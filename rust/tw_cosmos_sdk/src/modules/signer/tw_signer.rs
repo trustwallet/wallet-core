@@ -132,6 +132,7 @@ impl<Context: CosmosContext> TWSigner<Context> {
         })
     }
 
+    // TODO remove
     fn broadcast_mode(input: Proto::BroadcastMode) -> BroadcastMode {
         match input {
             Proto::BroadcastMode::BLOCK => BroadcastMode::Block,

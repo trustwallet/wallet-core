@@ -11,7 +11,13 @@ use crate::private_key::{CosmosPrivateKey, SignatureData};
 use crate::transaction::{SignedTransaction, UnsignedTransaction};
 use std::marker::PhantomData;
 use tw_coin_entry::error::SigningResult;
+use tw_memory::Data;
 use tw_proto::serialize;
+
+pub struct ProtobufTxPreimage {
+    pub encoded_tx: Data,
+    pub tx_hash: Data,
+}
 
 pub struct ProtobufSigner<Context: CosmosContext> {
     _phantom: PhantomData<Context>,
@@ -22,12 +28,8 @@ impl<Context: CosmosContext> ProtobufSigner<Context> {
         private_key: &Context::PrivateKey,
         unsigned: UnsignedTransaction<Context>,
     ) -> SigningResult<SignedTransaction<Context>> {
-        let tx_to_sign = ProtobufSerializer::build_sign_doc(&unsigned)?;
-        let encoded_tx = serialize(&tx_to_sign)?;
-
-        let hash_to_sign = Context::TxHasher::hash_sign_doc(&encoded_tx);
-        let signature_data = private_key.sign_tx_hash(&hash_to_sign)?;
-
+        let ProtobufTxPreimage { tx_hash, .. } = Self::preimage_hash(&unsigned)?;
+        let signature_data = private_key.sign_tx_hash(&tx_hash)?;
         Ok(unsigned.into_signed(signature_data))
     }
 
@@ -35,10 +37,31 @@ impl<Context: CosmosContext> ProtobufSigner<Context> {
         private_key: &Context::PrivateKey,
         args: &SignDirectArgs,
     ) -> SigningResult<SignatureData> {
+        let ProtobufTxPreimage { tx_hash, .. } = Self::preimage_hash_direct(args)?;
+        private_key.sign_tx_hash(&tx_hash)
+    }
+
+    pub fn preimage_hash(
+        unsigned: &UnsignedTransaction<Context>,
+    ) -> SigningResult<ProtobufTxPreimage> {
+        let tx_to_sign = ProtobufSerializer::build_sign_doc(unsigned)?;
+        let encoded_tx = serialize(&tx_to_sign)?;
+        let tx_hash = Context::TxHasher::hash_sign_doc(&encoded_tx);
+
+        Ok(ProtobufTxPreimage {
+            encoded_tx,
+            tx_hash,
+        })
+    }
+
+    pub fn preimage_hash_direct(args: &SignDirectArgs) -> SigningResult<ProtobufTxPreimage> {
         let tx_to_sign = ProtobufSerializer::<Context>::build_direct_sign_doc(args);
         let encoded_tx = serialize(&tx_to_sign)?;
+        let tx_hash = Context::TxHasher::hash_sign_doc(&encoded_tx);
 
-        let hash_to_sign = Context::TxHasher::hash_sign_doc(&encoded_tx);
-        private_key.sign_tx_hash(&hash_to_sign)
+        Ok(ProtobufTxPreimage {
+            encoded_tx,
+            tx_hash,
+        })
     }
 }
