@@ -381,6 +381,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeInternetComputer:
             EXPECT_EQ(address, "cb3aa6a0471a417fc33d8e71f1d241750dfa29b4dc8f084265ce1301fb03b65b");
             break;
+        case TWCoinTypeTia:
+            EXPECT_EQ(address, "celestia1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0g3wnkv");
+            break;
             // no default branch here, intentionally, to better notice any missing coins
         }
     }

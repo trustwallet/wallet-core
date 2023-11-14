@@ -12,26 +12,28 @@
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <gtest/gtest.h>
 
+namespace TW::Cosmos::tests {
 
-TEST(TWScrollCoinType, TWCoinType) {
-    const auto coin = TWCoinTypeScroll;
+TEST(TWTiaCoinType, TWCoinType) {
+    const auto coin = TWCoinTypeTia;
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
-    const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xa2062a4530b194a438bb9f9e87cdce59f70775a52e8336892364445847c43ca2"));
+    const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("FF370C65D8D67B8236F9D3A8D2B1256337C60C1965092CADD1FA970288FCE99B"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
-    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0xf9062b8a30e0d7722960e305049fa50b86ba6253"));
+    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("celestia1tt4tv4jrs4twdtzwywxd8u65duxgk8y73wvfu2"));
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
-
-    assertStringsEqual(id, "scroll");
-    assertStringsEqual(name, "Scroll");
-    assertStringsEqual(symbol, "ETH");
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
-    ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
+    assertStringsEqual(id, "tia");
+    assertStringsEqual(name, "Celestia");
+    assertStringsEqual(symbol, "TIA");
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 6);
+    ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
-    assertStringsEqual(chainId, "534352");
-    assertStringsEqual(txUrl, "https://scrollscan.com/tx/0xa2062a4530b194a438bb9f9e87cdce59f70775a52e8336892364445847c43ca2");
-    assertStringsEqual(accUrl, "https://scrollscan.com/address/0xf9062b8a30e0d7722960e305049fa50b86ba6253");
+    assertStringsEqual(chainId, "celestia");
+    assertStringsEqual(txUrl, "https://www.mintscan.io/celestia/txs/FF370C65D8D67B8236F9D3A8D2B1256337C60C1965092CADD1FA970288FCE99B");
+    assertStringsEqual(accUrl, "https://www.mintscan.io/celestia/account/celestia1tt4tv4jrs4twdtzwywxd8u65duxgk8y73wvfu2");
 }
+
+} // namespace TW::Cosmos::tests
