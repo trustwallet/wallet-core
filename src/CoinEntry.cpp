@@ -33,12 +33,16 @@ byte getFromPrefixPkhOrDefault(const PrefixVariant &prefix, TWCoinType coin) {
 }
 
 bool validateAddressRust(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) {
-    if (!std::holds_alternative<std::monostate>(addressPrefix)) {
-        throw std::invalid_argument("`Rust::tw_any_address_is_valid_bech32`, `Rust::tw_any_address_is_valid_ss58` are not supported yet");
-    }
-
     Rust::TWStringWrapper addressStr = address;
-    return Rust::tw_any_address_is_valid(addressStr.get(), static_cast<uint32_t>(coin));
+
+    if (std::holds_alternative<std::monostate>(addressPrefix)) {
+        return Rust::tw_any_address_is_valid(addressStr.get(), static_cast<uint32_t>(coin));
+    } else if (const auto* hrpPrefix = std::get_if<Bech32Prefix>(&addressPrefix); hrpPrefix) {
+        Rust::TWStringWrapper hrpStr = std::string(*hrpPrefix);
+        return Rust::tw_any_address_is_valid_bech32(addressStr.get(), static_cast<uint32_t>(coin), hrpStr.get());
+    } else {
+        throw std::invalid_argument("`Rust::tw_any_address_is_valid_ss58`, `Rust::tw_any_address_create_with_public_key_filecoin_address_type` are not supported yet");
+    }
 }
 
 std::string normalizeAddressRust(TWCoinType coin, const std::string& address) {
@@ -55,12 +59,6 @@ std::string normalizeAddressRust(TWCoinType coin, const std::string& address) {
 }
 
 std::string deriveAddressRust(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const PrefixVariant& addressPrefix) {
-    if (!std::holds_alternative<std::monostate>(addressPrefix)) {
-        throw std::invalid_argument("`Rust::tw_any_address_create_bech32_with_public_key`, "
-                                    "`Rust::tw_any_address_create_ss58_with_public_key`, "
-                                    "`Rust::tw_any_address_create_with_public_key_filecoin_address_type` are not supported yet");
-    }
-
     auto *twPublicKeyRaw = Rust::tw_public_key_create_with_data(publicKey.bytes.data(),
                                                              publicKey.bytes.size(),
                                                              static_cast<uint32_t>(publicKey.type));
@@ -69,9 +67,20 @@ std::string deriveAddressRust(TWCoinType coin, const PublicKey& publicKey, TWDer
         return {};
     }
 
-    auto *anyAddressRaw = Rust::tw_any_address_create_with_public_key_derivation(twPublicKey.get(),
-                                                                                 static_cast<uint32_t>(coin),
-                                                                                 static_cast<uint32_t>(derivation));
+    Rust::TWAnyAddress* anyAddressRaw = nullptr;
+    if (std::holds_alternative<std::monostate>(addressPrefix)) {
+        anyAddressRaw = Rust::tw_any_address_create_with_public_key_derivation(twPublicKey.get(),
+                                                                               static_cast<uint32_t>(coin),
+                                                                               static_cast<uint32_t>(derivation));
+    } else if (const auto* hrpPrefix = std::get_if<Bech32Prefix>(&addressPrefix); hrpPrefix) {
+        Rust::TWStringWrapper hrpStr = std::string(*hrpPrefix);
+        anyAddressRaw = Rust::tw_any_address_create_bech32_with_public_key(twPublicKey.get(),
+                                                                           static_cast<uint32_t>(coin),
+                                                                           hrpStr.get());
+    } else {
+        throw std::invalid_argument("`Rust::tw_any_address_is_valid_ss58`, `Rust::tw_any_address_create_with_public_key_filecoin_address_type` are not supported yet");
+    }
+
     auto anyAddress = Rust::wrapTWAnyAddress(anyAddressRaw);
     if (!anyAddress) {
         return {};

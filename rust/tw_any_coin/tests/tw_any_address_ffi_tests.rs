@@ -5,8 +5,9 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use tw_any_coin::ffi::tw_any_address::{
-    tw_any_address_create_with_public_key_derivation, tw_any_address_create_with_string,
-    tw_any_address_data, tw_any_address_description, tw_any_address_is_valid,
+    tw_any_address_create_bech32_with_public_key, tw_any_address_create_with_public_key_derivation,
+    tw_any_address_create_with_string, tw_any_address_data, tw_any_address_description,
+    tw_any_address_is_valid, tw_any_address_is_valid_bech32,
 };
 use tw_any_coin::test_utils::TWAnyAddressHelper;
 use tw_coin_entry::derivation::Derivation;
@@ -16,10 +17,12 @@ use tw_encoding::hex::DecodeHex;
 use tw_keypair::ffi::privkey::tw_private_key_get_public_key_by_type;
 use tw_keypair::test_utils::tw_private_key_helper::TWPrivateKeyHelper;
 use tw_keypair::test_utils::tw_public_key_helper::TWPublicKeyHelper;
+use tw_keypair::tw::PublicKeyType;
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
 
 const ETHEREUM_COIN_TYPE: u32 = 60;
+const OSMOSIS_COIN_TYPE: u32 = 10000118;
 
 #[test]
 fn test_any_address_derive() {
@@ -212,4 +215,37 @@ fn test_any_address_get_data_eth() {
     });
     let data = TWDataHelper::wrap(unsafe { tw_any_address_data(any_address.ptr()) });
     assert_eq!(data.to_vec(), Some(addr.decode_hex().unwrap()));
+}
+
+#[test]
+fn test_any_address_is_valid_bech32() {
+    let addr = "juno1mry47pkga5tdswtluy0m8teslpalkdq0gnn4mf";
+
+    let address_str = TWStringHelper::create(addr);
+    let hrp = TWStringHelper::create("juno");
+    // Should be valid even though Osmosis chain has `osmo` default hrp.
+    let result =
+        unsafe { tw_any_address_is_valid_bech32(address_str.ptr(), OSMOSIS_COIN_TYPE, hrp.ptr()) };
+    assert!(result);
+}
+
+#[test]
+fn test_any_address_create_bech32_with_public_key() {
+    let private_key = TWPrivateKeyHelper::with_hex(
+        "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
+    );
+    let public_key = TWPublicKeyHelper::wrap(unsafe {
+        tw_private_key_get_public_key_by_type(private_key.ptr(), PublicKeyType::Secp256k1 as u32)
+    });
+    let hrp = TWStringHelper::create("juno");
+
+    // Should be valid even though Osmosis chain has `osmo` default hrp.
+    let any_address = TWAnyAddressHelper::wrap(unsafe {
+        tw_any_address_create_bech32_with_public_key(public_key.ptr(), OSMOSIS_COIN_TYPE, hrp.ptr())
+    });
+
+    let description =
+        TWStringHelper::wrap(unsafe { tw_any_address_description(any_address.ptr()) });
+    let expected = "juno1ten42eesehw0ktddcp0fws7d3ycsqez3fksy86";
+    assert_eq!(description.to_string(), Some(expected.to_string()));
 }

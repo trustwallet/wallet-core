@@ -49,12 +49,22 @@ impl CoinEntry for BitcoinEntry {
     #[inline]
     fn parse_address(
         &self,
-        _coin: &dyn CoinContext,
+        coin: &dyn CoinContext,
         address: &str,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
+        self.parse_address_unchecked(coin, address)
+    }
+
+    #[inline]
+    fn parse_address_unchecked(
+        &self,
+        _coin: &dyn CoinContext,
+        address: &str,
+    ) -> AddressResult<Self::Address> {
         let address = bitcoin::address::Address::from_str(address)
             .map_err(|_| AddressError::FromHexError)?
+            // TODO Bitcoin address should not check the network in `Self::parse_address_unchecked`.
             .require_network(bitcoin::Network::Bitcoin)
             .map_err(|_| AddressError::InvalidInput)?;
 

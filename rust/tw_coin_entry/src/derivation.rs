@@ -20,3 +20,9 @@ impl Derivation {
         }
     }
 }
+
+impl Default for Derivation {
+    fn default() -> Self {
+        Derivation::Default
+    }
+}

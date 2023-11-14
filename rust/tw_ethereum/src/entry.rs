@@ -46,6 +46,16 @@ impl CoinEntry for EthereumEntry {
         Address::from_str(address)
     }
 
+    #[inline]
+    fn parse_address_unchecked(
+        &self,
+        _coin: &dyn CoinContext,
+        address: &str,
+    ) -> AddressResult<Self::Address> {
+        Address::from_str(address)
+    }
+
+    #[inline]
     fn derive_address(
         &self,
         _coin: &dyn CoinContext,

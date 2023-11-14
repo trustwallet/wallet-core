@@ -24,7 +24,7 @@ std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, [[
     return deriveAddressRust(coin, publicKey, derivation, addressPrefix);
 }
 
-Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
+Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
     return addressToDataRust(coin, address);
 }
 

@@ -48,8 +48,8 @@ impl<Context: CosmosContext> TWSigner<Context> {
         let compile_output = TWTransactionCompiler::<Context>::compile(
             coin,
             input,
-            signature_data,
-            public_key.to_bytes(),
+            vec![signature_data],
+            vec![public_key.to_bytes()],
         );
 
         if compile_output.error != SigningErrorType::OK {

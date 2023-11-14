@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::bech32_prefix::Bech32Prefix;
 use serde::{Serialize, Serializer};
 use std::fmt;
 use std::str::FromStr;
@@ -15,6 +16,8 @@ use tw_hash::hasher::Hasher;
 use tw_hash::H160;
 use tw_keypair::tw::{PrivateKey, PublicKey, PublicKeyType};
 use tw_memory::Data;
+
+pub mod bech32_prefix;
 
 pub struct Bech32Address {
     hrp: String,
@@ -62,8 +65,12 @@ impl Bech32Address {
     pub fn with_public_key_coin_context(
         coin: &dyn CoinContext,
         public_key: &PublicKey,
+        prefix: Option<Bech32Prefix>,
     ) -> AddressResult<Bech32Address> {
-        let hrp = coin.hrp().ok_or(AddressError::InvalidHrp)?;
+        let hrp = match prefix {
+            Some(Bech32Prefix { hrp }) => hrp,
+            None => coin.hrp().ok_or(AddressError::InvalidHrp)?,
+        };
         let address_hasher = coin
             .address_hasher()
             .ok_or(AddressError::UnexpectedHasher)?;
@@ -101,6 +108,21 @@ impl Bech32Address {
             key_hash: bytes,
             address_str,
         })
+    }
+
+    pub fn from_str_with_coin_and_prefix(
+        coin: &dyn CoinContext,
+        address_str: String,
+        prefix: Option<Bech32Prefix>,
+    ) -> AddressResult<Bech32Address>
+    where
+        Self: Sized,
+    {
+        let hrp = match prefix {
+            Some(Bech32Prefix { hrp }) => hrp,
+            None => coin.hrp().ok_or(AddressError::InvalidHrp)?,
+        };
+        Self::from_str_checked(&hrp, address_str)
     }
 
     pub fn key_hash(&self) -> &[u8] {

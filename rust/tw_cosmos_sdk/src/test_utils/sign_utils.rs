@@ -141,8 +141,8 @@ fn test_compile_impl<Context: CosmosContext>(test_input: TestCompileInput<'_>) {
     let compile_output = TWTransactionCompiler::<Context>::compile(
         test_input.coin,
         test_input.input,
-        test_input.signature.decode_hex().unwrap(),
-        public_key,
+        vec![test_input.signature.decode_hex().unwrap()],
+        vec![public_key],
     );
 
     assert_eq!(compile_output.error, SigningError::OK);
