@@ -157,23 +157,6 @@ static json messageSetWithdrawAddress(const Proto::Message_SetWithdrawAddress& m
     };
 }
 
-
-// This method not only support token transfer, but also support all other types of contract call.
-// https://docs.terra.money/Tutorials/Smart-contracts/Manage-CW20-tokens.html#interacting-with-cw20-contract
-static json messageExecuteContract(const Proto::Message_ExecuteContract& message) {
-    auto typePrefix = message.type_prefix().empty() ? TYPE_PREFIX_WASM_MSG_EXECUTE : message.type_prefix();
-
-    return {
-        {"type", typePrefix},
-        {"value", {
-            {"sender", message.sender()},
-            {"contract", message.contract()},
-            {"execute_msg", message.execute_msg()},
-            {"coins", amountsJSON(message.coins())}
-        }}
-    };
-}
-
 json messageWasmTerraTransfer(const Proto::Message_WasmTerraExecuteContractTransfer& msg) {
     return {
         {"type", TYPE_PREFIX_WASM_MSG_EXECUTE},
@@ -212,8 +195,6 @@ static json messagesJSON(const Proto::SigningInput& input) {
             j.push_back(messageRedelegate(msg.restake_message()));
         } else if (msg.has_raw_json_message()) {
             j.push_back(messageRawJSON(msg.raw_json_message()));
-        } else if (msg.has_execute_contract_message()) {
-            j.push_back(messageExecuteContract(msg.execute_contract_message()));
         } else if (msg.has_transfer_tokens_message()) {
             assert(false); // not suppored, use protobuf serialization
             return json::array();

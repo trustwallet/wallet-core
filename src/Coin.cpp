@@ -66,6 +66,7 @@
 #include "Sui/Entry.h"
 #include "Greenfield/Entry.h"
 #include "InternetComputer/Entry.h"
+#include "NativeEvmos/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -123,6 +124,7 @@ TheOpenNetwork::Entry tonDP;
 Sui::Entry SuiDP;
 Greenfield::Entry GreenfieldDP;
 InternetComputer::Entry InternetComputerDP;
+NativeEvmos::Entry NativeEvmosDP;
 // end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
@@ -182,6 +184,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainSui: entry = &SuiDP; break;
         case TWBlockchainGreenfield: entry = &GreenfieldDP; break;
         case TWBlockchainInternetComputer: entry = &InternetComputerDP; break;
+        case TWBlockchainNativeEvmos: entry = &NativeEvmosDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;

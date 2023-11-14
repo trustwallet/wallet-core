@@ -7,8 +7,7 @@
 use crate::context::CosmosContext;
 use crate::hasher::CosmosHasher;
 use crate::modules::serializer::protobuf_serializer::{ProtobufSerializer, SignDirectArgs};
-use crate::private_key::{CosmosPrivateKey, SignatureData};
-use crate::transaction::{SignedTransaction, UnsignedTransaction};
+use crate::transaction::UnsignedTransaction;
 use std::marker::PhantomData;
 use tw_coin_entry::error::SigningResult;
 use tw_memory::Data;

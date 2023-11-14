@@ -166,21 +166,6 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 return any;
             }
 
-        case Proto::Message::kExecuteContractMessage:
-            {
-                assert(msg.has_execute_contract_message());
-                const auto& execContract = msg.execute_contract_message();
-                auto executeContractMsg = terra::wasm::v1beta1::MsgExecuteContract();
-                executeContractMsg.set_sender(execContract.sender());
-                executeContractMsg.set_contract(execContract.contract());
-                executeContractMsg.set_execute_msg(execContract.execute_msg());
-                for (auto i = 0; i < execContract.coins_size(); ++i){
-                    *executeContractMsg.add_coins() = convertCoin(execContract.coins(i));
-                }
-                any.PackFrom(executeContractMsg, ProtobufAnyNamespacePrefix);
-                return any;
-            }
-
         case Proto::Message::kWasmTerraExecuteContractTransferMessage:
             {
                 assert(msg.has_wasm_terra_execute_contract_transfer_message());

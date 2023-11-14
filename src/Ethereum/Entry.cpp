@@ -32,7 +32,7 @@ Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
     return addressToDataRust(coin, address);
 }
 
-void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signRust(dataIn, coin, dataOut);
 }
 
