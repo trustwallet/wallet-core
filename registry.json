@@ -4505,5 +4505,35 @@
       "rpc": "",
       "documentation": "https://internetcomputer.org/docs"
     }
+  },
+  {
+    "id": "movo",
+    "name": "Movo Smart Chain",
+    "coinId": 2050,
+    "symbol": "MOVO",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "2024",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://movoscan.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x431cfdcac44d63825d19e902c098a1f49f126144599e7011d369ec79fd17c1aa",
+      "sampleAccount": "0x442398c51cb4a32988829e241ff6fa0083793a4c"
+    },
+    "info": {
+      "url": "https://movo.uk",
+      "source": "https://github.com/movosmartchain",
+      "rpc": "https://msc-rpc.movoscan.com",
+      "documentation": "https://movo.uk/#whitepaper"
+    }
   }
 ]
