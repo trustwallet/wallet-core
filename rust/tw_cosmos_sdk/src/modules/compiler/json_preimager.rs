@@ -19,24 +19,14 @@ pub struct JsonTxPreimage {
     pub tx_hash: Data,
 }
 
-pub struct JsonSigner<Context: CosmosContext> {
+pub struct JsonPreimager<Context: CosmosContext> {
     _phantom: PhantomData<Context>,
 }
 
-impl<Context: CosmosContext> JsonSigner<Context>
+impl<Context: CosmosContext> JsonPreimager<Context>
 where
     Context::PublicKey: JsonPublicKey,
 {
-    pub fn sign_tx(
-        private_key: &Context::PrivateKey,
-        unsigned: UnsignedTransaction<Context>,
-    ) -> SigningResult<SignedTransaction<Context>> {
-        let JsonTxPreimage { tx_hash, .. } = Self::preimage_hash(&unsigned)?;
-        let signature_data = private_key.sign_tx_hash(&tx_hash)?;
-
-        Ok(unsigned.into_signed(signature_data))
-    }
-
     pub fn preimage_hash(unsigned: &UnsignedTransaction<Context>) -> SigningResult<JsonTxPreimage> {
         let tx_to_sign = JsonSerializer::build_unsigned_tx(&unsigned)?;
         let encoded_tx = serde_json::to_string(&tx_to_sign)

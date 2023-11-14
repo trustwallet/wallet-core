@@ -19,28 +19,11 @@ pub struct ProtobufTxPreimage {
     pub tx_hash: Data,
 }
 
-pub struct ProtobufSigner<Context: CosmosContext> {
+pub struct ProtobufPreimager<Context: CosmosContext> {
     _phantom: PhantomData<Context>,
 }
 
-impl<Context: CosmosContext> ProtobufSigner<Context> {
-    pub fn sign_tx(
-        private_key: &Context::PrivateKey,
-        unsigned: UnsignedTransaction<Context>,
-    ) -> SigningResult<SignedTransaction<Context>> {
-        let ProtobufTxPreimage { tx_hash, .. } = Self::preimage_hash(&unsigned)?;
-        let signature_data = private_key.sign_tx_hash(&tx_hash)?;
-        Ok(unsigned.into_signed(signature_data))
-    }
-
-    pub fn sign_direct(
-        private_key: &Context::PrivateKey,
-        args: &SignDirectArgs,
-    ) -> SigningResult<SignatureData> {
-        let ProtobufTxPreimage { tx_hash, .. } = Self::preimage_hash_direct(args)?;
-        private_key.sign_tx_hash(&tx_hash)
-    }
-
+impl<Context: CosmosContext> ProtobufPreimager<Context> {
     pub fn preimage_hash(
         unsigned: &UnsignedTransaction<Context>,
     ) -> SigningResult<ProtobufTxPreimage> {

@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::context::CosmosContext;
-use crate::modules::compiler::TWTransactionCompiler;
+use crate::modules::compiler::tw_compiler::TWTransactionCompiler;
 use crate::modules::signer::tw_signer::TWSigner;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::SigningErrorType;

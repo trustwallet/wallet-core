@@ -6,10 +6,10 @@
 
 use crate::context::CosmosContext;
 use crate::modules::broadcast_msg::{BroadcastMode, BroadcastMsg};
+use crate::modules::compiler::json_preimager::JsonPreimager;
+use crate::modules::compiler::protobuf_preimager::ProtobufPreimager;
 use crate::modules::serializer::json_serializer::JsonSerializer;
 use crate::modules::serializer::protobuf_serializer::ProtobufSerializer;
-use crate::modules::signer::json_signer::JsonSigner;
-use crate::modules::signer::protobuf_signer::ProtobufSigner;
 use crate::modules::tx_builder::TxBuilder;
 use crate::public_key::CosmosPublicKey;
 use std::borrow::Cow;
@@ -63,13 +63,13 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
         let preimage = match TxBuilder::<Context>::try_sign_direct_args(&input) {
             // If there was a `SignDirect` message in the signing input, generate the tx preimage directly.
             Ok(Some(sign_direct_args)) => {
-                ProtobufSigner::<Context>::preimage_hash_direct(&sign_direct_args)?
+                ProtobufPreimager::<Context>::preimage_hash_direct(&sign_direct_args)?
             },
             // Otherwise, generate the tx preimage by using `TxBuilder`.
             _ => {
                 // Please note the [`Proto::SigningInput::public_key`] should be set already.
                 let unsigned_tx = TxBuilder::<Context>::unsigned_tx_from_proto(coin, &input)?;
-                ProtobufSigner::<Context>::preimage_hash(&unsigned_tx)?
+                ProtobufPreimager::<Context>::preimage_hash(&unsigned_tx)?
             },
         };
 
@@ -86,7 +86,7 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
         // Please note the [`Proto::SigningInput::public_key`] should be set already.
         let unsigned_tx = TxBuilder::<Context>::unsigned_tx_from_proto(coin, &input)?;
-        let preimage = JsonSigner::preimage_hash(&unsigned_tx)?;
+        let preimage = JsonPreimager::preimage_hash(&unsigned_tx)?;
 
         Ok(CompilerProto::PreSigningOutput {
             data: Cow::from(preimage.encoded_tx.as_bytes().to_vec()),
@@ -160,7 +160,7 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
         Ok(Proto::SigningOutput {
             signature: Cow::from(signature_data),
             signature_json: Cow::from(signature_json),
-            serialized: Cow::from(broadcast_tx),
+            json: Cow::from(broadcast_tx),
             ..Proto::SigningOutput::default()
         })
     }

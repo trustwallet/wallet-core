@@ -12,7 +12,6 @@ use tw_keypair::tw::Curve;
 use tw_keypair::KeyPairError;
 use tw_memory::Data;
 
-#[derive(Clone)]
 pub struct Secp256PrivateKey(tw::PrivateKey);
 
 impl AsRef<tw::PrivateKey> for Secp256PrivateKey {

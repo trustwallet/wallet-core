@@ -4,4 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub mod tw_signer;
+pub mod json_preimager;
+pub mod protobuf_preimager;
+pub mod tw_compiler;
