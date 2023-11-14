@@ -42,10 +42,10 @@ impl TryFrom<Value> for EntryFunction {
             .ok_or_else(|| anyhow!("Arguments field is not an array or is missing"))?
             .iter()
             .map(|element| {
-                let arg_str = element
-                    .as_str()
-                    .ok_or_else(|| anyhow!("Invalid argument string"))?;
-                let arg = parse_transaction_argument(arg_str)?;
+                let arg_str = element.to_string();
+                let arg = parse_transaction_argument(
+                    arg_str.trim_start_matches('"').trim_end_matches('"'),
+                )?;
                 serialize_argument(&arg)
             })
             .collect::<Result<Vec<Vec<u8>>>>()?;
@@ -85,9 +85,9 @@ fn serialize_argument(arg: &TransactionArgument) -> Result<Vec<u8>> {
         TransactionArgument::Address(v) => {
             let serialized_v = bcs::to_bytes(v)?;
             bcs::to_bytes(&serialized_v)
-        },
+        }
     }
-    .map_err(|e| anyhow!(e))
+        .map_err(|e| anyhow!(e))
 }
 
 pub fn convert_proto_struct_tag_to_type_tag(struct_tag: Aptos::Proto::StructTag) -> TypeTag {
@@ -95,7 +95,7 @@ pub fn convert_proto_struct_tag_to_type_tag(struct_tag: Aptos::Proto::StructTag)
         "{}::{}::{}",
         struct_tag.account_address, struct_tag.module, struct_tag.name
     ))
-    .unwrap()
+        .unwrap()
 }
 
 pub fn convert_type_tag_to_struct_tag(type_tag: TypeTag) -> Aptos::Proto::StructTag<'static> {
@@ -188,6 +188,19 @@ mod tests {
               "0x48e0e3958d42b8d452c9199d4a221d0d1b15d14655787453dbe77208ced90517::coins::DAI",
               "0x9936836587ca33240d3d3f91844651b16cb07802faf5e34514ed6f78580deb0a::uints::U1"
             ]
+        });
+
+        let v = EntryFunction::try_from(payload_value.clone()).unwrap();
+        assert_eq!(payload_value, v.to_json());
+    }
+
+    #[test]
+    fn test_payload_from_json_with_arg_non_str() {
+        let payload_value: Value = json!({
+            "type":"entry_function_payload",
+            "function":"0xd11107bdf0d6d7040c6c0bfbdecb6545191fdf13e8d8d259952f53e1713f61b5::ditto_staking::stake_aptos",
+            "type_arguments":[],
+            "arguments": [1000000]
         });
 
         let v = EntryFunction::try_from(payload_value.clone()).unwrap();
