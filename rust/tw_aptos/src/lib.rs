@@ -12,6 +12,7 @@ mod serde_helper;
 
 pub mod nft;
 
+pub mod bcs_encoding;
 pub mod compiler;
 pub mod liquid_staking;
 pub mod signer;

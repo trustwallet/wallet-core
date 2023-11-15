@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use serde_json::Error;
 use std::fmt;
 use std::fmt::Formatter;
 use tw_keypair::KeyPairError;
@@ -59,7 +58,7 @@ impl From<AddressError> for SigningError {
 }
 
 impl From<serde_json::Error> for SigningError {
-    fn from(_value: Error) -> Self {
+    fn from(_value: serde_json::Error) -> Self {
         SigningError(SigningErrorType::Error_input_parse)
     }
 }

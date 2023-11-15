@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::constants::APTOS_SALT;
-use crate::transaction_payload::{EntryFunction, TransactionPayload};
+use crate::transaction_payload::TransactionPayload;
 use move_core_types::account_address::AccountAddress;
 use serde::Serialize;
 use serde_json::{json, Value};
@@ -122,26 +122,7 @@ impl RawTransaction {
         }
     }
 
-    /// Create a new `RawTransaction` with an entry function.
-    pub fn new_entry_function(
-        sender: AccountAddress,
-        sequence_number: u64,
-        entry_function: EntryFunction,
-        max_gas_amount: u64,
-        gas_unit_price: u64,
-        expiration_timestamp_secs: u64,
-        chain_id: u8,
-    ) -> Self {
-        RawTransaction {
-            sender,
-            sequence_number,
-            payload: TransactionPayload::EntryFunction(entry_function),
-            max_gas_amount,
-            gas_unit_price,
-            expiration_timestamp_secs,
-            chain_id,
-        }
-    }
+    /// Create a new `RawTransaction` with an entry function
 
     fn serialize(&self) -> Vec<u8> {
         bcs::to_bytes(&self).unwrap()
@@ -220,9 +201,6 @@ pub struct SignedTransaction {
 }
 
 impl SignedTransaction {
-    pub fn raw_txn(&self) -> &RawTransaction {
-        &self.raw_txn
-    }
     pub fn authenticator(&self) -> &TransactionAuthenticator {
         &self.authenticator
     }

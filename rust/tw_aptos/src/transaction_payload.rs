@@ -4,7 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use anyhow::{anyhow, Result};
+use crate::bcs_encoding;
+use crate::bcs_encoding::{BcsEncodingError, BcsEncodingResult};
+use crate::serde_helper::vec_bytes;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::{ModuleId, StructTag, TypeTag};
 use move_core_types::parser::parse_transaction_argument;
@@ -13,9 +15,27 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::default::Default;
 use std::str::FromStr;
-
-use crate::serde_helper::vec_bytes;
+use tw_memory::Data;
 use tw_proto::Aptos;
+
+pub type EntryFunctionResult<T> = Result<T, EntryFunctionError>;
+
+#[derive(Debug)]
+pub enum EntryFunctionError {
+    MissingFunctionName,
+    InvalidFunctionName,
+    MissingArguments,
+    InvalidArguments,
+    BcsSerializingError,
+    MissingTypeArguments,
+    InvalidTypeArguments,
+}
+
+impl From<BcsEncodingError> for EntryFunctionError {
+    fn from(_error: BcsEncodingError) -> Self {
+        EntryFunctionError::BcsSerializingError
+    }
+}
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct EntryFunction {
@@ -29,38 +49,40 @@ pub struct EntryFunction {
 }
 
 impl TryFrom<Value> for EntryFunction {
-    type Error = anyhow::Error;
+    type Error = EntryFunctionError;
 
-    fn try_from(value: Value) -> Result<Self> {
+    fn try_from(value: Value) -> EntryFunctionResult<Self> {
         let function_str = value["function"]
             .as_str()
-            .ok_or_else(|| anyhow!("Missing function string"))?;
-        let tag = StructTag::from_str(function_str)?;
+            .ok_or(EntryFunctionError::MissingFunctionName)?;
+        let tag = StructTag::from_str(function_str)
+            .map_err(|_| EntryFunctionError::InvalidFunctionName)?;
 
         let args = value["arguments"]
             .as_array()
-            .ok_or_else(|| anyhow!("Arguments field is not an array or is missing"))?
+            .ok_or(EntryFunctionError::MissingArguments)?
             .iter()
             .map(|element| {
                 let arg_str = element.to_string();
                 let arg = parse_transaction_argument(
                     arg_str.trim_start_matches('"').trim_end_matches('"'),
-                )?;
-                serialize_argument(&arg)
+                )
+                .map_err(|_| EntryFunctionError::InvalidArguments)?;
+                serialize_argument(&arg).map_err(EntryFunctionError::from)
             })
-            .collect::<Result<Vec<Vec<u8>>>>()?;
+            .collect::<EntryFunctionResult<Vec<Data>>>()?;
 
         let ty_args = value["type_arguments"]
             .as_array()
-            .ok_or_else(|| anyhow!("Type arguments field is not an array or is missing"))?
+            .ok_or(EntryFunctionError::MissingTypeArguments)?
             .iter()
             .map(|element| {
                 let ty_arg_str = element
                     .as_str()
-                    .ok_or_else(|| anyhow!("Invalid type argument string"))?;
-                TypeTag::from_str(ty_arg_str)
+                    .ok_or(EntryFunctionError::InvalidTypeArguments)?;
+                TypeTag::from_str(ty_arg_str).map_err(|_| EntryFunctionError::InvalidTypeArguments)
             })
-            .collect::<Result<Vec<TypeTag>>>()?;
+            .collect::<EntryFunctionResult<Vec<TypeTag>>>()?;
 
         Ok(EntryFunction {
             module: tag.module_id(),
@@ -72,22 +94,21 @@ impl TryFrom<Value> for EntryFunction {
     }
 }
 
-fn serialize_argument(arg: &TransactionArgument) -> Result<Vec<u8>> {
+fn serialize_argument(arg: &TransactionArgument) -> BcsEncodingResult<Data> {
     match arg {
-        TransactionArgument::U8(v) => bcs::to_bytes(v),
-        TransactionArgument::U16(v) => bcs::to_bytes(v),
-        TransactionArgument::U32(v) => bcs::to_bytes(v),
-        TransactionArgument::U64(v) => bcs::to_bytes(v),
-        TransactionArgument::U128(v) => bcs::to_bytes(v),
-        TransactionArgument::U256(v) => bcs::to_bytes(v),
-        TransactionArgument::U8Vector(v) => bcs::to_bytes(v),
-        TransactionArgument::Bool(v) => bcs::to_bytes(v),
+        TransactionArgument::U8(v) => bcs_encoding::encode(v),
+        TransactionArgument::U16(v) => bcs_encoding::encode(v),
+        TransactionArgument::U32(v) => bcs_encoding::encode(v),
+        TransactionArgument::U64(v) => bcs_encoding::encode(v),
+        TransactionArgument::U128(v) => bcs_encoding::encode(v),
+        TransactionArgument::U256(v) => bcs_encoding::encode(v),
+        TransactionArgument::U8Vector(v) => bcs_encoding::encode(v),
+        TransactionArgument::Bool(v) => bcs_encoding::encode(v),
         TransactionArgument::Address(v) => {
-            let serialized_v = bcs::to_bytes(v)?;
-            bcs::to_bytes(&serialized_v)
+            let serialized_v = bcs_encoding::encode(v)?;
+            bcs_encoding::encode(&serialized_v)
         },
     }
-    .map_err(|e| anyhow!(e))
 }
 
 pub fn convert_proto_struct_tag_to_type_tag(struct_tag: Aptos::Proto::StructTag) -> TypeTag {
@@ -168,8 +189,8 @@ impl EntryFunction {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::address::Address;
-    use crate::transaction_payload::{EntryFunction, TransactionPayload};
     use move_core_types::account_address::AccountAddress;
     use move_core_types::identifier::Identifier;
     use move_core_types::language_storage::{ModuleId, TypeTag};
@@ -215,8 +236,8 @@ mod tests {
                 .inner();
         let amount: i64 = 1000;
         let args = vec![
-            bcs::to_bytes(&addr).unwrap(),
-            bcs::to_bytes(&amount).unwrap(),
+            bcs_encoding::encode(&addr).unwrap(),
+            bcs_encoding::encode(&amount).unwrap(),
         ];
         let module = ModuleId::new(AccountAddress::ONE, Identifier::from_str("coin").unwrap());
         let function = Identifier::from_str("transfer").unwrap();
@@ -229,7 +250,7 @@ mod tests {
             json!([addr.to_hex_literal(), amount.to_string()]),
         );
         let tp = TransactionPayload::EntryFunction(entry);
-        let serialized = bcs::to_bytes(&tp).unwrap();
+        let serialized = bcs_encoding::encode(&tp).unwrap();
         assert_eq!(hex::encode(serialized, false), "02000000000000000000000000000000000000000000000000000000000000000104636f696e087472616e73666572010700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e000220eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b08e803000000000000");
         let payload_value: Value = json!({
                 "function": "0x1::coin::transfer",

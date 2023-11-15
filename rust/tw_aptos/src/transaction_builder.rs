@@ -85,37 +85,40 @@ impl TransactionFactory {
             .with_max_gas_amount(input.max_gas_amount)
             .with_transaction_expiration_time(input.expiration_timestamp_secs);
         match input.transaction_payload {
-            OneOftransaction_payload::transfer(transfer) => Ok(factory
+            OneOftransaction_payload::transfer(transfer) => factory
                 .implicitly_create_user_account_and_transfer(
                     AccountAddress::from_str(&transfer.to).unwrap(),
                     transfer.amount,
-                )),
+                ),
             OneOftransaction_payload::token_transfer(token_transfer) => {
                 let func = token_transfer.function.unwrap();
-                Ok(factory.coins_transfer(
+                factory.coins_transfer(
                     AccountAddress::from_str(&token_transfer.to).unwrap(),
                     token_transfer.amount,
                     convert_proto_struct_tag_to_type_tag(func),
-                ))
+                )
             },
-            OneOftransaction_payload::create_account(create_account) => Ok(factory
-                .create_user_account(AccountAddress::from_str(&create_account.auth_key).unwrap())),
+            OneOftransaction_payload::create_account(create_account) => factory
+                .create_user_account(AccountAddress::from_str(&create_account.auth_key).unwrap()),
             OneOftransaction_payload::nft_message(nft_message) => {
-                Ok(factory.nft_ops(nft_message.into()))
+                factory.nft_ops(NftOperation::try_from(nft_message)?)
             },
-            OneOftransaction_payload::register_token(register_token) => Ok(factory.register_token(
-                convert_proto_struct_tag_to_type_tag(register_token.function.unwrap()),
-            )),
+            OneOftransaction_payload::register_token(register_token) => {
+                let function = register_token
+                    .function
+                    .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+                Ok(factory.register_token(convert_proto_struct_tag_to_type_tag(function)))
+            },
             OneOftransaction_payload::liquid_staking_message(msg) => {
-                Ok(factory.liquid_staking_ops(msg.into()))
+                factory.liquid_staking_ops(LiquidStakingOperation::try_from(msg)?)
             },
             OneOftransaction_payload::token_transfer_coins(token_transfer_coins) => {
                 let func = token_transfer_coins.function.unwrap();
-                Ok(factory.implicitly_create_user_and_coins_transfer(
+                factory.implicitly_create_user_and_coins_transfer(
                     AccountAddress::from_str(&token_transfer_coins.to).unwrap(),
                     token_transfer_coins.amount,
                     convert_proto_struct_tag_to_type_tag(func),
-                ))
+                )
             },
             OneOftransaction_payload::None => {
                 let is_blind_sign = !input.any_encoded.is_empty();
@@ -150,52 +153,55 @@ impl TransactionFactory {
         self.transaction_builder(payload)
     }
 
-    pub fn create_user_account(&self, to: AccountAddress) -> TransactionBuilder {
-        self.payload(aptos_account_create_account(to))
+    pub fn create_user_account(&self, to: AccountAddress) -> SigningResult<TransactionBuilder> {
+        Ok(self.payload(aptos_account_create_account(to)?))
     }
 
     pub fn register_token(&self, coin_type: TypeTag) -> TransactionBuilder {
         self.payload(managed_coin_register(coin_type))
     }
 
-    pub fn nft_ops(&self, operation: NftOperation) -> TransactionBuilder {
+    pub fn nft_ops(&self, operation: NftOperation) -> SigningResult<TransactionBuilder> {
         match operation {
-            NftOperation::Claim(claim) => self.payload(token_transfers_claim_script(
+            NftOperation::Claim(claim) => Ok(self.payload(token_transfers_claim_script(
                 claim.sender,
                 claim.creator,
                 claim.collection,
                 claim.name,
                 claim.property_version,
-            )),
-            NftOperation::Cancel(offer) => self.payload(token_transfers_cancel_offer_script(
+            )?)),
+            NftOperation::Cancel(offer) => Ok(self.payload(token_transfers_cancel_offer_script(
                 offer.receiver,
                 offer.creator,
                 offer.collection,
                 offer.name,
                 offer.property_version,
-            )),
-            NftOperation::Offer(offer) => self.payload(token_transfers_offer_script(
+            )?)),
+            NftOperation::Offer(offer) => Ok(self.payload(token_transfers_offer_script(
                 offer.receiver,
                 offer.creator,
                 offer.collection,
                 offer.name,
                 offer.property_version,
                 offer.amount,
-            )),
+            )?)),
         }
     }
 
-    pub fn liquid_staking_ops(&self, operation: LiquidStakingOperation) -> TransactionBuilder {
+    pub fn liquid_staking_ops(
+        &self,
+        operation: LiquidStakingOperation,
+    ) -> SigningResult<TransactionBuilder> {
         match operation {
             LiquidStakingOperation::Stake(stake) => {
-                self.payload(tortuga_stake(stake.smart_contract_address, stake.amount))
+                Ok(self.payload(tortuga_stake(stake.smart_contract_address, stake.amount)?))
             },
-            LiquidStakingOperation::Unstake(unstake) => self.payload(tortuga_unstake(
+            LiquidStakingOperation::Unstake(unstake) => Ok(self.payload(tortuga_unstake(
                 unstake.smart_contract_address,
                 unstake.amount,
-            )),
+            )?)),
             LiquidStakingOperation::Claim(claim) => {
-                self.payload(tortuga_claim(claim.smart_contract_address, claim.idx))
+                Ok(self.payload(tortuga_claim(claim.smart_contract_address, claim.idx)?))
             },
         }
     }
@@ -204,8 +210,8 @@ impl TransactionFactory {
         &self,
         to: AccountAddress,
         amount: u64,
-    ) -> TransactionBuilder {
-        self.payload(aptos_account_transfer(to, amount))
+    ) -> SigningResult<TransactionBuilder> {
+        Ok(self.payload(aptos_account_transfer(to, amount)?))
     }
 
     pub fn coins_transfer(
@@ -213,8 +219,8 @@ impl TransactionFactory {
         to: AccountAddress,
         amount: u64,
         coin_type: TypeTag,
-    ) -> TransactionBuilder {
-        self.payload(coin_transfer(coin_type, to, amount))
+    ) -> SigningResult<TransactionBuilder> {
+        Ok(self.payload(coin_transfer(coin_type, to, amount)?))
     }
 
     pub fn implicitly_create_user_and_coins_transfer(
@@ -222,8 +228,8 @@ impl TransactionFactory {
         to: AccountAddress,
         amount: u64,
         coin_type: TypeTag,
-    ) -> TransactionBuilder {
-        self.payload(aptos_account_transfer_coins(coin_type, to, amount))
+    ) -> SigningResult<TransactionBuilder> {
+        Ok(self.payload(aptos_account_transfer_coins(coin_type, to, amount)?))
     }
 
     fn transaction_builder(&self, payload: TransactionPayload) -> TransactionBuilder {

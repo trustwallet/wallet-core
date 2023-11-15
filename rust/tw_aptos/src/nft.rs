@@ -6,6 +6,7 @@
 
 use move_core_types::account_address::AccountAddress;
 use std::str::FromStr;
+use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_proto::Aptos::Proto::mod_NftMessage::OneOfnft_transaction_payload;
 use tw_proto::Aptos::Proto::{CancelOfferNftMessage, ClaimNftMessage, NftMessage, OfferNftMessage};
 
@@ -32,14 +33,20 @@ pub enum NftOperation {
     Cancel(Offer),
 }
 
-impl From<NftMessage<'_>> for NftOperation {
-    fn from(value: NftMessage) -> Self {
+impl TryFrom<NftMessage<'_>> for NftOperation {
+    type Error = SigningError;
+
+    fn try_from(value: NftMessage) -> SigningResult<Self> {
         match value.nft_transaction_payload {
-            OneOfnft_transaction_payload::offer_nft(msg) => NftOperation::Offer(msg.into()),
-            OneOfnft_transaction_payload::cancel_offer_nft(msg) => NftOperation::Cancel(msg.into()),
-            OneOfnft_transaction_payload::claim_nft(msg) => NftOperation::Claim(msg.into()),
+            OneOfnft_transaction_payload::offer_nft(msg) => {
+                Ok(NftOperation::Offer(Offer::try_from(msg)?))
+            },
+            OneOfnft_transaction_payload::cancel_offer_nft(msg) => {
+                Ok(NftOperation::Cancel(msg.into()))
+            },
+            OneOfnft_transaction_payload::claim_nft(msg) => Ok(NftOperation::Claim(msg.into())),
             OneOfnft_transaction_payload::None => {
-                todo!()
+                Err(SigningError(SigningErrorType::Error_invalid_params))
             },
         }
     }
@@ -63,16 +70,20 @@ impl From<NftOperation> for NftMessage<'_> {
     }
 }
 
-impl From<OfferNftMessage<'_>> for Offer {
-    fn from(value: OfferNftMessage) -> Self {
-        Offer {
-            receiver: AccountAddress::from_str(&value.receiver).unwrap(),
-            creator: AccountAddress::from_str(&value.creator).unwrap(),
+impl TryFrom<OfferNftMessage<'_>> for Offer {
+    type Error = SigningError;
+
+    fn try_from(value: OfferNftMessage) -> SigningResult<Self> {
+        Ok(Offer {
+            receiver: AccountAddress::from_str(&value.receiver)
+                .map_err(|_| SigningError(SigningErrorType::Error_invalid_address))?,
+            creator: AccountAddress::from_str(&value.creator)
+                .map_err(|_| SigningError(SigningErrorType::Error_invalid_address))?,
             collection: value.collectionName.as_bytes().to_vec(),
             name: value.name.as_bytes().to_vec(),
             property_version: value.property_version,
             amount: value.amount,
-        }
+        })
     }
 }
 
