@@ -1594,6 +1594,8 @@ dependencies = [
 name = "tw_any_coin"
 version = "0.1.0"
 dependencies = [
+ "serde",
+ "serde_json",
  "tw_any_coin",
  "tw_coin_entry",
  "tw_coin_registry",
@@ -1790,6 +1792,8 @@ version = "0.1.0"
 name = "tw_misc"
 version = "0.1.0"
 dependencies = [
+ "serde",
+ "serde_json",
  "zeroize",
 ]
 
