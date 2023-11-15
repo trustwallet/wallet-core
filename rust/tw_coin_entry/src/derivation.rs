@@ -5,9 +5,11 @@
 // file LICENSE at the root of the source code distribution tree.
 
 /// Extend this enum.
+#[derive(Default)]
 #[repr(u32)]
 pub enum Derivation {
     /// Default derivation.
+    #[default]
     Default = 0,
 }
 
@@ -18,11 +20,5 @@ impl Derivation {
             0 => Some(Derivation::Default),
             _ => None,
         }
-    }
-}
-
-impl Default for Derivation {
-    fn default() -> Self {
-        Derivation::Default
     }
 }

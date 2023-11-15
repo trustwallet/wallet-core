@@ -95,8 +95,7 @@ TEST(NativeInjectiveCompiler, CompileWithSignatures) {
 
         EXPECT_EQ(output.error(), Common::Proto::OK);
         EXPECT_EQ(output.serialized(), expectedTx);
-        EXPECT_EQ(output.signature(), "");
-        EXPECT_EQ(hex(output.signature()), "");
+        EXPECT_EQ(hex(output.signature()), "f7a9ec0a521170bb5566ca973d3c73a1b69b162d99ce022059189991ec440637333394ff1c9e75fad84eb114393969f20989b036f1dfed28949e906dc0077421");
     }
 }
 

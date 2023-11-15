@@ -44,7 +44,7 @@ fn test_staking_compounding_authz() {
         address: vec!["cosmosvaloper1gjtvly9lel6zskvwtvlg5vhwpu9c9waw7sxzwx".into()],
     };
     let stake_authorization = Proto::mod_Message::StakeAuthorization {
-        authorization_type: Proto::mod_Message::AuthorizationType::UNDELEGATE,
+        authorization_type: Proto::mod_Message::AuthorizationType::DELEGATE,
         validators: ProtoValidatorsType::allow_list(allow_list),
         ..Proto::mod_Message::StakeAuthorization::default()
     };
@@ -70,11 +70,11 @@ fn test_staking_compounding_authz() {
         input: input.clone(),
         // TODO the signature has been updated according to the serialization of the `StakeAuthorization` message.
         // Previous: CvgBCvUBCh4vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnR3JhbnQS0gEKLWNvc21vczEzazBxMGw3bGcya3IzMmt2dDdseTIzNnBwbGR5OHY5ZHp3aDNnZBItY29zbW9zMWZzN2x1MjhoeDVtOWFrbTdycDBjMjQyMmNuOHIyZjdndXJ1amhmGnIKaAoqL2Nvc21vcy5zdGFraW5nLnYxYmV0YTEuU3Rha2VBdXRob3JpemF0aW9uEjoSNgo0Y29zbW9zdmFsb3BlcjFnanR2bHk5bGVsNnpza3Z3dHZsZzV2aHdwdTljOXdhdzdzeHp3eCABEgYI4LD6pgYSZwpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohA/fcQw1hCVUx904t+kCXTiiziaLIY8lyssu1ENfzaN1KEgQKAggBGAUSEwoNCgV1YXRvbRIEMjQxOBCp8wUaQIFyfuijGKf87Hz61ZqxasfLI1PZnNge4RDq/tRyB/tZI6p80iGRqHecoV6+84EQkc9GTlNRQOSlApRCsivT9XI=
-        tx: r#"{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CvgBCvUBCh4vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnR3JhbnQS0gEKLWNvc21vczEzazBxMGw3bGcya3IzMmt2dDdseTIzNnBwbGR5OHY5ZHp3aDNnZBItY29zbW9zMWZzN2x1MjhoeDVtOWFrbTdycDBjMjQyMmNuOHIyZjdndXJ1amhmGnIKaAoqL2Nvc21vcy5zdGFraW5nLnYxYmV0YTEuU3Rha2VBdXRob3JpemF0aW9uEjogAhI2CjRjb3Ntb3N2YWxvcGVyMWdqdHZseTlsZWw2enNrdnd0dmxnNXZod3B1OWM5d2F3N3N4end4EgYI4LD6pgYSZwpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohA/fcQw1hCVUx904t+kCXTiiziaLIY8lyssu1ENfzaN1KEgQKAggBGAUSEwoNCgV1YXRvbRIEMjQxOBCp8wUaQLmIllMlQEFVxjPbK2SNitPNm/7c9nmouNwucybOik6lJs+CR1+/hWhDX7ZKltFNk46c5xWvS/zWfAkCfX5qTr8="}"#,
+        tx: r#"{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CvgBCvUBCh4vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnR3JhbnQS0gEKLWNvc21vczEzazBxMGw3bGcya3IzMmt2dDdseTIzNnBwbGR5OHY5ZHp3aDNnZBItY29zbW9zMWZzN2x1MjhoeDVtOWFrbTdycDBjMjQyMmNuOHIyZjdndXJ1amhmGnIKaAoqL2Nvc21vcy5zdGFraW5nLnYxYmV0YTEuU3Rha2VBdXRob3JpemF0aW9uEjogARI2CjRjb3Ntb3N2YWxvcGVyMWdqdHZseTlsZWw2enNrdnd0dmxnNXZod3B1OWM5d2F3N3N4end4EgYI4LD6pgYSZwpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohA/fcQw1hCVUx904t+kCXTiiziaLIY8lyssu1ENfzaN1KEgQKAggBGAUSEwoNCgV1YXRvbRIEMjQxOBCp8wUaQEAN1nIfDawlHnep2bNEm14w+g7tYybJJT3htcGVS6s9D7va3ed1OUEIk9LZoc3G//VenJ+KLw26SRVBaRukgVI="}"#,
         // Previous: 81727ee8a318a7fcec7cfad59ab16ac7cb2353d99cd81ee110eafed47207fb5923aa7cd22191a8779ca15ebef3811091cf464e535140e4a5029442b22bd3f572
-        signature: "b988965325404155c633db2b648d8ad3cd9bfedcf679a8b8dc2e7326ce8a4ea526cf82475fbf8568435fb64a96d14d938e9ce715af4bfcd67c09027d7e6a4ebf",
+        signature: "400dd6721f0dac251e77a9d9b3449b5e30fa0eed6326c9253de1b5c1954bab3d0fbbdadde77539410893d2d9a1cdc6fff55e9c9f8a2f0dba491541691ba48152",
         // Previous: gXJ+6KMYp/zsfPrVmrFqx8sjU9mc2B7hEOr+1HIH+1kjqnzSIZGod5yhXr7zgRCRz0ZOU1FA5KUClEKyK9P1cg==
-        signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A/fcQw1hCVUx904t+kCXTiiziaLIY8lyssu1ENfzaN1K"},"signature":"uYiWUyVAQVXGM9srZI2K082b/tz2eai43C5zJs6KTqUmz4JHX7+FaENftkqW0U2TjpznFa9L/NZ8CQJ9fmpOvw=="}]"#,
+        signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A/fcQw1hCVUx904t+kCXTiiziaLIY8lyssu1ENfzaN1K"},"signature":"QA3Wch8NrCUed6nZs0SbXjD6Du1jJsklPeG1wZVLqz0Pu9rd53U5QQiT0tmhzcb/9V6cn4ovDbpJFUFpG6SBUg=="}]"#,
     });
 
     // `AuthGrant` doesn't support JSON serialization and signing.

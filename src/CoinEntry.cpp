@@ -94,7 +94,7 @@ Data addressToDataRust(TWCoinType coin, const std::string& address) {
     Rust::TWStringWrapper addressStr = address;
 
     auto anyAddress = Rust::wrapTWAnyAddress(
-        Rust::tw_any_address_create_with_string(addressStr.get(), static_cast<uint32_t>(coin)));
+        Rust::tw_any_address_create_with_string_unchecked(addressStr.get(), static_cast<uint32_t>(coin)));
     if (!anyAddress) {
         return {};
     }

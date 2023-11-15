@@ -14,7 +14,6 @@ use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_cosmos_sdk::address::{Address, Bech32Prefix};
-use tw_cosmos_sdk::context::StandardCosmosContext;
 use tw_cosmos_sdk::modules::compiler::tw_compiler::TWTransactionCompiler;
 use tw_cosmos_sdk::modules::signer::tw_signer::TWSigner;
 use tw_keypair::tw;
@@ -74,7 +73,7 @@ impl CoinEntry for NativeEvmosEntry {
         coin: &dyn CoinContext,
         input: Self::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        TWTransactionCompiler::<StandardCosmosContext>::preimage_hashes(coin, input)
+        TWTransactionCompiler::<NativeEvmosContext>::preimage_hashes(coin, input)
     }
 
     #[inline]
@@ -85,11 +84,6 @@ impl CoinEntry for NativeEvmosEntry {
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
-        TWTransactionCompiler::<StandardCosmosContext>::compile(
-            coin,
-            input,
-            signatures,
-            public_keys,
-        )
+        TWTransactionCompiler::<NativeEvmosContext>::compile(coin, input, signatures, public_keys)
     }
 }

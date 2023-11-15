@@ -153,3 +153,28 @@ pub unsafe extern "C" fn tw_any_address_data(address: *const TWAnyAddress) -> *m
     let data = try_or_else!(address.0.get_data(), std::ptr::null_mut);
     TWData::from(data).into_ptr()
 }
+
+/// Creates an address from a string representation and a coin type. Must be deleted with `TWAnyAddressDelete` after use.
+/// This function does not check if the address belongs to the given chain.
+///
+/// \param string address to create.
+/// \param coin coin type of the address.
+/// \return `TWAnyAddress` pointer or nullptr if address and coin are invalid.
+///
+/// # Warning
+///
+/// This function should only be used when address prefix is unavailable to be passed to this function.
+/// Consider using `tw_any_address_create_<PREFIX>_with_string` if the prefix is known.
+/// Please note that this function should be removed when all chains are migrated to Rust.
+#[no_mangle]
+pub unsafe extern "C" fn tw_any_address_create_with_string_unchecked(
+    string: *const TWString,
+    coin: u32,
+) -> *mut TWAnyAddress {
+    let string = try_or_else!(TWString::from_ptr_as_ref(string), std::ptr::null_mut);
+    let string = try_or_else!(string.as_str(), std::ptr::null_mut);
+
+    AnyAddress::with_string_unchecked(coin, string)
+        .map(|any_address| TWAnyAddress(any_address).into_ptr())
+        .unwrap_or_else(|_| std::ptr::null_mut())
+}

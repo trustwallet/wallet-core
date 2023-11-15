@@ -41,6 +41,17 @@ impl AnyAddress {
         Ok(AnyAddress { coin, address })
     }
 
+    /// Creates an address from a string representation and a coin type.
+    /// Please note that his function does not validate if the address belongs to the given chain.
+    pub(crate) fn with_string_unchecked(
+        coin: CoinType,
+        address: &str,
+    ) -> AddressResult<AnyAddress> {
+        let (ctx, entry) = coin_dispatcher(coin).map_err(|_| AddressError::UnknownCoinType)?;
+        let address = entry.normalize_address(&ctx, address)?;
+        Ok(AnyAddress { coin, address })
+    }
+
     /// Creates an address from a public key, derivation and prefix option.
     #[inline]
     pub fn with_public_key(
@@ -57,11 +68,6 @@ impl AnyAddress {
     /// Returns underlying data (public key or key hash).
     #[inline]
     pub fn get_data(&self) -> AddressResult<Data> {
-        // TODO
-        println!(
-            "AnyAddress::get_data() coin={} address={}",
-            self.coin, self.address
-        );
         let (ctx, entry) = coin_dispatcher(self.coin).map_err(|_| AddressError::UnknownCoinType)?;
         entry.address_to_data(&ctx, &self.address)
     }

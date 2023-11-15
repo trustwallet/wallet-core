@@ -14,7 +14,6 @@ use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_cosmos_sdk::address::{Address, Bech32Prefix, CosmosAddress};
-use tw_cosmos_sdk::context::StandardCosmosContext;
 use tw_cosmos_sdk::modules::compiler::tw_compiler::TWTransactionCompiler;
 use tw_cosmos_sdk::modules::signer::tw_signer::TWSigner;
 use tw_keypair::tw;
@@ -74,7 +73,7 @@ impl CoinEntry for NativeInjectiveEntry {
         coin: &dyn CoinContext,
         input: Self::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        TWTransactionCompiler::<StandardCosmosContext>::preimage_hashes(coin, input)
+        TWTransactionCompiler::<NativeInjectiveContext>::preimage_hashes(coin, input)
     }
 
     #[inline]
@@ -85,7 +84,7 @@ impl CoinEntry for NativeInjectiveEntry {
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
-        TWTransactionCompiler::<StandardCosmosContext>::compile(
+        TWTransactionCompiler::<NativeInjectiveContext>::compile(
             coin,
             input,
             signatures,
