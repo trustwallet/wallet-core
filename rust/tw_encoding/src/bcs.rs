@@ -4,18 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub mod base32;
-pub mod base58;
-pub mod base64;
-pub mod bcs;
-pub mod cbor;
-pub mod ffi;
-pub mod hex;
+use crate::{EncodingError, EncodingResult};
+use serde::Serialize;
+use tw_memory::Data;
 
-pub type EncodingResult<T> = Result<T, EncodingError>;
-
-#[derive(Debug, PartialEq)]
-pub enum EncodingError {
-    InvalidInput,
-    InvalidAlphabet,
+pub fn encode<T>(value: &T) -> EncodingResult<Data>
+where
+    T: ?Sized + Serialize,
+{
+    bcs::to_bytes(value).map_err(|_| EncodingError::InvalidInput)
 }
