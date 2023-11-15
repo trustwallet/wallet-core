@@ -3177,6 +3177,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "thor",
+    "addressHasher": "sha256ripemd",
     "chainId": "thorchain-mainnet-v1",
     "explorer": {
       "url": "https://viewblock.io/thorchain",

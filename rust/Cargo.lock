@@ -1521,6 +1521,7 @@ dependencies = [
  "tw_native_evmos",
  "tw_native_injective",
  "tw_ronin",
+ "tw_thorchain",
 ]
 
 [[package]]
@@ -1742,6 +1743,17 @@ dependencies = [
  "tw_keypair",
  "tw_memory",
  "tw_number",
+ "tw_proto",
+]
+
+[[package]]
+name = "tw_thorchain"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_cosmos_sdk",
+ "tw_keypair",
+ "tw_memory",
  "tw_proto",
 ]
 

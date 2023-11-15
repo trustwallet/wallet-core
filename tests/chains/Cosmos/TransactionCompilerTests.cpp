@@ -139,7 +139,7 @@ TEST(CosmosCompiler, CompileWithSignatures) {
         Cosmos::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(output.serialized().size(), 0ul);
-        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+        EXPECT_EQ(output.error(), Common::Proto::Error_signatures_count);
     }
 
     /// Step 3: Obtain json preimage hash

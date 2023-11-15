@@ -20,6 +20,7 @@ pub enum BlockchainType {
     NativeEvmos,
     NativeInjective,
     Ronin,
+    Thorchain,
     Unsupported,
 }
 
@@ -42,9 +43,10 @@ impl FromStr for BlockchainType {
             "Cosmos" => Ok(BlockchainType::Cosmos),
             "Ethereum" => Ok(BlockchainType::Ethereum),
             "InternetComputer" => Ok(BlockchainType::InternetComputer),
-            "Ronin" => Ok(BlockchainType::Ronin),
             "NativeEvmos" => Ok(BlockchainType::NativeEvmos),
             "NativeInjective" => Ok(BlockchainType::NativeInjective),
+            "Ronin" => Ok(BlockchainType::Ronin),
+            "Thorchain" => Ok(BlockchainType::Thorchain),
             _ => Ok(BlockchainType::Unsupported),
         }
     }

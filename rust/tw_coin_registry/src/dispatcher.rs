@@ -18,6 +18,7 @@ use tw_internet_computer::entry::InternetComputerEntry;
 use tw_native_evmos::entry::NativeEvmosEntry;
 use tw_native_injective::entry::NativeInjectiveEntry;
 use tw_ronin::entry::RoninEntry;
+use tw_thorchain::entry::ThorchainEntry;
 
 pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;
 pub type EvmEntryExtStaticRef = &'static dyn EvmEntryExt;
@@ -29,6 +30,7 @@ const INTERNET_COMPUTER: InternetComputerEntry = InternetComputerEntry;
 const NATIVE_EVMOS: NativeEvmosEntry = NativeEvmosEntry;
 const NATIVE_INJECTIVE: NativeInjectiveEntry = NativeInjectiveEntry;
 const RONIN: RoninEntry = RoninEntry;
+const THORCHAIN: ThorchainEntry = ThorchainEntry;
 
 pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinEntryExtStaticRef> {
     match blockchain {
@@ -39,6 +41,7 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::NativeEvmos => Ok(&NATIVE_EVMOS),
         BlockchainType::NativeInjective => Ok(&NATIVE_INJECTIVE),
         BlockchainType::Ronin => Ok(&RONIN),
+        BlockchainType::Thorchain => Ok(&THORCHAIN),
         BlockchainType::Unsupported => Err(RegistryError::Unsupported),
     }
 }
@@ -62,6 +65,7 @@ pub fn evm_dispatcher(coin: CoinType) -> RegistryResult<EvmEntryExtStaticRef> {
         BlockchainType::NativeEvmos => Err(RegistryError::Unsupported),
         BlockchainType::NativeInjective => Err(RegistryError::Unsupported),
         BlockchainType::Ronin => Ok(&RONIN),
+        BlockchainType::Thorchain => Err(RegistryError::Unsupported),
         BlockchainType::Unsupported => Err(RegistryError::Unsupported),
     }
 }
