@@ -1,7 +1,5 @@
 use crate::address::Address;
-use crate::signer::AptosContext;
 use crate::transaction_builder;
-use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
@@ -9,11 +7,9 @@ use tw_coin_entry::signing_output_error;
 use tw_proto::Aptos::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
-pub struct Compiler<Context: AptosContext> {
-    _phantom: PhantomData<Context>,
-}
+pub struct Compiler;
 
-impl<Context: AptosContext> Compiler<Context> {
+impl Compiler {
     #[inline]
     pub fn preimage_hashes(
         input: Proto::SigningInput<'_>,

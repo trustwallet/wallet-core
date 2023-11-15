@@ -10,7 +10,7 @@ use std::str::FromStr;
 use tw_aptos::liquid_staking;
 use tw_aptos::liquid_staking::{LiquidStakingOperation, Stake, Unstake};
 use tw_aptos::nft::{Claim, NftOperation, Offer};
-use tw_aptos::signer::{Signer, StandardAptosContext};
+use tw_aptos::signer::Signer;
 use tw_aptos::transaction_payload::convert_type_tag_to_struct_tag;
 use tw_coin_entry::error::SigningErrorType;
 use tw_encoding::hex;
@@ -201,7 +201,7 @@ fn test_aptos_sign_transaction_transfer() {
             amount: 1000,
         })),
     );
-    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    let output = Signer::sign_proto(input);
     test_tx_result(output,
                    "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3063000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e74087472616e7366657200022007968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3008e803000000000000fe4d3200000000006400000000000000c2276ada0000000021",
                    "5707246db31e2335edc4316a7a656a11691d1d1647f6e864d1ab12f43428aaaf806cf02120d0b608cdd89c5c904af7b137432aacdd60cc53f9fad7bd33578e01",
@@ -243,7 +243,7 @@ fn test_aptos_sign_create_account() {
             to: "0x3aa1672641a4e17b3d913b4c0301e805755a80b12756fc729c5878f12344d30e".to_string(),
         })),
     );
-    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    let output = Signer::sign_proto(input);
     test_tx_result(output,
                    "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3000000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e740e6372656174655f6163636f756e740001203aa1672641a4e17b3d913b4c0301e805755a80b12756fc729c5878f12344d30efe4d3200000000006400000000000000c2276ada0000000021", // Expected raw transaction bytes
                    "fcba3dfbec76721454ef414955f09f159660a13886b4edd8c579e3c779c29073afe7b25efa3fef9b21c2efb1cf16b4247fc0e5c8f63fdcd1c8d87f5d59f44501", // Expected signature
@@ -293,7 +293,7 @@ fn test_aptos_sign_coin_transfer() {
             .unwrap(),
         })),
     );
-    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    let output = Signer::sign_proto(input);
     test_tx_result(output,
                    "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30180000000000000002000000000000000000000000000000000000000000000000000000000000000104636f696e087472616e73666572010743417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b905636f696e730342544300022007968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3008a086010000000000fe4d3200000000006400000000000000c2276ada0000000020", // Expected raw transaction bytes
                    "7643ec8aae6198bd13ca6ea2962265859cba5a228e7d181131f6c022700dd02a7a04dc0345ad99a0289e5ab80b130b3864e6404079980bc226f1a13aee7d280a", // Expected signature
@@ -332,7 +332,7 @@ fn test_implicit_aptos_sign_coin_transfer() {
                                         "",
                                         Some(OpsDetails::ImplicitTokenTransfer(TokenTransfer { transfer: Transfer { to: "0xb7c7d12080209e9dc14498c80200706e760363fb31782247e82cf57d1d6e5d6c".to_string(), amount: 10000 }, tag: TypeTag::from_str("0xe9c192ff55cffab3963c695cff6dbf9dad6aff2bb5ac19a6415cad26a81860d9::mee_coin::MeeCoin").unwrap() })),
     );
-    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    let output = Signer::sign_proto(input);
     test_tx_result(output,
                    "1869b853768f0ba935d67f837a66b172dd39a60ca2315f8d4e0e669bbd35cf2502000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e740e7472616e736665725f636f696e730107e9c192ff55cffab3963c695cff6dbf9dad6aff2bb5ac19a6415cad26a81860d9086d65655f636f696e074d6565436f696e000220b7c7d12080209e9dc14498c80200706e760363fb31782247e82cf57d1d6e5d6c081027000000000000d0070000000000006400000000000000c2276ada0000000001", // Expected raw transaction bytes
                    "30ebd7e95cb464677f411868e2cbfcb22bc01cc63cded36c459dff45e6d2f1354ae4e090e7dfbb509851c0368b343e0e5ecaf6b08e7c1b94c186530b0f7dee0d", // Expected signature
@@ -385,7 +385,7 @@ fn test_aptos_nft_offer() {
             amount: 1,
         }))),
     );
-    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    let output = Signer::sign_proto(input);
     test_tx_result(output,
                    "783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee01000000000000000200000000000000000000000000000000000000000000000000000000000000030f746f6b656e5f7472616e73666572730c6f666665725f73637269707400062007968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30209125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac0f0e546f70617a2054726f6f706572731514546f70617a2054726f6f70657220233230303638080000000000000000080100000000000000fe4d3200000000006400000000000000c2276ada0000000002", // Expected raw transaction bytes
                    "af5c7357a83c69e3f425beb23eaf232f8bb36dea3b7cad4a7ab8d735cee999c8ec5285005adf69dc85a6c34b042dd0308fe92b76dad5d6ac88c7b9259902c10f", // Expected signature
@@ -441,7 +441,7 @@ fn test_aptos_cancel_nft_offer() {
             amount: 0,
         }))),
     );
-    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    let output = Signer::sign_proto(input);
     test_tx_result(output,
                    "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3015000000000000000200000000000000000000000000000000000000000000000000000000000000030f746f6b656e5f7472616e73666572731363616e63656c5f6f666665725f736372697074000520783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee209125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac0f0e546f70617a2054726f6f706572731514546f70617a2054726f6f70657220233230303638080000000000000000fe4d3200000000006400000000000000c2276ada0000000002", // Expected raw transaction bytes
                    "826722d374e276f618123e77da3ac024c89a3f97db9e09e19aa8ed06c3cdfc57d4a21c7890137f9a7c0447cc303447ba10ca5b1908e889071e0a68f48c0f260a", // Expected signature
@@ -496,7 +496,7 @@ fn test_aptos_nft_claim() {
             property_version: 0,
         }))),
     );
-    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    let output = Signer::sign_proto(input);
     test_tx_result(output,
                    "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3013000000000000000200000000000000000000000000000000000000000000000000000000000000030f746f6b656e5f7472616e73666572730c636c61696d5f736372697074000520783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee209125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac0f0e546f70617a2054726f6f706572731514546f70617a2054726f6f70657220233230303638080000000000000000fe4d3200000000006400000000000000c2276ada0000000002", // Expected raw transaction bytes
                    "ede1ffb5f8f663741c2ca9597af44af81c98f7a910261bb4125f758fd0c0ebbf5bacb34f1196ad45153177729eb6d478676b364ab747da17602713f65ca2dd0a", // Expected signature
@@ -538,7 +538,7 @@ fn test_aptos_register_token() {
                                         "",
                                         Some(OpsDetails::RegisterToken(RegisterToken { coin_type: TypeTag::from_str("0xe4497a32bf4a9fd5601b27661aa0b933a923191bf403bd08669ab2468d43b379::move_coin::MoveCoin").unwrap() })),
     );
-    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    let output = Signer::sign_proto(input);
     test_tx_result(output,
                    "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3017000000000000000200000000000000000000000000000000000000000000000000000000000000010c6d616e616765645f636f696e0872656769737465720107e4497a32bf4a9fd5601b27661aa0b933a923191bf403bd08669ab2468d43b379096d6f76655f636f696e084d6f7665436f696e000080841e00000000006400000000000000c2276ada0000000002", // Expected raw transaction bytes
                    "e230b49f552fb85356dbec9df13f0dc56228eb7a9c29a8af3a99f4ae95b86c72bdcaa4ff1e9beb0bd81c298b967b9d97449856ec8bc672a08e2efef345c37100", // Expected signature
@@ -586,7 +586,7 @@ fn test_aptos_tortuga_stake() {
             },
         ))),
     );
-    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    let output = Signer::sign_proto(input);
     test_tx_result(output,
                    "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1300000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f75746572057374616b6500010800e1f50500000000b2150000000000006400000000000000cbd78d630000000001", // Expected raw transaction bytes
                    "22d3166c3003f9c24a35fd39c71eb27e0d2bb82541be610822165c9283f56fefe5a9d46421b9caf174995bd8f83141e60ea8cff521ecf4741fe19e6ae9a5680d", // Expected signature
@@ -636,7 +636,7 @@ fn test_aptos_tortuga_unstake() {
             }),
         )),
     );
-    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    let output = Signer::sign_proto(input);
     test_tx_result(output,
                    "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1400000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657207756e7374616b650001087456e9050000000043090000000000007800000000000000b5d48e630000000001", // Expected raw transaction bytes
                    "6994b917432ad70ae84d2ce1484e6aece589a68aad1b7c6e38c9697f2a012a083a3a755c5e010fd3d0f149a75dd8d257acbd09f10800e890074e5ad384314d0c", // Expected signature
@@ -686,7 +686,7 @@ fn test_aptos_tortuga_claim() {
             },
         ))),
     );
-    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    let output = Signer::sign_proto(input);
     test_tx_result(output,
                    "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1c00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657205636c61696d00010800000000000000000a0000000000000094000000000000005f4d42640000000001", // Expected raw transaction bytes
                    "c936584f89777e1fe2d5dd75cd8d9c514efc445810ba22f462b6fe7229c6ec7fc1c8b25d3e233eafaa8306433b3220235e563498ba647be38cac87ff618e3d03", // Expected signature
@@ -741,7 +741,7 @@ fn test_aptos_blind_sign() {
                                            }"#,
         None,
     );
-    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    let output = Signer::sign_proto(input);
     test_tx_result(output,
                    "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f302a000000000000000216fe2df00ea7dde4a63409201f7f4e536bde7bb7335526a35d05111e68aa322c0f416e696d6553776170506f6f6c563127737761705f65786163745f636f696e735f666f725f636f696e735f335f706169725f656e747279040700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e0007881ac202b1f1e6ad4efcff7a1d0579411533f2502417a19211cfc49751ddb5f404636f696e044d4f4a4f0007f22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa05617373657404555344540007f22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa056173736574045553444300020840420f000000000008b1c0000000000000ab860100000000006400000000000000c2276ada0000000001", // Expected raw transaction bytes
                    "42cd67406e85afd1e948e7ad7f5f484fb4c60d82b267c6b6b28a92301e228b983206d2b87cd5487cf9acfb0effbd183ab90123570eb2e047cb152d337152210b", // Expected signature
@@ -796,7 +796,7 @@ fn test_aptos_blind_sign_staking() {
                                         }"#,
         None,
     );
-    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    let output = Signer::sign_proto(input);
     test_tx_result(output,
                    "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc2b00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f75746572057374616b6500010800e1f50500000000ab860100000000006400000000000000c2276ada0000000001", // Expected raw transaction bytes
                    "a41b7440a50f36e8491319508734acb55488abc6d88fbc9cb2b37ba23210f01f5d08c856cb7abf18c414cf9302ee144450bd99495a7e21e61f624764db91eb0b", // Expected signature
@@ -845,7 +845,7 @@ fn test_aptos_blind_sign_unstaking() {
                                         }"#,
         None,
     );
-    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    let output = Signer::sign_proto(input);
     test_tx_result(output,
                    "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc2c00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657207756e7374616b650001087456e90500000000ab860100000000006400000000000000c2276ada0000000001", // Expected raw transaction bytes
                    "a58ad5e3331beb8c0212a18a1f932207cb664b78f5aad3cb1fe7435e0e0e053247ce49b38fd67b064bed34ed643eb6a03165d77c681d7d73ac3161ab984a960a", // Expected signature

@@ -4,31 +4,17 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::address::{Address, AptosAddress};
+use crate::address::Address;
 use crate::transaction_builder;
-use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::error::SigningResult;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::ed25519;
 use tw_proto::Aptos::Proto;
 
-pub trait AptosContext {
-    type Address: AptosAddress;
-}
+pub struct Signer;
 
-#[derive(Default)]
-pub struct StandardAptosContext;
-
-impl AptosContext for StandardAptosContext {
-    type Address = Address;
-}
-
-pub struct Signer<Context: AptosContext> {
-    _phantom: PhantomData<Context>,
-}
-
-impl<Context: AptosContext> Signer<Context> {
+impl Signer {
     #[inline]
     pub fn sign_proto(input: Proto::SigningInput<'_>) -> Proto::SigningOutput<'static> {
         Self::sign_proto_impl(input)

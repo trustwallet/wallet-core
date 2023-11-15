@@ -6,7 +6,7 @@
 
 use crate::address::Address;
 use crate::compiler::Compiler;
-use crate::signer::{Signer, StandardAptosContext};
+use crate::signer::Signer;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
@@ -59,7 +59,7 @@ impl CoinEntry for AptosEntry {
 
     #[inline]
     fn sign(&self, _coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput {
-        Signer::<StandardAptosContext>::sign_proto(input)
+        Signer::sign_proto(input)
     }
 
     #[inline]
@@ -68,7 +68,7 @@ impl CoinEntry for AptosEntry {
         _coin: &dyn CoinContext,
         input: Self::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        Compiler::<StandardAptosContext>::preimage_hashes(input)
+        Compiler::preimage_hashes(input)
     }
 
     #[inline]
@@ -79,7 +79,7 @@ impl CoinEntry for AptosEntry {
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
-        Compiler::<StandardAptosContext>::compile(input, signatures, public_keys)
+        Compiler::compile(input, signatures, public_keys)
     }
 
     #[inline]
