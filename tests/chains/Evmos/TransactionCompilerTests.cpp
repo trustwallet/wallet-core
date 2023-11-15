@@ -95,8 +95,7 @@ TEST(EvmosCompiler, CompileWithSignatures) {
 
         EXPECT_EQ(output.error(), Common::Proto::OK);
         EXPECT_EQ(output.serialized(), expectedTx);
-        EXPECT_EQ(output.signature(), "");
-        EXPECT_EQ(hex(output.signature()), "");
+        EXPECT_EQ(hex(output.signature()), hex(signature));
     }
 }
 
