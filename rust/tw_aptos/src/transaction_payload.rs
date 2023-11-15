@@ -4,8 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::bcs_encoding;
-use crate::bcs_encoding::{BcsEncodingError, BcsEncodingResult};
 use crate::serde_helper::vec_bytes;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::{ModuleId, StructTag, TypeTag};
@@ -16,6 +14,7 @@ use serde_json::{json, Value};
 use std::default::Default;
 use std::str::FromStr;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_encoding::{bcs, EncodingError, EncodingResult};
 use tw_memory::Data;
 use tw_proto::Aptos;
 
@@ -27,14 +26,14 @@ pub enum EntryFunctionError {
     InvalidFunctionName,
     MissingArguments,
     InvalidArguments,
-    BcsSerializingError,
+    EncodingError,
     MissingTypeArguments,
     InvalidTypeArguments,
 }
 
-impl From<BcsEncodingError> for EntryFunctionError {
-    fn from(_error: BcsEncodingError) -> Self {
-        EntryFunctionError::BcsSerializingError
+impl From<EncodingError> for EntryFunctionError {
+    fn from(_error: EncodingError) -> Self {
+        EntryFunctionError::EncodingError
     }
 }
 
@@ -101,19 +100,19 @@ impl TryFrom<Value> for EntryFunction {
     }
 }
 
-fn serialize_argument(arg: &TransactionArgument) -> BcsEncodingResult<Data> {
+fn serialize_argument(arg: &TransactionArgument) -> EncodingResult<Data> {
     match arg {
-        TransactionArgument::U8(v) => bcs_encoding::encode(v),
-        TransactionArgument::U16(v) => bcs_encoding::encode(v),
-        TransactionArgument::U32(v) => bcs_encoding::encode(v),
-        TransactionArgument::U64(v) => bcs_encoding::encode(v),
-        TransactionArgument::U128(v) => bcs_encoding::encode(v),
-        TransactionArgument::U256(v) => bcs_encoding::encode(v),
-        TransactionArgument::U8Vector(v) => bcs_encoding::encode(v),
-        TransactionArgument::Bool(v) => bcs_encoding::encode(v),
+        TransactionArgument::U8(v) => bcs::encode(v),
+        TransactionArgument::U16(v) => bcs::encode(v),
+        TransactionArgument::U32(v) => bcs::encode(v),
+        TransactionArgument::U64(v) => bcs::encode(v),
+        TransactionArgument::U128(v) => bcs::encode(v),
+        TransactionArgument::U256(v) => bcs::encode(v),
+        TransactionArgument::U8Vector(v) => bcs::encode(v),
+        TransactionArgument::Bool(v) => bcs::encode(v),
         TransactionArgument::Address(v) => {
-            let serialized_v = bcs_encoding::encode(v)?;
-            bcs_encoding::encode(&serialized_v)
+            let serialized_v = bcs::encode(v)?;
+            bcs::encode(&serialized_v)
         },
     }
 }
@@ -244,10 +243,7 @@ mod tests {
                 .unwrap()
                 .inner();
         let amount: i64 = 1000;
-        let args = vec![
-            bcs_encoding::encode(&addr).unwrap(),
-            bcs_encoding::encode(&amount).unwrap(),
-        ];
+        let args = vec![bcs::encode(&addr).unwrap(), bcs::encode(&amount).unwrap()];
         let module = ModuleId::new(AccountAddress::ONE, Identifier::from_str("coin").unwrap());
         let function = Identifier::from_str("transfer").unwrap();
         let type_tag = vec![TypeTag::from_str("0x1::aptos_coin::AptosCoin").unwrap()];
@@ -259,7 +255,7 @@ mod tests {
             json!([addr.to_hex_literal(), amount.to_string()]),
         );
         let tp = TransactionPayload::EntryFunction(entry);
-        let serialized = bcs_encoding::encode(&tp).unwrap();
+        let serialized = bcs::encode(&tp).unwrap();
         assert_eq!(hex::encode(serialized, false), "02000000000000000000000000000000000000000000000000000000000000000104636f696e087472616e73666572010700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e000220eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b08e803000000000000");
         let payload_value: Value = json!({
                 "function": "0x1::coin::transfer",

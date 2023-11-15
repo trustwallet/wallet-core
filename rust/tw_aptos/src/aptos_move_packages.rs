@@ -4,13 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::bcs_encoding;
 use crate::transaction_payload::{EntryFunction, TransactionPayload};
 use move_core_types::account_address::AccountAddress;
 use move_core_types::ident_str;
 use move_core_types::language_storage::{ModuleId, TypeTag};
 use serde_json::json;
 use tw_coin_entry::error::SigningResult;
+use tw_encoding::bcs;
 
 pub fn aptos_account_transfer(
     to: AccountAddress,
@@ -26,7 +26,7 @@ pub fn aptos_account_transfer(
         ),
         ident_str!("transfer").to_owned(),
         vec![],
-        vec![bcs_encoding::encode(&to)?, bcs_encoding::encode(&amount)?],
+        vec![bcs::encode(&to)?, bcs::encode(&amount)?],
         json!([to.to_hex_literal(), amount.to_string()]),
     )))
 }
@@ -42,7 +42,7 @@ pub fn aptos_account_create_account(auth_key: AccountAddress) -> SigningResult<T
         ),
         ident_str!("create_account").to_owned(),
         vec![],
-        vec![bcs_encoding::encode(&auth_key)?],
+        vec![bcs::encode(&auth_key)?],
         json!([auth_key.to_hex_literal()]),
     )))
 }
@@ -62,7 +62,7 @@ pub fn coin_transfer(
         ),
         ident_str!("transfer").to_owned(),
         vec![coin_type],
-        vec![bcs_encoding::encode(&to)?, bcs_encoding::encode(&amount)?],
+        vec![bcs::encode(&to)?, bcs::encode(&amount)?],
         json!([to.to_hex_literal(), amount.to_string()]),
     )))
 }
@@ -82,7 +82,7 @@ pub fn aptos_account_transfer_coins(
         ),
         ident_str!("transfer_coins").to_owned(),
         vec![coin_type],
-        vec![bcs_encoding::encode(&to)?, bcs_encoding::encode(&amount)?],
+        vec![bcs::encode(&to)?, bcs::encode(&amount)?],
         json!([to.to_hex_literal(), amount.to_string()]),
     )))
 }
@@ -106,12 +106,12 @@ pub fn token_transfers_offer_script(
         ident_str!("offer_script").to_owned(),
         vec![],
         vec![
-            bcs_encoding::encode(&receiver)?,
-            bcs_encoding::encode(&creator)?,
-            bcs_encoding::encode(&collection)?,
-            bcs_encoding::encode(&name)?,
-            bcs_encoding::encode(&property_version)?,
-            bcs_encoding::encode(&amount)?,
+            bcs::encode(&receiver)?,
+            bcs::encode(&creator)?,
+            bcs::encode(&collection)?,
+            bcs::encode(&name)?,
+            bcs::encode(&property_version)?,
+            bcs::encode(&amount)?,
         ],
         json!([
             receiver.to_hex_literal(),
@@ -142,11 +142,11 @@ pub fn token_transfers_cancel_offer_script(
         ident_str!("cancel_offer_script").to_owned(),
         vec![],
         vec![
-            bcs_encoding::encode(&receiver)?,
-            bcs_encoding::encode(&creator)?,
-            bcs_encoding::encode(&collection)?,
-            bcs_encoding::encode(&name)?,
-            bcs_encoding::encode(&property_version)?,
+            bcs::encode(&receiver)?,
+            bcs::encode(&creator)?,
+            bcs::encode(&collection)?,
+            bcs::encode(&name)?,
+            bcs::encode(&property_version)?,
         ],
         json!([
             receiver.to_hex_literal(),
@@ -176,11 +176,11 @@ pub fn token_transfers_claim_script(
         ident_str!("claim_script").to_owned(),
         vec![],
         vec![
-            bcs_encoding::encode(&sender)?,
-            bcs_encoding::encode(&creator)?,
-            bcs_encoding::encode(&collection)?,
-            bcs_encoding::encode(&name)?,
-            bcs_encoding::encode(&property_version)?,
+            bcs::encode(&sender)?,
+            bcs::encode(&creator)?,
+            bcs::encode(&collection)?,
+            bcs::encode(&name)?,
+            bcs::encode(&property_version)?,
         ],
         json!([
             sender.to_hex_literal(),

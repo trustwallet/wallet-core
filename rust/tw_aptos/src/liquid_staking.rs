@@ -5,12 +5,12 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::address::from_account_error;
-use crate::bcs_encoding;
 use crate::transaction_payload::{EntryFunction, TransactionPayload};
 use move_core_types::{account_address::AccountAddress, ident_str, language_storage::ModuleId};
 use serde_json::json;
 use std::str::FromStr;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_encoding::bcs;
 use tw_proto::{
     Aptos::Proto::mod_LiquidStaking::OneOfliquid_stake_transaction_payload,
     Aptos::Proto::{LiquidStaking, TortugaClaim, TortugaStake, TortugaUnstake},
@@ -27,7 +27,7 @@ pub fn tortuga_stake(
         ),
         ident_str!("stake").to_owned(),
         vec![],
-        vec![bcs_encoding::encode(&amount)?],
+        vec![bcs::encode(&amount)?],
         json!([amount.to_string()]),
     )))
 }
@@ -43,7 +43,7 @@ pub fn tortuga_unstake(
         ),
         ident_str!("unstake").to_owned(),
         vec![],
-        vec![bcs_encoding::encode(&amount)?],
+        vec![bcs::encode(&amount)?],
         json!([amount.to_string()]),
     )))
 }
@@ -59,7 +59,7 @@ pub fn tortuga_claim(
         ),
         ident_str!("claim").to_owned(),
         vec![],
-        vec![bcs_encoding::encode(&idx)?],
+        vec![bcs::encode(&idx)?],
         json!([idx.to_string()]),
     )))
 }

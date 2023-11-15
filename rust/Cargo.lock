@@ -1611,7 +1611,6 @@ dependencies = [
 name = "tw_aptos"
 version = "0.1.0"
 dependencies = [
- "bcs",
  "move-core-types",
  "serde",
  "serde_bytes",
@@ -1648,6 +1647,7 @@ name = "tw_coin_entry"
 version = "0.1.0"
 dependencies = [
  "serde_json",
+ "tw_encoding",
  "tw_keypair",
  "tw_memory",
  "tw_misc",
@@ -1679,6 +1679,7 @@ name = "tw_encoding"
 version = "0.1.0"
 dependencies = [
  "arbitrary",
+ "bcs",
  "bs58",
  "ciborium",
  "data-encoding",

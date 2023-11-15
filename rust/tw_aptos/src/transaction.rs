@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::bcs_encoding::{self, BcsEncodingResult};
 use crate::constants::APTOS_SALT;
 use crate::transaction_payload::TransactionPayload;
 use move_core_types::account_address::AccountAddress;
@@ -13,6 +12,7 @@ use serde_json::{json, Value};
 use std::borrow::Cow;
 use tw_coin_entry::error::SigningResult;
 use tw_encoding::hex::encode;
+use tw_encoding::{bcs, EncodingResult};
 use tw_keypair::ed25519::sha512::KeyPair;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
 use tw_memory::Data;
@@ -125,8 +125,8 @@ impl RawTransaction {
     }
 
     /// Create a new `RawTransaction` with an entry function
-    fn serialize(&self) -> BcsEncodingResult<Data> {
-        bcs_encoding::encode(&self)
+    fn serialize(&self) -> EncodingResult<Data> {
+        bcs::encode(&self)
     }
 
     fn msg_to_sign(&self) -> SigningResult<Data> {
@@ -151,7 +151,7 @@ impl RawTransaction {
             signature,
         };
         let mut encoded = serialized.clone();
-        encoded.extend_from_slice(bcs_encoding::encode(&auth)?.as_slice());
+        encoded.extend_from_slice(bcs::encode(&auth)?.as_slice());
         Ok(SignedTransaction {
             raw_txn: self.clone(),
             authenticator: auth,

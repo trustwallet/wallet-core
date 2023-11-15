@@ -12,7 +12,6 @@ tw_proto = { path = "../tw_proto" }
 tw_number = { path = "../tw_number" }
 tw_hash = { path = "../tw_hash" }
 tw_memory = { path = "../tw_memory" }
-bcs = "0.1.6"
 move-core-types = { git = "https://github.com/move-language/move", rev = "ea70797099baea64f05194a918cebd69ed02b285", features = ["address32"] }
 serde = { version = "1.0.189", features = ["derive"] }
 serde_bytes = "0.11.12"
