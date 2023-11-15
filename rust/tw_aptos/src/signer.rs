@@ -44,7 +44,7 @@ impl<Context: AptosContext> Signer<Context> {
         let signed_tx = builder
             .sender(sender.inner())
             .sequence_number(input.sequence_number as u64)
-            .build()
+            .build()?
             .sign(key_pair)?;
         Ok(Proto::SigningOutput {
             raw_txn: signed_tx.raw_txn_bytes().clone().into(),

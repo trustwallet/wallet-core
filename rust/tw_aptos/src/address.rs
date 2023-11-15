@@ -71,7 +71,7 @@ impl CoinAddress for Address {
 }
 
 #[inline]
-fn from_account_error(_err: AccountAddressParseError) -> AddressError {
+pub fn from_account_error(_err: AccountAddressParseError) -> AddressError {
     AddressError::InvalidInput
 }
 

@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::address::from_account_error;
 use move_core_types::account_address::AccountAddress;
 use std::str::FromStr;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
@@ -42,9 +43,11 @@ impl TryFrom<NftMessage<'_>> for NftOperation {
                 Ok(NftOperation::Offer(Offer::try_from(msg)?))
             },
             OneOfnft_transaction_payload::cancel_offer_nft(msg) => {
-                Ok(NftOperation::Cancel(msg.into()))
+                Ok(NftOperation::Cancel(Offer::try_from(msg)?))
             },
-            OneOfnft_transaction_payload::claim_nft(msg) => Ok(NftOperation::Claim(msg.into())),
+            OneOfnft_transaction_payload::claim_nft(msg) => {
+                Ok(NftOperation::Claim(Claim::try_from(msg)?))
+            },
             OneOfnft_transaction_payload::None => {
                 Err(SigningError(SigningErrorType::Error_invalid_params))
             },
@@ -75,10 +78,8 @@ impl TryFrom<OfferNftMessage<'_>> for Offer {
 
     fn try_from(value: OfferNftMessage) -> SigningResult<Self> {
         Ok(Offer {
-            receiver: AccountAddress::from_str(&value.receiver)
-                .map_err(|_| SigningError(SigningErrorType::Error_invalid_address))?,
-            creator: AccountAddress::from_str(&value.creator)
-                .map_err(|_| SigningError(SigningErrorType::Error_invalid_address))?,
+            receiver: AccountAddress::from_str(&value.receiver).map_err(from_account_error)?,
+            creator: AccountAddress::from_str(&value.creator).map_err(from_account_error)?,
             collection: value.collectionName.as_bytes().to_vec(),
             name: value.name.as_bytes().to_vec(),
             property_version: value.property_version,
@@ -102,16 +103,18 @@ impl From<Offer> for OfferNftMessage<'_> {
     }
 }
 
-impl From<CancelOfferNftMessage<'_>> for Offer {
-    fn from(value: CancelOfferNftMessage) -> Self {
-        Offer {
-            receiver: AccountAddress::from_str(&value.receiver).unwrap(),
-            creator: AccountAddress::from_str(&value.creator).unwrap(),
+impl TryFrom<CancelOfferNftMessage<'_>> for Offer {
+    type Error = SigningError;
+
+    fn try_from(value: CancelOfferNftMessage) -> SigningResult<Self> {
+        Ok(Offer {
+            receiver: AccountAddress::from_str(&value.receiver).map_err(from_account_error)?,
+            creator: AccountAddress::from_str(&value.creator).map_err(from_account_error)?,
             collection: value.collectionName.as_bytes().to_vec(),
             name: value.name.as_bytes().to_vec(),
             property_version: value.property_version,
             amount: 0,
-        }
+        })
     }
 }
 
@@ -131,15 +134,17 @@ impl From<Offer> for CancelOfferNftMessage<'_> {
     }
 }
 
-impl From<ClaimNftMessage<'_>> for Claim {
-    fn from(value: ClaimNftMessage) -> Self {
-        Claim {
-            sender: AccountAddress::from_str(&value.sender).unwrap(),
-            creator: AccountAddress::from_str(&value.creator).unwrap(),
+impl TryFrom<ClaimNftMessage<'_>> for Claim {
+    type Error = SigningError;
+
+    fn try_from(value: ClaimNftMessage) -> SigningResult<Self> {
+        Ok(Claim {
+            sender: AccountAddress::from_str(&value.sender).map_err(from_account_error)?,
+            creator: AccountAddress::from_str(&value.creator).map_err(from_account_error)?,
             collection: value.collectionName.as_bytes().to_vec(),
             name: value.name.as_bytes().to_vec(),
             property_version: value.property_version,
-        }
+        })
     }
 }
 

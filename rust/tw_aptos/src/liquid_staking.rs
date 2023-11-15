@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::address::from_account_error;
 use crate::bcs_encoding;
 use crate::transaction_payload::{EntryFunction, TransactionPayload};
 use move_core_types::{account_address::AccountAddress, ident_str, language_storage::ModuleId};
@@ -92,7 +93,7 @@ impl TryFrom<LiquidStaking<'_>> for LiquidStakingOperation {
             OneOfliquid_stake_transaction_payload::stake(stake_msg) => {
                 let smart_contract_address =
                     AccountAddress::from_str(&value.smart_contract_address)
-                        .map_err(|_| SigningError(SigningErrorType::Error_invalid_address))?;
+                        .map_err(from_account_error)?;
                 Ok(LiquidStakingOperation::Stake(Stake {
                     amount: stake_msg.amount,
                     smart_contract_address,
@@ -101,7 +102,7 @@ impl TryFrom<LiquidStaking<'_>> for LiquidStakingOperation {
             OneOfliquid_stake_transaction_payload::unstake(unstake_msg) => {
                 let smart_contract_address =
                     AccountAddress::from_str(&value.smart_contract_address)
-                        .map_err(|_| SigningError(SigningErrorType::Error_invalid_address))?;
+                        .map_err(from_account_error)?;
                 Ok(LiquidStakingOperation::Unstake(Unstake {
                     amount: unstake_msg.amount,
                     smart_contract_address,
@@ -110,7 +111,7 @@ impl TryFrom<LiquidStaking<'_>> for LiquidStakingOperation {
             OneOfliquid_stake_transaction_payload::claim(claim) => {
                 let smart_contract_address =
                     AccountAddress::from_str(&value.smart_contract_address)
-                        .map_err(|_| SigningError(SigningErrorType::Error_invalid_address))?;
+                        .map_err(from_account_error)?;
                 Ok(LiquidStakingOperation::Claim(Claim {
                     idx: claim.idx,
                     smart_contract_address,

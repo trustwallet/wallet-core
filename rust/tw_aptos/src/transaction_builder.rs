@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::address::from_account_error;
 use crate::aptos_move_packages::{
     aptos_account_create_account, aptos_account_transfer, aptos_account_transfer_coins,
     coin_transfer, managed_coin_register, token_transfers_cancel_offer_script,
@@ -47,17 +48,22 @@ impl TransactionBuilder {
         self
     }
 
-    pub fn build(self) -> RawTransaction {
-        RawTransaction::new(
-            self.sender.expect("sender must have been set"),
-            self.sequence_number
-                .expect("sequence number must have been set"),
+    pub fn build(self) -> SigningResult<RawTransaction> {
+        let sender = self
+            .sender
+            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+        let sequence_number = self
+            .sequence_number
+            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+        Ok(RawTransaction::new(
+            sender,
+            sequence_number,
             self.payload,
             self.max_gas_amount,
             self.gas_unit_price,
             self.expiration_timestamp_secs,
             self.chain_id,
-        )
+        ))
     }
 }
 
@@ -87,19 +93,24 @@ impl TransactionFactory {
         match input.transaction_payload {
             OneOftransaction_payload::transfer(transfer) => factory
                 .implicitly_create_user_account_and_transfer(
-                    AccountAddress::from_str(&transfer.to).unwrap(),
+                    AccountAddress::from_str(&transfer.to).map_err(from_account_error)?,
                     transfer.amount,
                 ),
             OneOftransaction_payload::token_transfer(token_transfer) => {
-                let func = token_transfer.function.unwrap();
+                let func = token_transfer
+                    .function
+                    .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
                 factory.coins_transfer(
-                    AccountAddress::from_str(&token_transfer.to).unwrap(),
+                    AccountAddress::from_str(&token_transfer.to).map_err(from_account_error)?,
                     token_transfer.amount,
-                    convert_proto_struct_tag_to_type_tag(func),
+                    convert_proto_struct_tag_to_type_tag(func)?,
                 )
             },
-            OneOftransaction_payload::create_account(create_account) => factory
-                .create_user_account(AccountAddress::from_str(&create_account.auth_key).unwrap()),
+            OneOftransaction_payload::create_account(create_account) => {
+                let address = AccountAddress::from_str(&create_account.auth_key)
+                    .map_err(from_account_error)?;
+                factory.create_user_account(address)
+            },
             OneOftransaction_payload::nft_message(nft_message) => {
                 factory.nft_ops(NftOperation::try_from(nft_message)?)
             },
@@ -107,26 +118,28 @@ impl TransactionFactory {
                 let function = register_token
                     .function
                     .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
-                Ok(factory.register_token(convert_proto_struct_tag_to_type_tag(function)))
+                Ok(factory.register_token(convert_proto_struct_tag_to_type_tag(function)?))
             },
             OneOftransaction_payload::liquid_staking_message(msg) => {
                 factory.liquid_staking_ops(LiquidStakingOperation::try_from(msg)?)
             },
             OneOftransaction_payload::token_transfer_coins(token_transfer_coins) => {
-                let func = token_transfer_coins.function.unwrap();
+                let func = token_transfer_coins
+                    .function
+                    .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
                 factory.implicitly_create_user_and_coins_transfer(
-                    AccountAddress::from_str(&token_transfer_coins.to).unwrap(),
+                    AccountAddress::from_str(&token_transfer_coins.to)
+                        .map_err(from_account_error)?,
                     token_transfer_coins.amount,
-                    convert_proto_struct_tag_to_type_tag(func),
+                    convert_proto_struct_tag_to_type_tag(func)?,
                 )
             },
             OneOftransaction_payload::None => {
                 let is_blind_sign = !input.any_encoded.is_empty();
                 let v = serde_json::from_str::<Value>(&input.any_encoded)?;
                 if is_blind_sign {
-                    Ok(factory.payload(TransactionPayload::EntryFunction(
-                        EntryFunction::try_from(v).unwrap(),
-                    )))
+                    let entry_function = EntryFunction::try_from(v)?;
+                    Ok(factory.payload(TransactionPayload::EntryFunction(entry_function)))
                 } else {
                     Err(SigningError(SigningErrorType::Error_input_parse))
                 }

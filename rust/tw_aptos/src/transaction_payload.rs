@@ -15,6 +15,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::default::Default;
 use std::str::FromStr;
+use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_memory::Data;
 use tw_proto::Aptos;
 
@@ -34,6 +35,12 @@ pub enum EntryFunctionError {
 impl From<BcsEncodingError> for EntryFunctionError {
     fn from(_error: BcsEncodingError) -> Self {
         EntryFunctionError::BcsSerializingError
+    }
+}
+
+impl From<EntryFunctionError> for SigningError {
+    fn from(_: EntryFunctionError) -> Self {
+        SigningError(SigningErrorType::Error_invalid_params)
     }
 }
 
@@ -111,12 +118,14 @@ fn serialize_argument(arg: &TransactionArgument) -> BcsEncodingResult<Data> {
     }
 }
 
-pub fn convert_proto_struct_tag_to_type_tag(struct_tag: Aptos::Proto::StructTag) -> TypeTag {
+pub fn convert_proto_struct_tag_to_type_tag(
+    struct_tag: Aptos::Proto::StructTag,
+) -> SigningResult<TypeTag> {
     TypeTag::from_str(&format!(
         "{}::{}::{}",
         struct_tag.account_address, struct_tag.module, struct_tag.name
     ))
-    .unwrap()
+    .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))
 }
 
 pub fn convert_type_tag_to_struct_tag(type_tag: TypeTag) -> Aptos::Proto::StructTag<'static> {

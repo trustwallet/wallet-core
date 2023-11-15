@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::bcs_encoding::{self, BcsEncodingResult};
 use crate::constants::APTOS_SALT;
 use crate::transaction_payload::TransactionPayload;
 use move_core_types::account_address::AccountAddress;
@@ -14,6 +15,7 @@ use tw_coin_entry::error::SigningResult;
 use tw_encoding::hex::encode;
 use tw_keypair::ed25519::sha512::KeyPair;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
+use tw_memory::Data;
 use tw_proto::Aptos::Proto;
 
 #[derive(Clone, Serialize)]
@@ -123,19 +125,18 @@ impl RawTransaction {
     }
 
     /// Create a new `RawTransaction` with an entry function
-
-    fn serialize(&self) -> Vec<u8> {
-        bcs::to_bytes(&self).unwrap()
+    fn serialize(&self) -> BcsEncodingResult<Data> {
+        bcs_encoding::encode(&self)
     }
 
-    fn msg_to_sign(&self) -> Vec<u8> {
-        let serialized = self.serialize();
+    fn msg_to_sign(&self) -> SigningResult<Data> {
+        let serialized = self.serialize()?;
         let mut preimage = tw_hash::sha3::sha3_256(APTOS_SALT);
         preimage.extend_from_slice(serialized.as_slice());
-        preimage
+        Ok(preimage)
     }
 
-    pub fn pre_image(&self) -> Vec<u8> {
+    pub fn pre_image(&self) -> SigningResult<Vec<u8>> {
         self.msg_to_sign()
     }
 
@@ -144,13 +145,13 @@ impl RawTransaction {
         signature: Vec<u8>,
         public_key: Vec<u8>,
     ) -> SigningResult<SignedTransaction> {
-        let serialized = self.serialize();
+        let serialized = self.serialize()?;
         let auth = TransactionAuthenticator::Ed25519 {
             public_key,
             signature,
         };
         let mut encoded = serialized.clone();
-        encoded.extend_from_slice(bcs::to_bytes(&auth).unwrap().as_slice());
+        encoded.extend_from_slice(bcs_encoding::encode(&auth)?.as_slice());
         Ok(SignedTransaction {
             raw_txn: self.clone(),
             authenticator: auth,
@@ -160,7 +161,7 @@ impl RawTransaction {
     }
 
     pub fn sign(self, key_pair: KeyPair) -> SigningResult<SignedTransaction> {
-        let to_sign = self.pre_image();
+        let to_sign = self.pre_image()?;
         let signature = key_pair.private().sign(to_sign)?.to_bytes().into_vec();
         let pubkey = key_pair.public().as_slice().to_vec();
         self.compile(signature, pubkey)
@@ -213,10 +214,7 @@ impl SignedTransaction {
 
     pub fn to_json(&self) -> Value {
         let mut json_value = self.raw_txn.to_json();
-        json_value
-            .as_object_mut()
-            .unwrap()
-            .insert("signature".to_string(), self.authenticator.to_json());
+        json_value["signature"] = self.authenticator.to_json();
         json_value
     }
 }
