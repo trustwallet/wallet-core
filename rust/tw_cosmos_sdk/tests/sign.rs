@@ -330,3 +330,32 @@ fn test_vote_payload() {
         assert_eq!(actual.value.to_hex(), expected);
     }
 }
+
+#[test]
+fn test_error_missing_message() {
+    let coin = TestCoinContext::default()
+        .with_public_key_type(PublicKeyType::Secp256k1)
+        .with_hrp("cosmos");
+
+    let input = Proto::SigningInput {
+        account_number: 1037,
+        chain_id: "gaia-13003".into(),
+        sequence: 8,
+        fee: Some(make_fee(200000, make_amount("muon", "200"))),
+        private_key: account_1037_private_key(),
+        messages: Vec::default(),
+        ..Proto::SigningInput::default()
+    };
+
+    test_sign_protobuf_error::<StandardCosmosContext>(TestErrorInput {
+        coin: &coin,
+        input: input.clone(),
+        error: SigningError::Error_invalid_params,
+    });
+
+    test_sign_json_error::<StandardCosmosContext>(TestErrorInput {
+        coin: &coin,
+        input,
+        error: SigningError::Error_invalid_params,
+    });
+}
