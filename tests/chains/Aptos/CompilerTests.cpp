@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Aptos/Signer.h"
+#include "proto/Aptos.pb.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
@@ -66,12 +66,12 @@ TEST(AptosCompiler, StandardTransaction) {
                     "gas_unit_price": "100",
                     "max_gas_amount": "3296766",
                     "payload": {
-                        "arguments": ["0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30","1000"],
+                        "arguments": ["0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30","1000"],
                         "function": "0x1::aptos_account::transfer",
                         "type": "entry_function_payload",
                         "type_arguments": []
                     },
-                    "sender": "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+                    "sender": "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
                     "sequence_number": "99",
                     "signature": {
                         "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
@@ -160,7 +160,7 @@ TEST(AptosCompiler, BlindTransactionJson) {
             ],
             "type": "entry_function_payload"
         },
-        "sender": "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+        "sender": "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
         "sequence_number": "42",
         "signature": {
             "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
@@ -168,54 +168,6 @@ TEST(AptosCompiler, BlindTransactionJson) {
             "type": "ed25519_signature"
         }
 }
-        )"_json;
-    nlohmann::json parsedJson = nlohmann::json::parse(output.json());
-    assertJSONEqual(expectedJson, parsedJson);
-}
-
-TEST(AptosCompiler, BlindTransactionHex) {
-    // successfully broadcasted https://explorer.aptoslabs.com/txn/0xd95857a9e644528708778a3a0a6e13986751944fca30eaac98853c1655de0422?network=Devnet
-    auto anyEncoded = "0xb5e97db07fa0bd0e5598aa3643a9bc6f6693bddc1a9fec9e674a461eaa00b19307968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f300200000000000000024633134869a61c41ad42eaca028d71c5b8b4109ffd69e1aa99c35a621b29883704706f6f6c0b737761705f795f746f5f780207deae46f81671e76f444e2ce5a299d9e1ea06a8fa26e81dfd49aa7fa5a5a60e010c6465766e65745f636f696e730a4465766e657455534454000700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e00020800e1f50500000000080000000000000000fe4d3200000000006400000000000000c2276ada0000000021";
-
-    Proto::SigningInput input;
-    input.set_any_encoded(anyEncoded);
-
-    auto inputString = input.SerializeAsString();
-    auto inputStrData = TW::Data(inputString.begin(), inputString.end());
-
-    // Pre-hash the transaction.
-
-    auto preImageHashesData = TransactionCompiler::preImageHashes(TWCoinTypeAptos, inputStrData);
-    TxCompiler::Proto::PreSigningOutput preSigningOutput;
-    preSigningOutput.ParseFromArray(preImageHashesData.data(), static_cast<int>(preImageHashesData.size()));
-    auto actualDataToSign = data(preSigningOutput.data());
-
-    EXPECT_EQ(preSigningOutput.error(), Common::Proto::OK);
-    EXPECT_EQ(actualDataToSign, parse_hex(anyEncoded));
-
-    // Sign the pre-hash data.
-
-    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"));
-    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519).bytes;
-    auto signature = privateKey.sign(actualDataToSign, TWCurveED25519);
-    EXPECT_EQ(hex(signature), "9e81026fdd43986f4d5588afdab875cd18b64dc15b3489fcc00ed46fc361915b27e23e0cefe6d23698ee76a562915fe85e99185dbc1dd29ba720f7fad144af0b");
-
-    // Compile the transaction.
-
-    auto outputData = TransactionCompiler::compileWithSignatures(TWCoinTypeAptos, inputStrData, {signature}, {publicKey});
-    Proto::SigningOutput output;
-    output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size()));
-
-    EXPECT_EQ(output.error(), Common::Proto::OK);
-    ASSERT_EQ(hex(output.raw_txn()), "b5e97db07fa0bd0e5598aa3643a9bc6f6693bddc1a9fec9e674a461eaa00b19307968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f300200000000000000024633134869a61c41ad42eaca028d71c5b8b4109ffd69e1aa99c35a621b29883704706f6f6c0b737761705f795f746f5f780207deae46f81671e76f444e2ce5a299d9e1ea06a8fa26e81dfd49aa7fa5a5a60e010c6465766e65745f636f696e730a4465766e657455534454000700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e00020800e1f50500000000080000000000000000fe4d3200000000006400000000000000c2276ada0000000021");
-    ASSERT_EQ(hex(output.authenticator().signature()), "9e81026fdd43986f4d5588afdab875cd18b64dc15b3489fcc00ed46fc361915b27e23e0cefe6d23698ee76a562915fe85e99185dbc1dd29ba720f7fad144af0b");
-    ASSERT_EQ(hex(output.encoded()), "b5e97db07fa0bd0e5598aa3643a9bc6f6693bddc1a9fec9e674a461eaa00b19307968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f300200000000000000024633134869a61c41ad42eaca028d71c5b8b4109ffd69e1aa99c35a621b29883704706f6f6c0b737761705f795f746f5f780207deae46f81671e76f444e2ce5a299d9e1ea06a8fa26e81dfd49aa7fa5a5a60e010c6465766e65745f636f696e730a4465766e657455534454000700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e00020800e1f50500000000080000000000000000fe4d3200000000006400000000000000c2276ada00000000210020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c409e81026fdd43986f4d5588afdab875cd18b64dc15b3489fcc00ed46fc361915b27e23e0cefe6d23698ee76a562915fe85e99185dbc1dd29ba720f7fad144af0b");
-    nlohmann::json expectedJson = R"(
-                {
-                        "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
-                        "signature": "0x9e81026fdd43986f4d5588afdab875cd18b64dc15b3489fcc00ed46fc361915b27e23e0cefe6d23698ee76a562915fe85e99185dbc1dd29ba720f7fad144af0b",
-                        "type": "ed25519_signature"
-                }
         )"_json;
     nlohmann::json parsedJson = nlohmann::json::parse(output.json());
     assertJSONEqual(expectedJson, parsedJson);

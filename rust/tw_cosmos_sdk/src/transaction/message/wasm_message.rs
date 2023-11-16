@@ -80,7 +80,6 @@ impl<Address: CosmosAddress> CosmosMessage for WasmExecuteContractMessage<Addres
             "msg": self.msg.try_to_json(),
             "sender": self.sender,
         });
-        // TODO custom_msg_type
         Ok(JsonMessage {
             msg_type: DEFAULT_JSON_MSG_TYPE.to_string(),
             value,

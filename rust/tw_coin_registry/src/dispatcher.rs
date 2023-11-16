@@ -9,6 +9,7 @@ use crate::coin_context::CoinRegistryContext;
 use crate::coin_type::CoinType;
 use crate::error::{RegistryError, RegistryResult};
 use crate::registry::get_coin_item;
+use tw_aptos::entry::AptosEntry;
 use tw_bitcoin::entry::BitcoinEntry;
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_cosmos::entry::CosmosEntry;
@@ -23,6 +24,7 @@ use tw_thorchain::entry::ThorchainEntry;
 pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;
 pub type EvmEntryExtStaticRef = &'static dyn EvmEntryExt;
 
+const APTOS: AptosEntry = AptosEntry;
 const BITCOIN: BitcoinEntry = BitcoinEntry;
 const COSMOS: CosmosEntry = CosmosEntry;
 const ETHEREUM: EthereumEntry = EthereumEntry;
@@ -34,6 +36,7 @@ const THORCHAIN: ThorchainEntry = ThorchainEntry;
 
 pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinEntryExtStaticRef> {
     match blockchain {
+        BlockchainType::Aptos => Ok(&APTOS),
         BlockchainType::Bitcoin => Ok(&BITCOIN),
         BlockchainType::Cosmos => Ok(&COSMOS),
         BlockchainType::Ethereum => Ok(&ETHEREUM),
@@ -58,6 +61,7 @@ pub fn coin_dispatcher(
 pub fn evm_dispatcher(coin: CoinType) -> RegistryResult<EvmEntryExtStaticRef> {
     let item = get_coin_item(coin)?;
     match item.blockchain {
+        BlockchainType::Aptos => Err(RegistryError::Unsupported),
         BlockchainType::Bitcoin => Err(RegistryError::Unsupported),
         BlockchainType::Cosmos => Err(RegistryError::Unsupported),
         BlockchainType::Ethereum => Ok(&ETHEREUM),

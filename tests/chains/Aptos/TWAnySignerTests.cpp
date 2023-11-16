@@ -4,11 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Aptos/Address.h"
-#include "Aptos/Signer.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
+#include "proto/Aptos.pb.h"
 #include <TrustWalletCore/TWAnySigner.h>
 #include <nlohmann/json.hpp>
 #include "TestUtilities.h"
@@ -42,12 +41,12 @@ TEST(TWAnySignerAptos, TxSign) {
                     "gas_unit_price": "100",
                     "max_gas_amount": "3296766",
                     "payload": {
-                        "arguments": ["0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30","1000"],
+                        "arguments": ["0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30","1000"],
                         "function": "0x1::aptos_account::transfer",
                         "type": "entry_function_payload",
                         "type_arguments": []
                     },
-                    "sender": "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+                    "sender": "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
                     "sequence_number": "99",
                     "signature": {
                         "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",

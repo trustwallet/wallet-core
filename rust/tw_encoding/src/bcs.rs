@@ -4,6 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-mod aptos;
-mod native_evmos;
-mod native_injective;
+use crate::{EncodingError, EncodingResult};
+use serde::Serialize;
+use tw_memory::Data;
+
+pub fn encode<T>(value: &T) -> EncodingResult<Data>
+where
+    T: ?Sized + Serialize,
+{
+    bcs::to_bytes(value).map_err(|_| EncodingError::InvalidInput)
+}
