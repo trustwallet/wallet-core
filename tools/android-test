@@ -27,7 +27,7 @@ SERIAL=emulator-${PORT}
 echo -e "\nCreating Android emulator...\n"
 echo "no" | "$ANDROID_CMDTOOLS/avdmanager" create avd \
     -n "${AVD_NAME}" \
-    -k "system-images;android-30;google_apis;x86" \
+    -k "system-images;android-33;google_apis;arm64-v8a" \
 	-f
 echo -e "\nAVD ${AVD_NAME} created."
 
@@ -36,7 +36,6 @@ echo -e "\nAVD ${AVD_NAME} created."
     -avd ${AVD_NAME} \
     -netspeed full \
     -netdelay none \
-    -no-snapshot -no-audio -no-boot-anim -no-window \
     -port ${PORT} &
 
 # Ensure Android Emulator has booted successfully before continuing
