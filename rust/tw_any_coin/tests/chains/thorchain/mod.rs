@@ -4,7 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-mod aptos;
-mod native_evmos;
-mod native_injective;
-mod thorchain;
+mod test_cases;
+mod thorchain_compile;
+mod thorchain_sign;
+
+const THORCHAIN_COIN_TYPE: u32 = 931;

@@ -1601,6 +1601,7 @@ dependencies = [
  "tw_coin_registry",
  "tw_cosmos_sdk",
  "tw_encoding",
+ "tw_hash",
  "tw_keypair",
  "tw_memory",
  "tw_misc",

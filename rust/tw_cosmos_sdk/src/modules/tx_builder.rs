@@ -206,6 +206,7 @@ where
             .map(Self::coin_from_proto)
             .collect::<SigningResult<_>>()?;
         let msg = SendMessage {
+            custom_type_prefix: Self::custom_msg_type(&send.type_prefix),
             from_address: Address::from_str_with_coin(coin, &send.from_address)?,
             to_address: Address::from_str_with_coin(coin, &send.to_address)?,
             amount: amounts,

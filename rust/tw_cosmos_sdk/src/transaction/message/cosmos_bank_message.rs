@@ -13,9 +13,13 @@ use serde::Serialize;
 use tw_coin_entry::error::SigningResult;
 use tw_proto::to_any;
 
+const DEFAULT_JSON_SEND_TYPE: &str = "cosmos-sdk/MsgSend";
+
 /// cosmos-sdk/MsgSend
 #[derive(Serialize)]
 pub struct SendMessage<Address: CosmosAddress> {
+    #[serde(skip)]
+    pub custom_type_prefix: Option<String>,
     pub from_address: Address,
     pub to_address: Address,
     pub amount: Vec<Coin>,
@@ -32,6 +36,10 @@ impl<Address: CosmosAddress> CosmosMessage for SendMessage<Address> {
     }
 
     fn to_json(&self) -> SigningResult<JsonMessage> {
-        message_to_json("cosmos-sdk/MsgSend", self)
+        let msg_type = self
+            .custom_type_prefix
+            .as_deref()
+            .unwrap_or(DEFAULT_JSON_SEND_TYPE);
+        message_to_json(msg_type, self)
     }
 }

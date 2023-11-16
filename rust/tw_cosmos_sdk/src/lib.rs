@@ -11,6 +11,7 @@ pub mod modules;
 pub mod private_key;
 pub mod public_key;
 pub mod transaction;
+pub mod signature;
 
 #[cfg(feature = "test-utils")]
 pub mod test_utils;

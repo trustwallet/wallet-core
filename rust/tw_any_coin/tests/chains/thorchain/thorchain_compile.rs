@@ -4,34 +4,41 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::chains::aptos::test_cases::transfer_b4d62afd::{
-    aptos_sign_transfer_input, expected_json, DATA_TO_SIGN, ENCODED, PRIVATE_KEY, RAW_TXN,
-    SIGNATURE,
+use crate::chains::thorchain::test_cases::send_fd0445af::{
+    signing_input, JSON_SIGNING_SIGNATURE, JSON_SIGNING_SIGNATURE_JSON, JSON_TX, JSON_TX_PREIMAGE,
+    PRIVATE_KEY,
 };
-use crate::chains::aptos::APTOS_COIN_TYPE;
+use crate::chains::thorchain::THORCHAIN_COIN_TYPE;
 use tw_any_coin::ffi::tw_transaction_compiler::{
     tw_transaction_compiler_compile, tw_transaction_compiler_pre_image_hashes,
 };
 use tw_coin_entry::error::SigningErrorType;
 use tw_encoding::hex::ToHex;
-use tw_keypair::ed25519;
+use tw_hash::H256;
+use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_memory::test_utils::tw_data_vector_helper::TWDataVectorHelper;
-use tw_misc::assert_eq_json;
 use tw_misc::traits::ToBytesVec;
-use tw_proto::Aptos::Proto;
+use tw_proto::Cosmos::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 use tw_proto::{deserialize, serialize};
 
 #[test]
-fn test_any_signer_compile_aptos() {
-    let input = aptos_sign_transfer_input();
+fn test_any_signer_compile_thorchain() {
+    let private_key = secp256k1::KeyPair::try_from(PRIVATE_KEY).unwrap();
+    let public_key = private_key.public().to_vec();
+
+    let input = Proto::SigningInput {
+        signing_mode: Proto::SigningMode::JSON,
+        public_key: public_key.clone().into(),
+        ..signing_input()
+    };
 
     // Step 2: Obtain preimage hash
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
     let preimage_data = TWDataHelper::wrap(unsafe {
-        tw_transaction_compiler_pre_image_hashes(APTOS_COIN_TYPE, input_data.ptr())
+        tw_transaction_compiler_pre_image_hashes(THORCHAIN_COIN_TYPE, input_data.ptr())
     })
     .to_vec()
     .expect("!tw_transaction_compiler_pre_image_hashes returned nullptr");
@@ -41,18 +48,24 @@ fn test_any_signer_compile_aptos() {
 
     assert_eq!(preimage.error, SigningErrorType::OK);
     assert!(preimage.error_message.is_empty());
-    assert_eq!(preimage.data.to_hex(), DATA_TO_SIGN);
+    let tx_preimage = String::from_utf8(preimage.data.to_vec())
+        .expect("Invalid transaction preimage. Expected a JSON object");
+    assert_eq!(tx_preimage, JSON_TX_PREIMAGE);
 
     // Step 3: Sign the data "externally"
 
-    let private_key = ed25519::sha512::KeyPair::try_from(PRIVATE_KEY).unwrap();
-    let public_key = private_key.public().to_vec();
+    let tx_hash = H256::try_from(preimage.data_hash.as_ref()).expect("Invalid Transaction Hash");
 
     let signature = private_key
-        .sign(preimage.data.to_vec())
+        .sign(tx_hash)
         .expect("Error signing data")
         .to_vec();
-    assert_eq!(signature.to_hex(), SIGNATURE);
+    assert!(
+        signature.to_hex().contains(JSON_SIGNING_SIGNATURE),
+        "{} must contain {}",
+        signature.to_hex(),
+        JSON_SIGNING_SIGNATURE
+    );
 
     // Step 4: Compile transaction info
 
@@ -62,7 +75,7 @@ fn test_any_signer_compile_aptos() {
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
     let output_data = TWDataHelper::wrap(unsafe {
         tw_transaction_compiler_compile(
-            APTOS_COIN_TYPE,
+            THORCHAIN_COIN_TYPE,
             input_data.ptr(),
             signatures.ptr(),
             public_keys.ptr(),
@@ -77,10 +90,8 @@ fn test_any_signer_compile_aptos() {
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 
-    let authenticator = output.authenticator.unwrap();
-    assert_eq!(authenticator.signature.to_hex(), SIGNATURE);
-    assert_eq!(output.raw_txn.to_hex(), RAW_TXN);
-    assert_eq!(output.encoded.to_hex(), ENCODED);
-
-    assert_eq_json!(output.json, expected_json());
+    // https://viewblock.io/thorchain/tx/FD0445AFFC4ED9ACCB7B5D3ADE361DAE4596EA096340F1360F1020381EA454AF
+    assert_eq!(output.json, JSON_TX);
+    assert_eq!(output.signature.to_hex(), JSON_SIGNING_SIGNATURE);
+    assert_eq!(output.signature_json, JSON_SIGNING_SIGNATURE_JSON);
 }

@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::compiler::ThorchainCompiler;
+use crate::signer::ThorchainSigner;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
@@ -13,9 +15,6 @@ use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_cosmos_sdk::address::{Address, Bech32Prefix, CosmosAddress};
-use tw_cosmos_sdk::context::StandardCosmosContext;
-use tw_cosmos_sdk::modules::compiler::tw_compiler::TWTransactionCompiler;
-use tw_cosmos_sdk::modules::signer::tw_signer::TWSigner;
 use tw_keypair::tw;
 use tw_proto::Cosmos::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
@@ -64,7 +63,7 @@ impl CoinEntry for ThorchainEntry {
 
     #[inline]
     fn sign(&self, coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput {
-        TWSigner::<StandardCosmosContext>::sign(coin, input)
+        ThorchainSigner::sign(coin, input)
     }
 
     #[inline]
@@ -73,7 +72,7 @@ impl CoinEntry for ThorchainEntry {
         coin: &dyn CoinContext,
         input: Self::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        TWTransactionCompiler::<StandardCosmosContext>::preimage_hashes(coin, input)
+        ThorchainCompiler::preimage_hashes(coin, input)
     }
 
     #[inline]
@@ -84,11 +83,6 @@ impl CoinEntry for ThorchainEntry {
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
-        TWTransactionCompiler::<StandardCosmosContext>::compile(
-            coin,
-            input,
-            signatures,
-            public_keys,
-        )
+        ThorchainCompiler::compile(coin, input, signatures, public_keys)
     }
 }

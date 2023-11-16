@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "proto/Aptos.pb.h"
+#include "proto/TransactionCompiler.pb.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
