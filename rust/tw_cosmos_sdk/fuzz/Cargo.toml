@@ -1,5 +1,5 @@
 [package]
-name = "tw_aptos-fuzz"
+name = "tw_cosmos_sdk-fuzz"
 version = "0.0.0"
 publish = false
 edition = "2021"
@@ -9,9 +9,11 @@ cargo-fuzz = true
 
 [dependencies]
 libfuzzer-sys = "0.4"
+tw_coin_entry = { path = "../../tw_coin_entry", features = ["test-utils"] }
+tw_keypair = { path = "../../tw_keypair" }
 tw_proto = { path = "../../tw_proto", features = ["fuzz"] }
 
-[dependencies.tw_aptos]
+[dependencies.tw_cosmos_sdk]
 path = ".."
 
 # Prevent this from interfering with workspaces
