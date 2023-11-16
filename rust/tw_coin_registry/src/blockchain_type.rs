@@ -15,9 +15,13 @@ use std::str::FromStr;
 pub enum BlockchainType {
     Aptos,
     Bitcoin,
+    Cosmos,
     Ethereum,
     InternetComputer,
+    NativeEvmos,
+    NativeInjective,
     Ronin,
+    Thorchain,
     Unsupported,
 }
 
@@ -38,9 +42,13 @@ impl FromStr for BlockchainType {
         match s {
             "Aptos" => Ok(BlockchainType::Aptos),
             "Bitcoin" => Ok(BlockchainType::Bitcoin),
+            "Cosmos" => Ok(BlockchainType::Cosmos),
             "Ethereum" => Ok(BlockchainType::Ethereum),
             "InternetComputer" => Ok(BlockchainType::InternetComputer),
+            "NativeEvmos" => Ok(BlockchainType::NativeEvmos),
+            "NativeInjective" => Ok(BlockchainType::NativeInjective),
             "Ronin" => Ok(BlockchainType::Ronin),
+            "Thorchain" => Ok(BlockchainType::Thorchain),
             _ => Ok(BlockchainType::Unsupported),
         }
     }

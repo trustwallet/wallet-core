@@ -25,7 +25,7 @@ use tw_proto::TxCompiler::Proto as CompilerProto;
 use tw_proto::{deserialize, serialize};
 
 #[test]
-fn test_any_signer_sign_aptos() {
+fn test_any_signer_compile_aptos() {
     let input = aptos_sign_transfer_input();
 
     // Step 2: Obtain preimage hash

@@ -5,9 +5,11 @@
 // file LICENSE at the root of the source code distribution tree.
 
 /// Extend this enum.
+#[derive(Default)]
 #[repr(u32)]
 pub enum Derivation {
     /// Default derivation.
+    #[default]
     Default = 0,
 }
 

@@ -9,7 +9,6 @@ cargo-fuzz = true
 
 [dependencies]
 libfuzzer-sys = "0.4"
-tw_number = { path = "../../tw_number" }
 tw_proto = { path = "../../tw_proto", features = ["fuzz"] }
 
 [dependencies.tw_aptos]

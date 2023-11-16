@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Base64.h"
-#include "Cosmos/Signer.h"
 #include "HexCoding.h"
 #include "proto/Cosmos.pb.h"
 #include "proto/TransactionCompiler.pb.h"
@@ -95,8 +94,7 @@ TEST(EvmosCompiler, CompileWithSignatures) {
 
         EXPECT_EQ(output.error(), Common::Proto::OK);
         EXPECT_EQ(output.serialized(), expectedTx);
-        EXPECT_EQ(output.signature(), "");
-        EXPECT_EQ(hex(output.signature()), "");
+        EXPECT_EQ(hex(output.signature()), hex(signature));
     }
 }
 

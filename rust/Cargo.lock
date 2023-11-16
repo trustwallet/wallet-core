@@ -1599,7 +1599,9 @@ dependencies = [
  "tw_any_coin",
  "tw_coin_entry",
  "tw_coin_registry",
+ "tw_cosmos_sdk",
  "tw_encoding",
+ "tw_hash",
  "tw_keypair",
  "tw_memory",
  "tw_misc",
@@ -1622,6 +1624,18 @@ dependencies = [
  "tw_memory",
  "tw_number",
  "tw_proto",
+]
+
+[[package]]
+name = "tw_bech32_address"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
 ]
 
 [[package]]
@@ -1648,6 +1662,7 @@ version = "0.1.0"
 dependencies = [
  "serde_json",
  "tw_encoding",
+ "tw_hash",
  "tw_keypair",
  "tw_memory",
  "tw_misc",
@@ -1665,13 +1680,48 @@ dependencies = [
  "tw_aptos",
  "tw_bitcoin",
  "tw_coin_entry",
+ "tw_cosmos",
  "tw_ethereum",
  "tw_evm",
+ "tw_hash",
  "tw_internet_computer",
  "tw_keypair",
  "tw_memory",
  "tw_misc",
+ "tw_native_evmos",
+ "tw_native_injective",
  "tw_ronin",
+ "tw_thorchain",
+]
+
+[[package]]
+name = "tw_cosmos"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_cosmos_sdk",
+ "tw_keypair",
+ "tw_proto",
+]
+
+[[package]]
+name = "tw_cosmos_sdk"
+version = "0.1.0"
+dependencies = [
+ "pb-rs",
+ "quick-protobuf",
+ "serde",
+ "serde_json",
+ "tw_bech32_address",
+ "tw_coin_entry",
+ "tw_cosmos_sdk",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_misc",
+ "tw_number",
+ "tw_proto",
 ]
 
 [[package]]
@@ -1680,6 +1730,7 @@ version = "0.1.0"
 dependencies = [
  "arbitrary",
  "bcs",
+ "bech32",
  "bs58",
  "ciborium",
  "data-encoding",
@@ -1798,6 +1849,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_native_evmos"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_cosmos_sdk",
+ "tw_keypair",
+ "tw_memory",
+ "tw_proto",
+]
+
+[[package]]
+name = "tw_native_injective"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_cosmos_sdk",
+ "tw_keypair",
+ "tw_memory",
+ "tw_proto",
+]
+
+[[package]]
 name = "tw_number"
 version = "0.1.0"
 dependencies = [
@@ -1831,6 +1904,17 @@ dependencies = [
  "tw_keypair",
  "tw_memory",
  "tw_number",
+ "tw_proto",
+]
+
+[[package]]
+name = "tw_thorchain"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_cosmos_sdk",
+ "tw_keypair",
+ "tw_memory",
  "tw_proto",
 ]
 

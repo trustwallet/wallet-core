@@ -28,7 +28,7 @@ TEST(TWNativeInjectiveCoinType, TWCoinType) {
     assertStringsEqual(name, "Native Injective");
     assertStringsEqual(symbol, "INJ");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
-    ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);
+    ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainNativeInjective);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
     assertStringsEqual(chainId, "injective-1");

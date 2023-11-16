@@ -34,6 +34,8 @@ pub enum AddressError {
     FromHexError,
     PublicKeyTypeMismatch,
     UnexpectedAddressPrefix,
+    UnexpectedHasher,
+    InvalidHrp,
     InvalidInput,
 }
 

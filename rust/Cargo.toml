@@ -1,10 +1,16 @@
 [workspace]
 members = [
+    "chains/tw_cosmos",
+    "chains/tw_native_evmos",
+    "chains/tw_native_injective",
+    "chains/tw_thorchain",
     "tw_any_coin",
     "tw_aptos",
+    "tw_bech32_address",
     "tw_bitcoin",
     "tw_coin_entry",
     "tw_coin_registry",
+    "tw_cosmos_sdk",
     "tw_encoding",
     "tw_ethereum",
     "tw_evm",

@@ -12,27 +12,39 @@ use crate::registry::get_coin_item;
 use tw_aptos::entry::AptosEntry;
 use tw_bitcoin::entry::BitcoinEntry;
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
+use tw_cosmos::entry::CosmosEntry;
 use tw_ethereum::entry::EthereumEntry;
 use tw_evm::evm_entry::EvmEntryExt;
 use tw_internet_computer::entry::InternetComputerEntry;
+use tw_native_evmos::entry::NativeEvmosEntry;
+use tw_native_injective::entry::NativeInjectiveEntry;
 use tw_ronin::entry::RoninEntry;
+use tw_thorchain::entry::ThorchainEntry;
 
 pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;
 pub type EvmEntryExtStaticRef = &'static dyn EvmEntryExt;
 
 const APTOS: AptosEntry = AptosEntry;
 const BITCOIN: BitcoinEntry = BitcoinEntry;
+const COSMOS: CosmosEntry = CosmosEntry;
 const ETHEREUM: EthereumEntry = EthereumEntry;
 const INTERNET_COMPUTER: InternetComputerEntry = InternetComputerEntry;
+const NATIVE_EVMOS: NativeEvmosEntry = NativeEvmosEntry;
+const NATIVE_INJECTIVE: NativeInjectiveEntry = NativeInjectiveEntry;
 const RONIN: RoninEntry = RoninEntry;
+const THORCHAIN: ThorchainEntry = ThorchainEntry;
 
 pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinEntryExtStaticRef> {
     match blockchain {
         BlockchainType::Aptos => Ok(&APTOS),
         BlockchainType::Bitcoin => Ok(&BITCOIN),
+        BlockchainType::Cosmos => Ok(&COSMOS),
         BlockchainType::Ethereum => Ok(&ETHEREUM),
         BlockchainType::InternetComputer => Ok(&INTERNET_COMPUTER),
+        BlockchainType::NativeEvmos => Ok(&NATIVE_EVMOS),
+        BlockchainType::NativeInjective => Ok(&NATIVE_INJECTIVE),
         BlockchainType::Ronin => Ok(&RONIN),
+        BlockchainType::Thorchain => Ok(&THORCHAIN),
         BlockchainType::Unsupported => Err(RegistryError::Unsupported),
     }
 }
@@ -51,9 +63,13 @@ pub fn evm_dispatcher(coin: CoinType) -> RegistryResult<EvmEntryExtStaticRef> {
     match item.blockchain {
         BlockchainType::Aptos => Err(RegistryError::Unsupported),
         BlockchainType::Bitcoin => Err(RegistryError::Unsupported),
+        BlockchainType::Cosmos => Err(RegistryError::Unsupported),
         BlockchainType::Ethereum => Ok(&ETHEREUM),
         BlockchainType::InternetComputer => Err(RegistryError::Unsupported),
+        BlockchainType::NativeEvmos => Err(RegistryError::Unsupported),
+        BlockchainType::NativeInjective => Err(RegistryError::Unsupported),
         BlockchainType::Ronin => Ok(&RONIN),
+        BlockchainType::Thorchain => Err(RegistryError::Unsupported),
         BlockchainType::Unsupported => Err(RegistryError::Unsupported),
     }
 }

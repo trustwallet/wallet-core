@@ -5,9 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Cosmos/Address.h"
-#include "Cosmos/Signer.h"
+#include "TrustWalletCore/TWAnySigner.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
+#include "proto/Cosmos.pb.h"
 #include "PublicKey.h"
 #include "TestUtilities.h"
 
@@ -45,7 +46,8 @@ TEST(SecretSigner, Sign) {
     auto privateKey = parse_hex("87201512d132ef7a1e57f9e24905fbc24300bd73f676b5716182be5f3e39dada");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input, TWCoinTypeSecret);
+    auto output = Cosmos::Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeSecret);
 
     // https://www.mintscan.io/secret/txs/01F4BD2458BF966F287533775C8D67BBC7CA7214CAEB1752D270A90223E9E82F
     // curl -H 'Content-Type: application/json' --data-binary "{\"tx_bytes\":\"CpIB...c4o=\",\"mode\":\"BROADCAST_MODE_BLOCK\"}" https://scrt-lcd.blockpane.com/cosmos/tx/v1beta1/txs

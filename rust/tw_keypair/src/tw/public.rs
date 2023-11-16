@@ -142,4 +142,19 @@ impl PublicKey {
             _ => None,
         }
     }
+
+    /// Returns a public key type.
+    pub fn public_key_type(&self) -> PublicKeyType {
+        match self {
+            PublicKey::Secp256k1(_) => PublicKeyType::Secp256k1,
+            PublicKey::Secp256k1Extended(_) => PublicKeyType::Secp256k1Extended,
+            PublicKey::Nist256p1(_) => PublicKeyType::Nist256p1,
+            PublicKey::Nist256p1Extended(_) => PublicKeyType::Nist256p1Extended,
+            PublicKey::Ed25519(_) => PublicKeyType::Ed25519,
+            PublicKey::Ed25519Blake2b(_) => PublicKeyType::Ed25519Blake2b,
+            PublicKey::Curve25519Waves(_) => PublicKeyType::Curve25519Waves,
+            PublicKey::Ed25519ExtendedCardano(_) => PublicKeyType::Ed25519ExtendedCardano,
+            PublicKey::Starkex(_) => PublicKeyType::Starkex,
+        }
+    }
 }

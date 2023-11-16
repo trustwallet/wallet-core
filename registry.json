@@ -3177,6 +3177,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "thor",
+    "addressHasher": "sha256ripemd",
     "chainId": "thorchain-mainnet-v1",
     "explorer": {
       "url": "https://viewblock.io/thorchain",
@@ -3973,7 +3974,7 @@
     "coinId": 20009001,
     "symbol": "EVMOS",
     "decimals": 18,
-    "blockchain": "Cosmos",
+    "blockchain": "NativeEvmos",
     "chainId": "evmos_9001-2",
     "derivation": [
       {
@@ -4365,7 +4366,7 @@
     "coinId": 10000060,
     "symbol": "INJ",
     "decimals": 18,
-    "blockchain": "Cosmos",
+    "blockchain": "NativeInjective",
     "derivation": [
       {
         "path": "m/44'/60'/0'/0/0"

@@ -64,7 +64,8 @@ impl<Context: EvmContext> Compiler<Context> {
         let SingleSignaturePubkey {
             signature,
             public_key: _,
-        } = SingleSignaturePubkey::<secp256k1::Signature, secp256k1::PublicKey>::from_sign_pubkey_list(signatures, public_keys)?;
+        } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
+        let signature = secp256k1::Signature::from_bytes(&signature)?;
 
         let chain_id = U256::from_big_endian_slice(&input.chain_id)?;
 

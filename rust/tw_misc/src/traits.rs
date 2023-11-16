@@ -38,3 +38,7 @@ impl<T> IntoOption<T> for Option<T> {
         self
     }
 }
+
+pub trait FromSlice: for<'a> TryFrom<&'a [u8]> {}
+
+impl<T> FromSlice for T where for<'a> T: TryFrom<&'a [u8]> {}

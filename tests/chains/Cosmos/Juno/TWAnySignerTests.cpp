@@ -39,7 +39,9 @@ TEST(TWAnySignerJuno, Sign) {
     amountOfFee->set_amount("1000");
 
     Proto::SigningOutput output;
-    ANY_SIGN(input, TWCoinTypeCosmos);
+    ANY_SIGN(input, TWCoinTypeJuno);
+
+    EXPECT_EQ(output.error(), Common::Proto::OK);
 
     // https://www.mintscan.io/juno/txs/3DCE6AAF19657BCF11D44FD6BE124D57B44E04CA34851DE0ECCE619F70ECC46F
     auto expectedJson = R"(

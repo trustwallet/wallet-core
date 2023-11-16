@@ -4,13 +4,13 @@ use common::{hex, MINER_FEE, ONE_BTC};
 use tw_bitcoin::aliases::*;
 use tw_bitcoin::entry::BitcoinEntry;
 use tw_coin_entry::coin_entry::CoinEntry;
-use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
+use tw_coin_entry::test_utils::test_context::TestCoinContext;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
 #[test]
 fn coin_entry_emtpy() {
-    let _coin = EmptyCoinContext;
+    let _coin = TestCoinContext::default();
     let alice_private_key = hex("56429688a1a6b00b90ccd22a0de0a376b6569d8684022ae92229a28478bfb657");
 
     let signing = Proto::SigningInput {
@@ -25,7 +25,7 @@ fn coin_entry_emtpy() {
 
 #[test]
 fn coin_entry_sign_input_p2pkh_output_p2pkh() {
-    let coin = EmptyCoinContext;
+    let coin = TestCoinContext::default();
 
     let alice_private_key = hex("56429688a1a6b00b90ccd22a0de0a376b6569d8684022ae92229a28478bfb657");
     let alice_pubkey = hex("036666dd712e05a487916384bfcd5973eb53e8038eccbbf97f7eed775b87389536");

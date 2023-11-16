@@ -9,6 +9,7 @@ pub mod blake2;
 pub mod crc32;
 pub mod ffi;
 pub mod groestl;
+pub mod hasher;
 pub mod hmac;
 pub mod ripemd;
 pub mod sha1;

@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 serde_json = "1.0.95"
 tw_encoding = { path = "../tw_encoding" }
+tw_hash = { path = "../tw_hash" }
 tw_keypair = { path = "../tw_keypair" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }

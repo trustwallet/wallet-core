@@ -10,6 +10,7 @@ use crate::error::{RegistryError, RegistryResult};
 use lazy_static::lazy_static;
 use serde::Deserialize;
 use std::collections::HashMap;
+use tw_hash::hasher::Hasher;
 use tw_keypair::tw::PublicKeyType;
 
 type RegistryMap = HashMap<CoinType, CoinItem>;
@@ -26,9 +27,13 @@ lazy_static! {
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CoinItem {
+    pub id: String,
+    pub name: String,
     pub coin_id: CoinType,
     pub blockchain: BlockchainType,
     pub public_key_type: PublicKeyType,
+    pub address_hasher: Option<Hasher>,
+    pub hrp: Option<String>,
 }
 
 #[inline]
