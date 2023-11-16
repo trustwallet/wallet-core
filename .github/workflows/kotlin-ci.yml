@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: [ self-hosted, macOS, ARM64, wallet-core ]
+    runs-on: macos-latest-xlarge
     if: github.event.pull_request.draft == false
     steps:
     - uses: actions/checkout@v3
@@ -23,6 +23,9 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
       with:
@@ -31,6 +34,15 @@ jobs:
     - name: Install system dependencies
       run: |
         tools/install-sys-dependencies-mac
+
+    - name: Cache Rust
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: |
+          rust
+
+    - name: Install Rust dependencies
+      run: |
         tools/install-rust-dependencies
 
     - name: Install emsdk
