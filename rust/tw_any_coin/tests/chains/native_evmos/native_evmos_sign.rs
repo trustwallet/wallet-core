@@ -112,8 +112,8 @@ fn test_sign_native_evmos_tx_protobuf() {
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 
-    // Successfully broadcasted https://www.mintscan.io/evmos/txs/8D811CEC078420C41220F0B584EA0AC037763380FAC31E0E352E4BB4D1D18B79
-    // TODO the signature has been updated according to the serialization of the `StakeAuthorization` message.
+    // Original test: https://github.com/trustwallet/wallet-core/blob/a60033f797e33628e557af7c66be539c8d78bc61/tests/chains/Evmos/SignerTests.cpp#L91-L124
+    // Please note the signature has been updated according to the serialization of the `StakeAuthorization` message.
     // Previous: CvUBCvIBCh4vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnR3JhbnQSzwEKLGV2bW9zMTJtOWdyZ2FzNjB5azBrdWx0MDc2dnhuc3Jxejh4cGp5OXJwZjNlEixldm1vczE4ZnpxNG5hYzI4Z2ZtYTZncWZ2a3B3cmdwbTVjdGFyMno5bXhmMxpxCmcKKi9jb3Ntb3Muc3Rha2luZy52MWJldGExLlN0YWtlQXV0aG9yaXphdGlvbhI5EjUKM2V2bW9zdmFsb3BlcjF1bWs0MDdlZWQ3YWY2YW52dXQ2bGxnMnpldm5mMGRuMGZlcXFueSABEgYI4LD6pgYSfQpZCk8KKC9ldGhlcm1pbnQuY3J5cHRvLnYxLmV0aHNlY3AyNTZrMS5QdWJLZXkSIwohA4B2WHbj6sH/GWE7z/YW5PRnXYFGaGRAov7gZZI2Fv2nEgQKAggBGAMSIAoaCgZhZXZtb3MSEDQ1MjE0NzUwMDAwMDAwMDAQ+4QLGkAm17CZgB7m+CPVlITnrHosklMTL9zrUeGRs8FL8N0GcRami9zdJ+e3xuXOtJmwP7G6QNh85CRYjFj8a8lpmmJM
     assert_eq!(
         output.serialized,

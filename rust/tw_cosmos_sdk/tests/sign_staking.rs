@@ -31,6 +31,13 @@ fn account_1290826_private_key() -> Cow<'static, [u8]> {
         .into()
 }
 
+fn account_1932898_private_key() -> Cow<'static, [u8]> {
+    "d142e036ceebe70c4e61e3909d6c16bab518edfeac8bdf91000463ce0b4a6156"
+        .decode_hex()
+        .unwrap()
+        .into()
+}
+
 #[test]
 fn test_staking_compounding_authz() {
     use Proto::mod_Message::mod_AuthGrant::OneOfgrant_type as ProtoGrantType;
@@ -55,7 +62,7 @@ fn test_staking_compounding_authz() {
         expiration: 1692309600,
     };
     let input = Proto::SigningInput {
-        account_number: 1290826,
+        account_number: 1932898,
         chain_id: "cosmoshub-4".into(),
         sequence: 5,
         fee: Some(make_fee(96681, make_amount("uatom", "2418"))),
@@ -64,11 +71,11 @@ fn test_staking_compounding_authz() {
         ..Proto::SigningInput::default()
     };
 
-    // Successfully broadcasted https://www.mintscan.io/cosmos/txs/C4629BC7C88690518D8F448E7A8D239C9D63975B11F8E1CE2F95CC2ADA3CCF67
+    // Original test: https://github.com/trustwallet/wallet-core/blob/a60033f797e33628e557af7c66be539c8d78bc61/tests/chains/Cosmos/StakingTests.cpp#L18-L52
+    // Please note the signature has been updated according to the serialization of the `StakeAuthorization` message.
     test_sign_protobuf::<StandardCosmosContext>(TestInput {
         coin: &coin,
         input: input.clone(),
-        // TODO the signature has been updated according to the serialization of the `StakeAuthorization` message.
         // Previous: CvgBCvUBCh4vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnR3JhbnQS0gEKLWNvc21vczEzazBxMGw3bGcya3IzMmt2dDdseTIzNnBwbGR5OHY5ZHp3aDNnZBItY29zbW9zMWZzN2x1MjhoeDVtOWFrbTdycDBjMjQyMmNuOHIyZjdndXJ1amhmGnIKaAoqL2Nvc21vcy5zdGFraW5nLnYxYmV0YTEuU3Rha2VBdXRob3JpemF0aW9uEjoSNgo0Y29zbW9zdmFsb3BlcjFnanR2bHk5bGVsNnpza3Z3dHZsZzV2aHdwdTljOXdhdzdzeHp3eCABEgYI4LD6pgYSZwpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohA/fcQw1hCVUx904t+kCXTiiziaLIY8lyssu1ENfzaN1KEgQKAggBGAUSEwoNCgV1YXRvbRIEMjQxOBCp8wUaQIFyfuijGKf87Hz61ZqxasfLI1PZnNge4RDq/tRyB/tZI6p80iGRqHecoV6+84EQkc9GTlNRQOSlApRCsivT9XI=
         tx: r#"{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CvgBCvUBCh4vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnR3JhbnQS0gEKLWNvc21vczEzazBxMGw3bGcya3IzMmt2dDdseTIzNnBwbGR5OHY5ZHp3aDNnZBItY29zbW9zMWZzN2x1MjhoeDVtOWFrbTdycDBjMjQyMmNuOHIyZjdndXJ1amhmGnIKaAoqL2Nvc21vcy5zdGFraW5nLnYxYmV0YTEuU3Rha2VBdXRob3JpemF0aW9uEjogARI2CjRjb3Ntb3N2YWxvcGVyMWdqdHZseTlsZWw2enNrdnd0dmxnNXZod3B1OWM5d2F3N3N4end4EgYI4LD6pgYSZwpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohA/fcQw1hCVUx904t+kCXTiiziaLIY8lyssu1ENfzaN1KEgQKAggBGAUSEwoNCgV1YXRvbRIEMjQxOBCp8wUaQEAN1nIfDawlHnep2bNEm14w+g7tYybJJT3htcGVS6s9D7va3ed1OUEIk9LZoc3G//VenJ+KLw26SRVBaRukgVI="}"#,
         // Previous: 81727ee8a318a7fcec7cfad59ab16ac7cb2353d99cd81ee110eafed47207fb5923aa7cd22191a8779ca15ebef3811091cf464e535140e4a5029442b22bd3f572
@@ -82,6 +89,49 @@ fn test_staking_compounding_authz() {
         coin: &coin,
         input,
         error: SigningError::Error_not_supported,
+    });
+}
+
+#[test]
+fn test_staking_compounding_authz_f355e659() {
+    use Proto::mod_Message::mod_AuthGrant::OneOfgrant_type as ProtoGrantType;
+    use Proto::mod_Message::mod_StakeAuthorization::OneOfvalidators as ProtoValidatorsType;
+
+    let coin = TestCoinContext::default()
+        .with_public_key_type(PublicKeyType::Secp256k1)
+        .with_hrp("cosmos");
+
+    let allow_list = Proto::mod_Message::mod_StakeAuthorization::Validators {
+        address: vec!["cosmosvaloper1gjtvly9lel6zskvwtvlg5vhwpu9c9waw7sxzwx".into()],
+    };
+    let stake_authorization = Proto::mod_Message::StakeAuthorization {
+        authorization_type: Proto::mod_Message::AuthorizationType::DELEGATE,
+        validators: ProtoValidatorsType::allow_list(allow_list),
+        ..Proto::mod_Message::StakeAuthorization::default()
+    };
+    let auth_grant = Proto::mod_Message::AuthGrant {
+        granter: "cosmos1wd0hdkzq68nmwzpprcugx82msj3l2y3wh8g5vv".into(),
+        grantee: "cosmos1fs7lu28hx5m9akm7rp0c2422cn8r2f7gurujhf".into(),
+        grant_type: ProtoGrantType::grant_stake(stake_authorization),
+        expiration: 1733011200,
+    };
+    let input = Proto::SigningInput {
+        account_number: 1932898,
+        chain_id: "cosmoshub-4".into(),
+        sequence: 0,
+        fee: Some(make_fee(96681, make_amount("uatom", "2418"))),
+        private_key: account_1932898_private_key(),
+        messages: vec![make_message(MessageEnum::auth_grant(auth_grant))],
+        ..Proto::SigningInput::default()
+    };
+
+    // Successfully broadcasted https://www.mintscan.io/cosmos/tx/F355E659CBB8C0191213415E8F3EC6FD0AD1541F96FF192855147F6C0872A98B?height=17879293
+    test_sign_protobuf::<StandardCosmosContext>(TestInput {
+        coin: &coin,
+        input: input,
+        tx: r#"{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CvgBCvUBCh4vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnR3JhbnQS0gEKLWNvc21vczF3ZDBoZGt6cTY4bm13enBwcmN1Z3g4Mm1zajNsMnkzd2g4ZzV2dhItY29zbW9zMWZzN2x1MjhoeDVtOWFrbTdycDBjMjQyMmNuOHIyZjdndXJ1amhmGnIKaAoqL2Nvc21vcy5zdGFraW5nLnYxYmV0YTEuU3Rha2VBdXRob3JpemF0aW9uEjogARI2CjRjb3Ntb3N2YWxvcGVyMWdqdHZseTlsZWw2enNrdnd0dmxnNXZod3B1OWM5d2F3N3N4end4EgYIgM6uugYSZQpOCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohA1yVadHrd1uQDhwasOzMBbg6zarM8PjyhRmDVY97HiX5EgQKAggBEhMKDQoFdWF0b20SBDI0MTgQqfMFGkCcDzlVwE+RUkWhjH0PiBrKDzqGgIczmj9fuMI0umrOFTqmKm/IQGol0eo4XZOIcahSYlqJ+1MOptAZM8Csqoay"}"#,
+        signature: "9c0f3955c04f915245a18c7d0f881aca0f3a868087339a3f5fb8c234ba6ace153aa62a6fc8406a25d1ea385d938871a852625a89fb530ea6d01933c0acaa86b2",
+        signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A1yVadHrd1uQDhwasOzMBbg6zarM8PjyhRmDVY97HiX5"},"signature":"nA85VcBPkVJFoYx9D4gayg86hoCHM5o/X7jCNLpqzhU6pipvyEBqJdHqOF2TiHGoUmJaiftTDqbQGTPArKqGsg=="}]"#,
     });
 }
 
