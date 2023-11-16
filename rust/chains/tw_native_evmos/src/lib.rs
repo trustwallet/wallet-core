@@ -5,5 +5,5 @@
 // file LICENSE at the root of the source code distribution tree.
 
 pub mod context;
-pub mod ethermint_public_key;
 pub mod entry;
+pub mod ethermint_public_key;
