@@ -7,6 +7,10 @@ set -e
 source $(dirname $0)/library
 version=$(wc_read_version $1)
 
+if [[ `uname` == "Darwin" ]]; then
+    export BOOST_ROOT=$(brew --prefix boost)
+fi
+
 pushd android
 ./gradlew assembleRelease
 cp wallet-core/build/outputs/aar/wallet-core-release.aar ../build/wallet-core.aar

@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: [ self-hosted, macOS, ARM64, wallet-core ]
+    runs-on: macos-latest-large
     if: github.event.pull_request.draft == false
     steps:
     - uses: actions/checkout@v3
@@ -29,6 +29,15 @@ jobs:
     - name: Install system dependencies
       run: |
         tools/install-sys-dependencies-mac
+
+    - name: Cache Rust
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: |
+          rust
+
+    - name: Install Rust dependencies
+      run: |
         tools/install-rust-dependencies
 
     - name: Install Android Dependencies
@@ -39,7 +48,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: build/local
-        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+        key: ${{ runner.os }}-${{ runner.arch }}-internal-${{ hashFiles('tools/install-dependencies') }}
 
     - name: Install internal dependencies
       run: tools/install-dependencies
@@ -51,8 +60,21 @@ jobs:
     - name: Build Kotlin doc
       run: tools/kotlin-doc
 
-    - name: Run test
-      run: tools/android-test
+    - name: Build tests
+      run: |
+        pushd android
+        ./gradlew assembleAndroidTest
+        popd
+
+    - name: Run tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 30
+        target: google_apis
+        arch: x86
+        ndk: 23.1.7779620
+        cmake: 3.18.1
+        script: cd android; ./gradlew connectedAndroidTest
 
     - name: Build sample app
       run: tools/samples-build android
