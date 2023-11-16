@@ -14,9 +14,12 @@ tw_misc = { path = "../tw_misc" }
 test-utils = []
 
 [dev-dependencies]
+serde = { version = "1.0.163", features = ["derive"] }
+serde_json = { version = "1.0.96" }
 tw_any_coin = { path = "./", features = ["test-utils"] }
 tw_encoding = { path = "../tw_encoding" }
 tw_keypair = { path = "../tw_keypair", features = ["test-utils"] }
 tw_memory = { path = "../tw_memory", features = ["test-utils"] }
+tw_misc = { path = "../tw_misc", features = ["test-utils"] }
 tw_number = { path = "../tw_number" }
 tw_proto = { path = "../tw_proto" }
