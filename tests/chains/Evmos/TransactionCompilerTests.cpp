@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Base64.h"
-#include "Cosmos/Signer.h"
 #include "HexCoding.h"
 #include "proto/Cosmos.pb.h"
 #include "proto/TransactionCompiler.pb.h"

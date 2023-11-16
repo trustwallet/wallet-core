@@ -90,6 +90,10 @@ where
         coin: &dyn CoinContext,
         input: &Proto::SigningInput<'_>,
     ) -> SigningResult<TxBody> {
+        if input.messages.is_empty() {
+            return Err(SigningError(SigningErrorType::Error_invalid_params));
+        }
+
         let messages = input
             .messages
             .iter()

@@ -6,8 +6,8 @@
 
 #include "Entry.h"
 #include "Address.h"
-#include "Signer.h"
 
+#include <proto/Cosmos.pb.h>
 #include <proto/TransactionCompiler.pb.h>
 #include <google/protobuf/util/json_util.h>
 

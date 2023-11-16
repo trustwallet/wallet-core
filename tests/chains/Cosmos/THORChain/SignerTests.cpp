@@ -5,10 +5,12 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "proto/Cosmos.pb.h"
-#include "THORChain/Signer.h"
+#include "Coin.h"
 #include "HexCoding.h"
 #include "Bech32Address.h"
 #include "TestUtilities.h"
+#include "TrustWalletCore/TWAnySigner.h"
+#include "TrustWalletCore/TWCoinType.h"
 
 #include <gtest/gtest.h>
 #include <google/protobuf/util/json_util.h>
@@ -80,7 +82,8 @@ TEST(THORChainSigner, SignTx_Protobuf_7E480F) {
     auto privateKey = parse_hex("7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = THORChain::Signer::sign(input);
+    auto output = Cosmos::Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeTHORChain);
 
     // https://viewblock.io/thorchain/tx/7E480FA163F6C6AFA17593F214C7BBC218F69AE3BC72366E39042AF381BFE105
     // curl -H 'Content-Type: application/json' --data-binary '{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"ClIKUAoO..89g="}' https://<thornode>/cosmos/tx/v1beta1/txs
@@ -158,7 +161,8 @@ TEST(THORChainSigner, SignTx_MsgDeposit) {
     auto privateKey = parse_hex("2659e41d54ebd449d68b9d58510d8eeeb837ee00d6ecc760b7a731238d8c3113");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = THORChain::Signer::sign(input);
+    auto output = Cosmos::Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeTHORChain);
 
     // https://viewblock.io/thorchain/tx/0162213E7F9D85965B1C57FA3BF9603C655B542F358318303A7B00661AE42510
     // curl -H 'Content-Type: application/json' --data-binary '{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CoUBCoIB..hiw="}' https://<thornode>/cosmos/tx/v1beta1/txs
@@ -225,7 +229,8 @@ TEST(THORChainSigner, SignTx_Json_Deprecated) {
     auto privateKey = parse_hex("7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = THORChain::Signer::sign(input);
+    auto output = Cosmos::Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeTHORChain);
 
     assertJSONEqual(output.json(), R"(
         {
@@ -275,7 +280,7 @@ TEST(THORChainSigner, SignJson) {
     auto inputJson = R"({"fee":{"amounts":[{"denom":"rune","amount":"200"}],"gas":"2000000"},"memo":"memo1234","messages":[{"sendCoinsMessage":{"fromAddress":"thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r","toAddress":"thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn","amounts":[{"denom":"rune","amount":"50000000"}]}}]})";
     auto privateKey = parse_hex("7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e");
 
-    auto outputJson = THORChain::Signer::signJSON(inputJson, privateKey);
+    auto outputJson = TW::anySignJSON(TWCoinTypeTHORChain, inputJson, privateKey);
 
     EXPECT_EQ(R"({"mode":"block","tx":{"fee":{"amount":[{"amount":"200","denom":"rune"}],"gas":"2000000"},"memo":"memo1234","msg":[{"type":"thorchain/MsgSend","value":{"amount":[{"amount":"50000000","denom":"rune"}],"from_address":"thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r","to_address":"thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A+2Zfjls9CkvX85aQrukFZnM1dluMTFUp8nqcEneMXx3"},"signature":"12AaNC0v51Rhz8rBf7V7rpI6oksREWrjzba3RK1v1NNlqZq62sG0aXWvStp9zZXe07Pp2FviFBAx+uqWsO30NQ=="}]}})", outputJson);
 }

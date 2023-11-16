@@ -8,7 +8,6 @@
 #include "Base64.h"
 #include "proto/Cosmos.pb.h"
 #include "Cosmos/Address.h"
-#include "Cosmos/Signer.h"
 #include "TestUtilities.h"
 
 #include <TrustWalletCore/TWAnySigner.h>

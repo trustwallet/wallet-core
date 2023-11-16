@@ -7,7 +7,6 @@
 #include "Base64.h"
 #include "Coin.h"
 #include "Cosmos/Address.h"
-#include "Cosmos/Signer.h"
 #include "HexCoding.h"
 #include "proto/Cosmos.pb.h"
 #include "TestUtilities.h"
@@ -123,7 +122,8 @@ TEST(CosmosStaking, Staking) {
 
     { // Json-serialization, for coverage (to be removed later)
         input.set_signing_mode(Proto::JSON);
-        output = Signer::sign(input, TWCoinTypeCosmos);
+        ANY_SIGN(input, TWCoinTypeCosmos);
+
         ASSERT_EQ(hex(output.signature()), "c08bdf6c2b0b4428f37975e85d329f1cb19745b000994a743b5df81d57d573aa5f755349befcc848c1d1507818723b1288594bc91df685e89aff22e0303b4861");
         EXPECT_EQ(output.error_message(), "");
         EXPECT_EQ(hex(output.serialized()), "");
@@ -164,7 +164,7 @@ TEST(CosmosStaking, Unstaking) {
 
     { // Json-serialization, for coverage (to be removed later)
         input.set_signing_mode(Proto::JSON);
-        output = Signer::sign(input, TWCoinTypeCosmos);
+        ANY_SIGN(input, TWCoinTypeCosmos);
         ASSERT_EQ(hex(output.signature()), "8f85a9515a211881daebfb346c2beeca3ab5c2d406a9b3ad402cfddaa3d08e2b13378e13cfef8ecf1d6500fe85d0ce3e793034dd77aba90f216427807cbff79f");
         EXPECT_EQ(output.error_message(), "");
         EXPECT_EQ(hex(output.serialized()), "");
@@ -207,7 +207,7 @@ TEST(CosmosStaking, Restaking) {
 
     { // Json-serialization, for coverage (to be removed later)
         input.set_signing_mode(Proto::JSON);
-        output = Signer::sign(input, TWCoinTypeCosmos);
+        ANY_SIGN(input, TWCoinTypeCosmos);
         ASSERT_EQ(hex(output.signature()), "e64d3761bd25a28befcda80c0a0e208d024fdb0a2b89955170e65a5c5d454aba2ce81d57e01f0c126de5a59c2b58124c109560c9803d65a17a14b548dd6c50db");
         EXPECT_EQ(output.error_message(), "");
         EXPECT_EQ(hex(output.serialized()), "");
@@ -245,7 +245,7 @@ TEST(CosmosStaking, Withdraw) {
 
     { // Json-serialization, for coverage (to be removed later)
         input.set_signing_mode(Proto::JSON);
-        output = Signer::sign(input, TWCoinTypeCosmos);
+        ANY_SIGN(input, TWCoinTypeCosmos);
         ASSERT_EQ(hex(output.signature()), "546f0d67356f6af94cfb5ab22b974e499c33123f2c2c292f4f0e64878e0e728f4643105fd771550beb3f2371f08880aaa38fa8f2334c103a779f1d82d2db98d6");
         EXPECT_EQ(output.error_message(), "");
         EXPECT_EQ(hex(output.serialized()), "");
@@ -283,7 +283,7 @@ TEST(CosmosStaking, SetWithdrawAddress) {
 
     { // Json-serialization, for coverage (to be removed later)
         input.set_signing_mode(Proto::JSON);
-        output = Signer::sign(input, TWCoinTypeCosmos);
+        ANY_SIGN(input, TWCoinTypeCosmos);
         ASSERT_EQ(hex(output.signature()), "22cfbcec33d06ed42623264049d11d6fb86566103d5621a23b1444022eb1aace3a0790a1c46b48c0218689616daf97f99ae72c3589966205de45b57194fbada2");
         EXPECT_EQ(output.error_message(), "");
         EXPECT_EQ(hex(output.serialized()), "");
