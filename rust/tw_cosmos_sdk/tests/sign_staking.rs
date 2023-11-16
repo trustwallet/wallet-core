@@ -62,7 +62,7 @@ fn test_staking_compounding_authz() {
         expiration: 1692309600,
     };
     let input = Proto::SigningInput {
-        account_number: 1932898,
+        account_number: 1290826,
         chain_id: "cosmoshub-4".into(),
         sequence: 5,
         fee: Some(make_fee(96681, make_amount("uatom", "2418"))),
