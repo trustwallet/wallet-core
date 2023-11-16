@@ -64,7 +64,8 @@ impl CoinEntry for BitcoinEntry {
     ) -> AddressResult<Self::Address> {
         let address = bitcoin::address::Address::from_str(address)
             .map_err(|_| AddressError::FromHexError)?
-            // TODO Bitcoin address should not check the network in `Self::parse_address_unchecked`.
+            // At this moment, we support mainnet only.
+            // This check will be removed in coming PRs.
             .require_network(bitcoin::Network::Bitcoin)
             .map_err(|_| AddressError::InvalidInput)?;
 

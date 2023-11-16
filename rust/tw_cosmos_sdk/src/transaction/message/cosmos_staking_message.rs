@@ -13,9 +13,17 @@ use serde::Serialize;
 use tw_coin_entry::error::SigningResult;
 use tw_proto::to_any;
 
+const DEFAULT_JSON_SET_WITHDRAW_ADDRESS_TYPE: &str = "cosmos-sdk/MsgSetWithdrawAddress";
+const DEFAULT_JSON_WITHDRAW_REWARDS_TYPE: &str = "cosmos-sdk/MsgWithdrawDelegationReward";
+const DEFAULT_JSON_BEGIN_REDELEGATE_TYPE: &str = "cosmos-sdk/MsgBeginRedelegate";
+const DEFAULT_JSON_UNDELEGATE_TYPE: &str = "cosmos-sdk/MsgUndelegate";
+const DEFAULT_JSON_DELEGATE_TYPE: &str = "cosmos-sdk/MsgDelegate";
+
 /// cosmos-sdk/MsgDelegate
 #[derive(Serialize)]
 pub struct DelegateMessage<Address: CosmosAddress> {
+    #[serde(skip)]
+    pub custom_type_prefix: Option<String>,
     pub amount: Coin,
     pub delegator_address: Address,
     pub validator_address: Address,
@@ -32,13 +40,19 @@ impl<Address: CosmosAddress> CosmosMessage for DelegateMessage<Address> {
     }
 
     fn to_json(&self) -> SigningResult<JsonMessage> {
-        message_to_json("cosmos-sdk/MsgDelegate", self)
+        let msg_type = self
+            .custom_type_prefix
+            .as_deref()
+            .unwrap_or(DEFAULT_JSON_DELEGATE_TYPE);
+        message_to_json(msg_type, self)
     }
 }
 
 /// cosmos-sdk/MsgUndelegate
 #[derive(Serialize)]
 pub struct UndelegateMessage<Address: CosmosAddress> {
+    #[serde(skip)]
+    pub custom_type_prefix: Option<String>,
     pub amount: Coin,
     pub delegator_address: Address,
     pub validator_address: Address,
@@ -55,13 +69,19 @@ impl<Address: CosmosAddress> CosmosMessage for UndelegateMessage<Address> {
     }
 
     fn to_json(&self) -> SigningResult<JsonMessage> {
-        message_to_json("cosmos-sdk/MsgUndelegate", self)
+        let msg_type = self
+            .custom_type_prefix
+            .as_deref()
+            .unwrap_or(DEFAULT_JSON_UNDELEGATE_TYPE);
+        message_to_json(msg_type, self)
     }
 }
 
 /// cosmos-sdk/MsgBeginRedelegate
 #[derive(Serialize)]
 pub struct BeginRedelegateMessage<Address: CosmosAddress> {
+    #[serde(skip)]
+    pub custom_type_prefix: Option<String>,
     pub amount: Coin,
     pub delegator_address: Address,
     pub validator_src_address: Address,
@@ -80,13 +100,19 @@ impl<Address: CosmosAddress> CosmosMessage for BeginRedelegateMessage<Address> {
     }
 
     fn to_json(&self) -> SigningResult<JsonMessage> {
-        message_to_json("cosmos-sdk/MsgBeginRedelegate", self)
+        let msg_type = self
+            .custom_type_prefix
+            .as_deref()
+            .unwrap_or(DEFAULT_JSON_BEGIN_REDELEGATE_TYPE);
+        message_to_json(msg_type, self)
     }
 }
 
 /// cosmos-sdk/MsgWithdrawDelegationReward
 #[derive(Serialize)]
 pub struct WithdrawDelegationRewardMessage<Address: CosmosAddress> {
+    #[serde(skip)]
+    pub custom_type_prefix: Option<String>,
     pub delegator_address: Address,
     pub validator_address: Address,
 }
@@ -101,13 +127,19 @@ impl<Address: CosmosAddress> CosmosMessage for WithdrawDelegationRewardMessage<A
     }
 
     fn to_json(&self) -> SigningResult<JsonMessage> {
-        message_to_json("cosmos-sdk/MsgWithdrawDelegationReward", self)
+        let msg_type = self
+            .custom_type_prefix
+            .as_deref()
+            .unwrap_or(DEFAULT_JSON_WITHDRAW_REWARDS_TYPE);
+        message_to_json(msg_type, self)
     }
 }
 
 /// cosmos-sdk/MsgSetWithdrawAddress
 #[derive(Serialize)]
 pub struct SetWithdrawAddressMessage<Address: CosmosAddress> {
+    #[serde(skip)]
+    pub custom_type_prefix: Option<String>,
     pub delegator_address: Address,
     pub withdraw_address: Address,
 }
@@ -122,6 +154,10 @@ impl<Address: CosmosAddress> CosmosMessage for SetWithdrawAddressMessage<Address
     }
 
     fn to_json(&self) -> SigningResult<JsonMessage> {
-        message_to_json("cosmos-sdk/MsgSetWithdrawAddress", self)
+        let msg_type = self
+            .custom_type_prefix
+            .as_deref()
+            .unwrap_or(DEFAULT_JSON_SET_WITHDRAW_ADDRESS_TYPE);
+        message_to_json(msg_type, self)
     }
 }

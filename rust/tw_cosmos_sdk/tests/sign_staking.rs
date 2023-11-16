@@ -165,6 +165,49 @@ fn test_staking_delegate() {
 }
 
 #[test]
+fn test_staking_delegate_custom_msg_type() {
+    let coin = TestCoinContext::default()
+        .with_public_key_type(PublicKeyType::Secp256k1)
+        .with_hrp("cosmos");
+
+    let delegate = Proto::mod_Message::Delegate {
+        delegator_address: "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02".into(),
+        validator_address: "cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp".into(),
+        amount: Some(make_amount("muon", "10")),
+        type_prefix: "unreal/MsgDelegate".into(),
+    };
+    let input = Proto::SigningInput {
+        account_number: 1037,
+        chain_id: "gaia-13003".into(),
+        sequence: 7,
+        fee: Some(make_fee(101721, make_amount("muon", "1018"))),
+        private_key: account_1037_private_key(),
+        messages: vec![make_message(MessageEnum::stake_message(delegate))],
+        mode: Proto::BroadcastMode::ASYNC,
+        ..Proto::SigningInput::default()
+    };
+
+    // This transaction hasn't been broadcasted.
+    // Check if the custom type_prefix doesn't affect Protobuf serialization.
+    test_sign_protobuf::<StandardCosmosContext>(TestInput {
+        coin: &coin,
+        input: input.clone(),
+        tx: r#"{"mode":"BROADCAST_MODE_ASYNC","tx_bytes":"CpsBCpgBCiMvY29zbW9zLnN0YWtpbmcudjFiZXRhMS5Nc2dEZWxlZ2F0ZRJxCi1jb3Ntb3MxaHNrNmpyeXlxamZocDVkaGM1NXRjOWp0Y2t5Z3gwZXBoNmRkMDISNGNvc21vc3ZhbG9wZXIxemt1cHI4M2hyemtuM3VwNWVsa3R6Y3EzdHVmdDhueHNtd2RxZ3AaCgoEbXVvbhICMTASZgpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3FEgQKAggBGAcSEgoMCgRtdW9uEgQxMDE4ENmaBhpA8O9Jm/kL6Za2I3poDs5vpMowYJgNvYCJBRU/vxAjs0lNZYsq40qpTbwOTbORjJA5UjQ6auc40v6uCFT4q4z+uA=="}"#,
+        signature: "f0ef499bf90be996b6237a680ece6fa4ca3060980dbd808905153fbf1023b3494d658b2ae34aa94dbc0e4db3918c903952343a6ae738d2feae0854f8ab8cfeb8",
+        signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"8O9Jm/kL6Za2I3poDs5vpMowYJgNvYCJBRU/vxAjs0lNZYsq40qpTbwOTbORjJA5UjQ6auc40v6uCFT4q4z+uA=="}]"#,
+    });
+
+    // This transaction hasn't been broadcasted.
+    test_sign_json::<StandardCosmosContext>(TestInput {
+        coin: &coin,
+        input: input.clone(),
+        tx: r#"{"mode":"async","tx":{"fee":{"amount":[{"amount":"1018","denom":"muon"}],"gas":"101721"},"memo":"","msg":[{"type":"unreal/MsgDelegate","value":{"amount":{"amount":"10","denom":"muon"},"delegator_address":"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02","validator_address":"cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"D9OufIm3RGkoGU/OO7eNHe17Yg4q0OBU0pHnqtULWXIm3J1eSUxsVI6OCbGAMYEqHUB9i5b1YGrueaDYFOH9xQ=="}]}}"#,
+        signature: "0fd3ae7c89b7446928194fce3bb78d1ded7b620e2ad0e054d291e7aad50b597226dc9d5e494c6c548e8e09b18031812a1d407d8b96f5606aee79a0d814e1fdc5",
+        signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"D9OufIm3RGkoGU/OO7eNHe17Yg4q0OBU0pHnqtULWXIm3J1eSUxsVI6OCbGAMYEqHUB9i5b1YGrueaDYFOH9xQ=="}]"#,
+    });
+}
+
+#[test]
 fn test_staking_undelegate() {
     let coin = TestCoinContext::default()
         .with_public_key_type(PublicKeyType::Secp256k1)

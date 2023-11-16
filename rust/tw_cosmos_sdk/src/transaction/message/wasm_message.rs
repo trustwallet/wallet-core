@@ -16,6 +16,8 @@ use tw_memory::Data;
 use tw_number::U256;
 use tw_proto::to_any;
 
+const DEFAULT_JSON_MSG_TYPE: &str = "wasm/MsgExecuteContract";
+
 #[derive(Clone, Serialize)]
 #[serde(untagged)]
 pub enum ExecuteMsg {
@@ -80,7 +82,7 @@ impl<Address: CosmosAddress> CosmosMessage for WasmExecuteContractMessage<Addres
         });
         // TODO custom_msg_type
         Ok(JsonMessage {
-            msg_type: "wasm/MsgExecuteContract".to_string(),
+            msg_type: DEFAULT_JSON_MSG_TYPE.to_string(),
             value,
         })
     }

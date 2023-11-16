@@ -15,6 +15,8 @@ use serde_json::json;
 use tw_coin_entry::error::SigningResult;
 use tw_proto::to_any;
 
+const DEFAULT_JSON_MSG_TYPE: &str = "wasm/MsgExecuteContract";
+
 /// This method not only support token transfer, but also support all other types of contract call.
 /// https://docs.terra.money/Tutorials/Smart-contracts/Manage-CW20-tokens.html#interacting-with-cw20-contract
 #[derive(Serialize)]
@@ -44,9 +46,8 @@ impl<Address: CosmosAddress> CosmosMessage for TerraExecuteContractMessage<Addre
             "execute_msg": self.execute_msg.try_to_json(),
             "sender": self.sender,
         });
-        // TODO custom_msg_type
         Ok(JsonMessage {
-            msg_type: "wasm/MsgExecuteContract".to_string(),
+            msg_type: DEFAULT_JSON_MSG_TYPE.to_string(),
             value,
         })
     }
