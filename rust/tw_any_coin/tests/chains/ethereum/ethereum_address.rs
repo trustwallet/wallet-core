@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use tw_any_coin::test_utils::{
+use tw_any_coin::test_utils::address_utils::{
     test_address_get_data, test_address_invalid, test_address_normalization, test_address_valid,
 };
 use tw_coin_registry::blockchain_type::BlockchainType;
@@ -42,7 +42,7 @@ fn test_ethereum_address_get_data() {
         test_address_get_data(
             coin.coin_id,
             "0xb16Db98B365B1f89191996942612B14F1Da4Bd5f",
-            "0xb16Db98B365B1f89191996942612B14F1Da4Bd5f",
+            "b16Db98B365B1f89191996942612B14F1Da4Bd5f",
         );
     }
 }

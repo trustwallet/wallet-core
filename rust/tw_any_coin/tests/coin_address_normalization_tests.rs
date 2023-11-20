@@ -7,7 +7,7 @@
 use tw_any_coin::ffi::tw_any_address::{
     tw_any_address_create_with_string, tw_any_address_description,
 };
-use tw_any_coin::test_utils::TWAnyAddressHelper;
+use tw_any_coin::test_utils::address_utils::TWAnyAddressHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_coin_registry::registry::get_coin_item;
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
