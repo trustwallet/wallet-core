@@ -5,3 +5,4 @@
 // file LICENSE at the root of the source code distribution tree.
 
 mod cosmos_address;
+mod cosmos_sign;

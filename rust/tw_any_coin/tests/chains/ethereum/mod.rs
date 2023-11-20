@@ -5,3 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 mod ethereum_address;
+mod ethereum_compile;
+mod ethereum_message_sign;
+mod ethereum_sign;
