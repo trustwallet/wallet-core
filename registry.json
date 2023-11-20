@@ -4506,5 +4506,35 @@
       "rpc": "",
       "documentation": "https://internetcomputer.org/docs"
     }
+  },
+  {
+    "id": "ultra_pro_chain",
+    "name": "Ultra Pro Chain",
+    "coinId": 10003468,
+    "symbol": "UPRO",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "473861",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://ultraproscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x4e99f3ab0b9cd33a46e284a47acc0ebc7259b98b87c2aef4f2427270fa3ff8ad",
+      "sampleAccount": "0xF59Bf1c3E85d0b66D18B51a52cE3eE71872aC4ff"
+    },
+    "info": {
+      "url": "https://ultrapro.info/",
+      "source": "https://github.com/ultraproblockchain/UPRONetwork",
+      "rpc": "https://mainnet-rpc.ultraproscan.io/",
+      "documentation": "https://eth.wiki/json-rpc/API"
+    }
   }
 ]

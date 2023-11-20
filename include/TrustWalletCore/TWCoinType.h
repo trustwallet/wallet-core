@@ -179,6 +179,7 @@ enum TWCoinType {
     TWCoinTypeZenEON = 7332,
     TWCoinTypeInternetComputer = 223,
     TWCoinTypeTia = 21000118,
+    TWCoinTypeUltraProChain = 10003468,
 };
 
 /// Returns the blockchain for a coin type.
