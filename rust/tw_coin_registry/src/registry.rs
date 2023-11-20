@@ -51,6 +51,13 @@ pub fn supported_coin_items() -> impl Iterator<Item = &'static CoinItem> {
     registry_iter().filter(|item| !matches!(item.blockchain, BlockchainType::Unsupported))
 }
 
+#[inline]
+pub fn coin_items_by_blockchain(
+    blockchain: BlockchainType,
+) -> impl Iterator<Item = &'static CoinItem> {
+    registry_iter().filter(move |item| item.blockchain == blockchain)
+}
+
 fn parse_registry_json() -> RegistryMap {
     let items: Vec<CoinItem> =
         serde_json::from_str(REGISTRY_JSON).expect("registry.json expected to be valid");

@@ -33,47 +33,38 @@ fn generate_coin_type(coins: &[CoinItem]) -> String {
         .map(|coin| format!("\t{} = {},\n", format_name(&coin.name), coin.coin_id))
         .join("");
 
-    let from_raw_cases = coins
-        .iter()
-        .map(|coin| {
-            format!(
-                "\t\t\t{} => {ENUM_NAME}::{},\n",
-                coin.coin_id,
-                format_name(&coin.name)
-            )
-        })
-        .join("");
-
     format!(
-        r#"use serde::Deserialize;
-use serde::de::{{Error as SerdeError, Deserializer}};
-
-#[allow(non_camel_case_types)]
-#[repr({RAW_TYPE})]
+        r#"#[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[derive(strum_macros::EnumIter, strum_macros::FromRepr)]
+#[repr({RAW_TYPE})]
 pub enum CoinType {{
 {coin_types_variants}
+}}
+
+impl {ENUM_NAME} {{
+    pub fn iter() -> impl IntoIterator<Item = {ENUM_NAME}> {{
+        use strum::IntoEnumIterator;
+
+        <Self as IntoEnumIterator>::iter()
+    }}
 }}
 
 impl TryFrom<{RAW_TYPE}> for {ENUM_NAME} {{
     type Error = ();
 
     fn try_from(num: {RAW_TYPE}) -> Result<{ENUM_NAME}, ()> {{
-        let coin_type = match num {{
-{from_raw_cases}
-            _ => return Err(()),
-        }};
-        Ok(coin_type)
+        {ENUM_NAME}::from_repr(num).ok_or(())
     }}
 }}
 
-impl<'de> Deserialize<'de> for {ENUM_NAME} {{
+impl<'de> serde::Deserialize<'de> for {ENUM_NAME} {{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
-        D: Deserializer<'de>,
+        D: serde::de::Deserializer<'de>,
     {{
-        let num_value: {RAW_TYPE} = Deserialize::deserialize(deserializer)?;
-        {ENUM_NAME}::try_from(num_value).map_err(|_| SerdeError::custom("Invalid `CoinType` value"))
+        let num_value: {RAW_TYPE} = {RAW_TYPE}::deserialize(deserializer)?;
+        {ENUM_NAME}::try_from(num_value).map_err(|_| serde::de::Error::custom("Invalid `CoinType` value"))
     }}
 }}
 "#

@@ -11,7 +11,7 @@ use std::str::FromStr;
 
 /// Blockchain implementation type.
 /// Extend this enum when adding new blockchains.
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum BlockchainType {
     Aptos,
     Bitcoin,
@@ -23,6 +23,12 @@ pub enum BlockchainType {
     Ronin,
     Thorchain,
     Unsupported,
+}
+
+impl BlockchainType {
+    pub fn is_supported(&self) -> bool {
+        !matches!(self, BlockchainType::Unsupported)
+    }
 }
 
 impl<'de> Deserialize<'de> for BlockchainType {

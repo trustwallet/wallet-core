@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+mod aptos_address;
 mod aptos_compile;
 mod aptos_sign;
 mod test_cases;
