@@ -7,13 +7,11 @@
 use std::borrow::Cow;
 use tw_any_coin::ffi::tw_any_signer::tw_any_signer_sign;
 use tw_coin_entry::error::SigningErrorType;
+use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_number::U256;
 use tw_proto::{deserialize, serialize};
-
-const COSMOS_COIN_TYPE: u32 = 118;
-const ETHEREUM_COIN_TYPE: u32 = 60;
 
 #[test]
 fn test_any_signer_sign_eth() {
@@ -43,10 +41,11 @@ fn test_any_signer_sign_eth() {
 
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
 
-    let output =
-        TWDataHelper::wrap(unsafe { tw_any_signer_sign(input_data.ptr(), ETHEREUM_COIN_TYPE) })
-            .to_vec()
-            .expect("!tw_any_signer_sign returned nullptr");
+    let output = TWDataHelper::wrap(unsafe {
+        tw_any_signer_sign(input_data.ptr(), CoinType::Ethereum as u32)
+    })
+    .to_vec()
+    .expect("!tw_any_signer_sign returned nullptr");
 
     let output: Proto::SigningOutput = deserialize(&output).unwrap();
     assert_eq!(output.error, SigningErrorType::OK);
@@ -95,10 +94,11 @@ fn test_any_signer_sign_cosmos() {
 
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
 
-    let output =
-        TWDataHelper::wrap(unsafe { tw_any_signer_sign(input_data.ptr(), COSMOS_COIN_TYPE) })
-            .to_vec()
-            .expect("!tw_any_signer_sign returned nullptr");
+    let output = TWDataHelper::wrap(unsafe {
+        tw_any_signer_sign(input_data.ptr(), CoinType::Cosmos as u32)
+    })
+    .to_vec()
+    .expect("!tw_any_signer_sign returned nullptr");
 
     let output: Proto::SigningOutput = deserialize(&output).unwrap();
     assert_eq!(output.error, SigningErrorType::OK);

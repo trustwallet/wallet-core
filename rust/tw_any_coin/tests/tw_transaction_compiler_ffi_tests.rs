@@ -10,6 +10,7 @@ use tw_any_coin::ffi::tw_transaction_compiler::{
     tw_transaction_compiler_compile, tw_transaction_compiler_pre_image_hashes,
 };
 use tw_coin_entry::error::SigningErrorType;
+use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_memory::test_utils::tw_data_vector_helper::TWDataVectorHelper;
@@ -17,8 +18,6 @@ use tw_number::U256;
 use tw_proto::Ethereum::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 use tw_proto::{deserialize, serialize};
-
-const ETHEREUM_COIN_TYPE: u32 = 60;
 
 #[test]
 fn test_transaction_compiler_eth() {
@@ -41,7 +40,7 @@ fn test_transaction_compiler_eth() {
     // Step 2: Obtain preimage hash
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
     let preimage_data = TWDataHelper::wrap(unsafe {
-        tw_transaction_compiler_pre_image_hashes(ETHEREUM_COIN_TYPE, input_data.ptr())
+        tw_transaction_compiler_pre_image_hashes(CoinType::Ethereum as u32, input_data.ptr())
     })
     .to_vec()
     .expect("!tw_transaction_compiler_pre_image_hashes returned nullptr");
@@ -68,7 +67,7 @@ fn test_transaction_compiler_eth() {
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
     let output_data = TWDataHelper::wrap(unsafe {
         tw_transaction_compiler_compile(
-            ETHEREUM_COIN_TYPE,
+            CoinType::Ethereum as u32,
             input_data.ptr(),
             signatures.ptr(),
             public_keys.ptr(),
@@ -100,11 +99,12 @@ fn test_transaction_compiler_plan_not_supported() {
         ..Proto::SigningInput::default()
     };
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
-    let plan =
-        TWDataHelper::wrap(unsafe { tw_any_signer_plan(input_data.ptr(), ETHEREUM_COIN_TYPE) });
+    let plan = TWDataHelper::wrap(unsafe {
+        tw_any_signer_plan(input_data.ptr(), CoinType::Ethereum as u32)
+    });
     assert!(
         plan.is_null(),
-        "Transaction plan is expected to be not supported by the {} coin",
-        ETHEREUM_COIN_TYPE
+        "Transaction plan is expected to be not supported by the {:?} coin",
+        CoinType::Ethereum
     );
 }

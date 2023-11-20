@@ -1674,6 +1674,7 @@ dependencies = [
 name = "tw_coin_registry"
 version = "0.1.0"
 dependencies = [
+ "itertools",
  "lazy_static",
  "serde",
  "serde_json",

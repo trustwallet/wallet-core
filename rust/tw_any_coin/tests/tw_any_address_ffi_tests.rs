@@ -12,6 +12,7 @@ use tw_any_coin::ffi::tw_any_address::{
 use tw_any_coin::test_utils::TWAnyAddressHelper;
 use tw_coin_entry::derivation::Derivation;
 use tw_coin_registry::blockchain_type::BlockchainType;
+use tw_coin_registry::coin_type::CoinType;
 use tw_coin_registry::registry::supported_coin_items;
 use tw_encoding::hex::DecodeHex;
 use tw_keypair::ffi::privkey::tw_private_key_get_public_key_by_type;
@@ -20,9 +21,6 @@ use tw_keypair::test_utils::tw_public_key_helper::TWPublicKeyHelper;
 use tw_keypair::tw::PublicKeyType;
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
-
-const ETHEREUM_COIN_TYPE: u32 = 60;
-const OSMOSIS_COIN_TYPE: u32 = 10000118;
 
 #[test]
 fn test_any_address_derive() {
@@ -62,7 +60,7 @@ fn test_any_address_derive() {
         let any_address = TWAnyAddressHelper::wrap(unsafe {
             tw_any_address_create_with_public_key_derivation(
                 public_key.ptr(),
-                coin.coin_id,
+                coin.coin_id as u32,
                 Derivation::Default as u32,
             )
         });
@@ -122,7 +120,7 @@ fn test_any_address_normalize_eth() {
         let denormalized = TWStringHelper::create(denormalized);
 
         let any_address = TWAnyAddressHelper::wrap(unsafe {
-            tw_any_address_create_with_string(denormalized.ptr(), coin.coin_id)
+            tw_any_address_create_with_string(denormalized.ptr(), coin.coin_id as u32)
         });
 
         let normalized =
@@ -192,7 +190,7 @@ fn test_any_address_is_valid_coin() {
 
         for valid_addr in valid {
             let valid = TWStringHelper::create(valid_addr);
-            assert!(unsafe { tw_any_address_is_valid(valid.ptr(), coin.coin_id) });
+            assert!(unsafe { tw_any_address_is_valid(valid.ptr(), coin.coin_id as u32) });
         }
     }
 }
@@ -236,7 +234,7 @@ fn test_any_address_is_valid_coin_invalid() {
 
         for invalid_addr in invalid {
             let valid = TWStringHelper::create(invalid_addr);
-            assert!(!unsafe { tw_any_address_is_valid(valid.ptr(), coin.coin_id) });
+            assert!(!unsafe { tw_any_address_is_valid(valid.ptr(), coin.coin_id as u32) });
         }
     }
 }
@@ -247,7 +245,7 @@ fn test_any_address_get_data_eth() {
 
     let address_str = TWStringHelper::create(addr);
     let any_address = TWAnyAddressHelper::wrap(unsafe {
-        tw_any_address_create_with_string(address_str.ptr(), ETHEREUM_COIN_TYPE)
+        tw_any_address_create_with_string(address_str.ptr(), CoinType::Ethereum as u32)
     });
     let data = TWDataHelper::wrap(unsafe { tw_any_address_data(any_address.ptr()) });
     assert_eq!(data.to_vec(), Some(addr.decode_hex().unwrap()));
@@ -260,8 +258,9 @@ fn test_any_address_is_valid_bech32() {
     let address_str = TWStringHelper::create(addr);
     let hrp = TWStringHelper::create("juno");
     // Should be valid even though Osmosis chain has `osmo` default hrp.
-    let result =
-        unsafe { tw_any_address_is_valid_bech32(address_str.ptr(), OSMOSIS_COIN_TYPE, hrp.ptr()) };
+    let result = unsafe {
+        tw_any_address_is_valid_bech32(address_str.ptr(), CoinType::Osmosis as u32, hrp.ptr())
+    };
     assert!(result);
 }
 
@@ -277,7 +276,11 @@ fn test_any_address_create_bech32_with_public_key() {
 
     // Should be valid even though Osmosis chain has `osmo` default hrp.
     let any_address = TWAnyAddressHelper::wrap(unsafe {
-        tw_any_address_create_bech32_with_public_key(public_key.ptr(), OSMOSIS_COIN_TYPE, hrp.ptr())
+        tw_any_address_create_bech32_with_public_key(
+            public_key.ptr(),
+            CoinType::Osmosis as u32,
+            hrp.ptr(),
+        )
     });
 
     let description =
