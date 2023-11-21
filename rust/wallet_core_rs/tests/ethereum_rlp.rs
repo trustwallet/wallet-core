@@ -21,10 +21,11 @@ fn test_ethereum_rlp() {
     let input = RlpProto::EncodingInput { item: Some(item) };
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
 
-    let output_data =
-        TWDataHelper::wrap(unsafe { tw_ethereum_rlp_encode(CoinType::Ethereum, input_data.ptr()) })
-            .to_vec()
-            .expect("!tw_ethereum_rlp_encode returned nullptr");
+    let output_data = TWDataHelper::wrap(unsafe {
+        tw_ethereum_rlp_encode(CoinType::Ethereum as u32, input_data.ptr())
+    })
+    .to_vec()
+    .expect("!tw_ethereum_rlp_encode returned nullptr");
     let output: RlpProto::EncodingOutput =
         deserialize(&output_data).expect("!tw_ethereum_rlp_encode returned an invalid output");
 

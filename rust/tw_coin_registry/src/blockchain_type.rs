@@ -19,9 +19,10 @@ pub enum BlockchainType {
     NativeEvmos,
     NativeInjective,
     Ronin,
-    Unsupported,
     Thorchain,
     // end_of_blockchain_type - USED TO GENERATE CODE
+    #[serde(other)]
+    Unsupported,
 }
 
 impl BlockchainType {
