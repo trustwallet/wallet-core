@@ -4,11 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::codegen::rust::toml_editor::Dependencies;
 use crate::codegen::rust::{rust_source_directory, CoinItem};
-use crate::utils::{read_lines, write_lines, FileContent};
-use crate::{Error, Result};
-use std::fs;
-use std::path::PathBuf;
+use crate::utils::FileContent;
+use crate::Result;
+use std::path::{Path, PathBuf};
 
 const BLOCKCHAIN_TYPE_START: &str = "start_of_blockchain_type";
 const BLOCKCHAIN_TYPE_END: &str = "end_of_blockchain_type";
@@ -31,20 +31,32 @@ pub fn dispatcher_path() -> PathBuf {
     coin_registry_directory().join("src").join("dispatcher.rs")
 }
 
-pub struct BlockchainType {
+pub struct CoinRegistry {
     coin: CoinItem,
 }
 
-impl BlockchainType {
-    pub fn new(coin: CoinItem) -> BlockchainType {
-        BlockchainType { coin }
+impl CoinRegistry {
+    pub fn new(coin: CoinItem) -> CoinRegistry {
+        CoinRegistry { coin }
     }
 
-    pub fn add(self) -> Result<()> {
+    pub fn add(self, path_to_new_blockchain_crate: &Path) -> Result<()> {
+        self.add_blockchain_crate_to_manifest_file(path_to_new_blockchain_crate)?;
         self.add_blockchain_variant()?;
         self.add_use_of_blockchain_entry()?;
         self.add_blockchain_entry()?;
         self.add_blockchain_dispatcher()
+    }
+
+    fn add_blockchain_crate_to_manifest_file(
+        &self,
+        path_to_new_blockchain_crate: &Path,
+    ) -> Result<()> {
+        let path_to_cargo_manifest = coin_registry_directory().join("Cargo.toml");
+        Dependencies::new(path_to_cargo_manifest).insert_dependency(
+            &self.coin.id.to_tw_crate_name(),
+            path_to_new_blockchain_crate,
+        )
     }
 
     fn add_blockchain_variant(&self) -> Result<()> {
@@ -72,10 +84,8 @@ impl BlockchainType {
 
         {
             let import_pattern = "use ";
-            let mut entries_region =
-                dispatcher_rs.rfind_line(|line| line.contains(import_pattern))?;
-            entries_region
-                .push_line_after(format!("use {tw_crate_name}::entry::{blockchain_entry};"));
+            let mut last_entry = dispatcher_rs.rfind_line(|line| line.contains(import_pattern))?;
+            last_entry.push_line_after(format!("use {tw_crate_name}::entry::{blockchain_entry};"));
         }
 
         dispatcher_rs.write()

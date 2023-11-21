@@ -6,8 +6,9 @@
 
 use crate::{Error, Result};
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::str::FromStr;
+use toml_edit::{Document, InlineTable, Item, Value};
 
 const NEW_LINE_TAB_DECORATOR: &str = "\n    ";
 const NO_DECORATOR: &str = "";
@@ -21,9 +22,9 @@ impl Workspace {
         Workspace { path_to_toml }
     }
 
-    pub fn insert_crate(self, path_to_crate: PathBuf) -> Result<()> {
+    pub fn insert_crate(self, path_to_crate: &Path) -> Result<()> {
         let manifest = fs::read_to_string(&self.path_to_toml)?;
-        let mut manifest = toml_edit::Document::from_str(&manifest)?;
+        let mut manifest = Document::from_str(&manifest)?;
 
         let members = manifest["workspace"]["members"]
             .as_array_mut()
@@ -31,21 +32,13 @@ impl Workspace {
                 "Invalid 'workspace' TOML format".to_string(),
             ))?;
 
-        // Try to get a `path_to_crate` relative to the `path_to_toml`
-        let absolute_path_to_manifest = self.path_to_toml.parent().unwrap().canonicalize()?;
-        let relative_path_to_crate = path_to_crate
-            .canonicalize()?
-            .strip_prefix(absolute_path_to_manifest)
-            .map_err(|e| Error::io_error_other(e.to_string()))?
-            .to_str()
-            .ok_or_else(|| Error::io_error_other("Invalid path to the crate".to_string()))?
-            .to_string();
+        // Try to get a path to the crate relative to the `Cargo.toml`.
+        let relative_path_to_crate = relative_path_to_crate(&self.path_to_toml, path_to_crate)?;
 
-        // Push the new member and saves sort the manifest.
+        // Push the new member, sort and save the manifest.
 
-        let relative_path_to_crate_decorated =
-            toml_edit::Value::from(relative_path_to_crate.to_string())
-                .decorated(NEW_LINE_TAB_DECORATOR, NO_DECORATOR);
+        let relative_path_to_crate_decorated = Value::from(relative_path_to_crate.to_string())
+            .decorated(NEW_LINE_TAB_DECORATOR, NO_DECORATOR);
 
         members.push_formatted(relative_path_to_crate_decorated);
         members.sort_by(|x, y| x.as_str().cmp(&y.as_str()));
@@ -53,4 +46,67 @@ impl Workspace {
         fs::write(self.path_to_toml, manifest.to_string())?;
         Ok(())
     }
+}
+
+pub struct Dependencies {
+    path_to_toml: PathBuf,
+}
+
+impl Dependencies {
+    pub fn new(path_to_toml: PathBuf) -> Dependencies {
+        Dependencies { path_to_toml }
+    }
+
+    pub fn insert_dependency(self, dep_name: &str, path_to_dep_crate: &Path) -> Result<()> {
+        let manifest = fs::read_to_string(&self.path_to_toml)?;
+        let mut manifest = Document::from_str(&manifest)?;
+
+        let dependencies = manifest["dependencies"]
+            .as_table_like_mut()
+            .ok_or(Error::TomlFormat("Invalid 'Cargo.toml' format".to_string()))?;
+
+        // Try to get a path to the crate relative to the `Cargo.toml`.
+        let relative_path_to_crate = relative_path_to_crate(&self.path_to_toml, path_to_dep_crate)?;
+
+        // Create the new dependency member (aka a TOML inline table with `path` key-value).
+        let mut new_member = InlineTable::new();
+        new_member.insert("path", relative_path_to_crate.into());
+
+        // Push the new member, sort and save the manifest.
+        dependencies.insert(dep_name, Item::Value(Value::InlineTable(new_member).into()));
+        dependencies.sort_values();
+
+        fs::write(self.path_to_toml, manifest.to_string())?;
+
+        Ok(())
+    }
+}
+
+/// Returns a path to the dependency accordingly to the Cargo manifest file.
+/// The result string can be put to `Cargo.toml` as:
+/// ```toml
+/// tw_foo = { path = "<RESULT_PATH>" }
+/// ```
+fn relative_path_to_crate(
+    path_to_cargo_manifest: &Path,
+    path_to_dependency: &Path,
+) -> Result<String> {
+    let absolute_path_to_crate_directory = path_to_cargo_manifest
+        .parent()
+        .ok_or_else(|| Error::io_error_other("Cannot get a parent directory".to_string()))?
+        .canonicalize()?;
+    let absolute_path_to_dependency = path_to_dependency.canonicalize()?;
+
+    let relative_path_to_dependency = pathdiff::diff_paths(
+        absolute_path_to_dependency,
+        absolute_path_to_crate_directory,
+    )
+    .ok_or_else(|| {
+        Error::io_error_other("Cannot get a relative path to the dependency".to_string())
+    })?
+    .to_str()
+    .ok_or_else(|| Error::io_error_other("Invalid path to the crate".to_string()))?
+    .to_string();
+
+    Ok(relative_path_to_dependency)
 }

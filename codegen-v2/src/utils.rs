@@ -5,8 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::{Error, Result};
+use std::fs;
 use std::path::{Path, PathBuf};
-use std::{fs, io};
 
 pub fn read_lines<P: AsRef<Path>>(path: P) -> Result<Vec<String>> {
     let lines = fs::read_to_string(path)?

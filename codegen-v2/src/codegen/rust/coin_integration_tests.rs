@@ -6,7 +6,7 @@
 
 use crate::codegen::rust::coin_id::CoinId;
 use crate::codegen::rust::{rs_header, tw_any_coin_directory, CoinItem};
-use crate::utils::read_lines;
+use crate::utils::FileContent;
 use crate::{Error, Result};
 use std::fs;
 use std::path::PathBuf;
@@ -120,30 +120,14 @@ mod {chain_id}_sign;
         let chains_mod_path = chains_integration_tests_directory().join("mod.rs");
         let chain_id = self.coin.id.as_str();
 
-        let mut chains_mod_rs: Vec<_> = read_lines(&chains_mod_path)?;
-        let last_line = chains_mod_rs.len() - 1;
+        let mut chains_mod_rs = FileContent::read(chains_mod_path)?;
 
-        // Find the first line that declares a coin module.
-        let first_mod_idx = chains_mod_rs
-            .iter()
-            .position(|line| line.starts_with("mod "))
-            // Otherwise consider the last line.
-            .unwrap_or(last_line);
+        {
+            let mod_pattern = "mod ";
+            let mut last_mod = chains_mod_rs.rfind_line(|line| line.starts_with(mod_pattern))?;
+            last_mod.push_line_after(format!("mod {chain_id};"));
+        }
 
-        // Insert the new module before the first `mod` line.
-        chains_mod_rs.insert(first_mod_idx, format!("mod {chain_id};"));
-
-        // Find the last line that declares a coin module.
-        let last_mod_idx = chains_mod_rs
-            .iter()
-            .rposition(|line| line.starts_with("mod "))
-            // Otherwise consider the last line.
-            .unwrap_or(last_line);
-
-        // Sort only the modules alphabetically.
-        chains_mod_rs[first_mod_idx..=last_mod_idx].sort();
-
-        let result_chains_mod_rs = chains_mod_rs.join("\n");
-        fs::write(chains_mod_path, result_chains_mod_rs).map_err(Error::from)
+        chains_mod_rs.write()
     }
 }
