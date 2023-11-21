@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::codegen::rust::blockchain_type::BlockchainType;
 use crate::codegen::rust::coin_crate::CoinCrate;
 use crate::codegen::rust::coin_id::CoinId;
 use crate::codegen::rust::coin_integration_tests::CoinIntegrationTests;
@@ -21,7 +22,9 @@ pub fn new_blockchain(coin: &str) -> Result<()> {
     // Insert the created crate to the workspace.
     Workspace::new(workspace_toml_path()).insert_crate(blockchain_crate_path)?;
     // Create integration tests.
-    CoinIntegrationTests::new(coin_item).create()?;
+    CoinIntegrationTests::new(coin_item.clone()).create()?;
+    // Add the new `BlockchainType` enum variant.
+    BlockchainType::new(coin_item).add()?;
 
     Ok(())
 }

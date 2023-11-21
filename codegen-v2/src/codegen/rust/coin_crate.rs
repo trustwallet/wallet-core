@@ -36,7 +36,7 @@ impl CoinCrate {
         let blockchain_entry_path = blockchain_src_path.join("entry.rs");
 
         let tw_crate_name = self.coin.id.to_tw_crate_name();
-        let blockchain_name = self.coin.formatted_blockchain();
+        let blockchain_name = self.coin.blockchain_type();
 
         if blockchain_path.exists() {
             return Err(Error::IoError(io::Error::new(

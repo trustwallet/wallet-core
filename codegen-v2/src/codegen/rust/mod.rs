@@ -9,6 +9,7 @@ use crate::{current_year, Error, Result};
 use std::path::PathBuf;
 use std::{env, fs};
 
+pub mod blockchain_type;
 pub mod coin_crate;
 pub mod coin_id;
 pub mod coin_integration_tests;
@@ -53,13 +54,18 @@ pub fn rs_header() -> String {
 #[derive(Clone, Deserialize)]
 pub struct CoinItem {
     pub id: CoinId,
+    pub name: String,
     pub blockchain: String,
 }
 
 impl CoinItem {
     /// Transforms a coin name to a Rust name.
     /// https://github.com/trustwallet/wallet-core/blob/3769f31b7d0c75126b2f426bb065364429aaa379/codegen/lib/coin_skeleton_gen.rb#L15-L22
-    fn formatted_blockchain(&self) -> String {
+    pub fn coin_type(&self) -> String {
+        self.name.replace([' ', '.', '-'], "")
+    }
+
+    pub fn blockchain_type(&self) -> String {
         let name = self.blockchain.replace([' ', '.', '-'], "");
         // Make the first letter uppercase.
         let mut name_chars = name.chars();
