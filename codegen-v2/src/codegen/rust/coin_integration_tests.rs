@@ -35,6 +35,7 @@ impl CoinIntegrationTests {
 
         fs::create_dir(&blockchain_tests_path)?;
 
+        self.list_blockchain_in_chains_mod()?;
         self.create_address_tests()?;
         self.create_sign_tests()?;
         self.create_chain_tests_mod_rs()?;
@@ -49,8 +50,9 @@ impl CoinIntegrationTests {
     fn create_address_tests(&self) -> Result<()> {
         let header = rs_header();
         let chain_id = self.coin.id.as_str();
-        let address_tests_path =
-            coin_integration_tests_directory(&self.coin.id).join(format!("{chain_id}_address.rs"));
+        let address_tests_path = self
+            .coin_tests_directory()
+            .join(format!("{chain_id}_address.rs"));
 
         let address_tests_rs = format!(
             r#"{header}
@@ -82,8 +84,9 @@ fn test_{chain_id}_address_get_data() {{
     fn create_sign_tests(&self) -> Result<()> {
         let header = rs_header();
         let chain_id = self.coin.id.as_str();
-        let sign_tests_path =
-            coin_integration_tests_directory(&self.coin.id).join(format!("{chain_id}_sign.rs"));
+        let sign_tests_path = self
+            .coin_tests_directory()
+            .join(format!("{chain_id}_sign.rs"));
 
         let sign_tests_rs = format!(
             r#"{header}
@@ -100,8 +103,7 @@ fn test_{chain_id}_sign() {{
     fn create_chain_tests_mod_rs(&self) -> Result<()> {
         let header = rs_header();
         let chain_id = self.coin.id.as_str();
-        let blockchain_tests_mod_path =
-            coin_integration_tests_directory(&self.coin.id).join("mod.rs");
+        let blockchain_tests_mod_path = self.coin_tests_directory().join("mod.rs");
 
         let blockchain_mod_rs = format!(
             r#"{header}
@@ -111,5 +113,40 @@ mod {chain_id}_sign;
 "#
         );
         fs::write(blockchain_tests_mod_path, blockchain_mod_rs).map_err(Error::from)
+    }
+
+    fn list_blockchain_in_chains_mod(&self) -> Result<()> {
+        let chains_mod_path = chains_integration_tests_directory().join("mod.rs");
+        let chain_id = self.coin.id.as_str();
+
+        let mut chains_mod_rs: Vec<_> = fs::read_to_string(&chains_mod_path)?
+            .split('\n')
+            .map(|line| line.to_string())
+            .collect();
+
+        let last_line = chains_mod_rs.len() - 1;
+
+        // Find the first line that declares a coin module.
+        let first_mod_idx = chains_mod_rs
+            .iter()
+            .position(|line| line.starts_with("mod "))
+            // Otherwise consider the last line.
+            .unwrap_or(last_line);
+
+        // Insert the new module before the first `mod` line.
+        chains_mod_rs.insert(first_mod_idx, format!("mod {chain_id};"));
+
+        // Find the last line that declares a coin module.
+        let last_mod_idx = chains_mod_rs
+            .iter()
+            .rposition(|line| line.starts_with("mod "))
+            // Otherwise consider the last line.
+            .unwrap_or(last_line);
+
+        // Sort only the modules alphabetically.
+        chains_mod_rs[first_mod_idx..=last_mod_idx].sort();
+
+        let result_chains_mod_rs = chains_mod_rs.join("\n");
+        fs::write(chains_mod_path, result_chains_mod_rs).map_err(Error::from)
     }
 }
