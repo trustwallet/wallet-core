@@ -10,6 +10,7 @@ use serde::Deserialize;
 /// Extend this enum when adding new blockchains.
 #[derive(Copy, Clone, Debug, Deserialize, PartialEq)]
 pub enum BlockchainType {
+    // start_of_blockchain_type - USED TO GENERATE CODE
     Aptos,
     Bitcoin,
     Cosmos,
@@ -18,8 +19,9 @@ pub enum BlockchainType {
     NativeEvmos,
     NativeInjective,
     Ronin,
-    Thorchain,
     Unsupported,
+    Thorchain,
+    // end_of_blockchain_type - USED TO GENERATE CODE
 }
 
 impl BlockchainType {

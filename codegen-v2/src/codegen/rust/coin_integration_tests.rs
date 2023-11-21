@@ -6,6 +6,7 @@
 
 use crate::codegen::rust::coin_id::CoinId;
 use crate::codegen::rust::{rs_header, tw_any_coin_directory, CoinItem};
+use crate::utils::read_lines;
 use crate::{Error, Result};
 use std::fs;
 use std::path::PathBuf;
@@ -119,11 +120,7 @@ mod {chain_id}_sign;
         let chains_mod_path = chains_integration_tests_directory().join("mod.rs");
         let chain_id = self.coin.id.as_str();
 
-        let mut chains_mod_rs: Vec<_> = fs::read_to_string(&chains_mod_path)?
-            .split('\n')
-            .map(|line| line.to_string())
-            .collect();
-
+        let mut chains_mod_rs: Vec<_> = read_lines(&chains_mod_path)?;
         let last_line = chains_mod_rs.len() - 1;
 
         // Find the first line that declares a coin module.

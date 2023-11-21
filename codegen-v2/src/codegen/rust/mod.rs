@@ -6,6 +6,7 @@
 
 use crate::codegen::rust::coin_id::CoinId;
 use crate::{current_year, Error, Result};
+use convert_case::{Case, Casing};
 use std::path::PathBuf;
 use std::{env, fs};
 
@@ -65,14 +66,19 @@ impl CoinItem {
         self.name.replace([' ', '.', '-'], "")
     }
 
+    /// Returns the blockchain type in `UpperCamel` case.
     pub fn blockchain_type(&self) -> String {
-        let name = self.blockchain.replace([' ', '.', '-'], "");
-        // Make the first letter uppercase.
-        let mut name_chars = name.chars();
-        match name_chars.next() {
-            None => String::new(),
-            Some(first_char) => first_char.to_uppercase().collect::<String>() + name_chars.as_str(),
-        }
+        self.blockchain.to_case(Case::UpperCamel)
+    }
+
+    /// Returns the blockchain type in `UPPER_SNAKE` case.
+    pub fn blockchain_entry_upper_snake(&self) -> String {
+        self.blockchain.to_case(Case::UpperSnake)
+    }
+
+    /// Returns a Rust blockchain entry of the blockchain.
+    pub fn blockchain_entry(&self) -> String {
+        format!("{}Entry", self.blockchain_type())
     }
 }
 

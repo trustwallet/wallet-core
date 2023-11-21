@@ -17,6 +17,7 @@ pub mod codegen;
 pub mod manifest;
 #[cfg(test)]
 mod tests;
+pub mod utils;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
