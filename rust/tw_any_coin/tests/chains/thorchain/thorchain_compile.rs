@@ -8,11 +8,11 @@ use crate::chains::thorchain::test_cases::send_fd0445af::{
     signing_input, JSON_SIGNING_SIGNATURE, JSON_SIGNING_SIGNATURE_JSON, JSON_TX, JSON_TX_PREIMAGE,
     PRIVATE_KEY,
 };
-use crate::chains::thorchain::THORCHAIN_COIN_TYPE;
 use tw_any_coin::ffi::tw_transaction_compiler::{
     tw_transaction_compiler_compile, tw_transaction_compiler_pre_image_hashes,
 };
 use tw_coin_entry::error::SigningErrorType;
+use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::ToHex;
 use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1;
@@ -38,7 +38,7 @@ fn test_any_signer_compile_thorchain() {
     // Step 2: Obtain preimage hash
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
     let preimage_data = TWDataHelper::wrap(unsafe {
-        tw_transaction_compiler_pre_image_hashes(THORCHAIN_COIN_TYPE, input_data.ptr())
+        tw_transaction_compiler_pre_image_hashes(CoinType::THORChain as u32, input_data.ptr())
     })
     .to_vec()
     .expect("!tw_transaction_compiler_pre_image_hashes returned nullptr");
@@ -75,7 +75,7 @@ fn test_any_signer_compile_thorchain() {
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
     let output_data = TWDataHelper::wrap(unsafe {
         tw_transaction_compiler_compile(
-            THORCHAIN_COIN_TYPE,
+            CoinType::THORChain as u32,
             input_data.ptr(),
             signatures.ptr(),
             public_keys.ptr(),

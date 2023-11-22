@@ -8,11 +8,10 @@ use tw_any_coin::ffi::tw_message_signer::{
     tw_message_signer_pre_image_hashes, tw_message_signer_sign, tw_message_signer_verify,
 };
 use tw_coin_entry::error::SigningErrorType;
+use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_proto::{deserialize, serialize, Ethereum, TxCompiler};
-
-const ETHEREUM_COIN_TYPE: u32 = 60;
 
 #[test]
 fn test_tw_message_signer_sign() {
@@ -27,10 +26,11 @@ fn test_tw_message_signer_sign() {
     };
 
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
-    let output =
-        TWDataHelper::wrap(unsafe { tw_message_signer_sign(input_data.ptr(), ETHEREUM_COIN_TYPE) })
-            .to_vec()
-            .expect("!tw_message_signer_sign returned nullptr");
+    let output = TWDataHelper::wrap(unsafe {
+        tw_message_signer_sign(input_data.ptr(), CoinType::Ethereum as u32)
+    })
+    .to_vec()
+    .expect("!tw_message_signer_sign returned nullptr");
 
     let output: Ethereum::Proto::MessageSigningOutput = deserialize(&output).unwrap();
     assert_eq!(output.error, SigningErrorType::OK);
@@ -47,7 +47,7 @@ fn test_tw_message_signer_verify() {
     };
 
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
-    let verified = unsafe { tw_message_signer_verify(input_data.ptr(), ETHEREUM_COIN_TYPE) };
+    let verified = unsafe { tw_message_signer_verify(input_data.ptr(), CoinType::Ethereum as u32) };
     assert!(verified);
 }
 
@@ -60,7 +60,7 @@ fn test_tw_message_signer_verify_invalid() {
     };
 
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
-    let verified = unsafe { tw_message_signer_verify(input_data.ptr(), ETHEREUM_COIN_TYPE) };
+    let verified = unsafe { tw_message_signer_verify(input_data.ptr(), CoinType::Ethereum as u32) };
     assert!(!verified);
 }
 
@@ -78,7 +78,7 @@ fn test_tw_message_signer_pre_image_hashes() {
 
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
     let output = TWDataHelper::wrap(unsafe {
-        tw_message_signer_pre_image_hashes(input_data.ptr(), ETHEREUM_COIN_TYPE)
+        tw_message_signer_pre_image_hashes(input_data.ptr(), CoinType::Ethereum as u32)
     })
     .to_vec()
     .expect("!tw_message_signer_sign returned nullptr");

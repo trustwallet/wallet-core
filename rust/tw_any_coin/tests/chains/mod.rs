@@ -5,6 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 mod aptos;
+mod bitcoin;
+mod cosmos;
+mod ethereum;
+mod internet_computer;
 mod native_evmos;
 mod native_injective;
 mod thorchain;

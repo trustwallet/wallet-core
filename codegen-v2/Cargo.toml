@@ -12,8 +12,11 @@ name = "parser"
 path = "src/main.rs"
 
 [dependencies]
+convert_case = "0.6.0"
+pathdiff = "0.2.1"
 serde = { version = "1.0.159", features = ["derive"] }
 serde_json = "1.0.95"
 serde_yaml = "0.9.21"
+toml_edit = "0.21.0"
 handlebars = "4.3.6"
 heck = "0.4.1"

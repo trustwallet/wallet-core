@@ -7,9 +7,9 @@
 use crate::chains::thorchain::test_cases::send_fd0445af::{
     signing_input, JSON_SIGNING_SIGNATURE, JSON_SIGNING_SIGNATURE_JSON, JSON_TX, PRIVATE_KEY,
 };
-use crate::chains::thorchain::THORCHAIN_COIN_TYPE;
 use tw_any_coin::ffi::tw_any_signer::tw_any_signer_sign;
 use tw_coin_entry::error::SigningErrorType;
+use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_proto::Cosmos::Proto;
@@ -25,10 +25,11 @@ fn test_any_signer_sign_thorchain() {
 
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
 
-    let output =
-        TWDataHelper::wrap(unsafe { tw_any_signer_sign(input_data.ptr(), THORCHAIN_COIN_TYPE) })
-            .to_vec()
-            .expect("!tw_any_signer_sign returned nullptr");
+    let output = TWDataHelper::wrap(unsafe {
+        tw_any_signer_sign(input_data.ptr(), CoinType::THORChain as u32)
+    })
+    .to_vec()
+    .expect("!tw_any_signer_sign returned nullptr");
 
     let output: Proto::SigningOutput = deserialize(&output).unwrap();
     assert_eq!(output.error, SigningErrorType::OK);

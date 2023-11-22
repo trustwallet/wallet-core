@@ -9,6 +9,7 @@
 use crate::any_address::AnyAddress;
 use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::prefix::AddressPrefix;
+use tw_coin_registry::coin_type::CoinType;
 use tw_keypair::ffi::pubkey::TWPublicKey;
 use tw_memory::ffi::tw_data::TWData;
 use tw_memory::ffi::tw_string::TWString;
@@ -29,6 +30,7 @@ impl RawPtrTrait for TWAnyAddress {}
 pub unsafe extern "C" fn tw_any_address_is_valid(string: *const TWString, coin: u32) -> bool {
     let string = try_or_false!(TWString::from_ptr_as_ref(string));
     let string = try_or_false!(string.as_str());
+    let coin = try_or_false!(CoinType::try_from(coin));
 
     AnyAddress::is_valid(coin, string, None)
 }
@@ -51,6 +53,8 @@ pub unsafe extern "C" fn tw_any_address_is_valid_bech32(
     let hrp = try_or_false!(TWString::from_ptr_as_ref(hrp));
     let hrp = try_or_false!(hrp.as_str());
 
+    let coin = try_or_false!(CoinType::try_from(coin));
+
     let prefix = AddressPrefix::Hrp(hrp.to_string());
     AnyAddress::is_valid(coin, string, Some(prefix))
 }
@@ -67,6 +71,7 @@ pub unsafe extern "C" fn tw_any_address_create_with_string(
 ) -> *mut TWAnyAddress {
     let string = try_or_else!(TWString::from_ptr_as_ref(string), std::ptr::null_mut);
     let string = try_or_else!(string.as_str(), std::ptr::null_mut);
+    let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
 
     AnyAddress::with_string(coin, string, None)
         .map(|any_address| TWAnyAddress(any_address).into_ptr())
@@ -87,6 +92,7 @@ pub unsafe extern "C" fn tw_any_address_create_with_public_key_derivation(
 ) -> *mut TWAnyAddress {
     let public_key = try_or_else!(TWPublicKey::from_ptr_as_ref(public_key), std::ptr::null_mut);
     let derivation = try_or_else!(Derivation::from_raw(derivation), std::ptr::null_mut);
+    let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
 
     AnyAddress::with_public_key(coin, public_key.as_ref().clone(), derivation, None)
         .map(|any_address| TWAnyAddress(any_address).into_ptr())
@@ -106,6 +112,7 @@ pub unsafe extern "C" fn tw_any_address_create_bech32_with_public_key(
     hrp: *const TWString,
 ) -> *mut TWAnyAddress {
     let public_key = try_or_else!(TWPublicKey::from_ptr_as_ref(public_key), std::ptr::null_mut);
+    let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
 
     let hrp = try_or_else!(TWString::from_ptr_as_ref(hrp), std::ptr::null_mut);
     let hrp = try_or_else!(hrp.as_str(), std::ptr::null_mut);
@@ -173,6 +180,7 @@ pub unsafe extern "C" fn tw_any_address_create_with_string_unchecked(
 ) -> *mut TWAnyAddress {
     let string = try_or_else!(TWString::from_ptr_as_ref(string), std::ptr::null_mut);
     let string = try_or_else!(string.as_str(), std::ptr::null_mut);
+    let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
 
     AnyAddress::with_string_unchecked(coin, string)
         .map(|any_address| TWAnyAddress(any_address).into_ptr())

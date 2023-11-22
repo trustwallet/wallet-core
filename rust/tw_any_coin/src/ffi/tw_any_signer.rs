@@ -7,6 +7,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use crate::any_signer::AnySigner;
+use tw_coin_registry::coin_type::CoinType;
 use tw_memory::ffi::tw_data::TWData;
 use tw_memory::ffi::RawPtrTrait;
 use tw_misc::try_or_else;
@@ -19,6 +20,7 @@ use tw_misc::try_or_else;
 #[no_mangle]
 pub unsafe extern "C" fn tw_any_signer_sign(input: *const TWData, coin: u32) -> *mut TWData {
     let input = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
+    let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
 
     AnySigner::sign(input.as_slice(), coin)
         .map(|output| TWData::from(output).into_ptr())
@@ -33,6 +35,7 @@ pub unsafe extern "C" fn tw_any_signer_sign(input: *const TWData, coin: u32) -> 
 #[no_mangle]
 pub unsafe extern "C" fn tw_any_signer_plan(input: *const TWData, coin: u32) -> *mut TWData {
     let input = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
+    let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
 
     AnySigner::plan(input.as_slice(), coin)
         .map(|output| TWData::from(output).into_ptr())
