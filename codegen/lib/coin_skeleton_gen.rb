@@ -90,6 +90,36 @@ def self.insert_target_line(target_file, target_line, original_line)
     return true
 end
 
+def generate_blockchain_files(coin)
+    name = format_name(coin)
+
+    generate_file("newcoin/Address.h.erb", "src/#{name}", "Address.h", coin)
+    generate_file("newcoin/Address.cpp.erb", "src/#{name}", "Address.cpp", coin)
+    generate_file("newcoin/Entry.h.erb", "src/#{name}", "Entry.h", coin)
+    generate_file("newcoin/Entry.cpp.erb", "src/#{name}", "Entry.cpp", coin)
+    generate_file("newcoin/Proto.erb", "src/proto", "#{name}.proto", coin)
+    generate_file("newcoin/Signer.h.erb", "src/#{name}", "Signer.h", coin)
+    generate_file("newcoin/Signer.cpp.erb", "src/#{name}", "Signer.cpp", coin)
+
+    generate_file("newcoin/AddressTests.cpp.erb", "tests/chains/#{name}", "AddressTests.cpp", coin)
+    generate_file("newcoin/SignerTests.cpp.erb", "tests/chains/#{name}", "SignerTests.cpp", coin)
+    generate_file("newcoin/TransactionCompilerTests.cpp.erb", "tests/chains/#{name}", "TransactionCompilerTests.cpp", coin)
+    generate_file("newcoin/TWAddressTests.cpp.erb", "tests/chains/#{name}", "TWAnyAddressTests.cpp", coin)
+    generate_file("newcoin/TWSignerTests.cpp.erb", "tests/chains/#{name}", "TWAnySignerTests.cpp", coin)
+end
+
+def generate_mobile_tests(coin)
+    name = format_name(coin)
+
+    generate_file("newcoin/AddressTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Address.kt", coin)
+    generate_file("newcoin/SignerTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Signer.kt", coin)
+    generate_file("newcoin/Tests.swift.erb", "swift/Tests/Blockchains", "#{name}Tests.swift", coin)
+end
+
+def generate_coin_type_tests(coin)
+    coin_test_gen.generate_coin_test_file(coin, 'TWCoinTypeTests.cpp.erb', true)
+end
+
 def generate_skeleton(coin_id, mode)
     puts "New coin template for coin '#{coin_id}' #{mode} requested"
 
@@ -112,32 +142,19 @@ def generate_skeleton(coin_id, mode)
         return
     end
     coin = coinSelect.first
-    name = format_name(coin)
 
-
-    insert_coin_type(coin, mode)
-    if (mode != "evm")
+    if (mode == "full")
+        insert_coin_type(coin, mode)
         insert_coin_entry(coin)
-
-        generate_file("newcoin/Address.h.erb", "src/#{name}", "Address.h", coin)
-        generate_file("newcoin/Address.cpp.erb", "src/#{name}", "Address.cpp", coin)
-        generate_file("newcoin/Entry.h.erb", "src/#{name}", "Entry.h", coin)
-        generate_file("newcoin/Entry.cpp.erb", "src/#{name}", "Entry.cpp", coin)
-        generate_file("newcoin/Proto.erb", "src/proto", "#{name}.proto", coin)
-        generate_file("newcoin/Signer.h.erb", "src/#{name}", "Signer.h", coin)
-        generate_file("newcoin/Signer.cpp.erb", "src/#{name}", "Signer.cpp", coin)
-
-        generate_file("newcoin/AddressTests.cpp.erb", "tests/chains/#{name}", "AddressTests.cpp", coin)
-        generate_file("newcoin/SignerTests.cpp.erb", "tests/chains/#{name}", "SignerTests.cpp", coin)
-        generate_file("newcoin/TransactionCompilerTests.cpp.erb", "tests/chains/#{name}", "TransactionCompilerTests.cpp", coin)
-        generate_file("newcoin/TWAddressTests.cpp.erb", "tests/chains/#{name}", "TWAnyAddressTests.cpp", coin)
-        generate_file("newcoin/TWSignerTests.cpp.erb", "tests/chains/#{name}", "TWAnySignerTests.cpp", coin)
-        generate_file("newcoin/AddressTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Address.kt", coin)
-        generate_file("newcoin/SignerTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Signer.kt", coin)
-        generate_file("newcoin/Tests.swift.erb", "swift/Tests/Blockchains", "#{name}Tests.swift", coin)
+        generate_blockchain_files(coin)
+        generate_mobile_tests(coin)
+        generate_coin_type_tests(coin)
+    elsif (mode == "evm")
+        insert_coin_type(coin, mode)
+        generate_coin_type_tests(coin)
+    elsif (mode == "mobile-tests")
+        generate_mobile_tests(coin)
     end
-
-    coin_test_gen.generate_coin_test_file(coin, 'TWCoinTypeTests.cpp.erb', true)
 
     puts "please tools/generate-files to generate Swift/Java/Protobuf files"
 end
