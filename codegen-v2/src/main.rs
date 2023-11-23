@@ -5,13 +5,12 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use libparser::codegen::swift::RenderIntput;
+use libparser::codegen::{cpp, rust};
+use libparser::coin_id::CoinId;
 use libparser::manifest::parse_dir;
+use libparser::registry::{read_coin_from_registry, CoinItem};
 use libparser::{Error, Result};
 use std::fs::read_to_string;
-
-pub mod cmd;
-
-use cmd::new_blockchain::new_blockchain;
 
 fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().collect();
@@ -21,10 +20,32 @@ fn main() -> Result<()> {
     }
 
     match args[1].as_str() {
+        "new-blockchain-rust" => new_blockchain_rust(&args[2..]),
         "new-blockchain" => new_blockchain(&args[2..]),
         "swift" => generate_swift_bindings(),
         _ => Err(Error::InvalidCommand),
     }
+}
+
+fn new_blockchain_rust(args: &[String]) -> Result<()> {
+    let coin_str = args.iter().next().ok_or_else(|| Error::InvalidCommand)?;
+    let coin_id = CoinId::new(coin_str.clone())?;
+    let coin_item = read_coin_from_registry(&coin_id)?;
+
+    rust::new_blockchain::new_blockchain(coin_item.clone())?;
+
+    Ok(())
+}
+
+fn new_blockchain(args: &[String]) -> Result<()> {
+    let coin_str = args.iter().next().ok_or_else(|| Error::InvalidCommand)?;
+    let coin_id = CoinId::new(coin_str.clone())?;
+    let coin_item = read_coin_from_registry(&coin_id)?;
+
+    rust::new_blockchain::new_blockchain(coin_item.clone())?;
+    cpp::new_blockchain::new_blockchain(coin_item)?;
+
+    Ok(())
 }
 
 fn generate_swift_bindings() -> Result<()> {

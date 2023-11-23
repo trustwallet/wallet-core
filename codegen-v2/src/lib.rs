@@ -14,7 +14,9 @@ use std::io::Error as IoError;
 use toml_edit::TomlError;
 
 pub mod codegen;
+pub mod coin_id;
 pub mod manifest;
+pub mod registry;
 #[cfg(test)]
 mod tests;
 pub mod utils;

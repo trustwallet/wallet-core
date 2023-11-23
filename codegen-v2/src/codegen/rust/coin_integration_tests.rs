@@ -4,21 +4,19 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::codegen::rust::coin_id::CoinId;
-use crate::codegen::rust::{tw_any_coin_directory, CoinItem};
+use crate::codegen::rust::tw_any_coin_directory;
 use crate::codegen::template_generator::TemplateGenerator;
+use crate::coin_id::CoinId;
+use crate::registry::CoinItem;
 use crate::utils::FileContent;
 use crate::{current_year, Result};
 use std::fs;
 use std::path::PathBuf;
 
-const ADDRESS_TESTS_TEMPLATE: &str =
-    include_str!("../../../templates/rust/integration_tests/address_tests.rs");
-const COMPILE_TESTS_TEMPLATE: &str =
-    include_str!("../../../templates/rust/integration_tests/compile_tests.rs");
-const MOD_TESTS_TEMPLATE: &str = include_str!("../../../templates/rust/integration_tests/mod.rs");
-const SIGN_TESTS_TEMPLATE: &str =
-    include_str!("../../../templates/rust/integration_tests/sign_tests.rs");
+const ADDRESS_TESTS_TEMPLATE: &str = include_str!("templates/integration_tests/address_tests.rs");
+const COMPILE_TESTS_TEMPLATE: &str = include_str!("templates/integration_tests/compile_tests.rs");
+const MOD_TESTS_TEMPLATE: &str = include_str!("templates/integration_tests/mod.rs");
+const SIGN_TESTS_TEMPLATE: &str = include_str!("templates/integration_tests/sign_tests.rs");
 
 const COIN_ADDRESS_DERIVATION_TEST_END: &str = "end_of_coin_address_derivation";
 

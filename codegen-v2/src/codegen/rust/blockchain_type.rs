@@ -4,8 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::codegen::rust::rust_source_directory;
 use crate::codegen::rust::toml_editor::Dependencies;
-use crate::codegen::rust::{rust_source_directory, CoinItem};
+use crate::registry::CoinItem;
 use crate::utils::FileContent;
 use crate::Result;
 use std::path::{Path, PathBuf};

@@ -4,25 +4,20 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::codegen::rust::coin_id::CoinId;
-use crate::codegen::rust::{chains_directory, CoinItem};
+use crate::codegen::rust::chains_directory;
 use crate::codegen::template_generator::TemplateGenerator;
+use crate::coin_id::CoinId;
+use crate::registry::CoinItem;
 use crate::{current_year, Error, Result};
 use std::path::PathBuf;
 use std::{fs, io};
 
-const BLOCKCHAIN_ADDRESS_TEMPLATE: &str =
-    include_str!("../../../templates/rust/blockchain_crate/address.rs");
-const BLOCKCHAIN_COMPILER_TEMPLATE: &str =
-    include_str!("../../../templates/rust/blockchain_crate/compiler.rs");
-const BLOCKCHAIN_ENTRY_TEMPLATE: &str =
-    include_str!("../../../templates/rust/blockchain_crate/entry.rs");
-const BLOCKCHAIN_MANIFEST_TEMPLATE: &str =
-    include_str!("../../../templates/rust/blockchain_crate/Cargo.toml");
-const BLOCKCHAIN_LIB_TEMPLATE: &str =
-    include_str!("../../../templates/rust/blockchain_crate/lib.rs");
-const BLOCKCHAIN_SIGNER_TEMPLATE: &str =
-    include_str!("../../../templates/rust/blockchain_crate/signer.rs");
+const BLOCKCHAIN_ADDRESS_TEMPLATE: &str = include_str!("templates/blockchain_crate/address.rs");
+const BLOCKCHAIN_COMPILER_TEMPLATE: &str = include_str!("templates/blockchain_crate/compiler.rs");
+const BLOCKCHAIN_ENTRY_TEMPLATE: &str = include_str!("templates/blockchain_crate/entry.rs");
+const BLOCKCHAIN_MANIFEST_TEMPLATE: &str = include_str!("templates/blockchain_crate/Cargo.toml");
+const BLOCKCHAIN_LIB_TEMPLATE: &str = include_str!("templates/blockchain_crate/lib.rs");
+const BLOCKCHAIN_SIGNER_TEMPLATE: &str = include_str!("templates/blockchain_crate/signer.rs");
 
 pub fn coin_source_directory(id: &CoinId) -> PathBuf {
     chains_directory().join(id.to_tw_crate_name())

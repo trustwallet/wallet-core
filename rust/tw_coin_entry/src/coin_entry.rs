@@ -32,7 +32,7 @@ pub trait CoinAddress: fmt::Display {
 ///
 /// Please sync them with the code generator template if there is need to make any changes in this trait
 /// (e.g adding/deleting a method or an associated type):
-/// https://github.com/trustwallet/wallet-core/blob/master/codegen-v2/templates/rust/blockchain_crate/entry.rs
+/// https://github.com/trustwallet/wallet-core/blob/master/codegen-v2/src/codegen/rust/templates/blockchain_crate/entry.rs
 pub trait CoinEntry {
     type AddressPrefix: Prefix;
     type Address: CoinAddress;

@@ -4,7 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub mod cpp;
-pub mod rust;
-pub mod swift;
-pub mod template_generator;
+use crate::codegen::cpp::coin_entry::BlockchainImpl;
+use crate::registry::CoinItem;
+use crate::Result;
+
+pub fn new_blockchain(coin: CoinItem) -> Result<()> {
+    // Generate C++ files.
+    BlockchainImpl::new(coin).create()?;
+
+    Ok(())
+}
