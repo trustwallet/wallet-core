@@ -4478,7 +4478,7 @@
     }
   },
   {
-    "id": "XDC",
+    "id": "xdc",
     "name": "XDC Network",
     "coinId": 10000050,
     "slip44": 550,
@@ -4503,7 +4503,7 @@
     "info": {
       "url": "https://xdc.org",
       "client": "https://github.com/XinFinOrg/XDPoSChain",
-      "rpc": "https://rpc.xinfin.network",
+      "rpc": "https://erpc.xinfin.network",
       "documentation": "https://docs.xdc.community"
     }
   },
