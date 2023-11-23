@@ -19,6 +19,8 @@ pub fn registry_json_path() -> PathBuf {
 #[derive(Clone, Deserialize)]
 pub struct CoinItem {
     pub id: CoinId,
+    #[serde(rename = "coinId")]
+    pub coin_id_number: u32,
     pub name: String,
     pub blockchain: String,
 }

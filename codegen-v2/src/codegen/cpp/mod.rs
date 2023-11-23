@@ -9,9 +9,18 @@ use std::path::PathBuf;
 
 pub mod coin_entry;
 pub mod new_blockchain;
+pub mod tw_blockchain;
+pub mod tw_coin_type;
 
 pub fn cpp_source_directory() -> PathBuf {
     PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
         .join("..")
         .join("src")
+}
+
+pub fn cpp_include_directory() -> PathBuf {
+    PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
+        .join("..")
+        .join("include")
+        .join("TrustWalletCore")
 }

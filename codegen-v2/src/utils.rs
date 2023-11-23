@@ -31,6 +31,28 @@ impl FileContent {
         read_lines(&path).map(|lines| FileContent { path, lines })
     }
 
+    pub fn find_region_with_prefix(&mut self, prefix: &str) -> Result<FileRegion<'_>> {
+        // Find the first line that starts with the `prefix`.
+        let region_starts_at = self
+            .lines
+            .iter()
+            .position(|line| line.starts_with(prefix))
+            .ok_or_else(|| Error::io_error_other(format!("Cannot find the `{prefix}` region")))?;
+
+        // Find the last line that starts with the `prefix`.
+        let region_ends_at = self
+            .lines
+            .iter()
+            .rposition(|line| line.starts_with(prefix))
+            .ok_or_else(|| Error::io_error_other(format!("Cannot find the `{prefix}` region")))?;
+
+        Ok(FileRegion {
+            lines: &mut self.lines,
+            region_starts_at,
+            region_ends_at,
+        })
+    }
+
     pub fn find_region_with_comments(
         &mut self,
         start_comment: &str,
@@ -104,6 +126,10 @@ impl<'a> FileRegion<'a> {
 
     pub fn sort(&mut self) {
         self.lines[self.region_starts_at..self.region_ends_at].sort()
+    }
+
+    pub fn count_lines(&self) -> usize {
+        self.region_ends_at - self.region_starts_at
     }
 }
 
