@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use libparser::codegen::swift::RenderIntput;
-use libparser::codegen::{cpp, rust};
+use libparser::codegen::{cpp, proto, rust};
 use libparser::coin_id::CoinId;
 use libparser::manifest::parse_dir;
 use libparser::registry::read_coin_from_registry;
@@ -32,7 +32,7 @@ fn new_blockchain_rust(args: &[String]) -> Result<()> {
     let coin_id = CoinId::new(coin_str.clone())?;
     let coin_item = read_coin_from_registry(&coin_id)?;
 
-    rust::new_blockchain::new_blockchain(coin_item.clone())?;
+    rust::new_blockchain::new_blockchain(coin_item)?;
 
     Ok(())
 }
@@ -42,6 +42,7 @@ fn new_blockchain(args: &[String]) -> Result<()> {
     let coin_id = CoinId::new(coin_str.clone())?;
     let coin_item = read_coin_from_registry(&coin_id)?;
 
+    proto::new_blockchain::new_blockchain(coin_item.clone())?;
     rust::new_blockchain::new_blockchain(coin_item.clone())?;
     cpp::new_blockchain::new_blockchain(coin_item)?;
 
