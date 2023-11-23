@@ -74,16 +74,12 @@ impl FileContent {
     where
         F: Fn(&str) -> bool,
     {
-        let line_idx = self
-            .lines
-            .iter()
-            .rposition(|line| f(&line))
-            .ok_or_else(|| {
-                Error::io_error_other(format!(
-                    "{:?} file does not contain a required pattern",
-                    self.path
-                ))
-            })?;
+        let line_idx = self.lines.iter().rposition(|line| f(line)).ok_or_else(|| {
+            Error::io_error_other(format!(
+                "{:?} file does not contain a required pattern",
+                self.path
+            ))
+        })?;
         Ok(LinePointer {
             lines: &mut self.lines,
             line_idx,

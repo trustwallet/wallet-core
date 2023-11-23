@@ -14,7 +14,6 @@ pub mod blockchain_type;
 pub mod coin_crate;
 pub mod coin_id;
 pub mod coin_integration_tests;
-pub mod new_blockchain;
 pub mod toml_editor;
 
 pub fn rust_source_directory() -> PathBuf {
@@ -82,7 +81,7 @@ impl CoinItem {
     }
 }
 
-pub(crate) fn read_coin_from_registry(coin: &CoinId) -> Result<CoinItem> {
+pub fn read_coin_from_registry(coin: &CoinId) -> Result<CoinItem> {
     let registry_path = registry_json_path();
 
     let registry_bytes = fs::read(registry_path)?;
