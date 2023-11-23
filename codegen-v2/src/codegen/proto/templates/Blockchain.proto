@@ -9,6 +9,8 @@ syntax = "proto3";
 package TW.{BLOCKCHAIN}.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // TODO: typical balance transfer, add more fields needed to sign
 message TransferMessage {
     int64 amount = 1;
@@ -29,4 +31,9 @@ message SigningInput {
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
+
+    // A possible error, `OK` if none.
+    Common.Proto.SigningError error = 2;
+
+    string error_message = 3;
 }
