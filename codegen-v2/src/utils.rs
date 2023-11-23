@@ -113,6 +113,10 @@ pub struct LinePointer<'a> {
 }
 
 impl<'a> LinePointer<'a> {
+    pub fn push_line_before(&mut self, line: String) {
+        self.lines.insert(self.line_idx, line);
+    }
+
     pub fn push_line_after(&mut self, line: String) {
         self.lines.insert(self.line_idx + 1, line);
     }
