@@ -30,10 +30,7 @@ impl TWCoinTypeTestsGenerator {
         let coin_tests_dir = coin_integration_tests_directory(&self.coin);
         let tw_coin_type_tests_path = coin_tests_dir.join("TWCoinTypeTests.cpp");
 
-        if !coin_tests_dir.exists() {
-            fs::create_dir(coin_tests_dir)?;
-        }
-
+        fs::create_dir(coin_tests_dir)?;
         if tw_coin_type_tests_path.exists() {
             return Ok(());
         }

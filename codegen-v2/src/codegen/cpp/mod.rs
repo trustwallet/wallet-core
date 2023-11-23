@@ -11,6 +11,8 @@ use std::path::PathBuf;
 pub mod blockchain_registry;
 pub mod coin_entry;
 pub mod new_blockchain;
+pub mod tw_any_address_tests_generator;
+pub mod tw_any_signer_tests_generator;
 pub mod tw_blockchain;
 pub mod tw_coin_type;
 pub mod tw_coin_type_tests_generator;
