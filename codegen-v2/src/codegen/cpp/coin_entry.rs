@@ -7,8 +7,9 @@
 use crate::codegen::cpp::cpp_source_directory;
 use crate::codegen::template_generator::TemplateGenerator;
 use crate::registry::CoinItem;
-use crate::{current_year, Result};
+use crate::{current_year, Error, Result};
 use std::path::PathBuf;
+use std::{fs, io};
 
 const ENTRY_HEADER_TEMPLATE: &str = include_str!("templates/Entry.h");
 
@@ -26,7 +27,17 @@ impl BlockchainImpl {
     }
 
     pub fn create(self) -> Result<PathBuf> {
-        let entry_header_path = coin_source_directory(&self.coin);
+        let blockchain_dir = coin_source_directory(&self.coin);
+        let entry_header_path = blockchain_dir.join("Entry.h");
+
+        if blockchain_dir.exists() {
+            return Err(Error::IoError(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                "blockchain already exists",
+            )));
+        }
+
+        fs::create_dir(&blockchain_dir)?;
 
         TemplateGenerator::new(ENTRY_HEADER_TEMPLATE)
             .write_to(entry_header_path.clone())

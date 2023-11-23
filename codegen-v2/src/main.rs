@@ -8,7 +8,7 @@ use libparser::codegen::swift::RenderIntput;
 use libparser::codegen::{cpp, rust};
 use libparser::coin_id::CoinId;
 use libparser::manifest::parse_dir;
-use libparser::registry::{read_coin_from_registry, CoinItem};
+use libparser::registry::read_coin_from_registry;
 use libparser::{Error, Result};
 use std::fs::read_to_string;
 
