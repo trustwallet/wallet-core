@@ -9,6 +9,8 @@ use crate::{current_year, Error, Result};
 use std::fs;
 use std::path::PathBuf;
 
+const PATTERNS_CAPACITY: usize = 20;
+
 pub struct TemplateGenerator {
     template_content: &'static str,
     write_to: Option<PathBuf>,
@@ -21,8 +23,8 @@ impl TemplateGenerator {
         TemplateGenerator {
             template_content,
             write_to: None,
-            to_replace: Vec::default(),
-            replace_with: Vec::default(),
+            to_replace: Vec::with_capacity(PATTERNS_CAPACITY),
+            replace_with: Vec::with_capacity(PATTERNS_CAPACITY),
         }
     }
 
@@ -38,6 +40,16 @@ impl TemplateGenerator {
             .add_pattern("{TW_CRATE_NAME}", coin.id.to_tw_crate_name())
             .add_pattern("{COIN_ID}", coin.id.as_str())
             .add_pattern("{COIN_TYPE}", coin.coin_type())
+            .add_pattern("{SYMBOL}", &coin.symbol)
+            .add_pattern("{DECIMALS}", coin.decimals)
+            .add_pattern("{P2PKH_PREFIX}", coin.p2pkh_prefix)
+            .add_pattern("{P2SH_PREFIX}", coin.p2sh_prefix)
+            .add_pattern("{STATIC_PREFIX}", coin.static_prefix)
+            .add_pattern("{EXPLORER_URL}", &coin.explorer.url)
+            .add_pattern("{EXPLORER_TX_PATH}", &coin.explorer.tx_path)
+            .add_pattern("{EXPLORER_ACCOUNT_PATH}", &coin.explorer.account_path)
+            .add_pattern("{EXPLORER_SAMPLE_TX}", &coin.explorer.sample_tx)
+            .add_pattern("{EXPLORER_SAMPLE_ACCOUNT}", &coin.explorer.sample_account)
     }
 
     pub fn add_pattern<K: ToString, V: ToString>(
@@ -50,7 +62,7 @@ impl TemplateGenerator {
         self
     }
 
-    pub fn replace_all(self) -> Result<()> {
+    pub fn write(self) -> Result<()> {
         let write_to_path = self.write_to.ok_or_else(|| {
             Error::io_error_other("Incorrect use of 'TemplateGenerator'".to_string())
         })?;

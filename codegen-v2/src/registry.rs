@@ -17,12 +17,39 @@ pub fn registry_json_path() -> PathBuf {
 }
 
 #[derive(Clone, Deserialize)]
+pub struct CoinExplorer {
+    pub url: String,
+    #[serde(rename = "txPath")]
+    pub tx_path: String,
+    #[serde(rename = "accountPath")]
+    pub account_path: String,
+    #[serde(rename = "sampleTx")]
+    #[serde(default)]
+    pub sample_tx: String,
+    #[serde(rename = "sampleAccount")]
+    #[serde(default)]
+    pub sample_account: String,
+}
+
+#[derive(Clone, Deserialize)]
 pub struct CoinItem {
     pub id: CoinId,
+    pub name: String,
     #[serde(rename = "coinId")]
     pub coin_id_number: u32,
-    pub name: String,
+    pub symbol: String,
+    pub decimals: u8,
     pub blockchain: String,
+    #[serde(rename = "p2pkhPrefix")]
+    #[serde(default)]
+    pub p2pkh_prefix: u8,
+    #[serde(rename = "p2shPrefix")]
+    #[serde(default)]
+    pub p2sh_prefix: u8,
+    #[serde(rename = "staticPrefix")]
+    #[serde(default)]
+    pub static_prefix: u8,
+    pub explorer: CoinExplorer,
 }
 
 impl CoinItem {

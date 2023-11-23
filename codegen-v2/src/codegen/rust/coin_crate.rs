@@ -58,32 +58,32 @@ impl CoinCrate {
         TemplateGenerator::new(BLOCKCHAIN_MANIFEST_TEMPLATE)
             .write_to(blockchain_toml_path)
             .with_default_patterns(&self.coin)
-            .replace_all()?;
+            .write()?;
 
         TemplateGenerator::new(BLOCKCHAIN_LIB_TEMPLATE)
             .write_to(blockchain_lib_rs_path)
             .with_default_patterns(&self.coin)
-            .replace_all()?;
+            .write()?;
 
         TemplateGenerator::new(BLOCKCHAIN_ENTRY_TEMPLATE)
             .write_to(blockchain_entry_path)
             .with_default_patterns(&self.coin)
-            .replace_all()?;
+            .write()?;
 
         TemplateGenerator::new(BLOCKCHAIN_COMPILER_TEMPLATE)
             .write_to(blockchain_compiler_path)
             .with_default_patterns(&self.coin)
-            .replace_all()?;
+            .write()?;
 
         TemplateGenerator::new(BLOCKCHAIN_ADDRESS_TEMPLATE)
             .write_to(blockchain_address_rs_path)
             .with_default_patterns(&self.coin)
-            .replace_all()?;
+            .write()?;
 
         TemplateGenerator::new(BLOCKCHAIN_SIGNER_TEMPLATE)
             .write_to(blockchain_signer_rs_path)
             .with_default_patterns(&self.coin)
-            .replace_all()?;
+            .write()?;
 
         Ok(blockchain_path)
     }

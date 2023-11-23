@@ -89,7 +89,7 @@ impl CoinIntegrationTests {
         TemplateGenerator::new(ADDRESS_TESTS_TEMPLATE)
             .write_to(address_tests_path)
             .with_default_patterns(&self.coin)
-            .replace_all()
+            .write()
     }
 
     fn create_compile_tests(&self) -> Result<()> {
@@ -101,7 +101,7 @@ impl CoinIntegrationTests {
         TemplateGenerator::new(COMPILE_TESTS_TEMPLATE)
             .write_to(compile_tests_path)
             .with_default_patterns(&self.coin)
-            .replace_all()
+            .write()
     }
 
     fn create_sign_tests(&self) -> Result<()> {
@@ -113,7 +113,7 @@ impl CoinIntegrationTests {
         TemplateGenerator::new(SIGN_TESTS_TEMPLATE)
             .write_to(sign_tests_path)
             .with_default_patterns(&self.coin)
-            .replace_all()
+            .write()
     }
 
     fn create_chain_tests_mod_rs(&self) -> Result<()> {
@@ -122,7 +122,7 @@ impl CoinIntegrationTests {
         TemplateGenerator::new(MOD_TESTS_TEMPLATE)
             .write_to(blockchain_tests_mod_path)
             .with_default_patterns(&self.coin)
-            .replace_all()
+            .write()
     }
 
     fn list_blockchain_in_chains_mod(&self) -> Result<()> {

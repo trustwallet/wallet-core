@@ -8,6 +8,7 @@ use crate::codegen::cpp::blockchain_registry::BlockchainDispatcher;
 use crate::codegen::cpp::coin_entry::BlockchainImpl;
 use crate::codegen::cpp::tw_blockchain::TWBlockchain;
 use crate::codegen::cpp::tw_coin_type::TWCoinType;
+use crate::codegen::cpp::tw_coin_type_tests_generator::TWCoinTypeTestsGenerator;
 use crate::registry::CoinItem;
 use crate::Result;
 
@@ -20,7 +21,10 @@ pub fn new_blockchain(coin: CoinItem) -> Result<()> {
     // Add the new blockchain type to the `TWBlockchain` enum.
     TWBlockchain::new(coin.clone()).add_blockchain_type_variant()?;
     // Add the blockchain entry to the dispatcher `Coin.cpp`.
-    BlockchainDispatcher::new(coin).add()?;
+    BlockchainDispatcher::new(coin.clone()).add()?;
+
+    // Add integration tests.
+    TWCoinTypeTestsGenerator::new(coin).generate()?;
 
     Ok(())
 }

@@ -36,7 +36,7 @@ impl ProtoGenerator {
         TemplateGenerator::new(PROTO_TEMPLATE)
             .write_to(proto_path)
             .with_default_patterns(&self.coin)
-            .replace_all()?;
+            .write()?;
 
         Ok(())
     }

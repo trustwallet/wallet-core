@@ -42,7 +42,7 @@ impl BlockchainImpl {
         TemplateGenerator::new(ENTRY_HEADER_TEMPLATE)
             .write_to(entry_header_path.clone())
             .with_default_patterns(&self.coin)
-            .replace_all()?;
+            .write()?;
 
         Ok(entry_header_path)
     }
