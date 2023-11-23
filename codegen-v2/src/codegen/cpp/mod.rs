@@ -7,6 +7,7 @@
 use std::env;
 use std::path::PathBuf;
 
+pub mod blockchain_registry;
 pub mod coin_entry;
 pub mod new_blockchain;
 pub mod tw_blockchain;

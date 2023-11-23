@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::codegen::cpp::blockchain_registry::BlockchainDispatcher;
 use crate::codegen::cpp::coin_entry::BlockchainImpl;
 use crate::codegen::cpp::tw_blockchain::TWBlockchain;
 use crate::codegen::cpp::tw_coin_type::TWCoinType;
@@ -18,6 +19,8 @@ pub fn new_blockchain(coin: CoinItem) -> Result<()> {
     TWCoinType::new(coin.clone()).add_coin_type_variant()?;
     // Add the new blockchain type to the `TWBlockchain` enum.
     TWBlockchain::new(coin.clone()).add_blockchain_type_variant()?;
+    // Add the blockchain entry to the dispatcher `Coin.cpp`.
+    BlockchainDispatcher::new(coin).add()?;
 
     Ok(())
 }

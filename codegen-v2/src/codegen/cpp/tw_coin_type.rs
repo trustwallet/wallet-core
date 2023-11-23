@@ -10,12 +10,13 @@ use crate::utils::FileContent;
 use crate::Result;
 use std::path::PathBuf;
 
-const TW_COIN_TYPE_END: &str = "end_of_tw_coin_type";
+const TW_COIN_TYPE_END: &str = "end_of_tw_coin_type_marker_do_not_modify";
 
 pub fn tw_coin_type_path() -> PathBuf {
     cpp_include_directory().join("TWCoinType.h")
 }
 
+/// Represents `TWCoinType.h`.
 pub struct TWCoinType {
     coin: CoinItem,
 }

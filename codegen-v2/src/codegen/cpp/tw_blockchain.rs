@@ -17,6 +17,7 @@ pub fn tw_blockchain_path() -> PathBuf {
     cpp_include_directory().join("TWBlockchain.h")
 }
 
+/// Represents `TWBlockchain.h`.
 pub struct TWBlockchain {
     coin: CoinItem,
 }
@@ -27,7 +28,7 @@ impl TWBlockchain {
     }
 
     pub fn add_blockchain_type_variant(self) -> Result<()> {
-        let coin_type = self.coin.coin_type();
+        let coin_type = self.coin.blockchain_type();
 
         let mut tw_blockchain_type_rs = FileContent::read(tw_blockchain_path())?;
 
