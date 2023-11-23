@@ -1,5 +1,5 @@
 [package]
-name = "{tw_crate_name}"
+name = "{TW_CRATE_NAME}"
 version = "0.1.0"
 edition = "2021"
 

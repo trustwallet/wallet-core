@@ -7,7 +7,7 @@
 use crate::codegen::cpp::cpp_source_directory;
 use crate::codegen::template_generator::TemplateGenerator;
 use crate::registry::CoinItem;
-use crate::{current_year, Error, Result};
+use crate::{Error, Result};
 use std::path::PathBuf;
 use std::{fs, io};
 
@@ -41,8 +41,7 @@ impl BlockchainImpl {
 
         TemplateGenerator::new(ENTRY_HEADER_TEMPLATE)
             .write_to(entry_header_path.clone())
-            .add_pattern("{YEAR}", current_year())
-            .add_pattern("{BLOCKCHAIN}", self.coin.blockchain_type())
+            .with_default_patterns(&self.coin)
             .replace_all()?;
 
         Ok(entry_header_path)

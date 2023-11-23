@@ -9,7 +9,7 @@ use crate::codegen::template_generator::TemplateGenerator;
 use crate::coin_id::CoinId;
 use crate::registry::CoinItem;
 use crate::utils::FileContent;
-use crate::{current_year, Result};
+use crate::Result;
 use std::fs;
 use std::path::PathBuf;
 
@@ -88,9 +88,7 @@ impl CoinIntegrationTests {
 
         TemplateGenerator::new(ADDRESS_TESTS_TEMPLATE)
             .write_to(address_tests_path)
-            .add_pattern("{YEAR}", current_year())
-            .add_pattern("{COIN_ID}", coin_id)
-            .add_pattern("{COIN_TYPE}", self.coin.coin_type())
+            .with_default_patterns(&self.coin)
             .replace_all()
     }
 
@@ -102,8 +100,7 @@ impl CoinIntegrationTests {
 
         TemplateGenerator::new(COMPILE_TESTS_TEMPLATE)
             .write_to(compile_tests_path)
-            .add_pattern("{YEAR}", current_year())
-            .add_pattern("{COIN_ID}", coin_id)
+            .with_default_patterns(&self.coin)
             .replace_all()
     }
 
@@ -115,19 +112,16 @@ impl CoinIntegrationTests {
 
         TemplateGenerator::new(SIGN_TESTS_TEMPLATE)
             .write_to(sign_tests_path)
-            .add_pattern("{YEAR}", current_year())
-            .add_pattern("{COIN_ID}", coin_id)
+            .with_default_patterns(&self.coin)
             .replace_all()
     }
 
     fn create_chain_tests_mod_rs(&self) -> Result<()> {
-        let coin_id = self.coin.id.as_str();
         let blockchain_tests_mod_path = self.coin_tests_directory().join("mod.rs");
 
         TemplateGenerator::new(MOD_TESTS_TEMPLATE)
             .write_to(blockchain_tests_mod_path)
-            .add_pattern("{YEAR}", current_year())
-            .add_pattern("{COIN_ID}", coin_id)
+            .with_default_patterns(&self.coin)
             .replace_all()
     }
 

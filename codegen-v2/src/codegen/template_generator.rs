@@ -4,7 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::{Error, Result};
+use crate::registry::CoinItem;
+use crate::{current_year, Error, Result};
 use std::fs;
 use std::path::PathBuf;
 
@@ -28,6 +29,15 @@ impl TemplateGenerator {
     pub fn write_to(mut self, write_to: PathBuf) -> TemplateGenerator {
         self.write_to = Some(write_to);
         self
+    }
+
+    /// Use default patterns.
+    pub fn with_default_patterns(self, coin: &CoinItem) -> TemplateGenerator {
+        self.add_pattern("{YEAR}", current_year())
+            .add_pattern("{BLOCKCHAIN}", coin.blockchain_type())
+            .add_pattern("{TW_CRATE_NAME}", coin.id.to_tw_crate_name())
+            .add_pattern("{COIN_ID}", coin.id.as_str())
+            .add_pattern("{COIN_TYPE}", coin.coin_type())
     }
 
     pub fn add_pattern<K: ToString, V: ToString>(

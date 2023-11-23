@@ -8,7 +8,7 @@ use crate::codegen::rust::chains_directory;
 use crate::codegen::template_generator::TemplateGenerator;
 use crate::coin_id::CoinId;
 use crate::registry::CoinItem;
-use crate::{current_year, Error, Result};
+use crate::{Error, Result};
 use std::path::PathBuf;
 use std::{fs, io};
 
@@ -45,9 +45,6 @@ impl CoinCrate {
         let blockchain_address_rs_path = blockchain_src_path.join("address.rs");
         let blockchain_signer_rs_path = blockchain_src_path.join("signer.rs");
 
-        let tw_crate_name = self.coin.id.to_tw_crate_name();
-        let blockchain_name = self.coin.blockchain_type();
-
         if blockchain_path.exists() {
             return Err(Error::IoError(io::Error::new(
                 io::ErrorKind::AlreadyExists,
@@ -60,37 +57,32 @@ impl CoinCrate {
 
         TemplateGenerator::new(BLOCKCHAIN_MANIFEST_TEMPLATE)
             .write_to(blockchain_toml_path)
-            .add_pattern("{tw_crate_name}", tw_crate_name)
+            .with_default_patterns(&self.coin)
             .replace_all()?;
 
         TemplateGenerator::new(BLOCKCHAIN_LIB_TEMPLATE)
             .write_to(blockchain_lib_rs_path)
-            .add_pattern("{YEAR}", current_year())
-            .add_pattern("{BLOCKCHAIN}", &blockchain_name)
+            .with_default_patterns(&self.coin)
             .replace_all()?;
 
         TemplateGenerator::new(BLOCKCHAIN_ENTRY_TEMPLATE)
             .write_to(blockchain_entry_path)
-            .add_pattern("{YEAR}", current_year())
-            .add_pattern("{BLOCKCHAIN}", &blockchain_name)
+            .with_default_patterns(&self.coin)
             .replace_all()?;
 
         TemplateGenerator::new(BLOCKCHAIN_COMPILER_TEMPLATE)
             .write_to(blockchain_compiler_path)
-            .add_pattern("{YEAR}", current_year())
-            .add_pattern("{BLOCKCHAIN}", &blockchain_name)
+            .with_default_patterns(&self.coin)
             .replace_all()?;
 
         TemplateGenerator::new(BLOCKCHAIN_ADDRESS_TEMPLATE)
             .write_to(blockchain_address_rs_path)
-            .add_pattern("{YEAR}", current_year())
-            .add_pattern("{BLOCKCHAIN}", &blockchain_name)
+            .with_default_patterns(&self.coin)
             .replace_all()?;
 
         TemplateGenerator::new(BLOCKCHAIN_SIGNER_TEMPLATE)
             .write_to(blockchain_signer_rs_path)
-            .add_pattern("{YEAR}", current_year())
-            .add_pattern("{BLOCKCHAIN}", blockchain_name)
+            .with_default_patterns(&self.coin)
             .replace_all()?;
 
         Ok(blockchain_path)

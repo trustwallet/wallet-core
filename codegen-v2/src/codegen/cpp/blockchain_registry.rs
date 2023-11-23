@@ -7,7 +7,7 @@
 use crate::codegen::cpp::cpp_source_directory;
 use crate::registry::CoinItem;
 use crate::utils::FileContent;
-use crate::{Error, Result};
+use crate::Result;
 use std::path::PathBuf;
 
 const COIN_INCLUDES_END: &str = "end_of_coin_includes_marker_do_not_modify";
