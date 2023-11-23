@@ -116,7 +116,7 @@ def generate_skeleton(coin_id, mode)
 
 
     insert_coin_type(coin, mode)
-    if (mode == "")
+    if (mode != "evm")
         insert_coin_entry(coin)
 
         generate_file("newcoin/Address.h.erb", "src/#{name}", "Address.h", coin)
@@ -135,10 +135,6 @@ def generate_skeleton(coin_id, mode)
         generate_file("newcoin/AddressTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Address.kt", coin)
         generate_file("newcoin/SignerTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Signer.kt", coin)
         generate_file("newcoin/Tests.swift.erb", "swift/Tests/Blockchains", "#{name}Tests.swift", coin)
-    end
-
-    if (mode == "tests")
-
     end
 
     coin_test_gen.generate_coin_test_file(coin, 'TWCoinTypeTests.cpp.erb', true)
