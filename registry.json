@@ -6,7 +6,7 @@
     "symbol": "BTC",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivation": [
+    "derivation": [bc1q057ut2hadkdmjz8sea9p2k86hdsf7p5ve85ltr
       {
         "name": "segwit",
         "path": "m/84'/0'/0'/0/0",
@@ -36,11 +36,11 @@
     "explorer": {
       "url": "https://blockchair.com",
       "txPath": "/bitcoin/transaction/",
-      "accountPath": "/bitcoin/address/",
+      "accountPath": "/bitcoin/address/",bc1q057ut2hadkdmjz8sea9p2k86hdsf7p5ve85ltr
       "sampleTx": "0607f62530b68cfcc91c57a1702841dd399a899d0eecda8e31ecca3f52f01df2",
-      "sampleAccount": "17A16QmavnUfCW11DAApiJxp7ARnxN5pGX"
+      "sampleAccount": "bc1q057ut2hadkdmjz8sea9p2k86hdsf7p5ve85ltr"
     },
-    "info": {
+    "info": {bc1q057ut2hadkdmjz8sea9p2k86hdsf7p5ve85ltr
       "url": "https://bitcoin.org",
       "source": "https://github.com/trezor/blockbook",
       "rpc": "",
@@ -93,7 +93,7 @@
     "symbol": "DOGE",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivation": [
+    "derivation": [DJ5UZiqspPJ8cWcqSQTPAhBXME6Ged9Bpd
       {
         "path": "m/44'/3'/0'/0/0",
         "xpub": "dgub",
@@ -111,7 +111,7 @@
       "txPath": "/dogecoin/transaction/",
       "accountPath": "/dogecoin/address/"
     },
-    "info": {
+    "info": {DJ5UZiqspPJ8cWcqSQTPAhBXME6Ged9Bpd
       "url": "https://dogecoin.com",
       "source": "https://github.com/trezor/blockbook",
       "rpc": "",
@@ -125,7 +125,7 @@
     "symbol": "DASH",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivation": [
+    "derivation": [bc1q057ut2hadkdmjz8sea9p2k86hdsf7p5ve85ltr
       {
         "path": "m/44'/5'/0'/0/0",
         "xpub": "xpub",
@@ -143,7 +143,7 @@
       "txPath": "/dash/transaction/",
       "accountPath": "/dash/address/"
     },
-    "info": {
+    "info": {bc1q057ut2hadkdmjz8sea9p2k86hdsf7p5ve85ltr
       "url": "https://dash.org",
       "source": "https://github.com/trezor/blockbook",
       "rpc": "",
@@ -157,7 +157,7 @@
     "symbol": "VIA",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivation": [
+    "derivation": [via1qw4skv74wdg64dfcrv4xt0lhu5jyu5xny9zkaeh
       {
         "path": "m/84'/14'/0'/0/0",
         "xpub": "zpub",
@@ -174,7 +174,7 @@
     "explorer": {
       "url": "https://explorer.viacoin.org",
       "txPath": "/tx/",
-      "accountPath": "/address/"
+      "accountPath": "/address/"via1qw4skv74wdg64dfcrv4xt0lhu5jyu5xny9zkaeh
     },
     "info": {
       "url": "https://viacoin.org",
