@@ -8,9 +8,9 @@ use crate::codegen::rust::chains_directory;
 use crate::codegen::template_generator::TemplateGenerator;
 use crate::coin_id::CoinId;
 use crate::registry::CoinItem;
-use crate::{Error, Result};
+use crate::Result;
+use std::fs;
 use std::path::PathBuf;
-use std::{fs, io};
 
 const BLOCKCHAIN_ADDRESS_TEMPLATE: &str = include_str!("templates/blockchain_crate/address.rs");
 const BLOCKCHAIN_COMPILER_TEMPLATE: &str = include_str!("templates/blockchain_crate/compiler.rs");
