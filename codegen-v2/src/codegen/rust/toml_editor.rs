@@ -37,8 +37,8 @@ impl Workspace {
 
         // Push the new member, sort and save the manifest.
 
-        let relative_path_to_crate_decorated = Value::from(relative_path_to_crate.to_string())
-            .decorated(NEW_LINE_TAB_DECORATOR, NO_DECORATOR);
+        let relative_path_to_crate_decorated =
+            Value::from(relative_path_to_crate).decorated(NEW_LINE_TAB_DECORATOR, NO_DECORATOR);
 
         members.push_formatted(relative_path_to_crate_decorated);
         members.sort_by(|x, y| x.as_str().cmp(&y.as_str()));
@@ -73,7 +73,7 @@ impl Dependencies {
         new_member.insert("path", relative_path_to_crate.into());
 
         // Push the new member, sort and save the manifest.
-        dependencies.insert(dep_name, Item::Value(Value::InlineTable(new_member).into()));
+        dependencies.insert(dep_name, Item::Value(Value::InlineTable(new_member)));
         dependencies.sort_values();
 
         fs::write(self.path_to_toml, manifest.to_string())?;

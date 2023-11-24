@@ -74,3 +74,18 @@ jobs:
       - name: Gather and check Rust code coverage
         run: |
           tools/check-coverage rust/coverage.stats rust/coverage.info
+
+      # Generate files for a blockchain in the end of the pipeline.
+      # Please note the blockchain should not be implemented in Rust at the moment of running this step,
+      # otherwise consider either generate files for another blockchain or remove this step at all.
+      - name: Test codegen-v2 new-blockchain-rust
+        run: |
+          cargo run -- new-blockchain-rust iotex
+        working-directory: codegen-v2
+
+      # Check if `new-blockchain-rust` command has generated files that do not break project compilation.
+      - name: Check Rust compiles
+        run: |
+          cargo check --tests
+        working-directory: rust
+

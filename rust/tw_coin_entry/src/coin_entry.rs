@@ -26,6 +26,13 @@ pub trait CoinAddress: fmt::Display {
     fn data(&self) -> Data;
 }
 
+/// The main coin entry trait. It is responsible for address management and the transaction signing.
+///
+/// # Maintaining
+///
+/// Please sync them with the code generator template if there is need to make any changes in this trait
+/// (e.g adding/deleting a method or an associated type):
+/// https://github.com/trustwallet/wallet-core/blob/master/codegen-v2/src/codegen/rust/templates/blockchain_crate/entry.rs
 pub trait CoinEntry {
     type AddressPrefix: Prefix;
     type Address: CoinAddress;

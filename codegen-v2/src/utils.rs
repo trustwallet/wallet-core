@@ -31,6 +31,28 @@ impl FileContent {
         read_lines(&path).map(|lines| FileContent { path, lines })
     }
 
+    pub fn find_region_with_prefix(&mut self, prefix: &str) -> Result<FileRegion<'_>> {
+        // Find the first line that starts with the `prefix`.
+        let region_starts_at = self
+            .lines
+            .iter()
+            .position(|line| line.starts_with(prefix))
+            .ok_or_else(|| Error::io_error_other(format!("Cannot find the `{prefix}` region")))?;
+
+        // Find the last line that starts with the `prefix`.
+        let region_ends_at = self
+            .lines
+            .iter()
+            .rposition(|line| line.starts_with(prefix))
+            .ok_or_else(|| Error::io_error_other(format!("Cannot find the `{prefix}` region")))?;
+
+        Ok(FileRegion {
+            lines: &mut self.lines,
+            region_starts_at,
+            region_ends_at,
+        })
+    }
+
     pub fn find_region_with_comments(
         &mut self,
         start_comment: &str,
@@ -74,16 +96,12 @@ impl FileContent {
     where
         F: Fn(&str) -> bool,
     {
-        let line_idx = self
-            .lines
-            .iter()
-            .rposition(|line| f(&line))
-            .ok_or_else(|| {
-                Error::io_error_other(format!(
-                    "{:?} file does not contain a required pattern",
-                    self.path
-                ))
-            })?;
+        let line_idx = self.lines.iter().rposition(|line| f(line)).ok_or_else(|| {
+            Error::io_error_other(format!(
+                "{:?} file does not contain a required pattern",
+                self.path
+            ))
+        })?;
         Ok(LinePointer {
             lines: &mut self.lines,
             line_idx,
@@ -104,10 +122,15 @@ pub struct FileRegion<'a> {
 impl<'a> FileRegion<'a> {
     pub fn push_line(&mut self, line: String) {
         self.lines.insert(self.region_ends_at + 1, line);
+        self.region_ends_at += 1;
     }
 
     pub fn sort(&mut self) {
-        self.lines[self.region_starts_at..self.region_ends_at].sort()
+        self.lines[self.region_starts_at..=self.region_ends_at].sort()
+    }
+
+    pub fn count_lines(&self) -> usize {
+        self.region_ends_at - self.region_starts_at
     }
 }
 
@@ -117,6 +140,19 @@ pub struct LinePointer<'a> {
 }
 
 impl<'a> LinePointer<'a> {
+    /// Please note that the line pointer will be shifted to the same line on which it pointed before.
+    pub fn push_line_before(&mut self, line: String) {
+        self.lines.insert(self.line_idx, line);
+        self.line_idx += 1;
+    }
+
+    pub fn push_paragraph_before(&mut self, paragraph: String) {
+        for line in paragraph.split("\n") {
+            self.push_line_before(line.to_string());
+        }
+    }
+
+    /// Please note that the line pointer will not be shifted to the pushed element.
     pub fn push_line_after(&mut self, line: String) {
         self.lines.insert(self.line_idx + 1, line);
     }

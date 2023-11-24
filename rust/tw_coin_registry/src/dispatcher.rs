@@ -47,9 +47,9 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::NativeEvmos => Ok(&NATIVE_EVMOS),
         BlockchainType::NativeInjective => Ok(&NATIVE_INJECTIVE),
         BlockchainType::Ronin => Ok(&RONIN),
-        BlockchainType::Unsupported => Err(RegistryError::Unsupported),
         BlockchainType::Thorchain => Ok(&THORCHAIN),
         // end_of_blockchain_dispatcher - USED TO GENERATE CODE
+        BlockchainType::Unsupported => Err(RegistryError::Unsupported),
     }
 }
 

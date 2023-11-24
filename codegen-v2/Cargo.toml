@@ -12,6 +12,7 @@ name = "parser"
 path = "src/main.rs"
 
 [dependencies]
+aho-corasick = "1.1.2"
 convert_case = "0.6.0"
 pathdiff = "0.2.1"
 serde = { version = "1.0.159", features = ["derive"] }

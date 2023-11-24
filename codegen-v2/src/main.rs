@@ -4,9 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use libparser::codegen::rust::new_blockchain::new_blockchain;
 use libparser::codegen::swift::RenderIntput;
+use libparser::codegen::{cpp, proto, rust};
+use libparser::coin_id::CoinId;
 use libparser::manifest::parse_dir;
+use libparser::registry::read_coin_from_registry;
 use libparser::{Error, Result};
 use std::fs::read_to_string;
 
@@ -18,21 +20,45 @@ fn main() -> Result<()> {
     }
 
     match args[1].as_str() {
+        "new-blockchain-rust" => new_blockchain_rust(&args[2..]),
+        "new-blockchain" => new_blockchain(&args[2..]),
+        "new-evmchain" => new_evmchain(&args[2..]),
         "swift" => generate_swift_bindings(),
-        "rust" => generate_rust(&args[2..]),
         _ => Err(Error::InvalidCommand),
     }
 }
 
-fn generate_rust(args: &[String]) -> Result<()> {
-    if args.len() < 2 {
-        return Err(Error::InvalidCommand);
-    }
+fn new_blockchain_rust(args: &[String]) -> Result<()> {
+    let coin_str = args.iter().next().ok_or_else(|| Error::InvalidCommand)?;
+    let coin_id = CoinId::new(coin_str.clone())?;
+    let coin_item = read_coin_from_registry(&coin_id)?;
 
-    match args[0].as_str() {
-        "new-blockchain" => new_blockchain(&args[1]),
-        _ => Err(Error::InvalidCommand),
-    }
+    rust::new_blockchain::new_blockchain(&coin_item)?;
+
+    Ok(())
+}
+
+fn new_blockchain(args: &[String]) -> Result<()> {
+    let coin_str = args.iter().next().ok_or_else(|| Error::InvalidCommand)?;
+    let coin_id = CoinId::new(coin_str.clone())?;
+    let coin_item = read_coin_from_registry(&coin_id)?;
+
+    proto::new_blockchain::new_blockchain(&coin_item)?;
+    rust::new_blockchain::new_blockchain(&coin_item)?;
+    cpp::new_blockchain::new_blockchain(&coin_item)?;
+
+    Ok(())
+}
+
+fn new_evmchain(args: &[String]) -> Result<()> {
+    let coin_str = args.iter().next().ok_or_else(|| Error::InvalidCommand)?;
+    let coin_id = CoinId::new(coin_str.clone())?;
+    let coin_item = read_coin_from_registry(&coin_id)?;
+
+    rust::new_evmchain::new_evmchain(&coin_item)?;
+    cpp::new_evmchain::new_evmchain(&coin_item)?;
+
+    Ok(())
 }
 
 fn generate_swift_bindings() -> Result<()> {

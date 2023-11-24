@@ -4,12 +4,19 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::codegen::rust::coin_id::CoinId;
-use crate::codegen::rust::{rs_header, tw_any_coin_directory, CoinItem};
+use crate::codegen::rust::tw_any_coin_directory;
+use crate::codegen::template_generator::TemplateGenerator;
+use crate::coin_id::CoinId;
+use crate::registry::CoinItem;
 use crate::utils::FileContent;
-use crate::{Error, Result};
+use crate::Result;
 use std::fs;
 use std::path::PathBuf;
+
+const ADDRESS_TESTS_TEMPLATE: &str = include_str!("templates/integration_tests/address_tests.rs");
+const COMPILE_TESTS_TEMPLATE: &str = include_str!("templates/integration_tests/compile_tests.rs");
+const MOD_TESTS_TEMPLATE: &str = include_str!("templates/integration_tests/mod.rs");
+const SIGN_TESTS_TEMPLATE: &str = include_str!("templates/integration_tests/sign_tests.rs");
 
 pub fn chains_integration_tests_directory() -> PathBuf {
     tw_any_coin_directory().join("tests").join("chains")
@@ -17,6 +24,12 @@ pub fn chains_integration_tests_directory() -> PathBuf {
 
 pub fn coin_integration_tests_directory(id: &CoinId) -> PathBuf {
     chains_integration_tests_directory().join(id.as_str())
+}
+
+pub fn coin_address_derivation_test_path() -> PathBuf {
+    tw_any_coin_directory()
+        .join("tests")
+        .join("coin_address_derivation_test.rs")
 }
 
 pub struct CoinIntegrationTests {
@@ -38,6 +51,7 @@ impl CoinIntegrationTests {
 
         self.list_blockchain_in_chains_mod()?;
         self.create_address_tests()?;
+        self.create_compile_tests()?;
         self.create_sign_tests()?;
         self.create_chain_tests_mod_rs()?;
 
@@ -49,71 +63,48 @@ impl CoinIntegrationTests {
     }
 
     fn create_address_tests(&self) -> Result<()> {
-        let header = rs_header();
-        let chain_id = self.coin.id.as_str();
+        let coin_id = self.coin.id.as_str();
         let address_tests_path = self
             .coin_tests_directory()
-            .join(format!("{chain_id}_address.rs"));
+            .join(format!("{coin_id}_address.rs"));
 
-        let address_tests_rs = format!(
-            r#"{header}
+        TemplateGenerator::new(ADDRESS_TESTS_TEMPLATE)
+            .write_to(address_tests_path)
+            .with_default_patterns(&self.coin)
+            .write()
+    }
 
-#[test]
-fn test_{chain_id}_address_normalization() {{
-    todo!()
-}}
+    fn create_compile_tests(&self) -> Result<()> {
+        let coin_id = self.coin.id.as_str();
+        let compile_tests_path = self
+            .coin_tests_directory()
+            .join(format!("{coin_id}_compile.rs"));
 
-#[test]
-fn test_{chain_id}_address_is_valid() {{
-    todo!()
-}}
-
-#[test]
-fn test_{chain_id}_address_invalid() {{
-    todo!()
-}}
-
-#[test]
-fn test_{chain_id}_address_get_data() {{
-    todo!()
-}}
-"#
-        );
-        fs::write(address_tests_path, address_tests_rs).map_err(Error::from)
+        TemplateGenerator::new(COMPILE_TESTS_TEMPLATE)
+            .write_to(compile_tests_path)
+            .with_default_patterns(&self.coin)
+            .write()
     }
 
     fn create_sign_tests(&self) -> Result<()> {
-        let header = rs_header();
-        let chain_id = self.coin.id.as_str();
+        let coin_id = self.coin.id.as_str();
         let sign_tests_path = self
             .coin_tests_directory()
-            .join(format!("{chain_id}_sign.rs"));
+            .join(format!("{coin_id}_sign.rs"));
 
-        let sign_tests_rs = format!(
-            r#"{header}
-
-#[test]
-fn test_{chain_id}_sign() {{
-    todo!()
-}}
-"#
-        );
-        fs::write(sign_tests_path, sign_tests_rs).map_err(Error::from)
+        TemplateGenerator::new(SIGN_TESTS_TEMPLATE)
+            .write_to(sign_tests_path)
+            .with_default_patterns(&self.coin)
+            .write()
     }
 
     fn create_chain_tests_mod_rs(&self) -> Result<()> {
-        let header = rs_header();
-        let chain_id = self.coin.id.as_str();
         let blockchain_tests_mod_path = self.coin_tests_directory().join("mod.rs");
 
-        let blockchain_mod_rs = format!(
-            r#"{header}
-
-mod {chain_id}_address;
-mod {chain_id}_sign;
-"#
-        );
-        fs::write(blockchain_tests_mod_path, blockchain_mod_rs).map_err(Error::from)
+        TemplateGenerator::new(MOD_TESTS_TEMPLATE)
+            .write_to(blockchain_tests_mod_path)
+            .with_default_patterns(&self.coin)
+            .write()
     }
 
     fn list_blockchain_in_chains_mod(&self) -> Result<()> {
@@ -124,8 +115,9 @@ mod {chain_id}_sign;
 
         {
             let mod_pattern = "mod ";
-            let mut last_mod = chains_mod_rs.rfind_line(|line| line.starts_with(mod_pattern))?;
-            last_mod.push_line_after(format!("mod {chain_id};"));
+            let mut mod_region = chains_mod_rs.find_region_with_prefix(mod_pattern)?;
+            mod_region.push_line(format!("mod {chain_id};"));
+            mod_region.sort();
         }
 
         chains_mod_rs.write()

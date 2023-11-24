@@ -4,8 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub mod cpp;
-pub mod proto;
-pub mod rust;
-pub mod swift;
-pub mod template_generator;
+use std::env;
+use std::path::PathBuf;
+
+pub mod new_blockchain;
+pub mod proto_generator;
+
+pub fn proto_source_directory() -> PathBuf {
+    PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
+        .join("..")
+        .join("src")
+        .join("proto")
+}
