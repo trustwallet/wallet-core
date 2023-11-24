@@ -9,12 +9,15 @@ extern crate serde;
 
 use handlebars::{RenderError, TemplateError};
 use serde_yaml::Error as YamlError;
+use std::io;
 use std::io::Error as IoError;
+use toml_edit::TomlError;
 
 pub mod codegen;
 pub mod manifest;
 #[cfg(test)]
 mod tests;
+pub mod utils;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -25,7 +28,15 @@ pub enum Error {
     RenderError(RenderError),
     TemplateError(TemplateError),
     BadFormat(String),
+    RegistryError(String),
+    TomlFormat(String),
     InvalidCommand,
+}
+
+impl Error {
+    pub fn io_error_other(err: String) -> Error {
+        Error::IoError(IoError::new(io::ErrorKind::Other, err))
+    }
 }
 
 impl From<IoError> for Error {
@@ -49,6 +60,12 @@ impl From<RenderError> for Error {
 impl From<TemplateError> for Error {
     fn from(err: TemplateError) -> Self {
         Error::TemplateError(err)
+    }
+}
+
+impl From<TomlError> for Error {
+    fn from(err: TomlError) -> Self {
+        Error::TomlFormat(err.to_string())
     }
 }
 

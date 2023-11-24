@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-mod test_cases;
-mod thorchain_address;
-mod thorchain_compile;
-mod thorchain_sign;
+mod ethereum_address;
+mod ethereum_compile;
+mod ethereum_message_sign;
+mod ethereum_sign;

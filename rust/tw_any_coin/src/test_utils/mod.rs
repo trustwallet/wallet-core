@@ -4,13 +4,4 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::ffi::tw_any_address::{tw_any_address_delete, TWAnyAddress};
-use tw_memory::test_utils::tw_wrapper::{TWWrapper, WithDestructor};
-
-pub type TWAnyAddressHelper = TWWrapper<TWAnyAddress>;
-
-impl WithDestructor for TWAnyAddress {
-    fn destructor() -> unsafe extern "C" fn(*mut Self) {
-        tw_any_address_delete
-    }
-}
+pub mod address_utils;

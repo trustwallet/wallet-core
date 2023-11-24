@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use libparser::codegen::rust::new_blockchain::new_blockchain;
 use libparser::codegen::swift::RenderIntput;
 use libparser::manifest::parse_dir;
 use libparser::{Error, Result};
@@ -18,6 +19,18 @@ fn main() -> Result<()> {
 
     match args[1].as_str() {
         "swift" => generate_swift_bindings(),
+        "rust" => generate_rust(&args[2..]),
+        _ => Err(Error::InvalidCommand),
+    }
+}
+
+fn generate_rust(args: &[String]) -> Result<()> {
+    if args.len() < 2 {
+        return Err(Error::InvalidCommand);
+    }
+
+    match args[0].as_str() {
+        "new-blockchain" => new_blockchain(&args[1]),
         _ => Err(Error::InvalidCommand),
     }
 }
