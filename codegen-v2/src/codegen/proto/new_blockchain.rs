@@ -9,5 +9,5 @@ use crate::registry::CoinItem;
 use crate::Result;
 
 pub fn new_blockchain(coin: &CoinItem) -> Result<()> {
-    ProtoGenerator::new(coin.clone()).generate()
+    ProtoGenerator::generate(coin)
 }

@@ -24,7 +24,7 @@ pub fn new_blockchain(coin: &CoinItem) -> Result<()> {
     // Add the new blockchain type to the `TWBlockchain` enum.
     TWBlockchainGenerator::generate_blockchain_type_variant(coin)?;
     // Add the blockchain entry to the dispatcher `Coin.cpp`.
-    BlockchainDispatcherGenerator::generate(coin)?;
+    BlockchainDispatcherGenerator::generate_new_blockchain_type_dispatching(coin)?;
 
     // Add integration tests.
     TWCoinTypeTestsGenerator::generate(coin)?;

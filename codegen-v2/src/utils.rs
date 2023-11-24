@@ -126,7 +126,7 @@ impl<'a> FileRegion<'a> {
     }
 
     pub fn sort(&mut self) {
-        self.lines[self.region_starts_at..self.region_ends_at].sort()
+        self.lines[self.region_starts_at..=self.region_ends_at].sort()
     }
 
     pub fn count_lines(&self) -> usize {

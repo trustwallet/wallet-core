@@ -115,8 +115,9 @@ impl CoinIntegrationTests {
 
         {
             let mod_pattern = "mod ";
-            let mut last_mod = chains_mod_rs.rfind_line(|line| line.starts_with(mod_pattern))?;
-            last_mod.push_line_after(format!("mod {chain_id};"));
+            let mut mod_region = chains_mod_rs.find_region_with_prefix(mod_pattern)?;
+            mod_region.push_line(format!("mod {chain_id};"));
+            mod_region.sort();
         }
 
         chains_mod_rs.write()

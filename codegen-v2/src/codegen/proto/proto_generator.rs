@@ -17,17 +17,11 @@ pub fn blockchain_proto_path(coin: &CoinItem) -> PathBuf {
     proto_source_directory().join(format!("{blockchain_type}.proto"))
 }
 
-pub struct ProtoGenerator {
-    coin: CoinItem,
-}
+pub struct ProtoGenerator;
 
 impl ProtoGenerator {
-    pub fn new(coin: CoinItem) -> ProtoGenerator {
-        ProtoGenerator { coin }
-    }
-
-    pub fn generate(self) -> Result<()> {
-        let proto_path = blockchain_proto_path(&self.coin);
+    pub fn generate(coin: &CoinItem) -> Result<()> {
+        let proto_path = blockchain_proto_path(coin);
 
         if proto_path.exists() {
             return Ok(());
@@ -35,7 +29,7 @@ impl ProtoGenerator {
 
         TemplateGenerator::new(PROTO_TEMPLATE)
             .write_to(proto_path)
-            .with_default_patterns(&self.coin)
+            .with_default_patterns(coin)
             .write()?;
 
         Ok(())

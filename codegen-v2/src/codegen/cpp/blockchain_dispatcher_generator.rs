@@ -23,7 +23,7 @@ fn dispatcher_coin_cpp_path() -> PathBuf {
 pub struct BlockchainDispatcherGenerator;
 
 impl BlockchainDispatcherGenerator {
-    pub fn generate(coin: &CoinItem) -> Result<()> {
+    pub fn generate_new_blockchain_type_dispatching(coin: &CoinItem) -> Result<()> {
         let mut file_content = FileContent::read(dispatcher_coin_cpp_path())?;
 
         Self::generate_include_of_blockchain_entry(coin, &mut file_content)?;
