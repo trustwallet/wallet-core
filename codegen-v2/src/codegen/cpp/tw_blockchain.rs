@@ -18,17 +18,11 @@ pub fn tw_blockchain_path() -> PathBuf {
 }
 
 /// Represents `TWBlockchain.h`.
-pub struct TWBlockchain {
-    coin: CoinItem,
-}
+pub struct TWBlockchainGenerator;
 
-impl TWBlockchain {
-    pub fn new(coin: CoinItem) -> TWBlockchain {
-        TWBlockchain { coin }
-    }
-
-    pub fn add_blockchain_type_variant(self) -> Result<()> {
-        let coin_type = self.coin.blockchain_type();
+impl TWBlockchainGenerator {
+    pub fn generate_blockchain_type_variant(coin: &CoinItem) -> Result<()> {
+        let coin_type = coin.blockchain_type();
 
         let mut tw_blockchain_type_rs = FileContent::read(tw_blockchain_path())?;
 

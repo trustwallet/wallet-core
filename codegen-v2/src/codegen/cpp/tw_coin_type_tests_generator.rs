@@ -17,17 +17,11 @@ pub fn tw_coin_type_tests_path(coin: &CoinItem) -> PathBuf {
     coin_integration_tests_directory(coin).join("TWCoinTypeTests.cpp")
 }
 
-pub struct TWCoinTypeTestsGenerator {
-    coin: CoinItem,
-}
+pub struct TWCoinTypeTestsGenerator;
 
 impl TWCoinTypeTestsGenerator {
-    pub fn new(coin: CoinItem) -> TWCoinTypeTestsGenerator {
-        TWCoinTypeTestsGenerator { coin }
-    }
-
-    pub fn generate(self) -> Result<()> {
-        let coin_tests_dir = coin_integration_tests_directory(&self.coin);
+    pub fn generate(coin: &CoinItem) -> Result<()> {
+        let coin_tests_dir = coin_integration_tests_directory(coin);
         let tw_coin_type_tests_path = coin_tests_dir.join("TWCoinTypeTests.cpp");
 
         fs::create_dir(coin_tests_dir)?;
@@ -37,7 +31,7 @@ impl TWCoinTypeTestsGenerator {
 
         TemplateGenerator::new(TW_COIN_TYPE_TESTS_TEMPLATE)
             .write_to(tw_coin_type_tests_path)
-            .with_default_patterns(&self.coin)
+            .with_default_patterns(coin)
             .write()?;
 
         Ok(())

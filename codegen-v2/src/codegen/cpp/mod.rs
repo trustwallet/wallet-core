@@ -8,15 +8,15 @@ use crate::registry::CoinItem;
 use std::env;
 use std::path::PathBuf;
 
-pub mod blockchain_registry;
-pub mod coin_entry;
+pub mod blockchain_dispatcher_generator;
+pub mod entry_generator;
 pub mod new_blockchain;
 pub mod new_evmchain;
 pub mod tw_any_address_tests_generator;
 pub mod tw_any_signer_tests_generator;
 pub mod tw_blockchain;
 pub mod tw_coin_address_derivation_tests_generator;
-pub mod tw_coin_type;
+pub mod tw_coin_type_generator;
 pub mod tw_coin_type_tests_generator;
 
 pub fn cpp_source_directory() -> PathBuf {

@@ -20,27 +20,24 @@ fn dispatcher_coin_cpp_path() -> PathBuf {
 }
 
 /// Represents `Coin.cpp`.
-pub struct BlockchainDispatcher {
-    coin: CoinItem,
-}
+pub struct BlockchainDispatcherGenerator;
 
-impl BlockchainDispatcher {
-    pub fn new(coin: CoinItem) -> BlockchainDispatcher {
-        BlockchainDispatcher { coin }
-    }
-
-    pub fn add(self) -> Result<()> {
+impl BlockchainDispatcherGenerator {
+    pub fn generate(coin: &CoinItem) -> Result<()> {
         let mut file_content = FileContent::read(dispatcher_coin_cpp_path())?;
 
-        self.add_include_of_blockchain_entry(&mut file_content)?;
-        self.add_blockchain_entry(&mut file_content)?;
-        self.add_blockchain_dispatcher(&mut file_content)?;
+        Self::generate_include_of_blockchain_entry(coin, &mut file_content)?;
+        Self::generate_blockchain_entry_constant(coin, &mut file_content)?;
+        Self::generate_blockchain_dispatcher_case(coin, &mut file_content)?;
 
         file_content.write()
     }
 
-    fn add_include_of_blockchain_entry(&self, file_content: &mut FileContent) -> Result<()> {
-        let blockchain_type = self.coin.blockchain_type();
+    fn generate_include_of_blockchain_entry(
+        coin: &CoinItem,
+        file_content: &mut FileContent,
+    ) -> Result<()> {
+        let blockchain_type = coin.blockchain_type();
 
         let mut line_marker = file_content.rfind_line(|line| line.contains(COIN_INCLUDES_END))?;
         line_marker.push_line_before(format!(r#"#include "{blockchain_type}/Entry.h""#));
@@ -48,8 +45,11 @@ impl BlockchainDispatcher {
         Ok(())
     }
 
-    fn add_blockchain_entry(&self, file_content: &mut FileContent) -> Result<()> {
-        let blockchain_type = self.coin.blockchain_type();
+    fn generate_blockchain_entry_constant(
+        coin: &CoinItem,
+        file_content: &mut FileContent,
+    ) -> Result<()> {
+        let blockchain_type = coin.blockchain_type();
 
         let mut entries_region =
             file_content.rfind_line(|line| line.contains(COIN_DISPATCHER_DECLARATIONS_END))?;
@@ -58,8 +58,11 @@ impl BlockchainDispatcher {
         Ok(())
     }
 
-    fn add_blockchain_dispatcher(&self, file_content: &mut FileContent) -> Result<()> {
-        let blockchain_type = self.coin.blockchain_type();
+    fn generate_blockchain_dispatcher_case(
+        coin: &CoinItem,
+        file_content: &mut FileContent,
+    ) -> Result<()> {
+        let blockchain_type = coin.blockchain_type();
 
         let mut entries_region =
             file_content.rfind_line(|line| line.contains(COIN_DISPATCHER_SWITCH_END))?;

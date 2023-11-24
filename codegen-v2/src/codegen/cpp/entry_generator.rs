@@ -17,17 +17,11 @@ pub fn coin_source_directory(coin: &CoinItem) -> PathBuf {
     cpp_source_directory().join(coin.blockchain_type())
 }
 
-pub struct BlockchainImpl {
-    coin: CoinItem,
-}
+pub struct EntryGenerator;
 
-impl BlockchainImpl {
-    pub fn new(coin: CoinItem) -> BlockchainImpl {
-        BlockchainImpl { coin }
-    }
-
-    pub fn create(self) -> Result<PathBuf> {
-        let blockchain_dir = coin_source_directory(&self.coin);
+impl EntryGenerator {
+    pub fn generate(coin: &CoinItem) -> Result<PathBuf> {
+        let blockchain_dir = coin_source_directory(coin);
         let entry_header_path = blockchain_dir.join("Entry.h");
 
         if blockchain_dir.exists() {
@@ -41,7 +35,7 @@ impl BlockchainImpl {
 
         TemplateGenerator::new(ENTRY_HEADER_TEMPLATE)
             .write_to(entry_header_path.clone())
-            .with_default_patterns(&self.coin)
+            .with_default_patterns(coin)
             .write()?;
 
         Ok(entry_header_path)

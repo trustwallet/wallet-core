@@ -5,17 +5,17 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::codegen::cpp::tw_coin_address_derivation_tests_generator::CoinAddressDerivationTestsGenerator;
-use crate::codegen::cpp::tw_coin_type::TWCoinType;
+use crate::codegen::cpp::tw_coin_type_generator::TWCoinTypeGenerator;
 use crate::codegen::cpp::tw_coin_type_tests_generator::TWCoinTypeTestsGenerator;
 use crate::registry::CoinItem;
 use crate::Result;
 
 pub fn new_evmchain(coin: &CoinItem) -> Result<()> {
     // Add the new coin type to the `TWCoinType` enum.
-    TWCoinType::new(coin.clone()).add_coin_type_variant()?;
+    TWCoinTypeGenerator::generate_coin_type_variant(coin)?;
 
     // Add integration tests.
-    TWCoinTypeTestsGenerator::new(coin.clone()).generate()?;
+    TWCoinTypeTestsGenerator::generate(coin)?;
     CoinAddressDerivationTestsGenerator::generate_new_evm_coin_type_case(coin)?;
 
     Ok(())

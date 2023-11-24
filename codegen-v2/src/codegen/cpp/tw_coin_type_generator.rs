@@ -17,18 +17,12 @@ pub fn tw_coin_type_path() -> PathBuf {
 }
 
 /// Represents `TWCoinType.h`.
-pub struct TWCoinType {
-    coin: CoinItem,
-}
+pub struct TWCoinTypeGenerator;
 
-impl TWCoinType {
-    pub fn new(coin: CoinItem) -> TWCoinType {
-        TWCoinType { coin }
-    }
-
-    pub fn add_coin_type_variant(self) -> Result<()> {
-        let coin_type = self.coin.coin_type();
-        let coin_id_number = self.coin.coin_id_number;
+impl TWCoinTypeGenerator {
+    pub fn generate_coin_type_variant(coin: &CoinItem) -> Result<()> {
+        let coin_type = coin.coin_type();
+        let coin_id_number = coin.coin_id_number;
 
         let mut tw_coin_type_rs = FileContent::read(tw_coin_type_path())?;
 
