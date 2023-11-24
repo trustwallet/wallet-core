@@ -20,8 +20,8 @@ pub fn tw_any_signer_tests_path(coin: &CoinItem) -> PathBuf {
 pub struct TWAnySignerTestsGenerator;
 
 impl TWAnySignerTestsGenerator {
-    pub fn generate(coin: CoinItem) -> Result<()> {
-        let coin_tests_dir = coin_integration_tests_directory(&coin);
+    pub fn generate(coin: &CoinItem) -> Result<()> {
+        let coin_tests_dir = coin_integration_tests_directory(coin);
         let tw_any_signer_tests_path = coin_tests_dir.join("TWAnySignerTests.cpp");
 
         fs::create_dir_all(coin_tests_dir)?;
@@ -31,7 +31,7 @@ impl TWAnySignerTestsGenerator {
 
         TemplateGenerator::new(TW_ANY_SIGNER_TESTS_TEMPLATE)
             .write_to(tw_any_signer_tests_path)
-            .with_default_patterns(&coin)
+            .with_default_patterns(coin)
             .write()?;
 
         Ok(())

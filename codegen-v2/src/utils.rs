@@ -122,6 +122,7 @@ pub struct FileRegion<'a> {
 impl<'a> FileRegion<'a> {
     pub fn push_line(&mut self, line: String) {
         self.lines.insert(self.region_ends_at + 1, line);
+        self.region_ends_at += 1;
     }
 
     pub fn sort(&mut self) {
@@ -139,10 +140,19 @@ pub struct LinePointer<'a> {
 }
 
 impl<'a> LinePointer<'a> {
+    /// Please note that the line pointer will be shifted to the same line on which it pointed before.
     pub fn push_line_before(&mut self, line: String) {
         self.lines.insert(self.line_idx, line);
+        self.line_idx += 1;
     }
 
+    pub fn push_paragraph_before(&mut self, paragraph: String) {
+        for line in paragraph.split("\n") {
+            self.push_line_before(line.to_string());
+        }
+    }
+
+    /// Please note that the line pointer will not be shifted to the pushed element.
     pub fn push_line_after(&mut self, line: String) {
         self.lines.insert(self.line_idx + 1, line);
     }
