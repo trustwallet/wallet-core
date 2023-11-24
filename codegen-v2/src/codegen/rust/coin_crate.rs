@@ -46,40 +46,47 @@ impl CoinCrate {
         let blockchain_signer_rs_path = blockchain_src_path.join("signer.rs");
 
         if blockchain_path.exists() {
-            return Err(Error::IoError(io::Error::new(
-                io::ErrorKind::AlreadyExists,
-                "blockchain already exists",
-            )));
+            let tw_crate_name = self.coin.id.to_tw_crate_name();
+            println!(
+                "[SKIP] '{tw_crate_name}' blockchain crate already exists: {blockchain_path:?}"
+            );
+            return Ok(blockchain_path);
         }
 
-        fs::create_dir(&blockchain_path)?;
-        fs::create_dir(&blockchain_src_path)?;
+        fs::create_dir_all(&blockchain_path)?;
+        fs::create_dir_all(&blockchain_src_path)?;
 
+        println!("[ADD] {blockchain_toml_path:?}");
         TemplateGenerator::new(BLOCKCHAIN_MANIFEST_TEMPLATE)
             .write_to(blockchain_toml_path)
             .with_default_patterns(&self.coin)
             .write()?;
 
+        println!("[ADD] {blockchain_lib_rs_path:?}");
         TemplateGenerator::new(BLOCKCHAIN_LIB_TEMPLATE)
             .write_to(blockchain_lib_rs_path)
             .with_default_patterns(&self.coin)
             .write()?;
 
+        println!("[ADD] {blockchain_entry_path:?}");
         TemplateGenerator::new(BLOCKCHAIN_ENTRY_TEMPLATE)
             .write_to(blockchain_entry_path)
             .with_default_patterns(&self.coin)
             .write()?;
 
+        println!("[ADD] {blockchain_compiler_path:?}");
         TemplateGenerator::new(BLOCKCHAIN_COMPILER_TEMPLATE)
             .write_to(blockchain_compiler_path)
             .with_default_patterns(&self.coin)
             .write()?;
 
+        println!("[ADD] {blockchain_address_rs_path:?}");
         TemplateGenerator::new(BLOCKCHAIN_ADDRESS_TEMPLATE)
             .write_to(blockchain_address_rs_path)
             .with_default_patterns(&self.coin)
             .write()?;
 
+        println!("[ADD] {blockchain_signer_rs_path:?}");
         TemplateGenerator::new(BLOCKCHAIN_SIGNER_TEMPLATE)
             .write_to(blockchain_signer_rs_path)
             .with_default_patterns(&self.coin)

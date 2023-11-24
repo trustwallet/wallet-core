@@ -27,9 +27,10 @@ pub struct CoinAddressDerivationTestsGenerator;
 impl CoinAddressDerivationTestsGenerator {
     pub fn generate_new_coin_type_case(coin: &CoinItem) -> Result<()> {
         let coin_type = coin.coin_type();
+        let test_path = coin_address_derivation_tests_path();
+        println!("[EDIT] {test_path:?}");
 
-        let mut coin_address_derivation_test_rs =
-            FileContent::read(coin_address_derivation_tests_path())?;
+        let mut coin_address_derivation_test_rs = FileContent::read(test_path)?;
 
         {
             let mut switch_case_region = coin_address_derivation_test_rs
@@ -50,9 +51,10 @@ r#"        case TWCoinType{coin_type}:
 
     pub fn generate_new_evm_coin_type_case(coin: &CoinItem) -> Result<()> {
         let coin_type = coin.coin_type();
+        let test_path = coin_address_derivation_tests_path();
+        println!("[EDIT] {test_path:?}");
 
-        let mut evm_address_derivation_test_rs =
-            FileContent::read(coin_address_derivation_tests_path())?;
+        let mut evm_address_derivation_test_rs = FileContent::read(test_path)?;
 
         {
             let mut switch_case_region = evm_address_derivation_test_rs

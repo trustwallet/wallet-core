@@ -117,6 +117,7 @@ def generate_mobile_tests(coin)
 end
 
 def generate_coin_type_tests(coin)
+    coin_test_gen = CoinTestGen.new()
     coin_test_gen.generate_coin_test_file(coin, 'TWCoinTypeTests.cpp.erb', true)
 end
 
@@ -132,8 +133,6 @@ def generate_skeleton(coin_id, mode)
     generator = CodeGenerator.new(entities: [entity], files: [file], output_folder: ".")
 
     @coins = coins
-
-    coin_test_gen = CoinTestGen.new()
 
     # Find coin in list of coins, by Id
     coinSelect = coins.select {|c| c['id'] == coin_id}

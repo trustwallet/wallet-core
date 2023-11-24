@@ -26,9 +26,11 @@ impl TWCoinTypeTestsGenerator {
 
         fs::create_dir(coin_tests_dir)?;
         if tw_coin_type_tests_path.exists() {
+            println!("[SKIP] {tw_coin_type_tests_path:?} already exists");
             return Ok(());
         }
 
+        println!("[ADD] {tw_coin_type_tests_path:?}");
         TemplateGenerator::new(TW_COIN_TYPE_TESTS_TEMPLATE)
             .write_to(tw_coin_type_tests_path)
             .with_default_patterns(coin)

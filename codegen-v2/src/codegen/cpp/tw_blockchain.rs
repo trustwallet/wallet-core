@@ -23,8 +23,10 @@ pub struct TWBlockchainGenerator;
 impl TWBlockchainGenerator {
     pub fn generate_blockchain_type_variant(coin: &CoinItem) -> Result<()> {
         let coin_type = coin.blockchain_type();
+        let tw_blockchain_type_path = tw_blockchain_path();
 
-        let mut tw_blockchain_type_rs = FileContent::read(tw_blockchain_path())?;
+        println!("[EDIT] {tw_blockchain_type_path:?}");
+        let mut tw_blockchain_type_rs = FileContent::read(tw_blockchain_type_path)?;
 
         {
             let mut enum_region =

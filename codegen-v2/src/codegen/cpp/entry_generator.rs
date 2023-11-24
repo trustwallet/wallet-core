@@ -25,14 +25,13 @@ impl EntryGenerator {
         let entry_header_path = blockchain_dir.join("Entry.h");
 
         if blockchain_dir.exists() {
-            return Err(Error::IoError(io::Error::new(
-                io::ErrorKind::AlreadyExists,
-                "blockchain already exists",
-            )));
+            println!("[SKIP] Entry file already exists: {blockchain_dir:?}");
+            return Ok(blockchain_dir);
         }
 
-        fs::create_dir(&blockchain_dir)?;
+        fs::create_dir_all(&blockchain_dir)?;
 
+        println!("[ADD] {entry_header_path:?}");
         TemplateGenerator::new(ENTRY_HEADER_TEMPLATE)
             .write_to(entry_header_path.clone())
             .with_default_patterns(coin)

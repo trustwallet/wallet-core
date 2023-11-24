@@ -27,6 +27,7 @@ impl BlockchainTypeGenerator {
         let blockchain_type_rs_path = blockchain_type_path();
         let blockchain_type = coin.blockchain_type();
 
+        println!("[EDIT] {blockchain_type_rs_path:?}");
         let mut blockchain_type_rs = FileContent::read(blockchain_type_rs_path)?;
 
         {

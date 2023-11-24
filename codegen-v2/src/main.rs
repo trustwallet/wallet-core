@@ -33,6 +33,7 @@ fn new_blockchain_rust(args: &[String]) -> Result<()> {
     let coin_id = CoinId::new(coin_str.clone())?;
     let coin_item = read_coin_from_registry(&coin_id)?;
 
+    println!("New Rust blockchain template for coin '{coin_str}' requested");
     rust::new_blockchain::new_blockchain(&coin_item)?;
 
     Ok(())
@@ -42,6 +43,8 @@ fn new_blockchain(args: &[String]) -> Result<()> {
     let coin_str = args.iter().next().ok_or_else(|| Error::InvalidCommand)?;
     let coin_id = CoinId::new(coin_str.clone())?;
     let coin_item = read_coin_from_registry(&coin_id)?;
+
+    println!("New '{coin_str}' blockchain template requested");
 
     proto::new_blockchain::new_blockchain(&coin_item)?;
     rust::new_blockchain::new_blockchain(&coin_item)?;
@@ -54,6 +57,8 @@ fn new_evmchain(args: &[String]) -> Result<()> {
     let coin_str = args.iter().next().ok_or_else(|| Error::InvalidCommand)?;
     let coin_id = CoinId::new(coin_str.clone())?;
     let coin_item = read_coin_from_registry(&coin_id)?;
+
+    println!("New '{coin_str}' EVM chain template requested");
 
     rust::new_evmchain::new_evmchain(&coin_item)?;
     cpp::new_evmchain::new_evmchain(&coin_item)?;

@@ -44,10 +44,11 @@ impl CoinIntegrationTests {
     pub fn create(self) -> Result<PathBuf> {
         let blockchain_tests_path = self.coin_tests_directory();
         if blockchain_tests_path.exists() {
+            println!("[SKIP] integration tests already exists: {blockchain_tests_path:?}");
             return Ok(blockchain_tests_path);
         }
 
-        fs::create_dir(&blockchain_tests_path)?;
+        fs::create_dir_all(&blockchain_tests_path)?;
 
         self.list_blockchain_in_chains_mod()?;
         self.create_address_tests()?;
@@ -68,6 +69,7 @@ impl CoinIntegrationTests {
             .coin_tests_directory()
             .join(format!("{coin_id}_address.rs"));
 
+        println!("[ADD] {address_tests_path:?}");
         TemplateGenerator::new(ADDRESS_TESTS_TEMPLATE)
             .write_to(address_tests_path)
             .with_default_patterns(&self.coin)
@@ -80,6 +82,7 @@ impl CoinIntegrationTests {
             .coin_tests_directory()
             .join(format!("{coin_id}_compile.rs"));
 
+        println!("[ADD] {compile_tests_path:?}");
         TemplateGenerator::new(COMPILE_TESTS_TEMPLATE)
             .write_to(compile_tests_path)
             .with_default_patterns(&self.coin)
@@ -92,6 +95,7 @@ impl CoinIntegrationTests {
             .coin_tests_directory()
             .join(format!("{coin_id}_sign.rs"));
 
+        println!("[ADD] {sign_tests_path:?}");
         TemplateGenerator::new(SIGN_TESTS_TEMPLATE)
             .write_to(sign_tests_path)
             .with_default_patterns(&self.coin)
@@ -101,6 +105,7 @@ impl CoinIntegrationTests {
     fn create_chain_tests_mod_rs(&self) -> Result<()> {
         let blockchain_tests_mod_path = self.coin_tests_directory().join("mod.rs");
 
+        println!("[ADD] {blockchain_tests_mod_path:?}");
         TemplateGenerator::new(MOD_TESTS_TEMPLATE)
             .write_to(blockchain_tests_mod_path)
             .with_default_patterns(&self.coin)
@@ -111,6 +116,7 @@ impl CoinIntegrationTests {
         let chains_mod_path = chains_integration_tests_directory().join("mod.rs");
         let chain_id = self.coin.id.as_str();
 
+        println!("[EDIT] {chains_mod_path:?}");
         let mut chains_mod_rs = FileContent::read(chains_mod_path)?;
 
         {

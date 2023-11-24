@@ -23,8 +23,10 @@ impl TWCoinTypeGenerator {
     pub fn generate_coin_type_variant(coin: &CoinItem) -> Result<()> {
         let coin_type = coin.coin_type();
         let coin_id_number = coin.coin_id_number;
+        let tw_coin_type_file_path = tw_coin_type_path();
 
-        let mut tw_coin_type_rs = FileContent::read(tw_coin_type_path())?;
+        println!("[EDIT] {tw_coin_type_file_path:?}");
+        let mut tw_coin_type_rs = FileContent::read(tw_coin_type_file_path)?;
 
         {
             let mut enum_region =

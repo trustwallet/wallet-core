@@ -26,9 +26,11 @@ impl TWAnyAddressTestsGenerator {
 
         fs::create_dir_all(coin_tests_dir)?;
         if tw_any_address_tests_path.exists() {
+            println!("[SKIP] {tw_any_address_tests_path:?} already exists");
             return Ok(());
         }
 
+        println!("[ADD] {tw_any_address_tests_path:?}");
         TemplateGenerator::new(TW_ANY_ADDRESS_TESTS_TEMPLATE)
             .write_to(tw_any_address_tests_path)
             .with_default_patterns(coin)

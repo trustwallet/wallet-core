@@ -15,6 +15,7 @@ pub struct CoinRegistryManifestGenerator;
 impl CoinRegistryManifestGenerator {
     pub fn add_dependency(coin: &CoinItem, path_to_new_blockchain_crate: &Path) -> Result<()> {
         let path_to_cargo_manifest = coin_registry_directory().join("Cargo.toml");
+        println!("[EDIT] {path_to_cargo_manifest:?}");
         Dependencies::new(path_to_cargo_manifest)
             .insert_dependency(&coin.id.to_tw_crate_name(), path_to_new_blockchain_crate)
     }

@@ -24,6 +24,7 @@ pub struct BlockchainDispatcherGenerator;
 impl BlockchainDispatcherGenerator {
     pub fn generate_new_blockchain_type_dispatching(coin: &CoinItem) -> Result<()> {
         let dispatcher_rs_path = dispatcher_path();
+        println!("[EDIT] {dispatcher_rs_path:?}");
         let mut dispatcher_rs = FileContent::read(dispatcher_rs_path)?;
 
         Self::generate_use_of_blockchain_entry(coin, &mut dispatcher_rs)?;

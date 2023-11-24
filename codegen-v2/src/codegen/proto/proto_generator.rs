@@ -24,9 +24,11 @@ impl ProtoGenerator {
         let proto_path = blockchain_proto_path(coin);
 
         if proto_path.exists() {
+            println!("[SKIP] Protobuf interface already exists: {proto_path:?}");
             return Ok(());
         }
 
+        println!("[ADD] {proto_path:?}");
         TemplateGenerator::new(PROTO_TEMPLATE)
             .write_to(proto_path)
             .with_default_patterns(coin)
