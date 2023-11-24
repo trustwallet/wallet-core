@@ -7,9 +7,9 @@
 use crate::codegen::cpp::cpp_source_directory;
 use crate::codegen::template_generator::TemplateGenerator;
 use crate::registry::CoinItem;
-use crate::{Error, Result};
+use crate::Result;
+use std::fs;
 use std::path::PathBuf;
-use std::{fs, io};
 
 const ENTRY_HEADER_TEMPLATE: &str = include_str!("templates/Entry.h");
 
