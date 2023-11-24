@@ -15,7 +15,7 @@ use crate::codegen::cpp::tw_coin_type_tests_generator::TWCoinTypeTestsGenerator;
 use crate::registry::CoinItem;
 use crate::Result;
 
-pub fn new_blockchain(coin: CoinItem) -> Result<()> {
+pub fn new_blockchain(coin: &CoinItem) -> Result<()> {
     // Generate C++ files.
     BlockchainImpl::new(coin.clone()).create()?;
 
@@ -29,8 +29,8 @@ pub fn new_blockchain(coin: CoinItem) -> Result<()> {
     // Add integration tests.
     TWCoinTypeTestsGenerator::new(coin.clone()).generate()?;
     TWAnyAddressTestsGenerator::generate(coin.clone())?;
-    TWAnySignerTestsGenerator::generate(&coin)?;
-    CoinAddressDerivationTestsGenerator::generate_new_coin_type_case(&coin)?;
+    TWAnySignerTestsGenerator::generate(coin)?;
+    CoinAddressDerivationTestsGenerator::generate_new_coin_type_case(coin)?;
 
     Ok(())
 }

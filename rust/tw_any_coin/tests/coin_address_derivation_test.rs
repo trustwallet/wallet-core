@@ -85,8 +85,9 @@ fn test_coin_address_derivation() {
             | CoinType::Linea
             | CoinType::Greenfield
             | CoinType::Mantle
-            | CoinType::ZenEON => "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309",
-            // end_of_ethereum_coin_address_derivation - DO NOT REMOVE
+            | CoinType::ZenEON
+            // end_of_evm_address_derivation_tests_marker_do_not_modify
+                => "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309",
             CoinType::Bitcoin
             // TODO all Bitcoin-based blockchains should have different addresses.
             // It should be fixed when Bitcoin is finalized.
@@ -143,7 +144,7 @@ fn test_coin_address_derivation() {
             CoinType::NativeInjective => "inj14s0vgnj0pjnazu4hsqlksdk7slah9vcfyrp6ct",
             CoinType::NativeCanto => "canto14s0vgnj0pjnazu4hsqlksdk7slah9vcfuuhw7m",
             CoinType::InternetComputer => "290cc7c359f44c8516fc169c5ed4f0f3ae2e24bf5de0d4c51f5e7545b5474faa",
-            // end_of_coin_address_derivation - DO NOT REMOVE
+            // end_of_coin_address_derivation_tests_marker_do_not_modify
             _ => panic!("{:?} must be covered", coin),
         };
 

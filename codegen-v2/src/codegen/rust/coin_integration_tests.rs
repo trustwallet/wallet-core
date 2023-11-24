@@ -18,8 +18,6 @@ const COMPILE_TESTS_TEMPLATE: &str = include_str!("templates/integration_tests/c
 const MOD_TESTS_TEMPLATE: &str = include_str!("templates/integration_tests/mod.rs");
 const SIGN_TESTS_TEMPLATE: &str = include_str!("templates/integration_tests/sign_tests.rs");
 
-const COIN_ADDRESS_DERIVATION_TEST_END: &str = "end_of_coin_address_derivation";
-
 pub fn chains_integration_tests_directory() -> PathBuf {
     tw_any_coin_directory().join("tests").join("chains")
 }
@@ -43,21 +41,6 @@ impl CoinIntegrationTests {
         CoinIntegrationTests { coin }
     }
 
-    pub fn add_coin_to_address_derivation_test(self) -> Result<()> {
-        let coin_type = self.coin.coin_type();
-
-        let mut coin_address_derivation_test_rs =
-            FileContent::read(coin_address_derivation_test_path())?;
-
-        {
-            let mut end_of_test = coin_address_derivation_test_rs
-                .rfind_line(|line| line.contains(COIN_ADDRESS_DERIVATION_TEST_END))?;
-            end_of_test.push_line_before(format!("            CoinType::{coin_type} => todo!(),"));
-        }
-
-        coin_address_derivation_test_rs.write()
-    }
-
     pub fn create(self) -> Result<PathBuf> {
         let blockchain_tests_path = self.coin_tests_directory();
         if blockchain_tests_path.exists() {
@@ -72,7 +55,6 @@ impl CoinIntegrationTests {
         self.create_sign_tests()?;
         self.create_chain_tests_mod_rs()?;
 
-        self.add_coin_to_address_derivation_test()?;
         Ok(blockchain_tests_path)
     }
 

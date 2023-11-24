@@ -22,6 +22,7 @@ fn main() -> Result<()> {
     match args[1].as_str() {
         "new-blockchain-rust" => new_blockchain_rust(&args[2..]),
         "new-blockchain" => new_blockchain(&args[2..]),
+        "new-evmchain" => new_evmchain(&args[2..]),
         "swift" => generate_swift_bindings(),
         _ => Err(Error::InvalidCommand),
     }
@@ -32,7 +33,7 @@ fn new_blockchain_rust(args: &[String]) -> Result<()> {
     let coin_id = CoinId::new(coin_str.clone())?;
     let coin_item = read_coin_from_registry(&coin_id)?;
 
-    rust::new_blockchain::new_blockchain(coin_item)?;
+    rust::new_blockchain::new_blockchain(&coin_item)?;
 
     Ok(())
 }
@@ -42,9 +43,20 @@ fn new_blockchain(args: &[String]) -> Result<()> {
     let coin_id = CoinId::new(coin_str.clone())?;
     let coin_item = read_coin_from_registry(&coin_id)?;
 
-    proto::new_blockchain::new_blockchain(coin_item.clone())?;
-    rust::new_blockchain::new_blockchain(coin_item.clone())?;
-    cpp::new_blockchain::new_blockchain(coin_item)?;
+    proto::new_blockchain::new_blockchain(&coin_item)?;
+    rust::new_blockchain::new_blockchain(&coin_item)?;
+    cpp::new_blockchain::new_blockchain(&coin_item)?;
+
+    Ok(())
+}
+
+fn new_evmchain(args: &[String]) -> Result<()> {
+    let coin_str = args.iter().next().ok_or_else(|| Error::InvalidCommand)?;
+    let coin_id = CoinId::new(coin_str.clone())?;
+    let coin_item = read_coin_from_registry(&coin_id)?;
+
+    rust::new_evmchain::new_evmchain(&coin_item)?;
+    cpp::new_evmchain::new_evmchain(&coin_item)?;
 
     Ok(())
 }

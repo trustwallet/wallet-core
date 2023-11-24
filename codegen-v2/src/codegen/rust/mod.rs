@@ -8,9 +8,11 @@ use std::env;
 use std::path::PathBuf;
 
 pub mod blockchain_type;
+pub mod coin_address_derivation_test_generator;
 pub mod coin_crate;
 pub mod coin_integration_tests;
 pub mod new_blockchain;
+pub mod new_evmchain;
 pub mod toml_editor;
 
 pub fn rust_source_directory() -> PathBuf {

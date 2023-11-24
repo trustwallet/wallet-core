@@ -4,10 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::codegen::proto::proto_generator::ProtoGenerator;
+use crate::codegen::rust::coin_address_derivation_test_generator::CoinAddressDerivationTestGenerator;
 use crate::registry::CoinItem;
 use crate::Result;
 
-pub fn new_blockchain(coin: &CoinItem) -> Result<()> {
-    ProtoGenerator::new(coin.clone()).generate()
+pub fn new_evmchain(coin: &CoinItem) -> Result<()> {
+    // Modify integration tests.
+    CoinAddressDerivationTestGenerator::generate_new_evm_coin_type_case(coin)
 }
