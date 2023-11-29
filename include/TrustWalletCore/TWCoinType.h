@@ -72,7 +72,7 @@ enum TWCoinType {
     TWCoinTypeTheta = 500,
     TWCoinTypeThunderCore = 1001,
     TWCoinTypeNEO = 888,
-    TWCoinTypeTomoChain = 889,
+    TWCoinTypeViction = 889,
     TWCoinTypeTron = 195,
     TWCoinTypeVeChain = 818,
     TWCoinTypeViacoin = 14,

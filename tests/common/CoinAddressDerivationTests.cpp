@@ -71,7 +71,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeTheta:
         case TWCoinTypeThetaFuel:
         case TWCoinTypeThunderCore:
-        case TWCoinTypeTomoChain:
+        case TWCoinTypeViction:
         case TWCoinTypeVeChain:
         case TWCoinTypeWanchain:
         case TWCoinTypeXDai:
