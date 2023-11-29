@@ -73,7 +73,7 @@ fn test_coin_address_derivation() {
             | CoinType::Theta
             | CoinType::ThetaFuel
             | CoinType::ThunderCore
-            | CoinType::TomoChain
+            | CoinType::Viction
             | CoinType::VeChain
             | CoinType::Wanchain
             | CoinType::xDai
