@@ -1673,7 +1673,10 @@ dependencies = [
 name = "tw_binance"
 version = "0.1.0"
 dependencies = [
+ "serde",
+ "tw_bech32_address",
  "tw_coin_entry",
+ "tw_cosmos_sdk",
  "tw_keypair",
  "tw_memory",
  "tw_proto",

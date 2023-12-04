@@ -2440,6 +2440,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
+    "addressHasher": "sha256ripemd",
     "hrp": "bnb",
     "chainId": "Binance-Chain-Tigris",
     "explorer": {
@@ -2472,6 +2473,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
+    "addressHasher": "sha256ripemd",
     "hrp": "tbnb",
     "explorer": {
       "url": "https://testnet-explorer.binance.org",

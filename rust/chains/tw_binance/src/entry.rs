@@ -8,6 +8,7 @@ use crate::address::BinanceAddress;
 use crate::compiler::BinanceCompiler;
 use crate::signer::BinanceSigner;
 use std::str::FromStr;
+use tw_bech32_address::bech32_prefix::Bech32Prefix;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
@@ -15,7 +16,6 @@ use tw_coin_entry::error::AddressResult;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
-use tw_coin_entry::prefix::NoPrefix;
 use tw_keypair::tw::PublicKey;
 use tw_proto::Binance::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
@@ -23,7 +23,7 @@ use tw_proto::TxCompiler::Proto as CompilerProto;
 pub struct BinanceEntry;
 
 impl CoinEntry for BinanceEntry {
-    type AddressPrefix = NoPrefix;
+    type AddressPrefix = Bech32Prefix;
     type Address = BinanceAddress;
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = Proto::SigningOutput<'static>;
@@ -37,11 +37,11 @@ impl CoinEntry for BinanceEntry {
     #[inline]
     fn parse_address(
         &self,
-        _coin: &dyn CoinContext,
-        _address: &str,
-        _prefix: Option<Self::AddressPrefix>,
+        coin: &dyn CoinContext,
+        address: &str,
+        prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        BinanceAddress::from_str_with_coin_and_prefix(coin, address.to_string(), prefix)
     }
 
     #[inline]
@@ -56,12 +56,12 @@ impl CoinEntry for BinanceEntry {
     #[inline]
     fn derive_address(
         &self,
-        _coin: &dyn CoinContext,
-        _public_key: PublicKey,
+        coin: &dyn CoinContext,
+        public_key: PublicKey,
         _derivation: Derivation,
-        _prefix: Option<Self::AddressPrefix>,
+        prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        BinanceAddress::with_public_key_coin_context(coin, &public_key, prefix)
     }
 
     #[inline]

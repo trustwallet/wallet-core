@@ -4,33 +4,86 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use serde::Serialize;
 use std::fmt;
 use std::str::FromStr;
+use tw_bech32_address::bech32_prefix::Bech32Prefix;
+use tw_bech32_address::Bech32Address;
+use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::AddressError;
+use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_cosmos_sdk::address::CosmosAddress;
+use tw_keypair::tw::PublicKey;
 use tw_memory::Data;
 
-pub struct BinanceAddress {
-    // TODO add necessary fields.
-}
+/// The list of known BNB hrps.
+const BNB_KNOWN_HRPS: [&str; 2] = [
+    "bva", // BNB Validator HRP.
+    "bca",
+];
+
+#[derive(Serialize)]
+pub struct BinanceAddress(Bech32Address);
 
 impl CoinAddress for BinanceAddress {
     #[inline]
     fn data(&self) -> Data {
-        todo!()
+        self.0.data()
+    }
+}
+
+impl BinanceAddress {
+    /// Creates a Binance address with the only `prefix`
+    pub fn from_str_with_coin_and_prefix(
+        coin: &dyn CoinContext,
+        address_str: String,
+        prefix: Option<Bech32Prefix>,
+    ) -> AddressResult<BinanceAddress>
+    where
+        Self: Sized,
+    {
+        let possible_hrps = match prefix {
+            Some(Bech32Prefix { hrp }) => vec![hrp],
+            None => {
+                let coin_hrp = coin.hrp().ok_or(AddressError::InvalidHrp)?;
+                let other_hrps = BNB_KNOWN_HRPS
+                    .iter()
+                    .map(|another_hrp| another_hrp.to_string());
+                std::iter::once(coin_hrp).chain(other_hrps).collect()
+            },
+        };
+        Bech32Address::from_str_checked(possible_hrps, address_str).map(BinanceAddress)
+    }
+
+    pub fn with_public_key_coin_context(
+        coin: &dyn CoinContext,
+        public_key: &PublicKey,
+        prefix: Option<Bech32Prefix>,
+    ) -> AddressResult<BinanceAddress> {
+        Bech32Address::with_public_key_coin_context(coin, public_key, prefix).map(BinanceAddress)
+    }
+}
+
+impl CosmosAddress for BinanceAddress {
+    fn from_str_with_coin(coin: &dyn CoinContext, addr: &str) -> AddressResult<Self>
+    where
+        Self: Sized,
+    {
+        let prefix = None;
+        BinanceAddress::from_str_with_coin_and_prefix(coin, addr.to_string(), prefix)
     }
 }
 
 impl FromStr for BinanceAddress {
     type Err = AddressError;
 
-    fn from_str(_s: &str) -> Result<Self, Self::Err> {
-        todo!()
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Bech32Address::from_str(s).map(BinanceAddress)
     }
 }
 
 impl fmt::Display for BinanceAddress {
-    fn fmt(&self, _f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Display::fmt(&self.0, f)
     }
 }
