@@ -1670,6 +1670,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_binance"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_keypair",
+ "tw_memory",
+ "tw_proto",
+]
+
+[[package]]
 name = "tw_bitcoin"
 version = "0.1.0"
 dependencies = [
@@ -1712,6 +1722,7 @@ dependencies = [
  "strum",
  "strum_macros",
  "tw_aptos",
+ "tw_binance",
  "tw_bitcoin",
  "tw_coin_entry",
  "tw_cosmos",

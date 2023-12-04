@@ -4,12 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-mod aptos;
-mod binance;
-mod bitcoin;
-mod cosmos;
-mod ethereum;
-mod internet_computer;
-mod native_evmos;
-mod native_injective;
-mod thorchain;
+mod binance_address;
+mod binance_compile;
+mod binance_sign;

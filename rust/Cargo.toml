@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "chains/tw_binance",
     "chains/tw_cosmos",
     "chains/tw_native_evmos",
     "chains/tw_native_injective",

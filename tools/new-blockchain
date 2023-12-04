@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+# This script generates new Blockchain skeleton files.
+
+pushd codegen-v2
+cargo run -- new-blockchain $1
+popd # codegen-v2
+
+pushd codegen
+codegen/bin/newcoin-mobile-tests $1
+popd # codegen
