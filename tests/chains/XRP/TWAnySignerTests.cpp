@@ -121,6 +121,31 @@ TEST(TWAnySignerRipple, SignTokenPayment1) {
     EXPECT_EQ(hex(output.encoded()), "12000022000000002401ec61e0201b01ec61f561d48a68d1c931200000000000000000000000000055534400000000004b4e9c06f24296074f7bc48f92a97916c6dc5ea968400000000000000a73210348c331ab218ba964150490c83875b06ccad2100b1f5707f296764712738cf1ca74473045022100a938783258d33e2e3e6099d1ab68fd85c3fd21adfa00e136a67bed8fddec6c9a02206cc6784c1f212f19dc939207643d361ceaa8334eb366722cf33b24dc7669dd7a81143a2f2f189d05abb8519cc9dee0e2dbc6fa53924183148132e4e20aecf29090ac428a9c43f230a829220d");
 }
 
+TEST(TWAnySignerRipple, SignEscrowCreateMain) {
+    // https://xrpscan.com/tx/3576E5D413CBDC228D13F281BB66304C1EE9DDEAA5563F1783EDB1848266D739
+    auto key = parse_hex("a3cf20a85b25be4c955f0814718cc7a02eae9195159bd72ede5dd5c4e60d22c4");
+    Proto::SigningInput input;
+
+    // with finish after and dest tag
+    input.mutable_op_escrow_create()->set_amount(21300);
+    input.mutable_op_escrow_create()->set_destination("rEeSXUWEYyEADhDHvi3mtahkFVn7dYNH2G");
+    input.mutable_op_escrow_create()->set_destination_tag(67);
+    input.mutable_op_escrow_create()->set_cancel_after(755015907);
+    input.mutable_op_escrow_create()->set_finish_after(755015897);
+    input.mutable_op_escrow_create()->set_condition("");
+
+    input.set_fee(12);
+    input.set_sequence(84363229);
+    input.set_last_ledger_sequence(84363920);
+    input.set_account("rnXwGtLDXXcV63CnRoNaesSsJCZZkJwo9w");
+    input.set_private_key(key.data(), key.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeXRP);
+
+    EXPECT_EQ(hex(output.encoded()), "120001220000000024050747dd2e00000043201b05074a9020242d00a0e320252d00a0d961400000000000533468400000000000000c7321029b557f4db390d68d39d3457204c225d4a68ed86854567a1da99d3e2cd640717374473045022100e62d5005401f1d2b1d9eaa42e0fdbb8b8a433d0cfe71455e782882aa6ab0656f02207b589489b4f344e87a956382e5ede6a55fbfc7e38701364c1fe7d056e9a3253a81143194b932f389b95922fba31662f3c8a606fedfd68314a0a67483ad4d51b2524eb304c0fcef6b2025b865");
+}
+
 TEST(TWAnySignerRipple, SignEscrowCreate) {
     // https://testnet.xrpl.org/transactions/3F581927C742D5FAE65FB0759D0F04EF3B64B4A087911B07975816ECCB59915B
     auto key = parse_hex("f157cf7951908b9a2b28d6c5817a3212c3971d8c05a1e964bbafaa5ad7529cb0");
@@ -169,6 +194,31 @@ TEST(TWAnySignerRipple, SignEscrowCreate2) {
     ANY_SIGN(input, TWCoinTypeXRP);
 
     EXPECT_EQ(hex(output.encoded()), "120001220000000024027ef7ac201b027ef7c220248000000020252cb592d46140000000054d23c268400000000000000c73210211cfeb81bc410e694e98c6a0f17c9c89d85e2b89bc17d2699063c0920217ab0574463044022038d27cd842422d8ee72d5cab11734ce128aef21d7cec17654d21c27d0556d23e0220059f913178a4c65a5d3289896876989e0fcaf3add9769459fb232ab94398368a81149c4970a2b763b9484e3b65d67f3d9b7b1698cb7f83144917342345fbe5cef1e22d3f1353fc468bf696ac");
+}
+
+TEST(TWAnySignerRipple, SignEscrowCreateWithConditionMain) {
+    // https://xrpscan.com/tx/77E01FD30A788BFC96F28960F099D4076255252F33FCD31EEBBCBB61E3318544
+    auto key = parse_hex("a3cf20a85b25be4c955f0814718cc7a02eae9195159bd72ede5dd5c4e60d22c4");
+    Proto::SigningInput input;
+
+    // with cancel after and crypto condition
+    input.mutable_op_escrow_create()->set_amount(37000);
+    input.mutable_op_escrow_create()->set_destination("rEeSXUWEYyEADhDHvi3mtahkFVn7dYNH2G");
+    input.mutable_op_escrow_create()->set_destination_tag(0);
+    input.mutable_op_escrow_create()->set_cancel_after(755014300);
+    input.mutable_op_escrow_create()->set_finish_after(0);
+    input.mutable_op_escrow_create()->set_condition("a0258020c26add2db64dd6d5700a5e2721c1e908d599901627b8dc82f25b3e035ec4004b810120"); // PREIMAGE-SHA-256 crypto-condition of secret 5d729ac237c4c7976403817b6409be7190efbfad49af2cf974b9582a854e8794
+
+    input.set_fee(12);
+    input.set_sequence(84363226);
+    input.set_last_ledger_sequence(84363509);
+    input.set_account("rnXwGtLDXXcV63CnRoNaesSsJCZZkJwo9w");
+    input.set_private_key(key.data(), key.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeXRP);
+
+    EXPECT_EQ(hex(output.encoded()), "120001220000000024050747da201b050748f520242d009a9c61400000000000908868400000000000000c7321029b557f4db390d68d39d3457204c225d4a68ed86854567a1da99d3e2cd6407173744630440220307f4c91e91166db1428eb1ab8f65a84bd9b89542ed844045ffd040f5e13d12b022061120350b9685381e9941c7ec54ce154ca0ef0d01f630aeb3e78dd9fd087ff80701127a0258020c26add2db64dd6d5700a5e2721c1e908d599901627b8dc82f25b3e035ec4004b81012081143194b932f389b95922fba31662f3c8a606fedfd68314a0a67483ad4d51b2524eb304c0fcef6b2025b865");
 }
 
 TEST(TWAnySignerRipple, SignEscrowCreateWithCondition) {
@@ -221,6 +271,26 @@ TEST(TWAnySignerRipple, SignEscrowCreateWithCondition2) {
     EXPECT_EQ(hex(output.encoded()), "120001220000000024027ef3c22e000009a3201b027ef3d820242cb5890c614000000001b99cc268400000000000000c7321035e6cd73289f9b1a796fba572f7a2732aae23b2a9ea6b0ec239d5b9feb388774074473045022100c4bb3b65acd5d30aa8f85ea2a0d2c0e18d2025a005a827722059a9a636eb1bca02207d73b4a64d679e605a6cb31881d7ea3642c1e54e3bf38d13d0dd4219c27d1420701127a0258020ffecf1ae6182f10efebe0c0896cd6b044df7b27d33b05030033ef63d47e2b25081012081140e9c9b31b826671aaa387555cdeccab82a78402083145da8080d21fecf98f24ea2223482e5d24f107799");
 }
 
+TEST(TWAnySignerRipple, SignEscrowCancelMain) {
+    // https://xrpscan.com/tx/949B3C3D8B4528C95D07654BBA10B08ABA65FFD339E31706BC93CB0824427F97
+    auto key = parse_hex("a3cf20a85b25be4c955f0814718cc7a02eae9195159bd72ede5dd5c4e60d22c4");
+    Proto::SigningInput input;
+
+    input.mutable_op_escrow_cancel()->set_owner("rnXwGtLDXXcV63CnRoNaesSsJCZZkJwo9w");
+    input.mutable_op_escrow_cancel()->set_offer_sequence(84363227);
+
+    input.set_fee(12);
+    input.set_sequence(84363228);
+    input.set_last_ledger_sequence(84363740);
+    input.set_account("rnXwGtLDXXcV63CnRoNaesSsJCZZkJwo9w");
+    input.set_private_key(key.data(), key.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeXRP);
+
+    EXPECT_EQ(hex(output.encoded()), "120004220000000024050747dc2019050747db201b050749dc68400000000000000c7321029b557f4db390d68d39d3457204c225d4a68ed86854567a1da99d3e2cd64071737446304402202c0416934dbf3a0c42d0b0da9e893cec69e42c81f41424f4a388c3ba8862e65a02201781e22ef85b251902e918f6d923769993757a79b865a62ecdebc1a015368f1f81143194b932f389b95922fba31662f3c8a606fedfd682143194b932f389b95922fba31662f3c8a606fedfd6");
+}
+
 TEST(TWAnySignerRipple, SignEscrowCancel) {
     // https://testnet.xrpl.org/transactions/5B0F8766FFBDE7D3A9ACAA63361BF00FE0739DC8718507776EB2C1AD980BC965
     auto key = parse_hex("bf9810cc4f7cc5e6dea8a0c29f3389d9d511e795d467b402a870e71d93243705");
@@ -241,6 +311,26 @@ TEST(TWAnySignerRipple, SignEscrowCancel) {
     EXPECT_EQ(hex(output.encoded()), "120004220000000024027ef71e2019027ef71d201b027ef73f68400000000000000c73210277314966f72e9520199faa3941bd45b89e444f7eabf203e805527f880de80b8674473045022100ec04d05db5725ce154a511f93056fde0b825b7e0bb4a59b4d4264a008eafdcfe0220676f30f916c6ea0644c11c0bcafcfa8209a083041742d672a726a5c8d99230ea8114a327f724d30f2732f78a4ec6744db298e827ba2b8214a327f724d30f2732f78a4ec6744db298e827ba2b");
 }
 
+TEST(TWAnySignerRipple, SignEscrowFinishMain) {
+    // https://xrpscan.com/tx/F015FB9E893877289E3058F14DD2FAA93D7F1E44AC2C7F71E684BD65B94EEB59
+    auto key = parse_hex("f60edca8e4bb25f9916017c9c7fe93e633b800550f86cf305a2e99271d7cede5");
+    Proto::SigningInput input;
+
+    input.mutable_op_escrow_finish()->set_owner("rnXwGtLDXXcV63CnRoNaesSsJCZZkJwo9w");
+    input.mutable_op_escrow_finish()->set_offer_sequence(84363235);
+
+    input.set_fee(12);
+    input.set_sequence(84363475);
+    input.set_last_ledger_sequence(84364395);
+    input.set_account("rEeSXUWEYyEADhDHvi3mtahkFVn7dYNH2G");
+    input.set_private_key(key.data(), key.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeXRP);
+
+    EXPECT_EQ(hex(output.encoded()), "120002220000000024050748d32019050747e3201b05074c6b68400000000000000c7321025a4c754a3f836ebe18520e7d3861c6e38a4adfe466465d5db6cbb2d745d27ee574473045022100df5a22c475fa039d8fd7f1dd9a3b248e2f11232bf23ae0206b79b6ac3014a80e02202df2da6d98ed9ced91b9790a3d84f28c2aeb368e3cde84806926086d74d406c18114a0a67483ad4d51b2524eb304c0fcef6b2025b86582143194b932f389b95922fba31662f3c8a606fedfd6");
+}
+
 TEST(TWAnySignerRipple, SignEscrowFinish) {
     // https://testnet.xrpl.org/transactions/690E04E97761E3E5F33A9FF3DA42C16E8E234043850DA294BB3FE38CAE551E71
     auto key = parse_hex("a6e306206d400dcc4a2d00e70b4a3925d511b2dabc1a85f4ffbf174a334e28e6");
@@ -259,6 +349,28 @@ TEST(TWAnySignerRipple, SignEscrowFinish) {
     ANY_SIGN(input, TWCoinTypeXRP);
 
     EXPECT_EQ(hex(output.encoded()), "120002220000000024027ef59d2019027ef59b201b027ef5bd68400000000000000c7321026f8adad2b4071daa02916f8759ff148fad37c1562e48e71bb608d896d1c833cb74473045022100a7f06325574a9c4300725cb069029645b94d67217e5ae15a2e20bc0387e32aaf02206f9f1a7ae4aaccf2f4c2ab8d90f868e786a285aae677e0b01507eca5dd6823818114937e838cb1033342c72acfae58fe2e3875ce76938214d8242542e6108fccf75a7f5bb0059cfae6d15537");
+}
+
+TEST(TWAnySignerRipple, SignEscrowFinishWithConditionMain) {
+    // https://xrpscan.com/tx/7E9AC2C8286E3EC0410784920A0F8048C79257EDF19B392F98A31F62E3CF4FAD
+    auto key = parse_hex("f60edca8e4bb25f9916017c9c7fe93e633b800550f86cf305a2e99271d7cede5");
+    Proto::SigningInput input;
+
+    input.mutable_op_escrow_finish()->set_owner("rnXwGtLDXXcV63CnRoNaesSsJCZZkJwo9w");
+    input.mutable_op_escrow_finish()->set_offer_sequence(84363226);
+    input.mutable_op_escrow_finish()->set_condition("a0258020c26add2db64dd6d5700a5e2721c1e908d599901627b8dc82f25b3e035ec4004b810120");
+    input.mutable_op_escrow_finish()->set_fulfillment("a02280205d729ac237c4c7976403817b6409be7190efbfad49af2cf974b9582a854e8794");
+
+    input.set_fee(423);
+    input.set_sequence(84363473);
+    input.set_last_ledger_sequence(84363511);
+    input.set_account("rEeSXUWEYyEADhDHvi3mtahkFVn7dYNH2G");
+    input.set_private_key(key.data(), key.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeXRP);
+
+    EXPECT_EQ(hex(output.encoded()), "120002220000000024050748d12019050747da201b050748f76840000000000001a77321025a4c754a3f836ebe18520e7d3861c6e38a4adfe466465d5db6cbb2d745d27ee574473045022100f06a6ac18efc1280f9d26cbb47c31f7ecd72ed200f9d05c6c762ffcf18b53534022049c6bb4ac8e79c478939a55dd1cb571d56ec929e5200332e410fd69c0fe1ef48701024a02280205d729ac237c4c7976403817b6409be7190efbfad49af2cf974b9582a854e8794701127a0258020c26add2db64dd6d5700a5e2721c1e908d599901627b8dc82f25b3e035ec4004b8101208114a0a67483ad4d51b2524eb304c0fcef6b2025b86582143194b932f389b95922fba31662f3c8a606fedfd6");
 }
 
 TEST(TWAnySignerRipple, SignEscrowFinishWithCondition) {
