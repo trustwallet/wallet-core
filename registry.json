@@ -4529,7 +4529,8 @@
       "url": "https://xdc.org",
       "client": "https://github.com/XinFinOrg/XDPoSChain",
       "clientPublic": "https://rpc.xdc.org/",
-      "clientDocs": "https://eth.wiki/json-rpc/API"
+      "rpc": "https://erpc.xinfin.network",
+      "clientDocs": "https://docs.xdc.community"
     }
   }
 ]
