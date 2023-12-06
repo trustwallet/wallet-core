@@ -17,6 +17,7 @@ pub enum CEncodingCode {
     Ok = 0,
     InvalidInput = 1,
     InvalidAlphabet = 2,
+    Internal = 3,
 }
 
 impl From<EncodingError> for CEncodingCode {
@@ -24,6 +25,7 @@ impl From<EncodingError> for CEncodingCode {
         match error {
             EncodingError::InvalidInput => CEncodingCode::InvalidInput,
             EncodingError::InvalidAlphabet => CEncodingCode::InvalidAlphabet,
+            EncodingError::Internal => CEncodingCode::Internal,
         }
     }
 }
