@@ -62,6 +62,13 @@ impl BinanceAddress {
     ) -> AddressResult<BinanceAddress> {
         Bech32Address::with_public_key_coin_context(coin, public_key, prefix).map(BinanceAddress)
     }
+
+    pub fn from_key_hash_with_coin(
+        coin: &dyn CoinContext,
+        key_hash: Data,
+    ) -> AddressResult<BinanceAddress> {
+        Bech32Address::from_key_hash_with_coin(coin, key_hash).map(BinanceAddress)
+    }
 }
 
 impl CosmosAddress for BinanceAddress {

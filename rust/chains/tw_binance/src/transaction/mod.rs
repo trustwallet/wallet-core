@@ -9,7 +9,7 @@ use crate::transaction::message::BinanceMessageBox;
 use serde::Serialize;
 use std::borrow::Cow;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
-use tw_hash::{sha2, H256};
+use tw_hash::{sha2, H256, H512};
 use tw_memory::Data;
 use tw_proto::Binance::Proto;
 
@@ -23,17 +23,17 @@ pub struct JsonTxPreimage {
 }
 
 #[derive(Serialize)]
-pub struct Transaction {
-    pub account_number: u64,
+pub struct UnsignedTransaction {
+    pub account_number: i64,
     pub chain_id: String,
     pub data: Data,
     pub memo: String,
     pub msgs: Vec<BinanceMessageBox>,
-    pub sequence: u64,
+    pub sequence: i64,
     pub source: i64,
 }
 
-impl Transaction {
+impl UnsignedTransaction {
     pub fn preimage_hash(&self) -> SigningResult<JsonTxPreimage> {
         let encoded_tx = serde_json::to_string(self)
             .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
@@ -44,11 +44,18 @@ impl Transaction {
             tx_hash,
         })
     }
+
+    pub fn into_signed(self, signature: H512) -> SignedTransaction {
+        SignedTransaction {
+            unsigned: self,
+            signature,
+        }
+    }
 }
 
 pub struct SignedTransaction {
-    unsigned: Transaction,
-    signatures: Vec<H256>,
+    pub unsigned: UnsignedTransaction,
+    pub signature: H512,
 }
 
 impl SignedTransaction {
@@ -59,11 +66,7 @@ impl SignedTransaction {
             .iter()
             .map(|msg| msg.to_amino_protobuf().map(Cow::from))
             .collect::<SigningResult<Vec<_>>>()?;
-        let signatures = self
-            .signatures
-            .iter()
-            .map(|sign| sign.to_vec().into())
-            .collect();
+        let signatures = vec![self.signature.to_vec().into()];
 
         let tx = Proto::Transaction {
             msgs,

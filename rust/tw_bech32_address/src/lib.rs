@@ -121,15 +121,20 @@ impl Bech32Address {
         coin: &dyn CoinContext,
         address_str: String,
         prefix: Option<Bech32Prefix>,
-    ) -> AddressResult<Bech32Address>
-    where
-        Self: Sized,
-    {
+    ) -> AddressResult<Bech32Address> {
         let hrp = match prefix {
             Some(Bech32Prefix { hrp }) => hrp,
             None => coin.hrp().ok_or(AddressError::InvalidHrp)?,
         };
         Self::from_str_checked([hrp], address_str)
+    }
+
+    pub fn from_key_hash_with_coin(
+        coin: &dyn CoinContext,
+        key_hash: Data,
+    ) -> AddressResult<Bech32Address> {
+        let hrp = coin.hrp().ok_or(AddressError::InvalidHrp)?;
+        Bech32Address::new(hrp, key_hash)
     }
 
     pub fn key_hash(&self) -> &[u8] {
