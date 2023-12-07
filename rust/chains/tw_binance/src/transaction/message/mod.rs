@@ -9,7 +9,9 @@ use serde::{Serialize, Serializer};
 use serde_json::Value as Json;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_memory::Data;
+use tw_proto::Binance::Proto;
 
+pub mod htlt_order;
 pub mod send_order;
 pub mod token_order;
 pub mod trade_order;
@@ -42,4 +44,22 @@ impl Serialize for dyn BinanceMessage {
 
 pub fn message_to_json<T: Serialize>(msg: T) -> SigningResult<Json> {
     serde_json::to_value(msg).map_err(|_| SigningError(SigningErrorType::Error_internal))
+}
+
+#[derive(Serialize)]
+pub struct Token {
+    /// Token ID.
+    pub denom: String,
+
+    /// Amount.
+    pub amount: i64,
+}
+
+impl Token {
+    pub fn to_proto(&self) -> Proto::mod_SendOrder::Token {
+        Proto::mod_SendOrder::Token {
+            denom: self.denom.clone().into(),
+            amount: self.amount,
+        }
+    }
 }

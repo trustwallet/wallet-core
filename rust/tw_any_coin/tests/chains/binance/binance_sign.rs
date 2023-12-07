@@ -17,6 +17,13 @@ const ACCOUNT_19_PRIVATE_KEY: &str =
 const ACCOUNT_15_PRIVATE_KEY: &str =
     "eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d";
 
+fn make_token(denom: &str, amount: i64) -> Proto::mod_SendOrder::Token {
+    Proto::mod_SendOrder::Token {
+        denom: denom.into(),
+        amount,
+    }
+}
+
 #[test]
 fn test_binance_sign_trade_order() {
     // bnb1hgm0p7khfk85zpz5v0j8wnej3a90w709vhkdfu
@@ -56,28 +63,17 @@ fn test_binance_sign_trade_order() {
 
 #[test]
 fn test_binance_sign_send_order() {
-    fn make_token(denom: &str, amount: i64) -> Proto::mod_SendOrder::Token {
-        Proto::mod_SendOrder::Token {
-            denom: denom.into(),
-            amount,
-        }
-    }
-
     let amount = 1_001_000_000;
-    let from_address_key_hash = "40c2979694bbc961023d1d27be6fc4d21a9febe6"
-        .decode_hex()
-        .unwrap();
-    let to_address_key_hash = "88b37d5e05f3699e2a1406468e5d87cb9dcceb95"
-        .decode_hex()
-        .unwrap();
+    let from_address_key_hash = "40c2979694bbc961023d1d27be6fc4d21a9febe6";
+    let to_address_key_hash = "88b37d5e05f3699e2a1406468e5d87cb9dcceb95";
 
     let send_order = Proto::SendOrder {
         inputs: vec![Proto::mod_SendOrder::Input {
-            address: from_address_key_hash.into(),
+            address: from_address_key_hash.decode_hex().unwrap().into(),
             coins: vec![make_token("BNB", amount)],
         }],
         outputs: vec![Proto::mod_SendOrder::Output {
-            address: to_address_key_hash.into(),
+            address: to_address_key_hash.decode_hex().unwrap().into(),
             coins: vec![make_token("BNB", amount)],
         }],
     };
@@ -118,12 +114,10 @@ fn test_binance_sign_send_order() {
 
 #[test]
 fn test_binance_sign_token_freeze_order() {
-    let from_address_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1"
-        .decode_hex()
-        .unwrap();
+    let from_address_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1";
 
     let freeze_order = Proto::TokenFreezeOrder {
-        from: from_address_key_hash.into(),
+        from: from_address_key_hash.decode_hex().unwrap().into(),
         symbol: "NNB-338_BNB".into(),
         amount: 1000000,
     };
@@ -154,12 +148,10 @@ fn test_binance_sign_token_freeze_order() {
 
 #[test]
 fn test_binance_sign_token_unfreeze_order() {
-    let from_address_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1"
-        .decode_hex()
-        .unwrap();
+    let from_address_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1";
 
     let unfreeze_order = Proto::TokenUnfreezeOrder {
-        from: from_address_key_hash.into(),
+        from: from_address_key_hash.decode_hex().unwrap().into(),
         symbol: "NNB-338_BNB".into(),
         amount: 1000000,
     };
@@ -190,12 +182,10 @@ fn test_binance_sign_token_unfreeze_order() {
 
 #[test]
 fn test_binance_sign_token_issue_order() {
-    let from_address_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1"
-        .decode_hex()
-        .unwrap();
+    let from_address_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1";
 
     let issue_order = Proto::TokenIssueOrder {
-        from: from_address_key_hash.into(),
+        from: from_address_key_hash.decode_hex().unwrap().into(),
         name: "NewBinanceToken".into(),
         symbol: "NNB-338_BNB".into(),
         total_supply: 1000000000,
@@ -228,12 +218,10 @@ fn test_binance_sign_token_issue_order() {
 
 #[test]
 fn test_binance_sign_token_mint_order() {
-    let from_address_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1"
-        .decode_hex()
-        .unwrap();
+    let from_address_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1";
 
     let mint_order = Proto::TokenMintOrder {
-        from: from_address_key_hash.into(),
+        from: from_address_key_hash.decode_hex().unwrap().into(),
         symbol: "NNB-338_BNB".into(),
         amount: 1000000,
     };
@@ -256,6 +244,79 @@ fn test_binance_sign_token_mint_order() {
         "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1120b",
         "4e4e422d3333385f424e42",
         "18c0843d126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240e3022069d897bf5bf4846d354fcd2c0e85807053be643c8b8c8596306003f7340d43a162722673eb848258b0435b1f49993d0e75d4ae43d03453a3ae57fe6991180f2001",
+    );
+    assert_eq!(output.encoded.to_hex(), expected_encoded);
+}
+
+#[test]
+fn test_binance_sign_token_burn_order() {
+    let from_address_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1";
+
+    let burn_order = Proto::TokenBurnOrder {
+        from: from_address_key_hash.decode_hex().unwrap().into(),
+        symbol: "NNB-338_BNB".into(),
+        amount: 1000000,
+    };
+
+    let input = Proto::SigningInput {
+        chain_id: "test-chain".into(),
+        account_number: 15,
+        sequence: 1,
+        private_key: ACCOUNT_15_PRIVATE_KEY.decode_hex().unwrap().into(),
+        order_oneof: OrderEnum::burn_order(burn_order),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Binance, input);
+
+    let expected_encoded = concat!(
+        "a101f0625dee0a2b",
+        "7ed2d2a0",
+        "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1120b",
+        "4e4e422d3333385f424e42",
+        "18c0843d126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240e3022069d897bf5bf4846d354fcd2c0e85807053be643c8b8c8596306003f7340d43a162722673eb848258b0435b1f49993d0e75d4ae43d03453a3ae57fe6991180f2001",
+    );
+    assert_eq!(output.encoded.to_hex(), expected_encoded);
+}
+
+#[test]
+fn test_binance_sign_htlt_order() {
+    let from_address_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1";
+    let to_address_key_hash = "0153f11d6db7e69c7d51e771c697378018fb6c24";
+    let random_number_hash = "e8eae926261ab77d018202434791a335249b470246a7b02e28c3b2fb6ffad8f3";
+
+    let htlt_order = Proto::HTLTOrder {
+        from: from_address_key_hash.decode_hex().unwrap().into(),
+        to: to_address_key_hash.decode_hex().unwrap().into(),
+        random_number_hash: random_number_hash.decode_hex().unwrap().into(),
+        timestamp: 1_567_746_273,
+        amount: vec![make_token("BNB", 100000000)],
+        expected_income: "100000000:BTC-1DC".into(),
+        height_span: 400,
+        cross_chain: false,
+        ..Proto::HTLTOrder::default()
+    };
+
+    let input = Proto::SigningInput {
+        chain_id: "test-chain".into(),
+        account_number: 15,
+        sequence: 0,
+        private_key: ACCOUNT_15_PRIVATE_KEY.decode_hex().unwrap().into(),
+        order_oneof: OrderEnum::htlt_order(htlt_order),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Binance, input);
+
+    let expected_encoded = concat!(
+        "ee01f0625dee0a7ab33f9a240a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e112140153f11d6db7",
+        "e69c7d51e771c697378018fb6c242a20e8eae926261ab77d018202434791a335249b470246a7b02e28c3",
+        "b2fb6ffad8f330e1d1c7eb053a0a0a03424e421080c2d72f42113130303030303030303a4254432d3144",
+        "43489003126c0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f",
+        "6b6a8fc7124051439de2da19fe9fd22137c903cfc5dc87553bf05dca0bb202c0e07c47f9b51269efa272",
+        "43eb7b55888f5384a84ac1eac6d325c830d1be0ed042838e2dc0f6a9180f",
     );
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }

@@ -6,31 +6,13 @@
 
 use crate::address::BinanceAddress;
 use crate::amino::AminoEncoder;
-use crate::transaction::message::{message_to_json, BinanceMessage};
+use crate::transaction::message::{message_to_json, BinanceMessage, Token};
 use serde::Serialize;
 use serde_json::Value as Json;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::SigningResult;
 use tw_memory::Data;
 use tw_proto::Binance::Proto;
-
-#[derive(Serialize)]
-pub struct Token {
-    /// Token ID.
-    pub denom: String,
-
-    /// Amount.
-    pub amount: i64,
-}
-
-impl Token {
-    pub fn to_proto(&self) -> Proto::mod_SendOrder::Token {
-        Proto::mod_SendOrder::Token {
-            denom: self.denom.clone().into(),
-            amount: self.amount,
-        }
-    }
-}
 
 /// Either an input or output of a `SendOrder`.
 #[derive(Serialize)]

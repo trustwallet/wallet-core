@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::address::BinanceAddress;
+use crate::transaction::message::Token;
 use crate::transaction::message::{BinanceMessage, BinanceMessageBox};
 use crate::transaction::UnsignedTransaction;
 use tw_coin_entry::coin_context::CoinContext;
@@ -49,11 +50,13 @@ impl TxBuilder {
             OrderEnum::unfreeze_order(ref unfreeze_order) => {
                 Self::unfreeze_order_from_proto(coin, unfreeze_order)
             },
+            OrderEnum::htlt_order(ref htlt_order) => Self::htlt_order_from_proto(coin, htlt_order),
             // TODO insert between
             OrderEnum::issue_order(ref issue_order) => {
                 Self::issue_order_from_proto(coin, issue_order)
             },
             OrderEnum::mint_order(ref mint_order) => Self::mint_order_from_proto(coin, mint_order),
+            OrderEnum::burn_order(ref burn_order) => Self::burn_order_from_proto(coin, burn_order),
             OrderEnum::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
             _ => todo!(),
         }
@@ -102,7 +105,7 @@ impl TxBuilder {
         coin: &dyn CoinContext,
         send_order: &Proto::SendOrder<'_>,
     ) -> SigningResult<BinanceMessageBox> {
-        use crate::transaction::message::send_order::{InOut, SendOrder, Token};
+        use crate::transaction::message::send_order::{InOut, SendOrder};
 
         fn in_out_from_proto(
             coin: &dyn CoinContext,
@@ -110,13 +113,7 @@ impl TxBuilder {
             coins: &[Proto::mod_SendOrder::Token],
         ) -> SigningResult<InOut> {
             let address = BinanceAddress::from_key_hash_with_coin(coin, address_key_hash.to_vec())?;
-            let coins = coins
-                .iter()
-                .map(|token| Token {
-                    denom: token.denom.to_string(),
-                    amount: token.amount,
-                })
-                .collect();
+            let coins = coins.iter().map(TxBuilder::token_from_proto).collect();
 
             Ok(InOut { address, coins })
         }
@@ -166,6 +163,36 @@ impl TxBuilder {
         .into_boxed())
     }
 
+    pub fn htlt_order_from_proto(
+        coin: &dyn CoinContext,
+        htlt_order: &Proto::HTLTOrder<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::htlt_order::HTLTOrder;
+
+        let from = BinanceAddress::from_key_hash_with_coin(coin, htlt_order.from.to_vec())?;
+        let to = BinanceAddress::from_key_hash_with_coin(coin, htlt_order.to.to_vec())?;
+
+        let amount = htlt_order
+            .amount
+            .iter()
+            .map(Self::token_from_proto)
+            .collect();
+
+        Ok(HTLTOrder {
+            from,
+            to,
+            recipient_other_chain: htlt_order.recipient_other_chain.to_string(),
+            sender_other_chain: htlt_order.sender_other_chain.to_string(),
+            random_number_hash: htlt_order.random_number_hash.to_vec(),
+            timestamp: htlt_order.timestamp,
+            amount,
+            expected_income: htlt_order.expected_income.to_string(),
+            height_span: htlt_order.height_span,
+            cross_chain: htlt_order.cross_chain,
+        }
+        .into_boxed())
+    }
+
     pub fn issue_order_from_proto(
         coin: &dyn CoinContext,
         issue_order: &Proto::TokenIssueOrder<'_>,
@@ -196,5 +223,27 @@ impl TxBuilder {
             amount: mint_order.amount,
         }
         .into_boxed())
+    }
+
+    pub fn burn_order_from_proto(
+        coin: &dyn CoinContext,
+        burn_order: &Proto::TokenBurnOrder<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::token_order::TokenBurnOrder;
+
+        let from = BinanceAddress::from_key_hash_with_coin(coin, burn_order.from.to_vec())?;
+        Ok(TokenBurnOrder {
+            from,
+            symbol: burn_order.symbol.to_string(),
+            amount: burn_order.amount,
+        }
+        .into_boxed())
+    }
+
+    fn token_from_proto(token: &Proto::mod_SendOrder::Token) -> Token {
+        Token {
+            denom: token.denom.to_string(),
+            amount: token.amount,
+        }
     }
 }

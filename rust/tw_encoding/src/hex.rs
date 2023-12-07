@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 pub use hex::FromHexError;
+use serde::{Serialize, Serializer};
 use tw_memory::Data;
 
 pub type FromHexResult<T> = Result<T, FromHexError>;
@@ -63,6 +64,15 @@ pub fn encode<T: AsRef<[u8]>>(data: T, prefixed: bool) -> String {
         return format!("0x{encoded}");
     }
     encoded
+}
+
+/// Serializes the `value` as a hex.
+pub fn as_hex<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
+where
+    T: ToHex,
+    S: Serializer,
+{
+    value.to_hex().serialize(serializer)
 }
 
 #[cfg(test)]

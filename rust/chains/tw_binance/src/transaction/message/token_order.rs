@@ -137,3 +137,33 @@ impl BinanceMessage for TokenMintOrder {
             .encode())
     }
 }
+
+#[derive(Serialize)]
+pub struct TokenBurnOrder {
+    pub from: BinanceAddress,
+    pub symbol: String,
+    pub amount: i64,
+}
+
+impl TokenBurnOrder {
+    /// cbindgen:ignore
+    pub const PREFIX: [u8; 4] = [0x7E, 0xD2, 0xD2, 0xA0];
+}
+
+impl BinanceMessage for TokenBurnOrder {
+    fn to_json(&self) -> SigningResult<Json> {
+        message_to_json(self)
+    }
+
+    fn to_amino_protobuf(&self) -> SigningResult<Data> {
+        let msg = Proto::TokenBurnOrder {
+            from: self.from.data().into(),
+            symbol: self.symbol.clone().into(),
+            amount: self.amount.clone().into(),
+        };
+
+        Ok(AminoEncoder::new(&Self::PREFIX)
+            .extend_with_msg(&msg)?
+            .encode())
+    }
+}
