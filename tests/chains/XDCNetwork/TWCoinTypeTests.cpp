@@ -20,7 +20,7 @@ TEST(TWXDCNetworkCoinType, TWCoinType) {
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x5c4fa942ff0b39651e5ffd21d646f2956a289ce9f26a59ddbef5dfa27701aa56"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
-    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("xdcbc4f1b0c59857dd97089d9d860f169d712c1fb6e"));
+    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0xbc4f1b0c59857dd97089d9d860f169d712c1fb6e"));
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
     assertStringsEqual(id, "xdc");
@@ -31,5 +31,5 @@ TEST(TWXDCNetworkCoinType, TWCoinType) {
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
     assertStringsEqual(txUrl, "https://xdc.blocksscan.io/tx/0x5c4fa942ff0b39651e5ffd21d646f2956a289ce9f26a59ddbef5dfa27701aa56");
-    assertStringsEqual(accUrl, "https://xdc.blocksscan.io/address/xdcbc4f1b0c59857dd97089d9d860f169d712c1fb6e");
+    assertStringsEqual(accUrl, "https://xdc.blocksscan.io/address/0xbc4f1b0c59857dd97089d9d860f169d712c1fb6e");
 }
