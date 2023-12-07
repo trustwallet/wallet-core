@@ -15,6 +15,7 @@ pub mod htlt_order;
 pub mod send_order;
 pub mod token_order;
 pub mod trade_order;
+pub mod tranfer_out_order;
 
 pub type BinanceMessageBox = Box<dyn BinanceMessage>;
 

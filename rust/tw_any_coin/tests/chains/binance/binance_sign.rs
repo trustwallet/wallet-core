@@ -421,3 +421,37 @@ fn test_binance_sign_refund_htlt_order() {
     );
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
+
+#[test]
+fn test_binance_sign_transfer_out_order() {
+    let from_address_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1";
+    let to_address_data = "0x35552c16704d214347f29Fa77f77DA6d75d7C752";
+
+    let transfer_out = Proto::TransferOut {
+        from: from_address_key_hash.decode_hex().unwrap().into(),
+        to: to_address_data.decode_hex().unwrap().into(),
+        amount: Some(make_token("BNB", 100000000)),
+        expire_time: 12345678,
+    };
+
+    let input = Proto::SigningInput {
+        chain_id: "test-chain".into(),
+        account_number: 15,
+        sequence: 1,
+        private_key: ACCOUNT_15_PRIVATE_KEY.decode_hex().unwrap().into(),
+        order_oneof: OrderEnum::transfer_out_order(transfer_out),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Binance, input);
+
+    let expected_encoded = concat!(
+        "b701f0625dee0a41800819c00a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1121435552c16704d",
+        "214347f29fa77f77da6d75d7c7521a0a0a03424e421080c2d72f20cec2f105126e0a26eb5ae9872103a9",
+        "a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc712407eda148e1167b1be12",
+        "71a788ccf4e3eade1c7e1773e9d2093982d7f802f8f85f35ef550049011728206e4eda1a272f9e96fd95",
+        "ef3983cad85a29cd14262c22e0180f2001",
+    );
+    assert_eq!(output.encoded.to_hex(), expected_encoded);
+}

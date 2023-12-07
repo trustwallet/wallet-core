@@ -10,6 +10,8 @@ use crate::transaction::message::{BinanceMessage, BinanceMessageBox};
 use crate::transaction::UnsignedTransaction;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_evm::address::Address as EthereumAddress;
+use tw_hash::H160;
 use tw_proto::Binance::Proto;
 
 pub struct TxBuilder;
@@ -60,12 +62,14 @@ impl TxBuilder {
             OrderEnum::refundHTLT_order(ref refund_htlt) => {
                 Self::refund_htlt_order_from_proto(coin, refund_htlt)
             },
-            // TODO insert between
             OrderEnum::issue_order(ref issue_order) => {
                 Self::issue_order_from_proto(coin, issue_order)
             },
             OrderEnum::mint_order(ref mint_order) => Self::mint_order_from_proto(coin, mint_order),
             OrderEnum::burn_order(ref burn_order) => Self::burn_order_from_proto(coin, burn_order),
+            OrderEnum::transfer_out_order(ref transfer_out) => {
+                Self::transfer_out_order_from_proto(coin, transfer_out)
+            },
             OrderEnum::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
             _ => todo!(),
         }
@@ -295,6 +299,32 @@ impl TxBuilder {
             from,
             symbol: burn_order.symbol.to_string(),
             amount: burn_order.amount,
+        }
+        .into_boxed())
+    }
+
+    pub fn transfer_out_order_from_proto(
+        coin: &dyn CoinContext,
+        transfer_out: &Proto::TransferOut<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::tranfer_out_order::TransferOutOrder;
+
+        let from = BinanceAddress::from_key_hash_with_coin(coin, transfer_out.from.to_vec())?;
+
+        let to_bytes = H160::try_from(transfer_out.to.as_ref())
+            .map_err(|_| SigningError(SigningErrorType::Error_invalid_address))?;
+        let to = EthereumAddress::from_bytes(to_bytes);
+
+        let amount_proto = transfer_out
+            .amount
+            .as_ref()
+            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+
+        Ok(TransferOutOrder {
+            from,
+            to,
+            amount: Self::token_from_proto(amount_proto),
+            expire_time: transfer_out.expire_time,
         }
         .into_boxed())
     }
