@@ -59,3 +59,34 @@ impl BinanceMessage for HTLTOrder {
             .encode())
     }
 }
+
+#[derive(Serialize)]
+pub struct DepositHTLTOrder {
+    pub from: BinanceAddress,
+    pub amount: Vec<Token>,
+    #[serde(serialize_with = "as_hex")]
+    pub swap_id: Data,
+}
+
+impl DepositHTLTOrder {
+    /// cbindgen:ignore
+    pub const PREFIX: [u8; 4] = [0x63, 0x98, 0x64, 0x96];
+}
+
+impl BinanceMessage for DepositHTLTOrder {
+    fn to_json(&self) -> SigningResult<Json> {
+        message_to_json(self)
+    }
+
+    fn to_amino_protobuf(&self) -> SigningResult<Data> {
+        let msg = Proto::DepositHTLTOrder {
+            from: self.from.data().into(),
+            amount: self.amount.iter().map(Token::to_proto).collect(),
+            swap_id: self.swap_id.clone().into(),
+        };
+
+        Ok(AminoEncoder::new(&Self::PREFIX)
+            .extend_with_msg(&msg)?
+            .encode())
+    }
+}

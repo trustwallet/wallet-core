@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::address::BinanceAddress;
+use crate::transaction::message::htlt_order::DepositHTLTOrder;
 use crate::transaction::message::Token;
 use crate::transaction::message::{BinanceMessage, BinanceMessageBox};
 use crate::transaction::UnsignedTransaction;
@@ -51,6 +52,9 @@ impl TxBuilder {
                 Self::unfreeze_order_from_proto(coin, unfreeze_order)
             },
             OrderEnum::htlt_order(ref htlt_order) => Self::htlt_order_from_proto(coin, htlt_order),
+            OrderEnum::depositHTLT_order(ref deposit_htlt) => {
+                Self::deposit_htlt_order_from_proto(coin, deposit_htlt)
+            },
             // TODO insert between
             OrderEnum::issue_order(ref issue_order) => {
                 Self::issue_order_from_proto(coin, issue_order)
@@ -189,6 +193,28 @@ impl TxBuilder {
             expected_income: htlt_order.expected_income.to_string(),
             height_span: htlt_order.height_span,
             cross_chain: htlt_order.cross_chain,
+        }
+        .into_boxed())
+    }
+
+    pub fn deposit_htlt_order_from_proto(
+        coin: &dyn CoinContext,
+        deposit_htlt: &Proto::DepositHTLTOrder<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::htlt_order::HTLTOrder;
+
+        let from = BinanceAddress::from_key_hash_with_coin(coin, deposit_htlt.from.to_vec())?;
+
+        let amount = deposit_htlt
+            .amount
+            .iter()
+            .map(Self::token_from_proto)
+            .collect();
+
+        Ok(DepositHTLTOrder {
+            from,
+            amount,
+            swap_id: deposit_htlt.swap_id.to_vec(),
         }
         .into_boxed())
     }

@@ -16,6 +16,8 @@ const ACCOUNT_19_PRIVATE_KEY: &str =
     "95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832";
 const ACCOUNT_15_PRIVATE_KEY: &str =
     "eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d";
+const ACCOUNT_16_PRIVATE_KEY: &str =
+    "851fab89c14f4bbec0cc06f5e445ec065efc641068d78b308c67217d9bd5c88a";
 
 fn make_token(denom: &str, amount: i64) -> Proto::mod_SendOrder::Token {
     Proto::mod_SendOrder::Token {
@@ -317,6 +319,39 @@ fn test_binance_sign_htlt_order() {
         "43489003126c0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f",
         "6b6a8fc7124051439de2da19fe9fd22137c903cfc5dc87553bf05dca0bb202c0e07c47f9b51269efa272",
         "43eb7b55888f5384a84ac1eac6d325c830d1be0ed042838e2dc0f6a9180f",
+    );
+    assert_eq!(output.encoded.to_hex(), expected_encoded);
+}
+
+#[test]
+fn test_binance_sign_deposit_htlt_order() {
+    let from_address_key_hash = "0153f11d6db7e69c7d51e771c697378018fb6c24";
+    let swap_id = "dd8fd4719741844d35eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e5";
+
+    let deposit_htlt = Proto::DepositHTLTOrder {
+        from: from_address_key_hash.decode_hex().unwrap().into(),
+        amount: vec![make_token("BTC-1DC", 100000000)],
+        swap_id: swap_id.decode_hex().unwrap().into(),
+    };
+
+    let input = Proto::SigningInput {
+        chain_id: "test-chain".into(),
+        account_number: 16,
+        sequence: 0,
+        private_key: ACCOUNT_16_PRIVATE_KEY.decode_hex().unwrap().into(),
+        order_oneof: OrderEnum::depositHTLT_order(deposit_htlt),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Binance, input);
+
+    let expected_encoded = concat!(
+        "c001f0625dee0a4c639864960a140153f11d6db7e69c7d51e771c697378018fb6c24120e0a074254432d",
+        "3144431080c2d72f1a20dd8fd4719741844d35eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e5",
+        "126c0a26eb5ae98721038df6960084e20b2d07d50e1422f94105c6241d9f1482a4eb79ce8bfd460f19e4",
+        "12400ca4144c6818e2836d09b4faf3161781d85f9adfc00badb2eaa0953174610a233b81413dafcf8471",
+        "6abad48a4ed3aeb9884d90eb8416eec5d5c0c6930ab60bd01810",
     );
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
