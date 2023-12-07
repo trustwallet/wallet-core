@@ -39,6 +39,10 @@ impl TxBuilder {
 
         match input.order_oneof {
             OrderEnum::trade_order(ref new_order) => Self::trade_order_from_proto(coin, new_order),
+            OrderEnum::send_order(ref send_order) => Self::send_order_from_proto(coin, send_order),
+            OrderEnum::cancel_trade_order(ref cancel_order) => {
+                Self::cancel_order_from_proto(coin, cancel_order)
+            },
             OrderEnum::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
             _ => todo!(),
         }
@@ -66,5 +70,58 @@ impl TxBuilder {
             time_in_force: new_order.timeinforce,
         }
         .into_boxed())
+    }
+
+    pub fn cancel_order_from_proto(
+        coin: &dyn CoinContext,
+        cancel_order: &Proto::CancelTradeOrder<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::trade_order::CancelTradeOrder;
+
+        let sender = BinanceAddress::from_key_hash_with_coin(coin, cancel_order.sender.to_vec())?;
+        Ok(CancelTradeOrder {
+            sender,
+            symbol: cancel_order.symbol.to_string(),
+            refid: cancel_order.refid.to_string(),
+        }
+        .into_boxed())
+    }
+
+    pub fn send_order_from_proto(
+        coin: &dyn CoinContext,
+        send_order: &Proto::SendOrder<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::send_order::{InOut, SendOrder, Token};
+
+        fn in_out_from_proto(
+            coin: &dyn CoinContext,
+            address_key_hash: &[u8],
+            coins: &[Proto::mod_SendOrder::Token],
+        ) -> SigningResult<InOut> {
+            let address = BinanceAddress::from_key_hash_with_coin(coin, address_key_hash.to_vec())?;
+            let coins = coins
+                .iter()
+                .map(|token| Token {
+                    denom: token.denom.to_string(),
+                    amount: token.amount,
+                })
+                .collect();
+
+            Ok(InOut { address, coins })
+        }
+
+        let inputs = send_order
+            .inputs
+            .iter()
+            .map(|input| in_out_from_proto(coin, &input.address, &input.coins))
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        let outputs = send_order
+            .outputs
+            .iter()
+            .map(|output| in_out_from_proto(coin, &output.address, &output.coins))
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        Ok(SendOrder { inputs, outputs }.into_boxed())
     }
 }

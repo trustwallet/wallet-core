@@ -44,6 +44,7 @@ pub struct NewTradeOrder {
 }
 
 impl NewTradeOrder {
+    /// cbindgen:ignore
     pub const PREFIX: [u8; 4] = [0xCE, 0x6D, 0xC0, 0x43];
 }
 
@@ -62,6 +63,38 @@ impl BinanceMessage for NewTradeOrder {
             side: self.side,
             symbol: self.symbol.clone().into(),
             timeinforce: self.time_in_force,
+        };
+        Ok(AminoEncoder::new(&Self::PREFIX)
+            .extend_with_msg(&msg)?
+            .encode())
+    }
+}
+
+#[derive(Serialize)]
+pub struct CancelTradeOrder {
+    /// Originating address.
+    pub sender: BinanceAddress,
+    /// Symbol for trading pair in full name of the tokens.
+    pub symbol: String,
+    /// Order id to cancel.
+    pub refid: String,
+}
+
+impl CancelTradeOrder {
+    /// cbindgen:ignore
+    pub const PREFIX: [u8; 4] = [0x16, 0x6E, 0x68, 0x1B];
+}
+
+impl BinanceMessage for CancelTradeOrder {
+    fn to_json(&self) -> SigningResult<Json> {
+        message_to_json(self)
+    }
+
+    fn to_amino_protobuf(&self) -> SigningResult<Data> {
+        let msg = Proto::CancelTradeOrder {
+            sender: self.sender.data().into(),
+            symbol: self.symbol.clone().into(),
+            refid: self.refid.clone().into(),
         };
         Ok(AminoEncoder::new(&Self::PREFIX)
             .extend_with_msg(&msg)?
