@@ -5,12 +5,12 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::address::BinanceAddress;
-use crate::amino::Amino;
+use crate::amino::AminoEncoder;
 use crate::transaction::message::{message_to_json, BinanceMessage};
 use serde::Serialize;
 use serde_json::Value as Json;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::{SigningError, SigningResult};
+use tw_coin_entry::error::SigningResult;
 use tw_memory::Data;
 use tw_proto::Binance::Proto;
 
@@ -63,6 +63,8 @@ impl BinanceMessage for NewTradeOrder {
             symbol: self.symbol.clone().into(),
             timeinforce: self.time_in_force,
         };
-        Amino::encode_proto(&Self::PREFIX, &msg).map_err(SigningError::from)
+        Ok(AminoEncoder::new(&Self::PREFIX)
+            .extend_with_msg(&msg)?
+            .encode())
     }
 }

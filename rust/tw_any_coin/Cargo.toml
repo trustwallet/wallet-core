@@ -11,9 +11,10 @@ tw_hash = { path = "../tw_hash" }
 tw_keypair = { path = "../tw_keypair" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
+tw_proto = { path = "../tw_proto", optional = true }
 
 [features]
-test-utils = []
+test-utils = ["tw_proto"]
 
 [dev-dependencies]
 serde = { version = "1.0", features = ["derive"] }
@@ -24,4 +25,3 @@ tw_keypair = { path = "../tw_keypair", features = ["test-utils"] }
 tw_memory = { path = "../tw_memory", features = ["test-utils"] }
 tw_misc = { path = "../tw_misc", features = ["test-utils"] }
 tw_number = { path = "../tw_number" }
-tw_proto = { path = "../tw_proto" }

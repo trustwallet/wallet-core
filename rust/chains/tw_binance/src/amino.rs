@@ -9,45 +9,45 @@ use tw_encoding::{EncodingError, EncodingResult};
 use tw_memory::Data;
 use tw_proto::serialize;
 
-pub struct Amino;
+pub struct AminoEncoder {
+    /// The Amino content starts with a prefix.
+    content: Data,
+}
 
-impl Amino {
-    pub fn encode(prefix: &[u8], content: &[u8]) -> Data {
-        let capacity = prefix.len() + content.len();
-        let mut buffer = Vec::with_capacity(capacity);
-
-        buffer.extend_from_slice(prefix);
-        buffer.extend_from_slice(content);
-
-        buffer
+impl AminoEncoder {
+    pub fn new(prefix: &[u8]) -> AminoEncoder {
+        AminoEncoder {
+            content: prefix.to_vec(),
+        }
     }
 
-    pub fn encode_proto<T: MessageWrite>(prefix: &[u8], msg: &T) -> EncodingResult<Data> {
-        let content = serialize(msg).map_err(|_| EncodingError::Internal)?;
-        Ok(Amino::encode(prefix, &content))
+    pub fn extend_content(mut self, content: &[u8]) -> AminoEncoder {
+        self.content.extend_from_slice(content);
+        self
     }
 
-    pub fn encode_with_content_size_prefix(prefix: &[u8], content: &[u8]) -> EncodingResult<Data> {
+    pub fn extend_with_msg<M: MessageWrite>(mut self, msg: &M) -> EncodingResult<AminoEncoder> {
+        let msg_data = serialize(msg).map_err(|_| EncodingError::Internal)?;
+        self.content.extend_from_slice(&msg_data);
+        Ok(self)
+    }
+
+    pub fn encode(self) -> Data {
+        self.content
+    }
+
+    pub fn encode_size_prefixed(self) -> EncodingResult<Data> {
         const CONTENT_SIZE_CAPACITY: usize = 10;
 
-        let content_len = prefix.len() + content.len();
+        let content_len = self.content.len();
         let capacity = content_len + CONTENT_SIZE_CAPACITY;
 
         let mut buffer = Vec::with_capacity(capacity);
 
         Self::write_varint(&mut buffer, content_len as u64)?;
-        buffer.extend_from_slice(prefix);
-        buffer.extend_from_slice(content);
+        buffer.extend_from_slice(&self.content);
 
         Ok(buffer)
-    }
-
-    pub fn encode_proto_with_content_size_prefix<T: MessageWrite>(
-        prefix: &[u8],
-        msg: &T,
-    ) -> EncodingResult<Data> {
-        let content = serialize(msg).map_err(|_| EncodingError::Internal)?;
-        Amino::encode_with_content_size_prefix(prefix, &content)
     }
 
     /// This method takes `&mut Data` instead of `&mut [u8]` because the given `buffer` can be extended (become longer).
@@ -76,10 +76,12 @@ mod tests {
         let content = input.content.decode_hex().unwrap();
 
         let actual = if input.content_size_prefixed {
-            Amino::encode_with_content_size_prefix(&prefix, &content)
+            AminoEncoder::new(&prefix)
+                .extend_content(&content)
+                .encode_size_prefixed()
                 .expect("Error on Amino encoding with content size prefix")
         } else {
-            Amino::encode(&prefix, &content)
+            AminoEncoder::new(&prefix).encode()
         };
 
         let expected = input.expected.decode_hex().unwrap();

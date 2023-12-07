@@ -4,14 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::modules::serializer::BinanceAminoSerializer;
 use crate::modules::tx_builder::TxBuilder;
-use crate::transaction::JsonTxPreimage;
+use crate::transaction::{JsonTxPreimage, SignerInfo};
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::SigningResult;
 use tw_coin_entry::signing_output_error;
 use tw_hash::{concat, H512};
 use tw_keypair::ecdsa::secp256k1;
-use tw_keypair::traits::SigningKeyTrait;
+use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
 use tw_proto::Binance::Proto;
 
 pub struct BinanceSigner;
@@ -33,11 +34,17 @@ impl BinanceSigner {
         let JsonTxPreimage { tx_hash, .. } = unsigned_tx.preimage_hash()?;
 
         let key_pair = secp256k1::KeyPair::try_from(input.private_key.as_ref())?;
+
         let signature = key_pair.sign(tx_hash)?;
         let signature: H512 = concat(signature.r(), signature.s());
 
-        let signed_tx = unsigned_tx.into_signed(signature);
-        let encoded_tx = signed_tx.encode()?;
+        let public_key = key_pair.public().compressed();
+
+        let signed_tx = unsigned_tx.into_signed(SignerInfo {
+            public_key,
+            signature,
+        });
+        let encoded_tx = BinanceAminoSerializer::serialize_signed_tx(&signed_tx)?;
 
         Ok(Proto::SigningOutput {
             encoded: encoded_tx.into(),

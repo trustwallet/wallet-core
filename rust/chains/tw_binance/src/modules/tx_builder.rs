@@ -23,7 +23,7 @@ impl TxBuilder {
         Ok(UnsignedTransaction {
             account_number: input.account_number,
             chain_id: input.chain_id.to_string(),
-            data: Vec::default(),
+            data: None,
             memo: input.memo.to_string(),
             msgs: vec![msg],
             sequence: input.sequence,
