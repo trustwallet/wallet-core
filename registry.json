@@ -2573,10 +2573,10 @@
     }
   },
   {
-    "id": "tomochain",
-    "name": "TomoChain",
+    "id": "viction",
+    "name": "Viction",
     "coinId": 889,
-    "symbol": "TOMO",
+    "symbol": "VIC",
     "decimals": 18,
     "blockchain": "Ethereum",
     "derivation": [
@@ -2589,15 +2589,15 @@
     "chainId": "88",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://tomoscan.io",
+      "url": "https://www.vicscan.xyz",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x35a8d3ab06c94d5b7d27221b7c9a24ba3f1710dd0fcfd75c5d59b3a885fd709b",
       "sampleAccount": "0x86cCbD9bfb371c355202086882bC644A7D0b024B"
     },
     "info": {
-      "url": "https://tomochain.com",
-      "source": "https://github.com/tomochain/tomochain",
+      "url": "https://www.viction.xyz/",
+      "source": "https://github.com/BuildOnViction/tomochain",
       "rpc": "https://rpc.tomochain.com",
       "documentation": "https://eth.wiki/json-rpc/API"
     }

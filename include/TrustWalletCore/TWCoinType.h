@@ -72,7 +72,7 @@ enum TWCoinType {
     TWCoinTypeTheta = 500,
     TWCoinTypeThunderCore = 1001,
     TWCoinTypeNEO = 888,
-    TWCoinTypeTomoChain = 889,
+    TWCoinTypeViction = 889,
     TWCoinTypeTron = 195,
     TWCoinTypeVeChain = 818,
     TWCoinTypeViacoin = 14,
@@ -179,6 +179,7 @@ enum TWCoinType {
     TWCoinTypeZenEON = 7332,
     TWCoinTypeInternetComputer = 223,
     TWCoinTypeTia = 21000118,
+    // end_of_tw_coin_type_marker_do_not_modify
 };
 
 /// Returns the blockchain for a coin type.
