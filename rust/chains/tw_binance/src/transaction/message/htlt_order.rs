@@ -90,3 +90,64 @@ impl BinanceMessage for DepositHTLTOrder {
             .encode())
     }
 }
+
+#[derive(Serialize)]
+pub struct ClaimHTLTOrder {
+    pub from: BinanceAddress,
+    #[serde(serialize_with = "as_hex")]
+    pub swap_id: Data,
+    #[serde(serialize_with = "as_hex")]
+    pub random_number: Data,
+}
+
+impl ClaimHTLTOrder {
+    /// cbindgen:ignore
+    pub const PREFIX: [u8; 4] = [0xC1, 0x66, 0x53, 0x00];
+}
+
+impl BinanceMessage for ClaimHTLTOrder {
+    fn to_json(&self) -> SigningResult<Json> {
+        message_to_json(self)
+    }
+
+    fn to_amino_protobuf(&self) -> SigningResult<Data> {
+        let msg = Proto::ClaimHTLOrder {
+            from: self.from.data().into(),
+            swap_id: self.swap_id.clone().into(),
+            random_number: self.random_number.clone().into(),
+        };
+
+        Ok(AminoEncoder::new(&Self::PREFIX)
+            .extend_with_msg(&msg)?
+            .encode())
+    }
+}
+
+#[derive(Serialize)]
+pub struct RefundHTLTOrder {
+    pub from: BinanceAddress,
+    #[serde(serialize_with = "as_hex")]
+    pub swap_id: Data,
+}
+
+impl RefundHTLTOrder {
+    /// cbindgen:ignore
+    pub const PREFIX: [u8; 4] = [0x34, 0x54, 0xA2, 0x7C];
+}
+
+impl BinanceMessage for RefundHTLTOrder {
+    fn to_json(&self) -> SigningResult<Json> {
+        message_to_json(self)
+    }
+
+    fn to_amino_protobuf(&self) -> SigningResult<Data> {
+        let msg = Proto::RefundHTLTOrder {
+            from: self.from.data().into(),
+            swap_id: self.swap_id.clone().into(),
+        };
+
+        Ok(AminoEncoder::new(&Self::PREFIX)
+            .extend_with_msg(&msg)?
+            .encode())
+    }
+}

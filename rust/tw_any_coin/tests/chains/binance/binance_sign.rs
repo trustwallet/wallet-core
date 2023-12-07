@@ -355,3 +355,69 @@ fn test_binance_sign_deposit_htlt_order() {
     );
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
+
+#[test]
+fn test_binance_sign_claim_htlt_order() {
+    let from_address_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1";
+    let swap_id = "dd8fd4719741844d35eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e5";
+    let random_number = "bda6933c7757d0ca428aa01fb9d0935a231f87bf2deeb9b409cea3f2d580a2cc";
+
+    let claim_htlt = Proto::ClaimHTLOrder {
+        from: from_address_key_hash.decode_hex().unwrap().into(),
+        swap_id: swap_id.decode_hex().unwrap().into(),
+        random_number: random_number.decode_hex().unwrap().into(),
+    };
+
+    let input = Proto::SigningInput {
+        chain_id: "test-chain".into(),
+        account_number: 15,
+        sequence: 1,
+        private_key: ACCOUNT_15_PRIVATE_KEY.decode_hex().unwrap().into(),
+        order_oneof: OrderEnum::claimHTLT_order(claim_htlt),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Binance, input);
+
+    let expected_encoded = concat!(
+        "d401f0625dee0a5ec16653000a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e11220dd8fd4719741844d35",
+        "eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e51a20bda6933c7757d0ca428aa01fb9d0935a231f87bf",
+        "2deeb9b409cea3f2d580a2cc126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561a",
+        "ac993dbe0f6b6a8fc71240fa30ba50111aa31d8329dacb6d044c1c7d54f1cb782bc9aa2a50c3fabce02a4579d7",
+        "5b76ca69a9fab11b676d9da66b5af7aa4c9ad3d18e24fffeb16433be39fb180f2001",
+    );
+    assert_eq!(output.encoded.to_hex(), expected_encoded);
+}
+
+#[test]
+fn test_binance_sign_refund_htlt_order() {
+    let from_address_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1";
+    let swap_id = "dd8fd4719741844d35eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e5";
+
+    let refund_htlt = Proto::RefundHTLTOrder {
+        from: from_address_key_hash.decode_hex().unwrap().into(),
+        swap_id: swap_id.decode_hex().unwrap().into(),
+    };
+
+    let input = Proto::SigningInput {
+        chain_id: "test-chain".into(),
+        account_number: 15,
+        sequence: 1,
+        private_key: ACCOUNT_15_PRIVATE_KEY.decode_hex().unwrap().into(),
+        order_oneof: OrderEnum::refundHTLT_order(refund_htlt),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Binance, input);
+
+    let expected_encoded = concat!(
+        "b201f0625dee0a3c3454a27c0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e11220dd8fd4719741",
+        "844d35eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e5126e0a26eb5ae9872103a9a55c040c8e",
+        "b8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240c9f36142534d16ec8ce656f8eb73",
+        "70b32206a2d15198b7165acf1e2a18952c9e4570b0f862e1ab7bb868c30781a42c9e3ec0ae08982e8d6c",
+        "91c55b83c71b7b1e180f2001",
+    );
+    assert_eq!(output.encoded.to_hex(), expected_encoded);
+}

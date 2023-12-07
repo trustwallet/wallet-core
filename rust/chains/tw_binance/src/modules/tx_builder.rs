@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::address::BinanceAddress;
-use crate::transaction::message::htlt_order::DepositHTLTOrder;
 use crate::transaction::message::Token;
 use crate::transaction::message::{BinanceMessage, BinanceMessageBox};
 use crate::transaction::UnsignedTransaction;
@@ -54,6 +53,12 @@ impl TxBuilder {
             OrderEnum::htlt_order(ref htlt_order) => Self::htlt_order_from_proto(coin, htlt_order),
             OrderEnum::depositHTLT_order(ref deposit_htlt) => {
                 Self::deposit_htlt_order_from_proto(coin, deposit_htlt)
+            },
+            OrderEnum::claimHTLT_order(ref claim_htlt) => {
+                Self::claim_htlt_order_from_proto(coin, claim_htlt)
+            },
+            OrderEnum::refundHTLT_order(ref refund_htlt) => {
+                Self::refund_htlt_order_from_proto(coin, refund_htlt)
             },
             // TODO insert between
             OrderEnum::issue_order(ref issue_order) => {
@@ -201,7 +206,7 @@ impl TxBuilder {
         coin: &dyn CoinContext,
         deposit_htlt: &Proto::DepositHTLTOrder<'_>,
     ) -> SigningResult<BinanceMessageBox> {
-        use crate::transaction::message::htlt_order::HTLTOrder;
+        use crate::transaction::message::htlt_order::DepositHTLTOrder;
 
         let from = BinanceAddress::from_key_hash_with_coin(coin, deposit_htlt.from.to_vec())?;
 
@@ -217,6 +222,34 @@ impl TxBuilder {
             swap_id: deposit_htlt.swap_id.to_vec(),
         }
         .into_boxed())
+    }
+
+    pub fn claim_htlt_order_from_proto(
+        coin: &dyn CoinContext,
+        claim_htlt: &Proto::ClaimHTLOrder<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::htlt_order::ClaimHTLTOrder;
+
+        let from = BinanceAddress::from_key_hash_with_coin(coin, claim_htlt.from.to_vec())?;
+
+        Ok(ClaimHTLTOrder {
+            from,
+            swap_id: claim_htlt.swap_id.to_vec(),
+            random_number: claim_htlt.random_number.to_vec(),
+        }
+        .into_boxed())
+    }
+
+    pub fn refund_htlt_order_from_proto(
+        coin: &dyn CoinContext,
+        refund_htlt: &Proto::RefundHTLTOrder<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::htlt_order::RefundHTLTOrder;
+
+        let from = BinanceAddress::from_key_hash_with_coin(coin, refund_htlt.from.to_vec())?;
+        let swap_id = refund_htlt.swap_id.to_vec();
+
+        Ok(RefundHTLTOrder { from, swap_id }.into_boxed())
     }
 
     pub fn issue_order_from_proto(

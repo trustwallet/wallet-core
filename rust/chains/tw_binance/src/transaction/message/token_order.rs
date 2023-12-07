@@ -129,7 +129,7 @@ impl BinanceMessage for TokenMintOrder {
         let msg = Proto::TokenMintOrder {
             from: self.from.data().into(),
             symbol: self.symbol.clone().into(),
-            amount: self.amount.clone().into(),
+            amount: self.amount,
         };
 
         Ok(AminoEncoder::new(&Self::PREFIX)
@@ -159,7 +159,7 @@ impl BinanceMessage for TokenBurnOrder {
         let msg = Proto::TokenBurnOrder {
             from: self.from.data().into(),
             symbol: self.symbol.clone().into(),
-            amount: self.amount.clone().into(),
+            amount: self.amount,
         };
 
         Ok(AminoEncoder::new(&Self::PREFIX)
