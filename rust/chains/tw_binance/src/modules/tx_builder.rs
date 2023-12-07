@@ -39,10 +39,21 @@ impl TxBuilder {
 
         match input.order_oneof {
             OrderEnum::trade_order(ref new_order) => Self::trade_order_from_proto(coin, new_order),
-            OrderEnum::send_order(ref send_order) => Self::send_order_from_proto(coin, send_order),
             OrderEnum::cancel_trade_order(ref cancel_order) => {
                 Self::cancel_order_from_proto(coin, cancel_order)
             },
+            OrderEnum::send_order(ref send_order) => Self::send_order_from_proto(coin, send_order),
+            OrderEnum::freeze_order(ref freeze_order) => {
+                Self::freeze_order_from_proto(coin, freeze_order)
+            },
+            OrderEnum::unfreeze_order(ref unfreeze_order) => {
+                Self::unfreeze_order_from_proto(coin, unfreeze_order)
+            },
+            // TODO insert between
+            OrderEnum::issue_order(ref issue_order) => {
+                Self::issue_order_from_proto(coin, issue_order)
+            },
+            OrderEnum::mint_order(ref mint_order) => Self::mint_order_from_proto(coin, mint_order),
             OrderEnum::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
             _ => todo!(),
         }
@@ -123,5 +134,67 @@ impl TxBuilder {
             .collect::<SigningResult<Vec<_>>>()?;
 
         Ok(SendOrder { inputs, outputs }.into_boxed())
+    }
+
+    pub fn freeze_order_from_proto(
+        coin: &dyn CoinContext,
+        freeze_order: &Proto::TokenFreezeOrder<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::token_order::TokenFreezeOrder;
+
+        let from = BinanceAddress::from_key_hash_with_coin(coin, freeze_order.from.to_vec())?;
+        Ok(TokenFreezeOrder {
+            from,
+            symbol: freeze_order.symbol.to_string(),
+            amount: freeze_order.amount,
+        }
+        .into_boxed())
+    }
+
+    pub fn unfreeze_order_from_proto(
+        coin: &dyn CoinContext,
+        unfreeze_order: &Proto::TokenUnfreezeOrder<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::token_order::TokenUnfreezeOrder;
+
+        let from = BinanceAddress::from_key_hash_with_coin(coin, unfreeze_order.from.to_vec())?;
+        Ok(TokenUnfreezeOrder {
+            from,
+            symbol: unfreeze_order.symbol.to_string(),
+            amount: unfreeze_order.amount,
+        }
+        .into_boxed())
+    }
+
+    pub fn issue_order_from_proto(
+        coin: &dyn CoinContext,
+        issue_order: &Proto::TokenIssueOrder<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::token_order::TokenIssueOrder;
+
+        let from = BinanceAddress::from_key_hash_with_coin(coin, issue_order.from.to_vec())?;
+        Ok(TokenIssueOrder {
+            from,
+            name: issue_order.name.to_string(),
+            symbol: issue_order.symbol.to_string(),
+            total_supply: issue_order.total_supply,
+            mintable: issue_order.mintable,
+        }
+        .into_boxed())
+    }
+
+    pub fn mint_order_from_proto(
+        coin: &dyn CoinContext,
+        mint_order: &Proto::TokenMintOrder<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::token_order::TokenMintOrder;
+
+        let from = BinanceAddress::from_key_hash_with_coin(coin, mint_order.from.to_vec())?;
+        Ok(TokenMintOrder {
+            from,
+            symbol: mint_order.symbol.to_string(),
+            amount: mint_order.amount,
+        }
+        .into_boxed())
     }
 }

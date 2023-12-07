@@ -11,6 +11,7 @@ use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_memory::Data;
 
 pub mod send_order;
+pub mod token_order;
 pub mod trade_order;
 
 pub type BinanceMessageBox = Box<dyn BinanceMessage>;
