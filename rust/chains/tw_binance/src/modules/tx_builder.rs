@@ -79,8 +79,16 @@ impl TxBuilder {
             OrderEnum::side_undelegate_order(ref side_undelegate) => {
                 Self::side_undelegate_order_from_proto(coin, side_undelegate)
             },
+            OrderEnum::time_lock_order(ref time_lock) => {
+                Self::time_lock_order_from_proto(coin, time_lock)
+            },
+            OrderEnum::time_relock_order(ref time_relock) => {
+                Self::time_relock_order_from_proto(coin, time_relock)
+            },
+            OrderEnum::time_unlock_order(ref time_unlock) => {
+                Self::time_unlock_order_from_proto(coin, time_unlock)
+            },
             OrderEnum::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
-            _ => todo!(),
         }
     }
 
@@ -412,6 +420,74 @@ impl TxBuilder {
             validator_addr,
             amount: Self::token_from_proto(amount),
             side_chain_id: side_undelegate.chain_id.to_string(),
+        }
+        .into_boxed())
+    }
+
+    pub fn time_lock_order_from_proto(
+        coin: &dyn CoinContext,
+        time_lock: &Proto::TimeLockOrder<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::time_lock_order::TimeLockOrder;
+
+        let from = BinanceAddress::from_key_hash_with_coin(coin, time_lock.from_address.to_vec())?;
+        let amount = time_lock
+            .amount
+            .iter()
+            .map(Self::token_from_proto)
+            .collect();
+
+        Ok(TimeLockOrder {
+            from,
+            description: time_lock.description.to_string(),
+            amount,
+            lock_time: time_lock.lock_time,
+        }
+        .into_boxed())
+    }
+
+    pub fn time_relock_order_from_proto(
+        coin: &dyn CoinContext,
+        time_relock: &Proto::TimeRelockOrder<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::time_lock_order::TimeRelockOrder;
+
+        let from =
+            BinanceAddress::from_key_hash_with_coin(coin, time_relock.from_address.to_vec())?;
+
+        let amount = if time_relock.amount.is_empty() {
+            None
+        } else {
+            Some(
+                time_relock
+                    .amount
+                    .iter()
+                    .map(Self::token_from_proto)
+                    .collect(),
+            )
+        };
+
+        Ok(TimeRelockOrder {
+            from,
+            time_lock_id: time_relock.id,
+            description: time_relock.description.to_string(),
+            amount,
+            lock_time: time_relock.lock_time,
+        }
+        .into_boxed())
+    }
+
+    pub fn time_unlock_order_from_proto(
+        coin: &dyn CoinContext,
+        time_unlock: &Proto::TimeUnlockOrder<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::time_lock_order::TimeUnlockOrder;
+
+        let from =
+            BinanceAddress::from_key_hash_with_coin(coin, time_unlock.from_address.to_vec())?;
+        Ok(TimeUnlockOrder {
+            from,
+            time_lock_id: time_unlock.id,
         }
         .into_boxed())
     }

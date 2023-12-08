@@ -14,6 +14,7 @@ use tw_proto::Binance::Proto;
 pub mod htlt_order;
 pub mod send_order;
 pub mod side_chain_delegate;
+pub mod time_lock_order;
 pub mod token_order;
 pub mod trade_order;
 pub mod tranfer_out_order;

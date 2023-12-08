@@ -563,3 +563,98 @@ fn test_binance_sign_side_chain_undelegate_order() {
     );
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
+
+#[test]
+fn test_binance_sign_time_lock_order() {
+    let from_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1";
+
+    let time_lock = Proto::TimeLockOrder {
+        from_address: from_key_hash.decode_hex().unwrap().into(),
+        description: "Description locked for offer".into(),
+        amount: vec![make_token("BNB", 1000000)],
+        lock_time: 1600001371,
+    };
+
+    let input = Proto::SigningInput {
+        chain_id: "test-chain".into(),
+        account_number: 15,
+        sequence: 1,
+        private_key: ACCOUNT_15_PRIVATE_KEY.decode_hex().unwrap().into(),
+        order_oneof: OrderEnum::time_lock_order(time_lock),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Binance, input);
+
+    let expected_encoded = concat!(
+        "bf01f0625dee0a49",
+        "07921531",
+        "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1121c4465736372697074696f6e206c6f636b656420666f72206f666665721a090a03424e4210c0843d20dbaaf8fa05126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240c270822b9515ba486c6a6b3472d388a5aea872ed960c0b53de0fafdc8682ef473a126f01e7dd2c00f04a0138a601b9540f54b14026846de362f7ab7f9fed948b180f2001",
+    );
+    assert_eq!(output.encoded.to_hex(), expected_encoded);
+}
+
+#[test]
+fn test_binance_sign_time_relock_order() {
+    let from_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1";
+
+    let time_relock = Proto::TimeRelockOrder {
+        from_address: from_key_hash.decode_hex().unwrap().into(),
+        id: 333,
+        description: "Description locked for offer".into(),
+        amount: vec![make_token("BNB", 1000000)],
+        lock_time: 1600001371,
+    };
+
+    let input = Proto::SigningInput {
+        chain_id: "test-chain".into(),
+        account_number: 15,
+        sequence: 1,
+        private_key: ACCOUNT_15_PRIVATE_KEY.decode_hex().unwrap().into(),
+        order_oneof: OrderEnum::time_relock_order(time_relock),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Binance, input);
+
+    let expected_encoded = concat!(
+        "c201f0625dee0a4c504711da0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e110cd021a1c446573",
+        "6372697074696f6e206c6f636b656420666f72206f6666657222090a03424e4210c0843d28dbaaf8fa05",
+        "126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc7",
+        "124086ddaa077c8ae551d402fa409cf7e91663982b0542200967c03c0b5876b181353250f689d342f221",
+        "7624a077b671ce7d09649187e29879f40abbbee9de7ab27c180f2001",
+    );
+    assert_eq!(output.encoded.to_hex(), expected_encoded);
+}
+
+#[test]
+fn test_binance_sign_time_unlock_order() {
+    let from_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1";
+
+    let time_unlock = Proto::TimeUnlockOrder {
+        from_address: from_key_hash.decode_hex().unwrap().into(),
+        id: 333,
+    };
+
+    let input = Proto::SigningInput {
+        chain_id: "test-chain".into(),
+        account_number: 15,
+        sequence: 1,
+        private_key: ACCOUNT_15_PRIVATE_KEY.decode_hex().unwrap().into(),
+        order_oneof: OrderEnum::time_unlock_order(time_unlock),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Binance, input);
+
+    let expected_encoded = concat!(
+        "9301f0625dee0a1dc4050c6c0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e110cd02126e0a26eb",
+        "5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240da777b",
+        "fd2032834f59ec9fe69fd6eaa4aca24242dfbc5ec4ef8c435cb9da7eb05ab78e1b8ca9f109657cb77996",
+        "898f1b59137b3d8f1e00f842e409e18033b347180f2001",
+    );
+    assert_eq!(output.encoded.to_hex(), expected_encoded);
+}
