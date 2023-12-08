@@ -455,3 +455,111 @@ fn test_binance_sign_transfer_out_order() {
     );
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
+
+#[test]
+fn test_binance_sign_side_chain_delegate_order() {
+    let delegator_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1";
+    // bva10npy5809y303f227g4leqw7vs3s6ep5ul26sq2
+    let validator_key_hash = "7cc24a1de5245f14a95e457f903bcc8461ac869c";
+
+    let side_delegate = Proto::SideChainDelegate {
+        delegator_addr: delegator_key_hash.decode_hex().unwrap().into(),
+        validator_addr: validator_key_hash.decode_hex().unwrap().into(),
+        delegation: Some(make_token("BNB", 200000000)),
+        chain_id: "chapel".into(),
+    };
+
+    let input = Proto::SigningInput {
+        chain_id: "test-chain".into(),
+        account_number: 15,
+        sequence: 1,
+        private_key: ACCOUNT_15_PRIVATE_KEY.decode_hex().unwrap().into(),
+        order_oneof: OrderEnum::side_delegate_order(side_delegate),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Binance, input);
+
+    let expected_encoded = concat!(
+        "ba01f0625dee0a44e3a07fd20a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e112147cc24a1de524",
+        "5f14a95e457f903bcc8461ac869c1a0a0a03424e42108084af5f220663686170656c126e0a26eb5ae987",
+        "2103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc7124039302c9975fb",
+        "2a09ac2b6b6fb1d3b9fb5b4c03630d3d7a7da42b1c6736d6127142a3fcdca0b70a3d065da8d4f4df8b5d",
+        "9d8f46aeb3627a7d7aa901fe186af34c180f2001",
+    );
+    assert_eq!(output.encoded.to_hex(), expected_encoded);
+}
+
+#[test]
+fn test_binance_sign_side_chain_redelegate_order() {
+    let delegator_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1";
+    // bva1echrty7p8r23cwx8g3ezwcza9azy4zq7ca0pzw
+    let validator_src_key_hash = "ce2e3593c138d51c38c7447227605d2f444a881e";
+    // bva1p7s26ervsmv3w83k5696glautc9sm5rchz5f5e
+    let validator_dst_key_hash = "0fa0ad646c86d9171e36a68ba47fbc5e0b0dd078";
+
+    let side_redelegate = Proto::SideChainRedelegate {
+        delegator_addr: delegator_key_hash.decode_hex().unwrap().into(),
+        validator_src_addr: validator_src_key_hash.decode_hex().unwrap().into(),
+        validator_dst_addr: validator_dst_key_hash.decode_hex().unwrap().into(),
+        amount: Some(make_token("BNB", 100000000)),
+        chain_id: "chapel".into(),
+    };
+
+    let input = Proto::SigningInput {
+        chain_id: "test-chain".into(),
+        account_number: 15,
+        sequence: 1,
+        private_key: ACCOUNT_15_PRIVATE_KEY.decode_hex().unwrap().into(),
+        order_oneof: OrderEnum::side_redelegate_order(side_redelegate),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Binance, input);
+
+    let expected_encoded = concat!(
+        "d001f0625dee0a5ae3ced3640a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e11214ce2e3593c138",
+        "d51c38c7447227605d2f444a881e1a140fa0ad646c86d9171e36a68ba47fbc5e0b0dd078220a0a03424e",
+        "421080c2d72f2a0663686170656c126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08",
+        "af44ea561aac993dbe0f6b6a8fc71240114c6927423e95ecc831ec763b629b3a40db8feeb330528a941f",
+        "d74843c0d63b4271b23916770d4901988c1f56b20086e5768a12290ebec265e30a80f8f3d88e180f2001",
+    );
+    assert_eq!(output.encoded.to_hex(), expected_encoded);
+}
+
+#[test]
+fn test_binance_sign_side_chain_undelegate_order() {
+    let delegator_key_hash = "08c7c918f6b72c3c0c21b7d08eb6fc66509998e1";
+    // bva1echrty7p8r23cwx8g3ezwcza9azy4zq7ca0pzw
+    let validator_key_hash = "ce2e3593c138d51c38c7447227605d2f444a881e";
+
+    let side_undelegate = Proto::SideChainUndelegate {
+        delegator_addr: delegator_key_hash.decode_hex().unwrap().into(),
+        validator_addr: validator_key_hash.decode_hex().unwrap().into(),
+        amount: Some(make_token("BNB", 100000000)),
+        chain_id: "chapel".into(),
+    };
+
+    let input = Proto::SigningInput {
+        chain_id: "test-chain".into(),
+        account_number: 15,
+        sequence: 1,
+        private_key: ACCOUNT_15_PRIVATE_KEY.decode_hex().unwrap().into(),
+        order_oneof: OrderEnum::side_undelegate_order(side_undelegate),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Binance, input);
+
+    let expected_encoded = concat!(
+        "ba01f0625dee0a44514f7e0e0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e11214ce2e3593c138",
+        "d51c38c7447227605d2f444a881e1a0a0a03424e421080c2d72f220663686170656c126e0a26eb5ae987",
+        "2103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240a622b7ca7a28",
+        "75e5eaa675a5ed976b2ec3b8ca055a2b05e7fb471d328bd04df854789437dd06407e41ebb1e5a345604c",
+        "93663dfb660e223800636c0b94c2e798180f2001",
+    );
+    assert_eq!(output.encoded.to_hex(), expected_encoded);
+}

@@ -18,7 +18,7 @@ use tw_memory::Data;
 
 /// The list of known BNB hrps.
 const BNB_KNOWN_HRPS: [&str; 2] = [
-    "bva", // BNB Validator HRP.
+    BinanceAddress::VALIDATOR_HRP, // BNB Validator HRP.
     "bca",
 ];
 
@@ -33,6 +33,16 @@ impl CoinAddress for BinanceAddress {
 }
 
 impl BinanceAddress {
+    pub const VALIDATOR_HRP: &'static str = "bva";
+
+    pub fn new(hrp: String, key_hash: Data) -> AddressResult<BinanceAddress> {
+        Bech32Address::new(hrp, key_hash).map(BinanceAddress)
+    }
+
+    pub fn new_validator_addr(key_hash: Data) -> AddressResult<BinanceAddress> {
+        Bech32Address::new(Self::VALIDATOR_HRP.to_string(), key_hash).map(BinanceAddress)
+    }
+
     /// Creates a Binance address with the only `prefix`
     pub fn from_str_with_coin_and_prefix(
         coin: &dyn CoinContext,

@@ -70,6 +70,15 @@ impl TxBuilder {
             OrderEnum::transfer_out_order(ref transfer_out) => {
                 Self::transfer_out_order_from_proto(coin, transfer_out)
             },
+            OrderEnum::side_delegate_order(ref side_delegate) => {
+                Self::side_delegate_order_from_proto(coin, side_delegate)
+            },
+            OrderEnum::side_redelegate_order(ref side_redelegate) => {
+                Self::side_redelegate_order_from_proto(coin, side_redelegate)
+            },
+            OrderEnum::side_undelegate_order(ref side_undelegate) => {
+                Self::side_undelegate_order_from_proto(coin, side_undelegate)
+            },
             OrderEnum::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
             _ => todo!(),
         }
@@ -325,6 +334,84 @@ impl TxBuilder {
             to,
             amount: Self::token_from_proto(amount_proto),
             expire_time: transfer_out.expire_time,
+        }
+        .into_boxed())
+    }
+
+    pub fn side_delegate_order_from_proto(
+        coin: &dyn CoinContext,
+        side_delegate: &Proto::SideChainDelegate<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::side_chain_delegate::SideDelegateOrder;
+
+        let delegator_addr =
+            BinanceAddress::from_key_hash_with_coin(coin, side_delegate.delegator_addr.to_vec())?;
+        let validator_addr =
+            BinanceAddress::new_validator_addr(side_delegate.validator_addr.to_vec())?;
+
+        let delegation = side_delegate
+            .delegation
+            .as_ref()
+            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+
+        Ok(SideDelegateOrder {
+            delegator_addr,
+            validator_addr,
+            delegation: Self::token_from_proto(delegation),
+            side_chain_id: side_delegate.chain_id.to_string(),
+        }
+        .into_boxed())
+    }
+
+    pub fn side_redelegate_order_from_proto(
+        coin: &dyn CoinContext,
+        side_redelegate: &Proto::SideChainRedelegate<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::side_chain_delegate::SideRedelegateOrder;
+
+        let delegator_addr =
+            BinanceAddress::from_key_hash_with_coin(coin, side_redelegate.delegator_addr.to_vec())?;
+        let validator_src_addr =
+            BinanceAddress::new_validator_addr(side_redelegate.validator_src_addr.to_vec())?;
+        let validator_dst_addr =
+            BinanceAddress::new_validator_addr(side_redelegate.validator_dst_addr.to_vec())?;
+
+        let amount = side_redelegate
+            .amount
+            .as_ref()
+            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+
+        Ok(SideRedelegateOrder {
+            delegator_addr,
+            validator_src_addr,
+            validator_dst_addr,
+            amount: Self::token_from_proto(amount),
+            side_chain_id: side_redelegate.chain_id.to_string(),
+        }
+        .into_boxed())
+    }
+
+    pub fn side_undelegate_order_from_proto(
+        coin: &dyn CoinContext,
+        side_undelegate: &Proto::SideChainUndelegate<'_>,
+    ) -> SigningResult<BinanceMessageBox> {
+        use crate::transaction::message::side_chain_delegate::SideUndelegateOrder;
+
+        let delegator_addr =
+            BinanceAddress::from_key_hash_with_coin(coin, side_undelegate.delegator_addr.to_vec())?;
+        let validator_addr =
+            BinanceAddress::new_validator_addr(side_undelegate.validator_addr.to_vec())?;
+
+        let amount = side_undelegate
+            .amount
+            .as_ref()
+            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+
+        Ok(SideUndelegateOrder {
+            delegator_addr,
+            validator_addr,
+            amount: Self::token_from_proto(amount),
+            side_chain_id: side_undelegate.chain_id.to_string(),
         }
         .into_boxed())
     }

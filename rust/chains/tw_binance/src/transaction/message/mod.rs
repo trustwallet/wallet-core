@@ -13,6 +13,7 @@ use tw_proto::Binance::Proto;
 
 pub mod htlt_order;
 pub mod send_order;
+pub mod side_chain_delegate;
 pub mod token_order;
 pub mod trade_order;
 pub mod tranfer_out_order;
@@ -51,7 +52,6 @@ pub fn message_to_json<T: Serialize>(msg: T) -> SigningResult<Json> {
 pub struct Token {
     /// Token ID.
     pub denom: String,
-
     /// Amount.
     pub amount: i64,
 }
@@ -62,5 +62,22 @@ impl Token {
             denom: self.denom.clone().into(),
             amount: self.amount,
         }
+    }
+
+    pub fn serialize_with_string_amount<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        #[derive(Serialize)]
+        struct TokenWithStringAmount<'a> {
+            denom: &'a str,
+            amount: String,
+        }
+
+        TokenWithStringAmount {
+            denom: &self.denom,
+            amount: self.amount.to_string(),
+        }
+        .serialize(serializer)
     }
 }
