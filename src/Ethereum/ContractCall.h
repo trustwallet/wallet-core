@@ -12,5 +12,5 @@
 #include <string>
 
 namespace TW::Ethereum::ABI {
-    std::optional<std::string> decodeCall(const Data& call, const nlohmann::json& abi);
+    std::optional<std::string> decodeCall(const Data& call, const std::string& abi);
 } // namespace TW::Ethereum::ABI

@@ -5,7 +5,11 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::hash_wrapper::hasher;
-use sha2::{Sha256, Sha512, Sha512_256};
+use sha2::{Sha224, Sha256, Sha512, Sha512_256};
+
+pub fn sha224(input: &[u8]) -> Vec<u8> {
+    hasher::<Sha224>(input)
+}
 
 pub fn sha256(input: &[u8]) -> Vec<u8> {
     hasher::<Sha256>(input)

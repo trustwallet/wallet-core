@@ -29,6 +29,9 @@ enum class FieldType: int {
 enum class TransactionType {
     no_type = -1,
     payment = 0,
+    EscrowCreate = 1,
+    EscrowFinish = 2,
+    EscrowCancel = 4,
     TrustSet = 20,
     NFTokenBurn = 26,
     NFTokenCreateOffer = 27,
@@ -64,6 +67,12 @@ class Transaction {
     int64_t destination_tag;
     Data pub_key;
     Data signature;
+    int64_t cancel_after;
+    int64_t finish_after;
+    Data owner;
+    int32_t offer_sequence;
+    Data condition;
+    Data fulfillment;
     Data nftoken_id;
     Data sell_offer;
     Data token_offers;
@@ -78,6 +87,9 @@ class Transaction {
         , account(p_account)
         , encode_tag(false)
         , destination_tag(0)
+        , cancel_after(0)
+        , finish_after(0)
+        , offer_sequence(0)
         , nftoken_id(0)
         , sell_offer(0)
         , token_offers(0)
@@ -106,6 +118,36 @@ class Transaction {
         transaction_type = TransactionType::payment;
         setDestination(p_destination, p_destination_tag);
         setCurrencyAmount(currency_amount, currency, value, issuer);
+    }
+
+    void createEscrowCreate(int64_t amount, const std::string& destination, int64_t destination_tag,
+                            int64_t cancel_after, int64_t finish_after, const std::string& condition) {
+        transaction_type = TransactionType::EscrowCreate;
+        if (cancel_after == 0 && finish_after == 0) {
+            throw std::invalid_argument("Either CancelAfter or FinishAfter must be specified");
+        } else if (finish_after == 0 && condition.length() == 0) {
+            throw std::invalid_argument("Either Condition or FinishAfter must be specified");
+        }
+        this->amount = amount;
+        setDestination(destination, destination_tag);
+        this->cancel_after = cancel_after;
+        this->finish_after = finish_after;
+        this->condition = parse_hex(condition);
+    }
+
+    void createEscrowCancel(const std::string& owner, int32_t offer_sequence) {
+        transaction_type = TransactionType::EscrowCancel;
+        setAccount(owner, this->owner);
+         this->offer_sequence = offer_sequence;
+    }
+
+    void createEscrowFinish(const std::string& owner, int32_t offer_sequence, 
+                            const std::string& condition, const std::string& fulfillment) {
+        transaction_type = TransactionType::EscrowFinish;
+        setAccount(owner, this->owner);
+        this->offer_sequence = offer_sequence;
+        this->condition = parse_hex(condition);
+        this->fulfillment = parse_hex(fulfillment);
     }
 
     void createNFTokenBurn(const std::string& p_nftoken_id) {

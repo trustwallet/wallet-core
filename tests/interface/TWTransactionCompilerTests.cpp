@@ -123,33 +123,22 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBinance) {
 TEST(TWTransactionCompiler, ExternalSignatureSignEthereum) {
     /// Step 1: Prepare transaction input (protobuf)
     const auto coin = TWCoinTypeEthereum;
-    const auto txInputData0 = WRAPD(TWTransactionCompilerBuildInput(
-        coin,
-        STRING("0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F").get(), // from
-        STRING("0x3535353535353535353535353535353535353535").get(), // to
-        STRING("1000000000000000000").get(),                        // amount
-        STRING("ETH").get(),                                        // asset
-        STRING("").get(),                                           // memo
-        STRING("").get()                                            // chainId
-        ));
-
-    // Check, by parsing
-    EXPECT_EQ((int)TWDataSize(txInputData0.get()), 61);
     Ethereum::Proto::SigningInput signingInput;
-    ASSERT_TRUE(signingInput.ParseFromArray(TWDataBytes(txInputData0.get()), (int)TWDataSize(txInputData0.get())));
-    EXPECT_EQ(hex(signingInput.chain_id()), "01");
-    EXPECT_EQ(signingInput.to_address(), "0x3535353535353535353535353535353535353535");
-    ASSERT_TRUE(signingInput.transaction().has_transfer());
-    EXPECT_EQ(hex(signingInput.transaction().transfer().amount()), "0de0b6b3a7640000");
 
-    // Set a few other values
     const auto nonce = store(uint256_t(11));
+    const auto chainId = store(uint256_t(1));
     const auto gasPrice = store(uint256_t(20000000000));
     const auto gasLimit = store(uint256_t(21000));
+    const auto amount = store(uint256_t(1'000'000'000'000'000'000));
+
     signingInput.set_nonce(nonce.data(), nonce.size());
+    signingInput.set_chain_id(chainId.data(), chainId.size());
     signingInput.set_gas_price(gasPrice.data(), gasPrice.size());
     signingInput.set_gas_limit(gasLimit.data(), gasLimit.size());
     signingInput.set_tx_mode(Ethereum::Proto::Legacy);
+    signingInput.set_to_address("0x3535353535353535353535353535353535353535");
+
+    signingInput.mutable_transaction()->mutable_transfer()->set_amount(amount.data(), amount.size());
 
     // Serialize back, this shows how to serialize SigningInput protobuf to byte array
     const auto txInputDataData = data(signingInput.SerializeAsString());

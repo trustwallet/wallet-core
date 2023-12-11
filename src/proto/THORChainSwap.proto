@@ -19,6 +19,7 @@ enum Chain {
     LTC = 6;
     ATOM = 7;
     AVAX = 8;
+    BSC = 9;
 }
 
 // Predefined error codes

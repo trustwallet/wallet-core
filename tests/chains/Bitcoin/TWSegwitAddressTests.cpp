@@ -60,7 +60,7 @@ TEST(TWSegwitAddress, InitWithAddress) {
 
     ASSERT_EQ(TWHRPBitcoin, TWSegwitAddressHRP(address.get()));
 
-    auto witness = WRAPS(TWSegwitAddressWitnessProgram(address.get()));
+    auto witness = WRAPD(TWSegwitAddressWitnessProgram(address.get()));
     ASSERT_EQ(TW::hex(TW::data(TWDataBytes(witness.get()), TWDataSize(witness.get()))), "751e76e8199196d454941c45d1b3a323f1433bd6");
 }
 

@@ -5,14 +5,60 @@
 // file LICENSE at the root of the source code distribution tree.
 
 pub use hex::FromHexError;
+use tw_memory::Data;
 
-pub fn decode(data: &str) -> Result<Vec<u8>, FromHexError> {
+pub type FromHexResult<T> = Result<T, FromHexError>;
+
+pub trait ToHex {
+    fn to_hex(&self) -> String;
+
+    fn to_hex_prefixed(&self) -> String;
+}
+
+impl<T> ToHex for T
+where
+    T: AsRef<[u8]>,
+{
+    fn to_hex(&self) -> String {
+        encode(self, false)
+    }
+
+    fn to_hex_prefixed(&self) -> String {
+        encode(self, true)
+    }
+}
+
+pub trait DecodeHex {
+    fn decode_hex(&self) -> FromHexResult<Data>;
+}
+
+impl<'a> DecodeHex for &'a str {
+    fn decode_hex(&self) -> FromHexResult<Data> {
+        decode(self)
+    }
+}
+
+/// Decodes the given hexadecimal string.
+pub fn decode(data: &str) -> FromHexResult<Data> {
     let hex_string = data.trim_start_matches("0x");
     hex::decode(hex_string)
 }
 
-pub fn encode(data: &[u8], prefixed: bool) -> String {
-    let encoded = hex::encode(data);
+/// Decodes the given hexadecimal string leniently allowing to pass odd number of chars.
+/// For example, `0x0` is extended to `0x00`, `0x123` is extended to `0x0123`.
+pub fn decode_lenient(data: &str) -> FromHexResult<Data> {
+    let hex_string = data.trim_start_matches("0x");
+    if hex_string.len() % 2 == 0 {
+        hex::decode(hex_string)
+    } else {
+        // Insert a leading 0.
+        let standard_hex = format!("0{hex_string}");
+        hex::decode(standard_hex)
+    }
+}
+
+pub fn encode<T: AsRef<[u8]>>(data: T, prefixed: bool) -> String {
+    let encoded = hex::encode(data.as_ref());
     if prefixed {
         return format!("0x{encoded}");
     }

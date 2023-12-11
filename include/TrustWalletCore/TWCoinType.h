@@ -72,7 +72,7 @@ enum TWCoinType {
     TWCoinTypeTheta = 500,
     TWCoinTypeThunderCore = 1001,
     TWCoinTypeNEO = 888,
-    TWCoinTypeTomoChain = 889,
+    TWCoinTypeViction = 889,
     TWCoinTypeTron = 195,
     TWCoinTypeVeChain = 818,
     TWCoinTypeViacoin = 14,
@@ -120,7 +120,7 @@ enum TWCoinType {
     TWCoinTypeSyscoin = 57,
     TWCoinTypeVerge = 77,
     TWCoinTypeZen = 121,
-    TWCoinTypeMetis = 1001088,
+    TWCoinTypeMetis = 10001088,
     TWCoinTypeAurora = 1323161554,
     TWCoinTypeEvmos = 10009001,
     TWCoinTypeNativeEvmos = 20009001,
@@ -162,7 +162,7 @@ enum TWCoinType {
     TWCoinTypePersistence = 16000118,
     TWCoinTypeAkash = 17000118,
     TWCoinTypeNoble = 18000118,
-    TWCoinTypeScroll = 534353,
+    TWCoinTypeScroll = 534352,
     TWCoinTypeRootstock = 137,
     TWCoinTypeThetaFuel = 361,
     TWCoinTypeConfluxeSpace = 1030,
@@ -175,6 +175,11 @@ enum TWCoinType {
     TWCoinTypeArbitrumNova = 10042170,
     TWCoinTypeLinea = 59144,
     TWCoinTypeGreenfield = 5600,
+    TWCoinTypeMantle = 5000,
+    TWCoinTypeZenEON = 7332,
+    TWCoinTypeInternetComputer = 223,
+    TWCoinTypeTia = 21000118,
+    // end_of_tw_coin_type_marker_do_not_modify
 };
 
 /// Returns the blockchain for a coin type.

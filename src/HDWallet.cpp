@@ -99,9 +99,9 @@ HDWallet<seedSize>::HDWallet(const Data& entropy, const std::string& passphrase)
 
 template <std::size_t seedSize>
 HDWallet<seedSize>::~HDWallet() {
-    std::fill(seed.begin(), seed.end(), 0);
-    std::fill(mnemonic.begin(), mnemonic.end(), 0);
-    std::fill(passphrase.begin(), passphrase.end(), 0);
+    memzero(seed.data(), seed.size());
+    memzero(mnemonic.data(), mnemonic.size());
+    memzero(passphrase.data(), passphrase.size());
 }
 
 template <size_t seedSize>

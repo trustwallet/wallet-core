@@ -197,3 +197,59 @@ message SigningOutput {
     // Encoded transaction bytes.
     bytes pre_hash = 8;
 }
+
+enum MessageType {
+    // Sign a message following EIP-191.
+    MessageType_legacy = 0;
+    // Sign a message following EIP-191 with EIP-155 replay attack protection.
+    MessageType_eip155 = 1;
+    // Sign a typed message EIP-712 V4.
+    MessageType_typed = 2;
+    // Sign a typed message EIP-712 V4 with EIP-155 replay attack protection.
+    MessageType_typed_eip155 = 3;
+    // Sign a message with Immutable X msg type.
+    MessageType_immutable_x = 4;
+}
+
+message MaybeChainId {
+    // Chain ID.
+    uint64 chain_id = 3;
+}
+
+message MessageSigningInput {
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 1;
+
+    // Message to sign. Either a regular message or a typed data structured message in JSON format.
+    // Message type should be declared at `message_type`.
+    string message = 2;
+
+    // Optional. Used in replay protection and to check Typed Structured Data input.
+    // Eg. should be set if `message_type` is `MessageType_eip155`, or MessageType_typed, or `MessageType_typed_eip155`.
+    MaybeChainId chain_id = 3;
+
+    // Message type.
+    MessageType message_type = 4;
+}
+
+message MessageSigningOutput {
+    // The signature, Hex-encoded.
+    string signature = 1;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
+}
+
+message MessageVerifyingInput {
+    // The message signed.
+    string message = 1;
+
+    // Public key that will verify and recover the message from the signature.
+    bytes public_key = 2;
+
+    // The signature, Hex-encoded.
+    string signature = 3;
+}

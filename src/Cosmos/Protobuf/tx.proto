@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cosmos;
+package cosmos.tx.v1beta1;
 
 // Src: https://github.com/cosmos/cosmos-sdk/blob/master/proto/cosmos/tx/v1beta1/tx.proto
 

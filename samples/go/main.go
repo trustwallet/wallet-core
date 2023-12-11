@@ -45,7 +45,7 @@ func main() {
 	fmt.Println("Ethereum signed tx:")
 	fmt.Println("\t", ethTxn)
 
-	// Bitcion transaction
+	// Bitcoin transaction
 	btcTxn := createBtcTransaction(bw)
 	fmt.Println("\nBitcoin signed tx:")
 	fmt.Println("\t", btcTxn)

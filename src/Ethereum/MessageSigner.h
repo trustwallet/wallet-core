@@ -43,10 +43,17 @@ public:
     /// \param signature signature to verify the message against
     /// \return true if the message match the signature, false otherwise
     static bool verifyMessage(const PublicKey& publicKey, const std::string& message, const std::string& signature) noexcept;
-    static constexpr auto MessagePrefix = "Ethereum Signed Message:\n";
-    static constexpr std::uint8_t EthereumPrefix{0x19};
-    static Data generateMessage(const std::string& message);
-    static std::string signHash(const PrivateKey& privateKey, const Data& signableMessage, MessageType msgType, TW::Ethereum::MessageSigner::MaybeChainId chainId);
+
+    /// Computes a hash of the message following EIP-191.
+    /// \param message message to hash
+    /// \return hash of the tuped data.
+    static Data messagePreImageHash(const std::string& message) noexcept;
+
+    /// Computes a hash of the typed data according to EIP-712 V4.
+    /// \param data json data
+    /// \return hash of the tuped data.
+    static Data typedDataPreImageHash(const std::string& data) noexcept;
+
     static void prepareSignature(Data& signature, MessageType msgType, MaybeChainId chainId = std::nullopt) noexcept;
 };
 

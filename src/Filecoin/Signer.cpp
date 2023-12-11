@@ -7,10 +7,20 @@
 #include <google/protobuf/util/json_util.h>
 
 #include "AddressConverter.h"
-#include "Ethereum/Transaction.h"
+#include "Ethereum/Entry.h"
+#include "Result.h"
 #include "Signer.h"
+#include "proto/Ethereum.pb.h"
+#include "proto/TransactionCompiler.pb.h"
 
 namespace TW::Filecoin {
+
+Proto::SigningOutput signingOutputError(Common::Proto::SigningError error) {
+    Proto::SigningOutput outputErr;
+    outputErr.set_error(error);
+    outputErr.set_error_message(Common::Proto::SigningError_Name(error));
+    return outputErr;
+}
 
 // ChainId defines the chain ID used in the Ethereum JSON-RPC endpoint.
 // As per https://github.com/ethereum-lists/chains
@@ -132,17 +142,38 @@ Proto::SigningOutput Signer::signDelegated(const Proto::SigningInput& input) {
     }
     Data toBytes(toEth->bytes.begin(), toEth->bytes.end());
 
+    Ethereum::Proto::SigningInput ethInput;
+
+    auto chainId = store(FILECOIN_EIP155_CHAIN_ID);
+    auto nonce = store(uint256_t(input.nonce()));
+    auto gasLimit = store(uint256_t(input.gas_limit()));
+
+    ethInput.set_chain_id(chainId.data(), chainId.size());
+    ethInput.set_nonce(nonce.data(), nonce.size());
+    ethInput.set_tx_mode(Ethereum::Proto::Enveloped);
+    ethInput.set_gas_limit(gasLimit.data(), gasLimit.size());
+    ethInput.set_max_inclusion_fee_per_gas(input.gas_premium());
+    ethInput.set_max_fee_per_gas(input.gas_fee_cap());
+    ethInput.set_to_address(toEth->string());
+
+    auto* transfer = ethInput.mutable_transaction()->mutable_transfer();
+    transfer->set_amount(input.value());
+    transfer->set_data(params.data(), params.size());
+
+    // Get an Ethereum EIP1559 native transfer preHash to sign.
+    auto ethOutputData = Ethereum::Entry().preImageHashes(TWCoinTypeEthereum, data(ethInput.SerializeAsString()));
+    if (ethOutputData.empty()) {
+        return signingOutputError(Common::Proto::SigningError::Error_internal);
+    }
+
+    TxCompiler::Proto::PreSigningOutput ethOutput;
+    ethOutput.ParseFromArray(ethOutputData.data(), static_cast<int>(ethOutputData.size()));
+    if (ethOutput.error() != Common::Proto::SigningError::OK) {
+        return signingOutputError(ethOutput.error());
+    }
+
+    auto preHash = data(ethOutput.data_hash());
     // Sign transaction as an Ethereum EIP1559 native transfer.
-    auto ethTransaction = Ethereum::TransactionEip1559::buildNativeTransfer(
-        /* nonce */                 input.nonce(),
-        /* maxInclusionFeePerGas */ load(input.gas_premium()),
-        /* maxFeePerGas */          load(input.gas_fee_cap()),
-        /* gasLimit */              input.gas_limit(),
-        /* toAddress */             toBytes,
-        /* amount */                load(input.value()),
-        /* data */                  params
-    );
-    Data preHash = ethTransaction->preHash(FILECOIN_EIP155_CHAIN_ID);
     Data signature = privateKey.sign(preHash, TWCurveSECP256k1);
 
     // Generate a Filecoin signed message.

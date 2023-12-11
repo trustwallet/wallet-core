@@ -23,10 +23,4 @@ PrivateKey getPrivateKeyFromEthPrivKey(const PrivateKey& ethPrivKey);
 
 PrivateKey getPrivateKeyFromRawSignature(const Data& signature, const DerivationPath& derivationPath);
 
-Data getPublicKeyFromPrivateKey(const Data& privateKey);
-
-Data sign(const Data &privateKey, const Data& digest);
-
-bool verify(const Data &pubKey, const Data& signature, const Data& digest);
-
 } // namespace TW::ImmutableX
