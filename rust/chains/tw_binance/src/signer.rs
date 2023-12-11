@@ -6,11 +6,11 @@
 
 use crate::modules::serializer::BinanceAminoSerializer;
 use crate::modules::tx_builder::TxBuilder;
+use crate::signature::BinanceSignature;
 use crate::transaction::{JsonTxPreimage, SignerInfo};
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::SigningResult;
 use tw_coin_entry::signing_output_error;
-use tw_hash::{concat, H512};
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
 use tw_proto::Binance::Proto;
@@ -35,10 +35,8 @@ impl BinanceSigner {
 
         let key_pair = secp256k1::KeyPair::try_from(input.private_key.as_ref())?;
 
-        let signature = key_pair.sign(tx_hash)?;
-        let signature: H512 = concat(signature.r(), signature.s());
-
-        let public_key = key_pair.public().compressed();
+        let signature = BinanceSignature::from(key_pair.sign(tx_hash)?);
+        let public_key = key_pair.public().clone();
 
         let signed_tx = unsigned_tx.into_signed(SignerInfo {
             public_key,

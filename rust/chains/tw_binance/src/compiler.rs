@@ -4,10 +4,16 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::modules::serializer::BinanceAminoSerializer;
+use crate::modules::tx_builder::TxBuilder;
+use crate::signature::BinanceSignature;
+use crate::transaction::{JsonTxPreimage, SignerInfo};
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
+use tw_coin_entry::common::compile_input::SingleSignaturePubkey;
 use tw_coin_entry::error::SigningResult;
 use tw_coin_entry::signing_output_error;
+use tw_keypair::ecdsa::secp256k1;
 use tw_proto::Binance::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
@@ -24,10 +30,20 @@ impl BinanceCompiler {
     }
 
     fn preimage_hashes_impl(
-        _coin: &dyn CoinContext,
-        _input: Proto::SigningInput<'_>,
+        coin: &dyn CoinContext,
+        input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
-        todo!()
+        let unsigned_tx = TxBuilder::unsigned_tx_from_proto(coin, &input)?;
+        let JsonTxPreimage {
+            tx_hash,
+            encoded_tx,
+        } = unsigned_tx.preimage_hash()?;
+
+        Ok(CompilerProto::PreSigningOutput {
+            data_hash: tx_hash.to_vec().into(),
+            data: encoded_tx.as_bytes().to_vec().into(),
+            ..CompilerProto::PreSigningOutput::default()
+        })
     }
 
     #[inline]
@@ -42,11 +58,29 @@ impl BinanceCompiler {
     }
 
     fn compile_impl(
-        _coin: &dyn CoinContext,
-        _input: Proto::SigningInput<'_>,
-        _signatures: Vec<SignatureBytes>,
-        _public_keys: Vec<PublicKeyBytes>,
+        coin: &dyn CoinContext,
+        input: Proto::SigningInput<'_>,
+        signatures: Vec<SignatureBytes>,
+        public_keys: Vec<PublicKeyBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        todo!()
+        let SingleSignaturePubkey {
+            signature,
+            public_key,
+        } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
+        let signature = BinanceSignature::try_from(signature.as_slice())?;
+        let public_key = secp256k1::PublicKey::try_from(public_key.as_slice())?;
+
+        let unsigned_tx = TxBuilder::unsigned_tx_from_proto(coin, &input)?;
+        let signed_tx = unsigned_tx.into_signed(SignerInfo {
+            public_key,
+            signature,
+        });
+
+        let encoded_tx = BinanceAminoSerializer::serialize_signed_tx(&signed_tx)?;
+
+        Ok(Proto::SigningOutput {
+            encoded: encoded_tx.into(),
+            ..Proto::SigningOutput::default()
+        })
     }
 }

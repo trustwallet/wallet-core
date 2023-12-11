@@ -4,10 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::signature::BinanceSignature;
 use crate::transaction::message::BinanceMessageBox;
 use serde::Serialize;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
-use tw_hash::{sha2, H256, H264, H512};
+use tw_hash::{sha2, H256};
+use tw_keypair::ecdsa::secp256k1;
 use tw_memory::Data;
 use tw_misc::serde::as_string;
 
@@ -54,8 +56,8 @@ impl UnsignedTransaction {
 }
 
 pub struct SignerInfo {
-    pub public_key: H264,
-    pub signature: H512,
+    pub public_key: secp256k1::PublicKey,
+    pub signature: BinanceSignature,
 }
 
 pub struct SignedTransaction {

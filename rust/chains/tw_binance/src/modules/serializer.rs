@@ -53,8 +53,8 @@ impl BinanceAminoSerializer {
 
     pub fn serialize_signature(signed: &SignedTransaction) -> SigningResult<Data> {
         let sign_msg = Proto::Signature {
-            pub_key: Self::serialize_public_key(signed.signer.public_key).into(),
-            signature: signed.signer.signature.to_vec().into(),
+            pub_key: Self::serialize_public_key(signed.signer.public_key.compressed()).into(),
+            signature: signed.signer.signature.to_bytes().into(),
             account_number: signed.unsigned.account_number,
             sequence: signed.unsigned.sequence,
         };
