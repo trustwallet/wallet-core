@@ -4,10 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::modules::preimager::{JsonPreimager, JsonTxPreimage};
 use crate::modules::serializer::BinanceAminoSerializer;
 use crate::modules::tx_builder::TxBuilder;
 use crate::signature::BinanceSignature;
-use crate::transaction::{JsonTxPreimage, SignerInfo};
+use crate::transaction::SignerInfo;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::SigningResult;
 use tw_coin_entry::signing_output_error;
@@ -31,7 +32,7 @@ impl BinanceSigner {
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let unsigned_tx = TxBuilder::unsigned_tx_from_proto(coin, &input)?;
-        let JsonTxPreimage { tx_hash, .. } = unsigned_tx.preimage_hash()?;
+        let JsonTxPreimage { tx_hash, .. } = JsonPreimager::preimage_hash(&unsigned_tx)?;
 
         let key_pair = secp256k1::KeyPair::try_from(input.private_key.as_ref())?;
 
