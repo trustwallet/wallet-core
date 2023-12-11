@@ -126,8 +126,6 @@ Data anyCoinPreImageHashes(TWCoinType coinType, const Data& txInputData);
 
 void anyCoinCompileWithSignatures(TWCoinType coinType, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& txOutputOut);
 
-Data anyCoinBuildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId);
-
 // Describes a derivation: path + optional format + optional name
 struct Derivation {
     TWDerivation name = TWDerivationDefault;
