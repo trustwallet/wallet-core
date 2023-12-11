@@ -15,7 +15,7 @@
 namespace TW::Ethereum {
 
 // TODO call `signRustJSON` when it's done.
-std::string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
+std::string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const {
     auto input = Proto::SigningInput();
     google::protobuf::util::JsonStringToMessage(json, &input);
     input.set_private_key(key.data(), key.size());

@@ -6,48 +6,17 @@
 
 #include "Bech32Address.h"
 #include "Binance/Address.h"
-#include "Binance/Signer.h"
+#include "TestUtilities.h"
 #include "Coin.h"
 #include "Ethereum/Address.h"
 #include "HDWallet.h"
 #include "HexCoding.h"
 #include "proto/Binance.pb.h"
+#include "TrustWalletCore/TWAnySigner.h"
 
 #include <gtest/gtest.h>
 
 namespace TW::Binance {
-
-TEST(BinanceSigner, Sign) {
-    auto input = Proto::SigningInput();
-    input.set_chain_id("chain-bnb");
-    input.set_account_number(12);
-    input.set_sequence(35);
-    input.set_memo("");
-    input.set_source(1);
-
-    auto key = parse_hex("90335b9d2153ad1a9799a3ccc070bd64b4164e9642ee1dd48053c33f9a3a05e9");
-    input.set_private_key(key.data(), key.size());
-
-    auto& order = *input.mutable_trade_order();
-    Binance::Address address;
-    ASSERT_TRUE(Binance::Address::decode("bnb1hgm0p7khfk85zpz5v0j8wnej3a90w709vhkdfu", address));
-    auto keyhash = address.getKeyHash();
-    order.set_sender(keyhash.data(), keyhash.size());
-    order.set_id("BA36F0FAD74D8F41045463E4774F328F4AF779E5-36");
-    order.set_symbol("NNB-338_BNB");
-    order.set_ordertype(2);
-    order.set_side(1);
-    order.set_price(136350000);
-    order.set_quantity(100000000);
-    order.set_timeinforce(1);
-
-    auto signer = Binance::Signer(std::move(input));
-    auto signature = signer.sign();
-
-    ASSERT_EQ(hex(signature),
-              "9123cb6906bb20aeb753f4a121d4d88ff0e9750ba75b0c4e10d76caee1e7d2481290fa3b9887a6225d69"
-              "97f5f939ef834ea61d596a314237c48e560da9e17b5a");
-}
 
 TEST(BinanceSigner, Build) {
     auto input = Proto::SigningInput();
@@ -70,10 +39,10 @@ TEST(BinanceSigner, Build) {
     order.set_quantity(1200000000);
     order.set_timeinforce(1);
 
-    auto signer = Binance::Signer(std::move(input));
-    auto result = signer.build();
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeBinance);
 
-    ASSERT_EQ(hex(result), "db01"
+    ASSERT_EQ(hex(output.encoded()), "db01"
         "f0625dee"
         "0a65"
             "ce6dc043"
@@ -109,10 +78,8 @@ TEST(BinanceSigner, BuildSend) {
     auto& order = *signingInput.mutable_send_order();
 
     auto fromKeyhash = parse_hex("40c2979694bbc961023d1d27be6fc4d21a9febe6");
-    auto fromAddress = Binance::Address(fromKeyhash);
 
     auto toKeyhash = parse_hex("88b37d5e05f3699e2a1406468e5d87cb9dcceb95");
-    auto toAddress = Binance::Address(toKeyhash);
 
     auto input = order.add_inputs();
     input->set_address(fromKeyhash.data(), fromKeyhash.size());
@@ -120,21 +87,16 @@ TEST(BinanceSigner, BuildSend) {
     inputCoin->set_denom("BNB");
     inputCoin->set_amount(1'001'000'000);
 
-    auto output = order.add_outputs();
-    output->set_address(toKeyhash.data(), toKeyhash.size());
-    auto outputCoin = output->add_coins();
+    auto output1 = order.add_outputs();
+    output1->set_address(toKeyhash.data(), toKeyhash.size());
+    auto outputCoin = output1->add_coins();
     outputCoin->set_denom("BNB");
     outputCoin->set_amount(1'001'000'000);
 
-    auto signer = Binance::Signer(std::move(signingInput));
-    auto signature = signer.sign();
-    ASSERT_EQ(hex(signature),
-              "c65a13440f18a155bd971ee40b9e0dd58586f5bf344e12ec4c76c439aebca8c7789bab7bfbfb4ce89aad"
-              "c4a02df225b6b6efc861c13bbeb5f7a3eea2d7ffc80f");
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(signingInput, TWCoinTypeBinance);
 
-    auto result = signer.build();
-
-    ASSERT_EQ(hex(result), "cc01"
+    ASSERT_EQ(hex(output.encoded()), "cc01"
         "f0625dee"
         "0a4e"
             "2a2c87fa"
@@ -173,24 +135,25 @@ TEST(BinanceSigner, BuildSend2) {
     token.set_denom("BNB");
     token.set_amount(100000000000000);
 
-    auto input = Proto::SendOrder::Input();
+    auto input1 = Proto::SendOrder::Input();
     auto fromKeyHash = Binance::Address(fromPublicKey).getKeyHash();
-    input.set_address(fromKeyHash.data(), fromKeyHash.size());
-    *input.add_coins() = token;
+    input1.set_address(fromKeyHash.data(), fromKeyHash.size());
+    *input1.add_coins() = token;
 
-    auto output = Proto::SendOrder::Output();
+    auto output1 = Proto::SendOrder::Output();
     auto toKeyHash = Binance::Address(toPublicKey).getKeyHash();
-    output.set_address(toKeyHash.data(), toKeyHash.size());
-    *output.add_coins() = token;
+    output1.set_address(toKeyHash.data(), toKeyHash.size());
+    *output1.add_coins() = token;
 
     auto sendOrder = Proto::SendOrder();
-    *sendOrder.add_inputs() = input;
-    *sendOrder.add_outputs() = output;
+    *sendOrder.add_inputs() = input1;
+    *sendOrder.add_outputs() = output1;
 
     *signingInput.mutable_send_order() = sendOrder;
 
-    const auto data = Signer(std::move(signingInput)).build();
-    ASSERT_EQ(hex(data),
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(signingInput, TWCoinTypeBinance);
+    ASSERT_EQ(hex(output.encoded()),
         "c601"
         "f0625dee"
         "0a52"
@@ -242,8 +205,9 @@ TEST(BinanceSigner, BuildHTLT) {
     htltOrder.set_random_number_hash(randomNumberHash.data(), randomNumberHash.size());
     htltOrder.set_cross_chain(false);
 
-    const auto data = Binance::Signer(std::move(signingInput)).build();
-    ASSERT_EQ(hex(data),
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(signingInput, TWCoinTypeBinance);
+    ASSERT_EQ(hex(output.encoded()),
               "ee01f0625dee0a7ab33f9a240a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e112140153f11d6db7"
               "e69c7d51e771c697378018fb6c242a20e8eae926261ab77d018202434791a335249b470246a7b02e28c3"
               "b2fb6ffad8f330e1d1c7eb053a0a0a03424e421080c2d72f42113130303030303030303a4254432d3144"
@@ -275,8 +239,9 @@ TEST(BinanceSigner, BuildDepositHTLT) {
     depositHTLTOrder.set_swap_id(swapID.data(), swapID.size());
     *depositHTLTOrder.add_amount() = token;
 
-    const auto data = Binance::Signer(std::move(signingInput)).build();
-    ASSERT_EQ(hex(data),
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(signingInput, TWCoinTypeBinance);
+    ASSERT_EQ(hex(output.encoded()),
               "c001f0625dee0a4c639864960a140153f11d6db7e69c7d51e771c697378018fb6c24120e0a074254432d"
               "3144431080c2d72f1a20dd8fd4719741844d35eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e5"
               "126c0a26eb5ae98721038df6960084e20b2d07d50e1422f94105c6241d9f1482a4eb79ce8bfd460f19e4"
@@ -305,9 +270,10 @@ TEST(BinanceSigner, BuildClaimHTLT) {
     claimHTLTOrder.set_swap_id(swapID.data(), swapID.size());
     claimHTLTOrder.set_random_number(randomNumber.data(), randomNumber.size());
 
-    const auto data = Binance::Signer(std::move(signingInput)).build();
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(signingInput, TWCoinTypeBinance);
     ASSERT_EQ(
-        hex(data),
+        hex(output.encoded()),
         "d401f0625dee0a5ec16653000a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e11220dd8fd4719741844d35"
         "eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e51a20bda6933c7757d0ca428aa01fb9d0935a231f87bf"
         "2deeb9b409cea3f2d580a2cc126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561a"
@@ -333,8 +299,9 @@ TEST(BinanceSigner, BuildRefundHTLT) {
     refundHTLTOrder.set_from(fromAddr.data(), fromAddr.size());
     refundHTLTOrder.set_swap_id(swapID.data(), swapID.size());
 
-    const auto data = Binance::Signer(std::move(signingInput)).build();
-    ASSERT_EQ(hex(data),
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(signingInput, TWCoinTypeBinance);
+    ASSERT_EQ(hex(output.encoded()),
               "b201f0625dee0a3c3454a27c0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e11220dd8fd4719741"
               "844d35eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e5126e0a26eb5ae9872103a9a55c040c8e"
               "b8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240c9f36142534d16ec8ce656f8eb73"
@@ -361,8 +328,9 @@ TEST(BinanceSigner, BuildIssueOrder) {
     issueOrder.set_total_supply(1000000000);
     issueOrder.set_mintable(true);
 
-    const auto data = Binance::Signer(std::move(signingInput)).build();
-    ASSERT_EQ(hex(data),
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(signingInput, TWCoinTypeBinance);
+    ASSERT_EQ(hex(output.encoded()),
               "b601f0625dee0a40"
               "17efab80"
               "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1120f"
@@ -390,8 +358,9 @@ TEST(BinanceSigner, BuildMintOrder) {
     mintOrder.set_symbol("NNB-338_BNB");
     mintOrder.set_amount(1000000);
 
-    const auto data = Binance::Signer(std::move(signingInput)).build();
-    ASSERT_EQ(hex(data),
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(signingInput, TWCoinTypeBinance);
+    ASSERT_EQ(hex(output.encoded()),
               "a101f0625dee0a2b"
               "467e0829"
               "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1120b"
@@ -417,8 +386,9 @@ TEST(BinanceSigner, BuildBurnOrder) {
     burnOrder.set_symbol("NNB-338_BNB");
     burnOrder.set_amount(1000000);
 
-    const auto data = Binance::Signer(std::move(signingInput)).build();
-    ASSERT_EQ(hex(data),
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(signingInput, TWCoinTypeBinance);
+    ASSERT_EQ(hex(output.encoded()),
               "a101f0625dee0a2b"
               "7ed2d2a0"
               "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1120b"
@@ -444,8 +414,9 @@ TEST(BinanceSigner, BuildFreezeOrder) {
     freezeOrder.set_symbol("NNB-338_BNB");
     freezeOrder.set_amount(1000000);
 
-    const auto data = Binance::Signer(std::move(signingInput)).build();
-    ASSERT_EQ(hex(data),
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(signingInput, TWCoinTypeBinance);
+    ASSERT_EQ(hex(output.encoded()),
               "a101f0625dee0a2b"
               "e774b32d"
               "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1120b"
@@ -472,8 +443,9 @@ TEST(BinanceSigner, BuildUnfreezeOrder) {
     unfreezeOrder.set_symbol("NNB-338_BNB");
     unfreezeOrder.set_amount(1000000);
 
-    const auto data = Binance::Signer(std::move(signingInput)).build();
-    ASSERT_EQ(hex(data),
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(signingInput, TWCoinTypeBinance);
+    ASSERT_EQ(hex(output.encoded()),
               "a101f0625dee0a2b"
               "6515ff0d"
               "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1120b"
@@ -507,8 +479,9 @@ TEST(BinanceSigner, BuildTransferOutOrder) {
     token.set_denom("BNB");
     token.set_amount(100000000);
 
-    const auto data = Binance::Signer(std::move(input)).build();
-    ASSERT_EQ(hex(data),
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeBinance);
+    ASSERT_EQ(hex(output.encoded()),
               "b701f0625dee0a41800819c00a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1121435552c16704d"
               "214347f29fa77f77da6d75d7c7521a0a0a03424e421080c2d72f20cec2f105126e0a26eb5ae9872103a9"
               "a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc712407eda148e1167b1be12"
@@ -539,8 +512,9 @@ TEST(BinanceSigner, BuildSideChainDelegate) {
     token.set_denom("BNB");
     token.set_amount(200000000);
 
-    const auto data = Binance::Signer(std::move(input)).build();
-    ASSERT_EQ(hex(data),
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeBinance);
+    ASSERT_EQ(hex(output.encoded()),
               "ba01f0625dee0a44e3a07fd20a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e112147cc24a1de524"
               "5f14a95e457f903bcc8461ac869c1a0a0a03424e42108084af5f220663686170656c126e0a26eb5ae987"
               "2103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc7124039302c9975fb"
@@ -574,8 +548,9 @@ TEST(BinanceSigner, BuildSideChainRedelegate) {
     token.set_denom("BNB");
     token.set_amount(100000000);
 
-    const auto data = Binance::Signer(std::move(input)).build();
-    ASSERT_EQ(hex(data),
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeBinance);
+    ASSERT_EQ(hex(output.encoded()),
         "d001f0625dee0a5ae3ced3640a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e11214ce2e3593c138"
         "d51c38c7447227605d2f444a881e1a140fa0ad646c86d9171e36a68ba47fbc5e0b0dd078220a0a03424e"
         "421080c2d72f2a0663686170656c126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08"
@@ -607,8 +582,9 @@ TEST(BinanceSigner, BuildSideChainUndelegate) {
     token.set_denom("BNB");
     token.set_amount(100000000);
 
-    const auto data = Binance::Signer(std::move(input)).build();
-    ASSERT_EQ(hex(data),
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeBinance);
+    ASSERT_EQ(hex(output.encoded()),
         "ba01f0625dee0a44514f7e0e0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e11214ce2e3593c138"
         "d51c38c7447227605d2f444a881e1a0a0a03424e421080c2d72f220663686170656c126e0a26eb5ae987"
         "2103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240a622b7ca7a28"
@@ -637,8 +613,9 @@ TEST(BinanceSigner, BuildTimeLockOrder) {
     amount->set_amount(1000000);
     lockOrder.set_lock_time(1600001371);
 
-    const auto data = Binance::Signer(std::move(signingInput)).build();
-    EXPECT_EQ(hex(data),
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(signingInput, TWCoinTypeBinance);
+    ASSERT_EQ(hex(output.encoded()),
         "bf01f0625dee0a49"
         "07921531"
         "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1121c4465736372697074696f6e206c6f636b656420666f72206f666665721a090a03424e4210c0843d20dbaaf8fa05126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240c270822b9515ba486c6a6b3472d388a5aea872ed960c0b53de0fafdc8682ef473a126f01e7dd2c00f04a0138a601b9540f54b14026846de362f7ab7f9fed948b180f2001"
@@ -666,8 +643,9 @@ TEST(BinanceSigner, BuildTimeRelockOrder) {
     amount->set_amount(1000000);
     relockOrder.set_lock_time(1600001371);
 
-    const auto data = Binance::Signer(std::move(signingInput)).build();
-    EXPECT_EQ(hex(data),
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(signingInput, TWCoinTypeBinance);
+    ASSERT_EQ(hex(output.encoded()),
               "c201f0625dee0a4c504711da0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e110cd021a1c446573"
               "6372697074696f6e206c6f636b656420666f72206f6666657222090a03424e4210c0843d28dbaaf8fa05"
               "126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc7"
@@ -691,8 +669,9 @@ TEST(BinanceSigner, BuildTimeUnlockOrder) {
     unlockOrder.set_from_address(fromAddr.data(), fromAddr.size());
     unlockOrder.set_id(333);
 
-    const auto data = Binance::Signer(std::move(signingInput)).build();
-    EXPECT_EQ(hex(data),
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(signingInput, TWCoinTypeBinance);
+    ASSERT_EQ(hex(output.encoded()),
               "9301f0625dee0a1dc4050c6c0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e110cd02126e0a26eb"
               "5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240da777b"
               "fd2032834f59ec9fe69fd6eaa4aca24242dfbc5ec4ef8c435cb9da7eb05ab78e1b8ca9f109657cb77996"

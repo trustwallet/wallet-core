@@ -58,6 +58,38 @@ fn test_binance_sign_trade_order() {
 }
 
 #[test]
+fn test_binance_sign_cancel_trade_order() {
+    // bnb1hgm0p7khfk85zpz5v0j8wnej3a90w709vhkdfu
+    let sender_key_hash = "ba36f0fad74d8f41045463e4774f328f4af779e5"
+        .decode_hex()
+        .unwrap();
+
+    let new_order = Proto::CancelTradeOrder {
+        sender: sender_key_hash.into(),
+        symbol: "NNB-338_BNB".into(),
+        refid: "BA36F0FAD74D8F41045463E4774F328F4AF779E5-36".into(),
+    };
+
+    let input = Proto::SigningInput {
+        chain_id: "chain-bnb".into(),
+        account_number: 12,
+        sequence: 36,
+        source: 1,
+        private_key: ACCOUNT_12_PRIVATE_KEY.decode_hex().unwrap().into(),
+        order_oneof: OrderEnum::cancel_trade_order(new_order),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Binance, input);
+
+    assert_eq!(
+        output.encoded.to_hex(),
+        "cc01f0625dee0a54166e681b0a14ba36f0fad74d8f41045463e4774f328f4af779e5120b4e4e422d3333385f424e421a2b424133364630464144373444384634313034353436334534373734463332384634414637373945352d3336126e0a26eb5ae98721029729a52e4e3c2b4a4e52aa74033eedaf8ba1df5ab6d1f518fd69e67bbd309b0e12403df6603426b991f7040bce22ce0137c12137df01e1d4d425cf3d9104103aec6335ac05c825e08ba26b9f72aa4cc45aa75cacfb6082df86b00692fef9701eb0f5180c20242001"
+    );
+}
+
+#[test]
 fn test_binance_sign_send_order() {
     let amount = 1_001_000_000;
     // bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2
