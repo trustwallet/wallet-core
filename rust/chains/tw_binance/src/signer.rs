@@ -51,26 +51,3 @@ impl BinanceSigner {
         })
     }
 }
-
-// TODO remove this
-// #[cfg(test)]
-// mod tests {
-//     use tw_encoding::base64;
-//     use tw_encoding::hex::ToHex;
-//     use tw_proto::Binance::Proto;
-//
-//     #[test]
-//     fn test_foo() {
-//         let data = base64::decode("yAHwYl3uCkgqLIf6CiAKFJk0ZA2+bZFukAgypQeKGy9OlDTQEggKA0JOQhCQThIgChRbIX6Z1PR2ShqNpO4/Icbd15EDkBIICgNCTkIQkE4Sbwom61rphyEC0upE6hpxiiBQ5B1+VK3ACPEwGHwC79TkcM2xMhHFnEUSQIlv+iYpbdTZbWagqawAg6D8fNfljGaQXK+2N4JhlzwhReCTAojp8HAfy1oRrwnfDP+bzjrMPnkZhCOos+bHMCUY8u7VAxoHcGF5YmFjaw==", false).unwrap();
-//         let tx: Proto::Transaction = tw_proto::deserialize(&data[6..]).unwrap();
-//
-//         println!("{tx:?}");
-//
-//         let sign: Proto::Signature = tw_proto::deserialize(&tx.signatures[0]).unwrap();
-//         println!("Signature Proto: {sign:?}");
-//         println!("Signature: {}", sign.signature.to_hex());
-//
-//         let msg: Proto::SendOrder = tw_proto::deserialize(&tx.msgs[0][3..]).unwrap();
-//         println!("{msg:?}");
-//     }
-// }
