@@ -6,7 +6,10 @@
 
 #include "CoinEntry.h"
 #include "Coin.h"
+#include "HexCoding.h"
+#include "rust/Wrapper.h"
 #include <variant>
+#include <google/protobuf/util/json_util.h>
 
 namespace TW {
 

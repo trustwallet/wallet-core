@@ -6,7 +6,11 @@
 set -e
 
 source $(dirname $0)/library
-version=$(wc_read_version)
+version=$(wc_read_version  $1)
+
+if [[ `uname` == "Darwin" ]]; then
+    export BOOST_ROOT=$(brew --prefix boost)
+fi
 
 echo "Building $version"
 

@@ -1,0 +1,13 @@
+[package]
+name = "tw_cosmos"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tw_coin_entry = { path = "../../tw_coin_entry" }
+tw_cosmos_sdk = { path = "../../tw_cosmos_sdk" }
+tw_keypair = { path = "../../tw_keypair" }
+tw_proto = { path = "../../tw_proto" }
+
+[dev-dependencies]
+tw_cosmos_sdk = { path = "../../tw_cosmos_sdk", features = ["test-utils"] }

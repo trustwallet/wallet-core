@@ -20,6 +20,7 @@ struct TWTransactionCompiler;
 
 /// Builds a coin-specific SigningInput (proto object) from a simple transaction.
 ///
+/// \deprecated `TWTransactionCompilerBuildInput` will be removed soon.
 /// \param coin coin type.
 /// \param from sender of the transaction.
 /// \param to receiver of the transaction.

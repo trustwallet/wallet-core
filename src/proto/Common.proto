@@ -67,4 +67,6 @@ enum SigningError {
     Error_invalid_params = 22;
     // Invalid input token amount
     Error_invalid_requested_token_amount = 23;
+    // Operation not supported for the chain.
+    Error_not_supported = 24;
 }

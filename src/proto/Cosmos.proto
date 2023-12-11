@@ -117,14 +117,6 @@ message Message {
         string type_prefix = 3;
     }
 
-    message ExecuteContract {
-        string sender = 1;
-        string contract = 2;
-        string execute_msg = 3;
-        repeated Amount coins = 4;
-        string type_prefix = 5;
-    }
-
     // transfer within wasm/MsgExecuteContract, used by Terra Classic
     message WasmTerraExecuteContractTransfer {
         // sender address
@@ -224,6 +216,7 @@ message Message {
     }
 
     // execute within wasm/MsgExecuteContract
+    // TODO replaces `ExecuteContract`.
     message WasmExecuteContractGeneric {
         // sender address
         string sender_address = 1;
@@ -353,7 +346,6 @@ message Message {
         WasmTerraExecuteContractTransfer wasm_terra_execute_contract_transfer_message = 8;
         WasmTerraExecuteContractSend wasm_terra_execute_contract_send_message = 9;
         THORChainSend thorchain_send_message = 10;
-        ExecuteContract execute_contract_message = 11;
         WasmTerraExecuteContractGeneric wasm_terra_execute_contract_generic = 12;
         WasmExecuteContractTransfer wasm_execute_contract_transfer_message = 13;
         WasmExecuteContractSend wasm_execute_contract_send_message = 14;

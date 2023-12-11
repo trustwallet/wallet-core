@@ -88,7 +88,7 @@ SigningResult<json> ProtobufSerialization::encodeTxProtobuf(const Proto::Signing
     }
     const auto serializedTxBody = txBodyResult.payload();
 
-    auto txRaw = cosmos::TxRaw();
+    auto txRaw = cosmos::tx::v1beta1::TxRaw();
     txRaw.set_body_bytes(serializedTxBody.data(), serializedTxBody.size());
     txRaw.set_auth_info_bytes(serializedAuthInfo.data(), serializedAuthInfo.size());
     *txRaw.add_signatures() = std::string(signature.begin(), signature.end());
@@ -100,7 +100,7 @@ SigningResult<json> ProtobufSerialization::encodeTxProtobuf(const Proto::Signing
 }
 
 SigningResult<Data> ProtobufSerialization::encodeTxBody(const Proto::SigningInput& input) {
-    cosmos::TxBody txBody;
+    cosmos::tx::v1beta1::TxBody txBody;
 
     // At this moment, we support only one message.
     if (input.messages_size() != 1) {
@@ -120,7 +120,7 @@ SigningResult<Data> ProtobufSerialization::encodeTxBody(const Proto::SigningInpu
 
 Data ProtobufSerialization::encodeAuthInfo(const Proto::SigningInput& input, const PublicKey& publicKey) {
     // AuthInfo
-    auto authInfo = cosmos::AuthInfo();
+    auto authInfo = cosmos::tx::v1beta1::AuthInfo();
     auto* signerInfo = authInfo.add_signer_infos();
 
     // At this moment, we support Eip712 signing mode only.

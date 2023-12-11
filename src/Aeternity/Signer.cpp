@@ -48,20 +48,23 @@ Proto::SigningOutput Signer::sign(const TW::PrivateKey& privateKey, Transaction&
     return createProtoOutput(signature, signedEncodedTx);
 }
 
-Data Signer::buildRlpTxRaw(Data& txRaw, Data& sigRaw) {
-    auto rlpTxRaw = Data();
-    auto signaturesList = Data();
-    append(signaturesList, Ethereum::RLP::encode(sigRaw));
+Data Signer::buildRlpTxRaw(const Data& txRaw, const Data& sigRaw) {
+    EthereumRlp::Proto::EncodingInput input;
+    auto* rlpList = input.mutable_item()->mutable_list();
 
-    append(rlpTxRaw, Ethereum::RLP::encode(Identifiers::objectTagSignedTransaction));
-    append(rlpTxRaw, Ethereum::RLP::encode(Identifiers::rlpMessageVersion));
-    append(rlpTxRaw, Ethereum::RLP::encodeList(signaturesList));
-    append(rlpTxRaw, Ethereum::RLP::encode(txRaw));
+    rlpList->add_items()->set_number_u64(Identifiers::objectTagSignedTransaction);
+    rlpList->add_items()->set_number_u64(Identifiers::rlpMessageVersion);
 
-    return Ethereum::RLP::encodeList(rlpTxRaw);
+    // Append a list of signatures.
+    auto* signaturesList = rlpList->add_items()->mutable_list();
+    signaturesList->add_items()->set_data(sigRaw.data(), sigRaw.size());
+
+    rlpList->add_items()->set_data(txRaw.data(), txRaw.size());
+
+    return Ethereum::RLP::encode(input);
 }
 
-Data Signer::buildMessageToSign(Data& txRaw) {
+Data Signer::buildMessageToSign(const Data& txRaw) {
     auto data = Data();
     Data bytes(Identifiers::networkId.begin(), Identifiers::networkId.end());
     append(data, bytes);

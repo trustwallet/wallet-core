@@ -8,7 +8,6 @@
 
 #include "Constants.h"
 #include "Ethereum/MessageSigner.h"
-#include "Ethereum/ABI/ParamStruct.h"
 #include "HexCoding.h"
 
 #include <map>
@@ -243,7 +242,7 @@ SigningResult<Eip712PreImage> SignerEip712::preImageHash(const Proto::SigningInp
     }
 
     const auto txTypedData = txTypedDataResult.payload();
-    const auto txTypedDataHash = Ethereum::ABI::ParamStruct::hashStructJson(txTypedData.dump());
+    const auto txTypedDataHash = Ethereum::MessageSigner::typedDataPreImageHash(txTypedData.dump());
     return SigningResult<Eip712PreImage>::success({.typedData = txTypedData, .typedDataHash = txTypedDataHash});
 }
 

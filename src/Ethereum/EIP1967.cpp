@@ -5,11 +5,9 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "EIP1014.h"
-#include "AddressChecksum.h"
+#include "ABI/Function.h"
 #include "Hash.h"
 #include "HexCoding.h"
-#include <iostream>
-#include "ABI.h"
 
 namespace TW::Ethereum {
 
@@ -18,13 +16,16 @@ static const std::string eip1967ProxyBytecodeHex = R"(0x608060405260405162000c51
 Data getEIP1967ProxyInitCode(const std::string& logicAddress, const Data& data) {
     Data initCode = parse_hex(eip1967ProxyBytecodeHex);
 
-    auto proxyConstructorParams = ABI::ParamTuple();
-    proxyConstructorParams.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(logicAddress)));
-    proxyConstructorParams.addParam(std::make_shared<ABI::ParamByteArray>(data));
-    Data proxyConstructorParamsEncoded;
-    proxyConstructorParams.encode(proxyConstructorParamsEncoded);
+    auto proxyConstructorParamsEncoded = Ethereum::ABI::Function::encodeParams(Ethereum::ABI::BaseParams {
+        std::make_shared<Ethereum::ABI::ProtoAddress>(logicAddress),
+        std::make_shared<Ethereum::ABI::ProtoByteArray>(data),
+    });
 
-    append(initCode, proxyConstructorParamsEncoded);
+    if (!proxyConstructorParamsEncoded.has_value()) {
+        return {};
+    }
+
+    append(initCode, proxyConstructorParamsEncoded.value());
     return initCode;
 }
 
