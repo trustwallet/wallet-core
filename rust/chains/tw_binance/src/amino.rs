@@ -75,13 +75,14 @@ mod tests {
         let prefix = input.prefix.decode_hex().unwrap();
         let content = input.content.decode_hex().unwrap();
 
+        let encoder = AminoEncoder::new(&prefix).extend_content(&content);
+
         let actual = if input.content_size_prefixed {
-            AminoEncoder::new(&prefix)
-                .extend_content(&content)
+            encoder
                 .encode_size_prefixed()
                 .expect("Error on Amino encoding with content size prefix")
         } else {
-            AminoEncoder::new(&prefix).encode()
+            encoder.encode()
         };
 
         let expected = input.expected.decode_hex().unwrap();

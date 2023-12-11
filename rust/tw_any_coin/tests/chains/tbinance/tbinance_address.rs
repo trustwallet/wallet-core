@@ -13,8 +13,8 @@ use tw_coin_registry::coin_type::CoinType;
 fn test_tbinance_address_normalization() {
     test_address_normalization(
         CoinType::TBinance,
-        "bnb1h8xf9htasu9aclra954dnnve8fgcda4ae7qfa8",
-        "bnb1h8xf9htasu9aclra954dnnve8fgcda4ae7qfa8",
+        "tbnb18mtcq20875cr0p7l4upm0u5zx4r9jpj2kfu9f8",
+        "tbnb18mtcq20875cr0p7l4upm0u5zx4r9jpj2kfu9f8",
     );
 }
 

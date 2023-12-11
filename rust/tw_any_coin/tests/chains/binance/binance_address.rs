@@ -5,7 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use tw_any_coin::test_utils::address_utils::{
-    test_address_get_data, test_address_invalid, test_address_normalization, test_address_valid,
+    test_address_bech32_is_valid, test_address_get_data, test_address_invalid,
+    test_address_normalization, test_address_valid, AddressBech32IsValid,
 };
 use tw_coin_registry::coin_type::CoinType;
 
@@ -52,4 +53,13 @@ fn test_binance_address_get_data() {
         "bnb1h8xf9htasu9aclra954dnnve8fgcda4ae7qfa8",
         "b9cc92dd7d870bdc7c7d2d2ad9cd993a5186f6bd",
     );
+}
+
+#[test]
+fn test_binance_address_is_valid_bech32() {
+    test_address_bech32_is_valid(AddressBech32IsValid {
+        coin: CoinType::Binance,
+        address: "bva10npy5809y303f227g4leqw7vs3s6ep5ul26sq2",
+        hrp: "bva",
+    });
 }

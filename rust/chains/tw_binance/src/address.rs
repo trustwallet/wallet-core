@@ -12,7 +12,6 @@ use tw_bech32_address::Bech32Address;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::{AddressError, AddressResult};
-use tw_cosmos_sdk::address::CosmosAddress;
 use tw_keypair::tw::PublicKey;
 use tw_memory::Data;
 
@@ -34,10 +33,6 @@ impl CoinAddress for BinanceAddress {
 
 impl BinanceAddress {
     pub const VALIDATOR_HRP: &'static str = "bva";
-
-    pub fn new(hrp: String, key_hash: Data) -> AddressResult<BinanceAddress> {
-        Bech32Address::new(hrp, key_hash).map(BinanceAddress)
-    }
 
     pub fn new_validator_addr(key_hash: Data) -> AddressResult<BinanceAddress> {
         Bech32Address::new(Self::VALIDATOR_HRP.to_string(), key_hash).map(BinanceAddress)
@@ -78,16 +73,6 @@ impl BinanceAddress {
         key_hash: Data,
     ) -> AddressResult<BinanceAddress> {
         Bech32Address::from_key_hash_with_coin(coin, key_hash).map(BinanceAddress)
-    }
-}
-
-impl CosmosAddress for BinanceAddress {
-    fn from_str_with_coin(coin: &dyn CoinContext, addr: &str) -> AddressResult<Self>
-    where
-        Self: Sized,
-    {
-        let prefix = None;
-        BinanceAddress::from_str_with_coin_and_prefix(coin, addr.to_string(), prefix)
     }
 }
 

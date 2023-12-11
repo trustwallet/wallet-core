@@ -10,6 +10,7 @@ use std::borrow::Cow;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_hash::H264;
 use tw_memory::Data;
+use tw_misc::traits::ToBytesVec;
 use tw_proto::serialize;
 use tw_proto::Binance::Proto;
 
@@ -54,7 +55,7 @@ impl BinanceAminoSerializer {
     pub fn serialize_signature(signed: &SignedTransaction) -> SigningResult<Data> {
         let sign_msg = Proto::Signature {
             pub_key: Self::serialize_public_key(signed.signer.public_key.compressed()).into(),
-            signature: signed.signer.signature.to_bytes().into(),
+            signature: signed.signer.signature.to_vec().into(),
             account_number: signed.unsigned.account_number,
             sequence: signed.unsigned.sequence,
         };
