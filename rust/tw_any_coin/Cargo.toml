@@ -14,7 +14,12 @@ tw_misc = { path = "../tw_misc" }
 tw_proto = { path = "../tw_proto", optional = true }
 
 [features]
-test-utils = ["tw_proto"]
+test-utils = [
+    "tw_keypair/test-utils",
+    "tw_memory/test-utils",
+    "tw_misc/test-utils",
+    "tw_proto"
+]
 
 [dev-dependencies]
 serde = { version = "1.0", features = ["derive"] }
