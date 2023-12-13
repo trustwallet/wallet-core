@@ -19,6 +19,7 @@ pub enum SignMode {
     Direct,
 }
 
+#[derive(Clone, Serialize)]
 pub struct Fee<Address> {
     pub amounts: Vec<Coin>,
     pub gas_limit: u64,

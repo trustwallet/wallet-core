@@ -10,10 +10,11 @@ use crate::abi::param_type::reader::Reader;
 use crate::abi::uint::UintBits;
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use crate::message::MessageSigningError;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use std::fmt;
 use std::str::FromStr;
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Property {
     pub name: String,
     #[serde(rename = "type")]
@@ -24,7 +25,9 @@ pub struct Property {
 pub enum PropertyType {
     Bool,
     String,
+    /// TODO add bits
     Int,
+    // TODO add bits
     Uint,
     Address,
     FixBytes {
@@ -85,6 +88,29 @@ impl TypeConstructor for PropertyType {
 
     fn custom(s: &str) -> AbiResult<Self> {
         Ok(PropertyType::Custom(s.to_string()))
+    }
+}
+
+impl fmt::Display for PropertyType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            PropertyType::Bool => write!(f, "bool"),
+            PropertyType::String => write!(f, "string"),
+            // TODO add bits
+            PropertyType::Int => write!(f, "int256"),
+            // TODO add bits
+            PropertyType::Uint => write!(f, "uint256"),
+            PropertyType::Address => write!(f, "address"),
+            PropertyType::FixBytes { len } => write!(f, "bytes{len}"),
+            PropertyType::Bytes => write!(f, "bytes"),
+            PropertyType::Custom(custom) => write!(f, "{custom}"),
+            PropertyType::Array(element_type) => {
+                write!(f, "{element_type}[]")
+            },
+            PropertyType::FixArray { len, element_type } => {
+                write!(f, "{element_type}[{len}]")
+            },
+        }
     }
 }
 
