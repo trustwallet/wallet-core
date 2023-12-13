@@ -108,18 +108,3 @@ TEST(EthereumCompiler, CompileWithSignatures) {
         EXPECT_EQ(output.error(), Common::Proto::Error_signatures_count);
     }
 }
-
-TEST(EthereumCompiler, BuildTransactionInputShouldFail) {
-    const auto coin = TWCoinTypeEthereum;
-    const auto txInputData0 =
-        TransactionCompiler::buildInput(coin,
-                                        "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F", // from
-                                        "0x3535353535353535353535353535353535353535", // to
-                                        "1000000000000000000",                        // amount
-                                        "ETH",                                        // asset
-                                        "Memo",                                       // memo
-                                        "05"                                          // chainId
-        );
-    // Ethereum doesn't support `buildInput`.
-    EXPECT_TRUE(txInputData0.empty());
-}

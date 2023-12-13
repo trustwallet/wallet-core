@@ -12,7 +12,6 @@ use crate::modules::serializer::json_serializer::JsonSerializer;
 use crate::modules::serializer::protobuf_serializer::ProtobufSerializer;
 use crate::modules::tx_builder::TxBuilder;
 use crate::public_key::CosmosPublicKey;
-use crate::signature::CosmosSignature;
 use std::borrow::Cow;
 use std::marker::PhantomData;
 use tw_coin_entry::coin_context::CoinContext;
@@ -20,6 +19,7 @@ use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::common::compile_input::SingleSignaturePubkey;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_coin_entry::signing_output_error;
+use tw_misc::traits::ToBytesVec;
 use tw_proto::Cosmos::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
@@ -105,21 +105,21 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
             signature,
             public_key,
         } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
-        let signature = Context::Signature::from_bytes(&signature)?;
+        let signature = Context::Signature::try_from(&signature)?;
         let public_key = Context::PublicKey::from_bytes(coin, &public_key)?;
 
         let signed_tx_raw = match TxBuilder::<Context>::try_sign_direct_args(&input) {
             // If there was a `SignDirect` message in the signing input, generate the `TxRaw` directly.
             Ok(Some(sign_direct_args)) => ProtobufSerializer::<Context>::build_direct_signed_tx(
                 &sign_direct_args,
-                signature.to_bytes(),
+                signature.to_vec(),
             ),
             // Otherwise, generate the `TxRaw` by using `TxBuilder`.
             _ => {
                 // Set the public key. It will be used to construct a signer info.
                 input.public_key = Cow::from(public_key.to_bytes());
                 let unsigned_tx = TxBuilder::<Context>::unsigned_tx_from_proto(coin, &input)?;
-                let signed_tx = unsigned_tx.into_signed(signature.to_bytes());
+                let signed_tx = unsigned_tx.into_signed(signature.to_vec());
 
                 ProtobufSerializer::build_signed_tx(&signed_tx)?
             },
@@ -129,12 +129,12 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
         let broadcast_tx = BroadcastMsg::raw(broadcast_mode, &signed_tx_raw).to_json_string();
 
         let signature_json =
-            JsonSerializer::<Context>::serialize_signature(&public_key, signature.to_bytes());
+            JsonSerializer::<Context>::serialize_signature(&public_key, signature.to_vec());
         let signature_json = serde_json::to_string(&[signature_json])
             .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
 
         Ok(Proto::SigningOutput {
-            signature: Cow::from(signature.to_bytes()),
+            signature: Cow::from(signature.to_vec()),
             signature_json: Cow::from(signature_json),
             serialized: Cow::from(broadcast_tx),
             ..Proto::SigningOutput::default()
@@ -151,13 +151,13 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
             signature,
             public_key,
         } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
-        let signature = Context::Signature::from_bytes(&signature)?;
+        let signature = Context::Signature::try_from(&signature)?;
         let public_key = Context::PublicKey::from_bytes(coin, &public_key)?;
 
         // Set the public key. It will be used to construct a signer info.
         input.public_key = Cow::from(public_key.to_bytes());
         let unsigned_tx = TxBuilder::<Context>::unsigned_tx_from_proto(coin, &input)?;
-        let signed_tx = unsigned_tx.into_signed(signature.to_bytes());
+        let signed_tx = unsigned_tx.into_signed(signature.to_vec());
 
         let signed_tx_json = JsonSerializer::build_signed_tx(&signed_tx)?;
 
@@ -168,7 +168,7 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
             .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
 
         Ok(Proto::SigningOutput {
-            signature: Cow::from(signature.to_bytes()),
+            signature: Cow::from(signature.to_vec()),
             signature_json: Cow::from(signature_json),
             json: Cow::from(broadcast_tx),
             ..Proto::SigningOutput::default()

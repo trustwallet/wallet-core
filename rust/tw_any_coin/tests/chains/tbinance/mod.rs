@@ -4,5 +4,4 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-/// TODO make this enum generated from `registry.json`.
-pub type CoinType = u32;
+mod tbinance_address;

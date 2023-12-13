@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# This script generates new EVM chain skeleton files.
+
+pushd codegen-v2
+cargo run -- new-evmchain $1
+popd # codegen-v2
