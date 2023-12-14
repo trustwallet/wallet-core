@@ -7,8 +7,8 @@ edition = "2021"
 itertools = "0.10.5"
 lazy_static = "1.4.0"
 rlp = "0.5.2"
-serde = { version = "1.0.159", features = ["derive"] }
-serde_json = "1.0.95"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 tw_coin_entry = { path = "../tw_coin_entry" }
 tw_encoding = { path = "../tw_encoding" }
 tw_hash = { path = "../tw_hash" }

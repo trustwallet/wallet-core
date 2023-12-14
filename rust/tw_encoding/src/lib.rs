@@ -19,4 +19,5 @@ pub type EncodingResult<T> = Result<T, EncodingError>;
 pub enum EncodingError {
     InvalidInput,
     InvalidAlphabet,
+    Internal,
 }
