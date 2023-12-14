@@ -12,7 +12,7 @@ namespace TW::Cosmos {
 
 /// Entry point for implementation of Cosmos coin.
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific includes in this file
-class Entry : public Rust::RustCoinEntry {
+class Entry : public Rust::RustCoinEntryWithSignJSON {
 public:
     ~Entry() override = default;
     bool supportsJSONSigning() const final { return true; }

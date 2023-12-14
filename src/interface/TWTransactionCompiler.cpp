@@ -14,23 +14,6 @@
 
 using namespace TW;
 
-
-TWData *_Nonnull TWTransactionCompilerBuildInput(enum TWCoinType coinType, TWString *_Nonnull from, TWString *_Nonnull to, TWString *_Nonnull amount, TWString *_Nonnull asset, TWString *_Nonnull memo, TWString *_Nonnull chainId) {
-    Data result;
-    try {
-        result = TransactionCompiler::buildInput(
-            coinType,
-            std::string(TWStringUTF8Bytes(from)),
-            std::string(TWStringUTF8Bytes(to)),
-            std::string(TWStringUTF8Bytes(amount)),
-            std::string(TWStringUTF8Bytes(asset)),
-            std::string(TWStringUTF8Bytes(memo)),
-            std::string(TWStringUTF8Bytes(chainId))
-        );
-    } catch (...) {} // return empty
-    return TWDataCreateWithBytes(result.data(), result.size());
-}
-
 static std::vector<Data> createFromTWDataVector(const struct TWDataVector* _Nonnull dataVector) {
     std::vector<Data> ret;
     const auto n = TWDataVectorSize(dataVector);

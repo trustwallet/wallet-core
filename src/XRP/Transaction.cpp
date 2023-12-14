@@ -22,7 +22,9 @@ Data Transaction::serialize() const {
 
     auto data = Data();
 
-    /// field must be sorted by field type then by field name
+    /// fields must be sorted by field type code then by field code (key)
+    // https://xrpl.org/serialization.html#canonical-field-order
+
     /// "type"
     encodeType(FieldType::int16, 2, data);
     encode16BE(uint16_t(transaction_type), data);
@@ -36,15 +38,35 @@ Data Transaction::serialize() const {
     encode32BE(sequence, data);
 
     /// "destinationTag"
-    if ((transaction_type == TransactionType::payment) && encode_tag) {
+    if (((transaction_type == TransactionType::payment) || 
+         (transaction_type == TransactionType::EscrowCreate)) && encode_tag) {
         encodeType(FieldType::int32, 14, data);
         encode32BE(static_cast<uint32_t>(destination_tag), data);
+    }
+
+    /// "OfferSequence"
+    if ((transaction_type == TransactionType::EscrowCancel) || 
+        (transaction_type == TransactionType::EscrowFinish)) {
+        encodeType(FieldType::int32, 25, data);
+        encode32BE(offer_sequence, data);
     }
 
     /// "lastLedgerSequence"
     if (last_ledger_sequence > 0) {
         encodeType(FieldType::int32, 27, data);
         encode32BE(last_ledger_sequence, data);
+    }
+
+    /// "CancelAfter"
+    if ((transaction_type == TransactionType::EscrowCreate) && cancel_after > 0) {
+        encodeType(FieldType::int32, 36, data);
+        encode32BE(static_cast<uint32_t>(cancel_after), data);
+    }
+
+    /// "FinishAfter"
+    if ((transaction_type == TransactionType::EscrowCreate) && finish_after > 0) {
+        encodeType(FieldType::int32, 37, data);
+        encode32BE(static_cast<uint32_t>(finish_after), data);
     }
 
     /// "NFTokenId"
@@ -71,6 +93,9 @@ Data Transaction::serialize() const {
     } else if (transaction_type == TransactionType::TrustSet) {
         encodeType(FieldType::amount, 3, data);
         append(data, serializeCurrencyAmount(limit_amount));
+    } else if (transaction_type == TransactionType::EscrowCreate) {
+        encodeType(FieldType::amount, 1, data);
+        append(data, serializeAmount(amount));
     }
 
     /// "fee"
@@ -82,10 +107,24 @@ Data Transaction::serialize() const {
         encodeType(FieldType::vl, 3, data);
         encodeBytes(pub_key, data);
     }
+
     /// "txnSignature"
     if (!signature.empty()) {
         encodeType(FieldType::vl, 4, data);
         encodeBytes(signature, data);
+    }
+
+    /// "Fulfillment"
+    if ((transaction_type == TransactionType::EscrowFinish) && !fulfillment.empty()) {
+        encodeType(FieldType::vl, 16, data);
+        encodeBytes(fulfillment, data);
+    }
+
+    /// "Condition"
+    if (((transaction_type == TransactionType::EscrowCreate) ||
+         (transaction_type == TransactionType::EscrowFinish)) && !condition.empty()) {
+        encodeType(FieldType::vl, 17, data);
+        encodeBytes(condition, data);
     }
 
     /// "account"
@@ -94,9 +133,17 @@ Data Transaction::serialize() const {
 
     /// "destination"
     if ((transaction_type == TransactionType::payment) ||
-        (transaction_type == TransactionType::NFTokenCreateOffer)) {
+        (transaction_type == TransactionType::NFTokenCreateOffer) ||
+        (transaction_type == TransactionType::EscrowCreate)) {
         encodeType(FieldType::account, 3, data);
         encodeBytes(destination, data);
+    }
+
+    /// "Owner"
+    if ((transaction_type == TransactionType::EscrowCancel) ||
+        (transaction_type == TransactionType::EscrowFinish)) {
+        encodeType(FieldType::account, 2, data);
+        encodeBytes(owner, data);
     }
 
     /// "NFTokenOffers"
