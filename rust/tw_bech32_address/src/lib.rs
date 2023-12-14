@@ -92,15 +92,22 @@ impl Bech32Address {
         Bech32Address::with_public_key_hasher(hrp, &public_key, address_hasher)
     }
 
-    pub fn from_str_checked(
-        expected_hrp: &str,
+    pub fn from_str_checked<I>(
+        possible_hrps: I,
         address_str: String,
-    ) -> AddressResult<Bech32Address> {
+    ) -> AddressResult<Bech32Address>
+    where
+        I: IntoIterator<Item = String>,
+    {
         let bech32::Decoded { hrp, bytes } =
             bech32::decode(&address_str).map_err(|_| AddressError::InvalidInput)?;
+        // Try to find at least one hrp matches the actual value.
         // Copied from the legacy Bech32Address.cpp:
         // https://github.com/trustwallet/wallet-core/blob/d67078daa580b37063c97be66a625aaee9664882/src/Bech32Address.cpp#L21
-        if !hrp.starts_with(expected_hrp) {
+        if !possible_hrps
+            .into_iter()
+            .any(|possible_hrp| hrp.starts_with(&possible_hrp))
+        {
             return Err(AddressError::InvalidHrp);
         }
         Ok(Bech32Address {
@@ -114,15 +121,20 @@ impl Bech32Address {
         coin: &dyn CoinContext,
         address_str: String,
         prefix: Option<Bech32Prefix>,
-    ) -> AddressResult<Bech32Address>
-    where
-        Self: Sized,
-    {
+    ) -> AddressResult<Bech32Address> {
         let hrp = match prefix {
             Some(Bech32Prefix { hrp }) => hrp,
             None => coin.hrp().ok_or(AddressError::InvalidHrp)?,
         };
-        Self::from_str_checked(&hrp, address_str)
+        Self::from_str_checked([hrp], address_str)
+    }
+
+    pub fn from_key_hash_with_coin(
+        coin: &dyn CoinContext,
+        key_hash: Data,
+    ) -> AddressResult<Bech32Address> {
+        let hrp = coin.hrp().ok_or(AddressError::InvalidHrp)?;
+        Bech32Address::new(hrp, key_hash)
     }
 
     pub fn key_hash(&self) -> &[u8] {
@@ -202,7 +214,7 @@ mod tests {
     #[test]
     fn test_address_from_str_checked_valid() {
         fn test_impl(addr: &str, hrp: &str) {
-            Bech32Address::from_str_checked(hrp, addr.to_string())
+            Bech32Address::from_str_checked([hrp.to_string()], addr.to_string())
                 .unwrap_or_else(|e| panic!("ERROR={:?}: hrp={} addr={}", e, hrp, addr));
         }
 
@@ -249,7 +261,7 @@ mod tests {
     #[test]
     fn test_address_from_str_checked_invalid() {
         fn test_impl(addr: &str, hrp: &str) {
-            Bech32Address::from_str_checked(hrp, addr.to_string())
+            Bech32Address::from_str_checked([hrp.to_string()], addr.to_string())
                 .expect_err(&format!("hrp={} addr={}", hrp, addr));
         }
 
@@ -293,7 +305,8 @@ mod tests {
     #[test]
     fn test_decode() {
         fn test_impl(addr: &str, hrp: &str, expected_hash: &str) {
-            let actual = Bech32Address::from_str_checked(hrp, addr.to_string()).unwrap();
+            let actual =
+                Bech32Address::from_str_checked([hrp.to_string()], addr.to_string()).unwrap();
             assert_eq!(actual.key_hash.to_hex(), expected_hash);
         }
 
