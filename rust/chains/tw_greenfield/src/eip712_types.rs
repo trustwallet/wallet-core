@@ -10,7 +10,7 @@ use serde::{Serialize, Serializer};
 use serde_json::Value as Json;
 use std::collections::BTreeMap;
 use tw_cosmos_sdk::transaction::message::JsonMessage;
-use tw_cosmos_sdk::transaction::Fee;
+use tw_cosmos_sdk::transaction::{Coin, Fee};
 use tw_evm::abi::param_type::constructor::TypeConstructor;
 use tw_evm::message::eip712::message_types::MessageTypesBuilder;
 use tw_evm::message::eip712::property::PropertyType;
@@ -91,7 +91,13 @@ impl GreenfieldCoin {
     }
 }
 
-pub struct GreenfieldFee;
+#[derive(Serialize)]
+pub struct GreenfieldFee {
+    pub amounts: Vec<Coin>,
+    pub gas_limit: u64,
+    pub payer: String,
+    pub granter: String,
+}
 
 impl GreenfieldFee {
     const TYPE_NAME: &'static str = "Fee";
@@ -107,6 +113,30 @@ impl GreenfieldFee {
                 .add_property("gas_limit", PropertyType::Uint)
                 .add_property("granter", PropertyType::String)
                 .add_property("payer", PropertyType::String);
+        }
+    }
+}
+
+/// TODO rename `GreenfieldFee` to `Eip712Fee`.
+/// TODO rename `Fee<GreenfieldAddress>` to `GreenfieldFee`
+impl From<Fee<GreenfieldAddress>> for GreenfieldFee {
+    fn from(fee: Fee<GreenfieldAddress>) -> Self {
+        let payer = fee
+            .payer
+            .as_ref()
+            .map(|addr| addr.to_string())
+            .unwrap_or_default();
+        let granter = fee
+            .granter
+            .as_ref()
+            .map(|addr| addr.to_string())
+            .unwrap_or_default();
+
+        GreenfieldFee {
+            amounts: fee.amounts.clone(),
+            gas_limit: fee.gas_limit,
+            payer,
+            granter,
         }
     }
 }
@@ -134,7 +164,7 @@ pub struct GreenfieldTransaction {
     pub account_number: U256,
     #[serde(serialize_with = "U256::as_decimal_str")]
     pub chain_id: U256,
-    pub fee: Fee<GreenfieldAddress>,
+    pub fee: GreenfieldFee,
     pub memo: String,
     /// Will be flatten as `"msg1": { ... }, "msg2": { ... }`.
     #[serde(flatten)]

@@ -5,15 +5,19 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::eip712_types::{
-    GreenfieldDomain, GreenfieldTransaction, GreenfieldTypedMsg, MsgPropertyName,
+    GreenfieldDomain, GreenfieldFee, GreenfieldTransaction, GreenfieldTypedMsg, MsgPropertyName,
 };
-use crate::transaction::UnsignedTransaction;
+use crate::transaction::{GreenfieldSignedTransaction, UnsignedTransaction};
 use std::collections::BTreeMap;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_cosmos_sdk::signature::secp256k1::Secp256k1Signature;
+use tw_cosmos_sdk::signature::CosmosSignature;
 use tw_evm::message::eip712::eip712_message::Eip712Message;
 use tw_evm::message::eip712::message_types::MessageTypesBuilder;
 use tw_evm::message::EthMessage;
 use tw_hash::H256;
+use tw_keypair::ecdsa::secp256k1;
+use tw_keypair::traits::SigningKeyTrait;
 use tw_number::U256;
 
 pub struct Eip712TxPreimage {
@@ -21,9 +25,22 @@ pub struct Eip712TxPreimage {
     pub tx_hash: H256,
 }
 
+/// TODO rename to `Eip712Signer`.
 pub struct Eip712Preimager;
 
 impl Eip712Preimager {
+    pub fn sign(
+        key_pair: &secp256k1::KeyPair,
+        unsigned: UnsignedTransaction,
+    ) -> SigningResult<GreenfieldSignedTransaction> {
+        let Eip712TxPreimage { tx_hash, .. } = Self::preimage_hash(&unsigned)?;
+
+        let signature = key_pair.sign(tx_hash)?;
+        // TODO this will be significantly improved after master is merged into s/rust-greenfield.
+        let signature = Secp256k1Signature::from_bytes(signature.to_bytes().as_slice())?;
+        Ok(unsigned.into_signed(signature))
+    }
+
     pub fn preimage_hash(unsigned: &UnsignedTransaction) -> SigningResult<Eip712TxPreimage> {
         // `types_builder` will be used to declare all custom types like `Tx`, `Fee`, `Msg1` etc.
         let mut types_builder = MessageTypesBuilder::default();
@@ -45,7 +62,7 @@ impl Eip712Preimager {
         let tx_to_sign = GreenfieldTransaction {
             account_number: U256::from(unsigned.account_number),
             chain_id: unsigned.eth_chain_id,
-            fee: unsigned.fee.clone(),
+            fee: GreenfieldFee::from(unsigned.fee.clone()),
             memo: unsigned.tx_body.memo.clone(),
             msgs,
             sequence: U256::from(unsigned.signer.sequence),

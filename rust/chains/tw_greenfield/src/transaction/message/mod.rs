@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use tw_cosmos_sdk::transaction::message::CosmosMessage;
+use tw_cosmos_sdk::transaction::message::{CosmosMessage, CosmosMessageBox};
 use tw_evm::message::eip712::message_types::MessageTypesBuilder;
 
 pub mod send_order;
@@ -17,4 +17,6 @@ pub trait GreenfieldMessage: CosmosMessage {
     }
 
     fn declare_eip712_type(&self, msg_idx: usize, message_types: &mut MessageTypesBuilder);
+
+    fn to_cosmos_message(&self) -> CosmosMessageBox;
 }

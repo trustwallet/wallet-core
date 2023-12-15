@@ -7,11 +7,14 @@
 use crate::address::GreenfieldAddress;
 use crate::transaction::message::GreenfieldMessage;
 use tw_cosmos_sdk::transaction::message::cosmos_bank_message::SendMessage;
+use tw_cosmos_sdk::transaction::message::CosmosMessageBox;
 use tw_evm::abi::param_type::constructor::TypeConstructor;
 use tw_evm::message::eip712::message_types::MessageTypesBuilder;
 use tw_evm::message::eip712::property::PropertyType;
 
-impl GreenfieldMessage for SendMessage<GreenfieldAddress> {
+pub type GreenfieldSendMessage = SendMessage<GreenfieldAddress>;
+
+impl GreenfieldMessage for GreenfieldSendMessage {
     fn declare_eip712_type(&self, msg_idx: usize, message_types: &mut MessageTypesBuilder) {
         let this_msg_type_name = self.eip712_type(msg_idx);
         // TODO add `struct SendOrderAmount(Coin)`.
@@ -30,5 +33,9 @@ impl GreenfieldMessage for SendMessage<GreenfieldAddress> {
             builder.add_property("amount", PropertyType::String);
             builder.add_property("denom", PropertyType::String);
         }
+    }
+
+    fn to_cosmos_message(&self) -> CosmosMessageBox {
+        Box::new(self.clone())
     }
 }

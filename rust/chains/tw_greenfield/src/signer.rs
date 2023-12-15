@@ -4,9 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::modules::eip712_preimager::Eip712Preimager;
+use crate::modules::tx_builder::TxBuilder;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::SigningResult;
 use tw_coin_entry::signing_output_error;
+use tw_keypair::ecdsa::secp256k1;
 use tw_proto::Greenfield::Proto;
 
 pub struct GreenfieldSigner;
@@ -21,9 +24,13 @@ impl GreenfieldSigner {
     }
 
     fn sign_impl(
-        _coin: &dyn CoinContext,
-        _input: Proto::SigningInput<'_>,
+        coin: &dyn CoinContext,
+        input: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
+        let unsigned = TxBuilder::unsigned_tx_from_proto(coin, &input)?;
+        let key_pair = secp256k1::KeyPair::try_from(input.private_key.as_ref())?;
+
+        let _signed = Eip712Preimager::sign(&key_pair, unsigned)?;
         todo!()
     }
 }

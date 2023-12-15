@@ -160,6 +160,7 @@ impl<Context: CosmosContext> ProtobufSerializer<Context> {
     fn build_sign_mode(sign_mode: SignMode) -> signing_proto::SignMode {
         match sign_mode {
             SignMode::Direct => signing_proto::SignMode::SIGN_MODE_DIRECT,
+            SignMode::Other(other) => signing_proto::SignMode::from(other),
         }
     }
 }

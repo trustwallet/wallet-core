@@ -12,10 +12,18 @@ use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_cosmos_sdk::address::CosmosAddress;
 use tw_evm::address::Address as EthereumAddress;
+use tw_keypair::ecdsa::secp256k1;
 use tw_memory::Data;
 
 #[derive(Clone, Serialize)]
 pub struct GreenfieldAddress(EthereumAddress);
+
+impl GreenfieldAddress {
+    /// Initializes an address with a `secp256k1` public key.
+    pub fn with_secp256k1_pubkey(pubkey: &secp256k1::PublicKey) -> GreenfieldAddress {
+        GreenfieldAddress(EthereumAddress::with_secp256k1_pubkey(pubkey))
+    }
+}
 
 impl CosmosAddress for GreenfieldAddress {
     fn from_str_with_coin(_coin: &dyn CoinContext, addr: &str) -> AddressResult<Self>

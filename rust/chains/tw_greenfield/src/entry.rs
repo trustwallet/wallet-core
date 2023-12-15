@@ -11,7 +11,7 @@ use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
-use tw_coin_entry::error::AddressResult;
+use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
@@ -38,10 +38,10 @@ impl CoinEntry for GreenfieldEntry {
     fn parse_address(
         &self,
         _coin: &dyn CoinContext,
-        _address: &str,
+        address: &str,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        GreenfieldAddress::from_str(address)
     }
 
     #[inline]
@@ -57,11 +57,14 @@ impl CoinEntry for GreenfieldEntry {
     fn derive_address(
         &self,
         _coin: &dyn CoinContext,
-        _public_key: PublicKey,
+        public_key: PublicKey,
         _derivation: Derivation,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        let public_key = public_key
+            .to_secp256k1()
+            .ok_or(AddressError::PublicKeyTypeMismatch)?;
+        Ok(GreenfieldAddress::with_secp256k1_pubkey(public_key))
     }
 
     #[inline]

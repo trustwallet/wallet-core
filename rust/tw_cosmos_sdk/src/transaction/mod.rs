@@ -17,6 +17,7 @@ use message::CosmosMessageBox;
 #[derive(Clone, Copy)]
 pub enum SignMode {
     Direct,
+    Other(i32),
 }
 
 #[derive(Clone, Serialize)]
