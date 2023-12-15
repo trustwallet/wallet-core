@@ -25,16 +25,37 @@ func SignExternalBinanceDemo() {
 
 	coin := core.CoinTypeBinance
 
+    // bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2
+    fromAddress, _ := hex.DecodeString("40c2979694bbc961023d1d27be6fc4d21a9febe6")
+    // bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5
+    toAddress, _ := hex.DecodeString("bffe47abfaede50419c577f1074fee6dd1535cd1")
+
+    inOutToken := binance.SendOrder_Token {
+        Denom: "BNB",
+        Amount: 1,
+    }
+
+    orderInput := binance.SendOrder_Input {
+        Address: fromAddress,
+        Coins: []*binance.SendOrder_Token{&inOutToken},
+    }
+    orderOutput := binance.SendOrder_Output {
+        Address: toAddress,
+        Coins: []*binance.SendOrder_Token{&inOutToken},
+    }
+
+	input := binance.SigningInput {
+	    ChainId: "Binance-Chain-Nile",
+	    OrderOneof: &binance.SigningInput_SendOrder {
+	        SendOrder: &binance.SendOrder {
+	            Inputs: []*binance.SendOrder_Input{&orderInput},
+                Outputs: []*binance.SendOrder_Output{&orderOutput},
+            },
+	    },
+	}
+
 	fmt.Println("\n==> Step 1: Prepare transaction input (protobuf)")
-	txInputData := core.BuildInput(
-		coin,
-		"bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2", // from
-		"bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5", // to
-		"1",                                          // amount
-		"BNB",                                        // asset
-		"",                                           // memo
-		"",                                           // chainId
-	)
+    txInputData, _ := proto.Marshal(&input)
 	fmt.Println("txInputData len: ", len(txInputData))
 
 	fmt.Println("\n==> Step 2: Obtain preimage hash")

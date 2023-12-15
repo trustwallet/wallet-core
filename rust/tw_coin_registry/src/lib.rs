@@ -6,7 +6,10 @@
 
 pub mod blockchain_type;
 pub mod coin_context;
-pub mod coin_type;
 pub mod dispatcher;
 pub mod error;
 pub mod registry;
+
+pub mod coin_type {
+    include!(concat!(env!("OUT_DIR"), "/coin_type.rs"));
+}

@@ -4,7 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use quick_protobuf::{BytesReader, Writer};
+use quick_protobuf::{BytesReader, MessageInfo, Writer};
+
+#[allow(non_snake_case)]
+#[rustfmt::skip]
+mod common;
 
 #[allow(non_snake_case)]
 #[rustfmt::skip]
@@ -12,6 +16,7 @@ mod generated {
     include!(concat!(env!("OUT_DIR"), "/proto/mod.rs"));
 }
 
+pub use common::google;
 pub use generated::TW::*;
 pub use quick_protobuf::{
     deserialize_from_slice as deserialize_prefixed, serialize_into_vec as serialize_prefixed,
@@ -36,6 +41,15 @@ pub fn serialize<T: MessageWrite>(message: &T) -> ProtoResult<Vec<u8>> {
 pub fn deserialize<'a, T: MessageRead<'a>>(data: &'a [u8]) -> ProtoResult<T> {
     let mut reader = BytesReader::from_bytes(data);
     T::from_reader(&mut reader, data)
+}
+
+pub fn to_any<T>(message: &T) -> google::protobuf::Any
+where
+    T: MessageInfo + MessageWrite,
+{
+    let value = serialize(message).expect("Protobuf serialization should never fail");
+    let type_url = format!("/{}", T::PATH);
+    google::protobuf::Any { type_url, value }
 }
 
 /// There is no way to create an instance of the `NoMessage` enum as it doesn't has variants.

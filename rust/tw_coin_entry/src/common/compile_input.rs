@@ -6,18 +6,13 @@
 
 use crate::coin_entry::{PublicKeyBytes, SignatureBytes};
 use crate::error::{SigningError, SigningErrorType, SigningResult};
-use tw_keypair::KeyPairError;
 
-pub struct SingleSignaturePubkey<Signature, PublicKey> {
-    pub signature: Signature,
-    pub public_key: PublicKey,
+pub struct SingleSignaturePubkey {
+    pub signature: SignatureBytes,
+    pub public_key: PublicKeyBytes,
 }
 
-impl<Signature, PublicKey> SingleSignaturePubkey<Signature, PublicKey>
-where
-    Signature: for<'a> TryFrom<&'a [u8], Error = KeyPairError>,
-    PublicKey: for<'a> TryFrom<&'a [u8], Error = KeyPairError>,
-{
+impl SingleSignaturePubkey {
     pub fn from_sign_pubkey_list(
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
@@ -26,17 +21,14 @@ where
             return Err(SigningError(SigningErrorType::Error_no_support_n2n));
         }
 
-        let signature_data = signatures
+        let signature = signatures
             .into_iter()
             .next()
             .ok_or(SigningError(SigningErrorType::Error_signatures_count))?;
-        let public_key_data = public_keys
+        let public_key = public_keys
             .into_iter()
             .next()
             .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
-
-        let signature = Signature::try_from(signature_data.as_slice())?;
-        let public_key = PublicKey::try_from(public_key_data.as_slice())?;
 
         Ok(SingleSignaturePubkey {
             signature,

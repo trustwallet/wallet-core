@@ -71,7 +71,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeTheta:
         case TWCoinTypeThetaFuel:
         case TWCoinTypeThunderCore:
-        case TWCoinTypeTomoChain:
+        case TWCoinTypeViction:
         case TWCoinTypeVeChain:
         case TWCoinTypeWanchain:
         case TWCoinTypeXDai:
@@ -386,6 +386,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeTia:
             EXPECT_EQ(address, "celestia1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0g3wnkv");
             break;
+            // end_of_coin_address_derivation_tests_marker_do_not_modify
             // no default branch here, intentionally, to better notice any missing coins
         }
     }

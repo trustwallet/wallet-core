@@ -46,6 +46,15 @@ impl CoinEntry for RoninEntry {
         Address::from_str(address)
     }
 
+    #[inline]
+    fn parse_address_unchecked(
+        &self,
+        _coin: &dyn CoinContext,
+        address: &str,
+    ) -> AddressResult<Self::Address> {
+        Address::from_str(address)
+    }
+
     fn derive_address(
         &self,
         _coin: &dyn CoinContext,

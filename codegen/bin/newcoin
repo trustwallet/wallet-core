@@ -18,4 +18,4 @@ end
 
 coin_id = command_line_args[0]
 
-generate_skeleton(coin_id, "")
+generate_skeleton(coin_id, "full")

@@ -6,6 +6,7 @@
 
 use std::fmt;
 use std::fmt::Formatter;
+use tw_encoding::EncodingError;
 use tw_keypair::KeyPairError;
 use tw_number::NumberError;
 use tw_proto::Common::Proto;
@@ -26,13 +27,15 @@ macro_rules! signing_output_error {
 
 pub type AddressResult<T> = Result<T, AddressError>;
 
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum AddressError {
     UnknownCoinType,
     MissingPrefix,
     FromHexError,
     PublicKeyTypeMismatch,
     UnexpectedAddressPrefix,
+    UnexpectedHasher,
+    InvalidHrp,
     InvalidInput,
 }
 
@@ -54,6 +57,18 @@ impl From<AddressError> for SigningError {
     #[inline]
     fn from(_err: AddressError) -> Self {
         SigningError(SigningErrorType::Error_invalid_address)
+    }
+}
+
+impl From<serde_json::Error> for SigningError {
+    fn from(_value: serde_json::Error) -> Self {
+        SigningError(SigningErrorType::Error_input_parse)
+    }
+}
+
+impl From<EncodingError> for SigningError {
+    fn from(_e: EncodingError) -> Self {
+        SigningError(SigningErrorType::Error_input_parse)
     }
 }
 

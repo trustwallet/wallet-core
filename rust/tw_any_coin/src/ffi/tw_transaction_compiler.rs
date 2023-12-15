@@ -7,6 +7,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use crate::transaction_compiler::TransactionCompiler;
+use tw_coin_registry::coin_type::CoinType;
 use tw_memory::ffi::tw_data::TWData;
 use tw_memory::ffi::tw_data_vector::TWDataVector;
 use tw_memory::ffi::RawPtrTrait;
@@ -25,6 +26,7 @@ pub unsafe extern "C" fn tw_transaction_compiler_pre_image_hashes(
     input: *const TWData,
 ) -> *mut TWData {
     let input = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
+    let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
 
     TransactionCompiler::preimage_hashes(coin, input.as_slice())
         .map(|output| TWData::from(output).into_ptr())
@@ -57,6 +59,7 @@ pub unsafe extern "C" fn tw_transaction_compiler_compile(
         TWDataVector::from_ptr_as_ref(public_keys),
         std::ptr::null_mut
     );
+    let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
 
     TransactionCompiler::compile(
         coin,

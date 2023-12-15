@@ -6,13 +6,13 @@ use secp256k1::XOnlyPublicKey;
 use tw_bitcoin::aliases::*;
 use tw_bitcoin::entry::BitcoinEntry;
 use tw_coin_entry::coin_entry::CoinEntry;
-use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
+use tw_coin_entry::test_utils::test_context::TestCoinContext;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
 #[test]
 fn send_to_p2sh_address() {
-    let coin = EmptyCoinContext;
+    let coin = TestCoinContext::default();
 
     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
     let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
@@ -73,7 +73,7 @@ fn send_to_p2sh_address() {
 
 #[test]
 fn send_to_p2pkh_address() {
-    let coin = EmptyCoinContext;
+    let coin = TestCoinContext::default();
 
     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
     let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
@@ -133,7 +133,7 @@ fn send_to_p2pkh_address() {
 
 #[test]
 fn send_to_p2wsh_address() {
-    let coin = EmptyCoinContext;
+    let coin = TestCoinContext::default();
 
     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
     let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
@@ -194,7 +194,7 @@ fn send_to_p2wsh_address() {
 
 #[test]
 fn send_to_p2wpkh_address() {
-    let coin = EmptyCoinContext;
+    let coin = TestCoinContext::default();
 
     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
     let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
@@ -254,7 +254,7 @@ fn send_to_p2wpkh_address() {
 
 #[test]
 fn send_to_p2tr_key_path_address() {
-    let coin = EmptyCoinContext;
+    let coin = TestCoinContext::default();
 
     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
     let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");

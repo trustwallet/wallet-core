@@ -8,9 +8,9 @@
 #include "Base64.h"
 #include "proto/Cosmos.pb.h"
 #include "Cosmos/Address.h"
-#include "Cosmos/Signer.h"
 #include "TestUtilities.h"
 
+#include <TrustWalletCore/TWAnySigner.h>
 #include <nlohmann/json.hpp>
 
 #include <gtest/gtest.h>
@@ -46,7 +46,8 @@ TEST(EvmosSigner, SignTxJsonEthermintKeyType) {
     auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input, TWCoinTypeNativeEvmos);
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeNativeEvmos);
     auto anotherExpectedJson =R"(
                             {
                                 "mode":"block",
@@ -64,7 +65,7 @@ TEST(EvmosSigner, SignTxJsonEthermintKeyType) {
                                                             "type":"ethermint/PubKeyEthSecp256k1",
                                                             "value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"
                                                         },
-                                                "signature":"RWt8aaBxdMAeEjym8toWskJ6WaJpEF9Ciucz2lAHkvNnTicGpzxwTUzJbJXRirSnGkejhISaYtDw2RBiq0vg5w=="
+                                                "signature":"1hMFtRqKjB8tiuyHYVYZundPdomebIIvHLC1gj9uXtFc+iO3UAHBysBjFB4brd9AD5yriS3uUDTAqqfg6fNGNg=="
                                             }
                                         ]}
                             })"_json;
@@ -82,7 +83,7 @@ TEST(EvmosSigner, SignTxJsonEthermintKeyType) {
                         "type":"ethermint/PubKeyEthSecp256k1",
                         "value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"
                     },
-                "signature":"RWt8aaBxdMAeEjym8toWskJ6WaJpEF9Ciucz2lAHkvNnTicGpzxwTUzJbJXRirSnGkejhISaYtDw2RBiq0vg5w=="
+                "signature":"1hMFtRqKjB8tiuyHYVYZundPdomebIIvHLC1gj9uXtFc+iO3UAHBysBjFB4brd9AD5yriS3uUDTAqqfg6fNGNg=="
             }
         ])"_json;
     EXPECT_EQ(signatures, expectedSignatures);
@@ -115,10 +116,13 @@ TEST(EvmosSigner, CompoundingAuthz) {
     auto privateKey = parse_hex("79bcbded1a5678ab34e6d9db9ad78e4e480e7b22723cc5fbf59e843732e1a8e5");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input, TWCoinTypeNativeEvmos);
+    auto output = Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeNativeEvmos);
+    // Please note the signature has been updated according to the serialization of the `StakeAuthorization` message.
+    // Previous: CvUBCvIBCh4vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnR3JhbnQSzwEKLGV2bW9zMTJtOWdyZ2FzNjB5azBrdWx0MDc2dnhuc3Jxejh4cGp5OXJwZjNlEixldm1vczE4ZnpxNG5hYzI4Z2ZtYTZncWZ2a3B3cmdwbTVjdGFyMno5bXhmMxpxCmcKKi9jb3Ntb3Muc3Rha2luZy52MWJldGExLlN0YWtlQXV0aG9yaXphdGlvbhI5EjUKM2V2bW9zdmFsb3BlcjF1bWs0MDdlZWQ3YWY2YW52dXQ2bGxnMnpldm5mMGRuMGZlcXFueSABEgYI4LD6pgYSfQpZCk8KKC9ldGhlcm1pbnQuY3J5cHRvLnYxLmV0aHNlY3AyNTZrMS5QdWJLZXkSIwohA4B2WHbj6sH/GWE7z/YW5PRnXYFGaGRAov7gZZI2Fv2nEgQKAggBGAMSIAoaCgZhZXZtb3MSEDQ1MjE0NzUwMDAwMDAwMDAQ+4QLGkAm17CZgB7m+CPVlITnrHosklMTL9zrUeGRs8FL8N0GcRami9zdJ+e3xuXOtJmwP7G6QNh85CRYjFj8a8lpmmJM
     auto expected = R"(
                 {
-                    "mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CvUBCvIBCh4vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnR3JhbnQSzwEKLGV2bW9zMTJtOWdyZ2FzNjB5azBrdWx0MDc2dnhuc3Jxejh4cGp5OXJwZjNlEixldm1vczE4ZnpxNG5hYzI4Z2ZtYTZncWZ2a3B3cmdwbTVjdGFyMno5bXhmMxpxCmcKKi9jb3Ntb3Muc3Rha2luZy52MWJldGExLlN0YWtlQXV0aG9yaXphdGlvbhI5EjUKM2V2bW9zdmFsb3BlcjF1bWs0MDdlZWQ3YWY2YW52dXQ2bGxnMnpldm5mMGRuMGZlcXFueSABEgYI4LD6pgYSfQpZCk8KKC9ldGhlcm1pbnQuY3J5cHRvLnYxLmV0aHNlY3AyNTZrMS5QdWJLZXkSIwohA4B2WHbj6sH/GWE7z/YW5PRnXYFGaGRAov7gZZI2Fv2nEgQKAggBGAMSIAoaCgZhZXZtb3MSEDQ1MjE0NzUwMDAwMDAwMDAQ+4QLGkAm17CZgB7m+CPVlITnrHosklMTL9zrUeGRs8FL8N0GcRami9zdJ+e3xuXOtJmwP7G6QNh85CRYjFj8a8lpmmJM"
+                    "mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CvUBCvIBCh4vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnR3JhbnQSzwEKLGV2bW9zMTJtOWdyZ2FzNjB5azBrdWx0MDc2dnhuc3Jxejh4cGp5OXJwZjNlEixldm1vczE4ZnpxNG5hYzI4Z2ZtYTZncWZ2a3B3cmdwbTVjdGFyMno5bXhmMxpxCmcKKi9jb3Ntb3Muc3Rha2luZy52MWJldGExLlN0YWtlQXV0aG9yaXphdGlvbhI5IAESNQozZXZtb3N2YWxvcGVyMXVtazQwN2VlZDdhZjZhbnZ1dDZsbGcyemV2bmYwZG4wZmVxcW55EgYI4LD6pgYSfQpZCk8KKC9ldGhlcm1pbnQuY3J5cHRvLnYxLmV0aHNlY3AyNTZrMS5QdWJLZXkSIwohA4B2WHbj6sH/GWE7z/YW5PRnXYFGaGRAov7gZZI2Fv2nEgQKAggBGAMSIAoaCgZhZXZtb3MSEDQ1MjE0NzUwMDAwMDAwMDAQ+4QLGkBXaTo3nk5EMFW9Euheez5ADx2bWo7XisNJ5vuGj1fKXh6CGNJGfJj/q1XUkBzaCvPNg+EcFHgtJdVSyF4cJZTg"
                 })";
     assertJSONEqual(output.serialized(), expected);
 }

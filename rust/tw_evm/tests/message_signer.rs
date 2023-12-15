@@ -6,7 +6,7 @@
 
 use tw_coin_entry::error::SigningErrorType;
 use tw_coin_entry::modules::message_signer::MessageSigner;
-use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
+use tw_coin_entry::test_utils::test_context::TestCoinContext;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_evm::modules::message_signer::EthMessageSigner;
 use tw_keypair::ecdsa::secp256k1;
@@ -30,6 +30,8 @@ struct SignVerifyTestInput {
 }
 
 fn test_message_signer_sign_verify(test_input: SignVerifyTestInput) {
+    let coin = TestCoinContext::default();
+
     let private_key = test_input.private_key.decode_hex().unwrap();
     let chain_id = test_input
         .chain_id
@@ -42,7 +44,7 @@ fn test_message_signer_sign_verify(test_input: SignVerifyTestInput) {
         ..Proto::MessageSigningInput::default()
     };
 
-    let output = EthMessageSigner.sign_message(&EmptyCoinContext, signing_input);
+    let output = EthMessageSigner.sign_message(&coin, signing_input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
     assert_eq!(output.signature, test_input.signature);
@@ -57,7 +59,7 @@ fn test_message_signer_sign_verify(test_input: SignVerifyTestInput) {
         signature: test_input.signature.into(),
     };
     assert!(
-        EthMessageSigner.verify_message(&EmptyCoinContext, verifying_input),
+        EthMessageSigner.verify_message(&coin, verifying_input),
         "!verify_message: {}",
         test_input.signature
     );
@@ -72,6 +74,8 @@ struct SignErrorTestInput {
 }
 
 fn test_message_signer_sign_err(test_input: SignErrorTestInput) {
+    let coin = TestCoinContext::default();
+
     let private_key = test_input.private_key.decode_hex().unwrap();
     let signing_input = Proto::MessageSigningInput {
         private_key: private_key.into(),
@@ -83,7 +87,7 @@ fn test_message_signer_sign_err(test_input: SignErrorTestInput) {
         ..Proto::MessageSigningInput::default()
     };
 
-    let output = EthMessageSigner.sign_message(&EmptyCoinContext, signing_input);
+    let output = EthMessageSigner.sign_message(&coin, signing_input);
     assert_eq!(output.error, test_input.error);
 }
 
@@ -95,6 +99,8 @@ struct PreimageTestInput {
 }
 
 fn test_message_signer_preimage_hashes(test_input: PreimageTestInput) {
+    let coin = TestCoinContext::default();
+
     let signing_input = Proto::MessageSigningInput {
         message: test_input.msg.into(),
         message_type: test_input.msg_type,
@@ -104,7 +110,7 @@ fn test_message_signer_preimage_hashes(test_input: PreimageTestInput) {
         ..Proto::MessageSigningInput::default()
     };
 
-    let output = EthMessageSigner.message_preimage_hashes(&EmptyCoinContext, signing_input);
+    let output = EthMessageSigner.message_preimage_hashes(&coin, signing_input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
     assert_eq!(output.data_hash.to_hex(), test_input.data_hash);
@@ -175,13 +181,15 @@ fn test_message_signer_hash_with_custom_array() {
 
 #[test]
 fn test_message_signer_hash_unequal_array_len() {
+    let coin = TestCoinContext::default();
+
     let signing_input = Proto::MessageSigningInput {
         message: EIP712_UNEQUAL_ARRAY_LEN.into(),
         message_type: Proto::MessageType::MessageType_typed_eip155,
         ..Proto::MessageSigningInput::default()
     };
 
-    let output = EthMessageSigner.message_preimage_hashes(&EmptyCoinContext, signing_input);
+    let output = EthMessageSigner.message_preimage_hashes(&coin, signing_input);
     assert_eq!(output.error, SigningErrorType::Error_invalid_params);
 }
 

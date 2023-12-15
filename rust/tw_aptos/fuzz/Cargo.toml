@@ -1,0 +1,28 @@
+[package]
+name = "tw_aptos-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+tw_proto = { path = "../../tw_proto", features = ["fuzz"] }
+
+[dependencies.tw_aptos]
+path = ".."
+
+# Prevent this from interfering with workspaces
+[workspace]
+members = ["."]
+
+[profile.release]
+debug = 1
+
+[[bin]]
+name = "sign"
+path = "fuzz_targets/sign.rs"
+test = false
+doc = false

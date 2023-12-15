@@ -17,11 +17,10 @@ use wallet_core_rs::ffi::ethereum::abi::{
     tw_ethereum_abi_function_get_signature,
 };
 
+use tw_coin_registry::coin_type::CoinType;
 use Proto::mod_ParamType::OneOfparam as ParamTypeEnum;
 use Proto::mod_Token::OneOftoken as TokenEnum;
 use Proto::AbiError as AbiErrorKind;
-
-const ETHEREUM_COIN_TYPE: u32 = 60;
 
 fn param(name: &str, kind: ParamTypeEnum<'static>) -> Proto::Param<'static> {
     Proto::Param {
@@ -58,7 +57,7 @@ fn test_ethereum_abi_decode_contract_call() {
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
 
     let output_data = TWDataHelper::wrap(unsafe {
-        tw_ethereum_abi_decode_contract_call(ETHEREUM_COIN_TYPE, input_data.ptr())
+        tw_ethereum_abi_decode_contract_call(CoinType::Ethereum as u32, input_data.ptr())
     })
     .to_vec()
     .expect("!tw_ethereum_abi_decode_contract_call returned nullptr");
@@ -98,7 +97,7 @@ fn test_ethereum_abi_decode_params() {
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
 
     let output_data = TWDataHelper::wrap(unsafe {
-        tw_ethereum_abi_decode_params(ETHEREUM_COIN_TYPE, input_data.ptr())
+        tw_ethereum_abi_decode_params(CoinType::Ethereum as u32, input_data.ptr())
     })
     .to_vec()
     .expect("!tw_ethereum_abi_decode_params returned nullptr");
@@ -135,7 +134,7 @@ fn test_ethereum_abi_function_get_signature() {
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
 
     let actual = TWStringHelper::wrap(unsafe {
-        tw_ethereum_abi_function_get_signature(ETHEREUM_COIN_TYPE, input_data.ptr())
+        tw_ethereum_abi_function_get_signature(CoinType::Ethereum as u32, input_data.ptr())
     })
     .to_string()
     .expect("!tw_ethereum_abi_function_get_signature returned nullptr");
@@ -156,7 +155,7 @@ fn test_ethereum_abi_encode_function() {
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
 
     let output_data = TWDataHelper::wrap(unsafe {
-        tw_ethereum_abi_encode_function(ETHEREUM_COIN_TYPE, input_data.ptr())
+        tw_ethereum_abi_encode_function(CoinType::Ethereum as u32, input_data.ptr())
     })
     .to_vec()
     .expect("!tw_ethereum_abi_encode_function returned nullptr");
@@ -182,7 +181,7 @@ fn test_ethereum_abi_decode_value() {
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
 
     let output_data = TWDataHelper::wrap(unsafe {
-        tw_ethereum_abi_decode_value(ETHEREUM_COIN_TYPE, input_data.ptr())
+        tw_ethereum_abi_decode_value(CoinType::Ethereum as u32, input_data.ptr())
     })
     .to_vec()
     .expect("!tw_ethereum_abi_decode_value returned nullptr");

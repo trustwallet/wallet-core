@@ -7,7 +7,7 @@
 use std::borrow::Cow;
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_coin_entry::error::SigningErrorType;
-use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
+use tw_coin_entry::test_utils::test_context::TestCoinContext;
 use tw_encoding::hex;
 use tw_ethereum::entry::EthereumEntry;
 use tw_keypair::ecdsa::secp256k1;
@@ -19,6 +19,8 @@ use tw_proto::{deserialize, serialize};
 
 #[test]
 fn test_external_signature_sign() {
+    let coin = TestCoinContext::default();
+
     let transfer = Proto::mod_Transaction::Transfer {
         amount: U256::encode_be_compact(1_000_000_000_000_000_000),
         data: Cow::default(),
@@ -38,7 +40,7 @@ fn test_external_signature_sign() {
     // Step 1: Obtain preimage hash
     let input_data = serialize(&input).unwrap();
     let preimage_data = EthereumEntry
-        .preimage_hashes(&EmptyCoinContext, &input_data)
+        .preimage_hashes(&coin, &input_data)
         .expect("!preimage_hashes");
     let preimage: CompilerProto::PreSigningOutput =
         deserialize(&preimage_data).expect("Coin entry returned an invalid output");
@@ -62,7 +64,7 @@ fn test_external_signature_sign() {
     let input_data = serialize(&input).unwrap();
     let output_data = EthereumEntry
         .compile(
-            &EmptyCoinContext,
+            &coin,
             &input_data,
             vec![signature],
             vec![public_key.to_bytes()],
@@ -88,7 +90,7 @@ fn test_external_signature_sign() {
 
     let input_data = serialize(&input).unwrap();
     let output_data = EthereumEntry
-        .sign(&EmptyCoinContext, &input_data)
+        .sign(&coin, &input_data)
         .expect("!output_data");
     let output: Proto::SigningOutput =
         deserialize(&output_data).expect("Coin entry returned an invalid output");

@@ -8,9 +8,8 @@
 #include "Base64.h"
 #include "proto/Cosmos.pb.h"
 #include "Cosmos/Address.h"
-#include "Cosmos/Signer.h"
-#include "Cosmos/ProtobufSerialization.h"
 #include "uint256.h"
+#include "TrustWalletCore/TWAnySigner.h"
 #include "TestUtilities.h"
 
 #include <gtest/gtest.h>
@@ -84,7 +83,8 @@ TEST(TerraSigner, SignSendTx) {
     auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input, TWCoinTypeTerraV2);
+    auto output = Cosmos::Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeTerraV2);
 
     // similar tx: https://finder.terra.money/mainnet/tx/fbbe73ad2f0db3a13911dc424f8a34370dc4b7e8b66687f536797e68ee200ece
     assertJSONEqual(output.serialized(), R"(
@@ -161,7 +161,8 @@ TEST(TerraSigner, SignWasmTransferTx) {
     auto privateKey = parse_hex("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input, TWCoinTypeTerraV2);
+    auto output = Cosmos::Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeTerraV2);
 
     assertJSONEqual(output.serialized(), R"(
         {
@@ -202,7 +203,8 @@ TEST(TerraSigner, SignWasmGeneric) {
     auto privateKey = parse_hex("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input, TWCoinTypeTerraV2);
+    auto output = Cosmos::Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeTerraV2);
 
     assertJSONEqual(output.serialized(), R"(
         {
@@ -248,7 +250,8 @@ TEST(TerraSigner, SignWasmGenericWithCoins) {
     auto privateKey = parse_hex("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input, TWCoinTypeTerraV2);
+    auto output = Cosmos::Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeTerraV2);
 
     assertJSONEqual(output.serialized(), R"(
         {
@@ -327,7 +330,8 @@ TEST(TerraSigner, SignWasmSendTx) {
     auto privateKey = parse_hex("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input, TWCoinTypeTerraV2);
+    auto output = Cosmos::Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeTerraV2);
 
     assertJSONEqual(output.serialized(), R"(
         {
@@ -338,25 +342,6 @@ TEST(TerraSigner, SignWasmSendTx) {
     EXPECT_EQ(hex(output.signature()), "4a25b5b5183aeff63d8521c926eccb690d9ccfd918e00e353ce28626387347b311013cb8edb776008ec29604202c8db9db568277b365c51b4f27c505d2f7104a");
     EXPECT_EQ(output.error_message(), "");
     EXPECT_EQ(output.json(), "");
-}
-
-TEST(TerraSigner, SignWasmTransferPayload) {
-    auto proto = Proto::Message_WasmExecuteContractTransfer();
-    proto.set_recipient_address("recipient=address");
-    const auto amount = store(uint256_t(250000), 0);
-    proto.set_amount(amount.data(), amount.size());
-
-    const auto payload = Protobuf::wasmExecuteTransferPayload(proto);
-
-    assertJSONEqual(payload.dump(), R"(
-        {
-            "transfer":
-                {
-                    "amount": "250000",
-                    "recipient": "recipient=address"
-                }
-        }
-    )");
 }
 
 } // namespace TW::Cosmos::tests

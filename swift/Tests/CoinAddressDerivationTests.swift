@@ -225,7 +225,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .thunderCore:
                     let expectedResult = "0x4b92b3ED6d8b24575Bf5ce4C6a86ED261DA0C8d7"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .tomoChain:
+                case .viction:
                     let expectedResult = "0xC74b6D8897cBa9A4b659d43fEF73C9cA852cE424"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .tron:
@@ -307,7 +307,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "EQDgEMqToTacHic7SnvnPFmvceG5auFkCcAw0mSCvzvKUfk9";
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .aptos:
-                    let expectedResult = "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30";
+                    let expectedResult = "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30";
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .nebl:
                     let expectedResult = "NgDVaXAwNgBwb88xLiFKomfBmPkEh9F2d7";
