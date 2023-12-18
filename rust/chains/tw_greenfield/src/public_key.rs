@@ -12,13 +12,7 @@ use tw_keypair::{KeyPairError, KeyPairResult};
 use tw_memory::Data;
 use tw_proto::{google, to_any};
 
-pub struct GreenfieldPublicKey(secp256k1::PublicKey);
-
-impl GreenfieldPublicKey {
-    pub fn secp256k1_public_key(&self) -> &secp256k1::PublicKey {
-        &self.0
-    }
-}
+pub struct GreenfieldPublicKey(pub secp256k1::PublicKey);
 
 impl JsonPublicKey for GreenfieldPublicKey {
     fn public_key_type(&self) -> String {

@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::compiler::GreenfieldCompiler;
 use crate::modules::eip712_signer::Eip712Signer;
 use crate::modules::tx_builder::TxBuilder;
 use std::borrow::Cow;
@@ -30,12 +31,16 @@ impl GreenfieldSigner {
         mut input: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let key_pair = secp256k1::KeyPair::try_from(input.private_key.as_ref())?;
+        let public_key = key_pair.public();
+
         // Set the public key. It will be used to construct a signer info.
-        input.public_key = Cow::from(key_pair.public().compressed().to_vec());
+        input.public_key = Cow::from(public_key.compressed().to_vec());
+        let unsigned_tx = TxBuilder::unsigned_tx_from_proto(coin, &input)?;
 
-        let unsigned = TxBuilder::unsigned_tx_from_proto(coin, &input)?;
+        let signed = Eip712Signer::sign(&key_pair, unsigned_tx)?;
+        let signatures = vec![signed.signature];
+        let public_keys = vec![public_key.compressed().to_vec()];
 
-        let _signed = Eip712Signer::sign(&key_pair, unsigned)?;
-        todo!()
+        GreenfieldCompiler::compile_impl(coin, input, signatures, public_keys)
     }
 }

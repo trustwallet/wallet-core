@@ -73,8 +73,7 @@ impl TxBuilder {
         input: &Proto::Fee,
         signer: &GreenfieldSignerInfo,
     ) -> SigningResult<GreenfieldFee> {
-        let payer =
-            GreenfieldAddress::with_secp256k1_pubkey(signer.public_key.secp256k1_public_key());
+        let payer = GreenfieldAddress::with_secp256k1_pubkey(&signer.public_key.0);
 
         let amounts = input
             .amounts
