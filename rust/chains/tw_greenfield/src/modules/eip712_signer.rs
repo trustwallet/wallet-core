@@ -7,16 +7,13 @@
 use crate::eip712_types::{
     GreenfieldDomain, GreenfieldFee, GreenfieldTransaction, GreenfieldTypedMsg, MsgPropertyName,
 };
-use crate::transaction::{GreenfieldSignedTransaction, GreenfieldUnsignedTransaction};
+use crate::transaction::GreenfieldUnsignedTransaction;
 use std::collections::BTreeMap;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
-use tw_cosmos_sdk::signature::secp256k1::Secp256k1Signature;
 use tw_evm::message::eip712::eip712_message::Eip712Message;
 use tw_evm::message::eip712::message_types::MessageTypesBuilder;
 use tw_evm::message::EthMessage;
 use tw_hash::H256;
-use tw_keypair::ecdsa::secp256k1;
-use tw_keypair::traits::SigningKeyTrait;
 use tw_number::U256;
 
 pub struct Eip712TxPreimage {
@@ -27,17 +24,6 @@ pub struct Eip712TxPreimage {
 pub struct Eip712Signer;
 
 impl Eip712Signer {
-    pub fn sign(
-        key_pair: &secp256k1::KeyPair,
-        unsigned: GreenfieldUnsignedTransaction,
-    ) -> SigningResult<GreenfieldSignedTransaction> {
-        let Eip712TxPreimage { tx_hash, .. } = Self::preimage_hash(&unsigned)?;
-
-        let signature = key_pair.sign(tx_hash)?;
-        let signature = Secp256k1Signature::from(signature);
-        Ok(unsigned.into_signed(signature))
-    }
-
     pub fn preimage_hash(
         unsigned: &GreenfieldUnsignedTransaction,
     ) -> SigningResult<Eip712TxPreimage> {

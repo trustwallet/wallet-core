@@ -7,8 +7,8 @@
 use crate::address::GreenfieldAddress;
 use crate::context::GreenfieldContext;
 use crate::public_key::GreenfieldPublicKey;
+use crate::signature::GreenfieldSignature;
 use crate::transaction::message::GreenfieldMessageBox;
-use tw_cosmos_sdk::signature::secp256k1::Secp256k1Signature;
 use tw_cosmos_sdk::transaction::{
     Fee, SignMode, SignedTransaction, SignerInfo, TxBody, UnsignedTransaction,
 };
@@ -67,7 +67,7 @@ pub struct GreenfieldUnsignedTransaction {
 }
 
 impl GreenfieldUnsignedTransaction {
-    pub fn into_signed(self, signature: Secp256k1Signature) -> GreenfieldSignedTransaction {
+    pub fn into_signed(self, signature: GreenfieldSignature) -> GreenfieldSignedTransaction {
         self.into_cosmos_unsigned().into_signed(signature.to_vec())
     }
 

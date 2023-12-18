@@ -138,22 +138,12 @@ impl<Context: CosmosContext> ProtobufSerializer<Context> {
     }
 
     fn build_fee(fee: &Fee<Context::Address>) -> tx_proto::Fee {
-        let payer = fee
-            .payer
-            .as_ref()
-            .map(Context::Address::to_string)
-            .unwrap_or_default();
-        let granter = fee
-            .granter
-            .as_ref()
-            .map(Context::Address::to_string)
-            .unwrap_or_default();
-
         tx_proto::Fee {
             amount: fee.amounts.iter().map(build_coin).collect(),
             gas_limit: fee.gas_limit,
-            payer,
-            granter,
+            // Ignore `payer` and `granter` even if they set.
+            payer: String::default(),
+            granter: String::default(),
         }
     }
 

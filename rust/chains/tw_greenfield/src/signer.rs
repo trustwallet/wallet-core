@@ -5,14 +5,15 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::compiler::GreenfieldCompiler;
-use crate::modules::eip712_signer::Eip712Signer;
+use crate::modules::eip712_signer::{Eip712Signer, Eip712TxPreimage};
 use crate::modules::tx_builder::TxBuilder;
 use std::borrow::Cow;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::SigningResult;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::ecdsa::secp256k1;
-use tw_keypair::traits::KeyPairTrait;
+use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
+use tw_misc::traits::ToBytesVec;
 use tw_proto::Greenfield::Proto;
 
 pub struct GreenfieldSigner;
@@ -37,8 +38,11 @@ impl GreenfieldSigner {
         input.public_key = Cow::from(public_key.compressed().to_vec());
         let unsigned_tx = TxBuilder::unsigned_tx_from_proto(coin, &input)?;
 
-        let signed = Eip712Signer::sign(&key_pair, unsigned_tx)?;
-        let signatures = vec![signed.signature];
+        let Eip712TxPreimage { tx_hash, .. } = Eip712Signer::preimage_hash(&unsigned_tx)?;
+        // Get the standard secp256k1 signature. It will be EIP155 protected at the `GreenfieldCompiler::compile_impl`.
+        let signature = key_pair.sign(tx_hash)?;
+
+        let signatures = vec![signature.to_vec()];
         let public_keys = vec![public_key.compressed().to_vec()];
 
         GreenfieldCompiler::compile_impl(coin, input, signatures, public_keys)

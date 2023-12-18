@@ -8,6 +8,7 @@ use crate::context::GreenfieldContext;
 use crate::modules::eip712_signer::{Eip712Signer, Eip712TxPreimage};
 use crate::modules::tx_builder::TxBuilder;
 use crate::public_key::GreenfieldPublicKey;
+use crate::signature::GreenfieldSignature;
 use std::borrow::Cow;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
@@ -18,7 +19,6 @@ use tw_cosmos_sdk::modules::broadcast_msg::{BroadcastMode, BroadcastMsg};
 use tw_cosmos_sdk::modules::serializer::json_serializer::JsonSerializer;
 use tw_cosmos_sdk::modules::serializer::protobuf_serializer::ProtobufSerializer;
 use tw_cosmos_sdk::public_key::CosmosPublicKey;
-use tw_cosmos_sdk::signature::secp256k1::Secp256k1Signature;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::Greenfield::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
@@ -74,8 +74,8 @@ impl GreenfieldCompiler {
             signature: signature_bytes,
             public_key,
         } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
-        let signature = Secp256k1Signature::try_from(signature_bytes.as_slice())?;
         let public_key = GreenfieldPublicKey::from_bytes(coin, &public_key)?;
+        let signature = GreenfieldSignature::try_from(signature_bytes.as_slice())?;
 
         let unsigned = TxBuilder::unsigned_tx_from_proto(coin, &input)?;
 
