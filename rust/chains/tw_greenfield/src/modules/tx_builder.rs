@@ -8,7 +8,7 @@ use crate::address::GreenfieldAddress;
 use crate::public_key::GreenfieldPublicKey;
 use crate::transaction::message::GreenfieldMessageBox;
 use crate::transaction::{
-    GreenfieldFee, GreenfieldSignMode, GreenfieldSignerInfo, TxBody, UnsignedTransaction,
+    GreenfieldFee, GreenfieldSignMode, GreenfieldSignerInfo, GreenfieldTxBody, GreenfieldUnsignedTransaction,
 };
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -31,7 +31,7 @@ impl TxBuilder {
     pub fn unsigned_tx_from_proto(
         coin: &dyn CoinContext,
         input: &Proto::SigningInput<'_>,
-    ) -> SigningResult<UnsignedTransaction> {
+    ) -> SigningResult<GreenfieldUnsignedTransaction> {
         let signer = Self::signer_info_from_proto(coin, input)?;
 
         let fee = input
@@ -43,7 +43,7 @@ impl TxBuilder {
         let eth_chain_id = U256::from_str(&input.eth_chain_id)
             .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?;
 
-        Ok(UnsignedTransaction {
+        Ok(GreenfieldUnsignedTransaction {
             signer,
             fee,
             cosmos_chain_id: input.cosmos_chain_id.to_string(),
@@ -96,7 +96,7 @@ impl TxBuilder {
         })
     }
 
-    fn tx_body_from_proto(input: &Proto::SigningInput<'_>) -> SigningResult<TxBody> {
+    fn tx_body_from_proto(input: &Proto::SigningInput<'_>) -> SigningResult<GreenfieldTxBody> {
         if input.messages.is_empty() {
             return Err(SigningError(SigningErrorType::Error_invalid_params));
         }
@@ -107,7 +107,7 @@ impl TxBuilder {
             .map(Self::tx_message_from_proto)
             .collect::<SigningResult<_>>()?;
 
-        Ok(TxBody {
+        Ok(GreenfieldTxBody {
             messages,
             memo: input.memo.to_string(),
             timeout_height: DEFAULT_TIMEOUT_HEIGHT,

@@ -7,7 +7,7 @@
 use crate::eip712_types::{
     GreenfieldDomain, GreenfieldFee, GreenfieldTransaction, GreenfieldTypedMsg, MsgPropertyName,
 };
-use crate::transaction::{GreenfieldSignedTransaction, UnsignedTransaction};
+use crate::transaction::{GreenfieldSignedTransaction, GreenfieldUnsignedTransaction};
 use std::collections::BTreeMap;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_cosmos_sdk::signature::secp256k1::Secp256k1Signature;
@@ -31,7 +31,7 @@ pub struct Eip712Preimager;
 impl Eip712Preimager {
     pub fn sign(
         key_pair: &secp256k1::KeyPair,
-        unsigned: UnsignedTransaction,
+        unsigned: GreenfieldUnsignedTransaction,
     ) -> SigningResult<GreenfieldSignedTransaction> {
         let Eip712TxPreimage { tx_hash, .. } = Self::preimage_hash(&unsigned)?;
 
@@ -41,7 +41,7 @@ impl Eip712Preimager {
         Ok(unsigned.into_signed(signature))
     }
 
-    pub fn preimage_hash(unsigned: &UnsignedTransaction) -> SigningResult<Eip712TxPreimage> {
+    pub fn preimage_hash(unsigned: &GreenfieldUnsignedTransaction) -> SigningResult<Eip712TxPreimage> {
         // `types_builder` will be used to declare all custom types like `Tx`, `Fee`, `Msg1` etc.
         let mut types_builder = MessageTypesBuilder::default();
 

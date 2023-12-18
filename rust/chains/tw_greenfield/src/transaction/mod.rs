@@ -11,8 +11,7 @@ use crate::transaction::message::GreenfieldMessageBox;
 use tw_cosmos_sdk::signature::secp256k1::Secp256k1Signature;
 use tw_cosmos_sdk::signature::CosmosSignature;
 use tw_cosmos_sdk::transaction::{
-    Fee, SignMode, SignedTransaction, SignerInfo, TxBody as CosmosTxBody,
-    UnsignedTransaction as CosmosUnsignedTransaction,
+    Fee, SignMode, SignedTransaction, SignerInfo, TxBody, UnsignedTransaction,
 };
 use tw_number::U256;
 
@@ -38,17 +37,15 @@ impl From<GreenfieldSignMode> for SignMode {
     }
 }
 
-/// TODO rename to `GreenfieldTxBody`.
-pub struct TxBody {
+pub struct GreenfieldTxBody {
     pub messages: Vec<GreenfieldMessageBox>,
     pub memo: String,
     pub timeout_height: u64,
 }
 
-impl TxBody {
-    /// TODO rename `CosmosTxBody` to `TxBody`.
-    fn into_cosmos_tx_body(self) -> CosmosTxBody {
-        CosmosTxBody {
+impl GreenfieldTxBody {
+    fn into_cosmos_tx_body(self) -> TxBody {
+        TxBody {
             messages: self
                 .messages
                 .into_iter()
@@ -60,25 +57,23 @@ impl TxBody {
     }
 }
 
-/// TODO rename to `GreenfieldUnsignedTransaction`.
-pub struct UnsignedTransaction {
+pub struct GreenfieldUnsignedTransaction {
     pub signer: GreenfieldSignerInfo,
     pub fee: GreenfieldFee,
     pub cosmos_chain_id: String,
     pub eth_chain_id: U256,
     pub account_number: u64,
-    pub tx_body: TxBody,
+    pub tx_body: GreenfieldTxBody,
 }
 
-impl UnsignedTransaction {
+impl GreenfieldUnsignedTransaction {
     pub fn into_signed(self, signature: Secp256k1Signature) -> GreenfieldSignedTransaction {
         self.into_cosmos_unsigned()
             .into_signed(signature.to_bytes())
     }
 
-    /// TODO rename `CosmosUnsignedTransaction` to `UnsignedTransaction`.
-    fn into_cosmos_unsigned(self) -> CosmosUnsignedTransaction<GreenfieldContext> {
-        CosmosUnsignedTransaction {
+    fn into_cosmos_unsigned(self) -> UnsignedTransaction<GreenfieldContext> {
+        UnsignedTransaction {
             signer: self.signer,
             fee: self.fee,
             chain_id: self.cosmos_chain_id,

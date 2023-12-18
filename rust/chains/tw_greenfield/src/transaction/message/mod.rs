@@ -8,6 +8,7 @@ use tw_cosmos_sdk::transaction::message::{CosmosMessage, CosmosMessageBox};
 use tw_evm::message::eip712::message_types::MessageTypesBuilder;
 
 pub mod send_order;
+pub mod type_msg_amount;
 
 pub type GreenfieldMessageBox = Box<dyn GreenfieldMessage>;
 
