@@ -10,28 +10,15 @@
 #include "HexCoding.h"
 #include "proto/Ethereum.pb.h"
 
-#include <google/protobuf/util/json_util.h>
-
 namespace TW::Ethereum {
 
-// TODO call `signRustJSON` when it's done.
-std::string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
-    auto input = Proto::SigningInput();
-    google::protobuf::util::JsonStringToMessage(json, &input);
-    input.set_private_key(key.data(), key.size());
-
-    auto inputData = data(input.SerializeAsString());
-    Data dataOut;
-    sign(coin, inputData, dataOut);
-
-    if(dataOut.empty()) {
-        return {};
-    }
-
-    Proto::SigningOutput output;
-    output.ParseFromArray(dataOut.data(), static_cast<int>(dataOut.size()));
-
-    return hex(output.encoded());
+std::string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const {
+    return signJSONHelper<Proto::SigningInput, Proto::SigningOutput>(
+        coin,
+        json,
+        key,
+        [](const Proto::SigningOutput& output) { return hex(output.encoded()); }
+    );
 }
 
 } // namespace TW::Ethereum

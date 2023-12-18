@@ -11,7 +11,6 @@ use crate::transaction::{GreenfieldSignedTransaction, GreenfieldUnsignedTransact
 use std::collections::BTreeMap;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_cosmos_sdk::signature::secp256k1::Secp256k1Signature;
-use tw_cosmos_sdk::signature::CosmosSignature;
 use tw_evm::message::eip712::eip712_message::Eip712Message;
 use tw_evm::message::eip712::message_types::MessageTypesBuilder;
 use tw_evm::message::EthMessage;
@@ -35,8 +34,7 @@ impl Eip712Signer {
         let Eip712TxPreimage { tx_hash, .. } = Self::preimage_hash(&unsigned)?;
 
         let signature = key_pair.sign(tx_hash)?;
-        // TODO this will be significantly improved after master is merged into s/rust-greenfield.
-        let signature = Secp256k1Signature::from_bytes(signature.to_bytes().as_slice())?;
+        let signature = Secp256k1Signature::from(signature);
         Ok(unsigned.into_signed(signature))
     }
 

@@ -12,6 +12,7 @@ use serde::Deserialize;
 pub enum BlockchainType {
     // start_of_blockchain_type - USED TO GENERATE CODE
     Aptos,
+    Binance,
     Bitcoin,
     Cosmos,
     Ethereum,

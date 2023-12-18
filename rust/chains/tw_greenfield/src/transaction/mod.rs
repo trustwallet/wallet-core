@@ -9,10 +9,10 @@ use crate::context::GreenfieldContext;
 use crate::public_key::GreenfieldPublicKey;
 use crate::transaction::message::GreenfieldMessageBox;
 use tw_cosmos_sdk::signature::secp256k1::Secp256k1Signature;
-use tw_cosmos_sdk::signature::CosmosSignature;
 use tw_cosmos_sdk::transaction::{
     Fee, SignMode, SignedTransaction, SignerInfo, TxBody, UnsignedTransaction,
 };
+use tw_misc::traits::ToBytesVec;
 use tw_number::U256;
 
 pub type GreenfieldSignerInfo = SignerInfo<GreenfieldPublicKey>;
@@ -68,8 +68,7 @@ pub struct GreenfieldUnsignedTransaction {
 
 impl GreenfieldUnsignedTransaction {
     pub fn into_signed(self, signature: Secp256k1Signature) -> GreenfieldSignedTransaction {
-        self.into_cosmos_unsigned()
-            .into_signed(signature.to_bytes())
+        self.into_cosmos_unsigned().into_signed(signature.to_vec())
     }
 
     fn into_cosmos_unsigned(self) -> UnsignedTransaction<GreenfieldContext> {

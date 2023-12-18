@@ -19,7 +19,6 @@ use tw_cosmos_sdk::modules::serializer::json_serializer::JsonSerializer;
 use tw_cosmos_sdk::modules::serializer::protobuf_serializer::ProtobufSerializer;
 use tw_cosmos_sdk::public_key::CosmosPublicKey;
 use tw_cosmos_sdk::signature::secp256k1::Secp256k1Signature;
-use tw_cosmos_sdk::signature::CosmosSignature;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::Greenfield::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
@@ -75,7 +74,7 @@ impl GreenfieldCompiler {
             signature: signature_bytes,
             public_key,
         } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
-        let signature = Secp256k1Signature::from_bytes(&signature_bytes)?;
+        let signature = Secp256k1Signature::try_from(signature_bytes.as_slice())?;
         let public_key = GreenfieldPublicKey::from_bytes(coin, &public_key)?;
 
         let unsigned = TxBuilder::unsigned_tx_from_proto(coin, &input)?;

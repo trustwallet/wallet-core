@@ -1365,6 +1365,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_repr"
+version = "0.1.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3081f5ffbb02284dda55132aa26daecedd7372a42417bbbab6f14ab7d6bb9145"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.37",
+]
+
+[[package]]
 name = "sha1"
 version = "0.10.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1670,6 +1681,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_binance"
+version = "0.1.0"
+dependencies = [
+ "quick-protobuf",
+ "serde",
+ "serde_json",
+ "serde_repr",
+ "strum_macros",
+ "tw_bech32_address",
+ "tw_coin_entry",
+ "tw_cosmos_sdk",
+ "tw_encoding",
+ "tw_evm",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_misc",
+ "tw_proto",
+]
+
+[[package]]
 name = "tw_bitcoin"
 version = "0.1.0"
 dependencies = [
@@ -1712,6 +1744,7 @@ dependencies = [
  "strum",
  "strum_macros",
  "tw_aptos",
+ "tw_binance",
  "tw_bitcoin",
  "tw_coin_entry",
  "tw_cosmos",
