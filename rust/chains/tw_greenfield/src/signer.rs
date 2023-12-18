@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::modules::eip712_preimager::Eip712Signer;
+use crate::modules::eip712_signer::Eip712Signer;
 use crate::modules::tx_builder::TxBuilder;
 use std::borrow::Cow;
 use tw_coin_entry::coin_context::CoinContext;

@@ -148,8 +148,21 @@ impl TxBuilder {
     }
 
     pub fn bridge_transfer_out_from_proto(
-        _transfer_out: &Proto::mod_Message::BridgeTransferOut<'_>,
+        transfer_out: &Proto::mod_Message::BridgeTransferOut<'_>,
     ) -> SigningResult<GreenfieldMessageBox> {
-        todo!()
+        use crate::transaction::message::transfer_out::GreenfieldTransferOut;
+
+        let amount = transfer_out
+            .amount
+            .as_ref()
+            .ok_or(SigningError(SigningErrorType::Error_wrong_fee))?;
+
+        let msg = GreenfieldTransferOut {
+            custom_type_prefix: transfer_out.type_prefix.to_string().empty_or_some(),
+            amount: Self::coin_from_proto(amount)?,
+            from: GreenfieldAddress::from_str(&transfer_out.from_address)?,
+            to: GreenfieldAddress::from_str(&transfer_out.to_address)?,
+        };
+        Ok(Box::new(msg))
     }
 }
