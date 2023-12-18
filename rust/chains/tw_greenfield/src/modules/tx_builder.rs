@@ -8,7 +8,8 @@ use crate::address::GreenfieldAddress;
 use crate::public_key::GreenfieldPublicKey;
 use crate::transaction::message::GreenfieldMessageBox;
 use crate::transaction::{
-    GreenfieldFee, GreenfieldSignMode, GreenfieldSignerInfo, GreenfieldTxBody, GreenfieldUnsignedTransaction,
+    GreenfieldFee, GreenfieldSignMode, GreenfieldSignerInfo, GreenfieldTxBody,
+    GreenfieldUnsignedTransaction,
 };
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -130,19 +131,20 @@ impl TxBuilder {
         send: &Proto::mod_Message::Send<'_>,
     ) -> SigningResult<GreenfieldMessageBox> {
         use crate::transaction::message::send_order::GreenfieldSendMessage;
+        use tw_cosmos_sdk::transaction::message::cosmos_bank_message::SendMessage;
 
         let amounts = send
             .amounts
             .iter()
             .map(Self::coin_from_proto)
             .collect::<SigningResult<_>>()?;
-        let msg = GreenfieldSendMessage {
+        let msg = SendMessage {
             custom_type_prefix: send.type_prefix.to_string().empty_or_some(),
             from_address: GreenfieldAddress::from_str(&send.from_address)?,
             to_address: GreenfieldAddress::from_str(&send.to_address)?,
             amount: amounts,
         };
-        Ok(Box::new(msg))
+        Ok(Box::new(GreenfieldSendMessage(msg)))
     }
 
     pub fn bridge_transfer_out_from_proto(

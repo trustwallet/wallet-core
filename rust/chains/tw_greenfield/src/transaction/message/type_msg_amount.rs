@@ -7,11 +7,12 @@
 use tw_evm::message::eip712::message_types::MessageTypesBuilder;
 use tw_evm::message::eip712::property::PropertyType;
 
+/// Represents an amount type that belongs to a particular order.
 pub struct TypeMsgAmount;
 
 impl TypeMsgAmount {
     pub fn eip712_type(msg_idx: usize) -> String {
-        format!("Msg{msg_idx}")
+        format!("TypeMsg{msg_idx}Amount")
     }
 
     pub fn declare_eip712_type(msg_idx: usize, message_types: &mut MessageTypesBuilder) {

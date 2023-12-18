@@ -1814,6 +1814,7 @@ dependencies = [
  "serde_json",
  "tw_coin_entry",
  "tw_cosmos_sdk",
+ "tw_encoding",
  "tw_evm",
  "tw_hash",
  "tw_keypair",

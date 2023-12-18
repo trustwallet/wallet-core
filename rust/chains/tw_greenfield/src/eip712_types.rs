@@ -30,6 +30,14 @@ impl fmt::Display for MsgPropertyName {
     }
 }
 
+pub struct MsgPropertyType(pub usize);
+
+impl fmt::Display for MsgPropertyType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Msg{}", self.0)
+    }
+}
+
 impl Serialize for MsgPropertyName {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -40,12 +48,12 @@ impl Serialize for MsgPropertyName {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct GreenfieldDomain {
     pub name: String,
     pub version: String,
     #[serde(serialize_with = "U256::as_decimal_str")]
     pub chain_id: U256,
-    #[serde(rename = "verifyingContract")]
     pub verifying_contract: String,
     pub salt: String,
 }
@@ -93,8 +101,9 @@ impl GreenfieldCoin {
 
 #[derive(Serialize)]
 pub struct GreenfieldFee {
-    pub amounts: Vec<Coin>,
-    pub gas_limit: u64,
+    pub amount: Vec<Coin>,
+    #[serde(serialize_with = "U256::as_decimal_str")]
+    pub gas_limit: U256,
     pub payer: String,
     pub granter: String,
 }
@@ -133,8 +142,8 @@ impl From<Fee<GreenfieldAddress>> for GreenfieldFee {
             .unwrap_or_default();
 
         GreenfieldFee {
-            amounts: fee.amounts.clone(),
-            gas_limit: fee.gas_limit,
+            amount: fee.amounts.clone(),
+            gas_limit: U256::from(fee.gas_limit),
             payer,
             granter,
         }
@@ -197,10 +206,11 @@ impl GreenfieldTransaction {
             .add_property("sequence", PropertyType::Uint)
             .add_property("timeout_height", PropertyType::Uint);
 
-        for (msg_property_name, msg) in self.msgs.iter() {
-            let msg_property_name = msg_property_name.to_string();
-            let msg_property_type = PropertyType::Custom(msg.msg_type.clone());
+        for (msg_property_name, _msg) in self.msgs.iter() {
+            let msg_property_type = MsgPropertyType(msg_property_name.0).to_string();
+            let msg_property_type = PropertyType::Custom(msg_property_type.to_string());
 
+            let msg_property_name = msg_property_name.to_string();
             tx_builder.add_property(&msg_property_name, msg_property_type);
         }
 

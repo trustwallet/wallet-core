@@ -7,13 +7,39 @@
 use crate::address::GreenfieldAddress;
 use crate::transaction::message::type_msg_amount::TypeMsgAmount;
 use crate::transaction::message::GreenfieldMessage;
+use tw_coin_entry::error::SigningResult;
+use tw_cosmos_sdk::proto::cosmos as CosmosProto;
 use tw_cosmos_sdk::transaction::message::cosmos_bank_message::SendMessage;
-use tw_cosmos_sdk::transaction::message::CosmosMessageBox;
+use tw_cosmos_sdk::transaction::message::{
+    CosmosMessage, CosmosMessageBox, JsonMessage, ProtobufMessage,
+};
 use tw_evm::abi::param_type::constructor::TypeConstructor;
 use tw_evm::message::eip712::message_types::MessageTypesBuilder;
 use tw_evm::message::eip712::property::PropertyType;
+use tw_proto::type_url;
 
-pub type GreenfieldSendMessage = SendMessage<GreenfieldAddress>;
+/// cosmos-sdk/MsgSend
+#[derive(Clone)]
+pub struct GreenfieldSendMessage(pub SendMessage<GreenfieldAddress>);
+
+impl CosmosMessage for GreenfieldSendMessage {
+    fn to_proto(&self) -> SigningResult<ProtobufMessage> {
+        self.0.to_proto()
+    }
+
+    /// [`GreenfieldSendMessage::to_json`] implementation differs from the original [`SendMessage::to_json`]:
+    /// * [`JsonMessage::msg_type`] should be "cosmos.bank.v1beta1.MsgSend" if other is not specified.
+    /// * [`JsonMessage::value`] is the same.
+    fn to_json(&self) -> SigningResult<JsonMessage> {
+        let msg_type = self
+            .0
+            .custom_type_prefix
+            .clone()
+            .unwrap_or_else(type_url::<CosmosProto::bank::v1beta1::MsgSend>);
+        let value = self.0.to_json()?.value;
+        Ok(JsonMessage { msg_type, value })
+    }
+}
 
 impl GreenfieldMessage for GreenfieldSendMessage {
     fn declare_eip712_type(&self, msg_idx: usize, message_types: &mut MessageTypesBuilder) {

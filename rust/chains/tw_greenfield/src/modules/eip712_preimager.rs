@@ -25,10 +25,9 @@ pub struct Eip712TxPreimage {
     pub tx_hash: H256,
 }
 
-/// TODO rename to `Eip712Signer`.
-pub struct Eip712Preimager;
+pub struct Eip712Signer;
 
-impl Eip712Preimager {
+impl Eip712Signer {
     pub fn sign(
         key_pair: &secp256k1::KeyPair,
         unsigned: GreenfieldUnsignedTransaction,
@@ -41,7 +40,9 @@ impl Eip712Preimager {
         Ok(unsigned.into_signed(signature))
     }
 
-    pub fn preimage_hash(unsigned: &GreenfieldUnsignedTransaction) -> SigningResult<Eip712TxPreimage> {
+    pub fn preimage_hash(
+        unsigned: &GreenfieldUnsignedTransaction,
+    ) -> SigningResult<Eip712TxPreimage> {
         // `types_builder` will be used to declare all custom types like `Tx`, `Fee`, `Msg1` etc.
         let mut types_builder = MessageTypesBuilder::default();
 
@@ -49,6 +50,9 @@ impl Eip712Preimager {
         // at the same time, declare the message custom types.
         let mut msgs = BTreeMap::new();
         for (msg_idx, msg) in unsigned.tx_body.messages.iter().enumerate() {
+            // Index of the transaction messages starts from 1.
+            let msg_idx = msg_idx + 1;
+
             let property_name = MsgPropertyName(msg_idx);
             let property_value = GreenfieldTypedMsg::from(msg.to_json()?);
 
