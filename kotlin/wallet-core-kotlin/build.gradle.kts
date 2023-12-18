@@ -10,9 +10,9 @@ plugins {
 }
 
 kotlin {
-    targetHierarchy.default()
+    applyDefaultHierarchyTemplate()
 
-    android {
+    androidTarget {
         publishLibraryVariants = listOf("release")
     }
 

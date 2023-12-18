@@ -5,7 +5,7 @@ android-sdk-compile = "33"
 android-cmake = "3.22.1"
 android-ndk = "25.2.9519653"
 
-kotlin = "1.8.21"
+kotlin = "1.9.21"
 agp = "8.0.0"
 wire = "4.5.6"
 

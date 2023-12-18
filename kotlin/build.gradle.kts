@@ -14,6 +14,7 @@ plugins {
 allprojects {
     tasks.withType<KotlinCompile> {
         compilerOptions {
+            freeCompilerArgs.add("-Xexpect-actual-classes")
             allWarningsAsErrors.set(true)
             jvmTarget.set(JvmTarget.JVM_17)
         }
