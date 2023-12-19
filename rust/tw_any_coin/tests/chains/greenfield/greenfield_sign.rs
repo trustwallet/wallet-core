@@ -239,7 +239,6 @@ fn test_greenfield_sign_multiple_messages_e3539e() {
 
     let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
     let output = signer.sign(CoinType::Greenfield, input);
-    println!("{}", output.serialized);
 
     let expected = r#"{"mode":"BROADCAST_MODE_SYNC","tx_bytes":"CqsCCpABChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEnAKKjB4RjFEQjdENTI1NmQ3MjFmRTNDMTQ0RjVjMWVkNGIzQTNBOTREYzQ0NBIqMHg5ZDFkOTdhREZjZDMyNEJiZDYwM0QzODcyQkQ3OGUwNDA5ODUxMGIxGhYKA0JOQhIPMTAwMDAwMDAwMDAwMDAwCpUBCiEvZ3JlZW5maWVsZC5icmlkZ2UuTXNnVHJhbnNmZXJPdXQScAoqMHhGMURCN0Q1MjU2ZDcyMWZFM0MxNDRGNWMxZWQ0YjNBM0E5NERjNDQ0EioweEYxREI3RDUyNTZkNzIxZkUzQzE0NEY1YzFlZDRiM0EzQTk0RGM0NDQaFgoDQk5CEg8yMDAwMDAwMDAwMDAwMDASdgpYCk0KJi9jb3Ntb3MuY3J5cHRvLmV0aC5ldGhzZWNwMjU2azEuUHViS2V5EiMKIQMJu59CIR8HRnoNsfcFBOO/P8ONNZuLOI+LvTZazYFslhIFCgMIyAUYAhIaChUKA0JOQhIOMTUwMDAwMDAwMDAwMDAQuBcaQfkHNYUs2oMR0/ZauYXv8Nd/9bbrQ4w323P4GpyEO0j8IadMVE8TkmI6lIx4H/hPSbpG9wRrqhZZfzTsqSv5rDgb"}"#;
     assert_eq!(output.error, SigningError::OK);
