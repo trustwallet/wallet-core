@@ -4180,7 +4180,7 @@
     "coinId": 5600,
     "symbol": "BNB",
     "decimals": 18,
-    "chainId": "9000",
+    "chainId": "1017",
     "blockchain": "Greenfield",
     "derivation": [
       {
