@@ -34,6 +34,13 @@ class KeyStoreTests: XCTestCase {
     let fileManager = FileManager.default
 
     var keyDirectory: URL!
+    
+    override func invokeTest() {
+        for time in 0...20 {
+            print("KeyStoreTests is being invoked: \(time) times")
+            super.invokeTest()
+        }
+    }
 
     override func setUp() {
         super.setUp()

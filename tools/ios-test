@@ -8,14 +8,10 @@ set -o pipefail
 pushd swift
 
 xcodegen && pod install
-
-for _ in {0..100}
-do
-  xcodebuild -workspace TrustWalletCore.xcworkspace \
-  	-scheme WalletCore \
-  	-sdk iphonesimulator \
-  	-destination "platform=iOS Simulator,name=iPhone 14" \
-  	test
-done
+xcodebuild -workspace TrustWalletCore.xcworkspace \
+  -scheme WalletCore \
+  -sdk iphonesimulator \
+  -destination "platform=iOS Simulator,name=iPhone 14" \
+  test
 
 popd
