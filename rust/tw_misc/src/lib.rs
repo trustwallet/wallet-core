@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 pub mod macros;
+#[cfg(feature = "serde")]
 pub mod serde;
 #[cfg(feature = "test-utils")]
 pub mod test_utils;

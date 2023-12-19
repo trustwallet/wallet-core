@@ -176,7 +176,8 @@ fn encode_bytes(value: &Json) -> MessageSigningResult<Data> {
         .decode_hex()
         .map_err(|_| MessageSigningError::InvalidParameterValue)?;
     let hash = keccak256(&bytes);
-    Ok(encode_tokens(&[Token::Bytes(hash)]))
+    let checked_bytes = NonEmptyBytes::new(hash).expect("`hash` must not be empty");
+    Ok(encode_tokens(&[Token::FixedBytes(checked_bytes)]))
 }
 
 fn encode_array(
