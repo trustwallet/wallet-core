@@ -144,7 +144,7 @@ impl Eip712Coin {
 }
 
 /// # EIP712 type
-/// 
+///
 /// ```json
 /// {
 ///     "Fee": [
