@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::eip712_types::{
-    GreenfieldDomain, GreenfieldFee, GreenfieldTransaction, GreenfieldTypedMsg, MsgPropertyName,
+    Eip712Domain, Eip712Fee, Eip712Transaction, Eip712TypedMsg, MsgPropertyName,
 };
 use crate::transaction::GreenfieldUnsignedTransaction;
 use std::collections::BTreeMap;
@@ -38,7 +38,7 @@ impl Eip712Signer {
             let msg_idx = msg_idx + 1;
 
             let property_name = MsgPropertyName(msg_idx);
-            let property_value = GreenfieldTypedMsg::from(msg.to_json()?);
+            let property_value = Eip712TypedMsg::from(msg.to_json()?);
 
             msgs.insert(property_name, property_value);
 
@@ -47,16 +47,16 @@ impl Eip712Signer {
         }
 
         // Step 2: Generate `Tx` and `Domain` objects - the main parts of the EIP712 message.
-        let tx_to_sign = GreenfieldTransaction {
+        let tx_to_sign = Eip712Transaction {
             account_number: U256::from(unsigned.account_number),
             chain_id: unsigned.eth_chain_id,
-            fee: GreenfieldFee::from(unsigned.fee.clone()),
+            fee: Eip712Fee::from(unsigned.fee.clone()),
             memo: unsigned.tx_body.memo.clone(),
             msgs,
             sequence: U256::from(unsigned.signer.sequence),
             timeout_height: U256::zero(),
         };
-        let domain = GreenfieldDomain::new(unsigned.eth_chain_id);
+        let domain = Eip712Domain::new(unsigned.eth_chain_id);
 
         // Step 3: Declare `Tx`, `Domain` and all types they depend on.
         tx_to_sign.declare_eip712_types(&mut types_builder);
@@ -68,7 +68,7 @@ impl Eip712Signer {
             types: types_builder.build(),
             domain: serde_json::to_value(domain)
                 .map_err(|_| SigningError(SigningErrorType::Error_internal))?,
-            primary_type: GreenfieldTransaction::TYPE_NAME.to_string(),
+            primary_type: Eip712Transaction::TYPE_NAME.to_string(),
             message: serde_json::to_value(tx_to_sign)
                 .map_err(|_| SigningError(SigningErrorType::Error_internal))?,
         };

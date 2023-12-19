@@ -4,13 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::address::GreenfieldAddress;
+use crate::transaction::GreenfieldFee;
 use core::fmt;
 use serde::{Serialize, Serializer};
 use serde_json::Value as Json;
 use std::collections::BTreeMap;
 use tw_cosmos_sdk::transaction::message::JsonMessage;
-use tw_cosmos_sdk::transaction::{Coin, Fee};
+use tw_cosmos_sdk::transaction::Coin;
 use tw_evm::abi::param_type::constructor::TypeConstructor;
 use tw_evm::message::eip712::message_types::MessageTypesBuilder;
 use tw_evm::message::eip712::property::PropertyType;
@@ -49,7 +49,7 @@ impl Serialize for MsgPropertyName {
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct GreenfieldDomain {
+pub struct Eip712Domain {
     pub name: String,
     pub version: String,
     #[serde(serialize_with = "U256::as_decimal_str")]
@@ -58,13 +58,13 @@ pub struct GreenfieldDomain {
     pub salt: String,
 }
 
-impl GreenfieldDomain {
+impl Eip712Domain {
     const TYPE_NAME: &'static str = "EIP712Domain";
 
     /// Returns a Serializable data of the `EIP712Domain` type.
     /// https://github.com/bnb-chain/greenfield-cosmos-sdk/blob/b48770f5e210b28536f92734b6228913666d4da1/x/auth/tx/eip712.go#L35-L40
-    pub fn new(chain_id: U256) -> GreenfieldDomain {
-        GreenfieldDomain {
+    pub fn new(chain_id: U256) -> Eip712Domain {
+        Eip712Domain {
             name: DOMAIN_NAME.to_string(),
             version: DOMAIN_VERSION.to_string(),
             chain_id,
@@ -85,9 +85,9 @@ impl GreenfieldDomain {
     }
 }
 
-pub struct GreenfieldCoin;
+pub struct Eip712Coin;
 
-impl GreenfieldCoin {
+impl Eip712Coin {
     const TYPE_NAME: &'static str = "Coin";
 
     pub fn declare_eip712_types(builder: &mut MessageTypesBuilder) {
@@ -100,7 +100,7 @@ impl GreenfieldCoin {
 }
 
 #[derive(Serialize)]
-pub struct GreenfieldFee {
+pub struct Eip712Fee {
     pub amount: Vec<Coin>,
     #[serde(serialize_with = "U256::as_decimal_str")]
     pub gas_limit: U256,
@@ -108,15 +108,15 @@ pub struct GreenfieldFee {
     pub granter: String,
 }
 
-impl GreenfieldFee {
+impl Eip712Fee {
     const TYPE_NAME: &'static str = "Fee";
 
     pub fn declare_eip712_types(builder: &mut MessageTypesBuilder) {
         // `Tx` depends on `Coin` and `Fee` custom types.
-        GreenfieldCoin::declare_eip712_types(builder);
+        Eip712Coin::declare_eip712_types(builder);
 
         if let Some(mut fee_builder) = builder.add_custom_type(Self::TYPE_NAME.to_string()) {
-            let amount_type = PropertyType::Custom(GreenfieldCoin::TYPE_NAME.to_string());
+            let amount_type = PropertyType::Custom(Eip712Coin::TYPE_NAME.to_string());
             fee_builder
                 .add_property("amount", PropertyType::array(amount_type))
                 .add_property("gas_limit", PropertyType::Uint)
@@ -126,10 +126,8 @@ impl GreenfieldFee {
     }
 }
 
-/// TODO rename `GreenfieldFee` to `Eip712Fee`.
-/// TODO rename `Fee<GreenfieldAddress>` to `GreenfieldFee`
-impl From<Fee<GreenfieldAddress>> for GreenfieldFee {
-    fn from(fee: Fee<GreenfieldAddress>) -> Self {
+impl From<GreenfieldFee> for Eip712Fee {
+    fn from(fee: GreenfieldFee) -> Self {
         let payer = fee
             .payer
             .as_ref()
@@ -141,7 +139,7 @@ impl From<Fee<GreenfieldAddress>> for GreenfieldFee {
             .map(|addr| addr.to_string())
             .unwrap_or_default();
 
-        GreenfieldFee {
+        Eip712Fee {
             amount: fee.amounts.clone(),
             gas_limit: U256::from(fee.gas_limit),
             payer,
@@ -151,16 +149,16 @@ impl From<Fee<GreenfieldAddress>> for GreenfieldFee {
 }
 
 #[derive(Clone, Serialize)]
-pub struct GreenfieldTypedMsg {
+pub struct Eip712TypedMsg {
     #[serde(rename = "type")]
     pub msg_type: String,
     #[serde(flatten)]
     pub value: Json,
 }
 
-impl From<JsonMessage> for GreenfieldTypedMsg {
+impl From<JsonMessage> for Eip712TypedMsg {
     fn from(msg: JsonMessage) -> Self {
-        GreenfieldTypedMsg {
+        Eip712TypedMsg {
             msg_type: msg.msg_type,
             value: msg.value,
         }
@@ -168,28 +166,28 @@ impl From<JsonMessage> for GreenfieldTypedMsg {
 }
 
 #[derive(Serialize)]
-pub struct GreenfieldTransaction {
+pub struct Eip712Transaction {
     #[serde(serialize_with = "U256::as_decimal_str")]
     pub account_number: U256,
     #[serde(serialize_with = "U256::as_decimal_str")]
     pub chain_id: U256,
-    pub fee: GreenfieldFee,
+    pub fee: Eip712Fee,
     pub memo: String,
     /// Will be flatten as `"msg1": { ... }, "msg2": { ... }`.
     #[serde(flatten)]
-    pub msgs: BTreeMap<MsgPropertyName, GreenfieldTypedMsg>,
+    pub msgs: BTreeMap<MsgPropertyName, Eip712TypedMsg>,
     #[serde(serialize_with = "U256::as_decimal_str")]
     pub sequence: U256,
     #[serde(serialize_with = "U256::as_decimal_str")]
     pub timeout_height: U256,
 }
 
-impl GreenfieldTransaction {
+impl Eip712Transaction {
     /// cbindgen::ignore
     pub const TYPE_NAME: &'static str = "Tx";
 
     pub fn declare_eip712_types(&self, builder: &mut MessageTypesBuilder) {
-        GreenfieldFee::declare_eip712_types(builder);
+        Eip712Fee::declare_eip712_types(builder);
 
         let Some(mut tx_builder) = builder.add_custom_type(Self::TYPE_NAME.to_string()) else {
             return;
@@ -200,7 +198,7 @@ impl GreenfieldTransaction {
             .add_property("chain_id", PropertyType::Uint)
             .add_property(
                 "fee",
-                PropertyType::Custom(GreenfieldFee::TYPE_NAME.to_string()),
+                PropertyType::Custom(Eip712Fee::TYPE_NAME.to_string()),
             )
             .add_property("memo", PropertyType::String)
             .add_property("sequence", PropertyType::Uint)
