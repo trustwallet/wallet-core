@@ -4,22 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::chains::greenfield::{make_amount, PRIVATE_KEY_15560, PRIVATE_KEY_1686};
 use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_proto::Common::Proto::SigningError;
 use tw_proto::Greenfield::Proto;
 use Proto::mod_Message::OneOfmessage_oneof as MessageEnum;
-
-const PRIVATE_KEY_15560: &str = "9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0";
-const PRIVATE_KEY_1686: &str = "6f96f3aa7e8052170f1864f72a9a53606ee9c0d185188266cab895512a4bcf84";
-
-fn make_amount<'a>(denom: &'a str, amount: &'a str) -> Proto::Amount<'a> {
-    Proto::Amount {
-        denom: denom.into(),
-        amount: amount.into(),
-    }
-}
 
 /// **Testnet**
 /// Successfully broadcasted: https://greenfieldscan.com/tx/0x9f895cf2dd64fb1f428cefcf2a6585a813c3540fc9fe1ef42db1da2cb1df55ab
