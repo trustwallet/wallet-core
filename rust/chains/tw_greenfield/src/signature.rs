@@ -11,6 +11,7 @@ use tw_keypair::KeyPairError;
 use tw_misc::traits::ToBytesVec;
 
 /// secp256k1 signature with the legacy ETH replay protection.
+#[derive(Clone)]
 pub struct GreenfieldSignature(MessageSignature);
 
 impl TryFrom<secp256k1::Signature> for GreenfieldSignature {

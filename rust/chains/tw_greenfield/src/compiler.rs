@@ -71,11 +71,13 @@ impl GreenfieldCompiler {
         public_keys: Vec<PublicKeyBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let SingleSignaturePubkey {
-            signature: signature_bytes,
+            signature: raw_signature,
             public_key,
         } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
+
         let public_key = GreenfieldPublicKey::from_bytes(coin, &public_key)?;
-        let signature = GreenfieldSignature::try_from(signature_bytes.as_slice())?;
+        let signature = GreenfieldSignature::try_from(raw_signature.as_slice())?;
+        let signature_bytes = signature.to_vec();
 
         let unsigned = TxBuilder::unsigned_tx_from_proto(coin, &input)?;
 

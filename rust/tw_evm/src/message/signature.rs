@@ -20,6 +20,7 @@ pub enum SignatureType {
     Eip155 { chain_id: U256 },
 }
 
+#[derive(Clone)]
 pub struct MessageSignature {
     r: H256,
     s: H256,
