@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::chains::greenfield::{make_amount, PUBLIC_KEY_15560};
+use std::borrow::Cow;
 use tw_any_coin::test_utils::sign_utils::{CompilerHelper, PreImageHelper};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
@@ -24,7 +25,7 @@ fn test_greenfield_compile() {
         ..Proto::mod_Message::Send::default()
     };
 
-    let input = Proto::SigningInput {
+    let mut input = Proto::SigningInput {
         signing_mode: Proto::SigningMode::Eip712,
         account_number: 15560,
         eth_chain_id: "5600".into(),
@@ -59,6 +60,9 @@ fn test_greenfield_compile() {
     let protected_signature = "cb3a4684a991014a387a04a85b59227ebb79567c2025addcb296b4ca856e9f810d3b526f2a0d0fad6ad1b126b3b9516f8b3be020a7cca9c03ce3cf47f4199b6d1b";
     let signature_bytes = signature.decode_hex().unwrap();
 
+    // Reset the `SigningInput::public_key`.
+    // The public key argument of the `TWTransactionCompilerCompileWithSignatures` should be used instead.
+    input.public_key = Cow::default();
     let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
     let output = compiler.compile(
         CoinType::Greenfield,

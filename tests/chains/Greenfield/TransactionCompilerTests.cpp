@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Greenfield/Signer.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
@@ -25,12 +24,17 @@ namespace TW::Greenfield {
 TEST(GreenfieldCompiler, PreHashCompile) {
     // Successfully broadcasted https://greenfieldscan.com/tx/0x9f895cf2dd64fb1f428cefcf2a6585a813c3540fc9fe1ef42db1da2cb1df55ab
 
+    auto privateKeyData = parse_hex("9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0");
+    PrivateKey privateKey(privateKeyData);
+    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+
     Proto::SigningInput input;
     input.set_signing_mode(Proto::Eip712);
     input.set_account_number(15560);
     input.set_cosmos_chain_id("greenfield_5600-1");
     input.set_eth_chain_id("5600");
     input.set_sequence(2);
+    input.set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
 
     auto& msg = *input.add_messages();
     auto& msgSend = *msg.mutable_send_coins_message();
@@ -58,9 +62,6 @@ TEST(GreenfieldCompiler, PreHashCompile) {
 
     // Step 2: Sign "remotely"
 
-    auto privateKeyData = parse_hex("9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0");
-    PrivateKey privateKey(privateKeyData);
-    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto signature = privateKey.sign(data(preOutput.data_hash()), TWCurveSECP256k1);
 
     EXPECT_EQ(hex(signature), "cb3a4684a991014a387a04a85b59227ebb79567c2025addcb296b4ca856e9f810d3b526f2a0d0fad6ad1b126b3b9516f8b3be020a7cca9c03ce3cf47f4199b6d00");

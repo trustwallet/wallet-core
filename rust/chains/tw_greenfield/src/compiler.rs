@@ -66,7 +66,7 @@ impl GreenfieldCompiler {
 
     pub(crate) fn compile_impl(
         coin: &dyn CoinContext,
-        input: Proto::SigningInput<'_>,
+        mut input: Proto::SigningInput<'_>,
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
@@ -79,6 +79,8 @@ impl GreenfieldCompiler {
         let signature = GreenfieldSignature::try_from(raw_signature.as_slice())?;
         let signature_bytes = signature.to_vec();
 
+        // Set the public key. It will be used to construct a signer info.
+        input.public_key = Cow::from(public_key.to_bytes());
         let unsigned = TxBuilder::unsigned_tx_from_proto(coin, &input)?;
 
         let signed_tx = unsigned.into_signed(signature);
