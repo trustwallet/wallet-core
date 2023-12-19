@@ -32,10 +32,10 @@ impl GreenfieldSigner {
         mut input: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let key_pair = secp256k1::KeyPair::try_from(input.private_key.as_ref())?;
-        let public_key = key_pair.public();
+        let public_key = key_pair.public().compressed().to_vec();
 
         // Set the public key. It will be used to construct a signer info.
-        input.public_key = Cow::from(public_key.compressed().to_vec());
+        input.public_key = Cow::from(public_key.clone());
         let unsigned_tx = TxBuilder::unsigned_tx_from_proto(coin, &input)?;
 
         let Eip712TxPreimage { tx_hash, .. } = Eip712Signer::preimage_hash(&unsigned_tx)?;
@@ -43,7 +43,7 @@ impl GreenfieldSigner {
         let signature = key_pair.sign(tx_hash)?;
 
         let signatures = vec![signature.to_vec()];
-        let public_keys = vec![public_key.compressed().to_vec()];
+        let public_keys = vec![public_key];
 
         GreenfieldCompiler::compile_impl(coin, input, signatures, public_keys)
     }

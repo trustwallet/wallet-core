@@ -47,6 +47,34 @@ impl Serialize for MsgPropertyName {
     }
 }
 
+/// # EIP712 type
+///
+/// ```json
+/// {
+///     "EIP712Domain": [
+///         {
+///             "name": "chainId",
+///             "type": "uint256"
+///         },
+///         {
+///             "name": "name",
+///             "type": "string"
+///         },
+///         {
+///             "name": "salt",
+///             "type": "string"
+///         },
+///         {
+///             "name": "verifyingContract",
+///             "type": "string"
+///         },
+///         {
+///             "name": "version",
+///             "type": "string"
+///         }
+///     ]
+/// }
+/// ```
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Eip712Domain {
@@ -85,6 +113,22 @@ impl Eip712Domain {
     }
 }
 
+/// # EIP712 type
+///
+/// ```json
+/// {
+///     "Coin": [
+///         {
+///             "name": "amount",
+///             "type": "uint256"
+///         },
+///         {
+///             "name": "denom",
+///             "type": "string"
+///          }
+///     ]
+/// }
+/// ```
 pub struct Eip712Coin;
 
 impl Eip712Coin {
@@ -99,6 +143,30 @@ impl Eip712Coin {
     }
 }
 
+/// # EIP712 type
+/// 
+/// ```json
+/// {
+///     "Fee": [
+///         {
+///             "name": "amount",
+///             "type": "Coin[]"
+///         },
+///         {
+///             "name": "gas_limit",
+///             "type": "uint256"
+///         },
+///         {
+///             "name": "granter",
+///             "type": "string"
+///         },
+///         {
+///             "name": "payer",
+///             "type": "string"
+///         }
+///     ]
+/// }
+/// ```
 #[derive(Serialize)]
 pub struct Eip712Fee {
     pub amount: Vec<Coin>,
@@ -165,6 +233,42 @@ impl From<JsonMessage> for Eip712TypedMsg {
     }
 }
 
+/// # EIP712 type
+///
+/// ```json
+/// {
+///     "Tx": [
+///         {
+///             "name": "account_number",
+///             "type": "uint256"
+///         },
+///         {
+///             "name": "chain_id",
+///             "type": "uint256"
+///         },
+///         {
+///             "name": "fee",
+///             "type": "Fee"
+///         },
+///         {
+///             "name": "memo",
+///             "type": "string"
+///         },
+///         {
+///             "name": "msg1",
+///             "type": "Msg1"
+///         },
+///         {
+///             "name": "sequence",
+///             "type": "uint256"
+///         },
+///         {
+///             "name": "timeout_height",
+///             "type": "uint256"
+///         }
+///     ]
+/// }
+/// ```
 #[derive(Serialize)]
 pub struct Eip712Transaction {
     #[serde(serialize_with = "U256::as_decimal_str")]

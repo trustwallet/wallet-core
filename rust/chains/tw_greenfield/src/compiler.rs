@@ -51,8 +51,6 @@ impl GreenfieldCompiler {
         })
     }
 
-    /// Please note that [`Proto::SigningInput::public_key`] must be set.
-    /// If the public key should be derived from a private key, please do it before this method is called.
     #[inline]
     pub fn compile(
         coin: &dyn CoinContext,

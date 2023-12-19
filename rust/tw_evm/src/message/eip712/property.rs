@@ -25,9 +25,7 @@ pub struct Property {
 pub enum PropertyType {
     Bool,
     String,
-    /// TODO add bits
     Int,
-    // TODO add bits
     Uint,
     Address,
     FixBytes {
@@ -96,9 +94,7 @@ impl fmt::Display for PropertyType {
         match self {
             PropertyType::Bool => write!(f, "bool"),
             PropertyType::String => write!(f, "string"),
-            // TODO add bits
             PropertyType::Int => write!(f, "int256"),
-            // TODO add bits
             PropertyType::Uint => write!(f, "uint256"),
             PropertyType::Address => write!(f, "address"),
             PropertyType::FixBytes { len } => write!(f, "bytes{len}"),
