@@ -8,13 +8,6 @@ import XCTest
 import WalletCore
 
 class WalletTests: XCTestCase {
-    override func invokeTest() {
-        for time in 0...20 {
-            print("WalletTests is being invoked: \(time) times")
-            super.invokeTest()
-        }
-    }
-
     func testSeparateAccounts() throws {
         let url = Bundle(for: type(of: self)).url(forResource: "wallet", withExtension: "json")!
         let key = StoredKey.load(path: url.path)!

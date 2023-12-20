@@ -8,13 +8,6 @@ import WalletCore
 import XCTest
 
 class KeystoreKeyTests: XCTestCase {
-    override func invokeTest() {
-        for time in 0...20 {
-            print("KeystoreKeyTests is being invoked: \(time) times")
-            super.invokeTest()
-        }
-    }
-    
     func testReadWallet() {
         let url = Bundle(for: type(of: self)).url(forResource: "key", withExtension: "json")!
         let key = StoredKey.load(path: url.path)!
