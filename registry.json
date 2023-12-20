@@ -4508,5 +4508,35 @@
       "rpc": "",
       "documentation": "https://internetcomputer.org/docs"
     }
+  },
+  {
+    "id": "manta",
+    "name": "Manta Pacific",
+    "coinId": 169,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "169",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://pacific-explorer.manta.network",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x2bbd5d85b0ed05d1416e30ce1197a6f0c27d10ce02593a2719e2baf486d2e8c2",
+      "sampleAccount": "0xF122a1aC569a36a5Cf6d0F828A22254c8A9afF84"
+    },
+    "info": {
+      "url": "https://pacific.manta.network",
+      "source": "https://github.com/manta-network",
+      "rpc": "https://pacific-rpc.manta.network/http",
+      "documentation": "https://docs.manta.network/docs/Introduction"
+    }
   }
 ]
