@@ -177,6 +177,7 @@ enum TWCoinType {
     TWCoinTypeGreenfield = 5600,
     TWCoinTypeMantle = 5000,
     TWCoinTypeZenEON = 7332,
+    TWCoinTypeICHAIN = 3639,
     TWCoinTypeInternetComputer = 223,
     TWCoinTypeTia = 21000118,
     // end_of_tw_coin_type_marker_do_not_modify
