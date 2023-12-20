@@ -19,7 +19,7 @@ TEST(TW{COIN_TYPE}CoinType, TWCoinType) {
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
     assertStringsEqual(id, "{COIN_ID}");
-    assertStringsEqual(name, "{COIN_TYPE}");
+    assertStringsEqual(name, "{COIN_NAME}");
     assertStringsEqual(symbol, "{SYMBOL}");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), {DECIMALS});
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchain{BLOCKCHAIN});

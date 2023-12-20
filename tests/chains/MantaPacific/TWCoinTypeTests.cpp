@@ -19,7 +19,7 @@ TEST(TWMantaPacificCoinType, TWCoinType) {
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
     assertStringsEqual(id, "manta");
-    assertStringsEqual(name, "MantaPacific");
+    assertStringsEqual(name, "Manta Pacific");
     assertStringsEqual(symbol, "ETH");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
