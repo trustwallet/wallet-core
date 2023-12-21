@@ -16,6 +16,7 @@ tw_coin_entry = { path = "../tw_coin_entry" }
 tw_cosmos = { path = "../chains/tw_cosmos" }
 tw_ethereum = { path = "../tw_ethereum" }
 tw_evm = { path = "../tw_evm" }
+tw_greenfield = { path = "../chains/tw_greenfield" }
 tw_hash = { path = "../tw_hash" }
 tw_internet_computer = { path = "../tw_internet_computer" }
 tw_keypair = { path = "../tw_keypair" }

@@ -8,12 +8,12 @@ use crate::abi::encode::encode_tokens;
 use crate::abi::non_empty_array::NonEmptyBytes;
 use crate::abi::token::Token;
 use crate::address::Address;
-use crate::message::eip712::property::{Property, PropertyType};
+use crate::message::eip712::message_types::CustomTypes;
+use crate::message::eip712::property::PropertyType;
 use crate::message::{EthMessage, MessageSigningError, MessageSigningResult};
 use itertools::Itertools;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value as Json;
-use std::collections::HashMap;
 use std::str::FromStr;
 use tw_encoding::hex::{self, DecodeHex};
 use tw_hash::sha3::keccak256;
@@ -27,15 +27,13 @@ const PREFIX: &[u8; 2] = b"\x19\x01";
 /// cbindgen:ignore
 const EIP712_DOMAIN: &str = "EIP712Domain";
 
-type CustomTypes = HashMap<String, Vec<Property>>;
-
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Eip712Message {
-    types: CustomTypes,
-    domain: Json,
+    pub types: CustomTypes,
+    pub domain: Json,
     #[serde(rename = "primaryType")]
-    primary_type: String,
-    message: Json,
+    pub primary_type: String,
+    pub message: Json,
 }
 
 impl Eip712Message {

@@ -25,6 +25,13 @@ impl<'a> ToJson for Cow<'a, str> {
     }
 }
 
+impl ToJson for String {
+    #[track_caller]
+    fn to_json(&self) -> Json {
+        self.as_str().to_json()
+    }
+}
+
 impl<'a> ToJson for &'a str {
     #[track_caller]
     fn to_json(&self) -> Json {
