@@ -16,7 +16,7 @@ use tw_proto::to_any;
 const DEFAULT_JSON_SEND_TYPE: &str = "cosmos-sdk/MsgSend";
 
 /// cosmos-sdk/MsgSend
-#[derive(Serialize)]
+#[derive(Clone, Serialize)]
 pub struct SendMessage<Address: CosmosAddress> {
     #[serde(skip)]
     pub custom_type_prefix: Option<String>,

@@ -140,7 +140,7 @@ impl EthMessageSigner {
             },
             Proto::MessageType::MessageType_eip155
             | Proto::MessageType::MessageType_typed_eip155 => {
-                let chain_id = maybe_chain_id.unwrap_or_default().chain_id;
+                let chain_id = U256::from(maybe_chain_id.unwrap_or_default().chain_id);
                 SignatureType::Eip155 { chain_id }
             },
         }

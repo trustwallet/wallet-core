@@ -42,3 +42,17 @@ impl<T> IntoOption<T> for Option<T> {
 pub trait FromSlice: for<'a> TryFrom<&'a [u8]> {}
 
 impl<T> FromSlice for T where for<'a> T: TryFrom<&'a [u8]> {}
+
+pub trait OptionalEmpty: Sized {
+    fn empty_or_some(self) -> Option<Self>;
+}
+
+impl OptionalEmpty for String {
+    fn empty_or_some(self) -> Option<Self> {
+        if self.is_empty() {
+            None
+        } else {
+            Some(self)
+        }
+    }
+}

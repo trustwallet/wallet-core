@@ -11,8 +11,6 @@
 #include "Cosmos/Address.h"
 #include "TrustWalletCore/TWAnySigner.h"
 #include "TestUtilities.h"
-#include "Cosmos/Protobuf/bank_tx.pb.h"
-#include "Cosmos/Protobuf/coin.pb.h"
 
 #include <gtest/gtest.h>
 #include <google/protobuf/util/json_util.h>
@@ -291,21 +289,11 @@ TEST(CosmosSigner, SignDirect1) {
 }
 
 TEST(CosmosSigner, SignDirect_0a90010a) {
+    // MsgSend:
+    //   from: cosmos1pkptre7fdkl6gfrzlesjjvhxhlc3r4gmmk8rs6
+    //   to: cosmos1qypqxpq9qcrsszg2pvxq6rs0zqg3yyc5lzv7xu
+    //   amount: 1234567 ucosm
     const auto bodyBytes = parse_hex("0a90010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412700a2d636f736d6f7331706b707472653766646b6c366766727a6c65736a6a766878686c63337234676d6d6b38727336122d636f736d6f7331717970717870713971637273737a673270767871367273307a716733797963356c7a763778751a100a0575636f736d120731323334353637");
-    { // verify contents of body
-        auto msgSend = cosmos::bank::v1beta1::MsgSend();
-        msgSend.set_from_address("cosmos1pkptre7fdkl6gfrzlesjjvhxhlc3r4gmmk8rs6");
-        msgSend.set_to_address("cosmos1qypqxpq9qcrsszg2pvxq6rs0zqg3yyc5lzv7xu");
-        auto amount = msgSend.add_amount();
-        amount->set_denom("ucosm");
-        amount->set_amount("1234567");
-        const auto msgSendSer = msgSend.SerializeAsString();
-        const auto bodyBytes1 = data(msgSendSer);
-        ASSERT_EQ(hex(bodyBytes1), "0a2d636f736d6f7331706b707472653766646b6c366766727a6c65736a6a766878686c63337234676d6d6b38727336122d636f736d6f7331717970717870713971637273737a673270767871367273307a716733797963356c7a763778751a100a0575636f736d120731323334353637");
-        const auto prefix = "/cosmos.bank.v1beta1.MsgSend";
-        const auto bodyBytes2 = parse_hex("0a90010a1c" + hex(data(prefix)) + "1270" + hex(bodyBytes1));
-        ASSERT_EQ(hex(bodyBytes2), hex(bodyBytes));
-    }
 
     auto input = Proto::SigningInput();
     input.set_signing_mode(Proto::Protobuf);

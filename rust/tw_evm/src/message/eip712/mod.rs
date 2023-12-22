@@ -5,4 +5,5 @@
 // file LICENSE at the root of the source code distribution tree.
 
 pub mod eip712_message;
+pub mod message_types;
 pub mod property;

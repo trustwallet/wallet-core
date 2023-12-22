@@ -15,7 +15,7 @@ use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
-use tw_misc::traits::ToBytesVec;
+use tw_misc::traits::{OptionalEmpty, ToBytesVec};
 use tw_number::U256;
 use tw_proto::Cosmos::Proto;
 use tw_proto::{google, serialize};
@@ -210,7 +210,7 @@ where
             .map(Self::coin_from_proto)
             .collect::<SigningResult<_>>()?;
         let msg = SendMessage {
-            custom_type_prefix: Self::custom_msg_type(&send.type_prefix),
+            custom_type_prefix: send.type_prefix.to_string().empty_or_some(),
             from_address: Address::from_str_with_coin(coin, &send.from_address)?,
             to_address: Address::from_str_with_coin(coin, &send.to_address)?,
             amount: amounts,
@@ -262,7 +262,7 @@ where
             .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
         let amount = Self::coin_from_proto(amount)?;
         let msg = DelegateMessage {
-            custom_type_prefix: Self::custom_msg_type(&delegate.type_prefix),
+            custom_type_prefix: delegate.type_prefix.to_string().empty_or_some(),
             amount,
             delegator_address: Address::from_str_with_coin(coin, &delegate.delegator_address)?,
             validator_address: Address::from_str_with_coin(coin, &delegate.validator_address)?,
@@ -283,7 +283,7 @@ where
         let amount = Self::coin_from_proto(amount)?;
 
         let msg = UndelegateMessage {
-            custom_type_prefix: Self::custom_msg_type(&undelegate.type_prefix),
+            custom_type_prefix: undelegate.type_prefix.to_string().empty_or_some(),
             amount,
             delegator_address: Address::from_str_with_coin(coin, &undelegate.delegator_address)?,
             validator_address: Address::from_str_with_coin(coin, &undelegate.validator_address)?,
@@ -298,7 +298,7 @@ where
         use crate::transaction::message::cosmos_staking_message::WithdrawDelegationRewardMessage;
 
         let msg = WithdrawDelegationRewardMessage {
-            custom_type_prefix: Self::custom_msg_type(&withdraw.type_prefix),
+            custom_type_prefix: withdraw.type_prefix.to_string().empty_or_some(),
             delegator_address: Address::from_str_with_coin(coin, &withdraw.delegator_address)?,
             validator_address: Address::from_str_with_coin(coin, &withdraw.validator_address)?,
         };
@@ -312,7 +312,7 @@ where
         use crate::transaction::message::cosmos_staking_message::SetWithdrawAddressMessage;
 
         let msg = SetWithdrawAddressMessage {
-            custom_type_prefix: Self::custom_msg_type(&set.type_prefix),
+            custom_type_prefix: set.type_prefix.to_string().empty_or_some(),
             delegator_address: Address::from_str_with_coin(coin, &set.delegator_address)?,
             withdraw_address: Address::from_str_with_coin(coin, &set.withdraw_address)?,
         };
@@ -336,7 +336,7 @@ where
             Address::from_str_with_coin(coin, &redelegate.validator_dst_address)?;
 
         let msg = BeginRedelegateMessage {
-            custom_type_prefix: Self::custom_msg_type(&redelegate.type_prefix),
+            custom_type_prefix: redelegate.type_prefix.to_string().empty_or_some(),
             amount,
             delegator_address: Address::from_str_with_coin(coin, &redelegate.delegator_address)?,
             validator_src_address,
@@ -643,13 +643,5 @@ where
             signer: deposit.signer.to_vec(),
         };
         Ok(msg.into_boxed())
-    }
-
-    fn custom_msg_type(type_prefix: &str) -> Option<String> {
-        if type_prefix.is_empty() {
-            None
-        } else {
-            Some(type_prefix.to_string())
-        }
     }
 }
