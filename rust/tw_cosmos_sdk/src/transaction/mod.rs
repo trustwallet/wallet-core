@@ -17,8 +17,10 @@ use message::CosmosMessageBox;
 #[derive(Clone, Copy)]
 pub enum SignMode {
     Direct,
+    Other(i32),
 }
 
+#[derive(Clone, Serialize)]
 pub struct Fee<Address> {
     pub amounts: Vec<Coin>,
     pub gas_limit: u64,

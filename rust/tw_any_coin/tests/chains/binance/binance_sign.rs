@@ -10,6 +10,7 @@ use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_proto::Binance::Proto;
 use tw_proto::Binance::Proto::mod_SigningInput::OneOforder_oneof as OrderEnum;
+use tw_proto::Common::Proto::SigningError;
 
 const ACCOUNT_12_PRIVATE_KEY: &str =
     "90335b9d2153ad1a9799a3ccc070bd64b4164e9642ee1dd48053c33f9a3a05e9";
@@ -51,6 +52,7 @@ fn test_binance_sign_trade_order() {
     let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
     let output = signer.sign(CoinType::Binance, input);
 
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(
         output.encoded.to_hex(),
         "dc01f0625dee0a64ce6dc0430a14ba36f0fad74d8f41045463e4774f328f4af779e5122b424133364630464144373444384634313034353436334534373734463332384634414637373945352d33361a0b4e4e422d3333385f424e422002280130b09282413880c2d72f4001126e0a26eb5ae98721029729a52e4e3c2b4a4e52aa74033eedaf8ba1df5ab6d1f518fd69e67bbd309b0e12409123cb6906bb20aeb753f4a121d4d88ff0e9750ba75b0c4e10d76caee1e7d2481290fa3b9887a6225d6997f5f939ef834ea61d596a314237c48e560da9e17b5a180c20232001"
@@ -83,6 +85,7 @@ fn test_binance_sign_cancel_trade_order() {
     let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
     let output = signer.sign(CoinType::Binance, input);
 
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(
         output.encoded.to_hex(),
         "cc01f0625dee0a54166e681b0a14ba36f0fad74d8f41045463e4774f328f4af779e5120b4e4e422d3333385f424e421a2b424133364630464144373444384634313034353436334534373734463332384634414637373945352d3336126e0a26eb5ae98721029729a52e4e3c2b4a4e52aa74033eedaf8ba1df5ab6d1f518fd69e67bbd309b0e12403df6603426b991f7040bce22ce0137c12137df01e1d4d425cf3d9104103aec6335ac05c825e08ba26b9f72aa4cc45aa75cacfb6082df86b00692fef9701eb0f5180c20242001"
@@ -138,6 +141,7 @@ fn test_binance_sign_send_order() {
             "1a04", "74657374",
             "2001",
     );
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
 
@@ -172,6 +176,7 @@ fn test_binance_sign_token_freeze_order() {
         "6b6a8fc71240e3022069d897bf5bf4846d354fcd2c0e85807053be643c8b8c8596306003f7340d43a162",
         "722673eb848258b0435b1f49993d0e75d4ae43d03453a3ae57fe6991180f2001",
     );
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
 
@@ -206,6 +211,7 @@ fn test_binance_sign_token_unfreeze_order() {
         "6b6a8fc71240e3022069d897bf5bf4846d354fcd2c0e85807053be643c8b8c8596306003f7340d43a162",
         "722673eb848258b0435b1f49993d0e75d4ae43d03453a3ae57fe6991180f2001",
     );
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
 
@@ -242,6 +248,7 @@ fn test_binance_sign_token_issue_order() {
         "4e4e422d3333385f424e42",
         "208094ebdc032801126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc712401fbb993d643f03b3e8e757a502035f58c4c45aaaa6e107a3059ab7c6164283c10f1254e87feee21477c64c87b1a27d8481048533ae2f685b3ac0dc66e4edbc0b180f2001",
     );
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
 
@@ -274,6 +281,7 @@ fn test_binance_sign_token_mint_order() {
         "4e4e422d3333385f424e42",
         "18c0843d126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240e3022069d897bf5bf4846d354fcd2c0e85807053be643c8b8c8596306003f7340d43a162722673eb848258b0435b1f49993d0e75d4ae43d03453a3ae57fe6991180f2001",
     );
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
 
@@ -306,6 +314,7 @@ fn test_binance_sign_token_burn_order() {
         "4e4e422d3333385f424e42",
         "18c0843d126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240e3022069d897bf5bf4846d354fcd2c0e85807053be643c8b8c8596306003f7340d43a162722673eb848258b0435b1f49993d0e75d4ae43d03453a3ae57fe6991180f2001",
     );
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
 
@@ -347,6 +356,7 @@ fn test_binance_sign_htlt_order() {
         "6b6a8fc7124051439de2da19fe9fd22137c903cfc5dc87553bf05dca0bb202c0e07c47f9b51269efa272",
         "43eb7b55888f5384a84ac1eac6d325c830d1be0ed042838e2dc0f6a9180f",
     );
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
 
@@ -380,6 +390,7 @@ fn test_binance_sign_deposit_htlt_order() {
         "12400ca4144c6818e2836d09b4faf3161781d85f9adfc00badb2eaa0953174610a233b81413dafcf8471",
         "6abad48a4ed3aeb9884d90eb8416eec5d5c0c6930ab60bd01810",
     );
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
 
@@ -414,6 +425,7 @@ fn test_binance_sign_claim_htlt_order() {
         "ac993dbe0f6b6a8fc71240fa30ba50111aa31d8329dacb6d044c1c7d54f1cb782bc9aa2a50c3fabce02a4579d7",
         "5b76ca69a9fab11b676d9da66b5af7aa4c9ad3d18e24fffeb16433be39fb180f2001",
     );
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
 
@@ -446,6 +458,7 @@ fn test_binance_sign_refund_htlt_order() {
         "70b32206a2d15198b7165acf1e2a18952c9e4570b0f862e1ab7bb868c30781a42c9e3ec0ae08982e8d6c",
         "91c55b83c71b7b1e180f2001",
     );
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
 
@@ -480,6 +493,7 @@ fn test_binance_sign_transfer_out_order() {
         "71a788ccf4e3eade1c7e1773e9d2093982d7f802f8f85f35ef550049011728206e4eda1a272f9e96fd95",
         "ef3983cad85a29cd14262c22e0180f2001",
     );
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
 
@@ -515,6 +529,7 @@ fn test_binance_sign_side_chain_delegate_order() {
         "2a09ac2b6b6fb1d3b9fb5b4c03630d3d7a7da42b1c6736d6127142a3fcdca0b70a3d065da8d4f4df8b5d",
         "9d8f46aeb3627a7d7aa901fe186af34c180f2001",
     );
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
 
@@ -553,6 +568,7 @@ fn test_binance_sign_side_chain_redelegate_order() {
         "af44ea561aac993dbe0f6b6a8fc71240114c6927423e95ecc831ec763b629b3a40db8feeb330528a941f",
         "d74843c0d63b4271b23916770d4901988c1f56b20086e5768a12290ebec265e30a80f8f3d88e180f2001",
     );
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
 
@@ -588,6 +604,7 @@ fn test_binance_sign_side_chain_undelegate_order() {
         "75e5eaa675a5ed976b2ec3b8ca055a2b05e7fb471d328bd04df854789437dd06407e41ebb1e5a345604c",
         "93663dfb660e223800636c0b94c2e798180f2001",
     );
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
 
@@ -619,6 +636,7 @@ fn test_binance_sign_time_lock_order() {
         "07921531",
         "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1121c4465736372697074696f6e206c6f636b656420666f72206f666665721a090a03424e4210c0843d20dbaaf8fa05126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240c270822b9515ba486c6a6b3472d388a5aea872ed960c0b53de0fafdc8682ef473a126f01e7dd2c00f04a0138a601b9540f54b14026846de362f7ab7f9fed948b180f2001",
     );
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
 
@@ -653,6 +671,7 @@ fn test_binance_sign_time_relock_order() {
         "124086ddaa077c8ae551d402fa409cf7e91663982b0542200967c03c0b5876b181353250f689d342f221",
         "7624a077b671ce7d09649187e29879f40abbbee9de7ab27c180f2001",
     );
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }
 
@@ -683,5 +702,6 @@ fn test_binance_sign_time_unlock_order() {
         "fd2032834f59ec9fe69fd6eaa4aca24242dfbc5ec4ef8c435cb9da7eb05ab78e1b8ca9f109657cb77996",
         "898f1b59137b3d8f1e00f842e409e18033b347180f2001",
     );
+    assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded.to_hex(), expected_encoded);
 }

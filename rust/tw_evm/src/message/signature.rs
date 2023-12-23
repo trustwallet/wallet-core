@@ -17,9 +17,10 @@ use tw_number::U256;
 pub enum SignatureType {
     Standard,
     Legacy,
-    Eip155 { chain_id: u64 },
+    Eip155 { chain_id: U256 },
 }
 
+#[derive(Clone)]
 pub struct MessageSignature {
     r: H256,
     s: H256,
@@ -37,10 +38,8 @@ impl MessageSignature {
             SignatureType::Legacy => {
                 legacy_replay_protection(sign.v()).map_err(|_| KeyPairError::InvalidSignature)?
             },
-            SignatureType::Eip155 { chain_id } => {
-                eip155_replay_protection(U256::from(chain_id), sign.v())
-                    .map_err(|_| KeyPairError::InvalidSignature)?
-            },
+            SignatureType::Eip155 { chain_id } => eip155_replay_protection(chain_id, sign.v())
+                .map_err(|_| KeyPairError::InvalidSignature)?,
         };
         Ok(MessageSignature {
             r: sign.r(),

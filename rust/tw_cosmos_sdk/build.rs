@@ -15,12 +15,7 @@ fn main() {
 
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap()).join("proto");
 
-    let proto_dir = cargo_manifest_dir
-        .join("..")
-        .join("..")
-        .join("src")
-        .join("Cosmos")
-        .join("Protobuf");
+    let proto_dir = cargo_manifest_dir.join("Protobuf");
     let proto_dir_str = proto_dir.to_str().expect("Invalid proto directory path");
     // Re-run this build.rs if the `proto` directory has been changed (i.e. a new file is added).
     println!("cargo:rerun-if-changed={}", proto_dir_str);

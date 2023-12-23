@@ -6,6 +6,10 @@ plugins {
 }
 
 allprojects {
+    tasks.withType<JavaCompile> {
+        sourceCompatibility = "17"
+        targetCompatibility = "17"
+    }
     tasks.withType<KotlinCompile> {
         compilerOptions {
             allWarningsAsErrors.set(true)
