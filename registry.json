@@ -501,6 +501,36 @@
     }
   },
   {
+    "id": "UltraPro",
+    "name": "UltraPro",
+    "coinId": 10473861,
+    "symbol": "UPRO",
+    "decimals": 18,
+    "blockchain": "UltraPro",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "473861",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://ultraproscan.io/",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xa40506a00896b154e4a49edb61d199731178304c563fef9cfc00e8afa6da8cd9",
+      "sampleAccount": "0xBde85167D6E8CBb62088e30F615826912185a9b1"
+    },
+    "info": {
+      "url": "https://ultrapro.info/",
+      "source": "https://github.com/ethereum/go-ethereum",
+      "rpc": "https://mainnet-rpc.ultraproscan.io",
+      "documentation": "https://ultraproscan.io/api-docs"
+    }
+  },
+  {
     "id": "classic",
     "name": "Ethereum Classic",
     "coinId": 61,
