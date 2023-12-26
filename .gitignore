@@ -72,3 +72,4 @@ samples/cpp/sample
 
 # Exclude .vs directory
 .vs/
+.vs/wallet-core/v17/.wsuo
