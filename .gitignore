@@ -69,3 +69,6 @@ samples/cpp/sample
 
 # Rust target build
 **/target/
+
+# Exclude .vs directory
+.vs/
