@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package TW.WalletConnect.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// The transaction protocol may differ from version to version.
+enum Protocol {
+    V2 = 0;
+}
+
+message SigningInput {
+    // A signing method like "cosmos_signAmino" or "eth_signTransaction".
+    string method = 1;
+
+    // Wallet's private key.
+    bytes private_key = 2;
+
+    // Transaction payload to sign.
+    // Basically, a JSON object.
+    string payload = 3;
+}
+
+message SigningOutput {
+    // A signing result in string representation.
+    // It can be a serialized signed transaction in Base64, hex etc, or a JSON object.
+    string result = 1;
+
+    // OK (=0) or other codes in case of error
+    Common.Proto.SigningError error = 2;
+
+    // error description in case of error
+    string error_message = 3;
+}

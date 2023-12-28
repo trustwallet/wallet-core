@@ -12,6 +12,7 @@ use tw_coin_entry::{
     error::{AddressError, AddressResult, SigningError},
     modules::{
         json_signer::NoJsonSigner, message_signer::NoMessageSigner, plan_builder::NoPlanBuilder,
+        wallet_connect_signer::NoWalletConnectSigner,
     },
     prefix::NoPrefix,
     signing_output_error,
@@ -42,6 +43,8 @@ impl CoinEntry for InternetComputerEntry {
     type PlanBuilder = NoPlanBuilder;
 
     type MessageSigner = NoMessageSigner;
+
+    type WalletConnectSigner = NoWalletConnectSigner;
 
     #[inline]
     fn parse_address(

@@ -16,6 +16,7 @@ use tw_memory::Data;
 use tw_proto::{MessageRead, MessageWrite};
 
 use crate::modules::message_signer::MessageSigner;
+use crate::modules::wallet_connect_signer::WalletConnectSigner;
 pub use tw_proto::{ProtoError, ProtoResult};
 
 pub type PrivateKeyBytes = Data;
@@ -60,6 +61,10 @@ pub trait CoinEntry {
     ///
     /// **Optional**. Use `NoMessageSigner` if the blockchain does not support message signing.
     type MessageSigner: MessageSigner;
+    /// WalletConnect Signer - the module allows to sign a transaction received in WalletConnect format.
+    ///
+    /// **Optional**. Use `NoWalletConnectSigner` if the blockchain does not support WalletConnect transactions.
+    type WalletConnectSigner: WalletConnectSigner;
 
     /// Tries to parse `Self::Address` from the given `address` string by `coin` type and address `prefix`.
     fn parse_address(
@@ -123,6 +128,13 @@ pub trait CoinEntry {
     /// Returns `Ok(None)` if the chain doesn't support regular message signing.
     #[inline]
     fn message_signer(&self) -> Option<Self::MessageSigner> {
+        None
+    }
+
+    /// It is optional, Signing WalletConnect input with private key.
+    /// Returns `Ok(None)` if the blockchain does not support WalletConnect transactions.
+    #[inline]
+    fn wallet_connect_signer(&self) -> Option<Self::WalletConnectSigner> {
         None
     }
 }
