@@ -4,12 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub mod address;
-pub mod amino;
-pub mod compiler;
-pub mod context;
-pub mod entry;
-pub mod modules;
-pub mod signature;
+pub mod methods;
 pub mod signer;
-pub mod transaction;
+pub mod types;

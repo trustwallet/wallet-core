@@ -6,24 +6,24 @@
 
 use crate::signature::BinanceSignature;
 use crate::transaction::message::BinanceMessageBox;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use tw_keypair::ecdsa::secp256k1;
 use tw_memory::Data;
 use tw_misc::serde::as_string;
 
 pub mod message;
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct UnsignedTransaction {
-    #[serde(serialize_with = "as_string")]
+    #[serde(with = "as_string")]
     pub account_number: i64,
     pub chain_id: String,
     pub data: Option<Data>,
     pub memo: String,
     pub msgs: Vec<BinanceMessageBox>,
-    #[serde(serialize_with = "as_string")]
+    #[serde(with = "as_string")]
     pub sequence: i64,
-    #[serde(serialize_with = "as_string")]
+    #[serde(with = "as_string")]
     pub source: i64,
 }
 

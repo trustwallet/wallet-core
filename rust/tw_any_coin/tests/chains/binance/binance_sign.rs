@@ -4,22 +4,16 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::chains::binance::make_token;
+use crate::chains::binance::{
+    make_token, ACCOUNT_12_PRIVATE_KEY, ACCOUNT_15_PRIVATE_KEY, ACCOUNT_16_PRIVATE_KEY,
+    ACCOUNT_19_PRIVATE_KEY,
+};
 use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_proto::Binance::Proto;
 use tw_proto::Binance::Proto::mod_SigningInput::OneOforder_oneof as OrderEnum;
 use tw_proto::Common::Proto::SigningError;
-
-const ACCOUNT_12_PRIVATE_KEY: &str =
-    "90335b9d2153ad1a9799a3ccc070bd64b4164e9642ee1dd48053c33f9a3a05e9";
-const ACCOUNT_19_PRIVATE_KEY: &str =
-    "95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832";
-const ACCOUNT_15_PRIVATE_KEY: &str =
-    "eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d";
-const ACCOUNT_16_PRIVATE_KEY: &str =
-    "851fab89c14f4bbec0cc06f5e445ec065efc641068d78b308c67217d9bd5c88a";
 
 #[test]
 fn test_binance_sign_trade_order() {
@@ -97,6 +91,7 @@ fn test_binance_sign_send_order() {
     let amount = 1_001_000_000;
     // bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2
     let from_address_key_hash = "40c2979694bbc961023d1d27be6fc4d21a9febe6";
+    // TODO
     let to_address_key_hash = "88b37d5e05f3699e2a1406468e5d87cb9dcceb95";
 
     let send_order = Proto::SendOrder {

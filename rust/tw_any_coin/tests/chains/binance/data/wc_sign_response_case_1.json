@@ -1,0 +1,43 @@
+{
+    "signed": {
+        "account_number": "12",
+        "chain_id": "chain-bnb",
+        "memo": "",
+        "data": null,
+        "msgs": [
+            {
+                "inputs": [
+                    {
+                        "address": "bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2",
+                        "coins": [
+                            {
+                                "amount": 1001000000,
+                                "denom": "BNB"
+                            }
+                        ]
+                    }
+                ],
+                "outputs": [
+                    {
+                        "address": "TODO",
+                        "coins": [
+                            {
+                                "amount": 1001000000,
+                                "denom": "BNB"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "sequence": "35",
+        "source": "1"
+    },
+    "signature": {
+        "pub_key": {
+            "type": "tendermint/PubKeySecp256k1",
+            "value": "TODO"
+        },
+        "signature": "TODO"
+    }
+}
