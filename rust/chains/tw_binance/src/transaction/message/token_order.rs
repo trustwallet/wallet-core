@@ -6,7 +6,7 @@
 
 use crate::address::BinanceAddress;
 use crate::amino::AminoEncoder;
-use crate::transaction::message::{message_to_json, BinanceMessage};
+use crate::transaction::message::BinanceMessage;
 use serde::Serialize;
 use serde_json::Value as Json;
 use tw_coin_entry::coin_entry::CoinAddress;
@@ -27,10 +27,6 @@ impl TokenFreezeOrder {
 }
 
 impl BinanceMessage for TokenFreezeOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
-    }
-
     fn to_amino_protobuf(&self) -> SigningResult<Data> {
         let msg = Proto::TokenFreezeOrder {
             from: self.from.data().into(),
@@ -57,10 +53,6 @@ impl TokenUnfreezeOrder {
 }
 
 impl BinanceMessage for TokenUnfreezeOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
-    }
-
     fn to_amino_protobuf(&self) -> SigningResult<Data> {
         let msg = Proto::TokenUnfreezeOrder {
             from: self.from.data().into(),
@@ -89,10 +81,6 @@ impl TokenIssueOrder {
 }
 
 impl BinanceMessage for TokenIssueOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
-    }
-
     fn to_amino_protobuf(&self) -> SigningResult<Data> {
         let msg = Proto::TokenIssueOrder {
             from: self.from.data().into(),
@@ -121,10 +109,6 @@ impl TokenMintOrder {
 }
 
 impl BinanceMessage for TokenMintOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
-    }
-
     fn to_amino_protobuf(&self) -> SigningResult<Data> {
         let msg = Proto::TokenMintOrder {
             from: self.from.data().into(),
@@ -151,10 +135,6 @@ impl TokenBurnOrder {
 }
 
 impl BinanceMessage for TokenBurnOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
-    }
-
     fn to_amino_protobuf(&self) -> SigningResult<Data> {
         let msg = Proto::TokenBurnOrder {
             from: self.from.data().into(),

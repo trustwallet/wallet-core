@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::signature::BinanceSignature;
-use crate::transaction::message::BinanceMessageBox;
+use crate::transaction::message::BinanceMessageEnum;
 use serde::{Deserialize, Serialize};
 use tw_keypair::ecdsa::secp256k1;
 use tw_memory::Data;
@@ -20,7 +20,7 @@ pub struct UnsignedTransaction {
     pub chain_id: String,
     pub data: Option<Data>,
     pub memo: String,
-    pub msgs: Vec<BinanceMessageBox>,
+    pub msgs: Vec<BinanceMessageEnum>,
     #[serde(with = "as_string")]
     pub sequence: i64,
     #[serde(with = "as_string")]

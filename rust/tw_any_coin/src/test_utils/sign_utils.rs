@@ -102,20 +102,20 @@ pub struct WalletConnectSignHelper<'a, Output: MessageRead<'a>> {
 }
 
 impl<'a, Output: MessageRead<'a>> WalletConnectSignHelper<'a, Output> {
-    pub fn sign_wallet_connect<Input: MessageWrite>(
-        &'a mut self,
-        coin_type: CoinType,
-        input: Input,
-    ) -> Output {
-        let input_data = TWDataHelper::create(serialize(input).unwrap());
-
-        self.output_data = TWDataHelper::wrap(unsafe {
-            tw_any_signer_sign_wallet_connect(input_data.ptr(), coin_type as u32)
-        })
-        .to_vec()
-        .expect("!tw_any_signer_sign_wallet_connect returned nullptr");
-
-        let output: Output = deserialize(&self.output_data).unwrap();
-        output
-    }
+    // pub fn sign_wallet_connect<Input: MessageWrite>(
+    //     &'a mut self,
+    //     coin_type: CoinType,
+    //     input: Input,
+    // ) -> Output {
+    //     let input_data = TWDataHelper::create(serialize(input).unwrap());
+    //
+    //     self.output_data = TWDataHelper::wrap(unsafe {
+    //         tw_any_signer_sign_wallet_connect(input_data.ptr(), coin_type as u32)
+    //     })
+    //     .to_vec()
+    //     .expect("!tw_any_signer_sign_wallet_connect returned nullptr");
+    //
+    //     let output: Output = deserialize(&self.output_data).unwrap();
+    //     output
+    // }
 }

@@ -6,7 +6,7 @@
 
 use crate::address::BinanceAddress;
 use crate::amino::AminoEncoder;
-use crate::transaction::message::{message_to_json, BinanceMessage, Token};
+use crate::transaction::message::{BinanceMessage, Token};
 use serde::Serialize;
 use serde_json::Value as Json;
 use tw_coin_entry::coin_entry::CoinAddress;
@@ -28,10 +28,6 @@ impl TimeLockOrder {
 }
 
 impl BinanceMessage for TimeLockOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
-    }
-
     fn to_amino_protobuf(&self) -> SigningResult<Data> {
         let msg = Proto::TimeLockOrder {
             from_address: self.from.data().into(),
@@ -62,10 +58,6 @@ impl TimeRelockOrder {
 }
 
 impl BinanceMessage for TimeRelockOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
-    }
-
     fn to_amino_protobuf(&self) -> SigningResult<Data> {
         let amount = match self.amount {
             Some(ref tokens) => tokens.iter().map(Token::to_proto).collect(),
@@ -98,10 +90,6 @@ impl TimeUnlockOrder {
 }
 
 impl BinanceMessage for TimeUnlockOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
-    }
-
     fn to_amino_protobuf(&self) -> SigningResult<Data> {
         let msg = Proto::TimeUnlockOrder {
             from_address: self.from.data().into(),

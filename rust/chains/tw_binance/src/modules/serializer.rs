@@ -27,7 +27,7 @@ impl BinanceAminoSerializer {
             .unsigned
             .msgs
             .iter()
-            .map(|msg| msg.to_amino_protobuf().map(Cow::from))
+            .map(|msg| msg.as_ref().to_amino_protobuf().map(Cow::from))
             .collect::<SigningResult<Vec<_>>>()?;
 
         let signature = Self::serialize_signature(tx)?;

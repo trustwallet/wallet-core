@@ -6,11 +6,13 @@
 
 use crate::address::BinanceAddress;
 use crate::amino::AminoEncoder;
-use crate::transaction::message::{message_to_json, BinanceMessage, Token};
-use serde::Serialize;
+use crate::transaction::message::{BinanceMessage, TWBinanceProto, Token};
+use serde::{Deserialize, Serialize};
 use serde_json::Value as Json;
+use std::borrow::Cow;
+use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::{SigningError, SigningResult};
 use tw_encoding::hex::as_hex;
 use tw_memory::Data;
 use tw_proto::Binance::Proto;
@@ -36,10 +38,6 @@ impl HTLTOrder {
 }
 
 impl BinanceMessage for HTLTOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
-    }
-
     fn to_amino_protobuf(&self) -> SigningResult<Data> {
         let msg = Proto::HTLTOrder {
             from: self.from.data().into(),
@@ -74,10 +72,6 @@ impl DepositHTLTOrder {
 }
 
 impl BinanceMessage for DepositHTLTOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
-    }
-
     fn to_amino_protobuf(&self) -> SigningResult<Data> {
         let msg = Proto::DepositHTLTOrder {
             from: self.from.data().into(),
@@ -106,10 +100,6 @@ impl ClaimHTLTOrder {
 }
 
 impl BinanceMessage for ClaimHTLTOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
-    }
-
     fn to_amino_protobuf(&self) -> SigningResult<Data> {
         let msg = Proto::ClaimHTLOrder {
             from: self.from.data().into(),
@@ -123,7 +113,7 @@ impl BinanceMessage for ClaimHTLTOrder {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct RefundHTLTOrder {
     pub from: BinanceAddress,
     #[serde(serialize_with = "as_hex")]
@@ -135,19 +125,28 @@ impl RefundHTLTOrder {
     pub const PREFIX: [u8; 4] = [0x34, 0x54, 0xA2, 0x7C];
 }
 
-impl BinanceMessage for RefundHTLTOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
+impl TWBinanceProto for RefundHTLTOrder {
+    type Proto<'a> = Proto::RefundHTLTOrder<'a>;
+
+    fn from_tw_proto(coin: &dyn CoinContext, msg: &Self::Proto<'_>) -> SigningResult<Self> {
+        let from = BinanceAddress::from_key_hash_with_coin(coin, msg.from.to_vec())?;
+        let swap_id = msg.swap_id.to_vec();
+
+        Ok(RefundHTLTOrder { from, swap_id })
     }
 
-    fn to_amino_protobuf(&self) -> SigningResult<Data> {
-        let msg = Proto::RefundHTLTOrder {
+    fn to_tw_proto(&self) -> Self::Proto<'static> {
+        Proto::RefundHTLTOrder {
             from: self.from.data().into(),
             swap_id: self.swap_id.clone().into(),
-        };
+        }
+    }
+}
 
+impl BinanceMessage for RefundHTLTOrder {
+    fn to_amino_protobuf(&self) -> SigningResult<Data> {
         Ok(AminoEncoder::new(&Self::PREFIX)
-            .extend_with_msg(&msg)?
+            .extend_with_msg(&self.to_tw_proto())?
             .encode())
     }
 }

@@ -6,7 +6,7 @@
 
 use crate::address::BinanceAddress;
 use crate::amino::AminoEncoder;
-use crate::transaction::message::{message_to_json, BinanceMessage, Token};
+use crate::transaction::message::{BinanceMessage, Token};
 use serde::Serialize;
 use serde_json::Value as Json;
 use tw_coin_entry::coin_entry::CoinAddress;
@@ -52,10 +52,6 @@ impl SendOrder {
 }
 
 impl BinanceMessage for SendOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
-    }
-
     fn to_amino_protobuf(&self) -> SigningResult<Data> {
         let msg = Proto::SendOrder {
             inputs: self.inputs.iter().map(InOut::to_input_proto).collect(),
