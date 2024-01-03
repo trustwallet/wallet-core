@@ -6,12 +6,11 @@
 
 use crate::address::BinanceAddress;
 use crate::amino::AminoEncoder;
-use crate::transaction::message::{BinanceMessage, Token};
-use serde::{Serialize, Serializer};
-use serde_json::Value as Json;
+use crate::transaction::message::{BinanceMessage, TWBinanceProto, Token};
+use serde::{Deserialize, Serialize};
+use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::SigningResult;
-use tw_cosmos_sdk::modules::serializer::json_serializer::AnyMsg;
+use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_memory::Data;
 use tw_misc::serde::Typped;
 use tw_proto::Binance::Proto;
@@ -19,13 +18,13 @@ use tw_proto::Binance::Proto;
 pub type SideDelegateOrder = Typped<SideDelegateOrderValue>;
 
 /// cosmos-sdk/MsgSideChainDelegate
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct SideDelegateOrderValue {
-    pub delegator_addr: BinanceAddress,
-    pub validator_addr: BinanceAddress,
     #[serde(serialize_with = "Token::serialize_with_string_amount")]
     pub delegation: Token,
+    pub delegator_addr: BinanceAddress,
     pub side_chain_id: String,
+    pub validator_addr: BinanceAddress,
 }
 
 impl SideDelegateOrderValue {
@@ -37,30 +36,58 @@ impl SideDelegateOrderValue {
 
 impl BinanceMessage for SideDelegateOrder {
     fn to_amino_protobuf(&self) -> SigningResult<Data> {
-        let msg = Proto::SideChainDelegate {
+        Ok(AminoEncoder::new(&SideDelegateOrderValue::PREFIX)
+            .extend_with_msg(&self.to_tw_proto())?
+            .encode())
+    }
+}
+
+impl TWBinanceProto for SideDelegateOrder {
+    type Proto<'a> = Proto::SideChainDelegate<'a>;
+
+    fn from_tw_proto(coin: &dyn CoinContext, msg: &Self::Proto<'_>) -> SigningResult<Self> {
+        let delegator_addr =
+            BinanceAddress::from_key_hash_with_coin(coin, msg.delegator_addr.to_vec())?;
+        let validator_addr = BinanceAddress::new_validator_addr(msg.validator_addr.to_vec())?;
+
+        let delegation = msg
+            .delegation
+            .as_ref()
+            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+
+        let value = SideDelegateOrderValue {
+            delegator_addr,
+            validator_addr,
+            delegation: Token::from_tw_proto(delegation),
+            side_chain_id: msg.chain_id.to_string(),
+        };
+        Ok(Typped {
+            ty: SideDelegateOrderValue::MESSAGE_TYPE.to_string(),
+            value,
+        })
+    }
+
+    fn to_tw_proto(&self) -> Self::Proto<'static> {
+        Proto::SideChainDelegate {
             delegator_addr: self.value.delegator_addr.data().into(),
             validator_addr: self.value.validator_addr.data().into(),
-            delegation: Some(self.value.delegation.to_proto()),
+            delegation: Some(self.value.delegation.to_tw_proto()),
             chain_id: self.value.side_chain_id.clone().into(),
-        };
-
-        Ok(AminoEncoder::new(&SideDelegateOrderValue::PREFIX)
-            .extend_with_msg(&msg)?
-            .encode())
+        }
     }
 }
 
 pub type SideRedelegateOrder = Typped<SideRedelegateOrderValue>;
 
 /// cosmos-sdk/MsgSideChainRedelegate
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct SideRedelegateOrderValue {
-    pub delegator_addr: BinanceAddress,
-    pub validator_src_addr: BinanceAddress,
-    pub validator_dst_addr: BinanceAddress,
     #[serde(serialize_with = "Token::serialize_with_string_amount")]
     pub amount: Token,
+    pub delegator_addr: BinanceAddress,
     pub side_chain_id: String,
+    pub validator_dst_addr: BinanceAddress,
+    pub validator_src_addr: BinanceAddress,
 }
 
 impl SideRedelegateOrderValue {
@@ -72,30 +99,62 @@ impl SideRedelegateOrderValue {
 
 impl BinanceMessage for SideRedelegateOrder {
     fn to_amino_protobuf(&self) -> SigningResult<Data> {
-        let msg = Proto::SideChainRedelegate {
+        Ok(AminoEncoder::new(&SideRedelegateOrderValue::PREFIX)
+            .extend_with_msg(&self.to_tw_proto())?
+            .encode())
+    }
+}
+
+impl TWBinanceProto for SideRedelegateOrder {
+    type Proto<'a> = Proto::SideChainRedelegate<'a>;
+
+    fn from_tw_proto(coin: &dyn CoinContext, msg: &Self::Proto<'_>) -> SigningResult<Self> {
+        let delegator_addr =
+            BinanceAddress::from_key_hash_with_coin(coin, msg.delegator_addr.to_vec())?;
+        let validator_src_addr =
+            BinanceAddress::new_validator_addr(msg.validator_src_addr.to_vec())?;
+        let validator_dst_addr =
+            BinanceAddress::new_validator_addr(msg.validator_dst_addr.to_vec())?;
+
+        let amount = msg
+            .amount
+            .as_ref()
+            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+
+        let value = SideRedelegateOrderValue {
+            delegator_addr,
+            validator_src_addr,
+            validator_dst_addr,
+            amount: Token::from_tw_proto(amount),
+            side_chain_id: msg.chain_id.to_string(),
+        };
+        Ok(Typped {
+            ty: SideRedelegateOrderValue::MESSAGE_TYPE.to_string(),
+            value,
+        })
+    }
+
+    fn to_tw_proto(&self) -> Self::Proto<'static> {
+        Proto::SideChainRedelegate {
             delegator_addr: self.value.delegator_addr.data().into(),
             validator_src_addr: self.value.validator_src_addr.data().into(),
             validator_dst_addr: self.value.validator_dst_addr.data().into(),
-            amount: Some(self.value.amount.to_proto()),
+            amount: Some(self.value.amount.to_tw_proto()),
             chain_id: self.value.side_chain_id.clone().into(),
-        };
-
-        Ok(AminoEncoder::new(&SideRedelegateOrderValue::PREFIX)
-            .extend_with_msg(&msg)?
-            .encode())
+        }
     }
 }
 
 pub type SideUndelegateOrder = Typped<SideUndelegateOrderValue>;
 
 /// cosmos-sdk/MsgSideChainUndelegate
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct SideUndelegateOrderValue {
-    pub delegator_addr: BinanceAddress,
-    pub validator_addr: BinanceAddress,
     #[serde(serialize_with = "Token::serialize_with_string_amount")]
     pub amount: Token,
+    pub delegator_addr: BinanceAddress,
     pub side_chain_id: String,
+    pub validator_addr: BinanceAddress,
 }
 
 impl SideUndelegateOrderValue {
@@ -107,15 +166,43 @@ impl SideUndelegateOrderValue {
 
 impl BinanceMessage for SideUndelegateOrder {
     fn to_amino_protobuf(&self) -> SigningResult<Data> {
-        let msg = Proto::SideChainUndelegate {
+        Ok(AminoEncoder::new(&SideUndelegateOrderValue::PREFIX)
+            .extend_with_msg(&self.to_tw_proto())?
+            .encode())
+    }
+}
+
+impl TWBinanceProto for SideUndelegateOrder {
+    type Proto<'a> = Proto::SideChainUndelegate<'a>;
+
+    fn from_tw_proto(coin: &dyn CoinContext, msg: &Self::Proto<'_>) -> SigningResult<Self> {
+        let delegator_addr =
+            BinanceAddress::from_key_hash_with_coin(coin, msg.delegator_addr.to_vec())?;
+        let validator_addr = BinanceAddress::new_validator_addr(msg.validator_addr.to_vec())?;
+
+        let amount = msg
+            .amount
+            .as_ref()
+            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+
+        let value = SideUndelegateOrderValue {
+            delegator_addr,
+            validator_addr,
+            amount: Token::from_tw_proto(amount),
+            side_chain_id: msg.chain_id.to_string(),
+        };
+        Ok(Typped {
+            ty: SideUndelegateOrderValue::MESSAGE_TYPE.to_string(),
+            value,
+        })
+    }
+
+    fn to_tw_proto(&self) -> Self::Proto<'static> {
+        Proto::SideChainUndelegate {
             delegator_addr: self.value.delegator_addr.data().into(),
             validator_addr: self.value.validator_addr.data().into(),
-            amount: Some(self.value.amount.to_proto()),
+            amount: Some(self.value.amount.to_tw_proto()),
             chain_id: self.value.side_chain_id.clone().into(),
-        };
-
-        Ok(AminoEncoder::new(&SideUndelegateOrderValue::PREFIX)
-            .extend_with_msg(&msg)?
-            .encode())
+        }
     }
 }

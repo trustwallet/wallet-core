@@ -8,7 +8,6 @@ use crate::address::BinanceAddress;
 use crate::transaction::UnsignedTransaction;
 use serde::{Deserialize, Serialize};
 use tw_cosmos_sdk::modules::serializer::json_serializer::SignatureJson;
-use tw_encoding::base64::Base64Encoded;
 
 #[derive(Deserialize)]
 pub struct SignAminoRequest {

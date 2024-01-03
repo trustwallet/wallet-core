@@ -6,7 +6,6 @@
 
 use crate::address::BinanceAddress;
 use tw_cosmos_sdk::context::CosmosContext;
-use tw_cosmos_sdk::hasher::keccak256_hasher::Keccak256Hasher;
 use tw_cosmos_sdk::hasher::sha256_hasher::Sha256Hasher;
 use tw_cosmos_sdk::private_key::secp256k1::Secp256PrivateKey;
 use tw_cosmos_sdk::public_key::secp256k1::Secp256PublicKey;

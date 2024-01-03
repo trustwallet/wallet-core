@@ -17,7 +17,6 @@ use tw_coin_entry::error::AddressResult;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
-use tw_coin_entry::modules::wallet_connect_signer::NoWalletConnectSigner;
 use tw_keypair::tw::PublicKey;
 use tw_proto::Binance::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
