@@ -10,6 +10,9 @@ plugins {
 }
 
 kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
     applyDefaultHierarchyTemplate()
 
     androidTarget {
