@@ -16,6 +16,7 @@ pub enum BlockchainType {
     Bitcoin,
     Cosmos,
     Ethereum,
+    Greenfield,
     InternetComputer,
     NativeEvmos,
     NativeInjective,

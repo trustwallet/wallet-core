@@ -80,6 +80,10 @@ kotlin {
 
         getByName("jsMain") {
             kotlin.srcDir(projectDir.resolve("src/jsMain/generated"))
+
+            dependencies {
+                implementation(npm(name = "webpack", version = "5.89.0"))
+            }
         }
     }
 
