@@ -28,18 +28,16 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        // find layout
-        val logView = findViewById<LinearLayout>(R.id.logView)
 
         // 'Import' a wallet
         val wallet = HDWallet(seedPhrase, passphrase)
-        showLog("Mnemonic: \n${wallet.mnemonic()}", logView)
+        showLog("Mnemonic: \n${wallet.mnemonic()}")
 
         // Ethereum example
         val coinEth: CoinType = CoinType.ETHEREUM
         // Get the default address
         val addressEth = wallet.getAddressForCoin(coinEth)
-        showLog("Default ETH address: \n$addressEth", logView)
+        showLog("Default ETH address: \n$addressEth")
 
         // Signing a transaction (using EthereumSigner)
         val secretPrivateKey = wallet.getKeyForCoin(coinEth)
@@ -58,13 +56,13 @@ class MainActivity : AppCompatActivity() {
             this.privateKey = ByteString.copyFrom(secretPrivateKey.data())
         }.build()
         val signerOutput = AnySigner.sign(signerInput, CoinType.ETHEREUM, Ethereum.SigningOutput.parser())
-        showLog("Signed transaction: \n${signerOutput.encoded.toByteArray().toHexString(false)}", logView)
+        showLog("Signed transaction: \n${signerOutput.encoded.toByteArray().toHexString(false)}")
 
         // Bitcoin example
         val coinBtc: CoinType = CoinType.BITCOIN
         // Get the default address
         val addressBtc = wallet.getAddressForCoin(coinBtc)
-        showLog("Default BTC address: \n$addressBtc", logView)
+        showLog("Default BTC address: \n$addressBtc")
 
         // Build a transaction
         val utxoTxId = "050d00e2e18ef13969606f1ceee290d3f49bd940684ce39898159352952b8ce2".hexStringToByteArray();
@@ -95,7 +93,7 @@ class MainActivity : AppCompatActivity() {
 
         // Calculate fee (plan a tranaction)
         val plan = AnySigner.plan(input.build(), coinBtc, Bitcoin.TransactionPlan.parser())
-        showLog("Planned fee:  ${plan.fee}  amount: ${plan.amount}  avail_amount: ${plan.availableAmount}  change: ${plan.change}", logView)
+        showLog("Planned fee:  ${plan.fee}  amount: ${plan.amount}  avail_amount: ${plan.availableAmount}  change: ${plan.change}")
 
         // Set the precomputed plan
         input.plan = plan
@@ -105,7 +103,7 @@ class MainActivity : AppCompatActivity() {
 
         assert(output.error == Common.SigningError.OK)
         val signedTransaction = output.encoded?.toByteArray()
-        showLog("Signed BTC transaction: \n${signedTransaction?.toHexString()}", logView)
+        showLog("Signed BTC transaction: \n${signedTransaction?.toHexString()}")
     }
 
     private fun ByteArray.toHexString(withPrefix: Boolean = true): String {
@@ -135,9 +133,10 @@ class MainActivity : AppCompatActivity() {
         return result
     }
 
-    private fun showLog(log: String, logView: LinearLayout) {
-        val tv =  TextView(this)
+    private fun showLog(log: String) {
+        val tv = TextView(this)
         tv.text = log
+        val logView = findViewById<LinearLayout>(R.id.logView)
         logView.addView(tv)
         println(log)
     }
