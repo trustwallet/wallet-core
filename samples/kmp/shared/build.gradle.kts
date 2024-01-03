@@ -35,7 +35,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("com.trustwallet:wallet-core-kotlin:4.0.14")
+                implementation("com.trustwallet:wallet-core-kotlin:4.0.15")
             }
         }
         val commonTest by getting {
@@ -77,9 +77,9 @@ kotlin {
 
 android {
     namespace = "com.example.kmpsample"
-    compileSdk = 33
+    compileSdk = 34
     defaultConfig {
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
     }
 }
