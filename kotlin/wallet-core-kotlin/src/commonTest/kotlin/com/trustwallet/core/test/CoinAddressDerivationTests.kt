@@ -17,7 +17,7 @@ class CoinAddressDerivationTests {
     fun testDeriveAddressesFromPhrase() {
         val wallet = HDWallet("shoot island position soft burden budget tooth cruel issue economy destroy above", "")
 
-        CoinType.values().forEach { coin ->
+        CoinType.entries.forEach { coin ->
             val address = wallet.getAddressForCoin(coin)
             val expectedAddress = getExpectedAddress(coin)
 
