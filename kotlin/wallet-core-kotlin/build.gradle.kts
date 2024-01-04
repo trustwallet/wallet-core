@@ -12,7 +12,6 @@ plugins {
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
-        freeCompilerArgs.add("-opt-in=kotlinx.cinterop.ExperimentalForeignApi")
     }
     applyDefaultHierarchyTemplate()
 
@@ -48,6 +47,7 @@ kotlin {
         all {
             languageSettings {
                 optIn("kotlin.js.ExperimentalJsExport")
+                optIn("kotlinx.cinterop.ExperimentalForeignApi")
             }
         }
 
