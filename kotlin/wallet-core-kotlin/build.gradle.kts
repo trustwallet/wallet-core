@@ -12,6 +12,7 @@ plugins {
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
+        freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
     }
     applyDefaultHierarchyTemplate()
 
