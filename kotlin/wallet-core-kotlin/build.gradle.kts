@@ -99,6 +99,7 @@ kotlin {
                 packageName = "com.trustwallet.core"
                 headers(rootDir.parentFile.resolve("include/TrustWalletCore").listFiles()!!)
             }
+            main.compilerOptions.options.freeCompilerArgs.add("-opt-in=kotlinx.cinterop.ExperimentalForeignApi")
         }
     }
 }
