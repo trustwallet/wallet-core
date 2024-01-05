@@ -12,7 +12,7 @@ use tw_coin_entry::error::AddressResult;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
-use tw_coin_entry::modules::wallet_connect_signer::NoWalletConnectSigner;
+use tw_coin_entry::modules::wallet_connect_signer::NoWalletConnector;
 use tw_cosmos_sdk::address::{Address, Bech32Prefix};
 use tw_cosmos_sdk::context::StandardCosmosContext;
 use tw_cosmos_sdk::modules::compiler::tw_compiler::TWTransactionCompiler;
@@ -32,7 +32,7 @@ impl CoinEntry for CosmosEntry {
     type JsonSigner = NoJsonSigner;
     type PlanBuilder = NoPlanBuilder;
     type MessageSigner = NoMessageSigner;
-    type WalletConnectSigner = NoWalletConnectSigner;
+    type WalletConnector = NoWalletConnector;
 
     #[inline]
     fn parse_address(

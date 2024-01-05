@@ -12,10 +12,11 @@ use crate::error::{AddressResult, SigningError, SigningErrorType};
 use crate::modules::json_signer::JsonSigner;
 use crate::modules::message_signer::MessageSigner;
 use crate::modules::plan_builder::PlanBuilder;
-use crate::modules::wallet_connect_signer::WalletConnectSigner;
+use crate::modules::wallet_connect_signer::WalletConnector;
 use crate::prefix::AddressPrefix;
 use tw_keypair::tw::{PrivateKey, PublicKey};
 use tw_memory::Data;
+use tw_proto::WalletConnect::Proto as WCProto;
 use tw_proto::{deserialize, serialize, ProtoResult};
 
 pub type PrivateKeyBytes = Data;
@@ -215,13 +216,12 @@ where
     }
 
     fn sign_wallet_connect(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data> {
-        let Some(wc_signer) = self.wallet_connect_signer() else {
+        let Some(wc_connector) = self.wallet_connector() else {
             return Err(SigningError(SigningErrorType::Error_not_supported));
         };
 
-        let input: <T::WalletConnectSigner as WalletConnectSigner>::SigningInput<'_> =
-            deserialize(input)?;
-        let output = wc_signer.sign(coin, input);
+        let input: WCProto::ParseRequestInput = deserialize(input)?;
+        let output = wc_connector.parse_request(coin, input);
         serialize(&output).map_err(SigningError::from)
     }
 }

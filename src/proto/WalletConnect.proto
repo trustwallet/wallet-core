@@ -10,22 +10,21 @@ enum Protocol {
     V2 = 0;
 }
 
-message SigningInput {
-    // A signing method like "cosmos_signAmino" or "eth_signTransaction".
-    string method = 1;
+message ParseRequestInput {
+    // A protocol version.
+    Protocol protocol = 1;
 
-    // Wallet's private key.
-    bytes private_key = 2;
+    // A signing method like "cosmos_signAmino" or "eth_signTransaction".
+    string method = 2;
 
     // Transaction payload to sign.
     // Basically, a JSON object.
     string payload = 3;
 }
 
-message SigningOutput {
-    // A signing result in string representation.
-    // It can be a serialized signed transaction in Base64, hex etc, or a JSON object.
-    string result = 1;
+message ParseRequestOutput {
+    // Prepared unsigned transaction input needs to be parsed accordingly.
+    bytes signing_input = 1;
 
     // OK (=0) or other codes in case of error
     Common.Proto.SigningError error = 2;

@@ -4,21 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::address::BinanceAddress;
 use crate::transaction::UnsignedTransaction;
-use serde::{Deserialize, Serialize};
-use tw_cosmos_sdk::modules::serializer::json_serializer::SignatureJson;
+use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct SignAminoRequest {
-    #[serde(rename = "signerAddress")]
-    pub signer_address: Option<BinanceAddress>,
     #[serde(rename = "signDoc")]
     pub sign_doc: UnsignedTransaction,
-}
-
-#[derive(Serialize)]
-pub struct SignAminoResponse {
-    pub signature: SignatureJson,
-    pub signed: UnsignedTransaction,
 }

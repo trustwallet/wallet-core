@@ -6,7 +6,7 @@
 
 use crate::address::BinanceAddress;
 use crate::compiler::BinanceCompiler;
-use crate::modules::wallet_connect::signer::BinanceWalletConnectSigner;
+use crate::modules::wallet_connect::connector::BinanceWalletConnector;
 use crate::signer::BinanceSigner;
 use std::str::FromStr;
 use tw_bech32_address::bech32_prefix::Bech32Prefix;
@@ -34,7 +34,7 @@ impl CoinEntry for BinanceEntry {
     type JsonSigner = NoJsonSigner;
     type PlanBuilder = NoPlanBuilder;
     type MessageSigner = NoMessageSigner;
-    type WalletConnectSigner = BinanceWalletConnectSigner;
+    type WalletConnector = BinanceWalletConnector;
 
     #[inline]
     fn parse_address(
@@ -92,7 +92,7 @@ impl CoinEntry for BinanceEntry {
     }
 
     #[inline]
-    fn wallet_connect_signer(&self) -> Option<Self::WalletConnectSigner> {
-        Some(BinanceWalletConnectSigner)
+    fn wallet_connector(&self) -> Option<Self::WalletConnector> {
+        Some(BinanceWalletConnector)
     }
 }

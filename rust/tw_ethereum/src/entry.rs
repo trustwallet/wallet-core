@@ -10,7 +10,7 @@ use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
-use tw_coin_entry::modules::wallet_connect_signer::NoWalletConnectSigner;
+use tw_coin_entry::modules::wallet_connect_signer::NoWalletConnector;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_evm::address::Address;
 use tw_evm::evm_context::StandardEvmContext;
@@ -36,7 +36,7 @@ impl CoinEntry for EthereumEntry {
     type JsonSigner = EthJsonSigner<StandardEvmContext>;
     type PlanBuilder = NoPlanBuilder;
     type MessageSigner = EthMessageSigner;
-    type WalletConnectSigner = NoWalletConnectSigner;
+    type WalletConnector = NoWalletConnector;
 
     #[inline]
     fn parse_address(
