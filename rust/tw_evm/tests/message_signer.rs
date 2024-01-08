@@ -20,6 +20,8 @@ const EIP712_UNEQUAL_ARRAY_LEN: &str = include_str!("data/eip712_unequal_array_l
 const EIP712_WITH_CHAIN_ID_STR: &str = include_str!("data/eip712_with_chain_id_string.json");
 const EIP712_GREENFIELD: &str = include_str!("data/eip712_greenfield.json");
 const EIP712_FIXED_BYTES: &str = include_str!("data/eip712_fixed_bytes.json");
+const EIP712_LONG_BYTES: &str = include_str!("data/eip712_long_bytes.json");
+const EIP712_DIFFERENT_BYTES: &str = include_str!("data/eip712_different_bytes.json");
 
 struct SignVerifyTestInput {
     private_key: &'static str,
@@ -275,5 +277,27 @@ fn test_message_signer_sign_verify_eip712_fixed_bytes() {
         msg_type: Proto::MessageType::MessageType_typed,
         chain_id: None,
         signature: "7ee9b54fedf355e40fa86bbe23e63b318ef797bd8fdbc5bb714edbace042d4cb60111912218234e856f2cf300b3b47c91383b98e263ecf69c6c10193fef6c9581b",
+    });
+}
+
+#[test]
+fn test_message_signer_sign_verify_eip712_long_bytes() {
+    test_message_signer_sign_verify(SignVerifyTestInput {
+        private_key: "6f96f3aa7e8052170f1864f72a9a53606ee9c0d185188266cab895512a4bcf84",
+        msg: EIP712_LONG_BYTES,
+        msg_type: Proto::MessageType::MessageType_typed,
+        chain_id: None,
+        signature: "3f78f5860dc9c38d3bf68fd0759c0e4963f104ba6c7fa44e915ed41a1575dbd50d6fd946919e6cfa7eecb869a5d90658b16b1d7b79ec6380acd1841fc21c77f71c",
+    });
+}
+
+#[test]
+fn test_message_signer_sign_verify_eip712_different_bytes() {
+    test_message_signer_sign_verify(SignVerifyTestInput {
+        private_key: "6f96f3aa7e8052170f1864f72a9a53606ee9c0d185188266cab895512a4bcf84",
+        msg: EIP712_DIFFERENT_BYTES,
+        msg_type: Proto::MessageType::MessageType_typed,
+        chain_id: None,
+        signature: "48dc667cd8a53beb58ea6b1745f98c21b12e1a57587ce28bae07689dba3600d40cef2685dc8a68028d38f3e63289891868ecdf05e8affc275fee3001e51d6c581c",
     });
 }

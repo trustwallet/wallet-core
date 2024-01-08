@@ -52,6 +52,10 @@ where
     google::protobuf::Any { type_url, value }
 }
 
+pub fn type_url<T: MessageInfo>() -> String {
+    format!("/{}", T::PATH)
+}
+
 /// There is no way to create an instance of the `NoMessage` enum as it doesn't has variants.
 pub enum NoMessage {}
 

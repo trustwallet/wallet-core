@@ -180,6 +180,8 @@ enum TWCoinType {
     TWCoinTypeInternetComputer = 223,
     TWCoinTypeTia = 21000118,
     TWCoinTypeXDCNetwork = 50,
+    TWCoinTypeMantaPacific = 169,
+    TWCoinTypeXDCNetwork = 50,
     // end_of_tw_coin_type_marker_do_not_modify
 };
 

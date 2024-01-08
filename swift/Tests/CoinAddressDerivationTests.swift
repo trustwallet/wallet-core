@@ -114,7 +114,9 @@ class CoinAddressDerivationTests: XCTestCase {
                      .linea,
                      .greenfield,
                      .mantle,
-                     .zenEON:
+                     .zenEON,
+                     .mantaPacific
+                     .xdc:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ronin:
@@ -389,9 +391,6 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .tia:
                     let expectedResult = "celestia142j9u5eaduzd7faumygud6ruhdwme98qpwmfv7"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .xdc:
-                    let expectedResult = "0xcf808d69db8ddc8d5fc90bf2586074f328058082"
-                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)  
                 @unknown default:
                     fatalError()
                 }

@@ -1750,6 +1750,7 @@ dependencies = [
  "tw_cosmos",
  "tw_ethereum",
  "tw_evm",
+ "tw_greenfield",
  "tw_hash",
  "tw_internet_computer",
  "tw_keypair",
@@ -1830,6 +1831,24 @@ dependencies = [
  "serde_json",
  "tw_coin_entry",
  "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_misc",
+ "tw_number",
+ "tw_proto",
+]
+
+[[package]]
+name = "tw_greenfield"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "tw_coin_entry",
+ "tw_cosmos_sdk",
+ "tw_encoding",
+ "tw_evm",
  "tw_hash",
  "tw_keypair",
  "tw_memory",
