@@ -11,14 +11,10 @@
 using namespace TW;
 
 TWData* _Nonnull TWWalletConnectRequestParse(enum TWCoinType coin, TWData* _Nonnull input) {
-    try {
-        const Data& inputData = *reinterpret_cast<const Data*>(input);
-        Rust::TWDataWrapper twInputData = inputData;
+    const Data& inputData = *reinterpret_cast<const Data*>(input);
+    Rust::TWDataWrapper twInputData = inputData;
 
-        Rust::TWDataWrapper twOutputData = Rust::tw_wallet_connect_request_parse(static_cast<uint32_t>(coin), twInputData.get());
-        auto outputData = twOutputData.toDataOrDefault();
-        return TWDataCreateWithBytes(outputData.data(), outputData.size());
-    } catch (...) {
-        return nullptr;
-    }
+    Rust::TWDataWrapper twOutputData = Rust::tw_wallet_connect_request_parse(static_cast<uint32_t>(coin), twInputData.get());
+    auto outputData = twOutputData.toDataOrDefault();
+    return TWDataCreateWithBytes(outputData.data(), outputData.size());
 }
