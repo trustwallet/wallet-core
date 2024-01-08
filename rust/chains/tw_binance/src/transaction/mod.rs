@@ -7,7 +7,7 @@
 use crate::signature::BinanceSignature;
 use crate::transaction::message::BinanceMessageEnum;
 use serde::{Deserialize, Serialize};
-use tw_keypair::ecdsa::secp256k1;
+use tw_cosmos_sdk::public_key::secp256k1::Secp256PublicKey;
 use tw_memory::Data;
 use tw_misc::serde::as_string;
 
@@ -37,7 +37,7 @@ impl UnsignedTransaction {
 }
 
 pub struct SignerInfo {
-    pub public_key: secp256k1::PublicKey,
+    pub public_key: Secp256PublicKey,
     pub signature: BinanceSignature,
 }
 

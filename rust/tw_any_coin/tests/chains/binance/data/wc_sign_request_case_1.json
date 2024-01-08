@@ -1,7 +1,7 @@
 {
     "signerAddress": "bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2",
     "signDoc": {
-        "account_number": "12",
+        "account_number": "19",
         "chain_id": "chain-bnb",
         "memo": "",
         "data": null,
@@ -31,7 +31,7 @@
                 ]
             }
         ],
-        "sequence": "35",
+        "sequence": "23",
         "source": "1"
     }
 }

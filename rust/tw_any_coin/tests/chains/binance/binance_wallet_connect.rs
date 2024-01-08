@@ -9,7 +9,7 @@ use std::borrow::Cow;
 use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_any_coin::test_utils::wallet_connect_utils::WalletConnectRequestHelper;
 use tw_coin_registry::coin_type::CoinType;
-use tw_encoding::hex::DecodeHex;
+use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_proto::Binance::Proto::{self, mod_SigningInput::OneOforder_oneof as MessageEnum};
 use tw_proto::Common::Proto::SigningError;
 use tw_proto::WalletConnect::Proto as WCProto;
@@ -46,8 +46,8 @@ fn test_binance_sign_wallet_connect_case_1() {
     };
     let expected_signing_input = Proto::SigningInput {
         chain_id: "chain-bnb".into(),
-        account_number: 12,
-        sequence: 35,
+        account_number: 19,
+        sequence: 23,
         source: 1,
         memo: "".into(),
         private_key: Cow::default(),
@@ -62,5 +62,8 @@ fn test_binance_sign_wallet_connect_case_1() {
     let signing_output = signer.sign(CoinType::Binance, signing_input);
 
     assert_eq!(signing_output.error, SigningError::OK);
-    // TODO check the signature.
+    let expected_signature = "3c24c784c6bbf99d54ffabb153edcb6d3c4a774936df5c72a5d32897256f8e062f320fb4753302fb0a96f08c475974d20edfd1a27bbeeda73587f58ddc958975";
+    assert_eq!(signing_output.signature.to_hex(), expected_signature);
+    let expected_signature_json = r#"{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"Amo1kgCI2Yw4iMpoxT38k/RWRgJgbLuH8P5e5TPbOOUC"},"signature":"PCTHhMa7+Z1U/6uxU+3LbTxKd0k231xypdMolyVvjgYvMg+0dTMC+wqW8IxHWXTSDt/Ronu+7ac1h/WN3JWJdQ=="}"#;
+    assert_eq!(signing_output.signature_json, expected_signature_json);
 }
