@@ -3,6 +3,7 @@ syntax = "proto3";
 package TW.WalletConnect.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Binance.proto";
 import "Common.proto";
 
 // The transaction protocol may differ from version to version.
@@ -10,12 +11,19 @@ enum Protocol {
     V2 = 0;
 }
 
+// WalletConnect request method.
+enum Method {
+    Unknown = 0;
+    // cosmos_signAmino
+    CosmosSignAmino = 1;
+}
+
 message ParseRequestInput {
     // A protocol version.
     Protocol protocol = 1;
 
     // A signing method like "cosmos_signAmino" or "eth_signTransaction".
-    string method = 2;
+    Method method = 2;
 
     // Transaction payload to sign.
     // Basically, a JSON object.
@@ -23,12 +31,14 @@ message ParseRequestInput {
 }
 
 message ParseRequestOutput {
-    // Prepared unsigned transaction input needs to be parsed accordingly.
-    bytes signing_input = 1;
-
     // OK (=0) or other codes in case of error
-    Common.Proto.SigningError error = 2;
+    Common.Proto.SigningError error = 1;
 
     // error description in case of error
-    string error_message = 3;
+    string error_message = 2;
+
+    // Prepared unsigned transaction input, on the source chain. Some fields must be completed, and it has to be signed.
+    oneof signing_input_oneof {
+        Binance.Proto.SigningInput binance = 3;
+    }
 }

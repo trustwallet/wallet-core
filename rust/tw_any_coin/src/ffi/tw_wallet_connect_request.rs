@@ -15,8 +15,8 @@ use tw_misc::try_or_else;
 /// Parses the WalletConnect signing request as a `SigningInput`.
 ///
 /// \param coin The given coin type to plan the transaction for.
-/// \param input The serialized data of a signing input.
-/// \return The serialized data of a `TransactionPlan` proto object.
+/// \param input The serialized data of a `WalletConnect::Proto::ParseRequestInput` proto object.
+/// \return The serialized data of `WalletConnect::Proto::ParseRequestOutput` proto object.
 #[no_mangle]
 pub unsafe extern "C" fn tw_wallet_connect_request_parse(
     coin: u32,

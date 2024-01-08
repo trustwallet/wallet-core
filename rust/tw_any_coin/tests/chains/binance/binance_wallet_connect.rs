@@ -20,15 +20,17 @@ const WC_SIGN_REQUEST_CASE_1: &str = include_str!("data/wc_sign_request_case_1.j
 fn test_binance_sign_wallet_connect_case_1() {
     let input = WCProto::ParseRequestInput {
         protocol: WCProto::Protocol::V2,
-        method: "cosmos_signAmino".into(),
+        method: WCProto::Method::CosmosSignAmino,
         payload: WC_SIGN_REQUEST_CASE_1.to_string().into(),
     };
 
-    let mut parser = WalletConnectRequestHelper::<Proto::SigningInput>::default();
+    let mut parser = WalletConnectRequestHelper::default();
+    let parsing_output = parser.parse(CoinType::Binance, &input);
 
-    let mut signing_input = parser
-        .parse(CoinType::Binance, &input)
-        .expect("Unexpected error on parsing WalletConnect request");
+    let mut signing_input = match parsing_output.signing_input_oneof {
+        WCProto::mod_ParseRequestOutput::OneOfsigning_input_oneof::binance(input) => input,
+        _ => unreachable!(),
+    };
 
     // bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2
     let expected_from_addr_key_hash = "40c2979694bbc961023d1d27be6fc4d21a9febe6";

@@ -5,5 +5,4 @@
 // file LICENSE at the root of the source code distribution tree.
 
 pub mod connector;
-pub mod methods;
 pub mod types;

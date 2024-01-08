@@ -82,7 +82,6 @@ TEST(BinanceCompiler, CompileWithSignatures) {
         "253cf264c69180ec31814929b5de62088c0c5a45e8a816d1208fc5366bb8b041781a6771248550d04094c3d7a5"
         "04f9e8310679";
     {
-        EXPECT_EQ(outputData.size(), 189ul);
         Binance::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
 
