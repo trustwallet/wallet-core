@@ -4,29 +4,63 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::chains::binance::ACCOUNT_19_PRIVATE_KEY;
-use serde_json::json;
-use tw_any_coin::test_utils::sign_utils::WalletConnectSignHelper;
+use crate::chains::binance::{make_token, ACCOUNT_19_PRIVATE_KEY};
+use std::borrow::Cow;
+use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
+use tw_any_coin::test_utils::wallet_connect_utils::WalletConnectRequestHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
-use tw_misc::assert_eq_json;
+use tw_proto::Binance::Proto::{self, mod_SigningInput::OneOforder_oneof as MessageEnum};
 use tw_proto::Common::Proto::SigningError;
 use tw_proto::WalletConnect::Proto as WCProto;
 
 const WC_SIGN_REQUEST_CASE_1: &str = include_str!("data/wc_sign_request_case_1.json");
-const WC_SIGN_RESPONSE_CASE_1: &str = include_str!("data/wc_sign_response_case_1.json");
 
 #[test]
 fn test_binance_sign_wallet_connect_case_1() {
-    // let input = WCProto::SigningInput {
-    //     method: "cosmos_signAmino".into(),
-    //     private_key: ACCOUNT_19_PRIVATE_KEY.decode_hex().unwrap().into(),
-    //     payload: WC_SIGN_REQUEST_CASE_1.to_string().into(),
-    // };
-    //
-    // let mut signer = WalletConnectSignHelper::<WCProto::SigningOutput>::default();
-    // let output = signer.sign_wallet_connect(CoinType::Binance, input);
-    //
-    // assert_eq!(output.error, SigningError::OK);
-    // assert_eq_json!(output.result, WC_SIGN_RESPONSE_CASE_1);
+    let input = WCProto::ParseRequestInput {
+        protocol: WCProto::Protocol::V2,
+        method: "cosmos_signAmino".into(),
+        payload: WC_SIGN_REQUEST_CASE_1.to_string().into(),
+    };
+
+    let mut parser = WalletConnectRequestHelper::<Proto::SigningInput>::default();
+
+    let mut signing_input = parser
+        .parse(CoinType::Binance, &input)
+        .expect("Unexpected error on parsing WalletConnect request");
+
+    // bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2
+    let expected_from_addr_key_hash = "40c2979694bbc961023d1d27be6fc4d21a9febe6";
+    // bnb13zeh6hs97d5eu2s5qerguhv8ewwue6u4ywa6yf
+    let expected_to_addr_key_hash = "88b37d5e05f3699e2a1406468e5d87cb9dcceb95";
+    let expected_send_order = Proto::SendOrder {
+        inputs: vec![Proto::mod_SendOrder::Input {
+            address: expected_from_addr_key_hash.decode_hex().unwrap().into(),
+            coins: vec![make_token("BNB", 1_001_000_000)],
+        }],
+        outputs: vec![Proto::mod_SendOrder::Output {
+            address: expected_to_addr_key_hash.decode_hex().unwrap().into(),
+            coins: vec![make_token("BNB", 1_001_000_000)],
+        }],
+    };
+    let expected_signing_input = Proto::SigningInput {
+        chain_id: "chain-bnb".into(),
+        account_number: 12,
+        sequence: 35,
+        source: 1,
+        memo: "".into(),
+        private_key: Cow::default(),
+        order_oneof: MessageEnum::send_order(expected_send_order),
+    };
+    assert_eq!(signing_input, expected_signing_input);
+
+    // Set missing private key.
+    signing_input.private_key = ACCOUNT_19_PRIVATE_KEY.decode_hex().unwrap().into();
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let signing_output = signer.sign(CoinType::Binance, signing_input);
+
+    assert_eq!(signing_output.error, SigningError::OK);
+    // TODO check the signature.
 }

@@ -33,6 +33,6 @@ impl AnySigner {
     #[inline]
     pub fn sign_wallet_connect(input: &[u8], coin: CoinType) -> SigningResult<Data> {
         let (ctx, entry) = coin_dispatcher(coin)?;
-        entry.sign_wallet_connect(&ctx, input)
+        entry.wallet_connect_parse_request(&ctx, input)
     }
 }

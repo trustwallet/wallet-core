@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::ffi::tw_any_signer::{tw_any_signer_sign, tw_any_signer_sign_wallet_connect};
+use crate::ffi::tw_any_signer::tw_any_signer_sign;
 use crate::ffi::tw_transaction_compiler::{
     tw_transaction_compiler_compile, tw_transaction_compiler_pre_image_hashes,
 };
@@ -93,29 +93,4 @@ impl<'a, Output: MessageRead<'a>> CompilerHelper<'a, Output> {
         let output: Output = deserialize(&self.output_data).unwrap();
         output
     }
-}
-
-#[derive(Default)]
-pub struct WalletConnectSignHelper<'a, Output: MessageRead<'a>> {
-    output_data: Data,
-    _output_type: PhantomData<&'a Output>,
-}
-
-impl<'a, Output: MessageRead<'a>> WalletConnectSignHelper<'a, Output> {
-    // pub fn sign_wallet_connect<Input: MessageWrite>(
-    //     &'a mut self,
-    //     coin_type: CoinType,
-    //     input: Input,
-    // ) -> Output {
-    //     let input_data = TWDataHelper::create(serialize(input).unwrap());
-    //
-    //     self.output_data = TWDataHelper::wrap(unsafe {
-    //         tw_any_signer_sign_wallet_connect(input_data.ptr(), coin_type as u32)
-    //     })
-    //     .to_vec()
-    //     .expect("!tw_any_signer_sign_wallet_connect returned nullptr");
-    //
-    //     let output: Output = deserialize(&self.output_data).unwrap();
-    //     output
-    // }
 }

@@ -91,7 +91,7 @@ fn test_binance_sign_send_order() {
     let amount = 1_001_000_000;
     // bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2
     let from_address_key_hash = "40c2979694bbc961023d1d27be6fc4d21a9febe6";
-    // TODO
+    // bnb13zeh6hs97d5eu2s5qerguhv8ewwue6u4ywa6yf
     let to_address_key_hash = "88b37d5e05f3699e2a1406468e5d87cb9dcceb95";
 
     let send_order = Proto::SendOrder {

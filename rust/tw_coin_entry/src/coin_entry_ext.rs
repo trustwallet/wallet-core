@@ -88,7 +88,11 @@ pub trait CoinEntryExt {
     fn verify_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<bool>;
 
     /// Signs a transaction in WalletConnect format.
-    fn sign_wallet_connect(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data>;
+    fn wallet_connect_parse_request(
+        &self,
+        coin: &dyn CoinContext,
+        input: &[u8],
+    ) -> SigningResult<Data>;
 }
 
 impl<T> CoinEntryExt for T
@@ -215,7 +219,11 @@ where
         Ok(message_signer.verify_message(coin, input))
     }
 
-    fn sign_wallet_connect(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data> {
+    fn wallet_connect_parse_request(
+        &self,
+        coin: &dyn CoinContext,
+        input: &[u8],
+    ) -> SigningResult<Data> {
         let Some(wc_connector) = self.wallet_connector() else {
             return Err(SigningError(SigningErrorType::Error_not_supported));
         };
