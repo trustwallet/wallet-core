@@ -8,7 +8,7 @@ use crate::modules::tx_builder::TxBuilder;
 use crate::modules::wallet_connect::types::SignAminoRequest;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
-use tw_coin_entry::modules::wallet_connect_signer::WalletConnector;
+use tw_coin_entry::modules::wallet_connector::WalletConnector;
 use tw_coin_entry::signing_output_error;
 use tw_proto::WalletConnect::Proto::{
     self as WCProto, mod_ParseRequestOutput::OneOfsigning_input_oneof as SigningInputEnum,

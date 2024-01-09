@@ -12,7 +12,7 @@ use crate::error::{AddressResult, SigningError, SigningErrorType};
 use crate::modules::json_signer::JsonSigner;
 use crate::modules::message_signer::MessageSigner;
 use crate::modules::plan_builder::PlanBuilder;
-use crate::modules::wallet_connect_signer::WalletConnector;
+use crate::modules::wallet_connector::WalletConnector;
 use crate::prefix::AddressPrefix;
 use tw_keypair::tw::{PrivateKey, PublicKey};
 use tw_memory::Data;

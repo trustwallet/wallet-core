@@ -12,7 +12,7 @@ use tw_coin_entry::{
     error::{AddressError, AddressResult, SigningError},
     modules::{
         json_signer::NoJsonSigner, message_signer::NoMessageSigner, plan_builder::NoPlanBuilder,
-        wallet_connect_signer::NoWalletConnector,
+        wallet_connector::NoWalletConnector,
     },
     prefix::NoPrefix,
     signing_output_error,

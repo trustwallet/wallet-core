@@ -16,7 +16,7 @@ pub trait WalletConnector {
     ) -> WCProto::ParseRequestOutput<'static>;
 }
 
-/// `NoWalletConnectSigner` can't be created since there are no enum variants.
+/// `NoWalletConnector` can't be created since there are no enum variants.
 pub enum NoWalletConnector {}
 
 impl WalletConnector for NoWalletConnector {

@@ -16,7 +16,7 @@ use tw_memory::Data;
 use tw_proto::{MessageRead, MessageWrite};
 
 use crate::modules::message_signer::MessageSigner;
-use crate::modules::wallet_connect_signer::WalletConnector;
+use crate::modules::wallet_connector::WalletConnector;
 pub use tw_proto::{ProtoError, ProtoResult};
 
 pub type PrivateKeyBytes = Data;
