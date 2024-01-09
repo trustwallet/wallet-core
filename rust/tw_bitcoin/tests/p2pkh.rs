@@ -9,7 +9,7 @@ use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
 #[test]
-fn coin_entry_emtpy() {
+fn coin_entry_empty() {
     let _coin = TestCoinContext::default();
     let alice_private_key = hex("56429688a1a6b00b90ccd22a0de0a376b6569d8684022ae92229a28478bfb657");
 
