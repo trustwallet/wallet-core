@@ -15,7 +15,9 @@ use tw_memory::Data;
 use tw_proto::Binance::Proto;
 
 #[repr(i64)]
-#[derive(Clone, Copy, Deserialize, serde_repr::Serialize_repr, strum_macros::FromRepr)]
+#[derive(
+    Clone, Copy, serde_repr::Deserialize_repr, serde_repr::Serialize_repr, strum_macros::FromRepr,
+)]
 pub enum OrderType {
     /// https://github.com/bnb-chain/python-sdk/blob/0f6b8a6077f486b26eda3e448f3e84ef35bfff75/binance_chain/constants.py#L62
     Limit = 2,

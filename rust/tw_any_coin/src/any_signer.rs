@@ -27,12 +27,4 @@ impl AnySigner {
         let (ctx, entry) = coin_dispatcher(coin)?;
         entry.plan(&ctx, input)
     }
-
-    /// Signs a transaction in WalletConnect format.
-    /// It is optional. Returns an error if the chain does not support WalletConnect signing.
-    #[inline]
-    pub fn sign_wallet_connect(input: &[u8], coin: CoinType) -> SigningResult<Data> {
-        let (ctx, entry) = coin_dispatcher(coin)?;
-        entry.wallet_connect_parse_request(&ctx, input)
-    }
 }

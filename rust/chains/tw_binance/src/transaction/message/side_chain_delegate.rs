@@ -12,10 +12,10 @@ use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_memory::Data;
-use tw_misc::serde::Typped;
+use tw_misc::serde::Typed;
 use tw_proto::Binance::Proto;
 
-pub type SideDelegateOrder = Typped<SideDelegateOrderValue>;
+pub type SideDelegateOrder = Typed<SideDelegateOrderValue>;
 
 /// cosmos-sdk/MsgSideChainDelegate
 #[derive(Deserialize, Serialize)]
@@ -61,7 +61,7 @@ impl TWBinanceProto for SideDelegateOrder {
             delegation: Token::from_tw_proto(delegation),
             side_chain_id: msg.chain_id.to_string(),
         };
-        Ok(Typped {
+        Ok(Typed {
             ty: SideDelegateOrderValue::MESSAGE_TYPE.to_string(),
             value,
         })
@@ -77,7 +77,7 @@ impl TWBinanceProto for SideDelegateOrder {
     }
 }
 
-pub type SideRedelegateOrder = Typped<SideRedelegateOrderValue>;
+pub type SideRedelegateOrder = Typed<SideRedelegateOrderValue>;
 
 /// cosmos-sdk/MsgSideChainRedelegate
 #[derive(Deserialize, Serialize)]
@@ -128,7 +128,7 @@ impl TWBinanceProto for SideRedelegateOrder {
             amount: Token::from_tw_proto(amount),
             side_chain_id: msg.chain_id.to_string(),
         };
-        Ok(Typped {
+        Ok(Typed {
             ty: SideRedelegateOrderValue::MESSAGE_TYPE.to_string(),
             value,
         })
@@ -145,7 +145,7 @@ impl TWBinanceProto for SideRedelegateOrder {
     }
 }
 
-pub type SideUndelegateOrder = Typped<SideUndelegateOrderValue>;
+pub type SideUndelegateOrder = Typed<SideUndelegateOrderValue>;
 
 /// cosmos-sdk/MsgSideChainUndelegate
 #[derive(Deserialize, Serialize)]
@@ -191,7 +191,7 @@ impl TWBinanceProto for SideUndelegateOrder {
             amount: Token::from_tw_proto(amount),
             side_chain_id: msg.chain_id.to_string(),
         };
-        Ok(Typped {
+        Ok(Typed {
             ty: SideUndelegateOrderValue::MESSAGE_TYPE.to_string(),
             value,
         })

@@ -61,9 +61,9 @@ pub trait CoinEntry {
     ///
     /// **Optional**. Use `NoMessageSigner` if the blockchain does not support message signing.
     type MessageSigner: MessageSigner;
-    /// WalletConnect Signer - the module allows to sign a transaction received in WalletConnect format.
+    /// WalletConnect Connector - the module allows to parse transactions received in WalletConnect format.
     ///
-    /// **Optional**. Use `NoWalletConnectSigner` if the blockchain does not support WalletConnect transactions.
+    /// **Optional**. Use `NoWalletConnector` if the blockchain does not support WalletConnect transactions.
     type WalletConnector: WalletConnector;
 
     /// Tries to parse `Self::Address` from the given `address` string by `coin` type and address `prefix`.
@@ -131,7 +131,7 @@ pub trait CoinEntry {
         None
     }
 
-    /// It is optional, Signing WalletConnect input with private key.
+    /// It is optional, Parsing signing requests received through WalletConnect.
     /// Returns `Ok(None)` if the blockchain does not support WalletConnect transactions.
     #[inline]
     fn wallet_connector(&self) -> Option<Self::WalletConnector> {

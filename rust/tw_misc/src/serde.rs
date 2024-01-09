@@ -33,9 +33,8 @@ pub mod as_string {
     }
 }
 
-/// TODO or `Typed`.
 #[derive(Deserialize, Serialize)]
-pub struct Typped<Value> {
+pub struct Typed<Value> {
     #[serde(rename = "type")]
     pub ty: String,
     pub value: Value,
