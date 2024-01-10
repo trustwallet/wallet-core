@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2024 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,6 +7,7 @@
 pub mod address;
 pub mod amino;
 pub mod compiler;
+pub mod context;
 pub mod entry;
 pub mod modules;
 pub mod signature;

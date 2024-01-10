@@ -12,9 +12,11 @@ use crate::error::{AddressResult, SigningError, SigningErrorType};
 use crate::modules::json_signer::JsonSigner;
 use crate::modules::message_signer::MessageSigner;
 use crate::modules::plan_builder::PlanBuilder;
+use crate::modules::wallet_connector::WalletConnector;
 use crate::prefix::AddressPrefix;
 use tw_keypair::tw::{PrivateKey, PublicKey};
 use tw_memory::Data;
+use tw_proto::WalletConnect::Proto as WCProto;
 use tw_proto::{deserialize, serialize, ProtoResult};
 
 pub type PrivateKeyBytes = Data;
@@ -84,6 +86,13 @@ pub trait CoinEntryExt {
 
     /// Verifies a signature for a message.
     fn verify_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<bool>;
+
+    /// Signs a transaction in WalletConnect format.
+    fn wallet_connect_parse_request(
+        &self,
+        coin: &dyn CoinContext,
+        input: &[u8],
+    ) -> SigningResult<Data>;
 }
 
 impl<T> CoinEntryExt for T
@@ -208,5 +217,19 @@ where
         let input: <T::MessageSigner as MessageSigner>::MessageVerifyingInput<'_> =
             deserialize(input)?;
         Ok(message_signer.verify_message(coin, input))
+    }
+
+    fn wallet_connect_parse_request(
+        &self,
+        coin: &dyn CoinContext,
+        input: &[u8],
+    ) -> SigningResult<Data> {
+        let Some(wc_connector) = self.wallet_connector() else {
+            return Err(SigningError(SigningErrorType::Error_not_supported));
+        };
+
+        let input: WCProto::ParseRequestInput = deserialize(input)?;
+        let output = wc_connector.parse_request(coin, input);
+        serialize(&output).map_err(SigningError::from)
     }
 }

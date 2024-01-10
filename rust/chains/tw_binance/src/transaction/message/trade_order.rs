@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2024 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,22 +6,24 @@
 
 use crate::address::BinanceAddress;
 use crate::amino::AminoEncoder;
-use crate::transaction::message::{message_to_json, BinanceMessage};
-use serde::Serialize;
-use serde_json::Value as Json;
+use crate::transaction::message::{BinanceMessage, TWBinanceProto};
+use serde::{Deserialize, Serialize};
+use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_memory::Data;
 use tw_proto::Binance::Proto;
 
 #[repr(i64)]
-#[derive(Clone, Copy, serde_repr::Serialize_repr, strum_macros::FromRepr)]
+#[derive(
+    Clone, Copy, serde_repr::Deserialize_repr, serde_repr::Serialize_repr, strum_macros::FromRepr,
+)]
 pub enum OrderType {
     /// https://github.com/bnb-chain/python-sdk/blob/0f6b8a6077f486b26eda3e448f3e84ef35bfff75/binance_chain/constants.py#L62
     Limit = 2,
 }
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct NewTradeOrder {
     /// Order id, optional.
     pub id: String,
@@ -49,12 +51,35 @@ impl NewTradeOrder {
 }
 
 impl BinanceMessage for NewTradeOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
+    fn to_amino_protobuf(&self) -> SigningResult<Data> {
+        Ok(AminoEncoder::new(&Self::PREFIX)
+            .extend_with_msg(&self.to_tw_proto())?
+            .encode())
+    }
+}
+
+impl TWBinanceProto for NewTradeOrder {
+    type Proto<'a> = Proto::TradeOrder<'a>;
+
+    fn from_tw_proto(coin: &dyn CoinContext, msg: &Self::Proto<'_>) -> SigningResult<Self> {
+        let order_type = OrderType::from_repr(msg.ordertype)
+            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+        let sender = BinanceAddress::from_key_hash_with_coin(coin, msg.sender.to_vec())?;
+
+        Ok(NewTradeOrder {
+            id: msg.id.to_string(),
+            order_type,
+            price: msg.price,
+            quantity: msg.quantity,
+            sender,
+            side: msg.side,
+            symbol: msg.symbol.to_string(),
+            time_in_force: msg.timeinforce,
+        })
     }
 
-    fn to_amino_protobuf(&self) -> SigningResult<Data> {
-        let msg = Proto::TradeOrder {
+    fn to_tw_proto(&self) -> Self::Proto<'static> {
+        Proto::TradeOrder {
             id: self.id.clone().into(),
             ordertype: self.order_type as i64,
             price: self.price,
@@ -63,21 +88,18 @@ impl BinanceMessage for NewTradeOrder {
             side: self.side,
             symbol: self.symbol.clone().into(),
             timeinforce: self.time_in_force,
-        };
-        Ok(AminoEncoder::new(&Self::PREFIX)
-            .extend_with_msg(&msg)?
-            .encode())
+        }
     }
 }
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct CancelTradeOrder {
+    /// Order id to cancel.
+    pub refid: String,
     /// Originating address.
     pub sender: BinanceAddress,
     /// Symbol for trading pair in full name of the tokens.
     pub symbol: String,
-    /// Order id to cancel.
-    pub refid: String,
 }
 
 impl CancelTradeOrder {
@@ -86,18 +108,30 @@ impl CancelTradeOrder {
 }
 
 impl BinanceMessage for CancelTradeOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
+    fn to_amino_protobuf(&self) -> SigningResult<Data> {
+        Ok(AminoEncoder::new(&Self::PREFIX)
+            .extend_with_msg(&self.to_tw_proto())?
+            .encode())
+    }
+}
+
+impl TWBinanceProto for CancelTradeOrder {
+    type Proto<'a> = Proto::CancelTradeOrder<'a>;
+
+    fn from_tw_proto(coin: &dyn CoinContext, msg: &Self::Proto<'_>) -> SigningResult<Self> {
+        let sender = BinanceAddress::from_key_hash_with_coin(coin, msg.sender.to_vec())?;
+        Ok(CancelTradeOrder {
+            sender,
+            symbol: msg.symbol.to_string(),
+            refid: msg.refid.to_string(),
+        })
     }
 
-    fn to_amino_protobuf(&self) -> SigningResult<Data> {
-        let msg = Proto::CancelTradeOrder {
+    fn to_tw_proto(&self) -> Self::Proto<'static> {
+        Proto::CancelTradeOrder {
             sender: self.sender.data().into(),
             symbol: self.symbol.clone().into(),
             refid: self.refid.clone().into(),
-        };
-        Ok(AminoEncoder::new(&Self::PREFIX)
-            .extend_with_msg(&msg)?
-            .encode())
+        }
     }
 }

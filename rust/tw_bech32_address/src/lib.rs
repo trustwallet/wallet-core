@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::bech32_prefix::Bech32Prefix;
-use serde::{Serialize, Serializer};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -19,6 +19,7 @@ use tw_memory::Data;
 
 pub mod bech32_prefix;
 
+#[derive(PartialEq)]
 pub struct Bech32Address {
     hrp: String,
     key_hash: Data,
@@ -175,6 +176,18 @@ impl fmt::Display for Bech32Address {
 impl fmt::Debug for Bech32Address {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{self}")
+    }
+}
+
+impl<'de> Deserialize<'de> for Bech32Address {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        use serde::de::Error as DeError;
+
+        let address_str = String::deserialize(deserializer)?;
+        Bech32Address::from_str(&address_str).map_err(|e| DeError::custom(format!("{e:?}")))
     }
 }
 

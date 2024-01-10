@@ -12,6 +12,7 @@ use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
+use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_evm::evm_entry::EvmEntry;
 use tw_evm::modules::compiler::Compiler;
@@ -35,6 +36,7 @@ impl CoinEntry for RoninEntry {
     type JsonSigner = EthJsonSigner<RoninContext>;
     type PlanBuilder = NoPlanBuilder;
     type MessageSigner = EthMessageSigner;
+    type WalletConnector = NoWalletConnector;
 
     #[inline]
     fn parse_address(

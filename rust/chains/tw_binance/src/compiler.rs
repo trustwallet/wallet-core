@@ -1,9 +1,10 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2024 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::context::BinanceContext;
 use crate::modules::preimager::{JsonPreimager, JsonTxPreimage};
 use crate::modules::serializer::BinanceAminoSerializer;
 use crate::modules::tx_builder::TxBuilder;
@@ -12,9 +13,12 @@ use crate::transaction::SignerInfo;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::common::compile_input::SingleSignaturePubkey;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_coin_entry::signing_output_error;
-use tw_keypair::ecdsa::secp256k1;
+use tw_cosmos_sdk::modules::serializer::json_serializer::JsonSerializer;
+use tw_cosmos_sdk::public_key::secp256k1::Secp256PublicKey;
+use tw_cosmos_sdk::public_key::CosmosPublicKey;
+use tw_misc::traits::ToBytesVec;
 use tw_proto::Binance::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
@@ -69,7 +73,13 @@ impl BinanceCompiler {
             public_key,
         } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
         let signature = BinanceSignature::try_from(signature.as_slice())?;
-        let public_key = secp256k1::PublicKey::try_from(public_key.as_slice())?;
+        let public_key = Secp256PublicKey::from_bytes(coin, public_key.as_slice())?;
+
+        let signature_bytes = signature.to_vec();
+        let signature_json = JsonSerializer::<BinanceContext>::serialize_signature(
+            &public_key,
+            signature_bytes.clone(),
+        );
 
         let unsigned_tx = TxBuilder::unsigned_tx_from_proto(coin, &input)?;
         let signed_tx = unsigned_tx.into_signed(SignerInfo {
@@ -79,8 +89,12 @@ impl BinanceCompiler {
 
         let encoded_tx = BinanceAminoSerializer::serialize_signed_tx(&signed_tx)?;
 
+        let signature_json = serde_json::to_string(&signature_json)
+            .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
         Ok(Proto::SigningOutput {
             encoded: encoded_tx.into(),
+            signature: signature_bytes.into(),
+            signature_json: signature_json.into(),
             ..Proto::SigningOutput::default()
         })
     }

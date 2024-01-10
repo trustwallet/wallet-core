@@ -9,3 +9,4 @@
 pub mod json_signer;
 pub mod message_signer;
 pub mod plan_builder;
+pub mod wallet_connector;

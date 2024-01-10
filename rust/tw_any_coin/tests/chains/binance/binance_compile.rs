@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2024 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -55,15 +55,19 @@ fn test_binance_compile() {
     // Step 3: Compile transaction info
 
     // Simulate signature, normally obtained from signature server.
-    let signature = "1b1181faec30b60a2ddaa2804c253cf264c69180ec31814929b5de62088c0c5a45e8a816d1208fc5366bb8b041781a6771248550d04094c3d7a504f9e8310679"
-        .decode_hex()
-        .unwrap();
+    let signature = "1b1181faec30b60a2ddaa2804c253cf264c69180ec31814929b5de62088c0c5a45e8a816d1208fc5366bb8b041781a6771248550d04094c3d7a504f9e8310679";
+    let signature_bytes = signature.decode_hex().unwrap();
     let public_key = "026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502"
         .decode_hex()
         .unwrap();
 
     let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
-    let output = compiler.compile(CoinType::Binance, &input, vec![signature], vec![public_key]);
+    let output = compiler.compile(
+        CoinType::Binance,
+        &input,
+        vec![signature_bytes],
+        vec![public_key],
+    );
 
     assert_eq!(output.error, SigningError::OK);
     let expected_tx = concat!(
@@ -74,4 +78,7 @@ fn test_binance_compile() {
         "04f9e8310679",
     );
     assert_eq!(output.encoded.to_hex(), expected_tx);
+    assert_eq!(output.signature.to_hex(), signature);
+    let expected_signature_json = r#"{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"Amo1kgCI2Yw4iMpoxT38k/RWRgJgbLuH8P5e5TPbOOUC"},"signature":"GxGB+uwwtgot2qKATCU88mTGkYDsMYFJKbXeYgiMDFpF6KgW0SCPxTZruLBBeBpncSSFUNBAlMPXpQT56DEGeQ=="}"#;
+    assert_eq!(output.signature_json, expected_signature_json);
 }
