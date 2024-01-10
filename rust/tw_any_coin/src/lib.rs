@@ -9,6 +9,7 @@ pub mod any_signer;
 pub mod ffi;
 pub mod message_signer;
 pub mod transaction_compiler;
+pub mod wallet_connect_request;
 
 #[cfg(feature = "test-utils")]
 pub mod test_utils;

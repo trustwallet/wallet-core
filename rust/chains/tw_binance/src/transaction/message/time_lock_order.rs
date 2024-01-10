@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2024 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,19 +6,19 @@
 
 use crate::address::BinanceAddress;
 use crate::amino::AminoEncoder;
-use crate::transaction::message::{message_to_json, BinanceMessage, Token};
-use serde::Serialize;
-use serde_json::Value as Json;
+use crate::transaction::message::{BinanceMessage, TWBinanceProto, Token};
+use serde::{Deserialize, Serialize};
+use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::SigningResult;
 use tw_memory::Data;
 use tw_proto::Binance::Proto;
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct TimeLockOrder {
-    pub from: BinanceAddress,
-    pub description: String,
     pub amount: Vec<Token>,
+    pub description: String,
+    pub from: BinanceAddress,
     pub lock_time: i64,
 }
 
@@ -28,32 +28,46 @@ impl TimeLockOrder {
 }
 
 impl BinanceMessage for TimeLockOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
-    }
-
     fn to_amino_protobuf(&self) -> SigningResult<Data> {
-        let msg = Proto::TimeLockOrder {
-            from_address: self.from.data().into(),
-            description: self.description.clone().into(),
-            amount: self.amount.iter().map(Token::to_proto).collect(),
-            lock_time: self.lock_time,
-        };
-
         Ok(AminoEncoder::new(&Self::PREFIX)
-            .extend_with_msg(&msg)?
+            .extend_with_msg(&self.to_tw_proto())?
             .encode())
     }
 }
 
-#[derive(Serialize)]
+impl TWBinanceProto for TimeLockOrder {
+    type Proto<'a> = Proto::TimeLockOrder<'a>;
+
+    fn from_tw_proto(coin: &dyn CoinContext, msg: &Self::Proto<'_>) -> SigningResult<Self> {
+        let from = BinanceAddress::from_key_hash_with_coin(coin, msg.from_address.to_vec())?;
+        let amount = msg.amount.iter().map(Token::from_tw_proto).collect();
+
+        Ok(TimeLockOrder {
+            from,
+            description: msg.description.to_string(),
+            amount,
+            lock_time: msg.lock_time,
+        })
+    }
+
+    fn to_tw_proto(&self) -> Self::Proto<'static> {
+        Proto::TimeLockOrder {
+            from_address: self.from.data().into(),
+            description: self.description.clone().into(),
+            amount: self.amount.iter().map(Token::to_tw_proto).collect(),
+            lock_time: self.lock_time,
+        }
+    }
+}
+
+#[derive(Deserialize, Serialize)]
 pub struct TimeRelockOrder {
-    pub from: BinanceAddress,
-    pub time_lock_id: i64,
-    pub description: String,
     /// If the amount is empty or omitted, set null to avoid signature verification error.
     pub amount: Option<Vec<Token>>,
+    pub description: String,
+    pub from: BinanceAddress,
     pub lock_time: i64,
+    pub time_lock_id: i64,
 }
 
 impl TimeRelockOrder {
@@ -62,31 +76,51 @@ impl TimeRelockOrder {
 }
 
 impl BinanceMessage for TimeRelockOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
+    fn to_amino_protobuf(&self) -> SigningResult<Data> {
+        Ok(AminoEncoder::new(&Self::PREFIX)
+            .extend_with_msg(&self.to_tw_proto())?
+            .encode())
+    }
+}
+
+impl TWBinanceProto for TimeRelockOrder {
+    type Proto<'a> = Proto::TimeRelockOrder<'a>;
+
+    fn from_tw_proto(coin: &dyn CoinContext, msg: &Self::Proto<'_>) -> SigningResult<Self> {
+        let from = BinanceAddress::from_key_hash_with_coin(coin, msg.from_address.to_vec())?;
+
+        let amount = if msg.amount.is_empty() {
+            None
+        } else {
+            Some(msg.amount.iter().map(Token::from_tw_proto).collect())
+        };
+
+        Ok(TimeRelockOrder {
+            from,
+            time_lock_id: msg.id,
+            description: msg.description.to_string(),
+            amount,
+            lock_time: msg.lock_time,
+        })
     }
 
-    fn to_amino_protobuf(&self) -> SigningResult<Data> {
+    fn to_tw_proto(&self) -> Self::Proto<'static> {
         let amount = match self.amount {
-            Some(ref tokens) => tokens.iter().map(Token::to_proto).collect(),
+            Some(ref tokens) => tokens.iter().map(Token::to_tw_proto).collect(),
             None => Vec::default(),
         };
 
-        let msg = Proto::TimeRelockOrder {
+        Proto::TimeRelockOrder {
             from_address: self.from.data().into(),
             id: self.time_lock_id,
             description: self.description.clone().into(),
             amount,
             lock_time: self.lock_time,
-        };
-
-        Ok(AminoEncoder::new(&Self::PREFIX)
-            .extend_with_msg(&msg)?
-            .encode())
+        }
     }
 }
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct TimeUnlockOrder {
     pub from: BinanceAddress,
     pub time_lock_id: i64,
@@ -98,18 +132,28 @@ impl TimeUnlockOrder {
 }
 
 impl BinanceMessage for TimeUnlockOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
+    fn to_amino_protobuf(&self) -> SigningResult<Data> {
+        Ok(AminoEncoder::new(&Self::PREFIX)
+            .extend_with_msg(&self.to_tw_proto())?
+            .encode())
+    }
+}
+
+impl TWBinanceProto for TimeUnlockOrder {
+    type Proto<'a> = Proto::TimeUnlockOrder<'a>;
+
+    fn from_tw_proto(coin: &dyn CoinContext, msg: &Self::Proto<'_>) -> SigningResult<Self> {
+        let from = BinanceAddress::from_key_hash_with_coin(coin, msg.from_address.to_vec())?;
+        Ok(TimeUnlockOrder {
+            from,
+            time_lock_id: msg.id,
+        })
     }
 
-    fn to_amino_protobuf(&self) -> SigningResult<Data> {
-        let msg = Proto::TimeUnlockOrder {
+    fn to_tw_proto(&self) -> Self::Proto<'static> {
+        Proto::TimeUnlockOrder {
             from_address: self.from.data().into(),
             id: self.time_lock_id,
-        };
-
-        Ok(AminoEncoder::new(&Self::PREFIX)
-            .extend_with_msg(&msg)?
-            .encode())
+        }
     }
 }

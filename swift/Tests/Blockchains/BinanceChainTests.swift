@@ -238,4 +238,35 @@ class BinanceChainTests: XCTestCase {
         }
         queue.waitUntilAllOperationsAreFinished()
     }
+    
+    func testSignFromWalletConnectRequest() throws {
+        // Step 1: Parse a signing request received through WalletConnect.
+        
+        let requestPayload = """
+        {"signerAddress":"bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2","signDoc":{"account_number":"19","chain_id":"chain-bnb","memo":"","data":null,"msgs":[{"inputs":[{"address":"bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2","coins":[{"amount":1001000000,"denom":"BNB"}]}],"outputs":[{"address":"bnb13zeh6hs97d5eu2s5qerguhv8ewwue6u4ywa6yf","coins":[{"amount":1001000000,"denom":"BNB"}]}]}],"sequence":"23","source":"1"}}
+        """
+        let parsingInput = WalletConnectParseRequestInput.with {
+            $0.method = .cosmosSignAmino
+            $0.payload = requestPayload
+        }
+        let parsingInputBytes = try parsingInput.serializedData()
+        
+        let parsingOutputBytes = WalletConnectRequest.parse(coin: .binance, input: parsingInputBytes)
+        let parsingOutput = try WalletConnectParseRequestOutput(serializedData: parsingOutputBytes)
+        
+        var signingInput = parsingOutput.binance
+        
+        // Step 2: Set missing fields.
+        
+        signingInput.privateKey = Data(hexString: "95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832")!
+        
+        // Step 3: Sign the transaction.
+        
+        let output: BinanceSigningOutput = AnySigner.sign(input: signingInput, coin: .binance)
+        
+        let expected = """
+        {"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"Amo1kgCI2Yw4iMpoxT38k/RWRgJgbLuH8P5e5TPbOOUC"},"signature":"PCTHhMa7+Z1U/6uxU+3LbTxKd0k231xypdMolyVvjgYvMg+0dTMC+wqW8IxHWXTSDt/Ronu+7ac1h/WN3JWJdQ=="}
+        """
+        XCTAssertEqual(output.signatureJson, expected)
+    }
 }

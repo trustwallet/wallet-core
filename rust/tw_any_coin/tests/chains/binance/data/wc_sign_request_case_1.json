@@ -1,0 +1,37 @@
+{
+    "signerAddress": "bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2",
+    "signDoc": {
+        "account_number": "19",
+        "chain_id": "chain-bnb",
+        "memo": "",
+        "data": null,
+        "msgs": [
+            {
+                "inputs": [
+                    {
+                        "address": "bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2",
+                        "coins": [
+                            {
+                                "amount": 1001000000,
+                                "denom": "BNB"
+                            }
+                        ]
+                    }
+                ],
+                "outputs": [
+                    {
+                        "address": "bnb13zeh6hs97d5eu2s5qerguhv8ewwue6u4ywa6yf",
+                        "coins": [
+                            {
+                                "amount": 1001000000,
+                                "denom": "BNB"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "sequence": "23",
+        "source": "1"
+    }
+}

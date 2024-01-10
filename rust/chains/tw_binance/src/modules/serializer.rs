@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2024 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,7 +8,7 @@ use crate::amino::AminoEncoder;
 use crate::transaction::SignedTransaction;
 use std::borrow::Cow;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
-use tw_hash::H264;
+use tw_cosmos_sdk::public_key::CosmosPublicKey;
 use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::serialize;
@@ -27,7 +27,7 @@ impl BinanceAminoSerializer {
             .unsigned
             .msgs
             .iter()
-            .map(|msg| msg.to_amino_protobuf().map(Cow::from))
+            .map(|msg| msg.as_ref().to_amino_protobuf().map(Cow::from))
             .collect::<SigningResult<Vec<_>>>()?;
 
         let signature = Self::serialize_signature(tx)?;
@@ -43,7 +43,7 @@ impl BinanceAminoSerializer {
             .encode_size_prefixed()?)
     }
 
-    pub fn serialize_public_key(public_key: H264) -> Data {
+    pub fn serialize_public_key(public_key: Data) -> Data {
         let public_key_len = public_key.len() as u8;
         AminoEncoder::new(&PUBLIC_KEY_PREFIX)
             // Push the length of the public key.
@@ -54,7 +54,7 @@ impl BinanceAminoSerializer {
 
     pub fn serialize_signature(signed: &SignedTransaction) -> SigningResult<Data> {
         let sign_msg = Proto::Signature {
-            pub_key: Self::serialize_public_key(signed.signer.public_key.compressed()).into(),
+            pub_key: Self::serialize_public_key(signed.signer.public_key.to_bytes()).into(),
             signature: signed.signer.signature.to_vec().into(),
             account_number: signed.unsigned.account_number,
             sequence: signed.unsigned.sequence,
