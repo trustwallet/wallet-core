@@ -1559,7 +1559,7 @@
     "publicKeyType": "ed25519Blake2b",
     "url": "https://nano.org",
     "explorer": {
-      "url": "https://nanocrawler.cc",
+      "url": "https://www.nanolooker.com",
       "txPath": "/explorer/block/",
       "accountPath": "/explorer/account/",
       "sampleTx": "C264DB7BF40738F0CEFF19B606746CB925B713E4B8699A055699E0DC8ABBC70F",
