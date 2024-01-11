@@ -34,9 +34,9 @@
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
     "explorer": {
-      "url": "https://blockchair.com",
-      "txPath": "/bitcoin/transaction/",
-      "accountPath": "/bitcoin/address/",
+      "url": "https://mempool.space",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
       "sampleTx": "0607f62530b68cfcc91c57a1702841dd399a899d0eecda8e31ecca3f52f01df2",
       "sampleAccount": "17A16QmavnUfCW11DAApiJxp7ARnxN5pGX"
     },
