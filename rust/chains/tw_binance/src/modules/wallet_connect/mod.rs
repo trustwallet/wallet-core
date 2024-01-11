@@ -2,6 +2,5 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-pub mod address_utils;
-pub mod sign_utils;
-pub mod wallet_connect_utils;
+pub mod connector;
+pub mod types;

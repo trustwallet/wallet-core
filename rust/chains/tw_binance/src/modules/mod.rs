@@ -5,3 +5,4 @@
 pub mod preimager;
 pub mod serializer;
 pub mod tx_builder;
+pub mod wallet_connect;

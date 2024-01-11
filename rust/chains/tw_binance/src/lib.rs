@@ -5,6 +5,7 @@
 pub mod address;
 pub mod amino;
 pub mod compiler;
+pub mod context;
 pub mod entry;
 pub mod modules;
 pub mod signature;

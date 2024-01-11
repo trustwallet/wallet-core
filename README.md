@@ -24,6 +24,10 @@ Swift for iOS and Java (Kotlin) for Android.
 
 For comprehensive documentation, see [developer.trustwallet.com](https://developer.trustwallet.com/wallet-core).
 
+# Audit Reports
+
+Security Audit reports can be found in the [audit](audit) directory.
+
 # Supported Blockchains
 
 Wallet Core supports more than **130** blockchains: Bitcoin, Ethereum, BNB, Cosmos, Solana, and most major blockchain platforms.
