@@ -1,19 +1,23 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2024 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::context::BinanceContext;
 use crate::modules::preimager::{JsonPreimager, JsonTxPreimage};
 use crate::modules::serializer::BinanceAminoSerializer;
 use crate::modules::tx_builder::TxBuilder;
 use crate::signature::BinanceSignature;
 use crate::transaction::SignerInfo;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_coin_entry::signing_output_error;
+use tw_cosmos_sdk::modules::serializer::json_serializer::JsonSerializer;
+use tw_cosmos_sdk::public_key::secp256k1::Secp256PublicKey;
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
+use tw_misc::traits::ToBytesVec;
 use tw_proto::Binance::Proto;
 
 pub struct BinanceSigner;
@@ -37,7 +41,13 @@ impl BinanceSigner {
         let key_pair = secp256k1::KeyPair::try_from(input.private_key.as_ref())?;
 
         let signature = BinanceSignature::from(key_pair.sign(tx_hash)?);
-        let public_key = key_pair.public().clone();
+        let public_key = Secp256PublicKey::from_secp256k1_public_key(coin, key_pair.public())?;
+
+        let signature_bytes = signature.to_vec();
+        let signature_json = JsonSerializer::<BinanceContext>::serialize_signature(
+            &public_key,
+            signature_bytes.clone(),
+        );
 
         let signed_tx = unsigned_tx.into_signed(SignerInfo {
             public_key,
@@ -45,8 +55,12 @@ impl BinanceSigner {
         });
         let encoded_tx = BinanceAminoSerializer::serialize_signed_tx(&signed_tx)?;
 
+        let signature_json = serde_json::to_string(&signature_json)
+            .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
         Ok(Proto::SigningOutput {
             encoded: encoded_tx.into(),
+            signature: signature_bytes.into(),
+            signature_json: signature_json.into(),
             ..Proto::SigningOutput::default()
         })
     }

@@ -17,7 +17,7 @@ using namespace TW;
 
 namespace TW::Bitcoin {
 
-// lenght-encode a message string
+// length-encode a message string
 Data messageToData(const std::string& message) {
     Data d;
     TW::encodeVarInt(message.size(), d);

@@ -24,7 +24,7 @@ int main() {
             cout << endl;
             cout << "  *** DISCLAIMER ***" << endl;
             cout << "  THIS IS A SAMPLE APPLICATION WITH DEMONSTRATION PURPOSES ONLY." << endl;
-            cout << "  DO NOT USE WITH REAL SECRETS, REAL ADDRESSESS, OR REAL TRANSACTIONS.  USE IT AT YOUR OWN RISK." << endl;
+            cout << "  DO NOT USE WITH REAL SECRETS, REAL ADDRESSES, OR REAL TRANSACTIONS.  USE IT AT YOUR OWN RISK." << endl;
             cout << "  *** DISCLAIMER ***" << endl;
             cout << endl;
         }

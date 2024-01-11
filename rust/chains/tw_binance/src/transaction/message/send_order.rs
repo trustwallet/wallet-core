@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2024 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,16 +6,16 @@
 
 use crate::address::BinanceAddress;
 use crate::amino::AminoEncoder;
-use crate::transaction::message::{message_to_json, BinanceMessage, Token};
-use serde::Serialize;
-use serde_json::Value as Json;
+use crate::transaction::message::{BinanceMessage, TWBinanceProto, Token};
+use serde::{Deserialize, Serialize};
+use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::SigningResult;
 use tw_memory::Data;
 use tw_proto::Binance::Proto;
 
 /// Either an input or output of a `SendOrder`.
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct InOut {
     /// Source address.
     pub address: BinanceAddress,
@@ -25,22 +25,22 @@ pub struct InOut {
 }
 
 impl InOut {
-    pub fn to_input_proto(&self) -> Proto::mod_SendOrder::Input {
+    pub fn to_input_proto(&self) -> Proto::mod_SendOrder::Input<'static> {
         Proto::mod_SendOrder::Input {
             address: self.address.data().into(),
-            coins: self.coins.iter().map(Token::to_proto).collect(),
+            coins: self.coins.iter().map(Token::to_tw_proto).collect(),
         }
     }
 
-    pub fn to_output_proto(&self) -> Proto::mod_SendOrder::Output {
+    pub fn to_output_proto(&self) -> Proto::mod_SendOrder::Output<'static> {
         Proto::mod_SendOrder::Output {
             address: self.address.data().into(),
-            coins: self.coins.iter().map(Token::to_proto).collect(),
+            coins: self.coins.iter().map(Token::to_tw_proto).collect(),
         }
     }
 }
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct SendOrder {
     pub inputs: Vec<InOut>,
     pub outputs: Vec<InOut>,
@@ -52,18 +52,47 @@ impl SendOrder {
 }
 
 impl BinanceMessage for SendOrder {
-    fn to_json(&self) -> SigningResult<Json> {
-        message_to_json(self)
+    fn to_amino_protobuf(&self) -> SigningResult<Data> {
+        Ok(AminoEncoder::new(&Self::PREFIX)
+            .extend_with_msg(&self.to_tw_proto())?
+            .encode())
+    }
+}
+
+impl TWBinanceProto for SendOrder {
+    type Proto<'a> = Proto::SendOrder<'a>;
+
+    fn from_tw_proto(coin: &dyn CoinContext, msg: &Self::Proto<'_>) -> SigningResult<Self> {
+        fn in_out_from_proto(
+            coin: &dyn CoinContext,
+            address_key_hash: &[u8],
+            coins: &[Proto::mod_SendOrder::Token],
+        ) -> SigningResult<InOut> {
+            let address = BinanceAddress::from_key_hash_with_coin(coin, address_key_hash.to_vec())?;
+            let coins = coins.iter().map(Token::from_tw_proto).collect();
+
+            Ok(InOut { address, coins })
+        }
+
+        let inputs = msg
+            .inputs
+            .iter()
+            .map(|input| in_out_from_proto(coin, &input.address, &input.coins))
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        let outputs = msg
+            .outputs
+            .iter()
+            .map(|output| in_out_from_proto(coin, &output.address, &output.coins))
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        Ok(SendOrder { inputs, outputs })
     }
 
-    fn to_amino_protobuf(&self) -> SigningResult<Data> {
-        let msg = Proto::SendOrder {
+    fn to_tw_proto(&self) -> Self::Proto<'static> {
+        Proto::SendOrder {
             inputs: self.inputs.iter().map(InOut::to_input_proto).collect(),
             outputs: self.outputs.iter().map(InOut::to_output_proto).collect(),
-        };
-
-        Ok(AminoEncoder::new(&Self::PREFIX)
-            .extend_with_msg(&msg)?
-            .encode())
+        }
     }
 }

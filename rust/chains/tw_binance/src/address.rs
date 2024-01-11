@@ -1,10 +1,10 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2024 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::str::FromStr;
 use tw_bech32_address::bech32_prefix::Bech32Prefix;
@@ -12,6 +12,7 @@ use tw_bech32_address::Bech32Address;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_cosmos_sdk::address::CosmosAddress;
 use tw_keypair::tw::PublicKey;
 use tw_memory::Data;
 
@@ -21,13 +22,23 @@ const BNB_KNOWN_HRPS: [&str; 2] = [
     "bca",
 ];
 
-#[derive(Serialize)]
+#[derive(Deserialize, PartialEq, Serialize)]
 pub struct BinanceAddress(Bech32Address);
 
 impl CoinAddress for BinanceAddress {
     #[inline]
     fn data(&self) -> Data {
         self.0.data()
+    }
+}
+
+impl CosmosAddress for BinanceAddress {
+    fn from_str_with_coin(coin: &dyn CoinContext, addr: &str) -> AddressResult<Self>
+    where
+        Self: Sized,
+    {
+        let prefix = None;
+        Self::from_str_with_coin_and_prefix(coin, addr.to_string(), prefix)
     }
 }
 

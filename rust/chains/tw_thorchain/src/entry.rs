@@ -14,6 +14,7 @@ use tw_coin_entry::error::AddressResult;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
+use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_cosmos_sdk::address::{Address, Bech32Prefix, CosmosAddress};
 use tw_keypair::tw;
 use tw_proto::Cosmos::Proto;
@@ -30,6 +31,7 @@ impl CoinEntry for ThorchainEntry {
     type JsonSigner = NoJsonSigner;
     type PlanBuilder = NoPlanBuilder;
     type MessageSigner = NoMessageSigner;
+    type WalletConnector = NoWalletConnector;
 
     #[inline]
     fn parse_address(

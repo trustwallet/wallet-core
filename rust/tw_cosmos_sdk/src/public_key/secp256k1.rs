@@ -14,8 +14,19 @@ use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::{google, to_any};
 
+#[derive(Clone)]
 pub struct Secp256PublicKey {
     public_key: Data,
+}
+
+impl Secp256PublicKey {
+    pub fn from_secp256k1_public_key(
+        coin: &dyn CoinContext,
+        public_key: &secp256k1::PublicKey,
+    ) -> KeyPairResult<Self> {
+        let public_key = prepare_secp256k1_public_key(coin, public_key.compressed().as_slice())?;
+        Ok(Secp256PublicKey { public_key })
+    }
 }
 
 impl CosmosPublicKey for Secp256PublicKey {

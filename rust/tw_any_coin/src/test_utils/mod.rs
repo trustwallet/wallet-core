@@ -6,3 +6,4 @@
 
 pub mod address_utils;
 pub mod sign_utils;
+pub mod wallet_connect_utils;
