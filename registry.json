@@ -1560,8 +1560,8 @@
     "url": "https://nano.org",
     "explorer": {
       "url": "https://www.nanolooker.com",
-      "txPath": "/explorer/block/",
-      "accountPath": "/explorer/account/",
+      "txPath": "/block/",
+      "accountPath": "/account/",
       "sampleTx": "C264DB7BF40738F0CEFF19B606746CB925B713E4B8699A055699E0DC8ABBC70F",
       "sampleAccount": "nano_1wpj616kwhe1y38y1mspd8aub8i334cwybqco511iyuxm55zx8d67ptf1tsf"
     },
