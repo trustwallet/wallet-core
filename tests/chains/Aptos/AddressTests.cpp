@@ -1,4 +1,7 @@
-// Copyright © 2017-2024 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+//
 // Author: Clement Doumergue
 //
 // This file is part of Trust. The full Trust copyright notice, including
