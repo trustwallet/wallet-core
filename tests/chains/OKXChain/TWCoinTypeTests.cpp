@@ -27,8 +27,8 @@ TEST(TWCoinTypeOKXChain, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeOKXChain));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeOKXChain));
     assertStringsEqual(symbol, "OKT");
-    assertStringsEqual(txUrl, "https://www.oklink.com/en/okc/tx/0x46C3A947E8248570FBD28E4FE456CC8F80DFD90716533878FB67857B95FA3D37");
-    assertStringsEqual(accUrl, "https://www.oklink.com/en/okc/address/0x074faafd0b20fad2efa115b8ed7e75993e580b85");
+    assertStringsEqual(txUrl, "https://www.oklink.com/oktc/tx/0x46C3A947E8248570FBD28E4FE456CC8F80DFD90716533878FB67857B95FA3D37");
+    assertStringsEqual(accUrl, "https://www.oklink.com/oktc/address/0x074faafd0b20fad2efa115b8ed7e75993e580b85");
     assertStringsEqual(id, "okc");
     assertStringsEqual(name, "OKX Chain");
 }

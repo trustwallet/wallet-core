@@ -27,8 +27,8 @@ TEST(TWNEARCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeNEAR));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeNEAR));
     assertStringsEqual(symbol, "NEAR");
-    assertStringsEqual(txUrl, "https://explorer.near.org/transactions/FPQAMaVnvFHNwNBJWnTttXfdJhp5FvMGGDJEesB8gvbL");
-    assertStringsEqual(accUrl, "https://explorer.near.org/accounts/test-trust.vlad.near");
+    assertStringsEqual(txUrl, "https://nearblocks.io/txns/FPQAMaVnvFHNwNBJWnTttXfdJhp5FvMGGDJEesB8gvbL");
+    assertStringsEqual(accUrl, "https://nearblocks.io/address/test-trust.vlad.near");
     assertStringsEqual(id, "near");
     assertStringsEqual(name, "NEAR");
 }

@@ -94,7 +94,7 @@ TEST(TWAnySignerNEAR, SignStakeMainnetReplication) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeNEAR);
 
-    // https://explorer.near.org/transactions/kd7ajFw1CfXB8LiJXvhz5NDS7QpQXkuQraAbhb5MMMq
+    // https://nearblocks.io/txns/kd7ajFw1CfXB8LiJXvhz5NDS7QpQXkuQraAbhb5MMMq
     ASSERT_EQ(Base58::encode(data(output.hash())), "kd7ajFw1CfXB8LiJXvhz5NDS7QpQXkuQraAbhb5MMMq");
     ASSERT_EQ(Base64::encode(data(output.signed_transaction())), "QAAAAGI4ZDVkZjI1MDQ3ODQxMzY1MDA4ZjMwZmI2YjMwZGQ4MjBlOWE4NGQ4NjlmMDU2MjNkMTE0ZTk2ODMxZjJmYmYAzgCT6NK76nb1mB7pToefgkGUHfUe5BKvvr3gW/nq+MgEuu1Mq0YAABEAAABhdmFkby5wb29sdjEubmVhcueGgJlhJ7eg8/I0NQLkQvJDZsul95y3L4vG0N67Js4kAQAAAAIRAAAAZGVwb3NpdF9hbmRfc3Rha2UCAAAAe30A0JjUr3EAAAAAgPZK4ccCLRUAAAAAAAAALNrorr8qTL6u1nlxLpuPa45nFdYmjU96i7CmJP08mVHVzHUaw/bGN30Z3u3o1F2o2yefCBNqO9Ogn9fM25NGCg==");
 }
@@ -122,7 +122,7 @@ TEST(TWAnySignerNEAR, SignUnstakeMainnetReplication) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeNEAR);
 
-    // https://explorer.near.org/transactions/DH6QAX3TkY6XtkteorvKBoGT5hA5ADkURZdzrbbKRs8P
+    // https://nearblocks.io/txns/DH6QAX3TkY6XtkteorvKBoGT5hA5ADkURZdzrbbKRs8P
     ASSERT_EQ(Base58::encode(data(output.hash())), "DH6QAX3TkY6XtkteorvKBoGT5hA5ADkURZdzrbbKRs8P");
     ASSERT_EQ(Base64::encode(data(output.signed_transaction())), "QAAAAGI4ZDVkZjI1MDQ3ODQxMzY1MDA4ZjMwZmI2YjMwZGQ4MjBlOWE4NGQ4NjlmMDU2MjNkMTE0ZTk2ODMxZjJmYmYAzgCT6NK76nb1mB7pToefgkGUHfUe5BKvvr3gW/nq+MgGuu1Mq0YAABEAAABhdmFkby5wb29sdjEubmVhcq0YnhRlt+TTtagkoy0qKn56zAfGhE+jkTJW6PR5k5r8AQAAAAILAAAAdW5zdGFrZV9hbGwCAAAAe30A0JjUr3EAAAAAAAAAAAAAAAAAAAAAAAAABaFP0EkfJU3VQZ4QAiTwq9ebWDJ7jx7TxbA+VGH4hwKX3gWnmDHVve+LK7/UbbffjF/y8vn0KrPxdh3ONAG0Ag==");
 }
@@ -131,7 +131,7 @@ TEST(TWAnySignerNEAR, SignUnstakeMainnetReplication) {
 /// https://nomicon.io/Standards/Tokens/FungibleToken/Core
 ///
 /// Successfully broadcasted tx:
-/// https://explorer.near.org/transactions/ABQY6nfLdNrRVynHYNjYkfUM6Up5pDHHpuhRJe6FCMRu
+/// https://nearblocks.io/txns/ABQY6nfLdNrRVynHYNjYkfUM6Up5pDHHpuhRJe6FCMRu
 TEST(TWAnySignerNEAR, SignTokenTransfer) {
     auto privateKey = parse_hex("77006e227658c18da47546413926a26b839204b1b19e807c4a13d994d661c72e");
 
