@@ -2034,9 +2034,9 @@
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
-      "url": "https://explorer.near.org",
-      "txPath": "/transactions/",
-      "accountPath": "/accounts/",
+      "url": "https://nearblocks.io",
+      "txPath": "/txns/",
+      "accountPath": "/address/",
       "sampleTx": "FPQAMaVnvFHNwNBJWnTttXfdJhp5FvMGGDJEesB8gvbL",
       "sampleAccount": "test-trust.vlad.near"
     },
