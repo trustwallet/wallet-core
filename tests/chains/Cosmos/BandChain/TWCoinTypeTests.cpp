@@ -15,9 +15,9 @@
 
 TEST(TWBandChainCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBandChain));
-    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("473264551D3063A9EC64EC251C61BE92DDDFCF6CC46D026D1E574D83D5447173"));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("74AF38C2183B06EB6274DA4AAC0D2334E6E283643D436852F5E088AEA2CD0B17"));
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBandChain, txId.get()));
-    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("band12nmsm9khdsv0tywge43q3zwj8kkj3hvup9rltp"));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("band16gpgu994g2gdrzvwp9047le3pcq9wz6mcgtd4w"));
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeBandChain, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBandChain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBandChain));
@@ -27,8 +27,8 @@ TEST(TWBandChainCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeBandChain));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeBandChain));
     assertStringsEqual(symbol, "BAND");
-    assertStringsEqual(txUrl, "https://scan-wenchang-testnet2.bandchain.org//tx/473264551D3063A9EC64EC251C61BE92DDDFCF6CC46D026D1E574D83D5447173");
-    assertStringsEqual(accUrl, "https://scan-wenchang-testnet2.bandchain.org//account/band12nmsm9khdsv0tywge43q3zwj8kkj3hvup9rltp");
+    assertStringsEqual(txUrl, "https://www.mintscan.io/band/tx/74AF38C2183B06EB6274DA4AAC0D2334E6E283643D436852F5E088AEA2CD0B17");
+    assertStringsEqual(accUrl, "https://www.mintscan.io/band/account/band16gpgu994g2gdrzvwp9047le3pcq9wz6mcgtd4w");
     assertStringsEqual(id, "band");
     assertStringsEqual(name, "BandChain");
 }
