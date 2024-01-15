@@ -3,6 +3,7 @@ syntax = "proto3";
 package TW.Bitcoin.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "BitcoinV2.proto";
 import "Common.proto";
 
 // A transaction, with its inputs and outputs
@@ -153,7 +154,16 @@ message SigningInput {
     // transaction creation time that will be used for verge(xvg)
     uint32 time = 17;
 
+    // Deprecated. Consider using `Bitcoin.Proto.SigningInput.signing_v2` instead.
     bool is_it_brc_operation = 18;
+
+    // If set, uses Bitcoin 2.0 Planning protocol.
+    // As a result, `Bitcoin.Proto.TransactionPlan.planning_result_v2` is set.
+    BitcoinV2.Proto.ComposePlan planning_v2 = 20;
+
+    // If set, uses Bitcoin 2.0 Signing protocol.
+    // As a result, `Bitcoin.Proto.SigningOutput.signing_result_v2` is set.
+    BitcoinV2.Proto.SigningInput signing_v2 = 21;
 }
 
 // Describes a preliminary transaction plan.
@@ -187,6 +197,10 @@ message TransactionPlan {
 
     // zen preblockheight
     int64 preblockheight = 10;
+
+    // Result of a transaction planning using the Bitcoin 2.0 protocol.
+    // Set if `Bitcoin.Proto.SigningInput.planning_v2` used.
+    BitcoinV2.Proto.TransactionPlan planning_result_v2 = 12;
 };
 
 // Result containing the signed and encoded transaction.
@@ -206,6 +220,10 @@ message SigningOutput {
 
     // error description
     string error_message = 5;
+
+    // Result of a transaction signing using the Bitcoin 2.0 protocol.
+    // Set if `Bitcoin.Proto.SigningInput.signing_v2` used.
+    BitcoinV2.Proto.SigningOutput signing_result_v2 = 7;
 }
 
 /// Pre-image hash to be used for signing
