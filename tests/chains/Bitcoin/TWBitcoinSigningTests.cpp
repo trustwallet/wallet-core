@@ -693,13 +693,14 @@ TEST(BitcoinSigning, PlanAndSignBrc20) {
     {
         Proto::SigningInput revealInput;
         *revealInput.mutable_signing_v2() = brc20Reveal;
+        // `schnorr` is used to sign the Reveal transaction.
+        revealInput.mutable_signing_v2()->set_dangerous_use_fixed_schnorr_rng(true);
 
         Proto::SigningOutput output;
         ANY_SIGN(revealInput, TWCoinTypeBitcoin);
         EXPECT_EQ(output.error(), Common::Proto::SigningError::OK);
         EXPECT_TRUE(output.has_signing_result_v2());
-        // TODO fix the test.
-        EXPECT_EQ(hex(output.signing_result_v2().encoded()), "0200000000010173711b50d9adb30fdc51231cd56a95b3b627453add775c56188449f2dccaef250000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d0340  6a0ba1248caa3f88dbfc9c942ac53d4a1af8af8fbe7b3fafc9c24b715cf6d55451ee7c03443184b1ac0fe508b1f12b41bff2a51e6b0e4f78da33f14bd3a74211  5b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
+        EXPECT_EQ(hex(output.signing_result_v2().encoded()), "0200000000010173711b50d9adb30fdc51231cd56a95b3b627453add775c56188449f2dccaef250000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d03405cd7fb811a8ebcc55ac791321243a6d1a4089abc548d93288dfe5870f6af7f96b0cb0c7c41c0126791179e8c190d8fecf9bdc4cc740ec3e7d6a43b1b0a345f155b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
     }
 }
 
