@@ -32,6 +32,8 @@
 
 namespace TW::Bitcoin {
 
+constexpr uint64_t ONE_BTC = 100'000'000;
+
 // clang-format off
 SigningInput buildInputP2PKH(bool omitKey = false) {
     auto hash0 = parse_hex("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f");
@@ -572,6 +574,134 @@ TEST(BitcoinSigning, SignNftInscriptionReveal) {
     ASSERT_EQ(output.error(), Common::Proto::OK);
     ASSERT_EQ(result.substr(0, 164), expectedHex.substr(0, 164));
     ASSERT_EQ(result.substr(292, result.size() - 292), expectedHex.substr(292, result.size() - 292));
+}
+
+TEST(BitcoinSigning, PlanAndSignBrc20) {
+    auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
+    auto publicKey = parse_hex("030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb");
+
+    // Construct a `BitcoinV2.Proto.ComposePlan` message.
+
+    auto dustSatoshis = 546;
+    auto ticker = "oadf";
+    auto tokensAmount = 20;
+    auto feePerVb = 25;
+
+    auto txId1 = parse_hex("181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911");
+    std::reverse(begin(txId1), end(txId1));
+
+    BitcoinV2::Proto::Input tx1;
+    tx1.set_txid(txId1.data(), (int)txId1.size());
+    tx1.set_vout(0);
+    tx1.set_value(ONE_BTC);
+    tx1.set_sighash_type(Utxo::Proto::SighashType::All);
+    tx1.mutable_builder()->set_p2wpkh(publicKey.data(), (int)publicKey.size());
+
+    auto txId2 = parse_hex("858e450a1da44397bde05ca2f8a78510d74c623cc2f69736a8b3fbfadc161f6e");
+    std::reverse(begin(txId2), end(txId2));
+
+    BitcoinV2::Proto::Input tx2;
+    tx2.set_txid(txId2.data(), (int)txId2.size());
+    tx2.set_vout(0);
+    tx2.set_value(2 * ONE_BTC);
+    tx2.set_sighash_type(Utxo::Proto::SighashType::All);
+    tx2.mutable_builder()->set_p2wpkh(publicKey.data(), (int)publicKey.size());
+
+    BitcoinV2::Proto::Output taggedOutput;
+    taggedOutput.set_value(dustSatoshis);
+    taggedOutput.mutable_builder()->mutable_p2wpkh()->set_pubkey(publicKey.data(), (int)publicKey.size());
+
+    BitcoinV2::Proto::Output changeOutput;
+    // Will be set by the library.
+    changeOutput.set_value(0);
+    changeOutput.mutable_builder()->mutable_p2wpkh()->set_pubkey(publicKey.data(), (int)publicKey.size());
+
+    BitcoinV2::Proto::Input_InputBrc20Inscription brc20Inscription;
+    brc20Inscription.set_one_prevout(false);
+    brc20Inscription.set_inscribe_to(publicKey.data(), (int)publicKey.size());
+    brc20Inscription.set_ticker(ticker);
+    brc20Inscription.set_transfer_amount(tokensAmount);
+
+    BitcoinV2::Proto::ComposePlan composePlan;
+    auto& composeBrc20 = *composePlan.mutable_brc20();
+    composeBrc20.set_private_key(privateKey.data(), (int)privateKey.size());
+    *composeBrc20.add_inputs() = tx1;
+    *composeBrc20.add_inputs() = tx2;
+    composeBrc20.set_input_selector(Utxo::Proto::InputSelector::SelectAscending);
+    *composeBrc20.mutable_tagged_output() = taggedOutput;
+    *composeBrc20.mutable_inscription() = brc20Inscription;
+    composeBrc20.set_fee_per_vb(feePerVb);
+    *composeBrc20.mutable_change_output() = changeOutput;
+    composeBrc20.set_disable_change_output(false);
+
+    // Construct a `Bitcoin.Proto.SigningInput` message with `planning_v2` field only.
+    Proto::SigningInput input;
+    *input.mutable_planning_v2() = composePlan;
+
+    // Plan the transaction using standard `TWAnySignerPlan`.
+    Proto::TransactionPlan plan;
+    ANY_PLAN(input, plan, TWCoinTypeBitcoin);
+
+    // Check the result Planning V2.
+    EXPECT_TRUE(plan.has_planning_result_v2());
+    const auto& planV2 = plan.planning_result_v2();
+    EXPECT_EQ(planV2.error(), BitcoinV2::Proto::Error::OK);
+    EXPECT_TRUE(planV2.has_brc20());
+    const auto& brc20Plan = planV2.brc20();
+
+    // Check the result Commit `SigningInput`.
+    auto commitOutputAmount = 3846;
+    EXPECT_TRUE(brc20Plan.has_commit());
+    const auto& brc20Commit = brc20Plan.commit();
+    EXPECT_EQ(brc20Commit.version(), 2);
+    EXPECT_EQ(brc20Commit.inputs_size(), 1);
+    EXPECT_EQ(brc20Commit.outputs_size(), 2);
+    // Change output generation is disabled, included in `commit.outputs`.
+    EXPECT_FALSE(brc20Commit.has_change_output());
+    EXPECT_EQ(brc20Commit.outputs(0).value(), commitOutputAmount);
+    EXPECT_EQ(brc20Commit.outputs(0).builder().brc20_inscribe().ticker(), ticker);
+    EXPECT_EQ(brc20Commit.outputs(0).builder().brc20_inscribe().transfer_amount(), tokensAmount);
+    // Change: tx1 value - out1 value
+    EXPECT_EQ(brc20Commit.outputs(1).value(), ONE_BTC - commitOutputAmount - 3175);
+
+    // Check the result Reveal `SigningInput`.
+    EXPECT_TRUE(brc20Plan.has_reveal());
+    const auto& brc20Reveal = brc20Plan.reveal();
+    EXPECT_EQ(brc20Reveal.version(), 2);
+    EXPECT_EQ(brc20Reveal.inputs_size(), 1);
+    EXPECT_EQ(brc20Reveal.outputs_size(), 1);
+    // Change output generation is disabled, included in `commit.outputs`.
+    EXPECT_FALSE(brc20Reveal.has_change_output());
+    EXPECT_EQ(brc20Reveal.inputs(0).value(), commitOutputAmount);
+    EXPECT_EQ(brc20Reveal.inputs(0).builder().brc20_inscribe().ticker(), ticker);
+    EXPECT_EQ(brc20Reveal.inputs(0).builder().brc20_inscribe().transfer_amount(), tokensAmount);
+    EXPECT_EQ(brc20Reveal.outputs(0).value(), dustSatoshis);
+
+    // Construct a `Bitcoin.Proto.SigningInput` message with `signing_v2` (Commit) field only.
+    {
+        Proto::SigningInput commitInput;
+        *commitInput.mutable_signing_v2() = brc20Commit;
+
+        Proto::SigningOutput output;
+        ANY_SIGN(commitInput, TWCoinTypeBitcoin);
+        EXPECT_EQ(output.error(), Common::Proto::SigningError::OK);
+        EXPECT_TRUE(output.has_signing_result_v2());
+        EXPECT_EQ(hex(output.signing_result_v2().encoded()), "0200000000010111b9f62923af73e297abb69f749e7a1aa2735fbdfd32ac5f6aa89e5c96841c180000000000ffffffff02060f000000000000225120e8b706a97732e705e22ae7710703e7f589ed13c636324461afa443016134cc0593c5f50500000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d02483045022100912004efb9b4e8368ba00d6bfbdfde22a43b037f64ae09d79aac030c77edbc2802206c5702646eadea2274c4aafee99c12b5054cb60da18c21f67f5f3003a318112d0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
+    }
+
+    // Construct a `Bitcoin.Proto.SigningInput` message with `signing_v2` (Reveal) field only.
+    {
+        Proto::SigningInput revealInput;
+        *revealInput.mutable_signing_v2() = brc20Reveal;
+        // `schnorr` is used to sign the Reveal transaction.
+        revealInput.mutable_signing_v2()->set_dangerous_use_fixed_schnorr_rng(true);
+
+        Proto::SigningOutput output;
+        ANY_SIGN(revealInput, TWCoinTypeBitcoin);
+        EXPECT_EQ(output.error(), Common::Proto::SigningError::OK);
+        EXPECT_TRUE(output.has_signing_result_v2());
+        EXPECT_EQ(hex(output.signing_result_v2().encoded()), "0200000000010173711b50d9adb30fdc51231cd56a95b3b627453add775c56188449f2dccaef250000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d03405cd7fb811a8ebcc55ac791321243a6d1a4089abc548d93288dfe5870f6af7f96b0cb0c7c41c0126791179e8c190d8fecf9bdc4cc740ec3e7d6a43b1b0a345f155b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
+    }
 }
 
 TEST(BitcoinSigning, SignP2PKH) {
