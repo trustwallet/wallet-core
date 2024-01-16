@@ -6,6 +6,7 @@ members = [
     "chains/tw_native_evmos",
     "chains/tw_native_injective",
     "chains/tw_thorchain",
+    "frameworks/tw_utxo",
     "tw_any_coin",
     "tw_aptos",
     "tw_bech32_address",
@@ -24,7 +25,6 @@ members = [
     "tw_number",
     "tw_proto",
     "tw_ronin",
-    "tw_utxo",
     "wallet_core_rs",
 ]
 
