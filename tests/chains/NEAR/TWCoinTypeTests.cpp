@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 //
 // This is a GENERATED FILE, changes made here MAY BE LOST.
 // Generated one-time (codegen/bin/cointests)
@@ -27,8 +25,8 @@ TEST(TWNEARCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeNEAR));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeNEAR));
     assertStringsEqual(symbol, "NEAR");
-    assertStringsEqual(txUrl, "https://explorer.near.org/transactions/FPQAMaVnvFHNwNBJWnTttXfdJhp5FvMGGDJEesB8gvbL");
-    assertStringsEqual(accUrl, "https://explorer.near.org/accounts/test-trust.vlad.near");
+    assertStringsEqual(txUrl, "https://nearblocks.io/txns/FPQAMaVnvFHNwNBJWnTttXfdJhp5FvMGGDJEesB8gvbL");
+    assertStringsEqual(accUrl, "https://nearblocks.io/address/test-trust.vlad.near");
     assertStringsEqual(id, "near");
     assertStringsEqual(name, "NEAR");
 }

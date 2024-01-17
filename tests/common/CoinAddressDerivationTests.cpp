@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Coin.h"
 #include "HexCoding.h"
@@ -89,6 +87,7 @@ TEST(Coin, DeriveAddress) {
 
         case TWCoinTypeZenEON:
         case TWCoinTypeMantaPacific:
+        case TWCoinTypeXDCNetwork:
             // end_of_evm_address_derivation_tests_marker_do_not_modify
             EXPECT_EQ(address, "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
             break;

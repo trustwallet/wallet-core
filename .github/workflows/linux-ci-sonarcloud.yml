@@ -16,16 +16,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
       - name: Install system dependencies
         run: |
           tools/install-sys-dependencies-linux
           tools/install-rust-dependencies
+
       - name: Cache internal dependencies
         id: internal_cache
         uses: actions/cache@v3
         with:
           path: build/local
           key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+
       - name: Install internal dependencies
         run: |
           tools/install-dependencies
@@ -33,12 +42,14 @@ jobs:
           CC: /usr/bin/clang
           CXX: /usr/bin/clang++
         if: steps.internal_cache.outputs.cache-hit != 'true'
+
       - name: Code generation
         run: |
           tools/generate-files native
         env:
           CC: /usr/bin/clang
           CXX: /usr/bin/clang++
+
       - name: CMake (coverage/clang-tidy/clang-asan)
         run: |
           cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_CODE_COVERAGE=ON -DTW_ENABLE_CLANG_TIDY=ON -DTW_CLANG_ASAN=ON -GNinja
@@ -46,6 +57,7 @@ jobs:
         env:
           CC: /usr/bin/clang
           CXX: /usr/bin/clang++
+
       - name: SonarCloud Scan
         run: |
           ./tools/sonarcloud-analysis

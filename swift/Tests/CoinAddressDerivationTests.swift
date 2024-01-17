@@ -1,8 +1,6 @@
-// Copyright © 2017-2020 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 import XCTest
 import WalletCore
@@ -115,8 +113,8 @@ class CoinAddressDerivationTests: XCTestCase {
                      .greenfield,
                      .mantle,
                      .zenEON,
-                     .mantaPacific
-                     .xdcNetwork:
+                     .mantaPacific,
+                     .XDCNetwork:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ronin:

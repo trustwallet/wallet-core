@@ -1,8 +1,6 @@
-// Copyright © 2017-2024 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::ffi::tw_wallet_connect_request::tw_wallet_connect_request_parse;
 use tw_coin_registry::coin_type::CoinType;
