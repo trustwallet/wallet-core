@@ -4510,32 +4510,6 @@
     }
   },
   {
-    "id": "xdc",
-    "name": "XDC Network",
-    "coinId": 50,
-    "slip44": 550,
-    "symbol": "XDC",
-    "decimals": 18,
-    "blockchain": "Ethereum",
-    "derivationPath": "m/44'/550'/0'/0/0",
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1Extended",
-    "explorer": {
-      "url": "https://xdc.network/",
-      "txPath": "/tx/",
-      "accountPath": "/address/",
-      "sampleTx": "0x5c4fa942ff0b39651e5ffd21d646f2956a289ce9f26a59ddbef5dfa27701aa56",
-      "sampleAccount": "0xbc4f1b0c59857dd97089d9d860f169d712c1fb6e"
-    },
-    "info": {
-      "url": "https://xdc.org",
-      "client": "https://github.com/XinFinOrg/XDPoSChain",
-      "clientPublic": "https://rpc.xdc.org/",
-      "rpc": "https://erpc.xinfin.network",
-      "clientDocs": "https://docs.xdc.community"
-    }
-  },
-  {
     "id": "manta",
     "name": "Manta Pacific",
     "coinId": 169,
@@ -4568,7 +4542,7 @@
   {
     "id": "xdc",
     "name": "XDC Network",
-    "coinId": 10000050,
+    "coinId": 50,
     "slip44": 550,
     "symbol": "XDC",
     "decimals": 18,
