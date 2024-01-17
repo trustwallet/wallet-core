@@ -34,9 +34,9 @@
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
     "explorer": {
-      "url": "https://blockchair.com",
-      "txPath": "/bitcoin/transaction/",
-      "accountPath": "/bitcoin/address/",
+      "url": "https://mempool.space",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
       "sampleTx": "0607f62530b68cfcc91c57a1702841dd399a899d0eecda8e31ecca3f52f01df2",
       "sampleAccount": "17A16QmavnUfCW11DAApiJxp7ARnxN5pGX"
     },
@@ -1498,7 +1498,7 @@
       "url": "https://blockchair.com/stellar",
       "txPath": "/transaction/",
       "accountPath": "/account/",
-      "sampleTx": "d9aeabfa9d24df8c5755125f8af243b74cd3ff878656cfa72c566a8824bf6e84",
+      "sampleTx": "8a7ff7261e8b3f31af7f6ed257c2e9fe7c47afcd9b1ce1be1bfc1bc5f6a3ad9e",
       "sampleAccount": "GCILJZQ3CKBKBUJWW4TAM6Q37LJA5MQX6GMSFSQN75BPLWIZ33OPRG52"
     },
     "info": {
@@ -1559,9 +1559,9 @@
     "publicKeyType": "ed25519Blake2b",
     "url": "https://nano.org",
     "explorer": {
-      "url": "https://nanocrawler.cc",
-      "txPath": "/explorer/block/",
-      "accountPath": "/explorer/account/",
+      "url": "https://www.nanolooker.com",
+      "txPath": "/block/",
+      "accountPath": "/account/",
       "sampleTx": "C264DB7BF40738F0CEFF19B606746CB925B713E4B8699A055699E0DC8ABBC70F",
       "sampleAccount": "nano_1wpj616kwhe1y38y1mspd8aub8i334cwybqco511iyuxm55zx8d67ptf1tsf"
     },
@@ -2034,9 +2034,9 @@
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
-      "url": "https://explorer.near.org",
-      "txPath": "/transactions/",
-      "accountPath": "/accounts/",
+      "url": "https://nearblocks.io",
+      "txPath": "/txns/",
+      "accountPath": "/address/",
       "sampleTx": "FPQAMaVnvFHNwNBJWnTttXfdJhp5FvMGGDJEesB8gvbL",
       "sampleAccount": "test-trust.vlad.near"
     },
@@ -2297,11 +2297,11 @@
     "hrp": "band",
     "addressHasher": "sha256ripemd",
     "explorer": {
-      "url": "https://scan-wenchang-testnet2.bandchain.org/",
+      "url": "https://www.mintscan.io/band",
       "txPath": "/tx/",
       "accountPath": "/account/",
-      "sampleTx": "473264551D3063A9EC64EC251C61BE92DDDFCF6CC46D026D1E574D83D5447173",
-      "sampleAccount": "band12nmsm9khdsv0tywge43q3zwj8kkj3hvup9rltp"
+      "sampleTx": "74AF38C2183B06EB6274DA4AAC0D2334E6E283643D436852F5E088AEA2CD0B17",
+      "sampleAccount": "band16gpgu994g2gdrzvwp9047le3pcq9wz6mcgtd4w"
     },
     "info": {
       "url": "https://bandprotocol.com/",
@@ -2713,7 +2713,7 @@
       "url": "https://oasisscan.com",
       "txPath": "/transactions/",
       "accountPath": "/accounts/detail/",
-      "sampleTx": "0b9bd4983f1c88a1c71bf33562b6ba02b3064e01697d15a0de4bfe1922ec74b8",
+      "sampleTx": "73dc977fdd8596d4a57e6feb891b21f5da3652d26815dc94f15f7420c298e29e",
       "sampleAccount": "oasis1qrx376dmwuckmruzn9vq64n49clw72lywctvxdf4"
     },
     "info": {
@@ -4130,7 +4130,7 @@
     "publicKeyType": "secp256k1Extended",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://www.oklink.com/en/okc",
+      "url": "https://www.oklink.com/oktc",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x46C3A947E8248570FBD28E4FE456CC8F80DFD90716533878FB67857B95FA3D37",
