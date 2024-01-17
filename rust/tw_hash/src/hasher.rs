@@ -8,7 +8,15 @@ use crate::sha3::keccak256;
 use serde::Deserialize;
 use tw_memory::Data;
 
-// keccak256
+/// ripemd hash of the SHA256 hash.
+pub fn sha256_ripemd(data: &[u8]) -> Data {
+    ripemd_160(&sha256(data))
+}
+
+/// SHA256 hash of the SHA256 hash.
+pub fn sha256_d(data: &[u8]) -> Data {
+    sha256(&sha256(data))
+}
 
 /// Enum selector for the supported hash functions.
 /// Add hash types if necessary. For example, when add a new hasher to `registry.json`.
@@ -31,8 +39,8 @@ impl Hasher {
         match self {
             Hasher::Sha256 => sha256(data),
             Hasher::Keccak256 => keccak256(data),
-            Hasher::Sha256d => sha256(&sha256(data)),
-            Hasher::Sha256ripemd => ripemd_160(&sha256(data)),
+            Hasher::Sha256d => sha256_d(data),
+            Hasher::Sha256ripemd => sha256_ripemd(data),
         }
     }
 }

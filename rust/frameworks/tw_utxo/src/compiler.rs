@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
 use crate::{Error, Result};
 use bitcoin::blockdata::locktime::absolute::{Height, LockTime, Time};
 use bitcoin::consensus::Encodable;

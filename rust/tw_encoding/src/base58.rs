@@ -4,7 +4,6 @@
 
 use crate::{EncodingError, EncodingResult};
 use bs58::decode::Error;
-pub use bs58::Alphabet;
 
 impl From<Error> for EncodingError {
     fn from(_: Error) -> Self {
@@ -12,13 +11,30 @@ impl From<Error> for EncodingError {
     }
 }
 
-pub fn encode(input: &[u8], alphabet: &Alphabet) -> String {
-    bs58::encode(input).with_alphabet(alphabet).into_string()
+#[derive(Debug, Clone, Copy, Eq, Hash, PartialEq)]
+pub enum Alphabet {
+    Bitcoin,
+    Ripple,
 }
 
-pub fn decode(input: &str, alphabet: &Alphabet) -> EncodingResult<Vec<u8>> {
+impl From<Alphabet> for &'static bs58::Alphabet {
+    fn from(alphabet: Alphabet) -> Self {
+        match alphabet {
+            Alphabet::Bitcoin => bs58::Alphabet::BITCOIN,
+            Alphabet::Ripple => bs58::Alphabet::RIPPLE,
+        }
+    }
+}
+
+pub fn encode(input: &[u8], alphabet: Alphabet) -> String {
+    bs58::encode(input)
+        .with_alphabet(alphabet.into())
+        .into_string()
+}
+
+pub fn decode(input: &str, alphabet: Alphabet) -> EncodingResult<Vec<u8>> {
     bs58::decode(input)
-        .with_alphabet(alphabet)
+        .with_alphabet(alphabet.into())
         .into_vec()
         .map_err(EncodingError::from)
 }

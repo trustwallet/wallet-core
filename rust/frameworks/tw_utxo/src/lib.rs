@@ -1,6 +1,11 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
 use tw_proto::Utxo::Proto;
 
 pub mod compiler;
+pub mod address;
 
 pub type Result<T> = std::result::Result<T, Error>;
 

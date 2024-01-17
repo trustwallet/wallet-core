@@ -30,10 +30,12 @@ pub enum AddressError {
     UnknownCoinType,
     MissingPrefix,
     FromHexError,
+    FromBase58Error,
     PublicKeyTypeMismatch,
     UnexpectedAddressPrefix,
     UnexpectedHasher,
     InvalidHrp,
+    InvalidRegistry,
     InvalidInput,
 }
 

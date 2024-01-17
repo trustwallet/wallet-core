@@ -32,6 +32,8 @@ pub struct CoinItem {
     pub public_key_type: PublicKeyType,
     pub address_hasher: Option<Hasher>,
     pub hrp: Option<String>,
+    pub p2pkh_prefix: Option<u8>,
+    pub p2sh_prefix: Option<u8>,
 }
 
 #[inline]

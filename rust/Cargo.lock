@@ -1669,6 +1669,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_base58_address"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "tw_coin_entry",
+ "tw_encoding",
+]
+
+[[package]]
 name = "tw_bech32_address"
 version = "0.1.0"
 dependencies = [
@@ -2010,8 +2019,10 @@ version = "0.1.0"
 dependencies = [
  "bitcoin",
  "secp256k1",
+ "tw_base58_address",
  "tw_coin_entry",
  "tw_encoding",
+ "tw_hash",
  "tw_keypair",
  "tw_memory",
  "tw_proto",

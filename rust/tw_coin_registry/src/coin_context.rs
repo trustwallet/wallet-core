@@ -33,4 +33,14 @@ impl CoinContext for CoinRegistryContext {
     fn hrp(&self) -> Option<String> {
         self.item.hrp.clone()
     }
+
+    #[inline]
+    fn p2pkh_prefix(&self) -> Option<u8> {
+        self.item.p2pkh_prefix
+    }
+
+    #[inline]
+    fn p2sh_prefix(&self) -> Option<u8> {
+        self.item.p2sh_prefix
+    }
 }

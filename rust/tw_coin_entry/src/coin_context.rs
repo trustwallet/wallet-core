@@ -15,4 +15,10 @@ pub trait CoinContext {
 
     /// Optional chain property.
     fn hrp(&self) -> Option<String>;
+
+    /// Optional p2pkh prefix (Bitcoin specific).
+    fn p2pkh_prefix(&self) -> Option<u8>;
+
+    /// Optional p2sh prefix (Bitcoin specific).
+    fn p2sh_prefix(&self) -> Option<u8>;
 }
