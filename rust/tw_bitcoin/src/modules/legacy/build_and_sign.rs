@@ -69,10 +69,10 @@ pub fn taproot_build_and_sign_transaction(
         })
     }
 
-    // We only select enough inputs to cover the output balance. However, since
+    // Normally we only select enough inputs to cover the output balance. However, since
     // some transaction types require precise input ordering (such as BRC20), we
     // do not sort the inputs and use the ordering as provided by the caller.
-    let input_selector = UtxoProto::InputSelector::SelectInOrder;
+    let input_selector = UtxoProto::InputSelector::UseAll;
 
     // The primary payload.
     let signing_input = Proto::SigningInput {
