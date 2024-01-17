@@ -77,6 +77,21 @@ impl Compiler<StandardBitcoinContext> {
             ));
         }
 
+        // If the input selector is InputSelector::SelectAscending, we sort the
+        // input first.
+        if let Proto::InputSelector::SelectAscending = proto.input_selector {
+            proto.inputs.sort_by(|a, b| a.value.cmp(&b.value));
+        }
+
+        // Estimate of the change output weight.
+        let change_output_weight = if proto.disable_change_output {
+            0
+        } else {
+            // VarInt + script_pubkey size, rough estimate.
+            1 + proto.change_script_pubkey.len() as u64
+        };
+
+        // Prepare the `bitcoin` crate native transaction structure, used for fee calculation.
         let mut tx = Transaction {
             version: proto.version,
             lock_time: lock_time_from_proto(&proto.lock_time)?,
@@ -96,22 +111,8 @@ impl Compiler<StandardBitcoinContext> {
                 .collect(),
         };
 
-        // If the input selector is InputSelector::SelectAscending, we sort the
-        // input first.
-        if let Proto::InputSelector::SelectAscending = proto.input_selector {
-            proto.inputs.sort_by(|a, b| a.value.cmp(&b.value));
-        }
-
-        // Estimate of the change output weight.
-        let change_output_weight = if proto.disable_change_output {
-            0
-        } else {
-            // VarInt + script_pubkey size, rough estimate.
-            1 + proto.change_script_pubkey.len() as u64
-        };
-
         // Select the inputs accordingly by updating `proto.inputs`.
-        let available = std::mem::replace(&mut proto.inputs, vec![]);
+        let available = std::mem::take(&mut proto.inputs); // Drain `proto.inputs`
         match &proto.input_selector {
             Proto::InputSelector::UseAll => {
                 // Simply add all inputs.
