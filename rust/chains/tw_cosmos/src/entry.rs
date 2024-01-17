@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -12,6 +10,7 @@ use tw_coin_entry::error::AddressResult;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
+use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_cosmos_sdk::address::{Address, Bech32Prefix};
 use tw_cosmos_sdk::context::StandardCosmosContext;
 use tw_cosmos_sdk::modules::compiler::tw_compiler::TWTransactionCompiler;
@@ -31,6 +30,7 @@ impl CoinEntry for CosmosEntry {
     type JsonSigner = NoJsonSigner;
     type PlanBuilder = NoPlanBuilder;
     type MessageSigner = NoMessageSigner;
+    type WalletConnector = NoWalletConnector;
 
     #[inline]
     fn parse_address(

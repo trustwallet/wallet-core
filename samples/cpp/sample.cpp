@@ -1,8 +1,6 @@
-// Copyright © 2017-2020 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWAnySigner.h>
@@ -24,7 +22,7 @@ int main() {
             cout << endl;
             cout << "  *** DISCLAIMER ***" << endl;
             cout << "  THIS IS A SAMPLE APPLICATION WITH DEMONSTRATION PURPOSES ONLY." << endl;
-            cout << "  DO NOT USE WITH REAL SECRETS, REAL ADDRESSESS, OR REAL TRANSACTIONS.  USE IT AT YOUR OWN RISK." << endl;
+            cout << "  DO NOT USE WITH REAL SECRETS, REAL ADDRESSES, OR REAL TRANSACTIONS.  USE IT AT YOUR OWN RISK." << endl;
             cout << "  *** DISCLAIMER ***" << endl;
             cout << endl;
         }

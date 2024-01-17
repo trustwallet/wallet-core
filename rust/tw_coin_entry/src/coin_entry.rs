@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::coin_context::CoinContext;
 use crate::derivation::Derivation;
@@ -16,6 +14,7 @@ use tw_memory::Data;
 use tw_proto::{MessageRead, MessageWrite};
 
 use crate::modules::message_signer::MessageSigner;
+use crate::modules::wallet_connector::WalletConnector;
 pub use tw_proto::{ProtoError, ProtoResult};
 
 pub type PrivateKeyBytes = Data;
@@ -60,6 +59,10 @@ pub trait CoinEntry {
     ///
     /// **Optional**. Use `NoMessageSigner` if the blockchain does not support message signing.
     type MessageSigner: MessageSigner;
+    /// WalletConnect Connector - the module allows to parse transactions received in WalletConnect format.
+    ///
+    /// **Optional**. Use `NoWalletConnector` if the blockchain does not support WalletConnect transactions.
+    type WalletConnector: WalletConnector;
 
     /// Tries to parse `Self::Address` from the given `address` string by `coin` type and address `prefix`.
     fn parse_address(
@@ -123,6 +126,13 @@ pub trait CoinEntry {
     /// Returns `Ok(None)` if the chain doesn't support regular message signing.
     #[inline]
     fn message_signer(&self) -> Option<Self::MessageSigner> {
+        None
+    }
+
+    /// It is optional, Parsing signing requests received through WalletConnect.
+    /// Returns `Ok(None)` if the blockchain does not support WalletConnect transactions.
+    #[inline]
+    fn wallet_connector(&self) -> Option<Self::WalletConnector> {
         None
     }
 }

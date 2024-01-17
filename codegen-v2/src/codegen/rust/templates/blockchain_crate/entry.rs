@@ -1,8 +1,6 @@
-// Copyright © 2017-{YEAR} Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::address::{BLOCKCHAIN}Address;
 use crate::compiler::{BLOCKCHAIN}Compiler;
@@ -15,6 +13,7 @@ use tw_coin_entry::error::AddressResult;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
+use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_keypair::tw::PublicKey;
 use tw_proto::{BLOCKCHAIN}::Proto;
@@ -33,6 +32,7 @@ impl CoinEntry for {BLOCKCHAIN}Entry {
     type JsonSigner = NoJsonSigner;
     type PlanBuilder = NoPlanBuilder;
     type MessageSigner = NoMessageSigner;
+    type WalletConnector = NoWalletConnector;
 
     #[inline]
     fn parse_address(

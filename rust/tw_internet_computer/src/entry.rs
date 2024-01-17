@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use std::str::FromStr;
 
@@ -12,6 +10,7 @@ use tw_coin_entry::{
     error::{AddressError, AddressResult, SigningError},
     modules::{
         json_signer::NoJsonSigner, message_signer::NoMessageSigner, plan_builder::NoPlanBuilder,
+        wallet_connector::NoWalletConnector,
     },
     prefix::NoPrefix,
     signing_output_error,
@@ -42,6 +41,8 @@ impl CoinEntry for InternetComputerEntry {
     type PlanBuilder = NoPlanBuilder;
 
     type MessageSigner = NoMessageSigner;
+
+    type WalletConnector = NoWalletConnector;
 
     #[inline]
     fn parse_address(

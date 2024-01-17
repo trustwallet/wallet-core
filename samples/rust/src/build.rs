@@ -1,8 +1,6 @@
-// Copyright © 2017-2022 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use std::fs;
 use std::path::Path;
@@ -25,7 +23,9 @@ fn main() {
         .out_dir(out_dir)
         .input(proto_src.to_string() + "/Common.proto")
         .input(proto_src.to_string() + "/Bitcoin.proto")
+        .input(proto_src.to_string() + "/BitcoinV2.proto")
         .input(proto_src.to_string() + "/Ethereum.proto")
+        .input(proto_src.to_string() + "/Utxo.proto")
         .include(proto_src)
         .run()
         .expect("Codegen failed.");

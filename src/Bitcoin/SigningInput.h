@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -68,7 +66,7 @@ public:
     uint32_t lockTime = 0;
     uint32_t time = 0;
 
-    // Besides to_address and change_addres,
+    // Besides to_address and change_address,
     // we have other outputs that include address and value
     std::vector<std::pair<std::string, int64_t>> extraOutputs;
 

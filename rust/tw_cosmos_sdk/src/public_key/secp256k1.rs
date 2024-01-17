@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::proto::cosmos;
 use crate::public_key::{CosmosPublicKey, JsonPublicKey, ProtobufPublicKey};
@@ -14,8 +12,19 @@ use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::{google, to_any};
 
+#[derive(Clone)]
 pub struct Secp256PublicKey {
     public_key: Data,
+}
+
+impl Secp256PublicKey {
+    pub fn from_secp256k1_public_key(
+        coin: &dyn CoinContext,
+        public_key: &secp256k1::PublicKey,
+    ) -> KeyPairResult<Self> {
+        let public_key = prepare_secp256k1_public_key(coin, public_key.compressed().as_slice())?;
+        Ok(Secp256PublicKey { public_key })
+    }
 }
 
 impl CosmosPublicKey for Secp256PublicKey {
