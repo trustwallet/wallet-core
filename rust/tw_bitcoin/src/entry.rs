@@ -8,16 +8,16 @@ use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
-use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_coin_entry::error::AddressResult;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
-use tw_coin_entry::prefix::NoPrefix;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::tw::PublicKey;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
+use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
 
 pub struct Address(pub bitcoin::address::Address<NetworkChecked>);
 
@@ -36,8 +36,8 @@ impl CoinAddress for Address {
 pub struct BitcoinEntry;
 
 impl CoinEntry for BitcoinEntry {
-    type AddressPrefix = NoPrefix;
-    type Address = Address;
+    type AddressPrefix = StandardBitcoinPrefix;
+    type Address = StandardBitcoinAddress;
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = Proto::SigningOutput<'static>;
     type PreSigningOutput = Proto::PreSigningOutput<'static>;
@@ -53,9 +53,9 @@ impl CoinEntry for BitcoinEntry {
         &self,
         coin: &dyn CoinContext,
         address: &str,
-        _prefix: Option<Self::AddressPrefix>,
+        prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        self.parse_address_unchecked(coin, address)
+        StandardBitcoinAddress::from_str_with_coin_and_prefix(coin, address, prefix)
     }
 
     #[inline]
@@ -64,38 +64,18 @@ impl CoinEntry for BitcoinEntry {
         _coin: &dyn CoinContext,
         address: &str,
     ) -> AddressResult<Self::Address> {
-        let address = bitcoin::address::Address::from_str(address)
-            .map_err(|_| AddressError::FromHexError)?
-            // At this moment, we support mainnet only.
-            // This check will be removed in coming PRs.
-            .require_network(bitcoin::Network::Bitcoin)
-            .map_err(|_| AddressError::InvalidInput)?;
-
-        Ok(Address(address))
+        StandardBitcoinAddress::from_str(address)
     }
 
     #[inline]
     fn derive_address(
         &self,
-        _coin: &dyn CoinContext,
+        coin: &dyn CoinContext,
         public_key: PublicKey,
-        _derivation: Derivation,
-        _prefix: Option<Self::AddressPrefix>,
+        derivation: Derivation,
+        prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        let pubkey = match public_key {
-            PublicKey::Secp256k1(pubkey) | PublicKey::Secp256k1Extended(pubkey) => pubkey,
-            _ => return Err(AddressError::InvalidInput),
-        };
-
-        let pubkey = bitcoin::PublicKey::from_slice(pubkey.to_vec().as_ref())
-            .map_err(|_| AddressError::InvalidInput)?;
-
-        let address: bitcoin::address::Address<NetworkChecked> = bitcoin::address::Address::new(
-            bitcoin::Network::Bitcoin,
-            bitcoin::address::Payload::PubkeyHash(pubkey.pubkey_hash()),
-        );
-
-        Ok(Address(address))
+        StandardBitcoinAddress::derive_as_tw(coin, &public_key, derivation, prefix)
     }
 
     #[inline]

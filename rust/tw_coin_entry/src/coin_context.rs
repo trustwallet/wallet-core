@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::derivation::DerivationWithPath;
 use tw_hash::hasher::Hasher;
 use tw_keypair::tw::PublicKeyType;
 
@@ -21,4 +22,7 @@ pub trait CoinContext {
 
     /// Optional p2sh prefix (Bitcoin specific).
     fn p2sh_prefix(&self) -> Option<u8>;
+
+    /// Returns coin derivations.
+    fn derivations(&self) -> &[DerivationWithPath];
 }

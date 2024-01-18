@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::coin_context::CoinContext;
+use crate::derivation::DerivationWithPath;
 use tw_hash::hasher::Hasher;
 use tw_keypair::tw::PublicKeyType;
 
@@ -48,5 +49,9 @@ impl CoinContext for TestCoinContext {
 
     fn p2sh_prefix(&self) -> Option<u8> {
         self.p2sh
+    }
+
+    fn derivations(&self) -> &[DerivationWithPath] {
+        unimplemented!()
     }
 }

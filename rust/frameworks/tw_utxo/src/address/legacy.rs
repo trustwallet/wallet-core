@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use std::fmt;
 use std::str::FromStr;
 use tw_base58_address::Base58Address;
 use tw_coin_entry::coin_context::CoinContext;
@@ -74,7 +75,11 @@ impl LegacyAddress {
     }
 
     pub fn prefix(&self) -> u8 {
-        self.0.as_ref()[0]
+        self.bytes()[0]
+    }
+
+    pub fn bytes(&self) -> &[u8] {
+        self.0.as_ref()
     }
 }
 
@@ -91,5 +96,11 @@ impl<'a> TryFrom<&'a [u8]> for LegacyAddress {
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
         BitcoinBase58Address::from_slice_with_alphabet(bytes, Alphabet::Bitcoin).map(LegacyAddress)
+    }
+}
+
+impl fmt::Display for LegacyAddress {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }

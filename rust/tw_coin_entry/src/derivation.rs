@@ -2,21 +2,42 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-/// Extend this enum.
-#[derive(Default)]
-#[repr(u32)]
-pub enum Derivation {
-    /// Default derivation.
-    #[default]
-    Default = 0,
+use serde::de::Error as DeError;
+use serde::{Deserialize, Deserializer};
+use std::str::FromStr;
+
+pub use derivation_path::{ChildIndex, DerivationPath};
+
+#[derive(Clone, Deserialize)]
+pub struct DerivationWithPath {
+    pub name: Derivation,
+    #[serde(deserialize_with = "deserialize_der_path")]
+    pub path: DerivationPath,
 }
 
-impl Derivation {
-    #[inline]
-    pub fn from_raw(derivation: u32) -> Option<Derivation> {
-        match derivation {
-            0 => Some(Derivation::Default),
-            _ => None,
-        }
+impl DerivationWithPath {
+    pub fn purpose(&self) -> Option<ChildIndex> {
+        self.path.path().first().copied()
     }
+}
+
+/// Extend this enum.
+#[derive(Clone, Copy, Default, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Derivation {
+    Segwit,
+    Legacy,
+    Testnet,
+    /// Default derivation.
+    #[default]
+    #[serde(other)]
+    Default,
+}
+
+fn deserialize_der_path<'de, D>(deserializer: D) -> Result<DerivationPath, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let path = String::deserialize(deserializer)?;
+    DerivationPath::from_str(&path).map_err(|e| DeError::custom(e.to_string()))
 }
