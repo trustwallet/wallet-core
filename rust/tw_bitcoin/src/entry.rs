@@ -197,6 +197,7 @@ impl BitcoinEntry {
                 .last()
                 .expect("expected change output");
 
+            // TODO: Is the fee estimate correct when pushing this?
             utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
                 value: change_output.value,
                 script_pubkey: change_output.script_pubkey.to_vec().into(),
@@ -241,6 +242,7 @@ impl BitcoinEntry {
                 crate::modules::transactions::InputClaimBuilder::utxo_claim_from_proto(
                     input, signature,
                 )?;
+
             utxo_input_claims.push(utxo_claim);
         }
 

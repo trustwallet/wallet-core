@@ -174,7 +174,7 @@ impl Compiler<StandardBitcoinContext> {
         // If enabled, set the change output amount.
         if !proto.disable_change_output {
             // The amount to be returned (if enabled).
-            let change_amount = total_input_amount + total_output_amount - fee_estimate;
+            let change_amount = total_input_amount - total_output_amount - fee_estimate;
 
             // Update the passed on protobuf structure by adding a change output
             // (return to sender)

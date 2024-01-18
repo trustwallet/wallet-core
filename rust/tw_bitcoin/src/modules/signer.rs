@@ -32,12 +32,30 @@ impl Signer {
 
         // Generate the sighashes.
         let pre_signed = BitcoinEntry.preimage_hashes_impl(_coin, proto.clone())?;
+        if pre_signed.error != Proto::Error::OK {
+            return Err(Error::from(pre_signed.error));
+        }
 
         debug_assert!(pre_signed.utxo_inputs.len() <= proto.inputs.len());
         debug_assert_eq!(pre_signed.utxo_inputs.len(), pre_signed.sighashes.len());
 
-        // The `pre_signed`` result contains a list of selected inputs in order to
-        // cover the output amount and fees, assuming the input selector was
+        // By default, we enforce that a change output is set.
+        if proto.disable_change_output {
+            debug_assert_eq!(pre_signed.utxo_outputs.len(), proto.outputs.len());
+        } else {
+            debug_assert_eq!(pre_signed.utxo_outputs.len(), proto.outputs.len() + 1); // plus change output.
+
+            // Update the given change output with the specified amount and push
+            // it to the proto structure.
+            let change_output_amount = pre_signed.utxo_outputs.last().expect("No change output provided").value;
+
+            let mut change_output = proto.change_output.clone().expect("change output expected");
+            change_output.value = change_output_amount;
+            proto.outputs.push(change_output);
+        }
+
+        // The `pre_signed` result contains a list of selected inputs in order
+        // to cover the output amount and fees, assuming the input selector was
         // used. We therefore need to update the proto structure.
 
         // Clear the inputs.
@@ -54,11 +72,6 @@ impl Signer {
             proto.inputs.push(available[index].clone());
         }
 
-        // Check for error.
-        if pre_signed.error != Proto::Error::OK {
-            return Err(Error::from(pre_signed.error));
-        }
-
         // Sign the sighashes.
         let signatures = crate::modules::signer::Signer::signatures_from_proto(
             &pre_signed,
@@ -71,7 +84,13 @@ impl Signer {
         debug_assert_eq!(signatures.len(), pre_signed.sighashes.len());
 
         // Construct the final transaction.
-        BitcoinEntry.compile_impl(_coin, proto, signatures, vec![])
+        let res = BitcoinEntry.compile_impl(_coin, proto, signatures, vec![]);
+
+        // TODO: Does not match
+        dbg!(pre_signed.fee_estimate);
+        dbg!(res.as_ref().unwrap().fee);
+
+        res
     }
     pub fn signatures_from_proto(
         input: &Proto::PreSigningOutput<'_>,
