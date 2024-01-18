@@ -1,6 +1,6 @@
 mod common;
+use common::{hex, ONE_BTC};
 
-use common::{hex, MINER_FEE, ONE_BTC};
 use tw_bitcoin::aliases::*;
 use tw_bitcoin::entry::BitcoinEntry;
 use tw_coin_entry::coin_entry::CoinEntry;
@@ -116,7 +116,6 @@ fn input_selection_no_utxo_outputs() {
 
     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
     let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
-    let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
 
     // Create transaction with P2WPKH as output.
     let txid: Vec<u8> = vec![1; 32];
@@ -158,7 +157,6 @@ fn input_selection_no_utxo_outputs_with_change_output() {
 
     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
     let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
-    let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
 
     // Create transaction with P2WPKH as output.
     let txid: Vec<u8> = vec![1; 32];
@@ -410,7 +408,7 @@ fn input_selection_select_ascending() {
     let tx = signed.transaction.unwrap();
     assert_eq!(tx.version, 2);
 
-    // Inputs.
+    // Inputs (ascending; third < second < ...).
     assert_eq!(tx.inputs.len(), 2);
 
     assert_eq!(tx.inputs[0].txid, tx3.txid);

@@ -154,7 +154,8 @@ impl BitcoinEntry {
             .map(crate::modules::transactions::OutputBuilder::utxo_from_proto)
             .collect::<Result<Vec<_>>>()?;
 
-        // If automatic change output is enabled, a change script must be provided.
+        // If automatic change output creation is enabled (by default), a change
+        // script must be provided.
         let change_script_pubkey = if proto.disable_change_output {
             Cow::default()
         } else {
@@ -186,12 +187,15 @@ impl BitcoinEntry {
             disable_change_output: proto.disable_change_output,
         };
 
-        // Generate the sighashes to be signed.
+        // Generate the sighashes to be signed. This also selects the inputs
+        // according to the input selecter and appends a change output, if
+        // enabled.
         let utxo_presigning = tw_utxo::compiler::Compiler::preimage_hashes(utxo_signing);
         handle_utxo_error(&utxo_presigning.error)?;
 
         // Check whether the change output is present.
         if !proto.disable_change_output {
+            // Change output has been added.
             debug_assert_eq!(utxo_presigning.outputs.len(), utxo_outputs.len() + 1);
 
             let change_output = utxo_presigning
@@ -199,6 +203,7 @@ impl BitcoinEntry {
                 .last()
                 .expect("expected change output");
 
+            // Push it to the list of outputs.
             utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
                 value: change_output.value,
                 script_pubkey: change_output.script_pubkey.to_vec().into(),
@@ -253,8 +258,8 @@ impl BitcoinEntry {
 
         // Prepare all the outputs.
         let mut utxo_outputs = vec![];
-        for output in proto.outputs {
-            let utxo = crate::modules::transactions::OutputBuilder::utxo_from_proto(&output)?;
+        for output in &proto.outputs {
+            let utxo = crate::modules::transactions::OutputBuilder::utxo_from_proto(output)?;
 
             utxo_outputs.push(utxo);
         }
@@ -279,9 +284,13 @@ impl BitcoinEntry {
         let utxo_serialized = tw_utxo::compiler::Compiler::compile(utxo_preserializtion);
         handle_utxo_error(&utxo_serialized.error)?;
 
-        // Prepare `Proto::TransactionInput` protobufs for signing output.
+        let mut total_input_amount = 0;
+
+        // Prepare `Proto::TransactionInput` for end result.
         let mut proto_inputs = vec![];
         for input in utxo_input_claims {
+            total_input_amount += input.value;
+
             proto_inputs.push(Proto::TransactionInput {
                 txid: Cow::Owned(input.txid.to_vec()),
                 vout: input.vout,
@@ -295,7 +304,7 @@ impl BitcoinEntry {
             });
         }
 
-        // Prepare `Proto::TransactionOutput` protobufs for output.
+        // Prepare `Proto::TransactionOutput` for end result.
         let mut proto_outputs = vec![];
         for output in utxo_outputs {
             proto_outputs.push(Proto::TransactionOutput {
@@ -306,13 +315,29 @@ impl BitcoinEntry {
             });
         }
 
-        // Prepare `Proto::Transaction` protobuf for output.
+        // Prepare `Proto::Transaction` for end result.
         let transaction = Proto::Transaction {
             version: proto.version,
             lock_time: proto.lock_time,
             inputs: proto_inputs,
             outputs: proto_outputs,
         };
+
+        // Sanity check.
+        let total_output_amount = transaction
+            .outputs
+            .iter()
+            .map(|output| output.value)
+            .sum::<u64>();
+
+        // Sanity check.
+        debug_assert_eq!(transaction.inputs.len(), proto.inputs.len());
+        debug_assert_eq!(transaction.outputs.len(), proto.outputs.len());
+        // Every output is accounted for, including the fee.
+        debug_assert_eq!(
+            total_input_amount,
+            total_output_amount + utxo_serialized.fee
+        );
 
         // Return the full protobuf output.
         Ok(Proto::SigningOutput {

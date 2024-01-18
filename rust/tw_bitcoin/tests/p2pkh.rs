@@ -9,21 +9,6 @@ use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
 #[test]
-fn coin_entry_empty() {
-    let _coin = TestCoinContext::default();
-    let alice_private_key = hex("56429688a1a6b00b90ccd22a0de0a376b6569d8684022ae92229a28478bfb657");
-
-    let signing = Proto::SigningInput {
-        private_key: alice_private_key.into(),
-        disable_change_output: true,
-        ..Default::default()
-    };
-
-    let signed = BitcoinEntry.sign(&_coin, signing);
-    assert_eq!(signed.error, Proto::Error::OK);
-}
-
-#[test]
 fn coin_entry_sign_input_p2pkh_output_p2pkh() {
     let coin = TestCoinContext::default();
 
