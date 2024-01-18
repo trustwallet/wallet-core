@@ -47,14 +47,14 @@ fn input_selection_default_values() {
 
     let signed = BitcoinEntry.sign(&coin, signing);
 
-	// By default, we mandate that a change output is set.
-	assert_eq!(signed.error, Proto::Error::Error_invalid_change_output);
-	assert_eq!(signed.error_message, "Error_invalid_change_output");
-	assert_eq!(signed.transaction, None);
-	assert!(signed.encoded.is_empty());
-	assert!(signed.txid.is_empty());
-	assert_eq!(signed.weight, 0);
-	assert_eq!(signed.fee, 0);
+    // By default, we mandate that a change output is set.
+    assert_eq!(signed.error, Proto::Error::Error_invalid_change_output);
+    assert_eq!(signed.error_message, "Error_invalid_change_output");
+    assert_eq!(signed.transaction, None);
+    assert!(signed.encoded.is_empty());
+    assert!(signed.txid.is_empty());
+    assert_eq!(signed.weight, 0);
+    assert_eq!(signed.fee, 0);
 }
 
 #[test]
@@ -114,7 +114,7 @@ fn input_selection_select_in_order() {
 
     let change_output = Proto::Output {
         // Will be set for us.
-		// TODO: Enforce that this is set to zero?
+        // TODO: Enforce that this is set to zero?
         value: 0,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
@@ -123,63 +123,54 @@ fn input_selection_select_in_order() {
         }),
     };
 
-	// TODO:
-	// * Return an error if fee_per_vb is zero?
-	// * disable_change_output = false on default?
+    // TODO:
+    // * Return an error if fee_per_vb is zero?
+    // * disable_change_output = false on default?
     let signing = Proto::SigningInput {
         private_key: alice_private_key.as_slice().into(),
         inputs: vec![tx1.clone(), tx2, tx3],
         outputs: vec![out1.clone()],
-		// We set the change output accordingly.
-		change_output: Some(change_output),
-		fee_per_vb: 50,
+        // We set the change output accordingly.
+        change_output: Some(change_output),
+        fee_per_vb: 50,
         ..Default::default()
     };
 
     let signed = BitcoinEntry.sign(&coin, signing);
 
-	//debug_assert_eq!(signed.fee, 16800);
-
-	//dbg!(&signed.transaction);
-    //let encoded = tw_encoding::hex::encode(signed.encoded, false);
-
     assert_eq!(signed.error, Proto::Error::OK);
-	assert!(signed.error_message.is_empty());
-	//assert_eq!(signed.encoded);
-	//assert_eq!(signed.txid);
-	//assert_eq!(signed.weight);
-	assert_eq!(signed.fee, 7_050);
+    assert!(signed.error_message.is_empty());
+    assert_eq!(signed.weight, 560);
+    assert_eq!(signed.fee, 7_000);
 
-	let tx = signed.transaction.unwrap();
-	assert_eq!(tx.version, 2);
-	//assert_eq!(tx.lock_time, 2);
+    let tx = signed.transaction.unwrap();
+    assert_eq!(tx.version, 2);
 
-	// Inputs
+    // Inputs
 
-	// Only one input was selected (ONE_BTC).
-	assert_eq!(tx.inputs.len(), 1);
-	assert_eq!(tx.inputs[0].txid, tx1.txid);
-	assert_eq!(tx.inputs[0].txid, vec![1; 32]);
-	assert_eq!(tx.inputs[0].vout, 0);
-	assert_eq!(tx.inputs[0].sequence, u32::MAX);
-	assert!(tx.inputs[0].script_sig.is_empty());
-	assert!(!tx.inputs[0].witness_items.is_empty());
+    // Only one input was selected (ONE_BTC).
+    assert_eq!(tx.inputs.len(), 1);
+    assert_eq!(tx.inputs[0].txid, tx1.txid);
+    assert_eq!(tx.inputs[0].txid, vec![1; 32]);
+    assert_eq!(tx.inputs[0].vout, 0);
+    assert_eq!(tx.inputs[0].sequence, u32::MAX);
+    assert!(tx.inputs[0].script_sig.is_empty());
+    assert!(!tx.inputs[0].witness_items.is_empty());
 
-	// Outputs.
-	assert_eq!(tx.outputs.len(), 2);
+    // Outputs.
+    assert_eq!(tx.outputs.len(), 2);
 
-	// Output for recipient.
-	assert!(!tx.outputs[0].script_pubkey.is_empty());
-	assert_eq!(tx.outputs[0].value, out1.value);
-	assert_eq!(tx.outputs[0].value, 50_000_000);
-	assert!(tx.outputs[0].taproot_payload.is_empty());
-	assert!(tx.outputs[0].control_block.is_empty());
+    // Output for recipient.
+    assert!(!tx.outputs[0].script_pubkey.is_empty());
+    assert_eq!(tx.outputs[0].value, out1.value);
+    assert_eq!(tx.outputs[0].value, 50_000_000);
+    assert!(tx.outputs[0].taproot_payload.is_empty());
+    assert!(tx.outputs[0].control_block.is_empty());
 
-	// Change output.
-	assert!(!tx.outputs[1].script_pubkey.is_empty());
-	// TODO:
-	assert_eq!(tx.outputs[1].value, ONE_BTC - 50_000_000 - 5750);
-	//assert_eq!(tx.outputs[1].value, tx1.value - out1.value - signed.fee);
-	assert!(tx.outputs[1].taproot_payload.is_empty());
-	assert!(tx.outputs[1].control_block.is_empty());
+    // Change output.
+    assert!(!tx.outputs[1].script_pubkey.is_empty());
+    assert_eq!(tx.outputs[1].value, tx1.value - out1.value - signed.fee);
+    assert_eq!(tx.outputs[1].value, ONE_BTC - 50_000_000 - 7_000);
+    assert!(tx.outputs[1].taproot_payload.is_empty());
+    assert!(tx.outputs[1].control_block.is_empty());
 }

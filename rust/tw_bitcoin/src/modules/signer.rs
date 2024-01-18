@@ -36,23 +36,30 @@ impl Signer {
             return Err(Error::from(pre_signed.error));
         }
 
-        debug_assert!(pre_signed.utxo_inputs.len() <= proto.inputs.len());
+        // Sanity check.
+        debug_assert!(proto.inputs.len() >= pre_signed.utxo_inputs.len());
         debug_assert_eq!(pre_signed.utxo_inputs.len(), pre_signed.sighashes.len());
-
-        // By default, we enforce that a change output is set.
         if proto.disable_change_output {
-            debug_assert_eq!(pre_signed.utxo_outputs.len(), proto.outputs.len());
+            debug_assert_eq!(proto.outputs.len(), pre_signed.utxo_outputs.len());
         } else {
-            debug_assert_eq!(pre_signed.utxo_outputs.len(), proto.outputs.len() + 1); // plus change output.
+            // If a change output was generated...
+            debug_assert_eq!(proto.outputs.len() + 1, pre_signed.utxo_outputs.len()); // plus change output.
 
             // Update the given change output with the specified amount and push
             // it to the proto structure.
-            let change_output_amount = pre_signed.utxo_outputs.last().expect("No change output provided").value;
+            let change_output_amount = pre_signed
+                .utxo_outputs
+                .last()
+                .expect("No change output provided")
+                .value;
 
             let mut change_output = proto.change_output.clone().expect("change output expected");
             change_output.value = change_output_amount;
             proto.outputs.push(change_output);
         }
+
+        // Sanity check
+        debug_assert_eq!(proto.outputs.len(), pre_signed.utxo_outputs.len());
 
         // The `pre_signed` result contains a list of selected inputs in order
         // to cover the output amount and fees, assuming the input selector was
@@ -80,17 +87,27 @@ impl Signer {
             proto.dangerous_use_fixed_schnorr_rng,
         )?;
 
+        // Sanity check.
         debug_assert_eq!(signatures.len(), proto.inputs.len());
         debug_assert_eq!(signatures.len(), pre_signed.sighashes.len());
+        debug_assert_eq!(proto.inputs.len(), pre_signed.utxo_inputs.len());
+        debug_assert_eq!(proto.outputs.len(), pre_signed.utxo_outputs.len());
 
         // Construct the final transaction.
-        let res = BitcoinEntry.compile_impl(_coin, proto, signatures, vec![]);
-
-        // TODO: Does not match
-        dbg!(pre_signed.fee_estimate);
-        dbg!(res.as_ref().unwrap().fee);
-
-        res
+        BitcoinEntry
+            .compile_impl(_coin, proto, signatures, vec![])
+            // Note: the fee that we used for estimation might be SLIGHLY off
+            // from the final fee. This is due to the fact that we must set a
+            // change output (which must consider fees) before we can calculate
+            // the final fee. This leads to a chicken-and-egg problem. However,
+            // the fee difference, should there be one, is generally as small as
+            // one weight unit. Hence, we overwrite the final fee with the
+            // estimated fee.
+            .map(|mut res| {
+                res.weight = pre_signed.weight_estimate;
+                res.fee = pre_signed.fee_estimate;
+                res
+            })
     }
     pub fn signatures_from_proto(
         input: &Proto::PreSigningOutput<'_>,

@@ -147,7 +147,7 @@ impl BitcoinEntry {
             .map(crate::modules::transactions::InputBuilder::utxo_from_proto)
             .collect::<Result<Vec<_>>>()?;
 
-        // Convert output builders into Utxo outputs.
+        // Convert output builders into Utxo outputs (does not contain the change output).
         let mut utxo_outputs = proto
             .outputs
             .iter()
@@ -190,14 +190,15 @@ impl BitcoinEntry {
         let utxo_presigning = tw_utxo::compiler::Compiler::preimage_hashes(utxo_signing);
         handle_utxo_error(&utxo_presigning.error)?;
 
-        // If a change output was created by the Utxo compiler, we return it here too.
-        if utxo_presigning.outputs.len() == utxo_outputs.len() + 1 {
+        // Check whether the change output is present.
+        if !proto.disable_change_output {
+            debug_assert_eq!(utxo_presigning.outputs.len(), utxo_outputs.len() + 1);
+
             let change_output = utxo_presigning
                 .outputs
                 .last()
                 .expect("expected change output");
 
-            // TODO: Is the fee estimate correct when pushing this?
             utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
                 value: change_output.value,
                 script_pubkey: change_output.script_pubkey.to_vec().into(),
@@ -205,6 +206,10 @@ impl BitcoinEntry {
                 taproot_payload: Default::default(),
             })
         }
+
+        // Sanity check.
+        debug_assert!(utxo_presigning.inputs.len() <= proto.inputs.len());
+        debug_assert_eq!(utxo_presigning.outputs.len(), utxo_outputs.len());
 
         Ok(Proto::PreSigningOutput {
             error: Proto::Error::OK,
@@ -246,7 +251,7 @@ impl BitcoinEntry {
             utxo_input_claims.push(utxo_claim);
         }
 
-        // Process all the outputs.
+        // Prepare all the outputs.
         let mut utxo_outputs = vec![];
         for output in proto.outputs {
             let utxo = crate::modules::transactions::OutputBuilder::utxo_from_proto(&output)?;
