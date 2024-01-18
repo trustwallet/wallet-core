@@ -93,21 +93,41 @@ impl Signer {
         debug_assert_eq!(proto.inputs.len(), pre_signed.utxo_inputs.len());
         debug_assert_eq!(proto.outputs.len(), pre_signed.utxo_outputs.len());
 
+        // Prepare values for sanity check.
+        let total_input_amount = proto.inputs.iter().map(|input| input.value).sum::<u64>();
+        let total_output_amount = proto.outputs.iter().map(|output| output.value).sum::<u64>();
+
         // Construct the final transaction.
-        BitcoinEntry
-            .compile_impl(_coin, proto, signatures, vec![])
-            // Note: the fee that we used for estimation might be SLIGHLY off
-            // from the final fee. This is due to the fact that we must set a
-            // change output (which must consider fees) before we can calculate
-            // the final fee. This leads to a chicken-and-egg problem. However,
-            // the fee difference, should there be one, is generally as small as
-            // one weight unit. Hence, we overwrite the final fee with the
-            // estimated fee.
-            .map(|mut res| {
-                res.weight = pre_signed.weight_estimate;
-                res.fee = pre_signed.fee_estimate;
-                res
-            })
+        let mut compiled = BitcoinEntry.compile_impl(_coin, proto, signatures, vec![])?;
+
+        // Note: the fee that we used for estimation might be SLIGHLY off
+        // from the final fee. This is due to the fact that we must set a
+        // change output (which must consider fees) before we can calculate
+        // the final fee. This leads to a chicken-and-egg problem. However,
+        // the fee difference, should there be one, is generally as small as
+        // one weight unit. Hence, we overwrite the final fee with the
+        // estimated fee.
+        compiled.weight = pre_signed.weight_estimate;
+        //compiled.fee = pre_signed.fee_estimate;
+
+        // Sanity check.
+        let compiled_total_output_amount = compiled
+            .transaction
+            .as_ref()
+            .expect("No transaction was constructed")
+            .outputs
+            .iter()
+            .map(|output| output.value)
+            .sum::<u64>();
+
+        debug_assert_eq!(total_output_amount, compiled_total_output_amount);
+        // Every output is accounted for, including the fee.
+        debug_assert_eq!(
+            total_input_amount,
+            compiled_total_output_amount + compiled.fee
+        );
+
+        Ok(compiled)
     }
     pub fn signatures_from_proto(
         input: &Proto::PreSigningOutput<'_>,

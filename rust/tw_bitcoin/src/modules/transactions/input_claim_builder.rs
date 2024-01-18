@@ -158,6 +158,7 @@ impl InputClaimBuilder {
         let claim = UtxoProto::TxInClaim {
             txid: input.txid.to_vec().into(),
             vout: input.vout,
+            value: input.value,
             sequence: input.sequence,
             script_sig: script_sig.to_vec().into(),
             witness_items: witness

@@ -368,6 +368,7 @@ impl Compiler<StandardBitcoinContext> {
             output: vec![],
         };
 
+        let mut total_input_amount = 0;
         for txin in &proto.inputs {
             let txid = Txid::from_slice(txin.txid.as_ref())
                 .map_err(|_| Error::from(Proto::Error::Error_invalid_txid))?;
@@ -381,6 +382,8 @@ impl Compiler<StandardBitcoinContext> {
                     .map(|s| s.as_ref())
                     .collect::<Vec<&[u8]>>(),
             );
+
+            total_input_amount += txin.value;
 
             tx.input.push(TxIn {
                 previous_output: OutPoint { txid, vout },
@@ -411,7 +414,12 @@ impl Compiler<StandardBitcoinContext> {
         let txid: Vec<u8> = tx.txid().as_byte_array().iter().copied().rev().collect();
 
         let weight = tx.weight().to_wu();
-        let fee = (weight + 3) / 4 * proto.weight_base;
+
+        // Calculate the EFFECTIVE fee.
+        let total_output_amount = tx.output.iter().map(|out| out.value).sum::<u64>();
+        // TODO: Return an error?
+        debug_assert!(total_input_amount >= total_output_amount);
+        let fee = total_input_amount - total_output_amount;
 
         Ok(Proto::SerializedTransaction {
             error: Proto::Error::OK,

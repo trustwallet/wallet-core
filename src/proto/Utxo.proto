@@ -192,14 +192,17 @@ message TxInClaim {
     // The index of the referenced output.
     uint32 vout = 2;
 
+    // The value of this input, such as satoshis.
+    uint64 value = 3;
+
     // The sequence number (TODO).
-    uint32 sequence = 3;
+    uint32 sequence = 4;
 
     // The script used for claiming an input.
-    bytes script_sig = 4;
+    bytes script_sig = 5;
 
     // The script used for claiming an input.
-    repeated bytes witness_items = 5;
+    repeated bytes witness_items = 6;
 }
 
 message SerializedTransaction {
