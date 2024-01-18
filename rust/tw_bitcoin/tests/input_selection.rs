@@ -18,7 +18,6 @@ fn input_selection_no_change_output() {
     let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
     let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
 
-    // Create transaction with P2WPKH as output.
     let txid: Vec<u8> = vec![1; 32];
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
@@ -68,7 +67,6 @@ fn input_selection_no_utxo_inputs() {
     let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
     let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
 
-    // Create transaction with P2WPKH as output.
     let out1 = Proto::Output {
         value: 50_000_000, // 0.5 BTC
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
@@ -117,7 +115,6 @@ fn input_selection_no_utxo_outputs() {
     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
     let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
 
-    // Create transaction with P2WPKH as output.
     let txid: Vec<u8> = vec![1; 32];
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
@@ -152,13 +149,73 @@ fn input_selection_no_utxo_outputs() {
 }
 
 #[test]
+fn input_selection_insufficient_inputs() {
+    let coin = TestCoinContext::default();
+
+    let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
+    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
+    let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
+
+    let txid: Vec<u8> = vec![1; 32];
+    let tx1 = Proto::Input {
+        txid: txid.as_slice().into(),
+        vout: 0,
+        value: ONE_BTC,
+        sighash_type: UtxoProto::SighashType::All,
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
+            variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
+        }),
+        ..Default::default()
+    };
+
+    let out1 = Proto::Output {
+        value: ONE_BTC * 2,
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
+            variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
+                to_address: ProtoPubkeyOrHash::pubkey(bob_pubkey.as_slice().into()),
+            }),
+        }),
+    };
+
+    let change_output = Proto::Output {
+        // Will be set for us.
+        value: 0,
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
+            variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
+                to_address: ProtoPubkeyOrHash::pubkey(alice_pubkey.as_slice().into()),
+            }),
+        }),
+    };
+
+    let signing = Proto::SigningInput {
+        private_key: alice_private_key.as_slice().into(),
+        // No inputs.
+        inputs: vec![tx1],
+        outputs: vec![out1],
+        // We set the change output accordingly.
+        change_output: Some(change_output),
+        ..Default::default()
+    };
+
+    let signed = BitcoinEntry.sign(&coin, signing);
+
+    // Input does not cover output.
+    assert_eq!(signed.error, Proto::Error::Error_utxo_insufficient_inputs);
+    assert_eq!(signed.error_message, "Error_utxo_insufficient_inputs");
+    assert_eq!(signed.transaction, None);
+    assert!(signed.encoded.is_empty());
+    assert!(signed.txid.is_empty());
+    assert_eq!(signed.weight, 0);
+    assert_eq!(signed.fee, 0);
+}
+
+#[test]
 fn input_selection_no_utxo_outputs_with_change_output() {
     let coin = TestCoinContext::default();
 
     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
     let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
 
-    // Create transaction with P2WPKH as output.
     let txid: Vec<u8> = vec![1; 32];
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
@@ -211,7 +268,6 @@ fn input_selection_select_in_order() {
     let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
     let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
 
-    // Create transaction with P2WPKH as output.
     let txid: Vec<u8> = vec![1; 32];
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
@@ -324,7 +380,6 @@ fn input_selection_select_ascending() {
     let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
     let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
 
-    // Create transaction with P2WPKH as output.
     let txid: Vec<u8> = vec![1; 32];
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
