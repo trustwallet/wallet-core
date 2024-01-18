@@ -176,9 +176,10 @@ impl BitcoinPlanBuilder {
             private_key: proto.private_key.to_vec().into(),
             inputs: vec![brc20_input],
             outputs: vec![tagged_output],
+            // Only one input, the COMMIT transaction.
             input_selector: UtxoProto::InputSelector::UseAll,
-            change_output: Default::default(),
-            fee_per_vb: 0,
+            fee_per_vb: proto.fee_per_vb,
+            // No change output.
             disable_change_output: true,
             ..Default::default()
         };
