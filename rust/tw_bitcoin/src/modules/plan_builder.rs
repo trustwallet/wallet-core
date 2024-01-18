@@ -97,13 +97,13 @@ impl BitcoinPlanBuilder {
         };
 
         // We can now determine the fee of the reveal transaction.
-        let dummy_signed = BitcoinEntry.preimage_hashes(_coin, dummy_reveal);
-        if dummy_signed.error != Proto::Error::OK {
-            return Err(Error::from(dummy_signed.error));
+        let dummy_preimage = BitcoinEntry.preimage_hashes(_coin, dummy_reveal);
+        if dummy_preimage.error != Proto::Error::OK {
+            return Err(Error::from(dummy_preimage.error));
         }
 
         // The estimated fee for the REVEAL transaction.
-        let reveal_fee_estimate = dummy_signed.fee_estimate;
+        let reveal_fee_estimate = dummy_preimage.fee_estimate;
 
         // Create the BRC20 output for the COMMIT transaction; we set the
         // amount to the estimated fee (REVEAL) plus the dust limit (`tagged_output.value`).
@@ -184,6 +184,9 @@ impl BitcoinPlanBuilder {
         };
 
         let reveal_signed = BitcoinEntry.sign(_coin, reveal_signing);
+        if reveal_signed.error != Proto::Error::OK {
+            return Err(Error::from(reveal_signed.error));
+        }
 
         Ok(Proto::mod_TransactionPlan::Brc20Plan {
             commit: Some(commit_signed),
