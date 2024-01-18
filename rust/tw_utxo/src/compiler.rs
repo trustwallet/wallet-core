@@ -412,13 +412,11 @@ impl Compiler<StandardBitcoinContext> {
         // The transaction identifier, which we represent in
         // non-reversed/non-network order.
         let txid: Vec<u8> = tx.txid().as_byte_array().iter().copied().rev().collect();
-
         let weight = tx.weight().to_wu();
 
         // Calculate the EFFECTIVE fee.
         let total_output_amount = tx.output.iter().map(|out| out.value).sum::<u64>();
-        // TODO: Return an error?
-        debug_assert!(total_input_amount >= total_output_amount);
+        debug_assert!(total_input_amount >= total_output_amount); // TODO: Return an error?
         let fee = total_input_amount - total_output_amount;
 
         Ok(Proto::SerializedTransaction {

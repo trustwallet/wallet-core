@@ -142,6 +142,7 @@ fn input_selection_select_in_order() {
     assert!(signed.error_message.is_empty());
     assert_eq!(signed.weight, 560);
     assert_eq!(signed.fee, 7_000);
+    assert_eq!((signed.weight + 3) / 4 * 50, signed.fee);
 
     let tx = signed.transaction.unwrap();
     assert_eq!(tx.version, 2);

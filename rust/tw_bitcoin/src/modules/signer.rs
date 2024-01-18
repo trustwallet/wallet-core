@@ -58,9 +58,6 @@ impl Signer {
             proto.outputs.push(change_output);
         }
 
-        // Sanity check
-        debug_assert_eq!(proto.outputs.len(), pre_signed.utxo_outputs.len());
-
         // The `pre_signed` result contains a list of selected inputs in order
         // to cover the output amount and fees, assuming the input selector was
         // used. We therefore need to update the proto structure.
@@ -79,6 +76,10 @@ impl Signer {
             proto.inputs.push(available[index].clone());
         }
 
+        // Sanity check.
+        debug_assert_eq!(proto.outputs.len(), pre_signed.utxo_outputs.len());
+        debug_assert_eq!(proto.inputs.len(), pre_signed.utxo_inputs.len());
+
         // Sign the sighashes.
         let signatures = crate::modules::signer::Signer::signatures_from_proto(
             &pre_signed,
@@ -90,8 +91,6 @@ impl Signer {
         // Sanity check.
         debug_assert_eq!(signatures.len(), proto.inputs.len());
         debug_assert_eq!(signatures.len(), pre_signed.sighashes.len());
-        debug_assert_eq!(proto.inputs.len(), pre_signed.utxo_inputs.len());
-        debug_assert_eq!(proto.outputs.len(), pre_signed.utxo_outputs.len());
 
         // Prepare values for sanity check.
         let total_input_amount = proto.inputs.iter().map(|input| input.value).sum::<u64>();
@@ -102,13 +101,12 @@ impl Signer {
 
         // Note: the fee that we used for estimation might be SLIGHLY off
         // from the final fee. This is due to the fact that we must set a
-        // change output (which must consider fees) before we can calculate
+        // change output (which must consider the fee) before we can calculate
         // the final fee. This leads to a chicken-and-egg problem. However,
         // the fee difference, should there be one, is generally as small as
         // one weight unit. Hence, we overwrite the final fee with the
         // estimated fee.
         compiled.weight = pre_signed.weight_estimate;
-        //compiled.fee = pre_signed.fee_estimate;
 
         // Sanity check.
         let compiled_total_output_amount = compiled
@@ -120,12 +118,9 @@ impl Signer {
             .map(|output| output.value)
             .sum::<u64>();
 
-        debug_assert_eq!(total_output_amount, compiled_total_output_amount);
         // Every output is accounted for, including the fee.
-        debug_assert_eq!(
-            total_input_amount,
-            compiled_total_output_amount + compiled.fee
-        );
+        debug_assert_eq!(total_output_amount, compiled_total_output_amount);
+        debug_assert_eq!(total_input_amount, total_output_amount + compiled.fee);
 
         Ok(compiled)
     }
