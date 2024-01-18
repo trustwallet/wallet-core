@@ -425,7 +425,7 @@ message TransactionPlan {
     }
 
     message Brc20Plan {
-        SigningInput commit = 1;
-        SigningInput reveal = 2;
+        SigningOutput commit = 1;
+        SigningOutput reveal = 2;
     }
 }

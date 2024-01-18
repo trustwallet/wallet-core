@@ -89,6 +89,7 @@ impl BitcoinPlanBuilder {
         let dummy_reveal = Proto::SigningInput {
             inputs: vec![dummy_brc20_input],
             outputs: vec![tagged_output.clone()],
+            // The reveal transaction has exactly one input.
             input_selector: UtxoProto::InputSelector::UseAll,
             // Disable change output creation.
             fee_per_vb: proto.fee_per_vb,
@@ -97,17 +98,18 @@ impl BitcoinPlanBuilder {
         };
 
         // We can now determine the fee of the reveal transaction.
-        let dummy_presigned = BitcoinEntry.preimage_hashes(_coin, dummy_reveal);
-        if dummy_presigned.error != Proto::Error::OK {
-            return Err(Error::from(dummy_presigned.error));
+        let dummy_signed = BitcoinEntry.preimage_hashes(_coin, dummy_reveal);
+        if dummy_signed.error != Proto::Error::OK {
+            return Err(Error::from(dummy_signed.error));
         }
 
-        assert_eq!(dummy_presigned.error, Proto::Error::OK);
-        let reveal_fee_estimate = dummy_presigned.fee_estimate;
+        // The estimated fee for the REVEAL transaction.
+        let reveal_fee_estimate = dummy_signed.fee_estimate;
 
         // Create the BRC20 output for the COMMIT transaction; we set the
         // amount to the estimated fee (REVEAL) plus the dust limit (`tagged_output.value`).
         let brc20_output = Proto::Output {
+            // Consider the reveal fee plus the tagged output value (normally 546 sats).
             value: reveal_fee_estimate + tagged_output.value,
             to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
                 variant: ProtoOutputBuilder::brc20_inscribe(
@@ -129,9 +131,11 @@ impl BitcoinPlanBuilder {
             None
         };
 
-        // Create the full COMMIT transaction with the appropriately selected inputs.
+        // Create the actual COMMIT transaction with the appropriately selected inputs.
         let commit_signing = Proto::SigningInput {
             private_key: proto.private_key.to_vec().into(),
+            // We pass on the full specified input set. The library will select
+            // this accordingly depending on the input selector.
             inputs: proto
                 .inputs
                 .iter()
@@ -146,62 +150,20 @@ impl BitcoinPlanBuilder {
             ..Default::default()
         };
 
-        let mut commit_signing = pre_processor(commit_signing);
-
         // We now determine the Txid of the COMMIT transaction, which we will have
         // to use in the REVEAL transaction.
-        let presigned = BitcoinEntry.preimage_hashes(_coin, commit_signing.clone());
-        if presigned.error != Proto::Error::OK {
-            return Err(Error::from(presigned.error));
+        let commit_signed = BitcoinEntry.sign(_coin, commit_signing.clone());
+        if commit_signed.error != Proto::Error::OK {
+            return Err(Error::from(commit_signed.error));
         }
 
-        assert_eq!(presigned.error, Proto::Error::OK);
-        let commit_txid: Vec<u8> = presigned.txid.to_vec().iter().copied().rev().collect();
+        let commit_txid: Vec<u8> = commit_signed.txid.to_vec().iter().copied().rev().collect();
 
-        // Create a list of the selected input Txids, as indicated by the
-        // `InputSelector`.
-        let selected_txids: Vec<_> = presigned
-            .utxo_inputs
-            .iter()
-            .map(|utxo| utxo.txid.clone())
-            .collect();
-
-        // Create the list of selected inputs and update the COMMIT transaction.
-        let selected_inputs: Vec<_> = proto
-            .inputs
-            .into_iter()
-            .filter(|input| selected_txids.contains(&input.txid))
-            .map(super::utils::hard_clone_proto_input)
-            .collect::<Result<_>>()?;
-
-        commit_signing.inputs = selected_inputs;
-
-        // Update the change amount to calculated amount.
-        if !proto.disable_change_output && presigned.utxo_outputs.len() == 2 {
-            let change_amount = presigned
-                .utxo_outputs
-                .last()
-                .expect("No Utxo outputs generated")
-                .value;
-
-            let mut change_output = change_output.expect("change output expected");
-            change_output.value = change_amount;
-
-            commit_signing
-                .outputs
-                .push(hard_clone_proto_output(change_output)?);
-        }
-
-        commit_signing.input_selector = UtxoProto::InputSelector::UseAll;
-        commit_signing.disable_change_output = true;
-        commit_signing.fee_per_vb = 0;
-        commit_signing.change_output = Default::default();
-
-        // Now we construct the *actual* REVEAL transaction.
-
+        // Create the actual REVEAL transaction with the generated COMMIT input.
         let brc20_input = Proto::Input {
             value: brc20_output_value,
-            txid: commit_txid.into(), // Reference COMMIT transaction.
+            // Reference COMMIT transaction.
+            txid: commit_txid.into(),
             sighash_type: UtxoProto::SighashType::UseDefault,
             to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
                 variant: ProtoInputBuilder::brc20_inscribe(brc20_info.clone()),
@@ -221,11 +183,11 @@ impl BitcoinPlanBuilder {
             ..Default::default()
         };
 
-        let reveal_signing = pre_processor(reveal_signing);
+        let reveal_signed = BitcoinEntry.sign(_coin, reveal_signing);
 
         Ok(Proto::mod_TransactionPlan::Brc20Plan {
-            commit: Some(commit_signing),
-            reveal: Some(reveal_signing),
+            commit: Some(commit_signed),
+            reveal: Some(reveal_signed),
         })
     }
 }

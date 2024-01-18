@@ -9,9 +9,7 @@ use tw_coin_entry::test_utils::test_context::TestCoinContext;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
-// TODO!!
 #[test]
-#[ignore]
 fn transaction_plan_compose_brc20() {
     let _coin = TestCoinContext::default();
 
@@ -96,99 +94,83 @@ fn transaction_plan_compose_brc20() {
     let built = builder.plan(&_coin, compose);
     assert_eq!(built.error, Proto::Error::OK);
 
+    // Build the plan, returning the signed COMMIT and REVEAL transactions.
     let Proto::mod_TransactionPlan::OneOfplan::brc20(plan) = built.plan else { panic!() };
 
-    // Check basics of the COMMIT transaction.
-    let commit_signing = {
-        let mut commit = plan.commit.unwrap();
-        // One input covers all outputs.
-        assert_eq!(commit.version, 2);
-        assert_eq!(commit.private_key, alice_private_key);
-        assert_eq!(commit.inputs.len(), 1);
-        // BRC20 inscription output + change.
-        assert_eq!(commit.outputs.len(), 2);
-        // Use inputs as provided (already selected by TransactionPlan).
-        assert_eq!(commit.input_selector, UtxoProto::InputSelector::UseAll);
-        assert_eq!(commit.fee_per_vb, 0);
-        // Change output generation is disabled, inclulded in `commit.outputs`.
-        assert_eq!(commit.change_output, Default::default());
-        assert!(commit.disable_change_output);
+    let commit = plan.commit.unwrap();
+    let reveal = plan.reveal.unwrap();
 
-        // Check first input.
-        assert_eq!(commit.inputs[0], tx1);
+    let rev_commit_txid: Vec<u8> = {
+        assert_eq!(commit.error, Proto::Error::OK);
+        assert!(commit.error_message.is_empty());
+        assert_eq!(commit.weight, 608);
+        assert_eq!(commit.fee, (commit.weight + 3) / 4 * 25);
+        assert_eq!(commit.fee, 3_800);
 
-        // Check first output.
-        let res_out_brc20 = &commit.outputs[0];
-        assert_eq!(res_out_brc20.value, 3846);
-        let Proto::mod_Output::OneOfto_recipient::builder(builder) = &res_out_brc20.to_recipient else { panic!() };
-        let Proto::mod_Output::mod_OutputBuilder::OneOfvariant::brc20_inscribe(brc20) = &builder.variant else { panic!() };
-        assert_eq!(brc20.inscribe_to, alice_pubkey);
-        assert_eq!(brc20.ticker, "oadf");
-        assert_eq!(brc20.transfer_amount, 20);
+        let tx = commit.transaction.unwrap();
+        assert_eq!(tx.version, 2);
 
-        // Check second output (ie. change output).
-        let res_out_change = &commit.outputs[1];
-        assert_eq!(res_out_change.value, ONE_BTC - 3846 - 3175); // Change: tx1 value - out1 value
-        assert_eq!(res_out_change.to_recipient, change_output.to_recipient);
+        // Inputs, only one input was selected (ONE_BTC * 2).
+        assert_eq!(tx.inputs.len(), 1);
+        assert_eq!(tx.inputs[0].txid, tx1.txid);
+        assert_eq!(tx.inputs[0].vout, 0);
+        assert_eq!(tx.inputs[0].sequence, u32::MAX);
+        assert!(tx.inputs[0].script_sig.is_empty());
+        assert!(!tx.inputs[0].witness_items.is_empty());
 
-        commit.private_key = alice_private_key.clone().into();
-        commit
-    };
+        // Outputs (BRC20 inscription + change output).
+        assert_eq!(tx.outputs.len(), 2);
 
-    // Check basics of the REVEAL transaction.
-    let reveal_signing = {
-        let mut reveal = plan.reveal.unwrap();
-        assert_eq!(reveal.version, 2);
-        assert_eq!(reveal.private_key, alice_private_key);
-        // One inputs covers all outputs.
-        assert_eq!(reveal.inputs.len(), 1);
-        assert_eq!(reveal.outputs.len(), 1);
-        // Use inputs as provided.
-        assert_eq!(reveal.input_selector, UtxoProto::InputSelector::UseAll);
-        assert_eq!(reveal.fee_per_vb, 0);
-        // Change output generation is disabled.
-        assert_eq!(reveal.change_output, Default::default());
-        assert!(reveal.disable_change_output);
+        // Output for recipient.
+        assert!(!tx.outputs[0].script_pubkey.is_empty());
+        // Since this output is used as a single input in the REVEAL
+        // transaction, the amount of stats here covers just enough for the
+        // REVEAL fee plus the tagged satoshis.
+        assert_eq!(tx.outputs[0].value, reveal.fee + tagged_output.value);
+        assert_eq!(tx.outputs[0].value, 3846);
+        assert!(!tx.outputs[0].taproot_payload.is_empty());
+        assert!(!tx.outputs[0].control_block.is_empty());
 
-        // Check first and only input.
-        let res_in_brc20 = &reveal.inputs[0];
-        //assert_eq!(plan_input.txid, )
-        assert_eq!(res_in_brc20.sequence, u32::MAX);
-        assert_eq!(res_in_brc20.value, 3846);
+        // Change output.
+        assert!(!tx.outputs[1].script_pubkey.is_empty());
         assert_eq!(
-            res_in_brc20.sighash_type,
-            UtxoProto::SighashType::UseDefault
+            tx.outputs[1].value,
+            tx1.value - tx.outputs[0].value - commit.fee
         );
-        let Proto::mod_Input::OneOfto_recipient::builder(builder) = &res_in_brc20.to_recipient else { panic!() };
-        let Proto::mod_Input::mod_InputBuilder::OneOfvariant::brc20_inscribe(brc20) = &builder.variant else { panic!() };
-        assert_eq!(brc20.inscribe_to, alice_pubkey);
-        assert_eq!(brc20.ticker, "oadf");
-        assert_eq!(brc20.transfer_amount, 20);
+        assert_eq!(tx.outputs[1].value, ONE_BTC - 3846 - 3_800);
+        assert!(tx.outputs[1].taproot_payload.is_empty());
+        assert!(tx.outputs[1].control_block.is_empty());
 
-        // Check first and only output.
-        assert_eq!(reveal.outputs[0], tagged_output);
-
-        reveal.private_key = alice_private_key.into();
-        reveal
+        commit.txid.iter().copied().rev().collect()
     };
 
-    // Signed both transactions from the returned plan.
-    let commit_signed = BitcoinEntry.sign(&_coin, commit_signing);
-    assert_eq!(commit_signed.error, Proto::Error::OK);
-    let reveal_signed = BitcoinEntry.sign(&_coin, reveal_signing);
-    assert_eq!(reveal_signed.error, Proto::Error::OK);
+    {
+        assert_eq!(reveal.error, Proto::Error::OK);
+        assert!(reveal.error_message.is_empty());
+        assert_eq!(reveal.weight, 527);
+        assert_eq!(reveal.fee, (reveal.weight + 3) / 4 * 25);
+        assert_eq!(reveal.fee, 3_300);
 
-    // Note that the API returns this in a non-reversed manner, so we need to reverse it first.
-    let commit_txid = commit_signed.txid.iter().copied().rev().collect::<Vec<_>>();
+        let tx = reveal.transaction.unwrap();
+        assert_eq!(tx.version, 2);
 
-    // IMPORTANT: The input of the REVEAL transaction must reference the COMMIT transaction (Id).
-    assert_eq!(
-        commit_txid,
-        reveal_signed.transaction.as_ref().unwrap().inputs[0]
-            .txid
-            .as_ref()
-    );
+        // Inputs, only one input was selected (ONE_BTC * 2).
+        assert_eq!(tx.inputs.len(), 1);
+        // Reference the COMMIT transaction(!).
+        assert_eq!(tx.inputs[0].txid, rev_commit_txid);
+        assert_eq!(tx.inputs[0].vout, 0);
+        assert_eq!(tx.inputs[0].sequence, u32::MAX);
+        assert!(tx.inputs[0].script_sig.is_empty());
+        assert!(!tx.inputs[0].witness_items.is_empty());
 
-    //dbg!(&commit_signed);
-    //dbg!(&reveal_signed);
+        // Outputs (only tagged output, no change output).
+        assert_eq!(tx.outputs.len(), 1);
+
+        // Output for recipient.
+        assert!(!tx.outputs[0].script_pubkey.is_empty());
+        assert_eq!(tx.outputs[0].value, tagged_output.value);
+        assert_eq!(tx.outputs[0].value, 546);
+        assert!(tx.outputs[0].taproot_payload.is_empty());
+        assert!(tx.outputs[0].control_block.is_empty());
+    }
 }

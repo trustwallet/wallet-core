@@ -323,7 +323,6 @@ impl BitcoinEntry {
             outputs: proto_outputs,
         };
 
-        // Sanity check.
         let total_output_amount = transaction
             .outputs
             .iter()
