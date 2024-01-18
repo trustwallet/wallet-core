@@ -1,5 +1,4 @@
-use crate::modules::utils::hard_clone_proto_output;
-use crate::{aliases::*, pre_processor, BitcoinEntry};
+use crate::{aliases::*, BitcoinEntry};
 use crate::{Error, Result};
 use tw_coin_entry::coin_entry::CoinEntry;
 use tw_coin_entry::modules::plan_builder::PlanBuilder;

@@ -40,6 +40,7 @@ fn input_selection_no_change_output() {
         }),
     };
 
+    // TODO: Mandate that fee_per_byte is non-zero?
     let signing = Proto::SigningInput {
         private_key: alice_private_key.as_slice().into(),
         inputs: vec![tx1],
@@ -79,7 +80,6 @@ fn input_selection_no_utxo_inputs() {
 
     let change_output = Proto::Output {
         // Will be set for us.
-        // TODO: Enforce that this is set to zero?
         value: 0,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
@@ -173,7 +173,6 @@ fn input_selection_no_utxo_outputs_with_change_output() {
 
     let change_output = Proto::Output {
         // Will be set for us.
-        // TODO: Enforce that this is set to zero?
         value: 0,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
@@ -260,7 +259,6 @@ fn input_selection_select_in_order() {
 
     let change_output = Proto::Output {
         // Will be set for us.
-        // TODO: Enforce that this is set to zero?
         value: 0,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
@@ -268,9 +266,6 @@ fn input_selection_select_in_order() {
             }),
         }),
     };
-
-    // TODO:
-    // * Return an error if fee_per_vb is zero?
 
     let signing = Proto::SigningInput {
         private_key: alice_private_key.as_slice().into(),
@@ -377,7 +372,6 @@ fn input_selection_select_ascending() {
 
     let change_output = Proto::Output {
         // Will be set for us.
-        // TODO: Enforce that this is set to zero?
         value: 0,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {

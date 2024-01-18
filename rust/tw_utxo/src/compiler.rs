@@ -150,7 +150,8 @@ impl Compiler<StandardBitcoinContext> {
                     // Update the change amount, if set.
                     if !proto.disable_change_output {
                         let change_output = tx.output.last_mut().expect("change output not set");
-                        change_output.value = total_input_amount.saturating_sub(total_output_amount);
+                        change_output.value =
+                            total_input_amount.saturating_sub(total_output_amount);
                     }
 
                     // Calculate the full weight projection (base weight + input
@@ -188,7 +189,9 @@ impl Compiler<StandardBitcoinContext> {
         // Set the change output amount in the proto structure, if enabled.
         if !proto.disable_change_output {
             let change_output = proto.outputs.last_mut().expect("change output not set");
-            change_output.value = total_input_amount.saturating_sub(total_output_amount).saturating_sub(fee_estimate);
+            change_output.value = total_input_amount
+                .saturating_sub(total_output_amount)
+                .saturating_sub(fee_estimate);
         }
 
         // Calculate the sighashes.

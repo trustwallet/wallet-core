@@ -9,6 +9,8 @@ use tw_coin_entry::test_utils::test_context::TestCoinContext;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
+const SAT_VBYTE: u64 = 25;
+
 #[test]
 fn transaction_plan_compose_brc20() {
     let _coin = TestCoinContext::default();
@@ -82,7 +84,7 @@ fn transaction_plan_compose_brc20() {
                 input_selector: UtxoProto::InputSelector::SelectAscending,
                 tagged_output: Some(tagged_output.clone()),
                 inscription: Some(brc20_inscription),
-                fee_per_vb: 25,
+                fee_per_vb: SAT_VBYTE,
                 change_output: Some(change_output.clone()),
                 disable_change_output: false,
             },
@@ -104,7 +106,7 @@ fn transaction_plan_compose_brc20() {
         assert_eq!(commit.error, Proto::Error::OK);
         assert!(commit.error_message.is_empty());
         assert_eq!(commit.weight, 608);
-        assert_eq!(commit.fee, (commit.weight + 3) / 4 * 25);
+        assert_eq!(commit.fee, (commit.weight + 3) / 4 * SAT_VBYTE);
         assert_eq!(commit.fee, 3_800);
 
         let tx = commit.transaction.unwrap();
@@ -148,7 +150,7 @@ fn transaction_plan_compose_brc20() {
         assert_eq!(reveal.error, Proto::Error::OK);
         assert!(reveal.error_message.is_empty());
         assert_eq!(reveal.weight, 527);
-        assert_eq!(reveal.fee, (reveal.weight + 3) / 4 * 25);
+        assert_eq!(reveal.fee, (reveal.weight + 3) / 4 * SAT_VBYTE);
         assert_eq!(reveal.fee, 3_300);
 
         let tx = reveal.transaction.unwrap();
