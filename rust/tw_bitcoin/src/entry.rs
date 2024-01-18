@@ -360,6 +360,7 @@ fn handle_utxo_error(utxo_err: &UtxoProto::Error) -> Result<()> {
         UtxoProto::Error::Error_missing_sighash_method => Proto::Error::Error_utxo_missing_sighash_method,
         UtxoProto::Error::Error_failed_encoding => Proto::Error::Error_utxo_failed_encoding,
         UtxoProto::Error::Error_insufficient_inputs => Proto::Error::Error_utxo_insufficient_inputs,
+        UtxoProto::Error::Error_no_outputs_specified => Proto::Error::Error_utxo_no_outputs_specified,
         UtxoProto::Error::Error_missing_change_script_pubkey => Proto::Error::Error_utxo_missing_change_script_pubkey,
     };
 

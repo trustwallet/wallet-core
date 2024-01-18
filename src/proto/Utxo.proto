@@ -13,7 +13,8 @@ enum Error {
     Error_missing_sighash_method = 6;
     Error_failed_encoding = 7;
     Error_insufficient_inputs = 8;
-    Error_missing_change_script_pubkey = 9;
+    Error_no_outputs_specified = 9;
+    Error_missing_change_script_pubkey = 10;
 }
 
 message SigningInput {

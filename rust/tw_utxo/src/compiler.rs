@@ -63,11 +63,16 @@ impl Compiler<StandardBitcoinContext> {
         let total_input_amount: u64 = proto.inputs.iter().map(|input| input.value).sum();
         let total_output_amount: u64 = proto.outputs.iter().map(|output| output.value).sum();
 
-        // Do some easy checks first.
+        // Do some easy checks first (TODO: replicate those in compile?).
 
         // Insufficient input amount.
         if total_output_amount > total_input_amount {
             return Err(Error::from(Proto::Error::Error_insufficient_inputs));
+        }
+
+        // No ouputs specified.
+        if total_output_amount == 0 {
+            return Err(Error::from(Proto::Error::Error_no_outputs_specified));
         }
 
         // Change scriptPubkey must be set if change output is enabled.

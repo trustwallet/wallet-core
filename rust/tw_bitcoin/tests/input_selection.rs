@@ -11,7 +11,7 @@ use tw_proto::Utxo::Proto as UtxoProto;
 const SAT_VBYTE: u64 = 50;
 
 #[test]
-fn input_selection_default_values() {
+fn input_selection_no_change_output() {
     let coin = TestCoinContext::default();
 
     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
@@ -26,7 +26,7 @@ fn input_selection_default_values() {
         value: ONE_BTC,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
-            variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
+            variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
         }),
         ..Default::default()
     };
@@ -52,6 +52,153 @@ fn input_selection_default_values() {
     // By default, we mandate that a change output is set.
     assert_eq!(signed.error, Proto::Error::Error_invalid_change_output);
     assert_eq!(signed.error_message, "Error_invalid_change_output");
+    assert_eq!(signed.transaction, None);
+    assert!(signed.encoded.is_empty());
+    assert!(signed.txid.is_empty());
+    assert_eq!(signed.weight, 0);
+    assert_eq!(signed.fee, 0);
+}
+
+#[test]
+fn input_selection_no_utxo_inputs() {
+    let coin = TestCoinContext::default();
+
+    let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
+    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
+    let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
+
+    // Create transaction with P2WPKH as output.
+    let out1 = Proto::Output {
+        value: 50_000_000, // 0.5 BTC
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
+            variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
+                to_address: ProtoPubkeyOrHash::pubkey(bob_pubkey.as_slice().into()),
+            }),
+        }),
+    };
+
+    let change_output = Proto::Output {
+        // Will be set for us.
+        // TODO: Enforce that this is set to zero?
+        value: 0,
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
+            variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
+                to_address: ProtoPubkeyOrHash::pubkey(alice_pubkey.as_slice().into()),
+            }),
+        }),
+    };
+
+    let signing = Proto::SigningInput {
+        private_key: alice_private_key.as_slice().into(),
+        // No inputs.
+        inputs: vec![],
+        outputs: vec![out1],
+        // We set the change output accordingly.
+        change_output: Some(change_output),
+        ..Default::default()
+    };
+
+    let signed = BitcoinEntry.sign(&coin, signing);
+
+    // Error
+    assert_eq!(signed.error, Proto::Error::Error_utxo_insufficient_inputs);
+    assert_eq!(signed.error_message, "Error_utxo_insufficient_inputs");
+    assert_eq!(signed.transaction, None);
+    assert!(signed.encoded.is_empty());
+    assert!(signed.txid.is_empty());
+    assert_eq!(signed.weight, 0);
+    assert_eq!(signed.fee, 0);
+}
+
+#[test]
+fn input_selection_no_utxo_outputs() {
+    let coin = TestCoinContext::default();
+
+    let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
+    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
+    let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
+
+    // Create transaction with P2WPKH as output.
+    let txid: Vec<u8> = vec![1; 32];
+    let tx1 = Proto::Input {
+        txid: txid.as_slice().into(),
+        vout: 0,
+        value: ONE_BTC,
+        sighash_type: UtxoProto::SighashType::All,
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
+            variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
+        }),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_key: alice_private_key.as_slice().into(),
+        // No inputs.
+        inputs: vec![tx1],
+        outputs: vec![],
+        disable_change_output: true,
+        ..Default::default()
+    };
+
+    let signed = BitcoinEntry.sign(&coin, signing);
+
+    // Error
+    assert_eq!(signed.error, Proto::Error::Error_utxo_no_outputs_specified);
+    assert_eq!(signed.error_message, "Error_utxo_no_outputs_specified");
+    assert_eq!(signed.transaction, None);
+    assert!(signed.encoded.is_empty());
+    assert!(signed.txid.is_empty());
+    assert_eq!(signed.weight, 0);
+    assert_eq!(signed.fee, 0);
+}
+
+#[test]
+fn input_selection_no_utxo_outputs_with_change_output() {
+    let coin = TestCoinContext::default();
+
+    let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
+    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
+    let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
+
+    // Create transaction with P2WPKH as output.
+    let txid: Vec<u8> = vec![1; 32];
+    let tx1 = Proto::Input {
+        txid: txid.as_slice().into(),
+        vout: 0,
+        value: ONE_BTC,
+        sighash_type: UtxoProto::SighashType::All,
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
+            variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
+        }),
+        ..Default::default()
+    };
+
+    let change_output = Proto::Output {
+        // Will be set for us.
+        // TODO: Enforce that this is set to zero?
+        value: 0,
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
+            variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
+                to_address: ProtoPubkeyOrHash::pubkey(alice_pubkey.as_slice().into()),
+            }),
+        }),
+    };
+
+    let signing = Proto::SigningInput {
+        private_key: alice_private_key.as_slice().into(),
+        // No inputs.
+        inputs: vec![tx1],
+        outputs: vec![],
+        // We set the change output accordingly.
+        change_output: Some(change_output),
+        ..Default::default()
+    };
+
+    let signed = BitcoinEntry.sign(&coin, signing);
+
+    // Even though there is a change output, we mandate "normal" outputs.
+    assert_eq!(signed.error, Proto::Error::Error_utxo_no_outputs_specified);
+    assert_eq!(signed.error_message, "Error_utxo_no_outputs_specified");
     assert_eq!(signed.transaction, None);
     assert!(signed.encoded.is_empty());
     assert!(signed.txid.is_empty());
@@ -126,7 +273,6 @@ fn input_selection_select_in_order() {
 
     // TODO:
     // * Return an error if fee_per_vb is zero?
-    // * disable_change_output = false on default?
 
     let signing = Proto::SigningInput {
         private_key: alice_private_key.as_slice().into(),
