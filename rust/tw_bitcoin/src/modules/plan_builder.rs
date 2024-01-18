@@ -69,7 +69,8 @@ impl BitcoinPlanBuilder {
                 .ok_or_else(|| Error::from(Proto::Error::Error_missing_tagged_output))?,
         )?;
 
-        // First, we create the reveal transaction in order to calculate its input requirement (fee + dust limit).
+        // First, we create the reveal transaction in order to calculate its
+        // input requirement (fee + dust limit).
 
         // We can use a zeroed Txid here.
         let txid = vec![0; 32];

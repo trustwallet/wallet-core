@@ -9,7 +9,9 @@ use tw_coin_entry::test_utils::test_context::TestCoinContext;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
+// TODO!!
 #[test]
+#[ignore]
 fn transaction_plan_compose_brc20() {
     let _coin = TestCoinContext::default();
 

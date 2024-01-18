@@ -20,7 +20,7 @@ impl Signer {
         // `preimage_hashes_impl` and `compile_impl`. But we're leaving this
         // here in case this methods gets extended and the pre-processing does
         // not get accidentally forgotten.
-        let proto = crate::entry::pre_processor(proto);
+        let mut proto = crate::entry::pre_processor(proto);
 
         // Collect individual private keys per input, if there are any.
         let mut individual_keys = HashMap::new();
@@ -32,6 +32,27 @@ impl Signer {
 
         // Generate the sighashes.
         let pre_signed = BitcoinEntry.preimage_hashes_impl(_coin, proto.clone())?;
+
+        debug_assert!(pre_signed.utxo_inputs.len() <= proto.inputs.len());
+        debug_assert_eq!(pre_signed.utxo_inputs.len(), pre_signed.sighashes.len());
+
+        // The `pre_signed`` result contains a list of selected inputs in order to
+        // cover the output amount and fees, assuming the input selector was
+        // used. We therefore need to update the proto structure.
+
+        // Clear the inputs.
+        let available = std::mem::take(&mut proto.inputs);
+
+        for selected in &pre_signed.utxo_inputs {
+            // Find the input in the passed on UTXO list.
+            let index = available
+                .iter()
+                .position(|input| input.txid == selected.txid && input.vout == selected.vout)
+                .expect("Selected input not found in proto structure");
+
+            // Update the input with the selected input.
+            proto.inputs.push(available[index].clone());
+        }
 
         // Check for error.
         if pre_signed.error != Proto::Error::OK {
@@ -45,6 +66,9 @@ impl Signer {
             individual_keys,
             proto.dangerous_use_fixed_schnorr_rng,
         )?;
+
+        debug_assert_eq!(signatures.len(), proto.inputs.len());
+        debug_assert_eq!(signatures.len(), pre_signed.sighashes.len());
 
         // Construct the final transaction.
         BitcoinEntry.compile_impl(_coin, proto, signatures, vec![])
