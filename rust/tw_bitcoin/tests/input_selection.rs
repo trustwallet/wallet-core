@@ -497,3 +497,247 @@ fn input_selection_select_ascending() {
     assert!(tx.outputs[1].taproot_payload.is_empty());
     assert!(tx.outputs[1].control_block.is_empty());
 }
+
+#[test]
+fn input_selection_use_all() {
+    let coin = TestCoinContext::default();
+
+    let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
+    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
+    let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
+
+    let txid: Vec<u8> = vec![1; 32];
+    let tx1 = Proto::Input {
+        txid: txid.as_slice().into(),
+        vout: 0,
+        value: ONE_BTC * 3,
+        sighash_type: UtxoProto::SighashType::All,
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
+            variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
+        }),
+        ..Default::default()
+    };
+
+    let txid: Vec<u8> = vec![2; 32];
+    let tx2 = Proto::Input {
+        txid: txid.as_slice().into(),
+        vout: 0,
+        value: ONE_BTC * 2,
+        sighash_type: UtxoProto::SighashType::All,
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
+            variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
+        }),
+        ..Default::default()
+    };
+
+    let txid: Vec<u8> = vec![3; 32];
+    let tx3 = Proto::Input {
+        txid: txid.as_slice().into(),
+        vout: 0,
+        value: ONE_BTC,
+        sighash_type: UtxoProto::SighashType::All,
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
+            variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
+        }),
+        ..Default::default()
+    };
+
+    let out1 = Proto::Output {
+        value: ONE_BTC,
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
+            variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
+                to_address: ProtoPubkeyOrHash::pubkey(bob_pubkey.as_slice().into()),
+            }),
+        }),
+    };
+
+    let change_output = Proto::Output {
+        // Will be set for us.
+        value: 0,
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
+            variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
+                to_address: ProtoPubkeyOrHash::pubkey(alice_pubkey.as_slice().into()),
+            }),
+        }),
+    };
+
+    let signing = Proto::SigningInput {
+        private_key: alice_private_key.as_slice().into(),
+        input_selector: UtxoProto::InputSelector::UseAll,
+        inputs: vec![tx1.clone(), tx2.clone(), tx3.clone()],
+        outputs: vec![out1.clone()],
+        // We set the change output accordingly.
+        change_output: Some(change_output),
+        fee_per_vb: SAT_VBYTE,
+        ..Default::default()
+    };
+
+    let signed = BitcoinEntry.sign(&coin, signing);
+
+    assert_eq!(signed.error, Proto::Error::OK);
+    assert!(signed.error_message.is_empty());
+    assert_eq!(signed.weight, 1_104);
+    assert_eq!(signed.fee, (signed.weight + 3) / 4 * SAT_VBYTE);
+    assert_eq!(signed.fee, 13_800);
+
+    let tx = signed.transaction.unwrap();
+    assert_eq!(tx.version, 2);
+
+    // All inputs used
+    assert_eq!(tx.inputs.len(), 3);
+
+    assert_eq!(tx.inputs[0].txid, tx1.txid);
+    assert_eq!(tx.inputs[0].txid, vec![1; 32]);
+    assert_eq!(tx.inputs[0].vout, 0);
+    assert_eq!(tx.inputs[0].sequence, u32::MAX);
+    assert!(tx.inputs[0].script_sig.is_empty());
+    assert!(!tx.inputs[0].witness_items.is_empty());
+
+    assert_eq!(tx.inputs[1].txid, tx2.txid);
+    assert_eq!(tx.inputs[1].txid, vec![2; 32]);
+    assert_eq!(tx.inputs[1].vout, 0);
+    assert_eq!(tx.inputs[1].sequence, u32::MAX);
+    assert!(tx.inputs[1].script_sig.is_empty());
+    assert!(!tx.inputs[1].witness_items.is_empty());
+
+    assert_eq!(tx.inputs[2].txid, tx3.txid);
+    assert_eq!(tx.inputs[2].txid, vec![3; 32]);
+    assert_eq!(tx.inputs[2].vout, 0);
+    assert_eq!(tx.inputs[2].sequence, u32::MAX);
+    assert!(tx.inputs[2].script_sig.is_empty());
+    assert!(!tx.inputs[2].witness_items.is_empty());
+
+    // Outputs.
+    assert_eq!(tx.outputs.len(), 2);
+
+    // Output for recipient.
+    assert!(!tx.outputs[0].script_pubkey.is_empty());
+    assert_eq!(tx.outputs[0].value, out1.value);
+    assert_eq!(tx.outputs[0].value, ONE_BTC);
+    assert!(tx.outputs[0].taproot_payload.is_empty());
+    assert!(tx.outputs[0].control_block.is_empty());
+
+    // Change output.
+    assert!(!tx.outputs[1].script_pubkey.is_empty());
+    assert_eq!(
+        tx.outputs[1].value,
+        tx1.value + tx2.value + tx3.value - out1.value - signed.fee
+    );
+    assert_eq!(
+        tx.outputs[1].value,
+        ONE_BTC * 3 + ONE_BTC * 2 + ONE_BTC - ONE_BTC - 13_800
+    );
+    assert!(tx.outputs[1].taproot_payload.is_empty());
+    assert!(tx.outputs[1].control_block.is_empty());
+}
+
+#[test]
+fn input_selection_use_all_without_change_output() {
+    let coin = TestCoinContext::default();
+
+    let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
+    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
+    let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
+
+    let txid: Vec<u8> = vec![1; 32];
+    let tx1 = Proto::Input {
+        txid: txid.as_slice().into(),
+        vout: 0,
+        value: ONE_BTC * 3,
+        sighash_type: UtxoProto::SighashType::All,
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
+            variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
+        }),
+        ..Default::default()
+    };
+
+    let txid: Vec<u8> = vec![2; 32];
+    let tx2 = Proto::Input {
+        txid: txid.as_slice().into(),
+        vout: 0,
+        value: ONE_BTC * 2,
+        sighash_type: UtxoProto::SighashType::All,
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
+            variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
+        }),
+        ..Default::default()
+    };
+
+    let txid: Vec<u8> = vec![3; 32];
+    let tx3 = Proto::Input {
+        txid: txid.as_slice().into(),
+        vout: 0,
+        value: ONE_BTC,
+        sighash_type: UtxoProto::SighashType::All,
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
+            variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
+        }),
+        ..Default::default()
+    };
+
+    let out1 = Proto::Output {
+        value: ONE_BTC,
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
+            variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
+                to_address: ProtoPubkeyOrHash::pubkey(bob_pubkey.as_slice().into()),
+            }),
+        }),
+    };
+
+    let signing = Proto::SigningInput {
+        private_key: alice_private_key.as_slice().into(),
+        input_selector: UtxoProto::InputSelector::UseAll,
+        inputs: vec![tx1.clone(), tx2.clone(), tx3.clone()],
+        outputs: vec![out1.clone()],
+        // Disabled
+        disable_change_output: true,
+        fee_per_vb: SAT_VBYTE,
+        ..Default::default()
+    };
+
+    let signed = BitcoinEntry.sign(&coin, signing);
+
+    assert_eq!(signed.error, Proto::Error::OK);
+    assert!(signed.error_message.is_empty());
+    assert_eq!(signed.weight, 980);
+    // All the remainder goes to fees.
+    assert_eq!(signed.fee, tx1.value + tx2.value + tx3.value - out1.value);
+    assert_eq!(signed.fee, ONE_BTC * 5);
+
+    let tx = signed.transaction.unwrap();
+    assert_eq!(tx.version, 2);
+
+    // All inputs used
+    assert_eq!(tx.inputs.len(), 3);
+
+    assert_eq!(tx.inputs[0].txid, tx1.txid);
+    assert_eq!(tx.inputs[0].txid, vec![1; 32]);
+    assert_eq!(tx.inputs[0].vout, 0);
+    assert_eq!(tx.inputs[0].sequence, u32::MAX);
+    assert!(tx.inputs[0].script_sig.is_empty());
+    assert!(!tx.inputs[0].witness_items.is_empty());
+
+    assert_eq!(tx.inputs[1].txid, tx2.txid);
+    assert_eq!(tx.inputs[1].txid, vec![2; 32]);
+    assert_eq!(tx.inputs[1].vout, 0);
+    assert_eq!(tx.inputs[1].sequence, u32::MAX);
+    assert!(tx.inputs[1].script_sig.is_empty());
+    assert!(!tx.inputs[1].witness_items.is_empty());
+
+    assert_eq!(tx.inputs[2].txid, tx3.txid);
+    assert_eq!(tx.inputs[2].txid, vec![3; 32]);
+    assert_eq!(tx.inputs[2].vout, 0);
+    assert_eq!(tx.inputs[2].sequence, u32::MAX);
+    assert!(tx.inputs[2].script_sig.is_empty());
+    assert!(!tx.inputs[2].witness_items.is_empty());
+
+    // Only output, the rest goes to fees.
+    assert_eq!(tx.outputs.len(), 1);
+
+    // Output for recipient.
+    assert!(!tx.outputs[0].script_pubkey.is_empty());
+    assert_eq!(tx.outputs[0].value, out1.value);
+    assert_eq!(tx.outputs[0].value, ONE_BTC);
+    assert!(tx.outputs[0].taproot_payload.is_empty());
+    assert!(tx.outputs[0].control_block.is_empty());
+}

@@ -189,6 +189,7 @@ impl Compiler<StandardBitcoinContext> {
         // Set the change output amount in the proto structure, if enabled.
         if !proto.disable_change_output {
             let change_output = proto.outputs.last_mut().expect("change output not set");
+
             change_output.value = total_input_amount
                 .saturating_sub(total_output_amount)
                 .saturating_sub(fee_estimate);
@@ -328,8 +329,6 @@ impl Compiler<StandardBitcoinContext> {
         // The transaction identifier, which we represent in
         // non-reversed/non-network order.
         let txid: Vec<u8> = tx.txid().as_byte_array().iter().copied().rev().collect();
-
-        // TODO: Make sanity check
 
         Ok(Proto::PreSigningOutput {
             error: Proto::Error::OK,
