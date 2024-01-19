@@ -9,12 +9,13 @@ use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::prefix::BitcoinBase58Prefix;
 use tw_encoding::base58::Alphabet;
-use tw_hash::hasher::sha256_ripemd;
+use tw_hash::hasher::{sha256_ripemd, Hasher};
 use tw_keypair::tw;
 
 pub const BITCOIN_ADDRESS_SIZE: usize = 21;
+pub const BITCOIN_ADDRESS_CHECKSUM_SIZE: usize = 4;
 
-type BitcoinBase58Address = Base58Address<BITCOIN_ADDRESS_SIZE>;
+type BitcoinBase58Address = Base58Address<BITCOIN_ADDRESS_SIZE, BITCOIN_ADDRESS_CHECKSUM_SIZE>;
 
 pub struct LegacyAddress(BitcoinBase58Address);
 
@@ -34,13 +35,13 @@ impl LegacyAddress {
             .to_secp256k1()
             .ok_or(AddressError::PublicKeyTypeMismatch)?
             .compressed();
-        let mut addr_bytes = sha256_ripemd(public_key_bytes.as_slice());
+        let mut public_key_hash = sha256_ripemd(public_key_bytes.as_slice());
 
         // Insert the P2PKH prefix to the beginning of the address bytes array.
         let prefix_idx = 0;
-        addr_bytes.insert(prefix_idx, p2pkh_prefix);
+        public_key_hash.insert(prefix_idx, p2pkh_prefix);
 
-        BitcoinBase58Address::from_slice_with_alphabet(&addr_bytes, Alphabet::Bitcoin)
+        BitcoinBase58Address::new(&public_key_hash, Alphabet::Bitcoin, Hasher::Sha256d)
             .map(LegacyAddress)
     }
 
@@ -87,7 +88,8 @@ impl FromStr for LegacyAddress {
     type Err = AddressError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        BitcoinBase58Address::from_str_with_alphabet(s, Alphabet::Bitcoin).map(LegacyAddress)
+        BitcoinBase58Address::from_str_with_alphabet(s, Alphabet::Bitcoin, Hasher::Sha256d)
+            .map(LegacyAddress)
     }
 }
 
@@ -95,7 +97,7 @@ impl<'a> TryFrom<&'a [u8]> for LegacyAddress {
     type Error = AddressError;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
-        BitcoinBase58Address::from_slice_with_alphabet(bytes, Alphabet::Bitcoin).map(LegacyAddress)
+        BitcoinBase58Address::new(bytes, Alphabet::Bitcoin, Hasher::Sha256d).map(LegacyAddress)
     }
 }
 

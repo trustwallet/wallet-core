@@ -4,6 +4,9 @@
 
 use crate::{EncodingError, EncodingResult};
 use bs58::decode::Error;
+use tw_memory::Data;
+
+pub const CHECKSUM_LEN: usize = 4;
 
 impl From<Error> for EncodingError {
     fn from(_: Error) -> Self {
@@ -32,7 +35,7 @@ pub fn encode(input: &[u8], alphabet: Alphabet) -> String {
         .into_string()
 }
 
-pub fn decode(input: &str, alphabet: Alphabet) -> EncodingResult<Vec<u8>> {
+pub fn decode(input: &str, alphabet: Alphabet) -> EncodingResult<Data> {
     bs58::decode(input)
         .with_alphabet(alphabet.into())
         .into_vec()
@@ -48,7 +51,7 @@ mod tests {
         let data = b"Hello, world!";
         let expected = "72k1xXWG59wUsYv7h2";
 
-        let result = encode(data, Alphabet::BITCOIN);
+        let result = encode(data, Alphabet::Bitcoin);
         assert_eq!(result, expected);
     }
 
@@ -57,7 +60,7 @@ mod tests {
         let data = "72k1xXWG59wUsYv7h2";
         let expected = b"Hello, world!";
 
-        let result = decode(data, Alphabet::BITCOIN).unwrap();
+        let result = decode(data, Alphabet::Bitcoin).unwrap();
         assert_eq!(result, expected.to_vec());
     }
 }

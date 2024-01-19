@@ -10,6 +10,7 @@ pub use derivation_path::{ChildIndex, DerivationPath};
 
 #[derive(Clone, Deserialize)]
 pub struct DerivationWithPath {
+    #[serde(default)]
     pub name: Derivation,
     #[serde(deserialize_with = "deserialize_der_path")]
     pub path: DerivationPath,
@@ -22,7 +23,7 @@ impl DerivationWithPath {
 }
 
 /// Extend this enum.
-#[derive(Clone, Copy, Default, Deserialize)]
+#[derive(Clone, Copy, Default, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Derivation {
     Segwit,

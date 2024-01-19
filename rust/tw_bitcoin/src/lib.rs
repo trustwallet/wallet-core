@@ -1,4 +1,6 @@
-extern crate serde;
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
 
 pub mod entry;
 pub mod modules;

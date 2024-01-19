@@ -6,6 +6,7 @@
 
 use crate::address::derivation::BitcoinDerivation;
 use crate::address::legacy::LegacyAddress;
+use crate::address::segwit::{Bech32Prefix, SegwitAddress};
 use std::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -20,12 +21,21 @@ use tw_memory::Data;
 /// The set of address prefixes can differ for Bitcoin forks.
 pub enum StandardBitcoinPrefix {
     Base58(BitcoinBase58Prefix),
+    Bech32(Bech32Prefix),
 }
 
 impl StandardBitcoinPrefix {
     pub fn into_base58(self) -> Option<BitcoinBase58Prefix> {
         match self {
             StandardBitcoinPrefix::Base58(base58) => Some(base58),
+            StandardBitcoinPrefix::Bech32(_) => None,
+        }
+    }
+
+    pub fn into_bech32(self) -> Option<Bech32Prefix> {
+        match self {
+            StandardBitcoinPrefix::Bech32(bech32) => Some(bech32),
+            StandardBitcoinPrefix::Base58(_) => None,
         }
     }
 }
@@ -36,7 +46,7 @@ impl TryFrom<AddressPrefix> for StandardBitcoinPrefix {
     fn try_from(prefix: AddressPrefix) -> Result<Self, Self::Error> {
         match prefix {
             AddressPrefix::BitcoinBase58(base58) => Ok(StandardBitcoinPrefix::Base58(base58)),
-            AddressPrefix::Hrp(_) => Err(AddressError::UnexpectedAddressPrefix),
+            AddressPrefix::Hrp(hrp) => Ok(StandardBitcoinPrefix::Bech32(Bech32Prefix { hrp })),
         }
     }
 }
@@ -47,6 +57,7 @@ impl TryFrom<AddressPrefix> for StandardBitcoinPrefix {
 /// For example, Zcash does not support segwit addresses.
 pub enum StandardBitcoinAddress {
     Legacy(LegacyAddress),
+    Segwit(SegwitAddress),
 }
 
 impl StandardBitcoinAddress {
@@ -62,6 +73,10 @@ impl StandardBitcoinAddress {
                 LegacyAddress::from_str_with_coin_and_prefix(coin, s, Some(base58))
                     .map(StandardBitcoinAddress::Legacy)
             },
+            Some(StandardBitcoinPrefix::Bech32(bech32)) => {
+                SegwitAddress::from_str_with_coin_and_prefix(coin, s, Some(bech32))
+                    .map(StandardBitcoinAddress::Segwit)
+            },
             None => StandardBitcoinAddress::from_str_checked(coin, s),
         }
     }
@@ -72,10 +87,19 @@ impl StandardBitcoinAddress {
         coin: &dyn CoinContext,
         s: &str,
     ) -> AddressResult<StandardBitcoinAddress> {
+        // Try to parse a Segwit address if the coin supports it.
+        if BitcoinDerivation::tw_supports_segwit(coin) {
+            if let Ok(segwit) = SegwitAddress::from_str_with_coin_and_prefix(coin, s, None) {
+                return Ok(StandardBitcoinAddress::Segwit(segwit));
+            }
+        }
+
+        // Otherwise, try to parse a Legacy address.
         if let Ok(legacy) = LegacyAddress::from_str_with_coin_and_prefix(coin, s, None) {
             return Ok(StandardBitcoinAddress::Legacy(legacy));
         }
-        // TODO handle segwit and taproot addresses here.
+
+        // TODO handle taproot address here.
         Err(AddressError::InvalidInput)
     }
 
@@ -93,7 +117,11 @@ impl StandardBitcoinAddress {
                 LegacyAddress::p2pkh_with_coin_and_prefix(coin, public_key, maybe_base58_prefix)
                     .map(StandardBitcoinAddress::Legacy)
             },
-            BitcoinDerivation::Segwit => todo!(),
+            BitcoinDerivation::Segwit => {
+                let maybe_bech32_prefix = maybe_prefix.and_then(|prefix| prefix.into_bech32());
+                SegwitAddress::p2wpkh_with_coin_and_prefix(coin, public_key, maybe_bech32_prefix)
+                    .map(StandardBitcoinAddress::Segwit)
+            },
             BitcoinDerivation::Taproot => todo!(),
         }
     }
@@ -106,6 +134,9 @@ impl FromStr for StandardBitcoinAddress {
         if let Ok(legacy) = LegacyAddress::from_str(s) {
             return Ok(StandardBitcoinAddress::Legacy(legacy));
         }
+        if let Ok(segwit) = SegwitAddress::from_str(s) {
+            return Ok(StandardBitcoinAddress::Segwit(segwit));
+        }
         // TODO handle segwit and taproot addresses here.
         Err(AddressError::InvalidInput)
     }
@@ -115,6 +146,7 @@ impl fmt::Display for StandardBitcoinAddress {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             StandardBitcoinAddress::Legacy(legacy) => write!(f, "{legacy}"),
+            StandardBitcoinAddress::Segwit(segwit) => write!(f, "{segwit}"),
         }
     }
 }
@@ -123,6 +155,7 @@ impl CoinAddress for StandardBitcoinAddress {
     fn data(&self) -> Data {
         match self {
             StandardBitcoinAddress::Legacy(legacy) => legacy.bytes().to_vec(),
+            StandardBitcoinAddress::Segwit(segwit) => segwit.witness_program().to_vec(),
         }
     }
 }

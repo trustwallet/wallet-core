@@ -41,7 +41,7 @@ fn test_bitcoin_address_invalid() {
 fn test_bitcoin_address_get_data() {
     test_address_get_data(
         CoinType::Bitcoin,
-        "1MrZNGN7mfWZiZNQttrzHjfw72jnJC2JNx",
-        "314d725a4e474e376d66575a695a4e517474727a486a667737326a6e4a43324a4e78",
+        "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx",
+        "00769bdff96a02f9135a1d19b749db6a78fe07dc90",
     );
 }

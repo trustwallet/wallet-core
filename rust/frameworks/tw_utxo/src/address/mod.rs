@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-pub mod standard_bitcoin;
 pub mod derivation;
 pub mod legacy;
+pub mod segwit;
+pub mod standard_bitcoin;
