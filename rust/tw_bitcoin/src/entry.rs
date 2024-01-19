@@ -1,7 +1,7 @@
-use crate::modules::plan_builder::BitcoinPlanBuilder;
 use crate::modules::signer::Signer;
 use crate::{Error, Result};
 use bitcoin::address::NetworkChecked;
+use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use std::borrow::Cow;
 use std::fmt::Display;
 use std::str::FromStr;
@@ -44,7 +44,7 @@ impl CoinEntry for BitcoinEntry {
 
     // Optional modules:
     type JsonSigner = NoJsonSigner;
-    type PlanBuilder = BitcoinPlanBuilder;
+    type PlanBuilder = NoPlanBuilder;
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
 
@@ -128,7 +128,7 @@ impl CoinEntry for BitcoinEntry {
 
     #[inline]
     fn plan_builder(&self) -> Option<Self::PlanBuilder> {
-        Some(BitcoinPlanBuilder)
+        None
     }
 }
 
