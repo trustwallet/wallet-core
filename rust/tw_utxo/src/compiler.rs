@@ -57,13 +57,11 @@ impl Compiler<StandardBitcoinContext> {
     fn preimage_hashes_impl(
         mut proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::PreSigningOutput<'static>> {
-        // TODO: Check for duplicate Txid (user error).
-
         // Calculate total outputs amount, based on it we can determine how many inputs to select.
         let total_input_amount: u64 = proto.inputs.iter().map(|input| input.value).sum();
         let total_output_amount: u64 = proto.outputs.iter().map(|output| output.value).sum();
 
-        // Do some easy checks first (TODO: replicate those in compile?).
+        // Do some easy checks first.
 
         // Insufficient input amount.
         if total_output_amount > total_input_amount {
@@ -372,6 +370,21 @@ impl Compiler<StandardBitcoinContext> {
     fn compile_impl(
         proto: Proto::PreSerialization<'_>,
     ) -> Result<Proto::SerializedTransaction<'static>> {
+        // Do some easy checks first.
+
+        let total_input_amount: u64 = proto.inputs.iter().map(|input| input.value).sum();
+        let total_output_amount: u64 = proto.outputs.iter().map(|output| output.value).sum();
+
+        // Insufficient input amount.
+        if total_output_amount > total_input_amount {
+            return Err(Error::from(Proto::Error::Error_insufficient_inputs));
+        }
+
+        // No ouputs specified.
+        if total_output_amount == 0 {
+            return Err(Error::from(Proto::Error::Error_no_outputs_specified));
+        }
+
         let mut tx = Transaction {
             version: proto.version,
             lock_time: lock_time_from_proto(&proto.lock_time)?,
@@ -425,9 +438,9 @@ impl Compiler<StandardBitcoinContext> {
         let txid: Vec<u8> = tx.txid().as_byte_array().iter().copied().rev().collect();
         let weight = tx.weight().to_wu();
 
-        // Calculate the EFFECTIVE fee.
+        // Calculate the effective fee.
         let total_output_amount = tx.output.iter().map(|out| out.value).sum::<u64>();
-        debug_assert!(total_input_amount >= total_output_amount); // TODO: Return an error?
+        debug_assert!(total_input_amount >= total_output_amount);
         let fee = total_input_amount - total_output_amount;
 
         Ok(Proto::SerializedTransaction {
