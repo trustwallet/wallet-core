@@ -168,16 +168,16 @@ impl Compiler<StandardBitcoinContext> {
             },
         };
 
-        // Update the (final) `total_input` amount based on the selected inputs.
+        // Update the `total input amount based on the selected inputs.
         let total_input_amount: u64 = proto.inputs.iter().map(|input| input.value).sum();
 
-        // Calculate the (final) total input weight projection.
+        // Calculate the total input weight projection.
         let total_input_weight: u64 = proto.inputs.iter().map(|input| input.weight_estimate).sum();
 
-        // Calculate the (final) full weight projection (base weight + output
-        // weight + input weight). Note that the scriptSig/Witness fields are
-        // blanked inside `tx`, hence we need to rely on the values passed on
-        // the proto structure.
+        // Calculate the weight projection (base weight + input weight + output
+        // weight). Note that the scriptSig/Witness fields are blanked inside
+        // `tx`, hence we need to rely on the values passed on the proto
+        // structure.
         let weight_estimate = tx.weight().to_wu() + total_input_weight;
         let fee_estimate = (weight_estimate + 3) / 4 * proto.weight_base;
 
@@ -193,6 +193,10 @@ impl Compiler<StandardBitcoinContext> {
                 .saturating_sub(total_output_amount)
                 .saturating_sub(fee_estimate);
         }
+
+        // Calculate the effective fee.
+        let total_output_amount: u64 = proto.outputs.iter().map(|out| out.value).sum();
+        let fee_estimate = total_input_amount - total_output_amount;
 
         // Calculate the sighashes.
         let mut cache = SighashCache::new(&tx);
