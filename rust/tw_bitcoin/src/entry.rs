@@ -1,7 +1,6 @@
 use crate::modules::signer::Signer;
 use crate::{Error, Result};
 use bitcoin::address::NetworkChecked;
-use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use std::borrow::Cow;
 use std::fmt::Display;
 use std::str::FromStr;
@@ -11,6 +10,7 @@ use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
+use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_coin_entry::signing_output_error;
