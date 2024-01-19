@@ -10,13 +10,17 @@ use tw_proto::Utxo::Proto as UtxoProto;
 
 const SAT_VBYTE: u64 = 50;
 
+const ALICE_PRIVATE_KEY: &str = "57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a";
+const ALICE_PUBKEY: &str = "028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f";
+const BOB_PUBKEY: &str = "025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f";
+
 #[test]
 fn input_selection_no_change_output() {
     let coin = TestCoinContext::default();
 
-    let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
-    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
-    let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
+    let alice_private_key = hex(ALICE_PRIVATE_KEY);
+    let alice_pubkey = hex(ALICE_PUBKEY);
+    let bob_pubkey = hex(BOB_PUBKEY);
 
     let txid: Vec<u8> = vec![1; 32];
     let tx1 = Proto::Input {
@@ -63,9 +67,9 @@ fn input_selection_no_change_output() {
 fn input_selection_no_utxo_inputs() {
     let coin = TestCoinContext::default();
 
-    let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
-    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
-    let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
+    let alice_private_key = hex(ALICE_PRIVATE_KEY);
+    let alice_pubkey = hex(ALICE_PUBKEY);
+    let bob_pubkey = hex(BOB_PUBKEY);
 
     let out1 = Proto::Output {
         value: 50_000_000, // 0.5 BTC
@@ -112,8 +116,8 @@ fn input_selection_no_utxo_inputs() {
 fn input_selection_no_utxo_outputs() {
     let coin = TestCoinContext::default();
 
-    let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
-    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
+    let alice_private_key = hex(ALICE_PRIVATE_KEY);
+    let alice_pubkey = hex(ALICE_PUBKEY);
 
     let txid: Vec<u8> = vec![1; 32];
     let tx1 = Proto::Input {
@@ -152,9 +156,9 @@ fn input_selection_no_utxo_outputs() {
 fn input_selection_insufficient_inputs() {
     let coin = TestCoinContext::default();
 
-    let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
-    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
-    let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
+    let alice_private_key = hex(ALICE_PRIVATE_KEY);
+    let alice_pubkey = hex(ALICE_PUBKEY);
+    let bob_pubkey = hex(BOB_PUBKEY);
 
     let txid: Vec<u8> = vec![1; 32];
     let tx1 = Proto::Input {
@@ -213,8 +217,8 @@ fn input_selection_insufficient_inputs() {
 fn input_selection_no_utxo_outputs_with_change_output() {
     let coin = TestCoinContext::default();
 
-    let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
-    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
+    let alice_private_key = hex(ALICE_PRIVATE_KEY);
+    let alice_pubkey = hex(ALICE_PUBKEY);
 
     let txid: Vec<u8> = vec![1; 32];
     let tx1 = Proto::Input {
@@ -264,9 +268,9 @@ fn input_selection_no_utxo_outputs_with_change_output() {
 fn input_selection_select_in_order() {
     let coin = TestCoinContext::default();
 
-    let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
-    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
-    let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
+    let alice_private_key = hex(ALICE_PRIVATE_KEY);
+    let alice_pubkey = hex(ALICE_PUBKEY);
+    let bob_pubkey = hex(BOB_PUBKEY);
 
     let txid: Vec<u8> = vec![1; 32];
     let tx1 = Proto::Input {
@@ -376,9 +380,9 @@ fn input_selection_select_in_order() {
 fn input_selection_select_ascending() {
     let coin = TestCoinContext::default();
 
-    let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
-    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
-    let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
+    let alice_private_key = hex(ALICE_PRIVATE_KEY);
+    let alice_pubkey = hex(ALICE_PUBKEY);
+    let bob_pubkey = hex(BOB_PUBKEY);
 
     let txid: Vec<u8> = vec![1; 32];
     let tx1 = Proto::Input {
@@ -502,9 +506,9 @@ fn input_selection_select_ascending() {
 fn input_selection_use_all() {
     let coin = TestCoinContext::default();
 
-    let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
-    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
-    let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
+    let alice_private_key = hex(ALICE_PRIVATE_KEY);
+    let alice_pubkey = hex(ALICE_PUBKEY);
+    let bob_pubkey = hex(BOB_PUBKEY);
 
     let txid: Vec<u8> = vec![1; 32];
     let tx1 = Proto::Input {
@@ -635,9 +639,9 @@ fn input_selection_use_all() {
 fn input_selection_use_all_without_change_output() {
     let coin = TestCoinContext::default();
 
-    let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
-    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
-    let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
+    let alice_private_key = hex(ALICE_PRIVATE_KEY);
+    let alice_pubkey = hex(ALICE_PUBKEY);
+    let bob_pubkey = hex(BOB_PUBKEY);
 
     let txid: Vec<u8> = vec![1; 32];
     let tx1 = Proto::Input {
