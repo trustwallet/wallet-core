@@ -39,6 +39,7 @@ impl Signer {
         // Sanity check.
         debug_assert!(proto.inputs.len() >= pre_signed.utxo_inputs.len());
         debug_assert_eq!(pre_signed.utxo_inputs.len(), pre_signed.sighashes.len());
+
         if proto.disable_change_output {
             debug_assert_eq!(proto.outputs.len(), pre_signed.utxo_outputs.len());
         } else {

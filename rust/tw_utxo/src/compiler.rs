@@ -186,11 +186,16 @@ impl Compiler<StandardBitcoinContext> {
 
         // Set the change output amount in the proto structure, if enabled.
         if !proto.disable_change_output {
+            // Update the change amount in the proto list.
             let change_output = proto.outputs.last_mut().expect("change output not set");
-
             change_output.value = total_input_amount
                 .saturating_sub(total_output_amount)
                 .saturating_sub(fee_estimate);
+
+            // Update the change amount in the `bitcoin` crate native transaction.
+            // This is required for the sighash calculation.
+            tx.output.last_mut().expect("change output not set").value =
+                change_output.value;
         }
 
         // Calculate the effective fee.
