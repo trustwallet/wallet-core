@@ -194,8 +194,7 @@ impl Compiler<StandardBitcoinContext> {
 
             // Update the change amount in the `bitcoin` crate native transaction.
             // This is required for the sighash calculation.
-            tx.output.last_mut().expect("change output not set").value =
-                change_output.value;
+            tx.output.last_mut().expect("change output not set").value = change_output.value;
         }
 
         // Calculate the effective fee.
