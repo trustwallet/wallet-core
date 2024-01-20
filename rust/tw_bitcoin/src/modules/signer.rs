@@ -22,14 +22,6 @@ impl Signer {
         // not get accidentally forgotten.
         let mut proto = crate::entry::pre_processor(proto);
 
-        // Collect individual private keys per input, if there are any.
-        let mut individual_keys = HashMap::new();
-        for (index, txin) in proto.inputs.iter().enumerate() {
-            if !txin.private_key.is_empty() {
-                individual_keys.insert(index, txin.private_key.to_vec());
-            }
-        }
-
         // Generate the sighashes.
         let pre_signed = BitcoinEntry.preimage_hashes_impl(_coin, proto.clone())?;
         if pre_signed.error != Proto::Error::OK {
@@ -80,6 +72,14 @@ impl Signer {
         // Sanity check.
         debug_assert_eq!(proto.outputs.len(), pre_signed.utxo_outputs.len());
         debug_assert_eq!(proto.inputs.len(), pre_signed.utxo_inputs.len());
+
+        // Collect individual private keys per input, if there are any.
+        let mut individual_keys = HashMap::new();
+        for (index, txin) in proto.inputs.iter().enumerate() {
+            if !txin.private_key.is_empty() {
+                individual_keys.insert(index, txin.private_key.to_vec());
+            }
+        }
 
         // Sign the sighashes.
         let signatures = crate::modules::signer::Signer::signatures_from_proto(
