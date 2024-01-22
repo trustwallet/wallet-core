@@ -357,6 +357,56 @@ TEST(BitcoinSigning, SignBRC20TransferCommit) {
     // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1
 }
 
+// Tests the BitcoinV2 API through the legacy `SigningInput`.
+TEST(BitcoinSigning, SignBRC20TransferCommitV2) {
+    auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
+    auto fullAmount = 26400;
+    auto minerFee = 3000;
+    auto brcInscribeAmount = 7000;
+    auto forFeeAmount = fullAmount - brcInscribeAmount - minerFee;
+    auto txId = parse_hex("089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e");
+
+    PrivateKey key(privateKey);
+    auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
+
+    TW::BitcoinV2::Proto::SigningInput signing;
+    signing.set_version(2);
+    signing.set_private_key(key.bytes.data(), key.bytes.size());
+    signing.set_input_selector(TW::Utxo::Proto::InputSelector::UseAll);
+    signing.set_disable_change_output(true);
+
+    auto& in = *signing.add_inputs();
+    in.set_txid(txId.data(), txId.size());
+    in.set_vout(1);
+    in.set_value(fullAmount);
+    in.mutable_builder()->set_p2wpkh(pubKey.bytes.data(), pubKey.bytes.size());
+
+    auto& out = *signing.add_outputs();
+    out.set_value(brcInscribeAmount);
+    auto& brc20 = *out.mutable_builder()->mutable_brc20_inscribe();
+    brc20.set_ticker("oadf");
+    brc20.set_transfer_amount("20");
+    brc20.set_inscribe_to(pubKey.bytes.data(), pubKey.bytes.size());
+
+    auto& changeOut = *signing.add_outputs();
+    changeOut.set_value(forFeeAmount);
+    changeOut.mutable_builder()->mutable_p2wpkh()->set_pubkey(pubKey.bytes.data(), pubKey.bytes.size());
+
+    Proto::SigningInput legacy;
+    *legacy.mutable_signing_v2() = signing;
+
+    Proto::SigningOutput output;
+    ANY_SIGN(legacy, TWCoinTypeBitcoin);
+
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+    ASSERT_TRUE(output.has_signing_result_v2());
+    EXPECT_EQ(output.signing_result_v2().error(), BitcoinV2::Proto::Error::OK);
+    EXPECT_EQ(hex(output.signing_result_v2().encoded()), "02000000000101089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e0100000000ffffffff02581b000000000000225120e8b706a97732e705e22ae7710703e7f589ed13c636324461afa443016134cc051040000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d02483045022100a44aa28446a9a886b378a4a65e32ad9a3108870bd725dc6105160bed4f317097022069e9de36422e4ce2e42b39884aa5f626f8f94194d1013007d5a1ea9220a06dce0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
+    EXPECT_EQ(hex(output.signing_result_v2().txid()), "797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1");
+
+    // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1
+}
+
 TEST(BitcoinSigning, SignBRC20TransferReveal) {
     auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
     auto dustSatoshi = 546;
