@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 //! This module contains a standard Bitcoin address enumeration each of these exist on the mainnet network.
+//! TODO consider moving the file to `tw_bitcoin`.
 
 use crate::address::derivation::BitcoinDerivation;
 use crate::address::legacy::LegacyAddress;

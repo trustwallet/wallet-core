@@ -20,6 +20,8 @@ mod tests {
     use super::*;
     use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
     use tw_encoding::hex;
+    use tw_encoding::hex::ToHex;
+    use tw_hash::sha2::sha256;
     use tw_hash::sha3::keccak256;
     use tw_hash::{H256, H264, H520};
     use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
@@ -83,6 +85,28 @@ mod tests {
 
         let verify_signature = VerifySignature::from(signature);
         assert!(public.verify(verify_signature, hash_to_sign));
+    }
+
+    #[test]
+    fn test_public_key_sign_verify_as_der() {
+        let private_key = PrivateKey::try_from(
+            "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
+        )
+        .unwrap();
+        let public_key = private_key.public();
+
+        let msg_to_sign = "Hello";
+        let hash_to_sign = sha256(msg_to_sign.as_bytes());
+        let hash_to_sign = H256::try_from(hash_to_sign.as_slice()).unwrap();
+
+        let signature = private_key.sign(hash_to_sign).unwrap();
+        let signature_der = VerifySignature::from(signature).to_der().unwrap();
+
+        assert_eq!(signature_der.der_bytes().to_hex(), "304402200f5d5a9e5fc4b82a625312f3be5d3e8ad017d882de86c72c92fcefa924e894c102202071772a14201a3a0debf381b5e8dea39fadb9bcabdc02ee71ab018f55bf717f");
+
+        // Now convert the der signature to ecdsa.
+        let verify_signature = VerifySignature::from_der(signature_der).unwrap();
+        assert!(public_key.verify(verify_signature, hash_to_sign));
     }
 
     #[test]
