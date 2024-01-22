@@ -295,10 +295,11 @@ fn ffi_proto_sign_input_p2wpkh_output_brc20() {
 
     // Output.
     let c_ticker = CString::new("oadf").unwrap();
+    let c_amount = CString::new("20").unwrap();
     let brc20_output = unsafe {
         legacy_ffi::tw_bitcoin_legacy_build_brc20_transfer_inscription(
             c_ticker.as_ptr(),
-            20,
+            c_amount.as_ptr(),
             7_000,
             alice_pubkey.as_c_ptr(),
             alice_pubkey.len(),

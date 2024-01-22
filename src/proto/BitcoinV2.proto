@@ -192,7 +192,7 @@ message Input {
         // The ticker of the BRC20 inscription.
         string ticker = 3;
         // The BRC20 token transfer amount.
-        uint64 transfer_amount = 4;
+        string transfer_amount = 4;
     }
 }
 
@@ -258,7 +258,7 @@ message Output {
         // The ticker of the BRC20 inscription.
         string ticker = 2;
         // The BRC20 token transfer amount.
-        uint64 transfer_amount = 3;
+        string transfer_amount = 3;
     }
 }
 

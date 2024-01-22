@@ -93,14 +93,15 @@ fn ffi_tw_bitcoin_legacy_build_brc20_transfer_inscription() {
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
 
     let ticker_str = "oadf";
+    let amount = "100";
     let c_ticker = CString::new(ticker_str).unwrap();
-    let brc20_amount = 100;
+    let brc20_amount = CString::new(amount).unwrap();
 
     // Call the FFI function.
     let raw = unsafe {
         legacy_ffi::tw_bitcoin_legacy_build_brc20_transfer_inscription(
             c_ticker.as_ptr(),
-            brc20_amount,
+            brc20_amount.as_ptr(),
             SATOSHIS,
             pubkey_slice.as_ptr(),
             pubkey_slice.len(),
@@ -110,7 +111,7 @@ fn ffi_tw_bitcoin_legacy_build_brc20_transfer_inscription() {
 
     // Prepare the BRC20 payload + merkle root.
     let ticker = Brc20Ticker::new(ticker_str.to_string()).unwrap();
-    let transfer = BRC20TransferInscription::new(pubkey, ticker, brc20_amount).unwrap();
+    let transfer = BRC20TransferInscription::new(pubkey, ticker, amount.to_string()).unwrap();
 
     let merkle_root = transfer
         .inscription()
