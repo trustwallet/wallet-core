@@ -318,7 +318,7 @@ TEST(BitcoinSigning, SignBRC20TransferCommit) {
     auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubKeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
     auto inputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
-    auto outputInscribe = TW::Bitcoin::Script::buildBRC20InscribeTransfer("oadf", 20, pubKey.bytes);
+    auto outputInscribe = TW::Bitcoin::Script::buildBRC20InscribeTransfer("oadf", "20", pubKey.bytes);
 
     Proto::SigningInput input;
     input.set_is_it_brc_operation(true);
@@ -367,7 +367,7 @@ TEST(BitcoinSigning, SignBRC20TransferReveal) {
     auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubKeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
     auto inputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
-    auto outputInscribe = TW::Bitcoin::Script::buildBRC20InscribeTransfer("oadf", 20, pubKey.bytes);
+    auto outputInscribe = TW::Bitcoin::Script::buildBRC20InscribeTransfer("oadf", "20", pubKey.bytes);
 
     Proto::SigningInput input;
     input.set_is_it_brc_operation(true);
@@ -424,7 +424,7 @@ TEST(BitcoinSigning, SignBRC20TransferInscription) {
     auto utxoPubKeyHashBob = Hash::ripemd(Hash::sha256(parse_hex("02f453bb46e7afc8796a9629e89e07b5cb0867e9ca340b571e7bcc63fc20c43f2e")));
     auto inputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
     auto outputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHashBob);
-    auto outputInscribe = TW::Bitcoin::Script::buildBRC20InscribeTransfer("oadf", 20, pubKey.bytes);
+    auto outputInscribe = TW::Bitcoin::Script::buildBRC20InscribeTransfer("oadf", "20", pubKey.bytes);
 
     Proto::SigningInput input;
     input.set_is_it_brc_operation(true);

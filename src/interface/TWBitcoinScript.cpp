@@ -167,7 +167,7 @@ TWData *_Nullable TWBitcoinScriptBuildBRC20InscribeTransfer(TWString* ticker, TW
     auto* brcTicker = reinterpret_cast<const std::string*>(ticker);
     auto* brcAmount = reinterpret_cast<const std::string*>(amount);
     auto* brcPubkey = reinterpret_cast<const TW::Data*>(pubkey);
-    auto script = TW::Bitcoin::Script::buildBRC20InscribeTransfer(*brcTicker, std::stoull(*brcAmount), *brcPubkey);
+    auto script = TW::Bitcoin::Script::buildBRC20InscribeTransfer(*brcTicker, *brcAmount, *brcPubkey);
     auto serialized = TW::data(script.SerializeAsString());
     return TWDataCreateWithBytes(serialized.data(), serialized.size());
 }

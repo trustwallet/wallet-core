@@ -115,7 +115,7 @@ class Script {
     static Script buildPayToV1WitnessProgram(const Data& publicKey);
 
     /// Builds the Ordinals inscripton for BRC20 transfer.
-    static Proto::TransactionOutput buildBRC20InscribeTransfer(const std::string& ticker, uint64_t amount, const Data& publicKey);
+    static Proto::TransactionOutput buildBRC20InscribeTransfer(const std::string& ticker, const std::string& amount, const Data& publicKey);
 
     /// Builds the Ordinals inscripton for NFTs.
     static Proto::TransactionOutput buildOrdinalNftInscription(const std::string& mimeType, const Data& payload, const Data& publicKey);
