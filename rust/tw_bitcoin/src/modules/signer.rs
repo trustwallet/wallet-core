@@ -20,7 +20,58 @@ impl Signer {
         // `preimage_hashes_impl` and `compile_impl`. But we're leaving this
         // here in case this methods gets extended and the pre-processing does
         // not get accidentally forgotten.
-        let proto = crate::entry::pre_processor(proto);
+        let mut proto = crate::entry::pre_processor(proto);
+
+        // Generate the sighashes.
+        let pre_signed = BitcoinEntry.preimage_hashes_impl(_coin, proto.clone())?;
+        if pre_signed.error != Proto::Error::OK {
+            return Err(Error::from(pre_signed.error));
+        }
+
+        // Sanity check.
+        debug_assert!(proto.inputs.len() >= pre_signed.utxo_inputs.len());
+        debug_assert_eq!(pre_signed.utxo_inputs.len(), pre_signed.sighashes.len());
+
+        if proto.disable_change_output {
+            debug_assert_eq!(proto.outputs.len(), pre_signed.utxo_outputs.len());
+        } else {
+            // If a change output was generated...
+            debug_assert_eq!(proto.outputs.len() + 1, pre_signed.utxo_outputs.len()); // plus change output.
+
+            // Update the given change output with the specified amount and push
+            // it to the proto structure.
+            let change_output_amount = pre_signed
+                .utxo_outputs
+                .last()
+                .expect("No change output provided")
+                .value;
+
+            let mut change_output = proto.change_output.clone().expect("change output expected");
+            change_output.value = change_output_amount;
+            proto.outputs.push(change_output);
+        }
+
+        // The `pre_signed` result contains a list of selected inputs in order
+        // to cover the output amount and fees, assuming the input selector was
+        // used. We therefore need to update the proto structure.
+
+        // Clear the inputs.
+        let available = std::mem::take(&mut proto.inputs);
+
+        for selected in &pre_signed.utxo_inputs {
+            // Find the input in the passed on UTXO list.
+            let index = available
+                .iter()
+                .position(|input| input.txid == selected.txid && input.vout == selected.vout)
+                .expect("Selected input not found in proto structure");
+
+            // Update the input with the selected input.
+            proto.inputs.push(available[index].clone());
+        }
+
+        // Sanity check.
+        debug_assert_eq!(proto.outputs.len(), pre_signed.utxo_outputs.len());
+        debug_assert_eq!(proto.inputs.len(), pre_signed.utxo_inputs.len());
 
         // Collect individual private keys per input, if there are any.
         let mut individual_keys = HashMap::new();
@@ -28,14 +79,6 @@ impl Signer {
             if !txin.private_key.is_empty() {
                 individual_keys.insert(index, txin.private_key.to_vec());
             }
-        }
-
-        // Generate the sighashes.
-        let pre_signed = BitcoinEntry.preimage_hashes_impl(_coin, proto.clone())?;
-
-        // Check for error.
-        if pre_signed.error != Proto::Error::OK {
-            return Err(Error::from(pre_signed.error));
         }
 
         // Sign the sighashes.
@@ -46,8 +89,41 @@ impl Signer {
             proto.dangerous_use_fixed_schnorr_rng,
         )?;
 
+        // Sanity check.
+        debug_assert_eq!(signatures.len(), proto.inputs.len());
+        debug_assert_eq!(signatures.len(), pre_signed.sighashes.len());
+
+        // Prepare values for sanity check.
+        let total_input_amount = proto.inputs.iter().map(|input| input.value).sum::<u64>();
+        let total_output_amount = proto.outputs.iter().map(|output| output.value).sum::<u64>();
+
         // Construct the final transaction.
-        BitcoinEntry.compile_impl(_coin, proto, signatures, vec![])
+        let mut compiled = BitcoinEntry.compile_impl(_coin, proto, signatures, vec![])?;
+
+        // Note: the fee that we used for estimation might be SLIGHLY off
+        // from the final fee. This is due to the fact that we must set a
+        // change output (which must consider the fee) before we can calculate
+        // the final fee. This leads to a chicken-and-egg problem. However,
+        // the fee difference, should there be one, is generally as small as
+        // one weight unit. Hence, we overwrite the final fee with the
+        // estimated fee.
+        compiled.weight = pre_signed.weight_estimate;
+
+        // Sanity check.
+        let compiled_total_output_amount = compiled
+            .transaction
+            .as_ref()
+            .expect("No transaction was constructed")
+            .outputs
+            .iter()
+            .map(|output| output.value)
+            .sum::<u64>();
+
+        // Every output is accounted for, including the fee.
+        debug_assert_eq!(total_output_amount, compiled_total_output_amount);
+        debug_assert_eq!(total_input_amount, total_output_amount + compiled.fee);
+
+        Ok(compiled)
     }
     pub fn signatures_from_proto(
         input: &Proto::PreSigningOutput<'_>,

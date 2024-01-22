@@ -57,17 +57,20 @@ impl Compiler<StandardBitcoinContext> {
     fn preimage_hashes_impl(
         mut proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::PreSigningOutput<'static>> {
-        // TODO: Check for duplicate Txid (user error).
-
         // Calculate total outputs amount, based on it we can determine how many inputs to select.
-        let total_input: u64 = proto.inputs.iter().map(|input| input.value).sum();
-        let total_output: u64 = proto.outputs.iter().map(|output| output.value).sum();
+        let total_input_amount: u64 = proto.inputs.iter().map(|input| input.value).sum();
+        let total_output_amount: u64 = proto.outputs.iter().map(|output| output.value).sum();
 
         // Do some easy checks first.
 
         // Insufficient input amount.
-        if total_output > total_input {
+        if total_output_amount > total_input_amount {
             return Err(Error::from(Proto::Error::Error_insufficient_inputs));
+        }
+
+        // No ouputs specified.
+        if total_output_amount == 0 {
+            return Err(Error::from(Proto::Error::Error_no_outputs_specified));
         }
 
         // Change scriptPubkey must be set if change output is enabled.
@@ -83,103 +86,123 @@ impl Compiler<StandardBitcoinContext> {
             proto.inputs.sort_by(|a, b| a.value.cmp(&b.value));
         }
 
-        // Unless InputSelector::UseAll is provided, we only use the necessariy
-        // amount of inputs to cover `total_output`. Any other input gets
-        // dropped.
-        let selected = if let Proto::InputSelector::SelectInOrder
-        | Proto::InputSelector::SelectAscending = proto.input_selector
-        {
-            let mut total_input = total_input;
-            let mut remaining = total_output;
+        // Add change output generation is enabled, push it to the proto structure.
+        if !proto.disable_change_output {
+            proto.outputs.push(Proto::TxOut {
+                // We set the change value later.
+                value: 0,
+                script_pubkey: proto.change_script_pubkey,
+            });
+        }
 
-            let selected: Vec<Proto::TxIn> = proto
-                .inputs
-                .into_iter()
-                .take_while(|input| {
-                    if remaining == 0 {
-                        return false;
+        // Prepare the `bitcoin` crate native transaction structure, used for fee calculation.
+        let mut tx = Transaction {
+            version: proto.version,
+            lock_time: lock_time_from_proto(&proto.lock_time)?,
+            // Leave inputs empty for now.
+            input: vec![],
+            // Add outputs (including change output)
+            output: proto
+                .outputs
+                .iter()
+                .map(|output| {
+                    // Conver to `bitcoin` crate native type.
+                    TxOut {
+                        value: output.value,
+                        script_pubkey: ScriptBuf::from_bytes(output.script_pubkey.to_vec()),
+                    }
+                })
+                .collect(),
+        };
+
+        // Select the inputs accordingly by updating `proto.inputs`.
+        let available = std::mem::take(&mut proto.inputs); // Drain `proto.inputs`
+        match &proto.input_selector {
+            Proto::InputSelector::UseAll => {
+                // Simply add all inputs.
+                for txin in available {
+                    let n_txin = convert_proto_to_txin(&txin)?;
+                    tx.input.push(n_txin);
+
+                    // Track selected input
+                    proto.inputs.push(txin);
+                }
+            },
+            Proto::InputSelector::SelectInOrder | Proto::InputSelector::SelectAscending => {
+                let mut total_input_amount = 0;
+                let mut total_input_weight = 0;
+
+                // For each iteration, we calculate the full fee estimate and
+                // exit when the total amount + fees have been covered.
+                for txin in available {
+                    let n_txin = convert_proto_to_txin(&txin)?;
+                    tx.input.push(n_txin);
+
+                    // Update input amount and weight.
+                    total_input_amount += txin.value;
+                    total_input_weight += txin.weight_estimate; // contains scriptSig/Witness weight
+
+                    // Track selected input
+                    proto.inputs.push(txin);
+
+                    // Update the change amount, if set.
+                    if !proto.disable_change_output {
+                        let change_output = tx.output.last_mut().expect("change output not set");
+                        change_output.value =
+                            total_input_amount.saturating_sub(total_output_amount);
                     }
 
-                    total_input += input.value;
-                    remaining = remaining.saturating_sub(input.value);
+                    // Calculate the full weight projection (base weight + input
+                    // weight + output weight). Note that the change output itself is
+                    // not included in the transaction yet.
+                    let weight_estimate = tx.weight().to_wu() + total_input_weight;
+                    let fee_estimate = (weight_estimate + 3) / 4 * proto.weight_base;
 
-                    true
-                })
-                .map(|input| Proto::TxIn {
-                    txid: input.txid.to_vec().into(),
-                    script_pubkey: input.script_pubkey.to_vec().into(),
-                    leaf_hash: input.leaf_hash.to_vec().into(),
-                    ..input
-                })
-                .collect();
-
-            selected
-        } else {
-            // TODO: Write a function for this
-            proto
-                .inputs
-                .into_iter()
-                .map(|input| Proto::TxIn {
-                    txid: input.txid.to_vec().into(),
-                    script_pubkey: input.script_pubkey.to_vec().into(),
-                    leaf_hash: input.leaf_hash.to_vec().into(),
-                    ..input
-                })
-                .collect()
+                    if total_input_amount >= total_output_amount + fee_estimate {
+                        // Enough inputs to cover the output and fee estimate.
+                        break;
+                    }
+                }
+            },
         };
 
-        // Update protobuf structure with selected inputs.
-        proto.inputs = selected.clone();
-
-        // Update the `total_input` amount based on the selected inputs.
-        let total_input: u64 = proto.inputs.iter().map(|input| input.value).sum();
+        // Update the `total input amount based on the selected inputs.
+        let total_input_amount: u64 = proto.inputs.iter().map(|input| input.value).sum();
 
         // Calculate the total input weight projection.
-        let input_weight: u64 = proto.inputs.iter().map(|input| input.weight_estimate).sum();
+        let total_input_weight: u64 = proto.inputs.iter().map(|input| input.weight_estimate).sum();
 
-        // Convert Protobuf structure to `bitcoin` crate native transaction,
-        // used for weight/fee calculation.
-        let tx = convert_proto_to_tx(&proto)?;
-
-        // Estimate of the change output weight.
-        let output_weight = if proto.disable_change_output {
-            0
-        } else {
-            // VarInt + script_pubkey size, rough estimate.
-            1 + proto.change_script_pubkey.len() as u64
-        };
-
-        // Calculate the full weight projection (base weight + input & output weight).
-        let weight_estimate = tx.weight().to_wu() + input_weight + output_weight;
+        // Calculate the weight projection (base weight + input weight + output
+        // weight). Note that the scriptSig/Witness fields are blanked inside
+        // `tx`, hence we need to rely on the values passed on the proto
+        // structure.
+        let weight_estimate = tx.weight().to_wu() + total_input_weight;
         let fee_estimate = (weight_estimate + 3) / 4 * proto.weight_base;
 
-        // Check if the fee projection would make the change amount negative
-        // (implying insufficient input amount).
-        let change_amount_before_fee = total_input - total_output;
-        if change_amount_before_fee < fee_estimate {
+        // Check if there are enough inputs to cover the the full output and fee estimate.
+        if total_input_amount < total_output_amount + fee_estimate {
             return Err(Error::from(Proto::Error::Error_insufficient_inputs));
         }
 
+        // Set the change output amount in the proto structure, if enabled.
         if !proto.disable_change_output {
-            // The amount to be returned (if enabled).
-            let change_amount = change_amount_before_fee - fee_estimate;
+            // Update the change amount in the proto list.
+            let change_output = proto.outputs.last_mut().expect("change output not set");
+            change_output.value = total_input_amount
+                .saturating_sub(total_output_amount)
+                .saturating_sub(fee_estimate);
 
-            // Update the passed on protobuf structure by adding a change output
-            // (return to sender)
-            if change_amount != 0 {
-                proto.outputs.push(Proto::TxOut {
-                    value: change_amount,
-                    script_pubkey: proto.change_script_pubkey.clone(),
-                });
-            }
+            // Update the change amount in the `bitcoin` crate native transaction.
+            // This is required for the sighash calculation.
+            tx.output.last_mut().expect("change output not set").value = change_output.value;
         }
 
-        // Convert *updated* Protobuf structure to `bitcoin` crate native
-        // transaction.
-        let tx = convert_proto_to_tx(&proto)?;
+        // Calculate the effective fee.
+        let total_output_amount: u64 = proto.outputs.iter().map(|out| out.value).sum();
+        let fee_estimate = total_input_amount - total_output_amount;
 
+        // Calculate the sighashes.
         let mut cache = SighashCache::new(&tx);
-
         let mut sighashes: Vec<(Vec<u8>, ProtoSigningMethod, Proto::SighashType)> = vec![];
 
         for (index, input) in proto.inputs.iter().enumerate() {
@@ -320,7 +343,21 @@ impl Compiler<StandardBitcoinContext> {
                     sighash_type,
                 })
                 .collect(),
-            inputs: selected,
+            inputs: proto
+                .inputs
+                .into_iter()
+                .map(|input| Proto::TxIn {
+                    txid: input.txid.to_vec().into(),
+                    vout: input.vout,
+                    sequence: input.sequence,
+                    value: input.value,
+                    script_pubkey: input.script_pubkey.to_vec().into(),
+                    weight_estimate: input.weight_estimate,
+                    signing_method: input.signing_method,
+                    sighash_type: input.sighash_type,
+                    leaf_hash: input.leaf_hash.to_vec().into(),
+                })
+                .collect(),
             outputs: proto
                 .outputs
                 .into_iter()
@@ -337,6 +374,21 @@ impl Compiler<StandardBitcoinContext> {
     fn compile_impl(
         proto: Proto::PreSerialization<'_>,
     ) -> Result<Proto::SerializedTransaction<'static>> {
+        // Do some easy checks first.
+
+        let total_input_amount: u64 = proto.inputs.iter().map(|input| input.value).sum();
+        let total_output_amount: u64 = proto.outputs.iter().map(|output| output.value).sum();
+
+        // Insufficient input amount.
+        if total_output_amount > total_input_amount {
+            return Err(Error::from(Proto::Error::Error_insufficient_inputs));
+        }
+
+        // No ouputs specified.
+        if total_output_amount == 0 {
+            return Err(Error::from(Proto::Error::Error_no_outputs_specified));
+        }
+
         let mut tx = Transaction {
             version: proto.version,
             lock_time: lock_time_from_proto(&proto.lock_time)?,
@@ -344,6 +396,7 @@ impl Compiler<StandardBitcoinContext> {
             output: vec![],
         };
 
+        let mut total_input_amount = 0;
         for txin in &proto.inputs {
             let txid = Txid::from_slice(txin.txid.as_ref())
                 .map_err(|_| Error::from(Proto::Error::Error_invalid_txid))?;
@@ -357,6 +410,8 @@ impl Compiler<StandardBitcoinContext> {
                     .map(|s| s.as_ref())
                     .collect::<Vec<&[u8]>>(),
             );
+
+            total_input_amount += txin.value;
 
             tx.input.push(TxIn {
                 previous_output: OutPoint { txid, vout },
@@ -373,6 +428,10 @@ impl Compiler<StandardBitcoinContext> {
             });
         }
 
+        // Sanity check.
+        debug_assert_eq!(tx.input.len(), proto.inputs.len());
+        debug_assert_eq!(tx.output.len(), proto.outputs.len());
+
         // Encode the transaction.
         let mut buffer = vec![];
         tx.consensus_encode(&mut buffer)
@@ -381,47 +440,39 @@ impl Compiler<StandardBitcoinContext> {
         // The transaction identifier, which we represent in
         // non-reversed/non-network order.
         let txid: Vec<u8> = tx.txid().as_byte_array().iter().copied().rev().collect();
+        let weight = tx.weight().to_wu();
+
+        // Calculate the effective fee.
+        let total_output_amount = tx.output.iter().map(|out| out.value).sum::<u64>();
+        debug_assert!(total_input_amount >= total_output_amount);
+        let fee = total_input_amount - total_output_amount;
 
         Ok(Proto::SerializedTransaction {
             error: Proto::Error::OK,
             encoded: buffer.into(),
             txid: txid.into(),
-            weight: tx.weight().to_wu(),
-            fee: tx.weight().to_vbytes_ceil() * proto.weight_base,
+            weight,
+            fee,
         })
     }
 }
 
-fn convert_proto_to_tx<'a>(proto: &'a Proto::SigningInput<'a>) -> Result<Transaction> {
-    let mut tx = Transaction {
-        version: proto.version,
-        lock_time: lock_time_from_proto(&proto.lock_time)?,
-        input: vec![],
-        output: vec![],
-    };
+fn convert_proto_to_txin<'a>(proto: &'a Proto::TxIn<'a>) -> Result<TxIn> {
+    let txid = Txid::from_slice(proto.txid.as_ref())
+        .map_err(|_| Error::from(Proto::Error::Error_invalid_txid))?;
 
-    for txin in &proto.inputs {
-        let txid = Txid::from_slice(txin.txid.as_ref())
-            .map_err(|_| Error::from(Proto::Error::Error_invalid_txid))?;
+    let vout = proto.vout;
 
-        let vout = txin.vout;
-
-        tx.input.push(TxIn {
-            previous_output: OutPoint { txid, vout },
-            script_sig: ScriptBuf::new(),
-            sequence: Sequence(txin.sequence),
-            witness: Witness::new(),
-        });
-    }
-
-    for txout in &proto.outputs {
-        tx.output.push(TxOut {
-            value: txout.value,
-            script_pubkey: ScriptBuf::from_bytes(txout.script_pubkey.to_vec()),
-        });
-    }
-
-    Ok(tx)
+    Ok(TxIn {
+        previous_output: OutPoint { txid, vout },
+        // Utxo.proto does not have the field, we rely on
+        // `Proto::TxIn.weight_estimate` for estimating fees.
+        script_sig: ScriptBuf::new(),
+        sequence: Sequence(proto.sequence),
+        // Utxo.proto does not have the field, we rely on
+        // `Proto::TxIn.weight_estimate` for estimating fees.
+        witness: Witness::new(),
+    })
 }
 
 // Convenience function to retreive the lock time. If none is provided, the

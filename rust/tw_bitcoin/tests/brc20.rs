@@ -38,7 +38,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
                 Proto::mod_Output::OutputBrc20Inscription {
                     inscribe_to: alice_pubkey.as_slice().into(),
                     ticker: "oadf".into(),
-                    transfer_amount: 20,
+                    transfer_amount: "20".into(),
                 },
             ),
         }),
@@ -93,7 +93,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
                 one_prevout: false,
                 inscribe_to: alice_pubkey.as_slice().into(),
                 ticker: "oadf".into(),
-                transfer_amount: 20,
+                transfer_amount: "20".into(),
             }),
         }),
         ..Default::default()

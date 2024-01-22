@@ -41,8 +41,9 @@ fn coin_entry_custom_script_path() {
     // Build the BRC20 transfer outside the library, only provide essential
     // information to the builder.
     let ticker = Brc20Ticker::new("oadf".to_string()).unwrap();
+    let amount = "20".to_string();
     let inscribe_to = PublicKey::from_slice(&alice_pubkey).unwrap();
-    let transfer = BRC20TransferInscription::new(inscribe_to, ticker, 20).unwrap();
+    let transfer = BRC20TransferInscription::new(inscribe_to, ticker, amount).unwrap();
     let merkle_root = transfer.inscription().spend_info().merkle_root().unwrap();
 
     // Provide the public key ("internal key") and the merkle root directly to the builder.
