@@ -4,6 +4,7 @@
 
 #![allow(clippy::missing_safety_doc)]
 
+use std::borrow::Cow;
 use std::ffi::{c_char, CStr};
 use tw_bitcoin::aliases::*;
 use tw_bitcoin::native::consensus::Decodable;
@@ -143,7 +144,7 @@ pub unsafe extern "C" fn tw_bitcoin_legacy_build_p2tr_key_path_script(
 pub unsafe extern "C" fn tw_bitcoin_legacy_build_brc20_transfer_inscription(
     // The 4-byte ticker.
     ticker: *const c_char,
-    value: u64,
+    amount: *const c_char,
     _satoshis: i64,
     pubkey: *const u8,
     pubkey_len: usize,
@@ -162,6 +163,11 @@ pub unsafe extern "C" fn tw_bitcoin_legacy_build_brc20_transfer_inscription(
         Err(_) => return CByteArray::null(),
     };
 
+    let amount = match CStr::from_ptr(amount).to_str() {
+        Ok(input) => input,
+        Err(_) => return CByteArray::null(),
+    };
+
     let output = Proto::Output {
         value: _satoshis as u64,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
@@ -169,7 +175,7 @@ pub unsafe extern "C" fn tw_bitcoin_legacy_build_brc20_transfer_inscription(
                 Proto::mod_Output::OutputBrc20Inscription {
                     inscribe_to: recipient.to_bytes().into(),
                     ticker: ticker.into(),
-                    transfer_amount: value,
+                    transfer_amount: Cow::from(amount.to_string()),
                 },
             ),
         }),

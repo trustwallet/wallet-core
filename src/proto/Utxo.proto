@@ -13,7 +13,8 @@ enum Error {
     Error_missing_sighash_method = 6;
     Error_failed_encoding = 7;
     Error_insufficient_inputs = 8;
-    Error_missing_change_script_pubkey = 9;
+    Error_no_outputs_specified = 9;
+    Error_missing_change_script_pubkey = 10;
 }
 
 message SigningInput {
@@ -45,14 +46,14 @@ message SigningInput {
 }
 
 enum InputSelector {
-    // Use all the inputs provided in the given order.
-    UseAll = 0;
+    // Automatically select enough inputs in an ascending order to cover the
+    // outputs of the transaction.
+    SelectAscending = 0;
     // Automatically select enough inputs in the given order to cover the
     // outputs of the transaction.
     SelectInOrder = 1;
-    // Automatically select enough inputs in an ascending order to cover the
-    // outputs of the transaction.
-    SelectAscending = 2;
+    // Use all the inputs provided in the given order.
+    UseAll = 10;
 }
 
 message LockTime {
@@ -192,14 +193,17 @@ message TxInClaim {
     // The index of the referenced output.
     uint32 vout = 2;
 
+    // The value of this input, such as satoshis.
+    uint64 value = 3;
+
     // The sequence number (TODO).
-    uint32 sequence = 3;
+    uint32 sequence = 4;
 
     // The script used for claiming an input.
-    bytes script_sig = 4;
+    bytes script_sig = 5;
 
     // The script used for claiming an input.
-    repeated bytes witness_items = 5;
+    repeated bytes witness_items = 6;
 }
 
 message SerializedTransaction {

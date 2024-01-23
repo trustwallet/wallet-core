@@ -16,6 +16,7 @@ enum Error {
     Error_utxo_missing_sighash_method = 7;
     Error_utxo_failed_encoding = 8;
     Error_utxo_insufficient_inputs = 9;
+    Error_utxo_no_outputs_specified = 43;
     Error_utxo_missing_change_script_pubkey = 10;
     // `tw_bitcoin` related errors.
     Error_zero_sequence_not_enabled = 11;
@@ -191,7 +192,7 @@ message Input {
         // The ticker of the BRC20 inscription.
         string ticker = 3;
         // The BRC20 token transfer amount.
-        uint64 transfer_amount = 4;
+        string transfer_amount = 4;
     }
 }
 
@@ -257,7 +258,7 @@ message Output {
         // The ticker of the BRC20 inscription.
         string ticker = 2;
         // The BRC20 token transfer amount.
-        uint64 transfer_amount = 3;
+        string transfer_amount = 3;
     }
 }
 
