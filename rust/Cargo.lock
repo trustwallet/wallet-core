@@ -2028,7 +2028,9 @@ version = "0.1.0"
 dependencies = [
  "bech32",
  "bitcoin",
+ "byteorder",
  "secp256k1",
+ "strum_macros",
  "tw_base58_address",
  "tw_bech32_address",
  "tw_coin_entry",

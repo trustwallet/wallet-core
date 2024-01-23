@@ -4,8 +4,13 @@
 
 use tw_proto::Utxo::Proto;
 
-pub mod compiler;
 pub mod address;
+pub mod compiler;
+pub mod encode;
+pub mod error;
+pub mod script;
+pub mod sighash;
+pub mod transaction;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
