@@ -116,9 +116,12 @@ impl InputClaimBuilder {
                     let ticker = Brc20Ticker::new(brc20.ticker.to_string())?;
 
                     // Construct the BRC20 transfer inscription.
-                    let transfer =
-                        BRC20TransferInscription::new(pubkey, ticker, brc20.transfer_amount)
-                            .expect("invalid BRC20 transfer construction");
+                    let transfer = BRC20TransferInscription::new(
+                        pubkey,
+                        ticker,
+                        brc20.transfer_amount.to_string(),
+                    )
+                    .expect("invalid BRC20 transfer construction");
 
                     // Create a control block for that inscription.
                     let control_block = transfer
@@ -158,6 +161,7 @@ impl InputClaimBuilder {
         let claim = UtxoProto::TxInClaim {
             txid: input.txid.to_vec().into(),
             vout: input.vout,
+            value: input.value,
             sequence: input.sequence,
             script_sig: script_sig.to_vec().into(),
             witness_items: witness
