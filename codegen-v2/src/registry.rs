@@ -47,6 +47,8 @@ pub struct CoinItem {
     #[serde(rename = "staticPrefix")]
     #[serde(default)]
     pub static_prefix: u8,
+    #[serde(default)]
+    pub hrp: String,
     pub explorer: CoinExplorer,
 }
 
