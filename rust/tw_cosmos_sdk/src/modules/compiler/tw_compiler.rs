@@ -104,7 +104,11 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
             public_key,
         } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
         let signature = Context::Signature::try_from(&signature)?;
-        let public_key = Context::PublicKey::from_bytes(coin, &public_key)?;
+
+        let mut public_key = Context::PublicKey::from_bytes(coin, &public_key)?;
+        if let Some(custom_type) = TxBuilder::<Context>::custom_public_key_type_from_proto(&input) {
+            public_key.with_custom_public_key_type(custom_type);
+        }
 
         let signed_tx_raw = match TxBuilder::<Context>::try_sign_direct_args(&input) {
             // If there was a `SignDirect` message in the signing input, generate the `TxRaw` directly.
@@ -150,7 +154,11 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
             public_key,
         } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
         let signature = Context::Signature::try_from(&signature)?;
-        let public_key = Context::PublicKey::from_bytes(coin, &public_key)?;
+
+        let mut public_key = Context::PublicKey::from_bytes(coin, &public_key)?;
+        if let Some(custom_type) = TxBuilder::<Context>::custom_public_key_type_from_proto(&input) {
+            public_key.with_custom_public_key_type(custom_type);
+        }
 
         // Set the public key. It will be used to construct a signer info.
         input.public_key = Cow::from(public_key.to_bytes());

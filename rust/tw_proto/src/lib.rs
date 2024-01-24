@@ -50,6 +50,14 @@ where
     google::protobuf::Any { type_url, value }
 }
 
+pub fn to_any_with_type_url<T>(message: &T, type_url: String) -> google::protobuf::Any
+where
+    T: MessageInfo + MessageWrite,
+{
+    let value = serialize(message).expect("Protobuf serialization should never fail");
+    google::protobuf::Any { type_url, value }
+}
+
 pub fn type_url<T: MessageInfo>() -> String {
     format!("/{}", T::PATH)
 }

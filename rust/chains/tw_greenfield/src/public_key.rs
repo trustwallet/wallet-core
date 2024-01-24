@@ -3,7 +3,9 @@
 // Copyright © 2017 Trust Wallet.
 
 use tw_coin_entry::coin_context::CoinContext;
-use tw_cosmos_sdk::public_key::{CosmosPublicKey, JsonPublicKey, ProtobufPublicKey};
+use tw_cosmos_sdk::public_key::{
+    CosmosPublicKey, CustomPublicKeyType, JsonPublicKey, ProtobufPublicKey,
+};
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::tw::{PrivateKey, PublicKeyType};
 use tw_keypair::{KeyPairError, KeyPairResult};
@@ -39,6 +41,10 @@ impl CosmosPublicKey for GreenfieldPublicKey {
 
     fn from_bytes(_coin: &dyn CoinContext, public_key_bytes: &[u8]) -> KeyPairResult<Self> {
         secp256k1::PublicKey::try_from(public_key_bytes).map(GreenfieldPublicKey)
+    }
+
+    fn with_custom_public_key_type(&mut self, _custom_type: CustomPublicKeyType) {
+        // Do nothing. Greenfield does not support custom public key type.
     }
 
     fn to_bytes(&self) -> Data {

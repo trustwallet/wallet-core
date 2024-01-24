@@ -9,6 +9,11 @@ use tw_proto::google;
 
 pub mod secp256k1;
 
+pub struct CustomPublicKeyType {
+    pub json_type: String,
+    pub protobuf_type_url: String,
+}
+
 pub trait CosmosPublicKey: JsonPublicKey + ProtobufPublicKey + Sized {
     fn from_private_key(
         coin: &dyn CoinContext,
@@ -16,6 +21,8 @@ pub trait CosmosPublicKey: JsonPublicKey + ProtobufPublicKey + Sized {
     ) -> KeyPairResult<Self>;
 
     fn from_bytes(coin: &dyn CoinContext, public_key_bytes: &[u8]) -> KeyPairResult<Self>;
+
+    fn with_custom_public_key_type(&mut self, custom_type: CustomPublicKeyType);
 
     fn to_bytes(&self) -> Data;
 }

@@ -4,7 +4,9 @@
 
 use tw_coin_entry::coin_context::CoinContext;
 use tw_cosmos_sdk::proto::ethermint;
-use tw_cosmos_sdk::public_key::{CosmosPublicKey, JsonPublicKey, ProtobufPublicKey};
+use tw_cosmos_sdk::public_key::{
+    CosmosPublicKey, CustomPublicKeyType, JsonPublicKey, ProtobufPublicKey,
+};
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::KeyPairResult;
 use tw_keypair::{tw, KeyPairError};
@@ -40,6 +42,10 @@ impl CosmosPublicKey for EthermintEthSecp256PublicKey {
     fn from_bytes(_coin: &dyn CoinContext, public_key_bytes: &[u8]) -> KeyPairResult<Self> {
         let public_key = secp256k1::PublicKey::try_from(public_key_bytes)?;
         EthermintEthSecp256PublicKey::new(&public_key)
+    }
+
+    fn with_custom_public_key_type(&mut self, _custom_type: CustomPublicKeyType) {
+        // Do nothing. NativeEvmos does not support custom public key type.
     }
 
     fn to_bytes(&self) -> Data {

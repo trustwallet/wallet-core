@@ -367,6 +367,11 @@ enum SigningMode {
     Protobuf = 1;    // Protobuf-serialized (binary), Stargate
 }
 
+message CustomPublicKeyType {
+    string json_type = 1;
+    string protobuf_type_url = 2;
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // Specify if protobuf (a.k.a. Stargate) or earlier JSON serialization is used
@@ -397,6 +402,9 @@ message SigningInput {
     BroadcastMode mode = 9;
 
     bytes public_key = 10;
+
+    // Optional. Public Key Type used to sign a transaction and generate a JSON broadcast message.
+    CustomPublicKeyType custom_public_key_type = 11;
 }
 
 // Result containing the signed and encoded transaction.
