@@ -13,3 +13,4 @@ mod native_evmos;
 mod native_injective;
 mod tbinance;
 mod thorchain;
+mod zetachain;
