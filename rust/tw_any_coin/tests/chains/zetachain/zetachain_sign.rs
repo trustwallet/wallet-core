@@ -12,10 +12,10 @@ use tw_proto::{deserialize, serialize};
 
 const PRIVATE_KEY: &str = "8d2a3bd62d300a148c89dc8635f87b7a24a951bd1c4e78675fe40e1a640d46ed";
 
-/// Successfully broadcasted:
+/// Successfully broadcasted (testnet):
 /// https://explorer.zetachain.com/cosmos/tx/A2FC8816657856ED274C4418C3CAEAEE645561275F6C63AB5F8B1DCFB37341A0
 #[test]
-fn test_zetachain_sign_msg_send() {
+fn test_zetachain_sign_msg_send_testnet() {
     let send_msg = Proto::mod_Message::Send {
         from_address: "zeta14py36sx57ud82t9yrks9z6hdsrpn5x6kmxs0ne".into(),
         to_address: "zeta1cscf4ldnkkz7f0wpveur6dpd0d6p2zxnsuu70y".into(),
