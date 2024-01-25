@@ -147,6 +147,7 @@ fn test_coin_address_derivation() {
             CoinType::Binance => "bnb1ten42eesehw0ktddcp0fws7d3ycsqez3aqvnpg",
             CoinType::TBinance => "tbnb1ten42eesehw0ktddcp0fws7d3ycsqez3n49hpe",
             CoinType::NativeZetaChain => "zeta14s0vgnj0pjnazu4hsqlksdk7slah9vcfcwctsr",
+            CoinType::Dydx => "dydx1ten42eesehw0ktddcp0fws7d3ycsqez3kaamq3",
             // end_of_coin_address_derivation_tests_marker_do_not_modify
             _ => panic!("{:?} must be covered", coin),
         };
