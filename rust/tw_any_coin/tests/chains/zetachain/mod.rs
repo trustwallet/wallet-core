@@ -3,3 +3,4 @@
 // Copyright © 2017 Trust Wallet.
 
 mod zetachain_address;
+mod zetachain_sign;

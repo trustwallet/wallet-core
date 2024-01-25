@@ -5,7 +5,7 @@
 use crate::address::Address;
 use crate::context::CosmosContext;
 use crate::modules::serializer::protobuf_serializer::SignDirectArgs;
-use crate::public_key::{CosmosPublicKey, CustomPublicKeyType};
+use crate::public_key::{CosmosPublicKey, PublicKeyParams};
 use crate::transaction::message::cosmos_generic_message::JsonRawMessage;
 use crate::transaction::message::{CosmosMessage, CosmosMessageBox};
 use crate::transaction::{Coin, Fee, SignMode, SignerInfo, TxBody, UnsignedTransaction};
@@ -13,6 +13,8 @@ use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_hash::hasher::Hasher;
+use tw_keypair::tw;
 use tw_misc::traits::{OptionalEmpty, ToBytesVec};
 use tw_number::U256;
 use tw_proto::Cosmos::Proto;
@@ -53,10 +55,8 @@ where
         coin: &dyn CoinContext,
         input: &Proto::SigningInput,
     ) -> SigningResult<SignerInfo<Context::PublicKey>> {
-        let mut public_key = Context::PublicKey::from_bytes(coin, &input.public_key)?;
-        if let Some(custom_type) = Self::custom_public_key_type_from_proto(input) {
-            public_key.with_custom_public_key_type(custom_type);
-        }
+        let params = Self::public_key_params_from_proto(input);
+        let public_key = Context::PublicKey::from_bytes(coin, &input.public_key, params)?;
 
         Ok(SignerInfo {
             public_key,
@@ -66,16 +66,25 @@ where
         })
     }
 
-    pub fn custom_public_key_type_from_proto(
-        input: &Proto::SigningInput,
-    ) -> Option<CustomPublicKeyType> {
-        input
-            .custom_public_key_type
-            .clone()
-            .map(|custom_type| CustomPublicKeyType {
-                json_type: custom_type.json_type.to_string(),
-                protobuf_type_url: custom_type.protobuf_type_url.to_string(),
-            })
+    pub fn public_key_params_from_proto(input: &Proto::SigningInput) -> Option<PublicKeyParams> {
+        input.signer_info.clone().map(|params| PublicKeyParams {
+            public_key_type: match params.public_key_type {
+                Proto::SignerPublicKeyType::Secp256k1 => tw::PublicKeyType::Secp256k1,
+                Proto::SignerPublicKeyType::Secp256k1Extended => {
+                    tw::PublicKeyType::Secp256k1Extended
+                },
+            },
+            json_type: params.json_type.to_string(),
+            protobuf_type_url: params.protobuf_type.to_string(),
+        })
+    }
+
+    pub fn tx_hasher_from_proto(input: &Proto::SigningInput) -> Hasher {
+        match input.tx_hasher {
+            Proto::TxHasher::UseDefault => Context::default_tx_hasher(),
+            Proto::TxHasher::Sha256 => Hasher::Sha256,
+            Proto::TxHasher::Keccak256 => Hasher::Keccak256,
+        }
     }
 
     fn fee_from_proto(input: &Proto::Fee) -> SigningResult<Fee<Context::Address>> {

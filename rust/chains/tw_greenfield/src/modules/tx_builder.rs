@@ -56,7 +56,9 @@ impl TxBuilder {
         coin: &dyn CoinContext,
         input: &Proto::SigningInput,
     ) -> SigningResult<GreenfieldSignerInfo> {
-        let public_key = GreenfieldPublicKey::from_bytes(coin, &input.public_key)?;
+        let public_key_params = None;
+        let public_key =
+            GreenfieldPublicKey::from_bytes(coin, &input.public_key, public_key_params)?;
         let sign_mode = match input.signing_mode {
             Proto::SigningMode::Eip712 => GreenfieldSignMode::Eip712,
         };

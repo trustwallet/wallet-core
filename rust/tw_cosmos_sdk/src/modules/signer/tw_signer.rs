@@ -34,10 +34,8 @@ impl<Context: CosmosContext> TWSigner<Context> {
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let private_key = Context::PrivateKey::try_from(&input.private_key)?;
 
-        let mut public_key = Context::PublicKey::from_private_key(coin, private_key.as_ref())?;
-        if let Some(custom_type) = TxBuilder::<Context>::custom_public_key_type_from_proto(&input) {
-            public_key.with_custom_public_key_type(custom_type);
-        }
+        let params = TxBuilder::<Context>::public_key_params_from_proto(&input);
+        let public_key = Context::PublicKey::from_private_key(coin, private_key.as_ref(), params)?;
 
         // Set the public key. It will be used to construct a signer info.
         input.public_key = Cow::from(public_key.to_bytes());

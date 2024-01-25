@@ -5,11 +5,10 @@
 use tw_coin_entry::coin_context::CoinContext;
 use tw_cosmos_sdk::proto::ethermint;
 use tw_cosmos_sdk::public_key::{
-    CosmosPublicKey, CustomPublicKeyType, JsonPublicKey, ProtobufPublicKey,
+    CosmosPublicKey, JsonPublicKey, ProtobufPublicKey, PublicKeyParams,
 };
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::KeyPairResult;
-use tw_keypair::{tw, KeyPairError};
 use tw_memory::Data;
 use tw_proto::{google, to_any};
 
@@ -28,24 +27,16 @@ impl EthermintEthSecp256PublicKey {
 }
 
 impl CosmosPublicKey for EthermintEthSecp256PublicKey {
-    fn from_private_key(coin: &dyn CoinContext, private_key: &tw::PrivateKey) -> KeyPairResult<Self>
-    where
-        Self: Sized,
-    {
-        let tw_public_key = private_key.get_public_key_by_type(coin.public_key_type())?;
-        let secp256k1_key = tw_public_key
-            .to_secp256k1()
-            .ok_or(KeyPairError::InvalidPublicKey)?;
-        EthermintEthSecp256PublicKey::new(secp256k1_key)
-    }
-
-    fn from_bytes(_coin: &dyn CoinContext, public_key_bytes: &[u8]) -> KeyPairResult<Self> {
+    fn from_bytes(
+        _coin: &dyn CoinContext,
+        public_key_bytes: &[u8],
+        // Ignore custom public key parameters.
+        _params: Option<PublicKeyParams>,
+    ) -> KeyPairResult<Self> {
+        // `NativeEvmos` requires the public key to be compressed,
+        // however the uncompressed public key is used to generate an address.
         let public_key = secp256k1::PublicKey::try_from(public_key_bytes)?;
         EthermintEthSecp256PublicKey::new(&public_key)
-    }
-
-    fn with_custom_public_key_type(&mut self, _custom_type: CustomPublicKeyType) {
-        // Do nothing. NativeEvmos does not support custom public key type.
     }
 
     fn to_bytes(&self) -> Data {
