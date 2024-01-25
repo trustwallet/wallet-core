@@ -35,7 +35,10 @@ impl<Context: CosmosContext> ProtobufPreimager<Context> {
         })
     }
 
-    pub fn preimage_hash_direct(args: &SignDirectArgs, hasher: Hasher) -> SigningResult<ProtobufTxPreimage> {
+    pub fn preimage_hash_direct(
+        args: &SignDirectArgs,
+        hasher: Hasher,
+    ) -> SigningResult<ProtobufTxPreimage> {
         let tx_to_sign = ProtobufSerializer::<Context>::build_direct_sign_doc(args);
         let encoded_tx = serialize(&tx_to_sign)?;
         let tx_hash = hasher.hash(&encoded_tx);
