@@ -80,10 +80,11 @@ impl Compiler<StandardBitcoinContext> {
             ));
         }
 
-        // If the input selector is InputSelector::SelectAscending, we sort the
-        // input first.
+        // If enabled, sort the order of the UTXOs.
         if let Proto::InputSelector::SelectAscending = proto.input_selector {
             proto.inputs.sort_by(|a, b| a.value.cmp(&b.value));
+        } else if let Proto::InputSelector::SelectDescending = proto.input_selector {
+            proto.inputs.sort_by(|a, b| b.value.cmp(&a.value));
         }
 
         // Add change output generation is enabled, push it to the proto structure.
@@ -128,7 +129,9 @@ impl Compiler<StandardBitcoinContext> {
                     proto.inputs.push(txin);
                 }
             },
-            Proto::InputSelector::SelectInOrder | Proto::InputSelector::SelectAscending => {
+            Proto::InputSelector::SelectInOrder
+            | Proto::InputSelector::SelectAscending
+            | Proto::InputSelector::SelectDescending => {
                 let mut total_input_amount = 0;
                 let mut total_input_weight = 0;
 

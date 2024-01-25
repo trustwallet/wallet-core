@@ -52,6 +52,9 @@ enum InputSelector {
     // Automatically select enough inputs in the given order to cover the
     // outputs of the transaction.
     SelectInOrder = 1;
+    // Automatically select enough inputs in an descending order to cover the
+    // outputs of the transaction.
+    SelectDescending = 2;
     // Use all the inputs provided in the given order.
     UseAll = 10;
 }
