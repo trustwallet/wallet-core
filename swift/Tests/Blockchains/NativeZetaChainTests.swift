@@ -46,7 +46,7 @@ class NativeZetaChainTests: XCTestCase {
             $0.txHasher = CosmosTxHasher.keccak256
             $0.signerInfo = CosmosSignerInfo.with {
                 $0.publicKeyType = CosmosSignerPublicKeyType.secp256K1
-                $0.jsonType = "zetachain/PubKeyEthSecp256k1"
+                $0.jsonType = "ethermint/PubKeyEthSecp256k1"
                 $0.protobufType = "/ethermint.crypto.v1.ethsecp256k1.PubKey"
             }
         }

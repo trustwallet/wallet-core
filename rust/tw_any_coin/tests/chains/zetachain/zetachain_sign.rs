@@ -45,7 +45,7 @@ fn test_zetachain_sign_msg_send_testnet() {
             // Zetachain requires a compressed public key to sign a transaction,
             // however an uncompressed public key is used to generate address.
             public_key_type: Proto::SignerPublicKeyType::Secp256k1,
-            json_type: "zetachain/PubKeyEthSecp256k1".into(),
+            json_type: "ethermint/PubKeyEthSecp256k1".into(),
             protobuf_type: "/ethermint.crypto.v1.ethsecp256k1.PubKey".into(),
         }),
         ..Proto::SigningInput::default()
@@ -70,6 +70,6 @@ fn test_zetachain_sign_msg_send_testnet() {
     assert_eq!(output.signature.to_hex(), "806bea71ad30d8df709c79e7c52f47895b9de1a43d94d0ae9b380d216eb0391e24bcf49c69c192d46de4c02c3bc322363492fc33579562369f148b761692a5df");
     assert_eq!(
         output.signature_json,
-        r#"[{"pub_key":{"type":"zetachain/PubKeyEthSecp256k1","value":"AoaOfhY0QX2yrf2f44IFv6D+oBiYp/0wVl0T9wVqN8Bl"},"signature":"gGvqca0w2N9wnHnnxS9HiVud4aQ9lNCumzgNIW6wOR4kvPScacGS1G3kwCw7wyI2NJL8M1eVYjafFIt2FpKl3w=="}]"#
+        r#"[{"pub_key":{"type":"ethermint/PubKeyEthSecp256k1","value":"AoaOfhY0QX2yrf2f44IFv6D+oBiYp/0wVl0T9wVqN8Bl"},"signature":"gGvqca0w2N9wnHnnxS9HiVud4aQ9lNCumzgNIW6wOR4kvPScacGS1G3kwCw7wyI2NJL8M1eVYjafFIt2FpKl3w=="}]"#
     );
 }

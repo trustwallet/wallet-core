@@ -56,7 +56,7 @@ class TestNativeZetaChainSigner {
                 // Zetachain requires a compressed public key to sign a transaction,
                 // however an uncompressed public key is used to generate address.
                 publicKeyType = Cosmos.SignerPublicKeyType.Secp256k1
-                jsonType = "zetachain/PubKeyEthSecp256k1"
+                jsonType = "ethermint/PubKeyEthSecp256k1"
                 protobufType = "/ethermint.crypto.v1.ethsecp256k1.PubKey"
             }.build()
             addAllMessages(listOf(message))
