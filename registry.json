@@ -4429,7 +4429,7 @@
     "symbol": "ZETA",
     "decimals": 18,
     "blockchain": "Cosmos",
-    "chainId": "zetachain_7000",
+    "chainId": "zetachain_7000-1",
     "derivation": [
       {
         "path": "m/44'/60'/0'/0/0"
@@ -4442,7 +4442,7 @@
     "explorer": {
       "url": "https://explorer.zetachain.com/cosmos",
       "txPath": "/tx/",
-      "accountPath": "/account/",
+      "accountPath": "/address/",
       "sampleTx": "2DBB071DDD47985F4470A21E5943CE95D371AE4BDE2267E201D3553FB2BDCFDE",
       "sampleAccount": "zeta14py36sx57ud82t9yrks9z6hdsrpn5x6kmxs0ne"
     },
