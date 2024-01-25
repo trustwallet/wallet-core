@@ -37,6 +37,11 @@ fn test_native_evmos_address_invalid() {
         CoinType::NativeEvmos,
         "evmos17xpfvakm2amg962yls6f84z3kell8c5ljcjw",
     );
+    // Cosmos has a different `hrp`.
+    test_address_invalid(
+        CoinType::Cosmos,
+        "evmos17xpfvakm2amg962yls6f84z3kell8c5ljcjw34",
+    );
 }
 
 #[test]
@@ -54,6 +59,16 @@ fn test_any_address_is_valid_bech32() {
         coin: CoinType::Cosmos,
         address: "evmos14py36sx57ud82t9yrks9z6hdsrpn5x6k0r05np",
         hrp: "evmos",
+    });
+    test_address_bech32_is_valid(AddressBech32IsValid {
+        coin: CoinType::NativeEvmos,
+        address: "evmos14py36sx57ud82t9yrks9z6hdsrpn5x6k0r05np",
+        hrp: "evmos",
+    });
+    test_address_bech32_is_valid(AddressBech32IsValid {
+        coin: CoinType::NativeEvmos,
+        address: "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02",
+        hrp: "cosmos",
     });
 }
 

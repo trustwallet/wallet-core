@@ -4,62 +4,56 @@
 
 use tw_coin_entry::coin_context::CoinContext;
 use tw_cosmos_sdk::proto::ethermint;
-use tw_cosmos_sdk::public_key::{CosmosPublicKey, JsonPublicKey, ProtobufPublicKey};
-use tw_keypair::ecdsa::secp256k1;
-use tw_keypair::KeyPairResult;
-use tw_keypair::{tw, KeyPairError};
+use tw_cosmos_sdk::public_key::secp256k1::Secp256PublicKey;
+use tw_cosmos_sdk::public_key::{
+    CosmosPublicKey, JsonPublicKey, ProtobufPublicKey, PublicKeyParams,
+};
+use tw_keypair::{tw, KeyPairResult};
 use tw_memory::Data;
-use tw_proto::{google, to_any};
+use tw_proto::{google, type_url};
 
-pub struct EthermintEthSecp256PublicKey {
-    public_key: Data,
-}
+const ETHERMINT_SECP256K1_PUBLIC_KEY_TYPE: &str = "ethermint/PubKeyEthSecp256k1";
+
+pub struct EthermintEthSecp256PublicKey(Secp256PublicKey);
 
 impl EthermintEthSecp256PublicKey {
-    pub fn new(public_key: &secp256k1::PublicKey) -> KeyPairResult<EthermintEthSecp256PublicKey> {
-        Ok(EthermintEthSecp256PublicKey {
-            // NativeEvmos chain requires the public key to be compressed.
-            // This trick is needed because `registry.json` contains extended public key type.
-            public_key: public_key.compressed().to_vec(),
-        })
+    fn default_public_key_params() -> PublicKeyParams {
+        PublicKeyParams {
+            // `NativeEvmos` requires the public key to be compressed,
+            // however the uncompressed public key is used to generate an address.
+            public_key_type: tw::PublicKeyType::Secp256k1,
+            json_type: ETHERMINT_SECP256K1_PUBLIC_KEY_TYPE.to_string(),
+            protobuf_type_url: type_url::<ethermint::crypto::v1::ethsecp256k1::PubKey>(),
+        }
     }
 }
 
 impl CosmosPublicKey for EthermintEthSecp256PublicKey {
-    fn from_private_key(coin: &dyn CoinContext, private_key: &tw::PrivateKey) -> KeyPairResult<Self>
-    where
-        Self: Sized,
-    {
-        let tw_public_key = private_key.get_public_key_by_type(coin.public_key_type())?;
-        let secp256k1_key = tw_public_key
-            .to_secp256k1()
-            .ok_or(KeyPairError::InvalidPublicKey)?;
-        EthermintEthSecp256PublicKey::new(secp256k1_key)
-    }
-
-    fn from_bytes(_coin: &dyn CoinContext, public_key_bytes: &[u8]) -> KeyPairResult<Self> {
-        let public_key = secp256k1::PublicKey::try_from(public_key_bytes)?;
-        EthermintEthSecp256PublicKey::new(&public_key)
+    fn from_bytes(
+        coin: &dyn CoinContext,
+        public_key_bytes: &[u8],
+        maybe_params: Option<PublicKeyParams>,
+    ) -> KeyPairResult<Self> {
+        // Use default Ethermint public key parameters if otherwise is not specified,
+        // however the uncompressed public key is used to generate an address.
+        let params = maybe_params.unwrap_or_else(Self::default_public_key_params);
+        Secp256PublicKey::from_bytes(coin, public_key_bytes, Some(params))
+            .map(EthermintEthSecp256PublicKey)
     }
 
     fn to_bytes(&self) -> Data {
-        self.public_key.clone()
+        self.0.to_bytes()
     }
 }
 
 impl JsonPublicKey for EthermintEthSecp256PublicKey {
     fn public_key_type(&self) -> String {
-        const ETHERMINT_SECP256K1_PUBLIC_KEY_TYPE: &str = "ethermint/PubKeyEthSecp256k1";
-
-        ETHERMINT_SECP256K1_PUBLIC_KEY_TYPE.to_string()
+        self.0.public_key_type()
     }
 }
 
 impl ProtobufPublicKey for EthermintEthSecp256PublicKey {
     fn to_proto(&self) -> google::protobuf::Any {
-        let proto = ethermint::crypto::v1::ethsecp256k1::PubKey {
-            key: self.public_key.clone(),
-        };
-        to_any(&proto)
+        self.0.to_proto()
     }
 }

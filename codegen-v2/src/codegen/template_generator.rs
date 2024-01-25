@@ -43,6 +43,7 @@ impl TemplateGenerator {
             .add_pattern("{DECIMALS}", coin.decimals)
             .add_pattern("{P2PKH_PREFIX}", coin.p2pkh_prefix)
             .add_pattern("{P2SH_PREFIX}", coin.p2sh_prefix)
+            .add_pattern("{HRP}", coin.hrp.as_str())
             .add_pattern("{STATIC_PREFIX}", coin.static_prefix)
             .add_pattern("{EXPLORER_URL}", &coin.explorer.url)
             .add_pattern("{EXPLORER_TX_PATH}", &coin.explorer.tx_path)

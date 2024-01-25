@@ -12,8 +12,11 @@ use std::fs;
 use std::path::PathBuf;
 
 const ADDRESS_TESTS_TEMPLATE: &str = include_str!("templates/integration_tests/address_tests.rs");
+const COSMOS_ADDRESS_TESTS_TEMPLATE: &str =
+    include_str!("templates/integration_tests/cosmos_address_tests.rs");
 const COMPILE_TESTS_TEMPLATE: &str = include_str!("templates/integration_tests/compile_tests.rs");
 const MOD_TESTS_TEMPLATE: &str = include_str!("templates/integration_tests/mod.rs");
+const MOD_ADDRESS_TESTS_TEMPLATE: &str = include_str!("templates/integration_tests/mod_address.rs");
 const SIGN_TESTS_TEMPLATE: &str = include_str!("templates/integration_tests/sign_tests.rs");
 
 pub fn chains_integration_tests_directory() -> PathBuf {
@@ -49,10 +52,28 @@ impl CoinIntegrationTests {
         fs::create_dir_all(&blockchain_tests_path)?;
 
         self.list_blockchain_in_chains_mod()?;
-        self.create_address_tests()?;
+        self.create_address_tests(ADDRESS_TESTS_TEMPLATE)?;
         self.create_compile_tests()?;
         self.create_sign_tests()?;
-        self.create_chain_tests_mod_rs()?;
+        self.create_chain_tests_mod_rs(MOD_TESTS_TEMPLATE)?;
+
+        Ok(blockchain_tests_path)
+    }
+
+    /// For a Cosmos chain, it's enough to create address tests only, but with additional Bech32 prefix tests.
+    pub fn create_cosmos(self) -> Result<PathBuf> {
+        let blockchain_tests_path = self.coin_tests_directory();
+        if blockchain_tests_path.exists() {
+            println!("[SKIP] integration tests already exists: {blockchain_tests_path:?}");
+            return Ok(blockchain_tests_path);
+        }
+
+        fs::create_dir_all(&blockchain_tests_path)?;
+
+        self.list_blockchain_in_chains_mod()?;
+        self.create_address_tests(COSMOS_ADDRESS_TESTS_TEMPLATE)?;
+        // `mod.rs` should contain `{COIN_TYPE}_address` module only.
+        self.create_chain_tests_mod_rs(MOD_ADDRESS_TESTS_TEMPLATE)?;
 
         Ok(blockchain_tests_path)
     }
@@ -61,14 +82,14 @@ impl CoinIntegrationTests {
         coin_integration_tests_directory(&self.coin.id)
     }
 
-    fn create_address_tests(&self) -> Result<()> {
+    fn create_address_tests(&self, template: &'static str) -> Result<()> {
         let coin_id = self.coin.id.as_str();
         let address_tests_path = self
             .coin_tests_directory()
             .join(format!("{coin_id}_address.rs"));
 
         println!("[ADD] {address_tests_path:?}");
-        TemplateGenerator::new(ADDRESS_TESTS_TEMPLATE)
+        TemplateGenerator::new(template)
             .write_to(address_tests_path)
             .with_default_patterns(&self.coin)
             .write()
@@ -100,11 +121,11 @@ impl CoinIntegrationTests {
             .write()
     }
 
-    fn create_chain_tests_mod_rs(&self) -> Result<()> {
+    fn create_chain_tests_mod_rs(&self, template: &'static str) -> Result<()> {
         let blockchain_tests_mod_path = self.coin_tests_directory().join("mod.rs");
 
         println!("[ADD] {blockchain_tests_mod_path:?}");
-        TemplateGenerator::new(MOD_TESTS_TEMPLATE)
+        TemplateGenerator::new(template)
             .write_to(blockchain_tests_mod_path)
             .with_default_patterns(&self.coin)
             .write()

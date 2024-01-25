@@ -151,5 +151,6 @@ class CoinAddressDerivationTests {
         SEI -> assertEquals("sei142j9u5eaduzd7faumygud6ruhdwme98qagm0sj", address)
         INTERNETCOMPUTER -> assertEquals("b9a13d974ee9db036d5abc5b66ace23e513cb5676f3996626c7717c339a3ee87", address)
         TIA -> assertEquals("celestia142j9u5eaduzd7faumygud6ruhdwme98qpwmfv7", address)
+        NATIVEZETACHAIN -> assertEquals("zeta13u6g7vqgw074mgmf2ze2cadzvkz9snlwywj304", address)
     }
 }

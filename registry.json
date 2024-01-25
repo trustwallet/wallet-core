@@ -4422,6 +4422,36 @@
     }
   },
   {
+    "id": "zetachain",
+    "name": "NativeZetaChain",
+    "displayName": "NativeZetaChain",
+    "coinId": 10007000,
+    "symbol": "ZETA",
+    "decimals": 18,
+    "blockchain": "Cosmos",
+    "chainId": "zetachain_7000-1",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "hrp": "zeta",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.zetachain.com",
+      "txPath": "/cosmos/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "2DBB071DDD47985F4470A21E5943CE95D371AE4BDE2267E201D3553FB2BDCFDE",
+      "sampleAccount": "zeta14py36sx57ud82t9yrks9z6hdsrpn5x6kmxs0ne"
+    },
+    "info": {
+      "url": "https://www.zetachain.com/",
+      "documentation": "https://www.zetachain.com/docs/"
+    }
+  },
+  {
     "id": "ton",
     "name": "TON",
     "coinId": 607,

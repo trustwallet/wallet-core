@@ -12,6 +12,7 @@ pub mod coin_crate;
 pub mod coin_integration_tests;
 pub mod coin_registry_manifest_generator;
 pub mod new_blockchain;
+pub mod new_cosmos_chain;
 pub mod new_evmchain;
 pub mod toml_editor;
 

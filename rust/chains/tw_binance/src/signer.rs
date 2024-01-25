@@ -39,7 +39,8 @@ impl BinanceSigner {
         let key_pair = secp256k1::KeyPair::try_from(input.private_key.as_ref())?;
 
         let signature = BinanceSignature::from(key_pair.sign(tx_hash)?);
-        let public_key = Secp256PublicKey::from_secp256k1_public_key(coin, key_pair.public())?;
+        let public_key =
+            Secp256PublicKey::from_secp256k1_public_key(coin.public_key_type(), key_pair.public())?;
 
         let signature_bytes = signature.to_vec();
         let signature_json = JsonSerializer::<BinanceContext>::serialize_signature(
