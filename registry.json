@@ -4362,6 +4362,38 @@
     }
   },
   {
+    "id": "dydx",
+    "name": "Dydx",
+    "displayName": "dYdX",
+    "coinId": 22000118,
+    "symbol": "DYDX",
+    "decimals": 18,
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "dydx",
+    "chainId": "dydx-mainnet-1",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/dydx",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "F236222E4F7C92FA84711FD6451ED22DD56CBDFA319BFDAFB99A21E4E9B9EC2F",
+      "sampleAccount": "dydx1adl7usw7z2dnysyn7wvrghu0u0q6gr7jqs4gtt"
+    },
+    "info": {
+      "url": "https://dydx.exchange",
+      "source": "https://github.com/dydxprotocol",
+      "rpc": "https://dydx-dao-api.polkachu.com",
+      "documentation": "https://docs.dydx.exchange"
+    }
+  },
+  {
     "id": "nativeinjective",
     "name": "NativeInjective",
     "displayName": "Native Injective",

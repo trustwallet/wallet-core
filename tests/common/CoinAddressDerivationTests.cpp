@@ -388,6 +388,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeNativeZetaChain:
             EXPECT_EQ(address, "zeta1nk9x9ajk4rgkzhqjjn7hr6w0k0jg2kj027x9uy");
             break;
+        case TWCoinTypeDydx:
+            EXPECT_EQ(address, "dydx1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0sz38vk");
+            break;
             // end_of_coin_address_derivation_tests_marker_do_not_modify
             // no default branch here, intentionally, to better notice any missing coins
         }

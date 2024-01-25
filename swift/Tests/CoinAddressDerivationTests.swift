@@ -392,6 +392,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .nativeZetaChain:
                     let expectedResult = "zeta13u6g7vqgw074mgmf2ze2cadzvkz9snlwywj304"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .dydx:
+                    let expectedResult = "dydx142j9u5eaduzd7faumygud6ruhdwme98qeayaky"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()
                 }

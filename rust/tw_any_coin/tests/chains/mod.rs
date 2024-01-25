@@ -6,6 +6,7 @@ mod aptos;
 mod binance;
 mod bitcoin;
 mod cosmos;
+mod dydx;
 mod ethereum;
 mod greenfield;
 mod internet_computer;

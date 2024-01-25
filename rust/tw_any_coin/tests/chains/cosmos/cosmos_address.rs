@@ -73,9 +73,9 @@ fn test_any_address_is_valid_bech32() {
 fn test_any_address_create_bech32_with_public_key() {
     test_address_create_bech32_with_public_key(AddressCreateBech32WithPublicKey {
         coin: CoinType::Cosmos,
-        private_key: "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
+        private_key: "a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433",
         public_key_type: PublicKeyType::Secp256k1,
-        hrp: "juno",
-        expected: "juno1ten42eesehw0ktddcp0fws7d3ycsqez3fksy86",
+        hrp: "dydx",
+        expected: "dydx1mry47pkga5tdswtluy0m8teslpalkdq0hc72uz",
     });
 }
