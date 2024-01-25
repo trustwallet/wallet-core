@@ -23,7 +23,7 @@ TEST(TWZetaEVMCoinType, TWCoinType) {
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
     assertStringsEqual(id, "zetaevm");
-    assertStringsEqual(name, "ZetaEVM");
+    assertStringsEqual(name, "Zeta EVM");
     assertStringsEqual(symbol, "ZETA");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
