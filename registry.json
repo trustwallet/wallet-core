@@ -4440,8 +4440,8 @@
     "hrp": "zeta",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://explorer.zetachain.com/cosmos",
-      "txPath": "/tx/",
+      "url": "https://explorer.zetachain.com",
+      "txPath": "/cosmos/tx/",
       "accountPath": "/address/",
       "sampleTx": "2DBB071DDD47985F4470A21E5943CE95D371AE4BDE2267E201D3553FB2BDCFDE",
       "sampleAccount": "zeta14py36sx57ud82t9yrks9z6hdsrpn5x6kmxs0ne"

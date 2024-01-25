@@ -25,5 +25,5 @@ TEST(TWNativeZetaChainCoinType, TWCoinType) {
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0);
     assertStringsEqual(txUrl, "https://explorer.zetachain.com/cosmos/tx/2DBB071DDD47985F4470A21E5943CE95D371AE4BDE2267E201D3553FB2BDCFDE");
-    assertStringsEqual(accUrl, "https://explorer.zetachain.com/cosmos/account/zeta14py36sx57ud82t9yrks9z6hdsrpn5x6kmxs0ne");
+    assertStringsEqual(accUrl, "https://explorer.zetachain.com/address/zeta14py36sx57ud82t9yrks9z6hdsrpn5x6kmxs0ne");
 }
