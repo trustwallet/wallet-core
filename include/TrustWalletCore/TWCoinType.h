@@ -179,6 +179,7 @@ enum TWCoinType {
     TWCoinTypeTia = 21000118,
     TWCoinTypeMantaPacific = 169,
     TWCoinTypeNativeZetaChain = 10007000,
+    TWCoinTypeZetaEVM = 20007000,
     // end_of_tw_coin_type_marker_do_not_modify
 };
 

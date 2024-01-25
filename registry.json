@@ -4452,6 +4452,34 @@
     }
   },
   {
+    "id": "zetaevm",
+    "name": "Zeta EVM",
+    "coinId": 20007000,
+    "symbol": "ZETA",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "7000",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.zetachain.com",
+      "txPath": "/evm/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x04cb1201857de29af97b755e51c888454fb96c1f3bb3c1329bb94d5353d5c19e",
+      "sampleAccount": "0x85539A58F9c88DdDccBaBBfc660968323Fd1e167"
+    },
+    "info": {
+      "url": "https://www.zetachain.com/",
+      "documentation": "https://www.zetachain.com/docs/"
+    }
+  },
+  {
     "id": "ton",
     "name": "TON",
     "coinId": 607,
