@@ -9,6 +9,7 @@ use std::path::PathBuf;
 pub mod blockchain_dispatcher_generator;
 pub mod entry_generator;
 pub mod new_blockchain;
+pub mod new_cosmos_chain;
 pub mod new_evmchain;
 pub mod tw_any_address_tests_generator;
 pub mod tw_any_signer_tests_generator;
@@ -39,5 +40,12 @@ pub fn integration_tests_directory() -> PathBuf {
 pub fn coin_integration_tests_directory(coin: &CoinItem) -> PathBuf {
     integration_tests_directory()
         .join("chains")
+        .join(coin.coin_type())
+}
+
+pub fn cosmos_coin_integration_tests_directory(coin: &CoinItem) -> PathBuf {
+    integration_tests_directory()
+        .join("chains")
+        .join("Cosmos")
         .join(coin.coin_type())
 }

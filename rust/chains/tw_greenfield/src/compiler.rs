@@ -71,7 +71,8 @@ impl GreenfieldCompiler {
             public_key,
         } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
 
-        let public_key = GreenfieldPublicKey::from_bytes(coin, &public_key)?;
+        let public_key_params = None;
+        let public_key = GreenfieldPublicKey::from_bytes(coin, &public_key, public_key_params)?;
         let signature = GreenfieldSignature::try_from(raw_signature.as_slice())?;
         let signature_bytes = signature.to_vec();
 

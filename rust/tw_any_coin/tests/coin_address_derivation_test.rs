@@ -85,6 +85,7 @@ fn test_coin_address_derivation() {
             | CoinType::Mantle
             | CoinType::ZenEON
             | CoinType::MantaPacific
+            | CoinType::ZetaEVM
             // end_of_evm_address_derivation_tests_marker_do_not_modify
                 => "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309",
             CoinType::Bitcoin => "bc1qten42eesehw0ktddcp0fws7d3ycsqez3f7d5yt",
@@ -144,6 +145,8 @@ fn test_coin_address_derivation() {
             CoinType::InternetComputer => "290cc7c359f44c8516fc169c5ed4f0f3ae2e24bf5de0d4c51f5e7545b5474faa",
             CoinType::Binance => "bnb1ten42eesehw0ktddcp0fws7d3ycsqez3aqvnpg",
             CoinType::TBinance => "tbnb1ten42eesehw0ktddcp0fws7d3ycsqez3n49hpe",
+            CoinType::NativeZetaChain => "zeta14s0vgnj0pjnazu4hsqlksdk7slah9vcfcwctsr",
+            CoinType::Dydx => "dydx1ten42eesehw0ktddcp0fws7d3ycsqez3kaamq3",
             // end_of_coin_address_derivation_tests_marker_do_not_modify
             _ => panic!("{:?} must be covered", coin),
         };

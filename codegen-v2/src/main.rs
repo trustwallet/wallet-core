@@ -21,6 +21,7 @@ fn main() -> Result<()> {
         "new-blockchain-rust" => new_blockchain_rust(&args[2..]),
         "new-blockchain" => new_blockchain(&args[2..]),
         "new-evmchain" => new_evmchain(&args[2..]),
+        "new-cosmos-chain" => new_cosmos_chain(&args[2..]),
         "swift" => generate_swift_bindings(),
         _ => Err(Error::InvalidCommand),
     }
@@ -60,6 +61,19 @@ fn new_evmchain(args: &[String]) -> Result<()> {
 
     rust::new_evmchain::new_evmchain(&coin_item)?;
     cpp::new_evmchain::new_evmchain(&coin_item)?;
+
+    Ok(())
+}
+
+fn new_cosmos_chain(args: &[String]) -> Result<()> {
+    let coin_str = args.iter().next().ok_or_else(|| Error::InvalidCommand)?;
+    let coin_id = CoinId::new(coin_str.clone())?;
+    let coin_item = read_coin_from_registry(&coin_id)?;
+
+    println!("New '{coin_str}' Cosmos chain template requested");
+
+    rust::new_cosmos_chain::new_cosmos_chain(&coin_item)?;
+    cpp::new_cosmos_chain::new_cosmos_chain(&coin_item)?;
 
     Ok(())
 }

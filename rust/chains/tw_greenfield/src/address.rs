@@ -5,9 +5,8 @@
 use serde::Serialize;
 use std::fmt;
 use std::str::FromStr;
-use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_coin_entry::error::AddressError;
 use tw_cosmos_sdk::address::CosmosAddress;
 use tw_evm::address::Address as EthereumAddress;
 use tw_keypair::ecdsa::secp256k1;
@@ -23,14 +22,7 @@ impl GreenfieldAddress {
     }
 }
 
-impl CosmosAddress for GreenfieldAddress {
-    fn from_str_with_coin(_coin: &dyn CoinContext, addr: &str) -> AddressResult<Self>
-    where
-        Self: Sized,
-    {
-        GreenfieldAddress::from_str(addr)
-    }
-}
+impl CosmosAddress for GreenfieldAddress {}
 
 impl CoinAddress for GreenfieldAddress {
     #[inline]

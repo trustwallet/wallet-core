@@ -4400,6 +4400,38 @@
     }
   },
   {
+    "id": "dydx",
+    "name": "Dydx",
+    "displayName": "dYdX",
+    "coinId": 22000118,
+    "symbol": "DYDX",
+    "decimals": 18,
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "dydx",
+    "chainId": "dydx-mainnet-1",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/dydx",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "F236222E4F7C92FA84711FD6451ED22DD56CBDFA319BFDAFB99A21E4E9B9EC2F",
+      "sampleAccount": "dydx1adl7usw7z2dnysyn7wvrghu0u0q6gr7jqs4gtt"
+    },
+    "info": {
+      "url": "https://dydx.exchange",
+      "source": "https://github.com/dydxprotocol",
+      "rpc": "https://dydx-dao-api.polkachu.com",
+      "documentation": "https://docs.dydx.exchange"
+    }
+  },
+  {
     "id": "nativeinjective",
     "name": "NativeInjective",
     "displayName": "Native Injective",
@@ -4457,6 +4489,64 @@
     "info": {
       "url": "https://canto.io/",
       "documentation": "https://docs.canto.io/"
+    }
+  },
+  {
+    "id": "zetachain",
+    "name": "NativeZetaChain",
+    "displayName": "NativeZetaChain",
+    "coinId": 10007000,
+    "symbol": "ZETA",
+    "decimals": 18,
+    "blockchain": "Cosmos",
+    "chainId": "zetachain_7000-1",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "hrp": "zeta",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.zetachain.com",
+      "txPath": "/cosmos/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "2DBB071DDD47985F4470A21E5943CE95D371AE4BDE2267E201D3553FB2BDCFDE",
+      "sampleAccount": "zeta14py36sx57ud82t9yrks9z6hdsrpn5x6kmxs0ne"
+    },
+    "info": {
+      "url": "https://www.zetachain.com/",
+      "documentation": "https://www.zetachain.com/docs/"
+    }
+  },
+  {
+    "id": "zetaevm",
+    "name": "Zeta EVM",
+    "coinId": 20007000,
+    "symbol": "ZETA",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "7000",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.zetachain.com",
+      "txPath": "/evm/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x04cb1201857de29af97b755e51c888454fb96c1f3bb3c1329bb94d5353d5c19e",
+      "sampleAccount": "0x85539A58F9c88DdDccBaBBfc660968323Fd1e167"
+    },
+    "info": {
+      "url": "https://www.zetachain.com/",
+      "documentation": "https://www.zetachain.com/docs/"
     }
   },
   {

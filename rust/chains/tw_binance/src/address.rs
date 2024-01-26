@@ -30,15 +30,7 @@ impl CoinAddress for BinanceAddress {
     }
 }
 
-impl CosmosAddress for BinanceAddress {
-    fn from_str_with_coin(coin: &dyn CoinContext, addr: &str) -> AddressResult<Self>
-    where
-        Self: Sized,
-    {
-        let prefix = None;
-        Self::from_str_with_coin_and_prefix(coin, addr.to_string(), prefix)
-    }
-}
+impl CosmosAddress for BinanceAddress {}
 
 impl BinanceAddress {
     pub const VALIDATOR_HRP: &'static str = "bva";

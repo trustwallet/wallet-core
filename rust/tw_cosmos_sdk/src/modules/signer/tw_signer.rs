@@ -4,6 +4,7 @@
 
 use crate::context::CosmosContext;
 use crate::modules::compiler::tw_compiler::TWTransactionCompiler;
+use crate::modules::tx_builder::TxBuilder;
 use crate::private_key::CosmosPrivateKey;
 use crate::public_key::CosmosPublicKey;
 use std::borrow::Cow;
@@ -32,7 +33,10 @@ impl<Context: CosmosContext> TWSigner<Context> {
         mut input: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let private_key = Context::PrivateKey::try_from(&input.private_key)?;
-        let public_key = Context::PublicKey::from_private_key(coin, private_key.as_ref())?;
+
+        let params = TxBuilder::<Context>::public_key_params_from_proto(&input);
+        let public_key = Context::PublicKey::from_private_key(coin, private_key.as_ref(), params)?;
+
         // Set the public key. It will be used to construct a signer info.
         input.public_key = Cow::from(public_key.to_bytes());
 

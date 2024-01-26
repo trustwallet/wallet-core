@@ -2,10 +2,10 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::address::{Address, CosmosAddress};
+use crate::address::Address;
 use crate::context::CosmosContext;
 use crate::modules::serializer::protobuf_serializer::SignDirectArgs;
-use crate::public_key::CosmosPublicKey;
+use crate::public_key::{CosmosPublicKey, PublicKeyParams};
 use crate::transaction::message::cosmos_generic_message::JsonRawMessage;
 use crate::transaction::message::{CosmosMessage, CosmosMessageBox};
 use crate::transaction::{Coin, Fee, SignMode, SignerInfo, TxBody, UnsignedTransaction};
@@ -13,6 +13,8 @@ use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_hash::hasher::Hasher;
+use tw_keypair::tw;
 use tw_misc::traits::{OptionalEmpty, ToBytesVec};
 use tw_number::U256;
 use tw_proto::Cosmos::Proto;
@@ -53,13 +55,36 @@ where
         coin: &dyn CoinContext,
         input: &Proto::SigningInput,
     ) -> SigningResult<SignerInfo<Context::PublicKey>> {
-        let public_key = Context::PublicKey::from_bytes(coin, &input.public_key)?;
+        let params = Self::public_key_params_from_proto(input);
+        let public_key = Context::PublicKey::from_bytes(coin, &input.public_key, params)?;
+
         Ok(SignerInfo {
             public_key,
             sequence: input.sequence,
             // At this moment, we support the Direct signing mode only.
             sign_mode: SignMode::Direct,
         })
+    }
+
+    pub fn public_key_params_from_proto(input: &Proto::SigningInput) -> Option<PublicKeyParams> {
+        input.signer_info.clone().map(|params| PublicKeyParams {
+            public_key_type: match params.public_key_type {
+                Proto::SignerPublicKeyType::Secp256k1 => tw::PublicKeyType::Secp256k1,
+                Proto::SignerPublicKeyType::Secp256k1Extended => {
+                    tw::PublicKeyType::Secp256k1Extended
+                },
+            },
+            json_type: params.json_type.to_string(),
+            protobuf_type_url: params.protobuf_type.to_string(),
+        })
+    }
+
+    pub fn tx_hasher_from_proto(input: &Proto::SigningInput) -> Hasher {
+        match input.tx_hasher {
+            Proto::TxHasher::UseDefault => Context::default_tx_hasher(),
+            Proto::TxHasher::Sha256 => Hasher::Sha256,
+            Proto::TxHasher::Keccak256 => Hasher::Keccak256,
+        }
     }
 
     fn fee_from_proto(input: &Proto::Fee) -> SigningResult<Fee<Context::Address>> {
@@ -197,7 +222,7 @@ where
     }
 
     pub fn send_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         send: &Proto::mod_Message::Send<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::cosmos_bank_message::SendMessage;
@@ -209,15 +234,15 @@ where
             .collect::<SigningResult<_>>()?;
         let msg = SendMessage {
             custom_type_prefix: send.type_prefix.to_string().empty_or_some(),
-            from_address: Address::from_str_with_coin(coin, &send.from_address)?,
-            to_address: Address::from_str_with_coin(coin, &send.to_address)?,
+            from_address: Address::from_str(&send.from_address)?,
+            to_address: Address::from_str(&send.to_address)?,
             amount: amounts,
         };
         Ok(msg.into_boxed())
     }
 
     pub fn transfer_tokens_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         transfer: &Proto::mod_Message::Transfer<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::ibc_message::{Height, TransferTokensMessage};
@@ -236,8 +261,7 @@ where
             source_port: transfer.source_port.to_string(),
             source_channel: transfer.source_channel.to_string(),
             token,
-            sender: Address::from_str_with_coin(coin, &transfer.sender)?,
-            // Don't use `Address::from_str_with_coin` as the recipient address can belong to another Cosmos chain.
+            sender: Address::from_str(&transfer.sender)?,
             receiver: Address::from_str(&transfer.receiver)?,
             timeout_height: Height {
                 revision_number: height.revision_number,
@@ -249,7 +273,7 @@ where
     }
 
     pub fn delegate_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         delegate: &Proto::mod_Message::Delegate<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::cosmos_staking_message::DelegateMessage;
@@ -262,14 +286,14 @@ where
         let msg = DelegateMessage {
             custom_type_prefix: delegate.type_prefix.to_string().empty_or_some(),
             amount,
-            delegator_address: Address::from_str_with_coin(coin, &delegate.delegator_address)?,
-            validator_address: Address::from_str_with_coin(coin, &delegate.validator_address)?,
+            delegator_address: Address::from_str(&delegate.delegator_address)?,
+            validator_address: Address::from_str(&delegate.validator_address)?,
         };
         Ok(msg.into_boxed())
     }
 
     pub fn undelegate_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         undelegate: &Proto::mod_Message::Undelegate<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::cosmos_staking_message::UndelegateMessage;
@@ -283,42 +307,42 @@ where
         let msg = UndelegateMessage {
             custom_type_prefix: undelegate.type_prefix.to_string().empty_or_some(),
             amount,
-            delegator_address: Address::from_str_with_coin(coin, &undelegate.delegator_address)?,
-            validator_address: Address::from_str_with_coin(coin, &undelegate.validator_address)?,
+            delegator_address: Address::from_str(&undelegate.delegator_address)?,
+            validator_address: Address::from_str(&undelegate.validator_address)?,
         };
         Ok(msg.into_boxed())
     }
 
     pub fn withdraw_reward_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         withdraw: &Proto::mod_Message::WithdrawDelegationReward<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::cosmos_staking_message::WithdrawDelegationRewardMessage;
 
         let msg = WithdrawDelegationRewardMessage {
             custom_type_prefix: withdraw.type_prefix.to_string().empty_or_some(),
-            delegator_address: Address::from_str_with_coin(coin, &withdraw.delegator_address)?,
-            validator_address: Address::from_str_with_coin(coin, &withdraw.validator_address)?,
+            delegator_address: Address::from_str(&withdraw.delegator_address)?,
+            validator_address: Address::from_str(&withdraw.validator_address)?,
         };
         Ok(msg.into_boxed())
     }
 
     pub fn set_withdraw_address_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         set: &Proto::mod_Message::SetWithdrawAddress<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::cosmos_staking_message::SetWithdrawAddressMessage;
 
         let msg = SetWithdrawAddressMessage {
             custom_type_prefix: set.type_prefix.to_string().empty_or_some(),
-            delegator_address: Address::from_str_with_coin(coin, &set.delegator_address)?,
-            withdraw_address: Address::from_str_with_coin(coin, &set.withdraw_address)?,
+            delegator_address: Address::from_str(&set.delegator_address)?,
+            withdraw_address: Address::from_str(&set.withdraw_address)?,
         };
         Ok(msg.into_boxed())
     }
 
     pub fn redelegate_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         redelegate: &Proto::mod_Message::BeginRedelegate<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::cosmos_staking_message::BeginRedelegateMessage;
@@ -328,15 +352,13 @@ where
             .as_ref()
             .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
         let amount = Self::coin_from_proto(amount)?;
-        let validator_src_address =
-            Address::from_str_with_coin(coin, &redelegate.validator_src_address)?;
-        let validator_dst_address =
-            Address::from_str_with_coin(coin, &redelegate.validator_dst_address)?;
+        let validator_src_address = Address::from_str(&redelegate.validator_src_address)?;
+        let validator_dst_address = Address::from_str(&redelegate.validator_dst_address)?;
 
         let msg = BeginRedelegateMessage {
             custom_type_prefix: redelegate.type_prefix.to_string().empty_or_some(),
             amount,
-            delegator_address: Address::from_str_with_coin(coin, &redelegate.delegator_address)?,
+            delegator_address: Address::from_str(&redelegate.delegator_address)?,
             validator_src_address,
             validator_dst_address,
         };
@@ -358,7 +380,7 @@ where
     }
 
     pub fn wasm_terra_execute_contract_transfer_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         transfer: &Proto::mod_Message::WasmTerraExecuteContractTransfer<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::terra_wasm_message::TerraExecuteContractMessage;
@@ -370,8 +392,8 @@ where
         };
 
         let msg = TerraExecuteContractMessage {
-            sender: Address::from_str_with_coin(coin, &transfer.sender_address)?,
-            contract: Address::from_str_with_coin(coin, &transfer.contract_address)?,
+            sender: Address::from_str(&transfer.sender_address)?,
+            contract: Address::from_str(&transfer.contract_address)?,
             execute_msg: ExecuteMsg::json(execute_payload)?,
             // Used in case you are sending native tokens along with this message.
             coins: Vec::default(),
@@ -380,7 +402,7 @@ where
     }
 
     pub fn wasm_terra_execute_contract_send_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         send: &Proto::mod_Message::WasmTerraExecuteContractSend<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::terra_wasm_message::TerraExecuteContractMessage;
@@ -393,8 +415,8 @@ where
         };
 
         let msg = TerraExecuteContractMessage {
-            sender: Address::from_str_with_coin(coin, &send.sender_address)?,
-            contract: Address::from_str_with_coin(coin, &send.contract_address)?,
+            sender: Address::from_str(&send.sender_address)?,
+            contract: Address::from_str(&send.contract_address)?,
             execute_msg: ExecuteMsg::json(execute_payload)?,
             // Used in case you are sending native tokens along with this message.
             coins: Vec::default(),
@@ -403,7 +425,7 @@ where
     }
 
     pub fn wasm_terra_execute_contract_generic_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         generic: &Proto::mod_Message::WasmTerraExecuteContractGeneric<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::terra_wasm_message::TerraExecuteContractMessage;
@@ -416,8 +438,8 @@ where
             .collect::<SigningResult<_>>()?;
 
         let msg = TerraExecuteContractMessage {
-            sender: Address::from_str_with_coin(coin, &generic.sender_address)?,
-            contract: Address::from_str_with_coin(coin, &generic.contract_address)?,
+            sender: Address::from_str(&generic.sender_address)?,
+            contract: Address::from_str(&generic.contract_address)?,
             execute_msg: ExecuteMsg::String(generic.execute_msg.to_string()),
             coins,
         };
@@ -425,7 +447,7 @@ where
     }
 
     pub fn wasm_execute_contract_transfer_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         transfer: &Proto::mod_Message::WasmExecuteContractTransfer<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::wasm_message::{
@@ -438,8 +460,8 @@ where
         };
 
         let msg = WasmExecuteContractMessage {
-            sender: Address::from_str_with_coin(coin, &transfer.sender_address)?,
-            contract: Address::from_str_with_coin(coin, &transfer.contract_address)?,
+            sender: Address::from_str(&transfer.sender_address)?,
+            contract: Address::from_str(&transfer.contract_address)?,
             msg: ExecuteMsg::json(transfer_payload)?,
             // Used in case you are sending native tokens along with this message.
             coins: Vec::default(),
@@ -448,7 +470,7 @@ where
     }
 
     pub fn wasm_execute_contract_send_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         send: &Proto::mod_Message::WasmExecuteContractSend<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::wasm_message::{
@@ -462,8 +484,8 @@ where
         };
 
         let msg = WasmExecuteContractMessage {
-            sender: Address::from_str_with_coin(coin, &send.sender_address)?,
-            contract: Address::from_str_with_coin(coin, &send.contract_address)?,
+            sender: Address::from_str(&send.sender_address)?,
+            contract: Address::from_str(&send.contract_address)?,
             msg: ExecuteMsg::json(execute_payload)?,
             // Used in case you are sending native tokens along with this message.
             coins: Vec::default(),
@@ -472,7 +494,7 @@ where
     }
 
     pub fn wasm_execute_contract_generic_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         generic: &Proto::mod_Message::WasmExecuteContractGeneric<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::wasm_message::{ExecuteMsg, WasmExecuteContractMessage};
@@ -484,8 +506,8 @@ where
             .collect::<SigningResult<_>>()?;
 
         let msg = WasmExecuteContractMessage {
-            sender: Address::from_str_with_coin(coin, &generic.sender_address)?,
-            contract: Address::from_str_with_coin(coin, &generic.contract_address)?,
+            sender: Address::from_str(&generic.sender_address)?,
+            contract: Address::from_str(&generic.contract_address)?,
             msg: ExecuteMsg::String(generic.execute_msg.to_string()),
             coins,
         };
@@ -513,7 +535,7 @@ where
     }
 
     pub fn auth_grant_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         auth: &Proto::mod_Message::AuthGrant<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::cosmos_auth_message::AuthGrantMessage;
@@ -533,8 +555,8 @@ where
         };
 
         let msg = AuthGrantMessage {
-            granter: Address::from_str_with_coin(coin, &auth.granter)?,
-            grantee: Address::from_str_with_coin(coin, &auth.grantee)?,
+            granter: Address::from_str(&auth.granter)?,
+            grantee: Address::from_str(&auth.grantee)?,
             grant_msg,
             expiration_secs: auth.expiration,
         };
@@ -542,21 +564,21 @@ where
     }
 
     pub fn auth_revoke_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         auth: &Proto::mod_Message::AuthRevoke<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::cosmos_auth_message::AuthRevokeMessage;
 
         let msg = AuthRevokeMessage {
-            granter: Address::from_str_with_coin(coin, &auth.granter)?,
-            grantee: Address::from_str_with_coin(coin, &auth.grantee)?,
+            granter: Address::from_str(&auth.granter)?,
+            grantee: Address::from_str(&auth.grantee)?,
             msg_type_url: auth.msg_type_url.to_string(),
         };
         Ok(msg.into_boxed())
     }
 
     pub fn vote_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         vote: &Proto::mod_Message::MsgVote<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::cosmos_gov_message::{VoteMessage, VoteOption};
@@ -572,20 +594,20 @@ where
 
         let msg = VoteMessage {
             proposal_id: vote.proposal_id,
-            voter: Address::from_str_with_coin(coin, &vote.voter)?,
+            voter: Address::from_str(&vote.voter)?,
             option,
         };
         Ok(msg.into_boxed())
     }
 
     pub fn stride_stake_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         stake: &Proto::mod_Message::MsgStrideLiquidStakingStake<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::stride_message::StrideLiquidStakeMessage;
 
         let msg = StrideLiquidStakeMessage {
-            creator: Address::from_str_with_coin(coin, &stake.creator)?,
+            creator: Address::from_str(&stake.creator)?,
             amount: U256::from_str(&stake.amount)?,
             host_denom: stake.host_denom.to_string(),
         };

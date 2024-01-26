@@ -58,16 +58,17 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
         coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
+        let tx_hasher = TxBuilder::<Context>::tx_hasher_from_proto(&input);
         let preimage = match TxBuilder::<Context>::try_sign_direct_args(&input) {
             // If there was a `SignDirect` message in the signing input, generate the tx preimage directly.
             Ok(Some(sign_direct_args)) => {
-                ProtobufPreimager::<Context>::preimage_hash_direct(&sign_direct_args)?
+                ProtobufPreimager::<Context>::preimage_hash_direct(&sign_direct_args, tx_hasher)?
             },
             // Otherwise, generate the tx preimage by using `TxBuilder`.
             _ => {
                 // Please note the [`Proto::SigningInput::public_key`] should be set already.
                 let unsigned_tx = TxBuilder::<Context>::unsigned_tx_from_proto(coin, &input)?;
-                ProtobufPreimager::<Context>::preimage_hash(&unsigned_tx)?
+                ProtobufPreimager::<Context>::preimage_hash(&unsigned_tx, tx_hasher)?
             },
         };
 
@@ -84,7 +85,8 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
         // Please note the [`Proto::SigningInput::public_key`] should be set already.
         let unsigned_tx = TxBuilder::<Context>::unsigned_tx_from_proto(coin, &input)?;
-        let preimage = JsonPreimager::preimage_hash(&unsigned_tx)?;
+        let tx_hasher = TxBuilder::<Context>::tx_hasher_from_proto(&input);
+        let preimage = JsonPreimager::preimage_hash(&unsigned_tx, tx_hasher)?;
 
         Ok(CompilerProto::PreSigningOutput {
             data: Cow::from(preimage.encoded_tx.as_bytes().to_vec()),
@@ -104,7 +106,9 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
             public_key,
         } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
         let signature = Context::Signature::try_from(&signature)?;
-        let public_key = Context::PublicKey::from_bytes(coin, &public_key)?;
+
+        let params = TxBuilder::<Context>::public_key_params_from_proto(&input);
+        let public_key = Context::PublicKey::from_bytes(coin, &public_key, params)?;
 
         let signed_tx_raw = match TxBuilder::<Context>::try_sign_direct_args(&input) {
             // If there was a `SignDirect` message in the signing input, generate the `TxRaw` directly.
@@ -150,7 +154,9 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
             public_key,
         } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
         let signature = Context::Signature::try_from(&signature)?;
-        let public_key = Context::PublicKey::from_bytes(coin, &public_key)?;
+
+        let params = TxBuilder::<Context>::public_key_params_from_proto(&input);
+        let public_key = Context::PublicKey::from_bytes(coin, &public_key, params)?;
 
         // Set the public key. It will be used to construct a signer info.
         input.public_key = Cow::from(public_key.to_bytes());
