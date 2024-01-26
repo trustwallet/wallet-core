@@ -78,18 +78,18 @@ TEST(Derivation, derivationPath) {
 TEST(Derivation, alternativeDerivation) {
     EXPECT_EQ(TW::derivationPath(TWCoinTypeBitcoin).string(), "m/84'/0'/0'/0/0");
     EXPECT_EQ(TW::derivationPath(TWCoinTypeBitcoin, TWDerivationDefault).string(), "m/84'/0'/0'/0/0");
-    EXPECT_EQ(TW::derivationPath(TWCoinTypeBitcoin, TWDerivationBitcoinSegwit).string(), "m/84'/0'/0'/0/0");
-    EXPECT_EQ(std::string(TW::derivationName(TWCoinTypeBitcoin, TWDerivationBitcoinSegwit)), "segwit");
-    EXPECT_EQ(TW::derivationPath(TWCoinTypeBitcoin, TWDerivationBitcoinLegacy).string(), "m/44'/0'/0'/0/0");
-    EXPECT_EQ(std::string(TW::derivationName(TWCoinTypeBitcoin, TWDerivationBitcoinLegacy)), "legacy");
+    EXPECT_EQ(TW::derivationPath(TWCoinTypeBitcoin, TWDerivationSegwit).string(), "m/84'/0'/0'/0/0");
+    EXPECT_EQ(std::string(TW::derivationName(TWCoinTypeBitcoin, TWDerivationSegwit)), "segwit");
+    EXPECT_EQ(TW::derivationPath(TWCoinTypeBitcoin, TWDerivationLegacy).string(), "m/44'/0'/0'/0/0");
+    EXPECT_EQ(std::string(TW::derivationName(TWCoinTypeBitcoin, TWDerivationLegacy)), "legacy");
 
     EXPECT_EQ(TW::derivationPath(TWCoinTypeLitecoin, TWDerivationDefault).string(), "m/84'/2'/0'/0/0");
-    EXPECT_EQ(TW::derivationPath(TWCoinTypeLitecoin, TWDerivationLitecoinLegacy).string(), "m/44'/2'/0'/0/0");
+    EXPECT_EQ(TW::derivationPath(TWCoinTypeLitecoin, TWDerivationLegacy).string(), "m/44'/2'/0'/0/0");
 
     EXPECT_EQ(TW::derivationPath(TWCoinTypeSolana).string(), "m/44'/501'/0'");
     EXPECT_EQ(TW::derivationPath(TWCoinTypeSolana, TWDerivationDefault).string(), "m/44'/501'/0'");
-    EXPECT_EQ(TW::derivationPath(TWCoinTypeSolana, TWDerivationSolanaSolana).string(), "m/44'/501'/0'/0'");
-    EXPECT_EQ(std::string(TW::derivationName(TWCoinTypeSolana, TWDerivationSolanaSolana)), "solana");
+    EXPECT_EQ(TW::derivationPath(TWCoinTypeSolana, TWDerivationSolana).string(), "m/44'/501'/0'/0'");
+    EXPECT_EQ(std::string(TW::derivationName(TWCoinTypeSolana, TWDerivationSolana)), "solana");
 }
 
 } // namespace TW

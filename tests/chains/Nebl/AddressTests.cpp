@@ -36,7 +36,7 @@ TEST(NeblAddress, FromPublicKey) {
     auto address = Address(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeNebl));
     ASSERT_EQ(address.string(), "NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc");
 
-    auto addr = TW::deriveAddress(TWCoinTypeNebl, publicKey, TWDerivationBitcoinLegacy);
+    auto addr = TW::deriveAddress(TWCoinTypeNebl, publicKey, TWDerivationLegacy);
     ASSERT_EQ(addr, "NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc");
 }
 

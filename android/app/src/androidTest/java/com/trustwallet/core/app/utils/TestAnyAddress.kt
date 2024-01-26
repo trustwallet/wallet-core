@@ -53,10 +53,10 @@ class TestAnyAddress {
     fun testCreateWithPublicKeyDerivation() {
         val coin = CoinType.BITCOIN
         val pubkey = PublicKey(any_address_test_pubkey.toHexByteArray(), PublicKeyType.SECP256K1)
-        val address1 = AnyAddress(pubkey, coin, Derivation.BITCOINSEGWIT)
+        val address1 = AnyAddress(pubkey, coin, Derivation.SEGWIT)
         assertEquals(address1.description(), any_address_test_address)
 
-        val address2 = AnyAddress(pubkey, coin, Derivation.BITCOINLEGACY)
+        val address2 = AnyAddress(pubkey, coin, Derivation.LEGACY)
         assertEquals(address2.description(), "1JvRfEQFv5q5qy9uTSAezH7kVQf4hqnHXx")
     }
 

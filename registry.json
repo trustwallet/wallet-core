@@ -4281,12 +4281,6 @@
     "derivation": [
       {
         "name": "segwit",
-        "path": "m/84'/105105'/0'/0/0",
-        "xpub": "zpub",
-        "xprv": "zprv"
-      },
-      {
-        "name": "legacy",
         "path": "m/44'/105105'/0'/0/0",
         "xpub": "xpub",
         "xprv": "xprv"

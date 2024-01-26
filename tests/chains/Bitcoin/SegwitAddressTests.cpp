@@ -243,9 +243,9 @@ TEST(SegwitAddress, SegwitDerivationHDWallet) {
     // addresses with different derivations
     EXPECT_EQ(wallet.deriveAddress(coin), "bc1qpsp72plnsqe6e2dvtsetxtww2cz36ztmfxghpd");
     EXPECT_EQ(wallet.deriveAddress(coin, TWDerivationDefault), "bc1qpsp72plnsqe6e2dvtsetxtww2cz36ztmfxghpd");
-    EXPECT_EQ(wallet.deriveAddress(coin, TWDerivationBitcoinSegwit), "bc1qpsp72plnsqe6e2dvtsetxtww2cz36ztmfxghpd");
-    EXPECT_EQ(wallet.deriveAddress(coin, TWDerivationBitcoinLegacy), "1GVb4mfQrvymPLz7zeZ3LnQ8sFv3NedZXe");
-    EXPECT_EQ(wallet.deriveAddress(coin, TWDerivationBitcoinTestnet), "tb1qq8p994ak933c39d2jaj8n4sg598tnkhnyk5sg5");
+    EXPECT_EQ(wallet.deriveAddress(coin, TWDerivationSegwit), "bc1qpsp72plnsqe6e2dvtsetxtww2cz36ztmfxghpd");
+    EXPECT_EQ(wallet.deriveAddress(coin, TWDerivationLegacy), "1GVb4mfQrvymPLz7zeZ3LnQ8sFv3NedZXe");
+    EXPECT_EQ(wallet.deriveAddress(coin, TWDerivationTestnet), "tb1qq8p994ak933c39d2jaj8n4sg598tnkhnyk5sg5");
 }
 
 } // namespace TW::Bitcoin::tests

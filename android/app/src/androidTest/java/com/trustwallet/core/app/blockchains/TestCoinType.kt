@@ -52,9 +52,9 @@ class TestCoinType {
     fun testDerivationPath() {
         var res = CoinType.createFromValue(CoinType.BITCOIN.value()).derivationPath().toString()
         assertEquals(res, "m/84'/0'/0'/0/0")
-        res = CoinType.createFromValue(CoinType.BITCOIN.value()).derivationPathWithDerivation(Derivation.BITCOINLEGACY).toString()
+        res = CoinType.createFromValue(CoinType.BITCOIN.value()).derivationPathWithDerivation(Derivation.LEGACY).toString()
         assertEquals(res, "m/44'/0'/0'/0/0")
-        res = CoinType.createFromValue(CoinType.SOLANA.value()).derivationPathWithDerivation(Derivation.SOLANASOLANA).toString()
+        res = CoinType.createFromValue(CoinType.SOLANA.value()).derivationPathWithDerivation(Derivation.SOLANA).toString()
         assertEquals(res, "m/44'/501'/0'/0'")
     }
 
@@ -62,7 +62,7 @@ class TestCoinType {
     fun testDeriveAddressFromPublicKeyAndDerivation() {
         val publicKey = PublicKey("0279BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798".toHexByteArray(), PublicKeyType.SECP256K1)
 
-        val address = CoinType.BITCOIN.deriveAddressFromPublicKeyAndDerivation(publicKey, Derivation.BITCOINSEGWIT)
+        val address = CoinType.BITCOIN.deriveAddressFromPublicKeyAndDerivation(publicKey, Derivation.SEGWIT)
         assertEquals(address, "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4")
     }
 }
