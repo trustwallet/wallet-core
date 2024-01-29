@@ -92,7 +92,6 @@ mod tests {
             .append(&4u64);
 
         let expected = vec![1_u8, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0];
-
         assert_eq!(stream.out(), expected);
     }
 

@@ -4,31 +4,29 @@
 
 use crate::encode::stream::Stream;
 use crate::encode::Encodable;
-use crate::script::ScriptPubkey;
-use tw_hash::H256;
+use crate::error::UtxoResult;
+use crate::script::Script;
+use crate::signing_mode::SigningMethod;
+use crate::transaction::transaction_interface::{
+    TransactionInterface, TxInputInterface, TxOutputInterface,
+};
+use crate::transaction::transaction_parts::{Amount, OutPoint};
+use crate::transaction::transaction_preimage::legacy_preimage::LegacyPreimage;
+use crate::transaction::transaction_preimage::witness0_preimage::Witness0Preimage;
+use crate::transaction::{PreimageArgs, TransactionPreimage};
 use tw_memory::Data;
-
-pub mod unsigned_tx;
 
 /// Must be zero.
 const WITNESS_MARKER: u8 = 0;
 /// Must be nonzero.
 const WITNESS_FLAG: u8 = 1;
 
-pub type Amount = i64;
-
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
-pub struct OutPoint {
-    pub hash: H256,
-    pub index: u32,
-}
-
-impl Encodable for OutPoint {
-    fn encode(&self, stream: &mut Stream) {
-        stream.append(&self.hash).append(&self.index);
-    }
-}
-
+/// A standard Bitcoin transaction.
+///
+/// # Important
+///
+/// Do not add chain specific fields to the standard Bitcoin [`Transaction`].
+/// Otherwise, consider adding a new type of transaction that implements the [`TransactionInterface`] trait.
 #[derive(Clone, Debug)]
 pub struct Transaction {
     /// Transaction data format version (note, this is signed).
@@ -50,12 +48,37 @@ pub struct Transaction {
     pub locktime: u32,
 }
 
-impl Transaction {
-    pub fn has_witness(&self) -> bool {
-        self.inputs.iter().any(TransactionInput::has_witness)
+impl TransactionInterface for Transaction {
+    type Input = TransactionInput;
+    type Output = TransactionOutput;
+
+    fn version(&self) -> i32 {
+        self.version
     }
 
-    /// Returns the same transaction with being [`TransactionInput::script_witness`] being empty.
+    fn inputs(&self) -> &[Self::Input] {
+        &self.inputs
+    }
+
+    fn set_inputs(&mut self, inputs: Vec<Self::Input>) {
+        self.inputs = inputs;
+    }
+
+    fn outputs(&self) -> &[Self::Output] {
+        &self.outputs
+    }
+
+    fn set_outputs(&mut self, outputs: Vec<Self::Output>) {
+        self.outputs = outputs;
+    }
+
+    fn locktime(&self) -> u32 {
+        self.locktime
+    }
+}
+
+impl Transaction {
+    /// Returns the same transaction with [`TransactionInput::script_witness`] being empty.
     pub fn without_witness(&self) -> Transaction {
         let mut without_witness = self.clone();
         for input in without_witness.inputs.iter_mut() {
@@ -87,12 +110,22 @@ impl Encodable for Transaction {
     }
 }
 
+impl TransactionPreimage for Transaction {
+    fn preimage_tx(&self, args: &PreimageArgs) -> UtxoResult<Data> {
+        match args.signing_method {
+            SigningMethod::Legacy => LegacyPreimage::<Self>::sighash_tx(self, args),
+            SigningMethod::Segwit => Witness0Preimage::<Self>::sighash_tx(self, args),
+            SigningMethod::TaprootAll | SigningMethod::TaprootOnePrevout => todo!(),
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct TransactionInput {
     /// Reference to the previous transaction's output.
     pub previous_output: OutPoint,
     /// Computational Script for confirming transaction authorization.
-    pub script_sig: Data,
+    pub script_sig: Script,
     /// Transaction version as defined by the sender.
     ///
     /// Intended for "replacement" of transactions when information is updated
@@ -102,11 +135,37 @@ pub struct TransactionInput {
     pub script_witness: Vec<Data>,
 }
 
+impl TxInputInterface for TransactionInput {
+    fn previous_output(&self) -> &OutPoint {
+        &self.previous_output
+    }
+
+    fn sequence(&self) -> u32 {
+        self.sequence
+    }
+
+    fn set_sequence(&mut self, sequence: u32) {
+        self.sequence = sequence;
+    }
+
+    fn script_witness(&self) -> &[Data] {
+        &self.script_witness
+    }
+
+    fn set_script_sig(&mut self, script_sig: Script) {
+        self.script_sig = script_sig;
+    }
+
+    fn clear_witness(&mut self) {
+        self.script_witness.clear();
+    }
+}
+
 impl Encodable for TransactionInput {
     fn encode(&self, stream: &mut Stream) {
         stream
             .append(&self.previous_output)
-            .append_raw_slice(&self.script_sig)
+            .append(&self.script_sig)
             .append(&self.sequence);
     }
 }
@@ -123,8 +182,19 @@ pub struct TransactionOutput {
     pub value: Amount,
     /// Usually contains the public key as a Bitcoin script setting up
     /// conditions to claim this output.
-    pub script: ScriptPubkey,
+    pub script: Script,
 }
+
+impl Default for TransactionOutput {
+    fn default() -> Self {
+        TransactionOutput {
+            value: -1,
+            script: Script::default(),
+        }
+    }
+}
+
+impl TxOutputInterface for TransactionOutput {}
 
 impl Encodable for TransactionOutput {
     fn encode(&self, stream: &mut Stream) {

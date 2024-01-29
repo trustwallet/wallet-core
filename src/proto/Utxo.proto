@@ -15,6 +15,7 @@ enum Error {
     Error_insufficient_inputs = 8;
     Error_no_outputs_specified = 9;
     Error_missing_change_script_pubkey = 10;
+    Error_internal = 20;
 }
 
 message SigningInput {

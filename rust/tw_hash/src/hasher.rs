@@ -5,6 +5,7 @@
 use crate::ripemd::ripemd_160;
 use crate::sha2::sha256;
 use crate::sha3::keccak256;
+use crate::{H160, H256};
 use serde::Deserialize;
 use tw_memory::Data;
 
@@ -41,6 +42,19 @@ impl Hasher {
             Hasher::Keccak256 => keccak256(data),
             Hasher::Sha256d => sha256_d(data),
             Hasher::Sha256ripemd => sha256_ripemd(data),
+        }
+    }
+
+    /// Returns a zeroized hash with a corresponding len.
+    pub fn zero_hash(&self) -> Data {
+        vec![0; self.hash_len()]
+    }
+
+    /// Returns a corresponding hash len.
+    pub fn hash_len(&self) -> usize {
+        match self {
+            Hasher::Sha256 | Hasher::Keccak256 | Hasher::Sha256d => H256::len(),
+            Hasher::Sha256ripemd => H160::len(),
         }
     }
 }

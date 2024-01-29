@@ -10,6 +10,7 @@ pub mod encode;
 pub mod error;
 pub mod script;
 pub mod sighash;
+pub mod signing_mode;
 pub mod transaction;
 
 pub type Result<T> = std::result::Result<T, Error>;
