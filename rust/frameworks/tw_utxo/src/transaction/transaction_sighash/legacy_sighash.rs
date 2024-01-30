@@ -7,28 +7,28 @@ use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
 use crate::script::Script;
 use crate::sighash::SighashBase;
 use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
-use crate::transaction::PreimageArgs;
+use crate::transaction::UtxoPreimageArgs;
 use std::marker::PhantomData;
 use tw_memory::Data;
 
-/// `LegacyPreimage` should be used if only a transaction does not have segwit inputs (with segwit).
-pub struct LegacyPreimage<Transaction: TransactionInterface> {
+/// `LegacySighash` is used to calculate a preimage hash of a P2PK, P2PKH or P2SH unspent output.
+pub struct LegacySighash<Transaction: TransactionInterface> {
     _phantom: PhantomData<Transaction>,
 }
 
-impl<Transaction: TransactionInterface> LegacyPreimage<Transaction> {
-    pub fn sighash_tx(tx: &Transaction, args: &PreimageArgs) -> UtxoResult<Data> {
+impl<Transaction: TransactionInterface> LegacySighash<Transaction> {
+    pub fn sighash_tx(tx: &Transaction, args: &UtxoPreimageArgs) -> UtxoResult<Data> {
         let mut tx_preimage = tx.clone();
 
         tx_preimage.set_inputs(Self::inputs_for_preimage(tx, args)?);
         tx_preimage.set_outputs(Self::outputs_for_preimage(tx, args));
 
         let mut stream = Stream::default();
-
-        // Encode the transaction preimage as a normal tx.
-        tx.encode(&mut stream);
-        // Append the sighash type.
-        stream.append(&args.sighash.raw_sighash());
+        stream
+            // Encode the transaction preimage as a normal tx.
+            .append(&tx_preimage)
+            // Append the sighash type.
+            .append(&args.sighash.raw_sighash());
 
         Ok(args.tx_hasher.hash(&stream.out()))
     }
@@ -36,7 +36,7 @@ impl<Transaction: TransactionInterface> LegacyPreimage<Transaction> {
     /// Select and prepare transaction inputs according to the preimage settings.
     pub fn inputs_for_preimage(
         tx: &Transaction,
-        args: &PreimageArgs,
+        args: &UtxoPreimageArgs,
     ) -> UtxoResult<Vec<Transaction::Input>> {
         let original_inputs = tx.inputs();
         // Get an input needs to be signed.
@@ -80,7 +80,10 @@ impl<Transaction: TransactionInterface> LegacyPreimage<Transaction> {
     }
 
     /// Selects transaction outputs according to the preimage settings.
-    pub fn outputs_for_preimage(tx: &Transaction, args: &PreimageArgs) -> Vec<Transaction::Output> {
+    pub fn outputs_for_preimage(
+        tx: &Transaction,
+        args: &UtxoPreimageArgs,
+    ) -> Vec<Transaction::Output> {
         match args.sighash.base_type() {
             // Hash all the transaction outputs.
             SighashBase::UseDefault | SighashBase::All => tx.outputs().to_vec(),

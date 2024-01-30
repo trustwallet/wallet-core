@@ -9,6 +9,7 @@ const FORK_ID_FLAG: u32 = 0x40;
 const BASE_FLAG: u32 = 0x1f;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
+#[repr(u32)]
 pub enum SighashBase {
     /// Use default (All) - 0x00
     UseDefault = 0,
@@ -62,5 +63,14 @@ impl Sighash {
     /// Whether a fork chain.
     pub fn fork_id(&self) -> bool {
         (self.raw_sighash & FORK_ID_FLAG) == FORK_ID_FLAG
+    }
+}
+
+impl Default for Sighash {
+    fn default() -> Self {
+        Sighash {
+            raw_sighash: SighashBase::UseDefault as u32,
+            base: SighashBase::UseDefault,
+        }
     }
 }

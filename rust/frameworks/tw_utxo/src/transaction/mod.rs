@@ -14,20 +14,22 @@ pub mod standard_transaction;
 pub mod transaction_hashing;
 pub mod transaction_interface;
 pub mod transaction_parts;
-pub mod transaction_preimage;
+pub mod transaction_sighash;
 
 pub trait TransactionPreimage {
     /// Preimages a transaction for a specific UTXO signing.
-    fn preimage_tx(&self, args: &PreimageArgs) -> UtxoResult<Data>;
+    fn preimage_tx(&self, args: &UtxoPreimageArgs) -> UtxoResult<Data>;
 }
 
-pub struct PreimageArgs {
+/// UTXO (unspent transaction output) preimage arguments.
+/// It provides an index of the UTXO to be signed and other required options.
+pub struct UtxoPreimageArgs {
     pub input_index: usize,
-    /// Script for claiming [`PreimageArgs::input_index`] UTXO.
+    /// Script for claiming [`UtxoPreimageArgs::input_index`] UTXO.
     pub input_claiming_script: Script,
     pub input_amount: Amount,
     pub sighash: Sighash,
     pub tx_hasher: Hasher,
-    /// Signing method needs to be used to sign the [`PreimageArgs::input_index`] index.
+    /// Signing method needs to be used to sign the [`UtxoPreimageArgs::input_index`] index.
     pub signing_method: SigningMethod,
 }

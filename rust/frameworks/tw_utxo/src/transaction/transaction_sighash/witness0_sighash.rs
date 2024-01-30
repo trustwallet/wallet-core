@@ -6,17 +6,17 @@ use crate::encode::stream::Stream;
 use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
 use crate::transaction::transaction_hashing::TransactionHasher;
 use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
-use crate::transaction::PreimageArgs;
+use crate::transaction::UtxoPreimageArgs;
 use std::marker::PhantomData;
 use tw_memory::Data;
 
-/// `LegacyPreimage` should be used if only a transaction does not have segwit inputs (with segwit).
-pub struct Witness0Preimage<Transaction: TransactionInterface> {
+/// `Witness0Sighash`is used to calculate a preimage hash of a P2WPKH or P2WSH unspent output.
+pub struct Witness0Sighash<Transaction: TransactionInterface> {
     _phantom: PhantomData<Transaction>,
 }
 
-impl<Transaction: TransactionInterface> Witness0Preimage<Transaction> {
-    pub fn sighash_tx(tx: &Transaction, args: &PreimageArgs) -> UtxoResult<Data> {
+impl<Transaction: TransactionInterface> Witness0Sighash<Transaction> {
+    pub fn sighash_tx(tx: &Transaction, args: &UtxoPreimageArgs) -> UtxoResult<Data> {
         let input = tx
             .inputs()
             .get(args.input_index)

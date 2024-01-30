@@ -11,9 +11,9 @@ use crate::transaction::transaction_interface::{
     TransactionInterface, TxInputInterface, TxOutputInterface,
 };
 use crate::transaction::transaction_parts::{Amount, OutPoint};
-use crate::transaction::transaction_preimage::legacy_preimage::LegacyPreimage;
-use crate::transaction::transaction_preimage::witness0_preimage::Witness0Preimage;
-use crate::transaction::{PreimageArgs, TransactionPreimage};
+use crate::transaction::transaction_sighash::legacy_sighash::LegacySighash;
+use crate::transaction::transaction_sighash::witness0_sighash::Witness0Sighash;
+use crate::transaction::{TransactionPreimage, UtxoPreimageArgs};
 use tw_memory::Data;
 
 /// Must be zero.
@@ -26,7 +26,7 @@ const WITNESS_FLAG: u8 = 1;
 /// # Important
 ///
 /// Do not add chain specific fields to the standard Bitcoin [`Transaction`].
-/// Otherwise, consider adding a new type of transaction that implements the [`TransactionInterface`] trait.
+/// Otherwise, consider adding a new type of transaction that implements the [`UnsignedTransaction`] trait.
 #[derive(Clone, Debug)]
 pub struct Transaction {
     /// Transaction data format version (note, this is signed).
@@ -111,10 +111,10 @@ impl Encodable for Transaction {
 }
 
 impl TransactionPreimage for Transaction {
-    fn preimage_tx(&self, args: &PreimageArgs) -> UtxoResult<Data> {
+    fn preimage_tx(&self, args: &UtxoPreimageArgs) -> UtxoResult<Data> {
         match args.signing_method {
-            SigningMethod::Legacy => LegacyPreimage::<Self>::sighash_tx(self, args),
-            SigningMethod::Segwit => Witness0Preimage::<Self>::sighash_tx(self, args),
+            SigningMethod::Legacy => LegacySighash::<Self>::sighash_tx(self, args),
+            SigningMethod::Segwit => Witness0Sighash::<Self>::sighash_tx(self, args),
             SigningMethod::TaprootAll | SigningMethod::TaprootOnePrevout => todo!(),
         }
     }

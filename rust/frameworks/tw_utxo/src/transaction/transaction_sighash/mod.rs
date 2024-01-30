@@ -2,5 +2,5 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-pub mod legacy_preimage;
-pub mod witness0_preimage;
+pub mod legacy_sighash;
+pub mod witness0_sighash;

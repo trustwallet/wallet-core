@@ -10,6 +10,7 @@ pub mod encode;
 pub mod error;
 pub mod script;
 pub mod sighash;
+pub mod signer;
 pub mod signing_mode;
 pub mod transaction;
 

@@ -5,7 +5,7 @@
 use crate::encode::stream::Stream;
 use crate::sighash::SighashBase;
 use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
-use crate::transaction::PreimageArgs;
+use crate::transaction::UtxoPreimageArgs;
 use std::marker::PhantomData;
 use tw_hash::hasher::Hasher;
 use tw_memory::Data;
@@ -16,7 +16,7 @@ pub struct TransactionHasher<Transaction> {
 }
 
 impl<Transaction: TransactionInterface> TransactionHasher<Transaction> {
-    /// Computes a hash of all [`TxInputInterface::previour_output`].
+    /// Computes a hash of all [`SignedUtxo::previour_output`].
     pub fn prevout_hash(tx: &Transaction, tx_hasher: Hasher) -> Data {
         let mut stream = Stream::default();
         for input in tx.inputs() {
@@ -25,16 +25,16 @@ impl<Transaction: TransactionInterface> TransactionHasher<Transaction> {
         tx_hasher.hash(&stream.out())
     }
 
-    /// Returns a zero hash if [`PreimageArgs::sighash::anyone_can_pay`] is true,
+    /// Returns a zero hash if [`UtxoPreimageArgs::sighash::anyone_can_pay`] is true,
     /// otherwise returns a hash of all [`TransactionInput::previour_output`].
-    pub fn preimage_prevout_hash(tx: &Transaction, args: &PreimageArgs) -> Data {
+    pub fn preimage_prevout_hash(tx: &Transaction, args: &UtxoPreimageArgs) -> Data {
         if args.sighash.anyone_can_pay() {
             return args.tx_hasher.zero_hash();
         }
         Self::prevout_hash(tx, args.tx_hasher)
     }
 
-    /// Computes a hash of all [`TxInputInterface::sequence`].
+    /// Computes a hash of all [`SignedUtxo::sequence`].
     pub fn sequence_hash(tx: &Transaction, tx_hasher: Hasher) -> Data {
         let mut stream = Stream::default();
         for input in tx.inputs() {
@@ -43,9 +43,9 @@ impl<Transaction: TransactionInterface> TransactionHasher<Transaction> {
         tx_hasher.hash(&stream.out())
     }
 
-    /// Returns a zero hash if [`PreimageArgs::sighash`] requires it (see the code below),
+    /// Returns a zero hash if [`UtxoPreimageArgs::sighash`] requires it (see the code below),
     /// otherwise returns a hash of all [`TransactionInput::sequence`].
-    pub fn preimage_sequence_hash(tx: &Transaction, args: &PreimageArgs) -> Data {
+    pub fn preimage_sequence_hash(tx: &Transaction, args: &UtxoPreimageArgs) -> Data {
         let single_or_none = matches!(
             args.sighash.base_type(),
             SighashBase::Single | SighashBase::None
@@ -56,9 +56,9 @@ impl<Transaction: TransactionInterface> TransactionHasher<Transaction> {
         Self::sequence_hash(tx, args.tx_hasher)
     }
 
-    /// Returns a hash of required [`TransactionOutput`] according to the [`PreimageArgs::sighash`].
+    /// Returns a hash of required [`TransactionOutput`] according to the [`UtxoPreimageArgs::sighash`].
     /// Please note the function can return a zero hash if necessary.
-    pub fn preimage_outputs_hash(tx: &Transaction, args: &PreimageArgs) -> Data {
+    pub fn preimage_outputs_hash(tx: &Transaction, args: &UtxoPreimageArgs) -> Data {
         let outputs = tx.outputs();
         match args.sighash.base_type() {
             SighashBase::UseDefault | SighashBase::All => {

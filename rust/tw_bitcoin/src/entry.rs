@@ -366,6 +366,7 @@ fn handle_utxo_error(utxo_err: &UtxoProto::Error) -> Result<()> {
         UtxoProto::Error::Error_insufficient_inputs => Proto::Error::Error_utxo_insufficient_inputs,
         UtxoProto::Error::Error_no_outputs_specified => Proto::Error::Error_utxo_no_outputs_specified,
         UtxoProto::Error::Error_missing_change_script_pubkey => Proto::Error::Error_utxo_missing_change_script_pubkey,
+        UtxoProto::Error::Error_signatures_count => Proto::Error::Error_unmatched_input_signature_count,
         UtxoProto::Error::Error_internal => Proto::Error::Error_internal,
     };
 
