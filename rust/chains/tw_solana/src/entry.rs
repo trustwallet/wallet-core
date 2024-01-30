@@ -38,10 +38,10 @@ impl CoinEntry for SolanaEntry {
     fn parse_address(
         &self,
         _coin: &dyn CoinContext,
-        _address: &str,
+        address: &str,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        SolanaAddress::from_str(address)
     }
 
     #[inline]
@@ -57,11 +57,11 @@ impl CoinEntry for SolanaEntry {
     fn derive_address(
         &self,
         _coin: &dyn CoinContext,
-        _public_key: PublicKey,
+        public_key: PublicKey,
         _derivation: Derivation,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        SolanaAddress::with_public_key(&public_key)
     }
 
     #[inline]
