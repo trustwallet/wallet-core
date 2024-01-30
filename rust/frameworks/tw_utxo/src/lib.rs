@@ -8,6 +8,7 @@ pub mod address;
 pub mod compiler;
 pub mod encode;
 pub mod error;
+pub mod planner;
 pub mod script;
 pub mod sighash;
 pub mod signer;

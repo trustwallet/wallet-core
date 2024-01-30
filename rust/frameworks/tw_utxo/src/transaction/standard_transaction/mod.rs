@@ -16,6 +16,8 @@ use crate::transaction::transaction_sighash::witness0_sighash::Witness0Sighash;
 use crate::transaction::{TransactionPreimage, UtxoPreimageArgs};
 use tw_memory::Data;
 
+pub mod builder;
+
 /// Must be zero.
 const WITNESS_MARKER: u8 = 0;
 /// Must be nonzero.
