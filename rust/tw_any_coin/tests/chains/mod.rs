@@ -12,6 +12,7 @@ mod greenfield;
 mod internet_computer;
 mod native_evmos;
 mod native_injective;
+mod solana;
 mod tbinance;
 mod thorchain;
 mod zetachain;
