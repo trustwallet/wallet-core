@@ -13,9 +13,9 @@ public typealias SigningOutput = Message
 // TANGEM
 public protocol Signer {
     var error: Error? { get }
-    
+
     var publicKey: Data { get }
-    
+
     func sign(_ data: Data) -> Data
     func sign(_ data: [Data]) -> [Data]
 }
@@ -24,23 +24,23 @@ public protocol Signer {
 // For auto tests only
 public struct PrivateKeySigner: Signer {
     public var error: Error?
-    
+
     public var publicKey: Data {
         privateKey.getPublicKey(coinType: coin).data
     }
-    
+
     private let privateKey: PrivateKey
     private let coin: CoinType
-    
+
     public init(privateKey: PrivateKey, coin: CoinType) {
         self.privateKey = privateKey
         self.coin = coin
     }
-    
+
     public func sign(_ data: Data) -> Data {
         return privateKey.sign(digest: data, curve: coin.curve)!
     }
-    
+
     public func sign(_ data: [Data]) -> [Data] {
         return data.map { privateKey.sign(digest: $0, curve: coin.curve)! }
     }
@@ -48,7 +48,7 @@ public struct PrivateKeySigner: Signer {
 
 // TANGEM
 // We can't capture a local variable in a closure we're passing to std::function. Global variables are fine.
-var externalSigner: Signer? = nil
+var externalSigner: Signer?
 
 /// Represents a signer to sign transactions for any blockchain.
 public final class AnySigner {
@@ -67,20 +67,23 @@ public final class AnySigner {
             fatalError(error.localizedDescription)
         }
     }
-    
+
     // TANGEM
     public static func signExternally<SigningOutput: Message>(input: SigningInput, coin: CoinType, signer: Signer) throws -> SigningOutput {
         defer {
             externalSigner = nil
         }
-        
+
         externalSigner = signer
 
         // It's safe to use "try!" here because the original code just catches exceptions and calls "fatalError"
         let outputData = nativeSignExternally(data: try! input.serializedData(), coin: coin, publicKey: signer.publicKey)
+        // swiftlint:disable:previous force_try
         if let error = signer.error {
             throw error
         }
+
+        // swiftlint:disable:next force_try
         return try! SigningOutput(serializedData: outputData)
     }
 
@@ -97,22 +100,22 @@ public final class AnySigner {
         }
         return TWDataNSData(TWAnySignerSign(inputData, TWCoinType(rawValue: coin.rawValue)))
     }
-    
+
     // TANGEM
     public static func nativeSignExternally(data: Data, coin: CoinType, publicKey: Data) -> Data {
         let inputData = TWDataCreateWithNSData(data)
         let publicKeyData = TWDataCreateWithNSData(publicKey)
-        
+
         defer {
             TWDataDelete(inputData)
             TWDataDelete(publicKeyData)
         }
-        
+
         return TWDataNSData(TWAnySignerSignExternally(inputData, TWCoinType(rawValue: coin.rawValue), publicKeyData, { twDataToSign in
             guard let externalSigner = externalSigner else {
                 fatalError("You must set external signer to sign asynchronously")
             }
-            
+
             let dataToSign = TWDataNSData(twDataToSign)
             let dataSigned = externalSigner.sign(dataToSign)
             return TWDataCreateWithNSData(dataSigned)
