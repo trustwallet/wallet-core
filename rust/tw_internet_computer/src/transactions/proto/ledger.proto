@@ -1,0 +1,313 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+// -*- c-basic-offset: 2 -*-
+// Source: https://github.com/dfinity/ic/blob/master/rs/rosetta-api/icp_ledger/proto/ic_ledger/pb/v1/types.proto
+// Commit Hash: 703eb96fea44ad2c82740e4360a526a2a127a960
+// Striped annotations related to the use of hardware wallets.
+
+syntax = "proto3";
+
+package ic_ledger.pb.v1;
+
+import "./types.proto";
+
+// Annotations related to the use of hardware wallets. The annotated messages are
+// parsed on hardware wallets and marked fields are displayed in a trusted user
+// interface (TUI). We must not, for instance, add fields that would change the
+// semantics of the message such that old hardware wallets would not display
+// appropriate information to users.
+
+// ** LEDGER CANISTER ENDPOINTS
+
+// Initialise the ledger canister
+message LedgerInit {
+  AccountIdentifier minting_account = 1;
+  repeated Account initial_values = 2;
+  ic_base_types.pb.v1.PrincipalId archive_canister = 3;
+  uint32 max_message_size_bytes = 4;
+}
+
+// The format of values serialized to/from the stable memory during and upgrade
+message LedgerUpgrade {}
+
+// Make a payment
+message SendRequest {
+  Memo memo = 1;
+  Payment payment = 2;
+  Tokens max_fee = 3;
+  Subaccount from_subaccount = 4;
+  AccountIdentifier to = 5;
+  BlockIndex created_at = 6;
+  TimeStamp created_at_time = 7;
+}
+
+message SendResponse {
+  BlockIndex resulting_height = 1;
+}
+
+// Notify a canister that it has received a payment
+message NotifyRequest {
+  BlockIndex block_height = 1;
+  Tokens max_fee = 2;
+  Subaccount from_subaccount = 3;
+  ic_base_types.pb.v1.PrincipalId to_canister = 4;
+  Subaccount to_subaccount = 5;
+}
+
+message NotifyResponse {}
+
+message TransactionNotificationRequest {
+  ic_base_types.pb.v1.PrincipalId from = 1;
+  Subaccount from_subaccount = 2;
+  ic_base_types.pb.v1.PrincipalId to = 3;
+  Subaccount to_subaccount = 4;
+  BlockIndex block_height = 5;
+  Tokens amount = 6;
+  Memo memo = 7;
+}
+
+message TransactionNotificationResponse {
+  bytes response = 1;
+}
+
+message CyclesNotificationResponse {
+  oneof response {
+    ic_base_types.pb.v1.PrincipalId created_canister_id = 1;
+    Refund refund = 2;
+    ToppedUp topped_up = 3;
+  }
+}
+
+// Get the balance of an account
+message AccountBalanceRequest {
+  AccountIdentifier account = 1;
+}
+
+message AccountBalanceResponse {
+  Tokens balance = 1;
+}
+
+// Get the length of the chain with a certification
+message TipOfChainRequest {}
+
+message TipOfChainResponse {
+  Certification certification = 1;
+  BlockIndex chain_length = 2;
+}
+
+// How many Tokens are there not in the minting account
+message TotalSupplyRequest {}
+
+message TotalSupplyResponse {
+  Tokens total_supply = 1;
+}
+
+// Archive any blocks older than this
+message LedgerArchiveRequest {
+  TimeStamp timestamp = 1;
+}
+
+// * Shared Endpoints *
+
+// Get a single block
+message BlockRequest {
+  uint64 block_height = 1;
+}
+
+message EncodedBlock {
+  bytes block = 1;
+}
+
+message BlockResponse {
+  oneof block_content {
+    EncodedBlock block = 1;
+    ic_base_types.pb.v1.PrincipalId canister_id = 2;
+  }
+}
+
+// Get a set of blocks
+message GetBlocksRequest {
+  uint64 start = 1;
+  uint64 length = 2;
+}
+
+message Refund {
+  BlockIndex refund = 2;
+  string error = 3;
+}
+
+message ToppedUp {}
+
+message EncodedBlocks {
+  repeated EncodedBlock blocks = 1;
+}
+
+message GetBlocksResponse {
+  oneof get_blocks_content {
+    EncodedBlocks blocks = 1;
+    string error = 2;
+  }
+}
+
+// Iterate through blocks
+message IterBlocksRequest {
+  uint64 start = 1;
+  uint64 length = 2;
+}
+
+message IterBlocksResponse {
+  repeated EncodedBlock blocks = 1;
+}
+
+message ArchiveIndexEntry {
+  uint64 height_from = 1;
+  uint64 height_to = 2;
+  ic_base_types.pb.v1.PrincipalId canister_id = 3;
+}
+
+message ArchiveIndexResponse {
+  repeated ArchiveIndexEntry entries = 1;
+}
+
+// ** ARCHIVE CANISTER ENDPOINTS **
+
+// * Archive canister *
+// Init the archive canister
+message ArchiveInit {
+  uint32 node_max_memory_size_bytes = 1;
+  uint32 max_message_size_bytes = 2;
+}
+
+// Add blocks to the archive canister
+message ArchiveAddRequest {
+  repeated Block blocks = 1;
+}
+
+message ArchiveAddResponse {}
+
+// Fetch a list of all of the archive nodes
+message GetNodesRequest {}
+
+message GetNodesResponse {
+  repeated ic_base_types.pb.v1.PrincipalId nodes = 1;
+}
+
+// ** BASIC TYPES **
+message Tokens {
+  uint64 e8s = 1;
+}
+
+message Payment {
+  Tokens receiver_gets = 1;
+}
+
+message BlockIndex {
+  uint64 height = 1;
+}
+
+// This is the
+message Block {
+  Hash parent_hash = 1;
+  TimeStamp timestamp = 2;
+  Transaction transaction = 3;
+}
+
+message Hash {
+  bytes hash = 1;
+}
+
+message Account {
+  AccountIdentifier identifier = 1;
+  Tokens balance = 2;
+}
+
+message Transaction {
+  oneof transfer {
+    Burn burn = 1;
+    Mint mint = 2;
+    Send send = 3;
+  }
+  Memo memo = 4;
+  Icrc1Memo icrc1_memo = 7;
+  BlockIndex created_at = 5; // obsolete
+  TimeStamp created_at_time = 6;
+}
+
+message Send {
+  // The meaning of the [from] field depends on the transaction type:
+  //   - Transfer: [from] is the source account.
+  //   - TransferFrom: [from] is the approver.
+  //   - Approve: [from] is the approver.
+  AccountIdentifier from = 1;
+  // The meaning of the [to] field depends on the transaction type:
+  //   - Transfer: [to] is the destination account.
+  //   - TransferFrom: [to] is the destination account.
+  //   - Approve: [to] is the default account id of the approved principal.
+  AccountIdentifier to = 2;
+  // If the transaction type is Approve, the amount must be zero.
+  Tokens amount = 3;
+  Tokens max_fee = 4;
+
+  // We represent metadata of new operation types as submessages for
+  // backward compatibility with old clients.
+  oneof extension {
+    Approve approve = 5;
+    TransferFrom transfer_from = 6;
+  }
+}
+
+message TransferFrom {
+  // The default account id of the principal who sent the transaction.
+  AccountIdentifier spender = 1;
+}
+
+message Approve {
+  Tokens allowance = 1;
+  TimeStamp expires_at = 2;
+  Tokens expected_allowance = 3;
+}
+
+message Mint {
+  AccountIdentifier to = 2;
+  Tokens amount = 3;
+}
+
+message Burn {
+  AccountIdentifier from = 1;
+  Tokens amount = 3;
+}
+
+message AccountIdentifier {
+  // Can contain either:
+  //  * the 32 byte identifier (4 byte checksum + 28 byte hash)
+  //  * the 28 byte hash
+  bytes hash = 1;
+}
+
+message Subaccount {
+  bytes sub_account = 1;
+}
+
+message Memo {
+  uint64 memo = 1;
+}
+
+message Icrc1Memo {
+  bytes memo = 1;
+}
+
+message TimeStamp {
+  uint64 timestamp_nanos = 1;
+}
+
+message Certification {
+  bytes certification = 1;
+}
+
+message TransferFeeRequest {}
+
+message TransferFeeResponse {
+  Tokens transfer_fee = 1;
+}

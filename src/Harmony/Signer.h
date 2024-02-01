@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -12,6 +10,7 @@
 #include "../Hash.h"
 #include "../PrivateKey.h"
 #include "../proto/Harmony.pb.h"
+#include "../proto/EthereumRlp.pb.h"
 
 #include <boost/multiprecision/cpp_int.hpp>
 #include <cstdint>
@@ -96,11 +95,16 @@ class Signer {
     template <typename Directive>
     Data rlpNoHash(const Staking<Directive> &transaction, const bool) const noexcept;
 
-    Data rlpNoHashDirective(const Staking<CreateValidator> &transaction) const noexcept;
-    Data rlpNoHashDirective(const Staking<EditValidator> &transaction) const noexcept;
-    Data rlpNoHashDirective(const Staking<Delegate> &transaction) const noexcept;
-    Data rlpNoHashDirective(const Staking<Undelegate> &transaction) const noexcept;
-    Data rlpNoHashDirective(const Staking<CollectRewards> &transaction) const noexcept;
+    EthereumRlp::Proto::RlpItem rlpNoHashDirective(const Staking<CreateValidator> &transaction) const noexcept;
+    EthereumRlp::Proto::RlpItem rlpNoHashDirective(const Staking<EditValidator> &transaction) const noexcept;
+    EthereumRlp::Proto::RlpItem rlpNoHashDirective(const Staking<Delegate> &transaction) const noexcept;
+    EthereumRlp::Proto::RlpItem rlpNoHashDirective(const Staking<Undelegate> &transaction) const noexcept;
+    EthereumRlp::Proto::RlpItem rlpNoHashDirective(const Staking<CollectRewards> &transaction) const noexcept;
+
+    template <typename Directive>
+    EthereumRlp::Proto::RlpItem rlpPrepareDescription(const Staking<Directive>& transaction) const noexcept;
+
+    static EthereumRlp::Proto::RlpItem rlpPrepareCommissionRates(const Staking<CreateValidator> &transaction) noexcept;
 };
 
 } // namespace TW::Harmony

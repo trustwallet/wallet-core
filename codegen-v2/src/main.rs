@@ -1,11 +1,12 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use libparser::codegen::swift::RenderIntput;
+use libparser::codegen::{cpp, proto, rust};
+use libparser::coin_id::CoinId;
 use libparser::manifest::parse_dir;
+use libparser::registry::read_coin_from_registry;
 use libparser::{Error, Result};
 use std::fs::read_to_string;
 
@@ -17,9 +18,64 @@ fn main() -> Result<()> {
     }
 
     match args[1].as_str() {
+        "new-blockchain-rust" => new_blockchain_rust(&args[2..]),
+        "new-blockchain" => new_blockchain(&args[2..]),
+        "new-evmchain" => new_evmchain(&args[2..]),
+        "new-cosmos-chain" => new_cosmos_chain(&args[2..]),
         "swift" => generate_swift_bindings(),
         _ => Err(Error::InvalidCommand),
     }
+}
+
+fn new_blockchain_rust(args: &[String]) -> Result<()> {
+    let coin_str = args.iter().next().ok_or_else(|| Error::InvalidCommand)?;
+    let coin_id = CoinId::new(coin_str.clone())?;
+    let coin_item = read_coin_from_registry(&coin_id)?;
+
+    println!("New Rust blockchain template for coin '{coin_str}' requested");
+    rust::new_blockchain::new_blockchain(&coin_item)?;
+
+    Ok(())
+}
+
+fn new_blockchain(args: &[String]) -> Result<()> {
+    let coin_str = args.iter().next().ok_or_else(|| Error::InvalidCommand)?;
+    let coin_id = CoinId::new(coin_str.clone())?;
+    let coin_item = read_coin_from_registry(&coin_id)?;
+
+    println!("New '{coin_str}' blockchain template requested");
+
+    proto::new_blockchain::new_blockchain(&coin_item)?;
+    rust::new_blockchain::new_blockchain(&coin_item)?;
+    cpp::new_blockchain::new_blockchain(&coin_item)?;
+
+    Ok(())
+}
+
+fn new_evmchain(args: &[String]) -> Result<()> {
+    let coin_str = args.iter().next().ok_or_else(|| Error::InvalidCommand)?;
+    let coin_id = CoinId::new(coin_str.clone())?;
+    let coin_item = read_coin_from_registry(&coin_id)?;
+
+    println!("New '{coin_str}' EVM chain template requested");
+
+    rust::new_evmchain::new_evmchain(&coin_item)?;
+    cpp::new_evmchain::new_evmchain(&coin_item)?;
+
+    Ok(())
+}
+
+fn new_cosmos_chain(args: &[String]) -> Result<()> {
+    let coin_str = args.iter().next().ok_or_else(|| Error::InvalidCommand)?;
+    let coin_id = CoinId::new(coin_str.clone())?;
+    let coin_item = read_coin_from_registry(&coin_id)?;
+
+    println!("New '{coin_str}' Cosmos chain template requested");
+
+    rust::new_cosmos_chain::new_cosmos_chain(&coin_item)?;
+    cpp::new_cosmos_chain::new_cosmos_chain(&coin_item)?;
+
+    Ok(())
 }
 
 fn generate_swift_bindings() -> Result<()> {

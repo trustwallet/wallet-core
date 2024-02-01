@@ -1,14 +1,14 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "proto/Cosmos.pb.h"
-#include "THORChain/Signer.h"
+#include "Coin.h"
 #include "HexCoding.h"
 #include "Bech32Address.h"
 #include "TestUtilities.h"
+#include "TrustWalletCore/TWAnySigner.h"
+#include "TrustWalletCore/TWCoinType.h"
 
 #include <gtest/gtest.h>
 #include <google/protobuf/util/json_util.h>
@@ -80,7 +80,8 @@ TEST(THORChainSigner, SignTx_Protobuf_7E480F) {
     auto privateKey = parse_hex("7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = THORChain::Signer::sign(input);
+    auto output = Cosmos::Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeTHORChain);
 
     // https://viewblock.io/thorchain/tx/7E480FA163F6C6AFA17593F214C7BBC218F69AE3BC72366E39042AF381BFE105
     // curl -H 'Content-Type: application/json' --data-binary '{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"ClIKUAoO..89g="}' https://<thornode>/cosmos/tx/v1beta1/txs
@@ -91,6 +92,84 @@ TEST(THORChainSigner, SignTx_Protobuf_7E480F) {
         }
     )");
     EXPECT_EQ(hex(output.signature()), "a66d4b70136b6e8e386bea74a9b5e196c778d7e43ed21a8d78b93246795da5f649639e5fe62708f67d4f117d263e5c548a3bd66e79c6ae2154bdf20db45ef3d8");
+    EXPECT_EQ(output.json(), "");
+    EXPECT_EQ(output.error_message(), "");
+}
+
+TEST(THORChainSigner, SignTx_MsgDeposit) {
+    auto input = Cosmos::Proto::SigningInput();
+    input.set_signing_mode(Cosmos::Proto::Protobuf);
+    input.set_chain_id("thorchain-mainnet-v1");
+    input.set_account_number(75247);
+    input.set_sequence(7);
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_thorchain_deposit_message();
+
+    message.set_memo("=:DOGE.DOGE:DNhRF1h8J4ZnB1bxp9kaqhVLYetkx1nSJ5::tr:0");
+    Bech32Address signerAddress("thor");
+    EXPECT_TRUE(Bech32Address::decode("thor14j5lwl8ulexrqp5x39kmkctv2937694z3jn2dz", signerAddress, "thor"));
+    message.set_signer(std::string(signerAddress.getKeyHash().begin(), signerAddress.getKeyHash().end()));
+
+    auto& coins = *message.add_coins();
+    coins.set_amount("150000000");
+    coins.set_decimals(0);
+
+    auto& asset = *coins.mutable_asset();
+    asset.set_chain("THOR");
+    asset.set_symbol("RUNE");
+    asset.set_ticker("RUNE");
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(50000000);
+
+    std::string json;
+    google::protobuf::util::MessageToJsonString(input, &json);
+
+    assertJSONEqual(json, R"(
+        {
+            "accountNumber": "75247",
+            "chainId": "thorchain-mainnet-v1",
+            "fee": {
+                "gas": "50000000"
+            },
+            "messages": [
+                {
+                    "thorchainDepositMessage": {
+                        "coins": [
+                            {
+                                "amount": "150000000",
+                                "asset": {
+                                    "chain": "THOR",
+                                    "symbol": "RUNE",
+                                    "ticker": "RUNE"
+                                }
+                            }
+                        ],
+                        "memo": "=:DOGE.DOGE:DNhRF1h8J4ZnB1bxp9kaqhVLYetkx1nSJ5::tr:0",
+                        "signer": "rKn3fPz+TDAGholtu2FsUWPtFqI="
+                    }
+                }
+            ],
+            "sequence": "7",
+            "signingMode": "Protobuf"
+        }
+    )");
+
+    auto privateKey = parse_hex("2659e41d54ebd449d68b9d58510d8eeeb837ee00d6ecc760b7a731238d8c3113");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Cosmos::Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeTHORChain);
+
+    // https://viewblock.io/thorchain/tx/0162213E7F9D85965B1C57FA3BF9603C655B542F358318303A7B00661AE42510
+    // curl -H 'Content-Type: application/json' --data-binary '{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CoUBCoIB..hiw="}' https://<thornode>/cosmos/tx/v1beta1/txs
+    assertJSONEqual(output.serialized(), R"(
+        {
+            "mode": "BROADCAST_MODE_BLOCK",
+            "tx_bytes": "CoUBCoIBChEvdHlwZXMuTXNnRGVwb3NpdBJtCh8KEgoEVEhPUhIEUlVORRoEUlVORRIJMTUwMDAwMDAwEjQ9OkRPR0UuRE9HRTpETmhSRjFoOEo0Wm5CMWJ4cDlrYXFoVkxZZXRreDFuU0o1Ojp0cjowGhSsqfd8/P5MMAaGiW27YWxRY+0WohJZClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEDuZVDlIFW3DtSEBa6aUBJ0DrQHlQ+2g7lIt5ekAM25SkSBAoCCAEYBxIFEIDh6xcaQAxKMZMKbM8gdLwn23GDXfbwyCkgqWzFMFlnrqFm0u54F8T32wmsoJQAdoLIyOskYmi7nb1rhryfabeeULwRhiw="
+        }
+    )");
     EXPECT_EQ(output.json(), "");
     EXPECT_EQ(output.error_message(), "");
 }
@@ -148,7 +227,8 @@ TEST(THORChainSigner, SignTx_Json_Deprecated) {
     auto privateKey = parse_hex("7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = THORChain::Signer::sign(input);
+    auto output = Cosmos::Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeTHORChain);
 
     assertJSONEqual(output.json(), R"(
         {
@@ -198,7 +278,7 @@ TEST(THORChainSigner, SignJson) {
     auto inputJson = R"({"fee":{"amounts":[{"denom":"rune","amount":"200"}],"gas":"2000000"},"memo":"memo1234","messages":[{"sendCoinsMessage":{"fromAddress":"thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r","toAddress":"thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn","amounts":[{"denom":"rune","amount":"50000000"}]}}]})";
     auto privateKey = parse_hex("7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e");
 
-    auto outputJson = THORChain::Signer::signJSON(inputJson, privateKey);
+    auto outputJson = TW::anySignJSON(TWCoinTypeTHORChain, inputJson, privateKey);
 
     EXPECT_EQ(R"({"mode":"block","tx":{"fee":{"amount":[{"amount":"200","denom":"rune"}],"gas":"2000000"},"memo":"memo1234","msg":[{"type":"thorchain/MsgSend","value":{"amount":[{"amount":"50000000","denom":"rune"}],"from_address":"thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r","to_address":"thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A+2Zfjls9CkvX85aQrukFZnM1dluMTFUp8nqcEneMXx3"},"signature":"12AaNC0v51Rhz8rBf7V7rpI6oksREWrjzba3RK1v1NNlqZq62sG0aXWvStp9zZXe07Pp2FviFBAx+uqWsO30NQ=="}]}})", outputJson);
 }

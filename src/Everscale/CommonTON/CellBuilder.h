@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -12,6 +10,7 @@
 
 #include "Cell.h"
 #include "CellSlice.h"
+#include "RawAddress.h"
 
 namespace TW::CommonTON {
 
@@ -40,6 +39,7 @@ public:
     void appendReferenceCell(Cell::Ref child);
     void appendBuilder(const CellBuilder& builder);
     void appendCellSlice(const CellSlice& other);
+    void appendAddress(const AddressData& addressData);
 
     Cell::Ref intoCell();
 

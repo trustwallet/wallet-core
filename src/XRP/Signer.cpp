@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Signer.h"
 #include "../BinaryCoding.h"
@@ -24,6 +22,30 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     switch (input.operation_oneof_case()) {
         case Proto::SigningInput::kOpPayment:
             signPayment(input, output, transaction);
+            break;
+
+        case Proto::SigningInput::kOpEscrowCreate:
+            transaction.createEscrowCreate(
+                input.op_escrow_create().amount(),
+                input.op_escrow_create().destination(),
+                input.op_escrow_create().destination_tag(),
+                input.op_escrow_create().cancel_after(),
+                input.op_escrow_create().finish_after(),
+                input.op_escrow_create().condition());
+            break;
+
+        case Proto::SigningInput::kOpEscrowCancel:
+            transaction.createEscrowCancel(
+                input.op_escrow_cancel().owner(),
+                input.op_escrow_cancel().offer_sequence());
+            break;
+
+        case Proto::SigningInput::kOpEscrowFinish:
+            transaction.createEscrowFinish(
+                input.op_escrow_finish().owner(),
+                input.op_escrow_finish().offer_sequence(),
+                input.op_escrow_finish().condition(),
+                input.op_escrow_finish().fulfillment());
             break;
 
         case Proto::SigningInput::kOpNftokenBurn:
@@ -94,6 +116,30 @@ TW::Data Signer::preImage() const {
             signPayment(input, output, transaction);
             break;
 
+        case Proto::SigningInput::kOpEscrowCreate:
+            transaction.createEscrowCreate(
+                input.op_escrow_create().amount(),
+                input.op_escrow_create().destination(),
+                input.op_escrow_create().destination_tag(),
+                input.op_escrow_create().cancel_after(),
+                input.op_escrow_create().finish_after(),
+                input.op_escrow_create().condition());
+            break;
+
+        case Proto::SigningInput::kOpEscrowCancel:
+            transaction.createEscrowCancel(
+                input.op_escrow_cancel().owner(),
+                input.op_escrow_cancel().offer_sequence());
+            break;
+
+        case Proto::SigningInput::kOpEscrowFinish:
+            transaction.createEscrowFinish(
+                input.op_escrow_finish().owner(),
+                input.op_escrow_finish().offer_sequence(),
+                input.op_escrow_finish().condition(),
+                input.op_escrow_finish().fulfillment());
+            break;
+
         case Proto::SigningInput::kOpNftokenBurn:
             transaction.createNFTokenBurn(input.op_nftoken_burn().nftoken_id());
             break;
@@ -147,6 +193,30 @@ Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& pub
     switch (input.operation_oneof_case()) {
         case Proto::SigningInput::kOpPayment:
             signPayment(input, output, transaction);
+            break;
+
+        case Proto::SigningInput::kOpEscrowCreate:
+            transaction.createEscrowCreate(
+                input.op_escrow_create().amount(),
+                input.op_escrow_create().destination(),
+                input.op_escrow_create().destination_tag(),
+                input.op_escrow_create().cancel_after(),
+                input.op_escrow_create().finish_after(),
+                input.op_escrow_create().condition());
+            break;
+
+        case Proto::SigningInput::kOpEscrowCancel:
+            transaction.createEscrowCancel(
+                input.op_escrow_cancel().owner(),
+                input.op_escrow_cancel().offer_sequence());
+            break;
+
+        case Proto::SigningInput::kOpEscrowFinish:
+            transaction.createEscrowFinish(
+                input.op_escrow_finish().owner(),
+                input.op_escrow_finish().offer_sequence(),
+                input.op_escrow_finish().condition(),
+                input.op_escrow_finish().fulfillment());
             break;
 
         case Proto::SigningInput::kOpNftokenBurn:

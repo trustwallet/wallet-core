@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -122,16 +120,6 @@ struct TWPublicKey* _Nonnull TWPrivateKeyGetPublicKeyEd25519Cardano(struct TWPri
 /// \return Non-null pointer to the corresponding public key
 TW_EXPORT_METHOD
 struct TWPublicKey* _Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivateKey* _Nonnull pk);
-
-/// Computes an EC Diffie-Hellman secret in constant time
-/// Supported curves: secp256k1
-///
-/// \param pk Non-null pointer to a Private key
-/// \param publicKey Non-null pointer to the corresponding public key
-/// \param curve Eliptic curve
-/// \return The corresponding shared key as a non-null block of data
-TW_EXPORT_METHOD
-TWData* _Nullable TWPrivateKeyGetSharedKey(const struct TWPrivateKey* _Nonnull pk, const struct TWPublicKey* _Nonnull publicKey, enum TWCurve curve);
 
 /// Signs a digest using ECDSA and given curve.
 ///

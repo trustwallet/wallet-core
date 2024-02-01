@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 //
 // This is a GENERATED FILE, changes made here MAY BE LOST.
 // Generated one-time (codegen/bin/cointests)
@@ -28,7 +26,7 @@ TEST(TWNativeInjectiveCoinType, TWCoinType) {
     assertStringsEqual(name, "Native Injective");
     assertStringsEqual(symbol, "INJ");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
-    ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);
+    ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainNativeInjective);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
     assertStringsEqual(chainId, "injective-1");

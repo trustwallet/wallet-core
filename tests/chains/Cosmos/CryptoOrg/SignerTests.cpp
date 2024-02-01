@@ -1,15 +1,13 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "proto/Cosmos.pb.h"
-#include "Cosmos/Signer.h"
 #include "Cosmos/Address.h"
 #include "HexCoding.h"
 #include "PublicKey.h"
 #include "TestUtilities.h"
+#include "TrustWalletCore/TWAnySigner.h"
 
 #include <gtest/gtest.h>
 #include <google/protobuf/util/json_util.h>
@@ -72,7 +70,8 @@ TEST(CryptoorgSigner, SignTx_DDCCE4) {
     auto privateKey = parse_hex("200e439e39cf1aad465ee3de6166247f914cbc0f823fc2dd48bf16dcd556f39d");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Cosmos::Signer::sign(input, TWCoinTypeCryptoOrg);
+    auto output = Cosmos::Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeCryptoOrg);
 
     assertJSONEqual(output.json(), R"(
         {
@@ -125,7 +124,7 @@ TEST(CryptoorgSigner, SignJson) {
     auto inputJson = R"({"accountNumber":"125798","chainId":"crypto-org-chain-mainnet-1","fee":{"amounts":[{"denom":"basecro","amount":"5000"}],"gas":"200000"},"messages":[{"sendCoinsMessage":{"fromAddress":"cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0","toAddress":"cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus","amounts":[{"denom":"basecro","amount":"100000000"}]}}]})";
     auto privateKey = parse_hex("200e439e39cf1aad465ee3de6166247f914cbc0f823fc2dd48bf16dcd556f39d");
 
-    auto outputJson = Cosmos::Signer::signJSON(inputJson, privateKey, TWCoinTypeCryptoOrg);
+    auto outputJson = TW::anySignJSON(TWCoinTypeCryptoOrg, inputJson, privateKey);
 
     assertJSONEqual(outputJson, R"(
         {

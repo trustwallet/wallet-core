@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -27,7 +25,8 @@ enum Chain {
     BCH = 5,
     LTC = 6,
     ATOM = 7,
-    AVAX = 8
+    AVAX = 8,
+    BSC = 9,
 };
 
 using SwapErrorCode = int;
@@ -36,6 +35,11 @@ struct SwapBundled {
     Data out{};
     SwapErrorCode status_code{0};
     std::string error{""};
+};
+
+struct StreamParams {
+    std::string mInterval{"1"};
+    std::string mQuantity{"0"};
 };
 
 class SwapBuilder {
@@ -47,15 +51,17 @@ class SwapBuilder {
     std::optional<std::string> mRouterAddress{std::nullopt};
     std::string mFromAmount;
     std::string mToAmountLimit{"0"};
+    std::optional<StreamParams> mStreamParams;
     std::optional<std::string> mAffFeeAddress{std::nullopt};
     std::optional<std::string> mAffFeeRate{std::nullopt};
     std::optional<std::string> mExtraMemo{std::nullopt};
     std::optional<std::size_t> mExpirationPolicy{std::nullopt};
 
-    SwapBundled buildBitcoin(uint256_t amount, const std::string& memo, Chain fromChain);
-    SwapBundled buildBinance(Proto::Asset fromAsset, uint256_t amount, const std::string& memo);
-    SwapBundled buildEth(uint256_t amount, const std::string& memo);
-    SwapBundled buildAtom(uint256_t amount, const std::string& memo);
+    SwapBundled buildBitcoin(const uint256_t& amount, const std::string& memo, Chain fromChain);
+    SwapBundled buildBinance(Proto::Asset fromAsset, const uint256_t& amount, const std::string& memo);
+    SwapBundled buildEth(const uint256_t& amount, const std::string& memo);
+    SwapBundled buildAtom(const uint256_t& amount, const std::string& memo);
+    SwapBundled buildRune(const uint256_t& amount, const std::string& memo);
 
 public:
     SwapBuilder() noexcept = default;
@@ -127,7 +133,29 @@ public:
     }
 
     SwapBuilder& toAmountLimit(std::string toAmountLimit) noexcept {
-        mToAmountLimit = std::move(toAmountLimit);
+        if (!toAmountLimit.empty()) {
+            mToAmountLimit = std::move(toAmountLimit);
+        }
+        return *this;
+    }
+
+    SwapBuilder& streamInterval(const std::string& interval) noexcept {
+        if (!mStreamParams.has_value()) {
+            mStreamParams = StreamParams();
+        }
+        if (!interval.empty()) {
+            mStreamParams->mInterval = interval;
+        }
+        return *this;
+    }
+
+    SwapBuilder& streamQuantity(const std::string& quantity) noexcept {
+        if (!mStreamParams.has_value()) {
+            mStreamParams = StreamParams();
+        }
+        if (!quantity.empty()) {
+            mStreamParams->mQuantity = quantity;
+        }
         return *this;
     }
 

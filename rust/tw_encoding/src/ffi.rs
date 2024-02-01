@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #![allow(clippy::missing_safety_doc)]
 
@@ -17,6 +15,7 @@ pub enum CEncodingCode {
     Ok = 0,
     InvalidInput = 1,
     InvalidAlphabet = 2,
+    Internal = 3,
 }
 
 impl From<EncodingError> for CEncodingCode {
@@ -24,6 +23,7 @@ impl From<EncodingError> for CEncodingCode {
         match error {
             EncodingError::InvalidInput => CEncodingCode::InvalidInput,
             EncodingError::InvalidAlphabet => CEncodingCode::InvalidAlphabet,
+            EncodingError::Internal => CEncodingCode::Internal,
         }
     }
 }
@@ -41,7 +41,8 @@ impl From<CEncodingCode> for ErrorCode {
 }
 
 #[repr(C)]
-#[derive(PartialEq, Debug)]
+#[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub enum Base58Alphabet {
     Bitcoin = 1,
     Ripple = 2,
@@ -104,7 +105,7 @@ pub unsafe extern "C" fn decode_base32(
     };
 
     base32::decode(input, alphabet, padding)
-        .map(CByteArray::new)
+        .map(CByteArray::from)
         .map_err(CEncodingCode::from)
         .into()
 }
@@ -141,7 +142,7 @@ pub unsafe extern "C" fn decode_base58(
     };
 
     base58::decode(input, alphabet.into())
-        .map(CByteArray::new)
+        .map(CByteArray::from)
         .map_err(CEncodingCode::from)
         .into()
 }
@@ -172,7 +173,7 @@ pub unsafe extern "C" fn decode_base64(data: *const c_char, is_url: bool) -> CBy
         Err(_) => return CByteArrayResult::error(CEncodingCode::InvalidInput),
     };
     base64::decode(str_slice, is_url)
-        .map(CByteArray::new)
+        .map(CByteArray::from)
         .map_err(CEncodingCode::from)
         .into()
 }
@@ -191,7 +192,7 @@ pub unsafe extern "C" fn decode_hex(data: *const c_char) -> CByteArrayResult {
     };
 
     hex::decode(hex_string)
-        .map(CByteArray::new)
+        .map(CByteArray::from)
         .map_err(CEncodingCode::from)
         .into()
 }

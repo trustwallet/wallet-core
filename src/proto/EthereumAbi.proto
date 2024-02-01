@@ -1,0 +1,318 @@
+syntax = "proto3";
+
+package TW.EthereumAbi.Proto;
+option java_package = "wallet.core.jni.proto";
+
+enum AbiError {
+    // This is the OK case, with value=0
+    OK = 0;
+
+    // Internal error.
+    Error_internal = 1;
+
+    // Unexpected function signature or ABI mismatch.
+    Error_abi_mismatch = 2;
+    // Invalid ABI.
+    Error_invalid_abi = 3;
+    // Invalid parameter type.
+    Error_invalid_param_type = 4;
+    // Invalid address value.
+    Error_invalid_address_value = 5;
+    // Invalid UInt value.
+    Error_invalid_uint_value = 6;
+    // Missing parameter type.
+    Error_missing_param_type = 7;
+    // Missing parameter value.
+    Error_missing_param_value = 8;
+    // Invalid encoded data.
+    Error_decoding_data = 9;
+    // Invalid empty type.
+    // For example, bytes0, address[0].
+    Error_empty_type = 10;
+}
+
+// ABI type parameters excluding values.
+
+// Indicates a boolean type.
+message BoolType {}
+
+// Generic number type for all bit sizes, like UInt24, 40, 48, ... 248.
+message NumberNType {
+    // The number of bits of an integer.
+    uint32 bits = 1;
+}
+
+// Indicates a string type.
+message StringType {}
+
+// Indicates an address type.
+message AddressType {}
+
+// Indicates an array type with an inner `element_type`.
+message ArrayType {
+    // The type of array elements.
+    ParamType element_type = 1;
+}
+
+// Indicates a fixed-size array type with an inner `element_type`.
+message FixedArrayType {
+    // The fixed-size of the array.
+    uint64 size = 1;
+    // The type of array elements.
+    ParamType element_type = 2;
+}
+
+// Indicates a byte array type.
+message ByteArrayType {}
+
+// Indicates a fixed-size byte array type.
+message ByteArrayFixType {
+    // The fixed-size of the array.
+    uint64 size = 1;
+}
+
+// Indicates a tuple with inner type parameters.
+message TupleType {
+    // Tuple named parameters.
+    repeated Param params = 1;
+}
+
+// Named parameter with type.
+message Param {
+    // Name of the parameter.
+    string name = 1;
+
+    // Type of the parameter.
+    ParamType param = 2;
+}
+
+message ParamType {
+    oneof param {
+        BoolType boolean = 1;
+        NumberNType number_int = 2;
+        NumberNType number_uint = 3;
+        // Nested values. Gap in field numbering is intentional.
+        StringType string_param = 7;
+        AddressType address = 8;
+        ByteArrayType byte_array = 9;
+        ByteArrayFixType byte_array_fix = 10;
+
+        // Nested values. Gap in field numbering is intentional.
+        ArrayType array = 14;
+        FixedArrayType fixed_array = 15;
+
+        // Nested values. Gap in field numbering is intentional.
+        TupleType tuple = 19;
+    }
+}
+
+// ABI parameters including values.
+
+// Generic number parameter for all other bit sizes, like UInt24, 40, 48, ... 248.
+message NumberNParam {
+    // Count of bits of the number.
+    // 0 < bits <= 256, bits % 8 == 0
+    uint32 bits = 1;
+
+    // Serialized big endian.
+    bytes value = 2;
+}
+
+// A byte array of arbitrary size.
+message ArrayParam {
+    // The type of array elements.
+    ParamType element_type = 1;
+
+    // Array elements.
+    repeated Token elements = 2;
+}
+
+// A tuple with various parameters similar to a structure.
+message TupleParam {
+    // Tokens (values) of the tuple parameters.
+    repeated Token params = 1;
+}
+
+// A value of an ABI parameter.
+message Token {
+    // Optional. Name of a corresponding parameter.
+    string name = 1;
+
+    oneof token {
+        // Integer values.
+        bool boolean = 2;
+        NumberNParam number_int = 3;
+        NumberNParam number_uint = 4;
+
+        // Simple values. Gap in field numbering is intentional.
+        string string_value = 7;
+        string address = 8;
+        bytes byte_array = 9;
+        bytes byte_array_fix = 10;
+
+        // Nested values. Gap in field numbering is intentional.
+        ArrayParam array = 14;
+        ArrayParam fixed_array = 15;
+
+        // Nested values. Gap in field numbering is intentional.
+        TupleParam tuple = 19;
+    }
+}
+
+//// TWEthereumAbiDecodeContractCall
+
+// Decode a contract call (function input) according to the given ABI json.
+message ContractCallDecodingInput {
+    // An encoded smart contract call with a prefixed function signature (4 bytes).
+    bytes encoded = 1;
+
+    // A smart contract ABI in JSON.
+    // Each ABI function must be mapped to a short signature.
+    // Expected to be a set of functions mapped to corresponding short signatures.
+    // Example:
+    // ```
+    // {
+    //     "1896f70a": {
+    //         "name": "setResolver",
+    //         "inputs": [...],
+    //         ...
+    //     },
+    //     "ac9650d8": {
+    //         "name": "multicall",
+    //         "inputs": [...],
+    //         ...
+    //     }
+    // }
+    // ```
+    string smart_contract_abi_json = 2;
+}
+
+message ContractCallDecodingOutput {
+    // Human readable json format, according to the input `ContractCallDecodingInput::smart_contract_abi_json`.
+    string decoded_json = 1;
+
+    // Decoded parameters.
+    repeated Token tokens = 2;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    AbiError error = 3;
+
+    // error code description
+    string error_message = 4;
+}
+
+//// TWEthereumAbiDecodeParams
+
+// A set of ABI type parameters.
+message AbiParams {
+    // ABI type parameters.
+    repeated Param params = 1;
+}
+
+// Decode a function input or output data according to the given ABI json.
+message ParamsDecodingInput {
+    // An encoded ABI.
+    bytes encoded = 1;
+
+    oneof abi {
+        // A set of ABI parameters in JSON.
+        // Expected to be a JSON array at the entry level.
+        // Example:
+        // ```
+        // [
+        //     {
+        //         "name": "_to',
+        //         "type": "address"
+        //     },
+        //     {
+        //         "name": "_value",
+        //         "type": "uint256"
+        //     }
+        // ]
+        // ```
+        string abi_json = 2;
+
+        // A set of ABI type parameters.
+        AbiParams abi_params = 3;
+    }
+}
+
+message ParamsDecodingOutput {
+    // Decoded parameters.
+    repeated Token tokens = 1;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    AbiError error = 2;
+
+    // error code description
+    string error_message = 3;
+}
+
+//// TWEthereumAbiDecodeValue
+
+// Decode an Eth ABI value.
+message ValueDecodingInput {
+    // An encoded value to be decoded.
+    bytes encoded = 1;
+
+    // A type of the parameter.
+    // Example: "bytes[32]".
+    // Please note `tuple` is not supported.
+    string param_type = 2;
+}
+
+message ValueDecodingOutput {
+    // Decoded parameter.
+    Token token = 1;
+
+    // Decoded parameter as a string.
+    string param_str = 2;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    AbiError error = 3;
+
+    // error code description
+    string error_message = 4;
+}
+
+//// TWEthereumAbiEncodeFunction
+
+// Encode a function call to Eth ABI binary.
+message FunctionEncodingInput {
+    // Function name.
+    string function_name = 1;
+
+    // Parameters to be encoded.
+    repeated Token tokens = 2;
+}
+
+message FunctionEncodingOutput {
+    // The function type signature.
+    // Example: "baz(int32,uint256)"
+    string function_type = 1;
+
+    // An encoded smart contract call with a prefixed function signature (4 bytes).
+    bytes encoded = 2;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    AbiError error = 3;
+
+    // error code description
+    string error_message = 4;
+}
+
+//// TWEthereumAbiFunctionGetType
+
+// Return the function type signature, of the form "baz(int32,uint256)".
+message FunctionGetTypeInput {
+    // Function signature. Includes function inputs if they are.
+    // Examples:
+    // - `functionName()`
+    // - `functionName()`
+    // - `functionName(bool)`
+    // - `functionName(uint256,bytes32)`
+    string function_name = 1;
+
+    // A set of ABI type parameters.
+    repeated Param inputs = 2;
+}

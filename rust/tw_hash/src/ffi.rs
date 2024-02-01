@@ -1,13 +1,35 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #![allow(clippy::missing_safety_doc)]
 
-use crate::{blake, blake2, groestl, hmac, ripemd, sha1, sha2, sha3};
-use tw_memory::ffi::c_byte_array::CByteArray;
+use crate::{blake, blake2, groestl, hmac, ripemd, sha1, sha2, sha3, Error};
+use tw_memory::ffi::c_byte_array::{CByteArray, CByteArrayResult};
+use tw_memory::ffi::c_result::ErrorCode;
+
+#[repr(C)]
+#[derive(Debug, PartialEq)]
+pub enum CHashingCode {
+    Ok = 0,
+    InvalidHashLength = 1,
+    InvalidArgument = 2,
+}
+
+impl From<Error> for CHashingCode {
+    fn from(e: Error) -> Self {
+        match e {
+            Error::FromHexError(_) | Error::InvalidArgument => CHashingCode::InvalidArgument,
+            Error::InvalidHashLength => CHashingCode::InvalidHashLength,
+        }
+    }
+}
+
+impl From<CHashingCode> for ErrorCode {
+    fn from(e: CHashingCode) -> Self {
+        e as ErrorCode
+    }
+}
 
 /// Computes the Blake-256 hash of the `input` byte array.
 /// \param input *non-null* byte array.
@@ -29,9 +51,12 @@ pub unsafe extern "C" fn blake2_b(
     input: *const u8,
     input_len: usize,
     hash_size: usize,
-) -> CByteArray {
+) -> CByteArrayResult {
     let input = std::slice::from_raw_parts(input, input_len);
-    blake2::blake2_b(input, hash_size).into()
+    blake2::blake2_b(input, hash_size)
+        .map(CByteArray::from)
+        .map_err(CHashingCode::from)
+        .into()
 }
 
 /// Computes the personalized BLAKE2B hash of the `input` byte array.
@@ -48,10 +73,13 @@ pub unsafe extern "C" fn blake2_b_personal(
     hash_size: usize,
     personal_input: *const u8,
     personal_len: usize,
-) -> CByteArray {
+) -> CByteArrayResult {
     let input = std::slice::from_raw_parts(input, input_len);
     let personal = std::slice::from_raw_parts(personal_input, personal_len);
-    blake2::blake2_b_personal(input, hash_size, personal).into()
+    blake2::blake2_b_personal(input, hash_size, personal)
+        .map(CByteArray::from)
+        .map_err(CHashingCode::from)
+        .into()
 }
 
 /// Computes the Groestl-512 hash of the `input` byte array.

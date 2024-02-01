@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #![allow(clippy::missing_safety_doc)]
 
@@ -11,6 +9,9 @@ use std::ffi::{c_char, CString};
 pub mod c_byte_array;
 pub mod c_byte_array_ref;
 pub mod c_result;
+pub mod tw_data;
+pub mod tw_data_vector;
+pub mod tw_string;
 
 /// Releases the memory previously allocated for the `ptr` string.
 /// \param ptr *non-null* C-compatible, nul-terminated string.
@@ -32,11 +33,18 @@ pub trait RawPtrTrait: Sized {
         Some(*Box::from_raw(raw))
     }
 
-    unsafe fn from_ptr_as_ref(raw: *mut Self) -> Option<&'static Self> {
+    unsafe fn from_ptr_as_ref(raw: *const Self) -> Option<&'static Self> {
         if raw.is_null() {
             return None;
         }
         Some(&*raw)
+    }
+
+    unsafe fn from_ptr_as_mut(raw: *mut Self) -> Option<&'static mut Self> {
+        if raw.is_null() {
+            return None;
+        }
+        Some(&mut *raw)
     }
 
     unsafe fn from_ptr_as_box(raw: *mut Self) -> Option<Box<Self>> {

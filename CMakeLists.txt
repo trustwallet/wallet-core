@@ -1,8 +1,6 @@
-# Copyright © 2017-2022 Trust Wallet.
+# SPDX-License-Identifier: Apache-2.0
 #
-# This file is part of Trust. The full Trust copyright notice, including
-# terms governing use, modification, and redistribution, is contained in the
-# file LICENSE at the root of the source code distribution tree.
+# Copyright © 2017 Trust Wallet.
 
 cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
@@ -61,14 +59,14 @@ include(cmake/Protobuf.cmake)
 
 # Source files
 if (${ANDROID})
-    message("Configuring for JNI")
+    message("Configuring for Android JNI")
     file(GLOB_RECURSE core_sources src/*.c src/*.cc src/*.cpp src/*.h jni/cpp/*.cpp jni/cpp/*.h)
     if (${KOTLIN})
         file(GLOB_RECURSE specific_sources
                 jni/kotlin/*.h
                 jni/kotlin/*.c
-                kotlin/wallet-core-kotlin/src/androidMain/cpp/generated/*.h
-                kotlin/wallet-core-kotlin/src/androidMain/cpp/generated/*.c
+                kotlin/wallet-core-kotlin/src/commonAndroidJvmMain/cpp/generated/*.h
+                kotlin/wallet-core-kotlin/src/commonAndroidJvmMain/cpp/generated/*.c
                 )
     else ()
         file(GLOB_RECURSE specific_sources jni/android/*.h jni/android/*.c)
@@ -89,6 +87,24 @@ if (${ANDROID})
         set(WALLET_CORE_BINDGEN ${WALLET_CORE_RS_TARGET_DIR}/x86_64-linux-android/release/${WALLET_CORE_RS_LIB})
     endif ()
     target_link_libraries(TrustWalletCore PUBLIC ${WALLET_CORE_BINDGEN} ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf ${log-lib} Boost::boost)
+elseif (${TW_COMPILE_JAVA})
+    message("Configuring for JNI")
+    file(GLOB_RECURSE core_sources src/*.c src/*.cc src/*.cpp src/*.h jni/cpp/*.cpp jni/cpp/*.h)
+    if (${TW_COMPILE_KOTLIN})
+        file(GLOB_RECURSE specific_sources
+                jni/kotlin/*.h
+                jni/kotlin/*.c
+                kotlin/wallet-core-kotlin/src/commonAndroidJvmMain/cpp/generated/*.h
+                kotlin/wallet-core-kotlin/src/commonAndroidJvmMain/cpp/generated/*.c
+                )
+    else ()
+        file(GLOB_RECURSE specific_sources jni/android/*.h jni/android/*.c)
+    endif ()
+    set(sources ${core_sources} ${specific_sources})
+    add_library(TrustWalletCore SHARED ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
+    find_package(JNI REQUIRED)
+    target_include_directories(TrustWalletCore PRIVATE ${JNI_INCLUDE_DIRS})
+    target_link_libraries(TrustWalletCore PUBLIC ${WALLET_CORE_BINDGEN} ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf Boost::boost)
 else ()
     message("Configuring standalone")
     file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h)

@@ -1,0 +1,58 @@
+{
+    "types": {
+        "EIP712Domain": [
+            {
+                "name": "name",
+                "type": "string"
+            },
+            {
+                "name": "version",
+                "type": "string"
+            },
+            {
+                "name": "verifyingContract",
+                "type": "address"
+            }
+        ],
+        "BytesTest": [
+            {
+                "name": "data_long",
+                "type": "bytes"
+            },
+            {
+                "name": "data_short",
+                "type": "bytes"
+            },
+            {
+                "name": "fix_data32",
+                "type": "bytes32"
+            },
+            {
+                "name": "fix_data32_short",
+                "type": "bytes32"
+            },
+            {
+                "name": "fix_data16",
+                "type": "bytes16"
+            },
+            {
+                "name": "fix_data16_short",
+                "type": "bytes16"
+            }
+        ]
+    },
+    "domain": {
+        "name": "Test",
+        "version": "0.0.0",
+        "verifyingContract": "0xb8d6eb2c8236ba373b40adfad4decb8e05ac9230"
+    },
+    "primaryType": "BytesTest",
+    "message": {
+        "data_long": "0xcb5a7173d109f8a59c23109189056c862d843808d00bac069e9b76ca7217d845a94d0ad600000000000000000000000000000000000000000000000000000000000000a07c1a7062fbf633885ae02e0919ec07020a96aa20bf9c79554d2ddcd013113c64579837cd54cb5f05c65c46c04fac9abe54f839a74fa3cc1c47fc9048db037a84000000000000000000000000000000000000000000000000000000000000001b0000000000000000000000000000000000000000000000000000000000000035697066733a2f2f516d61414e35575832525851385852374b5158475a6f726931517461597972356e3547537471456a71706a4e71640000000000000000000000",
+        "data_short": "0xcb5a71",
+        "fix_data32": "0xcb5a7173d109f8a59c23109189056c862d843808d00bac069e9b76ca7217d845",
+        "fix_data32_short": "0xcb5a71",
+        "fix_data16": "0xcb5a7173d109f8a59c23109189056c86",
+        "fix_data16_short": "0xcb5a71"
+    }
+}

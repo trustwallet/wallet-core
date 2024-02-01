@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::{EncodingError, EncodingResult};
 use data_encoding::{Encoding, Specification};
@@ -10,6 +8,7 @@ use std::cell::RefCell;
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 
+/// cbindgen:ignore
 const ALPHABET_RFC4648: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
 type EncodingMap = HashMap<EncodingParams, Encoding>;

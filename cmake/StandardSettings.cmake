@@ -66,7 +66,7 @@ endif ()
 option(TW_UNIT_TESTS "Enable the unit tests of the project" ON)
 option(TW_BUILD_EXAMPLES "Enable the examples builds of the project" ON)
 
-if (ANDROID OR IOS_PLATFORM OR TW_COMPILE_WASM)
+if (ANDROID OR IOS_PLATFORM OR TW_COMPILE_WASM OR TW_COMPILE_JAVA)
     set(TW_UNIT_TESTS OFF)
     set(TW_BUILD_EXAMPLES OFF)
 endif()

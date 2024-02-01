@@ -1,8 +1,6 @@
-# Copyright © 2017-2022 Trust Wallet.
+# SPDX-License-Identifier: Apache-2.0
 #
-# This file is part of Trust. The full Trust copyright notice, including
-# terms governing use, modification, and redistribution, is contained in the
-# file LICENSE at the root of the source code distribution tree.
+# Copyright © 2017 Trust Wallet.
 
 set(protobuf_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/../build/local/src/protobuf/protobuf-3.19.2)
 set(protobuf_source_dir ${CMAKE_CURRENT_LIST_DIR}/../build/local/src/protobuf/protobuf-3.19.2)

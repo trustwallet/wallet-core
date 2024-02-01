@@ -382,4 +382,10 @@ message SigningOutput {
 
     // error description in case of error
     string error_message = 3;
+
+    // Signature bytes.
+    bytes signature = 4;
+
+    // Signature JSON string.
+    string signature_json = 5;
 }

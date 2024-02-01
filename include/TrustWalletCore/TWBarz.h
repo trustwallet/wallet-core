@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 #pragma once
 
 #include "TWBase.h"
@@ -30,7 +28,7 @@ TWString *_Nonnull TWBarzGetCounterfactualAddress(TWData *_Nonnull input);
 /// \param verificationFacet Verification facet address
 /// \return The address.
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWBarzGetInitCode(TWString* _Nonnull factory, struct TWPublicKey* _Nonnull publicKey, TWString* _Nonnull verificationFacet);
+TWData *_Nonnull TWBarzGetInitCode(TWString* _Nonnull factory, struct TWPublicKey* _Nonnull publicKey, TWString* _Nonnull verificationFacet, uint32_t salt);
 
 /// Converts the original ASN-encoded signature from webauthn to the format accepted by Barz
 ///

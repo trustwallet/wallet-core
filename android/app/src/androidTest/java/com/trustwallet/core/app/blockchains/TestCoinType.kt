@@ -32,7 +32,7 @@ class TestCoinType {
         assertEquals(CoinType.POANETWORK.value(), 178)
         assertEquals(CoinType.VECHAIN.value(), 818)
         assertEquals(CoinType.ICON.value(), 74)
-        assertEquals(CoinType.TOMOCHAIN.value(), 889)
+        assertEquals(CoinType.VICTION.value(), 889)
         assertEquals(CoinType.TEZOS.value(), 1729)
         assertEquals(CoinType.QTUM.value(), 2301)
         assertEquals(CoinType.NEBULAS.value(), 2718)

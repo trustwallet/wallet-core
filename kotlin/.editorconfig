@@ -15,5 +15,7 @@ ij_kotlin_imports_layout = *
 ij_kotlin_allow_trailing_comma = true
 ij_kotlin_allow_trailing_comma_on_call_site = true
 ij_kotlin_enum_constants_wrap = split_into_lines
+ij_kotlin_name_count_to_use_star_import = 5
+ij_kotlin_name_count_to_use_star_import_for_members = 3
 ij_kotlin_packages_to_use_import_on_demand = *
 ij_kotlin_wrap_first_method_in_call_chain = true

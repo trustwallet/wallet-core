@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include <future>
 
@@ -37,8 +35,8 @@ Cell::Ref Wallet::createSigningMessage(
     uint64_t amount,
     uint32_t sequence_number,
     uint8_t mode,
-    uint32_t expireAt,
-    const std::string& comment
+    const Cell::Ref& queryPayload,
+    uint32_t expireAt
 ) const {
     CellBuilder builder;
     this->writeSigningPayload(builder, sequence_number, expireAt);
@@ -48,13 +46,7 @@ Cell::Ref Wallet::createSigningMessage(
         const auto header = std::make_shared<CommonTON::InternalMessageHeader>(true, dest.isBounceable, dest.addressData, amount);
         TheOpenNetwork::Message internalMessage = TheOpenNetwork::Message(MessageData(header));
 
-        CellBuilder bodyBuilder;
-        if (!comment.empty()) {
-            const auto& data = Data(comment.begin(), comment.end());
-            bodyBuilder.appendU32(0);
-            bodyBuilder.appendRaw(data, static_cast<uint16_t>(data.size()) * 8);
-        }
-        internalMessage.setBody(bodyBuilder.intoCell());
+        internalMessage.setBody(queryPayload);
 
         builder.appendReferenceCell(internalMessage.intoCell());
     }
@@ -62,14 +54,14 @@ Cell::Ref Wallet::createSigningMessage(
     return builder.intoCell();
 }
 
-Cell::Ref Wallet::createTransferMessage(
+Cell::Ref Wallet::createQueryMessage(
     const PrivateKey& privateKey,
     const Address& dest,
     uint64_t amount,
     uint32_t sequence_number,
     uint8_t mode,
-    uint32_t expireAt,
-    const std::string& comment
+    const Cell::Ref& queryPayload,
+    uint32_t expireAt
 ) const {
     return createTransferMessage(
         privateKey,
@@ -103,7 +95,7 @@ Cell::Ref Wallet::createTransferMessage(
 
     { // Set body of transfer message
         CellBuilder bodyBuilder;
-        const Cell::Ref signingMessage = this->createSigningMessage(dest, amount, sequence_number, mode, expireAt, comment);
+        const Cell::Ref signingMessage = this->createSigningMessage(dest, amount, sequence_number, mode, queryPayload, expireAt);
         Data data(signingMessage->hash.begin(), signingMessage->hash.end());
         
         // TANGEM        
@@ -123,5 +115,25 @@ Cell::Ref Wallet::createTransferMessage(
 
     return transferMessage.intoCell();
 }
+
+
+Cell::Ref Wallet::createTransferMessage(
+    const PrivateKey& privateKey,
+    const Address& dest,
+    uint64_t amount,
+    uint32_t sequence_number,
+    uint8_t mode,
+    uint32_t expireAt,
+    const std::string& comment
+) const {
+    CellBuilder bodyBuilder;
+        if (!comment.empty()) {
+            const auto& data = Data(comment.begin(), comment.end());
+            bodyBuilder.appendU32(0);
+            bodyBuilder.appendRaw(data, static_cast<uint16_t>(data.size()) * 8);
+    }
+    return createQueryMessage(privateKey, dest, amount, sequence_number, mode, bodyBuilder.intoCell(), expireAt);
+}
+
 
 } // namespace TW::TheOpenNetwork

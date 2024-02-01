@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -51,6 +49,16 @@ public:
         const std::string& comment = ""
     ) const;
 
+    [[nodiscard]] Cell::Ref createQueryMessage(
+        const PrivateKey& privateKey,
+        const Address& dest,
+        uint64_t amount,
+        uint32_t sequence_number,
+        uint8_t mode,
+        const Cell::Ref& payload,
+        uint32_t expireAt = 0
+    ) const;
+
 protected:
     [[nodiscard]] virtual Cell::Ref createDataCell() const = 0;
     virtual void writeSigningPayload(CellBuilder& builder, uint32_t sequence_number = 0, uint32_t expireAt = 0) const = 0;
@@ -61,8 +69,8 @@ private:
         uint64_t amount,
         uint32_t sequence_number,
         uint8_t mode,
-        uint32_t expireAt = 0,
-        const std::string& comment = ""
+        const Cell::Ref& payload,
+        uint32_t expireAt = 0
     ) const;
     [[nodiscard]] CommonTON::StateInit createStateInit() const;
 };

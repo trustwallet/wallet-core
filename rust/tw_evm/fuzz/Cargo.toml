@@ -1,0 +1,54 @@
+[package]
+name = "tw_evm-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = { version = "0.4", features = ["arbitrary-derive"] }
+serde_json = "1.0"
+tw_number = { path = "../../tw_number" }
+tw_proto = { path = "../../tw_proto", features = ["fuzz"] }
+
+[dependencies.tw_evm]
+path = ".."
+
+# Prevent this from interfering with workspaces
+[workspace]
+members = ["."]
+
+[profile.release]
+debug = 1
+
+[[bin]]
+name = "abi_encode_function"
+path = "fuzz_targets/abi_encode_function.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "abi_decode_value"
+path = "fuzz_targets/abi_decode_value.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "abi_function_decode_input"
+path = "fuzz_targets/abi_function_decode_input.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "rlp_encode"
+path = "fuzz_targets/rlp_encode.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "sign"
+path = "fuzz_targets/sign.rs"
+test = false
+doc = false

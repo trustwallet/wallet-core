@@ -1,8 +1,6 @@
-# Copyright © 2017-2022 Trust Wallet.
+# SPDX-License-Identifier: Apache-2.0
 #
-# This file is part of Trust. The full Trust copyright notice, including
-# terms governing use, modification, and redistribution, is contained in the
-# file LICENSE at the root of the source code distribution tree.
+# Copyright © 2017 Trust Wallet.
 
 set(TW_WARNING_FLAGS 
     -W
@@ -65,7 +63,7 @@ if (EMSCRIPTEN)
     message(STATUS "Skip building trezor-crypto/tests")
     set(TW_WARNING_FLAGS ${TW_WARNING_FLAGS} -Wno-bitwise-instead-of-logical)
 else ()
-    if(NOT ANDROID AND NOT IOS_PLATFORM)
+    if(NOT ANDROID AND NOT IOS_PLATFORM AND NOT TW_COMPILE_JAVA)
         add_subdirectory(crypto/tests)
     endif()
 endif()

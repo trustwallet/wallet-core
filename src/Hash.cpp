@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Hash.h"
 
@@ -16,7 +14,6 @@ TW::Hash::HasherSimpleType Hash::functionPointerFromEnum(TW::Hash::Hasher hasher
     switch (hasher) {
     case Hash::HasherSha1:
         return Hash::sha1;
-    default:
     case Hash::HasherSha256:
         return Hash::sha256;
     case Hash::HasherSha512:
@@ -95,16 +92,27 @@ Data Hash::blake256(const byte* data, size_t size) {
 }
 
 Data Hash::blake2b(const byte* data, size_t dataSize) {
-    return Rust::CByteArrayWrapper(Rust::blake2_b(data, dataSize, 32)).data;
+    Rust::CByteArrayResultWrapper res = Rust::blake2_b(data, dataSize, 32);
+    if (res.isErr()) {
+        throw std::runtime_error("Error 'blake2_b' hashing");
+    }
+    return res.unwrap().data;
 }
 
 Data Hash::blake2b(const byte* data, size_t dataSize, size_t hashSize) {
-    return Rust::CByteArrayWrapper(Rust::blake2_b(data, dataSize, hashSize)).data;
+    Rust::CByteArrayResultWrapper res = Rust::blake2_b(data, dataSize, hashSize);
+    if (res.isErr()) {
+        throw std::runtime_error("Error 'blake2_b' hashing");
+    }
+    return res.unwrap().data;
 }
 
 Data Hash::blake2b(const byte* data, size_t dataSize, size_t hashSize, const Data& personal) {
-    Rust::CByteArrayWrapper res = Rust::blake2_b_personal(data, dataSize, hashSize, personal.data(), personal.size());
-    return res.data;
+    Rust::CByteArrayResultWrapper res = Rust::blake2_b_personal(data, dataSize, hashSize, personal.data(), personal.size());
+    if (res.isErr()) {
+        throw std::runtime_error("Error 'blake2_b_personal' hashing");
+    }
+    return res.unwrap().data;
 }
 
 Data Hash::groestl512(const byte* data, size_t size) {

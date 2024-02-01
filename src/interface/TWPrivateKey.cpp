@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "../PrivateKey.h"
 #include "../PublicKey.h"
@@ -88,15 +86,6 @@ struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Cardano(struct TWPri
 
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivateKey *_Nonnull pk) {
     return TWPrivateKeyGetPublicKeyByType(pk, TWPublicKeyTypeCURVE25519);
-}
-
-TWData *_Nullable TWPrivateKeyGetSharedKey(const struct TWPrivateKey *_Nonnull pk, const struct TWPublicKey *_Nonnull publicKey, enum TWCurve curve) {
-    auto result = pk->impl.getSharedKey(publicKey->impl, curve);
-    if (result.empty()) {
-        return nullptr;
-    } else {
-        return TWDataCreateWithBytes(result.data(), result.size());
-    }
 }
 
 TWData *TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, enum TWCurve curve) {

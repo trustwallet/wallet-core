@@ -12,24 +12,37 @@ concurrency:
 
 jobs:
   build:
-    runs-on: [ self-hosted, macOS, ARM64, wallet-core ]
+    runs-on: macos-latest-xlarge
     if: github.event.pull_request.draft == false
     steps:
     - uses: actions/checkout@v3
+
     - name: Install system dependencies
       run: |
         tools/install-sys-dependencies-mac
+
+    - name: Cache Rust
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: |
+          rust
+
+    - name: Install Rust dependencies
+      run: |
         tools/install-rust-dependencies
+
     - name: Cache internal dependencies
       id: internal_cache
       uses: actions/cache@v3
       with:
         path: build/local
         key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+
     - name: Install internal dependencies
       run: |
         tools/install-dependencies
       if: steps.internal_cache.outputs.cache-hit != 'true'
+
     - name: Run codegen tests
       run: tools/codegen-test
 
@@ -37,6 +50,7 @@ jobs:
       run: |
         tools/generate-files ios
         tools/ios-test
+
     - name: Build sample app
       run: |
         tools/samples-build ios
