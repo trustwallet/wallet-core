@@ -63,28 +63,37 @@ Cell::Ref Wallet::createQueryMessage(
     const Cell::Ref& queryPayload,
     uint32_t expireAt
 ) const {
-    return createTransferMessage(
-        privateKey,
-        nullptr,
-        dest,
-        amount,
-        sequence_number,
-        mode,
-        expireAt,
-        comment
-    );
+    return createQueryMessage(privateKey, nullptr, dest, amount, sequence_number, mode, queryPayload, expireAt);
 }
-    
-// TANGEM
+
 Cell::Ref Wallet::createTransferMessage(
     const PrivateKey& privateKey,
-    const std::function<Data(Data)> externalSigner,
     const Address& dest,
     uint64_t amount,
     uint32_t sequence_number,
     uint8_t mode,
     uint32_t expireAt,
     const std::string& comment
+) const {
+    CellBuilder bodyBuilder;
+        if (!comment.empty()) {
+            const auto& data = Data(comment.begin(), comment.end());
+            bodyBuilder.appendU32(0);
+            bodyBuilder.appendRaw(data, static_cast<uint16_t>(data.size()) * 8);
+    }
+    return createQueryMessage(privateKey, nullptr, dest, amount, sequence_number, mode, bodyBuilder.intoCell(), expireAt);
+}
+
+// TANGEM START
+Cell::Ref Wallet::createQueryMessage(
+    const PrivateKey& privateKey,
+    const std::function<Data(Data)> externalSigner,
+    const Address& dest,
+    uint64_t amount,
+    uint32_t sequence_number,
+    uint8_t mode,
+    const Cell::Ref& queryPayload,
+    uint32_t expireAt
 ) const {
     const auto transferMessageHeader = std::make_shared<CommonTON::ExternalInboundMessageHeader>(this->getAddress().addressData);
     Message transferMessage = Message(MessageData(transferMessageHeader));
@@ -116,9 +125,9 @@ Cell::Ref Wallet::createTransferMessage(
     return transferMessage.intoCell();
 }
 
-
 Cell::Ref Wallet::createTransferMessage(
     const PrivateKey& privateKey,
+    const std::function<Data(Data)> externalSigner,
     const Address& dest,
     uint64_t amount,
     uint32_t sequence_number,
@@ -132,8 +141,9 @@ Cell::Ref Wallet::createTransferMessage(
             bodyBuilder.appendU32(0);
             bodyBuilder.appendRaw(data, static_cast<uint16_t>(data.size()) * 8);
     }
-    return createQueryMessage(privateKey, dest, amount, sequence_number, mode, bodyBuilder.intoCell(), expireAt);
+    return createQueryMessage(privateKey, externalSigner, dest, amount, sequence_number, mode, bodyBuilder.intoCell(), expireAt);
 }
+// TANGEM END
 
 
 } // namespace TW::TheOpenNetwork
