@@ -34,9 +34,7 @@ impl SingleSignaturePubkey {
         })
     }
 
-    pub fn from_sign_list(
-        signatures: Vec<SignatureBytes>,
-    ) -> SigningResult<Self> {
+    pub fn from_sign_list(signatures: Vec<SignatureBytes>) -> SigningResult<Self> {
         if signatures.len() > 1 {
             return Err(SigningError(SigningErrorType::Error_no_support_n2n));
         }
