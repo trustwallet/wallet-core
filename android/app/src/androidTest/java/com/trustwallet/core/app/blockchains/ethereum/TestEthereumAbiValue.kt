@@ -87,7 +87,7 @@ class TestEthereumAbiValue {
     fun testValueDecoderValue() {
         assertEquals("42", EthereumAbiValue.decodeValue(Numeric.hexStringToByteArray("000000000000000000000000000000000000000000000000000000000000002a"), "uint"))
         assertEquals("24", EthereumAbiValue.decodeValue(Numeric.hexStringToByteArray("0000000000000000000000000000000000000000000000000000000000000018"), "uint8"))
-        assertEquals("0xf784682c82526e245f50975190ef0fff4e4fc077", EthereumAbiValue.decodeValue(Numeric.hexStringToByteArray("000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077"), "address"))
+        assertEquals("0xF784682C82526e245F50975190EF0fff4E4fC077", EthereumAbiValue.decodeValue(Numeric.hexStringToByteArray("000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077"), "address"))
         assertEquals("Hello World!    Hello World!    Hello World!", EthereumAbiValue.decodeValue(
             Numeric.hexStringToByteArray("000000000000000000000000000000000000000000000000000000000000002c48656c6c6f20576f726c64212020202048656c6c6f20576f726c64212020202048656c6c6f20576f726c64210000000000000000000000000000000000000000"),
             "string"))
@@ -103,7 +103,7 @@ class TestEthereumAbiValue {
     @Test
     fun testValueDecoderArray_address() {
         val input = Numeric.hexStringToByteArray("0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc0770000000000000000000000002e00cd222cb42b616d86d037cc494e8ab7f5c9a3")
-        assertEquals("[\"0xf784682c82526e245f50975190ef0fff4e4fc077\",\"0x2e00cd222cb42b616d86d037cc494e8ab7f5c9a3\"]", EthereumAbiValue.decodeArray(input, "address[]"))
+        assertEquals("[\"0xF784682C82526e245F50975190EF0fff4E4fC077\",\"0x2e00CD222Cb42B616D86D037Cc494e8ab7F5c9a3\"]", EthereumAbiValue.decodeArray(input, "address[]"))
     }
 
     @Test

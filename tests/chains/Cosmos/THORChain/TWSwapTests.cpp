@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Bitcoin/Script.h"
 #include "Bitcoin/SegwitAddress.h"
@@ -281,6 +279,123 @@ TEST(TWTHORChainSwap, SwapAtomBnb) {
     // https://viewblock.io/thorchain/tx/07F47D71A74245538E205F24ADB4BBB799B49C3A8A8875665D249EA51662AA50
     // https://www.mintscan.io/cosmos/txs/07F47D71A74245538E205F24ADB4BBB799B49C3A8A8875665D249EA51662AA50
     // https://binance.mintscan.io/txs/2C97061737B16B234990B9B18A2BF65F7C7418FF9E39A68E634C832E4E4C59CE
+}
+
+TEST(TWTHORChainSwap, SwapRuneDoge) {
+    // prepare swap input
+    Proto::SwapInput input;
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(Proto::THOR);
+    fromAsset.set_symbol("RUNE");
+    *input.mutable_from_asset() = fromAsset;
+    input.set_from_address("thor14j5lwl8ulexrqp5x39kmkctv2937694z3jn2dz");
+    Proto::Asset toAsset;
+    toAsset.set_chain(Proto::DOGE);
+    toAsset.set_symbol("DOGE");
+    *input.mutable_to_asset() = toAsset;
+    input.set_to_address("DNhRF1h8J4ZnB1bxp9kaqhVLYetkx1nSJ5");
+    input.set_from_amount("150000000");
+    input.set_to_amount_limit("10000000");
+    input.set_affiliate_fee_address("tr");
+    input.set_affiliate_fee_rate_bp("0");
+
+    // serialize input
+    const auto inputData_ = input.SerializeAsString();
+    EXPECT_EQ(hex(inputData_), "0a06120452554e45122b74686f7231346a356c776c38756c6578727170357833396b6d6b637476323933373639347a336a6e32647a1a0808041204444f47452222444e6852463168384a345a6e4231627870396b617168564c5965746b78316e534a353a09313530303030303030420831303030303030304a027472520130");
+    const auto inputTWData_ = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData_.data(), inputData_.size()));
+
+    // invoke swap
+    const auto outputTWData_ = WRAPD(TWTHORChainSwapBuildSwap(inputTWData_.get()));
+    const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
+    EXPECT_EQ(outputData.size(), 153ul);
+    // parse result in proto
+    Proto::SwapOutput outputProto;
+    EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
+    EXPECT_EQ(outputProto.from_chain(), Proto::THOR);
+    EXPECT_EQ(outputProto.to_chain(), Proto::DOGE);
+    EXPECT_EQ(outputProto.error().code(), 0);
+    EXPECT_EQ(outputProto.error().message(), "");
+    EXPECT_TRUE(outputProto.has_cosmos());
+    Cosmos::Proto::SigningInput txInput = outputProto.cosmos();
+
+    ASSERT_EQ(txInput.messages(0).thorchain_deposit_message().memo(), "=:DOGE.DOGE:DNhRF1h8J4ZnB1bxp9kaqhVLYetkx1nSJ5:10000000:tr:0");
+    auto& fee = *txInput.mutable_fee();
+    fee.set_gas(50000000);
+
+    txInput.set_account_number(75247);
+    txInput.set_sequence(8);
+
+    auto privKey = parse_hex("2659e41d54ebd449d68b9d58510d8eeeb837ee00d6ecc760b7a731238d8c3113");
+    txInput.set_private_key(privKey.data(), privKey.size());
+
+    // sign and encode resulting input
+    Cosmos::Proto::SigningOutput output;
+    ANY_SIGN(txInput, TWCoinTypeCosmos);
+    EXPECT_EQ(output.error_message(), "");
+    ASSERT_EQ(output.serialized(), "{\"mode\":\"BROADCAST_MODE_BLOCK\",\"tx_bytes\":\"Co0BCooBChEvdHlwZXMuTXNnRGVwb3NpdBJ1Ch8KEgoEVEhPUhIEUlVORRoEUlVORRIJMTUwMDAwMDAwEjw9OkRPR0UuRE9HRTpETmhSRjFoOEo0Wm5CMWJ4cDlrYXFoVkxZZXRreDFuU0o1OjEwMDAwMDAwOnRyOjAaFKyp93z8/kwwBoaJbbthbFFj7RaiElkKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQO5lUOUgVbcO1IQFrppQEnQOtAeVD7aDuUi3l6QAzblKRIECgIIARgIEgUQgOHrFxpABOMrkMdq0FFNUEvjE7DDFpDW3EudV2qPhNCD4FrYtHsiBjMefdBaN8Ddp2Fucqs6OMkoXBEoW/u1msDqnvaXdA==\"}");
+
+    // https://viewblock.io/thorchain/tx/29C8B558051A0E0B1F44E4FFED034EDD204A7249A824DCE06C72C28D6114B5E3
+    // https://dogechain.info/tx/905ce02ec3397d6d4f2cbe63ebbff2ccf8b9f16d7ea136319be5ed543cdb66f3
+}
+
+TEST(TWTHORChainSwap, SwapRuneBnbStreamParams) {
+    // prepare swap input
+    Proto::SwapInput input;
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(Proto::THOR);
+    fromAsset.set_symbol("RUNE");
+    *input.mutable_from_asset() = fromAsset;
+    input.set_from_address("thor157vzvw2chydgf8g4qu2cqhlsyhq0mydutmd0p7");
+    Proto::Asset toAsset;
+    toAsset.set_chain(Proto::BNB);
+    toAsset.set_symbol("BNB");
+    *input.mutable_to_asset() = toAsset;
+    input.set_to_address("bnb1swlv73yc6rc7z4n244gcpjknqh22m7kpjpr0mw");
+    input.set_from_amount("170000000");
+    // Don't set `toAmountLimit`, should be 0 by default.
+    auto* streamParams = input.mutable_stream_params();
+    streamParams->set_interval("1");
+    streamParams->set_quantity("0");
+    input.set_affiliate_fee_address("tr");
+    input.set_affiliate_fee_rate_bp("0");
+
+    // serialize input
+    const auto inputData_ = input.SerializeAsString();
+    EXPECT_EQ(hex(inputData_), "0a06120452554e45122b74686f72313537767a7677326368796467663867347175326371686c73796871306d796475746d643070371a0708031203424e42222a626e623173776c7637337963367263377a346e3234346763706a6b6e716832326d376b706a7072306d773a093137303030303030304a0274725201306a060a0131120130");
+    const auto inputTWData_ = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData_.data(), inputData_.size()));
+
+    // invoke swap
+    const auto outputTWData_ = WRAPD(TWTHORChainSwapBuildSwap(inputTWData_.get()));
+    const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
+    EXPECT_EQ(outputData.size(), 156ul);
+    // parse result in proto
+    Proto::SwapOutput outputProto;
+    EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
+    EXPECT_EQ(outputProto.from_chain(), Proto::THOR);
+    EXPECT_EQ(outputProto.to_chain(), Proto::BNB);
+    EXPECT_EQ(outputProto.error().code(), 0);
+    EXPECT_EQ(outputProto.error().message(), "");
+    EXPECT_TRUE(outputProto.has_cosmos());
+    Cosmos::Proto::SigningInput txInput = outputProto.cosmos();
+
+    ASSERT_EQ(txInput.messages(0).thorchain_deposit_message().memo(), "=:BNB.BNB:bnb1swlv73yc6rc7z4n244gcpjknqh22m7kpjpr0mw:0/1/0:tr:0");
+    auto& fee = *txInput.mutable_fee();
+    fee.set_gas(50000000);
+
+    txInput.set_account_number(76456);
+    txInput.set_sequence(0);
+
+    auto privKey = parse_hex("15f9be0e6c80949f3dbe24fd9614027869af1e41953a86fdced947b0b1f3efa7");
+    txInput.set_private_key(privKey.data(), privKey.size());
+
+    // sign and encode resulting input
+    Cosmos::Proto::SigningOutput output;
+    ANY_SIGN(txInput, TWCoinTypeCosmos);
+    EXPECT_EQ(output.error_message(), "");
+    ASSERT_EQ(output.serialized(), "{\"mode\":\"BROADCAST_MODE_BLOCK\",\"tx_bytes\":\"CpABCo0BChEvdHlwZXMuTXNnRGVwb3NpdBJ4Ch8KEgoEVEhPUhIEUlVORRoEUlVORRIJMTcwMDAwMDAwEj89OkJOQi5CTkI6Ym5iMXN3bHY3M3ljNnJjN3o0bjI0NGdjcGprbnFoMjJtN2twanByMG13OjAvMS8wOnRyOjAaFKeYJjlYuRqEnRUHFYBf8CXA/ZG8ElcKTgpGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQNWwhqmW30kANTyAfdGJPa9BfZlI3xkAjqLWmhynukWThIECgIIARIFEIDh6xcaQNzvOBmgAgRriO5lsEgU4o58Gxu4mA71XZNyf5XXWBo5L9HkaJiDXE/YOlWPFj7iy86vDXVR1798pmc3n5EbkQ0=\"}");
+
+    // https://viewblock.io/thorchain/tx/317443DD48DDEE8811D0DCCC2FCA397F8E93DA0AC9C1D5173CB42E69CD0E01B0
+    // https://explorer.bnbchain.org/tx/6DE7B60C71F9FC3EEE914AAD8FE80D1A53A2EC59BE759A1C111C1B6C194740D2
 }
 
 TEST(TWTHORChainSwap, NegativeInvalidInput) {

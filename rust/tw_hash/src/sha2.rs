@@ -1,11 +1,13 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::hash_wrapper::hasher;
-use sha2::{Sha256, Sha512, Sha512_256};
+use sha2::{Sha224, Sha256, Sha512, Sha512_256};
+
+pub fn sha224(input: &[u8]) -> Vec<u8> {
+    hasher::<Sha224>(input)
+}
 
 pub fn sha256(input: &[u8]) -> Vec<u8> {
     hasher::<Sha256>(input)

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+if [[ `uname` == "Darwin" ]]; then
+    export BOOST_ROOT=$(brew --prefix boost)
+fi
+
+pushd kotlin
+./gradlew :wallet-core-kotlin:jvmTest
+popd

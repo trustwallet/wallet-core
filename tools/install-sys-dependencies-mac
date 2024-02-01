@@ -3,3 +3,12 @@
 set -e
 
 brew install boost ninja xcodegen xcbeautify
+
+if command -v rustup &> /dev/null
+then
+    echo "Rustup is already installed."
+else
+    echo "Rustup is not installed. Installing it now."
+    brew install rustup
+    rustup-init -y --default-toolchain none --no-update-default-toolchain
+fi

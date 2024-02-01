@@ -1,0 +1,38 @@
+syntax = "proto3";
+package types;
+
+// Src: https://gitlab.com/thorchain/thornode/-/blob/develop/proto/thorchain/v1/x/thorchain/types/msg_send.proto
+// Cosmos original: https://github.com/cosmos/cosmos-sdk/blob/master/proto/cosmos/bank/v1beta1/tx.proto
+
+import "coin.proto";
+
+// Original: https://gitlab.com/thorchain/thornode/-/blob/develop/proto/thorchain/v1/common/common.proto
+message Asset {
+    string chain = 1;
+    string symbol = 2;
+    string ticker = 3;
+    bool synth = 4;
+}
+
+// Original: https://gitlab.com/thorchain/thornode/-/blob/develop/proto/thorchain/v1/common/common.proto
+message Coin {
+    Asset asset = 1;
+    string amount = 2;
+    int64 decimals = 3;
+}
+
+// MsgSend represents a message to send coins from one account to another.
+message MsgSend {
+    bytes    from_address             = 1;
+    bytes    to_address               = 2;
+    repeated cosmos.base.v1beta1.Coin amount = 3;
+}
+
+// MsgDeposit represents a message to deposit coins from the `signer` account.
+// The message is used to swap $RUNE -> $ASSET: https://dev.thorchain.org/thorchain-dev/concepts/sending-transactions#thorchain
+// Original: https://gitlab.com/thorchain/thornode/-/blob/develop/proto/thorchain/v1/x/thorchain/types/msg_deposit.proto
+message MsgDeposit {
+    repeated Coin coins = 1;
+    string memo = 2;
+    bytes signer = 3;
+}

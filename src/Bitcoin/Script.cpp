@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Address.h"
 #include "CashAddress.h"
@@ -528,10 +526,24 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
     return lockScriptForAddress(string, coin);
 }
 
-Proto::TransactionOutput Script::buildBRC20InscribeTransfer(const std::string& ticker, uint64_t amount, const Data& publicKey) {
+Proto::TransactionOutput Script::buildBRC20InscribeTransfer(const std::string& ticker, const std::string& amount, const Data& publicKey) {
     TW::Bitcoin::Proto::TransactionOutput out;
-    auto tickerBytes = data(ticker);
-    Rust::CByteArrayWrapper res = TW::Rust::tw_build_brc20_inscribe_transfer(tickerBytes.data(), amount, 0, publicKey.data(), publicKey.size());
+    Rust::CByteArrayWrapper res = TW::Rust::tw_bitcoin_legacy_build_brc20_transfer_inscription(ticker.data(), amount.data(), 0, publicKey.data(), publicKey.size());
+    auto result = res.data;
+    out.ParseFromArray(result.data(), static_cast<int>(result.size()));
+    return out;
+}
+
+Proto::TransactionOutput Script::buildOrdinalNftInscription(const std::string& mimeType, const Data& payload, const Data& publicKey) {
+    TW::Bitcoin::Proto::TransactionOutput out;
+    Rust::CByteArrayWrapper res = TW::Rust::tw_bitcoin_legacy_build_nft_inscription(
+        mimeType.data(),
+        payload.data(),
+        payload.size(),
+        0,
+        publicKey.data(),
+        publicKey.size()
+    );
     auto result = res.data;
     out.ParseFromArray(result.data(), static_cast<int>(result.size()));
     return out;

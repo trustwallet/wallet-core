@@ -1,15 +1,11 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Binance/Address.h"
 #include "Bitcoin/Script.h"
 #include "Bitcoin/SegwitAddress.h"
 #include "Ethereum/ABI/Function.h"
-#include "Ethereum/ABI/ParamAddress.h"
-#include "Ethereum/ABI/ParamBase.h"
 #include "Ethereum/Address.h"
 #include "THORChain/Swap.h"
 #include "proto/Binance.pb.h"
@@ -393,6 +389,59 @@ TEST(THORChainSwap, SwapBtcBnb) {
     // https://explorer.binance.org/tx/8D78469069118E9B9546696214CCD46E63D3FA0D7E854C094D63C8F6061278B7
 }
 
+TEST(THORChainSwap, SwapUsdtBsc) {
+    auto myAddress = "0x0d6aA74992eDDaaf430eadca63B87f4C99Aef8dE";
+    auto vaultAddress = "0x1f3b3c6ac151bf32409fe139a5d55f3d9444729c";
+    auto routerAddress = "0xD37BbE5744D730a1d98d8DC97c42F0Ca46aD7146";
+    auto usdtTokenId = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
+    auto amount = 70000000;
+    auto expirationTime = 1775669796;
+
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::ETH));
+    fromAsset.set_symbol("USDT");
+    fromAsset.set_token_id(usdtTokenId);
+    Proto::Asset toAsset;
+    toAsset.set_chain(static_cast<Proto::Chain>(Chain::BSC));
+    toAsset.set_symbol("BSC");
+    toAsset.set_token_id("BNB");
+
+    auto&& [out, errorCode, error] = SwapBuilder::builder()
+        .from(fromAsset)
+        .to(toAsset)
+        .fromAddress(myAddress)
+        .toAddress(myAddress)
+        .vault(vaultAddress)
+        .router(routerAddress)
+        .fromAmount(std::to_string(amount))
+        .expirationPolicy(expirationTime)
+        .affFeeAddress("tr")
+        .affFeeRate("0")
+        .streamInterval("1")
+        .streamQuantity("0")
+        .build();
+    ASSERT_EQ(errorCode, 0);
+    ASSERT_EQ(error, "");
+
+    auto tx = Ethereum::Proto::SigningInput();
+    ASSERT_TRUE(tx.ParseFromArray(out.data(), (int)out.size()));
+
+    // check fields
+    EXPECT_EQ(tx.to_address(), routerAddress);
+    ASSERT_TRUE(tx.transaction().has_contract_generic());
+
+    auto funcData = Ethereum::ABI::Function::encodeFunctionCall("depositWithExpiry", Ethereum::ABI::BaseParams{
+        std::make_shared<Ethereum::ABI::ProtoAddress>(vaultAddress),
+        std::make_shared<Ethereum::ABI::ProtoAddress>(usdtTokenId),
+        std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(amount)),
+        std::make_shared<Ethereum::ABI::ProtoString>("=:BSC.BNB:0x0d6aA74992eDDaaf430eadca63B87f4C99Aef8dE:0/1/0:tr:0"),
+        std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(expirationTime))
+    }).value();
+    EXPECT_EQ(hex(funcData), "44bc937b0000000000000000000000001f3b3c6ac151bf32409fe139a5d55f3d9444729c000000000000000000000000dac17f958d2ee523a2206206994597c13d831ec700000000000000000000000000000000000000000000000000000000042c1d8000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000069d69224000000000000000000000000000000000000000000000000000000000000003f3d3a4253432e424e423a3078306436614137343939326544446161663433306561646361363342383766344339394165663864453a302f312f303a74723a3000");
+    EXPECT_EQ(hex(TW::data(tx.transaction().contract_generic().amount())), "00");
+    EXPECT_EQ(hex(TW::data(tx.transaction().contract_generic().data())), hex(funcData));
+}
+
 TEST(THORChainSwap, SwapAtomBnb) {
     Proto::Asset fromAsset;
     fromAsset.set_chain(static_cast<Proto::Chain>(Chain::ATOM));
@@ -484,19 +533,17 @@ TEST(THORChainSwap, SwapErc20Rune) {
     EXPECT_EQ(tx.to_address(), "0x8f66c4ae756bebc49ec8b81966dd8bba9f127549");
     ASSERT_TRUE(tx.transaction().has_contract_generic());
 
-    Data vaultAddressBin = SwapTest_ethAddressStringToData("0xa56f6Cb1D66cd80150b1ea79643b4C5900D6E36E");
-    EXPECT_EQ(hex(vaultAddressBin), "a56f6cb1d66cd80150b1ea79643b4c5900d6e36e");
-    auto func = Ethereum::ABI::Function("depositWithExpiry", std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>{
-                                                       std::make_shared<Ethereum::ABI::ParamAddress>(vaultAddressBin),
-                                                       std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex("0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E")),
-                                                       std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(1000000)),
-                                                       std::make_shared<Ethereum::ABI::ParamString>("=:THOR.RUNE:thor1ad6hapypumu7su5ad9qry2d74yt9d56fssa774:51638857:t:0"),
-                                                       std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(1775669796))});
-    Data payload;
-    func.encode(payload);
-    EXPECT_EQ(hex(payload), "44bc937b000000000000000000000000a56f6cb1d66cd80150b1ea79643b4c5900d6e36e000000000000000000000000b97ef9ef8734c71904d8002f8b6bc66dd9c48a6e00000000000000000000000000000000000000000000000000000000000f424000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000069d6922400000000000000000000000000000000000000000000000000000000000000443d3a54484f522e52554e453a74686f72316164366861707970756d753773753561643971727932643734797439643536667373613737343a35313633383835373a743a3000000000000000000000000000000000000000000000000000000000");
+    auto vaultAddress = "0xa56f6Cb1D66cd80150b1ea79643b4C5900D6E36E";
+    auto funcData = Ethereum::ABI::Function::encodeFunctionCall("depositWithExpiry", Ethereum::ABI::BaseParams{
+        std::make_shared<Ethereum::ABI::ProtoAddress>(vaultAddress),
+        std::make_shared<Ethereum::ABI::ProtoAddress>("0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"),
+        std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(1000000)),
+        std::make_shared<Ethereum::ABI::ProtoString>("=:THOR.RUNE:thor1ad6hapypumu7su5ad9qry2d74yt9d56fssa774:51638857:t:0"),
+        std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(1775669796))
+    }).value();
+    EXPECT_EQ(hex(funcData), "44bc937b000000000000000000000000a56f6cb1d66cd80150b1ea79643b4c5900d6e36e000000000000000000000000b97ef9ef8734c71904d8002f8b6bc66dd9c48a6e00000000000000000000000000000000000000000000000000000000000f424000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000069d6922400000000000000000000000000000000000000000000000000000000000000443d3a54484f522e52554e453a74686f72316164366861707970756d753773753561643971727932643734797439643536667373613737343a35313633383835373a743a3000000000000000000000000000000000000000000000000000000000");
     EXPECT_EQ(hex(TW::data(tx.transaction().contract_generic().amount())), "00");
-    EXPECT_EQ(hex(TW::data(tx.transaction().contract_generic().data())), hex(payload));
+    EXPECT_EQ(hex(TW::data(tx.transaction().contract_generic().data())), hex(funcData));
 
     EXPECT_EQ(hex(TW::data(tx.private_key())), "");
 
@@ -521,6 +568,62 @@ TEST(THORChainSwap, SwapErc20Rune) {
     // https://viewblock.io/thorchain/tx/B5E88D61157E7073995CA8729B75DAB2C1684A7B145DB711327CA4B8FF7DBDE7
     // https://snowtrace.io/tx/0xb5e88d61157e7073995ca8729b75dab2c1684a7b145db711327ca4b8ff7dbde7
     // https://thorchain.net/tx/B5E88D61157E7073995CA8729B75DAB2C1684A7B145DB711327CA4B8FF7DBDE7
+}
+
+TEST(THORChainSwap, SwapBscBnb) {
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::BSC));
+    fromAsset.set_token_id("0x0000000000000000000000000000000000000000");
+    Proto::Asset toAsset;
+    toAsset.set_chain(static_cast<Proto::Chain>(Chain::BNB));
+    toAsset.set_symbol("BNB");
+    auto&& [out, errorCode, error] = SwapBuilder::builder()
+                                         .from(fromAsset)
+                                         .to(toAsset)
+                                         .fromAddress("0xf8192E9c51c070d199a8F262c12DDD1034274083")
+                                         .toAddress("bnb1tjcup6q8nere6r0pdt2ucc4g0xcrhm0jy5xql8")
+                                         .vault("0xcBE4334E4a0fC7C5Fa8083223B28a4b9F695A06C")
+                                         .router("0xb30eC53F98ff5947EDe720D32aC2da7e52A5f56b")
+                                         .fromAmount("10000000000000000")
+                                         .toAmountLimit("100000")
+                                         .expirationPolicy(1775669796)
+                                         .affFeeAddress("t")
+                                         .affFeeRate("0")
+                                         .build();
+    ASSERT_EQ(errorCode, 0);
+    ASSERT_EQ(error, "");
+    EXPECT_EQ(hex(out), "0a01001201002201002a0100422a3078623330654335334639386666353934374544653732304433326143326461376535324135663536625293023290020a072386f26fc1000012840244bc937b000000000000000000000000cbe4334e4a0fc7c5fa8083223b28a4b9f695a06c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000069d69224000000000000000000000000000000000000000000000000000000000000003f3d3a424e422e424e423a626e6231746a6375703671386e65726536723070647432756363346730786372686d306a793578716c383a3130303030303a743a3000");
+
+    auto tx = Ethereum::Proto::SigningInput();
+    ASSERT_TRUE(tx.ParseFromArray(out.data(), (int)out.size()));
+
+
+    // check fields
+    EXPECT_EQ(tx.to_address(), "0xb30eC53F98ff5947EDe720D32aC2da7e52A5f56b");
+    ASSERT_TRUE(tx.transaction().has_contract_generic());
+
+    EXPECT_EQ(hex(TW::data(tx.private_key())), "");
+
+    // set few fields before signing
+    auto chainId = store(uint256_t(56));
+    tx.set_chain_id(chainId.data(), chainId.size());
+    auto nonce = store(uint256_t(0));
+    tx.set_nonce(nonce.data(), nonce.size());
+    // 0,000000001
+    auto gasPrice = store(uint256_t(3000000000));
+    tx.set_gas_price(gasPrice.data(), gasPrice.size());
+    auto gasLimit = store(uint256_t(50000));
+    tx.set_gas_limit(gasLimit.data(), gasLimit.size());
+    auto privKey = parse_hex("74c452b55e0da4139172bc3b32bec469cfefbcdce373edda8e33afcfbf9c0a87");
+    tx.set_private_key(privKey.data(), privKey.size());
+
+    // sign and encode resulting input
+    Ethereum::Proto::SigningOutput output;
+    ANY_SIGN(tx, TWCoinTypeSmartChain);
+    EXPECT_EQ(hex(output.encoded()), "f901718084b2d05e0082c35094b30ec53f98ff5947ede720d32ac2da7e52a5f56b872386f26fc10000b9010444bc937b000000000000000000000000cbe4334e4a0fc7c5fa8083223b28a4b9f695a06c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000069d69224000000000000000000000000000000000000000000000000000000000000003f3d3a424e422e424e423a626e6231746a6375703671386e65726536723070647432756363346730786372686d306a793578716c383a3130303030303a743a30008194a05b0032d4150a3fa3b39a047648c02cb44b3256b9c34b7780265643c33d2aa2c6a017fece0465a271b7bddf655f7ac77419fb0433f9acf64b455b9aa17183b6eb98");
+    // https://viewblock.io/thorchain/tx/4292A5068BAA5619CF7A35861058915423688DF3CAE8F241453D8FCC6E0BF0A9
+    // https://bscscan.com/tx/0x4292a5068baa5619cf7a35861058915423688df3cae8f241453d8fcc6e0bf0a9
+    // https://explorer.bnbchain.org/tx/88A1B6F9D64F3B48CE1107979CD325E817446C5D6729EE6FC917589A6FADA79D
 }
 
 TEST(THORChainSwap, SwapAvaxBnb) {
@@ -1068,6 +1171,18 @@ TEST(THORChainSwap, Memo) {
     EXPECT_EQ(builder.to(toAssetBNB).buildMemo(), "=:BNB.BNB:bnb123:1234");
     toAssetBNB.set_token_id("TWT-8C2");
     EXPECT_EQ(builder.to(toAssetBNB).buildMemo(), "=:BNB.TWT-8C2:bnb123:1234");
+
+    // Check streaming parameters.
+    EXPECT_EQ(builder.streamInterval("").buildMemo(), "=:BNB.TWT-8C2:bnb123:1234/1/0");
+    EXPECT_EQ(builder.streamQuantity("").buildMemo(), "=:BNB.TWT-8C2:bnb123:1234/1/0");
+    EXPECT_EQ(builder.streamQuantity("30").buildMemo(), "=:BNB.TWT-8C2:bnb123:1234/1/30");
+    EXPECT_EQ(builder.streamInterval("7").streamQuantity("15").buildMemo(), "=:BNB.TWT-8C2:bnb123:1234/7/15");
+
+    // Check the default `toAmountLimit` and streaming parameters.
+    builder = SwapBuilder::builder().to(toAssetETH).toAddress("bnb123");
+    builder.to(toAssetBNB);
+    EXPECT_EQ(builder.buildMemo(), "=:BNB.TWT-8C2:bnb123:0");
+    EXPECT_EQ(builder.streamQuantity("").buildMemo(), "=:BNB.TWT-8C2:bnb123:0/1/0");
 }
 
 TEST(THORChainSwap, WrongFromAddress) {
@@ -1136,24 +1251,6 @@ TEST(THORChainSwap, WrongToAddress) {
         EXPECT_EQ(errorCode, Proto::ErrorCode::Error_Invalid_to_address);
         EXPECT_EQ(error, "Invalid to address");
     }
-}
-
-TEST(THORChainSwap, FromRuneNotSupported) {
-    Proto::Asset fromAsset;
-    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::THOR));
-    Proto::Asset toAsset;
-    toAsset.set_chain(static_cast<Proto::Chain>(Chain::BNB));
-    toAsset.set_symbol("BNB");
-    auto&& [_, errorCode, error] = SwapBuilder::builder()
-                                       .from(fromAsset)
-                                       .to(toAsset)
-                                       .fromAddress(Address1Thor)
-                                       .toAddress(Address1Bnb)
-                                       .fromAmount("1000")
-                                       .toAmountLimit("1000")
-                                       .build();
-    EXPECT_EQ(errorCode, Proto::ErrorCode::Error_Unsupported_from_chain);
-    EXPECT_EQ(error, "Unsupported from chain: 0");
 }
 
 TEST(THORChainSwap, EthInvalidVault) {

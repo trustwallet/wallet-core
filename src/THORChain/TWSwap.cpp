@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Data.h"
 #include "Swap.h"
@@ -24,21 +22,28 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
 
     const auto fromChain = inputProto.from_asset().chain();
     const auto toChain = inputProto.to_asset().chain();
-    auto&& [txInput, errorCode, error] = THORChainSwap::SwapBuilder::builder()
-                   .from(inputProto.from_asset())
-                   .to(inputProto.to_asset())
-                   .fromAddress(inputProto.from_address())
-                   .toAddress(inputProto.to_address())
-                   .vault(inputProto.vault_address())
-                   .router(inputProto.router_address())
-                   .fromAmount(inputProto.from_amount())
-                   .toAmountLimit(inputProto.to_amount_limit())
-                   .affFeeAddress(inputProto.affiliate_fee_address())
-                   .affFeeRate(inputProto.affiliate_fee_rate_bp())
-                   .extraMemo(inputProto.extra_memo())
-                   .expirationPolicy(inputProto.expiration_time())
-                   .build();
+    auto builder = THORChainSwap::SwapBuilder::builder();
+    builder
+        .from(inputProto.from_asset())
+        .to(inputProto.to_asset())
+        .fromAddress(inputProto.from_address())
+        .toAddress(inputProto.to_address())
+        .vault(inputProto.vault_address())
+        .router(inputProto.router_address())
+        .fromAmount(inputProto.from_amount())
+        .toAmountLimit(inputProto.to_amount_limit())
+        .affFeeAddress(inputProto.affiliate_fee_address())
+        .affFeeRate(inputProto.affiliate_fee_rate_bp())
+        .extraMemo(inputProto.extra_memo())
+        .expirationPolicy(inputProto.expiration_time());
+    if (inputProto.has_stream_params()) {
+        const auto& streamParams = inputProto.stream_params();
+        builder
+            .streamInterval(streamParams.interval())
+            .streamQuantity(streamParams.quantity());
+    }
 
+    auto&& [txInput, errorCode, error] = builder.build();
     outputProto.set_from_chain(fromChain);
     outputProto.set_to_chain(toChain);
     if (errorCode != 0) {
@@ -65,6 +70,7 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
         } break;
 
         case THORChainSwap::Proto::ETH:
+        case THORChainSwap::Proto::BSC:
         case THORChainSwap::Proto::AVAX: {
             Ethereum::Proto::SigningInput ethInput;
             if (!ethInput.ParseFromArray(txInput.data(), static_cast<int>(txInput.size()))) {
@@ -85,6 +91,7 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
             }
         } break;
 
+        case THORChainSwap::Proto::THOR:
         case THORChainSwap::Proto::ATOM: {
             Cosmos::Proto::SigningInput cosmosInput;
             if (!cosmosInput.ParseFromArray(txInput.data(), static_cast<int>(txInput.size()))) {

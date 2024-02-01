@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -11,7 +9,7 @@
 
 #include "Coins.h"
 #include "Data.h"
-#include "../Ethereum/Address.h"
+#include "Ethereum/Address.h"
 
 namespace TW::Theta {
 
@@ -51,8 +49,11 @@ class Transaction {
                 const uint256_t& thetaAmount, const uint256_t& tfuelAmount, uint64_t sequence,
                 const uint256_t& feeAmount = 1000000000000);
 
-    /// Encodes the transaction
-    Data encode() const noexcept;
+    /// Encodes the essential part of the transaction without a Chain ID.
+    Data encodePayload() const noexcept;
+
+    /// Encodes the transaction with the given `chainId`.
+    Data encode(const std::string& chainId) const noexcept;
 
     /// Sets signature
     bool setSignature(const Ethereum::Address& address, const Data& signature) noexcept;

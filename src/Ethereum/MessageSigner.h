@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -43,9 +41,18 @@ public:
     /// \param signature signature to verify the message against
     /// \return true if the message match the signature, false otherwise
     static bool verifyMessage(const PublicKey& publicKey, const std::string& message, const std::string& signature) noexcept;
-    static constexpr auto MessagePrefix = "Ethereum Signed Message:\n";
-    static constexpr std::uint8_t EthereumPrefix{0x19};
-    static Data generateMessage(const std::string& message);
+
+    /// Computes a hash of the message following EIP-191.
+    /// \param message message to hash
+    /// \return hash of the tuped data.
+    static Data messagePreImageHash(const std::string& message) noexcept;
+
+    /// Computes a hash of the typed data according to EIP-712 V4.
+    /// \param data json data
+    /// \return hash of the tuped data.
+    static Data typedDataPreImageHash(const std::string& data) noexcept;
+
+    static void prepareSignature(Data& signature, MessageType msgType, MaybeChainId chainId = std::nullopt) noexcept;
 };
 
 } // namespace TW::Ethereum

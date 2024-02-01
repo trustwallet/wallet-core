@@ -1,8 +1,6 @@
-// Copyright © 2017-2020 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 import XCTest
 @testable import WalletCore
@@ -87,6 +85,7 @@ class CoinAddressDerivationTests: XCTestCase {
                      .polygonzkEVM,
                      .scroll,
                      .arbitrum,
+                     .arbitrumNova,
                      .ecochain,
                      .avalancheCChain,
                      .xdai,
@@ -106,8 +105,16 @@ class CoinAddressDerivationTests: XCTestCase {
                      .meter,
                      .okxchain,
                      .confluxeSpace,
-                     .opBNBtestnet,
-                     .acalaEVM:
+                     .opBNB,
+                     .acalaEVM,
+                     .neon,
+                     .base,
+                     .linea,
+                     .greenfield,
+                     .mantle,
+                     .zenEON,
+                     .mantaPacific,
+                     .zetaEVM:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ronin:
@@ -217,7 +224,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .thunderCore:
                     let expectedResult = "0x4b92b3ED6d8b24575Bf5ce4C6a86ED261DA0C8d7"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .tomoChain:
+                case .viction:
                     let expectedResult = "0xC74b6D8897cBa9A4b659d43fEF73C9cA852cE424"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .tron:
@@ -299,7 +306,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "EQDgEMqToTacHic7SnvnPFmvceG5auFkCcAw0mSCvzvKUfk9";
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .aptos:
-                    let expectedResult = "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30";
+                    let expectedResult = "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30";
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .nebl:
                     let expectedResult = "NgDVaXAwNgBwb88xLiFKomfBmPkEh9F2d7";
@@ -372,6 +379,21 @@ class CoinAddressDerivationTests: XCTestCase {
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .noble:
                     let expectedResult = "noble142j9u5eaduzd7faumygud6ruhdwme98qc8l3wa"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .sei:
+                    let expectedResult = "sei142j9u5eaduzd7faumygud6ruhdwme98qagm0sj"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .internetComputer:
+                    let expectedResult = "b9a13d974ee9db036d5abc5b66ace23e513cb5676f3996626c7717c339a3ee87"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .tia:
+                    let expectedResult = "celestia142j9u5eaduzd7faumygud6ruhdwme98qpwmfv7"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .nativeZetaChain:
+                    let expectedResult = "zeta13u6g7vqgw074mgmf2ze2cadzvkz9snlwywj304"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .dydx:
+                    let expectedResult = "dydx142j9u5eaduzd7faumygud6ruhdwme98qeayaky"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()

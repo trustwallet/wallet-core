@@ -1,12 +1,11 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
 #include "Data.h"
+#include "rust/bindgen/WalletCoreRSBindgen.h"
 
 #include "OpCodes.h"
 #include <TrustWalletCore/TWCoinType.h>
@@ -116,7 +115,10 @@ class Script {
     static Script buildPayToV1WitnessProgram(const Data& publicKey);
 
     /// Builds the Ordinals inscripton for BRC20 transfer.
-    static Proto::TransactionOutput buildBRC20InscribeTransfer(const std::string& ticker, uint64_t amount, const Data& publicKey);
+    static Proto::TransactionOutput buildBRC20InscribeTransfer(const std::string& ticker, const std::string& amount, const Data& publicKey);
+
+    /// Builds the Ordinals inscripton for NFTs.
+    static Proto::TransactionOutput buildOrdinalNftInscription(const std::string& mimeType, const Data& payload, const Data& publicKey);
 
     /// Builds an OP_RETURN script with given data. Returns empty script on error, if data is too long (>80).
     static Script buildOpReturnScript(const Data& data);

@@ -1,14 +1,13 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Swap.h"
 
 #include "Coin.h"
 #include "HexCoding.h"
 #include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWHRP.h>
 
 // ATOM
 #include "Cosmos/Address.h"
@@ -18,8 +17,6 @@
 #include "../proto/Bitcoin.pb.h"
 // ETH
 #include "Ethereum/ABI/Function.h"
-#include "Ethereum/ABI/ParamAddress.h"
-#include "Ethereum/ABI/ParamBase.h"
 #include "Ethereum/Address.h"
 #include "uint256.h"
 #include "../proto/Ethereum.pb.h"
@@ -64,6 +61,8 @@ TWCoinType chainCoinType(Chain chain) {
         return TWCoinTypeLitecoin;
     case Chain::ATOM:
         return TWCoinTypeCosmos;
+    case Chain::BSC:
+        return TWCoinTypeSmartChain;
     case Chain::THOR:
     default:
         return TWCoinTypeTHORChain;
@@ -78,6 +77,8 @@ std::string chainName(Chain chain) {
         return "ETH";
     case Chain::BNB:
         return "BNB";
+    case Chain::BSC:
+        return "BSC";
     case Chain::BTC:
         return "BTC";
     case Chain::DOGE:
@@ -113,6 +114,8 @@ SwapBundled SwapBuilder::build(bool shortened) {
     const auto memo = this->buildMemo(shortened);
 
     switch (fromChain) {
+    case Chain::THOR:
+        return buildRune(fromAmountNum, memo);
     case Chain::BTC:
     case Chain::DOGE:
     case Chain::BCH:
@@ -124,6 +127,7 @@ SwapBundled SwapBuilder::build(bool shortened) {
         return buildAtom(fromAmountNum, memo);
     case Chain::ETH:
     case Chain::AVAX:
+    case Chain::BSC:
         return buildEth(fromAmountNum, memo);
     }
     default:
@@ -141,8 +145,12 @@ std::string SwapBuilder::buildMemo(bool shortened) noexcept {
     const auto toCoinToken = (!toTokenId.empty() && toTokenId != "0x0000000000000000000000000000000000000000") ? toTokenId : toSymbol;
     std::stringstream memo;
     memo << prefix + ":" + chainName(toChain) + "." + toCoinToken + ":" + mToAddress;
-    if (toAmountLimitNum > 0) {
-        memo << ":" << std::to_string(toAmountLimitNum);
+
+    memo << ":" << std::to_string(toAmountLimitNum);
+    if (mStreamParams.has_value()) {
+        uint64_t intervalNum = std::stoull(mStreamParams->mInterval);
+        uint64_t quantityNum = std::stoull(mStreamParams->mQuantity);
+        memo << "/" << std::to_string(intervalNum) << "/" << std::to_string(quantityNum);
     }
 
     if (mAffFeeAddress.has_value() || mAffFeeRate.has_value() || mExtraMemo.has_value()) {
@@ -164,7 +172,7 @@ std::string SwapBuilder::buildMemo(bool shortened) noexcept {
     return memo.str();
 }
 
-SwapBundled SwapBuilder::buildBitcoin(uint256_t amount, const std::string& memo, Chain fromChain) {
+SwapBundled SwapBuilder::buildBitcoin(const uint256_t& amount, const std::string& memo, Chain fromChain) {
     auto input = Bitcoin::Proto::SigningInput();
     Data out;
     // Following fields must be set afterwards, before signing ...
@@ -187,7 +195,7 @@ SwapBundled SwapBuilder::buildBitcoin(uint256_t amount, const std::string& memo,
     out.insert(out.end(), serialized.begin(), serialized.end());
     return {.out = std::move(out)};
 }
-SwapBundled SwapBuilder::buildBinance(Proto::Asset fromAsset, uint256_t amount, const std::string& memo) {
+SwapBundled SwapBuilder::buildBinance(Proto::Asset fromAsset, const uint256_t& amount, const std::string& memo) {
     auto input = Binance::Proto::SigningInput();
     Data out;
 
@@ -226,11 +234,11 @@ SwapBundled SwapBuilder::buildBinance(Proto::Asset fromAsset, uint256_t amount, 
     return {.out = std::move(out)};
 }
 
-SwapBundled SwapBuilder::buildEth(uint256_t amount, const std::string& memo) {
+SwapBundled SwapBuilder::buildEth(const uint256_t& amount, const std::string& memo) {
     Data out;
     auto input = Ethereum::Proto::SigningInput();
     // EIP-1559
-    input.set_tx_mode(Ethereum::Proto::Enveloped);
+    input.set_tx_mode(this->mFromAsset.chain() == Proto::Chain::BSC ? Ethereum::Proto::Legacy : Ethereum::Proto::Enveloped);
     const auto& toTokenId = mFromAsset.token_id();
     // some sanity check / address conversion
     Data vaultAddressBin = ethAddressStringToData(mVaultAddress);
@@ -262,15 +270,19 @@ SwapBundled SwapBuilder::buildEth(uint256_t amount, const std::string& memo) {
             mExpirationPolicy = std::chrono::duration_cast<std::chrono::seconds>(in_15_minutes.time_since_epoch()).count();
         }
         auto& transfer = *input.mutable_transaction()->mutable_contract_generic();
-        auto func = Ethereum::ABI::Function("depositWithExpiry", std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>{
-                                                                     std::make_shared<Ethereum::ABI::ParamAddress>(vaultAddressBin),
-                                                                     std::make_shared<Ethereum::ABI::ParamAddress>(toAssetAddressBin),
-                                                                     std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(amount)),
-                                                                     std::make_shared<Ethereum::ABI::ParamString>(memo),
-                                                                     std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(*mExpirationPolicy))});
-        Data payload;
-        func.encode(payload);
-        transfer.set_data(payload.data(), payload.size());
+
+        // Ethereum::ABI::AbiProto::NamedParam
+        auto payload = Ethereum::ABI::Function::encodeFunctionCall("depositWithExpiry", {
+            std::make_shared<Ethereum::ABI::ProtoAddress>(mVaultAddress),
+            std::make_shared<Ethereum::ABI::ProtoAddress>(toTokenId),
+            std::make_shared<Ethereum::ABI::ProtoUInt256>(amount),
+            std::make_shared<Ethereum::ABI::ProtoString>(memo),
+            std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(*mExpirationPolicy)),
+        });
+        if (payload.has_value()) {
+            transfer.set_data(payload.value().data(), payload.value().size());
+        }
+
         Data amountData = store(uint256_t(0));
         // if tokenId is set to 0x0000000000000000000000000000000000000000 this means we are sending ethereum and transfer amount also need to be set
         if (toTokenId == "0x0000000000000000000000000000000000000000") {
@@ -290,7 +302,7 @@ SwapBundled SwapBuilder::buildEth(uint256_t amount, const std::string& memo) {
     return {.out = std::move(out)};
 }
 
-SwapBundled SwapBuilder::buildAtom(uint256_t amount, const std::string& memo) {
+SwapBundled SwapBuilder::buildAtom(const uint256_t& amount, const std::string& memo) {
     if (!Cosmos::Address::isValid(mVaultAddress, "cosmos")) {
         return {.status_code = static_cast<int>(Proto::ErrorCode::Error_Invalid_vault_address), .error = "Invalid vault address: " + mVaultAddress};
     }
@@ -301,15 +313,47 @@ SwapBundled SwapBuilder::buildAtom(uint256_t amount, const std::string& memo) {
     input.set_chain_id("cosmoshub-4");
     input.set_memo(memo);
 
-    auto msg = input.add_messages();
+    auto* msg = input.add_messages();
     auto& message = *msg->mutable_send_coins_message();
 
     message.set_from_address(mFromAddress);
     message.set_to_address(mVaultAddress);
 
-    auto amountOfTx = message.add_amounts();
+    auto* amountOfTx = message.add_amounts();
     amountOfTx->set_denom("uatom");
     amountOfTx->set_amount(amount.str());
+
+    auto serialized = input.SerializeAsString();
+    out.insert(out.end(), serialized.begin(), serialized.end());
+
+    return {.out = std::move(out)};
+}
+
+SwapBundled SwapBuilder::buildRune(const uint256_t& amount, const std::string& memo) {
+    auto* hrp = stringForHRP(TW::hrp(TWCoinTypeTHORChain));
+    auto* chainId = TW::chainId(TWCoinTypeTHORChain);
+
+    Bech32Address fromAddress(hrp);
+    Bech32Address::decode(mFromAddress, fromAddress, hrp);
+
+    Data out;
+
+    Cosmos::Proto::SigningInput input;
+    input.set_signing_mode(Cosmos::Proto::Protobuf);
+    input.set_chain_id(chainId);
+
+    auto* msg = input.add_messages()->mutable_thorchain_deposit_message();
+    msg->set_signer(fromAddress.getKeyHash().data(), fromAddress.getKeyHash().size());
+    msg->set_memo(memo);
+
+    auto* coin = msg->add_coins();
+    coin->set_amount(toString(amount));
+    coin->set_decimals(0);
+
+    auto* asset = coin->mutable_asset();
+    asset->set_chain(chainName(static_cast<Chain>(mFromAsset.chain())));
+    asset->set_symbol(mFromAsset.symbol());
+    asset->set_ticker(mFromAsset.symbol());
 
     auto serialized = input.SerializeAsString();
     out.insert(out.end(), serialized.begin(), serialized.end());

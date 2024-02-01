@@ -1,0 +1,42 @@
+[package]
+name = "tw_encoding-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = { version = "0.4", features = ["arbitrary-derive"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_bytes = "0.11.12"
+
+[dependencies.tw_encoding]
+path = ".."
+features = ["arbitrary"]
+
+# Prevent this from interfering with workspaces
+[workspace]
+members = ["."]
+
+[profile.release]
+debug = 1
+
+[[bin]]
+name = "base_encode"
+path = "fuzz_targets/base_encode.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "base_decode"
+path = "fuzz_targets/base_decode.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "cbor_encode_decode"
+path = "fuzz_targets/cbor_encode_decode.rs"
+test = false
+doc = false

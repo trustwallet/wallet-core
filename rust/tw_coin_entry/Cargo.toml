@@ -1,0 +1,17 @@
+[package]
+name = "tw_coin_entry"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde_json = "1.0"
+tw_encoding = { path = "../tw_encoding" }
+tw_hash = { path = "../tw_hash" }
+tw_keypair = { path = "../tw_keypair" }
+tw_memory = { path = "../tw_memory" }
+tw_misc = { path = "../tw_misc" }
+tw_number = { path = "../tw_number" }
+tw_proto = { path = "../tw_proto" }
+
+[features]
+test-utils = []
