@@ -37,7 +37,18 @@ public:
         uint32_t expireAt = 0,
         const std::string& comment = ""
     ) const;
-    // TANGEM
+
+    [[nodiscard]] Cell::Ref createQueryMessage(
+        const PrivateKey& privateKey,
+        const Address& dest,
+        uint64_t amount,
+        uint32_t sequence_number,
+        uint8_t mode,
+        const Cell::Ref& payload,
+        uint32_t expireAt = 0
+    ) const;
+
+    // TANGEM START
     [[nodiscard]] Cell::Ref createTransferMessage(
         const PrivateKey& privateKey,
         const std::function<Data(Data)> externalSigner,
@@ -48,6 +59,18 @@ public:
         uint32_t expireAt = 0,
         const std::string& comment = ""
     ) const;
+    
+    [[nodiscard]] Cell::Ref createQueryMessage(
+        const PrivateKey& privateKey,
+        const std::function<Data(Data)> externalSigner,
+        const Address& dest,
+        uint64_t amount,
+        uint32_t sequence_number,
+        uint8_t mode,
+        const Cell::Ref& payload,
+        uint32_t expireAt = 0
+    ) const;
+    // TANGEM END
 
     [[nodiscard]] Cell::Ref createQueryMessage(
         const PrivateKey& privateKey,
