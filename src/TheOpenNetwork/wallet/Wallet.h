@@ -72,16 +72,6 @@ public:
     ) const;
     // TANGEM END
 
-    [[nodiscard]] Cell::Ref createQueryMessage(
-        const PrivateKey& privateKey,
-        const Address& dest,
-        uint64_t amount,
-        uint32_t sequence_number,
-        uint8_t mode,
-        const Cell::Ref& payload,
-        uint32_t expireAt = 0
-    ) const;
-
 protected:
     [[nodiscard]] virtual Cell::Ref createDataCell() const = 0;
     virtual void writeSigningPayload(CellBuilder& builder, uint32_t sequence_number = 0, uint32_t expireAt = 0) const = 0;
