@@ -36,7 +36,7 @@ InputSelector<TypeWithAmount>::filterThreshold(const std::vector<TypeWithAmount>
                                                uint64_t minimumAmount) noexcept {
     std::vector<TypeWithAmount> filtered;
     for (auto& i : inputs) {
-        if (static_cast<uint64_t>(i.amount) > minimumAmount) {
+        if (static_cast<uint64_t>(i.amount) >= minimumAmount) {
             filtered.push_back(i);
         }
     }
@@ -71,8 +71,7 @@ InputSelector<TypeWithAmount>::select(uint64_t targetValue, uint64_t byteFee, ui
     }
 
     // Get all possible utxo selections up to a maximum size, sort by total amount, increasing
-    std::vector<TypeWithAmount> sorted = _inputs;
-    filterOutDust(sorted, byteFee);
+    std::vector<TypeWithAmount> sorted = filterOutDust(_inputs, byteFee);
     std::sort(
         sorted.begin(),
         sorted.end(),
@@ -157,7 +156,10 @@ InputSelector<TypeWithAmount>::select(uint64_t targetValue, uint64_t byteFee, ui
         }
     }
 
-    return {};
+    // If couldn't find a combination of inputs to cover estimated transaction fee and the target amount,
+    // return the whole set of UTXOs. Later, the transaction fee will be calculated more accurately,
+    // and these UTXOs can be enough.
+    return sorted;
 }
 
 template <typename TypeWithAmount>
@@ -173,7 +175,7 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t 
     }
     assert(_inputs.size() >= 1);
 
-    // target value is larger that original, but not by a factor of 2 (optimized for large UTXO
+    // target value is larger than original, but not by a factor of 2 (optimized for large UTXO
     // cases)
     const auto increasedTargetValue =
         (uint64_t)((double)targetValue * 1.1 +
@@ -196,8 +198,10 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t 
         }
     }
 
-    // not enough
-    return {};
+    // If couldn't find a combination of inputs to cover estimated transaction fee and the target amount,
+    // return the whole set of UTXOs. Later, the transaction fee will be calculated more accurately,
+    // and these UTXOs can be enough.
+    return selected;
 }
 
 template <typename TypeWithAmount>

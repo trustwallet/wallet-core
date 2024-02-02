@@ -125,7 +125,9 @@ TEST(BitcoinInputSelector, SelectOneInsufficientEqual) {
     auto selector = InputSelector<UTXO>(utxos);
     auto selected = selector.select(100'000, 1);
 
-    EXPECT_TRUE(verifySelectedUTXOs(selected, {}));
+    // `InputSelector` returns the entire list of UTXOs even if they are not enough.
+    // That's because `InputSelector` has a rough segwit fee estimation algorithm, and the UTXOs can actually be enough.
+    EXPECT_TRUE(verifySelectedUTXOs(selected, {100'000}));
 }
 
 TEST(BitcoinInputSelector, SelectOneInsufficientHigher) {
@@ -134,7 +136,21 @@ TEST(BitcoinInputSelector, SelectOneInsufficientHigher) {
     auto selector = InputSelector<UTXO>(utxos);
     auto selected = selector.select(99'900, 1);
 
-    EXPECT_TRUE(verifySelectedUTXOs(selected, {}));
+    // `InputSelector` returns the entire list of UTXOs even if they are not enough.
+    // That's because `InputSelector` has a rough segwit fee estimation algorithm, and the UTXOs can actually be enough.
+    EXPECT_TRUE(verifySelectedUTXOs(selected, {100'000}));
+}
+
+TEST(BitcoinInputSelector, SelectOneInsufficientHigherFilterDust) {
+    auto utxos = buildTestUTXOs({22, 100'000, 40});
+
+    auto selector = InputSelector<UTXO>(utxos);
+    auto selected = selector.select(99'900, 1);
+
+    // `InputSelector` returns the entire list of UTXOs even if they are not enough.
+    // That's because `InputSelector` has a rough segwit fee estimation algorithm, and the UTXOs can actually be enough.
+    // However, the list of result UTXOs does not include dust inputs.
+    EXPECT_TRUE(verifySelectedUTXOs(selected, {100'000}));
 }
 
 TEST(BitcoinInputSelector, SelectOneFitsExactly) {
@@ -150,10 +166,11 @@ TEST(BitcoinInputSelector, SelectOneFitsExactly) {
     EXPECT_EQ(feeCalculator.calculate(1, 2, 1), expectedFee);
     EXPECT_EQ(feeCalculator.calculate(1, 1, 1), 143);
 
-    // 1 sat more and does not fit any more
+    // 1 sat more and does not fit any more.
+    // However, `InputSelector` returns the entire list of UTXOs even if they are not enough.
+    // That's because `InputSelector` has a rough segwit fee estimation algorithm, and the UTXOs can actually be enough.
     selected = selector.select(100'000 - expectedFee + 1, 1);
-
-    EXPECT_TRUE(verifySelectedUTXOs(selected, {}));
+    EXPECT_TRUE(verifySelectedUTXOs(selected, {100'000}));
 }
 
 TEST(BitcoinInputSelector, SelectOneFitsExactlyHighfee) {
@@ -170,10 +187,11 @@ TEST(BitcoinInputSelector, SelectOneFitsExactlyHighfee) {
     EXPECT_EQ(feeCalculator.calculate(1, 2, byteFee), expectedFee);
     EXPECT_EQ(feeCalculator.calculate(1, 1, byteFee), 1430);
 
-    // 1 sat more and does not fit any more
+    // 1 sat more and does not fit any more.
+    // However, `InputSelector` returns the entire list of UTXOs even if they are not enough.
+    // That's because `InputSelector` has a rough segwit fee estimation algorithm, and the UTXOs can actually be enough.
     selected = selector.select(100'000 - expectedFee + 1, byteFee);
-
-    EXPECT_TRUE(verifySelectedUTXOs(selected, {}));
+    EXPECT_TRUE(verifySelectedUTXOs(selected, {100'000}));
 }
 
 TEST(BitcoinInputSelector, SelectThreeNoDust) {
@@ -409,7 +427,9 @@ TEST(BitcoinInputSelector, SelectZcashMaxUnspents2) {
     auto selector = InputSelector<UTXO>(utxos, getFeeCalculator(TWCoinTypeZcash), std::make_shared<LegacyDustCalculator>(TWCoinTypeZcash));
     auto selected = selector.select(176366 - 6, 1);
 
-    EXPECT_TRUE(verifySelectedUTXOs(selected, {}));
+    // `InputSelector` returns the entire list of UTXOs even if they are not enough.
+    // That's because `InputSelector` has a rough segwit fee estimation algorithm, and the UTXOs can actually be enough.
+    EXPECT_TRUE(verifySelectedUTXOs(selected, {2592, 73774, 100000}));
 }
 
 TEST(BitcoinInputSelector, ManyUtxos_900) {
