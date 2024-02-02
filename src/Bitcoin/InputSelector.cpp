@@ -25,8 +25,8 @@ template <typename TypeWithAmount>
 std::vector<TypeWithAmount>
 InputSelector<TypeWithAmount>::filterOutDust(const std::vector<TypeWithAmount>& inputs,
                                              int64_t byteFee) noexcept {
-    auto inputFeeLimit = static_cast<uint64_t>(feeCalculator.calculateSingleInput(byteFee));
-    return filterThreshold(inputs, inputFeeLimit);
+    auto dustThreshold = static_cast<uint64_t>(dustCalculator->dustAmount(byteFee));
+    return filterThreshold(inputs, dustThreshold);
 }
 
 // Filters utxos that are dust
@@ -70,21 +70,24 @@ InputSelector<TypeWithAmount>::select(uint64_t targetValue, uint64_t byteFee, ui
         return {};
     }
 
+    // Get all possible utxo selections up to a maximum size, sort by total amount, increasing
+    std::vector<TypeWithAmount> sorted = _inputs;
+    filterOutDust(sorted, byteFee);
+    std::sort(
+        sorted.begin(),
+        sorted.end(),
+        [](const TypeWithAmount& lhs, const TypeWithAmount& rhs) {
+            return lhs.amount < rhs.amount;
+        });
+
     // total values of utxos should be greater than targetValue
-    if (_inputs.empty() || sum(_inputs) < targetValue) {
+    if (sorted.empty() || sum(sorted) < targetValue) {
         return {};
     }
-    assert(_inputs.size() >= 1);
+    assert(sorted.size() >= 1);
 
     // definitions for the following calculation
     const auto doubleTargetValue = targetValue * 2;
-
-    // Get all possible utxo selections up to a maximum size, sort by total amount, increasing
-    std::vector<TypeWithAmount> sorted = _inputs;
-    std::sort(sorted.begin(), sorted.end(),
-              [](const TypeWithAmount& lhs, const TypeWithAmount& rhs) {
-                  return lhs.amount < rhs.amount;
-              });
 
     // Precompute maximum amount possible to obtain with given number of inputs
     const auto n = sorted.size();
@@ -104,7 +107,7 @@ InputSelector<TypeWithAmount>::select(uint64_t targetValue, uint64_t byteFee, ui
         return doubleTargetValue - val;
     };
 
-    const int64_t dustThreshold = feeCalculator.calculateSingleInput(byteFee);
+    const int64_t dustThreshold = dustCalculator->dustAmount(byteFee);
 
     // 1. Find a combination of the fewest inputs that is
     //    (1) bigger than what we need
@@ -131,7 +134,7 @@ InputSelector<TypeWithAmount>::select(uint64_t targetValue, uint64_t byteFee, ui
                                    const std::vector<TypeWithAmount>& rhs) {
                           return distFrom2x(sum(lhs)) < distFrom2x(sum(rhs));
                       });
-            return filterOutDust(slices.front(), byteFee);
+            return slices.front();
         }
     }
 
@@ -150,7 +153,7 @@ InputSelector<TypeWithAmount>::select(uint64_t targetValue, uint64_t byteFee, ui
                                     }),
                      slices.end());
         if (!slices.empty()) {
-            return filterOutDust(slices.front(), byteFee);
+            return slices.front();
         }
     }
 
@@ -176,7 +179,7 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t 
         (uint64_t)((double)targetValue * 1.1 +
                    feeCalculator.calculate(_inputs.size(), numOutputs, byteFee) + 1000);
 
-    const int64_t dustThreshold = feeCalculator.calculateSingleInput(byteFee);
+    const int64_t dustThreshold = dustCalculator->dustAmount(byteFee);
 
     // Go through inputs in a single pass, in the order they appear, no optimization
     uint64_t sum = 0;

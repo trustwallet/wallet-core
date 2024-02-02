@@ -239,6 +239,26 @@ TEST(TransactionPlan, SelectionSuboptimal_ExtraSmallUtxo) {
     EXPECT_EQ(firstUtxo, 500);
 }
 
+TEST(TransactionPlan, SelectionSuboptimal_ExtraSmallUtxoFixedDust) {
+    // Solution found 4-in-2-out {500, 600, 800, 1000} avail 2900 txamount 1390 fee 702 change 628
+    // Better solution: 3-in-2-out {600, 800, 1000} avail 2400 txamount 1390 fee 566 change 444
+    // Previously, with with higher fee estimation used in UTXO selection, solution found was 5-in-2-out {400, 500, 600, 800, 1000} avail 3300 txamount 1390 fee 838 change 1072
+    auto utxos = buildTestUTXOs({400, 500, 600, 800, 1'000});
+    auto byteFee = 2;
+    auto signingInput = buildSigningInput(1'390, byteFee, utxos);
+    signingInput.dustCalculator = std::make_shared<FixedDustCalculator>(546);
+
+    // UTXOs smaller than singleInputFee are not included
+    auto txPlan = TransactionBuilder::plan(signingInput);
+
+    auto expectedFee = 702;
+    EXPECT_TRUE(verifyPlan(txPlan, {500, 600, 800, 1'000}, 1'390, expectedFee));
+    auto change = 2'900 - 1'390 - expectedFee;
+    auto firstUtxo = txPlan.utxos[0].amount;
+    EXPECT_EQ(change, 808);
+    EXPECT_EQ(firstUtxo, 500);
+}
+
 TEST(TransactionPlan, Selection_Satisfied5) {
     // 5-input case, with a 5-input solution.
     // Previously, with with higher fee estimation used in UTXO selection, no solution would be found.

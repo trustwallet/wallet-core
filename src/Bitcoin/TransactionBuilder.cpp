@@ -95,7 +95,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         plan.error = Common::Proto::Error_missing_input_utxos;
     } else {
         const auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coinType), input.disableDustFilter);
-        auto inputSelector = InputSelector<UTXO>(input.utxos, feeCalculator);
+        auto inputSelector = InputSelector<UTXO>(input.utxos, feeCalculator, input.dustCalculator);
         auto inputSum = InputSelector<UTXO>::sum(input.utxos);
 
         // select UTXOs
@@ -111,6 +111,8 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         auto output_size = 2;
         UTXOs selectedInputs;
         if (!maxAmount) {
+            // Please note that there may not be a "change" output if the "change.amount" is less than "dust",
+            // but we use a max amount of transaction outputs to simplify the algorithm, so the fee can be slightly bigger in rare cases.
             output_size = 2 + extraOutputs; // output + change
             if (input.useMaxUtxo) {
                 selectedInputs = inputSelector.selectMaxAmount(input.byteFee);

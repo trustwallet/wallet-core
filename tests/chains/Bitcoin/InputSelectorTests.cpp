@@ -141,7 +141,7 @@ TEST(BitcoinInputSelector, SelectOneFitsExactly) {
     auto utxos = buildTestUTXOs({100'000});
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    auto selector = InputSelector<UTXO>(utxos, feeCalculator);
+    auto selector = InputSelector<UTXO>(utxos);
     auto expectedFee = 174;
     auto selected = selector.select(100'000 - expectedFee, 1);
 
@@ -161,7 +161,7 @@ TEST(BitcoinInputSelector, SelectOneFitsExactlyHighfee) {
 
     const auto byteFee = 10;
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    auto selector = InputSelector<UTXO>(utxos, feeCalculator);
+    auto selector = InputSelector<UTXO>(utxos);
     auto expectedFee = 1740;
     auto selected = selector.select(100'000 - expectedFee, byteFee);
 
@@ -180,7 +180,7 @@ TEST(BitcoinInputSelector, SelectThreeNoDust) {
     auto utxos = buildTestUTXOs({100'000, 70'000, 75'000});
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    auto selector = InputSelector<UTXO>(utxos, feeCalculator);
+    auto selector = InputSelector<UTXO>(utxos);
     auto selected = selector.select(100'000 - 174 - 10, 1);
 
     // 100'000 would fit with dust; instead two UTXOs are selected not to leave dust
@@ -274,7 +274,7 @@ TEST(BitcoinInputSelector, SelectTenThreeExact) {
     auto utxos = buildTestUTXOs({1'000, 2'000, 100'000, 3'000, 4'000, 5'000, 125'000, 6'000, 150'000, 7'000});
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    auto selector = InputSelector<UTXO>(utxos, feeCalculator);
+    auto selector = InputSelector<UTXO>(utxos);
     const auto dustLimit = 102;
     auto selected = selector.select(375'000 - 376 - dustLimit, 1);
 
@@ -292,7 +292,7 @@ TEST(BitcoinInputSelector, SelectMaxAmountOne) {
     auto utxos = buildTestUTXOs({10189534});
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    auto selector = InputSelector<UTXO>(utxos, feeCalculator);
+    auto selector = InputSelector<UTXO>(utxos);
     auto selected = selector.selectMaxAmount(1);
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {10189534}));
@@ -304,7 +304,7 @@ TEST(BitcoinInputSelector, SelectAllAvail) {
     auto utxos = buildTestUTXOs({10189534});
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    auto selector = InputSelector<UTXO>(utxos, feeCalculator);
+    auto selector = InputSelector<UTXO>(utxos);
     auto selected = selector.select(10189534 - 226, 1);
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {10189534}));
@@ -316,7 +316,7 @@ TEST(BitcoinInputSelector, SelectMaxAmount5of5) {
     auto utxos = buildTestUTXOs({400, 500, 600, 800, 1000});
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    auto selector = InputSelector<UTXO>(utxos, feeCalculator);
+    auto selector = InputSelector<UTXO>(utxos);
     auto byteFee = 1;
     auto selected = selector.selectMaxAmount(byteFee);
 
@@ -330,7 +330,7 @@ TEST(BitcoinInputSelector, SelectMaxAmount4of5) {
     auto utxos = buildTestUTXOs({400, 500, 600, 800, 1000});
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    auto selector = InputSelector<UTXO>(utxos, feeCalculator);
+    auto selector = InputSelector<UTXO>(utxos);
     auto byteFee = 4;
     auto selected = selector.selectMaxAmount(byteFee);
 
@@ -344,7 +344,7 @@ TEST(BitcoinInputSelector, SelectMaxAmount1of5) {
     auto utxos = buildTestUTXOs({400, 500, 600, 800, 1000});
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    auto selector = InputSelector<UTXO>(utxos, feeCalculator);
+    auto selector = InputSelector<UTXO>(utxos);
     auto byteFee = 8;
     auto selected = selector.selectMaxAmount(byteFee);
 
@@ -358,7 +358,7 @@ TEST(BitcoinInputSelector, SelectMaxAmountNone) {
     auto utxos = buildTestUTXOs({400, 500, 600, 800, 1000});
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    auto selector = InputSelector<UTXO>(utxos, feeCalculator);
+    auto selector = InputSelector<UTXO>(utxos);
     auto byteFee = 10;
     auto selected = selector.selectMaxAmount(byteFee);
 
@@ -370,8 +370,7 @@ TEST(BitcoinInputSelector, SelectMaxAmountNone) {
 TEST(BitcoinInputSelector, SelectMaxAmountNoUTXOs) {
     auto utxos = buildTestUTXOs({});
 
-    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    auto selector = InputSelector<UTXO>(utxos, feeCalculator);
+    auto selector = InputSelector<UTXO>(utxos);
     auto selected = selector.selectMaxAmount(1);
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {}));
@@ -380,7 +379,7 @@ TEST(BitcoinInputSelector, SelectMaxAmountNoUTXOs) {
 TEST(BitcoinInputSelector, SelectZcashUnspents) {
     auto utxos = buildTestUTXOs({100000, 2592, 73774});
 
-    auto selector = InputSelector<UTXO>(utxos, getFeeCalculator(TWCoinTypeZcash));
+    auto selector = InputSelector<UTXO>(utxos, getFeeCalculator(TWCoinTypeZcash), std::make_shared<LegacyDustCalculator>(TWCoinTypeZcash));
     auto selected = selector.select(10000, 1);
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {73774}));
@@ -389,7 +388,7 @@ TEST(BitcoinInputSelector, SelectZcashUnspents) {
 TEST(BitcoinInputSelector, SelectGroestlUnspents) {
     auto utxos = buildTestUTXOs({499971976});
 
-    auto selector = InputSelector<UTXO>(utxos, getFeeCalculator(TWCoinTypeZcash));
+    auto selector = InputSelector<UTXO>(utxos, getFeeCalculator(TWCoinTypeZcash), std::make_shared<LegacyDustCalculator>(TWCoinTypeZcash));
     auto selected = selector.select(499951976, 1, 1);
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {499971976}));
@@ -398,7 +397,7 @@ TEST(BitcoinInputSelector, SelectGroestlUnspents) {
 TEST(BitcoinInputSelector, SelectZcashMaxAmount) {
     auto utxos = buildTestUTXOs({100000, 2592, 73774});
 
-    auto selector = InputSelector<UTXO>(utxos, getFeeCalculator(TWCoinTypeZcash));
+    auto selector = InputSelector<UTXO>(utxos, getFeeCalculator(TWCoinTypeZcash), std::make_shared<LegacyDustCalculator>(TWCoinTypeZcash));
     auto selected = selector.selectMaxAmount(1);
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {100000, 2592, 73774}));
@@ -407,7 +406,7 @@ TEST(BitcoinInputSelector, SelectZcashMaxAmount) {
 TEST(BitcoinInputSelector, SelectZcashMaxUnspents2) {
     auto utxos = buildTestUTXOs({100000, 2592, 73774});
 
-    auto selector = InputSelector<UTXO>(utxos, getFeeCalculator(TWCoinTypeZcash));
+    auto selector = InputSelector<UTXO>(utxos, getFeeCalculator(TWCoinTypeZcash), std::make_shared<LegacyDustCalculator>(TWCoinTypeZcash));
     auto selected = selector.select(176366 - 6, 1);
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {}));
