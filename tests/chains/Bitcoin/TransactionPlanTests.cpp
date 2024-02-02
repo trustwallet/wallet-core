@@ -92,7 +92,9 @@ TEST(TransactionPlan, OneMoreRequested) {
 TEST(TransactionPlan, OneFitsExactly) {
     auto utxos = buildTestUTXOs({100'000});
     auto byteFee = 1;
-    auto expectedFee = 147;
+    auto dustChange = 27;
+    // Change amount is too low (less than dust), so we just waste it as the transaction fee.
+    auto expectedFee = 147 + dustChange;
     auto sigingInput = buildSigningInput(100'000 - 174, byteFee, utxos);
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
@@ -106,7 +108,9 @@ TEST(TransactionPlan, OneFitsExactly) {
 TEST(TransactionPlan, OneFitsExactlyHighFee) {
     auto utxos = buildTestUTXOs({100'000});
     auto byteFee = 10;
-    auto expectedFee = 1470;
+    auto dustChange = 270;
+    // Change amount is too low (less than dust), so we just waste it as the transaction fee.
+    auto expectedFee = 1470 + dustChange;
     auto sigingInput = buildSigningInput(100'000 - 1740, byteFee, utxos);
 
     auto txPlan = TransactionBuilder::plan(sigingInput);

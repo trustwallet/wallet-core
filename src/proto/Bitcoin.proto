@@ -169,7 +169,7 @@ message SigningInput {
     // Later, we plan to add support for `DynamicDust` policy with a `min_relay_fee` amount.
     oneof dust_policy {
         // Use a constant "Dust" threshold.
-        int64 fixed_threshold = 24;
+        int64 fixed_dust_threshold = 24;
     }
 }
 

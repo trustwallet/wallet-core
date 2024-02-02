@@ -202,6 +202,9 @@ TEST(BitcoinSigning, ExtraOutputsRequireExtraInputs) {
     signingInput.set_to_address(toAddress);
     signingInput.set_change_address(ownAddress);
     signingInput.add_private_key(privateKey.data(), privateKey.size());
+    // Dust threshold will be 612 (102 * 6) if otherwise is not set.
+    // So to fix the test, we should set the 313 dust threshold for the change output to be included.
+    signingInput.set_fixed_dust_threshold(313);
 
     auto utxoScript = Script::lockScriptForAddress(ownAddress, TWCoinTypeBitcoin);
     auto& utxo0 = *signingInput.add_utxo();
@@ -1025,6 +1028,9 @@ SigningInput buildInputP2WSH(enum TWBitcoinSigHashType hashType, bool omitScript
     input.byteFee = 1;
     input.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx";
     input.changeAddress = "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU";
+    // Set the very low fixed Dust threshold just to fix the tests.
+    // Actually, transactions in these tests have change=79 and change=52 that will lead to Dust error when broadcasting it.
+    input.dustCalculator = std::make_shared<FixedDustCalculator>(50);
 
     if (!omitKeys) {
         auto utxoKey0 = PrivateKey(parse_hex("ed00a0841cd53aedf89b0c616742d1d2a930f8ae2b0fb514765a17bb62c7521a"));

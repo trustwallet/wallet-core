@@ -88,6 +88,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
 
     bool maxAmount = input.useMaxAmount;
     Amount totalAmount = input.amount + input.extraOutputsAmount;
+    Amount dustThreshold = input.dustCalculator->dustAmount(input.byteFee);
 
     if (totalAmount == 0 && !maxAmount) {
         plan.error = Common::Proto::Error_zero_amount_requested;
@@ -181,9 +182,13 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
             if (plan.availableAmount < totalSpendAmount) {
                 plan.amount = 0;
                 plan.error = Common::Proto::Error_not_enough_utxos;
-            } else {
-                // compute change
+            } else if (plan.availableAmount - totalSpendAmount >= dustThreshold) {
+                // Compute change if it's not dust.
                 plan.change = plan.availableAmount - totalSpendAmount;
+            } else {
+                // Spend the change as tx fee if it `change < dustThreshold`, otherwise the transaction won't be mined.
+                plan.change = 0;
+                plan.fee += plan.availableAmount - totalSpendAmount;
             }
         }
     }
