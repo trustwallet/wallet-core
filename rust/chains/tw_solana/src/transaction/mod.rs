@@ -8,7 +8,7 @@ use tw_hash::{as_byte_sequence, H256, H512};
 pub mod legacy;
 pub mod short_vec;
 pub mod v0;
-pub mod versioned_transaction;
+pub mod versioned;
 
 #[derive(Clone, Copy, Default, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Pubkey(#[serde(with = "as_byte_sequence")] pub(crate) H256);
@@ -52,7 +52,7 @@ mod tests {
     use super::*;
     use crate::address::SolanaAddress;
     use crate::transaction::v0::MessageAddressTableLookup;
-    use crate::transaction::versioned_transaction::{VersionedMessage, VersionedTransaction};
+    use crate::transaction::versioned::{VersionedMessage, VersionedTransaction};
     use std::str::FromStr;
     use tw_encoding::hex::ToHex;
     use tw_encoding::{base58, base64};

@@ -44,3 +44,12 @@ pub struct Transaction {
     /// The message to sign.
     pub message: Message,
 }
+
+impl Transaction {
+    /// Zeroize signatures before re-signing...
+    pub fn zeroize_signatures(&mut self) {
+        self.signatures
+            .iter_mut()
+            .for_each(|signature| *signature = Signature::default());
+    }
+}

@@ -41,6 +41,30 @@ pub enum VersionedMessage {
     V0(v0::Message),
 }
 
+impl VersionedMessage {
+    pub fn num_required_signatures(&self) -> usize {
+        match self {
+            VersionedMessage::Legacy(legacy) => legacy.header.num_required_signatures as usize,
+            VersionedMessage::V0(v0) => v0.header.num_required_signatures as usize,
+        }
+    }
+
+    pub fn get_account_index(&self, account_pubkey: Pubkey) -> Option<usize> {
+        let account_keys = match self {
+            VersionedMessage::Legacy(legacy) => &legacy.account_keys,
+            VersionedMessage::V0(v0) => &v0.account_keys,
+        };
+        account_keys.iter().position(|pk| *pk == account_pubkey)
+    }
+
+    pub fn set_recent_blockhash(&mut self, recent_blockhash: H256) {
+        match self {
+            VersionedMessage::Legacy(legacy) => legacy.recent_blockhash = recent_blockhash,
+            VersionedMessage::V0(v0) => v0.recent_blockhash = recent_blockhash,
+        }
+    }
+}
+
 impl Serialize for VersionedMessage {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
