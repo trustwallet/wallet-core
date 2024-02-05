@@ -57,12 +57,12 @@ impl<Context: EvmContext> Compiler<Context> {
     fn compile_impl(
         input: Proto::SigningInput<'_>,
         signatures: Vec<SignatureBytes>,
-        public_keys: Vec<PublicKeyBytes>,
+        _: Vec<PublicKeyBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let SingleSignaturePubkey {
             signature,
             public_key: _,
-        } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
+        } = SingleSignaturePubkey::from_sign_list(signatures)?;
         let signature = secp256k1::Signature::from_bytes(&signature)?;
 
         let chain_id = U256::from_big_endian_slice(&input.chain_id)?;
