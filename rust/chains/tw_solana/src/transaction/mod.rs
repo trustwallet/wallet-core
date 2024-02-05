@@ -53,6 +53,7 @@ mod tests {
     use crate::address::SolanaAddress;
     use crate::transaction::v0::MessageAddressTableLookup;
     use crate::transaction::versioned::{VersionedMessage, VersionedTransaction};
+    use crate::SOLANA_ALPHABET;
     use std::str::FromStr;
     use tw_encoding::hex::ToHex;
     use tw_encoding::{base58, base64};
@@ -63,11 +64,11 @@ mod tests {
     }
 
     fn base58_decode(s: &'static str) -> Data {
-        base58::decode(s, &base58::Alphabet::BITCOIN).unwrap()
+        base58::decode(s, &SOLANA_ALPHABET).unwrap()
     }
 
     fn base58_decode_h256(s: &'static str) -> H256 {
-        let bytes = base58::decode(s, &base58::Alphabet::BITCOIN).unwrap();
+        let bytes = base58::decode(s, &SOLANA_ALPHABET).unwrap();
         H256::try_from(bytes.as_slice()).unwrap()
     }
 

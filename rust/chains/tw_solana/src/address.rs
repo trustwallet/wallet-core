@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::SOLANA_ALPHABET;
 use serde::de::Error as DeError;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
@@ -9,7 +10,6 @@ use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_encoding::base58;
-use tw_encoding::base58::Alphabet;
 use tw_hash::H256;
 use tw_keypair::tw;
 use tw_memory::Data;
@@ -49,7 +49,7 @@ impl FromStr for SolanaAddress {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let bytes =
-            base58::decode(s, Alphabet::BITCOIN).map_err(|_| AddressError::FromBase58Error)?;
+            base58::decode(s, &SOLANA_ALPHABET).map_err(|_| AddressError::FromBase58Error)?;
         let bytes = H256::try_from(bytes.as_slice()).map_err(|_| AddressError::InvalidInput)?;
         Ok(SolanaAddress { bytes })
     }
@@ -57,7 +57,7 @@ impl FromStr for SolanaAddress {
 
 impl fmt::Display for SolanaAddress {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let encoded = base58::encode(self.bytes.as_slice(), Alphabet::BITCOIN);
+        let encoded = base58::encode(self.bytes.as_slice(), &SOLANA_ALPHABET);
         write!(f, "{}", encoded)
     }
 }

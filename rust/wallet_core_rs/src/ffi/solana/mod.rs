@@ -2,6 +2,4 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-pub mod bitcoin;
-pub mod ethereum;
-pub mod solana;
+pub mod transaction;
