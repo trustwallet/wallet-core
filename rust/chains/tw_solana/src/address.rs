@@ -27,6 +27,14 @@ impl SolanaAddress {
             .to_bytes();
         Ok(SolanaAddress { bytes })
     }
+
+    pub fn with_public_key_bytes(bytes: H256) -> SolanaAddress {
+        SolanaAddress { bytes }
+    }
+
+    pub fn bytes(&self) -> H256 {
+        self.bytes
+    }
 }
 
 impl CoinAddress for SolanaAddress {
@@ -41,7 +49,7 @@ impl FromStr for SolanaAddress {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let bytes =
-            base58::decode(s, &Alphabet::BITCOIN).map_err(|_| AddressError::FromBase58Error)?;
+            base58::decode(s, Alphabet::BITCOIN).map_err(|_| AddressError::FromBase58Error)?;
         let bytes = H256::try_from(bytes.as_slice()).map_err(|_| AddressError::InvalidInput)?;
         Ok(SolanaAddress { bytes })
     }
@@ -49,7 +57,7 @@ impl FromStr for SolanaAddress {
 
 impl fmt::Display for SolanaAddress {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let encoded = base58::encode(self.bytes.as_slice(), &Alphabet::BITCOIN);
+        let encoded = base58::encode(self.bytes.as_slice(), Alphabet::BITCOIN);
         write!(f, "{}", encoded)
     }
 }

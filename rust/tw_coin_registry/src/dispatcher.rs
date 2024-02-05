@@ -19,8 +19,8 @@ use tw_internet_computer::entry::InternetComputerEntry;
 use tw_native_evmos::entry::NativeEvmosEntry;
 use tw_native_injective::entry::NativeInjectiveEntry;
 use tw_ronin::entry::RoninEntry;
-use tw_thorchain::entry::ThorchainEntry;
 use tw_solana::entry::SolanaEntry;
+use tw_thorchain::entry::ThorchainEntry;
 
 pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;
 pub type EvmEntryExtStaticRef = &'static dyn EvmEntryExt;

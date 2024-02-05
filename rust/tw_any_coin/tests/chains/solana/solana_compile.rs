@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 #[test]
+#[ignore]
 fn test_solana_compile() {
     todo!()
 }
