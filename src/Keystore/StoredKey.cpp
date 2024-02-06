@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "StoredKey.h"
 
@@ -17,6 +15,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <nlohmann/json.hpp>
+#include <TrezorCrypto/memzero.h>
 
 #include <cassert>
 #include <fstream>
@@ -32,7 +31,9 @@ StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& pas
     }
 
     Data mnemonicData = TW::Data(mnemonic.begin(), mnemonic.end());
-    return StoredKey(StoredKeyType::mnemonicPhrase, name, password, mnemonicData, encryptionLevel, encryption);
+    StoredKey key(StoredKeyType::mnemonicPhrase, name, password, mnemonicData, encryptionLevel, encryption);
+    memzero(mnemonicData.data(), mnemonic.size());
+    return key;
 }
 
 StoredKey StoredKey::createWithMnemonicRandom(const std::string& name, const Data& password, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption) {
@@ -40,7 +41,9 @@ StoredKey StoredKey::createWithMnemonicRandom(const std::string& name, const Dat
     const auto& mnemonic = wallet.getMnemonic();
     assert(Mnemonic::isValid(mnemonic));
     Data mnemonicData = TW::Data(mnemonic.begin(), mnemonic.end());
-    return StoredKey(StoredKeyType::mnemonicPhrase, name, password, mnemonicData, encryptionLevel, encryption);
+    StoredKey key(StoredKeyType::mnemonicPhrase, name, password, mnemonicData, encryptionLevel, encryption);
+    memzero(mnemonicData.data(), mnemonic.size());
+    return key;
 }
 
 StoredKey StoredKey::createWithMnemonicAddDefaultAddress(const std::string& name, const Data& password, const std::string& mnemonic, TWCoinType coin, TWStoredKeyEncryption encryption) {

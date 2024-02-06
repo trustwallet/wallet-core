@@ -1,15 +1,13 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use tw_memory::ffi::c_byte_array::{CByteArray, CByteArrayResult};
 use tw_memory::ffi::c_result::{OK_CODE, UNKNOWN_ERROR};
 
 #[test]
 fn test_c_result_unwrap() {
-    let c_res = CByteArrayResult::ok(CByteArray::new(vec![1, 2, 3]));
+    let c_res = CByteArrayResult::ok(CByteArray::from(vec![1, 2, 3]));
     assert!(c_res.is_ok());
     assert!(!c_res.is_err());
 
@@ -35,7 +33,7 @@ fn test_c_result_error_with_ok_code() {
 
 #[test]
 fn test_c_result_into_result() {
-    let c_res = CByteArrayResult::ok(CByteArray::new(vec![1, 2, 3]));
+    let c_res = CByteArrayResult::ok(CByteArray::from(vec![1, 2, 3]));
     c_res.into_result().unwrap();
 
     let c_res = CByteArrayResult::error(10);

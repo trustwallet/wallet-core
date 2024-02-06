@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "PrivateKey.h"
 
@@ -24,6 +22,36 @@
 #include <iterator>
 
 using namespace TW;
+
+Data rust_get_public_from_private(const Data& key, TWPublicKeyType public_type) {
+    auto* privkey = Rust::tw_private_key_create_with_data(key.data(), key.size());
+    if (privkey == nullptr) {
+        return {};
+    }
+    Data toReturn;
+
+    auto* pubkey = Rust::tw_private_key_get_public_key_by_type(privkey, static_cast<uint32_t>(public_type));
+    if (pubkey == nullptr) {
+        Rust::tw_private_key_delete(privkey);
+        return {};
+    }
+
+    Rust::CByteArrayWrapper res = Rust::tw_public_key_data(pubkey);
+
+    Rust::tw_public_key_delete(pubkey);
+    Rust::tw_private_key_delete(privkey);
+    return res.data;
+}
+
+Data rust_private_key_sign(const Data& key, const Data& hash, TWCurve curve) {
+    auto* priv = Rust::tw_private_key_create_with_data(key.data(), key.size());
+    if (priv == nullptr) {
+        return {};
+    }
+    Rust::CByteArrayWrapper res = Rust::tw_private_key_sign(priv, hash.data(), hash.size(), static_cast<uint32_t>(curve));
+    Rust::tw_private_key_delete(priv);
+    return res.data;
+}
 
 bool PrivateKey::isValid(const Data& data) {
     // Check length
@@ -162,32 +190,11 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
     }
 
     case TWPublicKeyTypeStarkex: {
-        result = ImmutableX::getPublicKeyFromPrivateKey(this->bytes);
-        if (result.size() == PublicKey::starkexSize - 1) {
-            result.insert(result.begin(), 0);
-        }
+        result = rust_get_public_from_private(this->bytes, type);
         break;
     }
     }
     return PublicKey(result, type);
-}
-
-Data PrivateKey::getSharedKey(const PublicKey& pubKey, TWCurve curve) const {
-    if (curve != TWCurveSECP256k1) {
-        return {};
-    }
-
-    Data result(PublicKey::secp256k1ExtendedSize);
-    bool success = ecdh_multiply(&secp256k1, key().data(),
-                                 pubKey.bytes.data(), result.data()) == 0;
-
-    if (success) {
-        PublicKey sharedKey(result, TWPublicKeyTypeSECP256k1Extended);
-        auto hash = Hash::sha256(sharedKey.compressed().bytes);
-        return hash;
-    }
-
-    return {};
 }
 
 int ecdsa_sign_digest_checked(const ecdsa_curve* curve, const uint8_t* priv_key, const uint8_t* digest, size_t digest_size, uint8_t* sig, uint8_t* pby, int (*is_canonical)(uint8_t by, uint8_t sig[64])) {
@@ -202,43 +209,42 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
     Data result;
     bool success = false;
     switch (curve) {
-    case TWCurveSECP256k1: {
-        result.resize(65);
-        success = ecdsa_sign_digest_checked(&secp256k1, key().data(), digest.data(), digest.size(), result.data(), result.data() + 64, nullptr) == 0;
-    } break;
-    case TWCurveED25519: {
-        result.resize(64);
-        ed25519_sign(digest.data(), digest.size(), key().data(), result.data());
-        success = true;
-    } break;
-    case TWCurveED25519Blake2bNano: {
-        result.resize(64);
-        ed25519_sign_blake2b(digest.data(), digest.size(), key().data(), result.data());
-        success = true;
-    } break;
-    case TWCurveED25519ExtendedCardano: {
-        result.resize(64);
-        ed25519_sign_ext(digest.data(), digest.size(), key().data(), extension().data(), result.data());
-        success = true;
-    } break;
-    case TWCurveCurve25519: {
-        result.resize(64);
-        const auto publicKey = getPublicKey(TWPublicKeyTypeED25519);
-        ed25519_sign(digest.data(), digest.size(), key().data(), result.data());
-        const auto sign_bit = publicKey.bytes[31] & 0x80;
-        result[63] = result[63] & 127;
-        result[63] |= sign_bit;
-        success = true;
-    } break;
-    case TWCurveNIST256p1: {
-        result.resize(65);
-        success = ecdsa_sign_digest_checked(&nist256p1, key().data(), digest.data(), digest.size(), result.data(), result.data() + 64, nullptr) == 0;
-    } break;
+        case TWCurveSECP256k1: {
+            result.resize(65);
+            success = ecdsa_sign_digest_checked(&secp256k1, key().data(), digest.data(), digest.size(), result.data(), result.data() + 64, nullptr) == 0;
+        } break;
+        case TWCurveED25519: {
+            result.resize(64);
+            ed25519_sign(digest.data(), digest.size(), key().data(), result.data());
+            success = true;
+        } break;
+        case TWCurveED25519Blake2bNano: {
+            result.resize(64);
+            ed25519_sign_blake2b(digest.data(), digest.size(), key().data(), result.data());
+            success = true;
+        } break;
+        case TWCurveED25519ExtendedCardano: {
+            result.resize(64);
+            ed25519_sign_ext(digest.data(), digest.size(), key().data(), extension().data(), result.data());
+            success = true;
+        } break;
+        case TWCurveCurve25519: {
+            result.resize(64);
+            const auto publicKey = getPublicKey(TWPublicKeyTypeED25519);
+            ed25519_sign(digest.data(), digest.size(), key().data(), result.data());
+            const auto sign_bit = publicKey.bytes[31] & 0x80;
+            result[63] = result[63] & 127;
+            result[63] |= sign_bit;
+            success = true;
+        } break;
+        case TWCurveNIST256p1: {
+            result.resize(65);
+            success = ecdsa_sign_digest_checked(&nist256p1, key().data(), digest.data(), digest.size(), result.data(), result.data() + 64, nullptr) == 0;
+        } break;
     case TWCurveStarkex: {
-        result = ImmutableX::sign(this->bytes, digest);
-        success = true;
-        break;
-    }
+        result = rust_private_key_sign(key(), digest, curve);
+        success = result.size() == 64;
+    } break;
     case TWCurveNone:
     default:
         break;
@@ -308,5 +314,5 @@ Data PrivateKey::signZilliqa(const Data& message) const {
 }
 
 void PrivateKey::cleanup() {
-    std::fill(bytes.begin(), bytes.end(), 0);
+    memzero(bytes.data(), bytes.size());
 }

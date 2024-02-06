@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "HDWallet.h"
 
@@ -99,9 +97,9 @@ HDWallet<seedSize>::HDWallet(const Data& entropy, const std::string& passphrase)
 
 template <std::size_t seedSize>
 HDWallet<seedSize>::~HDWallet() {
-    std::fill(seed.begin(), seed.end(), 0);
-    std::fill(mnemonic.begin(), mnemonic.end(), 0);
-    std::fill(passphrase.begin(), passphrase.end(), 0);
+    memzero(seed.data(), seed.size());
+    memzero(mnemonic.data(), mnemonic.size());
+    memzero(passphrase.data(), passphrase.size());
 }
 
 template <size_t seedSize>

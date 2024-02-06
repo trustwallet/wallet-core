@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -72,7 +70,7 @@ enum TWCoinType {
     TWCoinTypeTheta = 500,
     TWCoinTypeThunderCore = 1001,
     TWCoinTypeNEO = 888,
-    TWCoinTypeTomoChain = 889,
+    TWCoinTypeViction = 889,
     TWCoinTypeTron = 195,
     TWCoinTypeVeChain = 818,
     TWCoinTypeViacoin = 14,
@@ -120,7 +118,7 @@ enum TWCoinType {
     TWCoinTypeSyscoin = 57,
     TWCoinTypeVerge = 77,
     TWCoinTypeZen = 121,
-    TWCoinTypeMetis = 1001088,
+    TWCoinTypeMetis = 10001088,
     TWCoinTypeAurora = 1323161554,
     TWCoinTypeEvmos = 10009001,
     TWCoinTypeNativeEvmos = 20009001,
@@ -162,13 +160,28 @@ enum TWCoinType {
     TWCoinTypePersistence = 16000118,
     TWCoinTypeAkash = 17000118,
     TWCoinTypeNoble = 18000118,
-    TWCoinTypeScroll = 534353,
+    TWCoinTypeScroll = 534352,
     TWCoinTypeRootstock = 137,
     TWCoinTypeThetaFuel = 361,
     TWCoinTypeConfluxeSpace = 1030,
     TWCoinTypeAcala = 787,
     TWCoinTypeAcalaEVM = 10000787,
-    TWCoinTypeOpBNBtestnet = 5611,
+    TWCoinTypeOpBNB = 204,
+    TWCoinTypeNeon = 245022934,
+    TWCoinTypeBase = 8453,
+    TWCoinTypeSei = 19000118,
+    TWCoinTypeArbitrumNova = 10042170,
+    TWCoinTypeLinea = 59144,
+    TWCoinTypeGreenfield = 5600,
+    TWCoinTypeMantle = 5000,
+    TWCoinTypeZenEON = 7332,
+    TWCoinTypeInternetComputer = 223,
+    TWCoinTypeTia = 21000118,
+    TWCoinTypeMantaPacific = 169,
+    TWCoinTypeNativeZetaChain = 10007000,
+    TWCoinTypeZetaEVM = 20007000,
+    TWCoinTypeDydx = 22000118,
+    // end_of_tw_coin_type_marker_do_not_modify
 };
 
 /// Returns the blockchain for a coin type.

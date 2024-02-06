@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "HexCoding.h"
 #include "TestUtilities.h"
@@ -28,7 +26,7 @@ TEST(TWAptosAddress, HDWallet) {
     auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeAptos));
     auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
 
-    assertStringsEqual(addressStr, "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
+    assertStringsEqual(addressStr, "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
 }
 
 } // namespace TW::Aptos::tests

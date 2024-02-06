@@ -234,7 +234,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testImportJSON() throws {
-
         let expected = """
         {
             "activeAccounts": [{

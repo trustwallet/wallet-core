@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Cosmos/Address.h"
 #include "HexCoding.h"
@@ -39,7 +37,9 @@ TEST(TWAnySignerJuno, Sign) {
     amountOfFee->set_amount("1000");
 
     Proto::SigningOutput output;
-    ANY_SIGN(input, TWCoinTypeCosmos);
+    ANY_SIGN(input, TWCoinTypeJuno);
+
+    EXPECT_EQ(output.error(), Common::Proto::OK);
 
     // https://www.mintscan.io/juno/txs/3DCE6AAF19657BCF11D44FD6BE124D57B44E04CA34851DE0ECCE619F70ECC46F
     auto expectedJson = R"(

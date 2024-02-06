@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+// Source: https://github.com/dfinity/ic/blob/master/rs/rosetta-api/icp_ledger/proto/ic_ledger/pb/v1/types.proto
+// Commit Hash: 703eb96fea44ad2c82740e4360a526a2a127a960
+// Striped annotations related to the use of hardware wallets.
+
+syntax = "proto3";
+
+package ic_base_types.pb.v1;
+
+// A PB container for a PrincipalId, which uniquely identifies
+// a principal.
+message PrincipalId {
+  bytes serialized_id = 1;
+}

@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 //
 // This is a GENERATED FILE, changes made here MAY BE LOST.
 // Generated one-time (codegen/bin/cointests)
@@ -15,7 +13,7 @@
 
 TEST(TWOasisCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeOasis));
-    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0b9bd4983f1c88a1c71bf33562b6ba02b3064e01697d15a0de4bfe1922ec74b8"));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("73dc977fdd8596d4a57e6feb891b21f5da3652d26815dc94f15f7420c298e29e"));
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeOasis, txId.get()));
     auto accId = WRAPS(TWStringCreateWithUTF8Bytes("oasis1qrx376dmwuckmruzn9vq64n49clw72lywctvxdf4"));
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeOasis, accId.get()));
@@ -27,7 +25,7 @@ TEST(TWOasisCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeOasis));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeOasis));
     assertStringsEqual(symbol, "ROSE");
-    assertStringsEqual(txUrl, "https://oasisscan.com/transactions/0b9bd4983f1c88a1c71bf33562b6ba02b3064e01697d15a0de4bfe1922ec74b8");
+    assertStringsEqual(txUrl, "https://oasisscan.com/transactions/73dc977fdd8596d4a57e6feb891b21f5da3652d26815dc94f15f7420c298e29e");
     assertStringsEqual(accUrl, "https://oasisscan.com/accounts/detail/oasis1qrx376dmwuckmruzn9vq64n49clw72lywctvxdf4");
     assertStringsEqual(id, "oasis");
     assertStringsEqual(name, "Oasis");

@@ -1,0 +1,47 @@
+{
+    "function": "nested_tuple(uint16,(uint16,(uint16,uint64),uint32),bool)",
+    "inputs": [
+        {
+            "name": "param1",
+            "type": "uint16",
+            "value": "1"
+        },
+        {
+            "components": [
+                {
+                    "name": "param21",
+                    "type": "uint16",
+                    "value": "2"
+                },
+                {
+                    "components": [
+                        {
+                            "name": "param221",
+                            "type": "uint16",
+                            "value": "3"
+                        },
+                        {
+                            "name": "param222",
+                            "type": "uint64",
+                            "value": "4"
+                        }
+                    ],
+                    "name": "param22",
+                    "type": "tuple"
+                },
+                {
+                    "name": "param23",
+                    "type": "uint32",
+                    "value": "5"
+                }
+            ],
+            "name": "param2",
+            "type": "tuple"
+        },
+        {
+            "name": "param3",
+            "type": "bool",
+            "value": true
+        }
+    ]
+}

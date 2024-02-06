@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "CellBuilder.h"
 #include "Cell.h"
@@ -223,6 +221,15 @@ void CellBuilder::appendWithDoubleShifting(const Data& appendedData, uint16_t bi
         data.resize(bitLen / 8 + 1);
         data.back() &= ~static_cast<uint8_t>(0xff >> (bitLen % 8));
     }
+}
+
+void CellBuilder::appendAddress(const AddressData& addressData) {
+    Data rawData(addressData.hash.begin(), addressData.hash.end());
+    Data prefix{0x80};
+    appendRaw(prefix, 2);
+    appendBitZero();
+    appendI8(addressData.workchainId);
+    appendRaw(rawData, 256);
 }
 
 uint8_t CellBuilder::clzU128(const uint128_t& u) {

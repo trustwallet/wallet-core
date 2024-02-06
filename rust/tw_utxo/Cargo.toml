@@ -1,0 +1,16 @@
+[package]
+name = "tw_utxo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tw_coin_entry = { path = "../tw_coin_entry" }
+tw_keypair = { path = "../tw_keypair" }
+tw_proto = { path = "../tw_proto" }
+tw_memory = { path = "../tw_memory" }
+tw_encoding = { path = "../tw_encoding" }
+bitcoin = "0.30.1"
+secp256k1 = { version = "0.27.0", features = [ "rand-std" ] }
+
+[dev-dependencies]
+tw_encoding = { path = "../tw_encoding" }

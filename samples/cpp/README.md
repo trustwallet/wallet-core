@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains a simple but complete **C++** sample application, for demostrating usage of the
+This repository contains a simple but complete **C++** sample application, for demonstrating usage of the
 [Wallet Core](https://github.com/trustwallet/wallet-core) library (part of [Trust Wallet](https://trustwallet.com)).
 
 ## DISCLAIMER
@@ -23,7 +23,7 @@ and [Build Instructions](https://developer.trustwallet.com/wallet-core/building)
 
 You need to download and build WalletCore yourself
 (there is no official binary distribution).
-The dependencies TrezorCrypto and protobuf are also needed, these are also come with WalletCore.
+The dependencies TrezorCrypto and protobuf are also needed, these also come with WalletCore.
 You need to [build](https://developer.trustwallet.com/wallet-core/building) the library.
 
 
@@ -49,7 +49,7 @@ Run it:
 ./sample
 ```
 
-The relavant sample code is in the file `cpp/sample.cpp`.
+The relevant sample code is in the file `cpp/sample.cpp`.
 
 # What it Does
 

@@ -1,14 +1,13 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
 #include "TWBase.h"
-#include "TWString.h"
+#include "TWCoinType.h"
 #include "TWData.h"
+#include "TWString.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -17,6 +16,38 @@ struct TWEthereumAbiFunction;
 
 TW_EXPORT_STRUCT
 struct TWEthereumAbi;
+
+/// Decode a contract call (function input) according to an ABI json.
+///
+/// \param coin EVM-compatible coin type.
+/// \param input The serialized data of `TW.EthereumAbi.Proto.ContractCallDecodingInput`.
+/// \return The serialized data of a `TW.EthereumAbi.Proto.ContractCallDecodingOutput` proto object.
+TW_EXPORT_STATIC_METHOD
+TWData* _Nonnull TWEthereumAbiDecodeContractCall(enum TWCoinType coin, TWData* _Nonnull input);
+
+/// Decode a function input or output data according to a given ABI.
+///
+/// \param coin EVM-compatible coin type.
+/// \param input The serialized data of `TW.EthereumAbi.Proto.ParamsDecodingInput`.
+/// \return The serialized data of a `TW.EthereumAbi.Proto.ParamsDecodingOutput` proto object.
+TW_EXPORT_STATIC_METHOD
+TWData* _Nonnull TWEthereumAbiDecodeParams(enum TWCoinType coin, TWData* _Nonnull input);
+
+/// /// Decodes an Eth ABI value according to a given type.
+///
+/// \param coin EVM-compatible coin type.
+/// \param input The serialized data of `TW.EthereumAbi.Proto.ValueDecodingInput`.
+/// \return The serialized data of a `TW.EthereumAbi.Proto.ValueDecodingOutput` proto object.
+TW_EXPORT_STATIC_METHOD
+TWData* _Nonnull TWEthereumAbiDecodeValue(enum TWCoinType coin, TWData* _Nonnull input);
+
+/// Encode function to Eth ABI binary.
+///
+/// \param coin EVM-compatible coin type.
+/// \param input The serialized data of `TW.EthereumAbi.Proto.FunctionEncodingInput`.
+/// \return The serialized data of a `TW.EthereumAbi.Proto.FunctionEncodingOutput` proto object.
+TW_EXPORT_STATIC_METHOD
+TWData* _Nonnull TWEthereumAbiEncodeFunction(enum TWCoinType coin, TWData* _Nonnull input);
 
 /// Encode function to Eth ABI binary
 ///

@@ -1,0 +1,228 @@
+syntax = "proto3";
+
+package TW.Utxo.Proto;
+option java_package = "wallet.core.jni.proto";
+
+enum Error {
+    OK = 0;
+    Error_invalid_leaf_hash = 1;
+    Error_invalid_sighash_type = 2;
+    Error_invalid_lock_time = 3;
+    Error_invalid_txid = 4;
+    Error_sighash_failed = 5;
+    Error_missing_sighash_method = 6;
+    Error_failed_encoding = 7;
+    Error_insufficient_inputs = 8;
+    Error_no_outputs_specified = 9;
+    Error_missing_change_script_pubkey = 10;
+}
+
+message SigningInput {
+    // The protocol version.
+    int32 version = 1;
+
+    // Block height or timestamp indicating at what point transactions can be
+    // included in a block.
+    LockTime lock_time = 2;
+
+    // The inputs of the transaction.
+    repeated TxIn inputs = 3;
+
+    // The outputs of the transaction.
+    repeated TxOut outputs = 4;
+
+    // How inputs should be selected.
+    InputSelector input_selector = 5;
+
+    // The base unit per weight. In the case of Bitcoin, that would refer to
+    // satoshis by vbyte ("satVb").
+    uint64 weight_base = 6;
+
+    // The change output where to send left-over funds to (usually the sender).
+    bytes change_script_pubkey = 7;
+
+    // Explicility disable change output creation.
+    bool disable_change_output = 8;
+}
+
+enum InputSelector {
+    // Automatically select enough inputs in an ascending order to cover the
+    // outputs of the transaction.
+    SelectAscending = 0;
+    // Automatically select enough inputs in the given order to cover the
+    // outputs of the transaction.
+    SelectInOrder = 1;
+    // Automatically select enough inputs in an descending order to cover the
+    // outputs of the transaction.
+    SelectDescending = 2;
+    // Use all the inputs provided in the given order.
+    UseAll = 10;
+}
+
+message LockTime {
+    oneof variant {
+        uint32 blocks = 1;
+        uint32 seconds = 2;
+    }
+}
+
+message TxIn {
+    // The referenced transaction ID in REVERSED order.
+    bytes txid = 1;
+
+    // The position in the previous transactions output that this input
+    // references.
+    uint32 vout = 2;
+
+    // The value of this input, such as satoshis. Required for producing
+    // Segwit/Taproot transactions.
+    uint64 value = 3;
+
+    // The sequence number, used for timelocks, replace-by-fee, etc. Normally
+    // this number is simply 4294967295 (0xFFFFFFFF) .
+    uint32 sequence = 4;
+
+    // The spending condition of the referenced output.
+    bytes script_pubkey = 7;
+
+    // The sighash type, normally `SighashType::UseDefault` (All).
+    SighashType sighash_type = 8;
+
+    // The signing method.
+    SigningMethod signing_method = 9;
+
+    // The estimated weight of the input, required for estimating fees.
+    uint64 weight_estimate = 10;
+
+    // If this input is a Taproot script-path (complex transaction), then this
+    // leaf hash is required in order to compute the sighash.
+    bytes leaf_hash = 11;
+}
+
+enum SigningMethod {
+    // Used for P2SH and P2PKH
+    Legacy = 0;
+    // Used for P2WSH and P2WPKH
+    Segwit = 1;
+    // Used for P2TR key-path and P2TR script-paty
+    TaprootAll = 2;
+    // Used for P2TR key-path and P2TR script-paty if only one prevout should be
+    // used to calculate the Sighash. Normally this is not used.
+    TaprootOnePrevout = 3;
+}
+
+enum SighashType {
+    // Use default (All)
+    UseDefault = 0; // 0x00
+    // Sign all outputs (default).
+    All = 1; // 0x01
+    // Sign no outputs, anyone can choose the destination.
+    None = 2; // 0x02
+    // Sign the output whose index matches this inputs index.
+    Single = 3; // 0x03
+    //Sign all outputs but only this input.
+    AllPlusAnyoneCanPay = 129; // 0x81
+    // Sign no outputs and only this input.
+    NonePlusAnyoneCanPay = 130; // 0x82
+    // Sign one output and only this input.
+    SinglePlusAnyoneCanPay = 131; // 0x83
+}
+
+// The output of a transaction.
+message TxOut {
+    // The value of the output.
+    uint64 value = 1;
+    // The spending condition of the output.
+    bytes script_pubkey = 2;
+}
+
+message PreSigningOutput {
+    // error code, 0 is ok, other codes will be treated as errors
+    Error error = 1;
+
+    // The transaction ID in NON-reversed order. Note that this must be reversed
+    // when referencing in future transactions.
+    bytes txid = 2;
+
+    /// Sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
+    repeated Sighash sighashes = 3;
+
+    // The raw inputs.
+    repeated TxIn inputs = 4;
+
+    // The raw outputs.
+    repeated TxOut outputs = 5;
+
+    // The estimated weight of the transaction.
+    uint64 weight_estimate = 6;
+
+    // The estimated fee of the transaction denominated in the base unit (such
+    // as satoshis).
+    uint64 fee_estimate = 7;
+}
+
+message Sighash {
+    // The sighash to be signed.
+    bytes sighash = 1;
+    // The used signing method for this sighash.
+    SigningMethod signing_method = 2;
+    // The used sighash type for this sighash.
+    SighashType sighash_type = 3;
+}
+
+message PreSerialization {
+    // The protocol version, is currently expected to be 1 or 2 (BIP68)
+    int32 version = 1;
+
+    // Block height or timestamp indicating at what point transactions can be
+    // included in a block.
+    LockTime lock_time = 2;
+
+    // The transaction inputs containing the serialized claim scripts.
+    repeated TxInClaim inputs = 3;
+
+    // The transaction outputs.
+    repeated TxOut outputs = 4;
+
+    // The base unit per weight. In the case of Bitcoin, that would refer to
+    // satoshis ("satVb").
+    uint64 weight_base = 5;
+}
+
+message TxInClaim {
+    // The referenced transaction hash.
+    bytes txid = 1;
+
+    // The index of the referenced output.
+    uint32 vout = 2;
+
+    // The value of this input, such as satoshis.
+    uint64 value = 3;
+
+    // The sequence number (TODO).
+    uint32 sequence = 4;
+
+    // The script used for claiming an input.
+    bytes script_sig = 5;
+
+    // The script used for claiming an input.
+    repeated bytes witness_items = 6;
+}
+
+message SerializedTransaction {
+    // error code, 0 is ok, other codes will be treated as errors
+    Error error = 1;
+
+    // The encoded transaction, ready to be submitted to the network.
+    bytes encoded = 2;
+
+    // The transaction ID.
+    bytes txid = 3;
+
+    // The total and final weight of the transaction.
+    uint64 weight = 4;
+
+    // The total and final fee of the transaction denominated in the base unit
+    // (such as satoshis).
+    uint64 fee = 5;
+}

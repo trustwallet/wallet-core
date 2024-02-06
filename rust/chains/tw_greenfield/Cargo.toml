@@ -1,0 +1,22 @@
+[package]
+name = "tw_greenfield"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tw_coin_entry = { path = "../../tw_coin_entry" }
+tw_cosmos_sdk = { path = "../../tw_cosmos_sdk" }
+tw_encoding = { path = "../../tw_encoding" }
+tw_evm = { path = "../../tw_evm" }
+tw_hash = { path = "../../tw_hash" }
+tw_keypair = { path = "../../tw_keypair" }
+tw_memory = { path = "../../tw_memory" }
+tw_misc = { path = "../../tw_misc" }
+tw_number = { path = "../../tw_number" }
+tw_proto = { path = "../../tw_proto" }
+
+[dev-dependencies]
+tw_coin_entry = { path = "../../tw_coin_entry", features = ["test-utils"] }
+tw_misc = { path = "../../tw_misc", features = ["test-utils"] }
