@@ -8,7 +8,7 @@
 
 using namespace TW;
 
-TWData *_Nonnull TWSolanaTransactionUpdateBlockhashAndSign(const TWString *_Nonnull encodedTx,
+TWData *_Nonnull TWSolanaTransactionUpdateBlockhashAndSign(TWString *_Nonnull encodedTx,
                                                            TWString *_Nonnull recentBlockhash,
                                                            const struct TWDataVector *_Nonnull privateKeys) {
 
