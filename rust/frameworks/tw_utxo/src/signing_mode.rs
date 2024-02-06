@@ -12,6 +12,6 @@ pub enum SigningMethod {
     /// Used for P2TR key-path and P2TR script-paty.
     TaprootAll,
     /// Used for P2TR key-path and P2TR script-paty if only one prevout should be
-    /// used to calculate the Sighash. Normally this is not used.
+    /// used to calculate the Sighash. Normally, this is not used.
     TaprootOnePrevout,
 }

@@ -13,9 +13,9 @@ const BASE_FLAG: u32 = 0x1f;
 pub enum SighashBase {
     /// Use default (All) - 0x00
     UseDefault = 0,
-    /// Sign all outputs (default) - 0x01
+    /// Sign all inputs and outputs (default) - 0x01
     All = 1,
-    /// Sign no outputs, anyone can choose the destination - 0x02
+    /// Sign all inputs but no outputs, anyone can choose the destination - 0x02
     None = 2,
     /// Sign the output whose index matches this inputs index - 0x03
     Single = 3,

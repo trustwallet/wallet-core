@@ -2,15 +2,16 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-const OP_HASH160: u8 = 0xa9;
 const OP_PUSHBYTES_20: u8 = 0x14;
+const OP_PUSHBYTES_32: u8 = 0x20;
+const OP_PUSHBYTES_33: u8 = 0x21;
+const OP_HASH160: u8 = 0xa9;
 const OP_EQUAL: u8 = 0x87;
 const OP_DUP: u8 = 0x76;
 const OP_EQUALVERIFY: u8 = 0x88;
 const OP_CHECKSIG: u8 = 0xac;
 const OP_PUSHBYTES_65: u8 = 0x41;
-const OP_PUSHBYTES_33: u8 = 0x21;
-const OP_PUSHBYTES_32: u8 = 0x20;
+
 
 const SEGWIT_VERSION: u8 = 0;
 const TAPROOT_VERSION: u8 = 1;

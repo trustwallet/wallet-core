@@ -60,6 +60,12 @@ pub struct UtxoSighash {
 pub struct SignaturePubkey {
     signature: Data,
     public_key: tw::PublicKey,
+    algo: SignatureAlgorithm,
+}
+
+pub enum SignatureAlgorithm {
+    Ecdsa,
+    Schnorr,
 }
 
 /// Transaction signer with a standard signing behaviour.
@@ -97,6 +103,7 @@ where
             } else if s.is_p2wsh() || s.is_p2wpkh() {
                 Some(SigningMethod::Segwit)
             } else if s.is_p2tr() {
+                // TODO: What about TaprootOnePrevout?
                 Some(SigningMethod::TaprootAll)
             } else {
                 None
@@ -150,6 +157,23 @@ where
     /// Not required when [`TransactionSigner::compile`] is called right after [`TransactionSigner::preimage_tx`],
     /// as this method is expensive in terms of computations.
     pub fn verify_signatures(&self, signatures: Vec<SignaturePubkey>) -> UtxoResult<Transaction> {
+        let tx_preimage = self.preimage_tx()?;
+
+        if tx_preimage.sighashes.len() != signatures.len() {
+            return Err(UtxoError(UtxoErrorKind::Error_signatures_count));
+        }
+
+        for (sighash, sig_pubkey) in tx_preimage.sighashes.iter().zip(signatures.iter()) {
+            match sig_pubkey.algo {
+                SignatureAlgorithm::Ecdsa => {
+                    todo!()
+                }
+                SignatureAlgorithm::Schnorr => {
+                    todo!()
+                }
+            }
+        }
+
         // TODO compute transaction preimage and verify if all given signatures correspond to the result sighashes.
         todo!()
     }
