@@ -33,10 +33,7 @@ impl Encodable for Script {
 impl Script {
     pub fn is_p2sh(&self) -> bool {
         let b = &self.bytes;
-        b.len() == 23
-            && b[0] == OP_HASH160
-            && b[1] == OP_PUSHBYTES_20
-            && b[22] == OP_EQUAL
+        b.len() == 23 && b[0] == OP_HASH160 && b[1] == OP_PUSHBYTES_20 && b[22] == OP_EQUAL
     }
     pub fn is_p2pkh(&self) -> bool {
         let b = &self.bytes;
@@ -57,20 +54,14 @@ impl Script {
     }
     pub fn is_p2wsh(&self) -> bool {
         let b = &self.bytes;
-        b.len() == 34
-            && b[0] == SEGWIT_VERSION
-            && b[1] == OP_PUSHBYTES_32
+        b.len() == 34 && b[0] == SEGWIT_VERSION && b[1] == OP_PUSHBYTES_32
     }
     pub fn is_p2wpkh(&self) -> bool {
         let b = &self.bytes;
-        b.len() == 22
-            && b[0] == SEGWIT_VERSION
-            && b[1] == OP_PUSHBYTES_20
+        b.len() == 22 && b[0] == SEGWIT_VERSION && b[1] == OP_PUSHBYTES_20
     }
     pub fn is_p2tr(&self) -> bool {
         let b = &self.bytes;
-        b.len() == 34
-            && b[0] == TAPROOT_VERSION
-            && b[1] == OP_PUSHBYTES_32
+        b.len() == 34 && b[0] == TAPROOT_VERSION && b[1] == OP_PUSHBYTES_32
     }
 }
