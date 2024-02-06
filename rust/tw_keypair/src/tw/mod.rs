@@ -46,6 +46,7 @@ impl Curve {
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
+#[non_exhaustive]
 pub enum PublicKeyType {
     #[serde(rename = "secp256k1")]
     Secp256k1 = 0,
@@ -67,6 +68,8 @@ pub enum PublicKeyType {
     Ed25519ExtendedCardano = 7,
     #[serde(rename = "starkex")]
     Starkex = 8,
+    #[serde(rename = "schnorr")]
+    Secp256k1Schnorr = 9,
 }
 
 impl PublicKeyType {
@@ -82,6 +85,7 @@ impl PublicKeyType {
             6 => Some(PublicKeyType::Curve25519Waves),
             7 => Some(PublicKeyType::Ed25519ExtendedCardano),
             8 => Some(PublicKeyType::Starkex),
+            9 => Some(PublicKeyType::Secp256k1Schnorr),
             _ => None,
         }
     }
@@ -120,7 +124,8 @@ mod tests {
             (6, Some(PublicKeyType::Curve25519Waves)),
             (7, Some(PublicKeyType::Ed25519ExtendedCardano)),
             (8, Some(PublicKeyType::Starkex)),
-            (9, None),
+            (9, Some(PublicKeyType::Secp256k1Schnorr)),
+            (10, None),
         ];
         for (raw, expected) in tests {
             assert_eq!(PublicKeyType::from_raw(raw), expected);

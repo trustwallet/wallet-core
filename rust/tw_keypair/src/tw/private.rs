@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::ecdsa::{nist256p1, secp256k1};
+use crate::schnorr;
 use crate::traits::SigningKeyTrait;
 use crate::tw::{Curve, PublicKey, PublicKeyType};
 use crate::{ed25519, starkex, KeyPairError, KeyPairResult};
@@ -153,6 +154,10 @@ impl PrivateKey {
                 let privkey = self.to_starkex_privkey()?;
                 Ok(PublicKey::Starkex(privkey.public()))
             },
+            PublicKeyType::Secp256k1Schnorr => {
+                let privkey = self.to_schnorr_privkey()?;
+                Ok(PublicKey::Secp256k1Schnorr(privkey.public()))
+            },
         }
     }
 
@@ -189,5 +194,10 @@ impl PrivateKey {
     /// Tries to convert [`PrivateKey::key`] to [`starkex::PrivateKey`].
     fn to_starkex_privkey(&self) -> KeyPairResult<starkex::PrivateKey> {
         starkex::PrivateKey::try_from(self.key().as_slice())
+    }
+
+    /// Tries to convert [`PrivateKey::key`] to [`schnorr::secp256k1::PrivateKey`].
+    fn to_schnorr_privkey(&self) -> KeyPairResult<schnorr::secp256k1::PrivateKey> {
+        schnorr::secp256k1::PrivateKey::try_from(self.key().as_slice())
     }
 }

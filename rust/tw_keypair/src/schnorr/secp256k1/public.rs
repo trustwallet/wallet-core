@@ -5,6 +5,7 @@ use tw_encoding::hex;
 use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
 
+#[derive(Clone, PartialEq)]
 pub struct PublicKey {
     pub(crate) public: VerifyingKey,
 }
