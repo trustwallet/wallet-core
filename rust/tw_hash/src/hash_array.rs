@@ -253,33 +253,6 @@ pub mod as_byte_sequence {
     }
 }
 
-// #[cfg(feature = "serde")]
-// pub mod as_byte_array {
-//     use super::Hash;
-//     use serde::de::Error;
-//     use serde::{Deserialize, Deserializer, Serialize, Serializer};
-//     use tw_memory::Data;
-//
-//     pub fn deserialize<'de, const N: usize, D>(deserializer: D) -> Result<Hash<N>, D::Error>
-//     where
-//         D: Deserializer<'de>,
-//     {
-//         let bytes: Data = Deserialize::deserialize(deserializer)?;
-//         // TODO
-//         if bytes.is_empty() {
-//             return Ok(Hash::<N>::default());
-//         }
-//         Hash::try_from(bytes.as_slice()).map_err(|e| Error::custom(format!("{e:?}")))
-//     }
-//
-//     pub fn serialize<const N: usize, S>(hash: &Hash<N>, serializer: S) -> Result<S::Ok, S::Error>
-//     where
-//         S: Serializer,
-//     {
-//         hash.0.serialize(serializer)
-//     }
-// }
-
 #[cfg(test)]
 mod tests {
     use super::*;
