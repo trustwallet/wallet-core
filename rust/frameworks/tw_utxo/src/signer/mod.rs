@@ -20,6 +20,7 @@ const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 pub struct UtxoToSign {
     ///
     claiming_script: Script,
+    signing_method: SigningMethod,
     amount: Amount,
 }
 
@@ -97,9 +98,7 @@ where
             .iter()
             .enumerate()
             .map(|(input_index, utxo)| {
-                // TODO Use `Script::is_p2pkh`, `Script::is_p2wpkh`, ... to get the signing method accordingly.
-                // https://github.com/trustwallet/wallet-core/blob/d42429becefeec92ec44b9411ccb1c1a5ecf24b5/src/Bitcoin/SignatureBuilder.cpp#L134
-                let signing_method = todo!();
+                let signing_method = utxo.signing_method;
 
                 let utxo_args = UtxoPreimageArgs {
                     input_index,
@@ -109,6 +108,7 @@ where
                     tx_hasher: self.args.tx_hasher,
                     signing_method,
                 };
+
                 let sighash = self.transaction_to_sign.preimage_tx(&utxo_args)?;
 
                 Ok(UtxoSighash {
