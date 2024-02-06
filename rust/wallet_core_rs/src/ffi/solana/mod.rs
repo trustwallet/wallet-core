@@ -2,4 +2,5 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+#[cfg(feature = "solana-transaction")]
 pub mod transaction;
