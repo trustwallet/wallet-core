@@ -19,7 +19,7 @@ impl TxSigner {
             return Err(SigningError(SigningErrorType::Error_signatures_count));
         }
 
-        tx.signatures = vec![Signature::default(); tx.message.num_required_signatures()];
+        tx.zeroize_signatures();
         let message_data = bincode::serialize(&tx.message)
             .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?;
 

@@ -41,25 +41,37 @@ impl SolanaTransaction {
         let new_blockchain_hash = H256::try_from(new_blockchain_hash.as_slice())
             .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?;
 
-        let private_keys = private_keys
-            .iter()
-            .map(|pk| ed25519::sha512::PrivateKey::try_from(pk.as_slice()))
-            .collect::<KeyPairResult<Vec<_>>>()?;
-
         // Update the transaction's blockhash and re-sign it.
         tx_to_sign.message.set_recent_blockhash(new_blockchain_hash);
 
         let unsigned_encoded = TxSigner::preimage_versioned(&tx_to_sign)?;
-        let signed_tx = TxSigner::sign_versioned(tx_to_sign, &private_keys)?;
+
+        // Do not sign the transaction if there is no private keys, but set zeroed signatures.
+        // It's needed to estimate the transaction fee with an updated blockhash without using real private keys.
+        let signed_tx = if private_keys.is_empty() {
+            tx_to_sign.zeroize_signatures();
+            tx_to_sign
+        } else {
+            let private_keys = private_keys
+                .iter()
+                .map(|pk| ed25519::sha512::PrivateKey::try_from(pk.as_slice()))
+                .collect::<KeyPairResult<Vec<_>>>()?;
+
+            TxSigner::sign_versioned(tx_to_sign, &private_keys)?
+        };
 
         let unsigned_encoded = base64::encode(&unsigned_encoded, is_url);
         let signed_encoded = bincode::serialize(&signed_tx)
             .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
         let signed_encoded = base64::encode(&signed_encoded, is_url);
+        let message_encoded = bincode::serialize(&signed_tx.message)
+            .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+        let message_encoded = base64::encode(&message_encoded, is_url);
 
         Ok(Proto::SigningOutput {
             encoded: Cow::from(signed_encoded),
             unsigned_tx: Cow::from(unsigned_encoded),
+            message_encoded: Cow::from(message_encoded),
             ..Proto::SigningOutput::default()
         })
     }

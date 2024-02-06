@@ -27,6 +27,14 @@ pub struct VersionedTransaction {
     pub message: VersionedMessage,
 }
 
+impl VersionedTransaction {
+    /// Fill the signatures up with zeroed signatures
+    /// (same number of signatures as [`VersionedTransaction::num_required_signatures`]).
+    pub fn zeroize_signatures(&mut self) {
+        self.signatures = vec![Signature::default(); self.message.num_required_signatures()];
+    }
+}
+
 /// Either a legacy message or a v0 message.
 ///
 /// # Serialization
