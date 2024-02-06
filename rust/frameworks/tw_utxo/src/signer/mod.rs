@@ -20,7 +20,10 @@ const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 pub struct UtxoToSign {
     ///
     claiming_script: Script,
-    signing_method: SigningMethod,
+    /// The transaction signer will try to determine the signing method for the
+    /// Utxo, assuming it's a standardized (Bitcoin) Script. Alternatively, this
+    /// field can be set manually.
+    signing_method: Option<SigningMethod>,
     amount: Amount,
 }
 
@@ -88,6 +91,18 @@ where
 
     /// Computes sighashes of [`TransactionSigner::transaction`].
     pub fn preimage_tx(&self) -> UtxoResult<TxPreimage> {
+        fn determine_signing_method(s: &Script) -> Option<SigningMethod> {
+            if s.is_p2sh() || s.is_p2pk() || s.is_p2pkh() {
+                Some(SigningMethod::Legacy)
+            } else if s.is_p2wsh() || s.is_p2wpkh() {
+                Some(SigningMethod::Segwit)
+            } else if s.is_p2tr() {
+                Some(SigningMethod::TaprootAll)
+            } else {
+                None
+            }
+        }
+
         // There should be the same number of UTXOs and their meta data.
         if self.args.utxos_to_sign.len() != self.transaction_to_sign.inputs().len() {
             return Err(UtxoError(UtxoErrorKind::Error_internal));
@@ -98,7 +113,13 @@ where
             .iter()
             .enumerate()
             .map(|(input_index, utxo)| {
-                let signing_method = utxo.signing_method;
+                let signing_method = utxo
+                    // Use the provided signing method if set.
+                    .signing_method
+                    // Otherwise, try to determine the signing method from the UTXO script.
+                    .or(determine_signing_method(&utxo.claiming_script))
+                    // TODO: Set appropriate error kind.
+                    .ok_or(UtxoError(UtxoErrorKind::Error_internal))?;
 
                 let utxo_args = UtxoPreimageArgs {
                     input_index,
