@@ -81,6 +81,7 @@ impl<'a> TryFrom<&'a str> for PrivateKey {
 
 impl ToBytesZeroizing for PrivateKey {
     fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
+        // TODO: Why do this twice like this?
         let secret = Zeroizing::new(self.secret.to_bytes());
         Zeroizing::new(secret.as_slice().to_vec())
     }

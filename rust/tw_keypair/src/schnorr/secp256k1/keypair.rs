@@ -1,7 +1,53 @@
+use tw_hash::H256;
+
 use crate::schnorr::secp256k1::private::PrivateKey;
 use crate::schnorr::secp256k1::public::PublicKey;
+use crate::schnorr::signature::Signature;
+use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
+use crate::KeyPairError;
 
 pub struct KeyPair {
     private: PrivateKey,
     public: PublicKey,
+}
+
+impl KeyPairTrait for KeyPair {
+    type Private = PrivateKey;
+    type Public = PublicKey;
+
+    fn public(&self) -> &Self::Public {
+        &self.public
+    }
+
+    fn private(&self) -> &Self::Private {
+        &self.private
+    }
+}
+
+impl SigningKeyTrait for KeyPair {
+    type SigningMessage = H256;
+    type Signature = Signature;
+
+    fn sign(&self, message: Self::SigningMessage) -> crate::KeyPairResult<Self::Signature> {
+        todo!()
+    }
+}
+
+impl VerifyingKeyTrait for KeyPair {
+    type SigningMessage = H256;
+    type VerifySignature = Signature;
+
+    fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool {
+        todo!()
+    }
+}
+
+impl<'a> TryFrom<&'a [u8]> for KeyPair {
+    type Error = KeyPairError;
+
+    fn try_from(value: &'a [u8]) -> Result<Self, Self::Error> {
+        let private = PrivateKey::try_from(value)?;
+        let public = private.public();
+        Ok(KeyPair { private, public })
+    }
 }

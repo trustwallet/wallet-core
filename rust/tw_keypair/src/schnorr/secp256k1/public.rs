@@ -3,6 +3,7 @@ use ecdsa::signature::Verifier;
 use k256::schnorr::{Signature, VerifyingKey};
 use tw_encoding::hex;
 use tw_hash::H256;
+use tw_misc::traits::ToBytesVec;
 
 pub struct PublicKey {
     pub(crate) public: VerifyingKey,
@@ -23,6 +24,12 @@ impl VerifyingKeyTrait for PublicKey {
     }
 }
 
+impl ToBytesVec for PublicKey {
+    fn to_vec(&self) -> Vec<u8> {
+        self.public.to_bytes().to_vec()
+    }
+}
+
 impl<'a> TryFrom<&'a str> for PublicKey {
     type Error = KeyPairError;
 
@@ -39,5 +46,11 @@ impl<'a> TryFrom<&'a [u8]> for PublicKey {
         Ok(PublicKey::new(
             VerifyingKey::from_bytes(value).map_err(|_| KeyPairError::InvalidPublicKey)?,
         ))
+    }
+}
+
+impl From<k256::schnorr::VerifyingKey> for PublicKey {
+    fn from(public: k256::schnorr::VerifyingKey) -> Self {
+        PublicKey::new(public)
     }
 }
