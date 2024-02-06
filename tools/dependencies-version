@@ -4,4 +4,7 @@ export GTEST_VERSION=1.11.0
 export CHECK_VERSION=0.15.2
 export JSON_VERSION=3.10.2
 export PROTOBUF_VERSION=3.19.2
-export SWIFT_PROTOBUF_VERSION=1.18.0
+
+# Before upgrading, make sure that the new version of the SwiftProtobuf library is compatible with other consumers 
+# of the binary artifact (grpc-swift, hedera-sdk-swift, SwiftBinanceChain, blockchain-sdk-swift and so on)
+export SWIFT_PROTOBUF_VERSION=1.25.2
