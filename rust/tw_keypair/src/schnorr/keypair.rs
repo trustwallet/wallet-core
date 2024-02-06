@@ -29,7 +29,7 @@ impl SigningKeyTrait for KeyPair {
     type Signature = Signature;
 
     fn sign(&self, message: Self::SigningMessage) -> crate::KeyPairResult<Self::Signature> {
-        todo!()
+        self.private.sign(message)
     }
 }
 
@@ -38,7 +38,7 @@ impl VerifyingKeyTrait for KeyPair {
     type VerifySignature = Signature;
 
     fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool {
-        todo!()
+        self.public.verify(signature, message)
     }
 }
 

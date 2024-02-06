@@ -1,6 +1,8 @@
-use crate::{traits::VerifyingKeyTrait, KeyPairError};
+use crate::schnorr::Signature;
+use crate::traits::VerifyingKeyTrait;
+use crate::KeyPairError;
 use ecdsa::signature::Verifier;
-use k256::schnorr::{Signature, VerifyingKey};
+use k256::schnorr::VerifyingKey;
 use tw_encoding::hex;
 use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
@@ -21,7 +23,9 @@ impl VerifyingKeyTrait for PublicKey {
     type VerifySignature = Signature;
 
     fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool {
-        self.public.verify(message.as_slice(), &signature).is_ok()
+        self.public
+            .verify(message.as_slice(), &signature.signature)
+            .is_ok()
     }
 }
 
