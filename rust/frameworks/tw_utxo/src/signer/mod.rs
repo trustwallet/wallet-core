@@ -60,12 +60,6 @@ pub struct UtxoSighash {
 pub struct SignaturePubkey {
     signature: Data,
     public_key: tw::PublicKey,
-    algo: SignatureAlgorithm,
-}
-
-pub enum SignatureAlgorithm {
-    Ecdsa,
-    Schnorr,
 }
 
 /// Transaction signer with a standard signing behaviour.
@@ -146,7 +140,7 @@ where
             })
             // Collect the results as [`UtxoResult<Vec<UtxoSighash>>`].
             .collect::<UtxoResult<Vec<_>>>()
-            .map(|sighashes| TxPreimage { sighashes })
+            .map(|sighashes: Vec<UtxoSighash>| TxPreimage { sighashes })
     }
 
     /// Validates if the given signatures and public keys correspond to the actual [`TransactionSigner::transaction`] inputs.
@@ -156,26 +150,26 @@ where
     ///
     /// Not required when [`TransactionSigner::compile`] is called right after [`TransactionSigner::preimage_tx`],
     /// as this method is expensive in terms of computations.
-    pub fn verify_signatures(&self, signatures: Vec<SignaturePubkey>) -> UtxoResult<Transaction> {
+    pub fn verify_signatures(&self, signatures: Vec<SignaturePubkey>) -> UtxoResult<bool> {
+        // Compute transaction preimage and verify if all given signatures correspond to the result sighashes.
         let tx_preimage = self.preimage_tx()?;
 
         if tx_preimage.sighashes.len() != signatures.len() {
             return Err(UtxoError(UtxoErrorKind::Error_signatures_count));
         }
 
-        for (sighash, sig_pubkey) in tx_preimage.sighashes.iter().zip(signatures.iter()) {
-            match sig_pubkey.algo {
-                SignatureAlgorithm::Ecdsa => {
-                    todo!()
-                }
-                SignatureAlgorithm::Schnorr => {
-                    todo!()
-                }
-            }
-        }
+        let all_valid =
+            tx_preimage
+                .sighashes
+                .iter()
+                .zip(signatures.iter())
+                .all(|(sighash, sig_pubkey)| {
+                    sig_pubkey
+                        .public_key
+                        .verify(&sig_pubkey.signature, &sighash.sighash)
+                });
 
-        // TODO compute transaction preimage and verify if all given signatures correspond to the result sighashes.
-        todo!()
+        Ok(all_valid)
     }
 
     /// Compiles a transaction with the given signatures.

@@ -12,7 +12,6 @@ const OP_EQUALVERIFY: u8 = 0x88;
 const OP_CHECKSIG: u8 = 0xac;
 const OP_PUSHBYTES_65: u8 = 0x41;
 
-
 const SEGWIT_VERSION: u8 = 0;
 const TAPROOT_VERSION: u8 = 1;
 
