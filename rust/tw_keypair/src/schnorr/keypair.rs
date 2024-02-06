@@ -1,7 +1,7 @@
 use tw_hash::H256;
 
-use crate::schnorr::secp256k1::private::PrivateKey;
-use crate::schnorr::secp256k1::public::PublicKey;
+use crate::schnorr::private::PrivateKey;
+use crate::schnorr::public::PublicKey;
 use crate::schnorr::signature::Signature;
 use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::KeyPairError;

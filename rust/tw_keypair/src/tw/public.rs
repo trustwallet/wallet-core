@@ -23,7 +23,7 @@ pub enum PublicKey {
     Curve25519Waves(ed25519::waves::PublicKey),
     Ed25519ExtendedCardano(Box<ed25519::cardano::ExtendedPublicKey>),
     Starkex(starkex::PublicKey),
-    Secp256k1Schnorr(schnorr::secp256k1::PublicKey),
+    Schnorr(schnorr::PublicKey),
 }
 
 impl PublicKey {
@@ -72,9 +72,9 @@ impl PublicKey {
                 let pubkey = starkex::PublicKey::try_from(bytes.as_slice())?;
                 Ok(PublicKey::Starkex(pubkey))
             },
-            PublicKeyType::Secp256k1Schnorr => {
-                let pubkey = schnorr::secp256k1::PublicKey::try_from(bytes.as_slice())?;
-                Ok(PublicKey::Secp256k1Schnorr(pubkey))
+            PublicKeyType::Schnorr => {
+                let pubkey = schnorr::PublicKey::try_from(bytes.as_slice())?;
+                Ok(PublicKey::Schnorr(pubkey))
             },
             _ => Err(KeyPairError::InvalidPublicKey),
         }
@@ -113,7 +113,7 @@ impl PublicKey {
                 verify_impl(cardano.as_ref(), sig, message)
             },
             PublicKey::Starkex(stark) => verify_impl(stark, sig, message),
-            PublicKey::Secp256k1Schnorr(schnorr) => verify_impl(schnorr, sig, message),
+            PublicKey::Schnorr(schnorr) => verify_impl(schnorr, sig, message),
         }
     }
 
@@ -129,7 +129,7 @@ impl PublicKey {
             PublicKey::Curve25519Waves(waves) => waves.to_vec(),
             PublicKey::Ed25519ExtendedCardano(cardano) => cardano.to_vec(),
             PublicKey::Starkex(stark) => stark.to_vec(),
-            PublicKey::Secp256k1Schnorr(schnorr) => schnorr.to_vec(),
+            PublicKey::Schnorr(schnorr) => schnorr.to_vec(),
         }
     }
 
@@ -162,7 +162,7 @@ impl PublicKey {
             PublicKey::Curve25519Waves(_) => PublicKeyType::Curve25519Waves,
             PublicKey::Ed25519ExtendedCardano(_) => PublicKeyType::Ed25519ExtendedCardano,
             PublicKey::Starkex(_) => PublicKeyType::Starkex,
-            PublicKey::Secp256k1Schnorr(_) => PublicKeyType::Secp256k1Schnorr,
+            PublicKey::Schnorr(_) => PublicKeyType::Schnorr,
         }
     }
 }

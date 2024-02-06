@@ -154,9 +154,9 @@ impl PrivateKey {
                 let privkey = self.to_starkex_privkey()?;
                 Ok(PublicKey::Starkex(privkey.public()))
             },
-            PublicKeyType::Secp256k1Schnorr => {
+            PublicKeyType::Schnorr => {
                 let privkey = self.to_schnorr_privkey()?;
-                Ok(PublicKey::Secp256k1Schnorr(privkey.public()))
+                Ok(PublicKey::Schnorr(privkey.public()))
             },
         }
     }
@@ -196,8 +196,8 @@ impl PrivateKey {
         starkex::PrivateKey::try_from(self.key().as_slice())
     }
 
-    /// Tries to convert [`PrivateKey::key`] to [`schnorr::secp256k1::PrivateKey`].
-    fn to_schnorr_privkey(&self) -> KeyPairResult<schnorr::secp256k1::PrivateKey> {
-        schnorr::secp256k1::PrivateKey::try_from(self.key().as_slice())
+    /// Tries to convert [`PrivateKey::key`] to [`schnorr::PrivateKey`].
+    fn to_schnorr_privkey(&self) -> KeyPairResult<schnorr::PrivateKey> {
+        schnorr::PrivateKey::try_from(self.key().as_slice())
     }
 }

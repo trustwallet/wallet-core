@@ -69,7 +69,7 @@ pub enum PublicKeyType {
     #[serde(rename = "starkex")]
     Starkex = 8,
     #[serde(rename = "schnorr")]
-    Secp256k1Schnorr = 9,
+    Schnorr = 9,
 }
 
 impl PublicKeyType {
@@ -85,7 +85,7 @@ impl PublicKeyType {
             6 => Some(PublicKeyType::Curve25519Waves),
             7 => Some(PublicKeyType::Ed25519ExtendedCardano),
             8 => Some(PublicKeyType::Starkex),
-            9 => Some(PublicKeyType::Secp256k1Schnorr),
+            9 => Some(PublicKeyType::Schnorr),
             _ => None,
         }
     }
@@ -124,7 +124,7 @@ mod tests {
             (6, Some(PublicKeyType::Curve25519Waves)),
             (7, Some(PublicKeyType::Ed25519ExtendedCardano)),
             (8, Some(PublicKeyType::Starkex)),
-            (9, Some(PublicKeyType::Secp256k1Schnorr)),
+            (9, Some(PublicKeyType::Schnorr)),
             (10, None),
         ];
         for (raw, expected) in tests {

@@ -1,4 +1,4 @@
-use crate::schnorr::secp256k1::public::PublicKey;
+use crate::schnorr::public::PublicKey;
 use crate::schnorr::signature::Signature;
 use crate::traits::SigningKeyTrait;
 use crate::KeyPairError;
