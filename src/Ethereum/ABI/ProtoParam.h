@@ -74,6 +74,28 @@ private:
     Data m_data;
 };
 
+class ProtoBytes32 final: public BaseProtoParam {
+public:
+    explicit ProtoBytes32(const Data& data): m_data(data) {
+        if (data.size() != 32) {
+            throw std::invalid_argument("Data must be exactly 32 bytes long");
+        }
+    }
+
+    ~ProtoBytes32() override = default;
+
+    AbiProto::Token toToken() const override {
+        AbiProto::Token proto;
+        // Since bytes32 is a fixed-size byte array, it's set similarly to a byte array.
+        // Ensure that the data size is exactly 32 bytes.
+        proto.set_byte_array_fix(m_data.data(), m_data.size());
+        return proto;
+    }
+
+private:
+    Data m_data; // Data must be exactly 32 bytes
+};
+
 class ProtoString final: public BaseProtoParam {
 public:
     explicit ProtoString(std::string str): m_string(std::move(str)) {
