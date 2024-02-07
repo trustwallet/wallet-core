@@ -32,6 +32,12 @@ impl TWDataVectorHelper {
     }
 }
 
+impl Default for TWDataVectorHelper {
+    fn default() -> Self {
+        TWDataVectorHelper::create([])
+    }
+}
+
 impl Drop for TWDataVectorHelper {
     fn drop(&mut self) {
         if self.ptr.is_null() {

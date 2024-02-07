@@ -2,6 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-pub mod bitcoin;
-pub mod ethereum;
-pub mod solana;
+mod solana_address;
+mod solana_compile;
+mod solana_sign;
