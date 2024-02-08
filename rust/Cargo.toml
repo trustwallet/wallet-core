@@ -39,3 +39,8 @@ overflow-checks = true
 
 [profile.release.package.curve25519-dalek]
 opt-level = 2
+
+[profile.release]
+lto = true
+opt-level = "s"
+strip = "debuginfo"
