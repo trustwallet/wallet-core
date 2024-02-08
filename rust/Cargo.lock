@@ -163,6 +163,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "bincode"
+version = "1.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b1f45e9417d87227c7a56d22e471c6206462cba514c7590c09aff4cf6d1ddcad"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "bitcoin"
 version = "0.30.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1759,6 +1768,7 @@ dependencies = [
  "tw_native_evmos",
  "tw_native_injective",
  "tw_ronin",
+ "tw_solana",
  "tw_thorchain",
 ]
 
@@ -1996,6 +2006,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_solana"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "serde",
+ "serde_json",
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_proto",
+]
+
+[[package]]
 name = "tw_thorchain"
 version = "0.1.0"
 dependencies = [
@@ -2092,6 +2117,7 @@ dependencies = [
  "tw_misc",
  "tw_number",
  "tw_proto",
+ "tw_solana",
 ]
 
 [[package]]
