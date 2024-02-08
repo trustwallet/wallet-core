@@ -86,6 +86,7 @@ impl PrivateKey {
                     .is_ok()
             },
             Curve::Starkex => starkex::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
+            Curve::Schnorr => schnorr::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
         }
     }
 
@@ -110,6 +111,7 @@ impl PrivateKey {
                 sign_impl(self.to_ed25519_extended_cardano()?, message)
             },
             Curve::Starkex => sign_impl(self.to_starkex_privkey()?, message),
+            Curve::Schnorr => sign_impl(self.to_schnorr_privkey()?, message),
         }
     }
 

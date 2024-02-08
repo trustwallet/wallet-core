@@ -25,6 +25,7 @@ pub enum Curve {
     /// Cardano blockchain specific `ed25519` extended key.
     Ed25519ExtendedCardano = 5,
     Starkex = 6,
+    Schnorr = 7,
 }
 
 impl Curve {
@@ -38,6 +39,7 @@ impl Curve {
             4 => Some(Curve::Nist256p1),
             5 => Some(Curve::Ed25519ExtendedCardano),
             6 => Some(Curve::Starkex),
+            7 => Some(Curve::Schnorr),
             _ => None,
         }
     }
