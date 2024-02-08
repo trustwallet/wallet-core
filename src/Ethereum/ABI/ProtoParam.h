@@ -86,14 +86,12 @@ public:
 
     AbiProto::Token toToken() const override {
         AbiProto::Token proto;
-        // Since bytes32 is a fixed-size byte array, it's set similarly to a byte array.
-        // Ensure that the data size is exactly 32 bytes.
         proto.set_byte_array_fix(m_data.data(), m_data.size());
         return proto;
     }
 
 private:
-    Data m_data; // Data must be exactly 32 bytes
+    Data m_data;
 };
 
 class ProtoString final: public BaseProtoParam {
