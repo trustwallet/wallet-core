@@ -39,4 +39,20 @@ TWData *_Nonnull TWBarzGetInitCode(TWString* _Nonnull factory, struct TWPublicKe
 /// \return Bytes of the formatted signature
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWBarzGetFormattedSignature(TWData* _Nonnull signature, TWData* _Nonnull challenge, TWData* _Nonnull authenticatorData, TWString* _Nonnull clientDataJSON);
+
+/// Returns the final hash to be signed by Barz for signing messages & typed data
+///
+/// \param msgHash Original msgHash
+/// \param barzAddress The address of Barz wallet signing the message
+/// \param chainId The chainId of the network the verification will happen
+/// \return The final hash to be signed
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWBarzGetPrefixedMsgHash(TWData* _Nonnull msgHash, TWString* _Nonnull barzAddress, uint32_t chainId);
+
+/// Returns the encoded diamondCut function call for Barz contract upgrades
+///
+/// \param input The serialized data of DiamondCutInput
+/// \return The encoded bytes of diamondCut function call
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWBarzGetDiamondCutCode(TWData *_Nonnull input);
 TW_EXTERN_C_END
