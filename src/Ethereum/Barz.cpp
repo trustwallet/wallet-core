@@ -182,11 +182,11 @@ Data getDiamondCutCode(const Proto::DiamondCutInput& input) {
         ++instructChunk;
         append(encoded, dataLocation); // adding 0x60 DataStorage position
         ++instructChunk;
-        Ethereum::ABI::ValueEncoder::encodeUInt256(facetCut.function_selectors_size(), encoded); // FacetSelector의 개수
+        Ethereum::ABI::ValueEncoder::encodeUInt256(facetCut.function_selectors_size(), encoded); // Number of FacetSelector
         ++instructChunk;
         // Encode and append function selectors
         for (const auto& selector : facetCut.function_selectors()) {
-             Ethereum::ABI::ValueEncoder::encodeBytes(parse_hex(hex(selector)), encoded);
+            Ethereum::ABI::ValueEncoder::encodeBytes(parse_hex(hex(selector)), encoded);
             ++instructChunk;
         }
         totalInstructChunk += instructChunk;
