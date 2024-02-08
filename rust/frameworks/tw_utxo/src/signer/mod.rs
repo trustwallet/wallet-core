@@ -189,4 +189,8 @@ where
 
         Ok(())
     }
+
+    pub fn into_transaction(self) -> Transaction {
+        self.transaction_to_sign
+    }
 }

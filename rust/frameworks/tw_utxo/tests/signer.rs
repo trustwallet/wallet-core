@@ -5,7 +5,7 @@ use tw_misc::traits::ToBytesVec;
 use tw_utxo::{
     encode::{stream::Stream, Encodable},
     script::Script,
-    signer::{TransactionSigner, TxSigningArgs, UtxoToSign},
+    signer::{ClaimingData, TransactionSigner, TxSigningArgs, UtxoToSign},
     signing_mode::SigningMethod,
     transaction::{
         standard_transaction::{Transaction, TransactionInput, TransactionOutput},
@@ -44,6 +44,7 @@ fn signer() {
     };
 
     // Prepare TX input
+	// TODO: The API should not mandate this, all context should be in UtxoToSign.
 
     let txid: Vec<u8> =
         hex::decode("1e1cdc48aa990d7e154a161d5b5f1cad737742e97d2712ab188027bb42e6e47b")
@@ -73,9 +74,9 @@ fn signer() {
             hex::decode("037ed9a436e11ec4947ac4b7823787e24ba73180f1edd2857bff19c9f4d62b65bf")
                 .unwrap();
         let pubkey = bitcoin::PublicKey::from_slice(&pubkey_bytes).unwrap();
-        let script_pubkey = ScriptBuf::new_p2pkh(&pubkey.pubkey_hash());
 
-        Script::from(script_pubkey.to_vec())
+        let script_buf = ScriptBuf::new_p2pkh(&pubkey.pubkey_hash());
+        Script::from(script_buf.to_vec())
     };
 
     let output = TransactionOutput {
@@ -98,7 +99,49 @@ fn signer() {
         hex::decode("56429688a1a6b00b90ccd22a0de0a376b6569d8684022ae92229a28478bfb657").unwrap();
     let private_key = PrivateKey::new(private_key).unwrap();
 
-    let x = private_key.sign(&preimage.sighash, Curve::Schnorr).unwrap();
+    let sig = private_key.sign(&preimage.sighash, Curve::Secp256k1).unwrap();
 
-    dbg!(x);
+    dbg!(&sig);
+
+    let script_sig = {
+        let pubkey_bytes =
+            hex::decode("037ed9a436e11ec4947ac4b7823787e24ba73180f1edd2857bff19c9f4d62b65bf")
+                .unwrap();
+
+		let pubkey = bitcoin::PublicKey::from_slice(&pubkey_bytes).unwrap();
+
+		let sig = bitcoin::ecdsa::Signature {
+			// Note, we're skipping the recovery byte here.
+			sig: bitcoin::secp256k1::ecdsa::Signature::from_compact(&sig[..64]).unwrap(),
+			hash_ty: bitcoin::sighash::EcdsaSighashType::All,
+		};
+
+		let script_buf = ScriptBuf::builder()
+			.push_slice(&sig.serialize())
+			.push_key(&pubkey)
+			.into_script();
+
+        Script::from(script_buf.to_vec())
+    };
+
+	//let utxo = signer.transaction_to_sign.inputs.get_mut(0).unwrap();
+	//utxo.script_sig = script_sig;
+
+	let claims = vec![
+		ClaimingData {
+			script_sig,
+			witness: Vec::new(),
+		}
+	];
+
+	signer.compile(claims).unwrap();
+
+	let tx = signer.into_transaction();
+
+
+	let mut stream = Stream::new();
+	tx.encode(&mut stream);
+
+	let encoded = hex::encode(stream.out(), false);
+	dbg!(encoded);
 }
