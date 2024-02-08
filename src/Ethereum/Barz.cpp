@@ -91,7 +91,8 @@ Data getPrefixedMsgHash(const Data msgHash, const std::string& barzAddress, cons
     const Data& domainSeparatorTypeHashData = parse_hex("0x47e79534a245952e8b16893a336b85a3d9ea9fa8c573f3d803afb92a79469218");
     // keccak256("BarzMessage(bytes message)")
     const Data& barzMsgHashData = parse_hex("0xb1bcb804a4a3a1af3ee7920d949bdfd417ea1b736c3552c8d6563a229a619100");
-
+    const auto signedDataPrefix = "0x1901";
+    
     auto encodedDomainSeparatorData = Ethereum::ABI::Function::encodeParams(Ethereum::ABI::BaseParams {
         std::make_shared<Ethereum::ABI::ProtoBytes32>(domainSeparatorTypeHashData),
         std::make_shared<Ethereum::ABI::ProtoUInt256>(chainId),
@@ -115,7 +116,7 @@ Data getPrefixedMsgHash(const Data msgHash, const std::string& barzAddress, cons
         std::make_shared<Ethereum::ABI::ProtoBytes32>(domainSeparatorHash),
         std::make_shared<Ethereum::ABI::ProtoBytes32>(Hash::keccak256(rawMessageData))
     });
-    auto encodedMsgData = "0x1901" + hex(encodedMsg.value());
+    auto encodedMsgData = signedDataPrefix + hex(encodedMsg.value());
 
     Data finalEncodedMsgData = parse_hex(encodedMsgData);
 
@@ -129,6 +130,8 @@ Data getPrefixedMsgHash(const Data msgHash, const std::string& barzAddress, cons
 
 // Function to encode the diamondCut function call using protobuf message as input
 Data getDiamondCutCode(const Proto::DiamondCutInput& input) {
+    const auto diamondCutSelector = "1f931c1c";
+    const auto dataLocationChunk = "60";
     Data encoded;
 
     //    function diamondCut(
@@ -136,11 +139,11 @@ Data getDiamondCutCode(const Proto::DiamondCutInput& input) {
     //        address init,
     //        bytes calldata _calldata // Note that Barz does not use the _calldata for initialization.
     //    )
-    Data encodedSignature = parse_hex("1f931c1c"); // diamondCut() function selector
+    Data encodedSignature = parse_hex(diamondCutSelector); // diamondCut() function selector
     encoded.insert(encoded.end(), encodedSignature.begin(), encodedSignature.end());
 
     // First argument Data Location `diamondCut`
-    Data dataLocation = parse_hex("60");
+    Data dataLocation = parse_hex(dataLocationChunk);
     pad_left(dataLocation, 32);
     append(encoded, dataLocation);
 
