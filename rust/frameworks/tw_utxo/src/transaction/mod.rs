@@ -26,8 +26,8 @@ pub trait TransactionPreimage {
 pub struct UtxoPreimageArgs {
     pub input_index: usize,
     /// Script for claiming [`UtxoPreimageArgs::input_index`] UTXO.
-    pub input_claiming_script: Script,
-    pub input_amount: Amount,
+    pub script_pubkey: Script,
+    pub amount: Amount,
     pub sighash: Sighash,
     pub tx_hasher: Hasher,
     /// Signing method needs to be used to sign the [`UtxoPreimageArgs::input_index`] index.

@@ -46,7 +46,8 @@ impl<Transaction: TransactionInterface> LegacySighash<Transaction> {
 
         if args.sighash.anyone_can_pay() {
             let mut input_preimage = input_to_sign.clone();
-            input_preimage.set_script_sig(args.input_claiming_script.clone());
+            // TODO: Pretty sure this is wrong?
+            input_preimage.set_script_sig(args.script_pubkey.clone());
             input_preimage.clear_witness();
             return Ok(vec![input_preimage]);
         }
@@ -58,8 +59,9 @@ impl<Transaction: TransactionInterface> LegacySighash<Transaction> {
                 let is_this_input = n == args.input_index;
 
                 let mut input_preimage = input.clone();
+                // TODO: Pretty sure this is wrong?
                 input_preimage.set_script_sig(if is_this_input {
-                    args.input_claiming_script.clone()
+                    args.script_pubkey.clone()
                 } else {
                     Script::default()
                 });

@@ -18,12 +18,8 @@ const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 
 /// UTXO (Unsigned transaction input) contains all info required to sign the.
 pub struct UtxoToSign {
-    ///
-    claiming_script: Script,
-    /// The transaction signer will try to determine the signing method for the
-    /// Utxo, assuming it's a standardized (Bitcoin) Script. Alternatively, this
-    /// field can be set manually.
-    signing_method: Option<SigningMethod>,
+    script_pubkey: Script,
+    signing_method: SigningMethod,
     amount: Amount,
 }
 
@@ -56,10 +52,15 @@ pub struct UtxoSighash {
     pub sighash: Data,
 }
 
+pub struct ClaimingData {
+    pub script_sig: Script,
+    pub witness: Vec<Script>,
+}
+
 /// A pair of a signature and corresponding public key.
 pub struct SignaturePubkey {
-    signature: Data,
-    public_key: tw::PublicKey,
+    pub signature: tw::Signature,
+    pub public_key: tw::PublicKey,
 }
 
 /// Transaction signer with a standard signing behaviour.
@@ -91,19 +92,6 @@ where
 
     /// Computes sighashes of [`TransactionSigner::transaction`].
     pub fn preimage_tx(&self) -> UtxoResult<TxPreimage> {
-        fn determine_signing_method(s: &Script) -> Option<SigningMethod> {
-            if s.is_p2sh() || s.is_p2pk() || s.is_p2pkh() {
-                Some(SigningMethod::Legacy)
-            } else if s.is_p2wsh() || s.is_p2wpkh() {
-                Some(SigningMethod::Segwit)
-            } else if s.is_p2tr() {
-                // TODO: What about TaprootOnePrevout?
-                Some(SigningMethod::TaprootAll)
-            } else {
-                None
-            }
-        }
-
         // There should be the same number of UTXOs and their meta data.
         if self.args.utxos_to_sign.len() != self.transaction_to_sign.inputs().len() {
             return Err(UtxoError(UtxoErrorKind::Error_internal));
@@ -114,18 +102,12 @@ where
             .iter()
             .enumerate()
             .map(|(input_index, utxo)| {
-                let signing_method = utxo
-                    // Use the provided signing method if set.
-                    .signing_method
-                    // Otherwise, try to determine the signing method from the UTXO script.
-                    .or(determine_signing_method(&utxo.claiming_script))
-                    // TODO: Set appropriate error kind.
-                    .ok_or(UtxoError(UtxoErrorKind::Error_internal))?;
+                let signing_method = utxo.signing_method;
 
                 let utxo_args = UtxoPreimageArgs {
                     input_index,
-                    input_claiming_script: utxo.claiming_script.clone(),
-                    input_amount: utxo.amount,
+                    script_pubkey: utxo.script_pubkey.clone(),
+                    amount: utxo.amount,
                     sighash: self.args.sighash,
                     tx_hasher: self.args.tx_hasher,
                     signing_method,
@@ -179,25 +161,25 @@ where
     ///
     /// Consider using [`TransactionSigner::verify_signatures`] before calling [`TransactionSigner::compile`]
     /// if the signatures were computed externally.
-    pub fn compile(&self, signatures: Vec<SignaturePubkey>) -> UtxoResult<Transaction> {
+    pub fn compile(mut self, claims: Vec<ClaimingData>) -> UtxoResult<Transaction> {
         // There should be the same number of UTXOs and their meta data.
         if self.args.utxos_to_sign.len() != self.transaction_to_sign.inputs().len() {
             return Err(UtxoError(UtxoErrorKind::Error_internal));
         }
-        if self.args.utxos_to_sign.len() != signatures.len() {
-            return Err(UtxoError(UtxoErrorKind::Error_signatures_count));
+        if self.args.utxos_to_sign.len() != claims.len() {
+            // TODO: Set appropriate error variant
+            return Err(UtxoError(UtxoErrorKind::Error_internal));
         }
 
-        let signed_utxos: Vec<Transaction::Input> =
-            Vec::with_capacity(self.transaction_to_sign.inputs().len());
-        for (input_index, sign_pubkey) in signatures.into_iter().enumerate() {
-            let claiming_script = &self.args.utxos_to_sign[input_index];
-            let mut utxo = self.transaction_to_sign.inputs()[input_index].clone();
-
-            // TODO Generate a proper script-sig according to the `claiming_script`.
-            // For example, https://github.com/KomodoPlatform/komodo-defi-framework/blob/b0fd99e8406e67ea06435dd028991caa5f522b5c/mm2src/coins/utxo_signer/src/sign_common.rs#L32-L102
-            // Please note here can be an empty script sig, but set witness instead.
-            utxo.set_script_sig(todo!());
+        for (utxo, claim) in self
+            .transaction_to_sign
+            .inputs_mut()
+            .iter_mut()
+            .zip(claims.into_iter())
+        {
+            // TODO: At least one claim should be present.
+            utxo.set_script_sig(claim.script_sig);
+            utxo.set_witness(claim.witness);
         }
 
         todo!()

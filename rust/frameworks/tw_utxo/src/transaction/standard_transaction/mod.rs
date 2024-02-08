@@ -62,6 +62,10 @@ impl TransactionInterface for Transaction {
         &self.inputs
     }
 
+    fn inputs_mut(&mut self) -> &mut [Self::Input] {
+        &mut self.inputs
+    }
+
     fn set_inputs(&mut self, inputs: Vec<Self::Input>) {
         self.inputs = inputs;
     }
@@ -74,6 +78,10 @@ impl TransactionInterface for Transaction {
         self.outputs = outputs;
     }
 
+    fn has_witness(&self) -> bool {
+        self.inputs.iter().any(|input| input.has_witness())
+    }
+
     fn locktime(&self) -> u32 {
         self.locktime
     }
@@ -84,7 +92,7 @@ impl Transaction {
     pub fn without_witness(&self) -> Transaction {
         let mut without_witness = self.clone();
         for input in without_witness.inputs.iter_mut() {
-            input.script_witness.clear();
+            input.witness.clear();
         }
         without_witness
     }
@@ -105,7 +113,7 @@ impl Encodable for Transaction {
         // Encode witness if they present.
         if encode_witness {
             for input in &self.inputs {
-                stream.append_list(&input.script_witness);
+                stream.append_list(&input.witness);
             }
         }
         stream.append(&self.locktime);
@@ -134,7 +142,7 @@ pub struct TransactionInput {
     /// before inclusion into a block.
     pub sequence: u32,
     /// Witness stack.
-    pub script_witness: Vec<Data>,
+    pub witness: Vec<Script>,
 }
 
 impl TxInputInterface for TransactionInput {
@@ -150,16 +158,24 @@ impl TxInputInterface for TransactionInput {
         self.sequence = sequence;
     }
 
-    fn script_witness(&self) -> &[Data] {
-        &self.script_witness
-    }
-
     fn set_script_sig(&mut self, script_sig: Script) {
         self.script_sig = script_sig;
     }
 
+    fn set_witness(&mut self, witness: Vec<Script>) {
+        self.witness = witness;
+    }
+
+    fn witness(&self) -> &[Script] {
+        self.witness.as_slice()
+    }
+
+    fn has_witness(&self) -> bool {
+        !self.witness.is_empty()
+    }
+
     fn clear_witness(&mut self) {
-        self.script_witness.clear();
+        self.witness.clear();
     }
 }
 
@@ -172,26 +188,20 @@ impl Encodable for TransactionInput {
     }
 }
 
-impl TransactionInput {
-    pub fn has_witness(&self) -> bool {
-        !self.script_witness.is_empty()
-    }
-}
-
 #[derive(Clone, Debug)]
 pub struct TransactionOutput {
     /// Transaction amount.
     pub value: Amount,
     /// Usually contains the public key as a Bitcoin script setting up
     /// conditions to claim this output.
-    pub script: Script,
+    pub script_pubkey: Script,
 }
 
 impl Default for TransactionOutput {
     fn default() -> Self {
         TransactionOutput {
             value: -1,
-            script: Script::default(),
+            script_pubkey: Script::default(),
         }
     }
 }
@@ -200,6 +210,6 @@ impl TxOutputInterface for TransactionOutput {}
 
 impl Encodable for TransactionOutput {
     fn encode(&self, stream: &mut Stream) {
-        stream.append(&self.value).append(&self.script);
+        stream.append(&self.value).append(&self.script_pubkey);
     }
 }

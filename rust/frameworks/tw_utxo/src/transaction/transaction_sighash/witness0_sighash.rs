@@ -38,8 +38,8 @@ impl<Transaction: TransactionInterface> Witness0Sighash<Transaction> {
         // may already be contained in hashSequence.
         stream
             .append(input.previous_output())
-            .append(&args.input_claiming_script)
-            .append(&args.input_amount)
+            .append(&args.script_pubkey)
+            .append(&args.amount)
             .append(&input.sequence())
             .append_raw_slice(&outputs_hash)
             .append(&tx.locktime())
