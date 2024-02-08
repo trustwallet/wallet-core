@@ -425,6 +425,9 @@ message SigningInput {
 
     // Optional. If set, use a different Signer info when signing the transaction.
     SignerInfo signer_info = 12;
+
+    // Optional timeout_height
+    uint64 timeout_height = 13;
 }
 
 // Result containing the signed and encoded transaction.

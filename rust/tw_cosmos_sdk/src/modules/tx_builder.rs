@@ -20,8 +20,6 @@ use tw_number::U256;
 use tw_proto::Cosmos::Proto;
 use tw_proto::{google, serialize};
 
-const DEFAULT_TIMEOUT_HEIGHT: u64 = 0;
-
 pub struct TxBuilder<Context> {
     _phantom: PhantomData<Context>,
 }
@@ -126,7 +124,7 @@ where
         Ok(TxBody {
             messages,
             memo: input.memo.to_string(),
-            timeout_height: DEFAULT_TIMEOUT_HEIGHT,
+            timeout_height: input.timeout_height,
         })
     }
 
