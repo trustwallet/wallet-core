@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+#include <string>
 #include "ABI/ValueEncoder.h"
 #include "ABI/Function.h"
 #include "AddressChecksum.h"
@@ -92,7 +93,7 @@ Data getPrefixedMsgHash(const Data msgHash, const std::string& barzAddress, cons
     // keccak256("BarzMessage(bytes message)")
     const Data& barzMsgHashData = parse_hex("0xb1bcb804a4a3a1af3ee7920d949bdfd417ea1b736c3552c8d6563a229a619100");
     const auto signedDataPrefix = "0x1901";
-    
+
     auto encodedDomainSeparatorData = Ethereum::ABI::Function::encodeParams(Ethereum::ABI::BaseParams {
         std::make_shared<Ethereum::ABI::ProtoBytes32>(domainSeparatorTypeHashData),
         std::make_shared<Ethereum::ABI::ProtoUInt256>(chainId),
@@ -132,6 +133,7 @@ Data getPrefixedMsgHash(const Data msgHash, const std::string& barzAddress, cons
 Data getDiamondCutCode(const Proto::DiamondCutInput& input) {
     const auto diamondCutSelector = "1f931c1c";
     const auto dataLocationChunk = "60";
+    const char defaultPadding = '0';
     Data encoded;
 
     //    function diamondCut(
@@ -206,7 +208,12 @@ Data getDiamondCutCode(const Proto::DiamondCutInput& input) {
 
     auto initDataLength = initDataSize / 2; // 1 byte is encoded into 2 char
     Ethereum::ABI::ValueEncoder::encodeUInt256(initDataLength, encoded);
-    Ethereum::ABI::ValueEncoder::encodeBytes(parse_hex(input.init_data()), encoded);
+
+    append(encoded, parse_hex(input.init_data()));
+
+    const int paddingLength = (encodingChunk * 2) - (initDataSize % (encodingChunk * 2));
+    const std::string padding(paddingLength, defaultPadding);
+    append(encoded, parse_hex(padding));
 
     return encoded;
 }
