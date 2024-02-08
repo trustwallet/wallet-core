@@ -18,6 +18,7 @@ pub struct LegacySighash<Transaction: TransactionInterface> {
 
 impl<Transaction: TransactionInterface> LegacySighash<Transaction> {
     pub fn sighash_tx(tx: &Transaction, args: &UtxoPreimageArgs) -> UtxoResult<Data> {
+        // TODO: Avoid cloning here?
         let mut tx_preimage = tx.clone();
 
         tx_preimage.set_inputs(Self::inputs_for_preimage(tx, args)?);

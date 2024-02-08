@@ -14,6 +14,7 @@ use tw_utxo::{
 };
 
 #[test]
+// NOTE: This is just a playground for now... It's not a real test.
 fn signer() {
     let mut tx = Transaction {
         version: 2,
