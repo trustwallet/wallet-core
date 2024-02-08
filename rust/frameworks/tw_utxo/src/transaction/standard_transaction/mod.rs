@@ -32,11 +32,11 @@ const WITNESS_FLAG: u8 = 1;
 #[derive(Clone, Debug)]
 pub struct Transaction {
     /// Transaction data format version (note, this is signed).
-    version: i32,
+    pub version: i32,
     /// Unsigned transaction inputs.
-    inputs: Vec<TransactionInput>,
+    pub inputs: Vec<TransactionInput>,
     /// Transaction outputs.
-    outputs: Vec<TransactionOutput>,
+    pub outputs: Vec<TransactionOutput>,
     /// The block number or timestamp at which this transaction is unlocked.
     ///
     /// | Value          | Description
@@ -89,6 +89,7 @@ impl TransactionInterface for Transaction {
 
 impl Transaction {
     /// Returns the same transaction with [`TransactionInput::script_witness`] being empty.
+    /// TODO: Why?
     pub fn without_witness(&self) -> Transaction {
         let mut without_witness = self.clone();
         for input in without_witness.inputs.iter_mut() {

@@ -18,9 +18,9 @@ const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 
 /// UTXO (Unsigned transaction input) contains all info required to sign the.
 pub struct UtxoToSign {
-    script_pubkey: Script,
-    signing_method: SigningMethod,
-    amount: Amount,
+    pub script_pubkey: Script,
+    pub signing_method: SigningMethod,
+    pub amount: Amount,
 }
 
 /// Transaction preimage arguments.
@@ -41,11 +41,13 @@ impl Default for TxSigningArgs {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct TxPreimage {
     /// Transaction signatures in the same order as the transaction UTXOs.
     pub sighashes: Vec<UtxoSighash>,
 }
 
+#[derive(Debug, Clone)]
 pub struct UtxoSighash {
     /// The signing method needs to be used for this sighash.
     pub signing_method: SigningMethod,
@@ -125,6 +127,7 @@ where
             .map(|sighashes: Vec<UtxoSighash>| TxPreimage { sighashes })
     }
 
+    // TODO: This comment should be rephrased, given that in validates the preimages, not the claims
     /// Validates if the given signatures and public keys correspond to the actual [`TransactionSigner::transaction`] inputs.
     /// The method should be used to validate externally passed signatures before [`TransactionSigner::compile`].
     ///
@@ -154,14 +157,15 @@ where
         Ok(all_valid)
     }
 
-    /// Compiles a transaction with the given signatures.
-    /// The signatures must be in the same order as corresponding UTXOs.
+    // TODO: We should separate the compilation from the Signer.
+    /// Compiles a transaction with the given signatures. The signatures must be
+    /// in the same order as corresponding UTXOs.
     ///
     /// # Hint
     ///
     /// Consider using [`TransactionSigner::verify_signatures`] before calling [`TransactionSigner::compile`]
     /// if the signatures were computed externally.
-    pub fn compile(mut self, claims: Vec<ClaimingData>) -> UtxoResult<Transaction> {
+    pub fn compile(&mut self, claims: Vec<ClaimingData>) -> UtxoResult<()> {
         // There should be the same number of UTXOs and their meta data.
         if self.args.utxos_to_sign.len() != self.transaction_to_sign.inputs().len() {
             return Err(UtxoError(UtxoErrorKind::Error_internal));
@@ -171,17 +175,18 @@ where
             return Err(UtxoError(UtxoErrorKind::Error_internal));
         }
 
+        // Add the claiming script (scriptSig or Witness) to the transaction inputs.
         for (utxo, claim) in self
             .transaction_to_sign
             .inputs_mut()
             .iter_mut()
             .zip(claims.into_iter())
         {
-            // TODO: At least one claim should be present.
+            // TODO: Check that at least one claim should be present.
             utxo.set_script_sig(claim.script_sig);
             utxo.set_witness(claim.witness);
         }
 
-        todo!()
+        Ok(())
     }
 }
