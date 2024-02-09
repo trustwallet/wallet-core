@@ -92,21 +92,22 @@ fn signer() {
 
     // Sign preimages
 
+    //dbg!(&tx);
+
     let mut signer = TransactionSigner::new(tx);
     signer.set_signing_args(utxo_args);
 
     let preimage = &signer.preimage_tx().unwrap().sighashes[0];
+    //dbg!(preimage);
 
-    dbg!(preimage);
-
+    // >> Prepare signature.
     let private_key = PrivateKey::new(alice_private_key).unwrap();
-
     let sig = private_key
         .sign(&preimage.sighash, Curve::Secp256k1)
         .unwrap();
+    //dbg!(&sig);
 
-    dbg!(&sig);
-
+    // >> Prepare script_sig.
     let script_sig = {
         let pubkey = bitcoin::PublicKey::from_slice(&alice_pubkey).unwrap();
 

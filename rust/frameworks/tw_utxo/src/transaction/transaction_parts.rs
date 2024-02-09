@@ -6,6 +6,7 @@ use crate::encode::stream::Stream;
 use crate::encode::Encodable;
 use tw_hash::H256;
 
+// TODO: Shouldn't this be u64?
 pub type Amount = i64;
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]

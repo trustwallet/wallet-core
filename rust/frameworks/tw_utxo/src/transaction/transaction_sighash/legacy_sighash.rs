@@ -12,17 +12,19 @@ use std::marker::PhantomData;
 use tw_memory::Data;
 
 /// `LegacySighash` is used to calculate a preimage hash of a P2PK, P2PKH or P2SH unspent output.
-pub struct LegacySighash<Transaction: TransactionInterface> {
+pub struct LegacySighash<Transaction: std::fmt::Debug + TransactionInterface> {
     _phantom: PhantomData<Transaction>,
 }
 
-impl<Transaction: TransactionInterface> LegacySighash<Transaction> {
+impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transaction> {
     pub fn sighash_tx(tx: &Transaction, args: &UtxoPreimageArgs) -> UtxoResult<Data> {
         // TODO: Avoid cloning here?
         let mut tx_preimage = tx.clone();
 
         tx_preimage.set_inputs(Self::inputs_for_preimage(tx, args)?);
         tx_preimage.set_outputs(Self::outputs_for_preimage(tx, args));
+
+        dbg!(&tx_preimage);
 
         let mut stream = Stream::default();
         stream
@@ -47,10 +49,11 @@ impl<Transaction: TransactionInterface> LegacySighash<Transaction> {
 
         if args.sighash.anyone_can_pay() {
             let mut input_preimage = input_to_sign.clone();
-            // TODO: Pretty sure this is wrong?
             input_preimage.set_script_sig(args.script_pubkey.clone());
             input_preimage.clear_witness();
             return Ok(vec![input_preimage]);
+        } else {
+
         }
 
         let selected_inputs = original_inputs
@@ -60,19 +63,18 @@ impl<Transaction: TransactionInterface> LegacySighash<Transaction> {
                 let is_this_input = n == args.input_index;
 
                 let mut input_preimage = input.clone();
-                // TODO: Pretty sure this is wrong?
                 input_preimage.set_script_sig(if is_this_input {
                     args.script_pubkey.clone()
                 } else {
                     Script::default()
                 });
 
-                let signle_or_none = matches!(
+                let single_or_nonce = matches!(
                     args.sighash.base_type(),
                     SighashBase::Single | SighashBase::None
                 );
                 // Override the value with zero if necessary.
-                if signle_or_none && !is_this_input {
+                if single_or_nonce && !is_this_input {
                     input_preimage.set_sequence(0);
                 }
                 input_preimage.clear_witness();
@@ -99,6 +101,8 @@ impl<Transaction: TransactionInterface> LegacySighash<Transaction> {
                     if n == args.input_index {
                         out.clone()
                     } else {
+                        // TODO: The output amount in this case must be `0xffffffffffffffff`.
+                        // `standard_transaction::TransactionOutput` defaults to `-1`.
                         Transaction::Output::default()
                     }
                 })
