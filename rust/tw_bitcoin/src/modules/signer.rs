@@ -2,6 +2,7 @@ use crate::{BitcoinEntry, Error, Result};
 use bitcoin::key::{TapTweak, TweakedKeyPair};
 use bitcoin::sighash::{EcdsaSighashType, TapSighashType};
 use secp256k1::{KeyPair, Message, Secp256k1};
+use tw_utxo::sighash;
 use std::collections::HashMap;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PrivateKeyBytes, SignatureBytes};
@@ -153,6 +154,8 @@ impl Signer {
             // Create signable message from sighash.
             let sighash = Message::from_slice(entry.sighash.as_ref())
                 .map_err(|_| Error::from(Proto::Error::Error_invalid_sighash))?;
+
+            dbg!(&sighash.as_ref());
 
             // Sign the sighash depending on signing method.
             match entry.signing_method {
