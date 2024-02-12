@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
-use crate::script::Script;
+use crate::script::{Script, Witness};
 use crate::sighash::Sighash;
 use crate::signing_mode::SigningMethod;
 use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
@@ -56,7 +56,7 @@ pub struct UtxoSighash {
 
 pub struct ClaimingData {
     pub script_sig: Script,
-    pub witness: Vec<Script>,
+    pub witness: Witness,
 }
 
 /// A pair of a signature and corresponding public key.

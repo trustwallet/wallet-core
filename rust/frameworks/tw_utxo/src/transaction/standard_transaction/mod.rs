@@ -5,7 +5,7 @@
 use crate::encode::stream::Stream;
 use crate::encode::Encodable;
 use crate::error::UtxoResult;
-use crate::script::Script;
+use crate::script::{Script, Witness};
 use crate::signing_mode::SigningMethod;
 use crate::transaction::transaction_interface::{
     TransactionInterface, TxInputInterface, TxOutputInterface,
@@ -114,7 +114,7 @@ impl Encodable for Transaction {
         // Encode witness if they present.
         if encode_witness {
             for input in &self.inputs {
-                stream.append_list(&input.witness);
+                stream.append(&input.witness);
             }
         }
 
@@ -144,7 +144,7 @@ pub struct TransactionInput {
     /// before inclusion into a block.
     pub sequence: u32,
     /// Witness stack.
-    pub witness: Vec<Script>,
+    pub witness: Witness,
 }
 
 impl TxInputInterface for TransactionInput {
@@ -164,12 +164,12 @@ impl TxInputInterface for TransactionInput {
         self.script_sig = script_sig;
     }
 
-    fn set_witness(&mut self, witness: Vec<Script>) {
+    fn set_witness(&mut self, witness: Witness) {
         self.witness = witness;
     }
 
-    fn witness(&self) -> &[Script] {
-        self.witness.as_slice()
+    fn witness_items(&self) -> &[Script] {
+        self.witness.as_items()
     }
 
     fn has_witness(&self) -> bool {

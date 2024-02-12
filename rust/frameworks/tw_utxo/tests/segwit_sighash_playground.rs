@@ -1,10 +1,11 @@
 use bitcoin::ScriptBuf;
 use tw_encoding::hex;
 use tw_keypair::tw::{Curve, PrivateKey};
+use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
 use tw_utxo::{
     encode::{stream::Stream, Encodable},
-    script::Script,
+    script::{Script, Witness},
     signer::{ClaimingData, TransactionSigner, TxSigningArgs, UtxoToSign},
     signing_mode::SigningMethod,
     transaction::{
@@ -14,16 +15,15 @@ use tw_utxo::{
 };
 
 #[test]
+#[ignore]
 // NOTE: This is just a playground for now... It's not a real test.
-fn signer() {
-    let alice_private_key =
-        hex::decode("56429688a1a6b00b90ccd22a0de0a376b6569d8684022ae92229a28478bfb657").unwrap();
+fn segwit_sighash_playground() {
     let alice_pubkey =
-        hex::decode("036666dd712e05a487916384bfcd5973eb53e8038eccbbf97f7eed775b87389536").unwrap();
-    let _bob_private_key =
-        hex::decode("b7da1ec42b19085fe09fec54b9d9eacd998ae4e6d2ad472be38d8393391b9ead").unwrap();
+        hex::decode("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f").unwrap();
+    let bob_private_key =
+        hex::decode("05dead4689ec7d55de654771120866be83bf1b8e25c9a1b77fc58a336e1cd1a3").unwrap();
     let bob_pubkey =
-        hex::decode("037ed9a436e11ec4947ac4b7823787e24ba73180f1edd2857bff19c9f4d62b65bf").unwrap();
+        hex::decode("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f").unwrap();
 
     let mut tx = Transaction {
         version: 2,
@@ -33,16 +33,16 @@ fn signer() {
     };
 
     let script_pubkey = {
-        let pubkey = bitcoin::PublicKey::from_slice(&alice_pubkey).unwrap();
-        let script_pubkey = ScriptBuf::new_p2pkh(&pubkey.pubkey_hash());
+        let pubkey = bitcoin::PublicKey::from_slice(&bob_pubkey).unwrap();
+        let script_pubkey = ScriptBuf::new_v0_p2wpkh(&pubkey.wpubkey_hash().unwrap());
 
         Script::from(script_pubkey.to_vec())
     };
 
     let utx_arg = UtxoToSign {
         script_pubkey,
-        signing_method: SigningMethod::Legacy,
-        amount: 50 * 100_000_000,
+        signing_method: SigningMethod::Segwit,
+        amount: 50 * 100_000_000 - 1_000_000,
     };
 
     let utxo_args = TxSigningArgs {
@@ -54,7 +54,7 @@ fn signer() {
     // TODO: The API should not mandate this, all context should be in UtxoToSign.
 
     let txid: Vec<u8> =
-        hex::decode("1e1cdc48aa990d7e154a161d5b5f1cad737742e97d2712ab188027bb42e6e47b")
+        hex::decode("858e450a1da44397bde05ca2f8a78510d74c623cc2f69736a8b3fbfadc161f6e")
             .unwrap()
             .into_iter()
             .rev()
@@ -69,7 +69,7 @@ fn signer() {
         },
         sequence: u32::MAX,
         script_sig: Script::new(),
-        witness: Vec::new(),
+        witness: Witness::new(),
     };
 
     tx.inputs.push(utxo);
@@ -77,22 +77,20 @@ fn signer() {
     // Prepare TX output
 
     let script_pubkey = {
-        let pubkey = bitcoin::PublicKey::from_slice(&bob_pubkey).unwrap();
+        let pubkey = bitcoin::PublicKey::from_slice(&alice_pubkey).unwrap();
 
-        let script_buf = ScriptBuf::new_p2pkh(&pubkey.pubkey_hash());
+        let script_buf = ScriptBuf::new_v0_p2wpkh(&pubkey.wpubkey_hash().unwrap());
         Script::from(script_buf.to_vec())
     };
 
     let output = TransactionOutput {
-        value: 50 * 100_000_000 - 1_000_000,
+        value: 50 * 100_000_000 - 1_000_000 - 1_000_000,
         script_pubkey,
     };
 
     tx.outputs.push(output);
 
     // Sign preimages
-
-    //dbg!(&tx);
 
     let mut signer = TransactionSigner::new(tx);
     signer.set_signing_args(utxo_args);
@@ -101,14 +99,13 @@ fn signer() {
     dbg!(preimage);
 
     // >> Prepare signature.
-    let private_key = PrivateKey::new(alice_private_key).unwrap();
+    let private_key = PrivateKey::new(bob_private_key).unwrap();
     let sig = private_key
         .sign(&preimage.sighash, Curve::Secp256k1)
         .unwrap();
-    //dbg!(&sig);
 
     // >> Prepare script_sig.
-    let script_sig = {
+    let witness = {
         let pubkey = bitcoin::PublicKey::from_slice(&alice_pubkey).unwrap();
 
         let sig = bitcoin::ecdsa::Signature {
@@ -117,20 +114,19 @@ fn signer() {
             hash_ty: bitcoin::sighash::EcdsaSighashType::All,
         };
 
-        let script_buf = ScriptBuf::builder()
-            .push_slice(&sig.serialize())
-            .push_key(&pubkey)
-            .into_script();
+		let mut w = bitcoin::Witness::new();
+		w.push(sig.serialize());
+		w.push(pubkey.to_bytes());
 
-        Script::from(script_buf.to_vec())
+        Witness::from(w.to_vec())
     };
 
     //let utxo = signer.transaction_to_sign.inputs.get_mut(0).unwrap();
     //utxo.script_sig = script_sig;
 
     let claims = vec![ClaimingData {
-        script_sig,
-        witness: Vec::new(),
+        script_sig: Script::new(),
+        witness: witness,
     }];
 
     signer.compile(claims).unwrap();

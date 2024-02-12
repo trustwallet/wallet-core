@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::encode::Encodable;
-use crate::script::Script;
+use crate::script::{Script, Witness};
 use crate::transaction::transaction_parts::OutPoint;
 
 /// An interface of the Bitcoin transaction.
@@ -37,9 +37,9 @@ pub trait TxInputInterface: Clone {
 
     fn set_script_sig(&mut self, script_sig: Script);
 
-    fn set_witness(&mut self, witness: Vec<Script>);
+    fn set_witness(&mut self, witness: Witness);
 
-    fn witness(&self) -> &[Script];
+    fn witness_items(&self) -> &[Script];
 
     fn has_witness(&self) -> bool;
 
