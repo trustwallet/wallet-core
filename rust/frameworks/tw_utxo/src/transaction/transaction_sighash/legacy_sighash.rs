@@ -24,8 +24,6 @@ impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transact
         tx_preimage.set_inputs(Self::inputs_for_preimage(tx, args)?);
         tx_preimage.set_outputs(Self::outputs_for_preimage(tx, args));
 
-        dbg!(&tx_preimage);
-
         let mut stream = Stream::default();
         stream
             // Encode the transaction preimage as a normal tx.
@@ -33,10 +31,7 @@ impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transact
             // Append the sighash type.
             .append(&args.sighash.raw_sighash());
 
-        let out = stream.out();
-        dbg!(&out);
-
-        Ok(args.tx_hasher.hash(&out))
+        Ok(args.tx_hasher.hash(&stream.out()))
     }
 
     /// Select and prepare transaction inputs according to the preimage settings.
@@ -54,35 +49,35 @@ impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transact
             let mut input_preimage = input_to_sign.clone();
             input_preimage.set_script_sig(args.script_pubkey.clone());
             input_preimage.clear_witness();
-            Ok(vec![input_preimage])
-        } else {
-            let selected_inputs = original_inputs
-                .iter()
-                .enumerate()
-                .map(|(n, input)| {
-                    let is_this_input = n == args.input_index;
-
-                    let mut input_preimage = input.clone();
-                    input_preimage.set_script_sig(if is_this_input {
-                        args.script_pubkey.clone()
-                    } else {
-                        Script::default()
-                    });
-
-                    let single_or_none = matches!(
-                        args.sighash.base_type(),
-                        SighashBase::Single | SighashBase::None
-                    );
-                    // Override the value with zero if necessary.
-                    if !is_this_input && single_or_none {
-                        input_preimage.set_sequence(0);
-                    }
-                    input_preimage.clear_witness();
-                    input_preimage
-                })
-                .collect();
-            Ok(selected_inputs)
+            return Ok(vec![input_preimage]);
         }
+
+        let selected_inputs = original_inputs
+            .iter()
+            .enumerate()
+            .map(|(n, input)| {
+                let is_this_input = n == args.input_index;
+
+                let mut input_preimage = input.clone();
+                input_preimage.set_script_sig(if is_this_input {
+                    args.script_pubkey.clone()
+                } else {
+                    Script::default()
+                });
+
+                let single_or_none = matches!(
+                    args.sighash.base_type(),
+                    SighashBase::Single | SighashBase::None
+                );
+                // Override the value with zero if necessary.
+                if !is_this_input && single_or_none {
+                    input_preimage.set_sequence(0);
+                }
+                input_preimage.clear_witness();
+                input_preimage
+            })
+            .collect();
+        Ok(selected_inputs)
     }
 
     /// Selects transaction outputs according to the preimage settings.

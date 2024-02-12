@@ -107,11 +107,9 @@ impl Encodable for Transaction {
         if encode_witness {
             // Use extended format in case witnesses are to be serialized.
             stream.append(&WITNESS_MARKER).append(&WITNESS_FLAG);
-        } 
+        }
 
-        stream
-            .append_list(&self.inputs)
-            .append_list(&self.outputs);
+        stream.append_list(&self.inputs).append_list(&self.outputs);
 
         // Encode witness if they present.
         if encode_witness {
