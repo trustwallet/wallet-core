@@ -101,15 +101,17 @@ impl Transaction {
 
 impl Encodable for Transaction {
     fn encode(&self, stream: &mut Stream) {
-        let encode_witness = self.has_witness();
-
         stream.append(&self.version);
+
+        let encode_witness = self.has_witness();
         if encode_witness {
             // Use extended format in case witnesses are to be serialized.
             stream.append(&WITNESS_MARKER).append(&WITNESS_FLAG);
-        }
+        } 
 
-        stream.append_list(&self.inputs).append_list(&self.outputs);
+        stream
+            .append_list(&self.inputs)
+            .append_list(&self.outputs);
 
         // Encode witness if they present.
         if encode_witness {
@@ -117,6 +119,7 @@ impl Encodable for Transaction {
                 stream.append_list(&input.witness);
             }
         }
+
         stream.append(&self.locktime);
     }
 }

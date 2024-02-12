@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::error::UtxoResult;
+use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
 
 const ANYONE_CAN_PAY_FLAG: u32 = 0x80;
 const FORK_ID_FLAG: u32 = 0x40;
@@ -11,14 +11,16 @@ const BASE_FLAG: u32 = 0x1f;
 #[derive(Clone, Copy, Debug, PartialEq)]
 #[repr(u32)]
 pub enum SighashBase {
-    /// Use default (All) - 0x00
-    UseDefault = 0,
     /// Sign all inputs and outputs (default) - 0x01
     All = 1,
     /// Sign all inputs but no outputs, anyone can choose the destination - 0x02
     None = 2,
     /// Sign the output whose index matches this inputs index - 0x03
     Single = 3,
+    // TODO:
+    // AllPlusAnyoneCanPay = 129,
+    // NonePlusAnyoneCanPay = 130,
+    // SinglePlusAnyoneCanPay = 131,
 }
 
 /// Signature hash type.
@@ -35,10 +37,11 @@ impl Sighash {
     /// Creates Sighash from any u32.
     pub fn from_u32(u: u32) -> UtxoResult<Sighash> {
         let base = match u & BASE_FLAG {
-            0 => SighashBase::UseDefault,
+            1 => SighashBase::All,
             2 => SighashBase::None,
             3 => SighashBase::Single,
-            _ => SighashBase::All,
+            // TODO: Set appropriate error variant
+            _ => return Err(UtxoError(UtxoErrorKind::Error_internal)),
         };
         Ok(Sighash {
             raw_sighash: u,
@@ -69,8 +72,8 @@ impl Sighash {
 impl Default for Sighash {
     fn default() -> Self {
         Sighash {
-            raw_sighash: SighashBase::UseDefault as u32,
-            base: SighashBase::UseDefault,
+            raw_sighash: SighashBase::All as u32,
+            base: SighashBase::All,
         }
     }
 }

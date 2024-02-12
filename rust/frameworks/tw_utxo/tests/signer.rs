@@ -98,7 +98,7 @@ fn signer() {
     signer.set_signing_args(utxo_args);
 
     let preimage = &signer.preimage_tx().unwrap().sighashes[0];
-    //dbg!(preimage);
+    dbg!(preimage);
 
     // >> Prepare signature.
     let private_key = PrivateKey::new(alice_private_key).unwrap();

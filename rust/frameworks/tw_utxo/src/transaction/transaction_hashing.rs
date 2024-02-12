@@ -61,7 +61,7 @@ impl<Transaction: TransactionInterface> TransactionHasher<Transaction> {
     pub fn preimage_outputs_hash(tx: &Transaction, args: &UtxoPreimageArgs) -> Data {
         let outputs = tx.outputs();
         match args.sighash.base_type() {
-            SighashBase::UseDefault | SighashBase::All => {
+            SighashBase::All => {
                 let mut stream = Stream::default();
                 for output in outputs {
                     stream.append(output);
