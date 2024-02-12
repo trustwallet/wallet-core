@@ -67,6 +67,8 @@ impl From<Vec<Script>> for Witness {
 
 impl From<Vec<Data>> for Witness {
     fn from(items: Vec<Data>) -> Self {
-        Witness { items: items.into_iter().map(Script::from).collect() }
+        Witness {
+            items: items.into_iter().map(Script::from).collect(),
+        }
     }
 }

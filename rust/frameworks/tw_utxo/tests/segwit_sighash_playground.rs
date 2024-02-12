@@ -34,7 +34,10 @@ fn segwit_sighash_playground() {
 
     let script_pubkey = {
         let pubkey = bitcoin::PublicKey::from_slice(&bob_pubkey).unwrap();
-        let script_pubkey = ScriptBuf::new_v0_p2wpkh(&pubkey.wpubkey_hash().unwrap());
+        let script_pubkey = ScriptBuf::new_v0_p2wpkh(&pubkey.wpubkey_hash().unwrap())
+            // TODO: It's IMPORTANT that we replicate this part:
+            .p2wpkh_script_code()
+            .unwrap();
 
         Script::from(script_pubkey.to_vec())
     };
@@ -104,9 +107,9 @@ fn segwit_sighash_playground() {
         .sign(&preimage.sighash, Curve::Secp256k1)
         .unwrap();
 
-    // >> Prepare script_sig.
+    // >> Prepare witness.
     let witness = {
-        let pubkey = bitcoin::PublicKey::from_slice(&alice_pubkey).unwrap();
+        let pubkey = bitcoin::PublicKey::from_slice(&bob_pubkey).unwrap();
 
         let sig = bitcoin::ecdsa::Signature {
             // Note, we're skipping the recovery byte here.
@@ -114,9 +117,9 @@ fn segwit_sighash_playground() {
             hash_ty: bitcoin::sighash::EcdsaSighashType::All,
         };
 
-		let mut w = bitcoin::Witness::new();
-		w.push(sig.serialize());
-		w.push(pubkey.to_bytes());
+        let mut w = bitcoin::Witness::new();
+        w.push(sig.serialize());
+        w.push(pubkey.to_bytes());
 
         Witness::from(w.to_vec())
     };
@@ -126,7 +129,7 @@ fn segwit_sighash_playground() {
 
     let claims = vec![ClaimingData {
         script_sig: Script::new(),
-        witness: witness,
+        witness,
     }];
 
     signer.compile(claims).unwrap();
