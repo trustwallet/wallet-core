@@ -65,6 +65,9 @@ impl Script {
         // Finally, push the data itself.
         self.bytes.extend_from_slice(data);
     }
+    pub fn push_slice_no_len(&mut self, data: &[u8]) {
+        self.bytes.extend_from_slice(data);
+    }
     pub fn as_data(&self) -> &Data {
         &self.bytes
     }
@@ -91,12 +94,16 @@ impl Witness {
     pub fn new() -> Self {
         Self::default()
     }
+    pub fn push_item(&mut self, item: Script) {
+        self.items.push(item);
+    }
     pub fn as_items(&self) -> &[Script] {
         &self.items
     }
     pub fn is_empty(&self) -> bool {
         self.items.is_empty()
     }
+    // TODO: This needed?
     pub fn clear(&mut self) {
         self.items.clear();
     }
