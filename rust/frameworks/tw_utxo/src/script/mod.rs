@@ -2,10 +2,13 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::encode::compact_integer::CompactInteger;
 use crate::encode::stream::Stream;
 use crate::encode::Encodable;
+use opcodes::*;
 use tw_memory::Data;
+
+pub mod opcodes;
+pub mod standards;
 
 #[derive(Clone, Debug, Default)]
 pub struct Script {
@@ -21,6 +24,42 @@ impl Encodable for Script {
 impl Script {
     pub fn new() -> Self {
         Self::default()
+    }
+    pub fn push(&mut self, code: u8) {
+        self.bytes.push(code);
+    }
+    pub fn push_slice(&mut self, data: &Data) {
+        // Push the length indicator of the data.
+        match data.len() {
+            n if n < 0x4c => {
+                // n < 76
+                self.push(n as u8);
+            },
+            n if n < 0x100 => {
+                // n < 256
+                self.push(OP_PUSHDATA1);
+                self.push(n as u8);
+            },
+            n if n < 0x10000 => {
+                // n < 65536
+                self.push(OP_PUSHDATA2);
+                self.push((n % 0x100) as u8);
+                self.push((n / 0x100) as u8);
+            },
+            n if n < 0x100000000 => {
+                // n < 4294967296
+                self.push(OP_PUSHDATA4);
+                self.push((n % 0x100) as u8);
+                self.push(((n / 0x100) % 0x100) as u8);
+                self.push(((n / 0x10000) % 0x100) as u8);
+                self.push((n / 0x1000000) as u8);
+            },
+            // Not expected to ever happen in practice
+            _ => panic!("unspupported data length"),
+        }
+
+        // Finally, push the data itself.
+        self.bytes.extend_from_slice(data);
     }
     pub fn as_data(&self) -> &Data {
         &self.bytes
