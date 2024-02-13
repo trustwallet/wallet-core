@@ -8,7 +8,7 @@ use super::{Script, SEGWIT_VERSION};
 /// the redeem script are pushed with a length indicator.
 ///
 /// ```txt
-/// <len><data_item_1><len><data_item_2>...<len><redeem_script>
+/// <push><data_item_1> <push><data_item_2>... <push><redeem_script>
 /// ```
 pub fn new_p2sh(data_items: &[Script], redeem_script: &Script) -> Script {
     let mut s = Script::with_capacity(23);
@@ -33,7 +33,7 @@ pub fn new_p2pk(sig: &H520) -> Script {
 /// Creates a script to claim a P2PKH spending condition.
 ///
 /// ```txt
-/// <len><sig><len><pubkey>
+/// <push><sig><push><pubkey>
 /// ```
 pub fn new_p2pkh(sig: &H520, pubkey: &H264) -> Script {
     let mut s = Script::with_capacity(100);

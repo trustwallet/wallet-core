@@ -1,10 +1,15 @@
 use tw_hash::H160;
 use tw_hash::H256;
+use tw_hash::H264;
 
 use super::opcodes::*;
 use super::Script;
 use super::{SEGWIT_VERSION, TAPROOT_VERSION};
 
+/// Creates a P2SH spending condition.
+///
+/// ```txt
+/// OP_HASH160 <push><script_hash> OP_EQUAL
 pub fn new_p2sh(script_hash: &H160) -> Script {
     let mut s = Script::with_capacity(23);
     s.push(OP_HASH160);
@@ -13,14 +18,24 @@ pub fn new_p2sh(script_hash: &H160) -> Script {
     s
 }
 
+/// Creates a P2PK spending condition.
+///
+/// ```txt
+/// <push><pubkey> OP_CHECKSIG
+/// ```
 // TODO: Use the tw:: PublicKey instead?
-pub fn new_p2pk(pubkey: &tw_keypair::ecdsa::secp256k1::PublicKey) -> Script {
+pub fn new_p2pk(pubkey: &H264) -> Script {
     let mut s = Script::with_capacity(35);
-    s.push_slice(pubkey.compressed().as_slice());
+    s.push_slice(pubkey.as_slice());
     s.push(OP_CHECKSIG);
     s
 }
 
+/// Creates a P2PKH spending condition.
+///
+/// ```txt
+/// OP_DUP OP_HASH160 <push><pubkey_hash> OP_EQUALVERIFY OP_CHECKSIG
+/// ```
 pub fn new_p2pkh(pubkey_hash: &H160) -> Script {
     let mut s = Script::with_capacity(25);
     s.push(OP_DUP);
@@ -31,6 +46,11 @@ pub fn new_p2pkh(pubkey_hash: &H160) -> Script {
     s
 }
 
+/// Creates a P2WSH spending condition.
+///
+/// ```txt
+/// 0 <push><script_hash>
+/// ```
 pub fn new_p2wsh(script_hash: &H256) -> Script {
     let mut s = Script::with_capacity(34);
     s.push(SEGWIT_VERSION);
@@ -38,6 +58,11 @@ pub fn new_p2wsh(script_hash: &H256) -> Script {
     s
 }
 
+/// Creates a P2WPKH spending condition.
+///
+/// ```txt
+/// 0 <push><pubkey_hash>
+/// ```
 // TODO: Note that the witness pubkey hash must be serialized in a special way.
 pub fn new_p2wpkh(pubkey_hash: &H160) -> Script {
     let mut s = Script::with_capacity(22);
