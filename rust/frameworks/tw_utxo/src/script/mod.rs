@@ -25,10 +25,15 @@ impl Script {
     pub fn new() -> Self {
         Self::default()
     }
+    pub fn with_capacity(capacity: usize) -> Self {
+        Script {
+            bytes: Data::with_capacity(capacity),
+        }
+    }
     pub fn push(&mut self, code: u8) {
         self.bytes.push(code);
     }
-    pub fn push_slice(&mut self, data: &Data) {
+    pub fn push_slice(&mut self, data: &[u8]) {
         // Push the length indicator of the data.
         match data.len() {
             n if n < 0x4c => {
