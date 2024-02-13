@@ -133,6 +133,9 @@ impl TransactionPreimage for Transaction {
 }
 
 #[derive(Clone, Debug)]
+// TODO: We should consider having two of those types, one for the preimage
+// generation (ie. no script_sig and no witness), and one for the actual
+// transaction (ie. with script_sig and witness).
 pub struct TransactionInput {
     /// Reference to the previous transaction's output.
     pub previous_output: OutPoint,

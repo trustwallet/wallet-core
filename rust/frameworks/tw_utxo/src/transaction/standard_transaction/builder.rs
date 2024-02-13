@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_hash::{ripemd::bitcoin_hash_160, H160};
+use tw_hash::{ripemd::bitcoin_hash_160, H160, H256};
 use tw_keypair::tw;
 
 use crate::{
@@ -10,12 +10,13 @@ use crate::{
         standard_script::{claims, conditions},
         Script, Witness,
     },
+    sighash::SighashType,
     signer::{TxSigningArgs, UtxoToSign},
     signing_mode::SigningMethod,
-    transaction::transaction_parts::{Amount, OutPoint},
+    transaction::{transaction_parts::{Amount, OutPoint}, UtxoPreimageArgs},
 };
 
-use super::{TransactionInput, TransactionOutput};
+use super::{Transaction, TransactionInput, TransactionOutput};
 
 /// Transaction builder for standard Bitcoin transaction only.
 /// It parses `BitcoinV2::Proto::SigningInput` as the standard [`super::Transaction`].
@@ -46,6 +47,10 @@ impl TransactionBuilder {
         self.locktime = locktime;
         self
     }
+    pub fn sighash_ty(mut self, sighash_ty: SighashType) -> Self {
+        self.args.sighash_ty = sighash_ty;
+        self
+    }
     pub fn input_builder<F>(mut self, f: F) -> Self
     where
         F: FnOnce(UtxoBuilder) -> (TransactionInput, UtxoToSign),
@@ -55,13 +60,30 @@ impl TransactionBuilder {
         self.args.utxos_to_sign.push(utxo);
         self
     }
+    pub fn output_builder<F>(mut self, f: F) -> Self
+    where
+        F: FnOnce(OutputBuilder) -> TransactionOutput,
+    {
+        let out = f(OutputBuilder);
+        self.outputs.push(out);
+        self
+    }
+    pub fn build(self) -> (Transaction, TxSigningArgs) {
+        (
+            Transaction {
+                // TODO: Why is this i32?
+                version: self.version as i32,
+                inputs: self.inputs,
+                outputs: self.outputs,
+                locktime: self.locktime,
+            },
+            self.args
+        )
+    }
 }
 
 pub struct UtxoBuilder {
     input: TransactionInput,
-    script_pubkey: Option<Script>,
-    signing_method: Option<SigningMethod>,
-    amount: Option<Amount>,
 }
 
 impl UtxoBuilder {
@@ -70,41 +92,67 @@ impl UtxoBuilder {
             input: TransactionInput {
                 previous_output: OutPoint::default(),
                 script_sig: Script::default(),
-                sequence: 0,
+                sequence: u32::MAX,
                 witness: Witness::default(),
             },
-            script_pubkey: None,
-            signing_method: None,
-            amount: None,
         }
     }
-    pub fn previous_output(mut self, previous_output: OutPoint) -> Self {
-        self.input.previous_output = previous_output;
+    pub fn previous_output(mut self, hash: H256, index: u32) -> Self {
+        self.input.previous_output = OutPoint { hash, index };
         self
     }
     pub fn sequence(mut self, sequence: u32) -> Self {
         self.input.sequence = sequence;
         self
     }
-    pub fn p2pkh(
-        mut self,
-        pubkey: tw::PublicKey,
-        amount: Amount,
-    ) -> (TransactionInput, UtxoToSign) {
+    pub fn p2pkh(self, pubkey: tw::PublicKey, amount: Amount) -> (TransactionInput, UtxoToSign) {
         let h = bitcoin_hash_160(&pubkey.to_bytes());
         let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
-
-        self.script_pubkey = Some(conditions::new_p2pkh(&pubkey_hash));
-        self.signing_method = Some(SigningMethod::Legacy);
-        self.amount = Some(amount);
 
         (
             self.input,
             UtxoToSign {
-                script_pubkey: self.script_pubkey.expect("script_pubkey is not set"),
-                signing_method: self.signing_method.expect("signing_method is not set"),
-                amount: self.amount.expect("amount is not set"),
+                script_pubkey: conditions::new_p2pkh(&pubkey_hash),
+                signing_method: SigningMethod::Legacy,
+                amount,
             },
         )
+    }
+    pub fn p2wpkh(self, pubkey: tw::PublicKey, amount: Amount) -> (TransactionInput, UtxoToSign) {
+        let h = bitcoin_hash_160(&pubkey.to_bytes());
+        let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
+
+        (
+            self.input,
+            UtxoToSign {
+                // Generating special scriptPubkey for P2WPKH.
+                script_pubkey: conditions::new_p2wpkh_script_code(&pubkey_hash),
+                signing_method: SigningMethod::Segwit,
+                amount,
+            },
+        )
+    }
+}
+
+pub struct OutputBuilder;
+
+impl OutputBuilder {
+    pub fn p2pkh(&self, pubkey: tw::PublicKey, amount: Amount) -> TransactionOutput {
+        let h = bitcoin_hash_160(&pubkey.to_bytes());
+        let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
+
+        TransactionOutput {
+            value: amount,
+            script_pubkey: conditions::new_p2pkh(&pubkey_hash),
+        }
+    }
+    pub fn p2wpkh(&self, pubkey: tw::PublicKey, amount: Amount) -> TransactionOutput {
+        let h = bitcoin_hash_160(&pubkey.to_bytes());
+        let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
+
+        TransactionOutput {
+            value: amount,
+            script_pubkey: conditions::new_p2wpkh(&pubkey_hash),
+        }
     }
 }

@@ -93,8 +93,7 @@ fn legacy_sighash_playground() {
 
     // Sign preimages
 
-    let mut signer = TransactionSigner::new(tx);
-    signer.set_signing_args(utxo_args);
+    let mut signer = TransactionSigner::new(tx, utxo_args);
 
     let preimage = &signer.preimage_tx().unwrap().sighashes[0];
     dbg!(preimage);

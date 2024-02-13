@@ -6,7 +6,7 @@ use super::opcodes::*;
 use super::Script;
 use super::{SEGWIT_VERSION, TAPROOT_VERSION};
 
-/// Creates a P2SH spending condition.
+/// Creates a P2SH spending condition (_scriptPubkey_).
 ///
 /// ```txt
 /// OP_HASH160 <push><script_hash> OP_EQUAL
@@ -18,7 +18,7 @@ pub fn new_p2sh(script_hash: &H160) -> Script {
     s
 }
 
-/// Creates a P2PK spending condition.
+/// Creates a P2PK spending condition (_scriptPubkey_).
 ///
 /// ```txt
 /// <push><pubkey> OP_CHECKSIG
@@ -31,7 +31,7 @@ pub fn new_p2pk(pubkey: &H264) -> Script {
     s
 }
 
-/// Creates a P2PKH spending condition.
+/// Creates a P2PKH spending condition (_scriptPubkey_).
 ///
 /// ```txt
 /// OP_DUP OP_HASH160 <push><pubkey_hash> OP_EQUALVERIFY OP_CHECKSIG
@@ -46,7 +46,7 @@ pub fn new_p2pkh(pubkey_hash: &H160) -> Script {
     s
 }
 
-/// Creates a P2WSH spending condition.
+/// Creates a P2WSH spending condition (_scriptPubkey_).
 ///
 /// ```txt
 /// 0 <push><script_hash>
@@ -58,7 +58,9 @@ pub fn new_p2wsh(script_hash: &H256) -> Script {
     s
 }
 
-/// Creates a P2WPKH spending condition.
+/// Creates a P2WPKH spending condition (_scriptPubkey_). Do note that you must
+/// use [`new_p2wpkh_script_code`](Self::new_p2wpkh_script_code) when generating
+/// the _scriptPubkey_ for **claiming** a P2WPKH spending condition.
 ///
 /// ```txt
 /// 0 <push><pubkey_hash>
@@ -69,6 +71,17 @@ pub fn new_p2wpkh(pubkey_hash: &H160) -> Script {
     s.push(SEGWIT_VERSION);
     s.push_slice(pubkey_hash.as_slice());
     s
+}
+
+/// Creates a special _scriptPubkey_ when **claiming** a P2WPKH spending
+/// condition, which is used for Sighash calculation.
+///
+/// ```txt
+/// OP_DUP OP_HASH160 <push><pubkey_hash> OP_EQUALVERIFY OP_CHECKSIG
+/// ```
+pub fn new_p2wpkh_script_code(pubkey_hash: &H160) -> Script {
+    // We're just wrapping over the legacy P2PKH script builder.
+    new_p2pkh(pubkey_hash)
 }
 
 pub fn is_p2sh(s: &Script) -> bool {
