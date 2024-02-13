@@ -14,8 +14,6 @@ use tw_hash::hasher::Hasher;
 use tw_keypair::tw;
 use tw_memory::Data;
 
-pub mod preimage;
-
 const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 
 /// UTXO (Unsigned transaction input) contains all info required to sign the.
@@ -82,16 +80,12 @@ impl<Transaction> TransactionSigner<Transaction>
 where
     Transaction: TransactionPreimage + TransactionInterface,
 {
-    pub fn new(transaction: Transaction) -> Self {
+    pub fn new(transaction: Transaction, args: TxSigningArgs) -> Self {
         TransactionSigner {
             transaction_to_sign: transaction,
-            args: TxSigningArgs::default(),
+            args,
             _phantom: PhantomData,
         }
-    }
-
-    pub fn set_signing_args(&mut self, args: TxSigningArgs) {
-        self.args = args;
     }
 
     /// Computes sighashes of [`TransactionSigner::transaction`].
