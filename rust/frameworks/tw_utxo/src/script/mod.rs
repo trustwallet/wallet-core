@@ -29,29 +29,33 @@ impl Script {
             bytes: Data::with_capacity(capacity),
         }
     }
+    /// Pushes the given opcode to the end of the script.
     pub fn push(&mut self, code: u8) {
         self.bytes.push(code);
     }
+    /// Pushes the given data to the end of the script, with an OP_PUSHDATA
+    /// opcode and a length indicator.
+    /// 
+    /// # Panics
+    /// 
+    /// Panics if `data.len() >= 2^32`
     pub fn push_slice(&mut self, data: &[u8]) {
         // Push the length indicator of the data.
         match data.len() {
-            n if n < 0x4c => {
-                // n < 76
+            n if n <= 75 => {
+                // Interpreted as OP_PUSHBYTES_0..=OP_PUSHBYTES_75
                 self.push(n as u8);
             },
-            n if n < 0x100 => {
-                // n < 256
+            n if n <= 255 => {
                 self.push(OP_PUSHDATA1);
                 self.push(n as u8);
             },
-            n if n < 0x10000 => {
-                // n < 65536
+            n if n <= 65535 => {
                 self.push(OP_PUSHDATA2);
                 self.push((n % 0x100) as u8);
                 self.push((n / 0x100) as u8);
             },
-            n if n < 0x100000000 => {
-                // n < 4294967296
+            n if n <= 4294967295 => {
                 self.push(OP_PUSHDATA4);
                 self.push((n % 0x100) as u8);
                 self.push(((n / 0x100) % 0x100) as u8);
@@ -65,7 +69,8 @@ impl Script {
         // Finally, push the data itself.
         self.bytes.extend_from_slice(data);
     }
-    pub fn push_slice_no_len(&mut self, data: &[u8]) {
+    /// Appends the given data to the end of the script as-is.
+    pub fn append(&mut self, data: &[u8]) {
         self.bytes.extend_from_slice(data);
     }
     pub fn as_data(&self) -> &Data {

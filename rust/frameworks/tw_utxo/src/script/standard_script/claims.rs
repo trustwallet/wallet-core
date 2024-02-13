@@ -2,7 +2,7 @@ use tw_hash::{H264, H520};
 
 use crate::script::Witness;
 
-use super::{Script, SEGWIT_VERSION};
+use super::Script;
 
 /// Creates a script to claim a P2SH spending condition. All the data items and
 /// the redeem script are pushed with a length indicator.
@@ -26,7 +26,7 @@ pub fn new_p2sh(data_items: &[Script], redeem_script: &Script) -> Script {
 /// ````
 pub fn new_p2pk(sig: &H520) -> Script {
     let mut s = Script::with_capacity(35);
-    s.push_slice_no_len(sig.as_slice());
+    s.append(sig.as_slice());
     s
 }
 
