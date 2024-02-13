@@ -33,11 +33,11 @@ impl Script {
     pub fn push(&mut self, code: u8) {
         self.bytes.push(code);
     }
-    /// Pushes the given data to the end of the script, with an OP_PUSHDATA
-    /// opcode and a length indicator.
-    /// 
+    /// Pushes the given data with an OP_PUSHDATA opcode and a length indicator
+    /// as prefix to the end of the script.
+    ///
     /// # Panics
-    /// 
+    ///
     /// Panics if `data.len() >= 2^32`
     pub fn push_slice(&mut self, data: &[u8]) {
         // Push the length indicator of the data.
@@ -63,7 +63,7 @@ impl Script {
                 self.push((n / 0x1000000) as u8);
             },
             // Not expected to ever happen in practice
-            _ => panic!("unspupported data length"),
+            _ => panic!("unsupported data length"),
         }
 
         // Finally, push the data itself.
