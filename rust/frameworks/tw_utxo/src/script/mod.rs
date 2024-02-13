@@ -4,11 +4,10 @@
 
 use crate::encode::stream::Stream;
 use crate::encode::Encodable;
-use opcodes::*;
+use standard_script::opcodes::*;
 use tw_memory::Data;
 
-pub mod opcodes;
-pub mod standards;
+pub mod standard_script;
 
 #[derive(Clone, Debug, Default)]
 pub struct Script {
