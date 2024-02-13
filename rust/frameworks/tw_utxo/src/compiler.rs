@@ -208,8 +208,6 @@ impl Compiler<StandardBitcoinContext> {
         let total_output_amount: u64 = proto.outputs.iter().map(|out| out.value).sum();
         let fee_estimate = total_input_amount - total_output_amount;
 
-        dbg!(&tx);
-
         // Calculate the sighashes.
         let mut cache = SighashCache::new(&tx);
         let mut sighashes: Vec<(Vec<u8>, ProtoSigningMethod, Proto::SighashType)> = vec![];

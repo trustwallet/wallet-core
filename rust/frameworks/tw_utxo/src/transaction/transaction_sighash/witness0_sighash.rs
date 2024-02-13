@@ -44,7 +44,7 @@ impl<Transaction: TransactionInterface> Witness0Sighash<Transaction> {
             .append_raw_slice(&outputs_hash)
             .append(&tx.locktime())
             // This also includes 24-bit fork id. For example, 0 for BitcoinCash.
-            .append(&args.sighash.raw_sighash());
+            .append(&args.sighash_ty.raw_sighash());
 
         Ok(args.tx_hasher.hash(&stream.out()))
     }

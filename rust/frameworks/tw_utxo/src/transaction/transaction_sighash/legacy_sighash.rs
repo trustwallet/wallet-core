@@ -29,7 +29,7 @@ impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transact
             // Encode the transaction preimage as a normal tx.
             .append(&tx_preimage)
             // Append the sighash type.
-            .append(&args.sighash.raw_sighash());
+            .append(&args.sighash_ty.raw_sighash());
 
         Ok(args.tx_hasher.hash(&stream.out()))
     }
@@ -45,7 +45,7 @@ impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transact
             .get(args.input_index)
             .ok_or(UtxoError(UtxoErrorKind::Error_internal))?;
 
-        if args.sighash.anyone_can_pay() {
+        if args.sighash_ty.anyone_can_pay() {
             let mut input_preimage = input_to_sign.clone();
             input_preimage.set_script_sig(args.script_pubkey.clone());
             input_preimage.clear_witness();
@@ -66,7 +66,7 @@ impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transact
                 });
 
                 let single_or_none = matches!(
-                    args.sighash.base_type(),
+                    args.sighash_ty.base_type(),
                     SighashBase::Single | SighashBase::None
                 );
                 // Override the value with zero if necessary.
@@ -85,7 +85,7 @@ impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transact
         tx: &Transaction,
         args: &UtxoPreimageArgs,
     ) -> Vec<Transaction::Output> {
-        match args.sighash.base_type() {
+        match args.sighash_ty.base_type() {
             // Hash all the transaction outputs.
             SighashBase::All => tx.outputs().to_vec(),
             SighashBase::Single => tx

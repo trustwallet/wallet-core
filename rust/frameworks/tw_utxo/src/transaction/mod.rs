@@ -4,7 +4,7 @@
 
 use crate::error::UtxoResult;
 use crate::script::Script;
-use crate::sighash::Sighash;
+use crate::sighash::SighashType;
 use crate::signing_mode::SigningMethod;
 use crate::transaction::transaction_parts::Amount;
 use tw_hash::hasher::Hasher;
@@ -28,7 +28,7 @@ pub struct UtxoPreimageArgs {
     /// Script for claiming [`UtxoPreimageArgs::input_index`] UTXO.
     pub script_pubkey: Script,
     pub amount: Amount,
-    pub sighash: Sighash,
+    pub sighash_ty: SighashType,
     pub tx_hasher: Hasher,
     /// Signing method needs to be used to sign the [`UtxoPreimageArgs::input_index`] index.
     pub signing_method: SigningMethod,

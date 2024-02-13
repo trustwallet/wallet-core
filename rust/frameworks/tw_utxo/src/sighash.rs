@@ -26,16 +26,16 @@ pub enum SighashBase {
 /// Signature hash type.
 /// https://en.bitcoin.it/wiki/OP_CHECKSIG#Procedure_for_Hashtype_SIGHASH_SINGLE
 #[derive(Debug, PartialEq, Clone, Copy)]
-pub struct Sighash {
+pub struct SighashType {
     /// Original raw sighash type.
     raw_sighash: u32,
     /// Sighash base type.
     base: SighashBase,
 }
 
-impl Sighash {
+impl SighashType {
     /// Creates Sighash from any u32.
-    pub fn from_u32(u: u32) -> UtxoResult<Sighash> {
+    pub fn from_u32(u: u32) -> UtxoResult<Self> {
         let base = match u & BASE_FLAG {
             1 => SighashBase::All,
             2 => SighashBase::None,
@@ -43,7 +43,7 @@ impl Sighash {
             // TODO: Set appropriate error variant
             _ => return Err(UtxoError(UtxoErrorKind::Error_internal)),
         };
-        Ok(Sighash {
+        Ok(SighashType {
             raw_sighash: u,
             base,
         })
@@ -69,9 +69,9 @@ impl Sighash {
     }
 }
 
-impl Default for Sighash {
+impl Default for SighashType {
     fn default() -> Self {
-        Sighash {
+        SighashType {
             raw_sighash: SighashBase::All as u32,
             base: SighashBase::All,
         }

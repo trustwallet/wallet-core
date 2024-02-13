@@ -28,7 +28,7 @@ impl<Transaction: TransactionInterface> TransactionHasher<Transaction> {
     /// Returns a zero hash if [`UtxoPreimageArgs::sighash::anyone_can_pay`] is true,
     /// otherwise returns a hash of all [`TransactionInput::previour_output`].
     pub fn preimage_prevout_hash(tx: &Transaction, args: &UtxoPreimageArgs) -> Data {
-        if args.sighash.anyone_can_pay() {
+        if args.sighash_ty.anyone_can_pay() {
             return args.tx_hasher.zero_hash();
         }
         Self::prevout_hash(tx, args.tx_hasher)
@@ -47,10 +47,10 @@ impl<Transaction: TransactionInterface> TransactionHasher<Transaction> {
     /// otherwise returns a hash of all [`TransactionInput::sequence`].
     pub fn preimage_sequence_hash(tx: &Transaction, args: &UtxoPreimageArgs) -> Data {
         let single_or_none = matches!(
-            args.sighash.base_type(),
+            args.sighash_ty.base_type(),
             SighashBase::Single | SighashBase::None
         );
-        if args.sighash.anyone_can_pay() || single_or_none {
+        if args.sighash_ty.anyone_can_pay() || single_or_none {
             return args.tx_hasher.zero_hash();
         }
         Self::sequence_hash(tx, args.tx_hasher)
@@ -60,7 +60,7 @@ impl<Transaction: TransactionInterface> TransactionHasher<Transaction> {
     /// Please note the function can return a zero hash if necessary.
     pub fn preimage_outputs_hash(tx: &Transaction, args: &UtxoPreimageArgs) -> Data {
         let outputs = tx.outputs();
-        match args.sighash.base_type() {
+        match args.sighash_ty.base_type() {
             SighashBase::All => {
                 let mut stream = Stream::default();
                 for output in outputs {

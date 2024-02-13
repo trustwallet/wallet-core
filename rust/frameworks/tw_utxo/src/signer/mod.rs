@@ -4,7 +4,7 @@
 
 use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
 use crate::script::{Script, Witness};
-use crate::sighash::Sighash;
+use crate::sighash::SighashType;
 use crate::signing_mode::SigningMethod;
 use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
 use crate::transaction::transaction_parts::Amount;
@@ -13,6 +13,8 @@ use std::marker::PhantomData;
 use tw_hash::hasher::Hasher;
 use tw_keypair::tw;
 use tw_memory::Data;
+
+pub mod preimage;
 
 const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 
@@ -27,7 +29,7 @@ pub struct UtxoToSign {
 /// It provides required options to sign each UTXO of the transaction.
 pub struct TxSigningArgs {
     pub utxos_to_sign: Vec<UtxoToSign>,
-    pub sighash: Sighash,
+    pub sighash_ty: SighashType,
     pub tx_hasher: Hasher,
 }
 
@@ -35,7 +37,7 @@ impl Default for TxSigningArgs {
     fn default() -> Self {
         TxSigningArgs {
             utxos_to_sign: Vec::default(),
-            sighash: Sighash::default(),
+            sighash_ty: SighashType::default(),
             tx_hasher: DEFAULT_TX_HASHER,
         }
     }
@@ -110,7 +112,7 @@ where
                     input_index,
                     script_pubkey: utxo.script_pubkey.clone(),
                     amount: utxo.amount,
-                    sighash: self.args.sighash,
+                    sighash_ty: self.args.sighash_ty,
                     tx_hasher: self.args.tx_hasher,
                     signing_method,
                 };
