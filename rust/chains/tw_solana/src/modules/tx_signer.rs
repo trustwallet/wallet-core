@@ -2,7 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::transaction::{versioned, Pubkey, Signature};
+use crate::address::SolanaAddress;
+use crate::transaction::{versioned, Signature};
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_keypair::ed25519;
 use tw_keypair::traits::SigningKeyTrait;
@@ -24,7 +25,8 @@ impl TxSigner {
             .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?;
 
         for private_key in keys {
-            let signing_pubkey = Pubkey(private_key.public().to_bytes());
+            let signing_pubkey =
+                SolanaAddress::with_public_key_bytes(private_key.public().to_bytes());
             // Find an index of the corresponding account.
             let account_index = tx
                 .message

@@ -99,7 +99,7 @@ message TokenTransfer {
     uint32 decimals = 5;
 
     // optional memo§
-    string memo = 6;  
+    string memo = 6;
 
     // optional referenced public keys
     repeated string references = 7;
@@ -150,6 +150,49 @@ message AdvanceNonceAccount {
     string nonce_account = 1;
 }
 
+message RawMessage {
+    message MessageHeader {
+        uint32 num_required_signatures = 1;
+        uint32 num_readonly_signed_accounts = 2;
+        uint32 num_readonly_unsigned_accounts = 3;
+    }
+
+    message Instruction {
+        uint32 program_id = 1;
+        repeated uint32 accounts = 2;
+        bytes program_data = 3;
+    }
+
+    message MessageAddressTableLookup {
+        string account_key = 1;
+        repeated uint32 writable_indexes = 2;
+        repeated uint32 readonly_indexes = 3;
+    }
+
+    message MessageLegacy {
+        MessageHeader header = 1;
+        repeated string account_keys = 2;
+        // Relatively recent block hash (base58 encoded).
+        string recent_blockhash = 3;
+        repeated Instruction instruction = 4;
+    }
+
+    message MessageV0 {
+        MessageHeader header = 1;
+        repeated string account_keys = 2;
+        // Relatively recent block hash (base58 encoded).
+        string recent_blockhash = 3;
+        repeated Instruction instruction = 4;
+        MessageAddressTableLookup address_table_lookups = 5;
+    }
+
+    bool versioned = 1;
+    oneof message {
+        MessageLegacy legacy = 2;
+        MessageV0 v0 = 3;
+    }
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // The secret private key used for signing (32 bytes).
@@ -183,13 +226,15 @@ message SigningInput {
     bytes fee_payer_private_key = 17;
     // Optional external fee payer. support: TokenTransfer, CreateAndTransferToken
     string fee_payer = 18;
+    // Optional message plan. For signing an already prepared message.
+    RawMessage raw_message = 20;
 }
 
 // Result containing the signed and encoded transaction.
 message SigningOutput {
     // The encoded transaction
     string encoded = 1;
-    
+
     // error code, 0 is ok, other codes will be treated as errors
     Common.Proto.SigningError error = 2;
 
@@ -211,7 +256,7 @@ message PreSigningOutput {
 
     /// Pre-image data. There is no hashing for Solana presign image
     bytes data = 2;
-    
+
     // Error code, 0 is ok, other codes will be treated as errors
     Common.Proto.SigningError error = 3;
 

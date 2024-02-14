@@ -3,15 +3,12 @@
 // Copyright © 2017 Trust Wallet.
 
 use serde::{Deserialize, Serialize};
-use tw_hash::{as_byte_sequence, H256, H512};
+use tw_hash::{as_byte_sequence, H512};
 
 pub mod legacy;
 pub mod short_vec;
 pub mod v0;
 pub mod versioned;
-
-#[derive(Clone, Copy, Default, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
-pub struct Pubkey(#[serde(with = "as_byte_sequence")] pub(crate) H256);
 
 #[derive(Serialize, Deserialize, Default, Debug, PartialEq, Eq, Clone, Copy)]
 #[serde(rename_all = "camelCase")]
@@ -54,14 +51,10 @@ mod tests {
     use crate::transaction::v0::MessageAddressTableLookup;
     use crate::transaction::versioned::{VersionedMessage, VersionedTransaction};
     use crate::SOLANA_ALPHABET;
-    use std::str::FromStr;
     use tw_encoding::hex::ToHex;
     use tw_encoding::{base58, base64};
+    use tw_hash::H256;
     use tw_memory::Data;
-
-    fn address_pubkey(addr: &'static str) -> Pubkey {
-        Pubkey(SolanaAddress::from_str(addr).unwrap().bytes())
-    }
 
     fn base58_decode(s: &'static str) -> Data {
         base58::decode(s, &SOLANA_ALPHABET).unwrap()
@@ -86,22 +79,22 @@ mod tests {
                     num_readonly_unsigned_accounts: 7,
                 },
                 account_keys: vec![
-                    address_pubkey("AHy6YZA8BsHgQfVkk7MbwpAN94iyN7Nf1zN4nPqUN32Q"),
-                    address_pubkey("g7dD1FHSemkUQrX1Eak37wzvDjscgBW2pFCENwjLdMX"),
-                    address_pubkey("7m57LBTxtzhWn6WdFxKtnoJLBQXyNERLYebebXLVaKy3"),
-                    address_pubkey("AEBCPtV8FFkWFAKxrz7mbYvobpkZuWaRWQCyJVRaheUD"),
-                    address_pubkey("BND2ehwWVeHVA5EtMm2b7Vu51AT8f2PNWusS9KQX5moy"),
-                    address_pubkey("DVCeozFGbe6ew3eWTnZByjHeYqTq1cvbrB7JJhkLxaRJ"),
-                    address_pubkey("GvgWmk8iPACw1AEMt47WzkuTkKoSGbn4Xk3aLM8vdbJD"),
-                    address_pubkey("HkphEpUqnFBxBuCPEq5j1HA9L8EwmsmRT6UcFKziptM1"),
-                    address_pubkey("Hzxx6b5a7dmmJeDXLQzr4dTrc2HGK9ar5YRakZgr3ZZ7"),
-                    address_pubkey("11111111111111111111111111111111"),
-                    address_pubkey("ComputeBudget111111111111111111111111111111"),
-                    address_pubkey("JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"),
-                    address_pubkey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
-                    address_pubkey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"),
-                    address_pubkey("D8cy77BBepLMngZx6ZukaTff5hCt1HrWyKk3Hnd9oitf"),
-                    address_pubkey("GGztQqQ6pCPaJQnNpXBgELr5cs3WwDakRbh1iEMzjgSJ"),
+                    SolanaAddress::from("AHy6YZA8BsHgQfVkk7MbwpAN94iyN7Nf1zN4nPqUN32Q"),
+                    SolanaAddress::from("g7dD1FHSemkUQrX1Eak37wzvDjscgBW2pFCENwjLdMX"),
+                    SolanaAddress::from("7m57LBTxtzhWn6WdFxKtnoJLBQXyNERLYebebXLVaKy3"),
+                    SolanaAddress::from("AEBCPtV8FFkWFAKxrz7mbYvobpkZuWaRWQCyJVRaheUD"),
+                    SolanaAddress::from("BND2ehwWVeHVA5EtMm2b7Vu51AT8f2PNWusS9KQX5moy"),
+                    SolanaAddress::from("DVCeozFGbe6ew3eWTnZByjHeYqTq1cvbrB7JJhkLxaRJ"),
+                    SolanaAddress::from("GvgWmk8iPACw1AEMt47WzkuTkKoSGbn4Xk3aLM8vdbJD"),
+                    SolanaAddress::from("HkphEpUqnFBxBuCPEq5j1HA9L8EwmsmRT6UcFKziptM1"),
+                    SolanaAddress::from("Hzxx6b5a7dmmJeDXLQzr4dTrc2HGK9ar5YRakZgr3ZZ7"),
+                    SolanaAddress::from("11111111111111111111111111111111"),
+                    SolanaAddress::from("ComputeBudget111111111111111111111111111111"),
+                    SolanaAddress::from("JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"),
+                    SolanaAddress::from("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
+                    SolanaAddress::from("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"),
+                    SolanaAddress::from("D8cy77BBepLMngZx6ZukaTff5hCt1HrWyKk3Hnd9oitf"),
+                    SolanaAddress::from("GGztQqQ6pCPaJQnNpXBgELr5cs3WwDakRbh1iEMzjgSJ"),
                 ],
                 recent_blockhash: base58_decode_h256(
                     "DiSimxK2z1cRa6yD4goqte3rDMmghJAD8WDUZEab2CzD",
@@ -151,17 +144,23 @@ mod tests {
                 ],
                 address_table_lookups: vec![
                     MessageAddressTableLookup {
-                        account_key: address_pubkey("FeXRmSWmwChZbB2EC7Qjw9XKk28yBrPj3k3nzT1DKfak"),
+                        account_key: SolanaAddress::from(
+                            "FeXRmSWmwChZbB2EC7Qjw9XKk28yBrPj3k3nzT1DKfak",
+                        ),
                         writable_indexes: vec![202, 200, 201],
                         readonly_indexes: vec![196, 197, 36, 199],
                     },
                     MessageAddressTableLookup {
-                        account_key: address_pubkey("5cFsmTCEfmvpBUBHqsWZnf9n5vTWLYH2LT8X7HdShwxP"),
+                        account_key: SolanaAddress::from(
+                            "5cFsmTCEfmvpBUBHqsWZnf9n5vTWLYH2LT8X7HdShwxP",
+                        ),
                         writable_indexes: vec![160, 245, 248, 159, 157],
                         readonly_indexes: vec![156, 244, 246, 247],
                     },
                     MessageAddressTableLookup {
-                        account_key: address_pubkey("HJ5StCvsDU4JsvK39VcsHjaoTRTtQU749MQ9qUsJaG1m"),
+                        account_key: SolanaAddress::from(
+                            "HJ5StCvsDU4JsvK39VcsHjaoTRTtQU749MQ9qUsJaG1m",
+                        ),
                         writable_indexes: vec![122, 121, 125],
                         readonly_indexes: vec![110, 126],
                     },

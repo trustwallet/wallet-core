@@ -10,11 +10,11 @@ use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_encoding::base58;
-use tw_hash::H256;
+use tw_hash::{as_byte_sequence, H256};
 use tw_keypair::tw;
 use tw_memory::Data;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default, Debug, Eq, Hash, PartialEq)]
 pub struct SolanaAddress {
     bytes: H256,
 }
@@ -55,6 +55,12 @@ impl FromStr for SolanaAddress {
     }
 }
 
+impl From<&'static str> for SolanaAddress {
+    fn from(s: &'static str) -> Self {
+        SolanaAddress::from_str(s).unwrap()
+    }
+}
+
 impl fmt::Display for SolanaAddress {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let encoded = base58::encode(self.bytes.as_slice(), &SOLANA_ALPHABET);
@@ -67,7 +73,10 @@ impl Serialize for SolanaAddress {
     where
         S: Serializer,
     {
-        self.to_string().serialize(serializer)
+        if serializer.is_human_readable() {
+            return self.to_string().serialize(serializer);
+        }
+        as_byte_sequence::serialize(&self.bytes(), serializer)
     }
 }
 
@@ -76,7 +85,12 @@ impl<'de> Deserialize<'de> for SolanaAddress {
     where
         D: Deserializer<'de>,
     {
-        let addr_str = String::deserialize(deserializer)?;
-        SolanaAddress::from_str(&addr_str).map_err(|e| DeError::custom(format!("{e:?}")))
+        if deserializer.is_human_readable() {
+            let addr_str = String::deserialize(deserializer)?;
+            return SolanaAddress::from_str(&addr_str)
+                .map_err(|e| DeError::custom(format!("{e:?}")));
+        }
+        let bytes = as_byte_sequence::deserialize(deserializer)?;
+        Ok(SolanaAddress { bytes })
     }
 }
