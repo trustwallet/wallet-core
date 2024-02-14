@@ -131,9 +131,7 @@ fn segwit_sighash_playground() {
         witness,
     }];
 
-    signer.compile(claims).unwrap();
-
-    let tx = signer.into_transaction();
+    let tx = signer.compile(claims).unwrap();
 
     let mut stream = Stream::new();
     tx.encode(&mut stream);

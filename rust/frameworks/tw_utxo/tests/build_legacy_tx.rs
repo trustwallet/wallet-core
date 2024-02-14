@@ -14,7 +14,9 @@ use tw_utxo::{
     signing_mode::SigningMethod,
     transaction::{
         standard_transaction::{
-            builder::{txid_from_str_and_rev, OutputBuilder, TransactionBuilder, UtxoBuilder},
+            builder::{
+                txid_from_str_and_rev, ClaimBuilder, OutputBuilder, TransactionBuilder, UtxoBuilder,
+            },
             Transaction, TransactionInput, TransactionOutput,
         },
         transaction_parts::OutPoint,
@@ -56,24 +58,19 @@ fn build_legacy_tx() {
         .push_output(output1)
         .build();
 
-    // Sign the sighash.
+    // Compute the primage.
     let computer = SighashComputer::new(tx, args);
     let preimage = computer.preimage_tx().unwrap();
-    let preimage = preimage.sighashes[0].clone();
 
-    // Prepare the signature serialization.
-    let sighash: H256 = preimage.sighash.as_slice().try_into().unwrap();
-    let der_sig = alice_private_key.sign(sighash).unwrap().to_der().unwrap();
-    let btc_sig = BitcoinEcdsaSignature::new(der_sig, SighashType::new(SighashBase::All)).unwrap();
+    // Sign the sighash.
+    let sighash = preimage.into_h256_list().unwrap()[0];
+    let sig = alice_private_key.sign(sighash).unwrap();
 
-    // Finalize claim script.
-    let hpubkey: H264 = alice_pubkey.to_bytes().as_slice().try_into().unwrap();
-    let script_sig = claims::new_p2pkh(&btc_sig.serialize(), &hpubkey);
-
-    let claim = ClaimingData {
-        script_sig,
-        witness: Witness::default(),
-    };
+    // Build the claim
+    let claim = ClaimBuilder::new()
+        .sighash_ty(SighashType::new(SighashBase::All))
+        .p2pkh(sig, alice_pubkey)
+        .unwrap();
 
     let tx = computer.compile(vec![claim]).unwrap();
 

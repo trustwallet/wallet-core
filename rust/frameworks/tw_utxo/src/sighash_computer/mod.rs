@@ -11,6 +11,7 @@ use crate::transaction::transaction_parts::Amount;
 use crate::transaction::{TransactionPreimage, UtxoPreimageArgs};
 use std::marker::PhantomData;
 use tw_hash::hasher::Hasher;
+use tw_hash::H256;
 use tw_keypair::tw;
 use tw_memory::Data;
 
@@ -45,6 +46,18 @@ impl Default for TxSigningArgs {
 pub struct TxPreimage {
     /// Transaction signatures in the same order as the transaction UTXOs.
     pub sighashes: Vec<UtxoSighash>,
+}
+
+impl TxPreimage {
+    pub fn into_h256_list(self) -> UtxoResult<Vec<H256>> {
+        self.sighashes
+            .into_iter()
+            .map(|s| {
+                H256::try_from(s.sighash.as_slice())
+                    .map_err(|_| UtxoError(UtxoErrorKind::Error_internal))
+            })
+            .collect::<UtxoResult<_>>()
+    }
 }
 
 #[derive(Debug, Clone)]

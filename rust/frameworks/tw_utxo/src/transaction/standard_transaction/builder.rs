@@ -2,10 +2,10 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::error::UtxoError;
+use crate::{error::UtxoError, sighash::BitcoinEcdsaSignature, sighash_computer::ClaimingData};
 use tw_encoding::hex;
-use tw_hash::{ripemd::bitcoin_hash_160, H160, H256};
-use tw_keypair::tw;
+use tw_hash::{ripemd::bitcoin_hash_160, H160, H256, H264};
+use tw_keypair::{ecdsa, tw};
 
 use crate::{
     error::{UtxoErrorKind, UtxoResult},
@@ -211,7 +211,8 @@ impl OutputBuilder {
         self.amount = Some(amount);
         self
     }
-    pub fn p2pkh(&self, pubkey: tw::PublicKey) -> UtxoResult<TransactionOutput> {
+    // TODO: Be more precise with PublicKey type?.
+    pub fn p2pkh(self, pubkey: tw::PublicKey) -> UtxoResult<TransactionOutput> {
         let h = bitcoin_hash_160(&pubkey.to_bytes());
         let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
 
@@ -222,7 +223,8 @@ impl OutputBuilder {
             script_pubkey: conditions::new_p2pkh(&pubkey_hash),
         })
     }
-    pub fn p2wpkh(&self, pubkey: tw::PublicKey) -> UtxoResult<TransactionOutput> {
+    // TODO: Be more precise with PublicKey type?.
+    pub fn p2wpkh(self, pubkey: tw::PublicKey) -> UtxoResult<TransactionOutput> {
         let h = bitcoin_hash_160(&pubkey.to_bytes());
         let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
 
@@ -231,6 +233,44 @@ impl OutputBuilder {
                 .amount
                 .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
             script_pubkey: conditions::new_p2wpkh(&pubkey_hash),
+        })
+    }
+}
+
+pub struct ClaimBuilder {
+    sighash_ty: Option<SighashType>,
+}
+
+impl ClaimBuilder {
+    pub fn new() -> Self {
+        ClaimBuilder { sighash_ty: None }
+    }
+    pub fn sighash_ty(mut self, sighash_ty: SighashType) -> Self {
+        self.sighash_ty = Some(sighash_ty);
+        self
+    }
+    pub fn p2pkh(
+        self,
+        sig: ecdsa::secp256k1::Signature,
+        pubkey: tw::PublicKey,
+    ) -> UtxoResult<ClaimingData> {
+        // TODO: Check unwrap
+        let sig = BitcoinEcdsaSignature::new(
+            sig.to_der().unwrap(),
+            self.sighash_ty
+                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+        )
+        .unwrap();
+        let pubkey: H264 = pubkey
+            .to_bytes()
+            .as_slice()
+            .try_into()
+            .expect("pubkey length is 33 bytes");
+        let script_sig = claims::new_p2pkh(&sig.serialize(), &pubkey);
+
+        Ok(ClaimingData {
+            script_sig,
+            witness: Witness::default(),
         })
     }
 }
