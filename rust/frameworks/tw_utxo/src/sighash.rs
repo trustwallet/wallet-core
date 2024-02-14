@@ -28,7 +28,7 @@ impl BitcoinEcdsaSignature {
         let mut ser = Vec::with_capacity(Self::SER_SIZE);
         ser.extend(self.sig.der_bytes());
         ser.push(self.sighash_ty.raw_sighash() as u8);
-        debug_assert_eq!(ser.len(), Self::SER_SIZE);
+        //debug_assert_eq!(ser.len(), Self::SER_SIZE);
         ser
     }
 }

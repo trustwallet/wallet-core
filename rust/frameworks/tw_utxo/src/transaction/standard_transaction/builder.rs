@@ -6,6 +6,7 @@ use crate::{error::UtxoError, sighash::BitcoinEcdsaSignature, sighash_computer::
 use tw_encoding::hex;
 use tw_hash::{ripemd::bitcoin_hash_160, H160, H256, H264};
 use tw_keypair::{ecdsa, tw};
+use tw_misc::traits::ToBytesVec;
 
 use crate::{
     error::{UtxoErrorKind, UtxoResult},
@@ -270,6 +271,32 @@ impl SpendingScriptBuilder {
         Ok(SpendingData {
             script_sig,
             witness: Witness::default(),
+        })
+    }
+    pub fn p2wpkh(
+        self,
+        sig: ecdsa::secp256k1::Signature,
+        pubkey: tw::PublicKey,
+    ) -> UtxoResult<SpendingData> {
+        // TODO: Check unwrap
+        let sig = BitcoinEcdsaSignature::new(
+            sig.to_der().unwrap(),
+            self.sighash_ty
+                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+        )
+        .unwrap();
+
+        let pubkey: H264 = pubkey
+            .to_bytes()
+            .as_slice()
+            .try_into()
+            .expect("pubkey length is 33 bytes");
+
+        let witness = claims::new_p2wpkh(sig.serialize().to_vec(), pubkey);
+
+        Ok(SpendingData {
+            script_sig: Script::default(),
+            witness,
         })
     }
 }

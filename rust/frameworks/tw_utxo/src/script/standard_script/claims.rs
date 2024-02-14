@@ -70,9 +70,9 @@ pub fn new_p2wsh(items: Vec<Script>, redeem_script: Script) -> Witness {
 /// <pubkey>
 /// ```
 // TODO: Use BitcoinEcdsaSignature here?
-pub fn new_p2wpkh(sig: H520, pubkey: H264) -> Witness {
+pub fn new_p2wpkh(sig: Vec<u8>, pubkey: H264) -> Witness {
     let mut w = Witness::new();
-    w.push_item(Script::from(sig.into_vec()));
+    w.push_item(Script::from(sig));
     w.push_item(Script::from(pubkey.into_vec()));
     w
 }
