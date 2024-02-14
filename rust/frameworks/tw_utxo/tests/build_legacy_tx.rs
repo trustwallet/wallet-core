@@ -51,7 +51,6 @@ fn build_legacy_tx() {
         .p2pkh(bob_pubkey)
         .unwrap();
 
-    // TODO: Kind of ugly, adjust this.
     let (tx, args) = TransactionBuilder::new()
         .push_input(utxo1, arg1)
         .push_output(output1)
@@ -61,7 +60,6 @@ fn build_legacy_tx() {
     let preimage = signer.preimage_tx().unwrap();
     let preimage = preimage.sighashes[0].clone();
 
-    //let sig = alice_private_key.sign(&preimage.sighash, Curve::Secp256k1).unwrap();
     let sighash: H256 = preimage.sighash.as_slice().try_into().unwrap();
     let der_sig = alice_private_key.sign(sighash).unwrap().to_der().unwrap();
     let btc_sig = BitcoinEcdsaSignature::new(der_sig, SighashType::new(SighashBase::All)).unwrap();

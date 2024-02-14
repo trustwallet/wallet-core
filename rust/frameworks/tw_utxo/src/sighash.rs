@@ -17,13 +17,17 @@ pub struct BitcoinEcdsaSignature {
 }
 
 impl BitcoinEcdsaSignature {
+    // The size of the serialized signature.
+    const SER_SIZE: usize = 71;
+
     pub fn new(sig: der::Signature, sighash_ty: SighashType) -> UtxoResult<Self> {
         Ok(BitcoinEcdsaSignature { sig, sighash_ty })
     }
     pub fn serialize(&self) -> Vec<u8> {
-        let mut ser = Vec::with_capacity(71);
+        let mut ser = Vec::with_capacity(Self::SER_SIZE);
         ser.extend(self.sig.der_bytes());
         ser.push(self.sighash_ty.raw_sighash() as u8);
+        debug_assert_eq!(ser.len(), Self::SER_SIZE);
         ser
     }
 }
