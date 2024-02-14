@@ -90,6 +90,10 @@ impl<C: EcdsaCurve> Signature<C> {
         dest
     }
 
+    pub fn to_der(&self) -> KeyPairResult<der::Signature> {
+        der::Signature::new(self.r(), self.s())
+    }
+
     /// # Panic
     ///
     /// `r` and `s` must be 32 byte arrays, otherwise the function panics.

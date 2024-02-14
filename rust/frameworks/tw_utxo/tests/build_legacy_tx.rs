@@ -1,11 +1,15 @@
 use bitcoin::ScriptBuf;
 use tw_encoding::hex;
 use tw_hash::{H256, H264, H520};
-use tw_keypair::tw::{Curve, PrivateKey, PublicKey, PublicKeyType};
+use tw_keypair::{
+    traits::SigningKeyTrait,
+    tw::{Curve, PrivateKey, PublicKey, PublicKeyType},
+};
 use tw_misc::traits::ToBytesVec;
 use tw_utxo::{
     encode::{stream::Stream, Encodable},
     script::{standard_script::claims, Script, Witness},
+    sighash::{BitcoinEcdsaSignature, SighashBase, SighashType},
     signer::{ClaimingData, TransactionSigner, TxSigningArgs, UtxoToSign},
     signing_mode::SigningMethod,
     transaction::{
@@ -26,7 +30,8 @@ fn build_legacy_tx() {
     let bob_pubkey =
         hex::decode("037ed9a436e11ec4947ac4b7823787e24ba73180f1edd2857bff19c9f4d62b65bf").unwrap();
 
-    let alice_private_key = PrivateKey::new(alice_private_key).unwrap();
+    let alice_private_key =
+        tw_keypair::ecdsa::secp256k1::PrivateKey::try_from(alice_private_key.as_slice()).unwrap();
     let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
     let bob_pubkey = PublicKey::new(bob_pubkey, PublicKeyType::Secp256k1).unwrap();
 
@@ -56,16 +61,13 @@ fn build_legacy_tx() {
     let preimage = signer.preimage_tx().unwrap();
     let preimage = preimage.sighashes[0].clone();
 
-    let sig = alice_private_key.sign(&preimage.sighash, Curve::Secp256k1).unwrap();
-    // TODO: We need a better better interface/type for serialzied signatures.
-    let sig: bitcoin::ecdsa::Signature = bitcoin::ecdsa::Signature {
-        // Note, we're skipping the recovery byte here.
-        sig: bitcoin::secp256k1::ecdsa::Signature::from_compact(&sig[..64]).unwrap(),
-        hash_ty: bitcoin::sighash::EcdsaSighashType::All,
-    };
+    //let sig = alice_private_key.sign(&preimage.sighash, Curve::Secp256k1).unwrap();
+    let sighash: H256 = preimage.sighash.as_slice().try_into().unwrap();
+    let der_sig = alice_private_key.sign(sighash).unwrap().to_der().unwrap();
+    let btc_sig = BitcoinEcdsaSignature::new(der_sig, SighashType::new(SighashBase::All)).unwrap();
 
     let hpubkey: H264 = alice_pubkey.to_bytes().as_slice().try_into().unwrap();
-    let script_sig = claims::new_p2pkh(&sig.to_vec(), &hpubkey);
+    let script_sig = claims::new_p2pkh(&btc_sig.serialize(), &hpubkey);
 
     let claim = ClaimingData {
         script_sig,

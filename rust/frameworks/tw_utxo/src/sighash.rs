@@ -2,11 +2,31 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use tw_hash::H512;
+use tw_keypair::ecdsa::der;
+
 use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
 
 const ANYONE_CAN_PAY_FLAG: u32 = 0x80;
 const FORK_ID_FLAG: u32 = 0x40;
 const BASE_FLAG: u32 = 0x1f;
+
+pub struct BitcoinEcdsaSignature {
+    sig: der::Signature,
+    sighash_ty: SighashType,
+}
+
+impl BitcoinEcdsaSignature {
+    pub fn new(sig: der::Signature, sighash_ty: SighashType) -> UtxoResult<Self> {
+        Ok(BitcoinEcdsaSignature { sig, sighash_ty })
+    }
+    pub fn serialize(&self) -> Vec<u8> {
+        let mut ser = Vec::with_capacity(71);
+        ser.extend(self.sig.der_bytes());
+        ser.push(self.sighash_ty.raw_sighash() as u8);
+        ser
+    }
+}
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 #[repr(u32)]
@@ -34,6 +54,12 @@ pub struct SighashType {
 }
 
 impl SighashType {
+    pub fn new(base: SighashBase) -> Self {
+        SighashType {
+            raw_sighash: base as u32,
+            base,
+        }
+    }
     /// Creates Sighash from any u32.
     pub fn from_u32(u: u32) -> UtxoResult<Self> {
         let base = match u & BASE_FLAG {
