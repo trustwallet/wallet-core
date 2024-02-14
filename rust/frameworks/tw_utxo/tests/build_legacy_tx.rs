@@ -1,11 +1,11 @@
 use bitcoin::ScriptBuf;
 use tw_encoding::hex;
-use tw_hash::H256;
+use tw_hash::{H256, H264, H520};
 use tw_keypair::tw::{Curve, PrivateKey, PublicKey, PublicKeyType};
 use tw_misc::traits::ToBytesVec;
 use tw_utxo::{
     encode::{stream::Stream, Encodable},
-    script::{Script, Witness},
+    script::{standard_script::claims, Script, Witness},
     signer::{ClaimingData, TransactionSigner, TxSigningArgs, UtxoToSign},
     signing_mode::SigningMethod,
     transaction::{
@@ -26,17 +26,19 @@ fn build_legacy_tx() {
     let bob_pubkey =
         hex::decode("037ed9a436e11ec4947ac4b7823787e24ba73180f1edd2857bff19c9f4d62b65bf").unwrap();
 
+    let alice_private_key = PrivateKey::new(alice_private_key).unwrap();
     let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
     let bob_pubkey = PublicKey::new(bob_pubkey, PublicKeyType::Secp256k1).unwrap();
 
     let txid =
         txid_from_str_and_rev("1e1cdc48aa990d7e154a161d5b5f1cad737742e97d2712ab188027bb42e6e47b")
             .unwrap();
+
     let (utxo1, arg1) = UtxoBuilder::new()
         .prev_txid(txid)
         .prev_index(0)
         .amount(50 * 100_000_000)
-        .p2pkh(alice_pubkey)
+        .p2pkh(alice_pubkey.clone())
         .unwrap();
 
     let output1 = OutputBuilder::new()
@@ -50,12 +52,29 @@ fn build_legacy_tx() {
         .push_output(output1)
         .build();
 
-    let signer = TransactionSigner::new(tx, args);
+    let mut signer = TransactionSigner::new(tx, args);
+    let preimage = signer.preimage_tx().unwrap();
+    let preimage = preimage.sighashes[0].clone();
+
+    let sig = alice_private_key.sign(&preimage.sighash, Curve::Secp256k1).unwrap();
+    // TODO: We need a better better interface/type for serialzied signatures.
+    let sig: bitcoin::ecdsa::Signature = bitcoin::ecdsa::Signature {
+        // Note, we're skipping the recovery byte here.
+        sig: bitcoin::secp256k1::ecdsa::Signature::from_compact(&sig[..64]).unwrap(),
+        hash_ty: bitcoin::sighash::EcdsaSighashType::All,
+    };
+
+    let hpubkey: H264 = alice_pubkey.to_bytes().as_slice().try_into().unwrap();
+    let script_sig = claims::new_p2pkh(&sig.to_vec(), &hpubkey);
 
     let claim = ClaimingData {
-        script_sig: Script::default(),
+        script_sig,
         witness: Witness::default(),
     };
 
-    // TODO...
+    signer.compile(vec![claim]).unwrap();
+    let tx = signer.into_transaction();
+
+    let encoded = hex::encode(tx.encode_out(), false);
+    dbg!(encoded);
 }

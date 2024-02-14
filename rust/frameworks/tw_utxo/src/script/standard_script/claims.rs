@@ -35,9 +35,9 @@ pub fn new_p2pk(sig: &H520) -> Script {
 /// ```txt
 /// <push><sig><push><pubkey>
 /// ```
-pub fn new_p2pkh(sig: &H520, pubkey: &H264) -> Script {
+pub fn new_p2pkh(sig: &[u8], pubkey: &H264) -> Script {
     let mut s = Script::with_capacity(100);
-    s.push_slice(sig.as_slice());
+    s.push_slice(sig);
     s.push_slice(pubkey.as_slice());
     s
 }

@@ -97,6 +97,11 @@ impl Transaction {
         }
         without_witness
     }
+    pub fn encode_out(&self) -> Vec<u8> {
+        let mut stream = Stream::new();
+        self.encode(&mut stream);
+        stream.out()
+    }
 }
 
 impl Encodable for Transaction {

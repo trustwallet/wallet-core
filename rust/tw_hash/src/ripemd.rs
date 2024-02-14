@@ -11,10 +11,9 @@ pub fn ripemd_160(input: &[u8]) -> Vec<u8> {
     hasher::<Ripemd160>(input)
 }
 
-/// Computes the Bitcoin hash160 of the input data. Respectively, it hashes the
-/// input twice with SHA256 and then finally with RIPEMD-160.
+/// Computes the Bitcoin "hash160" of the input data. Respectively, it first
+/// hashes the input with SHA256 and then finally with RIPEMD-160.
 pub fn bitcoin_hash_160(input: &[u8]) -> Vec<u8> {
-    let hash = Sha256::digest(input);
-    let hash = Sha256::digest(&hash);
-    Ripemd160::digest(&hash).to_vec()
+    let hash = hasher::<Sha256>(input);
+    hasher::<Ripemd160>(&hash)
 }
