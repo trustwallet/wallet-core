@@ -10,7 +10,8 @@ use tw_utxo::{
     signing_mode::SigningMethod,
     transaction::{
         standard_transaction::{
-            builder::TransactionBuilder, Transaction, TransactionInput, TransactionOutput,
+            builder::{txid_from_str_and_rev, OutputBuilder, TransactionBuilder, UtxoBuilder},
+            Transaction, TransactionInput, TransactionOutput,
         },
         transaction_parts::OutPoint,
     },
@@ -28,25 +29,25 @@ fn build_legacy_tx() {
     let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
     let bob_pubkey = PublicKey::new(bob_pubkey, PublicKeyType::Secp256k1).unwrap();
 
-    let txid: Vec<u8> =
-        hex::decode("1e1cdc48aa990d7e154a161d5b5f1cad737742e97d2712ab188027bb42e6e47b")
-            .unwrap()
-            .into_iter()
-            .rev()
-            .collect();
-    let txid = H256::try_from(txid.as_slice()).unwrap();
+    let txid =
+        txid_from_str_and_rev("1e1cdc48aa990d7e154a161d5b5f1cad737742e97d2712ab188027bb42e6e47b")
+            .unwrap();
+    let (utxo1, arg1) = UtxoBuilder::new()
+        .prev_txid(txid)
+        .prev_index(0)
+        .amount(50 * 100_000_000)
+        .p2pkh(alice_pubkey)
+        .unwrap();
+
+    let output1 = OutputBuilder::new()
+        .amount(50 * 100_000_000 - 1_000_000)
+        .p2pkh(bob_pubkey)
+        .unwrap();
 
     // TODO: Kind of ugly, adjust this.
     let (tx, args) = TransactionBuilder::new()
-        .input_builder(|utxo| {
-            utxo
-                .previous_output(txid, 0)
-                .p2pkh(alice_pubkey, 50 * 100_000_000)
-        })
-        .output_builder(|out| {
-            out
-                .p2pkh(bob_pubkey, 50 * 100_000_000 - 1_000_000)
-        })
+        .push_input(utxo1, arg1)
+        .push_output(output1)
         .build();
 
     let signer = TransactionSigner::new(tx, args);

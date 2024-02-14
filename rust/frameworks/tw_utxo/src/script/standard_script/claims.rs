@@ -23,7 +23,7 @@ pub fn new_p2sh(data_items: &[Script], redeem_script: &Script) -> Script {
 ///
 /// ```txt
 /// <sig>
-/// ````
+/// ```
 pub fn new_p2pk(sig: &H520) -> Script {
     let mut s = Script::with_capacity(35);
     s.append(sig.as_slice());

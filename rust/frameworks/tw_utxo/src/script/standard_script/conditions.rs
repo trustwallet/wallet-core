@@ -10,6 +10,7 @@ use super::{SEGWIT_VERSION, TAPROOT_VERSION};
 ///
 /// ```txt
 /// OP_HASH160 <push><script_hash> OP_EQUAL
+/// ```
 pub fn new_p2sh(script_hash: &H160) -> Script {
     let mut s = Script::with_capacity(23);
     s.push(OP_HASH160);
@@ -23,7 +24,6 @@ pub fn new_p2sh(script_hash: &H160) -> Script {
 /// ```txt
 /// <push><pubkey> OP_CHECKSIG
 /// ```
-// TODO: Use the tw:: PublicKey instead?
 pub fn new_p2pk(pubkey: &H264) -> Script {
     let mut s = Script::with_capacity(35);
     s.push_slice(pubkey.as_slice());
@@ -65,7 +65,6 @@ pub fn new_p2wsh(script_hash: &H256) -> Script {
 /// ```txt
 /// 0 <push><pubkey_hash>
 /// ```
-// TODO: Note that the witness pubkey hash must be serialized in a special way.
 pub fn new_p2wpkh(pubkey_hash: &H160) -> Script {
     let mut s = Script::with_capacity(22);
     s.push(SEGWIT_VERSION);
