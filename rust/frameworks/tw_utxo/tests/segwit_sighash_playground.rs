@@ -6,7 +6,7 @@ use tw_misc::traits::ToBytesVec;
 use tw_utxo::{
     encode::{stream::Stream, Encodable},
     script::{Script, Witness},
-    sighash_computer::{ClaimingData, SighashComputer, TxSigningArgs, UtxoToSign},
+    sighash_computer::{SighashComputer, SpendingData, TxSigningArgs, UtxoToSign},
     signing_mode::SigningMethod,
     transaction::{
         standard_transaction::{Transaction, TransactionInput, TransactionOutput},
@@ -126,7 +126,7 @@ fn segwit_sighash_playground() {
     //let utxo = signer.transaction_to_sign.inputs.get_mut(0).unwrap();
     //utxo.script_sig = script_sig;
 
-    let claims = vec![ClaimingData {
+    let claims = vec![SpendingData {
         script_sig: Script::new(),
         witness,
     }];

@@ -49,6 +49,8 @@ pub struct TxPreimage {
 }
 
 impl TxPreimage {
+    /// Converts all the sighashes into a list of [`H256`] types, ready to be
+    /// signed.
     pub fn into_h256_list(self) -> UtxoResult<Vec<H256>> {
         self.sighashes
             .into_iter()
@@ -67,7 +69,7 @@ pub struct UtxoSighash {
     pub sighash: Data,
 }
 
-pub struct ClaimingData {
+pub struct SpendingData {
     pub script_sig: Script,
     pub witness: Witness,
 }
@@ -166,15 +168,13 @@ where
         Ok(all_valid)
     }
 
-    // TODO: We should separate the compilation from the Signer.
-    /// Compiles a transaction with the given signatures. The signatures must be
-    /// in the same order as corresponding UTXOs.
+    /// Compiles the transaction with the given spending data.
     ///
     /// # Hint
     ///
     /// Consider using [`SighashComputer::verify_signatures`] before calling [`SighashComputer::compile`]
     /// if the signatures were computed externally.
-    pub fn compile(mut self, claims: Vec<ClaimingData>) -> UtxoResult<Transaction> {
+    pub fn compile(mut self, claims: Vec<SpendingData>) -> UtxoResult<Transaction> {
         // There should be the same number of UTXOs and their meta data.
         if self.args.utxos_to_sign.len() != self.transaction_to_sign.inputs().len() {
             return Err(UtxoError(UtxoErrorKind::Error_internal));

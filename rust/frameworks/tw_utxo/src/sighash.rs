@@ -2,7 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_hash::H512;
 use tw_keypair::ecdsa::der;
 
 use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
@@ -11,6 +10,8 @@ const ANYONE_CAN_PAY_FLAG: u32 = 0x80;
 const FORK_ID_FLAG: u32 = 0x40;
 const BASE_FLAG: u32 = 0x1f;
 
+/// A Bitcoin ECDSA signature with a sighash type, which must be serialzed
+/// occordingly in the scriptSig/Witness data to spend an output.
 pub struct BitcoinEcdsaSignature {
     sig: der::Signature,
     sighash_ty: SighashType,

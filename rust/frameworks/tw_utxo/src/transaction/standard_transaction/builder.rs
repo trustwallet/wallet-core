@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::{error::UtxoError, sighash::BitcoinEcdsaSignature, sighash_computer::ClaimingData};
+use crate::{error::UtxoError, sighash::BitcoinEcdsaSignature, sighash_computer::SpendingData};
 use tw_encoding::hex;
 use tw_hash::{ripemd::bitcoin_hash_160, H160, H256, H264};
 use tw_keypair::{ecdsa, tw};
@@ -16,10 +16,7 @@ use crate::{
     sighash::SighashType,
     sighash_computer::{TxSigningArgs, UtxoToSign},
     signing_mode::SigningMethod,
-    transaction::{
-        transaction_parts::{Amount, OutPoint},
-        UtxoPreimageArgs,
-    },
+    transaction::transaction_parts::{Amount, OutPoint},
 };
 
 use super::{Transaction, TransactionInput, TransactionOutput};
@@ -237,13 +234,13 @@ impl OutputBuilder {
     }
 }
 
-pub struct ClaimBuilder {
+pub struct SpendingScriptBuilder {
     sighash_ty: Option<SighashType>,
 }
 
-impl ClaimBuilder {
+impl SpendingScriptBuilder {
     pub fn new() -> Self {
-        ClaimBuilder { sighash_ty: None }
+        SpendingScriptBuilder { sighash_ty: None }
     }
     pub fn sighash_ty(mut self, sighash_ty: SighashType) -> Self {
         self.sighash_ty = Some(sighash_ty);
@@ -253,7 +250,7 @@ impl ClaimBuilder {
         self,
         sig: ecdsa::secp256k1::Signature,
         pubkey: tw::PublicKey,
-    ) -> UtxoResult<ClaimingData> {
+    ) -> UtxoResult<SpendingData> {
         // TODO: Check unwrap
         let sig = BitcoinEcdsaSignature::new(
             sig.to_der().unwrap(),
@@ -261,14 +258,16 @@ impl ClaimBuilder {
                 .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
         )
         .unwrap();
+
         let pubkey: H264 = pubkey
             .to_bytes()
             .as_slice()
             .try_into()
             .expect("pubkey length is 33 bytes");
+
         let script_sig = claims::new_p2pkh(&sig.serialize(), &pubkey);
 
-        Ok(ClaimingData {
+        Ok(SpendingData {
             script_sig,
             witness: Witness::default(),
         })

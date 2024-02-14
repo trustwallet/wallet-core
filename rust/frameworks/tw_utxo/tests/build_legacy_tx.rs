@@ -10,12 +10,13 @@ use tw_utxo::{
     encode::{stream::Stream, Encodable},
     script::{standard_script::claims, Script, Witness},
     sighash::{BitcoinEcdsaSignature, SighashBase, SighashType},
-    sighash_computer::{ClaimingData, SighashComputer, TxSigningArgs, UtxoToSign},
+    sighash_computer::{SighashComputer, SpendingData, TxSigningArgs, UtxoToSign},
     signing_mode::SigningMethod,
     transaction::{
         standard_transaction::{
             builder::{
-                txid_from_str_and_rev, ClaimBuilder, OutputBuilder, TransactionBuilder, UtxoBuilder,
+                txid_from_str_and_rev, OutputBuilder, SpendingScriptBuilder, TransactionBuilder,
+                UtxoBuilder,
             },
             Transaction, TransactionInput, TransactionOutput,
         },
@@ -67,7 +68,7 @@ fn build_legacy_tx() {
     let sig = alice_private_key.sign(sighash).unwrap();
 
     // Build the claim
-    let claim = ClaimBuilder::new()
+    let claim = SpendingScriptBuilder::new()
         .sighash_ty(SighashType::new(SighashBase::All))
         .p2pkh(sig, alice_pubkey)
         .unwrap();

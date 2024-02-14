@@ -24,9 +24,10 @@ pub fn new_p2sh(data_items: &[Script], redeem_script: &Script) -> Script {
 /// ```txt
 /// <sig>
 /// ```
-pub fn new_p2pk(sig: &H520) -> Script {
+// TODO: Use BitcoinEcdsaSignature here?
+pub fn new_p2pk(sig: &[u8]) -> Script {
     let mut s = Script::with_capacity(35);
-    s.append(sig.as_slice());
+    s.append(sig);
     s
 }
 
@@ -35,6 +36,7 @@ pub fn new_p2pk(sig: &H520) -> Script {
 /// ```txt
 /// <push><sig><push><pubkey>
 /// ```
+// TODO: Use BitcoinEcdsaSignature here?
 pub fn new_p2pkh(sig: &[u8], pubkey: &H264) -> Script {
     let mut s = Script::with_capacity(100);
     s.push_slice(sig);
@@ -67,6 +69,7 @@ pub fn new_p2wsh(items: Vec<Script>, redeem_script: Script) -> Witness {
 /// <sig>
 /// <pubkey>
 /// ```
+// TODO: Use BitcoinEcdsaSignature here?
 pub fn new_p2wpkh(sig: H520, pubkey: H264) -> Witness {
     let mut w = Witness::new();
     w.push_item(Script::from(sig.into_vec()));
