@@ -5,7 +5,7 @@ use tw_misc::traits::ToBytesVec;
 use tw_utxo::{
     encode::{stream::Stream, Encodable},
     script::{Script, Witness},
-    signer::{ClaimingData, TransactionSigner, TxSigningArgs, UtxoToSign},
+    sighash_computer::{ClaimingData, SighashComputer, TxSigningArgs, UtxoToSign},
     signing_mode::SigningMethod,
     transaction::{
         standard_transaction::{Transaction, TransactionInput, TransactionOutput},
@@ -93,7 +93,7 @@ fn legacy_sighash_playground() {
 
     // Sign preimages
 
-    let mut signer = TransactionSigner::new(tx, utxo_args);
+    let mut signer = SighashComputer::new(tx, utxo_args);
 
     let preimage = &signer.preimage_tx().unwrap().sighashes[0];
     dbg!(preimage);

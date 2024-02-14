@@ -70,25 +70,25 @@ pub struct SignaturePubkey {
 /// # Important
 ///
 /// If needed to implement a custom logic, consider adding a different signer.
-pub struct TransactionSigner<Transaction> {
+pub struct SighashComputer<Transaction> {
     transaction_to_sign: Transaction,
     args: TxSigningArgs,
     _phantom: PhantomData<Transaction>,
 }
 
-impl<Transaction> TransactionSigner<Transaction>
+impl<Transaction> SighashComputer<Transaction>
 where
     Transaction: TransactionPreimage + TransactionInterface,
 {
     pub fn new(transaction: Transaction, args: TxSigningArgs) -> Self {
-        TransactionSigner {
+        SighashComputer {
             transaction_to_sign: transaction,
             args,
             _phantom: PhantomData,
         }
     }
 
-    /// Computes sighashes of [`TransactionSigner::transaction`].
+    /// Computes sighashes of [`SighashComputer::transaction`].
     pub fn preimage_tx(&self) -> UtxoResult<TxPreimage> {
         // There should be the same number of UTXOs and their meta data.
         if self.args.utxos_to_sign.len() != self.transaction_to_sign.inputs().len() {
@@ -124,12 +124,12 @@ where
     }
 
     // TODO: This comment should be rephrased, given that in validates the preimages, not the claims
-    /// Validates if the given signatures and public keys correspond to the actual [`TransactionSigner::transaction`] inputs.
-    /// The method should be used to validate externally passed signatures before [`TransactionSigner::compile`].
+    /// Validates if the given signatures and public keys correspond to the actual [`SighashComputer::transaction`] inputs.
+    /// The method should be used to validate externally passed signatures before [`SighashComputer::compile`].
     ///
     /// # Hint
     ///
-    /// Not required when [`TransactionSigner::compile`] is called right after [`TransactionSigner::preimage_tx`],
+    /// Not required when [`SighashComputer::compile`] is called right after [`SighashComputer::preimage_tx`],
     /// as this method is expensive in terms of computations.
     pub fn verify_signatures(&self, signatures: Vec<SignaturePubkey>) -> UtxoResult<bool> {
         // Compute transaction preimage and verify if all given signatures correspond to the result sighashes.
@@ -159,9 +159,9 @@ where
     ///
     /// # Hint
     ///
-    /// Consider using [`TransactionSigner::verify_signatures`] before calling [`TransactionSigner::compile`]
+    /// Consider using [`SighashComputer::verify_signatures`] before calling [`SighashComputer::compile`]
     /// if the signatures were computed externally.
-    pub fn compile(&mut self, claims: Vec<ClaimingData>) -> UtxoResult<()> {
+    pub fn compile(mut self, claims: Vec<ClaimingData>) -> UtxoResult<Transaction> {
         // There should be the same number of UTXOs and their meta data.
         if self.args.utxos_to_sign.len() != self.transaction_to_sign.inputs().len() {
             return Err(UtxoError(UtxoErrorKind::Error_internal));
@@ -183,10 +183,6 @@ where
             utxo.set_witness(claim.witness);
         }
 
-        Ok(())
-    }
-
-    pub fn into_transaction(self) -> Transaction {
-        self.transaction_to_sign
+        Ok(self.transaction_to_sign)
     }
 }

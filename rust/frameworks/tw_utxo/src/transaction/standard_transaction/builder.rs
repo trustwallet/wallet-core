@@ -14,7 +14,7 @@ use crate::{
         Script, Witness,
     },
     sighash::SighashType,
-    signer::{TxSigningArgs, UtxoToSign},
+    sighash_computer::{TxSigningArgs, UtxoToSign},
     signing_mode::SigningMethod,
     transaction::{
         transaction_parts::{Amount, OutPoint},

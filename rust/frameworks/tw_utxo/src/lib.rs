@@ -11,7 +11,7 @@ pub mod error;
 pub mod planner;
 pub mod script;
 pub mod sighash;
-pub mod signer;
+pub mod sighash_computer;
 pub mod signing_mode;
 pub mod transaction;
 
