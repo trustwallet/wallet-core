@@ -2010,6 +2010,7 @@ name = "tw_solana"
 version = "0.1.0"
 dependencies = [
  "bincode",
+ "lazy_static",
  "serde",
  "serde_json",
  "tw_coin_entry",

@@ -6,6 +6,7 @@ use tw_encoding::base58::Alphabet;
 
 pub mod address;
 pub mod compiler;
+pub mod defined_addresses;
 pub mod entry;
 pub mod instruction;
 pub mod modules;
