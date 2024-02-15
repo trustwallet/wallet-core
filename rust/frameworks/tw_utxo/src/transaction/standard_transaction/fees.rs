@@ -31,10 +31,8 @@ impl TransactionFee for Transaction {
         s += LOCKTIME_SIZE;
         s += CompactInteger::from(self.inputs().len()).serialized_len();
         s += CompactInteger::from(self.outputs().len()).serialized_len();
-
-        s = self.inputs().iter().fold(s, |s, input| w + input.size());
-        s = self.outputs().iter().fold(s, |s, input| w + input.size());
-
+        self.inputs().iter().for_each(|input| s += input.size());
+        self.outputs().iter().for_each(|output| s += output.size());
         s
     }
 
@@ -55,14 +53,16 @@ impl TransactionFee for Transaction {
 
         // Calculate the weight of each input and output. The Segwit scale
         // factor is already considered by the weight methods.
-        w = self.inputs().iter().fold(w, |w, input| w + input.weight());
-        w = self.outputs().iter().fold(w, |w, input| w + input.weight());
+        self.inputs().iter().for_each(|input| w += input.weight());
+        self.outputs()
+            .iter()
+            .for_each(|output| w += output.weight());
 
         w
     }
 
     fn fee(&self, fee_rate: u64) -> u64 {
-        todo!()
+        self.vsize() as u64 * fee_rate
     }
 }
 
