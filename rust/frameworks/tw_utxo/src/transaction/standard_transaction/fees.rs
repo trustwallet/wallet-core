@@ -4,6 +4,7 @@ use crate::{
     transaction::{
         transaction_fee::{TransactionFee, TxIndividualFee},
         transaction_interface::TransactionInterface,
+        transaction_parts::Amount,
     },
 };
 
@@ -66,8 +67,9 @@ impl TransactionFee for Transaction {
         w
     }
 
-    fn fee(&self, fee_rate: u64) -> u64 {
-        self.vsize() as u64 * fee_rate
+    fn fee(&self, fee_rate: Amount) -> Amount {
+        // TODO: Check casting. And why is Amount = i64?
+        Amount::from(self.vsize() as u32) * fee_rate
     }
 }
 
@@ -84,10 +86,7 @@ impl TxIndividualFee for TransactionInput {
     }
 
     fn weight(&self) -> usize {
-        let non_witness = OUT_POINT_SIZE
-            + self.script_sig.serialized_len()
-            + SEQUENCE_SIZE
-            + self.witness.serialized_len();
+        let non_witness = OUT_POINT_SIZE + self.script_sig.serialized_len() + SEQUENCE_SIZE;
 
         // Witness data has no scale factor applied, ie. it's discounted.
         non_witness * SEGWIT_SCALE_FACTOR + self.witness.serialized_len()

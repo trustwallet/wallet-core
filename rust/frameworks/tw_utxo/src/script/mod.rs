@@ -34,6 +34,10 @@ impl Script {
         self.bytes.len()
     }
     pub fn serialized_len(&self) -> usize {
+        if self.bytes.is_empty() {
+            return 0;
+        }
+
         CompactInteger::from(self.bytes.len()).serialized_len() + self.bytes.len()
     }
     /// Pushes the given opcode to the end of the script.
@@ -98,6 +102,7 @@ pub struct Witness {
 
 impl Encodable for Witness {
     fn encode(&self, stream: &mut Stream) {
+        // TODO: What if the witness is empty?
         stream.append_list(&self.items);
     }
 }
@@ -120,6 +125,10 @@ impl Witness {
         self.items.clear();
     }
     pub fn serialized_len(&self) -> usize {
+        if self.is_empty() {
+            return 0;
+        }
+
         CompactInteger::from(self.items.len()).serialized_len()
             + self
                 .items

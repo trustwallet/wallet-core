@@ -108,9 +108,9 @@ impl UtxoBuilder {
         UtxoBuilder {
             input: TransactionInput {
                 previous_output: OutPoint::default(),
-                script_sig: Script::default(),
+                script_sig: Script::new(),
                 sequence: u32::MAX,
-                witness: Witness::default(),
+                witness: Witness::new(),
             },
             prev_txid: None,
             prev_index: None,

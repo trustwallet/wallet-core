@@ -20,16 +20,17 @@ pub struct CompactInteger(u64);
 
 impl CompactInteger {
     pub fn serialized_len(&self) -> usize {
-        let v = self.0;
+        const BYTE_FLAG: usize = 1;
 
+        let v = self.0;
         if ONE_BYTE_RANGE.contains(&v) {
-            1
+            1 // No byte flag
         } else if TWO_BYTES_RANGE.contains(&v) {
-            2
+            BYTE_FLAG + 2
         } else if FOUR_BYTES_RANGE.contains(&v) {
-            4
+            BYTE_FLAG + 4
         } else {
-            8
+            BYTE_FLAG + 8
         }
     }
 }

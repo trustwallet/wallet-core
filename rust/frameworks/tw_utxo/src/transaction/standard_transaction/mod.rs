@@ -67,7 +67,7 @@ impl TransactionInterface for Transaction {
         &mut self.inputs
     }
 
-    fn set_inputs(&mut self, inputs: Vec<Self::Input>) {
+    fn replace_inputs(&mut self, inputs: Vec<Self::Input>) {
         self.inputs = inputs;
     }
 
@@ -75,7 +75,7 @@ impl TransactionInterface for Transaction {
         &self.outputs
     }
 
-    fn set_outputs(&mut self, outputs: Vec<Self::Output>) {
+    fn replace_outputs(&mut self, outputs: Vec<Self::Output>) {
         self.outputs = outputs;
     }
 
@@ -94,7 +94,7 @@ impl Transaction {
     pub fn without_witness(&self) -> Transaction {
         let mut without_witness = self.clone();
         for input in without_witness.inputs.iter_mut() {
-            input.witness.clear();
+            input.clear_witness();
         }
         without_witness
     }
@@ -217,7 +217,11 @@ impl Default for TransactionOutput {
     }
 }
 
-impl TxOutputInterface for TransactionOutput {}
+impl TxOutputInterface for TransactionOutput {
+    fn value(&self) -> Amount {
+        self.value
+    }
+}
 
 impl Encodable for TransactionOutput {
     fn encode(&self, stream: &mut Stream) {

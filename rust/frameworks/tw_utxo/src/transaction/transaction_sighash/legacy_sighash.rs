@@ -21,8 +21,8 @@ impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transact
         // TODO: Avoid cloning here?
         let mut tx_preimage = tx.clone();
 
-        tx_preimage.set_inputs(Self::inputs_for_preimage(tx, args)?);
-        tx_preimage.set_outputs(Self::outputs_for_preimage(tx, args));
+        tx_preimage.replace_inputs(Self::inputs_for_preimage(tx, args)?);
+        tx_preimage.replace_outputs(Self::outputs_for_preimage(tx, args));
 
         let mut stream = Stream::default();
         stream

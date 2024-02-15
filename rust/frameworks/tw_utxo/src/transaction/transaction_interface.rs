@@ -6,6 +6,8 @@ use crate::encode::Encodable;
 use crate::script::{Script, Witness};
 use crate::transaction::transaction_parts::OutPoint;
 
+use super::transaction_parts::Amount;
+
 /// An interface of the Bitcoin transaction.
 pub trait TransactionInterface: Clone + Encodable {
     type Input: TxInputInterface;
@@ -17,11 +19,11 @@ pub trait TransactionInterface: Clone + Encodable {
 
     fn inputs_mut(&mut self) -> &mut [Self::Input];
 
-    fn set_inputs(&mut self, inputs: Vec<Self::Input>);
+    fn replace_inputs(&mut self, inputs: Vec<Self::Input>);
 
     fn outputs(&self) -> &[Self::Output];
 
-    fn set_outputs(&mut self, outputs: Vec<Self::Output>);
+    fn replace_outputs(&mut self, outputs: Vec<Self::Output>);
 
     fn has_witness(&self) -> bool;
 
@@ -46,4 +48,6 @@ pub trait TxInputInterface: Clone {
     fn clear_witness(&mut self);
 }
 
-pub trait TxOutputInterface: Clone + Default + Encodable {}
+pub trait TxOutputInterface: Clone + Default + Encodable {
+    fn value(&self) -> Amount;
+}
