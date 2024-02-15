@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 /// TODO consider merging `TaprootAll` and `TaprootOnePrevout`.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SigningMethod {
     /// Used for P2SH and P2PKH.
     Legacy,

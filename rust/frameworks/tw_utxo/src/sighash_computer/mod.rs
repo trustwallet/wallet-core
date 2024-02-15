@@ -18,9 +18,11 @@ use tw_memory::Data;
 const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 
 /// UTXO (Unsigned transaction input) contains all info required to sign the.
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct UtxoToSign {
     pub script_pubkey: Script,
     pub signing_method: SigningMethod,
+    // TODO: Rename to value?
     pub amount: Amount,
 }
 

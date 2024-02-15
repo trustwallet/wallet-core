@@ -138,7 +138,7 @@ impl TransactionPreimage for Transaction {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 // TODO: We should consider having two of those types, one for the preimage
 // generation (ie. no script_sig and no witness), and one for the actual
 // transaction (ie. with script_sig and witness).

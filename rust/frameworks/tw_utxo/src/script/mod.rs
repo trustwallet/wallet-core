@@ -10,7 +10,7 @@ use tw_memory::Data;
 
 pub mod standard_script;
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Script {
     bytes: Data,
 }
@@ -95,7 +95,7 @@ impl From<Data> for Script {
     }
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Witness {
     items: Vec<Script>,
 }
