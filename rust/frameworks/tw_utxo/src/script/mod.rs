@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::encode::compact_integer::CompactInteger;
 use crate::encode::stream::Stream;
 use crate::encode::Encodable;
 use standard_script::opcodes::*;
@@ -28,6 +29,12 @@ impl Script {
         Script {
             bytes: Data::with_capacity(capacity),
         }
+    }
+    pub fn len(&self) -> usize {
+        self.bytes.len()
+    }
+    pub fn serialized_len(&self) -> usize {
+        CompactInteger::from(self.bytes.len()).serialized_len() + self.bytes.len()
     }
     /// Pushes the given opcode to the end of the script.
     pub fn push(&mut self, code: u8) {
@@ -111,6 +118,14 @@ impl Witness {
     // TODO: This needed?
     pub fn clear(&mut self) {
         self.items.clear();
+    }
+    pub fn serialized_len(&self) -> usize {
+        CompactInteger::from(self.items.len()).serialized_len()
+            + self
+                .items
+                .iter()
+                .map(|item| CompactInteger::from(item.len()).serialized_len() + item.len())
+                .sum::<usize>()
     }
 }
 

@@ -17,6 +17,7 @@ use crate::transaction::{TransactionPreimage, UtxoPreimageArgs};
 use tw_memory::Data;
 
 pub mod builder;
+pub mod fees;
 
 /// Must be zero.
 const WITNESS_MARKER: u8 = 0;

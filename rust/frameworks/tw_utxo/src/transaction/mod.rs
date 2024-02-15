@@ -11,6 +11,7 @@ use tw_hash::hasher::Hasher;
 use tw_memory::Data;
 
 pub mod standard_transaction;
+pub mod transaction_fee;
 pub mod transaction_hashing;
 pub mod transaction_interface;
 pub mod transaction_parts;

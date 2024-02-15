@@ -18,6 +18,12 @@ const EIGHT_BYTES_FLAG: u8 = 0xFF_u8;
 #[derive(Default, Debug, Clone, Copy, PartialEq)]
 pub struct CompactInteger(u64);
 
+impl CompactInteger {
+    pub fn serialized_len(&self) -> usize {
+        todo!()
+    }
+}
+
 impl From<usize> for CompactInteger {
     fn from(value: usize) -> Self {
         CompactInteger(value as u64)
