@@ -43,6 +43,8 @@ pub trait TxInputInterface: Clone {
 
     fn witness_items(&self) -> &[Script];
 
+    fn has_script_sig(&self) -> bool;
+
     fn has_witness(&self) -> bool;
 
     fn clear_witness(&mut self);

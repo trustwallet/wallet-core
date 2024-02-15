@@ -2,7 +2,7 @@ use super::{Transaction, TransactionInput, TransactionOutput};
 use crate::{
     encode::compact_integer::CompactInteger,
     transaction::{
-        transaction_fee::{TransactionFee, TxIndividualFee},
+        transaction_fee::TransactionFee,
         transaction_interface::TransactionInterface,
         transaction_parts::Amount,
     },
@@ -18,9 +18,9 @@ const VALUE_SIZE: usize = 8;
 const SEGWIT_SCALE_FACTOR: usize = 4;
 
 impl TransactionFee for Transaction {
-    fn size(&self) -> usize {
+    fn base_size(&self) -> usize {
         let mut s = 0;
-        // Base transaction weight.
+        // Base transaction size.
         s += VERSION_SIZE;
         s += LOCKTIME_SIZE;
 
@@ -31,28 +31,16 @@ impl TransactionFee for Transaction {
 
         s += CompactInteger::from(self.inputs().len()).serialized_len();
         s += CompactInteger::from(self.outputs().len()).serialized_len();
+        s
+    }
+    fn size(&self) -> usize {
+        let mut s = self.base_size();
         self.inputs().iter().for_each(|input| s += input.size());
         self.outputs().iter().for_each(|output| s += output.size());
         s
     }
-
-    fn vsize(&self) -> usize {
-        (self.weight() + 3) / SEGWIT_SCALE_FACTOR // ceil(weight / 4)
-    }
-
     fn weight(&self) -> usize {
-        let mut w = 0;
-        // Base transaction weight (non-segwit)
-        w += VERSION_SIZE;
-        w += LOCKTIME_SIZE;
-
-        // Consider extended format in case witnesses are to be serialized.
-        if self.has_witness() {
-            w += WITNESS_FLAG_MARKER;
-        }
-
-        w += CompactInteger::from(self.inputs().len()).serialized_len();
-        w += CompactInteger::from(self.outputs().len()).serialized_len();
+        let mut w = self.base_size();
 
         // Apply scale factor.
         w *= SEGWIT_SCALE_FACTOR;
@@ -66,26 +54,29 @@ impl TransactionFee for Transaction {
 
         w
     }
-
+    fn vsize(&self) -> usize {
+        (self.weight() + 3) / SEGWIT_SCALE_FACTOR // ceil(weight / 4)
+    }
     fn fee(&self, fee_rate: Amount) -> Amount {
         // TODO: Check casting. And why is Amount = i64?
         Amount::from(self.vsize() as u32) * fee_rate
     }
 }
 
-impl TxIndividualFee for TransactionInput {
-    fn size(&self) -> usize {
+// TODO: Move this to the standard_transaction module(?).
+impl TransactionInput {
+    pub fn size(&self) -> usize {
         OUT_POINT_SIZE
             + self.script_sig.serialized_len()
             + SEQUENCE_SIZE
             + self.witness.serialized_len()
     }
 
-    fn vsize(&self) -> usize {
+    pub fn vsize(&self) -> usize {
         (self.weight() + 3) / SEGWIT_SCALE_FACTOR // ceil(weight / 4)
     }
 
-    fn weight(&self) -> usize {
+    pub fn weight(&self) -> usize {
         let non_witness = OUT_POINT_SIZE + self.script_sig.serialized_len() + SEQUENCE_SIZE;
 
         // Witness data has no scale factor applied, ie. it's discounted.
@@ -93,16 +84,17 @@ impl TxIndividualFee for TransactionInput {
     }
 }
 
-impl TxIndividualFee for TransactionOutput {
-    fn size(&self) -> usize {
+// TODO: Move this to the standard_transaction module(?).
+impl TransactionOutput {
+    pub fn size(&self) -> usize {
         VALUE_SIZE + self.script_pubkey.serialized_len()
     }
 
-    fn vsize(&self) -> usize {
+    pub fn vsize(&self) -> usize {
         (self.weight() + 3) / SEGWIT_SCALE_FACTOR // ceil(weight / 4)
     }
 
-    fn weight(&self) -> usize {
+    pub fn weight(&self) -> usize {
         // All output data has the scale factor applied.
         self.size() * SEGWIT_SCALE_FACTOR
     }

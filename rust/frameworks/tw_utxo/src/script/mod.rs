@@ -33,6 +33,9 @@ impl Script {
     pub fn len(&self) -> usize {
         self.bytes.len()
     }
+    pub fn is_empty(&self) -> bool {
+        self.bytes.is_empty()
+    }
     pub fn serialized_len(&self) -> usize {
         if self.bytes.is_empty() {
             return 0;

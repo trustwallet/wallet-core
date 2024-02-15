@@ -185,6 +185,10 @@ impl TxInputInterface for TransactionInput {
         !self.witness.is_empty()
     }
 
+    fn has_script_sig(&self) -> bool {
+        !self.script_sig.is_empty()
+    }
+
     fn clear_witness(&mut self) {
         self.witness.clear();
     }
