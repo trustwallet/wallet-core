@@ -1,11 +1,15 @@
 use super::{Transaction, TransactionInput, TransactionOutput};
 use crate::{
     encode::compact_integer::CompactInteger,
-    transaction::transaction_fee::{TransactionFee, TxIndividualFee},
+    transaction::{
+        transaction_fee::{TransactionFee, TxIndividualFee},
+        transaction_interface::TransactionInterface,
+    },
 };
 
 const VERSION_SIZE: usize = 4;
 const LOCKTIME_SIZE: usize = 4;
+const WITNESS_FLAG_MARKER: usize = 2;
 const OUT_POINT_SIZE: usize = 36;
 const SEQUENCE_SIZE: usize = 4;
 const VALUE_SIZE: usize = 8;
@@ -13,22 +17,17 @@ const VALUE_SIZE: usize = 8;
 const SEGWIT_SCALE_FACTOR: usize = 4;
 
 impl TransactionFee for Transaction {
-    type Input = TransactionInput;
-    type Output = TransactionOutput;
-
-    fn inputs(&self) -> &[Self::Input] {
-        &self.inputs
-    }
-
-    fn outputs(&self) -> &[Self::Output] {
-        &self.outputs
-    }
-
     fn size(&self) -> usize {
         let mut s = 0;
         // Base transaction weight.
         s += VERSION_SIZE;
         s += LOCKTIME_SIZE;
+
+        // Consider extended format in case witnesses are to be serialized.
+        if self.has_witness() {
+            s += WITNESS_FLAG_MARKER;
+        }
+
         s += CompactInteger::from(self.inputs().len()).serialized_len();
         s += CompactInteger::from(self.outputs().len()).serialized_len();
         self.inputs().iter().for_each(|input| s += input.size());
@@ -45,6 +44,12 @@ impl TransactionFee for Transaction {
         // Base transaction weight (non-segwit)
         w += VERSION_SIZE;
         w += LOCKTIME_SIZE;
+
+        // Consider extended format in case witnesses are to be serialized.
+        if self.has_witness() {
+            w += WITNESS_FLAG_MARKER;
+        }
+
         w += CompactInteger::from(self.inputs().len()).serialized_len();
         w += CompactInteger::from(self.outputs().len()).serialized_len();
 
@@ -99,6 +104,7 @@ impl TxIndividualFee for TransactionOutput {
     }
 
     fn weight(&self) -> usize {
+        // All output data has the scale factor applied.
         self.size() * SEGWIT_SCALE_FACTOR
     }
 }

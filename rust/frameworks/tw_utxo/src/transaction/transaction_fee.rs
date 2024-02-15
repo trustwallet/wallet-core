@@ -1,10 +1,6 @@
-pub trait TransactionFee {
-    type Input: TxIndividualFee;
-    type Output: TxIndividualFee;
+use super::transaction_interface::TransactionInterface;
 
-    fn inputs(&self) -> &[Self::Input];
-    fn outputs(&self) -> &[Self::Output];
-
+pub trait TransactionFee: TransactionInterface {
     fn size(&self) -> usize;
     fn vsize(&self) -> usize;
     fn weight(&self) -> usize;
