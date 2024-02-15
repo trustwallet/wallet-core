@@ -24,6 +24,8 @@ pub struct UtxoToSign {
     pub signing_method: SigningMethod,
     // TODO: Rename to value?
     pub amount: Amount,
+    pub witness_size_hint: usize,
+    pub script_sig_size_hint: usize,
 }
 
 /// Transaction preimage arguments.

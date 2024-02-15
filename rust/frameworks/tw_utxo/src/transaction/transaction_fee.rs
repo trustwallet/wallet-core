@@ -1,4 +1,9 @@
-use crate::{sighash_computer::{TxSigningArgs, UtxoToSign}, transaction::{transaction_interface::TxInputInterface, transaction_parts::Amount}};
+use bitcoin::witness;
+
+use crate::{
+    sighash_computer::{TxSigningArgs, UtxoToSign},
+    transaction::{transaction_interface::TxInputInterface, transaction_parts::Amount},
+};
 
 use super::transaction_interface::{TransactionInterface, TxOutputInterface};
 
@@ -17,14 +22,21 @@ where
     fn size(&self) -> usize;
     fn weight(&self) -> usize;
     fn vsize(&self) -> usize;
+
+    // TODO: This trait should only have those methods.
     fn fee(&self, fee_rate: Amount) -> Amount;
+    // Computes the fee for a given scriptSig size.
+    fn fee_for_script_sig(bytes: usize, fee_rate: Amount) -> Amount;
+    // Computes the fee for a given witness size.
+    fn fee_for_witness(bytes: usize, fee_rate: Amount) -> Amount;
 
     fn select_inputs(
         &mut self,
         mut args: TxSigningArgs,
         fee_rate: Amount,
         selector: InputSelector,
-    ) -> Result<(TxSigningArgs, Amount), ()> {
+        // TODO: Adjust return type.
+    ) -> Result<(TxSigningArgs, Amount, Amount), ()> {
         let total_out = self
             .outputs()
             .iter()
@@ -59,13 +71,21 @@ where
         }
 
         // Select the UTXOs to cover all the outputs and the fee.
-        let mut total_in = Amount::from(0);
         let mut selected_utxo = Vec::with_capacity(utxos.len());
         let mut selected_args = Vec::with_capacity(utxos.len());
 
+        let mut total_in = Amount::from(0);
+        let mut script_fee = Amount::from(0);
+
         let mut total_covered = false;
         for (input, arg) in utxos {
-            debug_assert!(!input.has_witness() && !input.has_script_sig());
+            dbg!("new input");
+            // There is no scriptSig or witness in the input.
+            debug_assert!(!input.has_script_sig());
+            debug_assert!(!input.has_witness());
+
+            let script_sig_size_hint = arg.script_sig_size_hint;
+            let witness_size_hint = arg.witness_size_hint;
 
             total_in += arg.amount;
 
@@ -74,7 +94,18 @@ where
 
             tx.replace_inputs(selected_utxo.clone());
 
-            if total_in >= total_out + tx.fee(fee_rate) {
+            // Since we don't have the scriptSig or the witness, we need to
+            // calculate the fee based on the provided size hints.
+            let script_sig_fee = Self::fee_for_script_sig(script_sig_size_hint, fee_rate);
+            script_fee += script_sig_fee;
+            dbg!(script_sig_fee);
+
+            let witness_fee = Self::fee_for_witness(witness_size_hint, fee_rate);
+            script_fee += witness_fee;
+            dbg!(witness_fee);
+
+            let total_fee = tx.fee(fee_rate) + script_fee;
+            if total_in >= total_out + total_fee {
                 // Update self with selected in UTXOs.
                 self.replace_inputs(selected_utxo);
 
@@ -95,8 +126,9 @@ where
         args.utxos_to_sign = selected_args;
 
         // Calculate the change.
-        let change = total_in - total_out - self.fee(fee_rate);
+        let total_fee = self.fee(fee_rate) + script_fee;
+        let change = total_in - total_out - total_fee;
 
-        Ok((args, change))
+        Ok((args, total_fee, change))
     }
 }

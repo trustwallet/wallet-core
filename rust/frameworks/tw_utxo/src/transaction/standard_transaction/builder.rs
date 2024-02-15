@@ -174,6 +174,9 @@ impl UtxoBuilder {
                 amount: self
                     .amount
                     .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+                // varint (1 byte) + sig (71 to 73 bytes) + pubkey (33 bytes)
+                script_sig_size_hint: 107,
+                witness_size_hint: 0,
             },
         ))
     }
@@ -192,6 +195,9 @@ impl UtxoBuilder {
                 amount: self
                     .amount
                     .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+                script_sig_size_hint: 0,
+                // varint (1 byte) + sig (71 to 73 bytes) + pubkey (33 bytes)
+                witness_size_hint: 107,
             },
         ))
     }

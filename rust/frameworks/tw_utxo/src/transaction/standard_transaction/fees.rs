@@ -2,8 +2,7 @@ use super::{Transaction, TransactionInput, TransactionOutput};
 use crate::{
     encode::compact_integer::CompactInteger,
     transaction::{
-        transaction_fee::TransactionFee,
-        transaction_interface::TransactionInterface,
+        transaction_fee::TransactionFee, transaction_interface::TransactionInterface,
         transaction_parts::Amount,
     },
 };
@@ -60,6 +59,16 @@ impl TransactionFee for Transaction {
     fn fee(&self, fee_rate: Amount) -> Amount {
         // TODO: Check casting. And why is Amount = i64?
         Amount::from(self.vsize() as u32) * fee_rate
+    }
+    // Computes the fee for a given scriptSig size in bytes.
+    fn fee_for_script_sig(bytes: usize, fee_rate: Amount) -> Amount {
+        let vsize = bytes;
+        Amount::from(vsize as i64) * fee_rate
+    }
+    // Computes the fee for a given witness size in bytes.
+    fn fee_for_witness(bytes: usize, fee_rate: Amount) -> Amount {
+        let vsize = (bytes + 3) / SEGWIT_SCALE_FACTOR;
+        Amount::from(vsize as i64) * fee_rate
     }
 }
 

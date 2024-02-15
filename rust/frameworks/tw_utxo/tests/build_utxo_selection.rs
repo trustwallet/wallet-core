@@ -68,9 +68,13 @@ fn build_tx_input_selection() {
         .push_output(out2)
         .build();
 
-	let (args, change) = tx.select_inputs(args, SATS_PER_VBYTE, InputSelector::Ascending).unwrap();
+    let (args, estimated_fee, change) = tx
+        .select_inputs(args, SATS_PER_VBYTE, InputSelector::Ascending)
+        .unwrap();
 
-    let fee = tx.fee(SATS_PER_VBYTE);
+    //let fee = tx.fee(SATS_PER_VBYTE);
+    dbg!(estimated_fee);
+    //dbg!(fee);
 
     assert_eq!(tx.inputs.len(), 2);
     assert_eq!(tx.inputs[0], utxo1);
@@ -80,6 +84,29 @@ fn build_tx_input_selection() {
     assert_eq!(args.utxos_to_sign[0], arg1);
     assert_eq!(args.utxos_to_sign[1], arg2);
 
-    assert_eq!(change, 1_000 + 3_000 - 1_000 - 1_000 - fee);
+    assert_eq!(change, 1_000 + 3_000 - 1_000 - 1_000 - estimated_fee);
 
+    // Compute the primage.
+    let computer = SighashComputer::new(tx, args);
+    let preimage = computer.preimage_tx().unwrap();
+
+    // Sign the sighashes and build the claim
+    let mut claims = vec![];
+    for sighash in preimage.into_h256_list().unwrap() {
+        let sig = alice_private_key.sign(sighash).unwrap();
+
+        let claim = SpendingScriptBuilder::new()
+            .sighash_ty(SighashType::new(SighashBase::All))
+            .p2pkh(sig, alice_pubkey.clone())
+            .unwrap();
+
+        claims.push(claim);
+    }
+
+    let tx = computer.compile(claims).unwrap();
+
+    let fee = tx.fee(SATS_PER_VBYTE);
+    dbg!(fee);
+
+    todo!()
 }
