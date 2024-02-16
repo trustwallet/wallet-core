@@ -156,7 +156,7 @@ InputSelector<TypeWithAmount>::select(uint64_t targetValue, uint64_t byteFee, ui
         }
     }
 
-    // If couldn't find a combination of inputs to cover estimated transaction fee and the target amount,
+    // If we couldn't find a combination of inputs to cover estimated transaction fee and the target amount,
     // return the whole set of UTXOs. Later, the transaction fee will be calculated more accurately,
     // and these UTXOs can be enough.
     return sorted;
@@ -198,7 +198,7 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t 
         }
     }
 
-    // If couldn't find a combination of inputs to cover estimated transaction fee and the target amount,
+    // If we couldn't find a combination of inputs to cover estimated transaction fee and the target amount,
     // return the whole set of UTXOs. Later, the transaction fee will be calculated more accurately,
     // and these UTXOs can be enough.
     return selected;
