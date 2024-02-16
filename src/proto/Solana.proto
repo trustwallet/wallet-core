@@ -198,6 +198,10 @@ message SigningOutput {
 
     // The unsigned transaction
     string unsigned_tx = 4;
+
+    // The encoded message. Can be used to estimate a transaction fee required to execute the message.
+    // Please note that this is set only on `SolanaTransaction.updateBlockhashAndSign`, but no on `AnySigner.sign`.
+    string message_encoded = 5;
 }
 
 /// Transaction pre-signing output

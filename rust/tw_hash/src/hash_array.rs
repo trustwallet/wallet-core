@@ -198,6 +198,61 @@ mod impl_serde {
     }
 }
 
+#[cfg(feature = "serde")]
+pub mod as_byte_sequence {
+    use super::Hash;
+    use serde::de::{Error, SeqAccess, Visitor};
+    use serde::ser::SerializeTuple;
+    use serde::{Deserializer, Serializer};
+    use std::fmt;
+    use std::marker::PhantomData;
+
+    struct ByteArrayVisitor<const N: usize> {
+        _n: PhantomData<[u8; N]>,
+    }
+
+    impl<'de, const N: usize> Visitor<'de> for ByteArrayVisitor<N> {
+        type Value = Hash<N>;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("struct Hash<N>")
+        }
+
+        fn visit_seq<A>(self, mut seq: A) -> Result<Hash<N>, A::Error>
+        where
+            A: SeqAccess<'de>,
+        {
+            let mut result = Hash::<N>::default();
+            for i in 0..N {
+                result[i] = seq
+                    .next_element()?
+                    .ok_or_else(|| Error::invalid_length(i, &self))?;
+            }
+            Ok(result)
+        }
+    }
+
+    pub fn deserialize<'de, const N: usize, D>(deserializer: D) -> Result<Hash<N>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let visitor = ByteArrayVisitor::<N> { _n: PhantomData };
+        deserializer.deserialize_tuple(N, visitor)
+    }
+
+    pub fn serialize<const N: usize, S>(hash: &Hash<N>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut tup = serializer.serialize_tuple(N)?;
+        for el in hash.0 {
+            tup.serialize_element(&el)?;
+        }
+
+        tup.end()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

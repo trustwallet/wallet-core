@@ -2,6 +2,5 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-pub mod bitcoin;
-pub mod ethereum;
-pub mod solana;
+#[cfg(feature = "solana-transaction")]
+pub mod transaction;
