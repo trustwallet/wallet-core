@@ -2,8 +2,7 @@ use super::{Transaction, TransactionInput, TransactionOutput};
 use crate::{
     encode::compact_integer::CompactInteger,
     transaction::{
-        transaction_fee::TransactionFee,
-        transaction_interface::TransactionInterface,
+        transaction_fee::TransactionFee, transaction_interface::TransactionInterface,
         transaction_parts::Amount,
     },
 };

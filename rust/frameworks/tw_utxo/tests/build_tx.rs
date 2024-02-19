@@ -63,7 +63,7 @@ fn build_tx_input_legacy_output_legacy() {
         .p2pkh(sig, alice_pubkey)
         .unwrap();
 
-    let tx = computer.compile(vec![claim]).unwrap();
+    let tx = computer.compile(vec![claim]).unwrap().finalize();
 
     assert_eq!(tx.size(), 191);
     assert_eq!(tx.vsize(), 191); // No witness data
@@ -124,7 +124,7 @@ fn build_tx_input_legacy_output_segwit() {
         .p2pkh(sig, alice_pubkey)
         .unwrap();
 
-    let tx = computer.compile(vec![claim]).unwrap();
+    let tx = computer.compile(vec![claim]).unwrap().finalize();
 
     assert_eq!(tx.size(), 189);
     assert_eq!(tx.vsize(), 189); // No witness data
@@ -186,7 +186,7 @@ fn build_tx_input_segwit_output_segwit() {
         .p2wpkh(sig, bob_pubkey)
         .unwrap();
 
-    let tx = computer.compile(vec![claim]).unwrap();
+    let tx = computer.compile(vec![claim]).unwrap().finalize();
 
     assert_eq!(tx.size(), 191);
     assert_eq!(tx.vsize(), 110); // Witness data discounted

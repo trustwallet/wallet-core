@@ -6,7 +6,10 @@ use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
 use crate::script::{Script, Witness};
 use crate::sighash::SighashType;
 use crate::signing_mode::SigningMethod;
-use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
+use crate::transaction::transaction_fee::TransactionFee;
+use crate::transaction::transaction_interface::{
+    TransactionInterface, TxInputInterface, TxOutputInterface,
+};
 use crate::transaction::transaction_parts::Amount;
 use crate::transaction::{TransactionPreimage, UtxoPreimageArgs};
 use std::marker::PhantomData;
@@ -14,6 +17,7 @@ use tw_hash::hasher::Hasher;
 use tw_hash::H256;
 use tw_keypair::tw;
 use tw_memory::Data;
+use tw_proto::Utxo;
 
 const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 
@@ -176,7 +180,10 @@ where
     ///
     /// Consider using [`SighashComputer::verify_signatures`] before calling [`SighashComputer::compile`]
     /// if the signatures were computed externally.
-    pub fn compile(mut self, claims: Vec<SpendingData>) -> UtxoResult<Transaction> {
+    pub fn compile(
+        mut self,
+        claims: Vec<SpendingData>,
+    ) -> UtxoResult<ComputedTransaction<Transaction>> {
         // There should be the same number of UTXOs and their meta data.
         if self.args.utxos_to_sign.len() != self.transaction_to_sign.inputs().len() {
             return Err(UtxoError(UtxoErrorKind::Error_internal));
@@ -198,6 +205,115 @@ where
             utxo.set_witness(claim.witness);
         }
 
-        Ok(self.transaction_to_sign)
+        Ok(ComputedTransaction {
+            transaction_to_sign: self.transaction_to_sign,
+            args: self.args,
+            _phantom: PhantomData,
+        })
+    }
+}
+
+#[non_exhaustive]
+pub enum InputSelector {
+    Ascending,
+    Descending,
+    InOrder,
+}
+
+pub struct ComputedTransaction<Transaction> {
+    transaction_to_sign: Transaction,
+    args: TxSigningArgs,
+    _phantom: PhantomData<Transaction>,
+}
+
+impl<Transaction> ComputedTransaction<Transaction>
+where
+    Transaction: TransactionPreimage + TransactionInterface + TransactionFee,
+    Transaction::Output: TxOutputInterface,
+{
+    pub fn finalize(self) -> Transaction {
+        self.transaction_to_sign
+    }
+    pub fn select_inputs(
+        self,
+        selector: InputSelector,
+        fee_rate: Amount,
+    ) -> UtxoResult<(Transaction, Amount)> {
+        let total_out = self
+            .transaction_to_sign
+            .outputs()
+            .iter()
+            .map(|output| output.value())
+            .sum::<Amount>();
+
+        debug_assert_eq!(
+            self.args.utxos_to_sign.len(),
+            self.transaction_to_sign.inputs().len()
+        );
+
+        // We clone transaction so that the orginal remains unchanged in case we
+        // return an error early.
+        let mut tx = self.transaction_to_sign.clone();
+
+        // Prepare the available UTXOs.
+        let mut utxos: Vec<(Transaction::Input, UtxoToSign)> = tx
+            .inputs()
+            .into_iter()
+            .cloned()
+            .zip(self.args.utxos_to_sign.into_iter())
+            .collect::<Vec<_>>();
+
+        // Sort the UTXOs.
+        match selector {
+            InputSelector::InOrder => {
+                // Nothing to do.
+            },
+            InputSelector::Ascending => {
+                utxos.sort_by(|(_, a), (_, b)| a.amount.partial_cmp(&b.amount).unwrap());
+            },
+            InputSelector::Descending => {
+                utxos.sort_by(|(_, a), (_, b)| b.amount.partial_cmp(&a.amount).unwrap());
+            },
+        }
+
+        // Select the UTXOs to cover all the outputs and the fee.
+        let mut total_in = Amount::from(0);
+        let mut selected_utxo = Vec::with_capacity(utxos.len());
+
+        let mut total_covered = false;
+        for (input, arg) in utxos {
+            // Spending script MUST be set.
+            debug_assert!(input.has_witness() || input.has_script_sig());
+
+            // Update total input amount.
+            total_in += arg.amount;
+
+            // Track the selected UTXOs.
+            selected_utxo.push(input);
+
+            // Update the transaction with (all) the selected in UTXOs.
+            tx.replace_inputs(selected_utxo.clone());
+
+            // Check if the total input amount covers the total output amount
+            // and the fee.
+            if total_in >= total_out + tx.fee(fee_rate) {
+                // Update self with selected in UTXOs.
+                tx.replace_inputs(selected_utxo);
+
+                total_covered = true;
+                break;
+            }
+        }
+
+        if !total_covered {
+            // Insufficient funds.
+            todo!()
+        }
+
+        // Calculate the change.
+        let change = total_in - total_out - tx.fee(fee_rate);
+
+        // TODO: Should change be returned here?
+        Ok((tx, change))
     }
 }
