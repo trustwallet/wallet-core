@@ -88,16 +88,6 @@ impl InstructionBuilder {
             StakeInstructionBuilder::delegate(stake_addr, args.validator, args.sender),
         ])
     }
-
-    pub fn deactivate_stake(
-        stake_account: SolanaAddress,
-        sender: SolanaAddress,
-    ) -> SigningResult<Vec<Instruction>> {
-        Ok(vec![StakeInstructionBuilder::deactivate(
-            stake_account,
-            sender,
-        )])
-    }
 }
 
 fn append_references(account_metas: &mut Vec<AccountMeta>, references: Vec<SolanaAddress>) {

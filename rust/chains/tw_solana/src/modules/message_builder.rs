@@ -7,6 +7,7 @@ use crate::blockhash::Blockhash;
 use crate::instruction::Instruction;
 use crate::modules::compiled_instructions::compile_instructions;
 use crate::modules::compiled_keys::CompiledKeys;
+use crate::modules::instruction_builder::stake_instruction::StakeInstructionBuilder;
 use crate::modules::instruction_builder::{DepositStakeArgs, InstructionBuilder, TransferArgs};
 use crate::transaction::versioned::VersionedMessage;
 use crate::transaction::{legacy, v0};
@@ -89,6 +90,9 @@ impl<'a> MessageBuilder<'a> {
             ProtoTransactionType::deactivate_stake_transaction(ref deactivate) => {
                 self.deactivate_stake_from_proto(deactivate)
             },
+            ProtoTransactionType::deactivate_all_stake_transaction(ref deactivate_all) => {
+                self.deactivate_all_stake_from_proto(deactivate_all)
+            },
             _ => todo!(),
         }
     }
@@ -142,7 +146,25 @@ impl<'a> MessageBuilder<'a> {
     ) -> SigningResult<Vec<Instruction>> {
         let sender = self.signer_address()?;
         let stake_account = SolanaAddress::from_str(&deactivate.stake_account)?;
-        InstructionBuilder::deactivate_stake(stake_account, sender)
+        Ok(vec![StakeInstructionBuilder::deactivate(
+            stake_account,
+            sender,
+        )])
+    }
+
+    fn deactivate_all_stake_from_proto(
+        &self,
+        deactivate_all: &Proto::DeactivateAllStake,
+    ) -> SigningResult<Vec<Instruction>> {
+        let sender = self.signer_address()?;
+        deactivate_all
+            .stake_accounts
+            .iter()
+            .map(|stake_account| {
+                let stake_account = SolanaAddress::from_str(stake_account.as_ref())?;
+                Ok(StakeInstructionBuilder::deactivate(stake_account, sender))
+            })
+            .collect()
     }
 
     fn nonce_account(&self) -> SigningResult<Option<SolanaAddress>> {
