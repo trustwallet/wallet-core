@@ -2,7 +2,4 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-#[test]
-fn test_solana_compile() {
-    todo!()
-}
+pub mod stake_program;

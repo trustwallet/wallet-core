@@ -193,6 +193,11 @@ message RawMessage {
     }
 }
 
+enum Encoding {
+    Base58 = 0;
+    Base64 = 1;
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // The secret private key used for signing (32 bytes).
@@ -228,6 +233,8 @@ message SigningInput {
     string fee_payer = 18;
     // Optional message plan. For signing an already prepared message.
     RawMessage raw_message = 20;
+    // Output transaction encoding.
+    Encoding tx_encoding = 21;
 }
 
 // Result containing the signed and encoded transaction.
@@ -241,12 +248,9 @@ message SigningOutput {
     // error code description
     string error_message = 3;
 
-    // The unsigned transaction
-    string unsigned_tx = 4;
-
     // The encoded message. Can be used to estimate a transaction fee required to execute the message.
     // Please note that this is set only on `SolanaTransaction.updateBlockhashAndSign`, but no on `AnySigner.sign`.
-    string message_encoded = 5;
+    string unsigned_tx = 4;
 }
 
 /// Transaction pre-signing output

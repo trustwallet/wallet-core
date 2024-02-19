@@ -10,6 +10,8 @@ pub mod defined_addresses;
 pub mod entry;
 pub mod instruction;
 pub mod modules;
+pub mod blockhash;
+pub mod program;
 pub mod signer;
 pub mod transaction;
 

@@ -3,8 +3,11 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::SolanaAddress;
+use crate::blockhash::Blockhash;
 use crate::defined_addresses::*;
 use crate::instruction::{AccountMeta, Instruction};
+use crate::program::stake_program::StakeProgram;
+use tw_coin_entry::error::SigningResult;
 use tw_memory::Data;
 
 pub mod stake_instruction;
@@ -15,9 +18,92 @@ use stake_instruction::{Authorized, Lockup, StakeInstruction};
 use system_instruction::SystemInstruction;
 use token_instruction::TokenInstruction;
 
+pub struct TransferArgs {
+    pub from: SolanaAddress,
+    pub to: SolanaAddress,
+    pub lamports: u64,
+    pub recent_blockhash: Blockhash,
+    pub memo: String,
+    pub references: Vec<SolanaAddress>,
+    pub nonce_account: Option<SolanaAddress>,
+}
+
+pub struct DepositStakeArgs {
+    pub sender: SolanaAddress,
+    pub validator: SolanaAddress,
+    pub stake_account: Option<SolanaAddress>,
+    pub recent_blockhash: Blockhash,
+    pub lamports: u64,
+    pub space: u64,
+    pub owner_program_id: SolanaAddress,
+}
+
+pub struct InstructionBuilder;
+
+impl InstructionBuilder {
+    /// Builds all necessary instructions including optional nonce account advance and transfer memo.
+    pub fn transfer(args: TransferArgs) -> SigningResult<Vec<Instruction>> {
+        let mut instructions = Vec::default();
+        if let Some(nonce_account) = args.nonce_account {
+            instructions.push(SystemInstructionBuilder::advance_nonce_account(
+                nonce_account,
+                args.from,
+            ));
+        }
+
+        if !args.memo.is_empty() {
+            // Optional memo. Order: before transfer, as per documentation.
+            instructions.push(SystemInstructionBuilder::memo(&args.memo));
+        }
+
+        instructions.push(SystemInstructionBuilder::transfer(
+            args.from,
+            args.to,
+            args.lamports,
+            args.references,
+        ));
+        Ok(instructions)
+    }
+
+    pub fn deposit_stake(args: DepositStakeArgs) -> SigningResult<Vec<Instruction>> {
+        let stake_addr = args.stake_account.unwrap_or_else(|| {
+            // no stake address specified, generate a new unique
+            StakeProgram::address_from_recent_blockhash(args.sender, args.recent_blockhash)
+        });
+        let seed = args.recent_blockhash.to_string();
+
+        let authorized = Authorized {
+            staker: args.sender,
+            withdrawer: args.sender,
+        };
+        let lockup = Lockup::default();
+
+        Ok(vec![
+            SystemInstructionBuilder::account_with_seed(
+                args.sender,
+                stake_addr,
+                args.sender,
+                seed,
+                args.lamports,
+                args.space,
+                args.owner_program_id,
+            ),
+            StakeInstructionBuilder::stake_initialize(stake_addr, authorized, lockup),
+            StakeInstructionBuilder::delegate(stake_addr, args.validator, args.sender),
+        ])
+    }
+}
+
+// TODO move to system_instruction.rs
 pub struct SystemInstructionBuilder;
 
 impl SystemInstructionBuilder {
+    pub fn memo(memo: &str) -> Instruction {
+        let account_metas = Vec::default();
+        let data = memo.as_bytes().to_vec();
+        Instruction::new(*MEMO_PROGRAM_ID_ADDRESS, data, account_metas)
+    }
+
     pub fn create_account(
         from_pubkey: SolanaAddress,
         to_pubkey: SolanaAddress,
@@ -40,16 +126,17 @@ impl SystemInstructionBuilder {
         )
     }
 
-    // TODO add references
     pub fn transfer(
         from_pubkey: SolanaAddress,
         to_pubkey: SolanaAddress,
         lamports: u64,
+        references: Vec<SolanaAddress>,
     ) -> Instruction {
-        let account_metas = vec![
+        let mut account_metas = vec![
             AccountMeta::new(from_pubkey, true),
             AccountMeta::new(to_pubkey, false),
         ];
+        append_references(&mut account_metas, references);
         Instruction::new_with_bincode(
             *SYSTEM_PROGRAM_ID_ADDRESS,
             SystemInstruction::Transfer { lamports },

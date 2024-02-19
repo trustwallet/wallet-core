@@ -6,21 +6,22 @@ use crate::address::SolanaAddress;
 use crate::transaction::{versioned, Signature};
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_keypair::ed25519;
-use tw_keypair::traits::SigningKeyTrait;
+use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
 use tw_memory::Data;
 
 pub struct TxSigner;
 
 impl TxSigner {
     pub fn sign_versioned(
-        mut tx: versioned::VersionedTransaction,
-        keys: &[ed25519::sha512::PrivateKey],
+        unsigned_msg: versioned::VersionedMessage,
+        keys: &[ed25519::sha512::KeyPair],
     ) -> SigningResult<versioned::VersionedTransaction> {
+        let mut tx = versioned::VersionedTransaction::unsigned(unsigned_msg);
+
         if keys.len() != tx.message.num_required_signatures() {
             return Err(SigningError(SigningErrorType::Error_signatures_count));
         }
 
-        tx.zeroize_signatures();
         let message_data = bincode::serialize(&tx.message)
             .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?;
 
@@ -44,8 +45,7 @@ impl TxSigner {
         Ok(tx)
     }
 
-    pub fn preimage_versioned(tx: &versioned::VersionedTransaction) -> SigningResult<Data> {
-        bincode::serialize(&tx.message)
-            .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))
+    pub fn preimage_versioned(msg: &versioned::VersionedMessage) -> SigningResult<Data> {
+        bincode::serialize(&msg).map_err(|_| SigningError(SigningErrorType::Error_invalid_params))
     }
 }

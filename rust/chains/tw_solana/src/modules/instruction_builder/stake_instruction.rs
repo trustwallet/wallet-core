@@ -14,7 +14,7 @@ pub struct Authorized {
     pub withdrawer: SolanaAddress,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
+#[derive(Serialize, Deserialize, Debug, Default, PartialEq, Eq, Clone)]
 pub struct Lockup {
     /// UnixTimestamp at which this stake will allow withdrawal, unless the
     /// transaction is signed by the custodian

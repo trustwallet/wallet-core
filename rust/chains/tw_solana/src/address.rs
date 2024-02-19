@@ -11,10 +11,10 @@ use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_encoding::base58;
 use tw_hash::{as_byte_sequence, H256};
-use tw_keypair::tw;
+use tw_keypair::{ed25519, tw};
 use tw_memory::Data;
 
-#[derive(Clone, Copy, Default, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Default, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct SolanaAddress {
     bytes: H256,
 }
@@ -26,6 +26,12 @@ impl SolanaAddress {
             .ok_or(AddressError::PublicKeyTypeMismatch)?
             .to_bytes();
         Ok(SolanaAddress { bytes })
+    }
+
+    pub fn with_public_key_ed25519(public_key: &ed25519::sha512::PublicKey) -> SolanaAddress {
+        SolanaAddress {
+            bytes: public_key.to_bytes(),
+        }
     }
 
     pub fn with_public_key_bytes(bytes: H256) -> SolanaAddress {
