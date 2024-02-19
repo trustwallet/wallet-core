@@ -4,7 +4,6 @@
 
 use crate::address::SolanaAddress;
 use crate::blockhash::Blockhash;
-use crate::defined_addresses::STAKE_PROGRAM_ID_ADDRESS;
 use crate::instruction::Instruction;
 use crate::modules::compiled_instructions::compile_instructions;
 use crate::modules::compiled_keys::CompiledKeys;
@@ -131,7 +130,6 @@ impl<'a> MessageBuilder<'a> {
             recent_blockhash: self.recent_blockhash()?,
             lamports: delegate.value,
             space: DEFAULT_SPACE,
-            owner_program_id: *STAKE_PROGRAM_ID_ADDRESS,
         })
     }
 

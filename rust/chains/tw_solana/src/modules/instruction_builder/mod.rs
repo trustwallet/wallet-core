@@ -33,7 +33,6 @@ pub struct DepositStakeArgs {
     pub recent_blockhash: Blockhash,
     pub lamports: u64,
     pub space: u64,
-    pub owner_program_id: SolanaAddress,
 }
 
 pub struct InstructionBuilder;
@@ -84,7 +83,6 @@ impl InstructionBuilder {
                 seed,
                 args.lamports,
                 args.space,
-                args.owner_program_id,
             ),
             StakeInstructionBuilder::stake_initialize(stake_addr, authorized, lockup),
             StakeInstructionBuilder::delegate(stake_addr, args.validator, args.sender),

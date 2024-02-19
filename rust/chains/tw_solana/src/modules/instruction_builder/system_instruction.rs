@@ -239,7 +239,6 @@ impl SystemInstructionBuilder {
         seed: String,
         lamports: u64,
         space: u64,
-        owner: SolanaAddress,
     ) -> Instruction {
         let account_metas = vec![
             AccountMeta::new(from_pubkey, true),
@@ -254,7 +253,7 @@ impl SystemInstructionBuilder {
                 seed,
                 lamports,
                 space,
-                owner,
+                owner: *STAKE_PROGRAM_ID_ADDRESS,
             },
             account_metas,
         )

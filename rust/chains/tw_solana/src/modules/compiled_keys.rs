@@ -43,8 +43,11 @@ impl CompiledKeys {
 
         // add programIds (read-only, at end)
         for ix in instructions {
-            key_meta_map.entry(ix.program_id).or_default();
-            ordered_keys.push(ix.program_id);
+            let meta_entry = key_meta_map.entry(ix.program_id);
+            if matches!(meta_entry, Entry::Vacant(_)) {
+                ordered_keys.push(ix.program_id);
+            }
+            meta_entry.or_default();
         }
 
         Self {
@@ -97,7 +100,7 @@ impl CompiledKeys {
             num_readonly_unsigned_accounts: try_into_u8(readonly_non_signer_keys.len())?,
         };
 
-        let static_account_keys = std::iter::empty()
+        let static_account_keys: Vec<_> = std::iter::empty()
             .chain(writable_signer_keys)
             .chain(readonly_signer_keys)
             .chain(writable_non_signer_keys)
