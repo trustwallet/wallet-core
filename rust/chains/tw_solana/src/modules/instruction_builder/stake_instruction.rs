@@ -339,4 +339,23 @@ impl StakeInstructionBuilder {
             account_metas,
         )
     }
+
+    /// 0. `[WRITE]` Delegated stake account
+    /// 1. `[]` Clock sysvar
+    /// 2. `[SIGNER]` Stake authority
+    pub fn deactivate(
+        stake_pubkey: SolanaAddress,
+        authorized_pubkey: SolanaAddress,
+    ) -> Instruction {
+        let account_metas = vec![
+            AccountMeta::new(stake_pubkey, false),
+            AccountMeta::readonly(*SYSVAR_CLOCK_ID_ADDRESS, false),
+            AccountMeta::new(authorized_pubkey, true),
+        ];
+        Instruction::new_with_bincode(
+            *STAKE_PROGRAM_ID_ADDRESS,
+            StakeInstruction::Deactivate,
+            account_metas,
+        )
+    }
 }

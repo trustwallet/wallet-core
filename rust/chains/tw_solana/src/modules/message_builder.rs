@@ -86,6 +86,9 @@ impl<'a> MessageBuilder<'a> {
             ProtoTransactionType::delegate_stake_transaction(ref delegate) => {
                 self.delegate_stake_from_proto(delegate)
             },
+            ProtoTransactionType::deactivate_stake_transaction(ref deactivate) => {
+                self.deactivate_stake_from_proto(deactivate)
+            },
             _ => todo!(),
         }
     }
@@ -131,6 +134,15 @@ impl<'a> MessageBuilder<'a> {
             lamports: delegate.value,
             space: DEFAULT_SPACE,
         })
+    }
+
+    fn deactivate_stake_from_proto(
+        &self,
+        deactivate: &Proto::DeactivateStake,
+    ) -> SigningResult<Vec<Instruction>> {
+        let sender = self.signer_address()?;
+        let stake_account = SolanaAddress::from_str(&deactivate.stake_account)?;
+        InstructionBuilder::deactivate_stake(stake_account, sender)
     }
 
     fn nonce_account(&self) -> SigningResult<Option<SolanaAddress>> {
