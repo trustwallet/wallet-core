@@ -2,46 +2,53 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-//! Source: https://github.com/solana-labs/solana/blob/4b65cc8eef6ef79cb9b9cbc534a99b4900e58cf7/sdk/program/src/message/compiled_keys.rs
+//! Original source code: https://github.com/solana-labs/solana/blob/4b65cc8eef6ef79cb9b9cbc534a99b4900e58cf7/sdk/program/src/message/compiled_keys.rs
 
 use crate::address::SolanaAddress;
 use crate::instruction::Instruction;
 use crate::transaction::MessageHeader;
-use std::collections::BTreeMap;
+use std::collections::hash_map::Entry;
+use std::collections::HashMap;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 
-#[derive(Default, Debug, Clone, PartialEq, Eq)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 struct CompiledKeyMeta {
     is_signer: bool,
     is_writable: bool,
-    is_invoked: bool,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Eq)]
 pub(crate) struct CompiledKeys {
-    payer: Option<SolanaAddress>,
-    key_meta_map: BTreeMap<SolanaAddress, CompiledKeyMeta>,
+    ordered_keys: Vec<SolanaAddress>,
+    key_meta_map: HashMap<SolanaAddress, CompiledKeyMeta>,
 }
 
 impl CompiledKeys {
-    pub(crate) fn compile(instructions: &[Instruction], payer: Option<SolanaAddress>) -> Self {
-        let mut key_meta_map = BTreeMap::<SolanaAddress, CompiledKeyMeta>::new();
+    pub fn compile(instructions: &[Instruction]) -> Self {
+        let mut key_meta_map = HashMap::<SolanaAddress, CompiledKeyMeta>::new();
+        let mut ordered_keys = Vec::default();
+
         for ix in instructions {
-            let meta = key_meta_map.entry(ix.program_id).or_default();
-            meta.is_invoked = true;
             for account_meta in &ix.accounts {
-                let meta = key_meta_map.entry(account_meta.pubkey).or_default();
+                let meta_entry = key_meta_map.entry(account_meta.pubkey);
+                if matches!(meta_entry, Entry::Vacant(_)) {
+                    ordered_keys.push(account_meta.pubkey);
+                }
+
+                let meta = meta_entry.or_default();
                 meta.is_signer |= account_meta.is_signer;
                 meta.is_writable |= account_meta.is_writable;
             }
         }
-        if let Some(payer) = &payer {
-            let meta = key_meta_map.entry(*payer).or_default();
-            meta.is_signer = true;
-            meta.is_writable = true;
+
+        // add programIds (read-only, at end)
+        for ix in instructions {
+            key_meta_map.entry(ix.program_id).or_default();
+            ordered_keys.push(ix.program_id);
         }
+
         Self {
-            payer,
+            ordered_keys,
             key_meta_map,
         }
     }
@@ -54,33 +61,30 @@ impl CompiledKeys {
         };
 
         let Self {
-            payer,
-            mut key_meta_map,
+            ordered_keys,
+            key_meta_map,
         } = self;
 
-        if let Some(payer) = &payer {
-            key_meta_map.remove_entry(payer);
-        }
+        let filter = |account, is_signer: bool, is_writable: bool| -> Option<SolanaAddress> {
+            let meta = key_meta_map.get(account).copied().unwrap_or_default();
+            (meta.is_signer == is_signer && meta.is_writable == is_writable).then_some(*account)
+        };
 
-        let writable_signer_keys: Vec<SolanaAddress> = payer
-            .into_iter()
-            .chain(
-                key_meta_map
-                    .iter()
-                    .filter_map(|(key, meta)| (meta.is_signer && meta.is_writable).then_some(*key)),
-            )
-            .collect();
-        let readonly_signer_keys: Vec<SolanaAddress> = key_meta_map
+        let writable_signer_keys: Vec<SolanaAddress> = ordered_keys
             .iter()
-            .filter_map(|(key, meta)| (meta.is_signer && !meta.is_writable).then_some(*key))
+            .filter_map(|key| filter(key, true, true))
             .collect();
-        let writable_non_signer_keys: Vec<SolanaAddress> = key_meta_map
+        let readonly_signer_keys: Vec<SolanaAddress> = ordered_keys
             .iter()
-            .filter_map(|(key, meta)| (!meta.is_signer && meta.is_writable).then_some(*key))
+            .filter_map(|key| filter(key, true, false))
             .collect();
-        let readonly_non_signer_keys: Vec<SolanaAddress> = key_meta_map
+        let writable_non_signer_keys: Vec<SolanaAddress> = ordered_keys
             .iter()
-            .filter_map(|(key, meta)| (!meta.is_signer && !meta.is_writable).then_some(*key))
+            .filter_map(|key| filter(key, false, true))
+            .collect();
+        let readonly_non_signer_keys: Vec<SolanaAddress> = ordered_keys
+            .iter()
+            .filter_map(|key| filter(key, false, false))
             .collect();
 
         let signers_len = writable_signer_keys

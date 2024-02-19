@@ -14,7 +14,7 @@ use tw_hash::{as_byte_sequence, H256};
 use tw_keypair::{ed25519, tw};
 use tw_memory::Data;
 
-#[derive(Clone, Copy, Default, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct SolanaAddress {
     bytes: H256,
 }
@@ -64,6 +64,12 @@ impl FromStr for SolanaAddress {
 impl From<&'static str> for SolanaAddress {
     fn from(s: &'static str) -> Self {
         SolanaAddress::from_str(s).unwrap()
+    }
+}
+
+impl fmt::Debug for SolanaAddress {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self)
     }
 }
 

@@ -53,11 +53,10 @@ impl<'a> MessageBuilder<'a> {
     }
 
     pub fn build(self) -> SigningResult<VersionedMessage> {
-        let signer = self.signer_address()?;
         let instructions = self.build_instructions()?;
 
         let (message_header, account_keys) =
-            CompiledKeys::compile(&instructions, Some(signer)).try_into_message_components()?;
+            CompiledKeys::compile(&instructions).try_into_message_components()?;
 
         let compiled_instructions = compile_instructions(&instructions, &account_keys)?;
 
