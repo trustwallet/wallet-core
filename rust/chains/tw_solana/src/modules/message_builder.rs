@@ -96,6 +96,9 @@ impl<'a> MessageBuilder<'a> {
             ProtoTransactionType::withdraw_transaction(ref withdraw) => {
                 self.withdraw_from_proto(withdraw)
             },
+            ProtoTransactionType::withdraw_all_transaction(ref withdraw_all) => {
+                self.withdraw_all_from_proto(withdraw_all)
+            },
             _ => todo!(),
         }
     }
@@ -184,6 +187,28 @@ impl<'a> MessageBuilder<'a> {
             withdraw.value,
             custodian_account,
         )])
+    }
+
+    fn withdraw_all_from_proto(
+        &self,
+        withdraw_all: &Proto::WithdrawAllStake,
+    ) -> SigningResult<Vec<Instruction>> {
+        let sender = self.signer_address()?;
+        withdraw_all
+            .stake_accounts
+            .iter()
+            .map(|withdraw| {
+                let stake_account = SolanaAddress::from_str(withdraw.stake_account.as_ref())?;
+                let custodian_account = None;
+                Ok(StakeInstructionBuilder::withdraw(
+                    stake_account,
+                    sender,
+                    sender,
+                    withdraw.value,
+                    custodian_account,
+                ))
+            })
+            .collect()
     }
 
     fn nonce_account(&self) -> SigningResult<Option<SolanaAddress>> {
