@@ -35,6 +35,7 @@ pub struct DepositStakeArgs {
     pub space: u64,
 }
 
+/// Consists of complex instruction builders.
 pub struct InstructionBuilder;
 
 impl InstructionBuilder {
