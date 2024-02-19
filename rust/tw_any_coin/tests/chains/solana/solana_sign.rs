@@ -243,3 +243,24 @@ fn test_solana_sign_withdraw_all_stake() {
     assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded, "cvBNusjtHkR74EfWsvFPEe2Mydcr7eoLeY2wJw2ZMZYViotbb63Adai7UD1PW9uLusoVHGLeJC5cPgVBC4F693P9tPAxLs9yiZj1ZJQ4DgnYbeXafqzjdWje1Ly5FgpDUJaaU2RnLCG51CcrmiTJ4KB5fwai6egZaNjbiqo1DEC1wJz4FgKug2aKQWLdeCiH9WhCuvqfhNV6mEE4qRCkU8uS2gfSqBd1AdrczvoDEbKQszosrwmawxqmvTE5EWaFzMb48x9nLqxvpQCvGQu1nX6FxZJjv2swekA7wGLEAA4uSdFLTHNrYSi8pn8hVYGwESEzth9oiPkJCvW7Y2KvGALeERUZn8knHiz2eqaaT72Ajp9UogMdZtiuFHufveLXpBLWUERchhB7eU1magYcPNHcZuEE4uQv5kZJhHAqYCGU6dyUFLVA9Edus7o6fTktYVCjoGb");
 }
+
+#[test]
+fn test_solana_sign_create_token_account() {
+    let create_token_acc = Proto::CreateTokenAccount {
+        main_address: "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V".into(),
+        token_mint_address: "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt".into(),
+        token_address: "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP".into(),
+    };
+    let input = Proto::SigningInput {
+        private_key: b58("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"),
+        recent_blockhash: "9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K".into(),
+        transaction_type: TransactionType::create_token_account_transaction(create_token_acc),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    assert_eq!(output.encoded, "CKzRLx3AQeVeLQ7T4hss2rdbUpuAHdbwXDazxtRnSKBuncCk3WnYgy7XTrEiya19MJviYHYdTxi9gmWJY8qnR2vHVnH2DbPiKA8g72rD3VvMnjosGUBBvCwbBLge6FeQdgczMyRo9n5PcHvg9yJBTJaEEvuewyBVHwCGyGQci7eYd26xtZtCjAjwcTq4gGr3NZbeRW6jZp6j6APuew7jys4MKYRV4xPodua1TZFCkyWZr1XKzmPh7KTavtN5VzPDA8rbsvoEjHnKzjB2Bszs6pDjcBFSHyQqGsHoF8XPD35BLfjDghNtBmf9cFqo5axa6oSjANAuYg6cMSP4Hy28waSj8isr6gQjE315hWi3W1swwwPcn322gYZx6aMAcmjczaxX9aktpHYgZxixF7cYWEHxJs5QUK9mJePu9Xc6yW75UB4Ynx6dUgaSTEUzoQthF2TN3xXwu1");
+}

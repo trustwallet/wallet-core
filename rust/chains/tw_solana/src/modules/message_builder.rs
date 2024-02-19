@@ -8,6 +8,8 @@ use crate::instruction::Instruction;
 use crate::modules::compiled_instructions::compile_instructions;
 use crate::modules::compiled_keys::CompiledKeys;
 use crate::modules::instruction_builder::stake_instruction::StakeInstructionBuilder;
+use crate::modules::instruction_builder::system_instruction::SystemInstructionBuilder;
+use crate::modules::instruction_builder::token_instruction::TokenInstructionBuilder;
 use crate::modules::instruction_builder::{DepositStakeArgs, InstructionBuilder, TransferArgs};
 use crate::transaction::versioned::VersionedMessage;
 use crate::transaction::{legacy, v0};
@@ -99,6 +101,9 @@ impl<'a> MessageBuilder<'a> {
             ProtoTransactionType::withdraw_all_transaction(ref withdraw_all) => {
                 self.withdraw_all_from_proto(withdraw_all)
             },
+            ProtoTransactionType::create_token_account_transaction(ref create_token_acc) => {
+                self.create_token_account_from_proto(create_token_acc)
+            },
             _ => todo!(),
         }
     }
@@ -111,15 +116,15 @@ impl<'a> MessageBuilder<'a> {
         let to = SolanaAddress::from_str(&transfer.recipient)?;
         let references = Self::parse_references(&transfer.references)?;
 
-        InstructionBuilder::transfer(TransferArgs {
+        let instructions = InstructionBuilder::transfer(TransferArgs {
             from,
             to,
             lamports: transfer.value,
             recent_blockhash: self.recent_blockhash()?,
             memo: transfer.memo.to_string(),
             references,
-            nonce_account: self.nonce_account()?,
-        })
+        })?;
+        self.add_nonce_advance_if_necessary(instructions)
     }
 
     fn delegate_stake_from_proto(
@@ -209,6 +214,42 @@ impl<'a> MessageBuilder<'a> {
                 ))
             })
             .collect()
+    }
+
+    fn create_token_account_from_proto(
+        &self,
+        create_token_acc: &Proto::CreateTokenAccount,
+    ) -> SigningResult<Vec<Instruction>> {
+        let funding_account = self.signer_address()?;
+        let other_main_address = SolanaAddress::from_str(create_token_acc.main_address.as_ref())?;
+        let token_mint_address =
+            SolanaAddress::from_str(create_token_acc.token_mint_address.as_ref())?;
+        let token_address = SolanaAddress::from_str(create_token_acc.token_address.as_ref())?;
+
+        let instruction = TokenInstructionBuilder::create_account(
+            funding_account,
+            other_main_address,
+            token_mint_address,
+            token_address,
+        );
+        self.add_nonce_advance_if_necessary(std::iter::once(instruction))
+    }
+
+    fn add_nonce_advance_if_necessary<I>(&self, instructions: I) -> SigningResult<Vec<Instruction>>
+    where
+        I: IntoIterator<Item = Instruction>,
+    {
+        if let Some(nonce_account) = self.nonce_account()? {
+            let advance_instruction = SystemInstructionBuilder::advance_nonce_account(
+                nonce_account,
+                self.signer_address()?,
+            );
+            Ok(std::iter::once(advance_instruction)
+                .chain(instructions)
+                .collect())
+        } else {
+            Ok(instructions.into_iter().collect())
+        }
     }
 
     fn nonce_account(&self) -> SigningResult<Option<SolanaAddress>> {

@@ -23,7 +23,6 @@ pub struct TransferArgs {
     pub recent_blockhash: Blockhash,
     pub memo: String,
     pub references: Vec<SolanaAddress>,
-    pub nonce_account: Option<SolanaAddress>,
 }
 
 pub struct DepositStakeArgs {
@@ -42,12 +41,6 @@ impl InstructionBuilder {
     /// Builds all necessary instructions including optional nonce account advance and transfer memo.
     pub fn transfer(args: TransferArgs) -> SigningResult<Vec<Instruction>> {
         let mut instructions = Vec::default();
-        if let Some(nonce_account) = args.nonce_account {
-            instructions.push(SystemInstructionBuilder::advance_nonce_account(
-                nonce_account,
-                args.from,
-            ));
-        }
 
         if !args.memo.is_empty() {
             // Optional memo. Order: before transfer, as per documentation.
