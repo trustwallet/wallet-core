@@ -3,7 +3,11 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::SolanaAddress;
+use crate::defined_addresses::*;
+use crate::instruction::{AccountMeta, Instruction};
+use crate::modules::instruction_builder::append_references;
 use serde::{Deserialize, Serialize};
+use tw_memory::Data;
 
 /// Specifies the authority type for SetAuthority instructions
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
@@ -437,4 +441,52 @@ pub enum TokenInstruction {
     /// Data expected by this instruction:
     ///   None
     InitializeImmutableOwner,
+}
+
+pub struct TokenInstructionBuilder;
+
+impl TokenInstructionBuilder {
+    // `create_associated_token_account()` solana-program-library/associated-token-account/program/src/lib.rs
+    pub fn create_account(
+        funding_pubkey: SolanaAddress,
+        other_main_pubkey: SolanaAddress,
+        token_mint_pubkey: SolanaAddress,
+        token_pubkey: SolanaAddress,
+    ) -> Instruction {
+        let account_metas = vec![
+            AccountMeta::new(funding_pubkey, true),
+            AccountMeta::new(token_pubkey, false),
+            AccountMeta::readonly(other_main_pubkey, false),
+            AccountMeta::readonly(token_mint_pubkey, false),
+            AccountMeta::readonly(*SYSTEM_PROGRAM_ID_ADDRESS, false),
+            AccountMeta::readonly(*TOKEN_PROGRAM_ID_ADDRESS, false),
+            AccountMeta::readonly(*SYSVAR_RENT_ID_ADDRESS, false),
+        ];
+        let data = Data::default();
+        Instruction::new(*ASSOCIATED_TOKEN_PROGRAM_ID_ADDRESS, data, account_metas)
+    }
+
+    /// transfer_checked() solana-program-library/token/program/src/instruction.rs
+    pub fn transfer_checked(
+        sender_token_pubkey: SolanaAddress,
+        token_mint_pubkey: SolanaAddress,
+        recipient_token_pubkey: SolanaAddress,
+        signer: SolanaAddress,
+        amount: u64,
+        decimals: u8,
+        references: Vec<SolanaAddress>,
+    ) -> Instruction {
+        let mut account_metas = vec![
+            AccountMeta::new(sender_token_pubkey, false),
+            AccountMeta::readonly(token_mint_pubkey, false),
+            AccountMeta::new(recipient_token_pubkey, false),
+            AccountMeta::new(signer, true),
+        ];
+        append_references(&mut account_metas, references);
+        Instruction::new_with_bincode(
+            *TOKEN_PROGRAM_ID_ADDRESS,
+            TokenInstruction::TransferChecked { amount, decimals },
+            account_metas,
+        )
+    }
 }

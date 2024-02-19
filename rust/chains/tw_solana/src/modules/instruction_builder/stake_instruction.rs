@@ -3,6 +3,8 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::SolanaAddress;
+use crate::defined_addresses::*;
+use crate::instruction::{AccountMeta, Instruction};
 use serde::{Deserialize, Serialize};
 
 type UnixTimestamp = i64;
@@ -271,4 +273,70 @@ pub enum StakeInstruction {
     ///   4. `[SIGNER]` Stake authority
     ///
     Redelegate,
+}
+
+pub struct StakeInstructionBuilder;
+
+impl StakeInstructionBuilder {
+    /// Creates an Initialize Stake instruction.
+    pub fn stake_initialize(
+        stake_pubkey: SolanaAddress,
+        authorized: Authorized,
+        lockup: Lockup,
+    ) -> Instruction {
+        Instruction::new_with_bincode(
+            *STAKE_PROGRAM_ID_ADDRESS,
+            StakeInstruction::Initialize(authorized, lockup),
+            vec![
+                AccountMeta::new(stake_pubkey, false),
+                AccountMeta::readonly(*SYSVAR_RENT_ID_ADDRESS, false),
+            ],
+        )
+    }
+
+    pub fn withdraw(
+        stake_pubkey: SolanaAddress,
+        withdrawer_pubkey: SolanaAddress,
+        to_pubkey: SolanaAddress,
+        lamports: u64,
+        custodian_pubkey: Option<SolanaAddress>,
+    ) -> Instruction {
+        let mut account_metas = vec![
+            AccountMeta::new(stake_pubkey, false),
+            AccountMeta::new(to_pubkey, false),
+            AccountMeta::readonly(*SYSVAR_CLOCK_ID_ADDRESS, false),
+            AccountMeta::readonly(*SYSVAR_STAKE_HISTORY_ID_ADDRESS, false),
+            AccountMeta::readonly(withdrawer_pubkey, true),
+        ];
+
+        if let Some(custodian_pubkey) = custodian_pubkey {
+            account_metas.push(AccountMeta::readonly(custodian_pubkey, true));
+        }
+
+        Instruction::new_with_bincode(
+            *STAKE_PROGRAM_ID_ADDRESS,
+            StakeInstruction::Withdraw(lamports),
+            account_metas,
+        )
+    }
+
+    pub fn delegate(
+        stake_pubkey: SolanaAddress,
+        vote_pubkey: SolanaAddress,
+        authorized_pubkey: SolanaAddress,
+    ) -> Instruction {
+        let account_metas = vec![
+            AccountMeta::new(stake_pubkey, false),
+            AccountMeta::readonly(vote_pubkey, false),
+            AccountMeta::readonly(*SYSVAR_CLOCK_ID_ADDRESS, false),
+            AccountMeta::readonly(*SYSVAR_STAKE_HISTORY_ID_ADDRESS, false),
+            AccountMeta::readonly(*STAKE_CONFIG_ID_ADDRESS, false),
+            AccountMeta::readonly(authorized_pubkey, true),
+        ];
+        Instruction::new_with_bincode(
+            *STAKE_PROGRAM_ID_ADDRESS,
+            StakeInstruction::DelegateStake,
+            account_metas,
+        )
+    }
 }

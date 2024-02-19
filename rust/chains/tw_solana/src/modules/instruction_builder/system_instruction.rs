@@ -3,6 +3,9 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::SolanaAddress;
+use crate::defined_addresses::*;
+use crate::instruction::{AccountMeta, Instruction};
+use crate::modules::instruction_builder::append_references;
 use serde::{Deserialize, Serialize};
 
 /// An instruction to the system program.
@@ -177,4 +180,142 @@ pub enum SystemInstruction {
     /// # Account references
     ///   0. `[WRITE]` Nonce account
     UpgradeNonceAccount,
+}
+
+pub struct SystemInstructionBuilder;
+
+impl SystemInstructionBuilder {
+    pub fn memo(memo: &str) -> Instruction {
+        let account_metas = Vec::default();
+        let data = memo.as_bytes().to_vec();
+        Instruction::new(*MEMO_PROGRAM_ID_ADDRESS, data, account_metas)
+    }
+
+    pub fn create_account(
+        from_pubkey: SolanaAddress,
+        to_pubkey: SolanaAddress,
+        lamports: u64,
+        space: u64,
+        owner: SolanaAddress,
+    ) -> Instruction {
+        let account_metas = vec![
+            AccountMeta::new(from_pubkey, true),
+            AccountMeta::new(to_pubkey, true),
+        ];
+        Instruction::new_with_bincode(
+            *SYSTEM_PROGRAM_ID_ADDRESS,
+            SystemInstruction::CreateAccount {
+                lamports,
+                space,
+                owner,
+            },
+            account_metas,
+        )
+    }
+
+    pub fn transfer(
+        from_pubkey: SolanaAddress,
+        to_pubkey: SolanaAddress,
+        lamports: u64,
+        references: Vec<SolanaAddress>,
+    ) -> Instruction {
+        let mut account_metas = vec![
+            AccountMeta::new(from_pubkey, true),
+            AccountMeta::new(to_pubkey, false),
+        ];
+        append_references(&mut account_metas, references);
+        Instruction::new_with_bincode(
+            *SYSTEM_PROGRAM_ID_ADDRESS,
+            SystemInstruction::Transfer { lamports },
+            account_metas,
+        )
+    }
+
+    /// Please note `to_pubkey` must match `create_with_seed(base, seed, owner)`.
+    pub fn account_with_seed(
+        from_pubkey: SolanaAddress,
+        to_pubkey: SolanaAddress,
+        base: SolanaAddress,
+        seed: String,
+        lamports: u64,
+        space: u64,
+        owner: SolanaAddress,
+    ) -> Instruction {
+        let account_metas = vec![
+            AccountMeta::new(from_pubkey, true),
+            AccountMeta::new(to_pubkey, false),
+            AccountMeta::readonly(base, true),
+        ];
+
+        Instruction::new_with_bincode(
+            *SYSTEM_PROGRAM_ID_ADDRESS,
+            SystemInstruction::CreateAccountWithSeed {
+                base,
+                seed,
+                lamports,
+                space,
+                owner,
+            },
+            account_metas,
+        )
+    }
+
+    /// Advance the value of a durable transaction nonce.
+    ///
+    /// # Required signers
+    ///
+    /// The `authorized_pubkey` signer must sign the transaction.
+    pub fn advance_nonce_account(
+        nonce_pubkey: SolanaAddress,
+        authorized_pubkey: SolanaAddress,
+    ) -> Instruction {
+        let account_metas = vec![
+            AccountMeta::new(nonce_pubkey, false),
+            AccountMeta::readonly(*SYSVAR_RECENT_BLOCKHASHS_ADDRESS, false),
+            AccountMeta::readonly(authorized_pubkey, true),
+        ];
+        Instruction::new_with_bincode(
+            *SYSTEM_PROGRAM_ID_ADDRESS,
+            SystemInstruction::AdvanceNonceAccount,
+            account_metas,
+        )
+    }
+
+    /// Create an account containing a durable transaction nonce.
+    pub fn init_nonce_account(
+        nonce_pubkey: SolanaAddress,
+        authority: SolanaAddress,
+    ) -> Instruction {
+        let account_metas = vec![
+            AccountMeta::new(nonce_pubkey, false),
+            AccountMeta::readonly(*SYSVAR_RECENT_BLOCKHASHS_ADDRESS, false),
+            AccountMeta::readonly(*SYSVAR_RENT_ID_ADDRESS, false),
+        ];
+        Instruction::new_with_bincode(
+            *SYSTEM_PROGRAM_ID_ADDRESS,
+            SystemInstruction::InitializeNonceAccount(authority),
+            account_metas,
+        )
+    }
+
+    /// Withdraw lamports from a durable transaction nonce account.
+    pub fn withdraw_nonce_account(
+        nonce_pubkey: SolanaAddress,
+        authorized_pubkey: SolanaAddress,
+        to_pubkey: SolanaAddress,
+        lamports: u64,
+    ) -> Instruction {
+        let account_metas = vec![
+            AccountMeta::new(nonce_pubkey, false),
+            AccountMeta::new(to_pubkey, false),
+            AccountMeta::readonly(*SYSVAR_RECENT_BLOCKHASHS_ADDRESS, false),
+            AccountMeta::readonly(*SYSVAR_RENT_ID_ADDRESS, false),
+            AccountMeta::readonly(authorized_pubkey, true),
+        ];
+        Instruction::new_with_bincode(
+            *SYSTEM_PROGRAM_ID_ADDRESS,
+            SystemInstruction::WithdrawNonceAccount(lamports),
+            account_metas,
+        )
+    }
 }
