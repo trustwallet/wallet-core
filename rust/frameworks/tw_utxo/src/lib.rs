@@ -14,6 +14,7 @@ pub mod sighash;
 pub mod sighash_computer;
 pub mod signing_mode;
 pub mod transaction;
+pub mod utxo_selector;
 
 pub type Result<T> = std::result::Result<T, Error>;
 

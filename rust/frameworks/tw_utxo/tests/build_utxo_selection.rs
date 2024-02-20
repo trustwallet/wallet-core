@@ -7,12 +7,13 @@ use tw_keypair::traits::SigningKeyTrait;
 use tw_keypair::tw::{PublicKey, PublicKeyType};
 use tw_utxo::sighash::SighashBase;
 use tw_utxo::sighash::SighashType;
-use tw_utxo::sighash_computer::{InputSelector, SighashComputer};
+use tw_utxo::sighash_computer::SighashComputer;
 use tw_utxo::transaction::standard_transaction::builder::OutputBuilder;
 use tw_utxo::transaction::standard_transaction::builder::SpendingScriptBuilder;
 use tw_utxo::transaction::standard_transaction::builder::TransactionBuilder;
 use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
 use tw_utxo::transaction::transaction_fee::TransactionFee;
+use tw_utxo::utxo_selector::{InputSelector, SelectionBuilder};
 
 const SATS_PER_VBYTE: i64 = 2;
 
@@ -88,21 +89,16 @@ fn build_tx_input_selection() {
         dummy_claims.push(claim);
     }
 
-    let computer = SighashComputer::new(tx, args);
-
-    // Select the inputs and build the transaction.
-    let computed = computer
-        .input_selector(dummy_claims)
+    // Select the inputs and build the final transaction which includes the
+    // change amount.
+    let (tx, args) = SelectionBuilder::new(tx, args)
+        .compile(dummy_claims)
         .unwrap()
         .select_inputs(InputSelector::Ascending, SATS_PER_VBYTE)
         .unwrap();
 
-    // Retreive the change output, which considers the total output amount and
-    // the fee. Then, update the transaction.
-    let change = computed.change(SATS_PER_VBYTE).unwrap();
-    let computer = computed.set_change_output(change).unwrap();
-
     // Compute the final preimage.
+    let computer = SighashComputer::new(tx, args);
     let preimage = computer.preimage_tx().unwrap();
 
     // Create the final spending scripts.
