@@ -56,8 +56,10 @@ impl<'a> MessageBuilder<'a> {
     pub fn build(self) -> SigningResult<VersionedMessage> {
         let instructions = self.build_instructions()?;
 
-        let (message_header, account_keys) =
-            CompiledKeys::compile(&instructions).try_into_message_components()?;
+        // Please note the fee payer can be different from the actual signer.
+        let (message_header, account_keys) = CompiledKeys::with_fee_payer(self.fee_payer()?)
+            .compile(&instructions)
+            .try_into_message_components()?;
 
         let compiled_instructions = compile_instructions(&instructions, &account_keys)?;
 
@@ -106,6 +108,9 @@ impl<'a> MessageBuilder<'a> {
             ProtoTransactionType::token_transfer_transaction(ref token_transfer) => {
                 self.token_transfer_from_proto(token_transfer)
             },
+            ProtoTransactionType::create_and_transfer_token_transaction(
+                ref create_and_transfer,
+            ) => self.create_and_transfer_token_from_proto(create_and_transfer),
             _ => todo!(),
         }
     }
@@ -277,6 +282,54 @@ impl<'a> MessageBuilder<'a> {
         Ok(builder.output())
     }
 
+    fn create_and_transfer_token_from_proto(
+        &self,
+        create_and_transfer: &Proto::CreateAndTransferToken,
+    ) -> SigningResult<Vec<Instruction>> {
+        let signer = self.signer_address()?;
+        let fee_payer = self.fee_payer()?;
+        let sender_token_address =
+            SolanaAddress::from_str(create_and_transfer.sender_token_address.as_ref())?;
+        let token_mint_address =
+            SolanaAddress::from_str(create_and_transfer.token_mint_address.as_ref())?;
+        let recipient_main_address =
+            SolanaAddress::from_str(create_and_transfer.recipient_main_address.as_ref())?;
+        let recipient_token_address =
+            SolanaAddress::from_str(create_and_transfer.recipient_token_address.as_ref())?;
+        let references = Self::parse_references(&create_and_transfer.references)?;
+
+        let decimals = create_and_transfer
+            .decimals
+            .try_into()
+            .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?;
+
+        let create_account_instruction = TokenInstructionBuilder::create_account(
+            // Can be different from the actual signer.
+            fee_payer,
+            recipient_main_address,
+            token_mint_address,
+            recipient_token_address,
+        );
+        let transfer_instruction = TokenInstructionBuilder::transfer_checked(
+            sender_token_address,
+            token_mint_address,
+            recipient_token_address,
+            signer,
+            create_and_transfer.amount,
+            decimals,
+        )
+        .with_references(references);
+
+        let mut builder = InstructionBuilder::default();
+        builder
+            .maybe_advance_nonce(self.nonce_account()?, signer)
+            .add_instruction(create_account_instruction)
+            // Optional memo. Order: before transfer, as per documentation.
+            .maybe_memo(create_and_transfer.memo.as_ref())
+            .add_instruction(transfer_instruction);
+        Ok(builder.output())
+    }
+
     fn nonce_account(&self) -> SigningResult<Option<SolanaAddress>> {
         if self.input.nonce_account.is_empty() {
             Ok(None)
@@ -295,6 +348,23 @@ impl<'a> MessageBuilder<'a> {
                 self.signer_key()?.public(),
             ))
         }
+    }
+
+    /// Returns a fee payer of the transaction.
+    /// Please note it can be different the transaction signer if [`Proto::SigningInput::fee_payer`] is set.
+    pub fn fee_payer(&self) -> SigningResult<SolanaAddress> {
+        if !self.input.fee_payer_private_key.is_empty() {
+            let fee_payer_key =
+                ed25519::sha512::KeyPair::try_from(self.input.fee_payer_private_key.as_ref())?;
+            return Ok(SolanaAddress::with_public_key_ed25519(
+                fee_payer_key.public(),
+            ));
+        }
+        if !self.input.fee_payer.is_empty() {
+            return SolanaAddress::from_str(self.input.fee_payer.as_ref())
+                .map_err(SigningError::from);
+        }
+        self.signer_address()
     }
 
     fn recent_blockhash(&self) -> SigningResult<Blockhash> {

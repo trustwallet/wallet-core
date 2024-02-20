@@ -340,3 +340,90 @@ fn test_solana_sign_token_transfer() {
     // https://explorer.solana.com/tx/3vZ67CGoRYkuT76TtpP2VrtTPBfnvG2xj6mUTvvux46qbnpThgQDgm27nC3yQVUZrABFjT9Qo7vA74tCjtV5P9Xg
     assert_eq!(output.encoded, "PGfKqEaH2zZXDMZLcU6LUKdBSzU1GJWJ1CJXtRYCxaCH7k8uok38WSadZfrZw3TGejiau7nSpan2GvbK26hQim24jRe2AupmcYJFrgsdaCt1Aqs5kpGjPqzgj9krgxTZwwob3xgC1NdHK5BcNwhxwRtrCphGEH7zUFpGFrFrHzgpf2KY8FvPiPELQyxzTBuyNtjLjMMreehSKShEjD9Xzp1QeC1pEF8JL6vUKzxMXuveoEYem8q8JiWszYzmTMfDk13JPgv7pXFGMqDV3yNGCLsWccBeSFKN4UKECre6x2QbUEiKGkHkMc4zQwwyD8tGmEMBAGm339qdANssEMNpDeJp2LxLDStSoWShHnotcrH7pUa94xCVvCPPaomF");
 }
+
+#[test]
+fn test_solana_sign_token_transfer_2pmvzp() {
+    let token_transfer = Proto::TokenTransfer {
+        token_mint_address: "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt".into(),
+        sender_token_address: "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP".into(),
+        recipient_token_address: "ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf".into(),
+        // 0.0061
+        amount: 6100,
+        decimals: 6,
+        ..Proto::TokenTransfer::default()
+    };
+    let input = Proto::SigningInput {
+        private_key: b58("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"),
+        recent_blockhash: "zMEbroNLJ4vfDTdQyA72rk35c7nPo4K38efHLujbSuz".into(),
+        transaction_type: TransactionType::token_transfer_transaction(token_transfer),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    // https://explorer.solana.com/tx/2pMvzparE16evNgNhiexBfj15eurQgqFJXemYkuGasWV8RfT5tQseadqXA2VXbgGZPM1MpLcGwfkKKqvYvrKTmnR
+    assert_eq!(output.encoded, "LCtawaKHmvh9WEjYPFFMDQXsdKMQbVyK4Q3aRRfLCouqw6GE4p31PRPFoQqtazTziEj3ex3iLgnCspz1MN4SUE9d33g3HiiA6oCS6wGMvB2i3ojtmJzndCiLoDmuZgiuGouVSeS2MAEUoS3CRjdnbNKbRwgKn8YsDe1bZ57ueipfBLJfiE7xr8ji678uAv8FcMgo8Mq88SBGxVCUhjMS2VGQZhRUHHzDmvnzxhbbUzsLDfApzjHExkUm7ws3cQ2i1cSpQNCQWJd6rcDv1sYwDAavPS571Ny3CUq4cZxABh45Gj88LkRpzBMRdoebrh9hPy8ZRnu7PocBVjZytCgdF4CuhzdYNsmdcuU2WN5CEmv5zQ7pBrFdLZ8bBifP");
+}
+
+#[test]
+fn test_solana_sign_create_and_transfer_token() {
+    let create_transfer_token = Proto::CreateAndTransferToken {
+        recipient_main_address: "71e8mDsh3PR6gN64zL1HjwuxyKpgRXrPDUJT7XXojsVd".into(),
+        token_mint_address: "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt".into(),
+        recipient_token_address: "EF6L8yJT1SoRoDCkAZfSVmaweqMzfhxZiptKi7Tgj5XY".into(),
+        sender_token_address: "ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf".into(),
+        // 0.0029
+        amount: 2900,
+        decimals: 6,
+        ..Proto::CreateAndTransferToken::default()
+    };
+    let input = Proto::SigningInput {
+        private_key: b58("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c"),
+        recent_blockhash: "DMmDdJP41M9mw8Z4586VSvxqGCrqPy5uciF6HsKUVDja".into(),
+        transaction_type: TransactionType::create_and_transfer_token_transaction(
+            create_transfer_token,
+        ),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    // https://explorer.solana.com/tx/449VaYo48LrkMJF6XVKt9sJwVQN6Seqrmh9erDCLtiuj6BgFG3wpF5TwjNkxgJ7qzNa6NTj3TFsU3h9hKszfkA7w
+    assert_eq!(output.encoded, "3Y2MVz2VVi7aEyC9q1awwdk1ModDBPHRSacKmTYnSgkmbbJeZ62Fub1bVPSHaTy4LUcQpzCQYhHAKtTKXUDYijEeLsMAUqPBEMAq1w8zCdqDpdXy6M4PuwNtYVV1WgqeiEsiMWpPp4BGWKfcziwFbmYueUGituacJq4wTnt92fho8mFi49XW64gEG4iNGScDtJkY7Geq8PKiLh1E9JMJoceiHxKbmxzCmmLTxEHdhySYHcDUSXnXWogZskeZNBMtR9dNjEMkCzEjrxRpBtJPtUNshciY45mDPNmw4j3xyLCBTRikyfFLc5g11r3UgyVD4YokoPRvrEXsgt6W3yjBshropBm6mY2eJYvfY2eZz4Yq8kLcUatCHVKtjcb1mP9Ww57KisJ9bRhipC8sodFaMYhZARMEa4a1u9eH4MyNUATRGNXarwQSBY46PWS3nKP6QBK7Dw7Ppp9MmYkdPcXKaLScbyLF3jKu6dHWMkHw3WdXSsM1wwXjXnWF9LxdwaEVcDmySWybj6aKD9QCWTU5kdncqJU56f7SYNRTN289WdUFGNDmSh56tj2v1");
+}
+
+#[test]
+fn test_solana_sign_create_and_transfer_token_with_memo_and_references() {
+    let create_transfer_token = Proto::CreateAndTransferToken {
+        recipient_main_address: "71e8mDsh3PR6gN64zL1HjwuxyKpgRXrPDUJT7XXojsVd".into(),
+        token_mint_address: "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt".into(),
+        recipient_token_address: "EF6L8yJT1SoRoDCkAZfSVmaweqMzfhxZiptKi7Tgj5XY".into(),
+        sender_token_address: "ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf".into(),
+        // 0.0029
+        amount: 2900,
+        decimals: 6,
+        memo: "HelloSolanaMemo370".into(),
+        references: vec![
+            "CuieVDEDtLo7FypA9SbLM9saXFdb1dsshEkyErMqkRQq".into(),
+            "tFpP7tZUt6zb7YZPpQ11kXNmsc5YzpMXmahGMvCHhqS".into(),
+        ],
+    };
+    let input = Proto::SigningInput {
+        private_key: b58("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c"),
+        recent_blockhash: "DMmDdJP41M9mw8Z4586VSvxqGCrqPy5uciF6HsKUVDja".into(),
+        transaction_type: TransactionType::create_and_transfer_token_transaction(
+            create_transfer_token,
+        ),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    assert_eq!(output.encoded, "FuUw2MoEGPATE38roXAw9mGQhCfdsdpVDdhuf5h8LKc8iWj2HzNS3SteXqyUoZtQ7L1ufLvu7cTMwNzxT8snnVimcknsA52CeN7bgMz1Ad1hRTAr77zE5efzAi8B124kaQ1cBEb6nFMr5Zq4wwDRoJgBaiUaM1U9ZY6GofCKHGMQN7ZNqEFG4fFvPaMXB59dFtiqrtApBGzvDho3nGshyQWZVWfMY44hvVk45FqiGrXuqUwkiJqeRaDhooZdXiFR9ubwJLXo3Ux23ZyijWKXYNsx1Lm5zMFEgRz3kXhzxzb8uzHVSrFYNieXXCQEv1GtErMKeQWuAHcwS3zxC6avTnTWJhTz3kVSXfSTYEg4MF2MBWeGrzKZ7id88ZfbpG4ZwzsDsdUCSMV6YYRNmx9P3B6oC4DL7cbi2g8hwtBdeKojY4G6JMPeg629V9sPyg2KKeYxD3cjhMKAYtrsJEbixep4LZENtdQxmgZFouJVvGy9MVhiTzGEFVwm4G25p5FhWhiS9HxHWVRXpUFHi2K9K2ttoo4Ug39V9f8s9cG1Xb5A4bHhGSuKLeCCBcrBqPWEsuLdVhjxsKJrRBJhyrZ6mpxtDhUWivZa6skmEawTts9rN2aP3dXW3cNch3s3LTXZWXG9QPUARJJPy5QAYsBoR8GunF5FFgHVuEHVpjXAd8ku9f7aoF8RNiMnXAqQHxiM3ug6HZpLHLX8aGoUbJ7vVAnEDLH");
+}

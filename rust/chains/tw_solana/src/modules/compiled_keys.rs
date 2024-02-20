@@ -17,22 +17,29 @@ struct CompiledKeyMeta {
     is_writable: bool,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub(crate) struct CompiledKeys {
     ordered_keys: Vec<SolanaAddress>,
     key_meta_map: HashMap<SolanaAddress, CompiledKeyMeta>,
 }
 
 impl CompiledKeys {
-    pub fn compile(instructions: &[Instruction]) -> Self {
-        let mut key_meta_map = HashMap::<SolanaAddress, CompiledKeyMeta>::new();
-        let mut ordered_keys = Vec::default();
+    pub fn with_fee_payer(fee_payer: SolanaAddress) -> Self {
+        let mut selfi = Self::default();
 
+        selfi.key_meta_map.entry(fee_payer).or_default().is_signer = true;
+        // Fee payer must be the first account in the keys list.
+        selfi.ordered_keys.push(fee_payer);
+
+        selfi
+    }
+
+    pub fn compile(mut self, instructions: &[Instruction]) -> Self {
         for ix in instructions {
             for account_meta in &ix.accounts {
-                let meta_entry = key_meta_map.entry(account_meta.pubkey);
+                let meta_entry = self.key_meta_map.entry(account_meta.pubkey);
                 if matches!(meta_entry, Entry::Vacant(_)) {
-                    ordered_keys.push(account_meta.pubkey);
+                    self.ordered_keys.push(account_meta.pubkey);
                 }
 
                 let meta = meta_entry.or_default();
@@ -43,22 +50,17 @@ impl CompiledKeys {
 
         // add programIds (read-only, at end)
         for ix in instructions {
-            let meta_entry = key_meta_map.entry(ix.program_id);
+            let meta_entry = self.key_meta_map.entry(ix.program_id);
             if matches!(meta_entry, Entry::Vacant(_)) {
-                ordered_keys.push(ix.program_id);
+                self.ordered_keys.push(ix.program_id);
             }
             meta_entry.or_default();
         }
 
-        Self {
-            ordered_keys,
-            key_meta_map,
-        }
+        self
     }
 
-    pub(crate) fn try_into_message_components(
-        self,
-    ) -> SigningResult<(MessageHeader, Vec<SolanaAddress>)> {
+    pub fn try_into_message_components(self) -> SigningResult<(MessageHeader, Vec<SolanaAddress>)> {
         let try_into_u8 = |num: usize| -> SigningResult<u8> {
             u8::try_from(num).map_err(|_| SigningError(SigningErrorType::Error_tx_too_big))
         };

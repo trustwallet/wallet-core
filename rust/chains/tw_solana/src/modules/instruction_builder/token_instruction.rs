@@ -5,25 +5,11 @@
 use crate::address::SolanaAddress;
 use crate::defined_addresses::*;
 use crate::instruction::{AccountMeta, Instruction};
-use serde::{Deserialize, Serialize};
 use std::mem::size_of;
 use tw_memory::Data;
 
-/// Specifies the authority type for SetAuthority instructions
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
-pub enum AuthorityType {
-    /// Authority to mint new tokens
-    MintTokens,
-    /// Authority to freeze any account associated with the Mint
-    FreezeAccount,
-    /// Owner of a given token account
-    AccountOwner,
-    /// Authority to close a token account
-    CloseAccount,
-}
-
 /// Instructions supported by the token program.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TokenInstruction {
     /// Transfers tokens from one account to another either directly or via a
     /// delegate.  If this account is associated with the native mint then equal
