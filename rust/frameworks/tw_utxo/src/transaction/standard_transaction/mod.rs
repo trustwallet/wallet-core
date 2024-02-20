@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::encode::compact_integer::CompactInteger;
 use crate::encode::stream::Stream;
 use crate::encode::Encodable;
 use crate::error::UtxoResult;
@@ -23,6 +24,17 @@ pub mod fees;
 const WITNESS_MARKER: u8 = 0;
 /// Must be nonzero.
 const WITNESS_FLAG: u8 = 1;
+
+// Sizes of various transaction fields.
+const VERSION_SIZE: usize = 4;
+const LOCKTIME_SIZE: usize = 4;
+const WITNESS_FLAG_MARKER: usize = 2;
+const OUT_POINT_SIZE: usize = 36;
+const SEQUENCE_SIZE: usize = 4;
+const VALUE_SIZE: usize = 8;
+
+// The Segwit scale factor (witnesses are deducted).
+const SEGWIT_SCALE_FACTOR: usize = 4;
 
 /// A standard Bitcoin transaction.
 ///
@@ -121,6 +133,45 @@ impl Transaction {
         self.encode(&mut stream);
         stream.out()
     }
+    pub fn base_size(&self) -> usize {
+        let mut s = 0;
+        // Base transaction size.
+        s += VERSION_SIZE;
+        s += LOCKTIME_SIZE;
+
+        // Consider extended format in case witnesses are to be serialized.
+        if self.has_witness() {
+            s += WITNESS_FLAG_MARKER;
+        }
+
+        s += CompactInteger::from(self.inputs().len()).serialized_len();
+        s += CompactInteger::from(self.outputs().len()).serialized_len();
+        s
+    }
+    pub fn size(&self) -> usize {
+        let mut s = self.base_size();
+        self.inputs().iter().for_each(|input| s += input.size());
+        self.outputs().iter().for_each(|output| s += output.size());
+        s
+    }
+    pub fn weight(&self) -> usize {
+        let mut w = self.base_size();
+
+        // Apply scale factor.
+        w *= SEGWIT_SCALE_FACTOR;
+
+        // Calculate the weight of each input and output. The Segwit scale
+        // factor is already considered by the weight methods.
+        self.inputs().iter().for_each(|input| w += input.weight());
+        self.outputs()
+            .iter()
+            .for_each(|output| w += output.weight());
+
+        w
+    }
+    pub fn vsize(&self) -> usize {
+        (self.weight() + 3) / SEGWIT_SCALE_FACTOR // ceil(weight / 4)
+    }
 }
 
 impl Encodable for Transaction {
@@ -172,6 +223,26 @@ pub struct TransactionInput {
     pub sequence: u32,
     /// Witness stack.
     pub witness: Witness,
+}
+
+impl TransactionInput {
+    pub fn size(&self) -> usize {
+        OUT_POINT_SIZE
+            + self.script_sig.serialized_len()
+            + SEQUENCE_SIZE
+            + self.witness.serialized_len()
+    }
+
+    pub fn vsize(&self) -> usize {
+        (self.weight() + 3) / SEGWIT_SCALE_FACTOR // ceil(weight / 4)
+    }
+
+    pub fn weight(&self) -> usize {
+        let non_witness = OUT_POINT_SIZE + self.script_sig.serialized_len() + SEQUENCE_SIZE;
+
+        // Witness data has no scale factor applied, ie. it's discounted.
+        non_witness * SEGWIT_SCALE_FACTOR + self.witness.serialized_len()
+    }
 }
 
 impl TxInputInterface for TransactionInput {
@@ -228,6 +299,21 @@ pub struct TransactionOutput {
     /// Usually contains the public key as a Bitcoin script setting up
     /// conditions to claim this output.
     pub script_pubkey: Script,
+}
+
+impl TransactionOutput {
+    pub fn size(&self) -> usize {
+        VALUE_SIZE + self.script_pubkey.serialized_len()
+    }
+
+    pub fn vsize(&self) -> usize {
+        (self.weight() + 3) / SEGWIT_SCALE_FACTOR // ceil(weight / 4)
+    }
+
+    pub fn weight(&self) -> usize {
+        // All output data has the scale factor applied.
+        self.size() * SEGWIT_SCALE_FACTOR
+    }
 }
 
 impl Default for TransactionOutput {

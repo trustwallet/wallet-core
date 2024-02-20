@@ -119,8 +119,6 @@ fn build_tx_input_selection() {
     // Select the inputs and build the transaction.
     let tx = computer.compile(claims).unwrap();
 
-    let fee = tx.fee(SATS_PER_VBYTE);
-
     assert_eq!(tx.inputs.len(), 2);
     assert_eq!(
         tx.inputs[0].previous_output.hash,
@@ -131,5 +129,15 @@ fn build_tx_input_selection() {
         utxo2.previous_output.hash
     );
 
-    //assert_eq!(change, 1_000 + 3_000 - 1_000 - 1_000 - fee);
+    let fee = tx.fee(SATS_PER_VBYTE);
+    assert_eq!(fee, 814);
+
+    let total_input = arg1.amount + arg2.amount;
+    let total_output = tx.outputs[0].value + tx.outputs[1].value + tx.outputs[2].value;
+    // TODO: comment on this:
+    assert_eq!(total_input, total_output + fee - 2);
+
+    let total_input = 1_000 + 3_000;
+    let total_output = 1_000 + 1_000 + 1186;
+    assert_eq!(total_input, total_output + 814);
 }
