@@ -141,9 +141,9 @@ fn build_tx_input_selection() {
 
     let total_input = arg1.amount + arg2.amount;
     let total_output = tx.outputs[0].value + tx.outputs[1].value + tx.outputs[2].value;
-    assert_eq!(total_input, total_output + fee - 2);
+    assert_eq!(total_input, total_output + fee - 2); // off by 2
 
     let total_input = 1_000 + 3_000;
-    let total_output = 1_000 + 1_000 + 1186;
+    let total_output = 1_000 + 1_000 + 1186; // 1186 = change_output
     assert_eq!(total_input, total_output + 814);
 }
