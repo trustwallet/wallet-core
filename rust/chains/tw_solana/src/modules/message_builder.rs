@@ -7,12 +7,12 @@ use crate::blockhash::Blockhash;
 use crate::instruction::Instruction;
 use crate::modules::compiled_instructions::compile_instructions;
 use crate::modules::compiled_keys::CompiledKeys;
-use crate::modules::instruction_builder::stake_instruction::StakeInstructionBuilder;
+use crate::modules::instruction_builder::stake_instruction::{
+    DepositStakeArgs, StakeInstructionBuilder,
+};
 use crate::modules::instruction_builder::system_instruction::SystemInstructionBuilder;
 use crate::modules::instruction_builder::token_instruction::TokenInstructionBuilder;
-use crate::modules::instruction_builder::{
-    DepositStakeArgs, InstructionBuilder, InstructionBuilder1,
-};
+use crate::modules::instruction_builder::InstructionBuilder;
 use crate::transaction::versioned::VersionedMessage;
 use crate::transaction::{legacy, v0};
 use std::borrow::Cow;
@@ -43,14 +43,11 @@ impl<'a> MessageBuilder<'a> {
             signing_keys.push(fee_payer_private_key);
         }
 
-        match self.input.transaction_type {
-            ProtoTransactionType::create_nonce_account(ref nonce) => {
-                let nonce_private_key =
-                    ed25519::sha512::KeyPair::try_from(nonce.nonce_account_private_key.as_ref())?;
-                signing_keys.push(nonce_private_key);
-            },
-            // Consider matching other transaction types if they may contain other private keys.
-            _ => (),
+        // Consider matching other transaction types if they may contain other private keys.
+        if let ProtoTransactionType::create_nonce_account(ref nonce) = self.input.transaction_type {
+            let nonce_private_key =
+                ed25519::sha512::KeyPair::try_from(nonce.nonce_account_private_key.as_ref())?;
+            signing_keys.push(nonce_private_key);
         }
 
         Ok(signing_keys)
@@ -124,7 +121,7 @@ impl<'a> MessageBuilder<'a> {
         let transfer_instruction = SystemInstructionBuilder::transfer(from, to, transfer.value)
             .with_references(references);
 
-        let mut builder = InstructionBuilder1::default();
+        let mut builder = InstructionBuilder::default();
         builder
             .maybe_advance_nonce(self.nonce_account()?, from)
             .maybe_memo(transfer.memo.as_ref())
@@ -146,7 +143,7 @@ impl<'a> MessageBuilder<'a> {
             Some(stake_account)
         };
 
-        InstructionBuilder::deposit_stake(DepositStakeArgs {
+        StakeInstructionBuilder::deposit_stake(DepositStakeArgs {
             sender,
             validator,
             stake_account,
@@ -237,7 +234,7 @@ impl<'a> MessageBuilder<'a> {
             token_mint_address,
             token_address,
         );
-        let mut builder = InstructionBuilder1::default();
+        let mut builder = InstructionBuilder::default();
         builder
             .maybe_advance_nonce(self.nonce_account()?, funding_account)
             .add_instruction(instruction);
@@ -272,7 +269,7 @@ impl<'a> MessageBuilder<'a> {
         )
         .with_references(references);
 
-        let mut builder = InstructionBuilder1::default();
+        let mut builder = InstructionBuilder::default();
         builder
             .maybe_advance_nonce(self.nonce_account()?, signer)
             .maybe_memo(token_transfer.memo.as_ref())

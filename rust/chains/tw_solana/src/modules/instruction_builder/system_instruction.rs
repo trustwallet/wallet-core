@@ -229,7 +229,7 @@ impl SystemInstructionBuilder {
     }
 
     /// Please note `to_pubkey` must match `create_with_seed(base, seed, owner)`.
-    pub fn account_with_seed(
+    pub fn create_account_with_seed(
         from_pubkey: SolanaAddress,
         to_pubkey: SolanaAddress,
         base: SolanaAddress,

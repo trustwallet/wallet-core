@@ -3,9 +3,13 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::SolanaAddress;
+use crate::blockhash::Blockhash;
 use crate::defined_addresses::*;
 use crate::instruction::{AccountMeta, Instruction};
+use crate::modules::instruction_builder::system_instruction::SystemInstructionBuilder;
+use crate::program::stake_program::StakeProgram;
 use serde::{Deserialize, Serialize};
+use tw_coin_entry::error::SigningResult;
 
 type UnixTimestamp = i64;
 type Epoch = u64;
@@ -275,6 +279,15 @@ pub enum StakeInstruction {
     Redelegate,
 }
 
+pub struct DepositStakeArgs {
+    pub sender: SolanaAddress,
+    pub validator: SolanaAddress,
+    pub stake_account: Option<SolanaAddress>,
+    pub recent_blockhash: Blockhash,
+    pub lamports: u64,
+    pub space: u64,
+}
+
 pub struct StakeInstructionBuilder;
 
 impl StakeInstructionBuilder {
@@ -357,5 +370,33 @@ impl StakeInstructionBuilder {
             StakeInstruction::Deactivate,
             account_metas,
         )
+    }
+
+    /// The method represents "stake delegation" operation that consists of several small instructions.
+    pub fn deposit_stake(args: DepositStakeArgs) -> SigningResult<Vec<Instruction>> {
+        let stake_addr = args.stake_account.unwrap_or_else(|| {
+            // no stake address specified, generate a new unique
+            StakeProgram::address_from_recent_blockhash(args.sender, args.recent_blockhash)
+        });
+        let seed = args.recent_blockhash.to_string();
+
+        let authorized = Authorized {
+            staker: args.sender,
+            withdrawer: args.sender,
+        };
+        let lockup = Lockup::default();
+
+        Ok(vec![
+            SystemInstructionBuilder::create_account_with_seed(
+                args.sender,
+                stake_addr,
+                args.sender,
+                seed,
+                args.lamports,
+                args.space,
+            ),
+            StakeInstructionBuilder::stake_initialize(stake_addr, authorized, lockup),
+            StakeInstructionBuilder::delegate(stake_addr, args.validator, args.sender),
+        ])
     }
 }
