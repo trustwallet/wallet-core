@@ -27,7 +27,13 @@ impl CompiledKeys {
     pub fn with_fee_payer(fee_payer: SolanaAddress) -> Self {
         let mut selfi = Self::default();
 
-        selfi.key_meta_map.entry(fee_payer).or_default().is_signer = true;
+        selfi.key_meta_map.insert(
+            fee_payer,
+            CompiledKeyMeta {
+                is_signer: true,
+                is_writable: true,
+            },
+        );
         // Fee payer must be the first account in the keys list.
         selfi.ordered_keys.push(fee_payer);
 

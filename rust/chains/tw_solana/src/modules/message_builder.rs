@@ -118,7 +118,10 @@ impl<'a> MessageBuilder<'a> {
             ProtoTransactionType::withdraw_nonce_account(ref withdraw_nonce) => {
                 self.withdraw_nonce_from_proto(withdraw_nonce)
             },
-            _ => todo!(),
+            ProtoTransactionType::advance_nonce_account(ref advance_nonce) => {
+                self.advance_nonce_from_proto(advance_nonce)
+            },
+            ProtoTransactionType::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
         }
     }
 
@@ -374,6 +377,18 @@ impl<'a> MessageBuilder<'a> {
                 recipient,
                 withdraw_nonce.value,
             ));
+        Ok(builder.output())
+    }
+
+    fn advance_nonce_from_proto(
+        &self,
+        advance_nonce: &Proto::AdvanceNonceAccount,
+    ) -> SigningResult<Vec<Instruction>> {
+        let signer = self.signer_address()?;
+        let nonce_account = SolanaAddress::from_str(advance_nonce.nonce_account.as_ref())?;
+
+        let mut builder = InstructionBuilder::default();
+        builder.maybe_advance_nonce(Some(nonce_account), signer);
         Ok(builder.output())
     }
 
