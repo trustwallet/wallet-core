@@ -17,7 +17,6 @@ use tw_hash::hasher::Hasher;
 use tw_hash::H256;
 use tw_keypair::tw;
 use tw_memory::Data;
-use tw_proto::Utxo;
 
 const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 
@@ -234,11 +233,8 @@ where
     pub fn finalize(self) -> Transaction {
         self.transaction_to_sign
     }
-    pub fn select_inputs(
-        self,
-        selector: InputSelector,
-        fee_rate: Amount,
-    ) -> UtxoResult<(Transaction, Amount)> {
+    pub fn select_inputs(mut self, selector: InputSelector, fee_rate: Amount) -> UtxoResult<Self> {
+        // Calculate the total output amount.
         let total_out = self
             .transaction_to_sign
             .outputs()
@@ -256,11 +252,11 @@ where
         let mut tx = self.transaction_to_sign.clone();
 
         // Prepare the available UTXOs.
-        let mut utxos: Vec<(Transaction::Input, UtxoToSign)> = tx
+        let mut utxos: Vec<(Transaction::Input, &UtxoToSign)> = tx
             .inputs()
             .into_iter()
             .cloned()
-            .zip(self.args.utxos_to_sign.into_iter())
+            .zip(self.args.utxos_to_sign.iter())
             .collect::<Vec<_>>();
 
         // Sort the UTXOs.
@@ -310,10 +306,40 @@ where
             todo!()
         }
 
-        // Calculate the change.
-        let change = total_in - total_out - tx.fee(fee_rate);
+        // Update the transaction with the selected inputs.
+        self.transaction_to_sign = tx;
 
-        // TODO: Should change be returned here?
-        Ok((tx, change))
+        Ok(self)
+    }
+    pub fn change(&self) -> UtxoResult<Amount> {
+        let total_input = self
+            .args
+            .utxos_to_sign
+            .iter()
+            .map(|utxo| utxo.amount)
+            .sum::<Amount>();
+        let total_output = self
+            .transaction_to_sign
+            .outputs()
+            .iter()
+            .map(|out| out.value())
+            .sum::<Amount>();
+
+        if total_output > total_input {
+            return Err(UtxoError(UtxoErrorKind::Error_internal));
+        }
+
+        let change = total_input - total_output;
+        Ok(change)
+    }
+    pub fn change_with_fee(&self, fee_rate: Amount) -> UtxoResult<Amount> {
+        let change_excl_fee = self.change()?;
+        let fee = self.transaction_to_sign.fee(fee_rate);
+
+        if fee > change_excl_fee {
+            return Err(UtxoError(UtxoErrorKind::Error_internal));
+        }
+
+        Ok(change_excl_fee - fee)
     }
 }
