@@ -24,6 +24,7 @@ use tw_proto::Solana::Proto;
 use Proto::mod_SigningInput::OneOftransaction_type as ProtoTransactionType;
 
 const DEFAULT_SPACE: u64 = 200;
+const DEFAULT_CREATE_NONCE_SPACE: u64 = 80;
 
 pub struct MessageBuilder<'a> {
     input: Proto::SigningInput<'a>,
@@ -111,6 +112,12 @@ impl<'a> MessageBuilder<'a> {
             ProtoTransactionType::create_and_transfer_token_transaction(
                 ref create_and_transfer,
             ) => self.create_and_transfer_token_from_proto(create_and_transfer),
+            ProtoTransactionType::create_nonce_account(ref create_nonce) => {
+                self.create_nonce_account_from_proto(create_nonce)
+            },
+            ProtoTransactionType::withdraw_nonce_account(ref withdraw_nonce) => {
+                self.withdraw_nonce_from_proto(withdraw_nonce)
+            },
             _ => todo!(),
         }
     }
@@ -327,6 +334,46 @@ impl<'a> MessageBuilder<'a> {
             // Optional memo. Order: before transfer, as per documentation.
             .maybe_memo(create_and_transfer.memo.as_ref())
             .add_instruction(transfer_instruction);
+        Ok(builder.output())
+    }
+
+    fn create_nonce_account_from_proto(
+        &self,
+        create_nonce: &Proto::CreateNonceAccount,
+    ) -> SigningResult<Vec<Instruction>> {
+        let signer = self.signer_address()?;
+        let new_nonce_account = SolanaAddress::from_str(create_nonce.nonce_account.as_ref())?;
+        let prev_nonce_account = self.nonce_account()?;
+
+        let mut builder = InstructionBuilder::default();
+        builder
+            .maybe_advance_nonce(prev_nonce_account, signer)
+            .add_instructions(SystemInstructionBuilder::create_nonce_account(
+                signer,
+                new_nonce_account,
+                create_nonce.rent,
+                DEFAULT_CREATE_NONCE_SPACE,
+            ));
+        Ok(builder.output())
+    }
+
+    fn withdraw_nonce_from_proto(
+        &self,
+        withdraw_nonce: &Proto::WithdrawNonceAccount,
+    ) -> SigningResult<Vec<Instruction>> {
+        let signer = self.signer_address()?;
+        let withdraw_from_nonce = SolanaAddress::from_str(withdraw_nonce.nonce_account.as_ref())?;
+        let recipient = SolanaAddress::from_str(withdraw_nonce.recipient.as_ref())?;
+
+        let mut builder = InstructionBuilder::default();
+        builder
+            .maybe_advance_nonce(self.nonce_account()?, signer)
+            .add_instruction(SystemInstructionBuilder::withdraw_nonce_account(
+                withdraw_from_nonce,
+                signer,
+                recipient,
+                withdraw_nonce.value,
+            ));
         Ok(builder.output())
     }
 

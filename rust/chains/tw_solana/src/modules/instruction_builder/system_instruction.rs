@@ -314,4 +314,24 @@ impl SystemInstructionBuilder {
             account_metas,
         )
     }
+
+    /// The function represents "create nonce account" operation that consists of several small instructions.
+    pub fn create_nonce_account(
+        signer: SolanaAddress,
+        new_nonce_account: SolanaAddress,
+        rent: u64,
+        space: u64,
+    ) -> Vec<Instruction> {
+        let program_id = *SYSTEM_PROGRAM_ID_ADDRESS;
+        vec![
+            SystemInstructionBuilder::create_account(
+                signer,
+                new_nonce_account,
+                rent,
+                space,
+                program_id,
+            ),
+            SystemInstructionBuilder::init_nonce_account(new_nonce_account, signer),
+        ]
+    }
 }

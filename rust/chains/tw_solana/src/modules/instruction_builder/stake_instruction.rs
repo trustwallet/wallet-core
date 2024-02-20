@@ -372,7 +372,7 @@ impl StakeInstructionBuilder {
         )
     }
 
-    /// The method represents "stake delegation" operation that consists of several small instructions.
+    /// The function represents "stake delegation" operation that consists of several small instructions.
     pub fn deposit_stake(args: DepositStakeArgs) -> SigningResult<Vec<Instruction>> {
         let stake_addr = args.stake_account.unwrap_or_else(|| {
             // no stake address specified, generate a new unique
