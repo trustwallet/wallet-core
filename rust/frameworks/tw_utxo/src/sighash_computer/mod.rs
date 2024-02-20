@@ -179,10 +179,26 @@ where
     ///
     /// Consider using [`SighashComputer::verify_signatures`] before calling [`SighashComputer::compile`]
     /// if the signatures were computed externally.
-    pub fn compile(
+    pub fn compile(mut self, claims: Vec<SpendingData>) -> UtxoResult<Transaction> {
+        self.do_compile(claims)?;
+
+        Ok(self.transaction_to_sign)
+    }
+
+    pub fn input_selector(
         mut self,
         claims: Vec<SpendingData>,
-    ) -> UtxoResult<ComputedTransaction<Transaction>> {
+    ) -> UtxoResult<SelectionBuilder<Transaction>> {
+        self.do_compile(claims)?;
+
+        Ok(SelectionBuilder {
+            transaction_to_sign: self.transaction_to_sign,
+            args: self.args,
+            _phantom: PhantomData,
+        })
+    }
+
+    fn do_compile(&mut self, claims: Vec<SpendingData>) -> UtxoResult<()> {
         // There should be the same number of UTXOs and their meta data.
         if self.args.utxos_to_sign.len() != self.transaction_to_sign.inputs().len() {
             return Err(UtxoError(UtxoErrorKind::Error_internal));
@@ -204,11 +220,7 @@ where
             utxo.set_witness(claim.witness);
         }
 
-        Ok(ComputedTransaction {
-            transaction_to_sign: self.transaction_to_sign,
-            args: self.args,
-            _phantom: PhantomData,
-        })
+        Ok(())
     }
 }
 
@@ -219,20 +231,17 @@ pub enum InputSelector {
     InOrder,
 }
 
-pub struct ComputedTransaction<Transaction> {
+pub struct SelectionBuilder<Transaction> {
     transaction_to_sign: Transaction,
     args: TxSigningArgs,
     _phantom: PhantomData<Transaction>,
 }
 
-impl<Transaction> ComputedTransaction<Transaction>
+impl<Transaction> SelectionBuilder<Transaction>
 where
     Transaction: TransactionPreimage + TransactionInterface + TransactionFee,
     Transaction::Output: TxOutputInterface,
 {
-    pub fn finalize(self) -> Transaction {
-        self.transaction_to_sign
-    }
     pub fn select_inputs(mut self, selector: InputSelector, fee_rate: Amount) -> UtxoResult<Self> {
         // Calculate the total output amount.
         let total_out = self
@@ -275,6 +284,7 @@ where
         // Select the UTXOs to cover all the outputs and the fee.
         let mut total_in = Amount::from(0);
         let mut selected_utxo = Vec::with_capacity(utxos.len());
+        let mut selected_args = Vec::with_capacity(utxos.len());
 
         let mut total_covered = false;
         for (input, arg) in utxos {
@@ -286,6 +296,7 @@ where
 
             // Track the selected UTXOs.
             selected_utxo.push(input);
+            selected_args.push(arg.clone());
 
             // Update the transaction with (all) the selected in UTXOs.
             tx.replace_inputs(selected_utxo.clone());
@@ -308,16 +319,30 @@ where
 
         // Update the transaction with the selected inputs.
         self.transaction_to_sign = tx;
+        self.args.utxos_to_sign = selected_args;
 
         Ok(self)
     }
-    pub fn change(&self) -> UtxoResult<Amount> {
+
+    pub fn change(&self, fee_rate: Amount) -> UtxoResult<Amount> {
+        let change_wo_fee = self.change_without_fee()?;
+        let fee = self.transaction_to_sign.fee(fee_rate);
+
+        if fee > change_wo_fee {
+            return Err(UtxoError(UtxoErrorKind::Error_internal));
+        }
+
+        Ok(change_wo_fee - fee)
+    }
+
+    pub fn change_without_fee(&self) -> UtxoResult<Amount> {
         let total_input = self
             .args
             .utxos_to_sign
             .iter()
             .map(|utxo| utxo.amount)
             .sum::<Amount>();
+
         let total_output = self
             .transaction_to_sign
             .outputs()
@@ -332,14 +357,18 @@ where
         let change = total_input - total_output;
         Ok(change)
     }
-    pub fn change_with_fee(&self, fee_rate: Amount) -> UtxoResult<Amount> {
-        let change_excl_fee = self.change()?;
-        let fee = self.transaction_to_sign.fee(fee_rate);
 
-        if fee > change_excl_fee {
+    pub fn set_change_output(mut self, change: Amount) -> UtxoResult<SighashComputer<Transaction>> {
+        let did_change = self.transaction_to_sign.set_change_amount(change);
+        if !did_change {
+            // TODO: Should this just panic?
             return Err(UtxoError(UtxoErrorKind::Error_internal));
         }
 
-        Ok(change_excl_fee - fee)
+        Ok(SighashComputer {
+            transaction_to_sign: self.transaction_to_sign,
+            args: self.args,
+            _phantom: PhantomData,
+        })
     }
 }

@@ -1,6 +1,7 @@
 use tw_encoding::hex;
 use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1::PrivateKey;
+use tw_keypair::ecdsa::signature::Signature;
 use tw_keypair::traits::SigningKeyTrait;
 // TODO: Consider using ecdsa directly.
 use tw_keypair::tw::{PublicKey, PublicKeyType};
@@ -59,20 +60,52 @@ fn build_tx_input_selection() {
         .p2pkh(bob_pubkey)
         .unwrap();
 
+    // Create the change output.
+    let change_output = OutputBuilder::new()
+        .amount(0)
+        .p2pkh(alice_pubkey.clone())
+        .unwrap();
+
     let (tx, args) = TransactionBuilder::new()
         .push_input(utxo1.clone(), arg1.clone())
         .push_input(utxo2.clone(), arg2.clone())
         .push_input(utxo3, arg3)
         .push_output(out1)
         .push_output(out2)
+        .push_output(change_output)
         .build();
+
+    let mut dummy_claims = vec![];
+    for _ in &tx.inputs {
+        let dummy_sig = Signature::from_bytes(&vec![1; 65]).unwrap();
+
+        // Build the spending script.
+        let claim = SpendingScriptBuilder::new()
+            .sighash_ty(SighashType::new(SighashBase::All))
+            .p2pkh(dummy_sig, alice_pubkey.clone())
+            .unwrap();
+
+        dummy_claims.push(claim);
+    }
 
     let computer = SighashComputer::new(tx, args);
 
-    // Generate the preimage, ready for signing.
+    // Select the inputs and build the transaction.
+    let computed = computer
+        .input_selector(dummy_claims)
+        .unwrap()
+        .select_inputs(InputSelector::Ascending, SATS_PER_VBYTE)
+        .unwrap();
+
+    // Retreive the change output, which considers the total output amount and
+    // the fee. Then, update the transaction.
+    let change = computed.change(SATS_PER_VBYTE).unwrap();
+    let computer = computed.set_change_output(change).unwrap();
+
+    // Compute the final preimage.
     let preimage = computer.preimage_tx().unwrap();
 
-    // Create the spending scripts.
+    // Create the final spending scripts.
     let mut claims = vec![];
     for sighash in preimage.into_h256_list().unwrap() {
         // Sign the sighash.
@@ -88,12 +121,7 @@ fn build_tx_input_selection() {
     }
 
     // Select the inputs and build the transaction.
-    let tx = computer
-        .compile(claims)
-        .unwrap()
-        .select_inputs(InputSelector::Ascending, SATS_PER_VBYTE)
-        .unwrap()
-        .finalize();
+    let tx = computer.compile(claims).unwrap();
 
     let fee = tx.fee(SATS_PER_VBYTE);
 

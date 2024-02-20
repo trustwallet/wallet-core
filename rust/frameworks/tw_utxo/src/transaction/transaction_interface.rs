@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::encode::Encodable;
+use crate::error::UtxoResult;
 use crate::script::{Script, Witness};
 use crate::transaction::transaction_parts::OutPoint;
 
@@ -23,7 +24,13 @@ pub trait TransactionInterface: Clone + Encodable {
 
     fn outputs(&self) -> &[Self::Output];
 
+    fn outputs_mut(&mut self) -> &mut [Self::Output];
+
     fn replace_outputs(&mut self, outputs: Vec<Self::Output>);
+
+    fn change_amount(&self) -> Option<Amount>;
+
+    fn set_change_amount(&mut self, change: Amount) -> bool;
 
     fn has_witness(&self) -> bool;
 

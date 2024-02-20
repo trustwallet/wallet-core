@@ -75,6 +75,24 @@ impl TransactionInterface for Transaction {
         &self.outputs
     }
 
+    fn outputs_mut(&mut self) -> &mut [Self::Output] {
+        &mut self.outputs
+    }
+
+    fn change_amount(&self) -> Option<Amount> {
+        Some(self.outputs.last()?.value)
+    }
+
+    fn set_change_amount(&mut self, change: Amount) -> bool {
+        let Some(change_output) = self.outputs.last_mut() else {
+            return false;
+        };
+
+        change_output.value = change;
+
+        true
+    }
+
     fn replace_outputs(&mut self, outputs: Vec<Self::Output>) {
         self.outputs = outputs;
     }
