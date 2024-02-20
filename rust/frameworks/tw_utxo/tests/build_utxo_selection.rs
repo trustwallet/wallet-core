@@ -89,7 +89,7 @@ fn build_tx_input_selection() {
         dummy_claims.push(claim);
     }
 
-    // Select the inputs and build the final transaction which includes the
+    // Select the inputs and build the final transaction that includes the
     // change amount.
     let (tx, args) = SelectionBuilder::new(tx, args)
         .compile(dummy_claims)
@@ -119,6 +119,7 @@ fn build_tx_input_selection() {
     // Select the inputs and build the transaction.
     let tx = computer.compile(claims).unwrap();
 
+    // Two inputs were selected.
     assert_eq!(tx.inputs.len(), 2);
     assert_eq!(
         tx.inputs[0].previous_output.hash,
@@ -129,12 +130,17 @@ fn build_tx_input_selection() {
         utxo2.previous_output.hash
     );
 
+    // Check the amounts and fee precision.
     let fee = tx.fee(SATS_PER_VBYTE);
     assert_eq!(fee, 814);
 
+    // NOTE: During UTXO selection, a dummy signature is used. Since the
+    // DER-encoded signature lengths (plus Sighash type) can slightly vary (71
+    // to 73 bytes), the projected fee during change output calculation can be
+    // slightly off from the final fee.
+
     let total_input = arg1.amount + arg2.amount;
     let total_output = tx.outputs[0].value + tx.outputs[1].value + tx.outputs[2].value;
-    // TODO: comment on this:
     assert_eq!(total_input, total_output + fee - 2);
 
     let total_input = 1_000 + 3_000;
