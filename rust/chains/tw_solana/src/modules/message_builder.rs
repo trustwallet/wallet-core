@@ -10,12 +10,14 @@ use crate::modules::compiled_keys::CompiledKeys;
 use crate::modules::instruction_builder::stake_instruction::StakeInstructionBuilder;
 use crate::modules::instruction_builder::system_instruction::SystemInstructionBuilder;
 use crate::modules::instruction_builder::token_instruction::TokenInstructionBuilder;
-use crate::modules::instruction_builder::{DepositStakeArgs, InstructionBuilder, TransferArgs};
+use crate::modules::instruction_builder::{
+    DepositStakeArgs, InstructionBuilder, InstructionBuilder1,
+};
 use crate::transaction::versioned::VersionedMessage;
 use crate::transaction::{legacy, v0};
 use std::borrow::Cow;
 use std::str::FromStr;
-use tw_coin_entry::error::{SigningError, SigningResult};
+use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_keypair::ed25519;
 use tw_keypair::traits::KeyPairTrait;
 use tw_proto::Solana::Proto;
@@ -104,6 +106,9 @@ impl<'a> MessageBuilder<'a> {
             ProtoTransactionType::create_token_account_transaction(ref create_token_acc) => {
                 self.create_token_account_from_proto(create_token_acc)
             },
+            ProtoTransactionType::token_transfer_transaction(ref token_transfer) => {
+                self.token_transfer_from_proto(token_transfer)
+            },
             _ => todo!(),
         }
     }
@@ -116,15 +121,15 @@ impl<'a> MessageBuilder<'a> {
         let to = SolanaAddress::from_str(&transfer.recipient)?;
         let references = Self::parse_references(&transfer.references)?;
 
-        let instructions = InstructionBuilder::transfer(TransferArgs {
-            from,
-            to,
-            lamports: transfer.value,
-            recent_blockhash: self.recent_blockhash()?,
-            memo: transfer.memo.to_string(),
-            references,
-        })?;
-        self.add_nonce_advance_if_necessary(instructions)
+        let transfer_instruction = SystemInstructionBuilder::transfer(from, to, transfer.value)
+            .with_references(references);
+
+        let mut builder = InstructionBuilder1::default();
+        builder
+            .maybe_advance_nonce(self.nonce_account()?, from)
+            .maybe_memo(transfer.memo.as_ref())
+            .add_instruction(transfer_instruction);
+        Ok(builder.output())
     }
 
     fn delegate_stake_from_proto(
@@ -232,24 +237,47 @@ impl<'a> MessageBuilder<'a> {
             token_mint_address,
             token_address,
         );
-        self.add_nonce_advance_if_necessary(std::iter::once(instruction))
+        let mut builder = InstructionBuilder1::default();
+        builder
+            .maybe_advance_nonce(self.nonce_account()?, funding_account)
+            .add_instruction(instruction);
+        Ok(builder.output())
     }
 
-    fn add_nonce_advance_if_necessary<I>(&self, instructions: I) -> SigningResult<Vec<Instruction>>
-    where
-        I: IntoIterator<Item = Instruction>,
-    {
-        if let Some(nonce_account) = self.nonce_account()? {
-            let advance_instruction = SystemInstructionBuilder::advance_nonce_account(
-                nonce_account,
-                self.signer_address()?,
-            );
-            Ok(std::iter::once(advance_instruction)
-                .chain(instructions)
-                .collect())
-        } else {
-            Ok(instructions.into_iter().collect())
-        }
+    fn token_transfer_from_proto(
+        &self,
+        token_transfer: &Proto::TokenTransfer,
+    ) -> SigningResult<Vec<Instruction>> {
+        let signer = self.signer_address()?;
+        let sender_token_address =
+            SolanaAddress::from_str(token_transfer.sender_token_address.as_ref())?;
+        let token_mint_address =
+            SolanaAddress::from_str(token_transfer.token_mint_address.as_ref())?;
+        let recipient_token_address =
+            SolanaAddress::from_str(token_transfer.recipient_token_address.as_ref())?;
+
+        let decimals = token_transfer
+            .decimals
+            .try_into()
+            .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?;
+        let references = Self::parse_references(&token_transfer.references)?;
+
+        let transfer_instruction = TokenInstructionBuilder::transfer_checked(
+            sender_token_address,
+            token_mint_address,
+            recipient_token_address,
+            signer,
+            token_transfer.amount,
+            decimals,
+        )
+        .with_references(references);
+
+        let mut builder = InstructionBuilder1::default();
+        builder
+            .maybe_advance_nonce(self.nonce_account()?, signer)
+            .maybe_memo(token_transfer.memo.as_ref())
+            .add_instruction(transfer_instruction);
+        Ok(builder.output())
     }
 
     fn nonce_account(&self) -> SigningResult<Option<SolanaAddress>> {

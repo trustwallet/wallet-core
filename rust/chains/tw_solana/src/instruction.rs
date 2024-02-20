@@ -42,6 +42,13 @@ impl Instruction {
             data,
         }
     }
+
+    pub fn with_references<I: IntoIterator<Item = SolanaAddress>>(mut self, references: I) -> Self {
+        for reference in references {
+            self.accounts.push(AccountMeta::readonly(reference, false));
+        }
+        self
+    }
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Clone, Serialize, Deserialize)]

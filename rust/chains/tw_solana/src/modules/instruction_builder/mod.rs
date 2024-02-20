@@ -4,7 +4,7 @@
 
 use crate::address::SolanaAddress;
 use crate::blockhash::Blockhash;
-use crate::instruction::{AccountMeta, Instruction};
+use crate::instruction::Instruction;
 use crate::program::stake_program::StakeProgram;
 use tw_coin_entry::error::SigningResult;
 
@@ -14,15 +14,54 @@ pub mod token_instruction;
 
 use stake_instruction::{Authorized, Lockup, StakeInstructionBuilder};
 use system_instruction::SystemInstructionBuilder;
-// use token_instruction::TokenInstruction;
 
-pub struct TransferArgs {
-    pub from: SolanaAddress,
-    pub to: SolanaAddress,
-    pub lamports: u64,
-    pub recent_blockhash: Blockhash,
-    pub memo: String,
-    pub references: Vec<SolanaAddress>,
+// TODO rename to `InstructionBuilder`.
+#[derive(Default)]
+pub struct InstructionBuilder1 {
+    instructions: Vec<Instruction>,
+}
+
+impl InstructionBuilder1 {
+    /// Adds an `advance_nonce` instruction if the nonce account provided.
+    pub fn maybe_advance_nonce(
+        &mut self,
+        nonce_account: Option<SolanaAddress>,
+        authorized_account: SolanaAddress,
+    ) -> &mut Self {
+        if let Some(nonce_account) = nonce_account {
+            self.instructions
+                .push(SystemInstructionBuilder::advance_nonce_account(
+                    nonce_account,
+                    authorized_account,
+                ));
+        }
+        self
+    }
+
+    /// Adds a `memo` instruction if it is not empty.
+    pub fn maybe_memo(&mut self, memo: &str) -> &mut Self {
+        if !memo.is_empty() {
+            self.instructions.push(SystemInstructionBuilder::memo(memo));
+        }
+        self
+    }
+
+    pub fn add_instruction(&mut self, instruction: Instruction) -> &mut Self {
+        self.instructions.push(instruction);
+        self
+    }
+
+    pub fn add_instructions<I>(&mut self, instructions: I) -> &mut Self
+    where
+        I: IntoIterator<Item = Instruction>,
+    {
+        self.instructions.extend(instructions);
+        self
+    }
+
+    pub fn output(self) -> Vec<Instruction> {
+        self.instructions
+    }
 }
 
 pub struct DepositStakeArgs {
@@ -38,24 +77,7 @@ pub struct DepositStakeArgs {
 pub struct InstructionBuilder;
 
 impl InstructionBuilder {
-    /// Builds all necessary instructions including optional nonce account advance and transfer memo.
-    pub fn transfer(args: TransferArgs) -> SigningResult<Vec<Instruction>> {
-        let mut instructions = Vec::default();
-
-        if !args.memo.is_empty() {
-            // Optional memo. Order: before transfer, as per documentation.
-            instructions.push(SystemInstructionBuilder::memo(&args.memo));
-        }
-
-        instructions.push(SystemInstructionBuilder::transfer(
-            args.from,
-            args.to,
-            args.lamports,
-            args.references,
-        ));
-        Ok(instructions)
-    }
-
+    // TODO move to `StakeInstructionBuilder`.
     pub fn deposit_stake(args: DepositStakeArgs) -> SigningResult<Vec<Instruction>> {
         let stake_addr = args.stake_account.unwrap_or_else(|| {
             // no stake address specified, generate a new unique
@@ -81,11 +103,5 @@ impl InstructionBuilder {
             StakeInstructionBuilder::stake_initialize(stake_addr, authorized, lockup),
             StakeInstructionBuilder::delegate(stake_addr, args.validator, args.sender),
         ])
-    }
-}
-
-fn append_references(account_metas: &mut Vec<AccountMeta>, references: Vec<SolanaAddress>) {
-    for reference in references {
-        account_metas.push(AccountMeta::readonly(reference, false));
     }
 }

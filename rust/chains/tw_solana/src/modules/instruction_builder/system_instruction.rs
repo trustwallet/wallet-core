@@ -5,7 +5,6 @@
 use crate::address::SolanaAddress;
 use crate::defined_addresses::*;
 use crate::instruction::{AccountMeta, Instruction};
-use crate::modules::instruction_builder::append_references;
 use serde::{Deserialize, Serialize};
 
 /// An instruction to the system program.
@@ -217,13 +216,11 @@ impl SystemInstructionBuilder {
         from_pubkey: SolanaAddress,
         to_pubkey: SolanaAddress,
         lamports: u64,
-        references: Vec<SolanaAddress>,
     ) -> Instruction {
-        let mut account_metas = vec![
+        let account_metas = vec![
             AccountMeta::new(from_pubkey, true),
             AccountMeta::new(to_pubkey, false),
         ];
-        append_references(&mut account_metas, references);
         Instruction::new_with_bincode(
             *SYSTEM_PROGRAM_ID_ADDRESS,
             SystemInstruction::Transfer { lamports },
