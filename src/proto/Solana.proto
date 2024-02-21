@@ -183,10 +183,9 @@ message RawMessage {
         // Relatively recent block hash (base58 encoded).
         string recent_blockhash = 3;
         repeated Instruction instruction = 4;
-        MessageAddressTableLookup address_table_lookups = 5;
+        repeated MessageAddressTableLookup address_table_lookups = 5;
     }
 
-    bool versioned = 1;
     oneof message {
         MessageLegacy legacy = 2;
         MessageV0 v0 = 3;

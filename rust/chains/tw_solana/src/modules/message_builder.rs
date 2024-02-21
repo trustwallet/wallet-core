@@ -14,10 +14,10 @@ use crate::modules::instruction_builder::system_instruction::SystemInstructionBu
 use crate::modules::instruction_builder::token_instruction::TokenInstructionBuilder;
 use crate::modules::instruction_builder::InstructionBuilder;
 use crate::transaction::versioned::VersionedMessage;
-use crate::transaction::{legacy, v0};
+use crate::transaction::{legacy, v0, CompiledInstruction, MessageHeader};
 use std::borrow::Cow;
 use std::str::FromStr;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::{AddressResult, SigningError, SigningErrorType, SigningResult};
 use tw_keypair::ed25519;
 use tw_keypair::traits::KeyPairTrait;
 use tw_proto::Solana::Proto;
@@ -55,6 +55,10 @@ impl<'a> MessageBuilder<'a> {
     }
 
     pub fn build(self) -> SigningResult<VersionedMessage> {
+        if let Some(ref raw_message) = self.input.raw_message {
+            return RawMessageBuilder::build(raw_message);
+        }
+
         let instructions = self.build_instructions()?;
 
         // Please note the fee payer can be different from the actual signer.
@@ -443,4 +447,128 @@ impl<'a> MessageBuilder<'a> {
             .map(|addr| SolanaAddress::from_str(addr).map_err(SigningError::from))
             .collect()
     }
+}
+
+pub struct RawMessageBuilder;
+
+impl RawMessageBuilder {
+    pub fn build(raw_message: &Proto::RawMessage) -> SigningResult<VersionedMessage> {
+        use Proto::mod_RawMessage::OneOfmessage as RawMessageType;
+
+        match raw_message.message {
+            RawMessageType::legacy(ref legacy) => Self::build_legacy(legacy),
+            RawMessageType::v0(ref v0) => Self::build_v0(v0),
+            RawMessageType::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
+        }
+    }
+
+    fn build_legacy(
+        legacy: &Proto::mod_RawMessage::MessageLegacy,
+    ) -> SigningResult<VersionedMessage> {
+        let header = Self::build_message_header(&legacy.header)?;
+        let account_keys = Self::build_account_keys(&legacy.account_keys)?;
+        let recent_blockhash = Blockhash::from_str(legacy.recent_blockhash.as_ref())?;
+        let instructions: Vec<_> = Self::build_instructions(&legacy.instruction)?;
+
+        Ok(VersionedMessage::Legacy(legacy::Message {
+            header,
+            account_keys,
+            recent_blockhash: recent_blockhash.to_bytes(),
+            instructions,
+        }))
+    }
+
+    fn build_v0(v0: &Proto::mod_RawMessage::MessageV0) -> SigningResult<VersionedMessage> {
+        let header = Self::build_message_header(&v0.header)?;
+        let account_keys = Self::build_account_keys(&v0.account_keys)?;
+        let recent_blockhash = Blockhash::from_str(v0.recent_blockhash.as_ref())?;
+        let instructions: Vec<_> = Self::build_instructions(&v0.instruction)?;
+        let address_table_lookups = v0
+            .address_table_lookups
+            .iter()
+            .map(Self::build_address_lookup_table)
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        Ok(VersionedMessage::V0(v0::Message {
+            header,
+            account_keys,
+            recent_blockhash: recent_blockhash.to_bytes(),
+            instructions,
+            address_table_lookups,
+        }))
+    }
+
+    fn build_message_header(
+        raw_header: &Option<Proto::mod_RawMessage::MessageHeader>,
+    ) -> SigningResult<MessageHeader> {
+        let raw_header = raw_header
+            .as_ref()
+            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+        Ok(MessageHeader {
+            num_required_signatures: try_into_u8(raw_header.num_required_signatures)?,
+            num_readonly_signed_accounts: try_into_u8(raw_header.num_readonly_signed_accounts)?,
+            num_readonly_unsigned_accounts: try_into_u8(raw_header.num_readonly_unsigned_accounts)?,
+        })
+    }
+
+    fn build_account_keys(raw_keys: &[Cow<'_, str>]) -> SigningResult<Vec<SolanaAddress>> {
+        raw_keys
+            .iter()
+            .map(|s| SolanaAddress::from_str(s.as_ref()))
+            .collect::<AddressResult<Vec<_>>>()
+            .map_err(SigningError::from)
+    }
+
+    fn build_instructions(
+        ixs: &[Proto::mod_RawMessage::Instruction],
+    ) -> SigningResult<Vec<CompiledInstruction>> {
+        ixs.iter().map(Self::build_instruction).collect()
+    }
+
+    fn build_instruction(
+        ix: &Proto::mod_RawMessage::Instruction,
+    ) -> SigningResult<CompiledInstruction> {
+        let accounts = ix
+            .accounts
+            .iter()
+            .map(|idx| try_into_u8(*idx))
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        Ok(CompiledInstruction {
+            program_id_index: try_into_u8(ix.program_id)?,
+            accounts,
+            data: ix.program_data.to_vec(),
+        })
+    }
+
+    fn build_address_lookup_table(
+        lookup: &Proto::mod_RawMessage::MessageAddressTableLookup,
+    ) -> SigningResult<v0::MessageAddressTableLookup> {
+        let account_key = SolanaAddress::from_str(lookup.account_key.as_ref())?;
+        let writable_indexes = lookup
+            .writable_indexes
+            .iter()
+            .copied()
+            .map(try_into_u8)
+            .collect::<SigningResult<Vec<_>>>()?;
+        let readonly_indexes = lookup
+            .readonly_indexes
+            .iter()
+            .copied()
+            .map(try_into_u8)
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        Ok(v0::MessageAddressTableLookup {
+            account_key,
+            writable_indexes,
+            readonly_indexes,
+        })
+    }
+}
+
+fn try_into_u8<T>(num: T) -> SigningResult<u8>
+where
+    u8: TryFrom<T>,
+{
+    u8::try_from(num).map_err(|_| SigningError(SigningErrorType::Error_invalid_params))
 }
