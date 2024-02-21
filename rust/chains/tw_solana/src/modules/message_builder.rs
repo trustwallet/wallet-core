@@ -54,6 +54,21 @@ impl<'a> MessageBuilder<'a> {
         Ok(signing_keys)
     }
 
+    pub fn signers(&self) -> SigningResult<Vec<SolanaAddress>> {
+        let mut signers = vec![self.signer_address()?];
+
+        if !self.input.fee_payer.is_empty() {
+            signers.push(SolanaAddress::from_str(self.input.fee_payer.as_ref())?);
+        }
+
+        // Consider matching other transaction types if they may contain other private keys.
+        if let ProtoTransactionType::create_nonce_account(ref nonce) = self.input.transaction_type {
+            signers.push(SolanaAddress::from_str(nonce.nonce_account.as_ref())?);
+        }
+
+        Ok(signers)
+    }
+
     pub fn build(self) -> SigningResult<VersionedMessage> {
         if let Some(ref raw_message) = self.input.raw_message {
             return RawMessageBuilder::build(raw_message);

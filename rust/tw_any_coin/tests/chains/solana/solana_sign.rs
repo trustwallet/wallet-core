@@ -620,3 +620,44 @@ fn test_solana_sign_raw_message_legacy() {
     assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded, "3p2kzZ1DvquqC6LApPuxpTg5CCDVPqJFokGSnGhnBHrta4uq7S2EyehV1XNUVXp51D69GxGzQZUjikfDzbWBG2aFtG3gHT1QfLzyFKHM4HQtMQMNXqay1NAeiiYZjNhx9UvMX4uAQZ4Q6rx6m2AYfQ7aoMUrejq298q1wBFdtS9XVB5QTiStnzC7zs97FUEK2T4XapjF1519EyFBViTfHpGpnf5bfizDzsW9kYUtRDW1UC2LgHr7npgq5W9TBmHf9hSmRgM9XXucjXLqubNWE7HUMhbKjuBqkirRM");
 }
+
+#[test]
+fn test_solana_sign_raw_message_v0() {
+    let v0 = Proto::mod_RawMessage::MessageV0 {
+        header: Some(Proto::mod_RawMessage::MessageHeader {
+            num_required_signatures: 1,
+            num_readonly_signed_accounts: 0,
+            num_readonly_unsigned_accounts: 1,
+        }),
+        account_keys: vec![
+            "6pEfiZjMycJY4VA2FtAbKgYvRwzXDpxY58Xp4b7FQCz9".into(),
+            "11111111111111111111111111111111".into(),
+        ],
+        recent_blockhash: "HxKwWFTHixCu8aw35J1uxAX6yUhLHkFCdJJdK4y98Gyj".into(),
+        instruction: vec![Proto::mod_RawMessage::Instruction {
+            program_id: 1,
+            accounts: vec![0, 0],
+            program_data: "020000008813000000000000".decode_hex().unwrap().into(),
+        }],
+        address_table_lookups: Vec::default(),
+    };
+
+    let raw_message = Proto::RawMessage {
+        message: Proto::mod_RawMessage::OneOfmessage::v0(v0),
+    };
+    let input = Proto::SigningInput {
+        private_key: "833a053c59e78138a3ed090459bc6743cca6a9cbc2809a7bf5dbc7939b8775c8"
+            .decode_hex()
+            .unwrap()
+            .into(),
+        raw_message: Some(raw_message),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    // Successfully broadcasted: https://explorer.solana.com/tx/4ffBzXxLPYEEdCYpQGETkCTCCsH6iTdmKzwUZXZZgFemdhRpxQwboguFFoKCeGF3SsZPzuwwE7LbRwLgJbsyRqyP?cluster=testnet
+    assert_eq!(output.encoded, "6NijVxwQoDjqt6A41HXCK9kXwNDp48uLgvRyE8uz6NY5dEzaEDLzjzuMnc5TGatHZZUXehKrzUGzbg9jPSdn6pVsMc9TXNH6JGe5RJLmHwWey3MC1p8Hs2zhjw5P439P57NToatraDX9ZwvBtK4EzZzRjWbyGdicheTPjeYKCzvPCLxDkTFtPCM9VZGGXSN2Bne92NLDvf6ntNm5pxsPkZGxPe4w9Eq26gkE83hZyrYXKaiDh8TbqbHatSkw");
+}

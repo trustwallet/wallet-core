@@ -42,7 +42,7 @@ pub struct CompiledInstruction {
 }
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone, Copy, Eq, PartialEq, Hash)]
-pub struct Signature(#[serde(with = "as_byte_sequence")] pub(crate) H512);
+pub struct Signature(#[serde(with = "as_byte_sequence")] pub H512);
 
 #[cfg(test)]
 mod tests {

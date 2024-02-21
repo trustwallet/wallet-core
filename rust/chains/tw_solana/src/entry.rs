@@ -17,7 +17,6 @@ use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_keypair::tw::PublicKey;
 use tw_proto::Solana::Proto;
-use tw_proto::TxCompiler::Proto as CompilerProto;
 
 pub struct SolanaEntry;
 
@@ -26,7 +25,7 @@ impl CoinEntry for SolanaEntry {
     type Address = SolanaAddress;
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = Proto::SigningOutput<'static>;
-    type PreSigningOutput = CompilerProto::PreSigningOutput<'static>;
+    type PreSigningOutput = Proto::PreSigningOutput<'static>;
 
     // Optional modules:
     type JsonSigner = NoJsonSigner;

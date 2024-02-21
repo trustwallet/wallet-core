@@ -11,7 +11,7 @@ use tw_misc::traits::ToBytesVec;
 /// Represents an `ed25519` signature.
 /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/signature.rs#L22-L53
 #[allow(non_snake_case)]
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Signature {
     /// `R` is an `EdwardsPoint`, formed by using an hash function with
     /// 512-bits output to produce the digest of:

@@ -67,6 +67,15 @@ impl From<&'static str> for SolanaAddress {
     }
 }
 
+impl<'a> TryFrom<&'a [u8]> for SolanaAddress {
+    type Error = AddressError;
+
+    fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
+        let bytes = H256::try_from(bytes).map_err(|_| AddressError::InvalidInput)?;
+        Ok(SolanaAddress::with_public_key_bytes(bytes))
+    }
+}
+
 impl fmt::Debug for SolanaAddress {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self)
