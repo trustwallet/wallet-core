@@ -1,5 +1,7 @@
 <img src="docs/banner.png" align="center" title="Trust logo">
 
+[This is a GEODB fork, see GEODB_README.md for more info](GEODB_README.md).
+
 Trust Wallet Core is an open-source, cross-platform, mobile-focused library
 implementing low-level cryptographic wallet functionality for a high number of blockchains.
 It is a core part of the popular [Trust Wallet](https://trustwallet.com), and some other projects.
