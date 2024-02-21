@@ -459,13 +459,13 @@ fn test_solana_sign_create_and_transfer_token_with_memo_and_references() {
 #[test]
 fn test_solana_sign_create_nonce_account() {
     let create_nonce_account = Proto::CreateNonceAccount {
-        nonce_account: "6vNrYDm6EHcvBALY7HywuDWpTSc6uGt3y2nf5MuG1TmJ".into(),
         nonce_account_private_key:
             "2a9737aca3cde2dc0b4f3ae3487e3a90000490cb39fbc979da32b974ff5d7490"
                 .decode_hex()
                 .unwrap()
                 .into(),
         rent: 10000000,
+        ..Proto::CreateNonceAccount::default()
     };
     let input = Proto::SigningInput {
         private_key: "044014463e2ee3cc9c67a6f191dbac82288eb1d5c1111d21245bdc6a855082a1"

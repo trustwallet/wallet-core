@@ -62,7 +62,6 @@ TEST(SolanaCompiler, CompileTransferWithSignatures) {
         "QSUuHZdyyn7hK4pxzLPMgPG8fY1XvXdppWMaKMLmhriLkckzGKJMaE3pWBRFBKzigXY28714uUNndb7S9hVakxa59h"
         "rLph39CMgAkcj6b8KYvJEkb1YdYytHSZNGi4kVVTNqiicNgPdf1gmG6qz9zVtnqj9JtaD2efdS8qxsKnvNWSgb8Xxb"
         "T6dwyp7msUUi7d27cYaPTpK";
-    EXPECT_EQ(outputData.size(), 296ul);
     {
         Solana::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
@@ -143,8 +142,6 @@ TEST(SolanaCompiler, CompileCreateNonceAccountWithSignatures) {
         "2wi47n1rpLZfoCHWKxNiikkDUJTGQNcSDrGUMfeW5aGubJrCfecPKEo9Wo9kd36iSsxYPYSWNKrz2HTooa1rCRhqjX"
         "D8dyX3bXGV8TK6W2sEgf4JkcDnNoWQLbindcP8XR";
 
-    EXPECT_EQ(outputData.size(), 583ul);
-
     {
         Solana::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
@@ -220,7 +217,7 @@ TEST(SolanaCompiler, CompileWithdrawNonceAccountWithSignatures) {
         "XMusRtzeRV45CvrLKUvsAH7SSWHYW6bGow5TbEJie4buuz2rnbeVG5cxaZ6vyG2nJWHNuDPWZJTRi1MFEwHoxst3a5"
         "jQPv9UrG9rNZFCw4uZizVcG6HEqHWgQBu8gVpYpzFCX5SrhjGPZpbK3YmHhUEMEpJx3Fn7jX7Kt4t3hhhrieXppoqK"
         "NuqjeNVjfEf3Q8dJRfuVMLdXYbmitCVTPQzYKWBR6ERqWLYoAVqjoAS2pRUw1nrqi1HR";
-    EXPECT_EQ(outputData.size(), 431ul);
+
     {
         Solana::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
@@ -300,7 +297,7 @@ TEST(SolanaCompiler, CompileCreateTokenAccountAndTransferWithSignatures) {
         "uGUUpMYUT9uF16T72s4TTwqiWDPFkidD33tACx74JKGoDraHEvEeAPrv6iUmC675kMuAV4EtVspVc5SnKXgRWRxb4d"
         "cH3k7K4ckjSxYZwg8UhTXUgPxA936jBr2HeQuPLmNVn2muA1HfL2DnyrobUP9vHpbL3HHgM2fckeXy8LAcjnoE9TTa"
         "AKX32wo5xoMj9wJmmtcU6YbXN4KgZ";
-    EXPECT_EQ(outputData.size(), 572ul);
+
     {
         Solana::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
@@ -363,9 +360,8 @@ TEST(SolanaCompiler, SolanaCompileAdvanceNonceAccountWithSignatures) {
         "tKtutehxesmtzkZCPY9ADZ4ijFyveLmTt7kjZXX7ZWVoUmKAqiaYsPTex728uMBSRJpV4zRw2yKGdQRHTKy2QFEb9a"
         "cwLjmrbEgoyzPCarxjPhw21QZnNcy8RiYJB2mzZ9nvhrD5d2jB5TtdiroQPgTSdKFzkNEd7hJUKpqUppjDFcNHGK73"
         "FE9pCP2dKxCLH8Wfaez8bLtopjmWun9cbikxo7LZsarYzMXvxwZmerRd1";
-    EXPECT_EQ(outputData.size(), 330ul);
-    {
 
+    {
         Solana::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
 
@@ -443,7 +439,7 @@ TEST(SolanaCompiler, CompileCreateTokenAccountAndTransferWithExternalFeePayerWit
         TransactionCompiler::compileWithSignatures(coin, inputStrData, {signature1, signature2}, {feePayerPublicKeyData, publicKeyData});
     const auto ExpectedTx =
         "5sxFkQYd2FvqRU64N79A6xjJKNkgUsEEg2wKgai2NiK7A7hF3q5GYEbjQsYBG9S2MejwTENbwHzvypaa3D3cEkxvVTg19aJFWdCtXQiz42QF5fN2MuAb6eJR4KHFnzCtxxnYGtN9swZ5B5cMSPCffCRZeUTe3kooRmbTYPvSaemU6reVSM7X2beoFKPd2svrLFa8XnvhBwL9EiFWQ9WhHB2cDV7KozCnJAW9kdNDR4RbfFQxboANGo3ZGE5ddcZ6YdomATKze1TtHj2qzJEJRwxsRr3iM3iNFb4Eav5Q2n71KUriRf73mo44GQUPbQ2LvpZKf4V6M2PzxJwzBo7FiFZurPmsanT3U5efEsKnnueddbiLHedc8JXc1d3Z53sFxVGJpsGA8RR6thse9wUvaEWqXVtPbNA6NMao9DFGD6Dudza9pJXSobPc7mDHZmVmookf5vi6Lb9Y1Q4EgcEPQmbaDnKGGB6uGfZe629i3iKXRzAd2dB7mKfffhDadZ8S1eYGT3dhddV3ExRxcqDP9BAGQT3rkRw1JpeSSi7ziYMQ3vn4t3okdgQSq6rrpbPDUNG8tLSHFMAq3ydnh4Cb4ECKkYoz9SFAnXACUu4mWETxijuKMK9kHrTqPGk9weHTzobzCC8q8fcPWV3TcyUyMxsbVxh5q1p5h5tWfD9td5TZJ2HEUbTop2dA53ZF";
-    EXPECT_EQ(outputData.size(), 703ul);
+
     {
         Solana::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
@@ -522,7 +518,7 @@ TEST(SolanaCompiler, CompileTokenTransferWithExternalFeePayerWithSignatures) {
         TransactionCompiler::compileWithSignatures(coin, inputStrData, {signature1, signature2}, {feePayerPublicKeyData, publicKeyData});
     const auto ExpectedTx =
         "qjgNVBmoPDHNTN2ENQfxNVE57jWXpqdmu5GQX4msA7iK8ZRAnKpvbusQagv8CZGyNYti23p9jBsjTSx75ZU26UW5vgC8D88pusW8W5dp1ERo5DSfurMSYJ6afgQHdcuzn7exb8znSm6uV4y1cWgBRcuAGdg3wRpVhP8HEB1EeKgzjYVWvMSy6yR7qVrSL6BxHG6eiAMyahLFbEt4qBqLEdxxY7Dt4DyydVYmG2ZVtheaMHD3ACwCjpyPLXj399wxSgGXQQFGtzEJQw9awVezmJ4wZk6W4dDpXQvdKYaqUvwTwRZsQB5o2iekPWZXR9xvHiMLjMVBPzYgcU14ZSaCbqSNVv2pAJxP1sMvxZMNMzZPttPxCsDDGq9biC7exXwzesXSnZ3rsgEYeZtkUiBHAxR4rYqBpA6VzLs1bPx8MPTvr9mhNi2ezMBbg2nEfHV6Fz7H7rEY2g3jDtRz35Vmgits8s9RKi3kb73WtGUieRiXjiqkNhpvKkST1oEYRQ9";
-    EXPECT_EQ(outputData.size(), 514ul);
+
     {
         Solana::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));

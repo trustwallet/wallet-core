@@ -36,13 +36,14 @@ impl<'a> MessageBuilder<'a> {
     }
 
     pub fn signing_keys(&self) -> SigningResult<Vec<ed25519::sha512::KeyPair>> {
-        let mut signing_keys = vec![self.signer_key()?];
-
+        let mut signing_keys = Vec::default();
         if !self.input.fee_payer_private_key.is_empty() {
             let fee_payer_private_key =
                 ed25519::sha512::KeyPair::try_from(self.input.fee_payer_private_key.as_ref())?;
             signing_keys.push(fee_payer_private_key);
         }
+
+        signing_keys.push(self.signer_key()?);
 
         // Consider matching other transaction types if they may contain other private keys.
         if let ProtoTransactionType::create_nonce_account(ref nonce) = self.input.transaction_type {
@@ -55,11 +56,12 @@ impl<'a> MessageBuilder<'a> {
     }
 
     pub fn signers(&self) -> SigningResult<Vec<SolanaAddress>> {
-        let mut signers = vec![self.signer_address()?];
-
+        let mut signers = Vec::default();
         if !self.input.fee_payer.is_empty() {
             signers.push(SolanaAddress::from_str(self.input.fee_payer.as_ref())?);
         }
+
+        signers.push(self.signer_address()?);
 
         // Consider matching other transaction types if they may contain other private keys.
         if let ProtoTransactionType::create_nonce_account(ref nonce) = self.input.transaction_type {
@@ -364,8 +366,16 @@ impl<'a> MessageBuilder<'a> {
         create_nonce: &Proto::CreateNonceAccount,
     ) -> SigningResult<Vec<Instruction>> {
         let signer = self.signer_address()?;
-        let new_nonce_account = SolanaAddress::from_str(create_nonce.nonce_account.as_ref())?;
         let prev_nonce_account = self.nonce_account()?;
+
+        let new_nonce_account = if create_nonce.nonce_account.is_empty() {
+            let nonce_key = ed25519::sha512::KeyPair::try_from(
+                create_nonce.nonce_account_private_key.as_ref(),
+            )?;
+            SolanaAddress::with_public_key_ed25519(nonce_key.public())
+        } else {
+            SolanaAddress::from_str(create_nonce.nonce_account.as_ref())?
+        };
 
         let mut builder = InstructionBuilder::default();
         builder
