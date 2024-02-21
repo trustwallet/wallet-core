@@ -61,7 +61,8 @@ fn build_tx_input_selection() {
         .p2pkh(bob_pubkey)
         .unwrap();
 
-    // Create the change output.
+    // Create the change output. The exact amount will be calculated in the
+    // `SelectionBuilder`.
     let change_output = OutputBuilder::new()
         .amount(0)
         .p2pkh(alice_pubkey.clone())
@@ -146,4 +147,6 @@ fn build_tx_input_selection() {
     let total_input = 1_000 + 3_000;
     let total_output = 1_000 + 1_000 + 1186; // 1186 = change_output
     assert_eq!(total_input, total_output + 814);
+
+    // TODO:
 }

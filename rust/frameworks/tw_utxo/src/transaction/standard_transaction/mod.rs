@@ -96,6 +96,8 @@ impl TransactionInterface for Transaction {
     }
 
     fn set_change_amount(&mut self, change: Amount) -> bool {
+        // TODO: Is it a good idea to just assume that the last output is the
+        // change output?
         let Some(change_output) = self.outputs.last_mut() else {
             return false;
         };

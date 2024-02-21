@@ -31,7 +31,6 @@ pub enum InputSelector {
 pub struct SelectionBuilder<Transaction> {
     transaction_to_sign: Transaction,
     args: TxSigningArgs,
-    did_compile: bool,
     _phantom: PhantomData<Transaction>,
 }
 
@@ -44,12 +43,14 @@ where
         Self {
             transaction_to_sign: transaction,
             args,
-            did_compile: false,
             _phantom: PhantomData,
         }
     }
 
-    pub fn compile(mut self, claims: Vec<SpendingData>) -> UtxoResult<Self> {
+    pub fn compile(
+        mut self,
+        claims: Vec<SpendingData>,
+    ) -> UtxoResult<CompiledSelectionBuilder<Transaction>> {
         // There should be the same number of UTXOs and their meta data.
         if self.args.utxos_to_sign.len() != self.transaction_to_sign.inputs().len() {
             return Err(UtxoError(UtxoErrorKind::Error_internal));
@@ -71,12 +72,25 @@ where
             utxo.set_witness(claim.witness);
         }
 
-        // Set the flag to indicate that the transaction has been compiled.
-        self.did_compile = true;
-
-        Ok(self)
+        Ok(CompiledSelectionBuilder {
+            transaction_to_sign: self.transaction_to_sign,
+            args: self.args,
+            _phantom: PhantomData,
+        })
     }
+}
 
+pub struct CompiledSelectionBuilder<Transaction> {
+    transaction_to_sign: Transaction,
+    args: TxSigningArgs,
+    _phantom: PhantomData<Transaction>,
+}
+
+impl<Transaction> CompiledSelectionBuilder<Transaction>
+where
+    Transaction: TransactionPreimage + TransactionInterface + TransactionFee,
+    Transaction::Output: TxOutputInterface,
+{
     pub fn select_inputs(
         mut self,
         selector: InputSelector,
@@ -92,11 +106,12 @@ where
         Ok((self.transaction_to_sign, self.args))
     }
 
-    pub fn select_inputs_without_change_output(
+    pub fn select_inputs_do_not_set_change(
         mut self,
         selector: InputSelector,
         fee_rate: Amount,
     ) -> UtxoResult<(Transaction, TxSigningArgs)> {
+        // TODO: Ensure that the transaction has been compiled.
         let _ = self.do_select_inputs(selector, fee_rate)?;
         Ok((self.transaction_to_sign, self.args))
     }
@@ -106,11 +121,6 @@ where
         selector: InputSelector,
         fee_rate: Amount,
     ) -> UtxoResult<Amount> {
-        // Make sure the transaction has been compiled.
-        if !self.did_compile {
-            return Err(UtxoError(UtxoErrorKind::Error_internal));
-        }
-
         // Calculate the total output amount.
         let total_out = self
             .transaction_to_sign
