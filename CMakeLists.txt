@@ -39,6 +39,9 @@ if (TW_COMPILE_WASM)
     add_subdirectory(wasm)
 endif ()
 
+set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ~/homebrew/Cellar/boost/1.84.0/include)
+set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ~/homebrew/Cellar/boost/1.84.0/lib)
+
 find_host_package(Boost REQUIRED)
 
 include(ExternalProject)
