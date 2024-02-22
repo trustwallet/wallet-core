@@ -114,6 +114,31 @@ fn test_solana_sign_transfer_with_memo_and_references() {
 }
 
 #[test]
+fn test_solana_sign_transfer_with_durable_nonce() {
+    let transfer = Proto::Transfer {
+        recipient: "3UVYmECPPMZSCqWKfENfuoTv51fTDTWicX9xmBD2euKe".into(),
+        value: 1000,
+        ..Proto::Transfer::default()
+    };
+    let input = Proto::SigningInput {
+        private_key: "044014463e2ee3cc9c67a6f191dbac82288eb1d5c1111d21245bdc6a855082a1"
+            .decode_hex()
+            .unwrap()
+            .into(),
+        recent_blockhash: "5ycoKxPRpW2GdD4byZuMptHU3VU5MgUCh6NLGQ2U8VE5".into(),
+        transaction_type: TransactionType::transfer_transaction(transfer),
+        nonce_account: "ALAaqqt4Cc8hWH22GT2L16xKNAn6gv7XCTF7JkbfWsc".into(),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    assert_eq!(output.encoded, "6zRqmNP5waeyartbf8GuQrWxdSy4SCYBTEmGhiXfYNxQTuUrvrBjia18YoCM367AQZWZ5yTjcN6FaXuaPWju7aVZNFjyqpuMZLNEbpm8ZNmKP4Na2VzR59iAdSPEZGTPuesZEniNMAD7ZSux6fayxgwrEwMWjeiskFQEwdvFzKNHfNLbjoVpdSTxhKiqfbwxnFBpBxNE4nqMj3bUR37cYJAFoDFokxy23HGpV93V9mbGG89aLBNQnd9LKTjpYFv49VMd48mptUd7uyrRwZLMneew2Bxq3PLsj9SaJyCWbsnqYj6bBahhsErz67PJTJepx4BEhqRxHGUSbpeNiL7qyERri1GZsXhN8fgU3nPiYr7tMMxuLAoUFRMJ79HCex7vxhf7SapvcP");
+}
+
+#[test]
 fn test_solana_sign_delegate_stake_no_stake_account() {
     let delegate = Proto::DelegateStake {
         validator_pubkey: "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC".into(),
@@ -457,6 +482,35 @@ fn test_solana_sign_create_and_transfer_token_with_memo_and_references() {
 }
 
 #[test]
+fn test_solana_sign_create_and_transfer_token_with_durable_nonce() {
+    let create_transfer_token = Proto::CreateAndTransferToken {
+        recipient_main_address: "3UVYmECPPMZSCqWKfENfuoTv51fTDTWicX9xmBD2euKe".into(),
+        token_mint_address: "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU".into(),
+        recipient_token_address: "93hbN3brRjZqRQTT9Xx6rAHVDFZFWD9ragFDXvDbTEjr".into(),
+        sender_token_address: "5sS5Z8GAdVHqZKRqEvpDauHvvLgbDveiyfi81uh25mrf".into(),
+        // 0.004
+        amount: 4000,
+        decimals: 6,
+        ..Proto::CreateAndTransferToken::default()
+    };
+    let input = Proto::SigningInput {
+        private_key: b58("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"),
+        recent_blockhash: "AaYfEmGQpfJWypZ8MNmBHTep1dwCHVYDRHuZ3gVFiJpY".into(),
+        transaction_type: TransactionType::create_and_transfer_token_transaction(
+            create_transfer_token,
+        ),
+        nonce_account: "6vNrYDm6EHcvBALY7HywuDWpTSc6uGt3y2nf5MuG1TmJ".into(),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    assert_eq!(output.encoded, "388uZws6GfA9aiH1LPsYBijGBEfLEgqe6q5NWVYhsmjXjrgZB4cScGuvja6nBL3i6qg6HA4a8ptW6aHsNKVdcBWKhjZjaTPH5heEThzwEsMDfnH2PWAUbqfiFgMZQRCkhyCj57hGUR7hBFPELfz3DBw5qMz1tnP9gU6KTqHUomu5UaadLHb2v5mbgTRcsMm3yDp2tzMwrp53VqvFNmHSau4ot4kdNL1jqEJC68Fj4ku6fMQaFSPyAeLQRF45ofYsFCa65fmtb4gBpqWUdqWLv5Dy6xQUQUDsin8qpEVds6unXw5f63UjZeD7XQdC6Vz5aq3e6P9ug8L41xc1rbuRU3Kp4arUKyqTsHMQ2dxMhPwEJLkHd4mFqqUWpYFTdfLFaNGU22hEkvP1esHUzaaGDmzAozbS96oaFw2jbHRRJtL8VjoA1aokGFFThM6M6mExuy8GhUXdGjxDFU83Dan1URmHMGBRC4J9RMZip9s1sktJw9Rj5Std9KVT8T7m4MxTVTx4QoBw6KAf6PgNHyHPtZSc7kzoCxDYNo2Myxvy8D95zk9YMp1MxeZXTDQ2aJuhWvfHhhrwgcQasAxRzbnJ9oehebVUNEcZEFsfnCgYuUmxWUemoKZnE1bNMCvERVkT5fKQ36e1rt5vTC2iES9jzr3hDC1Pk1");
+}
+
+#[test]
 fn test_solana_sign_create_nonce_account() {
     let create_nonce_account = Proto::CreateNonceAccount {
         nonce_account_private_key:
@@ -485,6 +539,35 @@ fn test_solana_sign_create_nonce_account() {
 }
 
 #[test]
+fn test_solana_sign_create_nonce_account_with_durable_nonce() {
+    let create_nonce_account = Proto::CreateNonceAccount {
+        nonce_account_private_key:
+            "2a9737aca3cde2dc0b4f3ae3487e3a90000490cb39fbc979da32b974ff5d7490"
+                .decode_hex()
+                .unwrap()
+                .into(),
+        rent: 10000000,
+        ..Proto::CreateNonceAccount::default()
+    };
+    let input = Proto::SigningInput {
+        private_key: "044014463e2ee3cc9c67a6f191dbac82288eb1d5c1111d21245bdc6a855082a1"
+            .decode_hex()
+            .unwrap()
+            .into(),
+        recent_blockhash: "E6hvnoXU9QmfWaibMk9NuT6QRZdfzbs96WGc2hhttqXQ".into(),
+        transaction_type: TransactionType::create_nonce_account(create_nonce_account),
+        nonce_account: "ALAaqqt4Cc8hWH22GT2L16xKNAn6gv7XCTF7JkbfWsc".into(),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    assert_eq!(output.encoded, "Fr8FzXoH7h6Xo2La6SE49BEPzRX6f93Qn1cFA5E8n6z2GJtZdTU2BfyYGr1zv21Zkq7h68Z3Q96VnFyUVVd1hTWeq6tHDamF1JK5L23yEeUXpEWv1KziWvG9XbxfseHUyWETQck7SY2HbsT4KSjRX9suDaBh68Bu8c96CVN7KtgYPhUrKP62dAMHsf5qo7MESFN8wKJto94ANNCbQMzPmhig9nfiAfvfz9CqV4nbnSiqBGwo2XoyPknDK8RJ1UmA5ptfZ6w6Fy4UmJbQZWuZwpUrkEkfgLMNJ36McHkGAnjpyzq9gMtzb33xSjx1BqnbWXkKJdi8HyQAHTtvtqPz7DMsW9qx5fu3TNz6iC8YHG2HiynFCRjTtc2aH1rpJ9TLdFQEK8WrhdMFr3yW27cg6NB3JUFopUkDg2k5FwtzFyCdfifwebD7eswVNnqjoZxW59fHgY3BrBH8uNst8YAQWvRH77y5L6imVmFhezU5JUb5sF58gR1D8eAQhUcHueakZb5FkFCaMeioTpKrVGgcSNe9zkBMuquoUR3t4MVTiUSLa815qKoBCRmdexQDBt5RQbdQhYyVWn3ovjdhkwDGBU2zywRvottGCcEStQrUrSQDg1tMVKxX5G3sBtxYf");
+}
+
+#[test]
 fn test_solana_sign_withdraw_nonce_account() {
     let withdraw_nonce = Proto::WithdrawNonceAccount {
         nonce_account: "6vNrYDm6EHcvBALY7HywuDWpTSc6uGt3y2nf5MuG1TmJ".into(),
@@ -506,6 +589,31 @@ fn test_solana_sign_withdraw_nonce_account() {
 
     assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded, "7gdEdDymvtfPfVgVvCTPzafmZc1Z8Zu4uXgJDLm8KGpLyPHysxFGjtFzimZDmGtNhQCh22Ygv3ZtPZmSbANbafikR3S1tvujatHW9gMo35jveq7TxwcGoNSqc7tnH85hkEZwnDryVaiKRvtCeH3dgFE9YqPHxiBuZT5eChHJvVNb9iTTdMsJXMusRtzeRV45CvrLKUvsAH7SSWHYW6bGow5TbEJie4buuz2rnbeVG5cxaZ6vyG2nJWHNuDPWZJTRi1MFEwHoxst3a5jQPv9UrG9rNZFCw4uZizVcG6HEqHWgQBu8gVpYpzFCX5SrhjGPZpbK3YmHhUEMEpJx3Fn7jX7Kt4t3hhhrieXppoqKNuqjeNVjfEf3Q8dJRfuVMLdXYbmitCVTPQzYKWBR6ERqWLYoAVqjoAS2pRUw1nrqi1HR");
+}
+
+#[test]
+fn test_solana_sign_withdraw_nonce_account_to_self_with_durable_nonce() {
+    let withdraw_nonce = Proto::WithdrawNonceAccount {
+        nonce_account: "6vNrYDm6EHcvBALY7HywuDWpTSc6uGt3y2nf5MuG1TmJ".into(),
+        recipient: "sp6VUqq1nDEuU83bU2hstmEYrJNipJYpwS7gZ7Jv7ZH".into(),
+        value: 10000000,
+    };
+    let input = Proto::SigningInput {
+        private_key: "044014463e2ee3cc9c67a6f191dbac82288eb1d5c1111d21245bdc6a855082a1"
+            .decode_hex()
+            .unwrap()
+            .into(),
+        recent_blockhash: "5EtRPR4sTWRSwNUE5a5SnKB46ZqTJH8vgF1qZFTKGHvw".into(),
+        transaction_type: TransactionType::withdraw_nonce_account(withdraw_nonce),
+        nonce_account: "ALAaqqt4Cc8hWH22GT2L16xKNAn6gv7XCTF7JkbfWsc".into(),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    assert_eq!(output.encoded, "3rxbwm6dSX4SbFa7yitVQnoUGWkmRuQtg3V13a2jEAPfZZACCXZX2UFgWFpPqE7KfZSYhd5QE9TLzyikCwcmSBHhKXjMp4oktQXwRT66YaCK8rJdNzBUuS1D9tgHMkLUWKAR7ZRyWd3XvtQhe7nWD6YF6TRGoKPSuwsZAArBxogA7YddmEUKPsr2qjSKbjg7X5BbNceFwjEFAiafuizdSt7eGJHB5m9zJeYct8LCanTwJwyEVu1T9HTsgjW9hqHehqhCiHP46KGo63o7WAoappZvM4EJZemu4GfM6F6H48bPXF2z1QJz17wE6BYeMXfXuGkCRt5jYxrjdKuqvTDYV34X1HjZYUdrkW6mQotWDY3bS6zyAt784Vwzk2uiA8ytmWMbC24coUVwPSPGwZ92WJ6BpVCCtGDxLzp4CkahRu78UNWzdcEwPG6AUf");
 }
 
 #[test]
