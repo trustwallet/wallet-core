@@ -2,7 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_keypair::ecdsa::der;
+use tw_keypair::{ecdsa::der, schnorr};
+use tw_misc::traits::ToBytesVec;
+use tw_proto::Utxo;
 
 use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
 
@@ -18,8 +20,8 @@ pub struct BitcoinEcdsaSignature {
 }
 
 impl BitcoinEcdsaSignature {
-    // The size of the serialized signature.
-    const SER_SIZE: usize = 71;
+    // The max size of the serialized signature including sighash type.
+    const SER_SIZE: usize = 73;
 
     pub fn new(sig: der::Signature, sighash_ty: SighashType) -> UtxoResult<Self> {
         Ok(BitcoinEcdsaSignature { sig, sighash_ty })
@@ -28,7 +30,29 @@ impl BitcoinEcdsaSignature {
         let mut ser = Vec::with_capacity(Self::SER_SIZE);
         ser.extend(self.sig.der_bytes());
         ser.push(self.sighash_ty.raw_sighash() as u8);
-        //debug_assert_eq!(ser.len(), Self::SER_SIZE);
+        debug_assert!(ser.len() <= Self::SER_SIZE);
+        ser
+    }
+}
+
+pub struct BitcoinSchnorrSignature {
+    sig: schnorr::Signature,
+    sighash_ty: SighashType,
+}
+
+impl BitcoinSchnorrSignature {
+    // The size of the serialized signature including sighash type.
+    const SER_SIZE: usize = 65;
+
+    pub fn new(sig: schnorr::Signature, sighash_ty: SighashType) -> UtxoResult<Self> {
+        Ok(BitcoinSchnorrSignature { sig, sighash_ty })
+    }
+
+    pub fn serialize(&self) -> Vec<u8> {
+        let mut ser = Vec::with_capacity(Self::SER_SIZE);
+        ser.extend(self.sig.to_vec());
+        ser.push(self.sighash_ty.raw_sighash() as u8);
+        debug_assert_eq!(ser.len(), Self::SER_SIZE);
         ser
     }
 }
