@@ -87,6 +87,7 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPTHORChain, TWCoinTypeHRP(TWCoinTypeTHORChain));
     ASSERT_EQ(TWHRPCryptoOrg, TWCoinTypeHRP(TWCoinTypeCryptoOrg));
     ASSERT_EQ(TWHRPOsmosis, TWCoinTypeHRP(TWCoinTypeOsmosis));
+    ASSERT_EQ(TWHRPOdin, TWCoinTypeHRP(TWCoinTypeOdin));
     ASSERT_EQ(TWHRPECash, TWCoinTypeHRP(TWCoinTypeECash));
     ASSERT_EQ(TWHRPSecret, TWCoinTypeHRP(TWCoinTypeSecret));
 

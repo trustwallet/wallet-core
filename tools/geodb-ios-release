@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+# This script compress and upload the built static wallet core common xcframework to github release
+#
+
+set -o pipefail
+set -e
+
+# load release library code
+base_dir=$(cd `dirname $0`; pwd)
+
+source ${base_dir}/library
+src_dir=${base_dir}/..
+built_dir=${base_dir}/../build/ios-frameworks
+
+# version to release
+version=$(wc_read_version $1)
+echo "release version ${version}"
+release_url=$(wc_release_url ${version})
+echo "release_url url is $release_url"
+
+pushd ${built_dir}
+# archive headers, swift code and xcframework
+
+rm -rf release && mkdir -p release
+
+cp -R WalletCoreCommon.xcframework release
+cp -R ${src_dir}/include release
+cp -R ${src_dir}/swift/Sources release
+rm release/Sources/Dummy.cpp
+cp ${src_dir}/License release
+
+filename="TrustWalletCore-${version}.tar.xz"
+pushd release
+tar -cJvf ../${filename} .
+popd

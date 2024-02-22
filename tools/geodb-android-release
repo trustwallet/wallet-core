@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# This script uploads android build to repositories defined in maven-push.gradle
+# It also builds and uploads Kotlin docs
+
+rm -f android/wallet-core/build/outputs/aar/*.aar
+rm -f android/wallet-core-proto/build/libs/*.jar
+rm -Rf dist-android
+mkdir dist-android
+
+set -e
+
+source $(dirname $0)/library
+version=$(wc_read_version  $1)
+commit=$(git rev-parse HEAD)
+
+if [[ `uname` == "Darwin" ]]; then
+    export BOOST_ROOT=$(brew --prefix boost)
+fi
+
+echo "Building $version-$commit"
+
+#export ANDROID_HOME="$HOME/Library/Android/sdk"
+pushd android
+#./gradlew clean build assembleRelease publish -Pversion="$version"
+./gradlew clean build assembleRelease -Pversion="$version"
+
+echo "Android build generated"
+popd # android
+
+#find android -iname '*.aar'
+cp android/wallet-core/build/outputs/aar/*.aar dist-android
+cp android/wallet-core-proto/build/libs/*.jar dist-android
+echo "Files ready for distribution:"
+ls -l dist-android
+
+zip_name="wallet-core-odin-android-$version-$commit.zip"
+zip -9r $zip_name dist-android
+mv $zip_name dist-android
+echo "Packaged file:"
+ls -l "dist-android/$zip_name"

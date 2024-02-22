@@ -32,6 +32,7 @@ TEST(TWCoinType, TWPurpose) {
     ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeTHORChain));
     ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeCryptoOrg));
     ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeOsmosis));
+    ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeOdin));
     ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeECash));
 
     ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeAion));
@@ -105,6 +106,7 @@ TEST(TWCoinType, TWPublicKeyType) {
     ASSERT_EQ(TWPublicKeyTypeSECP256k1, TWCoinTypePublicKeyType(TWCoinTypeTHORChain));
     ASSERT_EQ(TWPublicKeyTypeSECP256k1, TWCoinTypePublicKeyType(TWCoinTypeCryptoOrg));
     ASSERT_EQ(TWPublicKeyTypeSECP256k1, TWCoinTypePublicKeyType(TWCoinTypeOsmosis));
+    ASSERT_EQ(TWPublicKeyTypeSECP256k1, TWCoinTypePublicKeyType(TWCoinTypeOdin));
     ASSERT_EQ(TWPublicKeyTypeSECP256k1, TWCoinTypePublicKeyType(TWCoinTypeECash));
 
     ASSERT_EQ(TWPublicKeyTypeED25519, TWCoinTypePublicKeyType(TWCoinTypeAion));
