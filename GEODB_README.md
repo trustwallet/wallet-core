@@ -25,7 +25,7 @@ $ ./bootstrap.sh
 $ ./tools/install-wasm-dependencies
 $ source emsdk/emsdk_env.sh
 $ ./tools/generate-files
-$ ./tools/android-release
+$ ./tools/geodb-android-release
 $ find . -iname '*aar'
 ```
 
