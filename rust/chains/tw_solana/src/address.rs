@@ -117,8 +117,6 @@ impl SolanaAddress {
         data_to_hash.extend_from_slice(program_id.bytes.as_slice());
         data_to_hash.extend_from_slice(PDA_MARKER);
 
-        println!("{}", data_to_hash.to_hex());
-
         let hash = sha2::sha256(&data_to_hash);
 
         // Check if the given hash is on the ed25519 elliptic curve.
