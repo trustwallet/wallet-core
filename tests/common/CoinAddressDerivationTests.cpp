@@ -150,6 +150,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeCardano:
             EXPECT_EQ(address, "addr1qxzk4wqhh5qmzas4e26aghcvkz8feju6sa43nghfj5xxsly9d2up00gpk9mptj44630sevywnn9e4pmtrx3wn9gvdp7qjhvjl4");
             break;
+        case TWCoinTypeOdin:
+            EXPECT_EQ(address, "odin1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0ameqqt");
+            break;
         case TWCoinTypeCosmos:
             EXPECT_EQ(address, "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp");
             break;

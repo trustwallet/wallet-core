@@ -4,13 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "proto/Cosmos.pb.h"
 #include "Cosmos/Address.h"
 #include "HexCoding.h"
-#include "proto/Cosmos.pb.h"
-#include <TrustWalletCore/TWAnySigner.h>
-
 #include "TestUtilities.h"
+#include "TrustWalletCore/TWAnySigner.h"
+
 #include <gtest/gtest.h>
+#include <google/protobuf/util/json_util.h>
 
 using namespace TW;
 using namespace TW::Cosmos;
@@ -61,5 +62,5 @@ TEST(TWAnySignerOdin, Sign) {
               "7d796c22ed4a7be91a9510f1daf904f1a9ef72c6a396bbbc4444e5a81a84416603d8910dc92d1f9b14cd"
               "b0498dbb8d149e3b61ddcd0ef1a5056278f80f7f0fdc");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error(), Common::Proto::SigningError::OK);
 }
