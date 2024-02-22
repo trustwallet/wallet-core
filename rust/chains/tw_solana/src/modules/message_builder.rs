@@ -513,7 +513,7 @@ impl RawMessageBuilder {
         let header = Self::build_message_header(&legacy.header)?;
         let account_keys = Self::build_account_keys(&legacy.account_keys)?;
         let recent_blockhash = Blockhash::from_str(legacy.recent_blockhash.as_ref())?;
-        let instructions: Vec<_> = Self::build_instructions(&legacy.instruction)?;
+        let instructions: Vec<_> = Self::build_instructions(&legacy.instructions)?;
 
         Ok(VersionedMessage::Legacy(legacy::Message {
             header,
@@ -527,7 +527,7 @@ impl RawMessageBuilder {
         let header = Self::build_message_header(&v0.header)?;
         let account_keys = Self::build_account_keys(&v0.account_keys)?;
         let recent_blockhash = Blockhash::from_str(v0.recent_blockhash.as_ref())?;
-        let instructions: Vec<_> = Self::build_instructions(&v0.instruction)?;
+        let instructions: Vec<_> = Self::build_instructions(&v0.instructions)?;
         let address_table_lookups = v0
             .address_table_lookups
             .iter()

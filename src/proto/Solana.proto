@@ -179,7 +179,7 @@ message RawMessage {
         repeated string account_keys = 2;
         // Relatively recent block hash (base58 encoded).
         string recent_blockhash = 3;
-        repeated Instruction instruction = 4;
+        repeated Instruction instructions = 4;
     }
 
     message MessageV0 {
@@ -187,7 +187,7 @@ message RawMessage {
         repeated string account_keys = 2;
         // Relatively recent block hash (base58 encoded).
         string recent_blockhash = 3;
-        repeated Instruction instruction = 4;
+        repeated Instruction instructions = 4;
         repeated MessageAddressTableLookup address_table_lookups = 5;
     }
 
