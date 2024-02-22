@@ -75,10 +75,13 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
             todo!()
         }
 
-        stream
-            .append_raw_slice(&outputs_hash)
-            // This also includes 24-bit fork id. For example, 0 for BitcoinCash.
-            .append(&args.sighash_ty.raw_sighash());
+        if args.sighash_ty.base_type() == SighashBase::Single {
+            todo!()
+        }
+
+        if leaf_hash_node_is_some {
+            todo!()
+        }
 
         Ok(args.tx_hasher.hash(&stream.out()))
     }
