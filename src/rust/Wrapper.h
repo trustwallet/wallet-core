@@ -82,6 +82,12 @@ struct TWStringWrapper {
     TWStringWrapper(TWString *ptr): ptr(std::shared_ptr<TWString>(ptr, tw_string_delete)) {
     }
 
+    /// Implicit constructor.
+    TWStringWrapper(const char* string) {
+        auto* stringRaw = tw_string_create_with_utf8_bytes(string);
+        ptr = std::shared_ptr<TWString>(stringRaw, tw_string_delete);
+    }
+
     ~TWStringWrapper() = default;
 
     TWString* get() const {
@@ -95,6 +101,14 @@ struct TWStringWrapper {
 
         auto* bytes = tw_string_utf8_bytes(ptr.get());
         return {bytes};
+    }
+
+    const char* c_str() const {
+        return ptr ? tw_string_utf8_bytes(ptr.get()) : nullptr;
+    }
+
+    explicit operator bool() const {
+        return static_cast<bool>(ptr);
     }
 
     std::shared_ptr<TWString> ptr;

@@ -22,7 +22,5 @@ fn test_solana_address_default_token_address() {
     .to_string()
     .expect("!tw_solana_address_default_token_address returned a nullptr");
 
-    // WalletCore C++ bug. Our users expect this to be "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP",
-    // but it should be "D8NqUpRmgmyGSpPk9UfoD1dQzuZyGeuUVMkn3uuRDCw1".
-    assert_eq!(actual, "D8NqUpRmgmyGSpPk9UfoD1dQzuZyGeuUVMkn3uuRDCw1");
+    assert_eq!(actual, "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
 }

@@ -69,11 +69,12 @@ impl SolanaAddress {
             let mut seeds_with_bump = seeds.to_vec();
             seeds_with_bump.push(&bump_seed);
             match Self::create_program_address(&seeds_with_bump, program_id) {
-                Ok(address) => return Some(address),
+                Ok(Some(address)) => return Some(address),
                 // Try to re-compute the program address with a different seed.
-                Err(AddressError::Internal) => (),
-                _ => break,
+                Ok(None) => (),
+                Err(_) => return None,
             }
+            // Try to re-compute the program address with a different seed.
             bump_seed[0] -= 1;
         }
         None
@@ -98,7 +99,7 @@ impl SolanaAddress {
     pub fn create_program_address(
         seeds: &[&[u8]],
         program_id: SolanaAddress,
-    ) -> AddressResult<SolanaAddress> {
+    ) -> AddressResult<Option<SolanaAddress>> {
         if seeds.len() > MAX_SEEDS {
             return Err(AddressError::Internal);
         }
@@ -116,12 +117,14 @@ impl SolanaAddress {
         data_to_hash.extend_from_slice(program_id.bytes.as_slice());
         data_to_hash.extend_from_slice(PDA_MARKER);
 
-        let hash = sha2::sha256(&data_to_hash);
+        let hash = H256::try_from(sha2::sha256(&data_to_hash).as_slice())
+            .expect("sha256 must return 32 bytes");
 
-        // Check if the given hash is on the ed25519 elliptic curve.
-        ed25519::sha512::PublicKey::try_from(hash.as_slice())
-            .map(|pubkey| SolanaAddress::with_public_key_ed25519(&pubkey))
-            .map_err(|_| AddressError::Internal)
+        // The given hash (aka new public key) must not be on the ed25519 elliptic curve.
+        match ed25519::sha512::PublicKey::try_from(hash.as_slice()) {
+            Ok(_) => Ok(None),
+            Err(_) => Ok(Some(SolanaAddress::with_public_key_bytes(hash))),
+        }
     }
 }
 
