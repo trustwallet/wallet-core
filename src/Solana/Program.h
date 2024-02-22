@@ -5,7 +5,6 @@
 #pragma once
 
 #include "Address.h"
-#include "Transaction.h"
 
 #include <vector>
 

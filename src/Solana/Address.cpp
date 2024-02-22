@@ -4,14 +4,6 @@
 
 #include "Address.h"
 #include "Program.h"
-#include "Transaction.h"
-#include "../Base58.h"
-#include "../Base58Address.h"
-#include "../Hash.h"
-
-#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
-
-#include <cassert>
 
 using namespace TW;
 

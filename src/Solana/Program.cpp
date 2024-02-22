@@ -4,7 +4,8 @@
 
 #include "Program.h"
 #include "Address.h"
-#include "Transaction.h"
+#include "Constants.h"
+#include "HexCoding.h"
 
 #include <limits>
 
@@ -62,6 +63,7 @@ Address TokenProgram::findProgramAddress(const std::vector<TW::Data>& seeds, [[m
         seedsCopy.emplace_back(bumpSeed);
         Address address = createProgramAddress(seedsCopy, programId);
         PublicKey publicKey = PublicKey(TW::data(address.bytes.data(), address.bytes.size()), TWPublicKeyTypeED25519);
+        // BUG should retry the loop if the public key is invalid.
         if (!publicKey.isValidED25519()) {
             result = address;
             break;

@@ -4,8 +4,7 @@
 
 #include "Entry.h"
 
-#include "Address.h"
-#include "Signer.h"
+#include "proto/Solana.pb.h"
 
 using namespace TW;
 using namespace std;
