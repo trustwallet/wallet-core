@@ -14,6 +14,10 @@ pub struct Blockhash {
 }
 
 impl Blockhash {
+    pub fn with_bytes(bytes: H256) -> Blockhash {
+        Blockhash { bytes }
+    }
+
     pub fn to_bytes(&self) -> H256 {
         self.bytes
     }

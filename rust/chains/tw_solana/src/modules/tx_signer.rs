@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::SolanaAddress;
+use crate::modules::PubkeySignatureMap;
 use crate::transaction::{versioned, Signature};
 use std::collections::HashMap;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
@@ -16,6 +17,7 @@ impl TxSigner {
     pub fn sign_versioned(
         unsigned_msg: versioned::VersionedMessage,
         keys: &[ed25519::sha512::KeyPair],
+        external_signatures: &PubkeySignatureMap,
     ) -> SigningResult<versioned::VersionedTransaction> {
         let mut key_signs = HashMap::default();
 
@@ -28,6 +30,8 @@ impl TxSigner {
 
             key_signs.insert(signing_pubkey, ed25519_signature);
         }
+        // Add external signatures.
+        key_signs.extend(external_signatures.clone().into_iter());
 
         Self::compile_versioned(unsigned_msg, key_signs)
     }

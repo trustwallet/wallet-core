@@ -151,6 +151,11 @@ message AdvanceNonceAccount {
 }
 
 message RawMessage {
+    message PubkeySignature {
+        string pubkey = 1;
+        bytes signature = 2;
+    }
+
     message MessageHeader {
         uint32 num_required_signatures = 1;
         uint32 num_readonly_signed_accounts = 2;
@@ -186,6 +191,7 @@ message RawMessage {
         repeated MessageAddressTableLookup address_table_lookups = 5;
     }
 
+    repeated PubkeySignature signatures = 1;
     oneof message {
         MessageLegacy legacy = 2;
         MessageV0 v0 = 3;

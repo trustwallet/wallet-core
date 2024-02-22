@@ -13,6 +13,7 @@ use crate::modules::instruction_builder::stake_instruction::{
 use crate::modules::instruction_builder::system_instruction::SystemInstructionBuilder;
 use crate::modules::instruction_builder::token_instruction::TokenInstructionBuilder;
 use crate::modules::instruction_builder::InstructionBuilder;
+use crate::modules::PubkeySignatureMap;
 use crate::transaction::versioned::VersionedMessage;
 use crate::transaction::{legacy, v0, CompiledInstruction, MessageHeader};
 use std::borrow::Cow;
@@ -69,6 +70,13 @@ impl<'a> MessageBuilder<'a> {
         }
 
         Ok(signers)
+    }
+
+    pub fn external_signatures(&self) -> SigningResult<PubkeySignatureMap> {
+        match self.input.raw_message {
+            Some(ref raw_message) => RawMessageBuilder::external_signatures(raw_message),
+            None => Ok(PubkeySignatureMap::default()),
+        }
     }
 
     pub fn build(self) -> SigningResult<VersionedMessage> {
@@ -485,6 +493,18 @@ impl RawMessageBuilder {
             RawMessageType::v0(ref v0) => Self::build_v0(v0),
             RawMessageType::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
         }
+    }
+
+    pub fn external_signatures(
+        raw_message: &Proto::RawMessage,
+    ) -> SigningResult<PubkeySignatureMap> {
+        let mut key_signs = PubkeySignatureMap::with_capacity(raw_message.signatures.len());
+        for entry in raw_message.signatures.iter() {
+            let pubkey = SolanaAddress::from_str(entry.pubkey.as_ref())?;
+            let signature = ed25519::Signature::try_from(entry.signature.as_ref())?;
+            key_signs.insert(pubkey, signature);
+        }
+        Ok(key_signs)
     }
 
     fn build_legacy(
