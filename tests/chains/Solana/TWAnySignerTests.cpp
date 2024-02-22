@@ -3,12 +3,8 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "Base58.h"
-#include "HexCoding.h"
 #include "PrivateKey.h"
-#include "Solana/Address.h"
-#include "Solana/Program.h"
 #include "proto/Solana.pb.h"
-#include "PrivateKey.h"
 #include "TestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 
