@@ -1,6 +1,9 @@
+use bitcoin::hashes::Hash;
+use secp256k1::XOnlyPublicKey;
 use tw_hash::H160;
 use tw_hash::H256;
 use tw_hash::H264;
+use tw_misc::traits::ToBytesVec;
 
 use super::opcodes::*;
 use super::Script;
@@ -81,6 +84,31 @@ pub fn new_p2wpkh(pubkey_hash: &H160) -> Script {
 pub fn new_p2wpkh_script_code(pubkey_hash: &H160) -> Script {
     // We're just wrapping over the legacy P2PKH script builder.
     new_p2pkh(pubkey_hash)
+}
+
+pub fn new_p2tr_key_path(pubkey: &H264) -> Script {
+    // We're relying on the `bitcoin` crate to generate anything Taproot related.
+    let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_slice()).unwrap();
+    let internal_key = XOnlyPublicKey::from(pubkey.inner);
+
+    let script = bitcoin::ScriptBuf::new_v1_p2tr(&secp256k1::Secp256k1::new(), internal_key, None);
+    Script::from(script.to_vec())
+}
+
+pub fn new_p2tr_script_path(pubkey: &H264, merkle_root: &H256) -> Script {
+    // We're relying on the `bitcoin` crate to generate anything Taproot related.
+    let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_slice()).unwrap();
+    let internal_key = XOnlyPublicKey::from(pubkey.inner);
+
+    let hash = bitcoin::hashes::sha256t::Hash::<_>::from_slice(merkle_root.as_slice()).unwrap();
+    let merkle_root = bitcoin::taproot::TapNodeHash::from_raw_hash(hash);
+
+    let script = bitcoin::ScriptBuf::new_v1_p2tr(
+        &secp256k1::Secp256k1::new(),
+        internal_key,
+        Some(merkle_root),
+    );
+    Script::from(script.to_vec())
 }
 
 pub fn is_p2sh(s: &Script) -> bool {
