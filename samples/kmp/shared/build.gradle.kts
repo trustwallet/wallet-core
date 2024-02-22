@@ -29,6 +29,16 @@ kotlin {
         podfile = project.file("../iosApp/Podfile")
         framework {
             baseName = "shared"
+
+            listOf(
+                iosX64(),
+                iosArm64(),
+                iosSimulatorArm64()
+            ).forEach {
+                it.binaries.all {
+                    linkerOpts += "-ld64"
+                }
+            }
         }
     }
 
