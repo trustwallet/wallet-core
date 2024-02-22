@@ -11,6 +11,9 @@ cmake-build-debug/
 .cache/
 build_pvs_studio/
 
+# Geodb dist directories
+dist-android/
+
 # Dependencies
 node_modules
 lib/json
