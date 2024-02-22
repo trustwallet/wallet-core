@@ -26,13 +26,8 @@ $ ./tools/install-wasm-dependencies
 $ source emsdk/emsdk_env.sh
 $ ./tools/generate-files
 $ ./tools/geodb-android-release
-$ find . -iname '*aar'
 ```
 
-After running more or less those commands, that `find` command should give you
-the path to built `aar` files:
-
-```
-./android/wallet-core/build/outputs/aar/wallet-core-release.aar
-./android/wallet-core/build/outputs/aar/wallet-core-debug.aar
-```
+After running more or less those commands, that last release script should
+generate a `dist-android` directory containing a zip file with the contained
+files. You can upload this file somewhere or include directly into a project.
