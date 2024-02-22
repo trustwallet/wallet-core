@@ -10,7 +10,6 @@ use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_encoding::base58;
-use tw_encoding::hex::ToHex;
 use tw_hash::{as_byte_sequence, sha2, H256};
 use tw_keypair::{ed25519, tw};
 use tw_memory::Data;
