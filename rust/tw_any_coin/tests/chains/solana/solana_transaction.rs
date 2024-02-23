@@ -32,6 +32,28 @@ fn check_and_update_recent_blockhash(
     *recent_blockhash = updated.to_string().into();
 }
 
+const PREV_RECENT_BLOCKHASH: &str = "H4gZ56AdmHfZj1F36oWrxDJMUJ8ph7XdTHtmsbtHZshG";
+const NEW_RECENT_BLOCKHASH: &str = "CyPYVsYWrsJNfVpi8aazu7WsrswNFuDd385z6GNoBGUg";
+
+const SENDER_PRIVATE_KEY: &str = "9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5";
+const SENDER_PUBLIC_KEY: &str = "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V";
+const FEE_PAYER_PRIVATE_KEY: &str = "66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c";
+const FEE_PAYER_PUBLIC_KEY: &str = "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ";
+
+const PREV_SENDER_SIGNATURE: &str =
+    "37UT8U6DdqaWqV6yQuHcRN3JpMefDgVna8LJJPmmDNKYMwmefEgvcreSg9AqSsT7cU2rMBNyDktEtDU19ZqqZvML";
+const NEW_SENDER_SIGNATURE: &str =
+    "3aqBe5B9uj9PBdhLwbdDkH5X9Wa2E49bDvjaMJyZWj68TeQvAavw9dizTuUkRLLqucgA4NP9SDtT261bPXoHAHEj";
+const PREV_FEE_PAYER_SIGNATURE: &str =
+    "3KbvREZUat76wgWMtnJfWbJL74Vzh4U2eabVJa3Z3bb2fPtW8AREP5pbmRwUrxZCESbTomWpL41PeKDcPGbojsej";
+const NEW_FEE_PAYER_SIGNATURE: &str =
+    "2DaVFTx5i3fuvBvyt3s3ti4FajmYa8DCcur5Bjf9cgoFA9CnQRM6RNLTrMQ537WmRkQw9Qw3iojfxVrzQy7jWxT7";
+
+/// https://explorer.solana.com/tx/3KbvREZUat76wgWMtnJfWbJL74Vzh4U2eabVJa3Z3bb2fPtW8AREP5pbmRwUrxZCESbTomWpL41PeKDcPGbojsej?cluster=devnet
+const PREV_ENCODED_TX: &str = "AnQTYwZpkm3fs4SdLxnV6gQj3hSLsyacpxDdLMALYWObm722f79IfYFTbZeFK9xHtMumiDOWAM2hHQP4r/GtbARpncaXgOVFv7OgbRLMbuCEJHO1qwcdCbtH72VzyzU8yw9sqqHIAaCUE8xaQTgT6Z5IyZfeyMe2QGJIfOjz65UPAgACBssq8Im1alV3N7wXGODL8jLPWwLhTuCqfGZ1Iz9fb5tXlMOJD6jUvASrKmdtLK/qXNyJns2Vqcvlk+nfJYdZaFpIWiT/tAcEYbttfxyLdYxrLckAKdVRtf1OrNgtZeMCII4SAn6SYaaidrX/AN3s/aVn/zrlEKW0cEUIatHVDKtXO0Qss5EhV/E6kz0BNCgtAytf/s0Botvxt3kGCN8ALqcG3fbh12Whk9nL4UbO63msHLSF7V9bN5E6jPWFfv8Aqe6sdLXiXSDILEtzckCjkjchiSf6zVGpMYiAE5BE2IqHAQUEAgQDAQoMoA8AAAAAAAAG";
+const NEW_ENCODED_TX: &str = "Ajzc/Tke0CG8Cew5qFa6xZI/7Ya3DN0M8Ige6tKPsGzhg8Bw9DqL18KUrEZZ1F4YqZBo4Rv+FsDT8A7Nss7p4A6BNVZzzGprCJqYQeNg0EVIbmPc6mDitNniHXGeKgPZ6QZbM4FElw9O7IOFTpOBPvQFeqy0vZf/aayncL8EK/UEAgACBssq8Im1alV3N7wXGODL8jLPWwLhTuCqfGZ1Iz9fb5tXlMOJD6jUvASrKmdtLK/qXNyJns2Vqcvlk+nfJYdZaFpIWiT/tAcEYbttfxyLdYxrLckAKdVRtf1OrNgtZeMCII4SAn6SYaaidrX/AN3s/aVn/zrlEKW0cEUIatHVDKtXO0Qss5EhV/E6kz0BNCgtAytf/s0Botvxt3kGCN8ALqcG3fbh12Whk9nL4UbO63msHLSF7V9bN5E6jPWFfv8AqbHiki6ThNH3auuyZPQpJntnN0mA//56nMpK/6HIuu8xAQUEAgQDAQoMoA8AAAAAAAAG";
+const ENCODED_UNSIGNED_MSG: &str = "AgACBssq8Im1alV3N7wXGODL8jLPWwLhTuCqfGZ1Iz9fb5tXlMOJD6jUvASrKmdtLK/qXNyJns2Vqcvlk+nfJYdZaFpIWiT/tAcEYbttfxyLdYxrLckAKdVRtf1OrNgtZeMCII4SAn6SYaaidrX/AN3s/aVn/zrlEKW0cEUIatHVDKtXO0Qss5EhV/E6kz0BNCgtAytf/s0Botvxt3kGCN8ALqcG3fbh12Whk9nL4UbO63msHLSF7V9bN5E6jPWFfv8AqbHiki6ThNH3auuyZPQpJntnN0mA//56nMpK/6HIuu8xAQUEAgQDAQoMoA8AAAAAAAAG";
+
 #[test]
 fn test_solana_decode_transaction() {
     let encoded_tx = base64::decode("AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAQAHEIoR5xuWyrvjIW4xU7CWlPOfyFAiy8B295hGo6tNjBmRCgUkQaFYTleMcAX2p74eBXQZd1dwDyQZAPJfSv2KGc5kcFLJj5qd2BVMaSNGVPfVBm74GbLwUq5/U1Ccdqc2gokZQxRDpMq7aeToP3nRaWIP4RXMxN+LJetccXMPq/QumgOqt7kkqk07cyPCKgYoQ4fQtOqqZn5sEqjWHYj3CDS5ha48uggePWu090s1ff4yoCjAvULeZ+cqYFn+Adk5Teyfw71W3u/F6VTnLQEPW96gJr5Kcm3bGi08n224JyF++PTko52VL0CIM2xtl0WkvNslD6Wawxr7yd9HYllN4Lz8lFwXilWGgyJdOq1qqBuZbE49glHeCO/sJHNnIHC0BgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwZGb+UhFzL/7K26csOb57yM5bvF9xJrLEObOkAAAAAEedVb8jHAbu50xW7OaBUH/bGy3qP0jlECsc2iVrwTjwbd9uHXZaGT2cvhRs7reawctIXtX1s3kTqM9YV+/wCpjJclj04kifG7PRApFI4NgwtaE5na/xCEBI572Nvp+Fm0P/on9df2SnTAmx8pWHneSwmrNt/J3VFLMhqns4zl6OL4d+g9rsaIj0Orta57MRu3jDSWCJf85ae4LBbiD/GXvOojZjsHekJrpRUuPggLJr943hDVD5UareeEucjCvaoHCgAFAsBcFQAKAAkDBBcBAAAAAAANBgAGACMJDAEBCQIABgwCAAAAAMqaOwAAAAAMAQYBEQs1DA8ABgEFAiMhCwsOCx0MDxoBGQcYBAgDJBscDB4PBwUQEhEfFR8UFwcFISITHw8MDCAfFgstwSCbM0HWnIEAAwAAABEBZAABCh0BAyZHAQMAypo7AAAAAJaWFAYAAAAAMgAADAMGAAABCQPZoILFk7gfE2y5bt3AC+g/4OwNzdiHKBhIbdeYvYFEjQPKyMkExMUkx0R25UNa/g5KsG0vfUwdUJ8e8HecK/Jkd3qm9XefBOB0BaD1+J+dBJz09vfyGuRYZH09HfdE/kL8v6Ql+H03+tO+9lMmmVg8O1c6gAN6eX0Cbn4=", false).unwrap();
@@ -146,7 +168,7 @@ fn test_solana_decode_transaction() {
 #[test]
 fn test_solana_decode_transaction_update_blockhash_and_sign_with_external_fee_payer() {
     // https://explorer.solana.com/tx/3KbvREZUat76wgWMtnJfWbJL74Vzh4U2eabVJa3Z3bb2fPtW8AREP5pbmRwUrxZCESbTomWpL41PeKDcPGbojsej?cluster=devnet
-    let encoded_tx = base64::decode("AnQTYwZpkm3fs4SdLxnV6gQj3hSLsyacpxDdLMALYWObm722f79IfYFTbZeFK9xHtMumiDOWAM2hHQP4r/GtbARpncaXgOVFv7OgbRLMbuCEJHO1qwcdCbtH72VzyzU8yw9sqqHIAaCUE8xaQTgT6Z5IyZfeyMe2QGJIfOjz65UPAgACBssq8Im1alV3N7wXGODL8jLPWwLhTuCqfGZ1Iz9fb5tXlMOJD6jUvASrKmdtLK/qXNyJns2Vqcvlk+nfJYdZaFpIWiT/tAcEYbttfxyLdYxrLckAKdVRtf1OrNgtZeMCII4SAn6SYaaidrX/AN3s/aVn/zrlEKW0cEUIatHVDKtXO0Qss5EhV/E6kz0BNCgtAytf/s0Botvxt3kGCN8ALqcG3fbh12Whk9nL4UbO63msHLSF7V9bN5E6jPWFfv8Aqe6sdLXiXSDILEtzckCjkjchiSf6zVGpMYiAE5BE2IqHAQUEAgQDAQoMoA8AAAAAAAAG", false).unwrap();
+    let encoded_tx = base64::decode(PREV_ENCODED_TX, false).unwrap();
 
     // Step 1: Decode the transaction.
     let mut decoder = TransactionDecoderHelper::<Proto::DecodingTransactionOutput>::default();
@@ -157,36 +179,25 @@ fn test_solana_decode_transaction_update_blockhash_and_sign_with_external_fee_pa
 
     let expected_signatures = vec![
         raw_message::PubkeySignature {
-            pubkey: "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ".into(),
-            signature: b58("3KbvREZUat76wgWMtnJfWbJL74Vzh4U2eabVJa3Z3bb2fPtW8AREP5pbmRwUrxZCESbTomWpL41PeKDcPGbojsej"),
+            pubkey: FEE_PAYER_PUBLIC_KEY.into(),
+            signature: b58(PREV_FEE_PAYER_SIGNATURE),
         },
         raw_message::PubkeySignature {
-            pubkey: "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V".into(),
-            signature: b58("37UT8U6DdqaWqV6yQuHcRN3JpMefDgVna8LJJPmmDNKYMwmefEgvcreSg9AqSsT7cU2rMBNyDktEtDU19ZqqZvML"),
-        }
+            pubkey: SENDER_PUBLIC_KEY.into(),
+            signature: b58(PREV_SENDER_SIGNATURE),
+        },
     ];
     assert_eq!(decoded_tx.signatures, expected_signatures);
 
     // Step 2. Update the recent-blockhash.
 
-    check_and_update_recent_blockhash(
-        &mut decoded_tx,
-        "H4gZ56AdmHfZj1F36oWrxDJMUJ8ph7XdTHtmsbtHZshG",
-        "CyPYVsYWrsJNfVpi8aazu7WsrswNFuDd385z6GNoBGUg",
-    );
-
-    // let mut_recent_blockhash = ref_mut_recent_blockhash(&mut decoded_tx);
-    // assert_eq!(
-    //     mut_recent_blockhash,
-    //     "H4gZ56AdmHfZj1F36oWrxDJMUJ8ph7XdTHtmsbtHZshG"
-    // );
-    // *mut_recent_blockhash = "CyPYVsYWrsJNfVpi8aazu7WsrswNFuDd385z6GNoBGUg".into();
+    check_and_update_recent_blockhash(&mut decoded_tx, PREV_RECENT_BLOCKHASH, NEW_RECENT_BLOCKHASH);
 
     // Step 3. Re-sign the updated transaction.
 
     let input = Proto::SigningInput {
-        private_key: b58("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"),
-        fee_payer_private_key: b58("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c"),
+        private_key: b58(SENDER_PRIVATE_KEY),
+        fee_payer_private_key: b58(FEE_PAYER_PRIVATE_KEY),
         raw_message: Some(decoded_tx),
         tx_encoding: Proto::Encoding::Base64,
         ..Proto::SigningInput::default()
@@ -196,7 +207,7 @@ fn test_solana_decode_transaction_update_blockhash_and_sign_with_external_fee_pa
     let output = signer.sign(CoinType::Solana, input);
 
     assert_eq!(output.error, SigningError::OK);
-    assert_eq!(output.encoded, "Ajzc/Tke0CG8Cew5qFa6xZI/7Ya3DN0M8Ige6tKPsGzhg8Bw9DqL18KUrEZZ1F4YqZBo4Rv+FsDT8A7Nss7p4A6BNVZzzGprCJqYQeNg0EVIbmPc6mDitNniHXGeKgPZ6QZbM4FElw9O7IOFTpOBPvQFeqy0vZf/aayncL8EK/UEAgACBssq8Im1alV3N7wXGODL8jLPWwLhTuCqfGZ1Iz9fb5tXlMOJD6jUvASrKmdtLK/qXNyJns2Vqcvlk+nfJYdZaFpIWiT/tAcEYbttfxyLdYxrLckAKdVRtf1OrNgtZeMCII4SAn6SYaaidrX/AN3s/aVn/zrlEKW0cEUIatHVDKtXO0Qss5EhV/E6kz0BNCgtAytf/s0Botvxt3kGCN8ALqcG3fbh12Whk9nL4UbO63msHLSF7V9bN5E6jPWFfv8AqbHiki6ThNH3auuyZPQpJntnN0mA//56nMpK/6HIuu8xAQUEAgQDAQoMoA8AAAAAAAAG");
+    assert_eq!(output.encoded, NEW_ENCODED_TX);
 }
 
 /// The test is similar to `test_solana_decode_transaction_update_blockhash_and_resign_with_external_fee_payer`,
@@ -205,7 +216,7 @@ fn test_solana_decode_transaction_update_blockhash_and_sign_with_external_fee_pa
 #[test]
 fn test_solana_decode_transaction_update_blockhash_and_sign_with_external_fee_payer_signature() {
     // https://explorer.solana.com/tx/3KbvREZUat76wgWMtnJfWbJL74Vzh4U2eabVJa3Z3bb2fPtW8AREP5pbmRwUrxZCESbTomWpL41PeKDcPGbojsej?cluster=devnet
-    let encoded_tx = base64::decode("AnQTYwZpkm3fs4SdLxnV6gQj3hSLsyacpxDdLMALYWObm722f79IfYFTbZeFK9xHtMumiDOWAM2hHQP4r/GtbARpncaXgOVFv7OgbRLMbuCEJHO1qwcdCbtH72VzyzU8yw9sqqHIAaCUE8xaQTgT6Z5IyZfeyMe2QGJIfOjz65UPAgACBssq8Im1alV3N7wXGODL8jLPWwLhTuCqfGZ1Iz9fb5tXlMOJD6jUvASrKmdtLK/qXNyJns2Vqcvlk+nfJYdZaFpIWiT/tAcEYbttfxyLdYxrLckAKdVRtf1OrNgtZeMCII4SAn6SYaaidrX/AN3s/aVn/zrlEKW0cEUIatHVDKtXO0Qss5EhV/E6kz0BNCgtAytf/s0Botvxt3kGCN8ALqcG3fbh12Whk9nL4UbO63msHLSF7V9bN5E6jPWFfv8Aqe6sdLXiXSDILEtzckCjkjchiSf6zVGpMYiAE5BE2IqHAQUEAgQDAQoMoA8AAAAAAAAG", false).unwrap();
+    let encoded_tx = base64::decode(PREV_ENCODED_TX, false).unwrap();
 
     // Step 1: Decode the transaction.
     let mut decoder = TransactionDecoderHelper::<Proto::DecodingTransactionOutput>::default();
@@ -216,34 +227,28 @@ fn test_solana_decode_transaction_update_blockhash_and_sign_with_external_fee_pa
 
     let expected_signatures = vec![
         raw_message::PubkeySignature {
-            pubkey: "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ".into(),
-            signature: b58("3KbvREZUat76wgWMtnJfWbJL74Vzh4U2eabVJa3Z3bb2fPtW8AREP5pbmRwUrxZCESbTomWpL41PeKDcPGbojsej"),
+            pubkey: FEE_PAYER_PUBLIC_KEY.into(),
+            signature: b58(PREV_FEE_PAYER_SIGNATURE),
         },
         raw_message::PubkeySignature {
-            pubkey: "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V".into(),
-            signature: b58("37UT8U6DdqaWqV6yQuHcRN3JpMefDgVna8LJJPmmDNKYMwmefEgvcreSg9AqSsT7cU2rMBNyDktEtDU19ZqqZvML"),
-        }
+            pubkey: SENDER_PUBLIC_KEY.into(),
+            signature: b58(PREV_SENDER_SIGNATURE),
+        },
     ];
     assert_eq!(decoded_tx.signatures, expected_signatures);
 
     // Step 2. Update the recent-blockhash and external fee payer signature.
 
-    decoded_tx.signatures[0].signature = b58(
-        "2DaVFTx5i3fuvBvyt3s3ti4FajmYa8DCcur5Bjf9cgoFA9CnQRM6RNLTrMQ537WmRkQw9Qw3iojfxVrzQy7jWxT7",
-    );
+    decoded_tx.signatures[0].signature = b58(NEW_FEE_PAYER_SIGNATURE);
 
-    check_and_update_recent_blockhash(
-        &mut decoded_tx,
-        "H4gZ56AdmHfZj1F36oWrxDJMUJ8ph7XdTHtmsbtHZshG",
-        "CyPYVsYWrsJNfVpi8aazu7WsrswNFuDd385z6GNoBGUg",
-    );
+    check_and_update_recent_blockhash(&mut decoded_tx, PREV_RECENT_BLOCKHASH, NEW_RECENT_BLOCKHASH);
 
     // Step 3. Re-sign the updated transaction.
 
     let input = Proto::SigningInput {
-        private_key: b58("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"),
+        private_key: b58(SENDER_PRIVATE_KEY),
         // Do not set the fee payer private key to test if the [`RawMessage::signatures`] is used instead.
-        // fee_payer_private_key: b58("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c"),
+        // fee_payer_private_key: b58(FEE_PAYER_PRIVATE_KEY),
         raw_message: Some(decoded_tx),
         tx_encoding: Proto::Encoding::Base64,
         ..Proto::SigningInput::default()
@@ -253,7 +258,7 @@ fn test_solana_decode_transaction_update_blockhash_and_sign_with_external_fee_pa
     let output = signer.sign(CoinType::Solana, input);
 
     assert_eq!(output.error, SigningError::OK);
-    assert_eq!(output.encoded, "Ajzc/Tke0CG8Cew5qFa6xZI/7Ya3DN0M8Ige6tKPsGzhg8Bw9DqL18KUrEZZ1F4YqZBo4Rv+FsDT8A7Nss7p4A6BNVZzzGprCJqYQeNg0EVIbmPc6mDitNniHXGeKgPZ6QZbM4FElw9O7IOFTpOBPvQFeqy0vZf/aayncL8EK/UEAgACBssq8Im1alV3N7wXGODL8jLPWwLhTuCqfGZ1Iz9fb5tXlMOJD6jUvASrKmdtLK/qXNyJns2Vqcvlk+nfJYdZaFpIWiT/tAcEYbttfxyLdYxrLckAKdVRtf1OrNgtZeMCII4SAn6SYaaidrX/AN3s/aVn/zrlEKW0cEUIatHVDKtXO0Qss5EhV/E6kz0BNCgtAytf/s0Botvxt3kGCN8ALqcG3fbh12Whk9nL4UbO63msHLSF7V9bN5E6jPWFfv8AqbHiki6ThNH3auuyZPQpJntnN0mA//56nMpK/6HIuu8xAQUEAgQDAQoMoA8AAAAAAAAG");
+    assert_eq!(output.encoded, NEW_ENCODED_TX);
 }
 
 #[test]
@@ -288,7 +293,7 @@ fn test_solana_decode_transaction_update_blockhash_and_sign_no_matching_pubkey()
 #[test]
 fn test_solana_decode_transaction_update_blockhash_preimage_hash_and_compile() {
     // https://explorer.solana.com/tx/3KbvREZUat76wgWMtnJfWbJL74Vzh4U2eabVJa3Z3bb2fPtW8AREP5pbmRwUrxZCESbTomWpL41PeKDcPGbojsej?cluster=devnet
-    let encoded_tx = base64::decode("AnQTYwZpkm3fs4SdLxnV6gQj3hSLsyacpxDdLMALYWObm722f79IfYFTbZeFK9xHtMumiDOWAM2hHQP4r/GtbARpncaXgOVFv7OgbRLMbuCEJHO1qwcdCbtH72VzyzU8yw9sqqHIAaCUE8xaQTgT6Z5IyZfeyMe2QGJIfOjz65UPAgACBssq8Im1alV3N7wXGODL8jLPWwLhTuCqfGZ1Iz9fb5tXlMOJD6jUvASrKmdtLK/qXNyJns2Vqcvlk+nfJYdZaFpIWiT/tAcEYbttfxyLdYxrLckAKdVRtf1OrNgtZeMCII4SAn6SYaaidrX/AN3s/aVn/zrlEKW0cEUIatHVDKtXO0Qss5EhV/E6kz0BNCgtAytf/s0Botvxt3kGCN8ALqcG3fbh12Whk9nL4UbO63msHLSF7V9bN5E6jPWFfv8Aqe6sdLXiXSDILEtzckCjkjchiSf6zVGpMYiAE5BE2IqHAQUEAgQDAQoMoA8AAAAAAAAG", false).unwrap();
+    let encoded_tx = base64::decode(PREV_ENCODED_TX, false).unwrap();
 
     // Step 1: Decode the transaction.
     let mut decoder = TransactionDecoderHelper::<Proto::DecodingTransactionOutput>::default();
@@ -298,17 +303,13 @@ fn test_solana_decode_transaction_update_blockhash_preimage_hash_and_compile() {
     let mut decoded_tx = decode_output.transaction.unwrap();
 
     // Step 2. Update recent blockhash.
-    check_and_update_recent_blockhash(
-        &mut decoded_tx,
-        "H4gZ56AdmHfZj1F36oWrxDJMUJ8ph7XdTHtmsbtHZshG",
-        "CyPYVsYWrsJNfVpi8aazu7WsrswNFuDd385z6GNoBGUg",
-    );
+    check_and_update_recent_blockhash(&mut decoded_tx, PREV_RECENT_BLOCKHASH, NEW_RECENT_BLOCKHASH);
 
     // Step 3. Pre-image hash the transaction.
 
     let input = Proto::SigningInput {
         // There is no matching pubkey in the transaction account keys.
-        sender: "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V".into(),
+        sender: SENDER_PUBLIC_KEY.into(),
         raw_message: Some(decoded_tx),
         tx_encoding: Proto::Encoding::Base64,
         ..Proto::SigningInput::default()
@@ -318,22 +319,16 @@ fn test_solana_decode_transaction_update_blockhash_preimage_hash_and_compile() {
     let preimage_output = preimager.pre_image_hashes(CoinType::Solana, &input);
 
     assert_eq!(preimage_output.error, SigningError::OK);
-    let expected_unsigned_msg = base64::decode("AgACBssq8Im1alV3N7wXGODL8jLPWwLhTuCqfGZ1Iz9fb5tXlMOJD6jUvASrKmdtLK/qXNyJns2Vqcvlk+nfJYdZaFpIWiT/tAcEYbttfxyLdYxrLckAKdVRtf1OrNgtZeMCII4SAn6SYaaidrX/AN3s/aVn/zrlEKW0cEUIatHVDKtXO0Qss5EhV/E6kz0BNCgtAytf/s0Botvxt3kGCN8ALqcG3fbh12Whk9nL4UbO63msHLSF7V9bN5E6jPWFfv8AqbHiki6ThNH3auuyZPQpJntnN0mA//56nMpK/6HIuu8xAQUEAgQDAQoMoA8AAAAAAAAG", false).unwrap();
+    let expected_unsigned_msg = base64::decode(ENCODED_UNSIGNED_MSG, false).unwrap();
     assert_eq!(preimage_output.data, expected_unsigned_msg);
 
     // Step 4. Compile the updated transaction with signatures.
 
-    let fee_payer_pubkey = b58("Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ").to_vec();
-    let sender_pubkey = b58("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V").to_vec();
+    let fee_payer_pubkey = b58(FEE_PAYER_PUBLIC_KEY).to_vec();
+    let sender_pubkey = b58(SENDER_PUBLIC_KEY).to_vec();
 
-    let fee_payer_signature = b58(
-        "2DaVFTx5i3fuvBvyt3s3ti4FajmYa8DCcur5Bjf9cgoFA9CnQRM6RNLTrMQ537WmRkQw9Qw3iojfxVrzQy7jWxT7",
-    )
-    .to_vec();
-    let sender_signature = b58(
-        "3aqBe5B9uj9PBdhLwbdDkH5X9Wa2E49bDvjaMJyZWj68TeQvAavw9dizTuUkRLLqucgA4NP9SDtT261bPXoHAHEj",
-    )
-    .to_vec();
+    let fee_payer_signature = b58(NEW_FEE_PAYER_SIGNATURE).to_vec();
+    let sender_signature = b58(NEW_SENDER_SIGNATURE).to_vec();
 
     let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
     let compile_output = compiler.compile(
@@ -344,5 +339,5 @@ fn test_solana_decode_transaction_update_blockhash_preimage_hash_and_compile() {
     );
 
     assert_eq!(compile_output.error, SigningError::OK);
-    assert_eq!(compile_output.encoded, "Ajzc/Tke0CG8Cew5qFa6xZI/7Ya3DN0M8Ige6tKPsGzhg8Bw9DqL18KUrEZZ1F4YqZBo4Rv+FsDT8A7Nss7p4A6BNVZzzGprCJqYQeNg0EVIbmPc6mDitNniHXGeKgPZ6QZbM4FElw9O7IOFTpOBPvQFeqy0vZf/aayncL8EK/UEAgACBssq8Im1alV3N7wXGODL8jLPWwLhTuCqfGZ1Iz9fb5tXlMOJD6jUvASrKmdtLK/qXNyJns2Vqcvlk+nfJYdZaFpIWiT/tAcEYbttfxyLdYxrLckAKdVRtf1OrNgtZeMCII4SAn6SYaaidrX/AN3s/aVn/zrlEKW0cEUIatHVDKtXO0Qss5EhV/E6kz0BNCgtAytf/s0Botvxt3kGCN8ALqcG3fbh12Whk9nL4UbO63msHLSF7V9bN5E6jPWFfv8AqbHiki6ThNH3auuyZPQpJntnN0mA//56nMpK/6HIuu8xAQUEAgQDAQoMoA8AAAAAAAAG");
+    assert_eq!(compile_output.encoded, NEW_ENCODED_TX);
 }
