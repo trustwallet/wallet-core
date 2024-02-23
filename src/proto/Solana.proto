@@ -164,14 +164,14 @@ message RawMessage {
 
     message Instruction {
         uint32 program_id = 1;
-        repeated uint32 accounts = 2;
+        repeated uint32 accounts = 2 [packed=true];
         bytes program_data = 3;
     }
 
     message MessageAddressTableLookup {
         string account_key = 1;
-        repeated uint32 writable_indexes = 2;
-        repeated uint32 readonly_indexes = 3;
+        repeated uint32 writable_indexes = 2 [packed=true];
+        repeated uint32 readonly_indexes = 3 [packed=true];
     }
 
     message MessageLegacy {

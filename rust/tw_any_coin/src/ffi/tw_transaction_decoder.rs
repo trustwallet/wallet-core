@@ -14,7 +14,7 @@ use tw_misc::try_or_else;
 ///
 /// \param coin coin type.
 /// \param tx encoded transaction data.
-/// \return serialized `DecodingTransactionOutput` protobuf message specific for the given coin.
+/// \return serialized protobuf message specific for the given coin.
 #[no_mangle]
 pub unsafe extern "C" fn tw_transaction_decoder_decode(
     coin: u32,
