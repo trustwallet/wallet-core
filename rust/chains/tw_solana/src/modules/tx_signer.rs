@@ -22,6 +22,10 @@ impl TxSigner {
         let mut key_signs = HashMap::default();
 
         let message_encoded = Self::preimage_versioned(&unsigned_msg)?;
+
+        // Add external signatures first, so they can be overriden if corresponding private keys are specified.
+        key_signs.extend(external_signatures.clone().into_iter());
+
         // Sign the message with all given private keys.
         for private_key in keys {
             let signing_pubkey =
@@ -30,8 +34,6 @@ impl TxSigner {
 
             key_signs.insert(signing_pubkey, ed25519_signature);
         }
-        // Add external signatures.
-        key_signs.extend(external_signatures.clone().into_iter());
 
         Self::compile_versioned(unsigned_msg, key_signs)
     }
