@@ -11,6 +11,7 @@ pub mod compiled_keys;
 pub mod instruction_builder;
 pub mod message_builder;
 pub mod proto_builder;
+pub mod transaction_decoder;
 pub mod tx_signer;
 pub mod utils;
 

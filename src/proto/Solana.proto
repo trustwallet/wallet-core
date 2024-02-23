@@ -198,6 +198,17 @@ message RawMessage {
     }
 }
 
+message DecodingTransactionOutput {
+    // Decoded transaction info.
+    RawMessage transaction = 1;
+
+    // Error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // Error code description
+    string error_message = 3;
+}
+
 enum Encoding {
     Base58 = 0;
     Base64 = 1;

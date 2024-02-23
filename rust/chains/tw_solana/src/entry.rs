@@ -4,6 +4,7 @@
 
 use crate::address::SolanaAddress;
 use crate::compiler::SolanaCompiler;
+use crate::modules::transaction_decoder::SolanaTransactionDecoder;
 use crate::signer::SolanaSigner;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -32,6 +33,7 @@ impl CoinEntry for SolanaEntry {
     type PlanBuilder = NoPlanBuilder;
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
+    type TransactionDecoder = SolanaTransactionDecoder;
 
     #[inline]
     fn parse_address(
@@ -86,5 +88,10 @@ impl CoinEntry for SolanaEntry {
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
         SolanaCompiler::compile(coin, input, signatures, public_keys)
+    }
+
+    #[inline]
+    fn transaction_decoder(&self) -> Option<Self::TransactionDecoder> {
+        Some(SolanaTransactionDecoder)
     }
 }
