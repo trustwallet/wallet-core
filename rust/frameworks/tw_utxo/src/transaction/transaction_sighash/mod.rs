@@ -4,5 +4,5 @@
 
 pub mod legacy_sighash;
 // TODO: Reason for adding segwit versions?
-pub mod witness0_sighash;
 pub mod taproot1_sighash;
+pub mod witness0_sighash;

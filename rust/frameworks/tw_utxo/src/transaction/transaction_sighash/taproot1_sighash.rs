@@ -34,8 +34,8 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
             .append(&args.sighash_ty.raw_sighash())
             .append(&tx.version())
             .append(&tx.locktime());
-            //.append_raw_slice(&prevout_hash)
-            //.append_raw_slice(&sequence_hash);
+        //.append_raw_slice(&prevout_hash)
+        //.append_raw_slice(&sequence_hash);
 
         if !args.sighash_ty.anyone_can_pay() {
             stream
@@ -50,7 +50,9 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
         // may already be contained in hashSequence.
 
         // TODO: What about `NonePlusAnyoneCanPay`.
-        if args.sighash_ty.base_type() != SighashBase::None && args.sighash_ty.base_type() != SighashBase::Single {
+        if args.sighash_ty.base_type() != SighashBase::None
+            && args.sighash_ty.base_type() != SighashBase::Single
+        {
             stream.append_raw_slice(&outputs_hash);
         }
 
