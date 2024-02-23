@@ -1,0 +1,90 @@
+#!/bin/bash
+
+rm -Rf dist-ios
+mkdir dist-ios
+
+set -o pipefail
+set -e
+
+# load release library code
+base_dir=$(dirname $0)
+source ${base_dir}/library
+
+# version to release
+version=$(wc_read_version $1)
+echo "release version ${version}"
+release_url="https://github.com/GeoDB-Limited/wallet-core-odin/releases/download/${version}"
+echo "release_url url is $release_url"
+
+pushd ${base_dir}/../swift/build
+
+# archive xcframeworks
+core_zip_filename="WalletCore.xcframework.zip"
+core_dsyms_filename="WalletCore.xcframework.dSYM.zip"
+protobuf_zip_filename="SwiftProtobuf.xcframework.zip"
+protobuf_dsyms_filename="SwiftProtobuf.xcframework.dSYM.zip"
+
+# upload to release
+core_download_url="${release_url}/${core_zip_filename}"
+echo "wallet core url is: ${core_download_url}"
+
+protobuf_download_url="${release_url}/${protobuf_zip_filename}"
+echo "swift protobuf url is: ${protobuf_download_url}"
+
+rm -rf ${core_zip_filename} ${core_dsyms_filename} ${protobuf_zip_filename} ${protobuf_dsyms_filename}
+
+zip -r ${core_dsyms_filename} WalletCore.dSYMs
+
+zip -r ${core_zip_filename} WalletCore.xcframework
+core_hash=$(/usr/bin/shasum -a 256 ${core_zip_filename} | awk '{printf $1}')
+
+zip -r ${protobuf_dsyms_filename} SwiftProtobuf.dSYMs
+
+zip -r ${protobuf_zip_filename} SwiftProtobuf.xcframework
+protobuf_hash=$(/usr/bin/shasum -a 256 ${protobuf_zip_filename} | awk '{printf $1}')
+
+# create Package.swift
+package_swift="Package.swift"
+cat > $package_swift <<EOF
+// swift-tools-version:5.3
+import PackageDescription
+
+let package = Package(
+    name: "WalletCore",
+    platforms: [.iOS(.v13)],
+    products: [
+        .library(name: "WalletCore", targets: ["WalletCore"]),
+        .library(name: "SwiftProtobuf", targets: ["SwiftProtobuf"])
+    ],
+    dependencies: [],
+    targets: [
+        .binaryTarget(
+            name: "WalletCore",
+            url: "${core_download_url}",
+            checksum: "${core_hash}"
+        ),
+        .binaryTarget(
+            name: "SwiftProtobuf",
+            url: "${protobuf_download_url}",
+            checksum: "${protobuf_hash}"
+        )
+    ]
+)
+EOF
+
+echo "${package_swift} generated."
+#cat $package_swift
+
+popd
+
+cp ${base_dir}/../swift/build/$core_zip_filename dist-ios
+cp ${base_dir}/../swift/build/$core_dsyms_filename dist-ios
+cp ${base_dir}/../swift/build/$protobuf_zip_filename dist-ios
+cp ${base_dir}/../swift/build/$protobuf_dsyms_filename dist-ios
+cp ${base_dir}/../swift/build/$package_swift dist-ios
+cp ${base_dir}/../swift/build/$package_swift .
+
+echo "Release files updated inside dist-ios"
+echo "Commit latest release to github when ready."
+
+git diff $package_swift

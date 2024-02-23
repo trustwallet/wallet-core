@@ -13,6 +13,7 @@ build_pvs_studio/
 
 # Geodb dist directories
 dist-android/
+dist-ios/
 
 # Dependencies
 node_modules
