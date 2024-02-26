@@ -315,7 +315,6 @@ fn build_tx_input_taproot_output_taproot() {
         ]
     );
     let sig = bob_private_key.sign(sighash).unwrap();
-    dbg!(sig.to_vec().as_slice());
 
     // Build the claim
     // TODO: Consider using type safetly for calling the right method here?

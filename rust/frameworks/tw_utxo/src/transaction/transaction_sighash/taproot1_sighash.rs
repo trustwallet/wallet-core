@@ -40,10 +40,6 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
             .append(&0u8)
             .append(&tx.version())
             .append(&tx.locktime());
-        //.append_raw_slice(&prevout_hash)
-        //.append_raw_slice(&sequence_hash);
-
-        dbg!(&args.tx_hasher);
 
         if !args.sighash_ty.anyone_can_pay() {
             // > sha_amounts (32): the SHA256 of the serialization of all spent output amounts.

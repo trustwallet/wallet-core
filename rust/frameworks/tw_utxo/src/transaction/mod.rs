@@ -33,8 +33,6 @@ pub struct UtxoPreimageArgs {
     pub tx_hasher: Hasher,
     /// Signing method needs to be used to sign the [`UtxoPreimageArgs::input_index`] index.
     pub signing_method: SigningMethod,
-    pub tr_spent_outpoints: Vec<(u64, Script)>,
     pub tr_spent_amounts: Vec<u64>,
     pub tr_spent_script_pubkeys: Vec<Script>,
-    pub tr_spent_sequences: Vec<u32>,
 }
