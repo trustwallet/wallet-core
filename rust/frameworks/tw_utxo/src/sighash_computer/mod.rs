@@ -117,6 +117,39 @@ where
             return Err(UtxoError(UtxoErrorKind::Error_internal));
         }
 
+        let tr_spent_outpoints: Vec<(u64, Script)> = self
+            .args
+            .utxos_to_sign
+            .iter()
+            .map(|utxo| (utxo.amount as u64, utxo.script_pubkey.clone()))
+            .collect();
+
+        let tr_spent_amounts: Vec<u64> = self
+            .args
+            .utxos_to_sign
+            .iter()
+            .map(|utxo| utxo.amount as u64)
+            .collect();
+
+        let tr_spent_script_pubkeys: Vec<Script> = self
+            .args
+            .utxos_to_sign
+            .iter()
+            .map(|utxo| {
+                // TODO: Remove
+                debug_assert!(!utxo.script_pubkey.is_empty());
+                utxo
+            })
+            .map(|utxo| utxo.script_pubkey.clone())
+            .collect();
+
+        let tr_spent_sequences: Vec<u32> = self
+            .transaction_to_sign
+            .inputs()
+            .iter()
+            .map(|input| input.sequence())
+            .collect();
+
         self.args
             .utxos_to_sign
             .iter()
@@ -124,6 +157,9 @@ where
             .map(|(input_index, utxo)| {
                 let signing_method = utxo.signing_method;
 
+                // TODO: Instead of putting all this info here, consider adding
+                // multiple methods to `TransactionPreimage` instead of using
+                // the unified `preimage_tx`.
                 let utxo_args = UtxoPreimageArgs {
                     input_index,
                     script_pubkey: utxo.script_pubkey.clone(),
@@ -131,6 +167,10 @@ where
                     sighash_ty: self.args.sighash_ty,
                     tx_hasher: self.args.tx_hasher,
                     signing_method,
+                    tr_spent_outpoints: tr_spent_outpoints.clone(),
+                    tr_spent_amounts: tr_spent_amounts.clone(),
+                    tr_spent_script_pubkeys: tr_spent_script_pubkeys.clone(),
+                    tr_spent_sequences: tr_spent_sequences.clone(),
                 };
 
                 let sighash = self.transaction_to_sign.preimage_tx(&utxo_args)?;

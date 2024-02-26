@@ -155,8 +155,6 @@ impl Signer {
             let sighash = Message::from_slice(entry.sighash.as_ref())
                 .map_err(|_| Error::from(Proto::Error::Error_invalid_sighash))?;
 
-            dbg!(&sighash.as_ref());
-
             // Sign the sighash depending on signing method.
             match entry.signing_method {
                 // Create a ECDSA signature for legacy and segwit transaction.

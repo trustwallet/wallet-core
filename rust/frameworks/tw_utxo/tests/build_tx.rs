@@ -283,7 +283,7 @@ fn build_tx_input_taproot_output_taproot() {
         .prev_txid(txid)
         .prev_index(0)
         .amount(50 * 100_000_000 - 1_000_000)
-        .p2pkh(bob_pubkey.clone())
+        .p2tr_key_path(bob_pubkey.clone())
         .unwrap();
 
     let output1 = OutputBuilder::new()
