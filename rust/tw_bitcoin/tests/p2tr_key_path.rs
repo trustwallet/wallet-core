@@ -91,8 +91,6 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
         ..Default::default()
     };
 
-    dbg!(&signing);
-
     let signed = BitcoinEntry.sign(&coin, signing);
     let encoded = tw_encoding::hex::encode(signed.encoded, false);
     assert_eq!(signed.error, Proto::Error::OK);

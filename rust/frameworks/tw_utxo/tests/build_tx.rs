@@ -1,4 +1,5 @@
 use tw_encoding::hex;
+use tw_hash::hasher::Hasher;
 use tw_keypair::ecdsa::secp256k1::PrivateKey;
 use tw_keypair::schnorr;
 use tw_keypair::traits::SigningKeyTrait;
@@ -291,10 +292,13 @@ fn build_tx_input_taproot_output_taproot() {
         .p2tr_key_path(alice_pubkey)
         .unwrap();
 
-    let (tx, args) = TransactionBuilder::new()
+    let (tx, mut args) = TransactionBuilder::new()
         .push_input(utxo1, arg1)
         .push_output(output1)
         .build();
+
+    // !!
+    args.tx_hasher = Hasher::Sha256;
 
     // Compute the primage.
     let computer = SighashComputer::new(tx, args);

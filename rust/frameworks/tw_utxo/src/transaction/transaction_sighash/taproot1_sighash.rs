@@ -9,6 +9,8 @@ use crate::transaction::transaction_hashing::TransactionHasher;
 use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
 use crate::transaction::UtxoPreimageArgs;
 use std::marker::PhantomData;
+use bitcoin::{amount, script};
+use secp256k1::rand::seq;
 use tw_encoding::hex;
 use tw_memory::Data;
 
@@ -32,55 +34,43 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
 
         stream
             .append(&0u8) // epoch
-            .append(&(args.sighash_ty.raw_sighash() as u8))
+            // TODO??
+            //.append(&(args.sighash_ty.raw_sighash() as u8))
+            .append(&0u8)
             .append(&tx.version())
             .append(&tx.locktime());
         //.append_raw_slice(&prevout_hash)
         //.append_raw_slice(&sequence_hash);
 
-        if !args.sighash_ty.anyone_can_pay() {
-            // > sha_prevouts (32): the SHA256 of the serialization of all input outpoints.
-            let mut s = Stream::default();
-            s.append_list(
-                &args
-                    .tr_spent_outpoints
-                    .iter()
-                    .map(|(amount, script)| {
-                        let mut s = Stream::default();
-                        s.append(amount).append(script);
-                        s.out()
-                    })
-                    .collect::<Vec<Data>>(),
-            );
-            let spent_outpoints = args.tx_hasher.hash(&s.out());
+        dbg!(&args.tx_hasher);
 
+        if !args.sighash_ty.anyone_can_pay() {
             // > sha_amounts (32): the SHA256 of the serialization of all spent output amounts.
             let mut s = Stream::default();
-            s.append_list(&args.tr_spent_amounts);
+            for amount in &args.tr_spent_amounts {
+                s.append(amount);
+            }
             let spent_amounts = args.tx_hasher.hash(&s.out());
 
             // > sha_scriptpubkeys (32): the SHA256 of the serialization of all spent output scriptPubKeys.
             let mut s = Stream::default();
-            s.append_list(&args.tr_spent_script_pubkeys);
+            for script in &args.tr_spent_script_pubkeys {
+                s.append(script);
+            }
             let spent_script_pubkeys = args.tx_hasher.hash(&s.out());
 
-            // > sha_sequences (32): the SHA256 of the serialization of all input nSequence.
-            let mut s = Stream::default();
-            s.append_list(&args.tr_spent_sequences);
-            let spent_sequences = args.tx_hasher.hash(&s.out());
-
             stream
-                .append(&spent_outpoints)
-                .append(&spent_amounts)
-                .append(&spent_script_pubkeys)
-                .append(&spent_sequences);
+                .append_raw_slice(&prevout_hash)
+                .append_raw_slice(&spent_amounts)
+                .append_raw_slice(&spent_script_pubkeys)
+                .append_raw_slice(&sequence_hash);
         }
 
         // TODO: What about `NonePlusAnyoneCanPay`?.
         if args.sighash_ty.base_type() != SighashBase::None
             && args.sighash_ty.base_type() != SighashBase::Single
         {
-            stream.append(&outputs_hash);
+            stream.append_raw_slice(&outputs_hash);
         }
 
         let mut spend_type = 0u8;
@@ -113,10 +103,10 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
             todo!()
         }
 
-        let sighash = args.tx_hasher.hash(&stream.out());
-        let hex_sighash = hex::encode(sighash.as_slice(), true);
-        dbg!(hex_sighash);
+        let full = stream.out();
+        dbg!(&full);
 
+        let sighash = args.tx_hasher.hash(&full);
         Ok(sighash)
     }
 }

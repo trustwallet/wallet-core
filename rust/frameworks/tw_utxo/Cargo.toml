@@ -5,7 +5,8 @@ edition = "2021"
 
 [dependencies]
 bech32 = "0.9.1"
-bitcoin = "0.30.1"
+#bitcoin = "0.30.1"
+bitcoin = { path = "../../../rust-bitcoin/bitcoin" }
 byteorder = "1.4"
 secp256k1 = { version = "0.27.0", features = ["rand-std"] }
 strum_macros = "0.25"
