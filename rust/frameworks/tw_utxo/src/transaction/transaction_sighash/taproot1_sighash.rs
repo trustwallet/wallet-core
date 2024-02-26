@@ -8,10 +8,11 @@ use crate::sighash::{SighashBase, SighashType};
 use crate::transaction::transaction_hashing::TransactionHasher;
 use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
 use crate::transaction::UtxoPreimageArgs;
-use std::marker::PhantomData;
 use bitcoin::{amount, script};
 use secp256k1::rand::seq;
+use std::marker::PhantomData;
 use tw_encoding::hex;
+use tw_hash::hasher::Hasher;
 use tw_memory::Data;
 
 /// `Taproot1Sighash`is used to calculate a preimage hash of a P2WPKH or P2WSH unspent output.
@@ -103,10 +104,17 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
             todo!()
         }
 
-        let full = stream.out();
-        dbg!(&full);
+        let out = stream.out();
+        //dbg!(&out);
 
-        let sighash = args.tx_hasher.hash(&full);
-        Ok(sighash)
+        let mut payload = Vec::new();
+        payload.extend(Hasher::Sha256.hash(b"TapSighash"));
+        payload.extend(Hasher::Sha256.hash(b"TapSighash"));
+        payload.extend(out);
+        Ok(Hasher::Sha256.hash(&payload))
+
+        // TODO??
+        //Ok(Hasher::Sha256d.hash(&out))
+        //Ok(Hasher::Sha256d.hash(&Hasher::Sha256.hash(&out)))
     }
 }

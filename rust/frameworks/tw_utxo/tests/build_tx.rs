@@ -306,6 +306,7 @@ fn build_tx_input_taproot_output_taproot() {
 
     // Sign the sighash.
     let sighash = preimage.into_h256_list().unwrap()[0];
+    dbg!(sighash.as_slice());
     let sig = bob_private_key.sign(sighash).unwrap();
 
     // Build the claim

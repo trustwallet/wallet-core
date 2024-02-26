@@ -289,7 +289,7 @@ impl Compiler<StandardBitcoinContext> {
                         sighash_type,
                     )?;
 
-                    dbg!(&sighash);
+                    dbg!(sighash.to_byte_array());
 
                     sighashes.push((
                         sighash.as_byte_array().to_vec(),
