@@ -5,6 +5,7 @@ use tw_keypair::schnorr;
 use tw_keypair::traits::SigningKeyTrait;
 // TODO: Consider using ecdsa directly.
 use tw_keypair::tw::{PublicKey, PublicKeyType};
+use tw_misc::traits::ToBytesVec;
 use tw_utxo::sighash::SighashBase;
 use tw_utxo::sighash::SighashType;
 use tw_utxo::sighash_computer::SighashComputer;
@@ -306,8 +307,15 @@ fn build_tx_input_taproot_output_taproot() {
 
     // Sign the sighash.
     let sighash = preimage.into_h256_list().unwrap()[0];
-    dbg!(sighash.as_slice());
+    assert_eq!(
+        sighash.as_slice(),
+        &[
+            200, 182, 65, 50, 58, 228, 169, 23, 0, 60, 121, 14, 186, 9, 8, 238, 94, 163, 141, 45,
+            54, 233, 4, 111, 175, 61, 115, 71, 154, 100, 158, 250,
+        ]
+    );
     let sig = bob_private_key.sign(sighash).unwrap();
+    dbg!(sig.to_vec().as_slice());
 
     // Build the claim
     // TODO: Consider using type safetly for calling the right method here?

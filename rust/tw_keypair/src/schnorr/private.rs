@@ -17,6 +17,17 @@ impl PrivateKey {
     pub fn public(&self) -> PublicKey {
         PublicKey::new(self.secret.verifying_key().clone())
     }
+    pub fn tweaked_public(&self) {
+        // let tweaked = pk.as_affine() * *sk.to_nonzero_scalar();
+
+        // let tweaked_pt = *pk.as_affine() * *sk.to_nonzero_scalar();
+        // let tweaked_pk = k256::PublicKey::from_affine(tweaked_pt.to_affine())?;
+
+        let pk = self.secret.verifying_key();
+        let tweaked_pt = *pk.as_affine() * self.secret.as_nonzero_scalar().as_ref();
+        let tweaked_pk = k256::PublicKey::from_affine(tweaked_pt.to_affine()).unwrap();
+        todo!()
+    }
 }
 
 impl SigningKeyTrait for PrivateKey {
