@@ -14,5 +14,6 @@ pub mod proto_builder;
 pub mod transaction_decoder;
 pub mod tx_signer;
 pub mod utils;
+pub mod wallet_connect;
 
 pub type PubkeySignatureMap = HashMap<SolanaAddress, ed25519::Signature>;
