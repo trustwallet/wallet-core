@@ -4,6 +4,7 @@
 
 use crate::address::SolanaAddress;
 use crate::modules::message_builder::MessageBuilder;
+use crate::modules::proto_builder::ProtoBuilder;
 use crate::modules::tx_signer::TxSigner;
 use crate::SOLANA_ALPHABET;
 use std::borrow::Cow;
@@ -104,6 +105,7 @@ impl SolanaCompiler {
         Ok(Proto::SigningOutput {
             encoded: Cow::from(signed_encoded),
             unsigned_tx: Cow::from(unsigned_encoded),
+            signatures: ProtoBuilder::build_signatures(&signed_tx),
             ..Proto::SigningOutput::default()
         })
     }

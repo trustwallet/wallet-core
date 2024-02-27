@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::modules::proto_builder::ProtoBuilder;
 use crate::modules::tx_signer::TxSigner;
 use crate::modules::PubkeySignatureMap;
 use crate::transaction::versioned::VersionedTransaction;
@@ -70,6 +71,7 @@ impl SolanaTransaction {
         Ok(Proto::SigningOutput {
             encoded: Cow::from(signed_encoded),
             unsigned_tx: Cow::from(unsigned_encoded),
+            signatures: ProtoBuilder::build_signatures(&signed_tx),
             ..Proto::SigningOutput::default()
         })
     }

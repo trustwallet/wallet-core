@@ -2,7 +2,12 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::SOLANA_ALPHABET;
 use serde::{Deserialize, Serialize};
+use std::fmt;
+use std::str::FromStr;
+use tw_coin_entry::error::{SigningError, SigningErrorType};
+use tw_encoding::base58;
 use tw_hash::{as_byte_sequence, H512};
 
 pub mod legacy;
@@ -43,6 +48,24 @@ pub struct CompiledInstruction {
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone, Copy, Eq, PartialEq, Hash)]
 pub struct Signature(#[serde(with = "as_byte_sequence")] pub H512);
+
+impl FromStr for Signature {
+    type Err = SigningError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let data = base58::decode(s, &SOLANA_ALPHABET)
+            .map_err(|_| SigningError(SigningErrorType::Error_input_parse))?;
+        H512::try_from(data.as_slice())
+            .map(Signature)
+            .map_err(|_| SigningError(SigningErrorType::Error_input_parse))
+    }
+}
+
+impl fmt::Display for Signature {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", base58::encode(self.0.as_slice(), &SOLANA_ALPHABET))
+    }
+}
 
 #[cfg(test)]
 mod tests {
