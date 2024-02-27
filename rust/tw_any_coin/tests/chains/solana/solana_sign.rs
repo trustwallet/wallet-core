@@ -706,7 +706,7 @@ fn test_solana_sign_raw_message_legacy() {
             "11111111111111111111111111111111".into(),
         ],
         recent_blockhash: "11111111111111111111111111111111".into(),
-        instruction: vec![Proto::mod_RawMessage::Instruction {
+        instructions: vec![Proto::mod_RawMessage::Instruction {
             program_id: 2,
             accounts: vec![0, 1],
             program_data: "020000002a00000000000000".decode_hex().unwrap().into(),
@@ -714,6 +714,7 @@ fn test_solana_sign_raw_message_legacy() {
     };
 
     let raw_message = Proto::RawMessage {
+        signatures: Vec::default(),
         message: Proto::mod_RawMessage::OneOfmessage::legacy(legacy),
     };
     let input = Proto::SigningInput {
@@ -742,7 +743,7 @@ fn test_solana_sign_raw_message_v0() {
             "11111111111111111111111111111111".into(),
         ],
         recent_blockhash: "HxKwWFTHixCu8aw35J1uxAX6yUhLHkFCdJJdK4y98Gyj".into(),
-        instruction: vec![Proto::mod_RawMessage::Instruction {
+        instructions: vec![Proto::mod_RawMessage::Instruction {
             program_id: 1,
             accounts: vec![0, 0],
             program_data: "020000008813000000000000".decode_hex().unwrap().into(),
@@ -751,6 +752,7 @@ fn test_solana_sign_raw_message_v0() {
     };
 
     let raw_message = Proto::RawMessage {
+        signatures: Vec::default(),
         message: Proto::mod_RawMessage::OneOfmessage::v0(v0),
     };
     let input = Proto::SigningInput {

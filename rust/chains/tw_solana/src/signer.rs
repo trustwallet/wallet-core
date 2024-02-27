@@ -34,13 +34,15 @@ impl SolanaSigner {
 
         let builder = MessageBuilder::new(input);
         let signing_keys = builder.signing_keys()?;
+        let external_signatures = builder.external_signatures()?;
         let unsigned_msg = builder.build()?;
 
         let encoded_unsigned = bincode::serialize(&unsigned_msg)
             .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
         let encoded_unsigned = encode(&encoded_unsigned);
 
-        let signed_tx = TxSigner::sign_versioned(unsigned_msg, &signing_keys)?;
+        let signed_tx =
+            TxSigner::sign_versioned(unsigned_msg, &signing_keys, &external_signatures)?;
 
         let encoded_tx = bincode::serialize(&signed_tx)
             .map_err(|_| SigningError(SigningErrorType::Error_internal))?;

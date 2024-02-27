@@ -15,6 +15,7 @@ use tw_coin_entry::error::AddressResult;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
+use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_keypair::tw::PublicKey;
 use tw_proto::Binance::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
@@ -33,6 +34,7 @@ impl CoinEntry for BinanceEntry {
     type PlanBuilder = NoPlanBuilder;
     type MessageSigner = NoMessageSigner;
     type WalletConnector = BinanceWalletConnector;
+    type TransactionDecoder = NoTransactionDecoder;
 
     #[inline]
     fn parse_address(

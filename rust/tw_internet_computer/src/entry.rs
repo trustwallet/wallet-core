@@ -4,6 +4,7 @@
 
 use std::str::FromStr;
 
+use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::{
     coin_context::CoinContext,
     coin_entry::CoinEntry,
@@ -27,22 +28,17 @@ pub struct InternetComputerEntry;
 
 impl CoinEntry for InternetComputerEntry {
     type AddressPrefix = NoPrefix;
-
     type Address = AccountIdentifier;
-
     type SigningInput<'a> = Proto::SigningInput<'a>;
-
     type SigningOutput = Proto::SigningOutput<'static>;
-
     type PreSigningOutput = CompilerProto::PreSigningOutput<'static>;
 
+    // Optional modules:
     type JsonSigner = NoJsonSigner;
-
     type PlanBuilder = NoPlanBuilder;
-
     type MessageSigner = NoMessageSigner;
-
     type WalletConnector = NoWalletConnector;
+    type TransactionDecoder = NoTransactionDecoder;
 
     #[inline]
     fn parse_address(

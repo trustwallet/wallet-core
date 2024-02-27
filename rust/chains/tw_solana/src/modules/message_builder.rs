@@ -13,6 +13,7 @@ use crate::modules::instruction_builder::stake_instruction::{
 use crate::modules::instruction_builder::system_instruction::SystemInstructionBuilder;
 use crate::modules::instruction_builder::token_instruction::TokenInstructionBuilder;
 use crate::modules::instruction_builder::InstructionBuilder;
+use crate::modules::PubkeySignatureMap;
 use crate::transaction::versioned::VersionedMessage;
 use crate::transaction::{legacy, v0, CompiledInstruction, MessageHeader};
 use std::borrow::Cow;
@@ -69,6 +70,13 @@ impl<'a> MessageBuilder<'a> {
         }
 
         Ok(signers)
+    }
+
+    pub fn external_signatures(&self) -> SigningResult<PubkeySignatureMap> {
+        match self.input.raw_message {
+            Some(ref raw_message) => RawMessageBuilder::external_signatures(raw_message),
+            None => Ok(PubkeySignatureMap::default()),
+        }
     }
 
     pub fn build(self) -> SigningResult<VersionedMessage> {
@@ -487,13 +495,25 @@ impl RawMessageBuilder {
         }
     }
 
+    pub fn external_signatures(
+        raw_message: &Proto::RawMessage,
+    ) -> SigningResult<PubkeySignatureMap> {
+        let mut key_signs = PubkeySignatureMap::with_capacity(raw_message.signatures.len());
+        for entry in raw_message.signatures.iter() {
+            let pubkey = SolanaAddress::from_str(entry.pubkey.as_ref())?;
+            let signature = ed25519::Signature::try_from(entry.signature.as_ref())?;
+            key_signs.insert(pubkey, signature);
+        }
+        Ok(key_signs)
+    }
+
     fn build_legacy(
         legacy: &Proto::mod_RawMessage::MessageLegacy,
     ) -> SigningResult<VersionedMessage> {
         let header = Self::build_message_header(&legacy.header)?;
         let account_keys = Self::build_account_keys(&legacy.account_keys)?;
         let recent_blockhash = Blockhash::from_str(legacy.recent_blockhash.as_ref())?;
-        let instructions: Vec<_> = Self::build_instructions(&legacy.instruction)?;
+        let instructions: Vec<_> = Self::build_instructions(&legacy.instructions)?;
 
         Ok(VersionedMessage::Legacy(legacy::Message {
             header,
@@ -507,7 +527,7 @@ impl RawMessageBuilder {
         let header = Self::build_message_header(&v0.header)?;
         let account_keys = Self::build_account_keys(&v0.account_keys)?;
         let recent_blockhash = Blockhash::from_str(v0.recent_blockhash.as_ref())?;
-        let instructions: Vec<_> = Self::build_instructions(&v0.instruction)?;
+        let instructions: Vec<_> = Self::build_instructions(&v0.instructions)?;
         let address_table_lookups = v0
             .address_table_lookups
             .iter()

@@ -10,6 +10,7 @@ use crate::error::{AddressResult, SigningError, SigningErrorType};
 use crate::modules::json_signer::JsonSigner;
 use crate::modules::message_signer::MessageSigner;
 use crate::modules::plan_builder::PlanBuilder;
+use crate::modules::transaction_decoder::TransactionDecoder;
 use crate::modules::wallet_connector::WalletConnector;
 use crate::prefix::AddressPrefix;
 use tw_keypair::tw::{PrivateKey, PublicKey};
@@ -91,6 +92,9 @@ pub trait CoinEntryExt {
         coin: &dyn CoinContext,
         input: &[u8],
     ) -> SigningResult<Data>;
+
+    /// Decodes a transaction from binary representation.
+    fn decode_transaction(&self, coin: &dyn CoinContext, tx: &[u8]) -> SigningResult<Data>;
 }
 
 impl<T> CoinEntryExt for T
@@ -228,6 +232,15 @@ where
 
         let input: WCProto::ParseRequestInput = deserialize(input)?;
         let output = wc_connector.parse_request(coin, input);
+        serialize(&output).map_err(SigningError::from)
+    }
+
+    fn decode_transaction(&self, coin: &dyn CoinContext, tx: &[u8]) -> SigningResult<Data> {
+        let Some(tx_decoder) = self.transaction_decoder() else {
+            return Err(SigningError(SigningErrorType::Error_not_supported));
+        };
+
+        let output = tx_decoder.decode_transaction(coin, tx);
         serialize(&output).map_err(SigningError::from)
     }
 }

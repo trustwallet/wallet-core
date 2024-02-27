@@ -151,6 +151,11 @@ message AdvanceNonceAccount {
 }
 
 message RawMessage {
+    message PubkeySignature {
+        string pubkey = 1;
+        bytes signature = 2;
+    }
+
     message MessageHeader {
         uint32 num_required_signatures = 1;
         uint32 num_readonly_signed_accounts = 2;
@@ -159,14 +164,14 @@ message RawMessage {
 
     message Instruction {
         uint32 program_id = 1;
-        repeated uint32 accounts = 2;
+        repeated uint32 accounts = 2 [packed=true];
         bytes program_data = 3;
     }
 
     message MessageAddressTableLookup {
         string account_key = 1;
-        repeated uint32 writable_indexes = 2;
-        repeated uint32 readonly_indexes = 3;
+        repeated uint32 writable_indexes = 2 [packed=true];
+        repeated uint32 readonly_indexes = 3 [packed=true];
     }
 
     message MessageLegacy {
@@ -174,7 +179,7 @@ message RawMessage {
         repeated string account_keys = 2;
         // Relatively recent block hash (base58 encoded).
         string recent_blockhash = 3;
-        repeated Instruction instruction = 4;
+        repeated Instruction instructions = 4;
     }
 
     message MessageV0 {
@@ -182,14 +187,29 @@ message RawMessage {
         repeated string account_keys = 2;
         // Relatively recent block hash (base58 encoded).
         string recent_blockhash = 3;
-        repeated Instruction instruction = 4;
+        repeated Instruction instructions = 4;
         repeated MessageAddressTableLookup address_table_lookups = 5;
     }
 
+    // Transaction signatures.
+    // If private keys are set in `SigningInput`, corresponding signatures will be overriden.
+    // It's also possible some or all the signatures are be used to compile a transaction if corresponding private keys are not set.
+    repeated PubkeySignature signatures = 1;
     oneof message {
         MessageLegacy legacy = 2;
         MessageV0 v0 = 3;
     }
+}
+
+message DecodingTransactionOutput {
+    // Decoded transaction info.
+    RawMessage transaction = 1;
+
+    // Error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // Error code description
+    string error_message = 3;
 }
 
 enum Encoding {
@@ -248,16 +268,15 @@ message SigningOutput {
     string error_message = 3;
 
     // The encoded message. Can be used to estimate a transaction fee required to execute the message.
-    // Please note that this is set only on `SolanaTransaction.updateBlockhashAndSign`, but no on `AnySigner.sign`.
     string unsigned_tx = 4;
 }
 
 /// Transaction pre-signing output
 message PreSigningOutput {
-    /// Signer list
+    // Signer list
     repeated bytes signers = 1;
 
-    /// Pre-image data. There is no hashing for Solana presign image
+    // Pre-image data. There is no hashing for Solana presign image
     bytes data = 2;
 
     // Error code, 0 is ok, other codes will be treated as errors

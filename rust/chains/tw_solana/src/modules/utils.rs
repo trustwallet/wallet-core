@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::modules::tx_signer::TxSigner;
+use crate::modules::PubkeySignatureMap;
 use crate::transaction::versioned::VersionedTransaction;
 use crate::SOLANA_ALPHABET;
 use std::borrow::Cow;
@@ -57,7 +58,8 @@ impl SolanaTransaction {
                 .map(|pk| ed25519::sha512::KeyPair::try_from(pk.as_slice()))
                 .collect::<KeyPairResult<Vec<_>>>()?;
 
-            TxSigner::sign_versioned(msg_to_sign, &private_keys)?
+            let external_signatures = PubkeySignatureMap::default();
+            TxSigner::sign_versioned(msg_to_sign, &private_keys, &external_signatures)?
         };
 
         let unsigned_encoded = base64::encode(&unsigned_encoded, is_url);

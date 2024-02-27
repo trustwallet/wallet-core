@@ -5,6 +5,7 @@
 //! Source code: https://github.com/solana-labs/solana/blob/a16f982169eb197fad0eb8c58c307fb069f69d8f/sdk/program/src/message/versions/mod.rs
 
 use crate::address::SolanaAddress;
+use crate::blockhash::Blockhash;
 use crate::transaction::{legacy, short_vec, v0, CompiledInstruction, MessageHeader, Signature};
 use serde::de::{SeqAccess, Unexpected, Visitor};
 use serde::ser::SerializeTuple;
@@ -50,6 +51,34 @@ pub enum VersionedMessage {
 }
 
 impl VersionedMessage {
+    pub fn header(&self) -> &MessageHeader {
+        match self {
+            VersionedMessage::Legacy(legacy) => &legacy.header,
+            VersionedMessage::V0(v0) => &v0.header,
+        }
+    }
+
+    pub fn account_keys(&self) -> &[SolanaAddress] {
+        match self {
+            VersionedMessage::Legacy(legacy) => &legacy.account_keys,
+            VersionedMessage::V0(v0) => &v0.account_keys,
+        }
+    }
+
+    pub fn recent_blockhash(&self) -> Blockhash {
+        match self {
+            VersionedMessage::Legacy(legacy) => Blockhash::with_bytes(legacy.recent_blockhash),
+            VersionedMessage::V0(v0) => Blockhash::with_bytes(v0.recent_blockhash),
+        }
+    }
+
+    pub fn instructions(&self) -> &[CompiledInstruction] {
+        match self {
+            VersionedMessage::Legacy(legacy) => &legacy.instructions,
+            VersionedMessage::V0(v0) => &v0.instructions,
+        }
+    }
+
     pub fn num_required_signatures(&self) -> usize {
         match self {
             VersionedMessage::Legacy(legacy) => legacy.header.num_required_signatures as usize,
