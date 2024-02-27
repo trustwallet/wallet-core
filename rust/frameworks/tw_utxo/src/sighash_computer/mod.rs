@@ -27,6 +27,7 @@ pub struct UtxoToSign {
     pub signing_method: SigningMethod,
     // TODO: Rename to value?
     pub amount: Amount,
+    pub leaf_hash_code_separator: Option<(H256, u32)>,
     pub tx_hasher: Hasher,
     pub sighash_ty: SighashType,
 }
@@ -37,6 +38,7 @@ impl Default for UtxoToSign {
             script_pubkey: Script::default(),
             signing_method: SigningMethod::Legacy,
             amount: Amount::default(),
+            leaf_hash_code_separator: None,
             tx_hasher: DEFAULT_TX_HASHER,
             sighash_ty: SighashType::default(),
         }
@@ -138,6 +140,7 @@ where
                     input_index,
                     script_pubkey: utxo.script_pubkey.clone(),
                     amount: utxo.amount,
+                    leaf_hash_code_separator: utxo.leaf_hash_code_separator,
                     sighash_ty: utxo.sighash_ty,
                     tx_hasher: utxo.tx_hasher,
                     signing_method,

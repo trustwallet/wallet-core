@@ -32,6 +32,7 @@ pub struct UtxoPreimageArgs {
     pub script_pubkey: Script,
     pub amount: Amount,
     pub sighash_ty: SighashType,
+    pub leaf_hash_code_separator: Option<(H256, u32)>,
     pub tx_hasher: Hasher,
     /// Signing method needs to be used to sign the [`UtxoPreimageArgs::input_index`] index.
     pub signing_method: SigningMethod,
