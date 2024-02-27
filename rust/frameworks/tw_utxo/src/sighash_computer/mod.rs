@@ -11,7 +11,7 @@ use crate::transaction::transaction_interface::{
     TransactionInterface, TxInputInterface, TxOutputInterface,
 };
 use crate::transaction::transaction_parts::Amount;
-use crate::transaction::{TransactionPreimage, UtxoPreimageArgs};
+use crate::transaction::{TransactionPreimage, UtxoPreimageArgs, UtxoTaprootPreimageArgs};
 use std::marker::PhantomData;
 use tw_hash::hasher::Hasher;
 use tw_hash::H256;
@@ -27,6 +27,22 @@ pub struct UtxoToSign {
     pub signing_method: SigningMethod,
     // TODO: Rename to value?
     pub amount: Amount,
+    pub leaf_hash_code_separator: Option<(H256, u32)>,
+    pub tx_hasher: Hasher,
+    pub sighash_ty: SighashType,
+}
+
+impl Default for UtxoToSign {
+    fn default() -> Self {
+        UtxoToSign {
+            script_pubkey: Script::default(),
+            signing_method: SigningMethod::Legacy,
+            amount: Amount::default(),
+            leaf_hash_code_separator: None,
+            tx_hasher: DEFAULT_TX_HASHER,
+            sighash_ty: SighashType::default(),
+        }
+    }
 }
 
 /// Transaction preimage arguments.
@@ -34,16 +50,12 @@ pub struct UtxoToSign {
 // TODO: Move this to another module.
 pub struct TxSigningArgs {
     pub utxos_to_sign: Vec<UtxoToSign>,
-    pub sighash_ty: SighashType,
-    pub tx_hasher: Hasher,
 }
 
 impl Default for TxSigningArgs {
     fn default() -> Self {
         TxSigningArgs {
             utxos_to_sign: Vec::default(),
-            sighash_ty: SighashType::default(),
-            tx_hasher: DEFAULT_TX_HASHER,
         }
     }
 }
@@ -128,12 +140,40 @@ where
                     input_index,
                     script_pubkey: utxo.script_pubkey.clone(),
                     amount: utxo.amount,
-                    sighash_ty: self.args.sighash_ty,
-                    tx_hasher: self.args.tx_hasher,
+                    leaf_hash_code_separator: utxo.leaf_hash_code_separator,
+                    sighash_ty: utxo.sighash_ty,
+                    tx_hasher: utxo.tx_hasher,
                     signing_method,
                 };
 
-                let sighash = self.transaction_to_sign.preimage_tx(&utxo_args)?;
+                let sighash = match signing_method {
+                    SigningMethod::Legacy | SigningMethod::Segwit => {
+                        self.transaction_to_sign.preimage_tx(&utxo_args)?
+                    },
+                    SigningMethod::TaprootAll | SigningMethod::TaprootOnePrevout => {
+                        let tr_spent_amounts: Vec<Amount> = self
+                            .args
+                            .utxos_to_sign
+                            .iter()
+                            .map(|utxo| utxo.amount)
+                            .collect();
+
+                        let tr_spent_script_pubkeys: Vec<Script> = self
+                            .args
+                            .utxos_to_sign
+                            .iter()
+                            .map(|utxo| utxo.script_pubkey.clone())
+                            .collect();
+
+                        let tr = UtxoTaprootPreimageArgs {
+                            args: utxo_args,
+                            spent_amounts: tr_spent_amounts,
+                            spent_script_pubkeys: tr_spent_script_pubkeys.clone(),
+                        };
+
+                        self.transaction_to_sign.preimage_taproot_tx(&tr)?
+                    },
+                };
 
                 Ok(UtxoSighash {
                     signing_method,

@@ -19,9 +19,27 @@ pub fn sha256_d(data: &[u8]) -> Data {
     sha256(&sha256(data))
 }
 
+/// TapSighash, required for Bitcoin Taproot. This function computes
+/// `sha256(sha256("TapSighash") + sha256("TapSighash") + data)`.
+pub fn tapsighash(data: &[u8]) -> Data {
+    const TAPSIG_TAG_HASH: [u8; 32] = [
+        244, 10, 72, 223, 75, 42, 112, 200, 180, 146, 75, 242, 101, 70, 97, 237, 61, 149, 253, 102,
+        163, 19, 235, 135, 35, 117, 151, 198, 40, 228, 160, 49,
+    ];
+
+    debug_assert_eq!(TAPSIG_TAG_HASH, sha256(b"TapSighash").as_slice());
+
+    let mut t = Vec::with_capacity(TAPSIG_TAG_HASH.len() * 2 + data.len());
+    t.extend(TAPSIG_TAG_HASH);
+    t.extend(TAPSIG_TAG_HASH);
+    t.extend(data);
+
+    sha256(&t)
+}
+
 /// Enum selector for the supported hash functions.
 /// Add hash types if necessary. For example, when add a new hasher to `registry.json`.
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
 pub enum Hasher {
     #[serde(rename = "sha256")]
     Sha256,
@@ -33,6 +51,8 @@ pub enum Hasher {
     /// ripemd hash of the SHA256 hash
     #[serde(rename = "sha256ripemd")]
     Sha256ripemd,
+    #[serde(rename = "tapsighash")]
+    TapSighash,
 }
 
 impl Hasher {
@@ -42,6 +62,7 @@ impl Hasher {
             Hasher::Keccak256 => keccak256(data),
             Hasher::Sha256d => sha256_d(data),
             Hasher::Sha256ripemd => sha256_ripemd(data),
+            Hasher::TapSighash => tapsighash(data),
         }
     }
 
@@ -55,6 +76,7 @@ impl Hasher {
         match self {
             Hasher::Sha256 | Hasher::Keccak256 | Hasher::Sha256d => H256::len(),
             Hasher::Sha256ripemd => H160::len(),
+            Hasher::TapSighash => H256::len(),
         }
     }
 }

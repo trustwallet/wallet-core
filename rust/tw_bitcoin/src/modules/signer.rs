@@ -155,8 +155,6 @@ impl Signer {
             let sighash = Message::from_slice(entry.sighash.as_ref())
                 .map_err(|_| Error::from(Proto::Error::Error_invalid_sighash))?;
 
-            dbg!(&sighash.as_ref());
-
             // Sign the sighash depending on signing method.
             match entry.signing_method {
                 // Create a ECDSA signature for legacy and segwit transaction.
@@ -188,6 +186,8 @@ impl Signer {
                         let tapped: TweakedKeyPair = keypair.tap_tweak(&secp, None);
                         let tweaked = KeyPair::from(tapped);
 
+                        dbg!(&entry.sighash);
+
                         // Construct the Schnorr signature.
                         let schnorr = if dangerous_use_fixed_schnorr_rng {
                             // For tests, we disable the included randomness in order to create
@@ -197,6 +197,8 @@ impl Signer {
                         } else {
                             secp.sign_schnorr(&sighash, &tweaked)
                         };
+
+                        dbg!(&schnorr.as_ref());
 
                         let sig = bitcoin::taproot::Signature {
                             sig: schnorr,

@@ -57,7 +57,7 @@ impl BitcoinSchnorrSignature {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u32)]
 pub enum SighashBase {
     /// Sign all inputs and outputs (default) - 0x01
@@ -74,7 +74,7 @@ pub enum SighashBase {
 
 /// Signature hash type.
 /// https://en.bitcoin.it/wiki/OP_CHECKSIG#Procedure_for_Hashtype_SIGHASH_SINGLE
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SighashType {
     /// Original raw sighash type.
     raw_sighash: u32,

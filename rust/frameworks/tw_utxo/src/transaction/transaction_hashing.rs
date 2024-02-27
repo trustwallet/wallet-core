@@ -3,12 +3,16 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::encode::stream::Stream;
+use crate::script::Script;
 use crate::sighash::SighashBase;
 use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
 use crate::transaction::UtxoPreimageArgs;
 use std::marker::PhantomData;
 use tw_hash::hasher::Hasher;
 use tw_memory::Data;
+
+use super::transaction_parts::Amount;
+use super::UtxoTaprootPreimageArgs;
 
 /// A helper structure that hashes some parts of the transaction.
 pub struct TransactionHasher<Transaction> {
@@ -32,6 +36,40 @@ impl<Transaction: TransactionInterface> TransactionHasher<Transaction> {
             return args.tx_hasher.zero_hash();
         }
         Self::prevout_hash(tx, args.tx_hasher)
+    }
+
+    /// Computes a hash of all `spent_amounts`. Required for TapSighash.
+    pub fn spent_amount_hash(tr: &UtxoTaprootPreimageArgs) -> Data {
+        let mut stream = Stream::default();
+        for amount in &tr.spent_amounts {
+            stream.append(amount);
+        }
+        tr.args.tx_hasher.hash(&stream.out())
+    }
+
+    // TODO: Comment
+    pub fn preimage_spent_amount_hash(tr: &UtxoTaprootPreimageArgs) -> Data {
+        if tr.args.sighash_ty.anyone_can_pay() {
+            return tr.args.tx_hasher.zero_hash();
+        }
+        Self::spent_amount_hash(tr)
+    }
+
+    /// Computes a hash of all `script_pubkeys`. Required for TapSighash.
+    pub fn spent_script_pubkeys(tr: &UtxoTaprootPreimageArgs) -> Data {
+        let mut stream = Stream::default();
+        for script in &tr.spent_script_pubkeys {
+            stream.append(script);
+        }
+        tr.args.tx_hasher.hash(&stream.out())
+    }
+
+    // TODO: Comment
+    pub fn preimage_spent_script_pubkeys(tr: &UtxoTaprootPreimageArgs) -> Data {
+        if tr.args.sighash_ty.anyone_can_pay() {
+            return tr.args.tx_hasher.zero_hash();
+        }
+        Self::spent_script_pubkeys(tr)
     }
 
     /// Computes a hash of all [`SignedUtxo::sequence`].

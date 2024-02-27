@@ -7,8 +7,9 @@ use crate::{
     sighash::{BitcoinEcdsaSignature, BitcoinSchnorrSignature},
     sighash_computer::SpendingData,
 };
+use bitcoin::hashes::Hash;
 use tw_encoding::hex;
-use tw_hash::{ripemd::bitcoin_hash_160, H160, H256, H264};
+use tw_hash::{hasher::Hasher, ripemd::bitcoin_hash_160, H160, H256, H264};
 use tw_keypair::{ecdsa, schnorr, tw};
 use tw_misc::traits::ToBytesVec;
 
@@ -71,10 +72,6 @@ impl TransactionBuilder {
     }
     pub fn lock_time(mut self, locktime: u32) -> Self {
         self.locktime = locktime;
-        self
-    }
-    pub fn sighash_ty(mut self, sighash_ty: SighashType) -> Self {
-        self.args.sighash_ty = sighash_ty;
         self
     }
     pub fn push_input(mut self, input: TransactionInput, arg: UtxoToSign) -> Self {
@@ -153,6 +150,7 @@ impl UtxoBuilder {
         self.amount = Some(amount);
         self
     }
+    // TODO: Can we somehow get rid of this?
     fn finalize_out_point(&mut self) -> UtxoResult<()> {
         // Populate the input with the previous output.
         self.input.previous_output.hash = self
@@ -178,6 +176,7 @@ impl UtxoBuilder {
                 amount: self
                     .amount
                     .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+                ..Default::default()
             },
         ))
     }
@@ -196,6 +195,7 @@ impl UtxoBuilder {
                 amount: self
                     .amount
                     .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+                ..Default::default()
             },
         ))
     }
@@ -220,6 +220,79 @@ impl UtxoBuilder {
                 amount: self
                     .amount
                     .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+                // Note that we don't use the default double-hasher.
+                tx_hasher: Hasher::Sha256,
+                ..Default::default()
+            },
+        ))
+    }
+    pub fn p2tr_script_path(
+        mut self,
+        pubkey: tw::PublicKey,
+        payload: Script,
+        merkle_root: H256,
+    ) -> UtxoResult<(TransactionInput, UtxoToSign)> {
+        let pubkey: H264 = pubkey
+            .to_bytes()
+            .as_slice()
+            .try_into()
+            .expect("pubkey length is 33 bytes");
+
+        /*
+        // TODO: This logic, including merkle root calculation, should be moved somewhere else.
+
+        let mut builder = bitcoin::taproot::TaprootBuilder::new();
+
+        for (depth, payload) in payloads {
+            let payload = bitcoin::ScriptBuf::from_bytes(payload.as_data().to_vec());
+            builder.add_leaf(*depth, payload).unwrap();
+        }
+
+        // The internal key.
+        let xonly = bitcoin::secp256k1::XOnlyPublicKey::from(
+            bitcoin::PublicKey::from_slice(pubkey.as_slice())
+                .unwrap()
+                .inner,
+        );
+
+        let spend_info = builder
+            .finalize(&bitcoin::secp256k1::Secp256k1::new(), xonly)
+            .unwrap();
+
+        let merkle_root: H256 = spend_info
+            .merkle_root()
+            .unwrap()
+            .to_byte_array()
+            .as_slice()
+            .try_into()
+            .unwrap();
+        */
+
+        // Construct the leaf hash.
+        let payload = bitcoin::ScriptBuf::from_bytes(payload.as_data().to_vec());
+        let leaf_hash = bitcoin::taproot::TapLeafHash::from_script(
+            &payload,
+            bitcoin::taproot::LeafVersion::TapScript,
+        );
+        let leaf_hash: H256 = leaf_hash
+            .to_byte_array()
+            .try_into()
+            .expect("leaf hash length is 32 bytes");
+
+        self.finalize_out_point()?;
+
+        Ok((
+            self.input,
+            UtxoToSign {
+                script_pubkey: conditions::new_p2tr_script_path(&pubkey, &merkle_root),
+                signing_method: SigningMethod::TaprootAll,
+                amount: self
+                    .amount
+                    .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+                leaf_hash_code_separator: Some((leaf_hash, 0)),
+                // Note that we don't use the default double-hasher.
+                tx_hasher: Hasher::Sha256,
+                ..Default::default()
             },
         ))
     }
@@ -275,6 +348,24 @@ impl OutputBuilder {
                 .amount
                 .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
             script_pubkey: conditions::new_p2tr_key_path(&pubkey),
+        })
+    }
+    pub fn p2tr_script_path(
+        self,
+        pubkey: tw::PublicKey,
+        merkle_root: H256,
+    ) -> UtxoResult<TransactionOutput> {
+        let pubkey: H264 = pubkey
+            .to_bytes()
+            .as_slice()
+            .try_into()
+            .expect("pubkey length is 33 bytes");
+
+        Ok(TransactionOutput {
+            value: self
+                .amount
+                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+            script_pubkey: conditions::new_p2tr_script_path(&pubkey, &merkle_root),
         })
     }
 }
@@ -352,6 +443,26 @@ impl SpendingScriptBuilder {
         .unwrap();
 
         let witness = claims::new_p2tr_key_path(sig.serialize());
+
+        Ok(SpendingData {
+            script_sig: Script::default(),
+            witness,
+        })
+    }
+    pub fn p2tr_script_path(
+        self,
+        sig: schnorr::Signature,
+        payload: Script,
+        control_block: Vec<u8>,
+    ) -> UtxoResult<SpendingData> {
+        let sig = BitcoinSchnorrSignature::new(
+            sig,
+            self.sighash_ty
+                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+        )
+        .unwrap();
+
+        let witness = claims::new_p2tr_script_path(sig.serialize(), payload, control_block);
 
         Ok(SpendingData {
             script_sig: Script::default(),
