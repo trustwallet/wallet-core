@@ -22,6 +22,10 @@ pub struct Taproot1Sighash<Transaction: TransactionInterface> {
 
 impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
     pub fn sighash_tx(tx: &Transaction, tr: &UtxoTaprootPreimageArgs) -> UtxoResult<Data> {
+        // The annex was introduced with Taproot and is currently unused in
+        // Bitcoin, but may be used it in the future.
+        const ANNEX_SUPPORTED: bool = true;
+
         let prevout_hash = TransactionHasher::<Transaction>::preimage_prevout_hash(tx, &tr.args);
         let sequence_hash = TransactionHasher::<Transaction>::preimage_sequence_hash(tx, &tr.args);
         let outputs_hash = TransactionHasher::<Transaction>::preimage_outputs_hash(tx, &tr.args);
@@ -56,6 +60,10 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
 
         let mut spend_type = 0u8;
 
+        if ANNEX_SUPPORTED {
+            spend_type |= 1u8;
+        }
+
         // TODO: Leaf hash node
         let leaf_hash_node_is_some = false;
         if leaf_hash_node_is_some {
@@ -70,8 +78,7 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
             stream.append(&(tr.args.input_index as u32));
         }
 
-        let annex_is_some = false;
-        if annex_is_some {
+        if ANNEX_SUPPORTED {
             todo!()
         }
 

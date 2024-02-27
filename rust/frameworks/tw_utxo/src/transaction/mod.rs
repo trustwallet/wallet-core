@@ -8,6 +8,7 @@ use crate::sighash::SighashType;
 use crate::signing_mode::SigningMethod;
 use crate::transaction::transaction_parts::Amount;
 use tw_hash::hasher::Hasher;
+use tw_hash::H256;
 use tw_memory::Data;
 
 pub mod standard_transaction;

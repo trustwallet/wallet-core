@@ -218,7 +218,7 @@ impl UtxoBuilder {
                 amount: self
                     .amount
                     .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
-                // Note that we don't use the double-hasher.
+                // Note that we don't use the default double-hasher.
                 tx_hasher: Hasher::Sha256,
                 ..Default::default()
             },
