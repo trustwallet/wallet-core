@@ -8,7 +8,7 @@ use crate::{
     sighash_computer::SpendingData,
 };
 use tw_encoding::hex;
-use tw_hash::{ripemd::bitcoin_hash_160, H160, H256, H264};
+use tw_hash::{hasher::Hasher, ripemd::bitcoin_hash_160, H160, H256, H264};
 use tw_keypair::{ecdsa, schnorr, tw};
 use tw_misc::traits::ToBytesVec;
 
@@ -71,10 +71,6 @@ impl TransactionBuilder {
     }
     pub fn lock_time(mut self, locktime: u32) -> Self {
         self.locktime = locktime;
-        self
-    }
-    pub fn sighash_ty(mut self, sighash_ty: SighashType) -> Self {
-        self.args.sighash_ty = sighash_ty;
         self
     }
     pub fn push_input(mut self, input: TransactionInput, arg: UtxoToSign) -> Self {
@@ -178,6 +174,7 @@ impl UtxoBuilder {
                 amount: self
                     .amount
                     .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+                ..Default::default()
             },
         ))
     }
@@ -196,6 +193,7 @@ impl UtxoBuilder {
                 amount: self
                     .amount
                     .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+                ..Default::default()
             },
         ))
     }
@@ -220,6 +218,9 @@ impl UtxoBuilder {
                 amount: self
                     .amount
                     .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+                // Note that we don't use the double-hasher.
+                tx_hasher: Hasher::Sha256,
+                ..Default::default()
             },
         ))
     }

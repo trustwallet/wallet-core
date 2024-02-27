@@ -27,6 +27,20 @@ pub struct UtxoToSign {
     pub signing_method: SigningMethod,
     // TODO: Rename to value?
     pub amount: Amount,
+    pub tx_hasher: Hasher,
+    pub sighash_ty: SighashType,
+}
+
+impl Default for UtxoToSign {
+    fn default() -> Self {
+        UtxoToSign {
+            script_pubkey: Script::default(),
+            signing_method: SigningMethod::Legacy,
+            amount: Amount::default(),
+            tx_hasher: DEFAULT_TX_HASHER,
+            sighash_ty: SighashType::default(),
+        }
+    }
 }
 
 /// Transaction preimage arguments.
@@ -34,16 +48,12 @@ pub struct UtxoToSign {
 // TODO: Move this to another module.
 pub struct TxSigningArgs {
     pub utxos_to_sign: Vec<UtxoToSign>,
-    pub sighash_ty: SighashType,
-    pub tx_hasher: Hasher,
 }
 
 impl Default for TxSigningArgs {
     fn default() -> Self {
         TxSigningArgs {
             utxos_to_sign: Vec::default(),
-            sighash_ty: SighashType::default(),
-            tx_hasher: DEFAULT_TX_HASHER,
         }
     }
 }
@@ -128,8 +138,8 @@ where
                     input_index,
                     script_pubkey: utxo.script_pubkey.clone(),
                     amount: utxo.amount,
-                    sighash_ty: self.args.sighash_ty,
-                    tx_hasher: self.args.tx_hasher,
+                    sighash_ty: utxo.sighash_ty,
+                    tx_hasher: utxo.tx_hasher,
                     signing_method,
                 };
 

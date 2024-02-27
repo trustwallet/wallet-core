@@ -31,24 +31,28 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
 
         let mut stream = Stream::default();
 
+        // For conventional reasons, as observed in the behavior of the
+        // `rust-bitcoin` crate, we map `SighashType::All` to 0x00, which
+        // indicates the default behavior. The 0x00 variant is only supported in
+        // Taproot transactions, not in Legacy or Segwit transactions.
+        let raw_sighash = if let SighashBase::All = tr.args.sighash_ty.base_type() {
+            0u8
+        } else {
+            tr.args.sighash_ty.raw_sighash() as u8
+        };
+
         stream
             .append(&0u8) // epoch
-            // TODO??
-            //.append(&(args.sighash_ty.raw_sighash() as u8))
-            .append(&0u8)
+            .append(&raw_sighash)
             .append(&tx.version())
             .append(&tx.locktime())
             .append_raw_slice(&prevout_hash)
             .append_raw_slice(&spent_amounts_hash)
             .append_raw_slice(&spent_script_pubkeys_hash)
-            .append_raw_slice(&sequence_hash);
-
-        // TODO: What about `NonePlusAnyoneCanPay`?.
-        if tr.args.sighash_ty.base_type() != SighashBase::None
-            && tr.args.sighash_ty.base_type() != SighashBase::Single
-        {
-            stream.append_raw_slice(&outputs_hash);
-        }
+            .append_raw_slice(&sequence_hash)
+            // TODO: Double check behavior or `Single`
+            // TODO: What about `NonePlusAnyoneCanPay`?.
+            .append_raw_slice(&outputs_hash);
 
         let mut spend_type = 0u8;
 
@@ -66,7 +70,6 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
             stream.append(&(tr.args.input_index as u32));
         }
 
-        // TODO:
         let annex_is_some = false;
         if annex_is_some {
             todo!()

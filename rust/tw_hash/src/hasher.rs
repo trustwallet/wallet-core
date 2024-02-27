@@ -39,7 +39,7 @@ pub fn tapsighash(data: &[u8]) -> Data {
 
 /// Enum selector for the supported hash functions.
 /// Add hash types if necessary. For example, when add a new hasher to `registry.json`.
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
 pub enum Hasher {
     #[serde(rename = "sha256")]
     Sha256,

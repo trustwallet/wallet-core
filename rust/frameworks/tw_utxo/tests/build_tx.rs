@@ -298,9 +298,6 @@ fn build_tx_input_taproot_output_taproot() {
         .push_output(output1)
         .build();
 
-    // !!
-    args.tx_hasher = Hasher::Sha256;
-
     // Compute the primage.
     let computer = SighashComputer::new(tx, args);
     let preimage = computer.preimage_tx().unwrap();
