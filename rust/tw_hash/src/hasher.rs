@@ -19,17 +19,19 @@ pub fn sha256_d(data: &[u8]) -> Data {
     sha256(&sha256(data))
 }
 
-/// TapSighash, required for Bitcoin Taproot.
+/// TapSighash, required for Bitcoin Taproot This function computes
+/// `sha256(sha256("TapSighash") + sha256("TapSighash") + data)`.
 pub fn tapsighash(data: &[u8]) -> Data {
-    // `sha256("TapSighash")`
-    const TAPSIG_PREFIX_HASH: [u8; 32] = [
+    const TAPSIG_TAG_HASH: [u8; 32] = [
         244, 10, 72, 223, 75, 42, 112, 200, 180, 146, 75, 242, 101, 70, 97, 237, 61, 149, 253, 102,
         163, 19, 235, 135, 35, 117, 151, 198, 40, 228, 160, 49,
     ];
 
-    let mut t = Vec::with_capacity(TAPSIG_PREFIX_HASH.len() * 2 + data.len());
-    t.extend(TAPSIG_PREFIX_HASH);
-    t.extend(TAPSIG_PREFIX_HASH);
+    debug_assert_eq!(TAPSIG_TAG_HASH, sha256(b"TapSighash").as_slice());
+
+    let mut t = Vec::with_capacity(TAPSIG_TAG_HASH.len() * 2 + data.len());
+    t.extend(TAPSIG_TAG_HASH);
+    t.extend(TAPSIG_TAG_HASH);
     t.extend(data);
 
     sha256(&t)
