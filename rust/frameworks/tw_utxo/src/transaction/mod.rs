@@ -23,12 +23,6 @@ pub trait TransactionPreimage {
     fn preimage_taproot_tx(&self, args: &UtxoTaprootPreimageArgs) -> UtxoResult<Data>;
 }
 
-pub struct UtxoTaprootPreimageArgs {
-    em: UtxoPreimageArgs,
-    tr_spent_amounts: Vec<u64>,
-    tr_spent_script_pubkeys: Vec<Script>,
-}
-
 /// UTXO (unspent transaction output) preimage arguments.
 /// It provides an index of the UTXO to be signed and other required options.
 pub struct UtxoPreimageArgs {
@@ -40,6 +34,10 @@ pub struct UtxoPreimageArgs {
     pub tx_hasher: Hasher,
     /// Signing method needs to be used to sign the [`UtxoPreimageArgs::input_index`] index.
     pub signing_method: SigningMethod,
-    pub tr_spent_amounts: Vec<u64>,
-    pub tr_spent_script_pubkeys: Vec<Script>,
+}
+
+pub struct UtxoTaprootPreimageArgs {
+    pub preimage: UtxoPreimageArgs,
+    pub spent_amounts: Vec<u64>,
+    pub spent_script_pubkeys: Vec<Script>,
 }

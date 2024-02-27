@@ -19,7 +19,7 @@ pub fn sha256_d(data: &[u8]) -> Data {
     sha256(&sha256(data))
 }
 
-/// TapSighash, required for Bitcoin Taproot This function computes
+/// TapSighash, required for Bitcoin Taproot. This function computes
 /// `sha256(sha256("TapSighash") + sha256("TapSighash") + data)`.
 pub fn tapsighash(data: &[u8]) -> Data {
     const TAPSIG_TAG_HASH: [u8; 32] = [

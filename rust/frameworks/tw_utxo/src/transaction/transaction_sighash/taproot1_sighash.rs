@@ -7,7 +7,7 @@ use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
 use crate::sighash::{SighashBase, SighashType};
 use crate::transaction::transaction_hashing::TransactionHasher;
 use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
-use crate::transaction::UtxoPreimageArgs;
+use crate::transaction::{UtxoPreimageArgs, UtxoTaprootPreimageArgs};
 use bitcoin::{amount, script};
 use secp256k1::rand::seq;
 use std::marker::PhantomData;
@@ -21,7 +21,14 @@ pub struct Taproot1Sighash<Transaction: TransactionInterface> {
 }
 
 impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
-    pub fn sighash_tx(tx: &Transaction, args: &UtxoPreimageArgs) -> UtxoResult<Data> {
+    pub fn sighash_tx(
+        tx: &Transaction,
+        taproot_args: &UtxoTaprootPreimageArgs,
+    ) -> UtxoResult<Data> {
+        let args = &taproot_args.preimage;
+        let spent_amounts = &taproot_args.spent_amounts;
+        let spent_script_pubkeys = &taproot_args.spent_script_pubkeys;
+
         let prevout_hash = TransactionHasher::<Transaction>::preimage_prevout_hash(tx, args);
         let sequence_hash = TransactionHasher::<Transaction>::preimage_sequence_hash(tx, args);
         let outputs_hash = TransactionHasher::<Transaction>::preimage_outputs_hash(tx, args);
@@ -39,14 +46,14 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
         if !args.sighash_ty.anyone_can_pay() {
             // > sha_amounts (32): the SHA256 of the serialization of all spent output amounts.
             let mut s = Stream::default();
-            for amount in &args.tr_spent_amounts {
+            for amount in spent_amounts {
                 s.append(amount);
             }
             let spent_amounts = args.tx_hasher.hash(&s.out());
 
             // > sha_scriptpubkeys (32): the SHA256 of the serialization of all spent output scriptPubKeys.
             let mut s = Stream::default();
-            for script in &args.tr_spent_script_pubkeys {
+            for script in spent_script_pubkeys {
                 s.append(script);
             }
             let spent_script_pubkeys = args.tx_hasher.hash(&s.out());

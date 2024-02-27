@@ -206,12 +206,17 @@ impl TransactionPreimage for Transaction {
         match args.signing_method {
             SigningMethod::Legacy => LegacySighash::<Self>::sighash_tx(self, args),
             SigningMethod::Segwit => Witness0Sighash::<Self>::sighash_tx(self, args),
-            SigningMethod::TaprootAll => Taproot1Sighash::<Self>::sighash_tx(self, args),
+            SigningMethod::TaprootAll => todo!(),
             SigningMethod::TaprootOnePrevout => todo!(),
         }
     }
     fn preimage_taproot_tx(&self, args: &super::UtxoTaprootPreimageArgs) -> UtxoResult<Data> {
-        todo!()
+        match args.preimage.signing_method {
+            SigningMethod::Legacy => todo!(),
+            SigningMethod::Segwit => todo!(),
+            SigningMethod::TaprootAll => Taproot1Sighash::<Self>::sighash_tx(self, args),
+            SigningMethod::TaprootOnePrevout => Taproot1Sighash::<Self>::sighash_tx(self, args),
+        }
     }
 }
 
