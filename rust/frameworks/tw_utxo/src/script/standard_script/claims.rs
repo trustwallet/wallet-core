@@ -84,10 +84,10 @@ pub fn new_p2tr_key_path(sig: Vec<u8>) -> Witness {
 }
 
 // TODO: Consider using newtypes for payload and control block.
-pub fn new_p2tr_script_path(sig: Vec<u8>, payload: Vec<u8>, control_block: Vec<u8>) -> Witness {
+pub fn new_p2tr_script_path(sig: Vec<u8>, payload: Script, control_block: Vec<u8>) -> Witness {
     let mut w = Witness::new();
     w.push_item(Script::from(sig));
-    w.push_item(Script::from(payload));
+    w.push_item(payload);
     w.push_item(Script::from(control_block));
     w
 }

@@ -229,7 +229,8 @@ impl UtxoBuilder {
     pub fn p2tr_script_path(
         mut self,
         pubkey: tw::PublicKey,
-        payloads: &[(u8, Script)],
+        payload: Script,
+        merkle_root: H256,
     ) -> UtxoResult<(TransactionInput, UtxoToSign)> {
         let pubkey: H264 = pubkey
             .to_bytes()
@@ -237,17 +238,13 @@ impl UtxoBuilder {
             .try_into()
             .expect("pubkey length is 33 bytes");
 
-        let builder = bitcoin::taproot::TaprootBuilder::new();
-
+        /*
         // TODO: This logic, including merkle root calculation, should be moved somewhere else.
+
+        let mut builder = bitcoin::taproot::TaprootBuilder::new();
+
         for (depth, payload) in payloads {
             let payload = bitcoin::ScriptBuf::from_bytes(payload.as_data().to_vec());
-            let leaf_hash = bitcoin::taproot::TapLeafHash::from_script(
-                &payload,
-                bitcoin::taproot::LeafVersion::TapScript,
-            );
-            //let leaf_hash: H256 = leaf_hash.to_byte_array().try_into().expect("leaf hash must be 32 bytes");
-
             builder.add_leaf(*depth, payload).unwrap();
         }
 
@@ -269,15 +266,25 @@ impl UtxoBuilder {
             .as_slice()
             .try_into()
             .unwrap();
+        */
 
-        let script_pubkey = conditions::new_p2tr_script_path(&pubkey, &merkle_root);
+        // Construct the leaf hash.
+        let payload = bitcoin::ScriptBuf::from_bytes(payload.as_data().to_vec());
+        let leaf_hash = bitcoin::taproot::TapLeafHash::from_script(
+            &payload,
+            bitcoin::taproot::LeafVersion::TapScript,
+        );
+        let leaf_hash: H256 = leaf_hash
+            .to_byte_array()
+            .try_into()
+            .expect("leaf hash length is 32 bytes");
 
         self.finalize_out_point()?;
 
         Ok((
             self.input,
             UtxoToSign {
-                script_pubkey,
+                script_pubkey: conditions::new_p2tr_script_path(&pubkey, &merkle_root),
                 signing_method: SigningMethod::TaprootAll,
                 amount: self
                     .amount
@@ -436,6 +443,26 @@ impl SpendingScriptBuilder {
         .unwrap();
 
         let witness = claims::new_p2tr_key_path(sig.serialize());
+
+        Ok(SpendingData {
+            script_sig: Script::default(),
+            witness,
+        })
+    }
+    pub fn p2tr_script_path(
+        self,
+        sig: schnorr::Signature,
+        payload: Script,
+        control_block: Vec<u8>,
+    ) -> UtxoResult<SpendingData> {
+        let sig = BitcoinSchnorrSignature::new(
+            sig,
+            self.sighash_ty
+                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+        )
+        .unwrap();
+
+        let witness = claims::new_p2tr_script_path(sig.serialize(), payload, control_block);
 
         Ok(SpendingData {
             script_sig: Script::default(),
