@@ -7,6 +7,7 @@ use crate::{
     sighash::{BitcoinEcdsaSignature, BitcoinSchnorrSignature},
     sighash_computer::SpendingData,
 };
+use bitcoin::hashes::Hash;
 use tw_encoding::hex;
 use tw_hash::{hasher::Hasher, ripemd::bitcoin_hash_160, H160, H256, H264};
 use tw_keypair::{ecdsa, schnorr, tw};
@@ -149,6 +150,7 @@ impl UtxoBuilder {
         self.amount = Some(amount);
         self
     }
+    // TODO: Can we somehow get rid of this?
     fn finalize_out_point(&mut self) -> UtxoResult<()> {
         // Populate the input with the previous output.
         self.input.previous_output.hash = self
@@ -224,6 +226,69 @@ impl UtxoBuilder {
             },
         ))
     }
+    pub fn p2tr_script_path(
+        mut self,
+        pubkey: tw::PublicKey,
+        payloads: &[(u8, Script)],
+    ) -> UtxoResult<(TransactionInput, UtxoToSign)> {
+        let pubkey: H264 = pubkey
+            .to_bytes()
+            .as_slice()
+            .try_into()
+            .expect("pubkey length is 33 bytes");
+
+        let builder = bitcoin::taproot::TaprootBuilder::new();
+
+        // TODO: This logic, including merkle root calculation, should be moved somewhere else.
+        for (depth, payload) in payloads {
+            let payload = bitcoin::ScriptBuf::from_bytes(payload.as_data().to_vec());
+            let leaf_hash = bitcoin::taproot::TapLeafHash::from_script(
+                &payload,
+                bitcoin::taproot::LeafVersion::TapScript,
+            );
+            //let leaf_hash: H256 = leaf_hash.to_byte_array().try_into().expect("leaf hash must be 32 bytes");
+
+            builder.add_leaf(*depth, payload).unwrap();
+        }
+
+        // The internal key.
+        let xonly = bitcoin::secp256k1::XOnlyPublicKey::from(
+            bitcoin::PublicKey::from_slice(pubkey.as_slice())
+                .unwrap()
+                .inner,
+        );
+
+        let spend_info = builder
+            .finalize(&bitcoin::secp256k1::Secp256k1::new(), xonly)
+            .unwrap();
+
+        let merkle_root: H256 = spend_info
+            .merkle_root()
+            .unwrap()
+            .to_byte_array()
+            .as_slice()
+            .try_into()
+            .unwrap();
+
+        let script_pubkey = conditions::new_p2tr_script_path(&pubkey, &merkle_root);
+
+        self.finalize_out_point()?;
+
+        Ok((
+            self.input,
+            UtxoToSign {
+                script_pubkey,
+                signing_method: SigningMethod::TaprootAll,
+                amount: self
+                    .amount
+                    .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+                leaf_hash_code_separator: Some((leaf_hash, 0)),
+                // Note that we don't use the default double-hasher.
+                tx_hasher: Hasher::Sha256,
+                ..Default::default()
+            },
+        ))
+    }
 }
 
 pub struct OutputBuilder {
@@ -276,6 +341,24 @@ impl OutputBuilder {
                 .amount
                 .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
             script_pubkey: conditions::new_p2tr_key_path(&pubkey),
+        })
+    }
+    pub fn p2tr_script_path(
+        self,
+        pubkey: tw::PublicKey,
+        merkle_root: H256,
+    ) -> UtxoResult<TransactionOutput> {
+        let pubkey: H264 = pubkey
+            .to_bytes()
+            .as_slice()
+            .try_into()
+            .expect("pubkey length is 33 bytes");
+
+        Ok(TransactionOutput {
+            value: self
+                .amount
+                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+            script_pubkey: conditions::new_p2tr_script_path(&pubkey, &merkle_root),
         })
     }
 }
