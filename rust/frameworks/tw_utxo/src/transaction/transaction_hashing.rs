@@ -12,6 +12,7 @@ use tw_hash::hasher::Hasher;
 use tw_memory::Data;
 
 use super::transaction_parts::Amount;
+use super::UtxoTaprootPreimageArgs;
 
 /// A helper structure that hashes some parts of the transaction.
 pub struct TransactionHasher<Transaction> {
@@ -38,21 +39,37 @@ impl<Transaction: TransactionInterface> TransactionHasher<Transaction> {
     }
 
     /// Computes a hash of all `spent_amounts`. Required for TapSighash.
-    pub fn spent_amount_hash(spent_amounts: &[Amount], tx_hasher: Hasher) -> Data {
+    pub fn spent_amount_hash(tr: &UtxoTaprootPreimageArgs) -> Data {
         let mut stream = Stream::default();
-        for amount in spent_amounts {
+        for amount in &tr.spent_amounts {
             stream.append(amount);
         }
-        tx_hasher.hash(&stream.out())
+        tr.args.tx_hasher.hash(&stream.out())
+    }
+
+    // TODO: Comment
+    pub fn preimage_spent_amount_hash(tr: &UtxoTaprootPreimageArgs) -> Data {
+        if tr.args.sighash_ty.anyone_can_pay() {
+            return tr.args.tx_hasher.zero_hash();
+        }
+        Self::spent_amount_hash(tr)
     }
 
     /// Computes a hash of all `script_pubkeys`. Required for TapSighash.
-    pub fn spent_script_pubkeys(script_pubkeys: &[Script], tx_hasher: Hasher) -> Data {
+    pub fn spent_script_pubkeys(tr: &UtxoTaprootPreimageArgs) -> Data {
         let mut stream = Stream::default();
-        for script in script_pubkeys {
+        for script in &tr.spent_script_pubkeys {
             stream.append(script);
         }
-        tx_hasher.hash(&stream.out())
+        tr.args.tx_hasher.hash(&stream.out())
+    }
+
+    // TODO: Comment
+    pub fn preimage_spent_script_pubkeys(tr: &UtxoTaprootPreimageArgs) -> Data {
+        if tr.args.sighash_ty.anyone_can_pay() {
+            return tr.args.tx_hasher.zero_hash();
+        }
+        Self::spent_script_pubkeys(tr)
     }
 
     /// Computes a hash of all [`SignedUtxo::sequence`].

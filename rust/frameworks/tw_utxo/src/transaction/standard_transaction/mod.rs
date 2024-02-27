@@ -18,6 +18,7 @@ use crate::transaction::{TransactionPreimage, UtxoPreimageArgs};
 use tw_memory::Data;
 
 use super::transaction_sighash::taproot1_sighash::Taproot1Sighash;
+use super::UtxoTaprootPreimageArgs;
 
 pub mod builder;
 pub mod fees;
@@ -210,12 +211,12 @@ impl TransactionPreimage for Transaction {
             SigningMethod::TaprootOnePrevout => todo!(),
         }
     }
-    fn preimage_taproot_tx(&self, args: &super::UtxoTaprootPreimageArgs) -> UtxoResult<Data> {
-        match args.preimage.signing_method {
+    fn preimage_taproot_tx(&self, tr: &UtxoTaprootPreimageArgs) -> UtxoResult<Data> {
+        match tr.args.signing_method {
             SigningMethod::Legacy => todo!(),
             SigningMethod::Segwit => todo!(),
-            SigningMethod::TaprootAll => Taproot1Sighash::<Self>::sighash_tx(self, args),
-            SigningMethod::TaprootOnePrevout => Taproot1Sighash::<Self>::sighash_tx(self, args),
+            SigningMethod::TaprootAll => Taproot1Sighash::<Self>::sighash_tx(self, tr),
+            SigningMethod::TaprootOnePrevout => Taproot1Sighash::<Self>::sighash_tx(self, tr),
         }
     }
 }

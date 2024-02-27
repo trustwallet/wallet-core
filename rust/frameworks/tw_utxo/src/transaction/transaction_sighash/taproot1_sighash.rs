@@ -21,17 +21,13 @@ pub struct Taproot1Sighash<Transaction: TransactionInterface> {
 }
 
 impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
-    pub fn sighash_tx(
-        tx: &Transaction,
-        taproot_args: &UtxoTaprootPreimageArgs,
-    ) -> UtxoResult<Data> {
-        let args = &taproot_args.preimage;
-        let spent_amounts = &taproot_args.spent_amounts;
-        let spent_script_pubkeys = &taproot_args.spent_script_pubkeys;
+    pub fn sighash_tx(tx: &Transaction, tr: &UtxoTaprootPreimageArgs) -> UtxoResult<Data> {
+        let prevout_hash = TransactionHasher::<Transaction>::preimage_prevout_hash(tx, &tr.args);
+        let sequence_hash = TransactionHasher::<Transaction>::preimage_sequence_hash(tx, &tr.args);
+        let outputs_hash = TransactionHasher::<Transaction>::preimage_outputs_hash(tx, &tr.args);
+        let spent_amounts_hash = TransactionHasher::<Transaction>::spent_amount_hash(&tr);
 
-        let prevout_hash = TransactionHasher::<Transaction>::preimage_prevout_hash(tx, args);
-        let sequence_hash = TransactionHasher::<Transaction>::preimage_sequence_hash(tx, args);
-        let outputs_hash = TransactionHasher::<Transaction>::preimage_outputs_hash(tx, args);
+        let spent_script_pubkeys_hash = TransactionHasher::<Transaction>::spent_script_pubkeys(&tr);
 
         let mut stream = Stream::default();
 
@@ -41,27 +37,15 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
             //.append(&(args.sighash_ty.raw_sighash() as u8))
             .append(&0u8)
             .append(&tx.version())
-            .append(&tx.locktime());
-
-        if !args.sighash_ty.anyone_can_pay() {
-            let spent_amounts_hash =
-                TransactionHasher::<Transaction>::spent_amount_hash(&spent_amounts, args.tx_hasher);
-
-            let spent_script_pubkeys_hash = TransactionHasher::<Transaction>::spent_script_pubkeys(
-                &spent_script_pubkeys,
-                args.tx_hasher,
-            );
-
-            stream
-                .append_raw_slice(&prevout_hash)
-                .append_raw_slice(&spent_amounts_hash)
-                .append_raw_slice(&spent_script_pubkeys_hash)
-                .append_raw_slice(&sequence_hash);
-        }
+            .append(&tx.locktime())
+            .append_raw_slice(&prevout_hash)
+            .append_raw_slice(&spent_amounts_hash)
+            .append_raw_slice(&spent_script_pubkeys_hash)
+            .append_raw_slice(&sequence_hash);
 
         // TODO: What about `NonePlusAnyoneCanPay`?.
-        if args.sighash_ty.base_type() != SighashBase::None
-            && args.sighash_ty.base_type() != SighashBase::Single
+        if tr.args.sighash_ty.base_type() != SighashBase::None
+            && tr.args.sighash_ty.base_type() != SighashBase::Single
         {
             stream.append_raw_slice(&outputs_hash);
         }
@@ -76,10 +60,10 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
 
         stream.append(&spend_type);
 
-        if args.sighash_ty.anyone_can_pay() {
+        if tr.args.sighash_ty.anyone_can_pay() {
             todo!()
         } else {
-            stream.append(&(args.input_index as u32));
+            stream.append(&(tr.args.input_index as u32));
         }
 
         // TODO:
@@ -88,7 +72,7 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
             todo!()
         }
 
-        if args.sighash_ty.base_type() == SighashBase::Single {
+        if tr.args.sighash_ty.base_type() == SighashBase::Single {
             todo!()
         }
 

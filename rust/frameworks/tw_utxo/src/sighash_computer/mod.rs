@@ -152,14 +152,13 @@ where
                             .map(|utxo| utxo.script_pubkey.clone())
                             .collect();
 
-                        let taproot_args = UtxoTaprootPreimageArgs {
-                            preimage: utxo_args,
+                        let tr = UtxoTaprootPreimageArgs {
+                            args: utxo_args,
                             spent_amounts: tr_spent_amounts,
                             spent_script_pubkeys: tr_spent_script_pubkeys.clone(),
                         };
 
-                        self.transaction_to_sign
-                            .preimage_taproot_tx(&taproot_args)?
+                        self.transaction_to_sign.preimage_taproot_tx(&tr)?
                     },
                 };
 
