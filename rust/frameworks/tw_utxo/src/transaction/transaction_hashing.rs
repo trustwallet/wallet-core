@@ -3,12 +3,15 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::encode::stream::Stream;
+use crate::script::Script;
 use crate::sighash::SighashBase;
 use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
 use crate::transaction::UtxoPreimageArgs;
 use std::marker::PhantomData;
 use tw_hash::hasher::Hasher;
 use tw_memory::Data;
+
+use super::transaction_parts::Amount;
 
 /// A helper structure that hashes some parts of the transaction.
 pub struct TransactionHasher<Transaction> {
@@ -32,6 +35,24 @@ impl<Transaction: TransactionInterface> TransactionHasher<Transaction> {
             return args.tx_hasher.zero_hash();
         }
         Self::prevout_hash(tx, args.tx_hasher)
+    }
+
+    /// Computes a hash of all `spent_amounts`. Required for TapSighash.
+    pub fn spent_amount_hash(spent_amounts: &[Amount], tx_hasher: Hasher) -> Data {
+        let mut stream = Stream::default();
+        for amount in spent_amounts {
+            stream.append(amount);
+        }
+        tx_hasher.hash(&stream.out())
+    }
+
+    /// Computes a hash of all `script_pubkeys`. Required for TapSighash.
+    pub fn spent_script_pubkeys(script_pubkeys: &[Script], tx_hasher: Hasher) -> Data {
+        let mut stream = Stream::default();
+        for script in script_pubkeys {
+            stream.append(script);
+        }
+        tx_hasher.hash(&stream.out())
     }
 
     /// Computes a hash of all [`SignedUtxo::sequence`].

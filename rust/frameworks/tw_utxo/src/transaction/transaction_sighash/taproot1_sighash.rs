@@ -44,24 +44,18 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
             .append(&tx.locktime());
 
         if !args.sighash_ty.anyone_can_pay() {
-            // > sha_amounts (32): the SHA256 of the serialization of all spent output amounts.
-            let mut s = Stream::default();
-            for amount in spent_amounts {
-                s.append(amount);
-            }
-            let spent_amounts = args.tx_hasher.hash(&s.out());
+            let spent_amounts_hash =
+                TransactionHasher::<Transaction>::spent_amount_hash(&spent_amounts, args.tx_hasher);
 
-            // > sha_scriptpubkeys (32): the SHA256 of the serialization of all spent output scriptPubKeys.
-            let mut s = Stream::default();
-            for script in spent_script_pubkeys {
-                s.append(script);
-            }
-            let spent_script_pubkeys = args.tx_hasher.hash(&s.out());
+            let spent_script_pubkeys_hash = TransactionHasher::<Transaction>::spent_script_pubkeys(
+                &spent_script_pubkeys,
+                args.tx_hasher,
+            );
 
             stream
                 .append_raw_slice(&prevout_hash)
-                .append_raw_slice(&spent_amounts)
-                .append_raw_slice(&spent_script_pubkeys)
+                .append_raw_slice(&spent_amounts_hash)
+                .append_raw_slice(&spent_script_pubkeys_hash)
                 .append_raw_slice(&sequence_hash);
         }
 

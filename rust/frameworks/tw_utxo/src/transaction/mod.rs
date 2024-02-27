@@ -38,6 +38,6 @@ pub struct UtxoPreimageArgs {
 
 pub struct UtxoTaprootPreimageArgs {
     pub preimage: UtxoPreimageArgs,
-    pub spent_amounts: Vec<u64>,
+    pub spent_amounts: Vec<Amount>,
     pub spent_script_pubkeys: Vec<Script>,
 }

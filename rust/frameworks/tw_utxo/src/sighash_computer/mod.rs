@@ -138,11 +138,11 @@ where
                         self.transaction_to_sign.preimage_tx(&utxo_args)?
                     },
                     SigningMethod::TaprootAll | SigningMethod::TaprootOnePrevout => {
-                        let tr_spent_amounts: Vec<u64> = self
+                        let tr_spent_amounts: Vec<Amount> = self
                             .args
                             .utxos_to_sign
                             .iter()
-                            .map(|utxo| utxo.amount as u64)
+                            .map(|utxo| utxo.amount)
                             .collect();
 
                         let tr_spent_script_pubkeys: Vec<Script> = self
@@ -154,7 +154,7 @@ where
 
                         let taproot_args = UtxoTaprootPreimageArgs {
                             preimage: utxo_args,
-                            spent_amounts: tr_spent_amounts.clone(),
+                            spent_amounts: tr_spent_amounts,
                             spent_script_pubkeys: tr_spent_script_pubkeys.clone(),
                         };
 
