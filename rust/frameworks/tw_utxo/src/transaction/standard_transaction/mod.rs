@@ -210,6 +210,9 @@ impl TransactionPreimage for Transaction {
             SigningMethod::TaprootOnePrevout => todo!(),
         }
     }
+    fn preimage_taproot_tx(&self, args: &super::UtxoTaprootPreimageArgs) -> UtxoResult<Data> {
+        todo!()
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]

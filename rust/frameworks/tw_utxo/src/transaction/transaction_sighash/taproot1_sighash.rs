@@ -22,11 +22,6 @@ pub struct Taproot1Sighash<Transaction: TransactionInterface> {
 
 impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
     pub fn sighash_tx(tx: &Transaction, args: &UtxoPreimageArgs) -> UtxoResult<Data> {
-        let input = tx
-            .inputs()
-            .get(args.input_index)
-            .ok_or(UtxoError(UtxoErrorKind::Error_sighash_failed))?;
-
         let prevout_hash = TransactionHasher::<Transaction>::preimage_prevout_hash(tx, args);
         let sequence_hash = TransactionHasher::<Transaction>::preimage_sequence_hash(tx, args);
         let outputs_hash = TransactionHasher::<Transaction>::preimage_outputs_hash(tx, args);
@@ -100,17 +95,6 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
             todo!()
         }
 
-        let out = stream.out();
-        //dbg!(&out);
-
-        let mut payload = Vec::new();
-        payload.extend(Hasher::Sha256.hash(b"TapSighash"));
-        payload.extend(Hasher::Sha256.hash(b"TapSighash"));
-        payload.extend(out);
-        Ok(Hasher::Sha256.hash(&payload))
-
-        // TODO??
-        //Ok(Hasher::Sha256d.hash(&out))
-        //Ok(Hasher::Sha256d.hash(&Hasher::Sha256.hash(&out)))
+        Ok(Hasher::TapSighash.hash(&stream.out()))
     }
 }

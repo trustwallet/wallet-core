@@ -20,6 +20,13 @@ pub mod transaction_sighash;
 pub trait TransactionPreimage {
     /// Preimages a transaction for a specific UTXO signing.
     fn preimage_tx(&self, args: &UtxoPreimageArgs) -> UtxoResult<Data>;
+    fn preimage_taproot_tx(&self, args: &UtxoTaprootPreimageArgs) -> UtxoResult<Data>;
+}
+
+pub struct UtxoTaprootPreimageArgs {
+    em: UtxoPreimageArgs,
+    tr_spent_amounts: Vec<u64>,
+    tr_spent_script_pubkeys: Vec<Script>,
 }
 
 /// UTXO (unspent transaction output) preimage arguments.
