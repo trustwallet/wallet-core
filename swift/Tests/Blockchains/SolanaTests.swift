@@ -281,6 +281,7 @@ class SolanaTests: XCTestCase {
         // Step 2: Set missing fields.
         
         signingInput.privateKey = Base58.decodeNoCheck(string: "A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr")!
+        signingInput.txEncoding = .base64
         
         // Step 3: Sign the transaction.
         
