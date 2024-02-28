@@ -22,7 +22,7 @@ message TokenAmount {
     // The name of the asset (within the policy)
     string asset_name = 2;
 
-    // The amount (uint256, serialized little endian)
+    // The amount (uint256, serialized big endian)
     bytes amount = 3;
 
     // The name of the asset (hex encoded). Ignored if `asset_name` is set

@@ -25,10 +25,10 @@ message Asset {
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
-    // Chain id (uint256, serialized little endian)
+    // Chain id (uint256, serialized big endian)
     bytes chain_id = 1;
 
-    // Reference Block Id (uint256, serialized little endian)
+    // Reference Block Id (uint256, serialized big endian)
     bytes reference_block_id = 2;
 
     // Timestamp on the reference block
