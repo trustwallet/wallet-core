@@ -260,4 +260,33 @@ class SolanaTests: XCTestCase {
         XCTAssertEqual(output.error, .ok)
         XCTAssertEqual(output.encoded, "Ajzc/Tke0CG8Cew5qFa6xZI/7Ya3DN0M8Ige6tKPsGzhg8Bw9DqL18KUrEZZ1F4YqZBo4Rv+FsDT8A7Nss7p4A6BNVZzzGprCJqYQeNg0EVIbmPc6mDitNniHXGeKgPZ6QZbM4FElw9O7IOFTpOBPvQFeqy0vZf/aayncL8EK/UEAgACBssq8Im1alV3N7wXGODL8jLPWwLhTuCqfGZ1Iz9fb5tXlMOJD6jUvASrKmdtLK/qXNyJns2Vqcvlk+nfJYdZaFpIWiT/tAcEYbttfxyLdYxrLckAKdVRtf1OrNgtZeMCII4SAn6SYaaidrX/AN3s/aVn/zrlEKW0cEUIatHVDKtXO0Qss5EhV/E6kz0BNCgtAytf/s0Botvxt3kGCN8ALqcG3fbh12Whk9nL4UbO63msHLSF7V9bN5E6jPWFfv8AqbHiki6ThNH3auuyZPQpJntnN0mA//56nMpK/6HIuu8xAQUEAgQDAQoMoA8AAAAAAAAG")
     }
+    
+    func testSignFromWalletConnectRequest() throws {
+        // Step 1: Parse a signing request received through WalletConnect.
+        
+        let requestPayload = """
+        {"transaction":"AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEDZsL1CMnFVcrMn7JtiOiN1U4hC7WovOVof2DX51xM0H/GizyJTHgrBanCf8bGbrFNTn0x3pCGq30hKbywSTr6AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAgIAAQwCAAAAKgAAAAAAAAA="}
+        """
+        let parsingInput = WalletConnectParseRequestInput.with {
+            $0.method = .solanaSignTransaction
+            $0.payload = requestPayload
+        }
+        let parsingInputBytes = try parsingInput.serializedData()
+        
+        let parsingOutputBytes = WalletConnectRequest.parse(coin: .solana, input: parsingInputBytes)
+        let parsingOutput = try WalletConnectParseRequestOutput(serializedData: parsingOutputBytes)
+        
+        var signingInput = parsingOutput.solana
+        
+        // Step 2: Set missing fields.
+        
+        signingInput.privateKey = Base58.decodeNoCheck(string: "A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr")!
+        
+        // Step 3: Sign the transaction.
+        
+        let output: SolanaSigningOutput = AnySigner.sign(input: signingInput, coin: .solana)
+        
+        let expected = "AQPWaOi7dMdmQpXi8HyQQKwiqIftrg1igGQxGtZeT50ksn4wAnyH4DtDrkkuE0fqgx80LTp4LwNN9a440SrmoA8BAAEDZsL1CMnFVcrMn7JtiOiN1U4hC7WovOVof2DX51xM0H/GizyJTHgrBanCf8bGbrFNTn0x3pCGq30hKbywSTr6AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAgIAAQwCAAAAKgAAAAAAAAA="
+        XCTAssertEqual(output.encoded, expected)
+    }
 }
