@@ -59,12 +59,12 @@ TEST(TWSolanaTransaction, DecodeUpdateBlockhashAndSign) {
     ASSERT_TRUE(decodeOutput.transaction().has_legacy());
     // Previous fee payer signature.
     EXPECT_EQ(
-        Base58::encode(data(decodeOutput.transaction().signatures(0).signature())),
+        decodeOutput.transaction().signatures(0).signature(),
         "3KbvREZUat76wgWMtnJfWbJL74Vzh4U2eabVJa3Z3bb2fPtW8AREP5pbmRwUrxZCESbTomWpL41PeKDcPGbojsej"
     );
     // Previous sender signature.
     EXPECT_EQ(
-        Base58::encode(data(decodeOutput.transaction().signatures(1).signature())),
+        decodeOutput.transaction().signatures(1).signature(),
         "37UT8U6DdqaWqV6yQuHcRN3JpMefDgVna8LJJPmmDNKYMwmefEgvcreSg9AqSsT7cU2rMBNyDktEtDU19ZqqZvML"
     );
 

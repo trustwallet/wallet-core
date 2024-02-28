@@ -5,6 +5,7 @@
 use crate::address::SolanaAddress;
 use crate::compiler::SolanaCompiler;
 use crate::modules::transaction_decoder::SolanaTransactionDecoder;
+use crate::modules::wallet_connect::connector::SolanaWalletConnector;
 use crate::signer::SolanaSigner;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -14,7 +15,6 @@ use tw_coin_entry::error::AddressResult;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
-use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_keypair::tw::PublicKey;
 use tw_proto::Solana::Proto;
@@ -32,7 +32,7 @@ impl CoinEntry for SolanaEntry {
     type JsonSigner = NoJsonSigner;
     type PlanBuilder = NoPlanBuilder;
     type MessageSigner = NoMessageSigner;
-    type WalletConnector = NoWalletConnector;
+    type WalletConnector = SolanaWalletConnector;
     type TransactionDecoder = SolanaTransactionDecoder;
 
     #[inline]
@@ -88,6 +88,11 @@ impl CoinEntry for SolanaEntry {
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
         SolanaCompiler::compile(coin, input, signatures, public_keys)
+    }
+
+    #[inline]
+    fn wallet_connector(&self) -> Option<Self::WalletConnector> {
+        Some(SolanaWalletConnector)
     }
 
     #[inline]

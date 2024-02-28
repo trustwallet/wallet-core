@@ -80,19 +80,15 @@ impl ProtoBuilder {
             .collect()
     }
 
-    fn build_signatures(
-        tx: &VersionedTransaction,
-    ) -> Vec<Proto::mod_RawMessage::PubkeySignature<'static>> {
+    pub fn build_signatures(tx: &VersionedTransaction) -> Vec<Proto::PubkeySignature<'static>> {
         tx.message
             .account_keys()
             .iter()
             .zip(tx.signatures.iter())
-            .map(
-                |(pubkey, signature)| Proto::mod_RawMessage::PubkeySignature {
-                    pubkey: Cow::from(pubkey.to_string()),
-                    signature: Cow::from(signature.0.to_vec()),
-                },
-            )
+            .map(|(pubkey, signature)| Proto::PubkeySignature {
+                pubkey: Cow::from(pubkey.to_string()),
+                signature: Cow::from(signature.to_string()),
+            })
             .collect()
     }
 }

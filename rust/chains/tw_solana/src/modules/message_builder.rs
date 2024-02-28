@@ -15,7 +15,7 @@ use crate::modules::instruction_builder::token_instruction::TokenInstructionBuil
 use crate::modules::instruction_builder::InstructionBuilder;
 use crate::modules::PubkeySignatureMap;
 use crate::transaction::versioned::VersionedMessage;
-use crate::transaction::{legacy, v0, CompiledInstruction, MessageHeader};
+use crate::transaction::{legacy, v0, CompiledInstruction, MessageHeader, Signature};
 use std::borrow::Cow;
 use std::str::FromStr;
 use tw_coin_entry::error::{AddressResult, SigningError, SigningErrorType, SigningResult};
@@ -501,8 +501,9 @@ impl RawMessageBuilder {
         let mut key_signs = PubkeySignatureMap::with_capacity(raw_message.signatures.len());
         for entry in raw_message.signatures.iter() {
             let pubkey = SolanaAddress::from_str(entry.pubkey.as_ref())?;
-            let signature = ed25519::Signature::try_from(entry.signature.as_ref())?;
-            key_signs.insert(pubkey, signature);
+            let signature = Signature::from_str(entry.signature.as_ref())?;
+            let ed25519_signature = ed25519::Signature::try_from(signature.0.as_slice())?;
+            key_signs.insert(pubkey, ed25519_signature);
         }
         Ok(key_signs)
     }

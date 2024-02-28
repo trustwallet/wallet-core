@@ -7,7 +7,6 @@ use tw_any_coin::test_utils::sign_utils::{AnySignerHelper, CompilerHelper, PreIm
 use tw_any_coin::test_utils::transaction_decode_utils::TransactionDecoderHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::base58::Alphabet;
-use tw_encoding::hex::DecodeHex;
 use tw_encoding::{base58, base64};
 use tw_proto::Common::Proto::SigningError;
 use tw_proto::Solana::Proto;
@@ -150,15 +149,10 @@ fn test_solana_decode_transaction() {
         ],
     };
     let expected = Proto::RawMessage {
-        signatures: vec![
-            raw_message::PubkeySignature {
-                pubkey: "AHy6YZA8BsHgQfVkk7MbwpAN94iyN7Nf1zN4nPqUN32Q".into(),
-                signature: "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-                    .decode_hex()
-                    .unwrap()
-                    .into()
-            }
-        ],
+        signatures: vec![Proto::PubkeySignature {
+            pubkey: "AHy6YZA8BsHgQfVkk7MbwpAN94iyN7Nf1zN4nPqUN32Q".into(),
+            signature: "1111111111111111111111111111111111111111111111111111111111111111".into(),
+        }],
         message: MessageType::v0(expected_msg),
     };
 
@@ -178,13 +172,13 @@ fn test_solana_decode_transaction_update_blockhash_and_sign_with_external_fee_pa
     let mut decoded_tx = output.transaction.unwrap();
 
     let expected_signatures = vec![
-        raw_message::PubkeySignature {
+        Proto::PubkeySignature {
             pubkey: FEE_PAYER_PUBLIC_KEY.into(),
-            signature: b58(PREV_FEE_PAYER_SIGNATURE),
+            signature: PREV_FEE_PAYER_SIGNATURE.into(),
         },
-        raw_message::PubkeySignature {
+        Proto::PubkeySignature {
             pubkey: SENDER_PUBLIC_KEY.into(),
-            signature: b58(PREV_SENDER_SIGNATURE),
+            signature: PREV_SENDER_SIGNATURE.into(),
         },
     ];
     assert_eq!(decoded_tx.signatures, expected_signatures);
@@ -226,20 +220,20 @@ fn test_solana_decode_transaction_update_blockhash_and_sign_with_external_fee_pa
     let mut decoded_tx = output.transaction.unwrap();
 
     let expected_signatures = vec![
-        raw_message::PubkeySignature {
+        Proto::PubkeySignature {
             pubkey: FEE_PAYER_PUBLIC_KEY.into(),
-            signature: b58(PREV_FEE_PAYER_SIGNATURE),
+            signature: PREV_FEE_PAYER_SIGNATURE.into(),
         },
-        raw_message::PubkeySignature {
+        Proto::PubkeySignature {
             pubkey: SENDER_PUBLIC_KEY.into(),
-            signature: b58(PREV_SENDER_SIGNATURE),
+            signature: PREV_SENDER_SIGNATURE.into(),
         },
     ];
     assert_eq!(decoded_tx.signatures, expected_signatures);
 
     // Step 2. Update the recent-blockhash and external fee payer signature.
 
-    decoded_tx.signatures[0].signature = b58(NEW_FEE_PAYER_SIGNATURE);
+    decoded_tx.signatures[0].signature = NEW_FEE_PAYER_SIGNATURE.into();
 
     check_and_update_recent_blockhash(&mut decoded_tx, PREV_RECENT_BLOCKHASH, NEW_RECENT_BLOCKHASH);
 

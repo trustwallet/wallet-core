@@ -150,12 +150,13 @@ message AdvanceNonceAccount {
     string nonce_account = 1;
 }
 
-message RawMessage {
-    message PubkeySignature {
-        string pubkey = 1;
-        bytes signature = 2;
-    }
+message PubkeySignature {
+    string pubkey = 1;
+    // base58 encoded signature.
+    string signature = 2;
+}
 
+message RawMessage {
     message MessageHeader {
         uint32 num_required_signatures = 1;
         uint32 num_readonly_signed_accounts = 2;
@@ -164,14 +165,14 @@ message RawMessage {
 
     message Instruction {
         uint32 program_id = 1;
-        repeated uint32 accounts = 2 [packed=true];
+        repeated uint32 accounts = 2 [packed = true];
         bytes program_data = 3;
     }
 
     message MessageAddressTableLookup {
         string account_key = 1;
-        repeated uint32 writable_indexes = 2 [packed=true];
-        repeated uint32 readonly_indexes = 3 [packed=true];
+        repeated uint32 writable_indexes = 2 [packed = true];
+        repeated uint32 readonly_indexes = 3 [packed = true];
     }
 
     message MessageLegacy {
@@ -269,6 +270,9 @@ message SigningOutput {
 
     // The encoded message. Can be used to estimate a transaction fee required to execute the message.
     string unsigned_tx = 4;
+
+    // Transaction signatures (may include external signatures).
+    repeated PubkeySignature signatures = 5;
 }
 
 /// Transaction pre-signing output
