@@ -9,7 +9,7 @@ import "Common.proto";
 message Transaction {
     // Native coin transfer transaction
     message Transfer {
-        // Amount to send in wei (uint256, serialized little endian)
+        // Amount to send in wei (uint256, serialized big endian)
         bytes amount = 1;
 
         // Optional payload data
@@ -21,7 +21,7 @@ message Transaction {
         // destination address (string)
         string to = 1;
 
-        // Amount to send (uint256, serialized little endian)
+        // Amount to send (uint256, serialized big endian)
         bytes amount = 2;
     }
 
@@ -30,7 +30,7 @@ message Transaction {
         // Target of the approval
         string spender = 1;
 
-        // Amount to send (uint256, serialized little endian)
+        // Amount to send (uint256, serialized big endian)
         bytes amount = 2;
     }
 
@@ -42,7 +42,7 @@ message Transaction {
         // Destination address
         string to = 2;
 
-        // ID of the token (uint256, serialized little endian)
+        // ID of the token (uint256, serialized big endian)
         bytes token_id = 3;
     }
 
@@ -54,10 +54,10 @@ message Transaction {
         // Destination address
         string to = 2;
 
-        // ID of the token (uint256, serialized little endian)
+        // ID of the token (uint256, serialized big endian)
         bytes token_id = 3;
 
-        // The amount of tokens being transferred (uint256, serialized little endian)
+        // The amount of tokens being transferred (uint256, serialized big endian)
         bytes value = 4;
 
         bytes data = 5;
@@ -65,7 +65,7 @@ message Transaction {
 
     // Generic smart contract transaction
     message ContractGeneric {
-        // Amount to send in wei (uint256, serialized little endian)
+        // Amount to send in wei (uint256, serialized big endian)
         bytes amount = 1;
 
         // Contract call payload data
@@ -78,7 +78,7 @@ message Transaction {
             // Recipient addresses.
             string address = 1;
 
-            // Amounts to send in wei (uint256, serialized little endian)
+            // Amounts to send in wei (uint256, serialized big endian)
             bytes amount = 2;
 
             // Contract call payloads data
@@ -136,28 +136,28 @@ message UserOperation {
 // Input data necessary to create a signed transaction.
 // Legacy and EIP2718/EIP1559 transactions supported, see TransactionMode.
 message SigningInput {
-    // Chain identifier (uint256, serialized little endian)
+    // Chain identifier (uint256, serialized big endian)
     bytes chain_id = 1;
 
-    // Nonce (uint256, serialized little endian)
+    // Nonce (uint256, serialized big endian)
     bytes nonce = 2;
 
     // Transaction version selector: Legacy or enveloped, has impact on fee structure.
     // Default is Legacy (value 0)
     TransactionMode tx_mode = 3;
 
-    // Gas price (uint256, serialized little endian)
+    // Gas price (uint256, serialized big endian)
     // Relevant for legacy transactions only (disregarded for enveloped/EIP1559)
     bytes gas_price = 4;
 
-    // Gas limit (uint256, serialized little endian)
+    // Gas limit (uint256, serialized big endian)
     bytes gas_limit = 5;
 
-    // Maximum optional inclusion fee (aka tip) (uint256, serialized little endian)
+    // Maximum optional inclusion fee (aka tip) (uint256, serialized big endian)
     // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
     bytes max_inclusion_fee_per_gas = 6;
 
-    // Maximum fee (uint256, serialized little endian)
+    // Maximum fee (uint256, serialized big endian)
     // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
     bytes max_fee_per_gas = 7;
 
@@ -180,7 +180,7 @@ message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
 
-    // The V, R, S components of the resulting signature, (each uint256, serialized little endian)
+    // The V, R, S components of the resulting signature, (each uint256, serialized big endian)
     bytes v = 2;
     bytes r = 3;
     bytes s = 4;
