@@ -241,26 +241,18 @@ impl UtxoBuilder {
             .try_into()
             .expect("leaf hash length is 32 bytes");
 
-        let merkle_root: H256 = transfer
-            .spend_info
-            .merkle_root()
-            .unwrap()
-            .to_byte_array()
-            .as_slice()
-            .try_into()
-            .unwrap();
-
         self.finalize_out_point()?;
 
         Ok((
             self.input,
             UtxoToSign {
-                script_pubkey: conditions::new_p2tr_script_path(&pubkey, &merkle_root),
+                // We reveal the full script.
+                script_pubkey: Script::from(transfer.script.to_vec()),
                 signing_method: SigningMethod::TaprootAll,
                 amount: self
                     .amount
                     .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
-                leaf_hash_code_separator: Some((leaf_hash, 0)),
+                leaf_hash_code_separator: Some((leaf_hash, u32::MAX)),
                 // Note that we don't use the default double-hasher.
                 tx_hasher: Hasher::Sha256,
                 ..Default::default()

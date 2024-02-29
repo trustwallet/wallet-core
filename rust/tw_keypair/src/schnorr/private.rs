@@ -2,14 +2,12 @@ use crate::schnorr::public::PublicKey;
 use crate::schnorr::signature::Signature;
 use crate::traits::SigningKeyTrait;
 use crate::KeyPairError;
-use ecdsa::signature::Signer;
 use k256::schnorr::SigningKey;
 use tw_encoding::hex;
 use tw_hash::H256;
 use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
 use zeroize::Zeroizing;
 
-#[cfg(feature = "tweak-support")]
 enum IsTweaked {
     Some(Option<H256>),
     None,
@@ -17,9 +15,7 @@ enum IsTweaked {
 
 pub struct PrivateKey {
     pub(crate) secret: SigningKey,
-    #[cfg(feature = "tweak-support")]
     tweak: IsTweaked,
-    #[cfg(feature = "tweak-support")]
     no_aux_rand: bool,
 }
 
@@ -29,7 +25,6 @@ impl PrivateKey {
     }
     // TODO: Prevent caller from tweaking multiple times. Maybe create a
     // separate type?
-    #[cfg(feature = "tweak-support")]
     /// Tweak the private key with a given hash.
     pub fn tweak(self, hash: Option<H256>) -> PrivateKey {
         PrivateKey {
@@ -38,15 +33,11 @@ impl PrivateKey {
             no_aux_rand: false,
         }
     }
-    #[cfg(feature = "tweak-support")]
-    /// Tweak the private key with a given hash and disable auxiliary random
-    /// data when signing. ONLY recommended for testing.
-    pub fn tweak_no_aux_rand(self, hash: Option<H256>) -> PrivateKey {
-        PrivateKey {
-            secret: self.secret,
-            tweak: IsTweaked::Some(hash),
-            no_aux_rand: true,
-        }
+    /// Disable auxiliary random data when signing. ONLY recommended for
+    /// testing.
+    pub fn no_aux_rand(mut self) -> PrivateKey {
+        self.no_aux_rand = true;
+        self
     }
 }
 
@@ -54,14 +45,8 @@ impl SigningKeyTrait for PrivateKey {
     type SigningMessage = H256;
     type Signature = Signature;
 
-    #[cfg(not(feature = "tweak-support"))]
     fn sign(&self, message: Self::SigningMessage) -> crate::KeyPairResult<Self::Signature> {
-        Ok(Signature::new(self.secret.sign(message.as_slice())))
-    }
-
-    #[cfg(feature = "tweak-support")]
-    fn sign(&self, message: Self::SigningMessage) -> crate::KeyPairResult<Self::Signature> {
-        // We fully rely on the `bitcoin` and `secp256k1` crates for those steps.
+        // We fully rely on the `bitcoin` and `secp256k1` crates to generate Schnorr signatures.
 
         use bitcoin::key::TapTweak;
         use secp256k1::hashes::Hash;
@@ -95,7 +80,21 @@ impl SigningKeyTrait for PrivateKey {
 
             Ok(Signature::from_bytes(sig.as_ref()).unwrap())
         } else {
-            Ok(Signature::new(self.secret.sign(message.as_slice())))
+            // Tweak the private key.
+            let secp = secp256k1::Secp256k1::new();
+            let keypair =
+                secp256k1::KeyPair::from_seckey_slice(&secp, self.secret.to_bytes().as_slice())
+                    .unwrap();
+
+            // Sign the message.
+            let msg = secp256k1::Message::from_slice(message.as_slice()).unwrap();
+            let sig = if self.no_aux_rand {
+                secp.sign_schnorr_no_aux_rand(&msg, &keypair)
+            } else {
+                secp.sign_schnorr(&msg, &keypair)
+            };
+
+            Ok(Signature::from_bytes(sig.as_ref()).unwrap())
         }
     }
 }
@@ -126,11 +125,6 @@ impl<'a> TryFrom<&'a [u8]> for PrivateKey {
 }
 
 impl From<k256::schnorr::SigningKey> for PrivateKey {
-    #[cfg(not(feature = "tweak-support"))]
-    fn from(secret: k256::schnorr::SigningKey) -> Self {
-        Self { secret }
-    }
-    #[cfg(feature = "tweak-support")]
     fn from(secret: k256::schnorr::SigningKey) -> Self {
         Self {
             secret,

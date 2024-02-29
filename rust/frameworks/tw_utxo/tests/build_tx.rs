@@ -305,7 +305,7 @@ fn build_tx_input_taproot_output_taproot() {
 
     // Sign the sighash.
     let sighash = preimage.into_h256_list().unwrap()[0];
-    let tweaked = bob_private_key.tweak_no_aux_rand(None);
+    let tweaked = bob_private_key.tweak(None).no_aux_rand();
     let sig = tweaked.sign(sighash).unwrap();
 
     // Build the claim
@@ -422,7 +422,7 @@ fn build_tx_input_brc20_transfer_commit_output_brc20_transfer_reveal() {
     let sighash = preimage.into_h256_list().unwrap()[0];
 
     // Tweak the private key with the Taproot script leaf hash.
-    let sig = alice_private_key.sign(sighash).unwrap();
+    let sig = alice_private_key.no_aux_rand().sign(sighash).unwrap();
 
     // Build the claim
     let claim = SpendingScriptBuilder::new()

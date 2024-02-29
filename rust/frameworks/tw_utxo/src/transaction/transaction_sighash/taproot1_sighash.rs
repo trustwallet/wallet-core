@@ -86,7 +86,7 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
 
         if let Some((leaf_hash, separator)) = tr.args.leaf_hash_code_separator {
             stream
-                .append_raw_slice(&tr.args.tx_hasher.hash(leaf_hash.as_slice()))
+                .append_raw_slice(leaf_hash.as_slice())
                 .append(&0u8) // key-version 0
                 .append(&separator);
         }
