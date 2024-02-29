@@ -3,7 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::hash_wrapper::hasher;
-use digest::Digest;
 use ripemd::Ripemd160;
 use sha2::Sha256;
 

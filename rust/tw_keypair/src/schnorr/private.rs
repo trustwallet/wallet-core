@@ -56,20 +56,20 @@ impl SigningKeyTrait for PrivateKey {
 
         if let IsTweaked::Some(tweak) = self._tweak {
             // We fully rely on the `bitcoin` and `secp256k1` crates for those steps.
-            // TODO: Try and use `secp256k1` directly?
 
             // Tweak the private key.
-            let secp = bitcoin::secp256k1::Secp256k1::new();
-            let keypair = bitcoin::secp256k1::KeyPair::from_seckey_slice(
+            let secp = secp256k1::Secp256k1::new();
+            let keypair = secp256k1::KeyPair::from_seckey_slice(
                 &secp,
                 self.secret.to_bytes().as_slice(),
             )
             .unwrap();
+            // TODO: If we implement `tap_tweak` ourselves, we can avoid the `bitcoin` crate.
             let tapped = keypair.tap_tweak(&secp, tweak);
-            let tweaked = bitcoin::secp256k1::KeyPair::from(tapped);
+            let tweaked = secp256k1::KeyPair::from(tapped);
 
             // Sign the message.
-            let msg = bitcoin::secp256k1::Message::from_slice(message.as_slice()).unwrap();
+            let msg = secp256k1::Message::from_slice(message.as_slice()).unwrap();
             let sig = tweaked.sign_schnorr(msg);
 
             Ok(Signature::from_bytes(sig.as_ref()).unwrap())
