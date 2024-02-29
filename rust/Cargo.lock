@@ -1949,6 +1949,7 @@ name = "tw_keypair"
 version = "0.1.0"
 dependencies = [
  "arbitrary",
+ "bitcoin",
  "blake2",
  "curve25519-dalek",
  "der",
@@ -1960,6 +1961,7 @@ dependencies = [
  "pkcs8",
  "rfc6979",
  "ring",
+ "secp256k1",
  "serde",
  "serde_json",
  "sha2 0.9.9",

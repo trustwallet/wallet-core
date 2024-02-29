@@ -9,24 +9,35 @@ use tw_hash::H256;
 use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
 use zeroize::Zeroizing;
 
+enum IsTweaked {
+    Some(Option<bitcoin::taproot::TapNodeHash>),
+    None,
+}
+
 pub struct PrivateKey {
     pub(crate) secret: SigningKey,
+    _tweak: IsTweaked,
 }
 
 impl PrivateKey {
     pub fn public(&self) -> PublicKey {
         PublicKey::new(self.secret.verifying_key().clone())
     }
-    pub fn tweaked_public(&self) {
-        // let tweaked = pk.as_affine() * *sk.to_nonzero_scalar();
+    #[cfg(feature = "tweak-support")]
+    pub fn tweak(self, tweak: Option<&H256>) -> PrivateKey {
+        use bitcoin::hashes::Hash;
 
-        // let tweaked_pt = *pk.as_affine() * *sk.to_nonzero_scalar();
-        // let tweaked_pk = k256::PublicKey::from_affine(tweaked_pt.to_affine())?;
+        let tweak = if let Some(tweak) = tweak {
+            let hash = bitcoin::hashes::sha256t::Hash::<_>::from_slice(tweak.as_slice()).unwrap();
+            Some(bitcoin::taproot::TapNodeHash::from_raw_hash(hash))
+        } else {
+            None
+        };
 
-        let pk = self.secret.verifying_key();
-        let tweaked_pt = *pk.as_affine() * self.secret.as_nonzero_scalar().as_ref();
-        let tweaked_pk = k256::PublicKey::from_affine(tweaked_pt.to_affine()).unwrap();
-        todo!()
+        PrivateKey {
+            secret: self.secret,
+            _tweak: IsTweaked::Some(tweak),
+        }
     }
 }
 
@@ -34,8 +45,37 @@ impl SigningKeyTrait for PrivateKey {
     type SigningMessage = H256;
     type Signature = Signature;
 
+    #[cfg(not(feature = "tweak-support"))]
     fn sign(&self, message: Self::SigningMessage) -> crate::KeyPairResult<Self::Signature> {
         Ok(Signature::new(self.secret.sign(message.as_slice())))
+    }
+
+    #[cfg(feature = "tweak-support")]
+    fn sign(&self, message: Self::SigningMessage) -> crate::KeyPairResult<Self::Signature> {
+        use bitcoin::key::TapTweak;
+
+        if let IsTweaked::Some(tweak) = self._tweak {
+            // We fully rely on the `bitcoin` and `secp256k1` crates for those steps.
+            // TODO: Try and use `secp256k1` directly?
+
+            // Tweak the private key.
+            let secp = bitcoin::secp256k1::Secp256k1::new();
+            let keypair = bitcoin::secp256k1::KeyPair::from_seckey_slice(
+                &secp,
+                self.secret.to_bytes().as_slice(),
+            )
+            .unwrap();
+            let tapped = keypair.tap_tweak(&secp, tweak);
+            let tweaked = bitcoin::secp256k1::KeyPair::from(tapped);
+
+            // Sign the message.
+            let msg = bitcoin::secp256k1::Message::from_slice(message.as_slice()).unwrap();
+            let sig = tweaked.sign_schnorr(msg);
+
+            Ok(Signature::from_bytes(sig.as_ref()).unwrap())
+        } else {
+            Ok(Signature::new(self.secret.sign(message.as_slice())))
+        }
     }
 }
 
@@ -66,6 +106,9 @@ impl<'a> TryFrom<&'a [u8]> for PrivateKey {
 
 impl From<k256::schnorr::SigningKey> for PrivateKey {
     fn from(secret: k256::schnorr::SigningKey) -> Self {
-        Self { secret }
+        Self {
+            secret,
+            _tweak: IsTweaked::None,
+        }
     }
 }

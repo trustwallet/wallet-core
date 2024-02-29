@@ -4,7 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
+default = [ "tweak-support" ] # TODO: disable
 test-utils = []
+tweak-support = [ "dep:bitcoin", "dep:secp256k1" ]
 
 [dependencies]
 arbitrary = { version = "1", features = ["derive"], optional = true }
@@ -29,6 +31,8 @@ blake2 = "0.9"
 curve25519-dalek = "3"
 digest = "0.9.0"
 sha2 = "0.9"
+bitcoin = { path = "../../rust-bitcoin/bitcoin", features = [ "rand-std" ], optional = true }
+secp256k1 = { version = "0.27.0", features = [ "global-context", "rand-std" ], optional = true }
 
 [dev-dependencies]
 serde_json = "1.0"
