@@ -13,9 +13,6 @@ use crate::transaction::transaction_interface::{
 use crate::transaction::transaction_parts::Amount;
 use crate::transaction::TransactionPreimage;
 use std::marker::PhantomData;
-use tw_hash::hasher::Hasher;
-
-const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 
 #[non_exhaustive]
 pub enum InputSelector {
