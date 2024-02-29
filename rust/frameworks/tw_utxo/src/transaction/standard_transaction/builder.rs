@@ -296,6 +296,10 @@ impl UtxoBuilder {
             },
         ))
     }
+    pub fn brc20(pubkey: tw::PublicKey, ticker: String, amount: String) {
+        todo!()
+
+    }
 }
 
 pub struct OutputBuilder {
