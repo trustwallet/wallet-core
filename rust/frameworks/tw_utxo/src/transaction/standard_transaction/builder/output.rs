@@ -2,7 +2,10 @@ use super::TransactionOutput;
 use crate::{
     error::{UtxoError, UtxoErrorKind, UtxoResult},
     script::standard_script::conditions,
-    transaction::{asset::brc20::{BRC20TransferInscription, Brc20Ticker}, transaction_parts::Amount},
+    transaction::{
+        asset::brc20::{BRC20TransferInscription, Brc20Ticker},
+        transaction_parts::Amount,
+    },
 };
 
 use bitcoin::hashes::Hash;

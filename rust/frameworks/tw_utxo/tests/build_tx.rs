@@ -321,7 +321,7 @@ fn build_tx_input_taproot_output_taproot() {
 }
 
 #[test]
-fn build_tx_input_segwit_output_brc20_transfer() {
+fn build_tx_input_segwit_output_brc20_transfer_commit() {
     let alice_private_key =
         hex::decode("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129").unwrap();
     let alice_pubkey =
@@ -367,9 +367,6 @@ fn build_tx_input_segwit_output_brc20_transfer() {
     let sighash = preimage.into_h256_list().unwrap()[0];
 
     // Tweak the private key with the Taproot script leaf hash.
-    //let hash = arg1.leaf_hash_code_separator.unwrap().0;
-    //let tweaked = alice_private_key.tweak_no_aux_rand(Some(hash));
-    //let sighash = preimage.into_h256_list().unwrap()[0];
     let sig = alice_private_key.sign(sighash).unwrap();
 
     // Build the claim
@@ -382,4 +379,59 @@ fn build_tx_input_segwit_output_brc20_transfer() {
 
     let encoded = hex::encode(tx.encode_out(), false);
     assert_eq!(encoded, "02000000000101089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e0100000000ffffffff02581b000000000000225120e8b706a97732e705e22ae7710703e7f589ed13c636324461afa443016134cc051040000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d02483045022100a44aa28446a9a886b378a4a65e32ad9a3108870bd725dc6105160bed4f317097022069e9de36422e4ce2e42b39884aa5f626f8f94194d1013007d5a1ea9220a06dce0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000")
+}
+
+#[test]
+fn build_tx_input_brc20_transfer_commit_output_brc20_transfer_reveal() {
+    let alice_private_key =
+        hex::decode("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129").unwrap();
+    let alice_pubkey =
+        hex::decode("030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb").unwrap();
+
+    let alice_private_key = schnorr::PrivateKey::try_from(alice_private_key.as_slice()).unwrap();
+    let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
+
+    let txid =
+        txid_from_str_and_rev("797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1")
+            .unwrap();
+
+    let (utxo1, arg1) = UtxoBuilder::new()
+        .prev_txid(txid)
+        .prev_index(0)
+        .amount(7_000)
+        .brc20_transfer(alice_pubkey.clone(), "oadf".into(), "20".into())
+        .unwrap();
+
+    let output1 = OutputBuilder::new()
+        .amount(546)
+        .p2wpkh(alice_pubkey.clone())
+        .unwrap();
+
+    dbg!(&arg1);
+
+    let (tx, args) = TransactionBuilder::new()
+        .push_input(utxo1, arg1.clone())
+        .push_output(output1)
+        .build();
+
+    // Compute the primage.
+    let computer = SighashComputer::new(tx, args);
+    let preimage = computer.preimage_tx().unwrap();
+
+    // Sign the sighash.
+    let sighash = preimage.into_h256_list().unwrap()[0];
+
+    // Tweak the private key with the Taproot script leaf hash.
+    let sig = alice_private_key.sign(sighash).unwrap();
+
+    // Build the claim
+    let claim = SpendingScriptBuilder::new()
+        .sighash_ty(SighashType::new(SighashBase::All))
+        .brc20_transfer(sig, alice_pubkey, "oadf".into(), "20".into())
+        .unwrap();
+
+    let tx = computer.compile(vec![claim]).unwrap();
+
+    let encoded = hex::encode(tx.encode_out(), false);
+    assert_eq!(encoded, "02000000000101b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d03406a35548b8fa4620028e021a944c1d3dc6e947243a7bfc901bf63fefae0d2460efa149a6440cab51966aa4f09faef2d1e5efcba23ab4ca6e669da598022dbcfe35b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000")
 }
