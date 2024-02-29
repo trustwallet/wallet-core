@@ -7,6 +7,7 @@ use crate::blockhash::Blockhash;
 use crate::instruction::Instruction;
 use crate::modules::compiled_instructions::compile_instructions;
 use crate::modules::compiled_keys::CompiledKeys;
+use crate::modules::instruction_builder::compute_budget_instruction::{UnitLimit, UnitPrice};
 use crate::modules::instruction_builder::stake_instruction::{
     DepositStakeArgs, StakeInstructionBuilder,
 };
@@ -162,14 +163,16 @@ impl<'a> MessageBuilder<'a> {
         let to = SolanaAddress::from_str(&transfer.recipient)?;
         let references = Self::parse_references(&transfer.references)?;
 
-        let transfer_instruction = SystemInstructionBuilder::transfer(from, to, transfer.value)
+        let transfer_ix = SystemInstructionBuilder::transfer(from, to, transfer.value)
             .with_references(references);
 
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_priority_fee_price(self.priority_fee_price())
+            .maybe_priority_fee_limit(self.priority_fee_limit())
             .maybe_advance_nonce(self.nonce_account()?, from)
             .maybe_memo(transfer.memo.as_ref())
-            .add_instruction(transfer_instruction);
+            .add_instruction(transfer_ix);
         Ok(builder.output())
     }
 
@@ -187,14 +190,22 @@ impl<'a> MessageBuilder<'a> {
             Some(stake_account)
         };
 
-        StakeInstructionBuilder::deposit_stake(DepositStakeArgs {
+        let deposit_ixs = StakeInstructionBuilder::deposit_stake(DepositStakeArgs {
             sender,
             validator,
             stake_account,
             recent_blockhash: self.recent_blockhash()?,
             lamports: delegate.value,
             space: DEFAULT_SPACE,
-        })
+        })?;
+
+        let mut builder = InstructionBuilder::default();
+        builder
+            .maybe_priority_fee_price(self.priority_fee_price())
+            .maybe_priority_fee_limit(self.priority_fee_limit())
+            .maybe_advance_nonce(self.nonce_account()?, sender)
+            .add_instructions(deposit_ixs);
+        Ok(builder.output())
     }
 
     fn deactivate_stake_from_proto(
@@ -203,10 +214,15 @@ impl<'a> MessageBuilder<'a> {
     ) -> SigningResult<Vec<Instruction>> {
         let sender = self.signer_address()?;
         let stake_account = SolanaAddress::from_str(&deactivate.stake_account)?;
-        Ok(vec![StakeInstructionBuilder::deactivate(
-            stake_account,
-            sender,
-        )])
+        let deactivate_ix = StakeInstructionBuilder::deactivate(stake_account, sender);
+
+        let mut builder = InstructionBuilder::default();
+        builder
+            .maybe_priority_fee_price(self.priority_fee_price())
+            .maybe_priority_fee_limit(self.priority_fee_limit())
+            .maybe_advance_nonce(self.nonce_account()?, sender)
+            .add_instruction(deactivate_ix);
+        Ok(builder.output())
     }
 
     fn deactivate_all_stake_from_proto(
@@ -214,14 +230,22 @@ impl<'a> MessageBuilder<'a> {
         deactivate_all: &Proto::DeactivateAllStake,
     ) -> SigningResult<Vec<Instruction>> {
         let sender = self.signer_address()?;
-        deactivate_all
+        let deactivate_ixs = deactivate_all
             .stake_accounts
             .iter()
             .map(|stake_account| {
                 let stake_account = SolanaAddress::from_str(stake_account.as_ref())?;
                 Ok(StakeInstructionBuilder::deactivate(stake_account, sender))
             })
-            .collect()
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        let mut builder = InstructionBuilder::default();
+        builder
+            .maybe_priority_fee_price(self.priority_fee_price())
+            .maybe_priority_fee_limit(self.priority_fee_limit())
+            .maybe_advance_nonce(self.nonce_account()?, sender)
+            .add_instructions(deactivate_ixs);
+        Ok(builder.output())
     }
 
     fn withdraw_from_proto(
@@ -231,13 +255,22 @@ impl<'a> MessageBuilder<'a> {
         let sender = self.signer_address()?;
         let stake_account = SolanaAddress::from_str(withdraw.stake_account.as_ref())?;
         let custodian_account = None;
-        Ok(vec![StakeInstructionBuilder::withdraw(
+
+        let withdraw_ix = StakeInstructionBuilder::withdraw(
             stake_account,
             sender,
             sender,
             withdraw.value,
             custodian_account,
-        )])
+        );
+
+        let mut builder = InstructionBuilder::default();
+        builder
+            .maybe_priority_fee_price(self.priority_fee_price())
+            .maybe_priority_fee_limit(self.priority_fee_limit())
+            .maybe_advance_nonce(self.nonce_account()?, sender)
+            .add_instruction(withdraw_ix);
+        Ok(builder.output())
     }
 
     fn withdraw_all_from_proto(
@@ -245,7 +278,8 @@ impl<'a> MessageBuilder<'a> {
         withdraw_all: &Proto::WithdrawAllStake,
     ) -> SigningResult<Vec<Instruction>> {
         let sender = self.signer_address()?;
-        withdraw_all
+
+        let withdraw_ixs = withdraw_all
             .stake_accounts
             .iter()
             .map(|withdraw| {
@@ -259,7 +293,15 @@ impl<'a> MessageBuilder<'a> {
                     custodian_account,
                 ))
             })
-            .collect()
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        let mut builder = InstructionBuilder::default();
+        builder
+            .maybe_priority_fee_price(self.priority_fee_price())
+            .maybe_priority_fee_limit(self.priority_fee_limit())
+            .maybe_advance_nonce(self.nonce_account()?, sender)
+            .add_instructions(withdraw_ixs);
+        Ok(builder.output())
     }
 
     fn create_token_account_from_proto(
@@ -280,6 +322,8 @@ impl<'a> MessageBuilder<'a> {
         );
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_priority_fee_price(self.priority_fee_price())
+            .maybe_priority_fee_limit(self.priority_fee_limit())
             .maybe_advance_nonce(self.nonce_account()?, funding_account)
             .add_instruction(instruction);
         Ok(builder.output())
@@ -315,6 +359,8 @@ impl<'a> MessageBuilder<'a> {
 
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_priority_fee_price(self.priority_fee_price())
+            .maybe_priority_fee_limit(self.priority_fee_limit())
             .maybe_advance_nonce(self.nonce_account()?, signer)
             .maybe_memo(token_transfer.memo.as_ref())
             .add_instruction(transfer_instruction);
@@ -361,6 +407,8 @@ impl<'a> MessageBuilder<'a> {
 
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_priority_fee_price(self.priority_fee_price())
+            .maybe_priority_fee_limit(self.priority_fee_limit())
             .maybe_advance_nonce(self.nonce_account()?, signer)
             .add_instruction(create_account_instruction)
             // Optional memo. Order: before transfer, as per documentation.
@@ -387,6 +435,8 @@ impl<'a> MessageBuilder<'a> {
 
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_priority_fee_price(self.priority_fee_price())
+            .maybe_priority_fee_limit(self.priority_fee_limit())
             .maybe_advance_nonce(prev_nonce_account, signer)
             .add_instructions(SystemInstructionBuilder::create_nonce_account(
                 signer,
@@ -407,6 +457,8 @@ impl<'a> MessageBuilder<'a> {
 
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_priority_fee_price(self.priority_fee_price())
+            .maybe_priority_fee_limit(self.priority_fee_limit())
             .maybe_advance_nonce(self.nonce_account()?, signer)
             .add_instruction(SystemInstructionBuilder::withdraw_nonce_account(
                 withdraw_from_nonce,
@@ -425,7 +477,10 @@ impl<'a> MessageBuilder<'a> {
         let nonce_account = SolanaAddress::from_str(advance_nonce.nonce_account.as_ref())?;
 
         let mut builder = InstructionBuilder::default();
-        builder.maybe_advance_nonce(Some(nonce_account), signer);
+        builder
+            .maybe_priority_fee_price(self.priority_fee_price())
+            .maybe_priority_fee_limit(self.priority_fee_limit())
+            .maybe_advance_nonce(Some(nonce_account), signer);
         Ok(builder.output())
     }
 
@@ -473,6 +528,20 @@ impl<'a> MessageBuilder<'a> {
     fn signer_key(&self) -> SigningResult<ed25519::sha512::KeyPair> {
         ed25519::sha512::KeyPair::try_from(self.input.private_key.as_ref())
             .map_err(SigningError::from)
+    }
+
+    fn priority_fee_price(&self) -> Option<UnitPrice> {
+        self.input
+            .priority_fee_price
+            .as_ref()
+            .map(|proto| proto.price)
+    }
+
+    fn priority_fee_limit(&self) -> Option<UnitLimit> {
+        self.input
+            .priority_fee_limit
+            .as_ref()
+            .map(|proto| proto.limit)
     }
 
     fn parse_references(refs: &[Cow<'_, str>]) -> SigningResult<Vec<SolanaAddress>> {

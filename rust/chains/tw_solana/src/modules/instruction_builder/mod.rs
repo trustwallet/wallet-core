@@ -5,10 +5,12 @@
 use crate::address::SolanaAddress;
 use crate::instruction::Instruction;
 
+pub mod compute_budget_instruction;
 pub mod stake_instruction;
 pub mod system_instruction;
 pub mod token_instruction;
 
+use compute_budget_instruction::ComputeBudgetInstructionBuilder;
 use system_instruction::SystemInstructionBuilder;
 
 #[derive(Default)]
@@ -37,6 +39,24 @@ impl InstructionBuilder {
     pub fn maybe_memo(&mut self, memo: &str) -> &mut Self {
         if !memo.is_empty() {
             self.instructions.push(SystemInstructionBuilder::memo(memo));
+        }
+        self
+    }
+
+    /// Adds a `priority_fee` instruction if it is provided.
+    pub fn maybe_priority_fee_price(&mut self, micro_lamports: Option<u64>) -> &mut Self {
+        if let Some(micro_lamports) = micro_lamports {
+            let ix = ComputeBudgetInstructionBuilder::set_compute_unit_price(micro_lamports);
+            self.instructions.push(ix);
+        }
+        self
+    }
+
+    /// Adds a `fee_limit` instruction if it is provided.
+    pub fn maybe_priority_fee_limit(&mut self, units: Option<u32>) -> &mut Self {
+        if let Some(units) = units {
+            let ix = ComputeBudgetInstructionBuilder::set_compute_unit_limit(units);
+            self.instructions.push(ix);
         }
         self
     }

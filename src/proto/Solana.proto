@@ -218,6 +218,16 @@ enum Encoding {
     Base64 = 1;
 }
 
+// Specific compute unit limit that the transaction is allowed to consume.
+message PriorityFeePrice {
+    uint64 price = 1;
+}
+
+// Compute unit price in "micro-lamports" to pay a higher transaction fee for higher transaction prioritization.
+message PriorityFeeLimit {
+    uint32 limit = 2;
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // The secret private key used for signing (32 bytes).
@@ -255,6 +265,13 @@ message SigningInput {
     RawMessage raw_message = 20;
     // Output transaction encoding.
     Encoding tx_encoding = 21;
+    // Optional. Set a specific compute unit limit that the transaction is allowed to consume.
+    // https://solana.com/docs/intro/transaction_fees#prioritization-fee
+    PriorityFeePrice priority_fee_price = 22;
+    // Optional. Set a compute unit price in "micro-lamports" to pay a higher transaction
+    // fee for higher transaction prioritization.
+    // https://solana.com/docs/intro/transaction_fees#prioritization-fee
+    PriorityFeeLimit priority_fee_limit = 23;
 }
 
 // Result containing the signed and encoded transaction.
