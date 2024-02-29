@@ -1,11 +1,14 @@
 use super::TransactionOutput;
 use crate::{
-    error::UtxoError,
-    error::{UtxoErrorKind, UtxoResult},
+    error::{UtxoError, UtxoErrorKind, UtxoResult},
     script::standard_script::conditions,
-    transaction::transaction_parts::Amount,
+    transaction::{
+        asset::brc20::{BRC20TransferInscription, Brc20Ticker},
+        transaction_parts::Amount,
+    },
 };
 
+use bitcoin::hashes::Hash;
 use tw_hash::{ripemd::bitcoin_hash_160, H160, H256, H264};
 use tw_keypair::tw;
 
@@ -71,6 +74,37 @@ impl OutputBuilder {
             .as_slice()
             .try_into()
             .expect("pubkey length is 33 bytes");
+
+        Ok(TransactionOutput {
+            value: self
+                .amount
+                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+            script_pubkey: conditions::new_p2tr_script_path(&pubkey, &merkle_root),
+        })
+    }
+    pub fn brc20_transfer(
+        self,
+        pubkey: tw::PublicKey,
+        ticker: String,
+        value: String,
+    ) -> UtxoResult<TransactionOutput> {
+        let pubkey: H264 = pubkey
+            .to_bytes()
+            .as_slice()
+            .try_into()
+            .expect("pubkey length is 33 bytes");
+
+        let ticker = Brc20Ticker::new(ticker).unwrap();
+        let transfer = BRC20TransferInscription::new(&pubkey, &ticker, &value).unwrap();
+
+        let merkle_root: H256 = transfer
+            .spend_info
+            .merkle_root()
+            .unwrap()
+            .to_byte_array()
+            .as_slice()
+            .try_into()
+            .unwrap();
 
         Ok(TransactionOutput {
             value: self

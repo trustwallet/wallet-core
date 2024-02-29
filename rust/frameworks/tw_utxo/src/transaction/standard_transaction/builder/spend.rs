@@ -110,7 +110,7 @@ impl SpendingScriptBuilder {
         })
     }
     pub fn brc20_transfer(
-        mut self,
+        self,
         sig: schnorr::Signature,
         pubkey: tw::PublicKey,
         ticker: String,
