@@ -1,73 +1,52 @@
-use super::ordinals::OrdinalsInscription;
-use crate::{Error, Result};
-use bitcoin::PublicKey;
-use serde::Serialize;
-use tw_proto::BitcoinV2::Proto;
+use std::ops::Deref;
 
-#[derive(Debug, Clone, Serialize)]
+use super::ordinal::OrdinalsInscription;
+use crate::Result;
+use tw_hash::H264;
+
+#[derive(Debug, Clone)]
 pub struct Brc20Ticker(String);
 
 impl Brc20Ticker {
     pub fn new(string: String) -> Result<Self> {
         // Brc20Ticker must be a 4-letter identifier.
         if string.len() != 4 {
-            return Err(Error::from(Proto::Error::Error_invalid_brc20_ticker));
+            todo!()
         }
 
         Ok(Brc20Ticker(string))
     }
 }
 
-#[derive(Serialize)]
-struct BRC20TransferPayload {
-    #[serde(rename = "p")]
-    protocol: String,
-    #[serde(rename = "op")]
-    operation: String,
-    #[serde(rename = "tick")]
-    ticker: Brc20Ticker,
-    #[serde(rename = "amt")]
-    amount: String,
-}
-
-impl BRC20TransferPayload {
-    const PROTOCOL_ID: &str = "brc-20";
-    const MIME: &[u8] = b"text/plain;charset=utf-8";
-}
-
-impl BRC20TransferPayload {
-    const OPERATION: &str = "transfer";
-
-    fn new(ticker: Brc20Ticker, amount: String) -> Self {
-        BRC20TransferPayload {
-            protocol: Self::PROTOCOL_ID.to_string(),
-            operation: Self::OPERATION.to_string(),
-            ticker,
-            amount,
-        }
-    }
-}
+const BRC20_PROTOCOL_ID: &str = "brc-20";
+const BRC20_MIME: &[u8] = b"text/plain;charset=utf-8";
 
 pub struct BRC20TransferInscription(OrdinalsInscription);
 
+impl Deref for BRC20TransferInscription {
+    type Target = OrdinalsInscription;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
 impl BRC20TransferInscription {
     pub fn new(
-        recipient: PublicKey,
-        ticker: Brc20Ticker,
-        value: String,
+        recipient: &H264,
+        ticker: &Brc20Ticker,
+        value: &str,
     ) -> Result<BRC20TransferInscription> {
-        let data: BRC20TransferPayload = BRC20TransferPayload::new(ticker, value);
+        let payload = format!(
+            "{{\"p\": \"{protocol}\", \"op\": \"transfer\", \"tick\": \"{ticker}\", \"amt\": \"{amt}\"}}",
+            protocol = BRC20_PROTOCOL_ID,
+            ticker = ticker.0,
+            amt = value
+        );
 
-        let inscription = OrdinalsInscription::new(
-            BRC20TransferPayload::MIME,
-            &serde_json::to_vec(&data).expect("badly constructed BRC20 payload"),
-            recipient,
-        )?;
+        let inscription = OrdinalsInscription::new(BRC20_MIME, payload.as_bytes(), recipient)?;
 
         Ok(BRC20TransferInscription(inscription))
-    }
-    pub fn inscription(&self) -> &OrdinalsInscription {
-        &self.0
     }
 }
 

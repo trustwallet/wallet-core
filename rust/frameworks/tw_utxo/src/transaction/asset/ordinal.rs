@@ -1,28 +1,21 @@
-use super::TaprootProgram;
-use crate::{Error, Result};
+use crate::script::Script;
+use crate::Result;
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
-use bitcoin::secp256k1::XOnlyPublicKey;
-use bitcoin::taproot::{TaprootBuilder, TaprootSpendInfo};
-use bitcoin::{PublicKey, Script};
-use tw_proto::BitcoinV2::Proto;
+use tw_hash::H264;
+use tw_misc::traits::ToBytesVec;
 
 pub struct OrdinalsInscription {
-    envelope: TaprootProgram,
+    pub script: bitcoin::ScriptBuf,
+    pub spend_info: bitcoin::taproot::TaprootSpendInfo,
 }
 
 impl OrdinalsInscription {
     /// Creates a new Ordinals Inscription ("commit stage").
-    pub fn new(mime: &[u8], data: &[u8], recipient: PublicKey) -> Result<OrdinalsInscription> {
+    pub fn new(mime: &[u8], data: &[u8], recipient: &H264) -> Result<OrdinalsInscription> {
         // Create the envelope, containing the inscription content.
-        let envelope = create_envelope(mime, data, recipient)?;
+        let (script, spend_info) = create_envelope(mime, data, recipient)?;
 
-        Ok(OrdinalsInscription { envelope })
-    }
-    pub fn taproot_program(&self) -> &Script {
-        self.envelope.script.as_script()
-    }
-    pub fn spend_info(&self) -> &TaprootSpendInfo {
-        &self.envelope.spend_info
+        Ok(OrdinalsInscription { script, spend_info })
     }
 }
 
@@ -41,15 +34,17 @@ impl OrdinalsInscription {
 /// could also be the same entity. Stage one, the `internal_key` is the
 /// recipient. Stage two, the `internal_key` is the claimer of the transaction
 /// (where the Inscription script is available in the Witness).
-fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<TaprootProgram> {
+fn create_envelope(
+    mime: &[u8],
+    data: &[u8],
+    pubkey: &H264,
+) -> Result<(bitcoin::ScriptBuf, bitcoin::taproot::TaprootSpendInfo)> {
     use bitcoin::opcodes::all::*;
     use bitcoin::opcodes::*;
 
     // Create MIME buffer.
     let mut mime_buf = PushBytesBuf::new();
-    mime_buf
-        .extend_from_slice(mime)
-        .map_err(|_| Error::from(Proto::Error::Error_ordinal_mime_type_too_large))?;
+    mime_buf.extend_from_slice(mime).unwrap();
 
     // Create an Ordinals Inscription.
     let mut builder = ScriptBuf::builder()
@@ -75,9 +70,7 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
     for chunk in data.chunks(520) {
         // Create data buffer.
         let mut data_buf = PushBytesBuf::new();
-        data_buf
-            .extend_from_slice(chunk)
-            .map_err(|_| Error::from(Proto::Error::Error_ordinal_payload_too_large))?;
+        data_buf.extend_from_slice(chunk).unwrap();
 
         // Push buffer
         builder = builder.push_slice(data_buf);
@@ -86,20 +79,27 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
     // Finalize scripts.
     let script = builder.push_opcode(OP_ENDIF).into_script();
 
+    // The internal key.
+    let xonly = bitcoin::secp256k1::XOnlyPublicKey::from(
+        bitcoin::PublicKey::from_slice(pubkey.as_slice())
+            .unwrap()
+            .inner,
+    );
+
     // Generate the necessary spending information. As mentioned in the
     // documentation of this function at the top, this serves two purposes;
     // setting the spending condition and actually claiming the spending
     // condition.
-    let spend_info = TaprootBuilder::new()
+    let spend_info = bitcoin::taproot::TaprootBuilder::new()
         .add_leaf(0, script.clone())
         .expect("Ordinals Inscription spending info must always build")
         .finalize(
             &secp256k1::Secp256k1::new(),
-            XOnlyPublicKey::from(internal_key.inner),
+            bitcoin::secp256k1::XOnlyPublicKey::from(xonly),
         )
         .expect("Ordinals Inscription spending info must always build");
 
-    Ok(TaprootProgram { script, spend_info })
+    Ok((script, spend_info))
 }
 
 pub struct OrdinalNftInscription(OrdinalsInscription);
@@ -116,7 +116,7 @@ impl OrdinalNftInscription {
     // * ...
     //
     // [Ordinal inscription]: https://docs.ordinals.com/inscriptions.html
-    pub fn new(mime_type: &[u8], data: &[u8], recipient: PublicKey) -> Result<Self> {
+    pub fn new(mime_type: &[u8], data: &[u8], recipient: &H264) -> Result<Self> {
         OrdinalsInscription::new(mime_type, data, recipient).map(OrdinalNftInscription)
     }
     pub fn inscription(&self) -> &OrdinalsInscription {

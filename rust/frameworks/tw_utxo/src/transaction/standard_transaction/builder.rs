@@ -6,8 +6,9 @@ use crate::{
     error::UtxoError,
     sighash::{BitcoinEcdsaSignature, BitcoinSchnorrSignature},
     sighash_computer::SpendingData,
+    transaction::asset::brc20::{BRC20TransferInscription, Brc20Ticker},
 };
-use bitcoin::hashes::Hash;
+use bitcoin::{hashes::Hash, taproot::TaprootSpendInfo};
 use tw_encoding::hex;
 use tw_hash::{hasher::Hasher, ripemd::bitcoin_hash_160, H160, H256, H264};
 use tw_keypair::{ecdsa, schnorr, tw};
@@ -274,6 +275,8 @@ impl UtxoBuilder {
             &payload,
             bitcoin::taproot::LeafVersion::TapScript,
         );
+
+        // Convert to native.
         let leaf_hash: H256 = leaf_hash
             .to_byte_array()
             .try_into()
@@ -296,9 +299,57 @@ impl UtxoBuilder {
             },
         ))
     }
-    pub fn brc20(pubkey: tw::PublicKey, ticker: String, amount: String) {
-        todo!()
+    pub fn brc20_transfer(
+        mut self,
+        pubkey: tw::PublicKey,
+        ticker: String,
+        value: String,
+    ) -> UtxoResult<(TransactionInput, UtxoToSign)> {
+        let pubkey: H264 = pubkey
+            .to_bytes()
+            .as_slice()
+            .try_into()
+            .expect("pubkey length is 33 bytes");
 
+        let ticker = Brc20Ticker::new(ticker).unwrap();
+        let transfer = BRC20TransferInscription::new(&pubkey, &ticker, &value).unwrap();
+
+        let leaf_hash = bitcoin::taproot::TapLeafHash::from_script(
+            &transfer.script,
+            bitcoin::taproot::LeafVersion::TapScript,
+        );
+
+        // Convert to native.
+        let leaf_hash: H256 = leaf_hash
+            .to_byte_array()
+            .try_into()
+            .expect("leaf hash length is 32 bytes");
+
+        let merkle_root: H256 = transfer
+            .spend_info
+            .merkle_root()
+            .unwrap()
+            .to_byte_array()
+            .as_slice()
+            .try_into()
+            .unwrap();
+
+        self.finalize_out_point()?;
+
+        Ok((
+            self.input,
+            UtxoToSign {
+                script_pubkey: conditions::new_p2tr_script_path(&pubkey, &merkle_root),
+                signing_method: SigningMethod::TaprootAll,
+                amount: self
+                    .amount
+                    .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+                leaf_hash_code_separator: Some((leaf_hash, 0)),
+                // Note that we don't use the default double-hasher.
+                tx_hasher: Hasher::Sha256,
+                ..Default::default()
+            },
+        ))
     }
 }
 
