@@ -138,6 +138,66 @@ fn test_solana_sign_transfer_with_durable_nonce() {
     assert_eq!(output.encoded, "6zRqmNP5waeyartbf8GuQrWxdSy4SCYBTEmGhiXfYNxQTuUrvrBjia18YoCM367AQZWZ5yTjcN6FaXuaPWju7aVZNFjyqpuMZLNEbpm8ZNmKP4Na2VzR59iAdSPEZGTPuesZEniNMAD7ZSux6fayxgwrEwMWjeiskFQEwdvFzKNHfNLbjoVpdSTxhKiqfbwxnFBpBxNE4nqMj3bUR37cYJAFoDFokxy23HGpV93V9mbGG89aLBNQnd9LKTjpYFv49VMd48mptUd7uyrRwZLMneew2Bxq3PLsj9SaJyCWbsnqYj6bBahhsErz67PJTJepx4BEhqRxHGUSbpeNiL7qyERri1GZsXhN8fgU3nPiYr7tMMxuLAoUFRMJ79HCex7vxhf7SapvcP");
 }
 
+/// Transfer SOL with `priority_fee_limit` and `priority_fee_price`.
+#[test]
+fn test_solana_sign_transfer_with_priority_fee() {
+    // Corresponding Solana address: 7HP8cENhoDxS7yT6UHyT3mVwvN5rv6gMrzwRXXWFJvDU.
+    let private_key = "1eb5264f82747294e7481ecae700bd1d21e50db620bcf0d2af7582f712c71b40"
+        .decode_hex()
+        .unwrap();
+
+    let transfer = Proto::Transfer {
+        recipient: "HwHDGHYeYfXdzwvCZu7zm21SzQ7ZLBGTLNkuscyFdpvZ".into(),
+        value: 1001,
+        ..Proto::Transfer::default()
+    };
+
+    let input = Proto::SigningInput {
+        private_key: private_key.into(),
+        recent_blockhash: "ABdaGDKfoBe2SJAYkD31sojYVwTM8ainsdBD7ZM9dut1".into(),
+        transaction_type: TransactionType::transfer_transaction(transfer),
+        priority_fee_limit: Some(Proto::PriorityFeeLimit { limit: 2000 }),
+        priority_fee_price: Some(Proto::PriorityFeePrice { price: 2 }),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    assert_eq!(output.encoded, "4WReC2rmup9nZjtFQbBbha5uADkVb54CRd6a3vbAoptbuzYvdud2Xau2tkzCejZsfsUC2ppqhMqbXXzaoiSpYH8XEDo6QtUV8EGXcE3GFxVjjtBT2U8abtC2qcBMDGAghtzpsmKWfWMxmQj8wWKjpmzamiU6PjfMbuAyAX5VPhQxZQ84Ay2HtQJBK8LA9CJ9qva9ehmu7g41wKBXLPq22NGjeSHq6ubjcNLQrFx34sKGtPJ68Z2oZgrju7XjKFhtnKzqUCWcgVUjUsyHyyBJ3awaExYHEw2uKq9NVoKmf9JDkjf2LBjNpUJ3EGzFHrfwnVEQ7B5XCX4nQRPir7eLuunLwVKhrdATKDbxin3ANe5D");
+}
+
+/// Transfer SOL with `priority_fee_limit` set only.
+#[test]
+fn test_solana_sign_transfer_with_priority_fee_limit() {
+    // Corresponding Solana address: 7HP8cENhoDxS7yT6UHyT3mVwvN5rv6gMrzwRXXWFJvDU.
+    let private_key = "1eb5264f82747294e7481ecae700bd1d21e50db620bcf0d2af7582f712c71b40"
+        .decode_hex()
+        .unwrap();
+
+    let transfer = Proto::Transfer {
+        recipient: "HwHDGHYeYfXdzwvCZu7zm21SzQ7ZLBGTLNkuscyFdpvZ".into(),
+        value: 160000,
+        ..Proto::Transfer::default()
+    };
+
+    let input = Proto::SigningInput {
+        private_key: private_key.into(),
+        recent_blockhash: "8mhXYg8vpezXr7y7eP5q3oztzY9FRwTPSvyB3izzF88m".into(),
+        transaction_type: TransactionType::transfer_transaction(transfer),
+        priority_fee_limit: Some(Proto::PriorityFeeLimit { limit: 1000 }),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    // https://solscan.io/tx/4ei1iejYd1Yr11hdi7ziFjc6GyUAtNnUQqURqssBXB7H6kYJ4CXxYiSks3PjoPdJfZFMXTSAYTp7wqYrjCKgKxcV
+    assert_eq!(output.encoded, "23MBXQ2GgD4CWLXG5MrhmXa6YDf4ghZdxEAzdrG9U457PMBAeg3WbSy7WA7H7a8VEFZ5eYR8TSvSAJ4ZBqhS4bLT7e8VSTszLDu159RmeKcfXtn7Ae4hQybb6uALWSkdBjSHyURYZoto6HWzS57htjUQkmAimaWFG5nwfkox9wqxAZqDNVAFYEAzM3eNWwWeN2rCnNy4vLfyKSZeNTRdvPg8PjUFyXrWcKkd3NFTqSchQmZsccaxpN32sNjg2Br2thCrcazon3rBY9T1BwuaWTtZsvm653dhhKENNajaD3TyA79K1m4rP6wYVaEs6UWr6qcwsdR6WD5TCkwmmmEjVYeQp2Py");
+}
+
 #[test]
 fn test_solana_sign_delegate_stake_no_stake_account() {
     let delegate = Proto::DelegateStake {
@@ -338,6 +398,36 @@ fn test_solana_sign_create_token_account_for_other_3e6ufv() {
     assert_eq!(output.error, SigningError::OK);
     // https://explorer.solana.com/tx/3E6UFVamHCm6Bgk8gXdZex7R7tJAVxqJm6t9ephAKu1PjcfZrD7CJqMwKu6RrvWSUESbZFqzdUyLXuxAFaawPHvJ
     assert_eq!(output.encoded, "4BsrHedHuForcKDhLdnLYDXgtQgQEj3EQVDtEhqa7o6ukFjW3shpTWv6PeKQdMp6af4ASjD4xQeZvXxLK5WUjguVMUf3xdJn7RnFeM7hdDJ56RDBM5PRJbRJVHjz6FJ7SVNTvr9y3gVYQtWx7NfKRxiyEAfq9JG7nqxSWaW6raMr9t35aVcdAVuXE9iXj3rzhVfCS69vVzy5KcFEK3mvDYG6L12V2CfviCydmeCvPw5r3zBUrZSQv7Ti4XFNBrPbk28gcqQwsBknBqasHxHqD9VUyPmBTuUyXq75QN8rhqN55NjxKBUw37tEUS1jKVpWnTeLFq1eRAMdXvjftNuQ5Bmm8Zc12PGWj9vdorBaYyvZXexJST5xNjR4SCkXvXZoRScETck95chv3VBn54jP8DpB4GGUmATFKSxpdtnNV64i1SQXW13KJwswthJvAaDiqevQLKLkvrTEAdb4BxEfPkFjDVti6P58rTZCMg5CTVLqdmWwpTSW5V");
+}
+
+#[test]
+fn test_solana_sign_create_token_account_with_priority_fee_price() {
+    // Corresponding Solana address: 7HP8cENhoDxS7yT6UHyT3mVwvN5rv6gMrzwRXXWFJvDU.
+    let private_key = "1eb5264f82747294e7481ecae700bd1d21e50db620bcf0d2af7582f712c71b40"
+        .decode_hex()
+        .unwrap();
+
+    let create_token_acc = Proto::CreateTokenAccount {
+        main_address: "7HP8cENhoDxS7yT6UHyT3mVwvN5rv6gMrzwRXXWFJvDU".into(),
+        // WBTC
+        token_mint_address: "3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh".into(),
+        token_address: "94JfTH8qCeBQDBatvULREG43msjSQscT7oHnqx7jppX".into(),
+    };
+
+    let input = Proto::SigningInput {
+        private_key: private_key.into(),
+        recent_blockhash: "FgDiTexKSzxGudn6pupKZZRm6J2GFvM1vGf7hPH2WX6r".into(),
+        transaction_type: TransactionType::create_token_account_transaction(create_token_acc),
+        priority_fee_price: Some(Proto::PriorityFeePrice { price: 20 }),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    // https://solscan.io/tx/5B2Zxu14wvr7CJJa4L3934cU9GEi82JHF1B9pDcHgtTeTPqBckyL12JSuZN224EAMCBGiCXEezT8fReQu4PVmHS
+    assert_eq!(output.encoded, "BtCPMKt9QUhF9cLrawa51GPZyY3GicQpaf1iX73sswSQ4t6gNNcoKM2kVkXne3Xcyzo3fRbuBxh6PsDEcBSi5TviDq7YZsS8usLchrGwCM41U1KqjsyABZSnwiyKNf4bUg77B3SiUqs5gWrH7s6QXJ4LDZvUMu3W9Hqo7uHbBkGGBPw4Pqjys1D963LnbBrSRHBRKuYLJauePJcQ9RoCNhWgy63RfuQMXyMLdVanUtiBCwY9BWxyFiwJTLvz2XbyY8CRruxQFvmDcyCSghMGvim8AKxah7EHgBzn9PTqfdRqYcdT3quHf6mfKCpxv13DuwbYUHAhQe4acCKQsV2ty3w6QtVaL9gND1CYp3rYpDcRXg8KyXrARcvyRmBU2oBsxyHyvwqxWarre8RZJxMKEHytYDo2Wkx36zgm8JZcruUajrZi4Z2RQNNhsKYSqU9AGzV31opPpa8YLa9hRFy3YmhrDGtBv897GqDV9eD5FiDkQsDAzH9JcSibaffPe3aK3E46fh");
 }
 
 #[test]
