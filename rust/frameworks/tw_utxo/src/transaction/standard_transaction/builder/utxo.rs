@@ -1,102 +1,24 @@
-// SPDX-License-Identifier: Apache-2.0
-//
-// Copyright © 2017 Trust Wallet.
-
+use super::{Transaction, TransactionInput, TransactionOutput};
 use crate::{
     error::UtxoError,
-    sighash::{BitcoinEcdsaSignature, BitcoinSchnorrSignature},
-    sighash_computer::SpendingData,
-    transaction::asset::brc20::{BRC20TransferInscription, Brc20Ticker},
-};
-use bitcoin::{hashes::Hash, taproot::TaprootSpendInfo};
-use tw_encoding::hex;
-use tw_hash::{hasher::Hasher, ripemd::bitcoin_hash_160, H160, H256, H264};
-use tw_keypair::{ecdsa, schnorr, tw};
-use tw_misc::traits::ToBytesVec;
-
-use crate::{
     error::{UtxoErrorKind, UtxoResult},
     script::{
         standard_script::{claims, conditions},
         Script, Witness,
     },
     sighash::SighashType,
+    sighash::{BitcoinEcdsaSignature, BitcoinSchnorrSignature},
+    sighash_computer::SpendingData,
     sighash_computer::{TxSigningArgs, UtxoToSign},
     signing_mode::SigningMethod,
+    transaction::asset::brc20::{BRC20TransferInscription, Brc20Ticker},
     transaction::transaction_parts::{Amount, OutPoint},
 };
-
-use super::{Transaction, TransactionInput, TransactionOutput};
-
-pub fn txid_from_str(txid: &str) -> UtxoResult<H256> {
-    hex::decode(txid)
-        .map_err(|_| UtxoError(UtxoErrorKind::Error_internal))?
-        .as_slice()
-        .try_into()
-        .map_err(|_| UtxoError(UtxoErrorKind::Error_internal))
-}
-
-pub fn txid_from_str_and_rev(txid: &str) -> UtxoResult<H256> {
-    hex::decode(txid)
-        .map_err(|_| UtxoError(UtxoErrorKind::Error_internal))?
-        .into_iter()
-        .rev()
-        .collect::<Vec<u8>>()
-        .as_slice()
-        .try_into()
-        .map_err(|_| UtxoError(UtxoErrorKind::Error_internal))
-}
-
-/// Transaction builder for standard Bitcoin transaction only.
-/// It parses `BitcoinV2::Proto::SigningInput` as the standard [`super::Transaction`].
-pub struct TransactionBuilder {
-    pub version: u32,
-    pub inputs: Vec<TransactionInput>,
-    pub outputs: Vec<TransactionOutput>,
-    pub locktime: u32,
-    pub args: TxSigningArgs,
-}
-
-impl TransactionBuilder {
-    pub fn new() -> Self {
-        TransactionBuilder {
-            version: 2,
-            inputs: Vec::new(),
-            outputs: Vec::new(),
-            locktime: 0,
-            args: TxSigningArgs::default(),
-        }
-    }
-    pub fn version(mut self, version: u32) -> Self {
-        self.version = version;
-        self
-    }
-    pub fn lock_time(mut self, locktime: u32) -> Self {
-        self.locktime = locktime;
-        self
-    }
-    pub fn push_input(mut self, input: TransactionInput, arg: UtxoToSign) -> Self {
-        self.inputs.push(input);
-        self.args.utxos_to_sign.push(arg);
-        self
-    }
-    pub fn push_output(mut self, out: TransactionOutput) -> Self {
-        self.outputs.push(out);
-        self
-    }
-    pub fn build(self) -> (Transaction, TxSigningArgs) {
-        (
-            Transaction {
-                // TODO: Why is this i32?
-                version: self.version as i32,
-                inputs: self.inputs,
-                outputs: self.outputs,
-                locktime: self.locktime,
-            },
-            self.args,
-        )
-    }
-}
+use bitcoin::{hashes::Hash, taproot::TaprootSpendInfo};
+use tw_encoding::hex;
+use tw_hash::{hasher::Hasher, ripemd::bitcoin_hash_160, H160, H256, H264};
+use tw_keypair::{ecdsa, schnorr, tw};
+use tw_misc::traits::ToBytesVec;
 
 pub struct UtxoBuilder {
     input: TransactionInput,
@@ -350,178 +272,5 @@ impl UtxoBuilder {
                 ..Default::default()
             },
         ))
-    }
-}
-
-pub struct OutputBuilder {
-    amount: Option<Amount>,
-}
-
-impl OutputBuilder {
-    pub fn new() -> Self {
-        OutputBuilder { amount: None }
-    }
-    pub fn amount(mut self, amount: Amount) -> Self {
-        self.amount = Some(amount);
-        self
-    }
-    // TODO: Be more precise with PublicKey type?.
-    // TODO: There should be a hash-equivalent.
-    pub fn p2pkh(self, pubkey: tw::PublicKey) -> UtxoResult<TransactionOutput> {
-        let h = bitcoin_hash_160(&pubkey.to_bytes());
-        let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
-
-        Ok(TransactionOutput {
-            value: self
-                .amount
-                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
-            script_pubkey: conditions::new_p2pkh(&pubkey_hash),
-        })
-    }
-    // TODO: Be more precise with PublicKey type?.
-    // TODO: There should be a hash-equivalent.
-    pub fn p2wpkh(self, pubkey: tw::PublicKey) -> UtxoResult<TransactionOutput> {
-        let h = bitcoin_hash_160(&pubkey.to_bytes());
-        let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
-
-        Ok(TransactionOutput {
-            value: self
-                .amount
-                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
-            script_pubkey: conditions::new_p2wpkh(&pubkey_hash),
-        })
-    }
-    pub fn p2tr_key_path(self, pubkey: tw::PublicKey) -> UtxoResult<TransactionOutput> {
-        let pubkey: H264 = pubkey
-            .to_bytes()
-            .as_slice()
-            .try_into()
-            .expect("pubkey length is 33 bytes");
-
-        Ok(TransactionOutput {
-            value: self
-                .amount
-                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
-            script_pubkey: conditions::new_p2tr_key_path(&pubkey),
-        })
-    }
-    pub fn p2tr_script_path(
-        self,
-        pubkey: tw::PublicKey,
-        merkle_root: H256,
-    ) -> UtxoResult<TransactionOutput> {
-        let pubkey: H264 = pubkey
-            .to_bytes()
-            .as_slice()
-            .try_into()
-            .expect("pubkey length is 33 bytes");
-
-        Ok(TransactionOutput {
-            value: self
-                .amount
-                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
-            script_pubkey: conditions::new_p2tr_script_path(&pubkey, &merkle_root),
-        })
-    }
-}
-
-pub struct SpendingScriptBuilder {
-    sighash_ty: Option<SighashType>,
-}
-
-impl SpendingScriptBuilder {
-    pub fn new() -> Self {
-        SpendingScriptBuilder { sighash_ty: None }
-    }
-    pub fn sighash_ty(mut self, sighash_ty: SighashType) -> Self {
-        self.sighash_ty = Some(sighash_ty);
-        self
-    }
-    pub fn p2pkh(
-        self,
-        sig: ecdsa::secp256k1::Signature,
-        pubkey: tw::PublicKey,
-    ) -> UtxoResult<SpendingData> {
-        // TODO: Check unwrap
-        let sig = BitcoinEcdsaSignature::new(
-            sig.to_der().unwrap(),
-            self.sighash_ty
-                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
-        )
-        .unwrap();
-
-        let pubkey: H264 = pubkey
-            .to_bytes()
-            .as_slice()
-            .try_into()
-            .expect("pubkey length is 33 bytes");
-
-        let script_sig = claims::new_p2pkh(&sig.serialize(), &pubkey);
-
-        Ok(SpendingData {
-            script_sig,
-            witness: Witness::default(),
-        })
-    }
-    pub fn p2wpkh(
-        self,
-        sig: ecdsa::secp256k1::Signature,
-        pubkey: tw::PublicKey,
-    ) -> UtxoResult<SpendingData> {
-        // TODO: Check unwrap
-        let sig = BitcoinEcdsaSignature::new(
-            sig.to_der().unwrap(),
-            self.sighash_ty
-                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
-        )
-        .unwrap();
-
-        let pubkey: H264 = pubkey
-            .to_bytes()
-            .as_slice()
-            .try_into()
-            .expect("pubkey length is 33 bytes");
-
-        let witness = claims::new_p2wpkh(sig.serialize(), pubkey);
-
-        Ok(SpendingData {
-            script_sig: Script::default(),
-            witness,
-        })
-    }
-    pub fn p2tr_key_path(self, sig: schnorr::Signature) -> UtxoResult<SpendingData> {
-        let sig = BitcoinSchnorrSignature::new(
-            sig,
-            self.sighash_ty
-                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
-        )
-        .unwrap();
-
-        let witness = claims::new_p2tr_key_path(sig.serialize());
-
-        Ok(SpendingData {
-            script_sig: Script::default(),
-            witness,
-        })
-    }
-    pub fn p2tr_script_path(
-        self,
-        sig: schnorr::Signature,
-        payload: Script,
-        control_block: Vec<u8>,
-    ) -> UtxoResult<SpendingData> {
-        let sig = BitcoinSchnorrSignature::new(
-            sig,
-            self.sighash_ty
-                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
-        )
-        .unwrap();
-
-        let witness = claims::new_p2tr_script_path(sig.serialize(), payload, control_block);
-
-        Ok(SpendingData {
-            script_sig: Script::default(),
-            witness,
-        })
     }
 }
