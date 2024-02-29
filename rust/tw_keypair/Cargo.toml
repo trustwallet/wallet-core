@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
-default = [ "tweak-support" ] # TODO: disable
 test-utils = []
 tweak-support = [ "dep:bitcoin", "dep:secp256k1" ]
 

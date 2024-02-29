@@ -34,6 +34,7 @@ impl BitcoinEcdsaSignature {
     }
 }
 
+// TODO: Do we even need this?
 pub struct BitcoinSchnorrSignature {
     sig: schnorr::Signature,
     sighash_ty: SighashType,
@@ -50,8 +51,9 @@ impl BitcoinSchnorrSignature {
     pub fn serialize(&self) -> Vec<u8> {
         let mut ser = Vec::with_capacity(Self::SER_SIZE);
         ser.extend(self.sig.to_vec());
-        ser.push(self.sighash_ty.raw_sighash() as u8);
-        debug_assert_eq!(ser.len(), Self::SER_SIZE);
+        // TODO: Looks like this is not expected(?)
+        //ser.push(self.sighash_ty.raw_sighash() as u8);
+        //debug_assert_eq!(ser.len(), Self::SER_SIZE);
         ser
     }
 }

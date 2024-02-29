@@ -11,7 +11,10 @@ impl Brc20Ticker {
     pub fn new(string: String) -> Result<Self> {
         // Brc20Ticker must be a 4-letter identifier.
         if string.len() != 4 {
-            todo!()
+            // TODO:
+            return Err(crate::Error::from(
+                tw_proto::Utxo::Proto::Error::Error_internal,
+            ));
         }
 
         Ok(Brc20Ticker(string))
