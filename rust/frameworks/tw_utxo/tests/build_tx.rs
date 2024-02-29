@@ -184,7 +184,6 @@ fn build_tx_input_segwit_output_segwit() {
     let sig = bob_private_key.sign(sighash).unwrap();
 
     // Build the claim
-    // TODO: Consider using type safetly for calling the right method here?
     let claim = SpendingScriptBuilder::new()
         .sighash_ty(SighashType::new(SighashBase::All))
         .p2wpkh(sig, bob_pubkey)
@@ -246,7 +245,6 @@ fn build_tx_input_legacy_output_taproot() {
     let sig = alice_private_key.sign(sighash).unwrap();
 
     // Build the claim
-    // TODO: Consider using type safetly for calling the right method here?
     let claim = SpendingScriptBuilder::new()
         .sighash_ty(SighashType::new(SighashBase::All))
         .p2pkh(sig, alice_pubkey)
@@ -307,19 +305,10 @@ fn build_tx_input_taproot_output_taproot() {
 
     // Sign the sighash.
     let sighash = preimage.into_h256_list().unwrap()[0];
-    assert_eq!(
-        sighash.as_slice(),
-        &[
-            200, 182, 65, 50, 58, 228, 169, 23, 0, 60, 121, 14, 186, 9, 8, 238, 94, 163, 141, 45,
-            54, 233, 4, 111, 175, 61, 115, 71, 154, 100, 158, 250,
-        ]
-    );
-
     let tweaked = bob_private_key.tweak_no_aux_rand(None);
     let sig = tweaked.sign(sighash).unwrap();
 
     // Build the claim
-    // TODO: Consider using type safetly for calling the right method here?
     let claim = SpendingScriptBuilder::new()
         .sighash_ty(SighashType::new(SighashBase::All))
         .p2tr_key_path(sig)
@@ -327,13 +316,70 @@ fn build_tx_input_taproot_output_taproot() {
 
     let tx = computer.compile(vec![claim]).unwrap();
 
-    //assert_eq!(tx.size(), 191);
-    //assert_eq!(tx.vsize(), 110); // Witness data discounted
-    //assert_eq!(tx.weight(), 110 * 4);
-    //assert_eq!(tx.weight(), 440);
-    //assert_eq!(tx.fee(SATS_PER_VBYTE), 110 * SATS_PER_VBYTE);
-    //assert_eq!(tx.fee(SATS_PER_VBYTE), 2200);
-
     let encoded = hex::encode(tx.encode_out(), false);
     assert_eq!(encoded, "02000000000101ac6058397e18c277e98defda1bc38bdf3ab304563d7df7afed0ca5f63220589a0000000000ffffffff01806de72901000000225120a5c027857e359d19f625e52a106b8ac6ca2d6a8728f6cf2107cd7958ee0787c20140ec2d3910d41506b60aaa20520bb72f15e2d2cbd97e3a8e26ee7bad5f4c56b0f2fb0ceaddac33cb2813a33ba017ba6b1d011bab74a0426f12a2bcf47b4ed5bc8600000000")
+}
+
+#[test]
+fn build_tx_input_segwit_output_brc20_transfer() {
+    let alice_private_key =
+        hex::decode("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129").unwrap();
+    let alice_pubkey =
+        hex::decode("030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb").unwrap();
+
+    let alice_private_key = PrivateKey::try_from(alice_private_key.as_slice()).unwrap();
+    let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
+
+    let txid =
+        txid_from_str_and_rev("8ec895b4d30adb01e38471ca1019bfc8c3e5fbd1f28d9e7b5653260d89989008")
+            .unwrap();
+
+    let (utxo1, arg1) = UtxoBuilder::new()
+        .prev_txid(txid)
+        .prev_index(1)
+        .amount(26_400)
+        .p2wpkh(alice_pubkey.clone())
+        .unwrap();
+
+    let output1 = OutputBuilder::new()
+        .amount(7_000)
+        .brc20_transfer(alice_pubkey.clone(), "oadf".into(), "20".into())
+        .unwrap();
+
+    let output2 = OutputBuilder::new()
+        .amount(16_400)
+        .p2wpkh(alice_pubkey.clone())
+        .unwrap();
+
+    dbg!(&arg1);
+
+    let (tx, args) = TransactionBuilder::new()
+        .push_input(utxo1, arg1.clone())
+        .push_output(output1)
+        .push_output(output2)
+        .build();
+
+    // Compute the primage.
+    let computer = SighashComputer::new(tx, args);
+    let preimage = computer.preimage_tx().unwrap();
+
+    // Sign the sighash.
+    let sighash = preimage.into_h256_list().unwrap()[0];
+
+    // Tweak the private key with the Taproot script leaf hash.
+    //let hash = arg1.leaf_hash_code_separator.unwrap().0;
+    //let tweaked = alice_private_key.tweak_no_aux_rand(Some(hash));
+    //let sighash = preimage.into_h256_list().unwrap()[0];
+    let sig = alice_private_key.sign(sighash).unwrap();
+
+    // Build the claim
+    let claim = SpendingScriptBuilder::new()
+        .sighash_ty(SighashType::new(SighashBase::All))
+        .p2wpkh(sig, alice_pubkey)
+        .unwrap();
+
+    let tx = computer.compile(vec![claim]).unwrap();
+
+    let encoded = hex::encode(tx.encode_out(), false);
+    assert_eq!(encoded, "02000000000101089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e0100000000ffffffff02581b000000000000225120e8b706a97732e705e22ae7710703e7f589ed13c636324461afa443016134cc051040000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d02483045022100a44aa28446a9a886b378a4a65e32ad9a3108870bd725dc6105160bed4f317097022069e9de36422e4ce2e42b39884aa5f626f8f94194d1013007d5a1ea9220a06dce0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000")
 }

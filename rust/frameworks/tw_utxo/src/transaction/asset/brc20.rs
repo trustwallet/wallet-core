@@ -41,11 +41,13 @@ impl BRC20TransferInscription {
         value: &str,
     ) -> Result<BRC20TransferInscription> {
         let payload = format!(
-            "{{\"p\": \"{protocol}\", \"op\": \"transfer\", \"tick\": \"{ticker}\", \"amt\": \"{amt}\"}}",
+            "{{\"p\":\"{protocol}\",\"op\":\"transfer\",\"tick\":\"{ticker}\",\"amt\":\"{amt}\"}}",
             protocol = BRC20_PROTOCOL_ID,
             ticker = ticker.0,
             amt = value
         );
+
+        println!("{payload}");
 
         let inscription = OrdinalsInscription::new(BRC20_MIME, payload.as_bytes(), recipient)?;
 
