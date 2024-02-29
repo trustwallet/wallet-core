@@ -3,15 +3,14 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::encode::stream::Stream;
-use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
-use crate::sighash::{SighashBase, SighashType};
+use crate::error::UtxoResult;
+use crate::sighash::SighashBase;
 use crate::transaction::transaction_hashing::TransactionHasher;
-use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
-use crate::transaction::{UtxoPreimageArgs, UtxoTaprootPreimageArgs};
-use bitcoin::{amount, script};
-use secp256k1::rand::seq;
+use crate::transaction::transaction_interface::TransactionInterface;
+use crate::transaction::UtxoTaprootPreimageArgs;
+
 use std::marker::PhantomData;
-use tw_encoding::hex;
+
 use tw_hash::hasher::Hasher;
 use tw_memory::Data;
 

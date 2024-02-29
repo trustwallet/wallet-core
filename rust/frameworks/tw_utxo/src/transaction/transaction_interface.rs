@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::encode::Encodable;
-use crate::error::UtxoResult;
+
 use crate::script::{Script, Witness};
 use crate::transaction::transaction_parts::OutPoint;
 

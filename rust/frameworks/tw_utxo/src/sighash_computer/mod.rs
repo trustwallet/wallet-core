@@ -6,10 +6,8 @@ use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
 use crate::script::{Script, Witness};
 use crate::sighash::SighashType;
 use crate::signing_mode::SigningMethod;
-use crate::transaction::transaction_fee::TransactionFee;
-use crate::transaction::transaction_interface::{
-    TransactionInterface, TxInputInterface, TxOutputInterface,
-};
+
+use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
 use crate::transaction::transaction_parts::Amount;
 use crate::transaction::{TransactionPreimage, UtxoPreimageArgs, UtxoTaprootPreimageArgs};
 use std::marker::PhantomData;

@@ -1,24 +1,13 @@
-use super::{Transaction, TransactionInput, TransactionOutput};
+use super::TransactionOutput;
 use crate::{
     error::UtxoError,
     error::{UtxoErrorKind, UtxoResult},
-    script::{
-        standard_script::{claims, conditions},
-        Script, Witness,
-    },
-    sighash::SighashType,
-    sighash::{BitcoinEcdsaSignature, BitcoinSchnorrSignature},
-    sighash_computer::SpendingData,
-    sighash_computer::{TxSigningArgs, UtxoToSign},
-    signing_mode::SigningMethod,
-    transaction::asset::brc20::{BRC20TransferInscription, Brc20Ticker},
-    transaction::transaction_parts::{Amount, OutPoint},
+    script::standard_script::conditions,
+    transaction::transaction_parts::Amount,
 };
-use bitcoin::{hashes::Hash, taproot::TaprootSpendInfo};
-use tw_encoding::hex;
-use tw_hash::{hasher::Hasher, ripemd::bitcoin_hash_160, H160, H256, H264};
-use tw_keypair::{ecdsa, schnorr, tw};
-use tw_misc::traits::ToBytesVec;
+
+use tw_hash::{ripemd::bitcoin_hash_160, H160, H256, H264};
+use tw_keypair::tw;
 
 pub struct OutputBuilder {
     amount: Option<Amount>,

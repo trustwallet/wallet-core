@@ -1,11 +1,5 @@
-use super::{Transaction, TransactionInput, TransactionOutput};
-use crate::{
-    encode::compact_integer::CompactInteger,
-    transaction::{
-        transaction_fee::TransactionFee, transaction_interface::TransactionInterface,
-        transaction_parts::Amount,
-    },
-};
+use super::Transaction;
+use crate::transaction::{transaction_fee::TransactionFee, transaction_parts::Amount};
 
 impl TransactionFee for Transaction {
     fn fee(&self, fee_rate: Amount) -> Amount {

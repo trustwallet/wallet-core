@@ -3,21 +3,17 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
-use crate::script::{Script, Witness};
-use crate::sighash::SighashType;
+
 use crate::sighash_computer::{SpendingData, TxSigningArgs, UtxoToSign};
-use crate::signing_mode::SigningMethod;
+
 use crate::transaction::transaction_fee::TransactionFee;
 use crate::transaction::transaction_interface::{
     TransactionInterface, TxInputInterface, TxOutputInterface,
 };
 use crate::transaction::transaction_parts::Amount;
-use crate::transaction::{TransactionPreimage, UtxoPreimageArgs};
+use crate::transaction::TransactionPreimage;
 use std::marker::PhantomData;
 use tw_hash::hasher::Hasher;
-use tw_hash::H256;
-use tw_keypair::tw;
-use tw_memory::Data;
 
 const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 

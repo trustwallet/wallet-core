@@ -4,7 +4,6 @@
 
 use tw_keypair::{ecdsa::der, schnorr};
 use tw_misc::traits::ToBytesVec;
-use tw_proto::Utxo;
 
 use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
 

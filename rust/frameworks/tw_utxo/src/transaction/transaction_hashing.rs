@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::encode::stream::Stream;
-use crate::script::Script;
+
 use crate::sighash::SighashBase;
 use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
 use crate::transaction::UtxoPreimageArgs;
@@ -11,7 +11,6 @@ use std::marker::PhantomData;
 use tw_hash::hasher::Hasher;
 use tw_memory::Data;
 
-use super::transaction_parts::Amount;
 use super::UtxoTaprootPreimageArgs;
 
 /// A helper structure that hashes some parts of the transaction.

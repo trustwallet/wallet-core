@@ -1,23 +1,17 @@
-use super::{Transaction, TransactionInput, TransactionOutput};
+use super::TransactionInput;
 use crate::{
     error::UtxoError,
     error::{UtxoErrorKind, UtxoResult},
-    script::{
-        standard_script::{claims, conditions},
-        Script, Witness,
-    },
-    sighash::SighashType,
-    sighash::{BitcoinEcdsaSignature, BitcoinSchnorrSignature},
-    sighash_computer::SpendingData,
-    sighash_computer::{TxSigningArgs, UtxoToSign},
+    script::{standard_script::conditions, Script, Witness},
+    sighash_computer::UtxoToSign,
     signing_mode::SigningMethod,
     transaction::asset::brc20::{BRC20TransferInscription, Brc20Ticker},
     transaction::transaction_parts::{Amount, OutPoint},
 };
-use bitcoin::{hashes::Hash, taproot::TaprootSpendInfo};
+use bitcoin::hashes::Hash;
 use tw_encoding::hex;
 use tw_hash::{hasher::Hasher, ripemd::bitcoin_hash_160, H160, H256, H264};
-use tw_keypair::{ecdsa, schnorr, tw};
+use tw_keypair::tw;
 use tw_misc::traits::ToBytesVec;
 
 pub struct UtxoBuilder {
@@ -66,7 +60,7 @@ impl UtxoBuilder {
         self.input.sequence = sequence;
         self
     }
-    pub fn custom_script(mut self, custom: Script) -> Self {
+    pub fn custom_script(self, _custom: Script) -> Self {
         todo!()
     }
     pub fn amount(mut self, amount: Amount) -> Self {

@@ -1,4 +1,4 @@
-use tw_hash::{H264, H520};
+use tw_hash::H264;
 
 use crate::script::Witness;
 

@@ -1,8 +1,6 @@
-use crate::script::Script;
 use crate::Result;
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use tw_hash::H264;
-use tw_misc::traits::ToBytesVec;
 
 pub struct OrdinalsInscription {
     pub script: bitcoin::ScriptBuf,
