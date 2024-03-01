@@ -1593,7 +1593,7 @@
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
     "explorer": {
-      "url": "https://ravencoin.network",
+      "url": "https://blockbook.ravencoin.org",
       "txPath": "/tx/",
       "accountPath": "/address/"
     },

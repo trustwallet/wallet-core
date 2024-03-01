@@ -7,7 +7,7 @@ import "Common.proto";
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
-    // Chain identifier (uint256, serialized little endian)
+    // Chain identifier (uint256, serialized big endian)
     bytes chain_id = 1;
 
     // The secret private key used for signing (32 bytes).
@@ -39,28 +39,28 @@ message SigningOutput {
 
 // A Transfer message
 message TransactionMessage {
-    // Nonce (uint256, serialized little endian)
+    // Nonce (uint256, serialized big endian)
     bytes nonce = 1;
 
-    // Gas price (uint256, serialized little endian)
+    // Gas price (uint256, serialized big endian)
     bytes gas_price = 2;
 
-    // Gas limit (uint256, serialized little endian)
+    // Gas limit (uint256, serialized big endian)
     bytes gas_limit = 3;
 
     // Recipient's address.
     string to_address = 4;
 
-    // Amount to send in wei (uint256, serialized little endian)
+    // Amount to send in wei (uint256, serialized big endian)
     bytes amount = 5;
 
     // Optional payload
     bytes payload = 6;
 
-    // From shard ID (uint256, serialized little endian)
+    // From shard ID (uint256, serialized big endian)
     bytes from_shard_id = 7;
 
-    // To Shard ID (uint256, serialized little endian)
+    // To Shard ID (uint256, serialized big endian)
     bytes to_shard_id = 8;
 }
 
@@ -75,13 +75,13 @@ message StakingMessage {
         DirectiveCollectRewards collect_rewards = 5;
     }
 
-    // Nonce (uint256, serialized little endian)
+    // Nonce (uint256, serialized big endian)
     bytes nonce = 6;
 
-    // Gas price (uint256, serialized little endian)
+    // Gas price (uint256, serialized big endian)
     bytes gas_price = 7;
 
-    // Gas limit (uint256, serialized little endian)
+    // Gas limit (uint256, serialized big endian)
     bytes gas_limit = 8;   
 }
 
@@ -156,7 +156,7 @@ message DirectiveDelegate {
     // Validator address
     string validator_address = 2;
     
-    // Delegate amount (uint256, serialized little endian)
+    // Delegate amount (uint256, serialized big endian)
     bytes amount = 3;
 }
 
@@ -168,7 +168,7 @@ message DirectiveUndelegate {
     // Validator address
     string validator_address = 2;
 
-    // Undelegate amount (uint256, serialized little endian)
+    // Undelegate amount (uint256, serialized big endian)
     bytes amount = 3;
 }
 
