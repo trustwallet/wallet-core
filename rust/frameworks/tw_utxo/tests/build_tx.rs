@@ -1,6 +1,5 @@
 use tw_encoding::hex;
 
-use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1::PrivateKey;
 use tw_keypair::schnorr;
 use tw_keypair::traits::SigningKeyTrait;
@@ -292,8 +291,6 @@ fn build_tx_input_taproot_output_taproot() {
         .p2tr_key_path(alice_pubkey)
         .unwrap();
 
-    dbg!(&arg1);
-
     let (tx, args) = TransactionBuilder::new()
         .push_input(utxo1, arg1)
         .push_output(output1)
@@ -351,8 +348,6 @@ fn build_tx_input_segwit_output_brc20_transfer_commit() {
         .p2wpkh(alice_pubkey.clone())
         .unwrap();
 
-    dbg!(&arg1);
-
     let (tx, args) = TransactionBuilder::new()
         .push_input(utxo1, arg1.clone())
         .push_output(output1)
@@ -406,8 +401,6 @@ fn build_tx_input_brc20_transfer_commit_output_brc20_transfer_reveal() {
         .amount(546)
         .p2wpkh(alice_pubkey.clone())
         .unwrap();
-
-    dbg!(&arg1);
 
     let (tx, args) = TransactionBuilder::new()
         .push_input(utxo1, arg1.clone())
