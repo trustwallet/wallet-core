@@ -126,6 +126,7 @@ impl fmt::Display for SigningError {
             SigningErrorType::Error_invalid_params => "Incorrect input parameter",
             SigningErrorType::Error_invalid_requested_token_amount => "Invalid input token amount",
             SigningErrorType::Error_not_supported => "Operation not supported for the chain",
+            SigningErrorType::Error_dust_amount_requested => "Requested amount is too low (less dust)",
         };
         write!(f, "{str}")
     }

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Amount.h"
+#include "DustCalculator.h"
 #include "Transaction.h"
 #include "UTXO.h"
 #include <TrustWalletCore/TWBitcoinSigHashType.h>
@@ -73,8 +74,10 @@ public:
     // Total amount of the `extraOutputs`.
     Amount extraOutputsAmount = 0;
 
+    DustCalculatorShared dustCalculator;
+
 public:
-    SigningInput() = default;
+    SigningInput();
 
     SigningInput(const Proto::SigningInput& input);
 };
