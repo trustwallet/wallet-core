@@ -197,7 +197,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
             // Make sure that the output amount is greater or at least equal to the dust threshold.
             if (plan.amount < dustThreshold) {
                 TransactionPlan errorPlan;
-                errorPlan.error = Common::Proto::Error_dust_amount_requested;
+                errorPlan.error = maxAmount ? Common::Proto::Error_not_enough_utxos : Common::Proto::Error_dust_amount_requested;
                 return errorPlan;
             }
 
