@@ -16,8 +16,10 @@ use tw_coin_entry::signing_output_error;
 use tw_keypair::tw::PublicKey;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
+use tw_proto::BitcoinV2::Proto::mod_Input::mod_InputBuilder::OneOfvariant;
 use tw_proto::Utxo::Proto as UtxoProto;
 use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
+use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
 
 pub struct Address(pub bitcoin::address::Address<NetworkChecked>);
 
@@ -112,6 +114,12 @@ impl CoinEntry for BitcoinEntry {
     }
 }
 
+// TODO: Adjust error type
+fn pubkey_from_raw(pubkey: &[u8]) -> Result<PublicKey> {
+    PublicKey::new(pubkey.to_vec(), tw_keypair::tw::PublicKeyType::Secp256k1)
+        .map_err(|_| Error::from(Proto::Error::Error_internal))
+}
+
 impl BitcoinEntry {
     pub(crate) fn preimage_hashes_impl(
         &self,
@@ -120,82 +128,67 @@ impl BitcoinEntry {
     ) -> Result<Proto::PreSigningOutput<'static>> {
         let proto = pre_processor(proto);
 
-        // Convert input builders into Utxo inputs.
-        let utxo_inputs = proto
-            .inputs
-            .iter()
-            .map(crate::modules::transactions::InputBuilder::utxo_from_proto)
-            .collect::<Result<Vec<_>>>()?;
+        for input in proto.inputs {
+            match input.to_recipient {
+                Proto::mod_Input::OneOfto_recipient::builder(builder) => {
+                    match builder.variant {
+                        OneOfvariant::p2sh(_) => todo!(),
+                        OneOfvariant::p2pkh(pubkey) => {
+                            let pubkey = pubkey_from_raw(pubkey.as_ref()).unwrap();
 
-        // Convert output builders into Utxo outputs (does not contain the change output).
-        let mut utxo_outputs = proto
-            .outputs
-            .iter()
-            .map(crate::modules::transactions::OutputBuilder::utxo_from_proto)
-            .collect::<Result<Vec<_>>>()?;
+                            UtxoBuilder::new()
+                                .prev_txid(input.txid.as_ref().try_into().unwrap())
+                                .prev_index(input.vout)
+                                .amount(input.value as i64) // TODO: Just use u64 to begin with?
+                                .p2pkh(pubkey)
+                                .unwrap();
+                        },
+                        OneOfvariant::p2wsh(_) => todo!(),
+                        OneOfvariant::p2wpkh(pubkey) => {
+                            let pubkey = pubkey_from_raw(pubkey.as_ref()).unwrap();
 
-        // If automatic change output creation is enabled (by default), a change
-        // script must be provided.
-        let change_script_pubkey = if proto.disable_change_output {
-            Cow::default()
-        } else {
-            // Convert output builder to Utxo output.
-            let output = crate::modules::transactions::OutputBuilder::utxo_from_proto(
-                &proto
-                    .change_output
-                    .ok_or_else(|| Error::from(Proto::Error::Error_invalid_change_output))?,
-            )?;
+                            UtxoBuilder::new()
+                                .prev_txid(input.txid.as_ref().try_into().unwrap())
+                                .prev_index(input.vout)
+                                .amount(input.value as i64) // TODO: Just use u64 to begin with?
+                                .p2wpkh(pubkey)
+                                .unwrap();
+                        },
+                        OneOfvariant::p2tr_key_path(payload) => {
+                            // TODO: Rename field to `pubkey`?
+                            let pubkey = pubkey_from_raw(payload.public_key.as_ref()).unwrap();
 
-            output.script_pubkey
-        };
+                            UtxoBuilder::new()
+                                .prev_txid(input.txid.as_ref().try_into().unwrap())
+                                .prev_index(input.vout)
+                                .amount(input.value as i64) // TODO: Just use u64 to begin with?
+                                .p2tr_key_path(pubkey)
+                                .unwrap();
+                        },
+                        OneOfvariant::p2tr_script_path(_) => todo!(),
+                        OneOfvariant::brc20_inscribe(payload) => {
+                            // TODO: Rename field to `pubkey`?
+                            let pubkey = pubkey_from_raw(payload.inscribe_to.as_ref()).unwrap();
+                            let ticker = payload.ticker.to_string();
+                            let value = payload.transfer_amount.to_string();
 
-        // Prepare SigningInput for Utxo sighash generation.
-        let utxo_signing = UtxoProto::SigningInput {
-            version: proto.version,
-            lock_time: proto.lock_time,
-            inputs: utxo_inputs.clone(),
-            outputs: utxo_outputs
-                .iter()
-                .map(|output| UtxoProto::TxOut {
-                    value: output.value,
-                    script_pubkey: Cow::Borrowed(&output.script_pubkey),
-                })
-                .collect(),
-            input_selector: proto.input_selector,
-            weight_base: proto.fee_per_vb,
-            change_script_pubkey,
-            disable_change_output: proto.disable_change_output,
-        };
-
-        // Generate the sighashes to be signed. This also selects the inputs
-        // according to the input selecter and appends a change output, if
-        // enabled.
-        let utxo_presigning = tw_utxo::compiler::Compiler::preimage_hashes(utxo_signing);
-        handle_utxo_error(&utxo_presigning.error)?;
-
-        // Check whether the change output is present.
-        if !proto.disable_change_output {
-            // Change output has been added.
-            debug_assert_eq!(utxo_presigning.outputs.len(), utxo_outputs.len() + 1);
-
-            let change_output = utxo_presigning
-                .outputs
-                .last()
-                .expect("expected change output");
-
-            // Push it to the list of outputs.
-            utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
-                value: change_output.value,
-                script_pubkey: change_output.script_pubkey.to_vec().into(),
-                control_block: Default::default(),
-                taproot_payload: Default::default(),
-            })
+                            UtxoBuilder::new()
+                                .prev_txid(input.txid.as_ref().try_into().unwrap())
+                                .prev_index(input.vout)
+                                .amount(input.value as i64) // TODO: Just use u64 to begin with?
+                                .brc20_transfer(pubkey, ticker, value)
+                                .unwrap();
+                        },
+                        OneOfvariant::ordinal_inscribe(_) => todo!(),
+                        OneOfvariant::None => todo!(),
+                    }
+                },
+                Proto::mod_Input::OneOfto_recipient::custom_script(script) => todo!(),
+                Proto::mod_Input::OneOfto_recipient::None => todo!(),
+            }
         }
 
-        // Sanity check.
-        debug_assert!(utxo_presigning.inputs.len() <= proto.inputs.len());
-        debug_assert_eq!(utxo_presigning.outputs.len(), utxo_outputs.len());
-
+        /*
         Ok(Proto::PreSigningOutput {
             error: Proto::Error::OK,
             error_message: Default::default(),
@@ -207,6 +200,8 @@ impl BitcoinEntry {
             weight_estimate: utxo_presigning.weight_estimate,
             fee_estimate: utxo_presigning.fee_estimate,
         })
+        */
+        todo!()
     }
 
     pub(crate) fn compile_impl(
