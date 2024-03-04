@@ -19,6 +19,7 @@ use tw_proto::BitcoinV2::Proto;
 use tw_proto::BitcoinV2::Proto::mod_Input::mod_InputBuilder::OneOfvariant;
 use tw_proto::Utxo::Proto as UtxoProto;
 use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
+use tw_utxo::script::Script;
 use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
 
 pub struct Address(pub bitcoin::address::Address<NetworkChecked>);
@@ -183,7 +184,17 @@ impl BitcoinEntry {
                         OneOfvariant::None => todo!(),
                     }
                 },
-                Proto::mod_Input::OneOfto_recipient::custom_script(script) => todo!(),
+                Proto::mod_Input::OneOfto_recipient::custom_script(payload) => {
+                    let script = Script::from(payload.script_sig.to_vec());
+
+                    UtxoBuilder::new()
+                        .prev_txid(input.txid.as_ref().try_into().unwrap())
+                        .prev_index(input.vout)
+                        .amount(input.value as i64) // TODO: Just use u64 to begin with?
+                        // TODO: Signing method:
+                        .custom_script_pubkey(script, tw_utxo::signing_mode::SigningMethod::Legacy)
+                        .unwrap();
+                },
                 Proto::mod_Input::OneOfto_recipient::None => todo!(),
             }
         }
