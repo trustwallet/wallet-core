@@ -15,12 +15,15 @@ use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::tw::PublicKey;
 use tw_misc::traits::ToBytesVec;
-use tw_proto::BitcoinV2::Proto;
 use tw_proto::BitcoinV2::Proto::mod_Input::mod_InputBuilder::OneOfvariant;
+use tw_proto::BitcoinV2::Proto::mod_Input::OneOfto_recipient;
+use tw_proto::BitcoinV2::Proto::mod_ToPublicKeyOrHash::OneOfto_address;
+use tw_proto::BitcoinV2::Proto::{self, mod_Output};
 use tw_proto::Utxo::Proto as UtxoProto;
 use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
 use tw_utxo::script::Script;
-use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
+use tw_utxo::transaction::standard_transaction::builder::{OutputBuilder, UtxoBuilder};
+use wallet_core_rs::tw_hash::H256;
 
 pub struct Address(pub bitcoin::address::Address<NetworkChecked>);
 
@@ -129,47 +132,48 @@ impl BitcoinEntry {
     ) -> Result<Proto::PreSigningOutput<'static>> {
         let proto = pre_processor(proto);
 
+        let mut utxo_inputs = vec![];
         for input in proto.inputs {
-            match input.to_recipient {
+            let (utxo, arg) = match input.to_recipient {
                 Proto::mod_Input::OneOfto_recipient::builder(builder) => {
                     match builder.variant {
                         OneOfvariant::p2sh(_) => todo!(),
                         OneOfvariant::p2pkh(pubkey) => {
-                            let pubkey = pubkey_from_raw(pubkey.as_ref()).unwrap();
+                            let pubkey = pubkey_from_raw(&pubkey).unwrap();
 
                             UtxoBuilder::new()
                                 .prev_txid(input.txid.as_ref().try_into().unwrap())
                                 .prev_index(input.vout)
                                 .amount(input.value as i64) // TODO: Just use u64 to begin with?
                                 .p2pkh(pubkey)
-                                .unwrap();
+                                .unwrap()
                         },
                         OneOfvariant::p2wsh(_) => todo!(),
                         OneOfvariant::p2wpkh(pubkey) => {
-                            let pubkey = pubkey_from_raw(pubkey.as_ref()).unwrap();
+                            let pubkey = pubkey_from_raw(&pubkey).unwrap();
 
                             UtxoBuilder::new()
                                 .prev_txid(input.txid.as_ref().try_into().unwrap())
                                 .prev_index(input.vout)
                                 .amount(input.value as i64) // TODO: Just use u64 to begin with?
                                 .p2wpkh(pubkey)
-                                .unwrap();
+                                .unwrap()
                         },
                         OneOfvariant::p2tr_key_path(payload) => {
                             // TODO: Rename field to `pubkey`?
-                            let pubkey = pubkey_from_raw(payload.public_key.as_ref()).unwrap();
+                            let pubkey = pubkey_from_raw(&payload.public_key).unwrap();
 
                             UtxoBuilder::new()
                                 .prev_txid(input.txid.as_ref().try_into().unwrap())
                                 .prev_index(input.vout)
                                 .amount(input.value as i64) // TODO: Just use u64 to begin with?
                                 .p2tr_key_path(pubkey)
-                                .unwrap();
+                                .unwrap()
                         },
                         OneOfvariant::p2tr_script_path(_) => todo!(),
                         OneOfvariant::brc20_inscribe(payload) => {
                             // TODO: Rename field to `pubkey`?
-                            let pubkey = pubkey_from_raw(payload.inscribe_to.as_ref()).unwrap();
+                            let pubkey = pubkey_from_raw(&payload.inscribe_to).unwrap();
                             let ticker = payload.ticker.to_string();
                             let value = payload.transfer_amount.to_string();
 
@@ -178,7 +182,7 @@ impl BitcoinEntry {
                                 .prev_index(input.vout)
                                 .amount(input.value as i64) // TODO: Just use u64 to begin with?
                                 .brc20_transfer(pubkey, ticker, value)
-                                .unwrap();
+                                .unwrap()
                         },
                         OneOfvariant::ordinal_inscribe(_) => todo!(),
                         OneOfvariant::None => todo!(),
@@ -193,10 +197,82 @@ impl BitcoinEntry {
                         .amount(input.value as i64) // TODO: Just use u64 to begin with?
                         // TODO: Signing method:
                         .custom_script_pubkey(script, tw_utxo::signing_mode::SigningMethod::Legacy)
-                        .unwrap();
+                        .unwrap()
                 },
                 Proto::mod_Input::OneOfto_recipient::None => todo!(),
-            }
+            };
+
+            utxo_inputs.push((utxo, arg));
+        }
+
+        for output in proto.outputs {
+            let out = match output.to_recipient {
+                Proto::mod_Output::OneOfto_recipient::builder(builder) => match builder.variant {
+                    mod_Output::mod_OutputBuilder::OneOfvariant::p2sh(_) => todo!(),
+                    mod_Output::mod_OutputBuilder::OneOfvariant::p2pkh(payload) => {
+                        match payload.to_address {
+                            OneOfto_address::pubkey(pubkey) => {
+                                let pubkey = pubkey_from_raw(&pubkey).unwrap();
+
+                                OutputBuilder::new()
+                                    .amount(output.value as i64)
+                                    .p2pkh(pubkey)
+                                    .unwrap()
+                            },
+                            OneOfto_address::hash(_) => todo!(),
+                            OneOfto_address::None => todo!(),
+                        }
+                    },
+                    mod_Output::mod_OutputBuilder::OneOfvariant::p2wsh(_) => todo!(),
+                    mod_Output::mod_OutputBuilder::OneOfvariant::p2wpkh(payload) => {
+                        match payload.to_address {
+                            OneOfto_address::pubkey(pubkey) => {
+                                let pubkey = pubkey_from_raw(&pubkey).unwrap();
+
+                                OutputBuilder::new()
+                                    .amount(output.value as i64)
+                                    .p2wpkh(pubkey)
+                                    .unwrap()
+                            },
+                            OneOfto_address::hash(_) => todo!(),
+                            OneOfto_address::None => todo!(),
+                        }
+                    },
+                    mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_key_path(pubkey) => {
+                        let pubkey = pubkey_from_raw(&pubkey).unwrap();
+
+                        OutputBuilder::new()
+                            .amount(output.value as i64)
+                            .p2tr_key_path(pubkey)
+                            .unwrap()
+                    },
+                    mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_script_path(payload) => {
+                        let pubkey = pubkey_from_raw(&payload.internal_key).unwrap();
+                        let merkle_root: H256 = payload.merkle_root.as_ref().try_into().unwrap();
+
+                        OutputBuilder::new()
+                            .amount(output.value as i64)
+                            .p2tr_script_path(pubkey, merkle_root)
+                            .unwrap()
+                    },
+                    mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_dangerous_assume_tweaked(
+                        _,
+                    ) => todo!(),
+                    mod_Output::mod_OutputBuilder::OneOfvariant::brc20_inscribe(payload) => {
+                        let pubkey = pubkey_from_raw(&payload.inscribe_to).unwrap();
+                        let ticker = payload.ticker.to_string();
+                        let value = payload.transfer_amount.to_string();
+
+                        OutputBuilder::new()
+                            .amount(output.value as i64)
+                            .brc20_transfer(pubkey, ticker, value)
+                            .unwrap()
+                    },
+                    mod_Output::mod_OutputBuilder::OneOfvariant::ordinal_inscribe(_) => todo!(),
+                    mod_Output::mod_OutputBuilder::OneOfvariant::None => todo!(),
+                },
+                _ => todo!(),
+            };
         }
 
         /*

@@ -46,6 +46,7 @@ impl OutputBuilder {
         })
     }
     // TODO: Be more precise with PublicKey type?.
+    // TODO: Afaik there's some specific condition for Segwith hashes?
     // TODO: There should be a hash-equivalent.
     pub fn p2wpkh(self, pubkey: tw::PublicKey) -> UtxoResult<TransactionOutput> {
         let h = bitcoin_hash_160(&pubkey.to_bytes());
