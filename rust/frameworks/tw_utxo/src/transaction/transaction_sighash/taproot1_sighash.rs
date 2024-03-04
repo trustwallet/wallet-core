@@ -63,7 +63,6 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
             spend_type |= 1u8;
         }
 
-        // TODO: Leaf hash node
         if tr.args.leaf_hash_code_separator.is_some() {
             spend_type |= 2u8;
         }

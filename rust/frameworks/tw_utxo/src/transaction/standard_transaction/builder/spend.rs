@@ -22,6 +22,18 @@ impl SpendingScriptBuilder {
         self.sighash_ty = Some(sighash_ty);
         self
     }
+    pub fn custom_script_sig(script_sig: Script) -> UtxoResult<SpendingData> {
+        Ok(SpendingData {
+            script_sig,
+            witness: Witness::default(),
+        })
+    }
+    pub fn custom_witness(witness: Witness) -> UtxoResult<SpendingData> {
+        Ok(SpendingData {
+            script_sig: Script::default(),
+            witness,
+        })
+    }
     pub fn p2pkh(
         self,
         sig: ecdsa::secp256k1::Signature,

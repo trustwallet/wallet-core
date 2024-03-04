@@ -1,7 +1,7 @@
 use super::TransactionOutput;
 use crate::{
     error::{UtxoError, UtxoErrorKind, UtxoResult},
-    script::standard_script::conditions,
+    script::{standard_script::conditions, Script},
     transaction::{
         asset::brc20::{BRC20TransferInscription, Brc20Ticker},
         transaction_parts::Amount,
@@ -23,6 +23,14 @@ impl OutputBuilder {
     pub fn amount(mut self, amount: Amount) -> Self {
         self.amount = Some(amount);
         self
+    }
+    pub fn custom_script_pubkey(&self, script_pubkey: Script) -> UtxoResult<TransactionOutput> {
+        Ok(TransactionOutput {
+            value: self
+                .amount
+                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+            script_pubkey,
+        })
     }
     // TODO: Be more precise with PublicKey type?.
     // TODO: There should be a hash-equivalent.
