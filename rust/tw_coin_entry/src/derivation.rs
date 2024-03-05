@@ -9,6 +9,7 @@ pub enum Derivation {
     /// Default derivation.
     #[default]
     Default = 0,
+    Solana = 6,
 }
 
 impl Derivation {
@@ -16,6 +17,7 @@ impl Derivation {
     pub fn from_raw(derivation: u32) -> Option<Derivation> {
         match derivation {
             0 => Some(Derivation::Default),
+            6 => Some(Derivation::Solana),
             _ => None,
         }
     }

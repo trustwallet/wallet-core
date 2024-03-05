@@ -10,16 +10,42 @@ on:
     paths:
       - 'codegen-v2/**'
 
+env:
+  SCCACHE_GHA_ENABLED: "true"
+  RUSTC_WRAPPER: "sccache"
+
 jobs:
   test:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-    - uses: actions-rs/cargo@v1
-      with:
-        command: test
-        args: --manifest-path codegen-v2/Cargo.toml
+      - uses: actions/checkout@v3
+      - name: Install system dependencies
+        run: |
+          tools/install-sys-dependencies-linux
+
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.3
+
+      - name: Install Rust dependencies
+        run: |
+          tools/install-rust-dependencies
+
+      - name: Run codegen-v2 tests
+        run: |
+          cargo test --all
+        working-directory: codegen-v2
+
+      # Generate files for a blockchain.
+      # Please note the blockchain should not be implemented in Rust at the moment of running this step,
+      # otherwise consider either generating files for another blockchain or removing this step at all.
+      - name: Test codegen-v2 new-blockchain-rust
+        run: |
+          cargo run -- new-blockchain-rust iotex
+        working-directory: codegen-v2
+
+      # Check if `new-blockchain-rust` command has generated files that do not break project compilation.
+      - name: Check Rust compiles
+        run: |
+          cargo check --tests
+        working-directory: rust

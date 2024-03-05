@@ -14,6 +14,7 @@ use tw_memory::Data;
 use tw_proto::{MessageRead, MessageWrite};
 
 use crate::modules::message_signer::MessageSigner;
+use crate::modules::transaction_decoder::TransactionDecoder;
 use crate::modules::wallet_connector::WalletConnector;
 pub use tw_proto::{ProtoError, ProtoResult};
 
@@ -63,6 +64,10 @@ pub trait CoinEntry {
     ///
     /// **Optional**. Use `NoWalletConnector` if the blockchain does not support WalletConnect transactions.
     type WalletConnector: WalletConnector;
+    /// TransactionDecoder - the module allows to decode transactions from binary representation.
+    ///
+    /// **Optional**. Use `NoTransactionDecoder` if the blockchain does not support transaction decoding yet.
+    type TransactionDecoder: TransactionDecoder;
 
     /// Tries to parse `Self::Address` from the given `address` string by `coin` type and address `prefix`.
     fn parse_address(
@@ -133,6 +138,13 @@ pub trait CoinEntry {
     /// Returns `Ok(None)` if the blockchain does not support WalletConnect transactions.
     #[inline]
     fn wallet_connector(&self) -> Option<Self::WalletConnector> {
+        None
+    }
+
+    /// It is optional, Transaction decoding.
+    /// Returns `Ok(None)` if the blockchain does not support transaction decoding yet.
+    #[inline]
+    fn transaction_decoder(&self) -> Option<Self::TransactionDecoder> {
         None
     }
 }
