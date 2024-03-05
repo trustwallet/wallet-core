@@ -33,6 +33,7 @@ jobs:
 
       - name: Create tag
         uses: actions/github-script@v3
+        if: False # temporarily disabled
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -60,6 +61,7 @@ jobs:
     name: Publish Android
     runs-on: macos-latest
     needs: create_tag
+    if: False # temporarily disabled
     steps:
       - name: Checkout
         uses: actions/checkout@v2
