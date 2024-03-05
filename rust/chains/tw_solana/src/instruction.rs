@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::SolanaAddress;
+use borsh::BorshSerialize;
 use serde::{Deserialize, Serialize};
 use tw_memory::Data;
 
@@ -28,6 +29,25 @@ impl Instruction {
         accounts: Vec<AccountMeta>,
     ) -> Self {
         let data = bincode::serialize(&data).expect("Error serializing bincode");
+        Self {
+            program_id,
+            accounts,
+            data,
+        }
+    }
+
+    /// Create a new instruction from a value, encoded with [`borsh`].
+    ///
+    /// [`borsh`]: https://docs.rs/borsh/latest/borsh/
+    ///
+    /// `program_id` is the address of the program that will execute the instruction.
+    /// `accounts` contains a description of all accounts that may be accessed by the program.
+    pub fn new_with_borsh<T: BorshSerialize>(
+        program_id: SolanaAddress,
+        data: &T,
+        accounts: Vec<AccountMeta>,
+    ) -> Self {
+        let data = borsh::to_vec(data).expect("Error serializing borsh");
         Self {
             program_id,
             accounts,
