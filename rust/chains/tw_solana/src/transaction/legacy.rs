@@ -2,7 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::transaction::{short_vec, CompiledInstruction, MessageHeader, Pubkey, Signature};
+use crate::address::SolanaAddress;
+use crate::transaction::{short_vec, CompiledInstruction, MessageHeader, Signature};
 use serde::{Deserialize, Serialize};
 use tw_hash::{as_byte_sequence, H256};
 
@@ -15,7 +16,7 @@ pub struct Message {
 
     /// All the account keys used by this transaction.
     #[serde(with = "short_vec")]
-    pub account_keys: Vec<Pubkey>,
+    pub account_keys: Vec<SolanaAddress>,
 
     /// The id of a recent ledger entry.
     #[serde(with = "as_byte_sequence")]
@@ -43,13 +44,4 @@ pub struct Transaction {
 
     /// The message to sign.
     pub message: Message,
-}
-
-impl Transaction {
-    /// Zeroize signatures before re-signing...
-    pub fn zeroize_signatures(&mut self) {
-        self.signatures
-            .iter_mut()
-            .for_each(|signature| *signature = Signature::default());
-    }
 }

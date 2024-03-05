@@ -2,7 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::transaction::{short_vec, CompiledInstruction, MessageHeader, Pubkey};
+use crate::address::SolanaAddress;
+use crate::transaction::{short_vec, CompiledInstruction, MessageHeader};
 use serde::{Deserialize, Serialize};
 use tw_hash::{as_byte_sequence, H256};
 
@@ -10,7 +11,7 @@ use tw_hash::{as_byte_sequence, H256};
 #[serde(rename_all = "camelCase")]
 pub struct MessageAddressTableLookup {
     /// Address lookup table account key
-    pub account_key: Pubkey,
+    pub account_key: SolanaAddress,
     /// List of indexes used to load writable account addresses
     #[serde(with = "short_vec")]
     pub writable_indexes: Vec<u8>,
@@ -29,7 +30,7 @@ pub struct Message {
 
     /// List of accounts loaded by this transaction.
     #[serde(with = "short_vec")]
-    pub account_keys: Vec<Pubkey>,
+    pub account_keys: Vec<SolanaAddress>,
 
     /// The blockhash of a recent block.
     #[serde(with = "as_byte_sequence")]

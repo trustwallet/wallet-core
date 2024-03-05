@@ -7,4 +7,5 @@
 pub mod json_signer;
 pub mod message_signer;
 pub mod plan_builder;
+pub mod transaction_decoder;
 pub mod wallet_connector;
