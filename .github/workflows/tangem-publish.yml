@@ -10,18 +10,13 @@ env:
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DVELOPMENT_ANDROID }}
 
 jobs:
-  publish:
-    name: Create tag and publish
+  create_tag:
+    name: Create tag
+    id: create_tag
     runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'adopt'
-          java-version: '17'
 
       - name: Read version.properties file
         uses: BrycensRanch/read-properties-action@v1
@@ -32,7 +27,9 @@ jobs:
           default: 0.0.1-tangem1
 
       - name: Echo version.properties
-        run: echo ${{ steps.version.outputs.tangem }}
+        run: echo publish-version
+        with:
+          publish-version: ${{ steps.version.outputs.tangem }}
 
       - name: Create tag
         uses: actions/github-script@v3
@@ -45,6 +42,33 @@ jobs:
               ref: "refs/tags/${{ steps.version.outputs.tangem }}",
               sha: context.sha
             })
+    outputs:
+      publish_version: ${{ steps.version.outputs.tangem }}
+
+  publish_ios:
+    name: Publish iOS
+    runs-on: macos-latest
+    needs: create_tag
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Echo version.properties
+        run: echo ${{ needs.create_tag.outputs.publish_version }}
+
+  publish_android:
+    name: Publish Android
+    runs-on: macos-latest
+    needs: create_tag
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '17'
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
@@ -80,11 +104,11 @@ jobs:
       - name: Generate files
         run: tools/generate-files android
 
-      - name: Build and publish
+      - name: Build and publish Android
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
         run: |
           cd android/
           echo sdk.dir = $ANDROID_HOME > local.properties
-          GITHUB_USER=${{ secrets.GITHUB_ACTOR }} GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} ./gradlew build assembleRelease publish -Pversion=${{ steps.version.outputs.tangem }}
+          GITHUB_USER=${{ secrets.GITHUB_ACTOR }} GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} ./gradlew build assembleRelease publish -Pversion=${{ needs.create_tag.outputs.publish_version }}
