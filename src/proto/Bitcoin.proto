@@ -164,6 +164,13 @@ message SigningInput {
     // If set, uses Bitcoin 2.0 Signing protocol.
     // As a result, `Bitcoin.Proto.SigningOutput.signing_result_v2` is set.
     BitcoinV2.Proto.SigningInput signing_v2 = 21;
+
+    // One of the "Dust" amount policies.
+    // Later, we plan to add support for `DynamicDust` policy with a `min_relay_fee` amount.
+    oneof dust_policy {
+        // Use a constant "Dust" threshold.
+        int64 fixed_dust_threshold = 24;
+    }
 }
 
 // Describes a preliminary transaction plan.

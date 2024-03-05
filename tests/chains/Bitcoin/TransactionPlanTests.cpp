@@ -59,17 +59,29 @@ TEST(TransactionPlan, OneInsufficientLower100) {
     EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, Common::Proto::Error_not_enough_utxos));
 }
 
-TEST(TransactionPlan, OneInsufficientLower170) {
+TEST(TransactionPlan, OneInsufficient146) {
     // requested is only slightly lower than avail, not enough for fee, cannot be satisfied
     auto utxos = buildTestUTXOs({100'000});
-    auto sigingInput = buildSigningInput(100'000 - 170, 1, utxos);
+    auto sigingInput = buildSigningInput(100'000 - 146, 1, utxos);
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
     EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, Common::Proto::Error_not_enough_utxos));
 }
 
-TEST(TransactionPlan, OneInsufficientLower300) {
+TEST(TransactionPlan, OneSufficientLower170) {
+    // requested is only slightly lower than avail, not enough for fee, cannot be satisfied
+    auto utxos = buildTestUTXOs({100'000});
+    auto sigingInput = buildSigningInput(100'000 - 170, 1, utxos);
+
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    auto dustChange = 23;
+    auto actualFee = 147 + dustChange;
+    EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 100'000 - 170, actualFee));
+}
+
+TEST(TransactionPlan, OneSufficientLower300) {
     auto utxos = buildTestUTXOs({100'000});
     auto sigingInput = buildSigningInput(100'000 - 300, 1, utxos);
 
@@ -92,7 +104,9 @@ TEST(TransactionPlan, OneMoreRequested) {
 TEST(TransactionPlan, OneFitsExactly) {
     auto utxos = buildTestUTXOs({100'000});
     auto byteFee = 1;
-    auto expectedFee = 147;
+    auto dustChange = 27;
+    // Change amount is too low (less than dust), so we just waste it as the transaction fee.
+    auto expectedFee = 147 + dustChange;
     auto sigingInput = buildSigningInput(100'000 - 174, byteFee, utxos);
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
@@ -106,7 +120,9 @@ TEST(TransactionPlan, OneFitsExactly) {
 TEST(TransactionPlan, OneFitsExactlyHighFee) {
     auto utxos = buildTestUTXOs({100'000});
     auto byteFee = 10;
-    auto expectedFee = 1470;
+    auto dustChange = 270;
+    // Change amount is too low (less than dust), so we just waste it as the transaction fee.
+    auto expectedFee = 1470 + dustChange;
     auto sigingInput = buildSigningInput(100'000 - 1740, byteFee, utxos);
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
@@ -236,6 +252,26 @@ TEST(TransactionPlan, SelectionSuboptimal_ExtraSmallUtxo) {
     auto firstUtxo = txPlan.utxos[0].amount;
     EXPECT_TRUE(change - 204 < txPlan.utxos[0].amount);
     EXPECT_EQ(change, 628);
+    EXPECT_EQ(firstUtxo, 500);
+}
+
+TEST(TransactionPlan, SelectionSuboptimal_ExtraSmallUtxoFixedDust) {
+    // Solution found 4-in-2-out {500, 600, 800, 1000} avail 2900 txamount 1390 fee 702 change 628
+    // Better solution: 3-in-2-out {600, 800, 1000} avail 2400 txamount 1390 fee 566 change 444
+    // Previously, with with higher fee estimation used in UTXO selection, solution found was 5-in-2-out {400, 500, 600, 800, 1000} avail 3300 txamount 1390 fee 838 change 1072
+    auto utxos = buildTestUTXOs({400, 500, 600, 800, 1'000});
+    auto byteFee = 2;
+    auto signingInput = buildSigningInput(1'390, byteFee, utxos);
+    signingInput.dustCalculator = std::make_shared<FixedDustCalculator>(450);
+
+    // UTXOs smaller than singleInputFee are not included
+    auto txPlan = TransactionBuilder::plan(signingInput);
+
+    auto expectedFee = 702;
+    EXPECT_TRUE(verifyPlan(txPlan, {500, 600, 800, 1'000}, 1'390, expectedFee));
+    auto change = 2'900 - 1'390 - expectedFee;
+    auto firstUtxo = txPlan.utxos[0].amount;
+    EXPECT_EQ(change, 808);
     EXPECT_EQ(firstUtxo, 500);
 }
 
@@ -484,15 +520,15 @@ TEST(TransactionPlan, MaxAmountDustAllFee10) {
 }
 
 TEST(TransactionPlan, One_MaxAmount_FeeMoreThanAvailable) {
-    auto utxos = buildTestUTXOs({170});
+    auto utxos = buildTestUTXOs({340});
     auto byteFee = 1;
     auto expectedFee = 113;
-    auto sigingInput = buildSigningInput(300, byteFee, utxos, true);
+    auto sigingInput = buildSigningInput(340, byteFee, utxos, true);
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
     // Fee is reduced to availableAmount
-    EXPECT_TRUE(verifyPlan(txPlan, {170}, 170 - expectedFee, expectedFee));
+    EXPECT_TRUE(verifyPlan(txPlan, {340}, 340 - expectedFee, expectedFee));
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     EXPECT_EQ(feeCalculator.calculate(1, 1, byteFee), 143);

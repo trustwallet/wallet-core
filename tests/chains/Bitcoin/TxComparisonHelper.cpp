@@ -45,6 +45,7 @@ SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, b
     input.byteFee = byteFee;
     input.useMaxAmount = useMaxAmount;
     input.coinType = coin;
+    input.dustCalculator = std::make_shared<LegacyDustCalculator>(coin);
 
     if (!omitPrivateKey) {
         auto utxoKey = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"));

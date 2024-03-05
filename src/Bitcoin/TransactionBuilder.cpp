@@ -88,6 +88,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
 
     bool maxAmount = input.useMaxAmount;
     Amount totalAmount = input.amount + input.extraOutputsAmount;
+    Amount dustThreshold = input.dustCalculator->dustAmount(input.byteFee);
 
     if (totalAmount == 0 && !maxAmount) {
         plan.error = Common::Proto::Error_zero_amount_requested;
@@ -95,7 +96,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         plan.error = Common::Proto::Error_missing_input_utxos;
     } else {
         const auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coinType), input.disableDustFilter);
-        auto inputSelector = InputSelector<UTXO>(input.utxos, feeCalculator);
+        auto inputSelector = InputSelector<UTXO>(input.utxos, feeCalculator, input.dustCalculator);
         auto inputSum = InputSelector<UTXO>::sum(input.utxos);
 
         // select UTXOs
@@ -111,6 +112,8 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         auto output_size = 2;
         UTXOs selectedInputs;
         if (!maxAmount) {
+            // Please note that there may not be a "change" output if the "change.amount" is less than "dust",
+            // but we use a max amount of transaction outputs to simplify the algorithm, so the fee can be slightly bigger in rare cases.
             output_size = 2 + extraOutputs; // output + change
             if (input.useMaxUtxo) {
                 selectedInputs = inputSelector.selectMaxAmount(input.byteFee);
@@ -145,10 +148,16 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         } else {
             plan.availableAmount = InputSelector<UTXO>::sum(plan.utxos);
 
+            // There can be less UTXOs after Dust filtering.
+            if (!maxAmount && totalAmount > plan.availableAmount) {
+                TransactionPlan errorPlan;
+                errorPlan.error = Common::Proto::Error_not_enough_utxos;
+                return errorPlan;
+            }
+
             // Compute fee.
             // must preliminary set change so that there is a second output
             if (!maxAmount) {
-                assert(totalAmount <= plan.availableAmount);
                 plan.amount = input.amount;
                 plan.fee = 0;
                 plan.change = plan.availableAmount - totalAmount;
@@ -158,6 +167,16 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
                 plan.change = 0;
             }
             plan.fee = estimateSegwitFee(feeCalculator, plan, output_size, input);
+
+            // `InputSelector` has a rough segwit fee estimation algorithm,
+            // so the fee could be increased or decreased (see `InputSelector::select`).
+            // We need to make sure if we have enough UTXOs to cover "requested amount + final fee".
+            if (!maxAmount && plan.availableAmount < plan.fee + plan.amount) {
+                TransactionPlan errorPlan;
+                errorPlan.error = Common::Proto::Error_not_enough_utxos;
+                return errorPlan;
+            }
+
             // If fee is larger than availableAmount (can happen in special maxAmount case), we reduce it (and hope it will go through)
             plan.fee = std::min(plan.availableAmount, plan.fee);
             assert(plan.fee >= 0 && plan.fee <= plan.availableAmount);
@@ -175,13 +194,28 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
             // The total amount that will be spent.
             Amount totalSpendAmount = plan.amount + input.extraOutputsAmount + plan.fee;
 
+            // Make sure that the output amount is greater or at least equal to the dust threshold.
+            if (plan.amount < dustThreshold) {
+                TransactionPlan errorPlan;
+                errorPlan.error = maxAmount ? Common::Proto::Error_not_enough_utxos : Common::Proto::Error_dust_amount_requested;
+                return errorPlan;
+            }
+
             // Make sure that we have enough available UTXOs to spend `fee`, `amount` and `extraOutputsAmount`.
             if (plan.availableAmount < totalSpendAmount) {
-                plan.amount = 0;
-                plan.error = Common::Proto::Error_not_enough_utxos;
+                TransactionPlan errorPlan;
+                errorPlan.error = Common::Proto::Error_not_enough_utxos;
+                return errorPlan;
+            }
+
+            auto changeAmount = plan.availableAmount - totalSpendAmount;
+            // Compute change if it's not dust.
+            if (changeAmount >= dustThreshold) {
+                plan.change = changeAmount;
             } else {
-                // compute change
-                plan.change = plan.availableAmount - totalSpendAmount;
+                // Spend the change as tx fee if it's dust, otherwise the transaction won't be mined.
+                plan.change = 0;
+                plan.fee += changeAmount;
             }
         }
     }
