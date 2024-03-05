@@ -64,6 +64,10 @@ class Script {
     /// Matches the script to a pay-to-public-key-hash (P2PKH).
     bool matchPayToPublicKeyHash(Data& keyHash) const;
 
+    /// Matches the script to a pay-to-exchange-public-key-hash (P2PKH).
+    /// Only apply for firo
+    bool matchPayToExchangePublicKeyHash(Data& keyHash) const;
+
     /// Matches the script to a pay-to-public-key-hash-replay (P2PKH).
     /// Only apply for zen
     bool matchPayToPublicKeyHashReplay(Data& keyHash) const;
@@ -89,6 +93,10 @@ class Script {
 
     /// Builds a pay-to-public-key-hash (P2PKH) script from a public key hash.
     static Script buildPayToPublicKeyHash(const Data& hash);
+
+    /// Builds a pay-to-exchange-public-key-hash script from a public key hash.
+    /// This will apply for firo.
+    static Script buildPayToExchangePublicKeyHash(const Data& hash);
 
     /// Builds a pay-to-public-key-hash-replay (P2PKH) script from a public key hash.
     /// This will apply for zen
