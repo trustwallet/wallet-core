@@ -127,7 +127,7 @@ struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKeyFilecoinAddressType
 /// \param publicKey derivates the address from the public key.
 /// \return TWAnyAddress pointer or nullptr if public key is invalid.
 TW_EXPORT_STATIC_METHOD
-struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKeyFiroAddressType(struct TWPublicKey* _Nonnull publicKey);
+struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKeyFiroExchangeAddress(struct TWPublicKey* _Nonnull publicKey);
 
 /// Deletes an address.
 ///
