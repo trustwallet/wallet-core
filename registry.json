@@ -1363,12 +1363,6 @@
         "path": "m/44'/136'/0'/0/0",
         "xpub": "xpub",
         "xprv": "xprv"
-      },
-      {
-        "name": "exchange",
-        "path": "m/44'/136'/0'/0/0",
-        "xpub": "xpub",
-        "xprv": "xprv"
       }
     ],
     "curve": "secp256k1",

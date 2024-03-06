@@ -99,12 +99,10 @@ std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW
         return ECashAddress(publicKey).string();
 
     case TWCoinTypeFiro:
-        switch (derivation) {
-            case TWDerivationFiroExchange:
-                return ExchangeAddress(publicKey).string();
-            default:
-                return Address(publicKey, p2pkh).string();
+        if (std::get_if<ExchangePrefix>(&addressPrefix)) {
+            return ExchangeAddress(publicKey).string();
         }
+        return Address(publicKey, p2pkh).string();
 
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:

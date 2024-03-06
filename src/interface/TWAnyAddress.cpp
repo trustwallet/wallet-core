@@ -90,6 +90,10 @@ struct TWAnyAddress* TWAnyAddressCreateWithPublicKeyFilecoinAddressType(struct T
     return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, TWCoinTypeFilecoin, TWDerivationDefault, prefix)};
 }
 
+struct TWAnyAddress* TWAnyAddressCreateWithPublicKeyFiroExchangeAddress(struct TWPublicKey* _Nonnull publicKey) {
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, TWCoinTypeFiro, TWDerivationDefault, TW::ExchangePrefix())};
+}
+
 void TWAnyAddressDelete(struct TWAnyAddress* _Nonnull address) {
     delete address->impl;
     delete address;

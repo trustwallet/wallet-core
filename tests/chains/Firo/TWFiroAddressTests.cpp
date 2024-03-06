@@ -36,7 +36,7 @@ TEST(TWZCoin, ExchangeAddress_CreateWithString) {
 
 TEST(TWZCoin, ExchangeAddress_DeriveFromPublicKey) {
     auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(DATA("034cc1963365aa67d35643f419d6601eca6ef7f62e46bf7f8b6ffa64e2f44fd0bf").get(), TWPublicKeyTypeSECP256k1));
-    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(publicKey.get(), TWCoinTypeFiro, TWDerivationFiroExchange));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyFiroExchangeAddress(publicKey.get()));
     auto addressDesc = WRAPS(TWAnyAddressDescription(address.get()));
     assertStringsEqual(addressDesc, "EXXWKhUtcaFKVW1NeRFuqPq33zAJMtQJwR4y");
 }
