@@ -1,6 +1,8 @@
 use crate::modules::signer::Signer;
 use crate::{Error, Result};
 use bitcoin::address::NetworkChecked;
+use tw_utxo::sighash_computer::SighashComputer;
+use tw_utxo::utxo_selector::SelectionBuilder;
 use std::borrow::Cow;
 use std::fmt::Display;
 use std::str::FromStr;
@@ -22,8 +24,10 @@ use tw_proto::BitcoinV2::Proto::{self, mod_Output};
 use tw_proto::Utxo::Proto as UtxoProto;
 use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
 use tw_utxo::script::Script;
-use tw_utxo::transaction::standard_transaction::builder::{OutputBuilder, UtxoBuilder};
+use tw_utxo::transaction::standard_transaction::builder::{OutputBuilder, TransactionBuilder, UtxoBuilder};
 use wallet_core_rs::tw_hash::H256;
+
+type X = tw_proto::Utxo::Proto::mod_LockTime;
 
 pub struct Address(pub bitcoin::address::Address<NetworkChecked>);
 
@@ -132,7 +136,9 @@ impl BitcoinEntry {
     ) -> Result<Proto::PreSigningOutput<'static>> {
         let proto = pre_processor(proto);
 
-        let mut utxo_inputs = vec![];
+        // Construct the transaction.
+        let mut builder = TransactionBuilder::new();
+
         for input in proto.inputs {
             let (utxo, arg) = match input.to_recipient {
                 Proto::mod_Input::OneOfto_recipient::builder(builder) => {
@@ -202,7 +208,8 @@ impl BitcoinEntry {
                 Proto::mod_Input::OneOfto_recipient::None => todo!(),
             };
 
-            utxo_inputs.push((utxo, arg));
+            // Add input to builder.
+            builder.push_input(utxo, arg);
         }
 
         for output in proto.outputs {
@@ -273,7 +280,25 @@ impl BitcoinEntry {
                 },
                 _ => todo!(),
             };
+
+            // Add output to builder
+            builder.push_output(out);
         }
+
+        // Build the transaction.
+        let (tx, tx_args) = builder.build();
+
+        // Select the UTXOs required for the transaction, depending on outputs
+        // and calculated fee.
+        let mut dummy_claims = vec![]; // TODO
+        let (tx, tx_args) = SelectionBuilder::new(tx, tx_args)
+            .compile(dummy_claims)
+            .unwrap()
+            .select_inputs(tw_utxo::utxo_selector::InputSelector::Ascending, 0)
+            .unwrap();
+
+        let computer = SighashComputer::new(tx, tx_args);
+        let preiamge = computer.preimage_tx().unwrap();
 
         /*
         Ok(Proto::PreSigningOutput {
