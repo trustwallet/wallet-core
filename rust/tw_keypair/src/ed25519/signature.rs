@@ -84,10 +84,11 @@ fn get_scalar(bytes: H256) -> KeyPairResult<Scalar> {
     // This succeed-fast trick should succeed for roughly half of all scalars.
     let last_byte = bytes.last().expect("H256 is exactly 32 length");
     if last_byte & SIGNIFICANT_BITS_MASK == 0 {
+        #[allow(deprecated)]
         return Ok(Scalar::from_bits(bytes.take()));
     }
 
-    match Scalar::from_canonical_bytes(bytes.take()) {
+    match Scalar::from_canonical_bytes(bytes.take()).into() {
         Some(x) => Ok(x),
         None => Err(KeyPairError::InvalidSignature),
     }
