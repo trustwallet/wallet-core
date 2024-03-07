@@ -83,7 +83,6 @@ fn build_tx_input_selection() {
 
         // Build the spending script.
         let claim = SpendingScriptBuilder::new()
-            .sighash_ty(SighashType::new(SighashBase::All))
             .p2pkh(dummy_sig, alice_pubkey.clone())
             .unwrap();
 

@@ -1,7 +1,7 @@
 use crate::{
-    error::{UtxoError, UtxoErrorKind, UtxoResult},
+    error::UtxoResult,
     script::{standard_script::claims, Script, Witness},
-    sighash::{BitcoinEcdsaSignature, BitcoinSchnorrSignature, SighashType},
+    sighash::{BitcoinEcdsaSignature, BitcoinSchnorrSignature, SighashBase, SighashType},
     sighash_computer::SpendingData,
     transaction::asset::brc20::{BRC20TransferInscription, Brc20Ticker},
 };
@@ -11,28 +11,22 @@ use tw_keypair::{ecdsa, schnorr, tw};
 use tw_misc::traits::ToBytesVec;
 
 pub struct SpendingScriptBuilder {
-    sighash_ty: Option<SighashType>,
+    sighash_ty: SighashType,
 }
 
 impl SpendingScriptBuilder {
     pub fn new() -> Self {
-        SpendingScriptBuilder { sighash_ty: None }
+        SpendingScriptBuilder { sighash_ty: SighashType::new(SighashBase::All) }
     }
     pub fn sighash_ty(mut self, sighash_ty: SighashType) -> Self {
-        self.sighash_ty = Some(sighash_ty);
+        self.sighash_ty = sighash_ty;
         self
     }
-    pub fn custom_script_sig(script_sig: Script) -> UtxoResult<SpendingData> {
-        Ok(SpendingData {
-            script_sig,
-            witness: Witness::default(),
-        })
-    }
-    pub fn custom_witness(witness: Witness) -> UtxoResult<SpendingData> {
-        Ok(SpendingData {
-            script_sig: Script::default(),
-            witness,
-        })
+    pub fn custom_script_sig_witness(script_sig: Option<Script>, witness: Option<Witness>) -> SpendingData {
+        SpendingData {
+            script_sig: script_sig.unwrap_or_default(),
+            witness: witness.unwrap_or_default(),
+        }
     }
     pub fn p2pkh(
         self,
@@ -42,8 +36,7 @@ impl SpendingScriptBuilder {
         // TODO: Check unwrap
         let sig = BitcoinEcdsaSignature::new(
             sig.to_der().unwrap(),
-            self.sighash_ty
-                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+            self.sighash_ty,
         )
         .unwrap();
 
@@ -68,8 +61,7 @@ impl SpendingScriptBuilder {
         // TODO: Check unwrap
         let sig = BitcoinEcdsaSignature::new(
             sig.to_der().unwrap(),
-            self.sighash_ty
-                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+            self.sighash_ty,
         )
         .unwrap();
 
@@ -89,8 +81,7 @@ impl SpendingScriptBuilder {
     pub fn p2tr_key_path(self, sig: schnorr::Signature) -> UtxoResult<SpendingData> {
         let sig = BitcoinSchnorrSignature::new(
             sig,
-            self.sighash_ty
-                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+            self.sighash_ty,
         )
         .unwrap();
 
@@ -109,8 +100,7 @@ impl SpendingScriptBuilder {
     ) -> UtxoResult<SpendingData> {
         let sig = BitcoinSchnorrSignature::new(
             sig,
-            self.sighash_ty
-                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+            self.sighash_ty,
         )
         .unwrap();
 
@@ -130,8 +120,7 @@ impl SpendingScriptBuilder {
     ) -> UtxoResult<SpendingData> {
         let sig = BitcoinSchnorrSignature::new(
             sig,
-            self.sighash_ty
-                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+            self.sighash_ty,
         )
         .unwrap();
 
