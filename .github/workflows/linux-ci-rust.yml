@@ -125,7 +125,7 @@ jobs:
 
       - name: Compile release binaries
         run: |
-          mkdir -p build/local
+          mkdir -p build/local/lib
           source emsdk/emsdk_env.sh
           tools/rust-bindgen
 
