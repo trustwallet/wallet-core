@@ -167,5 +167,4 @@ jobs:
           comment-author: 'github-actions[bot]'
           edit-mode: replace
           body: "Test comment"
-          token:
 #          body-path: 'report-diff.md'
