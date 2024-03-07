@@ -94,7 +94,7 @@ jobs:
       contents: read
       pull-requests: write
     runs-on: macos-latest-xlarge
-#    if: github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v3
       - name: Install system dependencies
