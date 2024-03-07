@@ -100,13 +100,13 @@ jobs:
         run: tools/rust-test wasm
 
   check-binary-sizes:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest-xlarge
 #    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v3
       - name: Install system dependencies
         run: |
-          tools/install-sys-dependencies-linux
+          tools/install-sys-dependencies-macos
 
       - name: Run sccache-cache
         uses: mozilla-actions/sccache-action@v0.0.3
@@ -124,7 +124,9 @@ jobs:
         run: tools/install-wasm-dependencies
 
       - name: Compile release binaries
-        run: tools/rust-bindgen
+        run: |
+          source emsdk/emsdk_env.sh
+          tools/rust-bindgen
 
       - name: Generate release report
         run: |
