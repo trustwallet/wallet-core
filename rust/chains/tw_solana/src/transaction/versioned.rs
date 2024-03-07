@@ -4,9 +4,9 @@
 
 //! Source code: https://github.com/solana-labs/solana/blob/a16f982169eb197fad0eb8c58c307fb069f69d8f/sdk/program/src/message/versions/mod.rs
 
-use crate::transaction::{
-    legacy, short_vec, v0, CompiledInstruction, MessageHeader, Pubkey, Signature,
-};
+use crate::address::SolanaAddress;
+use crate::blockhash::Blockhash;
+use crate::transaction::{legacy, short_vec, v0, CompiledInstruction, MessageHeader, Signature};
 use serde::de::{SeqAccess, Unexpected, Visitor};
 use serde::ser::SerializeTuple;
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
@@ -28,10 +28,11 @@ pub struct VersionedTransaction {
 }
 
 impl VersionedTransaction {
-    /// Fill the signatures up with zeroed signatures
-    /// (same number of signatures as [`VersionedTransaction::num_required_signatures`]).
-    pub fn zeroize_signatures(&mut self) {
-        self.signatures = vec![Signature::default(); self.message.num_required_signatures()];
+    pub fn unsigned(message: VersionedMessage) -> VersionedTransaction {
+        VersionedTransaction {
+            signatures: vec![Signature::default(); message.num_required_signatures()],
+            message,
+        }
     }
 }
 
@@ -50,6 +51,34 @@ pub enum VersionedMessage {
 }
 
 impl VersionedMessage {
+    pub fn header(&self) -> &MessageHeader {
+        match self {
+            VersionedMessage::Legacy(legacy) => &legacy.header,
+            VersionedMessage::V0(v0) => &v0.header,
+        }
+    }
+
+    pub fn account_keys(&self) -> &[SolanaAddress] {
+        match self {
+            VersionedMessage::Legacy(legacy) => &legacy.account_keys,
+            VersionedMessage::V0(v0) => &v0.account_keys,
+        }
+    }
+
+    pub fn recent_blockhash(&self) -> Blockhash {
+        match self {
+            VersionedMessage::Legacy(legacy) => Blockhash::with_bytes(legacy.recent_blockhash),
+            VersionedMessage::V0(v0) => Blockhash::with_bytes(v0.recent_blockhash),
+        }
+    }
+
+    pub fn instructions(&self) -> &[CompiledInstruction] {
+        match self {
+            VersionedMessage::Legacy(legacy) => &legacy.instructions,
+            VersionedMessage::V0(v0) => &v0.instructions,
+        }
+    }
+
     pub fn num_required_signatures(&self) -> usize {
         match self {
             VersionedMessage::Legacy(legacy) => legacy.header.num_required_signatures as usize,
@@ -57,12 +86,12 @@ impl VersionedMessage {
         }
     }
 
-    pub fn get_account_index(&self, account_pubkey: Pubkey) -> Option<usize> {
+    pub fn get_account_index(&self, account: SolanaAddress) -> Option<usize> {
         let account_keys = match self {
             VersionedMessage::Legacy(legacy) => &legacy.account_keys,
             VersionedMessage::V0(v0) => &v0.account_keys,
         };
-        account_keys.iter().position(|pk| *pk == account_pubkey)
+        account_keys.iter().position(|pk| *pk == account)
     }
 
     pub fn set_recent_blockhash(&mut self, recent_blockhash: H256) {
@@ -165,7 +194,7 @@ impl<'de> Deserialize<'de> for VersionedMessage {
                             pub num_readonly_signed_accounts: u8,
                             pub num_readonly_unsigned_accounts: u8,
                             #[serde(with = "short_vec")]
-                            pub account_keys: Vec<Pubkey>,
+                            pub account_keys: Vec<SolanaAddress>,
                             #[serde(with = "as_byte_sequence")]
                             pub recent_blockhash: H256,
                             #[serde(with = "short_vec")]

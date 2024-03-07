@@ -8,10 +8,11 @@ name = "wallet_core_rs"
 crate-type = ["staticlib", "rlib"] # Creates static lib
 
 [features]
-default = ["bitcoin-legacy", "ethereum-abi", "ethereum-rlp", "solana-transaction"]
+default = ["bitcoin-legacy", "ethereum-abi", "ethereum-rlp", "solana-address", "solana-transaction"]
 bitcoin-legacy = []
 ethereum-abi = []
 ethereum-rlp = []
+solana-address = []
 solana-transaction = []
 
 [dependencies]

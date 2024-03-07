@@ -6,7 +6,6 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "Solana/Address.h"
-#include "Solana/Program.h"
 
 #include <gtest/gtest.h>
 
@@ -64,16 +63,6 @@ TEST(SolanaAddress, isValidOnCurve) {
     EXPECT_FALSE(PublicKey(Base58::decode("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP"), TWPublicKeyTypeED25519).isValidED25519());
     EXPECT_FALSE(PublicKey(Base58::decode("ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf"), TWPublicKeyTypeED25519).isValidED25519());
     EXPECT_FALSE(PublicKey(Base58::decode("AbygL37RheNZv327cMvZPqKYLLkZ6wqWYexRxgNiZyeP"), TWPublicKeyTypeED25519).isValidED25519());
-}
-
-TEST(SolanaAddress, defaultTokenAddress) {
-    const Address serumToken = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
-    EXPECT_EQ(Address("HBYC51YrGFAZ8rM7Sj8e9uqKggpSrDYrinQDZzvMtqQp").defaultTokenAddress(serumToken).string(),
-              "6X4X1Ae24mkoWeCEpktevySVG9jzeCufut5vtUW3wFrD");
-    EXPECT_EQ(Address("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V").defaultTokenAddress(serumToken).string(),
-              "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
-    EXPECT_EQ(Address("Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ").defaultTokenAddress(serumToken).string(),
-              "ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf");
 }
 
 } // namespace TW::Solana::tests
