@@ -125,7 +125,8 @@ impl TransactionInterface for Transaction {
 
 impl Transaction {
     pub fn txid(&self) -> Vec<u8> {
-        todo!()
+        // TODO
+        vec![]
     }
     /// Returns the same transaction with [`TransactionInput::script_witness`] being empty.
     /// TODO: Why?

@@ -332,13 +332,29 @@ impl BitcoinEntry {
         // Build the transaction.
         let (tx, tx_args) = builder.build();
 
+        dbg!(&tx, &tx_args.utxos_to_sign);
+
         // Select the UTXOs required for the transaction, depending on outputs
         // and calculated fee.
-        let (tx, tx_args) = SelectionBuilder::new(tx, tx_args)
+        let selector = SelectionBuilder::new(tx, tx_args)
             .compile(dummy_claims)
-            .unwrap()
-            .select_inputs(tw_utxo::utxo_selector::InputSelector::Ascending, 0)
             .unwrap();
+
+        let (tx, tx_args) = if proto.disable_change_output {
+            selector
+                .select_inputs_do_not_set_change(
+                    tw_utxo::utxo_selector::InputSelector::UseAll,
+                    proto.fee_per_vb as i64,
+                )
+                .unwrap()
+        } else {
+            selector
+                .select_inputs(
+                    tw_utxo::utxo_selector::InputSelector::Ascending,
+                    proto.fee_per_vb as i64,
+                )
+                .unwrap()
+        };
 
         let computer = SighashComputer::new(tx, tx_args);
         let preiamge = computer.preimage_tx().unwrap();
@@ -397,7 +413,7 @@ impl BitcoinEntry {
             utxo_inputs: proto_inputs,
             utxo_outputs,
             weight_estimate: tx.weight() as u64,
-            fee_estimate: tx.fee(10) as u64, // TODO
+            fee_estimate: tx.fee(proto.fee_per_vb as i64) as u64, // TODO
         })
     }
 
