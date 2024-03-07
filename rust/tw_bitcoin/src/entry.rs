@@ -1,8 +1,6 @@
 use crate::modules::signer::Signer;
 use crate::{Error, Result};
 use bitcoin::address::NetworkChecked;
-use tw_utxo::sighash_computer::SighashComputer;
-use tw_utxo::utxo_selector::SelectionBuilder;
 use std::borrow::Cow;
 use std::fmt::Display;
 use std::str::FromStr;
@@ -15,6 +13,7 @@ use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_coin_entry::signing_output_error;
+use tw_hash::H256;
 use tw_keypair::tw::PublicKey;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto::mod_Input::mod_InputBuilder::OneOfvariant;
@@ -24,10 +23,13 @@ use tw_proto::BitcoinV2::Proto::{self, mod_Output};
 use tw_proto::Utxo::Proto as UtxoProto;
 use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
 use tw_utxo::script::Script;
-use tw_utxo::transaction::standard_transaction::builder::{OutputBuilder, TransactionBuilder, UtxoBuilder};
-use wallet_core_rs::tw_hash::H256;
-
-type X = tw_proto::Utxo::Proto::mod_LockTime;
+use tw_utxo::sighash_computer::SighashComputer;
+use tw_utxo::signing_mode::SigningMethod;
+use tw_utxo::transaction::standard_transaction::builder::{
+    OutputBuilder, TransactionBuilder, UtxoBuilder,
+};
+use tw_utxo::transaction::transaction_fee::TransactionFee;
+use tw_utxo::utxo_selector::SelectionBuilder;
 
 pub struct Address(pub bitcoin::address::Address<NetworkChecked>);
 
@@ -209,7 +211,7 @@ impl BitcoinEntry {
             };
 
             // Add input to builder.
-            builder.push_input(utxo, arg);
+            builder = builder.push_input(utxo, arg);
         }
 
         for output in proto.outputs {
@@ -282,7 +284,7 @@ impl BitcoinEntry {
             };
 
             // Add output to builder
-            builder.push_output(out);
+            builder = builder.push_output(out);
         }
 
         // Build the transaction.
@@ -299,21 +301,63 @@ impl BitcoinEntry {
 
         let computer = SighashComputer::new(tx, tx_args);
         let preiamge = computer.preimage_tx().unwrap();
+        let (tx, tx_args) = computer.into_transaction();
 
-        /*
+        let mut proto_inputs = vec![];
+        for (input, arg) in tx.inputs.iter().zip(tx_args.utxos_to_sign.iter()) {
+            let signing_method = match arg.signing_method {
+                SigningMethod::Legacy => UtxoProto::SigningMethod::Legacy,
+                SigningMethod::Segwit => UtxoProto::SigningMethod::Segwit,
+                SigningMethod::TaprootAll => UtxoProto::SigningMethod::TaprootAll,
+                SigningMethod::TaprootOnePrevout => UtxoProto::SigningMethod::TaprootOnePrevout,
+            };
+
+            proto_inputs.push(UtxoProto::TxIn {
+                txid: input.previous_output.hash.to_vec().into(),
+                vout: input.previous_output.index,
+                value: arg.amount as u64,
+                sequence: input.sequence,
+                script_pubkey: arg.script_pubkey.as_data().to_vec().into(),
+                sighash_type: UtxoProto::SighashType::All, // TODO
+                signing_method,
+                weight_estimate: input.weight() as u64,
+                leaf_hash: arg
+                    .leaf_hash_code_separator
+                    .map(|(hash, _)| hash.to_vec().into())
+                    .unwrap_or_default(),
+            });
+        }
+
+        let mut utxo_outputs = vec![];
+        // TODO
+
+        let mut proto_sighashes = vec![];
+        for sighash in preiamge.sighashes {
+            let signing_method = match sighash.signing_method {
+                SigningMethod::Legacy => UtxoProto::SigningMethod::Legacy,
+                SigningMethod::Segwit => UtxoProto::SigningMethod::Segwit,
+                SigningMethod::TaprootAll => UtxoProto::SigningMethod::TaprootAll,
+                SigningMethod::TaprootOnePrevout => UtxoProto::SigningMethod::TaprootOnePrevout,
+            };
+
+            proto_sighashes.push(UtxoProto::Sighash {
+                sighash: sighash.sighash.into(),
+                signing_method,
+                sighash_type: UtxoProto::SighashType::All, // TODO
+            });
+        }
+
         Ok(Proto::PreSigningOutput {
             error: Proto::Error::OK,
             error_message: Default::default(),
-            txid: utxo_presigning.txid,
-            sighashes: utxo_presigning.sighashes,
+            txid: tx.txid().into(),
+            sighashes: proto_sighashes,
             // Update selected inputs.
-            utxo_inputs: utxo_presigning.inputs,
+            utxo_inputs: proto_inputs,
             utxo_outputs,
-            weight_estimate: utxo_presigning.weight_estimate,
-            fee_estimate: utxo_presigning.fee_estimate,
+            weight_estimate: tx.weight() as u64,
+            fee_estimate: tx.fee(10) as u64, // TODO
         })
-        */
-        todo!()
     }
 
     pub(crate) fn compile_impl(

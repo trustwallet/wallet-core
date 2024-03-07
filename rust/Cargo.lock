@@ -1760,6 +1760,7 @@ dependencies = [
  "serde_json",
  "tw_coin_entry",
  "tw_encoding",
+ "tw_hash",
  "tw_keypair",
  "tw_memory",
  "tw_misc",

@@ -124,6 +124,9 @@ impl TransactionInterface for Transaction {
 }
 
 impl Transaction {
+    pub fn txid(&self) -> Vec<u8> {
+        todo!()
+    }
     /// Returns the same transaction with [`TransactionInput::script_witness`] being empty.
     /// TODO: Why?
     pub fn without_witness(&self) -> Transaction {
@@ -228,13 +231,13 @@ impl TransactionPreimage for Transaction {
 pub struct TransactionInput {
     /// Reference to the previous transaction's output.
     pub previous_output: OutPoint,
-    /// Computational Script for confirming transaction authorization.
-    pub script_sig: Script,
     /// Transaction version as defined by the sender.
     ///
     /// Intended for "replacement" of transactions when information is updated
     /// before inclusion into a block.
     pub sequence: u32,
+    /// Computational Script for confirming transaction authorization.
+    pub script_sig: Script,
     /// Witness stack.
     pub witness: Witness,
 }
