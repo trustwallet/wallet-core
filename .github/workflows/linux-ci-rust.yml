@@ -102,7 +102,7 @@ jobs:
   check-binary-sizes:
     permissions:
       contents: read
-      checks: write
+      pull-requests: write
     runs-on: macos-latest-xlarge
 #    if: github.event.pull_request.draft == false
     steps:
