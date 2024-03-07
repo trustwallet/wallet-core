@@ -256,19 +256,29 @@ impl BitcoinEntry {
             };
         }
 
+        let mut utxo_outputs = vec![];
+
         for output in proto.outputs {
-            let out = match output.to_recipient {
-                Proto::mod_Output::OneOfto_recipient::builder(builder) => match builder.variant {
+            match output.to_recipient {
+                Proto::mod_Output::OneOfto_recipient::builder(b) => match b.variant {
                     mod_Output::mod_OutputBuilder::OneOfvariant::p2sh(_) => todo!(),
                     mod_Output::mod_OutputBuilder::OneOfvariant::p2pkh(payload) => {
                         match payload.to_address {
                             OneOfto_address::pubkey(pubkey) => {
                                 let pubkey = pubkey_from_raw(&pubkey).unwrap();
 
-                                OutputBuilder::new()
+                                let out = OutputBuilder::new()
                                     .amount(output.value as i64)
                                     .p2pkh(pubkey)
-                                    .unwrap()
+                                    .unwrap();
+
+                                utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
+                                    value: output.value,
+                                    script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                                    ..Default::default()
+                                });
+
+                                builder = builder.push_output(out);
                             },
                             OneOfto_address::hash(_) => todo!(),
                             OneOfto_address::None => todo!(),
@@ -280,10 +290,18 @@ impl BitcoinEntry {
                             OneOfto_address::pubkey(pubkey) => {
                                 let pubkey = pubkey_from_raw(&pubkey).unwrap();
 
-                                OutputBuilder::new()
+                                let out = OutputBuilder::new()
                                     .amount(output.value as i64)
                                     .p2wpkh(pubkey)
-                                    .unwrap()
+                                    .unwrap();
+
+                                utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
+                                    value: output.value,
+                                    script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                                    ..Default::default()
+                                });
+
+                                builder = builder.push_output(out);
                             },
                             OneOfto_address::hash(_) => todo!(),
                             OneOfto_address::None => todo!(),
@@ -292,19 +310,35 @@ impl BitcoinEntry {
                     mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_key_path(pubkey) => {
                         let pubkey = pubkey_from_raw(&pubkey).unwrap();
 
-                        OutputBuilder::new()
+                        let out = OutputBuilder::new()
                             .amount(output.value as i64)
                             .p2tr_key_path(pubkey)
-                            .unwrap()
+                            .unwrap();
+
+                        utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
+                            value: output.value,
+                            script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                            ..Default::default()
+                        });
+
+                        builder = builder.push_output(out);
                     },
                     mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_script_path(payload) => {
                         let pubkey = pubkey_from_raw(&payload.internal_key).unwrap();
                         let merkle_root: H256 = payload.merkle_root.as_ref().try_into().unwrap();
 
-                        OutputBuilder::new()
+                        let out = OutputBuilder::new()
                             .amount(output.value as i64)
                             .p2tr_script_path(pubkey, merkle_root)
-                            .unwrap()
+                            .unwrap();
+
+                        utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
+                            value: output.value,
+                            script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                            ..Default::default()
+                        });
+
+                        builder = builder.push_output(out);
                     },
                     mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_dangerous_assume_tweaked(
                         _,
@@ -314,19 +348,24 @@ impl BitcoinEntry {
                         let ticker = payload.ticker.to_string();
                         let value = payload.transfer_amount.to_string();
 
-                        OutputBuilder::new()
+                        let out = OutputBuilder::new()
                             .amount(output.value as i64)
                             .brc20_transfer(pubkey, ticker, value)
-                            .unwrap()
+                            .unwrap();
+
+                        utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
+                            value: output.value,
+                            script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                            ..Default::default()
+                        });
+
+                        builder = builder.push_output(out);
                     },
                     mod_Output::mod_OutputBuilder::OneOfvariant::ordinal_inscribe(_) => todo!(),
                     mod_Output::mod_OutputBuilder::OneOfvariant::None => todo!(),
                 },
                 _ => todo!(),
             };
-
-            // Add output to builder
-            builder = builder.push_output(out);
         }
 
         // Build the transaction.
@@ -384,9 +423,6 @@ impl BitcoinEntry {
                     .unwrap_or_default(),
             });
         }
-
-        let mut utxo_outputs = vec![];
-        // TODO
 
         let mut proto_sighashes = vec![];
         for sighash in preiamge.sighashes {

@@ -16,13 +16,18 @@ pub struct SpendingScriptBuilder {
 
 impl SpendingScriptBuilder {
     pub fn new() -> Self {
-        SpendingScriptBuilder { sighash_ty: SighashType::new(SighashBase::All) }
+        SpendingScriptBuilder {
+            sighash_ty: SighashType::new(SighashBase::All),
+        }
     }
     pub fn sighash_ty(mut self, sighash_ty: SighashType) -> Self {
         self.sighash_ty = sighash_ty;
         self
     }
-    pub fn custom_script_sig_witness(script_sig: Option<Script>, witness: Option<Witness>) -> SpendingData {
+    pub fn custom_script_sig_witness(
+        script_sig: Option<Script>,
+        witness: Option<Witness>,
+    ) -> SpendingData {
         SpendingData {
             script_sig: script_sig.unwrap_or_default(),
             witness: witness.unwrap_or_default(),
@@ -34,11 +39,7 @@ impl SpendingScriptBuilder {
         pubkey: tw::PublicKey,
     ) -> UtxoResult<SpendingData> {
         // TODO: Check unwrap
-        let sig = BitcoinEcdsaSignature::new(
-            sig.to_der().unwrap(),
-            self.sighash_ty,
-        )
-        .unwrap();
+        let sig = BitcoinEcdsaSignature::new(sig.to_der().unwrap(), self.sighash_ty).unwrap();
 
         let pubkey: H264 = pubkey
             .to_bytes()
@@ -59,11 +60,7 @@ impl SpendingScriptBuilder {
         pubkey: tw::PublicKey,
     ) -> UtxoResult<SpendingData> {
         // TODO: Check unwrap
-        let sig = BitcoinEcdsaSignature::new(
-            sig.to_der().unwrap(),
-            self.sighash_ty,
-        )
-        .unwrap();
+        let sig = BitcoinEcdsaSignature::new(sig.to_der().unwrap(), self.sighash_ty).unwrap();
 
         let pubkey: H264 = pubkey
             .to_bytes()
@@ -79,11 +76,7 @@ impl SpendingScriptBuilder {
         })
     }
     pub fn p2tr_key_path(self, sig: schnorr::Signature) -> UtxoResult<SpendingData> {
-        let sig = BitcoinSchnorrSignature::new(
-            sig,
-            self.sighash_ty,
-        )
-        .unwrap();
+        let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty).unwrap();
 
         let witness = claims::new_p2tr_key_path(sig.serialize());
 
@@ -98,11 +91,7 @@ impl SpendingScriptBuilder {
         payload: Script,
         control_block: Vec<u8>,
     ) -> UtxoResult<SpendingData> {
-        let sig = BitcoinSchnorrSignature::new(
-            sig,
-            self.sighash_ty,
-        )
-        .unwrap();
+        let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty).unwrap();
 
         let witness = claims::new_p2tr_script_path(sig.serialize(), payload, control_block);
 
@@ -118,11 +107,7 @@ impl SpendingScriptBuilder {
         ticker: String,
         value: String,
     ) -> UtxoResult<SpendingData> {
-        let sig = BitcoinSchnorrSignature::new(
-            sig,
-            self.sighash_ty,
-        )
-        .unwrap();
+        let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty).unwrap();
 
         let pubkey: H264 = pubkey
             .to_bytes()
