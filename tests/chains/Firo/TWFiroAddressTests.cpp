@@ -6,6 +6,7 @@
 
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWDerivation.h>
+#include <TrustWalletCore/TWFiroAddressType.h>
 #include <TrustWalletCore/TWSegwitAddress.h>
 #include <TrustWalletCore/TWBitcoinAddress.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
@@ -36,9 +37,13 @@ TEST(TWZCoin, ExchangeAddress_CreateWithString) {
 
 TEST(TWZCoin, ExchangeAddress_DeriveFromPublicKey) {
     auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(DATA("034cc1963365aa67d35643f419d6601eca6ef7f62e46bf7f8b6ffa64e2f44fd0bf").get(), TWPublicKeyTypeSECP256k1));
-    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyFiroExchangeAddress(publicKey.get()));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyFiroAddressType(publicKey.get(), TWFiroAddressTypeExchange));
     auto addressDesc = WRAPS(TWAnyAddressDescription(address.get()));
     assertStringsEqual(addressDesc, "EXXWKhUtcaFKVW1NeRFuqPq33zAJMtQJwR4y");
+
+    auto defaultAddress = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyFiroAddressType(publicKey.get(), TWFiroAddressTypeDefault));
+    auto defaultAddressDesc = WRAPS(TWAnyAddressDescription(defaultAddress.get()));
+    assertStringsEqual(defaultAddressDesc, "aGaPDQKakaqVmQXGawLMLguZoqSx6CnSfK");
 }
 
 TEST(TWZCoin, ExtendedKeys) {

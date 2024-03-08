@@ -90,8 +90,12 @@ struct TWAnyAddress* TWAnyAddressCreateWithPublicKeyFilecoinAddressType(struct T
     return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, TWCoinTypeFilecoin, TWDerivationDefault, prefix)};
 }
 
-struct TWAnyAddress* TWAnyAddressCreateWithPublicKeyFiroExchangeAddress(struct TWPublicKey* _Nonnull publicKey) {
-    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, TWCoinTypeFiro, TWDerivationDefault, TW::ExchangePrefix())};
+struct TWAnyAddress* TWAnyAddressCreateWithPublicKeyFiroAddressType(struct TWPublicKey* _Nonnull publicKey, enum TWFiroAddressType firoAddressType) {
+    TW::PrefixVariant prefix = std::monostate();
+    if (firoAddressType == TWFiroAddressTypeExchange) {
+        prefix = TW::ExchangePrefix();
+    }
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, TWCoinTypeFiro, TWDerivationDefault, prefix)};
 }
 
 void TWAnyAddressDelete(struct TWAnyAddress* _Nonnull address) {
