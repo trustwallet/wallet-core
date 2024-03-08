@@ -142,6 +142,8 @@ jobs:
           if_no_artifact_found: warn
           # Same artifact name as at the "Upload release report" step.
           name: release_report
+          # Ignore status or conclusion in the search.
+          workflow_conclusion: ""
 
       - name: Craft Comment Body
         if: github.event_name == 'pull_request'
