@@ -88,7 +88,7 @@ fn get_scalar(bytes: H256) -> KeyPairResult<Scalar> {
         return Ok(Scalar::from_bits(bytes.take()));
     }
 
-    match Scalar::from_canonical_bytes(bytes.take()).into() {
+    match Scalar::from_canonical_bytes(bytes.take()) {
         Some(x) => Ok(x),
         None => Err(KeyPairError::InvalidSignature),
     }

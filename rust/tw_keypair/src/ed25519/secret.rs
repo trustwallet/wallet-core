@@ -81,7 +81,7 @@ impl<H: Hasher512> ExpandedSecretKey<H> {
         h.update(message);
 
         let r = Scalar::from_hash(h);
-        let R = (&r * constants::ED25519_BASEPOINT_TABLE).compress();
+        let R = (&r * &constants::ED25519_BASEPOINT_TABLE).compress();
 
         h = H::new();
         h.update(R.as_bytes());
