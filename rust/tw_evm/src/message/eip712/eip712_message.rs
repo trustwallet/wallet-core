@@ -188,7 +188,7 @@ fn encode_array(
 
     // Check if the type definition actually matches the length of items to be encoded.
     if expected_len.is_some() && Some(elements.len()) != expected_len {
-        return Err(MessageSigningError::TypeValueMismatch)?;
+        return Err(MessageSigningError::TypeValueMismatch);
     }
 
     let mut encoded_items = vec![];

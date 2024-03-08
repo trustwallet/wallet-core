@@ -98,7 +98,8 @@ impl<H: Hasher512> PublicKey<H> {
     ///
     /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/public.rs#L157-L160
     fn multiply_by_basepoint_to_produce_public_key(bits: [u8; 32]) -> PublicKey<H> {
-        let point = &Scalar::from_bits(bits) * &constants::ED25519_BASEPOINT_TABLE;
+        #[allow(deprecated)]
+        let point = &Scalar::from_bits(bits) * constants::ED25519_BASEPOINT_TABLE;
         PublicKey::with_edwards_point(point)
     }
 }
