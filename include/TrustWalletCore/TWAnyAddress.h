@@ -123,9 +123,10 @@ struct TWAnyAddress* _Nonnull TWAnyAddressCreateSS58WithPublicKey(struct TWPubli
 TW_EXPORT_STATIC_METHOD
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKeyFilecoinAddressType(struct TWPublicKey* _Nonnull publicKey, enum TWFilecoinAddressType filecoinAddressType);
 
-/// Creates a Firo address from a public key.
+/// Creates a Firo address from a public key and a given address type.
 ///
 /// \param publicKey derivates the address from the public key.
+/// \param firoAddressType Firo address type.
 /// \return TWAnyAddress pointer or nullptr if public key is invalid.
 TW_EXPORT_STATIC_METHOD
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKeyFiroAddressType(struct TWPublicKey* _Nonnull publicKey, enum TWFiroAddressType firoAddressType);
