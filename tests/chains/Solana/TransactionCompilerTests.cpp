@@ -85,7 +85,7 @@ TEST(SolanaCompiler, CompileTransferWithSignatures) {
 
 TEST(SolanaCompiler, CompileTransferWithPriorityFee) {
     // tx on mainnet
-	// https://explorer.solana.com/tx/5asW13PSGvbZAeiGe8YFo7jt3UTqb8KUfFhXh5DXpDVfpVup1ZP41tp7PmBJH43gK5xT9U4VDVChDynmC7PJp9fa
+    // https://explorer.solana.com/tx/5asW13PSGvbZAeiGe8YFo7jt3UTqb8KUfFhXh5DXpDVfpVup1ZP41tp7PmBJH43gK5xT9U4VDVChDynmC7PJp9fa
 
     const auto coin = TWCoinTypeSolana;
     /// Step 1: Prepare transaction input (protobuf)
