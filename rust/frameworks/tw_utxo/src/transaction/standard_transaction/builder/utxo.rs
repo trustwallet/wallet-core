@@ -60,9 +60,6 @@ impl UtxoBuilder {
         self.input.sequence = sequence;
         self
     }
-    pub fn custom_script(self, _custom: Script) -> Self {
-        todo!()
-    }
     pub fn amount(mut self, amount: Amount) -> Self {
         self.amount = Some(amount);
         self
@@ -78,6 +75,23 @@ impl UtxoBuilder {
             .ok_or(UtxoError(UtxoErrorKind::Error_internal))?;
 
         Ok(())
+    }
+    pub fn custom_script_pubkey(
+        self,
+        script_pubkey: Script,
+        signing_method: SigningMethod,
+    ) -> UtxoResult<(TransactionInput, UtxoToSign)> {
+        Ok((
+            self.input,
+            UtxoToSign {
+                script_pubkey,
+                signing_method,
+                amount: self
+                    .amount
+                    .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+                ..Default::default()
+            },
+        ))
     }
     pub fn p2pkh(mut self, pubkey: tw::PublicKey) -> UtxoResult<(TransactionInput, UtxoToSign)> {
         let h = bitcoin_hash_160(&pubkey.to_bytes());

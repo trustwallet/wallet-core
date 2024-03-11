@@ -213,6 +213,10 @@ where
         Ok(all_valid)
     }
 
+    pub fn into_transaction(self) -> (Transaction, TxSigningArgs) {
+        (self.transaction_to_sign, self.args)
+    }
+
     /// Compiles the transaction with the given spending data.
     ///
     /// # Hint

@@ -2,13 +2,13 @@ use crate::{BitcoinEntry, Error, Result};
 use bitcoin::key::{TapTweak, TweakedKeyPair};
 use bitcoin::sighash::{EcdsaSighashType, TapSighashType};
 use secp256k1::{KeyPair, Message, Secp256k1};
-use tw_utxo::sighash;
 use std::collections::HashMap;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PrivateKeyBytes, SignatureBytes};
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
+use tw_utxo::sighash;
 
 pub struct Signer;
 

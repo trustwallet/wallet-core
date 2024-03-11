@@ -13,11 +13,25 @@ use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_coin_entry::signing_output_error;
+use tw_hash::H256;
+use tw_keypair::ecdsa::signature::Signature;
+use tw_keypair::schnorr;
 use tw_keypair::tw::PublicKey;
 use tw_misc::traits::ToBytesVec;
-use tw_proto::BitcoinV2::Proto;
+use tw_proto::BitcoinV2::Proto::mod_Input::mod_InputBuilder::OneOfvariant;
+use tw_proto::BitcoinV2::Proto::mod_Input::OneOfto_recipient;
+use tw_proto::BitcoinV2::Proto::mod_ToPublicKeyOrHash::OneOfto_address;
+use tw_proto::BitcoinV2::Proto::{self, mod_Output};
 use tw_proto::Utxo::Proto as UtxoProto;
 use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
+use tw_utxo::script::{Script, Witness};
+use tw_utxo::sighash_computer::SighashComputer;
+use tw_utxo::signing_mode::SigningMethod;
+use tw_utxo::transaction::standard_transaction::builder::{
+    OutputBuilder, SpendingScriptBuilder, TransactionBuilder, UtxoBuilder,
+};
+use tw_utxo::transaction::transaction_fee::TransactionFee;
+use tw_utxo::utxo_selector::SelectionBuilder;
 
 pub struct Address(pub bitcoin::address::Address<NetworkChecked>);
 
@@ -112,6 +126,12 @@ impl CoinEntry for BitcoinEntry {
     }
 }
 
+// TODO: Adjust error type
+fn pubkey_from_raw(pubkey: &[u8]) -> Result<PublicKey> {
+    PublicKey::new(pubkey.to_vec(), tw_keypair::tw::PublicKeyType::Secp256k1)
+        .map_err(|_| Error::from(Proto::Error::Error_internal))
+}
+
 impl BitcoinEntry {
     pub(crate) fn preimage_hashes_impl(
         &self,
@@ -120,92 +140,316 @@ impl BitcoinEntry {
     ) -> Result<Proto::PreSigningOutput<'static>> {
         let proto = pre_processor(proto);
 
-        // Convert input builders into Utxo inputs.
-        let utxo_inputs = proto
-            .inputs
-            .iter()
-            .map(crate::modules::transactions::InputBuilder::utxo_from_proto)
-            .collect::<Result<Vec<_>>>()?;
+        // Construct the transaction.
+        let mut builder = TransactionBuilder::new();
+        let mut dummy_claims = vec![]; // TODO
 
-        // Convert output builders into Utxo outputs (does not contain the change output).
-        let mut utxo_outputs = proto
-            .outputs
-            .iter()
-            .map(crate::modules::transactions::OutputBuilder::utxo_from_proto)
-            .collect::<Result<Vec<_>>>()?;
+        for input in proto.inputs {
+            match input.to_recipient {
+                Proto::mod_Input::OneOfto_recipient::builder(b) => {
+                    match b.variant {
+                        OneOfvariant::p2sh(_) => todo!(),
+                        OneOfvariant::p2pkh(pubkey) => {
+                            let pubkey = pubkey_from_raw(&pubkey).unwrap();
 
-        // If automatic change output creation is enabled (by default), a change
-        // script must be provided.
-        let change_script_pubkey = if proto.disable_change_output {
-            Cow::default()
-        } else {
-            // Convert output builder to Utxo output.
-            let output = crate::modules::transactions::OutputBuilder::utxo_from_proto(
-                &proto
-                    .change_output
-                    .ok_or_else(|| Error::from(Proto::Error::Error_invalid_change_output))?,
-            )?;
+                            let (utxo, arg) = UtxoBuilder::new()
+                                .prev_txid(input.txid.as_ref().try_into().unwrap())
+                                .prev_index(input.vout)
+                                .amount(input.value as i64) // TODO: Just use u64 to begin with?
+                                .p2pkh(pubkey.clone())
+                                .unwrap();
 
-            output.script_pubkey
-        };
+                            let sig = Signature::from_bytes(&vec![1; 65]).unwrap();
+                            let claim = SpendingScriptBuilder::new().p2pkh(sig, pubkey).unwrap();
 
-        // Prepare SigningInput for Utxo sighash generation.
-        let utxo_signing = UtxoProto::SigningInput {
-            version: proto.version,
-            lock_time: proto.lock_time,
-            inputs: utxo_inputs.clone(),
-            outputs: utxo_outputs
-                .iter()
-                .map(|output| UtxoProto::TxOut {
-                    value: output.value,
-                    script_pubkey: Cow::Borrowed(&output.script_pubkey),
-                })
-                .collect(),
-            input_selector: proto.input_selector,
-            weight_base: proto.fee_per_vb,
-            change_script_pubkey,
-            disable_change_output: proto.disable_change_output,
-        };
+                            builder = builder.push_input(utxo, arg);
+                            dummy_claims.push(claim);
+                        },
+                        OneOfvariant::p2wsh(_) => todo!(),
+                        OneOfvariant::p2wpkh(pubkey) => {
+                            let pubkey = pubkey_from_raw(&pubkey).unwrap();
 
-        // Generate the sighashes to be signed. This also selects the inputs
-        // according to the input selecter and appends a change output, if
-        // enabled.
-        let utxo_presigning = tw_utxo::compiler::Compiler::preimage_hashes(utxo_signing);
-        handle_utxo_error(&utxo_presigning.error)?;
+                            let (utxo, arg) = UtxoBuilder::new()
+                                .prev_txid(input.txid.as_ref().try_into().unwrap())
+                                .prev_index(input.vout)
+                                .amount(input.value as i64) // TODO: Just use u64 to begin with?
+                                .p2wpkh(pubkey.clone())
+                                .unwrap();
 
-        // Check whether the change output is present.
-        if !proto.disable_change_output {
-            // Change output has been added.
-            debug_assert_eq!(utxo_presigning.outputs.len(), utxo_outputs.len() + 1);
+                            let sig = Signature::from_bytes(&vec![1; 65]).unwrap();
+                            let claim = SpendingScriptBuilder::new().p2wpkh(sig, pubkey).unwrap();
 
-            let change_output = utxo_presigning
-                .outputs
-                .last()
-                .expect("expected change output");
+                            builder = builder.push_input(utxo, arg);
+                            dummy_claims.push(claim);
+                        },
+                        OneOfvariant::p2tr_key_path(payload) => {
+                            // TODO: Rename field to `pubkey`?
+                            let pubkey = pubkey_from_raw(&payload.public_key).unwrap();
 
-            // Push it to the list of outputs.
-            utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
-                value: change_output.value,
-                script_pubkey: change_output.script_pubkey.to_vec().into(),
-                control_block: Default::default(),
-                taproot_payload: Default::default(),
-            })
+                            let (utxo, arg) = UtxoBuilder::new()
+                                .prev_txid(input.txid.as_ref().try_into().unwrap())
+                                .prev_index(input.vout)
+                                .amount(input.value as i64) // TODO: Just use u64 to begin with?
+                                .p2tr_key_path(pubkey)
+                                .unwrap();
+
+                            let sig = schnorr::Signature::from_bytes(&vec![1; 64]).unwrap();
+                            let claim = SpendingScriptBuilder::new().p2tr_key_path(sig).unwrap();
+
+                            builder = builder.push_input(utxo, arg);
+                            dummy_claims.push(claim);
+                        },
+                        OneOfvariant::p2tr_script_path(_) => todo!(),
+                        OneOfvariant::brc20_inscribe(payload) => {
+                            // TODO: Rename field to `pubkey`?
+                            let pubkey = pubkey_from_raw(&payload.inscribe_to).unwrap();
+                            let ticker = payload.ticker.to_string();
+                            let value = payload.transfer_amount.to_string();
+
+                            let (utxo, arg) = UtxoBuilder::new()
+                                .prev_txid(input.txid.as_ref().try_into().unwrap())
+                                .prev_index(input.vout)
+                                .amount(input.value as i64) // TODO: Just use u64 to begin with?
+                                .brc20_transfer(pubkey.clone(), ticker.clone(), value.clone())
+                                .unwrap();
+
+                            let sig = schnorr::Signature::from_bytes(&vec![1; 64]).unwrap();
+                            let claim = SpendingScriptBuilder::new()
+                                .brc20_transfer(sig, pubkey, ticker, value)
+                                .unwrap();
+
+                            builder = builder.push_input(utxo, arg);
+                            dummy_claims.push(claim);
+                        },
+                        OneOfvariant::ordinal_inscribe(_) => todo!(),
+                        OneOfvariant::None => todo!(),
+                    }
+                },
+                Proto::mod_Input::OneOfto_recipient::custom_script(payload) => {
+                    let script_pubkey = Script::from(payload.script_pubkey.to_vec());
+                    let script_sig = Script::from(payload.script_sig.to_vec());
+                    let mut witness = Witness::new();
+                    for item in payload.witness_items {
+                        witness.push_item(Script::from(item.to_vec()));
+                    }
+
+                    let (utxo, arg) = UtxoBuilder::new()
+                        .prev_txid(input.txid.as_ref().try_into().unwrap())
+                        .prev_index(input.vout)
+                        .amount(input.value as i64) // TODO: Just use u64 to begin with?
+                        // TODO: Signing method:
+                        .custom_script_pubkey(
+                            script_pubkey,
+                            tw_utxo::signing_mode::SigningMethod::Legacy,
+                        )
+                        .unwrap();
+
+                    let claim = SpendingScriptBuilder::custom_script_sig_witness(
+                        Some(script_sig),
+                        Some(witness),
+                    );
+
+                    builder = builder.push_input(utxo, arg);
+                    dummy_claims.push(claim);
+                },
+                Proto::mod_Input::OneOfto_recipient::None => todo!(),
+            };
         }
 
-        // Sanity check.
-        debug_assert!(utxo_presigning.inputs.len() <= proto.inputs.len());
-        debug_assert_eq!(utxo_presigning.outputs.len(), utxo_outputs.len());
+        let mut utxo_outputs = vec![];
+
+        for output in proto.outputs {
+            match output.to_recipient {
+                Proto::mod_Output::OneOfto_recipient::builder(b) => match b.variant {
+                    mod_Output::mod_OutputBuilder::OneOfvariant::p2sh(_) => todo!(),
+                    mod_Output::mod_OutputBuilder::OneOfvariant::p2pkh(payload) => {
+                        match payload.to_address {
+                            OneOfto_address::pubkey(pubkey) => {
+                                let pubkey = pubkey_from_raw(&pubkey).unwrap();
+
+                                let out = OutputBuilder::new()
+                                    .amount(output.value as i64)
+                                    .p2pkh(pubkey)
+                                    .unwrap();
+
+                                utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
+                                    value: output.value,
+                                    script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                                    ..Default::default()
+                                });
+
+                                builder = builder.push_output(out);
+                            },
+                            OneOfto_address::hash(_) => todo!(),
+                            OneOfto_address::None => todo!(),
+                        }
+                    },
+                    mod_Output::mod_OutputBuilder::OneOfvariant::p2wsh(_) => todo!(),
+                    mod_Output::mod_OutputBuilder::OneOfvariant::p2wpkh(payload) => {
+                        match payload.to_address {
+                            OneOfto_address::pubkey(pubkey) => {
+                                let pubkey = pubkey_from_raw(&pubkey).unwrap();
+
+                                let out = OutputBuilder::new()
+                                    .amount(output.value as i64)
+                                    .p2wpkh(pubkey)
+                                    .unwrap();
+
+                                utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
+                                    value: output.value,
+                                    script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                                    ..Default::default()
+                                });
+
+                                builder = builder.push_output(out);
+                            },
+                            OneOfto_address::hash(_) => todo!(),
+                            OneOfto_address::None => todo!(),
+                        }
+                    },
+                    mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_key_path(pubkey) => {
+                        let pubkey = pubkey_from_raw(&pubkey).unwrap();
+
+                        let out = OutputBuilder::new()
+                            .amount(output.value as i64)
+                            .p2tr_key_path(pubkey)
+                            .unwrap();
+
+                        utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
+                            value: output.value,
+                            script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                            ..Default::default()
+                        });
+
+                        builder = builder.push_output(out);
+                    },
+                    mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_script_path(payload) => {
+                        let pubkey = pubkey_from_raw(&payload.internal_key).unwrap();
+                        let merkle_root: H256 = payload.merkle_root.as_ref().try_into().unwrap();
+
+                        let out = OutputBuilder::new()
+                            .amount(output.value as i64)
+                            .p2tr_script_path(pubkey, merkle_root)
+                            .unwrap();
+
+                        utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
+                            value: output.value,
+                            script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                            ..Default::default()
+                        });
+
+                        builder = builder.push_output(out);
+                    },
+                    mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_dangerous_assume_tweaked(
+                        _,
+                    ) => todo!(),
+                    mod_Output::mod_OutputBuilder::OneOfvariant::brc20_inscribe(payload) => {
+                        let pubkey = pubkey_from_raw(&payload.inscribe_to).unwrap();
+                        let ticker = payload.ticker.to_string();
+                        let value = payload.transfer_amount.to_string();
+
+                        let out = OutputBuilder::new()
+                            .amount(output.value as i64)
+                            .brc20_transfer(pubkey, ticker, value)
+                            .unwrap();
+
+                        utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
+                            value: output.value,
+                            script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                            ..Default::default()
+                        });
+
+                        builder = builder.push_output(out);
+                    },
+                    mod_Output::mod_OutputBuilder::OneOfvariant::ordinal_inscribe(_) => todo!(),
+                    mod_Output::mod_OutputBuilder::OneOfvariant::None => todo!(),
+                },
+                _ => todo!(),
+            };
+        }
+
+        // Build the transaction.
+        let (tx, tx_args) = builder.build();
+
+        dbg!(&tx, &tx_args.utxos_to_sign);
+
+        // Select the UTXOs required for the transaction, depending on outputs
+        // and calculated fee.
+        let selector = SelectionBuilder::new(tx, tx_args)
+            .compile(dummy_claims)
+            .unwrap();
+
+        let (tx, tx_args) = if proto.disable_change_output {
+            selector
+                .select_inputs_do_not_set_change(
+                    tw_utxo::utxo_selector::InputSelector::UseAll,
+                    proto.fee_per_vb as i64,
+                )
+                .unwrap()
+        } else {
+            selector
+                .select_inputs(
+                    tw_utxo::utxo_selector::InputSelector::Ascending,
+                    proto.fee_per_vb as i64,
+                )
+                .unwrap()
+        };
+
+        let computer = SighashComputer::new(tx, tx_args);
+        let preiamge = computer.preimage_tx().unwrap();
+        let (tx, tx_args) = computer.into_transaction();
+
+        let mut proto_inputs = vec![];
+        for (input, arg) in tx.inputs.iter().zip(tx_args.utxos_to_sign.iter()) {
+            let signing_method = match arg.signing_method {
+                SigningMethod::Legacy => UtxoProto::SigningMethod::Legacy,
+                SigningMethod::Segwit => UtxoProto::SigningMethod::Segwit,
+                SigningMethod::TaprootAll => UtxoProto::SigningMethod::TaprootAll,
+                SigningMethod::TaprootOnePrevout => UtxoProto::SigningMethod::TaprootOnePrevout,
+            };
+
+            proto_inputs.push(UtxoProto::TxIn {
+                txid: input.previous_output.hash.to_vec().into(),
+                vout: input.previous_output.index,
+                value: arg.amount as u64,
+                sequence: input.sequence,
+                script_pubkey: arg.script_pubkey.as_data().to_vec().into(),
+                sighash_type: UtxoProto::SighashType::All, // TODO
+                signing_method,
+                weight_estimate: input.weight() as u64,
+                leaf_hash: arg
+                    .leaf_hash_code_separator
+                    .map(|(hash, _)| hash.to_vec().into())
+                    .unwrap_or_default(),
+            });
+        }
+
+        let mut proto_sighashes = vec![];
+        for sighash in preiamge.sighashes {
+            let signing_method = match sighash.signing_method {
+                SigningMethod::Legacy => UtxoProto::SigningMethod::Legacy,
+                SigningMethod::Segwit => UtxoProto::SigningMethod::Segwit,
+                SigningMethod::TaprootAll => UtxoProto::SigningMethod::TaprootAll,
+                SigningMethod::TaprootOnePrevout => UtxoProto::SigningMethod::TaprootOnePrevout,
+            };
+
+            proto_sighashes.push(UtxoProto::Sighash {
+                sighash: sighash.sighash.into(),
+                signing_method,
+                sighash_type: UtxoProto::SighashType::All, // TODO
+            });
+        }
 
         Ok(Proto::PreSigningOutput {
             error: Proto::Error::OK,
             error_message: Default::default(),
-            txid: utxo_presigning.txid,
-            sighashes: utxo_presigning.sighashes,
+            txid: tx.txid().into(),
+            sighashes: proto_sighashes,
             // Update selected inputs.
-            utxo_inputs: utxo_presigning.inputs,
+            utxo_inputs: proto_inputs,
             utxo_outputs,
-            weight_estimate: utxo_presigning.weight_estimate,
-            fee_estimate: utxo_presigning.fee_estimate,
+            weight_estimate: tx.weight() as u64,
+            fee_estimate: tx.fee(proto.fee_per_vb as i64) as u64, // TODO
         })
     }
 

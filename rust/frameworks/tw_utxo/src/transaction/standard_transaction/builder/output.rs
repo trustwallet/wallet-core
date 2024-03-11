@@ -1,7 +1,7 @@
 use super::TransactionOutput;
 use crate::{
     error::{UtxoError, UtxoErrorKind, UtxoResult},
-    script::standard_script::conditions,
+    script::{standard_script::conditions, Script},
     transaction::{
         asset::brc20::{BRC20TransferInscription, Brc20Ticker},
         transaction_parts::Amount,
@@ -24,6 +24,14 @@ impl OutputBuilder {
         self.amount = Some(amount);
         self
     }
+    pub fn custom_script_pubkey(&self, script_pubkey: Script) -> UtxoResult<TransactionOutput> {
+        Ok(TransactionOutput {
+            value: self
+                .amount
+                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+            script_pubkey,
+        })
+    }
     // TODO: Be more precise with PublicKey type?.
     // TODO: There should be a hash-equivalent.
     pub fn p2pkh(self, pubkey: tw::PublicKey) -> UtxoResult<TransactionOutput> {
@@ -38,6 +46,7 @@ impl OutputBuilder {
         })
     }
     // TODO: Be more precise with PublicKey type?.
+    // TODO: Afaik there's some specific condition for Segwith hashes?
     // TODO: There should be a hash-equivalent.
     pub fn p2wpkh(self, pubkey: tw::PublicKey) -> UtxoResult<TransactionOutput> {
         let h = bitcoin_hash_160(&pubkey.to_bytes());

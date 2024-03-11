@@ -15,7 +15,9 @@ use crate::transaction::TransactionPreimage;
 use std::marker::PhantomData;
 
 #[non_exhaustive]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum InputSelector {
+    UseAll,
     Ascending,
     Descending,
     InOrder,
@@ -139,9 +141,11 @@ where
             .zip(self.args.utxos_to_sign.iter())
             .collect::<Vec<_>>();
 
+        dbg!(utxos.len());
+
         // Sort the UTXOs.
         match selector {
-            InputSelector::InOrder => {
+            InputSelector::UseAll | InputSelector::InOrder => {
                 // Nothing to do.
             },
             InputSelector::Ascending => {
@@ -174,12 +178,14 @@ where
 
             // Check if the total input amount covers the total output amount
             // and the fee.
+            dbg!(total_in, total_out, tx.fee(fee_rate));
             if total_in >= total_out + tx.fee(fee_rate) {
-                // Update self with selected in UTXOs.
-                tx.replace_inputs(selected_utxo);
-
                 total_covered = true;
-                break;
+
+                // Unless we're told to use all inputs, we can stop here.
+                if InputSelector::UseAll != selector {
+                    break;
+                }
             }
         }
 
