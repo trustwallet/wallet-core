@@ -303,7 +303,7 @@ pub unsafe extern "C" fn tw_bitcoin_legacy_taproot_build_and_sign_transaction(
         };
 
         let serialized = tw_proto::serialize(&error).expect("failed to serialize error message");
-        return CByteArray::from(serialized)
+        return CByteArray::from(serialized);
     };
 
     // Serialize SigningOutput and return.

@@ -29,6 +29,11 @@ members = [
     "wallet_core_rs",
 ]
 
+[profile.release]
+strip = true
+codegen-units = 1
+panic = "abort"
+
 [profile.wasm-test]
 inherits = "release"
 # Fixes an incredibly slow compilation of `curve25519-dalek` package.

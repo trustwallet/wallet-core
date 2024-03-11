@@ -168,9 +168,9 @@ impl<'a> MessageBuilder<'a> {
 
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_advance_nonce(self.nonce_account()?, from)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .maybe_advance_nonce(self.nonce_account()?, from)
             .maybe_memo(transfer.memo.as_ref())
             .add_instruction(transfer_ix);
         Ok(builder.output())
@@ -201,9 +201,9 @@ impl<'a> MessageBuilder<'a> {
 
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_advance_nonce(self.nonce_account()?, sender)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .maybe_advance_nonce(self.nonce_account()?, sender)
             .add_instructions(deposit_ixs);
         Ok(builder.output())
     }
@@ -218,9 +218,9 @@ impl<'a> MessageBuilder<'a> {
 
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_advance_nonce(self.nonce_account()?, sender)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .maybe_advance_nonce(self.nonce_account()?, sender)
             .add_instruction(deactivate_ix);
         Ok(builder.output())
     }
@@ -241,9 +241,9 @@ impl<'a> MessageBuilder<'a> {
 
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_advance_nonce(self.nonce_account()?, sender)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .maybe_advance_nonce(self.nonce_account()?, sender)
             .add_instructions(deactivate_ixs);
         Ok(builder.output())
     }
@@ -266,9 +266,9 @@ impl<'a> MessageBuilder<'a> {
 
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_advance_nonce(self.nonce_account()?, sender)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .maybe_advance_nonce(self.nonce_account()?, sender)
             .add_instruction(withdraw_ix);
         Ok(builder.output())
     }
@@ -297,9 +297,9 @@ impl<'a> MessageBuilder<'a> {
 
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_advance_nonce(self.nonce_account()?, sender)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .maybe_advance_nonce(self.nonce_account()?, sender)
             .add_instructions(withdraw_ixs);
         Ok(builder.output())
     }
@@ -322,9 +322,9 @@ impl<'a> MessageBuilder<'a> {
         );
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_advance_nonce(self.nonce_account()?, funding_account)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .maybe_advance_nonce(self.nonce_account()?, funding_account)
             .add_instruction(instruction);
         Ok(builder.output())
     }
@@ -359,9 +359,9 @@ impl<'a> MessageBuilder<'a> {
 
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_advance_nonce(self.nonce_account()?, signer)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .maybe_advance_nonce(self.nonce_account()?, signer)
             .maybe_memo(token_transfer.memo.as_ref())
             .add_instruction(transfer_instruction);
         Ok(builder.output())
@@ -407,9 +407,9 @@ impl<'a> MessageBuilder<'a> {
 
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_advance_nonce(self.nonce_account()?, signer)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .maybe_advance_nonce(self.nonce_account()?, signer)
             .add_instruction(create_account_instruction)
             // Optional memo. Order: before transfer, as per documentation.
             .maybe_memo(create_and_transfer.memo.as_ref())
@@ -435,9 +435,9 @@ impl<'a> MessageBuilder<'a> {
 
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_advance_nonce(prev_nonce_account, signer)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .maybe_advance_nonce(prev_nonce_account, signer)
             .add_instructions(SystemInstructionBuilder::create_nonce_account(
                 signer,
                 new_nonce_account,
@@ -457,9 +457,9 @@ impl<'a> MessageBuilder<'a> {
 
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_advance_nonce(self.nonce_account()?, signer)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .maybe_advance_nonce(self.nonce_account()?, signer)
             .add_instruction(SystemInstructionBuilder::withdraw_nonce_account(
                 withdraw_from_nonce,
                 signer,
@@ -478,9 +478,9 @@ impl<'a> MessageBuilder<'a> {
 
         let mut builder = InstructionBuilder::default();
         builder
+            .maybe_advance_nonce(Some(nonce_account), signer)
             .maybe_priority_fee_price(self.priority_fee_price())
-            .maybe_priority_fee_limit(self.priority_fee_limit())
-            .maybe_advance_nonce(Some(nonce_account), signer);
+            .maybe_priority_fee_limit(self.priority_fee_limit());
         Ok(builder.output())
     }
 

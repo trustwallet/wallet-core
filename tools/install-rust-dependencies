@@ -10,6 +10,9 @@ rustup toolchain install $NIGHTLY-x86_64-apple-darwin --force-non-host
 rustup toolchain install $NIGHTLY-aarch64-apple-darwin --force-non-host
 rustup component add rust-src --toolchain $NIGHTLY-aarch64-apple-darwin
 rustup component add rust-src --toolchain $NIGHTLY-x86_64-apple-darwin
+if [[ `uname` == "Linux" ]]; then
+  rustup component add rust-src --toolchain $NIGHTLY-x86_64-unknown-linux-gnu
+fi
 
 # Android
 rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
