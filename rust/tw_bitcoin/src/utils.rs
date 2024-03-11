@@ -1,8 +1,10 @@
 use crate::{Error, Result};
+use tw_hash::H256;
 use tw_keypair::ecdsa::signature::Signature;
 use tw_keypair::schnorr;
 use tw_keypair::tw::PublicKey;
 use tw_proto::BitcoinV2::Proto::mod_Input::mod_InputBuilder::OneOfvariant;
+use tw_proto::BitcoinV2::Proto::mod_ToPublicKeyOrHash::OneOfto_address;
 use tw_proto::BitcoinV2::Proto::{self, mod_Output};
 use tw_proto::Utxo::Proto as UtxoProto;
 use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
@@ -13,7 +15,7 @@ use tw_utxo::signing_mode::SigningMethod;
 use tw_utxo::transaction::standard_transaction::builder::{
     OutputBuilder, SpendingScriptBuilder, TransactionBuilder, UtxoBuilder,
 };
-use tw_utxo::transaction::standard_transaction::TransactionInput;
+use tw_utxo::transaction::standard_transaction::{TransactionInput, TransactionOutput};
 use tw_utxo::transaction::transaction_fee::TransactionFee;
 use tw_utxo::utxo_selector::SelectionBuilder;
 
@@ -124,5 +126,120 @@ pub fn proto_input_to_native(
             Ok((utxo, arg, claim))
         },
         Proto::mod_Input::OneOfto_recipient::None => todo!(),
+    }
+}
+
+pub fn proto_output_to_native(
+    output: &Proto::Output,
+) -> Result<(
+    TransactionOutput,
+    Proto::mod_PreSigningOutput::TxOut<'static>,
+)> {
+    match &output.to_recipient {
+        Proto::mod_Output::OneOfto_recipient::builder(b) => match &b.variant {
+            mod_Output::mod_OutputBuilder::OneOfvariant::p2sh(_) => todo!(),
+            mod_Output::mod_OutputBuilder::OneOfvariant::p2pkh(payload) => {
+                match &payload.to_address {
+                    OneOfto_address::pubkey(pubkey) => {
+                        let pubkey = pubkey_from_raw(&pubkey).unwrap();
+
+                        let out = OutputBuilder::new()
+                            .amount(output.value as i64)
+                            .p2pkh(pubkey)
+                            .unwrap();
+
+                        let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                            value: output.value,
+                            script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                            ..Default::default()
+                        };
+
+                        Ok((out, tx_out))
+                    },
+                    OneOfto_address::hash(_) => todo!(),
+                    OneOfto_address::None => todo!(),
+                }
+            },
+            mod_Output::mod_OutputBuilder::OneOfvariant::p2wsh(_) => todo!(),
+            mod_Output::mod_OutputBuilder::OneOfvariant::p2wpkh(payload) => {
+                match &payload.to_address {
+                    OneOfto_address::pubkey(pubkey) => {
+                        let pubkey = pubkey_from_raw(&pubkey).unwrap();
+
+                        let out = OutputBuilder::new()
+                            .amount(output.value as i64)
+                            .p2wpkh(pubkey)
+                            .unwrap();
+
+                        let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                            value: output.value,
+                            script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                            ..Default::default()
+                        };
+
+                        Ok((out, tx_out))
+                    },
+                    OneOfto_address::hash(_) => todo!(),
+                    OneOfto_address::None => todo!(),
+                }
+            },
+            mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_key_path(pubkey) => {
+                let pubkey = pubkey_from_raw(&pubkey).unwrap();
+
+                let out = OutputBuilder::new()
+                    .amount(output.value as i64)
+                    .p2tr_key_path(pubkey)
+                    .unwrap();
+
+                let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                    value: output.value,
+                    script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                    ..Default::default()
+                };
+
+                Ok((out, tx_out))
+            },
+            mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_script_path(payload) => {
+                let pubkey = pubkey_from_raw(&payload.internal_key).unwrap();
+                let merkle_root: H256 = payload.merkle_root.as_ref().try_into().unwrap();
+
+                let out = OutputBuilder::new()
+                    .amount(output.value as i64)
+                    .p2tr_script_path(pubkey, merkle_root)
+                    .unwrap();
+
+                let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                    value: output.value,
+                    script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                    ..Default::default()
+                };
+
+                Ok((out, tx_out))
+            },
+            mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_dangerous_assume_tweaked(_) => {
+                todo!()
+            },
+            mod_Output::mod_OutputBuilder::OneOfvariant::brc20_inscribe(payload) => {
+                let pubkey = pubkey_from_raw(&payload.inscribe_to).unwrap();
+                let ticker = payload.ticker.to_string();
+                let value = payload.transfer_amount.to_string();
+
+                let out = OutputBuilder::new()
+                    .amount(output.value as i64)
+                    .brc20_transfer(pubkey, ticker, value)
+                    .unwrap();
+
+                let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                    value: output.value,
+                    script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                    ..Default::default()
+                };
+
+                Ok((out, tx_out))
+            },
+            mod_Output::mod_OutputBuilder::OneOfvariant::ordinal_inscribe(_) => todo!(),
+            mod_Output::mod_OutputBuilder::OneOfvariant::None => todo!(),
+        },
+        _ => todo!(),
     }
 }

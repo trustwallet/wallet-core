@@ -1,5 +1,5 @@
 use crate::modules::signer::Signer;
-use crate::utils::proto_input_to_native;
+use crate::utils::{proto_input_to_native, proto_output_to_native};
 use crate::{Error, Result};
 use bitcoin::address::NetworkChecked;
 use std::borrow::Cow;
@@ -145,128 +145,25 @@ impl BitcoinEntry {
         let mut builder = TransactionBuilder::new();
         let mut dummy_claims = vec![]; // TODO
 
+        // Process proto inputs.
         for input in &proto.inputs {
             let (utxo, arg, claim) = proto_input_to_native(input)?;
+
             builder = builder.push_input(utxo, arg);
             dummy_claims.push(claim);
         }
 
+        // Process proto outputs.
         let mut utxo_outputs = vec![];
-
         for output in proto.outputs {
-            match output.to_recipient {
-                Proto::mod_Output::OneOfto_recipient::builder(b) => match b.variant {
-                    mod_Output::mod_OutputBuilder::OneOfvariant::p2sh(_) => todo!(),
-                    mod_Output::mod_OutputBuilder::OneOfvariant::p2pkh(payload) => {
-                        match payload.to_address {
-                            OneOfto_address::pubkey(pubkey) => {
-                                let pubkey = pubkey_from_raw(&pubkey).unwrap();
+            let (out, tx_out) = proto_output_to_native(&output)?;
 
-                                let out = OutputBuilder::new()
-                                    .amount(output.value as i64)
-                                    .p2pkh(pubkey)
-                                    .unwrap();
-
-                                utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
-                                    value: output.value,
-                                    script_pubkey: out.script_pubkey.as_data().to_vec().into(),
-                                    ..Default::default()
-                                });
-
-                                builder = builder.push_output(out);
-                            },
-                            OneOfto_address::hash(_) => todo!(),
-                            OneOfto_address::None => todo!(),
-                        }
-                    },
-                    mod_Output::mod_OutputBuilder::OneOfvariant::p2wsh(_) => todo!(),
-                    mod_Output::mod_OutputBuilder::OneOfvariant::p2wpkh(payload) => {
-                        match payload.to_address {
-                            OneOfto_address::pubkey(pubkey) => {
-                                let pubkey = pubkey_from_raw(&pubkey).unwrap();
-
-                                let out = OutputBuilder::new()
-                                    .amount(output.value as i64)
-                                    .p2wpkh(pubkey)
-                                    .unwrap();
-
-                                utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
-                                    value: output.value,
-                                    script_pubkey: out.script_pubkey.as_data().to_vec().into(),
-                                    ..Default::default()
-                                });
-
-                                builder = builder.push_output(out);
-                            },
-                            OneOfto_address::hash(_) => todo!(),
-                            OneOfto_address::None => todo!(),
-                        }
-                    },
-                    mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_key_path(pubkey) => {
-                        let pubkey = pubkey_from_raw(&pubkey).unwrap();
-
-                        let out = OutputBuilder::new()
-                            .amount(output.value as i64)
-                            .p2tr_key_path(pubkey)
-                            .unwrap();
-
-                        utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
-                            value: output.value,
-                            script_pubkey: out.script_pubkey.as_data().to_vec().into(),
-                            ..Default::default()
-                        });
-
-                        builder = builder.push_output(out);
-                    },
-                    mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_script_path(payload) => {
-                        let pubkey = pubkey_from_raw(&payload.internal_key).unwrap();
-                        let merkle_root: H256 = payload.merkle_root.as_ref().try_into().unwrap();
-
-                        let out = OutputBuilder::new()
-                            .amount(output.value as i64)
-                            .p2tr_script_path(pubkey, merkle_root)
-                            .unwrap();
-
-                        utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
-                            value: output.value,
-                            script_pubkey: out.script_pubkey.as_data().to_vec().into(),
-                            ..Default::default()
-                        });
-
-                        builder = builder.push_output(out);
-                    },
-                    mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_dangerous_assume_tweaked(
-                        _,
-                    ) => todo!(),
-                    mod_Output::mod_OutputBuilder::OneOfvariant::brc20_inscribe(payload) => {
-                        let pubkey = pubkey_from_raw(&payload.inscribe_to).unwrap();
-                        let ticker = payload.ticker.to_string();
-                        let value = payload.transfer_amount.to_string();
-
-                        let out = OutputBuilder::new()
-                            .amount(output.value as i64)
-                            .brc20_transfer(pubkey, ticker, value)
-                            .unwrap();
-
-                        utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
-                            value: output.value,
-                            script_pubkey: out.script_pubkey.as_data().to_vec().into(),
-                            ..Default::default()
-                        });
-
-                        builder = builder.push_output(out);
-                    },
-                    mod_Output::mod_OutputBuilder::OneOfvariant::ordinal_inscribe(_) => todo!(),
-                    mod_Output::mod_OutputBuilder::OneOfvariant::None => todo!(),
-                },
-                _ => todo!(),
-            };
+            builder = builder.push_output(out);
+            utxo_outputs.push(tx_out);
         }
 
         // Build the transaction.
         let (tx, tx_args) = builder.build();
-
-        dbg!(&tx, &tx_args.utxos_to_sign);
 
         // Select the UTXOs required for the transaction, depending on outputs
         // and calculated fee.
