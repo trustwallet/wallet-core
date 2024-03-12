@@ -34,7 +34,10 @@ using SS58Prefix = uint32_t;
 /// Declare a dummy prefix to notify the entry to derive a delegated address.
 struct DelegatedPrefix {};
 
-using PrefixVariant = std::variant<Base58Prefix, Bech32Prefix, SS58Prefix, DelegatedPrefix, std::monostate>;
+/// Declare a dummy prefix to notify the entry to derive a firo exchange address.
+struct ExchangePrefix {};
+
+using PrefixVariant = std::variant<Base58Prefix, Bech32Prefix, SS58Prefix, DelegatedPrefix, ExchangePrefix, std::monostate>;
 
 /// Interface for coin-specific entry, used to dispatch calls to coins
 /// Implement this for all coins.

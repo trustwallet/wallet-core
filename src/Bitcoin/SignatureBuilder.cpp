@@ -191,7 +191,9 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
         }
         return Result<std::vector<Data>, Common::Proto::SigningError>::success({signature});
     }
-    if (script.matchPayToPublicKeyHash(data) || script.matchPayToPublicKeyHashReplay(data)) {
+    if (script.matchPayToPublicKeyHash(data)
+        || script.matchPayToPublicKeyHashReplay(data)
+        || script.matchPayToExchangePublicKeyHash(data)) {
         // obtain public key
         auto pair = keyPairForPubKeyHash(data);
         Data pubkey;
