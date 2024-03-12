@@ -2,7 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-#include "Coin.h"
 #include "HexCoding.h"
 #include "PublicKey.h"
 #include "TransactionCompiler.h"
@@ -10,10 +9,11 @@
 #include "proto/Bitcoin.pb.h"
 #include "proto/TransactionCompiler.pb.h"
 
+#include <TrustWalletCore/TWAnySigner.h>
+#include <TrustWalletCore/TWBitcoinSigHashType.h>
 #include <TrustWalletCore/TWCoinType.h>
 
 #include "Bitcoin/Script.h"
-#include "Bitcoin/TransactionPlan.h"
 
 #include "TestUtilities.h"
 #include <gtest/gtest.h>

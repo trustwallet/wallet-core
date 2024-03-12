@@ -35,13 +35,11 @@ impl SolanaCompiler {
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::PreSigningOutput<'static>> {
         let builder = MessageBuilder::new(input);
-        let signers = builder.signers()?;
         let unsigned_msg = builder.build()?;
-
         let data_to_sign = TxSigner::preimage_versioned(&unsigned_msg)?;
 
-        let signers: Vec<_> = signers
-            .iter()
+        let signers: Vec<_> = unsigned_msg
+            .signers()
             .map(|addr| Cow::from(addr.to_string().into_bytes()))
             .collect();
 
