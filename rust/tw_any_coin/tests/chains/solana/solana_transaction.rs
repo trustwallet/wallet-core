@@ -302,8 +302,6 @@ fn test_solana_decode_transaction_update_blockhash_preimage_hash_and_compile() {
     // Step 3. Pre-image hash the transaction.
 
     let input = Proto::SigningInput {
-        // There is no matching pubkey in the transaction account keys.
-        sender: SENDER_PUBLIC_KEY.into(),
         raw_message: Some(decoded_tx),
         tx_encoding: Proto::Encoding::Base64,
         ..Proto::SigningInput::default()

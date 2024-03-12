@@ -65,6 +65,16 @@ impl VersionedMessage {
         }
     }
 
+    pub fn signers(&self) -> impl Iterator<Item = &SolanaAddress> {
+        let signatures_count = self.num_required_signatures();
+        match self {
+            VersionedMessage::Legacy(legacy) => &legacy.account_keys,
+            VersionedMessage::V0(v0) => &v0.account_keys,
+        }
+        .iter()
+        .take(signatures_count)
+    }
+
     pub fn recent_blockhash(&self) -> Blockhash {
         match self {
             VersionedMessage::Legacy(legacy) => Blockhash::with_bytes(legacy.recent_blockhash),

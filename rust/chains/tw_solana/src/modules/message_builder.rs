@@ -57,22 +57,6 @@ impl<'a> MessageBuilder<'a> {
         Ok(signing_keys)
     }
 
-    pub fn signers(&self) -> SigningResult<Vec<SolanaAddress>> {
-        let mut signers = Vec::default();
-        if !self.input.fee_payer.is_empty() {
-            signers.push(SolanaAddress::from_str(self.input.fee_payer.as_ref())?);
-        }
-
-        signers.push(self.signer_address()?);
-
-        // Consider matching other transaction types if they may contain other private keys.
-        if let ProtoTransactionType::create_nonce_account(ref nonce) = self.input.transaction_type {
-            signers.push(SolanaAddress::from_str(nonce.nonce_account.as_ref())?);
-        }
-
-        Ok(signers)
-    }
-
     pub fn external_signatures(&self) -> SigningResult<PubkeySignatureMap> {
         match self.input.raw_message {
             Some(ref raw_message) => RawMessageBuilder::external_signatures(raw_message),
