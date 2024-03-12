@@ -34,7 +34,6 @@ jobs:
       - name: Cache Rust
         uses: Swatinem/rust-cache@v2
         with:
-          key: "build-and-test"
           workspaces: |
             rust
 
@@ -54,18 +53,8 @@ jobs:
 
       - name: Run tests
         run: |
-          cargo llvm-cov nextest --profile ci --no-fail-fast --lcov --output-path coverage.info
+          cargo llvm-cov test --no-fail-fast --lcov --output-path coverage.info
         working-directory: rust
-
-      - name: Rust Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        continue-on-error: true
-        with:
-          name: Rust Tests
-          path: |
-            rust/target/nextest/ci/junit.xml
-          reporter: java-junit
 
       - name: Gather and check Rust code coverage
         run: |
@@ -87,7 +76,6 @@ jobs:
       - name: Cache Rust
         uses: Swatinem/rust-cache@v2
         with:
-          key: "test-wasm"
           workspaces: |
             rust
 
@@ -100,3 +88,74 @@ jobs:
 
       - name: Run tests in WASM
         run: tools/rust-test wasm
+
+  check-binary-sizes:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: macos-latest-xlarge
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install system dependencies
+        run: |
+          tools/install-sys-dependencies-mac
+
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.3
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            rust
+
+      - name: Install Rust dependencies
+        run: tools/install-rust-dependencies
+
+      - name: Install emsdk
+        run: tools/install-wasm-dependencies
+
+      - name: Compile release binaries
+        run: |
+          mkdir -p build/local/lib
+          source emsdk/emsdk_env.sh
+          tools/rust-bindgen
+
+      - name: Generate release report
+        run: |
+          ./tools/release-size measure-rust > release-report.json
+
+      - name: Upload release report
+        uses: actions/upload-artifact@v2
+        with:
+          name: release_report
+          path: release-report.json
+
+      # Download previous release report, compare the release binary sizes, and post/update a comment at the Pull Request.
+      - name: Download previous release report
+        if: github.event_name == 'pull_request'
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          commit: ${{github.event.pull_request.base.sha}}
+          path: previous
+          if_no_artifact_found: warn
+          # Same artifact name as at the "Upload release report" step.
+          name: release_report
+          # Ignore status or conclusion in the search.
+          workflow_conclusion: ""
+
+      - name: Craft Comment Body
+        if: github.event_name == 'pull_request'
+        run: |
+          # Please note `previous/release-report.json` may not exist if the previous report was not found.
+          ./tools/release-size compare --before previous/release-report.json --current release-report.json > report-diff.md
+
+      - name: Create or Update Comment
+        uses: edumserrano/find-create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: "Binary size comparison"
+          comment-author: 'github-actions[bot]'
+          edit-mode: replace
+          body-path: 'report-diff.md'

@@ -60,6 +60,6 @@ impl Function {
 
         let signed = short_signature(&self.name, &input_param_types);
         let encoded = encode_tokens(tokens);
-        Ok(signed.into_iter().chain(encoded.into_iter()).collect())
+        Ok(signed.into_iter().chain(encoded).collect())
     }
 }

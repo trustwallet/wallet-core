@@ -190,7 +190,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
         erc4337_payload: Data,
     ) -> SigningResult<UserOperation> {
         let Some(ref user_op) = input.user_operation else {
-            return Err(SigningError(CommonError::Error_invalid_params))
+            return Err(SigningError(CommonError::Error_invalid_params));
         };
 
         let nonce = U256::from_big_endian_slice(&input.nonce)?;
