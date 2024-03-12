@@ -162,6 +162,15 @@ impl BitcoinEntry {
             utxo_outputs.push(tx_out);
         }
 
+        // Process proto change output, if specified.
+        if !proto.disable_change_output {
+            let change_output = proto.change_output.unwrap();
+            let (out, tx_out) = proto_output_to_native(&change_output)?;
+
+            builder = builder.push_output(out);
+            utxo_outputs.push(tx_out);
+        }
+
         // Build the transaction.
         let (tx, tx_args) = builder.build();
 
@@ -187,10 +196,13 @@ impl BitcoinEntry {
                 .unwrap()
         };
 
+        // Calculate the sighashes for the transaction.
         let computer = SighashComputer::new(tx, tx_args);
         let preiamge = computer.preimage_tx().unwrap();
         let (tx, tx_args) = computer.into_transaction();
 
+        // Once the UTXO selection process is completed, we prepare the inputs
+        // for the proto structure to be returned.
         let mut proto_inputs = vec![];
         for (input, arg) in tx.inputs.iter().zip(tx_args.utxos_to_sign.iter()) {
             let signing_method = match arg.signing_method {
