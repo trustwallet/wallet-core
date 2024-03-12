@@ -4,6 +4,9 @@
 
 #include "TestUtilities.h"
 
+#include <TrustWalletCore/TWAnyAddress.h>
+#include <TrustWalletCore/TWDerivation.h>
+#include <TrustWalletCore/TWFiroAddressType.h>
 #include <TrustWalletCore/TWSegwitAddress.h>
 #include <TrustWalletCore/TWBitcoinAddress.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
@@ -20,6 +23,27 @@ TEST(TWZCoin, Address) {
     auto address = WRAP(TWBitcoinAddress, TWBitcoinAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeP2pkhPrefix(TWCoinTypeFiro)));
     auto addressString = WRAPS(TWBitcoinAddressDescription(address.get()));
     assertStringsEqual(addressString, "aAbqxogrjdy2YHVcnQxFHMzqpt2fhjCTVT");
+}
+
+TEST(TWZCoin, ExchangeAddress_CreateWithString) {
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(STRING("aJtPAs49k2RYonsUoY9SGgmpzv4awdPfVP").get(), TWCoinTypeFiro));
+    auto addressData = WRAPD(TWAnyAddressData(address.get()));
+    assertHexEqual(addressData, "c7529bf17541410428c7b23b402761acb83fdfba");
+
+    auto exchangeAddress = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(STRING("EXXYdhSMM9Em5Z3kzdUWeUm2vFMNyXFSAEE9").get(), TWCoinTypeFiro));
+    auto exchangeAddressData = WRAPD(TWAnyAddressData(exchangeAddress.get()));
+    assertHexEqual(exchangeAddressData, "c7529bf17541410428c7b23b402761acb83fdfba");
+}
+
+TEST(TWZCoin, ExchangeAddress_DeriveFromPublicKey) {
+    auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(DATA("034cc1963365aa67d35643f419d6601eca6ef7f62e46bf7f8b6ffa64e2f44fd0bf").get(), TWPublicKeyTypeSECP256k1));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyFiroAddressType(publicKey.get(), TWFiroAddressTypeExchange));
+    auto addressDesc = WRAPS(TWAnyAddressDescription(address.get()));
+    assertStringsEqual(addressDesc, "EXXWKhUtcaFKVW1NeRFuqPq33zAJMtQJwR4y");
+
+    auto defaultAddress = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyFiroAddressType(publicKey.get(), TWFiroAddressTypeDefault));
+    auto defaultAddressDesc = WRAPS(TWAnyAddressDescription(defaultAddress.get()));
+    assertStringsEqual(defaultAddressDesc, "aGaPDQKakaqVmQXGawLMLguZoqSx6CnSfK");
 }
 
 TEST(TWZCoin, ExtendedKeys) {

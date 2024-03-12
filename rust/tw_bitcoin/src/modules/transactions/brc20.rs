@@ -31,12 +31,12 @@ struct BRC20TransferPayload {
 }
 
 impl BRC20TransferPayload {
-    const PROTOCOL_ID: &str = "brc-20";
-    const MIME: &[u8] = b"text/plain;charset=utf-8";
+    const PROTOCOL_ID: &'static str = "brc-20";
+    const MIME: &'static [u8] = b"text/plain;charset=utf-8";
 }
 
 impl BRC20TransferPayload {
-    const OPERATION: &str = "transfer";
+    const OPERATION: &'static str = "transfer";
 
     fn new(ticker: Brc20Ticker, amount: String) -> Self {
         BRC20TransferPayload {
