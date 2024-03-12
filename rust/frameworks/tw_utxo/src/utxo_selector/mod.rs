@@ -141,8 +141,6 @@ where
             .zip(self.args.utxos_to_sign.iter())
             .collect::<Vec<_>>();
 
-        dbg!(utxos.len());
-
         // Sort the UTXOs.
         match selector {
             InputSelector::UseAll | InputSelector::InOrder => {
@@ -178,7 +176,6 @@ where
 
             // Check if the total input amount covers the total output amount
             // and the fee.
-            dbg!(total_in, total_out, tx.fee(fee_rate));
             if total_in >= total_out + tx.fee(fee_rate) {
                 total_covered = true;
 

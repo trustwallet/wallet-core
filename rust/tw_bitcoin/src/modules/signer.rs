@@ -186,8 +186,6 @@ impl Signer {
                         let tapped: TweakedKeyPair = keypair.tap_tweak(&secp, None);
                         let tweaked = KeyPair::from(tapped);
 
-                        dbg!(&entry.sighash);
-
                         // Construct the Schnorr signature.
                         let schnorr = if dangerous_use_fixed_schnorr_rng {
                             // For tests, we disable the included randomness in order to create
@@ -197,8 +195,6 @@ impl Signer {
                         } else {
                             secp.sign_schnorr(&sighash, &tweaked)
                         };
-
-                        dbg!(&schnorr.as_ref());
 
                         let sig = bitcoin::taproot::Signature {
                             sig: schnorr,

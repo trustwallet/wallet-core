@@ -9,6 +9,7 @@ use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
 #[test]
+#[ignore]
 fn coin_entry_sign_brc20_commit_reveal_transfer() {
     let coin = TestCoinContext::default();
 

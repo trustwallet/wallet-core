@@ -240,6 +240,20 @@ pub fn proto_output_to_native(
             mod_Output::mod_OutputBuilder::OneOfvariant::ordinal_inscribe(_) => todo!(),
             mod_Output::mod_OutputBuilder::OneOfvariant::None => todo!(),
         },
+        Proto::mod_Output::OneOfto_recipient::custom_script_pubkey(script_pubkey) => {
+            let out = OutputBuilder::new()
+                .amount(output.value as i64)
+                .custom_script_pubkey(script_pubkey.to_vec().into())
+                .unwrap();
+
+            let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                value: output.value,
+                script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                ..Default::default()
+            };
+
+            Ok((out, tx_out))
+        },
         _ => todo!(),
     }
 }

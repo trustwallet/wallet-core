@@ -86,6 +86,7 @@ pub struct UtxoSighash {
 }
 
 // TODO: Move this to another module.
+#[derive(Debug, Clone)]
 pub struct SpendingData {
     pub script_sig: Script,
     pub witness: Witness,
