@@ -3,7 +3,9 @@ use tw_hash::H256;
 use tw_keypair::ecdsa::signature::Signature;
 use tw_keypair::schnorr;
 use tw_keypair::tw::PublicKey;
+use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto::mod_Input::mod_InputBuilder::OneOfvariant;
+use tw_proto::BitcoinV2::Proto::mod_Output::mod_OutputRedeemScriptOrHash;
 use tw_proto::BitcoinV2::Proto::mod_ToPublicKeyOrHash::OneOfto_address;
 use tw_proto::BitcoinV2::Proto::{self, mod_Output};
 use tw_proto::Utxo::Proto as UtxoProto;
@@ -54,7 +56,7 @@ pub fn proto_input_to_native(
                     let (utxo, arg) = UtxoBuilder::new()
                         .prev_txid(input.txid.as_ref().try_into().unwrap())
                         .prev_index(input.vout)
-                        .amount(input.value as i64) // TODO: Just use u64 to begin with?
+                        .amount(input.value as i64)
                         .p2wpkh(pubkey.clone())
                         .unwrap();
 
@@ -63,14 +65,14 @@ pub fn proto_input_to_native(
 
                     Ok((utxo, arg, claim))
                 },
-                OneOfvariant::p2tr_key_path(payload) => {
+                OneOfvariant::p2tr_key_path(ctx) => {
                     // TODO: Rename field to `pubkey`?
-                    let pubkey = pubkey_from_raw(&payload.public_key).unwrap();
+                    let pubkey = pubkey_from_raw(&ctx.public_key).unwrap();
 
                     let (utxo, arg) = UtxoBuilder::new()
                         .prev_txid(input.txid.as_ref().try_into().unwrap())
                         .prev_index(input.vout)
-                        .amount(input.value as i64) // TODO: Just use u64 to begin with?
+                        .amount(input.value as i64)
                         .p2tr_key_path(pubkey)
                         .unwrap();
 
@@ -79,7 +81,26 @@ pub fn proto_input_to_native(
 
                     Ok((utxo, arg, claim))
                 },
-                OneOfvariant::p2tr_script_path(_) => todo!(),
+                OneOfvariant::p2tr_script_path(ctx) => {
+                    // TODO:
+                    let one_prevout = ctx.one_prevout;
+                    let payload = Script::from(ctx.payload.to_vec());
+                    let control_block = ctx.control_block.to_vec();
+
+                    let (utxo, arg) = UtxoBuilder::new()
+                        .prev_txid(input.txid.as_ref().try_into().unwrap())
+                        .prev_index(input.vout)
+                        .amount(input.value as i64)
+                        .p2tr_script_path(payload.clone())
+                        .unwrap();
+
+                    let sig = schnorr::Signature::from_bytes(&vec![1; 64]).unwrap();
+                    let claim = SpendingScriptBuilder::new()
+                        .p2tr_script_path(sig, payload, control_block)
+                        .unwrap();
+
+                    Ok((utxo, arg, claim))
+                },
                 OneOfvariant::brc20_inscribe(payload) => {
                     // TODO: Rename field to `pubkey`?
                     let pubkey = pubkey_from_raw(&payload.inscribe_to).unwrap();

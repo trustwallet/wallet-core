@@ -240,7 +240,7 @@ impl BitcoinEntry {
             proto_sighashes.push(UtxoProto::Sighash {
                 sighash: sighash.sighash.into(),
                 signing_method,
-                sighash_type: UtxoProto::SighashType::All, // TODO
+                sighash_type: UtxoProto::SighashType::UseDefault, // TODO
             });
         }
 

@@ -9,7 +9,7 @@ use crate::{
 };
 
 use bitcoin::hashes::Hash;
-use tw_hash::{ripemd::bitcoin_hash_160, H160, H256, H264};
+use tw_hash::{ripemd::bitcoin_hash_160, sha2::sha256, H160, H256, H264};
 use tw_keypair::tw;
 
 pub struct OutputBuilder {
@@ -43,6 +43,17 @@ impl OutputBuilder {
                 .amount
                 .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
             script_pubkey: conditions::new_p2pkh(&pubkey_hash),
+        })
+    }
+    pub fn p2wsh(self, redeem_script: Script) -> UtxoResult<TransactionOutput> {
+        let h = sha256(redeem_script.as_data());
+        let redeem_hash: H256 = h.as_slice().try_into().expect("hash length is 32 bytes");
+
+        Ok(TransactionOutput {
+            value: self
+                .amount
+                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+            script_pubkey: conditions::new_p2wsh(&redeem_hash),
         })
     }
     // TODO: Be more precise with PublicKey type?.

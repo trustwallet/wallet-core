@@ -10,7 +10,7 @@ use crate::{
 };
 use bitcoin::hashes::Hash;
 use tw_encoding::hex;
-use tw_hash::{hasher::Hasher, ripemd::bitcoin_hash_160, H160, H256, H264};
+use tw_hash::{hasher::Hasher, ripemd::bitcoin_hash_160, sha2::sha256, H160, H256, H264};
 use tw_keypair::tw;
 use tw_misc::traits::ToBytesVec;
 
@@ -111,6 +111,24 @@ impl UtxoBuilder {
             },
         ))
     }
+    pub fn p2wsh(mut self, redeem_script: Script) -> UtxoResult<(TransactionInput, UtxoToSign)> {
+        let h = sha256(redeem_script.as_data());
+        let redeem_hash: H256 = h.as_slice().try_into().expect("hash length is 32 bytes");
+
+        self.finalize_out_point()?;
+
+        Ok((
+            self.input,
+            UtxoToSign {
+                script_pubkey: conditions::new_p2wsh(&redeem_hash),
+                signing_method: SigningMethod::Legacy,
+                amount: self
+                    .amount
+                    .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+                ..Default::default()
+            },
+        ))
+    }
     pub fn p2wpkh(mut self, pubkey: tw::PublicKey) -> UtxoResult<(TransactionInput, UtxoToSign)> {
         let h = bitcoin_hash_160(&pubkey.to_bytes());
         let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
@@ -159,50 +177,12 @@ impl UtxoBuilder {
     }
     pub fn p2tr_script_path(
         mut self,
-        pubkey: tw::PublicKey,
         payload: Script,
-        merkle_root: H256,
     ) -> UtxoResult<(TransactionInput, UtxoToSign)> {
-        let pubkey: H264 = pubkey
-            .to_bytes()
-            .as_slice()
-            .try_into()
-            .expect("pubkey length is 33 bytes");
-
-        /*
-        // TODO: This logic, including merkle root calculation, should be moved somewhere else.
-
-        let mut builder = bitcoin::taproot::TaprootBuilder::new();
-
-        for (depth, payload) in payloads {
-            let payload = bitcoin::ScriptBuf::from_bytes(payload.as_data().to_vec());
-            builder.add_leaf(*depth, payload).unwrap();
-        }
-
-        // The internal key.
-        let xonly = bitcoin::secp256k1::XOnlyPublicKey::from(
-            bitcoin::PublicKey::from_slice(pubkey.as_slice())
-                .unwrap()
-                .inner,
-        );
-
-        let spend_info = builder
-            .finalize(&bitcoin::secp256k1::Secp256k1::new(), xonly)
-            .unwrap();
-
-        let merkle_root: H256 = spend_info
-            .merkle_root()
-            .unwrap()
-            .to_byte_array()
-            .as_slice()
-            .try_into()
-            .unwrap();
-        */
-
         // Construct the leaf hash.
-        let payload = bitcoin::ScriptBuf::from_bytes(payload.as_data().to_vec());
+        let script_buf = bitcoin::ScriptBuf::from_bytes(payload.as_data().to_vec());
         let leaf_hash = bitcoin::taproot::TapLeafHash::from_script(
-            &payload,
+            &script_buf,
             bitcoin::taproot::LeafVersion::TapScript,
         );
 
@@ -217,12 +197,13 @@ impl UtxoBuilder {
         Ok((
             self.input,
             UtxoToSign {
-                script_pubkey: conditions::new_p2tr_script_path(&pubkey, &merkle_root),
+                // We use the full (revealed) script as scriptPubkey here.
+                script_pubkey: payload,
                 signing_method: SigningMethod::TaprootAll,
                 amount: self
                     .amount
                     .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
-                leaf_hash_code_separator: Some((leaf_hash, 0)),
+                leaf_hash_code_separator: Some((leaf_hash, u32::MAX)),
                 // Note that we don't use the default double-hasher.
                 tx_hasher: Hasher::Sha256,
                 ..Default::default()
@@ -260,7 +241,7 @@ impl UtxoBuilder {
         Ok((
             self.input,
             UtxoToSign {
-                // We reveal the full script.
+                // We use the full (revealed) script as scriptPubkey here.
                 script_pubkey: Script::from(transfer.script.to_vec()),
                 signing_method: SigningMethod::TaprootAll,
                 amount: self

@@ -54,10 +54,10 @@ pub fn new_p2pkh(pubkey_hash: &H160) -> Script {
 /// ```txt
 /// 0 <push><script_hash>
 /// ```
-pub fn new_p2wsh(script_hash: &H256) -> Script {
+pub fn new_p2wsh(redeem_hash: &H256) -> Script {
     let mut s = Script::with_capacity(34);
     s.push(SEGWIT_VERSION);
-    s.push_slice(script_hash.as_slice());
+    s.push_slice(redeem_hash.as_slice());
     s
 }
 
