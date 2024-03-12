@@ -10,6 +10,7 @@
 #include "proto/Bitcoin.pb.h"
 #include "proto/TransactionCompiler.pb.h"
 
+#include <TrustWalletCore/TWBitcoinSigHashType.h>
 #include <TrustWalletCore/TWCoinType.h>
 
 #include "Bitcoin/Script.h"

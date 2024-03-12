@@ -54,7 +54,7 @@ def compare_sizes(args):
     print("## Binary size comparison")
     print()
     for target, current_kb in current_json.items():
-        before_kb = before_json.get(target, 0)
+        before_kb = before_json.get(target, current_kb)
         display_target(target, before_kb, current_kb)
         print()
 
