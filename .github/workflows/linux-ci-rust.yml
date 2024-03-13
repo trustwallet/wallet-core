@@ -134,7 +134,7 @@ jobs:
 
       # Download previous release report, compare the release binary sizes, and post/update a comment at the Pull Request.
       - name: Download previous release report
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false
         uses: dawidd6/action-download-artifact@v3
         with:
           commit: ${{github.event.pull_request.base.sha}}
@@ -146,13 +146,13 @@ jobs:
           workflow_conclusion: ""
 
       - name: Craft Comment Body
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false
         run: |
           # Please note `previous/release-report.json` may not exist if the previous report was not found.
           ./tools/release-size compare --before previous/release-report.json --current release-report.json > report-diff.md
 
       - name: Create or Update Comment
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false
         uses: edumserrano/find-create-or-update-comment@v2
         with:
           issue-number: ${{ github.event.pull_request.number }}

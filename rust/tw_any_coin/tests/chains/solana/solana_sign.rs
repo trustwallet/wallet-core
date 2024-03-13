@@ -220,6 +220,33 @@ fn test_solana_sign_delegate_stake_no_stake_account() {
 }
 
 #[test]
+fn test_solana_sign_delegate_stake_no_stake_account_5zrqgk1() {
+    // Corresponding Solana address: GcQQ1qx822KK14zyfTkMLQMLEZ4a9d88HnKepaA2XbmW.
+    let private_key = "507479b94db463a33cdc413db98437b4aa8c74b6053aea936d1830c27027b1e9"
+        .decode_hex()
+        .unwrap();
+    let delegate = Proto::DelegateStake {
+        validator_pubkey: "BWkvytz3MAiLkUbMuYK5yV1VYThbBYYQYG3gdef8NLw5".into(),
+        value: 10000000,
+        ..Proto::DelegateStake::default()
+    };
+    let input = Proto::SigningInput {
+        private_key: private_key.into(),
+        recent_blockhash: "6ocSmEiuSHkN5yKDUaQrJHCzWCYXuFk3g3jB4rN1uDzv".into(),
+        transaction_type: TransactionType::delegate_stake_transaction(delegate),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    // Successfully broadcasted:
+    // https://solscan.io/tx/5zRQgK1oc1oHLhsM68AM2pSUUqif6VMMnuUKjyZgUsdySaNRufvzoEu8D8SF99GThw8iZiwRbPhnsDePpnDKKmRq
+    assert_eq!(output.encoded, "nuo7rnbTG4QLqpjYoPPPhDusRjpEVDyzos8YvdX67sDaw2XwfTJNm7eXcdxqjkgLqzFiHbD7kvm1i7f1caGjxZwTEzWqNkxK28YXJXU4S2NbQFa7HwSdamF38PLgKwNKmnUkh1quaZDFK3X5swL49QPxFhtSwFcFo9TphPsfeFjMbqqsLR8vjzLkePTrWKUSMmbwMG8U9TDEeWrsWbKaFeWsRQxzYP7ubDokPLVxGJopaEUobtUGyRA5K2A9H4dbuN7pZJSLwL926hGJQphjiXuJhD9PqY5TCRAq9PhyS6jtYP6ToQUiPfvigm5aHwb5rtEZKu5gM393G7LKfedMi263FVSnJyAb41i4xZXTMD3HdKiDBF5UomqCQEyPQhM4X8mYzPDPofRZfQjz2xS1fDesxY3BWMxwKQ6bgtazJDprBWWNJ7ULpHFEJ8wXtHAR3CfTWowQJ23zsKNUPbb6Ft4Lng3DJrRkMcTvvecLx9nnNqyuwjkqcBysWqJ4pJdvLC4QAnwoZzKAn8uzTKUSA85gSeE96RUmRVE4CgtPkZ7jYgmsSS5XgcC7g4XegHHJFQ3iMG4Uuxft635txXHAbkh6x9Ra9JnPFUq6Zdgc9UyCWrhhaKDvfmFgC2K7tykqHLXdDninmR2s7zmc1wsoGYeGvy2NbLTU3mRpyVwQPFaKPDPSisJYKYY4HnBQfG89wRLh4jkRsrH9snvxYwhgRLcsaMniwGNPpQEU4tLAkxHwco32rnxyFwycaPqEYsYpTR5vc5RUrnyy4nhEx1V79hqBb7NScxAbBsaBXvYpYitgdfX1h19uBr7A7uqZ3mqptKqA2Q3VjZthnLLGjJNVuR4BNJEa7VzPnR8SLCckjVycSHkbG26cUmB985K5");
+}
+
+#[test]
 fn test_solana_sign_delegate_stake_with_account() {
     let delegate = Proto::DelegateStake {
         validator_pubkey: "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC".into(),
