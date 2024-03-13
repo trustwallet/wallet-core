@@ -4,6 +4,7 @@
 
 use std::str::FromStr;
 use tw_solana::address::SolanaAddress;
+use tw_solana::blockhash::Blockhash;
 use tw_solana::program::stake_program::StakeProgram;
 
 fn test_get_default_token_address_impl(
@@ -46,5 +47,33 @@ fn test_get_default_token_address() {
         "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ",
         "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt",
         "ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf",
+    );
+}
+
+fn test_address_from_recent_blockhash_impl(main_address: &str, blockhash: &str, expected: &str) {
+    let main_address = SolanaAddress::from_str(main_address).unwrap();
+    let expected = SolanaAddress::from_str(expected).unwrap();
+    let blockhash = Blockhash::from_str(blockhash).unwrap();
+
+    let actual = StakeProgram::address_from_recent_blockhash(&main_address, &blockhash);
+    assert_eq!(actual, expected);
+}
+
+#[test]
+fn test_address_from_recent_blockhash() {
+    test_address_from_recent_blockhash_impl(
+        "zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu",
+        "11111111111111111111111111111111",
+        "GQDDc5EVGJZFC7AvpEJ8eoCQ75Yy4gr7eu17frCjvQRQ",
+    );
+    test_address_from_recent_blockhash_impl(
+        "zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu",
+        "9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K",
+        "2Kos1xJRBq3Ae1GnVNBx7HgJhq8KvdUe2bXE4QGdNaXb",
+    );
+    test_address_from_recent_blockhash_impl(
+        "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V",
+        "AfzzEC8NVXoxKoHdjXLDVzqwqvvZmgPuqyJqjuHiPY1D",
+        "Fxhhm82PZVuXEwycT28vGqknUEnVeoHh4UWEnJNQUDbv",
     );
 }

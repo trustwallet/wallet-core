@@ -17,9 +17,17 @@ LIB_NAME = "libwallet_core_rs.a"
 def display_size(size_kb: int) -> str:
     if size_kb >= 10000:
         size_mb = float(size_kb) / 1024
-        return f'{size_mb:+.2f} MB'
+        return f'{size_mb:.2f} MB'
     else:
         return f'{size_kb} KB'
+
+
+def display_diff(diff_kb: int) -> str:
+    if abs(diff_kb) >= 10000:
+        diff_mb = float(diff_kb) / 1024
+        return f'{diff_mb:+.2f} MB'
+    else:
+        return f'{diff_kb:+} KB'
 
 
 def measure_rust(_args):
@@ -37,14 +45,14 @@ def measure_rust(_args):
 def compare_sizes(args):
     def display_target(target: str, before_kb: int, current_kb: int):
         diff_kb = current_kb - before_kb
-        print(f'➡️ **{target}**')
-        print("```diff")
         if before_kb == current_kb:
-            print(f'  Size {display_size(before_kb)}')
+            print(f'➡️ **{target}**: {display_size(before_kb)}')
         else:
-            print(f'- Size {display_size(before_kb)}')
-            print(f'+ Size {display_size(current_kb)} \t {display_size(diff_kb)}')
-        print("```")
+            print(f'➡️ **{target}**:')
+            print("```diff")
+            print(f'- {display_size(before_kb)}')
+            print(f'+ {display_size(current_kb)} \t {display_diff(diff_kb)}')
+            print("```")
 
     current_json = json.load(open(args.current, 'r'))
     before_json = {}
