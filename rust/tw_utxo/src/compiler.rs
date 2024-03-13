@@ -182,7 +182,7 @@ impl Compiler<StandardBitcoinContext> {
         let weight_estimate = tx.weight().to_wu() + total_input_weight;
         let fee_estimate = (weight_estimate + 3) / 4 * proto.weight_base;
 
-        // Check if there are enough inputs to cover the the full output and fee estimate.
+        // Check if there are enough inputs to cover the full output and fee estimate.
         if total_input_amount < total_output_amount + fee_estimate {
             return Err(Error::from(Proto::Error::Error_insufficient_inputs));
         }
