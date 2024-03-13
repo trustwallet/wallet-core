@@ -376,9 +376,9 @@ impl StakeInstructionBuilder {
     pub fn deposit_stake(args: DepositStakeArgs) -> SigningResult<Vec<Instruction>> {
         let stake_addr = args.stake_account.unwrap_or_else(|| {
             // no stake address specified, generate a new unique
-            StakeProgram::address_from_recent_blockhash(args.sender, args.recent_blockhash)
+            StakeProgram::address_from_recent_blockhash(&args.sender, &args.recent_blockhash)
         });
-        let seed = args.recent_blockhash.to_string();
+        let seed = StakeProgram::recent_blockhash_as_seed(&args.recent_blockhash);
 
         let authorized = Authorized {
             staker: args.sender,
