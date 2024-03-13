@@ -106,7 +106,7 @@ fn coin_entry_custom_script_path() {
         .control_block(&(payload.to_owned(), LeafVersion::TapScript))
         .unwrap();
 
-    // Provide the the payload and control block directly to the builder.
+    // Provide the payload and control block directly to the builder.
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
