@@ -14,8 +14,8 @@ use tw_hash::hasher::Hasher;
 
 #[derive(Debug, Clone, Eq, Hash, PartialEq)]
 pub struct Base58Address<const SIZE: usize, const CHECKSUM_SIZE: usize> {
-    bytes: [u8; SIZE],
-    address_str: String,
+    pub bytes: [u8; SIZE],
+    pub address_str: String,
     _phantom: PhantomData<[(); CHECKSUM_SIZE]>,
 }
 

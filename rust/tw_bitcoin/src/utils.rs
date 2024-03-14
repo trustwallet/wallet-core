@@ -1,7 +1,9 @@
 use crate::{Error, Result};
 use tw_base58_address::Base58Address;
 use tw_bech32_address::Bech32Address;
-use tw_hash::H256;
+use tw_encoding::base58::Alphabet;
+use tw_hash::hasher::Hasher;
+use tw_hash::{H160, H256};
 use tw_keypair::ecdsa::signature::Signature;
 use tw_keypair::schnorr;
 use tw_keypair::tw::PublicKey;
@@ -278,11 +280,53 @@ pub fn proto_output_to_native(
                 todo!()
             }
 
-            /*
-            if let Ok(addr) = Base58Address::from_str_with_alphabet(s, alphabet, hasher) {
+            const PAYLOAD_SIZE: usize = 21;
+            const CHECKSUM_SIZE: usize = 4;
+            if let Ok(payload) =
+                Base58Address::<PAYLOAD_SIZE, CHECKSUM_SIZE>::from_str_with_alphabet(
+                    addr.as_ref(),
+                    Alphabet::Bitcoin,
+                    Hasher::Sha256,
+                )
+            {
+                match payload.bytes[0] {
+                    0 => {
+                        let pubkey_hash: H160 = payload.bytes[1..].try_into().unwrap();
 
+                        // P2PKH
+                        let out = OutputBuilder::new()
+                            .amount(output.value as i64)
+                            .p2pkh_from_hash(pubkey_hash)
+                            .unwrap();
+
+                        let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                            value: output.value,
+                            script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                            ..Default::default()
+                        };
+
+                        return Ok((out, tx_out));
+                    },
+                    5 => {
+                        let script_hash: H160 = payload.bytes[1..].try_into().unwrap();
+
+                        // P2SH
+                        let out = OutputBuilder::new()
+                            .amount(output.value as i64)
+                            .p2sh(script_hash)
+                            .unwrap();
+
+                        let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                            value: output.value,
+                            script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                            ..Default::default()
+                        };
+
+                        return Ok((out, tx_out));
+                    },
+                    _ => todo!(), // Invalid
+                }
             }
-            */
 
             // Try
             todo!()
