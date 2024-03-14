@@ -11,7 +11,6 @@ use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
 #[test]
-#[ignore]
 fn send_to_p2sh_address() {
     let coin = TestCoinContext::default();
 
@@ -73,7 +72,6 @@ fn send_to_p2sh_address() {
 }
 
 #[test]
-#[ignore]
 fn send_to_p2pkh_address() {
     let coin = TestCoinContext::default();
 
@@ -134,7 +132,6 @@ fn send_to_p2pkh_address() {
 }
 
 #[test]
-#[ignore]
 fn send_to_p2wsh_address() {
     let coin = TestCoinContext::default();
 
@@ -196,7 +193,6 @@ fn send_to_p2wsh_address() {
 }
 
 #[test]
-#[ignore]
 fn send_to_p2wpkh_address() {
     let coin = TestCoinContext::default();
 
