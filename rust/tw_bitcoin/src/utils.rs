@@ -163,7 +163,7 @@ pub fn proto_output_to_native(
 
                         let out = OutputBuilder::new()
                             .amount(output.value as i64)
-                            .p2pkh(pubkey)
+                            .p2pkh(&pubkey)
                             .unwrap();
 
                         let tx_out = Proto::mod_PreSigningOutput::TxOut {
@@ -186,7 +186,7 @@ pub fn proto_output_to_native(
 
                         let out = OutputBuilder::new()
                             .amount(output.value as i64)
-                            .p2wpkh(pubkey)
+                            .p2wpkh(&pubkey)
                             .unwrap();
 
                         let tx_out = Proto::mod_PreSigningOutput::TxOut {
@@ -206,7 +206,7 @@ pub fn proto_output_to_native(
 
                 let out = OutputBuilder::new()
                     .amount(output.value as i64)
-                    .p2tr_key_path(pubkey)
+                    .p2tr_key_path(&pubkey)
                     .unwrap();
 
                 let tx_out = Proto::mod_PreSigningOutput::TxOut {
@@ -277,26 +277,69 @@ pub fn proto_output_to_native(
             // NOTE: there's also "tb" ("TB") for testnet and "bcrt" ("BCRT") for regtest.
             let possible_hrps = ["bc".to_string(), "BC".to_string()];
             if let Ok(addr) = Bech32Address::from_str_checked(possible_hrps, addr.to_string()) {
-                todo!()
+                match addr.key_hash[0] {
+                    // Segwit version indicator.
+                    0 => {
+                        match addr.key_hash.len() {
+                            // P2WPKH
+                            21 => {
+                                let pubkey_hash: H160 = addr.key_hash[1..].try_into().unwrap();
+
+                                let out = OutputBuilder::new()
+                                    .amount(output.value as i64)
+                                    .p2wpkh_from_hash(&pubkey_hash)
+                                    .unwrap();
+
+                                let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                                    value: output.value,
+                                    script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                                    ..Default::default()
+                                };
+
+                                return Ok((out, tx_out));
+                            },
+                            // P2WSH
+                            33 => {
+                                let redeem_hash: H256 = addr.key_hash[1..].try_into().unwrap();
+
+                                let out = OutputBuilder::new()
+                                    .amount(output.value as i64)
+                                    .p2wsh_from_hash(&redeem_hash)
+                                    .unwrap();
+
+                                let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                                    value: output.value,
+                                    script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                                    ..Default::default()
+                                };
+
+                                return Ok((out, tx_out));
+                            },
+                            _ => todo!(), // Invalid
+                        }
+                    },
+                    1 => {
+                        todo!()
+                    },
+                    _ => todo!(), // Invalid
+                }
             }
 
             const PAYLOAD_SIZE: usize = 21;
             const CHECKSUM_SIZE: usize = 4;
-            if let Ok(payload) =
-                Base58Address::<PAYLOAD_SIZE, CHECKSUM_SIZE>::from_str_with_alphabet(
-                    addr.as_ref(),
-                    Alphabet::Bitcoin,
-                    Hasher::Sha256,
-                )
-            {
-                match payload.bytes[0] {
+            if let Ok(addr) = Base58Address::<PAYLOAD_SIZE, CHECKSUM_SIZE>::from_str_with_alphabet(
+                addr.as_ref(),
+                Alphabet::Bitcoin,
+                Hasher::Sha256,
+            ) {
+                match addr.bytes[0] {
+                    // P2PKH
                     0 => {
-                        let pubkey_hash: H160 = payload.bytes[1..].try_into().unwrap();
+                        let pubkey_hash: H160 = addr.bytes[1..].try_into().unwrap();
 
-                        // P2PKH
                         let out = OutputBuilder::new()
                             .amount(output.value as i64)
-                            .p2pkh_from_hash(pubkey_hash)
+                            .p2pkh_from_hash(&pubkey_hash)
                             .unwrap();
 
                         let tx_out = Proto::mod_PreSigningOutput::TxOut {
@@ -307,13 +350,13 @@ pub fn proto_output_to_native(
 
                         return Ok((out, tx_out));
                     },
+                    // P2SH
                     5 => {
-                        let script_hash: H160 = payload.bytes[1..].try_into().unwrap();
+                        let script_hash: H160 = addr.bytes[1..].try_into().unwrap();
 
-                        // P2SH
                         let out = OutputBuilder::new()
                             .amount(output.value as i64)
-                            .p2sh(script_hash)
+                            .p2sh(&script_hash)
                             .unwrap();
 
                         let tx_out = Proto::mod_PreSigningOutput::TxOut {
@@ -324,6 +367,8 @@ pub fn proto_output_to_native(
 
                         return Ok((out, tx_out));
                     },
+                    // NOTE: there's also `111` and `196` for the testnet
+                    // equivalents.
                     _ => todo!(), // Invalid
                 }
             }
