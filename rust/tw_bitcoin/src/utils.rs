@@ -5,21 +5,14 @@ use tw_keypair::schnorr;
 use tw_keypair::tw::PublicKey;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto::mod_Input::mod_InputBuilder::OneOfvariant;
-use tw_proto::BitcoinV2::Proto::mod_Output::mod_OutputRedeemScriptOrHash;
 use tw_proto::BitcoinV2::Proto::mod_ToPublicKeyOrHash::OneOfto_address;
 use tw_proto::BitcoinV2::Proto::{self, mod_Output};
-use tw_proto::Utxo::Proto as UtxoProto;
-use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
 use tw_utxo::script::{Script, Witness};
-use tw_utxo::sighash_computer::SighashComputer;
 use tw_utxo::sighash_computer::{SpendingData, UtxoToSign};
-use tw_utxo::signing_mode::SigningMethod;
 use tw_utxo::transaction::standard_transaction::builder::{
-    OutputBuilder, SpendingScriptBuilder, TransactionBuilder, UtxoBuilder,
+    OutputBuilder, SpendingScriptBuilder, UtxoBuilder,
 };
 use tw_utxo::transaction::standard_transaction::{TransactionInput, TransactionOutput};
-use tw_utxo::transaction::transaction_fee::TransactionFee;
-use tw_utxo::utxo_selector::SelectionBuilder;
 
 // TODO: Adjust error type
 fn pubkey_from_raw(pubkey: &[u8]) -> Result<PublicKey> {
@@ -275,6 +268,9 @@ pub fn proto_output_to_native(
 
             Ok((out, tx_out))
         },
-        _ => todo!(),
+        Proto::mod_Output::OneOfto_recipient::from_address(addr) => {
+            todo!()
+        },
+        Proto::mod_Output::OneOfto_recipient::None => todo!(),
     }
 }
