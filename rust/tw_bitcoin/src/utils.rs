@@ -1,4 +1,6 @@
 use crate::{Error, Result};
+use tw_base58_address::Base58Address;
+use tw_bech32_address::Bech32Address;
 use tw_hash::H256;
 use tw_keypair::ecdsa::signature::Signature;
 use tw_keypair::schnorr;
@@ -269,6 +271,20 @@ pub fn proto_output_to_native(
             Ok((out, tx_out))
         },
         Proto::mod_Output::OneOfto_recipient::from_address(addr) => {
+            // Upper and lower case is allowed, but not mixed case.
+            // NOTE: there's also "tb" ("TB") for testnet and "bcrt" ("BCRT") for regtest.
+            let possible_hrps = ["bc".to_string(), "BC".to_string()];
+            if let Ok(addr) = Bech32Address::from_str_checked(possible_hrps, addr.to_string()) {
+                todo!()
+            }
+
+            /*
+            if let Ok(addr) = Base58Address::from_str_with_alphabet(s, alphabet, hasher) {
+
+            }
+            */
+
+            // Try
             todo!()
         },
         Proto::mod_Output::OneOfto_recipient::None => todo!(),
