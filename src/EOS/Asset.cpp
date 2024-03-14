@@ -3,8 +3,8 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "Asset.h"
+#include "algorithm/string.hpp"
 
-#include <boost/algorithm/string/trim.hpp>
 #include <boost/lexical_cast.hpp>
 #include <stdexcept>
 
@@ -38,7 +38,7 @@ Asset::Asset(int64_t amount, uint8_t decimals, const std::string& symbol) {
 Asset Asset::fromString(std::string assetString) {
     using namespace std;
 
-    boost::algorithm::trim(assetString);
+    trim(assetString);
 
     // Find space in order to split amount and symbol
     auto spacePosition = assetString.find(' ');
@@ -46,7 +46,7 @@ Asset Asset::fromString(std::string assetString) {
         throw std::invalid_argument("Asset's amount and symbol should be separated with space");
     }
 
-    auto symbolString = boost::algorithm::trim_copy(assetString.substr(spacePosition + 1));
+    auto symbolString = trim_copy(assetString.substr(spacePosition + 1));
     auto amountString = assetString.substr(0, spacePosition);
 
     // Ensure that if decimal point is used (.), decimal fraction is specified
