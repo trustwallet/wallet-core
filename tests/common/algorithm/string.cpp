@@ -14,4 +14,16 @@ namespace TW::tests {
         ASSERT_EQ(splitted[1], "0");
         ASSERT_EQ(splitted[2], "1");
     }
+
+    TEST(Algorithm, StringTrim) {
+        std::string str = " \t \n  Hello, \n World \t   \n";
+        trim(str);
+        ASSERT_EQ(str, "Hello, \n World");
+    }
+
+    TEST(Algorithm, StringTrimSpecificSymbols) {
+        std::string str = ".\n  Hello. World ...";
+        trim(str, ".");
+        ASSERT_EQ(str, "\n  Hello. World ");
+    }
 }

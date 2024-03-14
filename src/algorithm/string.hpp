@@ -27,8 +27,8 @@ inline void trim_left(std::string& s, std::string_view t = kWitespaces)
 // trim from both ends of string (right then left)
 inline void trim(std::string& s, std::string_view t = kWitespaces)
 {
-    trim_right(s, t);
     trim_left(s, t);
+    trim_right(s, t);
 }
 
 // trim from both ends of string (right then left)
