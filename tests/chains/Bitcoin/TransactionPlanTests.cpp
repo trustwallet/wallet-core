@@ -715,6 +715,7 @@ TEST(TransactionPlan, OpReturn) {
     EXPECT_TRUE(verifyPlan(txPlan, {342101}, 300000, 205 * byteFee));
     EXPECT_EQ(txPlan.outputOpReturn.size(), 59ul);
     EXPECT_EQ(hex(txPlan.outputOpReturn), "535741503a54484f522e52554e453a74686f72317470657263616d6b6b7865633071306a6b366c74646e6c7176737732396775617038776d636c3a");
+    EXPECT_FALSE(txPlan.outputOpReturnIndex.has_value());
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     EXPECT_EQ(feeCalculator.calculate(1, 2, byteFee), 174 * byteFee);
