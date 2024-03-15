@@ -95,6 +95,11 @@ message OutputAddress {
     int64 amount = 2;
 }
 
+// Optional index of a corresponding output in the transaction.
+message OutputIndex {
+    uint32 index = 1;
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // Hash type to use when signing.
@@ -141,6 +146,10 @@ message SigningInput {
 
     // Optional zero-amount, OP_RETURN output
     bytes output_op_return = 13;
+
+    // Optional index of the OP_RETURN output in the transaction.
+    // If not set, OP_RETURN output will be pushed as the latest output.
+    OutputIndex output_op_return_index = 26;
 
     // Optional additional destination addresses, additional to first to_address output
     repeated OutputAddress extra_outputs = 14;
@@ -198,6 +207,10 @@ message TransactionPlan {
 
     // Optional zero-amount, OP_RETURN output
     bytes output_op_return = 8;
+
+    // Optional index of the OP_RETURN output in the transaction.
+    // If not set, OP_RETURN output will be pushed as the latest output.
+    OutputIndex output_op_return_index = 14;
 
     // zen & bitcoin diamond preblockhash
     bytes preblockhash = 9;

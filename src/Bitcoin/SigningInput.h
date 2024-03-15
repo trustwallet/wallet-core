@@ -64,6 +64,10 @@ public:
 
     Data outputOpReturn;
 
+    // Optional index of the OP_RETURN output in the transaction.
+    // If not set, OP_RETURN output will be pushed as the latest output.
+    MaybeIndex outputOpReturnIndex;
+
     uint32_t lockTime = 0;
     uint32_t time = 0;
 
