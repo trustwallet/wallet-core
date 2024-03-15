@@ -5,3 +5,5 @@
 pub mod bitcoin;
 pub mod ethereum;
 pub mod solana;
+#[cfg(feature = "uuid")]
+pub mod uuid_ffi;
