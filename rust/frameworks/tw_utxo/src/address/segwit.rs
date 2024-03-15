@@ -2,27 +2,18 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use super::{
+    Bech32Prefix, MAX_WITNESS_VERSION, WITNESS_V0, WITNESS_V0_VALID_PROGRAM_SIZES,
+    WITNESS_VALID_PROGRAM_SIZES, WITNESS_VERSIONS,
+};
 use bech32::FromBase32;
 use core::fmt;
-use std::ops::RangeInclusive;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_hash::hasher::sha256_ripemd;
-use tw_hash::{H160, H256};
 use tw_keypair::tw;
 use tw_memory::Data;
-
-const WITNESS_V0: u8 = 0;
-const MAX_WITNESS_VERSION: u8 = 16;
-const WITNESS_VERSIONS: RangeInclusive<u8> = WITNESS_V0..=MAX_WITNESS_VERSION;
-/// Witness program sizes valid for V0.
-const WITNESS_V0_VALID_PROGRAM_SIZES: [usize; 2] = [H160::LEN, H256::LEN];
-/// Witness program sizes valid for most of the witness versions.
-/// Please note that V0 is more constraint.
-const WITNESS_VALID_PROGRAM_SIZES: RangeInclusive<usize> = 2..=40;
-
-pub type Bech32Prefix = tw_bech32_address::bech32_prefix::Bech32Prefix;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct SegwitAddress {

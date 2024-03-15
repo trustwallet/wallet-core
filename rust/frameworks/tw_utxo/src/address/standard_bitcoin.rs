@@ -59,6 +59,7 @@ impl TryFrom<AddressPrefix> for StandardBitcoinPrefix {
 pub enum StandardBitcoinAddress {
     Legacy(LegacyAddress),
     Segwit(SegwitAddress),
+    Taproot(),
 }
 
 impl StandardBitcoinAddress {
