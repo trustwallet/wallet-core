@@ -885,6 +885,82 @@ TEST(BitcoinSigning, SignPlanTransactionNotSufficientAfterDustFiltering) {
     EXPECT_EQ(output.error(), Common::Proto::Error_not_enough_utxos);
 }
 
+// Deposit 0.0001 BTC from bc1q2sphzvc2uqmxqte2w9dd4gzy4sy9vvfv0me9ke to 0xa8491D40d4F71A752cA41DA0516AEd80c33a1B56 on ZETA mainnet.
+// https://www.zetachain.com/docs/developers/omnichain/bitcoin/#example-1-deposit-btc-into-an-account-in-zevm
+TEST(BitcoinSigning, SignDepositBtcToZetaChain) {
+    const auto myPrivateKey = PrivateKey(parse_hex("428d66be0b5a620f126a00fa67637222ce3dc9badfe5c605189520760810cfac"));
+    auto myPublicKey = myPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(myPublicKey.bytes));
+    auto redeemScript = Script::buildPayToWitnessPublicKeyHash(utxoPubkeyHash);
+
+    const auto ownAddress = "bc1q2sphzvc2uqmxqte2w9dd4gzy4sy9vvfv0me9ke";
+    const auto ownZetaEvmAddress = parse_hex("a8491D40d4F71A752cA41DA0516AEd80c33a1B56");
+    // https://www.zetachain.com/docs/reference/glossary/#tss
+    const auto zetaTssAddress = "bc1qm24wp577nk8aacckv8np465z3dvmu7ry45el6y";
+
+    auto utxoHash0 =
+        parse_hex("17a6adb5db1e33c87467a58aa31cddbb3800052315015cf3cf1c2b0119310e20");
+    std::reverse(utxoHash0.begin(), utxoHash0.end());
+    auto utxoAmount0 = 20000;
+    auto utxoOutputIndex0 = 0;
+
+    const auto sendAmount = 10000;
+    const auto dustAmount = 546;
+
+    Proto::SigningInput signingInput;
+    signingInput.set_coin_type(TWCoinTypeBitcoin);
+    signingInput.set_hash_type(TWBitcoinSigHashTypeAll);
+    signingInput.set_byte_fee(15);
+    signingInput.set_amount(sendAmount);
+    signingInput.set_to_address(zetaTssAddress);
+    signingInput.set_change_address(ownAddress);
+    signingInput.set_fixed_dust_threshold(dustAmount);
+    signingInput.set_output_op_return(ownZetaEvmAddress.data(), ownZetaEvmAddress.size());
+    // OP_RETURN must be the second output before the change.
+    signingInput.mutable_output_op_return_index()->set_index(1);
+
+    signingInput.add_private_key(myPrivateKey.bytes.data(), myPrivateKey.bytes.size());
+
+    // Add UTXO 0
+    auto utxo0 = signingInput.add_utxo();
+    utxo0->set_script(redeemScript.bytes.data(), redeemScript.bytes.size());
+    utxo0->set_amount(utxoAmount0);
+    utxo0->mutable_out_point()->set_hash(
+        std::string(utxoHash0.begin(), utxoHash0.end()));
+    utxo0->mutable_out_point()->set_index(utxoOutputIndex0);
+    utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    Proto::SigningOutput output;
+    ANY_SIGN(signingInput, TWCoinTypeBitcoin);
+    EXPECT_EQ(output.error(), Common::Proto::SigningError::OK);
+
+    EXPECT_EQ(output.transaction().outputs_size(), 3);
+    // P2WPKH to the TSS address.
+    EXPECT_EQ(output.transaction().outputs(0).value(), sendAmount);
+    // OP_RETURN
+    EXPECT_EQ(output.transaction().outputs(1).value(), 0);
+    // Transaction fee.
+    EXPECT_EQ(output.transaction().outputs(2).value(), 7420);
+
+    // Successfully broadcasted:
+    // https://mempool.space/tx/2b871b6c1112ad0a777f6db1f7a7709154c4d9af8e771ba4eca148915f830e9d
+    // https://explorer.zetachain.com/cc/tx/0x269e319478f8849247abb28b33a7b8e0a849dab4551bab328bf58bf67b02a807
+    const auto expectedTx = "01000000000101200e3119012b1ccff35c011523050038bbdd1ca38aa56774c8331edbb5ada6170000000000ffffffff031027000000000000160014daaae0d3de9d8fdee31661e61aea828b59be78640000000000000000166a14a8491d40d4f71a752ca41da0516aed80c33a1b56fc1c000000000000160014540371330ae036602f2a715adaa044ac0856312c02483045022100e29731f7474f9103c6df3434c8c62a540a21ad0e10e23df343b1e81e4b26110602202d37fb4fee5341a41f9e4e65ba2d3e0d2309425ea9806d94eb268efe6f21007001210369cdaf80b4a5fdad91e9face90e848225512884ec2e3ed572ca11dc68e75054700000000";
+
+    EXPECT_EQ(hex(output.encoded()), expectedTx);
+
+    Proto::TransactionPlan plan;
+    ANY_PLAN(signingInput, plan, TWCoinTypeBitcoin);
+    EXPECT_EQ(plan.error(), Common::Proto::SigningError::OK);
+    EXPECT_TRUE(plan.has_output_op_return_index());
+    EXPECT_EQ(plan.output_op_return_index().index(), 1);
+
+    *signingInput.mutable_plan() = plan;
+    ANY_SIGN(signingInput, TWCoinTypeBitcoin);
+    // The result has to be the same as signing without transaction planning.
+    EXPECT_EQ(hex(output.encoded()), expectedTx);
+}
+
 TEST(BitcoinSigning, SignP2PKH) {
     auto input = buildInputP2PKH();
 

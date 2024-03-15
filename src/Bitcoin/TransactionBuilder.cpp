@@ -85,6 +85,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
     if (input.outputOpReturn.size() > 0) {
         plan.outputOpReturn = input.outputOpReturn;
     }
+    plan.outputOpReturnIndex = input.outputOpReturnIndex;
 
     bool maxAmount = input.useMaxAmount;
     Amount totalAmount = input.amount + input.extraOutputsAmount;
