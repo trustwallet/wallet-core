@@ -33,6 +33,9 @@ pub struct CoinExplorer {
 pub struct CoinItem {
     pub id: CoinId,
     pub name: String,
+    #[serde(rename = "displayName")]
+    #[serde(default)]
+    pub display_name: String,
     #[serde(rename = "coinId")]
     pub coin_id_number: u32,
     pub symbol: String,
