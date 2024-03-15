@@ -8,8 +8,10 @@ use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_hash::hasher::sha256_ripemd;
+use tw_hash::H256;
 use tw_keypair::tw;
 use tw_memory::Data;
+use tw_misc::traits::ToBytesVec;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct TaprootAddress {
@@ -50,10 +52,19 @@ impl TaprootAddress {
         })
     }
 
-    pub fn p2wpkh_with_coin_and_prefix(
+    /// Create a Taproot address from a public key and an optional merkle root.
+    /// Taproot transactions come in two variants:
+    ///
+    /// * P2TR key-path: which is used for "normal" balance transfers and is
+    ///   internally _tweaked_ with an empty (None) merkle root.
+    /// * P2TR script-path: which is used for more complex scripts, such as
+    ///   Ordinals/BRC20, and is internally _tweaked_ with a merkle root of all
+    ///   possible spending conditions.
+    pub fn p2tr_with_coin_and_prefix(
         coin: &dyn CoinContext,
         public_key: &tw::PublicKey,
         prefix: Option<Bech32Prefix>,
+        merkle_root: Option<&H256>,
     ) -> AddressResult<TaprootAddress> {
         let hrp = match prefix {
             Some(Bech32Prefix { hrp }) => hrp,
@@ -64,9 +75,29 @@ impl TaprootAddress {
             .to_secp256k1()
             .ok_or(AddressError::PublicKeyTypeMismatch)?
             .compressed();
-        let public_key_hash = sha256_ripemd(public_key_bytes.as_slice());
 
-        Self::new(hrp, WITNESS_V1, public_key_hash.to_vec())
+        // We're relying on the `bitcoin` crate to generate anything Taproot related.
+
+        // Convert the native `H256` to `TapNodeHash` from the `bitcoin` crate.
+        let merkle_root = merkle_root.map(|hash| {
+            let hash = <bitcoin::hashes::sha256t::Hash<_> as bitcoin::hashes::Hash>::from_slice(
+                hash.as_slice(),
+            )
+            .expect("merkle_root length is 32 bytes");
+
+            bitcoin::taproot::TapNodeHash::from_raw_hash(hash)
+        });
+
+        // Tweak the public key with the (empty) merkle root.
+        let pubkey = bitcoin::PublicKey::from_slice(public_key_bytes.as_slice()).unwrap();
+        let internal_key = bitcoin::secp256k1::XOnlyPublicKey::from(pubkey.inner);
+        let (output_key, _parity) = bitcoin::key::TapTweak::tap_tweak(
+            internal_key,
+            &bitcoin::secp256k1::Secp256k1::new(),
+            merkle_root,
+        );
+
+        Self::new(hrp, WITNESS_V1, output_key.serialize().to_vec())
     }
 
     pub fn from_str_checked(s: &str, expected_hrp: &str) -> AddressResult<TaprootAddress> {

@@ -7,7 +7,9 @@
 
 use crate::address::derivation::BitcoinDerivation;
 use crate::address::legacy::LegacyAddress;
-use crate::address::segwit::{Bech32Prefix, SegwitAddress};
+use crate::address::segwit::SegwitAddress;
+use crate::address::taproot::TaprootAddress;
+use crate::address::Bech32Prefix;
 use std::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -59,7 +61,7 @@ impl TryFrom<AddressPrefix> for StandardBitcoinPrefix {
 pub enum StandardBitcoinAddress {
     Legacy(LegacyAddress),
     Segwit(SegwitAddress),
-    Taproot(),
+    Taproot(TaprootAddress),
 }
 
 impl StandardBitcoinAddress {
@@ -124,7 +126,17 @@ impl StandardBitcoinAddress {
                 SegwitAddress::p2wpkh_with_coin_and_prefix(coin, public_key, maybe_bech32_prefix)
                     .map(StandardBitcoinAddress::Segwit)
             },
-            BitcoinDerivation::Taproot => todo!(),
+            BitcoinDerivation::Taproot => {
+                let maybe_bech32_prefix = maybe_prefix.and_then(|prefix| prefix.into_bech32());
+                let merkle_root = None;
+                TaprootAddress::p2tr_with_coin_and_prefix(
+                    coin,
+                    public_key,
+                    maybe_bech32_prefix,
+                    merkle_root,
+                )
+                .map(StandardBitcoinAddress::Taproot)
+            },
         }
     }
 }
@@ -139,6 +151,9 @@ impl FromStr for StandardBitcoinAddress {
         if let Ok(segwit) = SegwitAddress::from_str(s) {
             return Ok(StandardBitcoinAddress::Segwit(segwit));
         }
+        if let Ok(taproot) = TaprootAddress::from_str(s) {
+            return Ok(StandardBitcoinAddress::Taproot(taproot));
+        }
         // TODO handle segwit and taproot addresses here.
         Err(AddressError::InvalidInput)
     }
@@ -149,6 +164,7 @@ impl fmt::Display for StandardBitcoinAddress {
         match self {
             StandardBitcoinAddress::Legacy(legacy) => write!(f, "{legacy}"),
             StandardBitcoinAddress::Segwit(segwit) => write!(f, "{segwit}"),
+            StandardBitcoinAddress::Taproot(taproot) => write!(f, "{taproot}"),
         }
     }
 }
@@ -158,6 +174,7 @@ impl CoinAddress for StandardBitcoinAddress {
         match self {
             StandardBitcoinAddress::Legacy(legacy) => legacy.bytes().to_vec(),
             StandardBitcoinAddress::Segwit(segwit) => segwit.witness_program().to_vec(),
+            StandardBitcoinAddress::Taproot(taproot) => taproot.witness_program().to_vec(),
         }
     }
 }
