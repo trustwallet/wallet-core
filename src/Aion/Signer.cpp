@@ -3,8 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "Signer.h"
-#include "../uint256.h"
-#include <boost/multiprecision/cpp_int.hpp>
 
 using namespace TW;
 

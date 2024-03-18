@@ -20,7 +20,7 @@ uint256_t hashKeyWithIndex(const Data& seed, std::size_t index) {
 
 std::string grindKey(const Data& seed) {
     std::size_t index{0};
-    int256_t key = hashKeyWithIndex(seed, index);
+    uint256_t key = hashKeyWithIndex(seed, index);
     while (key >= internal::gStarkDeriveBias) {
         key = hashKeyWithIndex(store(uint256_t(key)), index);
         index += 1;

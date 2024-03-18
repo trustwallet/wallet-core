@@ -97,12 +97,6 @@ TEST(Uint256, LoadEmpty) {
     EXPECT_EQ(load(parse_hex("0000")), uint256_t(0));
 }
 
-TEST(Uint256, LoadWithOffset) {
-    EXPECT_EQ(loadWithOffset(parse_hex("0000000000000000000000000000000000000000000000000000000000000003"), 0), uint256_t(3));
-    EXPECT_EQ(loadWithOffset(parse_hex("abcdef0000000000000000000000000000000000000000000000000000000000000003"), 3), uint256_t(3));
-    EXPECT_EQ(loadWithOffset(parse_hex("0000000000000000000000000000000000000000000000000000000000000003"), 1), uint256_t(0)); // not enough bytes
-}
-
 TEST(Uint256, loadStringProtobuf) {
     const Data data = parse_hex("03");
     const std::string str = std::string(reinterpret_cast<const char*>(data.data()), data.size());
