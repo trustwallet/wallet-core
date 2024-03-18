@@ -4,7 +4,7 @@
 
 use std::collections::HashSet;
 use std::ffi::CStr;
-use wallet_core_rs::ffi::uuid_ffi::tw_uuid_random;
+use wallet_core_rs::ffi::utils::uuid_ffi::tw_uuid_random;
 
 /// Example of the valid UUID: 3cbbcce1-db89-4ea2-be24-88a686be461c
 #[test]
