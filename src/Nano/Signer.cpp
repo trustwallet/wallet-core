@@ -25,8 +25,6 @@ const std::array<byte, 32> kBlockHashPreamble{
 };
 
 std::array<byte, 16> store(const uint128_t& value) {
-    using boost::multiprecision::cpp_int;
-
     Data buf;
     buf.reserve(16);
     export_bits(value, std::back_inserter(buf), 8);
