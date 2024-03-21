@@ -10,7 +10,6 @@
 
 #include <array>
 #include <string>
-#include <iostream>
 
 const std::string FullSS58Prefix = "SS58PRE";
 
