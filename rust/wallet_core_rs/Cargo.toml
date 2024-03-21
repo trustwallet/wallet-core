@@ -8,30 +8,46 @@ name = "wallet_core_rs"
 crate-type = ["staticlib", "rlib"] # Creates static lib
 
 [features]
-default = ["bitcoin-legacy", "ethereum-abi", "ethereum-rlp", "solana-address", "solana-transaction"]
-bitcoin-legacy = []
-ethereum-abi = []
-ethereum-rlp = []
-solana-address = []
-solana-transaction = []
+default = [
+    "any-coin",
+    "bitcoin",
+    "ethereum",
+    "keypair",
+    "solana",
+    "utils",
+]
+any-coin = ["tw_any_coin"]
+bitcoin = ["tw_bitcoin"]
+ethereum = ["tw_ethereum", "tw_coin_registry"]
+keypair = ["tw_keypair"]
+solana = ["tw_solana"]
+utils = [
+    "tw_encoding",
+    "tw_hash",
+    "tw_memory",
+    "tw_number",
+    "tw_proto",
+    "uuid"
+]
 
 [dependencies]
-tw_any_coin = { path = "../tw_any_coin" }
-tw_aptos = { path = "../tw_aptos" }
-tw_bitcoin = { path = "../tw_bitcoin" }
-tw_coin_entry = { path = "../tw_coin_entry", features = ["test-utils"] }
-tw_coin_registry = { path = "../tw_coin_registry" }
-tw_encoding = { path = "../tw_encoding" }
-tw_ethereum = { path = "../tw_ethereum" }
-tw_hash = { path = "../tw_hash" }
-tw_keypair = { path = "../tw_keypair" }
-tw_memory = { path = "../tw_memory" }
+tw_any_coin = { path = "../tw_any_coin", optional = true }
+tw_bitcoin = { path = "../tw_bitcoin", optional = true }
+tw_coin_registry = { path = "../tw_coin_registry", optional = true }
+tw_encoding = { path = "../tw_encoding", optional = true }
+tw_ethereum = { path = "../tw_ethereum", optional = true }
+tw_hash = { path = "../tw_hash", optional = true }
+tw_keypair = { path = "../tw_keypair", optional = true }
+tw_memory = { path = "../tw_memory", optional = true }
+tw_number = { path = "../tw_number", optional = true }
 tw_misc = { path = "../tw_misc" }
-tw_proto = { path = "../tw_proto" }
-tw_solana = { path = "../chains/tw_solana" }
+tw_proto = { path = "../tw_proto", optional = true }
+tw_solana = { path = "../chains/tw_solana", optional = true }
+uuid = { version = "1.7", features = ["v4"], optional = true }
 
 [dev-dependencies]
 serde_json = "1.0"
 tw_any_coin = { path = "../tw_any_coin", features = ["test-utils"] }
+tw_coin_entry = { path = "../tw_coin_entry", features = ["test-utils"] }
 tw_memory = { path = "../tw_memory", features = ["test-utils"] }
 tw_number = { path = "../tw_number", features = ["helpers"] }

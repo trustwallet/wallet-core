@@ -8,8 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include <boost/multiprecision/cpp_int.hpp>
-
 #include "Data.h"
 #include "Hash.h"
 

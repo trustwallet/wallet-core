@@ -2,5 +2,4 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-#[cfg(feature = "bitcoin-legacy")]
 pub mod legacy;

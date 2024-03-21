@@ -4,18 +4,17 @@
 
 #pragma once
 
-#include "../BinaryCoding.h"
+#include "BinaryCoding.h"
 #include "Data.h"
-#include "../PublicKey.h"
+#include "PublicKey.h"
 #include "SS58Address.h"
-#include <boost/multiprecision/cpp_int.hpp>
+#include "uint256.h"
+
 #include <cmath>
 #include <algorithm>
 #include <bitset>
 
-
-/// Reference https://github.com/soramitsu/kagome/blob/master/core/scale/scale_encoder_stream.cpp
-using CompactInteger = boost::multiprecision::cpp_int;
+using CompactInteger = TW::uint256_t;
 
 namespace TW::Polkadot {
 

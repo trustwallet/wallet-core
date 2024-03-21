@@ -21,8 +21,6 @@ pub use quick_protobuf::{
     Error as ProtoError, MessageRead, MessageWrite, Result as ProtoResult,
 };
 
-pub mod ffi;
-
 /// Serializes a Protobuf message without the length prefix.
 /// Please note that [`quick_protobuf::serialize_into_vec`] appends a `varint32` length prefix.
 pub fn serialize<T: MessageWrite>(message: &T) -> ProtoResult<Vec<u8>> {

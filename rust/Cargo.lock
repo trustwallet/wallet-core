@@ -1973,8 +1973,6 @@ dependencies = [
  "arbitrary 1.3.0",
  "pb-rs",
  "quick-protobuf",
- "tw_encoding",
- "tw_memory",
 ]
 
 [[package]]
@@ -2075,6 +2073,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a156c684c91ea7d62626509bce3cb4e1d9ed5c4d978f7b4352658f96a4c26b4a"
 
 [[package]]
+name = "uuid"
+version = "1.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f00cc9702ca12d3c81455259621e676d0f7251cec66a21e98fe2e9a37db93b2a"
+dependencies = [
+ "getrandom",
+]
+
+[[package]]
 name = "vec_map"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2092,7 +2099,6 @@ version = "0.1.0"
 dependencies = [
  "serde_json",
  "tw_any_coin",
- "tw_aptos",
  "tw_bitcoin",
  "tw_coin_entry",
  "tw_coin_registry",
@@ -2105,6 +2111,7 @@ dependencies = [
  "tw_number",
  "tw_proto",
  "tw_solana",
+ "uuid",
 ]
 
 [[package]]

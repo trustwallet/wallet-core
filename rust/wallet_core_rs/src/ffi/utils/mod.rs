@@ -2,5 +2,4 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-pub mod address;
-pub mod transaction;
+pub mod uuid_ffi;

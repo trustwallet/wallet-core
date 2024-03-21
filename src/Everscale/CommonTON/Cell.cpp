@@ -9,10 +9,8 @@
 #include <optional>
 #include <unordered_map>
 
+#include "Base64.h"
 #include "BinaryCoding.h"
-
-#include <boost/archive/iterators/binary_from_base64.hpp>
-#include <boost/archive/iterators/transform_width.hpp>
 
 using namespace TW;
 
@@ -87,11 +85,7 @@ struct Reader {
 };
 
 std::shared_ptr<Cell> Cell::fromBase64(const std::string& encoded) {
-    // `Hash::base64` trims \0 bytes from the end of the _decoded_ data, so
-    // raw transform is used here
-    using namespace boost::archive::iterators;
-    using It = transform_width<binary_from_base64<std::string::const_iterator>, 8, 6>;
-    Data boc(It(begin(encoded)), It(end(encoded)));
+    auto boc = Base64::decode(encoded);
     return Cell::deserialize(boc.data(), boc.size());
 }
 

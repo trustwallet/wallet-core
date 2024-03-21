@@ -64,7 +64,7 @@ TEST(EverscaleCell, EmptyCell) {
     ASSERT_EQ(hex(cell3->hash), EMPTY_CELL);
 
     // With `storeHashes` (provided hash should be skipped)
-    const auto cell4 = Cell::fromBase64("te6ccgEBAQEAJAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    const auto cell4 = Cell::fromBase64("te6ccgEBAQEAJAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=");
     ASSERT_EQ(hex(cell4->hash), EMPTY_CELL);
 }
 

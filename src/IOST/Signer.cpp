@@ -5,10 +5,7 @@
 #include "Signer.h"
 #include "Account.h"
 #include "../BinaryCoding.h"
-#include "../Hash.h"
-#include "../PrivateKey.h"
 #include <google/protobuf/util/json_util.h>
-#include <iostream>
 #include <nlohmann/json.hpp>
 #include <sstream>
 

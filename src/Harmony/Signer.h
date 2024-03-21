@@ -12,7 +12,6 @@
 #include "../proto/Harmony.pb.h"
 #include "../proto/EthereumRlp.pb.h"
 
-#include <boost/multiprecision/cpp_int.hpp>
 #include <cstdint>
 #include <tuple>
 #include <vector>
