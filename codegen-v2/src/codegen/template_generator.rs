@@ -38,7 +38,7 @@ impl TemplateGenerator {
             .add_pattern("{TW_CRATE_NAME}", coin.id.to_tw_crate_name())
             .add_pattern("{COIN_ID}", coin.id.as_str())
             .add_pattern("{COIN_TYPE}", coin.coin_type())
-            .add_pattern("{COIN_NAME}", &coin.name)
+            .add_pattern("{COIN_NAME}", if coin.display_name.len() > 0 { &coin.display_name } else { &coin.name })
             .add_pattern("{SYMBOL}", &coin.symbol)
             .add_pattern("{DECIMALS}", coin.decimals)
             .add_pattern("{P2PKH_PREFIX}", coin.p2pkh_prefix)
