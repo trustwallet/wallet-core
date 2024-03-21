@@ -4628,5 +4628,35 @@
       "rpc": "https://pacific-rpc.manta.network/http",
       "documentation": "https://docs.manta.network/docs/Introduction"
     }
+  },
+  {
+    "id": "merlin",
+    "name": "Merlin",
+    "coinId": 4200,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "4200",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://scan.merlinchain.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xca6f2891959b669237738dd0bc2c1051d966778c9de90b94165032ce58364212",
+      "sampleAccount": "0xf7e017b3f61bD3410A3b03D7DAD7699FD6780584"
+    },
+    "info": {
+      "url": "https://merlinchain.io",
+      "source": "https://merlinchain.io",
+      "rpc": "https://rpc.merlinchain.io",
+      "documentation": "https://docs.merlinchain.io/merlin-docs"
+    }
   }
 ]
