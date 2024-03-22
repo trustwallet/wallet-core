@@ -13,7 +13,7 @@ concurrency:
 jobs:
   build:
     runs-on: macos-latest-xlarge
-#    if: github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false
     steps:
     - uses: actions/checkout@v3
 
@@ -32,7 +32,7 @@ jobs:
     - name: Build KMP Sample
       run: |
         ./gradlew --version
-        ./gradlew assemble --debug
+        ./gradlew assemble
       working-directory: samples/kmp
       env:
         GITHUB_USER: ${{ github.actor }}
