@@ -2,8 +2,11 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+#include <chrono>
 #include <ctime>
 #include <iomanip>
+#include <iostream>
+#include <sstream>
 
 #include "Base58.h"
 #include "HexCoding.h"
