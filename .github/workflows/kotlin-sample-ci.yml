@@ -32,7 +32,7 @@ jobs:
     - name: Build KMP Sample
       run: |
         ./gradlew --version
-        ./gradlew assemble
+        ./gradlew assemble --debug
       working-directory: samples/kmp
       env:
         GITHUB_USER: ${{ github.actor }}
