@@ -369,11 +369,15 @@ fn test_solana_compile_transfer_with_zero_signature() {
     );
 
     // Step 3: Compile transaction info
-    let public_key = "0d044a62d0a4dfe5a037a15b59fa4d4d0d3ab81103a2c10a6da08a4d058611c0".decode_hex().unwrap();
+    let public_key = "0d044a62d0a4dfe5a037a15b59fa4d4d0d3ab81103a2c10a6da08a4d058611c0"
+        .decode_hex()
+        .unwrap();
     let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
 
     // Compile with zero signature
-    let signature = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000".decode_hex().unwrap();
+    let signature = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        .decode_hex()
+        .unwrap();
     let output = compiler.compile(CoinType::Solana, &input, vec![signature], vec![public_key]);
     assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded, "3md7BBV9wFjYGnMWcMNyAZcjca2HGfXWZkrU8vvho66z2sJMZFcx6HZdBiAddjo2kzgBv3uZoac3domBRjJJSXkbBvokxPZ8Lfa4BipQ5HdcJ2Fij2h7NHywnKFjDrgqfZ3YfUTEFreBy3MebYxQvgCaVhxGkxDwYc3Pvsoz4yQNMXTDrmgaqbhJzhV5WUXmqJeFMTyY8NguMLS6A9uP4iWe9RnMs2X5dFnhMPQzfCzL6wjVKJ99gRaqqDundDhdoYUdvgC17jY4pB9tMhL9bNBs9VwWu66dSYzQX");
@@ -405,11 +409,15 @@ fn test_solana_compile_transfer_with_fake_signature() {
     );
 
     // Step 3: Compile transaction info
-    let public_key = "0d044a62d0a4dfe5a037a15b59fa4d4d0d3ab81103a2c10a6da08a4d058611c0".decode_hex().unwrap();
+    let public_key = "0d044a62d0a4dfe5a037a15b59fa4d4d0d3ab81103a2c10a6da08a4d058611c0"
+        .decode_hex()
+        .unwrap();
     let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
 
     // Compile with other fake signature
-    let signature = "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000".decode_hex().unwrap();
+    let signature = "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        .decode_hex()
+        .unwrap();
     let output = compiler.compile(CoinType::Solana, &input, vec![signature], vec![public_key]);
     assert_eq!(output.error, SigningError::Error_signing);
 }
