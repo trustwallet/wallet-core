@@ -14,12 +14,9 @@ use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_coin_entry::signing_output_error;
 use tw_encoding::{base58, base64};
-use tw_hash::H512;
 use tw_keypair::ed25519;
 use tw_keypair::traits::VerifyingKeyTrait;
 use tw_proto::Solana::Proto;
-
-const ZERO_SIGNATURE: &str = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 
 pub struct SolanaCompiler;
 
@@ -89,8 +86,7 @@ impl SolanaCompiler {
             let signature = ed25519::Signature::try_from(sign.as_slice())?;
             let pubkey = ed25519::sha512::PublicKey::try_from(pubkey.as_slice())?;
 
-            if !pubkey.verify(signature.clone(), data_to_sign.clone())
-                && signature.to_bytes() != H512::from(ZERO_SIGNATURE) {
+            if !pubkey.verify(signature.clone(), data_to_sign.clone()) && !signature.to_bytes().is_zero() {
                 return Err(SigningError(SigningErrorType::Error_signing));
             }
 
