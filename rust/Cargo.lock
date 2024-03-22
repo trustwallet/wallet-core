@@ -1754,6 +1754,7 @@ dependencies = [
  "tw_native_injective",
  "tw_ronin",
  "tw_solana",
+ "tw_sui",
  "tw_thorchain",
 ]
 
@@ -2000,6 +2001,16 @@ dependencies = [
  "tw_coin_entry",
  "tw_encoding",
  "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_proto",
+]
+
+[[package]]
+name = "tw_sui"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
  "tw_keypair",
  "tw_memory",
  "tw_proto",

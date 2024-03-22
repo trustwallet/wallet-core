@@ -26,6 +26,7 @@ tw_native_evmos = { path = "../chains/tw_native_evmos" }
 tw_native_injective = { path = "../chains/tw_native_injective" }
 tw_ronin = { path = "../tw_ronin" }
 tw_solana = { path = "../chains/tw_solana" }
+tw_sui = { path = "../chains/tw_sui" }
 tw_thorchain = { path = "../chains/tw_thorchain" }
 
 [build-dependencies]

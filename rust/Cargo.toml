@@ -6,6 +6,7 @@ members = [
     "chains/tw_native_evmos",
     "chains/tw_native_injective",
     "chains/tw_solana",
+    "chains/tw_sui",
     "chains/tw_thorchain",
     "tw_any_coin",
     "tw_aptos",
