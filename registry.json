@@ -4660,5 +4660,101 @@
       "rpc": "https://pacific-rpc.manta.network/http",
       "documentation": "https://docs.manta.network/docs/Introduction"
     }
+  },
+  {
+    "id": "doki",
+    "name": "Doki",
+    "displayName": "Doki",
+    "coinId": 10000120,
+    "symbol": "Doki",
+    "decimals": 6,
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "odin",
+    "chainId": "odin-mainnet-freya",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://scan.odinprotocol.io",
+      "txPath": "/transactions/",
+      "accountPath": "/accounts/",
+      "sampleTx": "5A6E50A6F2927E4B8C87BB094D5FBF15F1287429A09111806FC44B3CD86CACA8",
+      "sampleAccount": "odin1fzjnsuwzxznqd3qlkt5njd4vvpcjqca6zckfux"
+    },
+    "info": {
+      "url": "https://odinprotocol.io/",
+      "client": "https://github.com/ODIN-PROTOCOL/networks/tree/master",
+      "clientPublic": "",
+      "clientDocs": ""
+    }
+  },
+  {
+    "id": "myrk",
+    "name": "MYRK",
+    "displayName": "MYRK",
+    "coinId": 10000121,
+    "symbol": "MYRK",
+    "decimals": 6,
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "odin",
+    "chainId": "odin-mainnet-freya",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://scan.odinprotocol.io",
+      "txPath": "/transactions/",
+      "accountPath": "/accounts/",
+      "sampleTx": "5A6E50A6F2927E4B8C87BB094D5FBF15F1287429A09111806FC44B3CD86CACA8",
+      "sampleAccount": "odin1fzjnsuwzxznqd3qlkt5njd4vvpcjqca6zckfux"
+    },
+    "info": {
+      "url": "https://odinprotocol.io/",
+      "client": "https://github.com/ODIN-PROTOCOL/networks/tree/master",
+      "clientPublic": "",
+      "clientDocs": ""
+    }
+  },
+  {
+    "id": "o9w",
+    "name": "O9W",
+    "displayName": "O9W",
+    "coinId": 10000122,
+    "symbol": "O9W",
+    "decimals": 6,
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "odin",
+    "chainId": "odin-mainnet-freya",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://scan.odinprotocol.io",
+      "txPath": "/transactions/",
+      "accountPath": "/accounts/",
+      "sampleTx": "5A6E50A6F2927E4B8C87BB094D5FBF15F1287429A09111806FC44B3CD86CACA8",
+      "sampleAccount": "odin1fzjnsuwzxznqd3qlkt5njd4vvpcjqca6zckfux"
+    },
+    "info": {
+      "url": "https://odinprotocol.io/",
+      "client": "https://github.com/ODIN-PROTOCOL/networks/tree/master",
+      "clientPublic": "",
+      "clientDocs": ""
+    }
   }
 ]
