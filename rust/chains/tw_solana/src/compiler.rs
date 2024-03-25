@@ -86,7 +86,9 @@ impl SolanaCompiler {
             let signature = ed25519::Signature::try_from(sign.as_slice())?;
             let pubkey = ed25519::sha512::PublicKey::try_from(pubkey.as_slice())?;
 
-            if !pubkey.verify(signature.clone(), data_to_sign.clone()) {
+            if !pubkey.verify(signature.clone(), data_to_sign.clone())
+                && !signature.to_bytes().is_zero()
+            {
                 return Err(SigningError(SigningErrorType::Error_signing));
             }
 

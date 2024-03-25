@@ -343,3 +343,81 @@ fn test_solana_compile_token_transfer_with_external_fee_payer() {
     assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded, "qjgNVBmoPDHNTN2ENQfxNVE57jWXpqdmu5GQX4msA7iK8ZRAnKpvbusQagv8CZGyNYti23p9jBsjTSx75ZU26UW5vgC8D88pusW8W5dp1ERo5DSfurMSYJ6afgQHdcuzn7exb8znSm6uV4y1cWgBRcuAGdg3wRpVhP8HEB1EeKgzjYVWvMSy6yR7qVrSL6BxHG6eiAMyahLFbEt4qBqLEdxxY7Dt4DyydVYmG2ZVtheaMHD3ACwCjpyPLXj399wxSgGXQQFGtzEJQw9awVezmJ4wZk6W4dDpXQvdKYaqUvwTwRZsQB5o2iekPWZXR9xvHiMLjMVBPzYgcU14ZSaCbqSNVv2pAJxP1sMvxZMNMzZPttPxCsDDGq9biC7exXwzesXSnZ3rsgEYeZtkUiBHAxR4rYqBpA6VzLs1bPx8MPTvr9mhNi2ezMBbg2nEfHV6Fz7H7rEY2g3jDtRz35Vmgits8s9RKi3kb73WtGUieRiXjiqkNhpvKkST1oEYRQ9");
 }
+
+#[test]
+fn test_solana_compile_transfer_with_zero_signature() {
+    let transfer = Proto::Transfer {
+        recipient: "3UVYmECPPMZSCqWKfENfuoTv51fTDTWicX9xmBD2euKe".into(),
+        value: 1000,
+        ..Proto::Transfer::default()
+    };
+    let input = Proto::SigningInput {
+        sender: "sp6VUqq1nDEuU83bU2hstmEYrJNipJYpwS7gZ7Jv7ZH".into(),
+        recent_blockhash: "TPJFTN4CjBn12HiBfAbGUhpD9zGvRSm2RcheFRA4Fyv".into(),
+        transaction_type: TransactionType::transfer_transaction(transfer),
+        ..Proto::SigningInput::default()
+    };
+
+    // Step 2: Obtain preimage hash
+    let mut pre_imager = PreImageHelper::<Proto::PreSigningOutput>::default();
+    let preimage_output = pre_imager.pre_image_hashes(CoinType::Solana, &input);
+
+    assert_eq!(preimage_output.error, SigningError::OK);
+    assert_eq!(
+        preimage_output.data.to_hex(),
+        "010001030d044a62d0a4dfe5a037a15b59fa4d4d0d3ab81103a2c10a6da08a4d058611c024c255a8bc3e8496217a2cd2a1894b9b9dcace04fcd9c0d599acdaaea40a1b61000000000000000000000000000000000000000000000000000000000000000006c25012cc11a599a45b3b2f7f8a7c65b0547fa0bb67170d7a0cd1eda4e2c9e501020200010c02000000e803000000000000"
+    );
+
+    // Step 3: Compile transaction info
+    let public_key = "0d044a62d0a4dfe5a037a15b59fa4d4d0d3ab81103a2c10a6da08a4d058611c0"
+        .decode_hex()
+        .unwrap();
+    let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
+
+    // Compile with zero signature
+    let signature = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        .decode_hex()
+        .unwrap();
+    let output = compiler.compile(CoinType::Solana, &input, vec![signature], vec![public_key]);
+    assert_eq!(output.error, SigningError::OK);
+    assert_eq!(output.encoded, "3md7BBV9wFjYGnMWcMNyAZcjca2HGfXWZkrU8vvho66z2sJMZFcx6HZdBiAddjo2kzgBv3uZoac3domBRjJJSXkbBvokxPZ8Lfa4BipQ5HdcJ2Fij2h7NHywnKFjDrgqfZ3YfUTEFreBy3MebYxQvgCaVhxGkxDwYc3Pvsoz4yQNMXTDrmgaqbhJzhV5WUXmqJeFMTyY8NguMLS6A9uP4iWe9RnMs2X5dFnhMPQzfCzL6wjVKJ99gRaqqDundDhdoYUdvgC17jY4pB9tMhL9bNBs9VwWu66dSYzQX");
+    assert_eq!(output.unsigned_tx, "87PYr2vKPjNPfwNmqTvhgkThhohTqFNKYJgCHcrUCeayX6daQs9AFvMA698MG9TknbSnUxNXaNaReatkevLDgiTG5FqcBgVHG5PLPrq3PCdKPLjAN9RMQJXM5i6KaVMDzGJGMfgSFMS4ecEjqumZX4nux9rhG4jpYaQbe5sgyYUetwMmemoNiCgW2qCFsGnTYR9rWSU7S9zF");
+}
+
+#[test]
+fn test_solana_compile_transfer_with_fake_signature() {
+    let transfer = Proto::Transfer {
+        recipient: "3UVYmECPPMZSCqWKfENfuoTv51fTDTWicX9xmBD2euKe".into(),
+        value: 1000,
+        ..Proto::Transfer::default()
+    };
+    let input = Proto::SigningInput {
+        sender: "sp6VUqq1nDEuU83bU2hstmEYrJNipJYpwS7gZ7Jv7ZH".into(),
+        recent_blockhash: "TPJFTN4CjBn12HiBfAbGUhpD9zGvRSm2RcheFRA4Fyv".into(),
+        transaction_type: TransactionType::transfer_transaction(transfer),
+        ..Proto::SigningInput::default()
+    };
+
+    // Step 2: Obtain preimage hash
+    let mut pre_imager = PreImageHelper::<Proto::PreSigningOutput>::default();
+    let preimage_output = pre_imager.pre_image_hashes(CoinType::Solana, &input);
+
+    assert_eq!(preimage_output.error, SigningError::OK);
+    assert_eq!(
+        preimage_output.data.to_hex(),
+        "010001030d044a62d0a4dfe5a037a15b59fa4d4d0d3ab81103a2c10a6da08a4d058611c024c255a8bc3e8496217a2cd2a1894b9b9dcace04fcd9c0d599acdaaea40a1b61000000000000000000000000000000000000000000000000000000000000000006c25012cc11a599a45b3b2f7f8a7c65b0547fa0bb67170d7a0cd1eda4e2c9e501020200010c02000000e803000000000000"
+    );
+
+    // Step 3: Compile transaction info
+    let public_key = "0d044a62d0a4dfe5a037a15b59fa4d4d0d3ab81103a2c10a6da08a4d058611c0"
+        .decode_hex()
+        .unwrap();
+    let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
+
+    // Compile with other fake signature
+    let signature = "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        .decode_hex()
+        .unwrap();
+    let output = compiler.compile(CoinType::Solana, &input, vec![signature], vec![public_key]);
+    assert_eq!(output.error, SigningError::Error_signing);
+}
