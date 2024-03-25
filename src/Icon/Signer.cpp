@@ -9,7 +9,6 @@
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
 
-#include <boost/multiprecision/cpp_int.hpp>
 #include <nlohmann/json.hpp>
 
 #include <algorithm>

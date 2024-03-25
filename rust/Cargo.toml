@@ -5,6 +5,7 @@ members = [
     "chains/tw_greenfield",
     "chains/tw_native_evmos",
     "chains/tw_native_injective",
+    "chains/tw_solana",
     "chains/tw_thorchain",
     "tw_any_coin",
     "tw_aptos",
@@ -27,6 +28,11 @@ members = [
     "tw_utxo",
     "wallet_core_rs",
 ]
+
+[profile.release]
+strip = true
+codegen-units = 1
+panic = "abort"
 
 [profile.wasm-test]
 inherits = "release"

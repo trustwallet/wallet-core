@@ -4,7 +4,6 @@
 
 pub mod address;
 pub mod context;
-pub mod hasher;
 pub mod modules;
 pub mod private_key;
 pub mod public_key;

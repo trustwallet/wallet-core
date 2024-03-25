@@ -16,8 +16,6 @@
 
 namespace TW::CommonTON {
 
-using uint128_t = CellBuilder::uint128_t;
-
 class CommonMsgInfo {
 public:
     virtual void writeTo(CellBuilder& builder) const = 0;

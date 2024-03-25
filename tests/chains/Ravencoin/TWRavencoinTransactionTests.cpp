@@ -81,7 +81,7 @@ TEST(RavencoinTransaction, LockScripts) {
     assertHexEqual(scriptData, "76a9149451f4546e09fc2e49ef9b5303924712ec2b038e88ac");
 
     // P2SH
-    // https://ravencoin.network/api/tx/f600d07814677d1f60545c8f7f71260238595c4928d6fb87caa0f9dd732e9bb5
+    // https://blockbook.ravencoin.org/tx/f600d07814677d1f60545c8f7f71260238595c4928d6fb87caa0f9dd732e9bb5
 
     auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(STRING("rPWwn5h4QFZNaz1XmY39rc73sdYGGDdmq1").get(), TWCoinTypeRavencoin));
     auto scriptData2 = WRAPD(TWBitcoinScriptData(script2.get()));

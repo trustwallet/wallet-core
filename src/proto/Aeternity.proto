@@ -11,10 +11,10 @@ message SigningInput {
     // Address of the recipient with "ak_" prefix
     string to_address = 2;
 
-    // Amount (uint256, serialized little endian)
+    // Amount (uint256, serialized big endian)
     bytes amount = 3;
 
-    // Fee amount (uint256, serialized little endian)
+    // Fee amount (uint256, serialized big endian)
     bytes fee = 4;
 
     // Message, optional

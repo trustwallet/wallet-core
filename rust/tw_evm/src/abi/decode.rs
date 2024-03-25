@@ -27,7 +27,7 @@ pub fn decode_params(params: &[Param], data: &[u8]) -> AbiResult<Vec<NamedToken>
 
     let named_tokens: Vec<_> = params
         .iter()
-        .zip(decoded_tokens.into_iter())
+        .zip(decoded_tokens)
         .map(|(param, value)| NamedToken::with_param_and_token(param, value))
         .collect();
     Ok(named_tokens)

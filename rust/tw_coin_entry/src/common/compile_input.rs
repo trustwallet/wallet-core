@@ -33,4 +33,20 @@ impl SingleSignaturePubkey {
             public_key,
         })
     }
+
+    pub fn from_sign_list(signatures: Vec<SignatureBytes>) -> SigningResult<Self> {
+        if signatures.len() > 1 {
+            return Err(SigningError(SigningErrorType::Error_no_support_n2n));
+        }
+
+        let signature = signatures
+            .into_iter()
+            .next()
+            .ok_or(SigningError(SigningErrorType::Error_signatures_count))?;
+
+        Ok(SingleSignaturePubkey {
+            signature,
+            public_key: PublicKeyBytes::default(),
+        })
+    }
 }

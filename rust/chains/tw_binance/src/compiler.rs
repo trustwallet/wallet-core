@@ -71,7 +71,9 @@ impl BinanceCompiler {
             public_key,
         } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
         let signature = BinanceSignature::try_from(signature.as_slice())?;
-        let public_key = Secp256PublicKey::from_bytes(coin, public_key.as_slice())?;
+        let public_key_params = None;
+        let public_key =
+            Secp256PublicKey::from_bytes(coin, public_key.as_slice(), public_key_params)?;
 
         let signature_bytes = signature.to_vec();
         let signature_json = JsonSerializer::<BinanceContext>::serialize_signature(

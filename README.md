@@ -6,12 +6,13 @@ It is a core part of the popular [Trust Wallet](https://trustwallet.com), and so
 Most of the code is C++ with a set of strict C interfaces, and idiomatic interfaces for supported languages:
 Swift for iOS and Java (Kotlin) for Android.
 
-![iOS CI](https://github.com/trustwallet/wallet-core/workflows/iOS%20CI/badge.svg)
-![Android CI](https://github.com/trustwallet/wallet-core/workflows/Android%20CI/badge.svg)
-![Linux CI](https://github.com/trustwallet/wallet-core/workflows/Linux%20CI/badge.svg)
-![Wasm CI](https://github.com/trustwallet/wallet-core/workflows/Wasm%20CI/badge.svg)
-![Kotlin CI](https://github.com/trustwallet/wallet-core/workflows/Kotlin%20CI/badge.svg)
-![Docker CI](https://github.com/trustwallet/wallet-core/workflows/Docker%20CI/badge.svg)
+[![iOS CI](https://github.com/trustwallet/wallet-core/actions/workflows/ios-ci.yml/badge.svg)](https://github.com/trustwallet/wallet-core/actions/workflows/ios-ci.yml)
+[![Android CI](https://github.com/trustwallet/wallet-core/actions/workflows/android-ci.yml/badge.svg)](https://github.com/trustwallet/wallet-core/actions/workflows/android-ci.yml)
+[![Linux CI](https://github.com/trustwallet/wallet-core/actions/workflows/linux-ci.yml/badge.svg)](https://github.com/trustwallet/wallet-core/actions/workflows/linux-ci.yml)
+[![Rust CI](https://github.com/trustwallet/wallet-core/actions/workflows/linux-ci-rust.yml/badge.svg)](https://github.com/trustwallet/wallet-core/actions/workflows/linux-ci-rust.yml)
+[![Wasm CI](https://github.com/trustwallet/wallet-core/actions/workflows/wasm-ci.yml/badge.svg)](https://github.com/trustwallet/wallet-core/actions/workflows/wasm-ci.yml)
+[![Kotlin CI](https://github.com/trustwallet/wallet-core/actions/workflows/kotlin-ci.yml/badge.svg)](https://github.com/trustwallet/wallet-core/actions/workflows/kotlin-ci.yml)
+[![Docker CI](https://github.com/trustwallet/wallet-core/actions/workflows/docker.yml/badge.svg)](https://github.com/trustwallet/wallet-core/actions/workflows/docker.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=TrustWallet_wallet-core&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=TrustWallet_wallet-core)
 
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/trustwallet/wallet-core)
@@ -101,7 +102,7 @@ Please check out the [Kotlin Multiplatform sample](https://github.com/trustwalle
 
 Projects using Trust Wallet Core. Add yours too!
 
-[<img src="https://trustwallet.com/assets/images/trust_logotype.svg" alt="Trust Wallet"/>](https://trustwallet.com)
+[<img src="https://trustwallet.com/icon.svg" alt="Trust Wallet"/>](https://trustwallet.com)
 
 [Coinpaprika](https://coinpaprika.com/)
 | [crypto.com](https://crypto.com)

@@ -21,8 +21,6 @@ pub use quick_protobuf::{
     Error as ProtoError, MessageRead, MessageWrite, Result as ProtoResult,
 };
 
-pub mod ffi;
-
 /// Serializes a Protobuf message without the length prefix.
 /// Please note that [`quick_protobuf::serialize_into_vec`] appends a `varint32` length prefix.
 pub fn serialize<T: MessageWrite>(message: &T) -> ProtoResult<Vec<u8>> {
@@ -46,7 +44,15 @@ where
     T: MessageInfo + MessageWrite,
 {
     let value = serialize(message).expect("Protobuf serialization should never fail");
-    let type_url = format!("/{}", T::PATH);
+    let type_url = type_url::<T>();
+    google::protobuf::Any { type_url, value }
+}
+
+pub fn to_any_with_type_url<T>(message: &T, type_url: String) -> google::protobuf::Any
+where
+    T: MessageInfo + MessageWrite,
+{
+    let value = serialize(message).expect("Protobuf serialization should never fail");
     google::protobuf::Any { type_url, value }
 }
 

@@ -44,7 +44,7 @@ pub fn taproot_build_and_sign_transaction(
         } else {
             legacy
                 .private_key
-                .get(0)
+                .first()
                 .ok_or_else(|| Error::from(Proto::Error::Error_legacy_no_private_key))?
         };
 
@@ -79,7 +79,7 @@ pub fn taproot_build_and_sign_transaction(
         version: 2,
         private_key: legacy
             .private_key
-            .get(0)
+            .first()
             .map(|pk| pk.to_vec().into())
             .unwrap_or_default(),
         lock_time: Some(lock_time),

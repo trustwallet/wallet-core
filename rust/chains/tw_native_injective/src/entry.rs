@@ -11,8 +11,9 @@ use tw_coin_entry::error::AddressResult;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
+use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
-use tw_cosmos_sdk::address::{Address, Bech32Prefix, CosmosAddress};
+use tw_cosmos_sdk::address::{Address, Bech32Prefix};
 use tw_cosmos_sdk::modules::compiler::tw_compiler::TWTransactionCompiler;
 use tw_cosmos_sdk::modules::signer::tw_signer::TWSigner;
 use tw_keypair::tw;
@@ -27,19 +28,22 @@ impl CoinEntry for NativeInjectiveEntry {
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = Proto::SigningOutput<'static>;
     type PreSigningOutput = CompilerProto::PreSigningOutput<'static>;
+
+    // Optional modules:
     type JsonSigner = NoJsonSigner;
     type PlanBuilder = NoPlanBuilder;
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
+    type TransactionDecoder = NoTransactionDecoder;
 
     #[inline]
     fn parse_address(
         &self,
         coin: &dyn CoinContext,
         address: &str,
-        _prefix: Option<Self::AddressPrefix>,
+        prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        Address::from_str_with_coin(coin, address)
+        Address::from_str_with_coin_and_prefix(coin, address.to_string(), prefix)
     }
 
     #[inline]

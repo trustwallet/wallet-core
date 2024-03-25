@@ -11,7 +11,6 @@
 
 #include <list>
 
-#include <boost/any.hpp>
 #include <gtest/gtest.h>
 
 namespace TW::Ontology::tests {

@@ -141,6 +141,9 @@ enum OpCode {
    OP_NOP9 [[maybe_unused]] = 0xb8,
    OP_NOP10 [[maybe_unused]] = 0xb9,
 
+    // firo, see: https://github.com/firoorg/firo/blob/8bd4abdea223e22f15c36e7d2d42618dc843e2ef/src/script/script.h#L212
+   OP_EXCHANGEADDR = 0xe0,
+
    OP_INVALIDOPCODE [[maybe_unused]] = 0xff,
 };
 

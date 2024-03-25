@@ -4,8 +4,8 @@
 
 #include "../BinaryCoding.h"
 #include "Name.h"
+#include "algorithm/string.hpp"
 
-#include <boost/algorithm/string/trim.hpp>
 #include <stdexcept>
 
 namespace TW::EOS {
@@ -50,7 +50,7 @@ std::string Name::string() const noexcept {
         tmp >>= 5;
     }
 
-    boost::algorithm::trim_right_if(str, [](char c) { return c == '.'; });
+    trim_right(str, ".");
     return str;
 }
 

@@ -11,6 +11,7 @@
 #include "Cell.h"
 #include "CellSlice.h"
 #include "RawAddress.h"
+#include "uint256.h"
 
 namespace TW::CommonTON {
 
@@ -20,8 +21,6 @@ class CellBuilder {
     std::vector<Cell::Ref> references{};
 
 public:
-    using uint128_t = boost::multiprecision::uint128_t;
-
     CellBuilder() = default;
     CellBuilder(Data& appendedData, uint16_t bits);
 

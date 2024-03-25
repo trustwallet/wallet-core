@@ -80,10 +80,11 @@ impl Compiler<StandardBitcoinContext> {
             ));
         }
 
-        // If the input selector is InputSelector::SelectAscending, we sort the
-        // input first.
+        // If enabled, sort the order of the UTXOs.
         if let Proto::InputSelector::SelectAscending = proto.input_selector {
             proto.inputs.sort_by(|a, b| a.value.cmp(&b.value));
+        } else if let Proto::InputSelector::SelectDescending = proto.input_selector {
+            proto.inputs.sort_by(|a, b| b.value.cmp(&a.value));
         }
 
         // Add change output generation is enabled, push it to the proto structure.
@@ -128,7 +129,9 @@ impl Compiler<StandardBitcoinContext> {
                     proto.inputs.push(txin);
                 }
             },
-            Proto::InputSelector::SelectInOrder | Proto::InputSelector::SelectAscending => {
+            Proto::InputSelector::SelectInOrder
+            | Proto::InputSelector::SelectAscending
+            | Proto::InputSelector::SelectDescending => {
                 let mut total_input_amount = 0;
                 let mut total_input_weight = 0;
 
@@ -179,7 +182,7 @@ impl Compiler<StandardBitcoinContext> {
         let weight_estimate = tx.weight().to_wu() + total_input_weight;
         let fee_estimate = (weight_estimate + 3) / 4 * proto.weight_base;
 
-        // Check if there are enough inputs to cover the the full output and fee estimate.
+        // Check if there are enough inputs to cover the full output and fee estimate.
         if total_input_amount < total_output_amount + fee_estimate {
             return Err(Error::from(Proto::Error::Error_insufficient_inputs));
         }
