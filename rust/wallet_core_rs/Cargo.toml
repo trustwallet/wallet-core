@@ -35,7 +35,7 @@ tw_any_coin = { path = "../tw_any_coin", optional = true }
 tw_bitcoin = { path = "../tw_bitcoin", optional = true }
 tw_coin_registry = { path = "../tw_coin_registry", optional = true }
 tw_encoding = { path = "../tw_encoding", optional = true }
-tw_ethereum = { path = "../tw_ethereum", optional = true }
+tw_ethereum = { path = "../chains/tw_ethereum", optional = true }
 tw_hash = { path = "../tw_hash", optional = true }
 tw_keypair = { path = "../tw_keypair", optional = true }
 tw_memory = { path = "../tw_memory", optional = true }
