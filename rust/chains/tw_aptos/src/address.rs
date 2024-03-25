@@ -6,25 +6,10 @@ use move_core_types::account_address::{AccountAddress, AccountAddressParseError}
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_coin_entry::error::AddressError;
 use tw_hash::sha3::sha3_256;
 use tw_keypair::ed25519;
 use tw_memory::Data;
-
-pub trait AptosAddress: FromStr<Err = AddressError> + Into<Address> {
-    /// Tries to parse an address from the string representation.
-    /// Returns `Ok(None)` if the given `s` string is empty.
-    #[inline]
-    fn from_str_optional(s: &str) -> AddressResult<Option<Self>> {
-        if s.is_empty() {
-            return Ok(None);
-        }
-
-        Self::from_str(s).map(Some)
-    }
-}
-
-impl AptosAddress for Address {}
 
 #[repr(u8)]
 pub enum Scheme {

@@ -2010,7 +2010,10 @@ dependencies = [
 name = "tw_sui"
 version = "0.1.0"
 dependencies = [
+ "move-core-types",
  "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
  "tw_keypair",
  "tw_memory",
  "tw_proto",

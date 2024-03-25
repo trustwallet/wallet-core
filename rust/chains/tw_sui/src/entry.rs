@@ -9,7 +9,7 @@ use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
-use tw_coin_entry::error::AddressResult;
+use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
@@ -40,10 +40,10 @@ impl CoinEntry for SuiEntry {
     fn parse_address(
         &self,
         _coin: &dyn CoinContext,
-        _address: &str,
+        address: &str,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        SuiAddress::from_str(address)
     }
 
     #[inline]
@@ -59,11 +59,14 @@ impl CoinEntry for SuiEntry {
     fn derive_address(
         &self,
         _coin: &dyn CoinContext,
-        _public_key: PublicKey,
+        public_key: PublicKey,
         _derivation: Derivation,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        let ed25519_public = public_key
+            .to_ed25519()
+            .ok_or(AddressError::PublicKeyTypeMismatch)?;
+        SuiAddress::with_ed25519_pubkey(ed25519_public)
     }
 
     #[inline]
