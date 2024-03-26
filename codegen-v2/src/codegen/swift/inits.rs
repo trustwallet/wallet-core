@@ -20,7 +20,7 @@ pub(super) fn process_inits(
 
     for init in inits {
         if !init.name.starts_with(object.name()) {
-            // Init is not assciated with the object.
+            // Init is not associated with the object.
             skipped_inits.push(init);
             continue;
         }
