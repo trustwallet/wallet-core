@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use move_core_types::account_address::AccountAddress;
+use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
@@ -17,7 +18,7 @@ pub enum Scheme {
     Ed25519 = 0,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct SuiAddress(AccountAddress);
 
 impl SuiAddress {

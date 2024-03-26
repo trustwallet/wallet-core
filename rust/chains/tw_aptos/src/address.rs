@@ -23,8 +23,8 @@ pub struct Address {
 
 impl Address {
     pub const LENGTH: usize = AccountAddress::LENGTH;
-    /// Initializes an address with a `ed25519` public key.
 
+    /// Initializes an address with a `ed25519` public key.
     pub fn with_ed25519_pubkey(
         pubkey: &ed25519::sha512::PublicKey,
     ) -> Result<Address, AddressError> {
