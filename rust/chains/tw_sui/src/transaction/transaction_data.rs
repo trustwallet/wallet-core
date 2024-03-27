@@ -181,6 +181,12 @@ impl TransactionData {
             gas_price,
         ))
     }
+
+    pub fn sender(&self) -> SuiAddress {
+        match self {
+            TransactionData::V1(v1) => v1.sender,
+        }
+    }
 }
 
 #[derive(Deserialize, Serialize)]
