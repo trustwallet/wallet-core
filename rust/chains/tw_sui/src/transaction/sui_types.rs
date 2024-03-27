@@ -5,6 +5,7 @@
 use crate::address::SuiAddress;
 use crate::constants::{SUI_SYSTEM_STATE_OBJECT_ID, SUI_SYSTEM_STATE_OBJECT_SHARED_VERSION};
 use move_core_types::account_address::AccountAddress;
+use serde::{Deserialize, Serialize};
 use tw_hash::H256;
 use tw_memory::Data;
 
@@ -12,19 +13,13 @@ pub type ObjectDigest = H256;
 pub type ObjectRef = (ObjectID, SequenceNumber, ObjectDigest);
 pub type EpochId = u64;
 
-pub struct Object1Ref {
-    pub id: ObjectID,
-    pub version: SequenceNumber,
-    pub digest: ObjectDigest,
-}
-
-#[derive(Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Hash, Default, Debug)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
 pub struct SequenceNumber(pub u64);
 
-#[derive(Debug, Eq, PartialEq, Clone, Copy, PartialOrd, Ord, Hash)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct ObjectID(pub AccountAddress);
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+#[derive(Deserialize, Serialize)]
 pub enum CallArg {
     // contains no structs or objects
     Pure(Data),
@@ -36,7 +31,7 @@ impl CallArg {
     pub const SUI_SYSTEM_MUT: Self = Self::Object(ObjectArg::SUI_SYSTEM_MUT);
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Deserialize, PartialEq, Serialize)]
 pub enum ObjectArg {
     // A Move object, either immutable, or owned mutable.
     ImmOrOwnedObject(ObjectRef),
@@ -63,7 +58,7 @@ impl ObjectArg {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+#[derive(Deserialize, Serialize)]
 pub struct GasData {
     pub payment: Vec<ObjectRef>,
     pub owner: SuiAddress,
@@ -71,7 +66,7 @@ pub struct GasData {
     pub budget: u64,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Deserialize, Serialize)]
 pub enum TransactionExpiration {
     /// The transaction has no expiration
     None,

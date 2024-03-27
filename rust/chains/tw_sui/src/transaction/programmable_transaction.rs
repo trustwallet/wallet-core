@@ -8,13 +8,13 @@ use crate::transaction::sui_types::{CallArg, ObjectArg, ObjectID, ObjectRef};
 use indexmap::IndexMap;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::TypeTag;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_encoding::bcs;
 
 /// A series of commands where the results of one command can be used in future
 /// commands
-#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+#[derive(Deserialize, Serialize)]
 pub struct ProgrammableTransaction {
     /// Input objects or primitive values
     pub inputs: Vec<CallArg>,
@@ -23,7 +23,7 @@ pub struct ProgrammableTransaction {
     pub commands: Vec<Command>,
 }
 
-#[derive(PartialEq, Eq, Hash)]
+#[derive(Eq, Hash, PartialEq)]
 enum BuilderArg {
     Object(ObjectID),
     Pure(Vec<u8>),

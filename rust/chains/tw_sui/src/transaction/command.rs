@@ -5,9 +5,10 @@
 use crate::transaction::sui_types::ObjectID;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::TypeTag;
+use serde::{Deserialize, Serialize};
 
 /// A single command in a programmable transaction.
-#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+#[derive(Deserialize, Serialize)]
 pub enum Command {
     /// A call to either an entry or a public Move function
     MoveCall(Box<ProgrammableMoveCall>),
@@ -48,7 +49,7 @@ impl Command {
 
 /// The command for calling a Move function, either an entry function or a public
 /// function (which cannot return references).
-#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+#[derive(Deserialize, Serialize)]
 pub struct ProgrammableMoveCall {
     /// The package containing the module and function.
     pub package: ObjectID,
@@ -63,7 +64,7 @@ pub struct ProgrammableMoveCall {
 }
 
 /// An argument to a programmable transaction command
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Clone, Copy, Deserialize, Serialize)]
 pub enum Argument {
     /// The gas coin. The gas coin can only be used by-ref, except for with
     /// `TransferObjects`, which can use it by-value.
