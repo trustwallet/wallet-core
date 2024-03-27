@@ -19,43 +19,14 @@ pub struct TransactionBuilder;
 impl TransactionBuilder {
     pub fn request_add_stake(
         signer: SuiAddress,
-        // TODO ObjectRef as a struct
         coins: Vec<ObjectRef>,
         amount: Option<u64>,
         validator: SuiAddress,
-        // TODO it was optional
         gas: ObjectRef,
         gas_budget: u64,
         gas_price: u64,
     ) -> SigningResult<TransactionData> {
-        // let gas_price = self.0.get_reference_gas_price().await?;
-        // let gas = self
-        //     .select_gas(signer, gas, gas_budget, coins.clone(), gas_price)
-        //     .await?;
-
         let obj_vec: Vec<_> = coins.into_iter().map(ObjectArg::ImmOrOwnedObject).collect();
-
-        // let mut obj_vec = vec![];
-        // let oref = coins
-        //     .pop()
-        //     .ok_or_else(|| anyhow!("Coins input should contain at lease one coin object."))?;
-        // let (oref, coin_type) = self.get_object_ref_and_type(coin).await?;
-        //
-        // let ObjectType::Struct(type_) = &coin_type else {
-        //     return Err(anyhow!("Provided object [{coin}] is not a move object."));
-        // };
-        // ensure!(
-        //     type_.is_coin(),
-        //     "Expecting either Coin<T> input coin objects. Received [{type_}]"
-        // );
-        // for coin_ref in coins {
-        //     let (oref, type_) = self.get_object_ref_and_type(coin).await?;
-        //     ensure!(
-        //         type_ == coin_type,
-        //         "All coins should be the same type, expecting {coin_type}, got {type_}."
-        //     );
-        //     obj_vec.push(ObjectArg::ImmOrOwnedObject(coin_ref))
-        // }
 
         let pt = {
             let mut builder = ProgrammableTransactionBuilder::default();
@@ -93,10 +64,6 @@ impl TransactionBuilder {
         gas_budget: u64,
         gas_price: u64,
     ) -> SigningResult<TransactionData> {
-        // let staked_sui = self.get_object_ref(staked_sui).await?;
-        // let gas = self
-        //     .select_gas(signer, gas, gas_budget, vec![], gas_price)
-        //     .await?;
         TransactionData::new_move_call(
             signer,
             SUI_SYSTEM_PACKAGE_ID,
@@ -115,7 +82,8 @@ impl TransactionBuilder {
 
     /// Send `Coin<T>` to a list of addresses, where T can be any coin type, following a list of amounts.
     /// The object specified in the gas field will be used to pay the gas fee for the transaction.
-    /// The gas object can not appear in input_coins. If the gas object is not specified, the RPC server will auto-select one.
+    /// The gas object can not appear in input_coins.
+    /// https://docs.sui.io/sui-api-ref#unsafe_pay
     #[allow(clippy::too_many_arguments)]
     pub fn pay(
         &self,
@@ -123,7 +91,6 @@ impl TransactionBuilder {
         input_coins: Vec<ObjectRef>,
         recipients: Vec<SuiAddress>,
         amounts: Vec<u64>,
-        // TODO was Optional
         gas: ObjectRef,
         gas_budget: u64,
         gas_price: u64,
@@ -132,19 +99,6 @@ impl TransactionBuilder {
             // Gas coin is in input coins of Pay transaction, use PaySui transaction instead!.
             return Err(SigningError(SigningErrorType::Error_invalid_params));
         }
-
-        // let handles: Vec<_> = input_coins
-        //     .iter()
-        //     .map(|id| self.get_object_ref(*id))
-        //     .collect();
-        // let coin_refs = join_all(handles)
-        //     .await
-        //     .into_iter()
-        //     .collect::<anyhow::Result<Vec<ObjectRef>>>()?;
-        // let gas_price = self.0.get_reference_gas_price().await?;
-        // let gas = self
-        //     .select_gas(signer, gas, gas_budget, input_coins, gas_price)
-        //     .await?;
 
         TransactionData::new_pay(
             signer,
@@ -157,6 +111,9 @@ impl TransactionBuilder {
         )
     }
 
+    /// Send SUI coins to a list of addresses, following a list of amounts.
+    /// This is for SUI coin only and does not require a separate gas coin object.
+    /// https://docs.sui.io/sui-api-ref#unsafe_paysui
     pub fn pay_sui(
         &self,
         signer: SuiAddress,
@@ -171,18 +128,7 @@ impl TransactionBuilder {
             return Err(SigningError(SigningErrorType::Error_invalid_params));
         }
 
-        // let handles: Vec<_> = input_coins
-        //     .into_iter()
-        //     .map(|id| self.get_object_ref(id))
-        //     .collect();
-        // let mut coin_refs = join_all(handles)
-        //     .await
-        //     .into_iter()
-        //     .collect::<anyhow::Result<Vec<ObjectRef>>>()?;
-
-        // [0] is safe because input_coins is non-empty and coins are of same length as input_coins.
         let gas_object_ref = input_coins.remove(0);
-
         TransactionData::new_pay_sui(
             signer,
             input_coins,
@@ -194,6 +140,9 @@ impl TransactionBuilder {
         )
     }
 
+    /// Send all SUI coins to one recipient.
+    /// This is for SUI coin only and does not require a separate gas coin object.
+    /// https://docs.sui.io/sui-api-ref#unsafe_payallsui
     pub fn pay_all_sui(
         &self,
         signer: SuiAddress,
@@ -207,19 +156,7 @@ impl TransactionBuilder {
             return Err(SigningError(SigningErrorType::Error_invalid_params));
         }
 
-        // let handles: Vec<_> = input_coins
-        //     .into_iter()
-        //     .map(|id| self.get_object_ref(id))
-        //     .collect();
-        //
-        // let mut coin_refs = join_all(handles)
-        //     .await
-        //     .into_iter()
-        //     .collect::<anyhow::Result<Vec<ObjectRef>>>()?;
-
-        // [0] is safe because input_coins is non-empty and coins are of same length as input_coins.
         let gas_object_ref = input_coins.remove(0);
-
         Ok(TransactionData::new_pay_all_sui(
             signer,
             input_coins,
