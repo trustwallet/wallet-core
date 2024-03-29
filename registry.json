@@ -4633,7 +4633,7 @@
     "id": "merlin",
     "name": "Merlin",
     "coinId": 4200,
-    "symbol": "ETH",
+    "symbol": "BTC",
     "decimals": 18,
     "blockchain": "Ethereum",
     "derivation": [
