@@ -5,6 +5,7 @@
 #include "Cell.h"
 
 #include <cassert>
+#include <cstring>
 #include <map>
 #include <optional>
 #include <unordered_map>
