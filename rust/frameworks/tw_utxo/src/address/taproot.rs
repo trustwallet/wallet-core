@@ -57,7 +57,7 @@ impl TaprootAddress {
     ///
     /// * P2TR key-path: which is used for "normal" balance transfers and is
     ///   internally _tweaked_ with an empty (None) merkle root.
-    /// * P2TR script-path: which is used for more complex scripts, such as
+    /// * P2TR script-path: which is used for complex scripts, such as
     ///   Ordinals/BRC20, and is internally _tweaked_ with a merkle root of all
     ///   possible spending conditions.
     pub fn p2tr_with_coin_and_prefix(
@@ -80,12 +80,12 @@ impl TaprootAddress {
 
         // Convert the native `H256` to `TapNodeHash` from the `bitcoin` crate.
         let merkle_root = merkle_root.map(|hash| {
-            let hash = <bitcoin::hashes::sha256t::Hash<_> as bitcoin::hashes::Hash>::from_slice(
+            let tap_hash = <bitcoin::hashes::sha256t::Hash<_> as bitcoin::hashes::Hash>::from_slice(
                 hash.as_slice(),
             )
             .expect("merkle_root length is 32 bytes");
 
-            bitcoin::taproot::TapNodeHash::from_raw_hash(hash)
+            bitcoin::taproot::TapNodeHash::from_raw_hash(tap_hash)
         });
 
         // Tweak the public key with the (empty) merkle root.

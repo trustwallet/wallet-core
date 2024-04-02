@@ -53,19 +53,19 @@ fn build_tx_input_selection() {
 
     let out1 = OutputBuilder::new()
         .amount(1_000)
-        .p2pkh(bob_pubkey.clone())
+        .p2pkh(&bob_pubkey)
         .unwrap();
 
     let out2 = OutputBuilder::new()
         .amount(1_000)
-        .p2pkh(bob_pubkey)
+        .p2pkh(&bob_pubkey)
         .unwrap();
 
     // Create the change output. The exact amount will be calculated in the
     // `SelectionBuilder`.
     let change_output = OutputBuilder::new()
         .amount(0)
-        .p2pkh(alice_pubkey.clone())
+        .p2pkh(&alice_pubkey)
         .unwrap();
 
     let (tx, args) = TransactionBuilder::new()

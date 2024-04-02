@@ -44,7 +44,7 @@ fn build_tx_input_legacy_output_legacy() {
 
     let output1 = OutputBuilder::new()
         .amount(50 * 100_000_000 - 1_000_000)
-        .p2pkh(bob_pubkey)
+        .p2pkh(&bob_pubkey)
         .unwrap();
 
     let (tx, args) = TransactionBuilder::new()
@@ -105,7 +105,7 @@ fn build_tx_input_legacy_output_segwit() {
 
     let output1 = OutputBuilder::new()
         .amount(50 * 100_000_000 - 1_000_000)
-        .p2wpkh(bob_pubkey)
+        .p2wpkh(&bob_pubkey)
         .unwrap();
 
     let (tx, args) = TransactionBuilder::new()
@@ -166,7 +166,7 @@ fn build_tx_input_segwit_output_segwit() {
 
     let output1 = OutputBuilder::new()
         .amount(50 * 100_000_000 - 1_000_000 - 1_000_000)
-        .p2wpkh(alice_pubkey)
+        .p2wpkh(&alice_pubkey)
         .unwrap();
 
     let (tx, args) = TransactionBuilder::new()
@@ -227,7 +227,7 @@ fn build_tx_input_legacy_output_taproot() {
 
     let output1 = OutputBuilder::new()
         .amount(50 * 100_000_000 - 1_000_000)
-        .p2tr_key_path(bob_pubkey)
+        .p2tr_key_path(&bob_pubkey)
         .unwrap();
 
     let (tx, args) = TransactionBuilder::new()
@@ -288,7 +288,7 @@ fn build_tx_input_taproot_output_taproot() {
 
     let output1 = OutputBuilder::new()
         .amount(50 * 100_000_000 - 1_000_000 - 1_000_000)
-        .p2tr_key_path(alice_pubkey)
+        .p2tr_key_path(&alice_pubkey)
         .unwrap();
 
     let (tx, args) = TransactionBuilder::new()
@@ -345,7 +345,7 @@ fn build_tx_input_segwit_output_brc20_transfer_commit() {
 
     let output2 = OutputBuilder::new()
         .amount(16_400)
-        .p2wpkh(alice_pubkey.clone())
+        .p2wpkh(&alice_pubkey)
         .unwrap();
 
     let (tx, args) = TransactionBuilder::new()
@@ -399,7 +399,7 @@ fn build_tx_input_brc20_transfer_commit_output_brc20_transfer_reveal() {
 
     let output1 = OutputBuilder::new()
         .amount(546)
-        .p2wpkh(alice_pubkey.clone())
+        .p2wpkh(&alice_pubkey)
         .unwrap();
 
     let (tx, args) = TransactionBuilder::new()
