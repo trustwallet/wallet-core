@@ -21,7 +21,7 @@ pub(super) fn process_methods(
 
     for func in functions {
         if !func.name.starts_with(object.name()) {
-            // Function is not assciated with the object.
+            // Function is not associated with the object.
             skipped_funcs.push(func);
             continue;
         }
