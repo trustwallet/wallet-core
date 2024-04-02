@@ -474,7 +474,7 @@
     "id": "ethereum",
     "name": "Ethereum",
     "coinId": 60,
-    "symbol": "BTC",
+    "symbol": "ETH",
     "decimals": 18,
     "blockchain": "Ethereum",
     "derivation": [
@@ -4633,7 +4633,7 @@
     "id": "merlin",
     "name": "Merlin",
     "coinId": 4200,
-    "symbol": "ETH",
+    "symbol": "BTC",
     "decimals": 18,
     "blockchain": "Ethereum",
     "derivation": [
