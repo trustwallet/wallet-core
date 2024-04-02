@@ -1,6 +1,9 @@
+use std::str::FromStr;
+
 use crate::{Error, Result};
 use tw_base58_address::Base58Address;
 use tw_bech32_address::Bech32Address;
+use tw_coin_entry::coin_context::CoinContext;
 use tw_encoding::base58::Alphabet;
 use tw_hash::hasher::Hasher;
 use tw_hash::{H160, H256};
@@ -11,6 +14,7 @@ use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto::mod_Input::mod_InputBuilder::OneOfvariant;
 use tw_proto::BitcoinV2::Proto::mod_ToPublicKeyOrHash::OneOfto_address;
 use tw_proto::BitcoinV2::Proto::{self, mod_Output};
+use tw_utxo::address::standard_bitcoin::StandardBitcoinAddress;
 use tw_utxo::script::{Script, Witness};
 use tw_utxo::sighash_computer::{SpendingData, UtxoToSign};
 use tw_utxo::transaction::standard_transaction::builder::{
@@ -273,7 +277,8 @@ pub fn proto_output_to_native(
             Ok((out, tx_out))
         },
         Proto::mod_Output::OneOfto_recipient::from_address(addr) => {
-            address_to_native(addr.as_ref(), output.value)
+            let address = StandardBitcoinAddress::from_str(addr).unwrap();
+            todo!()
         },
         Proto::mod_Output::OneOfto_recipient::None => todo!(),
     }

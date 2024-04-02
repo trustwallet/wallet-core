@@ -58,6 +58,7 @@ impl TryFrom<AddressPrefix> for StandardBitcoinPrefix {
 ///
 /// The set of address types can differ for Bitcoin forks.
 /// For example, Zcash does not support segwit addresses.
+#[derive(Debug, Eq, PartialEq)]
 pub enum StandardBitcoinAddress {
     Legacy(LegacyAddress),
     Segwit(SegwitAddress),

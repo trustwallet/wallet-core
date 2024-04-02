@@ -17,6 +17,7 @@ pub const BITCOIN_ADDRESS_CHECKSUM_SIZE: usize = 4;
 
 type BitcoinBase58Address = Base58Address<BITCOIN_ADDRESS_SIZE, BITCOIN_ADDRESS_CHECKSUM_SIZE>;
 
+#[derive(Debug, Eq, PartialEq)]
 pub struct LegacyAddress(BitcoinBase58Address);
 
 impl LegacyAddress {
@@ -35,6 +36,7 @@ impl LegacyAddress {
             .to_secp256k1()
             .ok_or(AddressError::PublicKeyTypeMismatch)?
             .compressed();
+
         let mut public_key_hash = sha256_ripemd(public_key_bytes.as_slice());
 
         // Insert the P2PKH prefix to the beginning of the address bytes array.

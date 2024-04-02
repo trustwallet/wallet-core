@@ -7,7 +7,6 @@ use core::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::{AddressError, AddressResult};
-use tw_hash::hasher::sha256_ripemd;
 use tw_hash::H256;
 use tw_keypair::tw;
 use tw_memory::Data;
@@ -180,8 +179,7 @@ impl FromStr for TaprootAddress {
 
         // Check encoding.
         match (version, checksum_variant) {
-            (0, bech32::Variant::Bech32) => (),
-            (_, bech32::Variant::Bech32m) => (),
+            (1, bech32::Variant::Bech32m) => (),
             _ => return Err(AddressError::InvalidInput),
         }
 
