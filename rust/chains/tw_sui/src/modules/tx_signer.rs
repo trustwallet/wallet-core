@@ -70,8 +70,12 @@ pub struct IntentMessage<T> {
 }
 
 pub struct TransactionPreimage {
-    pub tx_data: Data,
-    pub tx_hash: H256,
+    /// Transaction `bcs` encoded representation.
+    pub unsigned_tx_data: Data,
+    /// [`TransactionPreimage::unsigned_tx_data`] extended with the `IntentMessage`.
+    pub tx_data_to_sign: Data,
+    /// Hash of the [`TransactionPreimage::tx_data_to_sign`].
+    pub tx_hash_to_sign: H256,
 }
 
 pub struct TxSigner;
@@ -89,12 +93,14 @@ impl TxSigner {
         }
 
         let preimage = Self::preimage(tx)?;
-        let signature = signer_key.sign(preimage.tx_hash.into_vec())?;
+        let signature = signer_key.sign(preimage.tx_hash_to_sign.into_vec())?;
         let signature_info = SuiSignatureInfo::ed25519(&signature, public_key);
         Ok((preimage, signature_info))
     }
 
     pub fn preimage(tx: &TransactionData) -> SigningResult<TransactionPreimage> {
+        let unsigned_tx_data =
+            bcs::encode(tx).map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?;
         let tx_intent = IntentMessage {
             intent: Intent {
                 scope: IntentScope::TransactionData,
@@ -104,11 +110,15 @@ impl TxSigner {
             value: tx,
         };
 
-        let tx_data = bcs::encode(&tx_intent)
+        let tx_data_to_sign = bcs::encode(&tx_intent)
             .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?;
-        let tx_hash = blake2_b(&tx_data, H256::LEN)
+        let tx_hash_to_sign = blake2_b(&tx_data_to_sign, H256::LEN)
             .and_then(|hash| H256::try_from(hash.as_slice()))
             .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
-        Ok(TransactionPreimage { tx_data, tx_hash })
+        Ok(TransactionPreimage {
+            unsigned_tx_data,
+            tx_data_to_sign,
+            tx_hash_to_sign,
+        })
     }
 }

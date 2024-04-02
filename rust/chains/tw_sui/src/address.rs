@@ -38,6 +38,10 @@ impl SuiAddress {
             .map(SuiAddress)
             .map_err(|_| AddressError::Internal)
     }
+
+    pub fn into_inner(self) -> AccountAddress {
+        self.0
+    }
 }
 
 impl FromStr for SuiAddress {

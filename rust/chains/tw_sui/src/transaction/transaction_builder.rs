@@ -86,7 +86,6 @@ impl TransactionBuilder {
     /// https://docs.sui.io/sui-api-ref#unsafe_pay
     #[allow(clippy::too_many_arguments)]
     pub fn pay(
-        &self,
         signer: SuiAddress,
         input_coins: Vec<ObjectRef>,
         recipients: Vec<SuiAddress>,
@@ -115,7 +114,6 @@ impl TransactionBuilder {
     /// This is for SUI coin only and does not require a separate gas coin object.
     /// https://docs.sui.io/sui-api-ref#unsafe_paysui
     pub fn pay_sui(
-        &self,
         signer: SuiAddress,
         mut input_coins: Vec<ObjectRef>,
         recipients: Vec<SuiAddress>,
@@ -144,7 +142,6 @@ impl TransactionBuilder {
     /// This is for SUI coin only and does not require a separate gas coin object.
     /// https://docs.sui.io/sui-api-ref#unsafe_payallsui
     pub fn pay_all_sui(
-        &self,
         signer: SuiAddress,
         mut input_coins: Vec<ObjectRef>,
         recipient: SuiAddress,

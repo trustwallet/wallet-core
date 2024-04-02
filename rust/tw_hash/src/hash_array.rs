@@ -173,28 +173,25 @@ impl<const N: usize> fmt::Display for Hash<N> {
 }
 
 #[cfg(feature = "serde")]
-mod impl_serde {
+pub mod as_bytes {
     use super::Hash;
     use serde::de::Error;
-    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+    use serde::{Deserialize, Deserializer, Serializer};
+    use tw_memory::Data;
 
-    impl<'de, const N: usize> Deserialize<'de> for Hash<N> {
-        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-        where
-            D: Deserializer<'de>,
-        {
-            let hex = String::deserialize(deserializer)?;
-            hex.parse().map_err(|e| Error::custom(format!("{e:?}")))
-        }
+    pub fn deserialize<'de, const N: usize, D>(deserializer: D) -> Result<Hash<N>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let bytes = Data::deserialize(deserializer)?;
+        Hash::<N>::try_from(bytes.as_slice()).map_err(|e| Error::custom(format!("{e:?}")))
     }
 
-    impl<const N: usize> Serialize for Hash<N> {
-        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: Serializer,
-        {
-            self.to_string().serialize(serializer)
-        }
+    pub fn serialize<const N: usize, S>(hash: &Hash<N>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_bytes(&hash.0)
     }
 }
 

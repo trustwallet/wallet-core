@@ -33,7 +33,7 @@ impl SuiSigner {
         let (preimage, signature) = TxSigner::sign(&tx_to_sign, &signer_key)?;
 
         let is_url = false;
-        let unsigned_tx = base64::encode(&preimage.tx_data, is_url);
+        let unsigned_tx = base64::encode(&preimage.unsigned_tx_data, is_url);
         Ok(Proto::SigningOutput {
             unsigned_tx: Cow::from(unsigned_tx),
             signature: Cow::from(signature.to_base64()),

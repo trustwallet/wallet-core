@@ -6,10 +6,11 @@ use crate::address::SuiAddress;
 use crate::constants::{SUI_SYSTEM_STATE_OBJECT_ID, SUI_SYSTEM_STATE_OBJECT_SHARED_VERSION};
 use move_core_types::account_address::AccountAddress;
 use serde::{Deserialize, Serialize};
-use tw_hash::H256;
+use std::str::FromStr;
+use tw_coin_entry::error::AddressError;
+use tw_hash::{as_bytes, H256};
 use tw_memory::Data;
 
-pub type ObjectDigest = H256;
 pub type ObjectRef = (ObjectID, SequenceNumber, ObjectDigest);
 pub type EpochId = u64;
 
@@ -18,6 +19,18 @@ pub struct SequenceNumber(pub u64);
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct ObjectID(pub AccountAddress);
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+pub struct ObjectDigest(#[serde(with = "as_bytes")] pub H256);
+
+impl FromStr for ObjectID {
+    type Err = AddressError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let addr = SuiAddress::from_str(s)?;
+        Ok(ObjectID(addr.into_inner()))
+    }
+}
 
 #[derive(Deserialize, Serialize)]
 pub enum CallArg {
