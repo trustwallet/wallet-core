@@ -57,7 +57,6 @@ impl TransactionBuilder {
     }
 
     pub fn request_withdraw_stake(
-        &self,
         signer: SuiAddress,
         staked_sui: ObjectRef,
         gas: ObjectRef,

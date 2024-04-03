@@ -17,12 +17,6 @@ use tw_sui::transaction::transaction_data::{TransactionData, TransactionDataV1, 
 
 #[test]
 fn test_decode_transfer_tx() {
-    let payment_digest = base58::decode(
-        "7UoYeVzREVT17ZyYbRTsKzRCec5xJWm6FMh8AKaDPdDx",
-        Alphabet::BITCOIN,
-    )
-    .unwrap();
-
     let programmable = ProgrammableTransaction {
         inputs: vec![
             CallArg::Pure("1027000000000000".decode_hex().unwrap()),
@@ -54,7 +48,7 @@ fn test_decode_transfer_tx() {
                     .into_inner(),
                 ),
                 SequenceNumber(748),
-                ObjectDigest(H256::try_from(payment_digest.as_slice()).unwrap()),
+                ObjectDigest::from_str("7UoYeVzREVT17ZyYbRTsKzRCec5xJWm6FMh8AKaDPdDx").unwrap(),
             )],
             owner: SuiAddress::from_str(
                 "0xd575ad7f18e948462a5cf698f564ef394a752a71fec62493af8a055c012c0d50",

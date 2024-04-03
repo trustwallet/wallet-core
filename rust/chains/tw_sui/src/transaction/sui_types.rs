@@ -7,7 +7,8 @@ use crate::constants::{SUI_SYSTEM_STATE_OBJECT_ID, SUI_SYSTEM_STATE_OBJECT_SHARE
 use move_core_types::account_address::AccountAddress;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
-use tw_coin_entry::error::AddressError;
+use tw_coin_entry::error::{AddressError, SigningError, SigningErrorType};
+use tw_encoding::base58::{self, Alphabet};
 use tw_hash::{as_bytes, H256};
 use tw_memory::Data;
 
@@ -20,15 +21,27 @@ pub struct SequenceNumber(pub u64);
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct ObjectID(pub AccountAddress);
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
-pub struct ObjectDigest(#[serde(with = "as_bytes")] pub H256);
-
 impl FromStr for ObjectID {
     type Err = AddressError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let addr = SuiAddress::from_str(s)?;
         Ok(ObjectID(addr.into_inner()))
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+pub struct ObjectDigest(#[serde(with = "as_bytes")] pub H256);
+
+impl FromStr for ObjectDigest {
+    type Err = SigningError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let bytes = base58::decode(s, Alphabet::BITCOIN)
+            .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?;
+        H256::try_from(bytes.as_slice())
+            .map(ObjectDigest)
+            .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))
     }
 }
 
