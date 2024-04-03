@@ -4,21 +4,6 @@ use crate::script::Witness;
 
 use super::Script;
 
-/// Creates a script to claim a P2SH spending condition (_scriptSig_). All the data items and
-/// the redeem script are pushed with a length indicator.
-///
-/// ```txt
-/// <push><data_item_1> <push><data_item_2>... <push><redeem_script>
-/// ```
-pub fn new_p2sh(data_items: &[Script], redeem_script: &Script) -> Script {
-    let mut s = Script::with_capacity(23);
-    for item in data_items {
-        s.push_slice(item.as_data());
-    }
-    s.push_slice(redeem_script.as_data());
-    s
-}
-
 /// Creates a script to claim a P2PK spending condition (_scriptSig_).
 ///
 /// ```txt

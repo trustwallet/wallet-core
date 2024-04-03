@@ -35,14 +35,27 @@ pub fn proto_input_to_native(
     match &input.to_recipient {
         Proto::mod_Input::OneOfto_recipient::builder(b) => {
             match &b.variant {
-                OneOfInputVariant::p2sh(_) => todo!(),
+                OneOfInputVariant::p2sh(redeem_script) => {
+                    let redeem_script = Script::from(redeem_script.to_vec());
+
+                    let (utxo, arg) = UtxoBuilder::new()
+                        .prev_txid(input.txid.as_ref().try_into().unwrap())
+                        .prev_index(input.vout)
+                        .amount(input.value as i64)
+                        .p2sh(redeem_script.clone())
+                        .unwrap();
+
+                    let claim = SpendingScriptBuilder::new().p2sh(redeem_script).unwrap();
+
+                    Ok((utxo, arg, claim))
+                },
                 OneOfInputVariant::p2pkh(pubkey) => {
                     let pubkey = pubkey_from_raw(&pubkey).unwrap();
 
                     let (utxo, arg) = UtxoBuilder::new()
                         .prev_txid(input.txid.as_ref().try_into().unwrap())
                         .prev_index(input.vout)
-                        .amount(input.value as i64) // TODO: Just use u64 to begin with?
+                        .amount(input.value as i64)
                         .p2pkh(pubkey.clone())
                         .unwrap();
 

@@ -33,6 +33,12 @@ impl SpendingScriptBuilder {
             witness: witness.unwrap_or_default(),
         }
     }
+    pub fn p2sh(self, redeem_script: Script) -> UtxoResult<SpendingData> {
+        Ok(SpendingData {
+            script_sig: redeem_script,
+            witness: Witness::default(),
+        })
+    }
     pub fn p2pkh(
         self,
         sig: ecdsa::secp256k1::Signature,

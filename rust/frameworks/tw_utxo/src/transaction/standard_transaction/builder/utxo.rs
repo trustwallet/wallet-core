@@ -93,6 +93,24 @@ impl UtxoBuilder {
             },
         ))
     }
+    pub fn p2sh(mut self, redeem_script: Script) -> UtxoResult<(TransactionInput, UtxoToSign)> {
+        let h = bitcoin_hash_160(redeem_script.as_data());
+        let redeem_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
+
+        self.finalize_out_point()?;
+
+        Ok((
+            self.input,
+            UtxoToSign {
+                script_pubkey: conditions::new_p2sh(&redeem_hash),
+                signing_method: SigningMethod::Legacy,
+                amount: self
+                    .amount
+                    .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+                ..Default::default()
+            },
+        ))
+    }
     pub fn p2pkh(mut self, pubkey: tw::PublicKey) -> UtxoResult<(TransactionInput, UtxoToSign)> {
         let h = bitcoin_hash_160(&pubkey.to_bytes());
         let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
