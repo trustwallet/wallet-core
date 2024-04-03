@@ -178,7 +178,22 @@ pub fn proto_output_to_native(
 
                         Ok((out, tx_out))
                     },
-                    OneOfto_address::hash(_) => todo!(),
+                    OneOfto_address::hash(hash) => {
+                        let pubkey_hash = hash.as_ref().try_into().unwrap();
+
+                        let out = OutputBuilder::new()
+                            .amount(output.value as i64)
+                            .p2pkh_from_hash(&pubkey_hash)
+                            .unwrap();
+
+                        let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                            value: output.value,
+                            script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                            ..Default::default()
+                        };
+
+                        Ok((out, tx_out))
+                    },
                     OneOfto_address::None => todo!(),
                 }
             },
@@ -201,7 +216,22 @@ pub fn proto_output_to_native(
 
                         Ok((out, tx_out))
                     },
-                    OneOfto_address::hash(_) => todo!(),
+                    OneOfto_address::hash(hash) => {
+                        let pubkey_hash = hash.as_ref().try_into().unwrap();
+
+                        let out = OutputBuilder::new()
+                            .amount(output.value as i64)
+                            .p2wpkh_from_hash(&pubkey_hash)
+                            .unwrap();
+
+                        let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                            value: output.value,
+                            script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                            ..Default::default()
+                        };
+
+                        Ok((out, tx_out))
+                    },
                     OneOfto_address::None => todo!(),
                 }
             },
