@@ -11,7 +11,8 @@ use tw_keypair::ecdsa::signature::Signature;
 use tw_keypair::schnorr;
 use tw_keypair::tw::PublicKey;
 use tw_misc::traits::ToBytesVec;
-use tw_proto::BitcoinV2::Proto::mod_Input::mod_InputBuilder::OneOfvariant;
+use tw_proto::BitcoinV2::Proto::mod_Input::mod_InputBuilder::OneOfvariant as OneOfInputVariant;
+use tw_proto::BitcoinV2::Proto::mod_Output::mod_OutputRedeemScriptOrHash::OneOfvariant as OneOfOutputVariant;
 use tw_proto::BitcoinV2::Proto::mod_ToPublicKeyOrHash::OneOfto_address;
 use tw_proto::BitcoinV2::Proto::{self, mod_Output};
 use tw_utxo::address::standard_bitcoin::StandardBitcoinAddress;
@@ -34,8 +35,8 @@ pub fn proto_input_to_native(
     match &input.to_recipient {
         Proto::mod_Input::OneOfto_recipient::builder(b) => {
             match &b.variant {
-                OneOfvariant::p2sh(_) => todo!(),
-                OneOfvariant::p2pkh(pubkey) => {
+                OneOfInputVariant::p2sh(_) => todo!(),
+                OneOfInputVariant::p2pkh(pubkey) => {
                     let pubkey = pubkey_from_raw(&pubkey).unwrap();
 
                     let (utxo, arg) = UtxoBuilder::new()
@@ -50,8 +51,8 @@ pub fn proto_input_to_native(
 
                     Ok((utxo, arg, claim))
                 },
-                OneOfvariant::p2wsh(_) => todo!(),
-                OneOfvariant::p2wpkh(pubkey) => {
+                OneOfInputVariant::p2wsh(_) => todo!(),
+                OneOfInputVariant::p2wpkh(pubkey) => {
                     let pubkey = pubkey_from_raw(&pubkey).unwrap();
 
                     let (utxo, arg) = UtxoBuilder::new()
@@ -66,7 +67,7 @@ pub fn proto_input_to_native(
 
                     Ok((utxo, arg, claim))
                 },
-                OneOfvariant::p2tr_key_path(ctx) => {
+                OneOfInputVariant::p2tr_key_path(ctx) => {
                     // TODO: Rename field to `pubkey`?
                     let pubkey = pubkey_from_raw(&ctx.public_key).unwrap();
 
@@ -82,7 +83,7 @@ pub fn proto_input_to_native(
 
                     Ok((utxo, arg, claim))
                 },
-                OneOfvariant::p2tr_script_path(ctx) => {
+                OneOfInputVariant::p2tr_script_path(ctx) => {
                     // TODO:
                     let one_prevout = ctx.one_prevout;
                     let payload = Script::from(ctx.payload.to_vec());
@@ -102,7 +103,7 @@ pub fn proto_input_to_native(
 
                     Ok((utxo, arg, claim))
                 },
-                OneOfvariant::brc20_inscribe(payload) => {
+                OneOfInputVariant::brc20_inscribe(payload) => {
                     // TODO: Rename field to `pubkey`?
                     let pubkey = pubkey_from_raw(&payload.inscribe_to).unwrap();
                     let ticker = payload.ticker.to_string();
@@ -122,8 +123,8 @@ pub fn proto_input_to_native(
 
                     Ok((utxo, arg, claim))
                 },
-                OneOfvariant::ordinal_inscribe(_) => todo!(),
-                OneOfvariant::None => todo!(),
+                OneOfInputVariant::ordinal_inscribe(_) => todo!(),
+                OneOfInputVariant::None => todo!(),
             }
         },
         Proto::mod_Input::OneOfto_recipient::custom_script(payload) => {
@@ -159,7 +160,39 @@ pub fn proto_output_to_native(
 )> {
     match &output.to_recipient {
         Proto::mod_Output::OneOfto_recipient::builder(b) => match &b.variant {
-            mod_Output::mod_OutputBuilder::OneOfvariant::p2sh(_) => todo!(),
+            mod_Output::mod_OutputBuilder::OneOfvariant::p2sh(payload) => match &payload.variant {
+                OneOfOutputVariant::hash(hash) => {
+                    let redeem_hash: H160 = hash.as_ref().try_into().unwrap();
+
+                    let out = OutputBuilder::new()
+                        .amount(output.value as i64)
+                        .p2sh_from_hash(&redeem_hash)
+                        .unwrap();
+
+                    let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                        value: output.value,
+                        script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                        ..Default::default()
+                    };
+
+                    Ok((out, tx_out))
+                },
+                OneOfOutputVariant::redeem_script(redeem_script) => {
+                    let out = OutputBuilder::new()
+                        .amount(output.value as i64)
+                        .p2sh(redeem_script.as_ref())
+                        .unwrap();
+
+                    let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                        value: output.value,
+                        script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                        ..Default::default()
+                    };
+
+                    Ok((out, tx_out))
+                },
+                OneOfOutputVariant::None => todo!(),
+            },
             mod_Output::mod_OutputBuilder::OneOfvariant::p2pkh(payload) => {
                 match &payload.to_address {
                     OneOfto_address::pubkey(pubkey) => {

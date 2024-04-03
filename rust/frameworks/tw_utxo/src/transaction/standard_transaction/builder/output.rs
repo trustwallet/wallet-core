@@ -32,18 +32,24 @@ impl OutputBuilder {
             script_pubkey,
         })
     }
-    pub fn p2sh_from_hash(self, script_hash: &H160) -> UtxoResult<TransactionOutput> {
+    pub fn p2sh(self, redeem_script: &[u8]) -> UtxoResult<TransactionOutput> {
+        let h = bitcoin_hash_160(redeem_script);
+        let redeem_hash: H160 = h.as_slice().try_into().expect("hash length must be 20 bytes");
+
+        self.p2sh_from_hash(&redeem_hash)
+    }
+    pub fn p2sh_from_hash(self, redeem_hash: &H160) -> UtxoResult<TransactionOutput> {
         Ok(TransactionOutput {
             value: self
                 .amount
                 .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
-            script_pubkey: conditions::new_p2sh(script_hash),
+            script_pubkey: conditions::new_p2sh(redeem_hash),
         })
     }
     // TODO: Be more precise with PublicKey type?.
     pub fn p2pkh(self, pubkey: &tw::PublicKey) -> UtxoResult<TransactionOutput> {
         let h = bitcoin_hash_160(&pubkey.to_bytes());
-        let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
+        let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length must be 20 bytes");
 
         self.p2pkh_from_hash(&pubkey_hash)
     }
