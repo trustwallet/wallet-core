@@ -80,6 +80,10 @@ impl<const N: usize> Hash<N> {
     pub const fn len() -> usize {
         N
     }
+
+    pub fn is_zero(&self) -> bool {
+        self.0.iter().all(|byte| *byte == 0)
+    }
 }
 
 /// This is a [`Hash::split`] helper that ensures that `L + R == N` at compile time.

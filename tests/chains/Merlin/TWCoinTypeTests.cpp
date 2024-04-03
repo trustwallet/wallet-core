@@ -18,7 +18,7 @@ TEST(TWMerlinCoinType, TWCoinType) {
 
     assertStringsEqual(id, "merlin");
     assertStringsEqual(name, "Merlin");
-    assertStringsEqual(symbol, "ETH");
+    assertStringsEqual(symbol, "BTC");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
     ASSERT_EQ(TWCoinTypeP2pkhPrefix(coin), 0);
