@@ -2,10 +2,17 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::modules::tx_builder::TWTransactionBuilder;
+use crate::modules::tx_signer::{TransactionPreimage, TxSigner};
+use crate::signature::SuiSignatureInfo;
+use std::borrow::Cow;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
+use tw_coin_entry::common::compile_input::SingleSignaturePubkey;
 use tw_coin_entry::error::SigningResult;
 use tw_coin_entry::signing_output_error;
+use tw_encoding::base64;
+use tw_keypair::ed25519;
 use tw_proto::Sui::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
@@ -23,9 +30,22 @@ impl SuiCompiler {
 
     fn preimage_hashes_impl(
         _coin: &dyn CoinContext,
-        _input: Proto::SigningInput<'_>,
+        input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
-        todo!()
+        let builder = TWTransactionBuilder::new(input);
+        let tx_to_sign = builder.build()?;
+
+        let TransactionPreimage {
+            tx_data_to_sign,
+            tx_hash_to_sign,
+            ..
+        } = TxSigner::preimage(&tx_to_sign)?;
+
+        Ok(CompilerProto::PreSigningOutput {
+            data: Cow::from(tx_data_to_sign),
+            data_hash: Cow::from(tx_hash_to_sign.to_vec()),
+            ..CompilerProto::PreSigningOutput::default()
+        })
     }
 
     #[inline]
@@ -41,10 +61,33 @@ impl SuiCompiler {
 
     fn compile_impl(
         _coin: &dyn CoinContext,
-        _input: Proto::SigningInput<'_>,
-        _signatures: Vec<SignatureBytes>,
-        _public_keys: Vec<PublicKeyBytes>,
+        input: Proto::SigningInput<'_>,
+        signatures: Vec<SignatureBytes>,
+        public_keys: Vec<PublicKeyBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        todo!()
+        let builder = TWTransactionBuilder::new(input);
+        let tx_to_sign = builder.build()?;
+
+        let TransactionPreimage {
+            unsigned_tx_data, ..
+        } = TxSigner::preimage(&tx_to_sign)?;
+
+        let SingleSignaturePubkey {
+            signature: raw_signature,
+            public_key: public_key_bytes,
+        } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
+
+        let signature = ed25519::Signature::try_from(raw_signature.as_slice())?;
+        let public_key = ed25519::sha512::PublicKey::try_from(public_key_bytes.as_slice())?;
+
+        let signature_info = SuiSignatureInfo::ed25519(&signature, &public_key);
+
+        let is_url = false;
+        let unsigned_tx = base64::encode(&unsigned_tx_data, is_url);
+        Ok(Proto::SigningOutput {
+            unsigned_tx: Cow::from(unsigned_tx),
+            signature: Cow::from(signature_info.to_base64()),
+            ..Proto::SigningOutput::default()
+        })
     }
 }
