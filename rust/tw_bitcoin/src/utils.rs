@@ -283,7 +283,46 @@ pub fn proto_output_to_native(
                     todo!()
                 },
                 StandardBitcoinAddress::Segwit(addr) => {
-                    todo!()
+                    let prog = addr.witness_program();
+
+                    match prog.len() {
+                        // P2WPKH
+                        20 => {
+                            let pubkey_hash: H160 = prog.try_into().unwrap();
+
+                            let out = OutputBuilder::new()
+                                .amount(output.value as i64)
+                                .p2wpkh_from_hash(&pubkey_hash)
+                                .unwrap();
+
+                            let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                                value: output.value,
+                                script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                                ..Default::default()
+                            };
+
+                            Ok((out, tx_out))
+                        },
+                        // P2WSH
+                        32 => {
+                            let redeem_hash: H256 = prog.try_into().unwrap();
+
+                            let out = OutputBuilder::new()
+                                .amount(output.value as i64)
+                                .p2wsh_from_hash(&redeem_hash)
+                                .unwrap();
+
+                            let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                                value: output.value,
+                                script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                                ..Default::default()
+                            };
+
+                            Ok((out, tx_out))
+                        },
+                        // Invalid
+                        _ => todo!(),
+                    }
                 },
                 StandardBitcoinAddress::Taproot(addr) => {
                     let tweaked_pubkey: H256 = addr.witness_program().try_into().unwrap();

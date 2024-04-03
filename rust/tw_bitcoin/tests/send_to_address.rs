@@ -253,7 +253,6 @@ fn send_to_p2wpkh_address() {
 }
 
 #[test]
-#[ignore]
 fn send_to_p2tr_key_path_address() {
     let coin = TestCoinContext::default();
 
