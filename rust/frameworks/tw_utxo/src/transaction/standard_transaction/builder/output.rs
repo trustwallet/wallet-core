@@ -32,7 +32,7 @@ impl OutputBuilder {
             script_pubkey,
         })
     }
-    pub fn p2sh(self, script_hash: &H160) -> UtxoResult<TransactionOutput> {
+    pub fn p2sh_from_hash(self, script_hash: &H160) -> UtxoResult<TransactionOutput> {
         Ok(TransactionOutput {
             value: self
                 .amount

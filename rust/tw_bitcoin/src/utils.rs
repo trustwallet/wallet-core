@@ -280,7 +280,46 @@ pub fn proto_output_to_native(
             let addr = StandardBitcoinAddress::from_str(addr).unwrap();
             match addr {
                 StandardBitcoinAddress::Legacy(addr) => {
-                    todo!()
+                    let payload = addr.bytes();
+                    debug_assert_eq!(payload.len(), 21);
+
+                    match payload[0] {
+                        // P2PKH
+                        0 => {
+                            let pubkey_hash: H160 = payload[1..].try_into().unwrap();
+
+                            let out = OutputBuilder::new()
+                                .amount(output.value as i64)
+                                .p2pkh_from_hash(&pubkey_hash)
+                                .unwrap();
+
+                            let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                                value: output.value,
+                                script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                                ..Default::default()
+                            };
+
+                            Ok((out, tx_out))
+                        },
+                        // P2SH
+                        5 => {
+                            let pubkey_hash: H160 = payload[1..].try_into().unwrap();
+
+                            let out = OutputBuilder::new()
+                                .amount(output.value as i64)
+                                .p2sh_from_hash(&pubkey_hash)
+                                .unwrap();
+
+                            let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                                value: output.value,
+                                script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                                ..Default::default()
+                            };
+
+                            Ok((out, tx_out))
+                        },
+                        _ => todo!(),
+                    }
                 },
                 StandardBitcoinAddress::Segwit(addr) => {
                     let prog = addr.witness_program();
@@ -445,7 +484,7 @@ fn address_to_native(
 
             let out = OutputBuilder::new()
                 .amount(value as i64)
-                .p2sh(&script_hash)
+                .p2sh_from_hash(&script_hash)
                 .unwrap();
 
             let tx_out = Proto::mod_PreSigningOutput::TxOut {
