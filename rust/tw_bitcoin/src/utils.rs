@@ -6,7 +6,7 @@ use tw_bech32_address::Bech32Address;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_encoding::base58::Alphabet;
 use tw_hash::hasher::Hasher;
-use tw_hash::{H160, H256};
+use tw_hash::{H160, H256, H264};
 use tw_keypair::ecdsa::signature::Signature;
 use tw_keypair::schnorr;
 use tw_keypair::tw::PublicKey;
@@ -277,8 +277,32 @@ pub fn proto_output_to_native(
             Ok((out, tx_out))
         },
         Proto::mod_Output::OneOfto_recipient::from_address(addr) => {
-            let address = StandardBitcoinAddress::from_str(addr).unwrap();
-            todo!()
+            let addr = StandardBitcoinAddress::from_str(addr).unwrap();
+            match addr {
+                StandardBitcoinAddress::Legacy(addr) => {
+                    todo!()
+                },
+                StandardBitcoinAddress::Segwit(addr) => {
+                    todo!()
+                },
+                StandardBitcoinAddress::Taproot(addr) => {
+                    let tweaked_pubkey: H256 = addr.witness_program().try_into().unwrap();
+                    debug_assert_eq!(tweaked_pubkey.len(), 32);
+
+                    let out = OutputBuilder::new()
+                        .amount(output.value as i64)
+                        .p2tr_dangerous_assume_tweaked(&tweaked_pubkey)
+                        .unwrap();
+
+                    let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                        value: output.value,
+                        script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                        ..Default::default()
+                    };
+
+                    Ok((out, tx_out))
+                },
+            }
         },
         Proto::mod_Output::OneOfto_recipient::None => todo!(),
     }

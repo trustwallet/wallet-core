@@ -1,4 +1,5 @@
 use bitcoin::hashes::Hash;
+use bitcoin::key::TweakedPublicKey;
 use secp256k1::XOnlyPublicKey;
 use tw_hash::H160;
 use tw_hash::H256;
@@ -92,6 +93,15 @@ pub fn new_p2tr_key_path(pubkey: &H264) -> Script {
     let internal_key = XOnlyPublicKey::from(pubkey.inner);
 
     let script = bitcoin::ScriptBuf::new_v1_p2tr(&secp256k1::Secp256k1::new(), internal_key, None);
+    Script::from(script.to_vec())
+}
+
+pub fn new_p2tr_dangerous_assume_tweaked(xonly: &H256) -> Script {
+    // We're relying on the `bitcoin` crate to generate anything Taproot related.
+    let internal_key = XOnlyPublicKey::from_slice(xonly.as_slice()).unwrap();
+    let output_key = TweakedPublicKey::dangerous_assume_tweaked(internal_key);
+
+    let script = bitcoin::ScriptBuf::new_v1_p2tr_tweaked(output_key);
     Script::from(script.to_vec())
 }
 

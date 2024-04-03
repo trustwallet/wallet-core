@@ -98,6 +98,14 @@ impl OutputBuilder {
             script_pubkey: conditions::new_p2tr_key_path(&pubkey),
         })
     }
+    pub fn p2tr_dangerous_assume_tweaked(self, xonly: &H256) -> UtxoResult<TransactionOutput> {
+        Ok(TransactionOutput {
+            value: self
+                .amount
+                .ok_or(UtxoError(UtxoErrorKind::Error_internal))?,
+            script_pubkey: conditions::new_p2tr_dangerous_assume_tweaked(xonly),
+        })
+    }
     pub fn p2tr_script_path(
         self,
         pubkey: tw::PublicKey,

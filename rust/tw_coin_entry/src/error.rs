@@ -40,6 +40,7 @@ pub enum AddressError {
     InvalidRegistry,
     InvalidInput,
     InvalidChecksum,
+    InvalidWitnessProgram,
 }
 
 pub type SigningResult<T> = Result<T, SigningError>;

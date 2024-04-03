@@ -173,6 +173,10 @@ impl FromStr for TaprootAddress {
         let version = version[0].to_u8();
         let program = Data::from_base32(program).map_err(|_| AddressError::FromBech32Error)?;
 
+        if program.len() != 32 {
+            return Err(AddressError::InvalidWitnessProgram);
+        }
+
         if version > MAX_WITNESS_VERSION {
             return Err(AddressError::Unsupported);
         }
