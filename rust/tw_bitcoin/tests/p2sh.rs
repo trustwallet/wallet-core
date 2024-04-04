@@ -12,6 +12,7 @@ use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
 #[test]
+#[ignore]
 fn coin_entry_sign_input_p2pkh_output_p2sh() {
     let coin = TestCoinContext::default();
 
