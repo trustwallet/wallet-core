@@ -159,3 +159,163 @@ fn test_sui_sign_transfer_token() {
     assert_eq!(output.signature, "AAXK0so7TwO285ZhWKKRYs2MyFumsFSlOe4boampQKmrqhIZKhNnJKCTFEkarJTq5lIIvyTtgIu5S93gOsxN4guF69FEH+T5VPvl3GB3vwCOEZpeJpKXxvcIPQAdKsh2/g==");
     assert_eq!(output.unsigned_tx, "AAADAQBp4AfkDUtkUow9nlGePR8+XJyWKHB0gXH3uUwWjIaBYXdxGgUAAAAAIPukOuVHEHFrj96jMXgsE8RmAU/Es2ejPAhD41bNXslEAAh44AEAAAAAAAAgpxdavdXtkuvjrTkNs2bGpwZHjN9RfN5s+YYwBlzaN3oCAgEAAAEBAQABAQMAAAAAAQIAVOgNdteQwnf1pE886S9T0m9YlIkr85Xe5jdZiIdr5rIBY2Ags6fcexHDqm9Bmxf4qcEuf3mjHRvdLeZwtO3WMAV5cRoFAAAAACCFgwpF3YPy9Px5R/K+WLDjMSiO7AsEa/4cNWn5P/nkIVToDXbXkMJ39aRPPOkvU9JvWJSJK/OV3uY3WYiHa+ay7gIAAAAAAAAACT0AAAAAAAA=");
 }
+
+#[test]
+fn test_sui_sign_merge_sui() {
+    let sender = "0x54e80d76d790c277f5a44f3ce92f53d26f5894892bf395dee6375988876be6b2";
+
+    // Coin type: `0x2::sui::SUI`.
+    let primary_coin = object_ref(
+        "0x102054b7676a46b1bae724134dc962db729f3389acf79d3d6f3c27ba018a0404",
+        85887686,
+        "J3ZVMi8NUj2cbwB94dYFxTLoDJiBbLj156D7DmBUnVb2",
+    );
+    let primary_coin_balance = 150000;
+
+    // Coin type: `0x2::sui::SUI`.
+    let coin_to_merge = object_ref(
+        "0xf3b55a88fe631fdc778621c334941dd82453736fa02c7f6effd4441c38a805cc",
+        85887686,
+        "AT7MeU611cvSpM7B2cQFd53Uiw7WtVwuoQcUcZjWbxou",
+    );
+    let coin_to_merge_balance = 100000;
+
+    let pay = Proto::Pay {
+        input_coins: vec![primary_coin, coin_to_merge],
+        recipients: vec![sender.into()],
+        gas: Some(object_ref(
+            "0x636020b3a7dc7b11c3aa6f419b17f8a9c12e7f79a31d1bdd2de670b4edd63005",
+            85887691,
+            "JAdejLaC6f59Ko7SugLSuwVn55wVKYE2ukQae4nRJcm5",
+        )),
+        amounts: vec![primary_coin_balance + coin_to_merge_balance],
+    };
+
+    let input = Proto::SigningInput {
+        transaction_payload: TransactionType::pay(pay),
+        private_key: "7e6682f7bf479ef0f627823cffd4e1a940a7af33e5fb39d9e0f631d2ecc5daff"
+            .decode_hex()
+            .unwrap()
+            .into(),
+        // 0.004 SUI
+        gas_budget: 4000000,
+        reference_gas_price: 750,
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Sui, input);
+
+    assert_eq!(output.error, SigningError::OK);
+
+    // Successfully broadcasted: https://suiscan.xyz/mainnet/tx/68wBKsZyYXmCUydDmabQ71kTcFWTfDG7tFmTLk1HgNdN
+    assert_eq!(output.signature, "AAjKOQKQuLYdWN798F50O0dtLtRWsAa6bl/C4xJHnJaEIpRbYdhlxRXXfcSDpB6/YI14YU5P+auk6KsFGOBZmg2F69FEH+T5VPvl3GB3vwCOEZpeJpKXxvcIPQAdKsh2/g==");
+    assert_eq!(output.unsigned_tx, "AAAEAQAQIFS3Z2pGsbrnJBNNyWLbcp8ziaz3nT1vPCe6AYoEBMaKHgUAAAAAIP0+kx97Pe9YDREgUkz6oiMWshB9Lmh378kj8zPFQKydAQDztVqI/mMf3HeGIcM0lB3YJFNzb6Asf27/1EQcOKgFzMaKHgUAAAAAIIxpeFeM16YQBcGe5g1g/yPrBg49nG7O3ONFnBMQpao8AAiQ0AMAAAAAAAAgVOgNdteQwnf1pE886S9T0m9YlIkr85Xe5jdZiIdr5rIDAwEAAAEBAQACAQAAAQECAAEBAwEAAAABAwBU6A1215DCd/WkTzzpL1PSb1iUiSvzld7mN1mIh2vmsgFjYCCzp9x7EcOqb0GbF/ipwS5/eaMdG90t5nC07dYwBcuKHgUAAAAAIP8OWIzz7zyhJZG6luM+fwC+wc/3IWtHtGWeD/6h5YNwVOgNdteQwnf1pE886S9T0m9YlIkr85Xe5jdZiIdr5rLuAgAAAAAAAAAJPQAAAAAAAA==");
+}
+
+#[test]
+fn test_sui_sign_split_tokens() {
+    let sender = "0x54e80d76d790c277f5a44f3ce92f53d26f5894892bf395dee6375988876be6b2";
+
+    let pay = Proto::Pay {
+        input_coins: vec![
+            // Coin type: `0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK`
+            object_ref(
+                "0xcc94319baba4c4a2f1988805952f1cf0edf9690a150976396491ba72f7ea06f4",
+                85887684,
+                "5ErzJWYsjecyvjBSYg2CXPB76oqqJHCRarkYxsSYEf7c",
+            ),
+        ],
+        recipients: vec![sender.into(), sender.into(), sender.into()],
+        amounts: vec![10000000, 7000000, 123],
+        // Coin type: `0x2::sui::SUI`.
+        gas: Some(object_ref(
+            "0x636020b3a7dc7b11c3aa6f419b17f8a9c12e7f79a31d1bdd2de670b4edd63005",
+            85887686,
+            "HE58PPRBBwksCbB7DMG6RRUcHkR4uJEh5yq5Eax5g546",
+        )),
+    };
+
+    let input = Proto::SigningInput {
+        transaction_payload: TransactionType::pay(pay),
+        private_key: "7e6682f7bf479ef0f627823cffd4e1a940a7af33e5fb39d9e0f631d2ecc5daff"
+            .decode_hex()
+            .unwrap()
+            .into(),
+        // 0.007 SUI
+        gas_budget: 7000000,
+        reference_gas_price: 750,
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Sui, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    // Successfully broadcasted: https://suiscan.xyz/mainnet/tx/6yp2AfESB3od1AMmS7Q6KDbLPJgjNrcTBYR4YSx9nYTR
+    assert_eq!(output.signature, "AGrbddwztZ+spZCG39obT6Qp+Yv35hXfIPOExVNXzkUpdr7NDMjEMS19BLT6rc811EFiMMVi65G4RmetXGOeUgWF69FEH+T5VPvl3GB3vwCOEZpeJpKXxvcIPQAdKsh2/g==");
+    assert_eq!(output.unsigned_tx, "AAAFAQDMlDGbq6TEovGYiAWVLxzw7flpChUJdjlkkbpy9+oG9MSKHgUAAAAAID770d4E8lYGVpgqgH7V6wveP0upByVv6GPKEis8+F1vAAiAlpgAAAAAAAAIwM9qAAAAAAAACHsAAAAAAAAAACBU6A1215DCd/WkTzzpL1PSb1iUiSvzld7mN1mIh2vmsgICAQAAAwEBAAECAAEDAAEDAwAAAAADAAABAAMAAAIAAQQAVOgNdteQwnf1pE886S9T0m9YlIkr85Xe5jdZiIdr5rIBY2Ags6fcexHDqm9Bmxf4qcEuf3mjHRvdLeZwtO3WMAXGih4FAAAAACDxFDVI2G12qWGuVXlDH+ENYODgVgpT6lVcFhrw27vlu1ToDXbXkMJ39aRPPOkvU9JvWJSJK/OV3uY3WYiHa+ay7gIAAAAAAADAz2oAAAAAAAA=");
+}
+
+/// Merge `primary_coin_id`, `coin_to_merge1` and `coin_to_merge2` coins into one coin.
+/// Read the migration guide: https://blog.sui.io/sui-payment-transaction-types/
+#[test]
+fn test_sui_sign_merge_tokens() {
+    let sender = "0x54e80d76d790c277f5a44f3ce92f53d26f5894892bf395dee6375988876be6b2";
+
+    // Coin type: `0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK`
+    let primary_coin = object_ref(
+        "0x7c91902ea14bc1e1a27358d7aa44f7ab9f10890642ae97d03b4e8a4c804662cd",
+        85887687,
+        "DWJeDBNn5Uyb69E6xxoMZL2wupH9VaGxY3Pf7asJfRCQ",
+    );
+    let primary_coin_balance = 10000000;
+
+    // Coin type: `0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK`
+    let coin_to_merge1 = object_ref(
+        "0x3a5edd52deb7535dadb6cf92b9ed5e0d0eb959a6ce19ea075a3f7e1a8fe29070",
+        85887687,
+        "79CmNvfmneL651e4ND2Kqje13ZJ2sbpGk6oXsa87TkQv",
+    );
+    let coin_to_merge_balance1 = 7000000;
+
+    // Coin type: `0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK`
+    let coin_to_merge2 = object_ref(
+        "0xcc94319baba4c4a2f1988805952f1cf0edf9690a150976396491ba72f7ea06f4",
+        85887687,
+        "CZbcgfFMyUFmTErb9jewVVcThKPeLqEHk5SvoRtnihHD",
+    );
+    let coin_to_merge_balance2 = 135116;
+
+    let pay = Proto::Pay {
+        input_coins: vec![primary_coin, coin_to_merge1, coin_to_merge2],
+        recipients: vec![sender.into()],
+        amounts: vec![primary_coin_balance + coin_to_merge_balance1 + coin_to_merge_balance2],
+        // Coin type: `0x2::sui::SUI`.
+        gas: Some(object_ref(
+            "0x636020b3a7dc7b11c3aa6f419b17f8a9c12e7f79a31d1bdd2de670b4edd63005",
+            85887687,
+            "GvBAtzvLkhaj2mpC4LnmTH7796zYfHLof4U5dpRStSbn",
+        )),
+    };
+
+    let input = Proto::SigningInput {
+        transaction_payload: TransactionType::pay(pay),
+        private_key: "7e6682f7bf479ef0f627823cffd4e1a940a7af33e5fb39d9e0f631d2ecc5daff"
+            .decode_hex()
+            .unwrap()
+            .into(),
+        // 0.007 SUI
+        gas_budget: 7000000,
+        reference_gas_price: 750,
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Sui, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    // Successfully broadcasted: https://suiscan.xyz/mainnet/tx/EadSFJmRbfcJXjWsTwDZ1jUDonN6uWfjEgs79SuG2NCj
+    assert_eq!(output.signature, "AIPDD+jY6aYK0bc2XhtvdSyygk9HKha9WdZjTcRxasDkAi6vq1/a43s9jTV7WuZ7otAXk21eu8zevJ+HB0MABwWF69FEH+T5VPvl3GB3vwCOEZpeJpKXxvcIPQAdKsh2/g==");
+    assert_eq!(output.unsigned_tx, "AAAFAQB8kZAuoUvB4aJzWNeqRPernxCJBkKul9A7TopMgEZizceKHgUAAAAAILnOCLChQW+Ka6TYqDCKxTKXk7bbxxfROgRAn9cAqdZ1AQA6Xt1S3rdTXa22z5K57V4NDrlZps4Z6gdaP34aj+KQcMeKHgUAAAAAIFtAEid8uKSWbaEakB3Qld75NYy9NE0uUtVG7z2Oj+mHAQDMlDGbq6TEovGYiAWVLxzw7flpChUJdjlkkbpy9+oG9MeKHgUAAAAAIKvKSBp+aB45dA6ogOr30c+9zJ0SI3c+/OczUGBIHJxkAAgMdgUBAAAAAAAgVOgNdteQwnf1pE886S9T0m9YlIkr85Xe5jdZiIdr5rIDAwEAAAIBAQABAgACAQAAAQEDAAEBAwEAAAABBABU6A1215DCd/WkTzzpL1PSb1iUiSvzld7mN1mIh2vmsgFjYCCzp9x7EcOqb0GbF/ipwS5/eaMdG90t5nC07dYwBceKHgUAAAAAIOx+ljTbUQkwMHYczKT1iN+DkOpvQYNfaLWlTcnznhGtVOgNdteQwnf1pE886S9T0m9YlIkr85Xe5jdZiIdr5rLuAgAAAAAAAMDPagAAAAAAAA==");
+}
