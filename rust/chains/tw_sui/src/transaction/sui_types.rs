@@ -45,7 +45,7 @@ impl FromStr for ObjectDigest {
     }
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub enum CallArg {
     // contains no structs or objects
     Pure(Data),
@@ -57,7 +57,7 @@ impl CallArg {
     pub const SUI_SYSTEM_MUT: Self = Self::Object(ObjectArg::SUI_SYSTEM_MUT);
 }
 
-#[derive(Deserialize, PartialEq, Serialize)]
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
 pub enum ObjectArg {
     // A Move object, either immutable, or owned mutable.
     ImmOrOwnedObject(ObjectRef),
@@ -84,7 +84,7 @@ impl ObjectArg {
     }
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct GasData {
     pub payment: Vec<ObjectRef>,
     pub owner: SuiAddress,
@@ -92,7 +92,7 @@ pub struct GasData {
     pub budget: u64,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub enum TransactionExpiration {
     /// The transaction has no expiration
     None,

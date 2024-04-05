@@ -8,7 +8,7 @@ use move_core_types::language_storage::TypeTag;
 use serde::{Deserialize, Serialize};
 
 /// A single command in a programmable transaction.
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub enum Command {
     /// A call to either an entry or a public Move function
     MoveCall(Box<ProgrammableMoveCall>),
@@ -23,6 +23,9 @@ pub enum Command {
     /// `(&mut Coin<T>, Vec<Coin<T>>)`
     /// It merges n-coins into the first coin
     MergeCoins(Argument, Vec<Argument>),
+    /// Publishes a Move package. It takes the package bytes and a list of the package's transitive
+    /// dependencies to link against on-chain.
+    Publish(Vec<Vec<u8>>, Vec<ObjectID>),
     /// `forall T: Vec<T> -> vector<T>`
     /// Given n-values of the same type, it constructs a vector. For non objects or an empty vector,
     /// the type tag must be specified.
@@ -49,7 +52,7 @@ impl Command {
 
 /// The command for calling a Move function, either an entry function or a public
 /// function (which cannot return references).
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ProgrammableMoveCall {
     /// The package containing the module and function.
     pub package: ObjectID,
@@ -64,7 +67,7 @@ pub struct ProgrammableMoveCall {
 }
 
 /// An argument to a programmable transaction command
-#[derive(Clone, Copy, Deserialize, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum Argument {
     /// The gas coin. The gas coin can only be used by-ref, except for with
     /// `TransferObjects`, which can use it by-value.

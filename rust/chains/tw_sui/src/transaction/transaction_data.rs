@@ -12,7 +12,7 @@ use move_core_types::language_storage::TypeTag;
 use serde::{Deserialize, Serialize};
 use tw_coin_entry::error::SigningResult;
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub enum TransactionData {
     V1(TransactionDataV1),
 }
@@ -189,7 +189,7 @@ impl TransactionData {
     }
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct TransactionDataV1 {
     pub kind: TransactionKind,
     pub sender: SuiAddress,
@@ -197,7 +197,7 @@ pub struct TransactionDataV1 {
     pub expiration: TransactionExpiration,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub enum TransactionKind {
     /// A transaction that allows the interleaving of native commands and Move calls
     ProgrammableTransaction(ProgrammableTransaction),

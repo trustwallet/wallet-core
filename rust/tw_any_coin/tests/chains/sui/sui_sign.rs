@@ -4,8 +4,7 @@
 
 use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_coin_registry::coin_type::CoinType;
-use tw_encoding::base64;
-use tw_encoding::hex::{DecodeHex, ToHex};
+use tw_encoding::hex::DecodeHex;
 use tw_proto::Common::Proto::SigningError;
 use tw_proto::Sui::Proto::{self, mod_SigningInput::OneOftransaction_payload as TransactionType};
 
@@ -365,3 +364,97 @@ fn test_sui_sign_merge_tokens() {
     assert_eq!(output.unsigned_tx, "AAAFAQB8kZAuoUvB4aJzWNeqRPernxCJBkKul9A7TopMgEZizceKHgUAAAAAILnOCLChQW+Ka6TYqDCKxTKXk7bbxxfROgRAn9cAqdZ1AQA6Xt1S3rdTXa22z5K57V4NDrlZps4Z6gdaP34aj+KQcMeKHgUAAAAAIFtAEid8uKSWbaEakB3Qld75NYy9NE0uUtVG7z2Oj+mHAQDMlDGbq6TEovGYiAWVLxzw7flpChUJdjlkkbpy9+oG9MeKHgUAAAAAIKvKSBp+aB45dA6ogOr30c+9zJ0SI3c+/OczUGBIHJxkAAgMdgUBAAAAAAAgVOgNdteQwnf1pE886S9T0m9YlIkr85Xe5jdZiIdr5rIDAwEAAAIBAQABAgACAQAAAQEDAAEBAwEAAAABBABU6A1215DCd/WkTzzpL1PSb1iUiSvzld7mN1mIh2vmsgFjYCCzp9x7EcOqb0GbF/ipwS5/eaMdG90t5nC07dYwBceKHgUAAAAAIOx+ljTbUQkwMHYczKT1iN+DkOpvQYNfaLWlTcnznhGtVOgNdteQwnf1pE886S9T0m9YlIkr85Xe5jdZiIdr5rLuAgAAAAAAAMDPagAAAAAAAA==");
     assert_eq!(output.signature, "AIPDD+jY6aYK0bc2XhtvdSyygk9HKha9WdZjTcRxasDkAi6vq1/a43s9jTV7WuZ7otAXk21eu8zevJ+HB0MABwWF69FEH+T5VPvl3GB3vwCOEZpeJpKXxvcIPQAdKsh2/g==");
 }
+
+#[test]
+fn test_sui_sign_delegate_sui() {
+    let add_stake = Proto::RequestAddStake {
+        // Coin type: `0x2::sui::SUI`.
+        coins: vec![
+            object_ref(
+                "0xff1af62d35654956964437882b33d3256aad20214f18a234c62b5e258ca163ee",
+                83160977,
+                "FAugxdfWPQrMu57mMc9FmgNSjkt613pixR6V5M9nashw",
+            ),
+            object_ref(
+                "0x5ef77d20c7d6745d3d9b5f69e7825aae733fa5c8a3f82f7192749e3169791c8c",
+                85887695,
+                "F3JgSqdQJgzBsNnzJiYkr2XkjTEXmq7NEybixjEYrSf4",
+            ),
+        ],
+        // Do not specify the amount.
+        amount: Some(Proto::Amount {
+            // 1.00095
+            amount: 1_000_000_000 + 1_000_000 - 50_000,
+        }),
+        // https://suiscan.xyz/mainnet/validator/0x61953ea72709eed72f4441dd944eec49a11b4acabfc8e04015e89c63be81b6ab/delegators
+        validator: "0x61953ea72709eed72f4441dd944eec49a11b4acabfc8e04015e89c63be81b6ab".into(),
+        // Coin type: `0x2::sui::SUI`.
+        gas: Some(object_ref(
+            "0x102054b7676a46b1bae724134dc962db729f3389acf79d3d6f3c27ba018a0404",
+            85989207,
+            "GXGhEVNJGNBsvaTiLi85bGask5PbVXTZUKyN6CLR3N7D",
+        )),
+    };
+
+    let input = Proto::SigningInput {
+        transaction_payload: TransactionType::request_add_stake(add_stake),
+        private_key: "7e6682f7bf479ef0f627823cffd4e1a940a7af33e5fb39d9e0f631d2ecc5daff"
+            .decode_hex()
+            .unwrap()
+            .into(),
+        // 0.009 SUI
+        gas_budget: 9000000,
+        reference_gas_price: 750,
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Sui, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    // Successfully broadcasted: https://suiscan.xyz/mainnet/tx/9CHdn8h68pnC7pKxFN7ABCCiufFkYQQ6EwFEQEPiz6bp
+    assert_eq!(output.unsigned_tx, "AAAFAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQEAAAAAAAAAAQEA/xr2LTVlSVaWRDeIKzPTJWqtICFPGKI0xiteJYyhY+6R7/QEAAAAACDSjWt6fM4gT8LU9OmUKUD0oeVAN3195wXyRgLAAkj/RgEAXvd9IMfWdF09m19p54JarnM/pcij+C9xknSeMWl5HIzPih4FAAAAACDQmsUAK2qhMxauQja6zUchci2O+VpXNpKHQPa5uzG92wAJAfBIqTsAAAAAACBhlT6nJwnu1y9EQd2UTuxJoRtKyr/I4EAV6JxjvoG2qwIFAAIBAQABAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMKc3VpX3N5c3RlbRpyZXF1ZXN0X2FkZF9zdGFrZV9tdWxfY29pbgAEAQAAAgAAAQMAAQQAVOgNdteQwnf1pE886S9T0m9YlIkr85Xe5jdZiIdr5rIBECBUt2dqRrG65yQTTcli23KfM4ms9509bzwnugGKBARXFyAFAAAAACDmoHkZ4Q2u0tMpkkJOmnK9WHxAXfwVxtKnoGoU3ZecTFToDXbXkMJ39aRPPOkvU9JvWJSJK/OV3uY3WYiHa+ay7gIAAAAAAABAVIkAAAAAAAA=");
+    assert_eq!(output.signature, "AF7oDeTkRQT23xGuW1WsILvm2FQIycaP6bvbTA8oQ8QJU75VQcJDTgEscfxfg8GAN60uzSLKVAJKXKOu8O6vugmF69FEH+T5VPvl3GB3vwCOEZpeJpKXxvcIPQAdKsh2/g==");
+}
+
+// TODO uncomment when can unstake `0x4d3211b1569a24226d672b7de4edb08fa9e19b4f02dab89c9236e4fc8c4ab12d`.
+// #[test]
+// fn test_sui_sign_undelegate_sui() {
+//     let add_stake = Proto::RequestWithdrawStake {
+//         // Coin type: `0x2::sui::SUI`.
+//         staked_sui: Some(object_ref(
+//             "0x4d3211b1569a24226d672b7de4edb08fa9e19b4f02dab89c9236e4fc8c4ab12d",
+//             86012336,
+//             "559WJM2RXnQvPyLzRJpUj2bH9ZuZNxd48YJKwNXxtxMn",
+//         )),
+//         // Coin type: `0x2::sui::SUI`.
+//         gas: Some(object_ref(
+//             "0x102054b7676a46b1bae724134dc962db729f3389acf79d3d6f3c27ba018a0404",
+//             86012336,
+//             "2UWqt74UMHLdbEsviPNvU91F9WQS16vcUBY7cCwzBhow",
+//         )),
+//     };
+//
+//     let input = Proto::SigningInput {
+//         transaction_payload: TransactionType::request_withdraw_stake(add_stake),
+//         private_key: "7e6682f7bf479ef0f627823cffd4e1a940a7af33e5fb39d9e0f631d2ecc5daff"
+//             .decode_hex()
+//             .unwrap()
+//             .into(),
+//         // 0.009 SUI
+//         gas_budget: 9000000,
+//         reference_gas_price: 750,
+//         ..Proto::SigningInput::default()
+//     };
+//
+//     let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+//     let output = signer.sign(CoinType::Sui, input);
+//
+//     assert_eq!(output.error, SigningError::OK);
+//     println!("{}", output.unsigned_tx);
+//     println!("{}", output.signature);
+//
+//     // Successfully broadcasted:
+//     // assert_eq!(output.unsigned_tx, "AAAFAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQEAAAAAAAAAAQEA/xr2LTVlSVaWRDeIKzPTJWqtICFPGKI0xiteJYyhY+6R7/QEAAAAACDSjWt6fM4gT8LU9OmUKUD0oeVAN3195wXyRgLAAkj/RgEAXvd9IMfWdF09m19p54JarnM/pcij+C9xknSeMWl5HIzPih4FAAAAACDQmsUAK2qhMxauQja6zUchci2O+VpXNpKHQPa5uzG92wAJAfBIqTsAAAAAACBhlT6nJwnu1y9EQd2UTuxJoRtKyr/I4EAV6JxjvoG2qwIFAAIBAQABAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMKc3VpX3N5c3RlbRpyZXF1ZXN0X2FkZF9zdGFrZV9tdWxfY29pbgAEAQAAAgAAAQMAAQQAVOgNdteQwnf1pE886S9T0m9YlIkr85Xe5jdZiIdr5rIBECBUt2dqRrG65yQTTcli23KfM4ms9509bzwnugGKBARXFyAFAAAAACDmoHkZ4Q2u0tMpkkJOmnK9WHxAXfwVxtKnoGoU3ZecTFToDXbXkMJ39aRPPOkvU9JvWJSJK/OV3uY3WYiHa+ay7gIAAAAAAABAVIkAAAAAAAA=");
+//     // assert_eq!(output.signature, "AF7oDeTkRQT23xGuW1WsILvm2FQIycaP6bvbTA8oQ8QJU75VQcJDTgEscfxfg8GAN60uzSLKVAJKXKOu8O6vugmF69FEH+T5VPvl3GB3vwCOEZpeJpKXxvcIPQAdKsh2/g==");
+// }

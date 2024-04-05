@@ -14,7 +14,7 @@ use tw_encoding::bcs;
 
 /// A series of commands where the results of one command can be used in future
 /// commands
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ProgrammableTransaction {
     /// Input objects or primitive values
     pub inputs: Vec<CallArg>,
