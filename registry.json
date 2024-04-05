@@ -4578,7 +4578,7 @@
     "blockchain": "InternetComputer",
     "derivation": [
       {
-        "path": "m/44'/223'/1'/0/0",
+        "path": "m/44'/223'/0'/0/0",
         "xpub": "xpub",
         "xpriv": "xpriv"
       }
