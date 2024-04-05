@@ -2,19 +2,13 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::chains::sui::object_ref;
+use crate::chains::sui::test_cases::{transfer_d4ay9tdb, PRIVATE_KEY_54E80D76, SENDER_54E80D76};
 use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_proto::Common::Proto::SigningError;
 use tw_proto::Sui::Proto::{self, mod_SigningInput::OneOftransaction_payload as TransactionType};
-
-fn object_ref(id: &'static str, version: u64, digest: &'static str) -> Proto::ObjectRef<'static> {
-    Proto::ObjectRef {
-        object_id: id.into(),
-        version,
-        object_digest: digest.into(),
-    }
-}
 
 fn test_sign_direct_impl(unsigned_tx: &str, private_key: &str, expected_signature: &str) {
     let direct = Proto::SignDirect {
@@ -73,63 +67,36 @@ fn test_sui_sign_direct_add_delegation() {
 
 #[test]
 fn test_sui_sign_transfer_sui() {
-    let sender = "0x54e80d76d790c277f5a44f3ce92f53d26f5894892bf395dee6375988876be6b2";
-
-    let pay_sui = Proto::PaySui {
-        input_coins: vec![object_ref(
-            "0x636020b3a7dc7b11c3aa6f419b17f8a9c12e7f79a31d1bdd2de670b4edd63005",
-            85619064,
-            "2eKuWbZSVfpFVfg8FXY9wP6W5AFXnTchSoUdp7obyYZ5",
-        )],
-        recipients: vec![
-            "0xa7175abdd5ed92ebe3ad390db366c6a706478cdf517cde6cf98630065cda377a".into(),
-            // Send some amount to self.
-            sender.into(),
-        ],
-        amounts: vec![1000, 50_000],
-    };
-
-    let input = Proto::SigningInput {
-        transaction_payload: TransactionType::pay_sui(pay_sui),
-        private_key: "7e6682f7bf479ef0f627823cffd4e1a940a7af33e5fb39d9e0f631d2ecc5daff"
-            .decode_hex()
-            .unwrap()
-            .into(),
-        // 0.003 SUI
-        gas_budget: 3000000,
-        reference_gas_price: 750,
-        ..Proto::SigningInput::default()
-    };
+    let input = transfer_d4ay9tdb::sui_transfer_input();
 
     let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
     let output = signer.sign(CoinType::Sui, input);
 
     assert_eq!(output.error, SigningError::OK);
     // Successfully broadcasted: https://suiscan.xyz/mainnet/tx/D4Ay9TdBJjXkGmrZSstZakpEWskEQHaWURP6xWPRXbAm
-    assert_eq!(output.unsigned_tx, "AAAEAAjoAwAAAAAAAAAIUMMAAAAAAAAAIKcXWr3V7ZLr4605DbNmxqcGR4zfUXzebPmGMAZc2jd6ACBU6A1215DCd/WkTzzpL1PSb1iUiSvzld7mN1mIh2vmsgMCAAIBAAABAQABAQMAAAAAAQIAAQEDAAABAAEDAFToDXbXkMJ39aRPPOkvU9JvWJSJK/OV3uY3WYiHa+ayAWNgILOn3HsRw6pvQZsX+KnBLn95ox0b3S3mcLTt1jAFeHEaBQAAAAAgGGuNnxrqusosgjP3gQ3jBjnhapGNBlcU0yTaupXpa0BU6A1215DCd/WkTzzpL1PSb1iUiSvzld7mN1mIh2vmsu4CAAAAAAAAwMYtAAAAAAAA");
-    assert_eq!(output.signature, "AEh44B7iGArEHF1wOLAQJMLNgGnaIwn3gKPC92vtDJqITDETAM5z9plaxio1xomt6/cZReQ5FZaQsMC6l7E0BwmF69FEH+T5VPvl3GB3vwCOEZpeJpKXxvcIPQAdKsh2/g==");
+    assert_eq!(output.unsigned_tx, transfer_d4ay9tdb::UNSIGNED_TX);
+    assert_eq!(output.signature, transfer_d4ay9tdb::SIGNATURE);
 }
 
 #[test]
 fn test_sui_sign_split_sui() {
-    let sender = "0x54e80d76d790c277f5a44f3ce92f53d26f5894892bf395dee6375988876be6b2";
-
     let pay_sui = Proto::PaySui {
         input_coins: vec![object_ref(
             "0x636020b3a7dc7b11c3aa6f419b17f8a9c12e7f79a31d1bdd2de670b4edd63005",
             85887685,
             "GnzkqXxoowwtz1W33JrjwaW63FpnXmVo8DoVVWUwARyx",
         )],
-        recipients: vec![sender.into(), sender.into(), sender.into()],
+        recipients: vec![
+            SENDER_54E80D76.into(),
+            SENDER_54E80D76.into(),
+            SENDER_54E80D76.into(),
+        ],
         amounts: vec![150_000, 200_000, 100_000],
     };
 
     let input = Proto::SigningInput {
         transaction_payload: TransactionType::pay_sui(pay_sui),
-        private_key: "7e6682f7bf479ef0f627823cffd4e1a940a7af33e5fb39d9e0f631d2ecc5daff"
-            .decode_hex()
-            .unwrap()
-            .into(),
+        private_key: PRIVATE_KEY_54E80D76.decode_hex().unwrap().into(),
         // 0.007 SUI
         gas_budget: 7000000,
         reference_gas_price: 750,
@@ -147,8 +114,6 @@ fn test_sui_sign_split_sui() {
 
 #[test]
 fn test_sui_sign_merge_sui() {
-    let sender = "0x54e80d76d790c277f5a44f3ce92f53d26f5894892bf395dee6375988876be6b2";
-
     // Coin type: `0x2::sui::SUI`.
     let primary_coin = object_ref(
         "0x102054b7676a46b1bae724134dc962db729f3389acf79d3d6f3c27ba018a0404",
@@ -167,7 +132,7 @@ fn test_sui_sign_merge_sui() {
 
     let pay = Proto::Pay {
         input_coins: vec![primary_coin, coin_to_merge],
-        recipients: vec![sender.into()],
+        recipients: vec![SENDER_54E80D76.into()],
         gas: Some(object_ref(
             "0x636020b3a7dc7b11c3aa6f419b17f8a9c12e7f79a31d1bdd2de670b4edd63005",
             85887691,
@@ -178,10 +143,7 @@ fn test_sui_sign_merge_sui() {
 
     let input = Proto::SigningInput {
         transaction_payload: TransactionType::pay(pay),
-        private_key: "7e6682f7bf479ef0f627823cffd4e1a940a7af33e5fb39d9e0f631d2ecc5daff"
-            .decode_hex()
-            .unwrap()
-            .into(),
+        private_key: PRIVATE_KEY_54E80D76.decode_hex().unwrap().into(),
         // 0.004 SUI
         gas_budget: 4000000,
         reference_gas_price: 750,
@@ -224,10 +186,7 @@ fn test_sui_sign_transfer_all_sui() {
 
     let input = Proto::SigningInput {
         transaction_payload: TransactionType::pay_all_sui(pay_all_sui),
-        private_key: "7e6682f7bf479ef0f627823cffd4e1a940a7af33e5fb39d9e0f631d2ecc5daff"
-            .decode_hex()
-            .unwrap()
-            .into(),
+        private_key: PRIVATE_KEY_54E80D76.decode_hex().unwrap().into(),
         // 0.004 SUI
         gas_budget: 5000000,
         reference_gas_price: 750,
@@ -269,10 +228,7 @@ fn test_sui_sign_transfer_token() {
 
     let input = Proto::SigningInput {
         transaction_payload: TransactionType::pay(pay),
-        private_key: "7e6682f7bf479ef0f627823cffd4e1a940a7af33e5fb39d9e0f631d2ecc5daff"
-            .decode_hex()
-            .unwrap()
-            .into(),
+        private_key: PRIVATE_KEY_54E80D76.decode_hex().unwrap().into(),
         // 0.003 SUI
         gas_budget: 4000000,
         reference_gas_price: 750,
@@ -290,8 +246,6 @@ fn test_sui_sign_transfer_token() {
 
 #[test]
 fn test_sui_sign_split_tokens() {
-    let sender = "0x54e80d76d790c277f5a44f3ce92f53d26f5894892bf395dee6375988876be6b2";
-
     let pay = Proto::Pay {
         input_coins: vec![
             // Coin type: `0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK`
@@ -301,7 +255,11 @@ fn test_sui_sign_split_tokens() {
                 "5ErzJWYsjecyvjBSYg2CXPB76oqqJHCRarkYxsSYEf7c",
             ),
         ],
-        recipients: vec![sender.into(), sender.into(), sender.into()],
+        recipients: vec![
+            SENDER_54E80D76.into(),
+            SENDER_54E80D76.into(),
+            SENDER_54E80D76.into(),
+        ],
         amounts: vec![10000000, 7000000, 123],
         // Coin type: `0x2::sui::SUI`.
         gas: Some(object_ref(
@@ -313,10 +271,7 @@ fn test_sui_sign_split_tokens() {
 
     let input = Proto::SigningInput {
         transaction_payload: TransactionType::pay(pay),
-        private_key: "7e6682f7bf479ef0f627823cffd4e1a940a7af33e5fb39d9e0f631d2ecc5daff"
-            .decode_hex()
-            .unwrap()
-            .into(),
+        private_key: PRIVATE_KEY_54E80D76.decode_hex().unwrap().into(),
         // 0.007 SUI
         gas_budget: 7000000,
         reference_gas_price: 750,
@@ -336,8 +291,6 @@ fn test_sui_sign_split_tokens() {
 /// Read the migration guide: https://blog.sui.io/sui-payment-transaction-types/
 #[test]
 fn test_sui_sign_merge_tokens() {
-    let sender = "0x54e80d76d790c277f5a44f3ce92f53d26f5894892bf395dee6375988876be6b2";
-
     // Coin type: `0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK`
     let primary_coin = object_ref(
         "0x7c91902ea14bc1e1a27358d7aa44f7ab9f10890642ae97d03b4e8a4c804662cd",
@@ -364,7 +317,7 @@ fn test_sui_sign_merge_tokens() {
 
     let pay = Proto::Pay {
         input_coins: vec![primary_coin, coin_to_merge1, coin_to_merge2],
-        recipients: vec![sender.into()],
+        recipients: vec![SENDER_54E80D76.into()],
         amounts: vec![primary_coin_balance + coin_to_merge_balance1 + coin_to_merge_balance2],
         // Coin type: `0x2::sui::SUI`.
         gas: Some(object_ref(
@@ -376,10 +329,7 @@ fn test_sui_sign_merge_tokens() {
 
     let input = Proto::SigningInput {
         transaction_payload: TransactionType::pay(pay),
-        private_key: "7e6682f7bf479ef0f627823cffd4e1a940a7af33e5fb39d9e0f631d2ecc5daff"
-            .decode_hex()
-            .unwrap()
-            .into(),
+        private_key: PRIVATE_KEY_54E80D76.decode_hex().unwrap().into(),
         // 0.007 SUI
         gas_budget: 7000000,
         reference_gas_price: 750,
@@ -428,10 +378,7 @@ fn test_sui_sign_delegate_sui() {
 
     let input = Proto::SigningInput {
         transaction_payload: TransactionType::request_add_stake(add_stake),
-        private_key: "7e6682f7bf479ef0f627823cffd4e1a940a7af33e5fb39d9e0f631d2ecc5daff"
-            .decode_hex()
-            .unwrap()
-            .into(),
+        private_key: PRIVATE_KEY_54E80D76.decode_hex().unwrap().into(),
         // 0.009 SUI
         gas_budget: 9000000,
         reference_gas_price: 750,
@@ -467,7 +414,7 @@ fn test_sui_sign_delegate_sui() {
 //
 //     let input = Proto::SigningInput {
 //         transaction_payload: TransactionType::request_withdraw_stake(add_stake),
-//         private_key: "7e6682f7bf479ef0f627823cffd4e1a940a7af33e5fb39d9e0f631d2ecc5daff"
+//         private_key: PRIVATE_KEY_54E80D76
 //             .decode_hex()
 //             .unwrap()
 //             .into(),
