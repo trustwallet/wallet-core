@@ -9,11 +9,17 @@ use crate::transaction::transaction_data::TransactionData;
 use std::borrow::Cow;
 use std::str::FromStr;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
-use tw_encoding::{base64, bcs};
+use tw_encoding::base64;
 use tw_keypair::ed25519;
 use tw_keypair::traits::KeyPairTrait;
+use tw_memory::Data;
 use tw_proto::Sui::Proto;
 use tw_proto::Sui::Proto::mod_SigningInput::OneOftransaction_payload as TransactionType;
+
+pub enum TWTransaction {
+    Transaction(TransactionData),
+    SignDirect(Data),
+}
 
 pub struct TWTransactionBuilder<'a> {
     input: Proto::SigningInput<'a>,
@@ -29,9 +35,12 @@ impl<'a> TWTransactionBuilder<'a> {
             .map_err(SigningError::from)
     }
 
-    pub fn build(self) -> SigningResult<TransactionData> {
-        match self.input.transaction_payload {
-            TransactionType::sign_direct_message(ref direct) => self.sign_direct_from_proto(direct),
+    pub fn build(self) -> SigningResult<TWTransaction> {
+        let tx_data = match self.input.transaction_payload {
+            TransactionType::sign_direct_message(ref direct) => {
+                let raw_data = self.sign_direct_from_proto(direct)?;
+                return Ok(TWTransaction::SignDirect(raw_data));
+            },
             TransactionType::pay_sui(ref pay_sui) => self.pay_sui_from_proto(pay_sui),
             TransactionType::pay_all_sui(ref pay_all_sui) => {
                 self.pay_all_sui_from_proto(pay_all_sui)
@@ -42,19 +51,14 @@ impl<'a> TWTransactionBuilder<'a> {
                 self.withdraw_from_proto(withdraw)
             },
             TransactionType::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
-        }
+        }?;
+        Ok(TWTransaction::Transaction(tx_data))
     }
 
-    fn sign_direct_from_proto(
-        &self,
-        sign_direct: &Proto::SignDirect<'_>,
-    ) -> SigningResult<TransactionData> {
+    fn sign_direct_from_proto(&self, sign_direct: &Proto::SignDirect<'_>) -> SigningResult<Data> {
         let url = false;
-        let tx: TransactionData = base64::decode(&sign_direct.unsigned_tx_msg, url)
-            .and_then(|tx_bytes| bcs::decode(&tx_bytes))
-            .map_err(|_| SigningError(SigningErrorType::Error_input_parse))?;
-
-        Ok(tx)
+        base64::decode(&sign_direct.unsigned_tx_msg, url)
+            .map_err(|_| SigningError(SigningErrorType::Error_input_parse))
     }
 
     fn pay_sui_from_proto(&self, pay_sui: &Proto::PaySui<'_>) -> SigningResult<TransactionData> {

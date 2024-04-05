@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::modules::tx_builder::TWTransactionBuilder;
+use crate::modules::tx_builder::{TWTransaction, TWTransactionBuilder};
 use crate::modules::tx_signer::TxSigner;
 use std::borrow::Cow;
 use tw_coin_entry::coin_context::CoinContext;
@@ -30,7 +30,10 @@ impl SuiSigner {
         let signer_key = builder.signer_key()?;
         let tx_to_sign = builder.build()?;
 
-        let (preimage, signature) = TxSigner::sign(&tx_to_sign, &signer_key)?;
+        let (preimage, signature) = match tx_to_sign {
+            TWTransaction::Transaction(tx) => TxSigner::sign(&tx, &signer_key)?,
+            TWTransaction::SignDirect(tx_data) => TxSigner::sign_direct(tx_data, &signer_key)?,
+        };
 
         let is_url = false;
         let unsigned_tx = base64::encode(&preimage.unsigned_tx_data, is_url);

@@ -87,34 +87,48 @@ impl TxSigner {
     ) -> SigningResult<(TransactionPreimage, SuiSignatureInfo)> {
         let public_key = signer_key.public();
         let signer_address = SuiAddress::with_ed25519_pubkey(public_key)?;
-
         if signer_address != tx.sender() {
             return Err(SigningError(SigningErrorType::Error_missing_private_key));
         }
 
-        let preimage = Self::preimage(tx)?;
+        let unsigned_tx_data =
+            bcs::encode(tx).map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+        Self::sign_direct(unsigned_tx_data, signer_key)
+    }
+
+    pub fn sign_direct(
+        unsigned_tx_data: Data,
+        signer_key: &ed25519::sha512::KeyPair,
+    ) -> SigningResult<(TransactionPreimage, SuiSignatureInfo)> {
+        let preimage = Self::preimage_direct(unsigned_tx_data)?;
         let signature = signer_key.sign(preimage.tx_hash_to_sign.into_vec())?;
-        let signature_info = SuiSignatureInfo::ed25519(&signature, public_key);
+        let signature_info = SuiSignatureInfo::ed25519(&signature, signer_key.public());
         Ok((preimage, signature_info))
     }
 
     pub fn preimage(tx: &TransactionData) -> SigningResult<TransactionPreimage> {
         let unsigned_tx_data =
-            bcs::encode(tx).map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?;
-        let tx_intent = IntentMessage {
-            intent: Intent {
-                scope: IntentScope::TransactionData,
-                version: IntentVersion::V0,
-                app_id: AppId::Sui,
-            },
-            value: tx,
-        };
+            bcs::encode(tx).map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+        Self::preimage_direct(unsigned_tx_data)
+    }
 
-        let tx_data_to_sign = bcs::encode(&tx_intent)
-            .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?;
+    pub fn preimage_direct(unsigned_tx_data: Data) -> SigningResult<TransactionPreimage> {
+        let intent = Intent {
+            scope: IntentScope::TransactionData,
+            version: IntentVersion::V0,
+            app_id: AppId::Sui,
+        };
+        let intent_data =
+            bcs::encode(&intent).map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+
+        let tx_data_to_sign: Data = intent_data
+            .into_iter()
+            .chain(unsigned_tx_data.iter().copied())
+            .collect();
         let tx_hash_to_sign = blake2_b(&tx_data_to_sign, H256::LEN)
             .and_then(|hash| H256::try_from(hash.as_slice()))
             .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+
         Ok(TransactionPreimage {
             unsigned_tx_data,
             tx_data_to_sign,

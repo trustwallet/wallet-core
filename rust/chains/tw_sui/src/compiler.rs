@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::modules::tx_builder::TWTransactionBuilder;
+use crate::modules::tx_builder::{TWTransaction, TWTransactionBuilder};
 use crate::modules::tx_signer::{TransactionPreimage, TxSigner};
 use crate::signature::SuiSignatureInfo;
 use std::borrow::Cow;
@@ -39,7 +39,10 @@ impl SuiCompiler {
             tx_data_to_sign,
             tx_hash_to_sign,
             ..
-        } = TxSigner::preimage(&tx_to_sign)?;
+        } = match tx_to_sign {
+            TWTransaction::Transaction(tx) => TxSigner::preimage(&tx)?,
+            TWTransaction::SignDirect(tx_data) => TxSigner::preimage_direct(tx_data)?,
+        };
 
         Ok(CompilerProto::PreSigningOutput {
             data: Cow::from(tx_data_to_sign),
@@ -70,7 +73,10 @@ impl SuiCompiler {
 
         let TransactionPreimage {
             unsigned_tx_data, ..
-        } = TxSigner::preimage(&tx_to_sign)?;
+        } = match tx_to_sign {
+            TWTransaction::Transaction(tx) => TxSigner::preimage(&tx),
+            TWTransaction::SignDirect(tx_data) => TxSigner::preimage_direct(tx_data),
+        }?;
 
         let SingleSignaturePubkey {
             signature: raw_signature,
