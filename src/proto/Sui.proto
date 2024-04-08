@@ -99,6 +99,8 @@ message RequestWithdrawStake {
     ObjectRef gas = 2;
 }
 
+/// Transfer an object from one address to another. The object's type must allow public transfers.
+/// https://docs.sui.io/sui-api-ref#unsafe_transferobject
 message TransferObject {
     // Object ID to be transferred.
     ObjectRef object = 1;
