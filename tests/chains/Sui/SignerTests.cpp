@@ -4,7 +4,7 @@
 
 #include "HexCoding.h"
 #include "PrivateKey.h"
-#include "Proto/Sui.pb.h"
+#include "proto/Sui.pb.h"
 #include "PublicKey.h"
 #include "TestUtilities.h"
 
