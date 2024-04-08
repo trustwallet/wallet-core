@@ -76,6 +76,18 @@ impl ProgrammableTransactionBuilder {
         self.command(Command::TransferObjects(vec![Argument::GasCoin], rec_arg));
     }
 
+    pub fn transfer_object(
+        &mut self,
+        recipient: SuiAddress,
+        object_ref: ObjectRef,
+    ) -> SigningResult<()> {
+        let rec_arg = self.pure(recipient).unwrap();
+        let obj_arg = self.obj(ObjectArg::ImmOrOwnedObject(object_ref));
+        self.commands
+            .push(Command::TransferObjects(vec![obj_arg?], rec_arg));
+        Ok(())
+    }
+
     /// Will fail to generate if given an empty ObjVec
     pub fn move_call(
         &mut self,

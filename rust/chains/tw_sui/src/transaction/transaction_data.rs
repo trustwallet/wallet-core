@@ -19,6 +19,27 @@ pub enum TransactionData {
 
 impl TransactionData {
     #[inline]
+    pub fn new(
+        kind: TransactionKind,
+        sender: SuiAddress,
+        gas_payment: ObjectRef,
+        gas_budget: u64,
+        gas_price: u64,
+    ) -> Self {
+        TransactionData::V1(TransactionDataV1 {
+            kind,
+            sender,
+            gas_data: GasData {
+                price: gas_price,
+                owner: sender,
+                payment: vec![gas_payment],
+                budget: gas_budget,
+            },
+            expiration: TransactionExpiration::None,
+        })
+    }
+
+    #[inline]
     pub fn new_programmable(
         sender: SuiAddress,
         gas_payment: Vec<ObjectRef>,

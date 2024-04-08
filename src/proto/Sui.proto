@@ -99,6 +99,17 @@ message RequestWithdrawStake {
     ObjectRef gas = 2;
 }
 
+message TransferObject {
+    // Object ID to be transferred.
+    ObjectRef object = 1;
+
+    // The recipient address.
+    string recipient = 2;
+
+    // Gas object to be used in this transaction.
+    ObjectRef gas = 3;
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     //  Private key to sign the transaction (bytes).
@@ -115,6 +126,7 @@ message SigningInput {
         PayAllSui pay_all_sui = 6;
         RequestAddStake request_add_stake = 7;
         RequestWithdrawStake request_withdraw_stake = 8;
+        TransferObject transfer_object = 9;
     }
 
     // The gas budget, the transaction will fail if the gas cost exceed the budget.

@@ -10,7 +10,7 @@ use crate::constants::{
 use crate::transaction::command::Command;
 use crate::transaction::programmable_transaction::ProgrammableTransactionBuilder;
 use crate::transaction::sui_types::{CallArg, ObjectArg, ObjectRef};
-use crate::transaction::transaction_data::TransactionData;
+use crate::transaction::transaction_data::{TransactionData, TransactionKind};
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_encoding::bcs;
 
@@ -158,6 +158,26 @@ impl TransactionBuilder {
             input_coins,
             recipient,
             gas_object_ref,
+            gas_budget,
+            gas_price,
+        ))
+    }
+
+    pub fn transfer_object(
+        signer: SuiAddress,
+        object: ObjectRef,
+        recipient: SuiAddress,
+        gas: ObjectRef,
+        gas_budget: u64,
+        gas_price: u64,
+    ) -> SigningResult<TransactionData> {
+        let mut builder = ProgrammableTransactionBuilder::default();
+        builder.transfer_object(recipient, object)?;
+
+        Ok(TransactionData::new(
+            TransactionKind::ProgrammableTransaction(builder.finish()),
+            signer,
+            gas,
             gas_budget,
             gas_price,
         ))

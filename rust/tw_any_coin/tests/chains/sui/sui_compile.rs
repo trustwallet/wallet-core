@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::chains::sui::test_cases::{transfer_d4ay9tdb, PRIVATE_KEY_54E80D76};
+use crate::chains::sui::test_cases::{transfer_d4ay9tdb, PRIVATE_KEY_54E80D76, SENDER_54E80D76};
 use tw_any_coin::test_utils::sign_utils::{CompilerHelper, PreImageHelper};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
@@ -54,9 +54,14 @@ fn test_sui_compile_impl(args: SuiCompileArgs) {
 
 #[test]
 fn test_sui_compile_transfer() {
+    let input = Proto::SigningInput {
+        signer: SENDER_54E80D76.into(),
+        ..transfer_d4ay9tdb::sui_transfer_input()
+    };
+
     // Successfully broadcasted: https://suiscan.xyz/mainnet/tx/D4Ay9TdBJjXkGmrZSstZakpEWskEQHaWURP6xWPRXbAm
     test_sui_compile_impl(SuiCompileArgs {
-        input: transfer_d4ay9tdb::sui_transfer_input(),
+        input,
         private_key: PRIVATE_KEY_54E80D76,
         tx_hash: transfer_d4ay9tdb::TX_HASH,
         unsigned_tx_data: transfer_d4ay9tdb::UNSIGNED_TX,

@@ -3,7 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::chains::sui::object_ref;
-use tw_encoding::hex::DecodeHex;
 use tw_proto::Sui::Proto::{self, mod_SigningInput::OneOftransaction_payload as TransactionType};
 
 pub(super) const PRIVATE_KEY_54E80D76: &str =
@@ -36,7 +35,6 @@ pub(super) mod transfer_d4ay9tdb {
 
         Proto::SigningInput {
             transaction_payload: TransactionType::pay_sui(pay_sui),
-            private_key: PRIVATE_KEY_54E80D76.decode_hex().unwrap().into(),
             // 0.003 SUI
             gas_budget: 3000000,
             reference_gas_price: 750,

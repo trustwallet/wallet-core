@@ -67,7 +67,10 @@ fn test_sui_sign_direct_add_delegation() {
 
 #[test]
 fn test_sui_sign_transfer_sui() {
-    let input = transfer_d4ay9tdb::sui_transfer_input();
+    let input = Proto::SigningInput {
+        private_key: PRIVATE_KEY_54E80D76.decode_hex().unwrap().into(),
+        ..transfer_d4ay9tdb::sui_transfer_input()
+    };
 
     let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
     let output = signer.sign(CoinType::Sui, input);
@@ -427,4 +430,39 @@ fn test_sui_sign_undelegate_sui() {
     // Successfully broadcasted: AwZgU1EoWoo2Zn72U119KRvdjkvUz8QXN3fedLnGXa4n
     assert_eq!(output.unsigned_tx, "AAACAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQEAAAAAAAAAAQEATTIRsVaaJCJtZyt95O2wj6nhm08C2rickjbk/IxKsS2wcSAFAAAAACA8frAQitBlYHSw54BYKrEOpjPNXZtUQcp8CBCgeteO2QEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMKc3VpX3N5c3RlbRZyZXF1ZXN0X3dpdGhkcmF3X3N0YWtlAAIBAAABAQBU6A1215DCd/WkTzzpL1PSb1iUiSvzld7mN1mIh2vmsgEQIFS3Z2pGsbrnJBNNyWLbcp8ziaz3nT1vPCe6AYoEBLFxIAUAAAAAIJAmR388UsDK20u66hpL0Yo017timzGO1w9bTx3rP9fAVOgNdteQwnf1pE886S9T0m9YlIkr85Xe5jdZiIdr5rLuAgAAAAAAAEBUiQAAAAAAAA==");
     assert_eq!(output.signature, "ADbHKQ6TSvyrjll8YwIl+0/BnPR3YedjbLllydFcYL2gCt5AdX2wXZxbwfFgpLCMUPe2tGXzj09MkWsjxEM3XwqF69FEH+T5VPvl3GB3vwCOEZpeJpKXxvcIPQAdKsh2/g==");
+}
+
+#[test]
+fn test_sui_sign_transfer_nft() {
+    let transfer_obj = Proto::TransferObject {
+        // NFT https://suiscan.xyz/mainnet/object/0x2e2355a7e5f857a67c237d27e5a2184f9c683f4275d54bf90dcc70f6117f4a03
+        object: Some(object_ref(
+            "0x2e2355a7e5f857a67c237d27e5a2184f9c683f4275d54bf90dcc70f6117f4a03",
+            86012337,
+            "2XTKVJGNZm7i6ZYGQ6ikZowFu855TpTUTip8JJ1jf1ch",
+        )),
+        recipient: "0xf887e7077017554511e736d43424363da946d8aa748225f6b054630a0b1c0ae5".into(),
+        gas: Some(object_ref(
+            "0x102054b7676a46b1bae724134dc962db729f3389acf79d3d6f3c27ba018a0404",
+            87121030,
+            "5eWAHWYnidUinZFf3CWNCLSxsUr3c56VVVVofAgaP6bu",
+        )),
+    };
+
+    let input = Proto::SigningInput {
+        transaction_payload: TransactionType::transfer_object(transfer_obj),
+        private_key: PRIVATE_KEY_54E80D76.decode_hex().unwrap().into(),
+        // 0.004 SUI
+        gas_budget: 4000000,
+        reference_gas_price: 750,
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Sui, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    // Successfully broadcasted: https://suiscan.xyz/mainnet/tx/zJdcR77RiaMTzq1rURePQdcEFLEKBMUXiiUG2PyGWzR
+    assert_eq!(output.unsigned_tx, "AAACACD4h+cHcBdVRRHnNtQ0JDY9qUbYqnSCJfawVGMKCxwK5QEALiNVp+X4V6Z8I30n5aIYT5xoP0J11Uv5Dcxw9hF/SgOxcSAFAAAAACAWqN6yiNss1A1yjjz0hYuYwWdS3Dui2QSHjdKsQz08ZgEBAQEBAAEAAFToDXbXkMJ39aRPPOkvU9JvWJSJK/OV3uY3WYiHa+ayARAgVLdnakaxuuckE03JYttynzOJrPedPW88J7oBigQEhlwxBQAAAAAgRQo1hDoAiMbl2lgicyjy67PmKIWT5wccUlQMAfu84LxU6A1215DCd/WkTzzpL1PSb1iUiSvzld7mN1mIh2vmsu4CAAAAAAAAAAk9AAAAAAAA");
+    assert_eq!(output.signature, "AIbNoo74XJ9EvfVCBVwM2YMht5qsPHSu4Cb61uzKq6g2tgh4dlhKpY9Shhw/hHjlNGcg590+PvXm4nlj/IWy6wGF69FEH+T5VPvl3GB3vwCOEZpeJpKXxvcIPQAdKsh2/g==");
 }

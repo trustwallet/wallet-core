@@ -50,6 +50,9 @@ impl<'a> TWTransactionBuilder<'a> {
             TransactionType::request_withdraw_stake(ref withdraw) => {
                 self.withdraw_from_proto(withdraw)
             },
+            TransactionType::transfer_object(ref transfer_obj) => {
+                self.transfer_object_from_proto(transfer_obj)
+            },
             TransactionType::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
         }?;
         Ok(TWTransaction::Transaction(tx_data))
@@ -144,6 +147,26 @@ impl<'a> TWTransactionBuilder<'a> {
         TransactionBuilder::request_withdraw_stake(
             signer,
             staked_sui,
+            gas,
+            self.input.gas_budget,
+            self.input.reference_gas_price,
+        )
+    }
+
+    fn transfer_object_from_proto(
+        &self,
+        transfer_obj: &Proto::TransferObject<'_>,
+    ) -> SigningResult<TransactionData> {
+        let signer = self.signer_address()?;
+
+        let recipient = SuiAddress::from_str(&transfer_obj.recipient)?;
+        let object = Self::require_coin(&transfer_obj.object)?;
+        let gas = Self::require_coin(&transfer_obj.gas)?;
+
+        TransactionBuilder::transfer_object(
+            signer,
+            object,
+            recipient,
             gas,
             self.input.gas_budget,
             self.input.reference_gas_price,
