@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use serde::Deserialize;
-use tw_encoding::hex;
+use tw_encoding::hex::{self, as_hex};
 use tw_hash::H512;
 use tw_keypair::ed25519::cardano::ExtendedKeyPair;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
@@ -18,6 +18,7 @@ const ED25519_EXTENDED_CARDANO_PRIV_TO_PUB: &str =
 struct Ed255191ExtendedCardanoSignTest {
     secret: String,
     msg: String,
+    #[serde(with = "as_hex")]
     signature: H512,
 }
 

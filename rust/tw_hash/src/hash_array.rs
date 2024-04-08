@@ -332,7 +332,9 @@ mod tests {
 #[cfg(all(test, feature = "serde"))]
 mod serde_tests {
     use super::*;
+    use serde::{Deserialize, Serialize};
     use serde_json::json;
+    use tw_encoding::hex::as_hex;
 
     const BYTES_32: [u8; 32] = [
         175u8, 238, 252, 167, 77, 154, 50, 92, 241, 214, 182, 145, 29, 97, 166, 92, 50, 175, 168,
@@ -340,27 +342,60 @@ mod serde_tests {
     ];
     const HEX_32: &str = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
 
-    #[test]
-    fn test_hash_deserialize() {
-        let unprefixed: Hash<32> = serde_json::from_value(json!(HEX_32)).unwrap();
-        assert_eq!(unprefixed.0, BYTES_32);
+    #[derive(Debug, Deserialize, Serialize)]
+    struct TestAsHex {
+        #[serde(with = "as_hex")]
+        data: Hash<32>,
+    }
 
-        let prefixed: Hash<32> = serde_json::from_value(json!(HEX_32)).unwrap();
-        assert_eq!(prefixed.0, BYTES_32);
+    #[derive(Debug, Deserialize, Serialize)]
+    struct TestAsByteSequence {
+        #[serde(with = "as_byte_sequence")]
+        data: Hash<32>,
     }
 
     #[test]
-    fn test_hash_deserialize_error() {
-        serde_json::from_value::<Hash<32>>(json!(
-            "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45"
-        ))
+    fn test_hash_deserialize_as_byte_sequence() {
+        let res: TestAsByteSequence = serde_json::from_value(json!({"data": BYTES_32})).unwrap();
+        assert_eq!(res.data.0, BYTES_32);
+    }
+
+    #[test]
+    fn test_hash_serialize_as_byte_sequence() {
+        let res = TestAsByteSequence {
+            data: Hash::<32>::from(BYTES_32),
+        };
+        assert_eq!(
+            serde_json::to_value(&res).unwrap(),
+            json!({"data": BYTES_32})
+        );
+    }
+
+    #[test]
+    fn test_hash_deserialize_as_hex() {
+        let unprefixed: TestAsHex = serde_json::from_value(json!({"data": HEX_32})).unwrap();
+
+        assert_eq!(unprefixed.data.0, BYTES_32);
+
+        let prefixed: TestAsHex =
+            serde_json::from_value(json!({"data": format!("0x{HEX_32}")})).unwrap();
+        assert_eq!(prefixed.data.0, BYTES_32);
+    }
+
+    #[test]
+    fn test_hash_deserialize_as_hex_error() {
+        serde_json::from_value::<TestAsHex>(
+            json!({"data": "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45"}),
+        )
         .unwrap_err();
     }
 
     #[test]
-    fn test_hash_serialize() {
-        let hash = Hash::<32>::from(HEX_32);
-        let actual = serde_json::to_value(&hash).unwrap();
-        assert_eq!(actual, json!(HEX_32));
+    fn test_hash_serialize_as_hex() {
+        let test = TestAsHex {
+            data: Hash::<32>::from(HEX_32),
+        };
+        let actual = serde_json::to_value(&test).unwrap();
+        assert_eq!(actual, json!({"data": HEX_32}));
     }
 }

@@ -3,10 +3,8 @@
 // Copyright © 2017 Trust Wallet.
 
 use std::str::FromStr;
-use tw_encoding::base58::Alphabet;
 use tw_encoding::hex::DecodeHex;
-use tw_encoding::{base58, base64, bcs};
-use tw_hash::H256;
+use tw_encoding::{base64, bcs};
 use tw_sui::address::SuiAddress;
 use tw_sui::transaction::command::{Argument, Command};
 use tw_sui::transaction::programmable_transaction::ProgrammableTransaction;
