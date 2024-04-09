@@ -282,6 +282,16 @@ message SideChainUndelegate {
 	string chain_id = 4;
 }
 
+// Message for BNB Beacon Chain -> BSC Stake Migration.
+// https://github.com/bnb-chain/javascript-sdk/blob/26f6db8b67326e6214e74203ff90c89777b592a1/src/types/msg/stake/stakeMigrationMsg.ts#L13-L18
+message SideChainStakeMigration {
+    bytes validator_src_addr = 1;
+    bytes validator_dst_addr = 2;
+    bytes delegator_addr = 3;
+    bytes refund_addr = 4;
+    SendOrder.Token amount = 5;
+}
+
 // Message for TimeLock order
 message TimeLockOrder {
     // owner address
@@ -369,6 +379,7 @@ message SigningInput {
         TimeLockOrder time_lock_order = 24;
         TimeRelockOrder time_relock_order = 25;
         TimeUnlockOrder time_unlock_order = 26;
+        SideChainStakeMigration side_stake_migration_order = 27;
     }
 }
 

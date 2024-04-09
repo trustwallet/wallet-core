@@ -110,6 +110,15 @@ impl FromStr for Address {
     }
 }
 
+impl<'a> TryFrom<&'a [u8]> for Address {
+    type Error = AddressError;
+
+    fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
+        let bytes = H160::try_from(bytes).map_err(|_| AddressError::InvalidInput)?;
+        Ok(Address { bytes })
+    }
+}
+
 impl EvmAddress for Address {}
 
 /// Implement `str` -> `PrivateKey` conversion for test purposes.
