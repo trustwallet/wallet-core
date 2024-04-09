@@ -273,4 +273,3 @@ impl TWBinanceProto for StakeMigrationOrder {
         }
     }
 }
-
