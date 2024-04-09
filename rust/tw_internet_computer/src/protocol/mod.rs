@@ -22,7 +22,7 @@ const MAX_INGRESS_TTL: Duration = Duration::from_secs(5 * 60);
 
 /// Duration subtracted from `MAX_INGRESS_TTL` by
 /// `expiry_time_from_now()` when creating an ingress message.
-const PERMITTED_DRIFT: Duration = Duration::from_secs(60);
+const PERMITTED_DRIFT: Duration = Duration::from_secs(90);
 
 /// An upper limit on the validity of the request, expressed in nanoseconds since 1970-01-01.
 pub fn get_ingress_expiry(current_timestamp_duration: Duration) -> u64 {
