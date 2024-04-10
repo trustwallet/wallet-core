@@ -4719,5 +4719,35 @@
       "rpc": "https://rpc.blast.io",
       "documentation": "https://docs.blast.io"
     }
+  },
+  {
+    "id": "num",
+    "name": "Numbers Protocol",
+    "coinId": 10010507,
+    "symbol": "NUM",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "10507",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://mainnet.num.network",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x3cc633cf6bfbde82ec65a6458524a82929810f69e1c0b711d971c1a991226a7e",
+      "sampleAccount": "0x2FBfE8F2bA00B255e60c220755040B597d09aFFa"
+    },
+    "info": {
+      "url": "https://numbersprotocol.io/",
+      "source": "https://github.com/numbersprotocol",
+      "rpc": "https://mainnetrpc.num.network",
+      "documentation": "https://docs.numbersprotocol.io/"
+    }
   }
 ]

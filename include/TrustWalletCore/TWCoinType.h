@@ -10,10 +10,9 @@
 #include "TWDerivation.h"
 #include "TWHDVersion.h"
 #include "TWHRP.h"
+#include "TWPublicKeyType.h"
 #include "TWPurpose.h"
 #include "TWString.h"
-#include "TWDerivation.h"
-#include "TWPublicKeyType.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -81,7 +80,7 @@ enum TWCoinType {
     TWCoinTypeZelcash = 19167,
     TWCoinTypeRavencoin = 175,
     TWCoinTypeWaves = 5741564,
-    TWCoinTypeTerra = 330, // see also TerraV2
+    TWCoinTypeTerra = 330,        // see also TerraV2
     TWCoinTypeTerraV2 = 10000330, // see also Terra
     TWCoinTypeHarmony = 1023,
     TWCoinTypeAlgorand = 283,
@@ -184,6 +183,7 @@ enum TWCoinType {
     TWCoinTypeMerlin = 4200,
     TWCoinTypeLightlink = 1890,
     TWCoinTypeBlast = 81457,
+    TWCoinTypeNumbersProtocol = 10010507,
     // end_of_tw_coin_type_marker_do_not_modify
 };
 
