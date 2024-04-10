@@ -147,7 +147,10 @@ impl BitcoinEntry {
 
         // Process proto inputs.
         for input in &proto.inputs {
-            let (utxo, arg, claim) = proto_input_to_native(input)?;
+            // Note that the returned claims are invalid, respectively don't
+            // contain any valid signatures yet. This is solely used to
+            // calculate the transaction fee.
+            let (utxo, arg, claim) = proto_input_to_native(input, None)?;
 
             builder = builder.push_input(utxo, arg);
             dummy_claims.push(claim);
@@ -265,6 +268,44 @@ impl BitcoinEntry {
         _public_keys: Vec<PublicKeyBytes>,
     ) -> Result<Proto::SigningOutput<'static>> {
         let proto = pre_processor(proto);
+
+        // Construct the transaction.
+        let mut builder = TransactionBuilder::new();
+        let mut dummy_claims = vec![]; // TODO
+
+        // Process proto inputs.
+        for input in &proto.inputs {
+            let (utxo, arg, claim) = proto_input_to_native(input, None)?;
+
+            builder = builder.push_input(utxo, arg);
+            dummy_claims.push(claim);
+        }
+
+        // Process proto outputs.
+        let mut utxo_outputs = vec![];
+        for output in proto.outputs {
+            let (out, tx_out) = proto_output_to_native(&output)?;
+
+            builder = builder.push_output(out);
+            utxo_outputs.push(tx_out);
+        }
+
+        // Process proto change output, if specified.
+        if !proto.disable_change_output {
+            let change_output = proto.change_output.unwrap();
+            let (out, tx_out) = proto_output_to_native(&change_output)?;
+
+            builder = builder.push_output(out);
+            utxo_outputs.push(tx_out);
+        }
+
+        // Build the transaction.
+        let (tx, tx_args) = builder.build();
+
+        let computer = SighashComputer::new(tx, tx_args);
+        let x = computer.compile(claims)
+
+        // ***** *****
 
         // There must be a signature for each input.
         if proto.inputs.len() != signatures.len() {

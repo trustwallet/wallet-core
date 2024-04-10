@@ -1,12 +1,8 @@
 use std::str::FromStr;
 
 use crate::{Error, Result};
-use tw_base58_address::Base58Address;
-use tw_bech32_address::Bech32Address;
-use tw_coin_entry::coin_context::CoinContext;
-use tw_encoding::base58::Alphabet;
-use tw_hash::hasher::Hasher;
-use tw_hash::{H160, H256, H264};
+use tw_coin_entry::coin_entry::SignatureBytes;
+use tw_hash::{H160, H256};
 use tw_keypair::ecdsa::signature::Signature;
 use tw_keypair::schnorr;
 use tw_keypair::tw::PublicKey;
@@ -31,6 +27,7 @@ fn pubkey_from_raw(pubkey: &[u8]) -> Result<PublicKey> {
 
 pub fn proto_input_to_native(
     input: &Proto::Input,
+    sig: Option<SignatureBytes>,
 ) -> Result<(TransactionInput, UtxoToSign, SpendingData)> {
     match &input.to_recipient {
         Proto::mod_Input::OneOfto_recipient::builder(b) => {
@@ -44,6 +41,11 @@ pub fn proto_input_to_native(
                         .amount(input.value as i64)
                         .p2sh(redeem_script.clone())
                         .unwrap();
+
+                    // Note that the signature is ignored here, since it's
+                    // expected that the provided redeem script is constructed
+                    // in such a way that it can claim the UTXO. The caller must
+                    // either use None or a dummy value.
 
                     let claim = SpendingScriptBuilder::new().p2sh(redeem_script).unwrap();
 
@@ -59,7 +61,13 @@ pub fn proto_input_to_native(
                         .p2pkh(pubkey.clone())
                         .unwrap();
 
-                    let sig = Signature::from_bytes(&vec![1; 65]).unwrap();
+                    // Use the provided signature, or a dummy value if None.
+                    let sig = if let Some(sig_bytes) = sig {
+                         Signature::from_bytes(&sig_bytes).unwrap()
+                    } else {
+                         Signature::from_bytes(&vec![1; 65]).unwrap()
+                    };
+
                     let claim = SpendingScriptBuilder::new().p2pkh(sig, pubkey).unwrap();
 
                     Ok((utxo, arg, claim))
@@ -75,7 +83,14 @@ pub fn proto_input_to_native(
                         .p2wpkh(pubkey.clone())
                         .unwrap();
 
-                    let sig = Signature::from_bytes(&vec![1; 65]).unwrap();
+
+                    // Use the provided signature, or a dummy value if None.
+                    let sig = if let Some(sig_bytes) = sig {
+                         Signature::from_bytes(&sig_bytes).unwrap()
+                    } else {
+                         Signature::from_bytes(&vec![1; 65]).unwrap()
+                    };
+
                     let claim = SpendingScriptBuilder::new().p2wpkh(sig, pubkey).unwrap();
 
                     Ok((utxo, arg, claim))
@@ -91,7 +106,13 @@ pub fn proto_input_to_native(
                         .p2tr_key_path(pubkey)
                         .unwrap();
 
-                    let sig = schnorr::Signature::from_bytes(&vec![1; 64]).unwrap();
+                    // Use the provided signature, or a dummy value if None.
+                    let sig = if let Some(sig_bytes) = sig {
+                        schnorr::Signature::from_bytes(&sig_bytes).unwrap()
+                    } else {
+                        schnorr::Signature::from_bytes(&vec![1; 64]).unwrap()
+                    };
+
                     let claim = SpendingScriptBuilder::new().p2tr_key_path(sig).unwrap();
 
                     Ok((utxo, arg, claim))
@@ -109,7 +130,13 @@ pub fn proto_input_to_native(
                         .p2tr_script_path(payload.clone())
                         .unwrap();
 
-                    let sig = schnorr::Signature::from_bytes(&vec![1; 64]).unwrap();
+                    // Use the provided signature, or a dummy value if None.
+                    let sig = if let Some(sig_bytes) = sig {
+                        schnorr::Signature::from_bytes(&sig_bytes).unwrap()
+                    } else {
+                        schnorr::Signature::from_bytes(&vec![1; 64]).unwrap()
+                    };
+
                     let claim = SpendingScriptBuilder::new()
                         .p2tr_script_path(sig, payload, control_block)
                         .unwrap();
@@ -129,7 +156,13 @@ pub fn proto_input_to_native(
                         .brc20_transfer(pubkey.clone(), ticker.clone(), value.clone())
                         .unwrap();
 
-                    let sig = schnorr::Signature::from_bytes(&vec![1; 64]).unwrap();
+                    // Use the provided signature, or a dummy value if None.
+                    let sig = if let Some(sig_bytes) = sig {
+                        schnorr::Signature::from_bytes(&sig_bytes).unwrap()
+                    } else {
+                        schnorr::Signature::from_bytes(&vec![1; 64]).unwrap()
+                    };
+
                     let claim = SpendingScriptBuilder::new()
                         .brc20_transfer(sig, pubkey, ticker, value)
                         .unwrap();
@@ -155,6 +188,9 @@ pub fn proto_input_to_native(
                 // TODO: Signing method:
                 .custom_script_pubkey(script_pubkey, tw_utxo::signing_mode::SigningMethod::Legacy)
                 .unwrap();
+
+            // Signature is ignored here, caller must provide a valid
+            // script_sig/witness.
 
             let claim =
                 SpendingScriptBuilder::custom_script_sig_witness(Some(script_sig), Some(witness));
