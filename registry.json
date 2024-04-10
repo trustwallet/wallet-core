@@ -4658,5 +4658,36 @@
       "rpc": "https://rpc.merlinchain.io",
       "documentation": "https://docs.merlinchain.io/merlin-docs"
     }
+  },
+  {
+    "id": "lightlink",
+    "name": "Lightlink",
+    "displayName": "Lightlink Phoenix",
+    "coinId": 1890,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "1890",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://phoenix.lightlink.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xc65f82445aefc883fd4ffe09149c8ce48f61b670c0734528a49d4a8bd8309bb0",
+      "sampleAccount": "0x4566ED6c7a7fFc90E2C7cfF7eB9156262afD2fDe"
+    },
+    "info": {
+      "url": "https://lightlink.io",
+      "source": "https://github.com/lightlink-network",
+      "rpc": "https://endpoints.omniatech.io/v1/lightlink/phoenix/public",
+      "documentation": "https://docs.lightlink.io/lightlink-protocol"
+    }
   }
 ]
