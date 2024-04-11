@@ -16,6 +16,7 @@ struct ArbitraryTransferArgs {
     #[arbitrary(with = arbitrary_to_field)]
     to: String,
     current_timestamp_nanos: u64,
+    permitted_drift: Option<u64>,
 }
 
 fn arbitrary_to_field(u: &mut arbitrary::Unstructured) -> arbitrary::Result<String> {

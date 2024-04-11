@@ -39,6 +39,8 @@ pub struct TransferArgs {
     pub to: String,
     /// The current timestamp in nanoseconds.
     pub current_timestamp_nanos: u64,
+    /// The duration to tune up ingress expiry in seconds.
+    pub permitted_drift: Option<u64>,
 }
 
 impl TryFrom<TransferArgs> for SendRequest {
@@ -82,7 +84,7 @@ pub fn transfer(
     }
 
     let current_timestamp_duration = Duration::from_nanos(args.current_timestamp_nanos);
-    let ingress_expiry = get_ingress_expiry(current_timestamp_duration);
+    let ingress_expiry = get_ingress_expiry(current_timestamp_duration, args.permitted_drift);
     let identity = Identity::new(private_key);
 
     // Encode the arguments for the ledger `send_pb` endpoint.
@@ -189,6 +191,7 @@ mod test {
             max_fee: None,
             to: to_account_identifier.to_hex(),
             current_timestamp_nanos,
+            permitted_drift: None,
         }
     }
 

@@ -38,6 +38,11 @@ pub fn sign_transaction(
                 max_fee: None,
                 to: transfer_args.to_account_identifier.to_string(),
                 current_timestamp_nanos: transfer_args.current_timestamp_nanos,
+                permitted_drift: if transfer_args.permitted_drift > 0 {
+                    Some(transfer_args.permitted_drift)
+                } else {
+                    None
+                },
             },
         ),
         Tx::None => Err(SignTransactionError::InvalidArguments),

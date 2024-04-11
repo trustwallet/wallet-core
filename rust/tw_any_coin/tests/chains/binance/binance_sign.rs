@@ -4,7 +4,7 @@
 
 use crate::chains::binance::{
     make_token, ACCOUNT_12_PRIVATE_KEY, ACCOUNT_15_PRIVATE_KEY, ACCOUNT_16_PRIVATE_KEY,
-    ACCOUNT_19_PRIVATE_KEY,
+    ACCOUNT_19_PRIVATE_KEY, ACCOUNT_91147_PRIVATE_KEY,
 };
 use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_coin_registry::coin_type::CoinType;
@@ -678,6 +678,54 @@ fn test_binance_sign_side_chain_undelegate_order() {
     let expected_signature = "a622b7ca7a2875e5eaa675a5ed976b2ec3b8ca055a2b05e7fb471d328bd04df854789437dd06407e41ebb1e5a345604c93663dfb660e223800636c0b94c2e798";
     assert_eq!(output.signature.to_hex(), expected_signature);
     let expected_signature_json = r#"{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A6mlXAQMjrgSDz0bMhkyUIQcCK9E6lYarJk9vg9rao/H"},"signature":"piK3ynoodeXqpnWl7ZdrLsO4ygVaKwXn+0cdMovQTfhUeJQ33QZAfkHrseWjRWBMk2Y9+2YOIjgAY2wLlMLnmA=="}"#;
+    assert_eq!(output.signature_json, expected_signature_json);
+}
+
+#[test]
+fn test_binance_sign_side_chain_stake_migration_order() {
+    // Current staking delegator:
+    // tbnb1rr74uvz8rcvl5dqn43jkwdufx5aksp4zwzszvs
+    let refund_addr_key_hash = "18fd5e30471e19fa3413ac65673789353b6806a2";
+    // Where the staking amount will be re-delegated:
+    // 0xCAAc3DAf661b6cEFF18DB1C8fCC2C2fDA1B73893
+    let delegator_key_hash = "CAAc3DAf661b6cEFF18DB1C8fCC2C2fDA1B73893";
+    // BNB Beacon Chain - ARARAT validator has the following addresses:
+    // 1. bva1p7s26ervsmv3w83k5696glautc9sm5rchz5f5e (if using `bva` validator HRP);
+    // 2. tbnb1p7s26ervsmv3w83k5696glautc9sm5rcetua2v (if using `tbnb` testnet HRP).
+    let validator_src_key_hash = "0fa0ad646c86d9171e36a68ba47fbc5e0b0dd078";
+    // Binance Smart Chain - ARARAT validator has the following address:
+    // 0x341e228f22D4ec16297DD05A9d6347C74c125F66.
+    let validator_dst_key_hash = "0x341e228f22D4ec16297DD05A9d6347C74c125F66";
+
+    let stake_migration = Proto::SideChainStakeMigration {
+        delegator_addr: delegator_key_hash.decode_hex().unwrap().into(),
+        validator_src_addr: validator_src_key_hash.decode_hex().unwrap().into(),
+        validator_dst_addr: validator_dst_key_hash.decode_hex().unwrap().into(),
+        refund_addr: refund_addr_key_hash.decode_hex().unwrap().into(),
+        // 3.21 BNB
+        amount: Some(make_token("BNB", 321000000)),
+    };
+
+    let input = Proto::SigningInput {
+        chain_id: "Binance-Chain-Ganges".into(),
+        account_number: 91147,
+        sequence: 11,
+        private_key: ACCOUNT_91147_PRIVATE_KEY.decode_hex().unwrap().into(),
+        order_oneof: OrderEnum::side_stake_migration_order(stake_migration),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::TBinance, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    // Successfully broadcasted tx hash: 94E2FC487D93F9744EB0C6BEED7AE1E5F5AF7D6B756B5EEE9AB1E6CB02C7D015
+    // Note it's not indexed by the explorer for some reason.
+    assert_eq!(output.encoded.to_hex(), "e101f0625dee0a69385891960a140fa0ad646c86d9171e36a68ba47fbc5e0b0dd0781214341e228f22d4ec16297dd05a9d6347c74c125f661a14caac3daf661b6ceff18db1c8fcc2c2fda1b73893221418fd5e30471e19fa3413ac65673789353b6806a22a0b0a03424e4210c0a488990112700a26eb5ae987210243107052476885baddb4fad4df3fa07f4df807eac64daf6035e25232180f8c6a124065a45c4001488121e8199c3d87bc3dbcf1612ba690f0c474cc94f9a060a9e1bc302943dca5cd9240bba1c78a1691700e23d538efad79cee856a34595247249b6188bc805200b");
+
+    let expected_signature = "65a45c4001488121e8199c3d87bc3dbcf1612ba690f0c474cc94f9a060a9e1bc302943dca5cd9240bba1c78a1691700e23d538efad79cee856a34595247249b6";
+    assert_eq!(output.signature.to_hex(), expected_signature);
+    let expected_signature_json = r#"{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AkMQcFJHaIW63bT61N8/oH9N+Afqxk2vYDXiUjIYD4xq"},"signature":"ZaRcQAFIgSHoGZw9h7w9vPFhK6aQ8MR0zJT5oGCp4bwwKUPcpc2SQLuhx4oWkXAOI9U47615zuhWo0WVJHJJtg=="}"#;
     assert_eq!(output.signature_json, expected_signature_json);
 }
 
