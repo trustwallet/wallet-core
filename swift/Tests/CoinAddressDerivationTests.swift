@@ -385,7 +385,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "sei142j9u5eaduzd7faumygud6ruhdwme98qagm0sj"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .internetComputer:
-                    let expectedResult = "b9a13d974ee9db036d5abc5b66ace23e513cb5676f3996626c7717c339a3ee87"
+                    let expectedResult = "6f8e568160a3c8362789848dc0fa52891964473c045cc25208a305fb35b7c4ab"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .tia:
                     let expectedResult = "celestia142j9u5eaduzd7faumygud6ruhdwme98qpwmfv7"
