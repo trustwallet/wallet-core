@@ -4689,5 +4689,35 @@
       "rpc": "https://endpoints.omniatech.io/v1/lightlink/phoenix/public",
       "documentation": "https://docs.lightlink.io/lightlink-protocol"
     }
+  },
+  {
+    "id": "blast",
+    "name": "Blast",
+    "coinId": 81457,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "81457",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://blastscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x511fc00e8329343b9e953bf1f75e9b0a7b3cc2eb3a8f049d5be41adf4fbd6cac",
+      "sampleAccount": "0x0d11f2f0ff55c4fcfc3ff86bdc8e78ffa7df99fd"
+    },
+    "info": {
+      "url": "https://blast.io",
+      "source": "https://github.com/blast-io",
+      "rpc": "https://rpc.blast.io",
+      "documentation": "https://docs.blast.io"
+    }
   }
 ]
