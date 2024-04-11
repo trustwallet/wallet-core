@@ -115,7 +115,8 @@ class CoinAddressDerivationTests: XCTestCase {
                      .zenEON,
                      .mantaPacific,
                      .zetaEVM,
-                     .merlin:
+                     .merlin,
+                     .lightlink:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ronin:

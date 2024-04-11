@@ -18,6 +18,7 @@ message Transaction {
         uint64 amount = 2;
         uint64 memo = 3;
         uint64 current_timestamp_nanos = 4;
+        uint64 permitted_drift = 5;
     }
 
     // Payload transfer
