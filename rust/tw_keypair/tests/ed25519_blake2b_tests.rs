@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use serde::Deserialize;
-use tw_encoding::hex;
+use tw_encoding::hex::{self, as_hex};
 use tw_hash::{H256, H512};
 use tw_keypair::ed25519::blake2b::KeyPair;
 use tw_keypair::traits::{SigningKeyTrait, VerifyingKeyTrait};
@@ -13,8 +13,10 @@ const ED25519_BLAKE2B_SIGN: &str = include_str!("ed25519_blake2b_sign.json");
 
 #[derive(Deserialize)]
 struct Ed255191SignTest {
+    #[serde(with = "as_hex")]
     secret: H256,
     msg: String,
+    #[serde(with = "as_hex")]
     signature: H512,
 }
 

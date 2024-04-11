@@ -20,7 +20,7 @@ pub struct HTLTOrder {
     pub expected_income: String,
     pub from: BinanceAddress,
     pub height_span: i64,
-    #[serde(serialize_with = "as_hex")]
+    #[serde(with = "as_hex")]
     pub random_number_hash: Data,
     pub recipient_other_chain: String,
     pub sender_other_chain: String,
@@ -84,7 +84,7 @@ impl TWBinanceProto for HTLTOrder {
 pub struct DepositHTLTOrder {
     pub amount: Vec<Token>,
     pub from: BinanceAddress,
-    #[serde(serialize_with = "as_hex")]
+    #[serde(with = "as_hex")]
     pub swap_id: Data,
 }
 
@@ -127,9 +127,9 @@ impl TWBinanceProto for DepositHTLTOrder {
 #[derive(Deserialize, Serialize)]
 pub struct ClaimHTLTOrder {
     pub from: BinanceAddress,
-    #[serde(serialize_with = "as_hex")]
+    #[serde(with = "as_hex")]
     pub random_number: Data,
-    #[serde(serialize_with = "as_hex")]
+    #[serde(with = "as_hex")]
     pub swap_id: Data,
 }
 
@@ -171,7 +171,7 @@ impl TWBinanceProto for ClaimHTLTOrder {
 #[derive(Deserialize, Serialize)]
 pub struct RefundHTLTOrder {
     pub from: BinanceAddress,
-    #[serde(serialize_with = "as_hex")]
+    #[serde(with = "as_hex")]
     pub swap_id: Data,
 }
 

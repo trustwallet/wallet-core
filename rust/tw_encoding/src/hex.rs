@@ -3,7 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 pub use hex::FromHexError;
-use serde::{Serialize, Serializer};
 use tw_memory::Data;
 
 pub type FromHexResult<T> = Result<T, FromHexError>;
@@ -64,13 +63,31 @@ pub fn encode<T: AsRef<[u8]>>(data: T, prefixed: bool) -> String {
     encoded
 }
 
-/// Serializes the `value` as a hex.
-pub fn as_hex<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
-where
-    T: ToHex,
-    S: Serializer,
-{
-    value.to_hex().serialize(serializer)
+pub mod as_hex {
+    use super::*;
+    use serde::de::Error;
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+    use std::fmt;
+
+    /// Serializes the `value` as a hex.
+    pub fn serialize<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        T: ToHex,
+        S: Serializer,
+    {
+        value.to_hex().serialize(serializer)
+    }
+
+    pub fn deserialize<'de, D, T, E>(deserializer: D) -> Result<T, D::Error>
+    where
+        D: Deserializer<'de>,
+        T: for<'a> TryFrom<&'a [u8], Error = E>,
+        E: fmt::Debug,
+    {
+        let s = String::deserialize(deserializer)?;
+        let data = decode(&s).map_err(|e| Error::custom(format!("{e:?}")))?;
+        T::try_from(&data).map_err(|e| Error::custom(format!("Error parsing from bytes: {e:?}")))
+    }
 }
 
 #[cfg(test)]

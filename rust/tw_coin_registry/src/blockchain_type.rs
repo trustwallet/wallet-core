@@ -20,6 +20,7 @@ pub enum BlockchainType {
     NativeInjective,
     Ronin,
     Solana,
+    Sui,
     Thorchain,
     // end_of_blockchain_type - USED TO GENERATE CODE
     #[serde(other)]

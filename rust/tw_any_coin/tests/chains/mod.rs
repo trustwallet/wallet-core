@@ -13,6 +13,7 @@ mod internet_computer;
 mod native_evmos;
 mod native_injective;
 mod solana;
+mod sui;
 mod tbinance;
 mod thorchain;
 mod zetachain;

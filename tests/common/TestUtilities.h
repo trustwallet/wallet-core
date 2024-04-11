@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <TrustWalletCore/TWAnySigner.h>
+#include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWData.h>
 #include <TrustWalletCore/TWString.h>
 
