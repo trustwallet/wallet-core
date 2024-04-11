@@ -21,7 +21,10 @@ use std::time::Duration;
 const MAX_INGRESS_TTL: Duration = Duration::from_secs(5 * 60);
 
 /// An upper limit on the validity of the request, expressed in nanoseconds since 1970-01-01.
-pub fn get_ingress_expiry(current_timestamp_duration: Duration, permitted_drift_in_seconds: Option<u64>) -> u64 {
+pub fn get_ingress_expiry(
+    current_timestamp_duration: Duration,
+    permitted_drift_in_seconds: Option<u64>,
+) -> u64 {
     let permitted_drift = permitted_drift_in_seconds
         .map(|secs| Duration::from_secs(secs))
         .unwrap_or(Duration::from_secs(60));
