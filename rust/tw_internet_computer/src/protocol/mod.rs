@@ -26,7 +26,7 @@ pub fn get_ingress_expiry(
     permitted_drift_in_seconds: Option<u64>,
 ) -> u64 {
     let permitted_drift = permitted_drift_in_seconds
-        .map(|secs| Duration::from_secs(secs))
+        .map(Duration::from_secs)
         .unwrap_or(Duration::from_secs(60));
 
     current_timestamp_duration
