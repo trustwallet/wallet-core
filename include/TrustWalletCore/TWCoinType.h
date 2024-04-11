@@ -182,6 +182,7 @@ enum TWCoinType {
     TWCoinTypeZetaEVM = 20007000,
     TWCoinTypeDydx = 22000118,
     TWCoinTypeMerlin = 4200,
+    TWCoinTypeLightlink = 1890,
     // end_of_tw_coin_type_marker_do_not_modify
 };
 

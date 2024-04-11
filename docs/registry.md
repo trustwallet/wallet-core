@@ -84,6 +84,7 @@ This list is generated from [./registry.json](../registry.json)
 | 1030    | Conflux eSpace   | CFX    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/cfxevm/info/logo.png" width="32" />       | <https://confluxnetwork.org>  |
 | 1729    | Tezos            | XTZ    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tezos/info/logo.png" width="32" />        | <https://tezos.com>           |
 | 1815    | Cardano          | ADA    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/cardano/info/logo.png" width="32" />      | <https://www.cardano.org>     |
+| 1890    | Lightlink Phoenix | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/lightlink/info/logo.png" width="32" />    | <https://lightlink.io>        |
 | 2301    | Qtum             | QTUM   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/qtum/info/logo.png" width="32" />         | <https://qtum.org>            |
 | 2718    | Nebulas          | NAS    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nebulas/info/logo.png" width="32" />      | <https://nebulas.io>          |
 | 3030    | Hedera           | HBAR   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/hedera/info/logo.png" width="32" />       | <https://hedera.com/>         |
