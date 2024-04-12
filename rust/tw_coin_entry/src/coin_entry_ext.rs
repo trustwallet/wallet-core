@@ -5,8 +5,7 @@
 use crate::coin_context::CoinContext;
 use crate::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
 use crate::derivation::Derivation;
-use crate::error::SigningResult;
-use crate::error::{AddressResult, SigningError, SigningErrorType};
+use crate::error::prelude::*;
 use crate::modules::json_signer::JsonSigner;
 use crate::modules::message_signer::MessageSigner;
 use crate::modules::plan_builder::PlanBuilder;
@@ -58,7 +57,7 @@ pub trait CoinEntryExt {
         coin: &dyn CoinContext,
         input_json: &str,
         private_key: PrivateKeyBytes,
-    ) -> SigningResult<String>;
+    ) -> TWResult<String>;
 
     /// Returns hash(es) for signing, needed for external signing.
     /// It will return a proto object named `PreSigningOutput` which will include hash.
@@ -75,26 +74,22 @@ pub trait CoinEntryExt {
     ) -> ProtoResult<Data>;
 
     /// Plans a transaction (for UTXO chains only).
-    fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data>;
+    fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> TWResult<Data>;
 
     /// Signs a message.
-    fn sign_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data>;
+    fn sign_message(&self, coin: &dyn CoinContext, input: &[u8]) -> TWResult<Data>;
 
     /// Computes preimage hashes of a message.
-    fn message_preimage_hashes(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data>;
+    fn message_preimage_hashes(&self, coin: &dyn CoinContext, input: &[u8]) -> TWResult<Data>;
 
     /// Verifies a signature for a message.
-    fn verify_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<bool>;
+    fn verify_message(&self, coin: &dyn CoinContext, input: &[u8]) -> TWResult<bool>;
 
     /// Signs a transaction in WalletConnect format.
-    fn wallet_connect_parse_request(
-        &self,
-        coin: &dyn CoinContext,
-        input: &[u8],
-    ) -> SigningResult<Data>;
+    fn wallet_connect_parse_request(&self, coin: &dyn CoinContext, input: &[u8]) -> TWResult<Data>;
 
     /// Decodes a transaction from binary representation.
-    fn decode_transaction(&self, coin: &dyn CoinContext, tx: &[u8]) -> SigningResult<Data>;
+    fn decode_transaction(&self, coin: &dyn CoinContext, tx: &[u8]) -> TWResult<Data>;
 }
 
 impl<T> CoinEntryExt for T
@@ -152,9 +147,9 @@ where
         coin: &dyn CoinContext,
         input_json: &str,
         private_key: PrivateKeyBytes,
-    ) -> SigningResult<String> {
+    ) -> TWResult<String> {
         let Some(json_signer) = self.json_signer() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(TWErrorKind::Error_not_supported);
         };
 
         let private_key = PrivateKey::new(private_key)?;
@@ -179,41 +174,41 @@ where
         serialize(&output)
     }
 
-    fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data> {
+    fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> TWResult<Data> {
         let Some(plan_builder) = self.plan_builder() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(TWErrorKind::Error_not_supported);
         };
 
         let input: <T::PlanBuilder as PlanBuilder>::SigningInput<'_> = deserialize(input)?;
         let output = plan_builder.plan(coin, input);
-        serialize(&output).map_err(SigningError::from)
+        serialize(&output).into_tw()
     }
 
-    fn sign_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data> {
+    fn sign_message(&self, coin: &dyn CoinContext, input: &[u8]) -> TWResult<Data> {
         let Some(message_signer) = self.message_signer() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(TWErrorKind::Error_not_supported);
         };
 
         let input: <T::MessageSigner as MessageSigner>::MessageSigningInput<'_> =
             deserialize(input)?;
         let output = message_signer.sign_message(coin, input);
-        serialize(&output).map_err(SigningError::from)
+        serialize(&output).into_tw()
     }
 
-    fn message_preimage_hashes(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data> {
+    fn message_preimage_hashes(&self, coin: &dyn CoinContext, input: &[u8]) -> TWResult<Data> {
         let Some(message_signer) = self.message_signer() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(TWErrorKind::Error_not_supported);
         };
 
         let input: <T::MessageSigner as MessageSigner>::MessageSigningInput<'_> =
             deserialize(input)?;
         let output = message_signer.message_preimage_hashes(coin, input);
-        serialize(&output).map_err(SigningError::from)
+        serialize(&output).into_tw()
     }
 
-    fn verify_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<bool> {
+    fn verify_message(&self, coin: &dyn CoinContext, input: &[u8]) -> TWResult<bool> {
         let Some(message_signer) = self.message_signer() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(TWErrorKind::Error_not_supported);
         };
 
         let input: <T::MessageSigner as MessageSigner>::MessageVerifyingInput<'_> =
@@ -221,26 +216,22 @@ where
         Ok(message_signer.verify_message(coin, input))
     }
 
-    fn wallet_connect_parse_request(
-        &self,
-        coin: &dyn CoinContext,
-        input: &[u8],
-    ) -> SigningResult<Data> {
+    fn wallet_connect_parse_request(&self, coin: &dyn CoinContext, input: &[u8]) -> TWResult<Data> {
         let Some(wc_connector) = self.wallet_connector() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(TWErrorKind::Error_not_supported);
         };
 
         let input: WCProto::ParseRequestInput = deserialize(input)?;
         let output = wc_connector.parse_request(coin, input);
-        serialize(&output).map_err(SigningError::from)
+        serialize(&output).into_tw()
     }
 
-    fn decode_transaction(&self, coin: &dyn CoinContext, tx: &[u8]) -> SigningResult<Data> {
+    fn decode_transaction(&self, coin: &dyn CoinContext, tx: &[u8]) -> TWResult<Data> {
         let Some(tx_decoder) = self.transaction_decoder() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(TWErrorKind::Error_not_supported);
         };
 
         let output = tx_decoder.decode_transaction(coin, tx);
-        serialize(&output).map_err(SigningError::from)
+        serialize(&output).into_tw()
     }
 }

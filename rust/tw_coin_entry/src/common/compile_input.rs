@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::coin_entry::{PublicKeyBytes, SignatureBytes};
-use crate::error::{SigningError, SigningErrorType, SigningResult};
+use crate::error::prelude::*;
 
 pub struct SingleSignaturePubkey {
     pub signature: SignatureBytes,
@@ -14,19 +14,22 @@ impl SingleSignaturePubkey {
     pub fn from_sign_pubkey_list(
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
-    ) -> SigningResult<Self> {
+    ) -> TWResult<Self> {
         if signatures.len() > 1 || public_keys.len() > 1 {
-            return Err(SigningError(SigningErrorType::Error_no_support_n2n));
+            return TWError::err(TWErrorKind::Error_no_support_n2n)
+                .context("Expected exactly one signature and public key");
         }
 
         let signature = signatures
             .into_iter()
             .next()
-            .ok_or(SigningError(SigningErrorType::Error_signatures_count))?;
+            .or_tw_err(TWErrorKind::Error_signatures_count)
+            .context("Expected exactly one signature and public key")?;
         let public_key = public_keys
             .into_iter()
             .next()
-            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+            .or_tw_err(TWErrorKind::Error_invalid_params)
+            .context("Expected exactly one signature and public key")?;
 
         Ok(SingleSignaturePubkey {
             signature,
@@ -34,15 +37,17 @@ impl SingleSignaturePubkey {
         })
     }
 
-    pub fn from_sign_list(signatures: Vec<SignatureBytes>) -> SigningResult<Self> {
+    pub fn from_sign_list(signatures: Vec<SignatureBytes>) -> TWResult<Self> {
         if signatures.len() > 1 {
-            return Err(SigningError(SigningErrorType::Error_no_support_n2n));
+            return TWError::err(TWErrorKind::Error_no_support_n2n)
+                .context("Expected exactly one signature");
         }
 
         let signature = signatures
             .into_iter()
             .next()
-            .ok_or(SigningError(SigningErrorType::Error_signatures_count))?;
+            .or_tw_err(TWErrorKind::Error_signatures_count)
+            .context("Expected exactly one signature")?;
 
         Ok(SingleSignaturePubkey {
             signature,

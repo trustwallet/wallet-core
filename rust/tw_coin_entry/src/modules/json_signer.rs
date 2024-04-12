@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::coin_context::CoinContext;
-use crate::error::SigningResult;
+use crate::error::prelude::TWResult;
 use tw_keypair::tw::PrivateKey;
 
 pub trait JsonSigner {
@@ -13,7 +13,7 @@ pub trait JsonSigner {
         coin: &dyn CoinContext,
         input_json: &str,
         key: &PrivateKey,
-    ) -> SigningResult<String>;
+    ) -> TWResult<String>;
 }
 
 /// `NoJsonSigner` can't be created since there are no enum variants.
@@ -25,7 +25,7 @@ impl JsonSigner for NoJsonSigner {
         _coin: &dyn CoinContext,
         _input_json: &str,
         _key: &PrivateKey,
-    ) -> SigningResult<String> {
+    ) -> TWResult<String> {
         panic!("`NoJsonSigner` should never be constructed and used")
     }
 }
