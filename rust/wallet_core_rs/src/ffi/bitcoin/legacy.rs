@@ -43,15 +43,15 @@ pub unsafe extern "C" fn tw_bitcoin_legacy_build_p2pkh_script(
         }),
     };
 
-    let res = try_or_else!(
-        tw_bitcoin::modules::transactions::OutputBuilder::utxo_from_proto(&output),
+    let (_, tx_out) = try_or_else!(
+        tw_bitcoin::utils::proto_output_to_native(&output),
         CByteArray::null
     );
 
     // Prepare and serialize protobuf structure.
     let proto = LegacyProto::TransactionOutput {
-        value: res.value as i64,
-        script: res.script_pubkey,
+        value: tx_out.value as i64,
+        script: tx_out.script_pubkey,
         spendingScript: Default::default(),
     };
 
@@ -84,15 +84,15 @@ pub unsafe extern "C" fn tw_bitcoin_legacy_build_p2wpkh_script(
         }),
     };
 
-    let res = try_or_else!(
-        tw_bitcoin::modules::transactions::OutputBuilder::utxo_from_proto(&output),
+    let (_, tx_out) = try_or_else!(
+        tw_bitcoin::utils::proto_output_to_native(&output),
         CByteArray::null
     );
 
     // Prepare and serialize protobuf structure.
     let proto = LegacyProto::TransactionOutput {
-        value: res.value as i64,
-        script: res.script_pubkey,
+        value: tx_out.value as i64,
+        script: tx_out.script_pubkey,
         spendingScript: Default::default(),
     };
 
@@ -122,15 +122,15 @@ pub unsafe extern "C" fn tw_bitcoin_legacy_build_p2tr_key_path_script(
         }),
     };
 
-    let res = try_or_else!(
-        tw_bitcoin::modules::transactions::OutputBuilder::utxo_from_proto(&output),
+    let (_, tx_out) = try_or_else!(
+        tw_bitcoin::utils::proto_output_to_native(&output),
         CByteArray::null
     );
 
     // Prepare and serialize protobuf structure.
     let proto = LegacyProto::TransactionOutput {
-        value: res.value as i64,
-        script: res.script_pubkey,
+        value: tx_out.value as i64,
+        script: tx_out.script_pubkey,
         spendingScript: Default::default(),
     };
 
@@ -181,16 +181,16 @@ pub unsafe extern "C" fn tw_bitcoin_legacy_build_brc20_transfer_inscription(
         }),
     };
 
-    let res = try_or_else!(
-        tw_bitcoin::modules::transactions::OutputBuilder::utxo_from_proto(&output),
+    let (_, tx_out) = try_or_else!(
+        tw_bitcoin::utils::proto_output_to_native(&output),
         CByteArray::null
     );
 
     // Prepare and serialize protobuf structure.
     let proto = LegacyProto::TransactionOutput {
-        value: res.value as i64,
-        script: res.script_pubkey,
-        spendingScript: res.taproot_payload,
+        value: tx_out.value as i64,
+        script: tx_out.script_pubkey,
+        spendingScript: tx_out.taproot_payload,
     };
 
     let serialized = tw_proto::serialize(&proto).expect("failed to serialized transaction output");
@@ -242,16 +242,16 @@ pub unsafe extern "C" fn tw_bitcoin_legacy_build_nft_inscription(
         }),
     };
 
-    let res = try_or_else!(
-        tw_bitcoin::modules::transactions::OutputBuilder::utxo_from_proto(&output),
+    let (_, tx_out) = try_or_else!(
+        tw_bitcoin::utils::proto_output_to_native(&output),
         CByteArray::null
     );
 
     // Prepare and serialize protobuf structure.
     let proto = LegacyProto::TransactionOutput {
-        value: res.value as i64,
-        script: res.script_pubkey,
-        spendingScript: res.taproot_payload,
+        value: tx_out.value as i64,
+        script: tx_out.script_pubkey,
+        spendingScript: tx_out.taproot_payload,
     };
 
     let serialized = tw_proto::serialize(&proto).expect("failed to serialized transaction output");

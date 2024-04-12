@@ -4,7 +4,7 @@
 
 pub mod entry;
 pub mod modules;
-mod utils;
+pub mod utils;
 
 use std::fmt::Display;
 
