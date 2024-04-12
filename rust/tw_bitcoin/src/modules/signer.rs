@@ -8,7 +8,6 @@ use tw_coin_entry::coin_entry::{PrivateKeyBytes, SignatureBytes};
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
-use tw_utxo::sighash;
 
 pub struct Signer;
 

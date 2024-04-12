@@ -2,7 +2,6 @@ use crate::modules::signer::Signer;
 use crate::utils::{proto_input_to_native, proto_output_to_native};
 use crate::{Error, Result};
 use bitcoin::address::NetworkChecked;
-use std::borrow::Cow;
 use std::fmt::Display;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -14,23 +13,14 @@ use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_coin_entry::signing_output_error;
-use tw_hash::H256;
-use tw_keypair::ecdsa::signature::Signature;
-use tw_keypair::schnorr;
 use tw_keypair::tw::PublicKey;
 use tw_misc::traits::ToBytesVec;
-use tw_proto::BitcoinV2::Proto::mod_Input::mod_InputBuilder::OneOfvariant;
-use tw_proto::BitcoinV2::Proto::mod_Input::OneOfto_recipient;
-use tw_proto::BitcoinV2::Proto::mod_ToPublicKeyOrHash::OneOfto_address;
-use tw_proto::BitcoinV2::Proto::{self, mod_Output};
+use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
-use tw_utxo::script::{Script, Witness};
 use tw_utxo::sighash_computer::SighashComputer;
 use tw_utxo::signing_mode::SigningMethod;
-use tw_utxo::transaction::standard_transaction::builder::{
-    OutputBuilder, SpendingScriptBuilder, TransactionBuilder, UtxoBuilder,
-};
+use tw_utxo::transaction::standard_transaction::builder::TransactionBuilder;
 use tw_utxo::transaction::transaction_fee::TransactionFee;
 use tw_utxo::transaction::transaction_interface::TxInputInterface;
 use tw_utxo::utxo_selector::SelectionBuilder;
@@ -126,12 +116,6 @@ impl CoinEntry for BitcoinEntry {
     fn plan_builder(&self) -> Option<Self::PlanBuilder> {
         None
     }
-}
-
-// TODO: Adjust error type
-fn pubkey_from_raw(pubkey: &[u8]) -> Result<PublicKey> {
-    PublicKey::new(pubkey.to_vec(), tw_keypair::tw::PublicKeyType::Secp256k1)
-        .map_err(|_| Error::from(Proto::Error::Error_internal))
 }
 
 impl BitcoinEntry {

@@ -7,7 +7,7 @@ use tw_bitcoin::aliases::*;
 use tw_bitcoin::entry::BitcoinEntry;
 use tw_coin_entry::coin_entry::CoinEntry;
 use tw_coin_entry::test_utils::test_context::TestCoinContext;
-use tw_hash::{H256, H264};
+use tw_hash::H264;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
