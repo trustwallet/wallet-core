@@ -270,13 +270,19 @@ impl BitcoinEntry {
     ) -> Result<Proto::SigningOutput<'static>> {
         let proto = pre_processor(proto);
 
+        if signatures.len() != proto.inputs.len() {
+            return Err(Error::from(
+                Proto::Error::Error_unmatched_input_signature_count,
+            ));
+        }
+
         // Construct the transaction.
         let mut builder = TransactionBuilder::new();
         let mut claims = vec![]; // TODO
 
-        // Process proto inputs.
-        for input in &proto.inputs {
-            let (utxo, arg, claim) = proto_input_to_native(input, None)?;
+        // Process proto inputs WITH signatures.
+        for (sig, input) in signatures.into_iter().zip(proto.inputs.iter()) {
+            let (utxo, arg, claim) = proto_input_to_native(input, Some(sig))?;
 
             builder = builder.push_input(utxo, arg);
             claims.push(claim);
@@ -324,10 +330,11 @@ impl BitcoinEntry {
         let mut utxo_outputs = vec![];
         for output in &tx.outputs {
             utxo_outputs.push(Proto::TransactionOutput {
-                script_pubkey: output.script_pubkey.as_data().into(),
+                script_pubkey: output.script_pubkey.as_data().to_vec().into(),
                 value: output.value as u64,
-                taproot_payload: todo!(),
-                control_block: todo!(),
+                // TODO
+                taproot_payload: vec![].into(),
+                control_block: vec![].into(),
             });
         }
 
