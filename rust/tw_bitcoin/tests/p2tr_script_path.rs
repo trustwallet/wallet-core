@@ -5,12 +5,13 @@ use bitcoin::PublicKey;
 use common::hex;
 use tw_bitcoin::aliases::*;
 use tw_bitcoin::entry::BitcoinEntry;
-use tw_bitcoin::modules::transactions::{BRC20TransferInscription, Brc20Ticker};
 use tw_coin_entry::coin_entry::CoinEntry;
 use tw_coin_entry::test_utils::test_context::TestCoinContext;
+use tw_hash::{H256, H264};
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
+use tw_utxo::transaction::asset::brc20::{BRC20TransferInscription, Brc20Ticker};
 
 #[test]
 /// A test for the custom P2TR script-path builders. This test essentially
@@ -42,9 +43,14 @@ fn coin_entry_custom_script_path() {
     // information to the builder.
     let ticker = Brc20Ticker::new("oadf".to_string()).unwrap();
     let amount = "20".to_string();
-    let inscribe_to = PublicKey::from_slice(&alice_pubkey).unwrap();
-    let transfer = BRC20TransferInscription::new(inscribe_to, ticker, amount).unwrap();
-    let merkle_root = transfer.inscription().spend_info().merkle_root().unwrap();
+    let inscribe_to: H264 = PublicKey::from_slice(&alice_pubkey)
+        .unwrap()
+        .to_bytes()
+        .as_slice()
+        .try_into()
+        .unwrap();
+    let transfer = BRC20TransferInscription::new(&inscribe_to, &ticker, &amount).unwrap();
+    let merkle_root = transfer.spend_info.merkle_root().unwrap();
 
     // Provide the public key ("internal key") and the merkle root directly to the builder.
     let out1 = Proto::Output {
@@ -99,10 +105,9 @@ fn coin_entry_custom_script_path() {
         .collect();
 
     // Prepare the BRC20 payload and control block.
-    let payload = transfer.inscription().taproot_program().to_owned();
+    let payload = &transfer.script;
     let control_block = transfer
-        .inscription()
-        .spend_info()
+        .spend_info
         .control_block(&(payload.to_owned(), LeafVersion::TapScript))
         .unwrap();
 
