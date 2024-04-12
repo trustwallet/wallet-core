@@ -5,11 +5,13 @@ mod common;
 use bitcoin::{PublicKey, ScriptBuf};
 use secp256k1::XOnlyPublicKey;
 use std::ffi::CString;
-use tw_bitcoin::modules::transactions::{
-    BRC20TransferInscription, Brc20Ticker, OrdinalNftInscription,
-};
 use tw_encoding::hex;
+use tw_hash::H264;
 use tw_proto::Bitcoin::Proto as LegacyProto;
+use tw_utxo::transaction::asset::{
+    brc20::{BRC20TransferInscription, Brc20Ticker},
+    ordinal::OrdinalsInscription,
+};
 use wallet_core_rs::ffi::bitcoin::legacy as legacy_ffi;
 
 // When building the spending conditions of inputs (scriptPubkey), then the
@@ -110,14 +112,11 @@ fn ffi_tw_bitcoin_legacy_build_brc20_transfer_inscription() {
     };
 
     // Prepare the BRC20 payload + merkle root.
+    let inscribe_to: H264 = pubkey.to_bytes().as_slice().try_into().unwrap();
     let ticker = Brc20Ticker::new(ticker_str.to_string()).unwrap();
-    let transfer = BRC20TransferInscription::new(pubkey, ticker, amount.to_string()).unwrap();
-
-    let merkle_root = transfer
-        .inscription()
-        .spend_info()
-        .merkle_root()
-        .expect("incorrectly constructed Taproot merkle root");
+    let transfer =
+        BRC20TransferInscription::new(&inscribe_to, &ticker, &amount.to_string()).unwrap();
+    let merkle_root = transfer.spend_info.merkle_root().unwrap();
 
     // The expected script.
     let xonly = XOnlyPublicKey::from(pubkey.inner);
@@ -126,10 +125,7 @@ fn ffi_tw_bitcoin_legacy_build_brc20_transfer_inscription() {
     let proto: LegacyProto::TransactionOutput = tw_proto::deserialize(&raw).unwrap();
     assert_eq!(proto.value, SATOSHIS);
     assert_eq!(proto.script, expected.as_bytes());
-    assert_eq!(
-        proto.spendingScript,
-        transfer.inscription().taproot_program().as_bytes()
-    );
+    assert_eq!(proto.spendingScript, transfer.script.as_bytes(),);
 }
 
 #[test]
@@ -156,13 +152,9 @@ fn ffi_tw_bitcoin_legacy_build_nft_inscription() {
     };
 
     // Prepare the NFT inscription + merkle root.
-    let nft = OrdinalNftInscription::new(mime_type.as_bytes(), &payload, pubkey).unwrap();
-
-    let merkle_root = nft
-        .inscription()
-        .spend_info()
-        .merkle_root()
-        .expect("incorrectly constructed Taproot merkle root");
+    let inscribe_to: H264 = pubkey.to_bytes().as_slice().try_into().unwrap();
+    let nft = OrdinalsInscription::new(mime_type.as_bytes(), &payload, &inscribe_to).unwrap();
+    let merkle_root = nft.spend_info.merkle_root().unwrap();
 
     // The expected script.
     let xonly = XOnlyPublicKey::from(pubkey.inner);
@@ -171,8 +163,5 @@ fn ffi_tw_bitcoin_legacy_build_nft_inscription() {
     let proto: LegacyProto::TransactionOutput = tw_proto::deserialize(&raw).unwrap();
     assert_eq!(proto.value, SATOSHIS);
     assert_eq!(proto.script, expected.as_bytes());
-    assert_eq!(
-        proto.spendingScript,
-        nft.inscription().taproot_program().as_bytes()
-    );
+    assert_eq!(proto.spendingScript, nft.script.as_bytes(),);
 }
