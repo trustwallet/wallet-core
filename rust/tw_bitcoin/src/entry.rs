@@ -32,6 +32,7 @@ use tw_utxo::transaction::standard_transaction::builder::{
     OutputBuilder, SpendingScriptBuilder, TransactionBuilder, UtxoBuilder,
 };
 use tw_utxo::transaction::transaction_fee::TransactionFee;
+use tw_utxo::transaction::transaction_interface::TxInputInterface;
 use tw_utxo::utxo_selector::SelectionBuilder;
 
 pub struct Address(pub bitcoin::address::Address<NetworkChecked>);
@@ -271,14 +272,14 @@ impl BitcoinEntry {
 
         // Construct the transaction.
         let mut builder = TransactionBuilder::new();
-        let mut dummy_claims = vec![]; // TODO
+        let mut claims = vec![]; // TODO
 
         // Process proto inputs.
         for input in &proto.inputs {
             let (utxo, arg, claim) = proto_input_to_native(input, None)?;
 
             builder = builder.push_input(utxo, arg);
-            dummy_claims.push(claim);
+            claims.push(claim);
         }
 
         // Process proto outputs.
@@ -303,119 +304,49 @@ impl BitcoinEntry {
         let (tx, tx_args) = builder.build();
 
         let computer = SighashComputer::new(tx, tx_args);
-        let x = computer.compile(claims)
+        let tx = computer.compile(claims).unwrap();
 
-        // ***** *****
-
-        // There must be a signature for each input.
-        if proto.inputs.len() != signatures.len() {
-            return Err(Error::from(
-                Proto::Error::Error_unmatched_input_signature_count,
-            ));
-        }
-
-        // Generate claims for all the inputs.
-        let mut utxo_input_claims: Vec<UtxoProto::TxInClaim> = vec![];
-        for (input, signature) in proto.inputs.iter().zip(signatures.into_iter()) {
-            let utxo_claim =
-                crate::modules::transactions::InputClaimBuilder::utxo_claim_from_proto(
-                    input, signature,
-                )?;
-
-            utxo_input_claims.push(utxo_claim);
-        }
-
-        // Prepare all the outputs.
-        let mut utxo_outputs = vec![];
-        for output in &proto.outputs {
-            let utxo = crate::modules::transactions::OutputBuilder::utxo_from_proto(output)?;
-
-            utxo_outputs.push(utxo);
-        }
-
-        // Prepare PreSerialization input for Utxo compiler.
-        let utxo_preserializtion = UtxoProto::PreSerialization {
-            version: proto.version,
-            lock_time: proto.lock_time.clone(),
-            inputs: utxo_input_claims.clone(),
-            outputs: utxo_outputs
-                .iter()
-                .map(|out| UtxoProto::TxOut {
-                    value: out.value,
-                    script_pubkey: Cow::Borrowed(&out.script_pubkey),
-                })
-                .collect(),
-            weight_base: proto.fee_per_vb,
-        };
-
-        // Compile the transaction, build the final encoded transaction
-        // containing the signatures/scriptSigs/witnesses.
-        let utxo_serialized = tw_utxo::compiler::Compiler::compile(utxo_preserializtion);
-        handle_utxo_error(&utxo_serialized.error)?;
-
-        let mut total_input_amount = 0;
-
-        // Prepare `Proto::TransactionInput` for end result.
-        let mut proto_inputs = vec![];
-        for input in utxo_input_claims {
-            total_input_amount += input.value;
-
-            proto_inputs.push(Proto::TransactionInput {
-                txid: Cow::Owned(input.txid.to_vec()),
-                vout: input.vout,
+        let mut utxo_inputs = vec![];
+        for input in &tx.inputs {
+            utxo_inputs.push(Proto::TransactionInput {
+                txid: input.previous_output.hash.to_vec().into(),
+                vout: input.previous_output.index,
                 sequence: input.sequence,
-                script_sig: Cow::Owned(input.script_sig.into_owned()),
+                script_sig: input.script_sig.as_data().to_vec().into(),
                 witness_items: input
-                    .witness_items
+                    .witness_items()
                     .into_iter()
-                    .map(|item| Cow::Owned(item.into_owned()))
+                    .map(|w| w.as_data().to_vec().into())
                     .collect(),
+            })
+        }
+
+        let mut utxo_outputs = vec![];
+        for output in &tx.outputs {
+            utxo_outputs.push(Proto::TransactionOutput {
+                script_pubkey: output.script_pubkey.as_data().into(),
+                value: output.value as u64,
+                taproot_payload: todo!(),
+                control_block: todo!(),
             });
         }
 
-        // Prepare `Proto::TransactionOutput` for end result.
-        let mut proto_outputs = vec![];
-        for output in utxo_outputs {
-            proto_outputs.push(Proto::TransactionOutput {
-                script_pubkey: output.script_pubkey,
-                value: output.value,
-                taproot_payload: output.taproot_payload,
-                control_block: output.control_block,
-            });
-        }
-
-        // Prepare `Proto::Transaction` for end result.
         let transaction = Proto::Transaction {
             version: proto.version,
             lock_time: proto.lock_time,
-            inputs: proto_inputs,
-            outputs: proto_outputs,
+            inputs: utxo_inputs,
+            outputs: utxo_outputs,
         };
-
-        let total_output_amount = transaction
-            .outputs
-            .iter()
-            .map(|output| output.value)
-            .sum::<u64>();
-
-        // Sanity check.
-        debug_assert_eq!(transaction.inputs.len(), proto.inputs.len());
-        debug_assert_eq!(transaction.outputs.len(), proto.outputs.len());
-        // Every output is accounted for, including the fee.
-        debug_assert_eq!(
-            total_input_amount,
-            total_output_amount + utxo_serialized.fee
-        );
 
         // Return the full protobuf output.
         Ok(Proto::SigningOutput {
             error: Proto::Error::OK,
             error_message: Default::default(),
             transaction: Some(transaction),
-            encoded: utxo_serialized.encoded,
-            txid: utxo_serialized.txid,
-            weight: utxo_serialized.weight,
-            fee: utxo_serialized.fee,
+            encoded: tx.encode_out().into(),
+            txid: tx.txid().into(),
+            weight: tx.weight() as u64,
+            fee: tx.fee(proto.fee_per_vb as i64) as u64,
         })
     }
 }

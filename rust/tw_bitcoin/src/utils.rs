@@ -63,9 +63,9 @@ pub fn proto_input_to_native(
 
                     // Use the provided signature, or a dummy value if None.
                     let sig = if let Some(sig_bytes) = sig {
-                         Signature::from_bytes(&sig_bytes).unwrap()
+                        Signature::from_bytes(&sig_bytes).unwrap()
                     } else {
-                         Signature::from_bytes(&vec![1; 65]).unwrap()
+                        Signature::from_bytes(&vec![1; 65]).unwrap()
                     };
 
                     let claim = SpendingScriptBuilder::new().p2pkh(sig, pubkey).unwrap();
@@ -83,12 +83,11 @@ pub fn proto_input_to_native(
                         .p2wpkh(pubkey.clone())
                         .unwrap();
 
-
                     // Use the provided signature, or a dummy value if None.
                     let sig = if let Some(sig_bytes) = sig {
-                         Signature::from_bytes(&sig_bytes).unwrap()
+                        Signature::from_bytes(&sig_bytes).unwrap()
                     } else {
-                         Signature::from_bytes(&vec![1; 65]).unwrap()
+                        Signature::from_bytes(&vec![1; 65]).unwrap()
                     };
 
                     let claim = SpendingScriptBuilder::new().p2wpkh(sig, pubkey).unwrap();
