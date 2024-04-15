@@ -12,7 +12,9 @@ pub mod prelude {
     pub use super::tw_error::*;
     pub use super::tw_result::*;
 
-    pub type TWErrorKind = tw_proto::Common::Proto::SigningError;
+    pub type SigningErrorType = tw_proto::Common::Proto::SigningError;
+    pub type SigningError = TWError<SigningErrorType>;
+    pub type SigningResult<T> = Result<T, SigningError>;
 }
 
 #[macro_export]

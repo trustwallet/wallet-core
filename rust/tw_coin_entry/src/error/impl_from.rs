@@ -9,47 +9,51 @@ use tw_keypair::KeyPairError;
 use tw_number::NumberError;
 use tw_proto::ProtoError;
 
-impl From<NumberError> for TWError {
+impl From<NumberError> for SigningError {
     #[inline]
     fn from(_err: NumberError) -> Self {
-        TWError::new(TWErrorKind::Error_invalid_params)
+        TWError::new(SigningErrorType::Error_invalid_params)
     }
 }
 
-impl From<AddressError> for TWError {
+impl From<AddressError> for SigningError {
     #[inline]
     fn from(_err: AddressError) -> Self {
-        TWError::new(TWErrorKind::Error_invalid_address)
+        TWError::new(SigningErrorType::Error_invalid_address)
     }
 }
 
-impl From<serde_json::Error> for TWError {
+impl From<serde_json::Error> for SigningError {
     fn from(_value: serde_json::Error) -> Self {
-        TWError::new(TWErrorKind::Error_input_parse)
+        TWError::new(SigningErrorType::Error_input_parse)
     }
 }
 
-impl From<EncodingError> for TWError {
+impl From<EncodingError> for SigningError {
     fn from(_e: EncodingError) -> Self {
-        TWError::new(TWErrorKind::Error_input_parse)
+        TWError::new(SigningErrorType::Error_input_parse)
     }
 }
 
-impl From<KeyPairError> for TWError {
+impl From<KeyPairError> for SigningError {
     fn from(err: KeyPairError) -> Self {
         match err {
-            KeyPairError::InvalidSecretKey => TWError::new(TWErrorKind::Error_invalid_private_key),
+            KeyPairError::InvalidSecretKey => {
+                TWError::new(SigningErrorType::Error_invalid_private_key)
+            },
             KeyPairError::InvalidPublicKey
             | KeyPairError::InvalidSignature
             | KeyPairError::InvalidSignMessage
-            | KeyPairError::SignatureVerifyError => TWError::new(TWErrorKind::Error_invalid_params),
-            KeyPairError::SigningError => TWError::new(TWErrorKind::Error_signing),
+            | KeyPairError::SignatureVerifyError => {
+                TWError::new(SigningErrorType::Error_invalid_params)
+            },
+            KeyPairError::SigningError => TWError::new(SigningErrorType::Error_signing),
         }
     }
 }
 
-impl From<ProtoError> for TWError {
+impl From<ProtoError> for SigningError {
     fn from(_e: ProtoError) -> Self {
-        TWError::new(TWErrorKind::Error_input_parse)
+        TWError::new(SigningErrorType::Error_input_parse)
     }
 }
