@@ -7,7 +7,7 @@ use move_core_types::account_address::AccountAddress;
 use move_core_types::ident_str;
 use move_core_types::language_storage::{ModuleId, TypeTag};
 use serde_json::json;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::bcs;
 
 pub fn aptos_account_transfer(

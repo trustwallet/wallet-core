@@ -7,15 +7,15 @@ use std::fmt;
 
 pub type TWResult<T, E> = Result<T, TWError<E>>;
 
-pub trait ResultContext {
+pub trait ResultContext<T, E> {
     /// Wrap the error value with additional context.
-    fn context<C>(self, context: C) -> Self
+    fn context<C>(self, context: C) -> TWResult<T, E>
     where
         C: fmt::Display;
 
     /// Wrap the error value with additional context that is evaluated lazily
     /// only once an error does occur.
-    fn with_context<C, F>(self, f: F) -> Self
+    fn with_context<C, F>(self, f: F) -> TWResult<T, E>
     where
         C: fmt::Display,
         F: FnOnce() -> C;
@@ -35,20 +35,23 @@ pub trait OrTWError<T, E> {
     fn or_tw_err(self, error: E) -> TWResult<T, E>;
 }
 
-impl<T, E> ResultContext for TWResult<T, E> {
-    fn context<C>(self, context: C) -> Self
+impl<T, E, PrevE> ResultContext<T, E> for Result<T, PrevE>
+where
+    TWError<E>: From<PrevE>,
+{
+    fn context<C>(self, context: C) -> TWResult<T, E>
     where
         C: fmt::Display,
     {
-        self.map_err(|e| TWError::from(e).context(context))
+        self.map_err(|prev_err| TWError::from(prev_err).context(context))
     }
 
-    fn with_context<C, F>(self, f: F) -> Self
+    fn with_context<C, F>(self, f: F) -> TWResult<T, E>
     where
         C: fmt::Display,
         F: FnOnce() -> C,
     {
-        self.map_err(|e| TWError::from(e).context(f()))
+        self.map_err(|prev_err| TWError::from(prev_err).context(f()))
     }
 }
 

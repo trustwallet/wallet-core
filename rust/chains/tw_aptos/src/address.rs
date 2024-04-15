@@ -6,7 +6,7 @@ use move_core_types::account_address::{AccountAddress, AccountAddressParseError}
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::AddressError;
+use tw_coin_entry::error::prelude::*;
 use tw_hash::sha3::sha3_256;
 use tw_keypair::ed25519;
 use tw_memory::Data;

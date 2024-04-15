@@ -23,7 +23,7 @@ macro_rules! signing_output_error {
         let err = $error;
 
         let mut output = <$output>::default();
-        output.error = err.0;
+        output.error = *TWError::error_type(&err);
         output.error_message = std::borrow::Cow::from(err.to_string());
 
         output

@@ -37,6 +37,10 @@ impl<E> TWError<E> {
         self
     }
 
+    pub fn error_type(&self) -> &E {
+        &self.error
+    }
+
     fn format_context(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for (i, context) in self.context.iter().enumerate() {
             write!(f, "{i}. {context}")?;

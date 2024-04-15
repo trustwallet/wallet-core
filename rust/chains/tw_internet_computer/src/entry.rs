@@ -8,7 +8,7 @@ use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::{
     coin_context::CoinContext,
     coin_entry::CoinEntry,
-    error::{AddressError, AddressResult, SigningError},
+    error::prelude::*,
     modules::{
         json_signer::NoJsonSigner, message_signer::NoMessageSigner, plan_builder::NoPlanBuilder,
         wallet_connector::NoWalletConnector,
@@ -66,7 +66,7 @@ impl CoinEntry for InternetComputerEntry {
         public_key: tw_keypair::tw::PublicKey,
         _derivation: tw_coin_entry::derivation::Derivation,
         _prefix: Option<Self::AddressPrefix>,
-    ) -> tw_coin_entry::error::AddressResult<Self::Address> {
+    ) -> AddressResult<Self::Address> {
         let secp256k1_public_key = public_key
             .to_secp256k1()
             .ok_or(AddressError::PublicKeyTypeMismatch)?;
@@ -89,7 +89,7 @@ impl CoinEntry for InternetComputerEntry {
     ) -> Self::PreSigningOutput {
         signing_output_error!(
             CompilerProto::PreSigningOutput,
-            SigningError(CommonError::Error_not_supported)
+            SigningError::new(CommonError::Error_not_supported)
         )
     }
 
@@ -102,7 +102,7 @@ impl CoinEntry for InternetComputerEntry {
     ) -> Self::SigningOutput {
         signing_output_error!(
             Proto::SigningOutput,
-            SigningError(CommonError::Error_not_supported)
+            SigningError::new(CommonError::Error_not_supported)
         )
     }
 }
