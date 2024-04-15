@@ -10,7 +10,7 @@ use crate::transaction::sui_types::{CallArg, GasData, ObjectID, ObjectRef, Trans
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::TypeTag;
 use serde::{Deserialize, Serialize};
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum TransactionData {

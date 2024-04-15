@@ -11,7 +11,7 @@ use crate::transaction::command::Command;
 use crate::transaction::programmable_transaction::ProgrammableTransactionBuilder;
 use crate::transaction::sui_types::{CallArg, ObjectArg, ObjectRef};
 use crate::transaction::transaction_data::{TransactionData, TransactionKind};
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::bcs;
 
 pub struct TransactionBuilder;
@@ -94,8 +94,9 @@ impl TransactionBuilder {
         gas_price: u64,
     ) -> SigningResult<TransactionData> {
         if input_coins.iter().any(|coin| coin.0 == gas.0) {
-            // Gas coin is in input coins of Pay transaction, use PaySui transaction instead!.
-            return Err(SigningError(SigningErrorType::Error_invalid_params));
+            return SigningError::err(SigningErrorType::Error_invalid_params).context(
+                "Gas coin is in input coins of Pay transaction, use PaySui transaction instead!",
+            );
         }
 
         TransactionData::new_pay(
@@ -121,8 +122,8 @@ impl TransactionBuilder {
         gas_price: u64,
     ) -> SigningResult<TransactionData> {
         if input_coins.is_empty() {
-            // "Empty input coins for Pay related transaction"
-            return Err(SigningError(SigningErrorType::Error_invalid_params));
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Empty input coins for Pay related transaction");
         }
 
         let gas_object_ref = input_coins.remove(0);
@@ -148,8 +149,8 @@ impl TransactionBuilder {
         gas_price: u64,
     ) -> SigningResult<TransactionData> {
         if input_coins.is_empty() {
-            // "Empty input coins for Pay related transaction"
-            return Err(SigningError(SigningErrorType::Error_invalid_params));
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Empty input coins for Pay related transaction");
         }
 
         let gas_object_ref = input_coins.remove(0);
