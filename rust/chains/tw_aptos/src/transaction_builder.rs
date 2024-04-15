@@ -95,6 +95,7 @@ impl TransactionFactory {
                 .implicitly_create_user_account_and_transfer(
                     AccountAddress::from_str(&transfer.to)
                         .map_err(from_account_error)
+                        .into_tw()
                         .context("Invalid destination address")?,
                     transfer.amount,
                 ),
@@ -106,6 +107,7 @@ impl TransactionFactory {
                 factory.coins_transfer(
                     AccountAddress::from_str(&token_transfer.to)
                         .map_err(from_account_error)
+                        .into_tw()
                         .context("Invalid destination address")?,
                     token_transfer.amount,
                     convert_proto_struct_tag_to_type_tag(func)?,
@@ -114,6 +116,7 @@ impl TransactionFactory {
             OneOftransaction_payload::create_account(create_account) => {
                 let address = AccountAddress::from_str(&create_account.auth_key)
                     .map_err(from_account_error)
+                    .into_tw()
                     .context("Invalid 'auth_key' address")?;
                 factory.create_user_account(address)
             },
@@ -138,6 +141,7 @@ impl TransactionFactory {
                 factory.implicitly_create_user_and_coins_transfer(
                     AccountAddress::from_str(&token_transfer_coins.to)
                         .map_err(from_account_error)
+                        .into_tw()
                         .context("Invalid destination address")?,
                     token_transfer_coins.amount,
                     convert_proto_struct_tag_to_type_tag(func)?,
@@ -146,6 +150,7 @@ impl TransactionFactory {
             OneOftransaction_payload::None => {
                 let is_blind_sign = !input.any_encoded.is_empty();
                 let v = serde_json::from_str::<Value>(&input.any_encoded)
+                    .into_tw()
                     .context("Error decoding 'SigningInput::any_encoded' as JSON")?;
                 if is_blind_sign {
                     let entry_function = EntryFunction::try_from(v)?;

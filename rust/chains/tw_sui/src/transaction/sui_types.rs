@@ -25,7 +25,9 @@ impl FromStr for ObjectID {
     type Err = SigningError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let addr = SuiAddress::from_str(s).context("Invalid Object ID")?;
+        let addr = SuiAddress::from_str(s)
+            .into_tw()
+            .context("Invalid Object ID")?;
         Ok(ObjectID(addr.into_inner()))
     }
 }

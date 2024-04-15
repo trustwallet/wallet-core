@@ -109,9 +109,11 @@ impl TryFrom<CancelOfferNftMessage<'_>> for Offer {
         Ok(Offer {
             receiver: AccountAddress::from_str(&value.receiver)
                 .map_err(from_account_error)
+                .into_tw()
                 .context("Invalid receiver address")?,
             creator: AccountAddress::from_str(&value.creator)
                 .map_err(from_account_error)
+                .into_tw()
                 .context("Invalid creator address")?,
             collection: value.collectionName.as_bytes().to_vec(),
             name: value.name.as_bytes().to_vec(),
@@ -144,9 +146,11 @@ impl TryFrom<ClaimNftMessage<'_>> for Claim {
         Ok(Claim {
             sender: AccountAddress::from_str(&value.sender)
                 .map_err(from_account_error)
+                .into_tw()
                 .context("Invalid sender address")?,
             creator: AccountAddress::from_str(&value.creator)
                 .map_err(from_account_error)
+                .into_tw()
                 .context("Invalid creator address")?,
             collection: value.collectionName.as_bytes().to_vec(),
             name: value.name.as_bytes().to_vec(),

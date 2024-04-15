@@ -185,7 +185,7 @@ where
 
         let input: <T::PlanBuilder as PlanBuilder>::SigningInput<'_> = deserialize(input)?;
         let output = plan_builder.plan(coin, input);
-        serialize(&output).into_tw()
+        serialize(&output).map_err(SigningError::from)
     }
 
     fn sign_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data> {
@@ -196,7 +196,7 @@ where
         let input: <T::MessageSigner as MessageSigner>::MessageSigningInput<'_> =
             deserialize(input)?;
         let output = message_signer.sign_message(coin, input);
-        serialize(&output).into_tw()
+        serialize(&output).map_err(SigningError::from)
     }
 
     fn message_preimage_hashes(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data> {
@@ -207,7 +207,7 @@ where
         let input: <T::MessageSigner as MessageSigner>::MessageSigningInput<'_> =
             deserialize(input)?;
         let output = message_signer.message_preimage_hashes(coin, input);
-        serialize(&output).into_tw()
+        serialize(&output).map_err(SigningError::from)
     }
 
     fn verify_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<bool> {
@@ -231,7 +231,7 @@ where
 
         let input: WCProto::ParseRequestInput = deserialize(input)?;
         let output = wc_connector.parse_request(coin, input);
-        serialize(&output).into_tw()
+        serialize(&output).map_err(SigningError::from)
     }
 
     fn decode_transaction(&self, coin: &dyn CoinContext, tx: &[u8]) -> SigningResult<Data> {
@@ -240,6 +240,6 @@ where
         };
 
         let output = tx_decoder.decode_transaction(coin, tx);
-        serialize(&output).into_tw()
+        serialize(&output).map_err(SigningError::from)
     }
 }

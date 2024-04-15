@@ -130,6 +130,7 @@ impl RawTransaction {
     fn msg_to_sign(&self) -> SigningResult<Data> {
         let serialized = self
             .serialize()
+            .into_tw()
             .context("Error serializing RawTransaction")?;
         let mut preimage = tw_hash::sha3::sha3_256(APTOS_SALT);
         preimage.extend_from_slice(serialized.as_slice());

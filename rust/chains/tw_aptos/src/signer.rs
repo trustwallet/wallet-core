@@ -24,7 +24,9 @@ impl Signer {
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let key_pair = ed25519::sha512::KeyPair::try_from(input.private_key.as_ref())?;
         let builder = transaction_builder::TransactionFactory::new_from_protobuf(input.clone())?;
-        let sender = Address::from_str(&input.sender).context("Invalid sender address")?;
+        let sender = Address::from_str(&input.sender)
+            .into_tw()
+            .context("Invalid sender address")?;
         let signed_tx = builder
             .sender(sender.inner())
             .sequence_number(input.sequence_number as u64)

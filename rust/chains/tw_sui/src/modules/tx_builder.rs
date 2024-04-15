@@ -87,8 +87,9 @@ impl<'a> TWTransactionBuilder<'a> {
     ) -> SigningResult<TransactionData> {
         let signer = self.signer_address()?;
         let input_coins = Self::build_coins(&pay_all_sui.input_coins)?;
-        let recipient =
-            SuiAddress::from_str(&pay_all_sui.recipient).context("Invalid recipient address")?;
+        let recipient = SuiAddress::from_str(&pay_all_sui.recipient)
+            .into_tw()
+            .context("Invalid recipient address")?;
 
         TransactionBuilder::pay_all_sui(
             signer,
@@ -125,8 +126,9 @@ impl<'a> TWTransactionBuilder<'a> {
 
         let input_coins = Self::build_coins(&stake.coins)?;
         let amount = stake.amount.as_ref().map(|a| a.amount);
-        let validator =
-            SuiAddress::from_str(stake.validator.as_ref()).context("Invalid validator address")?;
+        let validator = SuiAddress::from_str(stake.validator.as_ref())
+            .into_tw()
+            .context("Invalid validator address")?;
         let gas = Self::require_coin(&stake.gas).context("No 'gas' coin specified")?;
 
         TransactionBuilder::request_add_stake(
@@ -165,8 +167,9 @@ impl<'a> TWTransactionBuilder<'a> {
     ) -> SigningResult<TransactionData> {
         let signer = self.signer_address()?;
 
-        let recipient =
-            SuiAddress::from_str(&transfer_obj.recipient).context("Invalid recipient address")?;
+        let recipient = SuiAddress::from_str(&transfer_obj.recipient)
+            .into_tw()
+            .context("Invalid recipient address")?;
         let object = Self::require_coin(&transfer_obj.object).context("No 'object' specified")?;
         let gas = Self::require_coin(&transfer_obj.gas).context("No 'gas' coin specified")?;
 
@@ -182,7 +185,9 @@ impl<'a> TWTransactionBuilder<'a> {
 
     fn signer_address(&self) -> SigningResult<SuiAddress> {
         if self.input.private_key.is_empty() {
-            SuiAddress::from_str(&self.input.signer).context("Invalid signer address")
+            SuiAddress::from_str(&self.input.signer)
+                .into_tw()
+                .context("Invalid signer address")
         } else {
             let keypair = self.signer_key()?;
             SuiAddress::with_ed25519_pubkey(keypair.public()).map_err(SigningError::from)

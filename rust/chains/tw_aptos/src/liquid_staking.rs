@@ -92,6 +92,7 @@ impl TryFrom<LiquidStaking<'_>> for LiquidStakingOperation {
                 let smart_contract_address =
                     AccountAddress::from_str(&value.smart_contract_address)
                         .map_err(from_account_error)
+                        .into_tw()
                         .context("Invalid Smart Contract address")?;
                 Ok(LiquidStakingOperation::Stake(Stake {
                     amount: stake_msg.amount,
@@ -102,6 +103,7 @@ impl TryFrom<LiquidStaking<'_>> for LiquidStakingOperation {
                 let smart_contract_address =
                     AccountAddress::from_str(&value.smart_contract_address)
                         .map_err(from_account_error)
+                        .into_tw()
                         .context("Invalid Smart Contract address")?;
                 Ok(LiquidStakingOperation::Unstake(Unstake {
                     amount: unstake_msg.amount,
@@ -112,6 +114,7 @@ impl TryFrom<LiquidStaking<'_>> for LiquidStakingOperation {
                 let smart_contract_address =
                     AccountAddress::from_str(&value.smart_contract_address)
                         .map_err(from_account_error)
+                        .into_tw()
                         .context("Invalid Smart Contract address")?;
                 Ok(LiquidStakingOperation::Claim(Claim {
                     idx: claim.idx,

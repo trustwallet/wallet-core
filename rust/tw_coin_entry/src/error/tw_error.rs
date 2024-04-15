@@ -42,9 +42,14 @@ impl<E> TWError<E> {
     }
 
     fn format_context(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.context.is_empty() {
+            return Ok(());
+        }
+        writeln!(f)?;
+        writeln!(f, "Context:")?;
         for (i, context) in self.context.iter().enumerate() {
             write!(f, "{i}. {context}")?;
-            if i == self.context.len() - 1 {
+            if i < self.context.len() - 1 {
                 writeln!(f)?;
             }
         }
@@ -52,16 +57,22 @@ impl<E> TWError<E> {
     }
 }
 
+impl<E> From<E> for TWError<E> {
+    fn from(inner: E) -> Self {
+        TWError::new(inner)
+    }
+}
+
 impl<E: fmt::Display> fmt::Display for TWError<E> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(f, "{}. Context:", self.error)?;
+        write!(f, "{}", self.error)?;
         self.format_context(f)
     }
 }
 
 impl<E: fmt::Debug> fmt::Debug for TWError<E> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(f, "{:?}. Context:", self.error)?;
+        write!(f, "{:?}", self.error)?;
         self.format_context(f)
     }
 }

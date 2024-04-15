@@ -22,7 +22,9 @@ impl Compiler {
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
         let builder = transaction_builder::TransactionFactory::new_from_protobuf(input.clone())?;
-        let sender = Address::from_str(&input.sender).context("Invalid sender address")?;
+        let sender = Address::from_str(&input.sender)
+            .into_tw()
+            .context("Invalid sender address")?;
         let signed_tx = builder
             .sender(sender.inner())
             .sequence_number(input.sequence_number as u64)
