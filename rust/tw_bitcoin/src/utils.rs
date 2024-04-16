@@ -203,7 +203,7 @@ pub fn proto_input_to_native(
     }
 }
 
-pub fn proto_input_to_spending_data(
+pub fn proto_sighash_to_sig(
     private_key: &[u8],
     ctx: &UtxoProto::Sighash,
 ) -> Result<Vec<u8>> {
