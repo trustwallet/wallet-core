@@ -63,10 +63,7 @@ fn build_tx_input_selection() {
 
     // Create the change output. The exact amount will be calculated in the
     // `SelectionBuilder`.
-    let change_output = OutputBuilder::new()
-        .amount(0)
-        .p2pkh(&alice_pubkey)
-        .unwrap();
+    let change_output = OutputBuilder::new().amount(0).p2pkh(&alice_pubkey).unwrap();
 
     let (tx, args) = TransactionBuilder::new()
         .push_input(utxo1.clone(), arg1.clone())

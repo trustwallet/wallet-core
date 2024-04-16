@@ -79,10 +79,11 @@ impl TaprootAddress {
 
         // Convert the native `H256` to `TapNodeHash` from the `bitcoin` crate.
         let merkle_root = merkle_root.map(|hash| {
-            let tap_hash = <bitcoin::hashes::sha256t::Hash<_> as bitcoin::hashes::Hash>::from_slice(
-                hash.as_slice(),
-            )
-            .expect("merkle_root length is 32 bytes");
+            let tap_hash =
+                <bitcoin::hashes::sha256t::Hash<_> as bitcoin::hashes::Hash>::from_slice(
+                    hash.as_slice(),
+                )
+                .expect("merkle_root length is 32 bytes");
 
             bitcoin::taproot::TapNodeHash::from_raw_hash(tap_hash)
         });
