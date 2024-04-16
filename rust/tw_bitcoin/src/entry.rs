@@ -119,6 +119,19 @@ impl CoinEntry for BitcoinEntry {
 }
 
 impl BitcoinEntry {
+    pub(crate) fn sign_impl(
+        &self,
+        _coin: &dyn CoinContext,
+        proto: Proto::SigningInput<'_>,
+    ) -> Result<Proto::SigningOutput<'static>> {
+        let pre_sign = self.preimage_hashes_impl(_coin, proto.clone())?;
+
+        for (txin, sighash) in pre_sign.utxo_inputs.iter().zip(pre_sign.sighashes.iter()) {
+            todo!()
+        }
+
+        todo!()
+    }
     pub(crate) fn preimage_hashes_impl(
         &self,
         _coin: &dyn CoinContext,
