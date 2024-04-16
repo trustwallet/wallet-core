@@ -277,7 +277,6 @@ fn ffi_proto_sign_input_p2pkh_output_p2tr_key_path() {
 
     assert_eq!(signed.error, CommonProto::SigningError::OK);
     let encoded_hex = tw_encoding::hex::encode(signed.encoded, false);
-    dbg!(&encoded_hex);
     assert_eq!(encoded_hex[..188], REVEAL_RAW[..188]);
     // Schnorr signature does not match (non-deterministic).
     assert_ne!(encoded_hex[188..316], REVEAL_RAW[188..316]);

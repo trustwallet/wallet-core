@@ -47,8 +47,6 @@ impl BRC20TransferInscription {
             amt = value
         );
 
-        println!("{payload}");
-
         let inscription = OrdinalsInscription::new(BRC20_MIME, payload.as_bytes(), recipient)?;
 
         Ok(BRC20TransferInscription(inscription))
