@@ -5,7 +5,6 @@
 use tw_proto::Utxo::Proto;
 
 pub mod address;
-pub mod compiler;
 pub mod encode;
 pub mod error;
 pub mod planner;
