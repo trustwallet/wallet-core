@@ -1,5 +1,5 @@
 use crate::modules::signer::Signer;
-use crate::utils::{proto_input_to_native, proto_output_to_native};
+use crate::utils::{proto_input_to_native, proto_output_to_native, proto_sighash_to_sig};
 use crate::{Error, Result};
 use bitcoin::address::NetworkChecked;
 use std::fmt::Display;
@@ -86,7 +86,7 @@ impl CoinEntry for BitcoinEntry {
 
     #[inline]
     fn sign(&self, _coin: &dyn CoinContext, proto: Self::SigningInput<'_>) -> Self::SigningOutput {
-        Signer::sign_proto(_coin, proto)
+        self.sign_impl(_coin, proto)
             .unwrap_or_else(|err| signing_output_error!(Proto::SigningOutput, err))
     }
 
@@ -126,11 +126,20 @@ impl BitcoinEntry {
     ) -> Result<Proto::SigningOutput<'static>> {
         let pre_sign = self.preimage_hashes_impl(_coin, proto.clone())?;
 
-        for (txin, sighash) in pre_sign.utxo_inputs.iter().zip(pre_sign.sighashes.iter()) {
-            todo!()
+        let mut sigs = vec![];
+        for (input, sighash) in proto.inputs.iter().zip(pre_sign.sighashes.iter()) {
+            let privkey = if !input.private_key.is_empty() {
+                // Overwrite with individual key for input.
+                &input.private_key
+            } else {
+                &proto.private_key
+            };
+
+            let sig = proto_sighash_to_sig(privkey, sighash).unwrap();
+            sigs.push(sig);
         }
 
-        todo!()
+        self.compile_impl(_coin, proto, sigs, vec![])
     }
     pub(crate) fn preimage_hashes_impl(
         &self,

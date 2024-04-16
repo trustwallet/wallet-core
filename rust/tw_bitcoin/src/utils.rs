@@ -6,14 +6,14 @@ use tw_hash::{H160, H256};
 use tw_keypair::ecdsa::secp256k1::PrivateKey;
 use tw_keypair::ecdsa::signature::Signature;
 use tw_keypair::schnorr;
-use tw_keypair::tw::PublicKey;
 use tw_keypair::traits::SigningKeyTrait;
+use tw_keypair::tw::PublicKey;
 use tw_misc::traits::ToBytesVec;
-use tw_proto::Utxo::Proto as UtxoProto;
 use tw_proto::BitcoinV2::Proto::mod_Input::mod_InputBuilder::OneOfvariant as OneOfInputVariant;
 use tw_proto::BitcoinV2::Proto::mod_Output::mod_OutputRedeemScriptOrHash::OneOfvariant as OneOfOutputVariant;
 use tw_proto::BitcoinV2::Proto::mod_ToPublicKeyOrHash::OneOfto_address;
 use tw_proto::BitcoinV2::Proto::{self, mod_Output};
+use tw_proto::Utxo::Proto as UtxoProto;
 use tw_utxo::address::standard_bitcoin::StandardBitcoinAddress;
 use tw_utxo::script::{Script, Witness};
 use tw_utxo::sighash_computer::{SpendingData, UtxoToSign};
@@ -203,10 +203,7 @@ pub fn proto_input_to_native(
     }
 }
 
-pub fn proto_sighash_to_sig(
-    private_key: &[u8],
-    ctx: &UtxoProto::Sighash,
-) -> Result<Vec<u8>> {
+pub fn proto_sighash_to_sig(private_key: &[u8], ctx: &UtxoProto::Sighash) -> Result<Vec<u8>> {
     match ctx.signing_method {
         UtxoProto::SigningMethod::Legacy | UtxoProto::SigningMethod::Segwit => {
             let privkey = PrivateKey::try_from(private_key).unwrap();
@@ -219,7 +216,7 @@ pub fn proto_sighash_to_sig(
             let sighash: H256 = ctx.sighash.as_ref().try_into().unwrap();
             let sig = privkey.sign(sighash).unwrap().to_vec();
             Ok(sig)
-        }
+        },
     }
 }
 
