@@ -81,8 +81,11 @@ public:
     void serialize(Data& out) const;
 };
 
-/// AddPubAddress action data part.
-class AddPubAddressData {
+/// A public address action data part.
+/// Can be used for `addaddress`, `remaddress` actions.
+/// https://dev.fio.net/reference/add_pub_address
+/// https://dev.fio.net/reference/remove_pub_address
+class PubAddressActionData {
 public:
     std::string fioAddress;
     PublicAddresses addresses;
@@ -90,7 +93,7 @@ public:
     std::string tpid;
     std::string actor;
 
-    AddPubAddressData(const std::string& fioAddress, const std::vector<PublicAddress>& addresses,
+    PubAddressActionData(const std::string& fioAddress, const std::vector<PublicAddress>& addresses,
         uint64_t fee, const std::string& tpid, const std::string& actor) :
         fioAddress(fioAddress), addresses(addresses),
         fee(fee), tpid(tpid), actor(actor) {}

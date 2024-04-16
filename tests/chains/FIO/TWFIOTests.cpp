@@ -37,6 +37,7 @@ TEST(TWFIO, Address) {
 }
 
 const Data gChainId = parse_hex("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77");
+const Data gChainIdMainnet = parse_hex("21dcae42c0182200e93f954a074011f9048a7624c6fe81d3c9541a614a88bd1c");
 // 5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf
 const PrivateKey privKeyBA = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035"));
 const PublicKey pubKey6M = privKeyBA.getPublicKey(TWPublicKeyTypeSECP256k1);
@@ -85,6 +86,31 @@ TEST(TWFIO, AddPubAddress) {
     ANY_SIGN(input, TWCoinTypeFIO);
     EXPECT_EQ(Common::Proto::OK, output.error());
     EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"15c2285e2d2d23622eff0000000001003056372503a85b0000c6eaa664523201102b2f46fca756b200000000a8ed3232c9010f6164616d4066696f746573746e65740303425443034254432a626331717679343037347267676b647232707a773576706e6e3632656730736d7a6c787770373064377603455448034554482a30786365356342366339324461333762624261393142643430443443394434443732344133613846353103424e4203424e422a626e6231747333646735346170776c76723968757076326e306a366534367135347a6e6e75736a6b39730000000000000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K3zimaMKU8cBhVRPw46KM2u7uQWaAKXrnoeYZ7MEbp6sVJcDQmQR2RtdavpUPwkAnYUkd8NqLun8H48tcxZBcTUgkiPGVJ"]})", output.json());
+}
+
+TEST(TWFIO, RemovePubAddress) {
+    auto privateKey = parse_hex("93083dc4d9e8f613a57e3a862a1fa5d665c5e90141a8428990c945d1c2b56491");
+
+    Proto::SigningInput input;
+    input.set_expiry(1713269931);
+    input.mutable_chain_params()->set_chain_id(string(gChainIdMainnet.begin(), gChainIdMainnet.end()));
+    input.mutable_chain_params()->set_head_block_number(256054093);
+    input.mutable_chain_params()->set_ref_block_prefix(2438027034);
+    input.set_private_key(string(privateKey.begin(), privateKey.end()));
+    input.set_tpid("trust@fiomembers");
+    auto action = input.mutable_action()->mutable_remove_pub_address_message();
+    action->set_fio_address("sergeitrust@wallet");
+    action->add_public_addresses();
+    action->mutable_public_addresses(0)->set_coin_symbol("BTC");
+    action->mutable_public_addresses(0)->set_address("bc1q68caps3gqt2c9qxtnkhmzf3whxenrs9cav4wlm");
+    action->set_fee(4878336459);
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeFIO);
+    EXPECT_EQ(Common::Proto::OK, output.error());
+    std::cout << output.json() << std::endl;
+    // Successfully broadcasted: https://fio.bloks.io/transaction/0bb6da24a3ea9e3ee57906de1cfa8bad18709acd64bf30908713dd61c54cfaea
+    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"ab6c1e664d131a5751910000000001003056372503a85b0000c6eaa664a4ba01b038b9d6c13372f700000000a8ed3232681273657267656974727573744077616c6c65740103425443034254432a62633171363863617073336771743263397178746e6b686d7a6633776878656e72733963617634776c6dcb81c52201000000b038b9d6c13372f71074727573744066696f6d656d6265727300","signatures":["SIG_K1_K3cKHXCFYYB9aLFc9qk2idmWgEA4Q9192fECc3cF7MYHXkw9kZamdeHv3qbVoifG9oS8h6nVAJwJvj5YcnhHmnd3u89ND7"]})", output.json());
 }
 
 TEST(TWFIO, Transfer) {

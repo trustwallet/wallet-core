@@ -145,7 +145,7 @@ TEST(FIOTransaction, ActionRegisterFioAddressInternal) {
 }
 
 TEST(FIOTransaction, ActionAddPubAddressInternal) {
-    AddPubAddressData aadata("adam@fiotestnet", {{"BTC", "BTC", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"}, {"ETH", "ETH", "0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51"}, {"BNB", "BNB", "bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s"}},
+    PubAddressActionData aadata("adam@fiotestnet", {{"BTC", "BTC", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"}, {"ETH", "ETH", "0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51"}, {"BNB", "BNB", "bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s"}},
                              0, "rewards@wallet", "qdfejz2a5wpl");
     Data ser1;
     aadata.serialize(ser1);
