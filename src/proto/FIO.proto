@@ -176,4 +176,7 @@ message SigningOutput {
 
     // error code description
     string error_message = 3;
+
+    // Performed action name, ex. "addaddress", "remaddress", "trnsfiopubky" etc.
+    string action_name = 4;
 }

@@ -38,6 +38,9 @@ public:
     /// Generic transaction signer: Build a signed transaction, in Json, from the specific SigningInput messages.
     static std::string sign(Proto::SigningInput in);
 
+    /// Returns an action name according to the given signing input.
+    static std::string actionName(const Proto::SigningInput& input);
+
     /// Create a signed RegisterFioAddress transaction, returned as json string (double quote delimited), suitable for register_fio_address RPC call
     /// @address The owners' FIO address. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
     /// @privateKey The private key matching the address, needed for signing.

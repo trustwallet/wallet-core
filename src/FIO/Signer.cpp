@@ -23,9 +23,11 @@ using namespace std;
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     FIO::Proto::SigningOutput output;
-    try {    
+    try {
+        const string actionName = TransactionBuilder::actionName(input);
         const string json = TransactionBuilder::sign(input);
         output.set_json(json);
+        output.set_action_name(actionName);
     } catch(const std::exception& e) {
         output.set_error(Common::Proto::Error_internal);
     }
