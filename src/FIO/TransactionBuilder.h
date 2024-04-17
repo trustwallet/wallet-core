@@ -38,6 +38,9 @@ public:
     /// Generic transaction signer: Build a signed transaction, in Json, from the specific SigningInput messages.
     static std::string sign(Proto::SigningInput in);
 
+    /// Returns an action name according to the given signing input.
+    static std::string actionName(const Proto::SigningInput& input);
+
     /// Create a signed RegisterFioAddress transaction, returned as json string (double quote delimited), suitable for register_fio_address RPC call
     /// @address The owners' FIO address. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
     /// @privateKey The private key matching the address, needed for signing.
@@ -61,6 +64,20 @@ public:
     /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
     /// Note: fee is usually 0 for add_pub_address.
     static std::string createAddPubAddress(const Address& address, const PrivateKey& privateKey, const std::string& fioName,
+        const std::vector<std::pair<std::string, std::string>>& pubAddresses,
+        const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime);
+
+    /// Create a signed `remaddress` transaction, returned as json string (double quote delimited), suitable for remove_pub_address RPC call
+    /// @address The owners' FIO address
+    /// @privateKey The private key matching the address, needed for signing.
+    /// @fioName The FIO name already registered to the owner. Ex.: "dmitry@trust"
+    /// @addressess List of public addresses to be registered, ex. {{"BTC", "bc1qv...7v"},{"BNB", "bnb1ts3...9s"}}
+    /// @chainParams Current parameters from the FIO chain, must be obtained recently using get_info and get_block calls.
+    /// @fee Max fee to spend, can be obtained using get_fee API.
+    /// @walletTpId The FIO name of the originating wallet (project-wide constant)
+    /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
+    /// Note: fee is usually 0 for remove_pub_address.
+    static std::string createRemovePubAddress(const Address& address, const PrivateKey& privateKey, const std::string& fioName,
         const std::vector<std::pair<std::string, std::string>>& pubAddresses,
         const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime);
 
@@ -131,8 +148,17 @@ private:
     static Transaction buildUnsignedRegisterFioAddress(const Address& address, const std::string& fioName,
         const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime);
 
-    static Transaction buildUnsignedAddPubAddress(const Address& address, const std::string& fioName,
-        const std::vector<std::pair<std::string, std::string>>& pubAddresses,
+    /// Builds an unsigned transaction to perform an action over public addresses, e.g. adding or removing public addresses.
+    /// @apiName The action API name, ex. "addaddress", "remaddress".
+    /// @address The owners' FIO address.
+    /// @fioName The FIO name already registered to the owner. Ex.: "dmitry@trust"
+    /// @pubAddresses List of public addresses to be registered, ex. {{"BTC", "bc1qv...7v"},{"BNB", "bnb1ts3...9s"}}
+    /// @chainParams Current parameters from the FIO chain, must be obtained recently using get_info and get_block calls.
+    /// @fee Max fee to spend, can be obtained using get_fee API.
+    /// @walletTpId The FIO name of the originating wallet (project-wide constant)
+    /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
+    static Transaction buildUnsignedPubAddressAction(const std::string& apiName, const Address& address,
+        const std::string& fioName, const std::vector<std::pair<std::string, std::string>>& pubAddresses,
         const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime);
 
     static Transaction buildUnsignedTransfer(const Address& address, const std::string& payeePublicKey, uint64_t amount,

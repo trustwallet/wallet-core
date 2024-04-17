@@ -21,6 +21,12 @@ using namespace TW;
 using namespace std;
 using json = nlohmann::json;
 
+static constexpr auto gRegisterFioAddress = "regaddress";
+static constexpr auto gAddPubAddress = "addaddress";
+static constexpr auto gRemoveAddress = "remaddress";
+static constexpr auto gTransferFIOPubkey = "trnsfiopubky";
+static constexpr auto gRenewFIOAddress = "renewaddress";
+static constexpr auto gNewFundsRequest = "newfundsreq";
 
 /// Internal helper
 ChainParams getChainParams(const Proto::SigningInput& input) {
@@ -36,6 +42,25 @@ bool TransactionBuilder::expirySetDefaultIfNeeded(uint32_t& expiryTime) {
     // fill based on current time 
     expiryTime = (uint32_t)time(nullptr) + ExpirySeconds;
     return true;
+}
+
+string TransactionBuilder::actionName(const Proto::SigningInput& input) {
+    switch (input.action().message_oneof_case()) {
+        case Proto::Action::MessageOneofCase::kRegisterFioAddressMessage:
+            return gRegisterFioAddress;
+        case Proto::Action::MessageOneofCase::kAddPubAddressMessage:
+            return gAddPubAddress;
+        case Proto::Action::MessageOneofCase::kTransferMessage:
+            return gTransferFIOPubkey;
+        case Proto::Action::MessageOneofCase::kRenewFioAddressMessage:
+            return gRenewFIOAddress;
+        case Proto::Action::MessageOneofCase::kNewFundsRequestMessage:
+            return gNewFundsRequest;
+        case Proto::Action::MessageOneofCase::kRemovePubAddressMessage:
+            return gRemoveAddress;
+        default:
+            return {};
+    }
 }
 
 string TransactionBuilder::sign(Proto::SigningInput in) {
@@ -76,6 +101,16 @@ string TransactionBuilder::sign(Proto::SigningInput in) {
             action.payer_fio_name(), action.payer_fio_address(), action.payee_fio_name(), content.payee_public_address(),
             content.amount(), content.coin_symbol(), content.memo(), content.hash(), content.offline_url(),
             getChainParams(in), action.fee(), in.tpid(), in.expiry(), Data());
+    } else if (in.action().has_remove_pub_address_message()) {
+        const auto action = in.action().remove_pub_address_message();
+        // process addresses
+        std::vector<std::pair<std::string, std::string>> addresses;
+        for (int i = 0; i < action.public_addresses_size(); ++i) {
+            addresses.emplace_back(std::make_pair(action.public_addresses(i).coin_symbol(), action.public_addresses(i).address()));
+        }
+        json = TransactionBuilder::createRemovePubAddress(owner, privateKey,
+            action.fio_address(), addresses,
+            getChainParams(in), action.fee(), in.tpid(), in.expiry());
     }
     return json;
 }
@@ -96,7 +131,19 @@ string TransactionBuilder::createAddPubAddress(const Address& address, const Pri
     const vector<pair<string, string>>& pubAddresses,
     const ChainParams& chainParams, uint64_t fee, const string& walletTpId, uint32_t expiryTime) {
 
-    Transaction transaction = TransactionBuilder::buildUnsignedAddPubAddress(address, fioName, pubAddresses, chainParams, fee, walletTpId, expiryTime);
+    Transaction transaction = TransactionBuilder::buildUnsignedPubAddressAction(gAddPubAddress, address, fioName, pubAddresses, chainParams, fee, walletTpId, expiryTime);
+
+    Data serTx;
+    transaction.serialize(serTx);
+
+    return signAndBuildTx(chainParams.chainId, serTx, privateKey);
+}
+
+string TransactionBuilder::createRemovePubAddress(const Address& address, const PrivateKey& privateKey, const string& fioName,
+    const vector<pair<string, string>>& pubAddresses,
+    const ChainParams& chainParams, uint64_t fee, const string& walletTpId, uint32_t expiryTime) {
+
+    Transaction transaction = TransactionBuilder::buildUnsignedPubAddressAction(gRemoveAddress, address, fioName, pubAddresses, chainParams, fee, walletTpId, expiryTime);
 
     Data serTx;
     transaction.serialize(serTx);
@@ -134,8 +181,6 @@ string TransactionBuilder::createNewFundsRequest(const Address& address, const P
         const ChainParams& chainParams, uint64_t fee, const string& walletTpId, uint32_t expiryTime,
         const Data& iv) {
 
-    const auto* const apiName = "newfundsreq";
-
     // use coinSymbol for chainCode as well
     NewFundsContent newFundsContent { payeePublicAddress, amount, coinSymbol, coinSymbol, memo, hash, offlineUrl };
     // serialize and encrypt
@@ -154,7 +199,7 @@ string TransactionBuilder::createNewFundsRequest(const Address& address, const P
     
     Action action;
     action.account = ContractPayRequest;
-    action.name = apiName;
+    action.name = gNewFundsRequest;
     action.actionDataSer = serData;
     action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
 
@@ -207,7 +252,7 @@ Data TransactionBuilder::buildUnsignedTxBytes(const Proto::SigningInput& in) {
         for (int i = 0; i < action.public_addresses_size(); ++i) {
             addresses.emplace_back(std::make_pair(action.public_addresses(i).coin_symbol(), action.public_addresses(i).address()));
         }
-        transaction = TransactionBuilder::buildUnsignedAddPubAddress(owner, action.fio_address(), addresses, 
+        transaction = TransactionBuilder::buildUnsignedPubAddressAction(gAddPubAddress, owner, action.fio_address(), addresses,
             getChainParams(in), action.fee(), in.tpid(), in.expiry());
     } else if (in.action().has_transfer_message()) {
         const auto action = in.action().transfer_message();
@@ -217,7 +262,16 @@ Data TransactionBuilder::buildUnsignedTxBytes(const Proto::SigningInput& in) {
         const auto action = in.action().renew_fio_address_message();
         transaction = TransactionBuilder::buildUnsignedRenewFioAddress(owner, action.fio_address(),
             getChainParams(in), action.fee(), in.tpid(), in.expiry());
-    } 
+    } else if (in.action().has_remove_pub_address_message()) {
+        const auto action = in.action().remove_pub_address_message();
+        // process addresses
+        std::vector<std::pair<std::string, std::string>> addresses;
+        for (int i = 0; i < action.public_addresses_size(); ++i) {
+            addresses.emplace_back(std::make_pair(action.public_addresses(i).coin_symbol(), action.public_addresses(i).address()));
+        }
+        transaction = TransactionBuilder::buildUnsignedPubAddressAction(gRemoveAddress, owner, action.fio_address(), addresses,
+            getChainParams(in), action.fee(), in.tpid(), in.expiry());
+    }
 
     Data serTx;
     transaction.serialize(serTx);
@@ -239,12 +293,11 @@ Proto::SigningOutput TransactionBuilder::buildSigningOutput(const Proto::Signing
     };
 
     output.set_json(tx.dump());
+    output.set_action_name(actionName(input));
     return output;
 }
 
 Transaction TransactionBuilder::buildUnsignedRegisterFioAddress(const Address& address, const std::string& fioName, const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime){
-    const auto* const apiName = "regaddress";
-
     string actor = Actor::actor(address);
     RegisterFioAddressData raData(fioName, address.string(), fee, walletTpId, actor);
     Data serData;
@@ -252,7 +305,7 @@ Transaction TransactionBuilder::buildUnsignedRegisterFioAddress(const Address& a
     
     Action action;
     action.account = ContractAddress;
-    action.name = apiName;
+    action.name = gRegisterFioAddress;
     action.actionDataSer = serData;
     action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
 
@@ -263,8 +316,9 @@ Transaction TransactionBuilder::buildUnsignedRegisterFioAddress(const Address& a
     return tx;
 }
 
-Transaction TransactionBuilder::buildUnsignedAddPubAddress(const Address& address, const std::string& fioName, const std::vector<std::pair<std::string, std::string>>& pubAddresses, const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime) {
-    const auto* const apiName = "addaddress";
+Transaction TransactionBuilder::buildUnsignedPubAddressAction(const std::string& apiName, const Address& address,
+    const std::string& fioName, const std::vector<std::pair<std::string, std::string>>& pubAddresses,
+    const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime) {
 
     string actor = Actor::actor(address);
     // convert addresses to add chainCode -- set it equal to coinSymbol
@@ -272,10 +326,10 @@ Transaction TransactionBuilder::buildUnsignedAddPubAddress(const Address& addres
     for (const auto& a: pubAddresses) {
         pubAddresses2.push_back(PublicAddress{a.first, a.first, a.second});
     }
-    AddPubAddressData aaData(fioName, pubAddresses2, fee, walletTpId, actor);
+    PubAddressActionData actionData(fioName, pubAddresses2, fee, walletTpId, actor);
     Data serData;
-    aaData.serialize(serData);
-    
+    actionData.serialize(serData);
+
     Action action;
     action.account = ContractAddress;
     action.name = apiName;
@@ -290,8 +344,6 @@ Transaction TransactionBuilder::buildUnsignedAddPubAddress(const Address& addres
 }
 
 Transaction TransactionBuilder::buildUnsignedTransfer(const Address& address, const std::string& payeePublicKey, uint64_t amount, const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime) {
-    const auto* const apiName = "trnsfiopubky";
-
     string actor = Actor::actor(address);
     TransferData ttData(payeePublicKey, amount, fee, walletTpId, actor);
     Data serData;
@@ -299,7 +351,7 @@ Transaction TransactionBuilder::buildUnsignedTransfer(const Address& address, co
     
     Action action;
     action.account = ContractToken;
-    action.name = apiName;
+    action.name = gTransferFIOPubkey;
     action.actionDataSer = serData;
     action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
 
@@ -311,8 +363,6 @@ Transaction TransactionBuilder::buildUnsignedTransfer(const Address& address, co
 }
 
 Transaction TransactionBuilder::buildUnsignedRenewFioAddress(const Address& address, const std::string& fioName, const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime) {
-    const auto* const apiName = "renewaddress";
-
     string actor = Actor::actor(address);
     RenewFioAddressData raData(fioName, fee, walletTpId, actor);
     Data serData;
@@ -320,7 +370,7 @@ Transaction TransactionBuilder::buildUnsignedRenewFioAddress(const Address& addr
     
     Action action;
     action.account = ContractAddress;
-    action.name = apiName;
+    action.name = gRenewFIOAddress;
     action.actionDataSer = serData;
     action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
 

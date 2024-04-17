@@ -41,7 +41,7 @@ void Action::serialize(Data& out) const {
     append(out, 0); // 00
 }
 
-void AddPubAddressData::serialize(Data& out) const {
+void PubAddressActionData::serialize(Data& out) const {
     encodeString(fioAddress, out);
     addresses.serialize(out);
     encode64LE(fee, out);
