@@ -7,7 +7,7 @@ use crate::modules::serializer::protobuf_serializer::build_coin;
 use crate::proto::ibc;
 use crate::transaction::message::{CosmosMessage, ProtobufMessage};
 use crate::transaction::Coin;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_proto::to_any;
 
 pub struct Height {

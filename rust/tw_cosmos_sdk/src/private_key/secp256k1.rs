@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::private_key::CosmosPrivateKey;
-use tw_coin_entry::error::{SigningError, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_keypair::tw;
 use tw_keypair::tw::Curve;
 use tw_keypair::KeyPairError;
