@@ -116,6 +116,28 @@ TEST(TWFIO, RemovePubAddress) {
     EXPECT_EQ(output.action_name(), "remaddress");
 }
 
+TEST(TWFIO, RemoveAllPubAddresses) {
+    auto privateKey = parse_hex("93083dc4d9e8f613a57e3a862a1fa5d665c5e90141a8428990c945d1c2b56491");
+
+    Proto::SigningInput input;
+    input.set_expiry(1713458993);
+    input.mutable_chain_params()->set_chain_id(string(gChainIdMainnet.begin(), gChainIdMainnet.end()));
+    input.mutable_chain_params()->set_head_block_number(256432311);
+    input.mutable_chain_params()->set_ref_block_prefix(2287536876);
+    input.set_private_key(string(privateKey.begin(), privateKey.end()));
+    input.set_tpid("trust@fiomembers");
+    auto action = input.mutable_action()->mutable_remove_all_pub_addresses_message();
+    action->set_fio_address("sergeitrust@wallet");
+    action->set_fee(0);
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeFIO);
+    EXPECT_EQ(Common::Proto::OK, output.error());
+    // Successfully broadcasted: https://fio.bloks.io/transaction/f2facdebfcba1981377537424a6d7b7e7ebd8222c87ba4d25a480d1b968704b2
+    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"314f2166b7d8ec0a59880000000001003056372503a85b00c04dc9c468a4ba01b038b9d6c13372f700000000a8ed3232341273657267656974727573744077616c6c65740000000000000000b038b9d6c13372f71074727573744066696f6d656d6265727300","signatures":["SIG_K1_KXXtpz7NWhzCms7Dj54nSwwtCw6w4zLCyTLxs3tqqgLscrz91cMjcbN4yxcySvZ7t4MER8HPteeJZUnR16uLyDa1gFGzrx"]})", output.json());
+    EXPECT_EQ(output.action_name(), "remalladdr");
+}
+
 TEST(TWFIO, Transfer) {
     Proto::SigningInput input;
     input.set_expiry(1579790000);
@@ -181,6 +203,29 @@ TEST(TWFIO, NewFundsRequest) {
         R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff000000000100403ed4aa0ba85b00acba384dbdb89a01102b2f46fca756b200000000a8ed32328802106d6172696f4066696f746573746)",
         output.json().substr(0, 195));
     EXPECT_EQ(output.action_name(), "newfundsreq");
+}
+
+TEST(TWFIO, AddBundledTransactions) {
+    auto privateKey = parse_hex("93083dc4d9e8f613a57e3a862a1fa5d665c5e90141a8428990c945d1c2b56491");
+
+    Proto::SigningInput input;
+    input.set_expiry(1713458594);
+    input.mutable_chain_params()->set_chain_id(string(gChainIdMainnet.begin(), gChainIdMainnet.end()));
+    input.mutable_chain_params()->set_head_block_number(256431437);
+    input.mutable_chain_params()->set_ref_block_prefix(791306279);
+    input.set_private_key(string(privateKey.begin(), privateKey.end()));
+    input.set_tpid("trust@fiomembers");
+    auto action = input.mutable_action()->mutable_add_bundled_transactions_message();
+    action->set_fio_address("sergeitrust@wallet");
+    action->set_bundle_sets(1);
+    action->set_fee(100000000000);
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeFIO);
+    EXPECT_EQ(Common::Proto::OK, output.error());
+    // Successfully broadcasted: https://fio.bloks.io/transaction/2c00f2051ca3738c4fe03ceddb82c48fefd9c534d8bb793dc7dce5d12f4f4f9c
+    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"a24d21664dd527602a2f0000000001003056372503a85b000056314d7d523201b038b9d6c13372f700000000a8ed32323c1273657267656974727573744077616c6c6574010000000000000000e87648170000001074727573744066696f6d656d62657273b038b9d6c13372f700","signatures":["SIG_K1_KjWGZ4Yd48VJcTAgox3HYVQhXeLhpRCgz2WqiF5WHRFSnbHouKxPgLQmymoABHC8EX51G1jU4ocWg2RKU17UYm4L5kTXP6"]})", output.json());
+    EXPECT_EQ(output.action_name(), "addbundles");
 }
 
 } // namespace TW::FIO::TWFIOTests
