@@ -81,6 +81,18 @@ public:
         const std::vector<std::pair<std::string, std::string>>& pubAddresses,
         const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime);
 
+    /// Create a signed `remalladdr` transaction, returned as json string (double quote delimited), suitable for remove_all_pub_address RPC call
+    /// @address The owners' FIO address
+    /// @privateKey The private key matching the address, needed for signing.
+    /// @fioName The FIO name already registered to the owner. Ex.: "dmitry@trust"
+    /// @chainParams Current parameters from the FIO chain, must be obtained recently using get_info and get_block calls.
+    /// @fee Max fee to spend, can be obtained using get_fee API.
+    /// @walletTpId The FIO name of the originating wallet (project-wide constant)
+    /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
+    /// Note: fee is usually 0 for remove_all_pub_address.
+    static std::string createRemoveAllPubAddresses(const Address& address, const PrivateKey& privateKey, const std::string& fioName,
+        const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime);
+
     /// Create a signed TransferTokens transaction, returned as json string (double quote delimited), suitable for transfer_tokens_pub_key RPC call
     /// @address The owners' FIO address
     /// @privateKey The private key matching the address, needed for signing.
@@ -130,6 +142,18 @@ public:
         const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime,
         const Data& iv);
 
+    /// Create a signed `addbundles` transaction, returned as json string (double quote delimited), suitable for add_bundled_transactions RPC call
+    /// @address The owners' FIO address
+    /// @privateKey The private key matching the address, needed for signing.
+    /// @fioName The FIO name already registered to the owner. Ex.: "dmitry@trust"
+    /// @bundleSets Number of bundled sets. One set is 100 bundled transactions.
+    /// @chainParams Current parameters from the FIO chain, must be obtained recently using get_info and get_block calls.
+    /// @fee Max fee to spend, can be obtained using get_fee API.
+    /// @walletTpId The FIO name of the originating wallet (project-wide constant)
+    /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
+    static std::string createAddBundledTransactions(const Address& address, const PrivateKey& privateKey, const std::string& fioName,
+        uint64_t bundleSets, const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime);
+
     /// Used internally.  Creates signatures and json with transaction.
     static std::string signAndBuildTx(const Data& chainId, const Data& packedTx, const PrivateKey& privateKey);
 
@@ -166,6 +190,12 @@ private:
 
     static Transaction buildUnsignedRenewFioAddress(const Address& address, const std::string& fioName,
         const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime);
+
+    static Transaction buildUnsignedRemoveAllAddressesAction(const Address& address, const std::string& fioName,
+        const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime);
+
+    static Transaction buildUnsignedAddBundledTransactions(const Address& address, const std::string& fioName,
+        uint64_t bundleSets, const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime);
 };
 
 } // namespace TW::FIO
