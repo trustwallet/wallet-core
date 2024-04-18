@@ -8,11 +8,14 @@ use crate::abi::token::Token;
 use crate::address::Address;
 use crate::message::eip712::message_types::CustomTypes;
 use crate::message::eip712::property::PropertyType;
-use crate::message::{EthMessage, MessageSigningError, MessageSigningResult};
+use crate::message::{
+    EthMessage, MessageSigningError, MessageSigningErrorKind, MessageSigningResult,
+};
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as Json;
 use std::str::FromStr;
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex::{self, DecodeHex};
 use tw_hash::sha3::keccak256;
 use tw_hash::{H160, H256};
@@ -38,11 +41,13 @@ impl Eip712Message {
     /// Tries to construct an EIP712 message from the given string.
     pub fn new<S: AsRef<str>>(message_to_sign: S) -> MessageSigningResult<Eip712Message> {
         let eip712_msg: Eip712Message = serde_json::from_str(message_to_sign.as_ref())
-            .map_err(|_| MessageSigningError::TypeValueMismatch)?;
+            .tw_err(|_| MessageSigningErrorKind::TypeValueMismatch)
+            .context("Error deserializing EIP712 message as JSON")?;
 
         // Check if the given message is actually EIP712.
         if !eip712_msg.types.contains_key(EIP712_DOMAIN) {
-            return Err(MessageSigningError::TypeValueMismatch);
+            return MessageSigningError::err(MessageSigningErrorKind::TypeValueMismatch)
+                .context("EIP712 message does not contain domain info");
         }
         Ok(eip712_msg)
     }
@@ -56,9 +61,12 @@ impl Eip712Message {
         // Check if `domain.chainId` is expected.
         let chain_id_value = msg.domain["chainId"].clone();
         let chain_id = U256::from_u64_or_decimal_str(chain_id_value)
-            .map_err(|_| MessageSigningError::TypeValueMismatch)?;
+            .tw_err(|_| MessageSigningErrorKind::TypeValueMismatch)
+            .context("Invalid chainId")?;
         if chain_id != expected_chain_id {
-            return Err(MessageSigningError::InvalidChainId);
+            return MessageSigningError::err(MessageSigningErrorKind::InvalidChainId).with_context(
+                || format!("Expected '{expected_chain_id}' chainId, found '{chain_id}'"),
+            );
         }
 
         Ok(msg)
@@ -71,12 +79,15 @@ impl EthMessage for Eip712Message {
             &self.types,
             PropertyType::Custom(EIP712_DOMAIN.to_string()),
             &self.domain,
-        )?;
+        )
+        .context("Error encoding EIP712Domain")?;
+
         let primary_data_hash = encode_data(
             &self.types,
             PropertyType::Custom(self.primary_type.clone()),
             &self.message,
-        )?;
+        )
+        .context("Error encoding primary type")?;
 
         let concat = [
             PREFIX.as_slice(),
@@ -96,17 +107,22 @@ fn encode_data(
     data: &Json,
 ) -> MessageSigningResult<Vec<u8>> {
     match data_type {
-        PropertyType::Bool => encode_bool(data),
-        PropertyType::String => encode_string(data),
-        PropertyType::Int => encode_i256(data),
-        PropertyType::Uint => encode_u256(data),
-        PropertyType::Address => encode_address(data),
-        PropertyType::FixBytes { len } => encode_fix_bytes(data, len.get()),
-        PropertyType::Bytes => encode_bytes(data),
-        PropertyType::Custom(custom) => encode_custom(custom_types, &custom, data),
-        PropertyType::Array(element_type) => encode_array(custom_types, *element_type, data, None),
+        PropertyType::Bool => encode_bool(data).context("Error encoding 'bool' parameter"),
+        PropertyType::String => encode_string(data).context("Error encoding 'string' parameter"),
+        PropertyType::Int => encode_i256(data).context("Error encoding 'i256' parameter"),
+        PropertyType::Uint => encode_u256(data).context("Error encoding 'u256' parameter"),
+        PropertyType::Address => encode_address(data).context("Error encoding 'address' parameter"),
+        PropertyType::FixBytes { len } => {
+            encode_fix_bytes(data, len.get()).context("Error encoding 'bytes[N]' parameter")
+        },
+        PropertyType::Bytes => encode_bytes(data).context("Error encoding 'bytes' parameter"),
+        PropertyType::Custom(custom) => encode_custom(custom_types, &custom, data)
+            .with_context(|| format!("Error encoding '{custom}' custom parameter")),
+        PropertyType::Array(element_type) => encode_array(custom_types, *element_type, data, None)
+            .context("Error encoding 'array' parameter"),
         PropertyType::FixArray { len, element_type } => {
             encode_array(custom_types, *element_type, data, Some(len.get()))
+                .context("Error encoding 'array[N]' parameter")
         },
     }
 }
@@ -114,14 +130,14 @@ fn encode_data(
 fn encode_bool(value: &Json) -> MessageSigningResult<Data> {
     let bin = value
         .as_bool()
-        .ok_or(MessageSigningError::InvalidParameterValue)?;
+        .or_tw_err(MessageSigningErrorKind::InvalidParameterValue)?;
     Ok(encode_tokens(&[Token::Bool(bin)]))
 }
 
 fn encode_string(value: &Json) -> MessageSigningResult<Data> {
     let string = value
         .as_str()
-        .ok_or(MessageSigningError::InvalidParameterValue)?;
+        .or_tw_err(MessageSigningErrorKind::InvalidParameterValue)?;
     let hash = keccak256(string.as_bytes());
     let checked_bytes = NonEmptyBytes::new(hash).expect("`hash` must not be empty");
     Ok(encode_tokens(&[Token::FixedBytes(checked_bytes)]))
@@ -129,23 +145,24 @@ fn encode_string(value: &Json) -> MessageSigningResult<Data> {
 
 fn encode_u256(value: &Json) -> MessageSigningResult<Data> {
     let uint = U256::from_u64_or_decimal_str(value.clone())
-        .map_err(|_| MessageSigningError::InvalidParameterValue)?;
+        .tw_err(|_| MessageSigningErrorKind::InvalidParameterValue)?;
     Ok(encode_tokens(&[Token::u256(uint)]))
 }
 
 fn encode_i256(value: &Json) -> MessageSigningResult<Data> {
     let int = I256::from_i64_or_decimal_str(value.clone())
-        .map_err(|_| MessageSigningError::InvalidParameterValue)?;
+        .tw_err(|_| MessageSigningErrorKind::InvalidParameterValue)?;
     Ok(encode_tokens(&[Token::i256(int)]))
 }
 
 fn encode_address(value: &Json) -> MessageSigningResult<Data> {
     let addr_str = value
         .as_str()
-        .ok_or(MessageSigningError::InvalidParameterValue)?;
+        .or_tw_err(MessageSigningErrorKind::InvalidParameterValue)?;
     // H160 doesn't require the string to be `0x` prefixed.
     let addr_data =
-        H160::from_str(addr_str).map_err(|_| MessageSigningError::InvalidParameterValue)?;
+        H160::from_str(addr_str).tw_err(|_| MessageSigningErrorKind::InvalidParameterValue)?;
+
     let addr = Address::from_bytes(addr_data);
     Ok(encode_tokens(&[Token::Address(addr)]))
 }
@@ -153,24 +170,29 @@ fn encode_address(value: &Json) -> MessageSigningResult<Data> {
 fn encode_fix_bytes(value: &Json, expected_len: usize) -> MessageSigningResult<Data> {
     let str = value
         .as_str()
-        .ok_or(MessageSigningError::InvalidParameterValue)?;
+        .or_tw_err(MessageSigningErrorKind::InvalidParameterValue)?;
     let fix_bytes =
-        hex::decode_lenient(str).map_err(|_| MessageSigningError::InvalidParameterValue)?;
-    if fix_bytes.len() > expected_len {
-        return Err(MessageSigningError::TypeValueMismatch);
+        hex::decode_lenient(str).tw_err(|_| MessageSigningErrorKind::InvalidParameterValue)?;
+
+    let actual_len = fix_bytes.len();
+    if actual_len > expected_len {
+        return MessageSigningError::err(MessageSigningErrorKind::TypeValueMismatch)
+            .with_context(|| format!("Expected '{expected_len}' bytes, found '{actual_len}'"));
     }
-    let checked_bytes =
-        NonEmptyBytes::new(fix_bytes).map_err(|_| MessageSigningError::InvalidParameterValue)?;
+    let checked_bytes = NonEmptyBytes::new(fix_bytes)
+        .tw_err(|_| MessageSigningErrorKind::InvalidParameterValue)
+        .context("Empty 'FixBytes' is not allowed")?;
     Ok(encode_tokens(&[Token::FixedBytes(checked_bytes)]))
 }
 
 fn encode_bytes(value: &Json) -> MessageSigningResult<Data> {
     let str = value
         .as_str()
-        .ok_or(MessageSigningError::InvalidParameterValue)?;
+        .or_tw_err(MessageSigningErrorKind::InvalidParameterValue)?;
     let bytes = str
         .decode_hex()
-        .map_err(|_| MessageSigningError::InvalidParameterValue)?;
+        .tw_err(|_| MessageSigningErrorKind::InvalidParameterValue)?;
+
     let hash = keccak256(&bytes);
     let checked_bytes = NonEmptyBytes::new(hash).expect("`hash` must not be empty");
     Ok(encode_tokens(&[Token::FixedBytes(checked_bytes)]))
@@ -184,16 +206,20 @@ fn encode_array(
 ) -> MessageSigningResult<Data> {
     let elements = data
         .as_array()
-        .ok_or(MessageSigningError::InvalidParameterValue)?;
+        .or_tw_err(MessageSigningErrorKind::InvalidParameterValue)?;
 
     // Check if the type definition actually matches the length of items to be encoded.
-    if expected_len.is_some() && Some(elements.len()) != expected_len {
-        return Err(MessageSigningError::TypeValueMismatch);
+    let actual_elements = elements.len();
+    if expected_len.is_some() && Some(actual_elements) != expected_len {
+        return MessageSigningError::err(MessageSigningErrorKind::TypeValueMismatch).with_context(
+            || format!("Expected '{expected_len:?}' array elements, found '{actual_elements}'"),
+        );
     }
 
     let mut encoded_items = vec![];
-    for item in elements {
-        let mut encoded = encode_data(custom_types, element_type.clone(), item)?;
+    for (item_idx, item) in elements.iter().enumerate() {
+        let mut encoded = encode_data(custom_types, element_type.clone(), item)
+            .with_context(|| format!("Error encoding '{item_idx}' array element"))?;
         encoded_items.append(&mut encoded);
     }
 
@@ -207,16 +233,18 @@ fn encode_custom(
 ) -> MessageSigningResult<Data> {
     let data_properties = custom_types
         .get(data_ident)
-        .ok_or(MessageSigningError::TypeValueMismatch)?;
+        .or_tw_err(MessageSigningErrorKind::TypeValueMismatch)
+        .with_context(|| format!("'{data_ident}' custom type is not specified"))?;
 
     let type_hash = encode_custom_type::type_hash(data_ident, custom_types)?;
     let checked_bytes =
-        NonEmptyBytes::new(type_hash).map_err(|_| MessageSigningError::InvalidParameterValue)?;
+        NonEmptyBytes::new(type_hash).tw_err(|_| MessageSigningErrorKind::InvalidParameterValue)?;
     let mut encoded_tokens = encode_tokens(&[Token::FixedBytes(checked_bytes)]);
 
-    for field in data_properties.iter() {
+    for (field_idx, field) in data_properties.iter().enumerate() {
         let field_value = &data[&field.name];
-        let field_property = PropertyType::from_str(&field.property_type)?;
+        let field_property = PropertyType::from_str(&field.property_type)
+            .with_context(|| format!("Error encoding '{field_idx}' field"))?;
         let mut encoded = encode_data(custom_types, field_property, field_value)?;
         encoded_tokens.append(&mut encoded);
     }
@@ -242,7 +270,10 @@ mod encode_custom_type {
     ) -> MessageSigningResult<String> {
         let deps = {
             let mut temp = build_dependencies(data_type, custom_types)
-                .ok_or(MessageSigningError::TypeValueMismatch)?;
+                .or_tw_err(MessageSigningErrorKind::TypeValueMismatch)
+                .with_context(|| {
+                    format!("Error building '{data_type}' custom type dependencies")
+                })?;
             temp.remove(data_type);
             let mut temp = temp.into_iter().collect::<Vec<_>>();
             temp.sort_unstable();

@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::Common::Proto::SigningError;
+use crate::EthereumAbi::Proto::AbiError;
 use std::fmt;
 
 impl fmt::Display for SigningError {
@@ -36,5 +37,24 @@ impl fmt::Display for SigningError {
             SigningError::Error_dust_amount_requested => "Requested amount is too low (less dust)",
         };
         write!(f, "{err}")
+    }
+}
+
+impl fmt::Display for AbiError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let err = match self {
+            AbiError::OK => "",
+            AbiError::Error_internal => "Internal error",
+            AbiError::Error_abi_mismatch => "ABI mismatch",
+            AbiError::Error_invalid_abi => "Invalid ABI provided",
+            AbiError::Error_invalid_param_type => "Invalid parameter type",
+            AbiError::Error_invalid_address_value => "Invalid address",
+            AbiError::Error_invalid_uint_value => "Invalid Uint",
+            AbiError::Error_missing_param_type => "Missing one of the parameter types",
+            AbiError::Error_missing_param_value => "Missing one of the parameter values",
+            AbiError::Error_decoding_data => "Error decoding data",
+            AbiError::Error_empty_type => "Empty array/tuple not allowed",
+        };
+        write!(f, "{}", err)
     }
 }

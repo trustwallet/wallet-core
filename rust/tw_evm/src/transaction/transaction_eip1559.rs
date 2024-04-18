@@ -6,7 +6,7 @@ use crate::address::Address;
 use crate::rlp::list::RlpList;
 use crate::transaction::signature::{EthSignature, Signature};
 use crate::transaction::{SignedTransaction, TransactionCommon, UnsignedTransaction};
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_keypair::ecdsa::secp256k1;
 use tw_memory::Data;
 use tw_number::U256;

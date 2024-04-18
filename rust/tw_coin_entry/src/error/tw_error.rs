@@ -41,6 +41,16 @@ impl<E> TWError<E> {
         &self.error
     }
 
+    pub fn map_err<F, NewE>(self, f: F) -> TWError<NewE>
+    where
+        F: FnOnce(E) -> NewE,
+    {
+        TWError {
+            error: f(self.error),
+            context: self.context,
+        }
+    }
+
     fn format_context(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if self.context.is_empty() {
             return Ok(());
