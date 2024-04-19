@@ -11,6 +11,20 @@ pub use secp256k1;
 
 use tw_proto::BitcoinV2::Proto;
 
+/// TODO use the standard `TWError<SigningError>` in tw_bitcoin crate.
+#[macro_export]
+macro_rules! bitcoin_output_error {
+    ($output:ty, $error:expr) => {{
+        let err = $error;
+
+        let mut output = <$output>::default();
+        output.error = err.0;
+        output.error_message = std::borrow::Cow::from(err.to_string());
+
+        output
+    }};
+}
+
 pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug)]
