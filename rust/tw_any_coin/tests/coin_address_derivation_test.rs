@@ -89,6 +89,7 @@ fn test_coin_address_derivation() {
             | CoinType::Merlin
             | CoinType::Lightlink
             | CoinType::Blast
+            | CoinType::BounceBit
             // end_of_evm_address_derivation_tests_marker_do_not_modify
                 => "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309",
             CoinType::Bitcoin

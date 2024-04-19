@@ -4719,5 +4719,35 @@
       "rpc": "https://rpc.blast.io",
       "documentation": "https://docs.blast.io"
     }
+  },
+  {
+    "id": "bouncebit",
+    "name": "BounceBit",
+    "coinId": 6001,
+    "symbol": "BB",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "6001",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://bbscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x52558f4143d058d942e3b73414090266ae3ffce1fe8c25fe86896e2c8e5ef932",
+      "sampleAccount": "0xf4aa7349a9ccca4609943955b5ddc7bd9278c223"
+    },
+    "info": {
+      "url": "https://bouncebit.io",
+      "source": "https://github.com/BounceBit-Labs",
+      "rpc": "https://fullnode-mainnet.bouncebitapi.com",
+      "documentation": "https://docs.bouncebit.io"
+    }
   }
 ]
