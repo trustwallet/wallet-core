@@ -4749,5 +4749,35 @@
       "rpc": "https://fullnode-mainnet.bouncebitapi.com",
       "documentation": "https://docs.bouncebit.io"
     }
+  },
+  {
+    "id": "genesys",
+    "name": "Genesys",
+    "coinId": 10016507,
+    "symbol": "GSYS",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "16507",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://gchainexplorer.genesys.network",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x717b7310d621ef669d02d516ab111c0baac30e164f554a41856d6c5d98fe9a2f",
+      "sampleAccount": "0xC95B4bd9670A82035E4707E0E1BdE9Fc9238BA79"
+    },
+    "info": {
+      "url": "https://www.genesys.network",
+      "source": "https://github.com/GENESYSBLOCKCHAIN",
+      "rpc": "https://rpc.genesys.network",
+      "documentation": "https://genesyblockchain.gitbook.io"
+    }
   }
 ]

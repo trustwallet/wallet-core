@@ -185,6 +185,7 @@ enum TWCoinType {
     TWCoinTypeLightlink = 1890,
     TWCoinTypeBlast = 81457,
     TWCoinTypeBounceBit = 6001,
+    TWCoinTypeGenesys = 10016507,
     // end_of_tw_coin_type_marker_do_not_modify
 };
 
