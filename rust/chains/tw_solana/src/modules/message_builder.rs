@@ -19,7 +19,7 @@ use crate::transaction::versioned::VersionedMessage;
 use crate::transaction::{legacy, v0, CompiledInstruction, MessageHeader, Signature};
 use std::borrow::Cow;
 use std::str::FromStr;
-use tw_coin_entry::error::{AddressResult, SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_keypair::ed25519;
 use tw_keypair::traits::KeyPairTrait;
 use tw_proto::Solana::Proto;
@@ -41,7 +41,9 @@ impl<'a> MessageBuilder<'a> {
         let mut signing_keys = Vec::default();
         if !self.input.fee_payer_private_key.is_empty() {
             let fee_payer_private_key =
-                ed25519::sha512::KeyPair::try_from(self.input.fee_payer_private_key.as_ref())?;
+                ed25519::sha512::KeyPair::try_from(self.input.fee_payer_private_key.as_ref())
+                    .into_tw()
+                    .context("Invalid fee payer private key")?;
             signing_keys.push(fee_payer_private_key);
         }
 
@@ -50,7 +52,9 @@ impl<'a> MessageBuilder<'a> {
         // Consider matching other transaction types if they may contain other private keys.
         if let ProtoTransactionType::create_nonce_account(ref nonce) = self.input.transaction_type {
             let nonce_private_key =
-                ed25519::sha512::KeyPair::try_from(nonce.nonce_account_private_key.as_ref())?;
+                ed25519::sha512::KeyPair::try_from(nonce.nonce_account_private_key.as_ref())
+                    .into_tw()
+                    .context("Invalid nonce account private key")?;
             signing_keys.push(nonce_private_key);
         }
 
@@ -135,7 +139,8 @@ impl<'a> MessageBuilder<'a> {
             ProtoTransactionType::advance_nonce_account(ref advance_nonce) => {
                 self.advance_nonce_from_proto(advance_nonce)
             },
-            ProtoTransactionType::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
+            ProtoTransactionType::None => SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("No transaction type specified"),
         }
     }
 
@@ -144,7 +149,10 @@ impl<'a> MessageBuilder<'a> {
         transfer: &Proto::Transfer<'_>,
     ) -> SigningResult<Vec<Instruction>> {
         let from = self.signer_address()?;
-        let to = SolanaAddress::from_str(&transfer.recipient)?;
+        let to = SolanaAddress::from_str(&transfer.recipient)
+            .into_tw()
+            .context("Invalid recipient address")?;
+
         let references = Self::parse_references(&transfer.references)?;
 
         let transfer_ix = SystemInstructionBuilder::transfer(from, to, transfer.value)
@@ -165,12 +173,16 @@ impl<'a> MessageBuilder<'a> {
         delegate: &Proto::DelegateStake,
     ) -> SigningResult<Vec<Instruction>> {
         let sender = self.signer_address()?;
-        let validator = SolanaAddress::from_str(delegate.validator_pubkey.as_ref())?;
+        let validator = SolanaAddress::from_str(delegate.validator_pubkey.as_ref())
+            .into_tw()
+            .context("Invalid validator address")?;
 
         let stake_account = if delegate.stake_account.is_empty() {
             None
         } else {
-            let stake_account = SolanaAddress::from_str(&delegate.stake_account)?;
+            let stake_account = SolanaAddress::from_str(&delegate.stake_account)
+                .into_tw()
+                .context("Invalid stake account")?;
             Some(stake_account)
         };
 
@@ -181,7 +193,7 @@ impl<'a> MessageBuilder<'a> {
             recent_blockhash: self.recent_blockhash()?,
             lamports: delegate.value,
             space: DEFAULT_SPACE,
-        })?;
+        });
 
         let mut builder = InstructionBuilder::default();
         builder
@@ -197,7 +209,10 @@ impl<'a> MessageBuilder<'a> {
         deactivate: &Proto::DeactivateStake,
     ) -> SigningResult<Vec<Instruction>> {
         let sender = self.signer_address()?;
-        let stake_account = SolanaAddress::from_str(&deactivate.stake_account)?;
+        let stake_account = SolanaAddress::from_str(&deactivate.stake_account)
+            .into_tw()
+            .context("Invalid stake account")?;
+
         let deactivate_ix = StakeInstructionBuilder::deactivate(stake_account, sender);
 
         let mut builder = InstructionBuilder::default();
@@ -221,7 +236,8 @@ impl<'a> MessageBuilder<'a> {
                 let stake_account = SolanaAddress::from_str(stake_account.as_ref())?;
                 Ok(StakeInstructionBuilder::deactivate(stake_account, sender))
             })
-            .collect::<SigningResult<Vec<_>>>()?;
+            .collect::<SigningResult<Vec<_>>>()
+            .context("Invalid stake account(s)")?;
 
         let mut builder = InstructionBuilder::default();
         builder
@@ -237,7 +253,10 @@ impl<'a> MessageBuilder<'a> {
         withdraw: &Proto::WithdrawStake,
     ) -> SigningResult<Vec<Instruction>> {
         let sender = self.signer_address()?;
-        let stake_account = SolanaAddress::from_str(withdraw.stake_account.as_ref())?;
+        let stake_account = SolanaAddress::from_str(withdraw.stake_account.as_ref())
+            .into_tw()
+            .context("Invalid stake account")?;
+
         let custodian_account = None;
 
         let withdraw_ix = StakeInstructionBuilder::withdraw(
@@ -267,7 +286,10 @@ impl<'a> MessageBuilder<'a> {
             .stake_accounts
             .iter()
             .map(|withdraw| {
-                let stake_account = SolanaAddress::from_str(withdraw.stake_account.as_ref())?;
+                let stake_account = SolanaAddress::from_str(withdraw.stake_account.as_ref())
+                    .into_tw()
+                    .context("Invalid stake account")?;
+
                 let custodian_account = None;
                 Ok(StakeInstructionBuilder::withdraw(
                     stake_account,
@@ -293,10 +315,18 @@ impl<'a> MessageBuilder<'a> {
         create_token_acc: &Proto::CreateTokenAccount,
     ) -> SigningResult<Vec<Instruction>> {
         let funding_account = self.signer_address()?;
-        let other_main_address = SolanaAddress::from_str(create_token_acc.main_address.as_ref())?;
+        let other_main_address = SolanaAddress::from_str(create_token_acc.main_address.as_ref())
+            .into_tw()
+            .context("Invalid main address")?;
+
         let token_mint_address =
-            SolanaAddress::from_str(create_token_acc.token_mint_address.as_ref())?;
-        let token_address = SolanaAddress::from_str(create_token_acc.token_address.as_ref())?;
+            SolanaAddress::from_str(create_token_acc.token_mint_address.as_ref())
+                .into_tw()
+                .context("Invalid token mint address")?;
+
+        let token_address = SolanaAddress::from_str(create_token_acc.token_address.as_ref())
+            .into_tw()
+            .context("Invalid token address to be created")?;
 
         let instruction = TokenInstructionBuilder::create_account(
             funding_account,
@@ -319,16 +349,26 @@ impl<'a> MessageBuilder<'a> {
     ) -> SigningResult<Vec<Instruction>> {
         let signer = self.signer_address()?;
         let sender_token_address =
-            SolanaAddress::from_str(token_transfer.sender_token_address.as_ref())?;
+            SolanaAddress::from_str(token_transfer.sender_token_address.as_ref())
+                .into_tw()
+                .context("Invalid sender token address")?;
+
         let token_mint_address =
-            SolanaAddress::from_str(token_transfer.token_mint_address.as_ref())?;
+            SolanaAddress::from_str(token_transfer.token_mint_address.as_ref())
+                .into_tw()
+                .context("Invalid token mint address")?;
+
         let recipient_token_address =
-            SolanaAddress::from_str(token_transfer.recipient_token_address.as_ref())?;
+            SolanaAddress::from_str(token_transfer.recipient_token_address.as_ref())
+                .into_tw()
+                .context("Invalid recipient token address")?;
 
         let decimals = token_transfer
             .decimals
             .try_into()
-            .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?;
+            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .context("Invalid token decimals. Expected lower than 256")?;
+
         let references = Self::parse_references(&token_transfer.references)?;
 
         let transfer_instruction = TokenInstructionBuilder::transfer_checked(
@@ -357,20 +397,34 @@ impl<'a> MessageBuilder<'a> {
     ) -> SigningResult<Vec<Instruction>> {
         let signer = self.signer_address()?;
         let fee_payer = self.fee_payer()?;
+
         let sender_token_address =
-            SolanaAddress::from_str(create_and_transfer.sender_token_address.as_ref())?;
+            SolanaAddress::from_str(create_and_transfer.sender_token_address.as_ref())
+                .into_tw()
+                .context("Invalid sender token address")?;
+
         let token_mint_address =
-            SolanaAddress::from_str(create_and_transfer.token_mint_address.as_ref())?;
+            SolanaAddress::from_str(create_and_transfer.token_mint_address.as_ref())
+                .into_tw()
+                .context("Invalid token mint address")?;
+
         let recipient_main_address =
-            SolanaAddress::from_str(create_and_transfer.recipient_main_address.as_ref())?;
+            SolanaAddress::from_str(create_and_transfer.recipient_main_address.as_ref())
+                .into_tw()
+                .context("Invalid recipient main address")?;
+
         let recipient_token_address =
-            SolanaAddress::from_str(create_and_transfer.recipient_token_address.as_ref())?;
+            SolanaAddress::from_str(create_and_transfer.recipient_token_address.as_ref())
+                .into_tw()
+                .context("Invalid recipient token address")?;
+
         let references = Self::parse_references(&create_and_transfer.references)?;
 
         let decimals = create_and_transfer
             .decimals
             .try_into()
-            .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?;
+            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .context("Invalid token decimals. Expected lower than 256")?;
 
         let create_account_instruction = TokenInstructionBuilder::create_account(
             // Can be different from the actual signer.
@@ -409,12 +463,15 @@ impl<'a> MessageBuilder<'a> {
         let prev_nonce_account = self.nonce_account()?;
 
         let new_nonce_account = if create_nonce.nonce_account.is_empty() {
-            let nonce_key = ed25519::sha512::KeyPair::try_from(
-                create_nonce.nonce_account_private_key.as_ref(),
-            )?;
+            let nonce_key =
+                ed25519::sha512::KeyPair::try_from(create_nonce.nonce_account_private_key.as_ref())
+                    .into_tw()
+                    .context("Invalid nonce account private key")?;
             SolanaAddress::with_public_key_ed25519(nonce_key.public())
         } else {
-            SolanaAddress::from_str(create_nonce.nonce_account.as_ref())?
+            SolanaAddress::from_str(create_nonce.nonce_account.as_ref())
+                .into_tw()
+                .context("Invalid nonce account")?
         };
 
         let mut builder = InstructionBuilder::default();
@@ -436,8 +493,13 @@ impl<'a> MessageBuilder<'a> {
         withdraw_nonce: &Proto::WithdrawNonceAccount,
     ) -> SigningResult<Vec<Instruction>> {
         let signer = self.signer_address()?;
-        let withdraw_from_nonce = SolanaAddress::from_str(withdraw_nonce.nonce_account.as_ref())?;
-        let recipient = SolanaAddress::from_str(withdraw_nonce.recipient.as_ref())?;
+        let withdraw_from_nonce = SolanaAddress::from_str(withdraw_nonce.nonce_account.as_ref())
+            .into_tw()
+            .context("Invalid nonce account")?;
+
+        let recipient = SolanaAddress::from_str(withdraw_nonce.recipient.as_ref())
+            .into_tw()
+            .context("Invalid recipient")?;
 
         let mut builder = InstructionBuilder::default();
         builder
@@ -458,7 +520,9 @@ impl<'a> MessageBuilder<'a> {
         advance_nonce: &Proto::AdvanceNonceAccount,
     ) -> SigningResult<Vec<Instruction>> {
         let signer = self.signer_address()?;
-        let nonce_account = SolanaAddress::from_str(advance_nonce.nonce_account.as_ref())?;
+        let nonce_account = SolanaAddress::from_str(advance_nonce.nonce_account.as_ref())
+            .into_tw()
+            .context("Invalid nonce account")?;
 
         let mut builder = InstructionBuilder::default();
         builder
@@ -475,12 +539,15 @@ impl<'a> MessageBuilder<'a> {
             SolanaAddress::from_str(&self.input.nonce_account)
                 .map(Some)
                 .map_err(SigningError::from)
+                .context("Invalid nonce account")
         }
     }
 
     fn signer_address(&self) -> SigningResult<SolanaAddress> {
         if self.input.private_key.is_empty() {
-            SolanaAddress::from_str(&self.input.sender).map_err(SigningError::from)
+            SolanaAddress::from_str(&self.input.sender)
+                .map_err(SigningError::from)
+                .context("Sender address is either not set or invalid")
         } else {
             Ok(SolanaAddress::with_public_key_ed25519(
                 self.signer_key()?.public(),
@@ -493,25 +560,31 @@ impl<'a> MessageBuilder<'a> {
     pub fn fee_payer(&self) -> SigningResult<SolanaAddress> {
         if !self.input.fee_payer_private_key.is_empty() {
             let fee_payer_key =
-                ed25519::sha512::KeyPair::try_from(self.input.fee_payer_private_key.as_ref())?;
+                ed25519::sha512::KeyPair::try_from(self.input.fee_payer_private_key.as_ref())
+                    .into_tw()
+                    .context("Invalid fee payer private key")?;
             return Ok(SolanaAddress::with_public_key_ed25519(
                 fee_payer_key.public(),
             ));
         }
         if !self.input.fee_payer.is_empty() {
             return SolanaAddress::from_str(self.input.fee_payer.as_ref())
-                .map_err(SigningError::from);
+                .map_err(SigningError::from)
+                .context("Invalid fee payer address");
         }
         self.signer_address()
     }
 
     fn recent_blockhash(&self) -> SigningResult<Blockhash> {
-        Ok(Blockhash::from_str(&self.input.recent_blockhash)?)
+        Blockhash::from_str(&self.input.recent_blockhash)
+            .map_err(SigningError::from)
+            .context("Invalid recent blockhash")
     }
 
     fn signer_key(&self) -> SigningResult<ed25519::sha512::KeyPair> {
         ed25519::sha512::KeyPair::try_from(self.input.private_key.as_ref())
             .map_err(SigningError::from)
+            .context("Invalid signer key")
     }
 
     fn priority_fee_price(&self) -> Option<UnitPrice> {
@@ -531,7 +604,8 @@ impl<'a> MessageBuilder<'a> {
     fn parse_references(refs: &[Cow<'_, str>]) -> SigningResult<Vec<SolanaAddress>> {
         refs.iter()
             .map(|addr| SolanaAddress::from_str(addr).map_err(SigningError::from))
-            .collect()
+            .collect::<SigningResult<Vec<_>>>()
+            .context("Invalid transaction reference(s)")
     }
 }
 
@@ -544,7 +618,7 @@ impl RawMessageBuilder {
         match raw_message.message {
             RawMessageType::legacy(ref legacy) => Self::build_legacy(legacy),
             RawMessageType::v0(ref v0) => Self::build_v0(v0),
-            RawMessageType::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
+            RawMessageType::None => SigningError::err(SigningErrorType::Error_invalid_params),
         }
     }
 
@@ -553,9 +627,17 @@ impl RawMessageBuilder {
     ) -> SigningResult<PubkeySignatureMap> {
         let mut key_signs = PubkeySignatureMap::with_capacity(raw_message.signatures.len());
         for entry in raw_message.signatures.iter() {
-            let pubkey = SolanaAddress::from_str(entry.pubkey.as_ref())?;
-            let signature = Signature::from_str(entry.signature.as_ref())?;
-            let ed25519_signature = ed25519::Signature::try_from(signature.0.as_slice())?;
+            let pubkey = SolanaAddress::from_str(entry.pubkey.as_ref())
+                .into_tw()
+                .context("Invalid 'PubkeySignature::public'")?;
+
+            let signature = Signature::from_str(entry.signature.as_ref())
+                .context("Invalid 'PubkeySignature::signature'")?;
+
+            let ed25519_signature = ed25519::Signature::try_from(signature.0.as_slice())
+                .into_tw()
+                .context("Invalid 'PubkeySignature::signature'")?;
+
             key_signs.insert(pubkey, ed25519_signature);
         }
         Ok(key_signs)
@@ -566,7 +648,10 @@ impl RawMessageBuilder {
     ) -> SigningResult<VersionedMessage> {
         let header = Self::build_message_header(&legacy.header)?;
         let account_keys = Self::build_account_keys(&legacy.account_keys)?;
-        let recent_blockhash = Blockhash::from_str(legacy.recent_blockhash.as_ref())?;
+        let recent_blockhash = Blockhash::from_str(legacy.recent_blockhash.as_ref())
+            .into_tw()
+            .context("Invalid recent blockhash")?;
+
         let instructions: Vec<_> = Self::build_instructions(&legacy.instructions)?;
 
         Ok(VersionedMessage::Legacy(legacy::Message {
@@ -580,7 +665,10 @@ impl RawMessageBuilder {
     fn build_v0(v0: &Proto::mod_RawMessage::MessageV0) -> SigningResult<VersionedMessage> {
         let header = Self::build_message_header(&v0.header)?;
         let account_keys = Self::build_account_keys(&v0.account_keys)?;
-        let recent_blockhash = Blockhash::from_str(v0.recent_blockhash.as_ref())?;
+        let recent_blockhash = Blockhash::from_str(v0.recent_blockhash.as_ref())
+            .into_tw()
+            .context("Invalid recent blockhash")?;
+
         let instructions: Vec<_> = Self::build_instructions(&v0.instructions)?;
         let address_table_lookups = v0
             .address_table_lookups
@@ -602,7 +690,9 @@ impl RawMessageBuilder {
     ) -> SigningResult<MessageHeader> {
         let raw_header = raw_header
             .as_ref()
-            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("No message header provided")?;
+
         Ok(MessageHeader {
             num_required_signatures: try_into_u8(raw_header.num_required_signatures)?,
             num_readonly_signed_accounts: try_into_u8(raw_header.num_readonly_signed_accounts)?,
@@ -616,6 +706,7 @@ impl RawMessageBuilder {
             .map(|s| SolanaAddress::from_str(s.as_ref()))
             .collect::<AddressResult<Vec<_>>>()
             .map_err(SigningError::from)
+            .context("Cannot build account keys")
     }
 
     fn build_instructions(
@@ -631,10 +722,11 @@ impl RawMessageBuilder {
             .accounts
             .iter()
             .map(|idx| try_into_u8(*idx))
-            .collect::<SigningResult<Vec<_>>>()?;
+            .collect::<SigningResult<Vec<_>>>()
+            .context("Cannot build account metas")?;
 
         Ok(CompiledInstruction {
-            program_id_index: try_into_u8(ix.program_id)?,
+            program_id_index: try_into_u8(ix.program_id).context("Invalid program ID")?,
             accounts,
             data: ix.program_data.to_vec(),
         })
@@ -643,19 +735,25 @@ impl RawMessageBuilder {
     fn build_address_lookup_table(
         lookup: &Proto::mod_RawMessage::MessageAddressTableLookup,
     ) -> SigningResult<v0::MessageAddressTableLookup> {
-        let account_key = SolanaAddress::from_str(lookup.account_key.as_ref())?;
+        let account_key = SolanaAddress::from_str(lookup.account_key.as_ref())
+            .into_tw()
+            .context("Invalid lookup's account key")?;
+
         let writable_indexes = lookup
             .writable_indexes
             .iter()
             .copied()
             .map(try_into_u8)
-            .collect::<SigningResult<Vec<_>>>()?;
+            .collect::<SigningResult<Vec<_>>>()
+            .context("Invalid writable index(s)")?;
+
         let readonly_indexes = lookup
             .readonly_indexes
             .iter()
             .copied()
             .map(try_into_u8)
-            .collect::<SigningResult<Vec<_>>>()?;
+            .collect::<SigningResult<Vec<_>>>()
+            .context("Invalid readonly index(s)")?;
 
         Ok(v0::MessageAddressTableLookup {
             account_key,
@@ -669,5 +767,5 @@ fn try_into_u8<T>(num: T) -> SigningResult<u8>
 where
     u8: TryFrom<T>,
 {
-    u8::try_from(num).map_err(|_| SigningError(SigningErrorType::Error_invalid_params))
+    u8::try_from(num).tw_err(|_| SigningErrorType::Error_tx_too_big)
 }

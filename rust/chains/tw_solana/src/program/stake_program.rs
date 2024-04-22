@@ -5,7 +5,7 @@
 use crate::address::SolanaAddress;
 use crate::blockhash::Blockhash;
 use crate::defined_addresses::*;
-use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_coin_entry::error::prelude::*;
 use tw_hash::sha2::sha256;
 use tw_hash::H256;
 

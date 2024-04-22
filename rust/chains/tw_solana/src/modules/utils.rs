@@ -8,7 +8,7 @@ use crate::modules::PubkeySignatureMap;
 use crate::transaction::versioned::VersionedTransaction;
 use crate::SOLANA_ALPHABET;
 use std::borrow::Cow;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_encoding::{base58, base64};
 use tw_hash::H256;
@@ -36,13 +36,13 @@ impl SolanaTransaction {
         let is_url = false;
         let tx_bytes = base64::decode(encoded_tx, is_url)?;
 
-        let tx_to_sign: VersionedTransaction = bincode::deserialize(&tx_bytes)
-            .map_err(|_| SigningError(SigningErrorType::Error_input_parse))?;
+        let tx_to_sign: VersionedTransaction =
+            bincode::deserialize(&tx_bytes).map_err(|_| SigningErrorType::Error_input_parse)?;
         let mut msg_to_sign = tx_to_sign.message;
 
         let new_blockchain_hash = base58::decode(recent_blockhash, &SOLANA_ALPHABET)?;
         let new_blockchain_hash = H256::try_from(new_blockchain_hash.as_slice())
-            .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?;
+            .tw_err(|_| SigningErrorType::Error_invalid_params)?;
 
         // Update the transaction's blockhash and re-sign it.
         msg_to_sign.set_recent_blockhash(new_blockchain_hash);
@@ -64,8 +64,8 @@ impl SolanaTransaction {
         };
 
         let unsigned_encoded = base64::encode(&unsigned_encoded, is_url);
-        let signed_encoded = bincode::serialize(&signed_tx)
-            .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+        let signed_encoded =
+            bincode::serialize(&signed_tx).tw_err(|_| SigningErrorType::Error_internal)?;
         let signed_encoded = base64::encode(&signed_encoded, is_url);
 
         Ok(Proto::SigningOutput {
