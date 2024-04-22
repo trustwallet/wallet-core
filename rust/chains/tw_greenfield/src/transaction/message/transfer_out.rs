@@ -6,7 +6,7 @@ use crate::address::GreenfieldAddress;
 use crate::transaction::message::type_msg_amount::TypeMsgAmount;
 use crate::transaction::message::GreenfieldMessage;
 use serde::Serialize;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_cosmos_sdk::modules::serializer::protobuf_serializer::build_coin;
 use tw_cosmos_sdk::proto::greenfield as GreenfieldProto;
 use tw_cosmos_sdk::transaction::message::{
