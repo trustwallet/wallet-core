@@ -107,7 +107,8 @@ mod tests {
             (4, Some(Curve::Nist256p1)),
             (5, Some(Curve::Ed25519ExtendedCardano)),
             (6, Some(Curve::Starkex)),
-            (7, None),
+            (7, Some(Curve::Schnorr)),
+            (8, None),
         ];
         for (raw, expected) in tests {
             assert_eq!(Curve::from_raw(raw), expected);

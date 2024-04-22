@@ -164,18 +164,16 @@ dependencies = [
 
 [[package]]
 name = "bitcoin"
-version = "0.30.1"
+version = "0.30.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1945a5048598e4189e239d3f809b19bdad4845c4b2ba400d304d2dcf26d2c462"
 dependencies = [
  "bech32",
- "bitcoin-private 0.1.0",
+ "bitcoin-private",
  "bitcoin_hashes",
  "hex_lit",
  "secp256k1",
 ]
-
-[[package]]
-name = "bitcoin-private"
-version = "0.1.0"
 
 [[package]]
 name = "bitcoin-private"
@@ -189,7 +187,7 @@ version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5d7066118b13d4b20b23645932dfb3a81ce7e29f95726c2036fa33cd7b092501"
 dependencies = [
- "bitcoin-private 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "bitcoin-private",
 ]
 
 [[package]]

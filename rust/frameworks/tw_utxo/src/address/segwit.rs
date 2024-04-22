@@ -154,6 +154,7 @@ impl FromStr for SegwitAddress {
         // Check encoding.
         match (version, checksum_variant) {
             (0, bech32::Variant::Bech32) => (),
+            (version, bech32::Variant::Bech32m) if WITNESS_VERSIONS.contains(&version) => (),
             _ => return Err(AddressError::InvalidInput),
         }
 

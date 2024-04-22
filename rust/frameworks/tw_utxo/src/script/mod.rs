@@ -19,34 +19,43 @@ impl Encodable for Script {
     fn encode(&self, stream: &mut Stream) {
         stream.append(&self.bytes);
     }
+
+    fn encoded_size(&self) -> usize
+    where
+        Self: Sized,
+    {
+        if self.bytes.is_empty() {
+            return 0;
+        }
+
+        CompactInteger::from(self.bytes.len()).encoded_size() + self.bytes.len()
+    }
 }
 
 impl Script {
     pub fn new() -> Self {
         Self::default()
     }
+
     pub fn with_capacity(capacity: usize) -> Self {
         Script {
             bytes: Data::with_capacity(capacity),
         }
     }
+
     pub fn len(&self) -> usize {
         self.bytes.len()
     }
+
     pub fn is_empty(&self) -> bool {
         self.bytes.is_empty()
     }
-    pub fn serialized_len(&self) -> usize {
-        if self.bytes.is_empty() {
-            return 0;
-        }
 
-        CompactInteger::from(self.bytes.len()).serialized_len() + self.bytes.len()
-    }
     /// Pushes the given opcode to the end of the script.
     pub fn push(&mut self, code: u8) {
         self.bytes.push(code);
     }
+
     /// Pushes the given data with an OP_PUSHDATA opcode and a length indicator
     /// as prefix to the end of the script.
     ///
@@ -83,10 +92,12 @@ impl Script {
         // Finally, push the data itself.
         self.bytes.extend_from_slice(data);
     }
+
     /// Appends the given data to the end of the script as-is.
     pub fn append(&mut self, data: &[u8]) {
         self.bytes.extend_from_slice(data);
     }
+
     pub fn as_data(&self) -> &Data {
         &self.bytes
     }
@@ -108,36 +119,41 @@ impl Encodable for Witness {
         // TODO: What if the witness is empty?
         stream.append_list(&self.items);
     }
+
+    fn encoded_size(&self) -> usize {
+        if self.is_empty() {
+            return 0;
+        }
+
+        CompactInteger::from(self.items.len()).encoded_size()
+            + self
+                .items
+                .iter()
+                .map(|item| CompactInteger::from(item.len()).encoded_size() + item.len())
+                .sum::<usize>()
+    }
 }
 
 impl Witness {
     pub fn new() -> Self {
         Self::default()
     }
+
     pub fn push_item(&mut self, item: Script) {
         self.items.push(item);
     }
+
     pub fn as_items(&self) -> &[Script] {
         &self.items
     }
+
     pub fn is_empty(&self) -> bool {
         self.items.is_empty()
     }
+
     // TODO: This needed?
     pub fn clear(&mut self) {
         self.items.clear();
-    }
-    pub fn serialized_len(&self) -> usize {
-        if self.is_empty() {
-            return 0;
-        }
-
-        CompactInteger::from(self.items.len()).serialized_len()
-            + self
-                .items
-                .iter()
-                .map(|item| CompactInteger::from(item.len()).serialized_len() + item.len())
-                .sum::<usize>()
     }
 }
 

@@ -4,8 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-#bitcoin = "0.30.0"
-bitcoin = { path = "../../rust-bitcoin/bitcoin" }
+bitcoin = { version = "0.30.0", features = ["rand-std"] }
 secp256k1 = { version = "0.27.0", features = ["global-context", "rand-std"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
@@ -17,8 +16,8 @@ tw_hash = { path = "../tw_hash" }
 tw_misc = { path = "../tw_misc" }
 tw_proto = { path = "../tw_proto" }
 tw_utxo = { path = "../frameworks/tw_utxo" }
-tw_bech32_address ={ path = "../tw_bech32_address" }
-tw_base58_address ={ path = "../tw_base58_address" }
+tw_bech32_address = { path = "../tw_bech32_address" }
+tw_base58_address = { path = "../tw_base58_address" }
 
 [dev-dependencies]
 wallet-core-rs = { path = "../wallet_core_rs" }

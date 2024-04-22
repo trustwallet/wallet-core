@@ -152,8 +152,8 @@ impl Transaction {
             s += WITNESS_FLAG_MARKER;
         }
 
-        s += CompactInteger::from(self.inputs().len()).serialized_len();
-        s += CompactInteger::from(self.outputs().len()).serialized_len();
+        s += CompactInteger::from(self.inputs().len()).encoded_size();
+        s += CompactInteger::from(self.outputs().len()).encoded_size();
         s
     }
     pub fn size(&self) -> usize {
@@ -244,10 +244,7 @@ pub struct TransactionInput {
 
 impl TransactionInput {
     pub fn size(&self) -> usize {
-        OUT_POINT_SIZE
-            + self.script_sig.serialized_len()
-            + SEQUENCE_SIZE
-            + self.witness.serialized_len()
+        self.encoded_size()
     }
 
     pub fn vsize(&self) -> usize {
@@ -255,10 +252,10 @@ impl TransactionInput {
     }
 
     pub fn weight(&self) -> usize {
-        let non_witness = OUT_POINT_SIZE + self.script_sig.serialized_len() + SEQUENCE_SIZE;
+        let non_witness = OUT_POINT_SIZE + self.script_sig.encoded_size() + SEQUENCE_SIZE;
 
         // Witness data has no scale factor applied, ie. it's discounted.
-        non_witness * SEGWIT_SCALE_FACTOR + self.witness.serialized_len()
+        non_witness * SEGWIT_SCALE_FACTOR + self.witness.encoded_size()
     }
 }
 
@@ -307,6 +304,16 @@ impl Encodable for TransactionInput {
             .append(&self.script_sig)
             .append(&self.sequence);
     }
+
+    fn encoded_size(&self) -> usize
+    where
+        Self: Sized,
+    {
+        OUT_POINT_SIZE
+            + self.script_sig.encoded_size()
+            + SEQUENCE_SIZE
+            + self.witness.encoded_size()
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -320,7 +327,7 @@ pub struct TransactionOutput {
 
 impl TransactionOutput {
     pub fn size(&self) -> usize {
-        VALUE_SIZE + self.script_pubkey.serialized_len()
+        self.encoded_size()
     }
 
     pub fn vsize(&self) -> usize {
@@ -351,5 +358,12 @@ impl TxOutputInterface for TransactionOutput {
 impl Encodable for TransactionOutput {
     fn encode(&self, stream: &mut Stream) {
         stream.append(&self.value).append(&self.script_pubkey);
+    }
+
+    fn encoded_size(&self) -> usize
+    where
+        Self: Sized,
+    {
+        VALUE_SIZE + self.script_pubkey.encoded_size()
     }
 }

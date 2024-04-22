@@ -18,23 +18,6 @@ const EIGHT_BYTES_FLAG: u8 = 0xFF_u8;
 #[derive(Default, Debug, Clone, Copy, PartialEq)]
 pub struct CompactInteger(u64);
 
-impl CompactInteger {
-    pub fn serialized_len(&self) -> usize {
-        const BYTE_FLAG: usize = 1;
-
-        let v = self.0;
-        if ONE_BYTE_RANGE.contains(&v) {
-            1 // No byte flag
-        } else if TWO_BYTES_RANGE.contains(&v) {
-            BYTE_FLAG + 2
-        } else if FOUR_BYTES_RANGE.contains(&v) {
-            BYTE_FLAG + 4
-        } else {
-            BYTE_FLAG + 8
-        }
-    }
-}
-
 impl From<usize> for CompactInteger {
     fn from(value: usize) -> Self {
         CompactInteger(value as u64)
@@ -57,16 +40,17 @@ impl Encodable for CompactInteger {
     }
 
     fn encoded_size(&self) -> usize {
-        let v = self.0;
+        const BYTE_FLAG: usize = 1;
 
+        let v = self.0;
         if ONE_BYTE_RANGE.contains(&v) {
-            1
+            BYTE_FLAG
         } else if TWO_BYTES_RANGE.contains(&v) {
-            3
+            BYTE_FLAG + 2
         } else if FOUR_BYTES_RANGE.contains(&v) {
-            5
+            BYTE_FLAG + 4
         } else {
-            9
+            BYTE_FLAG + 8
         }
     }
 }
