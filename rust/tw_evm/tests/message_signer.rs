@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::modules::message_signer::MessageSigner;
 use tw_coin_entry::test_utils::test_context::TestCoinContext;
 use tw_encoding::hex::{DecodeHex, ToHex};

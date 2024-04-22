@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use std::borrow::Cow;
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex;
 use tw_evm::abi::prebuild::erc20::Erc20;
 use tw_evm::address::Address;

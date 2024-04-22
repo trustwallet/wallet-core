@@ -10,7 +10,7 @@ use tw_aptos::liquid_staking::{LiquidStakingOperation, Stake, Unstake};
 use tw_aptos::nft::{Claim, NftOperation, Offer};
 use tw_aptos::signer::Signer;
 use tw_aptos::transaction_payload::convert_type_tag_to_struct_tag;
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex;
 use tw_proto::Aptos::Proto;
 use tw_proto::Aptos::Proto::{SigningInput, SigningOutput};

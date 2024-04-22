@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::base58;
 use tw_solana::modules::utils::SolanaTransaction;
 use tw_solana::SOLANA_ALPHABET;

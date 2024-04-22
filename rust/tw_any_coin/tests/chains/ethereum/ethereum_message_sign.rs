@@ -5,7 +5,7 @@
 use tw_any_coin::ffi::tw_message_signer::{
     tw_message_signer_pre_image_hashes, tw_message_signer_sign, tw_message_signer_verify,
 };
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
