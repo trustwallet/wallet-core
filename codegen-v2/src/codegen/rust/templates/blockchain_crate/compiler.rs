@@ -4,7 +4,7 @@
 
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_proto::{BLOCKCHAIN}::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
