@@ -8,12 +8,12 @@ use std::fmt;
 pub type TWResult<T, E> = Result<T, TWError<E>>;
 
 pub trait ResultContext {
-    /// Wrap the error value with additional context.
+    /// Wraps the error value with additional context.
     fn context<C>(self, context: C) -> Self
     where
         C: fmt::Display;
 
-    /// Wrap the error value with additional context that is evaluated lazily
+    /// Wraps the error value with additional context that is evaluated lazily
     /// only once an error does occur.
     fn with_context<C, F>(self, f: F) -> Self
     where
@@ -22,16 +22,20 @@ pub trait ResultContext {
 }
 
 pub trait IntoTWError<T, E> {
+    /// Wraps the inner `E` error into [`TWError<E>`].
     fn into_tw(self) -> TWResult<T, E>;
 }
 
 pub trait MapTWError<T, E, PrevE> {
+    /// Maps `PrevE` into [`TWError<E>`] with an `F` mapper.
     fn tw_err<F>(self, f: F) -> TWResult<T, E>
     where
         F: FnOnce(PrevE) -> E;
 }
 
 pub trait OrTWError<T, E> {
+    /// Transforms the [`Option<T>`] into a [`Result<T, TWError<E>>`], mapping [`Some(v)`] to
+    /// [`Ok(v)`] and [`None`] to [`Err(TWError<E>)`].
     fn or_tw_err(self, error: E) -> TWResult<T, E>;
 }
 

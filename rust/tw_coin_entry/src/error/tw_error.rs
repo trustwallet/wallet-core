@@ -12,6 +12,7 @@ pub struct TWError<E> {
 }
 
 impl<E> TWError<E> {
+    /// Converts `PrevE` into `E` and wraps it as [`TWError<E>`].
     pub fn new<PrevE>(error: PrevE) -> Self
     where
         E: From<PrevE>,
@@ -22,6 +23,7 @@ impl<E> TWError<E> {
         }
     }
 
+    /// Converts `PrevE` into `E` and wraps it as [`Err(TWError<E>)`].
     pub fn err<T, PrevE>(error: PrevE) -> TWResult<T, E>
     where
         E: From<PrevE>,
@@ -29,6 +31,7 @@ impl<E> TWError<E> {
         Err(TWError::new(error))
     }
 
+    /// Adds an error context.
     pub fn context<C>(mut self, context: C) -> Self
     where
         C: fmt::Display,
@@ -37,10 +40,12 @@ impl<E> TWError<E> {
         self
     }
 
+    /// Returns an inner error type.
     pub fn error_type(&self) -> &E {
         &self.error
     }
 
+    /// Converts [`TWError<E>`] into [`TWError<NewE>`].
     pub fn map_err<F, NewE>(self, f: F) -> TWError<NewE>
     where
         F: FnOnce(E) -> NewE,
