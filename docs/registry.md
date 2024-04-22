@@ -91,6 +91,7 @@ This list is generated from [./registry.json](../registry.json)
 | 4200    | Merlin           | BTC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/merlin/info/logo.png" width="32" />       | <https://merlinchain.io>      |
 | 5000    | Mantle           | MNT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/mantle/info/logo.png" width="32" />       | <https://www.mantle.xyz>      |
 | 5600    | BNB Greenfield   | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/greenfield/info/logo.png" width="32" />   | <https://greenfield.bnbchain.org> |
+| 6001    | BounceBit        | BB     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bouncebit/info/logo.png" width="32" />    | <https://bouncebit.io>        |
 | 6060    | GoChain          | GO     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/gochain/info/logo.png" width="32" />      | <https://gochain.io>          |
 | 7332    | Zen EON          | ZEN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zeneon/info/logo.png" width="32" />       | <https://eon.horizen.io>      |
 | 8453    | Base             | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/base/info/logo.png" width="32" />         | <https://base.mirror.xyz/>    |

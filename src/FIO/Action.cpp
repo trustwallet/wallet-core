@@ -41,9 +41,16 @@ void Action::serialize(Data& out) const {
     append(out, 0); // 00
 }
 
-void AddPubAddressData::serialize(Data& out) const {
+void PubAddressActionData::serialize(Data& out) const {
     encodeString(fioAddress, out);
     addresses.serialize(out);
+    encode64LE(fee, out);
+    EOS::Name(actor).serialize(out);
+    encodeString(tpid, out);
+}
+
+void RemoveAllPubAddressActionData::serialize(Data& out) const {
+    encodeString(fioAddress, out);
     encode64LE(fee, out);
     EOS::Name(actor).serialize(out);
     encodeString(tpid, out);
@@ -79,6 +86,14 @@ void NewFundsRequestData::serialize(Data& out) const {
     encode64LE(fee, out);
     encodeString(actor, out);
     encodeString(tpid, out);
+}
+
+void AddBundledTransactionsActionData::serialize(Data& out) const {
+    encodeString(fioAddress, out);
+    encode64LE(bundledSets, out);
+    encode64LE(fee, out);
+    encodeString(tpid, out);
+    EOS::Name(actor).serialize(out);
 }
 
 } // namespace TW::FIO
