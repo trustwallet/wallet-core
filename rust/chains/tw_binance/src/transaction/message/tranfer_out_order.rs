@@ -8,7 +8,7 @@ use crate::transaction::message::{BinanceMessage, TWBinanceProto, Token};
 use serde::{Deserialize, Serialize};
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_evm::address::Address as EthereumAddress;
 use tw_hash::H160;
 use tw_memory::Data;
@@ -41,14 +41,14 @@ impl TWBinanceProto for TransferOutOrder {
     fn from_tw_proto(coin: &dyn CoinContext, msg: &Self::Proto<'_>) -> SigningResult<Self> {
         let from = BinanceAddress::from_key_hash_with_coin(coin, msg.from.to_vec())?;
 
-        let to_bytes = H160::try_from(msg.to.as_ref())
-            .map_err(|_| SigningError(SigningErrorType::Error_invalid_address))?;
+        let to_bytes =
+            H160::try_from(msg.to.as_ref()).tw_err(|_| SigningErrorType::Error_invalid_address)?;
         let to = EthereumAddress::from_bytes(to_bytes);
 
         let amount_proto = msg
             .amount
             .as_ref()
-            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+            .or_tw_err(SigningErrorType::Error_invalid_params)?;
 
         Ok(TransferOutOrder {
             from,

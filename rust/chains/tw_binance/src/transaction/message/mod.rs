@@ -4,7 +4,7 @@
 
 use serde::{Deserialize, Serialize, Serializer};
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 use tw_proto::Binance::Proto::{self, mod_SigningInput::OneOforder_oneof as BinanceMessageProto};
 
@@ -138,7 +138,7 @@ impl TWBinanceProto for BinanceMessageEnum {
                 side_chain_delegate::StakeMigrationOrder::from_tw_proto(coin, order)
                     .map(BinanceMessageEnum::StakeMigrationOrder)
             },
-            BinanceMessageProto::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
+            BinanceMessageProto::None => SigningError::err(SigningErrorType::Error_invalid_params),
         }
     }
 
