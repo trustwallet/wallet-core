@@ -55,7 +55,7 @@ pub fn proto_input_to_native(
                     Ok((utxo, arg, claim))
                 },
                 OneOfInputVariant::p2pkh(pubkey) => {
-                    let pubkey = pubkey_from_raw(&pubkey).unwrap();
+                    let pubkey = pubkey_from_raw(pubkey).unwrap();
 
                     let (utxo, arg) = UtxoBuilder::new()
                         .prev_txid(input.txid.as_ref().try_into().unwrap())
@@ -68,7 +68,7 @@ pub fn proto_input_to_native(
                     let sig = if let Some(sig_bytes) = sig {
                         Signature::from_bytes(&sig_bytes).unwrap()
                     } else {
-                        Signature::from_bytes(&vec![1; 65]).unwrap()
+                        Signature::from_bytes(&[1; 65]).unwrap()
                     };
 
                     let claim = SpendingScriptBuilder::new().p2pkh(sig, pubkey).unwrap();
@@ -77,7 +77,7 @@ pub fn proto_input_to_native(
                 },
                 OneOfInputVariant::p2wsh(_) => todo!(),
                 OneOfInputVariant::p2wpkh(pubkey) => {
-                    let pubkey = pubkey_from_raw(&pubkey).unwrap();
+                    let pubkey = pubkey_from_raw(pubkey).unwrap();
 
                     let (utxo, arg) = UtxoBuilder::new()
                         .prev_txid(input.txid.as_ref().try_into().unwrap())
@@ -90,7 +90,7 @@ pub fn proto_input_to_native(
                     let sig = if let Some(sig_bytes) = sig {
                         Signature::from_bytes(&sig_bytes).unwrap()
                     } else {
-                        Signature::from_bytes(&vec![1; 65]).unwrap()
+                        Signature::from_bytes(&[1; 65]).unwrap()
                     };
 
                     let claim = SpendingScriptBuilder::new().p2wpkh(sig, pubkey).unwrap();
@@ -112,7 +112,7 @@ pub fn proto_input_to_native(
                     let sig = if let Some(sig_bytes) = sig {
                         schnorr::Signature::from_bytes(&sig_bytes).unwrap()
                     } else {
-                        schnorr::Signature::from_bytes(&vec![1; 64]).unwrap()
+                        schnorr::Signature::from_bytes(&[1; 64]).unwrap()
                     };
 
                     let claim = SpendingScriptBuilder::new().p2tr_key_path(sig).unwrap();
@@ -136,7 +136,7 @@ pub fn proto_input_to_native(
                     let sig = if let Some(sig_bytes) = sig {
                         schnorr::Signature::from_bytes(&sig_bytes).unwrap()
                     } else {
-                        schnorr::Signature::from_bytes(&vec![1; 64]).unwrap()
+                        schnorr::Signature::from_bytes(&[1; 64]).unwrap()
                     };
 
                     let claim = SpendingScriptBuilder::new()
@@ -162,7 +162,7 @@ pub fn proto_input_to_native(
                     let sig = if let Some(sig_bytes) = sig {
                         schnorr::Signature::from_bytes(&sig_bytes).unwrap()
                     } else {
-                        schnorr::Signature::from_bytes(&vec![1; 64]).unwrap()
+                        schnorr::Signature::from_bytes(&[1; 64]).unwrap()
                     };
 
                     let claim = SpendingScriptBuilder::new()
@@ -264,7 +264,7 @@ pub fn proto_output_to_native(
             mod_Output::mod_OutputBuilder::OneOfvariant::p2pkh(payload) => {
                 match &payload.to_address {
                     OneOfto_address::pubkey(pubkey) => {
-                        let pubkey = pubkey_from_raw(&pubkey).unwrap();
+                        let pubkey = pubkey_from_raw(pubkey).unwrap();
 
                         let out = OutputBuilder::new()
                             .amount(output.value as i64)
@@ -302,7 +302,7 @@ pub fn proto_output_to_native(
             mod_Output::mod_OutputBuilder::OneOfvariant::p2wpkh(payload) => {
                 match &payload.to_address {
                     OneOfto_address::pubkey(pubkey) => {
-                        let pubkey = pubkey_from_raw(&pubkey).unwrap();
+                        let pubkey = pubkey_from_raw(pubkey).unwrap();
 
                         let out = OutputBuilder::new()
                             .amount(output.value as i64)
@@ -337,7 +337,7 @@ pub fn proto_output_to_native(
                 }
             },
             mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_key_path(pubkey) => {
-                let pubkey = pubkey_from_raw(&pubkey).unwrap();
+                let pubkey = pubkey_from_raw(pubkey).unwrap();
 
                 let out = OutputBuilder::new()
                     .amount(output.value as i64)

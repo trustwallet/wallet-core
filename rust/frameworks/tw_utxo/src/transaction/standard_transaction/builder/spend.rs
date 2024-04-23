@@ -6,6 +6,7 @@ use crate::{
     transaction::asset::brc20::{BRC20TransferInscription, Brc20Ticker},
 };
 
+use crate::error::{UtxoError, UtxoErrorKind};
 use tw_hash::H264;
 use tw_keypair::{ecdsa, schnorr, tw};
 use tw_misc::traits::ToBytesVec;
@@ -20,10 +21,12 @@ impl SpendingScriptBuilder {
             sighash_ty: SighashType::new(SighashBase::All),
         }
     }
+
     pub fn sighash_ty(mut self, sighash_ty: SighashType) -> Self {
         self.sighash_ty = sighash_ty;
         self
     }
+
     pub fn custom_script_sig_witness(
         script_sig: Option<Script>,
         witness: Option<Witness>,
@@ -33,19 +36,20 @@ impl SpendingScriptBuilder {
             witness: witness.unwrap_or_default(),
         }
     }
+
     pub fn p2sh(self, redeem_script: Script) -> UtxoResult<SpendingData> {
         Ok(SpendingData {
             script_sig: redeem_script,
             witness: Witness::default(),
         })
     }
+
     pub fn p2pkh(
         self,
         sig: ecdsa::secp256k1::Signature,
         pubkey: tw::PublicKey,
     ) -> UtxoResult<SpendingData> {
-        // TODO: Check unwrap
-        let sig = BitcoinEcdsaSignature::new(sig.to_der().unwrap(), self.sighash_ty).unwrap();
+        let sig = BitcoinEcdsaSignature::new(sig.to_der()?, self.sighash_ty);
 
         let pubkey: H264 = pubkey
             .to_bytes()
@@ -53,36 +57,37 @@ impl SpendingScriptBuilder {
             .try_into()
             .expect("pubkey length is 33 bytes");
 
-        let script_sig = claims::new_p2pkh(&sig.serialize(), &pubkey);
+        let script_sig = claims::new_p2pkh(&sig, &pubkey);
 
         Ok(SpendingData {
             script_sig,
             witness: Witness::default(),
         })
     }
+
     pub fn p2wpkh(
         self,
         sig: ecdsa::secp256k1::Signature,
         pubkey: tw::PublicKey,
     ) -> UtxoResult<SpendingData> {
-        // TODO: Check unwrap
-        let sig = BitcoinEcdsaSignature::new(sig.to_der().unwrap(), self.sighash_ty).unwrap();
+        let sig = BitcoinEcdsaSignature::new(sig.to_der()?, self.sighash_ty);
 
         let pubkey: H264 = pubkey
             .to_bytes()
             .as_slice()
             .try_into()
-            .expect("pubkey length is 33 bytes");
+            .map_err(|_| UtxoError(UtxoErrorKind::Error_invalid_public_key))?;
 
-        let witness = claims::new_p2wpkh(sig.serialize(), pubkey);
+        let witness = claims::new_p2wpkh(&sig, pubkey);
 
         Ok(SpendingData {
             script_sig: Script::default(),
             witness,
         })
     }
+
     pub fn p2tr_key_path(self, sig: schnorr::Signature) -> UtxoResult<SpendingData> {
-        let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty).unwrap();
+        let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty);
 
         let witness = claims::new_p2tr_key_path(sig.serialize());
 
@@ -91,13 +96,14 @@ impl SpendingScriptBuilder {
             witness,
         })
     }
+
     pub fn p2tr_script_path(
         self,
         sig: schnorr::Signature,
         payload: Script,
         control_block: Vec<u8>,
     ) -> UtxoResult<SpendingData> {
-        let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty).unwrap();
+        let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty);
 
         let witness = claims::new_p2tr_script_path(sig.serialize(), payload, control_block);
 
@@ -106,6 +112,7 @@ impl SpendingScriptBuilder {
             witness,
         })
     }
+
     pub fn brc20_transfer(
         self,
         sig: schnorr::Signature,
@@ -113,7 +120,7 @@ impl SpendingScriptBuilder {
         ticker: String,
         value: String,
     ) -> UtxoResult<SpendingData> {
-        let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty).unwrap();
+        let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty);
 
         let pubkey: H264 = pubkey
             .to_bytes()
@@ -141,5 +148,11 @@ impl SpendingScriptBuilder {
             script_sig: Script::default(),
             witness,
         })
+    }
+}
+
+impl Default for SpendingScriptBuilder {
+    fn default() -> Self {
+        SpendingScriptBuilder::new()
     }
 }

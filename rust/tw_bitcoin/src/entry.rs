@@ -1,4 +1,3 @@
-use crate::modules::signer::Signer;
 use crate::utils::{proto_input_to_native, proto_output_to_native, proto_sighash_to_sig};
 use crate::{Error, Result};
 use bitcoin::address::NetworkChecked;
@@ -141,6 +140,7 @@ impl BitcoinEntry {
 
         self.compile_impl(_coin, proto, sigs, vec![])
     }
+
     pub(crate) fn preimage_hashes_impl(
         &self,
         _coin: &dyn CoinContext,
@@ -150,7 +150,7 @@ impl BitcoinEntry {
 
         // Construct the transaction.
         let mut builder = TransactionBuilder::new();
-        let mut dummy_claims = vec![]; // TODO
+        let mut dummy_claims = Vec::with_capacity(proto.inputs.len());
 
         // Process proto inputs.
         for input in &proto.inputs {
@@ -327,7 +327,7 @@ impl BitcoinEntry {
                 script_sig: input.script_sig.as_data().to_vec().into(),
                 witness_items: input
                     .witness_items()
-                    .into_iter()
+                    .iter()
                     .map(|w| w.as_data().to_vec().into())
                     .collect(),
             })
@@ -384,22 +384,36 @@ pub(crate) fn pre_processor(mut proto: Proto::SigningInput<'_>) -> Proto::Signin
     proto
 }
 
-#[rustfmt::skip]
 /// Convert `Utxo.proto` error type to `BitcoinV2.proto` error type.
 fn handle_utxo_error(utxo_err: &UtxoProto::Error) -> Result<()> {
     let bitcoin_err = match utxo_err {
         UtxoProto::Error::OK => return Ok(()),
         UtxoProto::Error::Error_invalid_leaf_hash => Proto::Error::Error_utxo_invalid_leaf_hash,
-        UtxoProto::Error::Error_invalid_sighash_type => Proto::Error::Error_utxo_invalid_sighash_type,
+        UtxoProto::Error::Error_invalid_sighash_type => {
+            Proto::Error::Error_utxo_invalid_sighash_type
+        },
         UtxoProto::Error::Error_invalid_lock_time => Proto::Error::Error_utxo_invalid_lock_time,
         UtxoProto::Error::Error_invalid_txid => Proto::Error::Error_utxo_invalid_txid,
         UtxoProto::Error::Error_sighash_failed => Proto::Error::Error_utxo_sighash_failed,
-        UtxoProto::Error::Error_missing_sighash_method => Proto::Error::Error_utxo_missing_sighash_method,
+        UtxoProto::Error::Error_missing_sighash_method => {
+            Proto::Error::Error_utxo_missing_sighash_method
+        },
         UtxoProto::Error::Error_failed_encoding => Proto::Error::Error_utxo_failed_encoding,
         UtxoProto::Error::Error_insufficient_inputs => Proto::Error::Error_utxo_insufficient_inputs,
-        UtxoProto::Error::Error_no_outputs_specified => Proto::Error::Error_utxo_no_outputs_specified,
-        UtxoProto::Error::Error_missing_change_script_pubkey => Proto::Error::Error_utxo_missing_change_script_pubkey,
-        UtxoProto::Error::Error_signatures_count => Proto::Error::Error_unmatched_input_signature_count,
+        UtxoProto::Error::Error_no_outputs_specified => {
+            Proto::Error::Error_utxo_no_outputs_specified
+        },
+        UtxoProto::Error::Error_missing_change_script_pubkey => {
+            Proto::Error::Error_utxo_missing_change_script_pubkey
+        },
+        UtxoProto::Error::Error_signatures_count => {
+            Proto::Error::Error_unmatched_input_signature_count
+        },
+        UtxoProto::Error::Error_invalid_public_key => Proto::Error::Error_invalid_public_key,
+        UtxoProto::Error::Error_invalid_private_key => Proto::Error::Error_invalid_private_key,
+        UtxoProto::Error::Error_verifying_signature | UtxoProto::Error::Error_invalid_signature => {
+            Proto::Error::Error_invalid_sighash
+        },
         UtxoProto::Error::Error_internal => Proto::Error::Error_internal,
     };
 

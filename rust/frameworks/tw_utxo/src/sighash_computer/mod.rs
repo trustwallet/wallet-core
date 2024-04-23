@@ -46,16 +46,9 @@ impl Default for UtxoToSign {
 /// Transaction preimage arguments.
 /// It provides required options to sign each UTXO of the transaction.
 // TODO: Move this to another module.
+#[derive(Default)]
 pub struct TxSigningArgs {
     pub utxos_to_sign: Vec<UtxoToSign>,
-}
-
-impl Default for TxSigningArgs {
-    fn default() -> Self {
-        TxSigningArgs {
-            utxos_to_sign: Vec::default(),
-        }
-    }
 }
 
 #[derive(Debug, Clone)]

@@ -21,8 +21,9 @@ pub struct PrivateKey {
 
 impl PrivateKey {
     pub fn public(&self) -> PublicKey {
-        PublicKey::new(self.secret.verifying_key().clone())
+        PublicKey::new(*self.secret.verifying_key())
     }
+
     // TODO: Prevent caller from tweaking multiple times. Maybe create a
     // separate type?
     /// Tweak the private key with a given hash.
@@ -33,6 +34,7 @@ impl PrivateKey {
             no_aux_rand: false,
         }
     }
+
     /// Disable auxiliary random data when signing. ONLY recommended for
     /// testing.
     pub fn no_aux_rand(mut self) -> PrivateKey {
@@ -110,7 +112,7 @@ impl<'a> TryFrom<&'a str> for PrivateKey {
 
     fn try_from(s: &'a str) -> Result<Self, Self::Error> {
         let bytes = hex::decode(s).map_err(|_| KeyPairError::InvalidPublicKey)?;
-        Ok(PrivateKey::try_from(bytes.as_slice())?)
+        PrivateKey::try_from(bytes.as_slice())
     }
 }
 

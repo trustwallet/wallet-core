@@ -205,10 +205,7 @@ impl UtxoBuilder {
         );
 
         // Convert to native.
-        let leaf_hash: H256 = leaf_hash
-            .to_byte_array()
-            .try_into()
-            .expect("leaf hash length is 32 bytes");
+        let leaf_hash: H256 = H256::from(leaf_hash.to_byte_array());
 
         self.finalize_out_point()?;
 
@@ -249,10 +246,7 @@ impl UtxoBuilder {
         );
 
         // Convert to native.
-        let leaf_hash: H256 = leaf_hash
-            .to_byte_array()
-            .try_into()
-            .expect("leaf hash length is 32 bytes");
+        let leaf_hash = H256::from(leaf_hash.to_byte_array());
 
         self.finalize_out_point()?;
 
@@ -271,5 +265,11 @@ impl UtxoBuilder {
                 ..Default::default()
             },
         ))
+    }
+}
+
+impl Default for UtxoBuilder {
+    fn default() -> Self {
+        UtxoBuilder::new()
     }
 }

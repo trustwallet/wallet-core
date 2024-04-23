@@ -28,9 +28,9 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
         let prevout_hash = TransactionHasher::<Transaction>::preimage_prevout_hash(tx, &tr.args);
         let sequence_hash = TransactionHasher::<Transaction>::preimage_sequence_hash(tx, &tr.args);
         let outputs_hash = TransactionHasher::<Transaction>::preimage_outputs_hash(tx, &tr.args);
-        let spent_amounts_hash = TransactionHasher::<Transaction>::spent_amount_hash(&tr);
+        let spent_amounts_hash = TransactionHasher::<Transaction>::spent_amount_hash(tr);
 
-        let spent_script_pubkeys_hash = TransactionHasher::<Transaction>::spent_script_pubkeys(&tr);
+        let spent_script_pubkeys_hash = TransactionHasher::<Transaction>::spent_script_pubkeys(tr);
 
         let mut stream = Stream::default();
 

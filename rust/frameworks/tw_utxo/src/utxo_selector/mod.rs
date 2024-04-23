@@ -136,7 +136,7 @@ where
         // Prepare the available UTXOs.
         let mut utxos: Vec<(Transaction::Input, &UtxoToSign)> = tx
             .inputs()
-            .into_iter()
+            .iter()
             .cloned()
             .zip(self.args.utxos_to_sign.iter())
             .collect::<Vec<_>>();

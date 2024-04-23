@@ -91,10 +91,7 @@ fn create_envelope(
     let spend_info = bitcoin::taproot::TaprootBuilder::new()
         .add_leaf(0, script.clone())
         .expect("Ordinals Inscription spending info must always build")
-        .finalize(
-            &secp256k1::Secp256k1::new(),
-            bitcoin::secp256k1::XOnlyPublicKey::from(xonly),
-        )
+        .finalize(&secp256k1::Secp256k1::new(), xonly)
         .expect("Ordinals Inscription spending info must always build");
 
     Ok((script, spend_info))

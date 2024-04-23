@@ -168,3 +168,9 @@ impl OutputBuilder {
         })
     }
 }
+
+impl Default for OutputBuilder {
+    fn default() -> Self {
+        OutputBuilder::new()
+    }
+}

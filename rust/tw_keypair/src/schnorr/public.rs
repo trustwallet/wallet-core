@@ -40,7 +40,7 @@ impl<'a> TryFrom<&'a str> for PublicKey {
 
     fn try_from(s: &'a str) -> Result<Self, Self::Error> {
         let bytes = hex::decode(s).map_err(|_| KeyPairError::InvalidPublicKey)?;
-        Ok(PublicKey::try_from(bytes.as_slice())?)
+        PublicKey::try_from(bytes.as_slice())
     }
 }
 

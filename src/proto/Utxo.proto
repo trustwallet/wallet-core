@@ -17,6 +17,10 @@ enum Error {
     Error_missing_change_script_pubkey = 10;
     // Incorrect count of signatures passed to compile
     Error_signatures_count = 11;
+    Error_invalid_public_key = 12;
+    Error_invalid_private_key = 13;
+    Error_invalid_signature = 14;
+    Error_verifying_signature = 15;
     Error_internal = 20;
 }
 

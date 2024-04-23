@@ -116,7 +116,6 @@ pub struct Witness {
 
 impl Encodable for Witness {
     fn encode(&self, stream: &mut Stream) {
-        // TODO: What if the witness is empty?
         stream.append_list(&self.items);
     }
 
@@ -151,7 +150,6 @@ impl Witness {
         self.items.is_empty()
     }
 
-    // TODO: This needed?
     pub fn clear(&mut self) {
         self.items.clear();
     }

@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use tw_keypair::{ecdsa::der, schnorr};
+use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
 
 use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
@@ -22,10 +23,11 @@ impl BitcoinEcdsaSignature {
     // The max size of the serialized signature including sighash type.
     const SER_SIZE: usize = 73;
 
-    pub fn new(sig: der::Signature, sighash_ty: SighashType) -> UtxoResult<Self> {
-        Ok(BitcoinEcdsaSignature { sig, sighash_ty })
+    pub fn new(sig: der::Signature, sighash_ty: SighashType) -> Self {
+        BitcoinEcdsaSignature { sig, sighash_ty }
     }
-    pub fn serialize(&self) -> Vec<u8> {
+
+    pub fn serialize(&self) -> Data {
         let mut ser = Vec::with_capacity(Self::SER_SIZE);
         ser.extend(self.sig.der_bytes());
         ser.push(self.sighash_ty.raw_sighash() as u8);
@@ -34,18 +36,21 @@ impl BitcoinEcdsaSignature {
     }
 }
 
-// TODO: Do we even need this?
 pub struct BitcoinSchnorrSignature {
     sig: schnorr::Signature,
-    sighash_ty: SighashType,
+    // TODO is this needed?
+    _sighash_ty: SighashType,
 }
 
 impl BitcoinSchnorrSignature {
     // The size of the serialized signature including sighash type.
     const SER_SIZE: usize = 65;
 
-    pub fn new(sig: schnorr::Signature, sighash_ty: SighashType) -> UtxoResult<Self> {
-        Ok(BitcoinSchnorrSignature { sig, sighash_ty })
+    pub fn new(sig: schnorr::Signature, sighash_ty: SighashType) -> Self {
+        BitcoinSchnorrSignature {
+            sig,
+            _sighash_ty: sighash_ty,
+        }
     }
 
     pub fn serialize(&self) -> Vec<u8> {

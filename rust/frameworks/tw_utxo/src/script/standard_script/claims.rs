@@ -1,6 +1,7 @@
 use tw_hash::H264;
 
 use crate::script::Witness;
+use crate::sighash::BitcoinEcdsaSignature;
 
 use super::Script;
 
@@ -9,10 +10,9 @@ use super::Script;
 /// ```txt
 /// <sig>
 /// ```
-// TODO: Use BitcoinEcdsaSignature here?
-pub fn new_p2pk(sig: &[u8]) -> Script {
+pub fn new_p2pk(sig: &BitcoinEcdsaSignature) -> Script {
     let mut s = Script::with_capacity(35);
-    s.append(sig);
+    s.append(&sig.serialize());
     s
 }
 
@@ -21,10 +21,9 @@ pub fn new_p2pk(sig: &[u8]) -> Script {
 /// ```txt
 /// <push><sig><push><pubkey>
 /// ```
-// TODO: Use BitcoinEcdsaSignature here?
-pub fn new_p2pkh(sig: &[u8], pubkey: &H264) -> Script {
+pub fn new_p2pkh(sig: &BitcoinEcdsaSignature, pubkey: &H264) -> Script {
     let mut s = Script::with_capacity(100);
-    s.push_slice(sig);
+    s.push_slice(&sig.serialize());
     s.push_slice(pubkey.as_slice());
     s
 }
@@ -54,10 +53,9 @@ pub fn new_p2wsh(items: Vec<Script>, redeem_script: Script) -> Witness {
 /// <sig>
 /// <pubkey>
 /// ```
-// TODO: Use BitcoinEcdsaSignature here?
-pub fn new_p2wpkh(sig: Vec<u8>, pubkey: H264) -> Witness {
+pub fn new_p2wpkh(sig: &BitcoinEcdsaSignature, pubkey: H264) -> Witness {
     let mut w = Witness::new();
-    w.push_item(Script::from(sig));
+    w.push_item(Script::from(sig.serialize()));
     w.push_item(Script::from(pubkey.into_vec()));
     w
 }

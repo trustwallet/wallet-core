@@ -79,7 +79,6 @@ impl TransactionBuilder {
     pub fn build(self) -> (Transaction, TxSigningArgs) {
         (
             Transaction {
-                // TODO: Why is this i32?
                 version: self.version as i32,
                 inputs: self.inputs,
                 outputs: self.outputs,
@@ -87,5 +86,11 @@ impl TransactionBuilder {
             },
             self.args,
         )
+    }
+}
+
+impl Default for TransactionBuilder {
+    fn default() -> Self {
+        TransactionBuilder::new()
     }
 }
