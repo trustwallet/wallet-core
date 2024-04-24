@@ -82,7 +82,7 @@ public:
 };
 
 /// A public address action data part.
-/// Can be used for `addaddress`, `remaddress` actions.
+/// Can be used for `addaddress`, `remaddress`, `remalladdr` (addresses must be empty) actions.
 /// https://dev.fio.net/reference/add_pub_address
 /// https://dev.fio.net/reference/remove_pub_address
 class PubAddressActionData {
@@ -97,6 +97,20 @@ public:
         uint64_t fee, const std::string& tpid, const std::string& actor) :
         fioAddress(fioAddress), addresses(addresses),
         fee(fee), tpid(tpid), actor(actor) {}
+    void serialize(Data& out) const;
+};
+
+/// RemoveAllPubAddress action data part.
+/// https://dev.fio.net/reference/remove_all_pub_address
+class RemoveAllPubAddressActionData {
+public:
+    std::string fioAddress;
+    uint64_t fee;
+    std::string tpid;
+    std::string actor;
+
+    RemoveAllPubAddressActionData(const std::string& fioAddress, uint64_t fee, const std::string& tpid, const std::string& actor) :
+        fioAddress(fioAddress), fee(fee), tpid(tpid), actor(actor) {}
     void serialize(Data& out) const;
 };
 
@@ -155,6 +169,21 @@ public:
 
     NewFundsRequestData(const std::string& payerFioName, const std::string& payeeFioName, const std::string& encryptedContent, uint64_t fee, const std::string& tpid, const std::string& actor) :
         payerFioName(payerFioName), payeeFioName(payeeFioName), encryptedContent(encryptedContent), fee(fee), tpid(tpid), actor(actor) {}
+    void serialize(Data& out) const;
+};
+
+/// AddBundledTransactions action data part.
+/// https://dev.fio.net/reference/add_bundled_transactions
+class AddBundledTransactionsActionData {
+public:
+    std::string fioAddress;
+    uint64_t bundledSets;
+    uint64_t fee;
+    std::string tpid;
+    std::string actor;
+
+    AddBundledTransactionsActionData(const std::string& fioAddress, uint64_t bundledSets, uint64_t fee, const std::string& tpid, const std::string& actor) :
+        fioAddress(fioAddress), bundledSets(bundledSets), fee(fee), tpid(tpid), actor(actor) {}
     void serialize(Data& out) const;
 };
 

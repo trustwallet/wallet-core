@@ -24,9 +24,11 @@ using json = nlohmann::json;
 static constexpr auto gRegisterFioAddress = "regaddress";
 static constexpr auto gAddPubAddress = "addaddress";
 static constexpr auto gRemoveAddress = "remaddress";
+static constexpr auto gRemoveAllPubAddresses = "remalladdr";
 static constexpr auto gTransferFIOPubkey = "trnsfiopubky";
 static constexpr auto gRenewFIOAddress = "renewaddress";
 static constexpr auto gNewFundsRequest = "newfundsreq";
+static constexpr auto gAddBundledTransactions = "addbundles";
 
 /// Internal helper
 ChainParams getChainParams(const Proto::SigningInput& input) {
@@ -58,6 +60,10 @@ string TransactionBuilder::actionName(const Proto::SigningInput& input) {
             return gNewFundsRequest;
         case Proto::Action::MessageOneofCase::kRemovePubAddressMessage:
             return gRemoveAddress;
+        case Proto::Action::MessageOneofCase::kRemoveAllPubAddressesMessage:
+            return gRemoveAllPubAddresses;
+        case Proto::Action::MessageOneofCase::kAddBundledTransactionsMessage:
+            return gAddBundledTransactions;
         default:
             return {};
     }
@@ -111,6 +117,14 @@ string TransactionBuilder::sign(Proto::SigningInput in) {
         json = TransactionBuilder::createRemovePubAddress(owner, privateKey,
             action.fio_address(), addresses,
             getChainParams(in), action.fee(), in.tpid(), in.expiry());
+    } else if (in.action().has_remove_all_pub_addresses_message()) {
+        const auto action = in.action().remove_all_pub_addresses_message();
+        json = TransactionBuilder::createRemoveAllPubAddresses(owner, privateKey,
+            action.fio_address(), getChainParams(in), action.fee(), in.tpid(), in.expiry());
+    } else if (in.action().has_add_bundled_transactions_message()) {
+        const auto action = in.action().add_bundled_transactions_message();
+        json = TransactionBuilder::createAddBundledTransactions(owner, privateKey, action.fio_address(),
+            action.bundle_sets(), getChainParams(in), action.fee(), in.tpid(), in.expiry());
     }
     return json;
 }
@@ -144,6 +158,28 @@ string TransactionBuilder::createRemovePubAddress(const Address& address, const 
     const ChainParams& chainParams, uint64_t fee, const string& walletTpId, uint32_t expiryTime) {
 
     Transaction transaction = TransactionBuilder::buildUnsignedPubAddressAction(gRemoveAddress, address, fioName, pubAddresses, chainParams, fee, walletTpId, expiryTime);
+
+    Data serTx;
+    transaction.serialize(serTx);
+
+    return signAndBuildTx(chainParams.chainId, serTx, privateKey);
+}
+
+std::string TransactionBuilder::createRemoveAllPubAddresses(const Address& address, const PrivateKey& privateKey, const std::string& fioName,
+    const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime) {
+
+    Transaction transaction = TransactionBuilder::buildUnsignedRemoveAllAddressesAction(address, fioName, chainParams, fee, walletTpId, expiryTime);
+
+    Data serTx;
+    transaction.serialize(serTx);
+
+    return signAndBuildTx(chainParams.chainId, serTx, privateKey);
+}
+
+std::string TransactionBuilder::createAddBundledTransactions(const Address& address, const PrivateKey& privateKey, const std::string& fioName,
+    uint64_t bundleSets, const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime) {
+
+    Transaction transaction = TransactionBuilder::buildUnsignedAddBundledTransactions(address, fioName, bundleSets, chainParams, fee, walletTpId, expiryTime);
 
     Data serTx;
     transaction.serialize(serTx);
@@ -271,6 +307,14 @@ Data TransactionBuilder::buildUnsignedTxBytes(const Proto::SigningInput& in) {
         }
         transaction = TransactionBuilder::buildUnsignedPubAddressAction(gRemoveAddress, owner, action.fio_address(), addresses,
             getChainParams(in), action.fee(), in.tpid(), in.expiry());
+    } else if (in.action().has_remove_all_pub_addresses_message()) {
+        const auto action = in.action().remove_all_pub_addresses_message();
+        transaction = TransactionBuilder::buildUnsignedRemoveAllAddressesAction(owner, action.fio_address(),
+            getChainParams(in), action.fee(), in.tpid(), in.expiry());
+    } else if (in.action().has_add_bundled_transactions_message()) {
+        const auto action = in.action().add_bundled_transactions_message();
+        transaction = TransactionBuilder::buildUnsignedAddBundledTransactions(owner, action.fio_address(), action.bundle_sets(),
+            getChainParams(in), action.fee(), in.tpid(), in.expiry());
     }
 
     Data serTx;
@@ -371,6 +415,48 @@ Transaction TransactionBuilder::buildUnsignedRenewFioAddress(const Address& addr
     Action action;
     action.account = ContractAddress;
     action.name = gRenewFIOAddress;
+    action.actionDataSer = serData;
+    action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
+
+    Transaction tx;
+    expirySetDefaultIfNeeded(expiryTime);
+    tx.set(expiryTime, chainParams);
+    tx.actions.push_back(action);
+    return tx;
+}
+
+Transaction TransactionBuilder::buildUnsignedRemoveAllAddressesAction(const Address& address, const std::string& fioName,
+    const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime) {
+
+    string actor = Actor::actor(address);
+    RemoveAllPubAddressActionData actionData(fioName, fee, walletTpId, actor);
+    Data serData;
+    actionData.serialize(serData);
+
+    Action action;
+    action.account = ContractAddress;
+    action.name = gRemoveAllPubAddresses;
+    action.actionDataSer = serData;
+    action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
+
+    Transaction tx;
+    expirySetDefaultIfNeeded(expiryTime);
+    tx.set(expiryTime, chainParams);
+    tx.actions.push_back(action);
+    return tx;
+}
+
+Transaction TransactionBuilder::buildUnsignedAddBundledTransactions(const Address& address, const std::string& fioName,
+    uint64_t bundleSets, const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime) {
+
+    string actor = Actor::actor(address);
+    AddBundledTransactionsActionData actionData(fioName, bundleSets, fee, walletTpId, actor);
+    Data serData;
+    actionData.serialize(serData);
+
+    Action action;
+    action.account = ContractAddress;
+    action.name = gAddBundledTransactions;
     action.actionDataSer = serData;
     action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
 
