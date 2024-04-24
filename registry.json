@@ -4478,6 +4478,54 @@
     }
   },
   {
+    "id": "whive",
+    "name": "Whive",
+    "coinId": 658,
+    "symbol": "WHIVE",
+    "decimals": 8,
+    "blockchain": "Bitcoin",
+    "derivation": [
+      {
+        "name": "segwit",
+        "path": "m/84'/0'/0'/0/0",
+        "xpub": "zpub",
+        "xprv": "zprv"
+      },
+      {
+        "name": "legacy",
+        "path": "m/44'/0'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
+      },
+      {
+        "name": "testnet",
+        "path": "m/84'/1'/0'/0/0",
+        "xpub": "zpub",
+        "xprv": "zprv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "p2pkhPrefix": 0,
+    "p2shPrefix": 5,
+    "hrp": "wv",
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "explorer": {
+      "url": "https://whiveexplorer.cointest.com/",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "3696a3f7ab913558b472d56fe6a1ea95120da72e38b44d6bcdea6d94a7fde338",
+      "sampleAccount": "Wd8bhXkoH85xKazYqhygZUXQyMqYtcuUVU"
+    },
+    "info": {
+      "url": "https://whive.io",
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+    }
+  },
+  {
     "id": "internet_computer",
     "name": "Internet Computer",
     "coinId": 223,

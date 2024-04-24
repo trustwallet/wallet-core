@@ -36,6 +36,7 @@ class TestCoinType {
         assertEquals(CoinType.TEZOS.value(), 1729)
         assertEquals(CoinType.QTUM.value(), 2301)
         assertEquals(CoinType.NEBULAS.value(), 2718)
+        assertEquals(CoinType.WHIVE.value(), 658)
     }
 
     @Test

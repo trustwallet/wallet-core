@@ -1,0 +1,14 @@
+yespower(5, 2048, 8, "Client Key") = a5 9f ec 4c 4f dd a1 6e 3b 14 05 ad da 66 d5 25 b6 8e 7c ad fc fe 6a c0 66 c7 ad 11 8c d8 05 90
+yespower(5, 2048, 8, BSTY) = 5e a2 b2 95 6a 9e ac e3 0a 32 37 ff 1d 44 1e de e1 dc 25 aa b8 f0 ea 15 c1 21 65 f8 3a 7b c2 65
+yespower(5, 4096, 16, "Client Key") = 92 7e 72 d0 de d3 d8 04 75 47 3f 40 f1 74 3c 67 28 9d 45 3d 52 42 d4 f5 5a f4 e3 25 e0 66 99 c5
+yespower(5, 4096, 24, "Jagaricoin") = 0e 13 66 97 32 11 e7 fe a8 ad 9d 81 98 9c 84 a2 54 d9 68 c9 d3 33 dd 8f f0 99 32 4f 38 61 1e 04
+yespower(5, 4096, 32, "WaviBanana") = 3a e0 5a bb 3c 5c f6 f7 54 15 a9 25 54 c9 8d 50 e3 8e c9 55 2c fa 78 37 36 16 f4 80 b2 4e 55 9f
+yespower(5, 2048, 32, "Client Key") = 56 0a 89 1b 5c a2 e1 c6 36 11 1a 9f f7 c8 94 a5 d0 a2 60 2f 43 fd cf a5 94 9b 95 e2 2f e4 46 1e
+yespower(5, 1024, 32, "Client Key") = 2a 79 e5 3d 1b e6 66 9b c5 56 cc c4 17 bc e3 d2 2a 74 a2 32 f5 6b 8e 1d 39 b4 57 92 67 5d e1 08
+yespower(5, 2048, 8, NULL) = 5e cb d8 e8 d7 c9 0b ae d4 bb f8 91 6a 12 25 dc c3 c6 5f 5c 91 65 ba e8 1c dd e3 cf fa d1 28 e8
+yespower(9, 2048, 8, NULL) = 69 e0 e8 95 b3 df 7a ee b8 37 d7 1f e1 99 e9 d3 4f 7e c4 6e cb ca 7a 2c 43 08 e5 18 57 ae 9b 46
+yespower(9, 4096, 16, NULL) = 33 fb 8f 06 38 24 a4 a0 20 f6 3d ca 53 5f 5c a6 6a b5 57 64 68 c7 5d 1c ca ac 75 42 f7 64 95 ac
+yespower(9, 4096, 32, NULL) = 77 1a ee fd a8 fe 79 a0 82 5b c7 f2 ae e1 62 ab 55 78 57 46 39 ff c6 ca 37 23 cc 18 e5 e3 e2 85
+yespower(9, 2048, 32, NULL) = d5 ef b8 13 cd 26 3e 9b 34 54 01 30 23 3c bb c6 a9 21 fb ff 34 31 e5 ec 1a 1a bd e2 ae a6 ff 4d
+yespower(9, 1024, 32, NULL) = 50 1b 79 2d b4 2e 38 8f 6e 7d 45 3c 95 d0 3a 12 a3 60 16 a5 15 4a 68 83 90 dd c6 09 a4 0c 67 99
+yespower(9, 1024, 32, "personality test") = 1f 02 69 ac f5 65 c4 9a dc 0e f9 b8 f2 6a b3 80 8c dc 38 39 4a 25 4f dd ee dc c3 aa cf f6 ad 9d

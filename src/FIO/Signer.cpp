@@ -16,6 +16,8 @@
 
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/secp256k1.h>
+#include <TrezorCrypto/yespower.h>
+
 
 #include <cassert>
 
