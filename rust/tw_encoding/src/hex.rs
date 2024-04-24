@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 pub use hex::FromHexError;
 use tw_memory::Data;
@@ -63,6 +61,33 @@ pub fn encode<T: AsRef<[u8]>>(data: T, prefixed: bool) -> String {
         return format!("0x{encoded}");
     }
     encoded
+}
+
+pub mod as_hex {
+    use super::*;
+    use serde::de::Error;
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+    use std::fmt;
+
+    /// Serializes the `value` as a hex.
+    pub fn serialize<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        T: ToHex,
+        S: Serializer,
+    {
+        value.to_hex().serialize(serializer)
+    }
+
+    pub fn deserialize<'de, D, T, E>(deserializer: D) -> Result<T, D::Error>
+    where
+        D: Deserializer<'de>,
+        T: for<'a> TryFrom<&'a [u8], Error = E>,
+        E: fmt::Debug,
+    {
+        let s = String::deserialize(deserializer)?;
+        let data = decode(&s).map_err(|e| Error::custom(format!("{e:?}")))?;
+        T::try_from(&data).map_err(|e| Error::custom(format!("Error parsing from bytes: {e:?}")))
+    }
 }
 
 #[cfg(test)]

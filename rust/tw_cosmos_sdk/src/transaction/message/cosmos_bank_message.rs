@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::address::CosmosAddress;
 use crate::modules::serializer::protobuf_serializer::build_coin;
@@ -16,7 +14,7 @@ use tw_proto::to_any;
 const DEFAULT_JSON_SEND_TYPE: &str = "cosmos-sdk/MsgSend";
 
 /// cosmos-sdk/MsgSend
-#[derive(Serialize)]
+#[derive(Clone, Serialize)]
 pub struct SendMessage<Address: CosmosAddress> {
     #[serde(skip)]
     pub custom_type_prefix: Option<String>,

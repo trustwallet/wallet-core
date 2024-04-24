@@ -213,9 +213,12 @@ impl InputBuilder {
                     let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref())?;
                     let ticker = Brc20Ticker::new(brc20.ticker.to_string())?;
 
-                    let transfer =
-                        BRC20TransferInscription::new(pubkey, ticker, brc20.transfer_amount)
-                            .expect("invalid BRC20 transfer construction");
+                    let transfer = BRC20TransferInscription::new(
+                        pubkey,
+                        ticker,
+                        brc20.transfer_amount.to_string(),
+                    )
+                    .expect("invalid BRC20 transfer construction");
 
                     // We construct a control block to estimate the fee,
                     // otherwise we do not need it here.

@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -69,6 +67,26 @@ public:
     AbiProto::Token toToken() const override {
         AbiProto::Token proto;
         proto.set_byte_array(m_data.data(), m_data.size());
+        return proto;
+    }
+
+private:
+    Data m_data;
+};
+
+class ProtoBytes32 final: public BaseProtoParam {
+public:
+    explicit ProtoBytes32(const Data& data): m_data(data) {
+        if (data.size() != 32) {
+            throw std::invalid_argument("Data must be exactly 32 bytes long");
+        }
+    }
+
+    ~ProtoBytes32() override = default;
+
+    AbiProto::Token toToken() const override {
+        AbiProto::Token proto;
+        proto.set_byte_array_fix(m_data.data(), m_data.size());
         return proto;
     }
 

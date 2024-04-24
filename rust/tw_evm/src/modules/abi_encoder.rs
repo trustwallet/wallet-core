@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::abi::decode::{decode_params, decode_value};
 use crate::abi::function::Function;
@@ -20,6 +18,7 @@ use std::borrow::Cow;
 use std::collections::HashMap;
 use std::marker::PhantomData;
 use std::str::FromStr;
+use tw_encoding::hex::as_hex;
 use tw_hash::H32;
 use tw_misc::traits::ToBytesVec;
 use tw_number::{I256, U256};
@@ -90,7 +89,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
 
         let function = abi_json
             .map
-            .get_mut(&short_signature)
+            .get_mut(&ContractCallSignature(short_signature))
             .ok_or(AbiError(AbiErrorKind::Error_abi_mismatch))?;
 
         let decoded_tokens = function.decode_input(encoded_data)?;
@@ -453,8 +452,11 @@ impl<Context: EvmContext> AbiEncoder<Context> {
 #[derive(Deserialize)]
 struct SmartContractCallAbiJson {
     #[serde(flatten)]
-    map: HashMap<H32, Function>,
+    map: HashMap<ContractCallSignature, Function>,
 }
+
+#[derive(Eq, Deserialize, Hash, PartialEq, Serialize)]
+struct ContractCallSignature(#[serde(with = "as_hex")] H32);
 
 #[derive(Serialize)]
 struct SmartContractCallDecodedInputJson<'a> {

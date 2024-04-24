@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::compiler::ThorchainCompiler;
 use crate::signer::ThorchainSigner;
@@ -14,7 +12,9 @@ use tw_coin_entry::error::AddressResult;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
-use tw_cosmos_sdk::address::{Address, Bech32Prefix, CosmosAddress};
+use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
+use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
+use tw_cosmos_sdk::address::{Address, Bech32Prefix};
 use tw_keypair::tw;
 use tw_proto::Cosmos::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
@@ -27,18 +27,22 @@ impl CoinEntry for ThorchainEntry {
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = Proto::SigningOutput<'static>;
     type PreSigningOutput = CompilerProto::PreSigningOutput<'static>;
+
+    // Optional modules:
     type JsonSigner = NoJsonSigner;
     type PlanBuilder = NoPlanBuilder;
     type MessageSigner = NoMessageSigner;
+    type WalletConnector = NoWalletConnector;
+    type TransactionDecoder = NoTransactionDecoder;
 
     #[inline]
     fn parse_address(
         &self,
         coin: &dyn CoinContext,
         address: &str,
-        _prefix: Option<Self::AddressPrefix>,
+        prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        Address::from_str_with_coin(coin, address)
+        Address::from_str_with_coin_and_prefix(coin, address.to_string(), prefix)
     }
 
     #[inline]

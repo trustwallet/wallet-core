@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use serde::Deserialize;
 
@@ -12,13 +10,17 @@ use serde::Deserialize;
 pub enum BlockchainType {
     // start_of_blockchain_type - USED TO GENERATE CODE
     Aptos,
+    Binance,
     Bitcoin,
     Cosmos,
     Ethereum,
+    Greenfield,
     InternetComputer,
     NativeEvmos,
     NativeInjective,
     Ronin,
+    Solana,
+    Sui,
     Thorchain,
     // end_of_blockchain_type - USED TO GENERATE CODE
     #[serde(other)]

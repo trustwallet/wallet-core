@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use pb_rs::types::FileDescriptor;
 use pb_rs::ConfigBuilder;
@@ -15,12 +13,7 @@ fn main() {
 
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap()).join("proto");
 
-    let proto_dir = cargo_manifest_dir
-        .join("..")
-        .join("..")
-        .join("src")
-        .join("Cosmos")
-        .join("Protobuf");
+    let proto_dir = cargo_manifest_dir.join("Protobuf");
     let proto_dir_str = proto_dir.to_str().expect("Invalid proto directory path");
     // Re-run this build.rs if the `proto` directory has been changed (i.e. a new file is added).
     println!("cargo:rerun-if-changed={}", proto_dir_str);

@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use serde::de::Error as SerdeError;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
@@ -109,6 +107,15 @@ impl FromStr for Address {
         let addr_hex = s.strip_prefix("0x").ok_or(AddressError::MissingPrefix)?;
         let addr_hash = H160::from_str(addr_hex).map_err(|_| AddressError::FromHexError)?;
         Ok(Address { bytes: addr_hash })
+    }
+}
+
+impl<'a> TryFrom<&'a [u8]> for Address {
+    type Error = AddressError;
+
+    fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
+        let bytes = H160::try_from(bytes).map_err(|_| AddressError::InvalidInput)?;
+        Ok(Address { bytes })
     }
 }
 

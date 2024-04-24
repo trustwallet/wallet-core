@@ -1,11 +1,9 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use serde::Deserialize;
-use tw_encoding::hex;
+use tw_encoding::hex::{self, as_hex};
 use tw_hash::{H256, H512};
 use tw_keypair::ed25519::sha512::KeyPair;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
@@ -17,14 +15,18 @@ const ED25519_PRIV_TO_PUB: &str = include_str!("ed25519_priv_to_pub.json");
 
 #[derive(Deserialize)]
 struct Ed255191SignTest {
+    #[serde(with = "as_hex")]
     secret: H256,
     msg: String,
+    #[serde(with = "as_hex")]
     signature: H512,
 }
 
 #[derive(Deserialize)]
 struct Ed255191PrivToPubTest {
+    #[serde(with = "as_hex")]
     secret: H256,
+    #[serde(with = "as_hex")]
     public: H256,
 }
 

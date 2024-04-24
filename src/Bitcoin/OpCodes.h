@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -142,6 +140,9 @@ enum OpCode {
    OP_NOP8 [[maybe_unused]] = 0xb7,
    OP_NOP9 [[maybe_unused]] = 0xb8,
    OP_NOP10 [[maybe_unused]] = 0xb9,
+
+    // firo, see: https://github.com/firoorg/firo/blob/8bd4abdea223e22f15c36e7d2d42618dc843e2ef/src/script/script.h#L212
+   OP_EXCHANGEADDR = 0xe0,
 
    OP_INVALIDOPCODE [[maybe_unused]] = 0xff,
 };

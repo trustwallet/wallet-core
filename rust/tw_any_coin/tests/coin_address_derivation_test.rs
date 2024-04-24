@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use tw_any_coin::ffi::tw_any_address::{
     tw_any_address_create_with_public_key_derivation, tw_any_address_description,
@@ -86,6 +84,12 @@ fn test_coin_address_derivation() {
             | CoinType::Greenfield
             | CoinType::Mantle
             | CoinType::ZenEON
+            | CoinType::MantaPacific
+            | CoinType::ZetaEVM
+            | CoinType::Merlin
+            | CoinType::Lightlink
+            | CoinType::Blast
+            | CoinType::BounceBit
             // end_of_evm_address_derivation_tests_marker_do_not_modify
                 => "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309",
             CoinType::Bitcoin
@@ -144,6 +148,12 @@ fn test_coin_address_derivation() {
             CoinType::NativeInjective => "inj14s0vgnj0pjnazu4hsqlksdk7slah9vcfyrp6ct",
             CoinType::NativeCanto => "canto14s0vgnj0pjnazu4hsqlksdk7slah9vcfuuhw7m",
             CoinType::InternetComputer => "290cc7c359f44c8516fc169c5ed4f0f3ae2e24bf5de0d4c51f5e7545b5474faa",
+            CoinType::Binance => "bnb1ten42eesehw0ktddcp0fws7d3ycsqez3aqvnpg",
+            CoinType::TBinance => "tbnb1ten42eesehw0ktddcp0fws7d3ycsqez3n49hpe",
+            CoinType::NativeZetaChain => "zeta14s0vgnj0pjnazu4hsqlksdk7slah9vcfcwctsr",
+            CoinType::Dydx => "dydx1ten42eesehw0ktddcp0fws7d3ycsqez3kaamq3",
+            CoinType::Solana => "5sn9QYhDaq61jLXJ8Li5BKqGL4DDMJQvU1rdN8XgVuwC",
+            CoinType::Sui => "0x1a5c6c1b74cec4fbd12b3e17252b83448136065afcdf24954dc3a9c26df4905",
             // end_of_coin_address_derivation_tests_marker_do_not_modify
             _ => panic!("{:?} must be covered", coin),
         };

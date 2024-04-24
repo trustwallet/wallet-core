@@ -1,11 +1,10 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::{EncodingError, EncodingResult};
-use serde::{Serialize, Serializer};
+use serde::de::Error as DeError;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use tw_memory::Data;
 
 pub fn encode(data: &[u8], is_url: bool) -> String {
@@ -35,5 +34,18 @@ impl Serialize for Base64Encoded {
     {
         let is_url = false;
         serializer.serialize_str(&encode(&self.0, is_url))
+    }
+}
+
+impl<'de> Deserialize<'de> for Base64Encoded {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        let is_url = false;
+        decode(&s, is_url)
+            .map(Base64Encoded)
+            .map_err(|e| DeError::custom(format!("{e:?}")))
     }
 }

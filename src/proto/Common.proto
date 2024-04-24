@@ -69,4 +69,6 @@ enum SigningError {
     Error_invalid_requested_token_amount = 23;
     // Operation not supported for the chain.
     Error_not_supported = 24;
+    // Requested amount is too low (less dust).
+    Error_dust_amount_requested = 25;
 }

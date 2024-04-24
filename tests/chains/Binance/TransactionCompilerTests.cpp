@@ -1,8 +1,6 @@
-// Copyright © 2017-2022 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Coin.h"
 #include "HexCoding.h"
@@ -25,27 +23,29 @@ using namespace TW;
 TEST(BinanceCompiler, CompileWithSignatures) {
     /// Step 1: Prepare transaction input (protobuf)
     const auto coin = TWCoinTypeBinance;
-    const auto txInputData = TransactionCompiler::buildInput(
-        coin,
-        "bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2", // from
-        "bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5", // to
-        "1",                                          // amount
-        "BNB",                                        // asset
-        "",                                           // memo
-        "Binance-Chain-Nile"                          // testnet chainId
-    );
+    // bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2
+    const auto fromAddressData = parse_hex("40c2979694bbc961023d1d27be6fc4d21a9febe6");
+    // bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5
+    const auto toAddressData = parse_hex("bffe47abfaede50419c577f1074fee6dd1535cd1");
 
-    {
-        // Check, by parsing
-        EXPECT_EQ(txInputData.size(), 88ul);
-        Binance::Proto::SigningInput input;
-        ASSERT_TRUE(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
-        EXPECT_EQ(input.chain_id(), "Binance-Chain-Nile");
-        EXPECT_TRUE(input.has_send_order());
-        ASSERT_EQ(input.send_order().inputs_size(), 1);
-        EXPECT_EQ(hex(data(input.send_order().inputs(0).address())),
-                  "40c2979694bbc961023d1d27be6fc4d21a9febe6");
-    }
+    Binance::Proto::SigningInput txInput;
+
+    txInput.set_chain_id("Binance-Chain-Nile");
+    auto& sendOrder = *txInput.mutable_send_order();
+
+    auto& input1 = *sendOrder.add_inputs();
+    input1.set_address(fromAddressData.data(), fromAddressData.size());
+    auto& input1Coin = *input1.add_coins();
+    input1Coin.set_amount(1);
+    input1Coin.set_denom("BNB");
+
+    auto& output1 = *sendOrder.add_outputs();
+    output1.set_address(toAddressData.data(), toAddressData.size());
+    auto& output1Coin = *output1.add_coins();
+    output1Coin.set_amount(1);
+    output1Coin.set_denom("BNB");
+
+    auto txInputData = data(txInput.SerializeAsString());
 
     /// Step 2: Obtain preimage hash
     const auto preImageHashes = TransactionCompiler::preImageHashes(coin, txInputData);
@@ -80,7 +80,6 @@ TEST(BinanceCompiler, CompileWithSignatures) {
         "253cf264c69180ec31814929b5de62088c0c5a45e8a816d1208fc5366bb8b041781a6771248550d04094c3d7a5"
         "04f9e8310679";
     {
-        EXPECT_EQ(outputData.size(), 189ul);
         Binance::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
 
@@ -115,6 +114,6 @@ TEST(BinanceCompiler, CompileWithSignatures) {
         Binance::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(output.encoded().size(), 0ul);
-        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+        EXPECT_EQ(output.error(), Common::Proto::Error_signatures_count);
     }
 }

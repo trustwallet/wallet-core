@@ -1,10 +1,10 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
-use crate::codegen::cpp::coin_integration_tests_directory;
+use crate::codegen::cpp::{
+    coin_integration_tests_directory, cosmos_coin_integration_tests_directory,
+};
 use crate::codegen::template_generator::TemplateGenerator;
 use crate::registry::CoinItem;
 use crate::Result;
@@ -22,6 +22,15 @@ pub struct TWCoinTypeTestsGenerator;
 impl TWCoinTypeTestsGenerator {
     pub fn generate(coin: &CoinItem) -> Result<()> {
         let coin_tests_dir = coin_integration_tests_directory(coin);
+        Self::generate_at(coin, coin_tests_dir)
+    }
+
+    pub fn generate_cosmos(coin: &CoinItem) -> Result<()> {
+        let cosmos_coin_tests_dir = cosmos_coin_integration_tests_directory(coin);
+        Self::generate_at(coin, cosmos_coin_tests_dir)
+    }
+
+    fn generate_at(coin: &CoinItem, coin_tests_dir: PathBuf) -> Result<()> {
         let tw_coin_type_tests_path = coin_tests_dir.join("TWCoinTypeTests.cpp");
 
         fs::create_dir(coin_tests_dir)?;

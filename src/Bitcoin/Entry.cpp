@@ -1,13 +1,12 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Entry.h"
 
 #include "Address.h"
 #include "CashAddress.h"
+#include "ExchangeAddress.h"
 #include "SegwitAddress.h"
 #include "Signer.h"
 
@@ -34,11 +33,12 @@ bool Entry::validateAddress(TWCoinType coin, const std::string& address, const P
         return base58Prefix ? isValidBase58 : BitcoinCashAddress::isValid(address);
     case TWCoinTypeECash:
         return base58Prefix ? isValidBase58 : ECashAddress::isValid(address);
+    case TWCoinTypeFiro:
+        return isValidBase58 || ExchangeAddress::isValid(address);
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
     case TWCoinTypePivx:
     case TWCoinTypeRavencoin:
-    case TWCoinTypeFiro:
     default:
         return isValidBase58;
     }
@@ -98,13 +98,18 @@ std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW
     case TWCoinTypeECash:
         return ECashAddress(publicKey).string();
 
+    case TWCoinTypeFiro:
+        if (std::get_if<ExchangePrefix>(&addressPrefix)) {
+            return ExchangeAddress(publicKey).string();
+        }
+        return Address(publicKey, p2pkh).string();
+
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
     case TWCoinTypeMonacoin:
     case TWCoinTypePivx:
     case TWCoinTypeQtum:
     case TWCoinTypeRavencoin:
-    case TWCoinTypeFiro:
     default:
         return Address(publicKey, p2pkh).string();
     }
@@ -122,6 +127,18 @@ Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
 
     case TWCoinTypeECash:
         return cashAddressToData(ECashAddress(address));
+
+    case TWCoinTypeFiro: {
+        // check if it is a legacy address
+        if (Address::isValid(address)) {
+            const auto addr = Address(address);
+            return {addr.bytes.begin() + 1, addr.bytes.end()};
+        } else if (ExchangeAddress::isValid(address)) {
+            const auto addr = ExchangeAddress(address);
+            return {addr.bytes.begin() + 3, addr.bytes.end()};
+        }
+        return {};
+    }
 
     default: {
         const auto decoded = SegwitAddress::decode(address);

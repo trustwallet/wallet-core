@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use serde_json::Value as Json;
 use std::borrow::Cow;
@@ -22,6 +20,13 @@ impl<'a> ToJson for Cow<'a, str> {
     #[track_caller]
     fn to_json(&self) -> Json {
         self.as_ref().to_json()
+    }
+}
+
+impl ToJson for String {
+    #[track_caller]
+    fn to_json(&self) -> Json {
+        self.as_str().to_json()
     }
 }
 

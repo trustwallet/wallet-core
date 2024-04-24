@@ -1,14 +1,12 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::ecdsa::EcdsaCurve;
 use crate::{KeyPairError, KeyPairResult};
 use ecdsa::elliptic_curve::FieldBytes;
 use std::ops::{Range, RangeInclusive};
-use tw_hash::{H256, H520};
+use tw_hash::{H256, H512, H520};
 use tw_misc::traits::ToBytesVec;
 
 /// Represents an ECDSA signature.
@@ -118,7 +116,26 @@ impl<'a, C: EcdsaCurve> TryFrom<&'a [u8]> for Signature<C> {
 
 /// To verify the signature, it's enough to check `r` and `s` parts without the recovery ID.
 pub struct VerifySignature<C: EcdsaCurve> {
-    pub signature: ecdsa::Signature<C>,
+    pub(crate) signature: ecdsa::Signature<C>,
+}
+
+impl<C: EcdsaCurve> VerifySignature<C> {
+    /// Returns a standard binary signature representation:
+    /// RS, where R - 32 byte array, S - 32 byte array.
+    pub fn to_bytes(&self) -> H512 {
+        let (r, s) = self.signature.split_bytes();
+
+        let mut dest = H512::default();
+        dest[Signature::<C>::R_RANGE].copy_from_slice(r.as_slice());
+        dest[Signature::<C>::S_RANGE].copy_from_slice(s.as_slice());
+        dest
+    }
+}
+
+impl<C: EcdsaCurve> ToBytesVec for VerifySignature<C> {
+    fn to_vec(&self) -> Vec<u8> {
+        self.to_bytes().to_vec()
+    }
 }
 
 impl<'a, C: EcdsaCurve> TryFrom<&'a [u8]> for VerifySignature<C> {

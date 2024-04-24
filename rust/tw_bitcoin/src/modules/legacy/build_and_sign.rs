@@ -44,7 +44,7 @@ pub fn taproot_build_and_sign_transaction(
         } else {
             legacy
                 .private_key
-                .get(0)
+                .first()
                 .ok_or_else(|| Error::from(Proto::Error::Error_legacy_no_private_key))?
         };
 
@@ -79,7 +79,7 @@ pub fn taproot_build_and_sign_transaction(
         version: 2,
         private_key: legacy
             .private_key
-            .get(0)
+            .first()
             .map(|pk| pk.to_vec().into())
             .unwrap_or_default(),
         lock_time: Some(lock_time),
@@ -102,6 +102,7 @@ pub fn taproot_build_and_sign_transaction(
 
     let transaction = signed
         .transaction
+        .as_ref()
         .expect("transaction not returned from signer");
 
     // Convert the returned transaction data into the (legacy) `Transaction`
@@ -141,10 +142,12 @@ pub fn taproot_build_and_sign_transaction(
     // Put the `Transaction` into the `SigningOutput`, return.
     let legacy_output = LegacyProto::SigningOutput {
         transaction: Some(legacy_transaction),
-        encoded: signed.encoded,
+        encoded: signed.encoded.clone(),
         transaction_id: txid_hex.into(),
         error: CommonProto::SigningError::OK,
         error_message: Default::default(),
+        // Set the Bitcoin 2.0 result as well.
+        signing_result_v2: Some(signed),
     };
 
     Ok(legacy_output)

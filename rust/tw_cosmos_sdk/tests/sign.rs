@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use std::borrow::Cow;
 use tw_coin_entry::test_utils::test_context::TestCoinContext;
@@ -134,6 +132,70 @@ fn test_sign_raw_json() {
         tx: r#"{"mode":"block","tx":{"fee":{"amount":[{"amount":"200","denom":"muon"}],"gas":"200000"},"memo":"","msg":[{"type":"test","value":{"test":"hello"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"qhxxCOMiVhP7e7Mx+98HUZI0t5DNOFXwzIqNQz+fT6hDKR/ebW0uocsYnE5CiBNEalmBcs5gSIJegNkHhgyEmA=="}]}}"#,
         signature: "aa1c7108e3225613fb7bb331fbdf07519234b790cd3855f0cc8a8d433f9f4fa843291fde6d6d2ea1cb189c4e428813446a598172ce6048825e80d907860c8498",
         signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"qhxxCOMiVhP7e7Mx+98HUZI0t5DNOFXwzIqNQz+fT6hDKR/ebW0uocsYnE5CiBNEalmBcs5gSIJegNkHhgyEmA=="}]"#,
+    });
+}
+
+#[test]
+fn test_sign_raw_json_with_timeout() {
+    let coin = TestCoinContext::default()
+        .with_public_key_type(PublicKeyType::Secp256k1)
+        .with_hrp("cosmos");
+
+    let raw_json_msg = Proto::mod_Message::RawJSON {
+        type_pb: "osmosis/poolmanager/split-amount-in".into(),
+        value: r#"{
+        "routes": [
+          {
+            "pools": [
+              {
+                "pool_id": "463",
+                "token_out_denom": "ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59"
+              },
+              {
+                "pool_id": "916",
+                "token_out_denom": "ibc/573FCD90FACEE750F55A8864EF7D38265F07E5A9273FA0E8DAFD39951332B580"
+              }
+            ],
+            "token_in_amount": "70000"
+          },
+          {
+            "pools": [
+              {
+                "pool_id": "907",
+                "token_out_denom": "ibc/573FCD90FACEE750F55A8864EF7D38265F07E5A9273FA0E8DAFD39951332B580"
+              }
+            ],
+            "token_in_amount": "30000"
+          }
+        ],
+        "sender": "osmo1qr7dhmvcqm4fnleaqel3gel4u20nk5rp9rwsae",
+        "token_in_denom": "uosmo",
+        "token_out_min_amount": "885297"
+    }"#.into(),
+    };
+    let input = Proto::SigningInput {
+        account_number: 24139,
+        chain_id: "osmosis-1".into(),
+        sequence: 191,
+        fee: Some(make_fee(617438, make_amount("uosmo", "1853"))),
+        private_key: account_1037_private_key(),
+        messages: vec![make_message(MessageEnum::raw_json_message(raw_json_msg))],
+        timeout_height: 13692007,
+        ..Proto::SigningInput::default()
+    };
+
+    // `RawJSON` doesn't support Protobuf serialization and signing.
+    test_sign_protobuf_error::<StandardCosmosContext>(TestErrorInput {
+        coin: &coin,
+        input: input.clone(),
+        error: SigningError::Error_not_supported,
+    });
+    test_sign_json::<StandardCosmosContext>(TestInput {
+        coin: &coin,
+        input,
+        tx: r#"{"mode":"block","tx":{"fee":{"amount":[{"amount":"1853","denom":"uosmo"}],"gas":"617438"},"memo":"","msg":[{"type":"osmosis/poolmanager/split-amount-in","value":{"routes":[{"pools":[{"pool_id":"463","token_out_denom":"ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59"},{"pool_id":"916","token_out_denom":"ibc/573FCD90FACEE750F55A8864EF7D38265F07E5A9273FA0E8DAFD39951332B580"}],"token_in_amount":"70000"},{"pools":[{"pool_id":"907","token_out_denom":"ibc/573FCD90FACEE750F55A8864EF7D38265F07E5A9273FA0E8DAFD39951332B580"}],"token_in_amount":"30000"}],"sender":"osmo1qr7dhmvcqm4fnleaqel3gel4u20nk5rp9rwsae","token_in_denom":"uosmo","token_out_min_amount":"885297"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"7gMxXwqzZDe5+h1i16q7A7CgGUtLl2+Q8/YaUZCeYvp8kISbBwD2SlNTpJtz1RLskzF2uNcDebo61HbcVn9dAw=="}],"timeout_height":"13692007"}}"#,
+        signature: "ee03315f0ab36437b9fa1d62d7aabb03b0a0194b4b976f90f3f61a51909e62fa7c90849b0700f64a5353a49b73d512ec933176b8d70379ba3ad476dc567f5d03",
+        signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"7gMxXwqzZDe5+h1i16q7A7CgGUtLl2+Q8/YaUZCeYvp8kISbBwD2SlNTpJtz1RLskzF2uNcDebo61HbcVn9dAw=="}]"#,
     });
 }
 

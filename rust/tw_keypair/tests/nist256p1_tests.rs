@@ -1,10 +1,9 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use serde::Deserialize;
+use tw_encoding::hex::as_hex;
 use tw_hash::{H256, H264, H520};
 use tw_keypair::ecdsa::nist256p1::{PrivateKey, PublicKey, VerifySignature};
 use tw_keypair::traits::VerifyingKeyTrait;
@@ -16,14 +15,19 @@ const NIST256P1_PRIV_TO_PUB_COMPRESSED: &str =
 
 #[derive(Deserialize)]
 struct Nist256p1VerifyTest {
+    #[serde(with = "as_hex")]
     public: H264,
+    #[serde(with = "as_hex")]
     msg: H256,
+    #[serde(with = "as_hex")]
     signature: H520,
 }
 
 #[derive(Deserialize)]
 struct Nist256p1PrivToPubCompressedTest {
+    #[serde(with = "as_hex")]
     secret: H256,
+    #[serde(with = "as_hex")]
     public: H264,
 }
 

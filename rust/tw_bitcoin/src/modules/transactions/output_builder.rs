@@ -140,9 +140,12 @@ impl OutputBuilder {
                     let xonly = XOnlyPublicKey::from(pubkey.inner);
 
                     let ticker = Brc20Ticker::new(brc20.ticker.to_string())?;
-                    let transfer =
-                        BRC20TransferInscription::new(pubkey, ticker, brc20.transfer_amount)
-                            .expect("invalid BRC20 transfer construction");
+                    let transfer = BRC20TransferInscription::new(
+                        pubkey,
+                        ticker,
+                        brc20.transfer_amount.to_string(),
+                    )
+                    .expect("invalid BRC20 transfer construction");
 
                     // Construct the control block.
                     let control_block = transfer

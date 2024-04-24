@@ -1,23 +1,20 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
-#include "../BinaryCoding.h"
+#include "BinaryCoding.h"
 #include "Data.h"
-#include "../PublicKey.h"
+#include "PublicKey.h"
 #include "SS58Address.h"
-#include <boost/multiprecision/cpp_int.hpp>
+#include "uint256.h"
+
 #include <cmath>
 #include <algorithm>
 #include <bitset>
 
-
-/// Reference https://github.com/soramitsu/kagome/blob/master/core/scale/scale_encoder_stream.cpp
-using CompactInteger = boost::multiprecision::cpp_int;
+using CompactInteger = TW::uint256_t;
 
 namespace TW::Polkadot {
 

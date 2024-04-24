@@ -1,13 +1,10 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Asset.h"
+#include "algorithm/string.hpp"
 
-#include <boost/algorithm/string/trim.hpp>
-#include <boost/lexical_cast.hpp>
 #include <stdexcept>
 
 namespace TW::EOS {
@@ -40,7 +37,7 @@ Asset::Asset(int64_t amount, uint8_t decimals, const std::string& symbol) {
 Asset Asset::fromString(std::string assetString) {
     using namespace std;
 
-    boost::algorithm::trim(assetString);
+    trim(assetString);
 
     // Find space in order to split amount and symbol
     auto spacePosition = assetString.find(' ');
@@ -48,7 +45,7 @@ Asset Asset::fromString(std::string assetString) {
         throw std::invalid_argument("Asset's amount and symbol should be separated with space");
     }
 
-    auto symbolString = boost::algorithm::trim_copy(assetString.substr(spacePosition + 1));
+    auto symbolString = trim_copy(assetString.substr(spacePosition + 1));
     auto amountString = assetString.substr(0, spacePosition);
 
     // Ensure that if decimal point is used (.), decimal fraction is specified
@@ -67,13 +64,13 @@ Asset Asset::fromString(std::string assetString) {
     // Parse amount
     int64_t intPart, fractPart = 0;
     if (dotPosition != string::npos) {
-        intPart = boost::lexical_cast<int64_t>(amountString.data(), dotPosition);
-        fractPart = boost::lexical_cast<int64_t>(amountString.data() + dotPosition + 1, decimals);
+        intPart = std::stoll(amountString.substr(0, dotPosition));
+        fractPart = std::stoll(amountString.substr(dotPosition + 1, decimals));
         if (amountString[0] == '-') {
             fractPart *= -1;
         }
     } else {
-        intPart = boost::lexical_cast<int64_t>(amountString);
+        intPart = std::stoll(amountString);
     }
 
     int64_t amount = intPart;

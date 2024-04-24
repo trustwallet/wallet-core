@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "StoredKey.h"
 
@@ -11,11 +9,6 @@
 #include "Mnemonic.h"
 #include "PrivateKey.h"
 
-#define BOOST_UUID_RANDOM_PROVIDER_FORCE_POSIX 1
-
-#include <boost/lexical_cast.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
 #include <nlohmann/json.hpp>
 #include <TrezorCrypto/memzero.h>
 
@@ -78,8 +71,10 @@ StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password,
     : type(type), id(), name(std::move(name)), accounts() {
     const auto encryptionParams = EncryptionParameters::getPreset(encryptionLevel, encryption);
     payload = EncryptedPayload(password, data, encryptionParams);
-    boost::uuids::random_generator gen;
-    id = boost::lexical_cast<std::string>(gen());
+
+    const char* uuid_ptr = Rust::tw_uuid_random();
+    id = std::make_optional<std::string>(uuid_ptr);
+    Rust::free_string(uuid_ptr);
 }
 
 const HDWallet<> StoredKey::wallet(const Data& password) const {

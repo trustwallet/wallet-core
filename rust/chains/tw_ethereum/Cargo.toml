@@ -1,0 +1,15 @@
+[package]
+name = "tw_ethereum"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tw_coin_entry = { path = "../../tw_coin_entry" }
+tw_evm = { path = "../../tw_evm" }
+tw_keypair = { path = "../../tw_keypair" }
+tw_proto = { path = "../../tw_proto" }
+
+[dev-dependencies]
+tw_coin_entry = { path = "../../tw_coin_entry", features = ["test-utils"] }
+tw_encoding = { path = "../../tw_encoding" }
+tw_number = { path = "../../tw_number", features = ["helpers"] }

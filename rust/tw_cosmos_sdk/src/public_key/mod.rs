@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use tw_coin_entry::coin_context::CoinContext;
 use tw_keypair::{tw, KeyPairResult};
@@ -11,13 +9,31 @@ use tw_proto::google;
 
 pub mod secp256k1;
 
+pub struct PublicKeyParams {
+    pub public_key_type: tw::PublicKeyType,
+    pub json_type: String,
+    pub protobuf_type_url: String,
+}
+
 pub trait CosmosPublicKey: JsonPublicKey + ProtobufPublicKey + Sized {
     fn from_private_key(
         coin: &dyn CoinContext,
         private_key: &tw::PrivateKey,
-    ) -> KeyPairResult<Self>;
+        params: Option<PublicKeyParams>,
+    ) -> KeyPairResult<Self> {
+        let public_key_type = match params {
+            Some(ref params) => params.public_key_type,
+            None => coin.public_key_type(),
+        };
+        let public_key = private_key.get_public_key_by_type(public_key_type)?;
+        Self::from_bytes(coin, &public_key.to_bytes(), params)
+    }
 
-    fn from_bytes(coin: &dyn CoinContext, public_key_bytes: &[u8]) -> KeyPairResult<Self>;
+    fn from_bytes(
+        coin: &dyn CoinContext,
+        public_key_bytes: &[u8],
+        params: Option<PublicKeyParams>,
+    ) -> KeyPairResult<Self>;
 
     fn to_bytes(&self) -> Data;
 }

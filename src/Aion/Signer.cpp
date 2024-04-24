@@ -1,12 +1,8 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Signer.h"
-#include "../uint256.h"
-#include <boost/multiprecision/cpp_int.hpp>
 
 using namespace TW;
 
@@ -61,8 +57,6 @@ Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& pub
 }
 
 Transaction Signer::buildTransaction(const Proto::SigningInput& input) noexcept {
-    using boost::multiprecision::uint128_t;
-
     auto transaction = Transaction(
         /* nonce: */ static_cast<uint128_t>(load(input.nonce())),
         /* gasPrice: */ static_cast<uint128_t>(load(input.gas_price())),

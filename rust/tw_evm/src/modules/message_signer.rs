@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::message::eip191::Eip191Message;
 use crate::message::eip712::eip712_message::Eip712Message;
@@ -140,7 +138,7 @@ impl EthMessageSigner {
             },
             Proto::MessageType::MessageType_eip155
             | Proto::MessageType::MessageType_typed_eip155 => {
-                let chain_id = maybe_chain_id.unwrap_or_default().chain_id;
+                let chain_id = U256::from(maybe_chain_id.unwrap_or_default().chain_id);
                 SignatureType::Eip155 { chain_id }
             },
         }

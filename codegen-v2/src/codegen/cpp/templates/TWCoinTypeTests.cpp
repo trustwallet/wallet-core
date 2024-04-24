@@ -1,8 +1,6 @@
-// Copyright © 2017-{YEAR} Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "TestUtilities.h"
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
@@ -19,7 +17,7 @@ TEST(TW{COIN_TYPE}CoinType, TWCoinType) {
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
     assertStringsEqual(id, "{COIN_ID}");
-    assertStringsEqual(name, "{COIN_TYPE}");
+    assertStringsEqual(name, "{COIN_NAME}");
     assertStringsEqual(symbol, "{SYMBOL}");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), {DECIMALS});
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchain{BLOCKCHAIN});

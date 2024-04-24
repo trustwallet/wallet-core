@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include "../Bitcoin/Script.h"
@@ -169,7 +167,7 @@ TWData *_Nullable TWBitcoinScriptBuildBRC20InscribeTransfer(TWString* ticker, TW
     auto* brcTicker = reinterpret_cast<const std::string*>(ticker);
     auto* brcAmount = reinterpret_cast<const std::string*>(amount);
     auto* brcPubkey = reinterpret_cast<const TW::Data*>(pubkey);
-    auto script = TW::Bitcoin::Script::buildBRC20InscribeTransfer(*brcTicker, std::stoull(*brcAmount), *brcPubkey);
+    auto script = TW::Bitcoin::Script::buildBRC20InscribeTransfer(*brcTicker, *brcAmount, *brcPubkey);
     auto serialized = TW::data(script.SerializeAsString());
     return TWDataCreateWithBytes(serialized.data(), serialized.size());
 }

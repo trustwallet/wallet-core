@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::ed25519::mangle::mangle_scalar;
 use crate::ed25519::signature::Signature;
@@ -41,8 +39,10 @@ impl<H: Hasher512> ExpandedSecretKey<H> {
         let (mut lower, upper): (H256, H256) = hash.split();
         mangle_scalar(lower.deref_mut());
 
+        #[allow(deprecated)]
+        let key = Scalar::from_bits(lower.take());
         ExpandedSecretKey {
-            key: Scalar::from_bits(lower.take()),
+            key,
             nonce: upper,
             _phantom: PhantomData,
         }
@@ -81,7 +81,7 @@ impl<H: Hasher512> ExpandedSecretKey<H> {
         h.update(message);
 
         let r = Scalar::from_hash(h);
-        let R = (&r * &constants::ED25519_BASEPOINT_TABLE).compress();
+        let R = (&r * constants::ED25519_BASEPOINT_TABLE).compress();
 
         h = H::new();
         h.update(R.as_bytes());

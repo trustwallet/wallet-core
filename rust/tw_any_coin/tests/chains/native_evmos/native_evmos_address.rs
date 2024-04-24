@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use tw_any_coin::test_utils::address_utils::{
     test_address_bech32_is_valid, test_address_create_bech32_with_public_key,
@@ -39,6 +37,11 @@ fn test_native_evmos_address_invalid() {
         CoinType::NativeEvmos,
         "evmos17xpfvakm2amg962yls6f84z3kell8c5ljcjw",
     );
+    // Cosmos has a different `hrp`.
+    test_address_invalid(
+        CoinType::Cosmos,
+        "evmos17xpfvakm2amg962yls6f84z3kell8c5ljcjw34",
+    );
 }
 
 #[test]
@@ -56,6 +59,16 @@ fn test_any_address_is_valid_bech32() {
         coin: CoinType::Cosmos,
         address: "evmos14py36sx57ud82t9yrks9z6hdsrpn5x6k0r05np",
         hrp: "evmos",
+    });
+    test_address_bech32_is_valid(AddressBech32IsValid {
+        coin: CoinType::NativeEvmos,
+        address: "evmos14py36sx57ud82t9yrks9z6hdsrpn5x6k0r05np",
+        hrp: "evmos",
+    });
+    test_address_bech32_is_valid(AddressBech32IsValid {
+        coin: CoinType::NativeEvmos,
+        address: "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02",
+        hrp: "cosmos",
     });
 }
 

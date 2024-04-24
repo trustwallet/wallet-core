@@ -1,8 +1,6 @@
-// Copyright © 2017-2022 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Coin.h"
 #include "HexCoding.h"
@@ -73,6 +71,12 @@ TEST(EthereumCompiler, CompileWithSignatures) {
     auto outputData =
         TransactionCompiler::compileWithSignatures(coin, txInputData, {signature}, {publicKeyData});
 
+    // We dont care about public key in ethereum. It is not part of the transaction.
+    auto outputDataWithoutPubKey =
+        TransactionCompiler::compileWithSignatures(coin, txInputData, {signature}, {});
+
+    EXPECT_EQ(outputData, outputDataWithoutPubKey);
+
     const auto ExpectedTx =
         "f86c0b8504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a0"
         "360a84fb41ad07f07c845fedc34cde728421803ebbaae392fc39c116b29fc07ba053bd9d1376e15a191d844db4"
@@ -107,19 +111,4 @@ TEST(EthereumCompiler, CompileWithSignatures) {
         EXPECT_EQ(output.encoded().size(), 0ul);
         EXPECT_EQ(output.error(), Common::Proto::Error_signatures_count);
     }
-}
-
-TEST(EthereumCompiler, BuildTransactionInputShouldFail) {
-    const auto coin = TWCoinTypeEthereum;
-    const auto txInputData0 =
-        TransactionCompiler::buildInput(coin,
-                                        "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F", // from
-                                        "0x3535353535353535353535353535353535353535", // to
-                                        "1000000000000000000",                        // amount
-                                        "ETH",                                        // asset
-                                        "Memo",                                       // memo
-                                        "05"                                          // chainId
-        );
-    // Ethereum doesn't support `buildInput`.
-    EXPECT_TRUE(txInputData0.empty());
 }

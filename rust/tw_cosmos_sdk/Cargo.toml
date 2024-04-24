@@ -8,8 +8,8 @@ test-utils = []
 
 [dependencies]
 quick-protobuf = "0.8.1"
-serde = { version = "1.0.163", features = ["derive"] }
-serde_json = "1.0.96"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 tw_bech32_address = { path = "../tw_bech32_address" }
 tw_coin_entry = { path = "../tw_coin_entry" }
 tw_encoding = { path = "../tw_encoding" }
@@ -17,7 +17,7 @@ tw_hash = { path = "../tw_hash" }
 tw_keypair = { path = "../tw_keypair" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
-tw_number = { path = "../tw_number", features = ["serde"] }
+tw_number = { path = "../tw_number" }
 tw_proto = { path = "../tw_proto" }
 
 [dev-dependencies]

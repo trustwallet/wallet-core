@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::{EncodingError, EncodingResult};
 use bs58::decode::Error;
@@ -23,6 +21,32 @@ pub fn decode(input: &str, alphabet: &Alphabet) -> EncodingResult<Vec<u8>> {
         .with_alphabet(alphabet)
         .into_vec()
         .map_err(EncodingError::from)
+}
+
+pub mod as_base58_bitcoin {
+    use super::*;
+    use serde::de::Error;
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+    /// Serializes the `value` as base58.
+    pub fn serialize<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        T: AsRef<[u8]>,
+        S: Serializer,
+    {
+        encode(value.as_ref(), Alphabet::BITCOIN).serialize(serializer)
+    }
+
+    /// Serializes the `value` as base58.
+    pub fn deserialize<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+    where
+        D: Deserializer<'de>,
+        T: for<'a> TryFrom<&'a [u8]>,
+    {
+        let s = String::deserialize(deserializer)?;
+        let data = decode(&s, Alphabet::BITCOIN).map_err(|e| Error::custom(format!("{e:?}")))?;
+        T::try_from(&data).map_err(|_| Error::custom("Unexpected bytes length"))
+    }
 }
 
 #[cfg(test)]

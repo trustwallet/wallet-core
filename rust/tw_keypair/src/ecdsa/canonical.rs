@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 //! This module is a Proof Of Concept that proves the possibility to implement the following in Rust:
 //! https://github.com/trustwallet/wallet-core/blob/d9e35ec485b1366dd10509192d02d9dbb6877ab3/src/PrivateKey.cpp#L253-L282

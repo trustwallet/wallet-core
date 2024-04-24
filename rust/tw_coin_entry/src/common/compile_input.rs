@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::coin_entry::{PublicKeyBytes, SignatureBytes};
 use crate::error::{SigningError, SigningErrorType, SigningResult};
@@ -33,6 +31,22 @@ impl SingleSignaturePubkey {
         Ok(SingleSignaturePubkey {
             signature,
             public_key,
+        })
+    }
+
+    pub fn from_sign_list(signatures: Vec<SignatureBytes>) -> SigningResult<Self> {
+        if signatures.len() > 1 {
+            return Err(SigningError(SigningErrorType::Error_no_support_n2n));
+        }
+
+        let signature = signatures
+            .into_iter()
+            .next()
+            .ok_or(SigningError(SigningErrorType::Error_signatures_count))?;
+
+        Ok(SingleSignaturePubkey {
+            signature,
+            public_key: PublicKeyBytes::default(),
         })
     }
 }

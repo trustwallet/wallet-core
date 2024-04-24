@@ -7,13 +7,13 @@ option java_package = "wallet.core.jni.proto";
 message Transaction {
     // Transfer transaction
     message Transfer {
-        // Amount to send (uint256, serialized little endian)
+        // Amount to send (uint256, serialized big endian)
         bytes amount           = 1;
     }
 
     // Generic contract call
     message Raw {
-        // Amount to send (uint256, serialized little endian)
+        // Amount to send (uint256, serialized big endian)
         bytes amount           = 1;
 
         // Smart contract code

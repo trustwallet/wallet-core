@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "../walletconsole/lib/CommandExecutor.h"
 #include "../walletconsole/lib/WalletConsole.h"
@@ -86,27 +84,27 @@ TEST(WalletConsole, coins) {
 TEST(WalletConsole, coin) {
     {
         auto pos = outputss.str().length();
-        cmd.executeLine("coin btc");
+        cmd.executeLine("coin atom");
         string res = outputss.str().substr(pos);
-        EXPECT_TRUE(res.find("Set active coin to: bitcoin") != string::npos);
+        EXPECT_TRUE(res.find("Set active coin to: cosmos") != string::npos);
     }
     {
         auto pos = outputss.str().length();
         cmd.executeLine("coin ethereum");
         string res = outputss.str().substr(pos);
-        EXPECT_TRUE(res.find("Set active coin to: ethereum") != string::npos);
+        EXPECT_TRUE(res.find("Set active coin to: ethereum") != string::npos) << res;
     }
     {
         auto pos = outputss.str().length();
         cmd.executeLine("coin bitcoin");
         string res = outputss.str().substr(pos);
-        EXPECT_TRUE(res.find("Set active coin to: bitcoin") != string::npos);
+        EXPECT_TRUE(res.find("Set active coin to: bitcoin") != string::npos) << res;
     }
     {
         auto pos = outputss.str().length();
         cmd.executeLine("coin no_such_coin_exists");
         string res = outputss.str().substr(pos);
-        EXPECT_TRUE(res.find("Error: No such coin") != string::npos);
+        EXPECT_TRUE(res.find("Error: No such coin") != string::npos) << res;
     }
 }
 
@@ -129,7 +127,7 @@ TEST(WalletConsole, newkey1) {
 }
 
 TEST(WalletConsole, pubPri1) {
-    cmd.executeLine("coin btc");
+    cmd.executeLine("coin bitcoin");
     auto pos1 = outputss.str().length();
     cmd.executeLine("pubPri 7d40d6a74e98543f545852989d54712834f9c86eddee89303a2083219749e38c");
     string res1 = outputss.str().substr(pos1);
@@ -137,7 +135,7 @@ TEST(WalletConsole, pubPri1) {
 }
 
 TEST(WalletConsole, pubPriInvalid) {
-    cmd.executeLine("coin btc");
+    cmd.executeLine("coin bitcoin");
     auto pos1 = outputss.str().length();
     cmd.executeLine("pubPri Hello!_This_is_an_invalid_private_key");
     string res1 = outputss.str().substr(pos1);
@@ -145,7 +143,7 @@ TEST(WalletConsole, pubPriInvalid) {
 }
 
 TEST(WalletConsole, priPub) {
-    cmd.executeLine("coin btc");
+    cmd.executeLine("coin bitcoin");
     auto pos1 = outputss.str().length();
     cmd.executeLine("priPub 0200266ab7dc3efec040cc8b9714ff49cc8339d2f30d9bab8a4b11043e1bdfee37");
     string res1 = outputss.str().substr(pos1);
@@ -153,7 +151,7 @@ TEST(WalletConsole, priPub) {
 }
 
 TEST(WalletConsole, addrPubBtc1) {
-    cmd.executeLine("coin btc");
+    cmd.executeLine("coin bitcoin");
     auto pos0 = outputss.str().length();
     cmd.executeLine("addrPub 0200266ab7dc3efec040cc8b9714ff49cc8339d2f30d9bab8a4b11043e1bdfee37");
     string res = outputss.str().substr(pos0);
@@ -162,7 +160,7 @@ TEST(WalletConsole, addrPubBtc1) {
 }
 
 TEST(WalletConsole, addrPubInvalid) {
-    cmd.executeLine("coin btc");
+    cmd.executeLine("coin bitcoin");
     auto pos0 = outputss.str().length();
     cmd.executeLine("addrPub Hello!");
     string res = outputss.str().substr(pos0);
@@ -170,7 +168,7 @@ TEST(WalletConsole, addrPubInvalid) {
 }
 
 TEST(WalletConsole, addrPri1) {
-    cmd.executeLine("coin btc");
+    cmd.executeLine("coin bitcoin");
     auto pos1 = outputss.str().length();
     cmd.executeLine("addrPri 7d40d6a74e98543f545852989d54712834f9c86eddee89303a2083219749e38c");
     string res1 = outputss.str().substr(pos1);
@@ -179,7 +177,7 @@ TEST(WalletConsole, addrPri1) {
 }
 
 TEST(WalletConsole, addrPriInvalid) {
-    cmd.executeLine("coin btc");
+    cmd.executeLine("coin bitcoin");
     auto pos1 = outputss.str().length();
     cmd.executeLine("addrPri Hello!");
     string res1 = outputss.str().substr(pos1);
@@ -187,7 +185,7 @@ TEST(WalletConsole, addrPriInvalid) {
 }
 
 TEST(WalletConsole, addrInvalid) {
-    cmd.executeLine("coin btc");
+    cmd.executeLine("coin bitcoin");
     auto pos1 = outputss.str().length();
     cmd.executeLine("addr Hello_This_is_an_Invalid_BTC_Address!_");
     string res1 = outputss.str().substr(pos1);
@@ -196,7 +194,7 @@ TEST(WalletConsole, addrInvalid) {
 
 TEST(WalletConsole, addrDP1) {
     cmd.executeLine("setMnemonic " + mnemonic1);
-    cmd.executeLine("coin btc");
+    cmd.executeLine("coin bitcoin");
 
     // default DP
     auto pos1 = outputss.str().length();
@@ -265,7 +263,7 @@ TEST(WalletConsole, newMnemonic) {
 
 TEST(WalletConsole, dumpdp) {
     {
-        cmd.executeLine("coin btc");
+        cmd.executeLine("coin bitcoin");
         auto pos1 = outputss.str().length();
         cmd.executeLine("dumpDP");
         string res1 = outputss.str().substr(pos1);
@@ -288,7 +286,7 @@ TEST(WalletConsole, dumpdp) {
 }
 
 TEST(WalletConsole, dumpXpub) {
-    cmd.executeLine("coin btc");
+    cmd.executeLine("coin bitcoin");
     auto pos1 = outputss.str().length();
     cmd.executeLine("setMnemonic " + mnemonic1);
     string res1 = outputss.str().substr(pos1);
@@ -303,7 +301,7 @@ TEST(WalletConsole, dumpXpub) {
 TEST(WalletConsole, derive) {
     // Step-by-step derivation, mnemo -> pri -> pub -> addr
     cmd.executeLine("setMnemonic " + mnemonic1);
-    cmd.executeLine("coin btc");
+    cmd.executeLine("coin bitcoin");
     {
         auto pos1 = outputss.str().length();
         cmd.executeLine("priDP m/84'/0'/0'/0/1");
@@ -336,7 +334,7 @@ TEST(WalletConsole, derive) {
 TEST(WalletConsole, addrDefault) {
     {
         cmd.executeLine("setMnemonic " + mnemonic1);
-        cmd.executeLine("coin btc");
+        cmd.executeLine("coin bitcoin");
         auto pos1 = outputss.str().length();
         cmd.executeLine("addrDefault");
         string res1 = outputss.str().substr(pos1);
@@ -359,7 +357,7 @@ TEST(WalletConsole, addrDefault) {
 }
 
 TEST(WalletConsole, addrXpub) {
-    cmd.executeLine("coin btc");
+    cmd.executeLine("coin bitcoin");
     // no need to set mnemonic here
     auto pos1 = outputss.str().length();
     cmd.executeLine("addrXpub zpub6qvN3x2m4Q96SJJ8Q3ZRbCTm4mGdTny6u2hY8tTiyWznnjwc3rRYpHDb1gN9AAypB5m2x1WR954CLNqpLcAxkxt9x7LX9hKDGp9sGtZca7o 0");

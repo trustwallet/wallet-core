@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "TestUtilities.h"
 
@@ -37,4 +35,15 @@ TEST(TWSolanaProgram, defaultTokenAddress) {
 
     assertStringsEqual(tokenAddress, "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     assertStringsEqual(description, "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+}
+
+TEST(TWSolanaProgram, defaultTokenAddressError) {
+    const auto solAddress = STRING("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    // Invalid token mint address.
+    const auto serumToken = STRING("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKW");
+
+    auto solanaAddress = WRAP(TWSolanaAddress, TWSolanaAddressCreateWithString(solAddress.get()));
+    auto description = WRAPS(TWSolanaAddressDescription(solanaAddress.get()));
+
+    EXPECT_EQ(TWSolanaAddressDefaultTokenAddress(solanaAddress.get(), serumToken.get()), nullptr);
 }

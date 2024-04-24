@@ -1,11 +1,10 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #![allow(clippy::missing_safety_doc)]
 
+use std::borrow::Cow;
 use std::ffi::{c_char, CStr};
 use tw_bitcoin::aliases::*;
 use tw_bitcoin::native::consensus::Decodable;
@@ -145,7 +144,7 @@ pub unsafe extern "C" fn tw_bitcoin_legacy_build_p2tr_key_path_script(
 pub unsafe extern "C" fn tw_bitcoin_legacy_build_brc20_transfer_inscription(
     // The 4-byte ticker.
     ticker: *const c_char,
-    value: u64,
+    amount: *const c_char,
     _satoshis: i64,
     pubkey: *const u8,
     pubkey_len: usize,
@@ -164,6 +163,11 @@ pub unsafe extern "C" fn tw_bitcoin_legacy_build_brc20_transfer_inscription(
         Err(_) => return CByteArray::null(),
     };
 
+    let amount = match CStr::from_ptr(amount).to_str() {
+        Ok(input) => input,
+        Err(_) => return CByteArray::null(),
+    };
+
     let output = Proto::Output {
         value: _satoshis as u64,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
@@ -171,7 +175,7 @@ pub unsafe extern "C" fn tw_bitcoin_legacy_build_brc20_transfer_inscription(
                 Proto::mod_Output::OutputBrc20Inscription {
                     inscribe_to: recipient.to_bytes().into(),
                     ticker: ticker.into(),
-                    transfer_amount: value,
+                    transfer_amount: Cow::from(amount.to_string()),
                 },
             ),
         }),
@@ -299,7 +303,7 @@ pub unsafe extern "C" fn tw_bitcoin_legacy_taproot_build_and_sign_transaction(
         };
 
         let serialized = tw_proto::serialize(&error).expect("failed to serialize error message");
-        return CByteArray::from(serialized)
+        return CByteArray::from(serialized);
     };
 
     // Serialize SigningOutput and return.

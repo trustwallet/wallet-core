@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::context::CosmosContext;
 use crate::private_key::SignatureData;
@@ -20,6 +18,9 @@ pub struct SignedTxJson {
     pub memo: String,
     pub msg: Vec<AnyMsg<Json>>,
     pub signatures: Vec<SignatureJson>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub timeout_height: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -30,6 +31,9 @@ pub struct UnsignedTxJson {
     pub memo: String,
     pub msgs: Vec<AnyMsg<Json>>,
     pub sequence: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub timeout_height: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -71,11 +75,19 @@ where
         let signature =
             Self::serialize_signature(&signed.signer.public_key, signed.signature.clone());
 
+        let convert = |value: u64| {
+            if value == 0 {
+                None
+            } else {
+                Some(value.to_string())
+            }
+        };
         Ok(SignedTxJson {
             fee: Self::build_fee(&signed.fee),
             memo: signed.tx_body.memo.clone(),
             msg,
             signatures: vec![signature],
+            timeout_height: convert(signed.tx_body.timeout_height),
         })
     }
 
@@ -89,6 +101,13 @@ where
             .map(|msg| msg.to_json())
             .collect::<SigningResult<_>>()?;
 
+        let convert = |value: u64| {
+            if value == 0 {
+                None
+            } else {
+                Some(value.to_string())
+            }
+        };
         Ok(UnsignedTxJson {
             account_number: unsigned.account_number.to_string(),
             chain_id: unsigned.chain_id.clone(),
@@ -96,6 +115,7 @@ where
             memo: unsigned.tx_body.memo.clone(),
             msgs,
             sequence: unsigned.signer.sequence.to_string(),
+            timeout_height: convert(unsigned.tx_body.timeout_height),
         })
     }
 

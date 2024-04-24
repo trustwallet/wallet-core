@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "proto/Binance.pb.h"
 #include "proto/Bitcoin.pb.h"
@@ -38,22 +36,35 @@ using namespace TW;
 TEST(TWTransactionCompiler, ExternalSignatureSignBinance) {
     /// Step 1: Prepare transaction input (protobuf)
     const auto coin = TWCoinTypeBinance;
-    const auto txInputData = WRAPD(TWTransactionCompilerBuildInput(
-        coin,
-        STRING("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2").get(),  // from
-        STRING("bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5").get(),  // to
-        STRING("1").get(),  // amount
-        STRING("BNB").get(),  // asset
-        STRING("").get(),  // memo
-        STRING("Binance-Chain-Nile").get()  // testnet chainId
-    ));
+    // bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2
+    const auto fromAddressData = parse_hex("40c2979694bbc961023d1d27be6fc4d21a9febe6");
+    // bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5
+    const auto toAddressData = parse_hex("bffe47abfaede50419c577f1074fee6dd1535cd1");
+
+    Binance::Proto::SigningInput txInput;
+
+    txInput.set_chain_id("Binance-Chain-Nile");
+    auto& sendOrder = *txInput.mutable_send_order();
+
+    auto& input1 = *sendOrder.add_inputs();
+    input1.set_address(fromAddressData.data(), fromAddressData.size());
+    auto& input1Coin = *input1.add_coins();
+    input1Coin.set_amount(1);
+    input1Coin.set_denom("BNB");
+
+    auto& output1 = *sendOrder.add_outputs();
+    output1.set_address(toAddressData.data(), toAddressData.size());
+    auto& output1Coin = *output1.add_coins();
+    output1Coin.set_amount(1);
+    output1Coin.set_denom("BNB");
+
+    auto txInputData = data(txInput.SerializeAsString());
 
     {
         // Check, by parsing
-        EXPECT_EQ((int)TWDataSize(txInputData.get()), 88);
+        EXPECT_EQ((int)txInputData.size(), 88);
         Binance::Proto::SigningInput input;
-        ASSERT_TRUE(input.ParseFromArray(TWDataBytes(txInputData.get()),
-                                         (int)TWDataSize(txInputData.get())));
+        ASSERT_TRUE(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
         EXPECT_EQ(input.chain_id(), "Binance-Chain-Nile");
         EXPECT_TRUE(input.has_send_order());
         ASSERT_EQ(input.send_order().inputs_size(), 1);
@@ -62,7 +73,8 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBinance) {
     }
 
     /// Step 2: Obtain preimage hash
-    const auto preImageHashes = WRAPD(TWTransactionCompilerPreImageHashes(coin, txInputData.get()));
+    auto txInputDataPtr = WRAPD(TWDataCreateWithBytes(txInputData.data(), txInputData.size()));
+    const auto preImageHashes = WRAPD(TWTransactionCompilerPreImageHashes(coin, txInputDataPtr.get()));
     auto preImageHash = data(TWDataBytes(preImageHashes.get()), TWDataSize(preImageHashes.get()));
 
     TxCompiler::Proto::PreSigningOutput preSigningOutput;
@@ -86,7 +98,7 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBinance) {
 
     /// Step 3: Compile transaction info
     const auto outputData = WRAPD(TWTransactionCompilerCompileWithSignatures(
-        coin, txInputData.get(),
+        coin, txInputDataPtr.get(),
         WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&signature)).get(),
         WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&publicKeyData)).get()));
 
@@ -97,7 +109,6 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBinance) {
         "253cf264c69180ec31814929b5de62088c0c5a45e8a816d1208fc5366bb8b041781a6771248550d04094c3d7a5"
         "04f9e8310679";
     {
-        EXPECT_EQ(TWDataSize(outputData.get()), 189ul);
         Binance::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(TWDataBytes(outputData.get()),
                                           (int)TWDataSize(outputData.get())));
@@ -108,8 +119,8 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBinance) {
     { // Double check: check if simple signature process gives the same result. Note that private
       // keys were not used anywhere up to this point.
         Binance::Proto::SigningInput input;
-        ASSERT_TRUE(input.ParseFromArray(TWDataBytes(txInputData.get()),
-                                         (int)TWDataSize(txInputData.get())));
+        ASSERT_TRUE(input.ParseFromArray(TWDataBytes(txInputDataPtr.get()),
+                                         (int)TWDataSize(txInputDataPtr.get())));
         auto key = parse_hex("95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832");
         input.set_private_key(key.data(), key.size());
 
@@ -491,7 +502,6 @@ TEST(TWTransactionCompiler, ExternalSignatureSignSolana) {
         "rLph39CMgAkcj6b8KYvJEkb1YdYytHSZNGi4kVVTNqiicNgPdf1gmG6qz9zVtnqj9JtaD2efdS8qxsKnvNWSgb8Xxb"
         "T6dwyp7msUUi7d27cYaPTpK";
     {
-        EXPECT_EQ(TWDataSize(outputData.get()), 296ul);
         Solana::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(TWDataBytes(outputData.get()),
                                           (int)TWDataSize(outputData.get())));

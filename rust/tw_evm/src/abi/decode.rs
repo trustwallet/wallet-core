@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::abi::non_empty_array::{NonEmptyArray, NonEmptyBytes};
 use crate::abi::param::Param;
@@ -29,7 +27,7 @@ pub fn decode_params(params: &[Param], data: &[u8]) -> AbiResult<Vec<NamedToken>
 
     let named_tokens: Vec<_> = params
         .iter()
-        .zip(decoded_tokens.into_iter())
+        .zip(decoded_tokens)
         .map(|(param, value)| NamedToken::with_param_and_token(param, value))
         .collect();
     Ok(named_tokens)

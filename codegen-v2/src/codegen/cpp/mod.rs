@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::registry::CoinItem;
 use std::env;
@@ -11,6 +9,7 @@ use std::path::PathBuf;
 pub mod blockchain_dispatcher_generator;
 pub mod entry_generator;
 pub mod new_blockchain;
+pub mod new_cosmos_chain;
 pub mod new_evmchain;
 pub mod tw_any_address_tests_generator;
 pub mod tw_any_signer_tests_generator;
@@ -41,5 +40,12 @@ pub fn integration_tests_directory() -> PathBuf {
 pub fn coin_integration_tests_directory(coin: &CoinItem) -> PathBuf {
     integration_tests_directory()
         .join("chains")
+        .join(coin.coin_type())
+}
+
+pub fn cosmos_coin_integration_tests_directory(coin: &CoinItem) -> PathBuf {
+    integration_tests_directory()
+        .join("chains")
+        .join("Cosmos")
         .join(coin.coin_type())
 }

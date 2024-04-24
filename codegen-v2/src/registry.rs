@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::coin_id::CoinId;
 use crate::{Error, Result};
@@ -35,6 +33,9 @@ pub struct CoinExplorer {
 pub struct CoinItem {
     pub id: CoinId,
     pub name: String,
+    #[serde(rename = "displayName")]
+    #[serde(default)]
+    pub display_name: String,
     #[serde(rename = "coinId")]
     pub coin_id_number: u32,
     pub symbol: String,
@@ -49,6 +50,8 @@ pub struct CoinItem {
     #[serde(rename = "staticPrefix")]
     #[serde(default)]
     pub static_prefix: u8,
+    #[serde(default)]
+    pub hrp: String,
     pub explorer: CoinExplorer,
 }
 

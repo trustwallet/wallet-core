@@ -2,19 +2,16 @@
 
 set -e
 
-STABLE="stable-2023-06-01"
-NIGHTLY="nightly-2023-06-27"
+NIGHTLY="nightly-2024-02-09"
 
-if [[ `uname` == "Darwin" || "$1" == "dev" ]]; then
-  rustup toolchain install $NIGHTLY
-  rustup default $NIGHTLY
-  rustup toolchain install $NIGHTLY-x86_64-apple-darwin --force-non-host
-  rustup toolchain install $NIGHTLY-aarch64-apple-darwin --force-non-host
-  rustup component add rust-src --toolchain $NIGHTLY-aarch64-apple-darwin
-  rustup component add rust-src --toolchain $NIGHTLY-x86_64-apple-darwin
-else
-  rustup toolchain install $STABLE
-  rustup default $STABLE
+rustup toolchain install $NIGHTLY
+rustup default $NIGHTLY
+rustup toolchain install $NIGHTLY-x86_64-apple-darwin --force-non-host
+rustup toolchain install $NIGHTLY-aarch64-apple-darwin --force-non-host
+rustup component add rust-src --toolchain $NIGHTLY-aarch64-apple-darwin
+rustup component add rust-src --toolchain $NIGHTLY-x86_64-apple-darwin
+if [[ `uname` == "Linux" ]]; then
+  rustup component add rust-src --toolchain $NIGHTLY-x86_64-unknown-linux-gnu
 fi
 
 # Android
@@ -31,5 +28,4 @@ cargo install cbindgen --locked
 if [[ "$1" == "dev" ]]; then
   rustup component add llvm-tools-preview clippy rustfmt
   cargo install cargo-llvm-cov --locked
-  cargo install cargo-nextest --locked
 fi

@@ -1,10 +1,9 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use serde::Deserialize;
+use tw_encoding::hex::as_hex;
 use tw_hash::{H256, H520};
 use tw_keypair::ecdsa::secp256k1::{KeyPair, VerifySignature};
 use tw_keypair::traits::{SigningKeyTrait, VerifyingKeyTrait};
@@ -14,8 +13,11 @@ const SECP256K1_SIGN: &str = include_str!("secp256k1_sign.json");
 
 #[derive(Deserialize)]
 struct Secp256k1SignTest {
+    #[serde(with = "as_hex")]
     secret: H256,
+    #[serde(with = "as_hex")]
     hash: H256,
+    #[serde(with = "as_hex")]
     signature: H520,
 }
 

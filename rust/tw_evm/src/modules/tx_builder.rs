@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::abi::prebuild::erc1155::Erc1155;
 use crate::abi::prebuild::erc20::Erc20;
@@ -192,7 +190,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
         erc4337_payload: Data,
     ) -> SigningResult<UserOperation> {
         let Some(ref user_op) = input.user_operation else {
-            return Err(SigningError(CommonError::Error_invalid_params))
+            return Err(SigningError(CommonError::Error_invalid_params));
         };
 
         let nonce = U256::from_big_endian_slice(&input.nonce)?;
