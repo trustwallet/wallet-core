@@ -2,9 +2,6 @@
 
 set -e
 
-# build-essential clang-14 libc++-dev libc++abi-dev ruby-full cmake
-sudo apt-get update && sudo apt-get install ninja-build lcov llvm-14 clang-tidy-14 libboost-all-dev rustc --fix-missing
-
 # Downgrade libc to temporarily fix https://github.com/actions/runner-images/issues/8659
 if [[ "$1" == "ci" ]]; then
   LIBSTD_PACKAGE_VERSION="12.3.0-1ubuntu1~22.04"
@@ -22,3 +19,6 @@ if [[ "$1" == "ci" ]]; then
     libstdc++6=$LIBSTD_PACKAGE_VERSION \
     libgcc-s1=$LIBSTD_PACKAGE_VERSION
 fi
+
+# build-essential clang-14 libc++-dev libc++abi-dev ruby-full cmake
+sudo apt-get update && sudo apt-get install ninja-build lcov llvm-14 clang-tidy-14 libboost-all-dev rustc --fix-missing
