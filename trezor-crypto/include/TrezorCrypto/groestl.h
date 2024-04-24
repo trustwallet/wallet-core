@@ -86,7 +86,7 @@ void groestl512_Update(void *cc, const void *data, size_t len);
 /**
  * Terminate the current Groestl-512 computation and output the result into
  * the provided buffer. The destination buffer must be wide enough to
- * accomodate the result (64 bytes). The context is automatically
+ * accommodate the result (64 bytes). The context is automatically
  * reinitialized.
  *
  * @param cc    the Groestl-512 context
