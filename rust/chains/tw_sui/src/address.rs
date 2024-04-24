@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex;
 use tw_hash::blake2::blake2_b;
 use tw_keypair::ed25519;

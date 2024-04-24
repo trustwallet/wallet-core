@@ -5,7 +5,7 @@
 use crate::address::Address;
 use crate::transaction_builder;
 use std::str::FromStr;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::ed25519;
 use tw_proto::Aptos::Proto;
@@ -24,7 +24,9 @@ impl Signer {
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let key_pair = ed25519::sha512::KeyPair::try_from(input.private_key.as_ref())?;
         let builder = transaction_builder::TransactionFactory::new_from_protobuf(input.clone())?;
-        let sender = Address::from_str(&input.sender)?;
+        let sender = Address::from_str(&input.sender)
+            .into_tw()
+            .context("Invalid sender address")?;
         let signed_tx = builder
             .sender(sender.inner())
             .sequence_number(input.sequence_number as u64)

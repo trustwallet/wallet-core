@@ -9,7 +9,6 @@ use crate::instruction::{AccountMeta, Instruction};
 use crate::modules::instruction_builder::system_instruction::SystemInstructionBuilder;
 use crate::program::stake_program::StakeProgram;
 use serde::{Deserialize, Serialize};
-use tw_coin_entry::error::SigningResult;
 
 type UnixTimestamp = i64;
 type Epoch = u64;
@@ -373,7 +372,7 @@ impl StakeInstructionBuilder {
     }
 
     /// The function represents "stake delegation" operation that consists of several small instructions.
-    pub fn deposit_stake(args: DepositStakeArgs) -> SigningResult<Vec<Instruction>> {
+    pub fn deposit_stake(args: DepositStakeArgs) -> Vec<Instruction> {
         let stake_addr = args.stake_account.unwrap_or_else(|| {
             // no stake address specified, generate a new unique
             StakeProgram::address_from_recent_blockhash(&args.sender, &args.recent_blockhash)
@@ -386,7 +385,7 @@ impl StakeInstructionBuilder {
         };
         let lockup = Lockup::default();
 
-        Ok(vec![
+        vec![
             SystemInstructionBuilder::create_account_with_seed(
                 args.sender,
                 stake_addr,
@@ -397,6 +396,6 @@ impl StakeInstructionBuilder {
             ),
             StakeInstructionBuilder::stake_initialize(stake_addr, authorized, lockup),
             StakeInstructionBuilder::delegate(stake_addr, args.validator, args.sender),
-        ])
+        ]
     }
 }

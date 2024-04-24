@@ -21,7 +21,7 @@ use move_core_types::account_address::AccountAddress;
 use move_core_types::language_storage::TypeTag;
 use serde_json::Value;
 use std::str::FromStr;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_proto::Aptos::Proto::mod_SigningInput::OneOftransaction_payload;
 use tw_proto::Aptos::Proto::SigningInput;
 
@@ -49,10 +49,12 @@ impl TransactionBuilder {
     pub fn build(self) -> SigningResult<RawTransaction> {
         let sender = self
             .sender
-            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("Invalid sender address")?;
         let sequence_number = self
             .sequence_number
-            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("Invalid sequence number")?;
         Ok(RawTransaction::new(
             sender,
             sequence_number,
@@ -91,22 +93,31 @@ impl TransactionFactory {
         match input.transaction_payload {
             OneOftransaction_payload::transfer(transfer) => factory
                 .implicitly_create_user_account_and_transfer(
-                    AccountAddress::from_str(&transfer.to).map_err(from_account_error)?,
+                    AccountAddress::from_str(&transfer.to)
+                        .map_err(from_account_error)
+                        .into_tw()
+                        .context("Invalid destination address")?,
                     transfer.amount,
                 ),
             OneOftransaction_payload::token_transfer(token_transfer) => {
                 let func = token_transfer
                     .function
-                    .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+                    .or_tw_err(SigningErrorType::Error_invalid_params)
+                    .context("'TokenTransferMessage::function' is not set")?;
                 factory.coins_transfer(
-                    AccountAddress::from_str(&token_transfer.to).map_err(from_account_error)?,
+                    AccountAddress::from_str(&token_transfer.to)
+                        .map_err(from_account_error)
+                        .into_tw()
+                        .context("Invalid destination address")?,
                     token_transfer.amount,
                     convert_proto_struct_tag_to_type_tag(func)?,
                 )
             },
             OneOftransaction_payload::create_account(create_account) => {
                 let address = AccountAddress::from_str(&create_account.auth_key)
-                    .map_err(from_account_error)?;
+                    .map_err(from_account_error)
+                    .into_tw()
+                    .context("Invalid 'auth_key' address")?;
                 factory.create_user_account(address)
             },
             OneOftransaction_payload::nft_message(nft_message) => {
@@ -115,7 +126,8 @@ impl TransactionFactory {
             OneOftransaction_payload::register_token(register_token) => {
                 let function = register_token
                     .function
-                    .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+                    .or_tw_err(SigningErrorType::Error_invalid_params)
+                    .context("'ManagedTokensRegisterMessage::function' is not set")?;
                 Ok(factory.register_token(convert_proto_struct_tag_to_type_tag(function)?))
             },
             OneOftransaction_payload::liquid_staking_message(msg) => {
@@ -124,22 +136,27 @@ impl TransactionFactory {
             OneOftransaction_payload::token_transfer_coins(token_transfer_coins) => {
                 let func = token_transfer_coins
                     .function
-                    .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+                    .or_tw_err(SigningErrorType::Error_invalid_params)
+                    .context("'TokenTransferCoinsMessage::function' is not set")?;
                 factory.implicitly_create_user_and_coins_transfer(
                     AccountAddress::from_str(&token_transfer_coins.to)
-                        .map_err(from_account_error)?,
+                        .map_err(from_account_error)
+                        .into_tw()
+                        .context("Invalid destination address")?,
                     token_transfer_coins.amount,
                     convert_proto_struct_tag_to_type_tag(func)?,
                 )
             },
             OneOftransaction_payload::None => {
                 let is_blind_sign = !input.any_encoded.is_empty();
-                let v = serde_json::from_str::<Value>(&input.any_encoded)?;
+                let v = serde_json::from_str::<Value>(&input.any_encoded)
+                    .into_tw()
+                    .context("Error decoding 'SigningInput::any_encoded' as JSON")?;
                 if is_blind_sign {
                     let entry_function = EntryFunction::try_from(v)?;
                     Ok(factory.payload(TransactionPayload::EntryFunction(entry_function)))
                 } else {
-                    Err(SigningError(SigningErrorType::Error_input_parse))
+                    SigningError::err(SigningErrorType::Error_input_parse)
                 }
             },
         }

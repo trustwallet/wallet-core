@@ -7,7 +7,7 @@ use crate::transaction_payload::{EntryFunction, TransactionPayload};
 use move_core_types::{account_address::AccountAddress, ident_str, language_storage::ModuleId};
 use serde_json::json;
 use std::str::FromStr;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::bcs;
 use tw_proto::{
     Aptos::Proto::mod_LiquidStaking::OneOfliquid_stake_transaction_payload,
@@ -91,7 +91,9 @@ impl TryFrom<LiquidStaking<'_>> for LiquidStakingOperation {
             OneOfliquid_stake_transaction_payload::stake(stake_msg) => {
                 let smart_contract_address =
                     AccountAddress::from_str(&value.smart_contract_address)
-                        .map_err(from_account_error)?;
+                        .map_err(from_account_error)
+                        .into_tw()
+                        .context("Invalid Smart Contract address")?;
                 Ok(LiquidStakingOperation::Stake(Stake {
                     amount: stake_msg.amount,
                     smart_contract_address,
@@ -100,7 +102,9 @@ impl TryFrom<LiquidStaking<'_>> for LiquidStakingOperation {
             OneOfliquid_stake_transaction_payload::unstake(unstake_msg) => {
                 let smart_contract_address =
                     AccountAddress::from_str(&value.smart_contract_address)
-                        .map_err(from_account_error)?;
+                        .map_err(from_account_error)
+                        .into_tw()
+                        .context("Invalid Smart Contract address")?;
                 Ok(LiquidStakingOperation::Unstake(Unstake {
                     amount: unstake_msg.amount,
                     smart_contract_address,
@@ -109,14 +113,16 @@ impl TryFrom<LiquidStaking<'_>> for LiquidStakingOperation {
             OneOfliquid_stake_transaction_payload::claim(claim) => {
                 let smart_contract_address =
                     AccountAddress::from_str(&value.smart_contract_address)
-                        .map_err(from_account_error)?;
+                        .map_err(from_account_error)
+                        .into_tw()
+                        .context("Invalid Smart Contract address")?;
                 Ok(LiquidStakingOperation::Claim(Claim {
                     idx: claim.idx,
                     smart_contract_address,
                 }))
             },
             OneOfliquid_stake_transaction_payload::None => {
-                Err(SigningError(SigningErrorType::Error_invalid_params))
+                SigningError::err(SigningErrorType::Error_invalid_params)
             },
         }
     }

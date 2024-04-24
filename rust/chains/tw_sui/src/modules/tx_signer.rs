@@ -7,7 +7,7 @@ use crate::signature::SuiSignatureInfo;
 use crate::transaction::transaction_data::TransactionData;
 use serde::Serialize;
 use serde_repr::Serialize_repr;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::bcs;
 use tw_hash::blake2::blake2_b;
 use tw_hash::H256;
@@ -88,11 +88,13 @@ impl TxSigner {
         let public_key = signer_key.public();
         let signer_address = SuiAddress::with_ed25519_pubkey(public_key)?;
         if signer_address != tx.sender() {
-            return Err(SigningError(SigningErrorType::Error_missing_private_key));
+            return SigningError::err(SigningErrorType::Error_missing_private_key)
+                .context("Given private key does not belong to the sender address");
         }
 
-        let unsigned_tx_data =
-            bcs::encode(tx).map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+        let unsigned_tx_data = bcs::encode(tx)
+            .tw_err(|_| SigningErrorType::Error_internal)
+            .context("Error serializing TransactionData")?;
         Self::sign_direct(unsigned_tx_data, signer_key)
     }
 
@@ -107,8 +109,9 @@ impl TxSigner {
     }
 
     pub fn preimage(tx: &TransactionData) -> SigningResult<TransactionPreimage> {
-        let unsigned_tx_data =
-            bcs::encode(tx).map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+        let unsigned_tx_data = bcs::encode(tx)
+            .tw_err(|_| SigningErrorType::Error_internal)
+            .context("Error serializing TransactionData")?;
         Self::preimage_direct(unsigned_tx_data)
     }
 
@@ -118,8 +121,9 @@ impl TxSigner {
             version: IntentVersion::V0,
             app_id: AppId::Sui,
         };
-        let intent_data =
-            bcs::encode(&intent).map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+        let intent_data = bcs::encode(&intent)
+            .tw_err(|_| SigningErrorType::Error_internal)
+            .context("Error serializing Intent message")?;
 
         let tx_data_to_sign: Data = intent_data
             .into_iter()
@@ -127,7 +131,7 @@ impl TxSigner {
             .collect();
         let tx_hash_to_sign = blake2_b(&tx_data_to_sign, H256::LEN)
             .and_then(|hash| H256::try_from(hash.as_slice()))
-            .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+            .tw_err(|_| SigningErrorType::Error_internal)?;
 
         Ok(TransactionPreimage {
             unsigned_tx_data,

@@ -5,7 +5,7 @@
 use std::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::AddressError;
+use tw_coin_entry::error::prelude::*;
 use tw_evm::address::{Address as EthAddress, EvmAddress};
 use tw_keypair::ecdsa::secp256k1;
 use tw_memory::Data;

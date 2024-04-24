@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_keypair::{tw, KeyPairError};
 use tw_memory::Data;
 use tw_misc::traits::FromSlice;

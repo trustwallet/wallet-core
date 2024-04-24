@@ -8,7 +8,7 @@ use crate::transaction::message::{BinanceMessage, TWBinanceProto, Token};
 use serde::{Deserialize, Serialize};
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_evm::address::Address as EthereumAddress;
 use tw_memory::Data;
 use tw_misc::serde::Typed;
@@ -52,7 +52,7 @@ impl TWBinanceProto for SideDelegateOrder {
         let delegation = msg
             .delegation
             .as_ref()
-            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+            .or_tw_err(SigningErrorType::Error_invalid_params)?;
 
         let value = SideDelegateOrderValue {
             delegator_addr,
@@ -118,7 +118,7 @@ impl TWBinanceProto for SideRedelegateOrder {
         let amount = msg
             .amount
             .as_ref()
-            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+            .or_tw_err(SigningErrorType::Error_invalid_params)?;
 
         let value = SideRedelegateOrderValue {
             delegator_addr,
@@ -182,7 +182,7 @@ impl TWBinanceProto for SideUndelegateOrder {
         let amount = msg
             .amount
             .as_ref()
-            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+            .or_tw_err(SigningErrorType::Error_invalid_params)?;
 
         let value = SideUndelegateOrderValue {
             delegator_addr,
@@ -248,7 +248,7 @@ impl TWBinanceProto for StakeMigrationOrder {
         let amount = msg
             .amount
             .as_ref()
-            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+            .or_tw_err(SigningErrorType::Error_invalid_params)?;
 
         let value = StakeMigrationOrderValue {
             amount: Token::from_tw_proto(amount),

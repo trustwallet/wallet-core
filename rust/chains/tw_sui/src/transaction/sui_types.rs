@@ -7,7 +7,7 @@ use crate::constants::{SUI_SYSTEM_STATE_OBJECT_ID, SUI_SYSTEM_STATE_OBJECT_SHARE
 use move_core_types::account_address::AccountAddress;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
-use tw_coin_entry::error::{AddressError, SigningError, SigningErrorType};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::base58::{self, Alphabet};
 use tw_hash::{as_bytes, H256};
 use tw_memory::Data;
@@ -22,10 +22,12 @@ pub struct SequenceNumber(pub u64);
 pub struct ObjectID(pub AccountAddress);
 
 impl FromStr for ObjectID {
-    type Err = AddressError;
+    type Err = SigningError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let addr = SuiAddress::from_str(s)?;
+        let addr = SuiAddress::from_str(s)
+            .into_tw()
+            .context("Invalid Object ID")?;
         Ok(ObjectID(addr.into_inner()))
     }
 }
@@ -38,10 +40,12 @@ impl FromStr for ObjectDigest {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let bytes = base58::decode(s, Alphabet::BITCOIN)
-            .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?;
+            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .context("Invalid Object Digest: expected valid base58 string")?;
         H256::try_from(bytes.as_slice())
             .map(ObjectDigest)
-            .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))
+            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .context("Invalid Object Digest: expected exactly 32 bytes")
     }
 }
 

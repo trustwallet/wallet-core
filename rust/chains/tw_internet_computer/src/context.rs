@@ -30,7 +30,7 @@ mod test {
 
     use std::marker::PhantomData;
 
-    use tw_coin_entry::error::AddressResult;
+    use tw_coin_entry::error::prelude::*;
 
     use super::*;
 

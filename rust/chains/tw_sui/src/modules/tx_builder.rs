@@ -8,7 +8,7 @@ use crate::transaction::transaction_builder::TransactionBuilder;
 use crate::transaction::transaction_data::TransactionData;
 use std::borrow::Cow;
 use std::str::FromStr;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::base64;
 use tw_keypair::ed25519;
 use tw_keypair::traits::KeyPairTrait;
@@ -53,7 +53,7 @@ impl<'a> TWTransactionBuilder<'a> {
             TransactionType::transfer_object(ref transfer_obj) => {
                 self.transfer_object_from_proto(transfer_obj)
             },
-            TransactionType::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
+            TransactionType::None => SigningError::err(SigningErrorType::Error_invalid_params),
         }?;
         Ok(TWTransaction::Transaction(tx_data))
     }
@@ -61,13 +61,15 @@ impl<'a> TWTransactionBuilder<'a> {
     fn sign_direct_from_proto(&self, sign_direct: &Proto::SignDirect<'_>) -> SigningResult<Data> {
         let url = false;
         base64::decode(&sign_direct.unsigned_tx_msg, url)
-            .map_err(|_| SigningError(SigningErrorType::Error_input_parse))
+            .tw_err(|_| SigningErrorType::Error_input_parse)
+            .context("Error parsing Raw Unsigned TX message as base64")
     }
 
     fn pay_sui_from_proto(&self, pay_sui: &Proto::PaySui<'_>) -> SigningResult<TransactionData> {
         let signer = self.signer_address()?;
         let input_coins = Self::build_coins(&pay_sui.input_coins)?;
-        let recipients = Self::parse_addresses(&pay_sui.recipients)?;
+        let recipients = Self::parse_addresses(&pay_sui.recipients)
+            .context("Invalid one of the recipients addresses")?;
 
         TransactionBuilder::pay_sui(
             signer,
@@ -85,7 +87,9 @@ impl<'a> TWTransactionBuilder<'a> {
     ) -> SigningResult<TransactionData> {
         let signer = self.signer_address()?;
         let input_coins = Self::build_coins(&pay_all_sui.input_coins)?;
-        let recipient = SuiAddress::from_str(&pay_all_sui.recipient)?;
+        let recipient = SuiAddress::from_str(&pay_all_sui.recipient)
+            .into_tw()
+            .context("Invalid recipient address")?;
 
         TransactionBuilder::pay_all_sui(
             signer,
@@ -99,8 +103,9 @@ impl<'a> TWTransactionBuilder<'a> {
     fn pay_from_proto(&self, pay: &Proto::Pay<'_>) -> SigningResult<TransactionData> {
         let signer = self.signer_address()?;
         let input_coins = Self::build_coins(&pay.input_coins)?;
-        let recipients = Self::parse_addresses(&pay.recipients)?;
-        let gas = Self::require_coin(&pay.gas)?;
+        let recipients = Self::parse_addresses(&pay.recipients)
+            .context("Invalid one of the recipients addresses")?;
+        let gas = Self::require_coin(&pay.gas).context("No 'gas' coin specified")?;
 
         TransactionBuilder::pay(
             signer,
@@ -121,8 +126,10 @@ impl<'a> TWTransactionBuilder<'a> {
 
         let input_coins = Self::build_coins(&stake.coins)?;
         let amount = stake.amount.as_ref().map(|a| a.amount);
-        let validator = SuiAddress::from_str(stake.validator.as_ref())?;
-        let gas = Self::require_coin(&stake.gas)?;
+        let validator = SuiAddress::from_str(stake.validator.as_ref())
+            .into_tw()
+            .context("Invalid validator address")?;
+        let gas = Self::require_coin(&stake.gas).context("No 'gas' coin specified")?;
 
         TransactionBuilder::request_add_stake(
             signer,
@@ -141,8 +148,9 @@ impl<'a> TWTransactionBuilder<'a> {
     ) -> SigningResult<TransactionData> {
         let signer = self.signer_address()?;
 
-        let staked_sui = Self::require_coin(&withdraw.staked_sui)?;
-        let gas = Self::require_coin(&withdraw.gas)?;
+        let staked_sui =
+            Self::require_coin(&withdraw.staked_sui).context("No 'staked_sui' coin specified")?;
+        let gas = Self::require_coin(&withdraw.gas).context("No 'gas' coin specified")?;
 
         TransactionBuilder::request_withdraw_stake(
             signer,
@@ -159,9 +167,11 @@ impl<'a> TWTransactionBuilder<'a> {
     ) -> SigningResult<TransactionData> {
         let signer = self.signer_address()?;
 
-        let recipient = SuiAddress::from_str(&transfer_obj.recipient)?;
-        let object = Self::require_coin(&transfer_obj.object)?;
-        let gas = Self::require_coin(&transfer_obj.gas)?;
+        let recipient = SuiAddress::from_str(&transfer_obj.recipient)
+            .into_tw()
+            .context("Invalid recipient address")?;
+        let object = Self::require_coin(&transfer_obj.object).context("No 'object' specified")?;
+        let gas = Self::require_coin(&transfer_obj.gas).context("No 'gas' coin specified")?;
 
         TransactionBuilder::transfer_object(
             signer,
@@ -175,7 +185,9 @@ impl<'a> TWTransactionBuilder<'a> {
 
     fn signer_address(&self) -> SigningResult<SuiAddress> {
         if self.input.private_key.is_empty() {
-            SuiAddress::from_str(&self.input.signer).map_err(SigningError::from)
+            SuiAddress::from_str(&self.input.signer)
+                .into_tw()
+                .context("Invalid signer address")
         } else {
             let keypair = self.signer_key()?;
             SuiAddress::with_ed25519_pubkey(keypair.public()).map_err(SigningError::from)
@@ -189,12 +201,12 @@ impl<'a> TWTransactionBuilder<'a> {
     fn require_coin(maybe_coin: &Option<Proto::ObjectRef>) -> SigningResult<ObjectRef> {
         let coin = maybe_coin
             .as_ref()
-            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+            .or_tw_err(SigningErrorType::Error_invalid_params)?;
         Self::build_coin(coin)
     }
 
     fn build_coin(coin: &Proto::ObjectRef) -> SigningResult<ObjectRef> {
-        let object_id = ObjectID::from_str(coin.object_id.as_ref())?;
+        let object_id = ObjectID::from_str(coin.object_id.as_ref()).context("Invalid Object ID")?;
         let version = SequenceNumber(coin.version);
         let object_digest = ObjectDigest::from_str(coin.object_digest.as_ref())?;
 

@@ -8,7 +8,7 @@ use move_core_types::account_address::AccountAddress;
 use serde::Serialize;
 use serde_json::{json, Value};
 use std::borrow::Cow;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex::encode;
 use tw_encoding::{bcs, EncodingResult};
 use tw_keypair::ed25519::sha512::KeyPair;
@@ -128,7 +128,10 @@ impl RawTransaction {
     }
 
     fn msg_to_sign(&self) -> SigningResult<Data> {
-        let serialized = self.serialize()?;
+        let serialized = self
+            .serialize()
+            .into_tw()
+            .context("Error serializing RawTransaction")?;
         let mut preimage = tw_hash::sha3::sha3_256(APTOS_SALT);
         preimage.extend_from_slice(serialized.as_slice());
         Ok(preimage)

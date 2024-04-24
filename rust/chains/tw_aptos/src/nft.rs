@@ -5,7 +5,7 @@
 use crate::address::from_account_error;
 use move_core_types::account_address::AccountAddress;
 use std::str::FromStr;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_proto::Aptos::Proto::mod_NftMessage::OneOfnft_transaction_payload;
 use tw_proto::Aptos::Proto::{CancelOfferNftMessage, ClaimNftMessage, NftMessage, OfferNftMessage};
 
@@ -47,7 +47,8 @@ impl TryFrom<NftMessage<'_>> for NftOperation {
                 Ok(NftOperation::Claim(Claim::try_from(msg)?))
             },
             OneOfnft_transaction_payload::None => {
-                Err(SigningError(SigningErrorType::Error_invalid_params))
+                SigningError::err(SigningErrorType::Error_invalid_params)
+                    .context("No transaction payload provided")
             },
         }
     }
@@ -106,8 +107,14 @@ impl TryFrom<CancelOfferNftMessage<'_>> for Offer {
 
     fn try_from(value: CancelOfferNftMessage) -> SigningResult<Self> {
         Ok(Offer {
-            receiver: AccountAddress::from_str(&value.receiver).map_err(from_account_error)?,
-            creator: AccountAddress::from_str(&value.creator).map_err(from_account_error)?,
+            receiver: AccountAddress::from_str(&value.receiver)
+                .map_err(from_account_error)
+                .into_tw()
+                .context("Invalid receiver address")?,
+            creator: AccountAddress::from_str(&value.creator)
+                .map_err(from_account_error)
+                .into_tw()
+                .context("Invalid creator address")?,
             collection: value.collectionName.as_bytes().to_vec(),
             name: value.name.as_bytes().to_vec(),
             property_version: value.property_version,
@@ -137,8 +144,14 @@ impl TryFrom<ClaimNftMessage<'_>> for Claim {
 
     fn try_from(value: ClaimNftMessage) -> SigningResult<Self> {
         Ok(Claim {
-            sender: AccountAddress::from_str(&value.sender).map_err(from_account_error)?,
-            creator: AccountAddress::from_str(&value.creator).map_err(from_account_error)?,
+            sender: AccountAddress::from_str(&value.sender)
+                .map_err(from_account_error)
+                .into_tw()
+                .context("Invalid sender address")?,
+            creator: AccountAddress::from_str(&value.creator)
+                .map_err(from_account_error)
+                .into_tw()
+                .context("Invalid creator address")?,
             collection: value.collectionName.as_bytes().to_vec(),
             name: value.name.as_bytes().to_vec(),
             property_version: value.property_version,

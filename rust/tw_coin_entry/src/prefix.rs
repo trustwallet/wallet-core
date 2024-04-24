@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::error::AddressError;
+use crate::error::prelude::*;
 
 /// An address prefix. It can contain a bech32 prefix that can be used by `Cosmos` based chains.
 /// Extend when adding new blockchains.

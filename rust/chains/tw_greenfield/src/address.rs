@@ -6,7 +6,7 @@ use serde::Serialize;
 use std::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::AddressError;
+use tw_coin_entry::error::prelude::*;
 use tw_cosmos_sdk::address::CosmosAddress;
 use tw_evm::address::Address as EthereumAddress;
 use tw_keypair::ecdsa::secp256k1;

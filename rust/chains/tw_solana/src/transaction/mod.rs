@@ -6,7 +6,7 @@ use crate::SOLANA_ALPHABET;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::str::FromStr;
-use tw_coin_entry::error::{SigningError, SigningErrorType};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::base58;
 use tw_hash::{as_byte_sequence, H512};
 
@@ -54,10 +54,12 @@ impl FromStr for Signature {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let data = base58::decode(s, &SOLANA_ALPHABET)
-            .map_err(|_| SigningError(SigningErrorType::Error_input_parse))?;
+            .tw_err(|_| SigningErrorType::Error_input_parse)
+            .context("Error decoding Solana Signature from base58")?;
         H512::try_from(data.as_slice())
             .map(Signature)
-            .map_err(|_| SigningError(SigningErrorType::Error_input_parse))
+            .tw_err(|_| SigningErrorType::Error_input_parse)
+            .context("Solana Signature must be 64 byte length")
     }
 }
 

@@ -2,7 +2,7 @@ use crate::address::Address;
 use crate::transaction_builder;
 use std::str::FromStr;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_proto::Aptos::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
@@ -22,7 +22,9 @@ impl Compiler {
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
         let builder = transaction_builder::TransactionFactory::new_from_protobuf(input.clone())?;
-        let sender = Address::from_str(&input.sender)?;
+        let sender = Address::from_str(&input.sender)
+            .into_tw()
+            .context("Invalid sender address")?;
         let signed_tx = builder
             .sender(sender.inner())
             .sequence_number(input.sequence_number as u64)
@@ -53,10 +55,10 @@ impl Compiler {
         let sender = Address::from_str(&input.sender)?;
         let signature = signatures
             .first()
-            .ok_or(SigningError(SigningErrorType::Error_signatures_count))?;
+            .or_tw_err(SigningErrorType::Error_signatures_count)?;
         let public_key = public_keys
             .first()
-            .ok_or(SigningError(SigningErrorType::Error_signatures_count))?;
+            .or_tw_err(SigningErrorType::Error_signatures_count)?;
 
         let signed_tx = builder
             .sender(sender.inner())

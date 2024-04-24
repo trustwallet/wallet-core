@@ -9,7 +9,7 @@ use indexmap::IndexMap;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::TypeTag;
 use serde::{Deserialize, Serialize};
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::bcs;
 
 /// A series of commands where the results of one command can be used in future
@@ -54,7 +54,8 @@ impl ProgrammableTransactionBuilder {
         let mut coins = coins.into_iter();
         let Some(coin) = coins.next() else {
             // coins vector is empty
-            return Err(SigningError(SigningErrorType::Error_invalid_params));
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("No coins provided");
         };
         let coin_arg = self.obj(ObjectArg::ImmOrOwnedObject(coin))?;
         let merge_args: Vec<_> = coins
@@ -140,7 +141,10 @@ impl ProgrammableTransactionBuilder {
         let id = obj_arg.id();
         let obj_arg = if let Some(old_value) = self.inputs.get(&BuilderArg::Object(id)) {
             let old_obj_arg = match old_value {
-                CallArg::Pure(_) => return Err(SigningError(SigningErrorType::Error_internal)),
+                CallArg::Pure(_) => {
+                    return SigningError::err(SigningErrorType::Error_internal)
+                        .context("Expected Object, found Pure")
+                },
                 CallArg::Object(arg) => arg,
             };
             match (old_obj_arg, obj_arg) {
@@ -158,7 +162,8 @@ impl ProgrammableTransactionBuilder {
                 ) if v1 == &v2 => {
                     if id1 != &id2 || id != id2 {
                         // "invariant violation! object has id does not match call arg"
-                        return Err(SigningError(SigningErrorType::Error_internal));
+                        return SigningError::err(SigningErrorType::Error_internal)
+                            .context("invariant violation! object has id does not match call arg");
                     }
                     ObjectArg::SharedObject {
                         id,
@@ -168,8 +173,8 @@ impl ProgrammableTransactionBuilder {
                 },
                 (old_obj_arg, obj_arg) => {
                     if old_obj_arg != &obj_arg {
-                        // "Mismatched Object argument kind for object {id}. {old_value:?} is not compatible with {obj_arg:?}"
-                        return Err(SigningError(SigningErrorType::Error_internal));
+                        return SigningError::err(SigningErrorType::Error_internal)
+                            .with_context(|| format!("Mismatched Object argument kind for object {id:?}. {old_value:?} is not compatible with {obj_arg:?}"));
                     }
                     obj_arg
                 },
@@ -208,7 +213,11 @@ impl ProgrammableTransactionBuilder {
     ) -> SigningResult<()> {
         if recipients.len() != amounts.len() {
             // "Recipients and amounts mismatch. Got {} recipients but {} amounts"
-            return Err(SigningError(SigningErrorType::Error_invalid_params));
+            return SigningError::err(SigningErrorType::Error_invalid_params).with_context(|| {
+                let recipients_num = recipients.len();
+                let amounts_num = amounts.len();
+                format!("Recipients and amounts mismatch. Got {recipients_num} recipients but {amounts_num} amounts")
+            });
         }
         if amounts.is_empty() {
             return Ok(());
@@ -224,7 +233,8 @@ impl ProgrammableTransactionBuilder {
         }
         let Argument::Result(split_primary) = self.command(Command::SplitCoins(coin, amt_args))
         else {
-            panic!("self.command should always give a Argument::Result")
+            return SigningError::err(SigningErrorType::Error_internal)
+                .context("self.command should always give an Argument::Result");
         };
         for (recipient, split_secondaries) in recipient_map {
             let rec_arg = self.pure(recipient).unwrap();

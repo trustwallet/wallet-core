@@ -2,10 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_coin_entry::{
-    coin_entry::CoinAddress,
-    error::{AddressError, AddressResult},
-};
+use tw_coin_entry::{coin_entry::CoinAddress, error::prelude::*};
 use tw_encoding::hex;
 use tw_hash::{crc32::crc32, sha2::sha224, H256};
 use tw_keypair::ecdsa::secp256k1::PublicKey;

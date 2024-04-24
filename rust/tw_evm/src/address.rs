@@ -8,7 +8,7 @@ use std::fmt::{Display, Formatter};
 use std::ops::{RangeFrom, RangeInclusive};
 use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex;
 use tw_hash::{sha3::keccak256, H160, H256};
 use tw_keypair::ecdsa::secp256k1;

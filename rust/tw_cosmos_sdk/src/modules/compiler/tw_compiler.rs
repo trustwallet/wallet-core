@@ -15,7 +15,7 @@ use std::marker::PhantomData;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::common::compile_input::SingleSignaturePubkey;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::Cosmos::Proto;
@@ -31,11 +31,8 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
         coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
     ) -> CompilerProto::PreSigningOutput<'static> {
-        match input.signing_mode {
-            Proto::SigningMode::JSON => Self::preimage_hashes_as_json(coin, input),
-            Proto::SigningMode::Protobuf => Self::preimage_hashes_as_protobuf(coin, input),
-        }
-        .unwrap_or_else(|e| signing_output_error!(CompilerProto::PreSigningOutput, e))
+        Self::preimage_hashes_impl(coin, input)
+            .unwrap_or_else(|e| signing_output_error!(CompilerProto::PreSigningOutput, e))
     }
 
     #[inline]
@@ -45,16 +42,22 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> Proto::SigningOutput<'static> {
-        match input.signing_mode {
-            Proto::SigningMode::JSON => Self::compile_as_json(coin, input, signatures, public_keys),
-            Proto::SigningMode::Protobuf => {
-                Self::compile_as_protobuf(coin, input, signatures, public_keys)
-            },
-        }
-        .unwrap_or_else(|e| signing_output_error!(Proto::SigningOutput, e))
+        Self::compile_impl(coin, input, signatures, public_keys)
+            .unwrap_or_else(|e| signing_output_error!(Proto::SigningOutput, e))
     }
 
-    pub fn preimage_hashes_as_protobuf(
+    #[inline]
+    pub(crate) fn preimage_hashes_impl(
+        coin: &dyn CoinContext,
+        input: Proto::SigningInput<'_>,
+    ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
+        match input.signing_mode {
+            Proto::SigningMode::JSON => Self::preimage_hashes_as_json(coin, input),
+            Proto::SigningMode::Protobuf => Self::preimage_hashes_as_protobuf(coin, input),
+        }
+    }
+
+    pub(crate) fn preimage_hashes_as_protobuf(
         coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
@@ -79,7 +82,7 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
         })
     }
 
-    pub fn preimage_hashes_as_json(
+    pub(crate) fn preimage_hashes_as_json(
         coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
@@ -95,7 +98,22 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
         })
     }
 
-    pub fn compile_as_protobuf(
+    #[inline]
+    pub(crate) fn compile_impl(
+        coin: &dyn CoinContext,
+        input: Proto::SigningInput<'_>,
+        signatures: Vec<SignatureBytes>,
+        public_keys: Vec<PublicKeyBytes>,
+    ) -> SigningResult<Proto::SigningOutput<'static>> {
+        match input.signing_mode {
+            Proto::SigningMode::JSON => Self::compile_as_json(coin, input, signatures, public_keys),
+            Proto::SigningMode::Protobuf => {
+                Self::compile_as_protobuf(coin, input, signatures, public_keys)
+            },
+        }
+    }
+
+    pub(crate) fn compile_as_protobuf(
         coin: &dyn CoinContext,
         mut input: Proto::SigningInput<'_>,
         signatures: Vec<SignatureBytes>,
@@ -133,7 +151,8 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
         let signature_json =
             JsonSerializer::<Context>::serialize_signature(&public_key, signature.to_vec());
         let signature_json = serde_json::to_string(&[signature_json])
-            .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+            .tw_err(|_| SigningErrorType::Error_internal)
+            .context("Error serializing signatures as JSON")?;
 
         Ok(Proto::SigningOutput {
             signature: Cow::from(signature.to_vec()),
@@ -143,7 +162,7 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
         })
     }
 
-    pub fn compile_as_json(
+    pub(crate) fn compile_as_json(
         coin: &dyn CoinContext,
         mut input: Proto::SigningInput<'_>,
         signatures: Vec<SignatureBytes>,
@@ -169,7 +188,8 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
         let broadcast_tx = BroadcastMsg::json(broadcast_mode, &signed_tx_json)?.to_json_string();
 
         let signature_json = serde_json::to_string(&signed_tx_json.signatures)
-            .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+            .tw_err(|_| SigningErrorType::Error_internal)
+            .context("Error serializing signatures as JSON")?;
 
         Ok(Proto::SigningOutput {
             signature: Cow::from(signature.to_vec()),

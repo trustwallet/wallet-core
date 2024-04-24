@@ -4,7 +4,7 @@
 
 use std::borrow::Cow;
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::test_utils::test_context::TestCoinContext;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_number::U256;

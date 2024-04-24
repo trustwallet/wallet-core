@@ -9,7 +9,7 @@ use crate::transaction::{Coin, Fee, SignedTransaction, UnsignedTransaction};
 use serde::Serialize;
 use serde_json::Value as Json;
 use std::marker::PhantomData;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::base64::Base64Encoded;
 
 #[derive(Serialize)]

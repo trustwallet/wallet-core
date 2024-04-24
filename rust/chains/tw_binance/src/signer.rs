@@ -9,7 +9,7 @@ use crate::modules::tx_builder::TxBuilder;
 use crate::signature::BinanceSignature;
 use crate::transaction::SignerInfo;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_cosmos_sdk::modules::serializer::json_serializer::JsonSerializer;
 use tw_cosmos_sdk::public_key::secp256k1::Secp256PublicKey;
@@ -54,8 +54,8 @@ impl BinanceSigner {
         });
         let encoded_tx = BinanceAminoSerializer::serialize_signed_tx(&signed_tx)?;
 
-        let signature_json = serde_json::to_string(&signature_json)
-            .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+        let signature_json =
+            serde_json::to_string(&signature_json).tw_err(|_| SigningErrorType::Error_internal)?;
         Ok(Proto::SigningOutput {
             encoded: encoded_tx.into(),
             signature: signature_bytes.into(),

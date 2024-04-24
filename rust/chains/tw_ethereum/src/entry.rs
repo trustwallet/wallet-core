@@ -6,7 +6,8 @@ use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
-use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_coin_entry::error::prelude::*;
+use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
@@ -15,7 +16,6 @@ use tw_evm::address::Address;
 use tw_evm::evm_context::StandardEvmContext;
 use tw_evm::evm_entry::EvmEntry;
 use tw_evm::modules::compiler::Compiler;
-use tw_evm::modules::json_signer::EthJsonSigner;
 use tw_evm::modules::message_signer::EthMessageSigner;
 use tw_evm::modules::signer::Signer;
 use tw_keypair::tw::PublicKey;
@@ -32,7 +32,7 @@ impl CoinEntry for EthereumEntry {
     type PreSigningOutput = CompilerProto::PreSigningOutput<'static>;
 
     // Optional modules:
-    type JsonSigner = EthJsonSigner<StandardEvmContext>;
+    type JsonSigner = NoJsonSigner;
     type PlanBuilder = NoPlanBuilder;
     type MessageSigner = EthMessageSigner;
     type WalletConnector = NoWalletConnector;
@@ -94,11 +94,6 @@ impl CoinEntry for EthereumEntry {
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
         Compiler::<StandardEvmContext>::compile(input, signatures, public_keys)
-    }
-
-    #[inline]
-    fn json_signer(&self) -> Option<Self::JsonSigner> {
-        Some(EthJsonSigner::default())
     }
 
     #[inline]

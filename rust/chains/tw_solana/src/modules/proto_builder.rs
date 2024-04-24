@@ -5,13 +5,12 @@
 use crate::transaction::v0;
 use crate::transaction::versioned::{VersionedMessage, VersionedTransaction};
 use std::borrow::Cow;
-use tw_coin_entry::error::SigningResult;
 use tw_proto::Solana::Proto::{self, mod_RawMessage::OneOfmessage as ProtoMessageType};
 
 pub struct ProtoBuilder;
 
 impl ProtoBuilder {
-    pub fn build_from_tx(tx: &VersionedTransaction) -> SigningResult<Proto::RawMessage<'static>> {
+    pub fn build_from_tx(tx: &VersionedTransaction) -> Proto::RawMessage<'static> {
         let message_header = Proto::mod_RawMessage::MessageHeader {
             num_required_signatures: tx.message.header().num_required_signatures as u32,
             num_readonly_signed_accounts: tx.message.header().num_readonly_signed_accounts as u32,
@@ -61,10 +60,10 @@ impl ProtoBuilder {
             },
         };
 
-        Ok(Proto::RawMessage {
+        Proto::RawMessage {
             signatures: Self::build_signatures(tx),
             message,
-        })
+        }
     }
 
     fn build_address_table_lookups(

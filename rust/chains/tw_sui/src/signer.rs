@@ -6,7 +6,7 @@ use crate::modules::tx_builder::{TWTransaction, TWTransactionBuilder};
 use crate::modules::tx_signer::TxSigner;
 use std::borrow::Cow;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_encoding::base64;
 use tw_proto::Sui::Proto;

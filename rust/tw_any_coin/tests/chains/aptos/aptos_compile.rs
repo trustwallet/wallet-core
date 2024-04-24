@@ -10,7 +10,7 @@ use crate::chains::aptos::APTOS_COIN_TYPE;
 use tw_any_coin::ffi::tw_transaction_compiler::{
     tw_transaction_compiler_compile, tw_transaction_compiler_pre_image_hashes,
 };
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex::ToHex;
 use tw_keypair::ed25519;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
