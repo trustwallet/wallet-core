@@ -1,14 +1,15 @@
 use crate::{KeyPairError, KeyPairResult};
 use tw_misc::traits::ToBytesVec;
 
+#[derive(Debug, PartialEq)]
 pub struct Signature {
-    pub(crate) signature: k256::schnorr::Signature,
+    pub(crate) signature: secp256k1::schnorr::Signature,
 }
 
 impl Signature {
-    pub const LEN: usize = k256::schnorr::Signature::BYTE_SIZE;
+    pub const LEN: usize = secp256k1::constants::SCHNORR_SIGNATURE_SIZE;
 
-    pub(crate) fn new(signature: k256::schnorr::Signature) -> Self {
+    pub(crate) fn new(signature: secp256k1::schnorr::Signature) -> Self {
         Self { signature }
     }
 
@@ -18,7 +19,7 @@ impl Signature {
 
     pub fn from_bytes(sig: &[u8]) -> KeyPairResult<Self> {
         Ok(Signature {
-            signature: k256::schnorr::Signature::try_from(sig)
+            signature: secp256k1::schnorr::Signature::from_slice(sig)
                 .map_err(|_| KeyPairError::InvalidSignature)?,
         })
     }
@@ -26,7 +27,7 @@ impl Signature {
 
 impl ToBytesVec for Signature {
     fn to_vec(&self) -> Vec<u8> {
-        self.signature.to_bytes().to_vec()
+        self.signature.as_ref().to_vec()
     }
 }
 
@@ -38,8 +39,8 @@ impl<'a> TryFrom<&'a [u8]> for Signature {
     }
 }
 
-impl From<k256::schnorr::Signature> for Signature {
-    fn from(sig: k256::schnorr::Signature) -> Self {
+impl From<secp256k1::schnorr::Signature> for Signature {
+    fn from(sig: secp256k1::schnorr::Signature) -> Self {
         Self::new(sig)
     }
 }

@@ -1,45 +1,62 @@
 use crate::schnorr::public::PublicKey;
 use crate::schnorr::signature::Signature;
 use crate::traits::SigningKeyTrait;
-use crate::KeyPairError;
-use k256::schnorr::SigningKey;
+use crate::{KeyPairError, KeyPairResult};
+use bitcoin::hashes::Hash;
+use bitcoin::key::TapTweak;
+use secp256k1::SECP256K1;
 use tw_encoding::hex;
 use tw_hash::H256;
 use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
-use zeroize::Zeroizing;
+use zeroize::{Zeroize, Zeroizing};
 
-enum IsTweaked {
-    Some(Option<H256>),
-    None,
-}
-
+/// Represents a `schnorr` private key.
 pub struct PrivateKey {
-    pub(crate) secret: SigningKey,
-    tweak: IsTweaked,
+    key_pair: secp256k1::KeyPair,
     no_aux_rand: bool,
 }
 
 impl PrivateKey {
     pub fn public(&self) -> PublicKey {
-        PublicKey::new(*self.secret.verifying_key())
-    }
-
-    // TODO: Prevent caller from tweaking multiple times. Maybe create a
-    // separate type?
-    /// Tweak the private key with a given hash.
-    pub fn tweak(self, hash: Option<H256>) -> PrivateKey {
-        PrivateKey {
-            secret: self.secret,
-            tweak: IsTweaked::Some(hash),
-            no_aux_rand: false,
+        PublicKey {
+            public: self.key_pair.public_key(),
         }
     }
 
-    /// Disable auxiliary random data when signing. ONLY recommended for
-    /// testing.
-    pub fn no_aux_rand(mut self) -> PrivateKey {
+    /// Tweak the private key with a given hash.
+    /// Note that the private key can be tweaked with a `None` value.
+    pub fn tweak(self, tweak: Option<H256>) -> PrivateKey {
+        let tweak = if let Some(tweak) = tweak {
+            let hash = bitcoin::hashes::sha256t::Hash::<_>::from_slice(tweak.as_slice())
+                .expect("Expected a valid sha256t tweak");
+            Some(bitcoin::taproot::TapNodeHash::from_raw_hash(hash))
+        } else {
+            None
+        };
+
+        // Tweak the private key.
+        let tweaked = self.key_pair.tap_tweak(&SECP256K1, tweak);
+        PrivateKey {
+            key_pair: secp256k1::KeyPair::from(tweaked),
+            no_aux_rand: self.no_aux_rand,
+        }
+    }
+
+    /// Disable auxiliary random data when signing. ONLY recommended for testing.
+    pub fn no_aux_rand(&mut self) {
         self.no_aux_rand = true;
-        self
+    }
+}
+
+impl Zeroize for PrivateKey {
+    fn zeroize(&mut self) {
+        self.key_pair.non_secure_erase();
+    }
+}
+
+impl Drop for PrivateKey {
+    fn drop(&mut self) {
+        self.zeroize();
     }
 }
 
@@ -47,63 +64,27 @@ impl SigningKeyTrait for PrivateKey {
     type SigningMessage = H256;
     type Signature = Signature;
 
-    fn sign(&self, message: Self::SigningMessage) -> crate::KeyPairResult<Self::Signature> {
+    fn sign(&self, message: Self::SigningMessage) -> KeyPairResult<Self::Signature> {
         // We fully rely on the `bitcoin` and `secp256k1` crates to generate Schnorr signatures.
 
-        use bitcoin::key::TapTweak;
-        use secp256k1::hashes::Hash;
+        // TODO consider checking `Utxo.leaf_hash` like at
+        // https://github.com/trustwallet/wallet-core/blob/43bf58c0c99d78789b5a11714ebc686b4268fa06/rust/tw_bitcoin/src/modules/signer.rs#L183
 
-        if let IsTweaked::Some(tweak) = self.tweak {
-            // Do note that the private key can be tweaked with a `None` value.
-            let tweak = if let Some(tweak) = tweak {
-                let hash =
-                    bitcoin::hashes::sha256t::Hash::<_>::from_slice(tweak.as_slice()).unwrap();
-                Some(bitcoin::taproot::TapNodeHash::from_raw_hash(hash))
-            } else {
-                None
-            };
-
-            // Tweak the private key.
-            let secp = secp256k1::Secp256k1::new();
-            let keypair =
-                secp256k1::KeyPair::from_seckey_slice(&secp, self.secret.to_bytes().as_slice())
-                    .unwrap();
-            // TODO: If we implement `tap_tweak` ourselves, we can avoid the `bitcoin` crate.
-            let tapped = keypair.tap_tweak(&secp, tweak);
-            let tweaked = secp256k1::KeyPair::from(tapped);
-
-            // Sign the message.
-            let msg = secp256k1::Message::from_slice(message.as_slice()).unwrap();
-            let sig = if self.no_aux_rand {
-                secp.sign_schnorr_no_aux_rand(&msg, &tweaked)
-            } else {
-                secp.sign_schnorr(&msg, &tweaked)
-            };
-
-            Ok(Signature::from_bytes(sig.as_ref()).unwrap())
+        // Sign the message.
+        let msg = secp256k1::Message::from_slice(message.as_slice()).expect("");
+        let sig = if self.no_aux_rand {
+            SECP256K1.sign_schnorr_no_aux_rand(&msg, &self.key_pair)
         } else {
-            // Tweak the private key.
-            let secp = secp256k1::Secp256k1::new();
-            let keypair =
-                secp256k1::KeyPair::from_seckey_slice(&secp, self.secret.to_bytes().as_slice())
-                    .unwrap();
+            SECP256K1.sign_schnorr(&msg, &self.key_pair)
+        };
 
-            // Sign the message.
-            let msg = secp256k1::Message::from_slice(message.as_slice()).unwrap();
-            let sig = if self.no_aux_rand {
-                secp.sign_schnorr_no_aux_rand(&msg, &keypair)
-            } else {
-                secp.sign_schnorr(&msg, &keypair)
-            };
-
-            Ok(Signature::from_bytes(sig.as_ref()).unwrap())
-        }
+        Signature::from_bytes(sig.as_ref())
     }
 }
 
 impl ToBytesZeroizing for PrivateKey {
-    fn to_zeroizing_vec(&self) -> zeroize::Zeroizing<Vec<u8>> {
-        Zeroizing::new(self.secret.to_bytes().to_vec())
+    fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
+        Zeroizing::new(self.key_pair.secret_bytes().to_vec())
     }
 }
 
@@ -120,18 +101,11 @@ impl<'a> TryFrom<&'a [u8]> for PrivateKey {
     type Error = KeyPairError;
 
     fn try_from(value: &'a [u8]) -> Result<Self, Self::Error> {
-        Ok(PrivateKey::from(
-            SigningKey::from_bytes(value).map_err(|_| KeyPairError::InvalidPublicKey)?,
-        ))
-    }
-}
-
-impl From<k256::schnorr::SigningKey> for PrivateKey {
-    fn from(secret: k256::schnorr::SigningKey) -> Self {
-        Self {
-            secret,
-            tweak: IsTweaked::None,
+        let key_pair = secp256k1::KeyPair::from_seckey_slice(&SECP256K1, value)
+            .map_err(|_| KeyPairError::InvalidSecretKey)?;
+        Ok(PrivateKey {
+            key_pair,
             no_aux_rand: false,
-        }
+        })
     }
 }

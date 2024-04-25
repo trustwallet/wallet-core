@@ -1970,6 +1970,7 @@ dependencies = [
  "starknet-ff",
  "tw_encoding",
  "tw_hash",
+ "tw_keypair",
  "tw_memory",
  "tw_misc",
  "zeroize",

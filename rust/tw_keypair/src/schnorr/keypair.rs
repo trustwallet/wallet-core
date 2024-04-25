@@ -1,4 +1,6 @@
+use tw_encoding::hex;
 use tw_hash::H256;
+use zeroize::Zeroizing;
 
 use crate::schnorr::private::PrivateKey;
 use crate::schnorr::public::PublicKey;
@@ -9,6 +11,13 @@ use crate::KeyPairError;
 pub struct KeyPair {
     private: PrivateKey,
     public: PublicKey,
+}
+
+impl KeyPair {
+    /// Disable auxiliary random data when signing. ONLY recommended for testing.
+    pub fn no_aux_rand(&mut self) {
+        self.private.no_aux_rand();
+    }
 }
 
 impl KeyPairTrait for KeyPair {
@@ -49,5 +58,14 @@ impl<'a> TryFrom<&'a [u8]> for KeyPair {
         let private = PrivateKey::try_from(value)?;
         let public = private.public();
         Ok(KeyPair { private, public })
+    }
+}
+
+impl<'a> TryFrom<&'a str> for KeyPair {
+    type Error = KeyPairError;
+
+    fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
+        let bytes = Zeroizing::new(hex::decode(hex).map_err(|_| KeyPairError::InvalidSecretKey)?);
+        Self::try_from(bytes.as_slice())
     }
 }
