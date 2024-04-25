@@ -128,7 +128,9 @@ impl Transaction {
     /// TODO move to the `TransactionInterface` trait.
     pub fn txid(&self) -> Vec<u8> {
         let encoded = self.without_witness().encode_out();
-        sha256_d(&encoded)
+        let mut tx_hash = sha256_d(&encoded);
+        tx_hash.reverse();
+        tx_hash
     }
 
     /// Returns the same transaction with [`TransactionInput::script_witness`] being empty.
