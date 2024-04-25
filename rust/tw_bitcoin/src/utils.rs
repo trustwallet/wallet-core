@@ -203,7 +203,11 @@ pub fn proto_input_to_native(
     }
 }
 
-pub fn proto_sighash_to_sig(private_key: &[u8], ctx: &UtxoProto::Sighash) -> Result<Vec<u8>> {
+pub fn proto_sighash_to_sig(
+    private_key: &[u8],
+    ctx: &UtxoProto::Sighash,
+    no_aux_rand: bool,
+) -> Result<Vec<u8>> {
     match ctx.signing_method {
         UtxoProto::SigningMethod::Legacy | UtxoProto::SigningMethod::Segwit => {
             let privkey = PrivateKey::try_from(private_key).unwrap();
@@ -213,6 +217,12 @@ pub fn proto_sighash_to_sig(private_key: &[u8], ctx: &UtxoProto::Sighash) -> Res
         },
         UtxoProto::SigningMethod::TaprootAll | UtxoProto::SigningMethod::TaprootOnePrevout => {
             let privkey = schnorr::PrivateKey::try_from(private_key).unwrap();
+            let privkey = if no_aux_rand {
+                privkey.no_aux_rand()
+            } else {
+                privkey
+            };
+
             let sighash: H256 = ctx.sighash.as_ref().try_into().unwrap();
             let sig = privkey.sign(sighash).unwrap().to_vec();
             Ok(sig)

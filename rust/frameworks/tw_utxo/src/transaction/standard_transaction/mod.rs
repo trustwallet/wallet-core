@@ -15,6 +15,7 @@ use crate::transaction::transaction_parts::{Amount, OutPoint};
 use crate::transaction::transaction_sighash::legacy_sighash::LegacySighash;
 use crate::transaction::transaction_sighash::witness0_sighash::Witness0Sighash;
 use crate::transaction::{TransactionPreimage, UtxoPreimageArgs};
+use tw_hash::hasher::sha256_d;
 use tw_memory::Data;
 
 use super::transaction_sighash::taproot1_sighash::Taproot1Sighash;
@@ -124,9 +125,12 @@ impl TransactionInterface for Transaction {
 }
 
 impl Transaction {
+    /// TODO move to the `TransactionInterface` trait.
     pub fn txid(&self) -> Vec<u8> {
-        todo!()
+        let encoded = self.without_witness().encode_out();
+        sha256_d(&encoded)
     }
+
     /// Returns the same transaction with [`TransactionInput::script_witness`] being empty.
     /// TODO: Why?
     pub fn without_witness(&self) -> Transaction {
@@ -136,11 +140,13 @@ impl Transaction {
         }
         without_witness
     }
+
     pub fn encode_out(&self) -> Vec<u8> {
         let mut stream = Stream::new();
         self.encode(&mut stream);
         stream.out()
     }
+
     pub fn base_size(&self) -> usize {
         let mut s = 0;
         // Base transaction size.
@@ -156,12 +162,14 @@ impl Transaction {
         s += CompactInteger::from(self.outputs().len()).encoded_size();
         s
     }
+
     pub fn size(&self) -> usize {
         let mut s = self.base_size();
         self.inputs().iter().for_each(|input| s += input.size());
         self.outputs().iter().for_each(|output| s += output.size());
         s
     }
+
     pub fn weight(&self) -> usize {
         let mut w = self.base_size();
 
@@ -177,6 +185,7 @@ impl Transaction {
 
         w
     }
+
     pub fn vsize(&self) -> usize {
         (self.weight() + 3) / SEGWIT_SCALE_FACTOR // ceil(weight / 4)
     }
@@ -214,6 +223,7 @@ impl TransactionPreimage for Transaction {
             SigningMethod::TaprootOnePrevout => todo!(),
         }
     }
+
     fn preimage_taproot_tx(&self, tr: &UtxoTaprootPreimageArgs) -> UtxoResult<Data> {
         match tr.args.signing_method {
             SigningMethod::Legacy => todo!(),

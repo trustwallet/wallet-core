@@ -383,7 +383,9 @@ fn build_tx_input_brc20_transfer_commit_output_brc20_transfer_reveal() {
     let alice_pubkey =
         hex::decode("030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb").unwrap();
 
-    let alice_private_key = schnorr::PrivateKey::try_from(alice_private_key.as_slice()).unwrap();
+    let alice_private_key = schnorr::PrivateKey::try_from(alice_private_key.as_slice())
+        .unwrap()
+        .no_aux_rand();
     let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
 
     let txid =
@@ -415,7 +417,7 @@ fn build_tx_input_brc20_transfer_commit_output_brc20_transfer_reveal() {
     let sighash = preimage.into_h256_list().unwrap()[0];
 
     // Tweak the private key with the Taproot script leaf hash.
-    let sig = alice_private_key.no_aux_rand().sign(sighash).unwrap();
+    let sig = alice_private_key.sign(sighash).unwrap();
 
     // Build the claim
     let claim = SpendingScriptBuilder::new()

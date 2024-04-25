@@ -36,8 +36,7 @@ mod tests {
 
     #[test]
     fn test_sign_verify() {
-        let mut key_pair = KeyPair::try_from(SECRET).unwrap();
-        key_pair.no_aux_rand();
+        let key_pair = KeyPair::try_from(SECRET).unwrap().no_aux_rand();
 
         let hash_to_sign = H256::from(MSG);
 
@@ -70,10 +69,10 @@ mod tests {
 
     #[test]
     fn test_sign_verify_tweaked() {
-        let mut tweaked_key_pair = PrivateKey::try_from(SECRET)
+        let tweaked_key_pair = PrivateKey::try_from(SECRET)
             .unwrap()
-            .tweak(Some(tweak_hash()));
-        tweaked_key_pair.no_aux_rand();
+            .tweak(Some(tweak_hash()))
+            .no_aux_rand();
 
         let hash_to_sign = H256::from(MSG);
 
@@ -90,8 +89,10 @@ mod tests {
 
     #[test]
     fn test_sign_verify_tweaked_no_hash() {
-        let mut tweaked_key_pair = PrivateKey::try_from(SECRET).unwrap().tweak(None);
-        tweaked_key_pair.no_aux_rand();
+        let tweaked_key_pair = PrivateKey::try_from(SECRET)
+            .unwrap()
+            .tweak(None)
+            .no_aux_rand();
 
         let hash_to_sign = H256::from(MSG);
 

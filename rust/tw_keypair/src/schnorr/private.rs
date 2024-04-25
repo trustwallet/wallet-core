@@ -43,8 +43,9 @@ impl PrivateKey {
     }
 
     /// Disable auxiliary random data when signing. ONLY recommended for testing.
-    pub fn no_aux_rand(&mut self) {
+    pub fn no_aux_rand(mut self) -> PrivateKey {
         self.no_aux_rand = true;
+        self
     }
 }
 

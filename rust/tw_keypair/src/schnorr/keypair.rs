@@ -15,8 +15,11 @@ pub struct KeyPair {
 
 impl KeyPair {
     /// Disable auxiliary random data when signing. ONLY recommended for testing.
-    pub fn no_aux_rand(&mut self) {
-        self.private.no_aux_rand();
+    pub fn no_aux_rand(self) -> KeyPair {
+        KeyPair {
+            private: self.private.no_aux_rand(),
+            public: self.public,
+        }
     }
 }
 

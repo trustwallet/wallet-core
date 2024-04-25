@@ -134,7 +134,8 @@ impl BitcoinEntry {
                 &proto.private_key
             };
 
-            let sig = proto_sighash_to_sig(privkey, sighash).unwrap();
+            let sig = proto_sighash_to_sig(privkey, sighash, proto.dangerous_use_fixed_schnorr_rng)
+                .unwrap();
             sigs.push(sig);
         }
 
