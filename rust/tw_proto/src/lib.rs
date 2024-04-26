@@ -7,6 +7,7 @@ use quick_protobuf::{BytesReader, MessageInfo, Writer};
 #[allow(non_snake_case)]
 #[rustfmt::skip]
 mod common;
+mod impls;
 
 #[allow(non_snake_case)]
 #[rustfmt::skip]
@@ -20,8 +21,6 @@ pub use quick_protobuf::{
     deserialize_from_slice as deserialize_prefixed, serialize_into_vec as serialize_prefixed,
     Error as ProtoError, MessageRead, MessageWrite, Result as ProtoResult,
 };
-
-pub mod ffi;
 
 /// Serializes a Protobuf message without the length prefix.
 /// Please note that [`quick_protobuf::serialize_into_vec`] appends a `varint32` length prefix.

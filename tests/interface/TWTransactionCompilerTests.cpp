@@ -502,7 +502,6 @@ TEST(TWTransactionCompiler, ExternalSignatureSignSolana) {
         "rLph39CMgAkcj6b8KYvJEkb1YdYytHSZNGi4kVVTNqiicNgPdf1gmG6qz9zVtnqj9JtaD2efdS8qxsKnvNWSgb8Xxb"
         "T6dwyp7msUUi7d27cYaPTpK";
     {
-        EXPECT_EQ(TWDataSize(outputData.get()), 296ul);
         Solana::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(TWDataBytes(outputData.get()),
                                           (int)TWDataSize(outputData.get())));

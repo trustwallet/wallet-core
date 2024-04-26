@@ -6,7 +6,7 @@ use std::fmt;
 use std::str::FromStr;
 use tw_base58_address::Base58Address;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::prefix::BitcoinBase58Prefix;
 use tw_encoding::base58::Alphabet;
 use tw_hash::hasher::{sha256_ripemd, Hasher};

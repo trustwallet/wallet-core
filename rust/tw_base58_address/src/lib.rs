@@ -7,7 +7,7 @@ use serde::de::Error as DeError;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::convert::TryFrom;
 use std::marker::PhantomData;
-use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::base58;
 use tw_encoding::base58::Alphabet;
 use tw_hash::hasher::Hasher;

@@ -5,7 +5,7 @@
 use quick_protobuf::MessageWrite;
 use serde::Serialize;
 use serde_json::Value as Json;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::base64::Base64Encoded;
 use tw_proto::serialize;
 
@@ -46,8 +46,9 @@ impl BroadcastMsg {
             BroadcastMode::Sync => "sync",
         }
         .to_string();
-        let tx =
-            serde_json::to_value(tx).map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+        let tx = serde_json::to_value(tx)
+            .tw_err(|_| SigningErrorType::Error_internal)
+            .context("Error serializing transaction to sign as JSON")?;
         Ok(BroadcastMsg::Json { mode, tx })
     }
 

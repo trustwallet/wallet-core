@@ -4,7 +4,7 @@
 
 use serde::{Deserialize, Serialize, Serializer};
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 use tw_proto::Binance::Proto::{self, mod_SigningInput::OneOforder_oneof as BinanceMessageProto};
 
@@ -41,6 +41,7 @@ pub enum BinanceMessageEnum {
     SideDelegateOrder(side_chain_delegate::SideDelegateOrder),
     SideRedelegateOrder(side_chain_delegate::SideRedelegateOrder),
     SideUndelegateOrder(side_chain_delegate::SideUndelegateOrder),
+    StakeMigrationOrder(side_chain_delegate::StakeMigrationOrder),
     TimeLockOrder(time_lock_order::TimeLockOrder),
     TimeRelockOrder(time_lock_order::TimeRelockOrder),
     TimeUnlockOrder(time_lock_order::TimeUnlockOrder),
@@ -133,7 +134,11 @@ impl TWBinanceProto for BinanceMessageEnum {
                 time_lock_order::TimeUnlockOrder::from_tw_proto(coin, order)
                     .map(BinanceMessageEnum::TimeUnlockOrder)
             },
-            BinanceMessageProto::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
+            BinanceMessageProto::side_stake_migration_order(ref order) => {
+                side_chain_delegate::StakeMigrationOrder::from_tw_proto(coin, order)
+                    .map(BinanceMessageEnum::StakeMigrationOrder)
+            },
+            BinanceMessageProto::None => SigningError::err(SigningErrorType::Error_invalid_params),
         }
     }
 
@@ -158,6 +163,9 @@ impl TWBinanceProto for BinanceMessageEnum {
             },
             BinanceMessageEnum::SideUndelegateOrder(m) => {
                 BinanceMessageProto::side_undelegate_order(m.to_tw_proto())
+            },
+            BinanceMessageEnum::StakeMigrationOrder(m) => {
+                BinanceMessageProto::side_stake_migration_order(m.to_tw_proto())
             },
             BinanceMessageEnum::TimeLockOrder(m) => {
                 BinanceMessageProto::time_lock_order(m.to_tw_proto())
@@ -207,6 +215,7 @@ impl<'a> AsRef<dyn BinanceMessage + 'a> for BinanceMessageEnum {
             BinanceMessageEnum::SideDelegateOrder(m) => m,
             BinanceMessageEnum::SideRedelegateOrder(m) => m,
             BinanceMessageEnum::SideUndelegateOrder(m) => m,
+            BinanceMessageEnum::StakeMigrationOrder(m) => m,
             BinanceMessageEnum::TimeLockOrder(m) => m,
             BinanceMessageEnum::TimeRelockOrder(m) => m,
             BinanceMessageEnum::TimeUnlockOrder(m) => m,

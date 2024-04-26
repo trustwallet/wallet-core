@@ -5,11 +5,11 @@
 use crate::message::eip191::Eip191Message;
 use crate::message::eip712::eip712_message::Eip712Message;
 use crate::message::signature::{MessageSignature, SignatureType};
-use crate::message::{EthMessage, EthMessageBoxed};
+use crate::message::{to_signing, EthMessage, EthMessageBoxed};
 use std::borrow::Cow;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::modules::message_signer::MessageSigner;
 use tw_coin_entry::signing_output_error;
 use tw_encoding::hex::ToHex;
@@ -61,7 +61,7 @@ impl EthMessageSigner {
         input: Proto::MessageSigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
         let msg = Self::message_from_proto(input)?;
-        let hash = msg.hash()?.to_vec();
+        let hash = msg.hash().map_err(to_signing)?.to_vec();
         Ok(CompilerProto::PreSigningOutput {
             data: Cow::Owned(hash.clone()),
             data_hash: Cow::Owned(hash),
@@ -78,7 +78,7 @@ impl EthMessageSigner {
 
         let msg = Self::message_from_proto(input)?;
 
-        let hash_to_sign = msg.hash()?;
+        let hash_to_sign = msg.hash().map_err(to_signing)?;
         let secp_sign = private_key.sign(hash_to_sign)?;
         let prepared_sign = MessageSignature::prepared(secp_sign, signature_type)?;
 
@@ -91,7 +91,9 @@ impl EthMessageSigner {
     fn verify_message_impl(input: Proto::MessageVerifyingInput<'_>) -> SigningResult<bool> {
         let public_key = secp256k1::PublicKey::try_from(input.public_key.as_ref())?;
 
-        let msg_hash = Self::message_from_str(&input.message)?.hash()?;
+        let msg_hash = Self::message_from_str(&input.message)?
+            .hash()
+            .map_err(to_signing)?;
         let secp_signature =
             MessageSignature::from_str(&input.signature)?.to_secp256k1_signature()?;
 
@@ -113,9 +115,13 @@ impl EthMessageSigner {
             | Proto::MessageType::MessageType_typed_eip155 => match input.chain_id {
                 Some(expected_chain_id) => {
                     let expected_chain_id = U256::from(expected_chain_id.chain_id);
-                    Ok(Eip712Message::new_checked(input.message, expected_chain_id)?.into_boxed())
+                    Ok(Eip712Message::new_checked(input.message, expected_chain_id)
+                        .map_err(to_signing)?
+                        .into_boxed())
                 },
-                None => Ok(Eip712Message::new(input.message)?.into_boxed()),
+                None => Ok(Eip712Message::new(input.message)
+                    .map_err(to_signing)?
+                    .into_boxed()),
             },
         }
     }

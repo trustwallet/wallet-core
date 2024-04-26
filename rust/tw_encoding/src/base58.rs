@@ -42,6 +42,32 @@ pub fn decode(input: &str, alphabet: Alphabet) -> EncodingResult<Data> {
         .map_err(EncodingError::from)
 }
 
+pub mod as_base58_bitcoin {
+    use super::*;
+    use serde::de::Error;
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+    /// Serializes the `value` as base58.
+    pub fn serialize<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        T: AsRef<[u8]>,
+        S: Serializer,
+    {
+        encode(value.as_ref(), Alphabet::Bitcoin).serialize(serializer)
+    }
+
+    /// Serializes the `value` as base58.
+    pub fn deserialize<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+    where
+        D: Deserializer<'de>,
+        T: for<'a> TryFrom<&'a [u8]>,
+    {
+        let s = String::deserialize(deserializer)?;
+        let data = decode(&s, Alphabet::Bitcoin).map_err(|e| Error::custom(format!("{e:?}")))?;
+        T::try_from(&data).map_err(|_| Error::custom("Unexpected bytes length"))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

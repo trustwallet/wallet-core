@@ -6,6 +6,10 @@
 
 namespace TW::Bitcoin {
 
+SigningInput::SigningInput()
+    : dustCalculator(std::make_shared<LegacyDustCalculator>(TWCoinTypeBitcoin)) {
+}
+
 SigningInput::SigningInput(const Proto::SigningInput& input) {
     hashType = static_cast<TWBitcoinSigHashType>(input.hash_type());
     amount = input.amount();
@@ -29,6 +33,9 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
         plan = TransactionPlan(input.plan());
     }
     outputOpReturn = data(input.output_op_return());
+    if (input.has_output_op_return_index()) {
+        outputOpReturnIndex = input.output_op_return_index().index();
+    }
     lockTime = input.lock_time();
     time = input.time();
 
@@ -37,6 +44,8 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
         extraOutputsAmount += output.amount();
         extraOutputs.push_back(std::make_pair(output.to_address(), output.amount()));
     }
+
+    dustCalculator = getDustCalculator(input);
 }
 
 } // namespace TW::Bitcoin

@@ -35,7 +35,7 @@ impl PrivateKey {
         };
 
         // Tweak the private key.
-        let tweaked = self.key_pair.tap_tweak(&SECP256K1, tweak);
+        let tweaked = self.key_pair.tap_tweak(SECP256K1, tweak);
         PrivateKey {
             key_pair: secp256k1::KeyPair::from(tweaked),
             no_aux_rand: self.no_aux_rand,
@@ -102,7 +102,7 @@ impl<'a> TryFrom<&'a [u8]> for PrivateKey {
     type Error = KeyPairError;
 
     fn try_from(value: &'a [u8]) -> Result<Self, Self::Error> {
-        let key_pair = secp256k1::KeyPair::from_seckey_slice(&SECP256K1, value)
+        let key_pair = secp256k1::KeyPair::from_seckey_slice(SECP256K1, value)
             .map_err(|_| KeyPairError::InvalidSecretKey)?;
         Ok(PrivateKey {
             key_pair,

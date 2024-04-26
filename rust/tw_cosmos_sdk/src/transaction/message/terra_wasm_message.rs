@@ -10,7 +10,7 @@ use crate::transaction::message::{CosmosMessage, JsonMessage, ProtobufMessage};
 use crate::transaction::Coin;
 use serde::Serialize;
 use serde_json::json;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_proto::to_any;
 
 const DEFAULT_JSON_MSG_TYPE: &str = "wasm/MsgExecuteContract";

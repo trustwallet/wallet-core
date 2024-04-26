@@ -8,7 +8,7 @@ use crate::proto::cosmos;
 use crate::transaction::message::{message_to_json, CosmosMessage, JsonMessage, ProtobufMessage};
 use crate::transaction::Coin;
 use serde::Serialize;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_proto::to_any;
 
 const DEFAULT_JSON_SEND_TYPE: &str = "cosmos-sdk/MsgSend";

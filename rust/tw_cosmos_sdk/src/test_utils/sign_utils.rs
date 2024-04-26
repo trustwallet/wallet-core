@@ -6,7 +6,7 @@ use crate::context::CosmosContext;
 use crate::modules::compiler::tw_compiler::TWTransactionCompiler;
 use crate::modules::signer::tw_signer::TWSigner;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_proto::Common::Proto::SigningError;
 use tw_proto::Cosmos::Proto;

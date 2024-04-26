@@ -11,6 +11,7 @@
 
 namespace TW {
 
+using uint128_t = boost::multiprecision::uint128_t;
 using int256_t = boost::multiprecision::int256_t;
 using uint256_t = boost::multiprecision::uint256_t;
 
@@ -23,20 +24,6 @@ inline uint256_t load(const Data& data) {
     }
     uint256_t result;
     import_bits(result, data.begin(), data.end());
-    return result;
-}
-
-/// Loads a `uint256_t` from a collection of bytes.
-/// The leftmost offset bytes are skipped, and the next 32 bytes are taken.  At least 32 (+offset)
-/// bytes are needed.
-inline uint256_t loadWithOffset(const Data& data, size_t offset) {
-    using boost::multiprecision::cpp_int;
-    if (data.empty() || (data.size() < (256 / 8 + offset))) {
-        // not enough bytes in data
-        return uint256_t(0);
-    }
-    uint256_t result;
-    import_bits(result, data.begin() + offset, data.begin() + offset + 256 / 8);
     return result;
 }
 

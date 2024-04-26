@@ -8,7 +8,7 @@ use std::fmt::{Display, Formatter};
 use std::ops::{RangeFrom, RangeInclusive};
 use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex;
 use tw_hash::{sha3::keccak256, H160, H256};
 use tw_keypair::ecdsa::secp256k1;
@@ -107,6 +107,15 @@ impl FromStr for Address {
         let addr_hex = s.strip_prefix("0x").ok_or(AddressError::MissingPrefix)?;
         let addr_hash = H160::from_str(addr_hex).map_err(|_| AddressError::FromHexError)?;
         Ok(Address { bytes: addr_hash })
+    }
+}
+
+impl<'a> TryFrom<&'a [u8]> for Address {
+    type Error = AddressError;
+
+    fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
+        let bytes = H160::try_from(bytes).map_err(|_| AddressError::InvalidInput)?;
+        Ok(Address { bytes })
     }
 }
 

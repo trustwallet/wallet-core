@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Amount.h"
+#include "DustCalculator.h"
 #include "Transaction.h"
 #include "UTXO.h"
 #include <TrustWalletCore/TWBitcoinSigHashType.h>
@@ -63,6 +64,10 @@ public:
 
     Data outputOpReturn;
 
+    // Optional index of the OP_RETURN output in the transaction.
+    // If not set, OP_RETURN output will be pushed as the latest output.
+    MaybeIndex outputOpReturnIndex;
+
     uint32_t lockTime = 0;
     uint32_t time = 0;
 
@@ -73,8 +78,10 @@ public:
     // Total amount of the `extraOutputs`.
     Amount extraOutputsAmount = 0;
 
+    DustCalculatorShared dustCalculator;
+
 public:
-    SigningInput() = default;
+    SigningInput();
 
     SigningInput(const Proto::SigningInput& input);
 };

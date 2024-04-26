@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_coin_entry::error::AddressError;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::prefix::AddressPrefix;
 
 pub struct Bech32Prefix {

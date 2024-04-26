@@ -1,17 +1,17 @@
 use crate::utils::{proto_input_to_native, proto_output_to_native, proto_sighash_to_sig};
-use crate::{Error, Result};
+use crate::{bitcoin_output_error, Error, Result};
 use bitcoin::address::NetworkChecked;
 use std::fmt::Display;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
-use tw_coin_entry::error::AddressResult;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
+use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
-use tw_coin_entry::signing_output_error;
 use tw_keypair::tw::PublicKey;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
@@ -52,6 +52,7 @@ impl CoinEntry for BitcoinEntry {
     type PlanBuilder = NoPlanBuilder;
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
+    type TransactionDecoder = NoTransactionDecoder;
 
     #[inline]
     fn parse_address(
@@ -86,7 +87,7 @@ impl CoinEntry for BitcoinEntry {
     #[inline]
     fn sign(&self, _coin: &dyn CoinContext, proto: Self::SigningInput<'_>) -> Self::SigningOutput {
         self.sign_impl(_coin, proto)
-            .unwrap_or_else(|err| signing_output_error!(Proto::SigningOutput, err))
+            .unwrap_or_else(|err| bitcoin_output_error!(Proto::SigningOutput, err))
     }
 
     #[inline]
@@ -96,7 +97,7 @@ impl CoinEntry for BitcoinEntry {
         proto: Proto::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
         self.preimage_hashes_impl(_coin, proto)
-            .unwrap_or_else(|err| signing_output_error!(Proto::PreSigningOutput, err))
+            .unwrap_or_else(|err| bitcoin_output_error!(Proto::PreSigningOutput, err))
     }
 
     #[inline]
@@ -108,7 +109,7 @@ impl CoinEntry for BitcoinEntry {
         _public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
         self.compile_impl(_coin, proto, signatures, _public_keys)
-            .unwrap_or_else(|err| signing_output_error!(Proto::SigningOutput, err))
+            .unwrap_or_else(|err| bitcoin_output_error!(Proto::SigningOutput, err))
     }
 
     #[inline]

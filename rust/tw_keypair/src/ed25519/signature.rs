@@ -11,7 +11,7 @@ use tw_misc::traits::ToBytesVec;
 /// Represents an `ed25519` signature.
 /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/signature.rs#L22-L53
 #[allow(non_snake_case)]
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Signature {
     /// `R` is an `EdwardsPoint`, formed by using an hash function with
     /// 512-bits output to produce the digest of:
@@ -37,6 +37,9 @@ pub struct Signature {
 }
 
 impl Signature {
+    /// cbindgen:ignore
+    pub const LEN: usize = H512::LEN;
+
     /// Returns the signature data (64 bytes).
     pub fn to_bytes(&self) -> H512 {
         let left = H256::from(self.R.to_bytes());
@@ -84,10 +87,11 @@ fn get_scalar(bytes: H256) -> KeyPairResult<Scalar> {
     // This succeed-fast trick should succeed for roughly half of all scalars.
     let last_byte = bytes.last().expect("H256 is exactly 32 length");
     if last_byte & SIGNIFICANT_BITS_MASK == 0 {
+        #[allow(deprecated)]
         return Ok(Scalar::from_bits(bytes.take()));
     }
 
-    match Scalar::from_canonical_bytes(bytes.take()) {
+    match Scalar::from_canonical_bytes(bytes.take()).into() {
         Some(x) => Ok(x),
         None => Err(KeyPairError::InvalidSignature),
     }

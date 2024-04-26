@@ -15,7 +15,7 @@ use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::derivation::Derivation;
-use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::prefix::{AddressPrefix, BitcoinBase58Prefix};
 use tw_keypair::tw;
 use tw_memory::Data;

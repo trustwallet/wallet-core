@@ -19,6 +19,8 @@ use tw_internet_computer::entry::InternetComputerEntry;
 use tw_native_evmos::entry::NativeEvmosEntry;
 use tw_native_injective::entry::NativeInjectiveEntry;
 use tw_ronin::entry::RoninEntry;
+use tw_solana::entry::SolanaEntry;
+use tw_sui::entry::SuiEntry;
 use tw_thorchain::entry::ThorchainEntry;
 
 pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;
@@ -35,6 +37,8 @@ const INTERNET_COMPUTER: InternetComputerEntry = InternetComputerEntry;
 const NATIVE_EVMOS: NativeEvmosEntry = NativeEvmosEntry;
 const NATIVE_INJECTIVE: NativeInjectiveEntry = NativeInjectiveEntry;
 const RONIN: RoninEntry = RoninEntry;
+const SOLANA: SolanaEntry = SolanaEntry;
+const SUI: SuiEntry = SuiEntry;
 const THORCHAIN: ThorchainEntry = ThorchainEntry;
 // end_of_blockchain_entries - USED TO GENERATE CODE
 
@@ -51,6 +55,8 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::NativeEvmos => Ok(&NATIVE_EVMOS),
         BlockchainType::NativeInjective => Ok(&NATIVE_INJECTIVE),
         BlockchainType::Ronin => Ok(&RONIN),
+        BlockchainType::Solana => Ok(&SOLANA),
+        BlockchainType::Sui => Ok(&SUI),
         BlockchainType::Thorchain => Ok(&THORCHAIN),
         // end_of_blockchain_dispatcher - USED TO GENERATE CODE
         BlockchainType::Unsupported => Err(RegistryError::Unsupported),

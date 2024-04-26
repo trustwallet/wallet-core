@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use tw_coin_entry::derivation::Derivation;
-use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::prefix::AddressPrefix;
 use tw_coin_registry::coin_type::CoinType;
 use tw_coin_registry::dispatcher::coin_dispatcher;

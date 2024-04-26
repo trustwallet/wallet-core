@@ -5,7 +5,7 @@
 use crate::amino::AminoEncoder;
 use crate::transaction::SignedTransaction;
 use std::borrow::Cow;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_cosmos_sdk::public_key::CosmosPublicKey;
 use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
@@ -58,6 +58,6 @@ impl BinanceAminoSerializer {
             sequence: signed.unsigned.sequence,
         };
         // There is no need to use Amino encoding here as the prefix is empty.
-        serialize(&sign_msg).map_err(|_| SigningError(SigningErrorType::Error_internal))
+        serialize(&sign_msg).tw_err(|_| SigningErrorType::Error_internal)
     }
 }

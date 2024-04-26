@@ -10,7 +10,7 @@ use crate::public_key::CosmosPublicKey;
 use std::borrow::Cow;
 use std::marker::PhantomData;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_proto::Cosmos::Proto;
 
@@ -41,23 +41,14 @@ impl<Context: CosmosContext> TWSigner<Context> {
         input.public_key = Cow::from(public_key.to_bytes());
 
         let preimage_output =
-            TWTransactionCompiler::<Context>::preimage_hashes(coin, input.clone());
-        if preimage_output.error != SigningErrorType::OK {
-            return Err(SigningError(preimage_output.error));
-        }
+            TWTransactionCompiler::<Context>::preimage_hashes_impl(coin, input.clone())?;
 
         let signature_data = private_key.sign_tx_hash(&preimage_output.data_hash)?;
-        let compile_output = TWTransactionCompiler::<Context>::compile(
+        TWTransactionCompiler::<Context>::compile_impl(
             coin,
             input,
             vec![signature_data],
             vec![public_key.to_bytes()],
-        );
-
-        if compile_output.error != SigningErrorType::OK {
-            return Err(SigningError(preimage_output.error));
-        }
-
-        Ok(compile_output)
+        )
     }
 }

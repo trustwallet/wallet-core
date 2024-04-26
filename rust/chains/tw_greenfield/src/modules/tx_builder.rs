@@ -11,7 +11,7 @@ use crate::transaction::{
 };
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_cosmos_sdk::public_key::CosmosPublicKey;
 use tw_cosmos_sdk::transaction::{Coin, SignerInfo};
 use tw_misc::traits::OptionalEmpty;
@@ -36,11 +36,13 @@ impl TxBuilder {
         let fee = input
             .fee
             .as_ref()
-            .ok_or(SigningError(SigningErrorType::Error_wrong_fee))?;
+            .or_tw_err(SigningErrorType::Error_wrong_fee)
+            .context("No 'fee' specified")?;
         let fee = Self::fee_from_proto(fee, &signer)?;
 
         let eth_chain_id = U256::from_str(&input.eth_chain_id)
-            .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?;
+            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .context("Invalid ETH chain ID")?;
 
         Ok(GreenfieldUnsignedTransaction {
             signer,
@@ -89,7 +91,9 @@ impl TxBuilder {
     }
 
     fn coin_from_proto(input: &Proto::Amount<'_>) -> SigningResult<Coin> {
-        let amount = U256::from_str(&input.amount)?;
+        let amount = U256::from_str(&input.amount)
+            .into_tw()
+            .context("Invalid amount: expected uint256 decimal-string")?;
         Ok(Coin {
             amount,
             denom: input.denom.to_string(),
@@ -98,7 +102,8 @@ impl TxBuilder {
 
     fn tx_body_from_proto(input: &Proto::SigningInput<'_>) -> SigningResult<GreenfieldTxBody> {
         if input.messages.is_empty() {
-            return Err(SigningError(SigningErrorType::Error_invalid_params));
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("No transaction messages provided");
         }
 
         let messages = input
@@ -122,7 +127,8 @@ impl TxBuilder {
             MessageEnum::bridge_transfer_out(ref transfer_out) => {
                 Self::bridge_transfer_out_from_proto(transfer_out)
             },
-            MessageEnum::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
+            MessageEnum::None => SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("No message type provided"),
         }
     }
 
@@ -139,8 +145,12 @@ impl TxBuilder {
             .collect::<SigningResult<_>>()?;
         let msg = SendMessage {
             custom_type_prefix: send.type_prefix.to_string().empty_or_some(),
-            from_address: GreenfieldAddress::from_str(&send.from_address)?,
-            to_address: GreenfieldAddress::from_str(&send.to_address)?,
+            from_address: GreenfieldAddress::from_str(&send.from_address)
+                .into_tw()
+                .context("Invalid sender address")?,
+            to_address: GreenfieldAddress::from_str(&send.to_address)
+                .into_tw()
+                .context("Invalid recipient address")?,
             amount: amounts,
         };
         Ok(Box::new(GreenfieldSendMessage(msg)))
@@ -154,13 +164,18 @@ impl TxBuilder {
         let amount = transfer_out
             .amount
             .as_ref()
-            .ok_or(SigningError(SigningErrorType::Error_wrong_fee))?;
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("No transfer amount specified")?;
 
         let msg = GreenfieldTransferOut {
             custom_type_prefix: transfer_out.type_prefix.to_string().empty_or_some(),
             amount: Self::coin_from_proto(amount)?,
-            from: GreenfieldAddress::from_str(&transfer_out.from_address)?,
-            to: GreenfieldAddress::from_str(&transfer_out.to_address)?,
+            from: GreenfieldAddress::from_str(&transfer_out.from_address)
+                .into_tw()
+                .context("Invalid sender address")?,
+            to: GreenfieldAddress::from_str(&transfer_out.to_address)
+                .into_tw()
+                .context("Invalid recipient address")?,
         };
         Ok(Box::new(msg))
     }

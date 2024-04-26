@@ -7,10 +7,11 @@ use crate::abi::param_type::constructor::TypeConstructor;
 use crate::abi::param_type::reader::Reader;
 use crate::abi::uint::UintBits;
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
-use crate::message::MessageSigningError;
+use crate::message::{MessageSigningError, MessageSigningErrorKind};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::str::FromStr;
+use tw_coin_entry::error::prelude::*;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Property {
@@ -79,7 +80,8 @@ impl TypeConstructor for PropertyType {
     }
 
     fn empty_tuple() -> AbiResult<Self> {
-        Err(AbiError(AbiErrorKind::Error_invalid_param_type))
+        AbiError::err(AbiErrorKind::Error_invalid_param_type)
+            .context("`PropertyType` doesn't support tuples")
     }
 
     fn custom(s: &str) -> AbiResult<Self> {
@@ -112,7 +114,7 @@ impl FromStr for PropertyType {
     type Err = MessageSigningError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Reader::parse_type(s).map_err(|_| MessageSigningError::InvalidParameterType)
+        Reader::parse_type(s).tw_err(|_| MessageSigningErrorKind::InvalidParameterType)
     }
 }
 

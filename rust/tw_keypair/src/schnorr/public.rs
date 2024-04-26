@@ -14,7 +14,7 @@ impl VerifyingKeyTrait for PublicKey {
     type VerifySignature = Signature;
 
     fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool {
-        let message = secp256k1::Message::from_slice(&message.as_slice())
+        let message = secp256k1::Message::from_slice(message.as_slice())
             .expect("Expected a valid secp256k1 message");
 
         let (x_only_pubkey, _parity) = self.public.x_only_public_key();

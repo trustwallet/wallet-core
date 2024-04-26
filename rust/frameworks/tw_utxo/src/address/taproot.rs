@@ -6,7 +6,7 @@ use bech32::FromBase32;
 use core::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_coin_entry::error::prelude::*;
 use tw_hash::H256;
 use tw_keypair::tw;
 use tw_memory::Data;

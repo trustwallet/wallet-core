@@ -1,0 +1,22 @@
+[package]
+name = "tw_aptos"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde_json = "1.0"
+tw_coin_entry = { path = "../../tw_coin_entry" }
+tw_encoding = { path = "../../tw_encoding" }
+tw_keypair = { path = "../../tw_keypair" }
+tw_proto = { path = "../../tw_proto" }
+tw_number = { path = "../../tw_number" }
+tw_hash = { path = "../../tw_hash" }
+tw_memory = { path = "../../tw_memory" }
+move-core-types = { git = "https://github.com/move-language/move", rev = "ea70797099baea64f05194a918cebd69ed02b285", features = ["address32"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_bytes = "0.11.12"
+
+[dev-dependencies]
+tw_coin_entry = { path = "../../tw_coin_entry", features = ["test-utils"] }
+tw_encoding = { path = "../../tw_encoding" }
+tw_number = { path = "../../tw_number", features = ["helpers"] }

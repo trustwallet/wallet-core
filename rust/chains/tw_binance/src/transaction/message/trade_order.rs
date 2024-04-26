@@ -8,7 +8,7 @@ use crate::transaction::message::{BinanceMessage, TWBinanceProto};
 use serde::{Deserialize, Serialize};
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 use tw_proto::Binance::Proto;
 
@@ -61,7 +61,7 @@ impl TWBinanceProto for NewTradeOrder {
 
     fn from_tw_proto(coin: &dyn CoinContext, msg: &Self::Proto<'_>) -> SigningResult<Self> {
         let order_type = OrderType::from_repr(msg.ordertype)
-            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+            .or_tw_err(SigningErrorType::Error_invalid_params)?;
         let sender = BinanceAddress::from_key_hash_with_coin(coin, msg.sender.to_vec())?;
 
         Ok(NewTradeOrder {

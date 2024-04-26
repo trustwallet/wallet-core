@@ -6,7 +6,6 @@
 #include "Cbor.h"
 #include "PublicKey.h"
 
-#include <iostream>
 #include <utility>
 #include <algorithm>
 #include <optional>

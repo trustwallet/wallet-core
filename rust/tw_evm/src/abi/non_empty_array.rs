@@ -6,6 +6,7 @@ use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use core::fmt;
 use std::num::NonZeroUsize;
 use std::ops::Deref;
+use tw_coin_entry::error::prelude::*;
 
 pub type NonEmptyBytes = NonEmptyArray<u8>;
 
@@ -16,7 +17,7 @@ pub struct NonZeroLen(NonZeroUsize);
 impl NonZeroLen {
     pub fn new(len: usize) -> AbiResult<NonZeroLen> {
         NonZeroUsize::new(len)
-            .ok_or(AbiError(AbiErrorKind::Error_invalid_param_type))
+            .or_tw_err(AbiErrorKind::Error_invalid_param_type)
             .map(NonZeroLen)
     }
 
@@ -43,7 +44,7 @@ pub struct NonEmptyArray<T>(Vec<T>);
 impl<T> NonEmptyArray<T> {
     pub fn new(elements: Vec<T>) -> AbiResult<NonEmptyArray<T>> {
         if elements.is_empty() {
-            return Err(AbiError(AbiErrorKind::Error_empty_type));
+            return AbiError::err(AbiErrorKind::Error_empty_type);
         }
         Ok(NonEmptyArray(elements))
     }

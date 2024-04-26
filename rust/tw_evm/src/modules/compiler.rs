@@ -8,7 +8,7 @@ use std::borrow::Cow;
 use std::marker::PhantomData;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::common::compile_input::SingleSignaturePubkey;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::ecdsa::secp256k1;
 use tw_number::U256;
@@ -41,7 +41,9 @@ impl<Context: EvmContext> Compiler<Context> {
     fn preimage_hashes_impl(
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
-        let chain_id = U256::from_big_endian_slice(&input.chain_id)?;
+        let chain_id = U256::from_big_endian_slice(&input.chain_id)
+            .into_tw()
+            .context("Invalid chain ID")?;
 
         let unsigned = TxBuilder::<Context>::tx_from_proto(&input)?;
         let prehash = unsigned.pre_hash(chain_id);
@@ -57,15 +59,17 @@ impl<Context: EvmContext> Compiler<Context> {
     fn compile_impl(
         input: Proto::SigningInput<'_>,
         signatures: Vec<SignatureBytes>,
-        public_keys: Vec<PublicKeyBytes>,
+        _: Vec<PublicKeyBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let SingleSignaturePubkey {
             signature,
             public_key: _,
-        } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
+        } = SingleSignaturePubkey::from_sign_list(signatures)?;
         let signature = secp256k1::Signature::from_bytes(&signature)?;
 
-        let chain_id = U256::from_big_endian_slice(&input.chain_id)?;
+        let chain_id = U256::from_big_endian_slice(&input.chain_id)
+            .into_tw()
+            .context("Invalid chain ID")?;
 
         let unsigned = TxBuilder::<Context>::tx_from_proto(&input)?;
 

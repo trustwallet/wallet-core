@@ -1623,7 +1623,7 @@
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
     "explorer": {
-      "url": "https://ravencoin.network",
+      "url": "https://blockbook.ravencoin.org",
       "txPath": "/tx/",
       "accountPath": "/address/"
     },
@@ -3235,7 +3235,7 @@
   {
     "id": "optimism",
     "name": "Optimism",
-    "displayName": "Optimism Ethereum",
+    "displayName": "OP Mainnet",
     "coinId": 10000070,
     "slip44": 60,
     "symbol": "ETH",
@@ -4616,7 +4616,7 @@
     "blockchain": "InternetComputer",
     "derivation": [
       {
-        "path": "m/44'/223'/1'/0/0",
+        "path": "m/44'/223'/0'/0/0",
         "xpub": "xpub",
         "xpriv": "xpriv"
       }
@@ -4665,6 +4665,127 @@
       "source": "https://github.com/manta-network",
       "rpc": "https://pacific-rpc.manta.network/http",
       "documentation": "https://docs.manta.network/docs/Introduction"
+    }
+  },
+  {
+    "id": "merlin",
+    "name": "Merlin",
+    "coinId": 4200,
+    "symbol": "BTC",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "4200",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://scan.merlinchain.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xca6f2891959b669237738dd0bc2c1051d966778c9de90b94165032ce58364212",
+      "sampleAccount": "0xf7e017b3f61bD3410A3b03D7DAD7699FD6780584"
+    },
+    "info": {
+      "url": "https://merlinchain.io",
+      "source": "https://merlinchain.io",
+      "rpc": "https://rpc.merlinchain.io",
+      "documentation": "https://docs.merlinchain.io/merlin-docs"
+    }
+  },
+  {
+    "id": "lightlink",
+    "name": "Lightlink",
+    "displayName": "Lightlink Phoenix",
+    "coinId": 1890,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "1890",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://phoenix.lightlink.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xc65f82445aefc883fd4ffe09149c8ce48f61b670c0734528a49d4a8bd8309bb0",
+      "sampleAccount": "0x4566ED6c7a7fFc90E2C7cfF7eB9156262afD2fDe"
+    },
+    "info": {
+      "url": "https://lightlink.io",
+      "source": "https://github.com/lightlink-network",
+      "rpc": "https://endpoints.omniatech.io/v1/lightlink/phoenix/public",
+      "documentation": "https://docs.lightlink.io/lightlink-protocol"
+    }
+  },
+  {
+    "id": "blast",
+    "name": "Blast",
+    "coinId": 81457,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "81457",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://blastscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x511fc00e8329343b9e953bf1f75e9b0a7b3cc2eb3a8f049d5be41adf4fbd6cac",
+      "sampleAccount": "0x0d11f2f0ff55c4fcfc3ff86bdc8e78ffa7df99fd"
+    },
+    "info": {
+      "url": "https://blast.io",
+      "source": "https://github.com/blast-io",
+      "rpc": "https://rpc.blast.io",
+      "documentation": "https://docs.blast.io"
+    }
+  },
+  {
+    "id": "bouncebit",
+    "name": "BounceBit",
+    "coinId": 6001,
+    "symbol": "BB",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "6001",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://bbscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x52558f4143d058d942e3b73414090266ae3ffce1fe8c25fe86896e2c8e5ef932",
+      "sampleAccount": "0xf4aa7349a9ccca4609943955b5ddc7bd9278c223"
+    },
+    "info": {
+      "url": "https://bouncebit.io",
+      "source": "https://github.com/BounceBit-Labs",
+      "rpc": "https://fullnode-mainnet.bouncebitapi.com",
+      "documentation": "https://docs.bouncebit.io"
     }
   }
 ]

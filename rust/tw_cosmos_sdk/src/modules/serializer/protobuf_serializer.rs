@@ -11,7 +11,7 @@ use crate::transaction::{
     Coin, Fee, SignMode, SignedTransaction, SignerInfo, TxBody, UnsignedTransaction,
 };
 use std::marker::PhantomData;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 use tw_proto::serialize;
 
