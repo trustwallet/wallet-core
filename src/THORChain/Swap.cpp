@@ -142,7 +142,7 @@ std::string SwapBuilder::buildMemo(bool shortened) noexcept {
     const auto& toChain = static_cast<Chain>(mToAsset.chain());
     const auto& toTokenId = mToAsset.token_id();
     const auto& toSymbol = mToAsset.symbol();
-    const auto toCoinToken = (!toTokenId.empty() && toTokenId != "0x0000000000000000000000000000000000000000") ? toTokenId : toSymbol;
+    const auto toCoinToken = (!toTokenId.empty() && toTokenId != "0x0000000000000000000000000000000000000000") ? toSymbol + "-" + toTokenId : toSymbol;
     std::stringstream memo;
     memo << prefix + ":" + chainName(toChain) + "." + toCoinToken + ":" + mToAddress;
 
