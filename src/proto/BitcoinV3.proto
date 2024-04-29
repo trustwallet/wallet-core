@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package TW.BitcoinV2.Proto;
+package TW.BitcoinV3.Proto;
 option java_package = "wallet.core.jni.proto";
 
 import "Common.proto";
@@ -13,14 +13,11 @@ message LockTime {
 }
 
 enum InputSelector {
-    // Automatically select enough inputs in an ascending order to cover the
-    // outputs of the transaction.
+    // Automatically select enough inputs in an ascending order to cover the outputs of the transaction.
     SelectAscending = 0;
-    // Automatically select enough inputs in the given order to cover the
-    // outputs of the transaction.
+    // Automatically select enough inputs in the given order to cover the outputs of the transaction.
     SelectInOrder = 1;
-    // Automatically select enough inputs in an descending order to cover the
-    // outputs of the transaction.
+    // Automatically select enough inputs in an descending order to cover the outputs of the transaction.
     SelectDescending = 2;
     // Use all the inputs provided in the given order.
     UseAll = 10;
@@ -37,19 +34,16 @@ message PublicKeyOrHash {
 }
 
 message Input {
-    // Use an individual private key for this input. Only required if the `sign`
-    // method is called.
+    // Use an individual private key for this input. Only required if the `sign` method is called.
     bytes private_key = 1;
     // The referenced transaction ID in REVERSED order.
     bytes txid = 2;
-    // The position in the previous transactions output that this input
-    // references.
+    // The position in the previous transactions output that this input references.
     uint32 vout = 3;
     // The sequence number, used for timelocks, replace-by-fee, etc.
     // If not set, the sequence will be set to the default 4294967295 (0xFFFFFFFF) value.
     Sequence sequence = 4;
-    // The amount of satoshis of this input. Required for producing
-    // Segwit/Taproot transactions.
+    // The amount of satoshis of this input. Required for producing Segwit/Taproot transactions.
     uint64 value = 5;
     // The sighash type, normally `All`.
     // See `TWBitcoinSigHashType` enum.
@@ -233,7 +227,7 @@ message SigningInput {
 }
 
 message Transaction {
-    // The protocol version, is currently expected to be 1 or 2 (BIP68)
+    // The protocol version, is currently expected to be 1 or 2 (BIP68).
     int32 version = 1;
     // Block height or timestamp indicating at what point transactions can be
     // included in a block. None by default (zero value).
@@ -246,11 +240,10 @@ message Transaction {
     message TransactionInput {
         // The referenced transaction ID in REVERSED order.
         bytes txid = 1;
-        // The position in the previous transactions output that this input
-        // references.
+        // The position in the previous transactions output that this input references.
         uint32 vout = 3;
-        // The sequence number, used for timelocks, replace-by-fee, etc. Normally
-        // this number is simply 4294967295 (0xFFFFFFFF).
+        // The sequence number, used for timelocks, replace-by-fee, etc.
+        // Normally this number is simply 4294967295 (0xFFFFFFFF).
         uint32 sequence = 4;
         // The script for claiming the input (non-Segwit/non-Taproot).
         bytes script_sig = 5;
@@ -266,15 +259,14 @@ message Transaction {
         // In case of P2TR script-path (complex scripts), this is the payload that
         // must later be revealed and is required for claiming.
         bytes taproot_payload = 3;
-        // In case of P2TR script-path (complex scripts), this is the control block
-        // required for claiming.
+        // In case of P2TR script-path (complex scripts), this is the control block required for claiming.
         bytes control_block = 4;
     }
 }
 
 message TransactionPlan {
     // A possible error, `OK` if none.
-    Common.Proto.Error error = 1;
+    Common.Proto.SigningError error = 1;
     /// Error description.
     string error_message = 2;
     // Selected unspent transaction outputs (subset of all input UTXOs).
@@ -295,7 +287,7 @@ message TransactionPlan {
 
 message PreSigningOutput {
     // A possible error, `OK` if none.
-    Common.Proto.Error error = 1;
+    Common.Proto.SigningError error = 1;
     // Error description.
     string error_message = 2;
     /// The sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
@@ -311,7 +303,7 @@ message PreSigningOutput {
 
 message SigningOutput {
     // A possible error, `OK` if none.
-    Common.Proto.Error error = 1;
+    Common.Proto.SigningError error = 1;
     // Error description.
     string error_message = 2;
     // Resulting transaction.

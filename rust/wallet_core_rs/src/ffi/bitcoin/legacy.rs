@@ -294,7 +294,7 @@ pub unsafe extern "C" fn tw_bitcoin_legacy_taproot_build_and_sign_transaction(
     let proto: LegacyProto::SigningInput =
         try_or_else!(tw_proto::deserialize(&data), CByteArray::null);
 
-    let Ok(signing) = tw_bitcoin::modules::legacy::taproot_build_and_sign_transaction(proto) else {
+    let Ok(signing) = tw_bitcoin::modules_legacy::legacy::taproot_build_and_sign_transaction(proto) else {
         // Convert the `BitcoinV2.proto` error type inot the `Common.proto`
         // errot type and return.
         let error = LegacyProto::SigningOutput {

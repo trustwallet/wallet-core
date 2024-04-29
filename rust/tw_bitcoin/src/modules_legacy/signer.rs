@@ -82,7 +82,7 @@ impl Signer {
         }
 
         // Sign the sighashes.
-        let signatures = crate::modules::signer::Signer::signatures_from_proto(
+        let signatures = crate::modules_legacy::signer::Signer::signatures_from_proto(
             &pre_signed,
             proto.private_key.to_vec(),
             individual_keys,
