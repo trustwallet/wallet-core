@@ -10,7 +10,6 @@ use crate::signing_mode::SigningMethod;
 use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
 use crate::transaction::transaction_parts::Amount;
 use crate::transaction::{TransactionPreimage, UtxoPreimageArgs, UtxoTaprootPreimageArgs};
-use std::marker::PhantomData;
 use tw_hash::hasher::Hasher;
 use tw_hash::H256;
 use tw_keypair::tw;
@@ -99,7 +98,6 @@ pub struct SignaturePubkey {
 pub struct SighashComputer<Transaction> {
     transaction_to_sign: Transaction,
     args: TxSigningArgs,
-    _phantom: PhantomData<Transaction>,
 }
 
 impl<Transaction> SighashComputer<Transaction>
@@ -110,7 +108,6 @@ where
         SighashComputer {
             transaction_to_sign: transaction,
             args,
-            _phantom: PhantomData,
         }
     }
 

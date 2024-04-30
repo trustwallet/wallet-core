@@ -23,6 +23,7 @@ use super::UtxoTaprootPreimageArgs;
 
 pub mod builder;
 pub mod fees;
+pub mod unsigned_transaction;
 
 /// Must be zero.
 const WITNESS_MARKER: u8 = 0;

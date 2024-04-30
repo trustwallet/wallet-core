@@ -12,6 +12,7 @@ use tw_hash::H256;
 use tw_memory::Data;
 
 pub mod asset;
+// TODO move the module to `tw_bitcoin`.
 pub mod standard_transaction;
 pub mod transaction_fee;
 pub mod transaction_hashing;

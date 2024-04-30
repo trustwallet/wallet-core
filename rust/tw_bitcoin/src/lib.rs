@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 pub mod entry;
+pub mod modules;
 pub mod modules_legacy;
 pub mod utils;
 
