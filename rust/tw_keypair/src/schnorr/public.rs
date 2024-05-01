@@ -1,12 +1,18 @@
 use crate::schnorr::Signature;
 use crate::traits::VerifyingKeyTrait;
 use crate::KeyPairError;
-use tw_hash::H256;
+use tw_hash::{H256, H264};
 use tw_misc::traits::ToBytesVec;
 
 #[derive(Clone, PartialEq)]
 pub struct PublicKey {
     pub(crate) public: secp256k1::PublicKey,
+}
+
+impl PublicKey {
+    pub fn compressed(&self) -> H264 {
+        H264::from(self.public.serialize())
+    }
 }
 
 impl VerifyingKeyTrait for PublicKey {

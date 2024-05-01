@@ -42,10 +42,7 @@ fn build_tx_input_legacy_output_legacy() {
         .p2pkh(alice_pubkey.clone())
         .unwrap();
 
-    let output1 = OutputBuilder::new()
-        .amount(50 * 100_000_000 - 1_000_000)
-        .p2pkh(&bob_pubkey)
-        .unwrap();
+    let output1 = OutputBuilder::new(50 * 100_000_000 - 1_000_000).p2pkh(&bob_pubkey);
 
     let (tx, args) = TransactionBuilder::new()
         .push_input(utxo1, arg1)
@@ -57,7 +54,7 @@ fn build_tx_input_legacy_output_legacy() {
     let preimage = computer.preimage_tx().unwrap();
 
     // Sign the sighash.
-    let sighash = preimage.into_h256_list().unwrap()[0];
+    let sighash = preimage.into_h256_iter().next().unwrap();
     let sig = alice_private_key.sign(sighash).unwrap();
 
     // Build the claim
@@ -103,10 +100,7 @@ fn build_tx_input_legacy_output_segwit() {
         .p2pkh(alice_pubkey.clone())
         .unwrap();
 
-    let output1 = OutputBuilder::new()
-        .amount(50 * 100_000_000 - 1_000_000)
-        .p2wpkh(&bob_pubkey)
-        .unwrap();
+    let output1 = OutputBuilder::new(50 * 100_000_000 - 1_000_000).p2wpkh(&bob_pubkey);
 
     let (tx, args) = TransactionBuilder::new()
         .push_input(utxo1, arg1)
@@ -118,7 +112,7 @@ fn build_tx_input_legacy_output_segwit() {
     let preimage = computer.preimage_tx().unwrap();
 
     // Sign the sighash.
-    let sighash = preimage.into_h256_list().unwrap()[0];
+    let sighash = preimage.into_h256_iter().next().unwrap();
     let sig = alice_private_key.sign(sighash).unwrap();
 
     // Build the claim
@@ -164,10 +158,8 @@ fn build_tx_input_segwit_output_segwit() {
         .p2wpkh(bob_pubkey.clone())
         .unwrap();
 
-    let output1 = OutputBuilder::new()
-        .amount(50 * 100_000_000 - 1_000_000 - 1_000_000)
-        .p2wpkh(&alice_pubkey)
-        .unwrap();
+    let output1 =
+        OutputBuilder::new(50 * 100_000_000 - 1_000_000 - 1_000_000).p2wpkh(&alice_pubkey);
 
     let (tx, args) = TransactionBuilder::new()
         .push_input(utxo1, arg1)
@@ -179,7 +171,7 @@ fn build_tx_input_segwit_output_segwit() {
     let preimage = computer.preimage_tx().unwrap();
 
     // Sign the sighash.
-    let sighash = preimage.into_h256_list().unwrap()[0];
+    let sighash = preimage.into_h256_iter().next().unwrap();
     let sig = bob_private_key.sign(sighash).unwrap();
 
     // Build the claim
@@ -225,10 +217,7 @@ fn build_tx_input_legacy_output_taproot() {
         .p2pkh(alice_pubkey.clone())
         .unwrap();
 
-    let output1 = OutputBuilder::new()
-        .amount(50 * 100_000_000 - 1_000_000)
-        .p2tr_key_path(&bob_pubkey)
-        .unwrap();
+    let output1 = OutputBuilder::new(50 * 100_000_000 - 1_000_000).p2tr_key_path(&bob_pubkey);
 
     let (tx, args) = TransactionBuilder::new()
         .push_input(utxo1, arg1)
@@ -240,7 +229,7 @@ fn build_tx_input_legacy_output_taproot() {
     let preimage = computer.preimage_tx().unwrap();
 
     // Sign the sighash.
-    let sighash = preimage.into_h256_list().unwrap()[0];
+    let sighash = preimage.into_h256_iter().next().unwrap();
     let sig = alice_private_key.sign(sighash).unwrap();
 
     // Build the claim
@@ -268,12 +257,10 @@ fn build_tx_input_taproot_output_taproot() {
         hex::decode("26c2566adcc030a1799213bfd546e615f6ab06f72085ec6806ff1761da48d227").unwrap();
     let alice_pubkey =
         hex::decode("0351e003fdc48e7f31c9bc94996c91f6c3273b7ef4208a1686021bedf7673bb058").unwrap();
-    let bob_pubkey =
-        hex::decode("02c0938cf377023dfde55e9c96b3cff4ca8894fb6b5d2009006bd43c0bff69cac9").unwrap();
 
     let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
     let bob_private_key = schnorr::PrivateKey::try_from(bob_private_key.as_slice()).unwrap();
-    let bob_pubkey = PublicKey::new(bob_pubkey, PublicKeyType::Secp256k1).unwrap();
+    let bob_pubkey = bob_private_key.public();
 
     let txid =
         txid_from_str_and_rev("9a582032f6a50cedaff77d3d5604b33adf8bc31bdaef8de977c2187e395860ac")
@@ -283,13 +270,11 @@ fn build_tx_input_taproot_output_taproot() {
         .prev_txid(txid)
         .prev_index(0)
         .amount(50 * 100_000_000 - 1_000_000)
-        .p2tr_key_path(bob_pubkey.clone())
+        .p2tr_key_path(&bob_pubkey)
         .unwrap();
 
-    let output1 = OutputBuilder::new()
-        .amount(50 * 100_000_000 - 1_000_000 - 1_000_000)
-        .p2tr_key_path(&alice_pubkey)
-        .unwrap();
+    let output1 =
+        OutputBuilder::new(50 * 100_000_000 - 1_000_000 - 1_000_000).p2tr_key_path(&alice_pubkey);
 
     let (tx, args) = TransactionBuilder::new()
         .push_input(utxo1, arg1)
@@ -301,15 +286,14 @@ fn build_tx_input_taproot_output_taproot() {
     let preimage = computer.preimage_tx().unwrap();
 
     // Sign the sighash.
-    let sighash = preimage.into_h256_list().unwrap()[0];
+    let sighash = preimage.into_h256_iter().next().unwrap();
     let tweaked = bob_private_key.tweak(None).no_aux_rand();
     let sig = tweaked.sign(sighash).unwrap();
 
     // Build the claim
     let claim = SpendingScriptBuilder::new()
         .sighash_ty(SighashType::new(SighashBase::All))
-        .p2tr_key_path(sig)
-        .unwrap();
+        .p2tr_key_path(sig);
 
     let tx = computer.compile(vec![claim]).unwrap();
 
@@ -338,15 +322,11 @@ fn build_tx_input_segwit_output_brc20_transfer_commit() {
         .p2wpkh(alice_pubkey.clone())
         .unwrap();
 
-    let output1 = OutputBuilder::new()
-        .amount(7_000)
+    let output1 = OutputBuilder::new(7_000)
         .brc20_transfer(alice_pubkey.clone(), "oadf".into(), "20".into())
         .unwrap();
 
-    let output2 = OutputBuilder::new()
-        .amount(16_400)
-        .p2wpkh(&alice_pubkey)
-        .unwrap();
+    let output2 = OutputBuilder::new(16_400).p2wpkh(&alice_pubkey);
 
     let (tx, args) = TransactionBuilder::new()
         .push_input(utxo1, arg1.clone())
@@ -359,7 +339,7 @@ fn build_tx_input_segwit_output_brc20_transfer_commit() {
     let preimage = computer.preimage_tx().unwrap();
 
     // Sign the sighash.
-    let sighash = preimage.into_h256_list().unwrap()[0];
+    let sighash = preimage.into_h256_iter().next().unwrap();
 
     // Tweak the private key with the Taproot script leaf hash.
     let sig = alice_private_key.sign(sighash).unwrap();
@@ -383,10 +363,11 @@ fn build_tx_input_brc20_transfer_commit_output_brc20_transfer_reveal() {
     let alice_pubkey =
         hex::decode("030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb").unwrap();
 
+    let alice_secp256k1_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
     let alice_private_key = schnorr::PrivateKey::try_from(alice_private_key.as_slice())
         .unwrap()
         .no_aux_rand();
-    let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
+    let alice_pubkey = alice_private_key.public();
 
     let txid =
         txid_from_str_and_rev("797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1")
@@ -396,13 +377,10 @@ fn build_tx_input_brc20_transfer_commit_output_brc20_transfer_reveal() {
         .prev_txid(txid)
         .prev_index(0)
         .amount(7_000)
-        .brc20_transfer(alice_pubkey.clone(), "oadf".into(), "20".into())
+        .brc20_transfer(&alice_pubkey, "oadf".into(), "20".into())
         .unwrap();
 
-    let output1 = OutputBuilder::new()
-        .amount(546)
-        .p2wpkh(&alice_pubkey)
-        .unwrap();
+    let output1 = OutputBuilder::new(546).p2wpkh(&alice_secp256k1_pubkey);
 
     let (tx, args) = TransactionBuilder::new()
         .push_input(utxo1, arg1.clone())
@@ -414,7 +392,7 @@ fn build_tx_input_brc20_transfer_commit_output_brc20_transfer_reveal() {
     let preimage = computer.preimage_tx().unwrap();
 
     // Sign the sighash.
-    let sighash = preimage.into_h256_list().unwrap()[0];
+    let sighash = preimage.into_h256_iter().next().unwrap();
 
     // Tweak the private key with the Taproot script leaf hash.
     let sig = alice_private_key.sign(sighash).unwrap();
@@ -422,7 +400,7 @@ fn build_tx_input_brc20_transfer_commit_output_brc20_transfer_reveal() {
     // Build the claim
     let claim = SpendingScriptBuilder::new()
         .sighash_ty(SighashType::new(SighashBase::All))
-        .brc20_transfer(sig, alice_pubkey, "oadf".into(), "20".into())
+        .brc20_transfer(sig, &alice_pubkey, "oadf".into(), "20".into())
         .unwrap();
 
     let tx = computer.compile(vec![claim]).unwrap();

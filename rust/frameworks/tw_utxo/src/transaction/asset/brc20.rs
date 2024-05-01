@@ -1,20 +1,17 @@
-use std::ops::Deref;
-
 use super::ordinal::OrdinalsInscription;
-use crate::Result;
+use std::ops::Deref;
+use tw_coin_entry::error::prelude::*;
 use tw_hash::H264;
 
 #[derive(Debug, Clone)]
 pub struct Brc20Ticker(String);
 
 impl Brc20Ticker {
-    pub fn new(string: String) -> Result<Self> {
+    pub fn new(string: String) -> SigningResult<Self> {
         // Brc20Ticker must be a 4-letter identifier.
         if string.len() != 4 {
-            // TODO:
-            return Err(crate::Error::from(
-                tw_proto::Utxo::Proto::Error::Error_internal,
-            ));
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("BRC20 ticker must be exactly 4 bytes length");
         }
 
         Ok(Brc20Ticker(string))
@@ -39,7 +36,7 @@ impl BRC20TransferInscription {
         recipient: &H264,
         ticker: &Brc20Ticker,
         value: &str,
-    ) -> Result<BRC20TransferInscription> {
+    ) -> SigningResult<BRC20TransferInscription> {
         let payload = format!(
             "{{\"p\":\"{protocol}\",\"op\":\"transfer\",\"tick\":\"{ticker}\",\"amt\":\"{amt}\"}}",
             protocol = BRC20_PROTOCOL_ID,
@@ -48,7 +45,6 @@ impl BRC20TransferInscription {
         );
 
         let inscription = OrdinalsInscription::new(BRC20_MIME, payload.as_bytes(), recipient)?;
-
         Ok(BRC20TransferInscription(inscription))
     }
 }

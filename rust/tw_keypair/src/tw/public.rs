@@ -150,6 +150,14 @@ impl PublicKey {
         }
     }
 
+    /// Returns a `schnorr` public key if the key type is matched.
+    pub fn to_schnorr(&self) -> Option<&schnorr::PublicKey> {
+        match self {
+            PublicKey::Schnorr(ref schnorr) => Some(schnorr),
+            _ => None,
+        }
+    }
+
     /// Returns a public key type.
     pub fn public_key_type(&self) -> PublicKeyType {
         match self {

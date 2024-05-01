@@ -1,5 +1,5 @@
-use crate::Result;
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
+use tw_coin_entry::error::prelude::*;
 use tw_hash::H264;
 
 pub struct OrdinalsInscription {
@@ -9,7 +9,7 @@ pub struct OrdinalsInscription {
 
 impl OrdinalsInscription {
     /// Creates a new Ordinals Inscription ("commit stage").
-    pub fn new(mime: &[u8], data: &[u8], recipient: &H264) -> Result<OrdinalsInscription> {
+    pub fn new(mime: &[u8], data: &[u8], recipient: &H264) -> SigningResult<OrdinalsInscription> {
         // Create the envelope, containing the inscription content.
         let (script, spend_info) = create_envelope(mime, data, recipient)?;
 
@@ -36,13 +36,16 @@ fn create_envelope(
     mime: &[u8],
     data: &[u8],
     pubkey: &H264,
-) -> Result<(bitcoin::ScriptBuf, bitcoin::taproot::TaprootSpendInfo)> {
+) -> SigningResult<(bitcoin::ScriptBuf, bitcoin::taproot::TaprootSpendInfo)> {
     use bitcoin::opcodes::all::*;
     use bitcoin::opcodes::*;
 
     // Create MIME buffer.
     let mut mime_buf = PushBytesBuf::new();
-    mime_buf.extend_from_slice(mime).unwrap();
+    mime_buf
+        .extend_from_slice(mime)
+        .tw_err(|_| SigningErrorType::Error_invalid_params)
+        .context("Given Ordinals mime is too long")?;
 
     // Create an Ordinals Inscription.
     let mut builder = ScriptBuf::builder()
@@ -68,7 +71,10 @@ fn create_envelope(
     for chunk in data.chunks(520) {
         // Create data buffer.
         let mut data_buf = PushBytesBuf::new();
-        data_buf.extend_from_slice(chunk).unwrap();
+        data_buf
+            .extend_from_slice(chunk)
+            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .context("Ordinals payload is too long")?;
 
         // Push buffer
         builder = builder.push_slice(data_buf);
@@ -80,7 +86,8 @@ fn create_envelope(
     // The internal key.
     let xonly = bitcoin::secp256k1::XOnlyPublicKey::from(
         bitcoin::PublicKey::from_slice(pubkey.as_slice())
-            .unwrap()
+            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .context("Invalid public key")?
             .inner,
     );
 
@@ -111,7 +118,7 @@ impl OrdinalNftInscription {
     // * ...
     //
     // [Ordinal inscription]: https://docs.ordinals.com/inscriptions.html
-    pub fn new(mime_type: &[u8], data: &[u8], recipient: &H264) -> Result<Self> {
+    pub fn new(mime_type: &[u8], data: &[u8], recipient: &H264) -> SigningResult<Self> {
         OrdinalsInscription::new(mime_type, data, recipient).map(OrdinalNftInscription)
     }
     pub fn inscription(&self) -> &OrdinalsInscription {

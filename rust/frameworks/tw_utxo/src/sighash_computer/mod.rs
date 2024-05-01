@@ -2,10 +2,10 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
 use crate::script::{Script, Witness};
 use crate::sighash::SighashType;
 use crate::signing_mode::SigningMethod;
+use tw_coin_entry::error::prelude::*;
 
 use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
 use crate::transaction::transaction_parts::Amount;
@@ -13,7 +13,6 @@ use crate::transaction::{TransactionPreimage, UtxoPreimageArgs, UtxoTaprootPreim
 use tw_hash::hasher::Hasher;
 use tw_hash::H256;
 use tw_keypair::tw;
-use tw_memory::Data;
 
 const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 
@@ -59,14 +58,8 @@ pub struct TxPreimage {
 impl TxPreimage {
     /// Converts all the sighashes into a list of [`H256`] types, ready to be
     /// signed.
-    pub fn into_h256_list(self) -> UtxoResult<Vec<H256>> {
-        self.sighashes
-            .into_iter()
-            .map(|s| {
-                H256::try_from(s.sighash.as_slice())
-                    .map_err(|_| UtxoError(UtxoErrorKind::Error_internal))
-            })
-            .collect::<UtxoResult<_>>()
+    pub fn into_h256_iter(self) -> impl Iterator<Item = H256> {
+        self.sighashes.into_iter().map(|s| s.sighash)
     }
 }
 
@@ -74,7 +67,7 @@ impl TxPreimage {
 pub struct UtxoSighash {
     /// The signing method needs to be used for this sighash.
     pub signing_method: SigningMethod,
-    pub sighash: Data,
+    pub sighash: H256,
 }
 
 // TODO: Move this to another module.
@@ -112,11 +105,9 @@ where
     }
 
     /// Computes sighashes of [`SighashComputer::transaction`].
-    pub fn preimage_tx(&self) -> UtxoResult<TxPreimage> {
+    pub fn preimage_tx(&self) -> SigningResult<TxPreimage> {
         // There should be the same number of UTXOs and their meta data.
-        if self.args.utxos_to_sign.len() != self.transaction_to_sign.inputs().len() {
-            return Err(UtxoError(UtxoErrorKind::Error_internal));
-        }
+        self.check_input_args()?;
 
         self.args
             .utxos_to_sign
@@ -169,8 +160,8 @@ where
                     sighash,
                 })
             })
-            // Collect the results as [`UtxoResult<Vec<UtxoSighash>>`].
-            .collect::<UtxoResult<Vec<_>>>()
+            // Collect the results as [`SigningResult<Vec<UtxoSighash>>`].
+            .collect::<SigningResult<Vec<_>>>()
             .map(|sighashes: Vec<UtxoSighash>| TxPreimage { sighashes })
     }
 
@@ -182,12 +173,16 @@ where
     ///
     /// Not required when [`SighashComputer::compile`] is called right after [`SighashComputer::preimage_tx`],
     /// as this method is expensive in terms of computations.
-    pub fn verify_signatures(&self, signatures: Vec<SignaturePubkey>) -> UtxoResult<bool> {
+    pub fn verify_signatures(&self, signatures: Vec<SignaturePubkey>) -> SigningResult<()> {
         // Compute transaction preimage and verify if all given signatures correspond to the result sighashes.
         let tx_preimage = self.preimage_tx()?;
 
         if tx_preimage.sighashes.len() != signatures.len() {
-            return Err(UtxoError(UtxoErrorKind::Error_signatures_count));
+            return SigningError::err(SigningErrorType::Error_signatures_count).context(format!(
+                "SighashComputer's error: there are '{}' transaction inputs, but given '{}' signatures",
+                tx_preimage.sighashes.len(),
+                signatures.len()
+            ));
         }
 
         let all_valid =
@@ -198,10 +193,15 @@ where
                 .all(|(sighash, sig_pubkey)| {
                     sig_pubkey
                         .public_key
-                        .verify(&sig_pubkey.signature, &sighash.sighash)
+                        .verify(&sig_pubkey.signature, sighash.sighash.as_slice())
                 });
 
-        Ok(all_valid)
+        if all_valid {
+            Ok(())
+        } else {
+            SigningError::err(SigningErrorType::Error_signing)
+                .context("Error verifying the given signature")
+        }
     }
 
     pub fn into_transaction(self) -> (Transaction, TxSigningArgs) {
@@ -214,14 +214,15 @@ where
     ///
     /// Consider using [`SighashComputer::verify_signatures`] before calling [`SighashComputer::compile`]
     /// if the signatures were computed externally.
-    pub fn compile(mut self, claims: Vec<SpendingData>) -> UtxoResult<Transaction> {
-        // There should be the same number of UTXOs and their meta data.
-        if self.args.utxos_to_sign.len() != self.transaction_to_sign.inputs().len() {
-            return Err(UtxoError(UtxoErrorKind::Error_internal));
-        }
+    pub fn compile(mut self, claims: Vec<SpendingData>) -> SigningResult<Transaction> {
+        self.check_input_args()?;
+
         if self.args.utxos_to_sign.len() != claims.len() {
-            // TODO: Set appropriate error variant
-            return Err(UtxoError(UtxoErrorKind::Error_internal));
+            return SigningError::err(SigningErrorType::Error_signatures_count).context(format!(
+                "SighashComputer's error: there are '{}' transaction inputs, but given '{}' claims",
+                self.args.utxos_to_sign.len(),
+                claims.len()
+            ));
         }
 
         // Add the claiming script (scriptSig or Witness) to the transaction inputs.
@@ -237,5 +238,18 @@ where
         }
 
         Ok(self.transaction_to_sign)
+    }
+
+    fn check_input_args(&self) -> SigningResult<()> {
+        // There should be the same number of UTXOs and their meta data.
+        if self.args.utxos_to_sign.len() != self.transaction_to_sign.inputs().len() {
+            return SigningError::err(SigningErrorType::Error_internal).context(format!(
+                "SighashComputer's error: there are '{}' transaction inputs, but given '{}' UTXO sign arguments",
+                self.transaction_to_sign.inputs().len(),
+                self.args.utxos_to_sign.len()
+            ));
+        }
+
+        Ok(())
     }
 }

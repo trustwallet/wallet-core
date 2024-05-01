@@ -1,12 +1,10 @@
 use crate::{
-    error::UtxoResult,
     script::{standard_script::claims, Script, Witness},
     sighash::{BitcoinEcdsaSignature, BitcoinSchnorrSignature, SighashBase, SighashType},
     sighash_computer::SpendingData,
     transaction::asset::brc20::{BRC20TransferInscription, Brc20Ticker},
 };
-
-use crate::error::{UtxoError, UtxoErrorKind};
+use tw_coin_entry::error::prelude::{OrTWError, ResultContext, SigningErrorType, SigningResult};
 use tw_hash::H264;
 use tw_keypair::{ecdsa, schnorr, tw};
 use tw_misc::traits::ToBytesVec;
@@ -37,25 +35,25 @@ impl SpendingScriptBuilder {
         }
     }
 
-    pub fn p2sh(self, redeem_script: Script) -> UtxoResult<SpendingData> {
-        Ok(SpendingData {
+    pub fn p2sh(self, redeem_script: Script) -> SpendingData {
+        SpendingData {
             script_sig: redeem_script,
             witness: Witness::default(),
-        })
+        }
     }
 
     pub fn p2pkh(
         self,
         sig: ecdsa::secp256k1::Signature,
         pubkey: tw::PublicKey,
-    ) -> UtxoResult<SpendingData> {
+    ) -> SigningResult<SpendingData> {
         let sig = BitcoinEcdsaSignature::new(sig.to_der()?, self.sighash_ty);
 
         let pubkey: H264 = pubkey
-            .to_bytes()
-            .as_slice()
-            .try_into()
-            .expect("pubkey length is 33 bytes");
+            .to_secp256k1()
+            .or_tw_err(SigningErrorType::Error_internal)
+            .context("Expected secp256k1 public key")?
+            .compressed();
 
         let script_sig = claims::new_p2pkh(&sig, &pubkey);
 
@@ -65,18 +63,19 @@ impl SpendingScriptBuilder {
         })
     }
 
+    // TODO take secp256k1::PublicKey
     pub fn p2wpkh(
         self,
         sig: ecdsa::secp256k1::Signature,
         pubkey: tw::PublicKey,
-    ) -> UtxoResult<SpendingData> {
+    ) -> SigningResult<SpendingData> {
         let sig = BitcoinEcdsaSignature::new(sig.to_der()?, self.sighash_ty);
 
         let pubkey: H264 = pubkey
-            .to_bytes()
-            .as_slice()
-            .try_into()
-            .map_err(|_| UtxoError(UtxoErrorKind::Error_invalid_public_key))?;
+            .to_secp256k1()
+            .or_tw_err(SigningErrorType::Error_internal)
+            .context("Expected secp256k1 public key")?
+            .compressed();
 
         let witness = claims::new_p2wpkh(&sig, pubkey);
 
@@ -86,15 +85,15 @@ impl SpendingScriptBuilder {
         })
     }
 
-    pub fn p2tr_key_path(self, sig: schnorr::Signature) -> UtxoResult<SpendingData> {
+    pub fn p2tr_key_path(self, sig: schnorr::Signature) -> SpendingData {
         let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty);
 
         let witness = claims::new_p2tr_key_path(sig.serialize());
 
-        Ok(SpendingData {
+        SpendingData {
             script_sig: Script::default(),
             witness,
-        })
+        }
     }
 
     pub fn p2tr_script_path(
@@ -102,34 +101,30 @@ impl SpendingScriptBuilder {
         sig: schnorr::Signature,
         payload: Script,
         control_block: Vec<u8>,
-    ) -> UtxoResult<SpendingData> {
+    ) -> SpendingData {
         let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty);
 
         let witness = claims::new_p2tr_script_path(sig.serialize(), payload, control_block);
 
-        Ok(SpendingData {
+        SpendingData {
             script_sig: Script::default(),
             witness,
-        })
+        }
     }
 
     pub fn brc20_transfer(
         self,
         sig: schnorr::Signature,
-        pubkey: tw::PublicKey,
+        pubkey: &schnorr::PublicKey,
         ticker: String,
         value: String,
-    ) -> UtxoResult<SpendingData> {
+    ) -> SigningResult<SpendingData> {
         let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty);
 
-        let pubkey: H264 = pubkey
-            .to_bytes()
-            .as_slice()
-            .try_into()
-            .expect("pubkey length is 33 bytes");
+        let pubkey: H264 = pubkey.compressed();
 
-        let ticker = Brc20Ticker::new(ticker).unwrap();
-        let transfer = BRC20TransferInscription::new(&pubkey, &ticker, &value).unwrap();
+        let ticker = Brc20Ticker::new(ticker)?;
+        let transfer = BRC20TransferInscription::new(&pubkey, &ticker, &value)?;
 
         let control_block = transfer
             .spend_info
@@ -137,7 +132,8 @@ impl SpendingScriptBuilder {
                 transfer.script.to_owned(),
                 bitcoin::taproot::LeafVersion::TapScript,
             ))
-            .unwrap();
+            .or_tw_err(SigningErrorType::Error_internal)
+            .context("'TaprootSpendInfo::control_block' is None")?;
 
         let payload = Script::from(transfer.script.to_vec());
 

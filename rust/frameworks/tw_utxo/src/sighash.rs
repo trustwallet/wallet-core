@@ -2,11 +2,10 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use tw_coin_entry::error::prelude::*;
 use tw_keypair::{ecdsa::der, schnorr};
 use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
-
-use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
 
 const ANYONE_CAN_PAY_FLAG: u32 = 0x80;
 const FORK_ID_FLAG: u32 = 0x40;
@@ -96,13 +95,15 @@ impl SighashType {
         }
     }
     /// Creates Sighash from any u32.
-    pub fn from_u32(u: u32) -> UtxoResult<Self> {
+    pub fn from_u32(u: u32) -> SigningResult<Self> {
         let base = match u & BASE_FLAG {
             1 => SighashBase::All,
             2 => SighashBase::None,
             3 => SighashBase::Single,
-            // TODO: Set appropriate error variant
-            _ => return Err(UtxoError(UtxoErrorKind::Error_internal)),
+            _ => {
+                return SigningError::err(SigningErrorType::Error_invalid_params)
+                    .context("Invalid sighash uint32 representation")
+            },
         };
         Ok(SighashType {
             raw_sighash: u,

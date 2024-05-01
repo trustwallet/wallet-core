@@ -51,19 +51,13 @@ fn build_tx_input_selection() {
         .p2pkh(alice_pubkey.clone())
         .unwrap();
 
-    let out1 = OutputBuilder::new()
-        .amount(1_000)
-        .p2pkh(&bob_pubkey)
-        .unwrap();
+    let out1 = OutputBuilder::new(1_000).p2pkh(&bob_pubkey);
 
-    let out2 = OutputBuilder::new()
-        .amount(1_000)
-        .p2pkh(&bob_pubkey)
-        .unwrap();
+    let out2 = OutputBuilder::new(1_000).p2pkh(&bob_pubkey);
 
     // Create the change output. The exact amount will be calculated in the
     // `SelectionBuilder`.
-    let change_output = OutputBuilder::new().amount(0).p2pkh(&alice_pubkey).unwrap();
+    let change_output = OutputBuilder::new(0).p2pkh(&alice_pubkey);
 
     let (tx, args) = TransactionBuilder::new()
         .push_input(utxo1.clone(), arg1.clone())
@@ -100,7 +94,7 @@ fn build_tx_input_selection() {
 
     // Create the final spending scripts.
     let mut claims = vec![];
-    for sighash in preimage.into_h256_list().unwrap() {
+    for sighash in preimage.into_h256_iter() {
         // Sign the sighash.
         let sig = alice_private_key.sign(sighash).unwrap();
 

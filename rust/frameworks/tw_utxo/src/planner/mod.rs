@@ -2,9 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::error::UtxoResult;
 use crate::script::Script;
 use std::marker::PhantomData;
+use tw_coin_entry::error::prelude::SigningResult;
 
 pub enum InputSelector {
     // Automatically select enough inputs in an ascending order to cover the
@@ -38,7 +38,7 @@ pub struct TransactionPlanner<Transaction> {
 }
 
 impl<Transaction> TransactionPlanner<Transaction> {
-    pub fn plan(_tx: &Transaction, _args: TxPlanningArgs) -> UtxoResult<Transaction> {
+    pub fn plan(_tx: &Transaction, _args: TxPlanningArgs) -> SigningResult<Transaction> {
         todo!()
     }
 }

@@ -28,6 +28,10 @@ fn pubkey_from_raw(pubkey: &[u8]) -> Result<PublicKey> {
         .map_err(|_| Error::from(Proto::Error::Error_internal))
 }
 
+fn schnorr_pubkey_from_raw(pubkey: &[u8]) -> Result<schnorr::PublicKey> {
+    schnorr::PublicKey::try_from(pubkey).map_err(|_| Error::from(Proto::Error::Error_internal))
+}
+
 pub fn proto_input_to_native(
     input: &Proto::Input,
     sig: Option<SignatureBytes>,
@@ -50,7 +54,7 @@ pub fn proto_input_to_native(
                     // in such a way that it can claim the UTXO. The caller must
                     // either use None or a dummy value.
 
-                    let claim = SpendingScriptBuilder::new().p2sh(redeem_script).unwrap();
+                    let claim = SpendingScriptBuilder::new().p2sh(redeem_script);
 
                     Ok((utxo, arg, claim))
                 },
@@ -99,13 +103,13 @@ pub fn proto_input_to_native(
                 },
                 OneOfInputVariant::p2tr_key_path(ctx) => {
                     // TODO: Rename field to `pubkey`?
-                    let pubkey = pubkey_from_raw(&ctx.public_key).unwrap();
+                    let pubkey = schnorr_pubkey_from_raw(&ctx.public_key).unwrap();
 
                     let (utxo, arg) = UtxoBuilder::new()
                         .prev_txid(input.txid.as_ref().try_into().unwrap())
                         .prev_index(input.vout)
                         .amount(input.value as i64)
-                        .p2tr_key_path(pubkey)
+                        .p2tr_key_path(&pubkey)
                         .unwrap();
 
                     // Use the provided signature, or a dummy value if None.
@@ -115,7 +119,7 @@ pub fn proto_input_to_native(
                         schnorr::Signature::from_bytes(&[1; 64]).unwrap()
                     };
 
-                    let claim = SpendingScriptBuilder::new().p2tr_key_path(sig).unwrap();
+                    let claim = SpendingScriptBuilder::new().p2tr_key_path(sig);
 
                     Ok((utxo, arg, claim))
                 },
@@ -139,15 +143,14 @@ pub fn proto_input_to_native(
                         schnorr::Signature::from_bytes(&[1; 64]).unwrap()
                     };
 
-                    let claim = SpendingScriptBuilder::new()
-                        .p2tr_script_path(sig, payload, control_block)
-                        .unwrap();
+                    let claim =
+                        SpendingScriptBuilder::new().p2tr_script_path(sig, payload, control_block);
 
                     Ok((utxo, arg, claim))
                 },
                 OneOfInputVariant::brc20_inscribe(payload) => {
                     // TODO: Rename field to `pubkey`?
-                    let pubkey = pubkey_from_raw(&payload.inscribe_to).unwrap();
+                    let pubkey = schnorr_pubkey_from_raw(&payload.inscribe_to).unwrap();
                     let ticker = payload.ticker.to_string();
                     let value = payload.transfer_amount.to_string();
 
@@ -155,7 +158,7 @@ pub fn proto_input_to_native(
                         .prev_txid(input.txid.as_ref().try_into().unwrap())
                         .prev_index(input.vout)
                         .amount(input.value as i64) // TODO: Just use u64 to begin with?
-                        .brc20_transfer(pubkey.clone(), ticker.clone(), value.clone())
+                        .brc20_transfer(&pubkey, ticker.clone(), value.clone())
                         .unwrap();
 
                     // Use the provided signature, or a dummy value if None.
@@ -166,7 +169,7 @@ pub fn proto_input_to_native(
                     };
 
                     let claim = SpendingScriptBuilder::new()
-                        .brc20_transfer(sig, pubkey, ticker, value)
+                        .brc20_transfer(sig, &pubkey, ticker, value)
                         .unwrap();
 
                     Ok((utxo, arg, claim))
@@ -242,10 +245,7 @@ pub fn proto_output_to_native(
                 OneOfOutputVariant::hash(hash) => {
                     let redeem_hash: H160 = hash.as_ref().try_into().unwrap();
 
-                    let out = OutputBuilder::new()
-                        .amount(output.value as i64)
-                        .p2sh_from_hash(&redeem_hash)
-                        .unwrap();
+                    let out = OutputBuilder::new(output.value as i64).p2sh_from_hash(&redeem_hash);
 
                     let tx_out = Proto::mod_PreSigningOutput::TxOut {
                         value: output.value,
@@ -256,10 +256,7 @@ pub fn proto_output_to_native(
                     Ok((out, tx_out))
                 },
                 OneOfOutputVariant::redeem_script(redeem_script) => {
-                    let out = OutputBuilder::new()
-                        .amount(output.value as i64)
-                        .p2sh(redeem_script.as_ref())
-                        .unwrap();
+                    let out = OutputBuilder::new(output.value as i64).p2sh(redeem_script.as_ref());
 
                     let tx_out = Proto::mod_PreSigningOutput::TxOut {
                         value: output.value,
@@ -276,10 +273,7 @@ pub fn proto_output_to_native(
                     OneOfto_address::pubkey(pubkey) => {
                         let pubkey = pubkey_from_raw(pubkey).unwrap();
 
-                        let out = OutputBuilder::new()
-                            .amount(output.value as i64)
-                            .p2pkh(&pubkey)
-                            .unwrap();
+                        let out = OutputBuilder::new(output.value as i64).p2pkh(&pubkey);
 
                         let tx_out = Proto::mod_PreSigningOutput::TxOut {
                             value: output.value,
@@ -292,10 +286,8 @@ pub fn proto_output_to_native(
                     OneOfto_address::hash(hash) => {
                         let pubkey_hash = hash.as_ref().try_into().unwrap();
 
-                        let out = OutputBuilder::new()
-                            .amount(output.value as i64)
-                            .p2pkh_from_hash(&pubkey_hash)
-                            .unwrap();
+                        let out =
+                            OutputBuilder::new(output.value as i64).p2pkh_from_hash(&pubkey_hash);
 
                         let tx_out = Proto::mod_PreSigningOutput::TxOut {
                             value: output.value,
@@ -314,10 +306,7 @@ pub fn proto_output_to_native(
                     OneOfto_address::pubkey(pubkey) => {
                         let pubkey = pubkey_from_raw(pubkey).unwrap();
 
-                        let out = OutputBuilder::new()
-                            .amount(output.value as i64)
-                            .p2wpkh(&pubkey)
-                            .unwrap();
+                        let out = OutputBuilder::new(output.value as i64).p2wpkh(&pubkey);
 
                         let tx_out = Proto::mod_PreSigningOutput::TxOut {
                             value: output.value,
@@ -330,10 +319,8 @@ pub fn proto_output_to_native(
                     OneOfto_address::hash(hash) => {
                         let pubkey_hash = hash.as_ref().try_into().unwrap();
 
-                        let out = OutputBuilder::new()
-                            .amount(output.value as i64)
-                            .p2wpkh_from_hash(&pubkey_hash)
-                            .unwrap();
+                        let out =
+                            OutputBuilder::new(output.value as i64).p2wpkh_from_hash(&pubkey_hash);
 
                         let tx_out = Proto::mod_PreSigningOutput::TxOut {
                             value: output.value,
@@ -349,10 +336,7 @@ pub fn proto_output_to_native(
             mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_key_path(pubkey) => {
                 let pubkey = pubkey_from_raw(pubkey).unwrap();
 
-                let out = OutputBuilder::new()
-                    .amount(output.value as i64)
-                    .p2tr_key_path(&pubkey)
-                    .unwrap();
+                let out = OutputBuilder::new(output.value as i64).p2tr_key_path(&pubkey);
 
                 let tx_out = Proto::mod_PreSigningOutput::TxOut {
                     value: output.value,
@@ -366,10 +350,8 @@ pub fn proto_output_to_native(
                 let pubkey = pubkey_from_raw(&payload.internal_key).unwrap();
                 let merkle_root: H256 = payload.merkle_root.as_ref().try_into().unwrap();
 
-                let out = OutputBuilder::new()
-                    .amount(output.value as i64)
-                    .p2tr_script_path(pubkey, merkle_root)
-                    .unwrap();
+                let out =
+                    OutputBuilder::new(output.value as i64).p2tr_script_path(pubkey, merkle_root);
 
                 let tx_out = Proto::mod_PreSigningOutput::TxOut {
                     value: output.value,
@@ -387,8 +369,7 @@ pub fn proto_output_to_native(
                 let ticker = payload.ticker.to_string();
                 let value = payload.transfer_amount.to_string();
 
-                let out = OutputBuilder::new()
-                    .amount(output.value as i64)
+                let out = OutputBuilder::new(output.value as i64)
                     .brc20_transfer(pubkey, ticker, value)
                     .unwrap();
 
@@ -404,10 +385,8 @@ pub fn proto_output_to_native(
             mod_Output::mod_OutputBuilder::OneOfvariant::None => todo!(),
         },
         Proto::mod_Output::OneOfto_recipient::custom_script_pubkey(script_pubkey) => {
-            let out = OutputBuilder::new()
-                .amount(output.value as i64)
-                .custom_script_pubkey(script_pubkey.to_vec().into())
-                .unwrap();
+            let out = OutputBuilder::new(output.value as i64)
+                .custom_script_pubkey(script_pubkey.to_vec().into());
 
             let tx_out = Proto::mod_PreSigningOutput::TxOut {
                 value: output.value,
@@ -442,10 +421,7 @@ fn address_to_native(
                 0 => {
                     let pubkey_hash: H160 = payload[1..].try_into().unwrap();
 
-                    let out = OutputBuilder::new()
-                        .amount(value as i64)
-                        .p2pkh_from_hash(&pubkey_hash)
-                        .unwrap();
+                    let out = OutputBuilder::new(value as i64).p2pkh_from_hash(&pubkey_hash);
 
                     let tx_out = Proto::mod_PreSigningOutput::TxOut {
                         value,
@@ -459,10 +435,7 @@ fn address_to_native(
                 5 => {
                     let pubkey_hash: H160 = payload[1..].try_into().unwrap();
 
-                    let out = OutputBuilder::new()
-                        .amount(value as i64)
-                        .p2sh_from_hash(&pubkey_hash)
-                        .unwrap();
+                    let out = OutputBuilder::new(value as i64).p2sh_from_hash(&pubkey_hash);
 
                     let tx_out = Proto::mod_PreSigningOutput::TxOut {
                         value,
@@ -483,10 +456,7 @@ fn address_to_native(
                 20 => {
                     let pubkey_hash: H160 = prog.try_into().unwrap();
 
-                    let out = OutputBuilder::new()
-                        .amount(value as i64)
-                        .p2wpkh_from_hash(&pubkey_hash)
-                        .unwrap();
+                    let out = OutputBuilder::new(value as i64).p2wpkh_from_hash(&pubkey_hash);
 
                     let tx_out = Proto::mod_PreSigningOutput::TxOut {
                         value,
@@ -500,10 +470,7 @@ fn address_to_native(
                 32 => {
                     let redeem_hash: H256 = prog.try_into().unwrap();
 
-                    let out = OutputBuilder::new()
-                        .amount(value as i64)
-                        .p2wsh_from_hash(&redeem_hash)
-                        .unwrap();
+                    let out = OutputBuilder::new(value as i64).p2wsh_from_hash(&redeem_hash);
 
                     let tx_out = Proto::mod_PreSigningOutput::TxOut {
                         value,
@@ -521,10 +488,8 @@ fn address_to_native(
             let tweaked_pubkey: H256 = addr.witness_program().try_into().unwrap();
             debug_assert_eq!(tweaked_pubkey.len(), 32);
 
-            let out = OutputBuilder::new()
-                .amount(value as i64)
-                .p2tr_dangerous_assume_tweaked(&tweaked_pubkey)
-                .unwrap();
+            let out =
+                OutputBuilder::new(value as i64).p2tr_dangerous_assume_tweaked(&tweaked_pubkey);
 
             let tx_out = Proto::mod_PreSigningOutput::TxOut {
                 value,

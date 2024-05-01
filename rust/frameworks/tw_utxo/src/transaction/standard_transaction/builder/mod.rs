@@ -3,13 +3,9 @@
 // Copyright © 2017 Trust Wallet.
 
 use super::{Transaction, TransactionInput, TransactionOutput};
-use crate::{
-    error::UtxoError,
-    error::{UtxoErrorKind, UtxoResult},
-    sighash_computer::{TxSigningArgs, UtxoToSign},
-};
-
-use tw_encoding::hex;
+use crate::sighash_computer::{TxSigningArgs, UtxoToSign};
+use std::str::FromStr;
+use tw_coin_entry::error::prelude::*;
 use tw_hash::H256;
 
 mod output;
@@ -20,23 +16,14 @@ pub use output::OutputBuilder;
 pub use spend::SpendingScriptBuilder;
 pub use utxo::UtxoBuilder;
 
-pub fn txid_from_str(txid: &str) -> UtxoResult<H256> {
-    hex::decode(txid)
-        .map_err(|_| UtxoError(UtxoErrorKind::Error_internal))?
-        .as_slice()
-        .try_into()
-        .map_err(|_| UtxoError(UtxoErrorKind::Error_internal))
+pub fn txid_from_str(txid: &str) -> SigningResult<H256> {
+    H256::from_str(txid)
+        .tw_err(|_| SigningErrorType::Error_invalid_params)
+        .context("Invalid txid")
 }
 
-pub fn txid_from_str_and_rev(txid: &str) -> UtxoResult<H256> {
-    hex::decode(txid)
-        .map_err(|_| UtxoError(UtxoErrorKind::Error_internal))?
-        .into_iter()
-        .rev()
-        .collect::<Vec<u8>>()
-        .as_slice()
-        .try_into()
-        .map_err(|_| UtxoError(UtxoErrorKind::Error_internal))
+pub fn txid_from_str_and_rev(txid: &str) -> SigningResult<H256> {
+    txid_from_str(txid).map(H256::rev)
 }
 
 /// Transaction builder for standard Bitcoin transaction only.
@@ -59,23 +46,28 @@ impl TransactionBuilder {
             args: TxSigningArgs::default(),
         }
     }
+
     pub fn version(mut self, version: u32) -> Self {
         self.version = version;
         self
     }
+
     pub fn lock_time(mut self, locktime: u32) -> Self {
         self.locktime = locktime;
         self
     }
+
     pub fn push_input(mut self, input: TransactionInput, arg: UtxoToSign) -> Self {
         self.inputs.push(input);
         self.args.utxos_to_sign.push(arg);
         self
     }
+
     pub fn push_output(mut self, out: TransactionOutput) -> Self {
         self.outputs.push(out);
         self
     }
+
     pub fn build(self) -> (Transaction, TxSigningArgs) {
         (
             Transaction {

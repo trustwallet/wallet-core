@@ -2,10 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
-
 use crate::sighash_computer::{SpendingData, TxSigningArgs, UtxoToSign};
-
 use crate::transaction::transaction_fee::TransactionFee;
 use crate::transaction::transaction_interface::{
     TransactionInterface, TxInputInterface, TxOutputInterface,
@@ -13,6 +10,7 @@ use crate::transaction::transaction_interface::{
 use crate::transaction::transaction_parts::Amount;
 use crate::transaction::TransactionPreimage;
 use std::marker::PhantomData;
+use tw_coin_entry::error::prelude::*;
 
 #[non_exhaustive]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -45,14 +43,28 @@ where
     pub fn compile(
         mut self,
         claims: Vec<SpendingData>,
-    ) -> UtxoResult<CompiledSelectionBuilder<Transaction>> {
+    ) -> SigningResult<CompiledSelectionBuilder<Transaction>> {
         // There should be the same number of UTXOs and their meta data.
+        // TODO take `UnsignedTransaction` at `SelectionBuilder::new` that will do this check.
         if self.args.utxos_to_sign.len() != self.transaction_to_sign.inputs().len() {
-            return Err(UtxoError(UtxoErrorKind::Error_internal));
+            return SigningError::err(SigningErrorType::Error_internal).context(format!(
+                "SelectionBuilder's error: there are '{}' transaction inputs, but given '{}' UTXO sign arguments",
+                self.transaction_to_sign.inputs().len(),
+                self.args.utxos_to_sign.len()
+            ));
         }
+
         if self.args.utxos_to_sign.len() != claims.len() {
-            // TODO: Set appropriate error variant
-            return Err(UtxoError(UtxoErrorKind::Error_internal));
+            return SigningError::err(SigningErrorType::Error_internal).context(format!(
+                "SelectionBuilder's error: there are '{}' transaction inputs, but given '{}' claims",
+                self.args.utxos_to_sign.len(),
+                claims.len()
+            ));
+        }
+
+        if claims.is_empty() {
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Transaction must have at least one transaction input");
         }
 
         // Add the claiming script (scriptSig or Witness) to the transaction inputs.
@@ -62,7 +74,6 @@ where
             .iter_mut()
             .zip(claims.into_iter())
         {
-            // TODO: Check that at least one claim should be present.
             utxo.set_script_sig(claim.script_sig);
             utxo.set_witness(claim.witness);
         }
@@ -70,7 +81,6 @@ where
         Ok(CompiledSelectionBuilder {
             transaction_to_sign: self.transaction_to_sign,
             args: self.args,
-            _phantom: PhantomData,
         })
     }
 }
@@ -78,7 +88,6 @@ where
 pub struct CompiledSelectionBuilder<Transaction> {
     transaction_to_sign: Transaction,
     args: TxSigningArgs,
-    _phantom: PhantomData<Transaction>,
 }
 
 impl<Transaction> CompiledSelectionBuilder<Transaction>
@@ -90,12 +99,13 @@ where
         mut self,
         selector: InputSelector,
         fee_rate: Amount,
-    ) -> UtxoResult<(Transaction, TxSigningArgs)> {
+    ) -> SigningResult<(Transaction, TxSigningArgs)> {
         let change = self.do_select_inputs(selector, fee_rate)?;
 
         let did_set = self.transaction_to_sign.set_change_amount(change);
         if !did_set {
-            return Err(UtxoError(UtxoErrorKind::Error_internal));
+            return SigningError::err(SigningErrorType::Error_internal)
+                .context("Error setting a change output");
         }
 
         Ok((self.transaction_to_sign, self.args))
@@ -105,9 +115,9 @@ where
         mut self,
         selector: InputSelector,
         fee_rate: Amount,
-    ) -> UtxoResult<(Transaction, TxSigningArgs)> {
+    ) -> SigningResult<(Transaction, TxSigningArgs)> {
         // TODO: Ensure that the transaction has been compiled.
-        let _ = self.do_select_inputs(selector, fee_rate)?;
+        let _amount = self.do_select_inputs(selector, fee_rate)?;
         Ok((self.transaction_to_sign, self.args))
     }
 
@@ -115,7 +125,7 @@ where
         &mut self,
         selector: InputSelector,
         fee_rate: Amount,
-    ) -> UtxoResult<Amount> {
+    ) -> SigningResult<Amount> {
         // Calculate the total output amount.
         let total_out = self
             .transaction_to_sign
@@ -147,15 +157,15 @@ where
                 // Nothing to do.
             },
             InputSelector::Ascending => {
-                utxos.sort_by(|(_, a), (_, b)| a.amount.partial_cmp(&b.amount).unwrap());
+                utxos.sort_by(|(_, a), (_, b)| a.amount.cmp(&b.amount));
             },
             InputSelector::Descending => {
-                utxos.sort_by(|(_, a), (_, b)| b.amount.partial_cmp(&a.amount).unwrap());
+                utxos.sort_by(|(_, a), (_, b)| b.amount.cmp(&a.amount));
             },
         }
 
         // Select the UTXOs to cover all the outputs and the fee.
-        let mut total_in = Amount::from(0);
+        let mut total_in = 0;
         let mut selected_utxo = Vec::with_capacity(utxos.len());
         let mut selected_args = Vec::with_capacity(utxos.len());
 
@@ -186,13 +196,16 @@ where
             }
         }
 
+        let tx_fee = tx.fee(fee_rate);
+
         if !total_covered {
             // Insufficient funds.
-            todo!()
+            return SigningError::err(SigningErrorType::Error_not_enough_utxos)
+                .context(format!("Insufficient funds to generate a transaction. Available '{total_in}', required '{total_out}' + fee '{tx_fee}'"));
         }
 
         // Calculate the change amount.
-        let change = total_in - total_out - tx.fee(fee_rate);
+        let change = total_in - total_out - tx_fee;
 
         // Update the transaction with the selected inputs.
         self.transaction_to_sign = tx;

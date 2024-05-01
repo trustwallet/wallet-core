@@ -3,16 +3,14 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::encode::stream::Stream;
-use crate::error::UtxoResult;
 use crate::sighash::SighashBase;
 use crate::transaction::transaction_hashing::TransactionHasher;
 use crate::transaction::transaction_interface::TransactionInterface;
 use crate::transaction::UtxoTaprootPreimageArgs;
-
 use std::marker::PhantomData;
-
-use tw_hash::hasher::Hasher;
-use tw_memory::Data;
+use tw_coin_entry::error::prelude::*;
+use tw_hash::hasher::tapsighash;
+use tw_hash::H256;
 
 /// `Taproot1Sighash`is used to calculate a preimage hash of a P2WPKH or P2WSH unspent output.
 pub struct Taproot1Sighash<Transaction: TransactionInterface> {
@@ -20,7 +18,7 @@ pub struct Taproot1Sighash<Transaction: TransactionInterface> {
 }
 
 impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
-    pub fn sighash_tx(tx: &Transaction, tr: &UtxoTaprootPreimageArgs) -> UtxoResult<Data> {
+    pub fn sighash_tx(tx: &Transaction, tr: &UtxoTaprootPreimageArgs) -> SigningResult<H256> {
         // The annex was introduced with Taproot and is currently unused in
         // Bitcoin, but may be used it in the future.
         const ANNEX_SUPPORTED: bool = false;
@@ -90,6 +88,9 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
                 .append(&separator);
         }
 
-        Ok(Hasher::TapSighash.hash(&stream.out()))
+        let hash = tapsighash(&stream.out());
+        H256::try_from(hash.as_slice())
+            .tw_err(|_| SigningErrorType::Error_internal)
+            .context("Taproot sighash must be H256")
     }
 }

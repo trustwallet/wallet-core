@@ -84,6 +84,12 @@ impl<const N: usize> Hash<N> {
     pub fn is_zero(&self) -> bool {
         self.0.iter().all(|byte| *byte == 0)
     }
+
+    /// Reverses the order of elements in the inner data, in place.
+    pub fn rev(mut self) -> Self {
+        self.0.reverse();
+        self
+    }
 }
 
 /// This is a [`Hash::split`] helper that ensures that `L + R == N` at compile time.

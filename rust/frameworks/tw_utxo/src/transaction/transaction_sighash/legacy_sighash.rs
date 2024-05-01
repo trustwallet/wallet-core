@@ -3,13 +3,15 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::encode::stream::Stream;
-use crate::error::{UtxoError, UtxoErrorKind, UtxoResult};
 use crate::script::Script;
 use crate::sighash::SighashBase;
 use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
 use crate::transaction::UtxoPreimageArgs;
 use std::marker::PhantomData;
-use tw_memory::Data;
+use tw_coin_entry::error::prelude::{
+    MapTWError, OrTWError, ResultContext, SigningErrorType, SigningResult,
+};
+use tw_hash::H256;
 
 /// `LegacySighash` is used to calculate a preimage hash of a P2PK, P2PKH or P2SH unspent output.
 pub struct LegacySighash<Transaction: std::fmt::Debug + TransactionInterface> {
@@ -17,7 +19,7 @@ pub struct LegacySighash<Transaction: std::fmt::Debug + TransactionInterface> {
 }
 
 impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transaction> {
-    pub fn sighash_tx(tx: &Transaction, args: &UtxoPreimageArgs) -> UtxoResult<Data> {
+    pub fn sighash_tx(tx: &Transaction, args: &UtxoPreimageArgs) -> SigningResult<H256> {
         // TODO: Avoid cloning here?
         let mut tx_preimage = tx.clone();
 
@@ -31,19 +33,23 @@ impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transact
             // Append the sighash type.
             .append(&args.sighash_ty.raw_sighash());
 
-        Ok(args.tx_hasher.hash(&stream.out()))
+        let hash = args.tx_hasher.hash(&stream.out());
+        H256::try_from(hash.as_slice())
+            .tw_err(|_| SigningErrorType::Error_internal)
+            .context("Bitcoin sighash must be H256")
     }
 
     /// Select and prepare transaction inputs according to the preimage settings.
     pub fn inputs_for_preimage(
         tx: &Transaction,
         args: &UtxoPreimageArgs,
-    ) -> UtxoResult<Vec<Transaction::Input>> {
+    ) -> SigningResult<Vec<Transaction::Input>> {
         let original_inputs = tx.inputs();
         // Get an input needs to be signed.
         let input_to_sign = original_inputs
             .get(args.input_index)
-            .ok_or(UtxoError(UtxoErrorKind::Error_internal))?;
+            .or_tw_err(SigningErrorType::Error_internal)
+            .context("Legacy sighash error: input_index is out of bounds")?;
 
         if args.sighash_ty.anyone_can_pay() {
             let mut input_preimage = input_to_sign.clone();

@@ -5,7 +5,6 @@
 use crate::encode::compact_integer::CompactInteger;
 use crate::encode::stream::Stream;
 use crate::encode::Encodable;
-use crate::error::UtxoResult;
 use crate::script::{Script, Witness};
 use crate::signing_mode::SigningMethod;
 use crate::transaction::transaction_interface::{
@@ -15,8 +14,9 @@ use crate::transaction::transaction_parts::{Amount, OutPoint};
 use crate::transaction::transaction_sighash::legacy_sighash::LegacySighash;
 use crate::transaction::transaction_sighash::witness0_sighash::Witness0Sighash;
 use crate::transaction::{TransactionPreimage, UtxoPreimageArgs};
+use tw_coin_entry::error::prelude::SigningResult;
 use tw_hash::hasher::sha256_d;
-use tw_memory::Data;
+use tw_hash::H256;
 
 use super::transaction_sighash::taproot1_sighash::Taproot1Sighash;
 use super::UtxoTaprootPreimageArgs;
@@ -218,7 +218,7 @@ impl Encodable for Transaction {
 }
 
 impl TransactionPreimage for Transaction {
-    fn preimage_tx(&self, args: &UtxoPreimageArgs) -> UtxoResult<Data> {
+    fn preimage_tx(&self, args: &UtxoPreimageArgs) -> SigningResult<H256> {
         match args.signing_method {
             SigningMethod::Legacy => LegacySighash::<Self>::sighash_tx(self, args),
             SigningMethod::Segwit => Witness0Sighash::<Self>::sighash_tx(self, args),
@@ -227,12 +227,13 @@ impl TransactionPreimage for Transaction {
         }
     }
 
-    fn preimage_taproot_tx(&self, tr: &UtxoTaprootPreimageArgs) -> UtxoResult<Data> {
+    fn preimage_taproot_tx(&self, tr: &UtxoTaprootPreimageArgs) -> SigningResult<H256> {
         match tr.args.signing_method {
             SigningMethod::Legacy => todo!(),
             SigningMethod::Segwit => todo!(),
-            SigningMethod::TaprootAll => Taproot1Sighash::<Self>::sighash_tx(self, tr),
-            SigningMethod::TaprootOnePrevout => Taproot1Sighash::<Self>::sighash_tx(self, tr),
+            SigningMethod::TaprootAll | SigningMethod::TaprootOnePrevout => {
+                Taproot1Sighash::<Self>::sighash_tx(self, tr)
+            },
         }
     }
 }
