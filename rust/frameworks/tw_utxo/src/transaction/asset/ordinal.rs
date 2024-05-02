@@ -1,4 +1,4 @@
-use bitcoin::script::{PushBytesBuf, ScriptBuf};
+use crate::script::Script;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::H264;
 
@@ -14,6 +14,10 @@ impl OrdinalsInscription {
         let (script, spend_info) = create_envelope(mime, data, recipient)?;
 
         Ok(OrdinalsInscription { script, spend_info })
+    }
+
+    pub fn taproot_program(&self) -> Script {
+        Script::from(self.script.as_script().as_bytes().to_vec())
     }
 }
 
@@ -41,14 +45,14 @@ fn create_envelope(
     use bitcoin::opcodes::*;
 
     // Create MIME buffer.
-    let mut mime_buf = PushBytesBuf::new();
+    let mut mime_buf = bitcoin::script::PushBytesBuf::new();
     mime_buf
         .extend_from_slice(mime)
         .tw_err(|_| SigningErrorType::Error_invalid_params)
         .context("Given Ordinals mime is too long")?;
 
     // Create an Ordinals Inscription.
-    let mut builder = ScriptBuf::builder()
+    let mut builder = bitcoin::ScriptBuf::builder()
         .push_opcode(OP_FALSE)
         .push_opcode(OP_IF)
         .push_slice(b"ord")
@@ -70,7 +74,7 @@ fn create_envelope(
     // Push the actual data in chunks.
     for chunk in data.chunks(520) {
         // Create data buffer.
-        let mut data_buf = PushBytesBuf::new();
+        let mut data_buf = bitcoin::script::PushBytesBuf::new();
         data_buf
             .extend_from_slice(chunk)
             .tw_err(|_| SigningErrorType::Error_invalid_params)

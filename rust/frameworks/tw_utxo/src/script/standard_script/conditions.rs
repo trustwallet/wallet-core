@@ -78,6 +78,7 @@ pub fn new_p2wpkh(pubkey_hash: &H160) -> Script {
 
 /// Creates a special _scriptPubkey_ when **claiming** a P2WPKH spending
 /// condition, which is used for Sighash calculation.
+/// TODO is this needed?
 ///
 /// ```txt
 /// OP_DUP OP_HASH160 <push><pubkey_hash> OP_EQUALVERIFY OP_CHECKSIG

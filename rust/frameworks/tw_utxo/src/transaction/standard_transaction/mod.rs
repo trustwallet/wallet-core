@@ -222,8 +222,7 @@ impl TransactionPreimage for Transaction {
         match args.signing_method {
             SigningMethod::Legacy => LegacySighash::<Self>::sighash_tx(self, args),
             SigningMethod::Segwit => Witness0Sighash::<Self>::sighash_tx(self, args),
-            SigningMethod::TaprootAll => todo!(),
-            SigningMethod::TaprootOnePrevout => todo!(),
+            SigningMethod::Taproot => todo!(),
         }
     }
 
@@ -231,9 +230,7 @@ impl TransactionPreimage for Transaction {
         match tr.args.signing_method {
             SigningMethod::Legacy => todo!(),
             SigningMethod::Segwit => todo!(),
-            SigningMethod::TaprootAll | SigningMethod::TaprootOnePrevout => {
-                Taproot1Sighash::<Self>::sighash_tx(self, tr)
-            },
+            SigningMethod::Taproot => Taproot1Sighash::<Self>::sighash_tx(self, tr),
         }
     }
 }

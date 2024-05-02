@@ -55,6 +55,9 @@ message Input {
         InputBuilder script_builder = 7;
         // Spending script pubkey data.
         // Use this variant if the UTXO claiming script is known already, otherwise use `InputBuilder`.
+        // Please note that the signing method (eg "legacy" or "segwit") will be determined by parsing the script data as:
+        // - P2SH, P2PK, P2PKH - legacy signing method;
+        // - P2WSH, P2WPKH - segwit signing method.
         bytes script_data = 8;
         // Derive a spending script pubkey from a receiver address.
         // E.g "bc1" segwit address will be P2WPKH claiming script.
@@ -80,8 +83,6 @@ message Input {
             InputTaprootScriptPath p2tr_script_path = 8;
             // Create a BRC20 inscription.
             InputBrc20Inscription brc20_inscribe = 9;
-            // Create an Ordinal (NFT) inscriptiohn.
-            InputOrdinalInscription ordinal_inscribe = 10;
         }
     }
 
@@ -90,37 +91,18 @@ message Input {
     }
 
     message InputTaprootKeyPath {
-        // Whether only one prevout should be used to calculate the Sighash.
-        // Normally this is `false`.
-        bool one_prevout = 1;
         // The recipient.
         bytes public_key = 2;
     }
 
     message InputTaprootScriptPath {
-        // Whether only one prevout should be used to calculate the Sighash.
-        // Normally this is `false`.
-        bool one_prevout = 1;
         // The payload of the Taproot transaction.
         bytes payload = 2;
         // The control block of the Taproot transaction required for claiming.
         bytes control_block = 3;
     }
 
-    message InputOrdinalInscription {
-        // Whether only one prevout should be used to calculate the Sighash.
-        // Normally this is `false`.
-        bool one_prevout = 1;
-        // The recipient of the inscription, usually the sender.
-        bytes inscribe_to = 2;
-        // The MIME type of the inscription, such as `image/png`, etc.
-        string mime_type = 3;
-        // The actual inscription content.
-        bytes payload = 4;
-    }
-
     message InputBrc20Inscription {
-        bool one_prevout = 1;
         // The recipient of the inscription, usually the sender.
         bytes inscribe_to = 2;
         // The ticker of the BRC20 inscription.
@@ -159,7 +141,6 @@ message Output {
             OutputTaprootScriptPath p2tr_script_path = 6;
             bytes p2tr_dangerous_assume_tweaked = 7;
             OutputBrc20Inscription brc20_inscribe = 8;
-            OutputOrdinalInscription ordinal_inscribe = 9;
             // OP_RETURN output. In most cases, with a zero-amount.
             bytes op_return = 12;
         }
@@ -179,15 +160,6 @@ message Output {
         bytes merkle_root = 2;
     }
 
-    message OutputOrdinalInscription {
-        // The recipient of the inscription, usually the sender.
-        bytes inscribe_to = 1;
-        // The MIME type of the inscription, such as `image/png`, etc.
-        string mime_type = 2;
-        // The actual inscription content.
-        bytes payload = 3;
-    }
-
     message OutputBrc20Inscription {
         // The recipient of the inscription, usually the sender.
         bytes inscribe_to = 1;
@@ -196,6 +168,13 @@ message Output {
         // The BRC20 token transfer amount.
         string transfer_amount = 3;
     }
+}
+
+message ChainInfo {
+    // P2PKH prefix for this chain.
+    uint32 p2pkh_prefix = 1;
+    // P2SH prefix for this coin type
+    uint32 p2sh_prefix = 2;
 }
 
 message SigningInput {
@@ -221,6 +200,9 @@ message SigningInput {
     // Note there can be no change output if the change amount is less than dust threshold.
     // Leave empty to explicitly disable change output creation.
     Output change_output = 9;
+    // Chain info includes p2pkh, p2sh address prefixes.
+    // The parameter needs to be set if an input/output has a receiver address pattern.
+    ChainInfo chain_info = 10;
     // Whether disable auxiliary random data when signing.
     // Use for testing **ONLY**.
     bool dangerous_use_fixed_schnorr_rng = 11;

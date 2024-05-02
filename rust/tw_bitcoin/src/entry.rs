@@ -220,8 +220,7 @@ impl BitcoinEntry {
             let signing_method = match arg.signing_method {
                 SigningMethod::Legacy => UtxoProto::SigningMethod::Legacy,
                 SigningMethod::Segwit => UtxoProto::SigningMethod::Segwit,
-                SigningMethod::TaprootAll => UtxoProto::SigningMethod::TaprootAll,
-                SigningMethod::TaprootOnePrevout => UtxoProto::SigningMethod::TaprootOnePrevout,
+                SigningMethod::Taproot => UtxoProto::SigningMethod::TaprootAll,
             };
 
             proto_inputs.push(UtxoProto::TxIn {
@@ -245,8 +244,7 @@ impl BitcoinEntry {
             let signing_method = match sighash.signing_method {
                 SigningMethod::Legacy => UtxoProto::SigningMethod::Legacy,
                 SigningMethod::Segwit => UtxoProto::SigningMethod::Segwit,
-                SigningMethod::TaprootAll => UtxoProto::SigningMethod::TaprootAll,
-                SigningMethod::TaprootOnePrevout => UtxoProto::SigningMethod::TaprootOnePrevout,
+                SigningMethod::Taproot => UtxoProto::SigningMethod::TaprootAll,
             };
 
             proto_sighashes.push(UtxoProto::Sighash {

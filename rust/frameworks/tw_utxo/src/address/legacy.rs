@@ -10,6 +10,7 @@ use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::prefix::BitcoinBase58Prefix;
 use tw_encoding::base58::Alphabet;
 use tw_hash::hasher::{sha256_ripemd, Hasher};
+use tw_hash::H160;
 use tw_keypair::tw;
 
 pub const BITCOIN_ADDRESS_SIZE: usize = 21;
@@ -83,6 +84,11 @@ impl LegacyAddress {
 
     pub fn bytes(&self) -> &[u8] {
         self.0.as_ref()
+    }
+
+    pub fn payload(&self) -> H160 {
+        debug_assert_eq!(self.bytes().len(), H160::LEN + 1);
+        H160::try_from(&self.0.as_ref()[1..]).expect("Legacy address must be exactly 21 bytes")
     }
 }
 

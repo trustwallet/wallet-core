@@ -130,7 +130,7 @@ where
                     SigningMethod::Legacy | SigningMethod::Segwit => {
                         self.transaction_to_sign.preimage_tx(&utxo_args)?
                     },
-                    SigningMethod::TaprootAll | SigningMethod::TaprootOnePrevout => {
+                    SigningMethod::Taproot => {
                         let tr_spent_amounts: Vec<Amount> = self
                             .args
                             .utxos_to_sign

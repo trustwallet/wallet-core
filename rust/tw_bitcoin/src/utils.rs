@@ -124,8 +124,6 @@ pub fn proto_input_to_native(
                     Ok((utxo, arg, claim))
                 },
                 OneOfInputVariant::p2tr_script_path(ctx) => {
-                    // TODO:
-                    let one_prevout = ctx.one_prevout;
                     let payload = Script::from(ctx.payload.to_vec());
                     let control_block = ctx.control_block.to_vec();
 

@@ -2,35 +2,204 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_coin_entry::error::prelude::SigningResult;
+use crate::modules::tx_builder::pubkey_hash_from_proto;
+use std::str::FromStr;
+use tw_coin_entry::error::prelude::*;
+use tw_hash::H256;
+use tw_keypair::{ecdsa, schnorr};
 use tw_memory::Data;
+use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV3::Proto;
+use tw_utxo::address::legacy::LegacyAddress;
+use tw_utxo::address::segwit::SegwitAddress;
+use tw_utxo::address::standard_bitcoin::StandardBitcoinAddress;
+use tw_utxo::address::taproot::TaprootAddress;
+use tw_utxo::script::standard_script::conditions::{
+    is_p2pk, is_p2pkh, is_p2sh, is_p2tr, is_p2wpkh, is_p2wsh,
+};
 use tw_utxo::script::Script;
 use tw_utxo::sighash_computer::UtxoToSign;
+use tw_utxo::signing_mode::SigningMethod;
 use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
 use tw_utxo::transaction::standard_transaction::TransactionInput;
 
-pub struct UtxoProtobuf;
+pub struct UtxoProtobuf<'a> {
+    chain_info: &'a Proto::ChainInfo,
+    input: &'a Proto::Input<'a>,
+}
 
-impl UtxoProtobuf {
-    pub fn utxo_from_proto(_input: &Proto::Input) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        todo!()
+impl<'a> UtxoProtobuf<'a> {
+    pub fn new(chain_info: &'a Proto::ChainInfo, input: &'a Proto::Input<'a>) -> Self {
+        UtxoProtobuf { chain_info, input }
     }
 
-    pub fn p2sh(
-        input: &Proto::Input,
-        redeem_script: Data,
-    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
+    pub fn utxo_from_proto(self) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        use Proto::mod_Input::mod_InputBuilder::OneOfvariant as BuilderType;
+        use Proto::mod_Input::OneOfclaiming_script as ScriptType;
+
+        match self.input.claiming_script {
+            ScriptType::script_builder(ref builder) => match builder.variant {
+                BuilderType::p2sh(ref redeem_script) => self.p2sh(redeem_script.to_vec()),
+                BuilderType::p2pk(ref pubkey) => self.p2pk(pubkey),
+                BuilderType::p2pkh(ref pubkey_or_hash) => self.p2pkh(pubkey_or_hash),
+                BuilderType::p2wsh(ref redeem_script) => self.p2wsh(redeem_script.to_vec()),
+                BuilderType::p2wpkh(ref pubkey_or_hash) => self.p2wpkh(pubkey_or_hash),
+                BuilderType::p2tr_key_path(ref key_path) => self.p2tr_key_path(key_path),
+                BuilderType::p2tr_script_path(ref script) => self.p2tr_script_path(script),
+                BuilderType::brc20_inscribe(ref inscription) => self.brc20_inscribe(inscription),
+                BuilderType::None => SigningError::err(SigningErrorType::Error_invalid_params)
+                    .context("No Input Builder type provided"),
+            },
+            ScriptType::script_data(ref script) => self.custom_script(script.to_vec()),
+            ScriptType::receiver_address(ref address) => self.recipient_address(address),
+            ScriptType::None => SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("No Input claiming script provided"),
+        }
+    }
+
+    pub fn p2sh(&self, redeem_script: Data) -> SigningResult<(TransactionInput, UtxoToSign)> {
         let redeem_script = Script::from(redeem_script);
+        self.prepare_builder()?.p2sh(redeem_script)
+    }
 
-        let (utxo, arg) = UtxoBuilder::new()
-            .prev_txid(input.txid.as_ref().try_into().unwrap())
-            .prev_index(input.vout)
-            .amount(input.value as i64)
-            .p2sh(redeem_script)
-            // TODO refactor `tw_utxo` to return `SigningError`.
-            .unwrap();
+    pub fn p2pk(&self, pubkey: &[u8]) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        let pubkey = ecdsa::secp256k1::PublicKey::try_from(pubkey)
+            .into_tw()
+            .context("Invalid P2PK public key")?;
 
-        Ok((utxo, arg))
+        self.prepare_builder()?.p2pk(pubkey)
+    }
+
+    pub fn p2pkh(
+        &self,
+        pubkey_or_hash: &Proto::PublicKeyOrHash,
+    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash)?;
+        self.prepare_builder()?.p2pkh_with_hash(pubkey_hash)
+    }
+
+    pub fn p2wsh(&self, redeem_script: Data) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        let script = Script::from(redeem_script);
+        self.prepare_builder()?.p2wsh(script)
+    }
+
+    pub fn p2wpkh(
+        &self,
+        pubkey_or_hash: &Proto::PublicKeyOrHash,
+    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash)?;
+        self.prepare_builder()?.p2wpkh_with_hash(&pubkey_hash)
+    }
+
+    pub fn p2tr_key_path(
+        &self,
+        taproot_key_path: &Proto::mod_Input::InputTaprootKeyPath,
+    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        let public_key = schnorr::PublicKey::try_from(taproot_key_path.public_key.as_ref())?;
+        self.prepare_builder()?.p2tr_key_path(&public_key)
+    }
+
+    pub fn p2tr_script_path(
+        &self,
+        taproot_script_path: &Proto::mod_Input::InputTaprootScriptPath,
+    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        let payload = Script::from(taproot_script_path.payload.to_vec());
+        self.prepare_builder()?.p2tr_script_path(payload)
+    }
+
+    pub fn brc20_inscribe(
+        &self,
+        inscription: &Proto::mod_Input::InputBrc20Inscription,
+    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        let public_key = schnorr::PublicKey::try_from(inscription.inscribe_to.as_ref())?;
+        self.prepare_builder()?.brc20_transfer(
+            &public_key,
+            inscription.ticker.to_string(),
+            inscription.transfer_amount.to_string(),
+        )
+    }
+
+    pub fn custom_script(
+        &self,
+        script_data: Data,
+    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        let script = Script::from(script_data);
+
+        let signing_method = if is_p2sh(&script) || is_p2pk(&script) || is_p2pkh(&script) {
+            SigningMethod::Legacy
+        } else if is_p2wsh(&script) || is_p2wpkh(&script) {
+            SigningMethod::Segwit
+        } else if is_p2tr(&script) {
+            SigningMethod::Taproot
+        } else {
+            return SigningError::err(SigningErrorType::Error_script_output).context(
+                "The given custom scriptPubkey is not supported. Consider using a Proto.Input.InputBuilder",
+            );
+        };
+
+        self.prepare_builder()?
+            .custom_script_pubkey(script, signing_method)
+    }
+
+    pub fn recipient_address(&self, addr: &str) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        let addr = StandardBitcoinAddress::from_str(addr)
+            .into_tw()
+            .context("Invalid claiming script recipient address")?;
+
+        match addr {
+            StandardBitcoinAddress::Legacy(ref legacy) => self.recipient_legacy_address(legacy),
+            StandardBitcoinAddress::Segwit(ref segwit) => self.recipient_segwit_address(segwit),
+            StandardBitcoinAddress::Taproot(ref taproot) => self.recipient_taproot_address(taproot),
+        }
+    }
+
+    pub fn recipient_legacy_address(
+        &self,
+        addr: &LegacyAddress,
+    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        let p2pkh_prefix = self.chain_info.p2pkh_prefix;
+        let p2sh_prefix = self.chain_info.p2sh_prefix;
+
+        if p2pkh_prefix == addr.prefix() as u32 {
+            self.prepare_builder()?.p2pkh_with_hash(addr.payload())
+        } else if p2sh_prefix == addr.prefix() as u32 {
+            self.prepare_builder()?.p2sh_with_hash(addr.payload())
+        } else {
+            SigningError::err(SigningErrorType::Error_invalid_address).context(format!(
+                "The given '{addr}' address has unexpected prefix. Expected p2pkh={p2pkh_prefix} p2sh={p2sh_prefix}",
+            ))
+        }
+    }
+
+    pub fn recipient_segwit_address(
+        &self,
+        addr: &SegwitAddress,
+    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        self.prepare_builder()?.p2witness_program_with_addr(addr)
+    }
+
+    pub fn recipient_taproot_address(
+        &self,
+        addr: &TaprootAddress,
+    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        let tweaked_pubkey = H256::try_from(addr.witness_program())
+            .tw_err(|_| SigningErrorType::Error_invalid_address)
+            .with_context(|| {
+                format!("The given '{addr}' taproot address should have 32 bytes witness program")
+            })?;
+
+        self.prepare_builder()?
+            .p2tr_dangerous_assume_tweaked(&tweaked_pubkey)
+    }
+
+    pub fn prepare_builder(&self) -> SigningResult<UtxoBuilder> {
+        let prev_txid = H256::try_from(self.input.txid.as_ref())
+            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .context("Invalid previous txid")?;
+
+        Ok(UtxoBuilder::new()
+            .prev_txid(prev_txid)
+            .prev_index(self.input.vout)
+            .amount(self.input.value as i64))
     }
 }
