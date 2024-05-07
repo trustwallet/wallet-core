@@ -4,7 +4,6 @@ use crate::{Error, Result};
 use tw_coin_entry::coin_entry::SignatureBytes;
 use tw_hash::{H160, H256};
 use tw_keypair::ecdsa::secp256k1::PrivateKey;
-use tw_keypair::ecdsa::signature::Signature;
 use tw_keypair::schnorr;
 use tw_keypair::traits::SigningKeyTrait;
 use tw_keypair::tw::PublicKey;
@@ -15,11 +14,8 @@ use tw_proto::BitcoinV2::Proto::mod_ToPublicKeyOrHash::OneOfto_address;
 use tw_proto::BitcoinV2::Proto::{self, mod_Output};
 use tw_proto::Utxo::Proto as UtxoProto;
 use tw_utxo::address::standard_bitcoin::StandardBitcoinAddress;
-use tw_utxo::script::{Script, Witness};
 use tw_utxo::sighash_computer::{SpendingData, UtxoToSign};
-use tw_utxo::transaction::standard_transaction::builder::{
-    OutputBuilder, SpendingScriptBuilder, UtxoBuilder,
-};
+use tw_utxo::transaction::standard_transaction::builder::OutputBuilder;
 use tw_utxo::transaction::standard_transaction::{TransactionInput, TransactionOutput};
 
 // TODO: Adjust error type
@@ -28,177 +24,184 @@ fn pubkey_from_raw(pubkey: &[u8]) -> Result<PublicKey> {
         .map_err(|_| Error::from(Proto::Error::Error_internal))
 }
 
-fn schnorr_pubkey_from_raw(pubkey: &[u8]) -> Result<schnorr::PublicKey> {
-    schnorr::PublicKey::try_from(pubkey).map_err(|_| Error::from(Proto::Error::Error_internal))
-}
+// fn schnorr_pubkey_from_raw(pubkey: &[u8]) -> Result<schnorr::PublicKey> {
+//     schnorr::PublicKey::try_from(pubkey).map_err(|_| Error::from(Proto::Error::Error_internal))
+// }
 
 pub fn proto_input_to_native(
     input: &Proto::Input,
-    sig: Option<SignatureBytes>,
+    _sig: Option<SignatureBytes>,
 ) -> Result<(TransactionInput, UtxoToSign, SpendingData)> {
     match &input.to_recipient {
         Proto::mod_Input::OneOfto_recipient::builder(b) => {
             match &b.variant {
-                OneOfInputVariant::p2sh(redeem_script) => {
-                    let redeem_script = Script::from(redeem_script.to_vec());
-
-                    let (utxo, arg) = UtxoBuilder::new()
-                        .prev_txid(input.txid.as_ref().try_into().unwrap())
-                        .prev_index(input.vout)
-                        .amount(input.value as i64)
-                        .p2sh(redeem_script.clone())
-                        .unwrap();
-
-                    // Note that the signature is ignored here, since it's
-                    // expected that the provided redeem script is constructed
-                    // in such a way that it can claim the UTXO. The caller must
-                    // either use None or a dummy value.
-
-                    let claim = SpendingScriptBuilder::new().p2sh(redeem_script);
-
-                    Ok((utxo, arg, claim))
+                OneOfInputVariant::p2sh(_redeem_script) => {
+                    todo!()
+                    // let redeem_script = Script::from(redeem_script.to_vec());
+                    //
+                    // let (utxo, arg) = UtxoBuilder::new()
+                    //     .prev_txid(input.txid.as_ref().try_into().unwrap())
+                    //     .prev_index(input.vout)
+                    //     .amount(input.value as i64)
+                    //     .p2sh(redeem_script.clone())
+                    //     .unwrap();
+                    //
+                    // // Note that the signature is ignored here, since it's
+                    // // expected that the provided redeem script is constructed
+                    // // in such a way that it can claim the UTXO. The caller must
+                    // // either use None or a dummy value.
+                    //
+                    // let claim = SpendingScriptBuilder::new().p2sh(redeem_script);
+                    //
+                    // Ok((utxo, arg, claim))
                 },
-                OneOfInputVariant::p2pkh(pubkey) => {
-                    let pubkey = pubkey_from_raw(pubkey).unwrap();
-
-                    let (utxo, arg) = UtxoBuilder::new()
-                        .prev_txid(input.txid.as_ref().try_into().unwrap())
-                        .prev_index(input.vout)
-                        .amount(input.value as i64)
-                        .p2pkh(pubkey.clone())
-                        .unwrap();
-
-                    // Use the provided signature, or a dummy value if None.
-                    let sig = if let Some(sig_bytes) = sig {
-                        Signature::from_bytes(&sig_bytes).unwrap()
-                    } else {
-                        Signature::from_bytes(&[1; 65]).unwrap()
-                    };
-
-                    let claim = SpendingScriptBuilder::new().p2pkh(sig, pubkey).unwrap();
-
-                    Ok((utxo, arg, claim))
+                OneOfInputVariant::p2pkh(_pubkey) => {
+                    todo!()
+                    // let pubkey = pubkey_from_raw(pubkey).unwrap();
+                    //
+                    // let (utxo, arg) = UtxoBuilder::new()
+                    //     .prev_txid(input.txid.as_ref().try_into().unwrap())
+                    //     .prev_index(input.vout)
+                    //     .amount(input.value as i64)
+                    //     .p2pkh(pubkey.clone())
+                    //     .unwrap();
+                    //
+                    // // Use the provided signature, or a dummy value if None.
+                    // let sig = if let Some(sig_bytes) = sig {
+                    //     Signature::from_bytes(&sig_bytes).unwrap()
+                    // } else {
+                    //     Signature::from_bytes(&[1; 65]).unwrap()
+                    // };
+                    //
+                    // let claim = SpendingScriptBuilder::new().p2pkh(sig, pubkey).unwrap();
+                    //
+                    // Ok((utxo, arg, claim))
                 },
                 OneOfInputVariant::p2wsh(_) => todo!(),
-                OneOfInputVariant::p2wpkh(pubkey) => {
-                    let pubkey = pubkey_from_raw(pubkey).unwrap();
-
-                    let (utxo, arg) = UtxoBuilder::new()
-                        .prev_txid(input.txid.as_ref().try_into().unwrap())
-                        .prev_index(input.vout)
-                        .amount(input.value as i64)
-                        .p2wpkh(pubkey.clone())
-                        .unwrap();
-
-                    // Use the provided signature, or a dummy value if None.
-                    let sig = if let Some(sig_bytes) = sig {
-                        Signature::from_bytes(&sig_bytes).unwrap()
-                    } else {
-                        Signature::from_bytes(&[1; 65]).unwrap()
-                    };
-
-                    let claim = SpendingScriptBuilder::new().p2wpkh(sig, pubkey).unwrap();
-
-                    Ok((utxo, arg, claim))
+                OneOfInputVariant::p2wpkh(_pubkey) => {
+                    todo!()
+                    // let pubkey = pubkey_from_raw(pubkey).unwrap();
+                    //
+                    // let (utxo, arg) = UtxoBuilder::new()
+                    //     .prev_txid(input.txid.as_ref().try_into().unwrap())
+                    //     .prev_index(input.vout)
+                    //     .amount(input.value as i64)
+                    //     .p2wpkh(pubkey.clone())
+                    //     .unwrap();
+                    //
+                    // // Use the provided signature, or a dummy value if None.
+                    // let sig = if let Some(sig_bytes) = sig {
+                    //     Signature::from_bytes(&sig_bytes).unwrap()
+                    // } else {
+                    //     Signature::from_bytes(&[1; 65]).unwrap()
+                    // };
+                    //
+                    // let claim = SpendingScriptBuilder::new().p2wpkh(sig, pubkey).unwrap();
+                    //
+                    // Ok((utxo, arg, claim))
                 },
-                OneOfInputVariant::p2tr_key_path(ctx) => {
-                    // TODO: Rename field to `pubkey`?
-                    let pubkey = schnorr_pubkey_from_raw(&ctx.public_key).unwrap();
-
-                    let (utxo, arg) = UtxoBuilder::new()
-                        .prev_txid(input.txid.as_ref().try_into().unwrap())
-                        .prev_index(input.vout)
-                        .amount(input.value as i64)
-                        .p2tr_key_path(&pubkey)
-                        .unwrap();
-
-                    // Use the provided signature, or a dummy value if None.
-                    let sig = if let Some(sig_bytes) = sig {
-                        schnorr::Signature::from_bytes(&sig_bytes).unwrap()
-                    } else {
-                        schnorr::Signature::from_bytes(&[1; 64]).unwrap()
-                    };
-
-                    let claim = SpendingScriptBuilder::new().p2tr_key_path(sig);
-
-                    Ok((utxo, arg, claim))
+                OneOfInputVariant::p2tr_key_path(_ctx) => {
+                    todo!()
+                    // // TODO: Rename field to `pubkey`?
+                    // let pubkey = schnorr_pubkey_from_raw(&ctx.public_key).unwrap();
+                    //
+                    // let (utxo, arg) = UtxoBuilder::new()
+                    //     .prev_txid(input.txid.as_ref().try_into().unwrap())
+                    //     .prev_index(input.vout)
+                    //     .amount(input.value as i64)
+                    //     .p2tr_key_path(&pubkey)
+                    //     .unwrap();
+                    //
+                    // // Use the provided signature, or a dummy value if None.
+                    // let sig = if let Some(sig_bytes) = sig {
+                    //     schnorr::Signature::from_bytes(&sig_bytes).unwrap()
+                    // } else {
+                    //     schnorr::Signature::from_bytes(&[1; 64]).unwrap()
+                    // };
+                    //
+                    // let claim = SpendingScriptBuilder::new().p2tr_key_path(sig);
+                    //
+                    // Ok((utxo, arg, claim))
                 },
-                OneOfInputVariant::p2tr_script_path(ctx) => {
-                    let payload = Script::from(ctx.payload.to_vec());
-                    let control_block = ctx.control_block.to_vec();
-
-                    let (utxo, arg) = UtxoBuilder::new()
-                        .prev_txid(input.txid.as_ref().try_into().unwrap())
-                        .prev_index(input.vout)
-                        .amount(input.value as i64)
-                        .p2tr_script_path(payload.clone())
-                        .unwrap();
-
-                    // Use the provided signature, or a dummy value if None.
-                    let sig = if let Some(sig_bytes) = sig {
-                        schnorr::Signature::from_bytes(&sig_bytes).unwrap()
-                    } else {
-                        schnorr::Signature::from_bytes(&[1; 64]).unwrap()
-                    };
-
-                    let claim =
-                        SpendingScriptBuilder::new().p2tr_script_path(sig, payload, control_block);
-
-                    Ok((utxo, arg, claim))
+                OneOfInputVariant::p2tr_script_path(_ctx) => {
+                    todo!()
+                    // let payload = Script::from(ctx.payload.to_vec());
+                    // let control_block = ctx.control_block.to_vec();
+                    //
+                    // let (utxo, arg) = UtxoBuilder::new()
+                    //     .prev_txid(input.txid.as_ref().try_into().unwrap())
+                    //     .prev_index(input.vout)
+                    //     .amount(input.value as i64)
+                    //     .p2tr_script_path(payload.clone())
+                    //     .unwrap();
+                    //
+                    // // Use the provided signature, or a dummy value if None.
+                    // let sig = if let Some(sig_bytes) = sig {
+                    //     schnorr::Signature::from_bytes(&sig_bytes).unwrap()
+                    // } else {
+                    //     schnorr::Signature::from_bytes(&[1; 64]).unwrap()
+                    // };
+                    //
+                    // let claim =
+                    //     SpendingScriptBuilder::new().p2tr_script_path(sig, payload, control_block);
+                    //
+                    // Ok((utxo, arg, claim))
                 },
-                OneOfInputVariant::brc20_inscribe(payload) => {
-                    // TODO: Rename field to `pubkey`?
-                    let pubkey = schnorr_pubkey_from_raw(&payload.inscribe_to).unwrap();
-                    let ticker = payload.ticker.to_string();
-                    let value = payload.transfer_amount.to_string();
-
-                    let (utxo, arg) = UtxoBuilder::new()
-                        .prev_txid(input.txid.as_ref().try_into().unwrap())
-                        .prev_index(input.vout)
-                        .amount(input.value as i64) // TODO: Just use u64 to begin with?
-                        .brc20_transfer(&pubkey, ticker.clone(), value.clone())
-                        .unwrap();
-
-                    // Use the provided signature, or a dummy value if None.
-                    let sig = if let Some(sig_bytes) = sig {
-                        schnorr::Signature::from_bytes(&sig_bytes).unwrap()
-                    } else {
-                        schnorr::Signature::from_bytes(&[1; 64]).unwrap()
-                    };
-
-                    let claim = SpendingScriptBuilder::new()
-                        .brc20_transfer(sig, &pubkey, ticker, value)
-                        .unwrap();
-
-                    Ok((utxo, arg, claim))
+                OneOfInputVariant::brc20_inscribe(_payload) => {
+                    todo!()
+                    // // TODO: Rename field to `pubkey`?
+                    // let pubkey = schnorr_pubkey_from_raw(&payload.inscribe_to).unwrap();
+                    // let ticker = payload.ticker.to_string();
+                    // let value = payload.transfer_amount.to_string();
+                    //
+                    // let (utxo, arg) = UtxoBuilder::new()
+                    //     .prev_txid(input.txid.as_ref().try_into().unwrap())
+                    //     .prev_index(input.vout)
+                    //     .amount(input.value as i64) // TODO: Just use u64 to begin with?
+                    //     .brc20_transfer(&pubkey, ticker.clone(), value.clone())
+                    //     .unwrap();
+                    //
+                    // // Use the provided signature, or a dummy value if None.
+                    // let sig = if let Some(sig_bytes) = sig {
+                    //     schnorr::Signature::from_bytes(&sig_bytes).unwrap()
+                    // } else {
+                    //     schnorr::Signature::from_bytes(&[1; 64]).unwrap()
+                    // };
+                    //
+                    // let claim = SpendingScriptBuilder::new()
+                    //     .brc20_transfer(sig, &pubkey, ticker, value)
+                    //     .unwrap();
+                    //
+                    // Ok((utxo, arg, claim))
                 },
                 OneOfInputVariant::ordinal_inscribe(_) => todo!(),
                 OneOfInputVariant::None => todo!(),
             }
         },
-        Proto::mod_Input::OneOfto_recipient::custom_script(payload) => {
-            let script_pubkey = Script::from(payload.script_pubkey.to_vec());
-            let script_sig = Script::from(payload.script_sig.to_vec());
-            let mut witness = Witness::new();
-            for item in &payload.witness_items {
-                witness.push_item(Script::from(item.to_vec()));
-            }
-
-            let (utxo, arg) = UtxoBuilder::new()
-                .prev_txid(input.txid.as_ref().try_into().unwrap())
-                .prev_index(input.vout)
-                .amount(input.value as i64) // TODO: Just use u64 to begin with?
-                // TODO: Signing method:
-                .custom_script_pubkey(script_pubkey, tw_utxo::signing_mode::SigningMethod::Legacy)
-                .unwrap();
-
-            // Signature is ignored here, caller must provide a valid
-            // script_sig/witness.
-
-            let claim =
-                SpendingScriptBuilder::custom_script_sig_witness(Some(script_sig), Some(witness));
-
-            Ok((utxo, arg, claim))
+        Proto::mod_Input::OneOfto_recipient::custom_script(_payload) => {
+            todo!()
+            // let script_pubkey = Script::from(payload.script_pubkey.to_vec());
+            // let script_sig = Script::from(payload.script_sig.to_vec());
+            // let mut witness = Witness::new();
+            // for item in &payload.witness_items {
+            //     witness.push_item(Script::from(item.to_vec()));
+            // }
+            //
+            // let (utxo, arg) = UtxoBuilder::new()
+            //     .prev_txid(input.txid.as_ref().try_into().unwrap())
+            //     .prev_index(input.vout)
+            //     .amount(input.value as i64) // TODO: Just use u64 to begin with?
+            //     // TODO: Signing method:
+            //     .custom_script_pubkey(script_pubkey, tw_utxo::signing_mode::SigningMethod::Legacy)
+            //     .unwrap();
+            //
+            // // Signature is ignored here, caller must provide a valid
+            // // script_sig/witness.
+            //
+            // let claim =
+            //     SpendingScriptBuilder::custom_script_sig_witness(Some(script_sig), Some(witness));
+            //
+            // Ok((utxo, arg, claim))
         },
         Proto::mod_Input::OneOfto_recipient::None => todo!(),
     }
@@ -331,53 +334,56 @@ pub fn proto_output_to_native(
                     OneOfto_address::None => todo!(),
                 }
             },
-            mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_key_path(pubkey) => {
-                let pubkey = pubkey_from_raw(pubkey).unwrap();
-
-                let out = OutputBuilder::new(output.value as i64).p2tr_key_path(&pubkey);
-
-                let tx_out = Proto::mod_PreSigningOutput::TxOut {
-                    value: output.value,
-                    script_pubkey: out.script_pubkey.as_data().to_vec().into(),
-                    ..Default::default()
-                };
-
-                Ok((out, tx_out))
+            mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_key_path(_pubkey) => {
+                todo!()
+                // let pubkey = pubkey_from_raw(pubkey).unwrap();
+                //
+                // let out = OutputBuilder::new(output.value as i64).p2tr_key_path(&pubkey);
+                //
+                // let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                //     value: output.value,
+                //     script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                //     ..Default::default()
+                // };
+                //
+                // Ok((out, tx_out))
             },
-            mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_script_path(payload) => {
-                let pubkey = pubkey_from_raw(&payload.internal_key).unwrap();
-                let merkle_root: H256 = payload.merkle_root.as_ref().try_into().unwrap();
-
-                let out =
-                    OutputBuilder::new(output.value as i64).p2tr_script_path(pubkey, merkle_root);
-
-                let tx_out = Proto::mod_PreSigningOutput::TxOut {
-                    value: output.value,
-                    script_pubkey: out.script_pubkey.as_data().to_vec().into(),
-                    ..Default::default()
-                };
-
-                Ok((out, tx_out))
+            mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_script_path(_payload) => {
+                todo!()
+                // let pubkey = pubkey_from_raw(&payload.internal_key).unwrap();
+                // let merkle_root: H256 = payload.merkle_root.as_ref().try_into().unwrap();
+                //
+                // let out =
+                //     OutputBuilder::new(output.value as i64).p2tr_script_path(pubkey, merkle_root);
+                //
+                // let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                //     value: output.value,
+                //     script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                //     ..Default::default()
+                // };
+                //
+                // Ok((out, tx_out))
             },
             mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_dangerous_assume_tweaked(_) => {
                 todo!()
             },
-            mod_Output::mod_OutputBuilder::OneOfvariant::brc20_inscribe(payload) => {
-                let pubkey = pubkey_from_raw(&payload.inscribe_to).unwrap();
-                let ticker = payload.ticker.to_string();
-                let value = payload.transfer_amount.to_string();
-
-                let out = OutputBuilder::new(output.value as i64)
-                    .brc20_transfer(pubkey, ticker, value)
-                    .unwrap();
-
-                let tx_out = Proto::mod_PreSigningOutput::TxOut {
-                    value: output.value,
-                    script_pubkey: out.script_pubkey.as_data().to_vec().into(),
-                    ..Default::default()
-                };
-
-                Ok((out, tx_out))
+            mod_Output::mod_OutputBuilder::OneOfvariant::brc20_inscribe(_payload) => {
+                todo!()
+                // let pubkey = pubkey_from_raw(&payload.inscribe_to).unwrap();
+                // let ticker = payload.ticker.to_string();
+                // let value = payload.transfer_amount.to_string();
+                //
+                // let out = OutputBuilder::new(output.value as i64)
+                //     .brc20_transfer(pubkey, ticker, value)
+                //     .unwrap();
+                //
+                // let tx_out = Proto::mod_PreSigningOutput::TxOut {
+                //     value: output.value,
+                //     script_pubkey: out.script_pubkey.as_data().to_vec().into(),
+                //     ..Default::default()
+                // };
+                //
+                // Ok((out, tx_out))
             },
             mod_Output::mod_OutputBuilder::OneOfvariant::ordinal_inscribe(_) => todo!(),
             mod_Output::mod_OutputBuilder::OneOfvariant::None => todo!(),

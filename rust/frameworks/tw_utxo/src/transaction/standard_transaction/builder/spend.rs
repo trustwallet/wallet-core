@@ -1,10 +1,11 @@
 use crate::{
     script::{standard_script::claims, Script, Witness},
-    sighash::{BitcoinEcdsaSignature, BitcoinSchnorrSignature, SighashBase, SighashType},
+    sighash::{SighashBase, SighashType},
     sighash_computer::SpendingData,
+    signature::{BitcoinEcdsaSignature, BitcoinSchnorrSignature},
     transaction::asset::brc20::{BRC20TransferInscription, Brc20Ticker},
 };
-use tw_coin_entry::error::prelude::{OrTWError, ResultContext, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_hash::H264;
 use tw_keypair::{ecdsa, schnorr, tw};
 use tw_misc::traits::ToBytesVec;
@@ -25,6 +26,7 @@ impl SpendingScriptBuilder {
         self
     }
 
+    /// TODO remove.
     pub fn custom_script_sig_witness(
         script_sig: Option<Script>,
         witness: Option<Witness>,
@@ -86,7 +88,7 @@ impl SpendingScriptBuilder {
     }
 
     pub fn p2tr_key_path(self, sig: schnorr::Signature) -> SpendingData {
-        let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty);
+        let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty).unwrap();
 
         let witness = claims::new_p2tr_key_path(sig.serialize());
 
@@ -102,9 +104,8 @@ impl SpendingScriptBuilder {
         payload: Script,
         control_block: Vec<u8>,
     ) -> SpendingData {
-        let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty);
-
-        let witness = claims::new_p2tr_script_path(sig.serialize(), payload, control_block);
+        let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty).unwrap();
+        let witness = claims::new_p2tr_script_path(&sig, payload, control_block);
 
         SpendingData {
             script_sig: Script::default(),
@@ -119,7 +120,7 @@ impl SpendingScriptBuilder {
         ticker: String,
         value: String,
     ) -> SigningResult<SpendingData> {
-        let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty);
+        let sig = BitcoinSchnorrSignature::new(sig, self.sighash_ty)?;
 
         let pubkey: H264 = pubkey.compressed();
 
@@ -137,8 +138,7 @@ impl SpendingScriptBuilder {
 
         let payload = Script::from(transfer.script.to_vec());
 
-        let witness =
-            claims::new_p2tr_script_path(sig.serialize(), payload, control_block.serialize());
+        let witness = claims::new_p2tr_script_path(&sig, payload, control_block.serialize());
 
         Ok(SpendingData {
             script_sig: Script::default(),

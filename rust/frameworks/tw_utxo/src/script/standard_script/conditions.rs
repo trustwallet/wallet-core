@@ -4,6 +4,7 @@ use secp256k1::XOnlyPublicKey;
 use tw_hash::H160;
 use tw_hash::H256;
 use tw_hash::H264;
+use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
 
 use super::opcodes::*;
@@ -159,4 +160,41 @@ pub fn is_p2wpkh(s: &Script) -> bool {
 pub fn is_p2tr(s: &Script) -> bool {
     let b = s.as_data();
     b.len() == 34 && b[0] == TAPROOT_VERSION && b[1] == OP_PUSHBYTES_32
+}
+
+/// Returns either a compressed or uncompressed public key data if matched.
+pub fn match_p2pk(s: &Script) -> Option<Data> {
+    let b = s.as_data();
+    match s.len() {
+        67 if b[0] == OP_PUSHBYTES_65 && b[66] == OP_CHECKSIG => Some(b[1..66].to_vec()),
+        35 if b[0] == OP_PUSHBYTES_33 && b[34] == OP_CHECKSIG => Some(b[1..34].to_vec()),
+        _ => None,
+    }
+}
+
+/// Returns a public key hash if matched.
+pub fn match_p2pkh(s: &Script) -> Option<H160> {
+    if is_p2pkh(s) {
+        Some(H160::try_from(&s.as_data()[3..23]).expect("is_p2pkh checks the length"))
+    } else {
+        None
+    }
+}
+
+/// Returns a public key hash if matched.
+pub fn match_p2wpkh(s: &Script) -> Option<H160> {
+    if is_p2wpkh(s) {
+        Some(H160::try_from(&s.as_data()[2..]).expect("is_p2wpkh checks the length"))
+    } else {
+        None
+    }
+}
+
+/// Returns a tweaked schnorr public key if matched.
+pub fn match_p2tr(s: &Script) -> Option<H256> {
+    if is_p2tr(s) {
+        Some(H256::try_from(&s.as_data()[2..]).expect("is_p2tr checks the length"))
+    } else {
+        None
+    }
 }

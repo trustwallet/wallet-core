@@ -6,7 +6,7 @@ use crate::abi::non_empty_array::NonZeroLen;
 use crate::abi::param_type::ParamType;
 use crate::abi::uint::UintBits;
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
-use tw_coin_entry::error::prelude::ResultContext;
+use tw_coin_entry::error::prelude::*;
 
 pub trait TypeConstructor: Sized {
     fn address() -> Self;

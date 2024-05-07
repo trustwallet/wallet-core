@@ -1,8 +1,8 @@
 use tw_encoding::hex;
 
 use tw_keypair::ecdsa::secp256k1::PrivateKey;
-use tw_keypair::schnorr;
 use tw_keypair::traits::SigningKeyTrait;
+use tw_keypair::{ecdsa, schnorr};
 // TODO: Consider using ecdsa directly.
 use tw_keypair::tw::{PublicKey, PublicKeyType};
 
@@ -28,6 +28,8 @@ fn build_tx_input_legacy_output_legacy() {
         hex::decode("037ed9a436e11ec4947ac4b7823787e24ba73180f1edd2857bff19c9f4d62b65bf").unwrap();
 
     let alice_private_key = PrivateKey::try_from(alice_private_key.as_slice()).unwrap();
+    let alice_ecdsa_pubkey =
+        ecdsa::secp256k1::PublicKey::try_from(alice_pubkey.as_slice()).unwrap();
     let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
     let bob_pubkey = PublicKey::new(bob_pubkey, PublicKeyType::Secp256k1).unwrap();
 
@@ -39,7 +41,7 @@ fn build_tx_input_legacy_output_legacy() {
         .prev_txid(txid)
         .prev_index(0)
         .amount(50 * 100_000_000)
-        .p2pkh(alice_pubkey.clone())
+        .p2pkh(&alice_ecdsa_pubkey)
         .unwrap();
 
     let output1 = OutputBuilder::new(50 * 100_000_000 - 1_000_000).p2pkh(&bob_pubkey);
@@ -86,6 +88,8 @@ fn build_tx_input_legacy_output_segwit() {
         hex::decode("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f").unwrap();
 
     let alice_private_key = PrivateKey::try_from(alice_private_key.as_slice()).unwrap();
+    let alice_ecdsa_pubkey =
+        ecdsa::secp256k1::PublicKey::try_from(alice_pubkey.as_slice()).unwrap();
     let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
     let bob_pubkey = PublicKey::new(bob_pubkey, PublicKeyType::Secp256k1).unwrap();
 
@@ -97,7 +101,7 @@ fn build_tx_input_legacy_output_segwit() {
         .prev_txid(txid)
         .prev_index(0)
         .amount(50 * 100_000_000)
-        .p2pkh(alice_pubkey.clone())
+        .p2pkh(&alice_ecdsa_pubkey)
         .unwrap();
 
     let output1 = OutputBuilder::new(50 * 100_000_000 - 1_000_000).p2wpkh(&bob_pubkey);
@@ -145,6 +149,7 @@ fn build_tx_input_segwit_output_segwit() {
 
     let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
     let bob_private_key = PrivateKey::try_from(bob_private_key.as_slice()).unwrap();
+    let bob_ecdsa_pubkey = ecdsa::secp256k1::PublicKey::try_from(bob_pubkey.as_slice()).unwrap();
     let bob_pubkey = PublicKey::new(bob_pubkey, PublicKeyType::Secp256k1).unwrap();
 
     let txid =
@@ -155,7 +160,7 @@ fn build_tx_input_segwit_output_segwit() {
         .prev_txid(txid)
         .prev_index(0)
         .amount(50 * 100_000_000 - 1_000_000)
-        .p2wpkh(bob_pubkey.clone())
+        .p2wpkh(&bob_ecdsa_pubkey)
         .unwrap();
 
     let output1 =
@@ -203,8 +208,10 @@ fn build_tx_input_legacy_output_taproot() {
         hex::decode("02c0938cf377023dfde55e9c96b3cff4ca8894fb6b5d2009006bd43c0bff69cac9").unwrap();
 
     let alice_private_key = PrivateKey::try_from(alice_private_key.as_slice()).unwrap();
+    let alice_ecdsa_pubkey =
+        ecdsa::secp256k1::PublicKey::try_from(alice_pubkey.as_slice()).unwrap();
     let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
-    let bob_pubkey = PublicKey::new(bob_pubkey, PublicKeyType::Secp256k1).unwrap();
+    let bob_schnorr_pubkey = schnorr::PublicKey::try_from(bob_pubkey.as_slice()).unwrap();
 
     let txid =
         txid_from_str_and_rev("c50563913e5a838f937c94232f5a8fc74e58b629fae41dfdffcc9a70f833b53a")
@@ -214,10 +221,11 @@ fn build_tx_input_legacy_output_taproot() {
         .prev_txid(txid)
         .prev_index(0)
         .amount(50 * 100_000_000)
-        .p2pkh(alice_pubkey.clone())
+        .p2pkh(&alice_ecdsa_pubkey)
         .unwrap();
 
-    let output1 = OutputBuilder::new(50 * 100_000_000 - 1_000_000).p2tr_key_path(&bob_pubkey);
+    let output1 =
+        OutputBuilder::new(50 * 100_000_000 - 1_000_000).p2tr_key_path(&bob_schnorr_pubkey);
 
     let (tx, args) = TransactionBuilder::new()
         .push_input(utxo1, arg1)
@@ -258,7 +266,7 @@ fn build_tx_input_taproot_output_taproot() {
     let alice_pubkey =
         hex::decode("0351e003fdc48e7f31c9bc94996c91f6c3273b7ef4208a1686021bedf7673bb058").unwrap();
 
-    let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
+    let alice_schnorr_pubkey = schnorr::PublicKey::try_from(alice_pubkey.as_slice()).unwrap();
     let bob_private_key = schnorr::PrivateKey::try_from(bob_private_key.as_slice()).unwrap();
     let bob_pubkey = bob_private_key.public();
 
@@ -273,8 +281,8 @@ fn build_tx_input_taproot_output_taproot() {
         .p2tr_key_path(&bob_pubkey)
         .unwrap();
 
-    let output1 =
-        OutputBuilder::new(50 * 100_000_000 - 1_000_000 - 1_000_000).p2tr_key_path(&alice_pubkey);
+    let output1 = OutputBuilder::new(50 * 100_000_000 - 1_000_000 - 1_000_000)
+        .p2tr_key_path(&alice_schnorr_pubkey);
 
     let (tx, args) = TransactionBuilder::new()
         .push_input(utxo1, arg1)
@@ -309,6 +317,9 @@ fn build_tx_input_segwit_output_brc20_transfer_commit() {
         hex::decode("030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb").unwrap();
 
     let alice_private_key = PrivateKey::try_from(alice_private_key.as_slice()).unwrap();
+    let alice_ecdsa_pubkey =
+        ecdsa::secp256k1::PublicKey::try_from(alice_pubkey.as_slice()).unwrap();
+    let alice_schnorr_pubkey = schnorr::PublicKey::try_from(alice_pubkey.as_slice()).unwrap();
     let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
 
     let txid =
@@ -319,11 +330,11 @@ fn build_tx_input_segwit_output_brc20_transfer_commit() {
         .prev_txid(txid)
         .prev_index(1)
         .amount(26_400)
-        .p2wpkh(alice_pubkey.clone())
+        .p2wpkh(&alice_ecdsa_pubkey)
         .unwrap();
 
     let output1 = OutputBuilder::new(7_000)
-        .brc20_transfer(alice_pubkey.clone(), "oadf".into(), "20".into())
+        .brc20_transfer(&alice_schnorr_pubkey, "oadf".into(), "20".into())
         .unwrap();
 
     let output2 = OutputBuilder::new(16_400).p2wpkh(&alice_pubkey);

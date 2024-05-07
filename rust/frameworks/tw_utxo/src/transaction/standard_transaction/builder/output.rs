@@ -8,8 +8,8 @@ use crate::{
 };
 use bitcoin::hashes::Hash;
 use tw_coin_entry::error::prelude::*;
-use tw_hash::{ripemd::bitcoin_hash_160, sha2::sha256, H160, H256, H264};
-use tw_keypair::tw;
+use tw_hash::{ripemd::bitcoin_hash_160, sha2::sha256, H160, H256};
+use tw_keypair::{ecdsa, schnorr, tw};
 
 pub struct OutputBuilder {
     amount: Amount,
@@ -41,6 +41,13 @@ impl OutputBuilder {
         TransactionOutput {
             value: self.amount,
             script_pubkey: conditions::new_p2sh(redeem_hash),
+        }
+    }
+
+    pub fn p2pk(self, pubkey: &ecdsa::secp256k1::PublicKey) -> TransactionOutput {
+        TransactionOutput {
+            value: self.amount,
+            script_pubkey: conditions::new_p2pk(&pubkey.compressed()),
         }
     }
 
@@ -91,16 +98,10 @@ impl OutputBuilder {
         }
     }
 
-    pub fn p2tr_key_path(self, pubkey: &tw::PublicKey) -> TransactionOutput {
-        let pubkey: H264 = pubkey
-            .to_bytes()
-            .as_slice()
-            .try_into()
-            .expect("pubkey length is 33 bytes");
-
+    pub fn p2tr_key_path(self, pubkey: &schnorr::PublicKey) -> TransactionOutput {
         TransactionOutput {
             value: self.amount,
-            script_pubkey: conditions::new_p2tr_key_path(&pubkey),
+            script_pubkey: conditions::new_p2tr_key_path(&pubkey.compressed()),
         }
     }
 
@@ -111,34 +112,26 @@ impl OutputBuilder {
         }
     }
 
-    pub fn p2tr_script_path(self, pubkey: tw::PublicKey, merkle_root: H256) -> TransactionOutput {
-        let pubkey: H264 = pubkey
-            .to_bytes()
-            .as_slice()
-            .try_into()
-            .expect("pubkey length is 33 bytes");
-
+    pub fn p2tr_script_path(
+        self,
+        pubkey: &schnorr::PublicKey,
+        merkle_root: H256,
+    ) -> TransactionOutput {
         TransactionOutput {
             value: self.amount,
-            script_pubkey: conditions::new_p2tr_script_path(&pubkey, &merkle_root),
+            script_pubkey: conditions::new_p2tr_script_path(&pubkey.compressed(), &merkle_root),
         }
     }
 
-    // TODO: Be more precise with PublicKey type?.
     pub fn brc20_transfer(
         self,
-        pubkey: tw::PublicKey,
+        pubkey: &schnorr::PublicKey,
         ticker: String,
         value: String,
     ) -> SigningResult<TransactionOutput> {
-        let pubkey: H264 = pubkey
-            .to_secp256k1()
-            .or_tw_err(SigningErrorType::Error_invalid_params)
-            .context("Expected secp256k1 public key")?
-            .compressed();
-
+        let pubkey_data = pubkey.compressed();
         let ticker = Brc20Ticker::new(ticker)?;
-        let transfer = BRC20TransferInscription::new(&pubkey, &ticker, &value)?;
+        let transfer = BRC20TransferInscription::new(&pubkey_data, &ticker, &value)?;
 
         let merkle_root: H256 = transfer
             .spend_info
@@ -150,7 +143,7 @@ impl OutputBuilder {
 
         Ok(TransactionOutput {
             value: self.amount,
-            script_pubkey: conditions::new_p2tr_script_path(&pubkey, &merkle_root),
+            script_pubkey: conditions::new_p2tr_script_path(&pubkey_data, &merkle_root),
         })
     }
 }

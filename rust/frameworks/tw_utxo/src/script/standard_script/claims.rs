@@ -1,7 +1,7 @@
 use tw_hash::H264;
 
 use crate::script::Witness;
-use crate::sighash::BitcoinEcdsaSignature;
+use crate::signature::{BitcoinEcdsaSignature, BitcoinSchnorrSignature};
 
 use super::Script;
 
@@ -13,6 +13,21 @@ use super::Script;
 pub fn new_p2pk(sig: &BitcoinEcdsaSignature) -> Script {
     let mut s = Script::with_capacity(35);
     s.append(&sig.serialize());
+    s
+}
+
+/// Creates script items to claim a P2SH spending condition.
+/// (_witness_).
+///
+/// ```txt
+/// <push><item_1><push><item_2><push><redeem_script>
+/// ```
+pub fn new_p2sh(items: Vec<Script>, redeem_script: Script) -> Script {
+    let mut s = Script::new();
+    for item in items {
+        s.push_slice(item.as_data());
+    }
+    s.push_slice(redeem_script.as_data());
     s
 }
 
@@ -60,16 +75,33 @@ pub fn new_p2wpkh(sig: &BitcoinEcdsaSignature, pubkey: H264) -> Witness {
     w
 }
 
+/// Creates witness script items to claim a P2TR spending condition
+/// (_witness_).
+///
+/// ```txt
+/// <sig>
+/// ```
 pub fn new_p2tr_key_path(sig: Vec<u8>) -> Witness {
     let mut w = Witness::new();
     w.push_item(Script::from(sig));
     w
 }
 
-// TODO: Consider using newtypes for payload and control block.
-pub fn new_p2tr_script_path(sig: Vec<u8>, payload: Script, control_block: Vec<u8>) -> Witness {
+/// Creates witness script items to claim a P2TR complex Taproot transaction
+/// (_witness_).
+///
+/// ```txt
+/// <sig>
+/// <payload>
+/// <control_block>
+/// ```
+pub fn new_p2tr_script_path(
+    sig: &BitcoinSchnorrSignature,
+    payload: Script,
+    control_block: Vec<u8>,
+) -> Witness {
     let mut w = Witness::new();
-    w.push_item(Script::from(sig));
+    w.push_item(Script::from(sig.serialize()));
     w.push_item(payload);
     w.push_item(Script::from(control_block));
     w

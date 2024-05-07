@@ -3,64 +3,11 @@
 // Copyright © 2017 Trust Wallet.
 
 use tw_coin_entry::error::prelude::*;
-use tw_keypair::{ecdsa::der, schnorr};
-use tw_memory::Data;
-use tw_misc::traits::ToBytesVec;
 
 const ANYONE_CAN_PAY_FLAG: u32 = 0x80;
 const FORK_ID_FLAG: u32 = 0x40;
 const BASE_FLAG: u32 = 0x1f;
-
-/// A Bitcoin ECDSA signature with a sighash type, which must be serialzed
-/// occordingly in the scriptSig/Witness data to spend an output.
-pub struct BitcoinEcdsaSignature {
-    sig: der::Signature,
-    sighash_ty: SighashType,
-}
-
-impl BitcoinEcdsaSignature {
-    // The max size of the serialized signature including sighash type.
-    const SER_SIZE: usize = 73;
-
-    pub fn new(sig: der::Signature, sighash_ty: SighashType) -> Self {
-        BitcoinEcdsaSignature { sig, sighash_ty }
-    }
-
-    pub fn serialize(&self) -> Data {
-        let mut ser = Vec::with_capacity(Self::SER_SIZE);
-        ser.extend(self.sig.der_bytes());
-        ser.push(self.sighash_ty.raw_sighash() as u8);
-        debug_assert!(ser.len() <= Self::SER_SIZE);
-        ser
-    }
-}
-
-pub struct BitcoinSchnorrSignature {
-    sig: schnorr::Signature,
-    // TODO is this needed?
-    _sighash_ty: SighashType,
-}
-
-impl BitcoinSchnorrSignature {
-    // The size of the serialized signature including sighash type.
-    const SER_SIZE: usize = 65;
-
-    pub fn new(sig: schnorr::Signature, sighash_ty: SighashType) -> Self {
-        BitcoinSchnorrSignature {
-            sig,
-            _sighash_ty: sighash_ty,
-        }
-    }
-
-    pub fn serialize(&self) -> Vec<u8> {
-        let mut ser = Vec::with_capacity(Self::SER_SIZE);
-        ser.extend(self.sig.to_vec());
-        // TODO: Looks like this is not expected(?)
-        //ser.push(self.sighash_ty.raw_sighash() as u8);
-        //debug_assert_eq!(ser.len(), Self::SER_SIZE);
-        ser
-    }
-}
+const DEFAULT_TAPROOT_SIGHASH_TYPE: u8 = 0;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u32)]
@@ -94,6 +41,7 @@ impl SighashType {
             base,
         }
     }
+
     /// Creates Sighash from any u32.
     pub fn from_u32(u: u32) -> SigningResult<Self> {
         let base = match u & BASE_FLAG {
@@ -114,6 +62,28 @@ impl SighashType {
     /// Returns a raw sighash type.
     pub fn raw_sighash(&self) -> u32 {
         self.raw_sighash
+    }
+
+    /// Returns a serialized raw sighash type, where `All` sighash is serialized as 0x00 (`Default`).
+    /// The 0x00 variant is only supported in Taproot transactions,
+    /// not in Legacy or Segwit transactions.
+    pub fn serialize_as_taproot(&self) -> SigningResult<u8> {
+        if self.is_default_taproot_sighash() {
+            Ok(DEFAULT_TAPROOT_SIGHASH_TYPE)
+        } else {
+            self.raw_sighash
+                .try_into()
+                .tw_err(|_| SigningErrorType::Error_invalid_params)
+                .context("Taproot sighash must fit uint8")
+        }
+    }
+
+    /// Whether the sighash type is `Default` Taproot, i.e will be serialized as 0x00.
+    /// The 0x00 variant is only supported in Taproot transactions,
+    /// not in Legacy or Segwit transactions.
+    pub fn is_default_taproot_sighash(&self) -> bool {
+        self.raw_sighash == DEFAULT_TAPROOT_SIGHASH_TYPE as u32
+            || self.raw_sighash == SighashBase::All as u32
     }
 
     pub fn base_type(&self) -> SighashBase {

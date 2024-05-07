@@ -1,5 +1,6 @@
 use tw_encoding::hex;
 use tw_hash::H256;
+use tw_keypair::ecdsa;
 use tw_keypair::ecdsa::secp256k1::PrivateKey;
 use tw_keypair::ecdsa::signature::Signature;
 use tw_keypair::traits::SigningKeyTrait;
@@ -27,6 +28,8 @@ fn build_tx_input_selection() {
         hex::decode("037ed9a436e11ec4947ac4b7823787e24ba73180f1edd2857bff19c9f4d62b65bf").unwrap();
 
     let alice_private_key = PrivateKey::try_from(alice_private_key.as_slice()).unwrap();
+    let alice_ecdsa_pubkey =
+        ecdsa::secp256k1::PublicKey::try_from(alice_pubkey.as_slice()).unwrap();
     let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
     let bob_pubkey = PublicKey::new(bob_pubkey, PublicKeyType::Secp256k1).unwrap();
 
@@ -34,21 +37,21 @@ fn build_tx_input_selection() {
         .prev_txid(H256::from([1; 32]))
         .prev_index(0)
         .amount(1_000)
-        .p2pkh(alice_pubkey.clone())
+        .p2pkh(&alice_ecdsa_pubkey)
         .unwrap();
 
     let (utxo2, arg2) = UtxoBuilder::new()
         .prev_txid(H256::from([2; 32]))
         .prev_index(0)
         .amount(3_000)
-        .p2pkh(alice_pubkey.clone())
+        .p2pkh(&alice_ecdsa_pubkey)
         .unwrap();
 
     let (utxo3, arg3) = UtxoBuilder::new()
         .prev_txid(H256::from([3; 32]))
         .prev_index(0)
         .amount(4_000)
-        .p2pkh(alice_pubkey.clone())
+        .p2pkh(&alice_ecdsa_pubkey)
         .unwrap();
 
     let out1 = OutputBuilder::new(1_000).p2pkh(&bob_pubkey);

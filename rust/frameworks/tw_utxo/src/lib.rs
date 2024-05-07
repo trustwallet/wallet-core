@@ -8,6 +8,8 @@ pub mod planner;
 pub mod script;
 pub mod sighash;
 pub mod sighash_computer;
+pub mod signature;
 pub mod signing_mode;
+pub mod spending_data;
 pub mod transaction;
 pub mod utxo_selector;

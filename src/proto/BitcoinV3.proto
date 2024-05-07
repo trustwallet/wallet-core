@@ -23,7 +23,7 @@ enum InputSelector {
     UseAll = 10;
 }
 
-// Eather a public key or public key hash.
+// Either a public key or public key hash.
 message PublicKeyOrHash {
     oneof variant {
         // Public key bytes.
@@ -34,8 +34,6 @@ message PublicKeyOrHash {
 }
 
 message Input {
-    // Use an individual private key for this input. Only required if the `sign` method is called.
-    bytes private_key = 1;
     // The referenced transaction ID in REVERSED order.
     bytes txid = 2;
     // The position in the previous transactions output that this input references.
@@ -56,8 +54,8 @@ message Input {
         // Spending script pubkey data.
         // Use this variant if the UTXO claiming script is known already, otherwise use `InputBuilder`.
         // Please note that the signing method (eg "legacy" or "segwit") will be determined by parsing the script data as:
-        // - P2SH, P2PK, P2PKH - legacy signing method;
-        // - P2WSH, P2WPKH - segwit signing method.
+        // - P2PK, P2PKH - legacy signing method;
+        // - P2WPKH - segwit signing method.
         bytes script_data = 8;
         // Derive a spending script pubkey from a receiver address.
         // E.g "bc1" segwit address will be P2WPKH claiming script.
@@ -68,17 +66,23 @@ message Input {
     message InputBuilder {
         oneof variant {
             // Pay-to-Script-Hash, specify the redeem script.
-            bytes p2sh = 2;
+            // Please note that we support standard redeem scripts only, such as P2PKH, P2WPKH, P2TR.
+            // TODO next iteration.
+            // bytes p2sh = 1;
+
             // Pay-to-Public-Key, specify the public key.
-            bytes p2pk = 3;
-            // Pay-to-Public-Key-Hash, specify the public key or its hash.
-            PublicKeyOrHash p2pkh = 4;
+            bytes p2pk = 2;
+            // Pay-to-Public-Key-Hash, specify the public key.
+            PublicKeyOrHash p2pkh = 3;
+
             // Pay-to-Witness-Script-Hash, specify the redeem script.
-            bytes p2wsh = 5;
-            // Pay-to-Public-Key-Hash, specify the public key or its hash.
-            PublicKeyOrHash p2wpkh = 6;
-            // Pay-to-Taproot-key-path (balance transfers).
-            InputTaprootKeyPath p2tr_key_path = 7;
+            // TODO next iteration.
+            // bytes p2wsh = 4;
+
+            // Pay-to-Public-Key-Hash, specify the public key.
+            PublicKeyOrHash p2wpkh = 5;
+            // Pay-to-Taproot-key-path (balance transfers), specify the public key.
+            bytes p2tr_key_path = 7;
             // Pay-to-Taproot-script-path (complex transfers).
             InputTaprootScriptPath p2tr_script_path = 8;
             // Create a BRC20 inscription.
@@ -88,11 +92,6 @@ message Input {
 
     message Sequence {
         uint32 sequence = 1;
-    }
-
-    message InputTaprootKeyPath {
-        // The recipient.
-        bytes public_key = 2;
     }
 
     message InputTaprootScriptPath {
@@ -127,28 +126,33 @@ message Output {
 
     message OutputBuilder {
         oneof variant {
-            // Pay-to-Script-Hash, specify the hash.
-            OutputRedeemScriptOrHash p2sh = 1;
-            // Pay-to-Public-Key-Hash
-            PublicKeyOrHash p2pkh = 2;
-            // Pay-to-Witness-Script-Hash, specify the hash.
-            OutputRedeemScriptOrHash p2wsh = 3;
-            // Pay-to-Public-Key-Hash
-            PublicKeyOrHash p2wpkh = 4;
+            // Pay-to-Script-Hash, specify the redeem script or its hash.
+            RedeemScriptOrHash p2sh = 1;
+            // Pay-to-Public-Key, specify the public key.
+            bytes p2pk = 2;
+            // Pay-to-Public-Key-Hash, specify the public key or its hash.
+            PublicKeyOrHash p2pkh = 3;
+            // Pay-to-Witness-Script-Hash, specify the redeem script or its hash.
+            RedeemScriptOrHash p2wsh = 4;
+            // Pay-to-Public-Key-Hash, specify the public key or its hash.
+            PublicKeyOrHash p2wpkh = 5;
             // Pay-to-Taproot-key-path (balance transfers), specify the public key.
-            bytes p2tr_key_path = 5;
+            bytes p2tr_key_path = 6;
             // Pay-to-Taproot-script-path (complex transfers)
-            OutputTaprootScriptPath p2tr_script_path = 6;
-            bytes p2tr_dangerous_assume_tweaked = 7;
-            OutputBrc20Inscription brc20_inscribe = 8;
+            OutputTaprootScriptPath p2tr_script_path = 7;
+            bytes p2tr_dangerous_assume_tweaked = 8;
+            OutputBrc20Inscription brc20_inscribe = 9;
             // OP_RETURN output. In most cases, with a zero-amount.
             bytes op_return = 12;
         }
     }
 
-    message OutputRedeemScriptOrHash {
+    // Either a redeem script or its hash.
+    message RedeemScriptOrHash {
         oneof variant {
+            // Redeem script bytes.
             bytes redeem_script = 1;
+            // Public key hash.
             bytes hash = 2;
         }
     }
@@ -181,11 +185,15 @@ message SigningInput {
     // (optional) The protocol version, is currently expected to be 1 or 2.
     // Version 2 by default.
     int32 version = 1;
+    // User private keys.
     // Only required if the `sign` method is called.
-    bytes private_key = 2;
+    repeated bytes private_keys = 2;
+    // User public keys.
+    // Only required if the `plan`, `preImageHash` methods are called.
+    repeated bytes public_keys = 3;
     // (optional) Block height or timestamp indicating at what point transactions can be
     // included in a block. None by default (zero value).
-    LockTime lock_time = 3;
+    LockTime lock_time = 4;
     // The inputs to spend.
     repeated Input inputs = 5;
     // The output of the transaction. Note that the change output is specified

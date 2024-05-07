@@ -4,7 +4,7 @@
 
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use std::fmt;
-use tw_coin_entry::error::prelude::ResultContext;
+use tw_coin_entry::error::prelude::*;
 use tw_number::U256;
 
 #[derive(Clone, Copy, PartialEq)]

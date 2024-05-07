@@ -7,6 +7,7 @@ use crate::sighash::SighashType;
 use crate::signing_mode::SigningMethod;
 use tw_coin_entry::error::prelude::*;
 
+use crate::spending_data::SpendingDataConstructor;
 use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
 use crate::transaction::transaction_parts::Amount;
 use crate::transaction::{TransactionPreimage, UtxoPreimageArgs, UtxoTaprootPreimageArgs};
@@ -14,31 +15,20 @@ use tw_hash::hasher::Hasher;
 use tw_hash::H256;
 use tw_keypair::tw;
 
-const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
+pub const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 
-/// UTXO (Unsigned transaction input) contains all info required to sign the.
-#[derive(Clone, Debug, PartialEq, Eq)]
+/// UTXO signing arguments contain all info required to sign a UTXO (Unspent Transaction Output).
+#[derive(Clone)]
 pub struct UtxoToSign {
     pub script_pubkey: Script,
     pub signing_method: SigningMethod,
-    // TODO: Rename to value?
+    pub spending_data_constructor: SpendingDataConstructor,
     pub amount: Amount,
+    /// Taproot UTXO specific argument.
+    /// TODO add `TaprootUtxoSignArgs`.
     pub leaf_hash_code_separator: Option<(H256, u32)>,
     pub tx_hasher: Hasher,
     pub sighash_ty: SighashType,
-}
-
-impl Default for UtxoToSign {
-    fn default() -> Self {
-        UtxoToSign {
-            script_pubkey: Script::default(),
-            signing_method: SigningMethod::Legacy,
-            amount: Amount::default(),
-            leaf_hash_code_separator: None,
-            tx_hasher: DEFAULT_TX_HASHER,
-            sighash_ty: SighashType::default(),
-        }
-    }
 }
 
 /// Transaction preimage arguments.

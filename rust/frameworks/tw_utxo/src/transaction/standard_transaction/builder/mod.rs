@@ -9,6 +9,7 @@ use tw_coin_entry::error::prelude::*;
 use tw_hash::H256;
 
 mod output;
+// TODO remove this.
 mod spend;
 mod utxo;
 

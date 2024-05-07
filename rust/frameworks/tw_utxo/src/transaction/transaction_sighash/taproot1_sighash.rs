@@ -27,20 +27,11 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
         let sequence_hash = TransactionHasher::<Transaction>::preimage_sequence_hash(tx, &tr.args);
         let outputs_hash = TransactionHasher::<Transaction>::preimage_outputs_hash(tx, &tr.args);
         let spent_amounts_hash = TransactionHasher::<Transaction>::spent_amount_hash(tr);
+        let raw_sighash = tr.args.sighash_ty.serialize_as_taproot()?;
 
         let spent_script_pubkeys_hash = TransactionHasher::<Transaction>::spent_script_pubkeys(tr);
 
         let mut stream = Stream::default();
-
-        // For conventional reasons, as observed in the behavior of the
-        // `rust-bitcoin` crate, we map `SighashType::All` to 0x00, which
-        // indicates the default behavior. The 0x00 variant is only supported in
-        // Taproot transactions, not in Legacy or Segwit transactions.
-        let raw_sighash = if let SighashBase::All = tr.args.sighash_ty.base_type() {
-            0u8
-        } else {
-            tr.args.sighash_ty.raw_sighash() as u8
-        };
 
         stream
             .append(&0u8) // epoch
