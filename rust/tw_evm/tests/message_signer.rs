@@ -127,6 +127,19 @@ fn test_message_signer_sign_verify_legacy() {
     });
 }
 
+/// https://github.com/trustwallet/wallet-core/issues/3831
+#[test]
+fn test_message_signer_sign_verify_legacy_hex() {
+    test_message_signer_sign_verify(SignVerifyTestInput {
+        // 0x9d1d97adfcd324bbd603d3872bd78e04098510b1
+        private_key: "9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0",
+        msg: "0xc0a96273d5c3fbe4d4000491f08daef9c17f88df846c1d6f57eb5f33c1fbd035",
+        msg_type: Proto::MessageType::MessageType_legacy,
+        chain_id: None,
+        signature: "b18a666ad08bf9bfcd39920b26b5a5d1486b67b45119810b3c7bda22e41e5c4c1bfbe0c932f6c14df4947a18ba310831a37b7307d724a3ac2a4935b99d7075141b",
+    });
+}
+
 #[test]
 fn test_message_signer_sign_verify_eip155() {
     test_message_signer_sign_verify(SignVerifyTestInput {
