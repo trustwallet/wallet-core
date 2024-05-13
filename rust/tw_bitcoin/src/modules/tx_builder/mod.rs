@@ -5,7 +5,8 @@
 use tw_coin_entry::error::prelude::*;
 use tw_proto::BitcoinV3::Proto;
 use tw_utxo::transaction::standard_transaction::builder::TransactionBuilder;
-use tw_utxo::transaction::standard_transaction::unsigned_transaction::UnsignedTransaction;
+use tw_utxo::transaction::standard_transaction::Transaction as StandardTransaction;
+use tw_utxo::transaction::unsigned_transaction::UnsignedTransaction;
 
 pub mod output_protobuf;
 pub mod public_keys;
@@ -17,7 +18,7 @@ pub struct TransactionProtobuf;
 impl TransactionProtobuf {
     pub fn unsigned_tx_from_proto(
         _input: &Proto::SigningInput,
-    ) -> SigningResult<UnsignedTransaction> {
+    ) -> SigningResult<UnsignedTransaction<StandardTransaction>> {
         let _transaction_builder = TransactionBuilder::default();
         todo!()
     }

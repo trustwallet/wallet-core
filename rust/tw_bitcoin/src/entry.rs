@@ -263,7 +263,7 @@ impl BitcoinEntry {
             utxo_inputs: proto_inputs,
             utxo_outputs,
             weight_estimate: tx.weight() as u64,
-            fee_estimate: tx.fee(proto.fee_per_vb as i64) as u64, // TODO
+            fee_estimate: tx.fee(proto.fee_per_vb as i64).expect("TODO") as u64, // TODO
         })
     }
 
@@ -359,7 +359,7 @@ impl BitcoinEntry {
             encoded: tx.encode_out().into(),
             txid: tx.txid().into(),
             weight: tx.weight() as u64,
-            fee: tx.fee(proto.fee_per_vb as i64) as u64,
+            fee: tx.fee(proto.fee_per_vb as i64).expect("TODO") as u64,
         })
     }
 }

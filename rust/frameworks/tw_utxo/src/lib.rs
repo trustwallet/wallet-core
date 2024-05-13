@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 pub mod address;
+pub mod dust;
 pub mod encode;
 pub mod planner;
 pub mod script;

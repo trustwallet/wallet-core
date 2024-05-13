@@ -1,4 +1,5 @@
 use crate::{KeyPairError, KeyPairResult};
+use tw_hash::H512;
 use tw_misc::traits::ToBytesVec;
 
 #[derive(Debug, PartialEq)]
@@ -22,6 +23,10 @@ impl Signature {
             signature: secp256k1::schnorr::Signature::from_slice(sig)
                 .map_err(|_| KeyPairError::InvalidSignature)?,
         })
+    }
+
+    pub fn bytes(&self) -> H512 {
+        H512::from(*self.signature.as_ref())
     }
 }
 

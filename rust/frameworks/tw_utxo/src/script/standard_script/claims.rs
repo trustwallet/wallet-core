@@ -32,6 +32,7 @@ pub fn new_p2sh(items: Vec<Script>, redeem_script: Script) -> Script {
 }
 
 /// Creates a script to claim a P2PKH spending condition (_scriptSig_).
+/// See [`tw_keypair::ecdsa::der::Signature::der_bytes`].
 ///
 /// ```txt
 /// <push><sig><push><pubkey>

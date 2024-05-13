@@ -23,7 +23,6 @@ use super::UtxoTaprootPreimageArgs;
 
 pub mod builder;
 pub mod fees;
-pub mod unsigned_transaction;
 
 /// Must be zero.
 const WITNESS_MARKER: u8 = 0;
@@ -94,6 +93,10 @@ impl TransactionInterface for Transaction {
 
     fn outputs_mut(&mut self) -> &mut [Self::Output] {
         &mut self.outputs
+    }
+
+    fn push_output(&mut self, output: Self::Output) {
+        self.outputs.push(output);
     }
 
     fn change_amount(&self) -> Option<Amount> {
@@ -189,6 +192,7 @@ impl Transaction {
         w
     }
 
+    /// TODO check if [`Transaction::vsize`] returns the same value as [`Transaction::size`] if there are no witnesses.
     pub fn vsize(&self) -> usize {
         (self.weight() + 3) / SEGWIT_SCALE_FACTOR // ceil(weight / 4)
     }
@@ -295,12 +299,12 @@ impl TxInputInterface for TransactionInput {
         self.witness.as_items()
     }
 
-    fn has_witness(&self) -> bool {
-        !self.witness.is_empty()
-    }
-
     fn has_script_sig(&self) -> bool {
         !self.script_sig.is_empty()
+    }
+
+    fn has_witness(&self) -> bool {
+        !self.witness.is_empty()
     }
 
     fn clear_witness(&mut self) {
@@ -363,6 +367,10 @@ impl Default for TransactionOutput {
 impl TxOutputInterface for TransactionOutput {
     fn value(&self) -> Amount {
         self.value
+    }
+
+    fn set_value(&mut self, value: Amount) {
+        self.value = value;
     }
 }
 

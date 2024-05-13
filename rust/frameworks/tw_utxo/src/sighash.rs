@@ -64,6 +64,14 @@ impl SighashType {
         self.raw_sighash
     }
 
+    /// Returns a raw sighash type as u8 if possible.
+    pub fn serialize(&self) -> SigningResult<u8> {
+        self.raw_sighash
+            .try_into()
+            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .context("sighashType must fit uint8")
+    }
+
     /// Returns a serialized raw sighash type, where `All` sighash is serialized as 0x00 (`Default`).
     /// The 0x00 variant is only supported in Taproot transactions,
     /// not in Legacy or Segwit transactions.
@@ -74,7 +82,7 @@ impl SighashType {
             self.raw_sighash
                 .try_into()
                 .tw_err(|_| SigningErrorType::Error_invalid_params)
-                .context("Taproot sighash must fit uint8")
+                .context("Taproot sighashType must fit uint8")
         }
     }
 

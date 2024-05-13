@@ -18,6 +18,7 @@ pub mod transaction_hashing;
 pub mod transaction_interface;
 pub mod transaction_parts;
 pub mod transaction_sighash;
+pub mod unsigned_transaction;
 
 pub trait TransactionPreimage {
     /// Preimages a transaction for a specific UTXO signing.

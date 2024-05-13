@@ -49,7 +49,7 @@ impl SpendingScriptBuilder {
         sig: ecdsa::secp256k1::Signature,
         pubkey: tw::PublicKey,
     ) -> SigningResult<SpendingData> {
-        let sig = BitcoinEcdsaSignature::new(sig.to_der()?, self.sighash_ty);
+        let sig = BitcoinEcdsaSignature::new(sig.to_der()?, self.sighash_ty)?;
 
         let pubkey: H264 = pubkey
             .to_secp256k1()
@@ -71,7 +71,7 @@ impl SpendingScriptBuilder {
         sig: ecdsa::secp256k1::Signature,
         pubkey: tw::PublicKey,
     ) -> SigningResult<SpendingData> {
-        let sig = BitcoinEcdsaSignature::new(sig.to_der()?, self.sighash_ty);
+        let sig = BitcoinEcdsaSignature::new(sig.to_der()?, self.sighash_ty)?;
 
         let pubkey: H264 = pubkey
             .to_secp256k1()

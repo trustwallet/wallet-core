@@ -204,16 +204,26 @@ message SigningInput {
     // (optional) The amount of satoshis per vbyte ("satVb"), used for fee calculation.
     uint64 fee_per_vb = 8;
     // The change output to be added (return to sender) at the end of the outputs list.
-    // The `value` will be ignored, leave as 0.
+    // The `Output.value` will be overwritten, leave as 0.
     // Note there can be no change output if the change amount is less than dust threshold.
     // Leave empty to explicitly disable change output creation.
     Output change_output = 9;
+    // The only output with a max available amount to be send.
+    // If set, `SigningInput.outputs` and `SigningInput.change` will be ignored.
+    // The `Output.value` will be overwritten, leave as 0.
+    Output max_amount_output = 10;
     // Chain info includes p2pkh, p2sh address prefixes.
     // The parameter needs to be set if an input/output has a receiver address pattern.
-    ChainInfo chain_info = 10;
+    ChainInfo chain_info = 13;
+    // One of the "Dust" amount policies.
+    // Later, we plan to add support for `DynamicDust` policy with a `min_relay_fee` amount.
+    oneof dust_policy {
+        // Use a constant "Dust" threshold.
+        int64 fixed_dust_threshold = 14;
+    }
     // Whether disable auxiliary random data when signing.
     // Use for testing **ONLY**.
-    bool dangerous_use_fixed_schnorr_rng = 11;
+    bool dangerous_use_fixed_schnorr_rng = 20;
 }
 
 message Transaction {
@@ -266,13 +276,18 @@ message TransactionPlan {
     // Maximum available amount in all the transaction input UTXOs.
     // That is an amount that will be spent by this transaction.
     int64 available_amount = 5;
-    // The estimated weight of the transaction.
-    uint64 weight_estimate = 6;
+    // Total sending amount in all the transaction outputs.
+    // That is an amount that will be sent (including change output if applied).
+    int64 send_amount = 6;
+    // The estimated `vsize` in `vbytes`.
+    // It is used to compare how much blockweight needs to be allocated to confirm a transaction.
+    // For non-segwit transactions, `vsize` = `size`.
+    uint64 vsize_estimate = 7;
     // The estimated fees of the transaction in satoshis.
-    int64 fee_estimate = 7;
+    int64 fee_estimate = 8;
     // Remaining change.
     // Zero if not applied.
-    int64 change = 8;
+    int64 change = 9;
 }
 
 message PreSigningOutput {

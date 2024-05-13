@@ -125,7 +125,7 @@ fn build_tx_input_selection() {
     );
 
     // Check the amounts and fee precision.
-    let fee = tx.fee(SATS_PER_VBYTE);
+    let fee = tx.fee(SATS_PER_VBYTE).unwrap();
     assert_eq!(fee, 814);
 
     // NOTE: During UTXO selection, a dummy signature is used. Since the

@@ -8,9 +8,13 @@ use crate::transaction::transaction_interface::{
     TransactionInterface, TxInputInterface, TxOutputInterface,
 };
 use crate::transaction::transaction_parts::Amount;
+use crate::transaction::unsigned_transaction::UnsignedTransaction;
 use crate::transaction::TransactionPreimage;
 use std::marker::PhantomData;
 use tw_coin_entry::error::prelude::*;
+
+pub mod exact_selector;
+pub mod max_selector;
 
 #[non_exhaustive]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -20,6 +24,31 @@ pub enum InputSelector {
     Descending,
     InOrder,
 }
+
+pub struct SelectPlan {
+    // Maximum available amount in all the transaction input UTXOs.
+    // That is an amount that will be spent by the transaction.
+    pub total_spend: Amount,
+    /// Total sending amount in all the transaction outputs.
+    /// That is an amount that will be sent (including change output if applied).
+    pub total_send: Amount,
+    /// The estimated `vsize` in `vbytes`.
+    /// It is used to compare how much blockweight needs to be allocated to confirm a transaction.
+    /// For non-segwit transactions, `vsize` = `size`.
+    pub vsize_estimate: usize,
+    /// The estimated fees of the transaction in satoshis.
+    pub fee_estimate: Amount,
+    // Remaining change.
+    // Zero if not applied.
+    pub change: Amount,
+}
+
+pub struct SelectResult<Transaction> {
+    pub unsigned_tx: UnsignedTransaction<Transaction>,
+    pub plan: SelectPlan,
+}
+
+// TODO all this.
 
 pub struct SelectionBuilder<Transaction> {
     transaction_to_sign: Transaction,
@@ -139,7 +168,7 @@ where
             self.transaction_to_sign.inputs().len()
         );
 
-        // We clone transaction so that the orginal remains unchanged in case we
+        // We clone transaction so that the original remains unchanged in case we
         // return an error early.
         let mut tx = self.transaction_to_sign.clone();
 
@@ -168,6 +197,7 @@ where
         let mut total_in = 0;
         let mut selected_utxo = Vec::with_capacity(utxos.len());
         let mut selected_args = Vec::with_capacity(utxos.len());
+        let mut tx_fee = 0;
 
         let mut total_covered = false;
         for (input, arg) in utxos {
@@ -186,7 +216,9 @@ where
 
             // Check if the total input amount covers the total output amount
             // and the fee.
-            if total_in >= total_out + tx.fee(fee_rate) {
+
+            tx_fee = tx.fee(fee_rate)?;
+            if total_in >= total_out + tx_fee {
                 total_covered = true;
 
                 // Unless we're told to use all inputs, we can stop here.
@@ -195,8 +227,6 @@ where
                 }
             }
         }
-
-        let tx_fee = tx.fee(fee_rate);
 
         if !total_covered {
             // Insufficient funds.

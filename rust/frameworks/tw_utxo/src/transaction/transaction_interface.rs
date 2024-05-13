@@ -28,6 +28,8 @@ pub trait TransactionInterface: Clone + Encodable {
 
     fn replace_outputs(&mut self, outputs: Vec<Self::Output>);
 
+    fn push_output(&mut self, output: Self::Output);
+
     fn change_amount(&self) -> Option<Amount>;
 
     fn set_change_amount(&mut self, change: Amount) -> bool;
@@ -54,9 +56,12 @@ pub trait TxInputInterface: Clone {
 
     fn has_witness(&self) -> bool;
 
+    // TODO consider removing it. Use `set_witness` instead.
     fn clear_witness(&mut self);
 }
 
 pub trait TxOutputInterface: Clone + Default + Encodable {
     fn value(&self) -> Amount;
+
+    fn set_value(&mut self, value: Amount);
 }
