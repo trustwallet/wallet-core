@@ -7,8 +7,11 @@ use crate::signing_mode::SigningMethod;
 use crate::transaction::transaction_interface::TransactionInterface;
 use crate::transaction::transaction_parts::Amount;
 use crate::transaction::unsigned_transaction::UnsignedTransaction;
-use crate::transaction::{TransactionPreimage, UtxoPreimageArgs, UtxoTaprootPreimageArgs};
+use crate::transaction::{
+    TransactionPreimage, UtxoPreimageArgs, UtxoTaprootPreimageArgs, UtxoToSign,
+};
 use std::marker::PhantomData;
+use tw_coin_entry::coin_entry::PublicKeyBytes;
 use tw_coin_entry::error::prelude::SigningResult;
 use tw_hash::H256;
 
@@ -23,6 +26,17 @@ pub struct UtxoSighash {
     /// The signing method needs to be used for this sighash.
     pub signing_method: SigningMethod,
     pub sighash: H256,
+    pub signer_pubkey: PublicKeyBytes,
+    /// Taproot tweak if [`SigningMethod::Taproot`] signing method is used.
+    /// Empty if there is no need to tweak the private to sign the sighash.
+    pub taproot_tweak: Option<TaprootTweak>,
+}
+
+#[derive(Debug, Clone)]
+pub struct TaprootTweak {
+    /// 32 bytes merkle root of the script tree.
+    /// `None` if there are no scripts, and the private key should be tweaked without a merkle root.
+    pub merkle_root: Option<H256>,
 }
 
 /// Sighash Computer with a standard Bitcoin behaviour.
@@ -60,9 +74,10 @@ where
                     signing_method,
                 };
 
-                let sighash = match signing_method {
+                let (sighash, taproot_tweak) = match signing_method {
                     SigningMethod::Legacy | SigningMethod::Segwit => {
-                        unsigned_tx.transaction().preimage_tx(&utxo_args)?
+                        let sighash = unsigned_tx.transaction().preimage_tx(&utxo_args)?;
+                        (sighash, None)
                     },
                     SigningMethod::Taproot => {
                         let tr_spent_amounts: Vec<Amount> = unsigned_tx
@@ -83,17 +98,33 @@ where
                             spent_script_pubkeys: tr_spent_script_pubkeys.clone(),
                         };
 
-                        unsigned_tx.transaction().preimage_taproot_tx(&tr)?
+                        let sighash = unsigned_tx.transaction().preimage_taproot_tx(&tr)?;
+                        let taproot_tweak = Self::get_taproot_tweak(utxo);
+
+                        (sighash, taproot_tweak)
                     },
                 };
 
                 Ok(UtxoSighash {
                     signing_method,
                     sighash,
+                    signer_pubkey: utxo.spender_public_key.clone(),
+                    taproot_tweak,
                 })
             })
             // Collect the results as [`SigningResult<Vec<UtxoSighash>>`].
             .collect::<SigningResult<Vec<_>>>()
             .map(|sighashes: Vec<UtxoSighash>| TxPreimage { sighashes })
+    }
+
+    pub fn get_taproot_tweak(utxo: &UtxoToSign) -> Option<TaprootTweak> {
+        // Any empty leaf hash implies P2TR key-path (balance transfer)
+        if utxo.leaf_hash_code_separator.is_none() {
+            // Tweak keypair for P2TR key-path (ie. zeroed Merkle root).
+            let merkle_root = None;
+            Some(TaprootTweak { merkle_root })
+        } else {
+            None
+        }
     }
 }

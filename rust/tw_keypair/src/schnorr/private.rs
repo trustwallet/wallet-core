@@ -11,6 +11,7 @@ use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
 use zeroize::{Zeroize, Zeroizing};
 
 /// Represents a `schnorr` private key.
+#[derive(Clone)]
 pub struct PrivateKey {
     key_pair: secp256k1::KeyPair,
     no_aux_rand: bool,

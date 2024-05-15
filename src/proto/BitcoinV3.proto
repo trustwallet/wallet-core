@@ -301,11 +301,32 @@ message PreSigningOutput {
     /// The sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
     repeated Sighash sighashes = 4;
 
+    enum SigningMethod {
+        // Used for P2SH and P2PKH - standard ecdsa secp256k1 signing
+        Legacy = 0;
+        // Used for P2WSH and P2WPKH - standard ecdsa secp256k1 signing
+        Segwit = 1;
+        // Used for P2TR key-path and P2TR script-pay - schnorr signing
+        Taproot = 2;
+    }
+
     message Sighash {
-        /// Public key hash used for signing.
-        bytes public_key_hash = 1;
+        // Public key used for signing.
+        // Please note it can be tweaked in case of P2TR scriptPubkey.
+        bytes public_key = 1;
         // The sighash to be signed.
         bytes sighash = 2;
+        // Signing method to be used to sign the sighash.
+        SigningMethod signing_method = 3;
+        // Taproot tweak if `Taproot` signing method is used.
+        // Empty if there is no need to tweak the private to sign the sighash.
+        TaprootTweak tweak = 4;
+    }
+
+    message TaprootTweak {
+        // 32 bytes merkle root of the script tree.
+        // Empty if there are no scripts, and the private key should be tweaked without a merkle root.
+        bytes merkle_root = 1;
     }
 }
 

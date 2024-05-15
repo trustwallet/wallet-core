@@ -3,11 +3,11 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::dust::DustPolicy;
+use crate::modules::utxo_selector::{SelectPlan, SelectResult};
 use crate::transaction::transaction_fee::TransactionFee;
 use crate::transaction::transaction_interface::{TransactionInterface, TxOutputInterface};
 use crate::transaction::transaction_parts::Amount;
 use crate::transaction::unsigned_transaction::UnsignedTransaction;
-use crate::utxo_selector::{SelectPlan, SelectResult};
 use tw_coin_entry::error::prelude::*;
 
 pub struct MaxInputSelector<Transaction> {

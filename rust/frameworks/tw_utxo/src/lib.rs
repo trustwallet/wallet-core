@@ -13,6 +13,3 @@ pub mod signature;
 pub mod signing_mode;
 pub mod spending_data;
 pub mod transaction;
-pub mod tx_signer;
-/// TODO move to `modules`.
-pub mod utxo_selector;
