@@ -1,7 +1,7 @@
+use crate::spending_data::SpendingData;
 use crate::{
     script::{standard_script::claims, Script, Witness},
     sighash::{SighashBase, SighashType},
-    sighash_computer::SpendingData,
     signature::{BitcoinEcdsaSignature, BitcoinSchnorrSignature},
     transaction::asset::brc20::{BRC20TransferInscription, Brc20Ticker},
 };

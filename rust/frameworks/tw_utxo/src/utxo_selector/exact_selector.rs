@@ -4,13 +4,13 @@
 
 use crate::dust::DustPolicy;
 use crate::script::{Script, Witness};
-use crate::sighash_computer::UtxoToSign;
 use crate::transaction::transaction_fee::TransactionFee;
 use crate::transaction::transaction_interface::{
     TransactionInterface, TxInputInterface, TxOutputInterface,
 };
 use crate::transaction::transaction_parts::Amount;
 use crate::transaction::unsigned_transaction::UnsignedTransaction;
+use crate::transaction::UtxoToSign;
 use crate::utxo_selector::{InputSelector, SelectPlan, SelectResult};
 use tw_coin_entry::error::prelude::*;
 

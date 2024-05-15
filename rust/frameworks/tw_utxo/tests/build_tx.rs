@@ -5,13 +5,12 @@ use tw_keypair::traits::SigningKeyTrait;
 use tw_keypair::{ecdsa, schnorr};
 // TODO: Consider using ecdsa directly.
 use tw_keypair::tw::{PublicKey, PublicKeyType};
+use tw_misc::traits::ToBytesVec;
+use tw_utxo::modules::compiler::TxCompiler;
+use tw_utxo::modules::sighash_computer::SighashComputer;
 
-use tw_utxo::sighash::SighashBase;
-use tw_utxo::sighash::SighashType;
-use tw_utxo::sighash_computer::SighashComputer;
 use tw_utxo::transaction::standard_transaction::builder::txid_from_str_and_rev;
 use tw_utxo::transaction::standard_transaction::builder::OutputBuilder;
-use tw_utxo::transaction::standard_transaction::builder::SpendingScriptBuilder;
 use tw_utxo::transaction::standard_transaction::builder::TransactionBuilder;
 use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
 use tw_utxo::transaction::transaction_fee::TransactionFee;
@@ -30,7 +29,6 @@ fn build_tx_input_legacy_output_legacy() {
     let alice_private_key = PrivateKey::try_from(alice_private_key.as_slice()).unwrap();
     let alice_ecdsa_pubkey =
         ecdsa::secp256k1::PublicKey::try_from(alice_pubkey.as_slice()).unwrap();
-    let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
     let bob_pubkey = PublicKey::new(bob_pubkey, PublicKeyType::Secp256k1).unwrap();
 
     let txid =
@@ -46,26 +44,20 @@ fn build_tx_input_legacy_output_legacy() {
 
     let output1 = OutputBuilder::new(50 * 100_000_000 - 1_000_000).p2pkh(&bob_pubkey);
 
-    let (tx, args) = TransactionBuilder::new()
+    let unsigned_tx = TransactionBuilder::new()
         .push_input(utxo1, arg1)
         .push_output(output1)
-        .build();
-
-    // Compute the primage.
-    let computer = SighashComputer::new(tx, args);
-    let preimage = computer.preimage_tx().unwrap();
-
-    // Sign the sighash.
-    let sighash = preimage.into_h256_iter().next().unwrap();
-    let sig = alice_private_key.sign(sighash).unwrap();
-
-    // Build the claim
-    let claim = SpendingScriptBuilder::new()
-        .sighash_ty(SighashType::new(SighashBase::All))
-        .p2pkh(sig, alice_pubkey)
+        .build()
         .unwrap();
 
-    let tx = computer.compile(vec![claim]).unwrap();
+    // Compute the primage.
+    let preimage = SighashComputer::preimage_tx(&unsigned_tx).unwrap();
+
+    // Sign the sighash.
+    let sighash = preimage.sighashes.into_iter().next().unwrap().sighash;
+    let sig = alice_private_key.sign(sighash).unwrap();
+
+    let tx = TxCompiler::compile(unsigned_tx, &[sig.to_vec()]).unwrap();
 
     assert_eq!(tx.size(), 191);
     assert_eq!(tx.vsize(), 191); // No witness data
@@ -90,7 +82,6 @@ fn build_tx_input_legacy_output_segwit() {
     let alice_private_key = PrivateKey::try_from(alice_private_key.as_slice()).unwrap();
     let alice_ecdsa_pubkey =
         ecdsa::secp256k1::PublicKey::try_from(alice_pubkey.as_slice()).unwrap();
-    let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
     let bob_pubkey = PublicKey::new(bob_pubkey, PublicKeyType::Secp256k1).unwrap();
 
     let txid =
@@ -106,26 +97,20 @@ fn build_tx_input_legacy_output_segwit() {
 
     let output1 = OutputBuilder::new(50 * 100_000_000 - 1_000_000).p2wpkh(&bob_pubkey);
 
-    let (tx, args) = TransactionBuilder::new()
+    let unsigned_tx = TransactionBuilder::new()
         .push_input(utxo1, arg1)
         .push_output(output1)
-        .build();
-
-    // Compute the primage.
-    let computer = SighashComputer::new(tx, args);
-    let preimage = computer.preimage_tx().unwrap();
-
-    // Sign the sighash.
-    let sighash = preimage.into_h256_iter().next().unwrap();
-    let sig = alice_private_key.sign(sighash).unwrap();
-
-    // Build the claim
-    let claim = SpendingScriptBuilder::new()
-        .sighash_ty(SighashType::new(SighashBase::All))
-        .p2pkh(sig, alice_pubkey)
+        .build()
         .unwrap();
 
-    let tx = computer.compile(vec![claim]).unwrap();
+    // Compute the primage.
+    let preimage = SighashComputer::preimage_tx(&unsigned_tx).unwrap();
+
+    // Sign the sighash.
+    let sighash = preimage.sighashes.into_iter().next().unwrap().sighash;
+    let sig = alice_private_key.sign(sighash).unwrap();
+
+    let tx = TxCompiler::compile(unsigned_tx, &[sig.to_vec()]).unwrap();
 
     assert_eq!(tx.size(), 189);
     assert_eq!(tx.vsize(), 189); // No witness data
@@ -150,7 +135,6 @@ fn build_tx_input_segwit_output_segwit() {
     let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
     let bob_private_key = PrivateKey::try_from(bob_private_key.as_slice()).unwrap();
     let bob_ecdsa_pubkey = ecdsa::secp256k1::PublicKey::try_from(bob_pubkey.as_slice()).unwrap();
-    let bob_pubkey = PublicKey::new(bob_pubkey, PublicKeyType::Secp256k1).unwrap();
 
     let txid =
         txid_from_str_and_rev("858e450a1da44397bde05ca2f8a78510d74c623cc2f69736a8b3fbfadc161f6e")
@@ -166,26 +150,20 @@ fn build_tx_input_segwit_output_segwit() {
     let output1 =
         OutputBuilder::new(50 * 100_000_000 - 1_000_000 - 1_000_000).p2wpkh(&alice_pubkey);
 
-    let (tx, args) = TransactionBuilder::new()
+    let unsigned_tx = TransactionBuilder::new()
         .push_input(utxo1, arg1)
         .push_output(output1)
-        .build();
-
-    // Compute the primage.
-    let computer = SighashComputer::new(tx, args);
-    let preimage = computer.preimage_tx().unwrap();
-
-    // Sign the sighash.
-    let sighash = preimage.into_h256_iter().next().unwrap();
-    let sig = bob_private_key.sign(sighash).unwrap();
-
-    // Build the claim
-    let claim = SpendingScriptBuilder::new()
-        .sighash_ty(SighashType::new(SighashBase::All))
-        .p2wpkh(sig, bob_pubkey)
+        .build()
         .unwrap();
 
-    let tx = computer.compile(vec![claim]).unwrap();
+    // Compute the primage.
+    let preimage = SighashComputer::preimage_tx(&unsigned_tx).unwrap();
+
+    // Sign the sighash.
+    let sighash = preimage.sighashes.into_iter().next().unwrap().sighash;
+    let sig = bob_private_key.sign(sighash).unwrap();
+
+    let tx = TxCompiler::compile(unsigned_tx, &[sig.to_vec()]).unwrap();
 
     assert_eq!(tx.size(), 191);
     assert_eq!(tx.vsize(), 110); // Witness data discounted
@@ -210,7 +188,6 @@ fn build_tx_input_legacy_output_taproot() {
     let alice_private_key = PrivateKey::try_from(alice_private_key.as_slice()).unwrap();
     let alice_ecdsa_pubkey =
         ecdsa::secp256k1::PublicKey::try_from(alice_pubkey.as_slice()).unwrap();
-    let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
     let bob_schnorr_pubkey = schnorr::PublicKey::try_from(bob_pubkey.as_slice()).unwrap();
 
     let txid =
@@ -227,26 +204,20 @@ fn build_tx_input_legacy_output_taproot() {
     let output1 =
         OutputBuilder::new(50 * 100_000_000 - 1_000_000).p2tr_key_path(&bob_schnorr_pubkey);
 
-    let (tx, args) = TransactionBuilder::new()
+    let unsigned_tx = TransactionBuilder::new()
         .push_input(utxo1, arg1)
         .push_output(output1)
-        .build();
-
-    // Compute the primage.
-    let computer = SighashComputer::new(tx, args);
-    let preimage = computer.preimage_tx().unwrap();
-
-    // Sign the sighash.
-    let sighash = preimage.into_h256_iter().next().unwrap();
-    let sig = alice_private_key.sign(sighash).unwrap();
-
-    // Build the claim
-    let claim = SpendingScriptBuilder::new()
-        .sighash_ty(SighashType::new(SighashBase::All))
-        .p2pkh(sig, alice_pubkey)
+        .build()
         .unwrap();
 
-    let tx = computer.compile(vec![claim]).unwrap();
+    // Compute the primage.
+    let preimage = SighashComputer::preimage_tx(&unsigned_tx).unwrap();
+
+    // Sign the sighash.
+    let sighash = preimage.sighashes.into_iter().next().unwrap().sighash;
+    let sig = alice_private_key.sign(sighash).unwrap();
+
+    let tx = TxCompiler::compile(unsigned_tx, &[sig.to_vec()]).unwrap();
 
     //assert_eq!(tx.size(), 191);
     //assert_eq!(tx.vsize(), 110); // Witness data discounted
@@ -284,26 +255,21 @@ fn build_tx_input_taproot_output_taproot() {
     let output1 = OutputBuilder::new(50 * 100_000_000 - 1_000_000 - 1_000_000)
         .p2tr_key_path(&alice_schnorr_pubkey);
 
-    let (tx, args) = TransactionBuilder::new()
+    let unsigned_tx = TransactionBuilder::new()
         .push_input(utxo1, arg1)
         .push_output(output1)
-        .build();
+        .build()
+        .unwrap();
 
     // Compute the primage.
-    let computer = SighashComputer::new(tx, args);
-    let preimage = computer.preimage_tx().unwrap();
+    let preimage = SighashComputer::preimage_tx(&unsigned_tx).unwrap();
 
     // Sign the sighash.
-    let sighash = preimage.into_h256_iter().next().unwrap();
+    let sighash = preimage.sighashes.into_iter().next().unwrap().sighash;
     let tweaked = bob_private_key.tweak(None).no_aux_rand();
     let sig = tweaked.sign(sighash).unwrap();
 
-    // Build the claim
-    let claim = SpendingScriptBuilder::new()
-        .sighash_ty(SighashType::new(SighashBase::All))
-        .p2tr_key_path(sig);
-
-    let tx = computer.compile(vec![claim]).unwrap();
+    let tx = TxCompiler::compile(unsigned_tx, &[sig.to_vec()]).unwrap();
 
     let encoded = hex::encode(tx.encode_out(), false);
     assert_eq!(encoded, "02000000000101ac6058397e18c277e98defda1bc38bdf3ab304563d7df7afed0ca5f63220589a0000000000ffffffff01806de72901000000225120a5c027857e359d19f625e52a106b8ac6ca2d6a8728f6cf2107cd7958ee0787c20140ec2d3910d41506b60aaa20520bb72f15e2d2cbd97e3a8e26ee7bad5f4c56b0f2fb0ceaddac33cb2813a33ba017ba6b1d011bab74a0426f12a2bcf47b4ed5bc8600000000")
@@ -339,29 +305,23 @@ fn build_tx_input_segwit_output_brc20_transfer_commit() {
 
     let output2 = OutputBuilder::new(16_400).p2wpkh(&alice_pubkey);
 
-    let (tx, args) = TransactionBuilder::new()
+    let unsigned_tx = TransactionBuilder::new()
         .push_input(utxo1, arg1.clone())
         .push_output(output1)
         .push_output(output2)
-        .build();
+        .build()
+        .unwrap();
 
     // Compute the primage.
-    let computer = SighashComputer::new(tx, args);
-    let preimage = computer.preimage_tx().unwrap();
+    let preimage = SighashComputer::preimage_tx(&unsigned_tx).unwrap();
 
     // Sign the sighash.
-    let sighash = preimage.into_h256_iter().next().unwrap();
+    let sighash = preimage.sighashes.into_iter().next().unwrap().sighash;
 
     // Tweak the private key with the Taproot script leaf hash.
     let sig = alice_private_key.sign(sighash).unwrap();
 
-    // Build the claim
-    let claim = SpendingScriptBuilder::new()
-        .sighash_ty(SighashType::new(SighashBase::All))
-        .p2wpkh(sig, alice_pubkey)
-        .unwrap();
-
-    let tx = computer.compile(vec![claim]).unwrap();
+    let tx = TxCompiler::compile(unsigned_tx, &[sig.to_vec()]).unwrap();
 
     let encoded = hex::encode(tx.encode_out(), false);
     assert_eq!(encoded, "02000000000101089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e0100000000ffffffff02581b000000000000225120e8b706a97732e705e22ae7710703e7f589ed13c636324461afa443016134cc051040000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d02483045022100a44aa28446a9a886b378a4a65e32ad9a3108870bd725dc6105160bed4f317097022069e9de36422e4ce2e42b39884aa5f626f8f94194d1013007d5a1ea9220a06dce0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000")
@@ -393,28 +353,22 @@ fn build_tx_input_brc20_transfer_commit_output_brc20_transfer_reveal() {
 
     let output1 = OutputBuilder::new(546).p2wpkh(&alice_secp256k1_pubkey);
 
-    let (tx, args) = TransactionBuilder::new()
+    let unsigned_tx = TransactionBuilder::new()
         .push_input(utxo1, arg1.clone())
         .push_output(output1)
-        .build();
+        .build()
+        .unwrap();
 
     // Compute the primage.
-    let computer = SighashComputer::new(tx, args);
-    let preimage = computer.preimage_tx().unwrap();
+    let preimage = SighashComputer::preimage_tx(&unsigned_tx).unwrap();
 
     // Sign the sighash.
-    let sighash = preimage.into_h256_iter().next().unwrap();
+    let sighash = preimage.sighashes.into_iter().next().unwrap().sighash;
 
     // Tweak the private key with the Taproot script leaf hash.
     let sig = alice_private_key.sign(sighash).unwrap();
 
-    // Build the claim
-    let claim = SpendingScriptBuilder::new()
-        .sighash_ty(SighashType::new(SighashBase::All))
-        .brc20_transfer(sig, &alice_pubkey, "oadf".into(), "20".into())
-        .unwrap();
-
-    let tx = computer.compile(vec![claim]).unwrap();
+    let tx = TxCompiler::compile(unsigned_tx, &[sig.to_vec()]).unwrap();
 
     let encoded = hex::encode(tx.encode_out(), false);
     assert_eq!(encoded, "02000000000101b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d03406a35548b8fa4620028e021a944c1d3dc6e947243a7bfc901bf63fefae0d2460efa149a6440cab51966aa4f09faef2d1e5efcba23ab4ca6e669da598022dbcfe35b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000")

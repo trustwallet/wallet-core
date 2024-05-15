@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use lazy_static::lazy_static;
+use bitcoin::hashes::Hash;
 
 mod keypair;
 mod private;
@@ -11,12 +11,18 @@ mod signature;
 
 pub use keypair::KeyPair;
 pub use private::PrivateKey;
-pub use public::PublicKey;
+pub use public::{PublicKey, XOnlyPublicKey};
 pub use signature::Signature;
+use tw_hash::H256;
 
-lazy_static! {
-    /// The secp256k1 engine, used to execute all signature operations including signing and verifying.
-    static ref SECP256K1: secp256k1::Secp256k1<secp256k1::All> = secp256k1::Secp256k1::new();
+pub(crate) fn bitcoin_tweak(tweak: Option<H256>) -> Option<bitcoin::taproot::TapNodeHash> {
+    if let Some(tweak) = tweak {
+        let hash = bitcoin::hashes::sha256t::Hash::<_>::from_slice(tweak.as_slice())
+            .expect("Expected a valid sha256t tweak");
+        Some(bitcoin::taproot::TapNodeHash::from_raw_hash(hash))
+    } else {
+        None
+    }
 }
 
 #[cfg(test)]
@@ -105,5 +111,16 @@ mod tests {
 
         let public = tweaked_key_pair.public();
         assert!(public.verify(actual, hash_to_sign), "Invalid signature");
+    }
+
+    #[test]
+    fn test_public_key_tweak() {
+        let private_key = PrivateKey::try_from(SECRET).unwrap();
+        let public_key = private_key.public();
+
+        let tweaked_private = private_key.tweak(None);
+        let tweaked_public = tweaked_private.public();
+
+        assert_eq!(public_key.tweak(None), tweaked_public);
     }
 }

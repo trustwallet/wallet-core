@@ -1,10 +1,9 @@
 use super::TransactionInput;
 use crate::sighash::SighashType;
-use crate::sighash_computer::DEFAULT_TX_HASHER;
 use crate::spending_data::{standard_constructor, SpendingDataConstructor};
+use crate::transaction::UtxoToSign;
 use crate::{
     script::{standard_script::conditions, Script, Witness},
-    sighash_computer::UtxoToSign,
     signing_mode::SigningMethod,
     transaction::asset::brc20::{BRC20TransferInscription, Brc20Ticker},
     transaction::transaction_parts::{Amount, OutPoint},
@@ -12,10 +11,12 @@ use crate::{
 use bitcoin::hashes::Hash;
 use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex;
-use tw_hash::{hasher::Hasher, ripemd::bitcoin_hash_160, H160, H256, H264};
+use tw_hash::{hasher::Hasher, ripemd::bitcoin_hash_160, H160, H256};
 use tw_keypair::{ecdsa, schnorr};
 use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
+
+pub const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 
 pub struct UtxoBuilder {
     input: TransactionInput,
@@ -152,6 +153,7 @@ impl UtxoBuilder {
                 spending_data_constructor: SpendingDataConstructor::ecdsa(
                     standard_constructor::P2PK,
                 ),
+                spender_public_key: pubkey.compressed().to_vec(),
                 amount,
                 leaf_hash_code_separator: None,
                 tx_hasher: DEFAULT_TX_HASHER,
@@ -183,6 +185,7 @@ impl UtxoBuilder {
                         pubkey: pubkey.compressed(),
                     },
                 ),
+                spender_public_key: pubkey.compressed().to_vec(),
                 amount,
                 leaf_hash_code_separator: None,
                 tx_hasher: DEFAULT_TX_HASHER,
@@ -239,6 +242,7 @@ impl UtxoBuilder {
                         pubkey: pubkey.compressed(),
                     },
                 ),
+                spender_public_key: pubkey.compressed().to_vec(),
                 // P2WPKH output can be spent by a Witness (eg "bc1") address only.
                 signing_method: SigningMethod::Segwit,
                 amount,
@@ -250,11 +254,17 @@ impl UtxoBuilder {
     }
 
     pub fn p2tr_key_path(
-        mut self,
+        self,
         pubkey: &schnorr::PublicKey,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        let pubkey = pubkey.compressed();
+        let tweaked_pubkey = pubkey.tweak(None);
+        self.p2tr_key_path_with_tweaked_pubkey(&tweaked_pubkey.x_only())
+    }
 
+    pub fn p2tr_key_path_with_tweaked_pubkey(
+        mut self,
+        tweaked_pubkey: &schnorr::XOnlyPublicKey,
+    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
         self.finalize_out_point()?;
         let amount = self.finalize_amount()?;
         let sighash_ty = self.finalize_sighash_type()?;
@@ -263,13 +273,16 @@ impl UtxoBuilder {
             self.input,
             UtxoToSign {
                 // Generating special scriptPubkey for P2WPKH.
-                script_pubkey: conditions::new_p2tr_key_path(&pubkey),
+                script_pubkey: conditions::new_p2tr_dangerous_assume_tweaked(
+                    &tweaked_pubkey.bytes(),
+                ),
                 // P2TR output can be spent by a Witness (eg "bc1") address only.
                 signing_method: SigningMethod::Taproot,
                 // When the sighash is signed, build a P2TR witness.
                 spending_data_constructor: SpendingDataConstructor::schnorr(
                     standard_constructor::P2TRKeyPath,
                 ),
+                spender_public_key: tweaked_pubkey.bytes().to_vec(),
                 amount,
                 leaf_hash_code_separator: None,
                 // Note that we don't use the default double-hasher.
@@ -281,6 +294,7 @@ impl UtxoBuilder {
 
     pub fn p2tr_script_path(
         mut self,
+        pubkey: &schnorr::PublicKey,
         payload: Script,
         control_block: Data,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
@@ -310,36 +324,10 @@ impl UtxoBuilder {
                         control_block,
                     },
                 ),
+                spender_public_key: pubkey.compressed().to_vec(),
                 amount,
                 leaf_hash_code_separator: Some((leaf_hash, u32::MAX)),
                 // Note that we don't use the default double-hasher.
-                tx_hasher: Hasher::Sha256,
-                sighash_ty,
-            },
-        ))
-    }
-
-    pub fn p2tr_dangerous_assume_tweaked(
-        mut self,
-        tweaked_pubkey_xonly: &H256,
-    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        self.finalize_out_point()?;
-        let amount = self.finalize_amount()?;
-        let sighash_ty = self.finalize_sighash_type()?;
-
-        Ok((
-            self.input,
-            UtxoToSign {
-                // Generating special scriptPubkey for P2WPKH.
-                script_pubkey: conditions::new_p2tr_dangerous_assume_tweaked(tweaked_pubkey_xonly),
-                // P2TR output can be spent by a Witness (eg "bc1") address only.
-                signing_method: SigningMethod::Taproot,
-                spending_data_constructor: SpendingDataConstructor::schnorr(
-                    standard_constructor::P2TRKeyPath,
-                ),
-                amount,
-                // Note that we don't use the default double-hasher.
-                leaf_hash_code_separator: None,
                 tx_hasher: Hasher::Sha256,
                 sighash_ty,
             },
@@ -352,10 +340,9 @@ impl UtxoBuilder {
         ticker: String,
         value: String,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        let pubkey: H264 = pubkey.compressed();
-
         let ticker = Brc20Ticker::new(ticker).unwrap();
-        let transfer = BRC20TransferInscription::new(&pubkey, &ticker, &value).unwrap();
+        let transfer =
+            BRC20TransferInscription::new(&pubkey.compressed(), &ticker, &value).unwrap();
 
         let control_block = transfer
             .spend_info
@@ -367,7 +354,7 @@ impl UtxoBuilder {
             .context("'TaprootSpendInfo::control_block' is None")?;
 
         let transfer_payload = Script::from(transfer.script.to_bytes());
-        self.p2tr_script_path(transfer_payload, control_block.serialize())
+        self.p2tr_script_path(pubkey, transfer_payload, control_block.serialize())
     }
 }
 

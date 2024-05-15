@@ -4,7 +4,6 @@
 
 pub mod entry;
 pub mod modules;
-pub mod modules_legacy;
 pub mod utils;
 
 use std::fmt::Display;

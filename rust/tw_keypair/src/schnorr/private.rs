@@ -1,8 +1,8 @@
+use crate::schnorr::bitcoin_tweak;
 use crate::schnorr::public::PublicKey;
 use crate::schnorr::signature::Signature;
 use crate::traits::SigningKeyTrait;
 use crate::{KeyPairError, KeyPairResult};
-use bitcoin::hashes::Hash;
 use bitcoin::key::TapTweak;
 use secp256k1::SECP256K1;
 use tw_encoding::hex;
@@ -26,13 +26,7 @@ impl PrivateKey {
     /// Tweak the private key with a given hash.
     /// Note that the private key can be tweaked with a `None` value.
     pub fn tweak(self, tweak: Option<H256>) -> PrivateKey {
-        let tweak = if let Some(tweak) = tweak {
-            let hash = bitcoin::hashes::sha256t::Hash::<_>::from_slice(tweak.as_slice())
-                .expect("Expected a valid sha256t tweak");
-            Some(bitcoin::taproot::TapNodeHash::from_raw_hash(hash))
-        } else {
-            None
-        };
+        let tweak = bitcoin_tweak(tweak);
 
         // Tweak the private key.
         let tweaked = self.key_pair.tap_tweak(SECP256K1, tweak);

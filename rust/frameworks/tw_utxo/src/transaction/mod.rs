@@ -5,10 +5,12 @@
 use crate::script::Script;
 use crate::sighash::SighashType;
 use crate::signing_mode::SigningMethod;
+use crate::spending_data::SpendingDataConstructor;
 use crate::transaction::transaction_parts::Amount;
 use tw_coin_entry::error::prelude::SigningResult;
 use tw_hash::hasher::Hasher;
 use tw_hash::H256;
+use tw_memory::Data;
 
 pub mod asset;
 // TODO move the module to `tw_bitcoin`.
@@ -44,4 +46,19 @@ pub struct UtxoTaprootPreimageArgs {
     pub args: UtxoPreimageArgs,
     pub spent_amounts: Vec<Amount>,
     pub spent_script_pubkeys: Vec<Script>,
+}
+
+/// UTXO signing arguments contain all info required to sign a UTXO (Unspent Transaction Output).
+#[derive(Clone)]
+pub struct UtxoToSign {
+    pub script_pubkey: Script,
+    pub signing_method: SigningMethod,
+    pub spending_data_constructor: SpendingDataConstructor,
+    pub spender_public_key: Data,
+    pub amount: Amount,
+    /// Taproot UTXO specific argument.
+    /// TODO add `TaprootUtxoSignArgs`.
+    pub leaf_hash_code_separator: Option<(H256, u32)>,
+    pub tx_hasher: Hasher,
+    pub sighash_ty: SighashType,
 }

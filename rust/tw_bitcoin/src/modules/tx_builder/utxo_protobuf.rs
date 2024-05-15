@@ -17,9 +17,9 @@ use tw_utxo::address::taproot::TaprootAddress;
 use tw_utxo::script::standard_script::conditions;
 use tw_utxo::script::Script;
 use tw_utxo::sighash::SighashType;
-use tw_utxo::sighash_computer::UtxoToSign;
 use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
 use tw_utxo::transaction::standard_transaction::TransactionInput;
+use tw_utxo::transaction::UtxoToSign;
 
 pub struct UtxoProtobuf<'a> {
     chain_info: &'a Proto::ChainInfo,
@@ -52,7 +52,7 @@ impl<'a> UtxoProtobuf<'a> {
                 // BuilderType::p2wsh(ref redeem_script) => self.p2wsh(redeem_script.to_vec()),
                 BuilderType::p2wpkh(ref pubkey_or_hash) => self.p2wpkh(pubkey_or_hash),
                 BuilderType::p2tr_key_path(ref key_path) => self.p2tr_key_path(key_path),
-                BuilderType::p2tr_script_path(ref script) => self.p2tr_script_path(script),
+                // BuilderType::p2tr_script_path(ref script) => self.p2tr_script_path(script),
                 BuilderType::brc20_inscribe(ref inscription) => self.brc20_inscribe(inscription),
                 BuilderType::None => SigningError::err(SigningErrorType::Error_invalid_params)
                     .context("No Input Builder type provided"),
@@ -105,14 +105,16 @@ impl<'a> UtxoProtobuf<'a> {
         self.prepare_builder()?.p2tr_key_path(&public_key)
     }
 
-    pub fn p2tr_script_path(
-        &self,
-        taproot_script_path: &Proto::mod_Input::InputTaprootScriptPath,
-    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        let payload = Script::from(taproot_script_path.payload.to_vec());
-        self.prepare_builder()?
-            .p2tr_script_path(payload, taproot_script_path.control_block.to_vec())
-    }
+    // TODO next iteration
+    // pub fn p2tr_script_path(
+    //     &self,
+    //     taproot_script_path: &Proto::mod_Input::InputTaprootScriptPath,
+    // ) -> SigningResult<(TransactionInput, UtxoToSign)> {
+    //     let payload = Script::from(taproot_script_path.payload.to_vec());
+    //     // let x = taproot_script_path.
+    //     self.prepare_builder()?
+    //         .p2tr_script_path(payload, taproot_script_path.control_block.to_vec())
+    // }
 
     pub fn brc20_inscribe(
         &self,
@@ -147,9 +149,13 @@ impl<'a> UtxoProtobuf<'a> {
             // P2WPKH
             let pubkey = self.get_ecdsa_pubkey_from_hash(&pubkey_hash)?;
             builder.p2wpkh(&pubkey)
-        } else if let Some(pubkey) = conditions::match_p2tr(&script) {
+        } else if let Some(tweaked_pubkey) = conditions::match_p2tr(&script) {
             // P2TR
-            builder.p2tr_dangerous_assume_tweaked(&pubkey)
+            let tweaked_pubkey_x_only =
+                schnorr::XOnlyPublicKey::try_from(tweaked_pubkey.as_slice())
+                    .into_tw()
+                    .context("P2TR scriptPubkey must contain a valid tweaked schnorr public key")?;
+            builder.p2tr_key_path_with_tweaked_pubkey(&tweaked_pubkey_x_only)
         } else if conditions::is_p2sh(&script) || conditions::is_p2wsh(&script) {
             // P2SH or P2WSH
             SigningError::err(SigningErrorType::Error_script_output)
@@ -230,14 +236,14 @@ impl<'a> UtxoProtobuf<'a> {
         &self,
         addr: &TaprootAddress,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        let tweaked_pubkey = H256::try_from(addr.witness_program())
+        let tweaked_pubkey = schnorr::XOnlyPublicKey::try_from(addr.witness_program())
             .tw_err(|_| SigningErrorType::Error_invalid_address)
             .with_context(|| {
-                format!("The given '{addr}' taproot address should have 32 bytes witness program")
+                format!("The given '{addr}' taproot address witness program should be a valid tweaked schnorr public key")
             })?;
 
         self.prepare_builder()?
-            .p2tr_dangerous_assume_tweaked(&tweaked_pubkey)
+            .p2tr_key_path_with_tweaked_pubkey(&tweaked_pubkey)
     }
 
     pub fn prepare_builder(&self) -> SigningResult<UtxoBuilder> {

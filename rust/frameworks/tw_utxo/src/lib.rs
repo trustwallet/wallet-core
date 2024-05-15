@@ -5,12 +5,14 @@
 pub mod address;
 pub mod dust;
 pub mod encode;
+pub mod modules;
 pub mod planner;
 pub mod script;
 pub mod sighash;
-pub mod sighash_computer;
 pub mod signature;
 pub mod signing_mode;
 pub mod spending_data;
 pub mod transaction;
+pub mod tx_signer;
+/// TODO move to `modules`.
 pub mod utxo_selector;

@@ -83,8 +83,11 @@ message Input {
             PublicKeyOrHash p2wpkh = 5;
             // Pay-to-Taproot-key-path (balance transfers), specify the public key.
             bytes p2tr_key_path = 7;
+
             // Pay-to-Taproot-script-path (complex transfers).
-            InputTaprootScriptPath p2tr_script_path = 8;
+            // TODO next iteration.
+            // InputTaprootScriptPath p2tr_script_path = 8;
+
             // Create a BRC20 inscription.
             InputBrc20Inscription brc20_inscribe = 9;
         }

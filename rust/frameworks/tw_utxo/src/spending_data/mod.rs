@@ -2,12 +2,18 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::sighash_computer::SpendingData;
+use crate::script::{Script, Witness};
 use crate::signature::{BitcoinEcdsaSignature, BitcoinSchnorrSignature};
 use std::fmt;
 use std::rc::Rc;
 
 pub mod standard_constructor;
+
+#[derive(Debug, Clone)]
+pub struct SpendingData {
+    pub script_sig: Script,
+    pub witness: Witness,
+}
 
 pub trait EcdsaSpendingDataConstructor: fmt::Debug {
     fn get_spending_data(&self, sig: &BitcoinEcdsaSignature) -> SpendingData;

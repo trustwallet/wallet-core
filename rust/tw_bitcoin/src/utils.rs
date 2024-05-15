@@ -14,9 +14,10 @@ use tw_proto::BitcoinV2::Proto::mod_ToPublicKeyOrHash::OneOfto_address;
 use tw_proto::BitcoinV2::Proto::{self, mod_Output};
 use tw_proto::Utxo::Proto as UtxoProto;
 use tw_utxo::address::standard_bitcoin::StandardBitcoinAddress;
-use tw_utxo::sighash_computer::{SpendingData, UtxoToSign};
+use tw_utxo::spending_data::SpendingData;
 use tw_utxo::transaction::standard_transaction::builder::OutputBuilder;
 use tw_utxo::transaction::standard_transaction::{TransactionInput, TransactionOutput};
+use tw_utxo::transaction::UtxoToSign;
 
 // TODO: Adjust error type
 fn pubkey_from_raw(pubkey: &[u8]) -> Result<PublicKey> {

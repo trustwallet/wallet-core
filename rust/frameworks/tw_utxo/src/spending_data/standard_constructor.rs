@@ -4,9 +4,10 @@
 
 use crate::script::standard_script::claims;
 use crate::script::{Script, Witness};
-use crate::sighash_computer::SpendingData;
 use crate::signature::{BitcoinEcdsaSignature, BitcoinSchnorrSignature};
-use crate::spending_data::{EcdsaSpendingDataConstructor, SchnorrSpendingDataConstructor};
+use crate::spending_data::{
+    EcdsaSpendingDataConstructor, SchnorrSpendingDataConstructor, SpendingData,
+};
 use tw_hash::H264;
 use tw_memory::Data;
 

@@ -3,7 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 use super::{Transaction, TransactionInput, TransactionOutput};
-use crate::sighash_computer::{TxSigningArgs, UtxoToSign};
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::H256;
@@ -13,6 +12,8 @@ mod output;
 mod spend;
 mod utxo;
 
+use crate::transaction::unsigned_transaction::UnsignedTransaction;
+use crate::transaction::UtxoToSign;
 pub use output::OutputBuilder;
 pub use spend::SpendingScriptBuilder;
 pub use utxo::UtxoBuilder;
@@ -34,7 +35,7 @@ pub struct TransactionBuilder {
     pub inputs: Vec<TransactionInput>,
     pub outputs: Vec<TransactionOutput>,
     pub locktime: u32,
-    pub args: TxSigningArgs,
+    pub utxo_args: Vec<UtxoToSign>,
 }
 
 impl TransactionBuilder {
@@ -44,7 +45,7 @@ impl TransactionBuilder {
             inputs: Vec::new(),
             outputs: Vec::new(),
             locktime: 0,
-            args: TxSigningArgs::default(),
+            utxo_args: Vec::default(),
         }
     }
 
@@ -60,7 +61,7 @@ impl TransactionBuilder {
 
     pub fn push_input(mut self, input: TransactionInput, arg: UtxoToSign) -> Self {
         self.inputs.push(input);
-        self.args.utxos_to_sign.push(arg);
+        self.utxo_args.push(arg);
         self
     }
 
@@ -69,16 +70,14 @@ impl TransactionBuilder {
         self
     }
 
-    pub fn build(self) -> (Transaction, TxSigningArgs) {
-        (
-            Transaction {
-                version: self.version as i32,
-                inputs: self.inputs,
-                outputs: self.outputs,
-                locktime: self.locktime,
-            },
-            self.args,
-        )
+    pub fn build(self) -> SigningResult<UnsignedTransaction<Transaction>> {
+        let transaction = Transaction {
+            version: self.version as i32,
+            inputs: self.inputs,
+            outputs: self.outputs,
+            locktime: self.locktime,
+        };
+        UnsignedTransaction::new(transaction, self.utxo_args)
     }
 }
 

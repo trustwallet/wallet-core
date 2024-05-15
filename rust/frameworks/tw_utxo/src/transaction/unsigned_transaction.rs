@@ -2,13 +2,13 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::sighash_computer::UtxoToSign;
 use crate::signature::{BitcoinEcdsaSignature, BitcoinSchnorrSignature};
 use crate::spending_data::SpendingDataConstructor;
 use crate::transaction::transaction_interface::{
     TransactionInterface, TxInputInterface, TxOutputInterface,
 };
 use crate::transaction::transaction_parts::Amount;
+use crate::transaction::UtxoToSign;
 use tw_coin_entry::error::prelude::*;
 
 pub struct UnsignedTransaction<Transaction> {
@@ -20,8 +20,20 @@ impl<Transaction> UnsignedTransaction<Transaction>
 where
     Transaction: TransactionInterface,
 {
+    pub fn new(transaction: Transaction, utxo_args: Vec<UtxoToSign>) -> SigningResult<Self> {
+        check_utxo_args_number(transaction.inputs().len(), utxo_args.len())?;
+        Ok(UnsignedTransaction {
+            transaction,
+            utxo_args,
+        })
+    }
+
     pub fn transaction(&self) -> &Transaction {
         &self.transaction
+    }
+
+    pub fn into_transaction(self) -> Transaction {
+        self.transaction
     }
 
     pub fn inputs(&self) -> &[Transaction::Input] {
@@ -69,17 +81,7 @@ where
         utxos: Vec<Transaction::Input>,
         utxo_args: Vec<UtxoToSign>,
     ) -> SigningResult<()> {
-        if utxos.len() != utxo_args.len() {
-            return SigningError::err(SigningErrorType::Error_internal)
-                .context("There must be the same number of UTXOs and UtxoToSign arguments");
-        }
-
-        if utxos.is_empty() {
-            return SigningError::err(SigningErrorType::Error_not_enough_utxos).context(
-                "Transaction must have at least one valid input (UTXO). \
-                All UTXOs are either filtered (have dust amount) or not UTXOs are specified",
-            );
-        }
+        check_utxo_args_number(utxos.len(), utxo_args.len())?;
 
         self.utxo_args = utxo_args;
         self.transaction.replace_inputs(utxos);
@@ -129,4 +131,19 @@ where
             .or_tw_err(SigningErrorType::Error_tx_too_big)
             .context("Sum of Transaction output amounts is too big")
     }
+}
+
+fn check_utxo_args_number(inputs_len: usize, utxo_args: usize) -> SigningResult<()> {
+    if inputs_len != utxo_args {
+        return SigningError::err(SigningErrorType::Error_internal)
+            .context("There must be the same number of UTXOs and UtxoToSign arguments");
+    }
+
+    if inputs_len == 0 {
+        return SigningError::err(SigningErrorType::Error_not_enough_utxos).context(
+            "Transaction must have at least one valid input (UTXO). \
+                All UTXOs are either filtered (have dust amount) or not UTXOs are specified",
+        );
+    }
+    Ok(())
 }

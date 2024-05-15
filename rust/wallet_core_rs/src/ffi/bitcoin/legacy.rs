@@ -15,7 +15,6 @@ use tw_memory::ffi::c_result::CUInt64Result;
 use tw_misc::try_or_else;
 use tw_proto::Bitcoin::Proto as LegacyProto;
 use tw_proto::BitcoinV2::Proto;
-use tw_proto::Common::Proto as CommonProto;
 
 // NOTE: The tests for those APIs can be found in `tw_bitcoin`.
 
@@ -281,32 +280,12 @@ pub unsafe extern "C" fn tw_bitcoin_legacy_calculate_transaction_fee(
     CUInt64Result::ok(fee)
 }
 
+// TODO remove it
 #[no_mangle]
 #[deprecated]
 pub unsafe extern "C" fn tw_bitcoin_legacy_taproot_build_and_sign_transaction(
-    input: *const u8,
-    input_len: usize,
+    _input: *const u8,
+    _input_len: usize,
 ) -> CByteArray {
-    let data = CByteArrayRef::new(input, input_len)
-        .to_vec()
-        .unwrap_or_default();
-
-    let proto: LegacyProto::SigningInput =
-        try_or_else!(tw_proto::deserialize(&data), CByteArray::null);
-
-    let Ok(signing) = tw_bitcoin::modules_legacy::legacy::taproot_build_and_sign_transaction(proto) else {
-        // Convert the `BitcoinV2.proto` error type inot the `Common.proto`
-        // errot type and return.
-        let error = LegacyProto::SigningOutput {
-            error: CommonProto::SigningError::Error_general,
-            ..Default::default()
-        };
-
-        let serialized = tw_proto::serialize(&error).expect("failed to serialize error message");
-        return CByteArray::from(serialized);
-    };
-
-    // Serialize SigningOutput and return.
-    let serialized = tw_proto::serialize(&signing).expect("failed to serialize signed transaction");
-    CByteArray::from(serialized)
+    todo!()
 }
