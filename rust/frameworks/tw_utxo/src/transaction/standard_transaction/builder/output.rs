@@ -11,6 +11,8 @@ use tw_coin_entry::error::prelude::*;
 use tw_hash::{ripemd::bitcoin_hash_160, sha2::sha256, H160, H256};
 use tw_keypair::{ecdsa, schnorr, tw};
 
+pub const OP_RETURN_DATA_LIMIT: usize = 80;
+
 pub struct OutputBuilder {
     amount: Amount,
 }
@@ -144,6 +146,19 @@ impl OutputBuilder {
         Ok(TransactionOutput {
             value: self.amount,
             script_pubkey: conditions::new_p2tr_script_path(&pubkey_data, &merkle_root),
+        })
+    }
+
+    pub fn op_return(self, data: &[u8]) -> SigningResult<TransactionOutput> {
+        if data.len() > OP_RETURN_DATA_LIMIT {
+            return SigningError::err(SigningErrorType::Error_invalid_memo).context(format!(
+                "OP_RETURN data can be up to {OP_RETURN_DATA_LIMIT} bytes"
+            ));
+        }
+
+        Ok(TransactionOutput {
+            value: self.amount,
+            script_pubkey: conditions::new_op_return(data),
         })
     }
 }

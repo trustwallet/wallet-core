@@ -12,6 +12,7 @@ use tw_keypair::tw;
 use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
 
+/// TODO move the inner implementation to a `WitnessProgram`.
 #[derive(Debug, Eq, PartialEq)]
 pub struct TaprootAddress {
     hrp: String,
@@ -195,5 +196,91 @@ impl FromStr for TaprootAddress {
 impl fmt::Display for TaprootAddress {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.address_str)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tw_encoding::hex::DecodeHex;
+
+    struct TestInputValid {
+        str: &'static str,
+        normalized: &'static str,
+        expected: TaprootAddress,
+    }
+
+    #[track_caller]
+    fn taproot_addr(hrp: &str, version: u8, program: &str) -> TaprootAddress {
+        TaprootAddress::new(hrp.to_string(), version, program.decode_hex().unwrap())
+            .expect("Cannot construct a TaprootAddress from the input")
+    }
+
+    /// Tests if the given `s` string representation is converted from and to `expected` segwit address.
+    #[track_caller]
+    fn test_to_from_str_valid(input: TestInputValid) {
+        let actual = TaprootAddress::from_str(input.str).expect("Expected a valid address");
+        assert_eq!(actual, input.expected, "String -> TaprootAddress");
+
+        let actual_str = actual.to_string();
+        assert_eq!(actual_str, input.normalized, "TaprootAddress -> String");
+    }
+
+    #[track_caller]
+    fn test_from_str_invalid(str: &str) {
+        let _ = TaprootAddress::from_str(str).expect_err("Expected an invalid Taproot address");
+    }
+
+    #[test]
+    fn test_segwit_address_to_from_str() {
+        test_to_from_str_valid(TestInputValid {
+            str: "bc1ptmsk7c2yut2xah4pgflpygh2s7fh0cpfkrza9cjj29awapv53mrslgd5cf",
+            normalized: "bc1ptmsk7c2yut2xah4pgflpygh2s7fh0cpfkrza9cjj29awapv53mrslgd5cf",
+            expected: taproot_addr(
+                "bc",
+                1,
+                "5ee16f6144e2d46edea1427e1222ea879377e029b0c5d2e252517aee85948ec7",
+            ),
+        });
+
+        test_to_from_str_valid(TestInputValid {
+            str: "tb1pqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvsesf3hn0c",
+            normalized: "tb1pqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvsesf3hn0c",
+            expected: taproot_addr(
+                "tb",
+                1,
+                "000000c4a5cad46221b2a187905e5266362b99d5e91c6ce24d165dab93e86433",
+            ),
+        });
+
+        test_to_from_str_valid(TestInputValid {
+            str: "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqzk5jj0",
+            normalized: "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqzk5jj0",
+            expected: taproot_addr(
+                "bc",
+                1,
+                "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            ),
+        });
+    }
+
+    #[test]
+    fn test_taproot_address_from_str_invalid() {
+        // version 0
+        test_from_str_invalid("tb1qqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvsesrxh6hy");
+
+        // version 2
+        test_from_str_invalid("bc1zw508d6qejxtdg4y5r3zarvaryvaxxpcs");
+
+        // version 2
+        test_from_str_invalid("bc1zw508d6qejxtdg4y5r3zarvaryvaxxpcs");
+
+        // version 16
+        test_from_str_invalid("BC1SW50QGDZ25J");
+
+        // program size 40
+        test_from_str_invalid(
+            "bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7kt5nd6y",
+        );
     }
 }

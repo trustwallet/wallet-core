@@ -154,7 +154,6 @@ impl FromStr for SegwitAddress {
         // Check encoding.
         match (version, checksum_variant) {
             (0, bech32::Variant::Bech32) => (),
-            (version, bech32::Variant::Bech32m) if WITNESS_VERSIONS.contains(&version) => (),
             _ => return Err(AddressError::InvalidInput),
         }
 
@@ -192,6 +191,11 @@ mod tests {
 
         let actual_str = actual.to_string();
         assert_eq!(actual_str, input.normalized, "SegwitAddress -> String");
+    }
+
+    #[track_caller]
+    fn test_from_str_invalid(str: &str) {
+        let _ = SegwitAddress::from_str(str).expect_err("Expected an invalid Segwit address");
     }
 
     #[test]
@@ -235,45 +239,6 @@ mod tests {
         });
 
         test_to_from_str_valid(TestInputValid {
-            str: "bc1ptmsk7c2yut2xah4pgflpygh2s7fh0cpfkrza9cjj29awapv53mrslgd5cf",
-            normalized: "bc1ptmsk7c2yut2xah4pgflpygh2s7fh0cpfkrza9cjj29awapv53mrslgd5cf",
-            expected: segwit_addr(
-                "bc",
-                1,
-                "5ee16f6144e2d46edea1427e1222ea879377e029b0c5d2e252517aee85948ec7",
-            ),
-        });
-
-        test_to_from_str_valid(TestInputValid {
-            str: "bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7kt5nd6y",
-            normalized:
-                "bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7kt5nd6y",
-            expected: segwit_addr(
-                "bc",
-                1,
-                "751e76e8199196d454941c45d1b3a323f1433bd6751e76e8199196d454941c45d1b3a323f1433bd6",
-            ),
-        });
-
-        test_to_from_str_valid(TestInputValid {
-            str: "BC1SW50QGDZ25J",
-            normalized: "bc1sw50qgdz25j",
-            expected: segwit_addr("bc", 16, "751e"),
-        });
-
-        test_to_from_str_valid(TestInputValid {
-            str: "bc1zw508d6qejxtdg4y5r3zarvaryvaxxpcs",
-            normalized: "bc1zw508d6qejxtdg4y5r3zarvaryvaxxpcs",
-            expected: segwit_addr("bc", 2, "751e76e8199196d454941c45d1b3a323"),
-        });
-
-        test_to_from_str_valid(TestInputValid {
-            str: "bc1zw508d6qejxtdg4y5r3zarvaryvaxxpcs",
-            normalized: "bc1zw508d6qejxtdg4y5r3zarvaryvaxxpcs",
-            expected: segwit_addr("bc", 2, "751e76e8199196d454941c45d1b3a323"),
-        });
-
-        test_to_from_str_valid(TestInputValid {
             str: "tb1qqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvsesrxh6hy",
             normalized: "tb1qqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvsesrxh6hy",
             expected: segwit_addr(
@@ -282,25 +247,22 @@ mod tests {
                 "000000c4a5cad46221b2a187905e5266362b99d5e91c6ce24d165dab93e86433",
             ),
         });
+    }
 
-        test_to_from_str_valid(TestInputValid {
-            str: "tb1pqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvsesf3hn0c",
-            normalized: "tb1pqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvsesf3hn0c",
-            expected: segwit_addr(
-                "tb",
-                1,
-                "000000c4a5cad46221b2a187905e5266362b99d5e91c6ce24d165dab93e86433",
-            ),
-        });
+    #[test]
+    fn test_taproot_address_from_str_invalid() {
+        // version 1
+        test_from_str_invalid("bc1ptmsk7c2yut2xah4pgflpygh2s7fh0cpfkrza9cjj29awapv53mrslgd5cf");
 
-        test_to_from_str_valid(TestInputValid {
-            str: "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqzk5jj0",
-            normalized: "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqzk5jj0",
-            expected: segwit_addr(
-                "bc",
-                1,
-                "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
-            ),
-        });
+        // version 1
+        test_from_str_invalid(
+            "bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7kt5nd6y",
+        );
+
+        // version 2
+        test_from_str_invalid("bc1zw508d6qejxtdg4y5r3zarvaryvaxxpcs");
+
+        // version 16
+        test_from_str_invalid("BC1SW50QGDZ25J");
     }
 }

@@ -123,6 +123,13 @@ pub fn new_p2tr_script_path(pubkey: &H264, merkle_root: &H256) -> Script {
     Script::from(script.to_vec())
 }
 
+pub fn new_op_return(data: &[u8]) -> Script {
+    let mut s = Script::with_capacity(83);
+    s.push(OP_RETURN);
+    s.push_slice(data);
+    s
+}
+
 pub fn is_p2sh(s: &Script) -> bool {
     let b = s.as_data();
     b.len() == 23 && b[0] == OP_HASH160 && b[1] == OP_PUSHBYTES_20 && b[22] == OP_EQUAL
