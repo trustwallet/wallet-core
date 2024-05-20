@@ -15,24 +15,25 @@ use crate::transaction::UtxoToSign;
 use tw_coin_entry::error::prelude::*;
 
 /// UTXO selector used to send the exact amounts specified in outputs.
-pub struct ExactSelector<Transaction: TransactionInterface> {
+pub struct ExactInputSelector<Transaction: TransactionInterface> {
     unsigned_tx: UnsignedTransaction<Transaction>,
     change_output: Option<Transaction::Output>,
 }
 
-impl<Transaction> ExactSelector<Transaction>
+impl<Transaction> ExactInputSelector<Transaction>
 where
     Transaction: TransactionInterface + TransactionFee,
 {
     pub fn new(unsigned_tx: UnsignedTransaction<Transaction>) -> Self {
-        ExactSelector {
+        ExactInputSelector {
             unsigned_tx,
             change_output: None,
         }
     }
 
-    pub fn set_change_output(&mut self, output: Transaction::Output) {
-        self.change_output = Some(output);
+    pub fn maybe_change_output(mut self, output: Option<Transaction::Output>) -> Self {
+        self.change_output = output;
+        self
     }
 
     pub fn select_inputs(

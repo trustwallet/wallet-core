@@ -2,5 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+pub mod planner;
+pub mod protobuf_builder;
+pub mod signer;
+pub mod signing_request;
 pub mod transaction;
 pub mod tx_builder;

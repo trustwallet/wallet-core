@@ -6,8 +6,8 @@ use tw_keypair::{ecdsa, schnorr};
 // TODO: Consider using ecdsa directly.
 use tw_keypair::tw::{PublicKey, PublicKeyType};
 use tw_misc::traits::ToBytesVec;
-use tw_utxo::modules::compiler::TxCompiler;
 use tw_utxo::modules::sighash_computer::SighashComputer;
+use tw_utxo::modules::tx_compiler::TxCompiler;
 
 use tw_utxo::transaction::standard_transaction::builder::txid_from_str_and_rev;
 use tw_utxo::transaction::standard_transaction::builder::OutputBuilder;
@@ -44,11 +44,9 @@ fn build_tx_input_legacy_output_legacy() {
 
     let output1 = OutputBuilder::new(50 * 100_000_000 - 1_000_000).p2pkh(&bob_pubkey);
 
-    let unsigned_tx = TransactionBuilder::new()
-        .push_input(utxo1, arg1)
-        .push_output(output1)
-        .build()
-        .unwrap();
+    let mut builder = TransactionBuilder::new();
+    builder.push_input(utxo1, arg1).push_output(output1);
+    let unsigned_tx = builder.build().unwrap();
 
     // Compute the primage.
     let preimage = SighashComputer::preimage_tx(&unsigned_tx).unwrap();
@@ -97,11 +95,9 @@ fn build_tx_input_legacy_output_segwit() {
 
     let output1 = OutputBuilder::new(50 * 100_000_000 - 1_000_000).p2wpkh(&bob_pubkey);
 
-    let unsigned_tx = TransactionBuilder::new()
-        .push_input(utxo1, arg1)
-        .push_output(output1)
-        .build()
-        .unwrap();
+    let mut builder = TransactionBuilder::new();
+    builder.push_input(utxo1, arg1).push_output(output1);
+    let unsigned_tx = builder.build().unwrap();
 
     // Compute the primage.
     let preimage = SighashComputer::preimage_tx(&unsigned_tx).unwrap();
@@ -150,11 +146,9 @@ fn build_tx_input_segwit_output_segwit() {
     let output1 =
         OutputBuilder::new(50 * 100_000_000 - 1_000_000 - 1_000_000).p2wpkh(&alice_pubkey);
 
-    let unsigned_tx = TransactionBuilder::new()
-        .push_input(utxo1, arg1)
-        .push_output(output1)
-        .build()
-        .unwrap();
+    let mut builder = TransactionBuilder::new();
+    builder.push_input(utxo1, arg1).push_output(output1);
+    let unsigned_tx = builder.build().unwrap();
 
     // Compute the primage.
     let preimage = SighashComputer::preimage_tx(&unsigned_tx).unwrap();
@@ -204,11 +198,9 @@ fn build_tx_input_legacy_output_taproot() {
     let output1 =
         OutputBuilder::new(50 * 100_000_000 - 1_000_000).p2tr_key_path(&bob_schnorr_pubkey);
 
-    let unsigned_tx = TransactionBuilder::new()
-        .push_input(utxo1, arg1)
-        .push_output(output1)
-        .build()
-        .unwrap();
+    let mut builder = TransactionBuilder::new();
+    builder.push_input(utxo1, arg1).push_output(output1);
+    let unsigned_tx = builder.build().unwrap();
 
     // Compute the primage.
     let preimage = SighashComputer::preimage_tx(&unsigned_tx).unwrap();
@@ -255,11 +247,9 @@ fn build_tx_input_taproot_output_taproot() {
     let output1 = OutputBuilder::new(50 * 100_000_000 - 1_000_000 - 1_000_000)
         .p2tr_key_path(&alice_schnorr_pubkey);
 
-    let unsigned_tx = TransactionBuilder::new()
-        .push_input(utxo1, arg1)
-        .push_output(output1)
-        .build()
-        .unwrap();
+    let mut builder = TransactionBuilder::new();
+    builder.push_input(utxo1, arg1).push_output(output1);
+    let unsigned_tx = builder.build().unwrap();
 
     // Compute the primage.
     let preimage = SighashComputer::preimage_tx(&unsigned_tx).unwrap();
@@ -305,12 +295,12 @@ fn build_tx_input_segwit_output_brc20_transfer_commit() {
 
     let output2 = OutputBuilder::new(16_400).p2wpkh(&alice_pubkey);
 
-    let unsigned_tx = TransactionBuilder::new()
+    let mut builder = TransactionBuilder::new();
+    builder
         .push_input(utxo1, arg1.clone())
         .push_output(output1)
-        .push_output(output2)
-        .build()
-        .unwrap();
+        .push_output(output2);
+    let unsigned_tx = builder.build().unwrap();
 
     // Compute the primage.
     let preimage = SighashComputer::preimage_tx(&unsigned_tx).unwrap();
@@ -353,11 +343,9 @@ fn build_tx_input_brc20_transfer_commit_output_brc20_transfer_reveal() {
 
     let output1 = OutputBuilder::new(546).p2wpkh(&alice_secp256k1_pubkey);
 
-    let unsigned_tx = TransactionBuilder::new()
-        .push_input(utxo1, arg1.clone())
-        .push_output(output1)
-        .build()
-        .unwrap();
+    let mut builder = TransactionBuilder::new();
+    builder.push_input(utxo1, arg1.clone()).push_output(output1);
+    let unsigned_tx = builder.build().unwrap();
 
     // Compute the primage.
     let preimage = SighashComputer::preimage_tx(&unsigned_tx).unwrap();

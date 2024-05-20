@@ -5,13 +5,6 @@ option java_package = "wallet.core.jni.proto";
 
 import "Common.proto";
 
-message LockTime {
-    oneof variant {
-        uint32 blocks = 1;
-        uint32 seconds = 2;
-    }
-}
-
 enum InputSelector {
     // Automatically select enough inputs in an ascending order to cover the outputs of the transaction.
     SelectAscending = 0;
@@ -33,34 +26,43 @@ message PublicKeyOrHash {
     }
 }
 
-message Input {
+// Bitcoin transaction out-point reference.
+message OutPoint {
+    // The hash of the referenced transaction (network byte order, usually needs to be reversed).
     // The referenced transaction ID in REVERSED order.
-    bytes txid = 2;
+    bytes hash = 1;
+
     // The position in the previous transactions output that this input references.
-    uint32 vout = 3;
+    uint32 vout = 2;
+
     // The sequence number, used for timelocks, replace-by-fee, etc.
     // If not set, the sequence will be set to the default 4294967295 (0xFFFFFFFF) value.
-    Sequence sequence = 4;
+    uint32 sequence = 3;
+}
+
+message Input {
+    // Reference to the previous transaction's output.
+    OutPoint out_point = 1;
     // The amount of satoshis of this input. Required for producing Segwit/Taproot transactions.
-    uint64 value = 5;
+    uint64 value = 2;
     // The sighash type, normally `All`.
     // See `TWBitcoinSigHashType` enum.
-    uint32 sighash_type = 6;
+    uint32 sighash_type = 3;
 
     // Script for claiming this UTXO.
     oneof claiming_script {
         // Construct claiming script with a builder pattern.
-        InputBuilder script_builder = 7;
+        InputBuilder script_builder = 4;
         // Spending script pubkey data.
         // Use this variant if the UTXO claiming script is known already, otherwise use `InputBuilder`.
         // Please note that the signing method (eg "legacy" or "segwit") will be determined by parsing the script data as:
         // - P2PK, P2PKH - legacy signing method;
         // - P2WPKH - segwit signing method.
-        bytes script_data = 8;
+        bytes script_data = 5;
         // Derive a spending script pubkey from a receiver address.
         // E.g "bc1" segwit address will be P2WPKH claiming script.
         // TODO consider deprecating this because we can't determine if the script pubkey is P2PK or P2PKH actually.
-        string receiver_address = 9;
+        string receiver_address = 6;
     }
 
     message InputBuilder {
@@ -91,10 +93,6 @@ message Input {
             // Create a BRC20 inscription.
             InputBrc20Inscription brc20_inscribe = 9;
         }
-    }
-
-    message Sequence {
-        uint32 sequence = 1;
     }
 
     message InputTaprootScriptPath {
@@ -185,18 +183,15 @@ message ChainInfo {
 }
 
 message SigningInput {
-    // (optional) The protocol version, is currently expected to be 1 or 2.
-    // Version 2 by default.
-    int32 version = 1;
     // User private keys.
     // Only required if the `sign` method is called.
     repeated bytes private_keys = 2;
     // User public keys.
     // Only required if the `plan`, `preImageHash` methods are called.
     repeated bytes public_keys = 3;
-    // (optional) Block height or timestamp indicating at what point transactions can be
-    // included in a block. None by default (zero value).
-    LockTime lock_time = 4;
+    // (optional) Block height or timestamp indicating at what point transactions can be included in a block.
+    // Zero by default.
+    uint32 lock_time = 4;
     // The inputs to spend.
     repeated Input inputs = 5;
     // The output of the transaction. Note that the change output is specified
@@ -232,26 +227,21 @@ message SigningInput {
 message Transaction {
     // The protocol version, is currently expected to be 1 or 2 (BIP68).
     int32 version = 1;
-    // Block height or timestamp indicating at what point transactions can be
-    // included in a block. None by default (zero value).
-    LockTime lock_time = 2;
+    // Block height or timestamp indicating at what point transactions can be included in a block.
+    // Zero by default.
+    uint32 lock_time = 2;
     // The transaction inputs.
     repeated TransactionInput inputs = 3;
     // The transaction outputs.
     repeated TransactionOutput outputs = 4;
 
     message TransactionInput {
-        // The referenced transaction ID in REVERSED order.
-        bytes txid = 1;
-        // The position in the previous transactions output that this input references.
-        uint32 vout = 3;
-        // The sequence number, used for timelocks, replace-by-fee, etc.
-        // Normally this number is simply 4294967295 (0xFFFFFFFF).
-        uint32 sequence = 4;
+        // Reference to the previous transaction's output.
+        OutPoint out_point = 1;
         // The script for claiming the input (non-Segwit/non-Taproot).
-        bytes script_sig = 5;
+        bytes script_sig = 2;
         // The script for claiming the input (Segit/Taproot).
-        repeated bytes witness_items = 6;
+        repeated bytes witness_items = 3;
     }
 
     message TransactionOutput {
@@ -259,11 +249,6 @@ message Transaction {
         bytes script_pubkey = 1;
         // The amount of satoshis to spend.
         uint64 value = 2;
-        // In case of P2TR script-path (complex scripts), this is the payload that
-        // must later be revealed and is required for claiming.
-        bytes taproot_payload = 3;
-        // In case of P2TR script-path (complex scripts), this is the control block required for claiming.
-        bytes control_block = 4;
     }
 }
 
@@ -341,8 +326,10 @@ message SigningOutput {
     bytes encoded = 4;
     // The transaction ID (hash).
     bytes txid = 5;
-    // The total and final weight of the transaction.
-    uint64 weight = 6;
+    // The total `vsize` in `vbytes`.
+    // It is used to compare how much blockweight needs to be allocated to confirm a transaction.
+    // For non-segwit transactions, `vsize` = `size`.
+    uint64 vsize = 6;
     // The total and final fee of the transaction in satoshis.
     uint64 fee = 7;
 }

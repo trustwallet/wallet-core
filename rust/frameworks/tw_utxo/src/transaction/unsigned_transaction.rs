@@ -21,6 +21,11 @@ where
     Transaction: TransactionInterface,
 {
     pub fn new(transaction: Transaction, utxo_args: Vec<UtxoToSign>) -> SigningResult<Self> {
+        if transaction.outputs().is_empty() {
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("No transaction Outputs provided");
+        }
+
         check_utxo_args_number(transaction.inputs().len(), utxo_args.len())?;
         Ok(UnsignedTransaction {
             transaction,

@@ -14,6 +14,13 @@ pub struct DustFilter<Transaction> {
 }
 
 impl<Transaction: TransactionInterface> DustFilter<Transaction> {
+    pub fn new(dust_policy: DustPolicy) -> Self {
+        DustFilter {
+            dust_policy,
+            _phantom: PhantomData,
+        }
+    }
+
     /// Filter dust UTXOs out.
     /// Returns an error if there are no valid UTXOs.
     pub fn filter_inputs(

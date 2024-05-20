@@ -1,17 +1,17 @@
 mod common;
 
-use bitcoin::consensus::Encodable;
-use bitcoin::{PublicKey, ScriptBuf, Witness};
-use common::{hex, MINER_FEE, ONE_BTC};
-use tw_bitcoin::aliases::*;
-use tw_bitcoin::entry::BitcoinEntry;
-use tw_coin_entry::coin_entry::CoinEntry;
-use tw_coin_entry::test_utils::test_context::TestCoinContext;
-use tw_hash::H256;
-use tw_keypair::ecdsa;
-use tw_keypair::traits::SigningKeyTrait;
-use tw_proto::BitcoinV2::Proto;
-use tw_proto::Utxo::Proto as UtxoProto;
+// use bitcoin::consensus::Encodable;
+// use bitcoin::{PublicKey, ScriptBuf, Witness};
+// use common::{hex, MINER_FEE, ONE_BTC};
+// use tw_bitcoin::aliases::*;
+// use tw_bitcoin::entry::BitcoinEntry;
+// use tw_coin_entry::coin_entry::CoinEntry;
+// use tw_coin_entry::test_utils::test_context::TestCoinContext;
+// use tw_hash::H256;
+// use tw_keypair::ecdsa;
+// use tw_keypair::traits::SigningKeyTrait;
+// use tw_proto::BitcoinV2::Proto;
+// use tw_proto::Utxo::Proto as UtxoProto;
 
 // TODO uncomment when P2WSH is ready
 // TODO rename to `test_bitcoin_compile_input_p2pkh_output_p2wsh`.

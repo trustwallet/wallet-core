@@ -247,14 +247,21 @@ impl<'a> UtxoProtobuf<'a> {
     }
 
     pub fn prepare_builder(&self) -> SigningResult<UtxoBuilder> {
-        let prev_txid = H256::try_from(self.input.txid.as_ref())
+        let out_point = self
+            .input
+            .out_point
+            .as_ref()
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("No OutPoint provided for a UTXO")?;
+
+        let prev_txid = H256::try_from(out_point.hash.as_ref())
             .tw_err(|_| SigningErrorType::Error_invalid_params)
             .context("Invalid previous txid")?;
         let sighash_ty = SighashType::from_u32(self.input.sighash_type)?;
 
         Ok(UtxoBuilder::new()
             .prev_txid(prev_txid)
-            .prev_index(self.input.vout)
+            .prev_index(out_point.vout)
             .amount(self.input.value as i64)
             .sighash_type(sighash_ty))
     }

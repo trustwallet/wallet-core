@@ -4,12 +4,12 @@ use tw_keypair::ecdsa;
 // TODO: Consider using ecdsa directly.
 use tw_keypair::tw::{PublicKey, PublicKeyType};
 use tw_utxo::dust::DustPolicy;
+use tw_utxo::modules::utxo_selector::exact_selector::ExactInputSelector;
+use tw_utxo::modules::utxo_selector::{InputSelector, SelectResult};
 use tw_utxo::transaction::standard_transaction::builder::OutputBuilder;
 use tw_utxo::transaction::standard_transaction::builder::TransactionBuilder;
 use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
 use tw_utxo::transaction::transaction_interface::TransactionInterface;
-use tw_utxo::utxo_selector::exact_selector::ExactSelector;
-use tw_utxo::utxo_selector::{InputSelector, SelectResult};
 
 const SATS_PER_VBYTE: i64 = 2;
 
@@ -54,19 +54,19 @@ fn build_tx_input_selection() {
     // `SelectionBuilder`.
     let change_output = OutputBuilder::new(0).p2pkh(&alice_pubkey);
 
-    let unsigned_tx = TransactionBuilder::new()
+    let mut builder = TransactionBuilder::new();
+    builder
         .push_input(utxo1.clone(), arg1.clone())
         .push_input(utxo2.clone(), arg2.clone())
         .push_input(utxo3, arg3)
         .push_output(out1)
         .push_output(out2)
-        .push_output(change_output)
-        .build()
-        .unwrap();
+        .push_output(change_output);
+    let unsigned_tx = builder.build().unwrap();
 
     // Select the inputs and build the final transaction that includes the
     // change amount.
-    let SelectResult { unsigned_tx, plan } = ExactSelector::new(unsigned_tx)
+    let SelectResult { unsigned_tx, plan } = ExactInputSelector::new(unsigned_tx)
         .select_inputs(
             // TODO move to a constant
             DustPolicy::FixedAmount(546),
