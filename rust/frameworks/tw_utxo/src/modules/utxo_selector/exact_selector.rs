@@ -133,6 +133,7 @@ where
             },
             // Either not specified or the change amount is dust.
             _ => {
+                // TODO since we do not have a change output, we should recalculate the transaction fee without it.
                 tx_fee += change;
                 change = 0;
             },

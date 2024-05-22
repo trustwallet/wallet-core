@@ -19,6 +19,7 @@ use tw_utxo::script::Script;
 use tw_utxo::sighash::SighashType;
 use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
 use tw_utxo::transaction::standard_transaction::TransactionInput;
+use tw_utxo::transaction::transaction_parts::OutPoint;
 use tw_utxo::transaction::UtxoToSign;
 
 pub struct UtxoProtobuf<'a> {
@@ -247,21 +248,12 @@ impl<'a> UtxoProtobuf<'a> {
     }
 
     pub fn prepare_builder(&self) -> SigningResult<UtxoBuilder> {
-        let out_point = self
-            .input
-            .out_point
-            .as_ref()
-            .or_tw_err(SigningErrorType::Error_invalid_params)
-            .context("No OutPoint provided for a UTXO")?;
-
-        let prev_txid = H256::try_from(out_point.hash.as_ref())
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
-            .context("Invalid previous txid")?;
+        let OutPoint { hash, index } = parse_out_point(&self.input.out_point)?;
         let sighash_ty = SighashType::from_u32(self.input.sighash_type)?;
 
         Ok(UtxoBuilder::new()
-            .prev_txid(prev_txid)
-            .prev_index(out_point.vout)
+            .prev_txid(hash)
+            .prev_index(index)
             .amount(self.input.value as i64)
             .sighash_type(sighash_ty))
     }
@@ -302,4 +294,20 @@ impl<'a> UtxoProtobuf<'a> {
             .into_tw()
             .context("Expected a valid ecdsa secp256k1 public key")
     }
+}
+
+pub fn parse_out_point(maybe_out_point: &Option<Proto::OutPoint>) -> SigningResult<OutPoint> {
+    let out_point = maybe_out_point
+        .as_ref()
+        .or_tw_err(SigningErrorType::Error_invalid_params)
+        .context("No OutPoint provided for a UTXO")?;
+
+    let hash = H256::try_from(out_point.hash.as_ref())
+        .tw_err(|_| SigningErrorType::Error_invalid_params)
+        .context("Invalid previous txid")?;
+
+    Ok(OutPoint {
+        hash,
+        index: out_point.vout,
+    })
 }

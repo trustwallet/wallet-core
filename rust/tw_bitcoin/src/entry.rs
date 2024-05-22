@@ -1,3 +1,5 @@
+use crate::modules::planner::BitcoinPlanner;
+use crate::modules::signer::BitcoinSigner;
 use bitcoin::address::NetworkChecked;
 use std::fmt::Display;
 use std::str::FromStr;
@@ -7,11 +9,10 @@ use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
-use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_keypair::tw::PublicKey;
-use tw_proto::BitcoinV2::Proto;
+use tw_proto::BitcoinV3::Proto;
 use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
 
 pub struct Address(pub bitcoin::address::Address<NetworkChecked>);
@@ -39,7 +40,7 @@ impl CoinEntry for BitcoinEntry {
 
     // Optional modules:
     type JsonSigner = NoJsonSigner;
-    type PlanBuilder = NoPlanBuilder;
+    type PlanBuilder = BitcoinPlanner;
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
@@ -75,8 +76,8 @@ impl CoinEntry for BitcoinEntry {
     }
 
     #[inline]
-    fn sign(&self, _coin: &dyn CoinContext, _proto: Self::SigningInput<'_>) -> Self::SigningOutput {
-        todo!()
+    fn sign(&self, _coin: &dyn CoinContext, proto: Self::SigningInput<'_>) -> Self::SigningOutput {
+        BitcoinSigner::sign(&proto)
     }
 
     #[inline]
@@ -101,28 +102,6 @@ impl CoinEntry for BitcoinEntry {
 
     #[inline]
     fn plan_builder(&self) -> Option<Self::PlanBuilder> {
-        todo!()
+        Some(BitcoinPlanner)
     }
-}
-
-// Convenience function for pre-processing of certain fields that must be
-// executed on each `CoinEntry` call.
-// TODO take this into account
-#[allow(dead_code)]
-pub(crate) fn pre_processor(mut proto: Proto::SigningInput<'_>) -> Proto::SigningInput<'_> {
-    // We automatically set the transaction version to 2.
-    if proto.version == 0 {
-        proto.version = 2;
-    }
-
-    // If an input sequence (timelock, replace-by-fee, etc) of zero is not
-    // expliclity enabled, we interpreted a sequence of zero as the max value
-    // (default).
-    proto.inputs.iter_mut().for_each(|txin| {
-        if !txin.sequence_enable_zero && txin.sequence == 0 {
-            txin.sequence = u32::MAX
-        }
-    });
-
-    proto
 }

@@ -184,7 +184,7 @@ where
         };
 
         let input: <T::PlanBuilder as PlanBuilder>::SigningInput<'_> = deserialize(input)?;
-        let output = plan_builder.plan(coin, input);
+        let output = plan_builder.plan(coin, &input);
         serialize(&output).map_err(SigningError::from)
     }
 

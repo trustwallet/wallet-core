@@ -9,7 +9,7 @@ use tw_hash::H256;
 // TODO: Shouldn't this be u64?
 pub type Amount = i64;
 
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct OutPoint {
     pub hash: H256,
     pub index: u32,
