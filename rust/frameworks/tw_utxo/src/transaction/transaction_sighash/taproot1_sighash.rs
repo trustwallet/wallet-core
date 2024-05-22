@@ -19,10 +19,6 @@ pub struct Taproot1Sighash<Transaction: TransactionInterface> {
 
 impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
     pub fn sighash_tx(tx: &Transaction, tr: &UtxoTaprootPreimageArgs) -> SigningResult<H256> {
-        // The annex was introduced with Taproot and is currently unused in
-        // Bitcoin, but may be used it in the future.
-        const ANNEX_SUPPORTED: bool = false;
-
         let prevout_hash = TransactionHasher::<Transaction>::preimage_prevout_hash(tx, &tr.args);
         let sequence_hash = TransactionHasher::<Transaction>::preimage_sequence_hash(tx, &tr.args);
         let outputs_hash = TransactionHasher::<Transaction>::preimage_outputs_hash(tx, &tr.args);
@@ -48,10 +44,6 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
 
         let mut spend_type = 0u8;
 
-        if ANNEX_SUPPORTED {
-            spend_type |= 1u8;
-        }
-
         if tr.args.leaf_hash_code_separator.is_some() {
             spend_type |= 2u8;
         }
@@ -59,17 +51,15 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
         stream.append(&spend_type);
 
         if tr.args.sighash_ty.anyone_can_pay() {
-            todo!()
+            return SigningError::err(SigningErrorType::Error_not_supported)
+                .context("'anyone can pay' sighash type is not supported for Taproot yet");
         } else {
             stream.append(&(tr.args.input_index as u32));
         }
 
-        if ANNEX_SUPPORTED {
-            todo!()
-        }
-
         if tr.args.sighash_ty.base_type() == SighashBase::Single {
-            todo!()
+            return SigningError::err(SigningErrorType::Error_not_supported)
+                .context("'single' sighash type is not supported for Taproot yet");
         }
 
         if let Some((leaf_hash, separator)) = tr.args.leaf_hash_code_separator {

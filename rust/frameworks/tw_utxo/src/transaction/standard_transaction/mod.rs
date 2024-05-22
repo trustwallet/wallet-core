@@ -14,7 +14,7 @@ use crate::transaction::transaction_parts::{Amount, OutPoint};
 use crate::transaction::transaction_sighash::legacy_sighash::LegacySighash;
 use crate::transaction::transaction_sighash::witness0_sighash::Witness0Sighash;
 use crate::transaction::{TransactionPreimage, UtxoPreimageArgs};
-use tw_coin_entry::error::prelude::SigningResult;
+use tw_coin_entry::error::prelude::{ResultContext, SigningError, SigningErrorType, SigningResult};
 use tw_hash::hasher::sha256_d;
 use tw_hash::H256;
 
@@ -226,14 +226,20 @@ impl TransactionPreimage for Transaction {
         match args.signing_method {
             SigningMethod::Legacy => LegacySighash::<Self>::sighash_tx(self, args),
             SigningMethod::Segwit => Witness0Sighash::<Self>::sighash_tx(self, args),
-            SigningMethod::Taproot => todo!(),
+            SigningMethod::Taproot => SigningError::err(SigningErrorType::Error_internal).context(
+                "'TransactionPreimage::preimage_tx' is called with Taproot signing method",
+            ),
         }
     }
 
     fn preimage_taproot_tx(&self, tr: &UtxoTaprootPreimageArgs) -> SigningResult<H256> {
         match tr.args.signing_method {
-            SigningMethod::Legacy => todo!(),
-            SigningMethod::Segwit => todo!(),
+            SigningMethod::Legacy | SigningMethod::Segwit => {
+                SigningError::err(SigningErrorType::Error_internal).context(format!(
+                    "'TransactionPreimage::preimage_taproot_tx' is called with {:?} signing method",
+                    tr.args.signing_method
+                ))
+            },
             SigningMethod::Taproot => Taproot1Sighash::<Self>::sighash_tx(self, tr),
         }
     }
