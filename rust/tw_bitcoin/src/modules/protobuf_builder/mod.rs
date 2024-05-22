@@ -44,7 +44,7 @@ impl ProtobufBuilder {
     ) -> Proto::mod_Transaction::TransactionOutput<'static> {
         Proto::mod_Transaction::TransactionOutput {
             script_pubkey: Self::script_data(&output.script_pubkey),
-            value: output.value as u64,
+            value: output.value,
         }
     }
 

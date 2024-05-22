@@ -44,7 +44,7 @@ message Input {
     // Reference to the previous transaction's output.
     OutPoint out_point = 1;
     // The amount of satoshis of this input. Required for producing Segwit/Taproot transactions.
-    uint64 value = 2;
+    int64 value = 2;
     // The sighash type, normally `All`.
     // See `TWBitcoinSigHashType` enum.
     uint32 sighash_type = 3;
@@ -114,7 +114,7 @@ message Input {
 
 message Output {
     // The amount of satoshis to send.
-    uint64 value = 1;
+    int64 value = 1;
 
     oneof to_recipient {
         // Construct output with builder pattern.
@@ -200,7 +200,7 @@ message SigningInput {
     // How the inputs should be selected.
     InputSelector input_selector = 7;
     // (optional) The amount of satoshis per vbyte ("satVb"), used for fee calculation.
-    uint64 fee_per_vb = 8;
+    int64 fee_per_vb = 8;
     // The change output to be added (return to sender) at the end of the outputs list.
     // The `Output.value` will be overwritten, leave as 0.
     // Note there can be no change output if the change amount is less than dust threshold.
@@ -248,7 +248,7 @@ message Transaction {
         // The condition for claiming the output.
         bytes script_pubkey = 1;
         // The amount of satoshis to spend.
-        uint64 value = 2;
+        int64 value = 2;
     }
 }
 
@@ -331,5 +331,5 @@ message SigningOutput {
     // For non-segwit transactions, `vsize` = `size`.
     uint64 vsize = 6;
     // The total and final fee of the transaction in satoshis.
-    uint64 fee = 7;
+    int64 fee = 7;
 }

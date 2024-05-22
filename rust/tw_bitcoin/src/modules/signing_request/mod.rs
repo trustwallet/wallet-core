@@ -43,12 +43,7 @@ impl SigningRequest {
             .context("No chain info specified")?;
 
         let dust_policy = Self::dust_policy(&input.dust_policy)?;
-
-        let fee_per_vbyte: Amount = input
-            .fee_per_vb
-            .try_into()
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
-            .context("Invalid feePerVb, it must fit int64")?;
+        let fee_per_vbyte = input.fee_per_vb;
 
         let public_keys = Self::get_public_keys(input)?;
 

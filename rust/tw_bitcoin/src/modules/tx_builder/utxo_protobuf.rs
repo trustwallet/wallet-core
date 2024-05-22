@@ -251,10 +251,15 @@ impl<'a> UtxoProtobuf<'a> {
         let OutPoint { hash, index } = parse_out_point(&self.input.out_point)?;
         let sighash_ty = SighashType::from_u32(self.input.sighash_type)?;
 
+        if self.input.value < 0 {
+            return SigningError::err(SigningErrorType::Error_invalid_utxo_amount)
+                .context("UTXO amount cannot be negative");
+        }
+
         Ok(UtxoBuilder::new()
             .prev_txid(hash)
             .prev_index(index)
-            .amount(self.input.value as i64)
+            .amount(self.input.value)
             .sighash_type(sighash_ty))
     }
 

@@ -47,12 +47,6 @@ impl BitcoinPlanner {
         // Fill out the Output Proto.
         let mut outputs_proto = Vec::with_capacity(unsigned_tx.transaction().outputs.len());
         for selected_output in unsigned_tx.transaction().outputs.iter() {
-            let value = selected_output
-                .value
-                .try_into()
-                .tw_err(|_| SigningErrorType::Error_internal)
-                .context("Standard Bitcoin Transaction Outputs cannot be negative")?;
-
             // For now, just provide a scriptPubkey as is.
             // Later it's probably worth to return the same output builders as in `SigningInput`.
             let to_recipient = Proto::mod_Output::OneOfto_recipient::custom_script_pubkey(
@@ -60,7 +54,7 @@ impl BitcoinPlanner {
             );
 
             outputs_proto.push(Proto::Output {
-                value,
+                value: selected_output.value,
                 to_recipient,
             })
         }
@@ -122,6 +116,6 @@ impl PlanBuilder for BitcoinPlanner {
     type Plan<'a> = Proto::TransactionPlan<'a>;
 
     fn plan<'a>(&self, _coin: &dyn CoinContext, input: &Self::SigningInput<'a>) -> Self::Plan<'a> {
-        Self::plan_impl(&input).unwrap_or_else(|e| signing_output_error!(Proto::TransactionPlan, e))
+        Self::plan_impl(input).unwrap_or_else(|e| signing_output_error!(Proto::TransactionPlan, e))
     }
 }

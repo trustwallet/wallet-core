@@ -62,14 +62,14 @@ impl<'a> OutputProtobuf<'a> {
     ) -> SigningResult<TransactionOutput> {
         let redeem_hash =
             Self::redeem_hash_from_proto(redeem, sha256_ripemd).context("P2SH builder")?;
-        Ok(self.prepare_builder().p2sh_from_hash(&redeem_hash))
+        Ok(self.prepare_builder()?.p2sh_from_hash(&redeem_hash))
     }
 
     pub fn p2pk(&self, pubkey: &[u8]) -> SigningResult<TransactionOutput> {
         let pubkey = ecdsa::secp256k1::PublicKey::try_from(pubkey)
             .into_tw()
             .context("Invalid P2PK public key")?;
-        Ok(self.prepare_builder().p2pk(&pubkey))
+        Ok(self.prepare_builder()?.p2pk(&pubkey))
     }
 
     pub fn p2pkh(
@@ -77,7 +77,7 @@ impl<'a> OutputProtobuf<'a> {
         pubkey_or_hash: &Proto::PublicKeyOrHash,
     ) -> SigningResult<TransactionOutput> {
         let pubkey_hash = Self::pubkey_hash_from_proto(pubkey_or_hash).context("P2PKH builder")?;
-        Ok(self.prepare_builder().p2pkh_from_hash(&pubkey_hash))
+        Ok(self.prepare_builder()?.p2pkh_from_hash(&pubkey_hash))
     }
 
     pub fn p2wsh(
@@ -85,7 +85,7 @@ impl<'a> OutputProtobuf<'a> {
         redeem: &Proto::mod_Output::RedeemScriptOrHash,
     ) -> SigningResult<TransactionOutput> {
         let redeem_hash = Self::redeem_hash_from_proto(redeem, sha256).context("P2WSH builder")?;
-        Ok(self.prepare_builder().p2wsh_from_hash(&redeem_hash))
+        Ok(self.prepare_builder()?.p2wsh_from_hash(&redeem_hash))
     }
 
     pub fn p2wpkh(
@@ -93,14 +93,14 @@ impl<'a> OutputProtobuf<'a> {
         pubkey_or_hash: &Proto::PublicKeyOrHash,
     ) -> SigningResult<TransactionOutput> {
         let pubkey_hash = Self::pubkey_hash_from_proto(pubkey_or_hash).context("P2WPKH builder")?;
-        Ok(self.prepare_builder().p2wpkh_from_hash(&pubkey_hash))
+        Ok(self.prepare_builder()?.p2wpkh_from_hash(&pubkey_hash))
     }
 
     pub fn p2tr_key_path(&self, taproot_pubkey: &[u8]) -> SigningResult<TransactionOutput> {
         let public_key = schnorr::PublicKey::try_from(taproot_pubkey)
             .into_tw()
             .context("Invalid P2TR key path. Must be a schnorr public key")?;
-        Ok(self.prepare_builder().p2tr_key_path(&public_key))
+        Ok(self.prepare_builder()?.p2tr_key_path(&public_key))
     }
 
     pub fn p2tr_dangerous_assume_tweaked(
@@ -111,7 +111,7 @@ impl<'a> OutputProtobuf<'a> {
             .tw_err(|_| SigningErrorType::Error_invalid_params)
             .context("Invalid P2TR tweaked public key. Expected 32 bytes x-only public key")?;
         Ok(self
-            .prepare_builder()
+            .prepare_builder()?
             .p2tr_dangerous_assume_tweaked(&tweaked_x_only))
     }
 
@@ -130,7 +130,7 @@ impl<'a> OutputProtobuf<'a> {
             .context("Invalid OutputTaprootScriptPath.merkle_root. Must be a 32 byte array")?;
 
         Ok(self
-            .prepare_builder()
+            .prepare_builder()?
             .p2tr_script_path(&public_key, merkle_root))
     }
 
@@ -139,7 +139,7 @@ impl<'a> OutputProtobuf<'a> {
         inscription: &Proto::mod_Output::OutputBrc20Inscription,
     ) -> SigningResult<TransactionOutput> {
         let public_key = schnorr::PublicKey::try_from(inscription.inscribe_to.as_ref())?;
-        self.prepare_builder().brc20_transfer(
+        self.prepare_builder()?.brc20_transfer(
             &public_key,
             inscription.ticker.to_string(),
             inscription.transfer_amount.to_string(),
@@ -148,7 +148,7 @@ impl<'a> OutputProtobuf<'a> {
 
     pub fn custom_script(&self, script_data: Data) -> SigningResult<TransactionOutput> {
         let script = Script::from(script_data);
-        Ok(self.prepare_builder().custom_script_pubkey(script))
+        Ok(self.prepare_builder()?.custom_script_pubkey(script))
     }
 
     pub fn recipient_address(&self, addr: &str) -> SigningResult<TransactionOutput> {
@@ -164,7 +164,7 @@ impl<'a> OutputProtobuf<'a> {
     }
 
     pub fn op_return(&self, op_return_data: &[u8]) -> SigningResult<TransactionOutput> {
-        self.prepare_builder().op_return(op_return_data)
+        self.prepare_builder()?.op_return(op_return_data)
     }
 
     pub fn recipient_legacy_address(
@@ -175,9 +175,9 @@ impl<'a> OutputProtobuf<'a> {
         let p2sh_prefix = self.chain_info.p2sh_prefix;
 
         if addr.prefix() as u32 == p2pkh_prefix {
-            Ok(self.prepare_builder().p2pkh_from_hash(&addr.payload()))
+            Ok(self.prepare_builder()?.p2pkh_from_hash(&addr.payload()))
         } else if addr.prefix() as u32 == p2sh_prefix {
-            Ok(self.prepare_builder().p2sh_from_hash(&addr.payload()))
+            Ok(self.prepare_builder()?.p2sh_from_hash(&addr.payload()))
         } else {
             // Unknown
             SigningError::err(SigningErrorType::Error_invalid_address).context(format!(
@@ -191,9 +191,9 @@ impl<'a> OutputProtobuf<'a> {
         addr: &SegwitAddress,
     ) -> SigningResult<TransactionOutput> {
         if let Ok(pubkey_hash) = H160::try_from(addr.witness_program()) {
-            Ok(self.prepare_builder().p2wpkh_from_hash(&pubkey_hash))
+            Ok(self.prepare_builder()?.p2wpkh_from_hash(&pubkey_hash))
         } else if let Ok(script_hash) = H256::try_from(addr.witness_program()) {
-            Ok(self.prepare_builder().p2wsh_from_hash(&script_hash))
+            Ok(self.prepare_builder()?.p2wsh_from_hash(&script_hash))
         } else {
             return SigningError::err(SigningErrorType::Error_invalid_address)
                 .context(format!("The given '{addr}' Segwit address has unexpected witness program. Expected either 20 or 32 bytes"));
@@ -209,7 +209,7 @@ impl<'a> OutputProtobuf<'a> {
             .context(format!("The given '{addr}' Taproot address has unexpected witness program. Expected 32 bytes public key"))?;
 
         Ok(self
-            .prepare_builder()
+            .prepare_builder()?
             .p2tr_dangerous_assume_tweaked(&pubkey_x_only))
     }
 
@@ -237,8 +237,12 @@ impl<'a> OutputProtobuf<'a> {
             .with_context(|| format!("Expected exactly {N} bytes redeem script hash"))
     }
 
-    pub fn prepare_builder(&self) -> OutputBuilder {
-        OutputBuilder::new(self.output.value as i64)
+    pub fn prepare_builder(&self) -> SigningResult<OutputBuilder> {
+        if self.output.value < 0 {
+            return SigningError::err(SigningErrorType::Error_invalid_utxo_amount)
+                .context("Transaction Output amount cannot be negative");
+        }
+        Ok(OutputBuilder::new(self.output.value))
     }
 
     /// Tries to convert [`Proto::PublicKeyOrHash`] to [`Hash<N>`].

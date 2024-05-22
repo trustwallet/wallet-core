@@ -55,17 +55,12 @@ impl BitcoinSigner {
         let signed_tx =
             TxSigner::sign_tx(unsigned_tx, &keys_manager).context("Error signing transaction")?;
 
-        let tx_encoded = signed_tx.encode_out();
-        let txid = signed_tx.txid();
-        let vsize = signed_tx.vsize() as u64;
-        let fee = signed_tx.fee(fee_per_vbyte)? as u64;
-
         Ok(Proto::SigningOutput {
             transaction: Some(ProtobufBuilder::tx_to_proto(&signed_tx)),
-            encoded: Cow::from(tx_encoded),
-            txid: Cow::from(txid),
-            vsize,
-            fee,
+            encoded: Cow::from(signed_tx.encode_out()),
+            txid: Cow::from(signed_tx.txid()),
+            vsize: signed_tx.vsize() as u64,
+            fee: signed_tx.fee(fee_per_vbyte)?,
             ..Proto::SigningOutput::default()
         })
     }

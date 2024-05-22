@@ -1,3 +1,4 @@
+use crate::modules::compiler::BitcoinCompiler;
 use crate::modules::planner::BitcoinPlanner;
 use crate::modules::signer::BitcoinSigner;
 use bitcoin::address::NetworkChecked;
@@ -84,20 +85,20 @@ impl CoinEntry for BitcoinEntry {
     fn preimage_hashes(
         &self,
         _coin: &dyn CoinContext,
-        _proto: Proto::SigningInput<'_>,
+        proto: Proto::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        todo!()
+        BitcoinCompiler::preimage_hashes(proto)
     }
 
     #[inline]
     fn compile(
         &self,
         _coin: &dyn CoinContext,
-        _proto: Proto::SigningInput<'_>,
-        _signatures: Vec<SignatureBytes>,
-        _public_keys: Vec<PublicKeyBytes>,
+        proto: Proto::SigningInput<'_>,
+        signatures: Vec<SignatureBytes>,
+        public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
-        todo!()
+        BitcoinCompiler::compile(proto, signatures, public_keys)
     }
 
     #[inline]
