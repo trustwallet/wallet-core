@@ -27,6 +27,7 @@ class CoinTypeTests: XCTestCase {
         XCTAssertEqual(CoinType.nebulas.rawValue, 2718)
         XCTAssertEqual(CoinType.avalancheCChain.rawValue, 10009000)
         XCTAssertEqual(CoinType.xdai.rawValue, 10000100)
+        XCTAssertEqual(CoinType.whive.rawValue, 658)
     }
     
     func testCoinDerivation() {

@@ -11,6 +11,7 @@
 #include <TrezorCrypto/ripemd160.h>
 #include <TrezorCrypto/sha2.h>
 #include <TrezorCrypto/sha3.h>
+#include <TrezorCrypto/yespower.h>
 
 #include <array>
 
@@ -114,4 +115,7 @@ TWData* _Nonnull TWHashBlake256RIPEMD(TWData* _Nonnull data) {
 TWData* _Nonnull TWHashGroestl512Groestl512(TWData* _Nonnull data) {
     const auto result = Hash::groestl512d(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
-}
+/* TWData* _Nonnull TWHashYespower(TWData* _Nonnull data, uint32_t version, uint32_t N, uint32_t r, uint32_t perslen, TWData* _Nonnull personal) {
+    const auto result = Hash::yespower(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data), version, N, r, perslen, reinterpret_cast<const byte*>(TWDataBytes(personal)), TWDataSize(personal));
+    return TWDataCreateWithBytes(result.data(), result.size());*/
+} 

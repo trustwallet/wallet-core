@@ -9,6 +9,7 @@
 #include <TrezorCrypto/aes.h>
 #include <TrezorCrypto/pbkdf2.h>
 #include <TrezorCrypto/scrypt.h>
+#include <TrezorCrypto/yespower.h>
 #include <cassert>
 
 using namespace TW;
