@@ -11,9 +11,16 @@ pub mod max_selector;
 #[non_exhaustive]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum InputSelector {
+    // Use all the inputs provided in the given order.
     UseAll,
+    // Automatically select enough inputs in an ascending order to cover the
+    // outputs of the transaction.
     Ascending,
+    // Automatically select enough inputs in an descending order to cover the
+    // outputs of the transaction.
     Descending,
+    // Automatically select enough inputs in the given order to cover the
+    // outputs of the transaction.
     InOrder,
 }
 

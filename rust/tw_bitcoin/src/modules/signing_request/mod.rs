@@ -8,34 +8,20 @@ use crate::modules::tx_builder::utxo_protobuf::UtxoProtobuf;
 use tw_coin_entry::error::prelude::*;
 use tw_proto::BitcoinV3::Proto;
 use tw_utxo::dust::DustPolicy;
+use tw_utxo::modules::tx_planner::{PlanRequest, RequestType};
 use tw_utxo::modules::utxo_selector::InputSelector;
 use tw_utxo::transaction::standard_transaction::builder::TransactionBuilder;
-use tw_utxo::transaction::standard_transaction::{Transaction, TransactionOutput};
-use tw_utxo::transaction::transaction_parts::Amount;
-use tw_utxo::transaction::unsigned_transaction::UnsignedTransaction;
+use tw_utxo::transaction::standard_transaction::Transaction;
 use Proto::mod_SigningInput::OneOfdust_policy as ProtoDustPolicy;
 
 const TX_VERSION: u32 = 2;
 
-pub struct SigningRequest {
-    pub ty: RequestType,
-    pub dust_policy: DustPolicy,
-    pub fee_per_vbyte: Amount,
-}
+pub type StandardSigningRequest = PlanRequest<Transaction>;
 
-pub enum RequestType {
-    SendMax {
-        unsigned_tx: UnsignedTransaction<Transaction>,
-    },
-    SendExact {
-        unsigned_tx: UnsignedTransaction<Transaction>,
-        change_output: Option<TransactionOutput>,
-        input_selector: InputSelector,
-    },
-}
+pub struct SigningRequestBuilder;
 
-impl SigningRequest {
-    pub fn from_proto(input: &Proto::SigningInput) -> SigningResult<SigningRequest> {
+impl SigningRequestBuilder {
+    pub fn build(input: &Proto::SigningInput) -> SigningResult<StandardSigningRequest> {
         let chain_info = input
             .chain_info
             .as_ref()
@@ -70,7 +56,7 @@ impl SigningRequest {
             builder.push_output(max_output);
 
             let unsigned_tx = builder.build()?;
-            return Ok(SigningRequest {
+            return Ok(StandardSigningRequest {
                 ty: RequestType::SendMax { unsigned_tx },
                 dust_policy,
                 fee_per_vbyte,
@@ -99,7 +85,7 @@ impl SigningRequest {
         let input_selector = Self::input_selector(&input.input_selector);
 
         let unsigned_tx = builder.build()?;
-        Ok(SigningRequest {
+        Ok(StandardSigningRequest {
             ty: RequestType::SendExact {
                 unsigned_tx,
                 change_output,

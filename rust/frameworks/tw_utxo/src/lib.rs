@@ -6,7 +6,6 @@ pub mod address;
 pub mod dust;
 pub mod encode;
 pub mod modules;
-pub mod planner;
 pub mod script;
 pub mod sighash;
 pub mod signature;

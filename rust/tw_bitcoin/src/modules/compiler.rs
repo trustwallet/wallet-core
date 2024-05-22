@@ -2,9 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::modules::planner::BitcoinPlanner;
 use crate::modules::protobuf_builder::ProtobufBuilder;
-use crate::modules::signing_request::SigningRequest;
+use crate::modules::signing_request::SigningRequestBuilder;
 use std::borrow::Cow;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::error::prelude::*;
@@ -15,6 +14,7 @@ use tw_proto::BitcoinV3::Proto::mod_PreSigningOutput::{
 };
 use tw_utxo::modules::sighash_computer::{SighashComputer, TaprootTweak, TxPreimage};
 use tw_utxo::modules::tx_compiler::TxCompiler;
+use tw_utxo::modules::tx_planner::TxPlanner;
 use tw_utxo::modules::utxo_selector::SelectResult;
 use tw_utxo::signing_mode::SigningMethod;
 use tw_utxo::transaction::transaction_fee::TransactionFee;
@@ -33,8 +33,8 @@ impl BitcoinCompiler {
     fn preimage_hashes_impl(
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::PreSigningOutput<'static>> {
-        let request = SigningRequest::from_proto(&input)?;
-        let SelectResult { unsigned_tx, .. } = BitcoinPlanner::plan_tx(request)?;
+        let request = SigningRequestBuilder::build(&input)?;
+        let SelectResult { unsigned_tx, .. } = TxPlanner::plan(request)?;
 
         let TxPreimage { sighashes } = SighashComputer::preimage_tx(&unsigned_tx)?;
 
@@ -69,9 +69,9 @@ impl BitcoinCompiler {
         signatures: Vec<SignatureBytes>,
         _public_keys: Vec<PublicKeyBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        let request = SigningRequest::from_proto(&input)?;
+        let request = SigningRequestBuilder::build(&input)?;
         let fee_per_vbyte = request.fee_per_vbyte;
-        let SelectResult { unsigned_tx, .. } = BitcoinPlanner::plan_tx(request)?;
+        let SelectResult { unsigned_tx, .. } = TxPlanner::plan(request)?;
 
         let signed_tx = TxCompiler::compile(unsigned_tx, &signatures)?;
         let tx_proto = ProtobufBuilder::tx_to_proto(&signed_tx);
