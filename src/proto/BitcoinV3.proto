@@ -34,10 +34,6 @@ message OutPoint {
 
     // The position in the previous transactions output that this input references.
     uint32 vout = 2;
-
-    // The sequence number, used for timelocks, replace-by-fee, etc.
-    // If not set, the sequence will be set to the default 4294967295 (0xFFFFFFFF) value.
-    uint32 sequence = 3;
 }
 
 message Input {
@@ -48,21 +44,29 @@ message Input {
     // The sighash type, normally `All`.
     // See `TWBitcoinSigHashType` enum.
     uint32 sighash_type = 3;
+    // Optional sequence number, used for timelocks, replace-by-fee, etc.
+    // Leave empty to use a default 4294967295 (0xFFFFFFFF) value.
+    Sequence sequence = 4;
 
     // Script for claiming this UTXO.
     oneof claiming_script {
         // Construct claiming script with a builder pattern.
-        InputBuilder script_builder = 4;
+        InputBuilder script_builder = 5;
         // Spending script pubkey data.
         // Use this variant if the UTXO claiming script is known already, otherwise use `InputBuilder`.
         // Please note that the signing method (eg "legacy" or "segwit") will be determined by parsing the script data as:
         // - P2PK, P2PKH - legacy signing method;
         // - P2WPKH - segwit signing method.
-        bytes script_data = 5;
+        bytes script_data = 6;
         // Derive a spending script pubkey from a receiver address.
         // E.g "bc1" segwit address will be P2WPKH claiming script.
         // TODO consider deprecating this because we can't determine if the script pubkey is P2PK or P2PKH actually.
-        string receiver_address = 6;
+        string receiver_address = 7;
+    }
+
+    // Optional sequence number, used for timelocks, replace-by-fee, etc.
+    message Sequence {
+        uint32 sequence = 1;
     }
 
     message InputBuilder {
@@ -238,10 +242,12 @@ message Transaction {
     message TransactionInput {
         // Reference to the previous transaction's output.
         OutPoint out_point = 1;
+        // The sequence number, used for timelocks, replace-by-fee, etc.
+        uint32 sequence = 2;
         // The script for claiming the input (non-Segwit/non-Taproot).
-        bytes script_sig = 2;
+        bytes script_sig = 3;
         // The script for claiming the input (Segit/Taproot).
-        repeated bytes witness_items = 3;
+        repeated bytes witness_items = 4;
     }
 
     message TransactionOutput {

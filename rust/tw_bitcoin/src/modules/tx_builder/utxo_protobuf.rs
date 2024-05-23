@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::modules::tx_builder::public_keys::PublicKeys;
+use crate::modules::tx_builder::BitcoinChainInfo;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::{H160, H256};
@@ -23,14 +24,14 @@ use tw_utxo::transaction::transaction_parts::OutPoint;
 use tw_utxo::transaction::UtxoToSign;
 
 pub struct UtxoProtobuf<'a> {
-    chain_info: &'a Proto::ChainInfo,
+    chain_info: &'a BitcoinChainInfo,
     input: &'a Proto::Input<'a>,
     public_keys: &'a PublicKeys,
 }
 
 impl<'a> UtxoProtobuf<'a> {
     pub fn new(
-        chain_info: &'a Proto::ChainInfo,
+        chain_info: &'a BitcoinChainInfo,
         input: &'a Proto::Input<'a>,
         public_keys: &'a PublicKeys,
     ) -> Self {
@@ -189,11 +190,11 @@ impl<'a> UtxoProtobuf<'a> {
         let p2pkh_prefix = self.chain_info.p2pkh_prefix;
         let p2sh_prefix = self.chain_info.p2sh_prefix;
 
-        if p2pkh_prefix == addr.prefix() as u32 {
+        if p2pkh_prefix == addr.prefix() {
             // P2PKH
             let pubkey = self.get_ecdsa_pubkey_from_hash(&addr.payload())?;
             self.prepare_builder()?.p2pkh(&pubkey)
-        } else if p2sh_prefix == addr.prefix() as u32 {
+        } else if p2sh_prefix == addr.prefix() {
             // P2SH
             SigningError::err(SigningErrorType::Error_script_redeem).context(
                 "pay-to-script-hash can only be used via 'Input.InputBuilder.p2sh'.\
@@ -256,9 +257,18 @@ impl<'a> UtxoProtobuf<'a> {
                 .context("UTXO amount cannot be negative");
         }
 
+        let sequence = self
+            .input
+            .sequence
+            .clone()
+            .map(|seq| seq.sequence)
+            // Use the default 0xFFFFFFFF sequence value if not specified.
+            .unwrap_or(u32::MAX);
+
         Ok(UtxoBuilder::new()
             .prev_txid(hash)
             .prev_index(index)
+            .sequence(sequence)
             .amount(self.input.value)
             .sighash_type(sighash_ty))
     }

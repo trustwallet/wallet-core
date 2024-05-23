@@ -5,6 +5,7 @@
 use crate::modules::protobuf_builder::ProtobufBuilder;
 use crate::modules::signing_request::SigningRequestBuilder;
 use std::borrow::Cow;
+use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::{ecdsa, schnorr};
@@ -19,14 +20,19 @@ use tw_utxo::transaction::transaction_fee::TransactionFee;
 pub struct BitcoinSigner;
 
 impl BitcoinSigner {
-    pub fn sign(input: &Proto::SigningInput<'_>) -> Proto::SigningOutput<'static> {
-        Self::sign_impl(input).unwrap_or_else(|e| signing_output_error!(Proto::SigningOutput, e))
+    pub fn sign(
+        coin: &dyn CoinContext,
+        input: &Proto::SigningInput<'_>,
+    ) -> Proto::SigningOutput<'static> {
+        Self::sign_impl(coin, input)
+            .unwrap_or_else(|e| signing_output_error!(Proto::SigningOutput, e))
     }
 
     pub fn sign_impl(
+        coin: &dyn CoinContext,
         input: &Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        let request = SigningRequestBuilder::build(input)?;
+        let request = SigningRequestBuilder::build(coin, input)?;
         let fee_per_vbyte = request.fee_per_vbyte;
         let SelectResult { unsigned_tx, .. } = TxPlanner::plan(request)?;
 
@@ -48,7 +54,12 @@ impl BitcoinSigner {
                 let schnorr_private = schnorr::PrivateKey::try_from(private.as_ref())
                     .into_tw()
                     .context("Invalid schnorr private key")?;
-                keys_manager.add_schnorr_private(schnorr_private);
+
+                if input.dangerous_use_fixed_schnorr_rng {
+                    keys_manager.add_schnorr_private(schnorr_private.no_aux_rand());
+                } else {
+                    keys_manager.add_schnorr_private(schnorr_private);
+                }
             }
         }
 

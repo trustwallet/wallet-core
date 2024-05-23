@@ -5,6 +5,7 @@
 use crate::modules::protobuf_builder::ProtobufBuilder;
 use crate::modules::signing_request::SigningRequestBuilder;
 use std::borrow::Cow;
+use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
@@ -25,15 +26,19 @@ impl BitcoinCompiler {
     /// Please note that [`Proto::SigningInput::public_key`] must be set.
     /// If the public key should be derived from a private key, please do it before this method is called.
     #[inline]
-    pub fn preimage_hashes(input: Proto::SigningInput<'_>) -> Proto::PreSigningOutput<'static> {
-        Self::preimage_hashes_impl(input)
+    pub fn preimage_hashes(
+        coin: &dyn CoinContext,
+        input: Proto::SigningInput<'_>,
+    ) -> Proto::PreSigningOutput<'static> {
+        Self::preimage_hashes_impl(coin, input)
             .unwrap_or_else(|e| signing_output_error!(Proto::PreSigningOutput, e))
     }
 
     fn preimage_hashes_impl(
+        coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::PreSigningOutput<'static>> {
-        let request = SigningRequestBuilder::build(&input)?;
+        let request = SigningRequestBuilder::build(coin, &input)?;
         let SelectResult { unsigned_tx, .. } = TxPlanner::plan(request)?;
 
         let TxPreimage { sighashes } = SighashComputer::preimage_tx(&unsigned_tx)?;
@@ -56,20 +61,22 @@ impl BitcoinCompiler {
 
     #[inline]
     pub fn compile(
+        coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> Proto::SigningOutput<'static> {
-        Self::compile_impl(input, signatures, public_keys)
+        Self::compile_impl(coin, input, signatures, public_keys)
             .unwrap_or_else(|e| signing_output_error!(Proto::SigningOutput, e))
     }
 
     fn compile_impl(
+        coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
         signatures: Vec<SignatureBytes>,
         _public_keys: Vec<PublicKeyBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        let request = SigningRequestBuilder::build(&input)?;
+        let request = SigningRequestBuilder::build(coin, &input)?;
         let fee_per_vbyte = request.fee_per_vbyte;
         let SelectResult { unsigned_tx, .. } = TxPlanner::plan(request)?;
 

@@ -18,9 +18,10 @@ pub struct BitcoinPlanner;
 
 impl BitcoinPlanner {
     pub fn plan_impl<'a>(
+        coin: &dyn CoinContext,
         input: &Proto::SigningInput<'a>,
     ) -> SigningResult<Proto::TransactionPlan<'a>> {
-        let request = SigningRequestBuilder::build(input)?;
+        let request = SigningRequestBuilder::build(coin, input)?;
         let SelectResult { unsigned_tx, plan } = TxPlanner::plan(request)?;
 
         // Prepare a map of source Inputs Proto `{ OutPoint -> Input }`.
@@ -73,7 +74,8 @@ impl PlanBuilder for BitcoinPlanner {
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type Plan<'a> = Proto::TransactionPlan<'a>;
 
-    fn plan<'a>(&self, _coin: &dyn CoinContext, input: &Self::SigningInput<'a>) -> Self::Plan<'a> {
-        Self::plan_impl(input).unwrap_or_else(|e| signing_output_error!(Proto::TransactionPlan, e))
+    fn plan<'a>(&self, coin: &dyn CoinContext, input: &Self::SigningInput<'a>) -> Self::Plan<'a> {
+        Self::plan_impl(coin, input)
+            .unwrap_or_else(|e| signing_output_error!(Proto::TransactionPlan, e))
     }
 }

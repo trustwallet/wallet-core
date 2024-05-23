@@ -5,6 +5,8 @@
 use crate::modules::tx_builder::output_protobuf::OutputProtobuf;
 use crate::modules::tx_builder::public_keys::PublicKeys;
 use crate::modules::tx_builder::utxo_protobuf::UtxoProtobuf;
+use crate::modules::tx_builder::BitcoinChainInfo;
+use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_proto::BitcoinV3::Proto;
 use tw_utxo::dust::DustPolicy;
@@ -21,13 +23,11 @@ pub type StandardSigningRequest = PlanRequest<Transaction>;
 pub struct SigningRequestBuilder;
 
 impl SigningRequestBuilder {
-    pub fn build(input: &Proto::SigningInput) -> SigningResult<StandardSigningRequest> {
-        let chain_info = input
-            .chain_info
-            .as_ref()
-            .or_tw_err(SigningErrorType::Error_invalid_params)
-            .context("No chain info specified")?;
-
+    pub fn build(
+        coin: &dyn CoinContext,
+        input: &Proto::SigningInput,
+    ) -> SigningResult<StandardSigningRequest> {
+        let chain_info = Self::chain_info(coin, &input.chain_info)?;
         let dust_policy = Self::dust_policy(&input.dust_policy)?;
         let fee_per_vbyte = input.fee_per_vb;
 
@@ -38,7 +38,7 @@ impl SigningRequestBuilder {
 
         // Parse all UTXOs.
         for utxo_proto in input.inputs.iter() {
-            let utxo_builder = UtxoProtobuf::new(chain_info, utxo_proto, &public_keys);
+            let utxo_builder = UtxoProtobuf::new(&chain_info, utxo_proto, &public_keys);
 
             let (utxo, utxo_args) = utxo_builder
                 .utxo_from_proto()
@@ -48,7 +48,7 @@ impl SigningRequestBuilder {
 
         // If `max_amount_output` is set, construct a transaction with only one output.
         if let Some(max_output_proto) = input.max_amount_output.as_ref() {
-            let output_builder = OutputProtobuf::new(chain_info, max_output_proto);
+            let output_builder = OutputProtobuf::new(&chain_info, max_output_proto);
 
             let max_output = output_builder
                 .output_from_proto()
@@ -65,7 +65,7 @@ impl SigningRequestBuilder {
 
         // `max_amount_output` isn't set, parse all Outputs.
         for output_proto in input.outputs.iter() {
-            let output = OutputProtobuf::new(chain_info, output_proto)
+            let output = OutputProtobuf::new(&chain_info, output_proto)
                 .output_from_proto()
                 .context("Error creating Output from Proto")?;
             builder.push_output(output);
@@ -76,7 +76,7 @@ impl SigningRequestBuilder {
             .change_output
             .as_ref()
             .map(|change_output_proto| {
-                OutputProtobuf::new(chain_info, change_output_proto)
+                OutputProtobuf::new(&chain_info, change_output_proto)
                     .output_from_proto()
                     .context("Error creating Change Output from Proto")
             })
@@ -126,6 +126,35 @@ impl SigningRequestBuilder {
             ProtoDustPolicy::fixed_dust_threshold(fixed) => Ok(DustPolicy::FixedAmount(*fixed)),
             ProtoDustPolicy::None => SigningError::err(SigningErrorType::Error_invalid_params)
                 .context("No dust policy provided"),
+        }
+    }
+
+    fn chain_info(
+        coin: &dyn CoinContext,
+        chain_info: &Option<Proto::ChainInfo>,
+    ) -> SigningResult<BitcoinChainInfo> {
+        fn prefix_to_u8(prefix: u32, prefix_name: &str) -> SigningResult<u8> {
+            prefix
+                .try_into()
+                .tw_err(|_| SigningErrorType::Error_invalid_params)
+                .with_context(|| format!("Invalid {prefix_name} prefix. It must fit uint8"))
+        }
+
+        if let Some(info) = chain_info {
+            return Ok(BitcoinChainInfo {
+                p2pkh_prefix: prefix_to_u8(info.p2pkh_prefix, "p2pkh")?,
+                p2sh_prefix: prefix_to_u8(info.p2sh_prefix, "p2sh")?,
+            });
+        }
+
+        // Try to get the chain info from the context.
+        match (coin.p2pkh_prefix(), coin.p2sh_prefix()) {
+            (Some(p2pkh_prefix), Some(p2sh_prefix)) => Ok(BitcoinChainInfo {
+                p2pkh_prefix,
+                p2sh_prefix,
+            }),
+            _ => SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Neither 'SigningInput.chain_info' nor p2pkh/p2sh prefixes specified in the registry.json")
         }
     }
 }

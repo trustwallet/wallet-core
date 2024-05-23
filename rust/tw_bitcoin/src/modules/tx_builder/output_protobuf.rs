@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::modules::tx_builder::BitcoinChainInfo;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::hasher::sha256_ripemd;
@@ -19,12 +20,12 @@ use tw_utxo::transaction::standard_transaction::builder::OutputBuilder;
 use tw_utxo::transaction::standard_transaction::TransactionOutput;
 
 pub struct OutputProtobuf<'a> {
-    chain_info: &'a Proto::ChainInfo,
+    chain_info: &'a BitcoinChainInfo,
     output: &'a Proto::Output<'a>,
 }
 
 impl<'a> OutputProtobuf<'a> {
-    pub fn new(chain_info: &'a Proto::ChainInfo, output: &'a Proto::Output<'a>) -> Self {
+    pub fn new(chain_info: &'a BitcoinChainInfo, output: &'a Proto::Output<'a>) -> Self {
         OutputProtobuf { chain_info, output }
     }
 
@@ -174,9 +175,9 @@ impl<'a> OutputProtobuf<'a> {
         let p2pkh_prefix = self.chain_info.p2pkh_prefix;
         let p2sh_prefix = self.chain_info.p2sh_prefix;
 
-        if addr.prefix() as u32 == p2pkh_prefix {
+        if addr.prefix() == p2pkh_prefix {
             Ok(self.prepare_builder()?.p2pkh_from_hash(&addr.payload()))
-        } else if addr.prefix() as u32 == p2sh_prefix {
+        } else if addr.prefix() == p2sh_prefix {
             Ok(self.prepare_builder()?.p2sh_from_hash(&addr.payload()))
         } else {
             // Unknown

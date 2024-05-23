@@ -77,28 +77,28 @@ impl CoinEntry for BitcoinEntry {
     }
 
     #[inline]
-    fn sign(&self, _coin: &dyn CoinContext, proto: Self::SigningInput<'_>) -> Self::SigningOutput {
-        BitcoinSigner::sign(&proto)
+    fn sign(&self, coin: &dyn CoinContext, proto: Self::SigningInput<'_>) -> Self::SigningOutput {
+        BitcoinSigner::sign(coin, &proto)
     }
 
     #[inline]
     fn preimage_hashes(
         &self,
-        _coin: &dyn CoinContext,
+        coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        BitcoinCompiler::preimage_hashes(proto)
+        BitcoinCompiler::preimage_hashes(coin, proto)
     }
 
     #[inline]
     fn compile(
         &self,
-        _coin: &dyn CoinContext,
+        coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
-        BitcoinCompiler::compile(proto, signatures, public_keys)
+        BitcoinCompiler::compile(coin, proto, signatures, public_keys)
     }
 
     #[inline]

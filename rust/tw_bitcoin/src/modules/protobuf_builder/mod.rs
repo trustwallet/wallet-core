@@ -32,8 +32,8 @@ impl ProtobufBuilder {
             out_point: Some(Proto::OutPoint {
                 hash: Cow::from(input.previous_output.hash.to_vec()),
                 vout: input.previous_output.index,
-                sequence: input.sequence,
             }),
+            sequence: input.sequence,
             script_sig: Self::script_data(&input.script_sig),
             witness_items: Self::witness_to_proto(&input.witness),
         }
