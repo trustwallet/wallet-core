@@ -57,7 +57,8 @@ impl FromStr for SuiAddress {
 
 impl fmt::Display for SuiAddress {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0.to_hex_literal())
+        let prefixed = true;
+        write!(f, "{}", hex::encode(self.0.as_ref(), prefixed))
     }
 }
 
@@ -85,5 +86,13 @@ mod tests {
             addr.to_string(),
             "0x259ff8074ab425cbb489f236e18e08f03f1a7856bdf7c7a2877bd64f738b5015"
         );
+    }
+
+    /// https://github.com/trustwallet/wallet-core/issues/3837
+    #[test]
+    fn test_sui_address_str_with_leading_zero() {
+        let s = "0x0cf10169225a251113b3198dc81d15ba72286f73353a8212f03bad10bd0f0a99";
+        let addr = SuiAddress::from_str(s).unwrap();
+        assert_eq!(addr.to_string(), s);
     }
 }

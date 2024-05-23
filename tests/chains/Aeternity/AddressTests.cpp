@@ -2,9 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+#include <TrustWalletCore/TWAnyAddress.h>
 #include <Aeternity/Address.h>
 #include <HexCoding.h>
-#include <PrivateKey.h>
 #include <gtest/gtest.h>
 
 namespace TW::Aeternity::tests {
@@ -20,6 +20,7 @@ TEST(AeternityAddress, FromString) {
     auto address = Address("ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw");
     ASSERT_EQ(address.string(), "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw");
     ASSERT_ANY_THROW(Address("invalid"));
+    ASSERT_ANY_THROW(Address("behave@wallet"));
 }
 
 } // namespace TW::Aeternity::tests
