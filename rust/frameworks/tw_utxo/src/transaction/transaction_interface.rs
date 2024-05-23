@@ -37,6 +37,11 @@ pub trait TransactionInterface: Clone + Encodable {
     fn has_witness(&self) -> bool;
 
     fn locktime(&self) -> u32;
+
+    /// The `vsize` in `vbytes` refers to a transaction's weighted size under segwit's rules.
+    /// It is used to compare how much blockweight needs to be allocated to confirm a transaction.
+    /// For non-segwit transactions, `vsize` = `size`.
+    fn vsize(&self) -> usize;
 }
 
 pub trait TxInputInterface: Clone {

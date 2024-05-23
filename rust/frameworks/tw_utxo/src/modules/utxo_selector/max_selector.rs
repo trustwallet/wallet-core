@@ -3,8 +3,8 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::dust::DustPolicy;
+use crate::modules::fee_estimator::FeeEstimator;
 use crate::modules::utxo_selector::{SelectPlan, SelectResult};
-use crate::transaction::transaction_fee::TransactionFee;
 use crate::transaction::transaction_interface::{TransactionInterface, TxOutputInterface};
 use crate::transaction::transaction_parts::Amount;
 use crate::transaction::unsigned_transaction::UnsignedTransaction;
@@ -16,7 +16,7 @@ pub struct MaxInputSelector<Transaction> {
 
 impl<Transaction> MaxInputSelector<Transaction>
 where
-    Transaction: TransactionInterface + TransactionFee,
+    Transaction: TransactionInterface,
 {
     pub fn new(unsigned_tx: UnsignedTransaction<Transaction>) -> Self {
         MaxInputSelector { unsigned_tx }
@@ -35,7 +35,7 @@ where
         let estimated_tx = self.unsigned_tx.estimate_transaction();
 
         let total_in = self.unsigned_tx.total_input()?;
-        let tx_fee = estimated_tx.fee(fee_rate)?;
+        let tx_fee = FeeEstimator::estimate_fee(&estimated_tx, fee_rate)?;
         let dust_threshold = dust_policy.dust_threshold();
 
         // Check if the total input amount covers the fee, and the remaining amount is not dust.

@@ -22,7 +22,6 @@ use super::transaction_sighash::taproot1_sighash::Taproot1Sighash;
 use super::UtxoTaprootPreimageArgs;
 
 pub mod builder;
-pub mod fees;
 
 /// Must be zero.
 const WITNESS_MARKER: u8 = 0;
@@ -126,6 +125,11 @@ impl TransactionInterface for Transaction {
     fn locktime(&self) -> u32 {
         self.locktime
     }
+
+    /// TODO check if [`Transaction::vsize`] returns the same value as [`Transaction::size`] if there are no witnesses.
+    fn vsize(&self) -> usize {
+        (self.weight() + 3) / SEGWIT_SCALE_FACTOR // ceil(weight / 4)
+    }
 }
 
 impl Transaction {
@@ -190,11 +194,6 @@ impl Transaction {
             .for_each(|output| w += output.weight());
 
         w
-    }
-
-    /// TODO check if [`Transaction::vsize`] returns the same value as [`Transaction::size`] if there are no witnesses.
-    pub fn vsize(&self) -> usize {
-        (self.weight() + 3) / SEGWIT_SCALE_FACTOR // ceil(weight / 4)
     }
 }
 

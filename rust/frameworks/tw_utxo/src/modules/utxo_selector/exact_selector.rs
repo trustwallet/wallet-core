@@ -3,9 +3,9 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::dust::DustPolicy;
+use crate::modules::fee_estimator::FeeEstimator;
 use crate::modules::utxo_selector::{InputSelector, SelectPlan, SelectResult};
 use crate::script::{Script, Witness};
-use crate::transaction::transaction_fee::TransactionFee;
 use crate::transaction::transaction_interface::{
     TransactionInterface, TxInputInterface, TxOutputInterface,
 };
@@ -22,7 +22,7 @@ pub struct ExactInputSelector<Transaction: TransactionInterface> {
 
 impl<Transaction> ExactInputSelector<Transaction>
 where
-    Transaction: TransactionInterface + TransactionFee,
+    Transaction: TransactionInterface,
 {
     pub fn new(unsigned_tx: UnsignedTransaction<Transaction>) -> Self {
         ExactInputSelector {
@@ -97,7 +97,7 @@ where
             estimated_tx.replace_inputs(selected_utxos.clone());
 
             // Estimate the transaction fee.
-            tx_fee = estimated_tx.fee(fee_rate)?;
+            tx_fee = FeeEstimator::estimate_fee(&estimated_tx, fee_rate)?;
 
             // Check if the total input amount covers the total output amount
             // and the fee.
@@ -132,11 +132,7 @@ where
                 total_out += change;
             },
             // Either not specified or the change amount is dust.
-            _ => {
-                // TODO since we do not have a change output, we should recalculate the transaction fee without it.
-                tx_fee += change;
-                change = 0;
-            },
+            _ => change = 0,
         }
 
         // Clear script_sig's and witnesses before updating the result transaction.
@@ -148,11 +144,14 @@ where
         self.unsigned_tx
             .set_inputs(selected_utxos, selected_utxo_args)?;
 
+        debug_assert!(total_out <= total_in);
+        let fee_estimate = total_in - total_out;
+
         let plan = SelectPlan {
             total_spend: total_in,
             total_send: total_out,
             vsize_estimate: estimated_tx.vsize(),
-            fee_estimate: tx_fee,
+            fee_estimate,
             change,
         };
         Ok(SelectResult {

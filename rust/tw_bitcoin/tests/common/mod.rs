@@ -3,6 +3,8 @@
 #![allow(dead_code)]
 
 pub mod data;
+pub mod plan;
+pub mod sign;
 
 pub const ONE_BTC: i64 = 100_000_000;
 pub const MINER_FEE: i64 = 1_000_000;
@@ -86,7 +88,7 @@ pub mod output {
         RecipientType::builder(OutputBuilder { variant: ty })
     }
 
-    pub fn p2pkh(pubkey: Data) ->  RecipientType<'static> {
+    pub fn p2pkh(pubkey: Data) -> RecipientType<'static> {
         receiver_builder(OutputBuilderType::p2pkh(Proto::PublicKeyOrHash {
             variant: PublicKeyOrHashType::pubkey(pubkey.into()),
         }))

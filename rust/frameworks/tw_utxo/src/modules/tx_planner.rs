@@ -7,7 +7,6 @@ use crate::dust::DustPolicy;
 use crate::modules::utxo_selector::exact_selector::ExactInputSelector;
 use crate::modules::utxo_selector::max_selector::MaxInputSelector;
 use crate::modules::utxo_selector::{InputSelector, SelectResult};
-use crate::transaction::transaction_fee::TransactionFee;
 use crate::transaction::transaction_interface::TransactionInterface;
 use crate::transaction::transaction_parts::Amount;
 use crate::transaction::unsigned_transaction::UnsignedTransaction;
@@ -47,7 +46,7 @@ pub struct TxPlanner<Transaction> {
 
 impl<Transaction> TxPlanner<Transaction>
 where
-    Transaction: TransactionInterface + TransactionFee,
+    Transaction: TransactionInterface,
 {
     /// * Filters dust UTXOs
     /// * Checks if all outputs are not dust

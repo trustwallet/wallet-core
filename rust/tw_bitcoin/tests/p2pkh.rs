@@ -1,13 +1,13 @@
 mod common;
 
-use crate::common::{btc_info, dust_threshold, input, output, DUST};
+use crate::common::{btc_info, dust_threshold, input, output, plan, sign, DUST};
 use common::{MINER_FEE, ONE_BTC};
 use tw_bitcoin::entry::BitcoinEntry;
 use tw_coin_entry::coin_entry::CoinEntry;
+use tw_coin_entry::modules::plan_builder::PlanBuilder;
 use tw_coin_entry::test_utils::test_context::TestCoinContext;
-use tw_encoding::hex::{DecodeHex, ToHex};
+use tw_encoding::hex::DecodeHex;
 use tw_proto::BitcoinV3::Proto;
-use tw_proto::Common::Proto::SigningError;
 use tw_utxo::sighash::SighashBase;
 
 #[test]
@@ -20,7 +20,6 @@ fn coin_entry_sign_input_p2pkh_output_p2pkh() {
     let alice_pubkey = "036666dd712e05a487916384bfcd5973eb53e8038eccbbf97f7eed775b87389536"
         .decode_hex()
         .unwrap();
-    // let _bob_private_key = "b7da1ec42b19085fe09fec54b9d9eacd998ae4e6d2ad472be38d8393391b9ead".decode_hex().unwrap();
     let bob_pubkey = "037ed9a436e11ec4947ac4b7823787e24ba73180f1edd2857bff19c9f4d62b65bf"
         .decode_hex()
         .unwrap();
@@ -50,9 +49,28 @@ fn coin_entry_sign_input_p2pkh_output_p2pkh() {
         ..Default::default()
     };
 
-    let signed = BitcoinEntry.sign(&coin, signing);
-    let encoded = signed.encoded.to_hex();
+    let plan = BitcoinEntry.plan_builder().unwrap().plan(&coin, &signing);
+    plan::verify(
+        &plan,
+        plan::Expected {
+            inputs: vec![ONE_BTC * 50],
+            outputs: vec![ONE_BTC * 50 - MINER_FEE],
+            vsize_estimate: 193,
+            // Fee includes potential change amount.
+            // In this test we do not want to have a change output.
+            fee_estimate: MINER_FEE,
+            change: 0,
+        },
+    );
 
-    assert_eq!(signed.error, SigningError::OK, "{}", signed.error_message);
-    assert_eq!(&encoded, "02000000017be4e642bb278018ab12277de9427773ad1c5f5b1d164a157e0d99aa48dc1c1e000000006a473044022078eda020d4b86fcb3af78ef919912e6d79b81164dbbb0b0b96da6ac58a2de4b102201a5fd8d48734d5a02371c4b5ee551a69dca3842edbf577d863cf8ae9fdbbd4590121036666dd712e05a487916384bfcd5973eb53e8038eccbbf97f7eed775b87389536ffffffff01c0aff629010000001976a9145eaaa4f458f9158f86afcba08dd7448d27045e3d88ac00000000");
+    let signed = BitcoinEntry.sign(&coin, signing.clone());
+    sign::verify(&signing, &signed, sign::Expected {
+        encoded: "02000000017be4e642bb278018ab12277de9427773ad1c5f5b1d164a157e0d99aa48dc1c1e000000006a473044022078eda020d4b86fcb3af78ef919912e6d79b81164dbbb0b0b96da6ac58a2de4b102201a5fd8d48734d5a02371c4b5ee551a69dca3842edbf577d863cf8ae9fdbbd4590121036666dd712e05a487916384bfcd5973eb53e8038eccbbf97f7eed775b87389536ffffffff01c0aff629010000001976a9145eaaa4f458f9158f86afcba08dd7448d27045e3d88ac00000000",
+        txid: "c19f410bf1d70864220e93bca20f836aaaf8cdde84a46692616e9f4480d54885",
+        inputs: vec![ONE_BTC * 50],
+        outputs: vec![ONE_BTC * 50 - MINER_FEE],
+        // `vsize` is different from the estimated value due to the signatures der serialization.
+        vsize: 191,
+        fee: MINER_FEE,
+    });
 }

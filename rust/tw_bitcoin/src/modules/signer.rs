@@ -15,7 +15,7 @@ use tw_utxo::modules::tx_planner::TxPlanner;
 use tw_utxo::modules::tx_signer::TxSigner;
 use tw_utxo::modules::utxo_selector::SelectResult;
 use tw_utxo::signing_mode::SigningMethod;
-use tw_utxo::transaction::transaction_fee::TransactionFee;
+use tw_utxo::transaction::transaction_interface::TransactionInterface;
 
 pub struct BitcoinSigner;
 
@@ -33,8 +33,7 @@ impl BitcoinSigner {
         input: &Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let request = SigningRequestBuilder::build(coin, input)?;
-        let fee_per_vbyte = request.fee_per_vbyte;
-        let SelectResult { unsigned_tx, .. } = TxPlanner::plan(request)?;
+        let SelectResult { unsigned_tx, plan } = TxPlanner::plan(request)?;
 
         let has_taproot = unsigned_tx
             .input_args()
@@ -70,8 +69,10 @@ impl BitcoinSigner {
             transaction: Some(ProtobufBuilder::tx_to_proto(&signed_tx)),
             encoded: Cow::from(signed_tx.encode_out()),
             txid: Cow::from(signed_tx.txid()),
+            // `vsize` could have been changed after the transaction being signed.
             vsize: signed_tx.vsize() as u64,
-            fee: signed_tx.fee(fee_per_vbyte)?,
+            // `fee` should haven't been changed since it's a difference between `sum(inputs)` and `sum(outputs)`.
+            fee: plan.fee_estimate,
             ..Proto::SigningOutput::default()
         })
     }
