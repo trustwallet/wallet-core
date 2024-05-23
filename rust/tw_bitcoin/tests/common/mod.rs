@@ -22,11 +22,11 @@ pub use tw_proto::BitcoinV3::Proto::mod_PublicKeyOrHash::OneOfvariant as PublicK
 
 use tw_proto::BitcoinV3::Proto;
 
-pub fn btc_info() -> Proto::ChainInfo {
-    Proto::ChainInfo {
+pub fn btc_info() -> Option<Proto::ChainInfo> {
+    Some(Proto::ChainInfo {
         p2pkh_prefix: 0,
         p2sh_prefix: 5,
-    }
+    })
 }
 
 pub fn dust_threshold(threshold: i64) -> Proto::mod_SigningInput::OneOfdust_policy {
@@ -42,11 +42,11 @@ pub mod input {
         txid.decode_hex().unwrap().into_iter().rev().collect()
     }
 
-    pub fn out_point(txid: &str, vout: u32) -> Proto::OutPoint<'static> {
-        Proto::OutPoint {
+    pub fn out_point(txid: &str, vout: u32) -> Option<Proto::OutPoint<'static>> {
+        Some(Proto::OutPoint {
             hash: reverse_txid(txid).into(),
             vout,
-        }
+        })
     }
 
     pub fn claiming_script_builder(ty: InputBuilderType<'static>) -> ClaimingScriptType<'static> {
@@ -63,6 +63,10 @@ pub mod input {
         claiming_script_builder(InputBuilderType::p2wpkh(Proto::PublicKeyOrHash {
             variant: PublicKeyOrHashType::pubkey(pubkey.into()),
         }))
+    }
+
+    pub fn p2tr_key_path(pubkey: Data) -> ClaimingScriptType<'static> {
+        claiming_script_builder(InputBuilderType::p2tr_key_path(pubkey.into()))
     }
 
     pub fn brc20_inscribe(
@@ -98,6 +102,10 @@ pub mod output {
         receiver_builder(OutputBuilderType::p2wpkh(Proto::PublicKeyOrHash {
             variant: PublicKeyOrHashType::pubkey(pubkey.into()),
         }))
+    }
+
+    pub fn p2tr_key_path(pubkey: Data) -> RecipientType<'static> {
+        receiver_builder(OutputBuilderType::p2tr_key_path(pubkey.into()))
     }
 
     pub fn brc20_inscribe(

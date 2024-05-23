@@ -27,7 +27,7 @@ fn coin_entry_sign_input_p2pkh_output_p2pkh() {
     // Create transaction with P2PKH as input and output.
     let txid = "1e1cdc48aa990d7e154a161d5b5f1cad737742e97d2712ab188027bb42e6e47b";
     let tx1 = Proto::Input {
-        out_point: Some(input::out_point(txid, 0)),
+        out_point: input::out_point(txid, 0),
         value: ONE_BTC * 50,
         sighash_type: SighashBase::All as u32,
         claiming_script: input::p2pkh(alice_pubkey.clone()),
@@ -44,7 +44,7 @@ fn coin_entry_sign_input_p2pkh_output_p2pkh() {
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: Proto::InputSelector::UseAll,
-        chain_info: Some(btc_info()),
+        chain_info: btc_info(),
         dust_policy: dust_threshold(DUST),
         ..Default::default()
     };

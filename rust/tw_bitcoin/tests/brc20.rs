@@ -23,7 +23,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
 
     let txid = "8ec895b4d30adb01e38471ca1019bfc8c3e5fbd1f28d9e7b5653260d89989008";
     let tx1 = Proto::Input {
-        out_point: Some(input::out_point(txid, 1)),
+        out_point: input::out_point(txid, 1),
         value: 26_400,
         sighash_type: SighashBase::All as u32,
         claiming_script: input::p2wpkh(alice_pubkey.clone()),
@@ -46,7 +46,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
         inputs: vec![tx1],
         outputs: vec![out1, out2],
         input_selector: Proto::InputSelector::UseAll,
-        chain_info: Some(btc_info()),
+        chain_info: btc_info(),
         dust_policy: dust_threshold(DUST),
         ..Default::default()
     };
@@ -68,7 +68,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
     // https://www.blockchain.com/explorer/transactions/btc/797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1
     let txid = "797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1";
     let tx1 = Proto::Input {
-        out_point: Some(input::out_point(txid, 0)),
+        out_point: input::out_point(txid, 0),
         value: 7_000,
         sighash_type: SighashBase::All as u32,
         claiming_script: input::brc20_inscribe(alice_pubkey.clone(), "oadf", "20"),
@@ -85,7 +85,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: Proto::InputSelector::UseAll,
-        chain_info: Some(btc_info()),
+        chain_info: btc_info(),
         // We enable deterministic Schnorr signatures here
         dangerous_use_fixed_schnorr_rng: true,
         dust_policy: dust_threshold(DUST),

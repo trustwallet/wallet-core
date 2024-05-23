@@ -6,6 +6,7 @@ use tw_keypair::{ecdsa, schnorr};
 // TODO: Consider using ecdsa directly.
 use tw_keypair::tw::{PublicKey, PublicKeyType};
 use tw_misc::traits::ToBytesVec;
+use tw_utxo::modules::fee_estimator::FeeEstimator;
 use tw_utxo::modules::sighash_computer::SighashComputer;
 use tw_utxo::modules::tx_compiler::TxCompiler;
 
@@ -13,9 +14,19 @@ use tw_utxo::transaction::standard_transaction::builder::txid_from_str_and_rev;
 use tw_utxo::transaction::standard_transaction::builder::OutputBuilder;
 use tw_utxo::transaction::standard_transaction::builder::TransactionBuilder;
 use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
-use tw_utxo::transaction::transaction_fee::TransactionFee;
+use tw_utxo::transaction::transaction_interface::TransactionInterface;
 
 const SATS_PER_VBYTE: i64 = 20;
+
+#[track_caller]
+fn verify_fee<Transaction: TransactionInterface>(
+    tx: &Transaction,
+    fee_per_vbyte: i64,
+    expected: i64,
+) {
+    let actual = FeeEstimator::estimate_fee(tx, fee_per_vbyte).unwrap();
+    assert_eq!(actual, expected);
+}
 
 #[test]
 fn build_tx_input_legacy_output_legacy() {
@@ -61,8 +72,7 @@ fn build_tx_input_legacy_output_legacy() {
     assert_eq!(tx.vsize(), 191); // No witness data
     assert_eq!(tx.weight(), 191 * 4);
     assert_eq!(tx.weight(), 764);
-    assert_eq!(tx.fee(SATS_PER_VBYTE).unwrap(), 191 * SATS_PER_VBYTE);
-    assert_eq!(tx.fee(SATS_PER_VBYTE).unwrap(), 3820);
+    verify_fee(&tx, SATS_PER_VBYTE, 191 * SATS_PER_VBYTE);
 
     let encoded = hex::encode(tx.encode_out(), false);
     assert_eq!(encoded, "02000000017be4e642bb278018ab12277de9427773ad1c5f5b1d164a157e0d99aa48dc1c1e000000006a473044022078eda020d4b86fcb3af78ef919912e6d79b81164dbbb0b0b96da6ac58a2de4b102201a5fd8d48734d5a02371c4b5ee551a69dca3842edbf577d863cf8ae9fdbbd4590121036666dd712e05a487916384bfcd5973eb53e8038eccbbf97f7eed775b87389536ffffffff01c0aff629010000001976a9145eaaa4f458f9158f86afcba08dd7448d27045e3d88ac00000000");
@@ -112,9 +122,7 @@ fn build_tx_input_legacy_output_segwit() {
     assert_eq!(tx.vsize(), 189); // No witness data
     assert_eq!(tx.weight(), 189 * 4);
     assert_eq!(tx.weight(), 756);
-    assert_eq!(tx.fee(SATS_PER_VBYTE).unwrap(), 189 * SATS_PER_VBYTE);
-    assert_eq!(tx.fee(SATS_PER_VBYTE).unwrap(), 3780);
-
+    verify_fee(&tx, SATS_PER_VBYTE, 189 * SATS_PER_VBYTE);
     let encoded = hex::encode(tx.encode_out(), false);
     assert_eq!(encoded, "020000000111b9f62923af73e297abb69f749e7a1aa2735fbdfd32ac5f6aa89e5c96841c18000000006b483045022100df9ed0b662b759e68b89a42e7144cddf787782a7129d4df05642dd825930e6e6022051a08f577f11cc7390684bbad2951a6374072253ffcf2468d14035ed0d8cd6490121028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28fffffffff01c0aff629010000001600140d0e1cec6c2babe8badde5e9b3dea667da90036d00000000")
 }
@@ -163,8 +171,7 @@ fn build_tx_input_segwit_output_segwit() {
     assert_eq!(tx.vsize(), 110); // Witness data discounted
     assert_eq!(tx.weight(), 110 * 4);
     assert_eq!(tx.weight(), 440);
-    assert_eq!(tx.fee(SATS_PER_VBYTE).unwrap(), 110 * SATS_PER_VBYTE);
-    assert_eq!(tx.fee(SATS_PER_VBYTE).unwrap(), 2200);
+    verify_fee(&tx, SATS_PER_VBYTE, 110 * SATS_PER_VBYTE);
 
     let encoded = hex::encode(tx.encode_out(), false);
     assert_eq!(encoded, "020000000001016e1f16dcfafbb3a83697f6c23c624cd71085a7f8a25ce0bd9743a41d0a458e850000000000ffffffff01806de7290100000016001460cda7b50f14c152d7401c28ae773c698db9237302483045022100a9b517de5a5e036d7133df499b5b751db6f9a01576a6c5dc38229ec08b6c45cd02200e42c9f8c707c9bf0ceab4f739ec8d683dc1f1f29e195a8da9bc183584d624a60121025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f00000000")
