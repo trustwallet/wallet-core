@@ -51,6 +51,12 @@ pub mod input {
         ClaimingScriptType::script_builder(InputBuilder { variant: ty })
     }
 
+    pub fn p2pkh(pubkey: Data) -> ClaimingScriptType<'static> {
+        claiming_script_builder(InputBuilderType::p2pkh(Proto::PublicKeyOrHash {
+            variant: PublicKeyOrHashType::pubkey(pubkey.into()),
+        }))
+    }
+
     pub fn p2wpkh(pubkey: Data) -> ClaimingScriptType<'static> {
         claiming_script_builder(InputBuilderType::p2wpkh(Proto::PublicKeyOrHash {
             variant: PublicKeyOrHashType::pubkey(pubkey.into()),
@@ -78,6 +84,12 @@ pub mod output {
 
     pub fn receiver_builder(ty: OutputBuilderType<'static>) -> RecipientType<'static> {
         RecipientType::builder(OutputBuilder { variant: ty })
+    }
+
+    pub fn p2pkh(pubkey: Data) ->  RecipientType<'static> {
+        receiver_builder(OutputBuilderType::p2pkh(Proto::PublicKeyOrHash {
+            variant: PublicKeyOrHashType::pubkey(pubkey.into()),
+        }))
     }
 
     pub fn p2wpkh(pubkey: Data) -> RecipientType<'static> {
