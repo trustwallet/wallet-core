@@ -88,6 +88,10 @@ pub mod input {
             },
         ))
     }
+
+    pub fn receiver_address(addr: &str) -> ClaimingScriptType<'static> {
+        ClaimingScriptType::receiver_address(addr.to_string().into())
+    }
 }
 
 pub mod output {
@@ -126,5 +130,9 @@ pub mod output {
                 transfer_amount: transfer_amount.to_string().into(),
             },
         ))
+    }
+
+    pub fn to_address(addr: &str) -> RecipientType<'static> {
+        RecipientType::to_address(addr.to_string().into())
     }
 }
