@@ -1,18 +1,12 @@
-mod common;
-
-use crate::common::{btc_info, dust_threshold, input, output, sign, DUST};
-use common::{MINER_FEE, ONE_BTC};
-use tw_bitcoin::entry::BitcoinEntry;
-use tw_coin_entry::coin_entry::CoinEntry;
-use tw_coin_entry::test_utils::test_context::TestCoinContext;
+use crate::chains::common::bitcoin::{
+    btc_info, dust_threshold, input, output, sign, DUST, MINER_FEE, ONE_BTC, SIGHASH_ALL,
+};
+use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_proto::BitcoinV3::Proto;
-use tw_utxo::sighash::SighashBase;
 
 #[test]
 fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
-    let coin = TestCoinContext::default();
-
     let alice_private_key = "12ce558df23528f1aa86f1f51ac7e13a197a06bda27610fa89e13b04c40ee999"
         .decode_hex()
         .unwrap();
@@ -30,7 +24,7 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
     let tx1 = Proto::Input {
         out_point: input::out_point(txid, 0),
         value: ONE_BTC * 50,
-        sighash_type: SighashBase::All as u32,
+        sighash_type: SIGHASH_ALL,
         claiming_script: input::p2pkh(alice_pubkey.clone()),
         ..Default::default()
     };
@@ -50,21 +44,23 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
         ..Default::default()
     };
 
-    let signed = BitcoinEntry.sign(&coin, signing.clone());
     let txid = "9a582032f6a50cedaff77d3d5604b33adf8bc31bdaef8de977c2187e395860ac";
-    sign::verify(&signing, &signed, sign::Expected {
-        encoded: "02000000013ab533f8709accfffd1de4fa29b6584ec78f5a2f23947c938f835a3e916305c5000000006b48304502210086ab2c2192e2738529d6cd9604d8ee75c5b09b0c2f4066a5c5fa3f87a26c0af602202afc7096aaa992235c43e712146057b5ed6a776d82b9129620bc5a21991c0a5301210351e003fdc48e7f31c9bc94996c91f6c3273b7ef4208a1686021bedf7673bb058ffffffff01c0aff62901000000225120e01cfdd05da8fa1d71f987373f3790d45dea9861acb0525c86656fe50f4397a600000000",
-        txid: "9a582032f6a50cedaff77d3d5604b33adf8bc31bdaef8de977c2187e395860ac",
-        inputs: vec![ONE_BTC * 50],
-        outputs: vec![ONE_BTC * 50 - MINER_FEE],
-        vsize: 201,
-        fee: MINER_FEE,
-    });
+    sign::BitcoinSignHelper::new(&signing)
+        .coin(CoinType::Bitcoin)
+        .sign(sign::Expected {
+            encoded: "02000000013ab533f8709accfffd1de4fa29b6584ec78f5a2f23947c938f835a3e916305c5000000006b48304502210086ab2c2192e2738529d6cd9604d8ee75c5b09b0c2f4066a5c5fa3f87a26c0af602202afc7096aaa992235c43e712146057b5ed6a776d82b9129620bc5a21991c0a5301210351e003fdc48e7f31c9bc94996c91f6c3273b7ef4208a1686021bedf7673bb058ffffffff01c0aff62901000000225120e01cfdd05da8fa1d71f987373f3790d45dea9861acb0525c86656fe50f4397a600000000",
+            txid,
+            inputs: vec![ONE_BTC * 50],
+            outputs: vec![ONE_BTC * 50 - MINER_FEE],
+            vsize: 201,
+            fee: MINER_FEE,
+        });
 
     let tx1 = Proto::Input {
+        // Now spend just created `9a582032f6a50cedaff77d3d5604b33adf8bc31bdaef8de977c2187e395860ac` output.
         out_point: input::out_point(txid, 0),
         value: ONE_BTC * 50 - MINER_FEE,
-        sighash_type: SighashBase::All as u32,
+        sighash_type: SIGHASH_ALL,
         claiming_script: input::p2tr_key_path(bob_pubkey.clone()),
         ..Default::default()
     };
@@ -86,13 +82,14 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
         ..Default::default()
     };
 
-    let signed = BitcoinEntry.sign(&coin, signing.clone());
-    sign::verify(&signing,&signed, sign::Expected {
-        encoded: "02000000000101ac6058397e18c277e98defda1bc38bdf3ab304563d7df7afed0ca5f63220589a0000000000ffffffff01806de72901000000225120a5c027857e359d19f625e52a106b8ac6ca2d6a8728f6cf2107cd7958ee0787c20140ec2d3910d41506b60aaa20520bb72f15e2d2cbd97e3a8e26ee7bad5f4c56b0f2fb0ceaddac33cb2813a33ba017ba6b1d011bab74a0426f12a2bcf47b4ed5bc8600000000",
-        txid: "1487204b521cd24d4e30e9998d2b0584ac8efd41d42bac041dc899abcf83ecdf",
-        inputs: vec![ONE_BTC * 50 - MINER_FEE],
-        outputs: vec![ONE_BTC * 50 - MINER_FEE - MINER_FEE],
-        vsize: 112,
-        fee: MINER_FEE,
-    });
+    sign::BitcoinSignHelper::new(&signing)
+        .coin(CoinType::Bitcoin)
+        .sign(sign::Expected {
+            encoded: "02000000000101ac6058397e18c277e98defda1bc38bdf3ab304563d7df7afed0ca5f63220589a0000000000ffffffff01806de72901000000225120a5c027857e359d19f625e52a106b8ac6ca2d6a8728f6cf2107cd7958ee0787c20140ec2d3910d41506b60aaa20520bb72f15e2d2cbd97e3a8e26ee7bad5f4c56b0f2fb0ceaddac33cb2813a33ba017ba6b1d011bab74a0426f12a2bcf47b4ed5bc8600000000",
+            txid: "1487204b521cd24d4e30e9998d2b0584ac8efd41d42bac041dc899abcf83ecdf",
+            inputs: vec![ONE_BTC * 50 - MINER_FEE],
+            outputs: vec![ONE_BTC * 50 - MINER_FEE - MINER_FEE],
+            vsize: 112,
+            fee: MINER_FEE,
+        });
 }

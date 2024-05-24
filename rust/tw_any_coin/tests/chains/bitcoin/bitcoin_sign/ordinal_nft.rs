@@ -1,5 +1,3 @@
-mod common;
-
 // use common::hex;
 // use tw_bitcoin::aliases::*;
 // use tw_bitcoin::entry::BitcoinEntry;

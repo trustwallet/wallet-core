@@ -1,5 +1,3 @@
-mod common;
-
 // use bitcoin::taproot::LeafVersion;
 // use bitcoin::PublicKey;
 // use common::hex;

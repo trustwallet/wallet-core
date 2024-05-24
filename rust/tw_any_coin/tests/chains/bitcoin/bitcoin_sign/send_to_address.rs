@@ -1,5 +1,3 @@
-mod common;
-
 // use bitcoin::{Address, PublicKey, ScriptBuf};
 // use common::hex;
 // use secp256k1::XOnlyPublicKey;

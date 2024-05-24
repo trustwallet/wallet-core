@@ -2,5 +2,4 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-mod bitcoin_address;
-mod bitcoin_sign;
+pub mod bitcoin;

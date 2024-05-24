@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
 // This seems to be required, even if the tests in `tests/` actually use
 // functions/constants.
 #![allow(dead_code)]
@@ -9,6 +13,8 @@ pub mod sign;
 pub const ONE_BTC: i64 = 100_000_000;
 pub const MINER_FEE: i64 = 1_000_000;
 pub const DUST: i64 = 546;
+
+pub const SIGHASH_ALL: u32 = 1;
 
 pub use tw_proto::BitcoinV3::Proto::mod_Input::mod_InputBuilder::OneOfvariant as InputBuilderType;
 pub use tw_proto::BitcoinV3::Proto::mod_Input::{
