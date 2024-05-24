@@ -18,11 +18,14 @@ fn test_bitcoin_address_normalization() {
 
 #[test]
 fn test_bitcoin_address_is_valid() {
+    // P2PKH
     test_address_valid(CoinType::Bitcoin, "1MrZNGN7mfWZiZNQttrzHjfw72jnJC2JNx");
+    // P2WSH address: Witness V0, 32 bytes program
     test_address_valid(
         CoinType::Bitcoin,
         "bc1qunq74p3h8425hr6wllevlvqqr6sezfxj262rff",
     );
+    // P2TR address: Witness V1, 32 bytes program
     test_address_valid(
         CoinType::Bitcoin,
         "bc1pwse34zfpvt344rvlt7tw0ngjtfh9xasc4q03avf0lk74jzjpzjuqaz7ks5",

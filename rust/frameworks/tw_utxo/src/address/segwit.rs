@@ -24,7 +24,7 @@ pub struct SegwitAddress {
 impl SegwitAddress {
     pub fn new(hrp: String, witness_program: Data) -> AddressResult<SegwitAddress> {
         // Specific segwit v0 check. These addresses can never spend funds sent to them.
-        if WITNESS_V0_VALID_PROGRAM_SIZES.contains(&witness_program.len()) {
+        if !WITNESS_V0_VALID_PROGRAM_SIZES.contains(&witness_program.len()) {
             return Err(AddressError::InvalidInput);
         }
 
@@ -111,6 +111,7 @@ mod tests {
         expected: SegwitAddress,
     }
 
+    #[track_caller]
     fn segwit_addr(hrp: &str, program: &str) -> SegwitAddress {
         SegwitAddress::new(hrp.to_string(), program.decode_hex().unwrap())
             .expect("Cannot construct a SegwitAddress from the input")

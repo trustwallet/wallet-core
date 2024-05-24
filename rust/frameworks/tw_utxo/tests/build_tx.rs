@@ -9,6 +9,7 @@ use tw_misc::traits::ToBytesVec;
 use tw_utxo::modules::fee_estimator::FeeEstimator;
 use tw_utxo::modules::sighash_computer::SighashComputer;
 use tw_utxo::modules::tx_compiler::TxCompiler;
+use tw_utxo::sighash::SighashType;
 
 use tw_utxo::transaction::standard_transaction::builder::txid_from_str_and_rev;
 use tw_utxo::transaction::standard_transaction::builder::OutputBuilder;
@@ -50,6 +51,7 @@ fn build_tx_input_legacy_output_legacy() {
         .prev_txid(txid)
         .prev_index(0)
         .amount(50 * 100_000_000)
+        .sighash_type(SighashType::default())
         .p2pkh(&alice_ecdsa_pubkey)
         .unwrap();
 
@@ -100,6 +102,7 @@ fn build_tx_input_legacy_output_segwit() {
         .prev_txid(txid)
         .prev_index(0)
         .amount(50 * 100_000_000)
+        .sighash_type(SighashType::default())
         .p2pkh(&alice_ecdsa_pubkey)
         .unwrap();
 
@@ -148,6 +151,7 @@ fn build_tx_input_segwit_output_segwit() {
         .prev_txid(txid)
         .prev_index(0)
         .amount(50 * 100_000_000 - 1_000_000)
+        .sighash_type(SighashType::default())
         .p2wpkh(&bob_ecdsa_pubkey)
         .unwrap();
 
@@ -199,6 +203,7 @@ fn build_tx_input_legacy_output_taproot() {
         .prev_txid(txid)
         .prev_index(0)
         .amount(50 * 100_000_000)
+        .sighash_type(SighashType::default())
         .p2pkh(&alice_ecdsa_pubkey)
         .unwrap();
 
@@ -248,6 +253,7 @@ fn build_tx_input_taproot_output_taproot() {
         .prev_txid(txid)
         .prev_index(0)
         .amount(50 * 100_000_000 - 1_000_000)
+        .sighash_type(SighashType::default())
         .p2tr_key_path(&bob_pubkey)
         .unwrap();
 
@@ -293,6 +299,7 @@ fn build_tx_input_segwit_output_brc20_transfer_commit() {
         .prev_txid(txid)
         .prev_index(1)
         .amount(26_400)
+        .sighash_type(SighashType::default())
         .p2wpkh(&alice_ecdsa_pubkey)
         .unwrap();
 
@@ -345,6 +352,7 @@ fn build_tx_input_brc20_transfer_commit_output_brc20_transfer_reveal() {
         .prev_txid(txid)
         .prev_index(0)
         .amount(7_000)
+        .sighash_type(SighashType::default())
         .brc20_transfer(&alice_pubkey, "oadf".into(), "20".into())
         .unwrap();
 

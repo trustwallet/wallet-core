@@ -6,6 +6,7 @@ use tw_keypair::tw::{PublicKey, PublicKeyType};
 use tw_utxo::dust::DustPolicy;
 use tw_utxo::modules::utxo_selector::exact_selector::ExactInputSelector;
 use tw_utxo::modules::utxo_selector::{InputSelector, SelectResult};
+use tw_utxo::sighash::{SighashBase, SighashType};
 use tw_utxo::transaction::standard_transaction::builder::OutputBuilder;
 use tw_utxo::transaction::standard_transaction::builder::TransactionBuilder;
 use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
@@ -29,6 +30,7 @@ fn build_tx_input_selection() {
         .prev_txid(H256::from([1; 32]))
         .prev_index(0)
         .amount(1_000)
+        .sighash_type(SighashType::new(SighashBase::All))
         .p2pkh(&alice_ecdsa_pubkey)
         .unwrap();
 
@@ -36,6 +38,7 @@ fn build_tx_input_selection() {
         .prev_txid(H256::from([2; 32]))
         .prev_index(0)
         .amount(3_000)
+        .sighash_type(SighashType::new(SighashBase::All))
         .p2pkh(&alice_ecdsa_pubkey)
         .unwrap();
 
@@ -43,6 +46,7 @@ fn build_tx_input_selection() {
         .prev_txid(H256::from([3; 32]))
         .prev_index(0)
         .amount(4_000)
+        .sighash_type(SighashType::new(SighashBase::All))
         .p2pkh(&alice_ecdsa_pubkey)
         .unwrap();
 
@@ -60,13 +64,13 @@ fn build_tx_input_selection() {
         .push_input(utxo2.clone(), arg2.clone())
         .push_input(utxo3, arg3)
         .push_output(out1)
-        .push_output(out2)
-        .push_output(change_output);
+        .push_output(out2);
     let unsigned_tx = builder.build().unwrap();
 
     // Select the inputs and build the final transaction that includes the
     // change amount.
     let SelectResult { unsigned_tx, plan } = ExactInputSelector::new(unsigned_tx)
+        .maybe_change_output(Some(change_output))
         .select_inputs(
             // TODO move to a constant
             DustPolicy::FixedAmount(546),
@@ -84,7 +88,7 @@ fn build_tx_input_selection() {
         unsigned_tx.inputs()[1].previous_output.hash,
         utxo2.previous_output.hash
     );
-    assert_eq!(plan.fee_estimate, 814);
+    assert_eq!(plan.fee_estimate, 820);
 
     // NOTE: During UTXO selection, a dummy signature is used. Since the
     // DER-encoded signature lengths (plus Sighash type) can slightly vary (71
@@ -96,8 +100,6 @@ fn build_tx_input_selection() {
     let total_input = arg1.amount + arg2.amount;
     let total_output = tx_outputs[0].value + tx_outputs[1].value + tx_outputs[2].value;
     assert_eq!(total_input, total_output + plan.fee_estimate);
-    // TODO is this needed?
-    // assert_eq!(total_input, total_output + plan.fee_estimate - 2); // off by 2
 
     let total_input = 1_000 + 3_000;
     let total_output = 1_000 + 1_000 + 1186; // 1186 = change_output

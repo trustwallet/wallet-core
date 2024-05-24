@@ -97,6 +97,10 @@ impl StandardBitcoinAddress {
             if let Ok(segwit) = SegwitAddress::from_str_with_coin_and_prefix(coin, s, None) {
                 return Ok(StandardBitcoinAddress::Segwit(segwit));
             }
+
+            if let Ok(taproot) = TaprootAddress::from_str_with_coin_and_prefix(coin, s, None) {
+                return Ok(StandardBitcoinAddress::Taproot(taproot));
+            }
         }
 
         // Otherwise, try to parse a Legacy address.
@@ -104,7 +108,6 @@ impl StandardBitcoinAddress {
             return Ok(StandardBitcoinAddress::Legacy(legacy));
         }
 
-        // TODO handle taproot address here.
         Err(AddressError::InvalidInput)
     }
 
