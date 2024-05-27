@@ -1,4 +1,4 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+"ghcr.io/elanhasson/devcontainer-features/dotnet-aspire-daily:1": {}// For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/debian
 {
 	"name": "Debian",
