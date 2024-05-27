@@ -16,6 +16,8 @@ pub const DUST: i64 = 546;
 
 pub const SIGHASH_ALL: u32 = 1;
 
+pub type Amount = i64;
+
 pub use tw_proto::BitcoinV3::Proto::mod_Input::mod_InputBuilder::OneOfvariant as InputBuilderType;
 pub use tw_proto::BitcoinV3::Proto::mod_Input::{
     InputBuilder, OneOfclaiming_script as ClaimingScriptType,

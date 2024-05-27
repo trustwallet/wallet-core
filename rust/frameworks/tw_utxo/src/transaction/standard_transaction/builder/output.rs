@@ -9,7 +9,7 @@ use crate::{
 use bitcoin::hashes::Hash;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::{ripemd::bitcoin_hash_160, sha2::sha256, H160, H256};
-use tw_keypair::{ecdsa, schnorr, tw};
+use tw_keypair::{ecdsa, schnorr};
 
 pub const OP_RETURN_DATA_LIMIT: usize = 80;
 
@@ -53,9 +53,8 @@ impl OutputBuilder {
         }
     }
 
-    // TODO: Be more precise with PublicKey type?.
-    pub fn p2pkh(self, pubkey: &tw::PublicKey) -> TransactionOutput {
-        let h = bitcoin_hash_160(&pubkey.to_bytes());
+    pub fn p2pkh(self, pubkey: &ecdsa::secp256k1::PublicKey) -> TransactionOutput {
+        let h = bitcoin_hash_160(pubkey.compressed().as_slice());
         let pubkey_hash: H160 = h
             .as_slice()
             .try_into()
@@ -85,9 +84,8 @@ impl OutputBuilder {
         }
     }
 
-    // TODO: Be more precise with PublicKey type?.
-    pub fn p2wpkh(self, pubkey: &tw::PublicKey) -> TransactionOutput {
-        let h = bitcoin_hash_160(&pubkey.to_bytes());
+    pub fn p2wpkh(self, pubkey: &ecdsa::secp256k1::PublicKey) -> TransactionOutput {
+        let h = bitcoin_hash_160(pubkey.compressed().as_slice());
         let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
 
         self.p2wpkh_from_hash(&pubkey_hash)

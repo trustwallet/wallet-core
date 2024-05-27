@@ -3,8 +3,6 @@ use tw_encoding::hex;
 use tw_keypair::ecdsa::secp256k1::PrivateKey;
 use tw_keypair::traits::SigningKeyTrait;
 use tw_keypair::{ecdsa, schnorr};
-// TODO: Consider using ecdsa directly.
-use tw_keypair::tw::{PublicKey, PublicKeyType};
 use tw_misc::traits::ToBytesVec;
 use tw_utxo::modules::fee_estimator::FeeEstimator;
 use tw_utxo::modules::sighash_computer::SighashComputer;
@@ -41,7 +39,7 @@ fn build_tx_input_legacy_output_legacy() {
     let alice_private_key = PrivateKey::try_from(alice_private_key.as_slice()).unwrap();
     let alice_ecdsa_pubkey =
         ecdsa::secp256k1::PublicKey::try_from(alice_pubkey.as_slice()).unwrap();
-    let bob_pubkey = PublicKey::new(bob_pubkey, PublicKeyType::Secp256k1).unwrap();
+    let bob_ecdsa_pubkey = ecdsa::secp256k1::PublicKey::try_from(bob_pubkey.as_slice()).unwrap();
 
     let txid =
         txid_from_str_and_rev("1e1cdc48aa990d7e154a161d5b5f1cad737742e97d2712ab188027bb42e6e47b")
@@ -55,7 +53,7 @@ fn build_tx_input_legacy_output_legacy() {
         .p2pkh(&alice_ecdsa_pubkey)
         .unwrap();
 
-    let output1 = OutputBuilder::new(50 * 100_000_000 - 1_000_000).p2pkh(&bob_pubkey);
+    let output1 = OutputBuilder::new(50 * 100_000_000 - 1_000_000).p2pkh(&bob_ecdsa_pubkey);
 
     let mut builder = TransactionBuilder::new();
     builder.push_input(utxo1, arg1).push_output(output1);
@@ -92,7 +90,7 @@ fn build_tx_input_legacy_output_segwit() {
     let alice_private_key = PrivateKey::try_from(alice_private_key.as_slice()).unwrap();
     let alice_ecdsa_pubkey =
         ecdsa::secp256k1::PublicKey::try_from(alice_pubkey.as_slice()).unwrap();
-    let bob_pubkey = PublicKey::new(bob_pubkey, PublicKeyType::Secp256k1).unwrap();
+    let bob_ecdsa_pubkey = ecdsa::secp256k1::PublicKey::try_from(bob_pubkey.as_slice()).unwrap();
 
     let txid =
         txid_from_str_and_rev("181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911")
@@ -106,7 +104,7 @@ fn build_tx_input_legacy_output_segwit() {
         .p2pkh(&alice_ecdsa_pubkey)
         .unwrap();
 
-    let output1 = OutputBuilder::new(50 * 100_000_000 - 1_000_000).p2wpkh(&bob_pubkey);
+    let output1 = OutputBuilder::new(50 * 100_000_000 - 1_000_000).p2wpkh(&bob_ecdsa_pubkey);
 
     let mut builder = TransactionBuilder::new();
     builder.push_input(utxo1, arg1).push_output(output1);
@@ -139,7 +137,8 @@ fn build_tx_input_segwit_output_segwit() {
     let bob_pubkey =
         hex::decode("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f").unwrap();
 
-    let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
+    let alice_ecdsa_pubkey =
+        ecdsa::secp256k1::PublicKey::try_from(alice_pubkey.as_slice()).unwrap();
     let bob_private_key = PrivateKey::try_from(bob_private_key.as_slice()).unwrap();
     let bob_ecdsa_pubkey = ecdsa::secp256k1::PublicKey::try_from(bob_pubkey.as_slice()).unwrap();
 
@@ -156,7 +155,7 @@ fn build_tx_input_segwit_output_segwit() {
         .unwrap();
 
     let output1 =
-        OutputBuilder::new(50 * 100_000_000 - 1_000_000 - 1_000_000).p2wpkh(&alice_pubkey);
+        OutputBuilder::new(50 * 100_000_000 - 1_000_000 - 1_000_000).p2wpkh(&alice_ecdsa_pubkey);
 
     let mut builder = TransactionBuilder::new();
     builder.push_input(utxo1, arg1).push_output(output1);
@@ -289,7 +288,6 @@ fn build_tx_input_segwit_output_brc20_transfer_commit() {
     let alice_ecdsa_pubkey =
         ecdsa::secp256k1::PublicKey::try_from(alice_pubkey.as_slice()).unwrap();
     let alice_schnorr_pubkey = schnorr::PublicKey::try_from(alice_pubkey.as_slice()).unwrap();
-    let alice_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
 
     let txid =
         txid_from_str_and_rev("8ec895b4d30adb01e38471ca1019bfc8c3e5fbd1f28d9e7b5653260d89989008")
@@ -307,7 +305,7 @@ fn build_tx_input_segwit_output_brc20_transfer_commit() {
         .brc20_transfer(&alice_schnorr_pubkey, "oadf".into(), "20".into())
         .unwrap();
 
-    let output2 = OutputBuilder::new(16_400).p2wpkh(&alice_pubkey);
+    let output2 = OutputBuilder::new(16_400).p2wpkh(&alice_ecdsa_pubkey);
 
     let mut builder = TransactionBuilder::new();
     builder
@@ -338,7 +336,8 @@ fn build_tx_input_brc20_transfer_commit_output_brc20_transfer_reveal() {
     let alice_pubkey =
         hex::decode("030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb").unwrap();
 
-    let alice_secp256k1_pubkey = PublicKey::new(alice_pubkey, PublicKeyType::Secp256k1).unwrap();
+    let alice_ecdsa_pubkey =
+        ecdsa::secp256k1::PublicKey::try_from(alice_pubkey.as_slice()).unwrap();
     let alice_private_key = schnorr::PrivateKey::try_from(alice_private_key.as_slice())
         .unwrap()
         .no_aux_rand();
@@ -356,7 +355,7 @@ fn build_tx_input_brc20_transfer_commit_output_brc20_transfer_reveal() {
         .brc20_transfer(&alice_pubkey, "oadf".into(), "20".into())
         .unwrap();
 
-    let output1 = OutputBuilder::new(546).p2wpkh(&alice_secp256k1_pubkey);
+    let output1 = OutputBuilder::new(546).p2wpkh(&alice_ecdsa_pubkey);
 
     let mut builder = TransactionBuilder::new();
     builder.push_input(utxo1, arg1.clone()).push_output(output1);

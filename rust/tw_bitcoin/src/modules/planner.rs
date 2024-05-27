@@ -29,7 +29,11 @@ impl BitcoinPlanner {
         let mut inputs_map = HashMap::with_capacity(input.inputs.len());
         for utxo in input.inputs.iter() {
             let key = parse_out_point(&utxo.out_point)?;
-            inputs_map.insert(key, utxo);
+            if inputs_map.insert(key, utxo).is_some() {
+                // Found a duplicate UTXO. Return an error.
+                return SigningError::err(SigningErrorType::Error_invalid_utxo)
+                    .context("Provided duplicate UTXOs with the same OutPoint");
+            }
         }
 
         // Fill out the selected Inputs Proto.
