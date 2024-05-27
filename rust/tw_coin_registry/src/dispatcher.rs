@@ -18,6 +18,7 @@ use tw_greenfield::entry::GreenfieldEntry;
 use tw_internet_computer::entry::InternetComputerEntry;
 use tw_native_evmos::entry::NativeEvmosEntry;
 use tw_native_injective::entry::NativeInjectiveEntry;
+use tw_polkadot::entry::PolkadotEntry;
 use tw_ronin::entry::RoninEntry;
 use tw_solana::entry::SolanaEntry;
 use tw_sui::entry::SuiEntry;
@@ -36,6 +37,7 @@ const GREENFIELD: GreenfieldEntry = GreenfieldEntry;
 const INTERNET_COMPUTER: InternetComputerEntry = InternetComputerEntry;
 const NATIVE_EVMOS: NativeEvmosEntry = NativeEvmosEntry;
 const NATIVE_INJECTIVE: NativeInjectiveEntry = NativeInjectiveEntry;
+const POLKADOT: PolkadotEntry = PolkadotEntry;
 const RONIN: RoninEntry = RoninEntry;
 const SOLANA: SolanaEntry = SolanaEntry;
 const SUI: SuiEntry = SuiEntry;
@@ -54,6 +56,7 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::InternetComputer => Ok(&INTERNET_COMPUTER),
         BlockchainType::NativeEvmos => Ok(&NATIVE_EVMOS),
         BlockchainType::NativeInjective => Ok(&NATIVE_INJECTIVE),
+        BlockchainType::Polkadot => Ok(&POLKADOT),
         BlockchainType::Ronin => Ok(&RONIN),
         BlockchainType::Solana => Ok(&SOLANA),
         BlockchainType::Sui => Ok(&SUI),
