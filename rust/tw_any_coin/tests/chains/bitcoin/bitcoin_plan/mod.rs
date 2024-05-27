@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::chains::common::bitcoin::{plan, DUST};
+use crate::chains::common::bitcoin::{plan, Amount, DUST};
 use tw_coin_registry::coin_type::CoinType;
 use tw_proto::BitcoinV3::Proto;
 
@@ -98,25 +98,65 @@ fn test_exact_selector_with_change_3_desc() {
         });
 }
 
-// #[test]
-// fn test_exact_selector_with_change_4() {
-//     let input = plan::make_planning_input(plan::PlanArgs {
-//         inputs: vec![40_000, 30_000, 30_000],
-//         outputs: vec![50_000],
-//         change: true,
-//         max: false,
-//         dust_threshold: DUST,
-//         order: Proto::InputSelector::SelectAscending,
-//         fee_per_vb: 10,
-//     });
-//     plan::BitcoinPlanHelper::new(&input)
-//         .coin(CoinType::Bitcoin)
-//         .plan(plan::Expected {
-//             inputs: vec![30_000, 40_000],
-//             outputs: vec![50_000, 0],
-//             vsize_estimate: 410,
-//             // vsize * fee_rate
-//             fee_estimate: 0,
-//             change: 0,
-//         });
-// }
+#[test]
+fn test_exact_selector_with_and_without_change() {
+    const OUT: Amount = 66_240;
+    const FEE_PER_VB: Amount = 10;
+    const UTXO_1: Amount = 20_000;
+    const UTXO_2: Amount = 30_000;
+    const UTXO_3: Amount = 40_000;
+
+    const VSIZE_WITHOUT_CHANGE: u64 = 376;
+    const VSIZE_WITH_CHANGE: u64 = 525;
+    const FEE_WITHOUT_CHANGE: Amount = VSIZE_WITHOUT_CHANGE as Amount * FEE_PER_VB;
+    const FEE_WITH_CHANGE: Amount = VSIZE_WITH_CHANGE as Amount * FEE_PER_VB;
+
+    // Generate a transaction with 2 inputs and no change output.
+
+    // Therefore zero change, no change at all.
+    assert_eq!(UTXO_3 + UTXO_2, OUT + FEE_WITHOUT_CHANGE);
+    let input = plan::make_planning_input(plan::PlanArgs {
+        inputs: vec![UTXO_1, UTXO_2, UTXO_3],
+        outputs: vec![OUT],
+        change: true,
+        max: false,
+        dust_threshold: DUST,
+        order: Proto::InputSelector::SelectDescending,
+        fee_per_vb: FEE_PER_VB,
+    });
+    plan::BitcoinPlanHelper::new(&input)
+        .coin(CoinType::Bitcoin)
+        .plan(plan::Expected {
+            inputs: vec![UTXO_3, UTXO_2],
+            outputs: vec![OUT],
+            vsize_estimate: VSIZE_WITHOUT_CHANGE,
+            // vsize * fee_rate
+            fee_estimate: FEE_WITHOUT_CHANGE,
+            change: 0,
+        });
+
+    // Now increase the output amount by 1 satoshi.
+    // Then UTXO_3 and UTXO_2 won't be enough to cover the target output + fee.
+    // Therefore will be used another one `UTXO_1` that will lead to a change.
+    let change = UTXO_3 + UTXO_2 + UTXO_1 - OUT - 1 - FEE_WITH_CHANGE;
+    assert_eq!(change, 18_509);
+    let input = plan::make_planning_input(plan::PlanArgs {
+        inputs: vec![UTXO_1, UTXO_2, UTXO_3],
+        outputs: vec![OUT + 1],
+        change: true,
+        max: false,
+        dust_threshold: DUST,
+        order: Proto::InputSelector::SelectDescending,
+        fee_per_vb: FEE_PER_VB,
+    });
+    plan::BitcoinPlanHelper::new(&input)
+        .coin(CoinType::Bitcoin)
+        .plan(plan::Expected {
+            inputs: vec![UTXO_3, UTXO_2, UTXO_1],
+            outputs: vec![OUT + 1, change],
+            vsize_estimate: VSIZE_WITH_CHANGE,
+            // vsize * fee_rate
+            fee_estimate: FEE_WITH_CHANGE,
+            change,
+        });
+}
