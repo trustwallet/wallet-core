@@ -20,6 +20,7 @@ pub enum BlockchainType {
     NativeEvmos,
     NativeInjective,
     Pactus,
+    Polkadot,
     Ronin,
     Solana,
     Sui,

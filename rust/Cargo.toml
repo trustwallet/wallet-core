@@ -11,6 +11,7 @@ members = [
     "chains/tw_native_evmos",
     "chains/tw_native_injective",
     "chains/tw_pactus",
+    "chains/tw_polkadot",
     "chains/tw_ronin",
     "chains/tw_solana",
     "chains/tw_sui",
@@ -35,6 +36,7 @@ members = [
     "tw_tests",
     "wallet_core_bin",
     "wallet_core_rs",
+    "tw_ss58_address",
 ]
 
 [profile.release]
