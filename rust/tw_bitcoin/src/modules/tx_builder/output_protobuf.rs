@@ -240,7 +240,7 @@ impl<'a> OutputProtobuf<'a> {
 
     pub fn prepare_builder(&self) -> SigningResult<OutputBuilder> {
         if self.output.value < 0 {
-            return SigningError::err(SigningErrorType::Error_invalid_utxo_amount)
+            return SigningError::err(SigningErrorType::Error_invalid_params)
                 .context("Transaction Output amount cannot be negative");
         }
         Ok(OutputBuilder::new(self.output.value))

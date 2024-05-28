@@ -2064,6 +2064,7 @@ dependencies = [
  "bech32",
  "bitcoin",
  "byteorder",
+ "itertools",
  "secp256k1",
  "strum_macros",
  "tw_base58_address",

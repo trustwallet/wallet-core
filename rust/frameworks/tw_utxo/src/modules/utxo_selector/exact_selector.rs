@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::constants::MAX_TRANSACTION_WEIGHT;
 use crate::dust::DustPolicy;
 use crate::modules::fee_estimator::FeeEstimator;
 use crate::modules::utxo_selector::{InputSelector, SelectPlan, SelectResult};
@@ -95,6 +96,12 @@ where
 
             // Update the transaction with (all) the selected in UTXOs.
             estimated_tx.replace_inputs(selected_utxos.clone());
+
+            // Check the transaction weight.
+            if estimated_tx.weight() > MAX_TRANSACTION_WEIGHT {
+                return SigningError::err(SigningErrorType::Error_tx_too_big)
+                    .context("Too many UTXOs required to send the requested amounts");
+            }
 
             // Estimate the transaction fee.
             tx_fee = FeeEstimator::estimate_fee(&estimated_tx, fee_rate)?;

@@ -13,6 +13,9 @@ use crate::transaction::unsigned_transaction::UnsignedTransaction;
 use std::marker::PhantomData;
 use tw_coin_entry::error::prelude::*;
 
+/// For now, restrict the transaction size to be up to 100kb, i.e `max_block_size / 10`.
+pub const MAX_TRANSACTION_SIZE: usize = 100 * 1024;
+
 /// Standard Plan request.
 ///
 /// # Important

@@ -130,6 +130,10 @@ impl TransactionInterface for Transaction {
     fn vsize(&self) -> usize {
         (self.weight() + 3) / SEGWIT_SCALE_FACTOR // ceil(weight / 4)
     }
+
+    fn weight(&self) -> usize {
+        self.weight()
+    }
 }
 
 impl Transaction {

@@ -42,6 +42,8 @@ pub trait TransactionInterface: Clone + Encodable {
     /// It is used to compare how much blockweight needs to be allocated to confirm a transaction.
     /// For non-segwit transactions, `vsize` = `size`.
     fn vsize(&self) -> usize;
+
+    fn weight(&self) -> usize;
 }
 
 pub trait TxInputInterface: Clone {

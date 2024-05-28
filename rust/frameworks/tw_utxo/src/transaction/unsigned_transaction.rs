@@ -145,7 +145,7 @@ fn check_utxo_args_number(inputs_len: usize, utxo_args: usize) -> SigningResult<
     }
 
     if inputs_len == 0 {
-        return SigningError::err(SigningErrorType::Error_not_enough_utxos).context(
+        return SigningError::err(SigningErrorType::Error_missing_input_utxos).context(
             "Transaction must have at least one valid input (UTXO). \
                 All UTXOs are either filtered (have dust amount) or not UTXOs are specified",
         );
