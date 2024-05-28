@@ -12,11 +12,17 @@ use tw_keypair::ed25519::sha512::PublicKey;
 // - https://github.com/paritytech/polkadot-sdk/blob/master/substrate/primitives/core/src/crypto.rs
 //
 
-#[derive(Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
 pub struct NetworkId(u16);
 
 impl NetworkId {
-    fn new_unchecked(value: u16) -> Self {
+    pub const POLKADOT: Self = Self::new_unchecked(0);
+    pub const KUSAMA: Self = Self::new_unchecked(2);
+    pub const GENERIC_SUBSTRATE: Self = Self::new_unchecked(42);
+}
+
+impl NetworkId {
+    const fn new_unchecked(value: u16) -> Self {
         Self(value)
     }
 
@@ -88,7 +94,7 @@ impl TryFrom<&[u8]> for NetworkId {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SS58Address {
     key: Vec<u8>,
     network: NetworkId,
@@ -289,10 +295,10 @@ mod tests {
             assert_eq!(addr.network().value(), expected_network);
         }
 
-        test_case("15KRsCq9LLNmCxNFhGk55s5bEyazKefunDxUH24GFZwsTxyu", 0);
-        test_case("5CK8D1sKNwF473wbuBP6NuhQfPaWUetNsWUNAAzVwTfxqjfr", 42);
-        test_case("CpjsLDC1JFyrhm3ftC9Gs4QoyrkHKhZKtK7YqGTRFtTafgp", 2);
-        test_case("Fu3r514w83euSVV7q1MyFGWErUR2xDzXS2goHzimUn4S12D", 2);
+        test_case("15KRsCq9LLNmCxNFhGk55s5bEyazKefunDxUH24GFZwsTxyu", NetworkId::POLKADOT.value());
+        test_case("5CK8D1sKNwF473wbuBP6NuhQfPaWUetNsWUNAAzVwTfxqjfr", NetworkId::GENERIC_SUBSTRATE.value());
+        test_case("CpjsLDC1JFyrhm3ftC9Gs4QoyrkHKhZKtK7YqGTRFtTafgp", NetworkId::KUSAMA.value());
+        test_case("Fu3r514w83euSVV7q1MyFGWErUR2xDzXS2goHzimUn4S12D", NetworkId::KUSAMA.value());
         test_case("ZG2d3dH5zfqNchsqReS6x4nBJuJCW7Z6Fh5eLvdA3ZXGkPd", 5);
         test_case("cEYtw6AVMB27hFUs4gVukajLM7GqxwxUfJkbPY3rNToHMcCgb", 64);
         test_case("p8EGHjWt7e1MYoD7V6WXvbPZWK9GSJiiK85kv2R7Ur7FisPUL", 172);
