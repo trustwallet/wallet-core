@@ -13,7 +13,7 @@ use tw_memory::Data;
 
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
-pub struct U256(pub(crate) primitive_types::U256);
+pub struct U256(pub primitive_types::U256);
 
 impl From<primitive_types::U256> for U256 {
     #[inline]

@@ -1820,6 +1820,7 @@ dependencies = [
 name = "tw_evm"
 version = "0.1.0"
 dependencies = [
+ "hex",
  "itertools",
  "lazy_static",
  "rlp",

@@ -33,6 +33,12 @@ pub struct Address {
     bytes: H160,
 }
 
+impl AsRef<[u8]> for Address {
+    fn as_ref(&self) -> &[u8] {
+        self.bytes.as_slice()
+    }
+}
+
 /// cbindgen:ignore
 impl Address {
     pub const LEN: usize = 20;

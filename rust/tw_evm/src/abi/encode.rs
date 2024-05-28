@@ -5,6 +5,7 @@
 use crate::abi::token::Token;
 use tw_hash::H256;
 use tw_memory::Data;
+use crate::abi::uint::UintBits;
 
 pub fn encode_tokens(tokens: &[Token]) -> Data {
     let mediates = tokens.iter().map(mediate_token).collect::<Vec<_>>();
@@ -202,8 +203,67 @@ fn fixed_bytes_append(result: &mut Vec<H256>, bytes: &[u8]) {
     }
 }
 
+pub fn encode_packed_tokens(tokens: &[Token]) -> Data {
+    let mut encoded = Vec::new();
+
+    for token in tokens {
+        match token {
+            Token::Address(address) => {
+                encoded.extend_from_slice(address.as_slice());
+            },
+            Token::Bytes(bytes) => {
+                encoded.extend_from_slice(bytes);
+            },
+            Token::String(s) => {
+                encoded.extend_from_slice(s.as_bytes());
+            },
+            Token::FixedBytes(bytes) => {
+                encoded.extend_from_slice(bytes);
+            },
+            Token::Int { int, .. } => {
+                let buf = int.to_big_endian();
+                let trimmed_buf = trim_leading_zeros(buf.as_slice());
+                encoded.extend_from_slice(trimmed_buf);
+            },
+            Token::Uint { uint, .. } => {
+                let buf = uint.to_big_endian();
+                let trimmed_buf = trim_leading_zeros(buf.as_slice());
+                encoded.extend_from_slice(trimmed_buf);
+            },
+            Token::Bool(b) => {
+                encoded.push(*b as u8);
+            },
+            Token::Array { arr, .. } => {
+                for element in arr.iter() {
+                    let element_data = encode_packed_tokens(&[element.clone()]);
+                    encoded.extend_from_slice(&element_data);
+                }
+            },
+            Token::FixedArray { arr, .. } => {
+                for element in arr.iter() {
+                    let element_data = encode_packed_tokens(&[element.clone()]);
+                    encoded.extend_from_slice(&element_data);
+                }
+            },
+            Token::Tuple { params } => {
+                for element in params.iter() {
+                    let element_data = encode_packed_tokens(&[element.value.clone()]);
+                    encoded.extend_from_slice(&element_data);
+                }
+            },
+        }
+    }
+    encoded
+}
+
+fn trim_leading_zeros(buf: &[u8]) -> &[u8] {
+    let first_non_zero = buf.iter().position(|&x| x != 0).unwrap_or(buf.len() - 1);
+    &buf[first_non_zero..]
+}
+
 #[cfg(test)]
 mod tests {
+    use hex::FromHex;
     use super::*;
     use crate::abi::non_empty_array::{NonEmptyArray, NonEmptyBytes};
     use crate::abi::param::Param;
@@ -1081,6 +1141,126 @@ mod tests {
         )
         .decode_hex()
         .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_packed_address() {
+        let address = Token::Address("0x1111111111111111111111111111111111111111".into());
+        let encoded = encode_packed_tokens(&[address]);
+        let expected = "1111111111111111111111111111111111111111".decode_hex().unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_packed_bytes() {
+        let bytes = Token::Bytes(vec![0x12, 0x34]);
+        let encoded = encode_packed_tokens(&[bytes]);
+        let expected = "1234".decode_hex().unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_packed_string() {
+        let s = Token::String("Hello, world!".to_owned());
+        let encoded = encode_packed_tokens(&[s]);
+        let expected = "48656c6c6f2c20776f726c6421".decode_hex().unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_packed_int() {
+        let int = Token::Int {
+            int: I256::from(-1),
+            bits: UintBits::new(256).unwrap(),
+        };
+        let encoded = encode_packed_tokens(&[int]);
+        let expected = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff".decode_hex().unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_packed_bool() {
+        let b = Token::Bool(true);
+        let encoded = encode_packed_tokens(&[b]);
+        let expected = "01".decode_hex().unwrap();
+        assert_eq!(encoded, expected);
+
+        let b = Token::Bool(false);
+        let encoded = encode_packed_tokens(&[b]);
+        let expected = "00".decode_hex().unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_packed_uint() {
+        let uint = Token::Uint {
+            uint: U256::from(3_u64),
+            bits: UintBits::new(256).unwrap(),
+        };
+        let encoded = encode_packed_tokens(&[uint]);
+        let expected = "03".decode_hex().unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_packed_fixed_bytes() {
+        let bytes = Token::FixedBytes(NonEmptyBytes::new(vec![0x12, 0x34]).unwrap());
+        let encoded = encode_packed_tokens(&[bytes]);
+        let expected = "1234".decode_hex().unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_packed_mixed() {
+        let tokens = vec![
+            Token::Int {
+                int: I256::from(-1),
+                bits: UintBits::new(256).unwrap(),
+            },
+            Token::FixedBytes(NonEmptyBytes::new(vec![0x42]).unwrap()),
+            Token::Uint {
+                uint: U256::from(3_u64),
+                bits: UintBits::new(256).unwrap(),
+            },
+            Token::String("Hello, world!".to_owned()),
+        ];
+        let encoded = encode_packed_tokens(&tokens);
+        // The expected value must match the packed representation of the tokens.
+        // The integer -1 as 32 bytes of f, followed by 0x42, followed by the integer 3,
+        // followed by the ASCII representation of "Hello, world!"
+        let expected = concat!(
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", // -1
+        "42", // 0x42
+        "03", // 3
+        "48656c6c6f2c20776f726c6421" // "Hello, world!" in ASCII
+        ).decode_hex().unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_packed_array() {
+        let array = Token::Array {
+            arr: vec![
+                Token::Uint {
+                    uint: U256::from(1_u64),
+                    bits: UintBits::new(256).unwrap(),
+                },
+                Token::Uint {
+                    uint: U256::from(2_u64),
+                    bits: UintBits::new(256).unwrap(),
+                },
+                Token::Uint {
+                    uint: U256::from(3_u64),
+                    bits: UintBits::new(256).unwrap(),
+                },
+            ],
+            kind: ParamType::Uint { bits: UintBits::new(256).unwrap() },
+        };
+        let encoded = encode_packed_tokens(&[array]);
+
+        let expected = Vec::from_hex("010203").unwrap();
+
         assert_eq!(encoded, expected);
     }
 }
