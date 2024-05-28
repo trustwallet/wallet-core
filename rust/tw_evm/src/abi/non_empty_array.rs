@@ -56,6 +56,27 @@ impl<T> NonEmptyArray<T> {
     pub fn into_vec(self) -> Vec<T> {
         self.0
     }
+
+    pub fn get(&self) -> &Vec<T> {
+        &self.0
+    }
+
+    pub fn set(&mut self, value: Vec<T>) {
+        if value.is_empty() {
+            panic!("`NonEmptyArray` must have at least one element");
+        }
+        self.0 = value;
+    }
+
+    pub fn from_slice(slice: &[T]) -> AbiResult<Self>
+        where
+            T: Clone,
+    {
+        if slice.is_empty() {
+            return AbiError::err(AbiErrorKind::Error_empty_type);
+        }
+        Ok(NonEmptyArray(slice.to_vec()))
+    }
 }
 
 impl<T> IntoIterator for NonEmptyArray<T> {

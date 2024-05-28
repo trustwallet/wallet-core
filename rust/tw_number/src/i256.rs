@@ -19,7 +19,7 @@ lazy_static! {
 
 #[derive(Clone, PartialEq)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
-pub struct I256(pub BaseU256);
+pub struct I256(BaseU256);
 
 // cbindgen:ignore
 impl I256 {
@@ -114,6 +114,18 @@ impl I256 {
             Sign::Negative => twos_complement(self.0),
         };
         (sign, abs)
+    }
+}
+
+impl I256 {
+    // Getter method for the internal value
+    pub fn get_value(&self) -> BaseU256 {
+        self.0
+    }
+
+    // Setter method for the internal value
+    pub fn set_value(&mut self, value: BaseU256) {
+        self.0 = value;
     }
 }
 

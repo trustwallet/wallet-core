@@ -13,7 +13,7 @@ use tw_memory::Data;
 
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
-pub struct U256(pub primitive_types::U256);
+pub struct U256(pub(crate) primitive_types::U256);
 
 impl From<primitive_types::U256> for U256 {
     #[inline]
@@ -143,6 +143,18 @@ impl U256 {
     #[inline]
     fn leading_zero_bytes(&self) -> usize {
         U256::BYTES - (self.0.bits() + 7) / 8
+    }
+}
+
+impl U256 {
+    // Getter method for the internal value
+    pub fn get_value(&self) -> primitive_types::U256 {
+        self.0
+    }
+
+    // Setter method for the internal value
+    pub fn set_value(&mut self, value: primitive_types::U256) {
+        self.0 = value;
     }
 }
 
