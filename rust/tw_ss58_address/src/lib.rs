@@ -88,7 +88,7 @@ impl TryFrom<&[u8]> for NetworkId {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SS58Address {
     key: Vec<u8>,
     network: NetworkId,

@@ -2103,6 +2103,7 @@ dependencies = [
  "tw_keypair",
  "tw_memory",
  "tw_proto",
+ "tw_ss58_address",
 ]
 
 [[package]]
@@ -2148,7 +2149,6 @@ dependencies = [
 name = "tw_ss58_address"
 version = "0.1.0"
 dependencies = [
- "blake2",
  "serde",
  "tw_coin_entry",
  "tw_encoding",
