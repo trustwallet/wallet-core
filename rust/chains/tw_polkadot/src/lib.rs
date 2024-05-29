@@ -5,5 +5,6 @@
 pub mod address;
 pub mod compiler;
 pub mod entry;
-mod extrinsic;
+pub mod extrinsic;
+mod scale;
 pub mod signer;
