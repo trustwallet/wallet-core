@@ -53,7 +53,7 @@ jobs:
 
       - name: Run tests
         run: |
-          cargo llvm-cov test --no-fail-fast --lcov --output-path coverage.info
+          cargo llvm-cov test --workspace --exclude wallet_core_bin --no-fail-fast --lcov --output-path coverage.info
         working-directory: rust
 
       - name: Gather and check Rust code coverage
