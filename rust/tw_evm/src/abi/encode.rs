@@ -1285,12 +1285,11 @@ mod tests {
     #[test]
     fn encode_packed_custom_case() {
         // bytes32 stateRoots
-        let state_roots = NonEmptyBytes::from_slice(
-            "3a53dc4890241dbe03e486e785761577d1c369548f6b09aa38017828dcdf5c27"
-                .decode_hex()
-                .unwrap()
-                .as_slice(),
-        ).unwrap();
+        // bytes32 stateRoots
+        let state_roots_hex = "3a53dc4890241dbe03e486e785761577d1c369548f6b09aa38017828dcdf5c27"
+            .decode_hex()
+            .unwrap();
+        let state_roots = NonEmptyBytes::new(state_roots_hex).unwrap();
 
         // uint256[2] calldata signatures
         let signatures = Token::Array {

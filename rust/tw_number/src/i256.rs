@@ -117,18 +117,6 @@ impl I256 {
     }
 }
 
-impl I256 {
-    // Getter method for the internal value
-    pub fn get_value(&self) -> BaseU256 {
-        self.0
-    }
-
-    // Setter method for the internal value
-    pub fn set_value(&mut self, value: BaseU256) {
-        self.0 = value;
-    }
-}
-
 #[cfg(feature = "helpers")]
 impl I256 {
     #[inline]

@@ -146,18 +146,6 @@ impl U256 {
     }
 }
 
-impl U256 {
-    // Getter method for the internal value
-    pub fn get_value(&self) -> primitive_types::U256 {
-        self.0
-    }
-
-    // Setter method for the internal value
-    pub fn set_value(&mut self, value: primitive_types::U256) {
-        self.0 = value;
-    }
-}
-
 #[cfg(feature = "helpers")]
 impl U256 {
     #[inline]
