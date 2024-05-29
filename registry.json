@@ -1780,9 +1780,9 @@
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
-      "url": "https://algoexplorer.io",
-      "txPath": "/tx/",
-      "accountPath": "/address/",
+      "url": "https://app.dappflow.org/explorer",
+      "txPath": "/transaction/",
+      "accountPath": "/account/",
       "sampleTx": "CR7POXFTYDLC7TV3IXHA7AZKWABUJC52BACLHJQNXAKZJGRPQY3A",
       "sampleAccount": "J4AEINCSSLDA7LNBNWM4ZXFCTLTOZT5LG3F5BLMFPJYGFWVCMU37EZI2AM"
     },
