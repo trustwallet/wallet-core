@@ -220,7 +220,7 @@ pub fn encode_packed_tokens(tokens: &[Token]) -> Data {
                 encoded.extend_from_slice(bytes.as_ref());
             },
             Token::Int { int, bits } => {
-                let buf = int.to_big_endian().as_slice().to_vec();
+                let buf = int.to_big_endian_compact_min_len(32).as_slice().to_vec();
                 let bits_value = bits.get();
                 let padding_len = (bits_value / 8) - buf.len();
                 let padding = vec![0; padding_len];
@@ -228,7 +228,7 @@ pub fn encode_packed_tokens(tokens: &[Token]) -> Data {
                 encoded.extend_from_slice(&buf);
             },
             Token::Uint { uint, bits } => {
-                let buf = uint.to_big_endian().as_slice().to_vec();
+                let buf = uint.to_big_endian_compact_min_len(32).as_slice().to_vec();
                 let bits_value = bits.get();
                 let padding_len = (bits_value / 8) - buf.len();
                 let padding = vec![0; padding_len];
@@ -1285,25 +1285,24 @@ mod tests {
     #[test]
     fn encode_packed_custom_case() {
         // bytes32 stateRoots
-        // bytes32 stateRoots
         let state_roots_hex = "3a53dc4890241dbe03e486e785761577d1c369548f6b09aa38017828dcdf5c27"
             .decode_hex()
-            .unwrap();
-        let state_roots = NonEmptyBytes::new(state_roots_hex).unwrap();
+            .unwrap()
+            .to_vec();
+        let state_roots = NonEmptyArray::new(state_roots_hex).unwrap();
+
+        let uint1 = "3402053321874964899321528271743396700217057178612185975187363512030360053932";
+        let uint2 = "1235124644010117237054094970590473241953434069965207718920579820322861537001";
 
         // uint256[2] calldata signatures
         let signatures = Token::Array {
             arr: vec![
                 Token::Uint {
-                    uint: U256::from_str(
-                        "3402053321874964899321528271743396700217057178612185975187363512030360053932"
-                    ).unwrap(),
+                    uint: U256::from_str(uint1).unwrap(),
                     bits: UintBits::new(256).unwrap(),
                 },
                 Token::Uint {
-                    uint: U256::from_str(
-                        "1235124644010117237054094970590473241953434069965207718920579820322861537001"
-                    ).unwrap(),
+                    uint: U256::from_str(uint2).unwrap(),
                     bits: UintBits::new(256).unwrap(),
                 },
             ],
