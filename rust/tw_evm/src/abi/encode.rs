@@ -1258,26 +1258,26 @@ mod tests {
 
     #[test]
     fn encode_packed_uint_256bits() {
+        let uint1 = "0000000000000000000000000000000000000000000000000000000000000003";
         let uint = Token::Uint {
             uint: U256::from(3_u64),
             bits: UintBits::new(256).unwrap(),
         };
         let encoded = encode_packed_tokens(&[uint]);
-        let expected = "0000000000000000000000000000000000000000000000000000000000000003"
-            .decode_hex()
+        let expected = uint1.decode_hex()
             .unwrap();
         assert_eq!(encoded, expected);
     }
 
     #[test]
     fn encode_packed_int_256bits() {
+        let uint1 = "0000000000000000000000000000000000000000000000000000000000000003";
         let int = Token::Int {
             int: I256::from(3),
             bits: UintBits::new(256).unwrap(),
         };
         let encoded = encode_packed_tokens(&[int]);
-        let expected = "0000000000000000000000000000000000000000000000000000000000000003"
-            .decode_hex()
+        let expected = uint1.decode_hex()
             .unwrap();
         assert_eq!(encoded, expected);
     }
