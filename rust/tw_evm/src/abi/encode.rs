@@ -1287,8 +1287,7 @@ mod tests {
         // bytes32 stateRoots
         let state_roots_hex = "3a53dc4890241dbe03e486e785761577d1c369548f6b09aa38017828dcdf5c27"
             .decode_hex()
-            .unwrap()
-            .to_vec();
+            .unwrap();
         let state_roots = NonEmptyArray::new(state_roots_hex).unwrap();
 
         let uint1 = "3402053321874964899321528271743396700217057178612185975187363512030360053932";
