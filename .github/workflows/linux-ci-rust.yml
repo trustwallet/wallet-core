@@ -54,7 +54,6 @@ jobs:
       - name: Run tests
         run: |
           tools/rust-coverage
-        working-directory: rust
 
       - name: Gather and check Rust code coverage
         run: |
