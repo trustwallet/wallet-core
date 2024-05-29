@@ -828,7 +828,7 @@ mod tests {
             .decode_hex()
             .unwrap();
         let encoded = encode_tokens(&[Token::Array {
-            arr: vec![Token::Bytes(bytes.to_vec())],
+            arr: vec![Token::Bytes(bytes)],
             kind: ParamType::Bytes,
         }]);
 
@@ -854,7 +854,7 @@ mod tests {
             .decode_hex()
             .unwrap();
         let encoded = encode_tokens(&[Token::Array {
-            arr: vec![Token::Bytes(bytes.to_vec()), Token::Bytes(bytes2.to_vec())],
+            arr: vec![Token::Bytes(bytes), Token::Bytes(bytes2)],
             kind: ParamType::Bytes,
         }]);
 
@@ -930,8 +930,8 @@ mod tests {
             .unwrap();
         let encoded = encode_tokens(&[Token::Tuple {
             params: vec![
-                NamedToken::with_token(Token::Bytes(bytes.to_vec())),
-                NamedToken::with_token(Token::Bytes(bytes2.to_vec())),
+                NamedToken::with_token(Token::Bytes(bytes)),
+                NamedToken::with_token(Token::Bytes(bytes2)),
             ],
         }]);
 
