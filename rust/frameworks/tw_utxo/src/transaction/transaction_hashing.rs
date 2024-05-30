@@ -46,14 +46,6 @@ impl<Transaction: TransactionInterface> TransactionHasher<Transaction> {
         tr.args.tx_hasher.hash(&stream.out())
     }
 
-    // TODO: Comment
-    pub fn preimage_spent_amount_hash(tr: &UtxoTaprootPreimageArgs) -> Data {
-        if tr.args.sighash_ty.anyone_can_pay() {
-            return tr.args.tx_hasher.zero_hash();
-        }
-        Self::spent_amount_hash(tr)
-    }
-
     /// Computes a hash of all `script_pubkeys`. Required for TapSighash.
     pub fn spent_script_pubkeys(tr: &UtxoTaprootPreimageArgs) -> Data {
         let mut stream = Stream::default();
@@ -61,14 +53,6 @@ impl<Transaction: TransactionInterface> TransactionHasher<Transaction> {
             stream.append(script);
         }
         tr.args.tx_hasher.hash(&stream.out())
-    }
-
-    // TODO: Comment
-    pub fn preimage_spent_script_pubkeys(tr: &UtxoTaprootPreimageArgs) -> Data {
-        if tr.args.sighash_ty.anyone_can_pay() {
-            return tr.args.tx_hasher.zero_hash();
-        }
-        Self::spent_script_pubkeys(tr)
     }
 
     /// Computes a hash of all [`SignedUtxo::sequence`].

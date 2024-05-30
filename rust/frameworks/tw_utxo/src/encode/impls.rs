@@ -15,6 +15,10 @@ impl Encodable for Data {
             .append(&CompactInteger::from(self.len()))
             .append_raw_slice(self.as_slice());
     }
+
+    fn encoded_size(&self) -> usize {
+        CompactInteger::from(self.len()).encoded_size() + self.len()
+    }
 }
 
 impl<const N: usize> Encodable for Hash<N> {

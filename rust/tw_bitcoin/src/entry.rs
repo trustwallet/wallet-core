@@ -1,11 +1,9 @@
 use crate::modules::compiler::BitcoinCompiler;
 use crate::modules::planner::BitcoinPlanner;
 use crate::modules::signer::BitcoinSigner;
-use bitcoin::address::NetworkChecked;
-use std::fmt::Display;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
+use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
@@ -15,20 +13,6 @@ use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_keypair::tw::PublicKey;
 use tw_proto::BitcoinV3::Proto;
 use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
-
-pub struct Address(pub bitcoin::address::Address<NetworkChecked>);
-
-impl Display for Address {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl CoinAddress for Address {
-    fn data(&self) -> tw_memory::Data {
-        self.0.to_string().into_bytes()
-    }
-}
 
 pub struct BitcoinEntry;
 

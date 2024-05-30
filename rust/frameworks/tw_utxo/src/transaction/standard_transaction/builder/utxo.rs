@@ -10,7 +10,6 @@ use crate::{
 };
 use bitcoin::hashes::Hash;
 use tw_coin_entry::error::prelude::*;
-use tw_encoding::hex;
 use tw_hash::{hasher::Hasher, ripemd::bitcoin_hash_160, H160, H256};
 use tw_keypair::{ecdsa, schnorr};
 use tw_memory::Data;
@@ -43,20 +42,6 @@ impl UtxoBuilder {
     }
 
     pub fn prev_txid(mut self, txid: H256) -> Self {
-        self.prev_txid = Some(txid);
-        self
-    }
-
-    pub fn prev_txid_str_and_reverse(mut self, txid: &str) -> Self {
-        let txid: H256 = hex::decode(txid)
-            .unwrap()
-            .into_iter()
-            .rev()
-            .collect::<Vec<u8>>()
-            .as_slice()
-            .try_into()
-            .unwrap();
-
         self.prev_txid = Some(txid);
         self
     }

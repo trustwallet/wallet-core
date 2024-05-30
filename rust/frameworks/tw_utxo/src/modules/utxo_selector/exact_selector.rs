@@ -157,6 +157,8 @@ where
         let plan = SelectPlan {
             total_spend: total_in,
             total_send: total_out,
+            // vsize may also include the change output even if it was not included due to the dust amount.
+            // This was made for simplicity. Consider fixing this later.
             vsize_estimate: estimated_tx.vsize(),
             fee_estimate,
             change,

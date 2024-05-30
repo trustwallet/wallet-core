@@ -141,10 +141,7 @@ impl OutputBuilder {
             .to_byte_array()
             .into();
 
-        Ok(TransactionOutput {
-            value: self.amount,
-            script_pubkey: conditions::new_p2tr_script_path(&pubkey_data, &merkle_root),
-        })
+        Ok(self.p2tr_script_path(pubkey, merkle_root))
     }
 
     pub fn op_return(self, data: &[u8]) -> SigningResult<TransactionOutput> {

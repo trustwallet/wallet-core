@@ -8,14 +8,11 @@ use tw_coin_entry::error::prelude::*;
 use tw_hash::H256;
 
 mod output;
-// TODO remove this.
-mod spend;
 mod utxo;
 
 use crate::transaction::unsigned_transaction::UnsignedTransaction;
 use crate::transaction::UtxoToSign;
 pub use output::OutputBuilder;
-pub use spend::SpendingScriptBuilder;
 pub use utxo::UtxoBuilder;
 
 pub fn txid_from_str(txid: &str) -> SigningResult<H256> {

@@ -30,10 +30,6 @@ pub trait TransactionInterface: Clone + Encodable {
 
     fn push_output(&mut self, output: Self::Output);
 
-    fn change_amount(&self) -> Option<Amount>;
-
-    fn set_change_amount(&mut self, change: Amount) -> bool;
-
     fn has_witness(&self) -> bool;
 
     fn locktime(&self) -> u32;
@@ -56,8 +52,6 @@ pub trait TxInputInterface: Clone {
     fn set_script_sig(&mut self, script_sig: Script);
 
     fn set_witness(&mut self, witness: Witness);
-
-    fn witness_items(&self) -> &[Script];
 
     fn has_script_sig(&self) -> bool;
 

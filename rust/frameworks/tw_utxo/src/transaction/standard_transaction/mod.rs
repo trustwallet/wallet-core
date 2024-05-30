@@ -98,22 +98,6 @@ impl TransactionInterface for Transaction {
         self.outputs.push(output);
     }
 
-    fn change_amount(&self) -> Option<Amount> {
-        Some(self.outputs.last()?.value)
-    }
-
-    fn set_change_amount(&mut self, change: Amount) -> bool {
-        // TODO: Is it a good idea to just assume that the last output is the
-        // change output?
-        let Some(change_output) = self.outputs.last_mut() else {
-            return false;
-        };
-
-        change_output.value = change;
-
-        true
-    }
-
     fn replace_outputs(&mut self, outputs: Vec<Self::Output>) {
         self.outputs = outputs;
     }
@@ -271,10 +255,6 @@ impl TransactionInput {
         self.encoded_size()
     }
 
-    pub fn vsize(&self) -> usize {
-        (self.weight() + 3) / SEGWIT_SCALE_FACTOR // ceil(weight / 4)
-    }
-
     pub fn weight(&self) -> usize {
         let non_witness = OUT_POINT_SIZE + self.script_sig.encoded_size() + SEQUENCE_SIZE;
 
@@ -302,10 +282,6 @@ impl TxInputInterface for TransactionInput {
 
     fn set_witness(&mut self, witness: Witness) {
         self.witness = witness;
-    }
-
-    fn witness_items(&self) -> &[Script] {
-        self.witness.as_items()
     }
 
     fn has_script_sig(&self) -> bool {
@@ -352,10 +328,6 @@ pub struct TransactionOutput {
 impl TransactionOutput {
     pub fn size(&self) -> usize {
         self.encoded_size()
-    }
-
-    pub fn vsize(&self) -> usize {
-        (self.weight() + 3) / SEGWIT_SCALE_FACTOR // ceil(weight / 4)
     }
 
     pub fn weight(&self) -> usize {

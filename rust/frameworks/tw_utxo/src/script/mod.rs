@@ -155,16 +155,57 @@ impl Witness {
     }
 }
 
-impl From<Vec<Script>> for Witness {
-    fn from(items: Vec<Script>) -> Self {
-        Witness { items }
-    }
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tw_encoding::hex::{DecodeHex, ToHex};
 
-impl From<Vec<Data>> for Witness {
-    fn from(items: Vec<Data>) -> Self {
-        Witness {
-            items: items.into_iter().map(Script::from).collect(),
-        }
+    #[test]
+    fn test_script_push_long_data_1() {
+        let data1 = "304402202457e78cc1b7f50d0543863c27de75d07982bde8359b9e3316adec0aec165f2f02200203fd331c4e4a4a02f48cf1c291e2c0d6b2f7078a784b5b3649fca41f8794d401";
+        let data2 = "552103244e602b46755f24327142a0517288cebd159eccb6ccf41ea6edf1f601e9af952103bbbacc302d19d29dbfa62d23f37944ae19853cf260c745c2bea739c95328fcb721039227e83246bd51140fe93538b2301c9048be82ef2fb3c7fc5d78426ed6f609ad210229bf310c379b90033e2ecb07f77ecf9b8d59acb623ab7be25a0caed539e2e6472103703e2ed676936f10b3ce9149fa2d4a32060fb86fa9a70a4efe3f21d7ab90611921031e9b7c6022400a6bb0424bbcde14cff6c016b91ee3803926f3440abf5c146d05210334667f975f55a8455d515a2ef1c94fdfa3315f12319a14515d2a13d82831f62f57ae";
+
+        let mut script = Script::new();
+        script.push(OP_PUSHBYTES_0);
+        script.push_slice(&data1.decode_hex().unwrap());
+        script.push(OP_PUSHBYTES_0);
+        script.push_slice(&data2.decode_hex().unwrap());
+
+        // OP_0
+        // OP_PUSHBYTES_71
+        // 304402202457e78cc1b7f50d0543863c27de75d07982bde8359b9e3316adec0aec165f2f02200203fd331c4e4a4a02f48cf1c291e2c0d6b2f7078a784b5b3649fca41f8794d401
+        // OP_0
+        // OP_PUSHDATA1
+        // 552103244e602b46755f24327142a0517288cebd159eccb6ccf41ea6edf1f601e9af952103bbbacc302d19d29dbfa62d23f37944ae19853cf260c745c2bea739c95328fcb721039227e83246bd51140fe93538b2301c9048be82ef2fb3c7fc5d78426ed6f609ad210229bf310c379b90033e2ecb07f77ecf9b8d59acb623ab7be25a0caed539e2e6472103703e2ed676936f10b3ce9149fa2d4a32060fb86fa9a70a4efe3f21d7ab90611921031e9b7c6022400a6bb0424bbcde14cff6c016b91ee3803926f3440abf5c146d05210334667f975f55a8455d515a2ef1c94fdfa3315f12319a14515d2a13d82831f62f57ae
+        assert_eq!(
+            script.bytes.to_hex(),
+            "0047304402202457e78cc1b7f50d0543863c27de75d07982bde8359b9e3316adec0aec165f2f02200203fd331c4e4a4a02f48cf1c291e2c0d6b2f7078a784b5b3649fca41f8794d401004cf1552103244e602b46755f24327142a0517288cebd159eccb6ccf41ea6edf1f601e9af952103bbbacc302d19d29dbfa62d23f37944ae19853cf260c745c2bea739c95328fcb721039227e83246bd51140fe93538b2301c9048be82ef2fb3c7fc5d78426ed6f609ad210229bf310c379b90033e2ecb07f77ecf9b8d59acb623ab7be25a0caed539e2e6472103703e2ed676936f10b3ce9149fa2d4a32060fb86fa9a70a4efe3f21d7ab90611921031e9b7c6022400a6bb0424bbcde14cff6c016b91ee3803926f3440abf5c146d05210334667f975f55a8455d515a2ef1c94fdfa3315f12319a14515d2a13d82831f62f57ae"
+        );
+    }
+
+    #[test]
+    fn test_script_push_long_data_2() {
+        let data1 = [1; 65_530];
+        let data2 = [2; 70_000];
+
+        let mut script = Script::new();
+        script.push(OP_PUSHBYTES_0);
+        script.push_slice(&data1);
+        script.push(OP_PUSHBYTES_0);
+        script.push_slice(&data2);
+
+        let mut data_buf1 = bitcoin::script::PushBytesBuf::new();
+        data_buf1.extend_from_slice(&data1).unwrap();
+        let mut data_buf2 = bitcoin::script::PushBytesBuf::new();
+        data_buf2.extend_from_slice(&data2).unwrap();
+
+        let bitcoin_script = bitcoin::script::Script::builder()
+            .push_opcode(bitcoin::opcodes::OP_0)
+            .push_slice(data_buf1)
+            .push_opcode(bitcoin::opcodes::OP_0)
+            .push_slice(data_buf2)
+            .into_bytes();
+
+        assert_eq!(script.bytes.to_hex(), bitcoin_script.to_hex());
     }
 }

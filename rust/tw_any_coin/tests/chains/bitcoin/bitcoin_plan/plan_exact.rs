@@ -47,8 +47,8 @@ fn test_exact_selector_with_change_2() {
             outputs: vec![2_000, 1_000, 1764],
             vsize_estimate: 559,
             // vsize * fee_rate
-            fee_estimate: 2236,
-            change: 1764,
+            fee_estimate: 2_236,
+            change: 1_764,
         });
 }
 
@@ -67,11 +67,11 @@ fn test_exact_selector_with_change_3() {
         .coin(CoinType::Bitcoin)
         .plan(plan::Expected {
             inputs: vec![1_000, 2_000, 4_000, 6_000, 11_000],
-            outputs: vec![2_000, 11_000, 9286],
+            outputs: vec![2_000, 11_000, 9_286],
             vsize_estimate: 857,
             // vsize * fee_rate
             fee_estimate: 1714,
-            change: 9286,
+            change: 9_286,
         });
 }
 
@@ -90,11 +90,11 @@ fn test_exact_selector_with_change_3_desc() {
         .coin(CoinType::Bitcoin)
         .plan(plan::Expected {
             inputs: vec![12_000, 11_000],
-            outputs: vec![2_000, 11_000, 9180],
+            outputs: vec![2_000, 11_000, 9_180],
             vsize_estimate: 410,
             // vsize * fee_rate
             fee_estimate: 820,
-            change: 9180,
+            change: 9_180,
         });
 }
 
@@ -195,26 +195,78 @@ fn test_exact_selector_with_change_many_utxos_900() {
         });
 }
 
-// TODO
-// #[test]
-// fn test_exact_selector_without_change_1() {
-//     let input = plan::make_planning_input(plan::PlanArgs {
-//         inputs: vec![4_000, 2_000, 6_000, 1_000, 11_000, 12_000],
-//         outputs: vec![2_000, 11_000],
-//         change: true,
-//         max: false,
-//         dust_threshold: DUST,
-//         order: Proto::InputSelector::SelectDescending,
-//         fee_per_vb: 2,
-//     });
-//     plan::BitcoinPlanHelper::new(&input)
-//         .coin(CoinType::Bitcoin)
-//         .plan(plan::Expected {
-//             inputs: vec![12_000, 11_000],
-//             outputs: vec![2_000, 11_000, 9180],
-//             vsize_estimate: 410,
-//             // vsize * fee_rate
-//             fee_estimate: 820,
-//             change: 9180,
-//         });
-// }
+#[test]
+fn test_exact_selector_without_change_1() {
+    let input = plan::make_planning_input(plan::PlanArgs {
+        inputs: vec![4_000, 2_000, 6_000, 1_000, 11_000, 12_000],
+        outputs: vec![34_000],
+        change: true,
+        max: false,
+        dust_threshold: DUST,
+        order: Proto::InputSelector::SelectDescending,
+        fee_per_vb: 2,
+    });
+    let dust_change = 36_000 - 34_000 - 1944;
+    assert!(dust_change < DUST);
+    plan::BitcoinPlanHelper::new(&input)
+        .coin(CoinType::Bitcoin)
+        .plan(plan::Expected {
+            inputs: vec![12_000, 11_000, 6_000, 4_000, 2_000, 1_000],
+            outputs: vec![34_000],
+            // vsize also includes theoretical change output.
+            // This was made for simplicity. Consider fixing this later.
+            vsize_estimate: 972,
+            // vsize * fee_rate + dust_change
+            fee_estimate: 972 * 2 + dust_change,
+            change: 0,
+        });
+}
+
+#[test]
+fn test_exact_selector_filter_utxo_dust_with_change() {
+    let input = plan::make_planning_input(plan::PlanArgs {
+        inputs: vec![3_000, 555, 8_000, 1_999],
+        outputs: vec![8_000],
+        change: true,
+        max: false,
+        dust_threshold: 2_000,
+        order: Proto::InputSelector::SelectDescending,
+        fee_per_vb: 2,
+    });
+    plan::BitcoinPlanHelper::new(&input)
+        .coin(CoinType::Bitcoin)
+        .plan(plan::Expected {
+            inputs: vec![8_000, 3_000],
+            outputs: vec![8_000, 2_248],
+            vsize_estimate: 376,
+            // vsize * fee_rate
+            fee_estimate: 752,
+            change: 2_248,
+        });
+}
+
+#[test]
+fn test_exact_selector_filter_utxo_dust_without_change() {
+    let input = plan::make_planning_input(plan::PlanArgs {
+        inputs: vec![3_000, 555, 8_000, 1_999],
+        outputs: vec![9_300],
+        change: true,
+        max: false,
+        dust_threshold: 2_000,
+        order: Proto::InputSelector::SelectDescending,
+        fee_per_vb: 2,
+    });
+    let dust_change = 948;
+    plan::BitcoinPlanHelper::new(&input)
+        .coin(CoinType::Bitcoin)
+        .plan(plan::Expected {
+            inputs: vec![8_000, 3_000],
+            outputs: vec![9_300],
+            // vsize also includes theoretical change output.
+            // This was made for simplicity. Consider fixing this later.
+            vsize_estimate: 376,
+            // vsize * fee_rate + dust_change
+            fee_estimate: 376 * 2 + dust_change,
+            change: 0,
+        });
+}

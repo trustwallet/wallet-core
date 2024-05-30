@@ -4,3 +4,5 @@
 
 mod plan_exact;
 mod plan_exact_error;
+mod plan_max;
+mod plan_max_error;
