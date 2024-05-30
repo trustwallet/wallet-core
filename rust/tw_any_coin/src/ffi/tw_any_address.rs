@@ -8,6 +8,7 @@ use crate::any_address::AnyAddress;
 use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::prefix::AddressPrefix;
 use tw_coin_registry::coin_type::CoinType;
+use tw_coin_registry::tw_derivation::TWDerivation;
 use tw_keypair::ffi::pubkey::TWPublicKey;
 use tw_memory::ffi::tw_data::TWData;
 use tw_memory::ffi::tw_string::TWString;
@@ -89,7 +90,8 @@ pub unsafe extern "C" fn tw_any_address_create_with_public_key_derivation(
     derivation: u32,
 ) -> *mut TWAnyAddress {
     let public_key = try_or_else!(TWPublicKey::from_ptr_as_ref(public_key), std::ptr::null_mut);
-    let derivation = try_or_else!(Derivation::from_raw(derivation), std::ptr::null_mut);
+    let derivation = try_or_else!(TWDerivation::from_repr(derivation), std::ptr::null_mut);
+    let derivation = Derivation::from(derivation);
     let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
 
     AnyAddress::with_public_key(coin, public_key.as_ref().clone(), derivation, None)

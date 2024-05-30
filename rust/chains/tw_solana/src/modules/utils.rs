@@ -40,7 +40,7 @@ impl SolanaTransaction {
             bincode::deserialize(&tx_bytes).map_err(|_| SigningErrorType::Error_input_parse)?;
         let mut msg_to_sign = tx_to_sign.message;
 
-        let new_blockchain_hash = base58::decode(recent_blockhash, &SOLANA_ALPHABET)?;
+        let new_blockchain_hash = base58::decode(recent_blockhash, SOLANA_ALPHABET)?;
         let new_blockchain_hash = H256::try_from(new_blockchain_hash.as_slice())
             .tw_err(|_| SigningErrorType::Error_invalid_params)?;
 

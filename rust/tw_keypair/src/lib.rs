@@ -45,6 +45,7 @@
 pub mod ecdsa;
 pub mod ed25519;
 pub mod ffi;
+pub mod schnorr;
 pub mod starkex;
 pub mod traits;
 pub mod tw;

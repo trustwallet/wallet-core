@@ -14,7 +14,7 @@ use tw_proto::Solana::Proto::mod_RawMessage as raw_message;
 use tw_proto::Solana::Proto::mod_RawMessage::OneOfmessage as MessageType;
 
 fn b58(s: &str) -> Cow<'static, [u8]> {
-    base58::decode(s, Alphabet::BITCOIN).unwrap().into()
+    base58::decode(s, Alphabet::Bitcoin).unwrap().into()
 }
 
 fn check_and_update_recent_blockhash(

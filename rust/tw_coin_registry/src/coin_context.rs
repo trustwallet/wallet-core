@@ -4,6 +4,7 @@
 
 use crate::registry::CoinItem;
 use tw_coin_entry::coin_context::CoinContext;
+use tw_coin_entry::derivation::DerivationWithPath;
 use tw_hash::hasher::Hasher;
 use tw_keypair::tw::PublicKeyType;
 
@@ -32,5 +33,20 @@ impl CoinContext for CoinRegistryContext {
     #[inline]
     fn hrp(&self) -> Option<String> {
         self.item.hrp.clone()
+    }
+
+    #[inline]
+    fn p2pkh_prefix(&self) -> Option<u8> {
+        self.item.p2pkh_prefix
+    }
+
+    #[inline]
+    fn p2sh_prefix(&self) -> Option<u8> {
+        self.item.p2sh_prefix
+    }
+
+    #[inline]
+    fn derivations(&self) -> &[DerivationWithPath] {
+        &self.item.derivation
     }
 }

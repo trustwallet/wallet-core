@@ -162,21 +162,3 @@ struct TWBitcoinScript *_Nonnull TWBitcoinScriptLockScriptForAddressReplay(TWStr
 uint32_t TWBitcoinScriptHashTypeForCoin(enum TWCoinType coinType) {
     return TW::Bitcoin::hashTypeForCoin(coinType);
 }
-
-TWData *_Nullable TWBitcoinScriptBuildBRC20InscribeTransfer(TWString* ticker, TWString* amount, TWData* pubkey) {
-    auto* brcTicker = reinterpret_cast<const std::string*>(ticker);
-    auto* brcAmount = reinterpret_cast<const std::string*>(amount);
-    auto* brcPubkey = reinterpret_cast<const TW::Data*>(pubkey);
-    auto script = TW::Bitcoin::Script::buildBRC20InscribeTransfer(*brcTicker, *brcAmount, *brcPubkey);
-    auto serialized = TW::data(script.SerializeAsString());
-    return TWDataCreateWithBytes(serialized.data(), serialized.size());
-}
-
-TWData *_Nullable TWBitcoinScriptBuildOrdinalNftInscription(TWString* mimeType, TWData* payload, TWData* pubkey) {
-    auto* ordMimeType = reinterpret_cast<const std::string*>(mimeType);
-    auto* ordPayload = reinterpret_cast<const TW::Data*>(payload);
-    auto* ordPubkey = reinterpret_cast<const TW::Data*>(pubkey);
-    auto script = TW::Bitcoin::Script::buildOrdinalNftInscription(*ordMimeType, *ordPayload, *ordPubkey);
-    auto serialized = TW::data(script.SerializeAsString());
-    return TWDataCreateWithBytes(serialized.data(), serialized.size());
-}

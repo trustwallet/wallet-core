@@ -18,11 +18,14 @@ fn test_bitcoin_address_normalization() {
 
 #[test]
 fn test_bitcoin_address_is_valid() {
+    // P2PKH
     test_address_valid(CoinType::Bitcoin, "1MrZNGN7mfWZiZNQttrzHjfw72jnJC2JNx");
+    // P2WSH address: Witness V0, 32 bytes program
     test_address_valid(
         CoinType::Bitcoin,
         "bc1qunq74p3h8425hr6wllevlvqqr6sezfxj262rff",
     );
+    // P2TR address: Witness V1, 32 bytes program
     test_address_valid(
         CoinType::Bitcoin,
         "bc1pwse34zfpvt344rvlt7tw0ngjtfh9xasc4q03avf0lk74jzjpzjuqaz7ks5",
@@ -41,7 +44,7 @@ fn test_bitcoin_address_invalid() {
 fn test_bitcoin_address_get_data() {
     test_address_get_data(
         CoinType::Bitcoin,
-        "1MrZNGN7mfWZiZNQttrzHjfw72jnJC2JNx",
-        "314d725a4e474e376d66575a695a4e517474727a486a667737326a6e4a43324a4e78",
+        "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx",
+        "00769bdff96a02f9135a1d19b749db6a78fe07dc90",
     );
 }

@@ -31,7 +31,7 @@ TEST(VergeAddress, FromPrivateKey) {
     auto address = Address(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeVerge));
     ASSERT_EQ(address.string(), "DRyNFvJaybnF22UfMS6NR1Qav3mqxPj86E");
 
-    auto addr = TW::deriveAddress(TWCoinTypeVerge, publicKey, TWDerivationBitcoinSegwit);
+    auto addr = TW::deriveAddress(TWCoinTypeVerge, publicKey, TWDerivationSegwit);
     ASSERT_EQ(addr, "vg1qujpe553lzgyg95g7k0w6zwscuy0ae022h4q4zg");
 }
 
@@ -40,7 +40,7 @@ TEST(VergeAddress, FromPublicKey) {
     auto address = Address(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeVerge));
     ASSERT_EQ(address.string(), "D8rBdwBfz5wvLhmHvRkXnNzeeihQgxkLmL");
 
-    auto addr = TW::deriveAddress(TWCoinTypeVerge, publicKey, TWDerivationBitcoinLegacy);
+    auto addr = TW::deriveAddress(TWCoinTypeVerge, publicKey, TWDerivationLegacy);
     ASSERT_EQ(addr, "D8rBdwBfz5wvLhmHvRkXnNzeeihQgxkLmL");
 }
 

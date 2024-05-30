@@ -39,7 +39,7 @@ impl FromStr for ObjectDigest {
     type Err = SigningError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let bytes = base58::decode(s, Alphabet::BITCOIN)
+        let bytes = base58::decode(s, Alphabet::Bitcoin)
             .tw_err(|_| SigningErrorType::Error_invalid_params)
             .context("Invalid Object Digest: expected valid base58 string")?;
         H256::try_from(bytes.as_slice())

@@ -31,7 +31,7 @@ TEST(BitcoinDiamondAddress, FromPublicKey) {
     auto addr = wallet.deriveAddress(TWCoinTypeBitcoinDiamond);
     EXPECT_EQ(addr, "1KaRW9xPPtCTZ9FdaTHduCPck4YvSeEWNn");
 
-    addr = wallet.deriveAddress(TWCoinTypeBitcoinDiamond, TWDerivationBitcoinSegwit);
+    addr = wallet.deriveAddress(TWCoinTypeBitcoinDiamond, TWDerivationSegwit);
     EXPECT_EQ(addr, "bcd1q7jh5qukuy9fc2pjm89xnyvx5dtfyvru9evw30x");
 }
 
@@ -45,7 +45,7 @@ TEST(BitcoinDiamondAddress, FromString) {
 
 TEST(BitcoinDiamondAddress, AddressData) {
     const auto publicKey = PublicKey(parse_hex("02485a209514cc896f8ed736e205bc4c35bd5299ef3f9e84054475336b964c02a3"), TWPublicKeyTypeSECP256k1);
-    auto address = TW::deriveAddress(TWCoinTypeBitcoinDiamond, publicKey, TWDerivationBitcoinSegwit);
+    auto address = TW::deriveAddress(TWCoinTypeBitcoinDiamond, publicKey, TWDerivationSegwit);
 
     auto data = TW::addressToData(TWCoinTypeBitcoinDiamond, "1G15VvshDxwFTnahZZECJfFwEkq9fP79o8");
     ASSERT_EQ(hex(data), "a48da46386ce52cccad178de900c71f06130c310");

@@ -68,7 +68,7 @@ impl SolanaCompiler {
         public_keys: Vec<PublicKeyBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let encode = move |data| match input.tx_encoding {
-            Proto::Encoding::Base58 => base58::encode(data, &SOLANA_ALPHABET),
+            Proto::Encoding::Base58 => base58::encode(data, SOLANA_ALPHABET),
             Proto::Encoding::Base64 => base64::encode(data, false),
         };
 

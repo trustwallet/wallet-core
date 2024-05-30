@@ -8,6 +8,7 @@ use crate::error::{RegistryError, RegistryResult};
 use lazy_static::lazy_static;
 use serde::Deserialize;
 use std::collections::HashMap;
+use tw_coin_entry::derivation::DerivationWithPath;
 use tw_hash::hasher::Hasher;
 use tw_keypair::tw::PublicKeyType;
 
@@ -29,9 +30,12 @@ pub struct CoinItem {
     pub name: String,
     pub coin_id: CoinType,
     pub blockchain: BlockchainType,
+    pub derivation: Vec<DerivationWithPath>,
     pub public_key_type: PublicKeyType,
     pub address_hasher: Option<Hasher>,
     pub hrp: Option<String>,
+    pub p2pkh_prefix: Option<u8>,
+    pub p2sh_prefix: Option<u8>,
 }
 
 #[inline]

@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::ecdsa::{nist256p1, secp256k1};
+use crate::schnorr;
 use crate::traits::SigningKeyTrait;
 use crate::tw::{Curve, PublicKey, PublicKeyType};
 use crate::{ed25519, starkex, KeyPairError, KeyPairResult};
@@ -85,6 +86,7 @@ impl PrivateKey {
                     .is_ok()
             },
             Curve::Starkex => starkex::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
+            Curve::Schnorr => schnorr::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
         }
     }
 
@@ -109,6 +111,7 @@ impl PrivateKey {
                 sign_impl(self.to_ed25519_extended_cardano()?, message)
             },
             Curve::Starkex => sign_impl(self.to_starkex_privkey()?, message),
+            Curve::Schnorr => sign_impl(self.to_schnorr_privkey()?, message),
         }
     }
 
@@ -153,6 +156,10 @@ impl PrivateKey {
                 let privkey = self.to_starkex_privkey()?;
                 Ok(PublicKey::Starkex(privkey.public()))
             },
+            PublicKeyType::Schnorr => {
+                let privkey = self.to_schnorr_privkey()?;
+                Ok(PublicKey::Schnorr(privkey.public()))
+            },
         }
     }
 
@@ -189,5 +196,10 @@ impl PrivateKey {
     /// Tries to convert [`PrivateKey::key`] to [`starkex::PrivateKey`].
     fn to_starkex_privkey(&self) -> KeyPairResult<starkex::PrivateKey> {
         starkex::PrivateKey::try_from(self.key().as_slice())
+    }
+
+    /// Tries to convert [`PrivateKey::key`] to [`schnorr::PrivateKey`].
+    fn to_schnorr_privkey(&self) -> KeyPairResult<schnorr::PrivateKey> {
+        schnorr::PrivateKey::try_from(self.key().as_slice())
     }
 }

@@ -113,13 +113,13 @@ class TestHDWallet {
         val coin = CoinType.BITCOIN
         val wallet = HDWallet(words, password)
 
-        val key1 = wallet.getKeyDerivation(coin, Derivation.BITCOINSEGWIT)
+        val key1 = wallet.getKeyDerivation(coin, Derivation.SEGWIT)
         assertEquals(key1.data().toHex(), "0x1901b5994f075af71397f65bd68a9fff8d3025d65f5a2c731cf90f5e259d6aac")
 
-        val key2 = wallet.getKeyDerivation(coin, Derivation.BITCOINLEGACY)
+        val key2 = wallet.getKeyDerivation(coin, Derivation.LEGACY)
         assertEquals(key2.data().toHex(), "0x28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4")
 
-        val key3 = wallet.getKeyDerivation(coin, Derivation.BITCOINTESTNET)
+        val key3 = wallet.getKeyDerivation(coin, Derivation.TESTNET)
         assertEquals(key3.data().toHex(), "0xca5845e1b43e3adf577b7f110b60596479425695005a594c88f9901c3afe864f")
     }
 
@@ -137,13 +137,13 @@ class TestHDWallet {
         val coin = CoinType.BITCOIN
         val wallet = HDWallet(words, password)
 
-        val address1 = wallet.getAddressDerivation(coin, Derivation.BITCOINSEGWIT)
+        val address1 = wallet.getAddressDerivation(coin, Derivation.SEGWIT)
         assertEquals(address1, "bc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85")
 
-        val address2 = wallet.getAddressDerivation(coin, Derivation.BITCOINLEGACY)
+        val address2 = wallet.getAddressDerivation(coin, Derivation.LEGACY)
         assertEquals(address2, "1PeUvjuxyf31aJKX6kCXuaqxhmG78ZUdL1")
 
-        val address3 = wallet.getAddressDerivation(coin, Derivation.BITCOINTESTNET)
+        val address3 = wallet.getAddressDerivation(coin, Derivation.TESTNET)
         assertEquals(address3, "tb1qwgpxgwn33z3ke9s7q65l976pseh4edrzfmyvl0")
     }
 

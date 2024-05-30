@@ -1,0 +1,12 @@
+[package]
+name = "tw_base58_address"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+tw_coin_entry = { path = "../tw_coin_entry" }
+tw_encoding = { path = "../tw_encoding" }
+tw_hash = { path = "../tw_hash" }

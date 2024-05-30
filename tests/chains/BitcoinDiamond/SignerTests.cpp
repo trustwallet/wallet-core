@@ -104,7 +104,7 @@ TEST(BitcoinDiamondSigner, SignSegwit) {
     auto utxoKey0 =
         PrivateKey(parse_hex("d2b9f2846d3adcead910ee0124a3ba7ae29e8a4729787d27f9bea1f532928eee"));
     auto utxoAddr0 =
-        TW::deriveAddress(TWCoinTypeBitcoinDiamond, utxoKey0, TWDerivationBitcoinSegwit);
+        TW::deriveAddress(TWCoinTypeBitcoinDiamond, utxoKey0, TWDerivationSegwit);
     ASSERT_EQ(utxoAddr0, "bcd1q5jx6gcuxeefvejk30r0fqrr37psnpscslrrd0y");
     auto script0 = Bitcoin::Script::lockScriptForAddress(utxoAddr0, TWCoinTypeBitcoinDiamond);
     ASSERT_EQ(hex(script0.bytes), "0014a48da46386ce52cccad178de900c71f06130c310");
@@ -162,7 +162,7 @@ TEST(BitcoinDiamondSigner, SignAnyoneCanPay) {
     auto utxoKey0 =
         PrivateKey(parse_hex("d2b9f2846d3adcead910ee0124a3ba7ae29e8a4729787d27f9bea1f532928eee"));
     auto utxoAddr0 =
-        TW::deriveAddress(TWCoinTypeBitcoinDiamond, utxoKey0, TWDerivationBitcoinSegwit);
+        TW::deriveAddress(TWCoinTypeBitcoinDiamond, utxoKey0, TWDerivationSegwit);
     ASSERT_EQ(utxoAddr0, "bcd1q5jx6gcuxeefvejk30r0fqrr37psnpscslrrd0y");
     auto script0 = Bitcoin::Script::lockScriptForAddress(utxoAddr0, TWCoinTypeBitcoinDiamond);
     ASSERT_EQ(hex(script0.bytes), "0014a48da46386ce52cccad178de900c71f06130c310");

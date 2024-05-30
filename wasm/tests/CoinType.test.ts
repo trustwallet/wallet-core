@@ -26,7 +26,7 @@ describe("CoinType", () => {
     assert.equal(CoinTypeExt.curve(CoinType.solana), Curve.ed25519);
     assert.isTrue(CoinTypeExt.validate(CoinType.solana, "Bxp8yhH9zNwxyE4UqxP7a7hgJ5xTZfxNNft7YJJ2VRjT"))
     assert.equal(CoinTypeExt.derivationPath(CoinType.solana), "m/44'/501'/0'");
-    assert.equal(CoinTypeExt.derivationPathWithDerivation(CoinType.solana, Derivation.solanaSolana), "m/44'/501'/0'/0'");
+    assert.equal(CoinTypeExt.derivationPathWithDerivation(CoinType.solana, Derivation.solana), "m/44'/501'/0'/0'");
   });
 
   it("test deriveAddress", () => {
@@ -52,7 +52,7 @@ describe("CoinType", () => {
 
     const data = HexCoding.decode("0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798");
     const key = PublicKey.createWithData(data, PublicKeyType.secp256k1);
-    const addr = CoinTypeExt.deriveAddressFromPublicKeyAndDerivation(CoinType.bitcoin, key, Derivation.bitcoinSegwit);
+    const addr = CoinTypeExt.deriveAddressFromPublicKeyAndDerivation(CoinType.bitcoin, key, Derivation.segwit);
     assert.equal(addr, "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4");
   });
 });

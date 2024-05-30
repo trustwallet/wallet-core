@@ -32,7 +32,7 @@ TEST(AnyAddress, createFromPubKeyDerivation) {
         EXPECT_EQ(addr->address, ANY_ADDRESS_TEST_ADDRESS);
     }
     {
-        std::unique_ptr<AnyAddress> addr(AnyAddress::createAddress(publicKey, TWCoinTypeBitcoin, TWDerivationBitcoinLegacy, std::monostate()));
+        std::unique_ptr<AnyAddress> addr(AnyAddress::createAddress(publicKey, TWCoinTypeBitcoin, TWDerivationLegacy, std::monostate()));
         EXPECT_EQ(addr->address, "1JvRfEQFv5q5qy9uTSAezH7kVQf4hqnHXx");
     }
 }

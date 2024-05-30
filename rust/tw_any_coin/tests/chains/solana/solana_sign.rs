@@ -13,7 +13,7 @@ use tw_proto::Solana::Proto;
 use tw_proto::Solana::Proto::mod_SigningInput::OneOftransaction_type as TransactionType;
 
 fn b58(s: &str) -> Cow<'static, [u8]> {
-    base58::decode(s, Alphabet::BITCOIN).unwrap().into()
+    base58::decode(s, Alphabet::Bitcoin).unwrap().into()
 }
 
 #[test]

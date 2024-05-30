@@ -52,6 +52,7 @@ enum Error {
     Error_bad_address_recipient = 35;
     Error_ordinal_mime_type_too_large = 38;
     Error_ordinal_payload_too_large = 40;
+    Error_internal = 50;
 }
 
 message SigningInput {

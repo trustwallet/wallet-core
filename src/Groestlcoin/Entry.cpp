@@ -22,7 +22,7 @@ std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicK
     auto p2pkh =  getFromPrefixPkhOrDefault(addressPrefix, coin);
     
     switch (derivation) {
-    case TWDerivationBitcoinLegacy:
+    case TWDerivationLegacy:
         return Address(publicKey, p2pkh).string();
     default:
         return TW::Bitcoin::SegwitAddress(publicKey, hrp).string();

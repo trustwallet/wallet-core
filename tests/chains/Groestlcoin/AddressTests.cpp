@@ -54,19 +54,19 @@ TEST(GroestlcoinAddress, Derive) {
     auto address = TW::deriveAddress(TWCoinTypeGroestlcoin, wallet.getKey(TWCoinTypeGroestlcoin, path));
     ASSERT_EQ(address, "grs1qw4teyraux2s77nhjdwh9ar8rl9dt7zww8r6lne");
 
-    address = TW::deriveAddress(TWCoinTypeGroestlcoin, wallet.getKey(TWCoinTypeGroestlcoin, path), TWDerivationBitcoinLegacy);
+    address = TW::deriveAddress(TWCoinTypeGroestlcoin, wallet.getKey(TWCoinTypeGroestlcoin, path), TWDerivationLegacy);
     ASSERT_EQ(address, "FfsAQrzfdECwEsApubn2rvxgamU8CcqsLT");
 }
 
 TEST(GroestlcoinAddress, AddressData) {
     const auto publicKey = PublicKey(parse_hex("03b85cc59b67c35851eb5060cfc3a759a482254553c5857075c9e247d74d412c91"), TWPublicKeyTypeSECP256k1);
-    auto address = TW::deriveAddress(TWCoinTypeGroestlcoin, publicKey, TWDerivationBitcoinLegacy);
+    auto address = TW::deriveAddress(TWCoinTypeGroestlcoin, publicKey, TWDerivationLegacy);
     ASSERT_EQ(address, "Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM");
 
     auto addressData = TW::addressToData(TWCoinTypeGroestlcoin, address);
     ASSERT_EQ(hex(addressData), "98af0aaca388a7e1024f505c033626d908e3b54a");
 
-    address = TW::deriveAddress(TWCoinTypeGroestlcoin, publicKey, TWDerivationBitcoinSegwit);
+    address = TW::deriveAddress(TWCoinTypeGroestlcoin, publicKey, TWDerivationSegwit);
     EXPECT_EQ(address, "grs1qnzhs4t9r3zn7zqj02pwqxd3xmyyw8d22q55nf8");
 
     addressData = TW::addressToData(TWCoinTypeGroestlcoin, address);

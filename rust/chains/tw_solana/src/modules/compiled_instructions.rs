@@ -54,7 +54,7 @@ mod tests {
     fn test_compile_instruction() {
         let public_0 = base58::decode(
             "GymAh18wHuFTytfSJWi8eYTA9x5S3sNb9CJSGBWoPRE3",
-            &SOLANA_ALPHABET,
+            SOLANA_ALPHABET,
         )
         .unwrap();
         let public_0 = ed25519::sha512::PublicKey::try_from(public_0.as_slice()).unwrap();
@@ -62,7 +62,7 @@ mod tests {
 
         let public_1 = base58::decode(
             "2oKoYSAHgveX91917v4DUEuN8BNKXDg8KJWpaGyEay9V",
-            &SOLANA_ALPHABET,
+            SOLANA_ALPHABET,
         )
         .unwrap();
         let public_1 = ed25519::sha512::PublicKey::try_from(public_1.as_slice()).unwrap();

@@ -4,6 +4,7 @@
 
 pub mod blockchain_type;
 pub mod coin_context;
+pub mod tw_derivation;
 pub mod dispatcher;
 pub mod error;
 pub mod registry;

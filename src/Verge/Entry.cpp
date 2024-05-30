@@ -27,7 +27,7 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDeriv
     const char* hrp = getFromPrefixHrpOrDefault(addressPrefix, coin);
 
     switch (derivation) {
-    case TWDerivationBitcoinLegacy:
+    case TWDerivationLegacy:
     case TWDerivationDefault:
         return Bitcoin::Address(publicKey, p2pkh).string();
     default:
