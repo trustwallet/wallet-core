@@ -48,6 +48,10 @@ impl<'a> BitcoinSignHelper<'a> {
         let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
         let output = signer.sign(coin_type, self.input.clone());
 
+        self.verify_output(output, expected);
+    }
+
+    pub fn verify_output(self, output: Proto::SigningOutput, expected: Expected) {
         assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
 
         let tx = output.transaction.as_ref().unwrap();
