@@ -27,6 +27,7 @@ members = [
     "tw_number",
     "tw_proto",
     "tw_utxo",
+    "wallet_core_bin",
     "wallet_core_rs",
 ]
 

@@ -14,7 +14,7 @@ use tw_keypair::tw::PublicKeyType;
 type RegistryMap = HashMap<CoinType, CoinItem>;
 
 /// cbindgen:ignore
-const REGISTRY_JSON: &str =
+pub const REGISTRY_JSON: &str =
     include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../registry.json"));
 
 lazy_static! {

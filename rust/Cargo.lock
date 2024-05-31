@@ -2132,6 +2132,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "wallet_core_bin"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "tw_coin_registry",
+]
+
+[[package]]
 name = "wasi"
 version = "0.11.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
