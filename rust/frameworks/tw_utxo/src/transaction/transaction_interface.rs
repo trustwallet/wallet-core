@@ -65,4 +65,6 @@ pub trait TxOutputInterface: Clone + Default + Encodable {
     fn value(&self) -> Amount;
 
     fn set_value(&mut self, value: Amount);
+
+    fn script_pubkey(&self) -> &Script;
 }

@@ -357,6 +357,10 @@ impl TxOutputInterface for TransactionOutput {
     fn set_value(&mut self, value: Amount) {
         self.value = value;
     }
+
+    fn script_pubkey(&self) -> &Script {
+        &self.script_pubkey
+    }
 }
 
 impl Encodable for TransactionOutput {

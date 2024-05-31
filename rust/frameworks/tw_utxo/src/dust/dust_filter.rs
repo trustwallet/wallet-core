@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::dust::DustPolicy;
+use crate::script::standard_script::conditions;
 use crate::transaction::transaction_interface::{TransactionInterface, TxOutputInterface};
 use crate::transaction::unsigned_transaction::UnsignedTransaction;
 use std::marker::PhantomData;
@@ -41,11 +42,13 @@ impl<Transaction: TransactionInterface> DustFilter<Transaction> {
     ) -> SigningResult<()> {
         let dust_threshold = self.dust_policy.dust_threshold();
 
-        let has_dust_output = transaction
-            .transaction()
-            .outputs()
-            .iter()
-            .any(|output| output.value() < dust_threshold);
+        let has_dust_output = transaction.transaction().outputs().iter().any(|output| {
+            if conditions::is_op_return(output.script_pubkey()) {
+                // Ignore the OP_RETURN output value. It can (or even should) be 0.
+                return false;
+            }
+            output.value() < dust_threshold
+        });
 
         if has_dust_output {
             return SigningError::err(SigningErrorType::Error_dust_amount_requested);

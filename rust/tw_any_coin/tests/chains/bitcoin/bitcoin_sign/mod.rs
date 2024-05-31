@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 mod brc20;
+mod op_return;
 mod ordinal_nft;
 mod p2pkh;
 mod p2sh;

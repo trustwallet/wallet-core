@@ -70,7 +70,7 @@ fn test_bitcoin_sign_input_p2pkh_output_p2pkh() {
 }
 
 /// TODO consider moving this test to `bitcoin_cash`.
-/// Original: https://github.com/trustwallet/wallet-core/blob/cd5a27481d2181e63362cb57e2b2160506cce163/tests/chains/BitcoinCash/TWBitcoinCashTests.cpp#L122-L164
+/// Original test: https://github.com/trustwallet/wallet-core/blob/cd5a27481d2181e63362cb57e2b2160506cce163/tests/chains/BitcoinCash/TWBitcoinCashTests.cpp#L122-L164
 /// *Note* that if we enable change output, current selection algorithm will calculate
 /// different change and fee amounts than in the original test.
 #[test]

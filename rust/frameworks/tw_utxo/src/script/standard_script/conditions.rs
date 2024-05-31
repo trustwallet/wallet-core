@@ -169,6 +169,11 @@ pub fn is_p2tr(s: &Script) -> bool {
     b.len() == 34 && b[0] == TAPROOT_VERSION && b[1] == OP_PUSHBYTES_32
 }
 
+pub fn is_op_return(s: &Script) -> bool {
+    let b = s.as_data();
+    !b.is_empty() && b[0] == OP_RETURN
+}
+
 /// Returns either a compressed or uncompressed public key data if matched.
 pub fn match_p2pk(s: &Script) -> Option<Data> {
     let b = s.as_data();

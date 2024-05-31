@@ -143,4 +143,8 @@ pub mod output {
     pub fn to_address(addr: &str) -> RecipientType<'static> {
         RecipientType::to_address(addr.to_string().into())
     }
+
+    pub fn op_return(data: Data) -> RecipientType<'static> {
+        receiver_builder(OutputBuilderType::op_return(data.into()))
+    }
 }
