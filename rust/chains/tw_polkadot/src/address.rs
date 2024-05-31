@@ -6,11 +6,32 @@ use std::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
+use tw_coin_entry::prefix::AddressPrefix;
 use tw_memory::Data;
 use tw_ss58_address::{NetworkId, SS58Address};
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub struct PolkadotPrefix(NetworkId);
+
+impl PolkadotPrefix {
+    pub fn network(self) -> NetworkId {
+        self.0
+    }
+}
+
+impl TryFrom<AddressPrefix> for PolkadotPrefix {
+    type Error = AddressError;
+
+    fn try_from(prefix: AddressPrefix) -> Result<Self, Self::Error> {
+        match prefix {
+            AddressPrefix::SubstrateNetwork(network) => NetworkId::from_u16(network).map(Self),
+            _ => Err(AddressError::UnexpectedAddressPrefix),
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct PolkadotAddress(SS58Address);
+pub struct PolkadotAddress(pub SS58Address);
 
 impl PolkadotAddress {
     pub fn with_network_check(self) -> AddressResult<Self> {
