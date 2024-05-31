@@ -61,26 +61,26 @@ macro_rules! call_indices {
 lazy_static! {
     static ref CALL_INDICES_BY_NETWORK: HashMap<NetworkId, CallIndicesTable> = call_indices! {
         NetworkId::POLKADOT => {
-            BALANCE_TRANSFER        => [0x05, 0x00],
-            STAKING_BOND            => [0x07, 0x00],
-            STAKING_BOND_EXTRA      => [0x07, 0x01],
-            STAKING_CHILL           => [0x07, 0x06],
-            STAKING_NOMINATE        => [0x07, 0x05],
-            STAKING_REBOND          => [0x07, 0x13],
-            STAKING_UNBOND          => [0x07, 0x02],
+            BALANCE_TRANSFER          => [0x05, 0x00],
+            STAKING_BOND              => [0x07, 0x00],
+            STAKING_BOND_EXTRA        => [0x07, 0x01],
+            STAKING_CHILL             => [0x07, 0x06],
+            STAKING_NOMINATE          => [0x07, 0x05],
+            STAKING_REBOND            => [0x07, 0x13],
+            STAKING_UNBOND            => [0x07, 0x02],
             STAKING_WITHDRAW_UNBONDED => [0x07, 0x03],
-            UTILITY_BATCH           => [0x1a, 0x02],
+            UTILITY_BATCH             => [0x1a, 0x02],
         },
         NetworkId::KUSAMA => {
-            BALANCE_TRANSFER        => [0x04, 0x00],
-            STAKING_BOND            => [0x06, 0x00],
-            STAKING_BOND_EXTRA      => [0x06, 0x01],
-            STAKING_CHILL           => [0x06, 0x06],
-            STAKING_NOMINATE        => [0x06, 0x05],
-            STAKING_REBOND          => [0x06, 0x13],
-            STAKING_UNBOND          => [0x06, 0x02],
+            BALANCE_TRANSFER          => [0x04, 0x00],
+            STAKING_BOND              => [0x06, 0x00],
+            STAKING_BOND_EXTRA        => [0x06, 0x01],
+            STAKING_CHILL             => [0x06, 0x06],
+            STAKING_NOMINATE          => [0x06, 0x05],
+            STAKING_REBOND            => [0x06, 0x13],
+            STAKING_UNBOND            => [0x06, 0x02],
             STAKING_WITHDRAW_UNBONDED => [0x06, 0x03],
-            UTILITY_BATCH           => [0x18, 0x02],
+            UTILITY_BATCH             => [0x18, 0x02],
         }
     };
 }
@@ -106,9 +106,7 @@ pub struct Extrinsic<'a> {
 
 impl<'a> Extrinsic<'a> {
     pub fn from_input(input: Proto::SigningInput<'a>) -> Self {
-        Self {
-            inner: input.to_owned(),
-        }
+        Self { inner: input }
     }
 
     fn get_call_index_for_network(network: NetworkId, key: &str) -> EncodeResult<Vec<u8>> {
