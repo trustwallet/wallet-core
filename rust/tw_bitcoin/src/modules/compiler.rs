@@ -14,6 +14,7 @@ use tw_proto::BitcoinV3::Proto::mod_PreSigningOutput::{
     SigningMethod as ProtoSigningMethod, TaprootTweak as ProtoTaprootTweak,
 };
 use tw_utxo::modules::sighash_computer::{SighashComputer, TaprootTweak, TxPreimage};
+use tw_utxo::modules::sighash_verifier::SighashVerifier;
 use tw_utxo::modules::tx_compiler::TxCompiler;
 use tw_utxo::modules::tx_planner::TxPlanner;
 use tw_utxo::modules::utxo_selector::SelectResult;
@@ -79,6 +80,7 @@ impl BitcoinCompiler {
         let request = SigningRequestBuilder::build(coin, &input)?;
         let SelectResult { unsigned_tx, plan } = TxPlanner::plan(request)?;
 
+        SighashVerifier::verify_signatures(&unsigned_tx, &signatures)?;
         let signed_tx = TxCompiler::compile(unsigned_tx, &signatures)?;
         let tx_proto = ProtobufBuilder::tx_to_proto(&signed_tx);
 

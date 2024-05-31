@@ -11,6 +11,7 @@ use crate::transaction::transaction_interface::{
     TransactionInterface, TxInputInterface, TxOutputInterface,
 };
 use crate::transaction::transaction_parts::{Amount, OutPoint};
+use crate::transaction::transaction_sighash::fork_id_sighash::ForkIdSighash;
 use crate::transaction::transaction_sighash::legacy_sighash::LegacySighash;
 use crate::transaction::transaction_sighash::witness0_sighash::Witness0Sighash;
 use crate::transaction::{TransactionPreimage, UtxoPreimageArgs};
@@ -211,6 +212,9 @@ impl Encodable for Transaction {
 impl TransactionPreimage for Transaction {
     fn preimage_tx(&self, args: &UtxoPreimageArgs) -> SigningResult<H256> {
         match args.signing_method {
+            SigningMethod::Legacy if args.sighash_ty.fork_id() => {
+                ForkIdSighash::<Self>::sighash_tx(self, args)
+            },
             SigningMethod::Legacy => LegacySighash::<Self>::sighash_tx(self, args),
             SigningMethod::Segwit => Witness0Sighash::<Self>::sighash_tx(self, args),
             SigningMethod::Taproot => SigningError::err(SigningErrorType::Error_internal).context(

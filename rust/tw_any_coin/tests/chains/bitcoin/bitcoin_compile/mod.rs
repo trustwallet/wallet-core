@@ -2,4 +2,5 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+mod compile_error;
 mod p2pkh;

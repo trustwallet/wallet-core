@@ -186,7 +186,18 @@ message ChainInfo {
     uint32 p2sh_prefix = 2;
 }
 
+enum TransactionVersion {
+    // V2 is used by default.
+    UseDefault = 0;
+    // Original transaction version.
+    V1 = 1;
+    // https://github.com/bitcoin/bips/blob/master/bip-0068.mediawiki#specification
+    V2 = 2;
+}
+
 message SigningInput {
+    // Transaction version.
+    TransactionVersion version = 1;
     // User private keys.
     // Only required if the `sign` method is called.
     repeated bytes private_keys = 2;

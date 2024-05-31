@@ -16,20 +16,21 @@ pub fn new_p2pk(sig: &BitcoinEcdsaSignature) -> Script {
     s
 }
 
-/// Creates script items to claim a P2SH spending condition.
-/// (_witness_).
-///
-/// ```txt
-/// <push><item_1><push><item_2><push><redeem_script>
-/// ```
-pub fn new_p2sh(items: Vec<Script>, redeem_script: Script) -> Script {
-    let mut s = Script::new();
-    for item in items {
-        s.push_slice(item.as_data());
-    }
-    s.push_slice(redeem_script.as_data());
-    s
-}
+// TODO next iteration.
+// /// Creates script items to claim a P2SH spending condition.
+// /// (_witness_).
+// ///
+// /// ```txt
+// /// <push><item_1><push><item_2><push><redeem_script>
+// /// ```
+// pub fn new_p2sh(items: Vec<Script>, redeem_script: Script) -> Script {
+//     let mut s = Script::new();
+//     for item in items {
+//         s.push_slice(item.as_data());
+//     }
+//     s.push_slice(redeem_script.as_data());
+//     s
+// }
 
 /// Creates a script to claim a P2PKH spending condition (_scriptSig_).
 /// See [`tw_keypair::ecdsa::der::Signature::der_bytes`].
@@ -44,23 +45,24 @@ pub fn new_p2pkh(sig: &BitcoinEcdsaSignature, pubkey: &H264) -> Script {
     s
 }
 
-/// Creates witness script items to claim a P2WSH spending condition
-/// (_witness_).
-///
-/// ```txt
-/// <witness_item_1>
-/// <witness_item_2>
-/// ...
-/// <redeem_script>
-/// ```
-pub fn new_p2wsh(items: Vec<Script>, redeem_script: Script) -> Witness {
-    let mut w = Witness::new();
-    for item in items {
-        w.push_item(item.clone());
-    }
-    w.push_item(redeem_script);
-    w
-}
+// TODO next iteration.
+// /// Creates witness script items to claim a P2WSH spending condition
+// /// (_witness_).
+// ///
+// /// ```txt
+// /// <witness_item_1>
+// /// <witness_item_2>
+// /// ...
+// /// <redeem_script>
+// /// ```
+// pub fn new_p2wsh(items: Vec<Script>, redeem_script: Script) -> Witness {
+//     let mut w = Witness::new();
+//     for item in items {
+//         w.push_item(item.clone());
+//     }
+//     w.push_item(redeem_script);
+//     w
+// }
 
 /// Creates witness script items to claim a P2WPKH spending condition
 /// (_witness_).

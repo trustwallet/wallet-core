@@ -16,7 +16,7 @@ use tw_utxo::transaction::standard_transaction::builder::TransactionBuilder;
 use tw_utxo::transaction::standard_transaction::Transaction;
 use Proto::mod_SigningInput::OneOfdust_policy as ProtoDustPolicy;
 
-const TX_VERSION: u32 = 2;
+const DEFAULT_TX_VERSION: u32 = 2;
 
 pub type StandardSigningRequest = PlanRequest<Transaction>;
 
@@ -30,11 +30,12 @@ impl SigningRequestBuilder {
         let chain_info = Self::chain_info(coin, &input.chain_info)?;
         let dust_policy = Self::dust_policy(&input.dust_policy)?;
         let fee_per_vbyte = input.fee_per_vb;
+        let version = Self::transaction_version(&input.version);
 
         let public_keys = Self::get_public_keys(input)?;
 
         let mut builder = TransactionBuilder::default();
-        builder.version(TX_VERSION).lock_time(input.lock_time);
+        builder.version(version).lock_time(input.lock_time);
 
         // Parse all UTXOs.
         for utxo_proto in input.inputs.iter() {
@@ -126,6 +127,14 @@ impl SigningRequestBuilder {
             ProtoDustPolicy::fixed_dust_threshold(fixed) => Ok(DustPolicy::FixedAmount(*fixed)),
             ProtoDustPolicy::None => SigningError::err(SigningErrorType::Error_invalid_params)
                 .context("No dust policy provided"),
+        }
+    }
+
+    fn transaction_version(proto: &Proto::TransactionVersion) -> u32 {
+        match proto {
+            Proto::TransactionVersion::UseDefault => DEFAULT_TX_VERSION,
+            Proto::TransactionVersion::V1 => 1,
+            Proto::TransactionVersion::V2 => 2,
         }
     }
 

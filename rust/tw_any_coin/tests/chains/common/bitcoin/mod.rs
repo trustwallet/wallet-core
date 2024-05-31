@@ -96,6 +96,10 @@ pub mod input {
     pub fn receiver_address(addr: &str) -> ClaimingScriptType<'static> {
         ClaimingScriptType::receiver_address(addr.to_string().into())
     }
+
+    pub fn custom_script(script: Data) -> ClaimingScriptType<'static> {
+        ClaimingScriptType::script_data(script.into())
+    }
 }
 
 pub mod output {

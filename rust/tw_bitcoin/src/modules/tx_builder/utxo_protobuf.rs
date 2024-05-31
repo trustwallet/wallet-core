@@ -265,7 +265,7 @@ impl<'a> UtxoProtobuf<'a> {
             // Use the default 0xFFFFFFFF sequence value if not specified.
             .unwrap_or(u32::MAX);
 
-        Ok(UtxoBuilder::new()
+        Ok(UtxoBuilder::default()
             .prev_txid(hash)
             .prev_index(index)
             .sequence(sequence)
