@@ -138,9 +138,7 @@ impl SS58Address {
         })
     }
 
-    pub fn from_public_key(key: &PublicKey, network: u16) -> AddressResult<Self> {
-        let network = NetworkId::try_from(network)?;
-
+    pub fn from_public_key(key: &PublicKey, network: NetworkId) -> AddressResult<Self> {
         Ok(Self {
             key: key.as_slice().to_owned(),
             network,
@@ -311,26 +309,17 @@ mod tests {
         let key_hex = "92fd9c237030356e26cfcc4568dc71055d5ec92dfe0ff903767e00611971bad3";
         let key = PublicKey::try_from(key_hex).expect("error creating test public key");
 
-        let addr = SS58Address::from_public_key(&key, 0).expect("error creating address");
+        let addr = SS58Address::from_public_key(&key, NetworkId::POLKADOT).expect("error creating address");
         assert_eq!(addr.network().value(), 0);
         assert_eq!(addr.key_bytes(), key.as_slice());
 
-        let addr = SS58Address::from_public_key(&key, 5).expect("error creating address");
+        let addr = SS58Address::from_public_key(&key, NetworkId::new_unchecked(5)).expect("error creating address");
         assert_eq!(addr.network().value(), 5);
         assert_eq!(addr.key_bytes(), key.as_slice());
 
-        let addr = SS58Address::from_public_key(&key, 172).expect("error creating address");
+        let addr = SS58Address::from_public_key(&key, NetworkId::new_unchecked(172)).expect("error creating address");
         assert_eq!(addr.network().value(), 172);
         assert_eq!(addr.key_bytes(), key.as_slice());
-    }
-
-    #[test]
-    fn test_address_from_public_key_with_invalid_network() {
-        let key_hex = "92fd9c237030356e26cfcc4568dc71055d5ec92dfe0ff903767e00611971bad3";
-        let key = PublicKey::try_from(key_hex).expect("error creating test public key");
-
-        let res = SS58Address::from_public_key(&key, 32771);
-        assert_eq!(res, Err(AddressError::InvalidInput));
     }
 
     #[test]
