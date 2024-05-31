@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::iter::{repeat, Iterator};
+use std::str::FromStr;
 
 use lazy_static::lazy_static;
 
@@ -22,7 +23,6 @@ use tw_proto::Polkadot::Proto::mod_Staking::{
 use tw_proto::Polkadot::Proto::{Balance, PolymeshCall, Staking};
 use tw_ss58_address::{NetworkId, SS58Address};
 
-use crate::address::PolkadotAddress;
 use crate::scale::{Compact, ToScale};
 
 const POLKADOT_MULTI_ADDRESS_SPEC: u32 = 28;

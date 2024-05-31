@@ -114,7 +114,7 @@ impl SS58Address {
         bytes
     }
 
-    pub fn from_str(repr: &str) -> AddressResult<Self> {
+    pub fn parse(repr: &str) -> AddressResult<Self> {
         let decoded = base58::decode(repr, base58::Alphabet::BITCOIN)
             .map_err(|_| AddressError::FromBase58Error)?;
 
@@ -173,7 +173,7 @@ impl FromStr for SS58Address {
     type Err = AddressError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Self::from_str(s)
+        Self::parse(s)
     }
 }
 
@@ -185,6 +185,7 @@ impl std::fmt::Display for SS58Address {
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
     use super::{NetworkId, SS58Address};
     use tw_coin_entry::error::prelude::AddressError;
     use tw_keypair::ed25519::sha512::PublicKey;
