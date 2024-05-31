@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::address::PolkadotAddress;
+use crate::address::{PolkadotAddress, PolkadotPrefix};
 use crate::compiler::PolkadotCompiler;
 use crate::signer::PolkadotSigner;
 use std::str::FromStr;
@@ -15,15 +15,15 @@ use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
-use tw_coin_entry::prefix::NoPrefix;
 use tw_keypair::tw::PublicKey;
 use tw_proto::Polkadot::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
+use tw_ss58_address::{NetworkId, SS58Address};
 
 pub struct PolkadotEntry;
 
 impl CoinEntry for PolkadotEntry {
-    type AddressPrefix = NoPrefix;
+    type AddressPrefix = PolkadotPrefix;
     type Address = PolkadotAddress;
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = Proto::SigningOutput<'static>;
@@ -40,10 +40,10 @@ impl CoinEntry for PolkadotEntry {
     fn parse_address(
         &self,
         _coin: &dyn CoinContext,
-        _address: &str,
+        address: &str,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        PolkadotAddress::from_str(address)?.with_network_check()
     }
 
     #[inline]
@@ -59,11 +59,21 @@ impl CoinEntry for PolkadotEntry {
     fn derive_address(
         &self,
         _coin: &dyn CoinContext,
-        _public_key: PublicKey,
+        public_key: PublicKey,
         _derivation: Derivation,
-        _prefix: Option<Self::AddressPrefix>,
+        prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        let public_key = public_key
+            .to_ed25519()
+            .ok_or(AddressError::PublicKeyTypeMismatch)?;
+
+        SS58Address::from_public_key(
+            public_key,
+            prefix
+                .map(PolkadotPrefix::network)
+                .unwrap_or(NetworkId::POLKADOT),
+        )
+        .map(PolkadotAddress)
     }
 
     #[inline]
