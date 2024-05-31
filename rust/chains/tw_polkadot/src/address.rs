@@ -7,16 +7,14 @@ use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
-use tw_ss58_address::SS58Address;
+use tw_ss58_address::{NetworkId, SS58Address};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PolkadotAddress(SS58Address);
 
-const POLKADOT_NETWORK_ID: u16 = 0;
-
 impl PolkadotAddress {
     pub fn with_network_check(self) -> AddressResult<Self> {
-        if self.0.network().value() != POLKADOT_NETWORK_ID {
+        if self.0.network() != NetworkId::POLKADOT {
             return Err(AddressError::UnexpectedAddressPrefix);
         }
         Ok(self)
