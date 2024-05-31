@@ -11,7 +11,7 @@ pub trait ToScale {
 
 impl ToScale for bool {
     fn to_scale(&self) -> Vec<u8> {
-        (if *self == true { 0x01 } else { 0x00 } as u8).to_scale()
+        (if *self { 0x01 } else { 0x00 } as u8).to_scale()
     }
 }
 
@@ -158,6 +158,7 @@ impl ToScale for Raw {
     }
 }
 
+#[cfg(test)]
 mod tests {
     use super::{Compact, ToScale};
     use tw_number::U256;
