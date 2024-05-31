@@ -1,70 +1,77 @@
-use crate::chains::common::bitcoin::input::out_point;
-use crate::chains::common::bitcoin::{dust_threshold, input, output, sign, DUST, SIGHASH_ALL};
+use crate::chains::common::bitcoin::{
+    btc_info, dust_threshold, input, output, sign, DUST, SIGHASH_ALL,
+};
+use std::str::FromStr;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
+use tw_keypair::ecdsa;
+use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
 use tw_proto::BitcoinV3::Proto;
-
-// #[test]
-// fn send_to_p2sh_address() {
-//     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
-//     let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
-//     let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
-//
-//     let txid: Vec<u8> = hex("181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911")
-//         .into_iter()
-//         .rev()
-//         .collect();
-//
-//     let tx1 = Proto::Input {
-//         txid: txid.as_slice().into(),
-//         vout: 0,
-//         value: 10_000,
-//         sighash_type: UtxoProto::SighashType::All,
-//         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
-//             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
-//         }),
-//         ..Default::default()
-//     };
-//
-//     // Create the P2SH address.
-//     let recipient = PublicKey::from_slice(&bob_pubkey).unwrap();
-//     // We use a simple P2PKH as the redeem script.
-//     let redeem_script = ScriptBuf::new_p2pkh(&recipient.pubkey_hash());
-//     let address = Address::p2sh(&redeem_script, bitcoin::Network::Bitcoin).unwrap();
-//
-//     // The output variant is derived from the specified address.
-//     let out1 = Proto::Output {
-//         value: 1_000,
-//         to_recipient: ProtoOutputRecipient::from_address(address.to_string().into()),
-//     };
-//
-//     let signing = Proto::SigningInput {
-//         private_key: alice_private_key.as_slice().into(),
-//         inputs: vec![tx1],
-//         outputs: vec![out1],
-//         input_selector: UtxoProto::InputSelector::UseAll,
-//         disable_change_output: true,
-//         ..Default::default()
-//     };
-//
-//     let signed = BitcoinEntry.sign(&coin, signing);
-//     assert_eq!(signed.error, Proto::Error::OK);
-//
-//     let tx = signed.transaction.as_ref().unwrap();
-//     assert_eq!(tx.inputs.len(), 1);
-//     assert_eq!(tx.outputs.len(), 1);
-//
-//     // The expected P2SH scriptPubkey
-//     let expected = ScriptBuf::new_p2sh(&redeem_script.script_hash());
-//
-//     assert_eq!(tx.outputs[0].value, 1_000);
-//     assert_eq!(tx.outputs[0].script_pubkey, expected.as_bytes());
-//     assert!(tx.outputs[0].taproot_payload.is_empty());
-//     assert!(tx.outputs[0].control_block.is_empty());
-// }
+use tw_utxo::address::legacy::LegacyAddress;
+use tw_utxo::address::segwit::SegwitAddress;
+use tw_utxo::script::standard_script::conditions;
 
 #[test]
-fn send_to_p2pkh_address() {
+fn test_bitcoin_send_to_p2sh_address() {
+    let p2sh_prefix = btc_info().unwrap().p2sh_prefix as u8;
+
+    let alice_private_key = "57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a";
+    let alice_private_key = ecdsa::secp256k1::PrivateKey::try_from(alice_private_key).unwrap();
+    let alice_public_key = alice_private_key.public();
+    let bob_address = "19prEapJCTF3zAS2ofreXyQhcnDscuXxbd";
+
+    // Create the P2SH address.
+    // We use a simple P2PKH as the redeem script.
+    let bob_address = LegacyAddress::from_str(bob_address).unwrap();
+    let p2pkh_redeem_script = conditions::new_p2pkh(&bob_address.payload());
+    let p2sh_address =
+        LegacyAddress::p2sh_with_prefix_byte(&p2pkh_redeem_script, p2sh_prefix).unwrap();
+    assert_eq!(
+        p2sh_address.to_string(),
+        "3BSsey83R7AvczeRrYZihwDTkQ8Khjtewr"
+    );
+
+    let utxo_hash_0 = "181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911";
+    let utxo_0 = Proto::Input {
+        out_point: input::out_point(utxo_hash_0, 0),
+        value: 10_000,
+        sighash_type: SIGHASH_ALL,
+        claiming_script: input::p2pkh(alice_public_key.to_vec().into()),
+        ..Default::default()
+    };
+
+    // The output variant is derived from the specified address.
+    let out_0 = Proto::Output {
+        value: 1_000,
+        to_recipient: output::to_address(&p2sh_address.to_string()),
+    };
+
+    let signing = Proto::SigningInput {
+        version: Proto::TransactionVersion::V2,
+        private_keys: vec![alice_private_key.to_zeroizing_vec().to_vec().into()],
+        inputs: vec![utxo_0],
+        outputs: vec![out_0],
+        input_selector: Proto::InputSelector::UseAll,
+        dust_policy: dust_threshold(DUST),
+        fee_per_vb: 1,
+        ..Default::default()
+    };
+
+    sign::BitcoinSignHelper::new(&signing)
+        .coin(CoinType::Bitcoin)
+        .sign(sign::Expected {
+            encoded: "020000000111b9f62923af73e297abb69f749e7a1aa2735fbdfd32ac5f6aa89e5c96841c18000000006a4730440220079b598713c12210c13f059c477f4ab33f85e80749c0925e0ac655bc0a3b9ca802200e9b83fb57ab3f2c907daeb386f02ed1e459aa058168c9e3b4e9a074ec8db78d0121028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28fffffffff01e80300000000000017a9146b04883a86994629fcc84e558968e2d70a3472fd8700000000",
+            txid: "4a476d6bc5e6e7fe13ef4388a22ff75cf9ecebb656483c27f5d884a1f173ac66",
+            inputs: vec![10_000],
+            outputs: vec![1_000],
+            vsize: 189,
+            // sum(inputs) - sum(outputs)
+            fee: 9000,
+        });
+}
+
+#[test]
+fn test_bitcoin_send_to_p2pkh_address() {
     let alice_private_key = "57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a"
         .decode_hex()
         .unwrap();
@@ -75,7 +82,7 @@ fn send_to_p2pkh_address() {
 
     let txid = "181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911";
     let tx1 = Proto::Input {
-        out_point: out_point(txid, 0),
+        out_point: input::out_point(txid, 0),
         value: 10_000,
         sighash_type: SIGHASH_ALL,
         claiming_script: input::p2pkh(alice_pubkey.clone()),
@@ -89,6 +96,7 @@ fn send_to_p2pkh_address() {
     };
 
     let signing = Proto::SigningInput {
+        version: Proto::TransactionVersion::V2,
         private_keys: vec![alice_private_key.into()],
         inputs: vec![tx1],
         outputs: vec![out1],
@@ -108,68 +116,64 @@ fn send_to_p2pkh_address() {
             fee: 9_000,
         });
 }
-//
-// #[test]
-// fn send_to_p2wsh_address() {
-//     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
-//     let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
-//     let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
-//
-//     let txid: Vec<u8> = hex("181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911")
-//         .into_iter()
-//         .rev()
-//         .collect();
-//
-//     let tx1 = Proto::Input {
-//         txid: txid.as_slice().into(),
-//         vout: 0,
-//         value: 10_000,
-//         sighash_type: UtxoProto::SighashType::All,
-//         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
-//             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
-//         }),
-//         ..Default::default()
-//     };
-//
-//     // Create the P2WSH address.
-//     let recipient = PublicKey::from_slice(&bob_pubkey).unwrap();
-//     // We use a simple P2PKH as the redeem script.
-//     let redeem_script = ScriptBuf::new_p2pkh(&recipient.pubkey_hash());
-//     let address = Address::p2wsh(&redeem_script, bitcoin::Network::Bitcoin);
-//
-//     // The output variant is derived from the specified address.
-//     let out1 = Proto::Output {
-//         value: 1_000,
-//         to_recipient: ProtoOutputRecipient::from_address(address.to_string().into()),
-//     };
-//
-//     let signing = Proto::SigningInput {
-//         private_key: alice_private_key.as_slice().into(),
-//         inputs: vec![tx1],
-//         outputs: vec![out1],
-//         input_selector: UtxoProto::InputSelector::UseAll,
-//         disable_change_output: true,
-//         ..Default::default()
-//     };
-//
-//     let signed = BitcoinEntry.sign(&coin, signing);
-//     assert_eq!(signed.error, Proto::Error::OK);
-//
-//     let tx = signed.transaction.as_ref().unwrap();
-//     assert_eq!(tx.inputs.len(), 1);
-//     assert_eq!(tx.outputs.len(), 1);
-//
-//     // The expected Pw2SH scriptPubkey
-//     let expected = ScriptBuf::new_v0_p2wsh(&redeem_script.wscript_hash());
-//
-//     assert_eq!(tx.outputs[0].value, 1_000);
-//     assert_eq!(tx.outputs[0].script_pubkey, expected.as_bytes());
-//     assert!(tx.outputs[0].taproot_payload.is_empty());
-//     assert!(tx.outputs[0].control_block.is_empty());
-// }
 
 #[test]
-fn send_to_p2wpkh_address() {
+fn test_bitcoin_send_to_p2wsh_address() {
+    let alice_private_key = "57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a";
+    let alice_private_key = ecdsa::secp256k1::PrivateKey::try_from(alice_private_key).unwrap();
+    let alice_pubkey = alice_private_key.public();
+    let bob_address = "12C2h5hXPxyrdvnYUBFaBGFnNNYjpWXhPX";
+
+    // Create the P2WSH address.
+    // We use a simple P2PKH as the redeem script.
+    let bob_address = LegacyAddress::from_str(bob_address).unwrap();
+    let p2pkh_redeem_script = conditions::new_p2pkh(&bob_address.payload());
+    let p2wsh_address =
+        SegwitAddress::p2wsh_with_hrp(&p2pkh_redeem_script, "bc".to_string()).unwrap();
+    assert_eq!(
+        p2wsh_address.to_string(),
+        "bc1qmtahx7nh2fqlcrf8fgf49mq6ywxnvjssay26aa8qfvf3xd907l6suvaz4x"
+    );
+
+    let utxo_hash_0 = "181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911";
+    let utxo_0 = Proto::Input {
+        out_point: input::out_point(utxo_hash_0, 0),
+        value: 10_000,
+        sighash_type: SIGHASH_ALL,
+        claiming_script: input::p2pkh(alice_pubkey.to_vec()),
+        ..Default::default()
+    };
+
+    // The output variant is derived from the specified address.
+    let out_0 = Proto::Output {
+        value: 1_000,
+        to_recipient: output::to_address(&p2wsh_address.to_string()),
+    };
+
+    let signing = Proto::SigningInput {
+        version: Proto::TransactionVersion::V2,
+        private_keys: vec![alice_private_key.to_zeroizing_vec().to_vec().into()],
+        inputs: vec![utxo_0],
+        outputs: vec![out_0],
+        input_selector: Proto::InputSelector::UseAll,
+        dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    sign::BitcoinSignHelper::new(&signing)
+        .coin(CoinType::Bitcoin)
+        .sign(sign::Expected {
+            encoded: "020000000111b9f62923af73e297abb69f749e7a1aa2735fbdfd32ac5f6aa89e5c96841c18000000006b483045022100b0ee8b8a5466db1fef9054e29bf2d241f1637dfafe65f87559bc55028153051802201008183146fd71a744cbe66ae01222c4372f2b6d274658d7dfa18ef33ab5ab5b0121028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28fffffffff01e803000000000000220020dafb737a775241fc0d274a1352ec1a238d364a10e915aef4e04b131334aff7f500000000",
+            txid: "a0dbacd99420b9fdd08623382efc474174e289cd84765097057a24d2cf67b108",
+            inputs: vec![10_000],
+            outputs: vec![1_000],
+            vsize: 201,
+            fee: 9_000,
+        });
+}
+
+#[test]
+fn test_bitcoin_send_to_p2wpkh_address() {
     let alice_private_key = "57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a"
         .decode_hex()
         .unwrap();
@@ -180,7 +184,7 @@ fn send_to_p2wpkh_address() {
 
     let txid = "181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911";
     let tx1 = Proto::Input {
-        out_point: out_point(txid, 0),
+        out_point: input::out_point(txid, 0),
         value: 10_000,
         sighash_type: SIGHASH_ALL,
         claiming_script: input::p2pkh(alice_pubkey),
@@ -194,6 +198,7 @@ fn send_to_p2wpkh_address() {
     };
 
     let signing = Proto::SigningInput {
+        version: Proto::TransactionVersion::V2,
         private_keys: vec![alice_private_key.into()],
         inputs: vec![tx1],
         outputs: vec![out1],
@@ -215,7 +220,7 @@ fn send_to_p2wpkh_address() {
 }
 
 #[test]
-fn send_to_p2tr_key_path_address() {
+fn test_bitcoin_send_to_p2tr_key_path_address() {
     let alice_private_key = "57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a"
         .decode_hex()
         .unwrap();
@@ -226,7 +231,7 @@ fn send_to_p2tr_key_path_address() {
 
     let txid = "181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911";
     let tx1 = Proto::Input {
-        out_point: out_point(txid, 0),
+        out_point: input::out_point(txid, 0),
         value: 10_000,
         sighash_type: SIGHASH_ALL,
         claiming_script: input::p2pkh(alice_pubkey),
@@ -240,6 +245,7 @@ fn send_to_p2tr_key_path_address() {
     };
 
     let signing = Proto::SigningInput {
+        version: Proto::TransactionVersion::V2,
         private_keys: vec![alice_private_key.into()],
         inputs: vec![tx1],
         outputs: vec![out1],

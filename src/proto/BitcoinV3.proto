@@ -187,7 +187,7 @@ message ChainInfo {
 }
 
 enum TransactionVersion {
-    // V2 is used by default.
+    // V1 is used by default.
     UseDefault = 0;
     // Original transaction version.
     V1 = 1;

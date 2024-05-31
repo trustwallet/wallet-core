@@ -35,6 +35,7 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
     };
 
     let signing = Proto::SigningInput {
+        version: Proto::TransactionVersion::V2,
         private_keys: vec![alice_private_key.into()],
         inputs: vec![tx1],
         outputs: vec![out1],
@@ -71,6 +72,7 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
     };
 
     let signing = Proto::SigningInput {
+        version: Proto::TransactionVersion::V2,
         private_keys: vec![bob_private_key.into()],
         inputs: vec![tx1],
         outputs: vec![out1],

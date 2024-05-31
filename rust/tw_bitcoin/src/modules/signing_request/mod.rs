@@ -16,7 +16,7 @@ use tw_utxo::transaction::standard_transaction::builder::TransactionBuilder;
 use tw_utxo::transaction::standard_transaction::Transaction;
 use Proto::mod_SigningInput::OneOfdust_policy as ProtoDustPolicy;
 
-const DEFAULT_TX_VERSION: u32 = 2;
+const DEFAULT_TX_VERSION: u32 = 1;
 
 pub type StandardSigningRequest = PlanRequest<Transaction>;
 

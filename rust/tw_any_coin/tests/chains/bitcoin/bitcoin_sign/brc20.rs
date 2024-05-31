@@ -35,6 +35,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
     };
 
     let signing = Proto::SigningInput {
+        version: Proto::TransactionVersion::V2,
         private_keys: vec![alice_private_key.as_slice().into()],
         inputs: vec![tx1],
         outputs: vec![out1, out2],
@@ -72,6 +73,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
     };
 
     let signing = Proto::SigningInput {
+        version: Proto::TransactionVersion::V2,
         private_keys: vec![alice_private_key.as_slice().into()],
         inputs: vec![tx1],
         outputs: vec![out1],

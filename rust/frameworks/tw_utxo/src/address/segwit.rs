@@ -4,11 +4,13 @@
 
 use super::Bech32Prefix;
 use crate::address::witness_program::{WitnessProgram, WITNESS_V0};
+use crate::script::Script;
 use core::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::hasher::sha256_ripemd;
+use tw_hash::sha2::sha256;
 use tw_hash::{H160, H256};
 use tw_keypair::tw;
 use tw_memory::Data;
@@ -49,6 +51,11 @@ impl SegwitAddress {
         let public_key_hash = sha256_ripemd(public_key_bytes.as_slice());
 
         Self::new(hrp, public_key_hash.to_vec())
+    }
+
+    pub fn p2wsh_with_hrp(redeem_script: &Script, hrp: String) -> AddressResult<SegwitAddress> {
+        let script_hash = sha256(redeem_script.as_data());
+        Self::new(hrp, script_hash)
     }
 
     pub fn from_str_checked(s: &str, expected_hrp: &str) -> AddressResult<SegwitAddress> {

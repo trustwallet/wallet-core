@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::script::Script;
 use std::fmt;
 use std::str::FromStr;
 use tw_base58_address::Base58Address;
@@ -22,6 +23,15 @@ type BitcoinBase58Address = Base58Address<BITCOIN_ADDRESS_SIZE, BITCOIN_ADDRESS_
 pub struct LegacyAddress(BitcoinBase58Address);
 
 impl LegacyAddress {
+    pub fn new(prefix: u8, data: &[u8]) -> AddressResult<LegacyAddress> {
+        let mut bytes = Vec::with_capacity(data.len() + 1);
+        // Insert the prefix to the beginning of the address bytes array.
+        bytes.push(prefix);
+        bytes.extend_from_slice(data);
+
+        BitcoinBase58Address::new(&bytes, Alphabet::Bitcoin, Hasher::Sha256d).map(LegacyAddress)
+    }
+
     /// Tries to parse a `LegacyAddress` and check if
     pub fn p2pkh_with_coin_and_prefix(
         coin: &dyn CoinContext,
@@ -38,14 +48,13 @@ impl LegacyAddress {
             .ok_or(AddressError::PublicKeyTypeMismatch)?
             .compressed();
 
-        let mut public_key_hash = sha256_ripemd(public_key_bytes.as_slice());
+        let public_key_hash = sha256_ripemd(public_key_bytes.as_slice());
+        LegacyAddress::new(p2pkh_prefix, &public_key_hash)
+    }
 
-        // Insert the P2PKH prefix to the beginning of the address bytes array.
-        let prefix_idx = 0;
-        public_key_hash.insert(prefix_idx, p2pkh_prefix);
-
-        BitcoinBase58Address::new(&public_key_hash, Alphabet::Bitcoin, Hasher::Sha256d)
-            .map(LegacyAddress)
+    pub fn p2sh_with_prefix_byte(redeem_script: &Script, p2sh_prefix: u8) -> AddressResult<LegacyAddress> {
+        let script_hash = sha256_ripemd(redeem_script.as_data());
+        LegacyAddress::new(p2sh_prefix, &script_hash)
     }
 
     pub fn from_str_with_coin_and_prefix(

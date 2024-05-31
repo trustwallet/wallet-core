@@ -7,7 +7,7 @@ use tw_proto::BitcoinV3::Proto;
 
 /// Note this test contains a sample transaction that has never been broadcasted.
 #[test]
-fn coin_entry_sign_input_p2pkh_output_p2pkh() {
+fn test_bitcoin_sign_input_p2pkh_output_p2pkh() {
     let alice_private_key = "56429688a1a6b00b90ccd22a0de0a376b6569d8684022ae92229a28478bfb657"
         .decode_hex()
         .unwrap();
@@ -34,6 +34,7 @@ fn coin_entry_sign_input_p2pkh_output_p2pkh() {
     };
 
     let signing = Proto::SigningInput {
+        version: Proto::TransactionVersion::V2,
         private_keys: vec![alice_private_key.into()],
         inputs: vec![tx1],
         outputs: vec![out1],
@@ -73,7 +74,7 @@ fn coin_entry_sign_input_p2pkh_output_p2pkh() {
 /// *Note* that if we enable change output, current selection algorithm will calculate
 /// different change and fee amounts than in the original test.
 #[test]
-fn bitcoin_cash_sign_input_p2pkh_custom_script() {
+fn test_bitcoin_cash_sign_input_p2pkh_custom_script() {
     const BCH_SIGHASH_FORK: u32 = 0x40;
 
     let alice_private_key = "7fdafb9db5bc501f2096e7d13d331dc7a75d9594af3d251313ba8b6200f4e384"

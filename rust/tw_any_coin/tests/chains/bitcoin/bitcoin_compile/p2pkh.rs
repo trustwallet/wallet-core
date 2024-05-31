@@ -43,6 +43,7 @@ fn test_bitcoin_compile_p2pkh() {
     };
 
     let signing = Proto::SigningInput {
+        version: Proto::TransactionVersion::V2,
         public_keys: vec![alice_pubkey.to_vec().into()],
         inputs: vec![tx1],
         outputs: vec![out1],
