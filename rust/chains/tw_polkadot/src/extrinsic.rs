@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::convert::identity;
 use std::iter::{repeat, Iterator};
 use std::str::FromStr;
 
@@ -23,7 +24,7 @@ use tw_proto::Polkadot::Proto::mod_Staking::{
 use tw_proto::Polkadot::Proto::{Balance, PolymeshCall, Staking};
 use tw_ss58_address::{NetworkId, SS58Address};
 
-use crate::scale::{Compact, ToScale};
+use crate::scale::{Compact, Raw, ToScale};
 
 const POLKADOT_MULTI_ADDRESS_SPEC: u32 = 28;
 const KUSAMA_MULTI_ADDRESS_SPEC: u32 = 2028;
@@ -44,14 +45,15 @@ const ASSETS_TRANSFER: &str = "Assets.transfer";
 const JOIN_IDENTITY_AS_KEY: &str = "Identity.join_identity_as_key";
 const IDENTITY_ADD_AUTHORIZATION: &str = "Identity.add_authorization";
 
-type CallIndicesTable = HashMap<&'static str, Vec<u8>>;
+type CallIndex = (u8, u8);
+type CallIndicesTable = HashMap<&'static str, CallIndex>;
 
 macro_rules! call_indices {
-    ($($chain:expr => { $($name:expr => [$($value:expr),*] $(,)?)* } $(,)? )*) => {
+    ($($chain:expr => { $($name:expr => ($($value:expr),*) $(,)?)* } $(,)? )*) => {
         [
             $((
                 $chain, std::collections::HashMap::from_iter(
-                    [$(($name, vec![$($value as u8),+])),+]
+                    [$(($name, ($($value as u8),+))),+]
                 )
             )),+
         ].into_iter().collect()
@@ -61,26 +63,26 @@ macro_rules! call_indices {
 lazy_static! {
     static ref CALL_INDICES_BY_NETWORK: HashMap<NetworkId, CallIndicesTable> = call_indices! {
         NetworkId::POLKADOT => {
-            BALANCE_TRANSFER          => [0x05, 0x00],
-            STAKING_BOND              => [0x07, 0x00],
-            STAKING_BOND_EXTRA        => [0x07, 0x01],
-            STAKING_CHILL             => [0x07, 0x06],
-            STAKING_NOMINATE          => [0x07, 0x05],
-            STAKING_REBOND            => [0x07, 0x13],
-            STAKING_UNBOND            => [0x07, 0x02],
-            STAKING_WITHDRAW_UNBONDED => [0x07, 0x03],
-            UTILITY_BATCH             => [0x1a, 0x02],
+            BALANCE_TRANSFER          => (0x05, 0x00),
+            STAKING_BOND              => (0x07, 0x00),
+            STAKING_BOND_EXTRA        => (0x07, 0x01),
+            STAKING_CHILL             => (0x07, 0x06),
+            STAKING_NOMINATE          => (0x07, 0x05),
+            STAKING_REBOND            => (0x07, 0x13),
+            STAKING_UNBOND            => (0x07, 0x02),
+            STAKING_WITHDRAW_UNBONDED => (0x07, 0x03),
+            UTILITY_BATCH             => (0x1a, 0x02),
         },
         NetworkId::KUSAMA => {
-            BALANCE_TRANSFER          => [0x04, 0x00],
-            STAKING_BOND              => [0x06, 0x00],
-            STAKING_BOND_EXTRA        => [0x06, 0x01],
-            STAKING_CHILL             => [0x06, 0x06],
-            STAKING_NOMINATE          => [0x06, 0x05],
-            STAKING_REBOND            => [0x06, 0x13],
-            STAKING_UNBOND            => [0x06, 0x02],
-            STAKING_WITHDRAW_UNBONDED => [0x06, 0x03],
-            UTILITY_BATCH             => [0x18, 0x02],
+            BALANCE_TRANSFER          => (0x04, 0x00),
+            STAKING_BOND              => (0x06, 0x00),
+            STAKING_BOND_EXTRA        => (0x06, 0x01),
+            STAKING_CHILL             => (0x06, 0x06),
+            STAKING_NOMINATE          => (0x06, 0x05),
+            STAKING_REBOND            => (0x06, 0x13),
+            STAKING_UNBOND            => (0x06, 0x02),
+            STAKING_WITHDRAW_UNBONDED => (0x06, 0x03),
+            UTILITY_BATCH             => (0x18, 0x02),
         }
     };
 }
@@ -96,6 +98,12 @@ pub enum EncodeError {
 
 type EncodeResult<T> = Result<T, EncodeError>;
 
+impl ToScale for SS58Address {
+    fn to_scale_into(&self, out: &mut Vec<u8>) {
+        Raw(self.key_bytes()).to_scale_into(out)
+    }
+}
+
 // `Extrinsic` is (for now) just a lightweight wrapper over the actual protobuf object.
 // In the future, we will refine the latter to let the caller specify arbitrary extrinsics.
 
@@ -109,7 +117,7 @@ impl<'a> Extrinsic<'a> {
         Self { inner: input }
     }
 
-    fn get_call_index_for_network(network: NetworkId, key: &str) -> EncodeResult<Vec<u8>> {
+    fn get_call_index_for_network(network: NetworkId, key: &str) -> EncodeResult<(u8, u8)> {
         CALL_INDICES_BY_NETWORK
             .get(&network)
             .and_then(|table| table.get(key))
@@ -117,12 +125,12 @@ impl<'a> Extrinsic<'a> {
             .ok_or(EncodeError::MissingCallIndicesTable)
     }
 
-    fn get_custom_call_index(civ: &Option<Proto::CallIndices>) -> EncodeResult<Vec<u8>> {
+    fn get_custom_call_index(civ: &Option<Proto::CallIndices>) -> EncodeResult<(u8, u8)> {
         if let Some(CallIndicesVariant::custom(c)) = civ.as_ref().map(|i| &i.variant) {
             if c.module_index > 0xff || c.method_index > 0xff {
                 return Err(EncodeError::InvalidCallIndex);
             }
-            return Ok(vec![c.module_index as u8, c.method_index as u8]);
+            return Ok((c.module_index as u8, c.method_index as u8));
         }
         Err(EncodeError::MissingCallIndicesTable)
     }
@@ -131,7 +139,7 @@ impl<'a> Extrinsic<'a> {
         &self,
         key: &str,
         civ: &Option<Proto::CallIndices>,
-    ) -> EncodeResult<Vec<u8>> {
+    ) -> EncodeResult<(u8, u8)> {
         Self::get_custom_call_index(civ).or_else(|_| {
             let network = NetworkId::try_from(self.inner.network as u16)
                 .map_err(|_| EncodeError::InvalidNetworkId)?;
@@ -157,36 +165,26 @@ impl<'a> Extrinsic<'a> {
         }
     }
 
-    fn encode_account_id(key: &[u8], raw: bool) -> Vec<u8> {
-        let mut data = Vec::with_capacity(key.len() + 1);
-
-        if !raw {
-            data.push(0x00);
-        }
-        data.extend(key);
-        data
-    }
-
     fn encode_transfer(&self, t: &Transfer) -> EncodeResult<Vec<u8>> {
         let mut data = Vec::new();
 
         // Encode call index
         let call_index =
             self.get_custom_call_index_or_network(BALANCE_TRANSFER, &t.call_indices)?;
-        data.extend(call_index);
+        call_index.to_scale_into(&mut data);
 
         // Encode destination account ID, TODO: check address network ?
         let address =
             SS58Address::from_str(&t.to_address).map_err(|_| EncodeError::InvalidAddress)?;
-        data.extend(Self::encode_account_id(
-            address.key_bytes(),
-            self.should_encode_raw_account(),
-        ));
+        if !self.should_encode_raw_account() {
+            data.push(0x00);
+        }
+        address.to_scale_into(&mut data);
 
         // Encode value
         let value =
             U256::from_little_endian_slice(&t.value).map_err(|_| EncodeError::InvalidValue)?;
-        data.extend(Compact(value).to_scale());
+        Compact(value).to_scale_into(&mut data);
 
         // Encode memo if present, padding it to 32 bytes
         if !t.memo.is_empty() {
@@ -206,25 +204,25 @@ impl<'a> Extrinsic<'a> {
         // Encode call index
         let call_index =
             self.get_custom_call_index_or_network(ASSETS_TRANSFER, &at.call_indices)?;
-        data.extend(call_index);
+        call_index.to_scale_into(&mut data);
 
         // Encode asset ID if not native token
         if at.asset_id != 0 {
-            data.extend(Compact(at.asset_id).to_scale());
+            Compact(at.asset_id).to_scale_into(&mut data);
         }
 
         // Encode destination account ID, TODO: check address network ?
         let address =
             SS58Address::from_str(&at.to_address).map_err(|_| EncodeError::InvalidAddress)?;
-        data.extend(Self::encode_account_id(
-            address.key_bytes(),
-            self.should_encode_raw_account(),
-        ));
+        if !self.should_encode_raw_account() {
+            data.push(0x00);
+        }
+        address.to_scale_into(&mut data);
 
         // Encode value
         let value =
             U256::from_little_endian_slice(&at.value).map_err(|_| EncodeError::InvalidValue)?;
-        data.extend(Compact(value).to_scale());
+        Compact(value).to_scale_into(&mut data);
 
         Ok(data)
     }
@@ -235,8 +233,13 @@ impl<'a> Extrinsic<'a> {
         call_indices: &Option<Proto::CallIndices>,
     ) -> EncodeResult<Vec<u8>> {
         let mut data = Vec::new();
-        data.extend(self.get_custom_call_index_or_network(UTILITY_BATCH, call_indices)?);
-        data.extend(Compact(encoded_calls.len()).to_scale());
+
+        // Encode call index
+        let call_index = self.get_custom_call_index_or_network(UTILITY_BATCH, call_indices)?;
+        call_index.to_scale_into(&mut data);
+
+        // Encode batched calls
+        Compact(encoded_calls.len()).to_scale_into(&mut data);
         for c in encoded_calls {
             data.extend(c);
         }
@@ -278,25 +281,25 @@ impl<'a> Extrinsic<'a> {
 
         // Encode call index
         let call_index = self.get_custom_call_index_or_network(STAKING_BOND, &b.call_indices)?;
-        data.extend(call_index);
+        call_index.to_scale_into(&mut data);
 
         // Encode controller account ID, TODO: check address network ?
         if !b.controller.is_empty() {
             let address =
                 SS58Address::from_str(&b.controller).map_err(|_| EncodeError::InvalidAddress)?;
-            data.extend(Self::encode_account_id(
-                address.key_bytes(),
-                self.should_encode_raw_account(),
-            ));
+            if !self.should_encode_raw_account() {
+                data.push(0x00);
+            }
+            address.to_scale_into(&mut data);
         }
 
         // Encode value
         let value =
             U256::from_little_endian_slice(&b.value).map_err(|_| EncodeError::InvalidValue)?;
-        data.extend(Compact(value).to_scale());
+        Compact(value).to_scale_into(&mut data);
 
         // Encode reward destination
-        data.extend((b.reward_destination as u8).to_scale());
+        (b.reward_destination as u8).to_scale_into(&mut data);
 
         Ok(data)
     }
@@ -330,12 +333,12 @@ impl<'a> Extrinsic<'a> {
         // Encode call index
         let call_index =
             self.get_custom_call_index_or_network(STAKING_BOND_EXTRA, &be.call_indices)?;
-        data.extend(call_index);
+        call_index.to_scale_into(&mut data);
 
         // Encode value
         let value =
             U256::from_little_endian_slice(&be.value).map_err(|_| EncodeError::InvalidValue)?;
-        data.extend(Compact(value).to_scale());
+        Compact(value).to_scale_into(&mut data);
 
         Ok(data)
     }
@@ -345,12 +348,12 @@ impl<'a> Extrinsic<'a> {
 
         // Encode call index
         let call_index = self.get_custom_call_index_or_network(STAKING_UNBOND, &u.call_indices)?;
-        data.extend(call_index);
+        call_index.to_scale_into(&mut data);
 
         // Encode value
         let value =
             U256::from_little_endian_slice(&u.value).map_err(|_| EncodeError::InvalidValue)?;
-        data.extend(Compact(value).to_scale());
+        Compact(value).to_scale_into(&mut data);
 
         Ok(data)
     }
@@ -360,12 +363,12 @@ impl<'a> Extrinsic<'a> {
 
         // Encode call index
         let call_index = self.get_custom_call_index_or_network(STAKING_REBOND, &u.call_indices)?;
-        data.extend(call_index);
+        call_index.to_scale_into(&mut data);
 
         // Encode value
         let value =
             U256::from_little_endian_slice(&u.value).map_err(|_| EncodeError::InvalidValue)?;
-        data.extend(Compact(value).to_scale());
+        Compact(value).to_scale_into(&mut data);
 
         Ok(data)
     }
@@ -376,10 +379,10 @@ impl<'a> Extrinsic<'a> {
         // Encode call index
         let call_index =
             self.get_custom_call_index_or_network(STAKING_WITHDRAW_UNBONDED, &wu.call_indices)?;
-        data.extend(call_index);
+        call_index.to_scale_into(&mut data);
 
         // Encode slashing spans as fixed-width u32
-        data.extend((wu.slashing_spans as u32).to_scale());
+        (wu.slashing_spans as u32).to_scale_into(&mut data);
 
         Ok(data)
     }
@@ -390,20 +393,22 @@ impl<'a> Extrinsic<'a> {
         // Encode call index
         let call_index =
             self.get_custom_call_index_or_network(STAKING_NOMINATE, &n.call_indices)?;
-        data.extend(call_index);
+        call_index.to_scale_into(&mut data);
 
         // Encode account IDs for nominators
+        Compact(n.nominators.len()).to_scale_into(&mut data);
         let raw = self.should_encode_raw_account();
-        let addresses = n
-            .nominators
+        n.nominators
             .iter()
-            .map(|s| SS58Address::from_str(s).map_err(|_| EncodeError::InvalidAddress))
-            .map(|a| a.map(|a| Self::encode_account_id(a.key_bytes(), raw)))
-            .collect::<EncodeResult<Vec<_>>>()?;
-
-        for addr in addresses {
-            data.extend(addr);
-        }
+            .map(|s| {
+                let addr = SS58Address::from_str(s).map_err(|_| EncodeError::InvalidAddress)?;
+                if !raw {
+                    data.push(0x00);
+                }
+                addr.to_scale_into(&mut data);
+                Ok(())
+            })
+            .try_for_each(identity)?;
 
         Ok(data)
     }
@@ -412,7 +417,7 @@ impl<'a> Extrinsic<'a> {
         // Encode call index
         let call_index = self.get_custom_call_index_or_network(STAKING_CHILL, &c.call_indices)?;
 
-        Ok(call_index)
+        Ok(call_index.to_scale())
     }
 
     fn encode_staking_chill_and_unbond(&self, cau: &ChillAndUnbond) -> EncodeResult<Vec<u8>> {
@@ -454,10 +459,10 @@ impl<'a> Extrinsic<'a> {
         // Encode call index
         let call_index =
             self.get_custom_call_index_or_network(JOIN_IDENTITY_AS_KEY, &j.call_indices)?;
-        data.extend(call_index);
+        call_index.to_scale_into(&mut data);
 
         // Encode auth ID
-        data.extend(j.auth_id.to_scale());
+        j.auth_id.to_scale_into(&mut data);
 
         Ok(data)
     }
@@ -468,12 +473,12 @@ impl<'a> Extrinsic<'a> {
         // Encode call index
         let call_index =
             self.get_custom_call_index_or_network(IDENTITY_ADD_AUTHORIZATION, &a.call_indices)?;
-        data.extend(call_index);
+        call_index.to_scale_into(&mut data);
 
         // Encode target
         data.push(0x01);
         let address = SS58Address::from_str(&a.target).map_err(|_| EncodeError::InvalidAddress)?;
-        data.extend(Self::encode_account_id(address.key_bytes(), true));
+        address.to_scale_into(&mut data);
 
         // Encode join identity
         data.push(0x05);
@@ -481,32 +486,32 @@ impl<'a> Extrinsic<'a> {
         if let Some(auth_data) = &a.data {
             if let Some(asset) = &auth_data.asset {
                 data.push(0x01);
-                data.extend_from_slice(&asset.data);
+                Raw(&asset.data).to_scale_into(&mut data);
             } else {
                 data.push(0x00);
             }
 
             if let Some(extrinsic) = &auth_data.extrinsic {
                 data.push(0x01);
-                data.extend_from_slice(&extrinsic.data);
+                Raw(&extrinsic.data).to_scale_into(&mut data);
             } else {
                 data.push(0x00);
             }
 
             if let Some(portfolio) = &auth_data.portfolio {
                 data.push(0x01);
-                data.extend_from_slice(&portfolio.data);
+                Raw(&portfolio.data).to_scale_into(&mut data);
             } else {
                 data.push(0x00);
             }
         } else {
             // Mark everything as authorized (asset, extrinsic, portfolio)
-            data.extend(&[0x01, 0x00]);
-            data.extend(&[0x01, 0x00]);
-            data.extend(&[0x01, 0x00]);
+            (0x01u8, 0x00u8).to_scale_into(&mut data);
+            (0x01u8, 0x00u8).to_scale_into(&mut data);
+            (0x01u8, 0x00u8).to_scale_into(&mut data);
         }
 
-        data.extend(Compact(a.expiry).to_scale());
+        Compact(a.expiry).to_scale_into(&mut data);
 
         Ok(data)
     }
