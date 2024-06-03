@@ -24,7 +24,7 @@ use tw_proto::Polkadot::Proto::mod_Staking::{
 use tw_proto::Polkadot::Proto::{Balance, PolymeshCall, Staking};
 use tw_ss58_address::{NetworkId, SS58Address};
 
-use crate::scale::{Compact, Raw, ToScale};
+use crate::scale::{Compact, Raw, RawIter, ToScale};
 
 const POLKADOT_MULTI_ADDRESS_SPEC: u32 = 28;
 const KUSAMA_MULTI_ADDRESS_SPEC: u32 = 2028;
@@ -104,6 +104,36 @@ impl ToScale for SS58Address {
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ExtrinsicEncoder {
+    encoded: Vec<u8>,
+}
+
+impl ExtrinsicEncoder {
+    pub fn new() -> Self {
+        Default::default()
+    }
+
+    fn from_encoded(encoded: Vec<u8>) -> Self {
+        Self { encoded }
+    }
+
+    pub fn add(self, t: impl ToScale) -> Self {
+        let mut encoded = self.encoded;
+        t.to_scale_into(&mut encoded);
+        Self::from_encoded(encoded)
+    }
+
+    pub fn add_mut(&mut self, t: impl ToScale) -> &mut Self {
+        t.to_scale_into(&mut self.encoded);
+        self
+    }
+
+    pub fn finalize(self) -> Vec<u8> {
+        self.encoded
+    }
+}
+
 // `Extrinsic` is (for now) just a lightweight wrapper over the actual protobuf object.
 // In the future, we will refine the latter to let the caller specify arbitrary extrinsics.
 
@@ -166,63 +196,53 @@ impl<'a> Extrinsic<'a> {
     }
 
     fn encode_transfer(&self, t: &Transfer) -> EncodeResult<Vec<u8>> {
-        let mut data = Vec::new();
-
-        // Encode call index
         let call_index =
             self.get_custom_call_index_or_network(BALANCE_TRANSFER, &t.call_indices)?;
-        call_index.to_scale_into(&mut data);
-
-        // Encode destination account ID, TODO: check address network ?
         let address =
             SS58Address::from_str(&t.to_address).map_err(|_| EncodeError::InvalidAddress)?;
-        if !self.should_encode_raw_account() {
-            data.push(0x00);
-        }
-        address.to_scale_into(&mut data);
-
-        // Encode value
         let value =
             U256::from_little_endian_slice(&t.value).map_err(|_| EncodeError::InvalidValue)?;
-        Compact(value).to_scale_into(&mut data);
+
+        let mut encoder = ExtrinsicEncoder::new();
+        encoder.add_mut(call_index);
+        if !self.should_encode_raw_account() {
+            encoder.add_mut(0x00u8);
+        }
+        encoder.add_mut(address);
+        encoder.add_mut(Compact(value));
 
         // Encode memo if present, padding it to 32 bytes
         if !t.memo.is_empty() {
-            data.push(0x01);
-            data.extend(t.memo.as_bytes());
+            encoder.add_mut(0x01u8);
+            encoder.add_mut(Raw(t.memo.as_bytes()));
             if t.memo.len() < 32 {
-                data.extend(repeat(0x00).take(32 - t.memo.len()));
+                encoder.add_mut(RawIter(repeat(0x00).take(32 - t.memo.len())));
             }
         }
 
-        Ok(data)
+        Ok(encoder.finalize())
     }
 
     fn encode_asset_transfer(&self, at: &AssetTransfer) -> EncodeResult<Vec<u8>> {
-        let mut data = Vec::new();
-
-        // Encode call index
         let call_index =
             self.get_custom_call_index_or_network(ASSETS_TRANSFER, &at.call_indices)?;
-        call_index.to_scale_into(&mut data);
+        let address =
+            SS58Address::from_str(&at.to_address).map_err(|_| EncodeError::InvalidAddress)?;
+        let value =
+            U256::from_little_endian_slice(&at.value).map_err(|_| EncodeError::InvalidValue)?;
+
+        let mut encoder = ExtrinsicEncoder::new().add(call_index);
 
         // Encode asset ID if not native token
         if at.asset_id != 0 {
-            Compact(at.asset_id).to_scale_into(&mut data);
+            encoder.add_mut(Compact(at.asset_id));
         }
 
-        // Encode destination account ID, TODO: check address network ?
-        let address =
-            SS58Address::from_str(&at.to_address).map_err(|_| EncodeError::InvalidAddress)?;
         if !self.should_encode_raw_account() {
-            data.push(0x00);
+            encoder.add_mut(0x00u8);
         }
-        address.to_scale_into(&mut data);
 
-        // Encode value
-        let value =
-            U256::from_little_endian_slice(&at.value).map_err(|_| EncodeError::InvalidValue)?;
-        Compact(value).to_scale_into(&mut data);
+        let data = encoder.add(address).add(Compact(value)).finalize();
 
         Ok(data)
     }
@@ -232,17 +252,16 @@ impl<'a> Extrinsic<'a> {
         encoded_calls: &[Vec<u8>],
         call_indices: &Option<Proto::CallIndices>,
     ) -> EncodeResult<Vec<u8>> {
-        let mut data = Vec::new();
-
-        // Encode call index
         let call_index = self.get_custom_call_index_or_network(UTILITY_BATCH, call_indices)?;
-        call_index.to_scale_into(&mut data);
+        let encoder = ExtrinsicEncoder::new()
+            .add(call_index)
+            .add(Compact(encoded_calls.len()));
 
-        // Encode batched calls
-        Compact(encoded_calls.len()).to_scale_into(&mut data);
-        for c in encoded_calls {
-            data.extend(c);
-        }
+        let data = encoded_calls
+            .iter()
+            .fold(encoder, |encoder, call| encoder.add(Raw(call)))
+            .finalize();
+
         Ok(data)
     }
 
@@ -277,29 +296,26 @@ impl<'a> Extrinsic<'a> {
     }
 
     fn encode_staking_bond(&self, b: &Bond) -> EncodeResult<Vec<u8>> {
-        let mut data = Vec::new();
-
-        // Encode call index
         let call_index = self.get_custom_call_index_or_network(STAKING_BOND, &b.call_indices)?;
-        call_index.to_scale_into(&mut data);
+        let value =
+            U256::from_little_endian_slice(&b.value).map_err(|_| EncodeError::InvalidValue)?;
 
-        // Encode controller account ID, TODO: check address network ?
+        let mut encoder = ExtrinsicEncoder::new().add(call_index);
+
         if !b.controller.is_empty() {
+            // TODO: check address network ?
             let address =
                 SS58Address::from_str(&b.controller).map_err(|_| EncodeError::InvalidAddress)?;
             if !self.should_encode_raw_account() {
-                data.push(0x00);
+                encoder.add_mut(0x00u8);
             }
-            address.to_scale_into(&mut data);
+            encoder.add_mut(address);
         }
 
-        // Encode value
-        let value =
-            U256::from_little_endian_slice(&b.value).map_err(|_| EncodeError::InvalidValue)?;
-        Compact(value).to_scale_into(&mut data);
-
-        // Encode reward destination
-        (b.reward_destination as u8).to_scale_into(&mut data);
+        let data = encoder
+            .add(Compact(value))
+            .add(b.reward_destination as u8)
+            .finalize();
 
         Ok(data)
     }
@@ -328,61 +344,53 @@ impl<'a> Extrinsic<'a> {
     }
 
     fn encode_staking_bond_extra(&self, be: &BondExtra) -> EncodeResult<Vec<u8>> {
-        let mut data = Vec::new();
-
-        // Encode call index
         let call_index =
             self.get_custom_call_index_or_network(STAKING_BOND_EXTRA, &be.call_indices)?;
-        call_index.to_scale_into(&mut data);
-
-        // Encode value
         let value =
             U256::from_little_endian_slice(&be.value).map_err(|_| EncodeError::InvalidValue)?;
-        Compact(value).to_scale_into(&mut data);
+
+        let data = ExtrinsicEncoder::new()
+            .add(call_index)
+            .add(Compact(value))
+            .finalize();
 
         Ok(data)
     }
 
     fn encode_staking_unbond(&self, u: &Unbond) -> EncodeResult<Vec<u8>> {
-        let mut data = Vec::new();
-
-        // Encode call index
         let call_index = self.get_custom_call_index_or_network(STAKING_UNBOND, &u.call_indices)?;
-        call_index.to_scale_into(&mut data);
-
-        // Encode value
         let value =
             U256::from_little_endian_slice(&u.value).map_err(|_| EncodeError::InvalidValue)?;
-        Compact(value).to_scale_into(&mut data);
+
+        let data = ExtrinsicEncoder::new()
+            .add(call_index)
+            .add(Compact(value))
+            .finalize();
 
         Ok(data)
     }
 
     fn encode_staking_rebond(&self, u: &Rebond) -> EncodeResult<Vec<u8>> {
-        let mut data = Vec::new();
-
-        // Encode call index
         let call_index = self.get_custom_call_index_or_network(STAKING_REBOND, &u.call_indices)?;
-        call_index.to_scale_into(&mut data);
-
-        // Encode value
         let value =
             U256::from_little_endian_slice(&u.value).map_err(|_| EncodeError::InvalidValue)?;
-        Compact(value).to_scale_into(&mut data);
+
+        let data = ExtrinsicEncoder::new()
+            .add(call_index)
+            .add(Compact(value))
+            .finalize();
 
         Ok(data)
     }
 
     fn encode_staking_withdraw_unbonded(&self, wu: &WithdrawUnbonded) -> EncodeResult<Vec<u8>> {
-        let mut data = Vec::new();
-
-        // Encode call index
         let call_index =
             self.get_custom_call_index_or_network(STAKING_WITHDRAW_UNBONDED, &wu.call_indices)?;
-        call_index.to_scale_into(&mut data);
 
-        // Encode slashing spans as fixed-width u32
-        (wu.slashing_spans as u32).to_scale_into(&mut data);
+        let data = ExtrinsicEncoder::new()
+            .add(call_index)
+            .add(wu.slashing_spans as u32)
+            .finalize();
 
         Ok(data)
     }

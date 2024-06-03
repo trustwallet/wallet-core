@@ -64,11 +64,11 @@ impl ToScale for Compact<u32> {
             0..=0b0011_1111_1111_1111 => (((self.0 as u16) << 2) | 0b01).to_scale_into(out),
             0..=0b0011_1111_1111_1111_1111_1111_1111_1111 => {
                 ((self.0 << 2) | 0b10).to_scale_into(out)
-            }
+            },
             _ => {
                 out.push(0b11);
                 self.0.to_scale_into(out);
-            }
+            },
         }
     }
 }
@@ -80,7 +80,7 @@ impl ToScale for Compact<u64> {
             0..=0b0011_1111_1111_1111 => (((self.0 as u16) << 2) | 0b01).to_scale_into(out),
             0..=0b0011_1111_1111_1111_1111_1111_1111_1111 => {
                 (((self.0 as u32) << 2) | 0b10).to_scale_into(out)
-            }
+            },
             _ => {
                 let bytes_needed = 8 - self.0.leading_zeros() / 8;
                 out.reserve(bytes_needed as usize);
@@ -90,7 +90,7 @@ impl ToScale for Compact<u64> {
                     out.push(x as u8);
                     x >>= 8;
                 }
-            }
+            },
         }
     }
 }
@@ -132,7 +132,10 @@ impl ToScale for Compact<usize> {
     }
 }
 
-impl<T> ToScale for Option<T> where T: ToScale {
+impl<T> ToScale for Option<T>
+where
+    T: ToScale,
+{
     fn to_scale_into(&self, out: &mut Vec<u8>) {
         if let Some(t) = &self {
             t.to_scale_into(out);
@@ -141,8 +144,8 @@ impl<T> ToScale for Option<T> where T: ToScale {
 }
 
 impl<T> ToScale for &[T]
-    where
-        T: ToScale,
+where
+    T: ToScale,
 {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
         Compact(self.len()).to_scale_into(out);
@@ -153,8 +156,8 @@ impl<T> ToScale for &[T]
 }
 
 impl<T> ToScale for Vec<T>
-    where
-        T: ToScale,
+where
+    T: ToScale,
 {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
         self.as_slice().to_scale_into(out)
@@ -184,7 +187,10 @@ tuple_impl!(T0, T1, T2, T3, T4, T5, T6, T7);
 
 pub struct FixedLength<'a, T>(pub &'a [T]);
 
-impl<'a, T> ToScale for FixedLength<'a, T> where T: ToScale {
+impl<'a, T> ToScale for FixedLength<'a, T>
+where
+    T: ToScale,
+{
     fn to_scale_into(&self, out: &mut Vec<u8>) {
         for ts in self.0.iter() {
             ts.to_scale_into(out);
@@ -200,9 +206,20 @@ impl<'a> ToScale for Raw<'a> {
     }
 }
 
+pub struct RawIter<T>(pub T);
+
+impl<T> ToScale for RawIter<T>
+where
+    T: IntoIterator<Item = u8> + Clone,
+{
+    fn to_scale_into(&self, out: &mut Vec<u8>) {
+        out.extend(self.0.clone());
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{Compact, FixedLength, Raw, ToScale};
+    use super::{Compact, FixedLength, Raw, RawIter, ToScale};
     use tw_number::U256;
 
     #[test]
@@ -403,6 +420,16 @@ mod tests {
         assert_eq!(Raw(empty.as_slice()).to_scale(), empty);
         assert_eq!(
             Raw([4u8, 8, 15, 16, 23, 42].as_slice()).to_scale(),
+            &[0x04, 0x08, 0x0f, 0x10, 0x17, 0x2a],
+        );
+    }
+
+    #[test]
+    fn test_raw_iter() {
+        let empty: [u8; 0] = [];
+        assert_eq!(RawIter(empty.into_iter()).to_scale(), empty);
+        assert_eq!(
+            RawIter([4u8, 8, 15, 16, 23, 42].into_iter()).to_scale(),
             &[0x04, 0x08, 0x0f, 0x10, 0x17, 0x2a],
         );
     }
