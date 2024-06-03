@@ -67,10 +67,6 @@ impl WitnessProgram {
         &self.witness_program
     }
 
-    pub fn checksum_type(&self) -> bech32::Variant {
-        self.bech32_variant
-    }
-
     pub fn hrp(&self) -> &str {
         &self.hrp
     }

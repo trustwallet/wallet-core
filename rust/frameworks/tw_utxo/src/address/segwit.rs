@@ -78,10 +78,6 @@ impl SegwitAddress {
         SegwitAddress::from_str_checked(s, &hrp)
     }
 
-    pub fn witness_version(&self) -> u8 {
-        self.inner.witness_version()
-    }
-
     pub fn witness_program(&self) -> &[u8] {
         self.inner.witness_program()
     }

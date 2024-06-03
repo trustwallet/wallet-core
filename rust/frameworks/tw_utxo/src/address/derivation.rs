@@ -8,7 +8,6 @@ use tw_coin_entry::derivation::Derivation;
 pub enum BitcoinDerivation {
     Legacy,
     Segwit,
-    Taproot,
 }
 
 impl BitcoinDerivation {

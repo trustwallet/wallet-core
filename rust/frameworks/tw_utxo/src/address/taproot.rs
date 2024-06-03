@@ -1,5 +1,6 @@
 use super::Bech32Prefix;
 use crate::address::witness_program::WitnessProgram;
+use bitcoin::key::TapTweak;
 use core::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -72,11 +73,8 @@ impl TaprootAddress {
         // Tweak the public key with the (empty) merkle root.
         let pubkey = bitcoin::PublicKey::from_slice(public_key_bytes.as_slice()).unwrap();
         let internal_key = bitcoin::secp256k1::XOnlyPublicKey::from(pubkey.inner);
-        let (output_key, _parity) = bitcoin::key::TapTweak::tap_tweak(
-            internal_key,
-            &bitcoin::secp256k1::Secp256k1::new(),
-            merkle_root,
-        );
+        let (output_key, _parity) =
+            internal_key.tap_tweak(&bitcoin::secp256k1::Secp256k1::new(), merkle_root);
 
         Self::new(hrp, output_key.serialize().to_vec())
     }
@@ -99,10 +97,6 @@ impl TaprootAddress {
             None => coin.hrp().ok_or(AddressError::InvalidRegistry)?,
         };
         TaprootAddress::from_str_checked(s, &hrp)
-    }
-
-    pub fn witness_version(&self) -> u8 {
-        self.inner.witness_version()
     }
 
     pub fn witness_program(&self) -> &[u8] {
@@ -133,6 +127,7 @@ impl fmt::Display for TaprootAddress {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use tw_coin_entry::test_utils::test_context::TestCoinContext;
     use tw_encoding::hex::DecodeHex;
 
     struct TestInputValid {
@@ -209,6 +204,31 @@ mod tests {
         // program size 40
         test_from_str_invalid(
             "bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7kt5nd6y",
+        );
+    }
+
+    #[test]
+    fn test_taproot_address_create_with_coin_and_prefix() {
+        let coin = TestCoinContext::default();
+        let hrp = "bc".to_string();
+        let merkle_root = None;
+
+        let public_key_bytes = "03cdf7e208a0146c3a35c181944a96a15b2a58256be69adad640a9a97d408b9b44"
+            .decode_hex()
+            .unwrap();
+        let public_key =
+            tw::PublicKey::new(public_key_bytes.clone(), tw::PublicKeyType::Secp256k1).unwrap();
+
+        let addr = TaprootAddress::p2tr_with_coin_and_prefix(
+            &coin,
+            &public_key,
+            Some(Bech32Prefix { hrp }),
+            merkle_root,
+        )
+        .unwrap();
+        assert_eq!(
+            addr.to_string(),
+            "bc1purekytqrqzfzdulufmll8a335jhvw9x4glhzp8fv76yxlsxeyptsfylq9h"
         );
     }
 }

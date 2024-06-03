@@ -22,25 +22,10 @@ use tw_memory::Data;
 
 /// A standard set of Bitcoin address prefixes.
 /// The set of address prefixes can differ for Bitcoin forks.
+/// TODO add `TaprootBech32` enum variant.
 pub enum StandardBitcoinPrefix {
     Base58(BitcoinBase58Prefix),
     Bech32(Bech32Prefix),
-}
-
-impl StandardBitcoinPrefix {
-    pub fn into_base58(self) -> Option<BitcoinBase58Prefix> {
-        match self {
-            StandardBitcoinPrefix::Base58(base58) => Some(base58),
-            StandardBitcoinPrefix::Bech32(_) => None,
-        }
-    }
-
-    pub fn into_bech32(self) -> Option<Bech32Prefix> {
-        match self {
-            StandardBitcoinPrefix::Bech32(bech32) => Some(bech32),
-            StandardBitcoinPrefix::Base58(_) => None,
-        }
-    }
 }
 
 impl TryFrom<AddressPrefix> for StandardBitcoinPrefix {
@@ -119,27 +104,27 @@ impl StandardBitcoinAddress {
         derivation: Derivation,
         maybe_prefix: Option<StandardBitcoinPrefix>,
     ) -> AddressResult<StandardBitcoinAddress> {
+        match maybe_prefix {
+            Some(StandardBitcoinPrefix::Base58(prefix)) => {
+                return LegacyAddress::p2pkh_with_coin_and_prefix(coin, public_key, Some(prefix))
+                    .map(StandardBitcoinAddress::Legacy);
+            },
+            Some(StandardBitcoinPrefix::Bech32(prefix)) => {
+                return SegwitAddress::p2wpkh_with_coin_and_prefix(coin, public_key, Some(prefix))
+                    .map(StandardBitcoinAddress::Segwit);
+            },
+            // Derive an address as declared in registry.json.
+            None => (),
+        }
+
         match BitcoinDerivation::tw_derivation(coin, derivation) {
             BitcoinDerivation::Legacy => {
-                let maybe_base58_prefix = maybe_prefix.and_then(|prefix| prefix.into_base58());
-                LegacyAddress::p2pkh_with_coin_and_prefix(coin, public_key, maybe_base58_prefix)
+                LegacyAddress::p2pkh_with_coin_and_prefix(coin, public_key, None)
                     .map(StandardBitcoinAddress::Legacy)
             },
             BitcoinDerivation::Segwit => {
-                let maybe_bech32_prefix = maybe_prefix.and_then(|prefix| prefix.into_bech32());
-                SegwitAddress::p2wpkh_with_coin_and_prefix(coin, public_key, maybe_bech32_prefix)
+                SegwitAddress::p2wpkh_with_coin_and_prefix(coin, public_key, None)
                     .map(StandardBitcoinAddress::Segwit)
-            },
-            BitcoinDerivation::Taproot => {
-                let maybe_bech32_prefix = maybe_prefix.and_then(|prefix| prefix.into_bech32());
-                let merkle_root = None;
-                TaprootAddress::p2tr_with_coin_and_prefix(
-                    coin,
-                    public_key,
-                    maybe_bech32_prefix,
-                    merkle_root,
-                )
-                .map(StandardBitcoinAddress::Taproot)
             },
         }
     }
