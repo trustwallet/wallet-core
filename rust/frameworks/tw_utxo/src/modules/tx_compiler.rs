@@ -4,7 +4,7 @@
 
 use crate::modules::sighash_verifier::SighashVerifier;
 use crate::sighash::SighashType;
-use crate::signature::{BitcoinEcdsaSignature, BitcoinSchnorrSignature};
+use crate::signature::{BitcoinEcdsaSignature, BitcoinSchnorrSignature, FromRawOrDerBytes};
 use crate::spending_data::{
     EcdsaSpendingDataConstructor, SchnorrSpendingDataConstructor, SpendingData,
     SpendingDataConstructor,
@@ -98,9 +98,7 @@ where
         sign: &[u8],
         sighash_ty: SighashType,
     ) -> SigningResult<SpendingData> {
-        let ecdsa_sign = ecdsa::secp256k1::Signature::try_from(sign)
-            .into_tw()
-            .context("Invalid ecdsa signature")?;
+        let ecdsa_sign = ecdsa::secp256k1::VerifySignature::from_raw_or_der_bytes(sign)?;
         let der_sign = ecdsa_sign
             .to_der()
             .into_tw()

@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::modules::sighash_computer::{SighashComputer, UtxoSighash};
+use crate::signature::FromRawOrDerBytes;
 use crate::signing_mode::SigningMethod;
 use crate::transaction::transaction_interface::TransactionInterface;
 use crate::transaction::unsigned_transaction::UnsignedTransaction;
@@ -79,9 +80,7 @@ where
             .into_tw()
             .with_context(|| format!("Error invalid ecdsa public key: {}", public_key.to_hex()))?;
 
-        let sign = ecdsa::secp256k1::VerifySignature::try_from(signature)
-            .into_tw()
-            .context("Given an invalid ecdsa signature")?;
+        let sign = ecdsa::secp256k1::VerifySignature::from_raw_or_der_bytes(signature)?;
 
         if !public_key.verify(sign, sighash.sighash) {
             return SigningError::err(SigningErrorType::Error_signing).context(format!(
