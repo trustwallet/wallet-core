@@ -117,7 +117,7 @@ message Input {
 
     // The reciepient of this input (the spender)
     oneof to_recipient {
-        // Construct input with a buildler pattern.
+        // Construct input with a builder pattern.
         InputBuilder builder = 8;
         // Construct input by providing raw spending information directly.
         InputScriptWitness custom_script = 9;
