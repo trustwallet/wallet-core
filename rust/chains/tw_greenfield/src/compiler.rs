@@ -11,7 +11,7 @@ use std::borrow::Cow;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::common::compile_input::SingleSignaturePubkey;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_cosmos_sdk::modules::broadcast_msg::{BroadcastMode, BroadcastMsg};
 use tw_cosmos_sdk::modules::serializer::json_serializer::JsonSerializer;
@@ -72,8 +72,12 @@ impl GreenfieldCompiler {
         } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
 
         let public_key_params = None;
-        let public_key = GreenfieldPublicKey::from_bytes(coin, &public_key, public_key_params)?;
-        let signature = GreenfieldSignature::try_from(raw_signature.as_slice())?;
+        let public_key = GreenfieldPublicKey::from_bytes(coin, &public_key, public_key_params)
+            .into_tw()
+            .context("Invalid provided public key")?;
+        let signature = GreenfieldSignature::try_from(raw_signature.as_slice())
+            .into_tw()
+            .context("Invalid provided signature")?;
         let signature_bytes = signature.to_vec();
 
         // Set the public key. It will be used to construct a signer info.
@@ -91,7 +95,8 @@ impl GreenfieldCompiler {
             signature_bytes.clone(),
         );
         let signature_json = serde_json::to_string(&[signature_json])
-            .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+            .tw_err(|_| SigningErrorType::Error_internal)
+            .context("Error serializing signatures as JSON")?;
 
         Ok(Proto::SigningOutput {
             signature: Cow::from(signature_bytes),

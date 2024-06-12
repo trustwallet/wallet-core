@@ -4,7 +4,7 @@
 
 use std::borrow::Cow;
 use tw_any_coin::ffi::tw_any_signer::tw_any_signer_sign;
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_cosmos_sdk::test_utils::proto_utils::{make_amount, make_fee, make_message};
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;

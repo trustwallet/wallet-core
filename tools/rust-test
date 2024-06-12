@@ -18,7 +18,7 @@ if [[ "$1" == "wasm" ]]; then
   source ../emsdk/emsdk_env.sh
   export CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_RUNNER=node
 
-  cargo test --target wasm32-unknown-emscripten --profile wasm-test
+  cargo test --target wasm32-unknown-emscripten --profile wasm-test --workspace --exclude wallet_core_bin
 else
   cargo test --all
 fi

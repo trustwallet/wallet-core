@@ -1,0 +1,17 @@
+[package]
+name = "tw_internet_computer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+quick-protobuf = "0.8.1"
+serde = { version = "1.0", features = ["derive"] }
+tw_coin_entry = { path = "../../tw_coin_entry" }
+tw_encoding = { path = "../../tw_encoding" }
+tw_hash = { path = "../../tw_hash" }
+tw_keypair = { path = "../../tw_keypair" }
+tw_memory = { path = "../../tw_memory" }
+tw_proto = { path = "../../tw_proto" }
+
+[build-dependencies]
+pb-rs = "0.10.0"

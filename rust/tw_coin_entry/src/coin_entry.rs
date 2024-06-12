@@ -4,7 +4,7 @@
 
 use crate::coin_context::CoinContext;
 use crate::derivation::Derivation;
-use crate::error::AddressResult;
+use crate::error::prelude::*;
 use crate::modules::json_signer::JsonSigner;
 use crate::modules::plan_builder::PlanBuilder;
 use crate::prefix::Prefix;

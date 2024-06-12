@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::modules::message_signer::MessageSigner;
 use tw_coin_entry::test_utils::test_context::TestCoinContext;
 use tw_encoding::hex::{DecodeHex, ToHex};
@@ -124,6 +124,19 @@ fn test_message_signer_sign_verify_legacy() {
         msg_type: Proto::MessageType::MessageType_legacy,
         chain_id: None,
         signature: "21a779d499957e7fd39392d49a079679009e60e492d9654a148829be43d2490736ec72bc4a5644047d979c3cf4ebe2c1c514044cf436b063cb89fc6676be71101b",
+    });
+}
+
+/// https://github.com/trustwallet/wallet-core/issues/3831
+#[test]
+fn test_message_signer_sign_verify_legacy_hex() {
+    test_message_signer_sign_verify(SignVerifyTestInput {
+        // 0x9d1d97adfcd324bbd603d3872bd78e04098510b1
+        private_key: "9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0",
+        msg: "0xc0a96273d5c3fbe4d4000491f08daef9c17f88df846c1d6f57eb5f33c1fbd035",
+        msg_type: Proto::MessageType::MessageType_legacy,
+        chain_id: None,
+        signature: "b18a666ad08bf9bfcd39920b26b5a5d1486b67b45119810b3c7bda22e41e5c4c1bfbe0c932f6c14df4947a18ba310831a37b7307d724a3ac2a4935b99d7075141b",
     });
 }
 

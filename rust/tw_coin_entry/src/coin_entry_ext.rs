@@ -5,8 +5,7 @@
 use crate::coin_context::CoinContext;
 use crate::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
 use crate::derivation::Derivation;
-use crate::error::SigningResult;
-use crate::error::{AddressResult, SigningError, SigningErrorType};
+use crate::error::prelude::*;
 use crate::modules::json_signer::JsonSigner;
 use crate::modules::message_signer::MessageSigner;
 use crate::modules::plan_builder::PlanBuilder;
@@ -154,7 +153,7 @@ where
         private_key: PrivateKeyBytes,
     ) -> SigningResult<String> {
         let Some(json_signer) = self.json_signer() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(SigningErrorType::Error_not_supported);
         };
 
         let private_key = PrivateKey::new(private_key)?;
@@ -181,7 +180,7 @@ where
 
     fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data> {
         let Some(plan_builder) = self.plan_builder() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(SigningErrorType::Error_not_supported);
         };
 
         let input: <T::PlanBuilder as PlanBuilder>::SigningInput<'_> = deserialize(input)?;
@@ -191,7 +190,7 @@ where
 
     fn sign_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data> {
         let Some(message_signer) = self.message_signer() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(SigningErrorType::Error_not_supported);
         };
 
         let input: <T::MessageSigner as MessageSigner>::MessageSigningInput<'_> =
@@ -202,7 +201,7 @@ where
 
     fn message_preimage_hashes(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data> {
         let Some(message_signer) = self.message_signer() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(SigningErrorType::Error_not_supported);
         };
 
         let input: <T::MessageSigner as MessageSigner>::MessageSigningInput<'_> =
@@ -213,7 +212,7 @@ where
 
     fn verify_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<bool> {
         let Some(message_signer) = self.message_signer() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(SigningErrorType::Error_not_supported);
         };
 
         let input: <T::MessageSigner as MessageSigner>::MessageVerifyingInput<'_> =
@@ -227,7 +226,7 @@ where
         input: &[u8],
     ) -> SigningResult<Data> {
         let Some(wc_connector) = self.wallet_connector() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(SigningErrorType::Error_not_supported);
         };
 
         let input: WCProto::ParseRequestInput = deserialize(input)?;
@@ -237,7 +236,7 @@ where
 
     fn decode_transaction(&self, coin: &dyn CoinContext, tx: &[u8]) -> SigningResult<Data> {
         let Some(tx_decoder) = self.transaction_decoder() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(SigningErrorType::Error_not_supported);
         };
 
         let output = tx_decoder.decode_transaction(coin, tx);

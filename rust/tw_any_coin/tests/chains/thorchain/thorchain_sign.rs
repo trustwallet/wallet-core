@@ -6,7 +6,7 @@ use crate::chains::thorchain::test_cases::send_fd0445af::{
     signing_input, JSON_SIGNING_SIGNATURE, JSON_SIGNING_SIGNATURE_JSON, JSON_TX, PRIVATE_KEY,
 };
 use tw_any_coin::ffi::tw_any_signer::tw_any_signer_sign;
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;

@@ -10,6 +10,7 @@ use crate::abi::token::Token;
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use crate::address::Address;
 use lazy_static::lazy_static;
+use tw_coin_entry::error::prelude::*;
 use tw_hash::{H160, H256};
 use tw_number::{I256, U256};
 
@@ -22,8 +23,7 @@ lazy_static! {
 
 pub fn decode_params(params: &[Param], data: &[u8]) -> AbiResult<Vec<NamedToken>> {
     let param_types: Vec<_> = params.iter().map(|param| param.kind.clone()).collect();
-    let decoded_tokens = decode_params_impl(&param_types, data)
-        .map_err(|_| AbiError(AbiErrorKind::Error_decoding_data))?;
+    let decoded_tokens = decode_params_impl(&param_types, data)?;
 
     let named_tokens: Vec<_> = params
         .iter()
@@ -65,7 +65,8 @@ fn decode_params_impl(types: &[ParamType], data: &[u8]) -> AbiResult<Vec<Token>>
 fn decode_offset(types: &[ParamType], data: &[u8]) -> AbiResult<(Vec<Token>, usize)> {
     // We don't support empty `FixedBytes` or `FixedArray` collections.
     if data.is_empty() {
-        return Err(AbiError(AbiErrorKind::Error_decoding_data));
+        return AbiError::err(AbiErrorKind::Error_decoding_data)
+            .context("Empty `FixedBytes` or `FixedArray` collections are not allowed");
     }
 
     let mut tokens = vec![];
@@ -83,7 +84,8 @@ fn decode_offset(types: &[ParamType], data: &[u8]) -> AbiResult<(Vec<Token>, usi
 fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<DecodeResult> {
     match param {
         ParamType::Address => {
-            let slice = peek_32_bytes(data, offset)?;
+            let slice = peek_32_bytes(data, offset)
+                .with_context(|| format!("Error decoding Address parameter at {offset}"))?;
             let mut address = H160::default();
             address.copy_from_slice(&slice[12..]);
             let result = DecodeResult {
@@ -93,7 +95,8 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
             Ok(result)
         },
         ParamType::Int { bits } => {
-            let slice = peek_32_bytes(data, offset)?;
+            let slice = peek_32_bytes(data, offset)
+                .with_context(|| format!("Error decoding Int parameter at {offset}"))?;
             let result = DecodeResult {
                 token: Token::Int {
                     int: I256::from_big_endian(slice),
@@ -104,7 +107,8 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
             Ok(result)
         },
         ParamType::Uint { bits } => {
-            let slice = peek_32_bytes(data, offset)?;
+            let slice = peek_32_bytes(data, offset)
+                .with_context(|| format!("Error decoding Uint parameter at {offset}"))?;
             let result = DecodeResult {
                 token: Token::Uint {
                     uint: U256::from_big_endian(slice),
@@ -115,7 +119,9 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
             Ok(result)
         },
         ParamType::Bool => {
-            let b = as_bool(&peek_32_bytes(data, offset)?)?;
+            let b = peek_32_bytes(data, offset)
+                .and_then(as_bool)
+                .with_context(|| format!("Error decoding Bool parameter at {offset}"))?;
             let result = DecodeResult {
                 token: Token::Bool(b),
                 new_offset: offset + WORD_LEN,
@@ -125,8 +131,10 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
         ParamType::FixedBytes { len } => {
             // FixedBytes is anything from bytes1 to bytes32. These values
             // are padded with trailing zeros to fill 32 bytes.
-            let bytes = take_bytes(data, offset, len.get())?;
-            let checked_bytes = NonEmptyBytes::new(bytes)?;
+            let bytes = take_bytes(data, offset, len.get())
+                .with_context(|| format!("Error decoding FixedBytes parameter at {offset}"))?;
+            let checked_bytes = NonEmptyBytes::new(bytes)
+                .context("Empty `FixedBytes` collection is not allowed")?;
             let result = DecodeResult {
                 token: Token::FixedBytes(checked_bytes),
                 new_offset: offset + WORD_LEN,
@@ -134,11 +142,17 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
             Ok(result)
         },
         ParamType::Bytes => {
-            let dynamic_offset = as_usize(&peek_32_bytes(data, offset)?)?;
-            let bytes_offset = add_checked(dynamic_offset, WORD_LEN)?;
+            let dynamic_offset = peek_32_bytes(data, offset)
+                .and_then(as_usize)
+                .with_context(|| format!("Error decoding Bytes dynamic offset at {offset}"))?;
+            let bytes_offset = add_checked(dynamic_offset, WORD_LEN)
+                .with_context(|| format!("Dynamic offset is too big at {offset}"))?;
 
-            let len = as_usize(&peek_32_bytes(data, dynamic_offset)?)?;
-            let bytes = take_bytes(data, bytes_offset, len)?;
+            let len = peek_32_bytes(data, dynamic_offset)
+                .and_then(as_usize)
+                .with_context(|| format!("Error decoding Bytes length at {dynamic_offset}"))?;
+            let bytes = take_bytes(data, bytes_offset, len)
+                .with_context(|| format!("Error decoding bytes at {bytes_offset}"))?;
             let result = DecodeResult {
                 token: Token::Bytes(bytes),
                 new_offset: offset + WORD_LEN,
@@ -146,11 +160,17 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
             Ok(result)
         },
         ParamType::String => {
-            let dynamic_offset = as_usize(&peek_32_bytes(data, offset)?)?;
-            let bytes_offset = add_checked(dynamic_offset, WORD_LEN)?;
+            let dynamic_offset = peek_32_bytes(data, offset)
+                .and_then(as_usize)
+                .with_context(|| format!("Error decoding String dynamic offset at {offset}"))?;
+            let bytes_offset = add_checked(dynamic_offset, WORD_LEN)
+                .with_context(|| format!("Dynamic offset is too big at {offset}"))?;
 
-            let len = as_usize(&peek_32_bytes(data, dynamic_offset)?)?;
-            let bytes = take_bytes(data, bytes_offset, len)?;
+            let len = peek_32_bytes(data, dynamic_offset)
+                .and_then(as_usize)
+                .with_context(|| format!("Error decoding String length at {dynamic_offset}"))?;
+            let bytes = take_bytes(data, bytes_offset, len)
+                .with_context(|| format!("Error decoding String parameter at {bytes_offset}"))?;
             let result = DecodeResult {
                 // NOTE: We're decoding strings using lossy UTF-8 decoding to
                 // prevent invalid strings written into contracts by either users or
@@ -162,17 +182,23 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
             Ok(result)
         },
         ParamType::Array { kind } => {
-            let len_offset = as_usize(&peek_32_bytes(data, offset)?)?;
-            let len = as_usize(&peek_32_bytes(data, len_offset)?)?;
+            let len_offset = peek_32_bytes(data, offset)
+                .and_then(as_usize)
+                .with_context(|| format!("Error decoding Array length offset at {offset}"))?;
+            let len = peek_32_bytes(data, len_offset)
+                .and_then(as_usize)
+                .with_context(|| format!("Error decoding Array length at {len_offset}"))?;
 
-            let tail_offset = add_checked(len_offset, WORD_LEN)?;
+            let tail_offset = add_checked(len_offset, WORD_LEN)
+                .with_context(|| format!("Array length offset is too big: {len_offset}"))?;
             let tail = &data[tail_offset..];
 
             let mut tokens = vec![];
             let mut new_offset = 0;
 
-            for _ in 0..len {
-                let res = decode_param(kind, tail, new_offset)?;
+            for elem_idx in 0..len {
+                let res = decode_param(kind, tail, new_offset)
+                    .with_context(|| format!("Error decoding '{elem_idx}' Array element"))?;
                 new_offset = res.new_offset;
                 tokens.push(res.token);
             }
@@ -191,9 +217,14 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
             let is_dynamic = param.is_dynamic();
 
             let (tail, mut new_offset) = if is_dynamic {
-                let offset = as_usize(&peek_32_bytes(data, offset)?)?;
+                let offset = peek_32_bytes(data, offset)
+                    .and_then(as_usize)
+                    .with_context(|| {
+                        format!("Error decoding FixedArray dynamic offset at {offset}")
+                    })?;
                 if offset > data.len() {
-                    return Err(AbiError(AbiErrorKind::Error_decoding_data));
+                    return AbiError::err(AbiErrorKind::Error_decoding_data)
+                        .context("FixedArray dynamic offset is out of bounds");
                 }
                 (&data[offset..], 0)
             } else {
@@ -202,13 +233,15 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
 
             let mut tokens = vec![];
 
-            for _ in 0..len.get() {
-                let res = decode_param(kind, tail, new_offset)?;
+            for elem_idx in 0..len.get() {
+                let res = decode_param(kind, tail, new_offset)
+                    .with_context(|| format!("Error decoding '{elem_idx}' FixedArray element"))?;
                 new_offset = res.new_offset;
                 tokens.push(res.token);
             }
 
-            let checked_tokens = NonEmptyArray::new(tokens)?;
+            let checked_tokens = NonEmptyArray::new(tokens)
+                .context("Empty `FixedBytes` collection is not allowed")?;
             let result = DecodeResult {
                 token: Token::FixedArray {
                     arr: checked_tokens,
@@ -229,9 +262,12 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
             // The first element in a dynamic Tuple is an offset to the Tuple's data
             // For a static Tuple the data begins right away
             let (tail, mut new_offset) = if is_dynamic {
-                let offset = as_usize(&peek_32_bytes(data, offset)?)?;
+                let offset = peek_32_bytes(data, offset)
+                    .and_then(as_usize)
+                    .with_context(|| format!("Error decoding Tuple dynamic offset at {offset}"))?;
                 if offset > data.len() {
-                    return Err(AbiError(AbiErrorKind::Error_decoding_data));
+                    return AbiError::err(AbiErrorKind::Error_decoding_data)
+                        .context("Tuple dynamic offset is out of bounds");
                 }
                 (&data[offset..], 0)
             } else {
@@ -239,8 +275,9 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
             };
 
             let mut named_tokens = Vec::with_capacity(params.len());
-            for param in params.iter() {
-                let res = decode_param(&param.kind, tail, new_offset)?;
+            for (elem_idx, param) in params.iter().enumerate() {
+                let res = decode_param(&param.kind, tail, new_offset)
+                    .with_context(|| format!("Error decoding '{elem_idx}' Tuple element"))?;
                 new_offset = res.new_offset;
                 named_tokens.push(NamedToken {
                     name: param.name.clone(),
@@ -268,9 +305,9 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
     }
 }
 
-fn as_usize(slice: &H256) -> AbiResult<usize> {
+fn as_usize(slice: H256) -> AbiResult<usize> {
     if !slice[..28].iter().all(|x| *x == 0) {
-        return Err(AbiError(AbiErrorKind::Error_decoding_data));
+        return AbiError::err(AbiErrorKind::Error_decoding_data);
     }
 
     let result = ((slice[28] as usize) << 24)
@@ -281,9 +318,9 @@ fn as_usize(slice: &H256) -> AbiResult<usize> {
     Ok(result)
 }
 
-fn as_bool(slice: &H256) -> AbiResult<bool> {
+fn as_bool(slice: H256) -> AbiResult<bool> {
     if !slice[..31].iter().all(|x| *x == 0) {
-        return Err(AbiError(AbiErrorKind::Error_decoding_data));
+        return AbiError::err(AbiErrorKind::Error_decoding_data);
     }
 
     Ok(slice[31] == 1)
@@ -292,7 +329,7 @@ fn as_bool(slice: &H256) -> AbiResult<bool> {
 fn peek(data: &[u8], offset: usize, len: usize) -> AbiResult<&[u8]> {
     let end = add_checked(offset, len)?;
     if end > data.len() {
-        Err(AbiError(AbiErrorKind::Error_decoding_data))
+        AbiError::err(AbiErrorKind::Error_decoding_data)
     } else {
         Ok(&data[offset..end])
     }
@@ -309,7 +346,7 @@ fn peek_32_bytes(data: &[u8], offset: usize) -> AbiResult<H256> {
 fn take_bytes(data: &[u8], offset: usize, len: usize) -> AbiResult<Vec<u8>> {
     let end = add_checked(offset, len)?;
     if end > data.len() {
-        Err(AbiError(AbiErrorKind::Error_decoding_data))
+        AbiError::err(AbiErrorKind::Error_decoding_data)
     } else {
         Ok(data[offset..end].to_vec())
     }
@@ -317,7 +354,7 @@ fn take_bytes(data: &[u8], offset: usize, len: usize) -> AbiResult<Vec<u8>> {
 
 fn add_checked(left: usize, right: usize) -> AbiResult<usize> {
     left.checked_add(right)
-        .ok_or(AbiError(AbiErrorKind::Error_decoding_data))
+        .or_tw_err(AbiErrorKind::Error_decoding_data)
 }
 
 #[cfg(test)]

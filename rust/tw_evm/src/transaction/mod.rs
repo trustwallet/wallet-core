@@ -10,7 +10,7 @@
 //! - User operations (EIP4337)
 
 use crate::transaction::signature::EthSignature;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_hash::{sha3::keccak256, H256};
 use tw_keypair::ecdsa::secp256k1;
 use tw_memory::Data;

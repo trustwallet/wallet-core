@@ -4,7 +4,7 @@
 
 use crate::transaction::message::{CosmosMessage, JsonMessage};
 use serde_json::Value as Json;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 
 /// Any raw JSON message.
 /// Supports JSON serialization only.

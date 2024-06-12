@@ -9,23 +9,24 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 strum = "0.25"
 strum_macros = "0.25"
-tw_aptos = { path = "../tw_aptos" }
+tw_aptos = { path = "../chains/tw_aptos" }
 tw_binance = { path = "../chains/tw_binance" }
 tw_bitcoin = { path = "../tw_bitcoin" }
 tw_coin_entry = { path = "../tw_coin_entry" }
 tw_cosmos = { path = "../chains/tw_cosmos" }
-tw_ethereum = { path = "../tw_ethereum" }
+tw_ethereum = { path = "../chains/tw_ethereum" }
 tw_evm = { path = "../tw_evm" }
 tw_greenfield = { path = "../chains/tw_greenfield" }
 tw_hash = { path = "../tw_hash" }
-tw_internet_computer = { path = "../tw_internet_computer" }
+tw_internet_computer = { path = "../chains/tw_internet_computer" }
 tw_keypair = { path = "../tw_keypair" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
 tw_native_evmos = { path = "../chains/tw_native_evmos" }
 tw_native_injective = { path = "../chains/tw_native_injective" }
-tw_ronin = { path = "../tw_ronin" }
+tw_ronin = { path = "../chains/tw_ronin" }
 tw_solana = { path = "../chains/tw_solana" }
+tw_sui = { path = "../chains/tw_sui" }
 tw_thorchain = { path = "../chains/tw_thorchain" }
 
 [build-dependencies]

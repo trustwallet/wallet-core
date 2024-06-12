@@ -5,7 +5,7 @@
 use crate::address::GreenfieldAddress;
 use crate::transaction::message::type_msg_amount::TypeMsgAmount;
 use crate::transaction::message::GreenfieldMessage;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_cosmos_sdk::proto::cosmos as CosmosProto;
 use tw_cosmos_sdk::transaction::message::cosmos_bank_message::SendMessage;
 use tw_cosmos_sdk::transaction::message::{

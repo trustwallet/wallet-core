@@ -4,7 +4,7 @@
 
 use std::borrow::Cow;
 use std::str::FromStr;
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_evm::evm_context::StandardEvmContext;
 use tw_evm::modules::rlp_encoder::{RlpEncoder, RECURSION_LIMIT};

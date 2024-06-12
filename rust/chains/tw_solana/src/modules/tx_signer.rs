@@ -6,7 +6,7 @@ use crate::address::SolanaAddress;
 use crate::modules::PubkeySignatureMap;
 use crate::transaction::{versioned, Signature};
 use std::collections::HashMap;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_keypair::ed25519;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
 use tw_memory::Data;
@@ -44,8 +44,11 @@ impl TxSigner {
     ) -> SigningResult<versioned::VersionedTransaction> {
         let mut tx = versioned::VersionedTransaction::unsigned(unsigned_msg);
 
-        if key_signs.len() != tx.message.num_required_signatures() {
-            return Err(SigningError(SigningErrorType::Error_signatures_count));
+        let actual_signatures = key_signs.len();
+        let expected_signatures = tx.message.num_required_signatures();
+        if actual_signatures != expected_signatures {
+            return SigningError::err(SigningErrorType::Error_signatures_count)
+                .with_context(|| format!("Expected '{expected_signatures}' signatures, provided '{actual_signatures}'"));
         }
 
         for (signing_pubkey, ed25519_signature) in key_signs {
@@ -53,11 +56,15 @@ impl TxSigner {
             let account_index = tx
                 .message
                 .get_account_index(signing_pubkey)
-                .ok_or(SigningError(SigningErrorType::Error_missing_private_key))?;
+                .or_tw_err(SigningErrorType::Error_missing_private_key)
+                .with_context(|| {
+                    format!("Provided a signature for an unexpected account: {signing_pubkey}")
+                })?;
             let signature_to_reassign = tx
                 .signatures
                 .get_mut(account_index)
-                .ok_or(SigningError(SigningErrorType::Error_signatures_count))?;
+                .or_tw_err(SigningErrorType::Error_signatures_count)
+                .context("Internal error: invalid number of Tx.signatures[]")?;
             *signature_to_reassign = Signature(ed25519_signature.to_bytes());
         }
 
@@ -65,6 +72,8 @@ impl TxSigner {
     }
 
     pub fn preimage_versioned(msg: &versioned::VersionedMessage) -> SigningResult<Data> {
-        bincode::serialize(&msg).map_err(|_| SigningError(SigningErrorType::Error_internal))
+        bincode::serialize(&msg)
+            .tw_err(|_| SigningErrorType::Error_internal)
+            .context("Error serializing Solana Message as 'bincode'")
     }
 }

@@ -53,8 +53,7 @@ jobs:
 
       - name: Run tests
         run: |
-          cargo llvm-cov test --no-fail-fast --lcov --output-path coverage.info
-        working-directory: rust
+          tools/rust-coverage
 
       - name: Gather and check Rust code coverage
         run: |

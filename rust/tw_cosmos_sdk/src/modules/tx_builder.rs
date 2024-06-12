@@ -12,7 +12,7 @@ use crate::transaction::{Coin, Fee, SignMode, SignerInfo, TxBody, UnsignedTransa
 use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_hash::hasher::Hasher;
 use tw_keypair::tw;
 use tw_misc::traits::{OptionalEmpty, ToBytesVec};
@@ -37,7 +37,8 @@ where
         let fee = input
             .fee
             .as_ref()
-            .ok_or(SigningError(SigningErrorType::Error_wrong_fee))?;
+            .or_tw_err(SigningErrorType::Error_wrong_fee)
+            .context("No fee specified")?;
         let signer = Self::signer_info_from_proto(coin, input)?;
 
         Ok(UnsignedTransaction {
@@ -100,7 +101,9 @@ where
     }
 
     fn coin_from_proto(input: &Proto::Amount<'_>) -> SigningResult<Coin> {
-        let amount = U256::from_str(&input.amount)?;
+        let amount = U256::from_str(&input.amount)
+            .into_tw()
+            .context("Invalid amount, expected string decimal")?;
         Ok(Coin {
             amount,
             denom: input.denom.to_string(),
@@ -112,7 +115,8 @@ where
         input: &Proto::SigningInput<'_>,
     ) -> SigningResult<TxBody> {
         if input.messages.is_empty() {
-            return Err(SigningError(SigningErrorType::Error_invalid_params));
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("No TX messages provided");
         }
 
         let messages = input
@@ -201,7 +205,8 @@ where
             MessageEnum::sign_direct_message(ref _sign) => {
                 // `SignDirect` message must be handled before this function is called.
                 // Consider using `Self::try_sign_direct_args` instead.
-                Err(SigningError(SigningErrorType::Error_not_supported))
+                SigningError::err(SigningErrorType::Error_not_supported)
+                    .context("Consider using `Self::try_sign_direct_args` instead")
             },
             MessageEnum::auth_grant(ref grant) => Self::auth_grant_msg_from_proto(coin, grant),
             MessageEnum::auth_revoke(ref revoke) => Self::auth_revoke_msg_from_proto(coin, revoke),
@@ -215,7 +220,8 @@ where
             MessageEnum::thorchain_deposit_message(ref deposit) => {
                 Self::thorchain_deposit_msg_from_proto(coin, deposit)
             },
-            MessageEnum::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
+            MessageEnum::None => SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("No TX message provided"),
         }
     }
 
@@ -232,8 +238,12 @@ where
             .collect::<SigningResult<_>>()?;
         let msg = SendMessage {
             custom_type_prefix: send.type_prefix.to_string().empty_or_some(),
-            from_address: Address::from_str(&send.from_address)?,
-            to_address: Address::from_str(&send.to_address)?,
+            from_address: Address::from_str(&send.from_address)
+                .into_tw()
+                .context("Invalid sender address")?,
+            to_address: Address::from_str(&send.to_address)
+                .into_tw()
+                .context("Invalid receiver address")?,
             amount: amounts,
         };
         Ok(msg.into_boxed())
@@ -248,19 +258,25 @@ where
         let token = transfer
             .token
             .as_ref()
-            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("No token specified")?;
         let token = Self::coin_from_proto(token)?;
         let height = transfer
             .timeout_height
             .as_ref()
-            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("No timeout height specified")?;
 
         let msg = TransferTokensMessage {
             source_port: transfer.source_port.to_string(),
             source_channel: transfer.source_channel.to_string(),
             token,
-            sender: Address::from_str(&transfer.sender)?,
-            receiver: Address::from_str(&transfer.receiver)?,
+            sender: Address::from_str(&transfer.sender)
+                .into_tw()
+                .context("Invalid sender address")?,
+            receiver: Address::from_str(&transfer.receiver)
+                .into_tw()
+                .context("Invalid receiver address")?,
             timeout_height: Height {
                 revision_number: height.revision_number,
                 revision_height: height.revision_height,
@@ -279,13 +295,18 @@ where
         let amount = delegate
             .amount
             .as_ref()
-            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("No amount specified")?;
         let amount = Self::coin_from_proto(amount)?;
         let msg = DelegateMessage {
             custom_type_prefix: delegate.type_prefix.to_string().empty_or_some(),
             amount,
-            delegator_address: Address::from_str(&delegate.delegator_address)?,
-            validator_address: Address::from_str(&delegate.validator_address)?,
+            delegator_address: Address::from_str(&delegate.delegator_address)
+                .into_tw()
+                .context("Invalid delegator address")?,
+            validator_address: Address::from_str(&delegate.validator_address)
+                .into_tw()
+                .context("Invalid validator address")?,
         };
         Ok(msg.into_boxed())
     }
@@ -299,14 +320,19 @@ where
         let amount = undelegate
             .amount
             .as_ref()
-            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("No amount specified")?;
         let amount = Self::coin_from_proto(amount)?;
 
         let msg = UndelegateMessage {
             custom_type_prefix: undelegate.type_prefix.to_string().empty_or_some(),
             amount,
-            delegator_address: Address::from_str(&undelegate.delegator_address)?,
-            validator_address: Address::from_str(&undelegate.validator_address)?,
+            delegator_address: Address::from_str(&undelegate.delegator_address)
+                .into_tw()
+                .context("Invalid delegator address")?,
+            validator_address: Address::from_str(&undelegate.validator_address)
+                .into_tw()
+                .context("Invalid validator address")?,
         };
         Ok(msg.into_boxed())
     }
@@ -319,8 +345,12 @@ where
 
         let msg = WithdrawDelegationRewardMessage {
             custom_type_prefix: withdraw.type_prefix.to_string().empty_or_some(),
-            delegator_address: Address::from_str(&withdraw.delegator_address)?,
-            validator_address: Address::from_str(&withdraw.validator_address)?,
+            delegator_address: Address::from_str(&withdraw.delegator_address)
+                .into_tw()
+                .context("Invalid delegator address")?,
+            validator_address: Address::from_str(&withdraw.validator_address)
+                .into_tw()
+                .context("Invalid validator address")?,
         };
         Ok(msg.into_boxed())
     }
@@ -333,8 +363,12 @@ where
 
         let msg = SetWithdrawAddressMessage {
             custom_type_prefix: set.type_prefix.to_string().empty_or_some(),
-            delegator_address: Address::from_str(&set.delegator_address)?,
-            withdraw_address: Address::from_str(&set.withdraw_address)?,
+            delegator_address: Address::from_str(&set.delegator_address)
+                .into_tw()
+                .context("Invalid delegator address")?,
+            withdraw_address: Address::from_str(&set.withdraw_address)
+                .into_tw()
+                .context("Invalid withdraw address")?,
         };
         Ok(msg.into_boxed())
     }
@@ -348,15 +382,22 @@ where
         let amount = redelegate
             .amount
             .as_ref()
-            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("No amount specified")?;
         let amount = Self::coin_from_proto(amount)?;
-        let validator_src_address = Address::from_str(&redelegate.validator_src_address)?;
-        let validator_dst_address = Address::from_str(&redelegate.validator_dst_address)?;
+        let validator_src_address = Address::from_str(&redelegate.validator_src_address)
+            .into_tw()
+            .context("Invalid source validator address")?;
+        let validator_dst_address = Address::from_str(&redelegate.validator_dst_address)
+            .into_tw()
+            .context("Invalid destination validator address")?;
 
         let msg = BeginRedelegateMessage {
             custom_type_prefix: redelegate.type_prefix.to_string().empty_or_some(),
             amount,
-            delegator_address: Address::from_str(&redelegate.delegator_address)?,
+            delegator_address: Address::from_str(&redelegate.delegator_address)
+                .into_tw()
+                .context("Invalid delegator address")?,
             validator_src_address,
             validator_dst_address,
         };
@@ -368,7 +409,8 @@ where
         raw: &Proto::mod_Message::RawJSON<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         let value = serde_json::from_str(&raw.value)
-            .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+            .tw_err(|_| SigningErrorType::Error_internal)
+            .context("Error parsing raw JSON")?;
 
         let msg = JsonRawMessage {
             msg_type: raw.type_pb.to_string(),
@@ -385,13 +427,19 @@ where
         use crate::transaction::message::wasm_message::{ExecuteMsg, WasmExecutePayload};
 
         let execute_payload = WasmExecutePayload::Transfer {
-            amount: U256::from_big_endian_slice(&transfer.amount)?,
+            amount: U256::from_big_endian_slice(&transfer.amount)
+                .into_tw()
+                .context("Expected U256 big-endian amount")?,
             recipient: transfer.recipient_address.to_string(),
         };
 
         let msg = TerraExecuteContractMessage {
-            sender: Address::from_str(&transfer.sender_address)?,
-            contract: Address::from_str(&transfer.contract_address)?,
+            sender: Address::from_str(&transfer.sender_address)
+                .into_tw()
+                .context("Invalid sender address")?,
+            contract: Address::from_str(&transfer.contract_address)
+                .into_tw()
+                .context("Invalid contract address")?,
             execute_msg: ExecuteMsg::json(execute_payload)?,
             // Used in case you are sending native tokens along with this message.
             coins: Vec::default(),
@@ -407,14 +455,20 @@ where
         use crate::transaction::message::wasm_message::{ExecuteMsg, WasmExecutePayload};
 
         let execute_payload = WasmExecutePayload::Send {
-            amount: U256::from_big_endian_slice(&send.amount)?,
+            amount: U256::from_big_endian_slice(&send.amount)
+                .into_tw()
+                .context("Expected U256 big-endian amount")?,
             contract: send.recipient_contract_address.to_string(),
             msg: send.msg.to_string(),
         };
 
         let msg = TerraExecuteContractMessage {
-            sender: Address::from_str(&send.sender_address)?,
-            contract: Address::from_str(&send.contract_address)?,
+            sender: Address::from_str(&send.sender_address)
+                .into_tw()
+                .context("Invalid sender address")?,
+            contract: Address::from_str(&send.contract_address)
+                .into_tw()
+                .context("Invalid contract address")?,
             execute_msg: ExecuteMsg::json(execute_payload)?,
             // Used in case you are sending native tokens along with this message.
             coins: Vec::default(),
@@ -436,8 +490,12 @@ where
             .collect::<SigningResult<_>>()?;
 
         let msg = TerraExecuteContractMessage {
-            sender: Address::from_str(&generic.sender_address)?,
-            contract: Address::from_str(&generic.contract_address)?,
+            sender: Address::from_str(&generic.sender_address)
+                .into_tw()
+                .context("Invalid sender address")?,
+            contract: Address::from_str(&generic.contract_address)
+                .into_tw()
+                .context("Invalid contract address")?,
             execute_msg: ExecuteMsg::String(generic.execute_msg.to_string()),
             coins,
         };
@@ -453,13 +511,19 @@ where
         };
 
         let transfer_payload = WasmExecutePayload::Transfer {
-            amount: U256::from_big_endian_slice(&transfer.amount)?,
+            amount: U256::from_big_endian_slice(&transfer.amount)
+                .into_tw()
+                .context("Expected U256 big-endian amount")?,
             recipient: transfer.recipient_address.to_string(),
         };
 
         let msg = WasmExecuteContractMessage {
-            sender: Address::from_str(&transfer.sender_address)?,
-            contract: Address::from_str(&transfer.contract_address)?,
+            sender: Address::from_str(&transfer.sender_address)
+                .into_tw()
+                .context("Invalid sender address")?,
+            contract: Address::from_str(&transfer.contract_address)
+                .into_tw()
+                .context("Invalid contract address")?,
             msg: ExecuteMsg::json(transfer_payload)?,
             // Used in case you are sending native tokens along with this message.
             coins: Vec::default(),
@@ -476,14 +540,20 @@ where
         };
 
         let execute_payload = WasmExecutePayload::Send {
-            amount: U256::from_big_endian_slice(&send.amount)?,
+            amount: U256::from_big_endian_slice(&send.amount)
+                .into_tw()
+                .context("Expected U256 big-endian amount")?,
             contract: send.recipient_contract_address.to_string(),
             msg: send.msg.to_string(),
         };
 
         let msg = WasmExecuteContractMessage {
-            sender: Address::from_str(&send.sender_address)?,
-            contract: Address::from_str(&send.contract_address)?,
+            sender: Address::from_str(&send.sender_address)
+                .into_tw()
+                .context("Invalid sender address")?,
+            contract: Address::from_str(&send.contract_address)
+                .into_tw()
+                .context("Invalid contract address")?,
             msg: ExecuteMsg::json(execute_payload)?,
             // Used in case you are sending native tokens along with this message.
             coins: Vec::default(),
@@ -504,8 +574,12 @@ where
             .collect::<SigningResult<_>>()?;
 
         let msg = WasmExecuteContractMessage {
-            sender: Address::from_str(&generic.sender_address)?,
-            contract: Address::from_str(&generic.contract_address)?,
+            sender: Address::from_str(&generic.sender_address)
+                .into_tw()
+                .context("Invalid sender address")?,
+            contract: Address::from_str(&generic.contract_address)
+                .into_tw()
+                .context("Invalid contract address")?,
             msg: ExecuteMsg::String(generic.execute_msg.to_string()),
             coins,
         };
@@ -545,16 +619,22 @@ where
             ProtoGrantType::grant_stake(ref stake) => google::protobuf::Any {
                 type_url: STAKE_AUTHORIZATION_MSG_TYPE.to_string(),
                 value: serialize(stake)
-                    .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?,
+                    .tw_err(|_| SigningErrorType::Error_invalid_params)
+                    .context("Error serializing Grant Stake Protobuf message")?,
             },
             ProtoGrantType::None => {
-                return Err(SigningError(SigningErrorType::Error_invalid_params))
+                return SigningError::err(SigningErrorType::Error_invalid_params)
+                    .context("No Grant type specified");
             },
         };
 
         let msg = AuthGrantMessage {
-            granter: Address::from_str(&auth.granter)?,
-            grantee: Address::from_str(&auth.grantee)?,
+            granter: Address::from_str(&auth.granter)
+                .into_tw()
+                .context("Invalid granter address")?,
+            grantee: Address::from_str(&auth.grantee)
+                .into_tw()
+                .context("Invalid grantee address")?,
             grant_msg,
             expiration_secs: auth.expiration,
         };
@@ -568,8 +648,12 @@ where
         use crate::transaction::message::cosmos_auth_message::AuthRevokeMessage;
 
         let msg = AuthRevokeMessage {
-            granter: Address::from_str(&auth.granter)?,
-            grantee: Address::from_str(&auth.grantee)?,
+            granter: Address::from_str(&auth.granter)
+                .into_tw()
+                .context("Invalid granter address")?,
+            grantee: Address::from_str(&auth.grantee)
+                .into_tw()
+                .context("Invalid grantee address")?,
             msg_type_url: auth.msg_type_url.to_string(),
         };
         Ok(msg.into_boxed())
@@ -592,7 +676,9 @@ where
 
         let msg = VoteMessage {
             proposal_id: vote.proposal_id,
-            voter: Address::from_str(&vote.voter)?,
+            voter: Address::from_str(&vote.voter)
+                .into_tw()
+                .context("Invalid voter address")?,
             option,
         };
         Ok(msg.into_boxed())
@@ -605,8 +691,12 @@ where
         use crate::transaction::message::stride_message::StrideLiquidStakeMessage;
 
         let msg = StrideLiquidStakeMessage {
-            creator: Address::from_str(&stake.creator)?,
-            amount: U256::from_str(&stake.amount)?,
+            creator: Address::from_str(&stake.creator)
+                .into_tw()
+                .context("Invalid creator address")?,
+            amount: U256::from_str(&stake.amount)
+                .into_tw()
+                .context("Expected U256 big-endian amount")?,
             host_denom: stake.host_denom.to_string(),
         };
         Ok(msg.into_boxed())
@@ -620,7 +710,9 @@ where
 
         let msg = StrideLiquidRedeemMessage {
             creator: redeem.creator.to_string(),
-            amount: U256::from_str(&redeem.amount)?,
+            amount: U256::from_str(&redeem.amount)
+                .into_tw()
+                .context("Expected U256 big-endian amount")?,
             receiver: redeem.receiver.to_string(),
             host_zone: redeem.host_zone.to_string(),
         };
@@ -640,7 +732,8 @@ where
             let asset_proto = coin_proto
                 .asset
                 .as_ref()
-                .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+                .or_tw_err(SigningErrorType::Error_invalid_params)
+                .context("No Deposit Asset specified")?;
 
             let asset = ThorchainAsset {
                 chain: asset_proto.chain.to_string(),
@@ -650,7 +743,9 @@ where
             };
             coins.push(ThorchainCoin {
                 asset,
-                amount: U256::from_str(&coin_proto.amount)?,
+                amount: U256::from_str(&coin_proto.amount)
+                    .into_tw()
+                    .context("Expected U256 big-endian Deposit amount")?,
                 decimals: coin_proto.decimals,
             });
         }

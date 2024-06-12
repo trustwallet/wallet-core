@@ -84,12 +84,14 @@ This list is generated from [./registry.json](../registry.json)
 | 1030    | Conflux eSpace   | CFX    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/cfxevm/info/logo.png" width="32" />       | <https://confluxnetwork.org>  |
 | 1729    | Tezos            | XTZ    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tezos/info/logo.png" width="32" />        | <https://tezos.com>           |
 | 1815    | Cardano          | ADA    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/cardano/info/logo.png" width="32" />      | <https://www.cardano.org>     |
+| 1890    | Lightlink Phoenix | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/lightlink/info/logo.png" width="32" />    | <https://lightlink.io>        |
 | 2301    | Qtum             | QTUM   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/qtum/info/logo.png" width="32" />         | <https://qtum.org>            |
 | 2718    | Nebulas          | NAS    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nebulas/info/logo.png" width="32" />      | <https://nebulas.io>          |
 | 3030    | Hedera           | HBAR   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/hedera/info/logo.png" width="32" />       | <https://hedera.com/>         |
 | 4200    | Merlin           | BTC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/merlin/info/logo.png" width="32" />       | <https://merlinchain.io>      |
 | 5000    | Mantle           | MNT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/mantle/info/logo.png" width="32" />       | <https://www.mantle.xyz>      |
 | 5600    | BNB Greenfield   | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/greenfield/info/logo.png" width="32" />   | <https://greenfield.bnbchain.org> |
+| 6001    | BounceBit        | BB     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bouncebit/info/logo.png" width="32" />    | <https://bouncebit.io>        |
 | 6060    | GoChain          | GO     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/gochain/info/logo.png" width="32" />      | <https://gochain.io>          |
 | 7332    | Zen EON          | ZEN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zeneon/info/logo.png" width="32" />       | <https://eon.horizen.io>      |
 | 8453    | Base             | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/base/info/logo.png" width="32" />         | <https://base.mirror.xyz/>    |
@@ -99,8 +101,10 @@ This list is generated from [./registry.json](../registry.json)
 | 19167   | Flux             | FLUX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zelcash/info/logo.png" width="32" />      | <https://runonflux.io>        |
 | 52752   | Celo             | CELO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/celo/info/logo.png" width="32" />         | <https://celo.org>            |
 | 59144   | Linea            | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/linea/info/logo.png" width="32" />        | <https://linea.build>         |
+| 81457   | Blast            | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/blast/info/logo.png" width="32" />        | <https://blast.io>            |
 | 105105  | Stratis          | STRAX  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/stratis/info/logo.png" width="32" />      | <https://www.stratisplatform.com/> |
 | 534352  | Scroll           | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/scroll/info/logo.png" width="32" />       | <https://scroll.io>           |
+| 810180  | zkLink Nova Mainnet | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zklinknova/info/logo.png" width="32" />   | <https://zklink.io>           |
 | 5718350 | Wanchain         | WAN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/wanchain/info/logo.png" width="32" />     | <https://wanchain.org>        |
 | 5741564 | Waves            | WAVES  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/waves/info/logo.png" width="32" />        | <https://wavesplatform.com>   |
 | 10000025 | Cronos Chain     | CRO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/cronos/info/logo.png" width="32" />       | <https://cronos.org>          |

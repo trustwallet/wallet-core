@@ -220,6 +220,36 @@ fn test_solana_sign_delegate_stake_no_stake_account() {
 }
 
 #[test]
+fn test_solana_sign_delegate_stake_with_priority_fee() {
+    let delegate = Proto::DelegateStake {
+        validator_pubkey: "BWkvytz3MAiLkUbMuYK5yV1VYThbBYYQYG3gdef8NLw5".into(),
+        // 0.01
+        value: 10000000,
+        ..Proto::DelegateStake::default()
+    };
+
+    let input = Proto::SigningInput {
+        // Corresponding Solana address: GEjr7dsDVHZMzTvnz1AgDW76LJ2GC7DATnHHMUVoF4p6.
+        private_key: "43c0aeb43038c582b1abac52e5bdc2c20c83a1995fbfde5936ccd2e6392e9d8b"
+            .decode_hex()
+            .unwrap()
+            .into(),
+        recent_blockhash: "7uKCh5WRoLdib5LfcX4NETFcJroQPjHVsekdXniyaoFZ".into(),
+        transaction_type: TransactionType::delegate_stake_transaction(delegate),
+        priority_fee_price: Some(Proto::PriorityFeePrice { price: 1000 }),
+        priority_fee_limit: Some(Proto::PriorityFeeLimit { limit: 10_000 }),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    // // https://solscan.io/tx/2DRUt4Q3BxYPB1Whd4MyekByh4pXWgrfQAybZ3obeNReR96sKYX1pZgZV12NUkLXJRb1c6ffAcEx1Eu7kYmA6zqH
+    assert_eq!(output.encoded, "XUMBKTDMfK4i8N3RBJtzzDsA3KnKZ4R4HexjXxiwsKr3j4DhENHcpUFWA41xwU94dE4av4hqP9Z5nvES9FU7GuECsDE5CuRagt5b1EEH2SPW8AjdeGbTs7JfT4nm3nd6gh2uJHXVMCjTYEhTKSKgLehgCa2JqwodiKEoPUdPwRoq7YoznzSBzvwvmSZrySC2eA8pp1PaBNDCG9rMAg1mDAzAu4VNmH7Nhh9bssGPcxgKZfoWmrhpvNcx6bDV4xBJBtvsYoGasRRSTXwF82VjA1L5aaQWJjAbBBZgsiws2Z5CqeWWdt6XF7sUHovAZihUdxXzJXPjRpEgX4HqHdriqTnPuaNwmVMEcNKzmZWJ543LTz4yUhyLRbYbN9hxWMtpiKBnjZe5KX783NPiuSHioyxAvmfkdKbDyKUf6a9G9HocHZMjKT3Yz1yeanHo69V2mAfKGZCPT7hRhRae6QoXu16QjHDHNBDLUtX8Db49vNJLdV3cYWPuyZ5eHLfDbw6r9jzCF34nmXJ4kFZHJHatp3wGKGbTtyeoxZnJVxLFmv7byoKVZ1hQdxGYg3q2jfjc2NsSj2Expmz6qLGZWMyVy6cVYjfqcQz9bwT89zC8823mAnFEPKRs8whZevCxifGiUfT6H99zZzNKfuJAhwJ14rP5VpZHCiDSuDRHzjydzwFxHDKamnAQXYuadEWJB89gJWA6wPoBQE1q4kRFTrYjU32mmnfwCs6Ji18uzNfrP2W6xPMs93vz2Pejpgzyru6anf7cYhKWVtou6bM9uNdVV5Qj5zr3eY4FqbNXXMz4WkiWmKQb5nUeyvp4e424WS1QUkwNYVW5vmehM2AuzMM9VEA5F2VMyrDihE74ZFA9yctaYZ4ovtH2TvSVgCGsS7ujqHoETVtDiyrjmgJvm68NtjcTioSKpAPgEvMciwxVwsUmYC6NGC6iCP2oVc2S6QCzixF");
+}
+
+#[test]
 fn test_solana_sign_delegate_stake_no_stake_account_5zrqgk1() {
     // Corresponding Solana address: GcQQ1qx822KK14zyfTkMLQMLEZ4a9d88HnKepaA2XbmW.
     let private_key = "507479b94db463a33cdc413db98437b4aa8c74b6053aea936d1830c27027b1e9"

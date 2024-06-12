@@ -9,7 +9,7 @@ use crate::chains::thorchain::test_cases::send_fd0445af::{
 use tw_any_coin::ffi::tw_transaction_compiler::{
     tw_transaction_compiler_compile, tw_transaction_compiler_pre_image_hashes,
 };
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::ToHex;
 use tw_hash::H256;

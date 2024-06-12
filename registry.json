@@ -1780,9 +1780,9 @@
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
-      "url": "https://algoexplorer.io",
-      "txPath": "/tx/",
-      "accountPath": "/address/",
+      "url": "https://app.dappflow.org/explorer",
+      "txPath": "/transaction/",
+      "accountPath": "/account/",
       "sampleTx": "CR7POXFTYDLC7TV3IXHA7AZKWABUJC52BACLHJQNXAKZJGRPQY3A",
       "sampleAccount": "J4AEINCSSLDA7LNBNWM4ZXFCTLTOZT5LG3F5BLMFPJYGFWVCMU37EZI2AM"
     },
@@ -4578,7 +4578,7 @@
     "blockchain": "InternetComputer",
     "derivation": [
       {
-        "path": "m/44'/223'/1'/0/0",
+        "path": "m/44'/223'/0'/0/0",
         "xpub": "xpub",
         "xpriv": "xpriv"
       }
@@ -4657,6 +4657,128 @@
       "source": "https://merlinchain.io",
       "rpc": "https://rpc.merlinchain.io",
       "documentation": "https://docs.merlinchain.io/merlin-docs"
+    }
+  },
+  {
+    "id": "lightlink",
+    "name": "Lightlink",
+    "displayName": "Lightlink Phoenix",
+    "coinId": 1890,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "1890",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://phoenix.lightlink.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xc65f82445aefc883fd4ffe09149c8ce48f61b670c0734528a49d4a8bd8309bb0",
+      "sampleAccount": "0x4566ED6c7a7fFc90E2C7cfF7eB9156262afD2fDe"
+    },
+    "info": {
+      "url": "https://lightlink.io",
+      "source": "https://github.com/lightlink-network",
+      "rpc": "https://endpoints.omniatech.io/v1/lightlink/phoenix/public",
+      "documentation": "https://docs.lightlink.io/lightlink-protocol"
+    }
+  },
+  {
+    "id": "blast",
+    "name": "Blast",
+    "coinId": 81457,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "81457",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://blastscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x511fc00e8329343b9e953bf1f75e9b0a7b3cc2eb3a8f049d5be41adf4fbd6cac",
+      "sampleAccount": "0x0d11f2f0ff55c4fcfc3ff86bdc8e78ffa7df99fd"
+    },
+    "info": {
+      "url": "https://blast.io",
+      "source": "https://github.com/blast-io",
+      "rpc": "https://rpc.blast.io",
+      "documentation": "https://docs.blast.io"
+    }
+  },
+  {
+    "id": "bouncebit",
+    "name": "BounceBit",
+    "coinId": 6001,
+    "symbol": "BB",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "6001",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://bbscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x52558f4143d058d942e3b73414090266ae3ffce1fe8c25fe86896e2c8e5ef932",
+      "sampleAccount": "0xf4aa7349a9ccca4609943955b5ddc7bd9278c223"
+    },
+    "info": {
+      "url": "https://bouncebit.io",
+      "source": "https://github.com/BounceBit-Labs",
+      "rpc": "https://fullnode-mainnet.bouncebitapi.com",
+      "documentation": "https://docs.bouncebit.io"
+    }
+  },
+  {
+    "id": "zklinknova",
+    "name": "ZkLinkNova",
+    "displayName": "zkLink Nova Mainnet",
+    "coinId": 810180,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "810180",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.zklink.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xeb5eb8710369c89115a83f3e744c15c9d388030cfce2fd3a653dbd18f2947400",
+      "sampleAccount": "0xF95115BaD9a4585B3C5e2bfB50579f17163A45aA"
+    },
+    "info": {
+      "url": "https://zklink.io",
+      "source": "https://github.com/zkLinkProtocol",
+      "rpc": "https://rpc.zklink.io",
+      "documentation": "https://docs.zklink.io"
     }
   }
 ]

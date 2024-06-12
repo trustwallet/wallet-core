@@ -5,7 +5,7 @@
 use crate::address::CosmosAddress;
 use crate::proto::stride;
 use crate::transaction::message::{CosmosMessage, ProtobufMessage};
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_number::U256;
 use tw_proto::to_any;
 

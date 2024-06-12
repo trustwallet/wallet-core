@@ -7,10 +7,10 @@ use crate::eip712_types::{
 };
 use crate::transaction::GreenfieldUnsignedTransaction;
 use std::collections::BTreeMap;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_evm::message::eip712::eip712_message::Eip712Message;
 use tw_evm::message::eip712::message_types::MessageTypesBuilder;
-use tw_evm::message::EthMessage;
+use tw_evm::message::{to_signing, EthMessage};
 use tw_hash::H256;
 use tw_number::U256;
 
@@ -65,15 +65,17 @@ impl Eip712Signer {
         let msg_to_sign = Eip712Message {
             types: types_builder.build(),
             domain: serde_json::to_value(domain)
-                .map_err(|_| SigningError(SigningErrorType::Error_internal))?,
+                .tw_err(|_| SigningErrorType::Error_internal)
+                .context("Error serializing EIP712Domain as JSON")?,
             primary_type: Eip712Transaction::TYPE_NAME.to_string(),
             message: serde_json::to_value(tx_to_sign)
-                .map_err(|_| SigningError(SigningErrorType::Error_internal))?,
+                .tw_err(|_| SigningErrorType::Error_internal)
+                .context("Error serializing EIP712 message payload as JSON")?,
         };
 
-        let tx_hash = msg_to_sign.hash()?;
-        let eip712_tx = serde_json::to_string(&msg_to_sign)
-            .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+        let tx_hash = msg_to_sign.hash().map_err(to_signing)?;
+        let eip712_tx =
+            serde_json::to_string(&msg_to_sign).tw_err(|_| SigningErrorType::Error_internal)?;
 
         Ok(Eip712TxPreimage { eip712_tx, tx_hash })
     }

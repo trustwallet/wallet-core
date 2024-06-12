@@ -87,6 +87,10 @@ fn test_coin_address_derivation() {
             | CoinType::MantaPacific
             | CoinType::ZetaEVM
             | CoinType::Merlin
+            | CoinType::Lightlink
+            | CoinType::Blast
+            | CoinType::BounceBit
+            | CoinType::ZkLinkNova
             // end_of_evm_address_derivation_tests_marker_do_not_modify
                 => "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309",
             CoinType::Bitcoin
@@ -150,6 +154,7 @@ fn test_coin_address_derivation() {
             CoinType::NativeZetaChain => "zeta14s0vgnj0pjnazu4hsqlksdk7slah9vcfcwctsr",
             CoinType::Dydx => "dydx1ten42eesehw0ktddcp0fws7d3ycsqez3kaamq3",
             CoinType::Solana => "5sn9QYhDaq61jLXJ8Li5BKqGL4DDMJQvU1rdN8XgVuwC",
+            CoinType::Sui => "0x01a5c6c1b74cec4fbd12b3e17252b83448136065afcdf24954dc3a9c26df4905",
             // end_of_coin_address_derivation_tests_marker_do_not_modify
             _ => panic!("{:?} must be covered", coin),
         };

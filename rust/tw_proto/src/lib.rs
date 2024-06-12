@@ -7,6 +7,7 @@ use quick_protobuf::{BytesReader, MessageInfo, Writer};
 #[allow(non_snake_case)]
 #[rustfmt::skip]
 mod common;
+mod impls;
 
 #[allow(non_snake_case)]
 #[rustfmt::skip]

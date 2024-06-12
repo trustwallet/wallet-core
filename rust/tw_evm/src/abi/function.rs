@@ -11,6 +11,7 @@ use crate::abi::token::Token;
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use itertools::Itertools;
 use serde::Deserialize;
+use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 
 #[derive(Clone, Debug, Default, Deserialize)]
@@ -52,9 +53,14 @@ impl Function {
         // Check if the given tokens match `Self::inputs` ABI.
         let input_param_types: Vec<_> =
             self.inputs.iter().map(|param| param.kind.clone()).collect();
-        for (token, kind) in tokens.iter().zip(input_param_types.iter()) {
-            if token.to_param_type() != *kind {
-                return Err(AbiError(AbiErrorKind::Error_abi_mismatch));
+        for (token_idx, (token, kind)) in tokens.iter().zip(input_param_types.iter()).enumerate() {
+            let actual_kind = token.to_param_type();
+            if actual_kind != *kind {
+                return AbiError::err(AbiErrorKind::Error_abi_mismatch).with_context(|| {
+                    format!(
+                        "Expected {kind:?} type parameter at {token_idx}, found {actual_kind:?}"
+                    )
+                });
             }
         }
 
