@@ -407,8 +407,8 @@ Data Extrinsic::encodePayload() const {
     }
 
     if (use_new_spec) {
-      // mode (currently always 0)
-      data.push_back(0x00);
+        // mode (currently always 0)
+        data.push_back(0x00);
     }
 
     // specVersion
@@ -421,8 +421,8 @@ Data Extrinsic::encodePayload() const {
     append(data, blockHash);
 
     if (use_new_spec) {
-      // empty metadata hash
-      data.push_back(0x00);
+        // empty metadata hash
+        data.push_back(0x00);
     }
     return data;
 }
