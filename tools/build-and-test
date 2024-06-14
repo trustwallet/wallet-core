@@ -10,7 +10,7 @@ echo "#### Generating files... ####"
 tools/generate-files native
 
 echo "#### Building... ####"
-cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_OSX_ARCHITECTURES=arm64
 make -Cbuild -j12 tests TrezorCryptoTests
 
 if [ -x "$(command -v clang-tidy)" ]; then

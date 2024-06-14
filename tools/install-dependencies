@@ -39,7 +39,7 @@ function build_libcheck() {
     # Build Check
     CHECK_DIR="$ROOT/build/local/src/check"
     cd ${CHECK_DIR}/check-$CHECK_VERSION
-    $CMAKE -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -H.
+    $CMAKE -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -DCMAKE_OSX_ARCHITECTURES=arm64 -H.
     $MAKE -j4
     $MAKE install
     $MAKE clean
@@ -60,14 +60,14 @@ function build_protobuf() {
 
     # Protobuf plugins
     cd "$ROOT/protobuf-plugin"
-    $CMAKE -H. -Bbuild -DCMAKE_INSTALL_PREFIX=$PREFIX
+    $CMAKE -H. -Bbuild -DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_OSX_ARCHITECTURES=arm64
     $MAKE -Cbuild -j12
     $MAKE -Cbuild install
     rm -rf build
 
-    if [[ -x "$(command -v swift)" && `uname` == "Darwin" ]]; then
-        build_swift_plugin
-    fi
+#    if [[ -x "$(command -v swift)" && `uname` == "Darwin" ]]; then
+#        build_swift_plugin
+#    fi
 }
 
 function build_swift_plugin() {
