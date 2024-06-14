@@ -429,6 +429,8 @@ Data Extrinsic::encodePayload() const {
 
 Data Extrinsic::encodeSignature(const PublicKey& signer, const Data& signature) const {
     Data data;
+    auto use_new_spec = requires_new_spec_compatbility(network, specVersion);
+
     // version header
     append(data, Data{extrinsicFormat | signedBit});
     // signer public key
@@ -443,6 +445,12 @@ Data Extrinsic::encodeSignature(const PublicKey& signer, const Data& signature) 
     if (!feeAssetId.empty()) {
         append(data, feeAssetId);
     }
+
+    if (use_new_spec) {
+      // mode (currently always 0)
+      data.push_back(0x00);
+    }
+
     // call
     append(data, call);
     // append length
