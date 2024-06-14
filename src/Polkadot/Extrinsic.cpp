@@ -441,14 +441,15 @@ Data Extrinsic::encodeSignature(const PublicKey& signer, const Data& signature) 
     append(data, signature);
     // era / nonce / tip
     append(data, encodeEraNonceTip());
+
+    if (use_new_spec) {
+        // mode (currently always 0)
+        data.push_back(0x00);
+    }
+
     // fee asset id
     if (!feeAssetId.empty()) {
         append(data, feeAssetId);
-    }
-
-    if (use_new_spec) {
-      // mode (currently always 0)
-      data.push_back(0x00);
     }
 
     // call
