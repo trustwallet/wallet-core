@@ -1,4 +1,4 @@
-# Full list
+oatef4313@gmail.com # Full list
 
 This list is generated from [./registry.json](../registry.json)
 
