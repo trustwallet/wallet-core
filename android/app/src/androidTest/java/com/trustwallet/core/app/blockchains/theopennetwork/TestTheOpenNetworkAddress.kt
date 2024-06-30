@@ -58,6 +58,6 @@ class TestTheOpenNetworkAddress {
         // Parse the `get_wallet_address` RPC response.
         val jettonAddressBocEncoded = "te6cckEBAQEAJAAAQ4AFvT5rqwxcbKfITqnkwL+go4Zi9bulRHAtLt4cjjFdK7B8L+Cq"
         val jettonAddress = TONAddressConverter.fromBoc(jettonAddressBocEncoded)
-        assertEquals(mainAddressBoc, "UQAt6fNdWGLjZT5CdU8mBf0FHDMXrd0qI4FpdvDkcYrpXV5H")
+        assertEquals(jettonAddress, "UQAt6fNdWGLjZT5CdU8mBf0FHDMXrd0qI4FpdvDkcYrpXV5H")
     }
 }
