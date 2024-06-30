@@ -11,7 +11,7 @@ TW_EXTERN_C_BEGIN
 
 /// TON address operations.
 TW_EXPORT_CLASS
-struct TWTONAddress;
+struct TWTONAddressConverter;
 
 /// Converts a TON user address into a Bag of Cells (BoC) with a single root Cell.
 /// The function is mostly used to request a Jetton user address via `get_wallet_address` RPC.
@@ -20,7 +20,7 @@ struct TWTONAddress;
 /// \param address Address to be converted into a Bag Of Cells (BoC).
 /// \return Pointer to a base64 encoded Bag Of Cells (BoC). Null if invalid address provided.
 TW_EXPORT_STATIC_METHOD
-TWString *_Nullable TWTONAddressToBoc(TWString *_Nonnull address);
+TWString *_Nullable TWTONAddressConverterToBoc(TWString *_Nonnull address);
 
 /// Parses a TON address from a Bag of Cells (BoC) with a single root Cell.
 /// The function is mostly used to parse a Jetton user address received on `get_wallet_address` RPC.
@@ -29,6 +29,6 @@ TWString *_Nullable TWTONAddressToBoc(TWString *_Nonnull address);
 /// \param boc Base64 encoded Bag Of Cells (BoC).
 /// \return Pointer to a Jetton address.
 TW_EXPORT_STATIC_METHOD
-TWString *_Nullable TWTONAddressFromBoc(TWString *_Nonnull boc);
+TWString *_Nullable TWTONAddressConverterFromBoc(TWString *_Nonnull boc);
 
 TW_EXTERN_C_END

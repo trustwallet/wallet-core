@@ -11,7 +11,7 @@
 #include "TheOpenNetwork/wallet/WalletV4R2.h"
 #include "TheOpenNetwork/WorkchainType.h"
 
-#include "TrustWalletCore/TWTONAddress.h"
+#include "TrustWalletCore/TWTONAddressConverter.h"
 
 #include <gtest/gtest.h>
 
@@ -116,7 +116,7 @@ TEST(TheOpenNetworkAddress, FromPublicKeyV4R2) {
 
 TEST(TheOpenNetworkAddress, GetJettonNotcoinAddress) {
     auto mainAddress = STRING("UQBjKqthWBE6GEcqb_epTRFrQ1niS6Z1Z1MHMwR-mnAYRoYr");
-    auto addressBocEncoded = WRAPS(TWTONAddressToBoc(mainAddress.get()));
+    auto addressBocEncoded = WRAPS(TWTONAddressConverterToBoc(mainAddress.get()));
     assertStringsEqual(addressBocEncoded, "te6ccgICAAEAAQAAACQAAABDgAxlVWwrAidDCOVN/vUpoi1oazxJdM6s6mDmYI/TTgMI0A==");
 
     // curl --location 'https://toncenter.com/api/v2/runGetMethod' --header 'Content-Type: application/json' --data \
@@ -124,13 +124,13 @@ TEST(TheOpenNetworkAddress, GetJettonNotcoinAddress) {
 
     // `get_wallet_address` response:
     auto jettonAddressBocEncoded = STRING("te6cckEBAQEAJAAAQ4AFvT5rqwxcbKfITqnkwL+go4Zi9bulRHAtLt4cjjFdK7B8L+Cq");
-    auto jettonAddress = WRAPS(TWTONAddressFromBoc(jettonAddressBocEncoded.get()));
+    auto jettonAddress = WRAPS(TWTONAddressConverterFromBoc(jettonAddressBocEncoded.get()));
     assertStringsEqual(jettonAddress, "UQAt6fNdWGLjZT5CdU8mBf0FHDMXrd0qI4FpdvDkcYrpXV5H");
 }
 
 TEST(TheOpenNetworkAddress, GetJettonUSDTAddress) {
     auto mainAddress = STRING("UQBjKqthWBE6GEcqb_epTRFrQ1niS6Z1Z1MHMwR-mnAYRoYr");
-    auto addressBocEncoded = WRAPS(TWTONAddressToBoc(mainAddress.get()));
+    auto addressBocEncoded = WRAPS(TWTONAddressConverterToBoc(mainAddress.get()));
     assertStringsEqual(addressBocEncoded, "te6ccgICAAEAAQAAACQAAABDgAxlVWwrAidDCOVN/vUpoi1oazxJdM6s6mDmYI/TTgMI0A==");
 
     // curl --location 'https://toncenter.com/api/v2/runGetMethod' --header 'Content-Type: application/json' --data \
@@ -138,13 +138,13 @@ TEST(TheOpenNetworkAddress, GetJettonUSDTAddress) {
 
     // `get_wallet_address` response:
     auto jettonAddressBocEncoded = STRING("te6cckEBAQEAJAAAQ4Aed71FEI46jdFXghsGUIG2GIR8wpbQaLzrKNj7BtHOEHBSO5Mf");
-    auto jettonAddress = WRAPS(TWTONAddressFromBoc(jettonAddressBocEncoded.get()));
+    auto jettonAddress = WRAPS(TWTONAddressConverterFromBoc(jettonAddressBocEncoded.get()));
     assertStringsEqual(jettonAddress, "UQDzveoohHHUboq8ENgyhA2wxCPmFLaDRedZRsfYNo5wg4TL");
 }
 
 TEST(TheOpenNetworkAddress, GetJettonStonAddress) {
     auto mainAddress = STRING("EQATQPeCwtMzQ9u54nTjUNcK4n_0VRSxPOOROLf_IE0OU3XK");
-    auto addressBocEncoded = WRAPS(TWTONAddressToBoc(mainAddress.get()));
+    auto addressBocEncoded = WRAPS(TWTONAddressConverterToBoc(mainAddress.get()));
     assertStringsEqual(addressBocEncoded, "te6ccgICAAEAAQAAACQAAABDgAJoHvBYWmZoe3c8TpxqGuFcT/6KopYnnHInFv/kCaHKcA==");
 
     // curl --location 'https://toncenter.com/api/v2/runGetMethod' --header 'Content-Type: application/json' --data \
@@ -152,32 +152,32 @@ TEST(TheOpenNetworkAddress, GetJettonStonAddress) {
 
     // `get_wallet_address` response:
     auto jettonAddressBocEncoded = STRING("te6cckEBAQEAJAAAQ4ALPu0dyA1gHd3r7J1rxlvhXSvT5y3rokMDMiCQ86TsUJDnt69H");
-    auto jettonAddress = WRAPS(TWTONAddressFromBoc(jettonAddressBocEncoded.get()));
+    auto jettonAddress = WRAPS(TWTONAddressConverterFromBoc(jettonAddressBocEncoded.get()));
     assertStringsEqual(jettonAddress, "UQBZ92juQGsA7u9fZOteMt8K6V6fOW9dEhgZkQSHnSdihHPH");
 }
 
 TEST(TheOpenNetworkAddress, FromBocNullAddress) {
     auto jettonAddressBocEncoded = STRING("te6cckEBAQEAAwAAASCUQYZV");
-    auto jettonAddress = WRAPS(TWTONAddressFromBoc(jettonAddressBocEncoded.get()));
+    auto jettonAddress = WRAPS(TWTONAddressConverterFromBoc(jettonAddressBocEncoded.get()));
     assertStringsEqual(jettonAddress, "UQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJKZ");
 }
 
 TEST(TheOpenNetworkAddress, FromBocError) {
     // No type bit.
     auto boc1 = STRING("te6cckEBAQEAAwAAAcCO6ba2");
-    ASSERT_EQ(TWTONAddressFromBoc(boc1.get()), nullptr);
+    ASSERT_EQ(TWTONAddressConverterFromBoc(boc1.get()), nullptr);
 
     // No res1 and workchain bits.
     auto boc2 = STRING("te6cckEBAQEAAwAAAaDsenDX");
-    ASSERT_EQ(TWTONAddressFromBoc(boc2.get()), nullptr);
+    ASSERT_EQ(TWTONAddressConverterFromBoc(boc2.get()), nullptr);
 
     // Incomplete hash (31 bytes instead of 32).
     auto boc3 = STRING("te6cckEBAQEAIwAAQYAgQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAUGJnJWk=");
-    ASSERT_EQ(TWTONAddressFromBoc(boc3.get()), nullptr);
+    ASSERT_EQ(TWTONAddressConverterFromBoc(boc3.get()), nullptr);
 
     // Expected 267 bits, found 268.
     auto boc4 = STRING("te6cckEBAQEAJAAAQ4AgQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEgGG0Gq");
-    ASSERT_EQ(TWTONAddressFromBoc(boc4.get()), nullptr);
+    ASSERT_EQ(TWTONAddressConverterFromBoc(boc4.get()), nullptr);
 }
 
 } // namespace TW::TheOpenNetwork::tests

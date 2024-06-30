@@ -2,14 +2,14 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-#include <TrustWalletCore/TWTONAddress.h>
+#include <TrustWalletCore/TWTONAddressConverter.h>
 
 #include "Base64.h"
 #include "TheOpenNetwork/Address.h"
 
 using namespace TW;
 
-TWString *_Nullable TWTONAddressToBoc(TWString *_Nonnull address) {
+TWString *_Nullable TWTONAddressConverterToBoc(TWString *_Nonnull address) {
     auto& addressString = *reinterpret_cast<const std::string*>(address);
     if (!TheOpenNetwork::Address::isValid(addressString)) {
         return nullptr;
@@ -20,7 +20,7 @@ TWString *_Nullable TWTONAddressToBoc(TWString *_Nonnull address) {
     return TWStringCreateWithUTF8Bytes(bocEncoded.c_str());
 }
 
-TWString *_Nullable TWTONAddressFromBoc(TWString *_Nonnull boc) {
+TWString *_Nullable TWTONAddressConverterFromBoc(TWString *_Nonnull boc) {
     auto& bocEncoded = *reinterpret_cast<const std::string*>(boc);
 
     try {
