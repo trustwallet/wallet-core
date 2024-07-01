@@ -153,6 +153,20 @@ struct CStringWrapper {
     std::string str;
 };
 
+struct CUInt8Wrapper {
+    /// Implicit move constructor.
+    CUInt8Wrapper(uint8_t c_u8) {
+        *this = c_u8;
+    }
+
+    CUInt8Wrapper& operator=(uint8_t c_u8) {
+        value = c_u8;
+        return *this;
+    }
+
+    uint8_t value;
+};
+
 struct CUInt64Wrapper {
     /// Implicit move constructor.
     CUInt64Wrapper(uint64_t c_u64) {
@@ -214,6 +228,7 @@ private:
 };
 
 using CByteArrayResultWrapper = CResult<CByteArrayWrapper>;
+using CUInt8ResultWrapper = CResult<CUInt8Wrapper>;
 using CUInt64ResultWrapper = CResult<CUInt64Wrapper>;
 
 } // namespace TW::Rust

@@ -10,6 +10,7 @@
 
 #include "Data.h"
 #include "Hash.h"
+#include "RawAddress.h"
 
 namespace TW::CommonTON {
 
@@ -57,6 +58,9 @@ public:
     [[nodiscard]] inline size_t serializedSize(uint8_t refSize) const noexcept {
         return 2 + (bitLen + 7) / 8 + refCount * refSize;
     }
+
+    // Tries to parse an address from the Cell.
+    std::optional<AddressData> parseAddress() const;
 };
 
 } // namespace TW::CommonTON

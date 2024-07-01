@@ -45,4 +45,19 @@ class TestTheOpenNetworkAddress {
         val address = AnyAddress(addressString, CoinType.TON)
         assertEquals(address.description(), "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
     }
+
+    @Test
+    fun testGenerateJettonAddress() {
+        val mainAddress = "UQBjKqthWBE6GEcqb_epTRFrQ1niS6Z1Z1MHMwR-mnAYRoYr"
+        val mainAddressBoc = TONAddressConverter.toBoc(mainAddress)
+        assertEquals(mainAddressBoc, "te6ccgICAAEAAQAAACQAAABDgAxlVWwrAidDCOVN/vUpoi1oazxJdM6s6mDmYI/TTgMI0A==")
+
+        // curl --location 'https://toncenter.com/api/v2/runGetMethod' --header 'Content-Type: application/json' --data \
+        // '{"address":"EQAvlWFDxGF2lXm67y4yzC17wYKD9A0guwPkMs1gOsM__NOT","method":"get_wallet_address","method":"get_wallet_address","stack":[["tvm.Slice","te6ccgICAAEAAQAAACQAAABDgAxlVWwrAidDCOVN/vUpoi1oazxJdM6s6mDmYI/TTgMI0A=="]]}'
+
+        // Parse the `get_wallet_address` RPC response.
+        val jettonAddressBocEncoded = "te6cckEBAQEAJAAAQ4AFvT5rqwxcbKfITqnkwL+go4Zi9bulRHAtLt4cjjFdK7B8L+Cq"
+        val jettonAddress = TONAddressConverter.fromBoc(jettonAddressBocEncoded)
+        assertEquals(jettonAddress, "UQAt6fNdWGLjZT5CdU8mBf0FHDMXrd0qI4FpdvDkcYrpXV5H")
+    }
 }

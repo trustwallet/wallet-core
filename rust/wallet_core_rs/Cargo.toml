@@ -31,6 +31,7 @@ utils = [
 ]
 
 [dependencies]
+bitreader = "0.3.8"
 tw_any_coin = { path = "../tw_any_coin", optional = true }
 tw_bitcoin = { path = "../tw_bitcoin", optional = true }
 tw_coin_registry = { path = "../tw_coin_registry", optional = true }
@@ -49,5 +50,6 @@ uuid = { version = "1.7", features = ["v4"], optional = true }
 serde_json = "1.0"
 tw_any_coin = { path = "../tw_any_coin", features = ["test-utils"] }
 tw_coin_entry = { path = "../tw_coin_entry", features = ["test-utils"] }
+tw_encoding = { path = "../tw_encoding" }
 tw_memory = { path = "../tw_memory", features = ["test-utils"] }
 tw_number = { path = "../tw_number", features = ["helpers"] }
