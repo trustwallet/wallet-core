@@ -394,6 +394,8 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .tia:
                     let expectedResult = "celestia142j9u5eaduzd7faumygud6ruhdwme98qpwmfv7"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .whive:
+                    let expectedResult = "wv1qw63vtfh5pdd9j6kdmeu6vkddjx77rqsu9drarf"
                 case .nativeZetaChain:
                     let expectedResult = "zeta13u6g7vqgw074mgmf2ze2cadzvkz9snlwywj304"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)

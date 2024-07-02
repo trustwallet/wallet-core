@@ -58,6 +58,7 @@
 #include <TrezorCrypto/ed25519.h>
 #include <TrezorCrypto/hmac_drbg.h>
 #include <TrezorCrypto/memzero.h>
+#include <TrezorCrypto/yespower.h>
 #if USE_MONERO // [wallet-core]
 #include "../monero/monero.h"
 #endif

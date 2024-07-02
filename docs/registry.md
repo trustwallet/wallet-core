@@ -66,6 +66,7 @@ This list is generated from [./registry.json](../registry.json)
 | 564     | Agoric           | BLD    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/agoric/info/logo.png" width="32" />       | <https://agoric.com>          |
 | 607     | TON              | TON    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ton/info/logo.png" width="32" />          | <https://ton.org>             |
 | 637     | Aptos            | APT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aptos/info/logo.png" width="32" />        | <https://aptoslabs.com/>      |
+| 658     | Whive            | WHIVE  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/whive/info/logo.png" width="32" />        | <https://whive.io>            |
 | 714     | BNB Beacon Chain | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png" width="32" />      | <https://www.bnbchain.org>    |
 | 784     | Sui              | SUI    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/sui/info/logo.png" width="32" />          | <https://sui.io/>             |
 | 787     | Acala            | ACA    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/acala/info/logo.png" width="32" />        | <https://acala.network>       |

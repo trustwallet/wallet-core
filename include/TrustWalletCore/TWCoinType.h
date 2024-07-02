@@ -177,6 +177,7 @@ enum TWCoinType {
     TWCoinTypeZenEON = 7332,
     TWCoinTypeInternetComputer = 223,
     TWCoinTypeTia = 21000118,
+    TWCoinTypeWhive = 658,
     TWCoinTypeMantaPacific = 169,
     TWCoinTypeNativeZetaChain = 10007000,
     TWCoinTypeZetaEVM = 20007000,

@@ -155,6 +155,9 @@ enums:
   - name: neutron
     value: 49
     as_string: neutron
+  - name: whive
+    value: 658
+    as_string: whive
 functions:
 - name: stringForHRP
   is_public: false
