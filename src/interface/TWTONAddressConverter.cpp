@@ -30,7 +30,7 @@ TWString *_Nullable TWTONAddressConverterFromBoc(TWString *_Nonnull boc) {
         }
 
         auto userFriendly = true;
-        auto bounceable = false;
+        auto bounceable = true;
         auto addressStr = address->string(userFriendly, bounceable);
 
         return TWStringCreateWithUTF8Bytes(addressStr.c_str());
