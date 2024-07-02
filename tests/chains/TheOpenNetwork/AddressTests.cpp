@@ -102,7 +102,7 @@ TEST(TheOpenNetworkAddress, FromPrivateKeyV4R2) {
     WalletV4R2 wallet(publicKey, WorkchainType::Basechain);
     const auto address = wallet.getAddress();
 
-    ASSERT_EQ(address.string(), "EQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorkdl");
+    ASSERT_EQ(address.string(), "UQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorhqg");
 }
 
 TEST(TheOpenNetworkAddress, FromPublicKeyV4R2) {
@@ -111,7 +111,7 @@ TEST(TheOpenNetworkAddress, FromPublicKeyV4R2) {
     WalletV4R2 wallet(publicKey, WorkchainType::Basechain);
     const auto address = wallet.getAddress();
 
-    ASSERT_EQ(address.string(), "EQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorkdl");
+    ASSERT_EQ(address.string(), "UQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorhqg");
 }
 
 TEST(TheOpenNetworkAddress, GetJettonNotcoinAddress) {
