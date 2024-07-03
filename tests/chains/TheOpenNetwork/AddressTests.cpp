@@ -125,7 +125,7 @@ TEST(TheOpenNetworkAddress, GetJettonNotcoinAddress) {
     // `get_wallet_address` response:
     auto jettonAddressBocEncoded = STRING("te6cckEBAQEAJAAAQ4AFvT5rqwxcbKfITqnkwL+go4Zi9bulRHAtLt4cjjFdK7B8L+Cq");
     auto jettonAddress = WRAPS(TWTONAddressConverterFromBoc(jettonAddressBocEncoded.get()));
-    assertStringsEqual(jettonAddress, "EQAt6fNdWGLjZT5CdU8mBf0FHDMXrd0qI4FpdvDkcYrpXQOC");
+    assertStringsEqual(jettonAddress, "UQAt6fNdWGLjZT5CdU8mBf0FHDMXrd0qI4FpdvDkcYrpXV5H");
 }
 
 TEST(TheOpenNetworkAddress, GetJettonUSDTAddress) {

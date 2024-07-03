@@ -42,7 +42,7 @@ class TheOpenNetworkTests: XCTestCase {
     func testAddressToBounceable() {
         let addressString = "UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV"
         let address = TONAddressConverter.toUserFriendly(address: addressString, bounceable: true, testnet: false)
-        XCTAssertEqual(address!.description, "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
+        XCTAssertEqual(address, "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
     }
 
     func testGenerateJettonAddress() {
@@ -56,7 +56,7 @@ class TheOpenNetworkTests: XCTestCase {
         // Parse the `get_wallet_address` RPC response.
         let jettonAddressBocEncoded = "te6cckEBAQEAJAAAQ4AFvT5rqwxcbKfITqnkwL+go4Zi9bulRHAtLt4cjjFdK7B8L+Cq"
         let jettonAddress = TONAddressConverter.fromBoc(boc: jettonAddressBocEncoded)
-        XCTAssertEqual(jettonAddress, "EQAt6fNdWGLjZT5CdU8mBf0FHDMXrd0qI4FpdvDkcYrpXQOC")
+        XCTAssertEqual(jettonAddress, "UQAt6fNdWGLjZT5CdU8mBf0FHDMXrd0qI4FpdvDkcYrpXV5H")
     }
 
     func testSign() {
