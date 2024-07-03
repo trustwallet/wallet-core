@@ -54,6 +54,15 @@ class TestTheOpenNetworkAddress {
     }
 
     @Test
+    fun testAddressToBounceable() {
+        val addressString = "UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV"
+        val bounceable = true
+        val testnet = false
+        val address = TONAddressConverter.toUserFriendly(addressString, bounceable, testnet)
+        assertEquals(address.description(), "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
+    }
+
+    @Test
     fun testGenerateJettonAddress() {
         val mainAddress = "UQBjKqthWBE6GEcqb_epTRFrQ1niS6Z1Z1MHMwR-mnAYRoYr"
         val mainAddressBoc = TONAddressConverter.toBoc(mainAddress)
@@ -65,6 +74,6 @@ class TestTheOpenNetworkAddress {
         // Parse the `get_wallet_address` RPC response.
         val jettonAddressBocEncoded = "te6cckEBAQEAJAAAQ4AFvT5rqwxcbKfITqnkwL+go4Zi9bulRHAtLt4cjjFdK7B8L+Cq"
         val jettonAddress = TONAddressConverter.fromBoc(jettonAddressBocEncoded)
-        assertEquals(jettonAddress, "UQAt6fNdWGLjZT5CdU8mBf0FHDMXrd0qI4FpdvDkcYrpXV5H")
+        assertEquals(jettonAddress, "EQAt6fNdWGLjZT5CdU8mBf0FHDMXrd0qI4FpdvDkcYrpXQOC")
     }
 }
