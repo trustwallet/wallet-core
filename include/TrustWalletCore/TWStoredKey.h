@@ -304,7 +304,7 @@ bool TWStoredKeyFixAddresses(struct TWStoredKey* _Nonnull key, TWData* _Nonnull 
 /// \param coin Coin type for which to update the address and public key
 /// \return `false` if the password is incorrect or there is no data for the specified chain, true otherwise.
 TW_EXPORT_METHOD
-bool TWStoredKeyUpdateAddress(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password, TWCoinType coin);
+bool TWStoredKeyUpdateAddress(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password, enum TWCoinType coin);
 
 /// Retrieve stored key encoding parameters, as JSON string.
 ///
