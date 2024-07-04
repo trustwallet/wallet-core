@@ -102,7 +102,7 @@ TEST(TheOpenNetworkAddress, FromPrivateKeyV4R2) {
     WalletV4R2 wallet(publicKey, WorkchainType::Basechain);
     const auto address = wallet.getAddress();
 
-    ASSERT_EQ(address.string(), "EQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorkdl");
+    ASSERT_EQ(address.string(), "UQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorhqg");
 }
 
 TEST(TheOpenNetworkAddress, FromPublicKeyV4R2) {
@@ -111,7 +111,7 @@ TEST(TheOpenNetworkAddress, FromPublicKeyV4R2) {
     WalletV4R2 wallet(publicKey, WorkchainType::Basechain);
     const auto address = wallet.getAddress();
 
-    ASSERT_EQ(address.string(), "EQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorkdl");
+    ASSERT_EQ(address.string(), "UQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorhqg");
 }
 
 TEST(TheOpenNetworkAddress, GetJettonNotcoinAddress) {
@@ -178,6 +178,60 @@ TEST(TheOpenNetworkAddress, FromBocError) {
     // Expected 267 bits, found 268.
     auto boc4 = STRING("te6cckEBAQEAJAAAQ4AgQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEgGG0Gq");
     ASSERT_EQ(TWTONAddressConverterFromBoc(boc4.get()), nullptr);
+}
+
+TEST(TheOpenNetworkAddress, ToUserFriendly) {
+    auto rawAddress = "0:8a8627861a5dd96c9db3ce0807b122da5ed473934ce7568a5b4b1c361cbb28ae";
+    auto bounceable = "EQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorkdl";
+    auto nonBounceable = "UQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorhqg";
+    auto bounceableTestnet = "kQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorvzv";
+    auto nonBounceableTestnet = "0QCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorqEq";
+
+    // Raw to user friendly.
+    assertStringsEqual(
+        WRAPS(TWTONAddressConverterToUserFriendly(STRING(rawAddress).get(), true, false)),
+        bounceable
+    );
+    assertStringsEqual(
+        WRAPS(TWTONAddressConverterToUserFriendly(STRING(rawAddress).get(), false, false)),
+        nonBounceable
+    );
+    assertStringsEqual(
+        WRAPS(TWTONAddressConverterToUserFriendly(STRING(rawAddress).get(), true, true)),
+        bounceableTestnet
+    );
+    assertStringsEqual(
+        WRAPS(TWTONAddressConverterToUserFriendly(STRING(rawAddress).get(), false, true)),
+        nonBounceableTestnet
+    );
+
+    // Bounceable to non-bounceable.
+    assertStringsEqual(
+        WRAPS(TWTONAddressConverterToUserFriendly(STRING(bounceable).get(), false, false)),
+        nonBounceable
+    );
+
+    // Non-bounceable to bounceable.
+    assertStringsEqual(
+        WRAPS(TWTONAddressConverterToUserFriendly(STRING(nonBounceable).get(), true, false)),
+        bounceable
+    );
+
+    // Non-bounceable to non-bounceable.
+    assertStringsEqual(
+        WRAPS(TWTONAddressConverterToUserFriendly(STRING(nonBounceable).get(), false, false)),
+        nonBounceable
+    );
+}
+
+TEST(TheOpenNetworkAddress, ToUserFriendlyError) {
+    // No "0:" prefix.
+    auto invalid1 = STRING("8a8627861a5dd96c9db3ce0807b122da5ed473934ce7568a5b4b1c361cbb28ae");
+    ASSERT_EQ(TWTONAddressConverterToUserFriendly(invalid1.get(), true, false), nullptr);
+
+    // Too short.
+    auto invalid2 = STRING("EQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsor");
+    ASSERT_EQ(TWTONAddressConverterToUserFriendly(invalid1.get(), false, false), nullptr);
 }
 
 } // namespace TW::TheOpenNetwork::tests

@@ -144,6 +144,12 @@ public:
     /// the encryption password to re-derive addresses from private keys.
     void fixAddresses(const Data& password);
 
+    /// Re-derives address and public key for the specified chain.
+    ///
+    /// Use when address format for the given chain has been changed. This method needs
+    /// the encryption password to re-derive addresses from private keys.
+    bool updateAddress(TWCoinType coin, const Data& password);
+
 private:
     /// Default constructor, private
     StoredKey() : type(StoredKeyType::mnemonicPhrase) {}
@@ -169,6 +175,9 @@ private:
 
     /// Re-derive account address if missing
     Account fillAddressIfMissing(Account& account, const HDWallet<>* wallet) const;
+
+    /// Re-derives public key and address for the specified account.
+    static void updateAddressForAccount(const PrivateKey& privKey, Account& account);
 };
 
 } // namespace TW::Keystore

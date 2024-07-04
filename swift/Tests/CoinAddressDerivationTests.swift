@@ -308,7 +308,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "0:0c39661089f86ec5926ea7d4ee4223d634ba4ed6dcc2e80c7b6a8e6d59f79b04";
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ton:
-                    let expectedResult = "EQDgEMqToTacHic7SnvnPFmvceG5auFkCcAw0mSCvzvKUfk9";
+                    let expectedResult = "UQDgEMqToTacHic7SnvnPFmvceG5auFkCcAw0mSCvzvKUaT4";
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .aptos:
                     let expectedResult = "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30";

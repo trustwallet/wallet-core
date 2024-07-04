@@ -11,26 +11,38 @@ class TheOpenNetworkTests: XCTestCase {
         let privateKey = PrivateKey(data: data!)!
         let publicKey = privateKey.getPublicKeyEd25519()
         let address = AnyAddress(publicKey: publicKey, coin: .ton)
-        XCTAssertEqual(address.description, "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
+        XCTAssertEqual(address.description, "UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV")
     }
 
     func testAddressFromPublicKey() {
         let data = Data(hexString: "f42c77f931bea20ec5d0150731276bbb2e2860947661245b2319ef8133ee8d41")
         let publicKey = PublicKey(data: data!, type: PublicKeyType.ed25519)!
         let address = AnyAddress(publicKey: publicKey, coin: .ton)
-        XCTAssertEqual(address.description, "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
+        XCTAssertEqual(address.description, "UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV")
     }
 
     func testAddressFromRawString() {
         let addressString = "0:66fbe3c5c03bf5c82792f904c9f8bf28894a6aa3d213d41c20569b654aadedb3"
         let address = AnyAddress(string: addressString, coin: .ton)
-        XCTAssertEqual(address!.description, "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
+        XCTAssertEqual(address!.description, "UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV")
+    }
+
+    func testAddressFromBounceableString() {
+        let addressString = "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q"
+        let address = AnyAddress(string: addressString, coin: .ton)
+        XCTAssertEqual(address!.description, "UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV")
     }
 
     func testAddressFromUserFriendlyString() {
-        let addressString = "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q"
+        let addressString = "UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV"
         let address = AnyAddress(string: addressString, coin: .ton)
-        XCTAssertEqual(address!.description, "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
+        XCTAssertEqual(address!.description, "UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV")
+    }
+
+    func testAddressToBounceable() {
+        let addressString = "UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV"
+        let address = TONAddressConverter.toUserFriendly(address: addressString, bounceable: true, testnet: false)
+        XCTAssertEqual(address, "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
     }
 
     func testGenerateJettonAddress() {

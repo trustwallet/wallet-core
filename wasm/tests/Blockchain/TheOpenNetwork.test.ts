@@ -20,21 +20,21 @@ describe("TheOpenNetwork", () => {
     let address = AnyAddress.createWithPublicKey(publicKey, CoinType.ton)
     
     assert.equal(publicKey.description(), "f42c77f931bea20ec5d0150731276bbb2e2860947661245b2319ef8133ee8d41");
-    assert.equal(address.description(), "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q");
+    assert.equal(address.description(), "UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV");
   });
 
   it("test address from public key TheOpenNetwork", () => {
     const { PublicKey, PublicKeyType, HexCoding, AnyAddress, CoinType } = globalThis.core;
     let publicKey = PublicKey.createWithData(HexCoding.decode("f42c77f931bea20ec5d0150731276bbb2e2860947661245b2319ef8133ee8d41"), PublicKeyType.ed25519);
     let address = AnyAddress.createWithPublicKey(publicKey, CoinType.ton);
-    assert.equal(address.description(), "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q");
+    assert.equal(address.description(), "UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV");
   });
 
   it("test address from raw string TheOpenNetwork", () => {
     const { AnyAddress, CoinType } = globalThis.core;
     let addressString = "0:66fbe3c5c03bf5c82792f904c9f8bf28894a6aa3d213d41c20569b654aadedb3";
     let address = AnyAddress.createWithString(addressString, CoinType.ton);
-    assert.equal(address.description(), "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q");
+    assert.equal(address.description(), "UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV");
   });
 
   it("test address invalid hex TheOpenNetwork", () => {
@@ -55,7 +55,7 @@ describe("TheOpenNetwork", () => {
     const { AnyAddress, CoinType } = globalThis.core;
     let addressString = "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q";
     let address = AnyAddress.createWithString(addressString, CoinType.ton);
-    assert.equal(address.description(), "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q");
+    assert.equal(address.description(), "UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV");
   });
 
   it("test address from user friendly invalid base64 decoding TheOpenNetwork", () => {
