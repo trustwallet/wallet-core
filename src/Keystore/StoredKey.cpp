@@ -155,6 +155,12 @@ Account StoredKey::fillAddressIfMissing(Account& account, const HDWallet<>* wall
     return account;
 }
 
+void StoredKey::updateAddressForAccount(const PrivateKey& privKey, Account& account) {
+    const auto pubKey = privKey.getPublicKey(TW::publicKeyType(account.coin));
+    account.address = TW::deriveAddress(account.coin, pubKey, account.derivation);
+    account.publicKey = hex(pubKey.bytes);
+}
+
 std::optional<const Account> StoredKey::account(TWCoinType coin, const HDWallet<>* wallet) {
     const auto account = getDefaultAccountOrAny(coin, wallet);
     if (account.has_value()) {
@@ -269,9 +275,7 @@ void StoredKey::fixAddresses(const Data& password) {
             }
             const auto& derivationPath = account.derivationPath;
             const auto key = wallet.getKey(account.coin, derivationPath);
-            const auto pubKey = key.getPublicKey(TW::publicKeyType(account.coin));
-            account.address = TW::deriveAddress(account.coin, pubKey, account.derivation);
-            account.publicKey = hex(pubKey.bytes);
+            updateAddressForAccount(key, account);
         }
     } break;
 
@@ -282,12 +286,35 @@ void StoredKey::fixAddresses(const Data& password) {
                 TW::validateAddress(account.coin, account.address)) {
                 continue;
             }
-            const auto pubKey = key.getPublicKey(TW::publicKeyType(account.coin));
-            account.address = TW::deriveAddress(account.coin, pubKey, account.derivation);
-            account.publicKey = hex(pubKey.bytes);
+            updateAddressForAccount(key, account);
         }
     } break;
     }
+}
+
+bool StoredKey::updateAddress(TWCoinType coin, const Data& password) {
+    auto account = std::find_if(accounts.begin(), accounts.end(), [coin](const auto &account) {
+        return account.coin == coin;
+    });
+    if (account == accounts.end()) {
+        return false;
+    }
+
+    switch (type) {
+        case StoredKeyType::mnemonicPhrase: {
+            const auto wallet = this->wallet(password);
+            const auto& derivationPath = account->derivationPath;
+            const auto key = wallet.getKey(account->coin, derivationPath);
+            updateAddressForAccount(key, *account);
+        } break;
+
+        case StoredKeyType::privateKey: {
+            auto key = PrivateKey(payload.decrypt(password));
+            updateAddressForAccount(key, *account);
+        } break;
+    }
+
+    return true;
 }
 
 // -----------------
