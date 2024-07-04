@@ -45,6 +45,31 @@ impl<'a> BitcoinPreImageHelper<'a> {
         });
         self
     }
+
+    pub fn add_expected_segwit(mut self, pubkey: Data, sighash: Data) -> Self {
+        self.expected_sighashes.push(ExpectedSighash {
+            pubkey: pubkey.to_vec(),
+            sighash: sighash.to_vec(),
+            taproot_tweak: None,
+            signing_method: Proto::mod_PreSigningOutput::SigningMethod::Segwit,
+        });
+        self
+    }
+
+    pub fn add_expected_taproot(
+        mut self,
+        pubkey: Data,
+        sighash: Data,
+        taproot_tweak: Option<Data>,
+    ) -> Self {
+        self.expected_sighashes.push(ExpectedSighash {
+            pubkey: pubkey.to_vec(),
+            sighash: sighash.to_vec(),
+            taproot_tweak,
+            signing_method: Proto::mod_PreSigningOutput::SigningMethod::Taproot,
+        });
+        self
+    }
 }
 
 impl<'a> BitcoinPreImageHelper<'a> {

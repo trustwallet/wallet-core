@@ -279,7 +279,7 @@ impl UtxoBuilder {
 
     pub fn p2tr_script_path(
         mut self,
-        pubkey: &schnorr::PublicKey,
+        internal_pubkey: &schnorr::PublicKey,
         payload: Script,
         control_block: Data,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
@@ -309,7 +309,8 @@ impl UtxoBuilder {
                         control_block,
                     },
                 ),
-                spender_public_key: pubkey.compressed().to_vec(),
+                // Taproot ScriptPath input should be signed with a non-tweaked private key.
+                spender_public_key: internal_pubkey.compressed().to_vec(),
                 amount,
                 leaf_hash_code_separator: Some((leaf_hash, u32::MAX)),
                 // Note that we don't use the default double-hasher.

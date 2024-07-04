@@ -5,6 +5,7 @@ use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_proto::BitcoinV3::Proto;
 
+/// TODO split into three tests: commit, reveal, inscribe (need to add).
 #[test]
 fn coin_entry_sign_brc20_commit_reveal_transfer() {
     let alice_private_key = "e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129"
