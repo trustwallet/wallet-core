@@ -295,6 +295,17 @@ TWData* _Nullable TWStoredKeyExportJSON(struct TWStoredKey* _Nonnull key);
 TW_EXPORT_METHOD
 bool TWStoredKeyFixAddresses(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
 
+/// Re-derives address and public key for the specified chain.
+/// It can be used to update the address if the default address format for the given chain has been changed.
+/// This method needs the encryption password to re-write address.
+///
+/// \param key Non-null pointer to a stored key
+/// \param password Non-null block of data, password of the stored key
+/// \param coin Coin type for which to update the address and public key
+/// \return `false` if the password is incorrect or there is no data for the specified chain, true otherwise.
+TW_EXPORT_METHOD
+bool TWStoredKeyUpdateAddress(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password, enum TWCoinType coin);
+
 /// Retrieve stored key encoding parameters, as JSON string.
 ///
 /// \param key Non-null pointer to a stored key

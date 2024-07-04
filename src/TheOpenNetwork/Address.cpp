@@ -6,6 +6,7 @@
 
 #include "Base64.h"
 #include "Crc.h"
+#include "Everscale/CommonTON/CellBuilder.h"
 
 #include "WorkchainType.h"
 
@@ -122,6 +123,31 @@ std::string Address::string(bool userFriendly, bool bounceable, bool testOnly)  
     append(data, crc16 & 0xff);
 
     return Base64::encodeBase64Url(data);
+}
+
+std::string Address::toBoc() const {
+    CommonTON::CellBuilder cellBuilder;
+    cellBuilder.appendAddress(addressData);
+    const auto cell = cellBuilder.intoCell();
+
+    Data bocData;
+    cell->serialize(bocData);
+
+    return Base64::encode(bocData);
+}
+
+std::optional<Address> Address::fromBoc(const std::string& bocEncoded) {
+    const auto cell = CommonTON::Cell::fromBase64(bocEncoded);
+    if (!cell) {
+        return std::nullopt;
+    }
+
+    const auto addressData = cell->parseAddress();
+    if (!addressData) {
+        return std::nullopt;
+    }
+
+    return std::make_optional<Address>(addressData->workchainId, addressData->hash);
 }
 
 } // namespace TW::TheOpenNetwork

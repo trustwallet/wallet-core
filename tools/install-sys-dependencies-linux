@@ -6,7 +6,7 @@ set -e
 if [[ "$1" == "ci" ]]; then
   LIBSTD_PACKAGE_VERSION="12.3.0-1ubuntu1~22.04"
   # Bump this version if the CI has been broken due to the packages update.
-  LIBC_PACKAGE_VERSION="2.35-0ubuntu3.7"
+  LIBC_PACKAGE_VERSION="2.35-0ubuntu3.8"
 
   echo "Remove GCC 13 from runner image - runner-images/8659 workaround"
   echo "NOTE: Bump $LIBC_PACKAGE_VERSION version if the CI has been broken due to the packages update"

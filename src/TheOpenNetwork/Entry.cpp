@@ -17,7 +17,7 @@ bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, [[maybe_unused]] c
 }
 
 std::string Entry::normalizeAddress([[maybe_unused]] TWCoinType coin, const std::string& address) const {
-    return Address(address).string(true, true, false);
+    return Address(address).string(true, false, false);
 }
 
 std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, [[maybe_unused]] const PrefixVariant& addressPrefix) const {

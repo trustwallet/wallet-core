@@ -5,7 +5,6 @@
 use crate::chains::common::bitcoin::{
     btc_info, compile, dust_threshold, input, output, preimage, DUST, SIGHASH_ALL,
 };
-use std::str::FromStr;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::ToHex;
 use tw_hash::H256;

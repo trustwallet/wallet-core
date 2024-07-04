@@ -84,7 +84,7 @@ TEST(AlgorandSigner, Sign) {
 }
 
 TEST(AlgorandSigner, SignAssetNFTTransfer) {
-    // Successfully broadcasted: https://algoexplorer.io/tx/FFLUH4QKZHG744RIQ2AZNWZUSIIH262KZ4MEWSY4RXMWN5NMOOJA
+    // Successfully broadcasted: https://app.dappflow.org/explorer/transaction/FFLUH4QKZHG744RIQ2AZNWZUSIIH262KZ4MEWSY4RXMWN5NMOOJA
     auto key = PrivateKey(parse_hex("dc6051ffc7b3ec601bde432f6dea34d40fe3855e4181afa0f0524c42194a6da7"));
     auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
     auto from = Address(publicKey);
@@ -115,7 +115,7 @@ TEST(AlgorandSigner, SignAssetNFTTransfer) {
 }
 
 TEST(AlgorandSigner, SignAsset) {
-    // https://testnet.algoexplorer.io/tx/NJ62HYO2LC222AVLIN2GW5LKIWKLGC7NZLIQ3DUL2RDVRYO2UW7A
+    // https://explorer.bitquery.io/algorand_testnet/tx/NJ62HYO2LC222AVLIN2GW5LKIWKLGC7NZLIQ3DUL2RDVRYO2UW7A
     auto key = PrivateKey(parse_hex("5a6a3cfe5ff4cc44c19381d15a0d16de2a76ee5c9b9d83b232e38cb5a2c84b04"));
     auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
     auto from = Address(publicKey);
@@ -172,7 +172,7 @@ TEST(AlgorandSigner, SignAssetWithNote) {
 }
 
 TEST(AlgorandSigner, SignAssetOptIn) {
-    // https://testnet.algoexplorer.io/tx/47LE2QS4B5N6IFHXOUN2MJUTCOQCHNY6AB3AJYECK4IM2VYKJDKQ
+    // https://explorer.bitquery.io/algorand_testnet/tx/47LE2QS4B5N6IFHXOUN2MJUTCOQCHNY6AB3AJYECK4IM2VYKJDKQ
     auto key = PrivateKey(parse_hex("5a6a3cfe5ff4cc44c19381d15a0d16de2a76ee5c9b9d83b232e38cb5a2c84b04"));
     auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
     auto address = Address(publicKey);
@@ -200,7 +200,7 @@ TEST(AlgorandSigner, SignAssetOptIn) {
 }
 
 TEST(AlgorandSigner, ProtoSignerOptIn) {
-    // https://testnet.algoexplorer.io/tx/47LE2QS4B5N6IFHXOUN2MJUTCOQCHNY6AB3AJYECK4IM2VYKJDKQ
+    // https://explorer.bitquery.io/algorand_testnet/tx/47LE2QS4B5N6IFHXOUN2MJUTCOQCHNY6AB3AJYECK4IM2VYKJDKQ
     auto optIn = new Proto::AssetOptIn();
     optIn->set_asset_id(13379146);
 
@@ -224,7 +224,7 @@ TEST(AlgorandSigner, ProtoSignerOptIn) {
 }
 
 TEST(AlgorandSigner, ProtoSignerAssetTransaction) {
-    // https://testnet.algoexplorer.io/tx/NJ62HYO2LC222AVLIN2GW5LKIWKLGC7NZLIQ3DUL2RDVRYO2UW7A
+    // https://explorer.bitquery.io/algorand_testnet/tx/NJ62HYO2LC222AVLIN2GW5LKIWKLGC7NZLIQ3DUL2RDVRYO2UW7A
     auto transaction = new Proto::AssetTransfer();
     transaction->set_asset_id(13379146);
     transaction->set_amount(1000000);

@@ -1810,9 +1810,9 @@
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
-      "url": "https://algoexplorer.io",
-      "txPath": "/tx/",
-      "accountPath": "/address/",
+      "url": "https://app.dappflow.org/explorer",
+      "txPath": "/transaction/",
+      "accountPath": "/account/",
       "sampleTx": "CR7POXFTYDLC7TV3IXHA7AZKWABUJC52BACLHJQNXAKZJGRPQY3A",
       "sampleAccount": "J4AEINCSSLDA7LNBNWM4ZXFCTLTOZT5LG3F5BLMFPJYGFWVCMU37EZI2AM"
     },
@@ -4564,9 +4564,9 @@
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
-      "url": "https://tonscan.org",
-      "txPath": "/tx/",
-      "accountPath": "/address/",
+      "url": "https://tonviewer.com",
+      "txPath": "/transaction/",
+      "accountPath": "/",
       "sampleTx": "fJXfn0EVhV09HFuEgUHu4Cchb24nUQtIMwSzmzk2tLs=",
       "sampleAccount": "EQCD39VS5jcptHL8vMjEXrzGaRcCVYto7HUn4bpAOg8xqB2N"
     },
@@ -4786,6 +4786,37 @@
       "source": "https://github.com/BounceBit-Labs",
       "rpc": "https://fullnode-mainnet.bouncebitapi.com",
       "documentation": "https://docs.bouncebit.io"
+    }
+  },
+  {
+    "id": "zklinknova",
+    "name": "ZkLinkNova",
+    "displayName": "zkLink Nova Mainnet",
+    "coinId": 810180,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "810180",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.zklink.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xeb5eb8710369c89115a83f3e744c15c9d388030cfce2fd3a653dbd18f2947400",
+      "sampleAccount": "0xF95115BaD9a4585B3C5e2bfB50579f17163A45aA"
+    },
+    "info": {
+      "url": "https://zklink.io",
+      "source": "https://github.com/zkLinkProtocol",
+      "rpc": "https://rpc.zklink.io",
+      "documentation": "https://docs.zklink.io"
     }
   }
 ]
