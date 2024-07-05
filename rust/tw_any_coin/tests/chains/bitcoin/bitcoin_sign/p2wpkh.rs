@@ -73,8 +73,8 @@ fn test_bitcoin_sign_p2wpkh_input_different_builders() {
             txid: "5d6bf53576a54be4d92cd8abf58d28ecc9ea7956eaf970d24d6bfcb9fcfe9855",
             inputs: vec![4_863, 30_269],
             outputs: vec![28_035],
-            // `vsize` is different from the estimated value due to the signatures der serialization.
-            vsize: 177,
+            vsize: 178,
+            weight: 710,
             // sum(inputs) - sum(outputs)
             fee: 7_097,
         });

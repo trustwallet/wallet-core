@@ -80,21 +80,21 @@ impl EthMessage for Eip712Message {
             PropertyType::Custom(EIP712_DOMAIN.to_string()),
             &self.domain,
         )
-            .context("Error encoding EIP712Domain")?;
+        .context("Error encoding EIP712Domain")?;
 
         let primary_data_hash = encode_data(
             &self.types,
             PropertyType::Custom(self.primary_type.clone()),
             &self.message,
         )
-            .context("Error encoding primary type")?;
+        .context("Error encoding primary type")?;
 
         let concat = [
             PREFIX.as_slice(),
             domain_hash.as_slice(),
             primary_data_hash.as_slice(),
         ]
-            .concat();
+        .concat();
 
         let hash_data = keccak256(&concat);
         Ok(H256::try_from(hash_data.as_slice()).expect("Expected 32-byte hash"))

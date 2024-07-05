@@ -52,7 +52,10 @@ impl LegacyAddress {
         LegacyAddress::new(p2pkh_prefix, &public_key_hash)
     }
 
-    pub fn p2sh_with_prefix_byte(redeem_script: &Script, p2sh_prefix: u8) -> AddressResult<LegacyAddress> {
+    pub fn p2sh_with_prefix_byte(
+        redeem_script: &Script,
+        p2sh_prefix: u8,
+    ) -> AddressResult<LegacyAddress> {
         let script_hash = sha256_ripemd(redeem_script.as_data());
         LegacyAddress::new(p2sh_prefix, &script_hash)
     }

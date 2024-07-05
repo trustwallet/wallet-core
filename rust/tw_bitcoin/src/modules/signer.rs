@@ -73,6 +73,7 @@ impl BitcoinSigner {
             vsize: signed_tx.vsize() as u64,
             // `fee` should haven't been changed since it's a difference between `sum(inputs)` and `sum(outputs)`.
             fee: plan.fee_estimate,
+            weight: signed_tx.weight() as u64,
             ..Proto::SigningOutput::default()
         })
     }

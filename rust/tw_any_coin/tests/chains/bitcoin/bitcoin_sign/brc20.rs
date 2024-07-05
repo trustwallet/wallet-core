@@ -56,6 +56,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
             inputs: vec![26_400],
             outputs: vec![7_000, 16_400],
             vsize: 153,
+            weight: 610,
             fee: 3000,
         });
 
@@ -91,7 +92,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
         .plan(plan::Expected {
             inputs: vec![7_000],
             outputs: vec![DUST],
-            vsize_estimate: 132,
+            vsize_estimate: 131,
             fee_estimate: 7_000 - DUST,
             change: 0,
         });
@@ -106,6 +107,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
             outputs: vec![DUST],
             // `vsize` is different from the estimated value due to the signatures der serialization.
             vsize: 131,
+            weight: 522,
             fee: 7_000 - DUST,
         });
 }

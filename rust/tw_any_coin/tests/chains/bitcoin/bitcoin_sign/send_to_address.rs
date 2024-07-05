@@ -65,6 +65,7 @@ fn test_bitcoin_send_to_p2sh_address() {
             inputs: vec![10_000],
             outputs: vec![1_000],
             vsize: 189,
+            weight: 756,
             // sum(inputs) - sum(outputs)
             fee: 9000,
         });
@@ -113,6 +114,7 @@ fn test_bitcoin_send_to_p2pkh_address() {
             inputs: vec![10_000],
             outputs: vec![1_000],
             vsize: 192,
+            weight: 768,
             fee: 9_000,
         });
 }
@@ -168,6 +170,7 @@ fn test_bitcoin_send_to_p2wsh_address() {
             inputs: vec![10_000],
             outputs: vec![1_000],
             vsize: 201,
+            weight: 804,
             fee: 9_000,
         });
 }
@@ -215,6 +218,7 @@ fn test_bitcoin_send_to_p2wpkh_address() {
             inputs: vec![10_000],
             outputs: vec![1_000],
             vsize: 189,
+            weight: 756,
             fee: 9_000,
         });
 }
@@ -262,6 +266,7 @@ fn test_bitcoin_send_to_p2tr_key_path_address() {
             inputs: vec![10_000],
             outputs: vec![1_000],
             vsize: 201,
+            weight: 804,
             fee: 9_000,
         });
 }

@@ -23,11 +23,5 @@ pub trait Encodable {
     fn encode(&self, stream: &mut Stream);
 
     /// Hint about the size of serialized struct.
-    fn encoded_size(&self) -> usize
-    where
-        Self: Sized,
-    {
-        // fallback implementation
-        encode(self).len()
-    }
+    fn encoded_size(&self) -> usize;
 }

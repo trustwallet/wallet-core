@@ -69,6 +69,7 @@ fn test_bitcoin_deposit_to_zetachain() {
             inputs: vec![20_000],
             outputs: vec![10_000, 0, 7_420],
             vsize: 172,
+            weight: 686,
             // sum(inputs) - sum(outputs)
             fee: 2580,
         });

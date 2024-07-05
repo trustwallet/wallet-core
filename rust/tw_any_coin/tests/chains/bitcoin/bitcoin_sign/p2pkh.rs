@@ -65,6 +65,7 @@ fn test_bitcoin_sign_input_p2pkh_output_p2pkh() {
             outputs: vec![ONE_BTC * 50 - MINER_FEE],
             // `vsize` is different from the estimated value due to the signatures der serialization.
             vsize: 191,
+            weight: 764,
             fee: MINER_FEE,
         });
 }
@@ -136,6 +137,7 @@ fn test_bitcoin_cash_sign_input_p2pkh_custom_script() {
             outputs: vec![600, 4325],
             // `vsize` is different from the estimated value due to the signatures der serialization.
             vsize: 226,
+            weight: 904,
             // vsize
             fee: 226,
         });

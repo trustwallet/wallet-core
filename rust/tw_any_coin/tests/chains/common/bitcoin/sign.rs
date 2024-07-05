@@ -19,6 +19,7 @@ pub struct Expected {
     pub inputs: Vec<i64>,
     pub outputs: Vec<i64>,
     pub vsize: u64,
+    pub weight: u64,
     pub fee: i64,
 }
 
@@ -70,6 +71,7 @@ impl<'a> BitcoinSignHelper<'a> {
         );
         assert_eq!(output.txid.to_hex(), expected.txid, "Wrong txid");
         assert_eq!(output.vsize, expected.vsize, "Wrong vsize");
+        assert_eq!(output.weight, expected.weight, "Wrong weight");
         assert_eq!(output.fee, expected.fee, "Wrong fee");
     }
 

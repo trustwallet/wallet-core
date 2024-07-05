@@ -54,6 +54,7 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
             inputs: vec![ONE_BTC * 50],
             outputs: vec![ONE_BTC * 50 - MINER_FEE],
             vsize: 201,
+            weight: 804,
             fee: MINER_FEE,
         });
 
@@ -91,7 +92,8 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
             txid: "1487204b521cd24d4e30e9998d2b0584ac8efd41d42bac041dc899abcf83ecdf",
             inputs: vec![ONE_BTC * 50 - MINER_FEE],
             outputs: vec![ONE_BTC * 50 - MINER_FEE - MINER_FEE],
-            vsize: 112,
+            vsize: 111,
+            weight: 444,
             fee: MINER_FEE,
         });
 }

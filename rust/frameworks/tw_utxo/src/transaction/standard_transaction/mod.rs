@@ -30,12 +30,7 @@ const WITNESS_MARKER: u8 = 0;
 const WITNESS_FLAG: u8 = 1;
 
 // Sizes of various transaction fields.
-const VERSION_SIZE: usize = 4;
-const LOCKTIME_SIZE: usize = 4;
 const WITNESS_FLAG_MARKER: usize = 2;
-const OUT_POINT_SIZE: usize = 36;
-const SEQUENCE_SIZE: usize = 4;
-const VALUE_SIZE: usize = 8;
 
 // The Segwit scale factor (witnesses are deducted).
 const SEGWIT_SCALE_FACTOR: usize = 4;
@@ -95,12 +90,12 @@ impl TransactionInterface for Transaction {
         &mut self.outputs
     }
 
-    fn push_output(&mut self, output: Self::Output) {
-        self.outputs.push(output);
-    }
-
     fn replace_outputs(&mut self, outputs: Vec<Self::Output>) {
         self.outputs = outputs;
+    }
+
+    fn push_output(&mut self, output: Self::Output) {
+        self.outputs.push(output);
     }
 
     fn has_witness(&self) -> bool {
@@ -111,13 +106,12 @@ impl TransactionInterface for Transaction {
         self.locktime
     }
 
-    /// TODO check if [`Transaction::vsize`] returns the same value as [`Transaction::size`] if there are no witnesses.
     fn vsize(&self) -> usize {
         (self.weight() + 3) / SEGWIT_SCALE_FACTOR // ceil(weight / 4)
     }
 
     fn weight(&self) -> usize {
-        self.weight()
+        self.base_size() * 3 + self.total_size()
     }
 }
 
@@ -146,43 +140,53 @@ impl Transaction {
         stream.out()
     }
 
-    pub fn base_size(&self) -> usize {
-        let mut s = 0;
-        // Base transaction size.
-        s += VERSION_SIZE;
-        s += LOCKTIME_SIZE;
+    pub fn size(&self) -> usize {
+        self.total_size()
+    }
+
+    /// Base transaction size.
+    ///
+    /// Base transaction size is the size of the transaction serialized with the witness data stripped.
+    fn base_size(&self) -> usize {
+        let mut s = self.version.encoded_size();
+
+        s += CompactInteger::from(self.inputs.len()).encoded_size();
+        s += self.inputs.iter().map(|i| i.base_size()).sum::<usize>();
+
+        s += CompactInteger::from(self.outputs.len()).encoded_size();
+        s += self.outputs.iter().map(|o| o.encoded_size()).sum::<usize>();
+
+        s + self.locktime.encoded_size()
+    }
+
+    /// Total transaction size.
+    ///
+    /// Total transaction size is the transaction size in bytes serialized as described in BIP144,
+    /// including base data and witness data.
+    fn total_size(&self) -> usize {
+        let has_witness = self.has_witness();
+
+        let mut s = self.version.encoded_size();
 
         // Consider extended format in case witnesses are to be serialized.
-        if self.has_witness() {
+        if has_witness {
             s += WITNESS_FLAG_MARKER;
         }
 
-        s += CompactInteger::from(self.inputs().len()).encoded_size();
-        s += CompactInteger::from(self.outputs().len()).encoded_size();
-        s
-    }
+        let get_input_size = |i: &TransactionInput| {
+            if has_witness {
+                return i.size_with_witness();
+            }
+            i.base_size()
+        };
 
-    pub fn size(&self) -> usize {
-        let mut s = self.base_size();
-        self.inputs().iter().for_each(|input| s += input.size());
-        self.outputs().iter().for_each(|output| s += output.size());
-        s
-    }
+        s += CompactInteger::from(self.inputs.len()).encoded_size();
+        s += self.inputs.iter().map(get_input_size).sum::<usize>();
 
-    pub fn weight(&self) -> usize {
-        let mut w = self.base_size();
+        s += CompactInteger::from(self.outputs.len()).encoded_size();
+        s += self.outputs.iter().map(|o| o.encoded_size()).sum::<usize>();
 
-        // Apply scale factor.
-        w *= SEGWIT_SCALE_FACTOR;
-
-        // Calculate the weight of each input and output. The Segwit scale
-        // factor is already considered by the weight methods.
-        self.inputs().iter().for_each(|input| w += input.weight());
-        self.outputs()
-            .iter()
-            .for_each(|output| w += output.weight());
-
-        w
+        s + self.locktime.encoded_size()
     }
 }
 
@@ -206,6 +210,10 @@ impl Encodable for Transaction {
         }
 
         stream.append(&self.locktime);
+    }
+
+    fn encoded_size(&self) -> usize {
+        self.total_size()
     }
 }
 
@@ -255,15 +263,14 @@ pub struct TransactionInput {
 }
 
 impl TransactionInput {
-    pub fn size(&self) -> usize {
-        self.encoded_size()
+    pub fn base_size(&self) -> usize {
+        self.previous_output.encoded_size()
+            + self.script_sig.encoded_size()
+            + self.sequence.encoded_size()
     }
 
-    pub fn weight(&self) -> usize {
-        let non_witness = OUT_POINT_SIZE + self.script_sig.encoded_size() + SEQUENCE_SIZE;
-
-        // Witness data has no scale factor applied, ie. it's discounted.
-        non_witness * SEGWIT_SCALE_FACTOR + self.witness.encoded_size()
+    pub fn size_with_witness(&self) -> usize {
+        self.base_size() + self.witness.encoded_size()
     }
 }
 
@@ -309,14 +316,8 @@ impl Encodable for TransactionInput {
             .append(&self.sequence);
     }
 
-    fn encoded_size(&self) -> usize
-    where
-        Self: Sized,
-    {
-        OUT_POINT_SIZE
-            + self.script_sig.encoded_size()
-            + SEQUENCE_SIZE
-            + self.witness.encoded_size()
+    fn encoded_size(&self) -> usize {
+        self.base_size()
     }
 }
 
@@ -327,17 +328,6 @@ pub struct TransactionOutput {
     /// Usually contains the public key as a Bitcoin script setting up
     /// conditions to claim this output.
     pub script_pubkey: Script,
-}
-
-impl TransactionOutput {
-    pub fn size(&self) -> usize {
-        self.encoded_size()
-    }
-
-    pub fn weight(&self) -> usize {
-        // All output data has the scale factor applied.
-        self.size() * SEGWIT_SCALE_FACTOR
-    }
 }
 
 impl Default for TransactionOutput {
@@ -368,10 +358,7 @@ impl Encodable for TransactionOutput {
         stream.append(&self.value).append(&self.script_pubkey);
     }
 
-    fn encoded_size(&self) -> usize
-    where
-        Self: Sized,
-    {
-        VALUE_SIZE + self.script_pubkey.encoded_size()
+    fn encoded_size(&self) -> usize {
+        self.value.encoded_size() + self.script_pubkey.encoded_size()
     }
 }

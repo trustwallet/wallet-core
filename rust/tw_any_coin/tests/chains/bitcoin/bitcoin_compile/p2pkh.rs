@@ -77,8 +77,8 @@ fn test_bitcoin_compile_p2pkh() {
             txid: "c19f410bf1d70864220e93bca20f836aaaf8cdde84a46692616e9f4480d54885",
             inputs: vec![ONE_BTC * 50],
             outputs: vec![ONE_BTC * 50 - MINER_FEE],
-            // `vsize` is different from the estimated value due to the signatures der serialization.
             vsize: 191,
+            weight: 764,
             fee: MINER_FEE,
         });
 }

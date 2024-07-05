@@ -170,10 +170,9 @@ fn build_tx_input_segwit_output_segwit() {
 
     let tx = TxCompiler::compile(unsigned_tx, &[sig.to_vec()]).unwrap();
 
-    assert_eq!(tx.size(), 191);
+    assert_eq!(tx.size(), 192);
     assert_eq!(tx.vsize(), 110); // Witness data discounted
-    assert_eq!(tx.weight(), 110 * 4);
-    assert_eq!(tx.weight(), 440);
+    assert_eq!(tx.weight(), 438);
     verify_fee(&tx, SATS_PER_VBYTE, 110 * SATS_PER_VBYTE);
 
     let encoded = hex::encode(tx.encode_out(), false);

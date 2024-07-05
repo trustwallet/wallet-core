@@ -83,6 +83,7 @@ fn test_bitcoin_compile_brc20_transfer_commit() {
             inputs: vec![available_amount],
             outputs: vec![brc20_inscribe_amount, change_amount],
             vsize: 153,
+            weight: 610,
             fee: tx_fee,
         });
 }
@@ -154,6 +155,7 @@ fn test_bitcoin_compile_brc20_transfer_reveal() {
             inputs: vec![brc20_inscribed_amount],
             outputs: vec![DUST],
             vsize: 131,
+            weight: 522,
             fee: tx_fee,
         });
 }

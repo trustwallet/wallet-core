@@ -347,6 +347,9 @@ message SigningOutput {
     // It is used to compare how much blockweight needs to be allocated to confirm a transaction.
     // For non-segwit transactions, `vsize` = `size`.
     uint64 vsize = 6;
+    // Transaction weight is defined as Base transaction size * 3 + Total transaction size
+    // (ie. the same method as calculating Block weight from Base size and Total size).
+    uint64 weight = 7;
     // The total and final fee of the transaction in satoshis.
-    int64 fee = 7;
+    int64 fee = 8;
 }

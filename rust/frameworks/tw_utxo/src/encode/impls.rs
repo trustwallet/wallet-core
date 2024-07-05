@@ -33,18 +33,6 @@ impl<const N: usize> Encodable for Hash<N> {
     }
 }
 
-impl Encodable for bool {
-    #[inline]
-    fn encode(&self, s: &mut Stream) {
-        (*self as u8).encode(s)
-    }
-
-    #[inline]
-    fn encoded_size(&self) -> usize {
-        1
-    }
-}
-
 impl Encodable for u8 {
     #[inline]
     fn encode(&self, s: &mut Stream) {

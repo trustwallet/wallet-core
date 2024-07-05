@@ -19,4 +19,8 @@ impl Encodable for OutPoint {
     fn encode(&self, stream: &mut Stream) {
         stream.append(&self.hash).append(&self.index);
     }
+
+    fn encoded_size(&self) -> usize {
+        self.hash.encoded_size() + self.index.encoded_size()
+    }
 }

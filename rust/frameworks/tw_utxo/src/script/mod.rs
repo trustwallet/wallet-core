@@ -24,11 +24,7 @@ impl Encodable for Script {
     where
         Self: Sized,
     {
-        if self.bytes.is_empty() {
-            return 0;
-        }
-
-        CompactInteger::from(self.bytes.len()).encoded_size() + self.bytes.len()
+        self.bytes.encoded_size()
     }
 }
 
@@ -120,16 +116,8 @@ impl Encodable for Witness {
     }
 
     fn encoded_size(&self) -> usize {
-        if self.is_empty() {
-            return 0;
-        }
-
         CompactInteger::from(self.items.len()).encoded_size()
-            + self
-                .items
-                .iter()
-                .map(|item| CompactInteger::from(item.len()).encoded_size() + item.len())
-                .sum::<usize>()
+            + self.items.iter().map(Script::encoded_size).sum::<usize>()
     }
 }
 
