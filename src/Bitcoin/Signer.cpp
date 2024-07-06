@@ -39,9 +39,7 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs) noexcept {
     Proto::SigningOutput output;
     if (input.is_it_brc_operation()) {
-        auto serializedInput = data(input.SerializeAsString());
-        Rust::CByteArrayWrapper res = Rust::tw_bitcoin_legacy_taproot_build_and_sign_transaction(serializedInput.data(), serializedInput.size());
-        output.ParseFromArray(res.data.data(), static_cast<int>(res.data.size()));
+        output.set_error(Common::Proto::SigningError::Error_not_supported);
         return output;
     } else if (input.has_signing_v2()) {
         // Forward the `Bitcoin.Proto.SigningInput.signing_v2` request to Rust.
