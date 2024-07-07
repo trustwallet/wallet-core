@@ -15,6 +15,8 @@ pub mod sign;
 pub const ONE_BTC: i64 = 100_000_000;
 pub const MINER_FEE: i64 = 1_000_000;
 pub const DUST: i64 = 546;
+pub const BITCOIN_P2PKH_PREFIX: u8 = 0;
+pub const BITCOIN_P2SH_PREFIX: u8 = 5;
 
 pub const SIGHASH_ALL: u32 = 1;
 
@@ -34,8 +36,8 @@ use tw_proto::BitcoinV3::Proto;
 
 pub fn btc_info() -> Option<Proto::ChainInfo> {
     Some(Proto::ChainInfo {
-        p2pkh_prefix: 0,
-        p2sh_prefix: 5,
+        p2pkh_prefix: BITCOIN_P2PKH_PREFIX as u32,
+        p2sh_prefix: BITCOIN_P2SH_PREFIX as u32,
     })
 }
 
@@ -105,9 +107,26 @@ pub mod input {
 pub mod output {
     use super::*;
     use tw_memory::Data;
+    use tw_proto::BitcoinV3::Proto::mod_Output::mod_RedeemScriptOrHash::OneOfvariant as RedeemScriptOrHashType;
 
     pub fn receiver_builder(ty: OutputBuilderType<'static>) -> RecipientType<'static> {
         RecipientType::builder(OutputBuilder { variant: ty })
+    }
+
+    pub fn p2sh_with_script(redeem_script: Data) -> RecipientType<'static> {
+        receiver_builder(OutputBuilderType::p2sh(
+            Proto::mod_Output::RedeemScriptOrHash {
+                variant: RedeemScriptOrHashType::redeem_script(redeem_script.into()),
+            },
+        ))
+    }
+
+    pub fn p2sh_with_hash(redeem_script_hash: Data) -> RecipientType<'static> {
+        receiver_builder(OutputBuilderType::p2sh(
+            Proto::mod_Output::RedeemScriptOrHash {
+                variant: RedeemScriptOrHashType::hash(redeem_script_hash.into()),
+            },
+        ))
     }
 
     pub fn p2pkh(pubkey: Data) -> RecipientType<'static> {

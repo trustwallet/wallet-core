@@ -54,7 +54,7 @@ impl SegwitAddress {
     }
 
     pub fn p2wsh_with_hrp(redeem_script: &Script, hrp: String) -> AddressResult<SegwitAddress> {
-        let script_hash = sha256(redeem_script.as_data());
+        let script_hash = sha256(redeem_script.as_slice());
         Self::new(hrp, script_hash)
     }
 

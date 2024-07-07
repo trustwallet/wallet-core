@@ -53,6 +53,6 @@ impl ProtobufBuilder {
     }
 
     fn script_data(script: &Script) -> Cow<'static, [u8]> {
-        Cow::from(script.as_data().clone())
+        Cow::from(script.to_vec())
     }
 }

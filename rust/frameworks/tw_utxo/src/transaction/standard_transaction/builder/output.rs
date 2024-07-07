@@ -71,7 +71,7 @@ impl OutputBuilder {
     }
 
     pub fn p2wsh(self, redeem_script: &Script) -> TransactionOutput {
-        let h = sha256(redeem_script.as_data());
+        let h = sha256(redeem_script.as_slice());
         let redeem_hash: H256 = h.as_slice().try_into().expect("hash length is 32 bytes");
 
         self.p2wsh_from_hash(&redeem_hash)

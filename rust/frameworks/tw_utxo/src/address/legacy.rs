@@ -56,7 +56,7 @@ impl LegacyAddress {
         redeem_script: &Script,
         p2sh_prefix: u8,
     ) -> AddressResult<LegacyAddress> {
-        let script_hash = sha256_ripemd(redeem_script.as_data());
+        let script_hash = sha256_ripemd(redeem_script.as_slice());
         LegacyAddress::new(p2sh_prefix, &script_hash)
     }
 

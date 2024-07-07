@@ -94,8 +94,12 @@ impl Script {
         self.bytes.extend_from_slice(data);
     }
 
-    pub fn as_data(&self) -> &Data {
+    pub fn as_slice(&self) -> &[u8] {
         &self.bytes
+    }
+
+    pub fn to_vec(&self) -> Data {
+        self.bytes.clone()
     }
 }
 

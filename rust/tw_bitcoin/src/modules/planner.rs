@@ -52,7 +52,7 @@ impl BitcoinPlanner {
             // For now, just provide a scriptPubkey as is.
             // Later it's probably worth to return the same output builders as in `SigningInput`.
             let to_recipient = Proto::mod_Output::OneOfto_recipient::custom_script_pubkey(
-                Cow::from(selected_output.script_pubkey.as_data().clone()),
+                Cow::from(selected_output.script_pubkey.to_vec()),
             );
 
             outputs_proto.push(Proto::Output {

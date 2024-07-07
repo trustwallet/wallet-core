@@ -26,9 +26,9 @@ pub fn new_p2pk(sig: &BitcoinEcdsaSignature) -> Script {
 // pub fn new_p2sh(items: Vec<Script>, redeem_script: Script) -> Script {
 //     let mut s = Script::new();
 //     for item in items {
-//         s.push_slice(item.as_data());
+//         s.push_slice(item.as_slice());
 //     }
-//     s.push_slice(redeem_script.as_data());
+//     s.push_slice(redeem_script.as_slice());
 //     s
 // }
 

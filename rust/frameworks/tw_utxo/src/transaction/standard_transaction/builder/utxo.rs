@@ -95,7 +95,7 @@ impl UtxoBuilder {
 
     // TODO next iteration.
     // pub fn p2sh(self, redeem_script: Script) -> SigningResult<(TransactionInput, UtxoToSign)> {
-    //     let h = bitcoin_hash_160(redeem_script.as_data());
+    //     let h = bitcoin_hash_160(redeem_script.as_slice());
     //     let redeem_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
     //
     //     self.p2sh_with_hash(redeem_hash)
@@ -181,7 +181,7 @@ impl UtxoBuilder {
 
     // TODO next iteration.
     // pub fn p2wsh(mut self, redeem_script: Script) -> SigningResult<(TransactionInput, UtxoToSign)> {
-    //     let h = sha256(redeem_script.as_data());
+    //     let h = sha256(redeem_script.as_slice());
     //     let redeem_hash: H256 = h.as_slice().try_into().expect("hash length is 32 bytes");
     //
     //     self.finalize_out_point()?;
@@ -284,7 +284,7 @@ impl UtxoBuilder {
         control_block: Data,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
         // Construct the leaf hash.
-        let script_buf = bitcoin::ScriptBuf::from_bytes(payload.as_data().to_vec());
+        let script_buf = bitcoin::ScriptBuf::from_bytes(payload.to_vec());
         let leaf_hash = bitcoin::taproot::TapLeafHash::from_script(
             &script_buf,
             bitcoin::taproot::LeafVersion::TapScript,
