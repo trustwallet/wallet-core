@@ -8,6 +8,7 @@ use tw_keypair::schnorr;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV3::Proto;
 use tw_utxo::address::taproot::TaprootAddress;
+use tw_utxo::script::standard_script::conditions;
 
 const ALICE_PRIVATE_KEY: &str = "12ce558df23528f1aa86f1f51ac7e13a197a06bda27610fa89e13b04c40ee999";
 const BOB_PRIVATE_KEY: &str = "26c2566adcc030a1799213bfd546e615f6ab06f72085ec6806ff1761da48d227";
@@ -99,6 +100,8 @@ fn test_bitcoin_sign_output_p2tr_address() {
 enum P2TRClaimingScriptType {
     KeyPath,
     P2TRAddress,
+    // Direct scriptPubkey with the witness program.
+    P2TRCustomScript,
 }
 
 fn test_bitcoin_sign_output_p2tr(utxo_owner: P2TRClaimingScriptType) {
@@ -112,6 +115,10 @@ fn test_bitcoin_sign_output_p2tr(utxo_owner: P2TRClaimingScriptType) {
         P2TRClaimingScriptType::KeyPath => input::p2tr_key_path(bob_pubkey.to_vec()),
         P2TRClaimingScriptType::P2TRAddress => {
             input::receiver_address(&p2tr_key_path_address(&bob_pubkey))
+        },
+        P2TRClaimingScriptType::P2TRCustomScript => {
+            let custom_script = conditions::new_p2tr_key_path(&bob_pubkey.compressed());
+            input::custom_script(custom_script.to_vec())
         },
     };
 
@@ -165,4 +172,9 @@ fn test_bitcoin_sign_input_p2tr_key_path() {
 #[test]
 fn test_bitcoin_sign_input_p2tr_address() {
     test_bitcoin_sign_output_p2tr(P2TRClaimingScriptType::P2TRAddress);
+}
+
+#[test]
+fn test_bitcoin_sign_input_p2tr_custom_script() {
+    test_bitcoin_sign_output_p2tr(P2TRClaimingScriptType::P2TRCustomScript);
 }

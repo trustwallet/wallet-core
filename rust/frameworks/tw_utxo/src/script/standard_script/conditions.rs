@@ -9,7 +9,7 @@ use tw_misc::traits::ToBytesVec;
 
 use super::opcodes::*;
 use super::Script;
-use super::{SEGWIT_VERSION, TAPROOT_VERSION};
+use super::SEGWIT_VERSION;
 
 /// Creates a P2SH spending condition (_scriptPubkey_).
 ///
@@ -166,7 +166,8 @@ pub fn is_p2wpkh(s: &Script) -> bool {
 
 pub fn is_p2tr(s: &Script) -> bool {
     let b = s.as_slice();
-    b.len() == 34 && b[0] == TAPROOT_VERSION && b[1] == OP_PUSHBYTES_32
+    let taproot_version_op_code = OP_PUSHNUM_1;
+    b.len() == 34 && b[0] == taproot_version_op_code && b[1] == OP_PUSHBYTES_32
 }
 
 pub fn is_op_return(s: &Script) -> bool {
