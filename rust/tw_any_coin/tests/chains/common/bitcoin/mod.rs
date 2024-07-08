@@ -15,10 +15,12 @@ pub mod sign;
 pub const ONE_BTC: i64 = 100_000_000;
 pub const MINER_FEE: i64 = 1_000_000;
 pub const DUST: i64 = 546;
-pub const BITCOIN_P2PKH_PREFIX: u8 = 0;
-pub const BITCOIN_P2SH_PREFIX: u8 = 5;
 
 pub const SIGHASH_ALL: u32 = 1;
+
+pub const BITCOIN_P2PKH_PREFIX: u8 = 0;
+pub const BITCOIN_P2SH_PREFIX: u8 = 5;
+pub const BITCOIN_HRP: &str = "bc";
 
 pub type Amount = i64;
 
@@ -108,6 +110,7 @@ pub mod output {
     use super::*;
     use tw_memory::Data;
     use tw_proto::BitcoinV3::Proto::mod_Output::mod_RedeemScriptOrHash::OneOfvariant as RedeemScriptOrHashType;
+    use tw_proto::BitcoinV3::Proto::mod_Output::OutputTaprootScriptPath as TaprootScriptPath;
 
     pub fn receiver_builder(ty: OutputBuilderType<'static>) -> RecipientType<'static> {
         RecipientType::builder(OutputBuilder { variant: ty })
@@ -143,6 +146,19 @@ pub mod output {
 
     pub fn p2tr_key_path(pubkey: Data) -> RecipientType<'static> {
         receiver_builder(OutputBuilderType::p2tr_key_path(pubkey.into()))
+    }
+
+    pub fn p2tr_assume_tweaked(tweaked_pubkey: Data) -> RecipientType<'static> {
+        receiver_builder(OutputBuilderType::p2tr_dangerous_assume_tweaked(
+            tweaked_pubkey.into(),
+        ))
+    }
+
+    pub fn p2tr_script_path(internal_pubkey: Data, merkle_root: Data) -> RecipientType<'static> {
+        receiver_builder(OutputBuilderType::p2tr_script_path(TaprootScriptPath {
+            internal_key: internal_pubkey.into(),
+            merkle_root: merkle_root.into(),
+        }))
     }
 
     pub fn brc20_inscribe(
