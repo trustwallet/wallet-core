@@ -63,9 +63,7 @@ pub fn new_p2wsh(redeem_hash: &H256) -> Script {
     s
 }
 
-/// Creates a P2WPKH spending condition (_scriptPubkey_). Do note that you must
-/// use [`new_p2wpkh_script_code`](Self::new_p2wpkh_script_code) when generating
-/// the _scriptPubkey_ for **claiming** a P2WPKH spending condition.
+/// Creates a P2WPKH spending condition (_scriptPubkey_).
 ///
 /// ```txt
 /// 0 <push><pubkey_hash>
@@ -75,18 +73,6 @@ pub fn new_p2wpkh(pubkey_hash: &H160) -> Script {
     s.push(SEGWIT_VERSION);
     s.push_slice(pubkey_hash.as_slice());
     s
-}
-
-/// Creates a special _scriptPubkey_ when **claiming** a P2WPKH spending
-/// condition, which is used for Sighash calculation.
-/// TODO is this needed?
-///
-/// ```txt
-/// OP_DUP OP_HASH160 <push><pubkey_hash> OP_EQUALVERIFY OP_CHECKSIG
-/// ```
-pub fn new_p2wpkh_script_code(pubkey_hash: &H160) -> Script {
-    // We're just wrapping over the legacy P2PKH script builder.
-    new_p2pkh(pubkey_hash)
 }
 
 pub fn new_p2tr_key_path(pubkey: &H264) -> Script {

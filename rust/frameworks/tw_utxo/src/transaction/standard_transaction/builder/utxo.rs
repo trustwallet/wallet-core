@@ -66,7 +66,6 @@ impl UtxoBuilder {
         self
     }
 
-    // TODO: Can we somehow get rid of this?
     fn finalize_out_point(&mut self) -> SigningResult<()> {
         // Populate the input with the previous output.
         self.input.previous_output.hash = self

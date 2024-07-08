@@ -143,7 +143,6 @@ impl FromStr for StandardBitcoinAddress {
         if let Ok(taproot) = TaprootAddress::from_str(s) {
             return Ok(StandardBitcoinAddress::Taproot(taproot));
         }
-        // TODO handle segwit and taproot addresses here.
         Err(AddressError::InvalidInput)
     }
 }

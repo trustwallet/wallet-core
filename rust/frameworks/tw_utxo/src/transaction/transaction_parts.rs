@@ -6,7 +6,8 @@ use crate::encode::stream::Stream;
 use crate::encode::Encodable;
 use tw_hash::H256;
 
-// TODO: Shouldn't this be u64?
+/// Amount in satoshis (Can be negative) in rare cases.
+/// https://github.com/bitcoin/bitcoin/blob/bd5d1688b4311e21c0e0ff89a3ae02ef7d0543b8/src/consensus/amount.h#L11-L12
 pub type Amount = i64;
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]

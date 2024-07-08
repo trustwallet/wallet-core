@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::encode::stream::Stream;
-use crate::script::Script;
+use crate::script::{Script, Witness};
 use crate::sighash::SighashBase;
 use crate::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
 use crate::transaction::UtxoPreimageArgs;
@@ -18,7 +18,6 @@ pub struct LegacySighash<Transaction: std::fmt::Debug + TransactionInterface> {
 
 impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transaction> {
     pub fn sighash_tx(tx: &Transaction, args: &UtxoPreimageArgs) -> SigningResult<H256> {
-        // TODO: Avoid cloning here?
         let mut tx_preimage = tx.clone();
 
         tx_preimage.replace_inputs(Self::inputs_for_preimage(tx, args)?);
@@ -52,7 +51,7 @@ impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transact
         if args.sighash_ty.anyone_can_pay() {
             let mut input_preimage = input_to_sign.clone();
             input_preimage.set_script_sig(args.script_pubkey.clone());
-            input_preimage.clear_witness();
+            input_preimage.set_witness(Witness::default());
             return Ok(vec![input_preimage]);
         }
 
@@ -77,7 +76,7 @@ impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transact
                 if !is_this_input && single_or_none {
                     input_preimage.set_sequence(0);
                 }
-                input_preimage.clear_witness();
+                input_preimage.set_witness(Witness::default());
                 input_preimage
             })
             .collect();
@@ -101,7 +100,6 @@ impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transact
                     if n == args.input_index {
                         out.clone()
                     } else {
-                        // TODO: The output amount in this case must be `0xffffffffffffffff`.
                         // `standard_transaction::TransactionOutput` defaults to `-1`.
                         Transaction::Output::default()
                     }

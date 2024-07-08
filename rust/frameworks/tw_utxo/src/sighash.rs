@@ -18,10 +18,6 @@ pub enum SighashBase {
     None = 2,
     /// Sign the output whose index matches this inputs index - 0x03
     Single = 3,
-    // TODO:
-    // AllPlusAnyoneCanPay = 129,
-    // NonePlusAnyoneCanPay = 130,
-    // SinglePlusAnyoneCanPay = 131,
 }
 
 /// Signature hash type.

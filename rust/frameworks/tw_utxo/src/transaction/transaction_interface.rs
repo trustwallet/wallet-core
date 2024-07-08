@@ -56,9 +56,6 @@ pub trait TxInputInterface: Clone {
     fn has_script_sig(&self) -> bool;
 
     fn has_witness(&self) -> bool;
-
-    // TODO consider removing it. Use `set_witness` instead.
-    fn clear_witness(&mut self);
 }
 
 pub trait TxOutputInterface: Clone + Default + Encodable {

@@ -125,11 +125,11 @@ impl Transaction {
     }
 
     /// Returns the same transaction with [`TransactionInput::script_witness`] being empty.
-    /// TODO: Why?
+    /// It's mostly used to calculate transaction hash (aka TXID).
     pub fn without_witness(&self) -> Transaction {
         let mut without_witness = self.clone();
         for input in without_witness.inputs.iter_mut() {
-            input.clear_witness();
+            input.set_witness(Witness::default());
         }
         without_witness
     }
@@ -301,10 +301,6 @@ impl TxInputInterface for TransactionInput {
 
     fn has_witness(&self) -> bool {
         !self.witness.is_empty()
-    }
-
-    fn clear_witness(&mut self) {
-        self.witness.clear();
     }
 }
 
