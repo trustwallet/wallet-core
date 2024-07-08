@@ -144,11 +144,11 @@ public:
     /// the encryption password to re-derive addresses from private keys.
     void fixAddresses(const Data& password);
 
-    /// Re-derives address and public key for the specified chain.
+    /// Re-derives address for the account(s) associated with the given coin.
     ///
-    /// Use when address format for the given chain has been changed. This method needs
-    /// the encryption password to re-derive addresses from private keys.
-    bool updateAddress(TWCoinType coin, const Data& password);
+    /// This method can be used if address format has been changed.
+    /// In case of multiple accounts, all of them will be updated.
+    bool updateAddress(TWCoinType coin);
 
 private:
     /// Default constructor, private
