@@ -135,15 +135,6 @@ pub fn is_p2sh(s: &Script) -> bool {
     b.len() == 23 && b[0] == OP_HASH160 && b[1] == OP_PUSHBYTES_20 && b[22] == OP_EQUAL
 }
 
-pub fn is_p2pk(s: &Script) -> bool {
-    let b = s.as_slice();
-    match b.len() {
-        67 if b[0] == OP_PUSHBYTES_65 && b[66] == OP_CHECKSIG => true,
-        35 if b[0] == OP_PUSHBYTES_33 && b[34] == OP_CHECKSIG => true,
-        _ => false,
-    }
-}
-
 pub fn is_p2pkh(s: &Script) -> bool {
     let b = s.as_slice();
     b.len() == 25

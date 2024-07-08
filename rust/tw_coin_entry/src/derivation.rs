@@ -16,12 +16,6 @@ pub struct DerivationWithPath {
     pub path: DerivationPath,
 }
 
-impl DerivationWithPath {
-    pub fn purpose(&self) -> Option<ChildIndex> {
-        self.path.path().first().copied()
-    }
-}
-
 /// Extend this enum.
 #[derive(Clone, Copy, Default, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]

@@ -74,7 +74,7 @@ impl SigningKeyTrait for PrivateKey {
             SECP256K1.sign_schnorr(&msg, &self.key_pair)
         };
 
-        Signature::from_bytes(sig.as_ref())
+        Ok(Signature::from(sig))
     }
 }
 

@@ -1,22 +1,44 @@
 use crate::chains::common::bitcoin::{
-    btc_info, dust_threshold, input, output, plan, sign, DUST, MINER_FEE, ONE_BTC, SIGHASH_ALL,
+    btc_info, dust_threshold, input, output, plan, sign, BITCOIN_P2PKH_PREFIX, DUST, MINER_FEE,
+    ONE_BTC, SIGHASH_ALL,
 };
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
+use tw_hash::hasher::sha256_ripemd;
+use tw_keypair::ecdsa;
+use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV3::Proto;
+use tw_utxo::address::legacy::LegacyAddress;
+
+enum P2PKHClaimingScriptType {
+    PublicKey,
+    PublicKeyHash,
+    P2PKHAddress,
+}
 
 /// Note this test contains a sample transaction that has never been broadcasted.
-#[test]
-fn test_bitcoin_sign_input_p2pkh_output_p2pkh() {
-    let alice_private_key = "56429688a1a6b00b90ccd22a0de0a376b6569d8684022ae92229a28478bfb657"
-        .decode_hex()
-        .unwrap();
-    let alice_pubkey = "036666dd712e05a487916384bfcd5973eb53e8038eccbbf97f7eed775b87389536"
-        .decode_hex()
-        .unwrap();
+fn test_bitcoin_sign_input_p2pkh(utxo_owner: P2PKHClaimingScriptType) {
+    const ALICE_PRIVATE_KEY: &str =
+        "56429688a1a6b00b90ccd22a0de0a376b6569d8684022ae92229a28478bfb657";
+
+    let alice_private_key = ecdsa::secp256k1::PrivateKey::try_from(ALICE_PRIVATE_KEY).unwrap();
+    let alice_pubkey = alice_private_key.public();
     let bob_pubkey = "037ed9a436e11ec4947ac4b7823787e24ba73180f1edd2857bff19c9f4d62b65bf"
         .decode_hex()
         .unwrap();
+
+    let claiming_script = match utxo_owner {
+        P2PKHClaimingScriptType::PublicKey => input::p2pkh(alice_pubkey.to_vec()),
+        P2PKHClaimingScriptType::PublicKeyHash => {
+            let alice_pubkey_hash = sha256_ripemd(alice_pubkey.compressed().as_slice());
+            input::p2pkh_with_hash(alice_pubkey_hash)
+        },
+        P2PKHClaimingScriptType::P2PKHAddress => {
+            let alice_address =
+                LegacyAddress::p2pkh_with_public_key(BITCOIN_P2PKH_PREFIX, &alice_pubkey).unwrap();
+            input::receiver_address(&alice_address.to_string())
+        },
+    };
 
     // Create transaction with P2PKH as input and output.
     let txid = "1e1cdc48aa990d7e154a161d5b5f1cad737742e97d2712ab188027bb42e6e47b";
@@ -24,7 +46,7 @@ fn test_bitcoin_sign_input_p2pkh_output_p2pkh() {
         out_point: input::out_point(txid, 0),
         value: ONE_BTC * 50,
         sighash_type: SIGHASH_ALL,
-        claiming_script: input::p2pkh(alice_pubkey.clone()),
+        claiming_script,
         ..Default::default()
     };
 
@@ -35,7 +57,7 @@ fn test_bitcoin_sign_input_p2pkh_output_p2pkh() {
 
     let signing = Proto::SigningInput {
         version: Proto::TransactionVersion::V2,
-        private_keys: vec![alice_private_key.into()],
+        private_keys: vec![ALICE_PRIVATE_KEY.decode_hex().unwrap().into()],
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: Proto::InputSelector::UseAll,
@@ -68,6 +90,24 @@ fn test_bitcoin_sign_input_p2pkh_output_p2pkh() {
             weight: 764,
             fee: MINER_FEE,
         });
+}
+
+/// Note this test contains a sample transaction that has never been broadcasted.
+#[test]
+fn test_bitcoin_sign_input_p2pkh_public_key() {
+    test_bitcoin_sign_input_p2pkh(P2PKHClaimingScriptType::PublicKey);
+}
+
+/// Note this test contains a sample transaction that has never been broadcasted.
+#[test]
+fn test_bitcoin_sign_input_p2pkh_public_key_hash() {
+    test_bitcoin_sign_input_p2pkh(P2PKHClaimingScriptType::PublicKeyHash);
+}
+
+/// Note this test contains a sample transaction that has never been broadcasted.
+#[test]
+fn test_bitcoin_sign_input_p2pkh_address() {
+    test_bitcoin_sign_input_p2pkh(P2PKHClaimingScriptType::P2PKHAddress);
 }
 
 /// TODO consider moving this test to `bitcoin_cash`.

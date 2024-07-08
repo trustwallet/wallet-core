@@ -10,14 +10,6 @@ pub struct Signature {
 impl Signature {
     pub const LEN: usize = secp256k1::constants::SCHNORR_SIGNATURE_SIZE;
 
-    pub(crate) fn new(signature: secp256k1::schnorr::Signature) -> Self {
-        Self { signature }
-    }
-
-    pub const fn len() -> usize {
-        Self::LEN
-    }
-
     pub fn from_bytes(sig: &[u8]) -> KeyPairResult<Self> {
         Ok(Signature {
             signature: secp256k1::schnorr::Signature::from_slice(sig)
@@ -46,6 +38,6 @@ impl<'a> TryFrom<&'a [u8]> for Signature {
 
 impl From<secp256k1::schnorr::Signature> for Signature {
     fn from(sig: secp256k1::schnorr::Signature) -> Self {
-        Self::new(sig)
+        Signature { signature: sig }
     }
 }

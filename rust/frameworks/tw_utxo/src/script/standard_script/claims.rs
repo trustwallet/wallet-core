@@ -12,7 +12,7 @@ use super::Script;
 /// ```
 pub fn new_p2pk(sig: &BitcoinEcdsaSignature) -> Script {
     let mut s = Script::with_capacity(35);
-    s.append(&sig.serialize());
+    s.push_slice(&sig.serialize());
     s
 }
 

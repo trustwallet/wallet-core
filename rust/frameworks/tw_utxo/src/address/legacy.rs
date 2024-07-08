@@ -12,7 +12,7 @@ use tw_coin_entry::prefix::BitcoinBase58Prefix;
 use tw_encoding::base58::Alphabet;
 use tw_hash::hasher::{sha256_ripemd, Hasher};
 use tw_hash::H160;
-use tw_keypair::tw;
+use tw_keypair::{ecdsa, tw};
 
 pub const BITCOIN_ADDRESS_SIZE: usize = 21;
 pub const BITCOIN_ADDRESS_CHECKSUM_SIZE: usize = 4;
@@ -32,6 +32,14 @@ impl LegacyAddress {
         BitcoinBase58Address::new(&bytes, Alphabet::Bitcoin, Hasher::Sha256d).map(LegacyAddress)
     }
 
+    pub fn p2pkh_with_public_key(
+        p2pkh_prefix: u8,
+        public_key: &ecdsa::secp256k1::PublicKey,
+    ) -> AddressResult<LegacyAddress> {
+        let public_key_hash = sha256_ripemd(public_key.compressed().as_slice());
+        LegacyAddress::new(p2pkh_prefix, &public_key_hash)
+    }
+
     /// Tries to parse a `LegacyAddress` and check if
     pub fn p2pkh_with_coin_and_prefix(
         coin: &dyn CoinContext,
@@ -43,13 +51,11 @@ impl LegacyAddress {
             None => coin.p2pkh_prefix().ok_or(AddressError::InvalidRegistry)?,
         };
 
-        let public_key_bytes = public_key
+        let ecdsa_public_key = public_key
             .to_secp256k1()
-            .ok_or(AddressError::PublicKeyTypeMismatch)?
-            .compressed();
+            .ok_or(AddressError::PublicKeyTypeMismatch)?;
 
-        let public_key_hash = sha256_ripemd(public_key_bytes.as_slice());
-        LegacyAddress::new(p2pkh_prefix, &public_key_hash)
+        LegacyAddress::p2pkh_with_public_key(p2pkh_prefix, ecdsa_public_key)
     }
 
     pub fn p2sh_with_prefix_byte(

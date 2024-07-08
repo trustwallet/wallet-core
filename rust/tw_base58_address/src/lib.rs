@@ -3,8 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 use core::fmt;
-use serde::de::Error as DeError;
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::convert::TryFrom;
 use std::marker::PhantomData;
 use tw_coin_entry::error::prelude::*;
@@ -77,34 +75,32 @@ impl<const SIZE: usize, const CHECKSUM_SIZE: usize> fmt::Display
     }
 }
 
-/// TODO consider removing this if not used.
-impl<const SIZE: usize, const CHECKSUM_SIZE: usize> Serialize
-    for Base58Address<SIZE, CHECKSUM_SIZE>
-{
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        self.to_string().serialize(serializer)
-    }
-}
+// impl<const SIZE: usize, const CHECKSUM_SIZE: usize> Serialize
+//     for Base58Address<SIZE, CHECKSUM_SIZE>
+// {
+//     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+//     where
+//         S: Serializer,
+//     {
+//         self.to_string().serialize(serializer)
+//     }
+// }
 
-/// Deserializes a `Base58Address<SIZE>` with Bitcoin alphabet.
-/// TODO consider removing this if not used.
-pub fn deserialize_with_bitcoin_alph<'de, const SIZE: usize, const CHECKSUM_SIZE: usize, D>(
-    deserializer: D,
-) -> Result<Base58Address<SIZE, CHECKSUM_SIZE>, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let s = String::deserialize(deserializer)?;
-    Base58Address::<SIZE, CHECKSUM_SIZE>::from_str_with_alphabet(
-        &s,
-        Alphabet::Bitcoin,
-        Hasher::Sha256d,
-    )
-    .map_err(|e| DeError::custom(format!("{e:?}")))
-}
+// /// Deserializes a `Base58Address<SIZE>` with Bitcoin alphabet.
+// pub fn deserialize_with_bitcoin_alph<'de, const SIZE: usize, const CHECKSUM_SIZE: usize, D>(
+//     deserializer: D,
+// ) -> Result<Base58Address<SIZE, CHECKSUM_SIZE>, D::Error>
+// where
+//     D: Deserializer<'de>,
+// {
+//     let s = String::deserialize(deserializer)?;
+//     Base58Address::<SIZE, CHECKSUM_SIZE>::from_str_with_alphabet(
+//         &s,
+//         Alphabet::Bitcoin,
+//         Hasher::Sha256d,
+//     )
+//     .map_err(|e| DeError::custom(format!("{e:?}")))
+// }
 
 pub fn calculate_checksum<const CHECKSUM_SIZE: usize>(
     bytes: &[u8],

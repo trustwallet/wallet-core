@@ -16,7 +16,9 @@ pub const ONE_BTC: i64 = 100_000_000;
 pub const MINER_FEE: i64 = 1_000_000;
 pub const DUST: i64 = 546;
 
-pub const SIGHASH_ALL: u32 = 1;
+pub const SIGHASH_ALL: u32 = 0x01;
+pub const SIGHASH_SINGLE: u32 = 0x03;
+pub const SIGHASH_ANYONE_CAN_PAY: u32 = 0x80;
 
 pub const BITCOIN_P2PKH_PREFIX: u8 = 0;
 pub const BITCOIN_P2SH_PREFIX: u8 = 5;
@@ -67,9 +69,19 @@ pub mod input {
         ClaimingScriptType::script_builder(InputBuilder { variant: ty })
     }
 
+    pub fn p2pk(pubkey: Data) -> ClaimingScriptType<'static> {
+        claiming_script_builder(InputBuilderType::p2pk(pubkey.into()))
+    }
+
     pub fn p2pkh(pubkey: Data) -> ClaimingScriptType<'static> {
         claiming_script_builder(InputBuilderType::p2pkh(Proto::PublicKeyOrHash {
             variant: PublicKeyOrHashType::pubkey(pubkey.into()),
+        }))
+    }
+
+    pub fn p2pkh_with_hash(pubkey_hash: Data) -> ClaimingScriptType<'static> {
+        claiming_script_builder(InputBuilderType::p2pkh(Proto::PublicKeyOrHash {
+            variant: PublicKeyOrHashType::hash(pubkey_hash.into()),
         }))
     }
 
@@ -142,6 +154,22 @@ pub mod output {
         receiver_builder(OutputBuilderType::p2wpkh(Proto::PublicKeyOrHash {
             variant: PublicKeyOrHashType::pubkey(pubkey.into()),
         }))
+    }
+
+    pub fn p2wsh_with_script(redeem_script: Data) -> RecipientType<'static> {
+        receiver_builder(OutputBuilderType::p2wsh(
+            Proto::mod_Output::RedeemScriptOrHash {
+                variant: RedeemScriptOrHashType::redeem_script(redeem_script.into()),
+            },
+        ))
+    }
+
+    pub fn p2wsh_with_hash(redeem_script_hash: Data) -> RecipientType<'static> {
+        receiver_builder(OutputBuilderType::p2wsh(
+            Proto::mod_Output::RedeemScriptOrHash {
+                variant: RedeemScriptOrHashType::hash(redeem_script_hash.into()),
+            },
+        ))
     }
 
     pub fn p2tr_key_path(pubkey: Data) -> RecipientType<'static> {

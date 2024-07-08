@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
 use crate::chains::common::bitcoin::{
     btc_info, dust_threshold, input, output, sign, DUST, SIGHASH_ALL,
 };

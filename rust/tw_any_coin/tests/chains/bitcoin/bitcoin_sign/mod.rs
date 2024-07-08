@@ -12,3 +12,4 @@ mod p2tr_script_path;
 mod p2wpkh;
 mod p2wsh;
 mod send_to_address;
+mod sighash_single;
