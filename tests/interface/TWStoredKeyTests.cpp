@@ -305,7 +305,7 @@ TEST(TWStoredKey, UpdateAddressWithMnemonic) {
 
     // Last step - update TON account address.
     // Expect to have a non-bounceable address in the end.
-    ASSERT_TRUE(TWStoredKeyUpdateAddress(key.get(), password.get(), TWCoinTypeTON));
+    ASSERT_TRUE(TWStoredKeyUpdateAddress(key.get(), TWCoinTypeTON));
     const auto tonAccount = WRAP(TWAccount, TWStoredKeyAccountForCoin(key.get(), TWCoinTypeTON, nullptr));
     assertStringsEqual(WRAPS(TWAccountAddress(tonAccount.get())), newAddress);
 }
@@ -338,29 +338,18 @@ TEST(TWStoredKey, UpdateAddressWithPrivateKey) {
 
     // Last step - update Ethereum account address.
     // Expect to have a checksummed address in the end.
-    ASSERT_TRUE(TWStoredKeyUpdateAddress(key.get(), password.get(), TWCoinTypeEthereum));
+    ASSERT_TRUE(TWStoredKeyUpdateAddress(key.get(), TWCoinTypeEthereum));
     const auto ethAccount = WRAP(TWAccount, TWStoredKeyAccountForCoin(key.get(), TWCoinTypeEthereum, nullptr));
     assertStringsEqual(WRAPS(TWAccountAddress(ethAccount.get())), newAddress);
 }
 
-TEST(TWStoredKey, updateAddressInvalidPassword) {
-    const auto keyName = STRING("key");
-    const string passwordString = "password";
-    const string invalidPasswordString = "invalid password";
-    const auto password = WRAPD(TWDataCreateWithBytes((const uint8_t*)passwordString.c_str(), passwordString.size()));
-    const auto invalidPassword = WRAPD(TWDataCreateWithBytes((const uint8_t*)invalidPasswordString.c_str(), invalidPasswordString.size()));
-
-    auto key = createAStoredKey(TWCoinTypeBitcoin, password.get());
-    ASSERT_FALSE(TWStoredKeyUpdateAddress(key.get(), invalidPassword.get(), TWCoinTypeBitcoin));
-}
-
-TEST(TWStoredKey, updateAddressUnknownAccount) {
+TEST(TWStoredKey, updateAddressNoAssociatedAccounts) {
     const auto keyName = STRING("key");
     const string passwordString = "password";
     const auto password = WRAPD(TWDataCreateWithBytes((const uint8_t*)passwordString.c_str(), passwordString.size()));
 
     auto key = createAStoredKey(TWCoinTypeBitcoin, password.get());
-    ASSERT_FALSE(TWStoredKeyUpdateAddress(key.get(), password.get(), TWCoinTypeEthereum));
+    ASSERT_FALSE(TWStoredKeyUpdateAddress(key.get(), TWCoinTypeEthereum));
 }
 
 TEST(TWStoredKey, importInvalidKey) {
