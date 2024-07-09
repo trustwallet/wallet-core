@@ -2,7 +2,7 @@
 
 set -e
 
-NIGHTLY="nightly-2024-02-09"
+NIGHTLY="nightly-2024-06-13"
 
 rustup toolchain install $NIGHTLY
 rustup default $NIGHTLY

@@ -9,4 +9,4 @@ test-utils = ["serde", "serde_json"]
 [dependencies]
 serde = { version = "1.0", features = ["derive"], optional = true }
 serde_json = { version = "1.0", optional = true }
-zeroize = "1.6.0"
+zeroize = "1.8.1"
