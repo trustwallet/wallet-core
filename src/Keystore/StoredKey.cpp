@@ -292,29 +292,22 @@ void StoredKey::fixAddresses(const Data& password) {
     }
 }
 
-bool StoredKey::updateAddress(TWCoinType coin, const Data& password) {
-    auto account = std::find_if(accounts.begin(), accounts.end(), [coin](const auto &account) {
-        return account.coin == coin;
-    });
-    if (account == accounts.end()) {
-        return false;
+bool StoredKey::updateAddress(TWCoinType coin) {
+    bool addressUpdated = false;
+    const auto publicKeyType = TW::publicKeyType(coin);
+
+    for (auto& account : accounts) {
+        // Update the address for the given chain if only `publicKey` is set.
+        if (account.coin == coin && !account.publicKey.empty()) {
+            const auto publicKeyBytes = parse_hex(account.publicKey);
+            const PublicKey publicKey(publicKeyBytes, publicKeyType);
+            account.address = TW::deriveAddress(account.coin, publicKey, account.derivation);
+
+            addressUpdated = true;
+        }
     }
 
-    switch (type) {
-        case StoredKeyType::mnemonicPhrase: {
-            const auto wallet = this->wallet(password);
-            const auto& derivationPath = account->derivationPath;
-            const auto key = wallet.getKey(account->coin, derivationPath);
-            updateAddressForAccount(key, *account);
-        } break;
-
-        case StoredKeyType::privateKey: {
-            auto key = PrivateKey(payload.decrypt(password));
-            updateAddressForAccount(key, *account);
-        } break;
-    }
-
-    return true;
+    return addressUpdated;
 }
 
 // -----------------
