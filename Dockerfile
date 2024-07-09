@@ -38,7 +38,7 @@ ENV CXX=/usr/bin/clang++-14
 RUN wget "https://sh.rustup.rs" -O rustup.sh \
     && sh rustup.sh -y
 ENV PATH="/root/.cargo/bin:${PATH}"
-RUN rustup default nightly-2024-02-09
+RUN rustup default nightly-2024-06-13
 RUN cargo install --force cbindgen \
     && rustup target add wasm32-unknown-emscripten
 
@@ -49,10 +49,11 @@ COPY . /wallet-core
 WORKDIR /wallet-core
 
 # Install dependencies
-RUN tools/install-dependencies
+# RUN tools/install-dependencies
 
 # Build: generate files and rust lib
-RUN tools/generate-files native
+# RUN tools/generate-files native
+RUN tools/rust-bindgen native
 
 # Build: cmake + make wallet core
 RUN cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug \
