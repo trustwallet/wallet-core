@@ -49,11 +49,10 @@ COPY . /wallet-core
 WORKDIR /wallet-core
 
 # Install dependencies
-# RUN tools/install-dependencies
+RUN tools/install-dependencies
 
 # Build: generate files and rust lib
-# RUN tools/generate-files native
-RUN tools/rust-bindgen native
+RUN tools/generate-files native
 
 # Build: cmake + make wallet core
 RUN cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug \
