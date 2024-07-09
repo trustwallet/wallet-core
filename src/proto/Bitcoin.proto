@@ -163,13 +163,6 @@ message SigningInput {
     // transaction creation time that will be used for verge(xvg)
     uint32 time = 17;
 
-    // Deprecated. Consider using `Bitcoin.Proto.SigningInput.signing_v2` instead.
-    bool is_it_brc_operation = 18;
-
-    // If set, uses Bitcoin 2.0 Planning protocol.
-    // As a result, `Bitcoin.Proto.TransactionPlan.planning_result_v2` is set.
-    BitcoinV2.Proto.ComposePlan planning_v2 = 20;
-
     // If set, uses Bitcoin 2.0 Signing protocol.
     // As a result, `Bitcoin.Proto.SigningOutput.signing_result_v2` is set.
     BitcoinV2.Proto.SigningInput signing_v2 = 21;

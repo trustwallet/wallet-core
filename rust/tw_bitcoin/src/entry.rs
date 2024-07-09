@@ -11,7 +11,7 @@ use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_keypair::tw::PublicKey;
-use tw_proto::BitcoinV3::Proto;
+use tw_proto::BitcoinV2::Proto;
 use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
 
 pub struct BitcoinEntry;

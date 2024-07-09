@@ -11,7 +11,7 @@ use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_keypair::ecdsa;
 use tw_keypair::traits::SigningKeyTrait;
 use tw_misc::traits::ToBytesVec;
-use tw_proto::BitcoinV3::Proto;
+use tw_proto::BitcoinV2::Proto;
 
 /// Note this test contains a sample transaction that has never been broadcasted.
 #[test]

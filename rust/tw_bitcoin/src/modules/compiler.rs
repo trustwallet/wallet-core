@@ -9,8 +9,8 @@ use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
-use tw_proto::BitcoinV3::Proto;
-use tw_proto::BitcoinV3::Proto::mod_PreSigningOutput::{
+use tw_proto::BitcoinV2::Proto;
+use tw_proto::BitcoinV2::Proto::mod_PreSigningOutput::{
     SigningMethod as ProtoSigningMethod, TaprootTweak as ProtoTaprootTweak,
 };
 use tw_utxo::modules::sighash_computer::{SighashComputer, TaprootTweak, TxPreimage};

@@ -7,7 +7,7 @@ use tw_encoding::hex::DecodeHex;
 use tw_hash::hasher::sha256_ripemd;
 use tw_hash::H160;
 use tw_keypair::ecdsa;
-use tw_proto::BitcoinV3::Proto;
+use tw_proto::BitcoinV2::Proto;
 use tw_utxo::address::legacy::LegacyAddress;
 use tw_utxo::script::standard_script::conditions;
 

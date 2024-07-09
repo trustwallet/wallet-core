@@ -6,7 +6,7 @@ use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_keypair::ecdsa;
 use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
-use tw_proto::BitcoinV3::Proto;
+use tw_proto::BitcoinV2::Proto;
 use tw_utxo::address::legacy::LegacyAddress;
 use tw_utxo::address::segwit::SegwitAddress;
 use tw_utxo::script::standard_script::conditions;

@@ -26,17 +26,17 @@ pub const BITCOIN_HRP: &str = "bc";
 
 pub type Amount = i64;
 
-pub use tw_proto::BitcoinV3::Proto::mod_Input::mod_InputBuilder::OneOfvariant as InputBuilderType;
-pub use tw_proto::BitcoinV3::Proto::mod_Input::{
+pub use tw_proto::BitcoinV2::Proto::mod_Input::mod_InputBuilder::OneOfvariant as InputBuilderType;
+pub use tw_proto::BitcoinV2::Proto::mod_Input::{
     InputBuilder, OneOfclaiming_script as ClaimingScriptType,
 };
-pub use tw_proto::BitcoinV3::Proto::mod_Output::mod_OutputBuilder::OneOfvariant as OutputBuilderType;
-pub use tw_proto::BitcoinV3::Proto::mod_Output::{
+pub use tw_proto::BitcoinV2::Proto::mod_Output::mod_OutputBuilder::OneOfvariant as OutputBuilderType;
+pub use tw_proto::BitcoinV2::Proto::mod_Output::{
     OneOfto_recipient as RecipientType, OutputBuilder,
 };
-pub use tw_proto::BitcoinV3::Proto::mod_PublicKeyOrHash::OneOfvariant as PublicKeyOrHashType;
+pub use tw_proto::BitcoinV2::Proto::mod_PublicKeyOrHash::OneOfvariant as PublicKeyOrHashType;
 
-use tw_proto::BitcoinV3::Proto;
+use tw_proto::BitcoinV2::Proto;
 
 pub fn btc_info() -> Option<Proto::ChainInfo> {
     Some(Proto::ChainInfo {
@@ -121,8 +121,8 @@ pub mod input {
 pub mod output {
     use super::*;
     use tw_memory::Data;
-    use tw_proto::BitcoinV3::Proto::mod_Output::mod_RedeemScriptOrHash::OneOfvariant as RedeemScriptOrHashType;
-    use tw_proto::BitcoinV3::Proto::mod_Output::OutputTaprootScriptPath as TaprootScriptPath;
+    use tw_proto::BitcoinV2::Proto::mod_Output::mod_RedeemScriptOrHash::OneOfvariant as RedeemScriptOrHashType;
+    use tw_proto::BitcoinV2::Proto::mod_Output::OutputTaprootScriptPath as TaprootScriptPath;
 
     pub fn receiver_builder(ty: OutputBuilderType<'static>) -> RecipientType<'static> {
         RecipientType::builder(OutputBuilder { variant: ty })

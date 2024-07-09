@@ -8,7 +8,7 @@ use crate::modules::tx_builder::utxo_protobuf::UtxoProtobuf;
 use crate::modules::tx_builder::BitcoinChainInfo;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
-use tw_proto::BitcoinV3::Proto;
+use tw_proto::BitcoinV2::Proto;
 use tw_utxo::dust::DustPolicy;
 use tw_utxo::modules::tx_planner::{PlanRequest, RequestType};
 use tw_utxo::modules::utxo_selector::InputSelector;

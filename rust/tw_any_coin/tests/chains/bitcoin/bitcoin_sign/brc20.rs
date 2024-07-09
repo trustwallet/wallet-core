@@ -3,7 +3,7 @@ use crate::chains::common::bitcoin::{
 };
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
-use tw_proto::BitcoinV3::Proto;
+use tw_proto::BitcoinV2::Proto;
 
 /// TODO split into three tests: commit, reveal, inscribe (need to add).
 #[test]

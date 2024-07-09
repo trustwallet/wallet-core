@@ -9,7 +9,7 @@ use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::{ecdsa, schnorr};
-use tw_proto::BitcoinV3::Proto;
+use tw_proto::BitcoinV2::Proto;
 use tw_utxo::modules::keys_manager::KeysManager;
 use tw_utxo::modules::tx_planner::TxPlanner;
 use tw_utxo::modules::tx_signer::TxSigner;

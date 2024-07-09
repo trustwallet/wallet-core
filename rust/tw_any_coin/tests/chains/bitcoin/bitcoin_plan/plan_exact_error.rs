@@ -5,7 +5,7 @@
 use crate::chains::common::bitcoin::{plan, Amount, DUST};
 use tw_any_coin::test_utils::plan_utils::AnyPlannerHelper;
 use tw_coin_registry::coin_type::CoinType;
-use tw_proto::BitcoinV3::Proto;
+use tw_proto::BitcoinV2::Proto;
 use tw_proto::Common::Proto as CommonProto;
 
 #[test]

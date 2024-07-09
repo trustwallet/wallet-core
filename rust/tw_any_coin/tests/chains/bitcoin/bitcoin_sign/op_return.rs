@@ -5,7 +5,7 @@
 use crate::chains::common::bitcoin::{dust_threshold, input, output, sign, DUST, SIGHASH_ALL};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
-use tw_proto::BitcoinV3::Proto;
+use tw_proto::BitcoinV2::Proto;
 
 /// Deposit 0.0001 BTC from bc1q2sphzvc2uqmxqte2w9dd4gzy4sy9vvfv0me9ke to 0xa8491D40d4F71A752cA41DA0516AEd80c33a1B56 on ZETA mainnet.
 /// https://www.zetachain.com/docs/developers/omnichain/bitcoin/#example-1-deposit-btc-into-an-account-in-zevm

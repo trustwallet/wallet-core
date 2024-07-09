@@ -9,7 +9,7 @@ use tw_hash::sha2::sha256;
 use tw_hash::H160;
 use tw_keypair::ecdsa;
 use tw_misc::traits::ToBytesVec;
-use tw_proto::BitcoinV3::Proto;
+use tw_proto::BitcoinV2::Proto;
 use tw_utxo::address::segwit::SegwitAddress;
 use tw_utxo::script::standard_script::conditions;
 use tw_utxo::script::Script;

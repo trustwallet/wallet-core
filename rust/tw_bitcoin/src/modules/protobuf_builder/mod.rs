@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use std::borrow::Cow;
-use tw_proto::BitcoinV3::Proto;
+use tw_proto::BitcoinV2::Proto;
 use tw_utxo::script::{Script, Witness};
 use tw_utxo::transaction::standard_transaction::{
     Transaction, TransactionInput, TransactionOutput,

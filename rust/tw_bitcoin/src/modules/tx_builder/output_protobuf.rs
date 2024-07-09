@@ -10,7 +10,7 @@ use tw_hash::sha2::sha256;
 use tw_hash::{Hash, H160, H256};
 use tw_keypair::{ecdsa, schnorr};
 use tw_memory::Data;
-use tw_proto::BitcoinV3::Proto;
+use tw_proto::BitcoinV2::Proto;
 use tw_utxo::address::legacy::LegacyAddress;
 use tw_utxo::address::segwit::SegwitAddress;
 use tw_utxo::address::standard_bitcoin::StandardBitcoinAddress;

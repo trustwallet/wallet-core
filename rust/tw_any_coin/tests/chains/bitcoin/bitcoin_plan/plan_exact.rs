@@ -4,7 +4,7 @@
 
 use crate::chains::common::bitcoin::{plan, Amount, DUST};
 use tw_coin_registry::coin_type::CoinType;
-use tw_proto::BitcoinV3::Proto;
+use tw_proto::BitcoinV2::Proto;
 
 #[test]
 fn test_exact_selector_with_change_1() {

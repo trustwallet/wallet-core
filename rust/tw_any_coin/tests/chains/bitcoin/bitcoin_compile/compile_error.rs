@@ -8,7 +8,7 @@ use crate::chains::common::bitcoin::{
 use tw_any_coin::test_utils::sign_utils::CompilerHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
-use tw_proto::BitcoinV3::Proto;
+use tw_proto::BitcoinV2::Proto;
 use tw_proto::Common::Proto::SigningError;
 
 #[test]

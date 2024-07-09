@@ -9,7 +9,7 @@ use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_keypair::ecdsa;
 use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
-use tw_proto::BitcoinV3::Proto;
+use tw_proto::BitcoinV2::Proto;
 
 #[test]
 fn test_bitcoin_sign_p2wpkh_input_different_builders() {

@@ -6,7 +6,7 @@ use tw_any_coin::test_utils::sign_utils::PreImageHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::ToHex;
 use tw_memory::Data;
-use tw_proto::BitcoinV3::Proto;
+use tw_proto::BitcoinV2::Proto;
 use tw_proto::Common::Proto::SigningError;
 
 struct ExpectedSighash {
