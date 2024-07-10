@@ -4784,7 +4784,7 @@
   {
   "id": "dchain",
   "name": "Dchain",
-  "coinId": 2716446429837000,
+  "coinId": 2716446429,
   "symbol": "ETH",
   "decimals": 18,
   "blockchain": "Ethereum",
@@ -4795,7 +4795,7 @@
   ],
   "curve": "secp256k1",
   "publicKeyType": "secp256k1Extended",
-  "chainId": "5000",
+  "chainId": "2716446429837000",
   "addressHasher": "keccak256",
   "explorer": {
     "url": "https://dchain-2716446429837000-1.sagaexplorer.io",
