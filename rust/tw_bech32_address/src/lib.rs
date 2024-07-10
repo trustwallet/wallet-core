@@ -20,7 +20,6 @@ pub mod bech32_prefix;
 #[derive(PartialEq)]
 pub struct Bech32Address {
     hrp: String,
-    /// TODO: Probably rename this to `bytes`?
     key_hash: Data,
     /// An address string created from this `hrp` and `key_hash`.
     address_str: String,

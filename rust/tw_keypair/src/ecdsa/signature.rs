@@ -125,7 +125,6 @@ pub struct VerifySignature<C: EcdsaCurve> {
 }
 
 impl<C: EcdsaCurve> VerifySignature<C> {
-    /// Returns an ASN.1 DER encoded signature.
     pub fn from_der(der_signature: der::Signature) -> KeyPairResult<Self> {
         let signature = Signature::signature_from_slices(der_signature.r(), der_signature.s())
             .map_err(|_| KeyPairError::InvalidSignature)?;

@@ -83,6 +83,7 @@ impl StandardBitcoinAddress {
                 return Ok(StandardBitcoinAddress::Segwit(segwit));
             }
 
+            // TODO use `BitcoinDerivation::tw_supports_taproot` based on `registry.json`.
             if let Ok(taproot) = TaprootAddress::from_str_with_coin_and_prefix(coin, s, None) {
                 return Ok(StandardBitcoinAddress::Taproot(taproot));
             }
