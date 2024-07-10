@@ -4780,5 +4780,35 @@
       "rpc": "https://rpc.zklink.io",
       "documentation": "https://docs.zklink.io"
     }
+  },
+  {
+  "id": "dchain",
+  "name": "Dchain",
+  "coinId": 2716446429837000,
+  "symbol": "ETH",
+  "decimals": 18,
+  "blockchain": "Ethereum",
+  "derivation": [
+    {
+      "path": "m/44'/60'/0'/0/0"
+    }
+  ],
+  "curve": "secp256k1",
+  "publicKeyType": "secp256k1Extended",
+  "chainId": "5000",
+  "addressHasher": "keccak256",
+  "explorer": {
+    "url": "https://dchain-2716446429837000-1.sagaexplorer.io",
+    "txPath": "/tx/",
+    "accountPath": "/address/",
+    "sampleTx": "0xad07394f21b36d52fd4a55a2a36f3d7076d5cdb20d70dc73c14ef47cda597abf",
+    "sampleAccount": "0xCc04124d31f6B62829Dd4EDB51bFF6b7D5c2a76b"
+  },
+  "info": {
+    "url": "https://dchain.foundation",
+    "source": "https://github.com/oleksiivinogradov",
+    "rpc": "https://dchain-2716446429837000-1.jsonrpc.sagarpc.io",
+    "documentation": "https://docs.openbisea.com/dexstudio/d-chain/about-us"
   }
+}
 ]
