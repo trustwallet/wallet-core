@@ -177,8 +177,10 @@ mod tests {
 
     #[test]
     fn test_script_push_long_data_2() {
-        let data1 = [1; 65_530];
-        let data2 = [2; 70_000];
+        // Don't use fixed (on stack) byte array
+        // because it causes (signal: 10, SIGBUS: access to undefined memory) in WASM.
+        let data1 = vec![1; 65_530];
+        let data2 = vec![2; 70_000];
 
         let mut script = Script::new();
         script.push(OP_PUSHBYTES_0);
