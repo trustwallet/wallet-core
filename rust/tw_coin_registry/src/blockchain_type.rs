@@ -21,6 +21,7 @@ pub enum BlockchainType {
     Ronin,
     Solana,
     Sui,
+    TheOpenNetwork,
     Thorchain,
     // end_of_blockchain_type - USED TO GENERATE CODE
     #[serde(other)]

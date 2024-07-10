@@ -16,4 +16,5 @@ mod solana;
 mod sui;
 mod tbinance;
 mod thorchain;
+mod ton;
 mod zetachain;

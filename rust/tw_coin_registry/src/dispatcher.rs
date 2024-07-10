@@ -22,6 +22,7 @@ use tw_ronin::entry::RoninEntry;
 use tw_solana::entry::SolanaEntry;
 use tw_sui::entry::SuiEntry;
 use tw_thorchain::entry::ThorchainEntry;
+use tw_ton::entry::TheOpenNetworkEntry;
 
 pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;
 pub type EvmEntryExtStaticRef = &'static dyn EvmEntryExt;
@@ -39,6 +40,7 @@ const NATIVE_INJECTIVE: NativeInjectiveEntry = NativeInjectiveEntry;
 const RONIN: RoninEntry = RoninEntry;
 const SOLANA: SolanaEntry = SolanaEntry;
 const SUI: SuiEntry = SuiEntry;
+const THE_OPEN_NETWORK: TheOpenNetworkEntry = TheOpenNetworkEntry;
 const THORCHAIN: ThorchainEntry = ThorchainEntry;
 // end_of_blockchain_entries - USED TO GENERATE CODE
 
@@ -57,6 +59,7 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::Ronin => Ok(&RONIN),
         BlockchainType::Solana => Ok(&SOLANA),
         BlockchainType::Sui => Ok(&SUI),
+        BlockchainType::TheOpenNetwork => Ok(&THE_OPEN_NETWORK),
         BlockchainType::Thorchain => Ok(&THORCHAIN),
         // end_of_blockchain_dispatcher - USED TO GENERATE CODE
         BlockchainType::Unsupported => Err(RegistryError::Unsupported),
