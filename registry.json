@@ -37,7 +37,9 @@
       "url": "https://mempool.space",
       "txPath": "/tx/",
       "accountPath": "/address/",
-      "sampleTx": "0607f62530b68cfcc91c57a1702841dd399a899d0eecda8e31ecca3f52f01df2",
+      "sampleTx": "  1FeexV6bAHb8ybZjqQMjJrcCrHGW9sb6uF
+      
+      ",
       "sampleAccount": "1FeexV6bAHb8ybZjqQMjJrcCrHGW9sb6uF"
     },
     "info": {
