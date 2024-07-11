@@ -179,6 +179,7 @@ fn test_bitcoin_sign_input_p2tr_custom_script() {
     test_bitcoin_sign_output_p2tr(P2TRClaimingScriptType::P2TRCustomScript);
 }
 
+/// Transfer from P2TR to P2WPKH address.
 #[test]
 fn test_bitcoin_sign_input_p2tr_key_path_with_change_output_a9c63d() {
     const PRIVATE_KEY: &str = "7fa638b0df495b2968ae6dc7011c4db08c86df16c91aa71a77ee6a222954e5bb";
@@ -201,6 +202,7 @@ fn test_bitcoin_sign_input_p2tr_key_path_with_change_output_a9c63d() {
         to_recipient: output::to_address(SEND_TO),
     };
     // Send the change amount back to the same P2TR address.
+    // The correct amount will be calculated for us.
     let change_output = Proto::Output {
         to_recipient: output::p2tr_key_path(my_public_key.to_vec()),
         ..Proto::Output::default()

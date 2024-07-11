@@ -13,6 +13,83 @@ describe("Bitcoin", () => {
     assert.isNotNull(TW.Binance.Proto.SigningOutput);
   });
 
+  // Transfer from P2TR to P2WPKH address.
+  // Successfully broadcasted: https://mempool.space/tx/a9c63dfe54f6ff462155d966a54226c456b3e43b52a9abe55d7fa87d6564c6e4
+  it("test Bitcoin sign P2TR", () => {
+    const { AnySigner, BitcoinSigHashType, PrivateKey, HexCoding, CoinType } = globalThis.core;
+    const Proto = TW.BitcoinV2.Proto;
+
+    const privateKeyData = HexCoding.decode("7fa638b0df495b2968ae6dc7011c4db08c86df16c91aa71a77ee6a222954e5bb");
+    const dustAmount = new Long(546);
+    const utxoTxId = HexCoding.decode("75ed78f0ae2bad924065d2357ef01184ceee2181c44e03337746512be9371a82").reverse();
+
+    const privateKey = PrivateKey.createWithData(privateKeyData);
+    const publicKey = privateKey.getPublicKeySecp256k1(true);
+
+    const utxo0 = Proto.Input.create({
+      outPoint: {
+        hash: utxoTxId,
+        vout: 1,
+      },
+      value: new Long(8_802),
+      sighashType: BitcoinSigHashType.all.value,
+      scriptBuilder: {
+        // Spend a UTXO sent to a P2TR address associated with this account
+        // (bc1pgy48w0sthfw0k4rz6qjv6jljensms6y2nea850u9ql4m4rcqmevqp3w344).
+        p2trKeyPath: publicKey.data(),
+      },
+    });
+
+    const out0 = Proto.Output.create({
+      value: new Long(3_000),
+      toAddress: "bc1qtaquch7d90x37qre6f75z5a6l0luzh0c03epyz",
+    });
+
+    // Send the change amount back to the same P2TR address.
+    // The correct amount will be calculated for us.
+    const changeOut = Proto.Output.create({
+      builder: {
+        p2trKeyPath: publicKey.data(),
+      },
+    });
+
+    const signingInput = Proto.SigningInput.create({
+      version: Proto.TransactionVersion.V2,
+      privateKeys: [privateKeyData],
+      inputs: [utxo0],
+      outputs: [out0],
+      inputSelector: Proto.InputSelector.SelectDescending,
+      feePerVb: new Long(8),
+      chainInfo: {
+        p2pkhPrefix: 0,
+        p2shPrefix: 5,
+      },
+      changeOutput: changeOut,
+      // WARNING Do not use in production!
+      dangerousUseFixedSchnorrRng: true,
+      fixedDustThreshold: dustAmount,
+    });
+
+    const legacySigningInput = TW.Bitcoin.Proto.SigningInput.create({
+      signingV2: signingInput,
+    });
+
+    const encoded = TW.Bitcoin.Proto.SigningInput.encode(legacySigningInput).finish();
+    const outputData = AnySigner.sign(encoded, CoinType.bitcoin);
+    const output = TW.Bitcoin.Proto.SigningOutput.decode(outputData);
+
+    assert.equal(output.error, TW.Common.Proto.SigningError.OK);
+    assert.equal(output.signingResultV2!.error, TW.Common.Proto.SigningError.OK);
+    assert.equal(
+        HexCoding.encode(output.signingResultV2!.encoded),
+        "0x02000000000101821a37e92b51467733034ec48121eece8411f07e35d2654092ad2baef078ed750100000000ffffffff02b80b0000000000001600145f41cc5fcd2bcd1f0079d27d4153bafbffc15df83212000000000000225120412a773e0bba5cfb5462d024cd4bf2cce1b8688a9e7a7a3f8507ebba8f00de580140cbe4d13bc9e067b042179e2c217e4e4b1d552119d12839aa4df11c21282f9159e2c4b58a4f22b291c200c0d0c5f277902282bdd78589dff0edbea89d3f00d77400000000"
+    );
+    assert.equal(
+        HexCoding.encode(output.signingResultV2!.txid),
+        "0xa9c63dfe54f6ff462155d966a54226c456b3e43b52a9abe55d7fa87d6564c6e4"
+    );
+  });
+
   // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/3e3576eb02667fac284a5ecfcb25768969680cc4c597784602d0a33ba7c654b7
   it("test Bitcoin sign BRC20 Transfer", () => {
     const { AnySigner, BitcoinSigHashType, PrivateKey, HexCoding, CoinType } = globalThis.core;
@@ -233,6 +310,7 @@ describe("Bitcoin", () => {
         p2pkhPrefix: 0,
         p2shPrefix: 5,
       },
+      // WARNING Do not use in production!
       dangerousUseFixedSchnorrRng: true,
       fixedDustThreshold: dustAmount,
     });
