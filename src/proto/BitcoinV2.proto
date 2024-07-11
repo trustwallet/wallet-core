@@ -39,7 +39,7 @@ message OutPoint {
 message Input {
     // Reference to the previous transaction's output.
     OutPoint out_point = 1;
-    // The amount of satoshis of this input. Required for producing Segwit/Taproot transactions.
+    // The amount of satoshis of this input.
     int64 value = 2;
     // The sighash type, normally `All`.
     // See `TWBitcoinSigHashType` enum.
@@ -214,16 +214,17 @@ message SigningInput {
     repeated Output outputs = 6;
     // How the inputs should be selected.
     InputSelector input_selector = 7;
-    // (optional) The amount of satoshis per vbyte ("satVb"), used for fee calculation.
+    // The amount of satoshis per vbyte ("satVb"), used for fee calculation.
+    // Can be satoshis per byte ("satB") **ONLY** when transaction does not contain segwit UTXOs.
     int64 fee_per_vb = 8;
-    // The change output to be added (return to sender) at the end of the outputs list.
-    // The `Output.value` will be overwritten, leave as 0.
+    // (optional) The change output to be added (return to sender) at the end of the outputs list.
+    // The `Output.value` will be overwritten, leave default.
     // Note there can be no change output if the change amount is less than dust threshold.
     // Leave empty to explicitly disable change output creation.
     Output change_output = 9;
     // The only output with a max available amount to be send.
     // If set, `SigningInput.outputs` and `SigningInput.change` will be ignored.
-    // The `Output.value` will be overwritten, leave as 0.
+    // The `Output.value` will be overwritten, leave default.
     Output max_amount_output = 10;
     // Chain info includes p2pkh, p2sh address prefixes.
     // The parameter needs to be set if an input/output has a receiver address pattern.

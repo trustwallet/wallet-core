@@ -62,13 +62,13 @@ impl<'a> BitcoinSignHelper<'a> {
         // Collect all the Output amounts.
         let output_outputs: Vec<_> = tx.outputs.iter().map(|output| output.value).collect();
 
-        assert_eq!(output_inputs, expected.inputs, "Wrong UTXOs");
-        assert_eq!(output_outputs, expected.outputs, "Wrong Outputs");
         assert_eq!(
             output.encoded.to_hex(),
             expected.encoded,
             "Wrong encoded signed transaction"
         );
+        assert_eq!(output_inputs, expected.inputs, "Wrong UTXOs");
+        assert_eq!(output_outputs, expected.outputs, "Wrong Outputs");
         assert_eq!(output.txid.to_hex(), expected.txid, "Wrong txid");
         assert_eq!(output.vsize, expected.vsize, "Wrong vsize");
         assert_eq!(output.weight, expected.weight, "Wrong weight");

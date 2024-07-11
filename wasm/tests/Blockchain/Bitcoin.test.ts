@@ -29,32 +29,32 @@ describe("Bitcoin", () => {
 
     // Now spend just created `7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca` reveal output.
     const utxo0 = Proto.Input.create({
-      outPoint: Proto.OutPoint.create({
+      outPoint: {
         hash: txIdInscription,
         vout: 0,
-      }),
+      },
       value: dustSatoshis,
       sighashType: BitcoinSigHashType.all.value,
-      scriptBuilder: Proto.Input.InputBuilder.create({
-        p2wpkh: Proto.PublicKeyOrHash.create({
-          pubkey: publicKey.data()
-        })
-      })
+      scriptBuilder: {
+        p2wpkh: {
+          pubkey: publicKey.data(),
+        },
+      },
     });
 
     // UTXO to cover fee.
     const utxo1 = Proto.Input.create({
-      outPoint: Proto.OutPoint.create({
+      outPoint: {
         hash: txIdForFees,
         vout: 1,
-      }),
+      },
       value: new Long(16_400),
       sighashType: BitcoinSigHashType.all.value,
-      scriptBuilder: Proto.Input.InputBuilder.create({
-        p2wpkh: Proto.PublicKeyOrHash.create({
-          pubkey: publicKey.data()
-        })
-      })
+      scriptBuilder: {
+        p2wpkh: {
+          pubkey: publicKey.data(),
+        },
+      },
     });
 
     const out0 = Proto.Output.create({
@@ -65,11 +65,11 @@ describe("Bitcoin", () => {
     // Change/return transaction. Set it explicitly.
     const changeOut = Proto.Output.create({
       value: new Long(13_400),
-      builder: Proto.Output.OutputBuilder.create({
-        p2wpkh: Proto.PublicKeyOrHash.create({
+      builder: {
+        p2wpkh: {
           pubkey: publicKey.data()
-        })
-      })
+        },
+      },
     });
 
     const signingInput = Proto.SigningInput.create({
@@ -78,10 +78,10 @@ describe("Bitcoin", () => {
       inputs: [utxo0, utxo1],
       outputs: [out0, changeOut],
       inputSelector: Proto.InputSelector.UseAll,
-      chainInfo: Proto.ChainInfo.create({
+      chainInfo: {
         p2pkhPrefix: 0,
         p2shPrefix: 5,
-      }),
+      },
       fixedDustThreshold: dustSatoshis,
     });
 
@@ -118,38 +118,38 @@ describe("Bitcoin", () => {
     const publicKey = privateKey.getPublicKeySecp256k1(true);
 
     const utxo0 = Proto.Input.create({
-      outPoint: Proto.OutPoint.create({
+      outPoint: {
         hash: txId,
         vout: 1,
-      }),
+      },
       value: new Long(26_400),
       sighashType: BitcoinSigHashType.all.value,
-      scriptBuilder: Proto.Input.InputBuilder.create({
-        p2wpkh: Proto.PublicKeyOrHash.create({
-          pubkey: publicKey.data()
-        })
-      })
+      scriptBuilder: {
+        p2wpkh: {
+          pubkey: publicKey.data(),
+        },
+      },
     });
 
     const out0 = Proto.Output.create({
       value: new Long(7_000),
-      builder: Proto.Output.OutputBuilder.create({
-        brc20Inscribe: Proto.Output.OutputBrc20Inscription.create({
+      builder: {
+        brc20Inscribe: {
           inscribeTo: publicKey.data(),
           ticker: "oadf",
           transferAmount: "20",
-        })
-      })
+        },
+      },
     });
 
     // Change/return transaction. Set it explicitly.
     const changeOut = Proto.Output.create({
       value: new Long(16_400),
-      builder: Proto.Output.OutputBuilder.create({
-        p2wpkh: Proto.PublicKeyOrHash.create({
-          pubkey: publicKey.data()
-        })
-      })
+      builder: {
+        p2wpkh: {
+          pubkey: publicKey.data(),
+        },
+      },
     });
 
     const signingInput = Proto.SigningInput.create({
@@ -158,10 +158,10 @@ describe("Bitcoin", () => {
       inputs: [utxo0],
       outputs: [out0, changeOut],
       inputSelector: Proto.InputSelector.UseAll,
-      chainInfo: Proto.ChainInfo.create({
+      chainInfo: {
         p2pkhPrefix: 0,
         p2shPrefix: 5,
-      }),
+      },
       fixedDustThreshold: dustAmount,
     });
 
@@ -199,28 +199,28 @@ describe("Bitcoin", () => {
 
     // Now spend just created `797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1` commit output.
     const utxo0 = Proto.Input.create({
-      outPoint: Proto.OutPoint.create({
+      outPoint: {
         hash: txIdCommit,
         vout: 0,
-      }),
+      },
       value: new Long(7_000),
       sighashType: BitcoinSigHashType.all.value,
-      scriptBuilder: Proto.Input.InputBuilder.create({
-        brc20Inscribe: Proto.Input.InputBrc20Inscription.create({
+      scriptBuilder: {
+        brc20Inscribe: {
           inscribeTo: publicKey.data(),
           ticker: "oadf",
           transferAmount: "20",
-        }),
-      }),
+        },
+      },
     });
 
     const out0 = Proto.Output.create({
       value: dustAmount,
-      builder: Proto.Output.OutputBuilder.create({
-        p2wpkh: Proto.PublicKeyOrHash.create({
-          pubkey: publicKey.data()
-        })
-      })
+      builder: {
+        p2wpkh: {
+          pubkey: publicKey.data(),
+        },
+      },
     });
 
     const signingInput = Proto.SigningInput.create({
@@ -229,10 +229,10 @@ describe("Bitcoin", () => {
       inputs: [utxo0],
       outputs: [out0],
       inputSelector: Proto.InputSelector.UseAll,
-      chainInfo: Proto.ChainInfo.create({
+      chainInfo: {
         p2pkhPrefix: 0,
         p2shPrefix: 5,
-      }),
+      },
       dangerousUseFixedSchnorrRng: true,
       fixedDustThreshold: dustAmount,
     });

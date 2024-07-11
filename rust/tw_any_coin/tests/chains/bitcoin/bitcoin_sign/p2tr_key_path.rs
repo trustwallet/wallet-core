@@ -178,3 +178,110 @@ fn test_bitcoin_sign_input_p2tr_address() {
 fn test_bitcoin_sign_input_p2tr_custom_script() {
     test_bitcoin_sign_output_p2tr(P2TRClaimingScriptType::P2TRCustomScript);
 }
+
+#[test]
+fn test_bitcoin_sign_input_p2tr_key_path_with_change_output_a9c63d() {
+    const PRIVATE_KEY: &str = "7fa638b0df495b2968ae6dc7011c4db08c86df16c91aa71a77ee6a222954e5bb";
+    const SEND_TO: &str = "bc1qtaquch7d90x37qre6f75z5a6l0luzh0c03epyz";
+
+    let my_private_key = schnorr::PrivateKey::try_from(PRIVATE_KEY).unwrap();
+    let my_public_key = my_private_key.public();
+
+    let txid = "75ed78f0ae2bad924065d2357ef01184ceee2181c44e03337746512be9371a82";
+    let utxo0 = Proto::Input {
+        out_point: input::out_point(txid, 1),
+        value: 8_802,
+        sighash_type: SIGHASH_ALL,
+        claiming_script: input::p2tr_key_path(my_public_key.to_vec()),
+        ..Default::default()
+    };
+
+    let out0 = Proto::Output {
+        value: 3_000,
+        to_recipient: output::to_address(SEND_TO),
+    };
+    // Send the change amount back to the same P2TR address.
+    let change_output = Proto::Output {
+        to_recipient: output::p2tr_key_path(my_public_key.to_vec()),
+        ..Proto::Output::default()
+    };
+
+    let signing = Proto::SigningInput {
+        version: Proto::TransactionVersion::V2,
+        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
+        inputs: vec![utxo0],
+        outputs: vec![out0],
+        input_selector: Proto::InputSelector::SelectDescending,
+        fee_per_vb: 8,
+        change_output: Some(change_output),
+        chain_info: btc_info(),
+        dangerous_use_fixed_schnorr_rng: true,
+        dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    // Successfully broadcasted: https://mempool.space/tx/a9c63dfe54f6ff462155d966a54226c456b3e43b52a9abe55d7fa87d6564c6e4
+    let txid = "a9c63dfe54f6ff462155d966a54226c456b3e43b52a9abe55d7fa87d6564c6e4";
+    sign::BitcoinSignHelper::new(&signing)
+        .coin(CoinType::Bitcoin)
+        .sign(sign::Expected {
+            encoded: "02000000000101821a37e92b51467733034ec48121eece8411f07e35d2654092ad2baef078ed750100000000ffffffff02b80b0000000000001600145f41cc5fcd2bcd1f0079d27d4153bafbffc15df83212000000000000225120412a773e0bba5cfb5462d024cd4bf2cce1b8688a9e7a7a3f8507ebba8f00de580140cbe4d13bc9e067b042179e2c217e4e4b1d552119d12839aa4df11c21282f9159e2c4b58a4f22b291c200c0d0c5f277902282bdd78589dff0edbea89d3f00d77400000000",
+            txid,
+            inputs: vec![8_802],
+            outputs: vec![3_000, 4_658],
+            vsize: 142,
+            weight: 568,
+            fee: 1_144,
+        });
+}
+
+#[test]
+fn test_bitcoin_sign_input_p2tr_key_path_with_max_amount_89c5d1() {
+    const PRIVATE_KEY: &str = "7fa638b0df495b2968ae6dc7011c4db08c86df16c91aa71a77ee6a222954e5bb";
+    const SEND_TO: &str = "bc1qtaquch7d90x37qre6f75z5a6l0luzh0c03epyz";
+
+    let my_private_key = schnorr::PrivateKey::try_from(PRIVATE_KEY).unwrap();
+    let my_public_key = my_private_key.public();
+
+    let txid = "a9c63dfe54f6ff462155d966a54226c456b3e43b52a9abe55d7fa87d6564c6e4";
+    let utxo0 = Proto::Input {
+        out_point: input::out_point(txid, 1),
+        value: 4_658,
+        sighash_type: SIGHASH_ALL,
+        claiming_script: input::p2tr_key_path(my_public_key.to_vec()),
+        ..Default::default()
+    };
+
+    // Send max amount to an address.
+    let max_output = Proto::Output {
+        to_recipient: output::to_address(SEND_TO),
+        ..Proto::Output::default()
+    };
+
+    let signing = Proto::SigningInput {
+        version: Proto::TransactionVersion::V2,
+        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
+        inputs: vec![utxo0],
+        input_selector: Proto::InputSelector::SelectDescending,
+        fee_per_vb: 6,
+        max_amount_output: Some(max_output),
+        chain_info: btc_info(),
+        dangerous_use_fixed_schnorr_rng: true,
+        dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    // Successfully broadcasted: https://mempool.space/tx/89c5d1d6242677a409c20fee95d6c7f7f397b82f707c96cca8e83308c4400f07
+    let txid = "89c5d1d6242677a409c20fee95d6c7f7f397b82f707c96cca8e83308c4400f07";
+    sign::BitcoinSignHelper::new(&signing)
+        .coin(CoinType::Bitcoin)
+        .sign(sign::Expected {
+            encoded: "02000000000101e4c664657da87f5de5aba9523be4b356c42642a566d9552146fff654fe3dc6a90100000000ffffffff01da0f0000000000001600145f41cc5fcd2bcd1f0079d27d4153bafbffc15df80140f480cb921aeae4ab03e0455da56517b6a9f2f90145e4432e0c1c39b1c06a42aa8265b30bed2d4185de2302faa89cb2a664a8a38b7fe9808a926263b7bf7cffb800000000",
+            txid,
+            inputs: vec![4_658],
+            outputs: vec![4_058],
+            vsize: 99,
+            weight: 396,
+            fee: 600,
+        });
+}
