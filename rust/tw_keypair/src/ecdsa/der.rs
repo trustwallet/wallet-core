@@ -4,15 +4,16 @@
 
 use crate::{KeyPairError, KeyPairResult};
 use der::asn1::UintRef;
-use der::{Decode, Reader};
+use der::{Decode, Encode, Reader};
+use tw_hash::{H256, H512};
+use tw_memory::Data;
 
 /// The standard binary signature representation length.
 /// RS, where R - 32 byte array, S - 32 byte array.
-const SIGNATURE_LENGTH: usize = 64;
-const R_LENGTH: usize = 32;
-const S_LENGTH: usize = 32;
+const R_LENGTH: usize = H256::LEN;
+const S_LENGTH: usize = H256::LEN;
 
-pub type SignatureBytes = [u8; SIGNATURE_LENGTH];
+pub type SignatureBytes = H512;
 
 /// ASN.1 DER-encoded signature as specified in [RFC5912 Appendix A]:
 ///
@@ -26,11 +27,19 @@ pub type SignatureBytes = [u8; SIGNATURE_LENGTH];
 /// [RFC5912 Appendix A]: https://www.rfc-editor.org/rfc/rfc5912#appendix-A
 #[derive(Debug)]
 pub struct Signature {
-    r: [u8; R_LENGTH],
-    s: [u8; S_LENGTH],
+    r: H256,
+    s: H256,
+    /// ASN.1 DER-encoded signature data.
+    der_bytes: Data,
 }
 
 impl Signature {
+    pub fn new(r: H256, s: H256) -> KeyPairResult<Signature> {
+        let der_bytes =
+            encode_der(r.as_slice(), s.as_slice()).map_err(|_| KeyPairError::InvalidSignature)?;
+        Ok(Signature { r, s, der_bytes })
+    }
+
     /// Parses signature from DER-encoded bytes.
     /// Source: https://github.com/RustCrypto/signatures/blob/ecb112aa25ac210d86946089cddf0a62a672ce14/ecdsa/src/der.rs#L83-L108
     pub fn from_bytes(input: &[u8]) -> KeyPairResult<Signature> {
@@ -43,32 +52,38 @@ impl Signature {
         let r_begin = R_LENGTH.saturating_sub(r.as_bytes().len());
         let s_begin = S_LENGTH.saturating_sub(s.as_bytes().len());
 
-        let mut r_complete = [0u8; R_LENGTH];
+        let mut r_complete = H256::default();
         r_complete[r_begin..].copy_from_slice(r.as_bytes());
 
-        let mut s_complete = [0u8; S_LENGTH];
+        let mut s_complete = H256::default();
         s_complete[s_begin..].copy_from_slice(s.as_bytes());
 
         Ok(Signature {
             r: r_complete,
             s: s_complete,
+            der_bytes: input.to_vec(),
         })
+    }
+
+    /// Returns ASN.1 DER-encoded signature data.
+    pub fn der_bytes(&self) -> Data {
+        self.der_bytes.clone()
     }
 
     /// Get the `r` component of the signature.
     pub fn r(&self) -> &[u8] {
-        &self.r
+        self.r.as_slice()
     }
 
     /// Get the `s` component of the signature.
     pub fn s(&self) -> &[u8] {
-        &self.s
+        self.s.as_slice()
     }
 
     /// Returns the standard binary signature representation:
     /// RS, where R - 32 byte array, S - 32 byte array.
     pub fn to_bytes(&self) -> SignatureBytes {
-        let mut sign = [0u8; SIGNATURE_LENGTH];
+        let mut sign = SignatureBytes::default();
 
         sign[0..R_LENGTH].copy_from_slice(self.r());
         sign[R_LENGTH..].copy_from_slice(self.s());
@@ -97,25 +112,56 @@ fn decode_der(der_bytes: &[u8]) -> der::Result<(UintRef<'_>, UintRef<'_>)> {
     reader.finish(ret)
 }
 
+/// Create an ASN.1 DER encoded signature from big endian `r` and `s` scalar components.
+/// Source: https://github.com/RustCrypto/signatures/blob/ecb112aa25ac210d86946089cddf0a62a672ce14/ecdsa/src/der.rs#L110-L128
+fn encode_der(r: &[u8], s: &[u8]) -> der::Result<Data> {
+    const DER_CAPACITY: usize = 100;
+
+    let r_uint = UintRef::new(r)?;
+    let s_uint = UintRef::new(s)?;
+
+    let mut bytes = [0u8; DER_CAPACITY];
+    let mut writer = der::SliceWriter::new(bytes.as_mut_slice());
+
+    writer.sequence((r_uint.encoded_len()? + s_uint.encoded_len()?)?, |seq| {
+        seq.encode(&r_uint)?;
+        seq.encode(&s_uint)
+    })?;
+
+    // Returns an actual der signature bytes.
+    Ok(writer.finish()?.to_vec())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::str::FromStr;
     use tw_encoding::hex;
+    use tw_encoding::hex::ToHex;
 
     #[test]
     fn test_parse_ecdsa_signature() {
         #[track_caller]
         fn test_impl(encoded: &str, expected: &str) {
+            // Test decoding an ecdsa signature from der.
             let encoded_bytes = hex::decode(encoded).unwrap();
             let sign = Signature::from_bytes(&encoded_bytes).unwrap();
             let actual = sign.to_bytes();
-            let expected_bytes = hex::decode(expected).unwrap();
-            assert_eq!(actual, expected_bytes.as_slice());
+            let expected_bytes = SignatureBytes::from_str(expected).expect("!decode");
+            assert_eq!(actual, expected_bytes, "!decode");
+
+            // Test encoding an ecdsa signature to der.
+            let new_signature = Signature::new(sign.r, sign.s).expect("!encode");
+            assert_eq!(new_signature.der_bytes().to_hex(), encoded, "!encode");
         }
 
         test_impl(
-            "3045022100B2B31575F8536B284410D01217F688BE3A9FAF4BA0BA3A9093F983E40D630EC7022022A7A25B01403CFF0D00B3B853D230F8E96FF832B15D4CCC75203CB65896A2D5",
+            "3045022100b2b31575f8536b284410d01217f688be3a9faf4ba0ba3a9093f983e40d630ec7022022a7a25b01403cff0d00b3b853d230f8e96ff832b15d4ccc75203cb65896a2d5",
             "b2b31575f8536b284410d01217f688be3a9faf4ba0ba3a9093f983e40d630ec722a7a25b01403cff0d00b3b853d230f8e96ff832b15d4ccc75203cb65896a2d5"
+        );
+        test_impl(
+            "304402200f5d5a9e5fc4b82a625312f3be5d3e8ad017d882de86c72c92fcefa924e894c102202071772a14201a3a0debf381b5e8dea39fadb9bcabdc02ee71ab018f55bf717f",
+            "0f5d5a9e5fc4b82a625312f3be5d3e8ad017d882de86c72c92fcefa924e894c12071772a14201a3a0debf381b5e8dea39fadb9bcabdc02ee71ab018f55bf717f"
         );
         test_impl(
             "3046022100db421231f23d0320dbb8f1284b600cd34b8e9218628139539ff4f1f6c05495da022100ff715aab70d5317dbf8ee224eb18bec3120cfb9db1000dbb31eadaf96c71c1b1",

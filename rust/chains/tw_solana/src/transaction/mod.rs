@@ -53,7 +53,7 @@ impl FromStr for Signature {
     type Err = SigningError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let data = base58::decode(s, &SOLANA_ALPHABET)
+        let data = base58::decode(s, SOLANA_ALPHABET)
             .tw_err(|_| SigningErrorType::Error_input_parse)
             .context("Error decoding Solana Signature from base58")?;
         H512::try_from(data.as_slice())
@@ -65,7 +65,7 @@ impl FromStr for Signature {
 
 impl fmt::Display for Signature {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", base58::encode(self.0.as_slice(), &SOLANA_ALPHABET))
+        write!(f, "{}", base58::encode(self.0.as_slice(), SOLANA_ALPHABET))
     }
 }
 
@@ -82,11 +82,11 @@ mod tests {
     use tw_memory::Data;
 
     fn base58_decode(s: &'static str) -> Data {
-        base58::decode(s, &SOLANA_ALPHABET).unwrap()
+        base58::decode(s, SOLANA_ALPHABET).unwrap()
     }
 
     fn base58_decode_h256(s: &'static str) -> H256 {
-        let bytes = base58::decode(s, &SOLANA_ALPHABET).unwrap();
+        let bytes = base58::decode(s, SOLANA_ALPHABET).unwrap();
         H256::try_from(bytes.as_slice()).unwrap()
     }
 

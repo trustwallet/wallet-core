@@ -6,8 +6,9 @@
 
 use crate::any_address::AnyAddress;
 use tw_coin_entry::derivation::Derivation;
-use tw_coin_entry::prefix::AddressPrefix;
+use tw_coin_entry::prefix::{AddressPrefix, BitcoinBase58Prefix};
 use tw_coin_registry::coin_type::CoinType;
+use tw_coin_registry::tw_derivation::TWDerivation;
 use tw_keypair::ffi::pubkey::TWPublicKey;
 use tw_memory::ffi::tw_data::TWData;
 use tw_memory::ffi::tw_string::TWString;
@@ -57,6 +58,29 @@ pub unsafe extern "C" fn tw_any_address_is_valid_bech32(
     AnyAddress::is_valid(coin, string, Some(prefix))
 }
 
+/// Determines if the string is a valid Any address with the given Base58 prefixes.
+///
+/// \param string address to validate.
+/// \param coin coin type of the address.
+/// \param p2pkh pay-to-public-key-hash address prefix.
+/// \param p2sh pay-to-script-hash address prefix.
+/// \return bool indicating if the address is valid.
+#[no_mangle]
+pub unsafe extern "C" fn tw_any_address_is_valid_base58(
+    string: *const TWString,
+    coin: u32,
+    p2pkh: u8,
+    p2sh: u8,
+) -> bool {
+    let string = try_or_false!(TWString::from_ptr_as_ref(string));
+    let string = try_or_false!(string.as_str());
+
+    let coin = try_or_false!(CoinType::try_from(coin));
+
+    let prefix = AddressPrefix::BitcoinBase58(BitcoinBase58Prefix { p2pkh, p2sh });
+    AnyAddress::is_valid(coin, string, Some(prefix))
+}
+
 /// Creates an address from a string representation and a coin type. Must be deleted with `TWAnyAddressDelete` after use.
 ///
 /// \param string address to create.
@@ -89,7 +113,8 @@ pub unsafe extern "C" fn tw_any_address_create_with_public_key_derivation(
     derivation: u32,
 ) -> *mut TWAnyAddress {
     let public_key = try_or_else!(TWPublicKey::from_ptr_as_ref(public_key), std::ptr::null_mut);
-    let derivation = try_or_else!(Derivation::from_raw(derivation), std::ptr::null_mut);
+    let derivation = try_or_else!(TWDerivation::from_repr(derivation), std::ptr::null_mut);
+    let derivation = Derivation::from(derivation);
     let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
 
     AnyAddress::with_public_key(coin, public_key.as_ref().clone(), derivation, None)
@@ -116,6 +141,34 @@ pub unsafe extern "C" fn tw_any_address_create_bech32_with_public_key(
     let hrp = try_or_else!(hrp.as_str(), std::ptr::null_mut);
 
     let prefix = AddressPrefix::Hrp(hrp.to_string());
+    AnyAddress::with_public_key(
+        coin,
+        public_key.as_ref().clone(),
+        Derivation::default(),
+        Some(prefix),
+    )
+    .map(|any_address| TWAnyAddress(any_address).into_ptr())
+    .unwrap_or_else(|_| std::ptr::null_mut())
+}
+
+/// Creates an Base58 Bitcoin address from a public key and a given hrp.
+///
+/// \param public_key derivates the address from the public key.
+/// \param coin coin type of the address.
+/// \param p2pkh pay-to-public-key-hash address prefix.
+/// \param p2sh pay-to-script-hash address prefix.
+/// \return TWAnyAddress pointer or nullptr if public key is invalid.
+#[no_mangle]
+pub unsafe extern "C" fn tw_any_address_create_base58_with_public_key(
+    public_key: *mut TWPublicKey,
+    coin: u32,
+    p2pkh: u8,
+    p2sh: u8,
+) -> *mut TWAnyAddress {
+    let public_key = try_or_else!(TWPublicKey::from_ptr_as_ref(public_key), std::ptr::null_mut);
+    let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
+
+    let prefix = AddressPrefix::BitcoinBase58(BitcoinBase58Prefix { p2pkh, p2sh });
     AnyAddress::with_public_key(
         coin,
         public_key.as_ref().clone(),

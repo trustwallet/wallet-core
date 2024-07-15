@@ -79,14 +79,13 @@ std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW
     case TWCoinTypeSyscoin:
     case TWCoinTypeStratis:
         switch (derivation) {
-        case TWDerivationBitcoinLegacy:
-        case TWDerivationLitecoinLegacy:
+        case TWDerivationLegacy:
             return Address(publicKey, p2pkh).string();
 
-        case TWDerivationBitcoinTestnet:
+        case TWDerivationTestnet:
             return SegwitAddress::createTestnetFromPublicKey(publicKey).string();
 
-        case TWDerivationBitcoinSegwit:
+        case TWDerivationSegwit:
         case TWDerivationDefault:
         default:
             return SegwitAddress(publicKey, hrp).string();

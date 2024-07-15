@@ -140,7 +140,7 @@ impl FromStr for SolanaAddress {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let bytes =
-            base58::decode(s, &SOLANA_ALPHABET).map_err(|_| AddressError::FromBase58Error)?;
+            base58::decode(s, SOLANA_ALPHABET).map_err(|_| AddressError::FromBase58Error)?;
         let bytes = H256::try_from(bytes.as_slice()).map_err(|_| AddressError::InvalidInput)?;
         Ok(SolanaAddress { bytes })
     }
@@ -160,7 +160,7 @@ impl fmt::Debug for SolanaAddress {
 
 impl fmt::Display for SolanaAddress {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let encoded = base58::encode(self.bytes.as_slice(), &SOLANA_ALPHABET);
+        let encoded = base58::encode(self.bytes.as_slice(), SOLANA_ALPHABET);
         write!(f, "{}", encoded)
     }
 }

@@ -10,8 +10,9 @@ use tw_keypair::ffi::privkey::{
     tw_private_key_create_with_data, tw_private_key_get_public_key_by_type,
     tw_private_key_is_valid, tw_private_key_sign,
 };
-use tw_keypair::ffi::pubkey::{tw_public_key_data, tw_public_key_delete};
+use tw_keypair::ffi::pubkey::{tw_public_key_data, tw_public_key_delete, tw_public_key_verify};
 use tw_keypair::test_utils::tw_private_key_helper::TWPrivateKeyHelper;
+use tw_keypair::test_utils::tw_public_key_helper::TWPublicKeyHelper;
 use tw_keypair::tw::{Curve, PublicKeyType};
 use tw_memory::ffi::c_byte_array::CByteArray;
 
@@ -205,4 +206,44 @@ fn test_tw_private_key_is_valid() {
     let privkey_bytes =
         H256::from("0000000000000000000000000000000000000000000000000000000000000000");
     assert!(!is_valid(privkey_bytes.into_vec()));
+}
+
+// `schnorr` generates unique signatures based on auxiliary random.
+#[test]
+fn test_tw_private_key_sign_schnorr() {
+    let secret = "0139fe4d6f02e666e86a6f58e65060f115cd3c185bd9e98bd829636931458f79";
+    let msg = "99b7098e8150cde90f3ec00280815d3069f81c7cdb6d83bbe2b897b1afbe7cd6";
+
+    let tw_privkey = TWPrivateKeyHelper::with_hex(secret);
+    let msg = hex::decode(msg).unwrap();
+    let msg_raw = CByteArray::from(msg);
+    let signature = unsafe {
+        tw_private_key_sign(
+            tw_privkey.ptr(),
+            msg_raw.data(),
+            msg_raw.size(),
+            Curve::Schnorr as u32,
+        )
+        .into_vec()
+    };
+
+    let signature_data = CByteArray::from(signature);
+
+    let tw_public_key = unsafe {
+        TWPublicKeyHelper::wrap(tw_private_key_get_public_key_by_type(
+            tw_privkey.ptr(),
+            PublicKeyType::Schnorr as u32,
+        ))
+    };
+
+    let is_valid = unsafe {
+        tw_public_key_verify(
+            tw_public_key.ptr(),
+            signature_data.data(),
+            signature_data.size(),
+            msg_raw.data(),
+            msg_raw.size(),
+        )
+    };
+    assert!(is_valid, "Error verifying a schnorr signature");
 }

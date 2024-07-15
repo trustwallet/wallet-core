@@ -477,6 +477,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "derivation-path"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6e5c37193a1db1d8ed868c03ec7b152175f26160a5b740e5e484143877e0adf0"
+
+[[package]]
 name = "derivative"
 version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1633,6 +1639,7 @@ dependencies = [
  "tw_misc",
  "tw_number",
  "tw_proto",
+ "tw_utxo",
 ]
 
 [[package]]
@@ -1650,6 +1657,16 @@ dependencies = [
  "tw_memory",
  "tw_number",
  "tw_proto",
+]
+
+[[package]]
+name = "tw_base58_address"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
 ]
 
 [[package]]
@@ -1693,8 +1710,11 @@ dependencies = [
  "secp256k1",
  "serde",
  "serde_json",
+ "tw_base58_address",
+ "tw_bech32_address",
  "tw_coin_entry",
  "tw_encoding",
+ "tw_hash",
  "tw_keypair",
  "tw_memory",
  "tw_misc",
@@ -1707,6 +1727,8 @@ dependencies = [
 name = "tw_coin_entry"
 version = "0.1.0"
 dependencies = [
+ "derivation-path",
+ "serde",
  "serde_json",
  "tw_encoding",
  "tw_hash",
@@ -1884,6 +1906,7 @@ name = "tw_keypair"
 version = "0.1.0"
 dependencies = [
  "arbitrary 1.3.0",
+ "bitcoin",
  "blake2",
  "curve25519-dalek",
  "der",
@@ -1895,6 +1918,7 @@ dependencies = [
  "pkcs8",
  "rfc6979",
  "ring",
+ "secp256k1",
  "serde",
  "serde_json",
  "sha2",
@@ -1902,6 +1926,7 @@ dependencies = [
  "starknet-ff",
  "tw_encoding",
  "tw_hash",
+ "tw_keypair",
  "tw_memory",
  "tw_misc",
  "zeroize",
@@ -2027,12 +2052,20 @@ dependencies = [
 name = "tw_utxo"
 version = "0.1.0"
 dependencies = [
+ "bech32",
  "bitcoin",
+ "byteorder",
+ "itertools",
  "secp256k1",
+ "strum_macros",
+ "tw_base58_address",
+ "tw_bech32_address",
  "tw_coin_entry",
  "tw_encoding",
+ "tw_hash",
  "tw_keypair",
  "tw_memory",
+ "tw_misc",
  "tw_proto",
 ]
 

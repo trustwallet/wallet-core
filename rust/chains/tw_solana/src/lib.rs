@@ -16,4 +16,4 @@ pub mod signer;
 pub mod transaction;
 
 // cbindgen:ignore
-pub const SOLANA_ALPHABET: Alphabet = *Alphabet::BITCOIN;
+pub const SOLANA_ALPHABET: Alphabet = Alphabet::Bitcoin;

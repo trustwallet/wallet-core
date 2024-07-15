@@ -51,7 +51,7 @@ const CoinInfo getCoinInfo(TWCoinType coin) {
                 TWCurve<%= format_name(coin['curve']) %>,
                 {
                     <% coin['derivation'].each do |deriv| -%>{
-                        <%= derivation_enum_name(deriv, coin) %>,
+                        <%= derivation_enum_name(deriv) %>,
                         "<%= deriv['path'] %>",
                         "<%= derivation_name(deriv) %>",
                         TWHDVersion<% if deriv['xpub'].nil? -%>None<% else -%><%= format_name(deriv['xpub']) %><% end -%>,

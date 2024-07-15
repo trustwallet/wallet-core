@@ -3,9 +3,10 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::ffi::tw_any_address::{
-    tw_any_address_create_bech32_with_public_key, tw_any_address_create_with_string,
-    tw_any_address_data, tw_any_address_delete, tw_any_address_description,
-    tw_any_address_is_valid, tw_any_address_is_valid_bech32, TWAnyAddress,
+    tw_any_address_create_base58_with_public_key, tw_any_address_create_bech32_with_public_key,
+    tw_any_address_create_with_string, tw_any_address_data, tw_any_address_delete,
+    tw_any_address_description, tw_any_address_is_valid, tw_any_address_is_valid_base58,
+    tw_any_address_is_valid_bech32, TWAnyAddress,
 };
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
@@ -100,4 +101,45 @@ pub fn test_address_bech32_is_valid(input: AddressBech32IsValid<'_>) {
     let result =
         unsafe { tw_any_address_is_valid_bech32(address_str.ptr(), input.coin as u32, hrp.ptr()) };
     assert!(result);
+}
+
+pub struct AddressCreateBase58WithPublicKey<'a> {
+    pub coin: CoinType,
+    pub public_key: &'a str,
+    pub public_key_type: PublicKeyType,
+    pub p2pkh: u8,
+    pub p2sh: u8,
+    pub expected: &'a str,
+}
+
+pub fn test_address_create_base58_with_public_key(input: AddressCreateBase58WithPublicKey<'_>) {
+    let public_key = TWPublicKeyHelper::with_hex(input.public_key, input.public_key_type);
+
+    let any_address = TWAnyAddressHelper::wrap(unsafe {
+        tw_any_address_create_base58_with_public_key(
+            public_key.ptr(),
+            input.coin as u32,
+            input.p2pkh,
+            input.p2sh,
+        )
+    });
+
+    let actual = TWStringHelper::wrap(unsafe { tw_any_address_description(any_address.ptr()) });
+    assert_eq!(actual.to_string(), Some(input.expected.to_string()));
+}
+
+pub struct AddressBase58IsValid<'a> {
+    pub coin: CoinType,
+    pub address: &'a str,
+    pub p2pkh: u8,
+    pub p2sh: u8,
+}
+
+pub fn test_address_base58_is_valid(input: AddressBase58IsValid<'_>) {
+    // First, check if the address is valid.
+    let addr_str = TWStringHelper::create(input.address);
+    let is_valid = unsafe {
+        tw_any_address_is_valid_base58(addr_str.ptr(), input.coin as u32, input.p2pkh, input.p2sh)
+    };
+    assert!(is_valid, "!tw_any_address_is_valid_base58");
 }

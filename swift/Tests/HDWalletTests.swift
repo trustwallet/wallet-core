@@ -92,13 +92,13 @@ class HDWalletTests: XCTestCase {
         let coin = CoinType.bitcoin
         let wallet = HDWallet.test
 
-        let key1 = wallet.getKeyDerivation(coin: coin, derivation: .bitcoinSegwit)
+        let key1 = wallet.getKeyDerivation(coin: coin, derivation: .segwit)
         XCTAssertEqual(key1.data.hexString, "1901b5994f075af71397f65bd68a9fff8d3025d65f5a2c731cf90f5e259d6aac")
 
-        let key2 = wallet.getKeyDerivation(coin: coin, derivation: .bitcoinLegacy)
+        let key2 = wallet.getKeyDerivation(coin: coin, derivation: .legacy)
         XCTAssertEqual(key2.data.hexString, "28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4")
 
-        let key3 = wallet.getKeyDerivation(coin: coin, derivation: .bitcoinTestnet)
+        let key3 = wallet.getKeyDerivation(coin: coin, derivation: .testnet)
         XCTAssertEqual(key3.data.hexString, "ca5845e1b43e3adf577b7f110b60596479425695005a594c88f9901c3afe864f")
     }
 
@@ -114,13 +114,13 @@ class HDWalletTests: XCTestCase {
         let coin = CoinType.bitcoin
         let wallet = HDWallet.test
 
-        let address1 = wallet.getAddressDerivation(coin: coin, derivation: .bitcoinSegwit)
+        let address1 = wallet.getAddressDerivation(coin: coin, derivation: .segwit)
         XCTAssertEqual(address1, "bc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85")
 
-        let address2 = wallet.getAddressDerivation(coin: coin, derivation: .bitcoinLegacy)
+        let address2 = wallet.getAddressDerivation(coin: coin, derivation: .legacy)
         XCTAssertEqual(address2, "1PeUvjuxyf31aJKX6kCXuaqxhmG78ZUdL1")
 
-        let address3 = wallet.getAddressDerivation(coin: coin, derivation: .bitcoinTestnet)
+        let address3 = wallet.getAddressDerivation(coin: coin, derivation: .testnet)
         XCTAssertEqual(address3, "tb1qwgpxgwn33z3ke9s7q65l976pseh4edrzfmyvl0")
     }
 

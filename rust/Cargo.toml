@@ -12,7 +12,9 @@ members = [
     "chains/tw_solana",
     "chains/tw_sui",
     "chains/tw_thorchain",
+    "frameworks/tw_utxo",
     "tw_any_coin",
+    "tw_base58_address",
     "tw_bech32_address",
     "tw_bitcoin",
     "tw_coin_entry",
@@ -26,7 +28,6 @@ members = [
     "tw_misc",
     "tw_number",
     "tw_proto",
-    "tw_utxo",
     "wallet_core_bin",
     "wallet_core_rs",
 ]

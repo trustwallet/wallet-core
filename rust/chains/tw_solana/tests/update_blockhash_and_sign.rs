@@ -15,7 +15,7 @@ fn test_update_recent_blockhash_and_sign() {
     let new_blockhash = "CyPYVsYWrsJNfVpi8aazu7WsrswNFuDd385z6GNoBGUg";
     let private_key = base58::decode(
         "A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr",
-        &SOLANA_ALPHABET,
+        SOLANA_ALPHABET,
     )
     .unwrap();
 

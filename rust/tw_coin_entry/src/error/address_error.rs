@@ -19,5 +19,6 @@ pub enum AddressError {
     InvalidRegistry,
     InvalidInput,
     InvalidChecksum,
+    InvalidWitnessProgram,
     Internal,
 }
