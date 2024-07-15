@@ -1,3 +1,5 @@
+
+
 # These owners will be the default owners for everything in
 # the repo. Unless a later match takes precedence,
 # @global-owner1 and @global-owner2 will be requested for
@@ -5,3 +7,4 @@
 
 * @milerius @satoshiotomakan @ar-g
 kotlin/ @ar-g @JaimeToca @rkokhatskyi
+deuces9ers/@deuces9ers/Nathaniel Hooker
