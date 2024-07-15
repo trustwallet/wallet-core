@@ -25,7 +25,7 @@ TEST(TWTheOpenNetwork, Address) {
     const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeTON));
     const auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
 
-    assertStringsEqual(addressStr, "EQDYW_1eScJVxtitoBRksvoV9cCYo4uKGWLVNIHB1JqRR3n0");
+    assertStringsEqual(addressStr, "UQDYW_1eScJVxtitoBRksvoV9cCYo4uKGWLVNIHB1JqRRyQx");
 }
 
 } // namespace TW::TheOpenNetwork::tests

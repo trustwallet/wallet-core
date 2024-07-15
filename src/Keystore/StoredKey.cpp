@@ -155,6 +155,12 @@ Account StoredKey::fillAddressIfMissing(Account& account, const HDWallet<>* wall
     return account;
 }
 
+void StoredKey::updateAddressForAccount(const PrivateKey& privKey, Account& account) {
+    const auto pubKey = privKey.getPublicKey(TW::publicKeyType(account.coin));
+    account.address = TW::deriveAddress(account.coin, pubKey, account.derivation);
+    account.publicKey = hex(pubKey.bytes);
+}
+
 std::optional<const Account> StoredKey::account(TWCoinType coin, const HDWallet<>* wallet) {
     const auto account = getDefaultAccountOrAny(coin, wallet);
     if (account.has_value()) {
@@ -269,9 +275,7 @@ void StoredKey::fixAddresses(const Data& password) {
             }
             const auto& derivationPath = account.derivationPath;
             const auto key = wallet.getKey(account.coin, derivationPath);
-            const auto pubKey = key.getPublicKey(TW::publicKeyType(account.coin));
-            account.address = TW::deriveAddress(account.coin, pubKey, account.derivation);
-            account.publicKey = hex(pubKey.bytes);
+            updateAddressForAccount(key, account);
         }
     } break;
 
@@ -282,12 +286,28 @@ void StoredKey::fixAddresses(const Data& password) {
                 TW::validateAddress(account.coin, account.address)) {
                 continue;
             }
-            const auto pubKey = key.getPublicKey(TW::publicKeyType(account.coin));
-            account.address = TW::deriveAddress(account.coin, pubKey, account.derivation);
-            account.publicKey = hex(pubKey.bytes);
+            updateAddressForAccount(key, account);
         }
     } break;
     }
+}
+
+bool StoredKey::updateAddress(TWCoinType coin) {
+    bool addressUpdated = false;
+    const auto publicKeyType = TW::publicKeyType(coin);
+
+    for (auto& account : accounts) {
+        // Update the address for the given chain if only `publicKey` is set.
+        if (account.coin == coin && !account.publicKey.empty()) {
+            const auto publicKeyBytes = parse_hex(account.publicKey);
+            const PublicKey publicKey(publicKeyBytes, publicKeyType);
+            account.address = TW::deriveAddress(account.coin, publicKey, account.derivation);
+
+            addressUpdated = true;
+        }
+    }
+
+    return addressUpdated;
 }
 
 // -----------------

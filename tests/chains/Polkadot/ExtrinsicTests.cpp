@@ -159,4 +159,33 @@ TEST(PolkadotExtrinsic, Kusama_encodeAssetTransferNoCallIndices) {
     EXPECT_THROW(Polkadot::Extrinsic(input).encodeCall(input), std::invalid_argument);
 }
 
+TEST(PolkadotExtrinsic, Polkadot_EncodePayloadWithNewSpec) {
+    Polkadot::Proto::SigningInput input;
+    input.set_network(0);
+    input.set_multi_address(true);
+
+    auto* transfer = input.mutable_balance_call()->mutable_asset_transfer();
+    transfer->set_to_address("14ixj163bkk2UEKLEXsEWosuFNuijpqEWZbX5JzN4yMHbUVD");
+    auto* callIndices = transfer->mutable_call_indices()->mutable_custom();
+    callIndices->set_module_index(0x32);
+    callIndices->set_method_index(0x05);
+
+    auto value = store(999500000);
+    transfer->set_value(std::string(value.begin(), value.end()));
+    transfer->set_asset_id(1984);
+
+    input.set_spec_version(1002000);  // breaking change happens at version 1002005
+    auto result = Polkadot::Extrinsic(input).encodePayload();
+    EXPECT_EQ(hex(result), "3205011f00a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943eda0d82a34cee00000000104a0f0000000000");
+
+    input.set_spec_version(1002005);  // >= 1002005
+    result = Polkadot::Extrinsic(input).encodePayload();
+    EXPECT_EQ(hex(result), "3205011f00a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943eda0d82a34cee0000000000154a0f000000000000");
+
+    input.set_spec_version(1002006);  // >= 1002005
+    result = Polkadot::Extrinsic(input).encodePayload();
+    EXPECT_EQ(hex(result), "3205011f00a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943eda0d82a34cee0000000000164a0f000000000000");
+}
+
+
 } // namespace TW::Polkadot::tests

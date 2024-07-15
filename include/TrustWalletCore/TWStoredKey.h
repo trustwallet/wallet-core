@@ -295,6 +295,16 @@ TWData* _Nullable TWStoredKeyExportJSON(struct TWStoredKey* _Nonnull key);
 TW_EXPORT_METHOD
 bool TWStoredKeyFixAddresses(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
 
+/// Re-derives address for the account(s) associated with the given coin.
+/// This method can be used if address format has been changed.
+/// In case of multiple accounts, all of them will be updated.
+///
+/// \param key Non-null pointer to a stored key
+/// \param coin Account(s) coin type to be updated
+/// \return `false` if there are no accounts associated with the given coin, true otherwise
+TW_EXPORT_METHOD
+bool TWStoredKeyUpdateAddress(struct TWStoredKey* _Nonnull key, enum TWCoinType coin);
+
 /// Retrieve stored key encoding parameters, as JSON string.
 ///
 /// \param key Non-null pointer to a stored key

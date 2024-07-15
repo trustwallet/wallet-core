@@ -48,7 +48,7 @@ public:
     /// Initializes an address with its parts
     explicit Address(
         int8_t workchainId, std::array<byte, AddressData::size> hash,
-        bool userFriendly = true, bool bounceable = true, bool testOnly = false
+        bool userFriendly = true, bool bounceable = false, bool testOnly = false
     ) : addressData(workchainId, hash),
         isUserFriendly(userFriendly),
         isBounceable(bounceable),
@@ -57,6 +57,12 @@ public:
     /// Returns a string representation of the address.
     [[nodiscard]] std::string string() const;
     [[nodiscard]] std::string string(bool userFriendly, bool bounceable = true, bool testOnly = false) const;
+
+    // Converts a TON user address into a Bag of Cells (BoC) with a single root Cell.
+    [[nodiscard]] std::string toBoc() const;
+
+    // Parses a TON address from a Bag of Cells (BoC) with a single root Cell.
+    [[nodiscard]] static std::optional<Address> fromBoc(const std::string& bocEncoded);
 };
 
 } // namespace TW::TheOpenNetwork
