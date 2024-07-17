@@ -8,7 +8,7 @@ use std::borrow::Cow;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
-use tw_encoding::base64;
+use tw_encoding::base64::{self, STANDARD};
 use tw_proto::Sui::Proto;
 
 pub struct SuiSigner;
@@ -35,8 +35,7 @@ impl SuiSigner {
             TWTransaction::SignDirect(tx_data) => TxSigner::sign_direct(tx_data, &signer_key)?,
         };
 
-        let is_url = false;
-        let unsigned_tx = base64::encode(&preimage.unsigned_tx_data, is_url);
+        let unsigned_tx = base64::encode(&preimage.unsigned_tx_data, STANDARD);
         Ok(Proto::SigningOutput {
             unsigned_tx: Cow::from(unsigned_tx),
             signature: Cow::from(signature.to_base64()),

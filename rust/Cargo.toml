@@ -13,6 +13,7 @@ members = [
     "chains/tw_sui",
     "chains/tw_thorchain",
     "chains/tw_ton",
+    "frameworks/tw_ton_sdk",
     "tw_any_coin",
     "tw_bech32_address",
     "tw_bitcoin",

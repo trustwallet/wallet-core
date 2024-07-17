@@ -10,7 +10,8 @@ use crate::SOLANA_ALPHABET;
 use std::borrow::Cow;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
-use tw_encoding::{base58, base64};
+use tw_encoding::base58;
+use tw_encoding::base64::{self, STANDARD};
 use tw_hash::H256;
 use tw_keypair::{ed25519, KeyPairResult};
 use tw_memory::Data;
@@ -33,8 +34,7 @@ impl SolanaTransaction {
         recent_blockhash: &str,
         private_keys: &[Data],
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        let is_url = false;
-        let tx_bytes = base64::decode(encoded_tx, is_url)?;
+        let tx_bytes = base64::decode(encoded_tx, STANDARD)?;
 
         let tx_to_sign: VersionedTransaction =
             bincode::deserialize(&tx_bytes).map_err(|_| SigningErrorType::Error_input_parse)?;
@@ -63,10 +63,10 @@ impl SolanaTransaction {
             TxSigner::sign_versioned(msg_to_sign, &private_keys, &external_signatures)?
         };
 
-        let unsigned_encoded = base64::encode(&unsigned_encoded, is_url);
+        let unsigned_encoded = base64::encode(&unsigned_encoded, STANDARD);
         let signed_encoded =
             bincode::serialize(&signed_tx).tw_err(|_| SigningErrorType::Error_internal)?;
-        let signed_encoded = base64::encode(&signed_encoded, is_url);
+        let signed_encoded = base64::encode(&signed_encoded, STANDARD);
 
         Ok(Proto::SigningOutput {
             encoded: Cow::from(signed_encoded),
