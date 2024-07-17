@@ -2,8 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-pub mod address;
-pub mod boc;
-pub mod cell;
-pub mod crc;
-pub mod error;
+pub mod address_data;
+pub mod raw_address;
+pub mod user_friendly_address;

@@ -22,7 +22,7 @@ pub const URL_SAFE: Config = Config {
     pad: true,
 };
 
-pub const URL_NOPAD: Config = Config {
+pub const URL_NO_PAD: Config = Config {
     url: true,
     pad: false,
 };

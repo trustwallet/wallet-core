@@ -5,17 +5,12 @@
 use crate::boc::binary_reader::BinaryReader;
 use crate::boc::binary_writer::BinaryWriter;
 use crate::cell::level_mask::LevelMask;
+use crate::crc::CRC_32_ISCSI;
 use crate::error::{CellError, CellErrorType, CellResult};
-use crc::Crc;
-use lazy_static::lazy_static;
 use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 
 const GENERIC_BOC_MAGIC: u32 = 0xb5ee9c72;
-
-lazy_static! {
-    pub static ref CRC_32_ISCSI: Crc<u32> = Crc::<u32>::new(&crc::CRC_32_ISCSI);
-}
 
 /// Raw representation of Cell.
 ///

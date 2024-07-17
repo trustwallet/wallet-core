@@ -7,7 +7,7 @@ use crate::cell::cell_parser::CellParser;
 use std::fmt;
 use std::sync::Arc;
 use tw_coin_entry::error::prelude::{OrTWError, ResultContext};
-use tw_encoding::base64::{self, URL_NOPAD};
+use tw_encoding::base64::{self, URL_NO_PAD};
 use tw_encoding::hex::ToHex;
 use tw_hash::sha2::sha256;
 use tw_hash::H256;
@@ -93,7 +93,7 @@ impl Cell {
     }
 
     pub fn cell_hash_base64(&self) -> String {
-        base64::encode(self.cell_hash().as_slice(), URL_NOPAD)
+        base64::encode(self.cell_hash().as_slice(), URL_NO_PAD)
     }
 
     pub fn get_hash(&self, level: u8) -> H256 {
