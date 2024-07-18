@@ -6,9 +6,9 @@ use tw_any_coin::ffi::tw_any_address::{
     tw_any_address_create_with_public_key_derivation, tw_any_address_description,
 };
 use tw_any_coin::test_utils::address_utils::TWAnyAddressHelper;
-use tw_coin_entry::derivation::Derivation;
 use tw_coin_registry::coin_type::CoinType;
 use tw_coin_registry::registry::get_coin_item;
+use tw_coin_registry::tw_derivation::TWDerivation;
 use tw_keypair::ffi::privkey::tw_private_key_get_public_key_by_type;
 use tw_keypair::test_utils::tw_private_key_helper::TWPrivateKeyHelper;
 use tw_keypair::test_utils::tw_public_key_helper::TWPublicKeyHelper;
@@ -93,25 +93,24 @@ fn test_coin_address_derivation() {
             | CoinType::ZkLinkNova
             // end_of_evm_address_derivation_tests_marker_do_not_modify
                 => "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309",
-            CoinType::Bitcoin
-            // TODO all Bitcoin-based blockchains should have different addresses.
-            // It should be fixed when Bitcoin is finalized.
-            | CoinType::Litecoin
-            | CoinType::Dogecoin
-            | CoinType::Dash
-            | CoinType::Viacoin
-            | CoinType::DigiByte
-            | CoinType::Monacoin
-            | CoinType::Syscoin
-            | CoinType::Pivx
-            | CoinType::Firo
-            | CoinType::BitcoinCash
-            | CoinType::BitcoinGold
-            | CoinType::Ravencoin
-            | CoinType::Qtum
-            | CoinType::eCash
-            | CoinType::Stratis
-            => "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X",
+            CoinType::Bitcoin => "bc1qten42eesehw0ktddcp0fws7d3ycsqez3f7d5yt",
+            CoinType::Litecoin => "ltc1qten42eesehw0ktddcp0fws7d3ycsqez3dzhsum",
+            CoinType::Dogecoin => "DDkFr311AYe6ABMsdSnjv8yoSr1Tppokp8",
+            CoinType::Dash => "XjJ192iFpqxPn7mrkk7QDuVzQ3rrY5yXJG",
+            CoinType::Viacoin => "via1qten42eesehw0ktddcp0fws7d3ycsqez3rmf8ld",
+            CoinType::DigiByte => "dgb1qten42eesehw0ktddcp0fws7d3ycsqez379fvu9",
+            CoinType::Monacoin => "MGWKYCxmN9ucWr9c7qT7ceRY2wAKz2NnGf",
+            CoinType::Syscoin => "sys1qten42eesehw0ktddcp0fws7d3ycsqez3pwuwme",
+            CoinType::Pivx => "DDkFr311AYe6ABMsdSnjv8yoSr1Tppokp8",
+            CoinType::Firo => "a9Kd3gVz5vjegicNuG7K8f8iB5QWkUuTxW",
+            // TODO should be "bitcoincash:qp0xw4t8xrxae7ed4hq9a96rekynzqry2ydzeh0jgs"
+            CoinType::BitcoinCash => "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X",
+            CoinType::BitcoinGold => "btg1qten42eesehw0ktddcp0fws7d3ycsqez3lht33r",
+            CoinType::Ravencoin => "RHtMPHweTxYNhBYUN2nJTu9QKyjm7MRKsF",
+            // TODO should be "ecash:qp0xw4t8xrxae7ed4hq9a96rekynzqry2y50du5gw8"
+            CoinType::eCash => "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X",
+            CoinType::Qtum => "QVD9R5M53bcd4KGJKC7fVebq4yDsnEDwtt",
+            CoinType::Stratis => "strax1qten42eesehw0ktddcp0fws7d3ycsqez39n8kr5",
             CoinType::Aptos => "0x9006fa46f038224e8004bdda97f2e7a60c2c3d135bce7cb15541e5c0aae907a4",
             CoinType::Cosmos => "cosmos1ten42eesehw0ktddcp0fws7d3ycsqez3lynlqx",
             CoinType::Stargaze => "stars1ten42eesehw0ktddcp0fws7d3ycsqez3tcyzth",
@@ -164,7 +163,7 @@ fn test_coin_address_derivation() {
             tw_any_address_create_with_public_key_derivation(
                 public_key.ptr(),
                 coin as u32,
-                Derivation::Default as u32,
+                TWDerivation::Default as u32,
             )
         });
 

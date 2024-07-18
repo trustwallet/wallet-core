@@ -24,12 +24,12 @@ fn test_solana_transaction_update_blockhash_and_sign_token_transfer_with_externa
 
     let my_private_key = base58::decode(
         "9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5",
-        &SOLANA_ALPHABET,
+        SOLANA_ALPHABET,
     )
     .unwrap();
     let fee_payer_private_key = base58::decode(
         "66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c",
-        &SOLANA_ALPHABET,
+        SOLANA_ALPHABET,
     )
     .unwrap();
     let private_keys = TWDataVectorHelper::create([fee_payer_private_key, my_private_key]);
@@ -63,7 +63,7 @@ fn test_solana_transaction_update_blockhash_and_sign_no_matching_pubkey() {
     // there is no matching pubkey in the transaction account keys.
     let private_key = base58::decode(
         "A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr",
-        &SOLANA_ALPHABET,
+        SOLANA_ALPHABET,
     )
     .unwrap();
     let private_keys = TWDataVectorHelper::create([private_key]);

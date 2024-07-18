@@ -15,20 +15,20 @@
 namespace TW::Bitcoin {
 
 Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
-    if (input.has_planning_v2()) {
+    if (input.has_signing_v2()) {
         Proto::TransactionPlan plan;
 
-        // Forward the `Bitcoin.Proto.SigningInput.planning_v2` request to Rust.
-        auto planningV2Data = data(input.planning_v2().SerializeAsString());
-        Rust::TWDataWrapper planningV2DataPtr(planningV2Data);
-        Rust::TWDataWrapper planningOutputV2DataPtr = Rust::tw_any_signer_plan(planningV2DataPtr.get(), input.coin_type());
+        // Forward the `Bitcoin.Proto.SigningInput.signing_v2` request to Rust.
+        auto signingV2Data = data(input.signing_v2().SerializeAsString());
+        Rust::TWDataWrapper signingV2DataPtr(signingV2Data);
+        Rust::TWDataWrapper transactionPlanV2DataPtr = Rust::tw_any_signer_plan(signingV2DataPtr.get(), input.coin_type());
 
-        auto planningOutputV2Data = planningOutputV2DataPtr.toDataOrDefault();
-        BitcoinV2::Proto::TransactionPlan planningOutputV2;
-        planningOutputV2.ParseFromArray(planningOutputV2Data.data(), static_cast<int>(planningOutputV2Data.size()));
+        auto transactionPlanV2Data = transactionPlanV2DataPtr.toDataOrDefault();
+        BitcoinV2::Proto::TransactionPlan transactionPlanV2;
+        transactionPlanV2.ParseFromArray(transactionPlanV2Data.data(), static_cast<int>(transactionPlanV2Data.size()));
 
         // Set `Bitcoin.Proto.TransactionPlan.planning_result_v2`. Remain other fields default.
-        *plan.mutable_planning_result_v2() = planningOutputV2;
+        *plan.mutable_planning_result_v2() = transactionPlanV2;
         return plan;
     }
 
@@ -38,12 +38,7 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs) noexcept {
     Proto::SigningOutput output;
-    if (input.is_it_brc_operation()) {
-        auto serializedInput = data(input.SerializeAsString());
-        Rust::CByteArrayWrapper res = Rust::tw_bitcoin_legacy_taproot_build_and_sign_transaction(serializedInput.data(), serializedInput.size());
-        output.ParseFromArray(res.data.data(), static_cast<int>(res.data.size()));
-        return output;
-    } else if (input.has_signing_v2()) {
+    if (input.has_signing_v2()) {
         // Forward the `Bitcoin.Proto.SigningInput.signing_v2` request to Rust.
         auto signingV2Data = data(input.signing_v2().SerializeAsString());
         Rust::TWDataWrapper signingV2DataPtr(signingV2Data);

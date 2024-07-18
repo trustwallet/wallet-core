@@ -82,8 +82,8 @@ fn test_solana_compile_create_nonce_account() {
     // Simulate signature, normally obtained from signature server.
     let sender_signature = "83985a7cb1ba60a11c361a49476f10316d70032d5e2b4d882250d4de1a841f3dbaf9e68b036b067ec4f56c04032672229777ad101e9d3d51d6d917994b767e0e".decode_hex().unwrap();
     let nonce_signature = "24708efdba7e33259607597396b665baea3fc51d71e19a963cccad4bbdd2770e42e4831d1cc037afd02065a09e8c2b5e04f63da20f200e6aff689ad3b2bf7f0a".decode_hex().unwrap();
-    let sender_pubkey = base58::decode(sender, Alphabet::BITCOIN).unwrap();
-    let nonce_pubkey = base58::decode(nonce_account, Alphabet::BITCOIN).unwrap();
+    let sender_pubkey = base58::decode(sender, Alphabet::Bitcoin).unwrap();
+    let nonce_pubkey = base58::decode(nonce_account, Alphabet::Bitcoin).unwrap();
 
     let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
     let output = compiler.compile(
@@ -128,7 +128,7 @@ fn test_solana_compile_withdraw_nonce_account() {
 
     // Simulate signature, normally obtained from signature server.
     let signature = "1212e67f30fc9f17a440ef446c3e8638676b8253d3dc4517e297a777c011f820509c5d102e5648827e2a6a4b6274943c9209f44d2dee31277eaa6c54afd0410c".decode_hex().unwrap();
-    let pubkey = base58::decode(sender, Alphabet::BITCOIN).unwrap();
+    let pubkey = base58::decode(sender, Alphabet::Bitcoin).unwrap();
 
     let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
     let output = compiler.compile(CoinType::Solana, &input, vec![signature], vec![pubkey]);
@@ -173,7 +173,7 @@ fn test_solana_compile_create_and_transfer_token() {
 
     // Simulate signature, normally obtained from signature server.
     let signature = "28d04f30288e51c257648b8c955c661228d1e13632ee2fa366d3932e359a0d6044c66074e89d8542d2a60675679bd28a1b6eb80c273ed60a8f1cfe4fdc736b02".decode_hex().unwrap();
-    let pubkey = base58::decode(sender, Alphabet::BITCOIN).unwrap();
+    let pubkey = base58::decode(sender, Alphabet::Bitcoin).unwrap();
 
     let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
     let output = compiler.compile(CoinType::Solana, &input, vec![signature], vec![pubkey]);
@@ -210,7 +210,7 @@ fn test_solana_compile_advance_nonce_account() {
 
     // Simulate signature, normally obtained from signature server.
     let signature = "54772ff2be7cce175e58dde0152437382ca71f932b62497ccac624f202bbf8fb8247a8c80ba7dd5412d8316c8ab25caf48739cc677c15b97cbbbc005b3a56006".decode_hex().unwrap();
-    let pubkey = base58::decode(sender, Alphabet::BITCOIN).unwrap();
+    let pubkey = base58::decode(sender, Alphabet::Bitcoin).unwrap();
 
     let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
     let output = compiler.compile(CoinType::Solana, &input, vec![signature], vec![pubkey]);
@@ -268,8 +268,8 @@ fn test_solana_compile_create_and_transfer_token_with_external_fee_payer() {
     // Simulate signature, normally obtained from signature server.
     let signature1 = "0567ccb81d1c52d87e6491d26a7f9e93f346a69a6f0318ab2f1d8fba210d0b034343730c7ed5d3a96a37e2eb4e97cb813eec9b1fab82b538f9cf7dd71383cd03".decode_hex().unwrap();
     let signature2 = "8aef8b94f8448e583e51b54c4935b1911bb98ebc3053a46859865451584b11e83fe1a50734afc933b973142b73a9b4892509798b2a3a6dcd851c0809704d4b0e".decode_hex().unwrap();
-    let fee_payer_pubkey = base58::decode(fee_payer, Alphabet::BITCOIN).unwrap();
-    let sender_pubkey = base58::decode(sender, Alphabet::BITCOIN).unwrap();
+    let fee_payer_pubkey = base58::decode(fee_payer, Alphabet::Bitcoin).unwrap();
+    let sender_pubkey = base58::decode(sender, Alphabet::Bitcoin).unwrap();
 
     let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
     let output = compiler.compile(
@@ -329,8 +329,8 @@ fn test_solana_compile_token_transfer_with_external_fee_payer() {
     // Simulate signature, normally obtained from signature server.
     let signature1 = "42eb5f9c2203aaaa1f58c38161da982fd5a855562fe75f12808fdec3bb742f3a688cf806f55588b4c533cd7e19bacc468497a8f19ad86fe06fe4dbb67a526c08".decode_hex().unwrap();
     let signature2 = "54eac822f984d4a23620546059890652d0540d7a73e6ca450d34ae046e7d0fd25d9bd6fa041a82f5573469196b2c46088997b6de97a8d20e28ba46b07333ec02".decode_hex().unwrap();
-    let fee_payer_pubkey = base58::decode(fee_payer, Alphabet::BITCOIN).unwrap();
-    let sender_pubkey = base58::decode(sender, Alphabet::BITCOIN).unwrap();
+    let fee_payer_pubkey = base58::decode(fee_payer, Alphabet::Bitcoin).unwrap();
+    let sender_pubkey = base58::decode(sender, Alphabet::Bitcoin).unwrap();
 
     let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
     let output = compiler.compile(

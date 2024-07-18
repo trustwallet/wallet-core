@@ -243,7 +243,7 @@ TEST(StoredKey, AddRemoveAccountDerivation) {
         EXPECT_EQ(key.accounts.size(), 1ul);
     }
     {
-        key.addAccount("1NyRyFewhZcWMa9XCj3bBxSXPXyoSg8dKz", coinTypeBc, TWDerivationBitcoinLegacy, derivationPath, "", "xpub6CR52eaUuVb4kXAVyHC2i5ZuqJ37oWNPZFtjXaazFPXZD45DwWBYEBLdrF7fmCR9pgBuCA9Q57zZfyJjDUBDNtWkhWuGHNYKLgDHpqrHsxV");
+        key.addAccount("1NyRyFewhZcWMa9XCj3bBxSXPXyoSg8dKz", coinTypeBc, TWDerivationLegacy, derivationPath, "", "xpub6CR52eaUuVb4kXAVyHC2i5ZuqJ37oWNPZFtjXaazFPXZD45DwWBYEBLdrF7fmCR9pgBuCA9Q57zZfyJjDUBDNtWkhWuGHNYKLgDHpqrHsxV");
         EXPECT_EQ(key.accounts.size(), 2ul);
     }
 
@@ -251,9 +251,9 @@ TEST(StoredKey, AddRemoveAccountDerivation) {
     EXPECT_EQ(key.accounts.size(), 1ul);
     key.removeAccount(coinTypeBc, TWDerivationDefault); // try 2nd time
     EXPECT_EQ(key.accounts.size(), 1ul);
-    key.removeAccount(coinTypeBc, TWDerivationBitcoinLegacy);
+    key.removeAccount(coinTypeBc, TWDerivationLegacy);
     EXPECT_EQ(key.accounts.size(), 0ul);
-    key.removeAccount(coinTypeBc, TWDerivationBitcoinLegacy); // try 2nd time
+    key.removeAccount(coinTypeBc, TWDerivationLegacy); // try 2nd time
     EXPECT_EQ(key.accounts.size(), 0ul);
 }
 
@@ -627,7 +627,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
     { // Create alternative P2PK Bitcoin account (different address format)
         const auto coin = TWCoinTypeBitcoin;
 
-        const auto btc2 = key.account(coin, TWDerivationBitcoinLegacy, wallet);
+        const auto btc2 = key.account(coin, TWDerivationLegacy, wallet);
 
         EXPECT_EQ(btc2.address, expectedBtc2);
         EXPECT_EQ(btc2.derivationPath.string(), "m/44'/0'/0'/0/0");
@@ -635,7 +635,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc2);
         EXPECT_EQ(key.account(coin)->address, expectedBtc1);
-        EXPECT_EQ(key.account(coin, TWDerivationBitcoinLegacy, wallet).address, expectedBtc2);
+        EXPECT_EQ(key.account(coin, TWDerivationLegacy, wallet).address, expectedBtc2);
         EXPECT_EQ(key.getAccounts(coin).size(), 2ul);
         EXPECT_EQ(key.getAccounts(coin)[0].address, expectedBtc1);
         EXPECT_EQ(key.getAccounts(coin)[1].address, expectedBtc2);
@@ -643,7 +643,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
     { // Create alternative Solana account with non-default derivation path (different derivation path and address)
         const auto coin = TWCoinTypeSolana;
 
-        const auto sol2 = key.account(coin, TWDerivationSolanaSolana, wallet);
+        const auto sol2 = key.account(coin, TWDerivationSolana, wallet);
 
         const auto expectedSol2 = "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C";
         EXPECT_EQ(sol2.address, expectedSol2);
@@ -652,7 +652,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedSol2);
         // Now we have 2 Solana addresses, 1st is returned here
         EXPECT_EQ(key.account(coin)->address, expectedSol1);
-        EXPECT_EQ(key.account(coin, TWDerivationSolanaSolana, wallet).address, expectedSol2);
+        EXPECT_EQ(key.account(coin, TWDerivationSolana, wallet).address, expectedSol2);
         EXPECT_EQ(key.getAccounts(coin).size(), 2ul);
         EXPECT_EQ(key.getAccounts(coin)[0].address, expectedSol1);
         EXPECT_EQ(key.getAccounts(coin)[1].address, expectedSol2);
@@ -697,13 +697,13 @@ TEST(StoredKey, CreateWithMnemonicAlternativeDerivation) {
     ASSERT_EQ(key.accounts.size(), 1ul);
 
     // alternative derivation, different keys
-    EXPECT_EQ(hex(key.privateKey(coin, TWDerivationSolanaSolana, gPassword).bytes), "d49a5fa7f77593534c7afd2ba8dc8e9d8b007bc6ec65fe8df25ffe6fafc57151");
+    EXPECT_EQ(hex(key.privateKey(coin, TWDerivationSolana, gPassword).bytes), "d49a5fa7f77593534c7afd2ba8dc8e9d8b007bc6ec65fe8df25ffe6fafc57151");
 
     ASSERT_EQ(key.accounts.size(), 2ul);
     EXPECT_EQ(key.accounts[1].coin, coin);
     EXPECT_EQ(key.accounts[1].address, "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C");
     EXPECT_EQ(key.accounts[1].publicKey, "ad8f57924dce62f9040f93b4f6ce3c3d39afde7e29bcb4013dad59db7913c4c7");
-    EXPECT_EQ(hex(key.privateKey(coin, TWDerivationSolanaSolana, gPassword).bytes), "d49a5fa7f77593534c7afd2ba8dc8e9d8b007bc6ec65fe8df25ffe6fafc57151");
+    EXPECT_EQ(hex(key.privateKey(coin, TWDerivationSolana, gPassword).bytes), "d49a5fa7f77593534c7afd2ba8dc8e9d8b007bc6ec65fe8df25ffe6fafc57151");
 }
 
 } // namespace TW::Keystore

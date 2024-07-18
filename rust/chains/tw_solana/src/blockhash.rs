@@ -25,7 +25,7 @@ impl Blockhash {
 
 impl fmt::Display for Blockhash {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", base58::encode(self.0.as_slice(), &SOLANA_ALPHABET))
+        write!(f, "{}", base58::encode(self.0.as_slice(), SOLANA_ALPHABET))
     }
 }
 
@@ -33,7 +33,7 @@ impl FromStr for Blockhash {
     type Err = EncodingError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let bytes = base58::decode(s, &SOLANA_ALPHABET)?;
+        let bytes = base58::decode(s, SOLANA_ALPHABET)?;
         let bytes = H256::try_from(bytes.as_slice()).map_err(|_| EncodingError::InvalidInput)?;
         Ok(Blockhash(bytes))
     }

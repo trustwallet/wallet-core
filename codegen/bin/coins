@@ -31,9 +31,9 @@ def self.derivation_name(deriv)
   deriv['name'].downcase
 end
 
-def self.derivation_enum_name(deriv, coin)
+def self.derivation_enum_name(deriv)
   return "TWDerivationDefault" if deriv['name'].nil?
-  "TWDerivation" + format_name(coin['name']) + camel_case(deriv['name'])
+  "TWDerivation" + camel_case(deriv['name'])
 end
 
 def self.coin_img(coin)
@@ -53,6 +53,7 @@ coins = JSON.parse(json_string).sort_by { |x| x['coinId'] }
 
 # used in some cases for numbering enum values
 enum_count = 0
+derivations = {}
 
 erbs = [
   {'template' => 'TWDerivation.h.erb', 'folder' => 'include/TrustWalletCore', 'file' => 'TWDerivation.h'},

@@ -2,11 +2,12 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::ecdsa::der;
 use crate::ecdsa::EcdsaCurve;
 use crate::{KeyPairError, KeyPairResult};
 use ecdsa::elliptic_curve::FieldBytes;
 use std::ops::{Range, RangeInclusive};
-use tw_hash::{H256, H512, H520};
+use tw_hash::{concat, H256, H512, H520};
 use tw_misc::traits::ToBytesVec;
 
 /// Represents an ECDSA signature.
@@ -89,6 +90,10 @@ impl<C: EcdsaCurve> Signature<C> {
         dest
     }
 
+    pub fn to_der(&self) -> KeyPairResult<der::Signature> {
+        der::Signature::new(self.r(), self.s())
+    }
+
     /// # Panic
     ///
     /// `r` and `s` must be 32 byte arrays, otherwise the function panics.
@@ -120,15 +125,36 @@ pub struct VerifySignature<C: EcdsaCurve> {
 }
 
 impl<C: EcdsaCurve> VerifySignature<C> {
+    pub fn from_der(der_signature: der::Signature) -> KeyPairResult<Self> {
+        let signature = Signature::signature_from_slices(der_signature.r(), der_signature.s())
+            .map_err(|_| KeyPairError::InvalidSignature)?;
+        Ok(VerifySignature { signature })
+    }
+
     /// Returns a standard binary signature representation:
     /// RS, where R - 32 byte array, S - 32 byte array.
     pub fn to_bytes(&self) -> H512 {
+        let (r, s) = self.rs();
+        concat(r, s)
+    }
+
+    /// Returns an ASN.1 DER encoded signature.
+    pub fn to_der(&self) -> KeyPairResult<der::Signature> {
+        let (r, s) = self.rs();
+        der::Signature::new(r, s)
+    }
+
+    /// Returns R (32 byte array) and S (32 byte array) values.
+    pub fn rs(&self) -> (H256, H256) {
         let (r, s) = self.signature.split_bytes();
 
-        let mut dest = H512::default();
-        dest[Signature::<C>::R_RANGE].copy_from_slice(r.as_slice());
-        dest[Signature::<C>::S_RANGE].copy_from_slice(s.as_slice());
-        dest
+        let mut r_bytes = H256::default();
+        r_bytes.copy_from_slice(r.as_slice());
+
+        let mut s_bytes = H256::default();
+        s_bytes.copy_from_slice(s.as_slice());
+
+        (r_bytes, s_bytes)
     }
 }
 

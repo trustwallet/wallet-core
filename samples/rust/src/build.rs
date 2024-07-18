@@ -25,7 +25,6 @@ fn main() {
         .input(proto_src.to_string() + "/Bitcoin.proto")
         .input(proto_src.to_string() + "/BitcoinV2.proto")
         .input(proto_src.to_string() + "/Ethereum.proto")
-        .input(proto_src.to_string() + "/Utxo.proto")
         .include(proto_src)
         .run()
         .expect("Codegen failed.");

@@ -1,0 +1,24 @@
+[package]
+name = "tw_utxo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bech32 = "0.9.1"
+bitcoin = { version = "0.30.0", features = ["rand-std"] }
+byteorder = "1.4"
+itertools = "0.10.5"
+secp256k1 = { version = "0.27.0", features = ["rand-std"] }
+strum_macros = "0.25"
+tw_base58_address = { path = "../../tw_base58_address" }
+tw_bech32_address = { path = "../../tw_bech32_address" }
+tw_coin_entry = { path = "../../tw_coin_entry" }
+tw_encoding = { path = "../../tw_encoding" }
+tw_hash = { path = "../../tw_hash" }
+tw_keypair = { path = "../../tw_keypair" }
+tw_memory = { path = "../../tw_memory" }
+tw_misc = { path = "../../tw_misc" }
+tw_proto = { path = "../../tw_proto" }
+
+[dev-dependencies]
+tw_coin_entry = { path = "../../tw_coin_entry", features = ["test-utils"] }

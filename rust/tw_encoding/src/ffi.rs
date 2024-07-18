@@ -5,7 +5,6 @@
 #![allow(clippy::missing_safety_doc)]
 
 use crate::{base32, base58, base64, hex, EncodingError};
-use bs58::Alphabet;
 use std::ffi::{c_char, CStr, CString};
 use tw_memory::ffi::c_byte_array::{CByteArray, CByteArrayResult};
 use tw_memory::ffi::c_result::{CStrMutResult, ErrorCode};
@@ -48,11 +47,11 @@ pub enum Base58Alphabet {
     Ripple = 2,
 }
 
-impl From<Base58Alphabet> for &Alphabet {
+impl From<Base58Alphabet> for base58::Alphabet {
     fn from(value: Base58Alphabet) -> Self {
         match value {
-            Base58Alphabet::Bitcoin => Alphabet::BITCOIN,
-            Base58Alphabet::Ripple => Alphabet::RIPPLE,
+            Base58Alphabet::Bitcoin => base58::Alphabet::Bitcoin,
+            Base58Alphabet::Ripple => base58::Alphabet::Ripple,
         }
     }
 }

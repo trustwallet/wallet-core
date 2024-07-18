@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::coin_context::CoinContext;
+use crate::derivation::DerivationWithPath;
 use tw_hash::hasher::Hasher;
 use tw_keypair::tw::PublicKeyType;
 
@@ -12,6 +13,8 @@ pub struct TestCoinContext {
     pub public_key_type: Option<PublicKeyType>,
     pub address_hasher: Option<Hasher>,
     pub hrp: Option<String>,
+    pub p2pkh: Option<u8>,
+    pub p2sh: Option<u8>,
 }
 
 impl TestCoinContext {
@@ -38,5 +41,17 @@ impl CoinContext for TestCoinContext {
 
     fn hrp(&self) -> Option<String> {
         self.hrp.clone()
+    }
+
+    fn p2pkh_prefix(&self) -> Option<u8> {
+        self.p2pkh
+    }
+
+    fn p2sh_prefix(&self) -> Option<u8> {
+        self.p2sh
+    }
+
+    fn derivations(&self) -> &[DerivationWithPath] {
+        unimplemented!()
     }
 }

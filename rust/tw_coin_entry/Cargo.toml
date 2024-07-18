@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+derivation-path = "0.2"
+serde = "1.0"
 serde_json = "1.0"
 tw_encoding = { path = "../tw_encoding" }
 tw_hash = { path = "../tw_hash" }
