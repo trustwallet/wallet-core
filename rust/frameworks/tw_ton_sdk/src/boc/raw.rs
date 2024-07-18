@@ -148,9 +148,9 @@ impl RawBagOfCells {
         //write flags byte
         let has_cache_bits = false;
         let flags: u8 = 0;
-        writer.write_bit(has_idx);
-        writer.write_bit(has_crc32);
-        writer.write_bit(has_cache_bits);
+        writer.write_bit(has_idx)?;
+        writer.write_bit(has_crc32)?;
+        writer.write_bit(has_cache_bits)?;
         writer.write(2, flags)?;
         writer.write(3, num_ref_bytes)?;
         writer.write(8, num_offset_bytes)?;
@@ -169,7 +169,7 @@ impl RawBagOfCells {
         if has_crc32 {
             let bytes = writer.bytes_if_aligned()?;
             let cs = CRC_32_ISCSI.checksum(bytes);
-            writer.write_bytes(cs.to_le_bytes().as_slice());
+            writer.write_bytes(cs.to_le_bytes().as_slice())?;
         }
         writer.align()?;
         writer.finish()
@@ -245,12 +245,12 @@ fn write_raw_cell(
     writer.write(8, d1)?;
     writer.write(8, d2)?;
     if !full_bytes {
-        writer.write_bytes(&data[..data_len_bytes - 1]);
+        writer.write_bytes(&data[..data_len_bytes - 1])?;
         let last_byte = data[data_len_bytes - 1];
         let l = last_byte | 1 << (8 - padding_bits - 1);
         writer.write(8, l)?;
     } else {
-        writer.write_bytes(data);
+        writer.write_bytes(data)?;
     }
 
     for r in cell.references.as_slice() {

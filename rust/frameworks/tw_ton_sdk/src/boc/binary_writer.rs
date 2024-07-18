@@ -18,11 +18,11 @@ impl BinaryWriter {
         }
     }
 
-    pub fn write_bit(&mut self, bit: bool) -> &mut Self {
+    pub fn write_bit(&mut self, bit: bool) -> CellResult<&mut Self> {
         self.writer
             .write_bit(bit)
-            .expect("Vec::<u8>::write() must not fail");
-        self
+            .tw_err(|_| CellErrorType::BagOfCellsSerializationError)?;
+        Ok(self)
     }
 
     pub fn write<V>(&mut self, bits: u32, val: V) -> CellResult<&mut Self>
@@ -35,10 +35,11 @@ impl BinaryWriter {
         Ok(self)
     }
 
-    pub fn write_bytes(&mut self, bytes: &[u8]) {
+    pub fn write_bytes(&mut self, bytes: &[u8]) -> CellResult<&mut Self> {
         self.writer
             .write_bytes(bytes)
-            .expect("Vec::<u8>::write() must not fail")
+            .tw_err(|_| CellErrorType::BagOfCellsSerializationError)?;
+        Ok(self)
     }
 
     // TODO the function doesn't count `bit_len / 8` count of bytes.
@@ -48,9 +49,9 @@ impl BinaryWriter {
         let full_bytes = rest_bits == 0;
 
         if full_bytes {
-            self.write_bytes(data);
+            self.write_bytes(data)?;
         } else {
-            self.write_bytes(&data[..data_len - 1]);
+            self.write_bytes(&data[..data_len - 1])?;
             let last_byte = data[data_len - 1];
             let l = last_byte | 1 << (8 - rest_bits - 1);
             self.write(8, l)?;
@@ -69,16 +70,25 @@ impl BinaryWriter {
 
     /// Pads the stream with 0 bits until it is aligned at a whole byte.
     /// Does nothing if the stream is already aligned.
-    pub fn align(&mut self) -> CellResult<()> {
+    /// Returns the number of trailing zero bits required to align the Cell.
+    pub fn align(&mut self) -> CellResult<usize> {
+        let mut trailing_zeros = 0;
         while !self.writer.byte_aligned() {
-            self.writer
-                .write_bit(false)
-                .tw_err(|_| CellErrorType::InternalError)?;
+            self.write_bit(false)?;
+            trailing_zeros += 1;
         }
-        Ok(())
+        Ok(trailing_zeros)
     }
 
     pub fn finish(mut self) -> CellResult<Data> {
         self.bytes_if_aligned().map(|slice| slice.to_vec())
+    }
+}
+
+impl Default for BinaryWriter {
+    fn default() -> Self {
+        BinaryWriter {
+            writer: BitWriter::new(Vec::default()),
+        }
     }
 }

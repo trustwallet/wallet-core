@@ -14,17 +14,20 @@ pub struct RawAddress(AddressData);
 
 impl RawAddress {
     #[inline]
-    pub fn as_data(&self) -> &AddressData {
-        &self.0
-    }
-
-    #[inline]
     pub fn into_data(self) -> AddressData {
         self.0
     }
 }
 
+impl AsRef<AddressData> for RawAddress {
+    #[inline]
+    fn as_ref(&self) -> &AddressData {
+        &self.0
+    }
+}
+
 impl From<AddressData> for RawAddress {
+    #[inline]
     fn from(value: AddressData) -> Self {
         RawAddress(value)
     }

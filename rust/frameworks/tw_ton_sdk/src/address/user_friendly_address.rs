@@ -10,7 +10,6 @@ use tw_encoding::base64::{NO_PAD, URL_NO_PAD};
 use tw_hash::{H256, H288};
 
 const BASE64_ADDRESS_LEN: usize = 48;
-const WORKCHAIN_MASK: i32 = 0xff;
 const CHECKSUM_MASK: u16 = 0xff;
 
 const BOUNCEABLE: u8 = 0x11;
@@ -33,11 +32,6 @@ impl UserFriendlyAddress {
             bounceable,
             testnet,
         }
-    }
-
-    #[inline]
-    pub fn as_data(&self) -> &AddressData {
-        &self.data
     }
 
     #[inline]
@@ -147,12 +141,19 @@ impl UserFriendlyAddress {
             (true, true) => BOUNCEABLE_TESTNET,
         };
         bytes[0] = tag;
-        bytes[1] = (self.data.workchain & WORKCHAIN_MASK) as u8;
+        bytes[1] = self.data.workchain_byte();
         bytes[2..34].clone_from_slice(self.data.hash_part.as_slice());
         let crc = CRC_16_XMODEM.checksum(&bytes[0..34]);
         bytes[34] = ((crc >> 8) & CHECKSUM_MASK) as u8;
         bytes[35] = (crc & CHECKSUM_MASK) as u8;
 
         bytes
+    }
+}
+
+impl AsRef<AddressData> for UserFriendlyAddress {
+    #[inline]
+    fn as_ref(&self) -> &AddressData {
+        &self.data
     }
 }

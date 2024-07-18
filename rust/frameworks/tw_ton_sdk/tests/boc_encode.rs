@@ -6,6 +6,7 @@ use serde::Deserialize;
 use serde_json::{json, Value as Json};
 use tw_encoding::hex::ToHex;
 use tw_ton_sdk::boc::BagOfCells;
+use tw_ton_sdk::cell::cell_builder::CellBuilder;
 use tw_ton_sdk::cell::Cell;
 
 #[derive(Deserialize)]
@@ -253,18 +254,27 @@ fn test_wallet_code_hashes() {
     );
 }
 
-// #[test]
-// fn it_constructs_raw() -> anyhow::Result<()> {
-//     let leaf = CellBuilder::new().store_byte(10)?.build()?;
-//     let inter = CellBuilder::new()
-//         .store_byte(20)?
-//         .store_child(leaf)?
-//         .build()?;
-//     let root = CellBuilder::new()
-//         .store_byte(30)?
-//         .store_child(inter)?
-//         .build()?;
-//     let boc = BagOfCells::from_root(root);
-//     let _raw = convert_to_raw_boc(&boc)?;
-//     Ok(())
-// }
+#[test]
+fn test_boc_encode_cell_builder() {
+    let leaf = {
+        let mut builder = CellBuilder::new();
+        builder.store_byte(10).unwrap();
+        builder.build().unwrap()
+    };
+    let inter = {
+        let mut builder = CellBuilder::new();
+        builder.store_byte(20).unwrap().store_child(leaf).unwrap();
+        builder.build().unwrap()
+    };
+    let root = {
+        let mut builder = CellBuilder::new();
+        builder.store_byte(30).unwrap().store_child(inter).unwrap();
+        builder.build().unwrap()
+    };
+
+    let boc = BagOfCells::from_root(root);
+    assert_eq!(
+        boc.to_base64(true).unwrap(),
+        "te6cckEBAwEACwABAh4BAQIUAgACCjHga8U="
+    );
+}

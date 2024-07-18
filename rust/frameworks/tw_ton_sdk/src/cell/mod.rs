@@ -301,7 +301,7 @@ fn write_ref_hashes(
             reference.get_hash(level)
         };
 
-        writer.write_bytes(child_hash.as_slice());
+        writer.write_bytes(child_hash.as_slice())?;
     }
 
     Ok(())
