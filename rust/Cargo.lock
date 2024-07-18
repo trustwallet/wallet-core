@@ -2077,6 +2077,7 @@ dependencies = [
  "tw_keypair",
  "tw_memory",
  "tw_proto",
+ "tw_ton_sdk",
 ]
 
 [[package]]

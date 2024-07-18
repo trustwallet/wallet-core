@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::address::TheOpenNetworkAddress;
+use crate::address::TonAddress;
 use crate::compiler::TheOpenNetworkCompiler;
 use crate::signer::TheOpenNetworkSigner;
 use std::str::FromStr;
@@ -24,7 +24,7 @@ pub struct TheOpenNetworkEntry;
 
 impl CoinEntry for TheOpenNetworkEntry {
     type AddressPrefix = NoPrefix;
-    type Address = TheOpenNetworkAddress;
+    type Address = TonAddress;
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = Proto::SigningOutput<'static>;
     type PreSigningOutput = CompilerProto::PreSigningOutput<'static>;
@@ -40,10 +40,11 @@ impl CoinEntry for TheOpenNetworkEntry {
     fn parse_address(
         &self,
         _coin: &dyn CoinContext,
-        _address: &str,
+        address: &str,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        // TODO consider checking whether the transaction is on testnet.
+        TonAddress::from_str(address)
     }
 
     #[inline]
@@ -52,7 +53,7 @@ impl CoinEntry for TheOpenNetworkEntry {
         _coin: &dyn CoinContext,
         address: &str,
     ) -> AddressResult<Self::Address> {
-        TheOpenNetworkAddress::from_str(address)
+        TonAddress::from_str(address)
     }
 
     #[inline]
