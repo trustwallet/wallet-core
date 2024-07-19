@@ -4555,7 +4555,7 @@
     "coinId": 607,
     "symbol": "TON",
     "decimals": 9,
-    "blockchain": "The Open Network",
+    "blockchain": "TheOpenNetwork",
     "derivation": [
       {
         "path": "m/44'/607'/0'"

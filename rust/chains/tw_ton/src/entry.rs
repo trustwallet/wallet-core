@@ -5,6 +5,7 @@
 use crate::address::TonAddress;
 use crate::compiler::TheOpenNetworkCompiler;
 use crate::signer::TheOpenNetworkSigner;
+use crate::wallet::TonWallet;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
@@ -44,7 +45,7 @@ impl CoinEntry for TheOpenNetworkEntry {
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
         // TODO consider checking whether the transaction is on testnet.
-        TonAddress::from_str(address)
+        TonAddress::from_str(address).and_then(TonAddress::normalize)
     }
 
     #[inline]
@@ -53,18 +54,23 @@ impl CoinEntry for TheOpenNetworkEntry {
         _coin: &dyn CoinContext,
         address: &str,
     ) -> AddressResult<Self::Address> {
-        TonAddress::from_str(address)
+        TonAddress::from_str(address).and_then(TonAddress::normalize)
     }
 
     #[inline]
     fn derive_address(
         &self,
         _coin: &dyn CoinContext,
-        _public_key: PublicKey,
+        public_key: PublicKey,
         _derivation: Derivation,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        let ed25519_pubkey = public_key
+            .to_ed25519()
+            .ok_or(AddressError::PublicKeyTypeMismatch)?;
+        TonWallet::std_with_public_key(ed25519_pubkey.clone())
+            .map(|wallet| wallet.address().clone())
+            .map_err(|_| AddressError::Internal)
     }
 
     #[inline]

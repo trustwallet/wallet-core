@@ -40,13 +40,21 @@ pub fn test_address_normalization(coin: CoinType, denormalized: &str, normalized
 }
 
 pub fn test_address_valid(coin: CoinType, address: &str) {
-    let address = TWStringHelper::create(address);
-    assert!(unsafe { tw_any_address_is_valid(address.ptr(), coin as u32) });
+    let addr = TWStringHelper::create(address);
+    assert!(
+        unsafe { tw_any_address_is_valid(addr.ptr(), coin as u32) },
+        "'{}' expected to be valid",
+        address
+    );
 }
 
 pub fn test_address_invalid(coin: CoinType, address: &str) {
-    let address = TWStringHelper::create(address);
-    assert!(!unsafe { tw_any_address_is_valid(address.ptr(), coin as u32) });
+    let addr = TWStringHelper::create(address);
+    assert!(
+        !unsafe { tw_any_address_is_valid(addr.ptr(), coin as u32) },
+        "'{}' expected to be invalid",
+        address
+    );
 }
 
 pub fn test_address_get_data(coin: CoinType, address: &str, data_hex: &str) {

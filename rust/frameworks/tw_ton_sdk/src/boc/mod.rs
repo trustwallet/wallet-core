@@ -24,8 +24,9 @@ pub struct BagOfCells {
 
 impl BagOfCells {
     pub fn from_root(root: Cell) -> BagOfCells {
-        let arc = Arc::new(root);
-        BagOfCells { roots: vec![arc] }
+        BagOfCells {
+            roots: vec![root.into_arc()],
+        }
     }
 
     pub fn num_roots(&self) -> usize {
@@ -64,7 +65,7 @@ impl BagOfCells {
                 raw_cell.is_exotic,
             )
             .tw_err(|_| CellErrorType::BagOfCellsDeserializationError)?;
-            cells.push(Arc::new(cell));
+            cells.push(cell.into_arc());
         }
 
         let roots = raw

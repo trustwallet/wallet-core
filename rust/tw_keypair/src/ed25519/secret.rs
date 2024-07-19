@@ -17,7 +17,7 @@ use zeroize::ZeroizeOnDrop;
 /// with 512-bits output to digest a `PrivateKey`.
 ///
 /// Represents [ed25519_extsk](https://github.com/trustwallet/wallet-core/blob/423f0e34725f69c0a9d535e1a32534c99682edea/trezor-crypto/crypto/ed25519-donna/ed25519.c#L23-L32).
-#[derive(ZeroizeOnDrop)]
+#[derive(Clone, ZeroizeOnDrop)]
 pub(crate) struct ExpandedSecretKey<H: Hasher512> {
     /// 32 byte scalar. Represents `extsk[0..32]`.
     pub key: Scalar,

@@ -2,22 +2,35 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::resources::{BASE_WORKCHAIN, MASTER_WORKCHAIN};
 use std::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
+use tw_hash::H256;
 use tw_memory::Data;
+use tw_ton_sdk::address::address_data::AddressData;
 use tw_ton_sdk::address::raw_address::RawAddress;
 use tw_ton_sdk::address::user_friendly_address::UserFriendlyAddress;
 
-const DEFAULT_BOUNCEABLE: bool = false;
-const DEFAULT_TESTNET: bool = false;
+pub const DEFAULT_BOUNCEABLE: bool = false;
+pub const DEFAULT_TESTNET: bool = false;
 
 /// User-friendly, base64 URL-safe **by default** encoded TON address.
 /// Please note it also supports raw (hex) and user-friendly base64 standard representations as well.
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TonAddress(UserFriendlyAddress);
 
 impl TonAddress {
+    pub fn new(workchain: i32, hash_part: H256) -> Self {
+        let data = AddressData::new(workchain, hash_part);
+        TonAddress(UserFriendlyAddress::with_flags(
+            data,
+            DEFAULT_BOUNCEABLE,
+            DEFAULT_TESTNET,
+        ))
+    }
+
     pub fn from_hex_str(s: &str) -> AddressResult<TonAddress> {
         let raw_address = RawAddress::from_str(s)?;
         let user_friendly_address = UserFriendlyAddress::with_flags(
@@ -28,12 +41,40 @@ impl TonAddress {
         Ok(TonAddress(user_friendly_address))
     }
 
+    #[inline]
     pub fn from_base64_url(s: &str) -> AddressResult<TonAddress> {
         UserFriendlyAddress::from_base64_url(s).map(TonAddress)
     }
 
+    #[inline]
     pub fn from_base64_std(s: &str) -> AddressResult<TonAddress> {
         UserFriendlyAddress::from_base64_std(s).map(TonAddress)
+    }
+
+    /// Normalizes the TON address according to the best wallet practice:
+    /// https://docs.ton.org/learn/overviews/addresses#bounceable-vs-non-bounceable-addresses
+    ///
+    /// Returns error if the address workchain is unexpected.
+    #[inline]
+    pub fn normalize(self) -> AddressResult<Self> {
+        let workchain = self.0.as_ref().workchain;
+        if workchain != MASTER_WORKCHAIN && workchain != BASE_WORKCHAIN {
+            return Err(AddressError::UnexpectedAddressPrefix);
+        }
+
+        Ok(self
+            .set_bounceable(DEFAULT_BOUNCEABLE)
+            .set_testnet(DEFAULT_TESTNET))
+    }
+
+    #[inline]
+    pub fn set_bounceable(self, bounceable: bool) -> Self {
+        TonAddress(self.0.set_bounceable(bounceable))
+    }
+
+    #[inline]
+    pub fn set_testnet(self, testnet: bool) -> Self {
+        TonAddress(self.0.set_testnet(testnet))
     }
 }
 

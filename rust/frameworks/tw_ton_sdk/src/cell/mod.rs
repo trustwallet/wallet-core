@@ -68,6 +68,10 @@ impl Cell {
         Ok(result)
     }
 
+    pub fn into_arc(self) -> CellArc {
+        Arc::new(self)
+    }
+
     pub fn data(&self) -> &[u8] {
         self.data.as_slice()
     }

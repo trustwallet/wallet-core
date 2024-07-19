@@ -48,6 +48,10 @@ impl CellBuilder {
         self.store_numeric(bit_len, val)
     }
 
+    pub fn store_i32(&mut self, bit_len: usize, val: i32) -> CellResult<&mut Self> {
+        self.store_numeric(bit_len, val)
+    }
+
     pub fn store_uint(&mut self, bit_len: usize, val: &U256) -> CellResult<&mut Self> {
         if val.bits() > bit_len {
             return CellError::err(CellErrorType::CellBuilderError).context(format!(
@@ -162,7 +166,7 @@ impl CellBuilder {
     ///
     /// The cell is wrapped it the `Arc`.
     pub fn store_child(&mut self, cell: Cell) -> CellResult<&mut Self> {
-        self.store_reference(&Arc::new(cell))
+        self.store_reference(&cell.into_arc())
     }
 
     pub fn store_remaining_bits(&mut self, parser: &mut CellParser) -> CellResult<&mut Self> {

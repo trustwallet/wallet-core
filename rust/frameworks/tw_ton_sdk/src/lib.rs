@@ -7,3 +7,4 @@ pub mod boc;
 pub mod cell;
 pub mod crc;
 pub mod error;
+pub mod message;
