@@ -22,6 +22,16 @@ pub const DEFAULT_TESTNET: bool = false;
 pub struct TonAddress(UserFriendlyAddress);
 
 impl TonAddress {
+    pub const NULL: TonAddress = TonAddress::null();
+
+    pub const fn null() -> TonAddress {
+        TonAddress(UserFriendlyAddress::with_flags(
+            AddressData::null(),
+            DEFAULT_BOUNCEABLE,
+            DEFAULT_TESTNET,
+        ))
+    }
+
     pub fn new(workchain: i32, hash_part: H256) -> Self {
         let data = AddressData::new(workchain, hash_part);
         TonAddress(UserFriendlyAddress::with_flags(
@@ -75,6 +85,17 @@ impl TonAddress {
     #[inline]
     pub fn set_testnet(self, testnet: bool) -> Self {
         TonAddress(self.0.set_testnet(testnet))
+    }
+
+    #[inline]
+    pub fn bounceable(&self) -> bool {
+        self.0.bounceable()
+    }
+}
+
+impl AsRef<AddressData> for TonAddress {
+    fn as_ref(&self) -> &AddressData {
+        self.0.as_ref()
     }
 }
 

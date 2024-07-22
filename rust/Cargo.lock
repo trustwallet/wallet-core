@@ -2078,6 +2078,7 @@ dependencies = [
  "tw_hash",
  "tw_keypair",
  "tw_memory",
+ "tw_number",
  "tw_proto",
  "tw_ton_sdk",
 ]

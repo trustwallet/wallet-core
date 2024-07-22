@@ -8,3 +8,5 @@ pub mod entry;
 pub mod resources;
 pub mod signer;
 pub mod wallet;
+pub mod message;
+pub mod transaction;

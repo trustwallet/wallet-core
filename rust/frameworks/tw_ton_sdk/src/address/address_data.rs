@@ -13,10 +13,14 @@ pub struct AddressData {
 }
 
 impl AddressData {
-    pub const NULL: AddressData = AddressData {
-        workchain: 0,
-        hash_part: H256::new(),
-    };
+    pub const NULL: AddressData = AddressData::null();
+
+    pub const fn null() -> AddressData {
+        AddressData {
+            workchain: 0,
+            hash_part: H256::new(),
+        }
+    }
 
     pub fn new(workchain: i32, hash_part: H256) -> AddressData {
         AddressData {

@@ -52,6 +52,10 @@ impl CellBuilder {
         self.store_numeric(bit_len, val)
     }
 
+    pub fn store_u64(&mut self, bit_len: usize, val: u64) -> CellResult<&mut Self> {
+        self.store_numeric(bit_len, val)
+    }
+
     pub fn store_uint(&mut self, bit_len: usize, val: &U256) -> CellResult<&mut Self> {
         if val.bits() > bit_len {
             return CellError::err(CellErrorType::CellBuilderError).context(format!(

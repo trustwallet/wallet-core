@@ -10,14 +10,21 @@ use tw_ton_sdk::cell::cell_builder::CellBuilder;
 use tw_ton_sdk::cell::{Cell, CellArc};
 use tw_ton_sdk::error::CellResult;
 
+/// We support WalletV4R2 version only.
+/// Consider adding a new `WalletV<n>R<k>` if needed.
+enum Revision {
+    R2,
+}
+
 pub struct WalletV4 {
-    code: CellArc,
+    revision: Revision,
 }
 
 impl WalletV4 {
     pub fn r2() -> CellResult<Self> {
-        let code = Arc::clone(WALLET_V4R2_CODE.single_root()?);
-        Ok(WalletV4 { code })
+        Ok(WalletV4 {
+            revision: Revision::R2,
+        })
     }
 }
 
@@ -36,6 +43,12 @@ impl WalletVersion for WalletV4 {
     }
 
     fn code(&self) -> CellResult<CellArc> {
-        Ok(Arc::clone(&self.code))
+        match self.revision {
+            Revision::R2 => WALLET_V4R2_CODE.single_root().map(Arc::clone),
+        }
+    }
+
+    fn has_op(&self) -> bool {
+        matches!(self.revision, Revision::R2)
     }
 }

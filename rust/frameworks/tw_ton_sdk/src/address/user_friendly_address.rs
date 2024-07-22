@@ -26,7 +26,7 @@ pub struct UserFriendlyAddress {
 
 impl UserFriendlyAddress {
     #[inline]
-    pub fn with_flags(data: AddressData, bounceable: bool, testnet: bool) -> Self {
+    pub const fn with_flags(data: AddressData, bounceable: bool, testnet: bool) -> Self {
         UserFriendlyAddress {
             data,
             bounceable,
