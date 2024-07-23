@@ -25,7 +25,8 @@ impl TheOpenNetworkCompiler {
         _coin: &dyn CoinContext,
         _input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
-        todo!()
+        SigningError::err(SigningErrorType::Error_not_supported)
+            .context("Transaction pre-image hashing is not supported for TON blockchain yet")
     }
 
     #[inline]
@@ -45,6 +46,7 @@ impl TheOpenNetworkCompiler {
         _signatures: Vec<SignatureBytes>,
         _public_keys: Vec<PublicKeyBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        todo!()
+        SigningError::err(SigningErrorType::Error_not_supported)
+            .context("Transaction compiling is not supported for TON blockchain yet")
     }
 }

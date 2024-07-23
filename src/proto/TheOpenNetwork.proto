@@ -92,9 +92,12 @@ message SigningOutput {
     // Signed and base64 encoded BOC message
     string encoded = 1;
 
+    // Transaction Cell hash
+    bytes hash = 2;
+
     // error code, 0 is ok, other codes will be treated as errors
-    Common.Proto.SigningError error = 2;
+    Common.Proto.SigningError error = 3;
 
     // error code description
-    string error_message = 3;
+    string error_message = 4;
 }

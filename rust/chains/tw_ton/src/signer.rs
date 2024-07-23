@@ -40,10 +40,6 @@ impl TheOpenNetworkSigner {
         let mut transfer_message =
             TransferInternalMessage::new(transfer_request.dest, transfer_request.ton_amount);
 
-        // Whether to add 'StateInit' reference.
-        let state_init = transfer_request.seqno == 0;
-        if transfer_request.seqno == 0 {}
-
         let transfer_payload = match transfer_request.comment {
             Some(comment) => CommentPayload::new(comment)
                 .build()
@@ -71,6 +67,8 @@ impl TheOpenNetworkSigner {
             .context("Error generating an external message cell")
             .map_err(cell_to_signing_error)?;
 
+        // Whether to add 'StateInit' reference.
+        let state_init = transfer_request.seqno == 0;
         let signed_tx = wallet
             .sign_transaction(external_message, state_init)
             .context("Error signing/wrapping an external message")?
@@ -78,6 +76,7 @@ impl TheOpenNetworkSigner {
             .context("Error generating signed message cell")
             .map_err(cell_to_signing_error)?;
 
+        let signed_tx_hash = signed_tx.cell_hash();
         let signed_tx_encoded = BagOfCells::from_root(signed_tx)
             .to_base64(HAS_CRC32)
             .context("Error serializing signed transaction as BoC")
@@ -85,6 +84,7 @@ impl TheOpenNetworkSigner {
 
         Ok(Proto::SigningOutput {
             encoded: signed_tx_encoded.into(),
+            hash: signed_tx_hash.to_vec().into(),
             ..Proto::SigningOutput::default()
         })
     }

@@ -1658,6 +1658,7 @@ dependencies = [
  "tw_misc",
  "tw_number",
  "tw_proto",
+ "tw_ton_sdk",
  "tw_utxo",
 ]
 
