@@ -92,6 +92,10 @@ impl<Version: WalletVersion> TonWallet<Version> {
         &self.address
     }
 
+    pub fn state_init(&self) -> CellResult<StateInit> {
+        Self::state_init_impl(&self.version, &self.public_key, self.wallet_id)
+    }
+
     pub fn create_external_body(
         &self,
         expire_at: u32,
@@ -130,8 +134,7 @@ impl<Version: WalletVersion> TonWallet<Version> {
         state_init: bool,
     ) -> SigningResult<SignedTransaction> {
         let state_init = if state_init {
-            let state_init = Self::state_init(&self.version, &self.public_key, self.wallet_id)
-                .map_err(cell_to_signing_error)?;
+            let state_init = self.state_init().map_err(cell_to_signing_error)?;
             Some(state_init)
         } else {
             None
@@ -158,7 +161,7 @@ impl<Version: WalletVersion> TonWallet<Version> {
         wallet_id: i32,
     ) -> CellResult<Self> {
         let state_init_hash =
-            Self::state_init(&version, &public_key, wallet_id)?.create_account_id()?;
+            Self::state_init_impl(&version, &public_key, wallet_id)?.create_account_id()?;
         let address = TonAddress::new(workchain, state_init_hash);
         Ok(TonWallet {
             public_key,
@@ -169,7 +172,7 @@ impl<Version: WalletVersion> TonWallet<Version> {
         })
     }
 
-    fn state_init(
+    fn state_init_impl(
         version: &Version,
         public_key: &PublicKey,
         wallet_id: i32,

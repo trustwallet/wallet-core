@@ -27,6 +27,7 @@ impl SignedTransaction {
             .store_address(&self.src_address)? // src
             .store_address(&self.dest_address)? // dest
             .store_coins(&self.import_fee)?; // import fee
+
         if let Some(ref state_init) = self.state_init {
             wrap_builder.store_bit(true)?; // state init present
             wrap_builder.store_bit(true)?; // state init in ref
@@ -34,6 +35,7 @@ impl SignedTransaction {
         } else {
             wrap_builder.store_bit(false)?; // state init absent
         }
+
         wrap_builder.store_bit(true)?; // signed_body is always defined
         wrap_builder.store_child(self.signed_body.build()?)?; // Signed body
 

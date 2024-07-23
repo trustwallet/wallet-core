@@ -21,6 +21,9 @@ const FWD_FEES: U256 = U256::ZERO;
 pub struct TransferInternalMessage {
     pub dest: TonAddress,
     pub value: U256,
+    /// At WalletCore, we do not use `state_init` at the internal message level,
+    /// but set it the [`SignedTransaction::state_init`].
+    #[allow(dead_code)]
     pub state_init: Option<CellArc>,
     pub data: Option<CellArc>,
 }
@@ -33,15 +36,6 @@ impl TransferInternalMessage {
             state_init: None,
             data: None,
         }
-    }
-
-    pub fn with_state_init(&mut self, state_init: Cell) -> &mut Self {
-        self.with_state_init_ref(state_init.into_arc())
-    }
-
-    pub fn with_state_init_ref(&mut self, state_init: CellArc) -> &mut Self {
-        self.state_init = Some(state_init);
-        self
     }
 
     pub fn with_data(&mut self, data: Cell) -> &mut Self {
@@ -67,10 +61,12 @@ impl TransferInternalMessage {
         builder.store_coins(&FWD_FEES)?; // fwd_fees
         builder.store_u64(64, CREATED_LT)?; // created_lt
         builder.store_u32(32, CREATED_AT)?; // created_at
+
         builder.store_bit(self.state_init.is_some())?; // state_init?
         if let Some(state_init) = self.state_init.as_ref() {
             builder.store_reference(state_init)?;
         }
+
         builder.store_bit(self.data.is_some())?; // data?
         if let Some(data) = self.data.as_ref() {
             builder.store_reference(data)?;

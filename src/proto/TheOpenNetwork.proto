@@ -77,10 +77,13 @@ message SigningInput {
     // The secret private key used for signing (32 bytes).
     bytes private_key = 1;
 
+    // Public key of the signer (32 bytes). Used when transaction is going to be signed externally.
+    bytes public_key = 2;
+
     // The payload transfer
     oneof action_oneof {
-        Transfer transfer = 2;
-        JettonTransfer jetton_transfer = 3;
+        Transfer transfer = 3;
+        JettonTransfer jetton_transfer = 4;
     }
 }
 

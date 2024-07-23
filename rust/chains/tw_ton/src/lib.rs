@@ -5,8 +5,9 @@
 pub mod address;
 pub mod compiler;
 pub mod entry;
+pub mod message;
 pub mod resources;
 pub mod signer;
-pub mod wallet;
-pub mod message;
+pub mod signing_request;
 pub mod transaction;
+pub mod wallet;
