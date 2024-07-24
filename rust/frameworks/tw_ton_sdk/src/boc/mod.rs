@@ -29,10 +29,6 @@ impl BagOfCells {
         }
     }
 
-    pub fn num_roots(&self) -> usize {
-        self.roots.len()
-    }
-
     pub fn single_root(&self) -> CellResult<&CellArc> {
         let root_count = self.roots.len();
         if root_count == 1 {

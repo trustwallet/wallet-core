@@ -27,10 +27,6 @@ impl CellBuilder {
         CellBuilder::default()
     }
 
-    pub fn set_cell_is_exotic(&mut self, val: bool) {
-        self.is_cell_exotic = val;
-    }
-
     pub fn store_bit(&mut self, val: bool) -> CellResult<&mut Self> {
         self.bit_writer.write_bit(val)?;
         Ok(self)
