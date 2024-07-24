@@ -8,6 +8,7 @@ bitreader = "0.3.8"
 bitstream-io = "2.5.0"
 crc = "3"
 lazy_static = "1.4.0"
+num-bigint = "0.4"
 tw_coin_entry = { path = "../../tw_coin_entry" }
 tw_encoding = { path = "../../tw_encoding" }
 tw_keypair = { path = "../../tw_keypair" }

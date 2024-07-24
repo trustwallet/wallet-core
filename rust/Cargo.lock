@@ -2092,6 +2092,7 @@ dependencies = [
  "bitstream-io",
  "crc",
  "lazy_static",
+ "num-bigint",
  "serde",
  "serde_json",
  "tw_coin_entry",

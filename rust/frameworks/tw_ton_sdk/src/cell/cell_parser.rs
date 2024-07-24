@@ -5,9 +5,11 @@
 use crate::address::address_data::AddressData;
 use crate::error::{CellError, CellErrorType, CellResult};
 use bitreader::BitReader;
+use num_bigint::BigUint;
 use tw_coin_entry::error::prelude::{MapTWError, ResultContext};
 use tw_hash::H256;
 use tw_memory::Data;
+use tw_number::U256;
 
 pub struct CellParser<'a> {
     bit_reader: BitReader<'a>,
@@ -48,23 +50,21 @@ impl<'a> CellParser<'a> {
             .tw_err(|_| CellErrorType::CellParserError)
     }
 
-    // TODO
-    // pub fn load_uint(&mut self, bit_len: usize) -> CellResult<U256> {
-    //     let num_words = (bit_len + 31) / 32;
-    //     let high_word_bits = if bit_len % 32 == 0 { 32 } else { bit_len % 32 };
-    //     let mut words: Vec<u32> = vec![0 as u32; num_words];
-    //     let high_word = self.load_u32(high_word_bits)?;
-    //     words[num_words - 1] = high_word;
-    //     for i in (0..num_words - 1).rev() {
-    //         let word = self.load_u32(32)?;
-    //         words[i] = word;
-    //     }
-    //     let big_uint = BigUint::new(words);
-    //     Ok(big_uint)
-    // }
-
-    pub fn load_byte(&mut self) -> CellResult<u8> {
-        self.load_u8(8)
+    pub fn load_uint(&mut self, bit_len: usize) -> CellResult<U256> {
+        let num_words = (bit_len + 31) / 32;
+        let high_word_bits = if bit_len % 32 == 0 { 32 } else { bit_len % 32 };
+        let mut words: Vec<u32> = vec![0 as u32; num_words];
+        let high_word = self.load_u32(high_word_bits)?;
+        words[num_words - 1] = high_word;
+        for i in (0..num_words - 1).rev() {
+            let word = self.load_u32(32)?;
+            words[i] = word;
+        }
+        let big_uint = BigUint::new(words);
+        let uint = U256::from_big_endian_slice(&big_uint.to_bytes_be())
+            .tw_err(|_| CellErrorType::CellParserError)
+            .context("Expected up to 32 bytes of uint")?;
+        Ok(uint)
     }
 
     pub fn load_slice(&mut self, slice: &mut [u8]) -> CellResult<()> {
@@ -84,14 +84,14 @@ impl<'a> CellParser<'a> {
         String::from_utf8(bytes).tw_err(|_| CellErrorType::CellParserError)
     }
 
-    // pub fn load_coins(&mut self) -> CellResult<U256> {
-    //     let num_bytes = self.load_u8(4)?;
-    //     if num_bytes == 0 {
-    //         Ok(U256::zero())
-    //     } else {
-    //         self.load_uint((num_bytes * 8) as usize)
-    //     }
-    // }
+    pub fn load_coins(&mut self) -> CellResult<U256> {
+        let num_bytes = self.load_u8(4)?;
+        if num_bytes == 0 {
+            Ok(U256::zero())
+        } else {
+            self.load_uint((num_bytes * 8) as usize)
+        }
+    }
 
     pub fn load_address(&mut self) -> CellResult<AddressData> {
         let tp = self.load_u8(2)?;
@@ -108,14 +108,6 @@ impl<'a> CellParser<'a> {
                 .context(format!("Invalid address type: {tp}")),
         }
     }
-
-    // pub fn load_unary_length(&mut self) -> anyhow::Result<usize> {
-    //     let mut res = 0;
-    //     while self.load_bit()? {
-    //         res = res + 1;
-    //     }
-    //     Ok(res)
-    // }
 
     pub fn ensure_empty(&self) -> CellResult<()> {
         let remaining = self.remaining_bits();
