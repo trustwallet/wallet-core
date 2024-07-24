@@ -133,13 +133,20 @@ impl Cell {
             write!(f, "-> Cell(ref {depth})")?;
         }
 
+        let maybe_exotic_type = if matches!(self.cell_type, CellType::Ordinary) {
+            "".to_string()
+        } else {
+            format!("exotic={:?} ", self.cell_type)
+        };
+
         write!(
             f,
-            " {{ data={}, bit_len={} }}",
+            " {{ data={}, bit_len={} {maybe_exotic_type}}}",
             self.data.to_hex(),
-            self.bit_len
+            self.bit_len,
         )?;
 
+        writeln!(f)?;
         let ref_depth = depth + 1;
         for reference in self.references() {
             reference.fmt_debug(f, ref_depth)?;
