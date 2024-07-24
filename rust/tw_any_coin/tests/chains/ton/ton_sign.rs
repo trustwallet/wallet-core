@@ -252,3 +252,94 @@ fn test_ton_sign_transfer_invalid_wallet_version() {
 
     assert_eq!(output.error, SigningError::Error_not_supported);
 }
+
+#[test]
+fn test_ton_sign_transfer_jettons() {
+    let private_key = "c054900a527538c1b4325688a421c0469b171c29f23a62da216e90b0df2412ee";
+
+    let transfer = Proto::Transfer {
+        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
+        dest: "EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja".into(),
+        amount: 100 * 1000 * 1000,
+        sequence_number: 0,
+        mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
+            | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
+        expire_at: 1787693046,
+        bounceable: true,
+        ..Proto::Transfer::default()
+    };
+
+    let jetton_transfer = Proto::JettonTransfer {
+        transfer: Some(transfer),
+        query_id: 69,
+        // Transfer 1 testtwt (decimal precision is 9).
+        jetton_amount: 1000 * 1000 * 1000,
+        to_owner: "EQAFwMs5ha8OgZ9M4hQr80z9NkE7rGxUpE1hCFndiY6JnDx8".into(),
+        // Send unused toncoins back to sender.
+        response_address: "EQBaKIMq5Am2p_rfR1IFTwsNWHxBkOpLTmwUain5Fj4llTXk".into(),
+        forward_amount: 1,
+    };
+
+    let input = Proto::SigningInput {
+        private_key: private_key.decode_hex().unwrap().into(),
+        action_oneof: ActionType::jetton_transfer(jetton_transfer),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::TON, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    // Successfully broadcasted: https://testnet.tonviewer.com/transaction/2HOPGAXhez3v6sdfj-5p8mPHX4S4T0CgxVbm0E2swxE=
+    assert_eq_boc(&output.encoded, "te6ccgICABoAAQAABCMAAAJFiAC0UQZVyBNtT/W+jqQKnhYasPiDIdSWnNgo1FPyLHxLKh4ABAABAZz3iNHD1z2mxbtpFAtmbVevYMnB4yHPkF3WAsL3KHcrqCw0SWezOg4lVz1zzSReeFDx98ByAqY9+eR5VF3xyugAKamjF/////8AAAAAAAMAAgFoYgAxNB+Hnam4Pt4pSYNuGp+1rhx1QxEXrrZTGnfPOq6D8yAvrwgAAAAAAAAAAAAAAAAAAQADAKoPin6lAAAAAAAAAEVDuaygCAALgZZzC14dAz6ZxChX5pn6bIJ3WNipSJrCELO7Ex0TOQAWiiDKuQJtqf630dSBU8LDVh8QZDqS05sFGop+RY+JZUICAgE0AAYABQBRAAAAACmpoxfOamBhePRNnx/pqQViBzW0dDCy/+1WLV1VhgbVTL6i30ABFP8A9KQT9LzyyAsABwIBIAANAAgE+PKDCNcYINMf0x/THwL4I7vyZO1E0NMf0x/T//QE0VFDuvKhUVG68qIF+QFUEGT5EPKj+AAkpMjLH1JAyx9SMMv/UhD0AMntVPgPAdMHIcAAn2xRkyDXSpbTB9QC+wDoMOAhwAHjACHAAuMAAcADkTDjDQOkyMsfEssfy/8ADAALAAoACQAK9ADJ7VQAbIEBCNcY+gDTPzBSJIEBCPRZ8qeCEGRzdHJwdIAYyMsFywJQBc8WUAP6AhPLassfEss/yXP7AABwgQEI1xj6ANM/yFQgR4EBCPRR8qeCEG5vdGVwdIAYyMsFywJQBs8WUAT6AhTLahLLH8s/yXP7AAIAbtIH+gDU1CL5AAXIygcVy//J0Hd0gBjIywXLAiLPFlAF+gIUy2sSzMzJc/sAyEAUgQEI9FHypwICAUgAFwAOAgEgABAADwBZvSQrb2omhAgKBrkPoCGEcNQICEekk30pkQzmkD6f+YN4EoAbeBAUiYcVnzGEAgEgABIAEQARuMl+1E0NcLH4AgFYABYAEwIBIAAVABQAGa8d9qJoQBBrkOuFj8AAGa3OdqJoQCBrkOuF/8AAPbKd+1E0IEBQNch9AQwAsjKB8v/ydABgQEI9ApvoTGAC5tAB0NMDIXGwkl8E4CLXScEgkl8E4ALTHyGCEHBsdWe9IoIQZHN0cr2wkl8F4AP6QDAg+kQByMoHy//J0O1E0IEBQNch9AQwXIEBCPQKb6Exs5JfB+AF0z/IJYIQcGx1Z7qSODDjDQOCEGRzdHK6kl8G4w0AGQAYAIpQBIEBCPRZMO1E0IEBQNcgyAHPFvQAye1UAXKwjiOCEGRzdHKDHrFwgBhQBcsFUAPPFiP6AhPLassfyz/JgED7AJJfA+IAeAH6APQEMPgnbyIwUAqhIb7y4FCCEHBsdWeDHrFwgBhQBMsFJs8WWPoCGfQAy2kXyx9SYMs/IMmAQPsABg==");
+    assert_eq!(
+        output.hash.to_hex(),
+        "3e4dac37acdc99ca670b3747ab2730e818727d9d25c80d3987abe501356d0da0"
+    );
+}
+
+#[test]
+fn test_ton_sign_transfer_jettons_with_comment() {
+    let private_key = "c054900a527538c1b4325688a421c0469b171c29f23a62da216e90b0df2412ee";
+
+    let transfer = Proto::Transfer {
+        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
+        dest: "EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja".into(),
+        amount: 100 * 1000 * 1000,
+        sequence_number: 1,
+        mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
+            | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
+        expire_at: 1787693046,
+        bounceable: true,
+        comment: "test comment".into(),
+        ..Proto::Transfer::default()
+    };
+
+    let jetton_transfer = Proto::JettonTransfer {
+        transfer: Some(transfer),
+        query_id: 0,
+        // Transfer 0.5 testtwt (decimal precision is 9).
+        jetton_amount: 500 * 1000 * 1000,
+        to_owner: "EQAFwMs5ha8OgZ9M4hQr80z9NkE7rGxUpE1hCFndiY6JnDx8".into(),
+        // Send unused toncoins back to sender.
+        response_address: "EQBaKIMq5Am2p_rfR1IFTwsNWHxBkOpLTmwUain5Fj4llTXk".into(),
+        forward_amount: 1,
+    };
+
+    let input = Proto::SigningInput {
+        private_key: private_key.decode_hex().unwrap().into(),
+        action_oneof: ActionType::jetton_transfer(jetton_transfer),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::TON, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    // Successfully broadcasted: https://testnet.tonviewer.com/transaction/12bfe84f947740aec3faa54f04a50690900e3aae9ac9596cfa6804a61a48f429
+    assert_eq_boc(&output.encoded, "te6ccgICAAQAAQAAARgAAAFFiAC0UQZVyBNtT/W+jqQKnhYasPiDIdSWnNgo1FPyLHxLKgwAAQGcaIWVosi1XnveAmoG9y0/mPeNUqUu7GY76mdbRAaVeNeDOPDlh5M3BEb26kkc6XoYDekV60o2iOobN+TGS76jBSmpoxdqjgf2AAAAAQADAAIBaGIAMTQfh52puD7eKUmDbhqfta4cdUMRF662Uxp3zzqug/MgL68IAAAAAAAAAAAAAAAAAAEAAwDKD4p+pQAAAAAAAAAAQdzWUAgAC4GWcwteHQM+mcQoV+aZ+myCd1jYqUiawhCzuxMdEzkAFoogyrkCban+t9HUgVPCw1YfEGQ6ktObBRqKfkWPiWVCAgAAAAB0ZXN0IGNvbW1lbnQ=");
+    assert_eq!(
+        output.hash.to_hex(),
+        "c98c205c8dd37d9a6ab5db6162f5b9d37cefa067de24a765154a5eb7a359f22f"
+    );
+}

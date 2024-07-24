@@ -2,12 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::message::internal_message::transfer::TransferInternalMessage;
-use crate::message::internal_message::InternalMessage;
-use crate::message::payload::comment::CommentPayload;
-use crate::message::payload::empty::EmptyPayload;
 use crate::signing_request::builder::SigningRequestBuilder;
-use crate::signing_request::SigningRequest;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
@@ -32,44 +27,16 @@ impl TheOpenNetworkSigner {
         _coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        let SigningRequest {
-            wallet,
-            transfer_request,
-        } = SigningRequestBuilder::build(&input)?;
+        let signing_request = SigningRequestBuilder::build(&input)?;
 
-        let mut transfer_message =
-            TransferInternalMessage::new(transfer_request.dest, transfer_request.ton_amount);
-
-        let transfer_payload = match transfer_request.comment {
-            Some(comment) => CommentPayload::new(comment)
-                .build()
-                .context("Error generating Transfer's comment payload")
-                .map_err(cell_to_signing_error)?,
-            None => EmptyPayload
-                .build()
-                .context("Error generating Transfer's empty payload")
-                .map_err(cell_to_signing_error)?,
-        };
-        transfer_message.with_data(transfer_payload);
-
-        let transfer_message_cell = transfer_message
-            .build()
-            .context("Error generating 'Transfer' internal message cell")
-            .map_err(cell_to_signing_error)?;
-        let internal_message = InternalMessage::new(transfer_request.mode, transfer_message_cell);
-
-        let external_message = wallet
-            .create_external_body(
-                transfer_request.expire_at,
-                transfer_request.seqno,
-                vec![internal_message],
-            )
-            .context("Error generating an external message cell")
+        let external_message = signing_request
+            .create_external_message_to_sign()
             .map_err(cell_to_signing_error)?;
 
         // Whether to add 'StateInit' reference.
-        let state_init = transfer_request.seqno == 0;
-        let signed_tx = wallet
+        let state_init = signing_request.transfer_request.seqno == 0;
+        let signed_tx = signing_request
+            .wallet
             .sign_transaction(external_message, state_init)
             .context("Error signing/wrapping an external message")?
             .build()

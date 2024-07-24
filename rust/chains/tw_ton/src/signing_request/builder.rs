@@ -3,7 +3,9 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::TonAddress;
-use crate::signing_request::{SigningRequest, TransferRequest};
+use crate::signing_request::{
+    JettonTransferRequest, SigningRequest, TransferPayload, TransferRequest,
+};
 use crate::wallet::wallet_v4::WalletV4;
 use crate::wallet::TonWallet;
 use std::str::FromStr;
@@ -22,12 +24,13 @@ impl SigningRequestBuilder {
     pub fn build(input: &Proto::SigningInput) -> SigningResult<SigningRequest> {
         let wallet = Self::wallet(input)?;
 
-        let (transfer_request, _message_payload) = match input.action_oneof {
-            ActionType::transfer(ref transfer) => (Self::transfer_request(transfer)?, None),
-            ActionType::jetton_transfer(ref jetton) => {
-                let (transfer, payload) = Self::jetton_transfer_request(jetton)?;
-                (transfer, Some(payload))
+        let transfer_request = match input.action_oneof {
+            ActionType::transfer(ref transfer) => {
+                // No payload specified.
+                let payload = None;
+                Self::transfer_request(transfer, payload)?
             },
+            ActionType::jetton_transfer(ref jetton) => Self::jetton_transfer_request(jetton)?,
             ActionType::None => {
                 return SigningError::err(SigningErrorType::Error_invalid_params)
                     .context("Expected 'action_oneof' to be set")
@@ -55,7 +58,10 @@ impl SigningRequestBuilder {
         TonWallet::std_with_public_key(public_key).map_err(cell_to_signing_error)
     }
 
-    fn transfer_request(input: &Proto::Transfer) -> SigningResult<TransferRequest> {
+    fn transfer_request(
+        input: &Proto::Transfer,
+        payload: Option<TransferPayload>,
+    ) -> SigningResult<TransferRequest> {
         if input.wallet_version != Proto::WalletVersion::WALLET_V4_R2 {
             return SigningError::err(SigningErrorType::Error_not_supported)
                 .context("'WALLET_V4_R2' version is supported only");
@@ -93,12 +99,36 @@ impl SigningRequestBuilder {
             mode,
             expire_at,
             comment,
+            payload,
         })
     }
 
-    fn jetton_transfer_request(
-        _input: &Proto::JettonTransfer,
-    ) -> SigningResult<(TransferRequest, ())> {
-        todo!()
+    fn jetton_transfer_request(input: &Proto::JettonTransfer) -> SigningResult<TransferRequest> {
+        let dest = TonAddress::from_str(input.to_owner.as_ref())
+            .into_tw()
+            .context("Invalid 'dest' address")?;
+
+        let response_address = TonAddress::from_str(input.response_address.as_ref())
+            .into_tw()
+            .context("Invalid 'response_address' address")?;
+
+        let jetton_payload = JettonTransferRequest {
+            query_id: input.query_id,
+            jetton_amount: U256::from(input.jetton_amount),
+            dest,
+            response_address,
+            forward_ton_amount: U256::from(input.forward_amount),
+        };
+
+        let ton_transfer_input = input
+            .transfer
+            .as_ref()
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("'JettonTransfer::transfer' must be set")?;
+
+        Self::transfer_request(
+            ton_transfer_input,
+            Some(TransferPayload::JettonTransfer(jetton_payload)),
+        )
     }
 }

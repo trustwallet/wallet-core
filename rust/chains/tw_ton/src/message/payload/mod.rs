@@ -4,3 +4,4 @@
 
 pub mod comment;
 pub mod empty;
+pub mod jetton_transfer;
