@@ -2,9 +2,11 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::address::address_data::AddressData;
 use crate::error::{CellError, CellErrorType, CellResult};
 use bitreader::BitReader;
 use tw_coin_entry::error::prelude::{MapTWError, ResultContext};
+use tw_hash::H256;
 use tw_memory::Data;
 
 pub struct CellParser<'a> {
@@ -20,11 +22,6 @@ impl<'a> CellParser<'a> {
 
     pub fn remaining_bits(&self) -> usize {
         self.bit_reader.remaining() as usize
-    }
-
-    /// Return number of full bytes remaining
-    pub fn remaining_bytes(&self) -> usize {
-        self.remaining_bits() / 8
     }
 
     pub fn load_bit(&mut self) -> CellResult<bool> {
@@ -96,21 +93,21 @@ impl<'a> CellParser<'a> {
     //     }
     // }
 
-    // pub fn load_address(&mut self) -> anyhow::Result<TonAddress> {
-    //     let tp = self.bit_reader.read_u8(2)?;
-    //     match tp {
-    //         0 => Ok(TonAddress::null()),
-    //         2 => {
-    //             let _res1 = self.bit_reader.read_u8(1)?;
-    //             let wc = self.bit_reader.read_u8(8)?;
-    //             let mut hash_part = [0 as u8; 32];
-    //             self.bit_reader.read_u8_slice(&mut hash_part)?; //.read_u8(8 * 32).unwrap();
-    //             let addr = TonAddress::new(wc as i32, &hash_part);
-    //             Ok(addr)
-    //         },
-    //         _ => Err(anyhow!("Invalid address type: {}", tp)),
-    //     }
-    // }
+    pub fn load_address(&mut self) -> CellResult<AddressData> {
+        let tp = self.load_u8(2)?;
+        match tp {
+            0 => Ok(AddressData::null()),
+            2 => {
+                let _res1 = self.load_u8(1)?;
+                let wc = self.load_u8(8)?;
+                let mut hash_part = H256::default();
+                self.load_slice(hash_part.as_mut_slice())?;
+                Ok(AddressData::new(wc as i32, hash_part))
+            },
+            _ => CellError::err(CellErrorType::CellParserError)
+                .context(format!("Invalid address type: {tp}")),
+        }
+    }
 
     // pub fn load_unary_length(&mut self) -> anyhow::Result<usize> {
     //     let mut res = 0;
@@ -121,7 +118,7 @@ impl<'a> CellParser<'a> {
     // }
 
     pub fn ensure_empty(&self) -> CellResult<()> {
-        let remaining = self.bit_reader.remaining();
+        let remaining = self.remaining_bits();
         if remaining == 0 {
             Ok(())
         } else {

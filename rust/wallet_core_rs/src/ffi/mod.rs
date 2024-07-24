@@ -8,5 +8,6 @@ pub mod bitcoin;
 pub mod ethereum;
 #[cfg(feature = "solana")]
 pub mod solana;
+pub mod ton;
 #[cfg(feature = "utils")]
 pub mod utils;

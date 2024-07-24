@@ -2200,6 +2200,7 @@ dependencies = [
  "tw_number",
  "tw_proto",
  "tw_solana",
+ "tw_ton",
  "uuid",
 ]
 

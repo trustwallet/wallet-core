@@ -6,6 +6,7 @@ pub mod address;
 pub mod compiler;
 pub mod entry;
 pub mod message;
+pub mod modules;
 pub mod resources;
 pub mod signer;
 pub mod signing_request;

@@ -61,6 +61,15 @@ impl TonAddress {
         UserFriendlyAddress::from_base64_std(s).map(TonAddress)
     }
 
+    #[inline]
+    pub fn with_address_data(data: AddressData) -> TonAddress {
+        TonAddress(UserFriendlyAddress::with_flags(
+            data,
+            DEFAULT_BOUNCEABLE,
+            DEFAULT_TESTNET,
+        ))
+    }
+
     /// Normalizes the TON address according to the best wallet practice:
     /// https://docs.ton.org/learn/overviews/addresses#bounceable-vs-non-bounceable-addresses
     ///
