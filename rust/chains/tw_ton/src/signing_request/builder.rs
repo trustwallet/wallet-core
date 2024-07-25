@@ -4,7 +4,7 @@
 
 use crate::address::TonAddress;
 use crate::signing_request::{
-    JettonTransferRequest, SigningRequest, TransferPayload, TransferRequest,
+    JettonTransferRequest, SigningRequest, TransferCustomRequest, TransferPayload, TransferRequest,
 };
 use crate::wallet::wallet_v4::WalletV4;
 use crate::wallet::TonWallet;
@@ -14,7 +14,7 @@ use tw_keypair::ed25519::sha512::{KeyPair, PublicKey};
 use tw_number::U256;
 use tw_proto::TheOpenNetwork::Proto;
 use tw_ton_sdk::error::cell_to_signing_error;
-use Proto::mod_SigningInput::OneOfaction_oneof as ActionType;
+use Proto::mod_MessageType::OneOfmessage_oneof as MessageType;
 
 const STATE_INIT_EXPIRE_AT: u32 = 0xffffffff;
 
@@ -24,22 +24,36 @@ impl SigningRequestBuilder {
     pub fn build(input: &Proto::SigningInput) -> SigningResult<SigningRequest> {
         let wallet = Self::wallet(input)?;
 
-        let transfer_request = match input.action_oneof {
-            ActionType::transfer(ref transfer) => {
-                // No payload specified.
-                let payload = None;
-                Self::transfer_request(transfer, payload)?
-            },
-            ActionType::jetton_transfer(ref jetton) => Self::jetton_transfer_request(jetton)?,
-            ActionType::None => {
-                return SigningError::err(SigningErrorType::Error_invalid_params)
-                    .context("Expected 'action_oneof' to be set")
-            },
+        let messages = input
+            .messages
+            .iter()
+            .map(|msg| match msg.message_oneof {
+                MessageType::transfer(ref transfer) => {
+                    // No payload specified.
+                    let payload = None;
+                    Self::transfer_request(transfer, payload)
+                },
+                MessageType::jetton_transfer(ref jetton) => Self::jetton_transfer_request(jetton),
+                MessageType::transfer_custom_payload(ref custom) => Self::custom_request(custom),
+                MessageType::None => SigningError::err(SigningErrorType::Error_invalid_params)
+                    .context("Expected 'message_oneof' to be set"),
+            })
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        let expire_at = if input.sequence_number == 0 {
+            STATE_INIT_EXPIRE_AT
+        } else if input.expire_at == 0 {
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("'expire_at' must be set");
+        } else {
+            input.expire_at
         };
 
         Ok(SigningRequest {
             wallet,
-            transfer_request,
+            messages,
+            expire_at,
+            seqno: input.sequence_number,
         })
     }
 
@@ -73,15 +87,6 @@ impl SigningRequestBuilder {
             // Set the 'bounceable' flag explicitly as specified in the Protobuf.
             .set_bounceable(input.bounceable);
 
-        let expire_at = if input.sequence_number == 0 {
-            STATE_INIT_EXPIRE_AT
-        } else if input.expire_at == 0 {
-            return SigningError::err(SigningErrorType::Error_invalid_params)
-                .context("'expire_at' must be set");
-        } else {
-            input.expire_at
-        };
-
         let comment = if input.comment.is_empty() {
             None
         } else {
@@ -95,9 +100,7 @@ impl SigningRequestBuilder {
         Ok(TransferRequest {
             dest,
             ton_amount: U256::from(input.amount),
-            seqno: input.sequence_number,
             mode,
-            expire_at,
             comment,
             payload,
         })
@@ -129,6 +132,34 @@ impl SigningRequestBuilder {
         Self::transfer_request(
             ton_transfer_input,
             Some(TransferPayload::JettonTransfer(jetton_payload)),
+        )
+    }
+
+    fn custom_request(input: &Proto::TransferCustomPayload) -> SigningResult<TransferRequest> {
+        let state_init = if input.state_init.is_empty() {
+            None
+        } else {
+            Some(input.state_init.to_string())
+        };
+
+        let payload = if input.payload.is_empty() {
+            None
+        } else {
+            Some(input.payload.to_string())
+        };
+
+        let ton_transfer_input = input
+            .transfer
+            .as_ref()
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("'JettonTransfer::transfer' must be set")?;
+
+        Self::transfer_request(
+            ton_transfer_input,
+            Some(TransferPayload::Custom(TransferCustomRequest {
+                state_init,
+                payload,
+            })),
         )
     }
 }

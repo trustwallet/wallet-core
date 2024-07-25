@@ -21,9 +21,10 @@ const FWD_FEES: U256 = U256::ZERO;
 pub struct TransferInternalMessage {
     pub dest: TonAddress,
     pub value: U256,
-    /// At WalletCore, we do not use `state_init` at the internal message level,
-    /// but set it the [`SignedTransaction::state_init`].
-    #[allow(dead_code)]
+    /// Deploy a smart contract different from the sender's wallet contract.
+    /// For example, to deploy a chatbot Doge: https://github.com/LaDoger/doge.fc
+    ///
+    /// Note consider using [`ExternalMessage::state_init`] to deploy the sender's wallet contract.
     pub state_init: Option<CellArc>,
     pub data: Option<CellArc>,
 }
@@ -38,12 +39,13 @@ impl TransferInternalMessage {
         }
     }
 
-    pub fn with_data(&mut self, data: Cell) -> &mut Self {
-        self.with_data_ref(data.into_arc())
+    pub fn with_data(&mut self, data: CellArc) -> &mut Self {
+        self.data = Some(data);
+        self
     }
 
-    pub fn with_data_ref(&mut self, data: CellArc) -> &mut Self {
-        self.data = Some(data);
+    pub fn with_state_init(&mut self, state_init: CellArc) -> &mut Self {
+        self.state_init = Some(state_init);
         self
     }
 

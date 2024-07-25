@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::signing_request::builder::SigningRequestBuilder;
+use crate::signing_request::cell_creator::ExternalMessageCreator;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
@@ -29,12 +30,12 @@ impl TheOpenNetworkSigner {
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let signing_request = SigningRequestBuilder::build(&input)?;
 
-        let external_message = signing_request
-            .create_external_message_to_sign()
-            .map_err(cell_to_signing_error)?;
+        let external_message =
+            ExternalMessageCreator::create_external_message_to_sign(&signing_request)
+                .map_err(cell_to_signing_error)?;
 
         // Whether to add 'StateInit' reference.
-        let state_init = signing_request.transfer_request.seqno == 0;
+        let state_init = signing_request.seqno == 0;
         let signed_tx = signing_request
             .wallet
             .sign_transaction(external_message, state_init)

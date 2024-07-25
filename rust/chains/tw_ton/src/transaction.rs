@@ -10,6 +10,9 @@ use tw_ton_sdk::cell::Cell;
 use tw_ton_sdk::error::*;
 use tw_ton_sdk::message::state_init::StateInit;
 
+/// See an example at https://docs.ton.org/develop/smart-contracts/tutorials/wallet#contract-deployment-via-wallet
+pub const INCOMING_EXTERNAL_TRANSACTION: u8 = 0b10;
+
 pub struct SignedTransaction {
     pub src_address: TonAddress,
     pub dest_address: TonAddress,
@@ -23,7 +26,7 @@ impl SignedTransaction {
     pub fn build(&self) -> CellResult<Cell> {
         let mut wrap_builder = CellBuilder::new();
         wrap_builder
-            .store_u8(2, 2)? // No idea
+            .store_u8(2, INCOMING_EXTERNAL_TRANSACTION)? // incoming external transaction
             .store_address(&self.src_address)? // src
             .store_address(&self.dest_address)? // dest
             .store_coins(&self.import_fee)?; // import fee
