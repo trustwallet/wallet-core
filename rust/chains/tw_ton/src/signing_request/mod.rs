@@ -11,7 +11,9 @@ pub mod builder;
 pub mod cell_creator;
 
 pub enum TransferPayload {
+    /// Jetton Transfer message payload.
     JettonTransfer(JettonTransferRequest),
+    /// Custom Transfer message payload.
     Custom(TransferCustomRequest),
 }
 

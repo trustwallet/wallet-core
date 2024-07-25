@@ -7,7 +7,7 @@ use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_proto::Common::Proto::SigningError;
 use tw_proto::TheOpenNetwork::Proto;
-use tw_proto::TheOpenNetwork::Proto::mod_MessageType::OneOfmessage_oneof as MessageType;
+use tw_proto::TheOpenNetwork::Proto::mod_Transfer::OneOfpayload as PayloadType;
 
 /// The same Cell can be BoC encoded differently.
 /// Use this function to compare inner Cells closing eyes on the encoding.
@@ -19,10 +19,6 @@ fn assert_eq_boc(left: &str, right: &str) {
     let right_boc = BagOfCells::parse_base64(right).unwrap();
 
     assert_eq!(left_boc, right_boc);
-}
-
-fn message(ty: MessageType) -> Proto::MessageType {
-    Proto::MessageType { message_oneof: ty }
 }
 
 #[test]
@@ -41,7 +37,7 @@ fn test_ton_sign_transfer_and_deploy() {
 
     let input = Proto::SigningInput {
         private_key: private_key.decode_hex().unwrap().into(),
-        messages: vec![message(MessageType::transfer(transfer))],
+        messages: vec![transfer],
         expire_at: 1671135440,
         ..Proto::SigningInput::default()
     };
@@ -76,7 +72,7 @@ fn test_ton_sign_transfer_and_deploy_4b1d9f() {
 
     let input = Proto::SigningInput {
         private_key: private_key.decode_hex().unwrap().into(),
-        messages: vec![message(MessageType::transfer(transfer))],
+        messages: vec![transfer],
         expire_at: 1721892371,
         ..Proto::SigningInput::default()
     };
@@ -109,7 +105,7 @@ fn test_ton_sign_transfer_ordinary() {
 
     let input = Proto::SigningInput {
         private_key: private_key.decode_hex().unwrap().into(),
-        messages: vec![message(MessageType::transfer(transfer))],
+        messages: vec![transfer],
         sequence_number: 6,
         expire_at: 1671132440,
         ..Proto::SigningInput::default()
@@ -143,7 +139,7 @@ fn test_ton_sign_transfer_all_balance() {
 
     let input = Proto::SigningInput {
         private_key: private_key.decode_hex().unwrap().into(),
-        messages: vec![message(MessageType::transfer(transfer))],
+        messages: vec![transfer],
         sequence_number: 7,
         expire_at: 1681102222,
         ..Proto::SigningInput::default()
@@ -177,7 +173,7 @@ fn test_ton_sign_transfer_all_balance_non_bounceable() {
 
     let input = Proto::SigningInput {
         private_key: private_key.decode_hex().unwrap().into(),
-        messages: vec![message(MessageType::transfer(transfer))],
+        messages: vec![transfer],
         sequence_number: 8,
         expire_at: 1681102222,
         ..Proto::SigningInput::default()
@@ -212,7 +208,7 @@ fn test_ton_sign_transfer_with_ascii_comment() {
 
     let input = Proto::SigningInput {
         private_key: private_key.decode_hex().unwrap().into(),
-        messages: vec![message(MessageType::transfer(transfer))],
+        messages: vec![transfer],
         sequence_number: 10,
         expire_at: 1681102222,
         ..Proto::SigningInput::default()
@@ -247,7 +243,7 @@ fn test_ton_sign_transfer_with_utf8_comment() {
 
     let input = Proto::SigningInput {
         private_key: private_key.decode_hex().unwrap().into(),
-        messages: vec![message(MessageType::transfer(transfer))],
+        messages: vec![transfer],
         sequence_number: 11,
         expire_at: 1681102222,
         ..Proto::SigningInput::default()
@@ -281,7 +277,7 @@ fn test_ton_sign_transfer_invalid_wallet_version() {
 
     let input = Proto::SigningInput {
         private_key: private_key.decode_hex().unwrap().into(),
-        messages: vec![message(MessageType::transfer(transfer))],
+        messages: vec![transfer],
         expire_at: 1671135440,
         ..Proto::SigningInput::default()
     };
@@ -296,18 +292,7 @@ fn test_ton_sign_transfer_invalid_wallet_version() {
 fn test_ton_sign_transfer_jettons() {
     let private_key = "c054900a527538c1b4325688a421c0469b171c29f23a62da216e90b0df2412ee";
 
-    let transfer = Proto::Transfer {
-        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
-        dest: "EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja".into(),
-        amount: 100 * 1000 * 1000,
-        mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
-            | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
-        bounceable: true,
-        ..Proto::Transfer::default()
-    };
-
     let jetton_transfer = Proto::JettonTransfer {
-        transfer: Some(transfer),
         query_id: 69,
         // Transfer 1 testtwt (decimal precision is 9).
         jetton_amount: 1000 * 1000 * 1000,
@@ -317,9 +302,20 @@ fn test_ton_sign_transfer_jettons() {
         forward_amount: 1,
     };
 
+    let transfer = Proto::Transfer {
+        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
+        dest: "EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja".into(),
+        amount: 100 * 1000 * 1000,
+        mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
+            | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
+        bounceable: true,
+        payload: PayloadType::jetton_transfer(jetton_transfer),
+        ..Proto::Transfer::default()
+    };
+
     let input = Proto::SigningInput {
         private_key: private_key.decode_hex().unwrap().into(),
-        messages: vec![message(MessageType::jetton_transfer(jetton_transfer))],
+        messages: vec![transfer],
         sequence_number: 0,
         expire_at: 1787693046,
         ..Proto::SigningInput::default()
@@ -341,19 +337,7 @@ fn test_ton_sign_transfer_jettons() {
 fn test_ton_sign_transfer_jettons_with_comment() {
     let private_key = "c054900a527538c1b4325688a421c0469b171c29f23a62da216e90b0df2412ee";
 
-    let transfer = Proto::Transfer {
-        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
-        dest: "EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja".into(),
-        amount: 100 * 1000 * 1000,
-        mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
-            | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
-        bounceable: true,
-        comment: "test comment".into(),
-        ..Proto::Transfer::default()
-    };
-
     let jetton_transfer = Proto::JettonTransfer {
-        transfer: Some(transfer),
         query_id: 0,
         // Transfer 0.5 testtwt (decimal precision is 9).
         jetton_amount: 500 * 1000 * 1000,
@@ -363,9 +347,21 @@ fn test_ton_sign_transfer_jettons_with_comment() {
         forward_amount: 1,
     };
 
+    let transfer = Proto::Transfer {
+        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
+        dest: "EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja".into(),
+        amount: 100 * 1000 * 1000,
+        mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
+            | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
+        bounceable: true,
+        comment: "test comment".into(),
+        payload: PayloadType::jetton_transfer(jetton_transfer),
+        ..Proto::Transfer::default()
+    };
+
     let input = Proto::SigningInput {
         private_key: private_key.decode_hex().unwrap().into(),
-        messages: vec![message(MessageType::jetton_transfer(jetton_transfer))],
+        messages: vec![transfer],
         sequence_number: 1,
         expire_at: 1787693046,
         ..Proto::SigningInput::default()
@@ -382,3 +378,51 @@ fn test_ton_sign_transfer_jettons_with_comment() {
         "c98c205c8dd37d9a6ab5db6162f5b9d37cefa067de24a765154a5eb7a359f22f"
     );
 }
+
+// #[test]
+// fn test_ton_sign_transfer_and_deploy_() {
+//     use std::time::SystemTime;
+//     let now = SystemTime::now()
+//         .duration_since(SystemTime::UNIX_EPOCH)
+//         .unwrap()
+//         .as_secs() as u32;
+//     let expire_at = now + 60 * 10;
+//     println!("Expire at {expire_at}");
+//
+//     // UQApdOSfRTScoB9bMNGeo3bn-DGpQD8gywA27UaZVvAQsrHg
+//     let private_key = "e97620499dfee0107c0cd7f0ecb2afb3323d385b3a82320a5e3fa1fbdca6e722";
+//
+//     let transfer = Proto::Transfer {
+//         wallet_version: Proto::WalletVersion::WALLET_V4_R2,
+//         dest: "UQA6whN_oU5h9jPljnlDSWRYQNDPkLaUqqaEWULNB_Zoykuu".into(),
+//         // 0.0001 TON
+//         amount: 100_000,
+//         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
+//             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
+//         expire_at: 1721892371,
+//         bounceable: true,
+//         ..Proto::Transfer::default()
+//     };
+//
+//     let input = Proto::SigningInput {
+//         private_key: private_key.decode_hex().unwrap().into(),
+//         action_oneof: ActionType::transfer(transfer),
+//         ..Proto::SigningInput::default()
+//     };
+//
+//     let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+//     let output = signer.sign(CoinType::TON, input);
+//
+//     assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+//     println!("{}", output.encoded);
+//     // Successfully broadcasted: https://tonviewer.com/transaction/4b1d9f09856af70ea1058b557a87c9ba2abb0bca2029e0cbbe8c659d5dae4ce1
+//     // assert_eq_boc(&output.encoded, "te6cckECGgEAA7QAAkWIAFLpyT6KaTlAPrZhoz1G7c/wY1KAfkGWAG3ajTKt4CFkHgECAgE0AwQBnPhb8QZRko0VcLtSmZsGLICPVXj7+QmBkrCrCL1R1bdHYWibC86XsAcA2dgem8QSl8xxsChuCd2oVG1FoMVUUgEpqaMX/////wAAAAAAAwUBFP8A9KQT9LzyyAsGAFEAAAAAKamjFyoNBiYB1ihabNBrDwYVwXUbvpGlthGturFziw2Dl/PLQAFmYgAdYQm/0Kcw+xnyxzyhpLIsIGhnyFtKVVNCLKFmg/s0ZRgMNQAAAAAAAAAAAAAAAAABBwIBIAgJAAACAUgKCwT48oMI1xgg0x/TH9MfAvgju/Jk7UTQ0x/TH9P/9ATRUUO68qFRUbryogX5AVQQZPkQ8qP4ACSkyMsfUkDLH1Iwy/9SEPQAye1U+A8B0wchwACfbFGTINdKltMH1AL7AOgw4CHAAeMAIcAC4wABwAORMOMNA6TIyx8Syx/L/wwNDg8C5tAB0NMDIXGwkl8E4CLXScEgkl8E4ALTHyGCEHBsdWe9IoIQZHN0cr2wkl8F4AP6QDAg+kQByMoHy//J0O1E0IEBQNch9AQwXIEBCPQKb6Exs5JfB+AF0z/IJYIQcGx1Z7qSODDjDQOCEGRzdHK6kl8G4w0QEQIBIBITAG7SB/oA1NQi+QAFyMoHFcv/ydB3dIAYyMsFywIizxZQBfoCFMtrEszMyXP7AMhAFIEBCPRR8qcCAHCBAQjXGPoA0z/IVCBHgQEI9FHyp4IQbm90ZXB0gBjIywXLAlAGzxZQBPoCFMtqEssfyz/Jc/sAAgBsgQEI1xj6ANM/MFIkgQEI9Fnyp4IQZHN0cnB0gBjIywXLAlAFzxZQA/oCE8tqyx8Syz/Jc/sAAAr0AMntVAB4AfoA9AQw+CdvIjBQCqEhvvLgUIIQcGx1Z4MesXCAGFAEywUmzxZY+gIZ9ADLaRfLH1Jgyz8gyYBA+wAGAIpQBIEBCPRZMO1E0IEBQNcgyAHPFvQAye1UAXKwjiOCEGRzdHKDHrFwgBhQBcsFUAPPFiP6AhPLassfyz/JgED7AJJfA+ICASAUFQBZvSQrb2omhAgKBrkPoCGEcNQICEekk30pkQzmkD6f+YN4EoAbeBAUiYcVnzGEAgFYFhcAEbjJftRNDXCx+AA9sp37UTQgQFA1yH0BDACyMoHy//J0AGBAQj0Cm+hMYAIBIBgZABmtznaiaEAga5Drhf/AABmvHfaiaEAQa5DrhY/AaTiNAg==");
+//     // assert_eq!(
+//     //     output.hash.to_hex(),
+//     //     "4b1d9f09856af70ea1058b557a87c9ba2abb0bca2029e0cbbe8c659d5dae4ce1"
+//     // );
+//
+//     // Expire at 1721891876
+//     // te6cckECGgEAA7QAAkWIAFLpyT6KaTlAPrZhoz1G7c/wY1KAfkGWAG3ajTKt4CFkHgECAgE0AwQBnD31ISBhivun4jnz7cE8DyawUX2EZqZaREqBHAe8eoA9kDKM14i7csoExPA0oaHXJn5ciA+7MBUVFWPol5zbwggpqaMX/////wAAAAAAAwUBFP8A9KQT9LzyyAsGAFEAAAAAKamjFyoNBiYB1ihabNBrDwYVwXUbvpGlthGturFziw2Dl/PLQAFmYgAdYQm/0Kcw+xnyxzyhpLIsIGhnyFtKVVNCLKFmg/s0ZRzEtAAAAAAAAAAAAAAAAAABBwIBIAgJAAACAUgKCwT48oMI1xgg0x/TH9MfAvgju/Jk7UTQ0x/TH9P/9ATRUUO68qFRUbryogX5AVQQZPkQ8qP4ACSkyMsfUkDLH1Iwy/9SEPQAye1U+A8B0wchwACfbFGTINdKltMH1AL7AOgw4CHAAeMAIcAC4wABwAORMOMNA6TIyx8Syx/L/wwNDg8C5tAB0NMDIXGwkl8E4CLXScEgkl8E4ALTHyGCEHBsdWe9IoIQZHN0cr2wkl8F4AP6QDAg+kQByMoHy//J0O1E0IEBQNch9AQwXIEBCPQKb6Exs5JfB+AF0z/IJYIQcGx1Z7qSODDjDQOCEGRzdHK6kl8G4w0QEQIBIBITAG7SB/oA1NQi+QAFyMoHFcv/ydB3dIAYyMsFywIizxZQBfoCFMtrEszMyXP7AMhAFIEBCPRR8qcCAHCBAQjXGPoA0z/IVCBHgQEI9FHyp4IQbm90ZXB0gBjIywXLAlAGzxZQBPoCFMtqEssfyz/Jc/sAAgBsgQEI1xj6ANM/MFIkgQEI9Fnyp4IQZHN0cnB0gBjIywXLAlAFzxZQA/oCE8tqyx8Syz/Jc/sAAAr0AMntVAB4AfoA9AQw+CdvIjBQCqEhvvLgUIIQcGx1Z4MesXCAGFAEywUmzxZY+gIZ9ADLaRfLH1Jgyz8gyYBA+wAGAIpQBIEBCPRZMO1E0IEBQNcgyAHPFvQAye1UAXKwjiOCEGRzdHKDHrFwgBhQBcsFUAPPFiP6AhPLassfyz/JgED7AJJfA+ICASAUFQBZvSQrb2omhAgKBrkPoCGEcNQICEekk30pkQzmkD6f+YN4EoAbeBAUiYcVnzGEAgFYFhcAEbjJftRNDXCx+AA9sp37UTQgQFA1yH0BDACyMoHy//J0AGBAQj0Cm+hMYAIBIBgZABmtznaiaEAga5Drhf/AABmvHfaiaEAQa5DrhY/As0TvSQ==
+//     // hash = J39oQU7HBNKwXDbyc0z/RFPX7C02qpQrHNltarWde7U=
+// }

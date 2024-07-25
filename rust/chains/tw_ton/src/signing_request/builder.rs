@@ -14,7 +14,7 @@ use tw_keypair::ed25519::sha512::{KeyPair, PublicKey};
 use tw_number::U256;
 use tw_proto::TheOpenNetwork::Proto;
 use tw_ton_sdk::error::cell_to_signing_error;
-use Proto::mod_MessageType::OneOfmessage_oneof as MessageType;
+use Proto::mod_Transfer::OneOfpayload as PayloadType;
 
 const STATE_INIT_EXPIRE_AT: u32 = 0xffffffff;
 
@@ -27,17 +27,7 @@ impl SigningRequestBuilder {
         let messages = input
             .messages
             .iter()
-            .map(|msg| match msg.message_oneof {
-                MessageType::transfer(ref transfer) => {
-                    // No payload specified.
-                    let payload = None;
-                    Self::transfer_request(transfer, payload)
-                },
-                MessageType::jetton_transfer(ref jetton) => Self::jetton_transfer_request(jetton),
-                MessageType::transfer_custom_payload(ref custom) => Self::custom_request(custom),
-                MessageType::None => SigningError::err(SigningErrorType::Error_invalid_params)
-                    .context("Expected 'message_oneof' to be set"),
-            })
+            .map(Self::transfer_request)
             .collect::<SigningResult<Vec<_>>>()?;
 
         let expire_at = if input.sequence_number == 0 {
@@ -72,10 +62,7 @@ impl SigningRequestBuilder {
         TonWallet::std_with_public_key(public_key).map_err(cell_to_signing_error)
     }
 
-    fn transfer_request(
-        input: &Proto::Transfer,
-        payload: Option<TransferPayload>,
-    ) -> SigningResult<TransferRequest> {
+    fn transfer_request(input: &Proto::Transfer) -> SigningResult<TransferRequest> {
         if input.wallet_version != Proto::WalletVersion::WALLET_V4_R2 {
             return SigningError::err(SigningErrorType::Error_not_supported)
                 .context("'WALLET_V4_R2' version is supported only");
@@ -97,6 +84,14 @@ impl SigningRequestBuilder {
             .tw_err(|_| SigningErrorType::Error_invalid_params)
             .context("'mode' must fit uint8")?;
 
+        let payload = match input.payload {
+            PayloadType::jetton_transfer(ref jetton) => {
+                Some(Self::jetton_transfer_request(jetton)?)
+            },
+            PayloadType::custom_payload(ref custom) => Some(Self::custom_request(custom)?),
+            PayloadType::None => None,
+        };
+
         Ok(TransferRequest {
             dest,
             ton_amount: U256::from(input.amount),
@@ -106,7 +101,7 @@ impl SigningRequestBuilder {
         })
     }
 
-    fn jetton_transfer_request(input: &Proto::JettonTransfer) -> SigningResult<TransferRequest> {
+    fn jetton_transfer_request(input: &Proto::JettonTransfer) -> SigningResult<TransferPayload> {
         let dest = TonAddress::from_str(input.to_owner.as_ref())
             .into_tw()
             .context("Invalid 'dest' address")?;
@@ -123,19 +118,10 @@ impl SigningRequestBuilder {
             forward_ton_amount: U256::from(input.forward_amount),
         };
 
-        let ton_transfer_input = input
-            .transfer
-            .as_ref()
-            .or_tw_err(SigningErrorType::Error_invalid_params)
-            .context("'JettonTransfer::transfer' must be set")?;
-
-        Self::transfer_request(
-            ton_transfer_input,
-            Some(TransferPayload::JettonTransfer(jetton_payload)),
-        )
+        Ok(TransferPayload::JettonTransfer(jetton_payload))
     }
 
-    fn custom_request(input: &Proto::TransferCustomPayload) -> SigningResult<TransferRequest> {
+    fn custom_request(input: &Proto::CustomPayload) -> SigningResult<TransferPayload> {
         let state_init = if input.state_init.is_empty() {
             None
         } else {
@@ -148,18 +134,9 @@ impl SigningRequestBuilder {
             Some(input.payload.to_string())
         };
 
-        let ton_transfer_input = input
-            .transfer
-            .as_ref()
-            .or_tw_err(SigningErrorType::Error_invalid_params)
-            .context("'JettonTransfer::transfer' must be set")?;
-
-        Self::transfer_request(
-            ton_transfer_input,
-            Some(TransferPayload::Custom(TransferCustomRequest {
-                state_init,
-                payload,
-            })),
-        )
+        Ok(TransferPayload::Custom(TransferCustomRequest {
+            state_init,
+            payload,
+        }))
     }
 }
