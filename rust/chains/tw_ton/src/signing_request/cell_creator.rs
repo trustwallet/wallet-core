@@ -14,7 +14,7 @@ use std::sync::Arc;
 use tw_coin_entry::error::prelude::ResultContext;
 use tw_ton_sdk::boc::BagOfCells;
 use tw_ton_sdk::cell::{Cell, CellArc};
-use tw_ton_sdk::error::CellResult;
+use tw_ton_sdk::error::{CellError, CellErrorType, CellResult};
 
 pub struct InternalMessageCreator;
 
@@ -124,6 +124,11 @@ pub struct ExternalMessageCreator;
 
 impl ExternalMessageCreator {
     pub fn create_external_message_to_sign(request: &SigningRequest) -> CellResult<Cell> {
+        if request.messages.is_empty() {
+            return CellError::err(CellErrorType::CellBuilderError)
+                .context("There must be at least one Transfer message");
+        }
+
         let internal_messages = request
             .messages
             .iter()

@@ -64,11 +64,14 @@ impl TransferInternalMessage {
         builder.store_u64(64, CREATED_LT)?; // created_lt
         builder.store_u32(32, CREATED_AT)?; // created_at
 
+        // (Maybe (Either StateInit ^StateInit))
         builder.store_bit(self.state_init.is_some())?; // state_init?
         if let Some(state_init) = self.state_init.as_ref() {
+            builder.store_bit(true)?; // store state_init as a reference, not inline
             builder.store_reference(state_init)?;
         }
 
+        // (Either X ^X) = Message X
         builder.store_bit(self.data.is_some())?; // data?
         if let Some(data) = self.data.as_ref() {
             builder.store_reference(data)?;

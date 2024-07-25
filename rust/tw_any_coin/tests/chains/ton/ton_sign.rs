@@ -2,6 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::chains::ton::cell_example::{
+    comment_cell, contract_address_from_state_init, doge_chatbot_state_init,
+};
 use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
@@ -379,50 +382,92 @@ fn test_ton_sign_transfer_jettons_with_comment() {
     );
 }
 
-// #[test]
-// fn test_ton_sign_transfer_and_deploy_() {
-//     use std::time::SystemTime;
-//     let now = SystemTime::now()
-//         .duration_since(SystemTime::UNIX_EPOCH)
-//         .unwrap()
-//         .as_secs() as u32;
-//     let expire_at = now + 60 * 10;
-//     println!("Expire at {expire_at}");
-//
-//     // UQApdOSfRTScoB9bMNGeo3bn-DGpQD8gywA27UaZVvAQsrHg
-//     let private_key = "e97620499dfee0107c0cd7f0ecb2afb3323d385b3a82320a5e3fa1fbdca6e722";
-//
-//     let transfer = Proto::Transfer {
-//         wallet_version: Proto::WalletVersion::WALLET_V4_R2,
-//         dest: "UQA6whN_oU5h9jPljnlDSWRYQNDPkLaUqqaEWULNB_Zoykuu".into(),
-//         // 0.0001 TON
-//         amount: 100_000,
-//         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
-//             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
-//         expire_at: 1721892371,
-//         bounceable: true,
-//         ..Proto::Transfer::default()
-//     };
-//
-//     let input = Proto::SigningInput {
-//         private_key: private_key.decode_hex().unwrap().into(),
-//         action_oneof: ActionType::transfer(transfer),
-//         ..Proto::SigningInput::default()
-//     };
-//
-//     let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
-//     let output = signer.sign(CoinType::TON, input);
-//
-//     assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
-//     println!("{}", output.encoded);
-//     // Successfully broadcasted: https://tonviewer.com/transaction/4b1d9f09856af70ea1058b557a87c9ba2abb0bca2029e0cbbe8c659d5dae4ce1
-//     // assert_eq_boc(&output.encoded, "te6cckECGgEAA7QAAkWIAFLpyT6KaTlAPrZhoz1G7c/wY1KAfkGWAG3ajTKt4CFkHgECAgE0AwQBnPhb8QZRko0VcLtSmZsGLICPVXj7+QmBkrCrCL1R1bdHYWibC86XsAcA2dgem8QSl8xxsChuCd2oVG1FoMVUUgEpqaMX/////wAAAAAAAwUBFP8A9KQT9LzyyAsGAFEAAAAAKamjFyoNBiYB1ihabNBrDwYVwXUbvpGlthGturFziw2Dl/PLQAFmYgAdYQm/0Kcw+xnyxzyhpLIsIGhnyFtKVVNCLKFmg/s0ZRgMNQAAAAAAAAAAAAAAAAABBwIBIAgJAAACAUgKCwT48oMI1xgg0x/TH9MfAvgju/Jk7UTQ0x/TH9P/9ATRUUO68qFRUbryogX5AVQQZPkQ8qP4ACSkyMsfUkDLH1Iwy/9SEPQAye1U+A8B0wchwACfbFGTINdKltMH1AL7AOgw4CHAAeMAIcAC4wABwAORMOMNA6TIyx8Syx/L/wwNDg8C5tAB0NMDIXGwkl8E4CLXScEgkl8E4ALTHyGCEHBsdWe9IoIQZHN0cr2wkl8F4AP6QDAg+kQByMoHy//J0O1E0IEBQNch9AQwXIEBCPQKb6Exs5JfB+AF0z/IJYIQcGx1Z7qSODDjDQOCEGRzdHK6kl8G4w0QEQIBIBITAG7SB/oA1NQi+QAFyMoHFcv/ydB3dIAYyMsFywIizxZQBfoCFMtrEszMyXP7AMhAFIEBCPRR8qcCAHCBAQjXGPoA0z/IVCBHgQEI9FHyp4IQbm90ZXB0gBjIywXLAlAGzxZQBPoCFMtqEssfyz/Jc/sAAgBsgQEI1xj6ANM/MFIkgQEI9Fnyp4IQZHN0cnB0gBjIywXLAlAFzxZQA/oCE8tqyx8Syz/Jc/sAAAr0AMntVAB4AfoA9AQw+CdvIjBQCqEhvvLgUIIQcGx1Z4MesXCAGFAEywUmzxZY+gIZ9ADLaRfLH1Jgyz8gyYBA+wAGAIpQBIEBCPRZMO1E0IEBQNcgyAHPFvQAye1UAXKwjiOCEGRzdHKDHrFwgBhQBcsFUAPPFiP6AhPLassfyz/JgED7AJJfA+ICASAUFQBZvSQrb2omhAgKBrkPoCGEcNQICEekk30pkQzmkD6f+YN4EoAbeBAUiYcVnzGEAgFYFhcAEbjJftRNDXCx+AA9sp37UTQgQFA1yH0BDACyMoHy//J0AGBAQj0Cm+hMYAIBIBgZABmtznaiaEAga5Drhf/AABmvHfaiaEAQa5DrhY/AaTiNAg==");
-//     // assert_eq!(
-//     //     output.hash.to_hex(),
-//     //     "4b1d9f09856af70ea1058b557a87c9ba2abb0bca2029e0cbbe8c659d5dae4ce1"
-//     // );
-//
-//     // Expire at 1721891876
-//     // te6cckECGgEAA7QAAkWIAFLpyT6KaTlAPrZhoz1G7c/wY1KAfkGWAG3ajTKt4CFkHgECAgE0AwQBnD31ISBhivun4jnz7cE8DyawUX2EZqZaREqBHAe8eoA9kDKM14i7csoExPA0oaHXJn5ciA+7MBUVFWPol5zbwggpqaMX/////wAAAAAAAwUBFP8A9KQT9LzyyAsGAFEAAAAAKamjFyoNBiYB1ihabNBrDwYVwXUbvpGlthGturFziw2Dl/PLQAFmYgAdYQm/0Kcw+xnyxzyhpLIsIGhnyFtKVVNCLKFmg/s0ZRzEtAAAAAAAAAAAAAAAAAABBwIBIAgJAAACAUgKCwT48oMI1xgg0x/TH9MfAvgju/Jk7UTQ0x/TH9P/9ATRUUO68qFRUbryogX5AVQQZPkQ8qP4ACSkyMsfUkDLH1Iwy/9SEPQAye1U+A8B0wchwACfbFGTINdKltMH1AL7AOgw4CHAAeMAIcAC4wABwAORMOMNA6TIyx8Syx/L/wwNDg8C5tAB0NMDIXGwkl8E4CLXScEgkl8E4ALTHyGCEHBsdWe9IoIQZHN0cr2wkl8F4AP6QDAg+kQByMoHy//J0O1E0IEBQNch9AQwXIEBCPQKb6Exs5JfB+AF0z/IJYIQcGx1Z7qSODDjDQOCEGRzdHK6kl8G4w0QEQIBIBITAG7SB/oA1NQi+QAFyMoHFcv/ydB3dIAYyMsFywIizxZQBfoCFMtrEszMyXP7AMhAFIEBCPRR8qcCAHCBAQjXGPoA0z/IVCBHgQEI9FHyp4IQbm90ZXB0gBjIywXLAlAGzxZQBPoCFMtqEssfyz/Jc/sAAgBsgQEI1xj6ANM/MFIkgQEI9Fnyp4IQZHN0cnB0gBjIywXLAlAFzxZQA/oCE8tqyx8Syz/Jc/sAAAr0AMntVAB4AfoA9AQw+CdvIjBQCqEhvvLgUIIQcGx1Z4MesXCAGFAEywUmzxZY+gIZ9ADLaRfLH1Jgyz8gyYBA+wAGAIpQBIEBCPRZMO1E0IEBQNcgyAHPFvQAye1UAXKwjiOCEGRzdHKDHrFwgBhQBcsFUAPPFiP6AhPLassfyz/JgED7AJJfA+ICASAUFQBZvSQrb2omhAgKBrkPoCGEcNQICEekk30pkQzmkD6f+YN4EoAbeBAUiYcVnzGEAgFYFhcAEbjJftRNDXCx+AA9sp37UTQgQFA1yH0BDACyMoHy//J0AGBAQj0Cm+hMYAIBIBgZABmtznaiaEAga5Drhf/AABmvHfaiaEAQa5DrhY/As0TvSQ==
-//     // hash = J39oQU7HBNKwXDbyc0z/RFPX7C02qpQrHNltarWde7U=
-// }
+#[test]
+fn test_ton_sign_transfer_custom_payload() {
+    // UQApdOSfRTScoB9bMNGeo3bn-DGpQD8gywA27UaZVvAQsrHg
+    let private_key = "e97620499dfee0107c0cd7f0ecb2afb3323d385b3a82320a5e3fa1fbdca6e722";
+
+    let transfer = Proto::Transfer {
+        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
+        dest: "UQA6whN_oU5h9jPljnlDSWRYQNDPkLaUqqaEWULNB_Zoykuu".into(),
+        // 0.00025 TON
+        amount: 250_000,
+        mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
+            | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
+        bounceable: true,
+        payload: PayloadType::custom_payload(Proto::CustomPayload {
+            state_init: "".into(),
+            payload: comment_cell("Hi there sir").into(),
+        }),
+        ..Proto::Transfer::default()
+    };
+
+    let input = Proto::SigningInput {
+        private_key: private_key.decode_hex().unwrap().into(),
+        expire_at: 1721906219,
+        messages: vec![transfer],
+        sequence_number: 2,
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::TON, input);
+
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+    // Successfully broadcasted: https://tonviewer.com/transaction/4b1d9f09856af70ea1058b557a87c9ba2abb0bca2029e0cbbe8c659d5dae4ce1
+    assert_eq_boc(&output.encoded, "te6cckEBBAEAvwABRYgAUunJPoppOUA+tmGjPUbtz/BjUoB+QZYAbdqNMq3gIWQMAQGc981GQ9a8Yr4m2YeIeuuNIWlzdHliyW6MRq3RDs5kgvXJP+iNhdZU7o79DJnm/OKuzWI5FbiNy3SF0fGGBObDDCmpoxdmojQrAAAAAgADAgFmYgAdYQm/0Kcw+xnyxzyhpLIsIGhnyFtKVVNCLKFmg/s0ZRgehIAAAAAAAAAAAAAAAAABAwAgAAAAAEhpIHRoZXJlIHNpcoAlI8E=");
+    assert_eq!(
+        output.hash.to_hex(),
+        "4ca4442921d0737d518b4863f8eafc2eb26824e9362ebaa9bc59373950b7fa86"
+    );
+}
+
+#[test]
+fn test_ton_sign_transfer_custom_payload_with_state_init() {
+    // UQD9XBth5b0D9F35h8No4nrF2au8E5H9XUc25iJMOx9tLfy3
+    let private_key = "5525e673087587bc0efd7ab09920ef7d3c1bf6b854a661430244ca59ab19e9d1";
+
+    let current_timestamp = 1721939114;
+    let expire_at = current_timestamp + 60 * 10;
+
+    let doge_state_init = doge_chatbot_state_init(current_timestamp);
+    let doge_contract_address = contract_address_from_state_init(&doge_state_init);
+    assert_eq!(
+        doge_contract_address,
+        "0:3042cd5480da232d5ac1d9cbe324e3c9eb58f167599f6b7c20c6e638aeed0335",
+    );
+
+    let transfer = Proto::Transfer {
+        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
+        dest: doge_contract_address.into(),
+        // 0.0100000321 TON
+        amount: 69_000_000,
+        mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
+            | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
+        bounceable: false,
+        payload: PayloadType::custom_payload(Proto::CustomPayload {
+            state_init: doge_state_init.into(),
+            payload: comment_cell("This transaction deploys Doge Chatbot contract").into(),
+        }),
+        ..Proto::Transfer::default()
+    };
+
+    let input = Proto::SigningInput {
+        private_key: private_key.decode_hex().unwrap().into(),
+        expire_at,
+        messages: vec![transfer],
+        sequence_number: 4,
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::TON, input);
+
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+    // Successfully broadcasted: https://tonviewer.com/transaction/f4b7ed2247b1adf54f33dd2fd99216fbd61beefb281542d0b330ccea9b8d0338
+    assert_eq_boc(&output.encoded, "te6cckECCAEAATcAAUWIAfq4NsPLegfou/MPhtHE9YuzV3gnI/q6jm3MRJh2PtpaDAEBnPbyCSsWrOZpEjb7ZFxz5yYi+an6M6Lnq7rI7TFWdDS76LEtGBrVVrhMGziwxuy6LCVtsMBikI7RPVQ89FCIAAYpqaMXZqK3AgAAAAQAAwICaUIAGCFmqkBtEZatYOzl8ZJx5PWseLOsz7W+EGNzHFd2gZqgIObaAAAAAAAAAAAAAAAAAAPAAwQCATQFBgBkAAAAAFRoaXMgdHJhbnNhY3Rpb24gZGVwbG95cyBEb2dlIENoYXRib3QgY29udHJhY3QBFP8A9KQT9LzyyAsHABAAAAGQ65G4EABq0zABgghpSSC5kTDg0NMDMfpAMItGRvZ2WHAggBjIywVQBM8WgEX6AhPLahLLHwHPFslz+wAa2r/S");
+    assert_eq!(
+        output.hash.to_hex(),
+        "724735eea1ab0663aff42af421fb90f7f0c0f7ca3dda424d97c1daf1a21036ad"
+    );
+}
