@@ -48,7 +48,7 @@ impl AddressConverter {
     /// https://docs.ton.org/develop/dapps/asset-processing/jettons#retrieving-jetton-wallet-addresses-for-a-given-user
     pub fn parse_from_boc(boc: &BagOfCells) -> CellResult<TonAddress> {
         boc.single_root()
-            .and_then(|cell| Self::parse_from_cell(&cell))
+            .and_then(|cell| Self::parse_from_cell(cell))
     }
 
     /// Parses a TON address from a Bag of Cells (BoC) with a single root Cell.

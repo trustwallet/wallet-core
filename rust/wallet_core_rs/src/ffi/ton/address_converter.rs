@@ -45,7 +45,7 @@ pub unsafe extern "C" fn tw_ton_address_converter_from_boc(boc: *const TWString)
     let boc_str = try_or_else!(boc.as_str(), std::ptr::null_mut);
 
     let address_ton = try_or_else!(
-        AddressConverter::parse_from_boc_base64(&boc_str),
+        AddressConverter::parse_from_boc_base64(boc_str),
         std::ptr::null_mut
     );
 

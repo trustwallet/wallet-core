@@ -2,10 +2,10 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::message::internal_message::InternalMessage;
 use tw_ton_sdk::cell::cell_builder::CellBuilder;
 use tw_ton_sdk::cell::Cell;
 use tw_ton_sdk::error::CellResult;
-use crate::message::internal_message::InternalMessage;
 
 pub struct ExternalMessage {
     pub wallet_id: i32,
