@@ -14,6 +14,7 @@ default = [
     "ethereum",
     "keypair",
     "solana",
+    "ton",
     "utils",
 ]
 any-coin = ["tw_any_coin"]
@@ -21,6 +22,7 @@ bitcoin = ["tw_bitcoin"]
 ethereum = ["tw_ethereum", "tw_coin_registry"]
 keypair = ["tw_keypair"]
 solana = ["tw_solana"]
+ton = ["tw_ton"]
 utils = [
     "tw_encoding",
     "tw_hash",
@@ -44,6 +46,7 @@ tw_number = { path = "../tw_number", optional = true }
 tw_misc = { path = "../tw_misc" }
 tw_proto = { path = "../tw_proto", optional = true }
 tw_solana = { path = "../chains/tw_solana", optional = true }
+tw_ton = { path = "../chains/tw_ton", optional = true }
 uuid = { version = "1.7", features = ["v4"], optional = true }
 
 [dev-dependencies]

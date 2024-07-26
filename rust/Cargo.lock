@@ -221,6 +221,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "bitstream-io"
+version = "2.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3dcde5f311c85b8ca30c2e4198d4326bc342c76541590106f5fa4a50946ea499"
+
+[[package]]
 name = "bitvec"
 version = "0.20.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -404,6 +410,21 @@ checksum = "53fe5e26ff1b7aef8bca9c6080520cfb8d9333c7568e1829cef191a9723e5504"
 dependencies = [
  "libc",
 ]
+
+[[package]]
+name = "crc"
+version = "3.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "69e6e4d7b33a94f0991c26729976b10ebde1d34c3ee82408fb536164fa10d636"
+dependencies = [
+ "crc-catalog",
+]
+
+[[package]]
+name = "crc-catalog"
+version = "2.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "19d374276b40fb8bbdee95aef7c7fa6b5316ec764510eb64b8dd0e2ed0d7e7f5"
 
 [[package]]
 name = "crunchy"
@@ -898,11 +919,10 @@ dependencies = [
 
 [[package]]
 name = "num-bigint"
-version = "0.4.3"
+version = "0.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f93ab6289c7b344a8a9f60f88d80aa20032336fe78da341afc91c8a2341fc75f"
+checksum = "a5e44f723f1133c9deac646763579fdb3ac745e418f2a7af9cd0c431da1f20b9"
 dependencies = [
- "autocfg",
  "num-integer",
  "num-traits",
 ]
@@ -918,11 +938,10 @@ dependencies = [
 
 [[package]]
 name = "num-integer"
-version = "0.1.45"
+version = "0.1.46"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "225d3389fb3509a24c93f5c29eb6bde2586b98d9f016636dff58d7c6f7569cd9"
+checksum = "7969661fd2958a5cb096e56c8e1ad0444ac2bbcd0061bd28660485a44879858f"
 dependencies = [
- "autocfg",
  "num-traits",
 ]
 
@@ -951,9 +970,9 @@ dependencies = [
 
 [[package]]
 name = "num-traits"
-version = "0.2.15"
+version = "0.2.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "578ede34cf02f8924ab9447f50c28075b4d3e5b269972345e7e0372b38c6cdcd"
+checksum = "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841"
 dependencies = [
  "autocfg",
 ]
@@ -1639,6 +1658,7 @@ dependencies = [
  "tw_misc",
  "tw_number",
  "tw_proto",
+ "tw_ton_sdk",
  "tw_utxo",
 ]
 
@@ -1768,6 +1788,7 @@ dependencies = [
  "tw_solana",
  "tw_sui",
  "tw_thorchain",
+ "tw_ton",
 ]
 
 [[package]]
@@ -2049,6 +2070,40 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_ton"
+version = "0.1.0"
+dependencies = [
+ "lazy_static",
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_number",
+ "tw_proto",
+ "tw_ton_sdk",
+]
+
+[[package]]
+name = "tw_ton_sdk"
+version = "0.1.0"
+dependencies = [
+ "bitreader",
+ "bitstream-io",
+ "crc",
+ "lazy_static",
+ "num-bigint",
+ "serde",
+ "serde_json",
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_number",
+]
+
+[[package]]
 name = "tw_utxo"
 version = "0.1.0"
 dependencies = [
@@ -2146,6 +2201,7 @@ dependencies = [
  "tw_number",
  "tw_proto",
  "tw_solana",
+ "tw_ton",
  "uuid",
 ]
 

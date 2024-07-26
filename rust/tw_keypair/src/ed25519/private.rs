@@ -15,7 +15,7 @@ use tw_misc::traits::ToBytesZeroizing;
 use zeroize::{ZeroizeOnDrop, Zeroizing};
 
 /// Represents an `ed25519` private key.
-#[derive(ZeroizeOnDrop)]
+#[derive(Clone, ZeroizeOnDrop)]
 pub struct PrivateKey<H: Hasher512> {
     secret: H256,
     /// An expanded secret key obtained from [`PrivateKey::secret`].

@@ -28,6 +28,7 @@ tw_ronin = { path = "../chains/tw_ronin" }
 tw_solana = { path = "../chains/tw_solana" }
 tw_sui = { path = "../chains/tw_sui" }
 tw_thorchain = { path = "../chains/tw_thorchain" }
+tw_ton = { path = "../chains/tw_ton" }
 
 [build-dependencies]
 itertools = "0.10.5"

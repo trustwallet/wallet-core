@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_encoding::base64;
+use tw_encoding::base64::{self, STANDARD};
 use tw_hash::{H256, H512};
 use tw_keypair::ed25519;
 use tw_memory::Data;
@@ -40,7 +40,6 @@ impl SuiSignatureInfo {
     }
 
     pub fn to_base64(&self) -> String {
-        let is_url = false;
-        base64::encode(&self.to_vec(), is_url)
+        base64::encode(&self.to_vec(), STANDARD)
     }
 }

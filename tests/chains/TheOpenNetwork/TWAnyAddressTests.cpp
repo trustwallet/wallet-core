@@ -28,4 +28,17 @@ TEST(TWTheOpenNetwork, Address) {
     assertStringsEqual(addressStr, "UQDYW_1eScJVxtitoBRksvoV9cCYo4uKGWLVNIHB1JqRRyQx");
 }
 
+TEST(TWTheOpenNetwork, AddressValidate) {
+    auto string = STRING("EQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorkdl");
+
+    ASSERT_TRUE(TWAnyAddressIsValid(string.get(), TWCoinTypeTON));
+    auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeTON));
+
+    auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
+    assertHexEqual(keyHash, "8a8627861a5dd96c9db3ce0807b122da5ed473934ce7568a5b4b1c361cbb28ae");
+
+    auto normalized = WRAPS(TWAnyAddressDescription(addr.get()));
+    assertStringsEqual(normalized, "UQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorhqg");
+}
+
 } // namespace TW::TheOpenNetwork::tests

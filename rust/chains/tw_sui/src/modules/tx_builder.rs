@@ -9,7 +9,7 @@ use crate::transaction::transaction_data::TransactionData;
 use std::borrow::Cow;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
-use tw_encoding::base64;
+use tw_encoding::base64::{self, STANDARD};
 use tw_keypair::ed25519;
 use tw_keypair::traits::KeyPairTrait;
 use tw_memory::Data;
@@ -59,8 +59,7 @@ impl<'a> TWTransactionBuilder<'a> {
     }
 
     fn sign_direct_from_proto(&self, sign_direct: &Proto::SignDirect<'_>) -> SigningResult<Data> {
-        let url = false;
-        base64::decode(&sign_direct.unsigned_tx_msg, url)
+        base64::decode(&sign_direct.unsigned_tx_msg, STANDARD)
             .tw_err(|_| SigningErrorType::Error_input_parse)
             .context("Error parsing Raw Unsigned TX message as base64")
     }

@@ -5,52 +5,42 @@
 #include <TrustWalletCore/TWTONAddressConverter.h>
 
 #include "Base64.h"
-#include "TheOpenNetwork/Address.h"
+#include "rust/Wrapper.h"
 
 using namespace TW;
 
 TWString *_Nullable TWTONAddressConverterToBoc(TWString *_Nonnull address) {
     auto& addressString = *reinterpret_cast<const std::string*>(address);
 
-    try {
-        const TheOpenNetwork::Address addressTon(addressString);
-        auto bocEncoded = addressTon.toBoc();
-        return TWStringCreateWithUTF8Bytes(bocEncoded.c_str());
-    } catch (...) {
+    const Rust::TWStringWrapper addressRustStr = addressString;
+    const Rust::TWStringWrapper bocRustStr = Rust::tw_ton_address_converter_to_boc(addressRustStr.get());
+    if (!bocRustStr) {
         return nullptr;
     }
+
+    return TWStringCreateWithUTF8Bytes(bocRustStr.c_str());
 }
 
 TWString *_Nullable TWTONAddressConverterFromBoc(TWString *_Nonnull boc) {
     auto& bocEncoded = *reinterpret_cast<const std::string*>(boc);
 
-    try {
-        auto address = TheOpenNetwork::Address::fromBoc(bocEncoded);
-        if (!address) {
-            return nullptr;
-        }
-
-        auto userFriendly = true;
-        auto bounceable = false;
-        auto addressStr = address->string(userFriendly, bounceable);
-
-        return TWStringCreateWithUTF8Bytes(addressStr.c_str());
-    } catch (...) {
+    const Rust::TWStringWrapper bocRustStr = bocEncoded;
+    const Rust::TWStringWrapper addressRustStr = Rust::tw_ton_address_converter_from_boc(bocRustStr.get());
+    if (!addressRustStr) {
         return nullptr;
     }
+
+    return TWStringCreateWithUTF8Bytes(addressRustStr.c_str());
 }
 
 TWString *_Nullable TWTONAddressConverterToUserFriendly(TWString *_Nonnull address, bool bounceable, bool testnet) {
     auto& addressString = *reinterpret_cast<const std::string*>(address);
 
-    try {
-        const TheOpenNetwork::Address addressTon(addressString);
-
-        auto userFriendly = true;
-        const auto addressFormatted = addressTon.string(userFriendly, bounceable, testnet);
-
-        return TWStringCreateWithUTF8Bytes(addressFormatted.c_str());
-    } catch (...) {
+    const Rust::TWStringWrapper addressRustStr = addressString;
+    const Rust::TWStringWrapper userFriendlyRustStr = Rust::tw_ton_address_converter_to_user_friendly(addressRustStr.get(), bounceable, testnet);
+    if (!userFriendlyRustStr) {
         return nullptr;
     }
+
+    return TWStringCreateWithUTF8Bytes(userFriendlyRustStr.c_str());
 }
