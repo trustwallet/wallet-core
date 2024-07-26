@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+//! Original source code: https://github.com/ston-fi/tonlib-rs/blob/b96a5252df583261ed755656292930af46c2039a/src/cell/parser.rs
+
 use crate::address::address_data::AddressData;
 use crate::error::{CellError, CellErrorType, CellResult};
 use bitreader::BitReader;

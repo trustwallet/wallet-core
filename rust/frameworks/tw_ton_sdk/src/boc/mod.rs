@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+//! Original source code: https://github.com/ston-fi/tonlib-rs/blob/b96a5252df583261ed755656292930af46c2039a/src/cell/bag_of_cells.rs
+
 use crate::boc::raw::RawBagOfCells;
 use crate::cell::{Cell, CellArc};
 use crate::error::{CellError, CellErrorType, CellResult};
@@ -51,7 +53,11 @@ impl BagOfCells {
                     return CellError::err(CellErrorType::BagOfCellsDeserializationError)
                         .context("References to previous cells are not supported");
                 }
-                references.push(cells[num_cells - 1 - ref_index].clone());
+                let cell_ref_idx = (num_cells - 1)
+                    .checked_sub(*ref_index)
+                    .or_tw_err(CellErrorType::BagOfCellsDeserializationError)
+                    .context("Cell references to an out-of-bound cell")?;
+                references.push(cells[cell_ref_idx].clone());
             }
 
             let cell = Cell::new(
@@ -64,12 +70,21 @@ impl BagOfCells {
             cells.push(cell.into_arc());
         }
 
+        if num_cells < raw.roots.len() {
+            return CellError::err(CellErrorType::BagOfCellsDeserializationError)
+                .context("BagOfCells contains more roots than cells");
+        }
         let roots = raw
             .roots
             .into_iter()
-            .map(|r| &cells[num_cells - 1 - r])
-            .map(Arc::clone)
-            .collect();
+            .map(|r| {
+                let cell_idx = (num_cells - 1)
+                    .checked_sub(r)
+                    .or_tw_err(CellErrorType::BagOfCellsDeserializationError)
+                    .context("Root index doesn't correspond to a Cell")?;
+                Ok(Arc::clone(&cells[cell_idx]))
+            })
+            .collect::<CellResult<Vec<_>>>()?;
 
         Ok(BagOfCells { roots })
     }

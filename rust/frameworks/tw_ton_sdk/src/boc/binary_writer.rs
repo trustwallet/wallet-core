@@ -42,7 +42,8 @@ impl BinaryWriter {
         Ok(self)
     }
 
-    // TODO the function doesn't count `bit_len / 8` count of bytes.
+    /// TODO the function doesn't count `bit_len / 8` count of bytes.
+    /// Original code: https://github.com/ston-fi/tonlib-rs/blob/b96a5252df583261ed755656292930af46c2039a/src/cell.rs#L507-L526
     pub(crate) fn write_bits(&mut self, data: &[u8], bit_len: usize) -> CellResult<()> {
         let data_len = data.len();
         let rest_bits = bit_len % 8;

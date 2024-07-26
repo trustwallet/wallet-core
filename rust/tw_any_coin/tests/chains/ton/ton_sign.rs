@@ -433,6 +433,10 @@ fn test_ton_sign_transfer_custom_payload_with_state_init() {
     let doge_state_init = doge_chatbot_state_init(current_timestamp);
     let doge_contract_address = contract_address_from_state_init(&doge_state_init);
     assert_eq!(
+        doge_state_init,
+        "te6cckEBBAEAUwACATQBAgEU/wD0pBP0vPLICwMAEAAAAZDrkbgQAGrTMAGCCGlJILmRMODQ0wMx+kAwi0ZG9nZYcCCAGMjLBVAEzxaARfoCE8tqEssfAc8WyXP7AO4ioYU="
+    );
+    assert_eq!(
         doge_contract_address,
         "0:3042cd5480da232d5ac1d9cbe324e3c9eb58f167599f6b7c20c6e638aeed0335",
     );
@@ -440,7 +444,7 @@ fn test_ton_sign_transfer_custom_payload_with_state_init() {
     let transfer = Proto::Transfer {
         wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         dest: doge_contract_address.into(),
-        // 0.0100000321 TON
+        // 0.069 TON
         amount: 69_000_000,
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,

@@ -2,11 +2,13 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+//! Original source code: https://github.com/ston-fi/tonlib-rs/blob/b96a5252df583261ed755656292930af46c2039a/src/cell.rs
+
 use crate::boc::binary_writer::BinaryWriter;
 use crate::cell::cell_parser::CellParser;
 use std::fmt;
 use std::sync::Arc;
-use tw_coin_entry::error::prelude::{OrTWError, ResultContext};
+use tw_coin_entry::error::prelude::{MapTWError, OrTWError, ResultContext};
 use tw_encoding::base64::{self, URL_NO_PAD};
 use tw_encoding::hex::ToHex;
 use tw_hash::sha2::sha256;
@@ -176,8 +178,8 @@ fn get_repr_for_data(
     let buffer_len = 2 + data_len + (32 + 2) * refs.len();
 
     let mut writer = BinaryWriter::with_capacity(buffer_len);
-    let d1 = get_refs_descriptor(cell_type, refs, level_mask.apply(level).mask());
-    let d2 = get_bits_descriptor(original_data, original_data_bit_len);
+    let d1 = get_refs_descriptor(cell_type, refs, level_mask.apply(level).mask())?;
+    let d2 = get_bits_descriptor(original_data, original_data_bit_len)?;
 
     // Write descriptors
     writer.write(8, d1)?;
@@ -240,7 +242,10 @@ fn calculate_hashes_and_depths(
                 max_depth.max(child_depth)
             });
 
-            max_ref_depth + 1
+            max_ref_depth
+                .checked_add(1)
+                .or_tw_err(CellErrorType::CellParserError)
+                .with_context(|| format!("max_ref_depth is too large: {max_ref_depth}"))?
         };
 
         // Calculate Hash
@@ -262,15 +267,50 @@ fn calculate_hashes_and_depths(
     cell_type.resolve_hashes_and_depths(hashes, depths, data, bit_len, level_mask)
 }
 
-fn get_refs_descriptor(cell_type: CellType, references: &[CellArc], level_mask: u32) -> u8 {
+/// `references.len() as u8 + 8 * cell_type_var + level_mask as u8 * 32`
+fn get_refs_descriptor(
+    cell_type: CellType,
+    references: &[CellArc],
+    level_mask: u32,
+) -> CellResult<u8> {
     let cell_type_var = (cell_type != CellType::Ordinary) as u8;
-    references.len() as u8 + 8 * cell_type_var + level_mask as u8 * 32
+    let references_len: u8 = references
+        .len()
+        .try_into()
+        .tw_err(|_| CellErrorType::CellParserError)
+        .with_context(|| format!("Got too much Cell references: {}", references.len()))?;
+    let level_mask_u8: u8 = level_mask
+        .try_into()
+        .tw_err(|_| CellErrorType::CellParserError)
+        .with_context(|| format!("Cell level_mask is too large: {level_mask}"))?;
+
+    level_mask_u8
+        .checked_mul(32)
+        .and_then(|v| v.checked_add(8 * cell_type_var))
+        .and_then(|v| v.checked_add(references_len))
+        .or_tw_err(CellErrorType::CellParserError)
+        .context("!get_refs_descriptor")
 }
 
-fn get_bits_descriptor(data: &[u8], bit_len: usize) -> u8 {
+fn get_bits_descriptor(data: &[u8], bit_len: usize) -> CellResult<u8> {
     let rest_bits = bit_len % 8;
     let full_bytes = rest_bits == 0;
-    data.len() as u8 * 2 - !full_bytes as u8 // subtract 1 if the last byte is not full
+
+    let double_len = data
+        .len()
+        .try_into()
+        .ok()
+        .and_then(|len: u8| len.checked_mul(2))
+        .or_tw_err(CellErrorType::CellParserError)
+        .context("!get_bits_descriptor()")?;
+
+    let inverted_full_bytes = !full_bytes as u8;
+
+    // subtract 1 if the last byte is not full
+    double_len
+        .checked_sub(inverted_full_bytes)
+        .or_tw_err(CellErrorType::CellParserError)
+        .context("!get_bits_descriptor()")
 }
 
 fn write_ref_depths(

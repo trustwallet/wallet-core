@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+//! Original source code: https://github.com/ston-fi/tonlib-rs/blob/b96a5252df583261ed755656292930af46c2039a/src/cell/raw.rs
+
 use crate::boc::binary_reader::BinaryReader;
 use crate::boc::binary_writer::BinaryWriter;
 use crate::cell::level_mask::LevelMask;
@@ -11,6 +13,8 @@ use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 
 const GENERIC_BOC_MAGIC: u32 = 0xb5ee9c72;
+/// The max number of cells in a BoC.
+const MAX_CELLS: usize = 4096;
 
 /// Raw representation of Cell.
 ///
@@ -79,8 +83,20 @@ impl RawBagOfCells {
         let off_bytes = reader.read_u8()?;
         //cells:(##(size * 8))
         let cells = reader.read_var_size(size as usize)?;
+        if cells > MAX_CELLS {
+            return CellError::err(CellErrorType::BagOfCellsDeserializationError).context(format!(
+                "Max number of cells is '{MAX_CELLS}', but given '{cells}' Cells"
+            ));
+        }
+
         //   roots:(##(size * 8)) { roots >= 1 }
         let roots = reader.read_var_size(size as usize)?;
+        if roots > MAX_CELLS {
+            return CellError::err(CellErrorType::BagOfCellsDeserializationError).context(format!(
+                "Max number of cells is '{MAX_CELLS}', but given '{roots}' root Cells"
+            ));
+        }
+
         //   absent:(##(size * 8)) { roots + absent <= cells }
         let _absent = reader.read_var_size(size as usize)?;
         //   tot_cells_size:(##(off_bytes * 8))

@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+//! Original source code: https://github.com/ston-fi/tonlib-rs/blob/b96a5252df583261ed755656292930af46c2039a/src/cell/cell_type.rs
+
 use crate::cell::level_mask::LevelMask;
 use crate::cell::{Cell, CellArc};
 use crate::error::{CellError, CellErrorType, CellResult};
@@ -73,6 +75,14 @@ impl CellType {
         cell_data_bit_len: usize,
         references: &[CellArc],
     ) -> CellResult<LevelMask> {
+        let ensure_ref_at_least = |at_least_count: usize| {
+            if references.len() < at_least_count {
+                return CellError::err(CellErrorType::CellParserError)
+                    .context("Invalid number of Cell references to get level_mask");
+            }
+            Ok(())
+        };
+
         let result = match self {
             CellType::Ordinary => references
                 .iter()
@@ -81,11 +91,17 @@ impl CellType {
                 }),
             CellType::PrunedBranch => self.pruned_level_mask(cell_data, cell_data_bit_len)?,
             CellType::Library => LevelMask::new(0),
-            CellType::MerkleProof => references[0].level_mask.shift_right(),
-            CellType::MerkleUpdate => references[0]
-                .level_mask
-                .apply_or(references[1].level_mask)
-                .shift_right(),
+            CellType::MerkleProof => {
+                ensure_ref_at_least(1)?;
+                references[0].level_mask.shift_right()
+            },
+            CellType::MerkleUpdate => {
+                ensure_ref_at_least(2)?;
+                references[0]
+                    .level_mask
+                    .apply_or(references[1].level_mask)
+                    .shift_right()
+            },
         };
 
         Ok(result)

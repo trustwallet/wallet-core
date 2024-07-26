@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+//! Original source code: https://github.com/ston-fi/tonlib-rs/blob/b96a5252df583261ed755656292930af46c2039a/src/cell/raw_boc_from_boc.rs
+
 use crate::boc::raw::{RawBagOfCells, RawCell};
 use crate::boc::BagOfCells;
 use crate::cell::{Cell, CellArc};
