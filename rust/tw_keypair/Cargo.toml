@@ -40,3 +40,4 @@ starknet-ff = "0.3.2"
 [dev-dependencies]
 serde_json = "1.0"
 tw_keypair = { path = "./", features = ["test-utils"] }
+tw_memory = { path = "../tw_memory", features = ["test-utils"] }

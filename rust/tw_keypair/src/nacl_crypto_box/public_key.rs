@@ -16,6 +16,10 @@ impl PublicKey {
     pub(crate) fn inner(&self) -> &crypto_box::PublicKey {
         &self.public
     }
+
+    pub fn as_slice(&self) -> &[u8] {
+        self.public.as_bytes()
+    }
 }
 
 impl<'a> TryFrom<&'a [u8]> for PublicKey {
