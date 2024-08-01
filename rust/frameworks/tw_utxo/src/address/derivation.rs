@@ -44,8 +44,9 @@ impl BitcoinDerivation {
     /// TrustWallet behaviour inherited from:
     /// https://github.com/trustwallet/wallet-core/blob/b65adc4c86e49eb905f659ade025185a62e87ca9/src/Bitcoin/Entry.cpp#L14
     pub fn tw_supports_segwit(coin: &dyn CoinContext) -> bool {
-        coin.derivations()
-            .iter()
-            .any(|der| der.name == Derivation::Segwit)
+        coin.derivations().iter().any(|der| {
+            der.name == Derivation::Segwit
+                || der.path.path().first().copied() == Some(SEGWIT_DERIVATION_PATH_TYPE)
+        })
     }
 }
