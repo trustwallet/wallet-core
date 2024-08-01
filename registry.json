@@ -56,7 +56,6 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "name": "segwit",
         "path": "m/84'/2'/0'/0/0",
         "xpub": "zpub",
         "xprv": "zprv"
@@ -160,16 +159,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "name": "segwit",
         "path": "m/84'/14'/0'/0/0",
         "xpub": "zpub",
         "xprv": "zprv"
-      },
-      {
-        "name": "legacy",
-        "path": "m/44'/14'/0'/0/0",
-        "xpub": "xpub",
-        "xprv": "xprv"
       }
     ],
     "curve": "secp256k1",
@@ -233,7 +225,6 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "name": "segwit",
         "path": "m/84'/20'/0'/0/0",
         "xpub": "zpub",
         "xprv": "zprv"
@@ -267,16 +258,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "name": "legacy",
         "path": "m/44'/22'/0'/0/0",
         "xpub": "xpub",
         "xprv": "xprv"
-      },
-      {
-        "name": "segwit",
-        "path": "m/84'/22'/0'/0/0",
-        "xpub": "zpub",
-        "xprv": "zprv"
       }
     ],
     "curve": "secp256k1",
@@ -340,16 +324,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "name": "segwit",
         "path": "m/84'/57'/0'/0/0",
         "xpub": "zpub",
         "xprv": "zprv"
-      },
-      {
-        "name": "legacy",
-        "path": "m/44'/57'/0'/0/0",
-        "xpub": "xpub",
-        "xprv": "xprv"
       }
     ],
     "curve": "secp256k1",
@@ -1540,16 +1517,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "name": "segwit",
         "path": "m/84'/156'/0'/0/0",
         "xpub": "zpub",
         "xprv": "zprv"
-      },
-      {
-        "name": "legacy",
-        "path": "m/44'/156'/0'/0/0",
-        "xpub": "xpub",
-        "xprv": "xprv"
       }
     ],
     "curve": "secp256k1",
@@ -2872,16 +2842,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "name": "legacy",
         "path": "m/44'/2301'/0'/0/0",
         "xpub": "xpub",
         "xprv": "xprv"
-      },
-      {
-        "name": "segwit",
-        "path": "m/84'/2301'/0'/0/0",
-        "xpub": "zpub",
-        "xprv": "zprv"
       }
     ],
     "curve": "secp256k1",
