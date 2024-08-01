@@ -7,6 +7,7 @@ use crate::nacl_crypto_box::secret_key::SecretKey;
 use tw_memory::ffi::RawPtrTrait;
 use tw_misc::try_or_else;
 
+/// Secret key used in `crypto_box` cryptography.
 pub struct TWCryptoBoxSecretKey(pub(crate) SecretKey);
 
 impl RawPtrTrait for TWCryptoBoxSecretKey {}

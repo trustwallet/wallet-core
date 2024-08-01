@@ -9,6 +9,7 @@ use tw_memory::ffi::tw_data::TWData;
 use tw_memory::ffi::RawPtrTrait;
 use tw_misc::{try_or_else, try_or_false};
 
+/// Public key used in `crypto_box` cryptography.
 pub struct TWCryptoBoxPublicKey(pub(crate) PublicKey);
 
 impl RawPtrTrait for TWCryptoBoxPublicKey {}

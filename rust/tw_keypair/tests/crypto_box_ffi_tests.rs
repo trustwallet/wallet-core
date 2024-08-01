@@ -45,6 +45,34 @@ fn test_encrypt_decrypt_easy() {
 }
 
 #[test]
+fn test_encrypt_decrypt_easy_error() {
+    let (my_secret, _my_pubkey) = random_key_pair();
+
+    let other_pubkey_data = TWDataHelper::create(
+        "afccabc5b28a8a1fd1cd880516f9c854ae2498d0d1b978b53a59f38e4ae55747"
+            .decode_hex()
+            .unwrap(),
+    );
+    let other_pubkey = TWWrapper::wrap(unsafe {
+        tw_crypto_box_public_key_create_with_data(other_pubkey_data.ptr())
+    });
+
+    // The given encrypted box cannot be decrypted by using `my_secret` and `other_pubkey`.
+    let invalid_encrypted = "7a7b9c8fee6e3c597512848c7d513e7131193cdfd410ff6611522fdeea99d7160873182019d7a18502f22c5e3644d26a2b669365".decode_hex().unwrap();
+    let invalid_encrypted_data = TWDataHelper::create(invalid_encrypted);
+
+    let decrypted = TWDataHelper::wrap(unsafe {
+        tw_crypto_box_decrypt_easy(
+            my_secret.ptr(),
+            other_pubkey.ptr(),
+            invalid_encrypted_data.ptr(),
+        )
+    });
+
+    assert!(decrypted.is_null());
+}
+
+#[test]
 fn test_public_key() {
     let pubkey_bytes = "afccabc5b28a8a1fd1cd880516f9c854ae2498d0d1b978b53a59f38e4ae55747"
         .decode_hex()
