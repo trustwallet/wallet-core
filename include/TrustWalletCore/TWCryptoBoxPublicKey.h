@@ -11,7 +11,7 @@
 TW_EXTERN_C_BEGIN
 
 /// Public key used in `crypto_box` cryptography.
-TW_EXPORT_STRUCT
+TW_EXPORT_CLASS
 struct TWCryptoBoxPublicKey;
 
 /// Determines if the given public key is valid or not.

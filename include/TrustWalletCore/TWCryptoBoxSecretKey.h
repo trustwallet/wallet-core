@@ -33,6 +33,6 @@ void TWCryptoBoxSecretKeyDelete(struct TWCryptoBoxSecretKey* _Nonnull key);
 /// \param key *non-null* pointer to the private key.
 /// \return *non-null* pointer to the corresponding public key.
 TW_EXPORT_METHOD
-struct TWCryptoBoxPublicKey* TWCryptoBoxSecretKeyGetPublicKey(struct TWCryptoBoxSecretKey* _Nonnull key);
+struct TWCryptoBoxPublicKey* _Nonnull TWCryptoBoxSecretKeyGetPublicKey(struct TWCryptoBoxSecretKey* _Nonnull key);
 
 TW_EXTERN_C_END
