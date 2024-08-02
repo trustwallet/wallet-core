@@ -928,3 +928,30 @@ fn test_solana_sign_raw_message_v0() {
     // Successfully broadcasted: https://explorer.solana.com/tx/4ffBzXxLPYEEdCYpQGETkCTCCsH6iTdmKzwUZXZZgFemdhRpxQwboguFFoKCeGF3SsZPzuwwE7LbRwLgJbsyRqyP?cluster=testnet
     assert_eq!(output.encoded, "6NijVxwQoDjqt6A41HXCK9kXwNDp48uLgvRyE8uz6NY5dEzaEDLzjzuMnc5TGatHZZUXehKrzUGzbg9jPSdn6pVsMc9TXNH6JGe5RJLmHwWey3MC1p8Hs2zhjw5P439P57NToatraDX9ZwvBtK4EzZzRjWbyGdicheTPjeYKCzvPCLxDkTFtPCM9VZGGXSN2Bne92NLDvf6ntNm5pxsPkZGxPe4w9Eq26gkE83hZyrYXKaiDh8TbqbHatSkw");
 }
+
+#[test]
+fn test_solana_sign_create_and_transfer_token_2022() {
+    let create_transfer_token: Proto::CreateAndTransferToken = Proto::CreateAndTransferToken {
+        recipient_main_address: "EbHdsfVpWzeQV4TceYQ2xENS8meBHyztyTKVSFtgHPUw".into(),
+        token_mint_address: "BSQCmMAFB9itonyVSLsUxX92Ne1rgBZFqothBk3q91k6".into(),
+        recipient_token_address: "FzsLNpzsLMBbm1LWpM6P3W4tKrCkd8KqnMmADNvArW5d".into(),
+        sender_token_address: "EQxRyhzjyhRX4TJXt7FmQ3HfFdRcu49krjxHMszidQYS".into(),
+        amount: 1000000000,
+        decimals: 9,
+        is_token_2022: true,
+        ..Proto::CreateAndTransferToken::default()
+    };
+    let input = Proto::SigningInput {
+        private_key: b58("MCyXa2gTJELxTPemyVi5ydDcQ3vVgFyddQYXj6UM3tw"),
+        recent_blockhash: "9S1R94w4KzF15EYP5iP7gTigvyPd4JRfEkcUdhsirxgA".into(),
+        transaction_type: TransactionType::create_and_transfer_token_transaction(
+            create_transfer_token,
+        ),
+        ..Proto::SigningInput::default()
+    };
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, input);
+     assert_eq!(output.error, SigningError::OK);
+    assert_eq!(output.encoded, "2hBQNSnumbABqKWgpeAFnCEYqb27FMMiZBn4BHrfv2CeYvzyhhrWhPm2uVHRjiJ4CwUFrFZgoTBKDhHqqDYkFVCnU82DAvsEjAQCcKGET16CGr14wNbmhL34KZv9qwvpiyRRBwDN8DJy9kLcRdYXKr8Vx5Emm5iaUu33BMbqLpcETN7HB4wFWrxrDyYgP6jbaC8v3g1wyp3xp7Q3LJ9NXki4ATmjV2T1MrpSzTjJAgQvhsx7mb2BARU7Bdrp92qgNrNWkpwr6vru2CF5UVJRySjYHaJo8YdKKMwFR8ZuwUfhbk9FFdSVGhxqX8pfj6NmUU55KMrxTtupjgifKuFZng7avzsRmysHZuBNeywrip7Gw66MaBsbsYons5jFarqUpboXyHiF4R1RQX4eQYqfmDPksv7Dh68M2wCcmiUcu3AdMMs4VHwWmkks3WfAGKKL1cN54f7SN5yP1FoGAMRbtLSCS5GCFt2pnQfkMmwqrNBtDT2pYB4f3iuGfXdHJ7APcoFtyBfUfwShUnYPq5KX3bgwAB73C38R1Hrh9e7mJJCG8i5d1CtLH12N4");
+    // https://explorer.solana.com/tx/Lg1xWzsC9GatQMu1ZXv23t7snC92RRvbKJe22bsS76GUb8C8a9q3HPkiUnFoK6AWKSoNSsmko1EBnvKkCnL8b7w?cluster=devnet
+ }
