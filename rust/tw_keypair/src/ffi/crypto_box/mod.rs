@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+#![allow(clippy::missing_safety_doc)]
+
 use crate::ffi::crypto_box::public_key::TWCryptoBoxPublicKey;
 use crate::ffi::crypto_box::secret_key::TWCryptoBoxSecretKey;
 use crate::nacl_crypto_box::CryptoBox;
