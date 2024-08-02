@@ -79,6 +79,9 @@ message CreateTokenAccount {
 
     // Token address
     string token_address = 3;
+
+    // optional is token 2022
+    bool is_token_2022 = 4;
 }
 
 // Transfer tokens
@@ -103,6 +106,9 @@ message TokenTransfer {
 
     // optional referenced public keys
     repeated string references = 7;
+
+    // optional is token 2022
+    bool is_token_2022 = 8;
 }
 
 // CreateTokenAccount and TokenTransfer combined
@@ -130,6 +136,9 @@ message CreateAndTransferToken {
 
     // optional referenced public keys
     repeated string references = 8;
+
+    // optional is token 2022
+    bool is_token_2022 = 9;
 }
 
 message CreateNonceAccount {

@@ -392,6 +392,7 @@ fn test_solana_sign_create_token_account() {
         main_address: "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V".into(),
         token_mint_address: "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt".into(),
         token_address: "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP".into(),
+        is_token_2022: false
     };
     let input = Proto::SigningInput {
         private_key: b58("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"),
@@ -413,6 +414,7 @@ fn test_solana_sign_create_token_account_5ktpn1() {
         main_address: "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ".into(),
         token_mint_address: "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt".into(),
         token_address: "ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf".into(),
+        is_token_2022: false
     };
     let input = Proto::SigningInput {
         private_key: "4b9d6f57d28b06cbfa1d4cc710953e62d653caf853415c56ffd9d150acdeb7f7"
@@ -438,6 +440,7 @@ fn test_solana_sign_create_token_account_for_other_3e6ufv() {
         main_address: "3xJ3MoUVFPNFEHfWdtNFa8ajXUHsJPzXcBSWMKLd76ft".into(),
         token_mint_address: "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt".into(),
         token_address: "67BrwFYt7qUnbAcYBVx7sQ4jeD2KWN1ohP6bMikmmQV3".into(),
+        is_token_2022: false
     };
     let input = Proto::SigningInput {
         private_key: "4b9d6f57d28b06cbfa1d4cc710953e62d653caf853415c56ffd9d150acdeb7f7"
@@ -469,6 +472,7 @@ fn test_solana_sign_create_token_account_with_priority_fee_price() {
         // WBTC
         token_mint_address: "3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh".into(),
         token_address: "94JfTH8qCeBQDBatvULREG43msjSQscT7oHnqx7jppX".into(),
+        is_token_2022: false
     };
 
     let input = Proto::SigningInput {
@@ -496,6 +500,7 @@ fn test_solana_sign_token_transfer() {
         // 0.004
         amount: 4000,
         decimals: 6,
+        is_token_2022: false,
         ..Proto::TokenTransfer::default()
     };
     let input = Proto::SigningInput {
@@ -522,6 +527,7 @@ fn test_solana_sign_token_transfer_2pmvzp() {
         // 0.0061
         amount: 6100,
         decimals: 6,
+        is_token_2022: false,
         ..Proto::TokenTransfer::default()
     };
     let input = Proto::SigningInput {
@@ -549,6 +555,7 @@ fn test_solana_sign_create_and_transfer_token() {
         // 0.0029
         amount: 2900,
         decimals: 6,
+        is_token_2022: false,
         ..Proto::CreateAndTransferToken::default()
     };
     let input = Proto::SigningInput {
@@ -578,6 +585,7 @@ fn test_solana_sign_create_and_transfer_token_2() {
         // 0.004
         amount: 4000,
         decimals: 6,
+        is_token_2022: false,
         ..Proto::CreateAndTransferToken::default()
     };
     let input = Proto::SigningInput {
@@ -611,6 +619,7 @@ fn test_solana_sign_create_and_transfer_token_with_memo_and_references() {
             "CuieVDEDtLo7FypA9SbLM9saXFdb1dsshEkyErMqkRQq".into(),
             "tFpP7tZUt6zb7YZPpQ11kXNmsc5YzpMXmahGMvCHhqS".into(),
         ],
+        is_token_2022: false
     };
     let input = Proto::SigningInput {
         private_key: b58("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c"),
@@ -638,6 +647,7 @@ fn test_solana_sign_create_and_transfer_token_with_durable_nonce() {
         // 0.004
         amount: 4000,
         decimals: 6,
+        is_token_2022: false,
         ..Proto::CreateAndTransferToken::default()
     };
     let input = Proto::SigningInput {
