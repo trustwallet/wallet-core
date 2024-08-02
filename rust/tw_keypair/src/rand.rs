@@ -2,5 +2,5 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-pub use rand_core::OsRng;
 pub use rand_core::CryptoRngCore;
+pub use rand_core::OsRng;
