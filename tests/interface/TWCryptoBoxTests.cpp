@@ -23,8 +23,10 @@ TEST(TWCryptoBox, EncryptDecryptEasy) {
 
     // Step 2. Make sure the Box can be decrypted by the other side.
     const auto decrypted = WRAPD(TWCryptoBoxDecryptEasy(otherSecret.get(), myPubkey.get(), encrypted.get()));
-    const auto* decryptedMessage = reinterpret_cast<const char*>(dataFromTWData(decrypted.get()));
-    EXPECT_STREQ(decryptedMessage, message);
+    const auto decryptedData = dataFromTWData(decrypted.get());
+    std::string decryptedMessage(decryptedData->begin(), decryptedData->end());
+
+    EXPECT_EQ(decryptedMessage, message);
 }
 
 TEST(TWCryptoBox, PublicKeyWithData) {
