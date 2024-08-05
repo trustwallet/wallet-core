@@ -2,5 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+pub mod tw_crypto_box_helpers;
 pub mod tw_private_key_helper;
 pub mod tw_public_key_helper;
