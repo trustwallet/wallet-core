@@ -13,6 +13,7 @@ use tw_hash::H256;
 use tw_keypair::ed25519::sha512::{KeyPair, PrivateKey, PublicKey};
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
 use tw_number::U256;
+use tw_ton_sdk::boc::BagOfCells;
 use tw_ton_sdk::cell::{Cell, CellArc};
 use tw_ton_sdk::error::{cell_to_signing_error, CellResult};
 use tw_ton_sdk::message::state_init::StateInit;
