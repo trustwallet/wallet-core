@@ -45,6 +45,8 @@
 pub mod ecdsa;
 pub mod ed25519;
 pub mod ffi;
+pub mod nacl_crypto_box;
+pub mod rand;
 pub mod schnorr;
 pub mod starkex;
 pub mod traits;
@@ -61,6 +63,8 @@ pub enum KeyPairError {
     InvalidPublicKey,
     InvalidSignature,
     InvalidSignMessage,
+    InvalidEncryptedMessage,
     SignatureVerifyError,
     SigningError,
+    InternalError,
 }

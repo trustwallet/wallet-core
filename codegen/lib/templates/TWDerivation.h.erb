@@ -19,9 +19,8 @@ enum TWDerivation {
 <% enum_count += 1 -%>
 <% coins.each do |coin| -%>
 <% coin['derivation'].each_with_index do |deriv, index| -%>
-<% if !deriv['name'].nil? and !derivations.has_key?(deriv['name']) -%>
-<% derivations[deriv['name']] = true -%>
-    <%= derivation_enum_name(deriv) %> = <% enum_count += 1 -%><%= enum_count %>,
+<% if index > 0 or !deriv['name'].nil? -%>
+    <%= derivation_enum_name(deriv, coin) %> = <% enum_count += 1 -%><%= enum_count %>,
 <% end -%>
 <% end -%>
 <% end -%>
