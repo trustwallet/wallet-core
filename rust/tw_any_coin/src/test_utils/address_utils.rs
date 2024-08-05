@@ -4,11 +4,14 @@
 
 use crate::ffi::tw_any_address::{
     tw_any_address_create_base58_with_public_key, tw_any_address_create_bech32_with_public_key,
-    tw_any_address_create_with_string, tw_any_address_data, tw_any_address_delete,
-    tw_any_address_description, tw_any_address_is_valid, tw_any_address_is_valid_base58,
-    tw_any_address_is_valid_bech32, TWAnyAddress,
+    tw_any_address_create_with_public_key_derivation, tw_any_address_create_with_string,
+    tw_any_address_data, tw_any_address_delete, tw_any_address_description,
+    tw_any_address_is_valid, tw_any_address_is_valid_base58, tw_any_address_is_valid_bech32,
+    TWAnyAddress,
 };
 use tw_coin_registry::coin_type::CoinType;
+use tw_coin_registry::registry::get_coin_item;
+use tw_coin_registry::tw_derivation::TWDerivation;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_keypair::ffi::privkey::tw_private_key_get_public_key_by_type;
 use tw_keypair::test_utils::tw_private_key_helper::TWPrivateKeyHelper;
@@ -26,6 +29,26 @@ impl WithDestructor for TWAnyAddress {
     }
 }
 
+pub fn test_address_derive(coin: CoinType, private_key: &str, address: &str) {
+    let coin_item = get_coin_item(coin).unwrap();
+
+    let private_key = TWPrivateKeyHelper::with_hex(private_key);
+    let public_key = TWPublicKeyHelper::wrap(unsafe {
+        tw_private_key_get_public_key_by_type(private_key.ptr(), coin_item.public_key_type as u32)
+    });
+
+    let any_address = TWAnyAddressHelper::wrap(unsafe {
+        tw_any_address_create_with_public_key_derivation(
+            public_key.ptr(),
+            coin as u32,
+            TWDerivation::Default as u32,
+        )
+    });
+
+    let actual = TWStringHelper::wrap(unsafe { tw_any_address_description(any_address.ptr()) });
+    assert_eq!(actual.to_string().unwrap(), address);
+}
+
 pub fn test_address_normalization(coin: CoinType, denormalized: &str, normalized: &str) {
     let expected = normalized;
     let denormalized = TWStringHelper::create(denormalized);
@@ -40,13 +63,21 @@ pub fn test_address_normalization(coin: CoinType, denormalized: &str, normalized
 }
 
 pub fn test_address_valid(coin: CoinType, address: &str) {
-    let address = TWStringHelper::create(address);
-    assert!(unsafe { tw_any_address_is_valid(address.ptr(), coin as u32) });
+    let addr = TWStringHelper::create(address);
+    assert!(
+        unsafe { tw_any_address_is_valid(addr.ptr(), coin as u32) },
+        "'{}' expected to be valid",
+        address
+    );
 }
 
 pub fn test_address_invalid(coin: CoinType, address: &str) {
-    let address = TWStringHelper::create(address);
-    assert!(!unsafe { tw_any_address_is_valid(address.ptr(), coin as u32) });
+    let addr = TWStringHelper::create(address);
+    assert!(
+        !unsafe { tw_any_address_is_valid(addr.ptr(), coin as u32) },
+        "'{}' expected to be invalid",
+        address
+    );
 }
 
 pub fn test_address_get_data(coin: CoinType, address: &str, data_hex: &str) {

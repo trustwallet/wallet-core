@@ -11,7 +11,7 @@ use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::common::compile_input::SingleSignaturePubkey;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
-use tw_encoding::base64;
+use tw_encoding::base64::{self, STANDARD};
 use tw_keypair::ed25519;
 use tw_proto::Sui::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
@@ -88,8 +88,7 @@ impl SuiCompiler {
 
         let signature_info = SuiSignatureInfo::ed25519(&signature, &public_key);
 
-        let is_url = false;
-        let unsigned_tx = base64::encode(&unsigned_tx_data, is_url);
+        let unsigned_tx = base64::encode(&unsigned_tx_data, STANDARD);
         Ok(Proto::SigningOutput {
             unsigned_tx: Cow::from(unsigned_tx),
             signature: Cow::from(signature_info.to_base64()),

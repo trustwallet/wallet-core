@@ -36,6 +36,7 @@ TWString *_Nullable TWTONAddressConverterFromBoc(TWString *_Nonnull boc);
 /// \param address raw or user-friendly address to be converted.
 /// \param bounceable whether the result address should be bounceable.
 /// \param testnet whether the result address should be testnet.
+/// \return user-friendly address str.
 TW_EXPORT_STATIC_METHOD
 TWString *_Nullable TWTONAddressConverterToUserFriendly(TWString *_Nonnull address, bool bounceable, bool testnet);
 

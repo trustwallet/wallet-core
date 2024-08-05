@@ -154,7 +154,11 @@ pub unsafe extern "C" fn decode_base58(
 #[no_mangle]
 pub unsafe extern "C" fn encode_base64(data: *const u8, len: usize, is_url: bool) -> *mut c_char {
     let data = std::slice::from_raw_parts(data, len);
-    let encoded = base64::encode(data, is_url);
+    let config = base64::Config {
+        url: is_url,
+        pad: true,
+    };
+    let encoded = base64::encode(data, config);
     CString::new(encoded).unwrap().into_raw()
 }
 
@@ -171,7 +175,11 @@ pub unsafe extern "C" fn decode_base64(data: *const c_char, is_url: bool) -> CBy
         Ok(input) => input,
         Err(_) => return CByteArrayResult::error(CEncodingCode::InvalidInput),
     };
-    base64::decode(str_slice, is_url)
+    let config = base64::Config {
+        url: is_url,
+        pad: true,
+    };
+    base64::decode(str_slice, config)
         .map(CByteArray::from)
         .map_err(CEncodingCode::from)
         .into()

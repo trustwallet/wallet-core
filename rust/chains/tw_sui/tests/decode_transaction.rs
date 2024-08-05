@@ -3,8 +3,9 @@
 // Copyright © 2017 Trust Wallet.
 
 use std::str::FromStr;
+use tw_encoding::base64::{self, STANDARD};
+use tw_encoding::bcs;
 use tw_encoding::hex::DecodeHex;
-use tw_encoding::{base64, bcs};
 use tw_sui::address::SuiAddress;
 use tw_sui::transaction::command::{Argument, Command};
 use tw_sui::transaction::programmable_transaction::ProgrammableTransaction;
@@ -59,8 +60,7 @@ fn test_decode_transfer_tx() {
     };
     let data = TransactionData::V1(v1);
 
-    let is_url = false;
-    let bytes = base64::encode(&bcs::encode(&data).unwrap(), is_url);
+    let bytes = base64::encode(&bcs::encode(&data).unwrap(), STANDARD);
     // Successfully broadcasted https://explorer.sui.io/txblock/HkPo6rYPyDY53x1MBszvSZVZyixVN7CHvCJGX381czAh?network=devnet
     assert_eq!(bytes, "AAACAAgQJwAAAAAAAAAgJZ/4B0q0Jcu0ifI24Y4I8D8aeFa998eih3vWT3OLUBUCAgABAQAAAQEDAAAAAAEBANV1rX8Y6UhGKlz2mPVk7zlKdSpx/sYkk6+KBVwBLA1QAQbywsjB2JZN8QGdZhbpcFcZvrq9kx2idVy5SM635olk7AIAAAAAAAAgYEVuxmf1zRBGdoDr+VDtMpIFF12s2Ua7I2ru1XyGF8/Vda1/GOlIRipc9pj1ZO85SnUqcf7GJJOvigVcASwNUAEAAAAAAAAA0AcAAAAAAAAA");
 }
