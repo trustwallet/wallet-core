@@ -82,7 +82,14 @@ impl TokenInstructionBuilder {
             AccountMeta::readonly(other_main_pubkey, false),
             AccountMeta::readonly(token_mint_pubkey, false),
             AccountMeta::readonly(*SYSTEM_PROGRAM_ID_ADDRESS, false),
-            AccountMeta::readonly(if is_token_2022 { *TOKEN_2022_PROGRAM_ID_ADDRESS } else { *TOKEN_PROGRAM_ID_ADDRESS }, false),
+            AccountMeta::readonly(
+                if is_token_2022 {
+                    *TOKEN_2022_PROGRAM_ID_ADDRESS
+                } else {
+                    *TOKEN_PROGRAM_ID_ADDRESS
+                },
+                false,
+            ),
             AccountMeta::readonly(*SYSVAR_RENT_ID_ADDRESS, false),
         ];
         let data = Data::default();
@@ -107,6 +114,14 @@ impl TokenInstructionBuilder {
         ];
 
         let data = TokenInstruction::TransferChecked { amount, decimals }.pack();
-        Instruction::new(if is_token_2022 { *TOKEN_2022_PROGRAM_ID_ADDRESS } else { *TOKEN_PROGRAM_ID_ADDRESS }, data, account_metas)
+        Instruction::new(
+            if is_token_2022 {
+                *TOKEN_2022_PROGRAM_ID_ADDRESS
+            } else {
+                *TOKEN_PROGRAM_ID_ADDRESS
+            },
+            data,
+            account_metas,
+        )
     }
 }
