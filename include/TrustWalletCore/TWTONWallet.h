@@ -21,6 +21,6 @@ struct TWTONWallet;
 /// \param walletId wallet's ID allows to create multiple wallets for the same private key.
 /// \return Pointer to a base64 encoded Bag Of Cells (BoC) StateInit. Null if invalid public key provided.
 TW_EXPORT_STATIC_METHOD
-TWString *_Nullable TWTONWalletCreateV4R2StateInit(struct TWPublicKey *_Nonnull publicKey, int32_t workchain, int32_t walletId);
+TWString *_Nullable TWTONWalletBuildV4R2StateInit(struct TWPublicKey *_Nonnull publicKey, int32_t workchain, int32_t walletId);
 
 TW_EXTERN_C_END

@@ -17,7 +17,7 @@ use tw_ton::modules::wallet_provider::WalletProvider;
 /// \param wallet_id wallet's ID allows to create multiple wallets for the same private key.
 /// \return Pointer to a base64 encoded Bag Of Cells (BoC) StateInit. Null if invalid public key provided.
 #[no_mangle]
-pub unsafe extern "C" fn tw_ton_wallet_create_v4_r2_state_init(
+pub unsafe extern "C" fn tw_ton_wallet_build_v4_r2_state_init(
     public_key: *const TWPublicKey,
     workchain: i32,
     wallet_id: i32,
