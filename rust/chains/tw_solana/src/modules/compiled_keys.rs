@@ -81,21 +81,18 @@ impl CompiledKeys {
             (meta.is_signer == is_signer && meta.is_writable == is_writable).then_some(*account)
         };
 
-        let mut writable_signer_keys: Vec<SolanaAddress> = ordered_keys
+        let writable_signer_keys: Vec<SolanaAddress> = ordered_keys
             .iter()
             .filter_map(|key| filter(key, true, true))
             .collect();
-        writable_signer_keys.sort();
-        let mut readonly_signer_keys: Vec<SolanaAddress> = ordered_keys
+        let readonly_signer_keys: Vec<SolanaAddress> = ordered_keys
             .iter()
             .filter_map(|key| filter(key, true, false))
             .collect();
-        readonly_signer_keys.sort();
-        let mut writable_non_signer_keys: Vec<SolanaAddress> = ordered_keys
+        let writable_non_signer_keys: Vec<SolanaAddress> = ordered_keys
             .iter()
             .filter_map(|key| filter(key, false, true))
             .collect();
-        writable_non_signer_keys.sort();
         let readonly_non_signer_keys: Vec<SolanaAddress> = ordered_keys
             .iter()
             .filter_map(|key| filter(key, false, false))
