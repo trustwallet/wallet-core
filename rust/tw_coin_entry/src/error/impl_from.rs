@@ -44,10 +44,12 @@ impl From<KeyPairError> for SigningError {
             KeyPairError::InvalidPublicKey
             | KeyPairError::InvalidSignature
             | KeyPairError::InvalidSignMessage
-            | KeyPairError::SignatureVerifyError => {
+            | KeyPairError::SignatureVerifyError
+            | KeyPairError::InvalidEncryptedMessage => {
                 TWError::new(SigningErrorType::Error_invalid_params)
             },
             KeyPairError::SigningError => TWError::new(SigningErrorType::Error_signing),
+            KeyPairError::InternalError => TWError::new(SigningErrorType::Error_internal),
         }
     }
 }

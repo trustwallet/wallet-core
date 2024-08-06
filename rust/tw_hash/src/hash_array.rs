@@ -12,6 +12,7 @@ use zeroize::DefaultIsZeroes;
 
 pub type H32 = Hash<4>;
 pub type H160 = Hash<20>;
+pub type H192 = Hash<24>;
 pub type H256 = Hash<32>;
 pub type H264 = Hash<33>;
 pub type H288 = Hash<36>;

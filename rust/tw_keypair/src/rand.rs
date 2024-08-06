@@ -2,7 +2,5 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-pub mod asn;
-pub mod crypto_box;
-pub mod privkey;
-pub mod pubkey;
+pub use rand_core::CryptoRngCore;
+pub use rand_core::OsRng;
