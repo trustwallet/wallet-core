@@ -30,9 +30,28 @@ SecretKey::SecretKey() {
     impl = SecretKeyPtr(secretKey, Rust::tw_crypto_box_secret_key_delete);
 }
 
+bool SecretKey::isValid(const Data& bytes) {
+    Rust::TWDataWrapper data = bytes;
+    return Rust::tw_crypto_box_secret_key_is_valid(data.get());
+}
+
+std::optional<SecretKey> SecretKey::fromBytes(const Data& bytes) {
+    Rust::TWDataWrapper data = bytes;
+    if (!Rust::tw_crypto_box_secret_key_is_valid(data.get())) {
+        return std::nullopt;
+    }
+    auto* secretKey = Rust::tw_crypto_box_secret_key_create_with_data(data.get());
+    return SecretKey(SecretKeyPtr(secretKey, Rust::tw_crypto_box_secret_key_delete));
+}
+
 PublicKey SecretKey::getPublicKey() const noexcept {
     auto* publicKey = Rust::tw_crypto_box_secret_key_get_public_key(impl.get());
     return PublicKey(PublicKeyPtr(publicKey, Rust::tw_crypto_box_public_key_delete));
+}
+
+Data SecretKey::getData() const {
+    Rust::TWDataWrapper data = Rust::tw_crypto_box_secret_key_data(impl.get());
+    return data.toDataOrDefault();
 }
 
 Data encryptEasy(const SecretKey& mySecret, const PublicKey& otherPubkey, const Data& message) {

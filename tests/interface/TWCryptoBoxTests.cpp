@@ -39,6 +39,16 @@ TEST(TWCryptoBox, PublicKeyWithData) {
     assertHexEqual(actualBytes, pubkeyBytesHex);
 }
 
+TEST(TWCryptoBox, SecretKeyWithData) {
+    auto secretBytesHex = "dd87000d4805d6fbd89ae1352f5e4445648b79d5e901c92aebcb610e9be468e4";
+    auto secretBytes = DATA(secretBytesHex);
+
+    ASSERT_TRUE(TWCryptoBoxSecretKeyIsValid(secretBytes.get()));
+    const auto publicKey = WRAP(TWCryptoBoxSecretKey, TWCryptoBoxSecretKeyCreateWithData(secretBytes.get()));
+    const auto actualBytes = WRAPD(TWCryptoBoxSecretKeyData(publicKey.get()));
+    assertHexEqual(actualBytes, secretBytesHex);
+}
+
 TEST(TWCryptoBox, DecryptEasyError) {
     auto otherPubkeyBytes = DATA("afccabc5b28a8a1fd1cd880516f9c854ae2498d0d1b978b53a59f38e4ae55747");
 
