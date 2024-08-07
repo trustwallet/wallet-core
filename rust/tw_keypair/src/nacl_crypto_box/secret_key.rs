@@ -5,6 +5,9 @@
 use crate::nacl_crypto_box::public_key::PublicKey;
 use crate::rand::{CryptoRngCore, OsRng};
 use crate::KeyPairError;
+use tw_hash::H256;
+use tw_misc::traits::ToBytesZeroizing;
+use zeroize::Zeroizing;
 
 pub struct SecretKey {
     secret: crypto_box::SecretKey,
@@ -26,6 +29,17 @@ impl SecretKey {
 
     pub(crate) fn inner(&self) -> &crypto_box::SecretKey {
         &self.secret
+    }
+
+    pub fn to_vec(&self) -> Zeroizing<H256> {
+        Zeroizing::new(H256::from(self.secret.to_bytes()))
+    }
+}
+
+impl ToBytesZeroizing for SecretKey {
+    fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
+        let bytes = Zeroizing::new(self.secret.to_bytes());
+        Zeroizing::new(bytes.to_vec())
     }
 }
 

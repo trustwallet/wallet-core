@@ -34,8 +34,20 @@ public:
     /// Create a random secret key.
     SecretKey();
 
+    explicit SecretKey(SecretKeyPtr ptr): impl(std::move(ptr)) {
+    }
+
+    /// Determines if the given secret key is valid or not.
+    static bool isValid(const Data& bytes);
+
+    /// Create a `crypto_box` secret key with the given block of data.
+    static std::optional<SecretKey> fromBytes(const Data& bytes);
+
     /// Returns the public key associated with the given `key`.
     PublicKey getPublicKey() const noexcept;
+
+    /// Returns the raw data of the given secret-key.
+    Data getData() const;
 
     SecretKeyPtr impl;
 };
