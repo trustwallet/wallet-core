@@ -1,7 +1,8 @@
 use super::ordinal::OrdinalsInscription;
+use bitcoin::hashes::Hash;
 use std::ops::Deref;
 use tw_coin_entry::error::prelude::*;
-use tw_hash::H264;
+use tw_hash::{H256, H264};
 
 #[derive(Debug, Clone)]
 pub struct Brc20Ticker(String);
@@ -46,6 +47,14 @@ impl BRC20TransferInscription {
 
         let inscription = OrdinalsInscription::new(BRC20_MIME, payload.as_bytes(), recipient)?;
         Ok(BRC20TransferInscription(inscription))
+    }
+
+    pub fn merkle_root(&self) -> SigningResult<H256> {
+        self.spend_info
+            .merkle_root()
+            .map(|root| H256::from(root.to_byte_array()))
+            .or_tw_err(SigningErrorType::Error_internal)
+            .context("No merkle root of the BRC20 Transfer spend info")
     }
 }
 

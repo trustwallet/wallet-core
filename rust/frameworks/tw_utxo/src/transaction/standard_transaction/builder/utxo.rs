@@ -127,10 +127,14 @@ impl UtxoBuilder {
         let amount = self.finalize_amount()?;
         let sighash_ty = self.finalize_sighash_type()?;
 
+        // The scriptPubkey for signing is the same as declared at the unspent output.
+        let script_pubkey = conditions::new_p2pk(&pubkey.compressed());
+
         Ok((
             self.input,
             UtxoToSign {
-                script_pubkey: conditions::new_p2pk(&pubkey.compressed()),
+                prevout_script_pubkey: script_pubkey.clone(),
+                script_pubkey,
                 // P2PK output can be spent by a legacy address only.
                 signing_method: SigningMethod::Legacy,
                 // When the sighash is signed, build a P2PK script_sig.
@@ -157,10 +161,14 @@ impl UtxoBuilder {
         let amount = self.finalize_amount()?;
         let sighash_ty = self.finalize_sighash_type()?;
 
+        // The scriptPubkey for signing is the same as declared at the unspent output.
+        let script_pubkey = conditions::new_p2pkh(&pubkey_hash);
+
         Ok((
             self.input,
             UtxoToSign {
-                script_pubkey: conditions::new_p2pkh(&pubkey_hash),
+                prevout_script_pubkey: script_pubkey.clone(),
+                script_pubkey,
                 // P2PK output can be spent by a legacy address only.
                 signing_method: SigningMethod::Legacy,
                 // When the sighash is signed, build a P2PKH script_sig.
@@ -216,6 +224,8 @@ impl UtxoBuilder {
         Ok((
             self.input,
             UtxoToSign {
+                // Original P2WPKH scriptPubkey.
+                prevout_script_pubkey: conditions::new_p2wpkh(&pubkey_hash),
                 // To spend a P2WPKH UTXO, we need to sign the transaction with a corresponding P2PKH UTXO.
                 // Then the result script_sig will be published as a witness.
                 // Generating special scriptPubkey for P2WPKH.
@@ -253,13 +263,14 @@ impl UtxoBuilder {
         let amount = self.finalize_amount()?;
         let sighash_ty = self.finalize_sighash_type()?;
 
+        // The scriptPubkey for signing is the same as declared at the unspent output.
+        let script_pubkey = conditions::new_p2tr_dangerous_assume_tweaked(&tweaked_pubkey.bytes());
+
         Ok((
             self.input,
             UtxoToSign {
-                // Generating special scriptPubkey for P2WPKH.
-                script_pubkey: conditions::new_p2tr_dangerous_assume_tweaked(
-                    &tweaked_pubkey.bytes(),
-                ),
+                prevout_script_pubkey: script_pubkey.clone(),
+                script_pubkey,
                 // P2TR output can be spent by a Witness (eg "bc1") address only.
                 signing_method: SigningMethod::Taproot,
                 // When the sighash is signed, build a P2TR witness.
@@ -281,6 +292,7 @@ impl UtxoBuilder {
         internal_pubkey: &schnorr::PublicKey,
         payload: Script,
         control_block: Data,
+        merkle_root: &H256,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
         // Construct the leaf hash.
         let script_buf = bitcoin::ScriptBuf::from_bytes(payload.to_vec());
@@ -296,9 +308,14 @@ impl UtxoBuilder {
         let amount = self.finalize_amount()?;
         let sighash_ty = self.finalize_sighash_type()?;
 
+        // Restore the original scriptPubkey declared at the unspent P2TR output.
+        let prevout_script_pubkey =
+            conditions::new_p2tr_script_path(&internal_pubkey.compressed(), merkle_root);
+
         Ok((
             self.input,
             UtxoToSign {
+                prevout_script_pubkey,
                 // We use the full (revealed) script as scriptPubkey here.
                 script_pubkey: payload.clone(),
                 signing_method: SigningMethod::Taproot,
@@ -338,8 +355,15 @@ impl UtxoBuilder {
             .or_tw_err(SigningErrorType::Error_internal)
             .context("'TaprootSpendInfo::control_block' is None")?;
 
+        let merkle_root = transfer.merkle_root()?;
         let transfer_payload = Script::from(transfer.script.to_bytes());
-        self.p2tr_script_path(pubkey, transfer_payload, control_block.serialize())
+
+        self.p2tr_script_path(
+            pubkey,
+            transfer_payload,
+            control_block.serialize(),
+            &merkle_root,
+        )
     }
 }
 
