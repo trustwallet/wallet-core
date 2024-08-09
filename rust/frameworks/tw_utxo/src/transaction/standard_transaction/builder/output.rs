@@ -7,7 +7,6 @@ use crate::{
     },
 };
 use tw_coin_entry::error::prelude::*;
-use tw_encoding::hex::ToHex;
 use tw_hash::{ripemd::bitcoin_hash_160, sha2::sha256, H160, H256};
 use tw_keypair::{ecdsa, schnorr};
 
