@@ -80,6 +80,7 @@ where
                         (sighash, None)
                     },
                     SigningMethod::Taproot => {
+                        // TODO Move `tr_spent_amounts` and `tr_spent_script_pubkeys` logic to `Transaction::preimage_taproot_tx()`.
                         let tr_spent_amounts: Vec<Amount> = unsigned_tx
                             .input_args()
                             .iter()
@@ -89,7 +90,15 @@ where
                         let tr_spent_script_pubkeys: Vec<Script> = unsigned_tx
                             .input_args()
                             .iter()
-                            .map(|utxo| utxo.script_pubkey.clone())
+                            .map(|utxo| {
+                                if utxo.signing_method == SigningMethod::Taproot {
+                                    // Taproot UTXOs scriptPubkeys should be signed as is.
+                                    utxo.script_pubkey.clone()
+                                } else {
+                                    // Use the original scriptPubkey declared in the unspent output.
+                                    utxo.prevout_script_pubkey.clone()
+                                }
+                            })
                             .collect();
 
                         let tr = UtxoTaprootPreimageArgs {

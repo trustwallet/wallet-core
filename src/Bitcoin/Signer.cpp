@@ -53,7 +53,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, std::optiona
         return output;
     }
 
-    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input, false, optionalExternalSigs);
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input, false, std::move(optionalExternalSigs));
     if (!result) {
         output.set_error(result.error());
         return output;
@@ -78,6 +78,21 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, std::optiona
 
 Proto::PreSigningOutput Signer::preImageHashes(const Proto::SigningInput& input) noexcept {
     Proto::PreSigningOutput output;
+    if (input.has_signing_v2()) {
+        // Forward the `Bitcoin.Proto.SigningInput.signing_v2` request to Rust.
+        auto signingV2Data = data(input.signing_v2().SerializeAsString());
+        Rust::TWDataWrapper signingV2DataPtr(signingV2Data);
+        Rust::TWDataWrapper preOutputV2DataPtr = Rust::tw_transaction_compiler_pre_image_hashes(input.coin_type(), signingV2DataPtr.get());
+
+        auto preOutputV2Data = preOutputV2DataPtr.toDataOrDefault();
+        BitcoinV2::Proto::PreSigningOutput preSigningOutputV2;
+        preSigningOutputV2.ParseFromArray(preOutputV2Data.data(), static_cast<int>(preOutputV2Data.size()));
+
+        // Set `Bitcoin.Proto.PreSigningOutput.pre_signing_result_v2`. Remain other fields default.
+        *output.mutable_pre_signing_result_v2() = preSigningOutputV2;
+        return output;
+    }
+
     auto result = TransactionSigner<Transaction, TransactionBuilder>::preImageHashes(input);
     if (!result) {
         output.set_error(result.error());
@@ -92,6 +107,54 @@ Proto::PreSigningOutput Signer::preImageHashes(const Proto::SigningInput& input)
         hpk->set_data_hash(h.first.data(), h.first.size());
         hpk->set_public_key_hash(h.second.data(), h.second.size());
     }
+    return output;
+}
+
+Proto::SigningOutput Signer::compile(const Proto::SigningInput& input,
+                                     const std::vector<Data>& signatures,
+                                     const std::vector<PublicKey>& publicKeys) noexcept {
+    Proto::SigningOutput output;
+    if (input.has_signing_v2()) {
+        Rust::TWDataVectorWrapper signaturesVec = signatures;
+        Rust::TWDataVectorWrapper publicKeysVec;
+        for (const auto& pubkey : publicKeys) {
+            publicKeysVec.push(pubkey.bytes);
+        }
+
+        // Forward the `Bitcoin.Proto.SigningInput.signing_v2` request to Rust.
+        auto signingV2Data = data(input.signing_v2().SerializeAsString());
+        Rust::TWDataWrapper signingV2DataPtr(signingV2Data);
+        Rust::TWDataWrapper outputV2DataPtr = Rust::tw_transaction_compiler_compile(
+            input.coin_type(), signingV2DataPtr.get(), signaturesVec.get(), publicKeysVec.get());
+
+        auto outputV2Data = outputV2DataPtr.toDataOrDefault();
+        BitcoinV2::Proto::SigningOutput outputV2;
+        outputV2.ParseFromArray(outputV2Data.data(), static_cast<int>(outputV2Data.size()));
+
+        // Set `Bitcoin.Proto.SigningOutput.signing_result_v2`. Remain other fields default.
+        *output.mutable_signing_result_v2() = outputV2;
+        return output;
+    }
+
+    if (signatures.empty() || publicKeys.empty()) {
+        output.set_error(Common::Proto::Error_invalid_params);
+        output.set_error_message("empty signatures or publickeys");
+        return output;
+    }
+
+    if (signatures.size() != publicKeys.size()) {
+        output.set_error(Common::Proto::Error_invalid_params);
+        output.set_error_message("signatures size and publickeys size not equal");
+        return output;
+    }
+
+    HashPubkeyList externalSignatures;
+    auto insertFunctor = [](auto&& signature, auto&& pubkey) noexcept {
+        return std::make_pair(signature, pubkey.bytes);
+    };
+    transform(begin(signatures), end(signatures), begin(publicKeys),
+              back_inserter(externalSignatures), insertFunctor);
+    output = Signer::sign(input, externalSignatures);
     return output;
 }
 

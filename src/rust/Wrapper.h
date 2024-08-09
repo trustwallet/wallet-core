@@ -21,6 +21,10 @@ inline std::shared_ptr<TWPublicKey> wrapTWPublicKey(TWPublicKey* publicKey) {
 }
 
 struct TWDataVectorWrapper {
+    TWDataVectorWrapper():
+        ptr(std::shared_ptr<TWDataVector>(tw_data_vector_create(), Rust::tw_data_vector_delete)) {
+    }
+
     /// Implicit constructor.
     TWDataVectorWrapper(const std::vector<Data>& vec) {
         ptr = std::shared_ptr<TWDataVector>(tw_data_vector_create(), Rust::tw_data_vector_delete);
@@ -33,6 +37,12 @@ struct TWDataVectorWrapper {
     }
 
     ~TWDataVectorWrapper() = default;
+
+    void push(const Data& item) {
+        auto* itemData = tw_data_create_with_bytes(item.data(), item.size());
+        Rust::tw_data_vector_add(ptr.get(), itemData);
+        Rust::tw_data_delete(itemData);
+    }
 
     TWDataVector* get() const {
         return ptr.get();

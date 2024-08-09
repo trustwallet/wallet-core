@@ -82,11 +82,29 @@ fn test_bitcoin_address_invalid() {
 }
 
 #[test]
-fn test_bitcoin_address_get_data() {
+fn test_bitcoin_address_legacy_get_data() {
     test_address_get_data(
         CoinType::Bitcoin,
         "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx",
-        "00769bdff96a02f9135a1d19b749db6a78fe07dc90",
+        "769bdff96a02f9135a1d19b749db6a78fe07dc90",
+    );
+}
+
+#[test]
+fn test_bitcoin_address_segwit_get_data() {
+    test_address_get_data(
+        CoinType::Bitcoin,
+        "bc1qunq74p3h8425hr6wllevlvqqr6sezfxj262rff",
+        "e4c1ea86373d554b8f4efff2cfb0001ea19124d2",
+    );
+}
+
+#[test]
+fn test_bitcoin_address_taproot_get_data() {
+    test_address_get_data(
+        CoinType::Bitcoin,
+        "bc1pwse34zfpvt344rvlt7tw0ngjtfh9xasc4q03avf0lk74jzjpzjuqaz7ks5",
+        "74331a892162e35a8d9f5f96e7cd125a6e537618a81f1eb12ffdbd590a4114b8",
     );
 }
 
