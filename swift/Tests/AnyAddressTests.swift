@@ -35,10 +35,10 @@ class AnyAddressTests: XCTestCase {
     func testCreateWithPublicKeyDerivation() {
         let coin = CoinType.bitcoin
         let pubkey = PublicKey(data: Data(hexString: any_address_test_pubkey)!, type: .secp256k1)!
-        let address1 = AnyAddress(publicKey: pubkey, coin: coin, derivation: .segwit)
+        let address1 = AnyAddress(publicKey: pubkey, coin: coin, derivation: .bitcoinSegwit)
         XCTAssertEqual(address1.description, any_address_test_address)
 
-        let address2 = AnyAddress(publicKey: pubkey, coin: coin, derivation: .legacy)
+        let address2 = AnyAddress(publicKey: pubkey, coin: coin, derivation: .bitcoinLegacy)
         XCTAssertEqual(address2.description, "1JvRfEQFv5q5qy9uTSAezH7kVQf4hqnHXx")
     }
 

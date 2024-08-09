@@ -35,10 +35,11 @@ impl U256 {
     pub const BYTES: usize = U256::WORDS_COUNT * 8;
     pub const BITS: usize = 256;
     pub const MAX: U256 = U256(primitive_types::U256::MAX);
+    pub const ZERO: U256 = U256::zero();
 
     #[inline]
-    pub fn zero() -> U256 {
-        U256::default()
+    pub const fn zero() -> U256 {
+        U256(primitive_types::U256::zero())
     }
 
     #[inline]

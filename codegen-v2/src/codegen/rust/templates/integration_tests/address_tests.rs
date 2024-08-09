@@ -3,9 +3,15 @@
 // Copyright © 2017 Trust Wallet.
 
 use tw_any_coin::test_utils::address_utils::{
-    test_address_get_data, test_address_invalid, test_address_normalization, test_address_valid,
+    test_address_derive, test_address_get_data, test_address_invalid, test_address_normalization,
+    test_address_valid,
 };
 use tw_coin_registry::coin_type::CoinType;
+
+#[test]
+fn test_{COIN_ID}_address_derive() {
+    test_address_derive(CoinType::{COIN_TYPE}, "PRIVATE_KEY", "EXPECTED ADDRESS");
+}
 
 #[test]
 fn test_{COIN_ID}_address_normalization() {
