@@ -25,6 +25,11 @@ class Signer {
 
     /// Collect pre-image hashes to be signed
     static Proto::PreSigningOutput preImageHashes(const Proto::SigningInput& input) noexcept;
+
+    /// Compile a transaction with the given signatures and public keys.
+    static Proto::SigningOutput compile(const Proto::SigningInput& input,
+                                        const std::vector<Data>& signatures,
+                                        const std::vector<PublicKey>& publicKeys) noexcept;
 };
 
 } // namespace TW::Bitcoin
