@@ -50,20 +50,20 @@ function build_protobuf() {
     PROTOBUF_DIR="$ROOT/build/local/src/protobuf"
     cd ${PROTOBUF_DIR}/protobuf-$PROTOBUF_VERSION
 
-    ./configure --prefix="$PREFIX"
-    $MAKE -j4
-    $MAKE install
+    $CMAKE -Scmake -Bbuild -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_MODULE_COMPATIBLE=ON
+    $CMAKE --build build -j
+    $CMAKE --install build --prefix $PREFIX
 
     # after install, cleanup to save space (docker)
-    make clean
+    $CMAKE --build build --target clean
     "$PREFIX/bin/protoc" --version
 
     # Protobuf plugins
     cd "$ROOT/protobuf-plugin"
-    $CMAKE -H. -Bbuild -DCMAKE_INSTALL_PREFIX=$PREFIX
-    $MAKE -Cbuild -j12
-    $MAKE -Cbuild install
-    rm -rf build
+    $CMAKE . -Bbuild -DProtobuf_DIR=$PREFIX/lib/cmake/protobuf
+    $CMAKE --build build -j
+    $CMAKE --install build --prefix $PREFIX
+    $CMAKE --build build --target clean
 
     if [[ -x "$(command -v swift)" && `uname` == "Darwin" ]]; then
         build_swift_plugin
@@ -71,7 +71,7 @@ function build_protobuf() {
 }
 
 function build_swift_plugin() {
-     # Download Swift Protobuf sources
+    # Download Swift Protobuf sources
     SWIFT_PROTOBUF_DIR="$ROOT/build/local/src/swift-protobuf"
     mkdir -p "$SWIFT_PROTOBUF_DIR"
     cd "$SWIFT_PROTOBUF_DIR"
