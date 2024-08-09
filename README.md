@@ -106,12 +106,12 @@ Projects using Trust Wallet Core. Add yours too!
 
 [Coinpaprika](https://coinpaprika.com/)
 | [crypto.com](https://crypto.com)
-| [Alice](https://www.alicedapp.com/)
 | [Frontier](https://frontier.xyz/)
 | [Tokenary](https://tokenary.io/)
 | [MemesWallet](https://planetmemes.com/)
 | [xPortal](https://xportal.com/)
 | [Slingshot](https://slingshot.finance/)
+| [ECOIN Wallet](https://play.google.com/store/apps/details?id=org.ecoinwallet&pcampaignid=web_share)
 
 # Community
 
