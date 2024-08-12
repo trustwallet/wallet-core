@@ -110,7 +110,7 @@ impl TokenInstructionBuilder {
             AccountMeta::new(sender_token_pubkey, false),
             AccountMeta::readonly(token_mint_pubkey, false),
             AccountMeta::new(recipient_token_pubkey, false),
-            AccountMeta::readonly(signer, true),
+            AccountMeta::new(signer, true),
         ];
 
         let data = TokenInstruction::TransferChecked { amount, decimals }.pack();
