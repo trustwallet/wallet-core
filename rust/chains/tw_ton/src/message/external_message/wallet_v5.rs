@@ -19,7 +19,7 @@ impl V5R1OpCode {
     // See https://github.com/ton-blockchain/wallet-contract-v5/blob/88557ebc33047a95207f6e47ac8aadb102dff744/contracts/wallet_v5.fc#L33
     pub fn to_ser_tag(&self) -> u32 {
         match self {
-            V5R1OpCode::AuthSignedExternal => 0x0ec3c86d,
+            V5R1OpCode::AuthSignedExternal => 0x7369676e,
             V5R1OpCode::AuthSignedInternal => 0x73696e74,
             V5R1OpCode::AuthExtension => 0x6578746e,
         }
