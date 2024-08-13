@@ -258,4 +258,8 @@ message PreSigningOutput {
 
     /// error description
     string error_message = 3;
+
+    // Result of a transaction pre-signing using the Bitcoin 2.0 protocol.
+    // Set if `Bitcoin.Proto.SigningInput.signing_v2` used.
+    BitcoinV2.Proto.PreSigningOutput pre_signing_result_v2 = 7;
 }

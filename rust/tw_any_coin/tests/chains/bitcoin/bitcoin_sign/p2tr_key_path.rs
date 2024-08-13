@@ -4,7 +4,7 @@ use crate::chains::common::bitcoin::{
 };
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
-use tw_keypair::schnorr;
+use tw_keypair::{ecdsa, schnorr};
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_utxo::address::taproot::TaprootAddress;
@@ -285,5 +285,72 @@ fn test_bitcoin_sign_input_p2tr_key_path_with_max_amount_89c5d1() {
             vsize: 99,
             weight: 396,
             fee: 600,
+        });
+}
+
+#[test]
+fn test_bitcoin_sign_input_p2tr_and_p2wpkh() {
+    const P2TR_PRIVATE_KEY: &str =
+        "2481de1ce115aa2f0ae9066046baf37256db97958aa7a5ac26c6d8ed0a48e88c";
+    const P2WPKH_PRIVATE_KEY: &str =
+        "25834fabebf75c15d5852aed768894e6f49853023df586e3dd5e83b42a9e2e2b";
+    const SEND_TO: &str = "bc1q8jqgv4us4pluu8nql9ze66y6rs6kxwk5tq678a";
+
+    let p2tr_private_key = schnorr::PrivateKey::try_from(P2TR_PRIVATE_KEY).unwrap();
+    let p2wpkh_private_key = ecdsa::secp256k1::PrivateKey::try_from(P2WPKH_PRIVATE_KEY).unwrap();
+
+    let txid = "0200c9a11371465e5d02fdb86fd13f2fa76561fd9d7d14929f31b8f919217995";
+    let p2tr_utxo = Proto::Input {
+        out_point: input::out_point(txid, 0),
+        value: 5_817,
+        sighash_type: SIGHASH_ALL,
+        // Spend a P2TR UTXO.
+        claiming_script: input::p2tr_key_path(p2tr_private_key.public().to_vec()),
+        ..Default::default()
+    };
+
+    let txid = "aff21919411e1988755768c2f7d2c34b7451a12f81c333d7609f6f03f408f2f0";
+    let p2wpkh_utxo = Proto::Input {
+        out_point: input::out_point(txid, 1),
+        value: 4_500,
+        sighash_type: SIGHASH_ALL,
+        // Spend a P2WPKH UTXO.
+        claiming_script: input::p2wpkh(p2wpkh_private_key.public().to_vec()),
+        ..Default::default()
+    };
+
+    // Send max amount to a P2WPKH address.
+    let max_output = Proto::Output {
+        to_recipient: output::to_address(SEND_TO),
+        ..Proto::Output::default()
+    };
+
+    let signing = Proto::SigningInput {
+        version: Proto::TransactionVersion::V2,
+        private_keys: vec![
+            P2TR_PRIVATE_KEY.decode_hex().unwrap().into(),
+            P2WPKH_PRIVATE_KEY.decode_hex().unwrap().into(),
+        ],
+        inputs: vec![p2tr_utxo, p2wpkh_utxo],
+        input_selector: Proto::InputSelector::UseAll,
+        fee_per_vb: 4,
+        max_amount_output: Some(max_output),
+        chain_info: btc_info(),
+        dangerous_use_fixed_schnorr_rng: true,
+        dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    // Successfully broadcasted: https://mempool.space/tx/bfc782da443774b9cf35e6d59b08312be311d791b4e802136fff88adc2312d28
+    sign::BitcoinSignHelper::new(&signing)
+        .coin(CoinType::Bitcoin)
+        .sign(sign::Expected {
+            encoded: "0200000000010295792119f9b8319f92147d9dfd6165a72f3fd16fb8fd025d5e467113a1c900020000000000fffffffff0f208f4036f9f60d733c3812fa151744bc3d2f7c268577588191e411919f2af0100000000ffffffff01ad250000000000001600143c80865790a87fce1e60f9459d689a1c35633ad40140d8cd111da08d7863366d4ff23f6b3be3ce7c7496ecabdbb6a275b1591270767e163d091b208190abae3075f24f11b1291656732369e3f9a14efdf131e481701302473044022021df9a043a886a9e7068fe06a19d8aa0a4a5a21c4b4e50abdbc6aeede32ca494022049da5e9082d83e6108027f4d63965cee50a2c9b619e603692748388150b3bf840121037ef29d31b889dfbae30cff4e996f742a49aae10a03fb6f992048c8d366b4b7c900000000",
+            txid: "bfc782da443774b9cf35e6d59b08312be311d791b4e802136fff88adc2312d28",
+            inputs: vec![5_817, 4_500],
+            outputs: vec![9_645],
+            vsize: 167,
+            weight: 667,
+            fee: 672,
         });
 }

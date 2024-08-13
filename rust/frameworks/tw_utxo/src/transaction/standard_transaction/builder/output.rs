@@ -6,7 +6,6 @@ use crate::{
         transaction_parts::Amount,
     },
 };
-use bitcoin::hashes::Hash;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::{ripemd::bitcoin_hash_160, sha2::sha256, H160, H256};
 use tw_keypair::{ecdsa, schnorr};
@@ -132,15 +131,7 @@ impl OutputBuilder {
         let pubkey_data = pubkey.compressed();
         let ticker = Brc20Ticker::new(ticker)?;
         let transfer = BRC20TransferInscription::new(&pubkey_data, &ticker, &value)?;
-
-        let merkle_root: H256 = transfer
-            .spend_info
-            .merkle_root()
-            .or_tw_err(SigningErrorType::Error_internal)
-            .context("No merkle root of the BRC20 Transfer spend info")?
-            .to_byte_array()
-            .into();
-
+        let merkle_root = transfer.merkle_root()?;
         Ok(self.p2tr_script_path(pubkey, merkle_root))
     }
 

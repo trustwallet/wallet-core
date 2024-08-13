@@ -97,16 +97,17 @@ impl LegacyAddress {
     }
 
     pub fn prefix(&self) -> u8 {
-        self.bytes()[0]
+        self.0.as_ref()[0]
     }
 
+    /// Address bytes excluding the prefix (skip first byte).
     pub fn bytes(&self) -> &[u8] {
-        self.0.as_ref()
+        &self.0.as_ref()[1..]
     }
 
     pub fn payload(&self) -> H160 {
-        debug_assert_eq!(self.bytes().len(), H160::LEN + 1);
-        H160::try_from(&self.0.as_ref()[1..]).expect("Legacy address must be exactly 21 bytes")
+        debug_assert_eq!(self.bytes().len(), H160::LEN);
+        H160::try_from(self.bytes()).expect("Legacy address must be exactly 20 bytes")
     }
 }
 
