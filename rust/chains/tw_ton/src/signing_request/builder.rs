@@ -6,8 +6,7 @@ use crate::address::TonAddress;
 use crate::signing_request::{
     JettonTransferRequest, SigningRequest, TransferCustomRequest, TransferPayload, TransferRequest,
 };
-use crate::wallet::wallet_v4::WalletV4;
-use crate::wallet::TonWallet;
+use crate::wallet::VersionedTonWallet;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_keypair::ed25519::sha512::{KeyPair, PublicKey};
@@ -47,25 +46,40 @@ impl SigningRequestBuilder {
         })
     }
 
-    /// Currently, V4R2 wallet supported only.
-    fn wallet(input: &Proto::SigningInput) -> SigningResult<TonWallet<WalletV4>> {
+    /// Currently, V4R2 and V5R1 wallets supported.
+    fn wallet(input: &Proto::SigningInput) -> SigningResult<VersionedTonWallet> {
+        // get wallet version from messages
+        let wallet_version = match input.messages.first() {
+            Some(message) => message.wallet_version,
+            None => {
+                return SigningError::err(SigningErrorType::Error_invalid_params)
+                    .context("No messages")
+            },
+        };
+
         if !input.private_key.is_empty() {
             let key_pair = KeyPair::try_from(input.private_key.as_ref())
                 .into_tw()
                 .context("Invalid private key")?;
-            return TonWallet::std_with_key_pair(&key_pair).map_err(cell_to_signing_error);
+
+            return VersionedTonWallet::std_with_key_pair(wallet_version, &key_pair)
+                .map_err(cell_to_signing_error);
         }
 
         let public_key = PublicKey::try_from(input.public_key.as_ref())
             .into_tw()
             .context("Expected either 'private_key' or 'public_key' to be set")?;
-        TonWallet::std_with_public_key(public_key).map_err(cell_to_signing_error)
+
+        VersionedTonWallet::std_with_public_key(wallet_version, public_key)
+            .map_err(cell_to_signing_error)
     }
 
     fn transfer_request(input: &Proto::Transfer) -> SigningResult<TransferRequest> {
-        if input.wallet_version != Proto::WalletVersion::WALLET_V4_R2 {
+        if input.wallet_version != Proto::WalletVersion::WALLET_V4_R2
+            && input.wallet_version != Proto::WalletVersion::WALLET_V5_R1
+        {
             return SigningError::err(SigningErrorType::Error_not_supported)
-                .context("'WALLET_V4_R2' version is supported only");
+                .context("'WALLET_V4_R2' and 'WALLET_V5_R1' are supported only");
         }
 
         let dest = TonAddress::from_str(input.dest.as_ref())

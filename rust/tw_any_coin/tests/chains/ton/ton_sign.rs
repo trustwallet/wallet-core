@@ -15,7 +15,7 @@ use tw_proto::TheOpenNetwork::Proto::mod_Transfer::OneOfpayload as PayloadType;
 /// The same Cell can be BoC encoded differently.
 /// Use this function to compare inner Cells closing eyes on the encoding.
 #[track_caller]
-fn assert_eq_boc(left: &str, right: &str) {
+pub fn assert_eq_boc(left: &str, right: &str) {
     use tw_ton_sdk::boc::BagOfCells;
 
     let left_boc = BagOfCells::parse_base64(left).unwrap();
@@ -414,7 +414,7 @@ fn test_ton_sign_transfer_custom_payload() {
     let output = signer.sign(CoinType::TON, input);
 
     assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
-    // Successfully broadcasted: https://tonviewer.com/transaction/4b1d9f09856af70ea1058b557a87c9ba2abb0bca2029e0cbbe8c659d5dae4ce1
+    // Successfully broadcasted: https://tonviewer.com/transaction/4ca4442921d0737d518b4863f8eafc2eb26824e9362ebaa9bc59373950b7fa86
     assert_eq_boc(&output.encoded, "te6cckEBBAEAvwABRYgAUunJPoppOUA+tmGjPUbtz/BjUoB+QZYAbdqNMq3gIWQMAQGc981GQ9a8Yr4m2YeIeuuNIWlzdHliyW6MRq3RDs5kgvXJP+iNhdZU7o79DJnm/OKuzWI5FbiNy3SF0fGGBObDDCmpoxdmojQrAAAAAgADAgFmYgAdYQm/0Kcw+xnyxzyhpLIsIGhnyFtKVVNCLKFmg/s0ZRgehIAAAAAAAAAAAAAAAAABAwAgAAAAAEhpIHRoZXJlIHNpcoAlI8E=");
     assert_eq!(
         output.hash.to_hex(),

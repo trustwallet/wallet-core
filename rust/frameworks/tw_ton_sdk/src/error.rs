@@ -17,6 +17,7 @@ pub enum CellErrorType {
     InvalidExoticCell,
     NonEmptyReader,
     InternalError,
+    NotSupported,
 }
 
 pub fn cell_to_signing_error(cell_err: CellError) -> SigningError {
@@ -30,5 +31,6 @@ pub fn cell_to_signing_error(cell_err: CellError) -> SigningError {
         },
         CellErrorType::InvalidAddressType => SigningErrorType::Error_invalid_address,
         CellErrorType::InternalError => SigningErrorType::Error_internal,
+        CellErrorType::NotSupported => SigningErrorType::Error_not_supported,
     })
 }

@@ -13,6 +13,7 @@ enum WalletVersion {
     WALLET_V3_R1 = 0;
     WALLET_V3_R2 = 1;
     WALLET_V4_R2 = 2;
+    WALLET_V5_R1 = 3;
 };
 
 enum SendMode {
