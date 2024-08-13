@@ -5,6 +5,10 @@
 #include <jni.h>
 #include <string.h>
 #include <stdint.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+#include <unistd.h>
 
 static JavaVM* cachedJVM;
 
@@ -25,31 +29,42 @@ uint32_t random32() {
 }
 
 void random_buffer(uint8_t *buf, size_t len) {
-    JNIEnv *env;
-
+    if (cachedJVM)
+    {
+        JNIEnv *env;
+    
 #if defined(__ANDROID__) || defined(ANDROID)
     cachedJVM->AttachCurrentThread(&env, nullptr);
 #else
     cachedJVM->AttachCurrentThread((void **) &env, nullptr);
 #endif
 
-    // SecureRandom random = new SecureRandom();
-    jclass secureRandomClass = env->FindClass("java/security/SecureRandom");
-    jmethodID constructor = env->GetMethodID(secureRandomClass, "<init>", "()V");
-    jobject random = env->NewObject(secureRandomClass, constructor);
+        // SecureRandom random = new SecureRandom();
+        jclass secureRandomClass = env->FindClass("java/security/SecureRandom");
+        jmethodID constructor = env->GetMethodID(secureRandomClass, "<init>", "()V");
+        jobject random = env->NewObject(secureRandomClass, constructor);
 
-    //byte array[] = new byte[len];
-    jbyteArray array = env->NewByteArray(static_cast<jsize>(len));
+        //byte array[] = new byte[len];
+        jbyteArray array = env->NewByteArray(static_cast<jsize>(len));
 
-    //random.nextBytes(bytes);
-    jmethodID nextBytes = env->GetMethodID(secureRandomClass, "nextBytes", "([B)V");
-    env->CallVoidMethod(random, nextBytes, array);
+        //random.nextBytes(bytes);
+        jmethodID nextBytes = env->GetMethodID(secureRandomClass, "nextBytes", "([B)V");
+        env->CallVoidMethod(random, nextBytes, array);
 
-    jbyte* bytes = env->GetByteArrayElements(array, nullptr);
-    memcpy(buf, bytes, len);
-    env->ReleaseByteArrayElements(array, bytes, JNI_ABORT);
+        jbyte* bytes = env->GetByteArrayElements(array, nullptr);
+        memcpy(buf, bytes, len);
+        env->ReleaseByteArrayElements(array, bytes, JNI_ABORT);
 
-    env->DeleteLocalRef(array);
-    env->DeleteLocalRef(random);
-    env->DeleteLocalRef(secureRandomClass);
+        env->DeleteLocalRef(array);
+        env->DeleteLocalRef(random);
+        env->DeleteLocalRef(secureRandomClass);
+    }
+    else
+    {
+        int randomData = open("/dev/urandom", O_RDONLY);
+        if (randomData >= 0) {
+            (void)read(randomData, buf, len); 
+            close(randomData);
+        }
+    }
 }
