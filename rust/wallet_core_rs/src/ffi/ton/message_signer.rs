@@ -14,7 +14,6 @@ use tw_ton::modules::personal_message_signer::PersonalMessageSigner;
 
 /// Signs an arbitrary message to prove ownership of an address for off-chain services.
 /// https://github.com/ton-foundation/specs/blob/main/specs/wtf-0002.md
-/// https://github.com/OpenProduct/openmask-extension/blob/7566ceb2772fed7a3a27d2a67bd34bf89e862557/src/view/screen/notifications/sign/api.ts#L21-L48
 ///
 /// \param private_key: the private key used for signing
 /// \param message: A custom message which is input to the signing.
