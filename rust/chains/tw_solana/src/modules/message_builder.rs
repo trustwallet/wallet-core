@@ -23,7 +23,7 @@ use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_keypair::ed25519;
 use tw_keypair::traits::KeyPairTrait;
-use tw_proto::Solana::Proto::{self, TokenProgramId};
+use tw_proto::Solana::Proto;
 use Proto::mod_SigningInput::OneOftransaction_type as ProtoTransactionType;
 
 const DEFAULT_SPACE: u64 = 200;
@@ -774,12 +774,12 @@ where
     u8::try_from(num).tw_err(|_| SigningErrorType::Error_tx_too_big)
 }
 
-fn match_program_id(program_id: TokenProgramId) -> SolanaAddress {
+fn match_program_id(program_id: Proto::TokenProgramId) -> SolanaAddress {
     match program_id {
-        TokenProgramId::TokenProgram => {
+        Proto::TokenProgramId::TokenProgram => {
             *TOKEN_PROGRAM_ID_ADDRESS
         }
-        TokenProgramId::Token2022Program =>{
+        Proto::TokenProgramId::Token2022Program =>{
             *TOKEN_2022_PROGRAM_ID_ADDRESS
         }
     }
