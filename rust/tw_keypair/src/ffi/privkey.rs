@@ -15,6 +15,12 @@ pub struct TWPrivateKey(pub(crate) PrivateKey);
 
 impl RawPtrTrait for TWPrivateKey {}
 
+impl AsRef<PrivateKey> for TWPrivateKey {
+    fn as_ref(&self) -> &PrivateKey {
+        &self.0
+    }
+}
+
 /// Create a private key with the given block of data.
 ///
 /// \param input *non-null* byte array.
