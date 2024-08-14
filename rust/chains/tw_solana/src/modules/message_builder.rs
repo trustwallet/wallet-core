@@ -372,6 +372,7 @@ impl<'a> MessageBuilder<'a> {
             .context("Invalid token decimals. Expected lower than 256")?;
 
         let references = Self::parse_references(&token_transfer.references)?;
+        
         let transfer_instruction = TokenInstructionBuilder::transfer_checked(
             sender_token_address,
             token_mint_address,
