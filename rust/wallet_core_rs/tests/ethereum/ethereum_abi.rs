@@ -43,8 +43,8 @@ fn number_n<const BITS: u32>(value: u64) -> Proto::NumberNParam<'static> {
 
 #[test]
 fn test_ethereum_abi_decode_contract_call() {
-    const CUSTOM_ABI_JSON: &str = include_str!("data/custom.json");
-    const CUSTOM_DECODED_JSON: &str = include_str!("data/custom_decoded.json");
+    const CUSTOM_ABI_JSON: &str = include_str!("../data/custom.json");
+    const CUSTOM_DECODED_JSON: &str = include_str!("../data/custom_decoded.json");
 
     let encoded = "ec37a4a000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000067472757374790000000000000000000000000000000000000000000000000000".decode_hex().unwrap();
 
