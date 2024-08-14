@@ -69,6 +69,11 @@ message WithdrawAllStake {
     repeated StakeAccountValue stake_accounts = 1;
 }
 
+enum TokenProgramId {
+    TokenProgram = 0;
+    Token2022Program = 1;
+}
+
 // Create a token account under a main account for a token type
 message CreateTokenAccount {
     // main account -- can be same as signer, or other main account (if done on some other account's behalf)
@@ -80,8 +85,8 @@ message CreateTokenAccount {
     // Token address
     string token_address = 3;
 
-    // optional is token 2022
-    bool is_token_2022 = 4;
+    // optional token program id
+    TokenProgramId token_program_id = 4;
 }
 
 // Transfer tokens
@@ -107,8 +112,8 @@ message TokenTransfer {
     // optional referenced public keys
     repeated string references = 7;
 
-    // optional is token 2022
-    bool is_token_2022 = 8;
+    // optional token program id
+    TokenProgramId token_program_id = 8;
 }
 
 // CreateTokenAccount and TokenTransfer combined
@@ -137,8 +142,8 @@ message CreateAndTransferToken {
     // optional referenced public keys
     repeated string references = 8;
 
-    // optional is token 2022
-    bool is_token_2022 = 9;
+    // optional token program id
+    TokenProgramId token_program_id = 9;
 }
 
 message CreateNonceAccount {

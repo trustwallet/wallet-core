@@ -4,6 +4,7 @@
 
 use crate::address::SolanaAddress;
 use crate::blockhash::Blockhash;
+use crate::defined_addresses::{TOKEN_2022_PROGRAM_ID_ADDRESS, TOKEN_PROGRAM_ID_ADDRESS};
 use crate::instruction::Instruction;
 use crate::modules::compiled_instructions::compile_instructions;
 use crate::modules::compiled_keys::CompiledKeys;
@@ -22,7 +23,7 @@ use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_keypair::ed25519;
 use tw_keypair::traits::KeyPairTrait;
-use tw_proto::Solana::Proto;
+use tw_proto::Solana::Proto::{self, TokenProgramId};
 use Proto::mod_SigningInput::OneOftransaction_type as ProtoTransactionType;
 
 const DEFAULT_SPACE: u64 = 200;
@@ -333,7 +334,7 @@ impl<'a> MessageBuilder<'a> {
             other_main_address,
             token_mint_address,
             token_address,
-            create_token_acc.is_token_2022,
+            match_program_id(create_token_acc.token_program_id),
         );
         let mut builder = InstructionBuilder::default();
         builder
@@ -371,7 +372,6 @@ impl<'a> MessageBuilder<'a> {
             .context("Invalid token decimals. Expected lower than 256")?;
 
         let references = Self::parse_references(&token_transfer.references)?;
-
         let transfer_instruction = TokenInstructionBuilder::transfer_checked(
             sender_token_address,
             token_mint_address,
@@ -379,7 +379,7 @@ impl<'a> MessageBuilder<'a> {
             signer,
             token_transfer.amount,
             decimals,
-            token_transfer.is_token_2022,
+            match_program_id(token_transfer.token_program_id),
         )
         .with_references(references);
 
@@ -434,7 +434,7 @@ impl<'a> MessageBuilder<'a> {
             recipient_main_address,
             token_mint_address,
             recipient_token_address,
-            create_and_transfer.is_token_2022,
+            match_program_id(create_and_transfer.token_program_id),
         );
         let transfer_instruction = TokenInstructionBuilder::transfer_checked(
             sender_token_address,
@@ -443,7 +443,7 @@ impl<'a> MessageBuilder<'a> {
             signer,
             create_and_transfer.amount,
             decimals,
-            create_and_transfer.is_token_2022,
+           match_program_id(create_and_transfer.token_program_id),
         )
         .with_references(references);
 
@@ -772,4 +772,15 @@ where
     u8: TryFrom<T>,
 {
     u8::try_from(num).tw_err(|_| SigningErrorType::Error_tx_too_big)
+}
+
+fn match_program_id(program_id: TokenProgramId) -> SolanaAddress {
+    match program_id {
+        TokenProgramId::TokenProgram => {
+            *TOKEN_PROGRAM_ID_ADDRESS
+        }
+        TokenProgramId::Token2022Program =>{
+            *TOKEN_2022_PROGRAM_ID_ADDRESS
+        }
+    }
 }

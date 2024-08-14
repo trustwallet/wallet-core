@@ -933,7 +933,7 @@ fn test_solana_sign_create_and_transfer_token_2022() {
         sender_token_address: "EQxRyhzjyhRX4TJXt7FmQ3HfFdRcu49krjxHMszidQYS".into(),
         amount: 1000000000,
         decimals: 9,
-        is_token_2022: true,
+        token_program_id: Proto::TokenProgramId::Token2022Program,
         ..Proto::CreateAndTransferToken::default()
     };
     let input = Proto::SigningInput {
@@ -955,7 +955,7 @@ fn test_solana_sign_transfer_token_2022() {
     let transfer_token: Proto::TokenTransfer = Proto::TokenTransfer {
         amount: 1000000000,
         decimals: 9,
-        is_token_2022: true,
+        token_program_id: Proto::TokenProgramId::Token2022Program,
         token_mint_address: "BSQCmMAFB9itonyVSLsUxX92Ne1rgBZFqothBk3q91k6".into(),
         sender_token_address: "EQxRyhzjyhRX4TJXt7FmQ3HfFdRcu49krjxHMszidQYS".into(),
         recipient_token_address: "FzsLNpzsLMBbm1LWpM6P3W4tKrCkd8KqnMmADNvArW5d".into(),
