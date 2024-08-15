@@ -5,10 +5,7 @@
 #include <jni.h>
 #include <string.h>
 #include <stdint.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/uio.h>
-#include <unistd.h>
+#include <fstream>
 
 static JavaVM* cachedJVM;
 
@@ -61,10 +58,10 @@ void random_buffer(uint8_t *buf, size_t len) {
     }
     else
     {
-        int randomData = open("/dev/urandom", O_RDONLY);
-        if (randomData >= 0) {
-            (void)read(randomData, buf, len); 
-            close(randomData);
+        std::ifstream randomData("/dev/urandom", std::ios::in | std::ios::binary);
+        if (randomData.is_open()) {
+            randomData.read(reinterpret_cast<char*>(buf), len);
+            randomData.close();
         }
     }
 }
