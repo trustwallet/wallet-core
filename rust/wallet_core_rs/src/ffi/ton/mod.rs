@@ -3,4 +3,5 @@
 // Copyright © 2017 Trust Wallet.
 
 pub mod address_converter;
+pub mod message_signer;
 pub mod wallet;
