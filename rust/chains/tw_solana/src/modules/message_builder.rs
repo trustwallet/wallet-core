@@ -443,7 +443,7 @@ impl<'a> MessageBuilder<'a> {
             signer,
             create_and_transfer.amount,
             decimals,
-           match_program_id(create_and_transfer.token_program_id),
+            match_program_id(create_and_transfer.token_program_id),
         )
         .with_references(references);
 
@@ -776,11 +776,7 @@ where
 
 fn match_program_id(program_id: Proto::TokenProgramId) -> SolanaAddress {
     match program_id {
-        Proto::TokenProgramId::TokenProgram => {
-            *TOKEN_PROGRAM_ID_ADDRESS
-        }
-        Proto::TokenProgramId::Token2022Program =>{
-            *TOKEN_2022_PROGRAM_ID_ADDRESS
-        }
+        Proto::TokenProgramId::TokenProgram => *TOKEN_PROGRAM_ID_ADDRESS,
+        Proto::TokenProgramId::Token2022Program => *TOKEN_2022_PROGRAM_ID_ADDRESS,
     }
 }

@@ -107,6 +107,6 @@ impl TokenInstructionBuilder {
         ];
 
         let data = TokenInstruction::TransferChecked { amount, decimals }.pack();
-        Instruction::new(token_program_id, data,account_metas)
+        Instruction::new(token_program_id, data, account_metas)
     }
 }
