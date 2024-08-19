@@ -16,7 +16,7 @@ class Generator : public  compiler::CodeGenerator {
         return proto_file.substr(0, index) + "+Proto.swift";
     }
 
-    bool Generate(const FileDescriptor* file, const std::string& parameter, compiler::GeneratorContext* generator_context, string* error) const {
+    bool Generate(const FileDescriptor* file, const std::string& parameter, compiler::GeneratorContext* generator_context, std::string* error) const {
         std::unique_ptr<io::ZeroCopyOutputStream> output(generator_context->Open(GetOutputFilename(file->name())));
         io::Printer printer(output.get(), '$');
 
