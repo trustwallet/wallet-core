@@ -2106,6 +2106,7 @@ dependencies = [
  "tw_memory",
  "tw_number",
  "tw_proto",
+ "tw_scale",
  "tw_ss58_address",
 ]
 
@@ -2129,6 +2130,14 @@ dependencies = [
  "tw_memory",
  "tw_number",
  "tw_proto",
+]
+
+[[package]]
+name = "tw_scale"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "tw_number",
 ]
 
 [[package]]
@@ -2158,6 +2167,7 @@ dependencies = [
  "tw_hash",
  "tw_keypair",
  "tw_memory",
+ "tw_scale",
 ]
 
 [[package]]

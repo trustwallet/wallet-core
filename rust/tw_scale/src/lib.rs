@@ -2,7 +2,6 @@ use tw_number::U256;
 
 ///
 /// SCALE encoding implementation (see https://docs.substrate.io/reference/scale-codec)
-/// TODO: this is a substrate-specific encoding, but consider moving to tw_encoding crate
 ///
 
 pub trait ToScale {

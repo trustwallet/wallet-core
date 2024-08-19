@@ -24,7 +24,7 @@ use tw_proto::Polkadot::Proto::mod_Staking::{
 use tw_proto::Polkadot::Proto::{Balance, PolymeshCall, Staking};
 use tw_ss58_address::{NetworkId, SS58Address};
 
-use crate::scale::{Compact, Raw, RawIter, ToScale};
+use tw_scale::{Compact, Raw, RawIter, ToScale};
 
 const POLKADOT_MULTI_ADDRESS_SPEC: u32 = 28;
 const KUSAMA_MULTI_ADDRESS_SPEC: u32 = 2028;
@@ -97,12 +97,6 @@ pub enum EncodeError {
 }
 
 type EncodeResult<T> = Result<T, EncodeError>;
-
-impl ToScale for SS58Address {
-    fn to_scale_into(&self, out: &mut Vec<u8>) {
-        Raw(self.key_bytes()).to_scale_into(out)
-    }
-}
 
 #[derive(Debug, Clone, Default)]
 pub struct ExtrinsicEncoder {

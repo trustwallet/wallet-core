@@ -3,6 +3,7 @@ use std::str::FromStr;
 
 use tw_coin_entry::error::prelude::*;
 use tw_encoding::{base58, hex};
+use tw_scale::{ToScale, Raw};
 use tw_hash::blake2::blake2_b;
 use tw_keypair::ed25519::sha512::PublicKey;
 
@@ -115,7 +116,7 @@ impl SS58Address {
     }
 
     pub fn parse(repr: &str) -> AddressResult<Self> {
-        let decoded = base58::decode(repr, base58::Alphabet::BITCOIN)
+        let decoded = base58::decode(repr, base58::Alphabet::Bitcoin)
             .map_err(|_| AddressError::FromBase58Error)?;
 
         let network = NetworkId::from_bytes(&decoded)?;
@@ -161,11 +162,17 @@ impl SS58Address {
     }
 
     pub fn to_base58_string(&self) -> String {
-        base58::encode(&self.to_bytes(), base58::Alphabet::BITCOIN)
+        base58::encode(&self.to_bytes(), base58::Alphabet::Bitcoin)
     }
 
     pub fn to_hex_string(&self) -> String {
         hex::encode(self.to_bytes(), false)
+    }
+}
+
+impl ToScale for SS58Address {
+    fn to_scale_into(&self, out: &mut Vec<u8>) {
+        Raw(self.key_bytes()).to_scale_into(out)
     }
 }
 
