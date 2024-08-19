@@ -2,22 +2,22 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::codegen::swift::{render_to_strings, RenderIntput};
+use crate::codegen::swift::{render_to_strings, RenderInput};
 use crate::manifest::parse_str;
 
 /// Convenience function.
-fn create_intput(yaml: &str) -> RenderIntput {
+fn create_intput(yaml: &str) -> RenderInput {
     let file_info = parse_str(yaml).unwrap();
 
-    RenderIntput {
+    RenderInput {
         file_info,
         struct_template: include_str!("../codegen/swift/templates/struct.hbs"),
         enum_template: include_str!("../codegen/swift/templates/enum.hbs"),
         extension_template: include_str!("../codegen/swift/templates/extension.hbs"),
         proto_template: include_str!("../codegen/swift/templates/proto.hbs"),
         partial_init_template: include_str!("../codegen/swift/templates/partial_init.hbs"),
-        partial_func_tempalte: include_str!("../codegen/swift/templates/partial_func.hbs"),
-        partial_prop_tempalte: include_str!("../codegen/swift/templates/partial_prop.hbs"),
+        partial_func_template: include_str!("../codegen/swift/templates/partial_func.hbs"),
+        partial_prop_template: include_str!("../codegen/swift/templates/partial_prop.hbs"),
     }
 }
 

@@ -20,7 +20,7 @@ mod render;
 // Re-exports
 pub use self::render::{
     generate_swift_types, render_to_strings, GeneratedSwiftTypes, GeneratedSwiftTypesStrings,
-    RenderIntput,
+    RenderInput,
 };
 
 /// Represents a Swift struct or class.
@@ -250,7 +250,7 @@ impl From<TypeVariant> for SwiftType {
     }
 }
 
-// Covenience function: process the parameter, returning the operation for
+// Convenience function: process the parameter, returning the operation for
 // handling the C FFI call (if any).
 fn param_c_ffi_call(param: &ParamInfo) -> Option<SwiftOperation> {
     let op = match &param.ty.variant {
@@ -339,7 +339,7 @@ fn param_c_ffi_call(param: &ParamInfo) -> Option<SwiftOperation> {
     Some(op)
 }
 
-// Convenience funcion: wrap the return value, returning the operation. Note
+// Convenience function: wrap the return value, returning the operation. Note
 // that types are wrapped differently when returning, compared to
 // `param_c_ffi_call`; such as using `TWStringNSString` instead of
 // `TWDataCreateWithNSData` for Strings.

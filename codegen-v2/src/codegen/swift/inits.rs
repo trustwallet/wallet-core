@@ -45,7 +45,7 @@ pub(super) fn process_inits(
             }
         }
 
-        // Prepepare parameter list to be passed on to the underlying C FFI function.
+        // Prepare parameter list to be passed on to the underlying C FFI function.
         let param_names = params
             .iter()
             .map(|p| p.name.as_str())
@@ -73,7 +73,7 @@ pub(super) fn process_inits(
         let pretty_name = init
             .name
             .strip_prefix(object.name())
-            // Panicing implies bug, checked at the start of the loop.
+            // Panicking implies bug, checked at the start of the loop.
             .unwrap()
             .to_string();
 
@@ -101,7 +101,7 @@ pub(super) fn process_deinits(
         if deinit.name.starts_with(object.name()) {
             swift_deinits.push(deinit)
         } else {
-            // Deinit is not assciated with the object.
+            // Deinit is not associated with the object.
             skipped_deinits.push(deinit);
             continue;
         }

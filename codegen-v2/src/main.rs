@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use libparser::codegen::swift::RenderIntput;
+use libparser::codegen::swift::RenderInput;
 use libparser::codegen::{cpp, proto, rust};
 use libparser::coin_id::CoinId;
 use libparser::manifest::parse_dir;
@@ -97,15 +97,15 @@ fn generate_swift_bindings() -> Result<()> {
     let file_infos = parse_dir("manifest/")?;
 
     for file_info in file_infos {
-        let input = RenderIntput {
+        let input = RenderInput {
             file_info,
             struct_template: &struct_t,
             enum_template: &enum_t,
             extension_template: &ext_t,
             proto_template: &proto_t,
             partial_init_template: &part_init_t,
-            partial_func_tempalte: &part_func_t,
-            partial_prop_tempalte: &part_prop_t,
+            partial_func_template: &part_func_t,
+            partial_prop_template: &part_prop_t,
         };
 
         let rendered = libparser::codegen::swift::render_to_strings(input)?;

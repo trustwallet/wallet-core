@@ -21,14 +21,14 @@ pub(super) fn process_methods(
 
     for func in functions {
         if !func.name.starts_with(object.name()) {
-            // Function is not assciated with the object.
+            // Function is not associated with the object.
             skipped_funcs.push(func);
             continue;
         }
 
         let mut ops = vec![];
 
-        // Initalize the 'self' type, which is then passed on to the underlying
+        // Initialize the 'self' type, which is then passed on to the underlying
         // C FFI function, assuming the function is not static.
         //
         // E.g:
@@ -111,7 +111,7 @@ pub(super) fn process_methods(
         let pretty_name = func
             .name
             .strip_prefix(object.name())
-            // Panicing implies bug, checked at the start of the loop.
+            // Panicking implies bug, checked at the start of the loop.
             .unwrap()
             .to_lower_camel_case();
 

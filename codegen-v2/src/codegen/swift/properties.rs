@@ -28,7 +28,7 @@ pub(super) fn process_properties(
 
         let mut ops = vec![];
 
-        // Initalize the 'self' type, which is then passed on to the underlying
+        // Initialize the 'self' type, which is then passed on to the underlying
         // C FFI function.
         ops.push(match object {
             // E.g. `let obj = self.rawValue`
@@ -66,7 +66,7 @@ pub(super) fn process_properties(
         let pretty_name = prop
             .name
             .strip_prefix(object.name())
-            // Panicing implies bug, checked at the start of the loop.
+            // Panicking implies bug, checked at the start of the loop.
             .unwrap()
             .to_lower_camel_case();
 
