@@ -1,0 +1,23 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+//
+// This is a GENERATED FILE, changes made here WILL BE LOST.
+//
+
+extension {{name}} {
+    {{! Methods }}
+    {{#each methods}}
+    {{~> partial_func}}
+    {{#unless @last}}
+
+    {{/unless}}
+    {{/each}}
+    {{! Properties }}
+    {{#each properties}}
+    {{~> partial_prop}}
+    {{#unless @last}}
+
+    {{/unless}}
+    {{/each}}
+}

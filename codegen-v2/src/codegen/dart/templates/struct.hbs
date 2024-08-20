@@ -1,0 +1,53 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+//
+// This is a GENERATED FILE, changes made here WILL BE LOST.
+//
+
+import Foundation
+
+{{#if is_public}}public {{/if}}{{#if is_class}}final class {{else}}struct {{/if}}{{name}}
+    {{~#if superclasses}}: {{/if}}{{#each superclasses}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} {
+    {{#if init_instance}}
+    let rawValue: OpaquePointer
+
+    init(rawValue: OpaquePointer) {
+        self.rawValue = rawValue
+    }
+    {{else}}
+    init() {}
+    {{/if}}
+
+    {{! Equality operator, if available }}
+    {{#if eq_operator}}
+    public static func == (lhs: {{name}}, rhs: {{name}}) -> Bool {
+        return {{eq_operator.c_ffi_name}}(lhs.rawValue, rhs.rawValue)
+    }
+
+    {{/if}}
+    {{! Inits }}
+    {{#each inits}}
+    {{~> partial_init}}
+
+    {{/each}}
+    {{! Deinits }}
+    {{#each deinits}}
+    deinit {
+        {{name}}(self.rawValue)
+    }
+
+    {{/each}}
+    {{! Methods }}
+    {{#each methods}}
+    {{~> partial_func}}
+
+    {{/each}}
+    {{! Properties }}
+    {{#each properties}}
+    {{~> partial_prop}}
+    {{#unless @last}}
+
+    {{/unless}}
+    {{/each}}
+}

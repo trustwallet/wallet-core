@@ -2,7 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use libparser::codegen::swift::RenderInput;
 use libparser::codegen::{cpp, proto, rust};
 use libparser::coin_id::CoinId;
 use libparser::manifest::parse_dir;
@@ -23,6 +22,7 @@ fn main() -> Result<()> {
         "new-evmchain" => new_evmchain(&args[2..]),
         "new-cosmos-chain" => new_cosmos_chain(&args[2..]),
         "swift" => generate_swift_bindings(),
+        "dart" => generate_dart_bindings(),
         _ => Err(Error::InvalidCommand),
     }
 }
@@ -80,7 +80,7 @@ fn new_cosmos_chain(args: &[String]) -> Result<()> {
 
 fn generate_swift_bindings() -> Result<()> {
     // NOTE: The paths will be configurable, eventually.
-    const OUT_DIR: &str = "bindings/";
+    const OUT_DIR: &str = "bindings/swift";
     const IN_DIR: &str = "src/codegen/swift/templates";
 
     std::fs::create_dir_all(OUT_DIR)?;
@@ -97,7 +97,7 @@ fn generate_swift_bindings() -> Result<()> {
     let file_infos = parse_dir("manifest/")?;
 
     for file_info in file_infos {
-        let input = RenderInput {
+        let input = libparser::codegen::swift::RenderInput {
             file_info,
             struct_template: &struct_t,
             enum_template: &enum_t,
@@ -143,6 +143,74 @@ fn generate_swift_bindings() -> Result<()> {
         }
     }
 
-    println!("Created bindings in directory 'bindings/'!");
+    println!("Created bindings in directory '{}'!", OUT_DIR);
+    Ok(())
+}
+
+fn generate_dart_bindings() -> Result<()> {
+    const OUT_DIR: &str = "bindings/dart";
+    const IN_DIR: &str = "src/codegen/dart/templates";
+
+    std::fs::create_dir_all(OUT_DIR)?;
+
+    let struct_t = read_to_string(&format!("{IN_DIR}/struct.hbs"))?;
+    let enum_t = read_to_string(&format!("{IN_DIR}/enum.hbs"))?;
+    let ext_t = read_to_string(&format!("{IN_DIR}/extension.hbs"))?;
+    let proto_t = read_to_string(&format!("{IN_DIR}/proto.hbs"))?;
+    let part_init_t = read_to_string(&format!("{IN_DIR}/partial_init.hbs"))?;
+    let part_func_t = read_to_string(&format!("{IN_DIR}/partial_func.hbs"))?;
+    let part_prop_t = read_to_string(&format!("{IN_DIR}/partial_prop.hbs"))?;
+
+    // Read the manifest dir, generate bindings for each entry.
+    let file_infos = parse_dir("manifest/")?;
+
+    for file_info in file_infos {
+        let input = libparser::codegen::dart::RenderInput {
+            file_info,
+            struct_template: &struct_t,
+            enum_template: &enum_t,
+            extension_template: &ext_t,
+            proto_template: &proto_t,
+            partial_init_template: &part_init_t,
+            partial_func_template: &part_func_t,
+            partial_prop_template: &part_prop_t,
+        };
+
+        let rendered = libparser::codegen::dart::render_to_strings(input)?;
+
+        // Enum declarations go into their own subfolder.
+        if !rendered.enums.is_empty() {
+            std::fs::create_dir_all(format!("{OUT_DIR}/enums"))?;
+        }
+
+        // Protobuf declarations go into their own subfolder.
+        if !rendered.protos.is_empty() {
+            std::fs::create_dir_all(format!("{OUT_DIR}/protobuf"))?;
+        }
+
+        for (name, rendered) in rendered.structs {
+            let file_path = format!("{OUT_DIR}/{name}.dart");
+            std::fs::write(&file_path, rendered.as_bytes())?;
+        }
+
+        for (name, rendered) in rendered.enums {
+            let file_path = format!("{OUT_DIR}/enums/{name}.dart");
+            std::fs::write(&file_path, rendered.as_bytes())?;
+        }
+
+        // Enum extensions.
+        for (name, rendered) in rendered.extensions {
+            let file_path = format!("{OUT_DIR}/{name}_extension.dart");
+            std::fs::write(&file_path, rendered.as_bytes())?;
+        }
+
+        // Protobuf messages.
+        for (name, rendered) in rendered.protos {
+            let file_path = format!("{OUT_DIR}/protobuf/{name}_proto.dart");
+            std::fs::write(&file_path, rendered.as_bytes())?;
+        }
+    }
+
+    println!("Created bindings in directory '{}'!", OUT_DIR);
     Ok(())
 }

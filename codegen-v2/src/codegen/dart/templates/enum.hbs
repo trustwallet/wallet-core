@@ -1,0 +1,32 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+//
+// This is a GENERATED FILE, changes made here WILL BE LOST.
+//
+
+enum {{#unless is_public}}_{{/unless}}{{name}}
+{
+    {{#each variants}}   
+    {{this.name}}({{this.value}}){{#unless @last}},{{else}};{{/unless}}
+    {{/each}}
+    {{#if add_description}}
+
+    String get description => switch (value) {
+      {{#each variants}}
+      {{this.value}} => '{{this.as_string}}',
+      {{/each}}
+    }
+    {{/if}}
+}
+
+{{!-- {
+    "is_public": true,
+    "name": "ColorEnum",
+    "variants": [
+        {"name": "red", "value": 1, "as_string": "Red"},
+        {"name": "green", "value": 2},
+        {"name": "blue", "value": 3, "as_string": "Blue"}
+    ],
+    "add_description": true
+} --}}
