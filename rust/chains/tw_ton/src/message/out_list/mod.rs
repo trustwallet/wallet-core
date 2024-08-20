@@ -14,12 +14,12 @@ pub fn build_out_list(actions: &[OutAction]) -> CellResult<Cell> {
         .iter()
         .fold(CellBuilder::new().build(), |acc, action| {
             let mut builder = CellBuilder::new();
-            builder.store_child(acc.unwrap())?;
+            builder.store_child(acc?)?;
             builder.store_cell(&action.build()?)?;
             builder.build()
         });
 
     let mut builder = CellBuilder::new();
-    builder.store_cell(&cell.unwrap())?;
+    builder.store_cell(&cell?)?;
     builder.build()
 }

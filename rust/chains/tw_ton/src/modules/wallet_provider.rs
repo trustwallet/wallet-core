@@ -2,9 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::wallet::VersionedTonWallet;
+use crate::wallet::{wallet_v4, wallet_v5};
 use tw_keypair::ed25519::sha512::PublicKey;
-use tw_proto::TheOpenNetwork::Proto;
 use tw_ton_sdk::boc::BagOfCells;
 use tw_ton_sdk::error::CellResult;
 
@@ -20,14 +19,9 @@ impl WalletProvider {
         workchain: i32,
         wallet_id: i32,
     ) -> CellResult<String> {
-        let state_init = VersionedTonWallet::with_public_key(
-            workchain,
-            Proto::WalletVersion::WALLET_V4_R2,
-            public_key,
-            wallet_id,
-        )?
-        .state_init()?
-        .to_cell()?;
+        let state_init = wallet_v4::WalletV4R2::with_public_key(workchain, public_key, wallet_id)?
+            .state_init()?
+            .to_cell()?;
         BagOfCells::from_root(state_init).to_base64(HAS_CRC32)
     }
 
@@ -37,14 +31,9 @@ impl WalletProvider {
         workchain: i32,
         wallet_id: i32,
     ) -> CellResult<String> {
-        let state_init = VersionedTonWallet::with_public_key(
-            workchain,
-            Proto::WalletVersion::WALLET_V5_R1,
-            public_key,
-            wallet_id,
-        )?
-        .state_init()?
-        .to_cell()?;
+        let state_init = wallet_v5::WalletV5R1::with_public_key(workchain, public_key, wallet_id)?
+            .state_init()?
+            .to_cell()?;
         BagOfCells::from_root(state_init).to_base64(HAS_CRC32)
     }
 }

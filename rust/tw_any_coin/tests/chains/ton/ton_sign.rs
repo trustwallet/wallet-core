@@ -15,7 +15,7 @@ use tw_proto::TheOpenNetwork::Proto::mod_Transfer::OneOfpayload as PayloadType;
 /// The same Cell can be BoC encoded differently.
 /// Use this function to compare inner Cells closing eyes on the encoding.
 #[track_caller]
-pub fn assert_eq_boc(left: &str, right: &str) {
+pub(crate) fn assert_eq_boc(left: &str, right: &str) {
     use tw_ton_sdk::boc::BagOfCells;
 
     let left_boc = BagOfCells::parse_base64(left).unwrap();

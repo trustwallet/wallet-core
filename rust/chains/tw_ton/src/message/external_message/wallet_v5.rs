@@ -9,10 +9,11 @@ use tw_ton_sdk::cell::cell_builder::CellBuilder;
 use tw_ton_sdk::cell::Cell;
 use tw_ton_sdk::error::{CellError, CellErrorType, CellResult};
 
+const SEND_MODE_IGNORE_ACTION_PHASE_ERRORS: u8 = 0x02;
+
 pub enum V5R1OpCode {
+    // Currently, only AuthSignedExternal is supported. AuthSignedInternal/AuthExtension are not supported.
     AuthSignedExternal,
-    AuthSignedInternal,
-    AuthExtension,
 }
 
 impl V5R1OpCode {
@@ -20,8 +21,6 @@ impl V5R1OpCode {
     pub fn to_ser_tag(&self) -> u32 {
         match self {
             V5R1OpCode::AuthSignedExternal => 0x7369676e,
-            V5R1OpCode::AuthSignedInternal => 0x73696e74,
-            V5R1OpCode::AuthExtension => 0x6578746e,
         }
     }
 }
@@ -52,15 +51,11 @@ impl ExternalMessageWalletV5 {
                 // Make sure +2 flag (ignore errors send mode) is set for all external send messages
                 // See https://github.com/ton-blockchain/wallet-contract-v5/blob/88557ebc33047a95207f6e47ac8aadb102dff744/contracts/wallet_v5.fc#L82
                 for action in &self.basic_actions {
-                    if (action.mode & 0x02) == 0 {
+                    if (action.mode & SEND_MODE_IGNORE_ACTION_PHASE_ERRORS) == 0 {
                         return CellError::err(CellErrorType::InternalError)
                             .context("External send message must have ignore errors send mode");
                     }
                 }
-            },
-            _ => {
-                return CellError::err(CellErrorType::NotSupported)
-                    .context("Unsupported V5R1OpCodes");
             },
         }
         builder

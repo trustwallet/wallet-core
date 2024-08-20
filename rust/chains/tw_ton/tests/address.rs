@@ -1,7 +1,6 @@
 use tw_keypair::ed25519::sha512::KeyPair;
 use tw_keypair::traits::KeyPairTrait;
-use tw_proto::TheOpenNetwork::Proto;
-use tw_ton::wallet::VersionedTonWallet;
+use tw_ton::wallet::wallet_v5;
 
 /// Tests for TON V5R1 address.
 ///
@@ -30,11 +29,10 @@ fn test_ton_v5r1_address_derive() {
         let public_key = key_pair.public().clone();
 
         // Create the VersionedTonWallet using the public key
-        let wallet =
-            VersionedTonWallet::std_with_public_key(Proto::WalletVersion::WALLET_V5_R1, public_key)
-                .expect("Failed to create wallet");
+        let wallet = wallet_v5::WalletV5R1::std_with_public_key(public_key)
+            .expect("Failed to create wallet");
 
-        let actual_address = wallet.address().to_string();
+        let actual_address = wallet.address.to_string();
 
         assert_eq!(actual_address, expected_address);
     }

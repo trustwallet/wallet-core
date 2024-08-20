@@ -8,8 +8,8 @@ use tw_ton_sdk::error::CellResult;
 
 #[derive(Clone)]
 pub enum OutActionType {
+    // Currently, only SendMsg is supported. SetCode is not supported.
     SendMsg,
-    SetCode,
 }
 
 impl OutActionType {
@@ -17,7 +17,6 @@ impl OutActionType {
     pub fn to_ser_tag(&self) -> u32 {
         match self {
             OutActionType::SendMsg => 0x0ec3c86d,
-            OutActionType::SetCode => 0xad4de08e,
         }
     }
 }
@@ -41,7 +40,6 @@ impl OutAction {
     pub fn build(&self) -> CellResult<Cell> {
         match self.typ {
             OutActionType::SendMsg => self.build_out_action_send_msg(),
-            OutActionType::SetCode => self.build_out_action_set_code(),
         }
     }
 
@@ -50,14 +48,6 @@ impl OutAction {
         builder
             .store_u32(32, self.typ.to_ser_tag())?
             .store_u8(8, self.mode)?
-            .store_reference(&self.data)?;
-        builder.build()
-    }
-
-    fn build_out_action_set_code(&self) -> CellResult<Cell> {
-        let mut builder = CellBuilder::new();
-        builder
-            .store_u32(32, self.typ.to_ser_tag())?
             .store_reference(&self.data)?;
         builder.build()
     }

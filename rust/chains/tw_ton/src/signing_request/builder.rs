@@ -6,7 +6,7 @@ use crate::address::TonAddress;
 use crate::signing_request::{
     JettonTransferRequest, SigningRequest, TransferCustomRequest, TransferPayload, TransferRequest,
 };
-use crate::wallet::VersionedTonWallet;
+use crate::wallet::{wallet_v4, wallet_v5, VersionedTonWallet};
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_keypair::ed25519::sha512::{KeyPair, PublicKey};
@@ -62,16 +62,36 @@ impl SigningRequestBuilder {
                 .into_tw()
                 .context("Invalid private key")?;
 
-            return VersionedTonWallet::std_with_key_pair(wallet_version, &key_pair)
-                .map_err(cell_to_signing_error);
+            return match wallet_version {
+                Proto::WalletVersion::WALLET_V4_R2 => Ok(VersionedTonWallet::V4R2(
+                    wallet_v4::WalletV4R2::std_with_key_pair(&key_pair)
+                        .map_err(cell_to_signing_error)?,
+                )),
+                Proto::WalletVersion::WALLET_V5_R1 => Ok(VersionedTonWallet::V5R1(
+                    wallet_v5::WalletV5R1::std_with_key_pair(&key_pair)
+                        .map_err(cell_to_signing_error)?,
+                )),
+                _ => SigningError::err(SigningErrorType::Error_not_supported)
+                    .context("Wallet version not supported"),
+            };
         }
 
         let public_key = PublicKey::try_from(input.public_key.as_ref())
             .into_tw()
             .context("Expected either 'private_key' or 'public_key' to be set")?;
 
-        VersionedTonWallet::std_with_public_key(wallet_version, public_key)
-            .map_err(cell_to_signing_error)
+        match wallet_version {
+            Proto::WalletVersion::WALLET_V4_R2 => Ok(VersionedTonWallet::V4R2(
+                wallet_v4::WalletV4R2::std_with_public_key(public_key)
+                    .map_err(cell_to_signing_error)?,
+            )),
+            Proto::WalletVersion::WALLET_V5_R1 => Ok(VersionedTonWallet::V5R1(
+                wallet_v5::WalletV5R1::std_with_public_key(public_key)
+                    .map_err(cell_to_signing_error)?,
+            )),
+            _ => SigningError::err(SigningErrorType::Error_not_supported)
+                .context("Wallet version not supported"),
+        }
     }
 
     fn transfer_request(input: &Proto::Transfer) -> SigningResult<TransferRequest> {
