@@ -209,6 +209,7 @@ pub fn generate_dart_types(mut info: FileInfo) -> Result<GeneratedDartTypes> {
             })
             .collect();
 
+        //TODO: get value type from info.value
         let value_type = "int";
         let value_field = Some(format!("final {} value;", value_type));
         let constructor = Some(format!("const {}(this.value);", pretty_enum_name));
