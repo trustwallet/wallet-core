@@ -62,7 +62,6 @@ pub(super) fn process_inits(
             ops.push(DartOperation::Call {
                 var_name: "result".to_string(),
                 call: format!("{}({})", init.name, param_names),
-                defer: None,
             });
         }
 

@@ -35,13 +35,11 @@ pub(super) fn process_properties(
             ObjectVariant::Struct(_) => DartOperation::Call {
                 var_name: "obj".to_string(),
                 call: "self.rawValue".to_string(),
-                defer: None,
             },
             // E.g. `let obj = TWSomeEnum(rawValue: self.rawValue")`
             ObjectVariant::Enum(name) => DartOperation::Call {
                 var_name: "obj".to_string(),
                 call: format!("{}(rawValue: self.rawValue)", name),
-                defer: None,
             },
         });
 
@@ -55,7 +53,6 @@ pub(super) fn process_properties(
             ops.push(DartOperation::Call {
                 var_name,
                 call,
-                defer: None,
             });
         }
 

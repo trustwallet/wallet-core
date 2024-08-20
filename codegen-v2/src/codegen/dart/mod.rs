@@ -109,16 +109,12 @@ struct DartProperty {
 #[serde(rename_all = "snake_case")]
 pub enum DartOperation {
     // Results in:
-    // ```swift
-    // let <var_name> = <call>
-    // defer {
-    //     <defer.String>(<var_name>)
-    // }
+    // ```dart
+    // final <var_name> = <call>
     // ```
     Call {
         var_name: String,
         call: String,
-        defer: Option<String>,
     },
     // Results in:
     // ```swift
@@ -133,7 +129,6 @@ pub enum DartOperation {
     CallOptional {
         var_name: String,
         call: String,
-        defer: Option<String>,
     },
     // Results in:
     // ```swift
@@ -147,8 +142,16 @@ pub enum DartOperation {
         call: String,
     },
     // Results in:
-    // ```swift
-    // return <call>
+    // ```dart
+    //  <call>(<var_name>);
+    DeferCall {
+        var_name: String,
+        call: String,
+    },
+    // ```
+    // Results in:
+    // ```dart
+    // return <call>;
     // ```
     Return {
         call: String,
@@ -256,12 +259,11 @@ impl From<TypeVariant> for DartType {
 // handling the C FFI call (if any).
 fn param_c_ffi_call(param: &ParamInfo) -> Option<DartOperation> {
     let op = match &param.ty.variant {
-        // E.g. `let param = TWStringCreateWithNSString(param)`
+        // E.g. `final param = TWStringCreateWithNSString(param);`
         TypeVariant::String => {
-            let (var_name, call, defer) = (
+            let (var_name, call) = (
                 param.name.clone(),
                 format!("TWStringCreateWithNSString({})", param.name),
-                Some(format!("TWStringDelete({})", param.name)),
             );
 
             // If the parameter is nullable, add special handler.
@@ -269,21 +271,18 @@ fn param_c_ffi_call(param: &ParamInfo) -> Option<DartOperation> {
                 DartOperation::CallOptional {
                     var_name,
                     call,
-                    defer,
                 }
             } else {
                 DartOperation::Call {
                     var_name,
                     call,
-                    defer,
                 }
             }
         }
         TypeVariant::Data => {
-            let (var_name, call, defer) = (
+            let (var_name, call) = (
                 param.name.clone(),
                 format!("TWDataCreateWithNSData({})", param.name),
-                Some(format!("TWDataDelete({})", param.name)),
             );
 
             // If the parameter is nullable, add special handler.
@@ -291,13 +290,11 @@ fn param_c_ffi_call(param: &ParamInfo) -> Option<DartOperation> {
                 DartOperation::CallOptional {
                     var_name,
                     call,
-                    defer,
                 }
             } else {
                 DartOperation::Call {
                     var_name,
                     call,
-                    defer,
                 }
             }
         }
@@ -308,29 +305,26 @@ fn param_c_ffi_call(param: &ParamInfo) -> Option<DartOperation> {
             // For nullable structs, we do not use the special
             // `CallOptional` handler but rather use the question mark
             // operator.
-            let (var_name, call, defer) = if param.ty.is_nullable {
+            let (var_name, call) = if param.ty.is_nullable {
                 (
                     param.name.clone(),
                     format!("{}?.rawValue", param.name),
-                    None,
                 )
             } else {
-                (param.name.clone(), format!("{}.rawValue", param.name), None)
+                (param.name.clone(), format!("{}.rawValue", param.name))
             };
 
             DartOperation::Call {
                 var_name,
                 call,
-                defer,
             }
         }
-        // E.g. `let param = TWSomeEnum(rawValue: param.rawValue)`
+        // E.g. `final param = TWSomeEnum(rawValue: param.rawValue);`
         // Note that it calls the constructor of the enum, which calls
         // the underlying "*Create*" C FFI function.
         TypeVariant::Enum(enm) => DartOperation::Call {
             var_name: param.name.clone(),
             call: format!("{enm}(rawValue: {}.rawValue)", param.name),
-            defer: None,
         },
         // Skip processing parameter, reference the parameter by name
         // directly, as defined in the function interface (usually the
