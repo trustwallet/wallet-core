@@ -208,7 +208,7 @@ pub fn generate_dart_types(mut info: FileInfo) -> Result<GeneratedDartTypes> {
 
         let mut add_class = false;
 
-        // Convert to Swift enum variants
+        // Convert to Dart enum variants
         let variants = enm
             .variants
             .into_iter()

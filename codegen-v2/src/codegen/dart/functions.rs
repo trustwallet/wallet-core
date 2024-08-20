@@ -39,12 +39,10 @@ pub(super) fn process_methods(
                 ObjectVariant::Struct(_) => DartOperation::Call {
                     var_name: "obj".to_string(),
                     call: "self.rawValue".to_string(),
-                    defer: None,
                 },
                 ObjectVariant::Enum(name) => DartOperation::Call {
                     var_name: "obj".to_string(),
                     call: format!("{}(rawValue: self.rawValue)", name),
-                    defer: None,
                 },
             });
         }
@@ -94,7 +92,6 @@ pub(super) fn process_methods(
             ops.push(DartOperation::Call {
                 var_name,
                 call,
-                defer: None,
             });
         }
 
