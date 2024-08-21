@@ -117,24 +117,24 @@ pub enum DartOperation {
         call: String,
     },
     // Results in:
-    // ```swift
-    // let ptr: UnsafeRawPointer?
-    // if let alphabet = alphabet {
-    //     ptr = TWStringCreateWithNSString(alphabet)
+    // ```dart
+    // final UnsafeRawPointer? ptr;
+    // if alphabet != null {
+    //     ptr = TWStringCreateWithNSString(alphabet);
     // } else {
-    //     ptr = nil
+    //     ptr = null;
     // }
+    // final alphabet = ptr;
     // ```
-    // ... with an optional `defer` operation.
     CallOptional {
         var_name: String,
         call: String,
     },
     // Results in:
     // ```swift
-    // let <var_name> = <call>
-    // guard let <var_name> = <var_name> else {
-    //     return nil
+    // final <var_name> = <call>;
+    // if <var_name> == null {
+    //     return null;
     // }
     // ```
     GuardedCall {
@@ -148,19 +148,16 @@ pub enum DartOperation {
         var_name: String,
         call: Option<String>,
     },
-    /// Need to understand what the code for Dart should be
     // Results in:
     // ```dart
-    // let <var_name> = <call>
-    // guard let <var_name> = <var_name> else {
-    //     return nil
+    // if (ptr != null) {
+    //    <call>(<var_name>);
     // }
     // ```
     DeferOptionalCall {
         var_name: String,
         call: Option<String>,
     },
-    // ```
     // Results in:
     // ```dart
     // return <call>;
@@ -232,7 +229,7 @@ impl TryFrom<ProtoInfo> for DartProto {
     }
 }
 
-/// Convert the `TypeVariant` into the appropriate Swift type.
+/// Convert the `TypeVariant` into the appropriate Dart type.
 impl From<TypeVariant> for DartType {
     fn from(value: TypeVariant) -> Self {
         let res = match value {
@@ -310,6 +307,7 @@ fn param_c_ffi_call(param: &ParamInfo) -> Option<DartOperation> {
                 }
             }
         }
+        // TODO: Figure out what a Dart call for a struct would look like.
         // E.g.
         // - `let param = param.rawValue`
         // - `let param = param?.rawValue`
