@@ -195,7 +195,7 @@ impl<'a> Extrinsic<'a> {
         let address =
             SS58Address::from_str(&t.to_address).map_err(|_| EncodeError::InvalidAddress)?;
         let value =
-            U256::from_little_endian_slice(&t.value).map_err(|_| EncodeError::InvalidValue)?;
+            U256::from_big_endian_slice(&t.value).map_err(|_| EncodeError::InvalidValue)?;
 
         let mut encoder = ExtrinsicEncoder::new();
         encoder.add_mut(call_index);
@@ -223,7 +223,7 @@ impl<'a> Extrinsic<'a> {
         let address =
             SS58Address::from_str(&at.to_address).map_err(|_| EncodeError::InvalidAddress)?;
         let value =
-            U256::from_little_endian_slice(&at.value).map_err(|_| EncodeError::InvalidValue)?;
+            U256::from_big_endian_slice(&at.value).map_err(|_| EncodeError::InvalidValue)?;
 
         let mut encoder = ExtrinsicEncoder::new().add(call_index);
 
@@ -292,7 +292,7 @@ impl<'a> Extrinsic<'a> {
     fn encode_staking_bond(&self, b: &Bond) -> EncodeResult<Vec<u8>> {
         let call_index = self.get_custom_call_index_or_network(STAKING_BOND, &b.call_indices)?;
         let value =
-            U256::from_little_endian_slice(&b.value).map_err(|_| EncodeError::InvalidValue)?;
+            U256::from_big_endian_slice(&b.value).map_err(|_| EncodeError::InvalidValue)?;
 
         let mut encoder = ExtrinsicEncoder::new().add(call_index);
 
@@ -341,7 +341,7 @@ impl<'a> Extrinsic<'a> {
         let call_index =
             self.get_custom_call_index_or_network(STAKING_BOND_EXTRA, &be.call_indices)?;
         let value =
-            U256::from_little_endian_slice(&be.value).map_err(|_| EncodeError::InvalidValue)?;
+            U256::from_big_endian_slice(&be.value).map_err(|_| EncodeError::InvalidValue)?;
 
         let data = ExtrinsicEncoder::new()
             .add(call_index)
@@ -354,7 +354,7 @@ impl<'a> Extrinsic<'a> {
     fn encode_staking_unbond(&self, u: &Unbond) -> EncodeResult<Vec<u8>> {
         let call_index = self.get_custom_call_index_or_network(STAKING_UNBOND, &u.call_indices)?;
         let value =
-            U256::from_little_endian_slice(&u.value).map_err(|_| EncodeError::InvalidValue)?;
+            U256::from_big_endian_slice(&u.value).map_err(|_| EncodeError::InvalidValue)?;
 
         let data = ExtrinsicEncoder::new()
             .add(call_index)
@@ -367,7 +367,7 @@ impl<'a> Extrinsic<'a> {
     fn encode_staking_rebond(&self, u: &Rebond) -> EncodeResult<Vec<u8>> {
         let call_index = self.get_custom_call_index_or_network(STAKING_REBOND, &u.call_indices)?;
         let value =
-            U256::from_little_endian_slice(&u.value).map_err(|_| EncodeError::InvalidValue)?;
+            U256::from_big_endian_slice(&u.value).map_err(|_| EncodeError::InvalidValue)?;
 
         let data = ExtrinsicEncoder::new()
             .add(call_index)
