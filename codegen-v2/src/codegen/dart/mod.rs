@@ -38,14 +38,16 @@ pub struct DartStruct {
     properties: Vec<DartProperty>,
 }
 
-/// Represents a Swift enum.
+/// Represents a Dart enum.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DartEnum {
     name: String,
     is_public: bool,
     add_description: bool,
-    superclasses: Vec<String>,
     variants: Vec<DartEnumVariant>,
+    value_type: String,
+    value_field: Option<String>,
+    constructor: Option<String>,
 }
 
 /// Represents a Swift enum variant.
