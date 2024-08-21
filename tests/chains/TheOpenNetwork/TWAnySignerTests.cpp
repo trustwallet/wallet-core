@@ -15,8 +15,6 @@ namespace TW::TheOpenNetwork::tests {
 TEST(TWAnySignerTheOpenNetwork, SingMessageToTransferAndDeployWalletV4R2) {
     Proto::SigningInput input;
 
-    input.set_wallet_version(Proto::WALLET_V4_R2);
-
     auto& transfer = *input.add_messages();
     transfer.set_dest("EQDYW_1eScJVxtitoBRksvoV9cCYo4uKGWLVNIHB1JqRR3n0");
     transfer.set_amount(10);
@@ -27,6 +25,8 @@ TEST(TWAnySignerTheOpenNetwork, SingMessageToTransferAndDeployWalletV4R2) {
     input.set_private_key(privateKey.data(), privateKey.size());
 
     input.set_expire_at(1671135440);
+
+    input.set_wallet_version(Proto::WALLET_V4_R2);
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeTON);
@@ -40,8 +40,6 @@ TEST(TWAnySignerTheOpenNetwork, SingMessageToTransferAndDeployWalletV4R2) {
 TEST(TWAnySignerTheOpenNetwork, SingMessageToTransferAndDeployWalletV5R1) {
     Proto::SigningInput input;
 
-    input.set_wallet_version(Proto::WALLET_V5_R1);
-
     auto& transfer = *input.add_messages();
     transfer.set_dest("EQBe6DtCpJZe8M4t-crMXe93JlEYgSl30S5OUuMSLOfeQfBu");
     transfer.set_amount(10);
@@ -52,6 +50,8 @@ TEST(TWAnySignerTheOpenNetwork, SingMessageToTransferAndDeployWalletV5R1) {
     input.set_private_key(privateKey.data(), privateKey.size());
 
     input.set_expire_at(0xffffffff);
+
+    input.set_wallet_version(Proto::WALLET_V5_R1);
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeTON);

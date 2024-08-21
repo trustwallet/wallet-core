@@ -82,7 +82,6 @@ class TheOpenNetworkTests: XCTestCase {
         let privateKeyData = Data(hexString: "c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0")!
 
         let transfer = TheOpenNetworkTransfer.with {
-            $0.walletVersion = TheOpenNetworkWalletVersion.walletV4R2
             $0.dest = "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q"
             $0.amount = 10
             $0.mode = UInt32(TheOpenNetworkSendMode.payFeesSeparately.rawValue | TheOpenNetworkSendMode.ignoreActionPhaseErrors.rawValue)
@@ -94,6 +93,7 @@ class TheOpenNetworkTests: XCTestCase {
             $0.privateKey = privateKeyData
             $0.sequenceNumber = 6
             $0.expireAt = 1671132440
+            $0.walletVersion = TheOpenNetworkWalletVersion.walletV4R2
         }
 
         let output: TheOpenNetworkSigningOutput = AnySigner.sign(input: input, coin: .ton)
@@ -115,7 +115,6 @@ class TheOpenNetworkTests: XCTestCase {
         }
         
         let transfer = TheOpenNetworkTransfer.with {
-            $0.walletVersion = TheOpenNetworkWalletVersion.walletV4R2
             $0.dest = "EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja"
             $0.amount = 100 * 1000 * 1000
             $0.mode = UInt32(TheOpenNetworkSendMode.payFeesSeparately.rawValue | TheOpenNetworkSendMode.ignoreActionPhaseErrors.rawValue)
@@ -129,6 +128,7 @@ class TheOpenNetworkTests: XCTestCase {
             $0.privateKey = privateKeyData
             $0.sequenceNumber = 1
             $0.expireAt = 1787693046
+            $0.walletVersion = TheOpenNetworkWalletVersion.walletV4R2
         }
 
         let output: TheOpenNetworkSigningOutput = AnySigner.sign(input: input, coin: .ton)
@@ -159,7 +159,6 @@ class TheOpenNetworkTests: XCTestCase {
         }
         
         let transfer = TheOpenNetworkTransfer.with {
-            $0.walletVersion = TheOpenNetworkWalletVersion.walletV4R2
             $0.dest = dogeChatbotDeployingAddress
             // 0.069 TON
             $0.amount = 69_000_000
@@ -173,6 +172,7 @@ class TheOpenNetworkTests: XCTestCase {
             $0.privateKey = privateKeyData
             $0.sequenceNumber = 4
             $0.expireAt = 1721939714
+            $0.walletVersion = TheOpenNetworkWalletVersion.walletV4R2
         }
 
         let output: TheOpenNetworkSigningOutput = AnySigner.sign(input: input, coin: .ton)

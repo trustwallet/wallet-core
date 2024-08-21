@@ -71,7 +71,6 @@ describe("TheOpenNetwork", () => {
     let privateKeyData = HexCoding.decode("c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0");
 
     let transfer = TW.TheOpenNetwork.Proto.Transfer.create({
-        walletVersion: TW.TheOpenNetwork.Proto.WalletVersion.WALLET_V4_R2,
         dest: "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q",
         amount: new Long(10),
         mode: (TW.TheOpenNetwork.Proto.SendMode.PAY_FEES_SEPARATELY | TW.TheOpenNetwork.Proto.SendMode.IGNORE_ACTION_PHASE_ERRORS),
@@ -83,6 +82,7 @@ describe("TheOpenNetwork", () => {
         privateKey: PrivateKey.createWithData(privateKeyData).data(),
         sequenceNumber: 6,
         expireAt: 1671132440,
+        walletVersion: TW.TheOpenNetwork.Proto.WalletVersion.WALLET_V4_R2,
     });
 
     const encoded = TW.TheOpenNetwork.Proto.SigningInput.encode(input).finish();
@@ -108,7 +108,6 @@ describe("TheOpenNetwork", () => {
     });
 
     let transfer = TW.TheOpenNetwork.Proto.Transfer.create({
-        walletVersion: TW.TheOpenNetwork.Proto.WalletVersion.WALLET_V4_R2,
         dest: "EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja",
         amount: new Long(100 * 1000 * 1000),
         mode: (TW.TheOpenNetwork.Proto.SendMode.PAY_FEES_SEPARATELY | TW.TheOpenNetwork.Proto.SendMode.IGNORE_ACTION_PHASE_ERRORS),
@@ -122,6 +121,7 @@ describe("TheOpenNetwork", () => {
         privateKey: PrivateKey.createWithData(privateKeyData).data(),
         sequenceNumber: 1,
         expireAt: 1787693046,
+        walletVersion: TW.TheOpenNetwork.Proto.WalletVersion.WALLET_V4_R2,
     });
 
     const encoded = TW.TheOpenNetwork.Proto.SigningInput.encode(input).finish();
