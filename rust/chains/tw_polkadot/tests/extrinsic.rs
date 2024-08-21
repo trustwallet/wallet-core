@@ -19,7 +19,7 @@ fn polymesh_encode_transfer_with_memo() {
         message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::balance_call(Proto::Balance {
             message_oneof: Proto::mod_Balance::OneOfmessage_oneof::transfer(Transfer {
                 to_address: "2EB7wW2fYfFskkSx2d65ivn34ewpuEjcowfJYBL79ty5FsZF".into(),
-                value: Cow::Owned(U256::from(1u64).to_little_endian().to_vec()),
+                value: Cow::Owned(U256::from(1u64).to_big_endian().to_vec()),
                 memo: "MEMO PADDED WITH SPACES".into(),
                 call_indices: Some(Proto::CallIndices {
                     variant: Proto::mod_CallIndices::OneOfvariant::custom(
@@ -226,7 +226,7 @@ fn statemint_encode_asset_transfer() {
                     ),
                 }),
                 to_address: "14ixj163bkk2UEKLEXsEWosuFNuijpqEWZbX5JzN4yMHbUVD".into(),
-                value: Cow::Owned(U256::from(999500000u64).to_little_endian().to_vec()),
+                value: Cow::Owned(U256::from(999500000u64).to_big_endian().to_vec()),
                 asset_id: 1984,
                 ..Default::default()
             }),
@@ -272,7 +272,7 @@ fn statemint_encode_batch_asset_transfer() {
                             ),
                         }),
                         to_address: "13wQDQTMM6E9g5WD27e6UsWWTwHLaW763FQxnkbVaoKmsBQy".into(),
-                        value: U256::from(808081u64).to_little_endian().to_vec().into(),
+                        value: U256::from(808081u64).to_big_endian().to_vec().into(),
                         asset_id: 1984,
                         ..Default::default()
                     }],
@@ -307,7 +307,7 @@ fn kusama_encode_asset_transfer_without_call_indices() {
                     fee_asset_id: 0x00,
                     transfers: vec![AssetTransfer {
                         to_address: "13wQDQTMM6E9g5WD27e6UsWWTwHLaW763FQxnkbVaoKmsBQy".into(),
-                        value: U256::from(808081u64).to_little_endian().to_vec().into(),
+                        value: U256::from(808081u64).to_big_endian().to_vec().into(),
                         asset_id: 1984,
                         ..Default::default()
                     }],
@@ -373,7 +373,7 @@ fn encode_staking_bond_with_controller() {
         message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::staking_call(Proto::Staking {
             message_oneof: Proto::mod_Staking::OneOfmessage_oneof::bond(Bond {
                 controller: "13wQDQTMM6E9g5WD27e6UsWWTwHLaW763FQxnkbVaoKmsBQy".into(),
-                value: U256::from(808081u64).to_little_endian().to_vec().into(),
+                value: U256::from(808081u64).to_big_endian().to_vec().into(),
                 reward_destination: Proto::RewardDestination::CONTROLLER,
                 call_indices: None,
             }),
@@ -397,7 +397,7 @@ fn encode_staking_bond() {
         message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::staking_call(Proto::Staking {
             message_oneof: Proto::mod_Staking::OneOfmessage_oneof::bond(Bond {
                 controller: Default::default(),
-                value: U256::from(808081u64).to_little_endian().to_vec().into(),
+                value: U256::from(808081u64).to_big_endian().to_vec().into(),
                 reward_destination: Proto::RewardDestination::STAKED,
                 call_indices: None,
             }),
@@ -417,7 +417,7 @@ fn encode_staking_bond_extra() {
         multi_address: true,
         message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::staking_call(Proto::Staking {
             message_oneof: Proto::mod_Staking::OneOfmessage_oneof::bond_extra(BondExtra {
-                value: U256::from(808081u64).to_little_endian().to_vec().into(),
+                value: U256::from(808081u64).to_big_endian().to_vec().into(),
                 call_indices: None,
             }),
         }),
@@ -436,7 +436,7 @@ fn encode_staking_rebond() {
         multi_address: true,
         message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::staking_call(Proto::Staking {
             message_oneof: Proto::mod_Staking::OneOfmessage_oneof::rebond(Rebond {
-                value: U256::from(808081u64).to_little_endian().to_vec().into(),
+                value: U256::from(808081u64).to_big_endian().to_vec().into(),
                 call_indices: None,
             }),
         }),
@@ -455,7 +455,7 @@ fn encode_staking_unbond() {
         multi_address: true,
         message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::staking_call(Proto::Staking {
             message_oneof: Proto::mod_Staking::OneOfmessage_oneof::unbond(Unbond {
-                value: U256::from(808081u64).to_little_endian().to_vec().into(),
+                value: U256::from(808081u64).to_big_endian().to_vec().into(),
                 call_indices: None,
             }),
         }),
