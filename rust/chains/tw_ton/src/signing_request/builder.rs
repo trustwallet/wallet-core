@@ -48,14 +48,13 @@ impl SigningRequestBuilder {
 
     /// Currently, V4R2 and V5R1 wallets supported.
     fn wallet(input: &Proto::SigningInput) -> SigningResult<VersionedTonWallet> {
-        // get wallet version from messages
-        let wallet_version = match input.messages.first() {
-            Some(message) => message.wallet_version,
-            None => {
-                return SigningError::err(SigningErrorType::Error_invalid_params)
-                    .context("No messages")
-            },
-        };
+        let wallet_version = input.wallet_version;
+        if wallet_version != Proto::WalletVersion::WALLET_V4_R2
+            && wallet_version != Proto::WalletVersion::WALLET_V5_R1
+        {
+            return SigningError::err(SigningErrorType::Error_not_supported)
+                .context("'WALLET_V4_R2' and 'WALLET_V5_R1' are supported only");
+        }
 
         if !input.private_key.is_empty() {
             let key_pair = KeyPair::try_from(input.private_key.as_ref())
@@ -95,13 +94,6 @@ impl SigningRequestBuilder {
     }
 
     fn transfer_request(input: &Proto::Transfer) -> SigningResult<TransferRequest> {
-        if input.wallet_version != Proto::WalletVersion::WALLET_V4_R2
-            && input.wallet_version != Proto::WalletVersion::WALLET_V5_R1
-        {
-            return SigningError::err(SigningErrorType::Error_not_supported)
-                .context("'WALLET_V4_R2' and 'WALLET_V5_R1' are supported only");
-        }
-
         let dest = TonAddress::from_str(input.dest.as_ref())
             .into_tw()
             .context("Invalid 'dest' address")?
