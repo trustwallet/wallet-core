@@ -4781,5 +4781,32 @@
       "rpc": "https://rpc.zklink.io",
       "documentation": "https://docs.zklink.io"
     }
+  },
+  {
+    "id": "pactus",
+    "name": "Pactus",
+    "coinId": 21888,
+    "symbol": "PAC",
+    "decimals": 9,
+    "blockchain": "Pactus",
+    "derivation": [
+      {
+        "path": "m/44'/21888'/2'/0"
+      }
+    ],
+    "curve": "ed25519",
+    "publicKeyType": "ed25519",
+    "hrp": "pc",
+    "explorer": {
+      "url": "https://pacviewer.com",
+      "txPath": "/transaction/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://pactus.org",
+      "source": "https://github.com/pactus-project/pactus",
+      "rpc": "https://docs.pactus.org/api/http",
+      "documentation": "https://docs.pactus.org"
+    }
   }
 ]
