@@ -144,7 +144,19 @@ pub enum DartOperation {
     //  <call>(<var_name>);
     DeferCall {
         var_name: String,
-        call: String,
+        defer: Option<String>,
+    },
+    /// Need to understand what the code for Dart should be
+    // Results in:
+    // ```dart
+    // let <var_name> = <call>
+    // guard let <var_name> = <var_name> else {
+    //     return nil
+    // }
+    // ```
+    DeferOptionalCall {
+        var_name: String,
+        defer: Option<String>,
     },
     // ```
     // Results in:
@@ -327,6 +339,50 @@ fn param_c_ffi_call(param: &ParamInfo) -> Option<DartOperation> {
         // Skip processing parameter, reference the parameter by name
         // directly, as defined in the function interface (usually the
         // case for primitive types).
+        _ => return None,
+    };
+
+    Some(op)
+}
+
+fn param_c_ffi_defer_call(param: &ParamInfo) -> Option<DartOperation> {
+    let op = match &param.ty.variant {
+        TypeVariant::String => {
+            let (var_name, defer) = (
+                param.name.clone(),
+                Some(format!("TWStringDelete({})", param.name)),
+            );
+
+            if param.ty.is_nullable {
+                DartOperation::DeferOptionalCall {
+                    var_name,
+                    defer,
+                }
+            } else {
+                DartOperation::DeferCall {
+                    var_name,
+                    defer,
+                }
+            }
+        }
+        TypeVariant::Data => {
+            let (var_name, defer) = (
+                param.name.clone(),
+                Some(format!("TWDataDelete({})", param.name)),
+            );
+
+            if param.ty.is_nullable {
+                DartOperation::DeferOptionalCall {
+                    var_name,
+                    defer,
+                }
+            } else {
+                DartOperation::DeferCall {
+                    var_name,
+                    defer,
+                }
+            }
+        }
         _ => return None,
     };
 

@@ -16,7 +16,7 @@ pub(super) fn process_methods(
     object: &ObjectVariant,
     functions: Vec<FunctionInfo>,
 ) -> Result<(Vec<DartFunction>, Vec<FunctionInfo>)> {
-    let mut swift_funcs = vec![];
+    let mut dart_funcs = vec![];
     let mut skipped_funcs = vec![];
 
     for func in functions {
@@ -51,7 +51,7 @@ pub(super) fn process_methods(
         // function interface and add the necessary operations on how to process
         // those parameters.
         let mut params = vec![];
-        for param in func.params {
+        for param in func.params.clone() {
             // Skip self parameter
             match &param.ty.variant {
                 TypeVariant::Enum(name) | TypeVariant::Struct(name) if name == object.name() => {
@@ -93,6 +93,13 @@ pub(super) fn process_methods(
                 var_name,
                 call,
             });
+        }
+
+        // Add Defer operation to release memory.
+        for param in func.params {
+            if let Some(op) = param_c_ffi_defer_call(&param) {
+                ops.push(op)
+            }
         }
 
         // Wrap result.
@@ -137,7 +144,7 @@ pub(super) fn process_methods(
             pretty_name
         };
 
-        swift_funcs.push(DartFunction {
+        dart_funcs.push(DartFunction {
             name: pretty_name,
             is_public: func.is_public,
             is_static: func.is_static,
@@ -148,5 +155,5 @@ pub(super) fn process_methods(
         });
     }
 
-    Ok((swift_funcs, skipped_funcs))
+    Ok((dart_funcs, skipped_funcs))
 }
