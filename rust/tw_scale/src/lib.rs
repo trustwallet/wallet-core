@@ -30,7 +30,7 @@ macro_rules! fixed_impl {
     };
 }
 
-fixed_impl!(u8, u16, u32, u64, usize, i8, i16, i32, i64, isize);
+fixed_impl!(u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize);
 
 #[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
 pub struct Compact<T>(pub T);
@@ -94,7 +94,27 @@ impl ToScale for Compact<u64> {
     }
 }
 
-// TODO: implement U128 support (we don't have it yet in tw_number)
+impl ToScale for Compact<u128> {
+    fn to_scale_into(&self, out: &mut Vec<u8>) {
+        match self.0 {
+            0..=0b0011_1111 => out.push((self.0 as u8) << 2),
+            0..=0b0011_1111_1111_1111 => (((self.0 as u16) << 2) | 0b01).to_scale_into(out),
+            0..=0b0011_1111_1111_1111_1111_1111_1111_1111 => {
+                (((self.0 as u32) << 2) | 0b10).to_scale_into(out)
+            },
+            _ => {
+                let bytes_needed = 16 - self.0.leading_zeros() / 8;
+                out.reserve(bytes_needed as usize);
+                out.push(0b11 + ((bytes_needed - 4) << 2) as u8);
+                let mut x = self.0;
+                for _ in 0..bytes_needed {
+                    out.push(x as u8);
+                    x >>= 8;
+                }
+            },
+        }
+    }
+}
 
 impl ToScale for Compact<U256> {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
@@ -323,6 +343,55 @@ mod tests {
         );
         assert_eq!(
             Compact(18446744073709551615u64).to_scale(),
+            &[0x13, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]
+        );
+
+        assert_eq!(Compact(0u128).to_scale(), &[0x00]);
+        assert_eq!(Compact(1u128).to_scale(), &[0x04]);
+        assert_eq!(Compact(18u128).to_scale(), &[0x48]);
+        assert_eq!(Compact(42u128).to_scale(), &[0xa8]);
+        assert_eq!(Compact(63u128).to_scale(), &[0xfc]);
+        assert_eq!(Compact(64u128).to_scale(), &[0x01, 0x01]);
+        assert_eq!(Compact(69u128).to_scale(), &[0x15, 0x01]);
+        assert_eq!(Compact(12345u128).to_scale(), &[0xe5, 0xc0]);
+        assert_eq!(Compact(16383u128).to_scale(), &[0xfd, 0xff]);
+        assert_eq!(Compact(16384u128).to_scale(), &[0x02, 0x00, 0x01, 0x00]);
+        assert_eq!(Compact(65535u128).to_scale(), &[0xfe, 0xff, 0x03, 0x00]);
+        assert_eq!(Compact(1073741823u128).to_scale(), &[0xfe, 0xff, 0xff, 0xff]);
+        assert_eq!(
+            Compact(1073741824u128).to_scale(),
+            &[0x03, 0x00, 0x00, 0x00, 0x40]
+        );
+        assert_eq!(
+            Compact(4294967295u128).to_scale(),
+            &[0x03, 0xff, 0xff, 0xff, 0xff]
+        );
+        assert_eq!(
+            Compact(4294967296u128).to_scale(),
+            &[0x07, 0x00, 0x00, 0x00, 0x00, 0x01]
+        );
+        assert_eq!(
+            Compact(100000000000000u128).to_scale(),
+            &[0x0b, 0x00, 0x40, 0x7a, 0x10, 0xf3, 0x5a]
+        );
+        assert_eq!(
+            Compact(1099511627776u128).to_scale(),
+            &[0x0b, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]
+        );
+        assert_eq!(
+            Compact(281474976710656u128).to_scale(),
+            &[0x0f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]
+        );
+        assert_eq!(
+            Compact(72057594037927935u128).to_scale(),
+            &[0x0f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]
+        );
+        assert_eq!(
+            Compact(72057594037927936u128).to_scale(),
+            &[0x13, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]
+        );
+        assert_eq!(
+            Compact(18446744073709551615u128).to_scale(),
             &[0x13, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]
         );
 
