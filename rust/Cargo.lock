@@ -1857,6 +1857,7 @@ dependencies = [
  "tw_misc",
  "tw_native_evmos",
  "tw_native_injective",
+ "tw_pactus",
  "tw_ronin",
  "tw_solana",
  "tw_sui",
@@ -2076,6 +2077,21 @@ dependencies = [
  "tw_encoding",
  "tw_hash",
  "tw_memory",
+]
+
+[[package]]
+name = "tw_pactus"
+version = "0.1.0"
+dependencies = [
+ "bech32",
+ "byteorder",
+ "hex",
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_proto",
 ]
 
 [[package]]

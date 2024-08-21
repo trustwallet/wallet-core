@@ -99,6 +99,7 @@ This list is generated from [./registry.json](../registry.json)
 | 14001   | WAX              | WAXP   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/wax/info/logo.png" width="32" />          | <http://wax.io>               |
 | 18000   | Meter            | MTR    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/meter/info/logo.png" width="32" />        | <https://meter.io/>           |
 | 19167   | Flux             | FLUX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zelcash/info/logo.png" width="32" />      | <https://runonflux.io>        |
+| 21888   | Pactus           | PAC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/pactus/info/logo.png" width="32" />       | <https://pactus.org>          |
 | 52752   | Celo             | CELO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/celo/info/logo.png" width="32" />         | <https://celo.org>            |
 | 59144   | Linea            | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/linea/info/logo.png" width="32" />        | <https://linea.build>         |
 | 81457   | Blast            | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/blast/info/logo.png" width="32" />        | <https://blast.io>            |

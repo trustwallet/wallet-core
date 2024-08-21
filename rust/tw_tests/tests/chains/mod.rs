@@ -15,6 +15,7 @@ mod greenfield;
 mod internet_computer;
 mod native_evmos;
 mod native_injective;
+mod pactus;
 mod solana;
 mod sui;
 mod tbinance;

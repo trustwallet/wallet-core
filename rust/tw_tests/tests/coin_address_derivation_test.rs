@@ -153,6 +153,7 @@ fn test_coin_address_derivation() {
             CoinType::Solana => "5sn9QYhDaq61jLXJ8Li5BKqGL4DDMJQvU1rdN8XgVuwC",
             CoinType::Sui => "0x01a5c6c1b74cec4fbd12b3e17252b83448136065afcdf24954dc3a9c26df4905",
             CoinType::TON => "UQCj3jAU_Ec2kXdAqweKt4rYjiwTNwiCfaUnIDHGh7wTwx_G",
+            CoinType::Pactus => todo!(),
             // end_of_coin_address_derivation_tests_marker_do_not_modify
             _ => panic!("{:?} must be covered", coin),
         };
