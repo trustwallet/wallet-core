@@ -203,7 +203,11 @@ pub fn generate_dart_types(mut info: FileInfo) -> Result<GeneratedDartTypes> {
             .variants
             .into_iter()
             .map(|info| DartEnumVariant {
-                name: info.name,
+                name: if info.name == "default" {
+                    "defaultValue".to_string()
+                } else {
+                    info.name
+                },
                 value: info.value,
                 as_string: info.as_string,
             })
