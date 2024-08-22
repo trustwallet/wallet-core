@@ -146,7 +146,7 @@ pub enum DartOperation {
     //  <call>(<var_name>);
     DeferCall {
         var_name: String,
-        defer: Option<String>,
+        call: Option<String>,
     },
     /// Need to understand what the code for Dart should be
     // Results in:
@@ -158,7 +158,7 @@ pub enum DartOperation {
     // ```
     DeferOptionalCall {
         var_name: String,
-        defer: Option<String>,
+        call: Option<String>,
     },
     // ```
     // Results in:
@@ -350,7 +350,7 @@ fn param_c_ffi_call(param: &ParamInfo) -> Option<DartOperation> {
 fn param_c_ffi_defer_call(param: &ParamInfo) -> Option<DartOperation> {
     let op = match &param.ty.variant {
         TypeVariant::String => {
-            let (var_name, defer) = (
+            let (var_name, call) = (
                 param.name.clone(),
                 Some(format!("TWStringDelete({})", param.name)),
             );
@@ -358,17 +358,17 @@ fn param_c_ffi_defer_call(param: &ParamInfo) -> Option<DartOperation> {
             if param.ty.is_nullable {
                 DartOperation::DeferOptionalCall {
                     var_name,
-                    defer,
+                    call,
                 }
             } else {
                 DartOperation::DeferCall {
                     var_name,
-                    defer,
+                    call,
                 }
             }
         }
         TypeVariant::Data => {
-            let (var_name, defer) = (
+            let (var_name, call) = (
                 param.name.clone(),
                 Some(format!("TWDataDelete({})", param.name)),
             );
@@ -376,12 +376,12 @@ fn param_c_ffi_defer_call(param: &ParamInfo) -> Option<DartOperation> {
             if param.ty.is_nullable {
                 DartOperation::DeferOptionalCall {
                     var_name,
-                    defer,
+                    call,
                 }
             } else {
                 DartOperation::DeferCall {
                     var_name,
-                    defer,
+                    call,
                 }
             }
         }
