@@ -3,19 +3,20 @@
 // Copyright © 2017 Trust Wallet.
 
 use super::*;
+use crate::codegen::dart::utils::pretty_func_name;
 use crate::manifest::InitInfo;
 
 /// This function checks each constructor and determines whether there's an
 /// association with the passed on object (struct or enum), based on common name
-/// prefix, and maps the data into a Swift structure.
+/// prefix, and maps the data into a Dart structure.
 ///
-/// This function returns a tuple of associated Swift constructor and the skipped
+/// This function returns a tuple of associated Dart constructor and the skipped
 /// respectively non-associated constructors.
 pub(super) fn process_inits(
     object: &ObjectVariant,
     inits: Vec<InitInfo>,
 ) -> Result<(Vec<DartInit>, Vec<InitInfo>)> {
-    let mut swift_inits = vec![];
+    let mut dart_inits = vec![];
     let mut skipped_inits = vec![];
 
     for init in inits {
@@ -32,7 +33,7 @@ pub(super) fn process_inits(
         // those parameters.
         let mut params = vec![];
         for param in init.params {
-            // Convert parameter to Swift parameter.
+            // Convert parameter to Dart parameter.
             params.push(DartParam {
                 name: param.name.clone(),
                 param_type: DartType::from(param.ty.variant.clone()),
@@ -50,7 +51,7 @@ pub(super) fn process_inits(
             .iter()
             .map(|p| p.name.as_str())
             .collect::<Vec<&str>>()
-            .join(",");
+            .join(", ");
 
         // Call the underlying C FFI function, passing on the parameter list.
         if init.is_nullable {
@@ -69,15 +70,13 @@ pub(super) fn process_inits(
         // `self.rawValue = result` entry at the end of the constructor.
 
         // Prettify name, remove object name prefix from this property.
-        let pretty_name = init
-            .name
-            .strip_prefix(object.name())
-            // Panicking implies bug, checked at the start of the loop.
-            .unwrap()
-            .to_string();
+        let pretty_init_name = pretty_func_name(&init.name, object.name());
 
-        swift_inits.push(DartInit {
-            name: pretty_name,
+        let class_name = pretty_name(String::from(object.name()));
+
+        dart_inits.push(DartInit {
+            name: pretty_init_name,
+            class_name,
             is_nullable: init.is_nullable,
             is_public: init.is_public,
             params,
@@ -86,7 +85,7 @@ pub(super) fn process_inits(
         });
     }
 
-    Ok((swift_inits, skipped_inits))
+    Ok((dart_inits, skipped_inits))
 }
 
 pub(super) fn process_deinits(

@@ -5,17 +5,18 @@
 use self::functions::process_methods;
 use self::inits::process_inits;
 use self::properties::process_properties;
-use self::render::pretty_name;
 use crate::manifest::{DeinitInfo, FileInfo, ParamInfo, ProtoInfo, TypeInfo, TypeVariant};
 use crate::{Error, Result};
 use handlebars::Handlebars;
 use serde_json::json;
 use std::fmt::Display;
+use crate::codegen::dart::utils::pretty_name;
 
 mod functions;
 mod inits;
 mod properties;
 mod render;
+mod utils;
 
 // Re-exports
 pub use self::render::{
@@ -68,8 +69,8 @@ pub struct DartEnumExtension {
     properties: Vec<DartProperty>,
 }
 
-// Wrapper around a valid Swift type (built in or custom). Meant to be used as
-// `<SwiftType as From<TypeVariant>>::from(...)`.
+// Wrapper around a valid Dart type (built in or custom). Meant to be used as
+// `<DartType as From<TypeVariant>>::from(...)`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DartType(String);
 
@@ -110,7 +111,7 @@ struct DartProperty {
 pub enum DartOperation {
     // Results in:
     // ```dart
-    // final <var_name> = <call>
+    // final <var_name> = <call>;
     // ```
     Call {
         var_name: String,
@@ -185,6 +186,7 @@ pub struct DartReturn {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DartInit {
     pub name: String,
+    pub class_name: String,
     pub is_nullable: bool,
     pub is_public: bool,
     pub params: Vec<DartParam>,
@@ -307,10 +309,9 @@ fn param_c_ffi_call(param: &ParamInfo) -> Option<DartOperation> {
                 }
             }
         }
-        // TODO: Figure out what a Dart call for a struct would look like.
         // E.g.
-        // - `let param = param.rawValue`
-        // - `let param = param?.rawValue`
+        // - `final param = param.rawValue`
+        // - `final param = param?.rawValue`
         TypeVariant::Struct(_) => {
             // For nullable structs, we do not use the special
             // `CallOptional` handler but rather use the question mark
