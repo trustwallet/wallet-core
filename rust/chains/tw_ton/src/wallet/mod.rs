@@ -8,11 +8,11 @@ use crate::message::signed_message::signed_message_v4::SignedMessageV4;
 use crate::message::signed_message::signed_message_v5::SignedMessageV5;
 use crate::transaction::SignedTransaction;
 use tw_coin_entry::error::prelude::*;
+use tw_keypair::ed25519::Signature;
 use tw_keypair::traits::SigningKeyTrait;
 use tw_number::U256;
 use tw_ton_sdk::cell::Cell;
 use tw_ton_sdk::error::{cell_to_signing_error, CellResult};
-use tw_ton_sdk::message::state_init::StateInit;
 
 pub mod wallet_v4;
 pub mod wallet_v5;
@@ -33,13 +33,6 @@ impl VersionedTonWallet {
         }
     }
 
-    pub fn state_init(&self) -> CellResult<StateInit> {
-        match self {
-            Self::V4R2(wallet_v4r2) => wallet_v4r2.state_init(),
-            Self::V5R1(wallet_v5r1) => wallet_v5r1.state_init(),
-        }
-    }
-
     pub fn create_external_body(
         &self,
         expire_at: u32,
@@ -56,46 +49,53 @@ impl VersionedTonWallet {
         }
     }
 
-    pub fn sign_external_message(&self, external_message: Cell) -> SigningResult<Cell> {
-        let message_hash = external_message.cell_hash();
+    pub fn sign(&self, msg_to_sign: Vec<u8>) -> SigningResult<Signature> {
         let sig = match self {
             Self::V4R2(wallet_v4r2) => wallet_v4r2.private_key.as_ref(),
             Self::V5R1(wallet_v5r1) => wallet_v5r1.private_key.as_ref(),
         }
         .or_tw_err(SigningErrorType::Error_internal)
         .context("'TonWallet' should be initialized with a key-pair to be able to sign a message")?
-        .sign(message_hash.to_vec())?;
+        .sign(msg_to_sign)?;
 
-        match self {
-            Self::V4R2(_) => Ok(SignedMessageV4 {
-                signature: sig.to_bytes(),
-                external_message,
-            }
-            .build()
-            .map_err(cell_to_signing_error)?),
-
-            Self::V5R1(_) => Ok(SignedMessageV5 {
-                signature: sig.to_bytes(),
-                external_message,
-            }
-            .build()
-            .map_err(cell_to_signing_error)?),
-        }
+        Ok(sig)
     }
 
-    pub fn sign_transaction(
+    pub fn compile_signed_transaction(
         &self,
         external_message: Cell,
         state_init: bool,
+        signature: Signature,
     ) -> SigningResult<SignedTransaction> {
         let state_init = if state_init {
-            let state_init = self.state_init().map_err(cell_to_signing_error)?;
-            Some(state_init)
+            match self {
+                Self::V4R2(wallet_v4r2) => {
+                    Some(wallet_v4r2.state_init().map_err(cell_to_signing_error)?)
+                },
+                Self::V5R1(wallet_v5r1) => {
+                    Some(wallet_v5r1.state_init().map_err(cell_to_signing_error)?)
+                },
+            }
         } else {
             None
         };
 
-        let signed_body = self.sign_external_message(external_message)?;
+        let signed_body = match self {
+            Self::V4R2(_) => SignedMessageV4 {
+                signature: signature.to_bytes(),
+                external_message,
+            }
+            .build()
+            .map_err(cell_to_signing_error)?,
+
+            Self::V5R1(_) => SignedMessageV5 {
+                signature: signature.to_bytes(),
+                external_message,
+            }
+            .build()
+            .map_err(cell_to_signing_error)?,
+        };
+
         Ok(SignedTransaction {
             src_address: TonAddress::null(),
             // The wallet contract address.

@@ -2,16 +2,13 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::compiler::TheOpenNetworkCompiler;
 use crate::signing_request::builder::SigningRequestBuilder;
-use crate::signing_request::cell_creator::ExternalMessageCreator;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
+use tw_misc::traits::ToBytesVec;
 use tw_proto::TheOpenNetwork::Proto;
-use tw_ton_sdk::boc::BagOfCells;
-use tw_ton_sdk::error::cell_to_signing_error;
-
-const HAS_CRC32: bool = true;
 
 pub struct TheOpenNetworkSigner;
 
@@ -25,35 +22,16 @@ impl TheOpenNetworkSigner {
     }
 
     fn sign_impl(
-        _coin: &dyn CoinContext,
+        coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        let signing_request = SigningRequestBuilder::build(&input)?;
+        let msg_to_sign = SigningRequestBuilder::msg_to_sign(&input)?;
+        let wallet = SigningRequestBuilder::build(&input)?.wallet;
+        let signature = wallet.sign(msg_to_sign.into_vec())?;
 
-        let external_message =
-            ExternalMessageCreator::create_external_message_to_sign(&signing_request)
-                .map_err(cell_to_signing_error)?;
+        let signatures = vec![signature.to_vec()];
+        let public_keys = vec![]; // No public keys needed
 
-        // Whether to add 'StateInit' reference.
-        let state_init = signing_request.seqno == 0;
-        let signed_tx = signing_request
-            .wallet
-            .sign_transaction(external_message, state_init)
-            .context("Error signing/wrapping an external message")?
-            .build()
-            .context("Error generating signed message cell")
-            .map_err(cell_to_signing_error)?;
-
-        let signed_tx_hash = signed_tx.cell_hash();
-        let signed_tx_encoded = BagOfCells::from_root(signed_tx)
-            .to_base64(HAS_CRC32)
-            .context("Error serializing signed transaction as BoC")
-            .map_err(cell_to_signing_error)?;
-
-        Ok(Proto::SigningOutput {
-            encoded: signed_tx_encoded.into(),
-            hash: signed_tx_hash.to_vec().into(),
-            ..Proto::SigningOutput::default()
-        })
+        TheOpenNetworkCompiler::compile_impl(coin, input, signatures, public_keys)
     }
 }
