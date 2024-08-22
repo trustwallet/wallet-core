@@ -15,7 +15,7 @@ use tw_proto::TheOpenNetwork::Proto::mod_Transfer::OneOfpayload as PayloadType;
 /// The same Cell can be BoC encoded differently.
 /// Use this function to compare inner Cells closing eyes on the encoding.
 #[track_caller]
-fn assert_eq_boc(left: &str, right: &str) {
+pub(crate) fn assert_eq_boc(left: &str, right: &str) {
     use tw_ton_sdk::boc::BagOfCells;
 
     let left_boc = BagOfCells::parse_base64(left).unwrap();
@@ -29,7 +29,6 @@ fn test_ton_sign_transfer_and_deploy() {
     let private_key = "63474e5fe9511f1526a50567ce142befc343e71a49b865ac3908f58667319cb8";
 
     let transfer = Proto::Transfer {
-        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         dest: "EQDYW_1eScJVxtitoBRksvoV9cCYo4uKGWLVNIHB1JqRR3n0".into(),
         amount: 10,
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
@@ -42,6 +41,7 @@ fn test_ton_sign_transfer_and_deploy() {
         private_key: private_key.decode_hex().unwrap().into(),
         messages: vec![transfer],
         expire_at: 1671135440,
+        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         ..Proto::SigningInput::default()
     };
 
@@ -63,7 +63,6 @@ fn test_ton_sign_transfer_and_deploy_4b1d9f() {
     let private_key = "e97620499dfee0107c0cd7f0ecb2afb3323d385b3a82320a5e3fa1fbdca6e722";
 
     let transfer = Proto::Transfer {
-        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         dest: "UQA6whN_oU5h9jPljnlDSWRYQNDPkLaUqqaEWULNB_Zoykuu".into(),
         // 0.0001 TON
         amount: 100_000,
@@ -77,6 +76,7 @@ fn test_ton_sign_transfer_and_deploy_4b1d9f() {
         private_key: private_key.decode_hex().unwrap().into(),
         messages: vec![transfer],
         expire_at: 1721892371,
+        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         ..Proto::SigningInput::default()
     };
 
@@ -97,7 +97,6 @@ fn test_ton_sign_transfer_ordinary() {
     let private_key = "c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0";
 
     let transfer = Proto::Transfer {
-        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         dest: "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q".into(),
         amount: 10,
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
@@ -111,6 +110,7 @@ fn test_ton_sign_transfer_ordinary() {
         messages: vec![transfer],
         sequence_number: 6,
         expire_at: 1671132440,
+        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         ..Proto::SigningInput::default()
     };
 
@@ -131,7 +131,6 @@ fn test_ton_sign_transfer_all_balance() {
     let private_key = "c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0";
 
     let transfer = Proto::Transfer {
-        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         dest: "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q".into(),
         amount: 0,
         mode: Proto::SendMode::ATTACH_ALL_CONTRACT_BALANCE as u32
@@ -145,6 +144,7 @@ fn test_ton_sign_transfer_all_balance() {
         messages: vec![transfer],
         sequence_number: 7,
         expire_at: 1681102222,
+        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         ..Proto::SigningInput::default()
     };
 
@@ -165,7 +165,6 @@ fn test_ton_sign_transfer_all_balance_non_bounceable() {
     let private_key = "c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0";
 
     let transfer = Proto::Transfer {
-        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         dest: "UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV".into(),
         amount: 0,
         mode: Proto::SendMode::ATTACH_ALL_CONTRACT_BALANCE as u32
@@ -179,6 +178,7 @@ fn test_ton_sign_transfer_all_balance_non_bounceable() {
         messages: vec![transfer],
         sequence_number: 8,
         expire_at: 1681102222,
+        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         ..Proto::SigningInput::default()
     };
 
@@ -199,7 +199,6 @@ fn test_ton_sign_transfer_with_ascii_comment() {
     let private_key = "c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0";
 
     let transfer = Proto::Transfer {
-        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         dest: "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q".into(),
         amount: 10,
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
@@ -214,6 +213,7 @@ fn test_ton_sign_transfer_with_ascii_comment() {
         messages: vec![transfer],
         sequence_number: 10,
         expire_at: 1681102222,
+        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         ..Proto::SigningInput::default()
     };
 
@@ -234,7 +234,6 @@ fn test_ton_sign_transfer_with_utf8_comment() {
     let private_key = "c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0";
 
     let transfer = Proto::Transfer {
-        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         dest: "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q".into(),
         amount: 10,
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
@@ -249,6 +248,7 @@ fn test_ton_sign_transfer_with_utf8_comment() {
         messages: vec![transfer],
         sequence_number: 11,
         expire_at: 1681102222,
+        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         ..Proto::SigningInput::default()
     };
 
@@ -269,7 +269,6 @@ fn test_ton_sign_transfer_invalid_wallet_version() {
     let private_key = "63474e5fe9511f1526a50567ce142befc343e71a49b865ac3908f58667319cb8";
 
     let transfer = Proto::Transfer {
-        wallet_version: Proto::WalletVersion::WALLET_V3_R2,
         dest: "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q".into(),
         amount: 10,
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
@@ -282,6 +281,7 @@ fn test_ton_sign_transfer_invalid_wallet_version() {
         private_key: private_key.decode_hex().unwrap().into(),
         messages: vec![transfer],
         expire_at: 1671135440,
+        wallet_version: Proto::WalletVersion::WALLET_V3_R2,
         ..Proto::SigningInput::default()
     };
 
@@ -306,7 +306,6 @@ fn test_ton_sign_transfer_jettons() {
     };
 
     let transfer = Proto::Transfer {
-        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         dest: "EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja".into(),
         amount: 100 * 1000 * 1000,
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
@@ -321,6 +320,7 @@ fn test_ton_sign_transfer_jettons() {
         messages: vec![transfer],
         sequence_number: 0,
         expire_at: 1787693046,
+        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         ..Proto::SigningInput::default()
     };
 
@@ -351,7 +351,6 @@ fn test_ton_sign_transfer_jettons_with_comment() {
     };
 
     let transfer = Proto::Transfer {
-        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         dest: "EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja".into(),
         amount: 100 * 1000 * 1000,
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
@@ -367,6 +366,7 @@ fn test_ton_sign_transfer_jettons_with_comment() {
         messages: vec![transfer],
         sequence_number: 1,
         expire_at: 1787693046,
+        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         ..Proto::SigningInput::default()
     };
 
@@ -388,7 +388,6 @@ fn test_ton_sign_transfer_custom_payload() {
     let private_key = "e97620499dfee0107c0cd7f0ecb2afb3323d385b3a82320a5e3fa1fbdca6e722";
 
     let transfer = Proto::Transfer {
-        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         dest: "UQA6whN_oU5h9jPljnlDSWRYQNDPkLaUqqaEWULNB_Zoykuu".into(),
         // 0.00025 TON
         amount: 250_000,
@@ -407,6 +406,7 @@ fn test_ton_sign_transfer_custom_payload() {
         expire_at: 1721906219,
         messages: vec![transfer],
         sequence_number: 2,
+        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         ..Proto::SigningInput::default()
     };
 
@@ -414,7 +414,7 @@ fn test_ton_sign_transfer_custom_payload() {
     let output = signer.sign(CoinType::TON, input);
 
     assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
-    // Successfully broadcasted: https://tonviewer.com/transaction/4b1d9f09856af70ea1058b557a87c9ba2abb0bca2029e0cbbe8c659d5dae4ce1
+    // Successfully broadcasted: https://tonviewer.com/transaction/4ca4442921d0737d518b4863f8eafc2eb26824e9362ebaa9bc59373950b7fa86
     assert_eq_boc(&output.encoded, "te6cckEBBAEAvwABRYgAUunJPoppOUA+tmGjPUbtz/BjUoB+QZYAbdqNMq3gIWQMAQGc981GQ9a8Yr4m2YeIeuuNIWlzdHliyW6MRq3RDs5kgvXJP+iNhdZU7o79DJnm/OKuzWI5FbiNy3SF0fGGBObDDCmpoxdmojQrAAAAAgADAgFmYgAdYQm/0Kcw+xnyxzyhpLIsIGhnyFtKVVNCLKFmg/s0ZRgehIAAAAAAAAAAAAAAAAABAwAgAAAAAEhpIHRoZXJlIHNpcoAlI8E=");
     assert_eq!(
         output.hash.to_hex(),
@@ -442,7 +442,6 @@ fn test_ton_sign_transfer_custom_payload_with_state_init() {
     );
 
     let transfer = Proto::Transfer {
-        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         dest: doge_contract_address.into(),
         // 0.069 TON
         amount: 69_000_000,
@@ -461,6 +460,7 @@ fn test_ton_sign_transfer_custom_payload_with_state_init() {
         expire_at,
         messages: vec![transfer],
         sequence_number: 4,
+        wallet_version: Proto::WalletVersion::WALLET_V4_R2,
         ..Proto::SigningInput::default()
     };
 
