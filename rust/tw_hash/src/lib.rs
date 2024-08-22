@@ -9,6 +9,7 @@ pub mod ffi;
 pub mod groestl;
 pub mod hasher;
 pub mod hmac;
+pub mod pbkdf2;
 pub mod ripemd;
 pub mod sha1;
 pub mod sha2;
@@ -28,6 +29,7 @@ pub enum Error {
     FromHexError(FromHexError),
     InvalidHashLength,
     InvalidArgument,
+    InvalidPassword,
 }
 
 impl From<FromHexError> for Error {

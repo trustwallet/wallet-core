@@ -14,6 +14,7 @@ pub enum CHashingCode {
     Ok = 0,
     InvalidHashLength = 1,
     InvalidArgument = 2,
+    InvalidPassword = 3,
 }
 
 impl From<Error> for CHashingCode {
@@ -21,6 +22,7 @@ impl From<Error> for CHashingCode {
         match e {
             Error::FromHexError(_) | Error::InvalidArgument => CHashingCode::InvalidArgument,
             Error::InvalidHashLength => CHashingCode::InvalidHashLength,
+            Error::InvalidPassword => CHashingCode::InvalidPassword,
         }
     }
 }

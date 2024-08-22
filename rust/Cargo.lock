@@ -1106,6 +1106,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "pbkdf2"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f0ca0b5a68607598bf3bad68f32227a8164f6254833f84eafaac409cd6746c31"
+dependencies = [
+ "digest 0.10.6",
+ "hmac",
+]
+
+[[package]]
 name = "pkcs8"
 version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1961,6 +1971,7 @@ dependencies = [
  "digest 0.10.6",
  "groestl",
  "hmac",
+ "pbkdf2",
  "ripemd",
  "serde",
  "serde_json",
@@ -1969,6 +1980,18 @@ dependencies = [
  "sha3",
  "tw_encoding",
  "tw_memory",
+ "zeroize",
+]
+
+[[package]]
+name = "tw_hd_wallet"
+version = "0.1.0"
+dependencies = [
+ "lazy_static",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_misc",
  "zeroize",
 ]
 
@@ -2148,6 +2171,7 @@ dependencies = [
  "tw_number",
  "tw_proto",
  "tw_ton_sdk",
+ "zeroize",
 ]
 
 [[package]]

@@ -57,16 +57,22 @@ impl<H: Hasher512> SigningKeyTrait for PrivateKey<H> {
     }
 }
 
+impl<H: Hasher512> From<H256> for PrivateKey<H> {
+    fn from(secret: H256) -> Self {
+        let expanded_key = ExpandedSecretKey::<H>::with_secret(secret);
+        PrivateKey {
+            secret,
+            expanded_key,
+        }
+    }
+}
+
 impl<H: Hasher512> TryFrom<&[u8]> for PrivateKey<H> {
     type Error = KeyPairError;
 
     fn try_from(data: &[u8]) -> Result<Self, Self::Error> {
         let secret = H256::try_from(data).map_err(|_| KeyPairError::InvalidSecretKey)?;
-        let expanded_key = ExpandedSecretKey::<H>::with_secret(secret);
-        Ok(PrivateKey {
-            secret,
-            expanded_key,
-        })
+        Ok(PrivateKey::from(secret))
     }
 }
 
