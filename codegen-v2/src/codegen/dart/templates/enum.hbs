@@ -14,7 +14,7 @@ enum {{#unless is_public}}_{{/unless}}{{name}} {
 String get description => switch (value) {
   {{#each variants}}
   {{this.value}} => '{{this.as_string}}',
-  {{/each}}}
+  {{/each}}
 {{/if}}
 {{#if value_field}}
   final {{value_type}} value;

@@ -5,17 +5,18 @@
 use self::functions::process_methods;
 use self::inits::process_inits;
 use self::properties::process_properties;
-use self::render::pretty_name;
 use crate::manifest::{DeinitInfo, FileInfo, ParamInfo, ProtoInfo, TypeInfo, TypeVariant};
 use crate::{Error, Result};
 use handlebars::Handlebars;
 use serde_json::json;
 use std::fmt::Display;
+use crate::codegen::dart::utils::pretty_name;
 
 mod functions;
 mod inits;
 mod properties;
 mod render;
+mod utils;
 
 // Re-exports
 pub use self::render::{
@@ -30,6 +31,7 @@ pub struct DartStruct {
     is_class: bool,
     is_public: bool,
     init_instance: bool,
+    imports: Vec<String>,
     superclasses: Vec<String>,
     eq_operator: Option<DartOperatorEquality>,
     inits: Vec<DartInit>,
@@ -68,8 +70,8 @@ pub struct DartEnumExtension {
     properties: Vec<DartProperty>,
 }
 
-// Wrapper around a valid Swift type (built in or custom). Meant to be used as
-// `<SwiftType as From<TypeVariant>>::from(...)`.
+// Wrapper around a valid Dart type (built in or custom). Meant to be used as
+// `<DartType as From<TypeVariant>>::from(...)`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DartType(String);
 
@@ -97,6 +99,7 @@ pub struct DartFunction {
 struct DartProperty {
     pub name: String,
     pub is_public: bool,
+    pub is_override: bool,
     pub operations: Vec<DartOperation>,
     #[serde(rename = "return")]
     pub return_type: DartReturn,
@@ -110,31 +113,31 @@ struct DartProperty {
 pub enum DartOperation {
     // Results in:
     // ```dart
-    // final <var_name> = <call>
+    // final <var_name> = <call>;
     // ```
     Call {
         var_name: String,
         call: String,
     },
     // Results in:
-    // ```swift
-    // let ptr: UnsafeRawPointer?
-    // if let alphabet = alphabet {
-    //     ptr = TWStringCreateWithNSString(alphabet)
+    // ```dart
+    // final UnsafeRawPointer? ptr;
+    // if alphabet != null {
+    //     ptr = TWStringCreateWithNSString(alphabet);
     // } else {
-    //     ptr = nil
+    //     ptr = null;
     // }
+    // final alphabet = ptr;
     // ```
-    // ... with an optional `defer` operation.
     CallOptional {
         var_name: String,
         call: String,
     },
     // Results in:
     // ```swift
-    // let <var_name> = <call>
-    // guard let <var_name> = <var_name> else {
-    //     return nil
+    // final <var_name> = <call>;
+    // if <var_name> == null {
+    //     return null;
     // }
     // ```
     GuardedCall {
@@ -148,19 +151,16 @@ pub enum DartOperation {
         var_name: String,
         call: Option<String>,
     },
-    /// Need to understand what the code for Dart should be
     // Results in:
     // ```dart
-    // let <var_name> = <call>
-    // guard let <var_name> = <var_name> else {
-    //     return nil
+    // if (ptr != null) {
+    //    <call>(<var_name>);
     // }
     // ```
     DeferOptionalCall {
         var_name: String,
         call: Option<String>,
     },
-    // ```
     // Results in:
     // ```dart
     // return <call>;
@@ -188,6 +188,7 @@ pub struct DartReturn {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DartInit {
     pub name: String,
+    pub class_name: String,
     pub is_nullable: bool,
     pub is_public: bool,
     pub params: Vec<DartParam>,
@@ -232,7 +233,7 @@ impl TryFrom<ProtoInfo> for DartProto {
     }
 }
 
-/// Convert the `TypeVariant` into the appropriate Swift type.
+/// Convert the `TypeVariant` into the appropriate Dart type.
 impl From<TypeVariant> for DartType {
     fn from(value: TypeVariant) -> Self {
         let res = match value {
@@ -311,8 +312,8 @@ fn param_c_ffi_call(param: &ParamInfo) -> Option<DartOperation> {
             }
         }
         // E.g.
-        // - `let param = param.rawValue`
-        // - `let param = param?.rawValue`
+        // - `final param = param.rawValue`
+        // - `final param = param?.rawValue`
         TypeVariant::Struct(_) => {
             // For nullable structs, we do not use the special
             // `CallOptional` handler but rather use the question mark

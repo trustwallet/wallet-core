@@ -4,7 +4,7 @@
 
 use super::*;
 use crate::manifest::{FunctionInfo, TypeVariant};
-use heck::ToLowerCamelCase;
+use crate::codegen::dart::utils::pretty_func_name;
 
 /// This function checks each function and determines whether there's an
 /// association with the passed on object (struct or enum), based on common name
@@ -79,7 +79,7 @@ pub(super) fn process_methods(
             .into_iter()
             .chain(params.iter().map(|p| p.name.as_str()))
             .collect::<Vec<&str>>()
-            .join(",");
+            .join(", ");
 
         // Call the underlying C FFI function, passing on the parameter list.
         let (var_name, call) = (
@@ -112,37 +112,7 @@ pub(super) fn process_methods(
         };
 
         // Prettify name, remove object name prefix from this property.
-        let pretty_name = func
-            .name
-            .strip_prefix(object.name())
-            // Panicking implies bug, checked at the start of the loop.
-            .unwrap()
-            .to_lower_camel_case();
-
-        // Special handling: some functions do not follow standard camelCase
-        // convention.
-        #[rustfmt::skip]
-        let pretty_name = if object.name() == "TWStoredKey" {
-            pretty_name
-                .replace("Json", "JSON")
-                .replace("Hd", "HD")
-        } else if object.name() == "TWPublicKey" {
-            pretty_name
-                .replace("Der", "DER")
-        } else if object.name() == "TWHash" {
-            pretty_name
-                .replace("ripemd", "RIPEMD")
-                .replace("Ripemd", "RIPEMD")
-                .replace("sha512256", "sha512_256")
-                .replace("sha3256", "sha3_256")
-                .replace("sha256sha256", "sha256SHA256")
-        } else if object.name() == "TWAES" {
-            pretty_name
-                .replace("Cbc", "CBC")
-                .replace("Ctr", "CTR")
-        } else {
-            pretty_name
-        };
+        let pretty_name = pretty_func_name(&func.name, object.name());
 
         dart_funcs.push(DartFunction {
             name: pretty_name,

@@ -5,24 +5,30 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-import Foundation
+import 'dart:ffi';
 
-{{#if is_public}}public {{/if}}{{#if is_class}}final class {{else}}struct {{/if}}{{name}}
-    {{~#if superclasses}}: {{/if}}{{#each superclasses}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} {
+import 'package:ffi/ffi.dart';
+import 'package:generated_bindings.dart';
+{{#if imports}}
+{{#each imports}}
+{{{this}}}
+{{/each}}
+{{/if}}
+
+final class {{#unless is_public}}_{{/unless}}{{name}} {{~#if superclasses}} implements {{#each superclasses}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}} {
     {{#if init_instance}}
-    let rawValue: OpaquePointer
+    final OpaquePointer rawValue;
 
-    init(rawValue: OpaquePointer) {
-        self.rawValue = rawValue
-    }
+    const {{name}}(this.rawValue);
     {{else}}
-    init() {}
+    const {{name}}();
     {{/if}}
 
     {{! Equality operator, if available }}
     {{#if eq_operator}}
-    public static func == (lhs: {{name}}, rhs: {{name}}) -> Bool {
-        return {{eq_operator.c_ffi_name}}(lhs.rawValue, rhs.rawValue)
+    @override
+    bool operator == ({{name}} other) {
+        return {{eq_operator.c_ffi_name}}(this.rawValue, other.rawValue);
     }
 
     {{/if}}
@@ -32,12 +38,15 @@ import Foundation
 
     {{/each}}
     {{! Deinits }}
+    {{#if deinits}}
+    @override
+    dispose() {
     {{#each deinits}}
-    deinit {
         {{name}}(self.rawValue)
+    {{/each}}
     }
 
-    {{/each}}
+    {{/if}}
     {{! Methods }}
     {{#each methods}}
     {{~> partial_func}}

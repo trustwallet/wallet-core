@@ -6,7 +6,7 @@ use crate::{Error, Result};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
-use toml_edit::{Document, InlineTable, Item, Value};
+use toml_edit::{DocumentMut, InlineTable, Item, Value};
 
 const NEW_LINE_TAB_DECORATOR: &str = "\n    ";
 const NO_DECORATOR: &str = "";
@@ -22,7 +22,7 @@ impl Workspace {
 
     pub fn insert_crate(self, path_to_crate: &Path) -> Result<()> {
         let manifest = fs::read_to_string(&self.path_to_toml)?;
-        let mut manifest = Document::from_str(&manifest)?;
+        let mut manifest = DocumentMut::from_str(&manifest)?;
 
         let members = manifest["workspace"]["members"]
             .as_array_mut()
@@ -57,7 +57,7 @@ impl Dependencies {
 
     pub fn insert_dependency(self, dep_name: &str, path_to_dep_crate: &Path) -> Result<()> {
         let manifest = fs::read_to_string(&self.path_to_toml)?;
-        let mut manifest = Document::from_str(&manifest)?;
+        let mut manifest = DocumentMut::from_str(&manifest)?;
 
         let dependencies = manifest["dependencies"]
             .as_table_like_mut()

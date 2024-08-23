@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use super::{inits::process_deinits, *};
-use convert_case::{Case, Casing};
+use crate::codegen::dart::utils::{import_name, pretty_file_name, pretty_name};
 
 #[derive(Debug, Clone)]
 pub struct RenderInput<'a> {
@@ -39,19 +39,6 @@ struct WithYear<'a, T> {
     pub current_year: u64,
     #[serde(flatten)]
     pub data: &'a T,
-}
-
-pub fn pretty_name(name: String) -> String {
-    name.replace("_", "").replace("TW", "").replace("Proto", "")
-}
-
-pub fn pretty_file_name(name: String) -> String {
-    let new_name = name
-        .replace("+", "_")
-        .replace("TW", "")
-        .replace("Proto", "");
-
-    new_name.to_case(Case::Snake)
 }
 
 pub fn render_to_strings(input: RenderInput) -> Result<GeneratedDartTypesStrings> {
@@ -155,12 +142,14 @@ pub fn generate_dart_types(mut info: FileInfo) -> Result<GeneratedDartTypes> {
         // Convert the name into an appropriate format.
         let pretty_struct_name = pretty_name(strct.name.clone());
 
-        // Add superclasses.
-        let superclasses = if pretty_struct_name.ends_with("Address") {
-            vec!["Address".to_string()]
-        } else {
-            vec![]
-        };
+        // Add Disposable and superclasses
+        let mut superclasses = vec![];
+        if !deinits.is_empty() {
+            superclasses.push("Disposable".to_string());
+        }
+        if pretty_struct_name.ends_with("Address") {
+            superclasses.push("Address".to_string());
+        }
 
         // Handle equality operator.
         let eq_method = methods.iter().enumerate().find(|(_, f)| f.name == "equal");
@@ -177,15 +166,22 @@ pub fn generate_dart_types(mut info: FileInfo) -> Result<GeneratedDartTypes> {
             None
         };
 
+
+        let mut imports = vec![];
+        for super_class in superclasses.clone() {
+            imports.push(import_name(super_class.as_str()));
+        }
+
         outputs.structs.push(DartStruct {
             name: pretty_struct_name,
             is_class: strct.is_class,
             is_public: strct.is_public,
             init_instance: strct.is_class,
+            imports,
             superclasses,
             eq_operator,
-            inits: inits,
-            deinits: deinits,
+            inits,
+            deinits,
             methods,
             properties,
         });
@@ -193,6 +189,13 @@ pub fn generate_dart_types(mut info: FileInfo) -> Result<GeneratedDartTypes> {
 
     // Render enums.
     for enm in info.enums {
+        let obj = ObjectVariant::Enum(&enm.name);
+
+        // Process items.
+        let (methods, properties);
+        (methods, info.functions) = process_methods(&obj, info.functions)?;
+        (properties, info.properties) = process_properties(&obj, info.properties)?;
+
         // Convert the name into an appropriate format.
         let pretty_enum_name = pretty_name(enm.name);
 
@@ -227,6 +230,18 @@ pub fn generate_dart_types(mut info: FileInfo) -> Result<GeneratedDartTypes> {
             value_type: value_type.to_string(),
             value_field,
             constructor,
+        });
+
+        // Avoid rendering empty extension for enums.
+        if methods.is_empty() && properties.is_empty() {
+            continue;
+        }
+
+        outputs.extensions.push(DartEnumExtension {
+            name: pretty_enum_name,
+            init_instance: true,
+            methods,
+            properties,
         });
     }
 

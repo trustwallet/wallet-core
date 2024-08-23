@@ -1,23 +1,29 @@
-    {{#if is_public}}public {{/if}}init{{#if is_nullable}}?{{/if}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}) {
+    {{class_name}}.{{#unless is_public}}_{{/unless}}{{name}}({{#each params}}{{type}}{{#if is_nullable}}?{{/if}} {{name}}{{#unless @last}}, {{/unless}}{{/each}}) {
         {{#each operations}}
         {{#if this.call}}
-        let {{this.call.var_name}} = {{this.call.call}}
-        {{#if this.call.defer}}
-        defer {
-            {{this.call.defer}}
-        }
-
-        {{/if}}
+        final {{this.call.var_name}} = {{this.call.call}};
         {{/if}}
         {{#if this.guarded_call}}
-        guard let {{this.guarded_call.var_name}} = {{this.guarded_call.call}} else {
-            return nil
+        final {{this.guarded_call.var_name}} = {{this.guarded_call.call}};
+        if ({{this.guarded_call.var_name}} == null) {
+            throw ArgumentError('{{this.guarded_call.call}} returned null');
         }
         {{/if}}
+        {{#if this.defer_optional_call.call}}
+        if ({{this.defer_optional_call.var_name}} != null) {
+            {{this.defer_optional_call.call}};
+        }
+        {{/if}}
+        {{#if this.defer_call}}
+        {{#if this.defer_call.call}}
+            {{this.defer_call.call}};
+        {{/if}}
+        {{/if}}
         {{#if this.return}}
+
         return {{this.return.call}}
         {{/if}}
         {{/each}}
 
-        self.rawValue = result
+        return {{class_name}}(result);
     }
