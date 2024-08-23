@@ -16,12 +16,8 @@ String get description => switch (value) {
   {{this.value}} => '{{this.as_string}}',
   {{/each}}
 {{/if}}
-{{#if value_field}}
   final {{value_type}} value;
-{{/if}}
-{{#if constructor}}
   const {{name}}(this.value);
-{{/if}}
 
   static {{#unless is_public}}_{{/unless}}{{name}} fromValue({{value_type}} value) => switch (value) {
       {{#each variants}}
