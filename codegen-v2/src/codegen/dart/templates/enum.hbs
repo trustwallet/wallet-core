@@ -22,4 +22,11 @@ String get description => switch (value) {
 {{#if constructor}}
   const {{name}}(this.value);
 {{/if}}
+
+  static {{#unless is_public}}_{{/unless}}{{name}} fromValue({{value_type}} value) => switch (value) {
+      {{#each variants}}
+        {{this.value}} => {{this.name}},
+      {{/each}}
+        _ => throw ArgumentError("Unknown value for TWCoinType: $value"),
+      };
 }
