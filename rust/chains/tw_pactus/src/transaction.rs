@@ -99,7 +99,7 @@ impl Transaction {
 
     pub fn from_proto(input: &Pactus::Proto::SigningInput) -> SigningResult<Self> {
         match &input.transaction {
-            None => return SigningError::err(SigningErrorType::Error_invalid_params),
+            None => SigningError::err(SigningErrorType::Error_invalid_params),
             Some(trx) => {
                 let payload = match &trx.payload {
                     Pactus::Proto::mod_TransactionMessage::OneOfpayload::transfer(pld) => {
@@ -121,7 +121,7 @@ impl Transaction {
                     }
                 };
 
-                return Ok(Transaction {
+                Ok(Transaction {
                     flags: 0,
                     version: VERSION_LATEST,
                     lock_time: trx.lock_time,
@@ -130,19 +130,23 @@ impl Transaction {
                     payload,
                     public_key: None,
                     signature: None,
-                });
+                })
             }
-        };
+        }
     }
 
     pub fn sign(&mut self, private_key: &PrivateKey) -> SigningResult<()> {
         let sign_bytes = self.sign_bytes();
         let signature = private_key.sign(sign_bytes)?;
 
-        self.public_key = Some(private_key.public());
-        self.signature = Some(signature);
+        self.set_signatory(private_key.public(), signature);
 
         Ok(())
+    }
+
+    pub fn set_signatory(&mut self, public_key: PublicKey, signature: Signature) {
+        self.public_key = Some(public_key);
+        self.signature = Some(signature);
     }
 
     pub fn id(&self) -> Vec<u8> {
