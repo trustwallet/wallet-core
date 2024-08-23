@@ -2,12 +2,17 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use std::borrow::Cow;
+
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
+use tw_keypair::ed25519;
 use tw_proto::Pactus::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
+
+use crate::transaction::Transaction;
 
 pub struct PactusCompiler;
 
@@ -23,9 +28,18 @@ impl PactusCompiler {
 
     fn preimage_hashes_impl(
         _coin: &dyn CoinContext,
-        _input: Proto::SigningInput<'_>,
+        input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
-        todo!()
+        let trx = Transaction::from_proto(&input)?;
+        let data = trx.to_bytes();
+
+        let output = CompilerProto::PreSigningOutput {
+            data_hash: Cow::Owned(trx.id()),
+            data: data.into(),
+            ..CompilerProto::PreSigningOutput::default()
+        };
+
+        Ok(output)
     }
 
     #[inline]
@@ -41,10 +55,30 @@ impl PactusCompiler {
 
     fn compile_impl(
         _coin: &dyn CoinContext,
-        _input: Proto::SigningInput<'_>,
-        _signatures: Vec<SignatureBytes>,
-        _public_keys: Vec<PublicKeyBytes>,
+        input: Proto::SigningInput<'_>,
+        signatures: Vec<SignatureBytes>,
+        public_keys: Vec<PublicKeyBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        todo!()
+        let signature_bytes = signatures
+            .first()
+            .or_tw_err(SigningErrorType::Error_signatures_count)?;
+        let public_key_bytes = public_keys
+            .first()
+            .or_tw_err(SigningErrorType::Error_signatures_count)?;
+
+        let public_key = ed25519::sha512::PublicKey::try_from(public_key_bytes.as_slice())?;
+        let signature = ed25519::Signature::try_from(signature_bytes.as_slice())?;
+
+        let mut trx = Transaction::from_proto(&input)?;
+        trx.set_signatory(public_key.to_owned(), signature.to_owned());
+
+        let data = trx.to_bytes();
+
+        let output = Proto::SigningOutput {
+            encoded: data.into(),
+            ..Proto::SigningOutput::default()
+        };
+
+        Ok(output)
     }
 }
