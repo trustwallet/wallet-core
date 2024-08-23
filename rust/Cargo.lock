@@ -2045,6 +2045,9 @@ dependencies = [
 [[package]]
 name = "tw_memory"
 version = "0.1.0"
+dependencies = [
+ "zeroize",
+]
 
 [[package]]
 name = "tw_misc"
@@ -2289,6 +2292,7 @@ dependencies = [
  "tw_encoding",
  "tw_ethereum",
  "tw_hash",
+ "tw_hd_wallet",
  "tw_keypair",
  "tw_memory",
  "tw_misc",

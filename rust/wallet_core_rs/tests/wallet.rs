@@ -2,5 +2,5 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-pub mod address_converter;
-pub mod message_signer;
+#[path = "wallet/ton_wallet.rs"]
+pub mod ton_wallet;
