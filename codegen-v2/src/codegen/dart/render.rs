@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use super::{inits::process_deinits, *};
-use crate::codegen::dart::utils::{pretty_file_name, pretty_name};
+use crate::codegen::dart::utils::{import_name, pretty_file_name, pretty_name};
 
 #[derive(Debug, Clone)]
 pub struct RenderInput<'a> {
@@ -142,12 +142,14 @@ pub fn generate_dart_types(mut info: FileInfo) -> Result<GeneratedDartTypes> {
         // Convert the name into an appropriate format.
         let pretty_struct_name = pretty_name(strct.name.clone());
 
-        // Add superclasses.
-        let superclasses = if pretty_struct_name.ends_with("Address") {
-            vec!["Address".to_string()]
-        } else {
-            vec![]
-        };
+        // Add Disposable and superclasses
+        let mut superclasses = vec![];
+        if !deinits.is_empty() {
+            superclasses.push("Disposable".to_string());
+        }
+        if pretty_struct_name.ends_with("Address") {
+            superclasses.push("Address".to_string());
+        }
 
         // Handle equality operator.
         let eq_method = methods.iter().enumerate().find(|(_, f)| f.name == "equal");
@@ -164,15 +166,22 @@ pub fn generate_dart_types(mut info: FileInfo) -> Result<GeneratedDartTypes> {
             None
         };
 
+
+        let mut imports = vec![];
+        for super_class in superclasses.clone() {
+            imports.push(import_name(super_class.as_str()));
+        }
+
         outputs.structs.push(DartStruct {
             name: pretty_struct_name,
             is_class: strct.is_class,
             is_public: strct.is_public,
             init_instance: strct.is_class,
+            imports,
             superclasses,
             eq_operator,
-            inits: inits,
-            deinits: deinits,
+            inits,
+            deinits,
             methods,
             properties,
         });

@@ -31,6 +31,7 @@ pub struct DartStruct {
     is_class: bool,
     is_public: bool,
     init_instance: bool,
+    imports: Vec<String>,
     superclasses: Vec<String>,
     eq_operator: Option<DartOperatorEquality>,
     inits: Vec<DartInit>,
@@ -98,6 +99,7 @@ pub struct DartFunction {
 struct DartProperty {
     pub name: String,
     pub is_public: bool,
+    pub is_override: bool,
     pub operations: Vec<DartOperation>,
     #[serde(rename = "return")]
     pub return_type: DartReturn,

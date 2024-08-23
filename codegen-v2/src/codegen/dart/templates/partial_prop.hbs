@@ -1,3 +1,4 @@
+    {{#if is_override}}@override{{/if}}
     {{return.type}}{{#if return.is_nullable}}?{{/if}} get {{#unless is_public}}_{{/unless}}{{name}} {
         {{#each operations}}
         {{#if this.call}}

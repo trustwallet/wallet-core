@@ -16,7 +16,7 @@ pub(super) fn process_properties(
     object: &ObjectVariant,
     properties: Vec<PropertyInfo>,
 ) -> Result<(Vec<DartProperty>, Vec<PropertyInfo>)> {
-    let mut swift_props = vec![];
+    let mut dart_props = vec![];
     let mut skipped_props = vec![];
 
     for prop in properties {
@@ -45,7 +45,7 @@ pub(super) fn process_properties(
 
         // Call the underlying C FFI function, passing on the `obj` instance.
         //
-        // E.g: `let result = TWSomeFunc(obj)`.
+        // E.g: `final result = TWSomeFunc(obj);`.
         let (var_name, call) = ("result".to_string(), format!("{}(obj)", prop.name));
         if prop.return_type.is_nullable {
             ops.push(DartOperation::GuardedCall { var_name, call });
@@ -73,14 +73,15 @@ pub(super) fn process_properties(
             is_nullable: prop.return_type.is_nullable,
         };
 
-        swift_props.push(DartProperty {
+        dart_props.push(DartProperty {
             name: pretty_name,
             is_public: prop.is_public,
+            is_override: true,
             operations: ops,
             return_type,
             comments: vec![],
         });
     }
 
-    Ok((swift_props, skipped_props))
+    Ok((dart_props, skipped_props))
 }

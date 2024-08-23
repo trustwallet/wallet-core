@@ -5,10 +5,17 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-// import Foundation
+import 'dart:ffi';
 
-final class {{#unless is_public}}_{{/unless}}{{name}}
-    {{~#if superclasses}} implements {{/if}}{{#each superclasses}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} {
+import 'package:ffi/ffi.dart';
+import 'package:generated_bindings.dart';
+{{#if imports}}
+{{#each imports}}
+{{{this}}}
+{{/each}}
+{{/if}}
+
+final class {{#unless is_public}}_{{/unless}}{{name}} {{~#if superclasses}} implements {{#each superclasses}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}} {
     {{#if init_instance}}
     final OpaquePointer rawValue;
 
@@ -31,12 +38,15 @@ final class {{#unless is_public}}_{{/unless}}{{name}}
 
     {{/each}}
     {{! Deinits }}
+    {{#if deinits}}
+    @override
+    dispose() {
     {{#each deinits}}
-    deinit {
         {{name}}(self.rawValue)
+    {{/each}}
     }
 
-    {{/each}}
+    {{/if}}
     {{! Methods }}
     {{#each methods}}
     {{~> partial_func}}

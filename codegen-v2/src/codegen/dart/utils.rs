@@ -42,3 +42,7 @@ pub(super) fn pretty_file_name(name: String) -> String {
 
     new_name.to_case(Case::Snake)
 }
+
+pub(super) fn import_name(name: &str) -> String {
+    format!("import 'package:{}.dart';", pretty_file_name(name.to_string()))
+}
