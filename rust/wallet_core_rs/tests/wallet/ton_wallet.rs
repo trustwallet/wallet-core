@@ -10,8 +10,17 @@ use tw_memory::test_utils::tw_string_helper::TWStringHelper;
 use tw_memory::test_utils::tw_wrapper::TWWrapper;
 use wallet_core_rs::ffi::wallet::ton_wallet::{
     tw_ton_wallet_build_v4_r2_state_init, tw_ton_wallet_create_with_mnemonic, tw_ton_wallet_delete,
-    tw_ton_wallet_get_key,
+    tw_ton_wallet_get_key, tw_ton_wallet_is_valid_mnemonic,
 };
+
+#[test]
+fn test_ton_wallet_is_valid_mnemonic() {
+    let mnemonic = TWStringHelper::create("protect drill sugar gallery note admit input wrist chicken swarm scheme hedgehog orbit ritual glove ski buddy slogan fragile sun delay toy lucky require");
+    let passphrase = TWStringHelper::create("");
+    let invalid_passphrase = TWStringHelper::create("Expected empty passphrase");
+    assert!(unsafe { tw_ton_wallet_is_valid_mnemonic(mnemonic.ptr(), passphrase.ptr()) });
+    assert!(!unsafe { tw_ton_wallet_is_valid_mnemonic(mnemonic.ptr(), invalid_passphrase.ptr()) });
+}
 
 #[test]
 fn test_ton_wallet_get_key() {
