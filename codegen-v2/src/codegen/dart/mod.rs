@@ -5,12 +5,12 @@
 use self::functions::process_methods;
 use self::inits::process_inits;
 use self::properties::process_properties;
+use crate::codegen::dart::utils::pretty_name;
 use crate::manifest::{DeinitInfo, FileInfo, ParamInfo, ProtoInfo, TypeInfo, TypeVariant};
 use crate::{Error, Result};
 use handlebars::Handlebars;
 use serde_json::json;
 use std::fmt::Display;
-use crate::codegen::dart::utils::pretty_name;
 
 mod functions;
 mod inits;
@@ -48,8 +48,6 @@ pub struct DartEnum {
     add_description: bool,
     variants: Vec<DartEnumVariant>,
     value_type: String,
-    value_field: Option<String>,
-    constructor: Option<String>,
 }
 
 /// Represents a Swift enum variant.
@@ -281,15 +279,9 @@ fn param_c_ffi_call(param: &ParamInfo) -> Option<DartOperation> {
 
             // If the parameter is nullable, add special handler.
             if param.ty.is_nullable {
-                DartOperation::CallOptional {
-                    var_name,
-                    call,
-                }
+                DartOperation::CallOptional { var_name, call }
             } else {
-                DartOperation::Call {
-                    var_name,
-                    call,
-                }
+                DartOperation::Call { var_name, call }
             }
         }
         TypeVariant::Data => {
@@ -300,15 +292,9 @@ fn param_c_ffi_call(param: &ParamInfo) -> Option<DartOperation> {
 
             // If the parameter is nullable, add special handler.
             if param.ty.is_nullable {
-                DartOperation::CallOptional {
-                    var_name,
-                    call,
-                }
+                DartOperation::CallOptional { var_name, call }
             } else {
-                DartOperation::Call {
-                    var_name,
-                    call,
-                }
+                DartOperation::Call { var_name, call }
             }
         }
         // E.g.
@@ -319,18 +305,12 @@ fn param_c_ffi_call(param: &ParamInfo) -> Option<DartOperation> {
             // `CallOptional` handler but rather use the question mark
             // operator.
             let (var_name, call) = if param.ty.is_nullable {
-                (
-                    param.name.clone(),
-                    format!("{}?.rawValue", param.name),
-                )
+                (param.name.clone(), format!("{}?.rawValue", param.name))
             } else {
                 (param.name.clone(), format!("{}.rawValue", param.name))
             };
 
-            DartOperation::Call {
-                var_name,
-                call,
-            }
+            DartOperation::Call { var_name, call }
         }
         // E.g. `final param = TWSomeEnum(rawValue: param.rawValue);`
         // Note that it calls the constructor of the enum, which calls
@@ -357,15 +337,9 @@ fn param_c_ffi_defer_call(param: &ParamInfo) -> Option<DartOperation> {
             );
 
             if param.ty.is_nullable {
-                DartOperation::DeferOptionalCall {
-                    var_name,
-                    call,
-                }
+                DartOperation::DeferOptionalCall { var_name, call }
             } else {
-                DartOperation::DeferCall {
-                    var_name,
-                    call,
-                }
+                DartOperation::DeferCall { var_name, call }
             }
         }
         TypeVariant::Data => {
@@ -375,15 +349,9 @@ fn param_c_ffi_defer_call(param: &ParamInfo) -> Option<DartOperation> {
             );
 
             if param.ty.is_nullable {
-                DartOperation::DeferOptionalCall {
-                    var_name,
-                    call,
-                }
+                DartOperation::DeferOptionalCall { var_name, call }
             } else {
-                DartOperation::DeferCall {
-                    var_name,
-                    call,
-                }
+                DartOperation::DeferCall { var_name, call }
             }
         }
         _ => return None,
