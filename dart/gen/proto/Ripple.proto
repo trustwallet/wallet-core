@@ -1,0 +1,170 @@
+syntax = "proto3";
+
+package TW.Ripple.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// https://xrpl.org/currency-formats.html#token-amounts
+message CurrencyAmount {
+	// Currency code
+	// https://xrpl.org/currency-formats.html#currency-codes
+	string currency = 1;
+
+	// String number
+	// https://xrpl.org/currency-formats.html#string-numbers
+	string value = 2;
+
+	// Account
+	// https://xrpl.org/accounts.html
+	string issuer = 3;
+}
+
+// https://xrpl.org/trustset.html
+message OperationTrustSet {
+    CurrencyAmount limit_amount = 1;
+}
+
+// https://xrpl.org/payment.html
+message OperationPayment {
+    // Transfer amount
+	oneof amount_oneof {
+		int64 amount = 1;
+		CurrencyAmount currency_amount = 2;
+	}
+
+    // Target account
+	string destination = 3;
+
+    // A Destination Tag
+	int64 destination_tag = 4;
+}
+
+// https://xrpl.org/escrowcreate.html
+message OperationEscrowCreate {
+    // Escrow amount
+    int64 amount = 1;
+
+    // Beneficiary account
+    string destination = 2;
+
+    // Destination Tag
+    int64 destination_tag = 3;
+
+    // Escrow expire time
+    int64 cancel_after = 4;
+
+    // Escrow release time
+    int64 finish_after = 5;
+
+    // Crypto condition
+    // https://datatracker.ietf.org/doc/html/draft-thomas-crypto-conditions-02#section-8.1
+    string condition = 6;
+}
+
+// https://xrpl.org/escrowcancel.html
+message OperationEscrowCancel {
+    // Funding account
+    string owner = 1;
+
+    // Escrow transaction sequence
+    int32 offer_sequence = 2;
+}
+
+// https://xrpl.org/escrowfinish.html
+message OperationEscrowFinish {
+    // Funding account
+    string owner = 1;
+
+    // Escrow transaction sequence
+    int32 offer_sequence = 2;
+
+    // Crypto condition
+    string condition = 3;
+
+    // Fulfillment matching condition
+    string fulfillment = 4;
+}
+
+// https://xrpl.org/nftokenburn.html 
+message OperationNFTokenBurn {
+    // Hash256 NFTokenId
+    bytes nftoken_id = 1;
+}
+
+// https://xrpl.org/nftokencreateoffer.html 
+message OperationNFTokenCreateOffer {
+    // Hash256 NFTokenId
+    bytes nftoken_id = 1;
+
+    // Destination account
+    string destination = 2;
+}
+
+// https://xrpl.org/nftokenacceptoffer.html 
+message OperationNFTokenAcceptOffer {
+    // Hash256 NFTokenOffer
+    bytes sell_offer = 1;
+}
+
+// https://xrpl.org/nftokencanceloffer.html 
+message OperationNFTokenCancelOffer {
+    // Vector256 NFTokenOffers
+    repeated bytes token_offers = 1;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Transfer fee
+    int64 fee = 1;
+
+    // Account sequence number
+    int32 sequence = 2;
+
+    // Ledger sequence number
+    int32 last_ledger_sequence = 3;
+
+    // Source account
+    string account = 4;
+
+    // Transaction flags, optional
+    int64 flags = 5;
+
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 6;
+
+    oneof operation_oneof {
+        OperationTrustSet op_trust_set = 7;
+
+        OperationPayment op_payment = 8;
+
+        OperationNFTokenBurn op_nftoken_burn = 9;
+
+        OperationNFTokenCreateOffer op_nftoken_create_offer = 10;
+
+        OperationNFTokenAcceptOffer op_nftoken_accept_offer = 11;
+
+        OperationNFTokenCancelOffer op_nftoken_cancel_offer = 12;
+
+        OperationEscrowCreate op_escrow_create = 16;
+
+        OperationEscrowCancel op_escrow_cancel = 17;
+
+        OperationEscrowFinish op_escrow_finish = 18;
+    }
+
+    // Only used by tss chain-integration.
+    bytes public_key = 15;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Encoded transaction
+    bytes encoded = 1;
+
+    // Optional error
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
+}

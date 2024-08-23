@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package TW.Nebulas.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // sender's address.
+    string from_address = 1;
+
+    // Chain identifier (uint256, serialized big endian)
+    bytes chain_id = 2;
+
+    // Nonce (uint256, serialized big endian)
+    bytes nonce = 3;
+
+    // Gas price (uint256, serialized big endian)
+    bytes gas_price = 4;
+
+    // Gas limit (uint256, serialized big endian)
+    bytes gas_limit = 5;
+
+    // Recipient's address.
+    string to_address = 6;
+
+    // Amount to send in wei, 1 NAS = 10^18 Wei (uint256, serialized big endian)
+    bytes amount = 7;
+
+    // Timestamp to create transaction (uint256, serialized big endian)
+    bytes timestamp = 8;
+
+    // Optional payload
+    string payload = 9;
+
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 10;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Algorithm code
+    uint32 algorithm = 1;
+
+    // The signature
+    bytes signature = 2;
+
+    // Encoded transaction
+    string raw = 3;
+}
+
+// Generic data
+message Data {
+    string type = 1;
+    bytes payload = 2;
+}
+
+// Raw transaction data
+message RawTransaction {
+    // tx hash
+    bytes hash  = 1;
+
+    // source address
+    bytes from = 2;
+
+    // destination address
+    bytes to = 3;
+
+    // amount (uint256, serialized big endian)
+    bytes value = 4;
+
+    // Nonce (should be larger than in the last transaction of the account)
+    uint64 nonce = 5;
+
+    // transaction timestamp
+    int64 timestamp = 6;
+
+    // generic data
+    Data data = 7;
+
+    // chain ID (4 bytes)
+    uint32 chain_id = 8;
+
+    // gas price (uint256, serialized big endian)
+    bytes gas_price = 9;
+
+    // gas limit (uint256, serialized big endian)
+    bytes gas_limit = 10;
+
+    // algorithm
+    uint32 alg = 11;
+
+    // signature
+    bytes sign = 12;
+}

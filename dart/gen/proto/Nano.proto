@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package TW.Nano.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 1;
+
+    // Optional parent block hash
+    bytes parent_block = 2;
+
+    // Receive/Send reference
+    oneof link_oneof {
+        // Hash of a block to receive from
+        bytes link_block = 3;
+        // Recipient address to send coins to
+        string link_recipient = 4;
+    }
+
+    // Representative address
+    string representative = 5;
+
+    // Account balance (128-bit unsigned integer, as a string)
+    string balance = 6;
+
+    // Work
+    string work = 7;
+
+    // Pulic key used for building preImage (32 bytes).
+    bytes public_key = 8;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Signature
+    bytes signature = 1;
+
+    // Block hash
+    bytes block_hash = 2;
+
+    // JSON representation of the block
+    string json = 3;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 4;
+
+    // error code description
+    string error_message = 5;
+}

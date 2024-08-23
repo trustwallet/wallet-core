@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package TW.Zilliqa.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Generic transaction
+message Transaction {
+    // Transfer transaction
+    message Transfer {
+        // Amount to send (uint256, serialized big endian)
+        bytes amount           = 1;
+    }
+
+    // Generic contract call
+    message Raw {
+        // Amount to send (uint256, serialized big endian)
+        bytes amount           = 1;
+
+        // Smart contract code
+        bytes code             = 2;
+
+        // String-ified JSON object specifying the transition parameter
+        bytes data             = 3;
+    }
+
+    oneof message_oneof {
+        Transfer transfer = 1;
+        Raw raw_transaction = 2;
+    }
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Transaction version
+    uint32 version         = 1;
+
+    // Nonce
+    uint64 nonce           = 2;
+
+    // Recipient's address.
+    string to              = 3;
+
+    // GasPrice (256-bit number)
+    bytes gas_price        = 4;
+
+    // GasLimit
+    uint64 gas_limit       = 5;
+
+    // The secret private key used for signing (32 bytes).
+    bytes private_key      = 6;
+
+    // The payload transaction
+    Transaction transaction = 7;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Signed signature bytes.
+    bytes signature = 1;
+
+    // JSON transaction with signature
+    string json = 2;
+}

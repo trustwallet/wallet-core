@@ -1,0 +1,452 @@
+syntax = "proto3";
+
+package TW.Cosmos.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// A denomination and an amount
+message Amount {
+    // name of the denomination
+    string denom = 1;
+
+    // amount, number as string
+    string amount = 2;
+}
+
+// Fee incl. gas
+message Fee {
+    // Fee amount(s)
+    repeated Amount amounts = 1;
+
+    // Gas price
+    uint64 gas = 2;
+}
+
+// Block height, a revision and block height tuple.
+// A height can be compared against another Height for the purposes of updating and freezing clients
+message Height {
+    // the revision that the client is currently on
+    uint64 revision_number = 1;
+    // the height within the given revision
+    uint64 revision_height = 2;
+}
+
+// Transaction broadcast mode
+enum BroadcastMode {
+    BLOCK = 0; // Wait for the tx to pass/fail CheckTx, DeliverTx, and be committed in a block
+    SYNC = 1;  // Wait for the tx to pass/fail CheckTx
+    ASYNC = 2; // Don't wait for pass/fail CheckTx; send and return tx immediately
+}
+
+message THORChainAsset {
+    string chain = 1;
+    string symbol = 2;
+    string ticker = 3;
+    bool synth = 4;
+}
+
+message THORChainCoin {
+    THORChainAsset asset = 1;
+    string amount = 2;
+    int64 decimals = 3;
+}
+
+// A transaction payload message
+message Message {
+    // cosmos-sdk/MsgSend
+    message Send {
+        string from_address = 1;
+        string to_address = 2;
+        repeated Amount amounts = 3;
+        string type_prefix = 4;
+    }
+
+    // cosmos-sdk/MsgTransfer, IBC transfer
+    message Transfer {
+        // IBC port, e.g. "transfer"
+        string source_port = 1;
+        // IBC connection channel, e.g. "channel-141", see apis /ibc/applications/transfer/v1beta1/denom_traces (connections) or /node_info (own channel)
+        string source_channel = 2;
+        Amount token = 3;
+        string sender = 4;
+        string receiver = 5;
+        // Timeout block height. Either timeout height or timestamp should be set.
+        // Recommendation is to set height, to rev. 1 and block current + 1000 (see api /blocks/latest)
+        Height timeout_height = 6;
+        // Timeout timestamp (in nanoseconds) relative to the current block timestamp.  Either timeout height or timestamp should be set.
+        uint64 timeout_timestamp = 7;
+    }
+
+    // cosmos-sdk/MsgDelegate to stake
+    message Delegate {
+        string delegator_address = 1;
+        string validator_address = 2;
+        Amount amount = 3;
+        string type_prefix = 4;
+    }
+
+    // cosmos-sdk/MsgUndelegate to unstake
+    message Undelegate {
+        string delegator_address = 1;
+        string validator_address = 2;
+        Amount amount = 3;
+        string type_prefix = 4;
+    }
+
+    // cosmos-sdk/MsgBeginRedelegate
+    message BeginRedelegate {
+        string delegator_address = 1;
+        string validator_src_address = 2;
+        string validator_dst_address = 3;
+        Amount amount = 4;
+        string type_prefix = 5;
+    }
+
+    // cosmos-sdk/MsgSetWithdrawAddress
+    message SetWithdrawAddress {
+        string delegator_address = 1;
+        string withdraw_address = 2;
+        string type_prefix = 3;
+    }
+
+    // cosmos-sdk/MsgWithdrawDelegationReward
+    message WithdrawDelegationReward {
+        string delegator_address = 1;
+        string validator_address = 2;
+        string type_prefix = 3;
+    }
+
+    // transfer within wasm/MsgExecuteContract, used by Terra Classic
+    message WasmTerraExecuteContractTransfer {
+        // sender address
+        string sender_address = 1;
+
+        // token contract address
+        string contract_address = 2;
+
+        // size is uint128, as bigint
+        bytes amount = 3;
+
+        string recipient_address = 4;
+    }
+
+    // send within wasm/MsgExecuteContract, used by Terra Classic
+    message WasmTerraExecuteContractSend {
+        // sender address
+        string sender_address = 1;
+
+        // token contract address
+        string contract_address = 2;
+
+        // size is uint128, as bigint
+        bytes amount = 3;
+
+        string recipient_contract_address = 4;
+
+        // execute_msg to be executed in the context of recipient contract
+        string msg = 5;
+
+        // used in case you are sending native tokens along with this message
+        repeated string coin = 6;
+    }
+
+    // thorchain/MsgSend
+    message THORChainSend {
+        bytes from_address = 1;
+        bytes to_address = 2;
+        repeated Amount amounts = 3;
+    }
+
+    // thorchain/MsgDeposit
+    message THORChainDeposit {
+        repeated THORChainCoin coins = 1;
+        string memo = 2;
+        bytes signer = 3;
+    }
+
+    // execute within wasm/MsgExecuteContract, used by Terra Classic
+    message WasmTerraExecuteContractGeneric {
+        // sender address
+        string sender_address = 1;
+
+        // token contract address
+        string contract_address = 2;
+
+        // execute_msg to be executed in the context of recipient contract
+        string execute_msg = 3;
+
+        // used in case you are sending native tokens along with this message
+        // Gap in field numbering is intentional
+        repeated Amount coins = 5;
+    }
+
+    // transfer within wasm/MsgExecuteContract
+    message WasmExecuteContractTransfer {
+        // sender address
+        string sender_address = 1;
+
+        // token contract address
+        string contract_address = 2;
+
+        // size is uint128, as bigint
+        bytes amount = 3;
+
+        string recipient_address = 4;
+    }
+
+    // send within wasm/MsgExecuteContract
+    message WasmExecuteContractSend {
+        // sender address
+        string sender_address = 1;
+
+        // token contract address
+        string contract_address = 2;
+
+        // size is uint128, as bigint
+        bytes amount = 3;
+
+        string recipient_contract_address = 4;
+
+        // execute_msg to be executed in the context of recipient contract
+        string msg = 5;
+
+        // used in case you are sending native tokens along with this message
+        repeated string coin = 6;
+    }
+
+    // execute within wasm/MsgExecuteContract
+    // TODO replaces `ExecuteContract`.
+    message WasmExecuteContractGeneric {
+        // sender address
+        string sender_address = 1;
+
+        // token contract address
+        string contract_address = 2;
+
+        // execute_msg to be executed in the context of recipient contract
+        string execute_msg = 3;
+
+        // used in case you are sending native tokens along with this message
+        // Gap in field numbering is intentional
+        repeated Amount coins = 5;
+    }
+
+    message RawJSON {
+        string type = 1;
+        string value = 2;
+    }
+
+    // For signing an already serialized transaction. Account number and chain ID must be set outside.
+    message SignDirect {
+        // The prepared serialized TxBody
+        bytes body_bytes = 1;
+        // The prepared serialized AuthInfo
+        bytes auth_info_bytes = 2;
+    }
+
+    // StakeAuthorization defines authorization for delegate/undelegate/redelegate.
+    //
+    // Since: cosmos-sdk 0.43
+    message StakeAuthorization {
+        // max_tokens specifies the maximum amount of tokens can be delegate to a validator. If it is
+        // empty, there is no spend limit and any amount of coins can be delegated.
+        Amount max_tokens = 1;
+        // validators is the oneof that represents either allow_list or deny_list
+        oneof validators {
+            // allow_list specifies list of validator addresses to whom grantee can delegate tokens on behalf of granter's
+            // account.
+            Validators allow_list = 2;
+            // deny_list specifies list of validator addresses to whom grantee can not delegate tokens.
+            Validators deny_list = 3;
+        }
+        // Validators defines list of validator addresses.
+        message Validators {
+            repeated string address = 1;
+        }
+        // authorization_type defines one of AuthorizationType.
+        AuthorizationType authorization_type = 4;
+    }
+
+    // AuthorizationType defines the type of staking module authorization type
+    //
+    // Since: cosmos-sdk 0.43
+    enum AuthorizationType {
+        // AUTHORIZATION_TYPE_UNSPECIFIED specifies an unknown authorization type
+        UNSPECIFIED = 0;
+        // AUTHORIZATION_TYPE_DELEGATE defines an authorization type for Msg/Delegate
+        DELEGATE = 1;
+        // AUTHORIZATION_TYPE_UNDELEGATE defines an authorization type for Msg/Undelegate
+        UNDELEGATE = 2;
+        // AUTHORIZATION_TYPE_REDELEGATE defines an authorization type for Msg/BeginRedelegate
+        REDELEGATE = 3;
+    }
+
+
+    // cosmos-sdk/MsgGrant
+    message AuthGrant {
+        string granter = 1;
+        string grantee = 2;
+        oneof grant_type {
+            StakeAuthorization grant_stake = 3;
+        }
+        int64 expiration = 4;
+    }
+
+    // cosmos-sdk/MsgRevoke
+    message AuthRevoke {
+        string granter = 1;
+        string grantee = 2;
+        string msg_type_url = 3;
+    }
+
+    // VoteOption enumerates the valid vote options for a given governance proposal.
+    enum VoteOption {
+        //_UNSPECIFIED defines a no-op vote option.
+        _UNSPECIFIED = 0;
+        // YES defines a yes vote option.
+        YES = 1;
+        // ABSTAIN defines an abstain vote option.
+        ABSTAIN = 2;
+        // NO defines a no vote option.
+        NO = 3;
+        // NO_WITH_VETO defines a no with veto vote option.
+        NO_WITH_VETO = 4;
+    }
+
+    // cosmos-sdk/MsgVote defines a message to cast a vote.
+    message MsgVote {
+        uint64     proposal_id = 1;
+        string     voter = 2;
+        VoteOption option = 3;
+    }
+
+    message MsgStrideLiquidStakingStake {
+        string creator = 1;
+        string amount = 2;
+        string host_denom = 3;
+    }
+
+    message MsgStrideLiquidStakingRedeem {
+        string creator = 1;
+        string amount = 2;
+        string host_zone = 3;
+        string receiver = 4;
+    }
+
+    // The payload message
+    oneof message_oneof {
+        Send send_coins_message = 1;
+        Transfer transfer_tokens_message = 2;
+        Delegate stake_message = 3;
+        Undelegate unstake_message = 4;
+        BeginRedelegate restake_message = 5;
+        WithdrawDelegationReward withdraw_stake_reward_message = 6;
+        RawJSON raw_json_message = 7;
+        WasmTerraExecuteContractTransfer wasm_terra_execute_contract_transfer_message = 8;
+        WasmTerraExecuteContractSend wasm_terra_execute_contract_send_message = 9;
+        THORChainSend thorchain_send_message = 10;
+        WasmTerraExecuteContractGeneric wasm_terra_execute_contract_generic = 12;
+        WasmExecuteContractTransfer wasm_execute_contract_transfer_message = 13;
+        WasmExecuteContractSend wasm_execute_contract_send_message = 14;
+        WasmExecuteContractGeneric wasm_execute_contract_generic = 15;
+        SignDirect sign_direct_message = 16;
+        AuthGrant  auth_grant = 17;
+        AuthRevoke auth_revoke = 18;
+        SetWithdrawAddress set_withdraw_address_message = 19;
+        MsgVote msg_vote = 20;
+        MsgStrideLiquidStakingStake msg_stride_liquid_staking_stake = 21;
+        MsgStrideLiquidStakingRedeem msg_stride_liquid_staking_redeem = 22;
+        THORChainDeposit thorchain_deposit_message = 23;
+    }
+}
+
+// Options for transaction encoding: JSON (Amino, older) or Protobuf.
+enum SigningMode {
+    JSON = 0;        // JSON format, Pre-Stargate
+    Protobuf = 1;    // Protobuf-serialized (binary), Stargate
+}
+
+enum TxHasher {
+    // For Cosmos chain, `Sha256` is used by default.
+    UseDefault = 0;
+    Sha256 = 1;
+    Keccak256 = 2;
+}
+
+enum SignerPublicKeyType {
+    // Default public key type.
+    Secp256k1 = 0;
+    // Mostly used in Cosmos chains with EVM support.
+    Secp256k1Extended = 1;
+}
+
+// Custom Signer info required to sign a transaction and generate a broadcast JSON message.
+message SignerInfo {
+    // Public key type used to sign a transaction.
+    // It can be different from the value from `registry.json`.
+    SignerPublicKeyType public_key_type = 1;
+    string json_type = 2;
+    string protobuf_type = 3;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Specify if protobuf (a.k.a. Stargate) or earlier JSON serialization is used
+    SigningMode signing_mode = 1;
+
+    // Source account number
+    uint64 account_number = 2;
+
+    // Chain ID (string)
+    string chain_id = 3;
+
+    // Transaction fee
+    Fee fee = 4;
+
+    // Optional memo
+    string memo = 5;
+
+    // Sequence number (account specific)
+    uint64 sequence = 6;
+
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 7;
+
+    // Payload message(s)
+    repeated Message messages = 8;
+
+    // Broadcast mode (included in output, relevant when broadcasting)
+    BroadcastMode mode = 9;
+
+    bytes public_key = 10;
+
+    TxHasher tx_hasher = 11;
+
+    // Optional. If set, use a different Signer info when signing the transaction.
+    SignerInfo signer_info = 12;
+
+    // Optional timeout_height
+    uint64 timeout_height = 13;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Signature
+    bytes signature = 1;
+
+    // Signed transaction in JSON (pre-Stargate case)
+    string json = 2;
+
+    // Signed transaction containing protobuf encoded, Base64-encoded form (Stargate case),
+    // wrapped in a ready-to-broadcast json.
+    string serialized = 3;
+
+    // signatures array json string
+    string signature_json = 4;
+
+    // error description
+    string error_message = 5;
+
+    Common.Proto.SigningError error = 6;
+}

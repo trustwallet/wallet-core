@@ -1,0 +1,180 @@
+syntax = "proto3";
+
+package TW.Harmony.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Chain identifier (uint256, serialized big endian)
+    bytes chain_id = 1;
+
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 2;
+
+    // The payload message
+    oneof message_oneof {
+        TransactionMessage transaction_message = 3;
+        StakingMessage staking_message = 4;
+    }
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+
+    // THE V,R,S components of the signature
+    bytes v = 2;
+    bytes r = 3;
+    bytes s = 4;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 5;
+
+    // error code description
+    string error_message = 6;
+}
+
+// A Transfer message
+message TransactionMessage {
+    // Nonce (uint256, serialized big endian)
+    bytes nonce = 1;
+
+    // Gas price (uint256, serialized big endian)
+    bytes gas_price = 2;
+
+    // Gas limit (uint256, serialized big endian)
+    bytes gas_limit = 3;
+
+    // Recipient's address.
+    string to_address = 4;
+
+    // Amount to send in wei (uint256, serialized big endian)
+    bytes amount = 5;
+
+    // Optional payload
+    bytes payload = 6;
+
+    // From shard ID (uint256, serialized big endian)
+    bytes from_shard_id = 7;
+
+    // To Shard ID (uint256, serialized big endian)
+    bytes to_shard_id = 8;
+}
+
+// A Staking message.
+message StakingMessage {
+    // StakeMsg 
+    oneof stake_msg {
+        DirectiveCreateValidator create_validator_message = 1;
+        DirectiveEditValidator edit_validator_message = 2;
+        DirectiveDelegate delegate_message = 3;
+        DirectiveUndelegate undelegate_message = 4;
+        DirectiveCollectRewards collect_rewards = 5;
+    }
+
+    // Nonce (uint256, serialized big endian)
+    bytes nonce = 6;
+
+    // Gas price (uint256, serialized big endian)
+    bytes gas_price = 7;
+
+    // Gas limit (uint256, serialized big endian)
+    bytes gas_limit = 8;   
+}
+
+// Description for a validator
+message Description {
+    string name = 1;
+    string identity = 2;
+    string website = 3;
+    string security_contact = 4;
+    string details = 5;
+}
+
+// A variable precision number
+message Decimal {
+    // The 'raw' value
+    bytes value = 1;
+
+    // The precision (number of decimals)
+    bytes precision = 2;
+}
+
+// Represents validator commission rule
+message CommissionRate {
+    // The rate
+    Decimal rate = 1;
+
+    // Maximum rate
+    Decimal max_rate = 2;
+
+    // Maximum of rate change
+    Decimal max_change_rate = 3;
+}
+
+// Create Validator directive
+message DirectiveCreateValidator {
+    // Address of validator
+    string validator_address = 1;
+
+    // Description, name etc.
+    Description description = 2;
+
+    // Rates
+    CommissionRate commission_rates = 3;
+
+    bytes min_self_delegation = 4;
+    bytes max_total_delegation = 5;
+    repeated bytes slot_pub_keys = 6;
+    repeated bytes slot_key_sigs = 7;
+    bytes amount = 8;
+}
+
+
+// Edit Validator directive
+message DirectiveEditValidator {
+    // Validator address
+    string validator_address = 1;
+    Description description = 2;
+    Decimal commission_rate = 3;
+    bytes min_self_delegation = 4;
+    bytes max_total_delegation = 5;
+    bytes slot_key_to_remove = 6;
+    bytes slot_key_to_add = 7;
+    bytes slot_key_to_add_sig = 8;
+    bytes active = 9;
+}
+
+// Delegate directive
+message DirectiveDelegate {
+    // Delegator address
+    string delegator_address = 1;
+    
+    // Validator address
+    string validator_address = 2;
+    
+    // Delegate amount (uint256, serialized big endian)
+    bytes amount = 3;
+}
+
+// Undelegate directive
+message DirectiveUndelegate {
+    // Delegator address
+    string delegator_address = 1;
+    
+    // Validator address
+    string validator_address = 2;
+
+    // Undelegate amount (uint256, serialized big endian)
+    bytes amount = 3;
+}
+
+
+// Collect reward
+message DirectiveCollectRewards {
+    // Delegator address
+    string delegator_address = 1;
+}

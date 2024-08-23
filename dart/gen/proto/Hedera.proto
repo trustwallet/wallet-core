@@ -1,0 +1,96 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+syntax = "proto3";
+
+package TW.Hedera.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// An exact date and time. This is the same data structure as the protobuf Timestamp.proto
+// (see the comments in https://github.com/google/protobuf/blob/master/src/google/protobuf/timestamp.proto)
+message Timestamp {
+  // Number of complete seconds since the start of the epoch
+  int64 seconds = 1;
+  // Number of nanoseconds since the start of the last second
+  int32 nanos = 2;
+}
+
+// The ID for a transaction. This is used for retrieving receipts and records for a transaction, for
+// appending to a file right after creating it, for instantiating a smart contract with bytecode in
+// a file just created, and internally by the network for detecting when duplicate transactions are
+// submitted. A user might get a transaction processed faster by submitting it to N nodes, each with
+// a different node account, but all with the same TransactionID. Then, the transaction will take
+// effect when the first of all those nodes submits the transaction and it reaches consensus. The
+// other transactions will not take effect. So this could make the transaction take effect faster,
+// if any given node might be slow. However, the full transaction fee is charged for each
+// transaction, so the total fee is N times as much if the transaction is sent to N nodes.
+//
+// Applicable to Scheduled Transactions:
+//  - The ID of a Scheduled Transaction has transactionValidStart and accountIDs inherited from the
+//    ScheduleCreate transaction that created it. That is to say that they are equal
+//  - The scheduled property is true for Scheduled Transactions
+//  - transactionValidStart, accountID and scheduled properties should be omitted
+message TransactionID {
+  // The transaction is invalid if consensusTimestamp < transactionID.transactionStartValid
+  Timestamp transactionValidStart = 1;
+  // The Account ID that paid for this transaction
+  string accountID = 2;
+  // Whether the Transaction is of type Scheduled or no
+  bool scheduled = 3;
+  // The identifier for an internal transaction that was spawned as part
+  // of handling a user transaction. (These internal transactions share the
+  // transactionValidStart and accountID of the user transaction, so a
+  // nonce is necessary to give them a unique TransactionID.)
+  //
+  // An example is when a "parent" ContractCreate or ContractCall transaction
+  // calls one or more HTS precompiled contracts; each of the "child" transactions spawned for a precompile has a id
+  // with a different nonce.
+  int32 nonce = 4;
+}
+
+// Necessary fields to process a TransferMessage
+message TransferMessage {
+  // Source Account address (string)
+  string from = 1;
+  // Destination Account address (string)
+  string to = 2;
+  // Amount to be transferred (sint64)
+  sint64 amount = 3;
+}
+
+// A single transaction. All transaction types are possible here.
+message TransactionBody {
+  // The ID for this transaction, which includes the payer's account (the account paying the transaction fee).
+  // If two transactions have the same transactionID, they won't both have an effect
+  TransactionID transactionID = 1;
+  // The account of the node that submits the client's transaction to the network
+  string nodeAccountID = 2;
+  // The maximum transaction fee the client is willing to pay
+  uint64 transactionFee = 3;
+  // The transaction is invalid if consensusTimestamp > transactionID.transactionValidStart + transactionValidDuration
+  int64 transactionValidDuration = 4;
+  // Any notes or descriptions that should be put into the record (max length 100)
+  string memo = 5;
+  // The choices here are arranged by service in roughly lexicographical order. The field ordinals are non-sequential,
+  // and a result of the historical order of implementation.
+  oneof data {
+    // Transfer amount between accounts
+    TransferMessage transfer = 6;
+  }
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+  // Private key to sign the transaction (bytes)
+  bytes private_key = 1;
+
+  // The transaction body
+  TransactionBody body = 2;
+}
+
+// Transaction signing output.
+message SigningOutput {
+  // Signed and encoded transaction bytes.
+  bytes encoded = 1;
+}

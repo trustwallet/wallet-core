@@ -1,0 +1,241 @@
+syntax = "proto3";
+
+package TW.IoTeX.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// A transfer
+message Transfer {
+    // Amount (as string)
+    string amount  = 1;
+
+    // Destination address
+    string recipient = 2;
+
+    // Payload data
+    bytes payload  = 3;
+}
+
+// A Staking message
+message Staking {
+    // create stake
+    message Create {
+        // validator name
+        string candidateName = 1;
+
+        // amount to be staked
+        string stakedAmount = 2;
+
+        // duration
+        uint32 stakedDuration = 3;
+
+        // auto-restake
+        bool autoStake = 4;
+
+        // payload data
+        bytes payload = 5;
+    }
+
+    // unstake or withdraw
+    message Reclaim {
+        // index to claim
+        uint64 bucketIndex = 1;
+
+        // payload data
+        bytes payload = 2;
+    }
+
+    // add the amount of bucket
+    message AddDeposit {
+        // index
+        uint64 bucketIndex = 1;
+
+        // amount to add
+        string amount = 2;
+
+        // payload data
+        bytes payload = 3;
+    }
+
+    // restake the duration and autoStake flag of bucket
+    message Restake {
+        // index
+        uint64 bucketIndex = 1;
+
+        // stake duration
+        uint32 stakedDuration = 2;
+
+        // auto re-stake
+        bool autoStake = 3;
+
+        // payload data
+        bytes payload = 4;
+    }
+
+    // move the bucket to vote for another candidate or transfer the ownership of bucket to another voters
+    message ChangeCandidate {
+        // index
+        uint64 bucketIndex = 1;
+
+        // validator name
+        string candidateName = 2;
+
+        // payload data
+        bytes payload = 3;
+    }
+
+    // transfer ownserhip of stake
+    message TransferOwnership {
+        // index
+        uint64 bucketIndex = 1;
+
+        // address of voter
+        string voterAddress = 2;
+
+        // payload data
+        bytes payload = 3;
+    }
+
+    // Candidate (validator) info
+    message CandidateBasicInfo {
+        string name = 1;
+        string operatorAddress = 2;
+        string rewardAddress = 3;
+    }
+
+    // Register a Candidate
+    message CandidateRegister {
+        CandidateBasicInfo candidate = 1;
+        string stakedAmount = 2;
+        uint32 stakedDuration = 3;
+        bool autoStake = 4;
+        string ownerAddress = 5; // if ownerAddress is absent, owner of candidate is the sender
+        bytes payload = 6;
+    }
+
+    // the payload message
+    oneof message {
+        Create stakeCreate = 1;
+        Reclaim stakeUnstake = 2;
+        Reclaim stakeWithdraw = 3;
+        AddDeposit stakeAddDeposit = 4;
+        Restake stakeRestake = 5;
+        ChangeCandidate stakeChangeCandidate = 6;
+        TransferOwnership stakeTransferOwnership = 7;
+        CandidateRegister candidateRegister = 8;
+        CandidateBasicInfo candidateUpdate = 9;
+    }
+}
+
+// Arbitrary contract call
+message ContractCall {
+    // amount
+    string amount  = 1;
+
+    // contract address
+    string contract = 2;
+
+    // payload data
+    bytes data = 3;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Transaction version
+    uint32 version = 1;
+
+    // Nonce (should be larger than in the last transaction of the account)
+    uint64 nonce = 2;
+
+    // Limit for the gas used
+    uint64 gasLimit = 3;
+
+    // Gas price
+    string gasPrice = 4;
+
+    // The chain id of blockchain
+    uint32 chainID = 5;
+
+    // The secret private key used for signing (32 bytes).
+    bytes privateKey = 6;
+
+    // Payload transfer
+    oneof action {
+        Transfer transfer = 10;
+        ContractCall call = 12;
+        // Native staking
+        Staking.Create stakeCreate = 40;
+        Staking.Reclaim stakeUnstake = 41;
+        Staking.Reclaim stakeWithdraw = 42;
+        Staking.AddDeposit stakeAddDeposit = 43;
+        Staking.Restake stakeRestake = 44;
+        Staking.ChangeCandidate stakeChangeCandidate = 45;
+        Staking.TransferOwnership stakeTransferOwnership = 46;
+        Staking.CandidateRegister candidateRegister = 47;
+        Staking.CandidateBasicInfo candidateUpdate = 48;
+    }
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Signed and encoded Action bytes
+    bytes encoded = 1;
+
+    // Signed Action hash
+    bytes hash = 2;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error code description
+    string error_message = 4;
+}
+
+// An Action structure
+// Used internally
+message ActionCore {
+    // version number
+    uint32 version = 1;
+
+    // Nonce (should be larger than in the last transaction of the account)
+    uint64 nonce = 2;
+
+    // Gas limit
+    uint64 gasLimit = 3;
+
+    // Gas price
+    string gasPrice = 4;
+
+    // Chain ID
+    uint32 chainID = 5;
+
+    // action payload
+    oneof action {
+        Transfer transfer = 10;
+        ContractCall execution = 12;
+        // Native staking
+        Staking.Create stakeCreate = 40;
+        Staking.Reclaim stakeUnstake = 41;
+        Staking.Reclaim stakeWithdraw = 42;
+        Staking.AddDeposit stakeAddDeposit = 43;
+        Staking.Restake stakeRestake = 44;
+        Staking.ChangeCandidate stakeChangeCandidate = 45;
+        Staking.TransferOwnership stakeTransferOwnership = 46;
+        Staking.CandidateRegister candidateRegister = 47;
+        Staking.CandidateBasicInfo candidateUpdate = 48;
+    }
+}
+
+// Signed Action
+// Used internally
+message Action {
+    // Action details
+    ActionCore core = 1;
+
+    // public key
+    bytes senderPubKey = 2;
+
+    // the signature
+    bytes signature = 3;
+}

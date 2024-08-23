@@ -1,0 +1,162 @@
+syntax = "proto3";
+
+package TW.NEO.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Input for a transaction (output of a prev tx)
+message TransactionInput {
+    // Previous tx hash
+    bytes prev_hash = 1;
+
+    // Output index
+    fixed32 prev_index = 2;
+
+    // unspent value of UTXO
+    int64 value = 3;
+
+    // Asset
+    string asset_id = 4;
+}
+
+// extra address of Output
+message OutputAddress {
+    // Amount (as string)
+    sint64 amount = 1;
+
+    // destination address
+    string to_address = 2;
+}
+
+// Output of a transaction
+message TransactionOutput {
+    // Asset
+    string asset_id = 1;
+
+    // Amount (as string)
+    sint64 amount = 2;
+
+    // destination address
+    string to_address = 3;
+
+    // change address
+    string change_address = 4;
+
+    // extra output
+    repeated OutputAddress extra_outputs = 5;
+}
+
+// Transaction
+message Transaction {
+    // nep5 token transfer transaction
+    message Nep5Transfer {
+        string asset_id = 1;
+        string from = 2;
+        string to = 3;
+
+        // Amount to send (256-bit number)
+        bytes amount = 4;
+
+        // determine if putting THROWIFNOT & RET instructions
+        bool script_with_ret = 5;
+    }
+
+    // Generic invocation transaction
+    message InvocationGeneric {
+        // gas to use
+        uint64 gas = 1;
+
+        // Contract call payload data
+        bytes script = 2;
+    }
+
+    oneof transaction_oneof {
+        Nep5Transfer nep5_transfer = 1;
+        InvocationGeneric invocation_generic = 2;
+    }
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Available transaction inputs
+    repeated TransactionInput inputs = 1;
+
+    // Transaction outputs
+    repeated TransactionOutput outputs = 2;
+
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 3;
+
+    // Fee
+    int64 fee = 4;
+
+    // Asset ID for gas
+    string gas_asset_id = 5;
+
+    // Address for the change
+    string gas_change_address = 6;
+
+    // Optional transaction plan (if missing it will be computed)
+    TransactionPlan plan = 7;
+    Transaction transaction = 8;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+
+    // Optional error
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
+}
+
+// Describes a preliminary transaction output plan.
+message TransactionOutputPlan {
+    // Amount to be received at the other end.
+    int64 amount = 1;
+
+    // Maximum available amount.
+    int64 available_amount = 2;
+
+    // Amount that is left as change
+    int64 change = 3;
+
+    // Asset
+    string asset_id = 4;
+
+    // Destination address
+    string to_address = 5;
+
+    // Address for the change
+    string change_address = 6;
+
+    // extra output
+    repeated OutputAddress extra_outputs = 7;
+};
+
+message TransactionAttributePlan {
+    int32 usage = 1;
+    bytes data = 2;
+}
+
+// Describes a preliminary transaction plan.
+message TransactionPlan {
+    // Used assets
+    repeated TransactionOutputPlan outputs = 1;
+
+    // Selected unspent transaction outputs.
+    repeated TransactionInput inputs = 2;
+
+    // GAS used
+    int64 fee = 3;
+
+    // Optional error
+    Common.Proto.SigningError error = 4;
+
+    // Attribute
+    repeated TransactionAttributePlan attributes = 5;
+};

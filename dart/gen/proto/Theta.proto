@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package TW.Theta.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+/// Input data necessary to create a signed transaction
+message SigningInput {
+    /// Chain ID string, mainnet, testnet and privatenet
+    string chain_id = 1;
+
+    /// Recipient address
+    string to_address = 2;
+
+    /// Theta token amount to send in wei (uint256, serialized big endian)
+    bytes theta_amount = 3;
+
+    /// TFuel token amount to send in wei (uint256, serialized big endian)
+    bytes tfuel_amount = 4;
+
+    /// Sequence number of the transaction for the sender address
+    uint64 sequence = 5;
+
+    /// Fee amount in TFuel wei for the transaction (uint256, serialized big endian)
+    bytes fee = 6;
+
+    /// The secret private key used for signing (32 bytes).
+    bytes private_key = 7;
+
+    /// Public key
+    bytes public_key = 8;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    /// Signed and encoded transaction bytes
+    bytes encoded = 1;
+
+    /// Signature
+    bytes signature = 2;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error code description
+    string error_message = 4;
+}

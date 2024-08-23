@@ -1,0 +1,149 @@
+syntax = "proto3";
+
+package TW.Stellar.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Represents an asset
+// Note: alphanum12 currently not supported
+message Asset {
+    // Optional in case of non-native asset; the asset issuer address
+    string issuer = 1;
+
+    // Optional in case of non-native asset; the asset alphanum4 code.
+    string alphanum4 = 2;
+}
+
+// Create a new account
+message OperationCreateAccount {
+    // address
+    string destination = 1;
+
+    // Amount (*10^7)
+    int64 amount = 2;
+}
+
+// Perform payment
+message OperationPayment {
+    // Destination address
+    string destination = 1;
+
+    // Optional, can be left empty for native asset
+    Asset asset = 2;
+
+    // Amount (*10^7)
+    int64 amount = 3;
+}
+
+// Change trust
+message OperationChangeTrust {
+    // The asset
+    Asset asset = 1;
+
+    // Validity (time bound to), unix time.  Set to (now() + 2 * 365 * 86400) for 2 years; set to 0 for missing.
+    int64 valid_before = 2;
+}
+
+// A predicate (used in claim)
+// Rest of predicates not currently supported
+// See https://github.com/stellar/stellar-protocol/blob/master/core/cap-0023.md
+enum ClaimPredicate {
+    Predicate_unconditional = 0;
+}
+
+// Claimant: account & predicate
+message Claimant {
+    // Claimant account
+    string account = 1;
+
+    // predicate
+    ClaimPredicate predicate = 2;
+}
+
+// Create a claimable balance (2-phase transfer)
+message OperationCreateClaimableBalance {
+    // Optional, can be left empty for native asset
+    Asset asset = 1;
+
+    // Amount (*10^7)
+    int64 amount = 2;
+
+    // One or more claimants
+    repeated Claimant claimants = 3;
+}
+
+// Claim a claimable balance
+message OperationClaimClaimableBalance {
+    // 32-byte balance ID hash
+    bytes balance_id = 1;
+}
+
+// Empty memo (placeholder)
+message MemoVoid {
+}
+
+// Memo with text
+message MemoText {
+    string text = 1;
+}
+
+// Memo with an ID
+message MemoId {
+    int64 id = 1;
+}
+
+// Memo with a hash
+message MemoHash {
+    bytes hash = 1;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Transaction fee
+    int32 fee = 1;
+
+    // Account sequence
+    int64 sequence = 2;
+
+    // Source account
+    string account = 3;
+
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 4;
+
+    // Wellknown passphrase, specific to the chain
+    string passphrase = 5;
+
+    // Payload message
+    oneof operation_oneof {
+        OperationCreateAccount op_create_account = 6;
+        OperationPayment op_payment = 7;
+        OperationChangeTrust op_change_trust = 8;
+        OperationCreateClaimableBalance op_create_claimable_balance = 14;
+        OperationClaimClaimableBalance op_claim_claimable_balance = 15;
+    }
+
+    // Memo
+    oneof memo_type_oneof {
+        MemoVoid memo_void = 9;
+        MemoText memo_text = 10;
+        MemoId memo_id = 11;
+        MemoHash memo_hash = 12;
+        MemoHash memo_return_hash = 13;
+    }
+
+    int64 time_bounds = 16;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Signature.
+    string signature = 1;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
+}

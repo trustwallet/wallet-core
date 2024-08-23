@@ -1,0 +1,198 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+syntax = "proto3";
+
+package TW.Aptos.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Necessary fields to process a TransferMessage
+message TransferMessage {
+  // Destination Account address (string)
+  string to = 1;
+  // Amount to be transferred (uint64)
+  uint64 amount = 2;
+}
+
+// Necessary tag for type function argument
+message StructTag {
+  // Address of the account
+  string account_address = 1;
+  // Module name
+  string module = 2;
+  // Identifier
+  string name = 3;
+}
+
+// Necessary fields to process a `0x1::coin::transfer` function.
+message TokenTransferMessage {
+  // Destination Account address (string)
+  string to = 1;
+  // Amount to be transferred (uint64)
+  uint64 amount = 2;
+  // token function to call, e.g BTC: 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC
+  StructTag function = 3;
+}
+
+// Necessary fields to process a `0x1::aptos_account::transfer_coins` function.
+// Can be used to transfer tokens with registering the recipient account if needed.
+message TokenTransferCoinsMessage {
+  // Destination Account address (string)
+  string to = 1;
+  // Amount to be transferred (uint64)
+  uint64 amount = 2;
+  // token function to call, e.g BTC: 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC
+  StructTag function = 3;
+}
+
+// Necessary fields to process a ManagedTokensRegisterMessage
+message ManagedTokensRegisterMessage {
+  // token function to register, e.g BTC: 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC
+  StructTag function = 1;
+}
+
+// Necessary fields to process a CreateAccountMessage
+message CreateAccountMessage {
+  // auth account address to create
+  string auth_key = 1;
+}
+
+// Necessary fields to process an OfferNftMessage
+message OfferNftMessage {
+  // Receiver address
+  string receiver = 1;
+  // Creator address
+  string creator = 2;
+  // Name of the collection
+  string collectionName = 3;
+  // Name of the NFT
+  string name = 4;
+  // Property version (should be often 0)
+  uint64 property_version = 5;
+  // Amount of NFT's to transfer (should be often 1)
+  uint64 amount = 6;
+}
+
+// Necessary fields to process an CancelOfferNftMessage
+message CancelOfferNftMessage {
+  // Receiver address
+  string receiver = 1;
+  // Creator address
+  string creator = 2;
+  // Name of the collection
+  string collectionName = 3;
+  // Name of the NFT
+  string name = 4;
+  // Property version (should be often 0)
+  uint64 property_version = 5;
+}
+
+// Necessary fields to process an ClaimNftMessage
+message ClaimNftMessage {
+  // Sender address
+  string sender = 1;
+  // Creator address
+  string creator = 2;
+  // Name of the collection
+  string collectionName = 3;
+  // Name of the NFT
+  string name = 4;
+  // Property version (should be often 0)
+  uint64 property_version = 5;
+}
+
+message TortugaClaim {
+  // idx of ticket to claim
+  uint64 idx = 1;
+}
+
+message TortugaStake {
+  // Amount to be stake
+  uint64 amount = 1;
+}
+
+message TortugaUnstake {
+  // Amount to be stake
+  uint64 amount = 1;
+}
+
+message LiquidStaking {
+  // Smart contract address of liquid staking module
+  string smart_contract_address = 1;
+
+  oneof liquid_stake_transaction_payload {
+    TortugaStake stake = 2;
+    TortugaUnstake unstake = 3;
+    TortugaClaim claim = 4;
+  }
+}
+
+message NftMessage {
+  oneof nft_transaction_payload {
+    OfferNftMessage offer_nft = 1;
+    CancelOfferNftMessage cancel_offer_nft = 2;
+    ClaimNftMessage claim_nft = 3;
+  }
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+  // Sender Account address (string)
+  string sender = 1;
+  // Sequence number, incremented atomically for each tx present on the account, start at 0 (int64)
+  int64 sequence_number = 2;
+  // Max gas amount that the user is willing to pay (uint64)
+  uint64 max_gas_amount = 3;
+  // Gas unit price - queried through API (uint64)
+  uint64 gas_unit_price = 4;
+  // Expiration timestamp for the transaction, can't be in the past (uint64)
+  uint64 expiration_timestamp_secs = 5;
+  //  Chain id 1 (mainnet) 32(devnet) (uint32 - casted in uint8_t later)
+  uint32 chain_id = 6;
+  //  Private key to sign the transaction (bytes)
+  bytes private_key = 7;
+  // hex encoded function to sign, use it for smart contract approval (string)
+  string any_encoded = 8;
+
+  oneof transaction_payload {
+    TransferMessage transfer = 9;
+    TokenTransferMessage token_transfer = 10;
+    CreateAccountMessage create_account = 11;
+    NftMessage nft_message = 12;
+    ManagedTokensRegisterMessage register_token = 13;
+    LiquidStaking liquid_staking_message = 14;
+    TokenTransferCoinsMessage token_transfer_coins = 15;
+  }
+}
+
+// Information related to the signed transaction
+message TransactionAuthenticator {
+  // Signature part of the signed transaction (bytes)
+  bytes signature = 1;
+  // Public key of the signer (bytes)
+  bytes public_key = 2;
+}
+
+// Transaction signing output.
+message SigningOutput {
+  /// The raw transaction (bytes)
+  bytes raw_txn = 1;
+
+  /// Public key and signature to authenticate
+  TransactionAuthenticator authenticator = 2;
+
+  /// Signed and encoded transaction bytes.
+  bytes encoded = 3;
+
+  // Transaction json format for api broadcasting (string)
+  string json = 4;
+
+  // Error code, 0 is ok, other codes will be treated as errors.
+  Common.Proto.SigningError error = 5;
+
+  // Error description.
+  string error_message = 6;
+}

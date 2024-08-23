@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package TW.Waves.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Transfer transaction
+message TransferMessage {
+    // amount
+    int64 amount = 1;
+
+    // asset ID
+    string asset = 2;
+
+    // minimum 0.001 Waves (100000 Wavelets) for now
+    int64 fee = 3;
+
+    // asset of the fee
+    string fee_asset = 4;
+
+    // destination address
+    string to = 5;
+
+    // any 140 bytes payload, will be displayed to the client as utf-8 string
+    bytes attachment = 6;
+}
+
+// Lease transaction
+message LeaseMessage {
+    // amount
+    int64 amount = 1;
+
+    // destination
+    string to = 2;
+
+    // minimum 0.001 Waves (100000 Wavelets) for now
+    int64 fee = 3;
+}
+
+// Cancel Lease transaction
+message CancelLeaseMessage {
+    // Lease ID to cancel
+    string lease_id = 1;
+
+    // Fee used
+    int64 fee = 2;
+}
+
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // in millis
+    int64 timestamp = 1;
+
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 2;
+
+    // Payload message
+    oneof message_oneof {
+        TransferMessage transfer_message = 3;
+        LeaseMessage lease_message = 4;
+        CancelLeaseMessage cancel_lease_message = 5;
+    }
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // signature data
+    bytes signature = 1;
+
+    // transaction in JSON format
+    string json = 2;
+}
+
+

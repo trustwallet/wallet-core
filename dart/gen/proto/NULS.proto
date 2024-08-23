@@ -1,0 +1,140 @@
+syntax = "proto3";
+
+package TW.NULS.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Transaction from address
+message TransactionCoinFrom {
+    // Source address
+    string from_address = 1;
+
+    // Chain ID
+    uint32 assets_chainid = 2;
+
+    // ID of the asset
+    uint32 assets_id = 3;
+
+    // transaction out amount (256-bit number)
+    bytes id_amount = 4;
+
+    // Nonce, 8 bytes
+    bytes nonce = 5;
+
+    // lock status: 1 locked; 0 unlocked
+    uint32 locked = 6;
+}
+
+// Transaction to a destination
+message TransactionCoinTo {
+    // destination address
+    string to_address = 1;
+
+    // Chain ID
+    uint32 assets_chainid = 2;
+
+    // ID of the asset
+    uint32 assets_id = 3;
+
+    // transaction amount (uint256, serialized big endian)
+    bytes id_amount = 4;
+
+    // lock time
+    uint32 lock_time = 5;
+}
+
+// A signature
+message Signature {
+    // Length of public key data
+    uint32 pkey_len = 1;
+
+    // The public key
+    bytes public_key = 2;
+
+    // The length of the signature
+    uint32 sig_len = 3;
+
+    // The signature data
+    bytes signature = 4;
+}
+
+// A transaction
+message Transaction {
+    // transaction type
+    uint32  type = 1;
+
+    // Timestamp of the transaction
+    uint32  timestamp = 2;
+
+    // Optional string remark
+    string  remark = 3;
+
+    // The raw data
+    bytes   tx_data = 4;
+
+    // CoinFrom
+    repeated TransactionCoinFrom input = 5;
+
+    // CoinTo
+    repeated TransactionCoinTo output = 6;
+
+    // Signature
+    Signature tx_sigs = 7;
+
+    // Tx hash
+    uint32 hash = 8;
+}
+
+// Input data necessary to create a signed order.
+message SigningInput {
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 1;
+
+    // Source address
+    string from = 2;
+
+    // Destination address
+    string to = 3;
+
+    // Transfer amount (uint256, serialized big endian)
+    bytes  amount = 4;
+
+    // Chain ID
+    uint32 chain_id = 5;
+
+    // Asset ID
+    uint32 idassets_id = 6;
+
+    // The last 8 bytes of latest transaction hash 
+    bytes nonce = 7;
+
+    // Optional memo remark
+    string remark = 8;
+
+    // Account balance 
+    bytes  balance = 9;
+
+    // time, accurate to the second
+    uint32 timestamp = 10;
+    // external address paying fee, required for token transfer, optional for NULS transfer, depending on if an external fee payer is provided. If provided, it will be the fee paying address.
+    string fee_payer = 11;
+    // fee payer address nonce, required for token transfer, optional for NULS transfer, depending on if fee_payer is provided.
+    bytes fee_payer_nonce = 12;
+    // fee payer address private key, required for token transfer, optional for NULS transfer, depending on if fee_payer is provided.
+    bytes fee_payer_private_key = 13;
+    // fee payer NULS balance, it is required for token transfer. optional for NULS transfer, depending on if fee_payer is provided.
+    bytes fee_payer_balance = 14;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Encoded transaction
+    bytes encoded = 1;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
+}

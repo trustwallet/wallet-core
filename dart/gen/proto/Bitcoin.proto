@@ -1,0 +1,261 @@
+syntax = "proto3";
+
+package TW.Bitcoin.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "BitcoinV2.proto";
+import "Common.proto";
+
+// A transaction, with its inputs and outputs
+message Transaction {
+    // Transaction data format version.
+    sint32 version = 1;
+
+    // The block number or timestamp at which this transaction is unlocked.
+    uint32 lockTime = 2;
+
+    // A list of 1 or more transaction inputs or sources for coins.
+    repeated TransactionInput inputs = 3;
+
+    // A list of 1 or more transaction outputs or destinations for coins.
+    repeated TransactionOutput outputs = 4;
+}
+
+// Bitcoin transaction input.
+message TransactionInput {
+    // Reference to the previous transaction's output.
+    OutPoint previousOutput = 1;
+
+    // Transaction version as defined by the sender.
+    uint32 sequence = 2;
+
+    // Computational script for confirming transaction authorization.
+    bytes script = 3;
+}
+
+// Bitcoin transaction out-point reference.
+message OutPoint {
+    // The hash of the referenced transaction (network byte order, usually needs to be reversed).
+    bytes hash = 1;
+
+    // The index of the specific output in the transaction.
+    uint32 index = 2;
+
+    // Transaction version as defined by the sender.
+    uint32 sequence = 3;
+
+    // The tree in utxo, only works for DCR
+    int32 tree = 4;
+}
+
+// Bitcoin transaction output.
+message TransactionOutput {
+    // Transaction amount.
+    int64 value = 1;
+
+    // Usually contains the public key as a Bitcoin script setting up conditions to claim this output.
+    bytes script = 2;
+
+    // Optional spending script for P2TR script-path transactions.
+    bytes spendingScript = 5;
+}
+
+// An unspent transaction output, that can serve as input to a transaction
+message UnspentTransaction {
+    // The unspent output
+    OutPoint out_point = 1;
+
+    // Script for claiming this UTXO
+    bytes script = 2;
+
+    // Amount of the UTXO
+    int64 amount = 3;
+
+    // The transaction variant
+    TransactionVariant variant = 4;
+
+    // Optional spending script for P2TR script-path transactions.
+    bytes spendingScript = 5;
+}
+
+enum TransactionVariant {
+    P2PKH = 0;
+    P2WPKH = 1;
+    P2TRKEYPATH = 2;
+    BRC20TRANSFER = 3;
+    NFTINSCRIPTION = 4;
+}
+
+// Pair of destination address and amount, used for extra outputs
+message OutputAddress {
+    // Destination address
+    string to_address = 1;
+
+    // Amount to be paid to this output
+    int64 amount = 2;
+}
+
+// Optional index of a corresponding output in the transaction.
+message OutputIndex {
+    uint32 index = 1;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Hash type to use when signing.
+    uint32 hash_type = 1;
+
+    // Amount to send.  Transaction created will have this amount in its output, 
+    // except when use_max_amount is set, in that case this amount is not relevant, maximum possible amount will be used (max avail less fee).
+    // If amount is equal or more than the available amount, also max amount will be used.
+    int64 amount = 2;
+
+    // Transaction fee rate, satoshis per byte, used to compute required fee (when planning)
+    int64 byte_fee = 3;
+
+    // Recipient's address, as string.
+    string to_address = 4;
+
+    // Change address, as string.
+    string change_address = 5;
+
+    // The available secret private key or keys required for signing (32 bytes each).
+    repeated bytes private_key = 6;
+
+    // Available redeem scripts indexed by script hash.
+    map<string, bytes> scripts = 7;
+
+    // Available input unspent transaction outputs.
+    repeated UnspentTransaction utxo = 8;
+
+    // Set if sending max amount is requested.
+    bool use_max_amount = 9;
+
+    // Coin type (used by forks).
+    uint32 coin_type = 10;
+
+    // Optional transaction plan. If missing, plan will be computed.
+    TransactionPlan plan = 11;
+
+    // Optional lockTime, default value 0 means no time locking.
+    // If all inputs have final (`0xffffffff`) sequence numbers then `lockTime` is irrelevant.
+    // Otherwise, the transaction may not be added to a block until after `lockTime`.
+    //  value  < 500000000 : Block number at which this transaction is unlocked
+    //  value >= 500000000 : UNIX timestamp at which this transaction is unlocked
+    uint32 lock_time = 12;
+
+    // Optional zero-amount, OP_RETURN output
+    bytes output_op_return = 13;
+
+    // Optional index of the OP_RETURN output in the transaction.
+    // If not set, OP_RETURN output will be pushed as the latest output.
+    OutputIndex output_op_return_index = 26;
+
+    // Optional additional destination addresses, additional to first to_address output
+    repeated OutputAddress extra_outputs = 14;
+
+    // If use max utxo.
+    bool use_max_utxo = 15;
+
+    // If disable dust filter.
+    bool disable_dust_filter = 16;
+
+    // transaction creation time that will be used for verge(xvg)
+    uint32 time = 17;
+
+    // If set, uses Bitcoin 2.0 Signing protocol.
+    // As a result, `Bitcoin.Proto.SigningOutput.signing_result_v2` is set.
+    BitcoinV2.Proto.SigningInput signing_v2 = 21;
+
+    // One of the "Dust" amount policies.
+    // Later, we plan to add support for `DynamicDust` policy with a `min_relay_fee` amount.
+    oneof dust_policy {
+        // Use a constant "Dust" threshold.
+        int64 fixed_dust_threshold = 24;
+    }
+}
+
+// Describes a preliminary transaction plan.
+message TransactionPlan {
+    // Amount to be received at the other end.
+    int64 amount = 1;
+
+    // Maximum available amount in all the input UTXOs.
+    int64 available_amount = 2;
+
+    // Estimated transaction fee.
+    int64 fee = 3;
+
+    // Remaining change
+    int64 change = 4;
+
+    // Selected unspent transaction outputs (subset of all input UTXOs)
+    repeated UnspentTransaction utxos = 5;
+
+    // Zcash branch id
+    bytes branch_id = 6;
+
+    // Optional error
+    Common.Proto.SigningError error = 7;
+
+    // Optional zero-amount, OP_RETURN output
+    bytes output_op_return = 8;
+
+    // Optional index of the OP_RETURN output in the transaction.
+    // If not set, OP_RETURN output will be pushed as the latest output.
+    OutputIndex output_op_return_index = 14;
+
+    // zen & bitcoin diamond preblockhash
+    bytes preblockhash = 9;
+
+    // zen preblockheight
+    int64 preblockheight = 10;
+
+    // Result of a transaction planning using the Bitcoin 2.0 protocol.
+    // Set if `Bitcoin.Proto.SigningInput.planning_v2` used.
+    BitcoinV2.Proto.TransactionPlan planning_result_v2 = 12;
+};
+
+// Result containing the signed and encoded transaction.
+// Note that the amount may be different than the requested amount to account for fees and available funds.
+message SigningOutput {
+    // Resulting transaction.
+    Transaction transaction = 1;
+
+    // Signed and encoded transaction bytes.
+    bytes encoded = 2;
+
+    // Transaction ID (hash)
+    string transaction_id = 3;
+
+    // Optional error
+    Common.Proto.SigningError error = 4;
+
+    // error description
+    string error_message = 5;
+
+    // Result of a transaction signing using the Bitcoin 2.0 protocol.
+    // Set if `Bitcoin.Proto.SigningInput.signing_v2` used.
+    BitcoinV2.Proto.SigningOutput signing_result_v2 = 7;
+}
+
+/// Pre-image hash to be used for signing
+message HashPublicKey {
+    /// Pre-image data hash that will be used for signing
+    bytes data_hash = 1;
+
+    /// public key hash used for signing
+    bytes public_key_hash = 2;
+}
+
+/// Transaction pre-signing output
+message PreSigningOutput {
+    /// hash, public key list
+    repeated HashPublicKey hash_public_keys = 1;
+
+    /// error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    /// error description
+    string error_message = 3;
+}

@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package TW.Aion.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Nonce (uint256, serialized big endian)
+    bytes nonce = 1;
+
+    // Gas price (uint256, serialized big endian)
+    bytes gas_price = 2;
+
+    // Gas limit (uint256, serialized big endian)
+    bytes gas_limit = 3;
+
+    // Recipient's address.
+    string to_address = 4;
+
+    // Amount to send in wei (uint256, serialized big endian)
+    bytes amount = 5;
+
+    // Optional payload
+    bytes payload = 6;
+
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 7;
+
+    // Timestamp
+    uint64 timestamp = 8;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+
+    // Signature.
+    bytes signature = 2;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error description
+    string error_message = 4;
+}

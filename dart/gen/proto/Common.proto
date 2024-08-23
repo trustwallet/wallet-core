@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package TW.Common.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Error codes, used in multiple blockchains.
+enum SigningError {
+    // This is the OK case, with value=0
+    OK = 0;
+    
+    // Chain-generic codes:
+    // Generic error (used if there is no suitable specific error is adequate)
+    Error_general = 1;
+    // Internal error, indicates some very unusual, unexpected case
+    Error_internal = 2;
+
+    // Chain-generic codes, input related:
+    // Low balance: the sender balance is not enough to cover the send and other auxiliary amount such as fee, deposit, or minimal balance.
+    Error_low_balance = 3;
+    // Requested amount is zero, send of 0 makes no sense
+    Error_zero_amount_requested = 4;
+    // One required key is missing (too few or wrong keys are provided)
+    Error_missing_private_key = 5;
+    // A private key provided is invalid (e.g. wrong size, usually should be 32 bytes)
+    Error_invalid_private_key = 15;
+    // A provided address (e.g. destination address) is invalid
+    Error_invalid_address = 16;
+    // A provided input UTXO is invalid
+    Error_invalid_utxo = 17;
+    // The amount of an input UTXO is invalid
+    Error_invalid_utxo_amount = 18;
+
+    // Chain-generic, fee related:
+    // Wrong fee is given, probably it is too low to cover minimal fee for the transaction
+    Error_wrong_fee = 6;
+
+    // Chain-generic, signing related:
+    // General signing error
+    Error_signing = 7;
+    // Resulting transaction is too large
+    // [NEO] Transaction too big, fee in GAS needed or try send by parts
+    Error_tx_too_big = 8;
+
+    // UTXO-chain specific, input related:
+    // No input UTXOs provided [BTC]
+    Error_missing_input_utxos = 9;
+    // Not enough non-dust input UTXOs to cover requested amount (dust UTXOs are filtered out) [BTC]
+    Error_not_enough_utxos = 10;
+
+    // UTXO-chain specific, script related:
+    // [BTC] Missing required redeem script
+    Error_script_redeem = 11;
+    // [BTC] Invalid required output script 
+    Error_script_output = 12;
+    // [BTC] Unrecognized witness program
+    Error_script_witness_program = 13;
+
+    // Invalid memo, e.g. [XRP] Invalid tag
+    Error_invalid_memo = 14;
+    // Some input field cannot be parsed
+    Error_input_parse = 19;
+    // Multi-input and multi-output transaction not supported
+    Error_no_support_n2n = 20;
+    // Incorrect count of signatures passed to compile
+    Error_signatures_count = 21;
+    // Incorrect input parameter
+    Error_invalid_params = 22;
+    // Invalid input token amount
+    Error_invalid_requested_token_amount = 23;
+    // Operation not supported for the chain.
+    Error_not_supported = 24;
+    // Requested amount is too low (less dust).
+    Error_dust_amount_requested = 25;
+}

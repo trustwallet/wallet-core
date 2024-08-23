@@ -1,0 +1,154 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+syntax = "proto3";
+
+package TW.Sui.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Object info (including Coins).
+message ObjectRef {
+    // Hex string representing the object ID.
+    string object_id = 1;
+    // Object version.
+    uint64 version = 2;
+    // Base58 string representing the object digest.
+    string object_digest = 3;
+}
+
+// Optional amount.
+message Amount {
+    uint64 amount = 1;
+}
+
+// Base64 encoded msg to sign (string)
+message SignDirect {
+    // Obtain by calling any write RpcJson on SUI
+    string unsigned_tx_msg = 1;
+}
+
+// Send `Coin<T>` to a list of addresses, where T can be any coin type, following a list of amounts.
+// The object specified in the gas field will be used to pay the gas fee for the transaction.
+// The gas object can not appear in input_coins.
+// https://docs.sui.io/sui-api-ref#unsafe_pay
+message Pay {
+    // The Sui coins to be used in this transaction, including the coin for gas payment.
+    repeated ObjectRef input_coins = 1;
+
+    // The recipients' addresses, the length of this vector must be the same as amounts.
+    repeated string recipients = 2;
+
+    // The amounts to be transferred to recipients, following the same order.
+    repeated uint64 amounts = 3;
+
+    // Gas object to be used in this transaction.
+    ObjectRef gas = 4;
+}
+
+// Send SUI coins to a list of addresses, following a list of amounts.
+// This is for SUI coin only and does not require a separate gas coin object.
+// https://docs.sui.io/sui-api-ref#unsafe_paysui
+message PaySui {
+    // The Sui coins to be used in this transaction, including the coin for gas payment.
+    repeated ObjectRef input_coins = 1;
+
+    // The recipients' addresses, the length of this vector must be the same as amounts.
+    repeated string recipients = 2;
+
+    // The amounts to be transferred to recipients, following the same order.
+    repeated uint64 amounts = 3;
+}
+
+// Send all SUI coins to one recipient.
+// This is for SUI coin only and does not require a separate gas coin object.
+// https://docs.sui.io/sui-api-ref#unsafe_payallsui
+message PayAllSui {
+    // The Sui coins to be used in this transaction, including the coin for gas payment.
+    repeated ObjectRef input_coins = 1;
+
+    // The recipient address.
+    string recipient = 2;
+}
+
+// Add stake to a validator's staking pool using multiple coins and amount.
+// https://docs.sui.io/sui-api-ref#unsafe_requestaddstake
+message RequestAddStake {
+    // Coin<SUI> objects to stake.
+    repeated ObjectRef coins = 1;
+
+    // Optional stake amount.
+    Amount amount = 2;
+
+    // The validator's Sui address.
+    string validator = 3;
+
+    // Gas object to be used in this transaction.
+    ObjectRef gas = 4;
+}
+
+// Withdraw stake from a validator's staking pool.
+// https://docs.sui.io/sui-api-ref#unsafe_requestwithdrawstake
+message RequestWithdrawStake {
+    // StakedSui object ID.
+    ObjectRef staked_sui = 1;
+
+    // Gas object to be used in this transaction.
+    ObjectRef gas = 2;
+}
+
+/// Transfer an object from one address to another. The object's type must allow public transfers.
+/// https://docs.sui.io/sui-api-ref#unsafe_transferobject
+message TransferObject {
+    // Object ID to be transferred.
+    ObjectRef object = 1;
+
+    // The recipient address.
+    string recipient = 2;
+
+    // Gas object to be used in this transaction.
+    ObjectRef gas = 3;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    //  Private key to sign the transaction (bytes).
+    bytes private_key = 1;
+
+    // Optional transaction signer.
+    // Needs to be set if no private key provided at `TransactionCompiler` module.
+    string signer = 2;
+
+    oneof transaction_payload {
+        SignDirect sign_direct_message = 3;
+        Pay pay = 4;
+        PaySui pay_sui = 5;
+        PayAllSui pay_all_sui = 6;
+        RequestAddStake request_add_stake = 7;
+        RequestWithdrawStake request_withdraw_stake = 8;
+        TransferObject transfer_object = 9;
+    }
+
+    // The gas budget, the transaction will fail if the gas cost exceed the budget.
+    uint64 gas_budget = 12;
+
+    // Reference gas price.
+    uint64 reference_gas_price = 13;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    /// The raw transaction without indent in base64
+    string unsigned_tx = 1;
+
+    /// The signature encoded in base64
+    string signature = 2;
+
+    // Error code, 0 is ok, other codes will be treated as errors.
+    Common.Proto.SigningError error = 3;
+
+    // Error description.
+    string error_message = 4;
+}

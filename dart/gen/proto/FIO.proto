@@ -1,0 +1,206 @@
+syntax = "proto3";
+
+package TW.FIO.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// A public blockchain address, such as {"BTC", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"}
+message PublicAddress {
+    // Coin symbol for the address (a.k.a. tokenCode)
+    string coin_symbol = 1;
+
+    // The address
+    string address = 2;
+}
+
+// Payload content for New Funds requests
+message NewFundsContent {
+    // Public addressed of the payee, on the mentioned blockchain.
+    string payee_public_address = 1;
+
+    // Amount requested (as string)
+    string amount = 2;
+
+    // Coin symbol of the amount requested (a.k.a. tokenCode)
+    string coin_symbol = 3;
+
+    // Memo free text.  Optional, may be empty.
+    string memo = 4;
+
+    // Hash.  Optional, may be empty.
+    string hash = 5;
+
+    // Attached offline URL.  Optional, may be empty.
+    string offline_url = 6;
+}
+
+// Different Actions
+message Action {
+    // Action for registering a FIO name; register_fio_address
+    message RegisterFioAddress {
+        // The FIO name to be registered. Ex.: "alice@trust"
+        string fio_address = 1;
+
+        // FIO address of the owner. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
+        string owner_fio_public_key = 2;
+        
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 fee = 3;
+        
+        // Note: actor is not needed, computed from owner_fio_public_key
+    }
+
+    // Acion for adding public chain addresses to a FIO name; add_pub_address
+    // Note: actor is not needed, computed from private key
+    message AddPubAddress {
+        // The FIO name already registered to the owner. Ex.: "alice@trust"
+        string fio_address = 1;
+
+        // List of public addresses to be registered, ex. {{"BTC", "bc1qv...7v"},{"BNB", "bnb1ts3...9s"}}
+        repeated PublicAddress public_addresses = 2;
+        
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 fee = 3;        
+    }
+
+    // Action for removing public chain addresses from a FIO name; remove_pub_address
+    // Note: actor is not needed, computed from private key
+    message RemovePubAddress {
+        // The FIO name already registered to the owner. Ex.: "alice@trust"
+        string fio_address = 1;
+
+        // List of public addresses to be unregistered, ex. {{"BTC", "bc1qv...7v"},{"BNB", "bnb1ts3...9s"}}
+        repeated PublicAddress public_addresses = 2;
+
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 fee = 3;
+    }
+
+    // Action for removing public chain addresses from a FIO name; remove_pub_address
+    // Note: actor is not needed, computed from private key
+    message RemoveAllPubAddress {
+        // The FIO name already registered to the owner. Ex.: "alice@trust"
+        string fio_address = 1;
+
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 fee = 3;
+    }
+
+    // Action for transferring FIO coins; transfer_tokens_pub_key
+    // Note: actor is not needed, computed from private key
+    message Transfer {
+        // FIO address of the payee. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
+        string payee_public_key = 1;
+        
+        // Amount of FIO coins to be transferred.
+        uint64 amount = 2;
+
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 fee = 3;
+    }
+
+    // Action for renewing a FIO name; renew_fio_address
+    // Note: actor is not needed, computed from private key
+    message RenewFioAddress {
+        // The FIO name to be renewed. Ex.: "alice@trust"
+        string fio_address = 1;
+
+        // FIO address of the owner. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
+        string owner_fio_public_key = 2;
+        
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 fee = 3;
+    }
+
+    // Action for creating a new payment request; new_funds_request
+    // Note: actor is not needed, computed from private key
+    message NewFundsRequest {
+        // The FIO name of the requested payer. Ex.: "alice@trust"
+        string payer_fio_name = 1;
+
+        // The FIO address (not name) of the payer, owner of payee_fio_name.  Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
+        string payer_fio_address = 2;
+
+        // Own FIO name.  Ex.: "bob@trust"
+        string payee_fio_name = 3;
+
+        // Payload content of the request
+        NewFundsContent content = 4;
+
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 fee = 5;
+    }
+
+    // Action for adding `100 * bundle_sets` bundled transactions to the supplied FIO Handle. When bundles are purchased one or more sets of bundled transactions are added to the existing count.
+    message AddBundledTransactions {
+        // The FIO name already registered to the owner. Ex.: "alice@trust"
+        string fio_address = 1;
+
+        // Number of bundled sets. One set is 100 bundled transactions.
+        uint64 bundle_sets = 2;
+
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 fee = 3;
+    }
+
+    // Payload message
+    oneof message_oneof {
+        RegisterFioAddress register_fio_address_message = 1;
+        AddPubAddress add_pub_address_message = 2;
+        Transfer transfer_message = 3;
+        RenewFioAddress renew_fio_address_message = 4;
+        NewFundsRequest new_funds_request_message = 5;
+        RemovePubAddress remove_pub_address_message = 6;
+        RemoveAllPubAddress remove_all_pub_addresses_message = 7;
+        AddBundledTransactions add_bundled_transactions_message = 8;
+    }
+}
+
+// Represents current parameters of the FIO blockchain
+message ChainParams {
+    // Constant chainId (32 bytes), obtained from get_info API
+    bytes chain_id = 1;
+    
+    // The last block number, obtained from get_info API
+    uint64 head_block_number = 2;
+
+    // Block prefix of last block, obtained from get_block API
+    uint64 ref_block_prefix = 3;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Expiry for this message, in unix time. Can be 0, then it is taken from current time with default expiry
+    uint32 expiry = 1;
+
+    // Current parameters of the FIO blockchain
+    ChainParams chain_params = 2;
+    
+    // The secret private key matching the address, used for signing (32 bytes).
+    bytes private_key = 3;
+
+    // The FIO name of the originating wallet (project-wide constant)
+    string tpid = 4;
+
+    // Context-specific action data
+    Action action = 5;
+
+    // FIO address of the owner. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
+    string owner_public_key = 6;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Signed transaction in JSON
+    string json = 1;
+
+    // Optional error
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
+
+    // Performed action name, ex. "addaddress", "remaddress", "trnsfiopubky" etc.
+    string action_name = 4;
+}

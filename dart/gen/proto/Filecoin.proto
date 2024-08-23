@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package TW.Filecoin.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Defines the type of `from` address derivation.
+enum DerivationType {
+    // Defines a Secp256k1 (`f1`) derivation for the sender address.
+    // Default derivation type.
+    SECP256K1 = 0;
+    // Defines a Delegated (`f4`) derivation for the sender address.
+    DELEGATED = 1;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // The secret private key of the sender account, used for signing (32 bytes).
+    bytes private_key = 1;
+
+    // Recipient's address.
+    string to = 2;
+
+    // Transaction nonce.
+    uint64 nonce = 3;
+
+    // Transfer value (uint256, serialized big endian)
+    bytes value = 4;
+
+    // Gas limit.
+    int64 gas_limit = 5;
+
+    // Gas fee cap (uint256, serialized big endian)
+    bytes gas_fee_cap = 6;
+
+    // Gas premium (uint256, serialized big endian)
+    bytes gas_premium = 7;
+
+    // Message params.
+    bytes params = 8;
+
+    // Sender address derivation type.
+    DerivationType derivation = 9;
+
+    // Public key secp256k1 extended
+    bytes public_key = 10;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Resulting transaction, in JSON.
+    string json = 1;
+
+    // Error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // Error description
+    string error_message = 3;
+}

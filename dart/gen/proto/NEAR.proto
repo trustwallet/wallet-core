@@ -1,0 +1,166 @@
+syntax = "proto3";
+
+package TW.NEAR.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Public key with type
+message PublicKey {
+    // Key type
+    uint32 key_type = 1;
+
+    // The public key data
+    bytes data = 2;
+}
+
+// Permissions for a function call
+message FunctionCallPermission {
+    // uint128 / big endian byte order
+    bytes allowance = 1;
+
+    string receiver_id = 2;
+
+    repeated string method_names = 3;
+}
+
+// Full access
+message FullAccessPermission {
+}
+
+// Access key: nonce + permission
+message AccessKey {
+    // Nonce
+    uint64 nonce = 1;
+
+    // Permission
+    oneof permission {
+        FunctionCallPermission function_call = 2;
+        FullAccessPermission full_access = 3;
+    }
+}
+
+// Create Account
+message CreateAccount {
+}
+
+// Deploying a contract
+message DeployContract {
+    bytes code = 1;
+}
+
+// A method/function call
+message FunctionCall {
+    // Method/function name
+    string method_name = 1;
+
+    // input arguments
+    bytes args = 2;
+
+    // gas
+    uint64 gas = 3;
+
+    // uint128 / big endian byte order
+    bytes deposit = 4;
+}
+
+// Transfer
+message Transfer {
+    // amount; uint128 / big endian byte order
+    bytes deposit = 1; 
+}
+
+// Stake
+message Stake {
+    // amount; uint128 / big endian byte order
+    bytes stake = 1;
+
+    // owner public key
+    PublicKey public_key = 2;
+}
+
+// Add a key
+message AddKey {
+    PublicKey public_key = 1;
+    AccessKey access_key = 2;
+}
+
+// Delete a key
+message DeleteKey {
+    PublicKey public_key = 1;
+}
+
+// Delete account
+message DeleteAccount {
+    string beneficiary_id = 1;
+}
+
+// Fungible token transfer
+message TokenTransfer {
+    // Token amount. Base-10 decimal string.
+    string token_amount = 1;
+
+    // ID of the receiver.
+    string receiver_id = 2;
+
+    // Gas.
+    uint64 gas = 3;
+
+    // NEAR deposit amount; uint128 / big endian byte order.
+    bytes deposit = 4;
+}
+
+// Represents an action
+message Action {
+    oneof payload {
+        CreateAccount create_account = 1;
+        DeployContract deploy_contract = 2;
+        FunctionCall function_call = 3;
+        Transfer transfer = 4;
+        Stake stake = 5;
+        AddKey add_key = 6;
+        DeleteKey delete_key = 7;
+        DeleteAccount delete_account = 8;
+        // Gap in field numbering is intentional as it's not a standard NEAR action.
+        TokenTransfer token_transfer = 13;
+    }
+}
+
+// Input data necessary to create a signed order.
+message SigningInput {
+    // ID of the sender
+    string signer_id = 1;
+
+    // Nonce (should be larger than in the last transaction of the account)
+    uint64 nonce = 2;
+
+    // ID of the receiver
+    string receiver_id = 3;
+
+    // Recent block hash
+    bytes block_hash = 4;
+
+    // Payload action(s)
+    repeated Action actions = 5;
+
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 6;
+
+    // The public key used for compiling a transaction with a signature.
+    bytes public_key = 7;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Signed transaction blob
+    bytes signed_transaction = 1;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
+    
+    // Hash of the transaction
+    bytes hash = 4;
+}

@@ -1,0 +1,206 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+syntax = "proto3";
+
+package TW.Nervos.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Nervos transaction plan
+message TransactionPlan {
+    // A list of cell deps.
+    repeated CellDep cell_deps = 1;
+
+    // A list of header deps.
+    repeated bytes header_deps = 2;
+
+    // A list of 1 or more selected cells for this transaction
+    repeated Cell selected_cells = 3;
+
+    // A list of 1 or more outputs by this transaction
+    repeated CellOutput outputs = 4;
+
+    // A list of outputs data.
+    repeated bytes outputs_data = 5;
+
+    // Optional error
+    Common.Proto.SigningError error = 6;
+}
+
+// Nervos cell dep.
+message CellDep {
+    // Prevents the transaction to be mined before an absolute or relative time
+    string dep_type = 1;
+
+    // Reference to the previous transaction's output.
+    OutPoint out_point = 2;
+}
+
+// Nervos transaction out-point reference.
+message OutPoint {
+    // The hash of the referenced transaction.
+    bytes tx_hash = 1;
+
+    // The index of the specific output in the transaction.
+    uint32 index = 2;
+}
+
+// Nervos cell output.
+message CellOutput {
+    // Transaction amount.
+    uint64 capacity = 1;
+
+    // Lock script
+    Script lock = 2;
+
+    // Type script
+    Script type = 3;
+}
+
+// Nervos script
+message Script {
+    // Code hash
+    bytes code_hash = 1;
+
+    // Hash type
+    string hash_type = 2;
+
+    // args
+    bytes args = 3;
+}
+
+// Transfer of native asset
+message NativeTransfer {
+    // Recipient's address.
+    string to_address = 1;
+
+    // Change address.
+    string change_address = 2;
+
+    // Amount to send.
+    uint64 amount = 3;
+
+    // If sending max amount.
+    bool use_max_amount = 4;
+}
+
+// Token transfer (SUDT)
+message SudtTransfer {
+    // Recipient's address.
+    string to_address = 1;
+
+    // Change address.
+    string change_address = 2;
+
+    // SUDT (Simple User Defined Token) address
+    bytes sudt_address = 3;
+
+    // Amount to send.
+    string amount = 4;
+
+    // If sending max amount.
+    bool use_max_amount = 5;
+}
+
+// Deposit
+message DaoDeposit {
+    // Recipient's address.
+    string to_address = 1;
+
+    // Change address.
+    string change_address = 2;
+
+    // Amount to deposit.
+    uint64 amount = 3;
+}
+
+message DaoWithdrawPhase1 {
+    // Deposit cell
+    Cell deposit_cell = 1;
+
+    // Change address.
+    string change_address = 2;
+}
+
+message DaoWithdrawPhase2 {
+    // Deposit cell
+    Cell deposit_cell = 1;
+
+    // Withdrawing cell
+    Cell withdrawing_cell = 2;
+
+    // Amount
+    uint64 amount = 3;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Transaction fee per byte.
+    uint64 byte_fee = 1;
+
+    // The available secret private keys used for signing (32 bytes each).
+    repeated bytes private_key = 2;
+
+    // Available unspent cell outputs.
+    repeated Cell cell = 3;
+
+    // Optional transaction plan
+    TransactionPlan plan = 4;
+
+    // The payload transfer
+    oneof operation_oneof {
+        NativeTransfer native_transfer = 5;
+        SudtTransfer sudt_transfer = 6;
+        DaoDeposit dao_deposit = 7;
+        DaoWithdrawPhase1 dao_withdraw_phase1 = 8;
+        DaoWithdrawPhase2 dao_withdraw_phase2 = 9;
+    }
+}
+
+// An unspent cell output, that can serve as input to a transaction
+message Cell {
+    // The unspent output
+    OutPoint out_point = 1;
+
+    // Amount of the cell
+    uint64 capacity = 2;
+
+    // Lock script
+    Script lock = 3;
+
+    // Type script
+    Script type = 4;
+
+    // Data
+    bytes data = 5;
+
+    // Optional block number
+    uint64 block_number = 6;
+
+    // Optional block hash
+    bytes block_hash = 7;
+
+    // Optional since the cell is available to spend
+    uint64 since = 8;
+
+    // Optional input type data to be included in witness
+    bytes input_type = 9;
+
+    // Optional output type data to be included in witness
+    bytes output_type = 10;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Resulting transaction. Note that the amount may be different than the requested amount to account for fees and available funds.
+    string transaction_json = 1;
+
+    // Transaction id
+    string transaction_id = 2;
+
+    // Optional error
+    Common.Proto.SigningError error = 3;
+}

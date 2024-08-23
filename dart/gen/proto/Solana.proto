@@ -1,0 +1,308 @@
+syntax = "proto3";
+
+package TW.Solana.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Transfer transaction
+message Transfer {
+    // destination address
+    string recipient = 1;
+
+    // amount
+    uint64 value = 2;
+
+    // optional memo
+    string memo = 3;
+
+    // optional referenced public keys
+    repeated string references = 4;
+}
+
+// Create and initialize a stake account, and delegate amount to it.
+// Recommendation behavior is to not specify a stake account, and a new unique account will be created each time.
+// Optionally a stake account pubkey can be specified, but it should not exist on chain.
+message DelegateStake {
+    // Validator's public key
+    string validator_pubkey = 1;
+
+    // delegation amount
+    uint64 value = 2;
+
+    // staking account
+    string stake_account = 3;
+}
+
+// Deactivate staking on stake account
+message DeactivateStake {
+    // staking account
+    string stake_account = 1;
+}
+
+// Deactivate staking on multiple stake account
+message DeactivateAllStake {
+    // staking accounts
+    repeated string stake_accounts = 1;
+}
+
+// Withdraw amount from stake account
+message WithdrawStake {
+    // staking account
+    string stake_account = 1;
+
+    // withdrawal amount
+    uint64 value = 2;
+}
+
+// Technical structure to group a staking account and an amount
+message StakeAccountValue {
+    // staking account
+    string stake_account = 1;
+
+    // amount
+    uint64 value = 2;
+}
+
+// Withdraw amounts from stake accounts
+message WithdrawAllStake {
+    repeated StakeAccountValue stake_accounts = 1;
+}
+
+// Create a token account under a main account for a token type
+message CreateTokenAccount {
+    // main account -- can be same as signer, or other main account (if done on some other account's behalf)
+    string main_address = 1;
+
+    // Token minting address
+    string token_mint_address = 2;
+
+    // Token address
+    string token_address = 3;
+}
+
+// Transfer tokens
+message TokenTransfer {
+    // Mint address of the token
+    string token_mint_address = 1;
+
+    // Source address
+    string sender_token_address = 2;
+
+    // Destination address
+    string recipient_token_address = 3;
+
+    // Amount
+    uint64 amount = 4;
+
+    // Note: 8-bit value
+    uint32 decimals = 5;
+
+    // optional memo§
+    string memo = 6;
+
+    // optional referenced public keys
+    repeated string references = 7;
+}
+
+// CreateTokenAccount and TokenTransfer combined
+message CreateAndTransferToken {
+    // main account -- can be same as signer, or other main account (if done on some other account's behalf)
+    string recipient_main_address = 1;
+
+    // Mint address of the token
+    string token_mint_address = 2;
+
+    // Token address for the recipient, will be created first
+    string recipient_token_address = 3;
+
+    // Sender's token address
+    string sender_token_address = 4;
+
+    // amount
+    uint64 amount = 5;
+
+    // Note: 8-bit value
+    uint32 decimals = 6;
+
+    // optional
+    string memo = 7;
+
+    // optional referenced public keys
+    repeated string references = 8;
+}
+
+message CreateNonceAccount {
+    // Required for building pre-signing hash of a transaction
+    string nonce_account = 1;
+    uint64 rent = 2;
+    // Optional for building pre-signing hash of a transaction
+    bytes nonce_account_private_key = 3;
+}
+
+message WithdrawNonceAccount {
+    string nonce_account = 1;
+    string recipient = 2;
+    uint64 value = 3;
+}
+
+message AdvanceNonceAccount {
+    string nonce_account = 1;
+}
+
+message PubkeySignature {
+    string pubkey = 1;
+    // base58 encoded signature.
+    string signature = 2;
+}
+
+message RawMessage {
+    message MessageHeader {
+        uint32 num_required_signatures = 1;
+        uint32 num_readonly_signed_accounts = 2;
+        uint32 num_readonly_unsigned_accounts = 3;
+    }
+
+    message Instruction {
+        uint32 program_id = 1;
+        repeated uint32 accounts = 2 [packed = true];
+        bytes program_data = 3;
+    }
+
+    message MessageAddressTableLookup {
+        string account_key = 1;
+        repeated uint32 writable_indexes = 2 [packed = true];
+        repeated uint32 readonly_indexes = 3 [packed = true];
+    }
+
+    message MessageLegacy {
+        MessageHeader header = 1;
+        repeated string account_keys = 2;
+        // Relatively recent block hash (base58 encoded).
+        string recent_blockhash = 3;
+        repeated Instruction instructions = 4;
+    }
+
+    message MessageV0 {
+        MessageHeader header = 1;
+        repeated string account_keys = 2;
+        // Relatively recent block hash (base58 encoded).
+        string recent_blockhash = 3;
+        repeated Instruction instructions = 4;
+        repeated MessageAddressTableLookup address_table_lookups = 5;
+    }
+
+    // Transaction signatures.
+    // If private keys are set in `SigningInput`, corresponding signatures will be overriden.
+    // It's also possible some or all the signatures are be used to compile a transaction if corresponding private keys are not set.
+    repeated PubkeySignature signatures = 1;
+    oneof message {
+        MessageLegacy legacy = 2;
+        MessageV0 v0 = 3;
+    }
+}
+
+message DecodingTransactionOutput {
+    // Decoded transaction info.
+    RawMessage transaction = 1;
+
+    // Error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // Error code description
+    string error_message = 3;
+}
+
+enum Encoding {
+    Base58 = 0;
+    Base64 = 1;
+}
+
+// Specific compute unit limit that the transaction is allowed to consume.
+message PriorityFeePrice {
+    uint64 price = 1;
+}
+
+// Compute unit price in "micro-lamports" to pay a higher transaction fee for higher transaction prioritization.
+message PriorityFeeLimit {
+    uint32 limit = 2;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 1;
+
+    // Relatively recent block hash
+    string recent_blockhash = 2;
+
+    bool v0_msg = 3;
+
+    // Payload message
+    oneof transaction_type {
+        Transfer transfer_transaction = 4;
+        DelegateStake delegate_stake_transaction = 5;
+        DeactivateStake deactivate_stake_transaction = 6;
+        DeactivateAllStake deactivate_all_stake_transaction = 7;
+        WithdrawStake withdraw_transaction = 8;
+        WithdrawAllStake withdraw_all_transaction = 9;
+        CreateTokenAccount create_token_account_transaction = 10;
+        TokenTransfer token_transfer_transaction = 11;
+        CreateAndTransferToken create_and_transfer_token_transaction = 12;
+        CreateNonceAccount create_nonce_account = 13;
+        WithdrawNonceAccount withdraw_nonce_account = 16;
+        AdvanceNonceAccount advance_nonce_account = 19;
+    }
+    // Required for building pre-signing hash of a transaction
+    string sender = 14;
+    // Required for using durable transaction nonce
+    string nonce_account = 15;
+    // Optional external fee payer private key. support: TokenTransfer, CreateAndTransferToken
+    bytes fee_payer_private_key = 17;
+    // Optional external fee payer. support: TokenTransfer, CreateAndTransferToken
+    string fee_payer = 18;
+    // Optional message plan. For signing an already prepared message.
+    RawMessage raw_message = 20;
+    // Output transaction encoding.
+    Encoding tx_encoding = 21;
+    // Optional. Set a specific compute unit limit that the transaction is allowed to consume.
+    // https://solana.com/docs/intro/transaction_fees#prioritization-fee
+    PriorityFeePrice priority_fee_price = 22;
+    // Optional. Set a compute unit price in "micro-lamports" to pay a higher transaction
+    // fee for higher transaction prioritization.
+    // https://solana.com/docs/intro/transaction_fees#prioritization-fee
+    PriorityFeeLimit priority_fee_limit = 23;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // The encoded transaction
+    string encoded = 1;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
+
+    // The encoded message. Can be used to estimate a transaction fee required to execute the message.
+    string unsigned_tx = 4;
+
+    // Transaction signatures (may include external signatures).
+    repeated PubkeySignature signatures = 5;
+}
+
+/// Transaction pre-signing output
+message PreSigningOutput {
+    // Signer list
+    repeated bytes signers = 1;
+
+    // Pre-image data. There is no hashing for Solana presign image
+    bytes data = 2;
+
+    // Error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // Error code description
+    string error_message = 4;
+}

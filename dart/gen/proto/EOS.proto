@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package TW.EOS.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+enum KeyType {
+    LEGACY = 0;
+    MODERNK1 = 1;
+    MODERNR1 = 2;
+}
+
+// Values for an Asset object.
+message Asset {
+    // Total amount
+    int64 amount = 1;
+
+    // Number of decimals defined
+    uint32 decimals = 2;
+
+    // Asset symbol
+    string symbol = 3;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Chain id (uint256, serialized big endian)
+    bytes chain_id = 1;
+
+    // Reference Block Id (uint256, serialized big endian)
+    bytes reference_block_id = 2;
+
+    // Timestamp on the reference block
+    sfixed32 reference_block_time = 3;
+    
+    // Currency (e.g. "eosio.token")
+    string currency = 4;
+
+    // Sender's username
+    string sender = 5;
+
+    // Recipient's username
+    string recipient = 6;
+
+    // Memo attached to the transaction
+    string memo = 7;
+
+    // Asset details and amount
+    Asset asset = 8;
+
+    // Sender's secret private key used for signing (32 bytes).
+    bytes private_key = 9;
+
+    // Type of the private key
+    KeyType private_key_type = 10;
+
+    // Expiration of the transaction, if not set, default is reference_block_time + 3600 seconds
+    sfixed32 expiration = 11;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // JSON of the packed transaction.
+    string json_encoded = 1;
+
+    // Optional error
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
+}

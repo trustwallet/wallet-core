@@ -1,0 +1,285 @@
+syntax = "proto3";
+
+package TW.Tron.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// A transfer transaction
+message TransferContract {
+    // Sender address.
+    string owner_address = 1;
+
+    // Recipient address.
+    string to_address = 2;
+
+    // Amount to send.
+    int64 amount = 3;
+}
+
+// Asset transfer
+message TransferAssetContract {
+    // Asset name.
+    string asset_name = 1;
+
+    // Sender address.
+    string owner_address = 2;
+
+    // Recipient address.
+    string to_address = 3;
+
+    // Amount to send.
+    int64 amount = 4;
+}
+
+// TRC20 token transfer
+message TransferTRC20Contract {
+    // Contract name.
+    string contract_address = 1;
+
+    // Sender address.
+    string owner_address = 2;
+
+    // Recipient address.
+    string to_address = 3;
+
+    // Amount to send, (uint256, serialized big endian)
+    bytes amount = 4;
+}
+
+// Freeze balance
+message FreezeBalanceContract {
+    // Sender address.
+    string owner_address = 1;
+
+    // Frozen balance. Minimum 1
+    int64 frozen_balance = 2;
+
+    // Frozen duration
+    int64 frozen_duration = 3;
+
+    // Resource type: BANDWIDTH | ENERGY
+    string resource = 10;
+
+    // Receiver address
+    string receiver_address = 15;
+}
+
+// stake TRX to obtain TRON Power (voting rights) and bandwidth or energy.
+message FreezeBalanceV2Contract {
+    // Address of transaction initiator, data type is string
+    string owner_address = 1;
+
+    // Amount of TRX to be staked, unit is sun, data type is uint256
+    int64 frozen_balance = 2;
+
+    // Resource type, "BANDWIDTH" or "ENERGY", data type is string
+    string resource = 3;
+}
+
+// Unstake TRX to release bandwidth and energy and at the same time TRON Power will be reduced and all corresponding votes will be canceled.
+message UnfreezeBalanceV2Contract {
+    // Address of transaction initiator, data type is string
+    string owner_address = 1;
+    // Amount of TRX to be unstaked, unit is sun, data type is uint256
+    int64 unfreeze_balance = 2;
+    // Resource type, "BANDWIDTH" or "ENERGY", data type is string
+    string resource = 3;
+}
+
+// withdraw unfrozen balance
+message WithdrawExpireUnfreezeContract {
+    // Address of transaction initiator, data type is string
+    string owner_address = 1;
+}
+
+// delegate resource
+message DelegateResourceContract {
+    // Address of transaction initiator, data type is string
+    string owner_address = 1;
+    // Resource type, "BANDWIDTH" or "ENERGY", data type is string
+    string resource = 2;
+    // Amount of TRX staked for resource to be delegated, unit is sun, data type is uint256
+    int64 balance = 3;
+    // Receiver address of resource to be delegated to
+    string receiver_address = 4;
+    // Whether it is locked, if it is set to true, the delegated resources cannot be undelegated within 3 days.
+    // When the lock time is not over, if the owner delegates the same resources using the lock to the same address,
+    // the lock time will be reset to 3 days
+    bool  lock = 5;
+}
+
+// undelegate resource
+message UnDelegateResourceContract {
+    // Address of transaction initiator, data type is string
+    string owner_address = 1;
+    // Resource type, "BANDWIDTH" or "ENERGY", data type is string
+    string resource = 2;
+    // Amount of TRX staked for resource to be undelegated, unit is sun, data type is uint256
+    int64 balance = 3;
+    // Receiver address of resource to be delegated to, data type is string
+    string receiver_address = 4;
+}
+
+// Unfreeze balance
+message UnfreezeBalanceContract {
+    // Sender address
+    string owner_address = 1;
+
+    // Resource type: BANDWIDTH | ENERGY
+    string resource = 10;
+
+    // Receiver address
+    string receiver_address = 15;
+}
+
+// Unfreeze asset
+message UnfreezeAssetContract {
+    // Sender address
+    string owner_address = 1;
+}
+
+// Vote asset
+message VoteAssetContract {
+    // Sender address
+    string owner_address = 1;
+
+    // Vote addresses
+    repeated string vote_address = 2;
+
+    bool support = 3;
+
+    int32 count = 5;
+}
+
+// Vote witness
+message VoteWitnessContract {
+    // A vote
+    message Vote {
+        // address
+        string vote_address = 1;
+
+        // vote count
+        int64 vote_count = 2;
+    }
+
+    // Owner
+    string owner_address = 1;
+
+    // The votes
+    repeated Vote votes = 2;
+
+    bool support = 3;
+}
+
+// Withdraw balance
+message WithdrawBalanceContract {
+    // Sender address
+    string owner_address = 1;
+}
+
+// Smart contract call
+message TriggerSmartContract {
+    // Owner
+    string owner_address = 1;
+
+    // Contract address
+    string contract_address = 2;
+
+    // amount
+    int64 call_value = 3;
+
+    // call data
+    bytes data = 4;
+
+    // token value
+    int64 call_token_value = 5;
+
+    // ID of the token
+    int64 token_id = 6;
+}
+
+// Info from block header
+message BlockHeader {
+    // creation timestamp
+    int64 timestamp = 1;
+
+    // root
+    bytes tx_trie_root = 2;
+
+    // hash of the parent
+    bytes parent_hash = 3;
+
+    int64 number = 7;
+
+    bytes witness_address = 9;
+
+    int32 version = 10;
+}
+
+// Transaction
+message Transaction {
+    // Transaction timestamp in milliseconds.
+    int64 timestamp = 1;
+
+    // Transaction expiration time in milliseconds.
+    int64 expiration = 2;
+
+    // Transaction block header.
+    BlockHeader block_header = 3;
+
+    // Transaction fee limit
+    int64 fee_limit = 4;
+
+    // Contract.
+    oneof contract_oneof {
+        TransferContract transfer = 10;
+        TransferAssetContract transfer_asset = 11;
+        FreezeBalanceContract freeze_balance = 12;
+        UnfreezeBalanceContract unfreeze_balance = 13;
+        UnfreezeAssetContract unfreeze_asset = 14;
+        WithdrawBalanceContract withdraw_balance = 15;
+        VoteAssetContract vote_asset = 16;
+        VoteWitnessContract vote_witness = 17;
+        TriggerSmartContract trigger_smart_contract = 18;
+        TransferTRC20Contract transfer_trc20_contract = 19;
+        FreezeBalanceV2Contract freeze_balance_v2 = 20;
+        UnfreezeBalanceV2Contract unfreeze_balance_v2 = 21;
+        WithdrawExpireUnfreezeContract withdraw_expire_unfreeze = 23;
+        DelegateResourceContract delegate_resource = 24;
+        UnDelegateResourceContract undelegate_resource = 25;
+    }
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Transaction.
+    Transaction transaction = 1;
+
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 2;
+
+    // For direct sign in Tron, we just have to sign the txId returned by the DApp json payload.
+    string txId = 3;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Transaction identifier.
+    bytes id = 1;
+
+    // Signature.
+    bytes signature = 2;
+
+    bytes ref_block_bytes = 3;
+    bytes ref_block_hash = 4;
+
+    // Result in JSON
+    string json = 5;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 6;
+
+    // error code description
+    string error_message = 7;
+}

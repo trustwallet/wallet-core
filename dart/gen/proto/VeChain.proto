@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package TW.VeChain.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// A clause, between a sender and destination
+message Clause {
+    /// Recipient address.
+    string to = 1;
+
+    /// Transaction amount (uint256, serialized big endian)
+    bytes value = 2;
+
+    /// Payload data.
+    bytes data = 3;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    /// Last byte of the genesis block ID which is used to identify a blockchain to prevent the cross-chain replay attack.
+    uint32 chain_tag = 1;
+
+    /// Reference to a specific block.
+    uint64 block_ref = 2;
+
+    /// How long, in terms of the number of blocks, the transaction will be allowed to be mined in VeChainThor.
+    uint32 expiration = 3;
+
+    /// An array of Clause objects.
+    ///
+    /// Each clause contains fields To, Value and Data to enable a single transaction to carry multiple tasks issued
+    /// by the transaction sender.
+    repeated Clause clauses = 4;
+
+    /// Coefficient used to calculate the gas price for the transaction.
+    uint32 gas_price_coef = 5;
+
+    /// Maximum amount of gas allowed to pay for the transaction.
+    uint64 gas = 6;
+
+    /// ID of the transaction on which the current transaction depends.
+    bytes depends_on = 7;
+
+    /// Number set by user.
+    uint64 nonce = 8;
+
+    /// The secret private key used for signing (32 bytes).
+    bytes private_key = 9;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+
+    // Signature.
+    bytes signature = 2;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error code description
+    string error_message = 4;
+}

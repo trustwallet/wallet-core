@@ -1,0 +1,52 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+syntax = "proto3";
+
+package TW.Barz.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Input parameters for calculating a counterfactual address for ERC-4337 based smart contract wallet
+message ContractAddressInput {
+  // ERC-4337 entry point
+  string entry_point = 1;
+  // Address of the contract factory
+  string factory = 2;
+
+  // Diamond proxy facets required for the contract setup
+  string account_facet = 3;
+  string verification_facet = 4;
+  string facet_registry = 5;
+  string default_fallback = 6;
+
+  // Bytecode of the smart contract to deploy
+  string bytecode = 7;
+  // PublicKey of the wallet
+  string public_key = 8;
+
+  // Salt is used to derive multiple account from the same public key
+  uint32 salt = 9;
+}
+
+// FacetCutAction represents the action to be performed for a FacetCut
+enum FacetCutAction {
+  ADD = 0;
+  REPLACE = 1;
+  REMOVE = 2;
+}
+
+// FacetCut represents a single operation to be performed on a facet
+message FacetCut {
+  string facet_address = 1; // The address of the facet
+  FacetCutAction action = 2; // The action to perform
+  repeated bytes function_selectors = 3; // List of function selectors, each is bytes4
+}
+
+// DiamondCutInput represents the input parameters for a diamondCut operation
+message DiamondCutInput {
+  repeated FacetCut facet_cuts = 1; // List of facet cuts to apply
+  string init_address = 2; // Address to call with `init` data after applying cuts
+  bytes init_data = 3; // Data to pass to `init` function call
+}
+

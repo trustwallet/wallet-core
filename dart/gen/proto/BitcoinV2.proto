@@ -1,0 +1,356 @@
+syntax = "proto3";
+
+package TW.BitcoinV2.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+enum InputSelector {
+    // Automatically select enough inputs in an ascending order to cover the outputs of the transaction.
+    SelectAscending = 0;
+    // Automatically select enough inputs in the given order to cover the outputs of the transaction.
+    SelectInOrder = 1;
+    // Automatically select enough inputs in an descending order to cover the outputs of the transaction.
+    SelectDescending = 2;
+    // Use all the inputs provided in the given order.
+    UseAll = 10;
+}
+
+// Either a public key or public key hash.
+message PublicKeyOrHash {
+    oneof variant {
+        // Public key bytes.
+        bytes pubkey = 1;
+        // Public key hash.
+        bytes hash = 2;
+    }
+}
+
+// Bitcoin transaction out-point reference.
+message OutPoint {
+    // The hash of the referenced transaction (network byte order, usually needs to be reversed).
+    // The referenced transaction ID in REVERSED order.
+    bytes hash = 1;
+
+    // The position in the previous transactions output that this input references.
+    uint32 vout = 2;
+}
+
+message Input {
+    // Reference to the previous transaction's output.
+    OutPoint out_point = 1;
+    // The amount of satoshis of this input.
+    int64 value = 2;
+    // The sighash type, normally `All`.
+    // See `TWBitcoinSigHashType` enum.
+    uint32 sighash_type = 3;
+    // Optional sequence number, used for timelocks, replace-by-fee, etc.
+    // Leave empty to use a default 4294967295 (0xFFFFFFFF) value.
+    Sequence sequence = 4;
+
+    // Script for claiming this UTXO.
+    oneof claiming_script {
+        // Construct claiming script with a builder pattern.
+        InputBuilder script_builder = 5;
+        // Spending script pubkey data.
+        // Use this variant if the UTXO claiming script is known already, otherwise use `InputBuilder`.
+        // Please note that the signing method (eg "legacy" or "segwit") will be determined by parsing the script data as:
+        // - P2PK, P2PKH - legacy signing method;
+        // - P2WPKH - segwit signing method.
+        bytes script_data = 6;
+        // Derive a spending script pubkey from a receiver address.
+        // E.g "bc1" segwit address will be P2WPKH claiming script.
+        // TODO consider deprecating this because we can't determine if the script pubkey is P2PK or P2PKH actually.
+        string receiver_address = 7;
+    }
+
+    // Optional sequence number, used for timelocks, replace-by-fee, etc.
+    message Sequence {
+        uint32 sequence = 1;
+    }
+
+    message InputBuilder {
+        oneof variant {
+            // Pay-to-Script-Hash, specify the redeem script.
+            // Please note that we support standard redeem scripts only, such as P2PKH, P2WPKH, P2TR.
+            // TODO next iteration.
+            // bytes p2sh = 1;
+
+            // Pay-to-Public-Key, specify the public key.
+            bytes p2pk = 2;
+            // Pay-to-Public-Key-Hash, specify the public key.
+            PublicKeyOrHash p2pkh = 3;
+
+            // Pay-to-Witness-Script-Hash, specify the redeem script.
+            // TODO next iteration.
+            // bytes p2wsh = 4;
+
+            // Pay-to-Public-Key-Hash, specify the public key.
+            PublicKeyOrHash p2wpkh = 5;
+            // Pay-to-Taproot-key-path (balance transfers), specify the public key.
+            bytes p2tr_key_path = 7;
+
+            // Pay-to-Taproot-script-path (complex transfers).
+            // TODO next iteration.
+            // InputTaprootScriptPath p2tr_script_path = 8;
+
+            // Create a BRC20 inscription.
+            InputBrc20Inscription brc20_inscribe = 9;
+        }
+    }
+
+    message InputTaprootScriptPath {
+        // The payload of the Taproot transaction.
+        bytes payload = 2;
+        // The control block of the Taproot transaction required for claiming.
+        bytes control_block = 3;
+    }
+
+    message InputBrc20Inscription {
+        // The recipient of the inscription, usually the sender.
+        bytes inscribe_to = 2;
+        // The ticker of the BRC20 inscription.
+        string ticker = 3;
+        // The BRC20 token transfer amount.
+        string transfer_amount = 4;
+    }
+}
+
+message Output {
+    // The amount of satoshis to send.
+    int64 value = 1;
+
+    oneof to_recipient {
+        // Construct output with builder pattern.
+        OutputBuilder builder = 2;
+        // Construct output by providing the scriptPubkey directly.
+        bytes custom_script_pubkey = 3;
+        // Derive the expected output from the provided address.
+        string to_address = 4;
+    }
+
+    message OutputBuilder {
+        oneof variant {
+            // Pay-to-Script-Hash, specify the redeem script or its hash.
+            RedeemScriptOrHash p2sh = 1;
+            // Pay-to-Public-Key, specify the public key.
+            bytes p2pk = 2;
+            // Pay-to-Public-Key-Hash, specify the public key or its hash.
+            PublicKeyOrHash p2pkh = 3;
+            // Pay-to-Witness-Script-Hash, specify the redeem script or its hash.
+            RedeemScriptOrHash p2wsh = 4;
+            // Pay-to-Public-Key-Hash, specify the public key or its hash.
+            PublicKeyOrHash p2wpkh = 5;
+            // Pay-to-Taproot-key-path (balance transfers), specify the public key.
+            bytes p2tr_key_path = 6;
+            // Pay-to-Taproot-script-path (complex transfers)
+            OutputTaprootScriptPath p2tr_script_path = 7;
+            bytes p2tr_dangerous_assume_tweaked = 8;
+            OutputBrc20Inscription brc20_inscribe = 9;
+            // OP_RETURN output. In most cases, with a zero-amount.
+            bytes op_return = 12;
+        }
+    }
+
+    // Either a redeem script or its hash.
+    message RedeemScriptOrHash {
+        oneof variant {
+            // Redeem script bytes.
+            bytes redeem_script = 1;
+            // Public key hash.
+            bytes hash = 2;
+        }
+    }
+
+    message OutputTaprootScriptPath {
+        // The internal key, usually the public key of the recipient.
+        bytes internal_key = 1;
+        // The merkle root of the Taproot script(s), required to compute the sighash.
+        bytes merkle_root = 2;
+    }
+
+    message OutputBrc20Inscription {
+        // The recipient of the inscription, usually the sender.
+        bytes inscribe_to = 1;
+        // The ticker of the BRC20 inscription.
+        string ticker = 2;
+        // The BRC20 token transfer amount.
+        string transfer_amount = 3;
+    }
+}
+
+message ChainInfo {
+    // P2PKH prefix for this chain.
+    uint32 p2pkh_prefix = 1;
+    // P2SH prefix for this coin type
+    uint32 p2sh_prefix = 2;
+}
+
+enum TransactionVersion {
+    // V1 is used by default.
+    UseDefault = 0;
+    // Original transaction version.
+    V1 = 1;
+    // https://github.com/bitcoin/bips/blob/master/bip-0068.mediawiki#specification
+    V2 = 2;
+}
+
+message SigningInput {
+    // Transaction version.
+    TransactionVersion version = 1;
+    // User private keys.
+    // Only required if the `sign` method is called.
+    repeated bytes private_keys = 2;
+    // User public keys.
+    // Only required if the `plan`, `preImageHash` methods are called.
+    repeated bytes public_keys = 3;
+    // (optional) Block height or timestamp indicating at what point transactions can be included in a block.
+    // Zero by default.
+    uint32 lock_time = 4;
+    // The inputs to spend.
+    repeated Input inputs = 5;
+    // The output of the transaction. Note that the change output is specified
+    // in the `change_output` field.
+    repeated Output outputs = 6;
+    // How the inputs should be selected.
+    InputSelector input_selector = 7;
+    // The amount of satoshis per vbyte ("satVb"), used for fee calculation.
+    // Can be satoshis per byte ("satB") **ONLY** when transaction does not contain segwit UTXOs.
+    int64 fee_per_vb = 8;
+    // (optional) The change output to be added (return to sender) at the end of the outputs list.
+    // The `Output.value` will be overwritten, leave default.
+    // Note there can be no change output if the change amount is less than dust threshold.
+    // Leave empty to explicitly disable change output creation.
+    Output change_output = 9;
+    // The only output with a max available amount to be send.
+    // If set, `SigningInput.outputs` and `SigningInput.change` will be ignored.
+    // The `Output.value` will be overwritten, leave default.
+    Output max_amount_output = 10;
+    // Chain info includes p2pkh, p2sh address prefixes.
+    // The parameter needs to be set if an input/output has a receiver address pattern.
+    ChainInfo chain_info = 13;
+    // One of the "Dust" amount policies.
+    // Later, we plan to add support for `DynamicDust` policy with a `min_relay_fee` amount.
+    oneof dust_policy {
+        // Use a constant "Dust" threshold.
+        int64 fixed_dust_threshold = 14;
+    }
+    // Whether disable auxiliary random data when signing.
+    // Use for testing **ONLY**.
+    bool dangerous_use_fixed_schnorr_rng = 20;
+}
+
+message Transaction {
+    // The protocol version, is currently expected to be 1 or 2 (BIP68).
+    int32 version = 1;
+    // Block height or timestamp indicating at what point transactions can be included in a block.
+    // Zero by default.
+    uint32 lock_time = 2;
+    // The transaction inputs.
+    repeated TransactionInput inputs = 3;
+    // The transaction outputs.
+    repeated TransactionOutput outputs = 4;
+
+    message TransactionInput {
+        // Reference to the previous transaction's output.
+        OutPoint out_point = 1;
+        // The sequence number, used for timelocks, replace-by-fee, etc.
+        uint32 sequence = 2;
+        // The script for claiming the input (non-Segwit/non-Taproot).
+        bytes script_sig = 3;
+        // The script for claiming the input (Segit/Taproot).
+        repeated bytes witness_items = 4;
+    }
+
+    message TransactionOutput {
+        // The condition for claiming the output.
+        bytes script_pubkey = 1;
+        // The amount of satoshis to spend.
+        int64 value = 2;
+    }
+}
+
+message TransactionPlan {
+    // A possible error, `OK` if none.
+    Common.Proto.SigningError error = 1;
+    /// Error description.
+    string error_message = 2;
+    // Selected unspent transaction outputs (subset of all input UTXOs).
+    repeated Input inputs = 3;
+    // Transaction outputs including a change output if applied.
+    repeated Output outputs = 4;
+    // Maximum available amount in all the transaction input UTXOs.
+    // That is an amount that will be spent by this transaction.
+    int64 available_amount = 5;
+    // Total sending amount in all the transaction outputs.
+    // That is an amount that will be sent (including change output if applied).
+    int64 send_amount = 6;
+    // The estimated `vsize` in `vbytes`.
+    // It is used to compare how much blockweight needs to be allocated to confirm a transaction.
+    // For non-segwit transactions, `vsize` = `size`.
+    uint64 vsize_estimate = 7;
+    // The estimated fees of the transaction in satoshis.
+    int64 fee_estimate = 8;
+    // Remaining change.
+    // Zero if not applied.
+    int64 change = 9;
+}
+
+message PreSigningOutput {
+    // A possible error, `OK` if none.
+    Common.Proto.SigningError error = 1;
+    // Error description.
+    string error_message = 2;
+    /// The sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
+    repeated Sighash sighashes = 4;
+
+    enum SigningMethod {
+        // Used for P2SH and P2PKH - standard ecdsa secp256k1 signing
+        Legacy = 0;
+        // Used for P2WSH and P2WPKH - standard ecdsa secp256k1 signing
+        Segwit = 1;
+        // Used for P2TR key-path and P2TR script-pay - schnorr signing
+        Taproot = 2;
+    }
+
+    message Sighash {
+        // Public key used for signing.
+        // Please note it can be tweaked in case of P2TR scriptPubkey.
+        bytes public_key = 1;
+        // The sighash to be signed.
+        bytes sighash = 2;
+        // Signing method to be used to sign the sighash.
+        SigningMethod signing_method = 3;
+        // Taproot tweak if `Taproot` signing method is used.
+        // Empty if there is no need to tweak the private to sign the sighash.
+        TaprootTweak tweak = 4;
+    }
+
+    message TaprootTweak {
+        // 32 bytes merkle root of the script tree.
+        // Empty if there are no scripts, and the private key should be tweaked without a merkle root.
+        bytes merkle_root = 1;
+    }
+}
+
+message SigningOutput {
+    // A possible error, `OK` if none.
+    Common.Proto.SigningError error = 1;
+    // Error description.
+    string error_message = 2;
+    // Resulting transaction.
+    Transaction transaction = 3;
+    // The encoded transaction that submitted to the network.
+    bytes encoded = 4;
+    // The transaction ID (hash).
+    bytes txid = 5;
+    // The total `vsize` in `vbytes`.
+    // It is used to compare how much blockweight needs to be allocated to confirm a transaction.
+    // For non-segwit transactions, `vsize` = `size`.
+    uint64 vsize = 6;
+    // Transaction weight is defined as Base transaction size * 3 + Total transaction size
+    // (ie. the same method as calculating Block weight from Base size and Total size).
+    uint64 weight = 7;
+    // The total and final fee of the transaction in satoshis.
+    int64 fee = 8;
+}

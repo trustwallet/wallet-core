@@ -1,0 +1,115 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+syntax = "proto3";
+
+package TW.TheOpenNetwork.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+enum WalletVersion {
+    WALLET_V3_R1 = 0;
+    WALLET_V3_R2 = 1;
+    WALLET_V4_R2 = 2;
+};
+
+enum SendMode {
+    DEFAULT = 0;
+    PAY_FEES_SEPARATELY = 1;
+    IGNORE_ACTION_PHASE_ERRORS = 2;
+    DESTROY_ON_ZERO_BALANCE = 32;
+    ATTACH_ALL_INBOUND_MESSAGE_VALUE = 64;
+    ATTACH_ALL_CONTRACT_BALANCE = 128;
+};
+
+message Transfer {
+    // Wallet version
+    WalletVersion wallet_version = 1;
+
+    // Recipient address
+    string dest = 2;
+
+    // Amount to send in nanotons
+    uint64 amount = 3;
+
+    // Send mode (optional, 0 by default)
+    // Learn more: https://ton.org/docs/develop/func/stdlib#send_raw_message
+    uint32 mode = 4;
+
+    // Transfer comment message (optional, empty by default)
+    // Ignored if `custom_payload` is specified
+    string comment = 5;
+
+    // If the address is bounceable
+    bool bounceable = 6;
+
+    // One of the Transfer message payloads (optional).
+    oneof payload {
+        // Jetton transfer payload.
+        JettonTransfer jetton_transfer = 7;
+        // TON transfer with custom stateInit and payload (contract call).
+        CustomPayload custom_payload = 8;
+    }
+}
+
+message JettonTransfer {
+    // Arbitrary request number. Default is 0. Optional field.
+    uint64 query_id = 1;
+
+    // Amount of transferred jettons in elementary integer units. The real value transferred is jetton_amount multiplied by ten to the power of token decimal precision
+    uint64 jetton_amount = 2;
+
+    // Address of the new owner of the jettons.
+    string to_owner = 3;
+
+    // Address where to send a response with confirmation of a successful transfer and the rest of the incoming message Toncoins. Usually the sender should get back their toncoins.
+    string response_address = 4;
+
+    // Amount in nanotons to forward to recipient. Basically minimum amount - 1 nanoton should be used
+    uint64 forward_amount = 5;
+}
+
+message CustomPayload {
+    // (string base64, optional): raw one-cell BoC encoded in Base64.
+    // Can be used to deploy a smart contract.
+    string state_init = 1;
+
+    // (string base64, optional): raw one-cell BoC encoded in Base64.
+    string payload = 2;
+}
+
+message SigningInput {
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 1;
+
+    // Public key of the signer (32 bytes). Used when transaction is going to be signed externally.
+    bytes public_key = 2;
+
+    // Up to 4 internal messages.
+    repeated Transfer messages = 3;
+
+    // Message counter (optional, 0 by default used for the first deploy)
+    // This field is required, because we need to protect the smart contract against "replay attacks"
+    // Learn more: https://ton.org/docs/develop/smart-contracts/guidelines/external-messages
+    uint32 sequence_number = 4;
+
+    // Expiration UNIX timestamp (optional, now() + 60 by default)
+    uint32 expire_at = 5;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signed and base64 encoded BOC message
+    string encoded = 1;
+
+    // Transaction Cell hash
+    bytes hash = 2;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error code description
+    string error_message = 4;
+}

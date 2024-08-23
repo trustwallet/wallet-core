@@ -1,0 +1,126 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+syntax = "proto3";
+
+package TW.LiquidStaking.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Ethereum.proto";
+import "Cosmos.proto";
+import "Aptos.proto";
+
+// Enum for supported coins for liquid staking
+enum Coin {
+  MATIC = 0;
+  ATOM = 1;
+  BNB = 2;
+  APT = 3;
+  ETH = 4;
+}
+
+// Enum for supported target blockchains for liquid staking
+enum Blockchain {
+  ETHEREUM = 0;
+  POLYGON = 1;
+  STRIDE = 2;
+  BNB_BSC = 3;
+  APTOS = 4;
+}
+
+// Enum for supported liquid staking protocols
+enum Protocol {
+  Strader = 0;
+  Stride = 1;
+  Tortuga = 2;
+  Lido = 3;
+}
+
+// Enum for status codes to indicate the result of an operation
+enum StatusCode {
+  OK = 0;
+  ERROR_ACTION_NOT_SET = 1;
+  ERROR_TARGETED_BLOCKCHAIN_NOT_SUPPORTED_BY_PROTOCOL = 2;
+  ERROR_SMART_CONTRACT_ADDRESS_NOT_SET = 3;
+  ERROR_INPUT_PROTO_DESERIALIZATION = 4;
+  ERROR_OPERATION_NOT_SUPPORTED_BY_PROTOCOL = 5;
+}
+
+// Message to represent the status of an operation
+message Status {
+  // Status code of the operation
+  StatusCode code = 1;
+
+  // Optional error message, populated in case of error
+  string message = 2;
+}
+
+// Message to represent the asset for staking operations
+message Asset {
+  // Coin to be staked
+  Coin   staking_token = 1;
+  // Optional, liquid_token to be manipulated: unstake, claim rewards
+  string liquid_token = 2;
+  // Denom of the asset to be manipulated, required by some liquid staking protocols
+  string denom = 3;
+
+  // Address for building the appropriate input
+  string from_address = 4;
+}
+
+// Message to represent a stake operation
+message Stake {
+  Asset  asset = 1;
+  string amount = 2;
+}
+
+// Message to represent an unstake operation
+message Unstake {
+  Asset asset = 1;
+  string amount = 2;
+  // Some cross-chain protocols propose u to setup a receiver_address
+  string receiver_address = 3;
+  // Some cross-chain protocols propose u to set the receiver chain_id, it allows auto-claim after probation period
+  string receiver_chain_id = 4;
+}
+
+// Message to represent a withdraw operation
+message Withdraw {
+  Asset asset = 1;
+  string amount = 2;
+  // Sometimes withdraw is just the index of a request, amount is already known by the SC
+  string idx = 3;
+}
+
+// Message to represent the input for a liquid staking operation
+message Input {
+  // Oneof field to specify the action: stake, unstake or withdraw
+  oneof action {
+    Stake stake = 1;
+    Unstake unstake = 2;
+    Withdraw withdraw = 3;
+  }
+
+  // Optional smart contract address for EVM-based chains
+  string smart_contract_address = 4;
+
+  // Protocol to be used for liquid staking
+  Protocol protocol = 5;
+
+  // Target blockchain for the liquid staking operation
+  Blockchain blockchain = 6;
+}
+
+// Message to represent the output of a liquid staking operation
+message Output {
+  // Status of the liquid staking operation
+  Status status = 1;
+
+  // Unsigned transaction input - needs to be completed and signed
+  oneof signing_input_oneof {
+    Ethereum.Proto.SigningInput ethereum = 2;
+    Cosmos.Proto.SigningInput cosmos = 3;
+    Aptos.Proto.SigningInput aptos = 4;
+  }
+}

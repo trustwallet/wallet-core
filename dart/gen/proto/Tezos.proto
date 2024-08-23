@@ -1,0 +1,132 @@
+syntax = "proto3";
+
+package TW.Tezos.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Input data necessary to create a signed Tezos transaction.
+// Next field: 3
+message SigningInput {
+  // One or more operations
+  OperationList operation_list = 1;
+
+  // Encoded operation bytes obtained with $RPC_URL/chains/main/blocks/head/helpers/forge/operations, operation_list will be ignored.
+  bytes encoded_operations = 2;
+
+  // The secret private key used for signing (32 bytes).
+  bytes private_key = 3;
+}
+
+// Result containing the signed and encoded transaction.
+// Next field: 2
+message SigningOutput {
+  // The encoded transaction
+  bytes encoded = 1;
+
+  // error code, 0 is ok, other codes will be treated as errors
+  Common.Proto.SigningError error = 2;
+
+  // error code description
+  string error_message = 3;
+}
+
+// A list of operations and a branch.
+// Next field: 3
+message OperationList {
+  // branch
+  string branch = 1;
+
+  // list of operations
+  repeated Operation operations = 2;
+}
+
+// An operation that can be applied to the Tezos blockchain.
+// Next field: 12
+message Operation {
+  // counter
+  int64 counter = 1;
+
+  // source account
+  string source = 2;
+
+  // fee
+  int64 fee = 3;
+
+  // gas limit
+  int64 gas_limit = 4;
+
+  // storage limit
+  int64 storage_limit = 5;
+
+  // Operation types
+  enum OperationKind {
+    // Note: Proto3 semantics require a zero value.
+    ENDORSEMENT = 0;
+
+    REVEAL = 107;
+    TRANSACTION = 108;
+    DELEGATION = 110;
+  }
+  // Operation type
+  OperationKind kind = 7;
+
+  // Operation specific data depending on the type of the operation.
+  oneof operation_data {
+    RevealOperationData reveal_operation_data = 8;
+    TransactionOperationData transaction_operation_data = 9;
+    DelegationOperationData delegation_operation_data = 11;
+  }
+}
+
+message FA12Parameters {
+  string entrypoint = 1;
+  string from = 2;
+  string to = 3;
+  string value = 4;
+}
+
+message Txs {
+  string to = 1;
+  string token_id = 2;
+  string amount = 3;
+}
+
+message TxObject {
+  string from = 1;
+  repeated Txs txs = 2;
+}
+
+message FA2Parameters {
+  string entrypoint = 1;
+  repeated TxObject txs_object = 2;
+}
+
+// Generic operation parameters
+message OperationParameters {
+  oneof parameters {
+    FA12Parameters fa12_parameters = 1;
+    FA2Parameters fa2_parameters = 2;
+  }
+}
+
+// Transaction operation specific data.
+// Next field: 3
+message TransactionOperationData {
+  string destination = 1;
+  int64 amount = 2;
+  bytes encoded_parameter = 3;
+  OperationParameters parameters = 4;
+}
+
+// Reveal operation specific data.
+// Next field: 2
+message RevealOperationData {
+  bytes public_key = 1;
+}
+
+// Delegation operation specific data.
+// Next field: 2
+message DelegationOperationData {
+  string delegate = 1;
+}

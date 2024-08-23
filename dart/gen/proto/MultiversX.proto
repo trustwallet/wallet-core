@@ -1,0 +1,130 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+syntax = "proto3";
+
+package TW.MultiversX.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Generic action. Using one of the more specific actions (e.g. transfers, see below) is recommended.
+message GenericAction {
+    // Accounts involved
+    Accounts    accounts = 1;
+
+    // amount
+    string      value = 2;
+
+    // additional data
+    string      data = 3;
+
+    // transaction version
+    uint32      version = 4;
+
+    // Generally speaking, the "options" field can be ignored (not set) by applications using TW Core.
+    uint32      options = 5;
+}
+
+// EGLD transfer (move balance).
+message EGLDTransfer {
+    // Accounts involved
+    Accounts    accounts = 1;
+
+    // Transfer amount (string)
+    string      amount = 2;
+    string      data = 3;
+
+    // transaction version, if empty, the default value will be used
+    uint32      version = 4;
+}
+
+// ESDT transfer (transfer regular ESDTs - fungible tokens).
+message ESDTTransfer {
+    // Accounts involved
+    Accounts    accounts = 1;
+
+    // Token ID
+    string      token_identifier = 2;
+
+    // Transfer token amount (string)
+    string      amount = 3;
+
+    // transaction version, if empty, the default value will be used
+    uint32      version = 4;
+}
+
+// ESDTNFT transfer (transfer NFTs, SFTs and Meta ESDTs).
+message ESDTNFTTransfer {
+    // Accounts involved
+    Accounts    accounts = 1;
+
+    // tokens
+    string      token_collection = 2;
+
+    // nonce of the token
+    uint64      token_nonce = 3;
+
+    // transfer amount
+    string      amount = 4;
+
+    // transaction version, if empty, the default value will be used
+    uint32      version = 5;
+}
+
+// Transaction sender & receiver etc.
+message Accounts {
+    // Nonce of the sender
+    uint64      sender_nonce = 1;
+
+    // Sender address
+    string      sender = 2;
+
+    // Sender username
+    string      sender_username = 3;
+
+    // Receiver address
+    string      receiver = 4;
+
+    // Receiver username
+    string      receiver_username = 5;
+
+    // Guardian address
+    string      guardian = 6;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // The secret private key used for signing (32 bytes).
+    bytes       private_key = 1;
+
+    // Chain identifier, string
+    string      chain_id = 2;
+
+    // Gas price
+    uint64      gas_price = 3;
+
+    // Limit for the gas used
+    uint64      gas_limit = 4;
+
+    // transfer payload
+    oneof message_oneof {
+        GenericAction generic_action = 5;
+        EGLDTransfer egld_transfer = 6;
+        ESDTTransfer esdt_transfer = 7;
+        ESDTNFTTransfer esdtnft_transfer = 8;
+    }
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    string encoded = 1;
+    string signature = 2;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error code description
+    string error_message = 4;
+}

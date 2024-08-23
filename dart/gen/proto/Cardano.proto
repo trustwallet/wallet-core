@@ -1,0 +1,214 @@
+syntax = "proto3";
+
+package TW.Cardano.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// A transaction output that can be used as input
+message OutPoint {
+    // The transaction ID
+    bytes tx_hash = 1;
+
+    // The index of this output within the transaction
+    uint64 output_index = 2;
+}
+
+// Represents a token and an amount. Token is identified by PolicyID and name.
+message TokenAmount {
+    // Policy ID of the token, as hex string (28x2 digits)
+    string policy_id = 1;
+
+    // The name of the asset (within the policy)
+    string asset_name = 2;
+
+    // The amount (uint256, serialized big endian)
+    bytes amount = 3;
+
+    // The name of the asset (hex encoded). Ignored if `asset_name` is set
+    string asset_name_hex = 4;
+}
+
+// One input for a transaction
+message TxInput {
+    // The UTXO
+    OutPoint out_point = 1;
+
+    // The owner address (string)
+    string address = 2;
+
+    // ADA amount in the UTXO
+    uint64 amount = 3;
+
+    // optional token amounts in the UTXO
+    repeated TokenAmount token_amount = 4;
+}
+
+// One output for a transaction
+message TxOutput {
+    // Destination address (string)
+    string address = 1;
+    
+    // ADA amount
+    uint64 amount = 2;
+
+    // optional token amounts
+    repeated TokenAmount token_amount = 3;
+}
+
+// Collection of tokens with amount
+message TokenBundle {
+    repeated TokenAmount token = 1;
+}
+
+// Message for simple Transfer tx
+message Transfer {
+    // Destination address as string
+    string to_address = 1;
+
+    // Change address
+    string change_address = 2;
+
+    // Requested ADA amount to be transferred. Output can be different only in use_max_amount case.
+    // Note that Cardano has a minimum amount per UTXO, see TWCardanoMinAdaAmount.
+    uint64 amount = 3;
+
+    // Optional token(s) to be transferred
+    // Currently only one token type to be transferred per transaction is supported
+    TokenBundle token_amount = 4;
+
+    // Request max amount option. If set, tx will send all possible amounts from all inputs, including all tokens; there will be no change; requested amount and token_amount is disregarded in this case.
+    bool use_max_amount = 5;
+
+    // Optional fee overriding. If left to 0, optimal fee will be calculated. If set, exactly this value will be used as fee.
+    // Use it with care, it may result in underfunded or wasteful fee.
+    uint64 force_fee = 6;
+}
+
+// Register a staking key for the account, prerequisite for Staking.
+// Note: staking messages are typically used with a 1-output-to-self transaction.
+message RegisterStakingKey {
+    // Staking address (as string)
+    string staking_address = 1;
+
+    // Amount deposited in this TX. Should be 2 ADA (2000000). If not set correctly, TX will be rejected. See also Delegate.deposit_amount.
+    uint64 deposit_amount = 2;
+}
+
+// Deregister staking key. can be done when staking is stopped completely. The Staking deposit is returned at this time.
+message DeregisterStakingKey {
+    // Staking address (as string)
+    string staking_address = 1;
+
+    // Amount undeposited in this TX. Should be 2 ADA (2000000). If not set correctly, TX will be rejected. See also RegisterStakingKey.deposit_amount.
+    uint64 undeposit_amount = 2;
+}
+
+// Delegate funds in this account to a specified staking pool.
+message Delegate {
+    // Staking address (as string)
+    string staking_address = 1;
+
+    // PoolID of staking pool
+    bytes pool_id = 2;
+
+    // Amount deposited in this TX. Should be 0. If not set correctly, TX will be rejected. See also RegisterStakingKey.deposit_amount.
+    uint64 deposit_amount = 3;
+}
+
+// Withdraw earned staking reward.
+message Withdraw {
+    // Staking address (as string)
+    string staking_address = 1;
+
+    // Withdrawal amount. Should match the real value of the earned reward.
+    uint64 withdraw_amount = 2;
+}
+
+// Describes a preliminary transaction plan.
+message TransactionPlan {
+    // total coins in the utxos
+    uint64 available_amount = 1;
+
+    // coins in the output UTXO
+    uint64 amount = 2;
+
+    // coin amount deducted as fee
+    uint64 fee = 3;
+
+    // coins in the change UTXO
+    uint64 change = 4;
+
+    // coins deposited (going to deposit) in this TX
+    uint64 deposit = 10;
+
+    // coins undeposited (coming from deposit) in this TX
+    uint64 undeposit = 11;
+
+    // total tokens in the utxos (optional)
+    repeated TokenAmount available_tokens = 5;
+
+    // tokens in the output (optional)
+    repeated TokenAmount output_tokens = 6;
+
+    // tokens in the change (optional)
+    repeated TokenAmount change_tokens = 7;
+
+    // The selected UTXOs, subset ot the input UTXOs
+    repeated TxInput utxos = 8;
+    
+    // Optional error
+    Common.Proto.SigningError error = 9;
+
+    // Optional additional destination addresses, additional to first to_address output
+    repeated TxOutput extra_outputs = 12;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Available input UTXOs
+    repeated TxInput utxos = 1;
+
+    // Available private keys (double extended keys); every input UTXO address should be covered
+    // In case of Plan only, keys should be present, in correct number
+    repeated bytes private_key = 2;
+
+    // Later this can be made oneof if more message types are supported
+    Transfer transfer_message = 3;
+
+    // Optional, used in case of Staking Key registration (prerequisite for Staking)
+    RegisterStakingKey register_staking_key = 6;
+
+    // Optional, used in case of (re)delegation
+    Delegate delegate = 7;
+
+    // Optional, used in case of withdraw
+    Withdraw withdraw = 8;
+
+    // Optional
+    DeregisterStakingKey deregister_staking_key = 9;
+
+    // Time-to-live time of the TX
+    uint64 ttl = 4;
+
+    // Optional plan, if missing it will be computed
+    TransactionPlan plan = 5;
+
+    // extra output UTXOs
+    repeated TxOutput extra_outputs = 10;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Encoded transaction bytes
+    bytes encoded = 1;
+
+    // TxID, derived from transaction data, also needed for submission
+    bytes tx_id = 2;
+
+    // Optional error
+    Common.Proto.SigningError error = 3;
+
+    // error code description
+    string error_message = 4;
+}

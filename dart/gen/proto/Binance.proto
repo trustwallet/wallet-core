@@ -1,0 +1,402 @@
+syntax = "proto3";
+
+package TW.Binance.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Transaction structure, used internally
+message Transaction {
+    // array of size 1, containing the transaction message, which are one of the transaction type below
+    repeated bytes msgs = 1;
+
+    // array of size 1, containing the standard signature structure of the transaction sender
+    repeated bytes signatures = 2;
+
+    // a short sentence of remark for the transaction, only for `Transfer` transactions.
+    string memo = 3;
+
+    // an identifier for tools triggering this transaction, set to zero if unwilling to disclose.
+    int64 source = 4;
+
+    // reserved for future use
+    bytes data = 5;
+}
+
+// Signature structure, used internally
+message Signature {
+    // public key bytes of the signer address
+    bytes pub_key = 1;
+
+    // signature bytes, please check chain access section for signature generation
+    bytes signature = 2;
+
+    // another identifier of signer, which can be read from chain by account REST API or RPC
+    int64 account_number = 3;
+
+    // sequence number for the next transaction
+    int64 sequence = 4;
+}
+
+// Message for Trade order
+message TradeOrder {
+    // originating address
+    bytes sender = 1;
+
+    // order id, optional
+    string id = 2;
+
+    // symbol for trading pair in full name of the tokens
+    string symbol = 3;
+
+    // only accept 2 for now, meaning limit order
+    int64 ordertype = 4;
+
+    // 1 for buy and 2 for sell
+    int64 side = 5;
+
+    // price of the order, which is the real price multiplied by 1e8 (10^8) and rounded to integer
+    int64 price = 6;
+
+    // quantity of the order, which is the real price multiplied by 1e8 (10^8) and rounded to integer
+    int64 quantity = 7;
+
+    // 1 for Good Till Expire(GTE) order and 3 for Immediate Or Cancel (IOC)
+    int64 timeinforce = 8;
+}
+
+// Message for CancelTrade order
+message CancelTradeOrder {
+    // originating address
+    bytes sender = 1;
+
+    // symbol for trading pair in full name of the tokens
+    string symbol = 2;
+
+    // order id to cancel
+    string refid = 3;
+}
+
+// Message for Send order
+message SendOrder {
+    // A token amount, symbol-amount pair.  Could be moved out of SendOrder; kept here for backward compatibility.
+    message Token {
+        // Token ID
+        string denom = 1;
+
+        // Amount
+        int64 amount = 2;
+    }
+
+    // Transaction input
+    message Input {
+        // source address
+        bytes address = 1;
+
+        // input coin amounts
+        repeated Token coins = 2;
+    }
+
+    // Transaction output
+    message Output {
+        // destination address
+        bytes address = 1;
+
+        // output coin amounts
+        repeated Token coins = 2;
+    }
+
+    // Send inputs
+    repeated Input inputs = 1;
+
+    // Send outputs
+    repeated Output outputs = 2;
+}
+
+// Message for TokenIssue order
+message TokenIssueOrder {
+    // owner address
+    bytes from = 1;
+
+    // token name
+    string name = 2;
+
+    // token symbol, in full name with "-" suffix
+    string symbol = 3;
+
+    // total supply
+    int64 total_supply = 4;
+
+    // mintable
+    bool mintable = 5;
+}
+
+// Message for TokenMint order
+message TokenMintOrder {
+    // owner address
+    bytes from = 1;
+
+    // token symbol, in full name with "-" suffix
+    string symbol = 2;
+
+    // amount to mint
+    int64 amount = 3;
+}
+
+// Message for TokenBurn order
+message TokenBurnOrder {
+    // owner address
+    bytes from = 1;
+
+    // token symbol, in full name with "-" suffix
+    string symbol = 2;
+
+    // amount to burn
+    int64 amount = 3;
+}
+
+// Message for TokenFreeze order
+message TokenFreezeOrder {
+    // owner address
+    bytes from = 1;
+
+    // token symbol, in full name with "-" suffix
+    string symbol = 2;
+
+    // amount of token to freeze
+    int64 amount = 3;
+}
+
+// Message for TokenUnfreeze order
+message TokenUnfreezeOrder {
+    // owner address
+    bytes from = 1;
+
+    // token symbol, in full name with "-" suffix
+    string symbol = 2;
+
+    // amount of token to unfreeze
+    int64 amount = 3;
+}
+
+// Message for HashTimeLock order
+message HTLTOrder {
+    // signer address
+    bytes from = 1;
+
+    // recipient address
+    bytes to = 2;
+
+    // source on other chain, optional
+    string recipient_other_chain = 3;
+
+    // recipient on other chain, optional
+    string sender_other_chain = 4;
+
+    // hash of a random number and timestamp, based on SHA256
+    bytes random_number_hash = 5;
+
+    // timestamp
+    int64 timestamp = 6;
+
+    // amounts
+    repeated SendOrder.Token amount = 7;
+
+    // expected gained token on the other chain
+    string expected_income = 8;
+
+    // period expressed in block heights
+    int64 height_span = 9;
+
+    // set for cross-chain send
+    bool cross_chain = 10;
+}
+
+// Message for Deposit HTLT order
+message DepositHTLTOrder {
+    // signer address
+    bytes from = 1;
+
+    // amounts
+    repeated SendOrder.Token amount = 2;
+
+    // swap ID
+    bytes swap_id = 3;
+}
+
+// Message for Claim HTLT order
+message ClaimHTLOrder {
+    // signer address
+    bytes from = 1;
+
+    // swap ID
+    bytes swap_id = 2;
+
+    // random number input
+    bytes random_number = 3;
+}
+
+// Message for Refund HTLT order
+message RefundHTLTOrder {
+    // signer address
+    bytes from = 1;
+
+    // swap ID
+    bytes swap_id = 2;
+}
+
+// Transfer
+message TransferOut {
+    // source address
+    bytes from = 1;
+
+    // recipient address
+    bytes to = 2;
+
+    // transfer amount
+	SendOrder.Token amount = 3;
+
+    // expiration time
+	int64 expire_time = 4;
+}
+
+message SideChainDelegate {
+    bytes delegator_addr = 1;
+    bytes validator_addr = 2;
+    SendOrder.Token delegation = 3;
+	string chain_id = 4;
+}
+
+message SideChainRedelegate {
+    bytes delegator_addr = 1;
+    bytes validator_src_addr = 2;
+    bytes validator_dst_addr = 3;
+    SendOrder.Token amount = 4;
+    string chain_id = 5;
+}
+
+message SideChainUndelegate {
+    bytes delegator_addr = 1;
+    bytes validator_addr = 2;
+    SendOrder.Token amount = 3;
+	string chain_id = 4;
+}
+
+// Message for BNB Beacon Chain -> BSC Stake Migration.
+// https://github.com/bnb-chain/javascript-sdk/blob/26f6db8b67326e6214e74203ff90c89777b592a1/src/types/msg/stake/stakeMigrationMsg.ts#L13-L18
+message SideChainStakeMigration {
+    bytes validator_src_addr = 1;
+    bytes validator_dst_addr = 2;
+    bytes delegator_addr = 3;
+    bytes refund_addr = 4;
+    SendOrder.Token amount = 5;
+}
+
+// Message for TimeLock order
+message TimeLockOrder {
+    // owner address
+    bytes from_address = 1;
+
+    // Description (optional)
+    string description = 2;
+
+    // Array of symbol/amount pairs. see SDK https://github.com/binance-chain/javascript-sdk/blob/master/docs/api-docs/classes/tokenmanagement.md#timelock
+    repeated SendOrder.Token amount = 3;
+
+    // lock time
+    int64 lock_time = 4;
+}
+
+// Message for TimeRelock order
+message TimeRelockOrder {
+    // owner address
+    bytes from_address = 1;
+
+    // order ID
+    int64 id = 2;
+
+    // Description (optional)
+    string description = 3;
+
+    // Array of symbol/amount pairs.
+    repeated SendOrder.Token amount = 4;
+
+    // lock time
+    int64 lock_time = 5;
+}
+
+// Message for TimeUnlock order
+message TimeUnlockOrder {
+    // owner address
+    bytes from_address = 1;
+
+    // order ID
+    int64 id = 2;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Chain ID
+    string chain_id = 1;
+
+    // Source account number
+    int64 account_number = 2;
+
+    // Sequence number (account specific)
+    int64 sequence = 3;
+
+    // Transaction source, see https://github.com/bnb-chain/BEPs/blob/master/BEP10.md
+    // Some important values:
+    //  0: Default source value (e.g. for Binance Chain Command Line, or SDKs)
+    //  1: Binance DEX Web Wallet
+    //  2: Trust Wallet
+    int64 source = 4;
+
+    // Optional memo
+    string memo = 5;
+
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 6;
+
+    // Payload message
+    oneof order_oneof {
+        TradeOrder trade_order = 8;
+        CancelTradeOrder cancel_trade_order = 9;
+        SendOrder send_order = 10;
+        TokenFreezeOrder freeze_order = 11;
+        TokenUnfreezeOrder unfreeze_order = 12;
+        HTLTOrder htlt_order = 13;
+        DepositHTLTOrder depositHTLT_order = 14;
+        ClaimHTLOrder claimHTLT_order = 15;
+        RefundHTLTOrder refundHTLT_order = 16;
+        TokenIssueOrder issue_order = 17;
+        TokenMintOrder mint_order = 18;
+        TokenBurnOrder burn_order = 19;
+        TransferOut transfer_out_order = 20;
+        SideChainDelegate side_delegate_order = 21;
+        SideChainRedelegate side_redelegate_order = 22;
+        SideChainUndelegate side_undelegate_order = 23;
+        TimeLockOrder time_lock_order = 24;
+        TimeRelockOrder time_relock_order = 25;
+        TimeUnlockOrder time_unlock_order = 26;
+        SideChainStakeMigration side_stake_migration_order = 27;
+    }
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+
+    // OK (=0) or other codes in case of error
+    Common.Proto.SigningError error = 2;
+
+    // error description in case of error
+    string error_message = 3;
+
+    // Signature bytes.
+    bytes signature = 4;
+
+    // Signature JSON string.
+    string signature_json = 5;
+}

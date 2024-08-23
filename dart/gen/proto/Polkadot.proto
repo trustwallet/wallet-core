@@ -1,0 +1,313 @@
+syntax = "proto3";
+
+package TW.Polkadot.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Destination options for reward
+enum RewardDestination {
+    STAKED = 0;
+    STASH = 1;
+    CONTROLLER = 2;
+}
+
+// An era, a period defined by a starting block and length
+message Era {
+    // recent block number (called phase in polkadot code), should match block hash
+    uint64 block_number = 1;
+
+    // length of period, calculated from block number, e.g. 64
+    uint64 period = 2;
+}
+
+// Readable decoded call indices can be found at https://www.subscan.io/
+message CustomCallIndices {
+    // Module index.
+    int32 module_index = 4;
+
+    // Method index.
+    int32 method_index = 5;
+}
+
+// Optional call indices.
+// Must be set if `SigningInput::network` is different from `Polkadot` and `Kusama`.
+message CallIndices {
+    oneof variant {
+        CustomCallIndices custom = 1;
+    }
+}
+
+// Balance transfer transaction
+message Balance {
+    // transfer
+    message Transfer {
+        // destination address
+        string to_address = 1;
+
+        // amount (uint256, serialized big endian)
+        bytes value = 2;
+
+        // max 32 chars
+        string memo = 3;
+
+        // call indices
+        CallIndices call_indices = 4;
+    }
+    // batch tranfer
+    message BatchTransfer {
+        // call indices
+        CallIndices call_indices = 1;
+
+        repeated Transfer transfers = 2;
+    }
+    // asset transfer
+    message AssetTransfer {
+        // call indices
+        CallIndices call_indices = 1;
+
+        // destination
+        string to_address = 2;
+
+        // value - BigInteger
+        bytes value = 3;
+
+        // asset identifier
+        uint32 asset_id = 4;
+
+        // fee asset identifier
+        uint32 fee_asset_id = 5;
+    }
+
+    // batch asset transfer
+    message BatchAssetTransfer {
+        // call indices
+        CallIndices call_indices = 1;
+
+        // fee asset identifier
+        uint32 fee_asset_id = 2;
+
+        repeated AssetTransfer transfers = 3;
+    }
+
+    oneof message_oneof {
+        Transfer transfer = 1;
+        BatchTransfer batchTransfer = 2;
+        AssetTransfer asset_transfer = 3;
+        BatchAssetTransfer batch_asset_transfer = 4;
+    }
+}
+
+// Staking transaction
+message Staking {
+    // Bond to a controller
+    message Bond {
+        // controller ID (optional)
+        string controller = 1;
+
+        // amount (uint256, serialized big endian)
+        bytes value = 2;
+
+        // destination for rewards
+        RewardDestination reward_destination = 3;
+
+        // call indices
+        CallIndices call_indices = 4;
+    }
+
+    // Bond to a controller, with nominators
+    message BondAndNominate {
+        // controller ID (optional)
+        string controller = 1;
+
+        // amount (uint256, serialized big endian)
+        bytes value = 2;
+
+        // destination for rewards
+        RewardDestination reward_destination = 3;
+
+        // list of nominators
+        repeated string nominators = 4;
+
+        // call indices
+        CallIndices call_indices = 5;
+    }
+
+    // Bond extra amount
+    message BondExtra {
+        // amount (uint256, serialized big endian)
+        bytes value = 1;
+
+        // call indices
+        CallIndices call_indices = 2;
+    }
+
+    // Unbond
+    message Unbond {
+        // amount (uint256, serialized big endian)
+        bytes value = 1;
+
+        // call indices
+        CallIndices call_indices = 2;
+    }
+
+    // Rebond
+    message Rebond {
+        // amount (uint256, serialized big endian)
+        bytes value = 1;
+
+        // call indices
+        CallIndices call_indices = 2;
+    }
+
+    // Withdraw unbonded amounts
+    message WithdrawUnbonded {
+        int32 slashing_spans = 1;
+
+        // call indices
+        CallIndices call_indices = 2;
+    }
+
+    // Nominate
+    message Nominate {
+        // list of nominators
+        repeated string nominators = 1;
+
+        // call indices
+        CallIndices call_indices = 2;
+    }
+
+    // Chill and unbound
+    message ChillAndUnbond {
+        // amount (uint256, serialized big endian)
+        bytes value = 1;
+
+        // call indices
+        CallIndices call_indices = 2;
+    }
+
+    // Chill
+    message Chill {
+        // call indices
+        CallIndices call_indices = 1;
+    }
+
+    // Payload messsage
+    oneof message_oneof {
+        Bond bond = 1;
+        BondAndNominate bond_and_nominate = 2;
+        BondExtra bond_extra = 3;
+        Unbond unbond = 4;
+        WithdrawUnbonded withdraw_unbonded = 5;
+        Nominate nominate = 6;
+        Chill chill = 7;
+        ChillAndUnbond chill_and_unbond = 8;
+        Rebond rebond = 9;
+    }
+}
+
+// Identity module
+message Identity {
+    // Identity::join_identity_as_key call
+    message JoinIdentityAsKey {
+        // call indices
+        CallIndices call_indices = 1;
+
+        // auth id
+        uint64 auth_id = 2;
+    }
+
+    // Identity::add_authorization call
+    message AddAuthorization {
+        message Data {
+            bytes data = 1;
+        }
+
+        message AuthData {
+            // authorization data, empty means all permissions, null means no permissions
+            Data asset = 1;
+
+            // authorization data, empty means all permissions, null means no permissions
+            Data extrinsic = 2;
+
+            // authorization data, empty means all permissions, null means no permissions
+            Data portfolio = 3;
+        }
+
+        // call indices
+        CallIndices call_indices = 1;
+
+        // address that will be added to the Identity
+        string target = 2;
+
+        // authorization data, null means all permissions
+        AuthData data = 3;
+
+        // expire time, unix seconds
+        uint64 expiry = 4;
+    }
+
+    oneof message_oneof {
+        JoinIdentityAsKey join_identity_as_key = 1;
+        AddAuthorization add_authorization = 2;
+    }
+}
+
+// Polymesh call
+message PolymeshCall {
+    oneof message_oneof {
+        Identity identity_call = 2;
+    }
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Recent block hash, or genesis hash if era is not set
+    bytes block_hash = 1;
+
+    // Genesis block hash (identifies the chain)
+    bytes genesis_hash = 2;
+
+    // Current account nonce
+    uint64 nonce = 3;
+
+    // Specification version, e.g. 26.
+    uint32 spec_version = 4;
+
+    // Transaction version, e.g. 5.
+    uint32 transaction_version = 5;
+
+    // Optional tip to pay, big integer
+    bytes tip = 6;
+
+    // Optional time validity limit, recommended, for replay-protection.  Empty means Immortal.
+    Era era = 7;
+
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 8;
+
+    // Network type
+    uint32 network = 9;
+
+    // Whether enable MultiAddress
+    bool multi_address = 10;
+
+    // Payload message
+    oneof message_oneof {
+        Balance balance_call = 11;
+        Staking staking_call = 12;
+        PolymeshCall polymesh_call = 13;
+    }
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
+}

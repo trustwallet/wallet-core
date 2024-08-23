@@ -1,0 +1,58 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+syntax = "proto3";
+
+package TW.Everscale.Proto;
+option java_package = "wallet.core.jni.proto";
+
+
+// Message option
+enum MessageBehavior {
+    // Sends a message with the specified amount. The sender pays a fee from the account balance
+    SimpleTransfer = 0;
+
+    // Sends the entire account balance along with the message
+    SendAllBalance = 1;
+}
+
+// Transfer message
+message Transfer {
+    // If set to true, then the message will be returned if there is an error on the recipient's side.
+    bool bounce = 1;
+
+    // Affect the attached amount and fees
+    MessageBehavior behavior = 2;
+
+    // Amount to send in nano EVER
+    uint64 amount = 3;
+
+    // Expiration UNIX timestamp
+    uint32 expired_at = 4;
+
+    // Recipient address
+    string to = 5;
+
+    // Account state if there is any
+    oneof account_state_oneof {
+        // Just contract data
+        string encoded_contract_data = 6;
+    }
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // The payload transfer
+    oneof action_oneof {
+        Transfer transfer = 1;
+    }
+
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 2;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    string encoded = 1;
+}

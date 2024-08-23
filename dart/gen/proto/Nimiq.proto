@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package TW.Nimiq.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 1;
+
+    // Destination address
+    string destination = 2;
+
+    // Amount of the transfer
+    uint64 value = 3;
+
+    // Fee amount
+    uint64 fee = 4;
+
+    // Validity start, in block height
+    uint32 validity_start_height = 5;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // The encoded transaction
+    bytes encoded = 1;
+}
