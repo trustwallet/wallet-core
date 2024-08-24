@@ -15,7 +15,7 @@ use tw_proto::TxCompiler::Proto as CompilerProto;
 use tw_ton_sdk::boc::BagOfCells;
 use tw_ton_sdk::error::cell_to_signing_error;
 
-const HAS_CRC32: bool = true;
+pub(crate) const HAS_CRC32: bool = true;
 
 pub struct TheOpenNetworkCompiler;
 
@@ -33,10 +33,14 @@ impl TheOpenNetworkCompiler {
         _coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
-        let msg_to_sign = SigningRequestBuilder::msg_to_sign(&input)?;
+        let signing_request = SigningRequestBuilder::build(&input)?;
+
+        let external_message =
+            ExternalMessageCreator::create_external_message_to_sign(&signing_request)
+                .map_err(cell_to_signing_error)?;
 
         Ok(CompilerProto::PreSigningOutput {
-            data: Cow::from(msg_to_sign.to_vec()),
+            data: Cow::from(external_message.cell_hash().to_vec()),
             ..CompilerProto::PreSigningOutput::default()
         })
     }
@@ -52,7 +56,7 @@ impl TheOpenNetworkCompiler {
             .unwrap_or_else(|e| signing_output_error!(Proto::SigningOutput, e))
     }
 
-    pub(crate) fn compile_impl(
+    fn compile_impl(
         _coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
         signatures: Vec<SignatureBytes>,
@@ -70,12 +74,16 @@ impl TheOpenNetworkCompiler {
             ExternalMessageCreator::create_external_message_to_sign(&signing_request)
                 .map_err(cell_to_signing_error)?;
 
+        let signed_external_message = signing_request
+            .wallet
+            .compile_signed_external_message(external_message, signature)?;
+
         // Whether to add 'StateInit' reference.
         let state_init = signing_request.seqno == 0;
         let signed_tx = signing_request
             .wallet
-            .compile_signed_transaction(external_message, state_init, signature)
-            .context("Error signing/wrapping an external message")?
+            .compile_transaction(signed_external_message, state_init)
+            .context("Error compiling an external message")?
             .build()
             .context("Error generating signed message cell")
             .map_err(cell_to_signing_error)?;

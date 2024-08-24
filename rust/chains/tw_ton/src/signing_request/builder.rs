@@ -3,14 +3,12 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::TonAddress;
-use crate::signing_request::cell_creator::ExternalMessageCreator;
 use crate::signing_request::{
     JettonTransferRequest, SigningRequest, TransferCustomRequest, TransferPayload, TransferRequest,
 };
 use crate::wallet::{wallet_v4, wallet_v5, VersionedTonWallet};
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
-use tw_hash::H256;
 use tw_keypair::ed25519::sha512::{KeyPair, PublicKey};
 use tw_number::U256;
 use tw_proto::TheOpenNetwork::Proto;
@@ -46,17 +44,6 @@ impl SigningRequestBuilder {
             expire_at,
             seqno: input.sequence_number,
         })
-    }
-
-    /// Returns the cell hash of external message to sign.
-    pub fn msg_to_sign(input: &Proto::SigningInput) -> SigningResult<H256> {
-        let signing_request = Self::build(input)?;
-
-        let external_message =
-            ExternalMessageCreator::create_external_message_to_sign(&signing_request)
-                .map_err(cell_to_signing_error)?;
-
-        Ok(external_message.cell_hash())
     }
 
     /// Currently, V4R2 and V5R1 wallets supported.
