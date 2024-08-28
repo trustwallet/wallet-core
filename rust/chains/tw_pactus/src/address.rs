@@ -16,10 +16,12 @@ use tw_memory::Data;
 use crate::encode;
 
 const HRP: &str = "pc";
+const TREASURY_ADDRESS_STRING: &str = "000000000000000000000000000000000000000000";
 
 /// Enum for Pactus address types.
 #[derive(Debug, Clone, PartialEq)]
 pub enum AddressType {
+    Treasury = 0,
     Validator = 1,
     BlsAccount = 2,
     Ed25519Account = 3,
@@ -58,6 +60,10 @@ impl Address {
             pub_hash: pub_hash.try_into().map_err(|_| AddressError::Internal)?,
         })
     }
+
+    pub fn is_treasury(&self) -> bool {
+        self.addr_type == AddressType::Treasury && self.pub_hash == [0; 20]
+    }
 }
 
 impl CoinAddress for Address {
@@ -74,6 +80,10 @@ impl CoinAddress for Address {
 // Pactus addresses are encoded into a string format using the Bech32m encoding scheme.
 impl fmt::Display for Address {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.is_treasury() {
+            return f.write_str(TREASURY_ADDRESS_STRING);
+        }
+
         let mut b32 = Vec::with_capacity(33);
 
         b32.push(bech32::u5::try_from_u8(self.addr_type.clone() as u8).map_err(|_| fmt::Error)?);
@@ -84,10 +94,20 @@ impl fmt::Display for Address {
 
 impl encode::Encodable for Address {
     fn encode(&self, stream: &mut encode::stream::Stream) {
+        if self.is_treasury() {
+            stream.append(&0u8);
+
+            return;
+        }
+
         stream.append_raw_slice(&self.data());
     }
 
     fn encoded_size(&self) -> usize {
+        if self.is_treasury() {
+            return 1;
+        }
+
         21
     }
 }
@@ -96,10 +116,21 @@ impl FromStr for Address {
     type Err = AddressError;
 
     fn from_str(s: &str) -> Result<Self, AddressError> {
+        if s == TREASURY_ADDRESS_STRING {
+            return Ok(Address {
+                addr_type: AddressType::Treasury,
+                pub_hash: [0; 20],
+            });
+        }
+
         let (hrp, b32, _variant) = bech32::decode(s).map_err(|_| AddressError::FromBech32Error)?;
 
         if hrp != HRP {
             return Err(AddressError::InvalidHrp);
+        }
+
+        if b32.len() != 33 {
+            return Err(AddressError::InvalidInput)
         }
 
         let addr_type = AddressType::from(b32[0].to_u8());
@@ -119,11 +150,34 @@ impl FromStr for Address {
 
 #[cfg(test)]
 mod test {
-    use encode::{stream::Stream, Encodable};
+    use encode::{stream::{self, Stream}, Encodable};
     use tw_encoding::hex::DecodeHex;
     use tw_keypair::ed25519::sha512::PrivateKey;
 
     use super::*;
+
+    #[test]
+    fn test_treasury_address_encoding() {
+        let addr = Address::from_str(TREASURY_ADDRESS_STRING).unwrap();
+        assert!(addr.is_treasury());
+
+        let mut  stream = Stream::new();
+        addr.encode(&mut stream);
+        assert_eq!( stream.out(), [0x00]);
+        assert_eq!( addr.encoded_size(), 1);
+    }
+
+
+    #[test]
+    fn test_address_encoding() {
+        let addr = Address::from_str("pc1rqqqsyqcyq5rqwzqfpg9scrgwpuqqzqsr36kkra").unwrap();
+        assert!(!addr.is_treasury());
+
+        let mut  stream = Stream::new();
+        addr.encode(&mut stream);
+        assert_eq!( stream.out(), "03000102030405060708090a0b0c0d0e0f00010203".decode_hex().unwrap());
+        assert_eq!( addr.encoded_size(), 21);
+    }
 
     #[test]
     fn test_address_string() {
@@ -136,6 +190,12 @@ mod test {
 
         // Define a list of test cases for encoding and decoding
         let test_cases = vec![
+            TestCase {
+                name: "Type Treasury (0)",
+                addr_type: AddressType::Treasury,
+                pub_hash: "0000000000000000000000000000000000000000",
+                expected_addr: TREASURY_ADDRESS_STRING,
+            },
             TestCase {
                 name: "Type Validator (1)",
                 addr_type: AddressType::Validator,
