@@ -12,7 +12,7 @@ fn test_aptos_address_normalization() {
     test_address_normalization(
         CoinType::Aptos,
         "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
-        "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
+          "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
     );
 }
 
