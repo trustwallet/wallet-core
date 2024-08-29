@@ -8,6 +8,7 @@ use crate::message::signed_message::signed_message_v4::SignedMessageV4;
 use crate::message::signed_message::signed_message_v5::SignedMessageV5;
 use crate::transaction::SignedTransaction;
 use tw_coin_entry::error::prelude::*;
+use tw_keypair::ed25519::Signature;
 use tw_keypair::traits::SigningKeyTrait;
 use tw_number::U256;
 use tw_ton_sdk::cell::Cell;
@@ -66,6 +67,14 @@ impl VersionedTonWallet {
         .context("'TonWallet' should be initialized with a key-pair to be able to sign a message")?
         .sign(message_hash.to_vec())?;
 
+        self.compile_signed_external_message(external_message, sig)
+    }
+
+    pub fn compile_signed_external_message(
+        &self,
+        external_message: Cell,
+        sig: Signature,
+    ) -> SigningResult<Cell> {
         match self {
             Self::V4R2(_) => Ok(SignedMessageV4 {
                 signature: sig.to_bytes(),
@@ -88,6 +97,15 @@ impl VersionedTonWallet {
         external_message: Cell,
         state_init: bool,
     ) -> SigningResult<SignedTransaction> {
+        let signed_external_message = self.sign_external_message(external_message.clone())?;
+        self.compile_transaction(signed_external_message, state_init)
+    }
+
+    pub fn compile_transaction(
+        &self,
+        signed_external_message: Cell,
+        state_init: bool,
+    ) -> SigningResult<SignedTransaction> {
         let state_init = if state_init {
             let state_init = self.state_init().map_err(cell_to_signing_error)?;
             Some(state_init)
@@ -95,14 +113,13 @@ impl VersionedTonWallet {
             None
         };
 
-        let signed_body = self.sign_external_message(external_message)?;
         Ok(SignedTransaction {
             src_address: TonAddress::null(),
             // The wallet contract address.
             dest_address: self.address().clone(),
             import_fee: U256::zero(),
             state_init,
-            signed_body,
+            signed_body: signed_external_message,
         })
     }
 }
