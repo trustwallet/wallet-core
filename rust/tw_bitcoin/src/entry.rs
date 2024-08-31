@@ -13,6 +13,7 @@ use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_keypair::tw::PublicKey;
 use tw_proto::BitcoinV2::Proto;
 use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
+use tw_utxo::modules::transaction_util::UtxoTransactionUtil;
 
 pub struct BitcoinEntry;
 
@@ -29,6 +30,7 @@ impl CoinEntry for BitcoinEntry {
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
+    type TransactionUtil = UtxoTransactionUtil;
 
     #[inline]
     fn parse_address(
@@ -88,5 +90,10 @@ impl CoinEntry for BitcoinEntry {
     #[inline]
     fn plan_builder(&self) -> Option<Self::PlanBuilder> {
         Some(BitcoinPlanner)
+    }
+
+    #[inline]
+    fn transaction_util(&self) -> Option<Self::TransactionUtil> {
+        Some(UtxoTransactionUtil)
     }
 }

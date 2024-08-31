@@ -6,6 +6,7 @@ pub mod fee_estimator;
 pub mod keys_manager;
 pub mod sighash_computer;
 pub mod sighash_verifier;
+pub mod transaction_util;
 pub mod tx_compiler;
 pub mod tx_planner;
 pub mod tx_signer;
