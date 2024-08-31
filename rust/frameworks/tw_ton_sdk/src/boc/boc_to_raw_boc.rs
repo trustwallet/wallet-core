@@ -9,6 +9,7 @@ use crate::boc::BagOfCells;
 use crate::cell::{Cell, CellArc};
 use crate::error::{CellErrorType, CellResult};
 use std::cell::RefCell;
+use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::sync::Arc;
 use tw_coin_entry::error::prelude::{OrTWError, ResultContext};
@@ -50,7 +51,11 @@ pub(crate) fn convert_to_raw_boc(boc: &BagOfCells) -> CellResult<RawBagOfCells> 
 fn build_and_verify_index(roots: &[CellArc]) -> HashMap<H256, IndexedCellRef> {
     let mut current_cells: Vec<_> = roots.iter().map(Arc::clone).collect();
     let mut new_hash_index = 0;
-    let mut cells_by_hash = HashMap::new();
+
+    // The Bag of Cells serialization process is not deterministic,
+    // and these uncertainties make it difficult to write test cases.
+    // Therefore, we use a BTreeMap instead of a HashMap to remove the uncertainty.
+    let mut cells_by_hash = BTreeMap::new();
 
     // Process cells to build the initial index.
     while !current_cells.is_empty() {
@@ -96,7 +101,7 @@ fn build_and_verify_index(roots: &[CellArc]) -> HashMap<H256, IndexedCellRef> {
         }
     }
 
-    cells_by_hash
+    cells_by_hash.into_iter().collect()
 }
 
 fn root_indices(
