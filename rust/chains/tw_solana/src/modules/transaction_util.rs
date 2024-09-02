@@ -2,12 +2,12 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::transaction::versioned::VersionedTransaction;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::modules::transaction_util::TransactionUtil;
 use tw_encoding::base64;
 use tw_encoding::base64::STANDARD;
+use crate::modules::transaction_decoder::SolanaTransactionDecoder;
 
 pub struct SolanaTransactionUtil;
 
@@ -18,19 +18,18 @@ impl TransactionUtil for SolanaTransactionUtil {
 }
 
 impl SolanaTransactionUtil {
-    fn calc_tx_hash_impl(_coin: &dyn CoinContext, encoded_tx: &str) -> SigningResult<String> {
-        let tx = base64::decode(encoded_tx, STANDARD)?;
+    fn calc_tx_hash_impl(coin: &dyn CoinContext, encoded_tx: &str) -> SigningResult<String> {
+        let tx_bytes = base64::decode(encoded_tx, STANDARD)?;
+        let decoded_tx_output = SolanaTransactionDecoder::decode_transaction_impl(coin, &tx_bytes)?;
 
-        let decoded_tx: VersionedTransaction =
-            bincode::deserialize(&tx).map_err(|_| SigningErrorType::Error_input_parse)?;
-
-        let first_sig = decoded_tx
-            .signatures
-            .first()
+        let first_sig = decoded_tx_output
+            .transaction
+            .as_ref()
+            .and_then(|tx| tx.signatures.first())
             .or_tw_err(SigningErrorType::Error_input_parse)
             .context("There is no transaction signatures. Looks like it hasn't been signed yet")?;
 
         // Tx hash is the first signature
-        Ok(first_sig.to_string())
+        Ok(first_sig.signature.to_string())
     }
 }
