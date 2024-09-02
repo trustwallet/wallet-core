@@ -4,6 +4,7 @@
 
 use crate::address::TonAddress;
 use crate::compiler::TheOpenNetworkCompiler;
+use crate::modules::transaction_util::TonTransactionUtil;
 use crate::signer::TheOpenNetworkSigner;
 use crate::wallet::{wallet_v4, VersionedTonWallet};
 use std::str::FromStr;
@@ -15,7 +16,6 @@ use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
-use tw_coin_entry::modules::transaction_util::NoTransactionUtil;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_keypair::tw::PublicKey;
@@ -37,7 +37,7 @@ impl CoinEntry for TheOpenNetworkEntry {
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
-    type TransactionUtil = NoTransactionUtil;
+    type TransactionUtil = TonTransactionUtil;
 
     #[inline]
     fn parse_address(
@@ -101,5 +101,10 @@ impl CoinEntry for TheOpenNetworkEntry {
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
         TheOpenNetworkCompiler::compile(coin, input, signatures, public_keys)
+    }
+
+    #[inline]
+    fn transaction_util(&self) -> Option<Self::TransactionUtil> {
+        Some(TonTransactionUtil)
     }
 }
