@@ -1,6 +1,7 @@
 use crate::modules::compiler::BitcoinCompiler;
 use crate::modules::planner::BitcoinPlanner;
 use crate::modules::signer::BitcoinSigner;
+use crate::modules::transaction_util::BitcoinTransactionUtil;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
@@ -13,7 +14,6 @@ use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_keypair::tw::PublicKey;
 use tw_proto::BitcoinV2::Proto;
 use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
-use tw_utxo::modules::transaction_util::UtxoTransactionUtil;
 
 pub struct BitcoinEntry;
 
@@ -30,7 +30,7 @@ impl CoinEntry for BitcoinEntry {
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
-    type TransactionUtil = UtxoTransactionUtil;
+    type TransactionUtil = BitcoinTransactionUtil;
 
     #[inline]
     fn parse_address(
@@ -94,6 +94,6 @@ impl CoinEntry for BitcoinEntry {
 
     #[inline]
     fn transaction_util(&self) -> Option<Self::TransactionUtil> {
-        Some(UtxoTransactionUtil)
+        Some(BitcoinTransactionUtil)
     }
 }
