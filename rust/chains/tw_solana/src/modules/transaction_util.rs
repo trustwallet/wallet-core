@@ -2,7 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::modules::proto_builder::ProtoBuilder;
 use crate::transaction::versioned::VersionedTransaction;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
@@ -25,18 +24,13 @@ impl SolanaTransactionUtil {
         let decoded_tx: VersionedTransaction =
             bincode::deserialize(&tx).map_err(|_| SigningErrorType::Error_input_parse)?;
 
-        let transaction = ProtoBuilder::build_from_tx(&decoded_tx);
-        if transaction.signatures.is_empty() {
-            return TWError::err(SigningErrorType::Error_input_parse);
-        }
-        // Tx hash is the first signature
-        let tx_hash = transaction
+        let first_sig = decoded_tx
             .signatures
             .first()
-            .unwrap() // unwrap is safe because we checked the length
-            .signature
-            .to_string();
+            .or_tw_err(SigningErrorType::Error_input_parse)
+            .context("There is no transaction signatures. Looks like it hasn't been signed yet")?;
 
-        Ok(tx_hash)
+        // Tx hash is the first signature
+        Ok(first_sig.to_string())
     }
 }

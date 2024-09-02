@@ -22,6 +22,8 @@ impl UtxoTransactionUtil {
         let tx = decode(encoded_tx).map_err(|_| SigningErrorType::Error_input_parse)?;
 
         // Deserialize the transaction
+        // Note: The following deserialization only works for Bitcoin, Dogecoin, Litecoin, Bitcoin Cash, etc.
+        // However, it does not work for Zcash or Verge. So, we need to implement a custom calc_tx_hash_impl for Zcash and Verge.
         let tx: Transaction = deserialize(&tx).map_err(|_| SigningErrorType::Error_input_parse)?;
 
         // Calculate the transaction ID

@@ -21,8 +21,13 @@ impl TonTransactionUtil {
     // because we often use the TON message hash to track transaction status.
     // The transaction hash is unknown until the transaction is included in a block.
     fn calc_tx_hash_impl(_coin: &dyn CoinContext, encoded_tx: &str) -> SigningResult<String> {
-        let boc = BagOfCells::parse_base64(encoded_tx).map_err(|_| SigningErrorType::Error_input_parse)?;
-        let root_cell_hash = boc.roots.first().ok_or(SigningErrorType::Error_input_parse)?.cell_hash();
+        let boc = BagOfCells::parse_base64(encoded_tx)
+            .map_err(|_| SigningErrorType::Error_input_parse)?;
+        let root_cell_hash = boc
+            .roots
+            .first()
+            .ok_or(SigningErrorType::Error_input_parse)?
+            .cell_hash();
 
         Ok(root_cell_hash.to_string())
     }
