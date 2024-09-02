@@ -2,12 +2,12 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::modules::transaction_decoder::SolanaTransactionDecoder;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::modules::transaction_util::TransactionUtil;
 use tw_encoding::base64;
 use tw_encoding::base64::STANDARD;
-use crate::modules::transaction_decoder::SolanaTransactionDecoder;
 
 pub struct SolanaTransactionUtil;
 
