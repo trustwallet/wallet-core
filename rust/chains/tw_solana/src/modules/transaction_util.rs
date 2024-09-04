@@ -19,6 +19,8 @@ impl TransactionUtil for SolanaTransactionUtil {
 
 impl SolanaTransactionUtil {
     fn calc_tx_hash_impl(coin: &dyn CoinContext, encoded_tx: &str) -> SigningResult<String> {
+        // Solana signed transactions can be encoded in either base64 or base58. For more information, see: https://solana.com/docs/rpc/http/sendtransaction
+        // Currently, this function only accepts base64 encoding.
         let tx_bytes = base64::decode(encoded_tx, STANDARD)?;
         let decoded_tx_output = SolanaTransactionDecoder::decode_transaction_impl(coin, &tx_bytes)?;
 

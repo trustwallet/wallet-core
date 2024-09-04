@@ -29,6 +29,8 @@ impl TonTransactionUtil {
             .ok_or(SigningErrorType::Error_input_parse)?
             .cell_hash();
 
+        // The message hash in TON can be encoded in base64, base64url, or hex.
+        // Here, we return the message hash in hex encoding.
         Ok(root_cell_hash.to_string())
     }
 }
