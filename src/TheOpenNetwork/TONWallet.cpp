@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "TONWallet.h"
+#include "Coin.h"
 
 namespace TW::TheOpenNetwork {
 
@@ -35,10 +36,19 @@ MaybeTONWallet TONWallet::createWithMnemonic(const std::string& mnemonic, const 
     return TONWallet(TONWalletPtr(walletPtr, Rust::tw_ton_wallet_delete));
 }
 
-PrivateKey TONWallet::getKey() const {
+PrivateKey TONWallet::getKey(TWCoinType coin, TWDerivation derivation) const {
+    if (coin != TWCoinTypeTON || derivation != TWDerivationDefault) {
+        throw std::invalid_argument("'TONWallet' supports TON coin and Default derivation only");
+    }
+
     const auto privateKeyRust = wrapTWPrivateKey(Rust::tw_ton_wallet_get_key(impl.get()));
     const Rust::TWDataWrapper privateKeyBytes = Rust::tw_private_key_data(privateKeyRust.get());
     return PrivateKey(privateKeyBytes.toDataOrDefault());
+}
+
+std::string TONWallet::deriveAddress(TWCoinType coin, TWDerivation derivation) const {
+    const auto key = getKey(coin, derivation);
+    return TW::deriveAddress(coin, key, derivation);
 }
 
 } // namespace TW::TheOpenNetwork

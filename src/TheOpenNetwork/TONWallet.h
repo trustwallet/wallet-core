@@ -7,6 +7,9 @@
 #include "PrivateKey.h"
 #include "rust/Wrapper.h"
 
+#include "TrustWalletCore/TWCoinType.h"
+#include "TrustWalletCore/TWDerivation.h"
+
 namespace TW::TheOpenNetwork {
 
 class TONWallet;
@@ -21,7 +24,13 @@ public:
 
     static MaybeTONWallet createWithMnemonic(const std::string& mnemonic, const MaybePassphrase& passphrase);
 
-    PrivateKey getKey() const;
+    /// Returns the private key with the given coin and derivation.
+    /// \throws std exception if `coin` or `derivation` aren't `TWCoinTypeTON` and `TWDerivationDefault` correspondingly.
+    PrivateKey getKey(TWCoinType coin = TWCoinTypeTON, TWDerivation derivation = TWDerivationDefault) const;
+
+    /// Derives the address for the given coin and derivation.
+    /// \throws std exception if `coin` or `derivation` aren't `TWCoinTypeTON` and `TWDerivationDefault` correspondingly.
+    std::string deriveAddress(TWCoinType coin = TWCoinTypeTON, TWDerivation derivation = TWDerivationDefault) const;
 
 private:
     explicit TONWallet(TONWalletPtr ptr): impl(std::move(ptr)) {

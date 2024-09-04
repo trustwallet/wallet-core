@@ -29,7 +29,7 @@ const TWCoinType coinTypeBsc = TWCoinTypeSmartChain;
 const TWCoinType coinTypeEth = TWCoinTypeEthereum;
 const TWCoinType coinTypeBscLegacy = TWCoinTypeSmartChainLegacy;
 
-const std::string testDataPath(const char* subpath) {
+static std::string testDataPath(const char* subpath) {
     return TESTS_ROOT + "/common/Keystore/Data/" + subpath;
 }
 

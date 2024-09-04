@@ -72,6 +72,21 @@ struct TWStoredKey* _Nullable TWStoredKeyImportHDWalletWithEncryption(TWString* 
     }
 }
 
+struct TWStoredKey* _Nullable TWStoredKeyImportTONWallet(TWString* _Nonnull tonMnemonic, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin) {
+    return TWStoredKeyImportTONWalletWithEncryption(tonMnemonic, name, password, coin, TWStoredKeyEncryptionAes128Ctr);
+}
+
+struct TWStoredKey* _Nullable TWStoredKeyImportTONWalletWithEncryption(TWString* _Nonnull tonMnemonic, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin, enum TWStoredKeyEncryption encryption) {
+    try {
+        const auto& tonMnemonicString = *reinterpret_cast<const std::string*>(tonMnemonic);
+        const auto& nameString = *reinterpret_cast<const std::string*>(name);
+        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        return new TWStoredKey{ KeyStore::StoredKey::createWithTonMnemonicAddDefaultAddress(nameString, passwordData, coin, tonMnemonicString, encryption) };
+    } catch (...) {
+        return nullptr;
+    }
+}
+
 struct TWStoredKey* _Nullable TWStoredKeyImportJSON(TWData* _Nonnull json) {
     try {
         const auto& d = *reinterpret_cast<const TW::Data*>(json);
@@ -99,6 +114,10 @@ TWString* _Nonnull TWStoredKeyName(struct TWStoredKey* _Nonnull key) {
 
 bool TWStoredKeyIsMnemonic(struct TWStoredKey* _Nonnull key) {
     return key->impl.type == KeyStore::StoredKeyType::mnemonicPhrase;
+}
+
+bool TWStoredKeyIsTONMnemonic(struct TWStoredKey* _Nonnull key) {
+    return key->impl.type == KeyStore::StoredKeyType::tonMnemonicPhrase;
 }
 
 size_t TWStoredKeyAccountCount(struct TWStoredKey* _Nonnull key) {
@@ -189,6 +208,10 @@ TWString* _Nullable TWStoredKeyDecryptMnemonic(struct TWStoredKey* _Nonnull key,
     } catch (...) {
         return nullptr;
     }
+}
+
+TWString* _Nullable TWStoredKeyDecryptTONMnemonic(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
+    return TWStoredKeyDecryptMnemonic(key, password);
 }
 
 struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWData* _Nonnull password) {

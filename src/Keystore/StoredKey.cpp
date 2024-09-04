@@ -262,7 +262,6 @@ Account StoredKey::account(TWCoinType coin, TWDerivation derivation, const TheOp
     return accounts.back();
 }
 
-/// TODO make sure this works for `tonMnemonic`.
 std::optional<const Account> StoredKey::account(TWCoinType coin) const {
     return getDefaultAccountOrAny(coin, nullptr);
 }
