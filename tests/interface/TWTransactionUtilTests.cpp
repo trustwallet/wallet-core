@@ -7,17 +7,11 @@
 #include <TrustWalletCore/TWTransactionUtil.h>
 
 #include "Bitcoin/Script.h"
-#include "Bitcoin/SegwitAddress.h"
-
-#include "HexCoding.h"
-#include "PublicKey.h"
 #include "uint256.h"
 
 #include "TestUtilities.h"
 #include <gtest/gtest.h>
 
-#include <algorithm>
-#include <map>
 #include <thread>
 
 using namespace TW;

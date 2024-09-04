@@ -5,15 +5,22 @@
 #include "TrustWalletCore/TWTransactionUtil.h"
 #include "rust/Wrapper.h"
 
-#include <iostream>
-
 using namespace TW;
 
-TWString* _Nonnull TWTransactionUtilCalcTxHash(enum TWCoinType coinType, TWString *_Nonnull encodedTx) {
-    auto& encodedTxRef = *reinterpret_cast<const std::string*>(encodedTx);
-    const Rust::TWStringWrapper encodedTxStr = encodedTxRef;
+TWString* _Nullable TWTransactionUtilCalcTxHash(enum TWCoinType coinType, TWString* _Nonnull encodedTx) {
+    try {
+        if (encodedTx == nullptr) {
+            return nullptr;
+        }
+        const Rust::TWStringWrapper encodedTxWrapper = TWStringUTF8Bytes(encodedTx);
 
-    const Rust::TWStringWrapper outputDataPtr = Rust::tw_transaction_util_calc_tx_hash(static_cast<uint32_t>(coinType), encodedTxStr.get());
+        const Rust::TWStringWrapper outputDataPtr = Rust::tw_transaction_util_calc_tx_hash(static_cast<uint32_t>(coinType), encodedTxWrapper.get());
+        if (!outputDataPtr) {
+            return nullptr;
+        }
 
-    return TWStringCreateWithUTF8Bytes(outputDataPtr.toStringOrDefault().c_str());
+        return TWStringCreateWithUTF8Bytes(outputDataPtr.c_str());
+    } catch (...) {
+        return nullptr;
+    }
 }

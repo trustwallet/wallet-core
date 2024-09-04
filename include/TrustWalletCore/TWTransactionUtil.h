@@ -17,8 +17,8 @@ struct TWTransactionUtil;
 ///
 /// \param coin coin type.
 /// \param encodedTx encoded transaction data.
-/// \return TX hash of a transaction
+/// \return The TX hash of a transaction, If the input is invalid or the chain is unsupported, null is returned.
 TW_EXPORT_STATIC_METHOD
-TWString *_Nonnull TWTransactionUtilCalcTxHash(enum TWCoinType coinType, TWString *_Nonnull encodedTx);
+TWString* _Nullable TWTransactionUtilCalcTxHash(enum TWCoinType coinType, TWString* _Nonnull encodedTx);
 
 TW_EXTERN_C_END

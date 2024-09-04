@@ -36,7 +36,7 @@ impl CoinEntry for CosmosEntry {
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
-    type TransactionUtil = CosmosTransactionUtil;
+    type TransactionUtil = CosmosTransactionUtil<StandardCosmosContext>;
 
     #[inline]
     fn parse_address(
@@ -100,6 +100,6 @@ impl CoinEntry for CosmosEntry {
 
     #[inline]
     fn transaction_util(&self) -> Option<Self::TransactionUtil> {
-        Some(CosmosTransactionUtil)
+        Some(CosmosTransactionUtil::<StandardCosmosContext>::default())
     }
 }

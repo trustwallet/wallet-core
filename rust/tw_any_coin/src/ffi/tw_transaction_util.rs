@@ -13,8 +13,8 @@ use tw_misc::try_or_else;
 /// Calculate the TX hash of a transaction.
 ///
 /// \param coin coin type.
-/// \param encodedTx encoded transaction data.
-/// \return TX hash of a transaction
+/// \param encoded_tx encoded transaction data.
+/// \return The TX hash of a transaction, If the input is invalid or the chain is unsupported, null is returned.
 #[no_mangle]
 pub unsafe extern "C" fn tw_transaction_util_calc_tx_hash(
     coin: u32,
