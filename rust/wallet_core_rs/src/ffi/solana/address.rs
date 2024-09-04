@@ -22,31 +22,7 @@ pub unsafe extern "C" fn tw_solana_address_default_token_address(
     address: *const TWString,
     token_mint_address: *const TWString,
 ) -> *mut TWString {
-    let main_address = try_or_else!(TWString::from_ptr_as_ref(address), std::ptr::null_mut);
-    let main_address = try_or_else!(main_address.as_str(), std::ptr::null_mut);
-
-    let token_mint_address = try_or_else!(
-        TWString::from_ptr_as_ref(token_mint_address),
-        std::ptr::null_mut
-    );
-    let token_mint_address = try_or_else!(token_mint_address.as_str(), std::ptr::null_mut);
-
-    let main_address = try_or_else!(SolanaAddress::from_str(main_address), std::ptr::null_mut);
-    let token_mint_address = try_or_else!(
-        SolanaAddress::from_str(token_mint_address),
-        std::ptr::null_mut
-    );
-
-    let token_address = try_or_else!(
-        StakeProgram::get_associated_token_address(
-            main_address,
-            *TOKEN_PROGRAM_ID_ADDRESS,
-            token_mint_address
-        ),
-        std::ptr::null_mut
-    );
-
-    TWString::from(token_address.to_string()).into_ptr()
+    tw_solana_address_token_address_impl(address, token_mint_address, *TOKEN_PROGRAM_ID_ADDRESS)
 }
 
 /// Derive token 2022 address for token
@@ -58,6 +34,18 @@ pub unsafe extern "C" fn tw_solana_address_default_token_address(
 pub unsafe extern "C" fn tw_solana_address_token_2022_address(
     address: *const TWString,
     token_mint_address: *const TWString,
+) -> *mut TWString {
+    tw_solana_address_token_address_impl(
+        address,
+        token_mint_address,
+        *TOKEN_2022_PROGRAM_ID_ADDRESS,
+    )
+}
+
+unsafe fn tw_solana_address_token_address_impl(
+    address: *const TWString,
+    token_mint_address: *const TWString,
+    token_address: SolanaAddress,
 ) -> *mut TWString {
     let main_address = try_or_else!(TWString::from_ptr_as_ref(address), std::ptr::null_mut);
     let main_address = try_or_else!(main_address.as_str(), std::ptr::null_mut);
@@ -73,14 +61,10 @@ pub unsafe extern "C" fn tw_solana_address_token_2022_address(
         std::ptr::null_mut
     );
 
-    let token_address = try_or_else!(
-        StakeProgram::get_associated_token_address(
-            main_address,
-            *TOKEN_2022_PROGRAM_ID_ADDRESS,
-            token_mint_address
-        ),
+    let associated_token_address = try_or_else!(
+        StakeProgram::get_associated_token_address(main_address, token_address, token_mint_address),
         std::ptr::null_mut
     );
 
-    TWString::from(token_address.to_string()).into_ptr()
+    TWString::from(associated_token_address.to_string()).into_ptr()
 }
