@@ -57,23 +57,17 @@ TEST(StoredKeyTon, CreateWithTonMnemonicAddDefault) {
 }
 
 TEST(StoredKeyTon, CreateWithTonMnemonicInvalid) {
-    try {
-        auto key = StoredKey::createWithTonMnemonicAddDefaultAddress(gName, gPassword, TWCoinTypeTON, gInvalidMnemonic);
-    } catch (std::invalid_argument&) {
-        // expedcted exception OK
-        return;
-    }
-    FAIL() << "Missing expected exception";
+    EXPECT_THROW(
+        StoredKey::createWithTonMnemonicAddDefaultAddress(gName, gPassword, TWCoinTypeTON, gInvalidMnemonic),
+        std::invalid_argument
+    );
 }
 
 TEST(StoredKeyTon, CreateWithTonMnemonicInvalidCoinType) {
-    try {
-        auto key = StoredKey::createWithTonMnemonicAddDefaultAddress(gName, gPassword, TWCoinTypeBitcoin, gTonMnemonic);
-    } catch (std::invalid_argument&) {
-        // expedcted exception OK
-        return;
-    }
-    FAIL() << "Missing expected exception";
+    EXPECT_THROW(
+        StoredKey::createWithTonMnemonicAddDefaultAddress(gName, gPassword, TWCoinTypeBitcoin, gTonMnemonic),
+        std::invalid_argument
+    );
 }
 
 TEST(StoredKeyTon, CreateWithMnemonicAddDefaultAddressAes256) {
@@ -85,6 +79,11 @@ TEST(StoredKeyTon, CreateWithMnemonicAddDefaultAddressAes256) {
     EXPECT_EQ(key.accounts[0].coin, TWCoinTypeTON);
     EXPECT_EQ(key.accounts[0].address, "UQBlm676c6vy6Q9Js732pvf3ivfmIkVc0MVDQy-F6NAFJd4k");
     EXPECT_EQ(key.payload.params.cipher(), "aes-256-ctr");
+}
+
+TEST(StoredKeyTon, HDWalletNotSupported) {
+    auto key = StoredKey::createWithTonMnemonicAddDefaultAddress(gName, gPassword, TWCoinTypeTON, gTonMnemonic);
+    EXPECT_THROW(key.wallet(gPassword), std::invalid_argument);
 }
 
 TEST(StoredKeyTon, AddRemoveAccount) {
