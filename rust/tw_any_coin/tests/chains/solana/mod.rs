@@ -6,4 +6,5 @@ mod solana_address;
 mod solana_compile;
 mod solana_sign;
 mod solana_transaction;
+mod solana_transaction_util;
 mod solana_wallet_connect;

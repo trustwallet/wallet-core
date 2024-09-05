@@ -7,6 +7,7 @@ use tw_proto::Sui::Proto;
 mod sui_address;
 mod sui_compile;
 mod sui_sign;
+mod sui_transaction_util;
 mod test_cases;
 
 fn object_ref(id: &'static str, version: u64, digest: &'static str) -> Proto::ObjectRef<'static> {
