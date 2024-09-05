@@ -3108,7 +3108,7 @@
     "id": "polygon",
     "name": "Polygon",
     "coinId": 966,
-    "symbol": "MATIC",
+    "symbol": "POL",
     "decimals": 18,
     "blockchain": "Ethereum",
     "derivation": [
@@ -3129,9 +3129,9 @@
     },
     "info": {
       "url": "https://polygon.technology",
-      "source": "https://github.com/maticnetwork/contracts",
+      "source": "https://github.com/maticnetwork",
       "rpc": "https://polygon-rpc.com",
-      "documentation": "https://eth.wiki/json-rpc/API"
+      "documentation": "https://docs.polygon.technology"
     }
   },
   {

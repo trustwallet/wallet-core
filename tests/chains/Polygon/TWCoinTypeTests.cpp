@@ -24,7 +24,7 @@ TEST(TWPolygonCoinType, TWCoinType) {
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypePolygon));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypePolygon));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypePolygon));
-    assertStringsEqual(symbol, "MATIC");
+    assertStringsEqual(symbol, "POL");
     assertStringsEqual(txUrl, "https://polygonscan.com/tx/0xe26ed1470d5bf99a53d687843e7acdf7e4ba6620af93b4d672e714de90476e8e");
     assertStringsEqual(accUrl, "https://polygonscan.com/address/0x720E1fa107A1Df39Db4E78A3633121ac36Bec132");
     assertStringsEqual(id, "polygon");

@@ -15,7 +15,7 @@ class LiquidStakingTests: XCTestCase {
             $0.stake = LiquidStakingStake.with {
                 $0.amount = "1000000000000000000"
                 $0.asset = LiquidStakingAsset.with {
-                    $0.stakingToken = .matic
+                    $0.stakingToken = .pol
                 }
             }
         }
