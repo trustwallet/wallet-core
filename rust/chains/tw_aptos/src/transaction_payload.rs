@@ -256,7 +256,8 @@ mod tests {
         );
         let tp = TransactionPayload::EntryFunction(entry);
         let serialized = bcs::encode(&tp).unwrap();
-        assert_eq!(hex::encode(serialized, false), "02000000000000000000000000000000000000000000000000000000000000000104636f696e087472616e73666572010700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e000220eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b08e803000000000000");
+        let expected_serialized = "02000000000000000000000000000000000000000000000000000000000000000104636f696e087472616e73666572010700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e000220eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b08e803000000000000";
+        assert_eq!(hex::encode(serialized, false), expected_serialized);
         let payload_value: Value = json!({
                 "function": "0x1::coin::transfer",
                 "type": "entry_function_payload",
@@ -264,5 +265,12 @@ mod tests {
                 "type_arguments": ["0x1::aptos_coin::AptosCoin"]
         });
         assert_eq!(tp.to_json(), payload_value);
+
+        // Rebuild a new EntryFunction object from the JSON above
+        let v = EntryFunction::try_from(payload_value.clone()).unwrap();
+        let tp = TransactionPayload::EntryFunction(v);
+        // Serialize the new EntryFunction object and compare with the expected serialized value
+        let serialized = bcs::encode(&tp).unwrap();
+        assert_eq!(hex::encode(serialized, false), expected_serialized);
     }
 }
