@@ -4,6 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install some basics
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y \
         wget \
         curl \
@@ -23,7 +24,7 @@ RUN apt-get update \
         libtool autoconf pkg-config \
         ninja-build \
         ruby-full \
-        clang-14 \
+        clang \
         llvm-14 \
         libc++-dev libc++abi-dev \
         cmake \
@@ -47,6 +48,9 @@ RUN cargo install --force cbindgen \
 
 COPY . /wallet-core
 WORKDIR /wallet-core
+
+# Clean CMakeCache before CMake execution
+RUN rm -rf /wallet-core/protobuf-plugin/build/CMakeCache.txt
 
 # Install dependencies
 RUN tools/install-dependencies
