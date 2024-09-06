@@ -21,8 +21,8 @@
 
 namespace TW::Keystore {
 
-/// An stored key can be either a private key or a mnemonic phrase for a HD
-/// wallet.
+/// An stored key can be either a private key, or a mnemonic phrase for a HD
+/// wallet, or a TON-specific mnemonic phrase.
 enum class StoredKeyType {
     privateKey,
     mnemonicPhrase,

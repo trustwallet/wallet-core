@@ -6,6 +6,12 @@
 
 import Foundation
 
+private enum StoredKeyType {
+    case privateKey(PrivateKey)
+    case mnemonic(String)
+    case tonMnemonic(String)
+}
+
 /// Manages directories of key and wallet files and presents them as accounts.
 public final class KeyStore {
     static let watchesFileName = "watches.json"
@@ -130,25 +136,49 @@ public final class KeyStore {
         guard let key = StoredKey.importJSON(json: json) else {
             throw Error.invalidJSON
         }
-        guard let data = key.decryptPrivateKey(password: Data(password.utf8)) else {
-            throw Error.invalidPassword
-        }
 
-        if let mnemonic = checkMnemonic(data) {
+        switch try decryptSecret(key: key, password: Data(password.utf8)) {
+        case .privateKey(let privateKey):
+            return try self.import(privateKey: privateKey, name: name, password: newPassword, coin: coins.first ?? .ethereum)
+        case .mnemonic(let mnemonic):
             return try self.import(mnemonic: mnemonic, name: name, encryptPassword: newPassword, coins: coins)
+        case .tonMnemonic(let tonMnemonic):
+            return try self.importTON(tonMnemonic: tonMnemonic, name: name, encryptPassword: newPassword, coin: coins.first ?? .ton)
         }
-
-        guard let privateKey = PrivateKey(data: data) else {
-            throw Error.invalidKey
-        }
-        return try self.import(privateKey: privateKey, name: name, password: newPassword, coin: coins.first ?? .ethereum)
     }
 
-    private func checkMnemonic(_ data: Data) -> String? {
-        guard let mnemonic = String(data: data, encoding: .ascii), Mnemonic.isValid(mnemonic: mnemonic) else {
-            return nil
+    /// Decrypts an inner secret as a `privateKey`, `mnemonic` or another type.
+    /// - Returns: a `StoredKeyType` enum.
+    /// - Note: `StoredKey::type` is not always set, and mnemonic or private key can be stored encrypted without any tag.
+    private func decryptSecret(key: StoredKey, password: Data) throws -> StoredKeyType {
+        guard var secretData = key.decryptPrivateKey(password: password) else {
+            throw Error.invalidPassword
         }
-        return mnemonic
+        defer {
+            secretData.resetBytes(in: 0 ..< secretData.count)
+        }
+
+        // First, check whether the key is init with a TON mnemonic.
+        // That's because TON Wallet is a new feature, and `StoredKey::type` is always set for these kind of keys.
+        if key.isTONMnemonic {
+            guard let tonMnemonic = String(data: secretData, encoding: .ascii), TONWallet.isValidMnemonic(mnemonic: tonMnemonic, passphrase: nil) else {
+                throw Error.invalidMnemonic
+            }
+            return StoredKeyType.tonMnemonic(tonMnemonic)
+        }
+
+        // The next, we should try to convert the secret into a string and check whether it's a valid BIP39 mnemonic phrase.
+        if let mnemonic = String(data: secretData, encoding: .ascii), Mnemonic.isValid(mnemonic: mnemonic) {
+            return StoredKeyType.mnemonic(mnemonic)
+        }
+
+        // Otherwise, we consider the secret as a private key.
+
+        if let privateKey = PrivateKey(data: secretData) {
+            return StoredKeyType.privateKey(privateKey)
+        }
+
+        throw Error.invalidKey
     }
 
     /// Imports a private key.
@@ -193,6 +223,31 @@ public final class KeyStore {
 
         return wallet
     }
+    
+    /// Imports a TON wallet.
+    ///
+    /// - Parameters:
+    ///   - tonMnemonic: TON wallet's mnemonic phrase
+    ///   - encryptPassword: password to use for encrypting
+    ///   - coin: coins to use for this wallet
+    /// - Returns: new account
+    public func `importTON`(tonMnemonic: String, name: String, encryptPassword: String, coin: CoinType, encryption: StoredKeyEncryption = .aes128Ctr) throws -> Wallet {
+        guard let newKey = StoredKey.importTONWalletWithEncryption(tonMnemonic: tonMnemonic, name: name, password: Data(encryptPassword.utf8), coin: coin, encryption: encryption) else {
+            throw Error.invalidKey
+        }
+
+        let url = makeAccountURL()
+        let wallet = Wallet(keyURL: url, key: newKey)
+        // `StoredKey.importTONWalletWithEncryption` should create exactly one account only.
+        if wallet.accounts.count != 1 {
+            throw Error.invalidKey
+        }
+        wallets.append(wallet)
+
+        try save(wallet: wallet)
+
+        return wallet
+    }
 
     /// Exports a wallet as JSON data.
     ///
@@ -202,28 +257,29 @@ public final class KeyStore {
     ///   - newPassword: password to use for exported key
     /// - Returns: encrypted JSON key
     public func export(wallet: Wallet, password: String, newPassword: String, encryption: StoredKeyEncryption = .aes128Ctr) throws -> Data {
-        var privateKeyData = try exportPrivateKey(wallet: wallet, password: password)
-        defer {
-            privateKeyData.resetBytes(in: 0 ..< privateKeyData.count)
-        }
-
+        // TODO why `importHDWalletWithEncryption` is called with a single coin?
+        // I guess that's because we don't want other wallets to know all user accounts.
         guard let coin = wallet.key.account(index: 0)?.coin else {
             throw Error.accountNotFound
         }
 
-        if let mnemonic = checkMnemonic(privateKeyData), let newKey = StoredKey.importHDWalletWithEncryption(mnemonic: mnemonic, name: "", password: Data(newPassword.utf8), coin: coin, encryption: encryption) {
-            guard let json = newKey.exportJSON() else {
-                throw Error.invalidKey
-            }
-            return json
-        } else if let newKey = StoredKey.importPrivateKeyWithEncryption(privateKey: privateKeyData, name: "", password: Data(newPassword.utf8), coin: coin, encryption: encryption) {
-            guard let json = newKey.exportJSON() else {
-                throw Error.invalidKey
-            }
-            return json
+        let secretType = try decryptSecret(key: wallet.key, password: Data(password.utf8))
+
+        let maybeNewKey: StoredKey? = switch secretType {
+        case .privateKey(let privateKey):
+            StoredKey.importPrivateKeyWithEncryption(privateKey: privateKey.data, name: "", password: Data(newPassword.utf8), coin: coin, encryption: encryption)
+
+        case .mnemonic(let mnemonic):
+            StoredKey.importHDWalletWithEncryption(mnemonic: mnemonic, name: "", password: Data(newPassword.utf8), coin: coin, encryption: encryption)
+
+        case .tonMnemonic(let tonMnemonic):
+            StoredKey.importTONWalletWithEncryption(tonMnemonic: tonMnemonic, name: "", password: Data(newPassword.utf8), coin: coin, encryption: encryption)
         }
 
-        throw Error.invalidKey
+        guard let newKey = maybeNewKey, let json = newKey.exportJSON() else {
+            throw Error.invalidKey
+        }
+        return json
     }
 
     /// Exports a wallet as private key data.
@@ -232,6 +288,7 @@ public final class KeyStore {
     ///   - wallet: wallet to export
     ///   - password: account password
     /// - Returns: private key data for encrypted keys or mnemonic phrase for HD wallets
+    /// - Throws: `EncryptError.invalidPassword` if the password is incorrect.
     public func exportPrivateKey(wallet: Wallet, password: String) throws -> Data {
         guard let key = wallet.key.decryptPrivateKey(password: Data(password.utf8)) else {
             throw Error.invalidPassword
@@ -245,12 +302,26 @@ public final class KeyStore {
     ///   - wallet: wallet to export
     ///   - password: account password
     /// - Returns: mnemonic phrase
-    /// - Throws: `EncryptError.invalidMnemonic` if the account is not an HD wallet.
+    /// - Throws: `EncryptError.invalidPassword` if the password is incorrect.
     public func exportMnemonic(wallet: Wallet, password: String) throws -> String {
         guard let mnemonic = wallet.key.decryptMnemonic(password: Data(password.utf8)) else {
             throw Error.invalidPassword
         }
         return mnemonic
+    }
+    
+    /// Exports a wallet as a TON mnemonic phrase.
+    ///
+    /// - Parameters:
+    ///   - wallet: wallet to export
+    ///   - password: account password
+    /// - Returns: TON mnemonic phrase
+    /// - Throws: `EncryptError.invalidPassword` if the password is incorrect.
+    public func exportTONMnemonic(wallet: Wallet, password: String) throws -> String {
+        guard let tonMnemonic = wallet.key.decryptTONMnemonic(password: Data(password.utf8)) else {
+            throw Error.invalidPassword
+        }
+        return tonMnemonic
     }
 
     /// Updates the password of an existing account.
@@ -278,28 +349,30 @@ public final class KeyStore {
             fatalError("Missing wallet")
         }
 
-        guard var privateKeyData = wallet.key.decryptPrivateKey(password: Data(password.utf8)) else {
-            throw Error.invalidPassword
-        }
-        defer {
-            privateKeyData.resetBytes(in: 0 ..< privateKeyData.count)
-        }
-
         let coins = wallet.accounts.map({ $0.coin })
         guard !coins.isEmpty else {
             throw Error.accountNotFound
         }
 
-        if let mnemonic = checkMnemonic(privateKeyData),
-            let key = StoredKey.importHDWalletWithEncryption(mnemonic: mnemonic, name: newName, password: Data(newPassword.utf8), coin: coins[0], encryption: encryption) {
-            wallets[index].key = key
-        } else if let key = StoredKey.importPrivateKeyWithEncryption(
-                privateKey: privateKeyData, name: newName, password: Data(newPassword.utf8), coin: coins[0], encryption: encryption) {
-            wallets[index].key = key
-        } else {
+        let secretType = try decryptSecret(key: wallet.key, password: Data(password.utf8))
+
+        let maybeNewKey: StoredKey? = switch secretType {
+        case .privateKey(let privateKey):
+            StoredKey.importPrivateKeyWithEncryption(
+                privateKey: privateKey.data, name: newName, password: Data(newPassword.utf8), coin: coins[0], encryption: encryption)
+
+        case .mnemonic(let mnemonic):
+            StoredKey.importHDWalletWithEncryption(mnemonic: mnemonic, name: newName, password: Data(newPassword.utf8), coin: coins[0], encryption: encryption)
+
+        case .tonMnemonic(let tonMnemonic):
+            StoredKey.importTONWalletWithEncryption(tonMnemonic: tonMnemonic, name: newName, password: Data(newPassword.utf8), coin: coins[0], encryption: encryption)
+        }
+
+        guard let newKey = maybeNewKey else {
             throw Error.invalidKey
         }
 
+        wallets[index].key = newKey
         _ = try wallets[index].getAccounts(password: newPassword, coins: coins)
         try save(wallet: wallets[index])
     }
