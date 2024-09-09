@@ -10,6 +10,7 @@ use crate::modules::json_signer::JsonSigner;
 use crate::modules::message_signer::MessageSigner;
 use crate::modules::plan_builder::PlanBuilder;
 use crate::modules::transaction_decoder::TransactionDecoder;
+use crate::modules::transaction_util::TransactionUtil;
 use crate::modules::wallet_connector::WalletConnector;
 use crate::prefix::AddressPrefix;
 use tw_keypair::tw::{PrivateKey, PublicKey};
@@ -94,6 +95,9 @@ pub trait CoinEntryExt {
 
     /// Decodes a transaction from binary representation.
     fn decode_transaction(&self, coin: &dyn CoinContext, tx: &[u8]) -> SigningResult<Data>;
+
+    /// Calculate the TX hash of a transaction.
+    fn calc_tx_hash(&self, coin: &dyn CoinContext, encoded_tx: &str) -> SigningResult<String>;
 }
 
 impl<T> CoinEntryExt for T
@@ -241,5 +245,13 @@ where
 
         let output = tx_decoder.decode_transaction(coin, tx);
         serialize(&output).map_err(SigningError::from)
+    }
+
+    fn calc_tx_hash(&self, coin: &dyn CoinContext, encoded_tx: &str) -> SigningResult<String> {
+        let Some(tx_util) = self.transaction_util() else {
+            return TWError::err(SigningErrorType::Error_not_supported);
+        };
+
+        tx_util.calc_tx_hash(coin, encoded_tx)
     }
 }

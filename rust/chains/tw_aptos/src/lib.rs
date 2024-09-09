@@ -12,6 +12,7 @@ pub mod nft;
 
 pub mod compiler;
 pub mod liquid_staking;
+pub mod modules;
 pub mod signer;
 pub mod transaction;
 pub mod transaction_builder;

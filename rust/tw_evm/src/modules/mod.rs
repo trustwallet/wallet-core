@@ -7,4 +7,5 @@ pub mod compiler;
 pub mod message_signer;
 pub mod rlp_encoder;
 pub mod signer;
+pub mod transaction_util;
 pub mod tx_builder;

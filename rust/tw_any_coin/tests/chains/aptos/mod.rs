@@ -5,6 +5,7 @@
 mod aptos_address;
 mod aptos_compile;
 mod aptos_sign;
+mod aptos_transaction_util;
 mod test_cases;
 
 const APTOS_COIN_TYPE: u32 = 637;
