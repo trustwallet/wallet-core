@@ -125,7 +125,7 @@ enum TWCoinType {
     TWCoinTypeMoonriver = 10001285,
     TWCoinTypeMoonbeam = 10001284,
     TWCoinTypeKavaEvm = 10002222,
-    TWCoinTypeKlaytn = 10008217,
+    TWCoinTypeKaia = 10008217,
     TWCoinTypeMeter = 18000,
     TWCoinTypeOKXChain = 996,
     TWCoinTypeStratis = 105105,
