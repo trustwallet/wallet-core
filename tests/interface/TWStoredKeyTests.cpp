@@ -289,7 +289,7 @@ TEST(TWStoredKey, TONWalletExportJSON) {
     const auto jsonStr = WRAPS(TWStringCreateWithRawBytes(TWDataBytes(jsonData.get()), TWDataSize(jsonData.get())));
     const auto json = nlohmann::json::parse(string(TWStringUTF8Bytes(jsonStr.get())));
     EXPECT_EQ(json["type"], "ton-mnemonic");
-    EXPECT_EQ(json["activeAccounts"].size(), 1);
+    EXPECT_EQ(json["activeAccounts"].size(), 1ul);
 }
 
 TEST(TWStoredKey, storeAndImportJSONAES256) {

@@ -20,14 +20,14 @@ namespace TW::Keystore::tests {
 
 using namespace std;
 
-const auto passwordString = "password";
-const auto gPassword = TW::data(string(passwordString));
-const auto gMnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
-const TWCoinType coinTypeBc = TWCoinTypeBitcoin;
-const TWCoinType coinTypeBnb = TWCoinTypeBinance;
-const TWCoinType coinTypeBsc = TWCoinTypeSmartChain;
-const TWCoinType coinTypeEth = TWCoinTypeEthereum;
-const TWCoinType coinTypeBscLegacy = TWCoinTypeSmartChainLegacy;
+static const auto passwordString = "password";
+static const auto gPassword = TW::data(string(passwordString));
+static const auto gMnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
+static const TWCoinType coinTypeBc = TWCoinTypeBitcoin;
+static const TWCoinType coinTypeBnb = TWCoinTypeBinance;
+static const TWCoinType coinTypeBsc = TWCoinTypeSmartChain;
+static const TWCoinType coinTypeEth = TWCoinTypeEthereum;
+static const TWCoinType coinTypeBscLegacy = TWCoinTypeSmartChainLegacy;
 
 static std::string testDataPath(const char* subpath) {
     return TESTS_ROOT + "/common/Keystore/Data/" + subpath;

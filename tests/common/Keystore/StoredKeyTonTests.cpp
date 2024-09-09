@@ -20,16 +20,16 @@ namespace TW::Keystore::tests {
 
 using namespace std;
 
-const auto gName = "name";
-const auto passwordString = "password";
-const auto gPassword = TW::data(string(passwordString));
-const auto gTonMnemonic = "protect drill sugar gallery note admit input wrist chicken swarm scheme hedgehog orbit ritual glove ski buddy slogan fragile sun delay toy lucky require";
+static const auto gName = "name";
+static const auto gPasswordString = "password";
+static const auto gPassword = TW::data(string(gPasswordString));
+static const auto gTonMnemonic = "protect drill sugar gallery note admit input wrist chicken swarm scheme hedgehog orbit ritual glove ski buddy slogan fragile sun delay toy lucky require";
 // The following TON mnemonic requires a passphrase to be used that we don't support right now.
-const auto gInvalidMnemonic = "mimic close sibling chair shuffle goat fashion chunk increase tennis scene ceiling divert cross treat happy soccer sample umbrella oyster advance quality perfect call";
-const auto gPrivateKey = "cdcea50b87d3f1ca859e7b2bdf9a5339b7b6804b5c70ac85198829f9607dc43b";
-const auto gPublicKey = "9016f03f9cfa4e183707761f25407e0e1975194a33a56b3e8d2c26f2438fa3d1";
-const auto gBounceableAddress = "EQBlm676c6vy6Q9Js732pvf3ivfmIkVc0MVDQy-F6NAFJYPh";
-const auto gNonBounceableAddress = "UQBlm676c6vy6Q9Js732pvf3ivfmIkVc0MVDQy-F6NAFJd4k";
+static const auto gInvalidMnemonic = "mimic close sibling chair shuffle goat fashion chunk increase tennis scene ceiling divert cross treat happy soccer sample umbrella oyster advance quality perfect call";
+static const auto gPrivateKey = "cdcea50b87d3f1ca859e7b2bdf9a5339b7b6804b5c70ac85198829f9607dc43b";
+static const auto gPublicKey = "9016f03f9cfa4e183707761f25407e0e1975194a33a56b3e8d2c26f2438fa3d1";
+static const auto gBounceableAddress = "EQBlm676c6vy6Q9Js732pvf3ivfmIkVc0MVDQy-F6NAFJYPh";
+static const auto gNonBounceableAddress = "UQBlm676c6vy6Q9Js732pvf3ivfmIkVc0MVDQy-F6NAFJd4k";
 
 static std::string testDataPath(const char* subpath) {
     return TESTS_ROOT + "/common/Keystore/Data/" + subpath;
