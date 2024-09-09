@@ -3,8 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::TonAddress;
-use crate::wallet::wallet_v4::WalletV4;
-use crate::wallet::TonWallet;
+use crate::wallet::VersionedTonWallet;
 use tw_number::U256;
 
 pub mod builder;
@@ -57,7 +56,7 @@ pub struct TransferCustomRequest {
 
 pub struct SigningRequest {
     /// Wallet initialized with the user's key-pair or public key.
-    pub wallet: TonWallet<WalletV4>,
+    pub wallet: VersionedTonWallet,
     pub messages: Vec<TransferRequest>,
     /// External message counter.
     /// https://ton.org/docs/develop/smart-contracts/guidelines/external-messages

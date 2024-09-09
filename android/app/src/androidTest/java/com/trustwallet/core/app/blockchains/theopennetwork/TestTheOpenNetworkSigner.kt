@@ -25,7 +25,6 @@ class TestTheOpenNetworkSigner {
         val privateKey = PrivateKey("c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0".toHexByteArray())
 
         val transfer = TheOpenNetwork.Transfer.newBuilder()
-            .setWalletVersion(TheOpenNetwork.WalletVersion.WALLET_V4_R2)
             .setDest("EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
             .setAmount(10)
             .setMode(TheOpenNetwork.SendMode.PAY_FEES_SEPARATELY_VALUE or TheOpenNetwork.SendMode.IGNORE_ACTION_PHASE_ERRORS_VALUE)
@@ -37,6 +36,7 @@ class TestTheOpenNetworkSigner {
             .addMessages(transfer)
             .setSequenceNumber(6)
             .setExpireAt(1671132440)
+            .setWalletVersion(TheOpenNetwork.WalletVersion.WALLET_V4_R2)
             .build()
 
         val output = AnySigner.sign(input, CoinType.TON, SigningOutput.parser())
@@ -59,7 +59,6 @@ class TestTheOpenNetworkSigner {
             .build()
 
         val transfer = TheOpenNetwork.Transfer.newBuilder()
-            .setWalletVersion(TheOpenNetwork.WalletVersion.WALLET_V4_R2)
             .setDest("EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja")
             .setAmount(100 * 1000 * 1000)
             .setMode(TheOpenNetwork.SendMode.PAY_FEES_SEPARATELY_VALUE or TheOpenNetwork.SendMode.IGNORE_ACTION_PHASE_ERRORS_VALUE)
@@ -72,6 +71,7 @@ class TestTheOpenNetworkSigner {
             .addMessages(transfer)
             .setSequenceNumber(1)
             .setExpireAt(1787693046)
+            .setWalletVersion(TheOpenNetwork.WalletVersion.WALLET_V4_R2)
             .build()
 
         val output = AnySigner.sign(input, CoinType.TON, SigningOutput.parser())
@@ -103,7 +103,6 @@ class TestTheOpenNetworkSigner {
             .build()
 
         val transfer = TheOpenNetwork.Transfer.newBuilder()
-            .setWalletVersion(TheOpenNetwork.WalletVersion.WALLET_V4_R2)
             .setDest(dogeChatbotDeployingAddress)
             // 0.069 TON
             .setAmount(69_000_000)
@@ -116,6 +115,7 @@ class TestTheOpenNetworkSigner {
             .addMessages(transfer)
             .setSequenceNumber(4)
             .setExpireAt(1721939714)
+            .setWalletVersion(TheOpenNetwork.WalletVersion.WALLET_V4_R2)
             .build()
 
         val output = AnySigner.sign(input, CoinType.TON, SigningOutput.parser())

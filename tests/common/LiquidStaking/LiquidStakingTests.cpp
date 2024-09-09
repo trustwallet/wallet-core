@@ -56,7 +56,7 @@ namespace TW::LiquidStaking::tests {
         input.set_protocol(Proto::Strader);
         Proto::Stake stake;
         Proto::Asset asset;
-        asset.set_staking_token(Proto::MATIC);
+        asset.set_staking_token(Proto::POL);
         *stake.mutable_asset() = asset;
         stake.set_amount("1000000000000000000");
         *input.mutable_stake() = stake;
@@ -80,14 +80,14 @@ namespace TW::LiquidStaking::tests {
         ASSERT_EQ(ls_output.status().code(), Proto::ERROR_TARGETED_BLOCKCHAIN_NOT_SUPPORTED_BY_PROTOCOL);
     }
 
-    TEST(LiquidStaking, PolygonStraderStakeMatic) {
+    TEST(LiquidStaking, PolygonStraderStakePol) {
         Proto::Input input;
         input.set_blockchain(Proto::POLYGON);
         input.set_protocol(Proto::Strader);
         input.set_smart_contract_address("0xfd225c9e6601c9d38d8f98d8731bf59efcf8c0e3");
         Proto::Stake stake;
         Proto::Asset asset;
-        asset.set_staking_token(Proto::MATIC);
+        asset.set_staking_token(Proto::POL);
         *stake.mutable_asset() = asset;
         stake.set_amount("1000000000000000000");
         *input.mutable_stake() = stake;
@@ -146,7 +146,7 @@ namespace TW::LiquidStaking::tests {
         }
     }
 
-    TEST(LiquidStaking, PolygonStraderUnStakeMatic) {
+    TEST(LiquidStaking, PolygonStraderUnStakePol) {
         Proto::Input input;
         input.set_blockchain(Proto::POLYGON);
         input.set_protocol(Proto::Strader);
@@ -184,7 +184,7 @@ namespace TW::LiquidStaking::tests {
         // Successfully broadcasted https://polygonscan.com/tx/0xa66855e4af8e654e458915f59acd77e88706c01b59a3e4aed1363a665458368a
     }
 
-    TEST(LiquidStaking, PolygonStraderWithdrawMatic) {
+    TEST(LiquidStaking, PolygonStraderWithdrawPol) {
         Proto::Input input;
         input.set_blockchain(Proto::POLYGON);
         input.set_protocol(Proto::Strader);

@@ -13,6 +13,7 @@ enum WalletVersion {
     WALLET_V3_R1 = 0;
     WALLET_V3_R2 = 1;
     WALLET_V4_R2 = 2;
+    WALLET_V5_R1 = 3;
 };
 
 enum SendMode {
@@ -25,32 +26,29 @@ enum SendMode {
 };
 
 message Transfer {
-    // Wallet version
-    WalletVersion wallet_version = 1;
-
     // Recipient address
-    string dest = 2;
+    string dest = 1;
 
     // Amount to send in nanotons
-    uint64 amount = 3;
+    uint64 amount = 2;
 
     // Send mode (optional, 0 by default)
     // Learn more: https://ton.org/docs/develop/func/stdlib#send_raw_message
-    uint32 mode = 4;
+    uint32 mode = 3;
 
     // Transfer comment message (optional, empty by default)
     // Ignored if `custom_payload` is specified
-    string comment = 5;
+    string comment = 4;
 
     // If the address is bounceable
-    bool bounceable = 6;
+    bool bounceable = 5;
 
     // One of the Transfer message payloads (optional).
     oneof payload {
         // Jetton transfer payload.
-        JettonTransfer jetton_transfer = 7;
+        JettonTransfer jetton_transfer = 6;
         // TON transfer with custom stateInit and payload (contract call).
-        CustomPayload custom_payload = 8;
+        CustomPayload custom_payload = 7;
     }
 }
 
@@ -97,6 +95,9 @@ message SigningInput {
 
     // Expiration UNIX timestamp (optional, now() + 60 by default)
     uint32 expire_at = 5;
+
+    // Wallet version
+    WalletVersion wallet_version = 6;
 }
 
 // Transaction signing output.

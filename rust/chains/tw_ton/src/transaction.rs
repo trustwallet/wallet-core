@@ -3,7 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::TonAddress;
-use crate::message::signed_message::SignedMessage;
 use tw_number::U256;
 use tw_ton_sdk::cell::cell_builder::CellBuilder;
 use tw_ton_sdk::cell::Cell;
@@ -19,7 +18,7 @@ pub struct SignedTransaction {
     pub import_fee: U256,
     /// Created via `StateInit`.
     pub state_init: Option<StateInit>,
-    pub signed_body: SignedMessage,
+    pub signed_body: Cell,
 }
 
 impl SignedTransaction {
@@ -40,7 +39,7 @@ impl SignedTransaction {
         }
 
         wrap_builder.store_bit(true)?; // signed_body is always defined
-        wrap_builder.store_child(self.signed_body.build()?)?; // Signed body
+        wrap_builder.store_child(self.signed_body.clone())?; // Signed body
 
         wrap_builder.build()
     }
