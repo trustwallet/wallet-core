@@ -12,12 +12,10 @@ impl TransactionUtilHelper {
     pub fn calc_tx_hash(coin_type: CoinType, tx: &str) -> String {
         let tx_data = TWStringHelper::create(tx);
 
-        let output = TWStringHelper::wrap(unsafe {
+        TWStringHelper::wrap(unsafe {
             tw_transaction_util_calc_tx_hash(coin_type as u32, tx_data.ptr())
         })
         .to_string()
-        .expect("!tw_transaction_util_calc_tx_hash returned nullptr");
-
-        output
+        .expect("!tw_transaction_util_calc_tx_hash returned nullptr")
     }
 }
