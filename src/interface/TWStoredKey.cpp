@@ -211,7 +211,7 @@ TWString* _Nullable TWStoredKeyDecryptMnemonic(struct TWStoredKey* _Nonnull key,
 }
 
 TWString* _Nullable TWStoredKeyDecryptTONMnemonic(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
-    if (TWStoredKeyIsTONMnemonic(key)) {
+    if (!TWStoredKeyIsTONMnemonic(key)) {
         return nullptr;
     }
     return TWStoredKeyDecryptMnemonic(key, password);
