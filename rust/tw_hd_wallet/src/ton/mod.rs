@@ -2,7 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::ton::mnemonic::TonMnemonic;
+use crate::bip39::normalize_mnemonic;
+use crate::ton::mnemonic::validate_mnemonic_words;
 use crate::{WalletError, WalletResult};
 use tw_hash::hmac::hmac_sha512;
 use tw_hash::pbkdf2::pbkdf2_hmac_sha512;
@@ -22,11 +23,11 @@ const TON_BASIC_SEED_ROUNDS: u32 = 390;
 const TON_PASSPHRASE_SEED_SALT: &[u8] = b"TON fast seed version";
 const TON_PASSPHRASE_SEED_ROUNDS: u32 = 1;
 
-pub mod mnemonic;
+mod mnemonic;
 
-#[derive(ZeroizeOnDrop)]
+#[derive(Debug, ZeroizeOnDrop)]
 pub struct TonWallet {
-    mnemonic: TonMnemonic,
+    mnemonic: String,
     passphrase: Option<String>,
     entropy: H512,
     seed: H512,
@@ -37,7 +38,10 @@ impl TonWallet {
 
     /// Creates `TonWallet` while validating if there should or shouldn't be a passphrase.
     /// https://github.com/toncenter/tonweb-mnemonic/blob/a338a00d4ca0ed833431e0e49e4cfad766ac713c/src/functions/validate-mnemonic.ts#L20-L28
-    pub fn new(mnemonic: TonMnemonic, passphrase: Option<String>) -> WalletResult<TonWallet> {
+    pub fn new(mnemonic: &str, passphrase: Option<String>) -> WalletResult<TonWallet> {
+        let mnemonic = normalize_mnemonic(mnemonic);
+        validate_mnemonic_words(&mnemonic)?;
+
         let entropy = Self::ton_mnemonic_to_entropy(&mnemonic, passphrase.as_deref());
 
         match passphrase {
@@ -72,16 +76,16 @@ impl TonWallet {
 
     /// Whether the mnemonic can be used with a passphrase only.
     /// https://github.com/toncenter/tonweb-mnemonic/blob/a338a00d4ca0ed833431e0e49e4cfad766ac713c/src/functions/is-password-needed.ts#L5-L11
-    fn is_password_needed(mnemonic: &TonMnemonic) -> bool {
+    fn is_password_needed(mnemonic: &str) -> bool {
         // Password mnemonic (without password) should be password seed, but not basic seed.
         let entropy = Self::ton_mnemonic_to_entropy(mnemonic, None);
         is_password_seed(&entropy) && !is_basic_seed(&entropy)
     }
 
     /// https://github.com/toncenter/tonweb-mnemonic/blob/a338a00d4ca0ed833431e0e49e4cfad766ac713c/src/functions/common.ts#L20-L23
-    fn ton_mnemonic_to_entropy(mnemonic: &TonMnemonic, passphrase: Option<&str>) -> H512 {
+    fn ton_mnemonic_to_entropy(mnemonic: &str, passphrase: Option<&str>) -> H512 {
         let passphrase_bytes = passphrase.map(str::as_bytes).unwrap_or(&[]);
-        let entropy = hmac_sha512(mnemonic.as_str().as_bytes(), passphrase_bytes);
+        let entropy = hmac_sha512(mnemonic.as_bytes(), passphrase_bytes);
         H512::try_from(entropy.as_slice()).expect("hmac_sha512 must return 64 bytes")
     }
 }

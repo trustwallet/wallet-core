@@ -18,7 +18,7 @@ lazy_static! {
 /// https://github.com/trustwallet/wallet-core/blob/43c92837db9f5d773f2545473f29c8a597d86de5/trezor-crypto/include/TrezorCrypto/bip39_english.h#L24-L367
 /// https://github.com/dvc94ch/rust-bip39/blob/master/src/language/english.rs
 #[rustfmt::skip]
-pub const BIP39_WORDS_LIST: [&'static str; 2048] = [
+pub const BIP39_WORDS_LIST: [&str; 2048] = [
     "abandon",
     "ability",
     "able",

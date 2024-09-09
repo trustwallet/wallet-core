@@ -3,7 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 use tw_encoding::hex::ToHex;
-use tw_hd_wallet::ton::mnemonic::TonMnemonic;
 use tw_hd_wallet::ton::TonWallet;
 use tw_hd_wallet::WalletError;
 use tw_keypair::traits::KeyPairTrait;
@@ -23,8 +22,7 @@ fn mnemonic_to_keypair_impl(input: MnemonicTest) {
         Some(input.passphrase.to_string())
     };
 
-    let mnemonic = TonMnemonic::new(input.mnemonic).unwrap();
-    let wallet = TonWallet::new(mnemonic, passphrase).unwrap();
+    let wallet = TonWallet::new(input.mnemonic, passphrase).unwrap();
     let key_pair = wallet.to_key_pair();
 
     assert_eq!(
@@ -51,9 +49,8 @@ fn mnemonic_to_keypair_error(input: MnemonicErrorTest) {
         Some(input.passphrase.to_string())
     };
 
-    let mnemonic = TonMnemonic::new(input.mnemonic).unwrap();
     assert!(
-        TonWallet::new(mnemonic, passphrase).is_err(),
+        TonWallet::new(input.mnemonic, passphrase).is_err(),
         "Expected an error"
     );
 }
@@ -147,13 +144,13 @@ fn test_mnemonic_to_keypair_error_expected_no_passphrase() {
 #[test]
 fn test_invalid_mnemonic() {
     // 24 words mnemonic is supported only.
-    let error = TonMnemonic::new("cost dash dress stove morning robust group affair stomach vacant route volume yellow salute laugh").unwrap_err();
+    let error = TonWallet::new("cost dash dress stove morning robust group affair stomach vacant route volume yellow salute laugh", None).unwrap_err();
     assert_eq!(error, WalletError::InvalidMnemonicWordCount);
 
-    let error = TonMnemonic::new("foo bar oooo edit wash faint patient cancel roof edit silly battle half engine reunion hotel joy fan unhappy oil alone sense empty mesh").unwrap_err();
+    let error = TonWallet::new("foo bar oooo edit wash faint patient cancel roof edit silly battle half engine reunion hotel joy fan unhappy oil alone sense empty mesh", None).unwrap_err();
     assert_eq!(error, WalletError::InvalidMnemonicUnknownWord);
 
     // Upper-case mnemonic is not allowed.
-    let error = TonMnemonic::new("TAIL SWING SUGGEST EDIT WASH FAINT PATIENT CANCEL ROOF EDIT SILLY BATTLE HALF ENGINE REUNION HOTEL JOY FAN UNHAPPY OIL ALONE SENSE EMPTY MESH").unwrap_err();
+    let error = TonWallet::new("TAIL SWING SUGGEST EDIT WASH FAINT PATIENT CANCEL ROOF EDIT SILLY BATTLE HALF ENGINE REUNION HOTEL JOY FAN UNHAPPY OIL ALONE SENSE EMPTY MESH", None).unwrap_err();
     assert_eq!(error, WalletError::InvalidMnemonicUnknownWord);
 }

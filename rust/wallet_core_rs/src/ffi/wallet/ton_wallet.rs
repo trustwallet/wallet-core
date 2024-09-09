@@ -4,7 +4,6 @@
 
 #![allow(clippy::missing_safety_doc)]
 
-use tw_hd_wallet::ton::mnemonic::TonMnemonic;
 use tw_hd_wallet::ton::TonWallet;
 use tw_keypair::ffi::privkey::TWPrivateKey;
 use tw_keypair::ffi::pubkey::TWPublicKey;
@@ -32,7 +31,6 @@ pub unsafe extern "C" fn tw_ton_wallet_is_valid_mnemonic(
 ) -> bool {
     let mnemonic = try_or_false!(TWString::from_ptr_as_ref(mnemonic));
     let mnemonic = try_or_false!(mnemonic.as_str());
-    let mnemonic = try_or_false!(TonMnemonic::new(mnemonic));
 
     let passphrase = TWString::from_ptr_as_ref(passphrase)
         .and_then(TWString::as_str)
@@ -55,7 +53,6 @@ pub unsafe extern "C" fn tw_ton_wallet_create_with_mnemonic(
 ) -> *mut TWTONWallet {
     let mnemonic = try_or_else!(TWString::from_ptr_as_ref(mnemonic), std::ptr::null_mut);
     let mnemonic = try_or_else!(mnemonic.as_str(), std::ptr::null_mut);
-    let mnemonic = try_or_else!(TonMnemonic::new(mnemonic), std::ptr::null_mut);
 
     let passphrase = TWString::from_ptr_as_ref(passphrase)
         .and_then(TWString::as_str)
