@@ -4,6 +4,7 @@
 
 package com.trustwallet.core.app.blockchains.theopennetwork
 
+import com.trustwallet.core.app.utils.toHex
 import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -25,5 +26,21 @@ class TestTheOpenNetworkWallet {
 
         val expected = "te6cckECFgEAAwQAAgE0AQIBFP8A9KQT9LzyyAsDAFEAAAAAKamjF/IpqTcfp8IQiz2Q6iLJvnBf9dDP6u6cu5Nm/wFxV5NXQAIBIAQFAgFIBgcE+PKDCNcYINMf0x/THwL4I7vyZO1E0NMf0x/T//QE0VFDuvKhUVG68qIF+QFUEGT5EPKj+AAkpMjLH1JAyx9SMMv/UhD0AMntVPgPAdMHIcAAn2xRkyDXSpbTB9QC+wDoMOAhwAHjACHAAuMAAcADkTDjDQOkyMsfEssfy/8ICQoLAubQAdDTAyFxsJJfBOAi10nBIJJfBOAC0x8hghBwbHVnvSKCEGRzdHK9sJJfBeAD+kAwIPpEAcjKB8v/ydDtRNCBAUDXIfQEMFyBAQj0Cm+hMbOSXwfgBdM/yCWCEHBsdWe6kjgw4w0DghBkc3RyupJfBuMNDA0CASAODwBu0gf6ANTUIvkABcjKBxXL/8nQd3SAGMjLBcsCIs8WUAX6AhTLaxLMzMlz+wDIQBSBAQj0UfKnAgBwgQEI1xj6ANM/yFQgR4EBCPRR8qeCEG5vdGVwdIAYyMsFywJQBs8WUAT6AhTLahLLH8s/yXP7AAIAbIEBCNcY+gDTPzBSJIEBCPRZ8qeCEGRzdHJwdIAYyMsFywJQBc8WUAP6AhPLassfEss/yXP7AAAK9ADJ7VQAeAH6APQEMPgnbyIwUAqhIb7y4FCCEHBsdWeDHrFwgBhQBMsFJs8WWPoCGfQAy2kXyx9SYMs/IMmAQPsABgCKUASBAQj0WTDtRNCBAUDXIMgBzxb0AMntVAFysI4jghBkc3Rygx6xcIAYUAXLBVADzxYj+gITy2rLH8s/yYBA+wCSXwPiAgEgEBEAWb0kK29qJoQICga5D6AhhHDUCAhHpJN9KZEM5pA+n/mDeBKAG3gQFImHFZ8xhAIBWBITABG4yX7UTQ1wsfgAPbKd+1E0IEBQNch9AQwAsjKB8v/ydABgQEI9ApvoTGACASAUFQAZrc52omhAIGuQ64X/wAAZrx32omhAEGuQ64WPwEXtMkg="
         assertEquals(stateInit, expected)
+    }
+
+    @Test
+    fun TheOpenNetworkWalletIsValidMnemonic() {
+        val validMnemonic = "sight shed side garbage illness clean health wet all win bench wide exist find galaxy drift task suggest portion fresh valve crime radar combine"
+        val noPassphrase = ""
+        val invalidPassphrase = "Expected empty passphrase"
+        assert(TONWallet.isValidMnemonic(validMnemonic, noPassphrase))
+        assert(!TONWallet.isValidMnemonic(validMnemonic, invalidPassphrase))
+    }
+
+    @Test
+    fun TheOpenNetworkWalletGetKey() {
+        val tonMnemonic = "sight shed side garbage illness clean health wet all win bench wide exist find galaxy drift task suggest portion fresh valve crime radar combine"
+        val wallet = TONWallet(tonMnemonic, "")
+        assertEquals(wallet.key.data().toHex(), "0xb471884e691a9f5bb641b14f33bb9e555f759c24e368c4c0d997db3a60704220")
     }
 }

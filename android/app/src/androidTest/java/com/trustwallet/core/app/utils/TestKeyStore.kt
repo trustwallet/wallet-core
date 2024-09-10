@@ -4,6 +4,7 @@ import org.junit.Assert.*
 import org.junit.Test
 import wallet.core.jni.StoredKey
 import wallet.core.jni.CoinType
+import wallet.core.jni.Derivation
 import wallet.core.jni.StoredKeyEncryption
 
 class TestKeyStore {
@@ -17,9 +18,12 @@ class TestKeyStore {
         val keyStore = StoredKey("Test Wallet", "password".toByteArray())
         val result = keyStore.decryptMnemonic("wrong".toByteArray())
         val result2 = keyStore.decryptMnemonic("password".toByteArray())
+        val result3 = keyStore.decryptTONMnemonic("password".toByteArray())
 
         assertNull(result)
         assertNotNull(result2)
+        // StoredKey is an HD by default, so `decryptTONMnemonic` should return null.
+        assertNull(result3)
     }
 
     @Test
@@ -90,5 +94,49 @@ class TestKeyStore {
         val newKeyStore = StoredKey.importJSON(json)
         val privateKey = newKeyStore.decryptPrivateKey("".toByteArray())
         assertNull(privateKey)
+    }
+
+    @Test
+    fun testImportTONWallet() {
+        val tonMnemonic = "laundry myself fitness beyond prize piano match acid vacuum already abandon dance occur pause grocery company inject excuse weasel carpet fog grunt trick spike"
+        val password = "password".toByteArray()
+
+        val keyStore = StoredKey.importTONWallet(tonMnemonic, "Test Wallet", password, CoinType.TON)
+
+        val decrypted1 = keyStore.decryptTONMnemonic("wrong".toByteArray())
+        val decrypted2 = keyStore.decryptTONMnemonic("password".toByteArray())
+        assertNull(decrypted1)
+        assertNotNull(decrypted2)
+
+        assertEquals(keyStore.accountCount(), 1)
+
+        // `StoredKey.account(index)` is only allowed.
+        // `StoredKey.accountForCoin(coin, wallet)` is not supported.
+        val tonAccount = keyStore.account(0)
+        assertEquals(tonAccount.address(), "UQDdB2lMwYM9Gxc-ln--Tu8cz-TYksQxYuUsMs2Pd4cHerYz")
+        assertEquals(tonAccount.coin(), CoinType.TON)
+        assertEquals(tonAccount.publicKey(), "c9af50596bd5c1c5a15fb32bef8d4f1ee5244b287aea1f49f6023a79f9b2f055")
+        assertEquals(tonAccount.extendedPublicKey(), "")
+        assertEquals(tonAccount.derivation(), Derivation.DEFAULT)
+        assertEquals(tonAccount.derivationPath(), "")
+
+        val privateKey = keyStore.privateKey(CoinType.TON, password)
+        assertEquals(privateKey.data().toHex(), "0x859cd74ab605afb7ce9f5316a1f6d59217a130b75b494efd249913be874c9d46")
+
+        // HD wallet is not supported for TON wallet
+        val hdWallet = keyStore.wallet(password)
+        assertNull(hdWallet)
+    }
+
+    @Test
+    fun testExportTONWallet() {
+        val tonMnemonic = "laundry myself fitness beyond prize piano match acid vacuum already abandon dance occur pause grocery company inject excuse weasel carpet fog grunt trick spike"
+        val password = "password".toByteArray()
+
+        val keyStore = StoredKey.importTONWallet(tonMnemonic, "Test Wallet", password, CoinType.TON)
+        val json = keyStore.exportJSON()
+
+        val newKeyStore = StoredKey.importJSON(json)
+        assertEquals(newKeyStore.decryptTONMnemonic(password), tonMnemonic)
     }
 }
