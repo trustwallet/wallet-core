@@ -154,7 +154,7 @@ TEST(StoredKeyTON, LoadTonMnemonic) {
     EXPECT_EQ(key.name, "Test TON Account");
 
     const auto data = key.payload.decrypt(gPassword);
-    const auto mnemonic = string(reinterpret_cast<const char*>(data.data()));
+    const auto mnemonic = string(reinterpret_cast<const char*>(data.data()), data.size());
     EXPECT_EQ(mnemonic, gTONMnemonic);
 
     EXPECT_EQ(key.accounts[0].coin, TWCoinTypeTON);
