@@ -53,7 +53,7 @@ fn test_coin_address_derivation() {
             | CoinType::Fantom
             | CoinType::GoChain
             | CoinType::KavaEvm
-            | CoinType::Klaytn
+            | CoinType::Kaia
             | CoinType::KuCoinCommunityChain
             | CoinType::Meter
             | CoinType::Metis
