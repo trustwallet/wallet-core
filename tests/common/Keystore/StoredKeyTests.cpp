@@ -10,28 +10,21 @@
 #include "HexCoding.h"
 #include "Mnemonic.h"
 #include "PrivateKey.h"
+#include "StoredKeyConstants.h"
 
 #include <gtest/gtest.h>
 #include <stdexcept>
-
-extern std::string TESTS_ROOT;
 
 namespace TW::Keystore::tests {
 
 using namespace std;
 
-static const auto passwordString = "password";
-static const auto gPassword = TW::data(string(passwordString));
 static const auto gMnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
 static const TWCoinType coinTypeBc = TWCoinTypeBitcoin;
 static const TWCoinType coinTypeBnb = TWCoinTypeBinance;
 static const TWCoinType coinTypeBsc = TWCoinTypeSmartChain;
 static const TWCoinType coinTypeEth = TWCoinTypeEthereum;
 static const TWCoinType coinTypeBscLegacy = TWCoinTypeSmartChainLegacy;
-
-static std::string testDataPath(const char* subpath) {
-    return TESTS_ROOT + "/common/Keystore/Data/" + subpath;
-}
 
 TEST(StoredKey, CreateWithMnemonic) {
     auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelDefault);
