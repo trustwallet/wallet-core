@@ -192,7 +192,7 @@ enums:
     value: 10001284
   - name: kavaEvm
     value: 10002222
-  - name: klaytn
+  - name: kaia
     value: 10008217
   - name: meter
     value: 18000
