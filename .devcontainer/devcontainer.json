@@ -8,10 +8,10 @@
 	},
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+	// "features": 00000000000000000002a53538b7b69f10a0cb825aa15463c212622b1e20bf68 {},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	// "forwardPorts": 1KbDEg1tDz2ErYgaDbaDhhawnLrSQFaFx5 [],
 
 	// Configure tool-specific properties.
 	"customizations": {
