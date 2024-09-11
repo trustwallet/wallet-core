@@ -35,6 +35,25 @@ TWString* _Nullable TWSolanaAddressDefaultTokenAddress(struct TWSolanaAddress* _
     }
 }
 
+TWString* _Nullable TWSolanaAddressToken2022Address(struct TWSolanaAddress* _Nonnull address, TWString* _Nonnull tokenMintAddress) {
+    try {
+        if (address == nullptr || tokenMintAddress == nullptr) {
+            return nullptr;
+        }
+        Rust::TWStringWrapper tokenMintAddressWrapper = TWStringUTF8Bytes(tokenMintAddress);
+        Rust::TWStringWrapper mainAddress = address->impl.string();
+
+        Rust::TWStringWrapper newTokenAddress = Rust::tw_solana_address_token_2022_address(mainAddress.get(), tokenMintAddressWrapper.get());
+
+        if (!newTokenAddress) {
+            return nullptr;
+        }
+        return TWStringCreateWithUTF8Bytes(newTokenAddress.c_str());
+    } catch (...) {
+        return nullptr;
+    }
+}
+
 TWString* _Nonnull TWSolanaAddressDescription(struct TWSolanaAddress* _Nonnull address) {
     return TWStringCreateWithUTF8Bytes(address->impl.string().c_str());
 }
