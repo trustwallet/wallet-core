@@ -51,7 +51,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeFantom:
         case TWCoinTypeGoChain:
         case TWCoinTypeKavaEvm:
-        case TWCoinTypeKlaytn:
+        case TWCoinTypeKaia:
         case TWCoinTypeKuCoinCommunityChain:
         case TWCoinTypeMeter:
         case TWCoinTypeMetis:

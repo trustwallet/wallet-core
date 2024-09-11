@@ -4,6 +4,7 @@
 
 use crate::address::SolanaAddress;
 use crate::blockhash::Blockhash;
+use crate::defined_addresses::{TOKEN_2022_PROGRAM_ID_ADDRESS, TOKEN_PROGRAM_ID_ADDRESS};
 use crate::instruction::Instruction;
 use crate::modules::compiled_instructions::compile_instructions;
 use crate::modules::compiled_keys::CompiledKeys;
@@ -333,6 +334,7 @@ impl<'a> MessageBuilder<'a> {
             other_main_address,
             token_mint_address,
             token_address,
+            match_program_id(create_token_acc.token_program_id),
         );
         let mut builder = InstructionBuilder::default();
         builder
@@ -370,7 +372,6 @@ impl<'a> MessageBuilder<'a> {
             .context("Invalid token decimals. Expected lower than 256")?;
 
         let references = Self::parse_references(&token_transfer.references)?;
-
         let transfer_instruction = TokenInstructionBuilder::transfer_checked(
             sender_token_address,
             token_mint_address,
@@ -378,6 +379,7 @@ impl<'a> MessageBuilder<'a> {
             signer,
             token_transfer.amount,
             decimals,
+            match_program_id(token_transfer.token_program_id),
         )
         .with_references(references);
 
@@ -432,6 +434,7 @@ impl<'a> MessageBuilder<'a> {
             recipient_main_address,
             token_mint_address,
             recipient_token_address,
+            match_program_id(create_and_transfer.token_program_id),
         );
         let transfer_instruction = TokenInstructionBuilder::transfer_checked(
             sender_token_address,
@@ -440,6 +443,7 @@ impl<'a> MessageBuilder<'a> {
             signer,
             create_and_transfer.amount,
             decimals,
+            match_program_id(create_and_transfer.token_program_id),
         )
         .with_references(references);
 
@@ -768,4 +772,11 @@ where
     u8: TryFrom<T>,
 {
     u8::try_from(num).tw_err(|_| SigningErrorType::Error_tx_too_big)
+}
+
+fn match_program_id(program_id: Proto::TokenProgramId) -> SolanaAddress {
+    match program_id {
+        Proto::TokenProgramId::TokenProgram => *TOKEN_PROGRAM_ID_ADDRESS,
+        Proto::TokenProgramId::Token2022Program => *TOKEN_2022_PROGRAM_ID_ADDRESS,
+    }
 }

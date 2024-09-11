@@ -38,7 +38,7 @@ class CoinAddressDerivationTests {
 
         Ethereum, SmartChain, Polygon, Optimism, Zksync, Arbitrum, ArbitrumNova, ECOChain, AvalancheCChain, XDai,
         Fantom, Celo, CronosChain, SmartBitcoinCash, KuCoinCommunityChain, Boba, Metis,
-        Aurora, Evmos, Moonriver, Moonbeam, KavaEvm, Klaytn, Meter, OKXChain, PolygonzkEVM, Scroll,
+        Aurora, Evmos, Moonriver, Moonbeam, KavaEvm, Kaia, Meter, OKXChain, PolygonzkEVM, Scroll,
         ConfluxeSpace, AcalaEVM, OpBNB, Neon, Base, Linea, Greenfield, Mantle, ZenEON, MantaPacific,
         ZetaEVM, Merlin, Lightlink, Blast, BounceBit, ZkLinkNova,
         -> "0x8f348F300873Fd5DA36950B2aC75a26584584feE"

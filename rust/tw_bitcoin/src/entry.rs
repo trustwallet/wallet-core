@@ -1,6 +1,7 @@
 use crate::modules::compiler::BitcoinCompiler;
 use crate::modules::planner::BitcoinPlanner;
 use crate::modules::signer::BitcoinSigner;
+use crate::modules::transaction_util::BitcoinTransactionUtil;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
@@ -29,6 +30,7 @@ impl CoinEntry for BitcoinEntry {
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
+    type TransactionUtil = BitcoinTransactionUtil;
 
     #[inline]
     fn parse_address(
@@ -88,5 +90,10 @@ impl CoinEntry for BitcoinEntry {
     #[inline]
     fn plan_builder(&self) -> Option<Self::PlanBuilder> {
         Some(BitcoinPlanner)
+    }
+
+    #[inline]
+    fn transaction_util(&self) -> Option<Self::TransactionUtil> {
+        Some(BitcoinTransactionUtil)
     }
 }

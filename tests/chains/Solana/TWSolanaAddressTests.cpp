@@ -47,3 +47,26 @@ TEST(TWSolanaProgram, defaultTokenAddressError) {
 
     EXPECT_EQ(TWSolanaAddressDefaultTokenAddress(solanaAddress.get(), serumToken.get()), nullptr);
 }
+
+TEST(TWSolanaProgram, token2022Address) {
+    const auto solAddress = STRING("68dzdXkni9BrAwU1asAwurMEdQhXUJq6MNY8niDAny8t");
+    const auto catwifhatToken = STRING("7atgF8KQo4wJrD5ATGX7t1V2zVvykPJbFfNeVf1icFv1");
+
+    auto solanaAddress = WRAP(TWSolanaAddress, TWSolanaAddressCreateWithString(solAddress.get()));
+    auto description = WRAPS(TWSolanaAddressDescription(solanaAddress.get()));
+    auto tokenAddress = WRAPS(TWSolanaAddressToken2022Address(solanaAddress.get(), catwifhatToken.get()));
+
+    assertStringsEqual(tokenAddress, "3PaFQnebQMHBgthRScup2B932cMxA1GBP7m9roCkomHq");
+    assertStringsEqual(description, "68dzdXkni9BrAwU1asAwurMEdQhXUJq6MNY8niDAny8t");
+}
+
+TEST(TWSolanaProgram, token2022AddressError) {
+    const auto solAddress = STRING("68dzdXkni9BrAwU1asAwurMEdQhXUJq6MNY8niDAny8t");
+    // Invalid token mint address.
+    const auto catwifhatToken = STRING("7atgF8KQo4wJrD5ATGX7t1V2zVvykPJbFfNeVf1icF");
+
+    auto solanaAddress = WRAP(TWSolanaAddress, TWSolanaAddressCreateWithString(solAddress.get()));
+    auto description = WRAPS(TWSolanaAddressDescription(solanaAddress.get()));
+
+    EXPECT_EQ(TWSolanaAddressToken2022Address(solanaAddress.get(), catwifhatToken.get()), nullptr);
+}

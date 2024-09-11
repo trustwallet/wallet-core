@@ -2,16 +2,16 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::compiler::HAS_CRC32;
 use crate::signing_request::builder::SigningRequestBuilder;
 use crate::signing_request::cell_creator::ExternalMessageCreator;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
+use tw_misc::traits::ToBytesVec;
 use tw_proto::TheOpenNetwork::Proto;
 use tw_ton_sdk::boc::BagOfCells;
 use tw_ton_sdk::error::cell_to_signing_error;
-
-const HAS_CRC32: bool = true;
 
 pub struct TheOpenNetworkSigner;
 

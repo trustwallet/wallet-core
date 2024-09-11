@@ -4,8 +4,9 @@
 
 use crate::address::TonAddress;
 use crate::compiler::TheOpenNetworkCompiler;
+use crate::modules::transaction_util::TonTransactionUtil;
 use crate::signer::TheOpenNetworkSigner;
-use crate::wallet::TonWallet;
+use crate::wallet::{wallet_v4, VersionedTonWallet};
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
@@ -36,6 +37,7 @@ impl CoinEntry for TheOpenNetworkEntry {
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
+    type TransactionUtil = TonTransactionUtil;
 
     #[inline]
     fn parse_address(
@@ -68,9 +70,12 @@ impl CoinEntry for TheOpenNetworkEntry {
         let ed25519_pubkey = public_key
             .to_ed25519()
             .ok_or(AddressError::PublicKeyTypeMismatch)?;
-        TonWallet::std_with_public_key(ed25519_pubkey.clone())
-            .map(|wallet| wallet.address().clone())
-            .map_err(|_| AddressError::Internal)
+        // Currently, we use the V4R2 wallet
+        let wallet = VersionedTonWallet::V4R2(
+            wallet_v4::WalletV4R2::std_with_public_key(ed25519_pubkey.clone())
+                .map_err(|_| AddressError::Internal)?,
+        );
+        Ok(wallet.address().clone())
     }
 
     #[inline]
@@ -96,5 +101,10 @@ impl CoinEntry for TheOpenNetworkEntry {
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
         TheOpenNetworkCompiler::compile(coin, input, signatures, public_keys)
+    }
+
+    #[inline]
+    fn transaction_util(&self) -> Option<Self::TransactionUtil> {
+        Some(TonTransactionUtil)
     }
 }

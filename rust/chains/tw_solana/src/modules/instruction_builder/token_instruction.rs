@@ -74,6 +74,7 @@ impl TokenInstructionBuilder {
         other_main_pubkey: SolanaAddress,
         token_mint_pubkey: SolanaAddress,
         token_pubkey: SolanaAddress,
+        token_program_id: SolanaAddress,
     ) -> Instruction {
         let account_metas = vec![
             AccountMeta::new(funding_pubkey, true),
@@ -81,7 +82,7 @@ impl TokenInstructionBuilder {
             AccountMeta::readonly(other_main_pubkey, false),
             AccountMeta::readonly(token_mint_pubkey, false),
             AccountMeta::readonly(*SYSTEM_PROGRAM_ID_ADDRESS, false),
-            AccountMeta::readonly(*TOKEN_PROGRAM_ID_ADDRESS, false),
+            AccountMeta::readonly(token_program_id, false),
             AccountMeta::readonly(*SYSVAR_RENT_ID_ADDRESS, false),
         ];
         let data = Data::default();
@@ -96,6 +97,7 @@ impl TokenInstructionBuilder {
         signer: SolanaAddress,
         amount: u64,
         decimals: u8,
+        token_program_id: SolanaAddress,
     ) -> Instruction {
         let account_metas = vec![
             AccountMeta::new(sender_token_pubkey, false),
@@ -105,6 +107,6 @@ impl TokenInstructionBuilder {
         ];
 
         let data = TokenInstruction::TransferChecked { amount, decimals }.pack();
-        Instruction::new(*TOKEN_PROGRAM_ID_ADDRESS, data, account_metas)
+        Instruction::new(token_program_id, data, account_metas)
     }
 }

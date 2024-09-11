@@ -101,7 +101,7 @@ class CoinAddressDerivationTests: XCTestCase {
                      .moonriver,
                      .moonbeam,
                      .kavaEvm,
-                     .klaytn,
+                     .kaia,
                      .meter,
                      .okxchain,
                      .confluxeSpace,
