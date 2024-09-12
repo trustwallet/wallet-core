@@ -42,8 +42,6 @@ impl TonWallet {
         let mnemonic = normalize_mnemonic(mnemonic);
         validate_mnemonic_words(&mnemonic)?;
 
-        let entropy = Self::ton_mnemonic_to_entropy(&mnemonic, passphrase.as_deref());
-
         match passphrase {
             Some(ref passphrase) if !passphrase.is_empty() => {
                 // Check whether the passphrase is really needed.
@@ -53,6 +51,8 @@ impl TonWallet {
             },
             _ => (),
         };
+
+        let entropy = Self::ton_mnemonic_to_entropy(&mnemonic, passphrase.as_deref());
 
         // The pair of `[mnemonic, Option<passphrase>]` should give a `basic` seed.
         // Otherwise, `passphrase` is either not set or invalid.

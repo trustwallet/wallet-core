@@ -12,11 +12,9 @@ pub const WORDS_LEN: usize = 24;
 /// Please note there this function doesn't validate the mnemonic but it words only.
 /// See [`TonWallet::new`].
 pub fn validate_mnemonic_words(mnemonic: &str) -> WalletResult<()> {
-    let normalized_mnemonic = mnemonic.trim().to_string();
-
     let mut invalid = false;
     let mut words_count = 0;
-    for word in normalized_mnemonic.split(" ") {
+    for word in mnemonic.split(" ") {
         words_count += 1;
 
         // Although this operation is not security-critical, we aim for constant-time operation here as well
