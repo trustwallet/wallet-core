@@ -23,9 +23,9 @@ pub struct RlpEncoder<Context: EvmContext> {
 }
 
 impl<Context: EvmContext> RlpEncoder<Context> {
-    pub fn encode<T>(val: T) -> Data
+    pub fn encode<T>(val: &T) -> Data
     where
-        T: RlpEncode,
+        T: RlpEncode + ?Sized,
     {
         let mut buf = RlpBuffer::new();
         val.rlp_append(&mut buf);
@@ -64,16 +64,16 @@ impl<Context: EvmContext> RlpEncoder<Context> {
 
         let encoded_item = match rlp_item.item {
             Item::string_item(str) => RlpEncoder::<Context>::encode(str.as_ref()),
-            Item::number_u64(num) => RlpEncoder::<Context>::encode(U256::from(num)),
+            Item::number_u64(num) => RlpEncoder::<Context>::encode(&U256::from(num)),
             Item::number_u256(num_be) => {
                 let num = U256::from_big_endian_slice(num_be.as_ref())
                     .into_tw()
                     .context("Invalid U256 number")?;
-                RlpEncoder::<Context>::encode(num)
+                RlpEncoder::<Context>::encode(&num)
             },
             Item::address(addr_s) => {
                 let addr = Context::Address::from_str(addr_s.as_ref())?;
-                RlpEncoder::<Context>::encode(addr.into())
+                RlpEncoder::<Context>::encode(&addr.into())
             },
             Item::data(data) => RlpEncoder::<Context>::encode(data.as_ref()),
             Item::list(proto_nested_list) => {

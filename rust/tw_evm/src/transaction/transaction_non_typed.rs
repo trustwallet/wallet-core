@@ -83,18 +83,18 @@ fn encode_transaction(
     signature: Option<&SignatureEip155>,
 ) -> Data {
     let mut list = RlpList::new();
-    list.append(tx.nonce)
-        .append(tx.gas_price)
-        .append(tx.gas_limit)
-        .append(tx.to)
-        .append(tx.amount)
+    list.append(&tx.nonce)
+        .append(&tx.gas_price)
+        .append(&tx.gas_limit)
+        .append(&tx.to)
+        .append(&tx.amount)
         .append(tx.payload.as_slice());
 
     let (v, r, s) = match signature {
         Some(sign) => (sign.v(), sign.r(), sign.s()),
         None => (chain_id, U256::zero(), U256::zero()),
     };
-    list.append(v).append(r).append(s);
+    list.append(&v).append(&r).append(&s);
     list.finish()
 }
 
