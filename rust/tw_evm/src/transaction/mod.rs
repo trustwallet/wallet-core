@@ -16,6 +16,7 @@ use tw_keypair::ecdsa::secp256k1;
 use tw_memory::Data;
 use tw_number::U256;
 
+pub mod access_list;
 pub mod signature;
 pub mod transaction_eip1559;
 pub mod transaction_non_typed;
