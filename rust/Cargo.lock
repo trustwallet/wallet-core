@@ -1805,7 +1805,6 @@ dependencies = [
  "tw_misc",
  "tw_proto",
  "tw_utxo",
- "wallet-core-rs",
 ]
 
 [[package]]
@@ -2145,6 +2144,7 @@ dependencies = [
  "tw_hash",
  "tw_keypair",
  "tw_memory",
+ "tw_misc",
  "tw_number",
  "tw_proto",
  "tw_ton_sdk",

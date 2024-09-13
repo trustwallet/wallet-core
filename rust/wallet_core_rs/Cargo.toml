@@ -35,7 +35,7 @@ utils = [
 [dependencies]
 bitreader = "0.3.8"
 tw_any_coin = { path = "../tw_any_coin", optional = true }
-tw_bitcoin = { path = "../tw_bitcoin", optional = true }
+tw_bitcoin = { path = "../chains/tw_bitcoin", optional = true }
 tw_coin_registry = { path = "../tw_coin_registry", optional = true }
 tw_encoding = { path = "../tw_encoding", optional = true }
 tw_ethereum = { path = "../chains/tw_ethereum", optional = true }
