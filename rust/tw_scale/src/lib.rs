@@ -1,4 +1,7 @@
+use tw_hash::Hash;
 use tw_number::U256;
+
+pub mod macros;
 
 ///
 /// SCALE encoding implementation (see https://docs.substrate.io/reference/scale-codec)
@@ -151,6 +154,12 @@ impl ToScale for Compact<usize> {
     }
 }
 
+impl<const N: usize> ToScale for Hash<N> {
+    fn to_scale_into(&self, out: &mut Vec<u8>) {
+        out.extend_from_slice(self.as_slice());
+    }
+}
+
 impl<T> ToScale for Option<T>
 where
     T: ToScale,
@@ -183,27 +192,6 @@ where
     }
 }
 
-macro_rules! tuple_impl {
-    ($(,)?) => {};
-    ($first:tt, $($rest:tt),* $(,)?) => {
-        tuple_impl!($($rest),*,);
-        tuple_impl!(@make_impl $first $($rest)*);
-    };
-    (@make_impl $($t:tt)+) => {
-        #[allow(non_snake_case, unused_parens, unconditional_recursion)] // the compiler seems confused here
-        impl <$($t),+> ToScale for ($($t),+,) where $($t: ToScale),+ {
-            fn to_scale_into(&self, out: &mut Vec<u8>) {
-                let ($($t),*) = self;
-                $(
-                    $t.to_scale_into(out);
-                )*
-            }
-        }
-    };
-}
-
-tuple_impl!(T0, T1, T2, T3, T4, T5, T6, T7);
-
 pub struct FixedLength<'a, T>(pub &'a [T]);
 
 impl<'a, T> ToScale for FixedLength<'a, T>
@@ -233,6 +221,12 @@ where
 {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
         out.extend(self.0.clone());
+    }
+}
+
+impl<T: ToScale> ToScale for &T {
+    fn to_scale_into(&self, out: &mut Vec<u8>) {
+        (*self).to_scale_into(out)
     }
 }
 
@@ -357,7 +351,10 @@ mod tests {
         assert_eq!(Compact(16383u128).to_scale(), &[0xfd, 0xff]);
         assert_eq!(Compact(16384u128).to_scale(), &[0x02, 0x00, 0x01, 0x00]);
         assert_eq!(Compact(65535u128).to_scale(), &[0xfe, 0xff, 0x03, 0x00]);
-        assert_eq!(Compact(1073741823u128).to_scale(), &[0xfe, 0xff, 0xff, 0xff]);
+        assert_eq!(
+            Compact(1073741823u128).to_scale(),
+            &[0xfe, 0xff, 0xff, 0xff]
+        );
         assert_eq!(
             Compact(1073741824u128).to_scale(),
             &[0x03, 0x00, 0x00, 0x00, 0x40]

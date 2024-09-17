@@ -2137,6 +2137,7 @@ name = "tw_scale"
 version = "0.1.0"
 dependencies = [
  "serde",
+ "tw_hash",
  "tw_number",
 ]
 
