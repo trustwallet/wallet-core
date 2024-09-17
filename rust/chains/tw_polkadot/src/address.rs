@@ -7,6 +7,7 @@ use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::prefix::AddressPrefix;
+use tw_scale::impl_struct_scale;
 use tw_memory::Data;
 use tw_ss58_address::{NetworkId, SS58Address};
 
@@ -30,8 +31,10 @@ impl TryFrom<AddressPrefix> for PolkadotPrefix {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct PolkadotAddress(pub SS58Address);
+impl_struct_scale!(
+  #[derive(Debug, Clone, PartialEq, Eq)]
+  pub struct PolkadotAddress(pub SS58Address);
+);
 
 impl PolkadotAddress {
     pub fn with_network_check(self) -> AddressResult<Self> {
