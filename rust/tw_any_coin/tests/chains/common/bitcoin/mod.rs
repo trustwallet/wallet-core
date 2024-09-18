@@ -10,6 +10,7 @@ pub mod compile;
 pub mod data;
 pub mod plan;
 pub mod preimage;
+pub mod psbt_sign;
 pub mod sign;
 
 pub const ONE_BTC: i64 = 100_000_000;

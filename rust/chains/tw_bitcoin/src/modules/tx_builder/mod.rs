@@ -4,6 +4,7 @@
 
 pub mod output_protobuf;
 pub mod public_keys;
+pub mod script_parser;
 pub mod utxo_protobuf;
 
 pub struct BitcoinChainInfo {

@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::modules::tx_builder::public_keys::PublicKeys;
+use crate::modules::tx_builder::script_parser::{ConditionScript, ConditionScriptParser};
 use crate::modules::tx_builder::BitcoinChainInfo;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
@@ -15,7 +16,6 @@ use tw_utxo::address::legacy::LegacyAddress;
 use tw_utxo::address::segwit::SegwitAddress;
 use tw_utxo::address::standard_bitcoin::StandardBitcoinAddress;
 use tw_utxo::address::taproot::TaprootAddress;
-use tw_utxo::script::standard_script::conditions;
 use tw_utxo::script::Script;
 use tw_utxo::sighash::SighashType;
 use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
@@ -137,36 +137,19 @@ impl<'a> UtxoProtobuf<'a> {
         let script = Script::from(script_data);
         let builder = self.prepare_builder()?;
 
-        if let Some(pubkey) = conditions::match_p2pk(&script) {
-            // P2PK
-            let pubkey = ecdsa::secp256k1::PublicKey::try_from(pubkey.as_slice())
-                .into_tw()
-                .context("P2PK scriptPubkey must contain a valid ecdsa secp256k1 public key")?;
-            builder.p2pk(&pubkey)
-        } else if let Some(pubkey_hash) = conditions::match_p2pkh(&script) {
-            // P2PKH
-            let pubkey = self.get_ecdsa_pubkey_from_hash(&pubkey_hash)?;
-            builder.p2pkh(&pubkey)
-        } else if let Some(pubkey_hash) = conditions::match_p2wpkh(&script) {
-            // P2WPKH
-            let pubkey = self.get_ecdsa_pubkey_from_hash(&pubkey_hash)?;
-            builder.p2wpkh(&pubkey)
-        } else if let Some(tweaked_pubkey) = conditions::match_p2tr(&script) {
-            // P2TR
-            let tweaked_pubkey_x_only =
-                schnorr::XOnlyPublicKey::try_from(tweaked_pubkey.as_slice())
-                    .into_tw()
-                    .context("P2TR scriptPubkey must contain a valid tweaked schnorr public key")?;
-            builder.p2tr_key_path_with_tweaked_pubkey(&tweaked_pubkey_x_only)
-        } else if conditions::is_p2sh(&script) || conditions::is_p2wsh(&script) {
-            // P2SH or P2WSH
-            SigningError::err(SigningErrorType::Error_script_output)
-                .context("P2SH and P2WSH scriptPubkey's are not supported yet")
-        } else {
-            // Unknown
-            SigningError::err(SigningErrorType::Error_script_output).context(
-                "The given custom scriptPubkey is not supported. Consider using a Proto.Input.InputBuilder",
-            )
+        match ConditionScriptParser.parse(&script)? {
+            ConditionScript::P2PK(pk) => builder.p2pk(&pk),
+            ConditionScript::P2PKH(pubkey_hash) => {
+                let pubkey = self.public_keys.get_ecdsa_public_key(&pubkey_hash)?;
+                builder.p2pkh(&pubkey)
+            },
+            ConditionScript::P2WPKH(pubkey_hash) => {
+                let pubkey = self.public_keys.get_ecdsa_public_key(&pubkey_hash)?;
+                builder.p2wpkh(&pubkey)
+            },
+            ConditionScript::P2TR(tweaked_pubkey) => {
+                builder.p2tr_key_path_with_tweaked_pubkey(&tweaked_pubkey)
+            },
         }
     }
 
@@ -192,7 +175,7 @@ impl<'a> UtxoProtobuf<'a> {
 
         if p2pkh_prefix == addr.prefix() {
             // P2PKH
-            let pubkey = self.get_ecdsa_pubkey_from_hash(&addr.payload())?;
+            let pubkey = self.public_keys.get_ecdsa_public_key(&addr.payload())?;
             self.prepare_builder()?.p2pkh(&pubkey)
         } else if p2sh_prefix == addr.prefix() {
             // P2SH
@@ -218,7 +201,7 @@ impl<'a> UtxoProtobuf<'a> {
             H160::LEN => {
                 let pubkey_hash = H160::try_from(witness_program)
                     .expect("'witness_program' length must be checked already");
-                let pubkey = self.get_ecdsa_pubkey_from_hash(&pubkey_hash)?;
+                let pubkey = self.public_keys.get_ecdsa_public_key(&pubkey_hash)?;
                 self.prepare_builder()?.p2wpkh(&pubkey)
             },
             // P2WSH
@@ -271,16 +254,6 @@ impl<'a> UtxoProtobuf<'a> {
             .sequence(sequence)
             .amount(self.input.value)
             .sighash_type(sighash_ty))
-    }
-
-    fn get_ecdsa_pubkey_from_hash(
-        &self,
-        pubkey_hash: &H160,
-    ) -> SigningResult<ecdsa::secp256k1::PublicKey> {
-        let pubkey_data = self.public_keys.get_public_key(pubkey_hash)?;
-        ecdsa::secp256k1::PublicKey::try_from(pubkey_data)
-            .into_tw()
-            .context("Expected a valid ecdsa secp256k1 public key")
     }
 
     /// Tries to convert [`Proto::PublicKeyOrHash`] to [`Hash<N>`].

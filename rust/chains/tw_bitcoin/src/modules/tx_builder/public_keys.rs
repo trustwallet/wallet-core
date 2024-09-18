@@ -41,4 +41,14 @@ impl PublicKeys {
             .or_tw_err(SigningErrorType::Error_missing_private_key)
             .with_context(|| format!("Missing either a private or public key corresponding to the pubkey hash: {pubkey_hash}"))
     }
+
+    pub fn get_ecdsa_public_key(
+        &self,
+        pubkey_hash: &H160,
+    ) -> SigningResult<ecdsa::secp256k1::PublicKey> {
+        let pubkey_data = self.get_public_key(pubkey_hash)?;
+        ecdsa::secp256k1::PublicKey::try_from(pubkey_data)
+            .into_tw()
+            .context("Expected a valid ecdsa secp256k1 public key")
+    }
 }

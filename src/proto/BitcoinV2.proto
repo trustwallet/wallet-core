@@ -340,7 +340,7 @@ message SigningOutput {
     string error_message = 2;
     // Resulting transaction.
     Transaction transaction = 3;
-    // The encoded transaction that submitted to the network.
+    // The encoded transaction that can be submitted to the network.
     bytes encoded = 4;
     // The transaction ID (hash).
     bytes txid = 5;
@@ -353,4 +353,42 @@ message SigningOutput {
     uint64 weight = 7;
     // The total and final fee of the transaction in satoshis.
     int64 fee = 8;
+}
+
+message PsbtSigningInput {
+    // Partly signed transaction to be signed.
+    bytes psbt = 1;
+    // User private keys.
+    // Only required if the `sign` method is called.
+    repeated bytes private_keys = 2;
+    // User public keys.
+    // Only required if the `plan` method is called.
+    repeated bytes public_keys = 3;
+    // Whether disable auxiliary random data when signing.
+    // Use for testing **ONLY**.
+    bool dangerous_use_fixed_schnorr_rng = 4;
+}
+
+message PsbtSigningOutput {
+    // A possible error, `OK` if none.
+    Common.Proto.SigningError error = 1;
+    // Error description.
+    string error_message = 2;
+    // Resulting transaction.
+    Transaction transaction = 3;
+    // The encoded transaction that can be submitted to the network.
+    bytes encoded = 4;
+    // The transaction ID (hash).
+    bytes txid = 5;
+    // The total `vsize` in `vbytes`.
+    // It is used to compare how much blockweight needs to be allocated to confirm a transaction.
+    // For non-segwit transactions, `vsize` = `size`.
+    uint64 vsize = 6;
+    // Transaction weight is defined as Base transaction size * 3 + Total transaction size
+    // (ie. the same method as calculating Block weight from Base size and Total size).
+    uint64 weight = 7;
+    // The total and final fee of the transaction in satoshis.
+    int64 fee = 8;
+    // Signed transaction serialized as PSBT.
+    bytes psbt = 9;
 }
