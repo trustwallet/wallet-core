@@ -10,7 +10,7 @@ actual object AnySigner {
 
     actual fun sign(input: ByteArray, coin: CoinType): ByteArray {
         val inputData = TWDataCreateWithBytes(input.toUByteArray().toCValues(), input.size.toULong())
-        val result = TWAnySignerSign(input.toTwData(), coin.value)!!.readTwBytes()!!
+        val result = TWAnySignerSign(inputData, coin.value)!!.readTwBytes()!!
         TWDataDelete(inputData)
         return result
     }
@@ -29,7 +29,7 @@ actual object AnySigner {
 
     actual fun plan(input: ByteArray, coin: CoinType): ByteArray {
         val inputData = TWDataCreateWithBytes(input.toUByteArray().toCValues(), input.size.toULong())
-        val result = TWAnySignerPlan(input.toTwData(), coin.value)?.readTwBytes()!!
+        val result = TWAnySignerPlan(inputData, coin.value)?.readTwBytes()!!
         TWDataDelete(inputData)
         return result
     }

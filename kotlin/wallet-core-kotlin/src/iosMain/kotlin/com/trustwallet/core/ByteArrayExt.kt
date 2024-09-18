@@ -15,7 +15,3 @@ internal fun COpaquePointer?.readTwBytes(): ByteArray? =
         TWDataDelete(it)
         result
     }
-
-@OptIn(ExperimentalUnsignedTypes::class)
-internal fun ByteArray?.toTwData(): COpaquePointer? =
-    TWDataCreateWithBytes(this?.toUByteArray()?.toCValues(), this?.size?.toULong() ?: 0u)
