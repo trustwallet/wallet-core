@@ -46,9 +46,31 @@ impl<'a> UtxoPsbt<'a> {
 
     pub fn build_non_witness_utxo(
         &self,
-        _non_witness_utxo: &bitcoin::Transaction,
+        non_witness_utxo: &bitcoin::Transaction,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        todo!()
+        let prev_out_idx = self.utxo.previous_output.vout as usize;
+        let prev_out = non_witness_utxo
+            .output
+            .get(prev_out_idx)
+            .or_tw_err(SigningErrorType::Error_invalid_utxo)
+            .with_context(|| {
+                format!("'Psbt::non_witness_utxo' does not contain '{prev_out_idx}' output")
+            })?;
+
+        let script = Script::from(prev_out.script_pubkey.to_bytes());
+        let builder = self.prepare_builder(prev_out.value)?;
+
+        match ConditionScriptParser.parse(&script)? {
+            ConditionScript::P2PK(pubkey) => builder.p2pk(&pubkey),
+            ConditionScript::P2PKH(pubkey_hash) => {
+                let pubkey = self.public_keys.get_ecdsa_public_key(&pubkey_hash)?;
+                builder.p2pkh(&pubkey)
+            },
+            ConditionScript::P2WPKH(_) | ConditionScript::P2TR(_) => {
+                SigningError::err(SigningErrorType::Error_invalid_params)
+                    .context("P2WPKH and P2TR scripts should be specified in 'witness_utxo'")
+            },
+        }
     }
 
     pub fn build_witness_utxo(
@@ -77,10 +99,6 @@ impl<'a> UtxoPsbt<'a> {
         }
     }
 
-    fn has_tap_scripts(&self) -> bool {
-        !self.utxo_psbt.tap_scripts.is_empty()
-    }
-
     pub fn prepare_builder(&self, amount: u64) -> SigningResult<UtxoBuilder> {
         let prevout_hash = H256::from(self.utxo.previous_output.txid.to_raw_hash().into_32());
         let prevout_index = self.utxo.previous_output.vout;
@@ -102,5 +120,9 @@ impl<'a> UtxoPsbt<'a> {
             .sequence(sequence)
             .sighash_type(sighash_ty)
             .amount(amount))
+    }
+
+    fn has_tap_scripts(&self) -> bool {
+        !self.utxo_psbt.tap_scripts.is_empty()
     }
 }
