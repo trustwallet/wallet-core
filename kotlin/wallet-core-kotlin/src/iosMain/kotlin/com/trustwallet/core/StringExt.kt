@@ -11,5 +11,10 @@ import kotlinx.cinterop.toKString
 internal fun String?.toTwString(): COpaquePointer? =
     this?.let { TWStringCreateWithUTF8Bytes(it) }
 
+// Build String from TWString, and then delete TWString
 internal fun CValuesRef<*>?.fromTwString(): String? =
-    this?.let { TWStringUTF8Bytes(it)?.toKString() }
+    this?.let {
+        val result = TWStringUTF8Bytes(it)?.toKString()
+        TWStringDelete(it)
+        result
+    }

@@ -31,7 +31,13 @@ module KotlinHelper
   def self.calling_parameters_ios(params)
     names = params.map do |param|
       name = fix_name(param.name)
+      if param.type.name == :data
+        "#{name}Data#{convert_calling_type_ios(param.type)}"
+      elsif param.type.name == :string
+        "#{name}String#{convert_calling_type_ios(param.type)}"
+      else
         "#{name}#{convert_calling_type_ios(param.type)}"
+      end
     end
     names.join(', ')
   end
@@ -55,8 +61,6 @@ module KotlinHelper
     case name
     when ''
       "value"
-    when 'val'
-      "value"
     when 'return'
       '`return`'
     else
@@ -65,19 +69,12 @@ module KotlinHelper
   end
 
   def self.convert_calling_type_ios(t)
-    case t.name
-    when :data
-      "#{if t.is_nullable then '?' else '' end}.toTwData()"
-    when :string
-      "#{if t.is_nullable then '?' else '' end}.toTwString()"
+    if t.is_enum
+      "#{if t.is_nullable then '?' else '' end}.nativeValue"
+    elsif t.is_class
+      "#{if t.is_nullable then '?' else '' end}.pointer"
     else
-      if t.is_enum
-        "#{if t.is_nullable then '?' else '' end}.nativeValue"
-      elsif t.is_class
-        "#{if t.is_nullable then '?' else '' end}.pointer"
-      else
-        ''
-      end
+      ''
     end
   end
 

@@ -1,0 +1,22 @@
+<%
+    method = locals[:method]
+
+    method.parameters.each do |param|  -%>
+<%    if param.type.name == :data -%>
+<%      if param.type.is_nullable -%>
+        if (<%= param.name %>Data != null) {
+            TWDataDelete(<%= param.name %>Data)
+        }
+<%      else -%>
+        TWDataDelete(<%= param.name %>Data)
+<%      end -%>
+<%    elsif param.type.name == :string -%>
+<%      if param.type.is_nullable -%>
+        if (<%= param.name %>String != null) {
+            TWStringDelete(<%= param.name %>String)
+        }
+<%      else -%>
+        TWStringDelete(<%= param.name %>String)
+<%      end -%>
+<%    end -%>
+<%  end -%>

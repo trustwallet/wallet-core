@@ -1,0 +1,26 @@
+<%
+    method = locals[:method]
+
+    method.parameters.each do |param| -%>
+<%    if param.type.name == :data -%>
+<%      if param.type.is_nullable -%>
+        val <%= param.name %>Data = if (<%= param.name %> == null) {
+            null
+        } else {
+            TWDataCreateWithBytes(<%= param.name %>.toUByteArray().toCValues(), <%= param.name %>.size.toULong())
+        }
+<%      else -%>
+        val <%= param.name %>Data = TWDataCreateWithBytes(<%= param.name %>.toUByteArray().toCValues(), <%= param.name %>.size.toULong())
+<%      end -%>
+<%    elsif param.type.name == :string -%>
+<%      if param.type.is_nullable -%>
+        val <%= param.name %>String = if (<%= param.name %> == null) {
+            null
+        } else {
+            TWStringCreateWithUTF8Bytes(<%= param.name %>)
+        }
+<%      else -%>
+        val <%= param.name %>String = TWStringCreateWithUTF8Bytes(<%= param.name %>)
+<%      end -%>
+<%    end -%>
+<%  end -%>
