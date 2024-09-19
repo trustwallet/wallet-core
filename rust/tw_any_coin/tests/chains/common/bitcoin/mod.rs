@@ -10,6 +10,7 @@ pub mod compile;
 pub mod data;
 pub mod plan;
 pub mod preimage;
+pub mod psbt_plan;
 pub mod psbt_sign;
 pub mod sign;
 
@@ -39,10 +40,11 @@ pub use tw_proto::BitcoinV2::Proto::mod_PublicKeyOrHash::OneOfvariant as PublicK
 
 use tw_proto::BitcoinV2::Proto;
 
-pub fn btc_info() -> Option<Proto::ChainInfo> {
+pub fn btc_info() -> Option<Proto::ChainInfo<'static>> {
     Some(Proto::ChainInfo {
         p2pkh_prefix: BITCOIN_P2PKH_PREFIX as u32,
         p2sh_prefix: BITCOIN_P2SH_PREFIX as u32,
+        hrp: "bc".into(),
     })
 }
 
@@ -64,6 +66,10 @@ pub mod input {
             hash: reverse_txid(txid).into(),
             vout,
         })
+    }
+
+    pub fn sequence(sequence: u32) -> Option<Proto::mod_Input::Sequence> {
+        Some(Proto::mod_Input::Sequence { sequence })
     }
 
     pub fn claiming_script_builder(ty: InputBuilderType<'static>) -> ClaimingScriptType<'static> {

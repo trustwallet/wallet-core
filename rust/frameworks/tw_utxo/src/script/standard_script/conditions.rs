@@ -4,6 +4,7 @@ use secp256k1::XOnlyPublicKey;
 use tw_hash::H160;
 use tw_hash::H256;
 use tw_hash::H264;
+use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
 
 use super::opcodes::*;
@@ -170,14 +171,14 @@ pub fn match_p2pkh(s: &Script) -> Option<H160> {
     }
 }
 
-// /// Returns a script hash if matched.
-// pub fn match_p2sh(s: &Script) -> Option<H160> {
-//     if is_p2sh(s) {
-//         Some(H160::try_from(&s.as_slice()[2..22]).expect("is_p2sh checks the length"))
-//     } else {
-//         None
-//     }
-// }
+/// Returns a script hash if matched.
+pub fn match_p2sh(s: &Script) -> Option<H160> {
+    if is_p2sh(s) {
+        Some(H160::try_from(&s.as_slice()[2..22]).expect("is_p2sh checks the length"))
+    } else {
+        None
+    }
+}
 
 /// Returns a public key hash if matched.
 pub fn match_p2wpkh(s: &Script) -> Option<H160> {
@@ -188,19 +189,28 @@ pub fn match_p2wpkh(s: &Script) -> Option<H160> {
     }
 }
 
-// /// Returns a script hash if matched.
-// pub fn match_p2wsh(s: &Script) -> Option<H256> {
-//     if is_p2wsh(s) {
-//         Some(H256::try_from(&s.as_slice()[2..]).expect("is_p2wsh checks the length"))
-//     } else {
-//         None
-//     }
-// }
+/// Returns a script hash if matched.
+pub fn match_p2wsh(s: &Script) -> Option<H256> {
+    if is_p2wsh(s) {
+        Some(H256::try_from(&s.as_slice()[2..]).expect("is_p2wsh checks the length"))
+    } else {
+        None
+    }
+}
 
 /// Returns a tweaked schnorr public key if matched.
 pub fn match_p2tr(s: &Script) -> Option<H256> {
     if is_p2tr(s) {
         Some(H256::try_from(&s.as_slice()[2..]).expect("is_p2tr checks the length"))
+    } else {
+        None
+    }
+}
+
+/// Returns an OP_RETURN payload.
+pub fn match_op_return(s: &Script) -> Option<Data> {
+    if is_op_return(s) {
+        Some(s.as_slice()[1..].to_vec())
     } else {
         None
     }

@@ -10,4 +10,6 @@ pub mod utxo_protobuf;
 pub struct BitcoinChainInfo {
     pub p2pkh_prefix: u8,
     pub p2sh_prefix: u8,
+    /// Note that not all Bitcoin forks support HRP (segwit addresses).
+    pub hrp: Option<String>,
 }

@@ -1,5 +1,6 @@
 use crate::modules::compiler::BitcoinCompiler;
 use crate::modules::planner::BitcoinPlanner;
+use crate::modules::psbt_planner::PsbtPlanner;
 use crate::modules::signer::BitcoinSigner;
 use crate::modules::transaction_util::BitcoinTransactionUtil;
 use std::str::FromStr;
@@ -102,6 +103,7 @@ impl CoinEntry for BitcoinEntry {
 impl UtxoEntry for BitcoinEntry {
     type PsbtSigningInput<'a> = Proto::PsbtSigningInput<'a>;
     type PsbtSigningOutput = Proto::PsbtSigningOutput<'static>;
+    type PsbtTransactionPlan = Proto::TransactionPlan<'static>;
 
     #[inline]
     fn sign_psbt(
@@ -110,5 +112,14 @@ impl UtxoEntry for BitcoinEntry {
         input: Self::PsbtSigningInput<'_>,
     ) -> Self::PsbtSigningOutput {
         BitcoinSigner::sign_psbt(coin, &input)
+    }
+
+    #[inline]
+    fn plan_psbt(
+        &self,
+        coin: &dyn CoinContext,
+        input: Self::PsbtSigningInput<'_>,
+    ) -> Self::PsbtTransactionPlan {
+        PsbtPlanner::plan_psbt(coin, &input)
     }
 }

@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::modules::tx_builder::public_keys::PublicKeys;
-use crate::modules::tx_builder::script_parser::{ConditionScript, ConditionScriptParser};
+use crate::modules::tx_builder::script_parser::{StandardScript, StandardScriptParser};
 use secp256k1::ThirtyTwoByteHash;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::H256;
@@ -60,17 +60,7 @@ impl<'a> UtxoPsbt<'a> {
         let script = Script::from(prev_out.script_pubkey.to_bytes());
         let builder = self.prepare_builder(prev_out.value)?;
 
-        match ConditionScriptParser.parse(&script)? {
-            ConditionScript::P2PK(pubkey) => builder.p2pk(&pubkey),
-            ConditionScript::P2PKH(pubkey_hash) => {
-                let pubkey = self.public_keys.get_ecdsa_public_key(&pubkey_hash)?;
-                builder.p2pkh(&pubkey)
-            },
-            ConditionScript::P2WPKH(_) | ConditionScript::P2TR(_) => {
-                SigningError::err(SigningErrorType::Error_invalid_params)
-                    .context("P2WPKH and P2TR scripts should be specified in 'witness_utxo'")
-            },
-        }
+        self.build_utxo_with_script(builder, &script)
     }
 
     pub fn build_witness_utxo(
@@ -79,27 +69,41 @@ impl<'a> UtxoPsbt<'a> {
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
         let script = Script::from(witness_utxo.script_pubkey.to_bytes());
         let builder = self.prepare_builder(witness_utxo.value)?;
+        self.build_utxo_with_script(builder, &script)
+    }
 
-        match ConditionScriptParser.parse(&script)? {
-            ConditionScript::P2PK(_) | ConditionScript::P2PKH(_) => {
-                SigningError::err(SigningErrorType::Error_invalid_params)
-                    .context("P2PK and P2PKH scripts should be specified in 'non_witness_utxo'")
+    fn build_utxo_with_script(
+        &self,
+        builder: UtxoBuilder,
+        script: &Script,
+    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        match StandardScriptParser.parse(script)? {
+            StandardScript::P2PK(pubkey) => builder.p2pk(&pubkey),
+            StandardScript::P2PKH(pubkey_hash) => {
+                let pubkey = self.public_keys.get_ecdsa_public_key(&pubkey_hash)?;
+                builder.p2pkh(&pubkey)
             },
-            ConditionScript::P2WPKH(pubkey_hash) => {
+            StandardScript::P2WPKH(pubkey_hash) => {
                 let pubkey = self.public_keys.get_ecdsa_public_key(&pubkey_hash)?;
                 builder.p2wpkh(&pubkey)
             },
-            ConditionScript::P2TR(_) if self.has_tap_scripts() => {
-                SigningError::err(SigningErrorType::Error_not_supported)
-                    .context("P2TR script path is not supported for PSBT at the moment")
-            },
-            ConditionScript::P2TR(tweaked_pubkey) => {
+            StandardScript::P2TR(tweaked_pubkey) => {
+                if self.has_tap_scripts() {
+                    return SigningError::err(SigningErrorType::Error_not_supported)
+                        .context("P2TR script path is not supported for PSBT at the moment");
+                }
                 builder.p2tr_key_path_with_tweaked_pubkey(&tweaked_pubkey)
             },
+            StandardScript::P2SH(_) | StandardScript::P2WSH(_) => {
+                SigningError::err(SigningErrorType::Error_not_supported)
+                    .context("P2SH and P2WSH scriptPubkey's are not supported yet")
+            },
+            StandardScript::OpReturn(_) => SigningError::err(SigningErrorType::Error_invalid_utxo)
+                .context("Cannot spend an OP_RETURN output"),
         }
     }
 
-    pub fn prepare_builder(&self, amount: u64) -> SigningResult<UtxoBuilder> {
+    fn prepare_builder(&self, amount: u64) -> SigningResult<UtxoBuilder> {
         let prevout_hash = H256::from(self.utxo.previous_output.txid.to_raw_hash().into_32());
         let prevout_index = self.utxo.previous_output.vout;
         let sequence = self.utxo.sequence.0;

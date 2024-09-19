@@ -8,6 +8,7 @@ use crate::modules::tx_builder::utxo_protobuf::UtxoProtobuf;
 use crate::modules::tx_builder::BitcoinChainInfo;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
+use tw_misc::traits::OptionalEmpty;
 use tw_proto::BitcoinV2::Proto;
 use tw_utxo::dust::DustPolicy;
 use tw_utxo::modules::tx_planner::{PlanRequest, RequestType};
@@ -138,7 +139,7 @@ impl SigningRequestBuilder {
         }
     }
 
-    fn chain_info(
+    pub fn chain_info(
         coin: &dyn CoinContext,
         chain_info: &Option<Proto::ChainInfo>,
     ) -> SigningResult<BitcoinChainInfo> {
@@ -150,17 +151,22 @@ impl SigningRequestBuilder {
         }
 
         if let Some(info) = chain_info {
+            let hrp = info.hrp.to_string().empty_or_some();
             return Ok(BitcoinChainInfo {
                 p2pkh_prefix: prefix_to_u8(info.p2pkh_prefix, "p2pkh")?,
                 p2sh_prefix: prefix_to_u8(info.p2sh_prefix, "p2sh")?,
+                hrp,
             });
         }
 
         // Try to get the chain info from the context.
+        // Note that not all Bitcoin forks support HRP (segwit addresses).
+        let hrp = coin.hrp();
         match (coin.p2pkh_prefix(), coin.p2sh_prefix()) {
             (Some(p2pkh_prefix), Some(p2sh_prefix)) => Ok(BitcoinChainInfo {
                 p2pkh_prefix,
                 p2sh_prefix,
+                hrp,
             }),
             _ => SigningError::err(SigningErrorType::Error_invalid_params)
                 .context("Neither 'SigningInput.chain_info' nor p2pkh/p2sh prefixes specified in the registry.json")

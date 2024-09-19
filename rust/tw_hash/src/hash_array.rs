@@ -96,7 +96,7 @@ impl<const N: usize> Hash<N> {
 
 /// This is a [`Hash::split`] helper that ensures that `L + R == N` at compile time.
 /// Assertion example:
-/// ```rust(ignore)
+/// ```ignore
 /// let hash = H256::default();
 /// let (left, right): (H128, H160) = hash.split();
 ///

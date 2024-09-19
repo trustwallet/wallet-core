@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::modules::tx_builder::public_keys::PublicKeys;
-use crate::modules::tx_builder::script_parser::{ConditionScript, ConditionScriptParser};
+use crate::modules::tx_builder::script_parser::{StandardScript, StandardScriptParser};
 use crate::modules::tx_builder::BitcoinChainInfo;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
@@ -137,19 +137,25 @@ impl<'a> UtxoProtobuf<'a> {
         let script = Script::from(script_data);
         let builder = self.prepare_builder()?;
 
-        match ConditionScriptParser.parse(&script)? {
-            ConditionScript::P2PK(pk) => builder.p2pk(&pk),
-            ConditionScript::P2PKH(pubkey_hash) => {
+        match StandardScriptParser.parse(&script)? {
+            StandardScript::P2PK(pk) => builder.p2pk(&pk),
+            StandardScript::P2PKH(pubkey_hash) => {
                 let pubkey = self.public_keys.get_ecdsa_public_key(&pubkey_hash)?;
                 builder.p2pkh(&pubkey)
             },
-            ConditionScript::P2WPKH(pubkey_hash) => {
+            StandardScript::P2WPKH(pubkey_hash) => {
                 let pubkey = self.public_keys.get_ecdsa_public_key(&pubkey_hash)?;
                 builder.p2wpkh(&pubkey)
             },
-            ConditionScript::P2TR(tweaked_pubkey) => {
+            StandardScript::P2TR(tweaked_pubkey) => {
                 builder.p2tr_key_path_with_tweaked_pubkey(&tweaked_pubkey)
             },
+            StandardScript::P2SH(_) | StandardScript::P2WSH(_) => {
+                SigningError::err(SigningErrorType::Error_not_supported)
+                    .context("P2SH and P2WSH scriptPubkey's are not supported yet")
+            },
+            StandardScript::OpReturn(_) => SigningError::err(SigningErrorType::Error_invalid_utxo)
+                .context("Cannot spend an OP_RETURN output"),
         }
     }
 

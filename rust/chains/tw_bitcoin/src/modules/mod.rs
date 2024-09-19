@@ -6,6 +6,7 @@ pub mod compiler;
 pub mod planner;
 pub mod protobuf_builder;
 pub mod psbt;
+pub mod psbt_planner;
 pub mod psbt_request;
 pub mod signer;
 pub mod signing_request;
