@@ -289,6 +289,7 @@ impl_map_from!(U256, u8);
 impl_map_from!(U256, u16);
 impl_map_from!(U256, u32);
 impl_map_from!(U256, u64);
+impl_map_from!(U256, u128);
 impl_map_from!(U256, usize);
 
 #[cfg(test)]
