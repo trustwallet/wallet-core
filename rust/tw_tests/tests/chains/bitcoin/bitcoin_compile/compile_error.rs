@@ -2,14 +2,14 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::chains::common::bitcoin::{
+    btc_info, dust_threshold, input, output, DUST, MINER_FEE, ONE_BTC, SIGHASH_ALL,
+};
 use tw_any_coin::test_utils::sign_utils::CompilerHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Common::Proto::SigningError;
-use tw_tests::common::bitcoin::{
-    btc_info, dust_threshold, input, output, DUST, MINER_FEE, ONE_BTC, SIGHASH_ALL,
-};
 
 #[test]
 fn test_bitcoin_compile_p2pkh_error() {

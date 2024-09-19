@@ -2,13 +2,13 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::chains::common::bitcoin::input::out_point;
+use crate::chains::common::bitcoin::psbt_plan::BitcoinPsbtPlanHelper;
+use crate::chains::common::bitcoin::{btc_info, input, output, RecipientType};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_keypair::ecdsa;
 use tw_proto::BitcoinV2::Proto;
-use tw_tests::common::bitcoin::input::out_point;
-use tw_tests::common::bitcoin::psbt_plan::BitcoinPsbtPlanHelper;
-use tw_tests::common::bitcoin::{btc_info, input, output, RecipientType};
 
 #[test]
 fn test_bitcoin_plan_psbt_thorchain_swap_witness() {

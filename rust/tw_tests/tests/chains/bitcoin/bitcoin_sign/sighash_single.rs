@@ -2,14 +2,14 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::chains::common::bitcoin::{
+    btc_info, dust_threshold, input, output, sign, DUST, SIGHASH_SINGLE,
+};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_keypair::ecdsa;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
-use tw_tests::common::bitcoin::{
-    btc_info, dust_threshold, input, output, sign, DUST, SIGHASH_SINGLE,
-};
 
 /// In this test we check not only SIGHASH_SINGLE, but also multiple private keys,
 /// also legacy and witness UTXOs at the same time.

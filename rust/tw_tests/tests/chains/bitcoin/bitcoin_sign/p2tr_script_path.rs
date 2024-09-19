@@ -1,9 +1,11 @@
+use crate::chains::common::bitcoin::{
+    btc_info, dust_threshold, input, output, sign, DUST, SIGHASH_ALL,
+};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_keypair::schnorr;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
-use tw_tests::common::bitcoin::{btc_info, dust_threshold, input, output, sign, DUST, SIGHASH_ALL};
 use tw_utxo::transaction::asset::brc20::{BRC20TransferInscription, Brc20Ticker};
 
 const ALICE_PRIVATE_KEY: &str = "e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129";

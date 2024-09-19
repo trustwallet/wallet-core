@@ -1,13 +1,13 @@
+use crate::chains::common::bitcoin::{
+    btc_info, dust_threshold, input, output, plan, sign, BITCOIN_P2PKH_PREFIX, DUST, MINER_FEE,
+    ONE_BTC, SIGHASH_ALL,
+};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_hash::hasher::sha256_ripemd;
 use tw_keypair::ecdsa;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
-use tw_tests::common::bitcoin::{
-    btc_info, dust_threshold, input, output, plan, sign, BITCOIN_P2PKH_PREFIX, DUST, MINER_FEE,
-    ONE_BTC, SIGHASH_ALL,
-};
 use tw_utxo::address::legacy::LegacyAddress;
 
 enum P2PKHClaimingScriptType {

@@ -2,10 +2,10 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::chains::common::bitcoin::psbt_sign::{BitcoinPsbtSignHelper, Expected};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_proto::BitcoinV2::Proto;
-use tw_tests::common::bitcoin::psbt_sign::{BitcoinPsbtSignHelper, Expected};
 
 #[test]
 fn test_bitcoin_sign_psbt_thorchain_swap_witness() {
