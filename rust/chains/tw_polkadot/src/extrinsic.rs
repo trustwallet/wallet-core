@@ -96,7 +96,7 @@ pub enum EncodeError {
     InvalidValue,
 }
 
-type EncodeResult<T> = Result<T, EncodeError>;
+pub type EncodeResult<T> = Result<T, EncodeError>;
 
 #[derive(Debug, Clone, Default)]
 pub struct ExtrinsicEncoder {

@@ -1,5 +1,6 @@
 use tw_hash::{H256, H512};
 use tw_scale::{Compact, ToScale, impl_struct_scale, impl_enum_scale};
+use tw_ss58_address::SS58Address;
 
 use crate::address::PolkadotAddress;
 
@@ -38,6 +39,12 @@ impl_enum_scale!(
 impl From<AccountId> for MultiAddress {
   fn from(other: AccountId) -> Self {
     Self::Id(other)
+  }
+}
+
+impl From<SS58Address> for MultiAddress {
+  fn from(other: SS58Address) -> Self {
+    Self::Id(PolkadotAddress(other))
   }
 }
 
