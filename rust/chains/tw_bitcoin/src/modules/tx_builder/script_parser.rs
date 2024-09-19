@@ -42,7 +42,7 @@ impl StandardScript {
         match self {
             StandardScript::P2PK(pubkey) => {
                 // Display P2PK input as P2PKH.
-                LegacyAddress::p2pkh_with_public_key(chain_info.p2pkh_prefix, &pubkey)
+                LegacyAddress::p2pkh_with_public_key(chain_info.p2pkh_prefix, pubkey)
                     .map(StandardBitcoinAddress::Legacy)
                     .map(Some)
             },

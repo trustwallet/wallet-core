@@ -1,12 +1,10 @@
-use crate::chains::common::bitcoin::{
-    btc_info, dust_threshold, input, output, sign, DUST, SIGHASH_ALL,
-};
 use std::str::FromStr;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_keypair::ecdsa;
 use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
 use tw_proto::BitcoinV2::Proto;
+use tw_tests::common::bitcoin::{btc_info, dust_threshold, input, output, sign, DUST, SIGHASH_ALL};
 use tw_utxo::address::legacy::LegacyAddress;
 use tw_utxo::address::segwit::SegwitAddress;
 use tw_utxo::script::standard_script::conditions;

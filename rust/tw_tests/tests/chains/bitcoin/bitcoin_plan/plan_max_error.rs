@@ -2,11 +2,11 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::chains::common::bitcoin::{plan, Amount, DUST};
 use tw_any_coin::test_utils::plan_utils::AnyPlannerHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Common::Proto as CommonProto;
+use tw_tests::common::bitcoin::{plan, Amount, DUST};
 
 #[test]
 fn test_max_selector_insufficient_to_cover_fee() {

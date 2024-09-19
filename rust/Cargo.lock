@@ -1710,21 +1710,14 @@ dependencies = [
 name = "tw_any_coin"
 version = "0.1.0"
 dependencies = [
- "serde",
- "serde_json",
- "tw_any_coin",
  "tw_coin_entry",
  "tw_coin_registry",
- "tw_cosmos_sdk",
  "tw_encoding",
  "tw_hash",
  "tw_keypair",
  "tw_memory",
  "tw_misc",
- "tw_number",
  "tw_proto",
- "tw_ton_sdk",
- "tw_utxo",
 ]
 
 [[package]]
@@ -1853,6 +1846,7 @@ dependencies = [
  "tw_sui",
  "tw_thorchain",
  "tw_ton",
+ "tw_utxo",
 ]
 
 [[package]]
@@ -2121,6 +2115,28 @@ dependencies = [
  "tw_keypair",
  "tw_memory",
  "tw_proto",
+]
+
+[[package]]
+name = "tw_tests"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "tw_any_coin",
+ "tw_coin_entry",
+ "tw_coin_registry",
+ "tw_cosmos_sdk",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_misc",
+ "tw_number",
+ "tw_proto",
+ "tw_ton_sdk",
+ "tw_utxo",
+ "wallet-core-rs",
 ]
 
 [[package]]

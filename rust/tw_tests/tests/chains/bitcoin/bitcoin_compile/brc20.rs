@@ -2,9 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::chains::common::bitcoin::{
-    btc_info, compile, dust_threshold, input, output, preimage, DUST, SIGHASH_ALL,
-};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::ToHex;
 use tw_hash::H256;
@@ -12,6 +9,9 @@ use tw_keypair::traits::SigningKeyTrait;
 use tw_keypair::{ecdsa, schnorr};
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
+use tw_tests::common::bitcoin::{
+    btc_info, compile, dust_threshold, input, output, preimage, DUST, SIGHASH_ALL,
+};
 
 const BRC20_COMMIT_TX_ID: &str = "797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1";
 const BRC20_REVEAL_TX_ID: &str = "7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca";

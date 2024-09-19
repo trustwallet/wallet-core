@@ -1,12 +1,12 @@
-use crate::chains::common::bitcoin::{
-    btc_info, dust_threshold, input, output, sign, BITCOIN_HRP, DUST, MINER_FEE, ONE_BTC,
-    SIGHASH_ALL,
-};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_keypair::{ecdsa, schnorr};
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
+use tw_tests::common::bitcoin::{
+    btc_info, dust_threshold, input, output, sign, BITCOIN_HRP, DUST, MINER_FEE, ONE_BTC,
+    SIGHASH_ALL,
+};
 use tw_utxo::address::taproot::TaprootAddress;
 use tw_utxo::script::standard_script::conditions;
 

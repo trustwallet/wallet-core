@@ -2,13 +2,13 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::chains::common::bitcoin::sign;
+use crate::common::bitcoin::sign;
 use tw_any_coin::test_utils::sign_utils::CompilerHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_memory::Data;
 use tw_proto::BitcoinV2::Proto;
 
-pub use crate::chains::common::bitcoin::sign::Expected;
+pub use crate::common::bitcoin::sign::Expected;
 
 pub struct BitcoinCompileHelper<'a> {
     input: &'a Proto::SigningInput<'a>,

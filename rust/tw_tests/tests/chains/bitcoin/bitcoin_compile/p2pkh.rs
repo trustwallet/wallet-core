@@ -2,16 +2,16 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::chains::common::bitcoin::{
-    btc_info, compile, dust_threshold, input, output, preimage, DUST, MINER_FEE, ONE_BTC,
-    SIGHASH_ALL,
-};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_keypair::ecdsa;
 use tw_keypair::traits::SigningKeyTrait;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
+use tw_tests::common::bitcoin::{
+    btc_info, compile, dust_threshold, input, output, preimage, DUST, MINER_FEE, ONE_BTC,
+    SIGHASH_ALL,
+};
 
 /// Note this test contains a sample transaction that has never been broadcasted.
 #[test]

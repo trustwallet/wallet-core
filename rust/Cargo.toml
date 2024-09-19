@@ -30,6 +30,7 @@ members = [
     "tw_misc",
     "tw_number",
     "tw_proto",
+    "tw_tests",
     "wallet_core_bin",
     "wallet_core_rs",
 ]
