@@ -2,4 +2,5 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-//! DO NOT WRITE ANY CODE WITHIN `tw_tests/src`.
+mod bit_reader;
+mod uuid;
