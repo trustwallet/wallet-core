@@ -76,7 +76,7 @@ fn polymesh_encode_authorization_join_identity() {
     let encoded = extrinsic.encode_call().expect("error encoding call");
     assert_eq!(
         encoded.to_hex(),
-        "070d0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320501000100010000"
+        "070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320500000000"
     );
 }
 
@@ -125,7 +125,7 @@ fn polymesh_encode_authorization_join_identity_with_zero_data() {
     let encoded = extrinsic.encode_call().expect("error encoding call");
     assert_eq!(
         encoded.to_hex(),
-        "070d0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320501000100010000"
+        "070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320501000100010000"
     );
 }
 
@@ -168,7 +168,7 @@ fn polymesh_encode_authorization_join_identity_allowing_everything() {
     let encoded = extrinsic.encode_call().expect("error encoding call");
     assert_eq!(
         encoded.to_hex(),
-        "070d0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320500000000"
+        "070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320500000000"
     );
 }
 
@@ -188,7 +188,7 @@ fn polymesh_encode_identity() {
                                         variant: Proto::mod_CallIndices::OneOfvariant::custom(
                                             Proto::CustomCallIndices {
                                                 module_index: 0x07,
-                                                method_index: 0x05,
+                                                method_index: 0x04,
                                             },
                                         ),
                                     }),
@@ -204,7 +204,7 @@ fn polymesh_encode_identity() {
 
     let extrinsic = Extrinsic::from_input(input);
     let encoded = extrinsic.encode_call().expect("error encoding call");
-    assert_eq!(encoded.to_hex(), "07050b13000000000000");
+    assert_eq!(encoded.to_hex(), "07040b13000000000000");
 }
 
 #[test]
@@ -368,7 +368,7 @@ fn encode_staking_chill() {
 #[test]
 fn encode_staking_bond_with_controller() {
     let input = Proto::SigningInput {
-        network: 0,
+        network: 12,
         multi_address: true,
         message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::staking_call(Proto::Staking {
             message_oneof: Proto::mod_Staking::OneOfmessage_oneof::bond(Bond {
@@ -385,7 +385,7 @@ fn encode_staking_bond_with_controller() {
     let encoded = extrinsic.encode_call().expect("error encoding call");
     assert_eq!(
         encoded.to_hex(),
-        "07000081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c914652310002"
+        "11000081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c914652310002"
     );
 }
 
