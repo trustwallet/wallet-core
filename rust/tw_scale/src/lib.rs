@@ -166,7 +166,10 @@ where
 {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
         if let Some(t) = &self {
+            out.push(1u8);
             t.to_scale_into(out);
+        } else {
+            out.push(0u8);
         }
     }
 }
