@@ -8,7 +8,7 @@ use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Common::Proto::SigningError;
 use tw_proto::{deserialize, serialize};
-use wallet_core_rs::ffi::bitcoin::psbt::tw_bitcoin_sign_psbt;
+use wallet_core_rs::ffi::bitcoin::psbt::tw_bitcoin_psbt_sign;
 
 pub struct Expected {
     /// Hex encoded PSBT.
@@ -48,7 +48,7 @@ impl<'a> BitcoinPsbtSignHelper<'a> {
         let input = TWDataHelper::create(input);
 
         let output =
-            TWDataHelper::wrap(unsafe { tw_bitcoin_sign_psbt(coin_type as u32, input.ptr()) });
+            TWDataHelper::wrap(unsafe { tw_bitcoin_psbt_sign(input.ptr(), coin_type as u32) });
         let output_bytes = output.to_vec().unwrap();
 
         let output: Proto::PsbtSigningOutput = deserialize(&output_bytes).unwrap();

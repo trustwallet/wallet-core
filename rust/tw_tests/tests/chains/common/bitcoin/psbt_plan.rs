@@ -6,7 +6,7 @@ use tw_coin_registry::coin_type::CoinType;
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::{deserialize, serialize};
-use wallet_core_rs::ffi::bitcoin::psbt::tw_bitcoin_plan_psbt;
+use wallet_core_rs::ffi::bitcoin::psbt::tw_bitcoin_psbt_plan;
 
 pub struct BitcoinPsbtPlanHelper<'a> {
     input: &'a Proto::PsbtSigningInput<'a>,
@@ -36,7 +36,7 @@ impl<'a> BitcoinPsbtPlanHelper<'a> {
         let input = TWDataHelper::create(input);
 
         let output =
-            TWDataHelper::wrap(unsafe { tw_bitcoin_plan_psbt(coin_type as u32, input.ptr()) });
+            TWDataHelper::wrap(unsafe { tw_bitcoin_psbt_plan(input.ptr(), coin_type as u32) });
         let output_bytes = output.to_vec().unwrap();
 
         let output: Proto::TransactionPlan = deserialize(&output_bytes).unwrap();
