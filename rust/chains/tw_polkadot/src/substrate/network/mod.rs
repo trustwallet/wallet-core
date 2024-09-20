@@ -3,10 +3,15 @@ use tw_scale::ToScale;
 use tw_proto::Polkadot::Proto::{
     self,
     Balance,
+    Staking,
     mod_SigningInput::OneOfmessage_oneof as SigningVariant,
     mod_Balance::{
-        BatchTransfer, OneOfmessage_oneof as BalanceVariant,
-    }
+        BatchTransfer, BatchAssetTransfer, OneOfmessage_oneof as BalanceVariant,
+    },
+    mod_Staking::{
+        Bond, BondAndNominate, Chill, ChillAndUnbond, Nominate,
+        OneOfmessage_oneof as StakingVariant, Unbond,
+    },
 };
 use tw_ss58_address::NetworkId;
 
@@ -52,11 +57,13 @@ impl PolkadotSigningContext {
 
         let encoder = match network {
             NetworkId::POLKADOT => {
-                Box::new(PolkadotCallEncoder)
+                PolkadotCallEncoder::new()
             },
             NetworkId::KUSAMA => {
-                // TODO:
-                Box::new(PolkadotCallEncoder)
+                KusamaCallEncoder::new()
+            },
+            NetworkId::POLYMESH => {
+                PolymeshCallEncoder::new()
             },
             _ => {
                 return Err(EncodeError::InvalidNetworkId);
@@ -72,7 +79,7 @@ impl PolkadotSigningContext {
         })
     }
 
-    pub fn encode_signing_input(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<Encoded> {
+    pub fn encode_input(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<Encoded> {
         let ctx = Self::from_input(input)?;
         ctx.encode_call(&input.message_oneof)
     }
@@ -92,13 +99,87 @@ impl PolkadotSigningContext {
         self.encode_batch(transfers)
     }
 
+    fn encode_batch_asset_transfer(&self, bat: &BatchAssetTransfer) -> EncodeResult<Encoded> {
+        let transfers = bat
+            .transfers
+            .iter()
+            .map(|t| {
+              let call = SigningVariant::balance_call(Proto::Balance {
+                message_oneof: BalanceVariant::asset_transfer(t.clone())
+              });
+              self.encode_call(&call)
+            })
+            .collect::<EncodeResult<Vec<Encoded>>>()?;
+
+        self.encode_batch(transfers)
+    }
+
     fn encode_balance_batch_call(&self, b: &Balance) -> EncodeResult<Option<Encoded>> {
         match &b.message_oneof {
             BalanceVariant::batchTransfer(bt) => {
                 let batch = self.encode_batch_transfer(bt)?;
                 Ok(Some(batch))
             }
-            _ => Ok(None),
+            BalanceVariant::batch_asset_transfer(bat) => {
+                let batch = self.encode_batch_asset_transfer(bat)?;
+                Ok(Some(batch))
+            }
+           _ => Ok(None),
+        }
+    }
+
+    fn encode_staking_bond_and_nominate(&self, ban: &BondAndNominate) -> EncodeResult<Encoded> {
+        // Encode a bond call
+        let first = self.encode_call(&SigningVariant::staking_call(Proto::Staking {
+                message_oneof: StakingVariant::bond(Bond {
+                    controller: ban.controller.clone(),
+                    value: ban.value.clone(),
+                    reward_destination: ban.reward_destination,
+                    call_indices: ban.call_indices.clone(),
+                }),
+        }))?;
+
+        // Encode a nominate call
+        let second = self.encode_call(&SigningVariant::staking_call(Proto::Staking {
+                message_oneof: StakingVariant::nominate(Nominate {
+                    nominators: ban.nominators.clone(),
+                    call_indices: ban.call_indices.clone(),
+                }),
+        }))?;
+
+        // Encode both calls as batched
+        self.encode_batch(vec![first, second])
+    }
+
+    fn encode_staking_chill_and_unbond(&self, cau: &ChillAndUnbond) -> EncodeResult<Encoded> {
+        let first = self.encode_call(&SigningVariant::staking_call(Proto::Staking {
+                    message_oneof: StakingVariant::chill(Chill {
+                        call_indices: cau.call_indices.clone(),
+                    }),
+        }))?;
+
+        let second = self.encode_call(&SigningVariant::staking_call(Proto::Staking {
+                    message_oneof: StakingVariant::unbond(Unbond {
+                        value: cau.value.clone(),
+                        call_indices: cau.call_indices.clone(),
+                    }),
+        }))?;
+
+        // Encode both calls as batched
+        self.encode_batch(vec![first, second])
+    }
+
+    fn encode_staking_batch_call(&self, s: &Staking) -> EncodeResult<Option<Encoded>> {
+        match &s.message_oneof {
+            StakingVariant::bond_and_nominate(ban) => {
+                let batch = self.encode_staking_bond_and_nominate(&ban)?;
+                Ok(Some(batch))
+            }
+            StakingVariant::chill_and_unbond(cau) => {
+                let batch = self.encode_staking_chill_and_unbond(&cau)?;
+                Ok(Some(batch))
+            }
+           _ => Ok(None),
         }
     }
 }
@@ -111,6 +192,11 @@ impl TWSubstrateSigningInput for PolkadotSigningContext {
         match msg {
             SigningVariant::balance_call(b) => {
                 if let Some(batch) = self.encode_balance_batch_call(b)? {
+                    return Ok(Encoded(batch.to_scale()));
+                }
+            },
+            SigningVariant::staking_call(s) => {
+                if let Some(batch) = self.encode_staking_batch_call(s)? {
                     return Ok(Encoded(batch.to_scale()));
                 }
             },

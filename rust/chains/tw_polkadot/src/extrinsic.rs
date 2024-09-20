@@ -1,31 +1,10 @@
-use std::collections::HashMap;
-use std::convert::identity;
-use std::iter::{repeat, Iterator};
-use std::str::FromStr;
-
-use lazy_static::lazy_static;
-
-use tw_number::U256;
 use tw_proto::Polkadot::Proto;
-use tw_proto::Polkadot::Proto::mod_Balance::{
-    AssetTransfer, BatchAssetTransfer, BatchTransfer, OneOfmessage_oneof as BalanceVariant,
-    Transfer,
-};
-use tw_proto::Polkadot::Proto::mod_CallIndices::OneOfvariant as CallIndicesVariant;
-use tw_proto::Polkadot::Proto::mod_Identity::{
-    AddAuthorization, JoinIdentityAsKey, OneOfmessage_oneof as PolymeshIdentityVariant,
-};
-use tw_proto::Polkadot::Proto::mod_PolymeshCall::OneOfmessage_oneof as PolymeshVariant;
-use tw_proto::Polkadot::Proto::mod_SigningInput::OneOfmessage_oneof as SigningVariant;
-use tw_proto::Polkadot::Proto::mod_Staking::{
-    Bond, BondAndNominate, BondExtra, Chill, ChillAndUnbond, Nominate,
-    OneOfmessage_oneof as StakingVariant, Rebond, Unbond, WithdrawUnbonded,
-};
-use tw_proto::Polkadot::Proto::{Balance, PolymeshCall, Staking};
-use tw_ss58_address::{NetworkId, SS58Address};
 
-use tw_scale::{Compact, Raw, RawIter, ToScale};
+use tw_scale::ToScale;
 
+use crate::substrate::*;
+
+/*
 const POLKADOT_MULTI_ADDRESS_SPEC: u32 = 28;
 const KUSAMA_MULTI_ADDRESS_SPEC: u32 = 2028;
 
@@ -83,9 +62,21 @@ lazy_static! {
             STAKING_UNBOND            => (0x06, 0x02),
             STAKING_WITHDRAW_UNBONDED => (0x06, 0x03),
             UTILITY_BATCH             => (0x18, 0x02),
-        }
+        },
+        NetworkId::POLYMESH => {
+            BALANCE_TRANSFER          => (0x05, 0x00),
+            STAKING_BOND              => (0x11, 0x00),
+            STAKING_BOND_EXTRA        => (0x11, 0x01),
+            STAKING_CHILL             => (0x11, 0x06),
+            STAKING_NOMINATE          => (0x11, 0x05),
+            STAKING_REBOND            => (0x11, 0x13),
+            STAKING_UNBOND            => (0x11, 0x02),
+            STAKING_WITHDRAW_UNBONDED => (0x11, 0x03),
+            UTILITY_BATCH             => (0x1a, 0x02),
+        },
     };
 }
+*/
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum EncodeError {
@@ -141,6 +132,7 @@ impl<'a> Extrinsic<'a> {
         Self { inner: input }
     }
 
+    /*
     fn get_call_index_for_network(network: NetworkId, key: &str) -> EncodeResult<(u8, u8)> {
         CALL_INDICES_BY_NETWORK
             .get(&network)
@@ -508,9 +500,9 @@ impl<'a> Extrinsic<'a> {
             }
         } else {
             // Mark everything as authorized (asset, extrinsic, portfolio)
-            (0x01u8, 0x00u8).to_scale_into(&mut data);
-            (0x01u8, 0x00u8).to_scale_into(&mut data);
-            (0x01u8, 0x00u8).to_scale_into(&mut data);
+            data.push(0x00);
+            data.push(0x00);
+            data.push(0x00);
         }
 
         Compact(a.expiry).to_scale_into(&mut data);
@@ -536,13 +528,18 @@ impl<'a> Extrinsic<'a> {
             PolymeshVariant::None => Ok(Vec::new()),
         }
     }
+    */
 
     pub fn encode_call(&self) -> EncodeResult<Vec<u8>> {
+        let ctx = PolkadotSigningContext::encode_input(&self.inner)?;
+        Ok(ctx.0)
+      /*
         match &self.inner.message_oneof {
             SigningVariant::balance_call(b) => self.encode_balance_call(b),
             SigningVariant::staking_call(s) => self.encode_staking_call(s),
             SigningVariant::polymesh_call(p) => self.encode_polymesh_call(p),
             SigningVariant::None => Ok(Vec::new()),
         }
+      // */
     }
 }
