@@ -19,6 +19,7 @@ pub struct NetworkId(u16);
 impl NetworkId {
     pub const POLKADOT: Self = Self::new_unchecked(0);
     pub const KUSAMA: Self = Self::new_unchecked(2);
+    pub const POLYMESH: Self = Self::new_unchecked(12);
     pub const GENERIC_SUBSTRATE: Self = Self::new_unchecked(42);
 }
 
