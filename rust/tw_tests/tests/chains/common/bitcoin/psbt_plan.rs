@@ -3,9 +3,10 @@
 // Copyright © 2017 Trust Wallet.
 
 use tw_coin_registry::coin_type::CoinType;
-use tw_coin_registry::dispatcher::{coin_dispatcher, utxo_dispatcher};
+use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::{deserialize, serialize};
+use wallet_core_rs::ffi::bitcoin::psbt::tw_bitcoin_plan_psbt;
 
 pub struct BitcoinPsbtPlanHelper<'a> {
     input: &'a Proto::PsbtSigningInput<'a>,
@@ -32,13 +33,11 @@ impl<'a> BitcoinPsbtPlanHelper<'a> {
             .expect("'BitcoinSignHelper::coin_type' is not set");
 
         let input = serialize(self.input).unwrap();
+        let input = TWDataHelper::create(input);
 
-        // TODO call `tw_bitcoin_plan_psbt` when all tests are moved to another crate.
-        let (ctx, _entry) = coin_dispatcher(coin_type).expect("Unknown CoinType");
-        let output_bytes = utxo_dispatcher(coin_type)
-            .expect("CoinType is not UTXO, i.e `utxo_dispatcher` failed")
-            .plan_psbt(&ctx, &input)
-            .unwrap();
+        let output =
+            TWDataHelper::wrap(unsafe { tw_bitcoin_plan_psbt(coin_type as u32, input.ptr()) });
+        let output_bytes = output.to_vec().unwrap();
 
         let output: Proto::TransactionPlan = deserialize(&output_bytes).unwrap();
 
