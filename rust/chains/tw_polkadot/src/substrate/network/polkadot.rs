@@ -1,6 +1,8 @@
 use tw_scale::impl_enum_scale;
 
-use tw_proto::Polkadot::Proto::mod_SigningInput::OneOfmessage_oneof as SigningVariant;
+use tw_proto::Polkadot::Proto::{
+    mod_SigningInput::OneOfmessage_oneof as SigningVariant,
+};
 
 use super::*;
 
@@ -13,17 +15,22 @@ impl_enum_scale!(
   }
 );
 
-
 pub struct PolkadotCallEncoder;
+
+impl PolkadotCallEncoder {
+    pub fn new() -> Box<dyn for<'a> TWSubstrateCallEncoder<SigningVariant<'a>>> {
+        Box::new(Self)
+    }
+}
 
 impl<'a> TWSubstrateCallEncoder<SigningVariant<'a>> for PolkadotCallEncoder {
     fn encode_call(&self, ctx: &SubstrateContext, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
         let call = match msg {
             SigningVariant::balance_call(b) => {
-                GenericBalances::encode_call(ctx, b)?
+                PolkadotCall::Balances(GenericBalances::encode_call(ctx, b)?)
             },
-            SigningVariant::staking_call(_s) => {
-                todo!("staking");
+            SigningVariant::staking_call(s) => {
+                PolkadotCall::Staking(GenericStaking::encode_call(ctx, s)?)
             },
             _ => {
                 // TODO: better error.
@@ -49,3 +56,36 @@ impl_enum_scale!(
     Utility(GenericUtility) = 0x18,
   }
 );
+
+pub struct KusamaCallEncoder;
+
+impl KusamaCallEncoder {
+    pub fn new() -> Box<dyn for<'a> TWSubstrateCallEncoder<SigningVariant<'a>>> {
+        Box::new(Self)
+    }
+}
+
+impl<'a> TWSubstrateCallEncoder<SigningVariant<'a>> for KusamaCallEncoder {
+    fn encode_call(&self, ctx: &SubstrateContext, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
+        let call = match msg {
+            SigningVariant::balance_call(b) => {
+                KusamaCall::Balances(GenericBalances::encode_call(ctx, b)?)
+            },
+            SigningVariant::staking_call(s) => {
+                KusamaCall::Staking(GenericStaking::encode_call(ctx, s)?)
+            },
+            _ => {
+                // TODO: better error.
+                return Err(EncodeError::InvalidCallIndex);
+            },
+        };
+        Ok(Encoded(call.to_scale()))
+    }
+
+    fn encode_batch(&self, _ctx: &SubstrateContext, calls: Vec<Encoded>) -> EncodeResult<Encoded> {
+        let call = KusamaCall::Utility(GenericUtility::BatchAll {
+            calls,
+        });
+        Ok(Encoded(call.to_scale()))
+    }
+}
