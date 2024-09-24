@@ -1,0 +1,20 @@
+[package]
+name = "tw_bitcoin"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bitcoin = { version = "0.30.0", features = ["rand-std"] }
+secp256k1 = { version = "0.27.0", features = ["global-context", "rand-std"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tw_bech32_address = { path = "../../tw_bech32_address" }
+tw_base58_address = { path = "../../tw_base58_address" }
+tw_coin_entry = { path = "../../tw_coin_entry", features = ["test-utils"] }
+tw_encoding = { path = "../../tw_encoding" }
+tw_hash = { path = "../../tw_hash" }
+tw_keypair = { path = "../../tw_keypair" }
+tw_memory = { path = "../../tw_memory" }
+tw_misc = { path = "../../tw_misc" }
+tw_proto = { path = "../../tw_proto" }
+tw_utxo = { path = "../../frameworks/tw_utxo" }

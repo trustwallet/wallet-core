@@ -182,8 +182,10 @@ message Output {
 message ChainInfo {
     // P2PKH prefix for this chain.
     uint32 p2pkh_prefix = 1;
-    // P2SH prefix for this coin type
+    // P2SH prefix for this coin type.
     uint32 p2sh_prefix = 2;
+    // HRP for this coin type if applicable.
+    string hrp = 3;
 }
 
 enum TransactionVersion {
@@ -273,7 +275,7 @@ message Transaction {
 message TransactionPlan {
     // A possible error, `OK` if none.
     Common.Proto.SigningError error = 1;
-    /// Error description.
+    // Error description.
     string error_message = 2;
     // Selected unspent transaction outputs (subset of all input UTXOs).
     repeated Input inputs = 3;
@@ -301,7 +303,7 @@ message PreSigningOutput {
     Common.Proto.SigningError error = 1;
     // Error description.
     string error_message = 2;
-    /// The sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
+    // The sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
     repeated Sighash sighashes = 4;
 
     enum SigningMethod {
@@ -340,7 +342,7 @@ message SigningOutput {
     string error_message = 2;
     // Resulting transaction.
     Transaction transaction = 3;
-    // The encoded transaction that submitted to the network.
+    // The encoded transaction that can be submitted to the network.
     bytes encoded = 4;
     // The transaction ID (hash).
     bytes txid = 5;
@@ -353,4 +355,45 @@ message SigningOutput {
     uint64 weight = 7;
     // The total and final fee of the transaction in satoshis.
     int64 fee = 8;
+}
+
+message PsbtSigningInput {
+    // Partly signed transaction to be signed.
+    bytes psbt = 1;
+    // User private keys.
+    // Only required if the `signPSBT` method is called.
+    repeated bytes private_keys = 2;
+    // User public keys.
+    // Only required if the `planPSBT` method is called.
+    repeated bytes public_keys = 3;
+    // Chain info includes p2pkh, p2sh, hrp address prefixes.
+    // The parameter needs to be set when `planPSBT` is called.
+    ChainInfo chain_info = 4;
+    // Whether disable auxiliary random data when signing.
+    // Use for testing **ONLY**.
+    bool dangerous_use_fixed_schnorr_rng = 5;
+}
+
+message PsbtSigningOutput {
+    // A possible error, `OK` if none.
+    Common.Proto.SigningError error = 1;
+    // Error description.
+    string error_message = 2;
+    // Resulting transaction.
+    Transaction transaction = 3;
+    // The encoded transaction that can be submitted to the network.
+    bytes encoded = 4;
+    // The transaction ID (hash).
+    bytes txid = 5;
+    // The total `vsize` in `vbytes`.
+    // It is used to compare how much blockweight needs to be allocated to confirm a transaction.
+    // For non-segwit transactions, `vsize` = `size`.
+    uint64 vsize = 6;
+    // Transaction weight is defined as Base transaction size * 3 + Total transaction size
+    // (ie. the same method as calculating Block weight from Base size and Total size).
+    uint64 weight = 7;
+    // The total and final fee of the transaction in satoshis.
+    int64 fee = 8;
+    // Signed transaction serialized as PSBT.
+    bytes psbt = 9;
 }

@@ -34,7 +34,7 @@ impl SighashType {
     /// Creates Sighash from any u32.
     pub fn from_u32(u: u32) -> SigningResult<Self> {
         let base = match u & BASE_FLAG {
-            1 => SighashBase::All,
+            0 | 1 => SighashBase::All,
             2 => SighashBase::None,
             3 => SighashBase::Single,
             _ => {

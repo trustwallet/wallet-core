@@ -1,0 +1,25 @@
+[package]
+name = "tw_tests"
+version = "0.1.0"
+edition = "2021"
+
+[dev-dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tw_any_coin = { path = "../tw_any_coin", features = ["test-utils"] }
+tw_coin_entry = { path = "../tw_coin_entry", features = ["test-utils"] }
+tw_coin_registry = { path = "../tw_coin_registry" }
+tw_encoding = { path = "../tw_encoding" }
+tw_hash = { path = "../tw_hash" }
+tw_keypair = { path = "../tw_keypair", features = ["test-utils"] }
+tw_memory = { path = "../tw_memory" }
+tw_misc = { path = "../tw_misc" }
+tw_number = { path = "../tw_number" }
+tw_proto = { path = "../tw_proto" }
+wallet-core-rs = { path = "../wallet_core_rs" }
+# Chain specific:
+tw_cosmos_sdk = { path = "../tw_cosmos_sdk", features = ["test-utils"] }
+tw_solana = { path = "../chains/tw_solana" }
+tw_ton = { path = "../chains/tw_ton" }
+tw_ton_sdk = { path = "../frameworks/tw_ton_sdk" }
+tw_utxo = { path = "../frameworks/tw_utxo" }

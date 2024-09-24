@@ -2,4 +2,4 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-pub mod psbt;
+//! DO NOT WRITE ANY CODE WITHIN `tw_tests/src`.
