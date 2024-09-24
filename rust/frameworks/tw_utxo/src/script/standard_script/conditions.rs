@@ -153,11 +153,11 @@ pub fn is_op_return(s: &Script) -> bool {
 }
 
 /// Returns either a compressed or uncompressed public key data if matched.
-pub fn match_p2pk(s: &Script) -> Option<Data> {
+pub fn match_p2pk(s: &Script) -> Option<&[u8]> {
     let b = s.as_slice();
     match s.len() {
-        67 if b[0] == OP_PUSHBYTES_65 && b[66] == OP_CHECKSIG => Some(b[1..66].to_vec()),
-        35 if b[0] == OP_PUSHBYTES_33 && b[34] == OP_CHECKSIG => Some(b[1..34].to_vec()),
+        67 if b[0] == OP_PUSHBYTES_65 && b[66] == OP_CHECKSIG => Some(&b[1..66]),
+        35 if b[0] == OP_PUSHBYTES_33 && b[34] == OP_CHECKSIG => Some(&b[1..34]),
         _ => None,
     }
 }
@@ -166,6 +166,15 @@ pub fn match_p2pk(s: &Script) -> Option<Data> {
 pub fn match_p2pkh(s: &Script) -> Option<H160> {
     if is_p2pkh(s) {
         Some(H160::try_from(&s.as_slice()[3..23]).expect("is_p2pkh checks the length"))
+    } else {
+        None
+    }
+}
+
+/// Returns a script hash if matched.
+pub fn match_p2sh(s: &Script) -> Option<H160> {
+    if is_p2sh(s) {
+        Some(H160::try_from(&s.as_slice()[2..22]).expect("is_p2sh checks the length"))
     } else {
         None
     }
@@ -180,10 +189,28 @@ pub fn match_p2wpkh(s: &Script) -> Option<H160> {
     }
 }
 
+/// Returns a script hash if matched.
+pub fn match_p2wsh(s: &Script) -> Option<H256> {
+    if is_p2wsh(s) {
+        Some(H256::try_from(&s.as_slice()[2..]).expect("is_p2wsh checks the length"))
+    } else {
+        None
+    }
+}
+
 /// Returns a tweaked schnorr public key if matched.
 pub fn match_p2tr(s: &Script) -> Option<H256> {
     if is_p2tr(s) {
         Some(H256::try_from(&s.as_slice()[2..]).expect("is_p2tr checks the length"))
+    } else {
+        None
+    }
+}
+
+/// Returns an OP_RETURN payload.
+pub fn match_op_return(s: &Script) -> Option<Data> {
+    if is_op_return(s) {
+        Some(s.as_slice()[1..].to_vec())
     } else {
         None
     }

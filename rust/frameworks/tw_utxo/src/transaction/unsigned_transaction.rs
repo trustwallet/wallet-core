@@ -49,6 +49,10 @@ where
         &self.utxo_args
     }
 
+    pub fn outputs(&self) -> &[Transaction::Output] {
+        self.transaction.outputs()
+    }
+
     pub fn outputs_mut(&mut self) -> &mut [Transaction::Output] {
         self.transaction.outputs_mut()
     }

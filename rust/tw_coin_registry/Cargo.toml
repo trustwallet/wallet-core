@@ -11,7 +11,7 @@ strum = "0.25"
 strum_macros = "0.25"
 tw_aptos = { path = "../chains/tw_aptos" }
 tw_binance = { path = "../chains/tw_binance" }
-tw_bitcoin = { path = "../tw_bitcoin" }
+tw_bitcoin = { path = "../chains/tw_bitcoin" }
 tw_coin_entry = { path = "../tw_coin_entry" }
 tw_cosmos = { path = "../chains/tw_cosmos" }
 tw_ethereum = { path = "../chains/tw_ethereum" }
@@ -29,6 +29,7 @@ tw_solana = { path = "../chains/tw_solana" }
 tw_sui = { path = "../chains/tw_sui" }
 tw_thorchain = { path = "../chains/tw_thorchain" }
 tw_ton = { path = "../chains/tw_ton" }
+tw_utxo = { path = "../frameworks/tw_utxo" }
 
 [build-dependencies]
 itertools = "0.10.5"

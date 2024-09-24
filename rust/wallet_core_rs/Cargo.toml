@@ -18,7 +18,7 @@ default = [
     "utils",
 ]
 any-coin = ["tw_any_coin"]
-bitcoin = ["tw_bitcoin"]
+bitcoin = ["tw_bitcoin", "tw_coin_registry"]
 ethereum = ["tw_ethereum", "tw_coin_registry"]
 keypair = ["tw_keypair"]
 solana = ["tw_solana"]
@@ -35,7 +35,7 @@ utils = [
 [dependencies]
 bitreader = "0.3.8"
 tw_any_coin = { path = "../tw_any_coin", optional = true }
-tw_bitcoin = { path = "../tw_bitcoin", optional = true }
+tw_bitcoin = { path = "../chains/tw_bitcoin", optional = true }
 tw_coin_registry = { path = "../tw_coin_registry", optional = true }
 tw_encoding = { path = "../tw_encoding", optional = true }
 tw_ethereum = { path = "../chains/tw_ethereum", optional = true }
@@ -48,11 +48,3 @@ tw_proto = { path = "../tw_proto", optional = true }
 tw_solana = { path = "../chains/tw_solana", optional = true }
 tw_ton = { path = "../chains/tw_ton", optional = true }
 uuid = { version = "1.7", features = ["v4"], optional = true }
-
-[dev-dependencies]
-serde_json = "1.0"
-tw_any_coin = { path = "../tw_any_coin", features = ["test-utils"] }
-tw_coin_entry = { path = "../tw_coin_entry", features = ["test-utils"] }
-tw_encoding = { path = "../tw_encoding" }
-tw_memory = { path = "../tw_memory", features = ["test-utils"] }
-tw_number = { path = "../tw_number", features = ["helpers"] }
