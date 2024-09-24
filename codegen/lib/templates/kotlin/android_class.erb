@@ -58,8 +58,8 @@ actual class <%= entity.name %> private constructor(
 
 <%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
         @JvmStatic
-        @JvmName("nativeDelete")
-        external fun nativeDelete(handle: Long)
+        @JvmName("delete")
+        private external fun delete(handle: Long)
 <%- end -%>
 <%- constructors.each do |constructor| -%>
 
@@ -88,7 +88,7 @@ actual class <%= entity.name %> private constructor(
                         Thread.currentThread().interrupt()
                     }
                 }.run {
-                    name = "WCFinalizingDaemon"
+                    name = "<%= entity.name %>FinalizingDaemon"
                     isDaemon = true
                     priority = Thread.NORM_PRIORITY
                     start()
@@ -100,11 +100,10 @@ actual class <%= entity.name %> private constructor(
             }
 
             private fun doDeletes() {
-                var ref = queue.poll() as? <%= entity.name %>PhantomReference
-                while (ref != null) {
-                    nativeDelete(ref.nativeHandle)
+                while (true) {
+                    val ref = queue.remove() as <%= entity.name %>PhantomReference
+                    delete(ref.nativeHandle)
                     references.remove(ref)
-                    ref = queue.poll() as <%= entity.name %>PhantomReference
                 }
             }
         }
