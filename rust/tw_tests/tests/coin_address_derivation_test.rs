@@ -103,8 +103,7 @@ fn test_coin_address_derivation() {
             CoinType::Syscoin => "sys1qten42eesehw0ktddcp0fws7d3ycsqez3pwuwme",
             CoinType::Pivx => "DDkFr311AYe6ABMsdSnjv8yoSr1Tppokp8",
             CoinType::Firo => "a9Kd3gVz5vjegicNuG7K8f8iB5QWkUuTxW",
-            // TODO should be "bitcoincash:qp0xw4t8xrxae7ed4hq9a96rekynzqry2ydzeh0jgs"
-            CoinType::BitcoinCash => "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X",
+            CoinType::BitcoinCash => "bitcoincash:qp0xw4t8xrxae7ed4hq9a96rekynzqry2ydzeh0jgs",
             CoinType::BitcoinGold => "btg1qten42eesehw0ktddcp0fws7d3ycsqez3lht33r",
             CoinType::Ravencoin => "RHtMPHweTxYNhBYUN2nJTu9QKyjm7MRKsF",
             // TODO should be "ecash:qp0xw4t8xrxae7ed4hq9a96rekynzqry2y50du5gw8"

@@ -1453,7 +1453,7 @@
     "coinId": 145,
     "symbol": "BCH",
     "decimals": 8,
-    "blockchain": "Bitcoin",
+    "blockchain": "BitcoinCash",
     "derivation": [
       {
         "path": "m/44'/145'/0'/0/0",

@@ -5,6 +5,7 @@
 mod aptos;
 mod binance;
 mod bitcoin;
+mod bitcoincash;
 mod common;
 mod cosmos;
 mod dydx;
