@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::chains::common::bitcoin::{
-    btc_info, dust_threshold, input, output, sign, DUST, SIGHASH_ALL,
+    btc_info, dust_threshold, input, output, sign, TransactionOneof, DUST, SIGHASH_ALL,
 };
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
@@ -55,17 +55,22 @@ fn test_bitcoin_sign_p2wpkh_input_different_builders() {
         to_recipient: output::to_address("bc1q2dsdlq3343vk29runkgv4yc292hmq53jedfjmp"),
     };
 
-    let signing = Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V1,
-        private_keys: vec![my_private_key.to_zeroizing_vec().to_vec().into()],
         inputs: vec![utxo_0, utxo_1, utxo_2],
         outputs: vec![out_0],
         change_output: None,
         // No matter which selector to use.
         input_selector: Proto::InputSelector::SelectAscending,
-        chain_info: btc_info(),
         dust_policy: dust_threshold(DUST),
         fee_per_vb: 33,
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![my_private_key.to_zeroizing_vec().to_vec().into()],
+        chain_info: btc_info(),
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 

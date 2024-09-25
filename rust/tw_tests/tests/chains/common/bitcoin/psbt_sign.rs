@@ -2,13 +2,11 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::ToHex;
-use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Common::Proto::SigningError;
-use tw_proto::{deserialize, serialize};
-use wallet_core_rs::ffi::bitcoin::psbt::tw_bitcoin_psbt_sign;
 
 pub struct Expected {
     /// Hex encoded PSBT.
@@ -21,12 +19,12 @@ pub struct Expected {
 }
 
 pub struct BitcoinPsbtSignHelper<'a> {
-    input: &'a Proto::PsbtSigningInput<'a>,
+    input: &'a Proto::SigningInput<'a>,
     coin_type: Option<CoinType>,
 }
 
 impl<'a> BitcoinPsbtSignHelper<'a> {
-    pub fn new(input: &'a Proto::PsbtSigningInput<'a>) -> Self {
+    pub fn new(input: &'a Proto::SigningInput<'a>) -> Self {
         BitcoinPsbtSignHelper {
             input,
             coin_type: None,
@@ -44,17 +42,13 @@ impl<'a> BitcoinPsbtSignHelper<'a> {
             .coin_type
             .expect("'BitcoinSignHelper::coin_type' is not set");
 
-        let input = serialize(self.input).unwrap();
-        let input = TWDataHelper::create(input);
-
-        let output =
-            TWDataHelper::wrap(unsafe { tw_bitcoin_psbt_sign(input.ptr(), coin_type as u32) });
-        let output_bytes = output.to_vec().unwrap();
-
-        let output: Proto::PsbtSigningOutput = deserialize(&output_bytes).unwrap();
+        let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+        let output = signer.sign(coin_type, self.input.clone());
 
         assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
-        assert_eq!(output.psbt.to_hex(), expected.psbt, "Wrong PSBT hex");
+
+        let psbt = output.psbt.expect("No PSBT in the SigningOutput").psbt;
+        assert_eq!(psbt.to_hex(), expected.psbt, "Wrong PSBT hex");
         assert_eq!(
             output.encoded.to_hex(),
             expected.encoded,

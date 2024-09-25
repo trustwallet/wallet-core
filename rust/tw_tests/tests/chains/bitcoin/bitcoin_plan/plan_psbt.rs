@@ -4,7 +4,7 @@
 
 use crate::chains::common::bitcoin::input::out_point;
 use crate::chains::common::bitcoin::psbt_plan::BitcoinPsbtPlanHelper;
-use crate::chains::common::bitcoin::{btc_info, input, output, RecipientType};
+use crate::chains::common::bitcoin::{btc_info, input, output, transaction_psbt, RecipientType};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_keypair::ecdsa;
@@ -17,12 +17,12 @@ fn test_bitcoin_plan_psbt_thorchain_swap_witness() {
     )
     .unwrap();
 
-    let psbt = "70736274ff0100bc0200000001147010db5fbcf619067c1090fec65c131443fbc80fb4aaeebe940e44206098c60000000000ffffffff0360ea000000000000160014f22a703617035ef7f490743d50f26ae08c30d0a70000000000000000426a403d3a474149412e41544f4d3a636f736d6f7331737377797a666d743675396a373437773537753438746778646575393573757a666c6d7175753a303a743a35303e12000000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d000000000001011f6603010000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d00000000".decode_hex().unwrap();
-    let input = Proto::PsbtSigningInput {
-        psbt: psbt.into(),
+    let psbt = "70736274ff0100bc0200000001147010db5fbcf619067c1090fec65c131443fbc80fb4aaeebe940e44206098c60000000000ffffffff0360ea000000000000160014f22a703617035ef7f490743d50f26ae08c30d0a70000000000000000426a403d3a474149412e41544f4d3a636f736d6f7331737377797a666d743675396a373437773537753438746778646575393573757a666c6d7175753a303a743a35303e12000000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d000000000001011f6603010000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d00000000";
+    let input = Proto::SigningInput {
         public_keys: vec![private_key.public().compressed().to_vec().into()],
         chain_info: btc_info(),
-        ..Proto::PsbtSigningInput::default()
+        transaction: transaction_psbt(psbt),
+        ..Proto::SigningInput::default()
     };
 
     let utxo_0 = Proto::Input {

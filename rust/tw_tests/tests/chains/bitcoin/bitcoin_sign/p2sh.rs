@@ -1,6 +1,6 @@
 use crate::chains::common::bitcoin::{
-    btc_info, dust_threshold, input, output, sign, BITCOIN_P2SH_PREFIX, DUST, MINER_FEE, ONE_BTC,
-    SIGHASH_ALL,
+    btc_info, dust_threshold, input, output, sign, TransactionOneof, BITCOIN_P2SH_PREFIX, DUST,
+    MINER_FEE, ONE_BTC, SIGHASH_ALL,
 };
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
@@ -64,14 +64,19 @@ fn test_bitcoin_sign_input_p2pkh_output_p2sh(recipient_type: P2SHRecipientType) 
         to_recipient,
     };
 
-    let input = Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V2,
-        private_keys: vec![alice_privkey_data.into()],
         inputs: vec![tx0],
         outputs: vec![out0],
         input_selector: Proto::InputSelector::UseAll,
-        chain_info: btc_info(),
         dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let input = Proto::SigningInput {
+        private_keys: vec![alice_privkey_data.into()],
+        chain_info: btc_info(),
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 

@@ -1,6 +1,6 @@
 use crate::chains::common::bitcoin::{
-    btc_info, dust_threshold, input, output, plan, sign, BITCOIN_P2PKH_PREFIX, DUST, MINER_FEE,
-    ONE_BTC, SIGHASH_ALL,
+    btc_info, dust_threshold, input, output, plan, sign, TransactionOneof, BITCOIN_P2PKH_PREFIX,
+    DUST, MINER_FEE, ONE_BTC, SIGHASH_ALL,
 };
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
@@ -55,14 +55,19 @@ fn test_bitcoin_sign_input_p2pkh(utxo_owner: P2PKHClaimingScriptType) {
         to_recipient: output::p2pkh(bob_pubkey.clone()),
     };
 
-    let signing = Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V2,
-        private_keys: vec![ALICE_PRIVATE_KEY.decode_hex().unwrap().into()],
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: Proto::InputSelector::UseAll,
-        chain_info: btc_info(),
         dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![ALICE_PRIVATE_KEY.decode_hex().unwrap().into()],
+        chain_info: btc_info(),
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 
@@ -144,16 +149,21 @@ fn test_bitcoin_cash_sign_input_p2pkh_custom_script() {
         to_recipient: output::to_address("1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU"),
     };
 
-    let signing = Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V1,
-        private_keys: vec![alice_private_key.into()],
         inputs: vec![utxo_1],
         outputs: vec![out_1, explicit_change_out],
         change_output: None,
         // No matter which selector to use.
         input_selector: Proto::InputSelector::SelectInOrder,
-        chain_info: btc_info(),
         dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![alice_private_key.into()],
+        chain_info: btc_info(),
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 
