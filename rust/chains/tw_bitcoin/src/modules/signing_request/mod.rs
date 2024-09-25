@@ -15,7 +15,7 @@ use tw_utxo::modules::tx_planner::{PlanRequest, RequestType};
 use tw_utxo::modules::utxo_selector::InputSelector;
 use tw_utxo::transaction::standard_transaction::builder::TransactionBuilder;
 use tw_utxo::transaction::standard_transaction::Transaction;
-use Proto::mod_SigningInput::OneOfdust_policy as ProtoDustPolicy;
+use Proto::mod_TransactionBuilder::OneOfdust_policy as ProtoDustPolicy;
 
 const DEFAULT_TX_VERSION: u32 = 1;
 
@@ -27,19 +27,22 @@ impl SigningRequestBuilder {
     pub fn build(
         coin: &dyn CoinContext,
         input: &Proto::SigningInput,
+        transaction_builder: &Proto::TransactionBuilder,
     ) -> SigningResult<StandardSigningRequest> {
         let chain_info = Self::chain_info(coin, &input.chain_info)?;
-        let dust_policy = Self::dust_policy(&input.dust_policy)?;
-        let fee_per_vbyte = input.fee_per_vb;
-        let version = Self::transaction_version(&input.version);
+        let dust_policy = Self::dust_policy(&transaction_builder.dust_policy)?;
+        let fee_per_vbyte = transaction_builder.fee_per_vb;
+        let version = Self::transaction_version(&transaction_builder.version);
 
         let public_keys = Self::get_public_keys(input)?;
 
         let mut builder = TransactionBuilder::default();
-        builder.version(version).lock_time(input.lock_time);
+        builder
+            .version(version)
+            .lock_time(transaction_builder.lock_time);
 
         // Parse all UTXOs.
-        for utxo_proto in input.inputs.iter() {
+        for utxo_proto in transaction_builder.inputs.iter() {
             let utxo_builder = UtxoProtobuf::new(&chain_info, utxo_proto, &public_keys);
 
             let (utxo, utxo_args) = utxo_builder
@@ -49,7 +52,7 @@ impl SigningRequestBuilder {
         }
 
         // If `max_amount_output` is set, construct a transaction with only one output.
-        if let Some(max_output_proto) = input.max_amount_output.as_ref() {
+        if let Some(max_output_proto) = transaction_builder.max_amount_output.as_ref() {
             let output_builder = OutputProtobuf::new(&chain_info, max_output_proto);
 
             let max_output = output_builder
@@ -66,7 +69,7 @@ impl SigningRequestBuilder {
         }
 
         // `max_amount_output` isn't set, parse all Outputs.
-        for output_proto in input.outputs.iter() {
+        for output_proto in transaction_builder.outputs.iter() {
             let output = OutputProtobuf::new(&chain_info, output_proto)
                 .output_from_proto()
                 .context("Error creating Output from Proto")?;
@@ -74,7 +77,7 @@ impl SigningRequestBuilder {
         }
 
         // Parse change output if it was provided.
-        let change_output = input
+        let change_output = transaction_builder
             .change_output
             .as_ref()
             .map(|change_output_proto| {
@@ -84,7 +87,7 @@ impl SigningRequestBuilder {
             })
             .transpose()?;
 
-        let input_selector = Self::input_selector(&input.input_selector);
+        let input_selector = Self::input_selector(&transaction_builder.input_selector);
 
         let unsigned_tx = builder.build()?;
         Ok(StandardSigningRequest {
@@ -98,7 +101,7 @@ impl SigningRequestBuilder {
         })
     }
 
-    fn get_public_keys(input: &Proto::SigningInput) -> SigningResult<PublicKeys> {
+    pub fn get_public_keys(input: &Proto::SigningInput) -> SigningResult<PublicKeys> {
         let mut public_keys = PublicKeys::default();
 
         if input.private_keys.is_empty() {

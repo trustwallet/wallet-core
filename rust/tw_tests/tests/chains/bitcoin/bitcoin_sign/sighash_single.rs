@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::chains::common::bitcoin::{
-    btc_info, dust_threshold, input, output, sign, DUST, SIGHASH_SINGLE,
+    btc_info, dust_threshold, input, output, sign, TransactionOneof, DUST, SIGHASH_SINGLE,
 };
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
@@ -51,22 +51,27 @@ fn test_bitcoin_sign_sighash_single() {
         to_recipient: output::to_address("1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU"),
     };
 
-    let signing = Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V1,
-        private_keys: vec![
-            priv_key_1.decode_hex().unwrap().into(),
-            priv_key_2.decode_hex().unwrap().into(),
-        ],
         inputs: vec![utxo_0, utxo_1],
         outputs: vec![out_0, explicit_change_output],
         change_output: None,
         // No matter which selector to use.
         input_selector: Proto::InputSelector::UseAll,
-        chain_info: btc_info(),
         dust_policy: dust_threshold(DUST),
         // Disable transaction fee calculation.
         // This transaction was generated via legacy Bitcoin implementation with an error in weight calculation.
         fee_per_vb: 0,
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![
+            priv_key_1.decode_hex().unwrap().into(),
+            priv_key_2.decode_hex().unwrap().into(),
+        ],
+        chain_info: btc_info(),
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 

@@ -303,12 +303,18 @@ TEST(BitcoinCompiler, CompileWithSignaturesV2) {
     const auto alicePublicKey = alicePrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     const auto bobPublicKey = parse_hex("037ed9a436e11ec4947ac4b7823787e24ba73180f1edd2857bff19c9f4d62b65bf");
 
+    input.mutable_chain_info()->set_p2pkh_prefix(0);
+    input.mutable_chain_info()->set_p2sh_prefix(5);
+    input.add_public_keys(alicePublicKey.bytes.data(), alicePublicKey.bytes.size());
+
     auto txid0 = parse_hex("1e1cdc48aa990d7e154a161d5b5f1cad737742e97d2712ab188027bb42e6e47b");
     std::reverse(txid0.begin(), txid0.end());
 
     // Step 1: Prepare transaction input (protobuf)
 
-    auto& utxo0 = *input.add_inputs();
+    auto& builder = *input.mutable_builder();
+
+    auto& utxo0 = *builder.add_inputs();
     utxo0.mutable_out_point()->set_hash(txid0.data(), txid0.size());
     utxo0.mutable_out_point()->set_vout(0);
     utxo0.set_value(ONE_BTC * 50);
@@ -316,17 +322,14 @@ TEST(BitcoinCompiler, CompileWithSignaturesV2) {
     // Set the Alice public key as the owner of the P2PKH input.
     utxo0.mutable_script_builder()->mutable_p2pkh()->set_pubkey(alicePublicKey.bytes.data(), alicePublicKey.bytes.size());
 
-    auto& out0 = *input.add_outputs();
+    auto& out0 = *builder.add_outputs();
     out0.set_value(ONE_BTC * 50 - 1'000'000);
     // Set the Bob public key as the receiver of the P2PKH output.
     out0.mutable_builder()->mutable_p2pkh()->set_pubkey(bobPublicKey.data(), bobPublicKey.size());
 
-    input.set_version(BitcoinV2::Proto::TransactionVersion::V2);
-    input.add_public_keys(alicePublicKey.bytes.data(), alicePublicKey.bytes.size());
-    input.set_input_selector(BitcoinV2::Proto::InputSelector::UseAll);
-    input.mutable_chain_info()->set_p2pkh_prefix(0);
-    input.mutable_chain_info()->set_p2sh_prefix(5);
-    input.set_fixed_dust_threshold(546);
+    builder.set_version(BitcoinV2::Proto::TransactionVersion::V2);
+    builder.set_input_selector(BitcoinV2::Proto::InputSelector::UseAll);
+    builder.set_fixed_dust_threshold(546);
 
     const auto inputLegacyData = data(inputLegacy.SerializeAsString());
 

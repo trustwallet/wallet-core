@@ -140,6 +140,15 @@ where
             .or_tw_err(SigningErrorType::Error_tx_too_big)
             .context("Sum of Transaction output amounts is too big")
     }
+
+    /// Calculates the unsigned transaction fee by the formula:
+    /// `sum(input) - sum(output)`
+    pub fn fee(&self) -> SigningResult<Amount> {
+        self.total_input()?
+            .checked_sub(self.total_output()?)
+            .or_tw_err(SigningErrorType::Error_not_enough_utxos)
+            .context("sum(input) < sum(output)")
+    }
 }
 
 fn check_utxo_args_number(inputs_len: usize, utxo_args: usize) -> SigningResult<()> {

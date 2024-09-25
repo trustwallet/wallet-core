@@ -4,7 +4,7 @@
 
 use crate::modules::psbt_request::output_psbt::OutputPsbt;
 use crate::modules::psbt_request::utxo_psbt::UtxoPsbt;
-use crate::modules::tx_builder::public_keys::PublicKeys;
+use crate::modules::signing_request::SigningRequestBuilder;
 use bitcoin::psbt::Psbt;
 use tw_coin_entry::error::prelude::*;
 use tw_proto::BitcoinV2::Proto;
@@ -21,8 +21,8 @@ pub struct PsbtRequest {
 }
 
 impl PsbtRequest {
-    pub fn build(input: &Proto::PsbtSigningInput) -> SigningResult<Self> {
-        let psbt = Psbt::deserialize(input.psbt.as_ref())
+    pub fn build(input: &Proto::SigningInput, psbt_input: &Proto::Psbt) -> SigningResult<Self> {
+        let psbt = Psbt::deserialize(&psbt_input.psbt)
             .tw_err(|_| SigningErrorType::Error_input_parse)
             .context("Error deserializing PSBT")?;
 
@@ -34,7 +34,7 @@ impl PsbtRequest {
             .context("Invalid PSBT transaction version")?;
         let lock_time = psbt.unsigned_tx.lock_time.to_consensus_u32();
 
-        let public_keys = Self::get_public_keys(input)?;
+        let public_keys = SigningRequestBuilder::get_public_keys(input)?;
 
         let mut builder = TransactionBuilder::default();
         builder.version(version).lock_time(lock_time);
@@ -59,21 +59,5 @@ impl PsbtRequest {
 
         let unsigned_tx = builder.build()?;
         Ok(PsbtRequest { psbt, unsigned_tx })
-    }
-
-    fn get_public_keys(input: &Proto::PsbtSigningInput) -> SigningResult<PublicKeys> {
-        let mut public_keys = PublicKeys::default();
-
-        if input.private_keys.is_empty() {
-            for public in input.public_keys.iter() {
-                public_keys.add_public_key(public.to_vec());
-            }
-        } else {
-            for private in input.private_keys.iter() {
-                public_keys.add_public_with_ecdsa_private(private)?;
-            }
-        }
-
-        Ok(public_keys)
     }
 }

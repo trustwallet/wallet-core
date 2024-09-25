@@ -54,20 +54,22 @@ describe("Bitcoin", () => {
     });
 
     const signingInput = Proto.SigningInput.create({
-      version: Proto.TransactionVersion.V2,
+      builder: {
+        version: Proto.TransactionVersion.V2,
+        inputs: [utxo0],
+        outputs: [out0],
+        inputSelector: Proto.InputSelector.SelectDescending,
+        feePerVb: new Long(8),
+        changeOutput: changeOut,
+        fixedDustThreshold: dustAmount,
+      },
       privateKeys: [privateKeyData],
-      inputs: [utxo0],
-      outputs: [out0],
-      inputSelector: Proto.InputSelector.SelectDescending,
-      feePerVb: new Long(8),
       chainInfo: {
         p2pkhPrefix: 0,
         p2shPrefix: 5,
       },
-      changeOutput: changeOut,
       // WARNING Do not use in production!
       dangerousUseFixedSchnorrRng: true,
-      fixedDustThreshold: dustAmount,
     });
 
     const legacySigningInput = TW.Bitcoin.Proto.SigningInput.create({
@@ -150,16 +152,18 @@ describe("Bitcoin", () => {
     });
 
     const signingInput = Proto.SigningInput.create({
-      version: Proto.TransactionVersion.V2,
+      builder: {
+        version: Proto.TransactionVersion.V2,
+        inputs: [utxo0, utxo1],
+        outputs: [out0, changeOut],
+        inputSelector: Proto.InputSelector.UseAll,
+        fixedDustThreshold: dustSatoshis,
+      },
       privateKeys: [privateKeyData],
-      inputs: [utxo0, utxo1],
-      outputs: [out0, changeOut],
-      inputSelector: Proto.InputSelector.UseAll,
       chainInfo: {
         p2pkhPrefix: 0,
         p2shPrefix: 5,
       },
-      fixedDustThreshold: dustSatoshis,
     });
 
     const legacySigningInput = TW.Bitcoin.Proto.SigningInput.create({
@@ -230,16 +234,18 @@ describe("Bitcoin", () => {
     });
 
     const signingInput = Proto.SigningInput.create({
-      version: Proto.TransactionVersion.V2,
+      builder: {
+        version: Proto.TransactionVersion.V2,
+        inputs: [utxo0],
+        outputs: [out0, changeOut],
+        inputSelector: Proto.InputSelector.UseAll,
+        fixedDustThreshold: dustAmount,
+      },
       privateKeys: [privateKeyData],
-      inputs: [utxo0],
-      outputs: [out0, changeOut],
-      inputSelector: Proto.InputSelector.UseAll,
       chainInfo: {
         p2pkhPrefix: 0,
         p2shPrefix: 5,
       },
-      fixedDustThreshold: dustAmount,
     });
 
     const legacySigningInput = TW.Bitcoin.Proto.SigningInput.create({
@@ -301,18 +307,20 @@ describe("Bitcoin", () => {
     });
 
     const signingInput = Proto.SigningInput.create({
-      version: Proto.TransactionVersion.V2,
+      builder: {
+        version: Proto.TransactionVersion.V2,
+        inputs: [utxo0],
+        outputs: [out0],
+        inputSelector: Proto.InputSelector.UseAll,
+        fixedDustThreshold: dustAmount,
+      },
       privateKeys: [privateKeyData],
-      inputs: [utxo0],
-      outputs: [out0],
-      inputSelector: Proto.InputSelector.UseAll,
       chainInfo: {
         p2pkhPrefix: 0,
         p2shPrefix: 5,
       },
       // WARNING Do not use in production!
       dangerousUseFixedSchnorrRng: true,
-      fixedDustThreshold: dustAmount,
     });
 
     const legacySigningInput = TW.Bitcoin.Proto.SigningInput.create({

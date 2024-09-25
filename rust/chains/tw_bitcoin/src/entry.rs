@@ -1,6 +1,5 @@
 use crate::modules::compiler::BitcoinCompiler;
 use crate::modules::planner::BitcoinPlanner;
-use crate::modules::psbt_planner::PsbtPlanner;
 use crate::modules::signer::BitcoinSigner;
 use crate::modules::transaction_util::BitcoinTransactionUtil;
 use std::str::FromStr;
@@ -15,7 +14,6 @@ use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_keypair::tw::PublicKey;
 use tw_proto::BitcoinV2::Proto;
 use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
-use tw_utxo::utxo_entry::UtxoEntry;
 
 pub struct BitcoinEntry;
 
@@ -97,29 +95,5 @@ impl CoinEntry for BitcoinEntry {
     #[inline]
     fn transaction_util(&self) -> Option<Self::TransactionUtil> {
         Some(BitcoinTransactionUtil)
-    }
-}
-
-impl UtxoEntry for BitcoinEntry {
-    type PsbtSigningInput<'a> = Proto::PsbtSigningInput<'a>;
-    type PsbtSigningOutput = Proto::PsbtSigningOutput<'static>;
-    type PsbtTransactionPlan = Proto::TransactionPlan<'static>;
-
-    #[inline]
-    fn sign_psbt(
-        &self,
-        coin: &dyn CoinContext,
-        input: Self::PsbtSigningInput<'_>,
-    ) -> Self::PsbtSigningOutput {
-        BitcoinSigner::sign_psbt(coin, &input)
-    }
-
-    #[inline]
-    fn plan_psbt(
-        &self,
-        coin: &dyn CoinContext,
-        input: Self::PsbtSigningInput<'_>,
-    ) -> Self::PsbtTransactionPlan {
-        PsbtPlanner::plan_psbt(coin, &input)
     }
 }
