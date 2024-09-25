@@ -13,4 +13,3 @@ pub mod signature;
 pub mod signing_mode;
 pub mod spending_data;
 pub mod transaction;
-pub mod utxo_entry;

@@ -223,9 +223,6 @@ message TransactionBuilder {
     // If set, `SigningInput.outputs` and `SigningInput.change` will be ignored.
     // The `Output.value` will be overwritten, leave default.
     Output max_amount_output = 8;
-    // Chain info includes p2pkh, p2sh address prefixes.
-    // The parameter needs to be set if an input/output has a receiver address pattern.
-    ChainInfo chain_info = 9;
     // One of the "Dust" amount policies.
     // Later, we plan to add support for `DynamicDust` policy with a `min_relay_fee` amount.
     oneof dust_policy {
@@ -247,16 +244,19 @@ message SigningInput {
     // User public keys.
     // Only required if the `plan`, `preImageHash` methods are called.
     repeated bytes public_keys = 2;
+    // Chain info includes p2pkh, p2sh address prefixes.
+    // The parameter needs to be set if an input/output has a receiver address pattern.
+    ChainInfo chain_info = 3;
     // Whether disable auxiliary random data when signing.
     // Use for testing **ONLY**.
-    bool dangerous_use_fixed_schnorr_rng = 3;
+    bool dangerous_use_fixed_schnorr_rng = 4;
 
     // The transaction signing type.
     oneof transaction {
         // Build a transaction to be signed.
-        TransactionBuilder builder = 7;
+        TransactionBuilder builder = 10;
         // Finalize a Partially Signed Bitcoin Transaction by signing the rest of UTXOs.
-        Psbt psbt = 8;
+        Psbt psbt = 11;
     }
 }
 

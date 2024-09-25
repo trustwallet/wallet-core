@@ -34,9 +34,24 @@ impl BitcoinSigner {
 
     pub fn sign_impl(
         coin: &dyn CoinContext,
-        input: &Proto::SigningInput<'_>,
+        input: &Proto::SigningInput,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        let request = SigningRequestBuilder::build(coin, input)?;
+        use Proto::mod_SigningInput::OneOftransaction as TransactionType;
+
+        match input.transaction {
+            TransactionType::builder(ref tx) => Self::sign_with_tx_builder(coin, input, tx),
+            TransactionType::psbt(ref psbt) => Self::sign_psbt(coin, input, psbt),
+            TransactionType::None => SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Either `TransactionBuilder` or `Psbt` should be set"),
+        }
+    }
+
+    pub fn sign_with_tx_builder(
+        coin: &dyn CoinContext,
+        input: &Proto::SigningInput,
+        tx_builder_input: &Proto::TransactionBuilder,
+    ) -> SigningResult<Proto::SigningOutput<'static>> {
+        let request = SigningRequestBuilder::build(coin, input, tx_builder_input)?;
         let SelectResult { unsigned_tx, plan } = TxPlanner::plan(request)?;
 
         let keys_manager = Self::keys_manager_for_tx(
@@ -62,27 +77,16 @@ impl BitcoinSigner {
     }
 
     pub fn sign_psbt(
-        coin: &dyn CoinContext,
-        input: &Proto::PsbtSigningInput<'_>,
-    ) -> Proto::PsbtSigningOutput<'static> {
-        Self::sign_psbt_impl(coin, input)
-            .unwrap_or_else(|e| signing_output_error!(Proto::PsbtSigningOutput, e))
-    }
-
-    pub fn sign_psbt_impl(
         _coin: &dyn CoinContext,
-        input: &Proto::PsbtSigningInput<'_>,
-    ) -> SigningResult<Proto::PsbtSigningOutput<'static>> {
+        input: &Proto::SigningInput,
+        psbt_input: &Proto::Psbt,
+    ) -> SigningResult<Proto::SigningOutput<'static>> {
         let PsbtRequest {
             mut psbt,
             unsigned_tx,
-        } = PsbtRequest::build(input)?;
+        } = PsbtRequest::build(input, psbt_input)?;
 
-        let fee = unsigned_tx
-            .total_input()?
-            .checked_sub(unsigned_tx.total_output()?)
-            .or_tw_err(SigningErrorType::Error_not_enough_utxos)
-            .context("PSBT sum(input) < sum(output)")?;
+        let fee = unsigned_tx.fee()?;
 
         let keys_manager = Self::keys_manager_for_tx(
             &input.private_keys,
@@ -95,7 +99,7 @@ impl BitcoinSigner {
 
         update_psbt_signed(&mut psbt, &signed_tx);
 
-        Ok(Proto::PsbtSigningOutput {
+        Ok(Proto::SigningOutput {
             transaction: Some(ProtobufBuilder::tx_to_proto(&signed_tx)),
             encoded: Cow::from(signed_tx.encode_out()),
             txid: Cow::from(signed_tx.txid()),
@@ -103,8 +107,10 @@ impl BitcoinSigner {
             vsize: signed_tx.vsize() as u64,
             fee,
             weight: signed_tx.weight() as u64,
-            psbt: Cow::from(psbt.serialize()),
-            ..Proto::PsbtSigningOutput::default()
+            psbt: Some(Proto::Psbt {
+                psbt: Cow::from(psbt.serialize()),
+            }),
+            ..Proto::SigningOutput::default()
         })
     }
 
