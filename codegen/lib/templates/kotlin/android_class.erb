@@ -10,7 +10,7 @@ actual class <%= entity.name %> private constructor(
     init {
         if (nativeHandle == 0L) throw IllegalArgumentException()
 <%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
-        <%= entity.name %>PhantomReference.register(this, nativeHandle)
+        GenericPhantomReference.register(this, nativeHandle, ::delete)
 <%  end -%>
     }
 <%# Constructors -%>
@@ -67,46 +67,6 @@ actual class <%= entity.name %> private constructor(
         @JvmName("<%= KotlinHelper.format_name(constructor.name) %>")
         private external fun <%= KotlinHelper.format_name(constructor.name) %>(<%= KotlinHelper.parameters(constructor.parameters) %>): Long
 <%- end -%>
-    }
-<%  end -%>
-
-<%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
-    internal class <%= entity.name %>PhantomReference private constructor(
-        referent: <%= entity.name %>,
-        private val nativeHandle: Long,
-    ) :
-        java.lang.ref.PhantomReference<<%= entity.name %>>(referent, queue) {
-        companion object {
-            private val references: MutableSet<<%= entity.name %>PhantomReference> = HashSet()
-            private val queue: java.lang.ref.ReferenceQueue<<%= entity.name %>> = java.lang.ref.ReferenceQueue<<%= entity.name %>>()
-
-            init {
-                Thread {
-                    try {
-                        doDeletes()
-                    } catch (e: InterruptedException) {
-                        Thread.currentThread().interrupt()
-                    }
-                }.run {
-                    name = "<%= entity.name %>FinalizingDaemon"
-                    isDaemon = true
-                    priority = Thread.NORM_PRIORITY
-                    start()
-                }
-            }
-
-            fun register(referent: <%= entity.name %>, nativeHandle: Long) {
-                references.add(<%= entity.name %>PhantomReference(referent, nativeHandle))
-            }
-
-            private fun doDeletes() {
-                while (true) {
-                    val ref = queue.remove() as <%= entity.name %>PhantomReference
-                    delete(ref.nativeHandle)
-                    references.remove(ref)
-                }
-            }
-        }
     }
 <%  end -%>
 }
