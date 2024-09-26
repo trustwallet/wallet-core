@@ -42,6 +42,8 @@ pub struct JettonTransferRequest {
     /// Address where to send a response with confirmation of a successful transfer and the rest of the incoming message Toncoins.
     /// Usually the sender should get back their toncoins.
     pub response_address: TonAddress,
+    /// Optional custom payload. Can be used for mintless jetton transfers.
+    pub custom_payload: Option<TransferCustomRequest>,
     /// Amount in nanotons to forward to recipient. Basically minimum amount - 1 nanoton should be used.
     pub forward_ton_amount: U256,
 }

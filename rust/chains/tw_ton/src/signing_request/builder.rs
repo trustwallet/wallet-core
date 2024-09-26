@@ -128,11 +128,20 @@ impl SigningRequestBuilder {
             .into_tw()
             .context("Invalid 'response_address' address")?;
 
+        let custom_payload = input
+            .custom_payload
+            .as_ref()
+            .map(|payload| TransferCustomRequest {
+                state_init: Some(payload.state_init.to_string()),
+                payload: Some(payload.payload.to_string()),
+            });
+
         let jetton_payload = JettonTransferRequest {
             query_id: input.query_id,
             jetton_amount: U256::from(input.jetton_amount),
             dest,
             response_address,
+            custom_payload,
             forward_ton_amount: U256::from(input.forward_amount),
         };
 

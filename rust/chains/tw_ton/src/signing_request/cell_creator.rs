@@ -71,10 +71,27 @@ impl InternalMessageCreator {
         jetton: &JettonTransferRequest,
         comment: Option<String>,
     ) -> CellResult<CellArc> {
+        let custom_payload_cell = if let Some(ref custom_payload) = jetton.custom_payload {
+            if let Some(ref custom_payload) = custom_payload.payload {
+                Some(
+                    BagOfCells::parse_base64(custom_payload)
+                        .context("Error parsing JettonTransfer custom_payload")?
+                        .single_root()
+                        .map(Arc::clone)
+                        .context("custom_payload must contain only one single root")?,
+                )
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
         let mut payload = JettonTransferPayload::new(jetton.dest.clone(), jetton.jetton_amount);
         payload
             .with_query_id(jetton.query_id)
             .with_response_destination(jetton.response_address.clone())
+            .with_custom_payload(custom_payload_cell)
             .with_forward_ton_amount(jetton.forward_ton_amount);
 
         if let Some(comment) = comment {
@@ -103,20 +120,40 @@ impl InternalMessageCreator {
     }
 
     fn maybe_custom_state_init(request: &TransferRequest) -> CellResult<Option<CellArc>> {
-        let Some(TransferPayload::Custom(ref custom)) = request.payload else {
-            return Ok(None);
-        };
+        match request.payload {
+            None => Ok(None),
+            Some(TransferPayload::JettonTransfer(ref jetton_transfer)) => {
+                // In case of JettonTransfer, we need to check if there is a custom payload.
+                // If there is, we need to store it as a StateInit Cell. This is used for mintless jetton transfers.
+                let Some(ref custom_payload) = jetton_transfer.custom_payload else {
+                    return Ok(None);
+                };
 
-        let Some(ref state_init) = custom.state_init else {
-            return Ok(None);
-        };
+                let Some(ref custom_payload) = custom_payload.state_init else {
+                    return Ok(None);
+                };
 
-        let state_init_cell = BagOfCells::parse_base64(state_init)
-            .context("Error parsing Transfer stateInit")?
-            .single_root()
-            .map(Arc::clone)
-            .context("stateInit must contain only one single root")?;
-        Ok(Some(state_init_cell))
+                let custom_payload_cell = BagOfCells::parse_base64(custom_payload)
+                    .context("Error parsing JettonTransfer custom_payload")?
+                    .single_root()
+                    .map(Arc::clone)
+                    .context("custom_payload must contain only one single root")?;
+
+                Ok(Some(custom_payload_cell))
+            },
+            Some(TransferPayload::Custom(ref custom)) => {
+                let Some(ref state_init) = custom.state_init else {
+                    return Ok(None);
+                };
+                let state_init_cell = BagOfCells::parse_base64(state_init)
+                    .context("Error parsing Transfer stateInit")?
+                    .single_root()
+                    .map(Arc::clone)
+                    .context("stateInit must contain only one single root")?;
+
+                Ok(Some(state_init_cell))
+            },
+        }
     }
 }
 

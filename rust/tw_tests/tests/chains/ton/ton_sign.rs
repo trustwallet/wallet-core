@@ -303,6 +303,7 @@ fn test_ton_sign_transfer_jettons() {
         // Send unused toncoins back to sender.
         response_address: "EQBaKIMq5Am2p_rfR1IFTwsNWHxBkOpLTmwUain5Fj4llTXk".into(),
         forward_amount: 1,
+        custom_payload: None,
     };
 
     let transfer = Proto::Transfer {
@@ -348,6 +349,7 @@ fn test_ton_sign_transfer_jettons_with_comment() {
         // Send unused toncoins back to sender.
         response_address: "EQBaKIMq5Am2p_rfR1IFTwsNWHxBkOpLTmwUain5Fj4llTXk".into(),
         forward_amount: 1,
+        custom_payload: None,
     };
 
     let transfer = Proto::Transfer {
