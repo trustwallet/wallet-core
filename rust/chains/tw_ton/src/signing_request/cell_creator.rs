@@ -123,17 +123,16 @@ impl InternalMessageCreator {
         match request.payload {
             None => Ok(None),
             Some(TransferPayload::JettonTransfer(ref jetton_transfer)) => {
-                // In case of JettonTransfer, we need to check if there is a custom payload.
-                // If there is, we need to store it as a StateInit Cell. This is used for mintless jetton transfers.
                 let Some(ref custom_payload) = jetton_transfer.custom_payload else {
                     return Ok(None);
                 };
 
-                let Some(ref custom_payload) = custom_payload.state_init else {
+                let Some(ref state_init) = custom_payload.state_init else {
                     return Ok(None);
                 };
 
-                let custom_payload_cell = BagOfCells::parse_base64(custom_payload)
+                // state_init is needed for deploying the sender's mintless jetton wallet contract.
+                let custom_payload_cell = BagOfCells::parse_base64(state_init)
                     .context("Error parsing JettonTransfer custom_payload")?
                     .single_root()
                     .map(Arc::clone)
