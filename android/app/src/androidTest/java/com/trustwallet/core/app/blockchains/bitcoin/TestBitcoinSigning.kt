@@ -198,19 +198,21 @@ class TestBitcoinSigning {
                 p2Wpkh = BitcoinV2.PublicKeyOrHash.newBuilder().setPubkey(publicKey).build()
             })
 
-        val signingInput = BitcoinV2.SigningInput.newBuilder()
+        val builder = BitcoinV2.TransactionBuilder.newBuilder()
             .setVersion(BitcoinV2.TransactionVersion.V2)
-            .addPrivateKeys(ByteString.copyFrom(privateKeyData))
             .addInputs(utxo0)
             .addOutputs(out0)
             .addOutputs(changeOutput)
             .setInputSelector(BitcoinV2.InputSelector.UseAll)
+            .setFixedDustThreshold(dustSatoshis)
+        val signingInput = BitcoinV2.SigningInput.newBuilder()
+            .setBuilder(builder)
+            .addPrivateKeys(ByteString.copyFrom(privateKeyData))
             .setChainInfo(BitcoinV2.ChainInfo.newBuilder().apply {
                 p2PkhPrefix = 0
                 p2ShPrefix = 5
             })
             .setDangerousUseFixedSchnorrRng(true)
-            .setFixedDustThreshold(dustSatoshis)
             .build()
 
         val legacySigningInput = Bitcoin.SigningInput.newBuilder().apply {
@@ -256,18 +258,20 @@ class TestBitcoinSigning {
                 p2Wpkh = BitcoinV2.PublicKeyOrHash.newBuilder().setPubkey(publicKey).build()
             })
 
-        val signingInput = BitcoinV2.SigningInput.newBuilder()
+        val builder = BitcoinV2.TransactionBuilder.newBuilder()
             .setVersion(BitcoinV2.TransactionVersion.V2)
-            .addPrivateKeys(ByteString.copyFrom(privateKeyData))
             .addInputs(utxo0)
             .addOutputs(out0)
             .setInputSelector(BitcoinV2.InputSelector.UseAll)
+            .setFixedDustThreshold(dustSatoshis)
+        val signingInput = BitcoinV2.SigningInput.newBuilder()
+            .setBuilder(builder)
+            .addPrivateKeys(ByteString.copyFrom(privateKeyData))
             .setChainInfo(BitcoinV2.ChainInfo.newBuilder().apply {
                 p2PkhPrefix = 0
                 p2ShPrefix = 5
             })
             .setDangerousUseFixedSchnorrRng(true)
-            .setFixedDustThreshold(dustSatoshis)
             .build()
 
         val legacySigningInput = Bitcoin.SigningInput.newBuilder().apply {
@@ -326,20 +330,22 @@ class TestBitcoinSigning {
                 p2Wpkh = BitcoinV2.PublicKeyOrHash.newBuilder().setPubkey(publicKey).build()
             })
 
-        val signingInput = BitcoinV2.SigningInput.newBuilder()
+        val builder = BitcoinV2.TransactionBuilder.newBuilder()
             .setVersion(BitcoinV2.TransactionVersion.V2)
-            .addPrivateKeys(ByteString.copyFrom(privateKeyData))
             .addInputs(utxo0)
             .addInputs(utxo1)
             .addOutputs(out0)
             .addOutputs(changeOutput)
             .setInputSelector(BitcoinV2.InputSelector.UseAll)
+            .setFixedDustThreshold(dustSatoshis)
+        val signingInput = BitcoinV2.SigningInput.newBuilder()
+            .setBuilder(builder)
+            .addPrivateKeys(ByteString.copyFrom(privateKeyData))
             .setChainInfo(BitcoinV2.ChainInfo.newBuilder().apply {
                 p2PkhPrefix = 0
                 p2ShPrefix = 5
             })
             .setDangerousUseFixedSchnorrRng(true)
-            .setFixedDustThreshold(dustSatoshis)
             .build()
 
         val legacySigningInput = Bitcoin.SigningInput.newBuilder().apply {

@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::chains::common::bitcoin::{
-    btc_info, compile, dust_threshold, input, output, preimage, DUST, SIGHASH_ALL,
+    btc_info, compile, dust_threshold, input, output, preimage, TransactionOneof, DUST, SIGHASH_ALL,
 };
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::ToHex;
@@ -51,14 +51,19 @@ fn test_bitcoin_compile_brc20_transfer_commit() {
         to_recipient: output::p2wpkh(my_pubkey.to_vec()),
     };
 
-    let signing = Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V2,
-        public_keys: vec![my_pubkey.to_vec().into()],
         inputs: vec![utxo_0],
         outputs: vec![out_0, explicit_change_out],
         input_selector: Proto::InputSelector::UseAll,
-        chain_info: btc_info(),
         dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        public_keys: vec![my_pubkey.to_vec().into()],
+        chain_info: btc_info(),
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 
@@ -124,14 +129,19 @@ fn test_bitcoin_compile_brc20_transfer_reveal() {
         to_recipient: output::p2wpkh(my_pubkey.to_vec()),
     };
 
-    let signing = Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V2,
-        public_keys: vec![my_pubkey.to_vec().into()],
         inputs: vec![utxo_0],
         outputs: vec![out_0],
         input_selector: Proto::InputSelector::UseAll,
-        chain_info: btc_info(),
         dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        public_keys: vec![my_pubkey.to_vec().into()],
+        chain_info: btc_info(),
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 

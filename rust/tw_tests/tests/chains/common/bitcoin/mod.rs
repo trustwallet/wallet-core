@@ -6,6 +6,8 @@
 // functions/constants.
 #![allow(dead_code)]
 
+use tw_encoding::hex::DecodeHex;
+
 pub mod compile;
 pub mod data;
 pub mod plan;
@@ -37,6 +39,7 @@ pub use tw_proto::BitcoinV2::Proto::mod_Output::{
     OneOfto_recipient as RecipientType, OutputBuilder,
 };
 pub use tw_proto::BitcoinV2::Proto::mod_PublicKeyOrHash::OneOfvariant as PublicKeyOrHashType;
+pub use tw_proto::BitcoinV2::Proto::mod_SigningInput::OneOftransaction as TransactionOneof;
 
 use tw_proto::BitcoinV2::Proto;
 
@@ -48,8 +51,14 @@ pub fn btc_info() -> Option<Proto::ChainInfo<'static>> {
     })
 }
 
-pub fn dust_threshold(threshold: i64) -> Proto::mod_SigningInput::OneOfdust_policy {
-    Proto::mod_SigningInput::OneOfdust_policy::fixed_dust_threshold(threshold)
+pub fn dust_threshold(threshold: i64) -> Proto::mod_TransactionBuilder::OneOfdust_policy {
+    Proto::mod_TransactionBuilder::OneOfdust_policy::fixed_dust_threshold(threshold)
+}
+
+pub fn transaction_psbt(hex: &str) -> TransactionOneof {
+    TransactionOneof::psbt(Proto::Psbt {
+        psbt: hex.decode_hex().unwrap().into(),
+    })
 }
 
 pub mod input {

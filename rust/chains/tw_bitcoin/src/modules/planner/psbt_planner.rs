@@ -8,7 +8,6 @@ use crate::modules::tx_builder::script_parser::StandardScriptParser;
 use crate::modules::tx_builder::BitcoinChainInfo;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
-use tw_coin_entry::signing_output_error;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::BitcoinV2::Proto::mod_Input::OneOfclaiming_script as ClaimingScriptProto;
 use tw_proto::BitcoinV2::Proto::mod_Output::OneOfto_recipient as ToRecipientProto;
@@ -21,25 +20,14 @@ pub struct PsbtPlanner;
 impl PsbtPlanner {
     pub fn plan_psbt(
         coin: &dyn CoinContext,
-        input: &Proto::PsbtSigningInput,
-    ) -> Proto::TransactionPlan<'static> {
-        Self::plan_psbt_impl(coin, input)
-            .unwrap_or_else(|e| signing_output_error!(Proto::TransactionPlan, e))
-    }
-
-    pub fn plan_psbt_impl(
-        coin: &dyn CoinContext,
-        input: &Proto::PsbtSigningInput,
+        input: &Proto::SigningInput,
+        psbt_input: &Proto::Psbt,
     ) -> SigningResult<Proto::TransactionPlan<'static>> {
         let chain_info = SigningRequestBuilder::chain_info(coin, &input.chain_info)?;
-        let PsbtRequest { unsigned_tx, .. } = PsbtRequest::build(input)?;
+        let PsbtRequest { unsigned_tx, .. } = PsbtRequest::build(input, psbt_input)?;
 
         let total_input = unsigned_tx.total_input()?;
-        let total_output = unsigned_tx.total_output()?;
-        let fee_estimate = total_input
-            .checked_sub(total_output)
-            .or_tw_err(SigningErrorType::Error_not_enough_utxos)
-            .context("PSBT sum(input) < sum(output)")?;
+        let fee_estimate = unsigned_tx.fee()?;
 
         let vsize_estimate = unsigned_tx.estimate_transaction().vsize() as u64;
 

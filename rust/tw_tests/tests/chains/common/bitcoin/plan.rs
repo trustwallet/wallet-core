@@ -134,16 +134,21 @@ pub fn make_planning_input(args: PlanArgs) -> Proto::SigningInput<'static> {
         None
     };
 
-    Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         inputs,
         outputs,
         input_selector: args.order,
         fee_per_vb: args.fee_per_vb,
         change_output,
         max_amount_output,
+        dust_policy: dust_threshold(args.dust_threshold),
+        ..Default::default()
+    };
+
+    Proto::SigningInput {
         // Chain info does not matter in this case, set to the default BTC.
         chain_info: btc_info(),
-        dust_policy: dust_threshold(args.dust_threshold),
+        transaction: TransactionOneof::builder(builder),
         ..Proto::SigningInput::default()
     }
 }

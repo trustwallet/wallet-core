@@ -14,6 +14,8 @@ use tw_proto::BitcoinV2::Proto;
 use tw_utxo::modules::tx_planner::TxPlanner;
 use tw_utxo::modules::utxo_selector::SelectResult;
 
+pub mod psbt_planner;
+
 pub struct BitcoinPlanner;
 
 impl BitcoinPlanner {
@@ -21,13 +23,30 @@ impl BitcoinPlanner {
         coin: &dyn CoinContext,
         input: &Proto::SigningInput<'a>,
     ) -> SigningResult<Proto::TransactionPlan<'a>> {
-        let request = SigningRequestBuilder::build(coin, input)?;
+        use Proto::mod_SigningInput::OneOftransaction as TransactionType;
+
+        match input.transaction {
+            TransactionType::builder(ref tx) => Self::plan_with_tx_builder(coin, input, tx),
+            TransactionType::psbt(ref psbt) => {
+                psbt_planner::PsbtPlanner::plan_psbt(coin, input, psbt)
+            },
+            TransactionType::None => SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Either `TransactionBuilder` or `Psbt` should be set"),
+        }
+    }
+
+    pub fn plan_with_tx_builder<'a>(
+        coin: &dyn CoinContext,
+        input: &Proto::SigningInput<'a>,
+        tx_builder: &Proto::TransactionBuilder<'a>,
+    ) -> SigningResult<Proto::TransactionPlan<'a>> {
+        let request = SigningRequestBuilder::build(coin, input, tx_builder)?;
         let SelectResult { unsigned_tx, plan } = TxPlanner::plan(request)?;
 
         // Prepare a map of source Inputs Proto `{ OutPoint -> Input }`.
         // It will be used to find a Input Proto by its `OutPoint`.
-        let mut inputs_map = HashMap::with_capacity(input.inputs.len());
-        for utxo in input.inputs.iter() {
+        let mut inputs_map = HashMap::with_capacity(tx_builder.inputs.len());
+        for utxo in tx_builder.inputs.iter() {
             let key = parse_out_point(&utxo.out_point)?;
             if inputs_map.insert(key, utxo).is_some() {
                 // Found a duplicate UTXO. Return an error.

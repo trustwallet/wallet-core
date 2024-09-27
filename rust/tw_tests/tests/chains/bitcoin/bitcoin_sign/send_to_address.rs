@@ -1,5 +1,5 @@
 use crate::chains::common::bitcoin::{
-    btc_info, dust_threshold, input, output, sign, DUST, SIGHASH_ALL,
+    btc_info, dust_threshold, input, output, sign, TransactionOneof, DUST, SIGHASH_ALL,
 };
 use std::str::FromStr;
 use tw_coin_registry::coin_type::CoinType;
@@ -46,14 +46,19 @@ fn test_bitcoin_send_to_p2sh_address() {
         to_recipient: output::to_address(&p2sh_address.to_string()),
     };
 
-    let signing = Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V2,
-        private_keys: vec![alice_private_key.to_zeroizing_vec().to_vec().into()],
         inputs: vec![utxo_0],
         outputs: vec![out_0],
         input_selector: Proto::InputSelector::UseAll,
         dust_policy: dust_threshold(DUST),
         fee_per_vb: 1,
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![alice_private_key.to_zeroizing_vec().to_vec().into()],
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 
@@ -96,13 +101,18 @@ fn test_bitcoin_send_to_p2pkh_address() {
         to_recipient: output::to_address(bob_address),
     };
 
-    let signing = Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V2,
-        private_keys: vec![alice_private_key.into()],
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: Proto::InputSelector::UseAll,
         dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![alice_private_key.into()],
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 
@@ -152,13 +162,18 @@ fn test_bitcoin_send_to_p2wsh_address() {
         to_recipient: output::to_address(&p2wsh_address.to_string()),
     };
 
-    let signing = Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V2,
-        private_keys: vec![alice_private_key.to_zeroizing_vec().to_vec().into()],
         inputs: vec![utxo_0],
         outputs: vec![out_0],
         input_selector: Proto::InputSelector::UseAll,
         dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![alice_private_key.to_zeroizing_vec().to_vec().into()],
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 
@@ -200,13 +215,18 @@ fn test_bitcoin_send_to_p2wpkh_address() {
         to_recipient: output::to_address(bob_address),
     };
 
-    let signing = Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V2,
-        private_keys: vec![alice_private_key.into()],
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: Proto::InputSelector::UseAll,
         dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![alice_private_key.into()],
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 
@@ -248,13 +268,18 @@ fn test_bitcoin_send_to_p2tr_key_path_address() {
         to_recipient: output::to_address(bob_address),
     };
 
-    let signing = Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V2,
-        private_keys: vec![alice_private_key.into()],
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: Proto::InputSelector::UseAll,
         dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![alice_private_key.into()],
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 

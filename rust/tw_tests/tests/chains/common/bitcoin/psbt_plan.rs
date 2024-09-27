@@ -2,19 +2,17 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use tw_any_coin::test_utils::plan_utils::AnyPlannerHelper;
 use tw_coin_registry::coin_type::CoinType;
-use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_proto::BitcoinV2::Proto;
-use tw_proto::{deserialize, serialize};
-use wallet_core_rs::ffi::bitcoin::psbt::tw_bitcoin_psbt_plan;
 
 pub struct BitcoinPsbtPlanHelper<'a> {
-    input: &'a Proto::PsbtSigningInput<'a>,
+    input: &'a Proto::SigningInput<'a>,
     coin_type: Option<CoinType>,
 }
 
 impl<'a> BitcoinPsbtPlanHelper<'a> {
-    pub fn new(input: &'a Proto::PsbtSigningInput<'a>) -> Self {
+    pub fn new(input: &'a Proto::SigningInput<'a>) -> Self {
         BitcoinPsbtPlanHelper {
             input,
             coin_type: None,
@@ -30,16 +28,10 @@ impl<'a> BitcoinPsbtPlanHelper<'a> {
     pub fn plan_psbt(self, expected: Proto::TransactionPlan) {
         let coin_type = self
             .coin_type
-            .expect("'BitcoinSignHelper::coin_type' is not set");
+            .expect("'BitcoinPsbtPlanHelper::coin_type' is not set");
 
-        let input = serialize(self.input).unwrap();
-        let input = TWDataHelper::create(input);
-
-        let output =
-            TWDataHelper::wrap(unsafe { tw_bitcoin_psbt_plan(input.ptr(), coin_type as u32) });
-        let output_bytes = output.to_vec().unwrap();
-
-        let output: Proto::TransactionPlan = deserialize(&output_bytes).unwrap();
+        let mut planner = AnyPlannerHelper::<Proto::TransactionPlan>::default();
+        let output = planner.plan(coin_type, self.input.clone());
 
         assert_eq!(output.error, expected.error, "{}", output.error_message);
 

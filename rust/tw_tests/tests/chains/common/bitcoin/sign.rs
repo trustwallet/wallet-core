@@ -77,8 +77,10 @@ impl<'a> BitcoinSignHelper<'a> {
 
     /// Gets the map of `{ OutPoint -> Amount }`.
     fn utxo_map(&self) -> UtxoMap {
-        let mut utxo_map = HashMap::with_capacity(self.input.inputs.len());
-        for utxo in self.input.inputs.iter() {
+        let builder_input = self.transaction_builder();
+
+        let mut utxo_map = HashMap::with_capacity(builder_input.inputs.len());
+        for utxo in builder_input.inputs.iter() {
             utxo_map.insert(OutPoint::from_proto(&utxo.out_point), utxo.value);
         }
         utxo_map
@@ -98,6 +100,16 @@ impl<'a> BitcoinSignHelper<'a> {
         }
 
         output_inputs
+    }
+
+    fn transaction_builder(&self) -> &Proto::TransactionBuilder<'_> {
+        match self.input.transaction {
+            TransactionOneof::builder(ref builder) => builder,
+            TransactionOneof::psbt(_) => panic!(
+                "`BitcoinSignHelper` doesn't support PSBT. Consider using `BitcoinPsbtSignHelper`"
+            ),
+            TransactionOneof::None => unreachable!(),
+        }
     }
 }
 

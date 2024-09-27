@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::modules::protobuf_builder::ProtobufBuilder;
+use crate::modules::psbt_request::PsbtRequest;
 use crate::modules::signing_request::SigningRequestBuilder;
 use std::borrow::Cow;
 use tw_coin_entry::coin_context::CoinContext;
@@ -13,6 +14,7 @@ use tw_proto::BitcoinV2::Proto;
 use tw_proto::BitcoinV2::Proto::mod_PreSigningOutput::{
     SigningMethod as ProtoSigningMethod, TaprootTweak as ProtoTaprootTweak,
 };
+use tw_proto::BitcoinV2::Proto::mod_SigningInput::OneOftransaction as TransactionType;
 use tw_utxo::modules::sighash_computer::{SighashComputer, TaprootTweak, TxPreimage};
 use tw_utxo::modules::sighash_verifier::SighashVerifier;
 use tw_utxo::modules::tx_compiler::TxCompiler;
@@ -39,8 +41,17 @@ impl BitcoinCompiler {
         coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::PreSigningOutput<'static>> {
-        let request = SigningRequestBuilder::build(coin, &input)?;
-        let SelectResult { unsigned_tx, .. } = TxPlanner::plan(request)?;
+        let unsigned_tx = match input.transaction {
+            TransactionType::builder(ref tx_builder) => {
+                let request = SigningRequestBuilder::build(coin, &input, tx_builder)?;
+                TxPlanner::plan(request)?.unsigned_tx
+            },
+            TransactionType::psbt(ref psbt) => PsbtRequest::build(&input, psbt)?.unsigned_tx,
+            TransactionType::None => {
+                return SigningError::err(SigningErrorType::Error_invalid_params)
+                    .context("Either `TransactionBuilder` or `Psbt` should be set")
+            },
+        };
 
         let TxPreimage { sighashes } = SighashComputer::preimage_tx(&unsigned_tx)?;
 
@@ -77,7 +88,23 @@ impl BitcoinCompiler {
         signatures: Vec<SignatureBytes>,
         _public_keys: Vec<PublicKeyBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        let request = SigningRequestBuilder::build(coin, &input)?;
+        match input.transaction {
+            TransactionType::builder(ref tx) => {
+                Self::compile_with_tx_builder(coin, &input, tx, signatures)
+            },
+            TransactionType::psbt(ref psbt) => Self::compile_psbt(coin, &input, psbt, signatures),
+            TransactionType::None => SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("No transaction type specified"),
+        }
+    }
+
+    fn compile_with_tx_builder(
+        coin: &dyn CoinContext,
+        input: &Proto::SigningInput,
+        tx_builder_input: &Proto::TransactionBuilder,
+        signatures: Vec<SignatureBytes>,
+    ) -> SigningResult<Proto::SigningOutput<'static>> {
+        let request = SigningRequestBuilder::build(coin, input, tx_builder_input)?;
         let SelectResult { unsigned_tx, plan } = TxPlanner::plan(request)?;
 
         SighashVerifier::verify_signatures(&unsigned_tx, &signatures)?;
@@ -93,6 +120,31 @@ impl BitcoinCompiler {
             weight: signed_tx.weight() as u64,
             // `fee` should haven't been changed since it's a difference between `sum(inputs)` and `sum(outputs)`.
             fee: plan.fee_estimate,
+            ..Proto::SigningOutput::default()
+        })
+    }
+
+    fn compile_psbt(
+        _coin: &dyn CoinContext,
+        input: &Proto::SigningInput,
+        psbt: &Proto::Psbt,
+        signatures: Vec<SignatureBytes>,
+    ) -> SigningResult<Proto::SigningOutput<'static>> {
+        let PsbtRequest { unsigned_tx, .. } = PsbtRequest::build(input, psbt)?;
+        let fee = unsigned_tx.fee()?;
+
+        SighashVerifier::verify_signatures(&unsigned_tx, &signatures)?;
+        let signed_tx = TxCompiler::compile(unsigned_tx, &signatures)?;
+        let tx_proto = ProtobufBuilder::tx_to_proto(&signed_tx);
+
+        Ok(Proto::SigningOutput {
+            transaction: Some(tx_proto),
+            encoded: Cow::from(signed_tx.encode_out()),
+            txid: Cow::from(signed_tx.txid()),
+            // `vsize` could have been changed after the transaction being signed.
+            vsize: signed_tx.vsize() as u64,
+            weight: signed_tx.weight() as u64,
+            fee,
             ..Proto::SigningOutput::default()
         })
     }
