@@ -10,6 +10,7 @@ use crate::registry::get_coin_item;
 use tw_aptos::entry::AptosEntry;
 use tw_binance::entry::BinanceEntry;
 use tw_bitcoin::entry::BitcoinEntry;
+use tw_bitcoincash::entry::BitcoinCashEntry;
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_cosmos::entry::CosmosEntry;
 use tw_ethereum::entry::EthereumEntry;
@@ -23,12 +24,9 @@ use tw_solana::entry::SolanaEntry;
 use tw_sui::entry::SuiEntry;
 use tw_thorchain::entry::ThorchainEntry;
 use tw_ton::entry::TheOpenNetworkEntry;
-use tw_utxo::utxo_entry::UtxoEntryExt;
-use tw_bitcoincash::entry::BitcoinCashEntry;
 
 pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;
 pub type EvmEntryExtStaticRef = &'static dyn EvmEntryExt;
-pub type UtxoEntryExtStaticRef = &'static dyn UtxoEntryExt;
 
 // start_of_blockchain_entries - USED TO GENERATE CODE
 const APTOS: AptosEntry = AptosEntry;
@@ -85,14 +83,6 @@ pub fn evm_dispatcher(coin: CoinType) -> RegistryResult<EvmEntryExtStaticRef> {
     match item.blockchain {
         BlockchainType::Ethereum => Ok(&ETHEREUM),
         BlockchainType::Ronin => Ok(&RONIN),
-        _ => Err(RegistryError::Unsupported),
-    }
-}
-
-pub fn utxo_dispatcher(coin: CoinType) -> RegistryResult<UtxoEntryExtStaticRef> {
-    let item = get_coin_item(coin)?;
-    match item.blockchain {
-        BlockchainType::Bitcoin => Ok(&BITCOIN),
         _ => Err(RegistryError::Unsupported),
     }
 }

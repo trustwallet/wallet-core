@@ -1,6 +1,6 @@
 use crate::chains::common::bitcoin::{
-    btc_info, dust_threshold, input, output, sign, BITCOIN_HRP, DUST, MINER_FEE, ONE_BTC,
-    SIGHASH_ALL,
+    btc_info, dust_threshold, input, output, sign, TransactionOneof, BITCOIN_HRP, DUST, MINER_FEE,
+    ONE_BTC, SIGHASH_ALL,
 };
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
@@ -57,14 +57,19 @@ fn test_bitcoin_sign_input_p2pkh_output_p2tr_key_path(send_to: P2TRRecipientType
         to_recipient,
     };
 
-    let signing = Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V2,
-        private_keys: vec![ALICE_PRIVATE_KEY.decode_hex().unwrap().into()],
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: Proto::InputSelector::UseAll,
-        chain_info: btc_info(),
         dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![ALICE_PRIVATE_KEY.decode_hex().unwrap().into()],
+        chain_info: btc_info(),
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 
@@ -138,16 +143,21 @@ fn test_bitcoin_sign_output_p2tr(utxo_owner: P2TRClaimingScriptType) {
         to_recipient: output::p2tr_key_path(alice_pubkey.to_vec()),
     };
 
-    let signing = Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V2,
-        private_keys: vec![BOB_PRIVATE_KEY.decode_hex().unwrap().into()],
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: Proto::InputSelector::UseAll,
+        dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![BOB_PRIVATE_KEY.decode_hex().unwrap().into()],
         chain_info: btc_info(),
         // We enable deterministic Schnorr signatures here
         dangerous_use_fixed_schnorr_rng: true,
-        dust_policy: dust_threshold(DUST),
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 
@@ -208,17 +218,22 @@ fn test_bitcoin_sign_input_p2tr_key_path_with_change_output_a9c63d() {
         ..Proto::Output::default()
     };
 
-    let signing = Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V2,
-        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
         inputs: vec![utxo0],
         outputs: vec![out0],
         input_selector: Proto::InputSelector::SelectDescending,
         fee_per_vb: 8,
         change_output: Some(change_output),
+        dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
         chain_info: btc_info(),
         dangerous_use_fixed_schnorr_rng: true,
-        dust_policy: dust_threshold(DUST),
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 
@@ -260,16 +275,21 @@ fn test_bitcoin_sign_input_p2tr_key_path_with_max_amount_89c5d1() {
         ..Proto::Output::default()
     };
 
-    let signing = Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V2,
-        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
         inputs: vec![utxo0],
         input_selector: Proto::InputSelector::SelectDescending,
         fee_per_vb: 6,
         max_amount_output: Some(max_output),
+        dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
         chain_info: btc_info(),
         dangerous_use_fixed_schnorr_rng: true,
-        dust_policy: dust_threshold(DUST),
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 
@@ -325,19 +345,24 @@ fn test_bitcoin_sign_input_p2tr_and_p2wpkh() {
         ..Proto::Output::default()
     };
 
-    let signing = Proto::SigningInput {
+    let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V2,
-        private_keys: vec![
-            P2TR_PRIVATE_KEY.decode_hex().unwrap().into(),
-            P2WPKH_PRIVATE_KEY.decode_hex().unwrap().into(),
-        ],
         inputs: vec![p2tr_utxo, p2wpkh_utxo],
         input_selector: Proto::InputSelector::UseAll,
         fee_per_vb: 4,
         max_amount_output: Some(max_output),
+        dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![
+            P2TR_PRIVATE_KEY.decode_hex().unwrap().into(),
+            P2WPKH_PRIVATE_KEY.decode_hex().unwrap().into(),
+        ],
         chain_info: btc_info(),
         dangerous_use_fixed_schnorr_rng: true,
-        dust_policy: dust_threshold(DUST),
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 

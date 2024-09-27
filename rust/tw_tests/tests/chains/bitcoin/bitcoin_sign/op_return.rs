@@ -2,7 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::chains::common::bitcoin::{dust_threshold, input, output, sign, DUST, SIGHASH_ALL};
+use crate::chains::common::bitcoin::{
+    dust_threshold, input, output, sign, TransactionOneof, DUST, SIGHASH_ALL,
+};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_proto::BitcoinV2::Proto;
@@ -48,13 +50,18 @@ fn test_bitcoin_deposit_to_zetachain() {
         to_recipient: output::to_address(my_address),
     };
 
-    let signing = Proto::SigningInput {
-        private_keys: vec![my_private_key.into()],
+    let builder = Proto::TransactionBuilder {
         inputs: vec![utxo_0],
         outputs: vec![out_0, out_1, explicit_change_output],
         input_selector: Proto::InputSelector::UseAll,
         dust_policy: dust_threshold(DUST),
         fee_per_vb: 1,
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![my_private_key.into()],
+        transaction: TransactionOneof::builder(builder),
         ..Default::default()
     };
 
