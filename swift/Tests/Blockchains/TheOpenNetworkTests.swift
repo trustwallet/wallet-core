@@ -153,18 +153,14 @@ class TheOpenNetworkTests: XCTestCase {
         // "This transaction deploys Doge Chatbot contract"
         let commentPayload = "te6cckEBAQEANAAAZAAAAABUaGlzIHRyYW5zYWN0aW9uIGRlcGxveXMgRG9nZSBDaGF0Ym90IGNvbnRyYWN0v84vSg=="
         
-        let customPayload = TheOpenNetworkCustomPayload.with {
-            $0.stateInit = dogeChatbotStateInit
-            $0.payload = commentPayload
-        }
-        
         let transfer = TheOpenNetworkTransfer.with {
             $0.dest = dogeChatbotDeployingAddress
             // 0.069 TON
             $0.amount = 69_000_000
             $0.mode = UInt32(TheOpenNetworkSendMode.payFeesSeparately.rawValue | TheOpenNetworkSendMode.ignoreActionPhaseErrors.rawValue)
             $0.bounceable = false
-            $0.customPayload = customPayload
+            $0.stateInit = dogeChatbotStateInit
+            $0.customPayload = commentPayload
         }
 
         let input = TheOpenNetworkSigningInput.with {
