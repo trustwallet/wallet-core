@@ -47,9 +47,9 @@ actual class <%= entity.name %> constructor(
         @Throws(IllegalArgumentException::class)
 <%  end -%>
         private fun wrapperTW<%= entity.name %><%= constructor.name %>(<%= KotlinHelper.parameters(constructor.parameters) %>): CPointer<TW<%= entity.name %>> {
-<%=   render('kotlin/ios_parameter_access.erb', { method: constructor }) -%>
+<%=   render('kotlin/ios_parameter_access.erb', { method: constructor, more_index: 4 }) -%>
             val result = TW<%= entity.name %><%= constructor.name %>(<%= KotlinHelper.calling_parameters_ios(constructor.parameters) %>)
-<%=   render('kotlin/ios_parameter_release.erb', { method: constructor }) -%>
+<%=   render('kotlin/ios_parameter_release.erb', { method: constructor, more_index: 4 }) -%>
 <%  if constructor.return_type.is_nullable -%>
             if (result == null) {
                 throw IllegalArgumentException()
@@ -71,9 +71,9 @@ actual class <%= entity.name %> constructor(
 <%  static_methods.each do |method| -%>
 
         actual fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters) %>)<%= KotlinHelper.return_type(method.return_type) %> {
-<%=   render('kotlin/ios_parameter_access.erb', { method: method }) -%>
+<%=   render('kotlin/ios_parameter_access.erb', { method: method, more_index: 4 }) -%>
             val result = <%= KotlinHelper.convert_calling_return_type_ios(method.return_type, "TW#{entity.name}#{method.name}(#{KotlinHelper.calling_parameters_ios(method.parameters)})") %>
-<%=   render('kotlin/ios_parameter_release.erb', { method: method }) -%>
+<%=   render('kotlin/ios_parameter_release.erb', { method: method, more_index: 4 }) -%>
             return result
         }
 <%  end -%>

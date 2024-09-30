@@ -1,26 +1,27 @@
 <%
     method = locals[:method]
+    more_index = locals[:more_index] || 0
 
     method.parameters.each do |param| -%>
 <%    if param.type.name == :data -%>
 <%      if param.type.is_nullable -%>
-        val <%= param.name %>Data = if (<%= param.name %> == null) {
-            null
-        } else {
-            TWDataCreateWithBytes(<%= param.name %>.toUByteArray().toCValues(), <%= param.name %>.size.toULong())
-        }
+<%= ' ' * more_index %>        val <%= param.name %>Data = if (<%= param.name %> == null) {
+<%= ' ' * more_index %>            null
+<%= ' ' * more_index %>        } else {
+<%= ' ' * more_index %>            TWDataCreateWithBytes(<%= param.name %>.toUByteArray().toCValues(), <%= param.name %>.size.toULong())
+<%= ' ' * more_index %>        }
 <%      else -%>
-        val <%= param.name %>Data = TWDataCreateWithBytes(<%= param.name %>.toUByteArray().toCValues(), <%= param.name %>.size.toULong())
+<%= ' ' * more_index %>        val <%= param.name %>Data = TWDataCreateWithBytes(<%= param.name %>.toUByteArray().toCValues(), <%= param.name %>.size.toULong())
 <%      end -%>
 <%    elsif param.type.name == :string -%>
 <%      if param.type.is_nullable -%>
-        val <%= param.name %>String = if (<%= param.name %> == null) {
-            null
-        } else {
-            TWStringCreateWithUTF8Bytes(<%= param.name %>)
-        }
+<%= ' ' * more_index %>        val <%= param.name %>String = if (<%= param.name %> == null) {
+<%= ' ' * more_index %>            null
+<%= ' ' * more_index %>        } else {
+<%= ' ' * more_index %>            TWStringCreateWithUTF8Bytes(<%= param.name %>)
+<%= ' ' * more_index %>        }
 <%      else -%>
-        val <%= param.name %>String = TWStringCreateWithUTF8Bytes(<%= param.name %>)
+<%= ' ' * more_index %>        val <%= param.name %>String = TWStringCreateWithUTF8Bytes(<%= param.name %>)
 <%      end -%>
 <%    end -%>
 <%  end -%>
