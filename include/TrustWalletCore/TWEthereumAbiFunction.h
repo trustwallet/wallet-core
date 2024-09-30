@@ -40,178 +40,179 @@ TWString* _Nonnull TWEthereumAbiFunctionGetType(struct TWEthereumAbiFunction* _N
 /// Add a uint8 type parameter
 ///
 /// \param fn A Non-null eth abi function
-/// \param value for output parameters, value has to be specified
+/// \param val for output parameters, value has to be specified
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddParamUInt8(struct TWEthereumAbiFunction* _Nonnull fn, uint8_t value, bool isOutput);
+int TWEthereumAbiFunctionAddParamUInt8(struct TWEthereumAbiFunction* _Nonnull fn, uint8_t val, bool isOutput);
 
 /// Add a uint16 type parameter
 ///
 /// \param fn A Non-null eth abi function
-/// \param value for output parameters, value has to be specified
+/// \param val for output parameters, value has to be specified
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddParamUInt16(struct TWEthereumAbiFunction* _Nonnull fn, uint16_t value, bool isOutput);
+int TWEthereumAbiFunctionAddParamUInt16(struct TWEthereumAbiFunction* _Nonnull fn, uint16_t val, bool isOutput);
 
 /// Add a uint32 type parameter
 ///
 /// \param fn A Non-null eth abi function
-/// \param value for output parameters, value has to be specified
+/// \param val for output parameters, value has to be specified
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddParamUInt32(struct TWEthereumAbiFunction* _Nonnull fn, uint32_t value, bool isOutput);
+int TWEthereumAbiFunctionAddParamUInt32(struct TWEthereumAbiFunction* _Nonnull fn, uint32_t val, bool isOutput);
 
 /// Add a uint64 type parameter
 ///
 /// \param fn A Non-null eth abi function
-/// \param value for output parameters, value has to be specified
+/// \param val for output parameters, value has to be specified
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddParamUInt64(struct TWEthereumAbiFunction* _Nonnull fn, uint64_t value, bool isOutput);
+int TWEthereumAbiFunctionAddParamUInt64(struct TWEthereumAbiFunction* _Nonnull fn, uint64_t val, bool isOutput);
 
 /// Add a uint256 type parameter
 ///
 /// \param fn A Non-null eth abi function
-/// \param value for output parameters, value has to be specified
+/// \param val for output parameters, value has to be specified
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddParamUInt256(struct TWEthereumAbiFunction* _Nonnull fn, TWData* _Nonnull value, bool isOutput);
+int TWEthereumAbiFunctionAddParamUInt256(struct TWEthereumAbiFunction* _Nonnull fn, TWData* _Nonnull val, bool isOutput);
 
 /// Add a uint(bits) type parameter
 ///
 /// \param fn A Non-null eth abi function
-/// \param value for output parameters, value has to be specified
+/// \param val for output parameters, value has to be specified
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddParamUIntN(struct TWEthereumAbiFunction* _Nonnull fn, int bits, TWData* _Nonnull value, bool isOutput);
+int TWEthereumAbiFunctionAddParamUIntN(struct TWEthereumAbiFunction* _Nonnull fn, int bits, TWData* _Nonnull val, bool isOutput);
 
 /// Add a int8 type parameter
 ///
 /// \param fn A Non-null eth abi function
-/// \param value for output parameters, value has to be specified
+/// \param val for output parameters, value has to be specified
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddParamInt8(struct TWEthereumAbiFunction* _Nonnull fn, int8_t value, bool isOutput);
+int TWEthereumAbiFunctionAddParamInt8(struct TWEthereumAbiFunction* _Nonnull fn, int8_t val, bool isOutput);
 
 /// Add a int16 type parameter
 ///
 /// \param fn A Non-null eth abi function
-/// \param value for output parameters, value has to be specified
+/// \param val for output parameters, value has to be specified
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddParamInt16(struct TWEthereumAbiFunction* _Nonnull fn, int16_t value, bool isOutput);
+int TWEthereumAbiFunctionAddParamInt16(struct TWEthereumAbiFunction* _Nonnull fn, int16_t val, bool isOutput);
 
 /// Add a int32 type parameter
 ///
 /// \param fn A Non-null eth abi function
-/// \param value for output parameters, value has to be specified
+/// \param val for output parameters, value has to be specified
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddParamInt32(struct TWEthereumAbiFunction* _Nonnull fn, int32_t value, bool isOutput);
+int TWEthereumAbiFunctionAddParamInt32(struct TWEthereumAbiFunction* _Nonnull fn, int32_t val, bool isOutput);
 
 /// Add a int64 type parameter
 ///
 /// \param fn A Non-null eth abi function
-/// \param value for output parameters, value has to be specified
+/// \param val for output parameters, value has to be specified
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddParamInt64(struct TWEthereumAbiFunction* _Nonnull fn, int64_t value, bool isOutput);
+int TWEthereumAbiFunctionAddParamInt64(struct TWEthereumAbiFunction* _Nonnull fn, int64_t val, bool isOutput);
 
 /// Add a int256 type parameter
 ///
 /// \param fn A Non-null eth abi function
-/// \param value for output parameters, value has to be specified (stored in a block of data)
+/// \param val for output parameters, value has to be specified (stored in a block of data)
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddParamInt256(struct TWEthereumAbiFunction* _Nonnull fn, TWData* _Nonnull value, bool isOutput);
+int TWEthereumAbiFunctionAddParamInt256(struct TWEthereumAbiFunction* _Nonnull fn, TWData* _Nonnull val, bool isOutput);
 
 /// Add a int(bits) type parameter
 ///
 /// \param fn A Non-null eth abi function
 /// \param bits Number of bits of the integer parameter
-/// \param value for output parameters, value has to be specified
+/// \param val for output parameters, value has to be specified
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddParamIntN(struct TWEthereumAbiFunction* _Nonnull fn, int bits, TWData* _Nonnull value, bool isOutput);
+int TWEthereumAbiFunctionAddParamIntN(struct TWEthereumAbiFunction* _Nonnull fn, int bits, TWData* _Nonnull val, bool isOutput);
 
 /// Add a bool type parameter
 ///
 /// \param fn A Non-null eth abi function
-/// \param value for output parameters, value has to be specified
+/// \param val for output parameters, value has to be specified
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddParamBool(struct TWEthereumAbiFunction* _Nonnull fn, bool value, bool isOutput);
+int TWEthereumAbiFunctionAddParamBool(struct TWEthereumAbiFunction* _Nonnull fn, bool val, bool isOutput);
 
 /// Add a string type parameter
 ///
 /// \param fn A Non-null eth abi function
-/// \param value for output parameters, value has to be specified
+/// \param val for output parameters, value has to be specified
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddParamString(struct TWEthereumAbiFunction* _Nonnull fn, TWString* _Nonnull value, bool isOutput);
+int TWEthereumAbiFunctionAddParamString(struct TWEthereumAbiFunction* _Nonnull fn, TWString* _Nonnull val, bool isOutput);
 
 /// Add an address type parameter
 ///
 /// \param fn A Non-null eth abi function
-/// \param value for output parameters, value has to be specified
+/// \param val for output parameters, value has to be specified
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddParamAddress(struct TWEthereumAbiFunction* _Nonnull fn, TWData* _Nonnull value, bool isOutput);
+int TWEthereumAbiFunctionAddParamAddress(struct TWEthereumAbiFunction* _Nonnull fn, TWData* _Nonnull val, bool isOutput);
 
 /// Add a bytes type parameter
 ///
 /// \param fn A Non-null eth abi function
-/// \param value for output parameters, value has to be specified
+/// \param val for output parameters, value has to be specified
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddParamBytes(struct TWEthereumAbiFunction* _Nonnull fn, TWData* _Nonnull value, bool isOutput);
+int TWEthereumAbiFunctionAddParamBytes(struct TWEthereumAbiFunction* _Nonnull fn, TWData* _Nonnull val, bool isOutput);
 
 /// Add a bytes[N] type parameter
 ///
 /// \param fn A Non-null eth abi function
-/// \param size fixed size of the bytes array parameter (value).
-/// \param value for output parameters, value has to be specified
+/// \param size fixed size of the bytes array parameter (val).
+/// \param val for output parameters, value has to be specified
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddParamBytesFix(struct TWEthereumAbiFunction* _Nonnull fn, size_t size, TWData* _Nonnull value, bool isOutput);
+int TWEthereumAbiFunctionAddParamBytesFix(struct TWEthereumAbiFunction* _Nonnull fn, size_t size, TWData* _Nonnull val, bool isOutput);
 
 /// Add a type[] type parameter
 ///
 /// \param fn A Non-null eth abi function
+/// \param val for output parameters, value has to be specified
 /// \param isOutput determines if the parameter is an input or output
 /// \return the index of the parameter (0-based).
 TW_EXPORT_METHOD
@@ -281,173 +282,173 @@ TWData* _Nonnull TWEthereumAbiFunctionGetParamAddress(struct TWEthereumAbiFuncti
 ///
 /// \param fn A Non-null eth abi function
 /// \param arrayIdx array index for the abi function (0-based).
-/// \param value the value of the parameter
+/// \param val the value of the parameter
 /// \return the index of the added parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddInArrayParamUInt8(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, uint8_t value);
+int TWEthereumAbiFunctionAddInArrayParamUInt8(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, uint8_t val);
 
 /// Adding a uint16 type parameter of to the top-level input parameter array
 ///
 /// \param fn A Non-null eth abi function
 /// \param arrayIdx array index for the abi function (0-based).
-/// \param value the value of the parameter
+/// \param val the value of the parameter
 /// \return the index of the added parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddInArrayParamUInt16(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, uint16_t value);
+int TWEthereumAbiFunctionAddInArrayParamUInt16(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, uint16_t val);
 
 /// Adding a uint32 type parameter of to the top-level input parameter array
 ///
 /// \param fn A Non-null eth abi function
 /// \param arrayIdx array index for the abi function (0-based).
-/// \param value the value of the parameter
+/// \param val the value of the parameter
 /// \return the index of the added parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddInArrayParamUInt32(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, uint32_t value);
+int TWEthereumAbiFunctionAddInArrayParamUInt32(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, uint32_t val);
 
 /// Adding a uint64 type parameter of to the top-level input parameter array
 ///
 /// \param fn A Non-null eth abi function
 /// \param arrayIdx array index for the abi function (0-based).
-/// \param value the value of the parameter
+/// \param val the value of the parameter
 /// \return the index of the added parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddInArrayParamUInt64(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, uint64_t value);
+int TWEthereumAbiFunctionAddInArrayParamUInt64(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, uint64_t val);
 
 /// Adding a uint256 type parameter of to the top-level input parameter array
 ///
 /// \param fn A Non-null eth abi function
 /// \param arrayIdx array index for the abi function (0-based).
-/// \param value the value of the parameter stored in a block of data
+/// \param val the value of the parameter stored in a block of data
 /// \return the index of the added parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddInArrayParamUInt256(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, TWData* _Nonnull value);
+int TWEthereumAbiFunctionAddInArrayParamUInt256(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, TWData* _Nonnull val);
 
 /// Adding a uint[N] type parameter of to the top-level input parameter array
 ///
 /// \param fn A Non-null eth abi function
 /// \param bits Number of bits of the integer parameter
 /// \param arrayIdx array index for the abi function (0-based).
-/// \param value the value of the parameter stored in a block of data
+/// \param val the value of the parameter stored in a block of data
 /// \return the index of the added parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddInArrayParamUIntN(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, int bits, TWData* _Nonnull value);
+int TWEthereumAbiFunctionAddInArrayParamUIntN(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, int bits, TWData* _Nonnull val);
 
 /// Adding a int8 type parameter of to the top-level input parameter array
 ///
 /// \param fn A Non-null eth abi function
 /// \param arrayIdx array index for the abi function (0-based).
-/// \param value the value of the parameter
+/// \param val the value of the parameter
 /// \return the index of the added parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddInArrayParamInt8(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, int8_t value);
+int TWEthereumAbiFunctionAddInArrayParamInt8(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, int8_t val);
 
 /// Adding a int16 type parameter of to the top-level input parameter array
 ///
 /// \param fn A Non-null eth abi function
 /// \param arrayIdx array index for the abi function (0-based).
-/// \param value the value of the parameter
+/// \param val the value of the parameter
 /// \return the index of the added parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddInArrayParamInt16(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, int16_t value);
+int TWEthereumAbiFunctionAddInArrayParamInt16(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, int16_t val);
 
 /// Adding a int32 type parameter of to the top-level input parameter array
 ///
 /// \param fn A Non-null eth abi function
 /// \param arrayIdx array index for the abi function (0-based).
-/// \param value the value of the parameter
+/// \param val the value of the parameter
 /// \return the index of the added parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddInArrayParamInt32(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, int32_t value);
+int TWEthereumAbiFunctionAddInArrayParamInt32(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, int32_t val);
 
 /// Adding a int64 type parameter of to the top-level input parameter array
 ///
 /// \param fn A Non-null eth abi function
 /// \param arrayIdx array index for the abi function (0-based).
-/// \param value the value of the parameter
+/// \param val the value of the parameter
 /// \return the index of the added parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddInArrayParamInt64(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, int64_t value);
+int TWEthereumAbiFunctionAddInArrayParamInt64(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, int64_t val);
 
 /// Adding a int256 type parameter of to the top-level input parameter array
 ///
 /// \param fn A Non-null eth abi function
 /// \param arrayIdx array index for the abi function (0-based).
-/// \param value the value of the parameter stored in a block of data
+/// \param val the value of the parameter stored in a block of data
 /// \return the index of the added parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddInArrayParamInt256(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, TWData* _Nonnull value);
+int TWEthereumAbiFunctionAddInArrayParamInt256(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, TWData* _Nonnull val);
 
 /// Adding a int[N] type parameter of to the top-level input parameter array
 ///
 /// \param fn A Non-null eth abi function
 /// \param bits Number of bits of the integer parameter
 /// \param arrayIdx array index for the abi function (0-based).
-/// \param value the value of the parameter stored in a block of data
+/// \param val the value of the parameter stored in a block of data
 /// \return the index of the added parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddInArrayParamIntN(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, int bits, TWData* _Nonnull value);
+int TWEthereumAbiFunctionAddInArrayParamIntN(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, int bits, TWData* _Nonnull val);
 
 /// Adding a bool type parameter of to the top-level input parameter array
 ///
 /// \param fn A Non-null eth abi function
 /// \param arrayIdx array index for the abi function (0-based).
-/// \param value the value of the parameter
+/// \param val the value of the parameter
 /// \return the index of the added parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddInArrayParamBool(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, bool value);
+int TWEthereumAbiFunctionAddInArrayParamBool(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, bool val);
 
 /// Adding a string type parameter of to the top-level input parameter array
 ///
 /// \param fn A Non-null eth abi function
 /// \param arrayIdx array index for the abi function (0-based).
-/// \param value the value of the parameter
+/// \param val the value of the parameter
 /// \return the index of the added parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddInArrayParamString(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, TWString* _Nonnull value);
+int TWEthereumAbiFunctionAddInArrayParamString(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, TWString* _Nonnull val);
 
 /// Adding an address type parameter of to the top-level input parameter array
 ///
 /// \param fn A Non-null eth abi function
 /// \param arrayIdx array index for the abi function (0-based).
-/// \param value the value of the parameter
+/// \param val the value of the parameter
 /// \return the index of the added parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddInArrayParamAddress(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, TWData* _Nonnull value);
+int TWEthereumAbiFunctionAddInArrayParamAddress(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, TWData* _Nonnull val);
 
 /// Adding a bytes type parameter of to the top-level input parameter array
 ///
 /// \param fn A Non-null eth abi function
 /// \param arrayIdx array index for the abi function (0-based).
-/// \param value the value of the parameter
+/// \param val the value of the parameter
 /// \return the index of the added parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddInArrayParamBytes(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, TWData* _Nonnull value);
+int TWEthereumAbiFunctionAddInArrayParamBytes(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, TWData* _Nonnull val);
 
 /// Adding a int64 type parameter of to the top-level input parameter array
 ///
 /// \param fn A Non-null eth abi function
 /// \param arrayIdx array index for the abi function (0-based).
-/// \param size fixed size of the bytes array parameter (value).
-/// \param value the value of the parameter
+/// \param size fixed size of the bytes array parameter (val).
+/// \param val the value of the parameter
 /// \return the index of the added parameter (0-based).
 TW_EXPORT_METHOD
 TW_METHOD_DISCARDABLE_RESULT
-int TWEthereumAbiFunctionAddInArrayParamBytesFix(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, size_t size, TWData* _Nonnull value);
+int TWEthereumAbiFunctionAddInArrayParamBytesFix(struct TWEthereumAbiFunction* _Nonnull fn, int arrayIdx, size_t size, TWData* _Nonnull val);
 
 TW_EXTERN_C_END
