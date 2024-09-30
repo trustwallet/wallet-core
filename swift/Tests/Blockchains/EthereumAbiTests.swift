@@ -9,14 +9,14 @@ class EthereumAbiTests: XCTestCase {
     func testAbiEncoder() {
         let function = EthereumAbiFunction(name: "sam")
         // add params
-        XCTAssertEqual(0, function.addParamBytes(value: Data(hexString: "0x64617665")!, isOutput: false))
-        XCTAssertEqual(1, function.addParamBool(value: true, isOutput: false))
+        XCTAssertEqual(0, function.addParamBytes(val: Data(hexString: "0x64617665")!, isOutput: false))
+        XCTAssertEqual(1, function.addParamBool(val: true, isOutput: false))
         let idx = function.addParamArray(isOutput: false)
         XCTAssertEqual(2, idx)
-        XCTAssertEqual(0, function.addInArrayParamUInt256(arrayIdx: idx, value: Data(hexString: "0x01")!))
-        XCTAssertEqual(1, function.addInArrayParamUInt256(arrayIdx: idx, value: Data(hexString: "0x02")!))
-        XCTAssertEqual(2, function.addInArrayParamUInt256(arrayIdx: idx, value: Data(hexString: "0x03")!))
-        XCTAssertEqual(0, function.addParamUInt64(value: 0, isOutput: true))
+        XCTAssertEqual(0, function.addInArrayParamUInt256(arrayIdx: idx, val: Data(hexString: "0x01")!))
+        XCTAssertEqual(1, function.addInArrayParamUInt256(arrayIdx: idx, val: Data(hexString: "0x02")!))
+        XCTAssertEqual(2, function.addInArrayParamUInt256(arrayIdx: idx, val: Data(hexString: "0x03")!))
+        XCTAssertEqual(0, function.addParamUInt64(val: 0, isOutput: true))
 
         // check signature
         XCTAssertEqual(function.getType(), "sam(bytes,bool,uint256[])")

@@ -188,7 +188,7 @@ class EthereumTests: XCTestCase {
 
     func testSignUnstakeRocketPool() {
         let function = EthereumAbiFunction(name: "burn")
-        function.addParamUInt256(value: Data(hexString: "0x21faa32ab2502b")!, isOutput: false)
+        function.addParamUInt256(val: Data(hexString: "0x21faa32ab2502b")!, isOutput: false)
 
         let input = EthereumSigningInput.with {
             $0.chainID = Data(hexString: "01")!
