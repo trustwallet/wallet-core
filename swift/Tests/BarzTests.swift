@@ -139,13 +139,13 @@ class BarzTests: XCTestCase {
     // https://testnet.bscscan.com/tx/0x872f709815a9f79623a349f2f16d93b52c4d5136967bab53a586f045edbe9203
     func testSignR1BatchedTransferAccountDeployed() {
         let approveFunc = EthereumAbiFunction(name: "approve")
-        approveFunc.addParamAddress(val: Data(hexString: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789")!, isOutput: false)
-        approveFunc.addParamUInt256(val: Data(hexString: "8AC7230489E80000")!, isOutput: false)
+        approveFunc.addParamAddress(value: Data(hexString: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789")!, isOutput: false)
+        approveFunc.addParamUInt256(value: Data(hexString: "8AC7230489E80000")!, isOutput: false)
         let approveCall = EthereumAbi.encode(fn: approveFunc)
 
         let transferFunc = EthereumAbiFunction(name: "transfer")
-        transferFunc.addParamAddress(val: Data(hexString: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789")!, isOutput: false)
-        transferFunc.addParamUInt256(val: Data(hexString: "8AC7230489E80000")!, isOutput: false)
+        transferFunc.addParamAddress(value: Data(hexString: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789")!, isOutput: false)
+        transferFunc.addParamUInt256(value: Data(hexString: "8AC7230489E80000")!, isOutput: false)
         let transferCall = EthereumAbi.encode(fn: transferFunc)
 
         let input = EthereumSigningInput.with {
