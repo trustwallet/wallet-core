@@ -103,8 +103,8 @@ message Message {
         string type_prefix = 5;
     }
 
-     // cosmos-sdk/MsgSetWithdrawAddress
-     message SetWithdrawAddress {
+    // cosmos-sdk/MsgSetWithdrawAddress
+    message SetWithdrawAddress {
         string delegator_address = 1;
         string withdraw_address = 2;
         string type_prefix = 3;
@@ -115,14 +115,6 @@ message Message {
         string delegator_address = 1;
         string validator_address = 2;
         string type_prefix = 3;
-    }
-
-    message ExecuteContract {
-        string sender = 1;
-        string contract = 2;
-        string execute_msg = 3;
-        repeated Amount coins = 4;
-        string type_prefix = 5;
     }
 
     // transfer within wasm/MsgExecuteContract, used by Terra Classic
@@ -224,6 +216,7 @@ message Message {
     }
 
     // execute within wasm/MsgExecuteContract
+    // TODO replaces `ExecuteContract`.
     message WasmExecuteContractGeneric {
         // sender address
         string sender_address = 1;
@@ -302,8 +295,8 @@ message Message {
 
     // cosmos-sdk/MsgRevoke
     message AuthRevoke {
-        string granter      = 1;
-        string grantee      = 2;
+        string granter = 1;
+        string grantee = 2;
         string msg_type_url = 3;
     }
 
@@ -324,8 +317,8 @@ message Message {
     // cosmos-sdk/MsgVote defines a message to cast a vote.
     message MsgVote {
         uint64     proposal_id = 1;
-        string     voter       = 2;
-        VoteOption option      = 3;
+        string     voter = 2;
+        VoteOption option = 3;
     }
 
     message MsgStrideLiquidStakingStake {
@@ -353,7 +346,6 @@ message Message {
         WasmTerraExecuteContractTransfer wasm_terra_execute_contract_transfer_message = 8;
         WasmTerraExecuteContractSend wasm_terra_execute_contract_send_message = 9;
         THORChainSend thorchain_send_message = 10;
-        ExecuteContract execute_contract_message = 11;
         WasmTerraExecuteContractGeneric wasm_terra_execute_contract_generic = 12;
         WasmExecuteContractTransfer wasm_execute_contract_transfer_message = 13;
         WasmExecuteContractSend wasm_execute_contract_send_message = 14;
@@ -373,6 +365,29 @@ message Message {
 enum SigningMode {
     JSON = 0;        // JSON format, Pre-Stargate
     Protobuf = 1;    // Protobuf-serialized (binary), Stargate
+}
+
+enum TxHasher {
+    // For Cosmos chain, `Sha256` is used by default.
+    UseDefault = 0;
+    Sha256 = 1;
+    Keccak256 = 2;
+}
+
+enum SignerPublicKeyType {
+    // Default public key type.
+    Secp256k1 = 0;
+    // Mostly used in Cosmos chains with EVM support.
+    Secp256k1Extended = 1;
+}
+
+// Custom Signer info required to sign a transaction and generate a broadcast JSON message.
+message SignerInfo {
+    // Public key type used to sign a transaction.
+    // It can be different from the value from `registry.json`.
+    SignerPublicKeyType public_key_type = 1;
+    string json_type = 2;
+    string protobuf_type = 3;
 }
 
 // Input data necessary to create a signed transaction.
@@ -405,6 +420,14 @@ message SigningInput {
     BroadcastMode mode = 9;
 
     bytes public_key = 10;
+
+    TxHasher tx_hasher = 11;
+
+    // Optional. If set, use a different Signer info when signing the transaction.
+    SignerInfo signer_info = 12;
+
+    // Optional timeout_height
+    uint64 timeout_height = 13;
 }
 
 // Result containing the signed and encoded transaction.

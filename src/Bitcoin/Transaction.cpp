@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Transaction.h"
 #include "SegwitAddress.h"
@@ -236,14 +234,6 @@ void Transaction::serializeInput(size_t subindex, const Script& scriptCode, size
     } else {
         encode32LE(inputs[subindex].sequence, data);
     }
-}
-
-std::optional<uint64_t> Transaction::calculateFee(const Data& encoded, uint64_t satVb) {
-    Rust::CUInt64ResultWrapper res = Rust::tw_bitcoin_legacy_calculate_transaction_fee(encoded.data(), encoded.size(), satVb);
-    if (res.isErr()) {
-        return std::nullopt;
-    }
-    return res.unwrap().value;
 }
 
 Proto::Transaction Transaction::proto() const {

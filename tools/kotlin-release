@@ -8,6 +8,7 @@ version=$(wc_read_version $1)
 echo "Building $version"
 
 export ANDROID_HOME="$HOME/Library/Android/sdk"
+export BOOST_ROOT=$(brew --prefix boost)
 
 pushd kotlin
 ./gradlew :wallet-core-kotlin:generateProtos

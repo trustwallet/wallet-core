@@ -1,12 +1,14 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "SigningInput.h"
 
 namespace TW::Bitcoin {
+
+SigningInput::SigningInput()
+    : dustCalculator(std::make_shared<LegacyDustCalculator>(TWCoinTypeBitcoin)) {
+}
 
 SigningInput::SigningInput(const Proto::SigningInput& input) {
     hashType = static_cast<TWBitcoinSigHashType>(input.hash_type());
@@ -31,6 +33,9 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
         plan = TransactionPlan(input.plan());
     }
     outputOpReturn = data(input.output_op_return());
+    if (input.has_output_op_return_index()) {
+        outputOpReturnIndex = input.output_op_return_index().index();
+    }
     lockTime = input.lock_time();
     time = input.time();
 
@@ -39,6 +44,8 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
         extraOutputsAmount += output.amount();
         extraOutputs.push_back(std::make_pair(output.to_address(), output.amount()));
     }
+
+    dustCalculator = getDustCalculator(input);
 }
 
 } // namespace TW::Bitcoin

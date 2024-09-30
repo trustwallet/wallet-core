@@ -1,0 +1,50 @@
+#!/bin/bash
+
+export NDK_API_LEVEL=21
+
+find_android_ndk() {
+    if [[ "$ANDROID_NDK_HOME" != "" ]]; then
+        >&2 echo "Use ANDROID_NDK_HOME"
+    elif [[ "$ANDROID_HOME" != "" ]]; then
+        >&2 echo "ANDROID_NDK_HOME is not set. Use ANDROID_HOME value instead"
+        ANDROID_NDK_HOME="$ANDROID_HOME/ndk"
+    else
+        >&2 echo "WARNING: ANDROID_HOME is not set. Use a default path"
+        ANDROID_NDK_HOME="$HOME/Library/Android/sdk/ndk"
+    fi
+
+    TEST_CLANG="aarch64-linux-android$NDK_API_LEVEL-clang"
+    PATH_TO_CLANG=$(find "$ANDROID_NDK_HOME" -iname $TEST_CLANG -print -quit)
+
+    if [[ "$PATH_TO_CLANG" == "" ]]; then
+        >&2 echo "ERROR: cannot find NDK tools within '$ANDROID_NDK_HOME'"
+        exit 22
+    fi
+
+    echo $(dirname "$PATH_TO_CLANG")
+}
+
+find_android_cmdline_tools() {
+    # Default version of cmdline tools is 11.
+    # https://github.com/android-actions/setup-android/blob/9584f05408b63719e3464df8ac85bdbe58f88a64/src/main.ts#L9
+    CMDLINE_TOOLS_VERSION="11.0"
+
+    if [[ "$ANDROID_HOME" == "" ]]; then
+        >&2 echo "ANDROID_HOME is not set. Use a default path"
+        ANDROID_HOME="$HOME/Library/Android/sdk"
+    fi
+
+    # cmdline-tools could have a 'latest' version, but if it was installed 2 years ago it may not be 'latest' as of today
+    if [ -x "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" ]; then
+        echo "$ANDROID_HOME/cmdline-tools/latest/bin"
+        return 0
+    fi
+
+    if [ -x "$ANDROID_HOME/cmdline-tools/$CMDLINE_TOOLS_VERSION/bin/sdkmanager" ]; then
+        echo "$ANDROID_HOME/cmdline-tools/$CMDLINE_TOOLS_VERSION/bin"
+        return 0
+    fi
+
+    >&2 echo "ERROR: cannot find SDK cmdline tools within '$ANDROID_HOME'"
+    exit 22
+}

@@ -1,22 +1,38 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
-/// Extend this enum.
-#[repr(u32)]
-pub enum Derivation {
-    /// Default derivation.
-    Default = 0,
+use serde::de::Error as DeError;
+use serde::{Deserialize, Deserializer};
+use std::str::FromStr;
+
+pub use derivation_path::{ChildIndex, DerivationPath};
+
+#[derive(Clone, Deserialize)]
+pub struct DerivationWithPath {
+    #[serde(default)]
+    pub name: Derivation,
+    #[serde(deserialize_with = "deserialize_der_path")]
+    pub path: DerivationPath,
 }
 
-impl Derivation {
-    #[inline]
-    pub fn from_raw(derivation: u32) -> Option<Derivation> {
-        match derivation {
-            0 => Some(Derivation::Default),
-            _ => None,
-        }
-    }
+/// Extend this enum.
+#[derive(Clone, Copy, Default, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum Derivation {
+    Segwit,
+    Legacy,
+    Testnet,
+    /// Default derivation.
+    #[default]
+    #[serde(other)]
+    Default,
+}
+
+fn deserialize_der_path<'de, D>(deserializer: D) -> Result<DerivationPath, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let path = String::deserialize(deserializer)?;
+    DerivationPath::from_str(&path).map_err(|e| DeError::custom(e.to_string()))
 }

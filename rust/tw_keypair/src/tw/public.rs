@@ -1,10 +1,9 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::ecdsa::{nist256p1, secp256k1};
+use crate::schnorr;
 use crate::traits::VerifyingKeyTrait;
 use crate::tw::PublicKeyType;
 use crate::{ed25519, starkex, KeyPairError, KeyPairResult};
@@ -13,6 +12,7 @@ use tw_misc::try_or_false;
 
 /// Represents a public key that can be used to verify signatures and messages.
 #[derive(Clone)]
+#[non_exhaustive]
 pub enum PublicKey {
     Secp256k1(secp256k1::PublicKey),
     Secp256k1Extended(secp256k1::PublicKey),
@@ -23,6 +23,7 @@ pub enum PublicKey {
     Curve25519Waves(ed25519::waves::PublicKey),
     Ed25519ExtendedCardano(Box<ed25519::cardano::ExtendedPublicKey>),
     Starkex(starkex::PublicKey),
+    Schnorr(schnorr::PublicKey),
 }
 
 impl PublicKey {
@@ -71,6 +72,10 @@ impl PublicKey {
                 let pubkey = starkex::PublicKey::try_from(bytes.as_slice())?;
                 Ok(PublicKey::Starkex(pubkey))
             },
+            PublicKeyType::Schnorr => {
+                let pubkey = schnorr::PublicKey::try_from(bytes.as_slice())?;
+                Ok(PublicKey::Schnorr(pubkey))
+            },
             _ => Err(KeyPairError::InvalidPublicKey),
         }
     }
@@ -108,6 +113,7 @@ impl PublicKey {
                 verify_impl(cardano.as_ref(), sig, message)
             },
             PublicKey::Starkex(stark) => verify_impl(stark, sig, message),
+            PublicKey::Schnorr(schnorr) => verify_impl(schnorr, sig, message),
         }
     }
 
@@ -123,6 +129,7 @@ impl PublicKey {
             PublicKey::Curve25519Waves(waves) => waves.to_vec(),
             PublicKey::Ed25519ExtendedCardano(cardano) => cardano.to_vec(),
             PublicKey::Starkex(stark) => stark.to_vec(),
+            PublicKey::Schnorr(schnorr) => schnorr.to_vec(),
         }
     }
 
@@ -133,6 +140,37 @@ impl PublicKey {
                 Some(secp256k1)
             },
             _ => None,
+        }
+    }
+
+    pub fn to_ed25519(&self) -> Option<&ed25519::sha512::PublicKey> {
+        match self {
+            PublicKey::Ed25519(ed25519) => Some(ed25519),
+            _ => None,
+        }
+    }
+
+    /// Returns a `schnorr` public key if the key type is matched.
+    pub fn to_schnorr(&self) -> Option<&schnorr::PublicKey> {
+        match self {
+            PublicKey::Schnorr(ref schnorr) => Some(schnorr),
+            _ => None,
+        }
+    }
+
+    /// Returns a public key type.
+    pub fn public_key_type(&self) -> PublicKeyType {
+        match self {
+            PublicKey::Secp256k1(_) => PublicKeyType::Secp256k1,
+            PublicKey::Secp256k1Extended(_) => PublicKeyType::Secp256k1Extended,
+            PublicKey::Nist256p1(_) => PublicKeyType::Nist256p1,
+            PublicKey::Nist256p1Extended(_) => PublicKeyType::Nist256p1Extended,
+            PublicKey::Ed25519(_) => PublicKeyType::Ed25519,
+            PublicKey::Ed25519Blake2b(_) => PublicKeyType::Ed25519Blake2b,
+            PublicKey::Curve25519Waves(_) => PublicKeyType::Curve25519Waves,
+            PublicKey::Ed25519ExtendedCardano(_) => PublicKeyType::Ed25519ExtendedCardano,
+            PublicKey::Starkex(_) => PublicKeyType::Starkex,
+            PublicKey::Schnorr(_) => PublicKeyType::Schnorr,
         }
     }
 }

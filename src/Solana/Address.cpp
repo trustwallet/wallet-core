@@ -1,19 +1,8 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Address.h"
-#include "Program.h"
-#include "Transaction.h"
-#include "../Base58.h"
-#include "../Base58Address.h"
-#include "../Hash.h"
-
-#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
-
-#include <cassert>
 
 using namespace TW;
 
@@ -53,10 +42,6 @@ std::string Address::string() const {
 
 Data Address::vector() const {
     return Data(begin(bytes), end(bytes));
-}
-
-Address Address::defaultTokenAddress(const Address& tokenMintAddress) {
-    return TokenProgram::defaultTokenAddress(*this, tokenMintAddress);
 }
 
 } // namespace TW::Solana

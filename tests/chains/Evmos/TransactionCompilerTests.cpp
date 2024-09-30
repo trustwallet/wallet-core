@@ -1,11 +1,8 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Base64.h"
-#include "Cosmos/Signer.h"
 #include "HexCoding.h"
 #include "proto/Cosmos.pb.h"
 #include "proto/TransactionCompiler.pb.h"
@@ -95,8 +92,7 @@ TEST(EvmosCompiler, CompileWithSignatures) {
 
         EXPECT_EQ(output.error(), Common::Proto::OK);
         EXPECT_EQ(output.serialized(), expectedTx);
-        EXPECT_EQ(output.signature(), "");
-        EXPECT_EQ(hex(output.signature()), "");
+        EXPECT_EQ(hex(output.signature()), hex(signature));
     }
 }
 

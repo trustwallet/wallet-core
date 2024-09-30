@@ -1,12 +1,10 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::modules::message_signer::MessageSigner;
-use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
+use tw_coin_entry::test_utils::test_context::TestCoinContext;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_evm::modules::message_signer::EthMessageSigner;
 use tw_keypair::ecdsa::secp256k1;
@@ -19,6 +17,9 @@ const EIP712_WITH_CUSTOM_ARRAY: &str = include_str!("data/eip712_with_custom_arr
 const EIP712_UNEQUAL_ARRAY_LEN: &str = include_str!("data/eip712_unequal_array_lengths.json");
 const EIP712_WITH_CHAIN_ID_STR: &str = include_str!("data/eip712_with_chain_id_string.json");
 const EIP712_GREENFIELD: &str = include_str!("data/eip712_greenfield.json");
+const EIP712_FIXED_BYTES: &str = include_str!("data/eip712_fixed_bytes.json");
+const EIP712_LONG_BYTES: &str = include_str!("data/eip712_long_bytes.json");
+const EIP712_DIFFERENT_BYTES: &str = include_str!("data/eip712_different_bytes.json");
 
 struct SignVerifyTestInput {
     private_key: &'static str,
@@ -29,6 +30,8 @@ struct SignVerifyTestInput {
 }
 
 fn test_message_signer_sign_verify(test_input: SignVerifyTestInput) {
+    let coin = TestCoinContext::default();
+
     let private_key = test_input.private_key.decode_hex().unwrap();
     let chain_id = test_input
         .chain_id
@@ -41,7 +44,7 @@ fn test_message_signer_sign_verify(test_input: SignVerifyTestInput) {
         ..Proto::MessageSigningInput::default()
     };
 
-    let output = EthMessageSigner.sign_message(&EmptyCoinContext, signing_input);
+    let output = EthMessageSigner.sign_message(&coin, signing_input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
     assert_eq!(output.signature, test_input.signature);
@@ -56,7 +59,7 @@ fn test_message_signer_sign_verify(test_input: SignVerifyTestInput) {
         signature: test_input.signature.into(),
     };
     assert!(
-        EthMessageSigner.verify_message(&EmptyCoinContext, verifying_input),
+        EthMessageSigner.verify_message(&coin, verifying_input),
         "!verify_message: {}",
         test_input.signature
     );
@@ -71,6 +74,8 @@ struct SignErrorTestInput {
 }
 
 fn test_message_signer_sign_err(test_input: SignErrorTestInput) {
+    let coin = TestCoinContext::default();
+
     let private_key = test_input.private_key.decode_hex().unwrap();
     let signing_input = Proto::MessageSigningInput {
         private_key: private_key.into(),
@@ -82,7 +87,7 @@ fn test_message_signer_sign_err(test_input: SignErrorTestInput) {
         ..Proto::MessageSigningInput::default()
     };
 
-    let output = EthMessageSigner.sign_message(&EmptyCoinContext, signing_input);
+    let output = EthMessageSigner.sign_message(&coin, signing_input);
     assert_eq!(output.error, test_input.error);
 }
 
@@ -94,6 +99,8 @@ struct PreimageTestInput {
 }
 
 fn test_message_signer_preimage_hashes(test_input: PreimageTestInput) {
+    let coin = TestCoinContext::default();
+
     let signing_input = Proto::MessageSigningInput {
         message: test_input.msg.into(),
         message_type: test_input.msg_type,
@@ -103,7 +110,7 @@ fn test_message_signer_preimage_hashes(test_input: PreimageTestInput) {
         ..Proto::MessageSigningInput::default()
     };
 
-    let output = EthMessageSigner.message_preimage_hashes(&EmptyCoinContext, signing_input);
+    let output = EthMessageSigner.message_preimage_hashes(&coin, signing_input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
     assert_eq!(output.data_hash.to_hex(), test_input.data_hash);
@@ -117,6 +124,19 @@ fn test_message_signer_sign_verify_legacy() {
         msg_type: Proto::MessageType::MessageType_legacy,
         chain_id: None,
         signature: "21a779d499957e7fd39392d49a079679009e60e492d9654a148829be43d2490736ec72bc4a5644047d979c3cf4ebe2c1c514044cf436b063cb89fc6676be71101b",
+    });
+}
+
+/// https://github.com/trustwallet/wallet-core/issues/3831
+#[test]
+fn test_message_signer_sign_verify_legacy_hex() {
+    test_message_signer_sign_verify(SignVerifyTestInput {
+        // 0x9d1d97adfcd324bbd603d3872bd78e04098510b1
+        private_key: "9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0",
+        msg: "0xc0a96273d5c3fbe4d4000491f08daef9c17f88df846c1d6f57eb5f33c1fbd035",
+        msg_type: Proto::MessageType::MessageType_legacy,
+        chain_id: None,
+        signature: "b18a666ad08bf9bfcd39920b26b5a5d1486b67b45119810b3c7bda22e41e5c4c1bfbe0c932f6c14df4947a18ba310831a37b7307d724a3ac2a4935b99d7075141b",
     });
 }
 
@@ -174,13 +194,15 @@ fn test_message_signer_hash_with_custom_array() {
 
 #[test]
 fn test_message_signer_hash_unequal_array_len() {
+    let coin = TestCoinContext::default();
+
     let signing_input = Proto::MessageSigningInput {
         message: EIP712_UNEQUAL_ARRAY_LEN.into(),
         message_type: Proto::MessageType::MessageType_typed_eip155,
         ..Proto::MessageSigningInput::default()
     };
 
-    let output = EthMessageSigner.message_preimage_hashes(&EmptyCoinContext, signing_input);
+    let output = EthMessageSigner.message_preimage_hashes(&coin, signing_input);
     assert_eq!(output.error, SigningErrorType::Error_invalid_params);
 }
 
@@ -254,5 +276,39 @@ fn test_message_signer_sign_verify_eip712_greenfield() {
         msg_type: Proto::MessageType::MessageType_typed,
         chain_id: None,
         signature: "cb3a4684a991014a387a04a85b59227ebb79567c2025addcb296b4ca856e9f810d3b526f2a0d0fad6ad1b126b3b9516f8b3be020a7cca9c03ce3cf47f4199b6d1b",
+    });
+}
+
+// The test checks if `0x0` is a valid `bytes32` value.
+#[test]
+fn test_message_signer_sign_verify_eip712_fixed_bytes() {
+    test_message_signer_sign_verify(SignVerifyTestInput {
+        private_key: "c85ef7d79691fe79573b1a7064c19c1a9819ebdbd1faaab1a8ec92344438aaf4",
+        msg: EIP712_FIXED_BYTES,
+        msg_type: Proto::MessageType::MessageType_typed,
+        chain_id: None,
+        signature: "7ee9b54fedf355e40fa86bbe23e63b318ef797bd8fdbc5bb714edbace042d4cb60111912218234e856f2cf300b3b47c91383b98e263ecf69c6c10193fef6c9581b",
+    });
+}
+
+#[test]
+fn test_message_signer_sign_verify_eip712_long_bytes() {
+    test_message_signer_sign_verify(SignVerifyTestInput {
+        private_key: "6f96f3aa7e8052170f1864f72a9a53606ee9c0d185188266cab895512a4bcf84",
+        msg: EIP712_LONG_BYTES,
+        msg_type: Proto::MessageType::MessageType_typed,
+        chain_id: None,
+        signature: "3f78f5860dc9c38d3bf68fd0759c0e4963f104ba6c7fa44e915ed41a1575dbd50d6fd946919e6cfa7eecb869a5d90658b16b1d7b79ec6380acd1841fc21c77f71c",
+    });
+}
+
+#[test]
+fn test_message_signer_sign_verify_eip712_different_bytes() {
+    test_message_signer_sign_verify(SignVerifyTestInput {
+        private_key: "6f96f3aa7e8052170f1864f72a9a53606ee9c0d185188266cab895512a4bcf84",
+        msg: EIP712_DIFFERENT_BYTES,
+        msg_type: Proto::MessageType::MessageType_typed,
+        chain_id: None,
+        signature: "48dc667cd8a53beb58ea6b1745f98c21b12e1a57587ce28bae07689dba3600d40cef2685dc8a68028d38f3e63289891868ecdf05e8affc275fee3001e51d6c581c",
     });
 }

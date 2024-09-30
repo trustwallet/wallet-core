@@ -1,11 +1,9 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use std::borrow::Cow;
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex;
 use tw_evm::abi::prebuild::erc20::Erc20;
 use tw_evm::address::Address;
@@ -37,7 +35,6 @@ fn test_barz_transfer_account_deployed() {
         chain_id: U256::encode_be_compact(97),
         nonce: U256::encode_be_compact(2),
         tx_mode: Proto::TransactionMode::UserOp,
-        gas_price: Cow::default(),
         gas_limit: U256::encode_be_compact(0x186A0),
         max_fee_per_gas: U256::encode_be_compact(0x1_a339_c9e9),
         max_inclusion_fee_per_gas: U256::encode_be_compact(0x1_a339_c9e9),
@@ -47,6 +44,7 @@ fn test_barz_transfer_account_deployed() {
             transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::transfer(transfer),
         }),
         user_operation: Some(user_op),
+        ..Proto::SigningInput::default()
     };
 
     let output = Signer::<StandardEvmContext>::sign_proto(input);
@@ -90,7 +88,6 @@ fn test_barz_transfer_account_not_deployed() {
         chain_id: U256::encode_be_compact(97),
         nonce: U256::encode_be_compact(0),
         tx_mode: Proto::TransactionMode::UserOp,
-        gas_price: Cow::default(),
         gas_limit: U256::encode_be_compact(0x26_25A0),
         max_fee_per_gas: U256::encode_be_compact(0x1_a339_c9e9),
         max_inclusion_fee_per_gas: U256::encode_be_compact(0x1_a339_c9e9),
@@ -100,6 +97,7 @@ fn test_barz_transfer_account_not_deployed() {
             transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::transfer(transfer),
         }),
         user_operation: Some(user_op),
+        ..Proto::SigningInput::default()
     };
 
     let output = Signer::<StandardEvmContext>::sign_proto(input);
@@ -165,7 +163,6 @@ fn test_barz_batched_account_deployed() {
         chain_id: U256::encode_be_compact(97),
         nonce: U256::encode_be_compact(3),
         tx_mode: Proto::TransactionMode::UserOp,
-        gas_price: Cow::default(),
         gas_limit: U256::encode_be_compact(0x01_5A61),
         max_fee_per_gas: U256::encode_be_compact(0x02_540B_E400),
         max_inclusion_fee_per_gas: U256::encode_be_compact(0x02_540B_E400),
@@ -177,6 +174,7 @@ fn test_barz_batched_account_deployed() {
             ),
         }),
         user_operation: Some(user_op),
+        ..Proto::SigningInput::default()
     };
 
     let output = Signer::<StandardEvmContext>::sign_proto(input);

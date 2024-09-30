@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::{NumberError, NumberResult};
 use std::borrow::Cow;
@@ -37,10 +35,11 @@ impl U256 {
     pub const BYTES: usize = U256::WORDS_COUNT * 8;
     pub const BITS: usize = 256;
     pub const MAX: U256 = U256(primitive_types::U256::MAX);
+    pub const ZERO: U256 = U256::zero();
 
     #[inline]
-    pub fn zero() -> U256 {
-        U256::default()
+    pub const fn zero() -> U256 {
+        U256(primitive_types::U256::zero())
     }
 
     #[inline]

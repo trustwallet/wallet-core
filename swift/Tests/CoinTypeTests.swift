@@ -1,8 +1,6 @@
-// Copyright © 2017-2020 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 import XCTest
 import WalletCore
@@ -23,7 +21,7 @@ class CoinTypeTests: XCTestCase {
         XCTAssertEqual(CoinType.poanetwork.rawValue, 178)
         XCTAssertEqual(CoinType.veChain.rawValue, 818)
         XCTAssertEqual(CoinType.icon.rawValue, 74)
-        XCTAssertEqual(CoinType.tomoChain.rawValue, 889)
+        XCTAssertEqual(CoinType.viction.rawValue, 889)
         XCTAssertEqual(CoinType.tezos.rawValue, 1729)
         XCTAssertEqual(CoinType.qtum.rawValue, 2301)
         XCTAssertEqual(CoinType.nebulas.rawValue, 2718)
@@ -36,11 +34,11 @@ class CoinTypeTests: XCTestCase {
         XCTAssertEqual(CoinType.bitcoin.derivationPathWithDerivation(derivation: Derivation.bitcoinLegacy), "m/44'/0'/0'/0/0")
         XCTAssertEqual(CoinType.solana.derivationPathWithDerivation(derivation: Derivation.solanaSolana), "m/44'/501'/0'/0'")
     }
-    
+
     func testDeriveAddressFromPublicKeyAndDerivation() {
         let pkData = Data(hexString: "0279BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798")!
         let publicKey = PublicKey(data: pkData, type: .secp256k1)!
-        
+
         let address = CoinType.bitcoin.deriveAddressFromPublicKeyAndDerivation(publicKey: publicKey, derivation: Derivation.bitcoinSegwit)
         XCTAssertEqual(address, "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4")
     }

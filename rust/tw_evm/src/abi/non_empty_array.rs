@@ -1,13 +1,12 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use core::fmt;
 use std::num::NonZeroUsize;
 use std::ops::Deref;
+use tw_coin_entry::error::prelude::*;
 
 pub type NonEmptyBytes = NonEmptyArray<u8>;
 
@@ -18,7 +17,7 @@ pub struct NonZeroLen(NonZeroUsize);
 impl NonZeroLen {
     pub fn new(len: usize) -> AbiResult<NonZeroLen> {
         NonZeroUsize::new(len)
-            .ok_or(AbiError(AbiErrorKind::Error_invalid_param_type))
+            .or_tw_err(AbiErrorKind::Error_invalid_param_type)
             .map(NonZeroLen)
     }
 
@@ -45,7 +44,7 @@ pub struct NonEmptyArray<T>(Vec<T>);
 impl<T> NonEmptyArray<T> {
     pub fn new(elements: Vec<T>) -> AbiResult<NonEmptyArray<T>> {
         if elements.is_empty() {
-            return Err(AbiError(AbiErrorKind::Error_empty_type));
+            return AbiError::err(AbiErrorKind::Error_empty_type);
         }
         Ok(NonEmptyArray(elements))
     }

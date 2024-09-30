@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 import XCTest
 import WalletCore
@@ -17,7 +15,7 @@ class LiquidStakingTests: XCTestCase {
             $0.stake = LiquidStakingStake.with {
                 $0.amount = "1000000000000000000"
                 $0.asset = LiquidStakingAsset.with {
-                    $0.stakingToken = .matic
+                    $0.stakingToken = .pol
                 }
             }
         }

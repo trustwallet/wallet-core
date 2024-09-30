@@ -1,11 +1,10 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use std::fmt;
+use tw_coin_entry::error::prelude::*;
 use tw_number::U256;
 
 #[derive(Clone, Copy, PartialEq)]
@@ -49,7 +48,8 @@ impl From<UintBits> for usize {
 // https://docs.soliditylang.org/en/latest/abi-spec.html#types
 pub fn check_uint_bits(bits: usize) -> AbiResult<()> {
     if bits % 8 != 0 || bits == 0 || bits > 256 {
-        return Err(AbiError(AbiErrorKind::Error_invalid_uint_value));
+        return AbiError::err(AbiErrorKind::Error_invalid_uint_value)
+            .with_context(|| format!("Unexpected Uint bits: {bits}"));
     }
     Ok(())
 }

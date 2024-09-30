@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include <TrustWalletCore/TWStoredKey.h>
 
@@ -221,6 +219,14 @@ bool TWStoredKeyFixAddresses(struct TWStoredKey* _Nonnull key, TWData* _Nonnull 
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
         key->impl.fixAddresses(passwordData);
         return true;
+    } catch (...) {
+        return false;
+    }
+}
+
+bool TWStoredKeyUpdateAddress(struct TWStoredKey* _Nonnull key, enum TWCoinType coin) {
+    try {
+        return key->impl.updateAddress(coin);
     } catch (...) {
         return false;
     }

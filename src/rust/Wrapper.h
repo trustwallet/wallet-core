@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -23,6 +21,10 @@ inline std::shared_ptr<TWPublicKey> wrapTWPublicKey(TWPublicKey* publicKey) {
 }
 
 struct TWDataVectorWrapper {
+    TWDataVectorWrapper():
+        ptr(std::shared_ptr<TWDataVector>(tw_data_vector_create(), Rust::tw_data_vector_delete)) {
+    }
+
     /// Implicit constructor.
     TWDataVectorWrapper(const std::vector<Data>& vec) {
         ptr = std::shared_ptr<TWDataVector>(tw_data_vector_create(), Rust::tw_data_vector_delete);
@@ -35,6 +37,12 @@ struct TWDataVectorWrapper {
     }
 
     ~TWDataVectorWrapper() = default;
+
+    void push(const Data& item) {
+        auto* itemData = tw_data_create_with_bytes(item.data(), item.size());
+        Rust::tw_data_vector_add(ptr.get(), itemData);
+        Rust::tw_data_delete(itemData);
+    }
 
     TWDataVector* get() const {
         return ptr.get();
@@ -84,6 +92,12 @@ struct TWStringWrapper {
     TWStringWrapper(TWString *ptr): ptr(std::shared_ptr<TWString>(ptr, tw_string_delete)) {
     }
 
+    /// Implicit constructor.
+    TWStringWrapper(const char* string) {
+        auto* stringRaw = tw_string_create_with_utf8_bytes(string);
+        ptr = std::shared_ptr<TWString>(stringRaw, tw_string_delete);
+    }
+
     ~TWStringWrapper() = default;
 
     TWString* get() const {
@@ -97,6 +111,14 @@ struct TWStringWrapper {
 
         auto* bytes = tw_string_utf8_bytes(ptr.get());
         return {bytes};
+    }
+
+    const char* c_str() const {
+        return ptr ? tw_string_utf8_bytes(ptr.get()) : nullptr;
+    }
+
+    explicit operator bool() const {
+        return static_cast<bool>(ptr);
     }
 
     std::shared_ptr<TWString> ptr;
@@ -139,6 +161,20 @@ struct CStringWrapper {
     }
 
     std::string str;
+};
+
+struct CUInt8Wrapper {
+    /// Implicit move constructor.
+    CUInt8Wrapper(uint8_t c_u8) {
+        *this = c_u8;
+    }
+
+    CUInt8Wrapper& operator=(uint8_t c_u8) {
+        value = c_u8;
+        return *this;
+    }
+
+    uint8_t value;
 };
 
 struct CUInt64Wrapper {
@@ -202,6 +238,7 @@ private:
 };
 
 using CByteArrayResultWrapper = CResult<CByteArrayWrapper>;
+using CUInt8ResultWrapper = CResult<CUInt8Wrapper>;
 using CUInt64ResultWrapper = CResult<CUInt64Wrapper>;
 
 } // namespace TW::Rust

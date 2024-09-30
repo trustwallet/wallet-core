@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "TestUtilities.h"
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
@@ -20,7 +18,7 @@ TEST(TWEvmosCoinType, TWCoinTypeNativeEvmos) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNativeEvmos));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNativeEvmos), 18);
-    ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeNativeEvmos));
+    ASSERT_EQ(TWBlockchainNativeEvmos, TWCoinTypeBlockchain(TWCoinTypeNativeEvmos));
 
     assertStringsEqual(symbol, "EVMOS");
     assertStringsEqual(txUrl, "https://mintscan.io/evmos/txs/A16C211C83AD1E684DE46F694FAAC17D8465C864BD7385A81EC062CDE0638811");

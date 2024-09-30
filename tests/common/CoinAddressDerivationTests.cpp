@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Coin.h"
 #include "HexCoding.h"
@@ -53,7 +51,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeFantom:
         case TWCoinTypeGoChain:
         case TWCoinTypeKavaEvm:
-        case TWCoinTypeKlaytn:
+        case TWCoinTypeKaia:
         case TWCoinTypeKuCoinCommunityChain:
         case TWCoinTypeMeter:
         case TWCoinTypeMetis:
@@ -71,7 +69,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeTheta:
         case TWCoinTypeThetaFuel:
         case TWCoinTypeThunderCore:
-        case TWCoinTypeTomoChain:
+        case TWCoinTypeViction:
         case TWCoinTypeVeChain:
         case TWCoinTypeWanchain:
         case TWCoinTypeXDai:
@@ -84,6 +82,14 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeGreenfield:
         case TWCoinTypeMantle:
         case TWCoinTypeZenEON:
+        case TWCoinTypeMantaPacific:
+        case TWCoinTypeZetaEVM:
+        case TWCoinTypeMerlin:
+        case TWCoinTypeLightlink:
+        case TWCoinTypeBlast:
+        case TWCoinTypeBounceBit:
+        case TWCoinTypeZkLinkNova:
+            // end_of_evm_address_derivation_tests_marker_do_not_modify
             EXPECT_EQ(address, "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
             break;
 
@@ -181,7 +187,7 @@ TEST(Coin, DeriveAddress) {
             EXPECT_EQ(address, "0:ef64d51f95ef17973b737277cfecbd2a8d551141be2f58f5fb362575fc3eb5b0");
             break;
         case TWCoinTypeTON:
-            EXPECT_EQ(address, "EQAoYT8nMLfeNh6h0uIoK_wLm9JkvxiGxJDr6GRXJGu2ZhpY");
+            EXPECT_EQ(address, "UQAoYT8nMLfeNh6h0uIoK_wLm9JkvxiGxJDr6GRXJGu2Zked");
             break;
         case TWCoinTypeFIO:
             EXPECT_EQ(address, "FIO5TrYnZP1RkDSUMzBY4GanCy6AP68kCMdkAb5EACkAwkdgRLShz");
@@ -378,6 +384,19 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeSei:
             EXPECT_EQ(address, "sei1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z05hw42q");
             break;
+        case TWCoinTypeInternetComputer:
+            EXPECT_EQ(address, "cb3aa6a0471a417fc33d8e71f1d241750dfa29b4dc8f084265ce1301fb03b65b");
+            break;
+        case TWCoinTypeTia:
+            EXPECT_EQ(address, "celestia1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0g3wnkv");
+            break;
+        case TWCoinTypeNativeZetaChain:
+            EXPECT_EQ(address, "zeta1nk9x9ajk4rgkzhqjjn7hr6w0k0jg2kj027x9uy");
+            break;
+        case TWCoinTypeDydx:
+            EXPECT_EQ(address, "dydx1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0sz38vk");
+            break;
+            // end_of_coin_address_derivation_tests_marker_do_not_modify
             // no default branch here, intentionally, to better notice any missing coins
         }
     }

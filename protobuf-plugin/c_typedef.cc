@@ -14,16 +14,14 @@ class Generator : public  compiler::CodeGenerator {
         return "TW" + proto_file.substr(0, index) + "Proto.h";
     }
 
-    bool Generate(const FileDescriptor* file, const std::string& parameter, compiler::GeneratorContext* generator_context, string* error) const {
+    bool Generate(const FileDescriptor* file, const std::string& parameter, compiler::GeneratorContext* generator_context, std::string* error) const {
         std::unique_ptr<io::ZeroCopyOutputStream> output(generator_context->Open(GetOutputFilename(file->name())));
         io::Printer printer(output.get(), '$');
 
         printer.Print(
-            "// Copyright © 2017-2020 Trust Wallet.\n"
+            "// SPDX-License-Identifier: Apache-2.0\n"
             "//\n"
-            "// This file is part of Trust. The full Trust copyright notice, including\n"
-            "// terms governing use, modification, and redistribution, is contained in the\n"
-            "// file LICENSE at the root of the source code distribution tree.\n"
+            "// Copyright © 2017 Trust Wallet.\n"
             "//\n"
             "// This is a GENERATED FILE, changes made here WILL BE LOST.\n"
             "\n"

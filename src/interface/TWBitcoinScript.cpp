@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include "../Bitcoin/Script.h"
@@ -163,22 +161,4 @@ struct TWBitcoinScript *_Nonnull TWBitcoinScriptLockScriptForAddressReplay(TWStr
 
 uint32_t TWBitcoinScriptHashTypeForCoin(enum TWCoinType coinType) {
     return TW::Bitcoin::hashTypeForCoin(coinType);
-}
-
-TWData *_Nullable TWBitcoinScriptBuildBRC20InscribeTransfer(TWString* ticker, TWString* amount, TWData* pubkey) {
-    auto* brcTicker = reinterpret_cast<const std::string*>(ticker);
-    auto* brcAmount = reinterpret_cast<const std::string*>(amount);
-    auto* brcPubkey = reinterpret_cast<const TW::Data*>(pubkey);
-    auto script = TW::Bitcoin::Script::buildBRC20InscribeTransfer(*brcTicker, std::stoull(*brcAmount), *brcPubkey);
-    auto serialized = TW::data(script.SerializeAsString());
-    return TWDataCreateWithBytes(serialized.data(), serialized.size());
-}
-
-TWData *_Nullable TWBitcoinScriptBuildOrdinalNftInscription(TWString* mimeType, TWData* payload, TWData* pubkey) {
-    auto* ordMimeType = reinterpret_cast<const std::string*>(mimeType);
-    auto* ordPayload = reinterpret_cast<const TW::Data*>(payload);
-    auto* ordPubkey = reinterpret_cast<const TW::Data*>(pubkey);
-    auto script = TW::Bitcoin::Script::buildOrdinalNftInscription(*ordMimeType, *ordPayload, *ordPubkey);
-    auto serialized = TW::data(script.SerializeAsString());
-    return TWDataCreateWithBytes(serialized.data(), serialized.size());
 }

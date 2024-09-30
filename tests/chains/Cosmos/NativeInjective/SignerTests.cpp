@@ -1,19 +1,15 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "HexCoding.h"
 #include "Base64.h"
 #include "proto/Cosmos.pb.h"
 #include "Cosmos/Address.h"
-#include "Cosmos/Signer.h"
 #include "TestUtilities.h"
-#include <nlohmann/json.hpp>
+#include "TrustWalletCore/TWAnySigner.h"
 
 #include <gtest/gtest.h>
-#include <google/protobuf/util/json_util.h>
 
 namespace TW::Cosmos::nativeInjective::tests {
 
@@ -46,7 +42,8 @@ TEST(NativeInjectiveSigner, Sign) {
     auto privateKey = parse_hex("9ee18daf8e463877aaf497282abc216852420101430482a28e246c179e2c5ef1");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input, TWCoinTypeNativeInjective);
+    auto output = Cosmos::Proto::SigningOutput();
+    ANY_SIGN(input, TWCoinTypeNativeInjective);
 
     // https://www.mintscan.io/injective/txs/135DD2C4A1910E4334A9C0F15125DA992E724EBF23FEB9638FCB71218BB064A5
     assertJSONEqual(output.serialized(), "{\"mode\":\"BROADCAST_MODE_BLOCK\",\"tx_bytes\":\"Co8BCowBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmwKKmluajEzdTZnN3ZxZ3cwNzRtZ21mMnplMmNhZHp2a3o5c25sd2NydHE4YRIqaW5qMXhtcGtteHI0YXMwMGVtMjN0YzJ6Z211eXkyZ3I0aDN3Z2NsNnZkGhIKA2luahILMTAwMDAwMDAwMDASngEKfgp0Ci0vaW5qZWN0aXZlLmNyeXB0by52MWJldGExLmV0aHNlY3AyNTZrMS5QdWJLZXkSQwpBBFoMa4O4vZgn5QcnDK20mbfjqQlSRvaiITKB94PYd8mLJWdCdBsGOfMXdo/k9MJ2JmDCESKDp2hdgVUH3uMikXMSBAoCCAEYARIcChYKA2luahIPMTAwMDAwMDAwMDAwMDAwELDbBhpAx2vkplmzeK7n3puCFGPWhLd0l/ZC/CYkGl+stH+3S3hiCvIe7uwwMpUlNaSwvT8HwF1kNUp+Sx2m0Uo1x5xcFw==\"}");

@@ -1,8 +1,14 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
+#[cfg(feature = "bitcoin")]
 pub mod bitcoin;
+#[cfg(feature = "ethereum")]
 pub mod ethereum;
+#[cfg(feature = "solana")]
+pub mod solana;
+#[cfg(feature = "ton")]
+pub mod ton;
+#[cfg(feature = "utils")]
+pub mod utils;

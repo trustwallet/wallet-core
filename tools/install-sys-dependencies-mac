@@ -2,4 +2,15 @@
 
 set -e
 
+# A workaround for "The `brew link` step did not complete successfully" error.
+brew install python@3 || brew link --overwrite python@3
 brew install boost ninja xcodegen xcbeautify
+
+if command -v rustup &> /dev/null
+then
+    echo "Rustup is already installed."
+else
+    echo "Rustup is not installed. Installing it now."
+    brew install rustup
+    rustup-init -y --default-toolchain none --no-update-default-toolchain
+fi

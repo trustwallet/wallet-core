@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 //! `tw_keypair` crate defines the keypairs, private and public keys that are used to sign messages,
 //! verify signatures and more.
@@ -47,6 +45,9 @@
 pub mod ecdsa;
 pub mod ed25519;
 pub mod ffi;
+pub mod nacl_crypto_box;
+pub mod rand;
+pub mod schnorr;
 pub mod starkex;
 pub mod traits;
 pub mod tw;
@@ -62,6 +63,8 @@ pub enum KeyPairError {
     InvalidPublicKey,
     InvalidSignature,
     InvalidSignMessage,
+    InvalidEncryptedMessage,
     SignatureVerifyError,
     SigningError,
+    InternalError,
 }

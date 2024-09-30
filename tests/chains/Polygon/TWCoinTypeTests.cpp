@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 //
 // This is a GENERATED FILE, changes made here MAY BE LOST.
 // Generated one-time (codegen/bin/cointests)
@@ -26,7 +24,7 @@ TEST(TWPolygonCoinType, TWCoinType) {
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypePolygon));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypePolygon));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypePolygon));
-    assertStringsEqual(symbol, "MATIC");
+    assertStringsEqual(symbol, "POL");
     assertStringsEqual(txUrl, "https://polygonscan.com/tx/0xe26ed1470d5bf99a53d687843e7acdf7e4ba6620af93b4d672e714de90476e8e");
     assertStringsEqual(accUrl, "https://polygonscan.com/address/0x720E1fa107A1Df39Db4E78A3633121ac36Bec132");
     assertStringsEqual(id, "polygon");

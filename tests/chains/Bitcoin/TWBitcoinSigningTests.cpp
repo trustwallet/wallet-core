@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Base58.h"
 #include "Bitcoin/Address.h"
@@ -83,6 +81,68 @@ SigningInput buildInputP2PKH(bool omitKey = false) {
     input.utxos.push_back(utxo1);
 
     return input;
+}
+
+TEST(BitcoinSigning, SpendMinimumAmountP2WPKH) {
+    auto myPrivateKey = PrivateKey(parse_hex("9ea2172511ed73ae0096be8e593c3b75631700edaf729f1abbae607314a20e35"));
+
+    auto myPublicKey = myPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(myPublicKey.bytes));
+    auto redeemScript = Script::buildPayToWitnessPublicKeyHash(utxoPubkeyHash);
+
+    // Both two UTXOs came from the same transaction.
+    auto utxoHash = parse_hex("e8b3c2d0d5851cef139d87dfb5794db8897ce90ce1b6961526f61923baf5b5a3");
+    std::reverse(utxoHash.begin(), utxoHash.end());
+
+    auto segwitDustAmount = 294;
+
+    // Setup input
+    SigningInput input;
+    input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
+    input.amount = 546;
+    input.useMaxAmount = false;
+    input.useMaxUtxo = true;
+    input.byteFee = 27;
+    input.toAddress = "bc1qvrt7ukvhvmdny0a3j9k8l8jasx92lrqm30t2u2";
+    input.changeAddress = "bc1qvrt7ukvhvmdny0a3j9k8l8jasx92lrqm30t2u2";
+    input.coinType = TWCoinTypeBitcoin;
+    input.dustCalculator = std::make_shared<FixedDustCalculator>(segwitDustAmount);
+
+    input.privateKeys.push_back(myPrivateKey);
+    input.scripts[hex(utxoPubkeyHash)] = redeemScript;
+
+    UTXO utxo0;
+    utxo0.script = redeemScript;
+    utxo0.amount = segwitDustAmount;
+    utxo0.outPoint = OutPoint(utxoHash, 0, UINT32_MAX);
+    input.utxos.push_back(utxo0);
+
+    UTXO utxo1;
+    utxo1.script = redeemScript;
+    utxo1.amount = 16776;
+    utxo1.outPoint = OutPoint(utxoHash, 1, UINT32_MAX);
+    input.utxos.push_back(utxo1);
+
+    {
+        // test plan (but do not reuse plan result)
+        auto plan = TransactionBuilder::plan(input);
+        EXPECT_TRUE(verifyPlan(plan, {294, 16776}, 546, 5643));
+        EXPECT_EQ(plan.change, 10881);
+    }
+
+    // Signs
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
+
+    ASSERT_TRUE(result) << std::to_string(result.error());
+    const auto signedTx = result.payload();
+
+    Data serialized;
+    signedTx.encode(serialized);
+
+    EXPECT_EQ(
+        hex(serialized),
+        "01000000000102a3b5f5ba2319f6261596b6e10ce97c89b84d79b5df879d13ef1c85d5d0c2b3e80000000000ffffffffa3b5f5ba2319f6261596b6e10ce97c89b84d79b5df879d13ef1c85d5d0c2b3e80100000000ffffffff02220200000000000016001460d7ee599766db323fb1916c7f9e5d818aaf8c1b812a00000000000016001460d7ee599766db323fb1916c7f9e5d818aaf8c1b02483045022100d7e4d267e94547bd365736229219a85b21f79cf896a65baa444e339215b4b36f022078c0dee3d1d603f77855fee8f23291fe180b50afaa2c9ae9f724b7418d76da75012103a11506993946e20ea82686b157bf08f944759f43d91af8d84650ee73a482431c02483045022100c10cdbe21cedab3b4e7db9422f69c7074764711d552a63545104d71c905b138802204999f3ecb5fdadfd8669a8c14f04643c59bb3e98aaf52c52f829a0f6ef5d6abb012103a11506993946e20ea82686b157bf08f944759f43d91af8d84650ee73a482431c00000000"
+    );
 }
 
 TEST(BitcoinSigning, ExtraOutputs) {
@@ -202,6 +262,9 @@ TEST(BitcoinSigning, ExtraOutputsRequireExtraInputs) {
     signingInput.set_to_address(toAddress);
     signingInput.set_change_address(ownAddress);
     signingInput.add_private_key(privateKey.data(), privateKey.size());
+    // Dust threshold will be 612 (102 * 6) if otherwise is not set.
+    // So to fix the test, we should set the 313 dust threshold for the change output to be included.
+    signingInput.set_fixed_dust_threshold(313);
 
     auto utxoScript = Script::lockScriptForAddress(ownAddress, TWCoinTypeBitcoin);
     auto& utxo0 = *signingInput.add_utxo();
@@ -306,7 +369,8 @@ TEST(BitcoinSigning, SignMaxAmount) {
     EXPECT_EQ(output0.value(), amountWithoutFee);
 }
 
-TEST(BitcoinSigning, SignBRC20TransferCommit) {
+// Tests the BitcoinV2 API through the legacy `SigningInput`.
+TEST(BitcoinSigning, SignBRC20TransferCommitV2) {
     auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
     auto fullAmount = 26400;
     auto minerFee = 3000;
@@ -316,264 +380,325 @@ TEST(BitcoinSigning, SignBRC20TransferCommit) {
 
     PrivateKey key(privateKey);
     auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
-    auto utxoPubKeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
-    auto inputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
-    auto outputInscribe = TW::Bitcoin::Script::buildBRC20InscribeTransfer("oadf", 20, pubKey.bytes);
 
-    Proto::SigningInput input;
-    input.set_is_it_brc_operation(true);
-    input.add_private_key(key.bytes.data(), key.bytes.size());
-    input.set_coin_type(TWCoinTypeBitcoin);
+    TW::BitcoinV2::Proto::SigningInput signing;
+    signing.add_private_keys(key.bytes.data(), key.bytes.size());
+    signing.set_dangerous_use_fixed_schnorr_rng(true);
 
-    auto& utxo = *input.add_utxo();
-    utxo.set_amount(fullAmount);
-    utxo.set_script(inputP2wpkh.bytes.data(), inputP2wpkh.bytes.size());
-    utxo.set_variant(Proto::TransactionVariant::P2WPKH);
+    auto& builder = *signing.mutable_builder();
+    builder.set_version(BitcoinV2::Proto::TransactionVersion::V2);
+    builder.set_input_selector(BitcoinV2::Proto::InputSelector::UseAll);
+    builder.set_fixed_dust_threshold(546);
 
-    Proto::OutPoint out;
-    out.set_index(1);
-    out.set_hash(txId.data(), txId.size());
-    *utxo.mutable_out_point() = out;
+    auto& chainInfo = *signing.mutable_chain_info();
+    chainInfo.set_p2pkh_prefix(0);
+    chainInfo.set_p2sh_prefix(5);
 
-    Proto::TransactionPlan plan;
-    auto& utxo1 = *plan.add_utxos();
-    utxo1.set_amount(brcInscribeAmount);
-    utxo1.set_script(outputInscribe.script());
-    utxo1.set_variant(Proto::TransactionVariant::BRC20TRANSFER);
+    auto& in = *builder.add_inputs();
+    auto& inOutPoint = *in.mutable_out_point();
+    inOutPoint.set_hash(txId.data(), txId.size());
+    inOutPoint.set_vout(1);
+    in.set_value(fullAmount);
+    in.mutable_script_builder()->mutable_p2wpkh()->set_pubkey(pubKey.bytes.data(), pubKey.bytes.size());
+    in.set_sighash_type(TWBitcoinSigHashTypeAll);
 
-    auto& utxo2 = *plan.add_utxos();
-    utxo2.set_amount(forFeeAmount);
-    utxo2.set_script(inputP2wpkh.bytes.data(), inputP2wpkh.bytes.size());
-    utxo2.set_variant(Proto::TransactionVariant::P2WPKH);
+    auto& out = *builder.add_outputs();
+    out.set_value(brcInscribeAmount);
+    auto& brc20 = *out.mutable_builder()->mutable_brc20_inscribe();
+    brc20.set_ticker("oadf");
+    brc20.set_transfer_amount("20");
+    brc20.set_inscribe_to(pubKey.bytes.data(), pubKey.bytes.size());
 
-    *input.mutable_plan() = plan;
+    auto& changeOut = *builder.add_outputs();
+    changeOut.set_value(forFeeAmount);
+    changeOut.mutable_builder()->mutable_p2wpkh()->set_pubkey(pubKey.bytes.data(), pubKey.bytes.size());
+
+    Proto::SigningInput legacy;
+    *legacy.mutable_signing_v2() = signing;
+
     Proto::SigningOutput output;
+    ANY_SIGN(legacy, TWCoinTypeBitcoin);
 
-    ANY_SIGN(input, TWCoinTypeBitcoin);
-    ASSERT_EQ(hex(output.encoded()), "02000000000101089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e0100000000ffffffff02581b000000000000225120e8b706a97732e705e22ae7710703e7f589ed13c636324461afa443016134cc051040000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d02483045022100a44aa28446a9a886b378a4a65e32ad9a3108870bd725dc6105160bed4f317097022069e9de36422e4ce2e42b39884aa5f626f8f94194d1013007d5a1ea9220a06dce0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
-    ASSERT_EQ(output.transaction_id(), "797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1");
-    ASSERT_EQ(output.error(), Common::Proto::OK);
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+    ASSERT_TRUE(output.has_signing_result_v2());
+    EXPECT_EQ(output.signing_result_v2().error(), Common::Proto::SigningError::OK)
+        << output.signing_result_v2().error_message();
+    EXPECT_EQ(hex(output.signing_result_v2().encoded()), "02000000000101089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e0100000000ffffffff02581b000000000000225120e8b706a97732e705e22ae7710703e7f589ed13c636324461afa443016134cc051040000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d02483045022100a44aa28446a9a886b378a4a65e32ad9a3108870bd725dc6105160bed4f317097022069e9de36422e4ce2e42b39884aa5f626f8f94194d1013007d5a1ea9220a06dce0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
+    EXPECT_EQ(hex(output.signing_result_v2().txid()), "797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1");
 
     // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1
 }
 
-TEST(BitcoinSigning, SignBRC20TransferReveal) {
-    auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
-    auto dustSatoshi = 546;
-    auto brcInscribeAmount = 7000;
-    auto txId = parse_hex("b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d79");
+TEST(BitcoinSigning, SignPlanTransactionWithDustAmount) {
+    const auto privateKey = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
+    const auto ownAddress = "bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv";
 
-    PrivateKey key(privateKey);
-    auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
-    auto utxoPubKeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
-    auto inputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
-    auto outputInscribe = TW::Bitcoin::Script::buildBRC20InscribeTransfer("oadf", 20, pubKey.bytes);
+    const auto revUtxoHash0 =
+        parse_hex("07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa8");
+    const auto utxoScript0 = parse_hex("0014bd92088bb7e82d611a9b94fbb74a0908152b784f");
 
-    Proto::SigningInput input;
-    input.set_is_it_brc_operation(true);
-    input.add_private_key(key.bytes.data(), key.bytes.size());
-    input.set_coin_type(TWCoinTypeBitcoin);
+    const auto dustAmount = 546;
+    // Use an amount less than dust.
+    const auto sendAmount = 545;
+    const auto availableAmount = 10'189'534;
 
-    auto& utxo = *input.add_utxo();
-    utxo.set_amount(brcInscribeAmount);
-    utxo.set_script(outputInscribe.script());
-    utxo.set_variant(Proto::TransactionVariant::BRC20TRANSFER);
-    utxo.set_spendingscript(outputInscribe.spendingscript());
+    Proto::SigningInput signingInput;
+    signingInput.set_coin_type(TWCoinTypeBitcoin);
+    signingInput.set_hash_type(TWBitcoinSigHashTypeAll);
+    signingInput.set_amount(sendAmount);
+    signingInput.set_byte_fee(1);
+    signingInput.set_to_address("bc1q2dsdlq3343vk29runkgv4yc292hmq53jedfjmp");
+    signingInput.set_change_address(ownAddress);
+    signingInput.set_fixed_dust_threshold(dustAmount);
 
-    Proto::OutPoint out;
-    out.set_index(0);
-    out.set_hash(txId.data(), txId.size());
-    *utxo.mutable_out_point() = out;
+    *signingInput.add_private_key() = std::string(privateKey.begin(), privateKey.end());
+
+    // Add UTXO
+    auto utxo = signingInput.add_utxo();
+    utxo->set_script(utxoScript0.data(), utxoScript0.size());
+    utxo->set_amount(availableAmount);
+    utxo->mutable_out_point()->set_hash(
+        std::string(revUtxoHash0.begin(), revUtxoHash0.end()));
+    utxo->mutable_out_point()->set_index(0);
+    utxo->mutable_out_point()->set_sequence(UINT32_MAX);
 
     Proto::TransactionPlan plan;
-    auto& utxo1 = *plan.add_utxos();
-    utxo1.set_amount(dustSatoshi);
-    utxo1.set_script(inputP2wpkh.bytes.data(), inputP2wpkh.bytes.size());
-    utxo1.set_variant(Proto::TransactionVariant::P2WPKH);
+    ANY_PLAN(signingInput, plan, TWCoinTypeBitcoin);
+    EXPECT_EQ(plan.error(), Common::Proto::Error_dust_amount_requested);
 
-    *input.mutable_plan() = plan;
+    // `AnySigner.sign` should return the same error.
     Proto::SigningOutput output;
-
-    ANY_SIGN(input, TWCoinTypeBitcoin);
-    auto result = hex(output.encoded());
-    ASSERT_EQ(result.substr(0, 164), "02000000000101b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d0340");
-    ASSERT_EQ(result.substr(292, result.size() - 292), "5b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
-    ASSERT_EQ(output.transaction_id(), "7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca");
-    ASSERT_EQ(output.error(), Common::Proto::OK);
-
-    // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca
+    ANY_SIGN(signingInput, TWCoinTypeBitcoin);
+    EXPECT_EQ(output.error(), Common::Proto::Error_dust_amount_requested);
 }
 
-TEST(BitcoinSigning, SignBRC20TransferInscription) {
-    // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/3e3576eb02667fac284a5ecfcb25768969680cc4c597784602d0a33ba7c654b7
+// If the change amount is less than "dust", there should not be a change output.
+TEST(BitcoinSigning, SignPlanTransactionNoChange) {
+    const auto myPrivateKey = PrivateKey(parse_hex("9ea2172511ed73ae0096be8e593c3b75631700edaf729f1abbae607314a20e35"));
+    auto myPublicKey = myPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(myPublicKey.bytes));
+    auto redeemScript = Script::buildPayToWitnessPublicKeyHash(utxoPubkeyHash);
 
-    auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
-    auto dustSatoshi = 546;
-    auto brcInscribeAmount = 7000;
-    auto fullAmount = 26400;
-    auto minerFee = 3000;
-    auto forFeeAmount = fullAmount - brcInscribeAmount - minerFee;
-    auto txIDInscription = parse_hex("7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca");
-    std::reverse(begin(txIDInscription), end(txIDInscription));
-    auto txIDForFees = parse_hex("797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1");
-    std::reverse(begin(txIDForFees), end(txIDForFees));
+    const auto ownAddress = "bc1qvrt7ukvhvmdny0a3j9k8l8jasx92lrqm30t2u2";
 
-    PrivateKey key(privateKey);
-    auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
-    auto utxoPubKeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
-    auto utxoPubKeyHashBob = Hash::ripemd(Hash::sha256(parse_hex("02f453bb46e7afc8796a9629e89e07b5cb0867e9ca340b571e7bcc63fc20c43f2e")));
-    auto inputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
-    auto outputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHashBob);
-    auto outputInscribe = TW::Bitcoin::Script::buildBRC20InscribeTransfer("oadf", 20, pubKey.bytes);
+    auto utxoHash0 =
+        parse_hex("b33082a5fad105c1d9712e8d503971fe4d84713065bd323fd1019636ed940e8d");
+    std::reverse(utxoHash0.begin(), utxoHash0.end());
+    auto utxoAmount0 = 30269;
+    auto utxoOutputIndex0 = 1;
 
-    Proto::SigningInput input;
-    input.set_is_it_brc_operation(true);
-    input.add_private_key(key.bytes.data(), key.bytes.size());
-    input.set_coin_type(TWCoinTypeBitcoin);
+    auto utxoHash1 =
+        parse_hex("1f62c18bfc5f8293a2b7b061587c427bf830fb224289f9a806e6ad48de6a4c7d");
+    std::reverse(utxoHash1.begin(), utxoHash1.end());
+    auto utxoAmount1 = 4863;
+    auto utxoOutputIndex1 = 1;
 
-    auto& utxo0 = *input.add_utxo();
-    utxo0.set_amount(dustSatoshi);
-    utxo0.set_script(inputP2wpkh.bytes.data(), inputP2wpkh.bytes.size());
-    utxo0.set_variant(Proto::TransactionVariant::P2WPKH);
+    auto utxoHash2 =
+        parse_hex("71c3343dfca5f1914e1bfc04153517d73650cb9c931e8511d24d1f5290120f6f");
+    std::reverse(utxoHash2.begin(), utxoHash2.end());
+    // This UTXO will be filtered out as less than dust threshold.
+    auto utxoAmount2 = 300;
+    auto utxoOutputIndex2 = 0;
 
-    Proto::OutPoint out0;
-    out0.set_index(0);
-    out0.set_hash(txIDInscription.data(), txIDInscription.size());
-    *utxo0.mutable_out_point() = out0;
+    const auto dustAmount = 546;
+    // Change amount is too low (less than dust), so we just waste it as the transaction fee.
+    const auto dustChange = 200;
+    const auto sendAmount = 28235 - dustChange;
 
-    auto& utxo1 = *input.add_utxo();
-    utxo1.set_amount(forFeeAmount);
-    utxo1.set_script(inputP2wpkh.bytes.data(), inputP2wpkh.bytes.size());
-    utxo1.set_variant(Proto::TransactionVariant::P2WPKH);
+    Proto::SigningInput signingInput;
+    signingInput.set_coin_type(TWCoinTypeBitcoin);
+    signingInput.set_hash_type(TWBitcoinSigHashTypeAll);
+    signingInput.set_byte_fee(33);
+    signingInput.set_amount(sendAmount);
+    signingInput.set_to_address("bc1q2dsdlq3343vk29runkgv4yc292hmq53jedfjmp");
+    signingInput.set_change_address(ownAddress);
+    signingInput.set_fixed_dust_threshold(dustAmount);
 
-    Proto::OutPoint out1;
-    out1.set_index(1);
-    out1.set_hash(txIDForFees.data(), txIDForFees.size());
-    *utxo1.mutable_out_point() = out1;
+    signingInput.add_private_key(myPrivateKey.bytes.data(), myPrivateKey.bytes.size());
+
+    // Add UTXO 0
+    auto utxo0 = signingInput.add_utxo();
+    utxo0->set_script(redeemScript.bytes.data(), redeemScript.bytes.size());
+    utxo0->set_amount(utxoAmount0);
+    utxo0->mutable_out_point()->set_hash(
+        std::string(utxoHash0.begin(), utxoHash0.end()));
+    utxo0->mutable_out_point()->set_index(utxoOutputIndex0);
+    utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    // Add UTXO 1
+    auto utxo1 = signingInput.add_utxo();
+    utxo1->set_script(redeemScript.bytes.data(), redeemScript.bytes.size());
+    utxo1->set_amount(utxoAmount1);
+    utxo1->mutable_out_point()->set_hash(
+        std::string(utxoHash1.begin(), utxoHash1.end()));
+    utxo1->mutable_out_point()->set_index(utxoOutputIndex1);
+    utxo1->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    // Add UTXO 2
+    auto utxo2 = signingInput.add_utxo();
+    utxo2->set_script(redeemScript.bytes.data(), redeemScript.bytes.size());
+    utxo2->set_amount(utxoAmount2);
+    utxo2->mutable_out_point()->set_hash(
+        std::string(utxoHash2.begin(), utxoHash2.end()));
+    utxo2->mutable_out_point()->set_index(utxoOutputIndex2);
+    utxo2->mutable_out_point()->set_sequence(UINT32_MAX);
 
     Proto::TransactionPlan plan;
-    auto& utxo2 = *plan.add_utxos();
-    utxo2.set_amount(dustSatoshi);
-    utxo2.set_script(outputP2wpkh.bytes.data(), outputP2wpkh.bytes.size());
-    utxo2.set_variant(Proto::TransactionVariant::P2WPKH);
+    ANY_PLAN(signingInput, plan, TWCoinTypeBitcoin);
+    EXPECT_EQ(plan.error(), Common::Proto::OK);
 
-    auto& utxo3 = *plan.add_utxos();
-    utxo3.set_amount(forFeeAmount - minerFee);
-    utxo3.set_script(inputP2wpkh.bytes.data(), inputP2wpkh.bytes.size());
-    utxo3.set_variant(Proto::TransactionVariant::P2WPKH);
+    auto fee = 6897 + dustChange;
+    // UTXO-2 with 300 satoshis should be filtered out as less than dust.
+    EXPECT_TRUE(verifyPlan(plan, {4863, 30269}, sendAmount, fee));
 
-    *input.mutable_plan() = plan;
     Proto::SigningOutput output;
-
-    ANY_SIGN(input, TWCoinTypeBitcoin);
-    auto result = hex(output.encoded());
-    ASSERT_EQ(hex(output.encoded()), "02000000000102ca3edda74a46877efa5364ab85947e148508713910ada23e147ea28926dc46700000000000ffffffffb11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790100000000ffffffff022202000000000000160014e891850afc55b64aa8247b2076f8894ebdf889015834000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d024830450221008798393eb0b7390217591a8c33abe18dd2f7ea7009766e0d833edeaec63f2ec302200cf876ff52e68dbaf108a3f6da250713a9b04949a8f1dcd1fb867b24052236950121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb0248304502210096bbb9d1f0596d69875646689e46f29485e8ceccacde9d0025db87fd96d3066902206d6de2dd69d965d28df3441b94c76e812384ab9297e69afe3480ee4031e1b2060121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
-    ASSERT_EQ(output.transaction_id(), "3e3576eb02667fac284a5ecfcb25768969680cc4c597784602d0a33ba7c654b7");
-    ASSERT_EQ(output.error(), Common::Proto::OK);
+    ANY_SIGN(signingInput, TWCoinTypeBitcoin);
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+    // Successfully broadcasted: https://mempool.space/tx/5d6bf53576a54be4d92cd8abf58d28ecc9ea7956eaf970d24d6bfcb9fcfe9855
+    EXPECT_EQ(hex(output.encoded()), "010000000001027d4c6ade48ade606a8f9894222fb30f87b427c5861b0b7a293825ffc8bc1621f0100000000ffffffff8d0e94ed369601d13f32bd653071844dfe7139508d2e71d9c105d1faa58230b30100000000ffffffff01836d0000000000001600145360df8231ac5965147c9d90ca930a2aafb0523202483045022100f95f9ac5d39f4b47dcd8c86daaaeac86374258d9960f922333ba0d5fdaa15b7e0220761794672dc9fbd71398d608f72f5d21a0f6c1306c6b700ad0d82f747c221062012103a11506993946e20ea82686b157bf08f944759f43d91af8d84650ee73a482431c02483045022100eb6ba0dcc64af61b2186b7efdab1ff03784d585ee03437f9a53875e93429db080220015a268d308436d3564b83ceaed90bc7272ca164016298ea855d1936568002a7012103a11506993946e20ea82686b157bf08f944759f43d91af8d84650ee73a482431c00000000");
 }
 
-TEST(BitcoinSigning, SignNftInscriptionCommit) {
-    // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117
+// Not enough funds to send requested amount after UTXO dust filtering.
+TEST(BitcoinSigning, SignPlanTransactionNotSufficientAfterDustFiltering) {
+    const auto myPrivateKey = PrivateKey(parse_hex("9ea2172511ed73ae0096be8e593c3b75631700edaf729f1abbae607314a20e35"));
+    auto myPublicKey = myPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(myPublicKey.bytes));
+    auto redeemScript = Script::buildPayToWitnessPublicKeyHash(utxoPubkeyHash);
 
-    auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
-    auto fullAmount = 32400;
-    auto minerFee = 1300;
-    auto inscribeAmount = fullAmount - minerFee;
-    auto txId = parse_hex("579590c3227253ad423b1e7e3c5b073b8a280d307c68aecd779df2600daa2f99");
-    std::reverse(begin(txId), end(txId));
+    const auto ownAddress = "bc1qvrt7ukvhvmdny0a3j9k8l8jasx92lrqm30t2u2";
 
-    // The inscribed image
-    auto payload = parse_hex(nftInscriptionImageData);
+    auto utxoHash0 =
+        parse_hex("b33082a5fad105c1d9712e8d503971fe4d84713065bd323fd1019636ed940e8d");
+    std::reverse(utxoHash0.begin(), utxoHash0.end());
+    auto utxoAmount0 = 30269;
+    auto utxoOutputIndex0 = 1;
 
-    PrivateKey key(privateKey);
-    auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
-    auto utxoPubKeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
-    auto inputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
-    auto outputInscribe = TW::Bitcoin::Script::buildOrdinalNftInscription("image/png", payload, pubKey.bytes);
+    auto utxoHash1 =
+        parse_hex("1f62c18bfc5f8293a2b7b061587c427bf830fb224289f9a806e6ad48de6a4c7d");
+    std::reverse(utxoHash1.begin(), utxoHash1.end());
+    auto utxoAmount1 = 545;
+    auto utxoOutputIndex1 = 1;
 
-    Proto::SigningInput input;
-    input.set_is_it_brc_operation(true);
-    input.add_private_key(key.bytes.data(), key.bytes.size());
-    input.set_coin_type(TWCoinTypeBitcoin);
+    const auto utxoScript0 = parse_hex("0014bd92088bb7e82d611a9b94fbb74a0908152b784f");
 
-    auto& utxo0 = *input.add_utxo();
-    utxo0.set_amount(fullAmount);
-    utxo0.set_script(inputP2wpkh.bytes.data(), inputP2wpkh.bytes.size());
-    utxo0.set_variant(Proto::TransactionVariant::P2WPKH);
+    const auto dustAmount = 546;
+    const auto sendAmount = 25620;
 
-    Proto::OutPoint out0;
-    out0.set_index(0);
-    out0.set_hash(txId.data(), txId.size());
-    *utxo0.mutable_out_point() = out0;
+    Proto::SigningInput signingInput;
+    signingInput.set_coin_type(TWCoinTypeBitcoin);
+    signingInput.set_hash_type(TWBitcoinSigHashTypeAll);
+    signingInput.set_byte_fee(33);
+    signingInput.set_amount(sendAmount);
+    signingInput.set_to_address("bc1q2dsdlq3343vk29runkgv4yc292hmq53jedfjmp");
+    signingInput.set_change_address(ownAddress);
+    signingInput.set_fixed_dust_threshold(dustAmount);
+
+    signingInput.add_private_key(myPrivateKey.bytes.data(), myPrivateKey.bytes.size());
+
+    // Add UTXO 0
+    auto utxo0 = signingInput.add_utxo();
+    utxo0->set_script(redeemScript.bytes.data(), redeemScript.bytes.size());
+    utxo0->set_amount(utxoAmount0);
+    utxo0->mutable_out_point()->set_hash(
+        std::string(utxoHash0.begin(), utxoHash0.end()));
+    utxo0->mutable_out_point()->set_index(utxoOutputIndex0);
+    utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    // Add UTXO 1
+    auto utxo1 = signingInput.add_utxo();
+    utxo1->set_script(redeemScript.bytes.data(), redeemScript.bytes.size());
+    utxo1->set_amount(utxoAmount1);
+    utxo1->mutable_out_point()->set_hash(
+        std::string(utxoHash1.begin(), utxoHash1.end()));
+    utxo1->mutable_out_point()->set_index(utxoOutputIndex1);
+    utxo1->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    // sum()
 
     Proto::TransactionPlan plan;
-    auto& utxo1 = *plan.add_utxos();
-    utxo1.set_amount(inscribeAmount);
-    utxo1.set_script(outputInscribe.script());
-    utxo1.set_variant(Proto::TransactionVariant::NFTINSCRIPTION);
+    ANY_PLAN(signingInput, plan, TWCoinTypeBitcoin);
+    EXPECT_EQ(plan.error(), Common::Proto::Error_not_enough_utxos);
 
-    *input.mutable_plan() = plan;
+    // `AnySigner.sign` should return the same error.
     Proto::SigningOutput output;
-
-    ANY_SIGN(input, TWCoinTypeBitcoin);
-    auto result = hex(output.encoded());
-    ASSERT_EQ(hex(output.encoded()), "02000000000101992faa0d60f29d77cdae687c300d288a3b075b3c7e1e3b42ad537222c39095570000000000ffffffff017c790000000000002251202ac69a7e9dba801e9fcba826055917b84ca6fba4d51a29e47d478de603eedab602473044022054212984443ed4c66fc103d825bfd2da7baf2ab65d286e3c629b36b98cd7debd022050214cfe5d3b12a17aaaf1a196bfeb2f0ad15ffb320c4717eb7614162453e4fe0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
-    ASSERT_EQ(output.transaction_id(), "f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117");
-    ASSERT_EQ(output.error(), Common::Proto::OK);
+    ANY_SIGN(signingInput, TWCoinTypeBitcoin);
+    EXPECT_EQ(output.error(), Common::Proto::Error_not_enough_utxos);
 }
 
-TEST(BitcoinSigning, SignNftInscriptionReveal) {
-    // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/173f8350b722243d44cc8db5584de76b432eb6d0888d9e66e662db51584f44ac
+// Deposit 0.0001 BTC from bc1q2sphzvc2uqmxqte2w9dd4gzy4sy9vvfv0me9ke to 0xa8491D40d4F71A752cA41DA0516AEd80c33a1B56 on ZETA mainnet.
+// https://www.zetachain.com/docs/developers/omnichain/bitcoin/#example-1-deposit-btc-into-an-account-in-zevm
+TEST(BitcoinSigning, SignDepositBtcToZetaChain) {
+    const auto myPrivateKey = PrivateKey(parse_hex("428d66be0b5a620f126a00fa67637222ce3dc9badfe5c605189520760810cfac"));
+    auto myPublicKey = myPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(myPublicKey.bytes));
+    auto redeemScript = Script::buildPayToWitnessPublicKeyHash(utxoPubkeyHash);
 
-    auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
-    auto inscribeAmount = 31100;
-    auto dustSatoshi = 546;
-    auto txId = parse_hex("f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117");
-    std::reverse(begin(txId), end(txId));
+    const auto ownAddress = "bc1q2sphzvc2uqmxqte2w9dd4gzy4sy9vvfv0me9ke";
+    const auto ownZetaEvmAddress = parse_hex("a8491D40d4F71A752cA41DA0516AEd80c33a1B56");
+    // https://www.zetachain.com/docs/reference/glossary/#tss
+    const auto zetaTssAddress = "bc1qm24wp577nk8aacckv8np465z3dvmu7ry45el6y";
 
-    // The inscribed image
-    auto payload = parse_hex(nftInscriptionImageData);
+    auto utxoHash0 =
+        parse_hex("17a6adb5db1e33c87467a58aa31cddbb3800052315015cf3cf1c2b0119310e20");
+    std::reverse(utxoHash0.begin(), utxoHash0.end());
+    auto utxoAmount0 = 20000;
+    auto utxoOutputIndex0 = 0;
 
-    // The expected TX hex output
-    auto expectedHex = nftInscriptionRawHex;
+    const auto sendAmount = 10000;
+    const auto dustAmount = 546;
 
-    PrivateKey key(privateKey);
-    auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
-    auto utxoPubKeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
-    auto inputInscribe = TW::Bitcoin::Script::buildOrdinalNftInscription("image/png", payload, pubKey.bytes);
-    auto outputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
+    Proto::SigningInput signingInput;
+    signingInput.set_coin_type(TWCoinTypeBitcoin);
+    signingInput.set_hash_type(TWBitcoinSigHashTypeAll);
+    signingInput.set_byte_fee(15);
+    signingInput.set_amount(sendAmount);
+    signingInput.set_to_address(zetaTssAddress);
+    signingInput.set_change_address(ownAddress);
+    signingInput.set_fixed_dust_threshold(dustAmount);
+    signingInput.set_output_op_return(ownZetaEvmAddress.data(), ownZetaEvmAddress.size());
+    // OP_RETURN must be the second output before the change.
+    signingInput.mutable_output_op_return_index()->set_index(1);
 
-    Proto::SigningInput input;
-    input.set_is_it_brc_operation(true);
-    input.add_private_key(key.bytes.data(), key.bytes.size());
-    input.set_coin_type(TWCoinTypeBitcoin);
+    signingInput.add_private_key(myPrivateKey.bytes.data(), myPrivateKey.bytes.size());
 
-    auto& utxo = *input.add_utxo();
-    utxo.set_amount(inscribeAmount);
-    utxo.set_script(inputInscribe.script());
-    utxo.set_variant(Proto::TransactionVariant::NFTINSCRIPTION);
-    utxo.set_spendingscript(inputInscribe.spendingscript());
+    // Add UTXO 0
+    auto utxo0 = signingInput.add_utxo();
+    utxo0->set_script(redeemScript.bytes.data(), redeemScript.bytes.size());
+    utxo0->set_amount(utxoAmount0);
+    utxo0->mutable_out_point()->set_hash(
+        std::string(utxoHash0.begin(), utxoHash0.end()));
+    utxo0->mutable_out_point()->set_index(utxoOutputIndex0);
+    utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
 
-    Proto::OutPoint out;
-    out.set_index(0);
-    out.set_hash(txId.data(), txId.size());
-    *utxo.mutable_out_point() = out;
+    Proto::SigningOutput output;
+    ANY_SIGN(signingInput, TWCoinTypeBitcoin);
+    EXPECT_EQ(output.error(), Common::Proto::SigningError::OK);
+
+    EXPECT_EQ(output.transaction().outputs_size(), 3);
+    // P2WPKH to the TSS address.
+    EXPECT_EQ(output.transaction().outputs(0).value(), sendAmount);
+    // OP_RETURN
+    EXPECT_EQ(output.transaction().outputs(1).value(), 0);
+    // Transaction fee.
+    EXPECT_EQ(output.transaction().outputs(2).value(), 7420);
+
+    // Successfully broadcasted:
+    // https://mempool.space/tx/2b871b6c1112ad0a777f6db1f7a7709154c4d9af8e771ba4eca148915f830e9d
+    // https://explorer.zetachain.com/cc/tx/0x269e319478f8849247abb28b33a7b8e0a849dab4551bab328bf58bf67b02a807
+    const auto expectedTx = "01000000000101200e3119012b1ccff35c011523050038bbdd1ca38aa56774c8331edbb5ada6170000000000ffffffff031027000000000000160014daaae0d3de9d8fdee31661e61aea828b59be78640000000000000000166a14a8491d40d4f71a752ca41da0516aed80c33a1b56fc1c000000000000160014540371330ae036602f2a715adaa044ac0856312c02483045022100e29731f7474f9103c6df3434c8c62a540a21ad0e10e23df343b1e81e4b26110602202d37fb4fee5341a41f9e4e65ba2d3e0d2309425ea9806d94eb268efe6f21007001210369cdaf80b4a5fdad91e9face90e848225512884ec2e3ed572ca11dc68e75054700000000";
+
+    EXPECT_EQ(hex(output.encoded()), expectedTx);
 
     Proto::TransactionPlan plan;
-    auto& utxo1 = *plan.add_utxos();
-    utxo1.set_amount(dustSatoshi);
-    utxo1.set_script(outputP2wpkh.bytes.data(), outputP2wpkh.bytes.size());
-    utxo1.set_variant(Proto::TransactionVariant::P2WPKH);
+    ANY_PLAN(signingInput, plan, TWCoinTypeBitcoin);
+    EXPECT_EQ(plan.error(), Common::Proto::SigningError::OK);
+    EXPECT_TRUE(plan.has_output_op_return_index());
+    EXPECT_EQ(plan.output_op_return_index().index(), 1);
 
-    *input.mutable_plan() = plan;
-    Proto::SigningOutput output;
-
-    ANY_SIGN(input, TWCoinTypeBitcoin);
-    auto result = hex(output.encoded());
-    ASSERT_EQ(output.transaction_id(), "173f8350b722243d44cc8db5584de76b432eb6d0888d9e66e662db51584f44ac");
-    ASSERT_EQ(output.error(), Common::Proto::OK);
-    ASSERT_EQ(result.substr(0, 164), expectedHex.substr(0, 164));
-    ASSERT_EQ(result.substr(292, result.size() - 292), expectedHex.substr(292, result.size() - 292));
+    *signingInput.mutable_plan() = plan;
+    ANY_SIGN(signingInput, TWCoinTypeBitcoin);
+    // The result has to be the same as signing without transaction planning.
+    EXPECT_EQ(hex(output.encoded()), expectedTx);
 }
 
 TEST(BitcoinSigning, SignP2PKH) {
@@ -975,6 +1100,9 @@ SigningInput buildInputP2WSH(enum TWBitcoinSigHashType hashType, bool omitScript
     input.byteFee = 1;
     input.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx";
     input.changeAddress = "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU";
+    // Set the very low fixed Dust threshold just to fix the tests.
+    // Actually, transactions in these tests have change=79 and change=52 that will lead to Dust error when broadcasting it.
+    input.dustCalculator = std::make_shared<FixedDustCalculator>(50);
 
     if (!omitKeys) {
         auto utxoKey0 = PrivateKey(parse_hex("ed00a0841cd53aedf89b0c616742d1d2a930f8ae2b0fb514765a17bb62c7521a"));

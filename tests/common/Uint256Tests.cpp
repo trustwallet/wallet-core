@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "uint256.h"
 #include "HexCoding.h"
@@ -97,12 +95,6 @@ TEST(Uint256, LoadEmpty) {
     EXPECT_EQ(load(parse_hex("")), uint256_t(0));
     EXPECT_EQ(load(parse_hex("00")), uint256_t(0));
     EXPECT_EQ(load(parse_hex("0000")), uint256_t(0));
-}
-
-TEST(Uint256, LoadWithOffset) {
-    EXPECT_EQ(loadWithOffset(parse_hex("0000000000000000000000000000000000000000000000000000000000000003"), 0), uint256_t(3));
-    EXPECT_EQ(loadWithOffset(parse_hex("abcdef0000000000000000000000000000000000000000000000000000000000000003"), 3), uint256_t(3));
-    EXPECT_EQ(loadWithOffset(parse_hex("0000000000000000000000000000000000000000000000000000000000000003"), 1), uint256_t(0)); // not enough bytes
 }
 
 TEST(Uint256, loadStringProtobuf) {

@@ -1,14 +1,12 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::evm_context::EvmContext;
 use crate::modules::tx_builder::TxBuilder;
 use std::borrow::Cow;
 use std::marker::PhantomData;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::traits::SigningKeyTrait;
@@ -31,7 +29,9 @@ impl<Context: EvmContext> Signer<Context> {
     fn sign_proto_impl(
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        let chain_id = U256::from_big_endian_slice(&input.chain_id)?;
+        let chain_id = U256::from_big_endian_slice(&input.chain_id)
+            .into_tw()
+            .context("Invalid chain ID")?;
         let private_key = secp256k1::PrivateKey::try_from(input.private_key.as_ref())?;
 
         let unsigned = TxBuilder::<Context>::tx_from_proto(&input)?;

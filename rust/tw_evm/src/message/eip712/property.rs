@@ -1,19 +1,19 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::abi::non_empty_array::NonZeroLen;
 use crate::abi::param_type::constructor::TypeConstructor;
 use crate::abi::param_type::reader::Reader;
 use crate::abi::uint::UintBits;
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
-use crate::message::MessageSigningError;
-use serde::Deserialize;
+use crate::message::{MessageSigningError, MessageSigningErrorKind};
+use serde::{Deserialize, Serialize};
+use std::fmt;
 use std::str::FromStr;
+use tw_coin_entry::error::prelude::*;
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Property {
     pub name: String,
     #[serde(rename = "type")]
@@ -80,7 +80,8 @@ impl TypeConstructor for PropertyType {
     }
 
     fn empty_tuple() -> AbiResult<Self> {
-        Err(AbiError(AbiErrorKind::Error_invalid_param_type))
+        AbiError::err(AbiErrorKind::Error_invalid_param_type)
+            .context("`PropertyType` doesn't support tuples")
     }
 
     fn custom(s: &str) -> AbiResult<Self> {
@@ -88,11 +89,32 @@ impl TypeConstructor for PropertyType {
     }
 }
 
+impl fmt::Display for PropertyType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            PropertyType::Bool => write!(f, "bool"),
+            PropertyType::String => write!(f, "string"),
+            PropertyType::Int => write!(f, "int256"),
+            PropertyType::Uint => write!(f, "uint256"),
+            PropertyType::Address => write!(f, "address"),
+            PropertyType::FixBytes { len } => write!(f, "bytes{len}"),
+            PropertyType::Bytes => write!(f, "bytes"),
+            PropertyType::Custom(custom) => write!(f, "{custom}"),
+            PropertyType::Array(element_type) => {
+                write!(f, "{element_type}[]")
+            },
+            PropertyType::FixArray { len, element_type } => {
+                write!(f, "{element_type}[{len}]")
+            },
+        }
+    }
+}
+
 impl FromStr for PropertyType {
     type Err = MessageSigningError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Reader::parse_type(s).map_err(|_| MessageSigningError::InvalidParameterType)
+        Reader::parse_type(s).tw_err(|_| MessageSigningErrorKind::InvalidParameterType)
     }
 }
 

@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #![allow(clippy::missing_safety_doc)]
 
@@ -16,6 +14,12 @@ use tw_misc::{try_or_else, try_or_false};
 pub struct TWPrivateKey(pub(crate) PrivateKey);
 
 impl RawPtrTrait for TWPrivateKey {}
+
+impl AsRef<PrivateKey> for TWPrivateKey {
+    fn as_ref(&self) -> &PrivateKey {
+        &self.0
+    }
+}
 
 /// Create a private key with the given block of data.
 ///

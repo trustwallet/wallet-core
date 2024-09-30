@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -146,6 +144,12 @@ public:
     /// the encryption password to re-derive addresses from private keys.
     void fixAddresses(const Data& password);
 
+    /// Re-derives address for the account(s) associated with the given coin.
+    ///
+    /// This method can be used if address format has been changed.
+    /// In case of multiple accounts, all of them will be updated.
+    bool updateAddress(TWCoinType coin);
+
 private:
     /// Default constructor, private
     StoredKey() : type(StoredKeyType::mnemonicPhrase) {}
@@ -171,6 +175,9 @@ private:
 
     /// Re-derive account address if missing
     Account fillAddressIfMissing(Account& account, const HDWallet<>* wallet) const;
+
+    /// Re-derives public key and address for the specified account.
+    static void updateAddressForAccount(const PrivateKey& privKey, Account& account);
 };
 
 } // namespace TW::Keystore

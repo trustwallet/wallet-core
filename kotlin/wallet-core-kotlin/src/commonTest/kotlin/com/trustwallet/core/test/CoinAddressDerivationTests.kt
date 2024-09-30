@@ -38,8 +38,9 @@ class CoinAddressDerivationTests {
 
         Ethereum, SmartChain, Polygon, Optimism, Zksync, Arbitrum, ArbitrumNova, ECOChain, AvalancheCChain, XDai,
         Fantom, Celo, CronosChain, SmartBitcoinCash, KuCoinCommunityChain, Boba, Metis,
-        Aurora, Evmos, Moonriver, Moonbeam, KavaEvm, Klaytn, Meter, OKXChain, PolygonzkEVM, Scroll,
-        ConfluxeSpace, AcalaEVM, OpBNB, Neon, Base, Linea, Greenfield, Mantle, ZenEON,
+        Aurora, Evmos, Moonriver, Moonbeam, KavaEvm, Kaia, Meter, OKXChain, PolygonzkEVM, Scroll,
+        ConfluxeSpace, AcalaEVM, OpBNB, Neon, Base, Linea, Greenfield, Mantle, ZenEON, MantaPacific,
+        ZetaEVM, Merlin, Lightlink, Blast, BounceBit, ZkLinkNova,
         -> "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
 
         Ronin -> "ronin:8f348F300873Fd5DA36950B2aC75a26584584feE"
@@ -53,7 +54,7 @@ class CoinAddressDerivationTests {
         XRP -> "rPwE3gChNKtZ1mhH3Ko8YFGqKmGRWLWXV3"
         Tezos -> "tz1acnY9VbMagps26Kj3RfoGRWD9nYG5qaRX"
         ThunderCore -> "0x4b92b3ED6d8b24575Bf5ce4C6a86ED261DA0C8d7"
-        TomoChain -> "0xC74b6D8897cBa9A4b659d43fEF73C9cA852cE424"
+        Viction -> "0xC74b6D8897cBa9A4b659d43fEF73C9cA852cE424"
         Tron -> "TQ5NMqJjhpQGK7YJbESKtNCo86PJ89ujio"
         VeChain -> "0x1a553275dF34195eAf23942CB7328AcF9d48c160"
         Wanchain -> "0xD5ca90b928279FE5D06144136a25DeD90127aC15"
@@ -114,8 +115,8 @@ class CoinAddressDerivationTests {
         NativeEvmos -> "evmos13u6g7vqgw074mgmf2ze2cadzvkz9snlwstd20d"
         Nervos -> "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdtyq04tvp02wectaumxn0664yw2jd53lqk4mxg3"
         Everscale -> "0:0c39661089f86ec5926ea7d4ee4223d634ba4ed6dcc2e80c7b6a8e6d59f79b04"
-        TON -> "EQDgEMqToTacHic7SnvnPFmvceG5auFkCcAw0mSCvzvKUfk9"
-        Aptos -> "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30"
+        TON -> "UQDgEMqToTacHic7SnvnPFmvceG5auFkCcAw0mSCvzvKUaT4"
+        Aptos -> "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30"
         Nebl -> "NgDVaXAwNgBwb88xLiFKomfBmPkEh9F2d7"
         Sui -> "0xada112cfb90b44ba889cc5d39ac2bf46281e4a91f7919c693bcd9b8323e81ed2"
         Hedera -> "0.0.302a300506032b657003210049eba62f64d0d941045595d9433e65d84ecc46bcdb1421de55e05fcf2d8357d5"
@@ -142,5 +143,9 @@ class CoinAddressDerivationTests {
         Noble -> "noble142j9u5eaduzd7faumygud6ruhdwme98qc8l3wa"
         Rootstock -> "0xA2D7065F94F838a3aB9C04D67B312056846424Df"
         Sei -> "sei142j9u5eaduzd7faumygud6ruhdwme98qagm0sj"
+        InternetComputer -> "6f8e568160a3c8362789848dc0fa52891964473c045cc25208a305fb35b7c4ab"
+        Tia -> "celestia142j9u5eaduzd7faumygud6ruhdwme98qpwmfv7"
+        NativeZetaChain -> "zeta13u6g7vqgw074mgmf2ze2cadzvkz9snlwywj304"
+        Dydx -> "dydx142j9u5eaduzd7faumygud6ruhdwme98qeayaky"
     }
 }

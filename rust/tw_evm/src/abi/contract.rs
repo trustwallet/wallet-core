@@ -1,13 +1,12 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::abi::function::Function;
-use crate::abi::{AbiError, AbiErrorKind, AbiResult};
+use crate::abi::{AbiErrorKind, AbiResult};
 use serde::{Deserialize, Deserializer};
 use std::collections::BTreeMap;
+use tw_coin_entry::error::prelude::*;
 
 /// API building calls to contracts ABI.
 /// Consider adding missing field such as `errors`, `events` etc.
@@ -24,7 +23,8 @@ impl Contract {
             .into_iter()
             .flatten()
             .next()
-            .ok_or(AbiError(AbiErrorKind::Error_abi_mismatch))
+            .or_tw_err(AbiErrorKind::Error_abi_mismatch)
+            .with_context(|| format!("The given Smart Contract does not have '{name}' function"))
     }
 }
 

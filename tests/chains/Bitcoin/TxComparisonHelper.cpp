@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "TxComparisonHelper.h"
 
@@ -47,6 +45,7 @@ SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, b
     input.byteFee = byteFee;
     input.useMaxAmount = useMaxAmount;
     input.coinType = coin;
+    input.dustCalculator = std::make_shared<LegacyDustCalculator>(coin);
 
     if (!omitPrivateKey) {
         auto utxoKey = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"));

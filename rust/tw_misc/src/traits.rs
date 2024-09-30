@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use zeroize::Zeroizing;
 
@@ -36,5 +34,23 @@ impl<T, E> IntoOption<T> for Result<T, E> {
 impl<T> IntoOption<T> for Option<T> {
     fn into_option(self) -> Option<T> {
         self
+    }
+}
+
+pub trait FromSlice: for<'a> TryFrom<&'a [u8]> {}
+
+impl<T> FromSlice for T where for<'a> T: TryFrom<&'a [u8]> {}
+
+pub trait OptionalEmpty: Sized {
+    fn empty_or_some(self) -> Option<Self>;
+}
+
+impl OptionalEmpty for String {
+    fn empty_or_some(self) -> Option<Self> {
+        if self.is_empty() {
+            None
+        } else {
+            Some(self)
+        }
     }
 }

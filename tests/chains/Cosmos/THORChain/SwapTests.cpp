@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Binance/Address.h"
 #include "Bitcoin/Script.h"
@@ -389,6 +387,59 @@ TEST(THORChainSwap, SwapBtcBnb) {
     // https://blockchair.com/bitcoin/transaction/1cd9056b212b85d9d7d34d0795a746dd8691b8cd34ef56df0aa9622fbdec5f88
     // https://viewblock.io/thorchain/tx/1CD9056B212B85D9D7D34D0795A746DD8691B8CD34EF56DF0AA9622FBDEC5F88
     // https://explorer.binance.org/tx/8D78469069118E9B9546696214CCD46E63D3FA0D7E854C094D63C8F6061278B7
+}
+
+TEST(THORChainSwap, SwapUsdtBsc) {
+    auto myAddress = "0x0d6aA74992eDDaaf430eadca63B87f4C99Aef8dE";
+    auto vaultAddress = "0x1f3b3c6ac151bf32409fe139a5d55f3d9444729c";
+    auto routerAddress = "0xD37BbE5744D730a1d98d8DC97c42F0Ca46aD7146";
+    auto usdtTokenId = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
+    auto amount = 70000000;
+    auto expirationTime = 1775669796;
+
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::ETH));
+    fromAsset.set_symbol("USDT");
+    fromAsset.set_token_id(usdtTokenId);
+    Proto::Asset toAsset;
+    toAsset.set_chain(static_cast<Proto::Chain>(Chain::BSC));
+    toAsset.set_symbol("BSC");
+    toAsset.set_token_id("BNB");
+
+    auto&& [out, errorCode, error] = SwapBuilder::builder()
+        .from(fromAsset)
+        .to(toAsset)
+        .fromAddress(myAddress)
+        .toAddress(myAddress)
+        .vault(vaultAddress)
+        .router(routerAddress)
+        .fromAmount(std::to_string(amount))
+        .expirationPolicy(expirationTime)
+        .affFeeAddress("tr")
+        .affFeeRate("0")
+        .streamInterval("1")
+        .streamQuantity("0")
+        .build();
+    ASSERT_EQ(errorCode, 0);
+    ASSERT_EQ(error, "");
+
+    auto tx = Ethereum::Proto::SigningInput();
+    ASSERT_TRUE(tx.ParseFromArray(out.data(), (int)out.size()));
+
+    // check fields
+    EXPECT_EQ(tx.to_address(), routerAddress);
+    ASSERT_TRUE(tx.transaction().has_contract_generic());
+
+    auto funcData = Ethereum::ABI::Function::encodeFunctionCall("depositWithExpiry", Ethereum::ABI::BaseParams{
+        std::make_shared<Ethereum::ABI::ProtoAddress>(vaultAddress),
+        std::make_shared<Ethereum::ABI::ProtoAddress>(usdtTokenId),
+        std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(amount)),
+        std::make_shared<Ethereum::ABI::ProtoString>("=:BSC.BNB:0x0d6aA74992eDDaaf430eadca63B87f4C99Aef8dE:0/1/0:tr:0"),
+        std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(expirationTime))
+    }).value();
+    EXPECT_EQ(hex(funcData), "44bc937b0000000000000000000000001f3b3c6ac151bf32409fe139a5d55f3d9444729c000000000000000000000000dac17f958d2ee523a2206206994597c13d831ec700000000000000000000000000000000000000000000000000000000042c1d8000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000069d69224000000000000000000000000000000000000000000000000000000000000003f3d3a4253432e424e423a3078306436614137343939326544446161663433306561646361363342383766344339394165663864453a302f312f303a74723a3000");
+    EXPECT_EQ(hex(TW::data(tx.transaction().contract_generic().amount())), "00");
+    EXPECT_EQ(hex(TW::data(tx.transaction().contract_generic().data())), hex(funcData));
 }
 
 TEST(THORChainSwap, SwapAtomBnb) {

@@ -1,13 +1,11 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "../BinaryCoding.h"
 #include "Name.h"
+#include "algorithm/string.hpp"
 
-#include <boost/algorithm/string/trim.hpp>
 #include <stdexcept>
 
 namespace TW::EOS {
@@ -52,7 +50,7 @@ std::string Name::string() const noexcept {
         tmp >>= 5;
     }
 
-    boost::algorithm::trim_right_if(str, [](char c) { return c == '.'; });
+    trim_right(str, ".");
     return str;
 }
 

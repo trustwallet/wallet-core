@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -96,8 +94,6 @@ public:
                           uint64_t amount, enum SignatureVersion version) const;
 
     void serializeInput(size_t subindex, const Script&, size_t index, enum TWBitcoinSigHashType hashType, Data& data) const;
-
-    static std::optional<uint64_t> calculateFee(const Data& encoded, uint64_t satVb);
 
     /// Converts to Protobuf model
     Proto::Transaction proto() const;

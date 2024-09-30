@@ -1,0 +1,45 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+syntax = "proto3";
+
+package TW.InternetComputer.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Internet Computer Transactions
+message Transaction {
+
+    // ICP ledger transfer arguments
+    message Transfer {
+        string to_account_identifier = 1;
+        uint64 amount = 2;
+        uint64 memo = 3;
+        uint64 current_timestamp_nanos = 4;
+        uint64 permitted_drift = 5;
+    }
+
+    // Payload transfer
+    oneof transaction_oneof {
+        Transfer transfer = 1;
+    }
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    bytes private_key = 1;
+    Transaction transaction = 2;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    // NOTE: Before sending to the Rosetta node, this value should be hex-encoded before using with the JSON structure.
+    bytes signed_transaction = 1;
+
+    Common.Proto.SigningError error = 2;
+
+    string error_message = 3;
+}

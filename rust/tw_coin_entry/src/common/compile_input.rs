@@ -1,46 +1,57 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::coin_entry::{PublicKeyBytes, SignatureBytes};
-use crate::error::{SigningError, SigningErrorType, SigningResult};
-use tw_keypair::KeyPairError;
+use crate::error::prelude::*;
 
-pub struct SingleSignaturePubkey<Signature, PublicKey> {
-    pub signature: Signature,
-    pub public_key: PublicKey,
+pub struct SingleSignaturePubkey {
+    pub signature: SignatureBytes,
+    pub public_key: PublicKeyBytes,
 }
 
-impl<Signature, PublicKey> SingleSignaturePubkey<Signature, PublicKey>
-where
-    Signature: for<'a> TryFrom<&'a [u8], Error = KeyPairError>,
-    PublicKey: for<'a> TryFrom<&'a [u8], Error = KeyPairError>,
-{
+impl SingleSignaturePubkey {
     pub fn from_sign_pubkey_list(
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> SigningResult<Self> {
         if signatures.len() > 1 || public_keys.len() > 1 {
-            return Err(SigningError(SigningErrorType::Error_no_support_n2n));
+            return TWError::err(SigningErrorType::Error_no_support_n2n)
+                .context("Expected exactly one signature and public key");
         }
 
-        let signature_data = signatures
+        let signature = signatures
             .into_iter()
             .next()
-            .ok_or(SigningError(SigningErrorType::Error_signatures_count))?;
-        let public_key_data = public_keys
+            .or_tw_err(SigningErrorType::Error_signatures_count)
+            .context("Expected exactly one signature and public key")?;
+        let public_key = public_keys
             .into_iter()
             .next()
-            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
-
-        let signature = Signature::try_from(signature_data.as_slice())?;
-        let public_key = PublicKey::try_from(public_key_data.as_slice())?;
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("Expected exactly one signature and public key")?;
 
         Ok(SingleSignaturePubkey {
             signature,
             public_key,
+        })
+    }
+
+    pub fn from_sign_list(signatures: Vec<SignatureBytes>) -> SigningResult<Self> {
+        if signatures.len() > 1 {
+            return TWError::err(SigningErrorType::Error_no_support_n2n)
+                .context("Expected exactly one signature");
+        }
+
+        let signature = signatures
+            .into_iter()
+            .next()
+            .or_tw_err(SigningErrorType::Error_signatures_count)
+            .context("Expected exactly one signature")?;
+
+        Ok(SingleSignaturePubkey {
+            signature,
+            public_key: PublicKeyBytes::default(),
         })
     }
 }

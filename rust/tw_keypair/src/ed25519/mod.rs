@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use digest::{consts::U64, Digest};
 
@@ -28,11 +26,11 @@ pub mod sha512 {
 
 /// `ed25519` implementation using `BLAKE2B` hash function.
 pub mod blake2b {
-    use blake2::Blake2b;
+    use blake2::Blake2b512;
 
-    pub type KeyPair = crate::ed25519::keypair::KeyPair<Blake2b>;
-    pub type PrivateKey = crate::ed25519::private::PrivateKey<Blake2b>;
-    pub type PublicKey = crate::ed25519::public::PublicKey<Blake2b>;
+    pub type KeyPair = crate::ed25519::keypair::KeyPair<Blake2b512>;
+    pub type PrivateKey = crate::ed25519::private::PrivateKey<Blake2b512>;
+    pub type PublicKey = crate::ed25519::public::PublicKey<Blake2b512>;
 }
 
 /// A hash function that returns 64 length output.

@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -17,23 +15,6 @@ TW_EXTERN_C_BEGIN
 /// Non-core transaction utility methods, like building a transaction using an external signature.
 TW_EXPORT_STRUCT
 struct TWTransactionCompiler;
-
-/// Builds a coin-specific SigningInput (proto object) from a simple transaction.
-///
-/// \deprecated `TWTransactionCompilerBuildInput` will be removed soon.
-/// \param coin coin type.
-/// \param from sender of the transaction.
-/// \param to receiver of the transaction.
-/// \param amount transaction amount in string
-/// \param asset optional asset name, like "BNB"
-/// \param memo optional memo
-/// \param chainId optional chainId to override default
-/// \return serialized data of the SigningInput proto object.
-TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWTransactionCompilerBuildInput(enum TWCoinType coinType, TWString* _Nonnull from,
-                                                 TWString* _Nonnull to, TWString* _Nonnull amount,
-                                                 TWString* _Nonnull asset, TWString* _Nonnull memo,
-                                                 TWString* _Nonnull chainId);
 
 /// Obtains pre-signing hashes of a transaction.
 ///

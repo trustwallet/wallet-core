@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::rlp::buffer::RlpBuffer;
 use crate::rlp::RlpEncode;
@@ -28,9 +26,9 @@ impl RlpList {
     }
 
     /// Appends an item.
-    pub fn append<T>(&mut self, item: T) -> &mut Self
+    pub fn append<T>(&mut self, item: &T) -> &mut Self
     where
-        T: RlpEncode,
+        T: RlpEncode + ?Sized,
     {
         item.rlp_append(&mut self.buf);
         self

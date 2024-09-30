@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "TestUtilities.h"
 
@@ -37,4 +35,38 @@ TEST(TWSolanaProgram, defaultTokenAddress) {
 
     assertStringsEqual(tokenAddress, "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     assertStringsEqual(description, "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+}
+
+TEST(TWSolanaProgram, defaultTokenAddressError) {
+    const auto solAddress = STRING("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    // Invalid token mint address.
+    const auto serumToken = STRING("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKW");
+
+    auto solanaAddress = WRAP(TWSolanaAddress, TWSolanaAddressCreateWithString(solAddress.get()));
+    auto description = WRAPS(TWSolanaAddressDescription(solanaAddress.get()));
+
+    EXPECT_EQ(TWSolanaAddressDefaultTokenAddress(solanaAddress.get(), serumToken.get()), nullptr);
+}
+
+TEST(TWSolanaProgram, token2022Address) {
+    const auto solAddress = STRING("68dzdXkni9BrAwU1asAwurMEdQhXUJq6MNY8niDAny8t");
+    const auto catwifhatToken = STRING("7atgF8KQo4wJrD5ATGX7t1V2zVvykPJbFfNeVf1icFv1");
+
+    auto solanaAddress = WRAP(TWSolanaAddress, TWSolanaAddressCreateWithString(solAddress.get()));
+    auto description = WRAPS(TWSolanaAddressDescription(solanaAddress.get()));
+    auto tokenAddress = WRAPS(TWSolanaAddressToken2022Address(solanaAddress.get(), catwifhatToken.get()));
+
+    assertStringsEqual(tokenAddress, "3PaFQnebQMHBgthRScup2B932cMxA1GBP7m9roCkomHq");
+    assertStringsEqual(description, "68dzdXkni9BrAwU1asAwurMEdQhXUJq6MNY8niDAny8t");
+}
+
+TEST(TWSolanaProgram, token2022AddressError) {
+    const auto solAddress = STRING("68dzdXkni9BrAwU1asAwurMEdQhXUJq6MNY8niDAny8t");
+    // Invalid token mint address.
+    const auto catwifhatToken = STRING("7atgF8KQo4wJrD5ATGX7t1V2zVvykPJbFfNeVf1icF");
+
+    auto solanaAddress = WRAP(TWSolanaAddress, TWSolanaAddressCreateWithString(solAddress.get()));
+    auto description = WRAPS(TWSolanaAddressDescription(solanaAddress.get()));
+
+    EXPECT_EQ(TWSolanaAddressToken2022Address(solanaAddress.get(), catwifhatToken.get()), nullptr);
 }

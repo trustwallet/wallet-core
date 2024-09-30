@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "TestUtilities.h"
 
@@ -60,7 +58,7 @@ TEST(TWSegwitAddress, InitWithAddress) {
 
     ASSERT_EQ(TWHRPBitcoin, TWSegwitAddressHRP(address.get()));
 
-    auto witness = WRAPS(TWSegwitAddressWitnessProgram(address.get()));
+    auto witness = WRAPD(TWSegwitAddressWitnessProgram(address.get()));
     ASSERT_EQ(TW::hex(TW::data(TWDataBytes(witness.get()), TWDataSize(witness.get()))), "751e76e8199196d454941c45d1b3a323f1433bd6");
 }
 

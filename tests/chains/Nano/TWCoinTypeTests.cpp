@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 //
 // This is a GENERATED FILE, changes made here MAY BE LOST.
 // Generated one-time (codegen/bin/cointests)
@@ -27,8 +25,8 @@ TEST(TWNanoCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeNano));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeNano));
     assertStringsEqual(symbol, "XNO");
-    assertStringsEqual(txUrl, "https://nanocrawler.cc/explorer/block/C264DB7BF40738F0CEFF19B606746CB925B713E4B8699A055699E0DC8ABBC70F");
-    assertStringsEqual(accUrl, "https://nanocrawler.cc/explorer/account/nano_1wpj616kwhe1y38y1mspd8aub8i334cwybqco511iyuxm55zx8d67ptf1tsf");
+    assertStringsEqual(txUrl, "https://www.nanolooker.com/block/C264DB7BF40738F0CEFF19B606746CB925B713E4B8699A055699E0DC8ABBC70F");
+    assertStringsEqual(accUrl, "https://www.nanolooker.com/account/nano_1wpj616kwhe1y38y1mspd8aub8i334cwybqco511iyuxm55zx8d67ptf1tsf");
     assertStringsEqual(id, "nano");
     assertStringsEqual(name, "Nano");
 }

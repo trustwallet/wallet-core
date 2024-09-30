@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #![allow(clippy::missing_safety_doc)]
 
@@ -18,10 +16,8 @@ use tw_misc::try_or_else;
 /// \param input Non-null serialized `EthereumRlp::Proto::EncodingInput`.
 /// \return serialized `EthereumRlp::Proto::EncodingOutput`.
 #[no_mangle]
-pub unsafe extern "C" fn tw_ethereum_rlp_encode(
-    coin: CoinType,
-    input: *const TWData,
-) -> *mut TWData {
+pub unsafe extern "C" fn tw_ethereum_rlp_encode(coin: u32, input: *const TWData) -> *mut TWData {
+    let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
     let input_data = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
     let evm_dispatcher = try_or_else!(evm_dispatcher(coin), std::ptr::null_mut);
     evm_dispatcher

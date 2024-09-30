@@ -1,10 +1,8 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
-use tw_coin_entry::error::{SigningError, SigningErrorType};
+use tw_coin_entry::error::prelude::*;
 use tw_hash::H256;
 
 pub mod eip191;
@@ -13,9 +11,10 @@ pub mod signature;
 
 pub type EthMessageBoxed = Box<dyn EthMessage>;
 pub type MessageSigningResult<T> = Result<T, MessageSigningError>;
+pub type MessageSigningError = TWError<MessageSigningErrorKind>;
 
 #[derive(Debug)]
-pub enum MessageSigningError {
+pub enum MessageSigningErrorKind {
     InvalidParameterType,
     InvalidParameterValue,
     TypeValueMismatch,
@@ -23,17 +22,15 @@ pub enum MessageSigningError {
     Internal,
 }
 
-impl From<MessageSigningError> for SigningError {
-    fn from(err: MessageSigningError) -> Self {
-        match err {
-            MessageSigningError::InvalidParameterType
-            | MessageSigningError::InvalidParameterValue
-            | MessageSigningError::TypeValueMismatch
-            | MessageSigningError::InvalidChainId => {
-                SigningError(SigningErrorType::Error_invalid_params)
-            },
-            MessageSigningError::Internal => SigningError(SigningErrorType::Error_internal),
-        }
+pub fn to_signing(msg_err: MessageSigningError) -> SigningError {
+    match msg_err.error_type() {
+        MessageSigningErrorKind::InvalidParameterType
+        | MessageSigningErrorKind::InvalidParameterValue
+        | MessageSigningErrorKind::TypeValueMismatch
+        | MessageSigningErrorKind::InvalidChainId => {
+            SigningError::new(SigningErrorType::Error_invalid_params)
+        },
+        MessageSigningErrorKind::Internal => SigningError::new(SigningErrorType::Error_internal),
     }
 }
 

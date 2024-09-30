@@ -1,13 +1,12 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::abi::non_empty_array::NonZeroLen;
 use crate::abi::param_type::ParamType;
 use crate::abi::uint::UintBits;
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
+use tw_coin_entry::error::prelude::*;
 
 pub trait TypeConstructor: Sized {
     fn address() -> Self;
@@ -101,7 +100,8 @@ impl TypeConstructor for ParamType {
         })
     }
 
-    fn custom(_s: &str) -> AbiResult<Self> {
-        Err(AbiError(AbiErrorKind::Error_invalid_param_type))
+    fn custom(s: &str) -> AbiResult<Self> {
+        AbiError::err(AbiErrorKind::Error_invalid_param_type)
+            .with_context(|| format!("`ParamType` doesn't support custom types like '{s}'"))
     }
 }

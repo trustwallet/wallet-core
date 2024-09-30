@@ -1,11 +1,9 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use serde::Deserialize;
-use tw_encoding::hex;
+use tw_encoding::hex::{self, as_hex};
 use tw_hash::H512;
 use tw_keypair::ed25519::cardano::ExtendedKeyPair;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
@@ -20,6 +18,7 @@ const ED25519_EXTENDED_CARDANO_PRIV_TO_PUB: &str =
 struct Ed255191ExtendedCardanoSignTest {
     secret: String,
     msg: String,
+    #[serde(with = "as_hex")]
     signature: H512,
 }
 

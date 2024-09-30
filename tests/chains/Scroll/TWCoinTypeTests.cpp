@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 //
 // This is a GENERATED FILE, changes made here MAY BE LOST.
 // Generated one-time (codegen/bin/cointests)
@@ -19,9 +17,9 @@ TEST(TWScrollCoinType, TWCoinType) {
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
-    const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xee9196d6840c8d31626324d91c886d20e65711c2026c559133fb23741d3b2f9d"));
+    const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xa2062a4530b194a438bb9f9e87cdce59f70775a52e8336892364445847c43ca2"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
-    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0xFE993660cd35d68D94b6Eba29F4D928d979cd65B"));
+    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0xf9062b8a30e0d7722960e305049fa50b86ba6253"));
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
     assertStringsEqual(id, "scroll");
@@ -31,7 +29,7 @@ TEST(TWScrollCoinType, TWCoinType) {
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
-    assertStringsEqual(chainId, "534353");
-    assertStringsEqual(txUrl, "https://blockscout.scroll.io/tx/0xee9196d6840c8d31626324d91c886d20e65711c2026c559133fb23741d3b2f9d");
-    assertStringsEqual(accUrl, "https://blockscout.scroll.io/address/0xFE993660cd35d68D94b6Eba29F4D928d979cd65B");
+    assertStringsEqual(chainId, "534352");
+    assertStringsEqual(txUrl, "https://scrollscan.com/tx/0xa2062a4530b194a438bb9f9e87cdce59f70775a52e8336892364445847c43ca2");
+    assertStringsEqual(accUrl, "https://scrollscan.com/address/0xf9062b8a30e0d7722960e305049fa50b86ba6253");
 }

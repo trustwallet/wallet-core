@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #![allow(clippy::missing_safety_doc)]
 
@@ -20,9 +18,10 @@ use tw_misc::try_or_else;
 /// \return serialized `EthereumAbi::Proto::ContractCallDecodingOutput`.
 #[no_mangle]
 pub unsafe extern "C" fn tw_ethereum_abi_decode_contract_call(
-    coin: CoinType,
+    coin: u32,
     input: *const TWData,
 ) -> *mut TWData {
+    let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
     let input_data = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
     let evm_dispatcher = try_or_else!(evm_dispatcher(coin), std::ptr::null_mut);
 
@@ -39,9 +38,10 @@ pub unsafe extern "C" fn tw_ethereum_abi_decode_contract_call(
 /// \return The serialized data of a `TW.EthereumAbi.Proto.ParamsDecodingOutput` proto object.
 #[no_mangle]
 pub unsafe extern "C" fn tw_ethereum_abi_decode_params(
-    coin: CoinType,
+    coin: u32,
     input: *const TWData,
 ) -> *mut TWData {
+    let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
     let input_data = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
     let evm_dispatcher = try_or_else!(evm_dispatcher(coin), std::ptr::null_mut);
 
@@ -58,9 +58,10 @@ pub unsafe extern "C" fn tw_ethereum_abi_decode_params(
 /// \return function type signature as a Non-null string.
 #[no_mangle]
 pub unsafe extern "C" fn tw_ethereum_abi_function_get_signature(
-    coin: CoinType,
+    coin: u32,
     input: *const TWData,
 ) -> *mut TWString {
+    let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
     let input_data = try_or_else!(TWData::from_ptr_as_ref(input), || TWString::new()
         .into_ptr());
     let evm_dispatcher = try_or_else!(evm_dispatcher(coin), || TWString::new().into_ptr());
@@ -78,9 +79,10 @@ pub unsafe extern "C" fn tw_ethereum_abi_function_get_signature(
 /// \return The serialized data of a `TW.EthereumAbi.Proto.FunctionEncodingOutput` proto object.
 #[no_mangle]
 pub unsafe extern "C" fn tw_ethereum_abi_encode_function(
-    coin: CoinType,
+    coin: u32,
     input: *const TWData,
 ) -> *mut TWData {
+    let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
     let input_data = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
     let evm_dispatcher = try_or_else!(evm_dispatcher(coin), std::ptr::null_mut);
 
@@ -97,9 +99,10 @@ pub unsafe extern "C" fn tw_ethereum_abi_encode_function(
 /// \return The serialized data of a `TW.EthereumAbi.Proto.ValueDecodingOutput` proto object.
 #[no_mangle]
 pub unsafe extern "C" fn tw_ethereum_abi_decode_value(
-    coin: CoinType,
+    coin: u32,
     input: *const TWData,
 ) -> *mut TWData {
+    let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
     let input_data = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
     let evm_dispatcher = try_or_else!(evm_dispatcher(coin), std::ptr::null_mut);
 

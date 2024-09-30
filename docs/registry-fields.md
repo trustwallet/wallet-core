@@ -189,7 +189,7 @@ Link to the default implementation of the node or RPC gateway that can be used b
 Optional URL to an available public RPC service.
 
 **`info/documentation`**
-Main porject documentation site/subsite.
+Main project documentation site/subsite.
 
 **`deprecated`**
 If set to `true`, the project is considered deprecated: its info is kept here, but it will not be supported.

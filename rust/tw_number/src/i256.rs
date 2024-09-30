@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::{NumberError, NumberResult, Sign, U256};
 use lazy_static::lazy_static;
@@ -42,7 +40,6 @@ impl I256 {
     /// - `0` is [`U256::zero()`]
     /// - `-1` is [`U256::MAX`]
     /// - `-2` is [`U256::MAX - 1`]
-    /// ...
     #[inline]
     pub fn to_u256_repr(&self) -> U256 {
         U256::from(self.0)
@@ -54,7 +51,6 @@ impl I256 {
     /// - [`U256::zero()`] is `0`
     /// - [`U256::MAX`] is `-1`
     /// - [`U256::MAX - 1`] is `-2`
-    /// ...
     #[inline]
     pub fn from_u256_repr(unsigned: U256) -> I256 {
         I256(unsigned.0)

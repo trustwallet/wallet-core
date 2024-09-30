@@ -1,12 +1,10 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use std::borrow::Cow;
 use std::str::FromStr;
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_evm::evm_context::StandardEvmContext;
 use tw_evm::modules::rlp_encoder::{RlpEncoder, RECURSION_LIMIT};

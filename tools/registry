@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import requests
+import subprocess
+import sys
+
+PATH_TO_REGISTRY_JSON = "registry.json"
+
+
+def ping_url(url):
+    response = requests.get(url)
+    if response.status_code != 200:
+        raise Exception(str(response.status_code))
+
+
+def ping_explorers(_args):
+    """Pings blockchain explorers inside 'registry.json'"""
+    registry_file = open(PATH_TO_REGISTRY_JSON, 'r')
+    registry_json = json.load(registry_file)
+
+    for chain_json in registry_json:
+        explorer_json = chain_json["explorer"]
+        sample_url = explorer_json["url"]
+
+        # Not all chains have `sampleTx` parameter.
+        if "sampleTx" in explorer_json:
+            sample_url += explorer_json["txPath"] + explorer_json["sampleTx"]
+
+        try:
+            ping_url(sample_url)
+        except Exception as exception:
+            print(chain_json["name"], ":", sample_url, " NOT WORKING")
+            print("\tError: ", exception)
+
+
+def registry_stats(_args):
+    """Print registry stats"""
+    subprocess.run([
+        "cargo",
+        "run",
+        "--manifest-path",
+        "rust/Cargo.toml",
+        "-p",
+        "wallet_core_bin",
+        "--",
+        "registry-stats"
+    ],
+        shell=False)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Operations over registry.json")
+    subparsers = parser.add_subparsers()
+
+    ping_explorers_parser = subparsers.add_parser('ping-explorers',
+                                                  help="Ping blockchain explorers inside 'registry.json'")
+    ping_explorers_parser.set_defaults(func=ping_explorers)
+
+    registry_stats_parser = subparsers.add_parser('registry-stats',
+                                                  help="Print registry statistic (e.g Rust transition progress)")
+    registry_stats_parser.set_defaults(func=registry_stats)
+
+    args = parser.parse_args()
+    args.func(args)

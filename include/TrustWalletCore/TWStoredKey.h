@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -296,6 +294,16 @@ TWData* _Nullable TWStoredKeyExportJSON(struct TWStoredKey* _Nonnull key);
 /// \return `false` if the password is incorrect, true otherwise.
 TW_EXPORT_METHOD
 bool TWStoredKeyFixAddresses(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
+
+/// Re-derives address for the account(s) associated with the given coin.
+/// This method can be used if address format has been changed.
+/// In case of multiple accounts, all of them will be updated.
+///
+/// \param key Non-null pointer to a stored key
+/// \param coin Account(s) coin type to be updated
+/// \return `false` if there are no accounts associated with the given coin, true otherwise
+TW_EXPORT_METHOD
+bool TWStoredKeyUpdateAddress(struct TWStoredKey* _Nonnull key, enum TWCoinType coin);
 
 /// Retrieve stored key encoding parameters, as JSON string.
 ///

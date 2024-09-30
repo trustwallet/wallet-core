@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::Error;
 use std::fmt;
@@ -14,8 +12,10 @@ use zeroize::DefaultIsZeroes;
 
 pub type H32 = Hash<4>;
 pub type H160 = Hash<20>;
+pub type H192 = Hash<24>;
 pub type H256 = Hash<32>;
 pub type H264 = Hash<33>;
+pub type H288 = Hash<36>;
 pub type H512 = Hash<64>;
 pub type H520 = Hash<65>;
 
@@ -38,7 +38,7 @@ pub fn concat<const L: usize, const R: usize, const N: usize>(
 }
 
 /// Represents a fixed-length byte array.
-#[derive(Debug, Clone, Copy, Eq, Hash, PartialEq)]
+#[derive(Debug, Clone, Copy, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct Hash<const N: usize>([u8; N]);
 
@@ -82,11 +82,21 @@ impl<const N: usize> Hash<N> {
     pub const fn len() -> usize {
         N
     }
+
+    pub fn is_zero(&self) -> bool {
+        self.0.iter().all(|byte| *byte == 0)
+    }
+
+    /// Reverses the order of elements in the inner data, in place.
+    pub fn rev(mut self) -> Self {
+        self.0.reverse();
+        self
+    }
 }
 
 /// This is a [`Hash::split`] helper that ensures that `L + R == N` at compile time.
 /// Assertion example:
-/// ```rust(ignore)
+/// ```ignore
 /// let hash = H256::default();
 /// let (left, right): (H128, H160) = hash.split();
 ///
@@ -175,28 +185,80 @@ impl<const N: usize> fmt::Display for Hash<N> {
 }
 
 #[cfg(feature = "serde")]
-mod impl_serde {
+pub mod as_bytes {
     use super::Hash;
     use serde::de::Error;
-    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+    use serde::{Deserialize, Deserializer, Serializer};
+    use tw_memory::Data;
 
-    impl<'de, const N: usize> Deserialize<'de> for Hash<N> {
-        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    pub fn deserialize<'de, const N: usize, D>(deserializer: D) -> Result<Hash<N>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let bytes = Data::deserialize(deserializer)?;
+        Hash::<N>::try_from(bytes.as_slice()).map_err(|e| Error::custom(format!("{e:?}")))
+    }
+
+    pub fn serialize<const N: usize, S>(hash: &Hash<N>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_bytes(&hash.0)
+    }
+}
+
+#[cfg(feature = "serde")]
+pub mod as_byte_sequence {
+    use super::Hash;
+    use serde::de::{Error, SeqAccess, Visitor};
+    use serde::ser::SerializeTuple;
+    use serde::{Deserializer, Serializer};
+    use std::fmt;
+    use std::marker::PhantomData;
+
+    struct ByteArrayVisitor<const N: usize> {
+        _n: PhantomData<[u8; N]>,
+    }
+
+    impl<'de, const N: usize> Visitor<'de> for ByteArrayVisitor<N> {
+        type Value = Hash<N>;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("struct Hash<N>")
+        }
+
+        fn visit_seq<A>(self, mut seq: A) -> Result<Hash<N>, A::Error>
         where
-            D: Deserializer<'de>,
+            A: SeqAccess<'de>,
         {
-            let hex = String::deserialize(deserializer)?;
-            hex.parse().map_err(|e| Error::custom(format!("{e:?}")))
+            let mut result = Hash::<N>::default();
+            for i in 0..N {
+                result[i] = seq
+                    .next_element()?
+                    .ok_or_else(|| Error::invalid_length(i, &self))?;
+            }
+            Ok(result)
         }
     }
 
-    impl<const N: usize> Serialize for Hash<N> {
-        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: Serializer,
-        {
-            self.to_string().serialize(serializer)
+    pub fn deserialize<'de, const N: usize, D>(deserializer: D) -> Result<Hash<N>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let visitor = ByteArrayVisitor::<N> { _n: PhantomData };
+        deserializer.deserialize_tuple(N, visitor)
+    }
+
+    pub fn serialize<const N: usize, S>(hash: &Hash<N>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut tup = serializer.serialize_tuple(N)?;
+        for el in hash.0 {
+            tup.serialize_element(&el)?;
         }
+
+        tup.end()
     }
 }
 
@@ -278,7 +340,9 @@ mod tests {
 #[cfg(all(test, feature = "serde"))]
 mod serde_tests {
     use super::*;
+    use serde::{Deserialize, Serialize};
     use serde_json::json;
+    use tw_encoding::hex::as_hex;
 
     const BYTES_32: [u8; 32] = [
         175u8, 238, 252, 167, 77, 154, 50, 92, 241, 214, 182, 145, 29, 97, 166, 92, 50, 175, 168,
@@ -286,27 +350,60 @@ mod serde_tests {
     ];
     const HEX_32: &str = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
 
-    #[test]
-    fn test_hash_deserialize() {
-        let unprefixed: Hash<32> = serde_json::from_value(json!(HEX_32)).unwrap();
-        assert_eq!(unprefixed.0, BYTES_32);
+    #[derive(Debug, Deserialize, Serialize)]
+    struct TestAsHex {
+        #[serde(with = "as_hex")]
+        data: Hash<32>,
+    }
 
-        let prefixed: Hash<32> = serde_json::from_value(json!(HEX_32)).unwrap();
-        assert_eq!(prefixed.0, BYTES_32);
+    #[derive(Debug, Deserialize, Serialize)]
+    struct TestAsByteSequence {
+        #[serde(with = "as_byte_sequence")]
+        data: Hash<32>,
     }
 
     #[test]
-    fn test_hash_deserialize_error() {
-        serde_json::from_value::<Hash<32>>(json!(
-            "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45"
-        ))
+    fn test_hash_deserialize_as_byte_sequence() {
+        let res: TestAsByteSequence = serde_json::from_value(json!({"data": BYTES_32})).unwrap();
+        assert_eq!(res.data.0, BYTES_32);
+    }
+
+    #[test]
+    fn test_hash_serialize_as_byte_sequence() {
+        let res = TestAsByteSequence {
+            data: Hash::<32>::from(BYTES_32),
+        };
+        assert_eq!(
+            serde_json::to_value(&res).unwrap(),
+            json!({"data": BYTES_32})
+        );
+    }
+
+    #[test]
+    fn test_hash_deserialize_as_hex() {
+        let unprefixed: TestAsHex = serde_json::from_value(json!({"data": HEX_32})).unwrap();
+
+        assert_eq!(unprefixed.data.0, BYTES_32);
+
+        let prefixed: TestAsHex =
+            serde_json::from_value(json!({"data": format!("0x{HEX_32}")})).unwrap();
+        assert_eq!(prefixed.data.0, BYTES_32);
+    }
+
+    #[test]
+    fn test_hash_deserialize_as_hex_error() {
+        serde_json::from_value::<TestAsHex>(
+            json!({"data": "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45"}),
+        )
         .unwrap_err();
     }
 
     #[test]
-    fn test_hash_serialize() {
-        let hash = Hash::<32>::from(HEX_32);
-        let actual = serde_json::to_value(&hash).unwrap();
-        assert_eq!(actual, json!(HEX_32));
+    fn test_hash_serialize_as_hex() {
+        let test = TestAsHex {
+            data: Hash::<32>::from(HEX_32),
+        };
+        let actual = serde_json::to_value(&test).unwrap();
+        assert_eq!(actual, json!({"data": HEX_32}));
     }
 }

@@ -1,17 +1,22 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::address::Address;
 use crate::rlp::buffer::RlpBuffer;
 use crate::rlp::RlpEncode;
+use tw_hash::H256;
 use tw_number::U256;
 
 impl RlpEncode for U256 {
     fn rlp_append(&self, buf: &mut RlpBuffer) {
         buf.append_data(&self.to_big_endian_compact())
+    }
+}
+
+impl RlpEncode for H256 {
+    fn rlp_append(&self, buf: &mut RlpBuffer) {
+        buf.append_data(self.as_slice())
     }
 }
 
@@ -30,13 +35,13 @@ impl RlpEncode for Option<Address> {
     }
 }
 
-impl<'a> RlpEncode for &'a [u8] {
+impl RlpEncode for [u8] {
     fn rlp_append(&self, buf: &mut RlpBuffer) {
         buf.append_data(self)
     }
 }
 
-impl<'a> RlpEncode for &'a str {
+impl RlpEncode for str {
     fn rlp_append(&self, buf: &mut RlpBuffer) {
         buf.append_data(self.as_bytes())
     }

@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -36,6 +34,14 @@ void TWSolanaAddressDelete(struct TWSolanaAddress* _Nonnull address);
 /// \return Null pointer if the Default token address for a token is not found, valid pointer otherwise
 TW_EXPORT_METHOD
 TWString* _Nullable TWSolanaAddressDefaultTokenAddress(struct TWSolanaAddress* _Nonnull address, TWString* _Nonnull tokenMintAddress);
+
+/// Derive token 2022 address for token
+///
+/// \param address Non-null pointer to a Solana Address
+/// \param tokenMintAddress Non-null pointer to a token mint address as a string
+/// \return Null pointer if the token 2022 address for a token is not found, valid pointer otherwise
+TW_EXPORT_METHOD
+TWString* _Nullable TWSolanaAddressToken2022Address(struct TWSolanaAddress* _Nonnull address, TWString* _Nonnull tokenMintAddress);
 
 /// Returns the address string representation.
 ///

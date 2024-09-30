@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Solana/Address.h"
 #include <TrustWalletCore/TWSolanaAddress.h>
@@ -23,9 +21,34 @@ TWString* _Nullable TWSolanaAddressDefaultTokenAddress(struct TWSolanaAddress* _
         if (address == nullptr || tokenMintAddress == nullptr) {
             return nullptr;
         }
-        Solana::Address tokenMint = Solana::Address(TWStringUTF8Bytes(tokenMintAddress));
-        std::string defaultAddress = address->impl.defaultTokenAddress(tokenMint).string();
-        return TWStringCreateWithUTF8Bytes(defaultAddress.c_str());
+        Rust::TWStringWrapper tokenMint = TWStringUTF8Bytes(tokenMintAddress);
+        Rust::TWStringWrapper mainAddress = address->impl.string();
+
+        Rust::TWStringWrapper newTokenAddress = Rust::tw_solana_address_default_token_address(mainAddress.get(), tokenMint.get());
+
+        if (!newTokenAddress) {
+            return nullptr;
+        }
+        return TWStringCreateWithUTF8Bytes(newTokenAddress.c_str());
+    } catch (...) {
+        return nullptr;
+    }
+}
+
+TWString* _Nullable TWSolanaAddressToken2022Address(struct TWSolanaAddress* _Nonnull address, TWString* _Nonnull tokenMintAddress) {
+    try {
+        if (address == nullptr || tokenMintAddress == nullptr) {
+            return nullptr;
+        }
+        Rust::TWStringWrapper tokenMintAddressWrapper = TWStringUTF8Bytes(tokenMintAddress);
+        Rust::TWStringWrapper mainAddress = address->impl.string();
+
+        Rust::TWStringWrapper newTokenAddress = Rust::tw_solana_address_token_2022_address(mainAddress.get(), tokenMintAddressWrapper.get());
+
+        if (!newTokenAddress) {
+            return nullptr;
+        }
+        return TWStringCreateWithUTF8Bytes(newTokenAddress.c_str());
     } catch (...) {
         return nullptr;
     }

@@ -1,11 +1,9 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use tw_coin_entry::derivation::Derivation;
-use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::prefix::AddressPrefix;
 use tw_coin_registry::coin_type::CoinType;
 use tw_coin_registry::dispatcher::coin_dispatcher;
@@ -36,7 +34,19 @@ impl AnyAddress {
         prefix: Option<AddressPrefix>,
     ) -> AddressResult<AnyAddress> {
         let (ctx, entry) = coin_dispatcher(coin).map_err(|_| AddressError::UnknownCoinType)?;
-        let address = entry.normalize_address(&ctx, address, prefix)?;
+        entry.validate_address(&ctx, address, prefix)?;
+        let address = entry.normalize_address(&ctx, address)?;
+        Ok(AnyAddress { coin, address })
+    }
+
+    /// Creates an address from a string representation and a coin type.
+    /// Please note that his function does not validate if the address belongs to the given chain.
+    pub(crate) fn with_string_unchecked(
+        coin: CoinType,
+        address: &str,
+    ) -> AddressResult<AnyAddress> {
+        let (ctx, entry) = coin_dispatcher(coin).map_err(|_| AddressError::UnknownCoinType)?;
+        let address = entry.normalize_address(&ctx, address)?;
         Ok(AnyAddress { coin, address })
     }
 
@@ -57,7 +67,7 @@ impl AnyAddress {
     #[inline]
     pub fn get_data(&self) -> AddressResult<Data> {
         let (ctx, entry) = coin_dispatcher(self.coin).map_err(|_| AddressError::UnknownCoinType)?;
-        entry.address_to_data(&ctx, &self.address, None)
+        entry.address_to_data(&ctx, &self.address)
     }
 
     /// Returns the address string representation.

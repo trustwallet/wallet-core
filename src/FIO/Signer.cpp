@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Signer.h"
 #include "Address.h"
@@ -25,9 +23,11 @@ using namespace std;
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     FIO::Proto::SigningOutput output;
-    try {    
+    try {
+        const string actionName = TransactionBuilder::actionName(input);
         const string json = TransactionBuilder::sign(input);
         output.set_json(json);
+        output.set_action_name(actionName);
     } catch(const std::exception& e) {
         output.set_error(Common::Proto::Error_internal);
     }
@@ -61,7 +61,7 @@ bool Signer::verify(const PublicKey& pubKey, const Data& data, const Data& signa
     return pubKey.verify(TW::data(signature.data() + 1, signature.size() - 1), data);
 }
 
-// canonical check for FIO, both R and S lenght is 32
+// canonical check for FIO, both R and S length is 32
 int Signer::isCanonical([[maybe_unused]] uint8_t by, uint8_t sig[64]) {
     return !(sig[0] & 0x80)
         && !(sig[0] == 0 && !(sig[1] & 0x80))

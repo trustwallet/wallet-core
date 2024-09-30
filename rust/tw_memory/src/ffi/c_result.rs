@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use std::ffi::c_char;
 
@@ -98,6 +96,12 @@ pub struct CBoolResult {
 }
 
 #[repr(C)]
+pub struct CUInt8Result {
+    pub code: i32,
+    pub result: u8,
+}
+
+#[repr(C)]
 pub struct CUInt64Result {
     pub code: i32,
     pub result: u64,
@@ -106,4 +110,5 @@ pub struct CUInt64Result {
 impl_c_result!(CStrResult, *const c_char, core::ptr::null());
 impl_c_result!(CStrMutResult, *mut c_char, core::ptr::null_mut());
 impl_c_result!(CBoolResult, bool, false);
+impl_c_result!(CUInt8Result, u8, 0);
 impl_c_result!(CUInt64Result, u64, 0);

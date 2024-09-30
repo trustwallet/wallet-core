@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #pragma once
 
@@ -66,6 +64,10 @@ class Script {
     /// Matches the script to a pay-to-public-key-hash (P2PKH).
     bool matchPayToPublicKeyHash(Data& keyHash) const;
 
+    /// Matches the script to a pay-to-exchange-public-key-hash (P2PKH).
+    /// Only apply for firo
+    bool matchPayToExchangePublicKeyHash(Data& keyHash) const;
+
     /// Matches the script to a pay-to-public-key-hash-replay (P2PKH).
     /// Only apply for zen
     bool matchPayToPublicKeyHashReplay(Data& keyHash) const;
@@ -92,6 +94,10 @@ class Script {
     /// Builds a pay-to-public-key-hash (P2PKH) script from a public key hash.
     static Script buildPayToPublicKeyHash(const Data& hash);
 
+    /// Builds a pay-to-exchange-public-key-hash script from a public key hash.
+    /// This will apply for firo.
+    static Script buildPayToExchangePublicKeyHash(const Data& hash);
+
     /// Builds a pay-to-public-key-hash-replay (P2PKH) script from a public key hash.
     /// This will apply for zen
     static Script buildPayToPublicKeyHashReplay(const Data& hash, const Data& blockHash, int64_t blockHeight);
@@ -115,12 +121,6 @@ class Script {
 
     /// Builds a V1 pay-to-witness-program script, P2TR (from a 32-byte Schnorr public key).
     static Script buildPayToV1WitnessProgram(const Data& publicKey);
-
-    /// Builds the Ordinals inscripton for BRC20 transfer.
-    static Proto::TransactionOutput buildBRC20InscribeTransfer(const std::string& ticker, uint64_t amount, const Data& publicKey);
-
-    /// Builds the Ordinals inscripton for NFTs.
-    static Proto::TransactionOutput buildOrdinalNftInscription(const std::string& mimeType, const Data& payload, const Data& publicKey);
 
     /// Builds an OP_RETURN script with given data. Returns empty script on error, if data is too long (>80).
     static Script buildOpReturnScript(const Data& data);

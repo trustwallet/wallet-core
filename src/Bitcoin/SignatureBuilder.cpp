@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "SignatureBuilder.h"
 #include "SigHashType.h"
@@ -193,7 +191,9 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
         }
         return Result<std::vector<Data>, Common::Proto::SigningError>::success({signature});
     }
-    if (script.matchPayToPublicKeyHash(data) || script.matchPayToPublicKeyHashReplay(data)) {
+    if (script.matchPayToPublicKeyHash(data)
+        || script.matchPayToPublicKeyHashReplay(data)
+        || script.matchPayToExchangePublicKeyHash(data)) {
         // obtain public key
         auto pair = keyPairForPubKeyHash(data);
         Data pubkey;

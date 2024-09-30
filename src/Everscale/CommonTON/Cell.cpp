@@ -1,20 +1,18 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 #include "Cell.h"
 
 #include <cassert>
+#include <cstring>
 #include <map>
 #include <optional>
 #include <unordered_map>
 
+#include "Base64.h"
 #include "BinaryCoding.h"
-
-#include <boost/archive/iterators/binary_from_base64.hpp>
-#include <boost/archive/iterators/transform_width.hpp>
+#include "BitReader.h"
 
 using namespace TW;
 
@@ -89,11 +87,7 @@ struct Reader {
 };
 
 std::shared_ptr<Cell> Cell::fromBase64(const std::string& encoded) {
-    // `Hash::base64` trims \0 bytes from the end of the _decoded_ data, so
-    // raw transform is used here
-    using namespace boost::archive::iterators;
-    using It = transform_width<binary_from_base64<std::string::const_iterator>, 8, 6>;
-    Data boc(It(begin(encoded)), It(end(encoded)));
+    auto boc = Base64::decode(encoded);
     return Cell::deserialize(boc.data(), boc.size());
 }
 
@@ -395,6 +389,53 @@ void Cell::finalize() {
 
     std::copy(computedHash.begin(), computedHash.end(), hash.begin());
     finalized = true;
+}
+
+std::optional<AddressData> Cell::parseAddress() const {
+    auto reader = BitReader::createExact(data, static_cast<uint64_t>(bitLen));
+    if (!reader) {
+        return std::nullopt;
+    }
+
+    auto tp = reader->readU8(2);
+    if (!tp) {
+        return std::nullopt;
+    }
+
+    if (tp.value() == 0) {
+        // Hole address (default). Check if the Cell does not contain more bits.
+        if (!reader->finished()) {
+            return std::nullopt;
+        }
+        return AddressData();
+    }
+
+    // We expect type=0 or type=2 addresses only.
+    if (tp.value() != 2) {
+        return std::nullopt;
+    }
+
+    // Ignore res1 value.
+    reader->readU8(1);
+
+    auto workchain = reader->readU8(8);
+    if (!workchain) {
+        return std::nullopt;
+    }
+
+    auto hashPart = reader->readU8Slice(AddressData::size);
+    if (!hashPart) {
+        return std::nullopt;
+    }
+
+    if (!reader->finished()) {
+        return std::nullopt;
+    }
+
+    std::array<byte, AddressData::size> parsedHash {};
+    std::copy(begin(hashPart.value()), end(hashPart.value()), begin(parsedHash));
+
+    return AddressData(static_cast<int8_t>(workchain.value()), parsedHash);
 }
 
 } // namespace TW::CommonTON

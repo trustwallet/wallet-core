@@ -1,8 +1,6 @@
-// Copyright © 2017-2023 Trust Wallet.
+// SPDX-License-Identifier: Apache-2.0
 //
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
+// Copyright © 2017 Trust Wallet.
 
 use crate::abi::encode::encode_tokens;
 use crate::abi::non_empty_array::NonEmptyBytes;
@@ -11,7 +9,7 @@ use crate::address::Address;
 use crate::transaction::signature::Signature;
 use crate::transaction::{SignedTransaction, TransactionCommon, UnsignedTransaction};
 use serde::Serialize;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex;
 use tw_hash::sha3::keccak256;
 use tw_hash::H256;
