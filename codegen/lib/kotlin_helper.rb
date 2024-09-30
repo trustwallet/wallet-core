@@ -61,6 +61,8 @@ module KotlinHelper
     case name
     when ''
       "value"
+    when 'val'
+       "value"
     when 'return'
       '`return`'
     else

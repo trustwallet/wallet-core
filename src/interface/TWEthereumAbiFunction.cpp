@@ -32,89 +32,89 @@ TWString *_Nonnull TWEthereumAbiFunctionGetType(struct TWEthereumAbiFunction *_N
 
 ///// AddParam
 
-int TWEthereumAbiFunctionAddParamUInt8(struct TWEthereumAbiFunction *_Nonnull func_in, uint8_t value, bool isOutput) {
+int TWEthereumAbiFunctionAddParamUInt8(struct TWEthereumAbiFunction *_Nonnull func_in, uint8_t val, bool isOutput) {
     assert(func_in != nullptr);
     uint32_t bits = 8;
-    auto encodedValue = store(value);
+    auto encodedValue = store(val);
     return func_in->impl.addUintParam(bits, encodedValue, isOutput);
 }
 
-int TWEthereumAbiFunctionAddParamUInt16(struct TWEthereumAbiFunction *_Nonnull func_in, uint16_t value, bool isOutput) {
+int TWEthereumAbiFunctionAddParamUInt16(struct TWEthereumAbiFunction *_Nonnull func_in, uint16_t val, bool isOutput) {
     assert(func_in != nullptr);
     uint32_t bits = 16;
-    auto encodedValue = store(value);
+    auto encodedValue = store(val);
     return func_in->impl.addUintParam(bits, encodedValue, isOutput);
 }
 
-int TWEthereumAbiFunctionAddParamUInt32(struct TWEthereumAbiFunction *_Nonnull func_in, uint32_t value, bool isOutput) {
+int TWEthereumAbiFunctionAddParamUInt32(struct TWEthereumAbiFunction *_Nonnull func_in, uint32_t val, bool isOutput) {
     assert(func_in != nullptr);
     uint32_t bits = 32;
-    auto encodedValue = store(value);
+    auto encodedValue = store(val);
     return func_in->impl.addUintParam(bits, encodedValue, isOutput);
 }
 
-int TWEthereumAbiFunctionAddParamUInt64(struct TWEthereumAbiFunction *_Nonnull func_in, uint64_t value, bool isOutput) {
+int TWEthereumAbiFunctionAddParamUInt64(struct TWEthereumAbiFunction *_Nonnull func_in, uint64_t val, bool isOutput) {
     assert(func_in != nullptr);
     uint32_t bits = 64;
-    auto encodedValue = store(value);
+    auto encodedValue = store(val);
     return func_in->impl.addUintParam(bits, encodedValue, isOutput);
 }
 
-int TWEthereumAbiFunctionAddParamUInt256(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull value, bool isOutput) {
+int TWEthereumAbiFunctionAddParamUInt256(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull val, bool isOutput) {
     assert(func_in != nullptr);
     uint32_t bits = 256;
-    const Data& encodedValue = *(reinterpret_cast<const Data*>(value));
+    const Data& encodedValue = *(reinterpret_cast<const Data*>(val));
     return func_in->impl.addUintParam(bits, encodedValue, isOutput);
 }
 
-int TWEthereumAbiFunctionAddParamUIntN(struct TWEthereumAbiFunction *_Nonnull func_in, int bits, TWData *_Nonnull value, bool isOutput) {
+int TWEthereumAbiFunctionAddParamUIntN(struct TWEthereumAbiFunction *_Nonnull func_in, int bits, TWData *_Nonnull val, bool isOutput) {
     assert(func_in != nullptr);
-    const Data& encodedValue = *(reinterpret_cast<const Data*>(value));
+    const Data& encodedValue = *(reinterpret_cast<const Data*>(val));
     return func_in->impl.addUintParam(static_cast<uint32_t>(bits), encodedValue, isOutput);
 }
 
-int TWEthereumAbiFunctionAddParamInt8(struct TWEthereumAbiFunction *_Nonnull func_in, int8_t value, bool isOutput) {
+int TWEthereumAbiFunctionAddParamInt8(struct TWEthereumAbiFunction *_Nonnull func_in, int8_t val, bool isOutput) {
     assert(func_in != nullptr);
     uint32_t bits = 8;
-    auto encodedValue = store(value);
+    auto encodedValue = store(val);
     return func_in->impl.addIntParam(bits, encodedValue, isOutput);
 }
 
-int TWEthereumAbiFunctionAddParamInt16(struct TWEthereumAbiFunction *_Nonnull func_in, int16_t value, bool isOutput) {
+int TWEthereumAbiFunctionAddParamInt16(struct TWEthereumAbiFunction *_Nonnull func_in, int16_t val, bool isOutput) {
     assert(func_in != nullptr);
     uint32_t bits = 16;
-    auto encodedValue = store(value);
+    auto encodedValue = store(val);
     return func_in->impl.addIntParam(bits, encodedValue, isOutput);
 }
 
-int TWEthereumAbiFunctionAddParamInt32(struct TWEthereumAbiFunction *_Nonnull func_in, int32_t value, bool isOutput) {
+int TWEthereumAbiFunctionAddParamInt32(struct TWEthereumAbiFunction *_Nonnull func_in, int32_t val, bool isOutput) {
     assert(func_in != nullptr);
     uint32_t bits = 32;
-    auto encodedValue = store(value);
+    auto encodedValue = store(val);
     return func_in->impl.addIntParam(bits, encodedValue, isOutput);
 }
 
-int TWEthereumAbiFunctionAddParamInt64(struct TWEthereumAbiFunction *_Nonnull func_in, int64_t value, bool isOutput) {
+int TWEthereumAbiFunctionAddParamInt64(struct TWEthereumAbiFunction *_Nonnull func_in, int64_t val, bool isOutput) {
     assert(func_in != nullptr);
     uint32_t bits = 64;
-    auto encodedValue = store(value);
+    auto encodedValue = store(val);
     return func_in->impl.addIntParam(bits, encodedValue, isOutput);
 }
 
-int TWEthereumAbiFunctionAddParamInt256(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull value, bool isOutput) {
+int TWEthereumAbiFunctionAddParamInt256(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull val, bool isOutput) {
     assert(func_in != nullptr);
     uint32_t bits = 256;
-    const Data& encodedValue = *(reinterpret_cast<const Data*>(value));
+    const Data& encodedValue = *(reinterpret_cast<const Data*>(val));
     return func_in->impl.addIntParam(bits, encodedValue, isOutput);
 }
 
-int TWEthereumAbiFunctionAddParamIntN(struct TWEthereumAbiFunction *_Nonnull func_in, int bits, TWData *_Nonnull value, bool isOutput) {
+int TWEthereumAbiFunctionAddParamIntN(struct TWEthereumAbiFunction *_Nonnull func_in, int bits, TWData *_Nonnull val, bool isOutput) {
     assert(func_in != nullptr);
-    const Data& encodedValue = *(reinterpret_cast<const Data*>(value));
+    const Data& encodedValue = *(reinterpret_cast<const Data*>(val));
     return func_in->impl.addIntParam(static_cast<uint32_t>(bits), encodedValue, isOutput);
 }
 
-int TWEthereumAbiFunctionAddParamBool(struct TWEthereumAbiFunction *_Nonnull func_in, bool value, bool isOutput) {
+int TWEthereumAbiFunctionAddParamBool(struct TWEthereumAbiFunction *_Nonnull func_in, bool val, bool isOutput) {
     assert(func_in != nullptr);
 
     EthereumAbi::Proto::Param paramType;
@@ -122,12 +122,12 @@ int TWEthereumAbiFunctionAddParamBool(struct TWEthereumAbiFunction *_Nonnull fun
     paramType.mutable_param()->mutable_boolean();
 
     EthereumAbi::Proto::Token token;
-    token.set_boolean(value);
+    token.set_boolean(val);
 
     return func_in->impl.addParam(std::move(paramType), std::move(token), isOutput);
 }
 
-int TWEthereumAbiFunctionAddParamString(struct TWEthereumAbiFunction *_Nonnull func_in, TWString *_Nonnull value, bool isOutput) {
+int TWEthereumAbiFunctionAddParamString(struct TWEthereumAbiFunction *_Nonnull func_in, TWString *_Nonnull val, bool isOutput) {
     assert(func_in != nullptr);
 
     EthereumAbi::Proto::Param paramType;
@@ -135,13 +135,13 @@ int TWEthereumAbiFunctionAddParamString(struct TWEthereumAbiFunction *_Nonnull f
     paramType.mutable_param()->mutable_string_param();
 
     EthereumAbi::Proto::Token token;
-    auto* s = reinterpret_cast<const std::string*>(value);
+    auto* s = reinterpret_cast<const std::string*>(val);
     token.set_string_value(*s);
 
     return func_in->impl.addParam(std::move(paramType), std::move(token), isOutput);
 }
 
-int TWEthereumAbiFunctionAddParamAddress(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull value, bool isOutput) {
+int TWEthereumAbiFunctionAddParamAddress(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull val, bool isOutput) {
     assert(func_in != nullptr);
 
     EthereumAbi::Proto::Param paramType;
@@ -149,7 +149,7 @@ int TWEthereumAbiFunctionAddParamAddress(struct TWEthereumAbiFunction *_Nonnull 
     paramType.mutable_param()->mutable_address();
 
     EthereumAbi::Proto::Token token;
-    const Data& addressData = *(reinterpret_cast<const Data*>(value));
+    const Data& addressData = *(reinterpret_cast<const Data*>(val));
     bool prefixed = true;
     auto addressStr = hex(addressData, prefixed);
     token.set_address(addressStr);
@@ -157,7 +157,7 @@ int TWEthereumAbiFunctionAddParamAddress(struct TWEthereumAbiFunction *_Nonnull 
     return func_in->impl.addParam(std::move(paramType), std::move(token), isOutput);
 }
 
-int TWEthereumAbiFunctionAddParamBytes(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull value, bool isOutput) {
+int TWEthereumAbiFunctionAddParamBytes(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull val, bool isOutput) {
     assert(func_in != nullptr);
 
     EthereumAbi::Proto::Param paramType;
@@ -165,13 +165,13 @@ int TWEthereumAbiFunctionAddParamBytes(struct TWEthereumAbiFunction *_Nonnull fu
     paramType.mutable_param()->mutable_byte_array();
 
     EthereumAbi::Proto::Token token;
-    const Data& bytesData = *(reinterpret_cast<const Data*>(value));
+    const Data& bytesData = *(reinterpret_cast<const Data*>(val));
     token.set_byte_array(bytesData.data(), bytesData.size());
 
     return func_in->impl.addParam(std::move(paramType), std::move(token), isOutput);
 }
 
-int TWEthereumAbiFunctionAddParamBytesFix(struct TWEthereumAbiFunction *_Nonnull func_in, size_t count, TWData *_Nonnull value, bool isOutput) {
+int TWEthereumAbiFunctionAddParamBytesFix(struct TWEthereumAbiFunction *_Nonnull func_in, size_t count, TWData *_Nonnull val, bool isOutput) {
     assert(func_in != nullptr);
 
     EthereumAbi::Proto::Param paramType;
@@ -179,7 +179,7 @@ int TWEthereumAbiFunctionAddParamBytesFix(struct TWEthereumAbiFunction *_Nonnull
     paramType.mutable_param()->mutable_byte_array_fix()->set_size(static_cast<uint64_t>(count));
 
     EthereumAbi::Proto::Token token;
-    Data bytesData = *(reinterpret_cast<const Data*>(value));
+    Data bytesData = *(reinterpret_cast<const Data*>(val));
     bytesData.resize(count);
     token.set_byte_array_fix(bytesData.data(), bytesData.size());
 
@@ -258,79 +258,79 @@ TWData *_Nonnull TWEthereumAbiFunctionGetParamAddress(struct TWEthereumAbiFuncti
 
 ///// AddInArrayParam
 
-int TWEthereumAbiFunctionAddInArrayParamUInt8(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, uint8_t value) {
+int TWEthereumAbiFunctionAddInArrayParamUInt8(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, uint8_t val) {
     assert(func_in != nullptr);
-    auto encodedVal = store(value);
+    auto encodedVal = store(val);
     return func_in->impl.addInArrayUintParam(arrayIdx, 8, encodedVal);
 }
 
-int TWEthereumAbiFunctionAddInArrayParamUInt16(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, uint16_t value) {
+int TWEthereumAbiFunctionAddInArrayParamUInt16(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, uint16_t val) {
     assert(func_in != nullptr);
-    auto encodedVal = store(value);
+    auto encodedVal = store(val);
     return func_in->impl.addInArrayUintParam(arrayIdx, 16, encodedVal);
 }
 
-int TWEthereumAbiFunctionAddInArrayParamUInt32(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, uint32_t value) {
+int TWEthereumAbiFunctionAddInArrayParamUInt32(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, uint32_t val) {
     assert(func_in != nullptr);
-    auto encodedVal = store(value);
+    auto encodedVal = store(val);
     return func_in->impl.addInArrayUintParam(arrayIdx, 32, encodedVal);
 }
 
-int TWEthereumAbiFunctionAddInArrayParamUInt64(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, uint64_t value) {
+int TWEthereumAbiFunctionAddInArrayParamUInt64(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, uint64_t val) {
     assert(func_in != nullptr);
-    auto encodedVal = store(value);
+    auto encodedVal = store(val);
     return func_in->impl.addInArrayUintParam(arrayIdx, 64, encodedVal);
 }
 
-int TWEthereumAbiFunctionAddInArrayParamUInt256(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWData *_Nonnull value) {
+int TWEthereumAbiFunctionAddInArrayParamUInt256(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWData *_Nonnull val) {
     assert(func_in != nullptr);
-    const Data& bytesData = *(reinterpret_cast<const Data*>(value));
+    const Data& bytesData = *(reinterpret_cast<const Data*>(val));
     return func_in->impl.addInArrayUintParam(arrayIdx, 256, bytesData);
 }
 
-int TWEthereumAbiFunctionAddInArrayParamUIntN(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int bits, TWData *_Nonnull value) {
+int TWEthereumAbiFunctionAddInArrayParamUIntN(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int bits, TWData *_Nonnull val) {
     assert(func_in != nullptr);
-    const Data& bytesData = *(reinterpret_cast<const Data*>(value));
+    const Data& bytesData = *(reinterpret_cast<const Data*>(val));
     return func_in->impl.addInArrayUintParam(arrayIdx, bits, bytesData);
 }
 
-int TWEthereumAbiFunctionAddInArrayParamInt8(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int8_t value) {
+int TWEthereumAbiFunctionAddInArrayParamInt8(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int8_t val) {
     assert(func_in != nullptr);
-    auto encodedVal = store(value);
+    auto encodedVal = store(val);
     return func_in->impl.addInArrayIntParam(arrayIdx, 8, encodedVal);
 }
 
-int TWEthereumAbiFunctionAddInArrayParamInt16(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int16_t value) {
+int TWEthereumAbiFunctionAddInArrayParamInt16(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int16_t val) {
     assert(func_in != nullptr);
-    auto encodedVal = store(value);
+    auto encodedVal = store(val);
     return func_in->impl.addInArrayIntParam(arrayIdx, 16, encodedVal);
 }
 
-int TWEthereumAbiFunctionAddInArrayParamInt32(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int32_t value) {
+int TWEthereumAbiFunctionAddInArrayParamInt32(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int32_t val) {
     assert(func_in != nullptr);
-    auto encodedVal = store(value);
+    auto encodedVal = store(val);
     return func_in->impl.addInArrayIntParam(arrayIdx, 32, encodedVal);
 }
 
-int TWEthereumAbiFunctionAddInArrayParamInt64(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int64_t value) {
+int TWEthereumAbiFunctionAddInArrayParamInt64(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int64_t val) {
     assert(func_in != nullptr);
-    auto encodedVal = store(value);
+    auto encodedVal = store(val);
     return func_in->impl.addInArrayIntParam(arrayIdx, 64, encodedVal);
 }
 
-int TWEthereumAbiFunctionAddInArrayParamInt256(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWData *_Nonnull value) {
+int TWEthereumAbiFunctionAddInArrayParamInt256(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWData *_Nonnull val) {
     assert(func_in != nullptr);
-    const Data& bytesData = *(reinterpret_cast<const Data*>(value));
+    const Data& bytesData = *(reinterpret_cast<const Data*>(val));
     return func_in->impl.addInArrayIntParam(arrayIdx, 256, bytesData);
 }
 
-int TWEthereumAbiFunctionAddInArrayParamIntN(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int bits, TWData *_Nonnull value) {
+int TWEthereumAbiFunctionAddInArrayParamIntN(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int bits, TWData *_Nonnull val) {
     assert(func_in != nullptr);
-    const Data& bytesData = *(reinterpret_cast<const Data*>(value));
+    const Data& bytesData = *(reinterpret_cast<const Data*>(val));
     return func_in->impl.addInArrayIntParam(arrayIdx, bits, bytesData);
 }
 
-int TWEthereumAbiFunctionAddInArrayParamBool(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, bool value) {
+int TWEthereumAbiFunctionAddInArrayParamBool(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, bool val) {
     assert(func_in != nullptr);
 
     EthereumAbi::Proto::ParamType paramType;
@@ -338,12 +338,12 @@ int TWEthereumAbiFunctionAddInArrayParamBool(struct TWEthereumAbiFunction *_Nonn
     paramType.mutable_boolean();
 
     EthereumAbi::Proto::Token token;
-    token.set_boolean(value);
+    token.set_boolean(val);
 
     return func_in->impl.addInArrayParam(arrayIdx, std::move(paramType), std::move(token));
 }
 
-int TWEthereumAbiFunctionAddInArrayParamString(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWString *_Nonnull value) {
+int TWEthereumAbiFunctionAddInArrayParamString(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWString *_Nonnull val) {
     assert(func_in != nullptr);
 
     EthereumAbi::Proto::ParamType paramType;
@@ -351,12 +351,12 @@ int TWEthereumAbiFunctionAddInArrayParamString(struct TWEthereumAbiFunction *_No
     paramType.mutable_string_param();
 
     EthereumAbi::Proto::Token token;
-    token.set_string_value(TWStringUTF8Bytes(value));
+    token.set_string_value(TWStringUTF8Bytes(val));
 
     return func_in->impl.addInArrayParam(arrayIdx, std::move(paramType), std::move(token));
 }
 
-int TWEthereumAbiFunctionAddInArrayParamAddress(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWData *_Nonnull value) {
+int TWEthereumAbiFunctionAddInArrayParamAddress(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWData *_Nonnull val) {
     assert(func_in != nullptr);
 
     EthereumAbi::Proto::ParamType paramType;
@@ -364,7 +364,7 @@ int TWEthereumAbiFunctionAddInArrayParamAddress(struct TWEthereumAbiFunction *_N
     paramType.mutable_address();
 
     EthereumAbi::Proto::Token token;
-    const Data& addressData = *(reinterpret_cast<const Data*>(value));
+    const Data& addressData = *(reinterpret_cast<const Data*>(val));
     bool prefixed = true;
     auto addressStr = hex(addressData, prefixed);
     token.set_address(addressStr);
@@ -372,7 +372,7 @@ int TWEthereumAbiFunctionAddInArrayParamAddress(struct TWEthereumAbiFunction *_N
     return func_in->impl.addInArrayParam(arrayIdx, std::move(paramType), std::move(token));
 }
 
-int TWEthereumAbiFunctionAddInArrayParamBytes(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWData *_Nonnull value) {
+int TWEthereumAbiFunctionAddInArrayParamBytes(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWData *_Nonnull val) {
     assert(func_in != nullptr);
 
     EthereumAbi::Proto::ParamType paramType;
@@ -380,13 +380,13 @@ int TWEthereumAbiFunctionAddInArrayParamBytes(struct TWEthereumAbiFunction *_Non
     paramType.mutable_byte_array();
 
     EthereumAbi::Proto::Token token;
-    const Data& bytesData = *(reinterpret_cast<const Data*>(value));
+    const Data& bytesData = *(reinterpret_cast<const Data*>(val));
     token.set_byte_array(bytesData.data(), bytesData.size());
 
     return func_in->impl.addInArrayParam(arrayIdx, std::move(paramType), std::move(token));
 }
 
-int TWEthereumAbiFunctionAddInArrayParamBytesFix(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, size_t count, TWData *_Nonnull value) {
+int TWEthereumAbiFunctionAddInArrayParamBytesFix(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, size_t count, TWData *_Nonnull val) {
     assert(func_in != nullptr);
 
     EthereumAbi::Proto::ParamType paramType;
@@ -394,7 +394,7 @@ int TWEthereumAbiFunctionAddInArrayParamBytesFix(struct TWEthereumAbiFunction *_
     paramType.mutable_byte_array_fix()->set_size(static_cast<uint64_t>(count));
 
     EthereumAbi::Proto::Token token;
-    Data bytesData = *(reinterpret_cast<const Data*>(value));
+    Data bytesData = *(reinterpret_cast<const Data*>(val));
     bytesData.resize(count);
     token.set_byte_array_fix(bytesData.data(), bytesData.size());
 
