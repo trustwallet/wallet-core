@@ -2,8 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::address::BitcoinCashAddress;
-use std::str::FromStr;
+use crate::address::Address;
 use tw_bitcoin::modules::compiler::BitcoinCompiler;
 use tw_bitcoin::modules::planner::BitcoinPlanner;
 use tw_bitcoin::modules::signer::BitcoinSigner;
@@ -23,9 +22,9 @@ use tw_proto::BitcoinV2::Proto;
 pub struct BitcoinCashEntry;
 
 impl CoinEntry for BitcoinCashEntry {
-    // TODO BitcoinCashPrefix
+    // TODO `BitcoinCash` should have its own prefix enum with an HRP and Base58 prefixes.
     type AddressPrefix = NoPrefix;
-    type Address = BitcoinCashAddress;
+    type Address = Address;
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = Proto::SigningOutput<'static>;
     type PreSigningOutput = Proto::PreSigningOutput<'static>;
@@ -41,20 +40,20 @@ impl CoinEntry for BitcoinCashEntry {
     #[inline]
     fn parse_address(
         &self,
-        _coin: &dyn CoinContext,
-        _address: &str,
+        coin: &dyn CoinContext,
+        address: &str,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        Address::from_str_with_coin(coin, address)
     }
 
     #[inline]
     fn parse_address_unchecked(
         &self,
         _coin: &dyn CoinContext,
-        address: &str,
+        _address: &str,
     ) -> AddressResult<Self::Address> {
-        BitcoinCashAddress::from_str(address)
+        todo!()
     }
 
     #[inline]
