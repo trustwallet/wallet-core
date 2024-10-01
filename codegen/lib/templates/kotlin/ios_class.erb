@@ -9,6 +9,12 @@ import kotlinx.cinterop.CPointer
 actual class <%= entity.name %> constructor(
     val pointer: CPointer<TW<%= entity.name %>>,
 ) {
+<%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
+    @OptIn(ExperimentalStdlibApi::class)
+    private val cleaner = kotlin.native.internal.createCleaner(pointer) { ptr ->
+        TW<%= entity.name %>Delete(ptr)
+    }
+<%  end -%>
 <%# Constructors -%>
 <%- constructors.each do |constructor| -%>
 
