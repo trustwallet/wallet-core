@@ -2,9 +2,11 @@
 
 set -e
 
-# A workaround for "The `brew link` step did not complete successfully" error.
-brew install python@3 || brew link --overwrite python@3
-brew install boost ninja xcodegen xcbeautify
+brew install cmake boost ninja xcodegen xcbeautify
+
+if [[ "$BOOST_ROOT" == "" ]]; then
+    echo "export BOOST_ROOT=$(brew --prefix boost)" >>  ~/.zprofile
+fi
 
 if command -v rustup &> /dev/null
 then
