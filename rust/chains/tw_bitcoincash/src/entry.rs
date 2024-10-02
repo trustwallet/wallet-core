@@ -4,6 +4,8 @@
 
 use crate::address::Address;
 use crate::cash_address::CashAddress;
+use crate::context::BitcoinCashContext;
+use std::str::FromStr;
 use tw_bitcoin::modules::compiler::BitcoinCompiler;
 use tw_bitcoin::modules::planner::BitcoinPlanner;
 use tw_bitcoin::modules::signer::BitcoinSigner;
@@ -32,7 +34,7 @@ impl CoinEntry for BitcoinCashEntry {
 
     // Optional modules:
     type JsonSigner = NoJsonSigner;
-    type PlanBuilder = BitcoinPlanner;
+    type PlanBuilder = BitcoinPlanner<BitcoinCashContext>;
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
@@ -54,7 +56,7 @@ impl CoinEntry for BitcoinCashEntry {
         _coin: &dyn CoinContext,
         address: &str,
     ) -> AddressResult<Self::Address> {
-        Address::from_str_unchecked(address)
+        Address::from_str(address)
     }
 
     #[inline]
@@ -74,7 +76,7 @@ impl CoinEntry for BitcoinCashEntry {
 
     #[inline]
     fn sign(&self, coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput {
-        BitcoinSigner::sign(coin, &input)
+        BitcoinSigner::<BitcoinCashContext>::sign(coin, &input)
     }
 
     #[inline]
@@ -83,7 +85,7 @@ impl CoinEntry for BitcoinCashEntry {
         coin: &dyn CoinContext,
         input: Self::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        BitcoinCompiler::preimage_hashes(coin, input)
+        BitcoinCompiler::<BitcoinCashContext>::preimage_hashes(coin, input)
     }
 
     #[inline]
@@ -94,6 +96,6 @@ impl CoinEntry for BitcoinCashEntry {
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
-        BitcoinCompiler::compile(coin, input, signatures, public_keys)
+        BitcoinCompiler::<BitcoinCashContext>::compile(coin, input, signatures, public_keys)
     }
 }

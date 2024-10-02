@@ -26,8 +26,12 @@ impl Address {
         }
         Err(AddressError::InvalidInput)
     }
+}
 
-    pub fn from_str_unchecked(address_str: &str) -> AddressResult<Self> {
+impl FromStr for Address {
+    type Err = AddressError;
+
+    fn from_str(address_str: &str) -> Result<Self, Self::Err> {
         if let Ok(cash) = CashAddress::from_str_unchecked(address_str) {
             return Ok(Address::Cash(cash));
         }

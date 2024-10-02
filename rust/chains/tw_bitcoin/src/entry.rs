@@ -1,3 +1,4 @@
+use crate::context::StandardBitcoinContext;
 use crate::modules::compiler::BitcoinCompiler;
 use crate::modules::planner::BitcoinPlanner;
 use crate::modules::signer::BitcoinSigner;
@@ -26,7 +27,7 @@ impl CoinEntry for BitcoinEntry {
 
     // Optional modules:
     type JsonSigner = NoJsonSigner;
-    type PlanBuilder = BitcoinPlanner;
+    type PlanBuilder = BitcoinPlanner<StandardBitcoinContext>;
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
@@ -64,7 +65,7 @@ impl CoinEntry for BitcoinEntry {
 
     #[inline]
     fn sign(&self, coin: &dyn CoinContext, proto: Self::SigningInput<'_>) -> Self::SigningOutput {
-        BitcoinSigner::sign(coin, &proto)
+        BitcoinSigner::<StandardBitcoinContext>::sign(coin, &proto)
     }
 
     #[inline]
@@ -73,7 +74,7 @@ impl CoinEntry for BitcoinEntry {
         coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        BitcoinCompiler::preimage_hashes(coin, proto)
+        BitcoinCompiler::<StandardBitcoinContext>::preimage_hashes(coin, proto)
     }
 
     #[inline]
@@ -84,12 +85,12 @@ impl CoinEntry for BitcoinEntry {
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
-        BitcoinCompiler::compile(coin, proto, signatures, public_keys)
+        BitcoinCompiler::<StandardBitcoinContext>::compile(coin, proto, signatures, public_keys)
     }
 
     #[inline]
     fn plan_builder(&self) -> Option<Self::PlanBuilder> {
-        Some(BitcoinPlanner)
+        Some(BitcoinPlanner::<StandardBitcoinContext>::default())
     }
 
     #[inline]

@@ -3,30 +3,33 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::modules::tx_builder::BitcoinChainInfo;
+use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::hasher::sha256_ripemd;
 use tw_hash::sha2::sha256;
-use tw_hash::{Hash, H160, H256};
+use tw_hash::{Hash, H256};
 use tw_keypair::{ecdsa, schnorr};
 use tw_memory::Data;
 use tw_proto::BitcoinV2::Proto;
-use tw_utxo::address::legacy::LegacyAddress;
-use tw_utxo::address::segwit::SegwitAddress;
-use tw_utxo::address::standard_bitcoin::StandardBitcoinAddress;
-use tw_utxo::address::taproot::TaprootAddress;
+use tw_utxo::context::UtxoContext;
 use tw_utxo::script::Script;
 use tw_utxo::transaction::standard_transaction::builder::OutputBuilder;
 use tw_utxo::transaction::standard_transaction::TransactionOutput;
 
-pub struct OutputProtobuf<'a> {
+pub struct OutputProtobuf<'a, Context: UtxoContext> {
     chain_info: &'a BitcoinChainInfo,
     output: &'a Proto::Output<'a>,
+    _phantom: PhantomData<Context>,
 }
 
-impl<'a> OutputProtobuf<'a> {
+impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
     pub fn new(chain_info: &'a BitcoinChainInfo, output: &'a Proto::Output<'a>) -> Self {
-        OutputProtobuf { chain_info, output }
+        OutputProtobuf {
+            chain_info,
+            output,
+            _phantom: PhantomData,
+        }
     }
 
     pub fn output_from_proto(self) -> SigningResult<TransactionOutput> {
@@ -152,66 +155,18 @@ impl<'a> OutputProtobuf<'a> {
         Ok(self.prepare_builder()?.custom_script_pubkey(script))
     }
 
-    pub fn recipient_address(&self, addr: &str) -> SigningResult<TransactionOutput> {
-        let addr = StandardBitcoinAddress::from_str(addr)
+    pub fn recipient_address(&self, addr_str: &str) -> SigningResult<TransactionOutput> {
+        let addr = Context::Address::from_str(addr_str)
             .into_tw()
             .context("Invalid recipient address")?;
-
-        match addr {
-            StandardBitcoinAddress::Legacy(ref legacy) => self.recipient_legacy_address(legacy),
-            StandardBitcoinAddress::Segwit(ref segwit) => self.recipient_segwit_address(segwit),
-            StandardBitcoinAddress::Taproot(ref taproot) => self.recipient_taproot_address(taproot),
-        }
+        let claiming_script_pubkey =
+            Context::addr_to_script_pubkey(&addr, self.chain_info.to_address_prefixes())?;
+        self.custom_script(claiming_script_pubkey.into())
+            .with_context(|| format!("Error handling {addr_str} output address"))
     }
 
     pub fn op_return(&self, op_return_data: &[u8]) -> SigningResult<TransactionOutput> {
         self.prepare_builder()?.op_return(op_return_data)
-    }
-
-    pub fn recipient_legacy_address(
-        &self,
-        addr: &LegacyAddress,
-    ) -> SigningResult<TransactionOutput> {
-        let p2pkh_prefix = self.chain_info.p2pkh_prefix;
-        let p2sh_prefix = self.chain_info.p2sh_prefix;
-
-        if addr.prefix() == p2pkh_prefix {
-            Ok(self.prepare_builder()?.p2pkh_from_hash(&addr.payload()))
-        } else if addr.prefix() == p2sh_prefix {
-            Ok(self.prepare_builder()?.p2sh_from_hash(&addr.payload()))
-        } else {
-            // Unknown
-            SigningError::err(SigningErrorType::Error_invalid_address).context(format!(
-                "The given '{addr}' address has unexpected prefix. Expected p2pkh={p2pkh_prefix} p2sh={p2sh_prefix}",
-            ))
-        }
-    }
-
-    pub fn recipient_segwit_address(
-        &self,
-        addr: &SegwitAddress,
-    ) -> SigningResult<TransactionOutput> {
-        if let Ok(pubkey_hash) = H160::try_from(addr.witness_program()) {
-            Ok(self.prepare_builder()?.p2wpkh_from_hash(&pubkey_hash))
-        } else if let Ok(script_hash) = H256::try_from(addr.witness_program()) {
-            Ok(self.prepare_builder()?.p2wsh_from_hash(&script_hash))
-        } else {
-            return SigningError::err(SigningErrorType::Error_invalid_address)
-                .context(format!("The given '{addr}' Segwit address has unexpected witness program. Expected either 20 or 32 bytes"));
-        }
-    }
-
-    pub fn recipient_taproot_address(
-        &self,
-        addr: &TaprootAddress,
-    ) -> SigningResult<TransactionOutput> {
-        let pubkey_x_only = H256::try_from(addr.witness_program())
-            .tw_err(|_| SigningErrorType::Error_invalid_address)
-            .context(format!("The given '{addr}' Taproot address has unexpected witness program. Expected 32 bytes public key"))?;
-
-        Ok(self
-            .prepare_builder()?
-            .p2tr_dangerous_assume_tweaked(&pubkey_x_only))
     }
 
     /// Tries to convert [`Proto::RedeemScriptOrHash`] to [`Hash<N>`] using a specific `hasher` function.

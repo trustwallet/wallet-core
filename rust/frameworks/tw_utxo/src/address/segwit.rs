@@ -4,6 +4,7 @@
 
 use super::Bech32Prefix;
 use crate::address::witness_program::{WitnessProgram, WITNESS_V0};
+use crate::script::standard_script::conditions;
 use crate::script::Script;
 use core::fmt;
 use std::str::FromStr;
@@ -18,7 +19,7 @@ use tw_memory::Data;
 /// Witness program sizes valid for V0 (Segwit).
 const WITNESS_V0_VALID_PROGRAM_SIZES: [usize; 2] = [H160::LEN, H256::LEN];
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SegwitAddress {
     inner: WitnessProgram,
 }
@@ -80,6 +81,28 @@ impl SegwitAddress {
 
     pub fn witness_program(&self) -> &[u8] {
         self.inner.witness_program()
+    }
+
+    pub fn to_script_pubkey(&self) -> SigningResult<Script> {
+        let witness_program = self.witness_program();
+        match witness_program.len() {
+            // P2WPKH
+            H160::LEN => {
+                let pubkey_hash = H160::try_from(witness_program)
+                    .expect("'witness_program' length must be checked already");
+                Ok(conditions::new_p2wpkh(&pubkey_hash))
+            },
+            // P2WSH
+            H256::LEN => {
+                let script_hash = H256::try_from(witness_program)
+                    .expect("'witness_program' length must be checked already");
+                Ok(conditions::new_p2wsh(&script_hash))
+            },
+            // Unknown
+            _ => SigningError::err(SigningErrorType::Error_invalid_address).context(format!(
+                "The given '{self}' segwit address should have 20 or 32 byte length witness program"
+            )),
+        }
     }
 }
 
