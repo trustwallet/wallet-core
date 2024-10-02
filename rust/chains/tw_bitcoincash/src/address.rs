@@ -26,6 +26,16 @@ impl Address {
         }
         Err(AddressError::InvalidInput)
     }
+
+    pub fn from_str_unchecked(address_str: &str) -> AddressResult<Self> {
+        if let Ok(cash) = CashAddress::from_str_unchecked(address_str) {
+            return Ok(Address::Cash(cash));
+        }
+        if let Ok(legacy) = LegacyAddress::from_str(address_str) {
+            return Ok(Address::Legacy(legacy));
+        }
+        Err(AddressError::InvalidInput)
+    }
 }
 
 impl CoinAddress for Address {
@@ -34,14 +44,6 @@ impl CoinAddress for Address {
             Address::Cash(cash) => cash.data(),
             Address::Legacy(legacy) => legacy.bytes().to_vec(),
         }
-    }
-}
-
-impl FromStr for Address {
-    type Err = AddressError;
-
-    fn from_str(_s: &str) -> Result<Self, Self::Err> {
-        todo!()
     }
 }
 

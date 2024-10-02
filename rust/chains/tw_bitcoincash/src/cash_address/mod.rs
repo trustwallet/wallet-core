@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use std::fmt;
+use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
@@ -16,6 +17,7 @@ use tw_utxo::address::legacy::LegacyAddress;
 /// BitcoinCash specific base32 format.
 mod cash_base32;
 mod checksum;
+mod unchecked;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum CashAddressType {
@@ -33,7 +35,15 @@ pub struct CashAddress {
 }
 
 impl CashAddress {
-    pub fn p2pkh_with_public_key(
+    pub fn p2pkh_with_coin(
+        coin: &dyn CoinContext,
+        public_key: &ecdsa::secp256k1::PublicKey,
+    ) -> AddressResult<CashAddress> {
+        let hrp = coin.hrp().ok_or(AddressError::InvalidRegistry)?;
+        Self::p2pkh_with_hrp(hrp, public_key)
+    }
+
+    pub fn p2pkh_with_hrp(
         hrp: String,
         public_key: &ecdsa::secp256k1::PublicKey,
     ) -> AddressResult<CashAddress> {
@@ -60,54 +70,15 @@ impl CashAddress {
             None => coin.hrp().ok_or(AddressError::InvalidRegistry)?,
         };
 
-        Self::from_str_with_hrp(address_str, &expected_hrp)
+        Self::from_str_with_hrp(address_str, expected_hrp)
     }
 
-    pub fn from_str_with_hrp(address_str: &str, expected_hrp: &str) -> AddressResult<Self> {
-        let address_str = address_str.to_lowercase();
-        let (prefix, encoded_payload) = split_address(&address_str)?;
+    pub fn from_str_with_hrp(address_str: &str, expected_hrp: String) -> AddressResult<Self> {
+        unchecked::UncheckedCashAddress::from_str(address_str)?.checked_with_prefix(expected_hrp)
+    }
 
-        // Cash address can have no prefix. If it's set, we should check whether it's expected.
-        if let Some(prefix) = prefix {
-            if prefix.to_lowercase() != expected_hrp {
-                return Err(AddressError::InvalidHrp);
-            }
-        }
-
-        let payload_with_checksum =
-            cash_base32::decode(encoded_payload).map_err(|_| AddressError::InvalidInput)?;
-
-        // Ensure the checksum is zero when decoding.
-        let checksum = checksum::calculate_checksum(&expected_hrp, &payload_with_checksum);
-        if checksum != 0 {
-            return Err(AddressError::InvalidChecksum);
-        }
-
-        // Get the payload without the checksum.
-        let payload_u5 =
-            &payload_with_checksum[..payload_with_checksum.len() - checksum::CHECKSUM_LEN];
-
-        let payload_data = {
-            let from = 5;
-            let to = 8;
-            let pad = false;
-            bech32::convert_bits(payload_u5, from, to, pad)
-                .map_err(|_| AddressError::InvalidInput)?
-        };
-
-        let version_byte = payload_data[0];
-        let ty = get_address_type(version_byte)?;
-        let key_hash =
-            H160::try_from(&payload_data[1..]).map_err(|_| AddressError::InvalidInput)?;
-
-        // `encoded_payload` is checked already, and it contains the valid checksum at the end.
-        let address_str = format!("{expected_hrp}:{encoded_payload}");
-        Ok(CashAddress {
-            hrp: expected_hrp.to_string(),
-            ty,
-            key_hash,
-            address_str,
-        })
+    pub fn from_str_unchecked(address_str: &str) -> AddressResult<Self> {
+        unchecked::UncheckedCashAddress::from_str(address_str)?.partly_checked()
     }
 
     pub fn to_legacy(&self, p2pkh_prefix: u8, p2sh_prefix: u8) -> AddressResult<LegacyAddress> {
@@ -167,33 +138,13 @@ impl fmt::Display for CashAddress {
     }
 }
 
-fn split_address(addr: &str) -> AddressResult<(Option<&str>, &str)> {
-    let tokens: Vec<&str> = addr.split(':').collect();
-    if tokens.len() == 1 {
-        Ok((None, tokens[0]))
-    } else if tokens.len() == 2 {
-        Ok((Some(tokens[0]), tokens[1]))
-    } else {
-        Err(AddressError::InvalidInput)
-    }
-}
-
-fn get_address_type(version_byte: u8) -> AddressResult<CashAddressType> {
-    match version_byte & 8 {
-        0 => Ok(CashAddressType::P2PKH),
-        8 => Ok(CashAddressType::P2SH),
-        _ => Err(AddressError::UnexpectedAddressPrefix),
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[track_caller]
     fn test_address_from_str_impl(s: &str, expected: CashAddress) {
-        let expected_hrp = &expected.hrp;
-        let actual = CashAddress::from_str_with_hrp(s, expected_hrp).unwrap();
+        let actual = CashAddress::from_str_with_hrp(s, expected.hrp.clone()).unwrap();
         assert_eq!(actual, expected);
     }
 
@@ -250,7 +201,7 @@ mod tests {
 
     #[track_caller]
     fn test_address_to_legacy_impl(input: AddressToLegacyTest) {
-        let cash = CashAddress::from_str_with_hrp(input.address, input.hrp).unwrap();
+        let cash = CashAddress::from_str_with_hrp(input.address, input.hrp.to_string()).unwrap();
         let legacy = cash
             .to_legacy(input.p2pkh_prefix, input.p2sh_prefixes)
             .unwrap();

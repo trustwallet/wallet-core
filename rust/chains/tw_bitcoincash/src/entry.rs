@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::Address;
+use crate::cash_address::CashAddress;
 use tw_bitcoin::modules::compiler::BitcoinCompiler;
 use tw_bitcoin::modules::planner::BitcoinPlanner;
 use tw_bitcoin::modules::signer::BitcoinSigner;
@@ -51,20 +52,24 @@ impl CoinEntry for BitcoinCashEntry {
     fn parse_address_unchecked(
         &self,
         _coin: &dyn CoinContext,
-        _address: &str,
+        address: &str,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        Address::from_str_unchecked(address)
     }
 
     #[inline]
     fn derive_address(
         &self,
-        _coin: &dyn CoinContext,
-        _public_key: PublicKey,
+        coin: &dyn CoinContext,
+        public_key: PublicKey,
         _derivation: Derivation,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        let public_key = public_key
+            .to_secp256k1()
+            .ok_or(AddressError::PublicKeyTypeMismatch)?;
+        let cash_addr = CashAddress::p2pkh_with_coin(coin, public_key)?;
+        Ok(Address::Cash(cash_addr))
     }
 
     #[inline]
