@@ -30,6 +30,17 @@ fn test_bitcoincash_address_normalization() {
         "bitcoincash:qruxj7zq6yzpdx8dld0e9hfvt7u47zrw9gfr5hy0vh",
         "bitcoincash:qruxj7zq6yzpdx8dld0e9hfvt7u47zrw9gfr5hy0vh",
     );
+    test_address_normalization(
+        CoinType::BitcoinCash,
+        "qqslmu0jxk4st3ldjyuazfpf5thd6vlgfuggqd3re4",
+        "bitcoincash:qqslmu0jxk4st3ldjyuazfpf5thd6vlgfuggqd3re4",
+    );
+    // Legacy address should be normalized as Legacy.
+    test_address_normalization(
+        CoinType::BitcoinCash,
+        "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2",
+        "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2",
+    );
 }
 
 #[test]
@@ -54,6 +65,15 @@ fn test_bitcoincash_address_is_valid() {
         CoinType::BitcoinCash,
         "bitcoincash:qr6m7j9njldwwzlg9v7v53unlr4jkmx6eylep8ekg2",
     );
+    test_address_valid(
+        CoinType::BitcoinCash,
+        "qq07l6rr5lsdm3m80qxw80ku2ex0tj76vvsxpvmgme",
+    );
+    test_address_valid(
+        CoinType::BitcoinCash,
+        "qqslmu0jxk4st3ldjyuazfpf5thd6vlgfuggqd3re4",
+    );
+    test_address_valid(CoinType::BitcoinCash, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2");
 }
 
 #[test]

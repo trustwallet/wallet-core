@@ -30,7 +30,15 @@ pub trait CoinEntryExt {
     ) -> AddressResult<()>;
 
     /// Validates and normalizes the given `address`.
-    fn normalize_address(&self, coin: &dyn CoinContext, address: &str) -> AddressResult<String>;
+    fn normalize_address(
+        &self,
+        coin: &dyn CoinContext,
+        address: &str,
+        prefix: Option<AddressPrefix>,
+    ) -> AddressResult<String>;
+
+    /// Normalizes the given `address` without checking its belonging to the `coin` network.
+    fn normalize_address_unchecked(&self, address: &str) -> AddressResult<String>;
 
     /// Derives an address associated with the given `public_key` by `coin` context, `derivation` and address `prefix`.
     fn derive_address(
@@ -42,7 +50,7 @@ pub trait CoinEntryExt {
     ) -> AddressResult<String>;
 
     /// Returns underlying data (public key or key hash).
-    fn address_to_data(&self, coin: &dyn CoinContext, address: &str) -> AddressResult<Data>;
+    fn address_to_data(&self, address: &str) -> AddressResult<Data>;
 
     /// Signs a transaction declared as the given `input`.
     fn sign(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Data>;
@@ -114,11 +122,22 @@ where
         self.parse_address(coin, address, prefix).map(|_| ())
     }
 
-    fn normalize_address(&self, coin: &dyn CoinContext, address: &str) -> AddressResult<String> {
+    fn normalize_address(
+        &self,
+        coin: &dyn CoinContext,
+        address: &str,
+        prefix: Option<AddressPrefix>,
+    ) -> AddressResult<String> {
+        let prefix = prefix.map(T::AddressPrefix::try_from).transpose()?;
         // Parse the address and display it.
         // Please note that `Self::Address::to_string()` returns a normalize address.
-        <Self as CoinEntry>::parse_address_unchecked(self, coin, address)
-            .map(|addr| addr.to_string())
+        <Self as CoinEntry>::parse_address(self, coin, address, prefix).map(|addr| addr.to_string())
+    }
+
+    fn normalize_address_unchecked(&self, address: &str) -> AddressResult<String> {
+        // Parse the address and display it.
+        // Please note that `Self::Address::to_string()` returns a normalize address.
+        <Self as CoinEntry>::parse_address_unchecked(self, address).map(|addr| addr.to_string())
     }
 
     fn derive_address(
@@ -135,8 +154,8 @@ where
             .map(|addr| addr.to_string())
     }
 
-    fn address_to_data(&self, coin: &dyn CoinContext, address: &str) -> AddressResult<Data> {
-        self.parse_address_unchecked(coin, address)
+    fn address_to_data(&self, address: &str) -> AddressResult<Data> {
+        self.parse_address_unchecked(address)
             .map(|addr| addr.data())
     }
 

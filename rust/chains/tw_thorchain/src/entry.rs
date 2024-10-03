@@ -48,11 +48,7 @@ impl CoinEntry for ThorchainEntry {
     }
 
     #[inline]
-    fn parse_address_unchecked(
-        &self,
-        _coin: &dyn CoinContext,
-        address: &str,
-    ) -> AddressResult<Self::Address> {
+    fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address> {
         Address::from_str(address)
     }
 

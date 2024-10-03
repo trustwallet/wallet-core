@@ -44,11 +44,7 @@ impl CoinEntry for BitcoinEntry {
     }
 
     #[inline]
-    fn parse_address_unchecked(
-        &self,
-        _coin: &dyn CoinContext,
-        address: &str,
-    ) -> AddressResult<Self::Address> {
+    fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address> {
         StandardBitcoinAddress::from_str(address)
     }
 
