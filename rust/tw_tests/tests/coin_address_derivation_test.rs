@@ -106,8 +106,7 @@ fn test_coin_address_derivation() {
             CoinType::BitcoinCash => "bitcoincash:qp0xw4t8xrxae7ed4hq9a96rekynzqry2ydzeh0jgs",
             CoinType::BitcoinGold => "btg1qten42eesehw0ktddcp0fws7d3ycsqez3lht33r",
             CoinType::Ravencoin => "RHtMPHweTxYNhBYUN2nJTu9QKyjm7MRKsF",
-            // TODO should be "ecash:qp0xw4t8xrxae7ed4hq9a96rekynzqry2y50du5gw8"
-            CoinType::eCash => "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X",
+            CoinType::eCash => "ecash:qp0xw4t8xrxae7ed4hq9a96rekynzqry2y50du5gw8",
             CoinType::Qtum => "QVD9R5M53bcd4KGJKC7fVebq4yDsnEDwtt",
             CoinType::Stratis => "strax1qten42eesehw0ktddcp0fws7d3ycsqez39n8kr5",
             CoinType::Aptos => "0x9006fa46f038224e8004bdda97f2e7a60c2c3d135bce7cb15541e5c0aae907a4",

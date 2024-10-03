@@ -3667,7 +3667,7 @@
     "coinId": 899,
     "symbol": "XEC",
     "decimals": 2,
-    "blockchain": "Bitcoin",
+    "blockchain": "BitcoinCash",
     "derivation": [
       {
         "path": "m/44'/899'/0'/0/0",
