@@ -5,3 +5,5 @@
 mod bitcoincash_address;
 mod bitcoincash_compile;
 mod bitcoincash_sign;
+
+pub const BCH_SIGHASH_FORK: u32 = 0x40;

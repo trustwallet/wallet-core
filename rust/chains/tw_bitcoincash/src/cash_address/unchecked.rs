@@ -107,7 +107,7 @@ impl FromStr for UncheckedCashAddress {
     type Err = AddressError;
 
     fn from_str(address_str: &str) -> Result<Self, Self::Err> {
-        let address_parts = CashAddressParts::from_str(&address_str)?;
+        let address_parts = CashAddressParts::from_str(address_str)?;
 
         let payload_with_checksum =
             cash_base32::decode(&address_parts.payload).map_err(|_| AddressError::InvalidInput)?;

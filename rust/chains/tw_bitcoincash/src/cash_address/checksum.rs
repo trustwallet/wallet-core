@@ -22,11 +22,8 @@ pub fn calculate_checksum(prefix: &str, payload: &[u8]) -> u64 {
 pub fn cacl_and_append_checksum(prefix: &str, payload: &[u8]) -> Data {
     // The checksum sits in the last eight bytes.
     // Append the phantom checksum to calculate an actual value.
-    let mut payload_with_checksum: Vec<_> = payload
-        .into_iter()
-        .copied()
-        .chain(PHANTOM_CHECKSUM)
-        .collect();
+    let mut payload_with_checksum: Vec<_> =
+        payload.iter().copied().chain(PHANTOM_CHECKSUM).collect();
 
     let checksum = calculate_checksum(prefix, &payload_with_checksum);
 
