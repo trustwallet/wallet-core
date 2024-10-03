@@ -3,7 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::Address;
-use crate::cash_address::CashAddress;
 use crate::context::BitcoinCashContext;
 use std::str::FromStr;
 use tw_bitcoin::modules::compiler::BitcoinCompiler;
@@ -18,15 +17,15 @@ use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
-use tw_coin_entry::prefix::NoPrefix;
+use tw_coin_entry::prefix::BitcoinBase58Prefix;
 use tw_keypair::tw::PublicKey;
 use tw_proto::BitcoinV2::Proto;
 
 pub struct BitcoinCashEntry;
 
 impl CoinEntry for BitcoinCashEntry {
-    // TODO `BitcoinCash` should have its own prefix enum with an HRP and Base58 prefixes.
-    type AddressPrefix = NoPrefix;
+    // TODO `BitcoinCash` should probably have its own prefix enum with Cash and Base58 prefixes.
+    type AddressPrefix = BitcoinBase58Prefix;
     type Address = Address;
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = Proto::SigningOutput<'static>;
@@ -45,9 +44,9 @@ impl CoinEntry for BitcoinCashEntry {
         &self,
         coin: &dyn CoinContext,
         address: &str,
-        _prefix: Option<Self::AddressPrefix>,
+        prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        Address::from_str_with_coin(coin, address)
+        Address::from_str_with_coin_and_prefix(coin, address, prefix)
     }
 
     #[inline]
@@ -61,13 +60,12 @@ impl CoinEntry for BitcoinCashEntry {
         coin: &dyn CoinContext,
         public_key: PublicKey,
         _derivation: Derivation,
-        _prefix: Option<Self::AddressPrefix>,
+        prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
         let public_key = public_key
             .to_secp256k1()
             .ok_or(AddressError::PublicKeyTypeMismatch)?;
-        let cash_addr = CashAddress::p2pkh_with_coin(coin, public_key)?;
-        Ok(Address::Cash(cash_addr))
+        Address::p2pkh_with_coin_and_prefix(coin, public_key, prefix)
     }
 
     #[inline]
