@@ -382,17 +382,19 @@ TEST(BitcoinSigning, SignBRC20TransferCommitV2) {
     auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
 
     TW::BitcoinV2::Proto::SigningInput signing;
-    signing.set_version(BitcoinV2::Proto::TransactionVersion::V2);
     signing.add_private_keys(key.bytes.data(), key.bytes.size());
-    signing.set_input_selector(BitcoinV2::Proto::InputSelector::UseAll);
     signing.set_dangerous_use_fixed_schnorr_rng(true);
-    signing.set_fixed_dust_threshold(546);
+
+    auto& builder = *signing.mutable_builder();
+    builder.set_version(BitcoinV2::Proto::TransactionVersion::V2);
+    builder.set_input_selector(BitcoinV2::Proto::InputSelector::UseAll);
+    builder.set_fixed_dust_threshold(546);
 
     auto& chainInfo = *signing.mutable_chain_info();
     chainInfo.set_p2pkh_prefix(0);
     chainInfo.set_p2sh_prefix(5);
 
-    auto& in = *signing.add_inputs();
+    auto& in = *builder.add_inputs();
     auto& inOutPoint = *in.mutable_out_point();
     inOutPoint.set_hash(txId.data(), txId.size());
     inOutPoint.set_vout(1);
@@ -400,14 +402,14 @@ TEST(BitcoinSigning, SignBRC20TransferCommitV2) {
     in.mutable_script_builder()->mutable_p2wpkh()->set_pubkey(pubKey.bytes.data(), pubKey.bytes.size());
     in.set_sighash_type(TWBitcoinSigHashTypeAll);
 
-    auto& out = *signing.add_outputs();
+    auto& out = *builder.add_outputs();
     out.set_value(brcInscribeAmount);
     auto& brc20 = *out.mutable_builder()->mutable_brc20_inscribe();
     brc20.set_ticker("oadf");
     brc20.set_transfer_amount("20");
     brc20.set_inscribe_to(pubKey.bytes.data(), pubKey.bytes.size());
 
-    auto& changeOut = *signing.add_outputs();
+    auto& changeOut = *builder.add_outputs();
     changeOut.set_value(forFeeAmount);
     changeOut.mutable_builder()->mutable_p2wpkh()->set_pubkey(pubKey.bytes.data(), pubKey.bytes.size());
 

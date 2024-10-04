@@ -2,7 +2,16 @@
 
 set -e
 
+source "$(dirname $0)/parse_args" "$@"
 source "$(dirname $0)/android-sdk"
+
+if isHelp; then
+  echo "usage: rust-bindgen [-h | --help] [all | native | wasm | android | ios]"
+  echo ""
+  echo "Generate Rust bindings for target platforms specified in arguments"
+  echo "You can specify multiple targets at once"
+  exit 0
+fi
 
 TARGET_NAME="libwallet_core_rs.a"
 TARGET_XCFRAMEWORK_NAME=../swift/WalletCoreRs.xcframework
@@ -19,47 +28,21 @@ create_xc_framework() {
 
 cd rust
 
-NATIVE="false"
-ANDROID="false"
-IOS="false"
-WASM="false"
-
-# Whether to generate bindings for native platform.
-if [[ "$1" == "native" ]] || [[ "$1" == "" ]]; then
-  NATIVE="true"
-fi
-
-# Whether to generate bindings for Android.
-  if [[ "$1" == "android" ]] || [[ "$1" == "" ]]; then
-    ANDROID="true"
-  fi
-
-# Generate bindings for ios platforms on MacOS only.
-if [[ `uname` == "Darwin" ]]; then
-# Whether to generate bindings for iOS.
-  if [[ "$1" == "ios" ]] || [[ "$1" == "" ]]; then
-    IOS="true"
-  fi
-fi
-
-# Whether to generate bindings for WASM.
-if [[ "$1" == "wasm" ]] || [[ "$1" == "" ]]; then
-  WASM="true"
-fi
-
-if [[ "$NATIVE" == "true" ]]; then
+if isTargetSpecified "native"; then
   echo "Generating Native target"
   cargo build --release --lib
 fi
 
 export RUSTFLAGS="-Zlocation-detail=none"
 
-if [[ "$WASM" == "true" ]]; then
+if isTargetSpecified "wasm"; then
   echo "Generating WASM target"
+
+  source ../emsdk/emsdk_env.sh
   cargo build -Z build-std=std,panic_abort --target wasm32-unknown-emscripten --release --lib
 fi
 
-if [[ "$ANDROID" == "true" ]]; then
+if isTargetSpecified "android"; then
   NDK_BIN_PATH=$(find_android_ndk)
 
   export AR="$NDK_BIN_PATH/llvm-ar"
@@ -72,7 +55,7 @@ if [[ "$ANDROID" == "true" ]]; then
   cargo build -Z build-std=std,panic_abort --target aarch64-linux-android --target armv7-linux-androideabi --target x86_64-linux-android --target i686-linux-android --release --lib
 fi
 
-if [[ "$IOS" == "true" ]]; then
+if isTargetSpecified "ios" && [[ $(uname) == "Darwin" ]]; then
   echo "Generating iOS targets"
   cargo build -Z build-std=std,panic_abort --target aarch64-apple-ios --target aarch64-apple-ios-sim --target x86_64-apple-ios --target aarch64-apple-darwin --target x86_64-apple-darwin --target aarch64-apple-ios-macabi --target x86_64-apple-ios-macabi --release --lib &
   wait
@@ -89,7 +72,7 @@ cbindgen --crate $CRATE --output ../src/rust/bindgen/$HEADER_NAME
 cd -
 [[ -e rust/target/release/${TARGET_NAME} ]] && cp rust/target/release/${TARGET_NAME} build/local/lib/
 
-if [[ "$IOS" == "true" ]]; then
+if isTargetSpecified "ios" && [[ $(uname) == "Darwin" ]]; then
 cd rust
 cat > $TARGET_XCFRAMEWORK_NAME/Info.plist << EOF
 <?xml version="1.0" encoding="UTF-8"?>

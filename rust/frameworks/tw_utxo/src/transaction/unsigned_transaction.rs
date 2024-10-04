@@ -49,6 +49,10 @@ where
         &self.utxo_args
     }
 
+    pub fn outputs(&self) -> &[Transaction::Output] {
+        self.transaction.outputs()
+    }
+
     pub fn outputs_mut(&mut self) -> &mut [Transaction::Output] {
         self.transaction.outputs_mut()
     }
@@ -135,6 +139,15 @@ where
             })
             .or_tw_err(SigningErrorType::Error_tx_too_big)
             .context("Sum of Transaction output amounts is too big")
+    }
+
+    /// Calculates the unsigned transaction fee by the formula:
+    /// `sum(input) - sum(output)`
+    pub fn fee(&self) -> SigningResult<Amount> {
+        self.total_input()?
+            .checked_sub(self.total_output()?)
+            .or_tw_err(SigningErrorType::Error_not_enough_utxos)
+            .context("sum(input) < sum(output)")
     }
 }
 
