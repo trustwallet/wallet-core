@@ -232,6 +232,7 @@ fn test_ton_sign_wallet_v5r1_transfer_jettons() {
         // Send unused toncoins back to sender.
         response_address: "UQCh41gQP1A4I0lnAn6yAfitDAIYpXG6UFIXqeSz1TVxNOJ_".into(),
         forward_amount: 1,
+        ..Default::default()
     };
 
     let transfer = Proto::Transfer {
@@ -277,6 +278,7 @@ fn test_ton_sign_wallet_v5r1_transfer_jettons_with_comment() {
         // Send unused toncoins back to sender.
         response_address: "UQCh41gQP1A4I0lnAn6yAfitDAIYpXG6UFIXqeSz1TVxNOJ_".into(),
         forward_amount: 1,
+        ..Default::default()
     };
 
     let transfer = Proto::Transfer {
@@ -323,10 +325,7 @@ fn test_ton_sign_wallet_v5r1_transfer_custom_payload() {
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
-        payload: PayloadType::custom_payload(Proto::CustomPayload {
-            state_init: "".into(),
-            payload: comment_cell("Hi there sir").into(),
-        }),
+        payload: PayloadType::custom_payload(comment_cell("Hi there sir").into()),
         ..Proto::Transfer::default()
     };
 
@@ -377,10 +376,10 @@ fn test_ton_sign_wallet_v5r1_transfer_custom_payload_with_state_init() {
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: false,
-        payload: PayloadType::custom_payload(Proto::CustomPayload {
-            state_init: doge_state_init.into(),
-            payload: comment_cell("This transaction deploys Doge Chatbot contract").into(),
-        }),
+        state_init: doge_state_init.into(),
+        payload: PayloadType::custom_payload(
+            comment_cell("This transaction deploys Doge Chatbot contract").into(),
+        ),
         ..Proto::Transfer::default()
     };
 
@@ -431,4 +430,51 @@ fn test_ton_sign_wallet_v5r1_missing_required_send_mode() {
     let output = signer.sign(CoinType::TON, input);
 
     assert_eq!(output.error, SigningError::Error_internal);
+}
+
+#[test]
+fn test_ton_sign_wallet_v5r1_mintless_jetton() {
+    let private_key = "502d60b0f3327382e7d0585b789f1db9aa04907fe5cddc5c28818ec163ebf4ba";
+
+    let jetton_transfer = Proto::JettonTransfer {
+        query_id: 1,
+        // Transfer 0 mintless jetton to self.
+        jetton_amount: 0,
+        to_owner: "UQCh41gQP1A4I0lnAn6yAfitDAIYpXG6UFIXqeSz1TVxNOJ_".into(),
+        // Send unused toncoins back to sender.
+        response_address: "UQCh41gQP1A4I0lnAn6yAfitDAIYpXG6UFIXqeSz1TVxNOJ_".into(),
+        forward_amount: 1,
+        custom_payload: "te6ccgECNQEABJMAAQgN9gLWAQlGA6+1FWXC4ss/wvDOFwMk2bVM97AUEWqaUhh63uWfQ26nAB4CIgWBcAIDBChIAQEZG2ZqtEYGAq27TvzHdGuGrhhKoICBU+Zg9Xq/qRMHGAAdIgEgBQYiASAHCChIAQEV0tdPcZG01smq0thhsmqf9ZzE0QqpP3c+ERvuHF1JDgAbKEgBAf3dO8qdKoPys7AWvavs1wMNWCOq5XashXaRopmksx/LABsiASAJCiIBIAsMKEgBAWP0xUs9JBrfQRl1FkF2tIfIDYpwLdf3fXqMi6BqxNtmABoiASANDihIAQFOErI5E7ld/nTAgHXdGI74UH8kxIaFyAkH42P54tEC9QAYIgEgDxAoSAEBrF16Czdlg18FB467CrR6Ucwxb8H+Z1e4qDeFWbkz1WEAFyIBIBESKEgBAXeWzg9xTFO6z0FP+axi8Njuxxp0zPrAUs4vnmt/dE3xABYoSAEBEZ7KazNpaWJoInmqO4II/AfncyhMNWxh6BE2qFU7/9wAFCIBIBMUKEgBAZleZTNXbgCF+8G08kiQeDPanQtNCVakzEU3g9GKB+K2ABQiASAVFihIAQFeCM83J7sm36g24qFeEDvStahHWn6SsEk+Wii49rzBiAASIgEgFxgoSAEBfV9jrgSeiAKVqeeLliXdoLrxFWe2HK0f4SG5h4kfb8YAESIBIBkaIgEgGxwoSAEBImHhXIbOHuOnOgE5f0KLqoXDB7/ZLQQGiHysuulUq2IAECIBIB0eKEgBAXT+qb5w1+qtvbJ1Fbn8y6IhO85YfxKIgKBga6ROO/yQAA8iASAfIChIAQGoJHXWXWRQGZdP9xIUrMowhvgnf+CwKTIIOBxlDiKgcAANKEgBAZ6tCuDr89HFRz3WwwK+wW4XmkE+O7Hf+NgUDI+uqnAJAAwiASAhIihIAQHtasTLBAw7MZHpRTsKyC47E1PZ/LAtF3n2Y2b5ThX0VgALIgEgIyQiASAlJihIAQGumGRf7UXrpK12Cuvj06565IC0Kbd4i2XoG6dnqC+uQAAJKEgBAXM19HUUkz6ns7o/2x45kQ2iLj8gl3zYhrAhISEUg0O1AAgiASAnKCIBICkqKEgBAa7kNA+lev+Z5T/xqKBbO648BvnLL6/hAp1auOiZTWRhAAcoSAEBxn19AKZGAUPYWs8pTpNQrCB4Ap0KfzyjOgB1Mc9PbIUABSIBICssKEgBAWarrCPqSS6+lq6NRcrWZ2/v6bN4b6Zd3GWAtN6j8a6BAAQiASAtLiIBIC8wKEgBAXYYqhLZ1tHg+HdKd8vLmTBsojkj61ZiafXB7pOt+hEFAAMiASAxMihIAQHt8p6qBiXtz+kKcgo13Udyh7Uo8irrdKlSSY2dOdALogAAIgFIMzQoSAEByacrlqsAKiFOlv4Rp4V1gNg2i4aVPkcHJq8Vug/89k4AAABduZA/UDgjSWcCfrIB+K0MAhilcbpQUhep5LPVNXE0Q7msoAAABm4N2AAABm9VrQgoSAEByIAktH0CNxT//QZ8Vgj68CApZON9XBKDfE0D2rY8Fx4AAA==".into()
+    };
+
+    let transfer = Proto::Transfer {
+        dest: "UQCn2lssMz09Gn60mBnv544DgiqIX3mK5cqGEPEPKxCNbE0E".into(), // jetton wallet address
+        amount: 90 * 1000 * 1000,                                        // 0.09 TON as fee
+        mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
+            | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
+        bounceable: true,
+        state_init: "te6ccgEBAwEAjwACATQBAghCAg7xnhv0Dyukkvyqw4buylm/aCejhQcI2fzZrbaDq8M2AMoAgBQ8awIH6gcEaSzgT9ZAPxWhgEMUrjdKCkL1PJZ6pq4mkAPpn0MdzkzH7w8jwjgGMZfR3Y2FqlpEArXYKCy3B42gyr7UVZcLiyz/C8M4XAyTZtUz3sBQRappSGHre5Z9DbqcAg==".into(),
+        payload: PayloadType::jetton_transfer(jetton_transfer),
+        ..Proto::Transfer::default()
+    };
+
+    let input = Proto::SigningInput {
+        private_key: private_key.decode_hex().unwrap().into(),
+        messages: vec![transfer],
+        sequence_number: 7,
+        expire_at: 1727346541,
+        wallet_version: Proto::WalletVersion::WALLET_V5_R1,
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::TON, input);
+
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+    // Successfully broadcasted: https://tonviewer.com/transaction/70f347338b3e0d33feb285a0cc7300d216b6011462ed7e76c6395bcca7abc649
+    assert_eq_boc(&output.encoded, "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");
+    assert_eq!(
+        output.hash.to_hex(),
+        "70f347338b3e0d33feb285a0cc7300d216b6011462ed7e76c6395bcca7abc649"
+    );
 }

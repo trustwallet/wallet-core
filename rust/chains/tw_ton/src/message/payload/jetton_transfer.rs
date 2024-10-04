@@ -23,8 +23,6 @@ pub struct JettonTransferPayload {
     /// Address where to send a response with confirmation of a successful transfer and the rest of the incoming message Toncoins.
     response_destination: TonAddress,
     /// Optional custom data (which is used by either sender or receiver jetton wallet for inner logic).
-    /// At WalletCore, we do not use `custom_payload` at the moment.
-    #[allow(dead_code)]
     custom_payload: Option<CellArc>,
     /// Amount of nanotons to be sent to the destination address.
     forward_ton_amount: U256,
@@ -62,6 +60,11 @@ impl JettonTransferPayload {
 
     pub fn with_comment(&mut self, comment: String) -> &mut Self {
         self.comment = Some(comment);
+        self
+    }
+
+    pub fn with_custom_payload(&mut self, custom_payload: Option<CellArc>) -> &mut Self {
+        self.custom_payload = custom_payload;
         self
     }
 
