@@ -19,9 +19,9 @@ use tw_keypair::test_utils::tw_public_key_helper::TWPublicKeyHelper;
 use tw_keypair::tw::PublicKeyType;
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
-use tw_memory::test_utils::tw_wrapper::{TWWrapper, WithDestructor};
+use tw_memory::test_utils::tw_wrapper::{TWAutoWrapper, WithDestructor};
 
-pub type TWAnyAddressHelper = TWWrapper<TWAnyAddress>;
+pub type TWAnyAddressHelper = TWAutoWrapper<TWAnyAddress>;
 
 impl WithDestructor for TWAnyAddress {
     fn destructor() -> unsafe extern "C" fn(*mut Self) {

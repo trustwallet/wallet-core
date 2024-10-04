@@ -12,3 +12,5 @@ pub mod solana;
 pub mod ton;
 #[cfg(feature = "utils")]
 pub mod utils;
+#[cfg(feature = "hd_wallet")]
+pub mod wallet;
