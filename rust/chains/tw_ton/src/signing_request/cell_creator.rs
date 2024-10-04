@@ -8,7 +8,7 @@ use crate::message::payload::comment::CommentPayload;
 use crate::message::payload::empty::EmptyPayload;
 use crate::message::payload::jetton_transfer::JettonTransferPayload;
 use crate::signing_request::{
-    JettonTransferRequest, SigningRequest, TransferCustomRequest, TransferPayload, TransferRequest,
+    JettonTransferRequest, SigningRequest, TransferPayload, TransferRequest,
 };
 use std::sync::Arc;
 use tw_coin_entry::error::prelude::ResultContext;
@@ -71,10 +71,23 @@ impl InternalMessageCreator {
         jetton: &JettonTransferRequest,
         comment: Option<String>,
     ) -> CellResult<CellArc> {
+        let custom_payload_cell = if let Some(ref custom_payload) = jetton.custom_payload {
+            Some(
+                BagOfCells::parse_base64(custom_payload)
+                    .context("Error parsing JettonTransfer custom_payload")?
+                    .single_root()
+                    .map(Arc::clone)
+                    .context("custom_payload must contain only one single root")?,
+            )
+        } else {
+            None
+        };
+
         let mut payload = JettonTransferPayload::new(jetton.dest.clone(), jetton.jetton_amount);
         payload
             .with_query_id(jetton.query_id)
             .with_response_destination(jetton.response_address.clone())
+            .with_custom_payload(custom_payload_cell)
             .with_forward_ton_amount(jetton.forward_ton_amount);
 
         if let Some(comment) = comment {
@@ -87,27 +100,16 @@ impl InternalMessageCreator {
             .context("Error generating Jetton Transfer payload")
     }
 
-    fn custom_payload(custom: &TransferCustomRequest) -> CellResult<CellArc> {
-        match custom.payload {
-            Some(ref payload) => BagOfCells::parse_base64(payload)
-                .context("Error parsing custom Transfer payload")?
-                .single_root()
-                .map(Arc::clone)
-                .context("Custom Transfer payload must contain only one single root"),
-            // Create an empty Cell payload.
-            None => EmptyPayload
-                .build()
-                .map(Cell::into_arc)
-                .context("Error generating Transfer's empty payload"),
-        }
+    fn custom_payload(payload: &str) -> CellResult<CellArc> {
+        BagOfCells::parse_base64(payload)
+            .context("Error parsing custom Transfer payload")?
+            .single_root()
+            .map(Arc::clone)
+            .context("Custom Transfer payload must contain only one single root")
     }
 
     fn maybe_custom_state_init(request: &TransferRequest) -> CellResult<Option<CellArc>> {
-        let Some(TransferPayload::Custom(ref custom)) = request.payload else {
-            return Ok(None);
-        };
-
-        let Some(ref state_init) = custom.state_init else {
+        let Some(ref state_init) = request.state_init else {
             return Ok(None);
         };
 

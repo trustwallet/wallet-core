@@ -4,7 +4,7 @@
 
 use crate::address::TonAddress;
 use crate::signing_request::{
-    JettonTransferRequest, SigningRequest, TransferCustomRequest, TransferPayload, TransferRequest,
+    JettonTransferRequest, SigningRequest, TransferPayload, TransferRequest,
 };
 use crate::wallet::{wallet_v4, wallet_v5, VersionedTonWallet};
 use std::str::FromStr;
@@ -98,6 +98,12 @@ impl SigningRequestBuilder {
             Some(input.comment.to_string())
         };
 
+        let state_init = if input.state_init.is_empty() {
+            None
+        } else {
+            Some(input.state_init.to_string())
+        };
+
         let mode = u8::try_from(input.mode)
             .tw_err(|_| SigningErrorType::Error_invalid_params)
             .context("'mode' must fit uint8")?;
@@ -115,6 +121,7 @@ impl SigningRequestBuilder {
             ton_amount: U256::from(input.amount),
             mode,
             comment,
+            state_init,
             payload,
         })
     }
@@ -128,33 +135,25 @@ impl SigningRequestBuilder {
             .into_tw()
             .context("Invalid 'response_address' address")?;
 
+        let custom_payload = if input.custom_payload.is_empty() {
+            None
+        } else {
+            Some(input.custom_payload.to_string())
+        };
+
         let jetton_payload = JettonTransferRequest {
             query_id: input.query_id,
             jetton_amount: U256::from(input.jetton_amount),
             dest,
             response_address,
+            custom_payload,
             forward_ton_amount: U256::from(input.forward_amount),
         };
 
         Ok(TransferPayload::JettonTransfer(jetton_payload))
     }
 
-    fn custom_request(input: &Proto::CustomPayload) -> SigningResult<TransferPayload> {
-        let state_init = if input.state_init.is_empty() {
-            None
-        } else {
-            Some(input.state_init.to_string())
-        };
-
-        let payload = if input.payload.is_empty() {
-            None
-        } else {
-            Some(input.payload.to_string())
-        };
-
-        Ok(TransferPayload::Custom(TransferCustomRequest {
-            state_init,
-            payload,
-        }))
+    fn custom_request(input: &str) -> SigningResult<TransferPayload> {
+        Ok(TransferPayload::Custom(input.to_string()))
     }
 }
