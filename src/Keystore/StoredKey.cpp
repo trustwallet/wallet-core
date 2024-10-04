@@ -8,6 +8,7 @@
 #include "HexCoding.h"
 #include "Mnemonic.h"
 #include "PrivateKey.h"
+#include "TheOpenNetwork/TONWallet.h"
 
 #include <nlohmann/json.hpp>
 #include <TrezorCrypto/memzero.h>
@@ -67,6 +68,24 @@ StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(const std::string& na
     return key;
 }
 
+StoredKey StoredKey::createWithTonMnemonic(const std::string& name, const Data& password, const std::string& tonMnemonic, TWStoredKeyEncryption encryption) {
+    if (!TheOpenNetwork::TONWallet::isValidMnemonic(tonMnemonic, std::nullopt)) {
+        throw std::invalid_argument("Invalid TON mnemonic");
+    }
+
+    Data mnemonicData = TW::Data(tonMnemonic.begin(), tonMnemonic.end());
+    StoredKey key(StoredKeyType::tonMnemonicPhrase, name, password, mnemonicData, TWStoredKeyEncryptionLevelDefault, encryption);
+    memzero(mnemonicData.data(), mnemonicData.size());
+    return key;
+}
+
+StoredKey StoredKey::createWithTonMnemonicAddDefaultAddress(const std::string& name, const Data& password, TWCoinType coin, const std::string& tonMnemonic, TWStoredKeyEncryption encryption) {
+    StoredKey key = createWithTonMnemonic(name, password, tonMnemonic, encryption);
+    const auto tonWallet = key.tonWallet(password);
+    key.account(coin, TWDerivationDefault, tonWallet);
+    return key;
+}
+
 StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption)
     : type(type), id(), name(std::move(name)), accounts() {
     const auto encryptionParams = EncryptionParameters::getPreset(encryptionLevel, encryption);
@@ -84,6 +103,20 @@ const HDWallet<> StoredKey::wallet(const Data& password) const {
     const auto data = payload.decrypt(password);
     const auto mnemonic = std::string(reinterpret_cast<const char*>(data.data()), data.size());
     return HDWallet<>(mnemonic, "");
+}
+
+TheOpenNetwork::TONWallet StoredKey::tonWallet(const Data& password) const {
+    if (type != StoredKeyType::tonMnemonicPhrase) {
+        throw std::invalid_argument("Invalid account requested.");
+    }
+    const auto data = payload.decrypt(password);
+    const auto tonMnemonic = std::string(reinterpret_cast<const char*>(data.data()), data.size());
+
+    auto maybeTonWallet = TheOpenNetwork::TONWallet::createWithMnemonic(tonMnemonic, std::nullopt);
+    if (!maybeTonWallet.has_value()) {
+        throw std::invalid_argument("Invalid TON mnemonic phrase.");
+    }
+    return std::move(*maybeTonWallet);
 }
 
 std::vector<Account> StoredKey::getAccounts(TWCoinType coin) const {
@@ -138,6 +171,12 @@ std::optional<Account> StoredKey::getAccount(TWCoinType coin, const std::string&
 }
 
 std::optional<Account> StoredKey::getAccount(TWCoinType coin, TWDerivation derivation, const HDWallet<>& wallet) const {
+    // obtain address
+    const auto address = wallet.deriveAddress(coin, derivation);
+    return getAccount(coin, address);
+}
+
+std::optional<Account> StoredKey::getAccount(TWCoinType coin, TWDerivation derivation, const TheOpenNetwork::TONWallet& wallet) const {
     // obtain address
     const auto address = wallet.deriveAddress(coin, derivation);
     return getAccount(coin, address);
@@ -201,6 +240,28 @@ Account StoredKey::account(TWCoinType coin, TWDerivation derivation, const HDWal
     return accounts.back();
 }
 
+Account StoredKey::account(TWCoinType coin, TWDerivation derivation, const TheOpenNetwork::TONWallet& tonWallet) {
+    const auto coinAccount = getAccount(coin, derivation, tonWallet);
+    if (coinAccount.has_value()) {
+        // No need to use `fillAddressIfMissing`
+        // because `getAccount` searches for an account with both `coin` and `address` equal to expected.
+        // So `address` is always set.
+        return coinAccount.value();
+    }
+    // Not found, add it.
+
+    // No derivation path for TON wallet. Use default
+    const DerivationPath derivationPath {};
+    const auto address = tonWallet.deriveAddress(coin, derivation);
+    // No extended public key for TON wallet. Use default
+    const std::string extendedPublicKey {};
+    const auto pubKeyType = TW::publicKeyType(coin);
+    const auto pubKey = tonWallet.getKey(coin, derivation).getPublicKey(pubKeyType);
+
+    addAccount(address, coin, derivation, derivationPath, hex(pubKey.bytes), extendedPublicKey);
+    return accounts.back();
+}
+
 std::optional<const Account> StoredKey::account(TWCoinType coin) const {
     return getDefaultAccountOrAny(coin, nullptr);
 }
@@ -254,14 +315,23 @@ const PrivateKey StoredKey::privateKey(TWCoinType coin, const Data& password) {
     return privateKey(coin, TWDerivationDefault, password);
 }
 
-const PrivateKey StoredKey::privateKey(TWCoinType coin, [[maybe_unused]] TWDerivation derivation, const Data& password) {
-    if (type == StoredKeyType::mnemonicPhrase) {
-        const auto wallet = this->wallet(password);
-        const Account& account = this->account(coin, derivation, wallet);
-        return wallet.getKey(coin, account.derivationPath);
+const PrivateKey StoredKey::privateKey(TWCoinType coin, TWDerivation derivation, const Data& password) {
+    switch (type) {
+        case StoredKeyType::mnemonicPhrase: {
+            const auto wallet = this->wallet(password);
+            const Account account = this->account(coin, derivation, wallet);
+            return wallet.getKey(coin, account.derivationPath);
+        }
+        case StoredKeyType::privateKey: {
+            return PrivateKey(payload.decrypt(password));
+        }
+        case StoredKeyType::tonMnemonicPhrase: {
+            const auto tonWallet = this->tonWallet(password);
+            return tonWallet.getKey(coin, derivation);
+        }
+        default:
+            throw std::invalid_argument("Unexpected StoredKey type");
     }
-    // type == StoredKeyType::privateKey
-    return PrivateKey(payload.decrypt(password));
 }
 
 void StoredKey::fixAddresses(const Data& password) {
@@ -289,6 +359,21 @@ void StoredKey::fixAddresses(const Data& password) {
             updateAddressForAccount(key, account);
         }
     } break;
+
+    case StoredKeyType::tonMnemonicPhrase: {
+        const auto tonWallet = this->tonWallet(password);
+        for (auto& account : accounts) {
+            if (!account.address.empty() && !account.publicKey.empty() &&
+                TW::validateAddress(account.coin, account.address)) {
+                continue;
+            }
+            const auto key = tonWallet.getKey(account.coin, account.derivation);
+            updateAddressForAccount(key, account);
+        }
+    } break;
+
+    default:
+        throw std::invalid_argument("Unexpected StoredKey type");
     }
 }
 
@@ -340,12 +425,18 @@ static const auto crypto = "Crypto";
 namespace TypeString {
 static const auto privateKey = "private-key";
 static const auto mnemonic = "mnemonic";
+static const auto tonMnemonic = "ton-mnemonic";
 } // namespace TypeString
 
 void StoredKey::loadJson(const nlohmann::json& json) {
-    if (json.count(CodingKeys::SK::type) != 0 &&
-        json[CodingKeys::SK::type].get<std::string>() == TypeString::mnemonic) {
+    const auto isSKType = [](const nlohmann::json& json, const std::string& expected) -> bool {
+        return json.count(CodingKeys::SK::type) != 0 && json[CodingKeys::SK::type].get<std::string>() == expected;
+    };
+
+    if (isSKType(json, TypeString::mnemonic)) {
         type = StoredKeyType::mnemonicPhrase;
+    } else if (isSKType(json, TypeString::tonMnemonic)) {
+        type = StoredKeyType::tonMnemonicPhrase;
     } else {
         type = StoredKeyType::privateKey;
     }
@@ -395,6 +486,9 @@ nlohmann::json StoredKey::json() const {
         break;
     case StoredKeyType::mnemonicPhrase:
         j[CodingKeys::SK::type] = TypeString::mnemonic;
+        break;
+    case StoredKeyType::tonMnemonicPhrase:
+        j[CodingKeys::SK::type] = TypeString::tonMnemonic;
         break;
     }
 

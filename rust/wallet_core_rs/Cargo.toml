@@ -12,6 +12,7 @@ default = [
     "any-coin",
     "bitcoin",
     "ethereum",
+    "hd_wallet",
     "keypair",
     "solana",
     "ton",
@@ -20,6 +21,7 @@ default = [
 any-coin = ["tw_any_coin"]
 bitcoin = ["tw_bitcoin", "tw_coin_registry"]
 ethereum = ["tw_ethereum", "tw_coin_registry"]
+hd_wallet = ["tw_hd_wallet"]
 keypair = ["tw_keypair"]
 solana = ["tw_solana"]
 ton = ["tw_ton"]
@@ -47,4 +49,5 @@ tw_misc = { path = "../tw_misc" }
 tw_proto = { path = "../tw_proto", optional = true }
 tw_solana = { path = "../chains/tw_solana", optional = true }
 tw_ton = { path = "../chains/tw_ton", optional = true }
+tw_hd_wallet = { path = "../tw_hd_wallet", optional = true }
 uuid = { version = "1.7", features = ["v4"], optional = true }

@@ -25,6 +25,7 @@ members = [
     "tw_encoding",
     "tw_evm",
     "tw_hash",
+    "tw_hd_wallet",
     "tw_keypair",
     "tw_memory",
     "tw_misc",
