@@ -303,6 +303,7 @@ fn test_ton_sign_transfer_jettons() {
         // Send unused toncoins back to sender.
         response_address: "EQBaKIMq5Am2p_rfR1IFTwsNWHxBkOpLTmwUain5Fj4llTXk".into(),
         forward_amount: 1,
+        ..Proto::JettonTransfer::default()
     };
 
     let transfer = Proto::Transfer {
@@ -348,6 +349,7 @@ fn test_ton_sign_transfer_jettons_with_comment() {
         // Send unused toncoins back to sender.
         response_address: "EQBaKIMq5Am2p_rfR1IFTwsNWHxBkOpLTmwUain5Fj4llTXk".into(),
         forward_amount: 1,
+        ..Proto::JettonTransfer::default()
     };
 
     let transfer = Proto::Transfer {
@@ -394,10 +396,7 @@ fn test_ton_sign_transfer_custom_payload() {
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
-        payload: PayloadType::custom_payload(Proto::CustomPayload {
-            state_init: "".into(),
-            payload: comment_cell("Hi there sir").into(),
-        }),
+        payload: PayloadType::custom_payload(comment_cell("Hi there sir").into()),
         ..Proto::Transfer::default()
     };
 
@@ -448,10 +447,10 @@ fn test_ton_sign_transfer_custom_payload_with_state_init() {
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: false,
-        payload: PayloadType::custom_payload(Proto::CustomPayload {
-            state_init: doge_state_init.into(),
-            payload: comment_cell("This transaction deploys Doge Chatbot contract").into(),
-        }),
+        state_init: doge_state_init.into(),
+        payload: PayloadType::custom_payload(
+            comment_cell("This transaction deploys Doge Chatbot contract").into(),
+        ),
         ..Proto::Transfer::default()
     };
 

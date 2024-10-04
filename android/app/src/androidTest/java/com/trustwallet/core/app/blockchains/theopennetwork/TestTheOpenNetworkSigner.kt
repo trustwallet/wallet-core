@@ -97,18 +97,14 @@ class TestTheOpenNetworkSigner {
         // "This transaction deploys Doge Chatbot contract"
         val commentPayload = "te6cckEBAQEANAAAZAAAAABUaGlzIHRyYW5zYWN0aW9uIGRlcGxveXMgRG9nZSBDaGF0Ym90IGNvbnRyYWN0v84vSg=="
 
-        val customPayload = TheOpenNetwork.CustomPayload.newBuilder()
-            .setStateInit(dogeChatbotStateInit)
-            .setPayload(commentPayload)
-            .build()
-
         val transfer = TheOpenNetwork.Transfer.newBuilder()
             .setDest(dogeChatbotDeployingAddress)
             // 0.069 TON
             .setAmount(69_000_000)
             .setMode(TheOpenNetwork.SendMode.PAY_FEES_SEPARATELY_VALUE or TheOpenNetwork.SendMode.IGNORE_ACTION_PHASE_ERRORS_VALUE)
             .setBounceable(false)
-            .setCustomPayload(customPayload)
+            .setStateInit(dogeChatbotStateInit)
+            .setCustomPayload(commentPayload)
 
         val input = TheOpenNetwork.SigningInput.newBuilder()
             .setPrivateKey(ByteString.copyFrom(privateKey.data()))
