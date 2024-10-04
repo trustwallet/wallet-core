@@ -33,21 +33,14 @@ pub struct SubstrateContext {
   pub spec_version: u32,
 }
 
-pub trait TWSubstrateSigningInput {
-    type ProtoCall<'a>;
-
-    fn encode_call(&self, msg: &Self::ProtoCall<'_>) -> EncodeResult<Encoded>;
-    fn encode_batch(&self, calls: Vec<Encoded>) -> EncodeResult<Encoded>;
-}
-
-pub trait TWSubstrateCallEncoder<ProtoCall> {
-    fn encode_call(&self, ctx: &SubstrateContext, msg: &ProtoCall) -> EncodeResult<Encoded>;
+pub trait TWPolkadotCallEncoder {
+    fn encode_call(&self, ctx: &SubstrateContext, msg: &SigningVariant<'_>) -> EncodeResult<Encoded>;
     fn encode_batch(&self, ctx: &SubstrateContext, calls: Vec<Encoded>) -> EncodeResult<Encoded>;
 }
 
 pub struct PolkadotSigningContext {
   ctx: SubstrateContext,
-  encoder: Box<dyn for<'a> TWSubstrateCallEncoder<SigningVariant<'a>>>,
+  encoder: Box<dyn TWPolkadotCallEncoder>,
 }
 
 impl PolkadotSigningContext {
@@ -182,12 +175,8 @@ impl PolkadotSigningContext {
            _ => Ok(None),
         }
     }
-}
 
-impl TWSubstrateSigningInput for PolkadotSigningContext {
-    type ProtoCall<'a> = SigningVariant<'a>;
-
-    fn encode_call(&self, msg: &Self::ProtoCall<'_>) -> EncodeResult<Encoded> {
+    fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
         // Special case for batches.
         match msg {
             SigningVariant::balance_call(b) => {

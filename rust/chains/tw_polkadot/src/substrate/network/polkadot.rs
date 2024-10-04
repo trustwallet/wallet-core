@@ -18,12 +18,12 @@ impl_enum_scale!(
 pub struct PolkadotCallEncoder;
 
 impl PolkadotCallEncoder {
-    pub fn new() -> Box<dyn for<'a> TWSubstrateCallEncoder<SigningVariant<'a>>> {
+    pub fn new() -> Box<dyn TWPolkadotCallEncoder> {
         Box::new(Self)
     }
 }
 
-impl<'a> TWSubstrateCallEncoder<SigningVariant<'a>> for PolkadotCallEncoder {
+impl TWPolkadotCallEncoder for PolkadotCallEncoder {
     fn encode_call(&self, ctx: &SubstrateContext, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
         let call = match msg {
             SigningVariant::balance_call(b) => {
@@ -60,12 +60,12 @@ impl_enum_scale!(
 pub struct KusamaCallEncoder;
 
 impl KusamaCallEncoder {
-    pub fn new() -> Box<dyn for<'a> TWSubstrateCallEncoder<SigningVariant<'a>>> {
+    pub fn new() -> Box<dyn TWPolkadotCallEncoder> {
         Box::new(Self)
     }
 }
 
-impl<'a> TWSubstrateCallEncoder<SigningVariant<'a>> for KusamaCallEncoder {
+impl TWPolkadotCallEncoder for KusamaCallEncoder {
     fn encode_call(&self, ctx: &SubstrateContext, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
         let call = match msg {
             SigningVariant::balance_call(b) => {

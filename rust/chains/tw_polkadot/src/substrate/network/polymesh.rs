@@ -327,12 +327,12 @@ impl_enum_scale!(
 pub struct PolymeshCallEncoder;
 
 impl PolymeshCallEncoder {
-    pub fn new() -> Box<dyn for<'a> TWSubstrateCallEncoder<SigningVariant<'a>>> {
+    pub fn new() -> Box<dyn TWPolkadotCallEncoder> {
         Box::new(Self)
     }
 }
 
-impl<'a> TWSubstrateCallEncoder<SigningVariant<'a>> for PolymeshCallEncoder {
+impl TWPolkadotCallEncoder for PolymeshCallEncoder {
     fn encode_call(&self, ctx: &SubstrateContext, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
         let call = match msg {
             SigningVariant::balance_call(b) => {
