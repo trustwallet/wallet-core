@@ -6,25 +6,29 @@ use crate::modules::psbt_request::PsbtRequest;
 use crate::modules::signing_request::SigningRequestBuilder;
 use crate::modules::tx_builder::script_parser::StandardScriptParser;
 use crate::modules::tx_builder::BitcoinChainInfo;
+use std::marker::PhantomData;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::BitcoinV2::Proto::mod_Input::OneOfclaiming_script as ClaimingScriptProto;
 use tw_proto::BitcoinV2::Proto::mod_Output::OneOfto_recipient as ToRecipientProto;
+use tw_utxo::context::UtxoContext;
 use tw_utxo::transaction::standard_transaction::{TransactionInput, TransactionOutput};
 use tw_utxo::transaction::transaction_interface::TransactionInterface;
 use tw_utxo::transaction::UtxoToSign;
 
-pub struct PsbtPlanner;
+pub struct PsbtPlanner<Context: UtxoContext> {
+    _phantom: PhantomData<Context>,
+}
 
-impl PsbtPlanner {
+impl<Context: UtxoContext> PsbtPlanner<Context> {
     pub fn plan_psbt(
         coin: &dyn CoinContext,
         input: &Proto::SigningInput,
         psbt_input: &Proto::Psbt,
     ) -> SigningResult<Proto::TransactionPlan<'static>> {
-        let chain_info = SigningRequestBuilder::chain_info(coin, &input.chain_info)?;
-        let PsbtRequest { unsigned_tx, .. } = PsbtRequest::build(input, psbt_input)?;
+        let chain_info = SigningRequestBuilder::<Context>::chain_info(coin, &input.chain_info)?;
+        let PsbtRequest { unsigned_tx, .. } = PsbtRequest::<Context>::build(input, psbt_input)?;
 
         let total_input = unsigned_tx.total_input()?;
         let fee_estimate = unsigned_tx.fee()?;

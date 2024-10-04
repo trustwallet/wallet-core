@@ -23,7 +23,7 @@ pub const WITNESS_VALID_PROGRAM_SIZES: RangeInclusive<usize> = 2..=40;
 /// For example:
 /// * witness V0 is Segwit address
 /// * witness V1 is Taproot address
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct WitnessProgram {
     hrp: String,
     witness_version: u8,

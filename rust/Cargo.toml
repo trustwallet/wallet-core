@@ -3,6 +3,7 @@ members = [
     "chains/tw_aptos",
     "chains/tw_binance",
     "chains/tw_bitcoin",
+    "chains/tw_bitcoincash",
     "chains/tw_cosmos",
     "chains/tw_ethereum",
     "chains/tw_greenfield",

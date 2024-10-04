@@ -6,10 +6,12 @@ use crate::modules::tx_builder::output_protobuf::OutputProtobuf;
 use crate::modules::tx_builder::public_keys::PublicKeys;
 use crate::modules::tx_builder::utxo_protobuf::UtxoProtobuf;
 use crate::modules::tx_builder::BitcoinChainInfo;
+use std::marker::PhantomData;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_misc::traits::OptionalEmpty;
 use tw_proto::BitcoinV2::Proto;
+use tw_utxo::context::UtxoContext;
 use tw_utxo::dust::DustPolicy;
 use tw_utxo::modules::tx_planner::{PlanRequest, RequestType};
 use tw_utxo::modules::utxo_selector::InputSelector;
@@ -21,9 +23,11 @@ const DEFAULT_TX_VERSION: u32 = 1;
 
 pub type StandardSigningRequest = PlanRequest<Transaction>;
 
-pub struct SigningRequestBuilder;
+pub struct SigningRequestBuilder<Context: UtxoContext> {
+    _phantom: PhantomData<Context>,
+}
 
-impl SigningRequestBuilder {
+impl<Context: UtxoContext> SigningRequestBuilder<Context> {
     pub fn build(
         coin: &dyn CoinContext,
         input: &Proto::SigningInput,
@@ -43,7 +47,7 @@ impl SigningRequestBuilder {
 
         // Parse all UTXOs.
         for utxo_proto in transaction_builder.inputs.iter() {
-            let utxo_builder = UtxoProtobuf::new(&chain_info, utxo_proto, &public_keys);
+            let utxo_builder = UtxoProtobuf::<Context>::new(&chain_info, utxo_proto, &public_keys);
 
             let (utxo, utxo_args) = utxo_builder
                 .utxo_from_proto()
@@ -53,7 +57,7 @@ impl SigningRequestBuilder {
 
         // If `max_amount_output` is set, construct a transaction with only one output.
         if let Some(max_output_proto) = transaction_builder.max_amount_output.as_ref() {
-            let output_builder = OutputProtobuf::new(&chain_info, max_output_proto);
+            let output_builder = OutputProtobuf::<Context>::new(&chain_info, max_output_proto);
 
             let max_output = output_builder
                 .output_from_proto()
@@ -70,7 +74,7 @@ impl SigningRequestBuilder {
 
         // `max_amount_output` isn't set, parse all Outputs.
         for output_proto in transaction_builder.outputs.iter() {
-            let output = OutputProtobuf::new(&chain_info, output_proto)
+            let output = OutputProtobuf::<Context>::new(&chain_info, output_proto)
                 .output_from_proto()
                 .context("Error creating Output from Proto")?;
             builder.push_output(output);
@@ -81,7 +85,7 @@ impl SigningRequestBuilder {
             .change_output
             .as_ref()
             .map(|change_output_proto| {
-                OutputProtobuf::new(&chain_info, change_output_proto)
+                OutputProtobuf::<Context>::new(&chain_info, change_output_proto)
                     .output_from_proto()
                     .context("Error creating Change Output from Proto")
             })

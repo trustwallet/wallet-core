@@ -1801,6 +1801,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_bitcoincash"
+version = "0.1.0"
+dependencies = [
+ "tw_bitcoin",
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_misc",
+ "tw_proto",
+ "tw_utxo",
+]
+
+[[package]]
 name = "tw_coin_entry"
 version = "0.1.0"
 dependencies = [
@@ -1829,6 +1844,7 @@ dependencies = [
  "tw_aptos",
  "tw_binance",
  "tw_bitcoin",
+ "tw_bitcoincash",
  "tw_coin_entry",
  "tw_cosmos",
  "tw_ethereum",

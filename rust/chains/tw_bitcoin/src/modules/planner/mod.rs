@@ -6,19 +6,24 @@ use crate::modules::signing_request::SigningRequestBuilder;
 use crate::modules::tx_builder::utxo_protobuf::parse_out_point;
 use std::borrow::Cow;
 use std::collections::HashMap;
+use std::marker::PhantomData;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::modules::plan_builder::PlanBuilder;
 use tw_coin_entry::signing_output_error;
 use tw_proto::BitcoinV2::Proto;
+use tw_utxo::context::UtxoContext;
 use tw_utxo::modules::tx_planner::TxPlanner;
 use tw_utxo::modules::utxo_selector::SelectResult;
 
 pub mod psbt_planner;
 
-pub struct BitcoinPlanner;
+#[derive(Default)]
+pub struct BitcoinPlanner<Context: UtxoContext> {
+    _phantom: PhantomData<Context>,
+}
 
-impl BitcoinPlanner {
+impl<Context: UtxoContext> BitcoinPlanner<Context> {
     pub fn plan_impl<'a>(
         coin: &dyn CoinContext,
         input: &Proto::SigningInput<'a>,
@@ -28,7 +33,7 @@ impl BitcoinPlanner {
         match input.transaction {
             TransactionType::builder(ref tx) => Self::plan_with_tx_builder(coin, input, tx),
             TransactionType::psbt(ref psbt) => {
-                psbt_planner::PsbtPlanner::plan_psbt(coin, input, psbt)
+                psbt_planner::PsbtPlanner::<Context>::plan_psbt(coin, input, psbt)
             },
             TransactionType::None => SigningError::err(SigningErrorType::Error_invalid_params)
                 .context("Either `TransactionBuilder` or `Psbt` should be set"),
@@ -40,7 +45,7 @@ impl BitcoinPlanner {
         input: &Proto::SigningInput<'a>,
         tx_builder: &Proto::TransactionBuilder<'a>,
     ) -> SigningResult<Proto::TransactionPlan<'a>> {
-        let request = SigningRequestBuilder::build(coin, input, tx_builder)?;
+        let request = SigningRequestBuilder::<Context>::build(coin, input, tx_builder)?;
         let SelectResult { unsigned_tx, plan } = TxPlanner::plan(request)?;
 
         // Prepare a map of source Inputs Proto `{ OutPoint -> Input }`.
@@ -93,7 +98,7 @@ impl BitcoinPlanner {
     }
 }
 
-impl PlanBuilder for BitcoinPlanner {
+impl<Context: UtxoContext> PlanBuilder for BitcoinPlanner<Context> {
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type Plan<'a> = Proto::TransactionPlan<'a>;
 

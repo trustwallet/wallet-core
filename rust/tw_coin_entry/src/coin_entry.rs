@@ -82,11 +82,7 @@ pub trait CoinEntry {
 
     /// Tries to parse `Self::Address` from the given `address` string by `coin` type.
     /// Please note that this method does not check if the address belongs to the given chain.
-    fn parse_address_unchecked(
-        &self,
-        coin: &dyn CoinContext,
-        address: &str,
-    ) -> AddressResult<Self::Address>;
+    fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address>;
 
     /// Derives an address associated with the given `public_key` by `coin` context, `derivation` and address `prefix`.
     fn derive_address(

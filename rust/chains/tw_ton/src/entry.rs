@@ -51,11 +51,7 @@ impl CoinEntry for TheOpenNetworkEntry {
     }
 
     #[inline]
-    fn parse_address_unchecked(
-        &self,
-        _coin: &dyn CoinContext,
-        address: &str,
-    ) -> AddressResult<Self::Address> {
+    fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address> {
         TonAddress::from_str(address).and_then(TonAddress::normalize)
     }
 

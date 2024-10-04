@@ -12,6 +12,7 @@ pub enum BlockchainType {
     Aptos,
     Binance,
     Bitcoin,
+    BitcoinCash,
     Cosmos,
     Ethereum,
     Greenfield,

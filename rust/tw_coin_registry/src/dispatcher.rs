@@ -10,6 +10,7 @@ use crate::registry::get_coin_item;
 use tw_aptos::entry::AptosEntry;
 use tw_binance::entry::BinanceEntry;
 use tw_bitcoin::entry::BitcoinEntry;
+use tw_bitcoincash::entry::BitcoinCashEntry;
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_cosmos::entry::CosmosEntry;
 use tw_ethereum::entry::EthereumEntry;
@@ -31,6 +32,7 @@ pub type EvmEntryExtStaticRef = &'static dyn EvmEntryExt;
 const APTOS: AptosEntry = AptosEntry;
 const BINANCE: BinanceEntry = BinanceEntry;
 const BITCOIN: BitcoinEntry = BitcoinEntry;
+const BITCOIN_CASH: BitcoinCashEntry = BitcoinCashEntry;
 const COSMOS: CosmosEntry = CosmosEntry;
 const ETHEREUM: EthereumEntry = EthereumEntry;
 const GREENFIELD: GreenfieldEntry = GreenfieldEntry;
@@ -50,6 +52,7 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::Aptos => Ok(&APTOS),
         BlockchainType::Binance => Ok(&BINANCE),
         BlockchainType::Bitcoin => Ok(&BITCOIN),
+        BlockchainType::BitcoinCash => Ok(&BITCOIN_CASH),
         BlockchainType::Cosmos => Ok(&COSMOS),
         BlockchainType::Ethereum => Ok(&ETHEREUM),
         BlockchainType::Greenfield => Ok(&GREENFIELD),

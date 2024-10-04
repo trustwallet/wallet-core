@@ -5,7 +5,7 @@
 use bech32::{FromBase32, ToBase32, Variant};
 use tw_memory::Data;
 
-pub use bech32::Error as Bech32Error;
+pub use bech32::{convert_bits, CheckBase32, Error as Bech32Error};
 
 pub type Bech32Result<T> = Result<T, Bech32Error>;
 

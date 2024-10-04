@@ -103,6 +103,12 @@ impl Script {
     }
 }
 
+impl From<Script> for Data {
+    fn from(value: Script) -> Self {
+        value.bytes
+    }
+}
+
 impl From<Data> for Script {
     fn from(bytes: Data) -> Self {
         Script { bytes }
