@@ -27,6 +27,7 @@ use polkadot::*;
 pub mod polymesh;
 use polymesh::*;
 
+#[derive(Debug, Clone)]
 pub struct SubstrateContext {
   pub multi_address: bool,
   pub network: NetworkId,
@@ -34,12 +35,11 @@ pub struct SubstrateContext {
 }
 
 pub trait TWPolkadotCallEncoder {
-    fn encode_call(&self, ctx: &SubstrateContext, msg: &SigningVariant<'_>) -> EncodeResult<Encoded>;
-    fn encode_batch(&self, ctx: &SubstrateContext, calls: Vec<Encoded>) -> EncodeResult<Encoded>;
+    fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded>;
+    fn encode_batch(&self, calls: Vec<Encoded>) -> EncodeResult<Encoded>;
 }
 
 pub struct PolkadotSigningContext {
-  ctx: SubstrateContext,
   encoder: Box<dyn TWPolkadotCallEncoder>,
 }
 
@@ -48,26 +48,26 @@ impl PolkadotSigningContext {
         let network = NetworkId::try_from(input.network as u16)
             .map_err(|_| EncodeError::InvalidNetworkId)?;
 
+        let ctx = SubstrateContext {
+          multi_address: input.multi_address,
+          network,
+          spec_version: input.spec_version,
+        };
         let encoder = match network {
             NetworkId::POLKADOT => {
-                PolkadotCallEncoder::new()
+                PolkadotCallEncoder::new(&ctx)
             },
             NetworkId::KUSAMA => {
-                KusamaCallEncoder::new()
+                KusamaCallEncoder::new(&ctx)
             },
             NetworkId::POLYMESH => {
-                PolymeshCallEncoder::new()
+                PolymeshCallEncoder::new(&ctx)
             },
             _ => {
                 return Err(EncodeError::InvalidNetworkId);
             },
         };
         Ok(Self {
-            ctx: SubstrateContext {
-              multi_address: input.multi_address,
-              network,
-              spec_version: input.spec_version,
-            },
             encoder,
         })
     }
@@ -192,10 +192,10 @@ impl PolkadotSigningContext {
             _ => (),
         }
         // non-batch calls.
-        self.encoder.encode_call(&self.ctx, msg)
+        self.encoder.encode_call(msg)
     }
 
     fn encode_batch(&self, calls: Vec<Encoded>) -> EncodeResult<Encoded> {
-        self.encoder.encode_batch(&self.ctx, calls)
+        self.encoder.encode_batch(calls)
     }
 }

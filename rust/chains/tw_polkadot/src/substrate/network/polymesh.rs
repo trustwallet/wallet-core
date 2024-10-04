@@ -94,7 +94,7 @@ impl PolymeshBalances {
         }
     }
 
-    pub fn encode_call(_ctx: &SubstrateContext, b: &Balance) -> EncodeResult<Self> {
+    pub fn encode_call(b: &Balance) -> EncodeResult<Self> {
         match &b.message_oneof {
             BalanceVariant::transfer(t) => Self::encode_transfer(t),
             _ => {
@@ -184,7 +184,7 @@ impl PolymeshIdentity {
         })
     }
 
-    pub fn encode_call(_ctx: &SubstrateContext, ident: &Identity) -> EncodeResult<Self> {
+    pub fn encode_call(ident: &Identity) -> EncodeResult<Self> {
         match &ident.message_oneof {
             IdentityVariant::join_identity_as_key(t) => Self::encode_join_identity(t),
             IdentityVariant::add_authorization(a) => Self::encode_add_authorization(a),
@@ -296,7 +296,7 @@ impl PolymeshStaking {
         })
     }
 
-    pub fn encode_call(_ctx: &SubstrateContext, s: &Staking) -> EncodeResult<Self> {
+    pub fn encode_call(s: &Staking) -> EncodeResult<Self> {
         match &s.message_oneof {
             StakingVariant::bond(b) => Self::encode_bond(b),
             StakingVariant::bond_extra(b) => Self::encode_bond_extra(b),
@@ -327,21 +327,21 @@ impl_enum_scale!(
 pub struct PolymeshCallEncoder;
 
 impl PolymeshCallEncoder {
-    pub fn new() -> Box<dyn TWPolkadotCallEncoder> {
+    pub fn new(_ctx: &SubstrateContext) -> Box<dyn TWPolkadotCallEncoder> {
         Box::new(Self)
     }
 }
 
 impl TWPolkadotCallEncoder for PolymeshCallEncoder {
-    fn encode_call(&self, ctx: &SubstrateContext, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
+    fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
         let call = match msg {
             SigningVariant::balance_call(b) => {
-                PolymeshCall::Balances(PolymeshBalances::encode_call(ctx, b)?)
+                PolymeshCall::Balances(PolymeshBalances::encode_call(b)?)
             },
             SigningVariant::polymesh_call(msg) => {
                 match &msg.message_oneof {
                     PolymeshVariant::identity_call(msg) => {
-                        PolymeshCall::Identity(PolymeshIdentity::encode_call(ctx, msg)?)
+                        PolymeshCall::Identity(PolymeshIdentity::encode_call(msg)?)
                     }
                     _ => {
                         // TODO: better error.
@@ -350,7 +350,7 @@ impl TWPolkadotCallEncoder for PolymeshCallEncoder {
                 }
             },
             SigningVariant::staking_call(s) => {
-                PolymeshCall::Staking(PolymeshStaking::encode_call(ctx, s)?)
+                PolymeshCall::Staking(PolymeshStaking::encode_call(s)?)
             },
             _ => {
                 // TODO: better error.
@@ -360,7 +360,7 @@ impl TWPolkadotCallEncoder for PolymeshCallEncoder {
         Ok(Encoded(call.to_scale()))
     }
 
-    fn encode_batch(&self, _ctx: &SubstrateContext, calls: Vec<Encoded>) -> EncodeResult<Encoded> {
+    fn encode_batch(&self, calls: Vec<Encoded>) -> EncodeResult<Encoded> {
         let call = PolymeshCall::Utility(GenericUtility::BatchAll {
             calls,
         });

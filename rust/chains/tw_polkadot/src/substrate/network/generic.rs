@@ -67,7 +67,7 @@ impl GenericBalances {
         })
     }
 
-    pub fn encode_call(_ctx: &SubstrateContext, b: &Balance) -> EncodeResult<Self> {
+    pub fn encode_call(b: &Balance) -> EncodeResult<Self> {
         match &b.message_oneof {
             BalanceVariant::transfer(t) => Self::encode_transfer(t),
             BalanceVariant::asset_transfer(t) => Self::encode_asset_transfer(t),
@@ -205,7 +205,7 @@ impl GenericStaking {
         })
     }
 
-    pub fn encode_call(_ctx: &SubstrateContext, s: &Staking) -> EncodeResult<Self> {
+    pub fn encode_call(s: &Staking) -> EncodeResult<Self> {
         match &s.message_oneof {
             StakingVariant::bond(b) => Self::encode_bond(b),
             StakingVariant::bond_extra(b) => Self::encode_bond_extra(b),

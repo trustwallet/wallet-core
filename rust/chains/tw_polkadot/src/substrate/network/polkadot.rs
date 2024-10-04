@@ -18,19 +18,19 @@ impl_enum_scale!(
 pub struct PolkadotCallEncoder;
 
 impl PolkadotCallEncoder {
-    pub fn new() -> Box<dyn TWPolkadotCallEncoder> {
+    pub fn new(_ctx: &SubstrateContext) -> Box<dyn TWPolkadotCallEncoder> {
         Box::new(Self)
     }
 }
 
 impl TWPolkadotCallEncoder for PolkadotCallEncoder {
-    fn encode_call(&self, ctx: &SubstrateContext, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
+    fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
         let call = match msg {
             SigningVariant::balance_call(b) => {
-                PolkadotCall::Balances(GenericBalances::encode_call(ctx, b)?)
+                PolkadotCall::Balances(GenericBalances::encode_call(b)?)
             },
             SigningVariant::staking_call(s) => {
-                PolkadotCall::Staking(GenericStaking::encode_call(ctx, s)?)
+                PolkadotCall::Staking(GenericStaking::encode_call(s)?)
             },
             _ => {
                 // TODO: better error.
@@ -40,7 +40,7 @@ impl TWPolkadotCallEncoder for PolkadotCallEncoder {
         Ok(Encoded(call.to_scale()))
     }
 
-    fn encode_batch(&self, _ctx: &SubstrateContext, calls: Vec<Encoded>) -> EncodeResult<Encoded> {
+    fn encode_batch(&self, calls: Vec<Encoded>) -> EncodeResult<Encoded> {
         let call = PolkadotCall::Utility(GenericUtility::BatchAll {
             calls,
         });
@@ -60,19 +60,19 @@ impl_enum_scale!(
 pub struct KusamaCallEncoder;
 
 impl KusamaCallEncoder {
-    pub fn new() -> Box<dyn TWPolkadotCallEncoder> {
+    pub fn new(_ctx: &SubstrateContext) -> Box<dyn TWPolkadotCallEncoder> {
         Box::new(Self)
     }
 }
 
 impl TWPolkadotCallEncoder for KusamaCallEncoder {
-    fn encode_call(&self, ctx: &SubstrateContext, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
+    fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
         let call = match msg {
             SigningVariant::balance_call(b) => {
-                KusamaCall::Balances(GenericBalances::encode_call(ctx, b)?)
+                KusamaCall::Balances(GenericBalances::encode_call(b)?)
             },
             SigningVariant::staking_call(s) => {
-                KusamaCall::Staking(GenericStaking::encode_call(ctx, s)?)
+                KusamaCall::Staking(GenericStaking::encode_call(s)?)
             },
             _ => {
                 // TODO: better error.
@@ -82,7 +82,7 @@ impl TWPolkadotCallEncoder for KusamaCallEncoder {
         Ok(Encoded(call.to_scale()))
     }
 
-    fn encode_batch(&self, _ctx: &SubstrateContext, calls: Vec<Encoded>) -> EncodeResult<Encoded> {
+    fn encode_batch(&self, calls: Vec<Encoded>) -> EncodeResult<Encoded> {
         let call = KusamaCall::Utility(GenericUtility::BatchAll {
             calls,
         });
