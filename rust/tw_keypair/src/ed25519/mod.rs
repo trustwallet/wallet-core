@@ -86,7 +86,7 @@ mod tests {
 
         let expected =
             H256::from("b689ab808542e13f3d2ec56fe1efe43a1660dcadc73ce489fde7df98dd8ce5d9");
-        assert_eq!(public.to_bytes(), expected);
+        assert_eq!(public.to_h256(), expected);
     }
 
     #[test]

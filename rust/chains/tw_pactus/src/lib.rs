@@ -7,5 +7,6 @@ pub mod amount;
 pub mod compiler;
 pub mod encode;
 pub mod entry;
+pub mod modules;
 pub mod signer;
 pub mod transaction;

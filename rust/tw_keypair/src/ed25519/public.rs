@@ -66,12 +66,17 @@ impl<H: Hasher512> PublicKey<H> {
         }
     }
 
-    /// Returns the raw data of the public key (32 bytes).
-    pub fn to_bytes(&self) -> H256 {
-        H256::from(self.compressed.to_bytes())
+    /// Converts the public key to its raw H256 representation.
+    pub fn to_h256(&self) -> H256 {
+        H256::from(self.to_bytes())
     }
 
-    /// Returns the raw data of the data of the public key.
+    /// Converts the public key to a 32-byte array.
+    pub fn to_bytes(&self) -> [u8; 32] {
+        self.compressed.to_bytes()
+    }
+
+    /// Returns the public key as a byte slice.
     pub fn as_slice(&self) -> &[u8] {
         self.compressed.as_bytes()
     }
