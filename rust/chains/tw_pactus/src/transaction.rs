@@ -1,4 +1,5 @@
 use std::fmt::Debug;
+use std::io;
 use std::str::FromStr;
 
 use tw_coin_entry::error::prelude::{SigningError, SigningErrorType, SigningResult};
@@ -10,7 +11,6 @@ use tw_proto::Pactus;
 
 use crate::address::Address;
 use crate::amount::Amount;
-use crate::encode::stream::Stream;
 use crate::encode::Encodable;
 
 const VERSION_LATEST: u8 = 1;
@@ -25,8 +25,8 @@ pub enum PayloadType {
 }
 
 impl Encodable for PayloadType {
-    fn encode(&self, stream: &mut Stream) {
-        (self.clone() as u8).encode(stream)
+    fn encode<W: std::io::Write + ?Sized>(&self, w: &mut W) -> Result<usize, io::Error> {
+        (self.clone() as u8).encode(w)
     }
 
     fn encoded_size(&self) -> usize {
@@ -35,7 +35,7 @@ impl Encodable for PayloadType {
 }
 
 pub trait Payload: Debug {
-    fn encode(&self, stream: &mut Stream);
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, io::Error>;
     fn encoded_size(&self) -> usize;
     fn signer(&self) -> &Address;
     fn value(&self) -> Amount;
@@ -49,11 +49,15 @@ pub struct TransferPayload {
     amount: Amount,
 }
 
+
+
 impl Payload for TransferPayload {
-    fn encode(&self, stream: &mut Stream) {
-        self.sender.encode(stream);
-        self.receiver.encode(stream);
-        self.amount.encode(stream);
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, io::Error> {
+        let mut len = self.sender.encode(w)?;
+        len += self.receiver.encode(w)?;
+        len += self.amount.encode(w)?;
+
+        Ok(len)
     }
 
     fn encoded_size(&self) -> usize {
@@ -135,6 +139,10 @@ impl Transaction {
         }
     }
 
+    pub fn from_bytes(input: &[u8]) -> SigningResult<Self> {
+        todo!()
+    }
+
     pub fn sign(&mut self, private_key: &PrivateKey) -> SigningResult<()> {
         let sign_bytes = self.sign_bytes();
         let signature = private_key.sign(sign_bytes)?;
@@ -154,33 +162,33 @@ impl Transaction {
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
-        let mut stream = Stream::new();
+        let mut w = Vec::new();
 
-        self.flags.encode(&mut stream);
-        stream.append_raw_slice(&self.sign_bytes());
+        self.flags.encode(&mut w);
+        self.sign_bytes().encode(&mut w);
 
         if let Some(signature) = &self.signature {
-            signature.encode(&mut stream)
+            signature.encode(&mut w);
         }
 
         if let Some(public_key) = &self.public_key {
-            public_key.encode(&mut stream)
+            public_key.encode(&mut w);
         }
 
-        stream.out()
+        w.to_vec()
     }
 
     fn sign_bytes(&self) -> Vec<u8> {
-        let mut stream = Stream::new();
+        let mut w = Vec::new();
 
-        self.version.encode(&mut stream);
-        self.lock_time.encode(&mut stream);
-        self.fee.encode(&mut stream);
-        self.memo.encode(&mut stream);
-        self.payload.payload_type().encode(&mut stream);
-        self.payload.encode(&mut stream);
+        self.version.encode(&mut w);
+        self.lock_time.encode(&mut w);
+        self.fee.encode(&mut w);
+        self.memo.encode(&mut w);
+        self.payload.payload_type().encode(&mut w);
+        self.payload.encode(&mut w);
 
-        stream.out()
+        w.to_vec()
     }
 }
 
@@ -194,11 +202,11 @@ mod tests {
 
     #[test]
     fn test_payload_type_encoding() {
-        let mut stream = Stream::new();
+        let mut stream = Vec::new();
 
         let payload = PayloadType::Unbond;
         payload.encode(&mut stream);
-        assert_eq!(stream.out(), &[4]);
+        assert_eq!(stream.to_vec(), &[4]);
     }
 
     #[test]

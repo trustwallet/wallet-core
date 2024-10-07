@@ -55,6 +55,6 @@ fn test_ed25519_priv_to_pub() {
         );
 
         let public = keypair.public();
-        assert_eq!(public.to_bytes(), test.public);
+        assert_eq!(public.to_h256(), test.public);
     }
 }

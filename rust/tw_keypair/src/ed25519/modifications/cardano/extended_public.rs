@@ -35,7 +35,7 @@ impl<H: Hasher512> ExtendedPublicKey<H> {
 
     /// Returns a public key bytes (32 length) that is used in signing.
     pub(crate) fn key_for_signing(&self) -> H256 {
-        self.key.public.to_bytes()
+        self.key.public.to_h256()
     }
 }
 

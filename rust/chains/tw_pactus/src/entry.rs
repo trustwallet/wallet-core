@@ -20,6 +20,7 @@ use tw_proto::TxCompiler::Proto as CompilerProto;
 
 use crate::address::Address;
 use crate::compiler::PactusCompiler;
+use crate::modules::transaction_util::PactusTransactionUtil;
 use crate::signer::PactusSigner;
 
 pub struct PactusEntry;
@@ -30,6 +31,7 @@ impl CoinEntry for PactusEntry {
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = Proto::SigningOutput<'static>;
     type PreSigningOutput = CompilerProto::PreSigningOutput<'static>;
+    type TransactionUtil = PactusTransactionUtil;
 
     // Optional modules:
     type JsonSigner = NoJsonSigner;
@@ -94,5 +96,10 @@ impl CoinEntry for PactusEntry {
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
         PactusCompiler::compile(coin, input, signatures, public_keys)
+    }
+
+    #[inline]
+    fn transaction_util(&self) -> Option<Self::TransactionUtil> {
+        Some(PactusTransactionUtil)
     }
 }

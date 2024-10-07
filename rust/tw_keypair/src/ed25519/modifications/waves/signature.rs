@@ -28,7 +28,7 @@ impl Signature {
         standard_pubkey: &StandardPublicKey<H>,
         standard_sign: &StandardSignature,
     ) -> Signature {
-        let pubkey_bytes: H256 = standard_pubkey.to_bytes();
+        let pubkey_bytes: H256 = standard_pubkey.to_h256();
         let sign_bit = pubkey_bytes[31] & PUBKEY_SIGN_MASK;
 
         let mut bytes = standard_sign.to_bytes();

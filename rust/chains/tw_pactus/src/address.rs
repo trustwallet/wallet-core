@@ -2,8 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use std::fmt;
 use std::str::FromStr;
+use std::{fmt, io};
 
 use bech32::{FromBase32, ToBase32};
 use tw_coin_entry::coin_entry::CoinAddress;
@@ -51,7 +51,7 @@ pub struct Address {
 
 impl Address {
     pub fn from_public_key(public_key: &PublicKey) -> Result<Self, AddressError> {
-        let pud_data = public_key.to_bytes();
+        let pud_data = public_key.to_h256();
         let pub_hash =
             ripemd_160(&blake2_b(pud_data.as_ref(), 32).map_err(|_| AddressError::Internal)?);
 
@@ -93,14 +93,14 @@ impl fmt::Display for Address {
 }
 
 impl encode::Encodable for Address {
-    fn encode(&self, stream: &mut encode::stream::Stream) {
+    fn encode<W: std::io::Write + ?Sized>(&self, w: &mut W) -> Result<usize, io::Error> {
         if self.is_treasury() {
-            stream.append(&0u8);
+            &0u8.encode(w);
 
-            return;
+            return Ok(1);
         }
 
-        stream.append_raw_slice(&self.data());
+        self.data().encode(w)
     }
 
     fn encoded_size(&self) -> usize {
@@ -130,7 +130,7 @@ impl FromStr for Address {
         }
 
         if b32.len() != 33 {
-            return Err(AddressError::InvalidInput)
+            return Err(AddressError::InvalidInput);
         }
 
         let addr_type = AddressType::from(b32[0].to_u8());
@@ -150,7 +150,7 @@ impl FromStr for Address {
 
 #[cfg(test)]
 mod test {
-    use encode::{stream::{self, Stream}, Encodable};
+    use encode::Encodable;
     use tw_encoding::hex::DecodeHex;
     use tw_keypair::ed25519::sha512::PrivateKey;
 
@@ -161,22 +161,26 @@ mod test {
         let addr = Address::from_str(TREASURY_ADDRESS_STRING).unwrap();
         assert!(addr.is_treasury());
 
-        let mut  stream = Stream::new();
-        addr.encode(&mut stream);
-        assert_eq!( stream.out(), [0x00]);
-        assert_eq!( addr.encoded_size(), 1);
+        let mut w = Vec::new();
+        addr.encode(&mut w);
+        assert_eq!(w.to_vec(), [0x00]);
+        assert_eq!(addr.encoded_size(), 1);
     }
-
 
     #[test]
     fn test_address_encoding() {
         let addr = Address::from_str("pc1rqqqsyqcyq5rqwzqfpg9scrgwpuqqzqsr36kkra").unwrap();
         assert!(!addr.is_treasury());
 
-        let mut  stream = Stream::new();
-        addr.encode(&mut stream);
-        assert_eq!( stream.out(), "03000102030405060708090a0b0c0d0e0f00010203".decode_hex().unwrap());
-        assert_eq!( addr.encoded_size(), 21);
+        let mut w = Vec::new();
+        addr.encode(&mut w);
+        assert_eq!(
+            w.to_vec(),
+            "03000102030405060708090a0b0c0d0e0f00010203"
+                .decode_hex()
+                .unwrap()
+        );
+        assert_eq!(addr.encoded_size(), 21);
     }
 
     #[test]
@@ -238,11 +242,11 @@ mod test {
         )
         .unwrap();
         let address = Address::from_public_key(&private_key.public()).unwrap();
-        let mut stream = Stream::new();
+        let mut w = Vec::new();
 
-        address.encode(&mut stream);
+        address.encode(&mut w);
 
-        assert_eq!(expected_data, stream.out(),);
+        assert_eq!(expected_data, w.to_vec(),);
         assert_eq!(expected_data.len(), address.encoded_size());
     }
 }
