@@ -15,4 +15,4 @@ tw_encoding = { path = "../../tw_encoding" }
 
 [dev-dependencies]
 tw_encoding = { path = "../../tw_encoding" }
-hex = "0.4.3"
+

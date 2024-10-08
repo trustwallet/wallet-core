@@ -26,7 +26,7 @@ pub fn deserialize<T: Decodable>(data: &[u8]) -> Result<T, Error> {
 /// Trait for encoding an object into a consistent byte sequence.
 pub trait Encodable {
     /// Encode the object in consistent and deterministic way.
-    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error>;
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<(), Error>;
 
     /// Determine the size of serialized object.
     fn encoded_size(&self) -> usize;

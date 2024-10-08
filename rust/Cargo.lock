@@ -2085,7 +2085,6 @@ version = "0.1.0"
 dependencies = [
  "bech32",
  "byteorder",
- "hex",
  "tw_coin_entry",
  "tw_encoding",
  "tw_hash",

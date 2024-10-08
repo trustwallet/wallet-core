@@ -4,7 +4,7 @@ use crate::encoder::{error::Error, var_int::VarInt, Decodable, Encodable};
 pub struct Amount(pub i64);
 
 impl Encodable for Amount {
-    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<(), Error> {
         VarInt::from(self.0 as usize).encode(w)
     }
 

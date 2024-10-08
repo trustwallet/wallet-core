@@ -18,7 +18,7 @@ pub(crate) fn decode_var_slice(r: &mut dyn std::io::Read) -> Result<Vec<u8>, Err
 }
 
 pub(crate) fn decode_fix_slice(r: &mut dyn std::io::Read, len: usize) -> Result<Vec<u8>, Error> {
-    let mut buf = vec![0; len as usize];
+    let mut buf = vec![0; len];
     r.read_exact(&mut buf)?;
 
     Ok(buf)

@@ -1,6 +1,5 @@
 use tw_coin_entry::error::prelude::{SigningError, SigningErrorType};
 
-
 /// Errors encountered when encoding or decoding data.
 #[derive(Debug)]
 pub enum Error {
@@ -13,7 +12,6 @@ impl From<std::io::Error> for Error {
         Error::IoError(err)
     }
 }
-
 
 impl From<Error> for SigningError {
     fn from(_: Error) -> Self {
