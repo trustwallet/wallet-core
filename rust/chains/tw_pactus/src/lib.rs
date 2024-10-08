@@ -5,7 +5,7 @@
 pub mod address;
 pub mod amount;
 pub mod compiler;
-pub mod encode;
+pub mod encoder;
 pub mod entry;
 pub mod modules;
 pub mod signer;

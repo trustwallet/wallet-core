@@ -30,7 +30,7 @@ impl PactusSigner {
         let key_pair = ed25519::sha512::KeyPair::try_from(input.private_key.as_ref())?;
         trx.sign(key_pair.private())?;
 
-        let data = trx.to_bytes();
+        let data = trx.to_bytes()?;
 
         let output = Proto::SigningOutput {
             encoded: data.into(),

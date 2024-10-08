@@ -2,12 +2,12 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use std::{io, ops::Deref};
+use std::ops::Deref;
 
 use byteorder::ReadBytesExt;
 
 use super::{error::Error, Decodable};
-use crate::encode::Encodable;
+use crate::encoder::Encodable;
 
 /// A type of variable-length integer commonly used in the Bitcoin P2P protocol and Bitcoin serialized data structures.
 #[derive(Default, Debug, Clone, Copy, PartialEq)]
@@ -28,7 +28,7 @@ impl Deref for VarInt {
 }
 
 impl Encodable for VarInt {
-    fn encode<W: std::io::Write + ?Sized>(&self, w: &mut W) -> Result<usize, io::Error> {
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
         let mut val = self.0;
         let mut len = 0;
         // Make sure that there is one after this
@@ -94,7 +94,7 @@ impl Decodable for VarInt {
 mod tests {
 
     use super::*;
-    use crate::encode::{self, deserialize};
+    use crate::encoder::{self, deserialize};
 
     #[test]
     fn test_var_int_encode_data() {

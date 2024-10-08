@@ -2,28 +2,23 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use std::io::{self, Cursor};
+use std::io::Cursor;
 
 use error::Error;
-use tw_memory::Data;
 
-// use crate::encode::stream::Stream;
-
-pub mod var_int;
-pub mod encode;
 pub mod decode;
+pub mod encode;
 pub mod error;
+pub mod var_int;
 
-pub fn serialize<T: Encodable>(t: &T) -> Result<Data, std::io::Error>
-{
+pub fn serialize<T: Encodable>(t: &T) -> Result<Vec<u8>, Error> {
     let mut writer = Vec::with_capacity(t.encoded_size());
     t.encode(&mut writer)?;
 
     Ok(writer.to_vec())
 }
 
-pub fn deserialize<T: Decodable>(data: &[u8]) -> Result<T, Error>
-{
+pub fn deserialize<T: Decodable>(data: &[u8]) -> Result<T, Error> {
     let mut cursor = Cursor::new(data);
     T::decode(&mut cursor)
 }
@@ -31,7 +26,7 @@ pub fn deserialize<T: Decodable>(data: &[u8]) -> Result<T, Error>
 /// Trait for encoding an object into a consistent byte sequence.
 pub trait Encodable {
     /// Encode the object in consistent and deterministic way.
-    fn encode<W: std::io::Write + ?Sized>(&self, w: &mut W) -> Result<usize, io::Error>;
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error>;
 
     /// Determine the size of serialized object.
     fn encoded_size(&self) -> usize;

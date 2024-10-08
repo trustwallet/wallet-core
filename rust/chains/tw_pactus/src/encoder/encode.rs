@@ -2,85 +2,78 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use std::io;
-
 use byteorder::{LittleEndian, WriteBytesExt};
 use tw_hash::Hash;
 use tw_keypair::ed25519::{sha512::PublicKey, Signature};
 
-use crate::encode::var_int::VarInt;
-use crate::encode::Encodable;
+use super::error::Error;
+use crate::encoder::var_int::VarInt;
+use crate::encoder::Encodable;
 
-pub(crate) fn encode_var_slice<W: std::io::Write + ?Sized>(
-    data: &[u8],
-    w: &mut W,
-) -> Result<usize, io::Error> {
+pub(crate) fn encode_var_slice(data: &[u8], w: &mut dyn std::io::Write) -> Result<usize, Error> {
     let mut len = VarInt::from(data.len()).encode(w)?;
     len += w.write(data)?;
 
     Ok(len)
 }
 
-pub(crate) fn encode_size_var_slice(data: &[u8]) -> usize {
-    let mut len = VarInt::from(data.len()).encoded_size();
-    len += data.len();
-
-    len
+pub(crate) fn encode_fix_slice(data: &[u8], w: &mut dyn std::io::Write) -> Result<usize, Error> {
+    Ok(w.write(data)?)
 }
 
 impl Encodable for Vec<u8> {
-    fn encode<W: std::io::Write + ?Sized>(&self, w: &mut W) -> Result<usize, io::Error> {
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
         encode_var_slice(self, w)
     }
 
     fn encoded_size(&self) -> usize {
-        encode_size_var_slice(self)
+        VarInt::from(self.len()).encoded_size() + self.len()
     }
 }
 
 impl Encodable for String {
-    fn encode<W: std::io::Write + ?Sized>(&self, w: &mut W) -> Result<usize, io::Error> {
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
         encode_var_slice(self.as_bytes(), w)
     }
 
     fn encoded_size(&self) -> usize {
-        encode_size_var_slice(self.as_bytes())
+        VarInt::from(self.len()).encoded_size() + self.len()
     }
 }
 
 impl Encodable for PublicKey {
-    fn encode<W: std::io::Write + ?Sized>(&self, w: &mut W) -> Result<usize, io::Error> {
-        encode_var_slice(self.as_slice(), w)
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
+        encode_fix_slice(self.as_slice(), w)
     }
 
     fn encoded_size(&self) -> usize {
-        encode_size_var_slice(self.as_slice())
+        PublicKey::LEN
     }
 }
 
 impl Encodable for Signature {
-    fn encode<W: std::io::Write + ?Sized>(&self, w: &mut W) -> Result<usize, io::Error> {
-        encode_var_slice(self.to_bytes().as_slice(), w)
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
+        encode_fix_slice(self.to_bytes().as_slice(), w)
     }
 
     fn encoded_size(&self) -> usize {
-        encode_size_var_slice(self.to_bytes().as_slice())
+        Signature::LEN
     }
 }
 
 impl<const N: usize> Encodable for Hash<N> {
-    fn encode<W: std::io::Write + ?Sized>(&self, w: &mut W) -> Result<usize, io::Error> {
-        encode_var_slice(self.as_slice(), w)
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
+        encode_fix_slice(self.as_slice(), w)
     }
 
     fn encoded_size(&self) -> usize {
-        encode_size_var_slice(self.as_slice())
+        N
     }
 }
 
 impl Encodable for u8 {
     #[inline]
-    fn encode<W: std::io::Write + ?Sized>(&self, w: &mut W) -> Result<usize, io::Error> {
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
         w.write_u8(*self)?;
 
         Ok(1)
@@ -96,7 +89,7 @@ macro_rules! impl_encodable_for_int {
     ($int:ty, $size:literal, $write_fn:tt) => {
         impl Encodable for $int {
             #[inline]
-            fn encode<W: std::io::Write + ?Sized>(&self, w: &mut W) -> Result<usize, io::Error> {
+            fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
                 w.$write_fn::<LittleEndian>(*self)?;
 
                 Ok($size)
@@ -121,19 +114,27 @@ mod tests {
     use tw_encoding::hex::DecodeHex;
 
     use super::*;
-    use crate::encode::serialize;
-
+    use crate::encoder::serialize;
 
     #[test]
     fn test_encode_var_slice() {
         let expected = "0401020304".decode_hex().unwrap();
-        let slice = vec![1,2,3,4];
+        let slice = vec![1, 2, 3, 4];
         let mut w = Vec::new();
         encode_var_slice(&slice, &mut w).unwrap();
 
         assert_eq!(expected, w.to_vec());
     }
 
+    #[test]
+    fn test_encode_fix_slice() {
+        let expected = "01020304".decode_hex().unwrap();
+        let slice = vec![1, 2, 3, 4];
+        let mut w = Vec::new();
+        encode_fix_slice(&slice, &mut w).unwrap();
+
+        assert_eq!(expected, w.to_vec());
+    }
 
     #[test]
     fn test_encode_numbers() {

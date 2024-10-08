@@ -2,21 +2,24 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use std::fmt;
 use std::str::FromStr;
-use std::{fmt, io};
 
 use bech32::{FromBase32, ToBase32};
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::blake2::blake2_b;
 use tw_hash::ripemd::ripemd_160;
+use tw_hash::Hash;
 use tw_keypair::ed25519::sha512::PublicKey;
 use tw_memory::Data;
 
-use crate::encode;
+use crate::encoder::error::Error;
+use crate::encoder::{Decodable, Encodable};
 
 const HRP: &str = "pc";
 const TREASURY_ADDRESS_STRING: &str = "000000000000000000000000000000000000000000";
+const PUB_HASH_LEN: usize = 20;
 
 /// Enum for Pactus address types.
 #[derive(Debug, Clone, PartialEq)]
@@ -25,17 +28,36 @@ pub enum AddressType {
     Validator = 1,
     BlsAccount = 2,
     Ed25519Account = 3,
-    Invalid,
 }
 
-impl From<u8> for AddressType {
-    fn from(value: u8) -> Self {
+impl TryFrom<u8> for AddressType {
+    type Error = AddressError;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
         match value {
-            1 => AddressType::Validator,
-            2 => AddressType::BlsAccount,
-            3 => AddressType::Ed25519Account,
-            _ => AddressType::Invalid,
+            0 => Ok(AddressType::Treasury),
+            1 => Ok(AddressType::Validator),
+            2 => Ok(AddressType::BlsAccount),
+            3 => Ok(AddressType::Ed25519Account),
+            _ => Err(AddressError::Unsupported),
         }
+    }
+}
+
+impl Encodable for AddressType {
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
+        (self.clone() as u8).encode(w)
+    }
+
+    fn encoded_size(&self) -> usize {
+        1
+    }
+}
+
+impl Decodable for AddressType {
+    fn decode(r: &mut dyn std::io::Read) -> Result<Self, Error> {
+        AddressType::try_from(u8::decode(r)?)
+            .map_err(|_| Error::ParseFailed("Invalid address type"))
     }
 }
 
@@ -46,23 +68,28 @@ impl From<u8> for AddressType {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Address {
     addr_type: AddressType,
-    pub_hash: [u8; 20],
+    pub_hash: Hash<PUB_HASH_LEN>,
 }
 
 impl Address {
     pub fn from_public_key(public_key: &PublicKey) -> Result<Self, AddressError> {
         let pud_data = public_key.to_h256();
-        let pub_hash =
+        let pub_hash_data =
             ripemd_160(&blake2_b(pud_data.as_ref(), 32).map_err(|_| AddressError::Internal)?);
+        let pub_hash = Address::vec_to_pub_hash(pub_hash_data)?;
 
         Ok(Address {
             addr_type: AddressType::Ed25519Account,
-            pub_hash: pub_hash.try_into().map_err(|_| AddressError::Internal)?,
+            pub_hash,
         })
     }
 
     pub fn is_treasury(&self) -> bool {
-        self.addr_type == AddressType::Treasury && self.pub_hash == [0; 20]
+        self.addr_type == AddressType::Treasury && self.pub_hash.is_zero()
+    }
+
+    pub fn vec_to_pub_hash(vec: Vec<u8>) -> Result<Hash<PUB_HASH_LEN>, AddressError> {
+        Hash::<PUB_HASH_LEN>::try_from(vec.as_slice()).map_err(|_| AddressError::Internal)
     }
 }
 
@@ -92,15 +119,17 @@ impl fmt::Display for Address {
     }
 }
 
-impl encode::Encodable for Address {
-    fn encode<W: std::io::Write + ?Sized>(&self, w: &mut W) -> Result<usize, io::Error> {
-        if self.is_treasury() {
-            &0u8.encode(w);
+impl Encodable for Address {
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
+        let mut len = self.addr_type.encode(w)?;
 
-            return Ok(1);
+        if self.is_treasury() {
+            return Ok(len);
         }
 
-        self.data().encode(w)
+        len += self.pub_hash.encode(w)?;
+
+        Ok(len)
     }
 
     fn encoded_size(&self) -> usize {
@@ -112,6 +141,24 @@ impl encode::Encodable for Address {
     }
 }
 
+impl Decodable for Address {
+    fn decode(r: &mut dyn std::io::Read) -> Result<Self, Error> {
+        let addr_type = AddressType::decode(r)?;
+        if addr_type == AddressType::Treasury {
+            return Ok(Address {
+                addr_type,
+                pub_hash: Hash::<PUB_HASH_LEN>::new(),
+            });
+        }
+
+        let pub_hash = Hash::<PUB_HASH_LEN>::decode(r)?;
+        Ok(Address {
+            addr_type,
+            pub_hash,
+        })
+    }
+}
+
 impl FromStr for Address {
     type Err = AddressError;
 
@@ -119,7 +166,7 @@ impl FromStr for Address {
         if s == TREASURY_ADDRESS_STRING {
             return Ok(Address {
                 addr_type: AddressType::Treasury,
-                pub_hash: [0; 20],
+                pub_hash: Hash::<PUB_HASH_LEN>::new(),
             });
         }
 
@@ -133,13 +180,9 @@ impl FromStr for Address {
             return Err(AddressError::InvalidInput);
         }
 
-        let addr_type = AddressType::from(b32[0].to_u8());
-        if addr_type == AddressType::Invalid {
-            return Err(AddressError::InvalidInput);
-        }
-
+        let addr_type = AddressType::try_from(b32[0].to_u8())?;
         let b8 = Vec::<u8>::from_base32(&b32[1..]).map_err(|_| AddressError::InvalidInput)?;
-        let pub_hash = b8.try_into().map_err(|_| AddressError::InvalidInput)?;
+        let pub_hash = Address::vec_to_pub_hash(b8)?;
 
         Ok(Address {
             addr_type,
@@ -150,11 +193,11 @@ impl FromStr for Address {
 
 #[cfg(test)]
 mod test {
-    use encode::Encodable;
     use tw_encoding::hex::DecodeHex;
     use tw_keypair::ed25519::sha512::PrivateKey;
 
     use super::*;
+    use crate::encoder::{deserialize, Encodable};
 
     #[test]
     fn test_treasury_address_encoding() {
@@ -162,9 +205,19 @@ mod test {
         assert!(addr.is_treasury());
 
         let mut w = Vec::new();
-        addr.encode(&mut w);
+        let len = addr.encode(&mut w).unwrap();
         assert_eq!(w.to_vec(), [0x00]);
         assert_eq!(addr.encoded_size(), 1);
+        assert_eq!(len, 1);
+    }
+
+    #[test]
+    fn test_treasury_address_decoding() {
+        let data = vec![0u8];
+
+        let addr = deserialize::<Address>(&data).unwrap();
+        assert!(addr.is_treasury());
+        assert_eq!(addr.to_string(), TREASURY_ADDRESS_STRING);
     }
 
     #[test]
@@ -173,7 +226,7 @@ mod test {
         assert!(!addr.is_treasury());
 
         let mut w = Vec::new();
-        addr.encode(&mut w);
+        let len = addr.encode(&mut w).unwrap();
         assert_eq!(
             w.to_vec(),
             "03000102030405060708090a0b0c0d0e0f00010203"
@@ -181,6 +234,18 @@ mod test {
                 .unwrap()
         );
         assert_eq!(addr.encoded_size(), 21);
+        assert_eq!(len, 21);
+    }
+
+    #[test]
+    fn test_address_decoding() {
+        let data = "03000102030405060708090a0b0c0d0e0f00010203"
+            .decode_hex()
+            .unwrap();
+
+        let addr = deserialize::<Address>(&data).unwrap();
+        assert!(!addr.is_treasury());
+        assert_eq!(addr.to_string(), "pc1rqqqsyqcyq5rqwzqfpg9scrgwpuqqzqsr36kkra");
     }
 
     #[test]
@@ -221,10 +286,10 @@ mod test {
         ];
 
         for case in test_cases {
-            let pub_hash = case.pub_hash.decode_hex().unwrap();
+            let pub_hash_data = case.pub_hash.decode_hex().unwrap();
             let addr = Address {
                 addr_type: case.addr_type,
-                pub_hash: pub_hash.try_into().unwrap(),
+                pub_hash: Address::vec_to_pub_hash(pub_hash_data).unwrap(),
             };
 
             let addr_str = addr.to_string();
@@ -244,7 +309,7 @@ mod test {
         let address = Address::from_public_key(&private_key.public()).unwrap();
         let mut w = Vec::new();
 
-        address.encode(&mut w);
+        address.encode(&mut w).unwrap();
 
         assert_eq!(expected_data, w.to_vec(),);
         assert_eq!(expected_data.len(), address.encoded_size());
