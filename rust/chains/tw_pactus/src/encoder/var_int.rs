@@ -28,19 +28,18 @@ impl Deref for VarInt {
 }
 
 impl Encodable for VarInt {
-    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<(), Error> {
         let mut val = self.0;
-        let mut len = 0;
         // Make sure that there is one after this
         while val >= 0x80 {
             let n = (val as u8 & 0x7f) | 0x80;
-            len += w.write(&[n])?;
+            w.write_all(&[n])?;
             val >>= 7; // It should be in multiples of 7, this should just get the next part
         }
 
-        len += w.write(&[val as u8])?;
+        w.write_all(&[val as u8])?;
 
-        Ok(len)
+        Ok(())
     }
 
     fn encoded_size(&self) -> usize {
@@ -94,7 +93,7 @@ impl Decodable for VarInt {
 mod tests {
 
     use super::*;
-    use crate::encoder::{self, deserialize};
+    use crate::encoder::deserialize;
 
     #[test]
     fn test_var_int_encode_data() {
@@ -160,19 +159,22 @@ mod tests {
             let mut w = Vec::new();
             let var_int = VarInt(*value);
             let encoded_size = var_int.encoded_size();
-            let len = var_int.encode(&mut w).unwrap();
+            var_int.encode(&mut w).unwrap();
             let out = w.as_slice();
 
             assert_eq!(out, *encoded, "Test {i} failed: data mismatch");
-            assert_eq!(len, out.len(), "Test {i} failed: encoded size mismatch");
-            assert_eq!(len, encoded_size, "Test {i} failed: data size mismatch",);
+            assert_eq!(
+                encoded_size,
+                out.len(),
+                "Test {i} failed: encoded size mismatch"
+            );
         }
     }
 
     #[test]
     fn test_var_int_decode() {
         for (i, (value, data)) in VARINT_TEST_CASES.iter().enumerate() {
-            let var_int = deserialize::<VarInt>(*data).unwrap();
+            let var_int = deserialize::<VarInt>(data).unwrap();
 
             assert_eq!(*value, *var_int, "Test {i} failed: value mismatch");
         }

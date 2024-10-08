@@ -10,19 +10,21 @@ use super::error::Error;
 use crate::encoder::var_int::VarInt;
 use crate::encoder::Encodable;
 
-pub(crate) fn encode_var_slice(data: &[u8], w: &mut dyn std::io::Write) -> Result<usize, Error> {
-    let mut len = VarInt::from(data.len()).encode(w)?;
-    len += w.write(data)?;
+pub(crate) fn encode_var_slice(data: &[u8], w: &mut dyn std::io::Write) -> Result<(), Error> {
+    VarInt::from(data.len()).encode(w)?;
+    w.write_all(data)?;
 
-    Ok(len)
+    Ok(())
 }
 
-pub(crate) fn encode_fix_slice(data: &[u8], w: &mut dyn std::io::Write) -> Result<usize, Error> {
-    Ok(w.write(data)?)
+pub(crate) fn encode_fix_slice(data: &[u8], w: &mut dyn std::io::Write) -> Result<(), Error> {
+    w.write_all(data)?;
+
+    Ok(())
 }
 
 impl Encodable for Vec<u8> {
-    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<(), Error> {
         encode_var_slice(self, w)
     }
 
@@ -32,7 +34,7 @@ impl Encodable for Vec<u8> {
 }
 
 impl Encodable for String {
-    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<(), Error> {
         encode_var_slice(self.as_bytes(), w)
     }
 
@@ -42,7 +44,7 @@ impl Encodable for String {
 }
 
 impl Encodable for PublicKey {
-    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<(), Error> {
         encode_fix_slice(self.as_slice(), w)
     }
 
@@ -52,7 +54,7 @@ impl Encodable for PublicKey {
 }
 
 impl Encodable for Signature {
-    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<(), Error> {
         encode_fix_slice(self.to_bytes().as_slice(), w)
     }
 
@@ -62,7 +64,7 @@ impl Encodable for Signature {
 }
 
 impl<const N: usize> Encodable for Hash<N> {
-    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<(), Error> {
         encode_fix_slice(self.as_slice(), w)
     }
 
@@ -73,10 +75,10 @@ impl<const N: usize> Encodable for Hash<N> {
 
 impl Encodable for u8 {
     #[inline]
-    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<(), Error> {
         w.write_u8(*self)?;
 
-        Ok(1)
+        Ok(())
     }
 
     #[inline]
@@ -89,10 +91,10 @@ macro_rules! impl_encodable_for_int {
     ($int:ty, $size:literal, $write_fn:tt) => {
         impl Encodable for $int {
             #[inline]
-            fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
+            fn encode(&self, w: &mut dyn std::io::Write) -> Result<(), Error> {
                 w.$write_fn::<LittleEndian>(*self)?;
 
-                Ok($size)
+                Ok(())
             }
 
             #[inline]

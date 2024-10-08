@@ -45,7 +45,7 @@ impl TryFrom<u8> for AddressType {
 }
 
 impl Encodable for AddressType {
-    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<(), Error> {
         (self.clone() as u8).encode(w)
     }
 
@@ -120,16 +120,16 @@ impl fmt::Display for Address {
 }
 
 impl Encodable for Address {
-    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
-        let mut len = self.addr_type.encode(w)?;
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<(), Error> {
+        self.addr_type.encode(w)?;
 
         if self.is_treasury() {
-            return Ok(len);
+            return Ok(());
         }
 
-        len += self.pub_hash.encode(w)?;
+        self.pub_hash.encode(w)?;
 
-        Ok(len)
+        Ok(())
     }
 
     fn encoded_size(&self) -> usize {
@@ -205,10 +205,9 @@ mod test {
         assert!(addr.is_treasury());
 
         let mut w = Vec::new();
-        let len = addr.encode(&mut w).unwrap();
+        addr.encode(&mut w).unwrap();
         assert_eq!(w.to_vec(), [0x00]);
         assert_eq!(addr.encoded_size(), 1);
-        assert_eq!(len, 1);
     }
 
     #[test]
@@ -226,7 +225,7 @@ mod test {
         assert!(!addr.is_treasury());
 
         let mut w = Vec::new();
-        let len = addr.encode(&mut w).unwrap();
+        addr.encode(&mut w).unwrap();
         assert_eq!(
             w.to_vec(),
             "03000102030405060708090a0b0c0d0e0f00010203"
@@ -234,7 +233,6 @@ mod test {
                 .unwrap()
         );
         assert_eq!(addr.encoded_size(), 21);
-        assert_eq!(len, 21);
     }
 
     #[test]
@@ -245,7 +243,10 @@ mod test {
 
         let addr = deserialize::<Address>(&data).unwrap();
         assert!(!addr.is_treasury());
-        assert_eq!(addr.to_string(), "pc1rqqqsyqcyq5rqwzqfpg9scrgwpuqqzqsr36kkra");
+        assert_eq!(
+            addr.to_string(),
+            "pc1rqqqsyqcyq5rqwzqfpg9scrgwpuqqzqsr36kkra"
+        );
     }
 
     #[test]
