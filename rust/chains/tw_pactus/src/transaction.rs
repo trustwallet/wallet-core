@@ -1,5 +1,5 @@
 use std::fmt::Debug;
-use std::io;
+use std::io::{Cursor, Write};
 use std::str::FromStr;
 
 use tw_coin_entry::error::prelude::{SigningError, SigningErrorType, SigningResult};
@@ -11,7 +11,8 @@ use tw_proto::Pactus;
 
 use crate::address::Address;
 use crate::amount::Amount;
-use crate::encode::Encodable;
+use crate::encoder::error::Error;
+use crate::encoder::{decode, Decodable, Encodable};
 
 const VERSION_LATEST: u8 = 1;
 
@@ -24,8 +25,23 @@ pub enum PayloadType {
     Withdraw = 5,
 }
 
+impl TryFrom<u8> for PayloadType {
+    type Error = Error;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            1 => Ok(PayloadType::Transfer),
+            2 => Ok(PayloadType::Bond),
+            3 => Ok(PayloadType::Sortition),
+            4 => Ok(PayloadType::Unbond),
+            5 => Ok(PayloadType::Withdraw),
+            _ => Err(Error::ParseFailed("Invalid PayloadType value")),
+        }
+    }
+}
+
 impl Encodable for PayloadType {
-    fn encode<W: std::io::Write + ?Sized>(&self, w: &mut W) -> Result<usize, io::Error> {
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
         (self.clone() as u8).encode(w)
     }
 
@@ -34,9 +50,13 @@ impl Encodable for PayloadType {
     }
 }
 
-pub trait Payload: Debug {
-    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, io::Error>;
-    fn encoded_size(&self) -> usize;
+impl Decodable for PayloadType {
+    fn decode(r: &mut dyn std::io::Read) -> Result<Self, Error> {
+        PayloadType::try_from(u8::decode(r)?)
+    }
+}
+
+pub trait Payload: Debug + Encodable {
     fn signer(&self) -> &Address;
     fn value(&self) -> Amount;
     fn payload_type(&self) -> PayloadType;
@@ -49,10 +69,8 @@ pub struct TransferPayload {
     amount: Amount,
 }
 
-
-
-impl Payload for TransferPayload {
-    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, io::Error> {
+impl Encodable for TransferPayload {
+    fn encode(&self, w: &mut dyn std::io::Write) -> Result<usize, Error> {
         let mut len = self.sender.encode(w)?;
         len += self.receiver.encode(w)?;
         len += self.amount.encode(w)?;
@@ -63,7 +81,15 @@ impl Payload for TransferPayload {
     fn encoded_size(&self) -> usize {
         self.sender.encoded_size() + self.receiver.encoded_size() + self.amount.encoded_size()
     }
+}
 
+impl Decodable for TransferPayload {
+    fn decode(r: &mut dyn std::io::Read) -> Result<Self, Error> {
+        todo!()
+    }
+}
+
+impl Payload for TransferPayload {
     fn signer(&self) -> &Address {
         &self.sender
     }
@@ -140,11 +166,26 @@ impl Transaction {
     }
 
     pub fn from_bytes(input: &[u8]) -> SigningResult<Self> {
+        // let mut cursor = Cursor::new(input);
+
+        // let version = u8::decode(&mut cursor)?;
+        // let lock_time = u32::decode(&mut cursor)?;
+        // let fee = Amount::decode(&mut cursor)?;
+        // let memo = String::decode(&mut cursor)?;
+        // let payload_type = PayloadType::decode(&mut cursor)?;
+        // let payload = match payload_type {
+        //     PayloadType::Transfer =>
+        //         TransferPayload::decode(&mut cursor)?,
+        //     _ => return SigningError::err(SigningErrorType::Error_not_supported)
+        // };
+
+
+
         todo!()
     }
 
     pub fn sign(&mut self, private_key: &PrivateKey) -> SigningResult<()> {
-        let sign_bytes = self.sign_bytes();
+        let sign_bytes = self.sign_bytes()?;
         let signature = private_key.sign(sign_bytes)?;
 
         self.set_signatory(private_key.public(), signature);
@@ -158,37 +199,38 @@ impl Transaction {
     }
 
     pub fn id(&self) -> Vec<u8> {
-        blake2_b(&self.sign_bytes(), 32).unwrap_or_default()
+        blake2_b(&self.sign_bytes().unwrap_or_default(), 32).unwrap_or_default()
     }
 
-    pub fn to_bytes(&self) -> Vec<u8> {
+    pub fn to_bytes(&self) -> SigningResult<Vec<u8>> {
         let mut w = Vec::new();
 
-        self.flags.encode(&mut w);
-        self.sign_bytes().encode(&mut w);
+        self.flags.encode(&mut w)?;
+        w.write(&self.sign_bytes()?)
+            .map_err(|_| SigningError::new(SigningErrorType::Error_input_parse))?;
 
         if let Some(signature) = &self.signature {
-            signature.encode(&mut w);
+            signature.encode(&mut w)?;
         }
 
         if let Some(public_key) = &self.public_key {
-            public_key.encode(&mut w);
+            public_key.encode(&mut w)?;
         }
 
-        w.to_vec()
+        Ok(w.to_vec())
     }
 
-    fn sign_bytes(&self) -> Vec<u8> {
+    fn sign_bytes(&self) -> SigningResult<Vec<u8>> {
         let mut w = Vec::new();
 
-        self.version.encode(&mut w);
-        self.lock_time.encode(&mut w);
-        self.fee.encode(&mut w);
-        self.memo.encode(&mut w);
-        self.payload.payload_type().encode(&mut w);
-        self.payload.encode(&mut w);
+        self.version.encode(&mut w)?;
+        self.lock_time.encode(&mut w)?;
+        self.fee.encode(&mut w)?;
+        self.memo.encode(&mut w)?;
+        self.payload.payload_type().encode(&mut w)?;
+        self.payload.encode(&mut w)?;
 
-        w.to_vec()
+        Ok(w.to_vec())
     }
 }
 
@@ -205,7 +247,7 @@ mod tests {
         let mut stream = Vec::new();
 
         let payload = PayloadType::Unbond;
-        payload.encode(&mut stream);
+        payload.encode(&mut stream).unwrap();
         assert_eq!(stream.to_vec(), &[4]);
     }
 
@@ -235,7 +277,7 @@ mod tests {
         });
         let trx = Transaction::new(0x04030201, Amount(1), "".to_string(), payload);
 
-        assert_eq!(expected_data, trx.to_bytes());
+        assert_eq!(expected_data, trx.to_bytes().unwrap());
         assert_eq!(expected_id, trx.id());
     }
 }

@@ -31,7 +31,7 @@ impl PactusCompiler {
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
         let trx = Transaction::from_proto(&input)?;
-        let data = trx.to_bytes();
+        let data = trx.to_bytes()?;
 
         let output = CompilerProto::PreSigningOutput {
             data_hash: Cow::Owned(trx.id()),
@@ -72,7 +72,7 @@ impl PactusCompiler {
         let mut trx = Transaction::from_proto(&input)?;
         trx.set_signatory(public_key.to_owned(), signature.to_owned());
 
-        let data = trx.to_bytes();
+        let data = trx.to_bytes()?;
 
         let output = Proto::SigningOutput {
             encoded: data.into(),

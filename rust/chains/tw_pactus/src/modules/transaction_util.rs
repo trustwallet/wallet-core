@@ -6,9 +6,7 @@ use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::modules::transaction_util::TransactionUtil;
 use tw_encoding::hex;
-use tw_hash::sha3::sha3_256;
 
-use crate::transaction::Transaction;
 
 pub struct PactusTransactionUtil;
 
