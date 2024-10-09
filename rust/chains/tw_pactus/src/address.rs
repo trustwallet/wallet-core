@@ -73,7 +73,7 @@ pub struct Address {
 
 impl Address {
     pub fn from_public_key(public_key: &PublicKey) -> Result<Self, AddressError> {
-        let pud_data = public_key.to_h256();
+        let pud_data = public_key.to_bytes();
         let pub_hash_data =
             ripemd_160(&blake2_b(pud_data.as_ref(), 32).map_err(|_| AddressError::Internal)?);
         let pub_hash = Address::vec_to_pub_hash(pub_hash_data)?;

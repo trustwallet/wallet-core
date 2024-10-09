@@ -156,13 +156,13 @@ impl Transaction {
                             receiver,
                             amount: Amount(pld.amount),
                         })
-                    }
+                    },
                     Pactus::Proto::mod_TransactionMessage::OneOfpayload::bond(_pld) => {
                         return SigningError::err(SigningErrorType::Error_not_supported)
-                    }
+                    },
                     Pactus::Proto::mod_TransactionMessage::OneOfpayload::None => {
                         return SigningError::err(SigningErrorType::Error_invalid_params)
-                    }
+                    },
                 };
 
                 let flags = FLAG_NOT_SIGNED;
@@ -175,7 +175,7 @@ impl Transaction {
                     trx.memo.to_string(),
                     payload,
                 ))
-            }
+            },
         }
     }
 
