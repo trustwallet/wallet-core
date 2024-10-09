@@ -184,13 +184,13 @@ impl Transaction {
         Ok(deserialize::<Transaction>(input)?)
     }
 
-    pub fn sign(&mut self, private_key: &PrivateKey) -> SigningResult<()> {
+    pub fn sign(&mut self, private_key: &PrivateKey) -> SigningResult<Signature> {
         let sign_bytes = self.sign_bytes()?;
         let signature = private_key.sign(sign_bytes)?;
 
-        self.set_signatory(private_key.public(), signature);
+        self.set_signatory(private_key.public(), signature.clone());
 
-        Ok(())
+        Ok(signature)
     }
 
     pub fn set_signatory(&mut self, public_key: PublicKey, signature: Signature) {
@@ -213,7 +213,7 @@ impl Transaction {
         Ok(w.to_vec())
     }
 
-    fn sign_bytes(&self) -> SigningResult<Vec<u8>> {
+    pub fn sign_bytes(&self) -> SigningResult<Vec<u8>> {
         let mut w = Vec::new();
         self.encode_with_no_signatory(&mut w)?;
         let mut sign_bytes = w.to_vec();
@@ -321,52 +321,52 @@ mod tests {
         assert_eq!(stream.to_vec(), &[4]);
     }
 
-    const DATA_HEX_NOT_SIGNED: &str = concat!(
+    const TRANSACTION_NOT_SIGNED: &str = concat!(
         "02",                                         // Flags
         "01",                                         // Version
-        "01020304",                                   // LockTime
-        "01",                                         // Fee
+        "01020300",                                   // LockTime
+        "e807",                                       // Fee
         "0474657374",                                 // Memo
         "01",                                         // PayloadType
-        "033333333333333333333333333333333333333333", // Sender
-        "032222222222222222222222222222222222222222", // Receiver
-        "02"
-    ); // Amount
+        "037098338e0b6808119dfd4457ab806b9c2059b89b", // Sender
+        "037a14ae24533816e7faaa6ed28fcdde8e55a7df21", // Receiver
+        "a09c01"                                      // Amount
+    );
 
-    const DATA_HEX_SIGNED: &str = concat!(
+    const TRANSACTION_SIGNED: &str = concat!(
         "00",                                                               // Flags
         "01",                                                               // Version
-        "01020304",                                                         // LockTime
-        "01",                                                               // Fee
+        "01020300",                                                         // LockTime
+        "e807",                                                             // Fee
         "0474657374",                                                       // Memo
         "01",                                                               // PayloadType
-        "033333333333333333333333333333333333333333",                       // Sender
-        "032222222222222222222222222222222222222222",                       // Receiver
-        "02",                                                               // Amount
-        "5bf1420418b7aec8f2a28e9c90f1c346ca8b28134e2cf983e6f541350da6774f", // Signature
-        "033aa2c42f12a5fa95be506c790e99731a9b5b9989e7b37bc192c642331d9c09",
+        "037098338e0b6808119dfd4457ab806b9c2059b89b",                       // Sender
+        "037a14ae24533816e7faaa6ed28fcdde8e55a7df21",                       // Receiver
+        "a09c01",                                                           // Amount
+        "50ac25c7125271489b0cd230549257c93fb8c6265f2914a988ba7b81c1bc47ff", // Signature
+        "f027412dd59447867911035ff69742d171060a1f132ac38b95acc6e39ec0bd09",
         "95794161374b22c696dabb98e93f6ca9300b22f3b904921fbf560bb72145f4fa" // PublicKey
     );
 
-    const TX_ID: &str = "e5a0e1fb4ee6f26a867dd3c091fc9fdfcbd25a5caff8cf13a4485a716501150d";
+    const TX_ID: &str = "34cd4656a98f7eb996e83efdc384cefbe3a9c52dca79a99245b4eacc0b0b4311";
 
     #[test]
     fn test_sign_signature() {
-        let expected_data = DATA_HEX_SIGNED.decode_hex().unwrap();
+        let expected_data = TRANSACTION_SIGNED.decode_hex().unwrap();
         let expected_id = TX_ID.decode_hex().unwrap();
 
-        let sender = Address::from_str("pc1rxvenxvenxvenxvenxvenxvenxvenxvenupgaeg").unwrap();
-        let receiver = Address::from_str("pc1ryg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zwllqv6").unwrap();
+        let sender = Address::from_str("pc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymcxy3lr").unwrap();
+        let receiver = Address::from_str("pc1r0g22ufzn8qtw0742dmfglnw73e260hep0k3yra").unwrap();
         let payload = Box::new(TransferPayload {
             sender,
             receiver,
-            amount: Amount(2),
+            amount: Amount(20000),
         });
         let mut trx = Transaction::new(
             FLAG_NOT_SIGNED,
             VERSION_LATEST,
-            0x04030201,
-            Amount(1),
+            0x00030201,
+            Amount(1000),
             "test".to_string(),
             payload,
         );
@@ -383,7 +383,7 @@ mod tests {
 
     #[test]
     fn test_encoding_not_signed() {
-        let data = DATA_HEX_NOT_SIGNED.decode_hex().unwrap();
+        let data = TRANSACTION_NOT_SIGNED.decode_hex().unwrap();
         let trx = Transaction::from_bytes(&data).unwrap();
         let expected_id = TX_ID.decode_hex().unwrap();
 
@@ -397,7 +397,7 @@ mod tests {
 
     #[test]
     fn test_encoding_signed() {
-        let data = DATA_HEX_SIGNED.decode_hex().unwrap();
+        let data = TRANSACTION_SIGNED.decode_hex().unwrap();
         let trx = Transaction::from_bytes(&data).unwrap();
         let expected_id = TX_ID.decode_hex().unwrap();
 

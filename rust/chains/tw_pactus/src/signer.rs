@@ -28,12 +28,14 @@ impl PactusSigner {
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let mut trx = Transaction::from_proto(&input)?;
         let key_pair = ed25519::sha512::KeyPair::try_from(input.private_key.as_ref())?;
-        trx.sign(key_pair.private())?;
+        let signature = trx.sign(key_pair.private())?;
 
         let data = trx.to_bytes()?;
 
         let output = Proto::SigningOutput {
-            encoded: data.into(),
+            transaction_id: trx.id().into(),
+            signed_transaction_data: data.into(),
+            signature: signature.to_bytes().to_vec().into(),
             ..Proto::SigningOutput::default()
         };
 
