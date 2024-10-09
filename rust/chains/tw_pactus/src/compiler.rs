@@ -2,8 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use std::borrow::Cow;
-
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::error::prelude::*;
@@ -31,11 +29,11 @@ impl PactusCompiler {
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
         let trx = Transaction::from_proto(&input)?;
-        let data = trx.to_bytes()?;
+        let sign_bytes = trx.sign_bytes()?;
 
         let output = CompilerProto::PreSigningOutput {
-            data_hash: Cow::Owned(trx.id()),
-            data: data.into(),
+            data_hash: trx.id().into(),
+            data: sign_bytes.into(),
             ..CompilerProto::PreSigningOutput::default()
         };
 
@@ -75,7 +73,9 @@ impl PactusCompiler {
         let data = trx.to_bytes()?;
 
         let output = Proto::SigningOutput {
-            encoded: data.into(),
+            transaction_id: trx.id().into(),
+            signed_transaction_data: data.into(),
+            signature: signature.to_bytes().to_vec().into(),
             ..Proto::SigningOutput::default()
         };
 
