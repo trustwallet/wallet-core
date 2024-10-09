@@ -28,13 +28,13 @@ impl SolanaAddress {
         let bytes = public_key
             .to_ed25519()
             .ok_or(AddressError::PublicKeyTypeMismatch)?
-            .to_h256();
+            .to_bytes();
         Ok(SolanaAddress { bytes })
     }
 
     pub fn with_public_key_ed25519(public_key: &ed25519::sha512::PublicKey) -> SolanaAddress {
         SolanaAddress {
-            bytes: public_key.to_h256(),
+            bytes: public_key.to_bytes(),
         }
     }
 
