@@ -148,8 +148,7 @@ impl Transaction {
             Some(trx) => {
                 let payload = match &trx.payload {
                     Pactus::Proto::mod_TransactionMessage::OneOfpayload::transfer(pld) => {
-                        let private_key = PrivateKey::try_from(input.private_key.as_ref())?;
-                        let sender = Address::from_public_key(&private_key.public())?;
+                        let sender = Address::from_str(&pld.sender)?;
                         let receiver = Address::from_str(&pld.receiver)?;
 
                         Box::new(TransferPayload {
