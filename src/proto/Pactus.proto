@@ -24,8 +24,9 @@ message TransactionMessage {
 }
 
 // Transfer payload for creating a Transfer transaction between two accounts.
-// The sender's address is the same as the signer's address.
 message TransferPayload {
+  // The sender's account address.
+  string sender = 1;
   // The receiver's account address.
   string receiver = 2;
   // The amount to be transferred, specified in NanoPAC.
@@ -33,14 +34,15 @@ message TransferPayload {
 }
 
 // Bond payload for creating a Bond transaction from an account to a validator.
-// The sender's address is the same as the signer's address.
 message BondPayload {
+  // The sender's account address.
+  string sender = 1;
   // The receiver's validator address.
-  string receiver = 1;
+  string receiver = 2;
   // The stake amount in NanoPAC.
-  int64 stake = 2;
+  int64 stake = 3;
   // The public key of the validator (only set when creating a new validator).
-  string public_key = 3;
+  string public_key = 4;
 }
 
 // Input data necessary to create a signed transaction.

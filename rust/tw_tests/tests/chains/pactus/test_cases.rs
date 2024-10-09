@@ -56,6 +56,7 @@ pub mod transfer_1 {
 
     pub fn pactus_sign_transfer_input() -> Proto::SigningInput<'static> {
         let transfer_payload = Proto::TransferPayload {
+            sender: "pc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymcxy3lr".into(),
             receiver: "pc1r0g22ufzn8qtw0742dmfglnw73e260hep0k3yra".into(),
             amount: 20000,
         };
