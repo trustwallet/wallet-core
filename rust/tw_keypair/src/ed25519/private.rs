@@ -44,7 +44,7 @@ impl<H: Hasher512> PrivateKey<H> {
         message: &[u8],
     ) -> KeyPairResult<Signature> {
         self.expanded_key
-            .sign_with_pubkey(public.to_h256(), message)
+            .sign_with_pubkey(public.to_bytes(), message)
     }
 }
 

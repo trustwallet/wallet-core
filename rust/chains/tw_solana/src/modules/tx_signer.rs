@@ -29,7 +29,7 @@ impl TxSigner {
         // Sign the message with all given private keys.
         for private_key in keys {
             let signing_pubkey =
-                SolanaAddress::with_public_key_bytes(private_key.public().to_h256());
+                SolanaAddress::with_public_key_bytes(private_key.public().to_bytes());
             let ed25519_signature = private_key.sign(message_encoded.clone())?;
 
             key_signs.insert(signing_pubkey, ed25519_signature);

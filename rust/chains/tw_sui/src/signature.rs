@@ -27,7 +27,7 @@ impl SuiSignatureInfo {
         SuiSignatureInfo {
             scheme: SignatureScheme::ED25519,
             signature: signature.to_bytes(),
-            public_key: public_key.to_h256(),
+            public_key: public_key.to_bytes(),
         }
     }
 
