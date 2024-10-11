@@ -401,7 +401,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "dydx142j9u5eaduzd7faumygud6ruhdwme98qeayaky"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .pactus:
-                    let expectedResult = "pc1rehvlc6tfn79z0zjqqaj8zas5j5h9c2fe59a4ff"
+                    let expectedResult = "pc1r7ys2g5a4xc2qtm0t4q987m4mvs57w5g0v4pvzg"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()

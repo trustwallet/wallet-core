@@ -147,5 +147,6 @@ class CoinAddressDerivationTests {
         Tia -> "celestia142j9u5eaduzd7faumygud6ruhdwme98qpwmfv7"
         NativeZetaChain -> "zeta13u6g7vqgw074mgmf2ze2cadzvkz9snlwywj304"
         Dydx -> "dydx142j9u5eaduzd7faumygud6ruhdwme98qeayaky"
+        Pactus -> "pc1r7ys2g5a4xc2qtm0t4q987m4mvs57w5g0v4pvzg"
     }
 }
