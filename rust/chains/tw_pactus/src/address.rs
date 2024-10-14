@@ -10,7 +10,7 @@ use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::blake2::blake2_b;
 use tw_hash::ripemd::ripemd_160;
-use tw_hash::Hash;
+use tw_hash::H160;
 use tw_keypair::ed25519::sha512::PublicKey;
 use tw_memory::Data;
 
@@ -19,7 +19,6 @@ use crate::encoder::{Decodable, Encodable};
 
 const HRP: &str = "pc";
 const TREASURY_ADDRESS_STRING: &str = "000000000000000000000000000000000000000000";
-const PUB_HASH_LEN: usize = 20;
 
 /// Enum for Pactus address types.
 #[derive(Debug, Clone, PartialEq)]
@@ -68,7 +67,7 @@ impl Decodable for AddressType {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Address {
     addr_type: AddressType,
-    pub_hash: Hash<PUB_HASH_LEN>,
+    pub_hash: H160,
 }
 
 impl Address {
@@ -88,8 +87,8 @@ impl Address {
         self.addr_type == AddressType::Treasury && self.pub_hash.is_zero()
     }
 
-    pub fn vec_to_pub_hash(vec: Vec<u8>) -> Result<Hash<PUB_HASH_LEN>, AddressError> {
-        Hash::<PUB_HASH_LEN>::try_from(vec.as_slice()).map_err(|_| AddressError::Internal)
+    pub fn vec_to_pub_hash(vec: Vec<u8>) -> Result<H160, AddressError> {
+        H160::try_from(vec.as_slice()).map_err(|_| AddressError::Internal)
     }
 }
 
@@ -147,11 +146,11 @@ impl Decodable for Address {
         if addr_type == AddressType::Treasury {
             return Ok(Address {
                 addr_type,
-                pub_hash: Hash::<PUB_HASH_LEN>::new(),
+                pub_hash: H160::new(),
             });
         }
 
-        let pub_hash = Hash::<PUB_HASH_LEN>::decode(r)?;
+        let pub_hash = H160::decode(r)?;
         Ok(Address {
             addr_type,
             pub_hash,
@@ -166,7 +165,7 @@ impl FromStr for Address {
         if s == TREASURY_ADDRESS_STRING {
             return Ok(Address {
                 addr_type: AddressType::Treasury,
-                pub_hash: Hash::<PUB_HASH_LEN>::new(),
+                pub_hash: H160::new(),
             });
         }
 
