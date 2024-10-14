@@ -5,9 +5,11 @@
 mod aptos;
 mod binance;
 mod bitcoin;
+mod bitcoincash;
 mod common;
 mod cosmos;
 mod dydx;
+mod ecash;
 mod ethereum;
 mod greenfield;
 mod internet_computer;

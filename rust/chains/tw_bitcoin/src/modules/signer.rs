@@ -7,11 +7,13 @@ use crate::modules::psbt::update_psbt_signed;
 use crate::modules::psbt_request::PsbtRequest;
 use crate::modules::signing_request::SigningRequestBuilder;
 use std::borrow::Cow;
+use std::marker::PhantomData;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::{ecdsa, schnorr};
 use tw_proto::BitcoinV2::Proto;
+use tw_utxo::context::UtxoContext;
 use tw_utxo::modules::keys_manager::KeysManager;
 use tw_utxo::modules::tx_planner::TxPlanner;
 use tw_utxo::modules::tx_signer::TxSigner;
@@ -21,9 +23,11 @@ use tw_utxo::transaction::standard_transaction::Transaction;
 use tw_utxo::transaction::transaction_interface::TransactionInterface;
 use tw_utxo::transaction::unsigned_transaction::UnsignedTransaction;
 
-pub struct BitcoinSigner;
+pub struct BitcoinSigner<Context: UtxoContext> {
+    _phantom: PhantomData<Context>,
+}
 
-impl BitcoinSigner {
+impl<Context: UtxoContext> BitcoinSigner<Context> {
     pub fn sign(
         coin: &dyn CoinContext,
         input: &Proto::SigningInput<'_>,
@@ -51,7 +55,7 @@ impl BitcoinSigner {
         input: &Proto::SigningInput,
         tx_builder_input: &Proto::TransactionBuilder,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        let request = SigningRequestBuilder::build(coin, input, tx_builder_input)?;
+        let request = SigningRequestBuilder::<Context>::build(coin, input, tx_builder_input)?;
         let SelectResult { unsigned_tx, plan } = TxPlanner::plan(request)?;
 
         let keys_manager = Self::keys_manager_for_tx(
@@ -84,7 +88,8 @@ impl BitcoinSigner {
         let PsbtRequest {
             mut psbt,
             unsigned_tx,
-        } = PsbtRequest::build(input, psbt_input)?;
+            ..
+        } = PsbtRequest::<Context>::build(input, psbt_input)?;
 
         let fee = unsigned_tx.fee()?;
 
