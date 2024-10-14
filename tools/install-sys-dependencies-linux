@@ -4,9 +4,9 @@ set -e
 
 # Downgrade libc to temporarily fix https://github.com/actions/runner-images/issues/8659
 if [[ "$1" == "ci" ]]; then
-  LIBSTD_PACKAGE_VERSION="12.3.0-1ubuntu1~22.04"
+  LIBSTD_PACKAGE_VERSION="12.3.0-*"
   # Bump this version if the CI has been broken due to the packages update.
-  LIBC_PACKAGE_VERSION="2.35-0ubuntu3.9"
+  LIBC_PACKAGE_VERSION="2.35-*"
 
   echo "Remove GCC 13 from runner image - runner-images/8659 workaround"
   echo "NOTE: Bump $LIBC_PACKAGE_VERSION version if the CI has been broken due to the packages update"
