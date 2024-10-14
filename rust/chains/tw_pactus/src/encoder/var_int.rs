@@ -99,22 +99,22 @@ mod tests {
     fn test_var_int_encode_data() {
         let mut w = Vec::new();
 
-        VarInt::from(0_usize).encode(&mut w).unwrap();
+        VarInt::from(0x00_usize).encode(&mut w).unwrap();
         VarInt::from(0xfc_usize).encode(&mut w).unwrap();
         VarInt::from(0xfd_usize).encode(&mut w).unwrap();
         VarInt::from(0xffff_usize).encode(&mut w).unwrap();
-        VarInt::from(0x10000_usize).encode(&mut w).unwrap();
+        VarInt::from(0x01_0000_usize).encode(&mut w).unwrap();
         VarInt::from(0xffff_ffff_usize).encode(&mut w).unwrap();
-        VarInt(0x1_0000_0000_u64).encode(&mut w).unwrap();
+        VarInt::from(0x01_0000_0000_usize).encode(&mut w).unwrap();
 
         let expected = vec![
-            0_u8, // 0
-            0xfc, 0x1, // 0xfc
-            0xfd, 0x1, // 0xfd
-            0xff, 0xff, 0x3, // 0xffff
-            0x80, 0x80, 0x04, // 0x10000
-            0xff, 0xff, 0xff, 0xff, 0xf, // 0xffff_ffff
-            0x80, 0x80, 0x80, 0x80, 0x10, // 0x1_0000_0000
+            0x00, // 0x00
+            0xfc, 0x01, // 0xfc
+            0xfd, 0x01, // 0xfd
+            0xff, 0xff, 0x03, // 0xffff
+            0x80, 0x80, 0x04, // 0x01_0000
+            0xff, 0xff, 0xff, 0xff, 0x0f, // 0xffff_ffff
+            0x80, 0x80, 0x80, 0x80, 0x10, // 0x01_0000_0000
         ];
 
         assert_eq!(w.to_vec(), expected);
