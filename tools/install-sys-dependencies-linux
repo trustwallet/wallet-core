@@ -25,6 +25,6 @@ sudo apt-get update && sudo apt-get install ninja-build llvm-14 clang-tidy-14 li
 
 # As of now, Ubuntu 24.04 has lcov 2.0-4ubuntu2 only, but we don't support it yet.
 # Install lcov 1.15-1 manually.
-wget -qO- http://mirrors.kernel.org/ubuntu/pool/universe/l/lcov/lcov_1.15-1_all.deb \
-  | sudo dpkg -i - \
-  && sudo apt-get install -f
+LCOV_DEB="$(mktemp)"
+wget -O "$LCOV_DEB" http://mirrors.kernel.org/ubuntu/pool/universe/l/lcov/lcov_1.15-1_all.deb
+sudo dpkg -i "$LCOV_DEB"
