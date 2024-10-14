@@ -27,4 +27,5 @@ sudo apt-get update && sudo apt-get install ninja-build llvm-14 clang-tidy-14 li
 # Install lcov 1.15-1 manually.
 LCOV_DEB="$(mktemp)"
 wget -O "$LCOV_DEB" http://mirrors.kernel.org/ubuntu/pool/universe/l/lcov/lcov_1.15-1_all.deb
-sudo dpkg -i "$LCOV_DEB"
+sudo apt-get install "$LCOV_DEB"
+rm -rf $LCOV_DEB
