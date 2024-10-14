@@ -1,5 +1,7 @@
 use super::Bech32Prefix;
 use crate::address::witness_program::WitnessProgram;
+use crate::script::standard_script::conditions;
+use crate::script::Script;
 use bitcoin::key::TapTweak;
 use core::fmt;
 use std::str::FromStr;
@@ -16,7 +18,7 @@ pub const WITNESS_V1: u8 = 1;
 /// cbindgen:ignore
 pub const WITNESS_V1_VALID_PROGRAM_SIZES: [usize; 1] = [H256::LEN];
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TaprootAddress {
     inner: WitnessProgram,
 }
@@ -117,6 +119,15 @@ impl TaprootAddress {
 
     pub fn witness_program(&self) -> &[u8] {
         self.inner.witness_program()
+    }
+
+    pub fn to_script_pubkey(&self) -> SigningResult<Script> {
+        let tweaked_pubkey_hash = H256::try_from(self.witness_program())
+            .tw_err(|_| SigningErrorType::Error_invalid_address)
+            .context("P2TR 'witness_program' should be 32-bytes array")?;
+        Ok(conditions::new_p2tr_dangerous_assume_tweaked(
+            &tweaked_pubkey_hash,
+        ))
     }
 }
 

@@ -5,6 +5,7 @@
 use crate::modules::tx_builder::public_keys::PublicKeys;
 use crate::modules::tx_builder::script_parser::{StandardScript, StandardScriptParser};
 use crate::modules::tx_builder::BitcoinChainInfo;
+use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::{H160, H256};
@@ -12,10 +13,7 @@ use tw_keypair::{ecdsa, schnorr};
 use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
-use tw_utxo::address::legacy::LegacyAddress;
-use tw_utxo::address::segwit::SegwitAddress;
-use tw_utxo::address::standard_bitcoin::StandardBitcoinAddress;
-use tw_utxo::address::taproot::TaprootAddress;
+use tw_utxo::context::UtxoContext;
 use tw_utxo::script::Script;
 use tw_utxo::sighash::SighashType;
 use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
@@ -23,13 +21,14 @@ use tw_utxo::transaction::standard_transaction::TransactionInput;
 use tw_utxo::transaction::transaction_parts::OutPoint;
 use tw_utxo::transaction::UtxoToSign;
 
-pub struct UtxoProtobuf<'a> {
+pub struct UtxoProtobuf<'a, Context: UtxoContext> {
     chain_info: &'a BitcoinChainInfo,
     input: &'a Proto::Input<'a>,
     public_keys: &'a PublicKeys,
+    _phantom: PhantomData<Context>,
 }
 
-impl<'a> UtxoProtobuf<'a> {
+impl<'a, Context: UtxoContext> UtxoProtobuf<'a, Context> {
     pub fn new(
         chain_info: &'a BitcoinChainInfo,
         input: &'a Proto::Input<'a>,
@@ -39,6 +38,7 @@ impl<'a> UtxoProtobuf<'a> {
             chain_info,
             input,
             public_keys,
+            _phantom: PhantomData,
         }
     }
 
@@ -159,82 +159,17 @@ impl<'a> UtxoProtobuf<'a> {
         }
     }
 
-    pub fn recipient_address(&self, addr: &str) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        let addr = StandardBitcoinAddress::from_str(addr)
+    pub fn recipient_address(
+        &self,
+        addr_str: &str,
+    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        let addr = Context::Address::from_str(addr_str)
             .into_tw()
             .context("Invalid claiming script recipient address")?;
-
-        match addr {
-            StandardBitcoinAddress::Legacy(ref legacy) => self.recipient_legacy_address(legacy),
-            StandardBitcoinAddress::Segwit(ref segwit) => self.recipient_segwit_address(segwit),
-            StandardBitcoinAddress::Taproot(ref taproot) => self.recipient_taproot_address(taproot),
-        }
-        .with_context(|| format!("Error handling {addr} input recipient"))
-    }
-
-    pub fn recipient_legacy_address(
-        &self,
-        addr: &LegacyAddress,
-    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        let p2pkh_prefix = self.chain_info.p2pkh_prefix;
-        let p2sh_prefix = self.chain_info.p2sh_prefix;
-
-        if p2pkh_prefix == addr.prefix() {
-            // P2PKH
-            let pubkey = self.public_keys.get_ecdsa_public_key(&addr.payload())?;
-            self.prepare_builder()?.p2pkh(&pubkey)
-        } else if p2sh_prefix == addr.prefix() {
-            // P2SH
-            SigningError::err(SigningErrorType::Error_script_redeem).context(
-                "pay-to-script-hash can only be used via 'Input.InputBuilder.p2sh'.\
-                 That is because P2SH address does not provide redeem script but its hash",
-            )
-        } else {
-            // Unknown
-            SigningError::err(SigningErrorType::Error_invalid_address).context(format!(
-                "The given '{addr}' address has unexpected prefix. Expected p2pkh={p2pkh_prefix} p2sh={p2sh_prefix}",
-            ))
-        }
-    }
-
-    pub fn recipient_segwit_address(
-        &self,
-        addr: &SegwitAddress,
-    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        let witness_program = addr.witness_program();
-        match witness_program.len() {
-            // P2WPKH
-            H160::LEN => {
-                let pubkey_hash = H160::try_from(witness_program)
-                    .expect("'witness_program' length must be checked already");
-                let pubkey = self.public_keys.get_ecdsa_public_key(&pubkey_hash)?;
-                self.prepare_builder()?.p2wpkh(&pubkey)
-            },
-            // P2WSH
-            H256::LEN => {
-                SigningError::err(SigningErrorType::Error_script_redeem).context(
-                    "pay-to-witness-script-hash can only be used via 'Input.InputBuilder.p2wsh'.\
-                    That is because P2SH address does not provide redeem script but its hash"
-                )
-            },
-            // Unknown
-            _ => SigningError::err(SigningErrorType::Error_invalid_address)
-                .context(format!("The given '{addr}' segwit address should have 20 or 32 byte length witness program")),
-        }
-    }
-
-    pub fn recipient_taproot_address(
-        &self,
-        addr: &TaprootAddress,
-    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        let tweaked_pubkey = schnorr::XOnlyPublicKey::try_from(addr.witness_program())
-            .tw_err(|_| SigningErrorType::Error_invalid_address)
-            .with_context(|| {
-                format!("The given '{addr}' taproot address witness program should be a valid tweaked schnorr public key")
-            })?;
-
-        self.prepare_builder()?
-            .p2tr_key_path_with_tweaked_pubkey(&tweaked_pubkey)
+        let claiming_script_pubkey =
+            Context::addr_to_script_pubkey(&addr, self.chain_info.to_address_prefixes())?;
+        self.custom_script(claiming_script_pubkey.into())
+            .with_context(|| format!("Error handling {addr_str} input recipient"))
     }
 
     pub fn prepare_builder(&self) -> SigningResult<UtxoBuilder> {
