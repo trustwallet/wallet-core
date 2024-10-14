@@ -12,12 +12,10 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 #    if: github.event.pull_request.draft == false
     steps:
     - uses: actions/checkout@v3
-    - name: Downgrade libc to temporarily fix runner-images/8659
-      uses: mjp41/workaround8649@c8550b715ccdc17f89c8d5c28d7a48eeff9c94a8
     - name: Install system dependencies
       run: |
         tools/install-sys-dependencies-linux
