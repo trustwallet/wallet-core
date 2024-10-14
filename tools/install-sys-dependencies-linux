@@ -21,4 +21,10 @@ if [[ "$1" == "ci" ]]; then
 fi
 
 # build-essential clang-14 libc++-dev libc++abi-dev ruby-full cmake
-sudo apt-get update && sudo apt-get install ninja-build lcov llvm-14 clang-tidy-14 libboost-all-dev rustc --fix-missing
+sudo apt-get update && sudo apt-get install ninja-build llvm-14 clang-tidy-14 libboost-all-dev rustc --fix-missing
+
+# As of now, Ubuntu 24.04 has lcov 2.0-4ubuntu2 only, but we don't support it yet.
+# Install lcov 1.15-1 manually.
+wget -qO- http://mirrors.kernel.org/ubuntu/pool/universe/l/lcov/lcov_1.15-1_all.deb \
+  | sudo dpkg -i - \
+  && sudo apt-get install -f

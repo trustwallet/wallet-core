@@ -30,11 +30,11 @@ EOF
 
 if [[ `uname` == "Darwin" ]]; then
     echo "gcov is llvm-cov on macOS"
-    lcov --rc derive_function_end_line=0 --capture --directory . --output-file coverage.info
+    lcov --capture --directory . --output-file coverage.info
 else
     echo "call llvm-cov on Linux"
     install_llvm_gcov
-    lcov --rc derive_function_end_line=0 --gcov-tool /tmp/llvm-gcov.sh --capture --directory . --output-file coverage.info
+    lcov --gcov-tool /tmp/llvm-gcov.sh --capture --directory . --output-file coverage.info
 fi
 
 lcov --remove coverage.info '/usr/*' --output-file coverage.info
@@ -52,7 +52,6 @@ if [[ "$1" == "html" ]]; then
         --demangle-cpp --num-spaces 4 --sort \
         --title "Trust Wallet Core Test Coverage" \
         --function-coverage --branch-coverage --legend \
-        --rc derive_function_end_line=0 \
         coverage.info
 fi
 

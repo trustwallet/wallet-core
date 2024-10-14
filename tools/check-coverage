@@ -15,10 +15,10 @@ set -e
 coverage_stats=$1
 coverage_info=$2
 
-lcov --rc derive_function_end_line=0 --summary $coverage_info
+lcov --summary $coverage_info
 
 current=$(<$coverage_stats)
-new=$(lcov --rc derive_function_end_line=0 --summary $coverage_info | awk '/lines.*:/{sub("%", "", $2);print $2}')
+new=$(lcov --summary $coverage_info | awk '/lines.*:/{sub("%", "", $2);print $2}')
 
 if (( $(echo "$current > $new" | bc -l) )); then
     echo "Code coverage drops to ${new}% (current is ${current}%)"
