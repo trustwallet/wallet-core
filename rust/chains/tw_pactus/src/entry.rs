@@ -18,10 +18,10 @@ use tw_keypair::tw::PublicKey;
 use tw_proto::Pactus::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
-use crate::address::Address;
 use crate::compiler::PactusCompiler;
 use crate::modules::transaction_util::PactusTransactionUtil;
 use crate::signer::PactusSigner;
+use crate::types::Address;
 
 pub struct PactusEntry;
 

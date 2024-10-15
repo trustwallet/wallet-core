@@ -1,113 +1,20 @@
-use std::fmt::Debug;
-use std::str::FromStr;
+pub mod payload;
 
-use tw_coin_entry::error::prelude::{SigningError, SigningErrorType, SigningResult};
+use std::fmt::Debug;
+
+use payload::{Payload, PayloadType, TransferPayload};
+use tw_coin_entry::error::prelude::SigningResult;
 use tw_hash::blake2::blake2_b;
 use tw_keypair::ed25519::sha512::{PrivateKey, PublicKey};
 use tw_keypair::ed25519::Signature;
 use tw_keypair::traits::SigningKeyTrait;
-use tw_proto::Pactus;
 
-use crate::address::Address;
-use crate::amount::Amount;
 use crate::encoder::error::Error as EncoderError;
 use crate::encoder::{deserialize, Decodable, Encodable};
+use crate::types::Amount;
 
 const VERSION_LATEST: u8 = 1;
 const FLAG_NOT_SIGNED: u8 = 0x02;
-
-#[derive(Debug, Clone)]
-pub enum PayloadType {
-    Transfer = 1,
-    Bond = 2,
-    Sortition = 3,
-    Unbond = 4,
-    Withdraw = 5,
-}
-
-impl TryFrom<u8> for PayloadType {
-    type Error = EncoderError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            1 => Ok(PayloadType::Transfer),
-            2 => Ok(PayloadType::Bond),
-            3 => Ok(PayloadType::Sortition),
-            4 => Ok(PayloadType::Unbond),
-            5 => Ok(PayloadType::Withdraw),
-            _ => Err(EncoderError::ParseFailed("Invalid PayloadType value")),
-        }
-    }
-}
-
-impl Encodable for PayloadType {
-    fn encode(&self, w: &mut dyn std::io::Write) -> Result<(), EncoderError> {
-        (self.clone() as u8).encode(w)
-    }
-
-    fn encoded_size(&self) -> usize {
-        1
-    }
-}
-
-impl Decodable for PayloadType {
-    fn decode(r: &mut dyn std::io::Read) -> Result<Self, EncoderError> {
-        PayloadType::try_from(u8::decode(r)?)
-    }
-}
-
-pub trait Payload: Debug + Encodable {
-    fn signer(&self) -> &Address;
-    fn value(&self) -> Amount;
-    fn payload_type(&self) -> PayloadType;
-}
-
-#[derive(Debug)]
-pub struct TransferPayload {
-    sender: Address,
-    receiver: Address,
-    amount: Amount,
-}
-
-impl Encodable for TransferPayload {
-    fn encode(&self, w: &mut dyn std::io::Write) -> Result<(), EncoderError> {
-        self.sender.encode(w)?;
-        self.receiver.encode(w)?;
-        self.amount.encode(w)?;
-
-        Ok(())
-    }
-
-    fn encoded_size(&self) -> usize {
-        self.sender.encoded_size() + self.receiver.encoded_size() + self.amount.encoded_size()
-    }
-}
-
-impl Decodable for TransferPayload {
-    fn decode(r: &mut dyn std::io::Read) -> Result<Self, EncoderError> {
-        let sender = Address::decode(r)?;
-        let receiver = Address::decode(r)?;
-        let amount = Amount::decode(r)?;
-
-        Ok(TransferPayload {
-            sender,
-            receiver,
-            amount,
-        })
-    }
-}
-
-impl Payload for TransferPayload {
-    fn signer(&self) -> &Address {
-        &self.sender
-    }
-    fn value(&self) -> Amount {
-        self.amount.clone()
-    }
-    fn payload_type(&self) -> PayloadType {
-        PayloadType::Transfer
-    }
-}
 
 #[derive(Debug)]
 pub struct Transaction {
@@ -122,60 +29,16 @@ pub struct Transaction {
 }
 
 impl Transaction {
-    pub fn new(
-        flags: u8,
-        version: u8,
-        lock_time: u32,
-        fee: Amount,
-        memo: String,
-        payload: Box<dyn Payload>,
-    ) -> Self {
+    pub fn new(lock_time: u32, fee: Amount, memo: String, payload: Box<dyn Payload>) -> Self {
         Transaction {
-            flags,
-            version,
+            flags: FLAG_NOT_SIGNED,
+            version: VERSION_LATEST,
             lock_time,
             fee,
             memo,
             payload,
             public_key: None,
             signature: None,
-        }
-    }
-
-    pub fn from_proto(input: &Pactus::Proto::SigningInput) -> SigningResult<Self> {
-        match &input.transaction {
-            None => SigningError::err(SigningErrorType::Error_invalid_params),
-            Some(trx) => {
-                let payload = match &trx.payload {
-                    Pactus::Proto::mod_TransactionMessage::OneOfpayload::transfer(pld) => {
-                        let sender = Address::from_str(&pld.sender)?;
-                        let receiver = Address::from_str(&pld.receiver)?;
-
-                        Box::new(TransferPayload {
-                            sender,
-                            receiver,
-                            amount: Amount(pld.amount),
-                        })
-                    },
-                    Pactus::Proto::mod_TransactionMessage::OneOfpayload::bond(_pld) => {
-                        return SigningError::err(SigningErrorType::Error_not_supported)
-                    },
-                    Pactus::Proto::mod_TransactionMessage::OneOfpayload::None => {
-                        return SigningError::err(SigningErrorType::Error_invalid_params)
-                    },
-                };
-
-                let flags = FLAG_NOT_SIGNED;
-                let version = VERSION_LATEST;
-                Ok(Transaction::new(
-                    flags,
-                    version,
-                    trx.lock_time,
-                    Amount(trx.fee),
-                    trx.memo.to_string(),
-                    payload,
-                ))
-            },
         }
     }
 
@@ -287,7 +150,16 @@ impl Decodable for Transaction {
             _ => return Err(EncoderError::ParseFailed("Unsupported payload")),
         };
 
-        let mut trx = Transaction::new(flags, version, lock_time, fee, memo, payload);
+        let mut trx = Transaction {
+            flags,
+            version,
+            lock_time,
+            fee,
+            memo,
+            payload,
+            public_key: None,
+            signature: None,
+        };
 
         if !trx.is_signed() {
             return Ok(trx);
@@ -308,6 +180,8 @@ mod tests {
     use std::str::FromStr;
 
     use tw_encoding::hex::DecodeHex;
+
+    use crate::types::Address;
 
     use super::*;
 
@@ -356,19 +230,8 @@ mod tests {
 
         let sender = Address::from_str("pc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymcxy3lr").unwrap();
         let receiver = Address::from_str("pc1r0g22ufzn8qtw0742dmfglnw73e260hep0k3yra").unwrap();
-        let payload = Box::new(TransferPayload {
-            sender,
-            receiver,
-            amount: Amount(20000),
-        });
-        let mut trx = Transaction::new(
-            FLAG_NOT_SIGNED,
-            VERSION_LATEST,
-            0x00030201,
-            Amount(1000),
-            "test".to_string(),
-            payload,
-        );
+        let payload = Box::new(TransferPayload::new(sender, receiver, Amount(20000)));
+        let mut trx = Transaction::new(0x00030201, Amount(1000), "test".to_string(), payload);
 
         let private_key_data = "4e51f1f3721f644ac7a193be7f5e7b8c2abaa3467871daf4eacb5d3af080e5d6"
             .decode_hex()

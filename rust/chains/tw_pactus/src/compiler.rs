@@ -10,7 +10,7 @@ use tw_keypair::ed25519;
 use tw_proto::Pactus::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
-use crate::transaction::Transaction;
+use crate::modules::tx_builder::TxBuilder;
 
 pub struct PactusCompiler;
 
@@ -28,7 +28,7 @@ impl PactusCompiler {
         _coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
-        let trx = Transaction::from_proto(&input)?;
+        let trx = TxBuilder::from_proto(&input)?;
         let sign_bytes = trx.sign_bytes()?;
 
         let output = CompilerProto::PreSigningOutput {
@@ -67,7 +67,7 @@ impl PactusCompiler {
         let public_key = ed25519::sha512::PublicKey::try_from(public_key_bytes.as_slice())?;
         let signature = ed25519::Signature::try_from(signature_bytes.as_slice())?;
 
-        let mut trx = Transaction::from_proto(&input)?;
+        let mut trx = TxBuilder::from_proto(&input)?;
         trx.set_signatory(public_key.to_owned(), signature.to_owned());
 
         let data = trx.to_bytes()?;

@@ -192,7 +192,7 @@ impl FromStr for Address {
 
 #[cfg(test)]
 mod test {
-    use tw_encoding::hex::DecodeHex;
+    use tw_encoding::hex::{DecodeHex, ToHex};
     use tw_keypair::ed25519::sha512::PrivateKey;
 
     use super::*;
@@ -313,5 +313,22 @@ mod test {
 
         assert_eq!(expected_data, w.to_vec(),);
         assert_eq!(expected_data.len(), address.encoded_size());
+    }
+
+    #[test]
+    fn test_address_from_private_key() {
+        let private_key_data = "4e51f1f3721f644ac7a193be7f5e7b8c2abaa3467871daf4eacb5d3af080e5d6"
+            .decode_hex()
+            .unwrap();
+        let private_key = PrivateKey::try_from(private_key_data.as_slice()).unwrap();
+        let public_key = private_key.public();
+        let address = Address::from_public_key(&public_key).unwrap();
+
+        let expected_public_key =
+            "95794161374b22c696dabb98e93f6ca9300b22f3b904921fbf560bb72145f4fa";
+        let expected_address = "pc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymcxy3lr";
+
+        assert_eq!(public_key.to_bytes().to_hex(), expected_public_key);
+        assert_eq!(address.to_string(), expected_address);
     }
 }

@@ -9,7 +9,7 @@ use tw_keypair::ed25519;
 use tw_keypair::traits::KeyPairTrait;
 use tw_proto::Pactus::Proto;
 
-use crate::transaction::Transaction;
+use crate::modules::tx_builder::TxBuilder;
 
 pub struct PactusSigner;
 
@@ -26,7 +26,7 @@ impl PactusSigner {
         _coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        let mut trx = Transaction::from_proto(&input)?;
+        let mut trx = TxBuilder::from_proto(&input)?;
         let key_pair = ed25519::sha512::KeyPair::try_from(input.private_key.as_ref())?;
         let signature = trx.sign(key_pair.private())?;
 
