@@ -2,23 +2,13 @@
 
 set -e
 
-# Downgrade libc to temporarily fix https://github.com/actions/runner-images/issues/8659
-if [[ "$1" == "ci" ]]; then
-  LIBSTD_PACKAGE_VERSION="12.3.0-1ubuntu1~22.04"
-  # Bump this version if the CI has been broken due to the packages update.
-  LIBC_PACKAGE_VERSION="2.35-0ubuntu3.8"
-
-  echo "Remove GCC 13 from runner image - runner-images/8659 workaround"
-  echo "NOTE: Bump $LIBC_PACKAGE_VERSION version if the CI has been broken due to the packages update"
-
-  sudo rm -f /etc/apt/sources.list.d/ubuntu-toolchain-r-ubuntu-test-jammy.list
-  sudo apt-get update
-  sudo apt-get install -y --allow-downgrades \
-    libc6=$LIBC_PACKAGE_VERSION \
-    libc6-dev=$LIBC_PACKAGE_VERSION \
-    libstdc++6=$LIBSTD_PACKAGE_VERSION \
-    libgcc-s1=$LIBSTD_PACKAGE_VERSION
-fi
-
 # build-essential clang-14 libc++-dev libc++abi-dev ruby-full cmake
-sudo apt-get update && sudo apt-get install ninja-build lcov llvm-14 clang-tidy-14 libboost-all-dev rustc --fix-missing
+sudo apt-get update && sudo apt-get install ninja-build llvm-14 clang-tidy-14 libboost-all-dev rustc --fix-missing gcc-multilib g++-multilib
+
+# As of now, Ubuntu 24.04 has lcov 2.0-4ubuntu2 only, but we don't support it yet.
+# Install lcov 1.15-1 manually.
+LCOV_TEMP="$(mktemp -d)"
+LCOV_DEB="$LCOV_TEMP/lcov.deb"
+wget -O "$LCOV_DEB" http://mirrors.kernel.org/ubuntu/pool/universe/l/lcov/lcov_1.15-1_all.deb
+sudo apt-get install "$LCOV_DEB"
+rm -rf $LCOV_TEMP
