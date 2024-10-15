@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+#include <algorithm>
 #include <TrustWalletCore/TWCardano.h>
 
 #include "Cardano/Transaction.h"
