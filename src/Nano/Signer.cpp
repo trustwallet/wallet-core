@@ -7,8 +7,9 @@
 #include "../BinaryCoding.h"
 #include "../HexCoding.h"
 #include "../uint256.h"
-#include <nlohmann/json.hpp>
 
+#include <algorithm>
+#include <nlohmann/json.hpp>
 #include <google/protobuf/util/json_util.h>
 
 using namespace TW;
