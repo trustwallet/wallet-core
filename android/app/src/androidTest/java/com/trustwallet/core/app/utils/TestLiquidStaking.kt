@@ -29,7 +29,7 @@ class TestLiquidStaking {
             stake = LiquidStaking.Stake.newBuilder().apply {
                 amount = "1000000000000000000"
                 asset = LiquidStaking.Asset.newBuilder().apply {
-                    stakingToken = LiquidStaking.Coin.MATIC
+                    stakingToken = LiquidStaking.Coin.POL
                 }.build()
             }.build()
         }

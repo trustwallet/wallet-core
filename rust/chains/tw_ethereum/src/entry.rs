@@ -18,6 +18,7 @@ use tw_evm::evm_entry::EvmEntry;
 use tw_evm::modules::compiler::Compiler;
 use tw_evm::modules::message_signer::EthMessageSigner;
 use tw_evm::modules::signer::Signer;
+use tw_evm::modules::transaction_util::EvmTransactionUtil;
 use tw_keypair::tw::PublicKey;
 use tw_proto::Ethereum::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
@@ -37,6 +38,7 @@ impl CoinEntry for EthereumEntry {
     type MessageSigner = EthMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
+    type TransactionUtil = EvmTransactionUtil;
 
     #[inline]
     fn parse_address(
@@ -49,11 +51,7 @@ impl CoinEntry for EthereumEntry {
     }
 
     #[inline]
-    fn parse_address_unchecked(
-        &self,
-        _coin: &dyn CoinContext,
-        address: &str,
-    ) -> AddressResult<Self::Address> {
+    fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address> {
         Address::from_str(address)
     }
 
@@ -99,6 +97,11 @@ impl CoinEntry for EthereumEntry {
     #[inline]
     fn message_signer(&self) -> Option<Self::MessageSigner> {
         Some(EthMessageSigner)
+    }
+
+    #[inline]
+    fn transaction_util(&self) -> Option<Self::TransactionUtil> {
+        Some(EvmTransactionUtil)
     }
 }
 

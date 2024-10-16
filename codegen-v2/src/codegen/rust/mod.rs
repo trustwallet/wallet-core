@@ -26,8 +26,8 @@ pub fn chains_directory() -> PathBuf {
     rust_source_directory().join("chains")
 }
 
-pub fn tw_any_coin_directory() -> PathBuf {
-    rust_source_directory().join("tw_any_coin")
+pub fn tw_tests_directory() -> PathBuf {
+    rust_source_directory().join("tw_tests")
 }
 
 pub fn workspace_toml_path() -> PathBuf {

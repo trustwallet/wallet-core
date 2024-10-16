@@ -15,6 +15,7 @@ use tw_proto::{MessageRead, MessageWrite};
 
 use crate::modules::message_signer::MessageSigner;
 use crate::modules::transaction_decoder::TransactionDecoder;
+use crate::modules::transaction_util::TransactionUtil;
 use crate::modules::wallet_connector::WalletConnector;
 pub use tw_proto::{ProtoError, ProtoResult};
 
@@ -69,6 +70,8 @@ pub trait CoinEntry {
     /// **Optional**. Use `NoTransactionDecoder` if the blockchain does not support transaction decoding yet.
     type TransactionDecoder: TransactionDecoder;
 
+    type TransactionUtil: TransactionUtil;
+
     /// Tries to parse `Self::Address` from the given `address` string by `coin` type and address `prefix`.
     fn parse_address(
         &self,
@@ -79,11 +82,7 @@ pub trait CoinEntry {
 
     /// Tries to parse `Self::Address` from the given `address` string by `coin` type.
     /// Please note that this method does not check if the address belongs to the given chain.
-    fn parse_address_unchecked(
-        &self,
-        coin: &dyn CoinContext,
-        address: &str,
-    ) -> AddressResult<Self::Address>;
+    fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address>;
 
     /// Derives an address associated with the given `public_key` by `coin` context, `derivation` and address `prefix`.
     fn derive_address(
@@ -145,6 +144,13 @@ pub trait CoinEntry {
     /// Returns `Ok(None)` if the blockchain does not support transaction decoding yet.
     #[inline]
     fn transaction_decoder(&self) -> Option<Self::TransactionDecoder> {
+        None
+    }
+
+    /// It is optional, Transaction util, for example, calculating the TX hash of a transaction.
+    /// Returns `Ok(None)` if the blockchain does not support transaction util yet.
+    #[inline]
+    fn transaction_util(&self) -> Option<Self::TransactionUtil> {
         None
     }
 }

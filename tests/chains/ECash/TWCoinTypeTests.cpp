@@ -21,7 +21,7 @@ TEST(TWECashCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeECash));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeECash), 2);
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeECash));
+    ASSERT_EQ(TWBlockchainBitcoinCash, TWCoinTypeBlockchain(TWCoinTypeECash));
     ASSERT_EQ(0x5, TWCoinTypeP2shPrefix(TWCoinTypeECash));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeECash));
     assertStringsEqual(symbol, "XEC");

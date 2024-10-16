@@ -21,7 +21,7 @@ TEST(TWBitcoinCashCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBitcoinCash));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBitcoinCash), 8);
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeBitcoinCash));
+    ASSERT_EQ(TWBlockchainBitcoinCash, TWCoinTypeBlockchain(TWCoinTypeBitcoinCash));
     ASSERT_EQ(0x5, TWCoinTypeP2shPrefix(TWCoinTypeBitcoinCash));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeBitcoinCash));
     assertStringsEqual(symbol, "BCH");

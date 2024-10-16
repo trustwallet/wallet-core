@@ -4,6 +4,7 @@
 
 use crate::address::TonAddress;
 use crate::compiler::TheOpenNetworkCompiler;
+use crate::modules::transaction_util::TonTransactionUtil;
 use crate::signer::TheOpenNetworkSigner;
 use crate::wallet::{wallet_v4, VersionedTonWallet};
 use std::str::FromStr;
@@ -36,6 +37,7 @@ impl CoinEntry for TheOpenNetworkEntry {
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
+    type TransactionUtil = TonTransactionUtil;
 
     #[inline]
     fn parse_address(
@@ -49,11 +51,7 @@ impl CoinEntry for TheOpenNetworkEntry {
     }
 
     #[inline]
-    fn parse_address_unchecked(
-        &self,
-        _coin: &dyn CoinContext,
-        address: &str,
-    ) -> AddressResult<Self::Address> {
+    fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address> {
         TonAddress::from_str(address).and_then(TonAddress::normalize)
     }
 
@@ -99,5 +97,10 @@ impl CoinEntry for TheOpenNetworkEntry {
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
         TheOpenNetworkCompiler::compile(coin, input, signatures, public_keys)
+    }
+
+    #[inline]
+    fn transaction_util(&self) -> Option<Self::TransactionUtil> {
+        Some(TonTransactionUtil)
     }
 }

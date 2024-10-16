@@ -5,6 +5,7 @@
 use std::str::FromStr;
 
 use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
+use tw_coin_entry::modules::transaction_util::NoTransactionUtil;
 use tw_coin_entry::{
     coin_context::CoinContext,
     coin_entry::CoinEntry,
@@ -16,7 +17,6 @@ use tw_coin_entry::{
     prefix::NoPrefix,
     signing_output_error,
 };
-
 use tw_proto::{
     Common::Proto::SigningError as CommonError, InternetComputer::Proto,
     TxCompiler::Proto as CompilerProto,
@@ -39,6 +39,7 @@ impl CoinEntry for InternetComputerEntry {
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
+    type TransactionUtil = NoTransactionUtil;
 
     #[inline]
     fn parse_address(
@@ -51,11 +52,7 @@ impl CoinEntry for InternetComputerEntry {
     }
 
     #[inline]
-    fn parse_address_unchecked(
-        &self,
-        _coin: &dyn CoinContext,
-        address: &str,
-    ) -> AddressResult<Self::Address> {
+    fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address> {
         Self::Address::from_str(address)
     }
 

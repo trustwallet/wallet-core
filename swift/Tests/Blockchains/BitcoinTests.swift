@@ -55,16 +55,18 @@ class BitcoinTransactionSignerTests: XCTestCase {
         }
         
         let signingInput = BitcoinV2SigningInput.with {
-            $0.version = .v2
+            $0.builder = BitcoinV2TransactionBuilder.with {
+                $0.version = .v2
+                $0.inputs = [utxo0]
+                $0.outputs = [out0, changeOut]
+                $0.inputSelector = .useAll
+                $0.fixedDustThreshold = dustAmount
+            }
             $0.privateKeys = [privateKeyData]
-            $0.inputs = [utxo0]
-            $0.outputs = [out0, changeOut]
-            $0.inputSelector = .useAll
             $0.chainInfo = BitcoinV2ChainInfo.with {
                 $0.p2PkhPrefix = 0
                 $0.p2ShPrefix = 5
             }
-            $0.fixedDustThreshold = dustAmount
         }
         
         let legacySigningInput = BitcoinSigningInput.with {
@@ -115,17 +117,19 @@ class BitcoinTransactionSignerTests: XCTestCase {
         }
         
         let signingInput = BitcoinV2SigningInput.with {
-            $0.version = .v2
+            $0.builder = BitcoinV2TransactionBuilder.with {
+                $0.version = .v2
+                $0.inputs = [utxo0]
+                $0.outputs = [out0]
+                $0.inputSelector = .useAll
+                $0.fixedDustThreshold = dustAmount
+            }
             $0.privateKeys = [privateKeyData]
-            $0.inputs = [utxo0]
-            $0.outputs = [out0]
-            $0.inputSelector = .useAll
             $0.chainInfo = BitcoinV2ChainInfo.with {
                 $0.p2PkhPrefix = 0
                 $0.p2ShPrefix = 5
             }
             $0.dangerousUseFixedSchnorrRng = true
-            $0.fixedDustThreshold = dustAmount
         }
         
         let legacySigningInput = BitcoinSigningInput.with {
@@ -197,16 +201,18 @@ class BitcoinTransactionSignerTests: XCTestCase {
         }
         
         let signingInput = BitcoinV2SigningInput.with {
-            $0.version = .v2
+            $0.builder = BitcoinV2TransactionBuilder.with {
+                $0.version = .v2
+                $0.inputs = [utxo0, utxo1]
+                $0.outputs = [out0, changeOut]
+                $0.inputSelector = .useAll
+                $0.fixedDustThreshold = dustAmount
+            }
             $0.privateKeys = [privateKeyData]
-            $0.inputs = [utxo0, utxo1]
-            $0.outputs = [out0, changeOut]
-            $0.inputSelector = .useAll
             $0.chainInfo = BitcoinV2ChainInfo.with {
                 $0.p2PkhPrefix = 0
                 $0.p2ShPrefix = 5
             }
-            $0.fixedDustThreshold = dustAmount
         }
         
         let legacySigningInput = BitcoinSigningInput.with {
@@ -386,6 +392,76 @@ class BitcoinTransactionSignerTests: XCTestCase {
         // https://blockchair.com/bitcoin/transaction/1d73706d33ec249beae6804c2e636ab9d7adbc2e9548757f6fcf8118771cb311
         XCTAssertEqual(output.error, .ok)
         XCTAssertEqual(output.encoded.hexString, "01000000026c90312e53a3411347a197bfd637c2583d617dd2317262a70e1b5245d2f1e36a000000008a47304402201a631068ea5ddea19467ef7c932a0f3b04f366ca2beaf70e18958e47456124980220614816c449e39cf6acc6625e1cf3100db1db7c0b755bdbb6804d4fa3c4b735d10141041b3937fac1f14074447cde9d3a324ed292d2865ed0d7a7da26cb43558ce4db4ef33c47e820e53031ae16bb0c39205def059a5ca8e1d617650eabc72c5206a81dffffffff13bf27945c669cf3c1d70cf3048f4ab14f1ab6acf06d10d425e8288217a81efd000000008a473044022051d381d8f48a9a4866ca4109f12647922514604a4733e8da8aac046e19275f700220797c3ebf20df7d2a9fed283f9d0ad14cbd656cafb5ec70a2b1c85646ea7485190141041b3937fac1f14074447cde9d3a324ed292d2865ed0d7a7da26cb43558ce4db4ef33c47e820e53031ae16bb0c39205def059a5ca8e1d617650eabc72c5206a81dffffffff0194590000000000001976a914a0c0a50f986924e65ae9bd18eafae448f83117ed88ac00000000")
+    }
+    
+    func testSignPsbtThorSwap() throws {
+        let privateKey = Data(hexString: "f00ffbe44c5c2838c13d2778854ac66b75e04eb6054f0241989e223223ad5e55")!
+        let psbt = Data(hexString: "70736274ff0100bc0200000001147010db5fbcf619067c1090fec65c131443fbc80fb4aaeebe940e44206098c60000000000ffffffff0360ea000000000000160014f22a703617035ef7f490743d50f26ae08c30d0a70000000000000000426a403d3a474149412e41544f4d3a636f736d6f7331737377797a666d743675396a373437773537753438746778646575393573757a666c6d7175753a303a743a35303e12000000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d000000000001011f6603010000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d00000000")!
+
+        let input = BitcoinV2SigningInput.with {
+            $0.psbt = BitcoinV2Psbt.with {
+                $0.psbt = psbt
+            }
+            $0.privateKeys = [privateKey]
+        }
+
+        let legacy = BitcoinSigningInput.with {
+            $0.signingV2 = input
+        }
+        let output: BitcoinSigningOutput = AnySigner.sign(input: legacy, coin: .bitcoin)
+
+        XCTAssertEqual(output.error, .ok)
+        XCTAssert(output.hasSigningResultV2)
+        let outputV2 = output.signingResultV2
+        XCTAssertEqual(outputV2.psbt.psbt.hexString, "70736274ff0100bc0200000001147010db5fbcf619067c1090fec65c131443fbc80fb4aaeebe940e44206098c60000000000ffffffff0360ea000000000000160014f22a703617035ef7f490743d50f26ae08c30d0a70000000000000000426a403d3a474149412e41544f4d3a636f736d6f7331737377797a666d743675396a373437773537753438746778646575393573757a666c6d7175753a303a743a35303e12000000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d000000000001011f6603010000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d01086c02483045022100b1229a008f20691639767bf925d6b8956ea957ccc633ad6b5de3618733a55e6b02205774d3320489b8a57a6f8de07f561de3e660ff8e587f6ac5422c49020cd4dc9101210306d8c664ea8fd2683eebea1d3114d90e0a5429e5783ba49b80ddabce04ff28f300000000")
+        XCTAssertEqual(outputV2.encoded.hexString, "02000000000101147010db5fbcf619067c1090fec65c131443fbc80fb4aaeebe940e44206098c60000000000ffffffff0360ea000000000000160014f22a703617035ef7f490743d50f26ae08c30d0a70000000000000000426a403d3a474149412e41544f4d3a636f736d6f7331737377797a666d743675396a373437773537753438746778646575393573757a666c6d7175753a303a743a35303e12000000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d02483045022100b1229a008f20691639767bf925d6b8956ea957ccc633ad6b5de3618733a55e6b02205774d3320489b8a57a6f8de07f561de3e660ff8e587f6ac5422c49020cd4dc9101210306d8c664ea8fd2683eebea1d3114d90e0a5429e5783ba49b80ddabce04ff28f300000000")
+        XCTAssertEqual(outputV2.txid.hexString, "634a416e82ac710166725f6a4090ac7b5db69687e86b2d2e38dcb3d91c956c32")
+    }
+    
+    func testPlanPsbtThorSwap() throws {
+        let privateKeyBytes = Data(hexString: "f00ffbe44c5c2838c13d2778854ac66b75e04eb6054f0241989e223223ad5e55")!
+        let privateKey = PrivateKey(data: privateKeyBytes)!
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
+
+        let psbt = Data(hexString: "70736274ff0100bc0200000001147010db5fbcf619067c1090fec65c131443fbc80fb4aaeebe940e44206098c60000000000ffffffff0360ea000000000000160014f22a703617035ef7f490743d50f26ae08c30d0a70000000000000000426a403d3a474149412e41544f4d3a636f736d6f7331737377797a666d743675396a373437773537753438746778646575393573757a666c6d7175753a303a743a35303e12000000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d000000000001011f6603010000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d00000000")!
+
+        let input = BitcoinV2SigningInput.with {
+            // TODO check if it works
+            $0.psbt.psbt = psbt
+            $0.publicKeys = [publicKey.data]
+        }
+
+        let legacy = BitcoinSigningInput.with {
+            $0.signingV2 = input
+        }
+        let legacyPlan: BitcoinTransactionPlan = AnySigner.plan(input: legacy, coin: .bitcoin)
+
+        XCTAssertEqual(legacyPlan.error, .ok)
+        XCTAssert(legacyPlan.hasPlanningResultV2)
+        let plan = legacyPlan.planningResultV2
+        
+        XCTAssertEqual(plan.inputs[0].receiverAddress, "bc1qkyu3n8k8jmekl3pwvdl59k5w8enjp25akz2r3z")
+        XCTAssertEqual(plan.inputs[0].value, 66_406)
+
+        // Vault transfer
+        XCTAssertEqual(plan.outputs[0].toAddress, "bc1q7g48qdshqd000aysws74pun2uzxrp598gcfum0")
+        XCTAssertEqual(plan.outputs[0].value, 60_000)
+
+        // OP_RETURN
+        XCTAssertEqual(
+            plan.outputs[1].customScriptPubkey.hexString,
+            "6a403d3a474149412e41544f4d3a636f736d6f7331737377797a666d743675396a373437773537753438746778646575393573757a666c6d7175753a303a743a3530"
+        )
+        XCTAssertEqual(plan.outputs[1].value, 0)
+
+        // Change output
+        XCTAssertEqual(plan.outputs[2].toAddress, "bc1qkyu3n8k8jmekl3pwvdl59k5w8enjp25akz2r3z")
+        XCTAssertEqual(plan.outputs[2].value, 4_670)
+
+        XCTAssertEqual(plan.feeEstimate, 1736)
+        // Please note that `change` in PSBT planning is always 0.
+        // That's because we aren't able to determine which output is an actual change from PSBT.
+        XCTAssertEqual(plan.change, 0)
     }
 
     func testBitcoinMessageSigner() {

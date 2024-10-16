@@ -4,6 +4,7 @@
 
 use crate::address::Address;
 use crate::compiler::Compiler;
+use crate::modules::transaction_util::AptosTransactionUtil;
 use crate::signer::Signer;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -35,6 +36,7 @@ impl CoinEntry for AptosEntry {
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
+    type TransactionUtil = AptosTransactionUtil;
 
     #[inline]
     fn parse_address(
@@ -47,11 +49,7 @@ impl CoinEntry for AptosEntry {
     }
 
     #[inline]
-    fn parse_address_unchecked(
-        &self,
-        _coin: &dyn CoinContext,
-        address: &str,
-    ) -> AddressResult<Self::Address> {
+    fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address> {
         Address::from_str(address)
     }
 
@@ -101,5 +99,10 @@ impl CoinEntry for AptosEntry {
     #[inline]
     fn message_signer(&self) -> Option<Self::MessageSigner> {
         None
+    }
+
+    #[inline]
+    fn transaction_util(&self) -> Option<Self::TransactionUtil> {
+        Some(AptosTransactionUtil)
     }
 }

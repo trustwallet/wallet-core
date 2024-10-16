@@ -4,6 +4,7 @@
 
 use crate::address::SuiAddress;
 use crate::compiler::SuiCompiler;
+use crate::modules::transaction_util::SuiTransactionUtil;
 use crate::signer::SuiSigner;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -35,6 +36,7 @@ impl CoinEntry for SuiEntry {
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
+    type TransactionUtil = SuiTransactionUtil;
 
     #[inline]
     fn parse_address(
@@ -47,11 +49,7 @@ impl CoinEntry for SuiEntry {
     }
 
     #[inline]
-    fn parse_address_unchecked(
-        &self,
-        _coin: &dyn CoinContext,
-        address: &str,
-    ) -> AddressResult<Self::Address> {
+    fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address> {
         SuiAddress::from_str(address)
     }
 
@@ -92,5 +90,10 @@ impl CoinEntry for SuiEntry {
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
         SuiCompiler::compile(coin, input, signatures, public_keys)
+    }
+
+    #[inline]
+    fn transaction_util(&self) -> Option<Self::TransactionUtil> {
+        Some(SuiTransactionUtil)
     }
 }

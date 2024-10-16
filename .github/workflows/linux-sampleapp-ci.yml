@@ -18,7 +18,7 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install system dependencies
       run: |
-        tools/install-sys-dependencies-linux ci
+        tools/install-sys-dependencies-linux
         tools/install-rust-dependencies
     - name: Cache internal dependencies
       id: internal_cache
@@ -61,13 +61,6 @@ jobs:
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
-    - name: Build, run, and test devconsole.ts
-      run: |
-        cd samples/typescript/devconsole.ts
-        npm install
-        npm run build
-        echo -e "help() \n .exit" | npm run start
-        npm run test
     - name: Install Go
       env:
         GO_VERSION: 1.19

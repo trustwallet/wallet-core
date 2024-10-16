@@ -126,7 +126,7 @@ jobs:
           ./tools/release-size measure-rust > release-report.json
 
       - name: Upload release report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: release_report
           path: release-report.json
@@ -134,7 +134,7 @@ jobs:
       # Download previous release report, compare the release binary sizes, and post/update a comment at the Pull Request.
       - name: Download previous release report
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@v6
         with:
           commit: ${{github.event.pull_request.base.sha}}
           path: previous

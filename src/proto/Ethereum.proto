@@ -133,6 +133,14 @@ message UserOperation {
     bytes paymaster_and_data = 6;
 }
 
+// An item of the [EIP-2930](https://eips.ethereum.org/EIPS/eip-2930) access list.
+message Access {
+    // Address to be accessed by the transaction.
+    string address = 1;
+    // Storage keys to be accessed by the transaction.
+    repeated bytes stored_keys = 2;
+}
+
 // Input data necessary to create a signed transaction.
 // Legacy and EIP2718/EIP1559 transactions supported, see TransactionMode.
 message SigningInput {
@@ -172,6 +180,10 @@ message SigningInput {
 
     // UserOperation for ERC-4337 wallets
     UserOperation user_operation = 11;
+
+    // Optional list of addresses and storage keys that the transaction plans to access.
+    // Used in `TransactionMode::Enveloped` only.
+    repeated Access access_list = 12;
 }
 
 // Result containing the signed and encoded transaction.

@@ -136,7 +136,7 @@ class CodeGenerator
   def render(file, locals = {})
     @locals = locals
     path = File.expand_path(file, File.join(File.dirname(__FILE__), 'templates'))
-    template = ERB.new(File.read(path), nil, '-')
+    template = ERB.new(File.read(path), trim_mode: '-')
     template.result(binding)
   end
 

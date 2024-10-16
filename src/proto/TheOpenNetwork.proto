@@ -43,12 +43,16 @@ message Transfer {
     // If the address is bounceable
     bool bounceable = 5;
 
+    // Optional raw one-cell BoC encoded in Base64.
+    // Can be used to deploy a smart contract.
+    string state_init = 6;
+
     // One of the Transfer message payloads (optional).
     oneof payload {
         // Jetton transfer payload.
-        JettonTransfer jetton_transfer = 6;
-        // TON transfer with custom stateInit and payload (contract call).
-        CustomPayload custom_payload = 7;
+        JettonTransfer jetton_transfer = 7;
+        // TON transfer with custom payload (contract call). Raw one-cell BoC encoded in Base64.
+        string custom_payload = 8;
     }
 }
 
@@ -67,15 +71,10 @@ message JettonTransfer {
 
     // Amount in nanotons to forward to recipient. Basically minimum amount - 1 nanoton should be used
     uint64 forward_amount = 5;
-}
 
-message CustomPayload {
-    // (string base64, optional): raw one-cell BoC encoded in Base64.
-    // Can be used to deploy a smart contract.
-    string state_init = 1;
-
-    // (string base64, optional): raw one-cell BoC encoded in Base64.
-    string payload = 2;
+    // Optional raw one-cell BoC encoded in Base64.
+    // Can be used in the case of mintless jetton transfers.
+    string custom_payload = 6;
 }
 
 message SigningInput {

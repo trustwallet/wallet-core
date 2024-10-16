@@ -9,6 +9,7 @@ use crate::abi::prebuild::erc4337::{Erc4337SimpleAccount, ExecuteArgs};
 use crate::abi::prebuild::erc721::Erc721;
 use crate::address::{Address, EvmAddress};
 use crate::evm_context::EvmContext;
+use crate::transaction::access_list::{Access, AccessList};
 use crate::transaction::transaction_eip1559::TransactionEip1559;
 use crate::transaction::transaction_non_typed::TransactionNonTyped;
 use crate::transaction::user_operation::UserOperation;
@@ -16,6 +17,7 @@ use crate::transaction::UnsignedTransactionBox;
 use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
+use tw_hash::H256;
 use tw_memory::Data;
 use tw_number::U256;
 use tw_proto::Common::Proto::SigningError as CommonError;
@@ -249,6 +251,9 @@ impl<Context: EvmContext> TxBuilder<Context> {
             .into_tw()
             .context("Invalid max fee per gas")?;
 
+        let access_list =
+            Self::parse_access_list(&input.access_list).context("Invalid access list")?;
+
         Ok(TransactionEip1559 {
             nonce,
             max_inclusion_fee_per_gas,
@@ -257,6 +262,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
             to: to_address,
             amount: eth_amount,
             payload,
+            access_list,
         })
     }
 
@@ -315,19 +321,39 @@ impl<Context: EvmContext> TxBuilder<Context> {
         })
     }
 
-    #[inline]
     fn parse_address(addr: &str) -> SigningResult<Address> {
         Context::Address::from_str(addr)
             .map(Context::Address::into)
             .map_err(SigningError::from)
     }
 
-    #[inline]
     fn parse_address_optional(addr: &str) -> SigningResult<Option<Address>> {
         match Context::Address::from_str_optional(addr) {
             Ok(Some(addr)) => Ok(Some(addr.into())),
             Ok(None) => Ok(None),
             Err(e) => Err(SigningError::from(e)),
         }
+    }
+
+    fn parse_access_list(list_proto: &[Proto::Access]) -> SigningResult<AccessList> {
+        let mut access_list = AccessList::default();
+        for access_proto in list_proto.iter() {
+            access_list.add_access(Self::parse_access(access_proto)?);
+        }
+        Ok(access_list)
+    }
+
+    fn parse_access(access_proto: &Proto::Access) -> SigningResult<Access> {
+        let addr =
+            Self::parse_address(access_proto.address.as_ref()).context("Invalid access address")?;
+
+        let mut access = Access::new(addr);
+        for key_proto in access_proto.stored_keys.iter() {
+            let storage_key = H256::try_from(key_proto.as_ref())
+                .tw_err(|_| SigningErrorType::Error_invalid_params)
+                .context("Invalid storage key")?;
+            access.add_storage_key(storage_key);
+        }
+        Ok(access)
     }
 }

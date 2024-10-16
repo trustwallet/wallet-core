@@ -2,6 +2,8 @@
 members = [
     "chains/tw_aptos",
     "chains/tw_binance",
+    "chains/tw_bitcoin",
+    "chains/tw_bitcoincash",
     "chains/tw_cosmos",
     "chains/tw_ethereum",
     "chains/tw_greenfield",
@@ -18,7 +20,6 @@ members = [
     "tw_any_coin",
     "tw_base58_address",
     "tw_bech32_address",
-    "tw_bitcoin",
     "tw_coin_entry",
     "tw_coin_registry",
     "tw_cosmos_sdk",
@@ -30,6 +31,7 @@ members = [
     "tw_misc",
     "tw_number",
     "tw_proto",
+    "tw_tests",
     "wallet_core_bin",
     "wallet_core_rs",
 ]

@@ -5,6 +5,7 @@
 use std::str::FromStr;
 use tw_solana::address::SolanaAddress;
 use tw_solana::blockhash::Blockhash;
+use tw_solana::defined_addresses::TOKEN_PROGRAM_ID_ADDRESS;
 use tw_solana::program::stake_program::StakeProgram;
 
 fn test_get_default_token_address_impl(
@@ -16,8 +17,12 @@ fn test_get_default_token_address_impl(
     let token_mint_address = SolanaAddress::from_str(token_mint_address).unwrap();
     let expected = SolanaAddress::from_str(expected).unwrap();
 
-    let actual = StakeProgram::get_associated_token_address(main_address, token_mint_address)
-        .expect("!get_associated_token_address");
+    let actual = StakeProgram::get_associated_token_address(
+        main_address,
+        *TOKEN_PROGRAM_ID_ADDRESS,
+        token_mint_address,
+    )
+    .expect("!get_associated_token_address");
     assert_eq!(actual, expected);
 }
 
