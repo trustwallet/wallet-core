@@ -45,13 +45,15 @@ TEST(StoredKey, CreateWithMnemonic) {
     EXPECT_EQ(json["name"], "name");
     EXPECT_EQ(json["type"], "mnemonic");
     EXPECT_EQ(json["version"], 3);
+    // Salt is 32 bytes, encoded as hex.
+    EXPECT_EQ(json["crypto"]["kdfparams"]["salt"].get<std::string>().size(), 64ul);
 }
 
 TEST(StoredKey, CreateWithMnemonicInvalid) {
     try {
         auto key = StoredKey::createWithMnemonic("name", gPassword, "_THIS_IS_NOT_A_VALID_MNEMONIC_", TWStoredKeyEncryptionLevelDefault);
     } catch (std::invalid_argument&) {
-        // expedcted exception OK
+        // expected exception OK
         return;
     }
     FAIL() << "Missing excpected excpetion";
@@ -539,6 +541,7 @@ TEST(StoredKey, CreateMinimalEncryptionParameters) {
 
     EXPECT_EQ(json["crypto"]["kdf"], "scrypt");
     EXPECT_EQ(json["crypto"]["kdfparams"]["n"], 4096);
+    EXPECT_EQ(json["crypto"]["kdfparams"]["salt"].get<std::string>().size(), 64ul);
 
     // load it back
     const auto key2 = StoredKey::createWithJson(json);
@@ -557,6 +560,7 @@ TEST(StoredKey, CreateWeakEncryptionParameters) {
 
     EXPECT_EQ(json["crypto"]["kdf"], "scrypt");
     EXPECT_EQ(json["crypto"]["kdfparams"]["n"], 16384);
+    EXPECT_EQ(json["crypto"]["kdfparams"]["salt"].get<std::string>().size(), 64ul);
 
     // load it back
     const auto key2 = StoredKey::createWithJson(json);
@@ -575,10 +579,21 @@ TEST(StoredKey, CreateStandardEncryptionParameters) {
 
     EXPECT_EQ(json["crypto"]["kdf"], "scrypt");
     EXPECT_EQ(json["crypto"]["kdfparams"]["n"], 262144);
+    EXPECT_EQ(json["crypto"]["kdfparams"]["salt"].get<std::string>().size(), 64ul);
 
     // load it back
     const auto key2 = StoredKey::createWithJson(json);
     EXPECT_EQ(key2.wallet(gPassword).getMnemonic(), string(gMnemonic));
+}
+
+TEST(StoredKey, CreateEncryptionParametersRandomSalt) {
+    const auto key1 = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelStandard);
+    const auto salt1 = parse_hex(key1.json()["crypto"]["kdfparams"]["salt"]);
+
+    const auto key2 = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelStandard);
+    const auto salt2 = parse_hex(key2.json()["crypto"]["kdfparams"]["salt"]);
+
+    EXPECT_NE(salt1, salt2) << "salt must be random on every StoredKey creation";
 }
 
 TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
