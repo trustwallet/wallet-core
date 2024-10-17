@@ -97,7 +97,7 @@ public final class <%= entity.name %> {
         }
 
         GenericPhantomReference.register(someObject, someHandle, handle -> {
-            nativeDelete(nativeHandle)
+            nativeDelete(nativeHandle);
         });
     }
 
