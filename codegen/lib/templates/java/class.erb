@@ -96,32 +96,10 @@ public final class <%= entity.name %> {
             throw new InvalidParameterException();
         }
 
-        <%= entity.name %>PhantomReference.register(this, nativeHandle);
+        GenericPhantomReference.register(someObject, someHandle, handle -> {
+            nativeDelete(nativeHandle)
+        });
     }
 
 <%- end -%>
 }
-<%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
-class <%= entity.name %>PhantomReference extends java.lang.ref.PhantomReference<<%= entity.name %>> {
-    private static java.util.Set<<%= entity.name %>PhantomReference> references = new HashSet<<%= entity.name %>PhantomReference>();
-    private static java.lang.ref.ReferenceQueue<<%= entity.name %>> queue = new java.lang.ref.ReferenceQueue<<%= entity.name %>>();
-    private long nativeHandle;
-
-    private <%= entity.name %>PhantomReference(<%= entity.name %> referent, long nativeHandle) {
-        super(referent, queue);
-        this.nativeHandle = nativeHandle;
-    }
-
-    static void register(<%= entity.name %> referent, long nativeHandle) {
-        references.add(new <%= entity.name %>PhantomReference(referent, nativeHandle));
-    }
-
-    public static void doDeletes() {
-        <%= entity.name %>PhantomReference ref = (<%= entity.name %>PhantomReference) queue.poll();
-        for (; ref != null; ref = (<%= entity.name %>PhantomReference) queue.poll()) {
-            <%= entity.name %>.nativeDelete(ref.nativeHandle);
-            references.remove(ref);
-        }
-    }
-}
-<%  end -%>
