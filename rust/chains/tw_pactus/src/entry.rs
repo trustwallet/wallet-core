@@ -51,10 +51,7 @@ impl CoinEntry for PactusEntry {
     }
 
     #[inline]
-    fn parse_address_unchecked(
-        &self,
-        address: &str,
-    ) -> AddressResult<Self::Address> {
+    fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address> {
         Address::from_str(address)
     }
 
