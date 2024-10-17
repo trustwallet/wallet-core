@@ -19,7 +19,7 @@ class PactusTests: XCTestCase {
 
     func testSign() {
         let input = PactusSigningInput.with {
-            $0.privateKey = Data(hexString: "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec")!
+            $0.privateKey = Data(hexString: "4e51f1f3721f644ac7a193be7f5e7b8c2abaa3467871daf4eacb5d3af080e5d6")!
             $0.transaction = PactusTransactionMessage.with {
                 $0.lockTime = 0x00030201
                 $0.fee = 1000
