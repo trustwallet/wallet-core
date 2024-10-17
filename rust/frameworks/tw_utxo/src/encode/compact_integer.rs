@@ -70,7 +70,7 @@ mod tests {
             .append(&CompactInteger::from(0xffff_usize))
             .append(&CompactInteger::from(0x01_0000_usize))
             .append(&CompactInteger::from(0xffff_ffff_usize))
-            .append(&CompactInteger::from(0x01_0000_0000_usize));
+            .append(&CompactInteger(0x01_0000_0000_u64));
 
         let expected = vec![
             0x00, // 0x00

@@ -9,7 +9,7 @@ use byteorder::ReadBytesExt;
 use super::{error::Error, Decodable};
 use crate::encoder::Encodable;
 
-/// A type of variable-length integer commonly used in the Bitcoin P2P protocol and Bitcoin serialized data structures.
+/// A type of variable-length integer used in the Pactus blockchain to serialize a variable-length integer.
 #[derive(Default, Debug, Clone, Copy, PartialEq)]
 pub struct VarInt(u64);
 
@@ -105,7 +105,7 @@ mod tests {
         VarInt::from(0xffff_usize).encode(&mut w).unwrap();
         VarInt::from(0x01_0000_usize).encode(&mut w).unwrap();
         VarInt::from(0xffff_ffff_usize).encode(&mut w).unwrap();
-        VarInt::from(0x01_0000_0000_usize).encode(&mut w).unwrap();
+        VarInt(0x01_0000_0000_u64).encode(&mut w).unwrap();
 
         let expected = vec![
             0x00, // 0x00
