@@ -2,13 +2,43 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use tw_encoding::hex::ToHex;
+use tw_keypair::test_utils::tw_private_key_helper::TWPrivateKeyHelper;
 use tw_keypair::test_utils::tw_public_key_helper::TWPublicKeyHelper;
 use tw_keypair::tw::PublicKeyType;
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
+use tw_memory::test_utils::tw_wrapper::TWWrapper;
 use tw_ton::resources::WALLET_ID_V5R1_TON_MAINNET;
-use wallet_core_rs::ffi::ton::wallet::{
+use wallet_core_rs::ffi::wallet::ton_wallet::{
     tw_ton_wallet_build_v4_r2_state_init, tw_ton_wallet_build_v5_r1_state_init,
+    tw_ton_wallet_create_with_mnemonic, tw_ton_wallet_delete, tw_ton_wallet_get_key,
+    tw_ton_wallet_is_valid_mnemonic,
 };
+
+#[test]
+fn test_ton_wallet_is_valid_mnemonic() {
+    let mnemonic = TWStringHelper::create("protect drill sugar gallery note admit input wrist chicken swarm scheme hedgehog orbit ritual glove ski buddy slogan fragile sun delay toy lucky require");
+    let passphrase = TWStringHelper::create("");
+    let invalid_passphrase = TWStringHelper::create("Expected empty passphrase");
+    assert!(unsafe { tw_ton_wallet_is_valid_mnemonic(mnemonic.ptr(), passphrase.ptr()) });
+    assert!(!unsafe { tw_ton_wallet_is_valid_mnemonic(mnemonic.ptr(), invalid_passphrase.ptr()) });
+}
+
+#[test]
+fn test_ton_wallet_get_key() {
+    let mnemonic = TWStringHelper::create("protect drill sugar gallery note admit input wrist chicken swarm scheme hedgehog orbit ritual glove ski buddy slogan fragile sun delay toy lucky require");
+    let passphrase = std::ptr::null();
+    let wallet = TWWrapper::wrap(
+        unsafe { tw_ton_wallet_create_with_mnemonic(mnemonic.ptr(), passphrase) },
+        tw_ton_wallet_delete,
+    );
+    let key = TWPrivateKeyHelper::wrap(unsafe { tw_ton_wallet_get_key(wallet.ptr()) });
+    let key_data = key.bytes().unwrap();
+    assert_eq!(
+        key_data.to_hex(),
+        "cdcea50b87d3f1ca859e7b2bdf9a5339b7b6804b5c70ac85198829f9607dc43b"
+    );
+}
 
 #[test]
 fn test_ton_wallet_v4_r2_create_state_init() {

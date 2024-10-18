@@ -1,0 +1,14 @@
+[package]
+name = "tw_hd_wallet"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+lazy_static = "1.4.0"
+tw_hash = { path = "../tw_hash" }
+tw_keypair = { path = "../tw_keypair" }
+zeroize = "1.8.1"
+
+[dev-dependencies]
+tw_encoding = { path = "../tw_encoding" }
+tw_misc = { path = "../tw_misc" }

@@ -4,10 +4,10 @@
 
 use crate::ffi::crypto_box::public_key::{tw_crypto_box_public_key_delete, TWCryptoBoxPublicKey};
 use crate::ffi::crypto_box::secret_key::{tw_crypto_box_secret_key_delete, TWCryptoBoxSecretKey};
-use tw_memory::test_utils::tw_wrapper::{TWWrapper, WithDestructor};
+use tw_memory::test_utils::tw_wrapper::{TWAutoWrapper, WithDestructor};
 
-pub type TWCryptoBoxSecretKeyHelper = TWWrapper<TWCryptoBoxSecretKey>;
-pub type TWCryptoBoxPublicKeyHelper = TWWrapper<TWCryptoBoxPublicKey>;
+pub type TWCryptoBoxSecretKeyHelper = TWAutoWrapper<TWCryptoBoxSecretKey>;
+pub type TWCryptoBoxPublicKeyHelper = TWAutoWrapper<TWCryptoBoxPublicKey>;
 
 impl WithDestructor for TWCryptoBoxSecretKey {
     fn destructor() -> unsafe extern "C" fn(*mut Self) {

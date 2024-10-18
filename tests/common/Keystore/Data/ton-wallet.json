@@ -1,0 +1,30 @@
+{
+    "activeAccounts": [
+        {
+            "address": "UQBlm676c6vy6Q9Js732pvf3ivfmIkVc0MVDQy-F6NAFJd4k",
+            "coin": 607,
+            "derivationPath": "",
+            "publicKey": "9016f03f9cfa4e183707761f25407e0e1975194a33a56b3e8d2c26f2438fa3d1"
+        }
+    ],
+    "crypto": {
+        "cipher": "aes-128-ctr",
+        "cipherparams": {
+            "iv": "459bbf197fe8e1cdfb949fc516257238"
+        },
+        "ciphertext": "efbda7237b41d2340a4b4c7f0ab6a103e31f7a2b8148137abc815a0d346c3ae851d842ad068ad0218ef9f81647f41e52f7b056d568a314433a0b7980601f96e8974a071b5ddedd50079eebdb9281a8d84a0b9d4649ef3125f6605e303a78c0a4ed67556e3cd4e88b78b120267544eb44a912c92516562acb9782e0ea989cb50bce5948e2dfa26107053caf838af096ce47357061a2b49654",
+        "kdf": "scrypt",
+        "kdfparams": {
+            "dklen": 32,
+            "n": 16384,
+            "p": 4,
+            "r": 8,
+            "salt": ""
+        },
+        "mac": "be9e9a26076334683799c2dbe22bfb2d9f2ff92ad130aa61b4687b392e7b98e6"
+    },
+    "id": "f7a2172e-fb7a-427a-8526-99779fc47c0a",
+    "name": "Test TON Account",
+    "type": "ton-mnemonic",
+    "version": 3
+}
