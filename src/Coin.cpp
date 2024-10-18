@@ -67,6 +67,7 @@
 #include "NativeEvmos/Entry.h"
 #include "NativeInjective/Entry.h"
 #include "BitcoinCash/Entry.h"
+#include "Pactus/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -127,6 +128,7 @@ InternetComputer::Entry InternetComputerDP;
 NativeEvmos::Entry NativeEvmosDP;
 NativeInjective::Entry NativeInjectiveDP;
 BitcoinCash::Entry BitcoinCashDP;
+Pactus::Entry PactusDP;
 // end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
@@ -189,6 +191,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainNativeEvmos: entry = &NativeEvmosDP; break;
         case TWBlockchainNativeInjective: entry = &NativeInjectiveDP; break;
         case TWBlockchainBitcoinCash: entry = &BitcoinCashDP; break;
+        case TWBlockchainPactus: entry = &PactusDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;
