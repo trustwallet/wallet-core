@@ -13,7 +13,7 @@ class PactusTests: XCTestCase {
         let address = AnyAddress(publicKey: pubkey, coin: .pactus)
         let addressFromString = AnyAddress(string: "pc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymcxy3lr", coin: .pactus)!
 
-        XCTAssertEqual(pubkey.data.hexString, "0x95794161374b22c696dabb98e93f6ca9300b22f3b904921fbf560bb72145f4fa")
+        XCTAssertEqual(pubkey.data.hexString, "95794161374b22c696dabb98e93f6ca9300b22f3b904921fbf560bb72145f4fa")
         XCTAssertEqual(address.description, addressFromString.description)
     }
 
