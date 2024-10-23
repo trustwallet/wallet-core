@@ -30,6 +30,15 @@ impl WithDestructor for TWAnyAddress {
 }
 
 pub fn test_address_derive(coin: CoinType, private_key: &str, address: &str) {
+    test_address_derive_with_derivation(coin, private_key, address, TWDerivation::Default)
+}
+
+pub fn test_address_derive_with_derivation(
+    coin: CoinType,
+    private_key: &str,
+    address: &str,
+    derivation: TWDerivation,
+) {
     let coin_item = get_coin_item(coin).unwrap();
 
     let private_key = TWPrivateKeyHelper::with_hex(private_key);
@@ -41,7 +50,7 @@ pub fn test_address_derive(coin: CoinType, private_key: &str, address: &str) {
         tw_any_address_create_with_public_key_derivation(
             public_key.ptr(),
             coin as u32,
-            TWDerivation::Default as u32,
+            derivation as u32,
         )
     });
 
