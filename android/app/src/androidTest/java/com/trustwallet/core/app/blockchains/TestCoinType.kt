@@ -54,6 +54,8 @@ class TestCoinType {
         assertEquals(res, "m/84'/0'/0'/0/0")
         res = CoinType.createFromValue(CoinType.BITCOIN.value()).derivationPathWithDerivation(Derivation.BITCOINLEGACY).toString()
         assertEquals(res, "m/44'/0'/0'/0/0")
+        res = CoinType.createFromValue(CoinType.BITCOIN.value()).derivationPathWithDerivation(Derivation.BITCOINTAPROOT).toString()
+        assertEquals(res, "m/86'/0'/0'/0/0")
         res = CoinType.createFromValue(CoinType.SOLANA.value()).derivationPathWithDerivation(Derivation.SOLANASOLANA).toString()
         assertEquals(res, "m/44'/501'/0'/0'")
     }
