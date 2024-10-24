@@ -693,7 +693,7 @@ TEST(BitcoinSigning, SignDepositBtcToZetaChain) {
     ANY_PLAN(signingInput, plan, TWCoinTypeBitcoin);
     EXPECT_EQ(plan.error(), Common::Proto::SigningError::OK);
     EXPECT_TRUE(plan.has_output_op_return_index());
-    EXPECT_EQ(plan.output_op_return_index().index(), 1);
+    EXPECT_EQ(plan.output_op_return_index().index(), 1u);
 
     *signingInput.mutable_plan() = plan;
     ANY_SIGN(signingInput, TWCoinTypeBitcoin);
