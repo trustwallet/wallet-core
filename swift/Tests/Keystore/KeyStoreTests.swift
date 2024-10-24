@@ -437,6 +437,10 @@ class KeyStoreTests: XCTestCase {
         let btc2 = try wallet.getAccount(password: password, coin: .bitcoin, derivation: .bitcoinLegacy)
         XCTAssertEqual(btc2.address, "1NyRyFewhZcWMa9XCj3bBxSXPXyoSg8dKz")
         XCTAssertEqual(btc2.extendedPublicKey, "xpub6CR52eaUuVb4kXAVyHC2i5ZuqJ37oWNPZFtjXaazFPXZD45DwWBYEBLdrF7fmCR9pgBuCA9Q57zZfyJjDUBDNtWkhWuGHNYKLgDHpqrHsxV")
+        
+        let btc3 = try wallet.getAccount(password: password, coin: .bitcoin, derivation: .bitcoinTaproot)
+        XCTAssertEqual(btc3.address, "bc1pyqkqf20fmmwmcxf98tv6k63e2sgnjy4zne6d0r32vxwm3au0hnksq6ec57")
+        XCTAssertEqual(btc3.extendedPublicKey, "zpub6qNRYbLLXquaD1GKxHZWDs3moUFQfP4iqXiDPCd8aD3oNHZkCAusAw5raKQEWV8BkXBTXhWBkgZTxzjjnQ5cRjWa6LNcjmrVVNdUKvbKTgm")
 
         let solana1 = try wallet.getAccount(password: password, coin: .solana, derivation: .default)
         XCTAssertEqual(solana1.address, "HiipoCKL8hX2RVmJTz3vaLy34hS2zLhWWMkUWtw85TmZ")
