@@ -58,6 +58,9 @@ class TestAnyAddress {
 
         val address2 = AnyAddress(pubkey, coin, Derivation.BITCOINLEGACY)
         assertEquals(address2.description(), "1JvRfEQFv5q5qy9uTSAezH7kVQf4hqnHXx")
+
+        val address3 = AnyAddress(pubkey, coin, Derivation.BITCOINTAPROOT)
+        assertEquals(address3.description(), "bc1pnncpg8s7gu7t6xmmzxqarcj8ydthmaz8gr4m76eephjfprs53maswgel0w")
     }
 
     @Test

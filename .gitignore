@@ -38,7 +38,6 @@ codegen-v2/bindings/
 src/Generated/*.cpp
 include/TrustWalletCore/TWHRP.h
 include/TrustWalletCore/TW*Proto.h
-include/TrustWalletCore/TWDerivation.h
 include/TrustWalletCore/TWEthereumChainID.h
 
 # Wasm

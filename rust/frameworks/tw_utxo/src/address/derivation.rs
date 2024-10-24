@@ -6,10 +6,12 @@ use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::derivation::{ChildIndex, Derivation};
 
 pub const SEGWIT_DERIVATION_PATH_TYPE: ChildIndex = ChildIndex::Hardened(84);
+pub const TAPROOT_DERIVATION_PATH_TYPE: ChildIndex = ChildIndex::Hardened(86);
 
 pub enum BitcoinDerivation {
     Legacy,
     Segwit,
+    Taproot,
 }
 
 impl BitcoinDerivation {
@@ -23,6 +25,7 @@ impl BitcoinDerivation {
             Derivation::Default | Derivation::Testnet => (),
             Derivation::Segwit => return BitcoinDerivation::Segwit,
             Derivation::Legacy => return BitcoinDerivation::Legacy,
+            Derivation::Taproot => return BitcoinDerivation::Taproot,
         }
 
         let Some(default_derivation) = coin.derivations().first() else {
@@ -32,8 +35,12 @@ impl BitcoinDerivation {
 
         match default_derivation.name {
             Derivation::Segwit => BitcoinDerivation::Segwit,
+            Derivation::Taproot => BitcoinDerivation::Taproot,
             Derivation::Default if derivation_path_type == Some(SEGWIT_DERIVATION_PATH_TYPE) => {
                 BitcoinDerivation::Segwit
+            },
+            Derivation::Default if derivation_path_type == Some(TAPROOT_DERIVATION_PATH_TYPE) => {
+                BitcoinDerivation::Taproot
             },
             Derivation::Default | Derivation::Legacy | Derivation::Testnet => {
                 BitcoinDerivation::Legacy
@@ -47,6 +54,13 @@ impl BitcoinDerivation {
         coin.derivations().iter().any(|der| {
             der.name == Derivation::Segwit
                 || der.path.path().first().copied() == Some(SEGWIT_DERIVATION_PATH_TYPE)
+        })
+    }
+
+    pub fn tw_supports_taproot(coin: &dyn CoinContext) -> bool {
+        coin.derivations().iter().any(|der| {
+            der.name == Derivation::Taproot
+                || der.path.path().first().copied() == Some(TAPROOT_DERIVATION_PATH_TYPE)
         })
     }
 }

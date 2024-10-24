@@ -82,6 +82,8 @@ TEST(Derivation, alternativeDerivation) {
     EXPECT_EQ(std::string(TW::derivationName(TWCoinTypeBitcoin, TWDerivationBitcoinSegwit)), "segwit");
     EXPECT_EQ(TW::derivationPath(TWCoinTypeBitcoin, TWDerivationBitcoinLegacy).string(), "m/44'/0'/0'/0/0");
     EXPECT_EQ(std::string(TW::derivationName(TWCoinTypeBitcoin, TWDerivationBitcoinLegacy)), "legacy");
+    EXPECT_EQ(TW::derivationPath(TWCoinTypeBitcoin, TWDerivationBitcoinTaproot).string(), "m/86'/0'/0'/0/0");
+    EXPECT_EQ(std::string(TW::derivationName(TWCoinTypeBitcoin, TWDerivationBitcoinTaproot)), "taproot");
 
     EXPECT_EQ(TW::derivationPath(TWCoinTypeLitecoin, TWDerivationDefault).string(), "m/84'/2'/0'/0/0");
     EXPECT_EQ(TW::derivationPath(TWCoinTypeLitecoin, TWDerivationLitecoinLegacy).string(), "m/44'/2'/0'/0/0");

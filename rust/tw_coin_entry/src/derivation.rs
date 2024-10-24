@@ -23,6 +23,7 @@ pub enum Derivation {
     Segwit,
     Legacy,
     Testnet,
+    Taproot,
     /// Default derivation.
     #[default]
     #[serde(other)]

@@ -204,6 +204,10 @@ TEST(TWStoredKey, addressAddDerivation) {
     EXPECT_EQ(string(TWStringUTF8Bytes(accountAddress2.get())), "1NyRyFewhZcWMa9XCj3bBxSXPXyoSg8dKz");
 
     EXPECT_EQ(TWStoredKeyAccountCount(key.get()), 2ul);
+
+    const auto accountCoin3 = WRAP(TWAccount, TWStoredKeyAccountForCoinDerivation(key.get(), coin, TWDerivationBitcoinTaproot, wallet.get()));
+    const auto accountAddress3 = WRAPS(TWAccountAddress(accountCoin3.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(accountAddress3.get())), "bc1pyqkqf20fmmwmcxf98tv6k63e2sgnjy4zne6d0r32vxwm3au0hnksq6ec57");
 }
 
 TEST(TWStoredKey, exportJSON) {

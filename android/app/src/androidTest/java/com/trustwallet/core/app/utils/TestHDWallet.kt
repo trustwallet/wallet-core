@@ -121,6 +121,9 @@ class TestHDWallet {
 
         val key3 = wallet.getKeyDerivation(coin, Derivation.BITCOINTESTNET)
         assertEquals(key3.data().toHex(), "0xca5845e1b43e3adf577b7f110b60596479425695005a594c88f9901c3afe864f")
+
+        val key4 = wallet.getKeyDerivation(coin, Derivation.BITCOINTAPROOT)
+        assertEquals(key4.data().toHex(), "0xa2c4d6df786f118f20330affd65d248ffdc0750ae9cbc729d27c640302afd030")
     }
 
     @Test
@@ -145,6 +148,9 @@ class TestHDWallet {
 
         val address3 = wallet.getAddressDerivation(coin, Derivation.BITCOINTESTNET)
         assertEquals(address3, "tb1qwgpxgwn33z3ke9s7q65l976pseh4edrzfmyvl0")
+
+        val address4 = wallet.getAddressDerivation(coin, Derivation.BITCOINTAPROOT)
+        assertEquals(address4, "bc1pgqks0cynn93ymve4x0jq3u7hne77908nlysp289hc44yc4cmy0hslyckrz")
     }
 
     @Test

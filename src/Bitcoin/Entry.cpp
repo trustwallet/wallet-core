@@ -12,6 +12,8 @@
 
 namespace TW::Bitcoin {
 
+const EntryV2 bitcoinV2Dispatcher;
+
 bool Entry::validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const {
     auto* base58Prefix = std::get_if<Base58Prefix>(&addressPrefix);
     auto* hrp = std::get_if<Bech32Prefix>(&addressPrefix);
@@ -85,6 +87,9 @@ std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW
 
         case TWDerivationBitcoinTestnet:
             return SegwitAddress::createTestnetFromPublicKey(publicKey).string();
+
+        case TWDerivationBitcoinTaproot:
+            return bitcoinV2Dispatcher.deriveAddress(coin, publicKey, derivation, addressPrefix);
 
         case TWDerivationBitcoinSegwit:
         case TWDerivationDefault:

@@ -24,6 +24,12 @@
         "path": "m/84'/1'/0'/0/0",
         "xpub": "zpub",
         "xprv": "zprv"
+      },
+      {
+        "name": "taproot",
+        "path": "m/86'/0'/0'/0/0",
+        "xpub": "zpub",
+        "xprv": "zprv"
       }
     ],
     "curve": "secp256k1",

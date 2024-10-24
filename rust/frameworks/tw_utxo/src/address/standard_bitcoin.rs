@@ -82,8 +82,10 @@ impl StandardBitcoinAddress {
             if let Ok(segwit) = SegwitAddress::from_str_with_coin_and_prefix(coin, s, None) {
                 return Ok(StandardBitcoinAddress::Segwit(segwit));
             }
+        }
 
-            // TODO use `BitcoinDerivation::tw_supports_taproot` based on `registry.json`.
+        // Try to parse a Taproot address if the coin supports it.
+        if BitcoinDerivation::tw_supports_taproot(coin) {
             if let Ok(taproot) = TaprootAddress::from_str_with_coin_and_prefix(coin, s, None) {
                 return Ok(StandardBitcoinAddress::Taproot(taproot));
             }
@@ -126,6 +128,11 @@ impl StandardBitcoinAddress {
             BitcoinDerivation::Segwit => {
                 SegwitAddress::p2wpkh_with_coin_and_prefix(coin, public_key, None)
                     .map(StandardBitcoinAddress::Segwit)
+            },
+            BitcoinDerivation::Taproot => {
+                let no_merkle_root = None;
+                TaprootAddress::p2tr_with_coin_and_prefix(coin, public_key, None, no_merkle_root)
+                    .map(StandardBitcoinAddress::Taproot)
             },
         }
     }

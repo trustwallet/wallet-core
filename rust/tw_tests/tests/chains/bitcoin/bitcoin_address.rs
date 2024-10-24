@@ -5,12 +5,57 @@
 use tw_any_coin::test_utils::address_utils::{
     test_address_base58_is_valid, test_address_bech32_is_valid,
     test_address_create_base58_with_public_key, test_address_create_bech32_with_public_key,
-    test_address_get_data, test_address_invalid, test_address_normalization, test_address_valid,
-    AddressBase58IsValid, AddressBech32IsValid, AddressCreateBase58WithPublicKey,
-    AddressCreateBech32WithPublicKey,
+    test_address_derive, test_address_derive_with_derivation, test_address_get_data,
+    test_address_invalid, test_address_normalization, test_address_valid, AddressBase58IsValid,
+    AddressBech32IsValid, AddressCreateBase58WithPublicKey, AddressCreateBech32WithPublicKey,
 };
 use tw_coin_registry::coin_type::CoinType;
+use tw_coin_registry::tw_derivation::TWDerivation;
 use tw_keypair::tw::PublicKeyType;
+
+#[test]
+fn test_bitcoin_address_derive() {
+    // Segwit address by default.
+    test_address_derive(
+        CoinType::Bitcoin,
+        "a26b7ffda8ad29cf3aba066cc43ce255cb13b3fba5fa9b638f4685333e3670fd",
+        "bc1qj7uu67l9zkajuhx976d8fvj2ylc29gnq3kjm3r",
+    );
+    // Explicit Legacy address.
+    test_address_derive_with_derivation(
+        CoinType::Bitcoin,
+        "a8212108f1f2a42b18b642c2dbe6e388e75de89ca7be9b6f7648bab06cdedabf",
+        "1JspsmYcHGLjRDavb62hodTb7BW8GGia7v",
+        TWDerivation::BitcoinLegacy,
+    );
+    // Explicit Segwit address.
+    test_address_derive_with_derivation(
+        CoinType::Bitcoin,
+        "a26b7ffda8ad29cf3aba066cc43ce255cb13b3fba5fa9b638f4685333e3670fd",
+        "bc1qj7uu67l9zkajuhx976d8fvj2ylc29gnq3kjm3r",
+        TWDerivation::BitcoinSegwit,
+    );
+
+    // Explicit Taproot addresses.
+    test_address_derive_with_derivation(
+        CoinType::Bitcoin,
+        "e5bbc9cab0ff9ec86889bcd84d79ca484b017763614cd4fa3bf4aa49ad9d55a9",
+        "bc1pkup60ng64cthqujp38l57y0eewkyqy35s86tmqjcc5yzgmz9l2gscz37tx",
+        TWDerivation::BitcoinTaproot,
+    );
+    test_address_derive_with_derivation(
+        CoinType::Bitcoin,
+        "ae39965b1e73944763eb8ddaeb126d9cbde772a5c141e3ad5791f8e7f094a089",
+        "bc1plvzy756f4t2p32n29jy9vrqcrj46g5yka7u7e89tkeufx5urgyss38y98d",
+        TWDerivation::BitcoinTaproot,
+    );
+    test_address_derive_with_derivation(
+        CoinType::Bitcoin,
+        "e0721275d0f94bf4d0f59bf0bef42179f680e38dfb306e1d0e3c13ab1d797d20",
+        "bc1puu933ez5v6w99w9dqsmwdeajpnrvknc65tlnrdx3xhxwd954mudsa39gum",
+        TWDerivation::BitcoinTaproot,
+    );
+}
 
 #[test]
 fn test_bitcoin_address_normalization() {

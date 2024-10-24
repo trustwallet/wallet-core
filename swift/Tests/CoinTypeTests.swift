@@ -32,6 +32,7 @@ class CoinTypeTests: XCTestCase {
     func testCoinDerivation() {
         XCTAssertEqual(CoinType.bitcoin.derivationPath(), "m/84'/0'/0'/0/0")
         XCTAssertEqual(CoinType.bitcoin.derivationPathWithDerivation(derivation: Derivation.bitcoinLegacy), "m/44'/0'/0'/0/0")
+        XCTAssertEqual(CoinType.bitcoin.derivationPathWithDerivation(derivation: Derivation.bitcoinTaproot), "m/86'/0'/0'/0/0")
         XCTAssertEqual(CoinType.solana.derivationPathWithDerivation(derivation: Derivation.solanaSolana), "m/44'/501'/0'/0'")
     }
 
