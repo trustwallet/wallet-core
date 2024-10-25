@@ -109,10 +109,7 @@ fn serialize_argument(arg: &TransactionArgument) -> EncodingResult<Data> {
         TransactionArgument::U256(v) => bcs::encode(v),
         TransactionArgument::U8Vector(v) => bcs::encode(v),
         TransactionArgument::Bool(v) => bcs::encode(v),
-        TransactionArgument::Address(v) => {
-            let serialized_v = bcs::encode(v)?;
-            bcs::encode(&serialized_v)
-        },
+        TransactionArgument::Address(v) => bcs::encode(v),
     }
 }
 
@@ -220,6 +217,10 @@ mod tests {
 
         let v = EntryFunction::try_from(payload_value.clone()).unwrap();
         assert_eq!(payload_value, v.to_json());
+
+        let tp = TransactionPayload::EntryFunction(v);
+        let serialized = bcs::encode(&tp).unwrap();
+        assert_eq!(hex::encode(serialized, false), "02c23c3b70956ce8d88fb18ad9ed3b463fe873cb045db3f6d2e2fb15b9aab71d500349464f0772656c65617365030748e0e3958d42b8d452c9199d4a221d0d1b15d14655787453dbe77208ced9051705636f696e730442555344000748e0e3958d42b8d452c9199d4a221d0d1b15d14655787453dbe77208ced9051705636f696e730344414900079936836587ca33240d3d3f91844651b16cb07802faf5e34514ed6f78580deb0a0575696e7473025531000120c95db29a67a848940829b3df6119b5e67b788ff0248676e4484c7c6f29c0f5e6");
     }
 
     #[test]
@@ -255,7 +256,8 @@ mod tests {
         );
         let tp = TransactionPayload::EntryFunction(entry);
         let serialized = bcs::encode(&tp).unwrap();
-        assert_eq!(hex::encode(serialized, false), "02000000000000000000000000000000000000000000000000000000000000000104636f696e087472616e73666572010700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e000220eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b08e803000000000000");
+        let expected_serialized = "02000000000000000000000000000000000000000000000000000000000000000104636f696e087472616e73666572010700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e000220eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b08e803000000000000";
+        assert_eq!(hex::encode(serialized, false), expected_serialized);
         let payload_value: Value = json!({
                 "function": "0x1::coin::transfer",
                 "type": "entry_function_payload",
@@ -263,5 +265,12 @@ mod tests {
                 "type_arguments": ["0x1::aptos_coin::AptosCoin"]
         });
         assert_eq!(tp.to_json(), payload_value);
+
+        // Rebuild a new EntryFunction object from the JSON above
+        let v = EntryFunction::try_from(payload_value.clone()).unwrap();
+        let tp = TransactionPayload::EntryFunction(v);
+        // Serialize the new EntryFunction object and compare with the expected serialized value
+        let serialized = bcs::encode(&tp).unwrap();
+        assert_eq!(hex::encode(serialized, false), expected_serialized);
     }
 }

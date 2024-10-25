@@ -21,10 +21,6 @@ enum class ScryptValidationError {
 
 /// Scrypt function parameters.
 struct ScryptParameters {
-    static ScryptParameters Minimal;
-    static ScryptParameters Weak;
-    static ScryptParameters Standard;
-
     /// The N and P parameters of Scrypt encryption algorithm, using 256MB memory and
     /// taking approximately 1s CPU time on a modern processor.
     static const uint32_t standardN = 1 << 18;
@@ -59,13 +55,20 @@ struct ScryptParameters {
     /// Block size factor.
     uint32_t r = defaultR;
 
+    /// Generates Scrypt encryption parameters with the minimal sufficient level (4096), and with a random salt.
+    static ScryptParameters minimal();
+    /// Generates Scrypt encryption parameters with the weak sufficient level (16k), and with a random salt.
+    static ScryptParameters weak();
+    /// Generates Scrypt encryption parameters with the standard sufficient level (262k), and with a random salt.
+    static ScryptParameters standard();
+
     /// Initializes with default scrypt parameters and a random salt.
     ScryptParameters();
 
     /// Initializes `ScryptParameters` with all values.
     ///
     /// @throws ScryptValidationError if the parameters are invalid.
-    ScryptParameters(const Data& salt, uint32_t n, uint32_t r, uint32_t p, std::size_t desiredKeyLength)
+    ScryptParameters(Data salt, uint32_t n, uint32_t r, uint32_t p, std::size_t desiredKeyLength)
         : salt(std::move(salt)), desiredKeyLength(desiredKeyLength), n(n), p(p), r(r) {
         auto error = validate();
         if (error) {
@@ -79,7 +82,7 @@ struct ScryptParameters {
     std::optional<ScryptValidationError> validate() const;
 
     /// Initializes `ScryptParameters` with a JSON object.
-    ScryptParameters(const nlohmann::json& json);
+    explicit ScryptParameters(const nlohmann::json& json);
 
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;

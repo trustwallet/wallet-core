@@ -4,9 +4,15 @@
 
 #pragma once
 
-#include "../CoinEntry.h"
+#include "rust/RustCoinEntry.h"
 
 namespace TW::Bitcoin {
+
+/// A helper Bitcoin Entry migrated to Rust partly used in some cases,
+/// for example, in Taproot address generation.
+/// TODO remove when `Bitcoin` is migrated to Rust completely.
+class EntryV2: public Rust::RustCoinEntry {
+};
 
 /// Bitcoin entry dispatcher.
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific
