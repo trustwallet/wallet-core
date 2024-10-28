@@ -13,6 +13,8 @@ use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_proto::Pactus::Proto;
 use tw_proto::{deserialize, serialize};
 
+// Successfully transfer broadcasted:
+// https://pacviewer.com/transaction/1b6b7226f7935a15f05371d1a1fefead585a89704ce464b7cc1d453d299d235f
 #[test]
 fn test_pactus_sign() {
     let input = Proto::SigningInput {
