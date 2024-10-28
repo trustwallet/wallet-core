@@ -16,7 +16,7 @@ fi
 
 echo "#### Installing system dependencies ... ####"
 if [[ $(uname) == "Darwin" ]]; then
-  tools/install-sys-dependencies-macos
+  tools/install-sys-dependencies-mac
 else
   tools/install-sys-dependencies-linux
 fi
