@@ -441,7 +441,7 @@ fn test_solana_compile_transfer_with_fake_signature() {
 }
 
 #[test]
-fn test_solana_compile_raw_message_and_priority_fee() {
+fn test_solana_compile_raw_message_and_priority_fee_adding() {
     let encoded_tx = base64::decode("AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAQABA5TDiQ+o1LwEqypnbSyv6lzciZ7NlanL5ZPp3yWHWWhayyrwibVqVXc3vBcY4MvyMs9bAuFO4Kp8ZnUjP19vm1cAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC/97vMyUTb630FaCFQVn8OUyGBJSmbdqtiExlCT7L6nAQICAAEMAgAAADkwAAAAAAAAAA==", STANDARD).unwrap();
     // Make sure there is only one instruction. No instruction for priority fee.
     check_instructions_num(&encoded_tx, 1);
@@ -486,6 +486,56 @@ fn test_solana_compile_raw_message_and_priority_fee() {
     assert_eq!(output.encoded, "zqU7P77sexSjPh3zgC4MgihTLFH8v2ywPHz4e3QmaAgdHU1PTaXm7eS5PcbJfSXtCz1uYNgkcbmPun4rZPjdjGi3JSYmAeR5mMxfPz2AfaRUn2VstEzVdto72opE9SXAYcU3Gcz9zBJvZhTYfJq14b6ZeGMR5RtXf51Tgep9nC9DmePr4j5ynsaUz9Dm2qWuicTxyEuPf6ruEUv52ZWFJdhZ5PTeuMXSbCgixLPJVZB2Veh1DgkYrUgL4vtsjkNba8M3Wf7dApdatw51pZTzYe7kCQxRcD6NMazvDhDeaF4kCoazCzPzdXuc1foo7hBA4gi4SEAdjFdk1571kCv1SEaPiFSPdLVjr15Ut38q5vWXDy");
 
     // Step 6: Check the instructions for priority fee limit and priority fee price is included in the transaction
+    let new_encoded_tx = base58::decode(output.encoded.as_ref(), SOLANA_ALPHABET).unwrap();
+    check_instructions_num(&new_encoded_tx, 3);
+}
+
+#[test]
+fn test_solana_compile_raw_message_and_priority_fee_modifying() {
+    let encoded_tx = base64::decode("AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAQACBJTDiQ+o1LwEqypnbSyv6lzciZ7NlanL5ZPp3yWHWWhayyrwibVqVXc3vBcY4MvyMs9bAuFO4Kp8ZnUjP19vm1cAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMGRm/lIRcy/+ytunLDm+e8jOW7xfcSayxDmzpAAAAAu2IOLPsPwlOdNupvpZsuRoKuqmMScRNXAzWlbMOHyYYDAgIAAQwCAAAAh9YSAAAAAAADAAUCiBMAAAMACQP0AQAAAAAAAAA=", STANDARD).unwrap();
+    // Make sure the instructions for priority fee limit and priority fee price is included in the transaction.
+    check_instructions_num(&encoded_tx, 3);
+
+    // Step 1: Decode the transaction.
+    let mut decoder = TransactionDecoderHelper::<Proto::DecodingTransactionOutput>::default();
+    let output = decoder.decode(CoinType::Solana, encoded_tx);
+    assert_eq!(output.error, SigningError::OK);
+    let decoded_tx = output.transaction.unwrap();
+
+    // Step 2: Construct signing input with raw message and priority fee
+    let input = Proto::SigningInput {
+        raw_message: Some(decoded_tx),
+        priority_fee_limit: Some(Proto::PriorityFeeLimit { limit: 10_000 }),
+        priority_fee_price: Some(Proto::PriorityFeePrice { price: 1_000 }),
+        ..Proto::SigningInput::default()
+    };
+
+    // Step 3: Obtain preimage hash
+    let mut pre_imager = PreImageHelper::<Proto::PreSigningOutput>::default();
+    let preimage_output = pre_imager.pre_image_hashes(CoinType::Solana, &input);
+    assert_eq!(preimage_output.error, SigningError::OK);
+    assert_eq!(
+        preimage_output.data.to_hex(),
+        "800100020494c3890fa8d4bc04ab2a676d2cafea5cdc899ecd95a9cbe593e9df258759685acb2af089b56a557737bc1718e0cbf232cf5b02e14ee0aa7c6675233f5f6f9b5700000000000000000000000000000000000000000000000000000000000000000306466fe5211732ffecadba72c39be7bc8ce5bbc5f7126b2c439b3a40000000bb620e2cfb0fc2539d36ea6fa59b2e4682aeaa63127113570335a56cc387c98603020200010c0200000087d6120000000000030005021027000003000903e80300000000000000"
+    );
+
+    // Step 4: Get the signature
+    // Simulate signature, normally obtained from signature server.
+    let signature = "dffaaaf0a019de5ac432bd59651966d1c93aa2e43a449bcde9aa8e9c81592d2074879f4a38ae42640df5b80eb4004f25d7044e569eeb3397ed39ff000b0b3b0e"
+        .decode_hex()
+        .unwrap();
+
+    // Step 5: Compile transaction info
+    let public_key = "94c3890fa8d4bc04ab2a676d2cafea5cdc899ecd95a9cbe593e9df258759685a"
+        .decode_hex()
+        .unwrap(); // related private key: 7f0932159226ddec9e1a4b0b8fe7cdc135049f9e549a867d722aa720dd64f32e
+    let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
+    let output = compiler.compile(CoinType::Solana, &input, vec![signature], vec![public_key]);
+    assert_eq!(output.error, SigningError::OK);
+    // https://explorer.solana.com/tx/5UjCSdUuYkrcBkrf5989VCceP2YCUxiA57ahzKv2B4LkzpaVn7YkXdpkHbZmMPSDEmJx7d7n1PZc27WwmRz43KVF?cluster=devnet
+    assert_eq!(output.encoded, "2rAtkHdqL4GCo1HMEgULcvbMcbmkGaMJHmM1WjUGAxjtrTuhrK88W7F2LBSJMVsRhDH27gAHAhESMPeritjK9hXD1rVwV6MAuLiKrTAmYW2Z3sG7vECjZno2iwxNiBLcguaxApQRv7ypKCfT2MRYsiwvm6VQD7wFmxZ1nyDMHVPTb5Lw8WBBtokHSVXfthkw1UAFwPXLm8ZtT5XxnDMic18m2Vy5JeemwjcT6SV1ecE1wiy69HaCdqDg9Tqi4DK15PQyiXM1cQPtT3cAwJ8MxtZSiSUBN1ch9K8o6xRvQV7kLpp2SxLMQLgmWK8LkUtDYE6RPQLhVq1BL4Kw5rnpLQ4GFd4vL5ARrCRYu1h12ruzGXH");
+
+    // Step 6: Check the transaction still includes instructions for the priority fee limit and priority fee price.
     let new_encoded_tx = base58::decode(output.encoded.as_ref(), SOLANA_ALPHABET).unwrap();
     check_instructions_num(&new_encoded_tx, 3);
 }
