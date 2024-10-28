@@ -6,6 +6,10 @@
 
 use crate::address::SolanaAddress;
 use crate::blockhash::Blockhash;
+use crate::defined_addresses::COMPUTE_BUDGET_ADDRESS;
+use crate::modules::instruction_builder::compute_budget_instruction::{
+    ComputeBudgetInstructionBuilder, UnitLimit, UnitPrice,
+};
 use crate::transaction::{legacy, short_vec, v0, CompiledInstruction, MessageHeader, Signature};
 use serde::de::{SeqAccess, Unexpected, Visitor};
 use serde::ser::SerializeTuple;
@@ -108,6 +112,74 @@ impl VersionedMessage {
         match self {
             VersionedMessage::Legacy(legacy) => legacy.recent_blockhash = recent_blockhash,
             VersionedMessage::V0(v0) => v0.recent_blockhash = recent_blockhash,
+        }
+    }
+
+    pub fn set_priority_fee(
+        &mut self,
+        priority_fee_limit: Option<UnitLimit>,
+        priority_fee_price: Option<UnitPrice>,
+    ) {
+        // If priority fee limit and price are not provided, return early.
+        if priority_fee_limit.is_none() && priority_fee_price.is_none() {
+            return;
+        }
+
+        let (account_keys, header, instructions) = match self {
+            VersionedMessage::Legacy(legacy) => (
+                &mut legacy.account_keys,
+                &mut legacy.header,
+                &mut legacy.instructions,
+            ),
+            VersionedMessage::V0(v0) => {
+                (&mut v0.account_keys, &mut v0.header, &mut v0.instructions)
+            },
+        };
+
+        // Add compute budget account to the account keys if it doesn't exist.
+        if !account_keys.contains(&COMPUTE_BUDGET_ADDRESS) {
+            account_keys.push(*COMPUTE_BUDGET_ADDRESS);
+            header.num_readonly_unsigned_accounts += 1;
+        }
+
+        // Find the index of the compute budget account in the account keys.
+        let compute_budget_index = account_keys
+            .iter()
+            .position(|address| *address == *COMPUTE_BUDGET_ADDRESS)
+            .unwrap() as u8;
+
+        let update_compute_budget_instruction =
+            |instructions: &mut Vec<CompiledInstruction>, data: Vec<u8>| {
+                // The first byte of the data is the discriminator of compute budget instruction.
+                let discriminator = data[0];
+
+                if let Some(index) = instructions.iter().position(|instruction| {
+                    instruction.program_id_index == compute_budget_index
+                        && instruction.data[0] == discriminator
+                }) {
+                    // Update the existing instruction.
+                    instructions[index].data = data;
+                } else {
+                    // Add a new instruction if it doesn't exist.
+                    instructions.push(CompiledInstruction {
+                        program_id_index: compute_budget_index,
+                        accounts: vec![], // No accounts are required for the compute budget account.
+                        data,
+                    });
+                }
+            };
+
+        if let Some(priority_fee_limit) = priority_fee_limit {
+            update_compute_budget_instruction(
+                instructions,
+                ComputeBudgetInstructionBuilder::set_compute_unit_limit(priority_fee_limit).data,
+            );
+        }
+        if let Some(priority_fee_price) = priority_fee_price {
+            update_compute_budget_instruction(
+                instructions,
+                ComputeBudgetInstructionBuilder::set_compute_unit_price(priority_fee_price).data,
+            );
         }
     }
 }

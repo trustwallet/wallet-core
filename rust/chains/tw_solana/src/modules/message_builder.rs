@@ -71,7 +71,15 @@ impl<'a> MessageBuilder<'a> {
 
     pub fn build(self) -> SigningResult<VersionedMessage> {
         if let Some(ref raw_message) = self.input.raw_message {
-            return RawMessageBuilder::build(raw_message);
+            let mut result = RawMessageBuilder::build(raw_message);
+
+            if let Ok(version_message) = &mut result {
+                // Update the priority fee in raw message if priority fee is set in the signing input.
+                version_message
+                    .set_priority_fee(self.priority_fee_limit(), self.priority_fee_price());
+            }
+
+            return result;
         }
 
         let instructions = self.build_instructions()?;
