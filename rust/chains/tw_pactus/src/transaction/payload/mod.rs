@@ -1,6 +1,8 @@
 mod transfer;
+mod bond;
 
 pub use transfer::TransferPayload;
+pub use bond::BondPayload;
 
 use std::fmt::Debug;
 
