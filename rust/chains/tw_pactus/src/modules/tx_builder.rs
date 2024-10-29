@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::transaction::payload::{TransferPayload, BondPayload, Payload};
+use crate::transaction::payload::{BondPayload, Payload, TransferPayload};
 use crate::transaction::Transaction;
 use crate::types::{Address, Amount, ValidatorPublicKey};
 use std::str::FromStr;
@@ -31,7 +31,12 @@ impl TxBuilder {
                             None
                         };
 
-                        Box::new(BondPayload::new(sender, receiver, Amount(pld.stake), public_key))
+                        Box::new(BondPayload::new(
+                            sender,
+                            receiver,
+                            Amount(pld.stake),
+                            public_key,
+                        ))
                     },
                     Pactus::Proto::mod_TransactionMessage::OneOfpayload::None => {
                         return SigningError::err(SigningErrorType::Error_invalid_params)

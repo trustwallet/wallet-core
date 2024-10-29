@@ -17,7 +17,7 @@ use tw_memory::Data;
 use crate::encoder::error::Error;
 use crate::encoder::{Decodable, Encodable};
 
-const HRP: &str = "pc";
+const ADDRESS_HRP: &str = "pc";
 const TREASURY_ADDRESS_STRING: &str = "000000000000000000000000000000000000000000";
 
 /// Enum for Pactus address types.
@@ -114,7 +114,8 @@ impl fmt::Display for Address {
 
         b32.push(bech32::u5::try_from_u8(self.addr_type.clone() as u8).map_err(|_| fmt::Error)?);
         b32.extend_from_slice(&self.pub_hash.to_vec().to_base32());
-        bech32::encode_to_fmt(f, HRP, &b32, bech32::Variant::Bech32m).map_err(|_| fmt::Error)?
+        bech32::encode_to_fmt(f, ADDRESS_HRP, &b32, bech32::Variant::Bech32m)
+            .map_err(|_| fmt::Error)?
     }
 }
 
@@ -171,7 +172,7 @@ impl FromStr for Address {
 
         let (hrp, b32, _variant) = bech32::decode(s).map_err(|_| AddressError::FromBech32Error)?;
 
-        if hrp != HRP {
+        if hrp != ADDRESS_HRP {
             return Err(AddressError::InvalidHrp);
         }
 

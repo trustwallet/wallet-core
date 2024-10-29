@@ -2,7 +2,7 @@ pub mod payload;
 
 use std::fmt::Debug;
 
-use payload::{Payload, PayloadType, TransferPayload};
+use payload::{BondPayload, Payload, PayloadType, TransferPayload};
 use tw_coin_entry::error::prelude::SigningResult;
 use tw_hash::blake2::blake2_b;
 use tw_keypair::ed25519::sha512::{PrivateKey, PublicKey};
@@ -145,8 +145,9 @@ impl Decodable for Transaction {
         let fee = Amount::decode(r)?;
         let memo = String::decode(r)?;
         let payload_type = PayloadType::decode(r)?;
-        let payload = match payload_type {
+        let payload: Box<dyn Payload> = match payload_type {
             PayloadType::Transfer => Box::new(TransferPayload::decode(r)?),
+            PayloadType::Bond => Box::new(BondPayload::decode(r)?),
             _ => return Err(EncoderError::ParseFailed("Unsupported payload")),
         };
 
