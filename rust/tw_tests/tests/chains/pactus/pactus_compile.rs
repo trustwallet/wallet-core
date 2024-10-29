@@ -2,8 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::chains::pactus::test_cases::transfer_1::{
-    pactus_sign_transfer_input, PRIVATE_KEY, SIGNATURE, SIGN_BYTES, TRANSACTION_SIGNED_DATA, TX_ID,
+use crate::chains::pactus::test_cases::transfer::{
+    pactus_sign_transfer_input, TRANSFER_SIGNATURE, TRANSFER_SIGN_BYTES, TRANSACTION_TRANSFER_SIGNED_DATA, TRANSFER_TX_ID,
 };
 use tw_any_coin::ffi::tw_transaction_compiler::{
     tw_transaction_compiler_compile, tw_transaction_compiler_pre_image_hashes,
@@ -19,6 +19,7 @@ use tw_misc::traits::ToBytesVec;
 use tw_proto::Pactus::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 use tw_proto::{deserialize, serialize};
+use crate::chains::pactus::test_cases::PRIVATE_KEY;
 
 #[test]
 fn test_pactus_compile() {
@@ -38,7 +39,7 @@ fn test_pactus_compile() {
 
     assert_eq!(preimage.error, SigningErrorType::OK);
     assert!(preimage.error_message.is_empty());
-    assert_eq!(preimage.data.to_hex(), SIGN_BYTES);
+    assert_eq!(preimage.data.to_hex(), TRANSFER_SIGN_BYTES);
 
     // Step 3: Sign the data "externally"
     let private_key = ed25519::sha512::KeyPair::try_from(PRIVATE_KEY).unwrap();
@@ -48,7 +49,7 @@ fn test_pactus_compile() {
         .sign(preimage.data.to_vec())
         .expect("Error signing data")
         .to_vec();
-    assert_eq!(signature.to_hex(), SIGNATURE);
+    assert_eq!(signature.to_hex(), TRANSFER_SIGNATURE);
 
     // Step 4: Compile transaction info
 
@@ -72,10 +73,10 @@ fn test_pactus_compile() {
 
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
-    assert_eq!(output.transaction_id.to_hex(), TX_ID);
-    assert_eq!(output.signature.to_hex(), SIGNATURE);
+    assert_eq!(output.transaction_id.to_hex(), TRANSFER_TX_ID);
+    assert_eq!(output.signature.to_hex(), TRANSFER_SIGNATURE);
     assert_eq!(
         output.signed_transaction_data.to_hex(),
-        TRANSACTION_SIGNED_DATA
+        TRANSACTION_TRANSFER_SIGNED_DATA
     );
 }
