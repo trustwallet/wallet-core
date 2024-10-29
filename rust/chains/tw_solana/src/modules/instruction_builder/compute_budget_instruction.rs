@@ -5,6 +5,7 @@
 use crate::defined_addresses::COMPUTE_BUDGET_ADDRESS;
 use crate::instruction::Instruction;
 use borsh::{BorshDeserialize, BorshSerialize};
+use tw_encoding::{EncodingError, EncodingResult};
 
 pub type UnitLimit = u32;
 pub type UnitPrice = u64;
@@ -16,6 +17,12 @@ pub enum ComputeBudgetInstruction {
     SetComputeUnitLimit(UnitLimit),
     SetComputeUnitPrice(UnitPrice),
     SetLoadedAccountsDataSizeLimit(u32),
+}
+
+impl ComputeBudgetInstruction {
+    pub fn try_from_borsh(data: &[u8]) -> EncodingResult<Self> {
+        borsh::from_slice(data).map_err(|_| EncodingError::InvalidInput)
+    }
 }
 
 pub struct ComputeBudgetInstructionBuilder;

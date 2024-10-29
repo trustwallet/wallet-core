@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::SolanaAddress;
+use crate::modules::insert_instruction::InsertInstruction;
 use crate::transaction::{short_vec, CompiledInstruction, MessageHeader, Signature};
 use serde::{Deserialize, Serialize};
 use tw_hash::{as_byte_sequence, H256};
@@ -26,6 +27,20 @@ pub struct Message {
     /// succeed.
     #[serde(with = "short_vec")]
     pub instructions: Vec<CompiledInstruction>,
+}
+
+impl InsertInstruction for Message {
+    fn account_keys_mut(&mut self) -> &mut Vec<SolanaAddress> {
+        &mut self.account_keys
+    }
+
+    fn message_header_mut(&mut self) -> &mut MessageHeader {
+        &mut self.header
+    }
+
+    fn instructions_mut(&mut self) -> &mut Vec<CompiledInstruction> {
+        &mut self.instructions
+    }
 }
 
 #[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize)]

@@ -6,6 +6,7 @@ use crate::address::SolanaAddress;
 use crate::defined_addresses::*;
 use crate::instruction::{AccountMeta, Instruction};
 use serde::{Deserialize, Serialize};
+use tw_encoding::{EncodingError, EncodingResult};
 
 /// An instruction to the system program.
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
@@ -179,6 +180,12 @@ pub enum SystemInstruction {
     /// # Account references
     ///   0. `[WRITE]` Nonce account
     UpgradeNonceAccount,
+}
+
+impl SystemInstruction {
+    pub fn try_from_bincode(data: &[u8]) -> EncodingResult<Self> {
+        bincode::deserialize(data).map_err(|_| EncodingError::InvalidInput)
+    }
 }
 
 pub struct SystemInstructionBuilder;
