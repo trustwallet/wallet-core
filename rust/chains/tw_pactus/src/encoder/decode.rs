@@ -17,8 +17,8 @@ pub(crate) fn decode_var_slice(r: &mut dyn std::io::Read) -> Result<Vec<u8>, Err
     Ok(buf)
 }
 
-pub(crate) fn decode_fix_slice(r: &mut dyn std::io::Read, len: usize) -> Result<Vec<u8>, Error> {
-    let mut buf = vec![0; len];
+pub(crate) fn decode_fix_slice<const N: usize>(r: &mut dyn std::io::Read) -> Result<[u8; N], Error> {
+    let mut buf: [u8; N] = [0; N];
     r.read_exact(&mut buf)?;
 
     Ok(buf)
@@ -39,7 +39,7 @@ impl Decodable for String {
 
 impl Decodable for PublicKey {
     fn decode(r: &mut dyn std::io::Read) -> Result<Self, Error> {
-        let data = decode_fix_slice(r, PublicKey::LEN)?;
+        let data = decode_fix_slice::<PublicKey::LEN>(r)?;
         PublicKey::try_from(data.as_slice())
             .map_err(|_| self::Error::ParseFailed("Invalid Public Key"))
     }
@@ -47,7 +47,7 @@ impl Decodable for PublicKey {
 
 impl Decodable for Signature {
     fn decode(r: &mut dyn std::io::Read) -> Result<Self, Error> {
-        let data = decode_fix_slice(r, Signature::LEN)?;
+        let data = decode_fix_slice::<Signature::LEN>(r)?;
         Signature::try_from(data.as_slice())
             .map_err(|_| self::Error::ParseFailed("Invalid Signature"))
     }
@@ -55,7 +55,7 @@ impl Decodable for Signature {
 
 impl<const N: usize> Decodable for Hash<N> {
     fn decode(r: &mut dyn std::io::Read) -> Result<Self, Error> {
-        let data = decode_fix_slice(r, N)?;
+        let data = decode_fix_slice::<N>(r)?;
         Hash::try_from(data.as_slice()).map_err(|_| self::Error::ParseFailed("Invalid Hash"))
     }
 }
@@ -102,7 +102,7 @@ mod tests {
     fn test_decode_fix_slice() {
         let expected = vec![1, 2, 3, 4];
         let mut cursor = Cursor::new("01020304".decode_hex().unwrap());
-        let slice = decode_fix_slice(&mut cursor, 4).unwrap();
+        let slice = decode_fix_slice::<4>(&mut cursor).unwrap();
 
         assert_eq!(expected, slice);
     }
