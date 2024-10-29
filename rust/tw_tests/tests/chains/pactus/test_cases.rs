@@ -75,7 +75,7 @@ pub mod transfer {
     }
 }
 
-pub mod bond_1 {
+pub mod bond {
     use super::*;
     use tw_encoding::hex::DecodeHex;
 

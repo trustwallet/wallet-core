@@ -5,7 +5,7 @@
 use crate::chains::pactus::test_cases::PRIVATE_KEY;
 use crate::chains::pactus::test_cases::transfer::{
     pactus_sign_transfer_input, TRANSFER_SIGNATURE, TRANSACTION_TRANSFER_SIGNED_DATA, TRANSFER_TX_ID};
-use crate::chains::pactus::test_cases::bond_1::{
+use crate::chains::pactus::test_cases::bond::{
     pactus_sign_bond_input, BOND_SIGNATURE, TRANSACTION_BOND_SIGNED_DATA, BOND_TX_ID};
 use tw_any_coin::ffi::tw_any_signer::tw_any_signer_sign;
 use tw_coin_entry::error::prelude::*;
