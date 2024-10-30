@@ -91,7 +91,7 @@ pub unsafe extern "C" fn tw_solana_transaction_get_compute_unit_limit(
 ///
 /// \param encoded_tx base64 encoded Solana transaction.
 /// \price Unit Price as a decimal string.
-/// \return base64 encoded Solana transaction.
+/// \return base64 encoded Solana transaction. Null if an error occurred.
 #[no_mangle]
 pub unsafe extern "C" fn tw_solana_transaction_set_compute_unit_price(
     encoded_tx: *const TWString,
@@ -115,7 +115,7 @@ pub unsafe extern "C" fn tw_solana_transaction_set_compute_unit_price(
 ///
 /// \param encoded_tx base64 encoded Solana transaction.
 /// \limit Unit Limit as a decimal string.
-/// \return base64 encoded Solana transaction.
+/// \return base64 encoded Solana transaction. Null if an error occurred.
 #[no_mangle]
 pub unsafe extern "C" fn tw_solana_transaction_set_compute_unit_limit(
     encoded_tx: *const TWString,
