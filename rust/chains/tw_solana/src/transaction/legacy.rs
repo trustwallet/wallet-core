@@ -4,6 +4,7 @@
 
 use crate::address::SolanaAddress;
 use crate::modules::insert_instruction::InsertInstruction;
+use crate::transaction::v0::MessageAddressTableLookup;
 use crate::transaction::{short_vec, CompiledInstruction, MessageHeader, Signature};
 use serde::{Deserialize, Serialize};
 use tw_hash::{as_byte_sequence, H256};
@@ -30,6 +31,10 @@ pub struct Message {
 }
 
 impl InsertInstruction for Message {
+    fn address_table_lookups(&self) -> Option<&[MessageAddressTableLookup]> {
+        None
+    }
+
     fn account_keys_mut(&mut self) -> &mut Vec<SolanaAddress> {
         &mut self.account_keys
     }

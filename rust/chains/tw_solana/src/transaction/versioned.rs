@@ -7,6 +7,7 @@
 use crate::address::SolanaAddress;
 use crate::blockhash::Blockhash;
 use crate::modules::insert_instruction::InsertInstruction;
+use crate::transaction::v0::MessageAddressTableLookup;
 use crate::transaction::{legacy, short_vec, v0, CompiledInstruction, MessageHeader, Signature};
 use serde::de::{SeqAccess, Unexpected, Visitor};
 use serde::ser::SerializeTuple;
@@ -41,6 +42,11 @@ impl VersionedTransaction {
     pub fn from_base64(s: &str) -> EncodingResult<VersionedTransaction> {
         let tx_bytes = base64::decode(s, STANDARD)?;
         bincode::deserialize(&tx_bytes).map_err(|_| EncodingError::InvalidInput)
+    }
+
+    pub fn to_base64(&self) -> EncodingResult<String> {
+        let tx_bytes = bincode::serialize(self).map_err(|_| EncodingError::InvalidInput)?;
+        Ok(base64::encode(&tx_bytes, STANDARD))
     }
 }
 
@@ -142,6 +148,13 @@ impl Serialize for VersionedMessage {
 }
 
 impl InsertInstruction for VersionedMessage {
+    fn address_table_lookups(&self) -> Option<&[MessageAddressTableLookup]> {
+        match self {
+            VersionedMessage::Legacy(legacy) => legacy.address_table_lookups(),
+            VersionedMessage::V0(v0) => v0.address_table_lookups(),
+        }
+    }
+
     fn account_keys_mut(&mut self) -> &mut Vec<SolanaAddress> {
         match self {
             VersionedMessage::Legacy(legacy) => legacy.account_keys_mut(),

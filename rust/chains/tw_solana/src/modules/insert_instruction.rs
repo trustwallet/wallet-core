@@ -92,9 +92,7 @@ pub trait InsertInstruction {
     }
 
     /// Returns ALT (Address Lookup Tables) if supported by the message version.
-    fn address_table_lookups(&self) -> Option<&[MessageAddressTableLookup]> {
-        None
-    }
+    fn address_table_lookups(&self) -> Option<&[MessageAddressTableLookup]>;
 
     fn account_keys_mut(&mut self) -> &mut Vec<SolanaAddress>;
 

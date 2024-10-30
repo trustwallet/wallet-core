@@ -99,7 +99,7 @@ impl SolanaTransaction {
             .find_map(try_instruction_as_set_unit_limit))
     }
 
-    pub fn set_compute_unit_price(encoded_tx: &str, price: UnitPrice) -> SigningResult<()> {
+    pub fn set_compute_unit_price(encoded_tx: &str, price: UnitPrice) -> SigningResult<String> {
         let tx_bytes = base64::decode(encoded_tx, STANDARD)?;
         let mut tx: VersionedTransaction =
             bincode::deserialize(&tx_bytes).map_err(|_| SigningErrorType::Error_input_parse)?;
@@ -114,17 +114,17 @@ impl SolanaTransaction {
         // If it presents already, it's enough to update the instruction data only.
         if let Some(pos) = ix_position {
             tx.message.instructions_mut()[pos].data = set_price_ix.data;
-            return Ok(());
+            return tx.to_base64().tw_err(|_| SigningErrorType::Error_internal);
         }
 
         // `ComputeBudgetInstruction::SetComputeUnitPrice` can be pushed to the end of the instructions list.
         tx.message
             .push_simple_instruction(set_price_ix.program_id, set_price_ix.data)?;
 
-        Ok(())
+        tx.to_base64().tw_err(|_| SigningErrorType::Error_internal)
     }
 
-    pub fn set_compute_unit_limit(encoded_tx: &str, limit: UnitLimit) -> SigningResult<()> {
+    pub fn set_compute_unit_limit(encoded_tx: &str, limit: UnitLimit) -> SigningResult<String> {
         let tx_bytes = base64::decode(encoded_tx, STANDARD)?;
         let mut tx: VersionedTransaction =
             bincode::deserialize(&tx_bytes).map_err(|_| SigningErrorType::Error_input_parse)?;
@@ -139,7 +139,7 @@ impl SolanaTransaction {
         // If it presents already, it's enough to update the instruction data only.
         if let Some(pos) = ix_position {
             tx.message.instructions_mut()[pos].data = set_limit_ix.data;
-            return Ok(());
+            return tx.to_base64().tw_err(|_| SigningErrorType::Error_internal);
         }
 
         // `ComputeBudgetInstruction::SetComputeUnitLimit` should be at the beginning of the instructions list.
@@ -156,7 +156,7 @@ impl SolanaTransaction {
             set_limit_ix.data,
         )?;
 
-        Ok(())
+        tx.to_base64().tw_err(|_| SigningErrorType::Error_internal)
     }
 }
 
