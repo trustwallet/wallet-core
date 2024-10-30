@@ -2,14 +2,24 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_encoding::base58;
+use tw_any_coin::test_utils::address_utils::test_address_derive;
+use tw_any_coin::test_utils::sign_utils::{AnySignerHelper, PreImageHelper};
+use tw_any_coin::test_utils::transaction_decode_utils::TransactionDecoderHelper;
+use tw_coin_registry::coin_type::CoinType;
+use tw_encoding::base64::STANDARD;
+use tw_encoding::hex::{DecodeHex, ToHex};
+use tw_encoding::{base58, base64};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_memory::test_utils::tw_data_vector_helper::TWDataVectorHelper;
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
 use tw_proto::Common::Proto::SigningError;
-use tw_proto::Solana::Proto;
+use tw_proto::Solana::Proto::{self, mod_SigningInput::OneOftransaction_type as TransactionType};
 use tw_solana::SOLANA_ALPHABET;
-use wallet_core_rs::ffi::solana::transaction::tw_solana_transaction_update_blockhash_and_sign;
+use wallet_core_rs::ffi::solana::transaction::{
+    tw_solana_transaction_get_compute_unit_limit, tw_solana_transaction_get_compute_unit_price,
+    tw_solana_transaction_set_compute_unit_limit, tw_solana_transaction_set_compute_unit_price,
+    tw_solana_transaction_update_blockhash_and_sign,
+};
 
 #[test]
 fn test_solana_transaction_update_blockhash_and_sign_token_transfer_with_external_fee_payer() {
@@ -112,4 +122,165 @@ fn test_solana_transaction_update_blockhash_and_sign_empty_private_keys() {
 
     let expected_message = "AgACBssq8Im1alV3N7wXGODL8jLPWwLhTuCqfGZ1Iz9fb5tXlMOJD6jUvASrKmdtLK/qXNyJns2Vqcvlk+nfJYdZaFpIWiT/tAcEYbttfxyLdYxrLckAKdVRtf1OrNgtZeMCII4SAn6SYaaidrX/AN3s/aVn/zrlEKW0cEUIatHVDKtXO0Qss5EhV/E6kz0BNCgtAytf/s0Botvxt3kGCN8ALqcG3fbh12Whk9nL4UbO63msHLSF7V9bN5E6jPWFfv8AqbHiki6ThNH3auuyZPQpJntnN0mA//56nMpK/6HIuu8xAQUEAgQDAQoMoA8AAAAAAAAG";
     assert_eq!(output.unsigned_tx, expected_message);
+}
+
+struct SetPriorityTestInput {
+    /// Hex-encoded private key.
+    private_key: &'static str,
+    /// Base64-encoded original transaction.
+    original_tx: &'static str,
+    /// Priority fee limit if present in the original transaction.
+    original_limit: Option<u32>,
+    /// Priority fee price if present in the original transaction.
+    original_price: Option<u64>,
+    /// Base64-encoded transaction after the priority fee and limit being changed.
+    updated_tx: &'static str,
+    /// Priority fee limit to be set to.
+    limit: u32,
+    /// Priority fee price to be set to.
+    price: u64,
+    /// Base64-encoded [`SetPriorityTestInput::updated_tx`] transaction that has been signed.
+    signed_tx: &'static str,
+    /// Hex-encoded signature of the [`SetPriorityTestInput::signed_tx`] transaction.
+    signature: &'static str,
+}
+
+fn test_solana_transaction_set_priority_fee(input: SetPriorityTestInput) {
+    let original_tx = TWStringHelper::create(input.original_tx);
+
+    // Step 1 - Check if there is are no price and limit instructions.
+
+    let original_price = TWStringHelper::wrap(unsafe {
+        tw_solana_transaction_get_compute_unit_price(original_tx.ptr())
+    });
+    let original_limit = TWStringHelper::wrap(unsafe {
+        tw_solana_transaction_get_compute_unit_limit(original_tx.ptr())
+    });
+    assert_eq!(
+        original_price.to_string(),
+        input.original_price.map(|v| v.to_string()),
+        "Invalid original price"
+    );
+    assert_eq!(
+        original_limit.to_string(),
+        input.original_limit.map(|v| v.to_string()),
+        "Invalid original limit"
+    );
+
+    // Step 2 - Set price and limit instructions.
+
+    let updated_tx = TWStringHelper::wrap(unsafe {
+        tw_solana_transaction_set_compute_unit_limit(
+            original_tx.ptr(),
+            TWStringHelper::create(&input.limit.to_string()).ptr(),
+        )
+    });
+    let updated_tx = TWStringHelper::wrap(unsafe {
+        tw_solana_transaction_set_compute_unit_price(
+            updated_tx.ptr(),
+            TWStringHelper::create(&input.price.to_string()).ptr(),
+        )
+    });
+
+    // Step 3 - Check if price and limit instructions are set successfully.
+
+    let actual_limit = TWStringHelper::wrap(unsafe {
+        tw_solana_transaction_get_compute_unit_limit(updated_tx.ptr())
+    });
+    let actual_price = TWStringHelper::wrap(unsafe {
+        tw_solana_transaction_get_compute_unit_price(updated_tx.ptr())
+    });
+    assert_eq!(
+        actual_limit.to_string(),
+        Some(input.limit.to_string()),
+        "Invalid updated limit"
+    );
+    assert_eq!(
+        actual_price.to_string(),
+        Some(input.price.to_string()),
+        "Invalid updated price"
+    );
+
+    let actual_updated_tx = updated_tx.to_string().unwrap();
+    assert_eq!(actual_updated_tx, input.updated_tx);
+
+    // Step 4 - Decode transaction into a `RawMessage` Protobuf.
+
+    let tx_data = base64::decode(&actual_updated_tx, STANDARD).unwrap();
+    let mut decoder = TransactionDecoderHelper::<Proto::DecodingTransactionOutput>::default();
+    let decode_output = decoder.decode(CoinType::Solana, tx_data);
+
+    // Step 5 - Sign the decoded `RawMessage` transaction.
+
+    let signing_input = Proto::SigningInput {
+        private_key: input.private_key.decode_hex().unwrap().into(),
+        raw_message: decode_output.transaction,
+        tx_encoding: Proto::Encoding::Base64,
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, signing_input);
+
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+    assert_eq!(
+        output.encoded, input.signed_tx,
+        "Invalid signed transaction"
+    );
+    assert_eq!(
+        output.signatures.first().unwrap().signature,
+        input.signature,
+        "Invalid signature"
+    );
+}
+
+#[test]
+fn test_solana_transaction_set_priority_fee_transfer() {
+    // Successfully broadcasted tx:
+    // https://explorer.solana.com/tx/2ho7wZUXbDNz12xGfsXg2kcNMqkBAQjv7YNXNcVcuCmbC4p9FZe9ELeM2gMjq9MKQPpmE3nBW5pbdgwVCfNLr1h8
+    test_solana_transaction_set_priority_fee(SetPriorityTestInput {
+        private_key: "baf2b2dbbbad7ca96c1fa199c686f3d8fbd2c7b352f307e37e04f33df6741f18",
+        original_tx: "AX43+Ir2EDqf2zLEvgzFrCZKRjdr3wCdp8CnvYh6N0G/s86IueX9BbiNUl16iLRGvwREDfi2Srb0hmLNBFw1BwABAAEDODI+iWe7g68B9iwCy8bFkJKvsIEj350oSOpcv4gNnv/st+6qmqipl9lwMK6toB9TiL7LrJVfij+pKwr+pUKxfwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAG6GdPcA92ORzVJe2jfG8KQqqMHr9YTLu30oM4i7MFEoBAgIAAQwCAAAA6AMAAAAAAAA=",
+        original_limit: None,
+        original_price: None,
+        updated_tx: "AX43+Ir2EDqf2zLEvgzFrCZKRjdr3wCdp8CnvYh6N0G/s86IueX9BbiNUl16iLRGvwREDfi2Srb0hmLNBFw1BwABAAIEODI+iWe7g68B9iwCy8bFkJKvsIEj350oSOpcv4gNnv/st+6qmqipl9lwMK6toB9TiL7LrJVfij+pKwr+pUKxfwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwZGb+UhFzL/7K26csOb57yM5bvF9xJrLEObOkAAAAAboZ09wD3Y5HNUl7aN8bwpCqowev1hMu7fSgziLswUSgMDAAUCECcAAAICAAEMAgAAAOgDAAAAAAAAAwAJA+gDAAAAAAAA",
+        limit: 10_000,
+        price: 1_000,
+        signed_tx: "AVUye82Mv+/aWeU2G+B6Nes365mUU2m8iqcGZn/8kFJvw4wY6AgKGG+vJHaknHlCDwE1yi1SIMVUUtNCOm3kHg8BAAIEODI+iWe7g68B9iwCy8bFkJKvsIEj350oSOpcv4gNnv/st+6qmqipl9lwMK6toB9TiL7LrJVfij+pKwr+pUKxfwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwZGb+UhFzL/7K26csOb57yM5bvF9xJrLEObOkAAAAAboZ09wD3Y5HNUl7aN8bwpCqowev1hMu7fSgziLswUSgMDAAUCECcAAAICAAEMAgAAAOgDAAAAAAAAAwAJA+gDAAAAAAAA",
+        signature: "2ho7wZUXbDNz12xGfsXg2kcNMqkBAQjv7YNXNcVcuCmbC4p9FZe9ELeM2gMjq9MKQPpmE3nBW5pbdgwVCfNLr1h8",
+    });
+}
+
+#[test]
+fn test_solana_transaction_set_priority_fee_transfer_override() {
+    // Successfully broadcasted tx:
+    // https://explorer.solana.com/tx/3dxcZP8Q8WTj2JapeDLymQZvn1wGxPpism59RcaWA28igXo8Lyh1xRbAjipv7hrgo6JKyoAxbZ6ADayZLWqNJZg1
+    test_solana_transaction_set_priority_fee(SetPriorityTestInput {
+        private_key: "baf2b2dbbbad7ca96c1fa199c686f3d8fbd2c7b352f307e37e04f33df6741f18",
+        original_tx: "Ab8KqzeQeInEQVRNDD1akh2B0EEeb5XJFfyVjqDrocz49NcZ6x5cp76zC9mjZKspsVCWVYIYdvNRYJYVB2OK3g4BAAIEODI+iWe7g68B9iwCy8bFkJKvsIEj350oSOpcv4gNnv/st+6qmqipl9lwMK6toB9TiL7LrJVfij+pKwr+pUKxfwMGRm/lIRcy/+ytunLDm+e8jOW7xfcSayxDmzpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwXONiS/AgQzMMUxsafHXszeF2QJdufrIFBZHMZlu8/gMCAAkDLAEAAAAAAAACAAUCiBMAAAMCAAEMAgAAAOgDAAAAAAAA",
+        original_limit: Some(5_000),
+        original_price: Some(300),
+        updated_tx: "Ab8KqzeQeInEQVRNDD1akh2B0EEeb5XJFfyVjqDrocz49NcZ6x5cp76zC9mjZKspsVCWVYIYdvNRYJYVB2OK3g4BAAIEODI+iWe7g68B9iwCy8bFkJKvsIEj350oSOpcv4gNnv/st+6qmqipl9lwMK6toB9TiL7LrJVfij+pKwr+pUKxfwMGRm/lIRcy/+ytunLDm+e8jOW7xfcSayxDmzpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwXONiS/AgQzMMUxsafHXszeF2QJdufrIFBZHMZlu8/gMCAAkD6AMAAAAAAAACAAUCECcAAAMCAAEMAgAAAOgDAAAAAAAA",
+        limit: 10_000,
+        price: 1_000,
+        signed_tx: "AYPn6T3Qqfqg/IW+2FL1suZyUDrhFVlEiKBaCAWAtINfuLgWkDw7Q+QaDvGGRa7eMgEnj4hfCA92tssQByeCCw4BAAIEODI+iWe7g68B9iwCy8bFkJKvsIEj350oSOpcv4gNnv/st+6qmqipl9lwMK6toB9TiL7LrJVfij+pKwr+pUKxfwMGRm/lIRcy/+ytunLDm+e8jOW7xfcSayxDmzpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwXONiS/AgQzMMUxsafHXszeF2QJdufrIFBZHMZlu8/gMCAAkD6AMAAAAAAAACAAUCECcAAAMCAAEMAgAAAOgDAAAAAAAA",
+        signature: "3dxcZP8Q8WTj2JapeDLymQZvn1wGxPpism59RcaWA28igXo8Lyh1xRbAjipv7hrgo6JKyoAxbZ6ADayZLWqNJZg1",
+    });
+}
+
+#[test]
+fn test_solana_transaction_set_priority_fee_transfer_with_address_lookup() {
+    // Successfully broadcasted tx:
+    // https://explorer.solana.com/tx/4vkDYvXnAyauDwgQUT9pjhvArCm1jZZFp6xFiT6SYKDHwabPNyNskzzd8YJZR4UJVXakBtRAFku3axVQoA7Apido
+    test_solana_transaction_set_priority_fee(SetPriorityTestInput {
+        private_key: "a73613f265ae572772e28bd921a7bcd0f020e188aae4d1ebd07b9b487fde3573",
+        original_tx: "Acjjw79E1WGC531Oq6lsyg3X+D65Fo37i6A4nKaqDjxWVrF/djOxbyShfg0HwMuCMp2Mj2JtsiGMkJbt/iD8rQ2AAQABAgEFuF07bbuXk4EuSECBjRkLhDeGEZ4Jm4QbrRF/TN0CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUE/bdT0AlTN8m+IZkrbzaTUxHcnoKW3WZucqu7msImQEBAgACDAIAAAD0AQAAAAAAAAGDq5uNdcMMtPgcMghpRBOza1eEzcNhvr0zid3hRZoV0wEAAA==",
+        original_limit: None,
+        original_price: None,
+        updated_tx: "Acjjw79E1WGC531Oq6lsyg3X+D65Fo37i6A4nKaqDjxWVrF/djOxbyShfg0HwMuCMp2Mj2JtsiGMkJbt/iD8rQ2AAQACAwEFuF07bbuXk4EuSECBjRkLhDeGEZ4Jm4QbrRF/TN0CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADBkZv5SEXMv/srbpyw5vnvIzlu8X3EmssQ5s6QAAAABQT9t1PQCVM3yb4hmStvNpNTEdyegpbdZm5yq7uawiZAwIABQIQJwAAAQIAAwwCAAAA9AEAAAAAAAACAAkD6AMAAAAAAAABg6ubjXXDDLT4HDIIaUQTs2tXhM3DYb69M4nd4UWaFdMBAAA=",
+        limit: 10_000,
+        price: 1_000,
+        signed_tx: "AcRmE7GRYYh3XKjfYpBRvTdXjYMLtowRUxaStETGPTm0qxa7sm11yqGXKiO3SgOdsRL2Y9IQRBMfqwkBZyrK9gKAAQACAwEFuF07bbuXk4EuSECBjRkLhDeGEZ4Jm4QbrRF/TN0CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADBkZv5SEXMv/srbpyw5vnvIzlu8X3EmssQ5s6QAAAABQT9t1PQCVM3yb4hmStvNpNTEdyegpbdZm5yq7uawiZAwIABQIQJwAAAQIAAwwCAAAA9AEAAAAAAAACAAkD6AMAAAAAAAABg6ubjXXDDLT4HDIIaUQTs2tXhM3DYb69M4nd4UWaFdMBAAA=",
+        signature: "4vkDYvXnAyauDwgQUT9pjhvArCm1jZZFp6xFiT6SYKDHwabPNyNskzzd8YJZR4UJVXakBtRAFku3axVQoA7Apido",
+    });
 }
