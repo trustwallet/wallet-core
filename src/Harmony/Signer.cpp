@@ -297,14 +297,6 @@ CollectRewards Signer::buildUnsignedCollectRewards(const Proto::SigningInput &in
     return CollectRewards(delegatorAddr);
 }
 
-template <typename T>
-void Signer::sign(const PrivateKey& privateKey, const Data& hash, T& transaction) const noexcept {
-    auto tuple = sign(chainID, privateKey, hash);
-    transaction.r = std::get<0>(tuple);
-    transaction.s = std::get<1>(tuple);
-    transaction.v = std::get<2>(tuple);
-}
-
 Data Signer::rlpNoHash(const Transaction& transaction, const bool include_vrs) const noexcept {
     auto nonce = store(transaction.nonce);
     auto gasPrice = store(transaction.gasPrice);
