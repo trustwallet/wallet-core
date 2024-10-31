@@ -2,6 +2,13 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::defined_addresses::{COMPUTE_BUDGET_ADDRESS, SYSTEM_PROGRAM_ID_ADDRESS};
+use crate::modules::insert_instruction::InsertInstruction;
+use crate::modules::instruction_builder::compute_budget_instruction::{
+    ComputeBudgetInstruction, ComputeBudgetInstructionBuilder, UnitLimit, UnitPrice,
+};
+use crate::modules::instruction_builder::system_instruction::SystemInstruction;
+use crate::modules::message_decompiler::{InstructionWithoutAccounts, MessageDecompiler};
 use crate::modules::proto_builder::ProtoBuilder;
 use crate::modules::tx_signer::TxSigner;
 use crate::modules::PubkeySignatureMap;
@@ -75,4 +82,113 @@ impl SolanaTransaction {
             ..Proto::SigningOutput::default()
         })
     }
+
+    pub fn get_compute_unit_price(encoded_tx: &str) -> SigningResult<Option<UnitPrice>> {
+        let tx = VersionedTransaction::from_base64(encoded_tx)?;
+        let instructions = MessageDecompiler::decompile_partly(&tx.message)?;
+        Ok(instructions
+            .iter()
+            .find_map(try_instruction_as_set_unit_price))
+    }
+
+    pub fn get_compute_unit_limit(encoded_tx: &str) -> SigningResult<Option<UnitLimit>> {
+        let tx = VersionedTransaction::from_base64(encoded_tx)?;
+        let instructions = MessageDecompiler::decompile_partly(&tx.message)?;
+        Ok(instructions
+            .iter()
+            .find_map(try_instruction_as_set_unit_limit))
+    }
+
+    pub fn set_compute_unit_price(encoded_tx: &str, price: UnitPrice) -> SigningResult<String> {
+        let tx_bytes = base64::decode(encoded_tx, STANDARD)?;
+        let mut tx: VersionedTransaction =
+            bincode::deserialize(&tx_bytes).map_err(|_| SigningErrorType::Error_input_parse)?;
+        let instructions = MessageDecompiler::decompile_partly(&tx.message)?;
+
+        let set_price_ix = ComputeBudgetInstructionBuilder::set_compute_unit_price(price);
+
+        // First, try to find a `ComputeBudgetInstruction::SetComputeUnitPrice` instruction.
+        let ix_position = instructions
+            .iter()
+            .position(|ix| try_instruction_as_set_unit_price(ix).is_some());
+        // If it presents already, it's enough to update the instruction data only.
+        if let Some(pos) = ix_position {
+            tx.message.instructions_mut()[pos].data = set_price_ix.data;
+            return tx.to_base64().tw_err(|_| SigningErrorType::Error_internal);
+        }
+
+        // `ComputeBudgetInstruction::SetComputeUnitPrice` can be pushed to the end of the instructions list.
+        tx.message
+            .push_simple_instruction(set_price_ix.program_id, set_price_ix.data)?;
+
+        tx.to_base64().tw_err(|_| SigningErrorType::Error_internal)
+    }
+
+    pub fn set_compute_unit_limit(encoded_tx: &str, limit: UnitLimit) -> SigningResult<String> {
+        let tx_bytes = base64::decode(encoded_tx, STANDARD)?;
+        let mut tx: VersionedTransaction =
+            bincode::deserialize(&tx_bytes).map_err(|_| SigningErrorType::Error_input_parse)?;
+        let instructions = MessageDecompiler::decompile_partly(&tx.message)?;
+
+        let set_limit_ix = ComputeBudgetInstructionBuilder::set_compute_unit_limit(limit);
+
+        // First, try to find a `ComputeBudgetInstruction::SetComputeUnitLimit` instruction.
+        let ix_position = instructions
+            .iter()
+            .position(|ix| try_instruction_as_set_unit_limit(ix).is_some());
+        // If it presents already, it's enough to update the instruction data only.
+        if let Some(pos) = ix_position {
+            tx.message.instructions_mut()[pos].data = set_limit_ix.data;
+            return tx.to_base64().tw_err(|_| SigningErrorType::Error_internal);
+        }
+
+        // `ComputeBudgetInstruction::SetComputeUnitLimit` should be at the beginning of the instructions list.
+        // However `SystemInstruction::AdvanceNonceAccount` must be the first instruction.
+        // So in case if the advance nonce instruction presents, we should insert unit limit as the second instruction.
+        let insert_at = match instructions.first() {
+            Some(first_ix) if is_instruction_advance_nonce_account(first_ix) => 1,
+            _ => 0,
+        };
+
+        tx.message.insert_simple_instruction(
+            insert_at,
+            set_limit_ix.program_id,
+            set_limit_ix.data,
+        )?;
+
+        tx.to_base64().tw_err(|_| SigningErrorType::Error_internal)
+    }
+}
+
+fn try_instruction_as_compute_budget(
+    ix: &InstructionWithoutAccounts,
+) -> Option<ComputeBudgetInstruction> {
+    if ix.program_id != *COMPUTE_BUDGET_ADDRESS {
+        return None;
+    }
+    ComputeBudgetInstruction::try_from_borsh(&ix.data).ok()
+}
+
+fn try_instruction_as_set_unit_price(ix: &InstructionWithoutAccounts) -> Option<UnitPrice> {
+    match try_instruction_as_compute_budget(ix)? {
+        ComputeBudgetInstruction::SetComputeUnitPrice(price) => Some(price),
+        _ => None,
+    }
+}
+
+fn try_instruction_as_set_unit_limit(ix: &InstructionWithoutAccounts) -> Option<UnitLimit> {
+    match try_instruction_as_compute_budget(ix)? {
+        ComputeBudgetInstruction::SetComputeUnitLimit(limit) => Some(limit),
+        _ => None,
+    }
+}
+
+fn is_instruction_advance_nonce_account(ix: &InstructionWithoutAccounts) -> bool {
+    if ix.program_id != *SYSTEM_PROGRAM_ID_ADDRESS {
+        return false;
+    }
+    let Ok(system_ix) = SystemInstruction::try_from_bincode(&ix.data) else {
+        return false;
+    };
+    system_ix == SystemInstruction::AdvanceNonceAccount
 }

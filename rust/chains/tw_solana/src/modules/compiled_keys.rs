@@ -11,6 +11,12 @@ use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use tw_coin_entry::error::prelude::*;
 
+pub fn try_into_u8(num: usize) -> SigningResult<u8> {
+    u8::try_from(num)
+        .tw_err(|_| SigningErrorType::Error_tx_too_big)
+        .context("There are too many accounts in the transaction")
+}
+
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 struct CompiledKeyMeta {
     is_signer: bool,
@@ -67,10 +73,6 @@ impl CompiledKeys {
     }
 
     pub fn try_into_message_components(self) -> SigningResult<(MessageHeader, Vec<SolanaAddress>)> {
-        let try_into_u8 = |num: usize| -> SigningResult<u8> {
-            u8::try_from(num).tw_err(|_| SigningErrorType::Error_tx_too_big)
-        };
-
         let Self {
             ordered_keys,
             key_meta_map,
