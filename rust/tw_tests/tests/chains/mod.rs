@@ -13,7 +13,12 @@ mod ecash;
 mod ethereum;
 mod greenfield;
 mod internet_computer;
+<<<<<<< HEAD
 mod kusama;
+||||||| parent of 2908edbc (Update mod.rs)
+=======
+mod mayachain;
+>>>>>>> 2908edbc (Update mod.rs)
 mod native_evmos;
 mod native_injective;
 mod pactus;

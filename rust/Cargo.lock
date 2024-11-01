@@ -1858,7 +1858,6 @@ dependencies = [
  "tw_hash",
  "tw_internet_computer",
  "tw_keypair",
- "tw_mayachain",
  "tw_memory",
  "tw_misc",
  "tw_native_evmos",
