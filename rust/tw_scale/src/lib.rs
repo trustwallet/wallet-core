@@ -456,10 +456,9 @@ mod tests {
 
     #[test]
     fn test_option() {
-        let empty: [u8; 0] = [];
-        assert_eq!(Some(1u8).to_scale(), &[0x01]);
-        assert_eq!(None::<u8>.to_scale(), empty);
-        assert_eq!(Some(Compact(1u64)).to_scale(), &[0x04]);
+        assert_eq!(Some(1u8).to_scale(), &[0x01, 0x01]);
+        assert_eq!(None::<u8>.to_scale(), &[0x00]);
+        assert_eq!(Some(Compact(1u64)).to_scale(), &[0x01, 0x04]);
     }
 
     #[test]
