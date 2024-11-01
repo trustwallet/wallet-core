@@ -17,6 +17,7 @@ use tw_ethereum::entry::EthereumEntry;
 use tw_evm::evm_entry::EvmEntryExt;
 use tw_greenfield::entry::GreenfieldEntry;
 use tw_internet_computer::entry::InternetComputerEntry;
+use tw_mayachain::entry::MayachainEntry;
 use tw_native_evmos::entry::NativeEvmosEntry;
 use tw_native_injective::entry::NativeInjectiveEntry;
 use tw_pactus::entry::PactusEntry;
@@ -40,6 +41,7 @@ const COSMOS: CosmosEntry = CosmosEntry;
 const ETHEREUM: EthereumEntry = EthereumEntry;
 const GREENFIELD: GreenfieldEntry = GreenfieldEntry;
 const INTERNET_COMPUTER: InternetComputerEntry = InternetComputerEntry;
+const MAYACHAIN: MayachainEntry = MayachainEntry;
 const NATIVE_EVMOS: NativeEvmosEntry = NativeEvmosEntry;
 const NATIVE_INJECTIVE: NativeInjectiveEntry = NativeInjectiveEntry;
 const PACTUS: PactusEntry = PactusEntry;
@@ -62,6 +64,7 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::Ethereum => Ok(&ETHEREUM),
         BlockchainType::Greenfield => Ok(&GREENFIELD),
         BlockchainType::InternetComputer => Ok(&INTERNET_COMPUTER),
+        BlockchainType::Mayachain => Ok(&MAYACHAIN),
         BlockchainType::NativeEvmos => Ok(&NATIVE_EVMOS),
         BlockchainType::NativeInjective => Ok(&NATIVE_INJECTIVE),
         BlockchainType::Pactus => Ok(&PACTUS),
