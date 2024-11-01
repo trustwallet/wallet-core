@@ -28,7 +28,13 @@ create_xc_framework() {
 
 cd rust
 
-if isTargetSpecified "native"; then
+if isTargetSpecified "native" && [[ $(uname) == "Darwin" ]]; then
+  echo "Generating Native target"
+  cargo build --target  x86_64-apple-darwin --target aarch64-apple-darwin --release --lib
+
+  lipo $BUILD_FOLDER/x86_64-apple-darwin/release/$TARGET_NAME $BUILD_FOLDER/aarch64-apple-darwin/release/$TARGET_NAME -create -output $BUILD_FOLDER/release/$TARGET_NAME
+
+else
   echo "Generating Native target"
   cargo build --release --lib
 fi

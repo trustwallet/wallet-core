@@ -28,11 +28,19 @@ function download_dependencies() {
     ${BASE_DIR}/download-dependencies
 }
 
+function get_cmake_platform_options() {
+    local options=""
+    if [[ $(uname) == "Darwin" ]]; then
+        options="-DCMAKE_OSX_ARCHITECTURES='x86_64;arm64'"
+    fi
+    echo "$options"
+}
+
 function build_gtest() {
     # Build gtest
     GTEST_DIR="$ROOT/build/local/src/gtest"
     cd ${GTEST_DIR}/googletest-release-$GTEST_VERSION
-    $CMAKE -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -H.
+    $CMAKE -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -H. $(get_cmake_platform_options)
     $MAKE -j4
     $MAKE install
     $MAKE clean
@@ -42,7 +50,7 @@ function build_libcheck() {
     # Build Check
     CHECK_DIR="$ROOT/build/local/src/check"
     cd ${CHECK_DIR}/check-$CHECK_VERSION
-    $CMAKE -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -H.
+    $CMAKE -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -H. $(get_cmake_platform_options)
     $MAKE -j4
     $MAKE install
     $MAKE clean
@@ -53,7 +61,7 @@ function build_protobuf() {
     PROTOBUF_DIR="$ROOT/build/local/src/protobuf"
     cd ${PROTOBUF_DIR}/protobuf-$PROTOBUF_VERSION
 
-    $CMAKE -Scmake -B . -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_MODULE_COMPATIBLE=ON
+    $CMAKE -Scmake -B . -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_MODULE_COMPATIBLE=ON $(get_cmake_platform_options)
     $CMAKE --build . -j
     $CMAKE --install . --prefix $PREFIX
 
@@ -63,7 +71,7 @@ function build_protobuf() {
 
     # Protobuf plugins
     cd "$ROOT/protobuf-plugin"
-    $CMAKE . -Bbuild -DProtobuf_DIR=$PREFIX/lib/cmake/protobuf
+    $CMAKE . -Bbuild -DProtobuf_DIR=$PREFIX/lib/cmake/protobuf $(get_cmake_platform_options)
     $CMAKE --build build -j
     $CMAKE --install build --prefix $PREFIX
     $CMAKE --build build --target clean
