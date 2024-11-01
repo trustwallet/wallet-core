@@ -187,6 +187,7 @@ enum TWCoinType {
     TWCoinTypeBounceBit = 6001,
     TWCoinTypeZkLinkNova = 810180,
     TWCoinTypePactus = 21888,
+    TWCoinTypeMAYAChain = 1000931,
     // end_of_tw_coin_type_marker_do_not_modify
 };
 
