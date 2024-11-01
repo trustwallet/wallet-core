@@ -15,6 +15,7 @@ use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
+use tw_coin_entry::modules::transaction_util::NoTransactionUtil;
 use tw_keypair::tw::PublicKey;
 use tw_proto::Polkadot::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
@@ -35,6 +36,7 @@ impl CoinEntry for PolkadotEntry {
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
+    type TransactionUtil = NoTransactionUtil;
 
     #[inline]
     fn parse_address(
@@ -47,11 +49,7 @@ impl CoinEntry for PolkadotEntry {
     }
 
     #[inline]
-    fn parse_address_unchecked(
-        &self,
-        _coin: &dyn CoinContext,
-        address: &str,
-    ) -> AddressResult<Self::Address> {
+    fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address> {
         PolkadotAddress::from_str(address)
     }
 
