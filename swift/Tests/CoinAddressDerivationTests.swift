@@ -403,6 +403,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .pactus:
                     let expectedResult = "pc1r7ys2g5a4xc2qtm0t4q987m4mvs57w5g0v4pvzg"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .mayachain:
+                    let expectedResult = "maya1c8jd7ad9pcw4k3wkuqlkz4auv95mldr2knf5vy"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()
                 }
