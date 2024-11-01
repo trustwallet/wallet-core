@@ -155,5 +155,6 @@ class CoinAddressDerivationTests {
         NATIVEZETACHAIN -> assertEquals("zeta13u6g7vqgw074mgmf2ze2cadzvkz9snlwywj304", address)
         DYDX -> assertEquals("dydx142j9u5eaduzd7faumygud6ruhdwme98qeayaky", address)
         PACTUS -> assertEquals("pc1r7ys2g5a4xc2qtm0t4q987m4mvs57w5g0v4pvzg", address)
+        MAYACHAIN -> assertEquals("maya1c8jd7ad9pcw4k3wkuqlkz4auv95mldr2knf5vy", address)
     }
 }
