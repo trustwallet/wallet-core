@@ -4,21 +4,16 @@
 
 use tw_proto::Pactus::Proto;
 
-/// A macro to define three constants: `SIGN_BYTES`, `NOT_SIGNED_DATA`, and `SIGNED_DATA`.
+/// A macro to define test data.
 /// Transaction format explained here: https://docs.pactus.org/protocol/transaction/format/
-macro_rules! define_expected_data {
+macro_rules! define_test_data {
     (  $tx_id:expr,
        $signature:expr,
        $public_key:expr
        $(, $param:expr)*,
     ) => {
-        pub const SIGN_BYTES: &str = concat!(
+        pub const DATA_TO_SIGN: &str = concat!(
             $( $param, )*
-        );
-
-        pub const NOT_SIGNED_DATA: &str = concat!(
-            "02", // Not Sign Flag
-            $($param, )*
         );
 
         pub const SIGNED_DATA: &str = concat!(
@@ -36,13 +31,13 @@ macro_rules! define_expected_data {
 // Private key for all the test cases
 pub const PRIVATE_KEY: &str = "4e51f1f3721f644ac7a193be7f5e7b8c2abaa3467871daf4eacb5d3af080e5d6";
 
-// Successfully broadcasted transfer transaction:
+// Successfully broadcasted transaction:
 // https://pacviewer.com/transaction/1b6b7226f7935a15f05371d1a1fefead585a89704ce464b7cc1d453d299d235f
 pub mod transfer_test_case {
     use super::*;
     use tw_encoding::hex::DecodeHex;
 
-    define_expected_data!(
+    define_test_data!(
         "1b6b7226f7935a15f05371d1a1fefead585a89704ce464b7cc1d453d299d235f", // transaction ID
         "4ed8fee3d8992e82660dd05bbe8608fc56ceabffdeeee61e3213b9b49d33a0fc\
          8dea6d79ee7ec60f66433f189ed9b3c50b2ad6fa004e26790ee736693eda8506", // Signature
@@ -80,13 +75,13 @@ pub mod transfer_test_case {
     }
 }
 
-// Successfully broadcasted bond transaction:
+// Successfully broadcasted transaction:
 // https://pacviewer.com/transaction/d194b445642a04ec78ced4448696e50b733f2f0b517a23871882c0eefaf1c28f
-pub mod bond_test_case {
+pub mod bond_with_public_key_test_case {
     use super::*;
     use tw_encoding::hex::DecodeHex;
 
-    define_expected_data!(
+    define_test_data!(
         "d194b445642a04ec78ced4448696e50b733f2f0b517a23871882c0eefaf1c28f", // transaction ID
         "0d7bc6d94927534b89e2f53bcfc9fc849e0e2982438955eda55b4338328adac7\
          9d4ee3216d143f0e1629764ab650734f8ba188e716d71f9eff65e39ce7006300", // Signature
@@ -129,7 +124,7 @@ pub mod bond_test_case {
     }
 }
 
-// Successfully broadcasted bond without public key transaction:
+// Successfully broadcasted transaction:
 // https://pacviewer.com/transaction/f83f583a5c40adf93a90ea536a7e4b467d30ca4f308d5da52624d80c42adec80
 //
 // If the validator exists and has already been staked, there’s no need to send the public key.
@@ -138,7 +133,7 @@ pub mod bond_without_public_key_test_case {
     use super::*;
     use tw_encoding::hex::DecodeHex;
 
-    define_expected_data!(
+    define_test_data!(
         "f83f583a5c40adf93a90ea536a7e4b467d30ca4f308d5da52624d80c42adec80", // transaction ID
         "9e6279fb64067c7d7316ac74630bbb8589df268aa4548f1c7d85c087a8748ff0\
          715b9149afbd94c5d8ee6b37c787ec63e963cbb38be513ebc436aa58f9a8f00d", // Signature
@@ -177,3 +172,35 @@ pub mod bond_without_public_key_test_case {
         }
     }
 }
+
+pub(crate) struct TestCase {
+    pub sign_input_fn: fn() -> Proto::SigningInput<'static>,
+    pub transaction_id: &'static str,
+    pub signature: &'static str,
+    pub data_to_sign: &'static str,
+    pub signed_data: &'static str,
+}
+
+pub(crate) const TEST_CASES: &[TestCase; 3] = &[
+    TestCase {
+        sign_input_fn: transfer_test_case::sign_input,
+        transaction_id: transfer_test_case::TX_ID,
+        signature: transfer_test_case::SIGNATURE,
+        data_to_sign: transfer_test_case::DATA_TO_SIGN,
+        signed_data: transfer_test_case::SIGNED_DATA,
+    },
+    TestCase {
+        sign_input_fn: bond_with_public_key_test_case::sign_input,
+        transaction_id: bond_with_public_key_test_case::TX_ID,
+        signature: bond_with_public_key_test_case::SIGNATURE,
+        data_to_sign: bond_with_public_key_test_case::DATA_TO_SIGN,
+        signed_data: bond_with_public_key_test_case::SIGNED_DATA,
+    },
+    TestCase {
+        sign_input_fn: bond_without_public_key_test_case::sign_input,
+        transaction_id: bond_without_public_key_test_case::TX_ID,
+        signature: bond_without_public_key_test_case::SIGNATURE,
+        data_to_sign: bond_without_public_key_test_case::DATA_TO_SIGN,
+        signed_data: bond_without_public_key_test_case::SIGNED_DATA,
+    },
+];
