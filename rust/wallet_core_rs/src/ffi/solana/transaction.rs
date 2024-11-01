@@ -49,3 +49,87 @@ pub unsafe extern "C" fn tw_solana_transaction_update_blockhash_and_sign(
 
     TWData::from(output_proto).into_ptr()
 }
+
+/// Try to find a `ComputeBudgetInstruction::SetComputeUnitPrice` instruction in the given transaction,
+/// and returns the specified Unit Price.
+///
+/// \param encoded_tx base64 encoded Solana transaction.
+/// \return nullable Unit Price as a decimal string. Null if no instruction found.
+#[no_mangle]
+pub unsafe extern "C" fn tw_solana_transaction_get_compute_unit_price(
+    encoded_tx: *const TWString,
+) -> *mut TWString {
+    let encoded_tx = try_or_else!(TWString::from_ptr_as_ref(encoded_tx), std::ptr::null_mut);
+    let encoded_tx = try_or_else!(encoded_tx.as_str(), std::ptr::null_mut);
+
+    match SolanaTransaction::get_compute_unit_price(encoded_tx) {
+        Ok(Some(price)) => TWString::from(price.to_string()).into_ptr(),
+        _ => std::ptr::null_mut(),
+    }
+}
+
+/// Try to find a `ComputeBudgetInstruction::SetComputeUnitLimit` instruction in the given transaction,
+/// and returns the specified Unit Limit.
+///
+/// \param encoded_tx base64 encoded Solana transaction.
+/// \return nullable Unit Limit as a decimal string. Null if no instruction found.
+#[no_mangle]
+pub unsafe extern "C" fn tw_solana_transaction_get_compute_unit_limit(
+    encoded_tx: *const TWString,
+) -> *mut TWString {
+    let encoded_tx = try_or_else!(TWString::from_ptr_as_ref(encoded_tx), std::ptr::null_mut);
+    let encoded_tx = try_or_else!(encoded_tx.as_str(), std::ptr::null_mut);
+
+    match SolanaTransaction::get_compute_unit_limit(encoded_tx) {
+        Ok(Some(limit)) => TWString::from(limit.to_string()).into_ptr(),
+        _ => std::ptr::null_mut(),
+    }
+}
+
+/// Adds or updates a `ComputeBudgetInstruction::SetComputeUnitPrice` instruction of the given transaction,
+/// and returns the updated transaction.
+///
+/// \param encoded_tx base64 encoded Solana transaction.
+/// \price Unit Price as a decimal string.
+/// \return base64 encoded Solana transaction. Null if an error occurred.
+#[no_mangle]
+pub unsafe extern "C" fn tw_solana_transaction_set_compute_unit_price(
+    encoded_tx: *const TWString,
+    price: *const TWString,
+) -> *mut TWString {
+    let encoded_tx = try_or_else!(TWString::from_ptr_as_ref(encoded_tx), std::ptr::null_mut);
+    let encoded_tx = try_or_else!(encoded_tx.as_str(), std::ptr::null_mut);
+
+    let price = try_or_else!(TWString::from_ptr_as_ref(price), std::ptr::null_mut);
+    let price = try_or_else!(price.as_str(), std::ptr::null_mut);
+    let price = try_or_else!(price.parse(), std::ptr::null_mut);
+
+    match SolanaTransaction::set_compute_unit_price(encoded_tx, price) {
+        Ok(updated_tx) => TWString::from(updated_tx).into_ptr(),
+        _ => std::ptr::null_mut(),
+    }
+}
+
+/// Adds or updates a `ComputeBudgetInstruction::SetComputeUnitLimit` instruction of the given transaction,
+/// and returns the updated transaction.
+///
+/// \param encoded_tx base64 encoded Solana transaction.
+/// \limit Unit Limit as a decimal string.
+/// \return base64 encoded Solana transaction. Null if an error occurred.
+#[no_mangle]
+pub unsafe extern "C" fn tw_solana_transaction_set_compute_unit_limit(
+    encoded_tx: *const TWString,
+    limit: *const TWString,
+) -> *mut TWString {
+    let encoded_tx = try_or_else!(TWString::from_ptr_as_ref(encoded_tx), std::ptr::null_mut);
+    let encoded_tx = try_or_else!(encoded_tx.as_str(), std::ptr::null_mut);
+
+    let limit = try_or_else!(TWString::from_ptr_as_ref(limit), std::ptr::null_mut);
+    let limit = try_or_else!(limit.as_str(), std::ptr::null_mut);
+    let limit = try_or_else!(limit.parse(), std::ptr::null_mut);
+
+    match SolanaTransaction::set_compute_unit_limit(encoded_tx, limit) {
+        Ok(updated_tx) => TWString::from(updated_tx).into_ptr(),
+        _ => std::ptr::null_mut(),
+    }
+}

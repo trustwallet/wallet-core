@@ -6,11 +6,15 @@
 
 use crate::address::SolanaAddress;
 use crate::blockhash::Blockhash;
+use crate::modules::insert_instruction::InsertInstruction;
+use crate::transaction::v0::MessageAddressTableLookup;
 use crate::transaction::{legacy, short_vec, v0, CompiledInstruction, MessageHeader, Signature};
 use serde::de::{SeqAccess, Unexpected, Visitor};
 use serde::ser::SerializeTuple;
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
+use tw_encoding::base64::STANDARD;
+use tw_encoding::{base64, EncodingError, EncodingResult};
 use tw_hash::{as_byte_sequence, H256};
 
 /// Bit mask that indicates whether a serialized message is versioned.
@@ -33,6 +37,16 @@ impl VersionedTransaction {
             signatures: vec![Signature::default(); message.num_required_signatures()],
             message,
         }
+    }
+
+    pub fn from_base64(s: &str) -> EncodingResult<VersionedTransaction> {
+        let tx_bytes = base64::decode(s, STANDARD)?;
+        bincode::deserialize(&tx_bytes).map_err(|_| EncodingError::InvalidInput)
+    }
+
+    pub fn to_base64(&self) -> EncodingResult<String> {
+        let tx_bytes = bincode::serialize(self).map_err(|_| EncodingError::InvalidInput)?;
+        Ok(base64::encode(&tx_bytes, STANDARD))
     }
 }
 
@@ -129,6 +143,36 @@ impl Serialize for VersionedMessage {
                 seq.serialize_element(message)?;
                 seq.end()
             },
+        }
+    }
+}
+
+impl InsertInstruction for VersionedMessage {
+    fn address_table_lookups(&self) -> Option<&[MessageAddressTableLookup]> {
+        match self {
+            VersionedMessage::Legacy(legacy) => legacy.address_table_lookups(),
+            VersionedMessage::V0(v0) => v0.address_table_lookups(),
+        }
+    }
+
+    fn account_keys_mut(&mut self) -> &mut Vec<SolanaAddress> {
+        match self {
+            VersionedMessage::Legacy(legacy) => legacy.account_keys_mut(),
+            VersionedMessage::V0(v0) => v0.account_keys_mut(),
+        }
+    }
+
+    fn message_header_mut(&mut self) -> &mut MessageHeader {
+        match self {
+            VersionedMessage::Legacy(legacy) => legacy.message_header_mut(),
+            VersionedMessage::V0(v0) => v0.message_header_mut(),
+        }
+    }
+
+    fn instructions_mut(&mut self) -> &mut Vec<CompiledInstruction> {
+        match self {
+            VersionedMessage::Legacy(legacy) => legacy.instructions_mut(),
+            VersionedMessage::V0(v0) => v0.instructions_mut(),
         }
     }
 }
