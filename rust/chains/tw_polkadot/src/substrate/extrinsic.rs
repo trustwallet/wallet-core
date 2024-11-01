@@ -2,7 +2,13 @@ use tw_hash::{H256, H512};
 use tw_scale::{Compact, ToScale, impl_struct_scale, impl_enum_scale};
 use tw_ss58_address::SS58Address;
 
+use tw_proto::Polkadot::Proto::{
+    mod_CallIndices::OneOfvariant as CallIndicesVariant,
+    CallIndices,
+};
+
 use crate::address::PolkadotAddress;
+use crate::extrinsic::EncodeError;
 
 pub type TxHash = H256;
 pub type BlockHash = H256;
@@ -95,6 +101,72 @@ impl Extra {
   pub fn tip(&self) -> u128 {
     self.tip.0
   }
+}
+
+#[derive(Clone, Debug)]
+pub struct CallIndex(Option<(u8, u8)>);
+
+impl CallIndex {
+    pub fn from_tw(call_index: &Option<CallIndices>) -> Result<Self, EncodeError> {
+        let call_index = match call_index {
+            Some(CallIndices { variant: CallIndicesVariant::custom(c) }) => {
+                if c.module_index > 0xff || c.method_index > 0xff {
+                    return Err(EncodeError::InvalidCallIndex);
+                }
+                Some((c.module_index as u8, c.method_index as u8))
+            }
+            _ => None,
+        };
+        Ok(Self(call_index))
+    }
+
+    pub fn required_from_tw(call_index: &Option<CallIndices>) -> Result<Self, EncodeError> {
+        if call_index.is_none() {
+            return Err(EncodeError::MissingCallIndicesTable);
+        }
+        Self::from_tw(call_index)
+    }
+
+    pub fn has_call_index(&self) -> bool {
+        self.0.is_some()
+    }
+
+    pub fn wrap<T: ToScale>(self, value: T) -> WithCallIndex<T> {
+        WithCallIndex {
+            value,
+            call_index: self,
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct WithCallIndex<T: ToScale> {
+  value: T,
+  call_index: CallIndex,
+}
+
+impl<T: ToScale> WithCallIndex<T> {
+    pub fn map<U: ToScale, F: Fn(T) -> U>(self, f: F) -> WithCallIndex<U> {
+        WithCallIndex {
+            value: f(self.value),
+            call_index: self.call_index,
+        }
+    }
+}
+
+impl<T: ToScale> ToScale for WithCallIndex<T> {
+    fn to_scale_into(&self, out: &mut Vec<u8>) {
+        if let Some(call_index) = &self.call_index.0 {
+            let mut value = self.value.to_scale();
+            assert!(value.len() >= 2);
+            // Override the first two bytes with the custom call index.
+            value[0] = call_index.0;
+            value[1] = call_index.1;
+            out.extend(&value);
+        } else {
+            self.value.to_scale_into(out);
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
