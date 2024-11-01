@@ -205,6 +205,9 @@ where
             MessageEnum::thorchain_send_message(ref send) => {
                 Self::thorchain_send_msg_from_proto(coin, send)
             },
+            MessageEnum::mayachain_send_message(ref send) => {
+                Self::mayachain_send_msg_from_proto(coin, send)
+            },
             MessageEnum::wasm_terra_execute_contract_generic(ref generic) => {
                 Self::wasm_terra_execute_contract_generic_msg_from_proto(coin, generic)
             },
@@ -234,6 +237,9 @@ where
             },
             MessageEnum::thorchain_deposit_message(ref deposit) => {
                 Self::thorchain_deposit_msg_from_proto(coin, deposit)
+            },
+            MessageEnum::mayachain_deposit_message(ref deposit) => {
+                Self::mayachain_deposit_msg_from_proto(coin, deposit)
             },
             MessageEnum::None => SigningError::err(SigningErrorType::Error_invalid_params)
                 .context("No TX message provided"),
@@ -621,6 +627,26 @@ where
         Ok(msg.into_boxed())
     }
 
+    pub fn mayachain_send_msg_from_proto(
+        _coin: &dyn CoinContext,
+        send: &Proto::mod_Message::MAYAChainSend<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        use crate::transaction::message::mayachain_message::MayachainSendMessage;
+
+        let amount = send
+            .amounts
+            .iter()
+            .map(Self::coin_from_proto)
+            .collect::<SigningResult<_>>()?;
+
+        let msg = MayachainSendMessage {
+            from_address: send.from_address.to_vec(),
+            to_address: send.to_address.to_vec(),
+            amount,
+        };
+        Ok(msg.into_boxed())
+    }
+
     pub fn auth_grant_msg_from_proto(
         _coin: &dyn CoinContext,
         auth: &Proto::mod_Message::AuthGrant<'_>,
@@ -766,6 +792,45 @@ where
         }
 
         let msg = ThorchainDepositMessage {
+            coins,
+            memo: deposit.memo.to_string(),
+            signer: deposit.signer.to_vec(),
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn mayachain_deposit_msg_from_proto(
+        _coin: &dyn CoinContext,
+        deposit: &Proto::mod_Message::MAYAChainDeposit<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        use crate::transaction::message::mayachain_message::{
+            MayachainAsset, MayachainCoin, MayachainDepositMessage,
+        };
+
+        let mut coins = Vec::with_capacity(deposit.coins.len());
+        for coin_proto in deposit.coins.iter() {
+            let asset_proto = coin_proto
+                .asset
+                .as_ref()
+                .or_tw_err(SigningErrorType::Error_invalid_params)
+                .context("No Deposit Asset specified")?;
+
+            let asset = MayachainAsset {
+                chain: asset_proto.chain.to_string(),
+                symbol: asset_proto.symbol.to_string(),
+                ticker: asset_proto.ticker.to_string(),
+                synth: asset_proto.synth,
+            };
+            coins.push(MayachainCoin {
+                asset,
+                amount: U256::from_str(&coin_proto.amount)
+                    .into_tw()
+                    .context("Expected U256 big-endian Deposit amount")?,
+                decimals: coin_proto.decimals,
+            });
+        }
+
+        let msg = MayachainDepositMessage {
             coins,
             memo: deposit.memo.to_string(),
             signer: deposit.signer.to_vec(),
