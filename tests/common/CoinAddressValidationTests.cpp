@@ -422,4 +422,12 @@ TEST(Coin, ValidateAddressTheOpenNetwork) {
     ASSERT_EQ(normalizeAddress(TWCoinTypeTON, "0:8a8627861a5dd96c9db3ce0807b122da5ed473934ce7568a5b4b1c361cbb28ae"), "UQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorhqg");
 }
 
+TEST(Coin, ValidateAddresMAYAChain) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeMAYAChain, "maya1z53wwe7md6cewz9sqwqzn0aavpaun0gw0wclun"));
+    // wrong prefix
+    EXPECT_FALSE(validateAddress(TWCoinTypeMAYAChain, "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
+    // wrong checksum
+    EXPECT_FALSE(validateAddress(TWCoinTypeMAYAChain, "maya1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2s"));
+}
+
 } // namespace TW
