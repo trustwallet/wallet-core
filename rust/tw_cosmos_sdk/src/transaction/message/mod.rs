@@ -14,6 +14,7 @@ pub mod cosmos_generic_message;
 pub mod cosmos_gov_message;
 pub mod cosmos_staking_message;
 pub mod ibc_message;
+pub mod mayachain_message;
 pub mod stride_message;
 pub mod terra_wasm_message;
 pub mod thorchain_message;
