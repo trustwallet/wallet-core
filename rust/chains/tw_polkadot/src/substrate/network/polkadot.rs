@@ -27,10 +27,10 @@ impl TWPolkadotCallEncoder for PolkadotCallEncoder {
     fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
         let call = match msg {
             SigningVariant::balance_call(b) => {
-                PolkadotCall::Balances(GenericBalances::encode_call(b)?)
+                GenericBalances::encode_call(b)?.map(PolkadotCall::Balances)
             },
             SigningVariant::staking_call(s) => {
-                PolkadotCall::Staking(GenericStaking::encode_call(s)?)
+                GenericStaking::encode_call(s)?.map(PolkadotCall::Staking)
             },
             _ => {
                 // TODO: better error.
@@ -69,10 +69,10 @@ impl TWPolkadotCallEncoder for KusamaCallEncoder {
     fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
         let call = match msg {
             SigningVariant::balance_call(b) => {
-                KusamaCall::Balances(GenericBalances::encode_call(b)?)
+                GenericBalances::encode_call(b)?.map(KusamaCall::Balances)
             },
             SigningVariant::staking_call(s) => {
-                KusamaCall::Staking(GenericStaking::encode_call(s)?)
+                GenericStaking::encode_call(s)?.map(KusamaCall::Staking)
             },
             _ => {
                 // TODO: better error.

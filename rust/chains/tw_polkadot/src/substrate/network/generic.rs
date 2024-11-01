@@ -36,7 +36,8 @@ impl_enum_scale!(
 );
 
 impl GenericBalances {
-    fn encode_transfer(t: &Transfer) -> EncodeResult<Self> {
+    fn encode_transfer(t: &Transfer) -> WithCallIndexResult<Self> {
+        let ci = CallIndex::from_tw(&t.call_indices)?;
         let address =
             SS58Address::from_str(&t.to_address).map_err(|_| EncodeError::InvalidAddress)?;
         let value =
@@ -45,13 +46,14 @@ impl GenericBalances {
             .try_into()
             .map_err(|_| EncodeError::InvalidValue)?;
 
-        Ok(Self::TransferAllowDeath {
+        Ok(ci.wrap(Self::TransferAllowDeath {
             dest: address.into(),
             value: Compact(value)
-        })
+        }))
     }
 
-    fn encode_asset_transfer(t: &AssetTransfer) -> EncodeResult<Self> {
+    fn encode_asset_transfer(t: &AssetTransfer) -> WithCallIndexResult<Self> {
+        let ci = CallIndex::required_from_tw(&t.call_indices)?;
         let address =
             SS58Address::from_str(&t.to_address).map_err(|_| EncodeError::InvalidAddress)?;
         let amount =
@@ -60,14 +62,14 @@ impl GenericBalances {
             .try_into()
             .map_err(|_| EncodeError::InvalidValue)?;
 
-        Ok(Self::AssetTransfer {
+        Ok(ci.wrap(Self::AssetTransfer {
             id: Compact(t.asset_id),
             target: address.into(),
             amount: Compact(amount)
-        })
+        }))
     }
 
-    pub fn encode_call(b: &Balance) -> EncodeResult<Self> {
+    pub fn encode_call(b: &Balance) -> WithCallIndexResult<Self> {
         match &b.message_oneof {
             BalanceVariant::transfer(t) => Self::encode_transfer(t),
             BalanceVariant::asset_transfer(t) => Self::encode_asset_transfer(t),
@@ -135,77 +137,84 @@ impl_enum_scale!(
 );
 
 impl GenericStaking {
-    fn encode_bond(b: &Bond) -> EncodeResult<Self> {
+    fn encode_bond(b: &Bond) -> WithCallIndexResult<Self> {
+        let ci = CallIndex::from_tw(&b.call_indices)?;
         let value =
             U256::from_big_endian_slice(&b.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
             .map_err(|_| EncodeError::InvalidValue)?;
 
-        Ok(Self::Bond {
+        Ok(ci.wrap(Self::Bond {
             value: Compact(value),
             reward: RewardDestination::from_tw(b.reward_destination as u8, &b.controller)?,
-        })
+        }))
     }
 
-    fn encode_bond_extra(b: &BondExtra) -> EncodeResult<Self> {
+    fn encode_bond_extra(b: &BondExtra) -> WithCallIndexResult<Self> {
+        let ci = CallIndex::from_tw(&b.call_indices)?;
         let value =
             U256::from_big_endian_slice(&b.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
             .map_err(|_| EncodeError::InvalidValue)?;
 
-        Ok(Self::BondExtra {
+        Ok(ci.wrap(Self::BondExtra {
             max_additional: Compact(value),
-        })
+        }))
     }
 
-    fn encode_chill(_c: &Chill) -> EncodeResult<Self> {
-        Ok(Self::Chill)
+    fn encode_chill(c: &Chill) -> WithCallIndexResult<Self> {
+        let ci = CallIndex::from_tw(&c.call_indices)?;
+        Ok(ci.wrap(Self::Chill))
     }
 
-    fn encode_unbond(b: &Unbond) -> EncodeResult<Self> {
+    fn encode_unbond(b: &Unbond) -> WithCallIndexResult<Self> {
+        let ci = CallIndex::from_tw(&b.call_indices)?;
         let value =
             U256::from_big_endian_slice(&b.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
             .map_err(|_| EncodeError::InvalidValue)?;
 
-        Ok(Self::Unbond {
+        Ok(ci.wrap(Self::Unbond {
             value: Compact(value),
-        })
+        }))
     }
 
-    fn encode_rebond(b: &Rebond) -> EncodeResult<Self> {
+    fn encode_rebond(b: &Rebond) -> WithCallIndexResult<Self> {
+        let ci = CallIndex::from_tw(&b.call_indices)?;
         let value =
             U256::from_big_endian_slice(&b.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
             .map_err(|_| EncodeError::InvalidValue)?;
 
-        Ok(Self::Rebond {
+        Ok(ci.wrap(Self::Rebond {
             value: Compact(value),
-        })
+        }))
     }
 
-    fn encode_withdraw_unbonded(b: &WithdrawUnbonded) -> EncodeResult<Self> {
-        Ok(Self::WithdrawUnbonded {
+    fn encode_withdraw_unbonded(b: &WithdrawUnbonded) -> WithCallIndexResult<Self> {
+        let ci = CallIndex::from_tw(&b.call_indices)?;
+        Ok(ci.wrap(Self::WithdrawUnbonded {
             num_slashing_spans: b.slashing_spans as u32,
-        })
+        }))
     }
 
-    fn encode_nominate(b: &Nominate) -> EncodeResult<Self> {
+    fn encode_nominate(b: &Nominate) -> WithCallIndexResult<Self> {
+        let ci = CallIndex::from_tw(&b.call_indices)?;
         let targets = b.nominators.iter()
             .map(|target| {
                 let account = SS58Address::from_str(&target).map_err(|_| EncodeError::InvalidAddress)?;
                 Ok(account.into())
             }).collect::<EncodeResult<Vec<MultiAddress>>>()?;
-        Ok(Self::Nominate {
+        Ok(ci.wrap(Self::Nominate {
             targets,
-        })
+        }))
     }
 
-    pub fn encode_call(s: &Staking) -> EncodeResult<Self> {
+    pub fn encode_call(s: &Staking) -> WithCallIndexResult<Self> {
         match &s.message_oneof {
             StakingVariant::bond(b) => Self::encode_bond(b),
             StakingVariant::bond_extra(b) => Self::encode_bond_extra(b),
