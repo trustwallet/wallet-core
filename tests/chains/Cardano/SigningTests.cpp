@@ -972,7 +972,7 @@ TEST(CardanoSigning, SignTransferTokenAmountNonUtf8) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeCardano);
 
-    // https://cardanoscan.io/transaction/
+    // https://cardanoscan.io/transaction/df89e81fbaec7485ba65ac3a2ffe4121a888f4937d085f3ad4f7e8e5192dea74
     // curl -d '{"txHash":"620b71..b872","txBody":"83a400..08f6"}' -H "Content-Type: application/json" https://<cardano-node>/api/txs/submit
     EXPECT_EQ(output.error(), Common::Proto::OK);
     const auto encoded = data(output.encoded());
