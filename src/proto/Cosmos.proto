@@ -52,6 +52,19 @@ message THORChainCoin {
     int64 decimals = 3;
 }
 
+message MAYAChainAsset {
+    string chain = 1;
+    string symbol = 2;
+    string ticker = 3;
+    bool synth = 4;
+}
+
+message MAYAChainCoin {
+    MAYAChainAsset asset = 1;
+    string amount = 2;
+    int64 decimals = 3;
+}
+
 // A transaction payload message
 message Message {
     // cosmos-sdk/MsgSend
@@ -161,6 +174,20 @@ message Message {
     // thorchain/MsgDeposit
     message THORChainDeposit {
         repeated THORChainCoin coins = 1;
+        string memo = 2;
+        bytes signer = 3;
+    }
+
+    // mayachain/MsgSend
+    message MAYAChainSend {
+        bytes from_address = 1;
+        bytes to_address = 2;
+        repeated Amount amounts = 3;
+    }
+
+    // mayachain/MsgDeposit
+    message MAYAChainDeposit {
+        repeated MAYAChainCoin coins = 1;
         string memo = 2;
         bytes signer = 3;
     }
@@ -360,6 +387,8 @@ message Message {
         MsgStrideLiquidStakingStake msg_stride_liquid_staking_stake = 21;
         MsgStrideLiquidStakingRedeem msg_stride_liquid_staking_redeem = 22;
         THORChainDeposit thorchain_deposit_message = 23;
+        MAYAChainSend mayachain_send_message = 24;
+        MAYAChainDeposit mayachain_deposit_message = 25;
     }
 }
 
