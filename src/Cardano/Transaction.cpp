@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+#include <google/protobuf/stubs/strutil.h>
+
 #include "Transaction.h"
 #include "AddressV3.h"
 
@@ -9,13 +11,14 @@
 #include "Hash.h"
 #include "HexCoding.h"
 #include "Numeric.h"
+#include "rust/Wrapper.h"
 
 namespace TW::Cardano {
 
 TokenAmount TokenAmount::fromProto(const Proto::TokenAmount& proto) {
-    std::string assetName;
+    Data assetName;
     if (!proto.asset_name().empty()) {
-        assetName = proto.asset_name();
+        assetName = data(proto.asset_name());
     } else if (!proto.asset_name_hex().empty()) {
         auto assetNameData = parse_hex(proto.asset_name_hex());
         assetName.assign(assetNameData.data(), assetNameData.data() + assetNameData.size());
@@ -29,11 +32,30 @@ Proto::TokenAmount TokenAmount::toProto() const {
 
     Proto::TokenAmount tokenAmount;
     tokenAmount.set_policy_id(policyId.data(), policyId.size());
-    tokenAmount.set_asset_name(assetName.data(), assetName.size());
     tokenAmount.set_asset_name_hex(assetNameHex.data(), assetNameHex.size());
     const auto amountData = store(amount);
     tokenAmount.set_amount(amountData.data(), amountData.size());
+
+    if (const auto assetNameStr = assetNameToString(); assetNameStr.has_value()) {
+        tokenAmount.set_asset_name(assetNameStr.value().data(), assetNameStr.value().size());
+    }
     return tokenAmount;
+}
+
+std::string TokenAmount::displayAssetName() const {
+    if (const auto assetNameStr = assetNameToString(); assetNameStr.has_value()) {
+        return std::move(assetNameStr.value());
+    }
+    return hex(assetName);
+}
+
+std::optional<std::string> TokenAmount::assetNameToString() const {
+    if (!Rust::tw_string_is_utf8_bytes(assetName.data(), assetName.size())) {
+        return std::nullopt;
+    }
+    std::string assetNameStr;
+    assetNameStr.assign(assetName.data(), assetName.data() + assetName.size());
+    return assetNameStr;
 }
 
 TokenBundle TokenBundle::fromProto(const Proto::TokenBundle& proto) {
@@ -108,18 +130,18 @@ uint64_t TokenBundle::minAdaAmount() const {
     }
 
     std::unordered_set<std::string> policyIdRegistry;
-    std::unordered_set<std::string> assetNameRegistry;
+    std::unordered_set<Data, DataHash> assetNameRegistry;
     uint64_t sumAssetNameLengths = 0;
     for (const auto& t : bundle) {
         policyIdRegistry.emplace(t.second.policyId);
-        if (t.second.assetName.length() > 0) {
+        if (!t.second.assetName.empty()) {
             assetNameRegistry.emplace(t.second.assetName);
         }
     }
 
     auto numPids = uint64_t(policyIdRegistry.size());
     auto numAssets = uint64_t(assetNameRegistry.size());
-    for_each(assetNameRegistry.begin(), assetNameRegistry.end(), [&sumAssetNameLengths](auto&& a){ sumAssetNameLengths += a.length(); });
+    for_each(assetNameRegistry.begin(), assetNameRegistry.end(), [&sumAssetNameLengths](auto&& a){ sumAssetNameLengths += a.size(); });
     
     return minAdaAmountHelper(numPids, numAssets, sumAssetNameLengths);
 }
@@ -256,7 +278,7 @@ Cbor::Encode cborizeOutputAmounts(const Amount& amount, const TokenBundle& token
         std::map<Cbor::Encode, Cbor::Encode> subTokensMap;
         for (const auto& token : subTokens) {
             subTokensMap.emplace(
-                Cbor::Encode::bytes(data(token.assetName)),
+                Cbor::Encode::bytes(token.assetName),
                 Cbor::Encode::uint(uint64_t(token.amount)) // 64 bits
             );
         }
