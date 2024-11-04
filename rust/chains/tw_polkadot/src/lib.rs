@@ -4,6 +4,5 @@
 
 pub mod compiler;
 pub mod entry;
-pub mod extrinsic;
 pub mod call_encoder;
 pub mod signer;
