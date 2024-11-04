@@ -4,6 +4,7 @@ use tw_scale::{impl_enum_scale, Compact};
 
 use tw_number::U256;
 use tw_ss58_address::SS58Address;
+use tw_substrate::*;
 
 use tw_proto::Polkadot::Proto::{
     mod_Balance::{AssetTransfer, OneOfmessage_oneof as BalanceVariant, Transfer},
@@ -14,8 +15,7 @@ use tw_proto::Polkadot::Proto::{
     Balance, Staking,
 };
 
-use super::*;
-use crate::address::PolkadotAddress;
+use super::{validate_call_index, required_call_index};
 
 impl_enum_scale!(
     #[derive(Clone, Debug)]
@@ -34,7 +34,7 @@ impl_enum_scale!(
 
 impl GenericBalances {
     fn encode_transfer(t: &Transfer) -> WithCallIndexResult<Self> {
-        let ci = CallIndex::from_tw(&t.call_indices)?;
+        let ci = validate_call_index(&t.call_indices)?;
         let address =
             SS58Address::from_str(&t.to_address).map_err(|_| EncodeError::InvalidAddress)?;
         let value = U256::from_big_endian_slice(&t.value)
@@ -49,7 +49,7 @@ impl GenericBalances {
     }
 
     fn encode_asset_transfer(t: &AssetTransfer) -> WithCallIndexResult<Self> {
-        let ci = CallIndex::required_from_tw(&t.call_indices)?;
+        let ci = required_call_index(&t.call_indices)?;
         let address =
             SS58Address::from_str(&t.to_address).map_err(|_| EncodeError::InvalidAddress)?;
         let amount = U256::from_big_endian_slice(&t.value)
@@ -96,7 +96,7 @@ impl RewardDestination {
             4 => {
                 let account =
                     SS58Address::from_str(account).map_err(|_| EncodeError::InvalidAddress)?;
-                Ok(Self::Account(PolkadotAddress(account)))
+                Ok(Self::Account(SubstrateAddress(account)))
             },
             5 => Ok(Self::None),
             _ => Err(EncodeError::InvalidValue),
@@ -132,7 +132,7 @@ impl_enum_scale!(
 
 impl GenericStaking {
     fn encode_bond(b: &Bond) -> WithCallIndexResult<Self> {
-        let ci = CallIndex::from_tw(&b.call_indices)?;
+        let ci = validate_call_index(&b.call_indices)?;
         let value = U256::from_big_endian_slice(&b.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
@@ -145,7 +145,7 @@ impl GenericStaking {
     }
 
     fn encode_bond_extra(b: &BondExtra) -> WithCallIndexResult<Self> {
-        let ci = CallIndex::from_tw(&b.call_indices)?;
+        let ci = validate_call_index(&b.call_indices)?;
         let value = U256::from_big_endian_slice(&b.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
@@ -157,12 +157,12 @@ impl GenericStaking {
     }
 
     fn encode_chill(c: &Chill) -> WithCallIndexResult<Self> {
-        let ci = CallIndex::from_tw(&c.call_indices)?;
+        let ci = validate_call_index(&c.call_indices)?;
         Ok(ci.wrap(Self::Chill))
     }
 
     fn encode_unbond(b: &Unbond) -> WithCallIndexResult<Self> {
-        let ci = CallIndex::from_tw(&b.call_indices)?;
+        let ci = validate_call_index(&b.call_indices)?;
         let value = U256::from_big_endian_slice(&b.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
@@ -174,7 +174,7 @@ impl GenericStaking {
     }
 
     fn encode_rebond(b: &Rebond) -> WithCallIndexResult<Self> {
-        let ci = CallIndex::from_tw(&b.call_indices)?;
+        let ci = validate_call_index(&b.call_indices)?;
         let value = U256::from_big_endian_slice(&b.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
@@ -186,14 +186,14 @@ impl GenericStaking {
     }
 
     fn encode_withdraw_unbonded(b: &WithdrawUnbonded) -> WithCallIndexResult<Self> {
-        let ci = CallIndex::from_tw(&b.call_indices)?;
+        let ci = validate_call_index(&b.call_indices)?;
         Ok(ci.wrap(Self::WithdrawUnbonded {
             num_slashing_spans: b.slashing_spans as u32,
         }))
     }
 
     fn encode_nominate(b: &Nominate) -> WithCallIndexResult<Self> {
-        let ci = CallIndex::from_tw(&b.call_indices)?;
+        let ci = validate_call_index(&b.call_indices)?;
         let targets = b
             .nominators
             .iter()

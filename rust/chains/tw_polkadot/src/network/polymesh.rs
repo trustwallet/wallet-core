@@ -4,6 +4,7 @@ use tw_scale::{impl_enum_scale, Compact, ToScale};
 
 use tw_number::U256;
 use tw_ss58_address::SS58Address;
+use tw_substrate::address::SubstrateAddress;
 
 use tw_proto::Polkadot::Proto::{
     mod_Balance::{OneOfmessage_oneof as BalanceVariant, Transfer},
@@ -17,7 +18,6 @@ use tw_proto::Polkadot::Proto::{
 };
 
 use super::*;
-use crate::address::PolkadotAddress;
 
 #[derive(Clone, Debug)]
 pub struct Memo(pub [u8; 32]);
@@ -168,7 +168,7 @@ impl PolymeshIdentity {
             data.push(0x00);
         }
         Ok(Self::AddAuthorization {
-            target: Signatory::Account(PolkadotAddress(target.into())),
+            target: Signatory::Account(SubstrateAddress(target.into())),
             data: AuthorizationData::JoinIdentity {
                 permissions: Encoded(data),
             },

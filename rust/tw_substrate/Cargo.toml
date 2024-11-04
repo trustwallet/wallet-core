@@ -1,0 +1,12 @@
+[package]
+name = "tw_substrate"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tw_coin_entry = { path = "../tw_coin_entry" }
+tw_scale = { path = "../tw_scale" }
+tw_number = { path = "../tw_number" }
+tw_hash = { path = "../tw_hash" }
+tw_memory = { path = "../tw_memory" }
+tw_ss58_address = { path = "../tw_ss58_address" }

@@ -2,9 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-pub mod address;
 pub mod compiler;
 pub mod entry;
 pub mod extrinsic;
 pub mod signer;
-pub mod substrate;
+pub mod network;

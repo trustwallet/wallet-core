@@ -12,15 +12,15 @@ use tw_scale::impl_struct_scale;
 use tw_ss58_address::{NetworkId, SS58Address};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
-pub struct PolkadotPrefix(NetworkId);
+pub struct SubstratePrefix(NetworkId);
 
-impl PolkadotPrefix {
+impl SubstratePrefix {
     pub fn network(self) -> NetworkId {
         self.0
     }
 }
 
-impl TryFrom<AddressPrefix> for PolkadotPrefix {
+impl TryFrom<AddressPrefix> for SubstratePrefix {
     type Error = AddressError;
 
     fn try_from(prefix: AddressPrefix) -> Result<Self, Self::Error> {
@@ -33,10 +33,10 @@ impl TryFrom<AddressPrefix> for PolkadotPrefix {
 
 impl_struct_scale!(
     #[derive(Debug, Clone, PartialEq, Eq)]
-    pub struct PolkadotAddress(pub SS58Address);
+    pub struct SubstrateAddress(pub SS58Address);
 );
 
-impl PolkadotAddress {
+impl SubstrateAddress {
     pub fn with_network_check(self) -> AddressResult<Self> {
         if self.0.network() != NetworkId::POLKADOT {
             return Err(AddressError::UnexpectedAddressPrefix);
@@ -45,22 +45,22 @@ impl PolkadotAddress {
     }
 }
 
-impl CoinAddress for PolkadotAddress {
+impl CoinAddress for SubstrateAddress {
     #[inline]
     fn data(&self) -> Data {
         self.0.to_bytes()
     }
 }
 
-impl FromStr for PolkadotAddress {
+impl FromStr for SubstrateAddress {
     type Err = AddressError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        SS58Address::from_str(s).map(PolkadotAddress)
+        SS58Address::from_str(s).map(SubstrateAddress)
     }
 }
 
-impl fmt::Display for PolkadotAddress {
+impl fmt::Display for SubstrateAddress {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt::Display::fmt(&self.0, f)
     }
