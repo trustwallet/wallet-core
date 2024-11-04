@@ -279,14 +279,14 @@ TEST(CardanoSigning, ExtraOutputPlan) {
         const auto toAddress = AddressV3(txOutput1.address);
         EXPECT_EQ(toAddress.string(), "addr1v9jxgu33wyunycmdddnh5a3edq6x2dt3xakkuun6wd6hsar8v9uhvee5w9erw7fnvauhswfhw44k673nv3n8sdmj89n82denweckuv34xvmnw6m9xeerq7rt8ymh5aesxaj8zu3e0y6k67tcd3nkzervxfenqer8ddjn27jkkrj");
         EXPECT_EQ(txOutput1.tokenBundle.getByPolicyId(sundaeTokenPolicy)[0].amount, 3000000);
-        EXPECT_EQ(txOutput1.tokenBundle.getByPolicyId(sundaeTokenPolicy)[0].assetName, "CUBY");
+        EXPECT_EQ(txOutput1.tokenBundle.getByPolicyId(sundaeTokenPolicy)[0].assetName, data("CUBY"));
         EXPECT_EQ(txOutput1.tokenBundle.getByPolicyId(sundaeTokenPolicy)[0].policyId, sundaeTokenPolicy);
     }
     {
         // also test proto toProto / toProto
         const auto toAddress = AddressV3("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
         std::vector<TokenAmount> tokenAmount;
-        tokenAmount.emplace_back(sundaeTokenPolicy, "CUBY", 3000000);
+        tokenAmount.emplace_back(sundaeTokenPolicy, data("CUBY"), 3000000);
         const Proto::TxOutput txOutputProto = TxOutput(toAddress.data(), 2000000, TokenBundle(tokenAmount)).toProto();
         EXPECT_EQ(txOutputProto.amount(), 2000000ul);
         EXPECT_EQ(txOutputProto.address(), "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
@@ -905,6 +905,80 @@ TEST(CardanoSigning, SignTransferTokenMaxAmount_620b71) {
     EXPECT_EQ(hex(encoded), "83a4008182582046964521ad00d9b3f3d41f77c07e1b3093848048dbdf2d95cf900e15cdac0d7f00018182583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd5821a001e7ebea1581c9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77a14653554e4441451a01312d00021a0002a139031a03a418dca100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df2905840e1d1565cd747b20b0f10a92f068f3d5faebdee92b4b4a4b96ce14736d975e17d1446f7f51e64997a0bb38e0151dc738468161d574d6cfcd8040e4455ff46bc08f6");
     const auto txid = data(output.tx_id());
     EXPECT_EQ(hex(txid), "620b719338efb419b0e1417bfbe01fc94a62d5669a4b8cbbf4e32ecc1ca3b872");
+}
+
+TEST(CardanoSigning, SignTransferTokenAmountNonUtf8) {
+    const auto ownAddress = "addr1q83kuum4jhwu3gxdwftdv2vezr0etmt3tp7phw5assltzl6t4afzguegnkcrdzp79vdcqswly775f33jvtpayl280qeqts960l";
+    const auto privateKey = "009aba22621d98e008c266a8d19c493f5f80a3a4f55048a83168a9c856726852fc240e6e95d7dc4e8ea599d09d64f84fdbe951b2282f5e5ed374252d17be9507643b2d078e607b5327397f212e4f6607ff0b6dfc93bdc9ad2bd0a682887edb9f304a573e99c7c2022c925511f004c7c9b89e8569080d09e2c53dfb1d53726852d4735794e3d32eac2b17d4d7c94742a77b7400b66fa11eaeb6ae38ba2dea84612f0c38fd68b9751ed4cb4ac48fb5e19f985f809fff1cfe5303fbfd29aca43d66";
+    const auto gensTokenPolicy = "dda5fdb1002f7389b33e036b6afee82a8189becb6cba852e8b79b4fb";
+    // Non UTF-8 assetName according to https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067
+    const auto gensTokenNameHex = "0014df1047454e53";
+    const auto currentSlot = 138'888'357ul;
+
+    Proto::SigningInput input;
+    auto* utxo1 = input.add_utxos();
+    const auto txHash1 = parse_hex("7b377e0cf7b83d67bb6919008c38e1a63be86c4831a93ad0cb45778b9f2f7e28");
+    utxo1->mutable_out_point()->set_tx_hash(txHash1.data(), txHash1.size());
+    utxo1->mutable_out_point()->set_output_index(4);
+    utxo1->set_address(ownAddress);
+    utxo1->set_amount(1'700'000ul);
+    // GENS token (asset1266q2ewhgul7jh3xqpvjzqarrepfjuler20akr).
+    auto* token1 = utxo1->add_token_amount();
+    token1->set_policy_id(gensTokenPolicy);
+    token1->set_asset_name_hex(gensTokenNameHex);
+    const auto tokenAmount1 = store(uint256_t(44'660'987ul));
+    token1->set_amount(tokenAmount1.data(), tokenAmount1.size());
+
+    const auto privateKeyData = parse_hex(privateKey);
+    input.add_private_key(privateKeyData.data(), privateKeyData.size());
+    input.mutable_transfer_message()->set_to_address("addr1q875r037fjeqveg6xv5wke922ff897eyrnshlj3ryp4mypzt4afzguegnkcrdzp79vdcqswly775f33jvtpayl280qeq7zgptp");
+    input.mutable_transfer_message()->set_change_address(ownAddress);
+    input.mutable_transfer_message()->set_amount(666ul); // doesn't matter, max is used
+    auto* toToken = input.mutable_transfer_message()->mutable_token_amount()->add_token();
+    toToken->set_policy_id(gensTokenPolicy);
+    toToken->set_asset_name_hex(gensTokenNameHex);
+    const auto toTokenAmount = store(uint256_t(666ul)); // doesn't matter, max is used
+    input.mutable_transfer_message()->set_use_max_amount(true);
+    input.set_ttl(currentSlot + 7200ul);
+
+    Proto::TransactionPlan plan;
+    ANY_PLAN(input, plan, TWCoinTypeCardano);
+
+    EXPECT_EQ(plan.error(), Common::Proto::SigningError::OK);
+    {
+        EXPECT_EQ(plan.available_amount(), 1'700'000ul);
+        EXPECT_EQ(plan.amount(), 1'700'000ul - 167'818ul);
+        EXPECT_EQ(plan.fee(), 167'818ul);
+        EXPECT_EQ(plan.change(), 0ul);
+        EXPECT_EQ(plan.utxos_size(), 1);
+        EXPECT_EQ(plan.available_tokens_size(), 1);
+
+        EXPECT_EQ(load(plan.available_tokens(0).amount()), 44'660'987ul);
+        // `assetName` must be empty as it's not a UTF-8 string.
+        EXPECT_EQ(plan.available_tokens(0).asset_name(), "");
+        EXPECT_EQ(plan.available_tokens(0).asset_name_hex(), gensTokenNameHex);
+
+        EXPECT_EQ(plan.output_tokens_size(), 1);
+        EXPECT_EQ(load(plan.output_tokens(0).amount()), 44'660'987ul);
+        // `assetName` must be empty as it's not a UTF-8 string.
+        EXPECT_EQ(plan.output_tokens(0).asset_name(), "");
+        EXPECT_EQ(plan.output_tokens(0).asset_name_hex(), gensTokenNameHex);
+        EXPECT_EQ(plan.change_tokens_size(), 0);
+    }
+
+    // set plan with specific fee, to match the real transaction
+    *input.mutable_plan() = plan;
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeCardano);
+
+    // https://cardanoscan.io/transaction/df89e81fbaec7485ba65ac3a2ffe4121a888f4937d085f3ad4f7e8e5192dea74
+    // curl -d '{"txHash":"620b71..b872","txBody":"83a400..08f6"}' -H "Content-Type: application/json" https://<cardano-node>/api/txs/submit
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+    const auto encoded = data(output.encoded());
+    EXPECT_EQ(hex(encoded), "83a400818258207b377e0cf7b83d67bb6919008c38e1a63be86c4831a93ad0cb45778b9f2f7e2804018182583901fd41be3e4cb206651a3328eb64aa525272fb241ce17fca23206bb2044baf522473289db036883e2b1b8041df27bd44c63262c3d27d477832821a00176116a1581cdda5fdb1002f7389b33e036b6afee82a8189becb6cba852e8b79b4fba1480014df1047454e531a02a978fb021a00028f8a031a084760c5a10081825820748022805ee71f9fa31d06e60f14f0715a37c278c0690b565f26e1e1e83f930e5840386c5d05fb5cfdb11f1296e909a80314616cdd2779e5be5ea583e1a938ee8409f58b585c90248e1c0633638cc0f4517c03fdb59f17434267c2955e0fbbb3b609f6");
+    const auto txid = data(output.tx_id());
+    EXPECT_EQ(hex(txid), "df89e81fbaec7485ba65ac3a2ffe4121a888f4937d085f3ad4f7e8e5192dea74");
 }
 
 TEST(CardanoSigning, SignTransferTwoTokens) {
