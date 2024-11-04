@@ -3,6 +3,7 @@ use tw_scale::{Compact, ToScale, impl_struct_scale, impl_enum_scale};
 use tw_ss58_address::SS58Address;
 
 use tw_proto::Polkadot::Proto::{
+    self,
     mod_CallIndices::OneOfvariant as CallIndicesVariant,
     CallIndices,
 };
@@ -64,15 +65,53 @@ impl_struct_scale!(
   }
 );
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Era {
   Immortal,
   Mortal(u64, u64),
 }
 
+impl Era {
+    pub fn from_tw(era: &Option<Proto::Era>) -> Self {
+        match era {
+            None => Self::immortal(),
+            Some(era) => {
+                Self::mortal(era.period, era.block_number)
+            }
+        }
+    }
+
+    pub fn mortal(period: u64, block: u64) -> Self {
+        // Based off `sp_runtime::generic::Era`:
+        // See https://github.com/paritytech/polkadot-sdk/blob/657b5503a04e97737696fa7344641019350fb521/substrate/primitives/runtime/src/generic/era.rs#L65
+        let period = period.checked_next_power_of_two().unwrap_or(1 << 16).clamp(4, 1 << 16);
+        let phase = block % period;
+        let quantize_factor = (period >> 12).max(1);
+        let quantized_phase = phase / quantize_factor * quantize_factor;
+        Self::Mortal(period, quantized_phase)
+    }
+
+    pub fn immortal() -> Self {
+        Self::Immortal
+    }
+}
+
 impl ToScale for Era {
-    fn to_scale_into(&self, _out: &mut Vec<u8>) {
-        todo!("Scale encode Era")
+    fn to_scale_into(&self, out: &mut Vec<u8>) {
+        match self {
+            Self::Immortal => {
+                out.push(0);
+            }
+            Self::Mortal(period, phase) => {
+                // Based off `sp_runtime::generic::Era`:
+                // See https://github.com/paritytech/polkadot-sdk/blob/657b5503a04e97737696fa7344641019350fb521/substrate/primitives/runtime/src/generic/era.rs#L107
+                let quantize_factor = (period >> 12).max(1);
+
+                let encoded = (period.trailing_zeros() - 1).clamp(1, 15) as u16 |
+                    ((phase / quantize_factor) << 4) as u16;
+                encoded.to_scale_into(out);
+            }
+        }
     }
 }
 
