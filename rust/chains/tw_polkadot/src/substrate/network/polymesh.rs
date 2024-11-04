@@ -1,30 +1,23 @@
 use std::str::FromStr;
 
-use tw_scale::{Compact, ToScale, impl_enum_scale};
+use tw_scale::{impl_enum_scale, Compact, ToScale};
 
-use tw_ss58_address::SS58Address;
 use tw_number::U256;
+use tw_ss58_address::SS58Address;
 
 use tw_proto::Polkadot::Proto::{
-    mod_Balance::{
-        OneOfmessage_oneof as BalanceVariant,
-        Transfer,
-    },
+    mod_Balance::{OneOfmessage_oneof as BalanceVariant, Transfer},
+    mod_Identity::{AddAuthorization, JoinIdentityAsKey, OneOfmessage_oneof as IdentityVariant},
     mod_PolymeshCall::OneOfmessage_oneof as PolymeshVariant,
-    mod_Identity::{
-        OneOfmessage_oneof as IdentityVariant,
-        JoinIdentityAsKey,
-        AddAuthorization,
-    },
     mod_Staking::{
-        Bond, BondExtra, Chill, Nominate,
-        OneOfmessage_oneof as StakingVariant, Rebond, Unbond, WithdrawUnbonded,
+        Bond, BondExtra, Chill, Nominate, OneOfmessage_oneof as StakingVariant, Rebond, Unbond,
+        WithdrawUnbonded,
     },
-    Balance, Staking, Identity,
+    Balance, Identity, Staking,
 };
 
-use crate::address::PolkadotAddress;
 use super::*;
+use crate::address::PolkadotAddress;
 
 #[derive(Clone, Debug)]
 pub struct Memo(pub [u8; 32]);
@@ -56,26 +49,25 @@ impl ToScale for IdentityId {
 }
 
 impl_enum_scale!(
-  #[derive(Clone, Debug)]
-  pub enum PolymeshBalances {
-    Transfer {
-      dest: MultiAddress,
-      value: Compact<u128>,
-    } = 0x00,
-    TransferWithMemo {
-      dest: MultiAddress,
-      value: Compact<u128>,
-      memo: Option<Memo>,
-    } = 0x01,
-  }
+    #[derive(Clone, Debug)]
+    pub enum PolymeshBalances {
+        Transfer {
+            dest: MultiAddress,
+            value: Compact<u128>,
+        } = 0x00,
+        TransferWithMemo {
+            dest: MultiAddress,
+            value: Compact<u128>,
+            memo: Option<Memo>,
+        } = 0x01,
+    }
 );
 
 impl PolymeshBalances {
     fn encode_transfer(t: &Transfer) -> EncodeResult<Self> {
         let address =
             SS58Address::from_str(&t.to_address).map_err(|_| EncodeError::InvalidAddress)?;
-        let value =
-            U256::from_big_endian_slice(&t.value)
+        let value = U256::from_big_endian_slice(&t.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
             .map_err(|_| EncodeError::InvalidValue)?;
@@ -89,7 +81,7 @@ impl PolymeshBalances {
         } else {
             Ok(Self::Transfer {
                 dest: address.into(),
-                value: Compact(value)
+                value: Compact(value),
             })
         }
     }
@@ -106,35 +98,35 @@ impl PolymeshBalances {
 }
 
 impl_enum_scale!(
-  #[derive(Clone, Debug)]
-  pub enum Signatory {
-    Identity(IdentityId),
-    Account(AccountId),
-  }
+    #[derive(Clone, Debug)]
+    pub enum Signatory {
+        Identity(IdentityId),
+        Account(AccountId),
+    }
 );
 
 impl_enum_scale!(
-  #[derive(Clone, Debug)]
-  pub enum AuthorizationData {
-    JoinIdentity {
-      // TODO:
-      permissions: Encoded,
-    } = 0x05,
-  }
+    #[derive(Clone, Debug)]
+    pub enum AuthorizationData {
+        JoinIdentity {
+            // TODO:
+            permissions: Encoded,
+        } = 0x05,
+    }
 );
 
 impl_enum_scale!(
-  #[derive(Clone, Debug)]
-  pub enum PolymeshIdentity {
-    JoinIdentity {
-      auth_id: u64,
-    } = 0x04,
-    AddAuthorization {
-      target: Signatory,
-      data: AuthorizationData,
-      expiry: Option<u64>,
-    } = 0x0a,
-  }
+    #[derive(Clone, Debug)]
+    pub enum PolymeshIdentity {
+        JoinIdentity {
+            auth_id: u64,
+        } = 0x04,
+        AddAuthorization {
+            target: Signatory,
+            data: AuthorizationData,
+            expiry: Option<u64>,
+        } = 0x0a,
+    }
 );
 
 impl PolymeshIdentity {
@@ -180,7 +172,11 @@ impl PolymeshIdentity {
             data: AuthorizationData::JoinIdentity {
                 permissions: Encoded(data),
             },
-            expiry: if auth.expiry > 0 { Some(auth.expiry) } else { None },
+            expiry: if auth.expiry > 0 {
+                Some(auth.expiry)
+            } else {
+                None
+            },
         })
     }
 
@@ -197,40 +193,40 @@ impl PolymeshIdentity {
 }
 
 impl_enum_scale!(
-  #[derive(Clone, Debug)]
-  pub enum PolymeshStaking {
-    Bond {
-      controller: MultiAddress,
-      value: Compact<u128>,
-      reward: RewardDestination,
-    } = 0x00,
-    BondExtra {
-      max_additional: Compact<u128>,
-    } = 0x01,
-    Unbond {
-      value: Compact<u128>,
-    } = 0x02,
-    WithdrawUnbonded {
-      num_slashing_spans: u32,
-    } = 0x03,
-    Nominate {
-      targets: Vec<MultiAddress>,
-    } = 0x05,
-    Chill = 0x06,
-    Rebond {
-      value: Compact<u128>,
-    } = 0x18,
-  }
+    #[derive(Clone, Debug)]
+    pub enum PolymeshStaking {
+        Bond {
+            controller: MultiAddress,
+            value: Compact<u128>,
+            reward: RewardDestination,
+        } = 0x00,
+        BondExtra {
+            max_additional: Compact<u128>,
+        } = 0x01,
+        Unbond {
+            value: Compact<u128>,
+        } = 0x02,
+        WithdrawUnbonded {
+            num_slashing_spans: u32,
+        } = 0x03,
+        Nominate {
+            targets: Vec<MultiAddress>,
+        } = 0x05,
+        Chill = 0x06,
+        Rebond {
+            value: Compact<u128>,
+        } = 0x18,
+    }
 );
 
 impl PolymeshStaking {
     fn encode_bond(b: &Bond) -> EncodeResult<Self> {
-        let value =
-            U256::from_big_endian_slice(&b.value)
+        let value = U256::from_big_endian_slice(&b.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
             .map_err(|_| EncodeError::InvalidValue)?;
-        let controller = SS58Address::from_str(&b.controller).map_err(|_| EncodeError::InvalidAddress)?;
+        let controller =
+            SS58Address::from_str(&b.controller).map_err(|_| EncodeError::InvalidAddress)?;
 
         Ok(Self::Bond {
             controller: controller.into(),
@@ -240,8 +236,7 @@ impl PolymeshStaking {
     }
 
     fn encode_bond_extra(b: &BondExtra) -> EncodeResult<Self> {
-        let value =
-            U256::from_big_endian_slice(&b.value)
+        let value = U256::from_big_endian_slice(&b.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
             .map_err(|_| EncodeError::InvalidValue)?;
@@ -256,8 +251,7 @@ impl PolymeshStaking {
     }
 
     fn encode_unbond(b: &Unbond) -> EncodeResult<Self> {
-        let value =
-            U256::from_big_endian_slice(&b.value)
+        let value = U256::from_big_endian_slice(&b.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
             .map_err(|_| EncodeError::InvalidValue)?;
@@ -268,8 +262,7 @@ impl PolymeshStaking {
     }
 
     fn encode_rebond(b: &Rebond) -> EncodeResult<Self> {
-        let value =
-            U256::from_big_endian_slice(&b.value)
+        let value = U256::from_big_endian_slice(&b.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
             .map_err(|_| EncodeError::InvalidValue)?;
@@ -286,14 +279,16 @@ impl PolymeshStaking {
     }
 
     fn encode_nominate(b: &Nominate) -> EncodeResult<Self> {
-        let targets = b.nominators.iter()
+        let targets = b
+            .nominators
+            .iter()
             .map(|target| {
-                let account = SS58Address::from_str(&target).map_err(|_| EncodeError::InvalidAddress)?;
+                let account =
+                    SS58Address::from_str(&target).map_err(|_| EncodeError::InvalidAddress)?;
                 Ok(account.into())
-            }).collect::<EncodeResult<Vec<MultiAddress>>>()?;
-        Ok(Self::Nominate {
-            targets,
-        })
+            })
+            .collect::<EncodeResult<Vec<MultiAddress>>>()?;
+        Ok(Self::Nominate { targets })
     }
 
     pub fn encode_call(s: &Staking) -> EncodeResult<Self> {
@@ -313,15 +308,14 @@ impl PolymeshStaking {
     }
 }
 
-
 impl_enum_scale!(
-  #[derive(Clone, Debug)]
-  pub enum PolymeshCall {
-    Balances(PolymeshBalances) = 0x05,
-    Identity(PolymeshIdentity) = 0x07,
-    Staking(PolymeshStaking) = 0x11,
-    Utility(GenericUtility) = 0x29,
-  }
+    #[derive(Clone, Debug)]
+    pub enum PolymeshCall {
+        Balances(PolymeshBalances) = 0x05,
+        Identity(PolymeshIdentity) = 0x07,
+        Staking(PolymeshStaking) = 0x11,
+        Utility(GenericUtility) = 0x29,
+    }
 );
 
 pub struct PolymeshCallEncoder;
@@ -342,11 +336,11 @@ impl TWPolkadotCallEncoder for PolymeshCallEncoder {
                 match &msg.message_oneof {
                     PolymeshVariant::identity_call(msg) => {
                         PolymeshCall::Identity(PolymeshIdentity::encode_call(msg)?)
-                    }
+                    },
                     _ => {
                         // TODO: better error.
                         return Err(EncodeError::InvalidCallIndex);
-                    }
+                    },
                 }
             },
             SigningVariant::staking_call(s) => {
@@ -361,9 +355,7 @@ impl TWPolkadotCallEncoder for PolymeshCallEncoder {
     }
 
     fn encode_batch(&self, calls: Vec<Encoded>) -> EncodeResult<Encoded> {
-        let call = PolymeshCall::Utility(GenericUtility::BatchAll {
-            calls,
-        });
+        let call = PolymeshCall::Utility(GenericUtility::BatchAll { calls });
         Ok(Encoded(call.to_scale()))
     }
 }
