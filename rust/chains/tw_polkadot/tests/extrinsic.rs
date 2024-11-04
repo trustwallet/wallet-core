@@ -11,26 +11,73 @@ use tw_proto::Polkadot::Proto::mod_Staking::{
     Bond, BondExtra, Chill, Nominate, Rebond, Unbond, WithdrawUnbonded,
 };
 
+fn custom_call_indices(module: u8, method: u8) -> Option<Proto::CallIndices> {
+    Some(Proto::CallIndices {
+        variant: Proto::mod_CallIndices::OneOfvariant::custom(Proto::CustomCallIndices {
+            module_index: module as i32,
+            method_index: method as i32,
+        }),
+    })
+}
+
+fn polymesh_identity_call(
+    call: Proto::mod_Identity::OneOfmessage_oneof,
+) -> Proto::mod_SigningInput::OneOfmessage_oneof {
+    Proto::mod_SigningInput::OneOfmessage_oneof::polymesh_call(Proto::PolymeshCall {
+        message_oneof: Proto::mod_PolymeshCall::OneOfmessage_oneof::identity_call(
+            Proto::Identity {
+                message_oneof: call,
+            },
+        ),
+    })
+}
+
+fn polymesh_add_auth_call(
+    add_auth: Proto::mod_Identity::AddAuthorization,
+) -> Proto::mod_SigningInput::OneOfmessage_oneof {
+    polymesh_identity_call(Proto::mod_Identity::OneOfmessage_oneof::add_authorization(
+        add_auth,
+    ))
+}
+
+fn polymesh_join_identity(auth_id: u64) -> Proto::mod_SigningInput::OneOfmessage_oneof<'static> {
+    polymesh_identity_call(
+        Proto::mod_Identity::OneOfmessage_oneof::join_identity_as_key(
+            Proto::mod_Identity::JoinIdentityAsKey {
+                call_indices: custom_call_indices(0x07, 0x04),
+                auth_id,
+            },
+        ),
+    )
+}
+
+fn balance_call(
+    call: Proto::mod_Balance::OneOfmessage_oneof,
+) -> Proto::mod_SigningInput::OneOfmessage_oneof {
+    Proto::mod_SigningInput::OneOfmessage_oneof::balance_call(Proto::Balance {
+        message_oneof: call,
+    })
+}
+
+fn staking_call(
+    call: Proto::mod_Staking::OneOfmessage_oneof,
+) -> Proto::mod_SigningInput::OneOfmessage_oneof {
+    Proto::mod_SigningInput::OneOfmessage_oneof::staking_call(Proto::Staking {
+        message_oneof: call,
+    })
+}
+
 #[test]
 fn polymesh_encode_transfer_with_memo() {
     let input = Proto::SigningInput {
         network: 12,
         multi_address: true,
-        message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::balance_call(Proto::Balance {
-            message_oneof: Proto::mod_Balance::OneOfmessage_oneof::transfer(Transfer {
-                to_address: "2EB7wW2fYfFskkSx2d65ivn34ewpuEjcowfJYBL79ty5FsZF".into(),
-                value: Cow::Owned(U256::from(1u64).to_big_endian().to_vec()),
-                memo: "MEMO PADDED WITH SPACES".into(),
-                call_indices: Some(Proto::CallIndices {
-                    variant: Proto::mod_CallIndices::OneOfvariant::custom(
-                        Proto::CustomCallIndices {
-                            module_index: 0x05,
-                            method_index: 0x01,
-                        },
-                    ),
-                }),
-            }),
-        }),
+        message_oneof: balance_call(Proto::mod_Balance::OneOfmessage_oneof::transfer(Transfer {
+            to_address: "2EB7wW2fYfFskkSx2d65ivn34ewpuEjcowfJYBL79ty5FsZF".into(),
+            value: Cow::Owned(U256::from(1u64).to_big_endian().to_vec()),
+            memo: "MEMO PADDED WITH SPACES".into(),
+            call_indices: custom_call_indices(0x05, 0x01),
+        })),
         ..Default::default()
     };
 
@@ -47,28 +94,11 @@ fn polymesh_encode_authorization_join_identity() {
     let input = Proto::SigningInput {
         network: 12,
         multi_address: true,
-        message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::polymesh_call(
-            Proto::PolymeshCall {
-                message_oneof: Proto::mod_PolymeshCall::OneOfmessage_oneof::identity_call(
-                    Proto::Identity {
-                        message_oneof: Proto::mod_Identity::OneOfmessage_oneof::add_authorization(
-                            Proto::mod_Identity::AddAuthorization {
-                                call_indices: Some(Proto::CallIndices {
-                                    variant: Proto::mod_CallIndices::OneOfvariant::custom(
-                                        Proto::CustomCallIndices {
-                                            module_index: 0x07,
-                                            method_index: 0x0d,
-                                        },
-                                    ),
-                                }),
-                                target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
-                                ..Default::default()
-                            },
-                        ),
-                    },
-                ),
-            },
-        ),
+        message_oneof: polymesh_add_auth_call(Proto::mod_Identity::AddAuthorization {
+            call_indices: custom_call_indices(0x07, 0x0d),
+            target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
+            ..Default::default()
+        }),
         ..Default::default()
     };
 
@@ -85,39 +115,22 @@ fn polymesh_encode_authorization_join_identity_with_zero_data() {
     let input = Proto::SigningInput {
         network: 12,
         multi_address: true,
-        message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::polymesh_call(
-            Proto::PolymeshCall {
-                message_oneof: Proto::mod_PolymeshCall::OneOfmessage_oneof::identity_call(
-                    Proto::Identity {
-                        message_oneof: Proto::mod_Identity::OneOfmessage_oneof::add_authorization(
-                            Proto::mod_Identity::AddAuthorization {
-                                call_indices: Some(Proto::CallIndices {
-                                    variant: Proto::mod_CallIndices::OneOfvariant::custom(
-                                        Proto::CustomCallIndices {
-                                            module_index: 0x07,
-                                            method_index: 0x0d,
-                                        },
-                                    ),
-                                }),
-                                target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
-                                data: Some(AuthData {
-                                    asset: Some(Data {
-                                        data: (&[0x00]).into(),
-                                    }),
-                                    extrinsic: Some(Data {
-                                        data: (&[0x00]).into(),
-                                    }),
-                                    portfolio: Some(Data {
-                                        data: (&[0x00]).into(),
-                                    }),
-                                }),
-                                ..Default::default()
-                            },
-                        ),
-                    },
-                ),
-            },
-        ),
+        message_oneof: polymesh_add_auth_call(Proto::mod_Identity::AddAuthorization {
+            call_indices: custom_call_indices(0x07, 0x0d),
+            target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
+            data: Some(AuthData {
+                asset: Some(Data {
+                    data: (&[0x00]).into(),
+                }),
+                extrinsic: Some(Data {
+                    data: (&[0x00]).into(),
+                }),
+                portfolio: Some(Data {
+                    data: (&[0x00]).into(),
+                }),
+            }),
+            ..Default::default()
+        }),
         ..Default::default()
     };
 
@@ -134,33 +147,16 @@ fn polymesh_encode_authorization_join_identity_allowing_everything() {
     let input = Proto::SigningInput {
         network: 12,
         multi_address: true,
-        message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::polymesh_call(
-            Proto::PolymeshCall {
-                message_oneof: Proto::mod_PolymeshCall::OneOfmessage_oneof::identity_call(
-                    Proto::Identity {
-                        message_oneof: Proto::mod_Identity::OneOfmessage_oneof::add_authorization(
-                            Proto::mod_Identity::AddAuthorization {
-                                call_indices: Some(Proto::CallIndices {
-                                    variant: Proto::mod_CallIndices::OneOfvariant::custom(
-                                        Proto::CustomCallIndices {
-                                            module_index: 0x07,
-                                            method_index: 0x0d,
-                                        },
-                                    ),
-                                }),
-                                target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
-                                data: Some(AuthData {
-                                    asset: None,
-                                    extrinsic: None,
-                                    portfolio: None,
-                                }),
-                                ..Default::default()
-                            },
-                        ),
-                    },
-                ),
-            },
-        ),
+        message_oneof: polymesh_add_auth_call(Proto::mod_Identity::AddAuthorization {
+            call_indices: custom_call_indices(0x07, 0x0d),
+            target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
+            data: Some(AuthData {
+                asset: None,
+                extrinsic: None,
+                portfolio: None,
+            }),
+            ..Default::default()
+        }),
         ..Default::default()
     };
 
@@ -177,28 +173,7 @@ fn polymesh_encode_identity() {
     let input = Proto::SigningInput {
         network: 12,
         multi_address: true,
-        message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::polymesh_call(
-            Proto::PolymeshCall {
-                message_oneof: Proto::mod_PolymeshCall::OneOfmessage_oneof::identity_call(
-                    Proto::Identity {
-                        message_oneof:
-                            Proto::mod_Identity::OneOfmessage_oneof::join_identity_as_key(
-                                Proto::mod_Identity::JoinIdentityAsKey {
-                                    call_indices: Some(Proto::CallIndices {
-                                        variant: Proto::mod_CallIndices::OneOfvariant::custom(
-                                            Proto::CustomCallIndices {
-                                                module_index: 0x07,
-                                                method_index: 0x04,
-                                            },
-                                        ),
-                                    }),
-                                    auth_id: 4875,
-                                },
-                            ),
-                    },
-                ),
-            },
-        ),
+        message_oneof: polymesh_join_identity(4875),
         ..Default::default()
     };
 
@@ -215,22 +190,15 @@ fn statemint_encode_asset_transfer() {
     let input = Proto::SigningInput {
         network: 0,
         multi_address: true,
-        message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::balance_call(Proto::Balance {
-            message_oneof: Proto::mod_Balance::OneOfmessage_oneof::asset_transfer(AssetTransfer {
-                call_indices: Some(Proto::CallIndices {
-                    variant: Proto::mod_CallIndices::OneOfvariant::custom(
-                        Proto::CustomCallIndices {
-                            module_index: 0x32,
-                            method_index: 0x05,
-                        },
-                    ),
-                }),
+        message_oneof: balance_call(Proto::mod_Balance::OneOfmessage_oneof::asset_transfer(
+            AssetTransfer {
+                call_indices: custom_call_indices(0x32, 0x05),
                 to_address: "14ixj163bkk2UEKLEXsEWosuFNuijpqEWZbX5JzN4yMHbUVD".into(),
                 value: Cow::Owned(U256::from(999500000u64).to_big_endian().to_vec()),
                 asset_id: 1984,
                 ..Default::default()
-            }),
-        }),
+            },
+        )),
         ..Default::default()
     };
 
@@ -250,35 +218,19 @@ fn statemint_encode_batch_asset_transfer() {
     let input = Proto::SigningInput {
         network: 0,
         multi_address: true,
-        message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::balance_call(Proto::Balance {
-            message_oneof: Proto::mod_Balance::OneOfmessage_oneof::batch_asset_transfer(
-                BatchAssetTransfer {
-                    call_indices: Some(Proto::CallIndices {
-                        variant: Proto::mod_CallIndices::OneOfvariant::custom(
-                            Proto::CustomCallIndices {
-                                module_index: 0x28,
-                                method_index: 0x00,
-                            },
-                        ),
-                    }),
-                    fee_asset_id: 0x00,
-                    transfers: vec![AssetTransfer {
-                        call_indices: Some(Proto::CallIndices {
-                            variant: Proto::mod_CallIndices::OneOfvariant::custom(
-                                Proto::CustomCallIndices {
-                                    module_index: 0x32,
-                                    method_index: 0x06,
-                                },
-                            ),
-                        }),
-                        to_address: "13wQDQTMM6E9g5WD27e6UsWWTwHLaW763FQxnkbVaoKmsBQy".into(),
-                        value: U256::from(808081u64).to_big_endian().to_vec().into(),
-                        asset_id: 1984,
-                        ..Default::default()
-                    }],
-                },
-            ),
-        }),
+        message_oneof: balance_call(
+            Proto::mod_Balance::OneOfmessage_oneof::batch_asset_transfer(BatchAssetTransfer {
+                call_indices: custom_call_indices(0x28, 0x00),
+                fee_asset_id: 0x00,
+                transfers: vec![AssetTransfer {
+                    call_indices: custom_call_indices(0x32, 0x06),
+                    to_address: "13wQDQTMM6E9g5WD27e6UsWWTwHLaW763FQxnkbVaoKmsBQy".into(),
+                    value: U256::from(808081u64).to_big_endian().to_vec().into(),
+                    asset_id: 1984,
+                    ..Default::default()
+                }],
+            }),
+        ),
         ..Default::default()
     };
 
@@ -301,20 +253,18 @@ fn kusama_encode_asset_transfer_without_call_indices() {
     let input = Proto::SigningInput {
         network: 0,
         multi_address: true,
-        message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::balance_call(Proto::Balance {
-            message_oneof: Proto::mod_Balance::OneOfmessage_oneof::batch_asset_transfer(
-                BatchAssetTransfer {
-                    fee_asset_id: 0x00,
-                    transfers: vec![AssetTransfer {
-                        to_address: "13wQDQTMM6E9g5WD27e6UsWWTwHLaW763FQxnkbVaoKmsBQy".into(),
-                        value: U256::from(808081u64).to_big_endian().to_vec().into(),
-                        asset_id: 1984,
-                        ..Default::default()
-                    }],
+        message_oneof: balance_call(
+            Proto::mod_Balance::OneOfmessage_oneof::batch_asset_transfer(BatchAssetTransfer {
+                fee_asset_id: 0x00,
+                transfers: vec![AssetTransfer {
+                    to_address: "13wQDQTMM6E9g5WD27e6UsWWTwHLaW763FQxnkbVaoKmsBQy".into(),
+                    value: U256::from(808081u64).to_big_endian().to_vec().into(),
+                    asset_id: 1984,
                     ..Default::default()
-                },
-            ),
-        }),
+                }],
+                ..Default::default()
+            }),
+        ),
         ..Default::default()
     };
 
@@ -327,15 +277,13 @@ fn encode_staking_nominate() {
     let input = Proto::SigningInput {
         network: 0,
         multi_address: true,
-        message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::staking_call(Proto::Staking {
-            message_oneof: Proto::mod_Staking::OneOfmessage_oneof::nominate(Nominate {
-                nominators: vec![
-                    "13wQDQTMM6E9g5WD27e6UsWWTwHLaW763FQxnkbVaoKmsBQy".into(),
-                    "14ixj163bkk2UEKLEXsEWosuFNuijpqEWZbX5JzN4yMHbUVD".into(),
-                ],
-                call_indices: None,
-            }),
-        }),
+        message_oneof: staking_call(Proto::mod_Staking::OneOfmessage_oneof::nominate(Nominate {
+            nominators: vec![
+                "13wQDQTMM6E9g5WD27e6UsWWTwHLaW763FQxnkbVaoKmsBQy".into(),
+                "14ixj163bkk2UEKLEXsEWosuFNuijpqEWZbX5JzN4yMHbUVD".into(),
+            ],
+            call_indices: None,
+        })),
         ..Default::default()
     };
 
@@ -352,11 +300,9 @@ fn encode_staking_chill() {
     let input = Proto::SigningInput {
         network: 0,
         multi_address: true,
-        message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::staking_call(Proto::Staking {
-            message_oneof: Proto::mod_Staking::OneOfmessage_oneof::chill(Chill {
-                call_indices: None,
-            }),
-        }),
+        message_oneof: staking_call(Proto::mod_Staking::OneOfmessage_oneof::chill(Chill {
+            call_indices: None,
+        })),
         ..Default::default()
     };
 
@@ -370,14 +316,12 @@ fn encode_staking_bond_with_controller() {
     let input = Proto::SigningInput {
         network: 12,
         multi_address: true,
-        message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::staking_call(Proto::Staking {
-            message_oneof: Proto::mod_Staking::OneOfmessage_oneof::bond(Bond {
-                controller: "13wQDQTMM6E9g5WD27e6UsWWTwHLaW763FQxnkbVaoKmsBQy".into(),
-                value: U256::from(808081u64).to_big_endian().to_vec().into(),
-                reward_destination: Proto::RewardDestination::CONTROLLER,
-                call_indices: None,
-            }),
-        }),
+        message_oneof: staking_call(Proto::mod_Staking::OneOfmessage_oneof::bond(Bond {
+            controller: "13wQDQTMM6E9g5WD27e6UsWWTwHLaW763FQxnkbVaoKmsBQy".into(),
+            value: U256::from(808081u64).to_big_endian().to_vec().into(),
+            reward_destination: Proto::RewardDestination::CONTROLLER,
+            call_indices: None,
+        })),
         ..Default::default()
     };
 
@@ -394,14 +338,12 @@ fn encode_staking_bond() {
     let input = Proto::SigningInput {
         network: 0,
         multi_address: true,
-        message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::staking_call(Proto::Staking {
-            message_oneof: Proto::mod_Staking::OneOfmessage_oneof::bond(Bond {
-                controller: Default::default(),
-                value: U256::from(808081u64).to_big_endian().to_vec().into(),
-                reward_destination: Proto::RewardDestination::STAKED,
-                call_indices: None,
-            }),
-        }),
+        message_oneof: staking_call(Proto::mod_Staking::OneOfmessage_oneof::bond(Bond {
+            controller: Default::default(),
+            value: U256::from(808081u64).to_big_endian().to_vec().into(),
+            reward_destination: Proto::RewardDestination::STAKED,
+            call_indices: None,
+        })),
         ..Default::default()
     };
 
@@ -415,12 +357,12 @@ fn encode_staking_bond_extra() {
     let input = Proto::SigningInput {
         network: 0,
         multi_address: true,
-        message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::staking_call(Proto::Staking {
-            message_oneof: Proto::mod_Staking::OneOfmessage_oneof::bond_extra(BondExtra {
+        message_oneof: staking_call(Proto::mod_Staking::OneOfmessage_oneof::bond_extra(
+            BondExtra {
                 value: U256::from(808081u64).to_big_endian().to_vec().into(),
                 call_indices: None,
-            }),
-        }),
+            },
+        )),
         ..Default::default()
     };
 
@@ -434,12 +376,10 @@ fn encode_staking_rebond() {
     let input = Proto::SigningInput {
         network: 0,
         multi_address: true,
-        message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::staking_call(Proto::Staking {
-            message_oneof: Proto::mod_Staking::OneOfmessage_oneof::rebond(Rebond {
-                value: U256::from(808081u64).to_big_endian().to_vec().into(),
-                call_indices: None,
-            }),
-        }),
+        message_oneof: staking_call(Proto::mod_Staking::OneOfmessage_oneof::rebond(Rebond {
+            value: U256::from(808081u64).to_big_endian().to_vec().into(),
+            call_indices: None,
+        })),
         ..Default::default()
     };
 
@@ -453,12 +393,10 @@ fn encode_staking_unbond() {
     let input = Proto::SigningInput {
         network: 0,
         multi_address: true,
-        message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::staking_call(Proto::Staking {
-            message_oneof: Proto::mod_Staking::OneOfmessage_oneof::unbond(Unbond {
-                value: U256::from(808081u64).to_big_endian().to_vec().into(),
-                call_indices: None,
-            }),
-        }),
+        message_oneof: staking_call(Proto::mod_Staking::OneOfmessage_oneof::unbond(Unbond {
+            value: U256::from(808081u64).to_big_endian().to_vec().into(),
+            call_indices: None,
+        })),
         ..Default::default()
     };
 
@@ -472,14 +410,12 @@ fn encode_staking_withdraw_unbonded() {
     let input = Proto::SigningInput {
         network: 0,
         multi_address: true,
-        message_oneof: Proto::mod_SigningInput::OneOfmessage_oneof::staking_call(Proto::Staking {
-            message_oneof: Proto::mod_Staking::OneOfmessage_oneof::withdraw_unbonded(
-                WithdrawUnbonded {
-                    slashing_spans: 84,
-                    call_indices: None,
-                },
-            ),
-        }),
+        message_oneof: staking_call(Proto::mod_Staking::OneOfmessage_oneof::withdraw_unbonded(
+            WithdrawUnbonded {
+                slashing_spans: 84,
+                call_indices: None,
+            },
+        )),
         ..Default::default()
     };
 
