@@ -1,6 +1,17 @@
 use tw_scale::ToScale;
 use tw_substrate::extrinsic::Era;
 
+#[test]
+fn encode_era() {
+    let e1 = Era::mortal(8, 429119);
+    let e2 = Era::mortal(4, 428861);
+    let e3 = Era::mortal(64, 4246319);
+
+    assert_eq!(e1.to_scale(), vec![0x72, 0x00]);
+    assert_eq!(e2.to_scale(), vec![0x11, 0x00]);
+    assert_eq!(e3.to_scale(), vec![0xf5, 0x02]);
+}
+
 // Era tests ported from: https://github.com/paritytech/polkadot-sdk/blob/657b5503a04e97737696fa7344641019350fb521/substrate/primitives/runtime/src/generic/era.rs#L182
 #[test]
 fn immortal_works() {
