@@ -3,13 +3,22 @@ use std::default::Default;
 
 use tw_encoding::hex::ToHex;
 use tw_number::U256;
-use tw_polkadot::extrinsic::Extrinsic;
 use tw_proto::Polkadot::Proto;
 use tw_proto::Polkadot::Proto::mod_Balance::{AssetTransfer, BatchAssetTransfer, Transfer};
 use tw_proto::Polkadot::Proto::mod_Identity::mod_AddAuthorization::{AuthData, Data};
 use tw_proto::Polkadot::Proto::mod_Staking::{
     Bond, BondExtra, Chill, Nominate, Rebond, Unbond, WithdrawUnbonded,
 };
+use tw_substrate::EncodeResult;
+
+use tw_polkadot::{
+    call_encoder::CallEncoder
+};
+
+fn encode_input(input: &Proto::SigningInput<'_>) -> EncodeResult<Vec<u8>> {
+    let encoded = CallEncoder::encode_input(input)?;
+    Ok(encoded.0)
+}
 
 fn custom_call_indices(module: u8, method: u8) -> Option<Proto::CallIndices> {
     Some(Proto::CallIndices {
@@ -81,8 +90,7 @@ fn polymesh_encode_transfer_with_memo() {
         ..Default::default()
     };
 
-    let extrinsic = Extrinsic::from_input(input);
-    let encoded = extrinsic.encode_call().expect("error encoding call");
+    let encoded = encode_input(&input).expect("error encoding call");
     assert_eq!(
         encoded.to_hex(),
         "0501004c6c63e3dc083959f876788716b78885460b5f3c7ed9379f8d5f408e08639e0204014d454d4f20504144444544205749544820535041434553000000000000000000"
@@ -102,8 +110,7 @@ fn polymesh_encode_authorization_join_identity() {
         ..Default::default()
     };
 
-    let extrinsic = Extrinsic::from_input(input);
-    let encoded = extrinsic.encode_call().expect("error encoding call");
+    let encoded = encode_input(&input).expect("error encoding call");
     assert_eq!(
         encoded.to_hex(),
         "070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320500000000"
@@ -134,8 +141,7 @@ fn polymesh_encode_authorization_join_identity_with_zero_data() {
         ..Default::default()
     };
 
-    let extrinsic = Extrinsic::from_input(input);
-    let encoded = extrinsic.encode_call().expect("error encoding call");
+    let encoded = encode_input(&input).expect("error encoding call");
     assert_eq!(
         encoded.to_hex(),
         "070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320501000100010000"
@@ -160,8 +166,7 @@ fn polymesh_encode_authorization_join_identity_allowing_everything() {
         ..Default::default()
     };
 
-    let extrinsic = Extrinsic::from_input(input);
-    let encoded = extrinsic.encode_call().expect("error encoding call");
+    let encoded = encode_input(&input).expect("error encoding call");
     assert_eq!(
         encoded.to_hex(),
         "070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320500000000"
@@ -177,8 +182,7 @@ fn polymesh_encode_identity() {
         ..Default::default()
     };
 
-    let extrinsic = Extrinsic::from_input(input);
-    let encoded = extrinsic.encode_call().expect("error encoding call");
+    let encoded = encode_input(&input).expect("error encoding call");
     assert_eq!(encoded.to_hex(), "07040b13000000000000");
 }
 
@@ -202,8 +206,7 @@ fn statemint_encode_asset_transfer() {
         ..Default::default()
     };
 
-    let extrinsic = Extrinsic::from_input(input);
-    let encoded = extrinsic.encode_call().expect("error encoding call");
+    let encoded = encode_input(&input).expect("error encoding call");
     assert_eq!(
         encoded.to_hex(),
         "3205\
@@ -234,8 +237,7 @@ fn statemint_encode_batch_asset_transfer() {
         ..Default::default()
     };
 
-    let extrinsic = Extrinsic::from_input(input);
-    let encoded = extrinsic.encode_call().expect("error encoding call");
+    let encoded = encode_input(&input).expect("error encoding call");
     assert_eq!(
         encoded.to_hex(),
         "2800\
@@ -268,8 +270,7 @@ fn kusama_encode_asset_transfer_without_call_indices() {
         ..Default::default()
     };
 
-    let extrinsic = Extrinsic::from_input(input);
-    extrinsic.encode_call().expect_err("unexpected success");
+    encode_input(&input).expect_err("unexpected success");
 }
 
 #[test]
@@ -287,8 +288,7 @@ fn encode_staking_nominate() {
         ..Default::default()
     };
 
-    let extrinsic = Extrinsic::from_input(input);
-    let encoded = extrinsic.encode_call().expect("error encoding call");
+    let encoded = encode_input(&input).expect("error encoding call");
     assert_eq!(
         encoded.to_hex(),
         "0705080081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c9100a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943eda0d",
@@ -306,8 +306,7 @@ fn encode_staking_chill() {
         ..Default::default()
     };
 
-    let extrinsic = Extrinsic::from_input(input);
-    let encoded = extrinsic.encode_call().expect("error encoding call");
+    let encoded = encode_input(&input).expect("error encoding call");
     assert_eq!(encoded.to_hex(), "0706");
 }
 
@@ -325,8 +324,7 @@ fn encode_staking_bond_with_controller() {
         ..Default::default()
     };
 
-    let extrinsic = Extrinsic::from_input(input);
-    let encoded = extrinsic.encode_call().expect("error encoding call");
+    let encoded = encode_input(&input).expect("error encoding call");
     assert_eq!(
         encoded.to_hex(),
         "11000081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c914652310002"
@@ -347,8 +345,7 @@ fn encode_staking_bond() {
         ..Default::default()
     };
 
-    let extrinsic = Extrinsic::from_input(input);
-    let encoded = extrinsic.encode_call().expect("error encoding call");
+    let encoded = encode_input(&input).expect("error encoding call");
     assert_eq!(encoded.to_hex(), "07004652310000");
 }
 
@@ -366,8 +363,7 @@ fn encode_staking_bond_extra() {
         ..Default::default()
     };
 
-    let extrinsic = Extrinsic::from_input(input);
-    let encoded = extrinsic.encode_call().expect("error encoding call");
+    let encoded = encode_input(&input).expect("error encoding call");
     assert_eq!(encoded.to_hex(), "070146523100");
 }
 
@@ -383,8 +379,7 @@ fn encode_staking_rebond() {
         ..Default::default()
     };
 
-    let extrinsic = Extrinsic::from_input(input);
-    let encoded = extrinsic.encode_call().expect("error encoding call");
+    let encoded = encode_input(&input).expect("error encoding call");
     assert_eq!(encoded.to_hex(), "071346523100");
 }
 
@@ -400,8 +395,7 @@ fn encode_staking_unbond() {
         ..Default::default()
     };
 
-    let extrinsic = Extrinsic::from_input(input);
-    let encoded = extrinsic.encode_call().expect("error encoding call");
+    let encoded = encode_input(&input).expect("error encoding call");
     assert_eq!(encoded.to_hex(), "070246523100");
 }
 
@@ -419,7 +413,6 @@ fn encode_staking_withdraw_unbonded() {
         ..Default::default()
     };
 
-    let extrinsic = Extrinsic::from_input(input);
-    let encoded = extrinsic.encode_call().expect("error encoding call");
+    let encoded = encode_input(&input).expect("error encoding call");
     assert_eq!(encoded.to_hex(), "070354000000");
 }
