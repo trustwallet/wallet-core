@@ -2,7 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_substrate::address::{SubstrateAddress, SubstratePrefix};
 use crate::compiler::PolkadotCompiler;
 use crate::signer::PolkadotSigner;
 use std::str::FromStr;
@@ -20,6 +19,7 @@ use tw_keypair::tw::PublicKey;
 use tw_proto::Polkadot::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 use tw_ss58_address::{NetworkId, SS58Address};
+use tw_substrate::address::{SubstrateAddress, SubstratePrefix};
 
 pub struct PolkadotEntry;
 

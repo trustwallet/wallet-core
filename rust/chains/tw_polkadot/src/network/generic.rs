@@ -15,7 +15,7 @@ use tw_proto::Polkadot::Proto::{
     Balance, Staking,
 };
 
-use super::{validate_call_index, required_call_index};
+use super::{required_call_index, validate_call_index};
 
 impl_enum_scale!(
     #[derive(Clone, Debug)]
