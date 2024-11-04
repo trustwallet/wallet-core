@@ -2,18 +2,14 @@ use tw_hash::{H256, H512};
 use tw_scale::{impl_enum_scale, impl_struct_scale, Compact, ToScale};
 use tw_ss58_address::SS58Address;
 
-use tw_proto::Polkadot::Proto::{
-    self, mod_CallIndices::OneOfvariant as CallIndicesVariant, CallIndices,
-};
-
-use crate::address::PolkadotAddress;
-use crate::extrinsic::EncodeError;
+use crate::address::SubstrateAddress;
+use crate::EncodeError;
 
 pub type TxHash = H256;
 pub type BlockHash = H256;
 pub type BlockNumber = u32;
 
-pub type AccountId = PolkadotAddress;
+pub type AccountId = SubstrateAddress;
 pub type AccountIndex = u32;
 
 impl_enum_scale!(
@@ -49,7 +45,7 @@ impl From<AccountId> for MultiAddress {
 
 impl From<SS58Address> for MultiAddress {
     fn from(other: SS58Address) -> Self {
-        Self::Id(PolkadotAddress(other))
+        Self::Id(SubstrateAddress(other))
     }
 }
 
@@ -70,13 +66,6 @@ pub enum Era {
 }
 
 impl Era {
-    pub fn from_tw(era: &Option<Proto::Era>) -> Self {
-        match era {
-            None => Self::immortal(),
-            Some(era) => Self::mortal(era.period, era.block_number),
-        }
-    }
-
     pub fn mortal(period: u64, block: u64) -> Self {
         // Based off `sp_runtime::generic::Era`:
         // See https://github.com/paritytech/polkadot-sdk/blob/657b5503a04e97737696fa7344641019350fb521/substrate/primitives/runtime/src/generic/era.rs#L65
@@ -145,22 +134,20 @@ impl Extra {
 pub struct CallIndex(Option<(u8, u8)>);
 
 impl CallIndex {
-    pub fn from_tw(call_index: &Option<CallIndices>) -> Result<Self, EncodeError> {
+    pub fn from_tw(call_index: Option<(i32, i32)>) -> Result<Self, EncodeError> {
         let call_index = match call_index {
-            Some(CallIndices {
-                variant: CallIndicesVariant::custom(c),
-            }) => {
-                if c.module_index > 0xff || c.method_index > 0xff {
+            Some((module_index, method_index)) => {
+                if module_index > 0xff || method_index > 0xff {
                     return Err(EncodeError::InvalidCallIndex);
                 }
-                Some((c.module_index as u8, c.method_index as u8))
+                Some((module_index as u8, method_index as u8))
             },
             _ => None,
         };
         Ok(Self(call_index))
     }
 
-    pub fn required_from_tw(call_index: &Option<CallIndices>) -> Result<Self, EncodeError> {
+    pub fn required_from_tw(call_index: Option<(i32, i32)>) -> Result<Self, EncodeError> {
         if call_index.is_none() {
             return Err(EncodeError::MissingCallIndicesTable);
         }

@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::address::{PolkadotAddress, PolkadotPrefix};
+use tw_substrate::address::{SubstrateAddress, SubstratePrefix};
 use crate::compiler::PolkadotCompiler;
 use crate::signer::PolkadotSigner;
 use std::str::FromStr;
@@ -24,8 +24,8 @@ use tw_ss58_address::{NetworkId, SS58Address};
 pub struct PolkadotEntry;
 
 impl CoinEntry for PolkadotEntry {
-    type AddressPrefix = PolkadotPrefix;
-    type Address = PolkadotAddress;
+    type AddressPrefix = SubstratePrefix;
+    type Address = SubstrateAddress;
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = Proto::SigningOutput<'static>;
     type PreSigningOutput = CompilerProto::PreSigningOutput<'static>;
@@ -45,12 +45,12 @@ impl CoinEntry for PolkadotEntry {
         address: &str,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        PolkadotAddress::from_str(address)?.with_network_check()
+        SubstrateAddress::from_str(address)?.with_network_check()
     }
 
     #[inline]
     fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address> {
-        PolkadotAddress::from_str(address)
+        SubstrateAddress::from_str(address)
     }
 
     #[inline]
@@ -68,10 +68,10 @@ impl CoinEntry for PolkadotEntry {
         SS58Address::from_public_key(
             public_key,
             prefix
-                .map(PolkadotPrefix::network)
+                .map(SubstratePrefix::network)
                 .unwrap_or(NetworkId::POLKADOT),
         )
-        .map(PolkadotAddress)
+        .map(SubstrateAddress)
     }
 
     #[inline]

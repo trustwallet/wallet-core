@@ -3,6 +3,7 @@ use tw_scale::ToScale;
 use tw_proto::Polkadot::Proto::{
     self,
     mod_Balance::{BatchAssetTransfer, BatchTransfer, OneOfmessage_oneof as BalanceVariant},
+    mod_CallIndices::OneOfvariant as CallIndicesVariant,
     mod_SigningInput::OneOfmessage_oneof as SigningVariant,
     mod_Staking::{
         Bond, BondAndNominate, Chill, ChillAndUnbond, Nominate,
@@ -11,9 +12,7 @@ use tw_proto::Polkadot::Proto::{
     Balance, CallIndices, Staking,
 };
 use tw_ss58_address::NetworkId;
-
-use crate::extrinsic::*;
-use crate::substrate::extrinsic::*;
+use tw_substrate::*;
 
 pub mod generic;
 use generic::*;
@@ -23,6 +22,26 @@ use polkadot::*;
 
 pub mod polymesh;
 use polymesh::*;
+
+pub fn validate_call_index(call_index: &Option<CallIndices>) -> EncodeResult<CallIndex> {
+    let index = match call_index {
+        Some(CallIndices {
+            variant: CallIndicesVariant::custom(c),
+        }) => Some((c.module_index, c.method_index)),
+        _ => None,
+    };
+    CallIndex::from_tw(index)
+}
+
+pub fn required_call_index(call_index: &Option<CallIndices>) -> EncodeResult<CallIndex> {
+    let index = match call_index {
+        Some(CallIndices {
+            variant: CallIndicesVariant::custom(c),
+        }) => Some((c.module_index, c.method_index)),
+        _ => None,
+    };
+    CallIndex::required_from_tw(index)
+}
 
 #[derive(Debug, Clone)]
 pub struct SubstrateContext {
@@ -193,7 +212,7 @@ impl PolkadotSigningContext {
     }
 
     fn encode_batch(&self, calls: Vec<Encoded>, ci: &Option<CallIndices>) -> EncodeResult<Encoded> {
-        let ci = CallIndex::from_tw(ci)?;
+        let ci = validate_call_index(ci)?;
         let call = ci.wrap(self.encoder.encode_batch(calls)?);
         Ok(Encoded(call.to_scale()))
     }

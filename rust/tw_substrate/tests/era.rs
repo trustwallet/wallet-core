@@ -1,5 +1,5 @@
-use tw_polkadot::substrate::extrinsic::Era;
 use tw_scale::ToScale;
+use tw_substrate::extrinsic::Era;
 
 // Era tests ported from: https://github.com/paritytech/polkadot-sdk/blob/657b5503a04e97737696fa7344641019350fb521/substrate/primitives/runtime/src/generic/era.rs#L182
 #[test]

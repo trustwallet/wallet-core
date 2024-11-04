@@ -1,18 +1,8 @@
 use tw_proto::Polkadot::Proto;
 
-use crate::substrate::*;
+use tw_substrate::*;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub enum EncodeError {
-    InvalidNetworkId,
-    MissingCallIndicesTable,
-    InvalidCallIndex,
-    InvalidAddress,
-    InvalidValue,
-}
-
-pub type EncodeResult<T> = Result<T, EncodeError>;
-pub type WithCallIndexResult<T> = Result<WithCallIndex<T>, EncodeError>;
+use crate::network::*;
 
 // `Extrinsic` is (for now) just a lightweight wrapper over the actual protobuf object.
 // In the future, we will refine the latter to let the caller specify arbitrary extrinsics.

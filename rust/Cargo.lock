@@ -2098,7 +2098,6 @@ dependencies = [
 name = "tw_polkadot"
 version = "0.1.0"
 dependencies = [
- "lazy_static",
  "tw_coin_entry",
  "tw_encoding",
  "tw_hash",
@@ -2108,6 +2107,7 @@ dependencies = [
  "tw_proto",
  "tw_scale",
  "tw_ss58_address",
+ "tw_substrate",
 ]
 
 [[package]]
@@ -2136,7 +2136,6 @@ dependencies = [
 name = "tw_scale"
 version = "0.1.0"
 dependencies = [
- "serde",
  "tw_hash",
  "tw_number",
 ]
@@ -2169,6 +2168,18 @@ dependencies = [
  "tw_keypair",
  "tw_memory",
  "tw_scale",
+]
+
+[[package]]
+name = "tw_substrate"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_hash",
+ "tw_memory",
+ "tw_number",
+ "tw_scale",
+ "tw_ss58_address",
 ]
 
 [[package]]
