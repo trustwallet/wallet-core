@@ -19,7 +19,7 @@ pub trait ToScale {
 
 impl ToScale for bool {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
-        out.push(if *self { 0x01 } else { 0x00 } as u8);
+        out.push(*self as u8);
     }
 }
 
