@@ -5,5 +5,5 @@
 pub mod compiler;
 pub mod entry;
 pub mod extrinsic;
-pub mod signer;
 pub mod network;
+pub mod signer;
