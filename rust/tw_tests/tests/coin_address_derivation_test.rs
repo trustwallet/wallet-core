@@ -154,7 +154,8 @@ fn test_coin_address_derivation() {
             CoinType::Sui => "0x01a5c6c1b74cec4fbd12b3e17252b83448136065afcdf24954dc3a9c26df4905",
             CoinType::TON => "UQCj3jAU_Ec2kXdAqweKt4rYjiwTNwiCfaUnIDHGh7wTwx_G",
             CoinType::Pactus => "pc1rk2qaaeu9pj3zwtvm49d3d4yqxzpp4te87cx0am",
-            CoinType::Polkadot => todo!(),
+            CoinType::Polkadot
+            | CoinType::Acala => "12dyy3fArMPDXLsnRtapTqZsC2KCEimeqs1dop4AEERaKC6x",
             // end_of_coin_address_derivation_tests_marker_do_not_modify
             _ => panic!("{:?} must be covered", coin),
         };
