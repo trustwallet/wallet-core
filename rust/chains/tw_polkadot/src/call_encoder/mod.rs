@@ -55,11 +55,16 @@ pub trait TWPolkadotCallEncoder {
     fn encode_batch(&self, calls: Vec<Encoded>) -> EncodeResult<Encoded>;
 }
 
-pub struct PolkadotSigningContext {
+pub struct CallEncoder {
     encoder: Box<dyn TWPolkadotCallEncoder>,
 }
 
-impl PolkadotSigningContext {
+impl CallEncoder {
+    pub fn encode_input(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<Encoded> {
+        let encoder = Self::from_input(input)?;
+        encoder.encode_call(&input.message_oneof)
+    }
+
     fn from_input(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<Self> {
         let network =
             NetworkId::try_from(input.network as u16).map_err(|_| EncodeError::InvalidNetworkId)?;
@@ -78,11 +83,6 @@ impl PolkadotSigningContext {
             },
         };
         Ok(Self { encoder })
-    }
-
-    pub fn encode_input(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<Encoded> {
-        let ctx = Self::from_input(input)?;
-        ctx.encode_call(&input.message_oneof)
     }
 
     fn encode_batch_transfer(&self, bt: &BatchTransfer) -> EncodeResult<Encoded> {
