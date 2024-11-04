@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::ffi::c_byte_array_ref::CByteArrayRef;
 use crate::ffi::RawPtrTrait;
 use std::ffi::{c_char, CStr, CString};
 
@@ -14,6 +15,13 @@ use std::ffi::{c_char, CStr, CString};
 pub struct TWString(CString);
 
 impl TWString {
+    pub unsafe fn is_utf8_string(bytes: *const u8, size: usize) -> bool {
+        let Some(bytes) = CByteArrayRef::new(bytes, size).to_vec() else {
+            return false;
+        };
+        String::from_utf8(bytes).is_ok()
+    }
+
     /// Returns an empty `TWString` instance.
     pub fn new() -> TWString {
         TWString(CString::default())
@@ -68,6 +76,13 @@ pub unsafe extern "C" fn tw_string_utf8_bytes(str: *const TWString) -> *const c_
     TWString::from_ptr_as_ref(str)
         .map(|str| str.as_c_char())
         .unwrap_or_else(std::ptr::null)
+}
+
+/// Checks whether the C byte array is a UTF8 string.
+/// \return true if the given C byte array is UTF-8 string, otherwise false.
+#[no_mangle]
+pub unsafe extern "C" fn tw_string_is_utf8_bytes(bytes: *const u8, size: usize) -> bool {
+    TWString::is_utf8_string(bytes, size)
 }
 
 /// Deletes a string created with a `TWStringCreate*` method and frees the memory.

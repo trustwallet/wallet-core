@@ -60,7 +60,12 @@ class Signer {
 
     /// Signs the given transaction.
     template <typename T>
-    void sign(const PrivateKey &privateKey, const Data &hash, T &transaction) const noexcept;
+    void sign(const PrivateKey &privateKey, const Data &hash, T &transaction) noexcept {
+        auto tuple = sign(chainID, privateKey, hash);
+        transaction.r = std::get<0>(tuple);
+        transaction.s = std::get<1>(tuple);
+        transaction.v = std::get<2>(tuple);
+    }
 
     /// Signs a hash with the given private key for the given chain identifier.
     ///

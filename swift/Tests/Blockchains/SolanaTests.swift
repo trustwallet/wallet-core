@@ -290,4 +290,43 @@ class SolanaTests: XCTestCase {
         let expected = "AQPWaOi7dMdmQpXi8HyQQKwiqIftrg1igGQxGtZeT50ksn4wAnyH4DtDrkkuE0fqgx80LTp4LwNN9a440SrmoA8BAAEDZsL1CMnFVcrMn7JtiOiN1U4hC7WovOVof2DX51xM0H/GizyJTHgrBanCf8bGbrFNTn0x3pCGq30hKbywSTr6AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAgIAAQwCAAAAKgAAAAAAAAA="
         XCTAssertEqual(output.encoded, expected)
     }
+    
+    func testSetPriorityFee() throws {
+        let privateKey = Data(hexString: "baf2b2dbbbad7ca96c1fa199c686f3d8fbd2c7b352f307e37e04f33df6741f18")!
+        let originalTx = "AX43+Ir2EDqf2zLEvgzFrCZKRjdr3wCdp8CnvYh6N0G/s86IueX9BbiNUl16iLRGvwREDfi2Srb0hmLNBFw1BwABAAEDODI+iWe7g68B9iwCy8bFkJKvsIEj350oSOpcv4gNnv/st+6qmqipl9lwMK6toB9TiL7LrJVfij+pKwr+pUKxfwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAG6GdPcA92ORzVJe2jfG8KQqqMHr9YTLu30oM4i7MFEoBAgIAAQwCAAAA6AMAAAAAAAA="
+
+        // Step 1 - Check if there are no price and limit instructions in the original transaction.
+        XCTAssertEqual(SolanaTransaction.getComputeUnitPrice(encodedTx: originalTx), nil)
+        XCTAssertEqual(SolanaTransaction.getComputeUnitLimit(encodedTx: originalTx), nil)
+
+        // Step 2 - Set price and limit instructions.
+        let txWithPrice = SolanaTransaction.setComputeUnitPrice(encodedTx: originalTx, price: "1000")!
+        let updatedTx = SolanaTransaction.setComputeUnitLimit(encodedTx: txWithPrice, limit: "10000")!
+
+        XCTAssertEqual(updatedTx, "AX43+Ir2EDqf2zLEvgzFrCZKRjdr3wCdp8CnvYh6N0G/s86IueX9BbiNUl16iLRGvwREDfi2Srb0hmLNBFw1BwABAAIEODI+iWe7g68B9iwCy8bFkJKvsIEj350oSOpcv4gNnv/st+6qmqipl9lwMK6toB9TiL7LrJVfij+pKwr+pUKxfwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwZGb+UhFzL/7K26csOb57yM5bvF9xJrLEObOkAAAAAboZ09wD3Y5HNUl7aN8bwpCqowev1hMu7fSgziLswUSgMDAAUCECcAAAICAAEMAgAAAOgDAAAAAAAAAwAJA+gDAAAAAAAA")
+
+        // Step 3 - Check if price and limit instructions are set successfully.
+        XCTAssertEqual(SolanaTransaction.getComputeUnitPrice(encodedTx: updatedTx), "1000")
+        XCTAssertEqual(SolanaTransaction.getComputeUnitLimit(encodedTx: updatedTx), "10000")
+
+        // Step 4 - Decode transaction into a `RawMessage` Protobuf.
+        let updatedTxData = Base64.decode(string: updatedTx)!
+        let decodeOutputData = TransactionDecoder.decode(coinType: .solana, encodedTx: updatedTxData)
+        var decodeOutput = try SolanaDecodingTransactionOutput(serializedData: decodeOutputData)
+
+        XCTAssertEqual(decodeOutput.error, .ok)
+
+        // Step 5 - Sign the decoded `RawMessage` transaction.
+        let signingInput = SolanaSigningInput.with {
+            $0.privateKey = privateKey
+            $0.rawMessage = decodeOutput.transaction
+            $0.txEncoding = .base64
+        }
+
+        let output: SolanaSigningOutput = AnySigner.sign(input: signingInput, coin: .solana)
+        XCTAssertEqual(output.error, .ok)
+        // Successfully broadcasted tx:
+        // https://explorer.solana.com/tx/2ho7wZUXbDNz12xGfsXg2kcNMqkBAQjv7YNXNcVcuCmbC4p9FZe9ELeM2gMjq9MKQPpmE3nBW5pbdgwVCfNLr1h8
+        XCTAssertEqual(output.encoded, "AVUye82Mv+/aWeU2G+B6Nes365mUU2m8iqcGZn/8kFJvw4wY6AgKGG+vJHaknHlCDwE1yi1SIMVUUtNCOm3kHg8BAAIEODI+iWe7g68B9iwCy8bFkJKvsIEj350oSOpcv4gNnv/st+6qmqipl9lwMK6toB9TiL7LrJVfij+pKwr+pUKxfwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwZGb+UhFzL/7K26csOb57yM5bvF9xJrLEObOkAAAAAboZ09wD3Y5HNUl7aN8bwpCqowev1hMu7fSgziLswUSgMDAAUCECcAAAICAAEMAgAAAOgDAAAAAAAAAwAJA+gDAAAAAAAA")
+    }
 }

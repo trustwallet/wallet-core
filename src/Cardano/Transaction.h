@@ -25,17 +25,20 @@ typedef uint64_t Amount;
 class TokenAmount {
 public:
     std::string policyId;
-    std::string assetName;
+    Data assetName;
     uint256_t amount;
 
     TokenAmount() = default;
-    TokenAmount(std::string policyId, std::string assetName, uint256_t amount)
+    TokenAmount(std::string policyId, Data assetName, uint256_t amount)
         : policyId(std::move(policyId)), assetName(std::move(assetName)), amount(std::move(amount)) {}
 
     static TokenAmount fromProto(const Proto::TokenAmount& proto);
     Proto::TokenAmount toProto() const;
     /// Key used in TokenBundle
-    std::string key() const { return policyId + "_" + assetName; }
+    std::string key() const { return policyId + "_" + displayAssetName(); }
+    std::string displayAssetName() const;
+    /// Tries to convert the `assetName` to a UTF-8 string. Returns `std::nullopt` otherwise.
+    std::optional<std::string> assetNameToString() const;
 };
 
 class TokenBundle {

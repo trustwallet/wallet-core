@@ -61,20 +61,20 @@ TEST(CardanoTransaction, minAdaAmount) {
     }
 
     {   // 1 policyId, 1 6-char asset name
-        const auto tb = TokenBundle({TokenAmount(policyId, "TOKEN1", 0)});
+        const auto tb = TokenBundle({TokenAmount(policyId, data("TOKEN1"), 0)});
         EXPECT_EQ(tb.minAdaAmount(), 1444443ul);
     }
     { // 2 policyId, 2 4-char asset names
         auto tb = TokenBundle();
-        tb.add(TokenAmount("012345678901234567890POLICY1", "TOK1", 20));
-        tb.add(TokenAmount("012345678901234567890POLICY2", "TOK2", 20));
+        tb.add(TokenAmount("012345678901234567890POLICY1", data("TOK1"), 20));
+        tb.add(TokenAmount("012345678901234567890POLICY2", data("TOK2"), 20));
         EXPECT_EQ(tb.minAdaAmount(), 1629628ul);
     }
     { // 10 policyId, 10 6-char asset names
         auto tb = TokenBundle();
         for (auto i = 0; i < 10; ++i) {
             std::string policyId1 =  + "012345678901234567890123456" + std::to_string(i);
-            std::string name = "ASSET" + std::to_string(i);
+            Data name = data("ASSET" + std::to_string(i));
             tb.add(TokenAmount(policyId1, name, 0));
         }
         EXPECT_EQ(tb.minAdaAmount(), 3370367ul);
@@ -96,9 +96,9 @@ TEST(CardanoTransaction, getPolicyIDs) {
     const auto policyId1 = "012345678901234567890POLICY1";
     const auto policyId2 = "012345678901234567890POLICY2";
     const auto tb = TokenBundle({
-        TokenAmount(policyId1, "TOK1", 10),
-        TokenAmount(policyId2, "TOK2", 20),
-        TokenAmount(policyId2, "TOK3", 30), // duplicate policyId
+        TokenAmount(policyId1, data("TOK1"), 10),
+        TokenAmount(policyId2, data("TOK2"), 20),
+        TokenAmount(policyId2, data("TOK3"), 30), // duplicate policyId
     });
     ASSERT_EQ(tb.getPolicyIds().size(), 2ul);
     EXPECT_TRUE(tb.getPolicyIds().contains(policyId1));
@@ -116,8 +116,8 @@ TEST(TWCardanoTransaction, minAdaAmount) {
     }
     { // 2 policyId, 2 4-char asset names
         auto bundle = TokenBundle();
-        bundle.add(TokenAmount("012345678901234567890POLICY1", "TOK1", 20));
-        bundle.add(TokenAmount("012345678901234567890POLICY2", "TOK2", 20));
+        bundle.add(TokenAmount("012345678901234567890POLICY1", data("TOK1"), 20));
+        bundle.add(TokenAmount("012345678901234567890POLICY2", data("TOK2"), 20));
         const auto bundleProto = bundle.toProto();
         const auto bundleProtoData = data(bundleProto.SerializeAsString());
         EXPECT_EQ(TWCardanoMinAdaAmount(&bundleProtoData), 1629628ul);
@@ -145,7 +145,7 @@ TEST(TWCardanoTransaction, outputMinAdaAmount) {
     }
     { // 1 NFT
         auto bundle = TokenBundle();
-        bundle.add(TokenAmount("219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5e", "coolcatssociety4567", 1));
+        bundle.add(TokenAmount("219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5e", data("coolcatssociety4567"), 1));
         const auto bundleProto = bundle.toProto();
         const auto bundleProtoData = data(bundleProto.SerializeAsString());
         const auto actual = WRAPS(TWCardanoOutputMinAdaAmount(toAddress.get(), &bundleProtoData, coinsPerUtxoByte.get()));
@@ -153,8 +153,8 @@ TEST(TWCardanoTransaction, outputMinAdaAmount) {
     }
     { // 2 policyId, 2 4-char asset names
         auto bundle = TokenBundle();
-        bundle.add(TokenAmount("8fef2d34078659493ce161a6c7fba4b56afefa8535296a5743f69587", "AADA", 20));
-        bundle.add(TokenAmount("6ac8ef33b510ec004fe11585f7c5a9f0c07f0c23428ab4f29c1d7d10", "MELD", 20));
+        bundle.add(TokenAmount("8fef2d34078659493ce161a6c7fba4b56afefa8535296a5743f69587", data("AADA"), 20));
+        bundle.add(TokenAmount("6ac8ef33b510ec004fe11585f7c5a9f0c07f0c23428ab4f29c1d7d10", data("MELD"), 20));
         const auto bundleProto = bundle.toProto();
         const auto bundleProtoData = data(bundleProto.SerializeAsString());
         const auto actual = WRAPS(TWCardanoOutputMinAdaAmount(toAddress.get(), &bundleProtoData, coinsPerUtxoByte.get()));
