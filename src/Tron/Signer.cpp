@@ -386,6 +386,10 @@ protocol::Transaction buildTransaction(const Proto::SigningInput& input) noexcep
         *contract->mutable_parameter() = any;
     }
 
+    if (!input.transaction().memo().empty()) {
+        tx.mutable_raw_data()->set_data(input.transaction().memo());
+    }
+
     tx.mutable_raw_data()->set_timestamp(input.transaction().timestamp());
     tx.mutable_raw_data()->set_expiration(input.transaction().expiration());
     tx.mutable_raw_data()->set_fee_limit(input.transaction().fee_limit());

@@ -228,8 +228,11 @@ message Transaction {
     // Transaction block header.
     BlockHeader block_header = 3;
 
-    // Transaction fee limit
+    // Transaction fee limit.
     int64 fee_limit = 4;
+
+    // Transaction memo.
+    string memo = 5;
 
     // Contract.
     oneof contract_oneof {
