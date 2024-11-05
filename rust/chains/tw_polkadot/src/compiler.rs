@@ -36,6 +36,7 @@ impl PolkadotCompiler {
         let pre_image = unsigned_tx.encode_payload()?;
 
         Ok(CompilerProto::PreSigningOutput {
+            // `pre_image` is already hashed if it is larger then 256 bytes.
             data_hash: pre_image.clone().into(),
             data: pre_image.into(),
             ..Default::default()

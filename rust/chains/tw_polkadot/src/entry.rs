@@ -43,9 +43,9 @@ impl CoinEntry for PolkadotEntry {
         &self,
         _coin: &dyn CoinContext,
         address: &str,
-        _prefix: Option<Self::AddressPrefix>,
+        prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        SubstrateAddress::from_str(address)?.with_network_check()
+        SubstrateAddress::from_str(address)?.with_network_check(prefix)
     }
 
     #[inline]
