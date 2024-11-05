@@ -1,5 +1,5 @@
 import java.security.InvalidParameterException;
-import java.util.HashSet;
+import wallet.core.java.GenericPhantomReference;
 
 <%  less = entity.static_methods.detect{ |i| i.name == 'Less' } -%>
 <%  equal = entity.static_methods.detect{ |i| i.name == 'Equal' } -%>
@@ -21,7 +21,7 @@ public final class <%= entity.name %> {
         <%= entity.name %> instance = new <%= entity.name %>();
         instance.nativeHandle = nativeHandle;
 <%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
-        <%= entity.name %>PhantomReference.register(instance, nativeHandle);
+        GenericPhantomReference.register(instance, nativeHandle, <%= entity.name %>::nativeDelete);
 <%  end -%>
         return instance;
     }
@@ -96,9 +96,7 @@ public final class <%= entity.name %> {
             throw new InvalidParameterException();
         }
 
-        GenericPhantomReference.register(someObject, someHandle, handle -> {
-            nativeDelete(nativeHandle);
-        });
+        GenericPhantomReference.register(this, nativeHandle, <%= entity.name %>::nativeDelete);
     }
 
 <%- end -%>
