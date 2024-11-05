@@ -2,7 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+pub mod call_encoder;
 pub mod compiler;
 pub mod entry;
-pub mod call_encoder;
 pub mod signer;
+pub mod tx_builder;

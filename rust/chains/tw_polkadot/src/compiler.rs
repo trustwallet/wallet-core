@@ -2,12 +2,19 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::signer::network_id_from_tw;
+use crate::tx_builder::TxBuilder;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
+use tw_coin_entry::common::compile_input::SingleSignaturePubkey;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
+use tw_keypair::ed25519::{sha512::PublicKey, Signature};
 use tw_proto::Polkadot::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
+use tw_scale::ToScale;
+use tw_ss58_address::SS58Address;
+use tw_substrate::*;
 
 pub struct PolkadotCompiler;
 
@@ -22,10 +29,17 @@ impl PolkadotCompiler {
     }
 
     fn preimage_hashes_impl(
-        _coin: &dyn CoinContext,
-        _input: Proto::SigningInput<'_>,
+        coin: &dyn CoinContext,
+        input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
-        todo!()
+        let unsigned_tx = TxBuilder::unsigned_tx_from_proto(coin, &input)?;
+        let pre_image = unsigned_tx.encode_payload()?;
+
+        Ok(CompilerProto::PreSigningOutput {
+            data_hash: pre_image.clone().into(),
+            data: pre_image.into(),
+            ..Default::default()
+        })
     }
 
     #[inline]
@@ -40,11 +54,27 @@ impl PolkadotCompiler {
     }
 
     fn compile_impl(
-        _coin: &dyn CoinContext,
-        _input: Proto::SigningInput<'_>,
-        _signatures: Vec<SignatureBytes>,
-        _public_keys: Vec<PublicKeyBytes>,
+        coin: &dyn CoinContext,
+        input: Proto::SigningInput<'_>,
+        signatures: Vec<SignatureBytes>,
+        public_keys: Vec<PublicKeyBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        todo!()
+        let SingleSignaturePubkey {
+            signature,
+            public_key,
+        } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
+        let signature = Signature::try_from(signature.as_slice())?;
+        let public_key = PublicKey::try_from(public_key.as_slice())?;
+        let network_id = network_id_from_tw(&input)?;
+        let account = SubstrateAddress(SS58Address::from_public_key(&public_key, network_id)?);
+
+        let unsigned_tx = TxBuilder::unsigned_tx_from_proto(coin, &input)?;
+        let signed_tx = unsigned_tx.into_signed(account, signature)?;
+        let encoded = signed_tx.to_scale();
+
+        Ok(Proto::SigningOutput {
+            encoded: encoded.into(),
+            ..Default::default()
+        })
     }
 }

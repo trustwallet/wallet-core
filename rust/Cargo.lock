@@ -2176,6 +2176,7 @@ version = "0.1.0"
 dependencies = [
  "tw_coin_entry",
  "tw_hash",
+ "tw_keypair",
  "tw_memory",
  "tw_number",
  "tw_scale",

@@ -11,9 +11,7 @@ use tw_proto::Polkadot::Proto::mod_Staking::{
 };
 use tw_substrate::EncodeResult;
 
-use tw_polkadot::{
-    call_encoder::CallEncoder
-};
+use tw_polkadot::call_encoder::CallEncoder;
 
 fn encode_input(input: &Proto::SigningInput<'_>) -> EncodeResult<Vec<u8>> {
     let encoded = CallEncoder::encode_input(input)?;
