@@ -1,4 +1,9 @@
-use tw_hash::{H256, H512};
+use tw_hash::{blake2::blake2_b, H256, H512};
+use tw_keypair::{
+    ed25519::{sha512::KeyPair, Signature},
+    traits::SigningKeyTrait,
+    KeyPairError,
+};
 use tw_scale::{impl_enum_scale, impl_struct_scale, Compact, ToScale};
 use tw_ss58_address::SS58Address;
 
@@ -20,6 +25,12 @@ impl_enum_scale!(
         //Ecdsa([u8; 65]),
     }
 );
+
+impl From<Signature> for MultiSignature {
+    fn from(sig: Signature) -> Self {
+        Self::Ed25519(sig.to_bytes())
+    }
+}
 
 impl_enum_scale!(
     #[derive(Clone, Debug)]
@@ -205,7 +216,7 @@ impl ToScale for Encoded {
     }
 }
 
-pub struct SignedPayload<'a>((&'a Encoded, &'a Extra, AdditionalSigned));
+pub struct SignedPayload<'a>((&'a Encoded, &'a Extra, &'a AdditionalSigned));
 
 impl<'a> ToScale for SignedPayload<'a> {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
@@ -214,20 +225,20 @@ impl<'a> ToScale for SignedPayload<'a> {
 }
 
 impl<'a> SignedPayload<'a> {
-    pub fn new(call: &'a Encoded, extra: &'a Extra, additional: AdditionalSigned) -> Self {
+    pub fn new(call: &'a Encoded, extra: &'a Extra, additional: &'a AdditionalSigned) -> Self {
         Self((call, extra, additional))
     }
 }
 
-/// PreparedTransaction holds all data needed to sign a transaction.
+/// UnsignedTransaction holds all data needed to sign a transaction.
 #[derive(Clone, Debug)]
-pub struct PreparedTransaction {
-    pub call: Encoded,
-    pub extra: Extra,
-    pub additional: AdditionalSigned,
+pub struct UnsignedTransaction {
+    call: Encoded,
+    extra: Extra,
+    additional: AdditionalSigned,
 }
 
-impl PreparedTransaction {
+impl UnsignedTransaction {
     pub fn new(additional: AdditionalSigned, extra: Extra, call: Encoded) -> Self {
         Self {
             additional,
@@ -236,17 +247,36 @@ impl PreparedTransaction {
         }
     }
 
-    /*
-    pub async fn sign(self, signer: &mut impl Signer) -> Result<ExtrinsicV4> {
-      let account = signer.account();
-      let payload = SignedPayload::new(&self.call, &self.extra, self.additional);
-      let payload = payload.to_scale();
-      let sig = signer.sign(&payload[..]).await?;
-
-      let xt = ExtrinsicV4::signed(account, sig, self.extra, self.call);
-      Ok(xt)
+    pub fn encode_payload(&self) -> Result<Vec<u8>, KeyPairError> {
+        let payload = SignedPayload::new(&self.call, &self.extra, &self.additional);
+        // SCALE encode the SignedPayload and if the payload is large then we sign a hash
+        // of the payload.
+        let encoded = payload.to_scale();
+        if encoded.len() > MAX_PAYLOAD_SIZE {
+            Ok(blake2_b(&encoded, PAYLOAD_HASH_SIZE).map_err(|_| KeyPairError::InternalError)?)
+        } else {
+            Ok(encoded)
+        }
     }
-    */
+
+    pub fn sign(self, account: AccountId, signer: &KeyPair) -> Result<ExtrinsicV4, KeyPairError> {
+        let payload = self.encode_payload()?;
+        let signature = signer.sign(payload)?;
+        self.into_signed(account, signature)
+    }
+
+    pub fn into_signed(
+        self,
+        account: AccountId,
+        signature: Signature,
+    ) -> Result<ExtrinsicV4, KeyPairError> {
+        Ok(ExtrinsicV4::signed(
+            account,
+            signature.into(),
+            self.extra,
+            self.call,
+        ))
+    }
 }
 
 impl_struct_scale!(
@@ -262,6 +292,8 @@ impl_struct_scale!(
 pub const EXTRINSIC_VERSION: u8 = 4;
 pub const SIGNED_EXTRINSIC_BIT: u8 = 0b1000_0000;
 pub const UNSIGNED_EXTRINSIC_MASK: u8 = 0b0111_1111;
+pub const MAX_PAYLOAD_SIZE: usize = 256;
+pub const PAYLOAD_HASH_SIZE: usize = 32;
 
 #[derive(Clone, Debug)]
 pub struct ExtrinsicV4 {
