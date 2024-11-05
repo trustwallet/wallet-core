@@ -109,7 +109,7 @@ static int blake2b_init_param( blake2b_state *S, const blake2b_param *P )
 }
 
 
-/* Sequential tc_blake2b initialization */
+/* Sequential blake2b initialization */
 int tc_blake2b_Init( blake2b_state *S, size_t outlen )
 {
   blake2b_param P[1] = {0};
