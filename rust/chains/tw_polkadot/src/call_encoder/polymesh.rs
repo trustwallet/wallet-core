@@ -89,10 +89,7 @@ impl PolymeshBalances {
     pub fn encode_call(b: &Balance) -> EncodeResult<Self> {
         match &b.message_oneof {
             BalanceVariant::transfer(t) => Self::encode_transfer(t),
-            _ => {
-                // TODO: better error.
-                Err(EncodeError::InvalidCallIndex)
-            },
+            _ => Err(EncodeError::InvalidCallIndex),
         }
     }
 }
@@ -109,7 +106,7 @@ impl_enum_scale!(
     #[derive(Clone, Debug)]
     pub enum AuthorizationData {
         JoinIdentity {
-            // TODO:
+            // TODO: Polkymesh permissions.
             permissions: Encoded,
         } = 0x05,
     }
@@ -184,10 +181,7 @@ impl PolymeshIdentity {
         match &ident.message_oneof {
             IdentityVariant::join_identity_as_key(t) => Self::encode_join_identity(t),
             IdentityVariant::add_authorization(a) => Self::encode_add_authorization(a),
-            _ => {
-                // TODO: better error.
-                Err(EncodeError::InvalidCallIndex)
-            },
+            _ => Err(EncodeError::InvalidCallIndex),
         }
     }
 }
@@ -300,10 +294,7 @@ impl PolymeshStaking {
             StakingVariant::withdraw_unbonded(b) => Self::encode_withdraw_unbonded(b),
             StakingVariant::rebond(b) => Self::encode_rebond(b),
             StakingVariant::nominate(b) => Self::encode_nominate(b),
-            _ => {
-                // TODO: better error.
-                Err(EncodeError::InvalidCallIndex)
-            },
+            _ => Err(EncodeError::InvalidCallIndex),
         }
     }
 }
@@ -332,22 +323,18 @@ impl TWPolkadotCallEncoder for PolymeshCallEncoder {
             SigningVariant::balance_call(b) => {
                 PolymeshCall::Balances(PolymeshBalances::encode_call(b)?)
             },
-            SigningVariant::polymesh_call(msg) => {
-                match &msg.message_oneof {
-                    PolymeshVariant::identity_call(msg) => {
-                        PolymeshCall::Identity(PolymeshIdentity::encode_call(msg)?)
-                    },
-                    _ => {
-                        // TODO: better error.
-                        return Err(EncodeError::InvalidCallIndex);
-                    },
-                }
+            SigningVariant::polymesh_call(msg) => match &msg.message_oneof {
+                PolymeshVariant::identity_call(msg) => {
+                    PolymeshCall::Identity(PolymeshIdentity::encode_call(msg)?)
+                },
+                PolymeshVariant::None => {
+                    return Err(EncodeError::InvalidCallIndex);
+                },
             },
             SigningVariant::staking_call(s) => {
                 PolymeshCall::Staking(PolymeshStaking::encode_call(s)?)
             },
-            _ => {
-                // TODO: better error.
+            SigningVariant::None => {
                 return Err(EncodeError::InvalidCallIndex);
             },
         };

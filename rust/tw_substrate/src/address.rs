@@ -37,9 +37,11 @@ impl_struct_scale!(
 );
 
 impl SubstrateAddress {
-    pub fn with_network_check(self) -> AddressResult<Self> {
-        if self.0.network() != NetworkId::POLKADOT {
-            return Err(AddressError::UnexpectedAddressPrefix);
+    pub fn with_network_check(self, prefix: Option<SubstratePrefix>) -> AddressResult<Self> {
+        if let Some(prefix) = prefix {
+            if self.0.network() != prefix.network() {
+                return Err(AddressError::UnexpectedAddressPrefix);
+            }
         }
         Ok(self)
     }
@@ -48,7 +50,7 @@ impl SubstrateAddress {
 impl CoinAddress for SubstrateAddress {
     #[inline]
     fn data(&self) -> Data {
-        self.0.to_bytes()
+        self.0.key_bytes().into()
     }
 }
 

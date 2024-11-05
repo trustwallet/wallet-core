@@ -31,7 +31,6 @@ impl TWPolkadotCallEncoder for PolkadotCallEncoder {
                 GenericStaking::encode_call(s)?.map(PolkadotCall::Staking)
             },
             _ => {
-                // TODO: better error.
                 return Err(EncodeError::InvalidCallIndex);
             },
         };
@@ -71,7 +70,6 @@ impl TWPolkadotCallEncoder for KusamaCallEncoder {
                 GenericStaking::encode_call(s)?.map(KusamaCall::Staking)
             },
             _ => {
-                // TODO: better error.
                 return Err(EncodeError::InvalidCallIndex);
             },
         };

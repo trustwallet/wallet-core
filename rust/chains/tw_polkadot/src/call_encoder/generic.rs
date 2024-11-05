@@ -68,10 +68,7 @@ impl GenericBalances {
         match &b.message_oneof {
             BalanceVariant::transfer(t) => Self::encode_transfer(t),
             BalanceVariant::asset_transfer(t) => Self::encode_asset_transfer(t),
-            _ => {
-                // TODO: better error.
-                Err(EncodeError::InvalidCallIndex)
-            },
+            _ => Err(EncodeError::InvalidCallIndex),
         }
     }
 }
@@ -215,10 +212,7 @@ impl GenericStaking {
             StakingVariant::withdraw_unbonded(b) => Self::encode_withdraw_unbonded(b),
             StakingVariant::rebond(b) => Self::encode_rebond(b),
             StakingVariant::nominate(b) => Self::encode_nominate(b),
-            _ => {
-                // TODO: better error.
-                Err(EncodeError::InvalidCallIndex)
-            },
+            _ => Err(EncodeError::InvalidCallIndex),
         }
     }
 }
