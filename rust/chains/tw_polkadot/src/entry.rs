@@ -15,6 +15,7 @@ use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::modules::transaction_util::NoTransactionUtil;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
+use tw_coin_entry::prefix::AddressPrefix;
 use tw_keypair::tw::PublicKey;
 use tw_proto::Polkadot::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
@@ -41,10 +42,15 @@ impl CoinEntry for PolkadotEntry {
     #[inline]
     fn parse_address(
         &self,
-        _coin: &dyn CoinContext,
+        coin: &dyn CoinContext,
         address: &str,
         prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
+        let prefix = prefix.or_else(|| {
+            coin.ss58_prefix().and_then(|prefix| {
+                SubstratePrefix::try_from(AddressPrefix::SubstrateNetwork(prefix)).ok()
+            })
+        });
         SubstrateAddress::from_str(address)?.with_network_check(prefix)
     }
 
@@ -56,20 +62,23 @@ impl CoinEntry for PolkadotEntry {
     #[inline]
     fn derive_address(
         &self,
-        _coin: &dyn CoinContext,
+        coin: &dyn CoinContext,
         public_key: PublicKey,
         _derivation: Derivation,
         prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
+        let network = prefix
+          .map(SubstratePrefix::network)
+          .or_else(|| {
+            coin.ss58_prefix().and_then(|prefix| NetworkId::from_u16(prefix).ok())
+        }).unwrap_or(NetworkId::POLKADOT);
         let public_key = public_key
             .to_ed25519()
             .ok_or(AddressError::PublicKeyTypeMismatch)?;
 
         SS58Address::from_public_key(
             public_key,
-            prefix
-                .map(SubstratePrefix::network)
-                .unwrap_or(NetworkId::POLKADOT),
+            network,
         )
         .map(SubstrateAddress)
     }

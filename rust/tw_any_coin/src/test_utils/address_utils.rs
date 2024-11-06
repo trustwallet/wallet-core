@@ -80,6 +80,15 @@ pub fn test_address_valid(coin: CoinType, address: &str) {
     );
 }
 
+pub fn test_address_ss58_is_valid(coin: CoinType, address: &str, ss58: u16) {
+    let addr = TWStringHelper::create(address);
+    assert!(
+        unsafe { tw_any_address_is_valid_ss58(addr.ptr(), coin as u32, ss58) },
+        "'{}' expected to be valid",
+        address
+    );
+}
+
 pub fn test_address_invalid(coin: CoinType, address: &str) {
     let addr = TWStringHelper::create(address);
     assert!(
