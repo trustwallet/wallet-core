@@ -316,16 +316,22 @@ impl ExtrinsicV4 {
 
 impl ToScale for ExtrinsicV4 {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
+        // We use a temp buffer here for the `Compact<u32>` length prefix.
+        let mut buf = Vec::with_capacity(512);
+
         // 1 byte version id and signature if signed.
         match &self.signature {
             Some(sig) => {
-                out.push(EXTRINSIC_VERSION | SIGNED_EXTRINSIC_BIT);
-                sig.to_scale_into(out);
+                buf.push(EXTRINSIC_VERSION | SIGNED_EXTRINSIC_BIT);
+                sig.to_scale_into(&mut buf);
             },
             None => {
-                out.push(EXTRINSIC_VERSION & UNSIGNED_EXTRINSIC_MASK);
+                buf.push(EXTRINSIC_VERSION & UNSIGNED_EXTRINSIC_MASK);
             },
         }
-        self.call.to_scale_into(out);
+        self.call.to_scale_into(&mut buf);
+
+        // SCALE encode the tmp buffer to `out`.
+        buf.to_scale_into(out);
     }
 }

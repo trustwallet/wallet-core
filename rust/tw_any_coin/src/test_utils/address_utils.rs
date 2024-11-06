@@ -7,7 +7,7 @@ use crate::ffi::tw_any_address::{
     tw_any_address_create_with_public_key_derivation, tw_any_address_create_with_string,
     tw_any_address_data, tw_any_address_delete, tw_any_address_description,
     tw_any_address_is_valid, tw_any_address_is_valid_base58, tw_any_address_is_valid_bech32,
-    TWAnyAddress,
+    tw_any_address_is_valid_ss58, TWAnyAddress,
 };
 use tw_coin_registry::coin_type::CoinType;
 use tw_coin_registry::registry::get_coin_item;
