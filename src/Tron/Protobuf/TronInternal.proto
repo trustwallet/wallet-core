@@ -4,6 +4,7 @@ import "google/protobuf/any.proto";
 
 package protocol;
 
+// https://github.com/tronprotocol/protocol/blob/2a678934da3992b1a67f975769bbb2d31989451f/core/Tron.proto#L336
 message Transaction {
     message Contract {
         enum ContractType {
@@ -33,6 +34,8 @@ message Transaction {
         int64 ref_block_num = 3;
         bytes ref_block_hash = 4;
         int64 expiration = 8;
+        // transaction memo
+        bytes data = 10;
         //only support size = 1,  repeated list here for extension
         repeated Contract contract = 11;
         int64 timestamp = 14;
