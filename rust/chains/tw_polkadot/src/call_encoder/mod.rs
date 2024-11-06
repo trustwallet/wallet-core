@@ -78,9 +78,7 @@ impl CallEncoder {
             NetworkId::POLKADOT => PolkadotCallEncoder::new(&ctx),
             NetworkId::KUSAMA => KusamaCallEncoder::new(&ctx),
             NetworkId::POLYMESH => PolymeshCallEncoder::new(&ctx),
-            _ => {
-                return Err(EncodeError::InvalidNetworkId);
-            },
+            _ => PolkadotCallEncoder::new(&ctx),
         };
         Ok(Self { encoder })
     }

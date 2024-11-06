@@ -3,9 +3,9 @@ use std::str::FromStr;
 
 use tw_coin_entry::error::prelude::*;
 use tw_encoding::{base58, hex};
-use tw_scale::{ToScale, Raw};
 use tw_hash::blake2::blake2_b;
 use tw_keypair::ed25519::sha512::PublicKey;
+use tw_scale::{Raw, ToScale};
 
 //
 // Most of the materials implemented here are based on the following resources:
@@ -193,8 +193,8 @@ impl std::fmt::Display for SS58Address {
 
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
     use super::{NetworkId, SS58Address};
+    use std::str::FromStr;
     use tw_coin_entry::error::prelude::AddressError;
     use tw_keypair::ed25519::sha512::PublicKey;
 
@@ -302,10 +302,22 @@ mod tests {
             assert_eq!(addr.network().value(), expected_network);
         }
 
-        test_case("15KRsCq9LLNmCxNFhGk55s5bEyazKefunDxUH24GFZwsTxyu", NetworkId::POLKADOT.value());
-        test_case("5CK8D1sKNwF473wbuBP6NuhQfPaWUetNsWUNAAzVwTfxqjfr", NetworkId::GENERIC_SUBSTRATE.value());
-        test_case("CpjsLDC1JFyrhm3ftC9Gs4QoyrkHKhZKtK7YqGTRFtTafgp", NetworkId::KUSAMA.value());
-        test_case("Fu3r514w83euSVV7q1MyFGWErUR2xDzXS2goHzimUn4S12D", NetworkId::KUSAMA.value());
+        test_case(
+            "15KRsCq9LLNmCxNFhGk55s5bEyazKefunDxUH24GFZwsTxyu",
+            NetworkId::POLKADOT.value(),
+        );
+        test_case(
+            "5CK8D1sKNwF473wbuBP6NuhQfPaWUetNsWUNAAzVwTfxqjfr",
+            NetworkId::GENERIC_SUBSTRATE.value(),
+        );
+        test_case(
+            "CpjsLDC1JFyrhm3ftC9Gs4QoyrkHKhZKtK7YqGTRFtTafgp",
+            NetworkId::KUSAMA.value(),
+        );
+        test_case(
+            "Fu3r514w83euSVV7q1MyFGWErUR2xDzXS2goHzimUn4S12D",
+            NetworkId::KUSAMA.value(),
+        );
         test_case("ZG2d3dH5zfqNchsqReS6x4nBJuJCW7Z6Fh5eLvdA3ZXGkPd", 5);
         test_case("cEYtw6AVMB27hFUs4gVukajLM7GqxwxUfJkbPY3rNToHMcCgb", 64);
         test_case("p8EGHjWt7e1MYoD7V6WXvbPZWK9GSJiiK85kv2R7Ur7FisPUL", 172);
@@ -318,15 +330,18 @@ mod tests {
         let key_hex = "92fd9c237030356e26cfcc4568dc71055d5ec92dfe0ff903767e00611971bad3";
         let key = PublicKey::try_from(key_hex).expect("error creating test public key");
 
-        let addr = SS58Address::from_public_key(&key, NetworkId::POLKADOT).expect("error creating address");
+        let addr = SS58Address::from_public_key(&key, NetworkId::POLKADOT)
+            .expect("error creating address");
         assert_eq!(addr.network().value(), 0);
         assert_eq!(addr.key_bytes(), key.as_slice());
 
-        let addr = SS58Address::from_public_key(&key, NetworkId::new_unchecked(5)).expect("error creating address");
+        let addr = SS58Address::from_public_key(&key, NetworkId::new_unchecked(5))
+            .expect("error creating address");
         assert_eq!(addr.network().value(), 5);
         assert_eq!(addr.key_bytes(), key.as_slice());
 
-        let addr = SS58Address::from_public_key(&key, NetworkId::new_unchecked(172)).expect("error creating address");
+        let addr = SS58Address::from_public_key(&key, NetworkId::new_unchecked(172))
+            .expect("error creating address");
         assert_eq!(addr.network().value(), 172);
         assert_eq!(addr.key_bytes(), key.as_slice());
     }

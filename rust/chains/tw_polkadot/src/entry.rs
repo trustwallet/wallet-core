@@ -68,19 +68,17 @@ impl CoinEntry for PolkadotEntry {
         prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
         let network = prefix
-          .map(SubstratePrefix::network)
-          .or_else(|| {
-            coin.ss58_prefix().and_then(|prefix| NetworkId::from_u16(prefix).ok())
-        }).unwrap_or(NetworkId::POLKADOT);
+            .map(SubstratePrefix::network)
+            .or_else(|| {
+                coin.ss58_prefix()
+                    .and_then(|prefix| NetworkId::from_u16(prefix).ok())
+            })
+            .unwrap_or(NetworkId::POLKADOT);
         let public_key = public_key
             .to_ed25519()
             .ok_or(AddressError::PublicKeyTypeMismatch)?;
 
-        SS58Address::from_public_key(
-            public_key,
-            network,
-        )
-        .map(SubstrateAddress)
+        SS58Address::from_public_key(public_key, network).map(SubstrateAddress)
     }
 
     #[inline]
