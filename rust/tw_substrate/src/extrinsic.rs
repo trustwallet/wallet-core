@@ -70,6 +70,26 @@ impl_struct_scale!(
     }
 );
 
+impl AdditionalSigned {
+    pub fn with_check_metadata(
+        self,
+        metadata_hash: Option<BlockHash>,
+    ) -> AdditionalSignedWithCheckMetadata {
+        AdditionalSignedWithCheckMetadata {
+            additional: self,
+            metadata_hash,
+        }
+    }
+}
+
+impl_struct_scale!(
+    #[derive(Clone, Debug)]
+    pub struct AdditionalSignedWithCheckMetadata {
+        additional: AdditionalSigned,
+        metadata_hash: Option<BlockHash>,
+    }
+);
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Era {
     Immortal,
@@ -139,7 +159,34 @@ impl Extra {
     pub fn tip(&self) -> u128 {
         self.tip.0
     }
+
+    pub fn with_check_metadata(self, check_metadata: bool) -> ExtraWithCheckMetadata {
+        ExtraWithCheckMetadata {
+            extra: self,
+            check_metadata: if check_metadata {
+                CheckMetadataMode::Enabled
+            } else {
+                CheckMetadataMode::Disabled
+            },
+        }
+    }
 }
+
+impl_enum_scale!(
+    #[derive(Clone, Copy, Debug)]
+    pub enum CheckMetadataMode {
+        Disabled,
+        Enabled,
+    }
+);
+
+impl_struct_scale!(
+    #[derive(Clone, Debug)]
+    pub struct ExtraWithCheckMetadata {
+        extra: Extra,
+        check_metadata: CheckMetadataMode,
+    }
+);
 
 #[derive(Clone, Debug)]
 pub struct CallIndex(Option<(u8, u8)>);
@@ -210,13 +257,21 @@ impl<T: ToScale> ToScale for WithCallIndex<T> {
 #[derive(Clone, Debug)]
 pub struct Encoded(pub Vec<u8>);
 
+impl Encoded {
+    pub fn new<T: ToScale>(val: T) -> Self {
+        Self(val.to_scale())
+    }
+}
+
 impl ToScale for Encoded {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
         out.extend(&self.0);
     }
 }
 
-pub struct SignedPayload<'a>((&'a Encoded, &'a Extra, &'a AdditionalSigned));
+pub type EncodedExtra = Encoded;
+pub type EncodedAdditionalSigned = Encoded;
+pub struct SignedPayload<'a>((&'a Encoded, &'a EncodedExtra, &'a EncodedAdditionalSigned));
 
 impl<'a> ToScale for SignedPayload<'a> {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
@@ -225,7 +280,11 @@ impl<'a> ToScale for SignedPayload<'a> {
 }
 
 impl<'a> SignedPayload<'a> {
-    pub fn new(call: &'a Encoded, extra: &'a Extra, additional: &'a AdditionalSigned) -> Self {
+    pub fn new(
+        call: &'a Encoded,
+        extra: &'a EncodedExtra,
+        additional: &'a EncodedAdditionalSigned,
+    ) -> Self {
         Self((call, extra, additional))
     }
 }
@@ -234,12 +293,12 @@ impl<'a> SignedPayload<'a> {
 #[derive(Clone, Debug)]
 pub struct UnsignedTransaction {
     call: Encoded,
-    extra: Extra,
-    additional: AdditionalSigned,
+    extra: EncodedExtra,
+    additional: EncodedAdditionalSigned,
 }
 
 impl UnsignedTransaction {
-    pub fn new(additional: AdditionalSigned, extra: Extra, call: Encoded) -> Self {
+    pub fn new(additional: EncodedAdditionalSigned, extra: EncodedExtra, call: Encoded) -> Self {
         Self {
             additional,
             extra,
@@ -284,7 +343,7 @@ impl_struct_scale!(
     pub struct ExtrinsicSignature {
         pub account: MultiAddress,
         pub signature: MultiSignature,
-        pub extra: Extra,
+        pub extra: EncodedExtra,
     }
 );
 
@@ -302,7 +361,12 @@ pub struct ExtrinsicV4 {
 }
 
 impl ExtrinsicV4 {
-    pub fn signed(account: AccountId, sig: MultiSignature, extra: Extra, call: Encoded) -> Self {
+    pub fn signed(
+        account: AccountId,
+        sig: MultiSignature,
+        extra: EncodedExtra,
+        call: Encoded,
+    ) -> Self {
         Self {
             signature: Some(ExtrinsicSignature {
                 account: MultiAddress::from(account),
