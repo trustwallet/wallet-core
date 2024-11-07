@@ -26,8 +26,9 @@ impl TxBuilder {
         _coin: &dyn CoinContext,
         input: &Proto::SigningInput<'_>,
     ) -> SigningResult<PrepareTransaction> {
+        let encoder = CallEncoder::from_ctx(ctx)?;
+        let call = encoder.encode_call(&input.message_oneof)?;
         let check_metadata = require_check_metadata(ctx.network, input.spec_version);
-        let call = CallEncoder::encode_input(&input)?;
         let era = match &input.era {
             Some(era) => Era::mortal(era.period, era.block_number),
             None => Era::immortal(),
@@ -54,7 +55,11 @@ impl TxBuilder {
         builder.extension(CheckGenesis(genesis_hash));
         builder.extension(CheckEra { era, current_hash });
         builder.extension(CheckNonce::new(input.nonce as u32));
-        builder.extension(ChargeTransactionPayment::new(tip));
+        if let Some(fee_asset_id) = ctx.fee_asset_id {
+            builder.extension(ChargeAssetTxPayment::new(tip, fee_asset_id));
+        } else {
+            builder.extension(ChargeTransactionPayment::new(tip));
+        }
         if check_metadata {
             builder.extension(CheckMetadataHash::default());
         }

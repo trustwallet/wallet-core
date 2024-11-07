@@ -133,6 +133,33 @@ impl TxExtension for ChargeTransactionPayment {
     }
 }
 
+#[derive(Clone, Debug)]
+pub struct ChargeAssetTxPayment {
+    tip: Compact<u128>,
+    asset_id: Option<u32>,
+}
+
+impl ChargeAssetTxPayment {
+    pub fn new(tip: u128, asset_id: u32) -> Self {
+        Self {
+            tip: Compact(tip),
+            asset_id: if asset_id > 0 {
+                Some(asset_id)
+            } else {
+                // native token
+                None
+            },
+        }
+    }
+}
+
+impl TxExtension for ChargeAssetTxPayment {
+    fn encode(&self, tx: &mut TxExtensionData) {
+        tx.encode_data(&self.tip);
+        tx.encode_data(&self.asset_id);
+    }
+}
+
 impl_enum_scale!(
     #[derive(Clone, Copy, Debug, Default)]
     pub enum CheckMetadataMode {

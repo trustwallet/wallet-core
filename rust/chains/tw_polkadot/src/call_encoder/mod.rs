@@ -53,20 +53,20 @@ pub struct CallEncoder {
 }
 
 impl CallEncoder {
-    pub fn encode_input(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<Encoded> {
-        let encoder = Self::from_input(input)?;
-        encoder.encode_call(&input.message_oneof)
-    }
-
-    fn from_input(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<Self> {
-        let ctx = ctx_from_tw(input)?;
+    pub fn from_ctx(ctx: &SubstrateContext) -> EncodeResult<Self> {
         let encoder = match ctx.network {
-            NetworkId::POLKADOT => PolkadotCallEncoder::new(&ctx),
-            NetworkId::KUSAMA => KusamaCallEncoder::new(&ctx),
-            NetworkId::POLYMESH => PolymeshCallEncoder::new(&ctx),
-            _ => PolkadotCallEncoder::new(&ctx),
+            NetworkId::POLKADOT => PolkadotCallEncoder::new(ctx),
+            NetworkId::KUSAMA => KusamaCallEncoder::new(ctx),
+            NetworkId::POLYMESH => PolymeshCallEncoder::new(ctx),
+            _ => PolkadotCallEncoder::new(ctx),
         };
         Ok(Self { encoder })
+    }
+
+    pub fn encode_input(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<Encoded> {
+        let ctx = ctx_from_tw(input)?;
+        let encoder = Self::from_ctx(&ctx)?;
+        encoder.encode_call(&input.message_oneof)
     }
 
     fn encode_batch_transfer(&self, bt: &BatchTransfer) -> EncodeResult<Encoded> {
@@ -176,7 +176,7 @@ impl CallEncoder {
         }
     }
 
-    fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
+    pub fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
         // Special case for batches.
         match msg {
             SigningVariant::balance_call(b) => {

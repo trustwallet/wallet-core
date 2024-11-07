@@ -35,6 +35,7 @@ pub struct SubstrateContext {
     pub network: NetworkId,
     pub spec_version: u32,
     pub transaction_version: u32,
+    pub fee_asset_id: Option<u32>,
 }
 
 impl SubstrateContext {
