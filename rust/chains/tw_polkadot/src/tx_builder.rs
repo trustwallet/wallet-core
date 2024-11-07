@@ -37,12 +37,12 @@ impl TxBuilder {
             .genesis_hash
             .as_ref()
             .try_into()
-            .map_err(|_| SigningErrorType::Error_input_parse)?;
+            .unwrap_or_default();
         let current_hash = input
             .block_hash
             .as_ref()
             .try_into()
-            .map_err(|_| SigningErrorType::Error_input_parse)?;
+            .unwrap_or_default();
         let tip = U256::from_big_endian_slice(&input.tip)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
