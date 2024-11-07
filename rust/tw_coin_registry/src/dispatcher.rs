@@ -65,6 +65,7 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::NativeInjective => Ok(&NATIVE_INJECTIVE),
         BlockchainType::Pactus => Ok(&PACTUS),
         BlockchainType::Polkadot => Ok(&POLKADOT),
+        BlockchainType::Kusama => Ok(&POLKADOT),
         BlockchainType::Ronin => Ok(&RONIN),
         BlockchainType::Solana => Ok(&SOLANA),
         BlockchainType::Sui => Ok(&SUI),

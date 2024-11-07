@@ -28,7 +28,7 @@ namespace TW::Polkadot::tests {
     auto privateKeyThrow2 = PrivateKey(parse_hex("70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f"));
     auto privateKeyPolkadot = PrivateKey(parse_hex("298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266"));
     auto addressThrow2 = "14Ztd3KJDaB9xyJtRkREtSZDdhLSbm7UUKt8Z7AwSv7q85G2";
-    auto toPublicKey = TWPublicKeyCreateWithData(DATA("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48").get(), TWPublicKeyTypeED25519);
+    auto publicKey = TWPublicKeyCreateWithData(DATA("0x88dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee").get(), TWPublicKeyTypeED25519);
     auto genesisHash = parse_hex("91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3");
     auto controller1 = "14xKzzU1ZYDnzFj7FgdtDAYSMJNARjDc2gNw4XAFDgr4uXgp";
 
@@ -41,27 +41,29 @@ Data helper_encodePayload(TWCoinType coin, const Proto::SigningInput &input) {
     TxCompiler::Proto::PreSigningOutput preSigningOutput;
     preSigningOutput.ParseFromArray(preImageHash.data(), int(preImageHash.size()));
 
+    EXPECT_EQ(preSigningOutput.error(), Common::Proto::OK);
     return data(preSigningOutput.data());
 }
 
-Data helper_encodeTransaction(TWCoinType coin, const Proto::SigningInput &input, const Data &publicKey, const Data &signature) {
+Data helper_encodeTransaction(TWCoinType coin, const Proto::SigningInput &input, const Data &pubKey, const Data &signature) {
     auto txInputData = data(input.SerializeAsString());
     auto txInputDataPtr = WRAPD(TWDataCreateWithBytes(txInputData.data(), txInputData.size()));
 
     const auto outputData = WRAPD(TWTransactionCompilerCompileWithSignatures(
         coin, txInputDataPtr.get(),
         WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&signature)).get(),
-        WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&publicKey)).get()));
+        WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&pubKey)).get()));
 
 		Polkadot::Proto::SigningOutput output;
     output.ParseFromArray(TWDataBytes(outputData.get()),
                           (int)TWDataSize(outputData.get()));
+    EXPECT_EQ(output.error(), Common::Proto::OK);
 
     return data(output.encoded());
 }
 
 TEST(TWAnySignerPolkadot, SignTransfer_9fd062) {
-		auto toAddress = STRING("13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5");
+		auto toAddressStr = STRING("13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5");
 
     auto input = Proto::SigningInput();
     input.set_genesis_hash(genesisHash.data(), genesisHash.size());
@@ -70,8 +72,8 @@ TEST(TWAnySignerPolkadot, SignTransfer_9fd062) {
     input.set_nonce(3);
     input.set_spec_version(26);
     {
-        PublicKey publicKey = privateKeyThrow2.getPublicKey(TWPublicKeyTypeED25519);
-				const auto address = AnyAddress::createAddress(publicKey, TWCoinTypePolkadot);
+        PublicKey pubKey = privateKeyThrow2.getPublicKey(TWPublicKeyTypeED25519);
+				const auto address = AnyAddress::createAddress(pubKey, TWCoinTypePolkadot);
         EXPECT_EQ(address->address, addressThrow2);
     }
     input.set_private_key(privateKeyThrow2.bytes.data(), privateKeyThrow2.bytes.size());
@@ -86,7 +88,7 @@ TEST(TWAnySignerPolkadot, SignTransfer_9fd062) {
     auto balanceCall = input.mutable_balance_call();
     auto transfer = balanceCall->mutable_transfer();
     auto value = store(uint256_t(2000000000)); // 0.2
-    transfer->set_to_address(TWStringUTF8Bytes(toAddress.get()));
+    transfer->set_to_address(TWStringUTF8Bytes(toAddressStr.get()));
     transfer->set_value(value.data(), value.size());
 
     auto preimage = helper_encodePayload(TWCoinTypePolkadot, input);
@@ -100,10 +102,10 @@ TEST(TWAnySignerPolkadot, SignTransfer_9fd062) {
 }
 
 TEST(TWAnySignerPolkadot, SignTransferDOT) {
-
     auto blockHash = parse_hex("0x343a3f4258fd92f5ca6ca5abdf473d86a78b0bcd0dc09c568ca594245cc8c642");
-    const auto toAddress = WRAP(TWAnyAddress, TWAnyAddressCreateSS58WithPublicKey(toPublicKey, TWCoinTypePolkadot, polkadotPrefix));
+    const auto toAddress = WRAP(TWAnyAddress, TWAnyAddressCreateSS58WithPublicKey(publicKey, TWCoinTypePolkadot, polkadotPrefix));
     const auto toAddressStr = WRAPS(TWAnyAddressDescription(toAddress.get()));
+		assertStringsEqual(toAddressStr, "146SvjUZXoMaemdeiecyxgALeYMm8ZWh1yrGo8RtpoPfe7WL");
 
     auto input = Proto::SigningInput();
     input.set_genesis_hash(genesisHash.data(), genesisHash.size());
@@ -126,12 +128,13 @@ TEST(TWAnySignerPolkadot, SignTransferDOT) {
     transfer.set_value(value.data(), value.size());
 
     auto preimage = helper_encodePayload(TWCoinTypePolkadot, input);
+    EXPECT_EQ(hex(preimage), "050088dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0eee5c032000000110000000300000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3343a3f4258fd92f5ca6ca5abdf473d86a78b0bcd0dc09c568ca594245cc8c642");
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypePolkadot);
+    EXPECT_EQ(output.error(), Common::Proto::OK);
 
-    ASSERT_EQ(hex(preimage), "05008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c032000000110000000300000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3343a3f4258fd92f5ca6ca5abdf473d86a78b0bcd0dc09c568ca594245cc8c642");
-    ASSERT_EQ(hex(output.encoded()), "29028488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee003d91a06263956d8ce3ce5c55455baefff299d9cb2bb3f76866b6828ee4083770b6c03b05d7b6eb510ac78d047002c1fe5c6ee4b37c9c5a8b09ea07677f12e50d3200000005008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c0");
+    ASSERT_EQ(hex(output.encoded()), "29028488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee0061ee605d8cdcedf93200ba01636572f032ff04d75ed2999b80c184bc03ecbca7df83d176d955551b8f1654d2f6f771565be8d573df82d0b7f2eaba6d5daa3f0232000000050088dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0eee5c0");
 }
 
 TEST(TWAnySignerPolkadot, SignTransfer_72dd5b) {
@@ -175,8 +178,8 @@ TEST(TWAnySignerPolkadot, SignBond_8da66d) {
     input.set_nonce(0);
     input.set_spec_version(26);
     {
-        PublicKey publicKey = privateKeyThrow2.getPublicKey(TWPublicKeyTypeED25519);
-				const auto address = AnyAddress::createAddress(publicKey, TWCoinTypePolkadot);
+        PublicKey pubKey = privateKeyThrow2.getPublicKey(TWPublicKeyTypeED25519);
+				const auto address = AnyAddress::createAddress(pubKey, TWCoinTypePolkadot);
         EXPECT_EQ(address->address, addressThrow2);
     }
     input.set_private_key(privateKeyThrow2.bytes.data(), privateKeyThrow2.bytes.size());
@@ -432,14 +435,14 @@ TEST(TWAnySignerPolkadot, PolymeshEncodeAndSign) {
 
     ASSERT_EQ(hex(preImage), "050100849e2f6b165d4b28b39ef3d98f86c0520d82bc349536324365c10af08f323f8302093d00014d454d4f2050414444454420574954482053504143455300000000000000000025010400c20b0000020000006fbd74e5e1d0a61d52ccfe9d4adaed16dd3a7caa37c6bc4d0c2fa12e8b2f4063898bba6413c38f79a284aec8749f297f6c8734c501f67517b5a6aadc338d1102");
 
-    auto publicKey = parse_hex("4322cf71da08f9d56181a707af7c0c437dfcb93e6caac9825a5aba57548142ee");
+    auto pubKey = parse_hex("4322cf71da08f9d56181a707af7c0c437dfcb93e6caac9825a5aba57548142ee");
     auto signature = parse_hex("0791ee378775eaff34ef7e529ab742f0d81d281fdf20ace0aa765ca484f5909c4eea0a59c8dbbc534c832704924b424ba3230c38acd0ad5360cef023ca2a420f");
 
     /// Step 3: Compile transaction info
     const auto outputData = WRAPD(TWTransactionCompilerCompileWithSignatures(
         coin, txInputDataPtr.get(),
         WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&signature)).get(),
-        WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&publicKey)).get()));
+        WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&pubKey)).get()));
 
 		const auto ExpectedTx =
 				"bd0284004322cf71da08f9d56181a707af7c0c437dfcb93e6caac9825a5aba57548142ee000791ee378775eaff34ef7e529ab742f0d81d281fdf20ace0aa765ca484f5909c4eea0a59c8dbbc534c832704924b424ba3230c38acd0ad5360cef023ca2a420f25010400050100849e2f6b165d4b28b39ef3d98f86c0520d82bc349536324365c10af08f323f8302093d00014d454d4f20504144444544205749544820535041434553000000000000000000";
@@ -479,9 +482,9 @@ TEST(TWAnySignerPolkadot, Statemint_encodeTransaction_transfer) {
     callIndices->set_module_index(0x32);
     callIndices->set_method_index(0x05);
 
-    auto publicKey = parse_hex("81f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c91");
+    auto pubKey = parse_hex("81f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c91");
     auto signature = parse_hex("e0ae36a5ceaaa7ff53fadfecc8a285a436b15e39c43ea09e8897f34fa3fe55133028eb7d8a9ea2cd42ff1c786e945cd47a02243454ecb39c81acc3409d96f903");
-    auto encoded = helper_encodeTransaction(TWCoinTypePolkadot, input, publicKey, signature);
+    auto encoded = helper_encodeTransaction(TWCoinTypePolkadot, input, pubKey, signature);
     ASSERT_EQ(hex(encoded), "4102840081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c9100e0ae36a5ceaaa7ff53fadfecc8a285a436b15e39c43ea09e8897f34fa3fe55133028eb7d8a9ea2cd42ff1c786e945cd47a02243454ecb39c81acc3409d96f903000000003205011f0050e47b3c8aef60bc4fc744d8d979cb0eb2d45fa25c2e9da74e1e5ebd9e117518821a0600");
 
     // 3d  02840081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c9100e0ae36a5ceaaa7ff53fadfecc8a285a436b15e39c43ea09e8897f34fa3fe55133028eb7d8a9ea2cd42ff1c786e945cd47a02243454ecb39c81acc3409d96f903000000      3205011f0050e47b3c8aef60bc4fc744d8d979cb0eb2d45fa25c2e9da74e1e5ebd9e117518821a0600
@@ -519,9 +522,9 @@ TEST(TWAnySignerPolkadot, Statemint_encodeTransaction_transfer_keep_alive) {
     callIndices->set_module_index(0x32);
     callIndices->set_method_index(0x06);
 
-    auto publicKey = parse_hex("81f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c91");
+    auto pubKey = parse_hex("81f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c91");
     auto signature = parse_hex("68c40526bd9e56e340bfc9385ea463afce34e5c49be75b5946974d9ef6a357f90842036cd1b811b60882ae7183aa23545ef5825aafc8aaa6274d71a03414dc0a");
-    auto encoded = helper_encodeTransaction(TWCoinTypePolkadot, input, publicKey, signature);
+    auto encoded = helper_encodeTransaction(TWCoinTypePolkadot, input, pubKey, signature);
     ASSERT_EQ(hex(encoded), "4502840081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c910068c40526bd9e56e340bfc9385ea463afce34e5c49be75b5946974d9ef6a357f90842036cd1b811b60882ae7183aa23545ef5825aafc8aaa6274d71a03414dc0a85020800003206011f0050e47b3c8aef60bc4fc744d8d979cb0eb2d45fa25c2e9da74e1e5ebd9e117518821a0600");
 }
 
@@ -569,9 +572,9 @@ TEST(TWAnySignerPolkadot, Statemint_encodeTransaction_batch_transfer_keep_alive)
     t2CallIndices->set_module_index(0x32);
     t2CallIndices->set_method_index(0x06);
 
-    auto publicKey = parse_hex("81f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c91");
+    auto pubKey = parse_hex("81f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c91");
     auto signature = parse_hex("e1d541271965858ff2ba1a1296f0b4d28c8cbcaddf0ea06a9866869caeca3d16eff1265591d11b46d66882493079fde9e425cd941f166260135e9d81f7daf60c");
-    auto encoded = helper_encodeTransaction(TWCoinTypePolkadot, input, publicKey, signature);
+    auto encoded = helper_encodeTransaction(TWCoinTypePolkadot, input, pubKey, signature);
     ASSERT_EQ(hex(encoded), "f502840081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c9100e1d541271965858ff2ba1a1296f0b4d28c8cbcaddf0ea06a9866869caeca3d16eff1265591d11b46d66882493079fde9e425cd941f166260135e9d81f7daf60c85020c00002800083206011f0050e47b3c8aef60bc4fc744d8d979cb0eb2d45fa25c2e9da74e1e5ebd9e117518821a06003206011f0050e47b3c8aef60bc4fc744d8d979cb0eb2d45fa25c2e9da74e1e5ebd9e117518821a0600");
 }
 
@@ -602,9 +605,9 @@ TEST(TWAnySignerPolkadot, Statemint_encodeTransaction_dot_transfer_keep_alive) {
     callIndices->set_module_index(0x0a);
     callIndices->set_method_index(0x03);
 
-    auto publicKey = parse_hex("81f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c91");
+    auto pubKey = parse_hex("81f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c91");
     auto signature = parse_hex("c4f7cb46605986ff6dd1a192736feddd8ae468a10b1b458eadfa855ed6b59ad442a96c18e7109ad594d11ba2fd52920545f8a450234e9b03ee3e8f59a8f06f00");
-    auto encoded = helper_encodeTransaction(TWCoinTypePolkadot, input, publicKey, signature);
+    auto encoded = helper_encodeTransaction(TWCoinTypePolkadot, input, pubKey, signature);
     ASSERT_EQ(hex(encoded), "3902840081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c9100c4f7cb46605986ff6dd1a192736feddd8ae468a10b1b458eadfa855ed6b59ad442a96c18e7109ad594d11ba2fd52920545f8a450234e9b03ee3e8f59a8f06f00001c00000a030050e47b3c8aef60bc4fc744d8d979cb0eb2d45fa25c2e9da74e1e5ebd9e117518821a0600");
 }
 
@@ -635,9 +638,9 @@ TEST(TWAnySignerPolkadot, Statemint_encodeTransaction_usdt_transfer_keep_alive) 
     callIndices->set_module_index(0x32);
     callIndices->set_method_index(0x06);
 
-    auto publicKey = parse_hex("81f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c91");
+    auto pubKey = parse_hex("81f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c91");
     auto signature = parse_hex("d22583408806c005a24caf16f2084691f4c6dcb6015e6645adc86fc1474369b0e0b7dbcc0ef25b17eae43844aff6fb42a0b279a19e822c76043cac015be5e40a");
-    auto encoded = helper_encodeTransaction(TWCoinTypePolkadot, input, publicKey, signature);
+    auto encoded = helper_encodeTransaction(TWCoinTypePolkadot, input, pubKey, signature);
     ASSERT_EQ(hex(encoded), "5102840081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c9100d22583408806c005a24caf16f2084691f4c6dcb6015e6645adc86fc1474369b0e0b7dbcc0ef25b17eae43844aff6fb42a0b279a19e822c76043cac015be5e40a00200001c00700003206011f0050e47b3c8aef60bc4fc744d8d979cb0eb2d45fa25c2e9da74e1e5ebd9e117518821a0600");
 }
 
@@ -662,13 +665,23 @@ TEST(TWAnySignerPolkadot, encodeTransaction_Add_authorization) {
 
     auto* addAuthorization = input.mutable_polymesh_call()->mutable_identity_call()->mutable_add_authorization();
     addAuthorization->set_target("2HEVN4PHYKj7B1krQ9bctAQXZxHQQkANVNCcfbdYk2gZ4cBR");
+    auto* authData = addAuthorization->mutable_data();
+    // Set empty "These".
+    auto* assets = authData->mutable_asset();
+    auto empty = parse_hex("00");
+		assets->set_data(std::string(empty.begin(), empty.end()));
+    auto* extrinsics = authData->mutable_extrinsic();
+		extrinsics->set_data(std::string(empty.begin(), empty.end()));
+    auto* portfolios = authData->mutable_portfolio();
+		portfolios->set_data(std::string(empty.begin(), empty.end()));
+
     auto* callIndices = addAuthorization->mutable_call_indices()->mutable_custom();
     callIndices->set_module_index(0x07);
     callIndices->set_method_index(0x0d);
 
-    auto publicKey = parse_hex("4322cf71da08f9d56181a707af7c0c437dfcb93e6caac9825a5aba57548142ee");
+    auto pubKey = parse_hex("4322cf71da08f9d56181a707af7c0c437dfcb93e6caac9825a5aba57548142ee");
     auto signature = parse_hex("81e6561e4391862b5da961d7033baced1c4b25f0e27f938b02321af1118e0b859e1c2bd5607576a258f2c2befbc5f397ea4adb62938f30eb73c8060ab0eabf01");
-    auto encoded = helper_encodeTransaction(TWCoinTypePolkadot, input, publicKey, signature);
+    auto encoded = helper_encodeTransaction(TWCoinTypePolkadot, input, pubKey, signature);
     ASSERT_EQ(hex(encoded), "490284004322cf71da08f9d56181a707af7c0c437dfcb93e6caac9825a5aba57548142ee0081e6561e4391862b5da961d7033baced1c4b25f0e27f938b02321af1118e0b859e1c2bd5607576a258f2c2befbc5f397ea4adb62938f30eb73c8060ab0eabf01b5031400070d01d3b2f1c41b9b4522eb3e23329b81aca6cc0231167ecfa3580c5a71ff6d0610540501000100010000");
 }
 
@@ -697,9 +710,9 @@ TEST(TWAnySignerPolkadot, encodeTransaction_JoinIdentityAsKey) {
     callIndices->set_module_index(0x07);
     callIndices->set_method_index(0x05);
 
-    auto publicKey = parse_hex("d3b2f1c41b9b4522eb3e23329b81aca6cc0231167ecfa3580c5a71ff6d061054");
+    auto pubKey = parse_hex("d3b2f1c41b9b4522eb3e23329b81aca6cc0231167ecfa3580c5a71ff6d061054");
     auto signature = parse_hex("7f5adbb2749e2f0ace29b409c41dd717681495b1f22dc5358311646a9fb8af8a173fc47f1b19748fb56831c2128773e2976986685adee83c741ab49934d80006");
-    auto encoded = helper_encodeTransaction(TWCoinTypePolkadot, input, publicKey, signature);
+    auto encoded = helper_encodeTransaction(TWCoinTypePolkadot, input, pubKey, signature);
     ASSERT_EQ(hex(encoded), "c5018400d3b2f1c41b9b4522eb3e23329b81aca6cc0231167ecfa3580c5a71ff6d061054007f5adbb2749e2f0ace29b409c41dd717681495b1f22dc5358311646a9fb8af8a173fc47f1b19748fb56831c2128773e2976986685adee83c741ab49934d80006750000000705bb53000000000000");
 }
 
@@ -748,8 +761,8 @@ TEST(TWAnySignerPolkadot, SignTransfer_KusamaNewSpec) {
     input.set_nonce(150);
     input.set_spec_version(1002005);
     {
-        PublicKey publicKey = privateKeyThrow2.getPublicKey(TWPublicKeyTypeED25519);
-				const auto address = AnyAddress::createAddress(publicKey, TWCoinTypePolkadot);
+        PublicKey pubKey = privateKeyThrow2.getPublicKey(TWPublicKeyTypeED25519);
+				const auto address = AnyAddress::createAddress(pubKey, TWCoinTypePolkadot);
         EXPECT_EQ(address->address, addressThrow2);
     }
     input.set_private_key(privateKeyThrow2.bytes.data(), privateKeyThrow2.bytes.size());
@@ -778,6 +791,9 @@ TEST(TWAnySignerPolkadot, SignTransfer_KusamaNewSpec) {
 
 TEST(PolkadotExtrinsic, Polkadot_EncodePayloadWithNewSpec) {
     Polkadot::Proto::SigningInput input;
+    input.set_genesis_hash(genesisHash.data(), genesisHash.size());
+    auto blockHash = parse_hex("0x5d2143bb808626d63ad7e1cda70fa8697059d670a992e82cd440fbb95ea40351");
+    input.set_block_hash(blockHash.data(), blockHash.size());
     input.set_network(0);
     input.set_multi_address(true);
 
@@ -793,15 +809,15 @@ TEST(PolkadotExtrinsic, Polkadot_EncodePayloadWithNewSpec) {
 
     input.set_spec_version(1002000);  // breaking change happens at version 1002005
     auto result = helper_encodePayload(TWCoinTypePolkadot, input);
-    EXPECT_EQ(hex(result), "3205011f00a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943eda0d82a34cee00000000104a0f0000000000");
+    EXPECT_EQ(hex(result), "3205011f00a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943eda0d82a34cee00000000104a0f000000000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c35d2143bb808626d63ad7e1cda70fa8697059d670a992e82cd440fbb95ea40351");
 
     input.set_spec_version(1002005);  // >= 1002005
     result = helper_encodePayload(TWCoinTypePolkadot, input);
-    EXPECT_EQ(hex(result), "3205011f00a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943eda0d82a34cee0000000000154a0f000000000000");
+    EXPECT_EQ(hex(result), "3205011f00a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943eda0d82a34cee0000000000154a0f000000000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c35d2143bb808626d63ad7e1cda70fa8697059d670a992e82cd440fbb95ea4035100");
 
     input.set_spec_version(1002006);  // >= 1002005
     result = helper_encodePayload(TWCoinTypePolkadot, input);
-    EXPECT_EQ(hex(result), "3205011f00a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943eda0d82a34cee0000000000164a0f000000000000");
+    EXPECT_EQ(hex(result), "3205011f00a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943eda0d82a34cee0000000000164a0f000000000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c35d2143bb808626d63ad7e1cda70fa8697059d670a992e82cd440fbb95ea4035100");
 }
 
 } // namespace TW::Polkadot::tests
