@@ -4,6 +4,7 @@
 
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
+use tw_number::U256;
 use tw_proto::Polkadot::Proto;
 use tw_ss58_address::NetworkId;
 use tw_substrate::*;
@@ -41,6 +42,11 @@ impl TxBuilder {
             .as_ref()
             .try_into()
             .map_err(|_| SigningErrorType::Error_input_parse)?;
+        let tip = U256::from_big_endian_slice(&input.tip)
+            .map_err(|_| EncodeError::InvalidValue)?
+            .try_into()
+            .map_err(|_| EncodeError::InvalidValue)?;
+
         let mut builder = TransactionBuilder::new(call);
         // Add chain extensions.
         builder.extension(CheckVersion(input.spec_version));
@@ -48,7 +54,7 @@ impl TxBuilder {
         builder.extension(CheckGenesis(genesis_hash));
         builder.extension(CheckEra { era, current_hash });
         builder.extension(CheckNonce::new(input.nonce as u32));
-        builder.extension(ChargeTransactionPayment::new(0));
+        builder.extension(ChargeTransactionPayment::new(tip));
         if check_metadata {
             builder.extension(CheckMetadataHash::default());
         }

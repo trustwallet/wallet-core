@@ -1,11 +1,6 @@
 use std::str::FromStr;
 
-use tw_scale::{impl_enum_scale, Compact};
-
 use tw_number::U256;
-use tw_ss58_address::SS58Address;
-use tw_substrate::*;
-
 use tw_proto::Polkadot::Proto::{
     mod_Balance::{AssetTransfer, OneOfmessage_oneof as BalanceVariant, Transfer},
     mod_Staking::{
@@ -14,6 +9,9 @@ use tw_proto::Polkadot::Proto::{
     },
     Balance, Staking,
 };
+use tw_scale::{impl_enum_scale, Compact};
+use tw_ss58_address::SS58Address;
+use tw_substrate::*;
 
 use super::{required_call_index, validate_call_index};
 
