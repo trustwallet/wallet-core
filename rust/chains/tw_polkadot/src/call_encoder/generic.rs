@@ -9,7 +9,7 @@ use tw_proto::Polkadot::Proto::{
     },
     Balance, Staking,
 };
-use tw_scale::{impl_enum_scale, Compact};
+use tw_scale::{impl_enum_scale, Compact, ToScale};
 use tw_ss58_address::SS58Address;
 use tw_substrate::*;
 
@@ -110,13 +110,28 @@ impl RewardDestination {
     }
 }
 
+
+#[derive(Clone, Debug)]
+pub struct BondCall {
+    controller: Option<MultiAddress>,
+    value: Compact<u128>,
+    reward: RewardDestination,
+}
+
+impl ToScale for BondCall {
+    fn to_scale_into(&self, out: &mut Vec<u8>) {
+        if let Some(controller) = &self.controller {
+            controller.to_scale_into(out);
+        }
+        self.value.to_scale_into(out);
+        self.reward.to_scale_into(out);
+    }
+}
+
 impl_enum_scale!(
     #[derive(Clone, Debug)]
     pub enum GenericStaking {
-        Bond {
-            value: Compact<u128>,
-            reward: RewardDestination,
-        } = 0x00,
+        Bond(BondCall) = 0x00,
         BondExtra {
             max_additional: Compact<u128>,
         } = 0x01,
@@ -137,17 +152,22 @@ impl_enum_scale!(
 );
 
 impl GenericStaking {
-    fn encode_bond(b: &Bond) -> WithCallIndexResult<Self> {
+    fn encode_bond(ctx: &SubstrateContext, b: &Bond) -> WithCallIndexResult<Self> {
         let ci = validate_call_index(&b.call_indices)?;
+        let controller =
+            SS58Address::from_str(&b.controller)
+            .map(|addr| ctx.multi_address(addr.into()))
+            .ok();
         let value = U256::from_big_endian_slice(&b.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
             .map_err(|_| EncodeError::InvalidValue)?;
 
-        Ok(ci.wrap(Self::Bond {
+        Ok(ci.wrap(Self::Bond(BondCall {
+            controller,
             value: Compact(value),
             reward: RewardDestination::from_tw(b.reward_destination as u8, &b.controller)?,
-        }))
+        })))
     }
 
     fn encode_bond_extra(b: &BondExtra) -> WithCallIndexResult<Self> {
@@ -214,7 +234,7 @@ impl GenericStaking {
 
     pub fn encode_call(ctx: &SubstrateContext, s: &Staking) -> WithCallIndexResult<Self> {
         match &s.message_oneof {
-            StakingVariant::bond(b) => Self::encode_bond(b),
+            StakingVariant::bond(b) => Self::encode_bond(ctx, b),
             StakingVariant::bond_extra(b) => Self::encode_bond_extra(b),
             StakingVariant::chill(b) => Self::encode_chill(b),
             StakingVariant::unbond(b) => Self::encode_unbond(b),
