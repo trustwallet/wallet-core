@@ -13,11 +13,11 @@ impl_enum_scale!(
     }
 );
 
-pub struct PolkadotCallEncoder;
+pub struct PolkadotCallEncoder(SubstrateContext);
 
 impl PolkadotCallEncoder {
-    pub fn new(_ctx: &SubstrateContext) -> Box<dyn TWPolkadotCallEncoder> {
-        Box::new(Self)
+    pub fn new(ctx: &SubstrateContext) -> Box<dyn TWPolkadotCallEncoder> {
+        Box::new(Self(ctx.clone()))
     }
 }
 
@@ -25,10 +25,10 @@ impl TWPolkadotCallEncoder for PolkadotCallEncoder {
     fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
         let call = match msg {
             SigningVariant::balance_call(b) => {
-                GenericBalances::encode_call(b)?.map(PolkadotCall::Balances)
+                GenericBalances::encode_call(&self.0, b)?.map(PolkadotCall::Balances)
             },
             SigningVariant::staking_call(s) => {
-                GenericStaking::encode_call(s)?.map(PolkadotCall::Staking)
+                GenericStaking::encode_call(&self.0, s)?.map(PolkadotCall::Staking)
             },
             _ => {
                 return Err(EncodeError::InvalidCallIndex);
@@ -52,11 +52,11 @@ impl_enum_scale!(
     }
 );
 
-pub struct KusamaCallEncoder;
+pub struct KusamaCallEncoder(SubstrateContext);
 
 impl KusamaCallEncoder {
-    pub fn new(_ctx: &SubstrateContext) -> Box<dyn TWPolkadotCallEncoder> {
-        Box::new(Self)
+    pub fn new(ctx: &SubstrateContext) -> Box<dyn TWPolkadotCallEncoder> {
+        Box::new(Self(ctx.clone()))
     }
 }
 
@@ -64,10 +64,10 @@ impl TWPolkadotCallEncoder for KusamaCallEncoder {
     fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
         let call = match msg {
             SigningVariant::balance_call(b) => {
-                GenericBalances::encode_call(b)?.map(KusamaCall::Balances)
+                GenericBalances::encode_call(&self.0, b)?.map(KusamaCall::Balances)
             },
             SigningVariant::staking_call(s) => {
-                GenericStaking::encode_call(s)?.map(KusamaCall::Staking)
+                GenericStaking::encode_call(&self.0, s)?.map(KusamaCall::Staking)
             },
             _ => {
                 return Err(EncodeError::InvalidCallIndex);
