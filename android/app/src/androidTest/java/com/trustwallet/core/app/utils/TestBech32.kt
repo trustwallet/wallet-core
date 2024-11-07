@@ -12,7 +12,7 @@ class TestBech32 {
     @Test
     fun testEncode() {
         val data = Numeric.hexStringToByteArray("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")
-        assertEquals(Bech32.encode("abcdef", data, "abcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw")
+        assertEquals(Bech32.encode("abcdef", data), "abcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw")
     }
 
     @Test
