@@ -21,8 +21,14 @@ pub enum EncodeError {
 
 impl From<EncodeError> for SigningError {
     #[inline]
-    fn from(_err: EncodeError) -> Self {
-        TWError::new(SigningErrorType::Error_invalid_params)
+    fn from(err: EncodeError) -> Self {
+        eprintln!("--- Substrate error: {err:?}");
+        TWError::new(match err {
+            EncodeError::InvalidAddress => SigningErrorType::Error_invalid_address,
+            EncodeError::InvalidValue => SigningErrorType::Error_input_parse,
+            EncodeError::MissingCallIndicesTable => SigningErrorType::Error_not_supported,
+            _ => SigningErrorType::Error_invalid_params,
+        })
     }
 }
 
