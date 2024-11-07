@@ -64,7 +64,8 @@ impl_enum_scale!(
 );
 
 impl PolymeshBalances {
-    fn encode_transfer(t: &Transfer) -> EncodeResult<Self> {
+    fn encode_transfer(t: &Transfer) -> WithCallIndexResult<Self> {
+        let ci = validate_call_index(&t.call_indices)?;
         let address =
             SS58Address::from_str(&t.to_address).map_err(|_| EncodeError::InvalidAddress)?;
         let value = U256::from_big_endian_slice(&t.value)
@@ -73,20 +74,20 @@ impl PolymeshBalances {
             .map_err(|_| EncodeError::InvalidValue)?;
 
         if !t.memo.is_empty() {
-            Ok(Self::TransferWithMemo {
+            Ok(ci.wrap(Self::TransferWithMemo {
                 dest: address.into(),
                 value: Compact(value),
                 memo: Some(Memo::new(&t.memo)),
-            })
+            }))
         } else {
-            Ok(Self::Transfer {
+            Ok(ci.wrap(Self::Transfer {
                 dest: address.into(),
                 value: Compact(value),
-            })
+            }))
         }
     }
 
-    pub fn encode_call(b: &Balance) -> EncodeResult<Self> {
+    pub fn encode_call(b: &Balance) -> WithCallIndexResult<Self> {
         match &b.message_oneof {
             BalanceVariant::transfer(t) => Self::encode_transfer(t),
             _ => Err(EncodeError::InvalidCallIndex),
@@ -127,13 +128,15 @@ impl_enum_scale!(
 );
 
 impl PolymeshIdentity {
-    fn encode_join_identity(join: &JoinIdentityAsKey) -> EncodeResult<Self> {
-        Ok(Self::JoinIdentity {
+    fn encode_join_identity(join: &JoinIdentityAsKey) -> WithCallIndexResult<Self> {
+        let ci = validate_call_index(&join.call_indices)?;
+        Ok(ci.wrap(Self::JoinIdentity {
             auth_id: join.auth_id,
-        })
+        }))
     }
 
-    fn encode_add_authorization(auth: &AddAuthorization) -> EncodeResult<Self> {
+    fn encode_add_authorization(auth: &AddAuthorization) -> WithCallIndexResult<Self> {
+        let ci = validate_call_index(&auth.call_indices)?;
         let target =
             SS58Address::from_str(&auth.target).map_err(|_| EncodeError::InvalidAddress)?;
         let mut data = Vec::new();
@@ -164,7 +167,7 @@ impl PolymeshIdentity {
             data.push(0x00);
             data.push(0x00);
         }
-        Ok(Self::AddAuthorization {
+        Ok(ci.wrap(Self::AddAuthorization {
             target: Signatory::Account(SubstrateAddress(target.into())),
             data: AuthorizationData::JoinIdentity {
                 permissions: Encoded(data),
@@ -174,10 +177,10 @@ impl PolymeshIdentity {
             } else {
                 None
             },
-        })
+        }))
     }
 
-    pub fn encode_call(ident: &Identity) -> EncodeResult<Self> {
+    pub fn encode_call(ident: &Identity) -> WithCallIndexResult<Self> {
         match &ident.message_oneof {
             IdentityVariant::join_identity_as_key(t) => Self::encode_join_identity(t),
             IdentityVariant::add_authorization(a) => Self::encode_add_authorization(a),
@@ -214,7 +217,8 @@ impl_enum_scale!(
 );
 
 impl PolymeshStaking {
-    fn encode_bond(b: &Bond) -> EncodeResult<Self> {
+    fn encode_bond(b: &Bond) -> WithCallIndexResult<Self> {
+        let ci = validate_call_index(&b.call_indices)?;
         let value = U256::from_big_endian_slice(&b.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
@@ -222,57 +226,63 @@ impl PolymeshStaking {
         let controller =
             SS58Address::from_str(&b.controller).map_err(|_| EncodeError::InvalidAddress)?;
 
-        Ok(Self::Bond {
+        Ok(ci.wrap(Self::Bond {
             controller: controller.into(),
             value: Compact(value),
             reward: RewardDestination::from_tw(b.reward_destination as u8, &b.controller)?,
-        })
+        }))
     }
 
-    fn encode_bond_extra(b: &BondExtra) -> EncodeResult<Self> {
+    fn encode_bond_extra(b: &BondExtra) -> WithCallIndexResult<Self> {
+        let ci = validate_call_index(&b.call_indices)?;
         let value = U256::from_big_endian_slice(&b.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
             .map_err(|_| EncodeError::InvalidValue)?;
 
-        Ok(Self::BondExtra {
+        Ok(ci.wrap(Self::BondExtra {
             max_additional: Compact(value),
-        })
+        }))
     }
 
-    fn encode_chill(_c: &Chill) -> EncodeResult<Self> {
-        Ok(Self::Chill)
+    fn encode_chill(c: &Chill) -> WithCallIndexResult<Self> {
+        let ci = validate_call_index(&c.call_indices)?;
+        Ok(ci.wrap(Self::Chill))
     }
 
-    fn encode_unbond(b: &Unbond) -> EncodeResult<Self> {
+    fn encode_unbond(b: &Unbond) -> WithCallIndexResult<Self> {
+        let ci = validate_call_index(&b.call_indices)?;
         let value = U256::from_big_endian_slice(&b.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
             .map_err(|_| EncodeError::InvalidValue)?;
 
-        Ok(Self::Unbond {
+        Ok(ci.wrap(Self::Unbond {
             value: Compact(value),
-        })
+        }))
     }
 
-    fn encode_rebond(b: &Rebond) -> EncodeResult<Self> {
+    fn encode_rebond(b: &Rebond) -> WithCallIndexResult<Self> {
+        let ci = validate_call_index(&b.call_indices)?;
         let value = U256::from_big_endian_slice(&b.value)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
             .map_err(|_| EncodeError::InvalidValue)?;
 
-        Ok(Self::Rebond {
+        Ok(ci.wrap(Self::Rebond {
             value: Compact(value),
-        })
+        }))
     }
 
-    fn encode_withdraw_unbonded(b: &WithdrawUnbonded) -> EncodeResult<Self> {
-        Ok(Self::WithdrawUnbonded {
+    fn encode_withdraw_unbonded(b: &WithdrawUnbonded) -> WithCallIndexResult<Self> {
+        let ci = validate_call_index(&b.call_indices)?;
+        Ok(ci.wrap(Self::WithdrawUnbonded {
             num_slashing_spans: b.slashing_spans as u32,
-        })
+        }))
     }
 
-    fn encode_nominate(b: &Nominate) -> EncodeResult<Self> {
+    fn encode_nominate(b: &Nominate) -> WithCallIndexResult<Self> {
+        let ci = validate_call_index(&b.call_indices)?;
         let targets = b
             .nominators
             .iter()
@@ -282,10 +292,10 @@ impl PolymeshStaking {
                 Ok(account.into())
             })
             .collect::<EncodeResult<Vec<MultiAddress>>>()?;
-        Ok(Self::Nominate { targets })
+        Ok(ci.wrap(Self::Nominate { targets }))
     }
 
-    pub fn encode_call(s: &Staking) -> EncodeResult<Self> {
+    pub fn encode_call(s: &Staking) -> WithCallIndexResult<Self> {
         match &s.message_oneof {
             StakingVariant::bond(b) => Self::encode_bond(b),
             StakingVariant::bond_extra(b) => Self::encode_bond_extra(b),
@@ -321,18 +331,18 @@ impl TWPolkadotCallEncoder for PolymeshCallEncoder {
     fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
         let call = match msg {
             SigningVariant::balance_call(b) => {
-                PolymeshCall::Balances(PolymeshBalances::encode_call(b)?)
+                PolymeshBalances::encode_call(b)?.map(PolymeshCall::Balances)
             },
             SigningVariant::polymesh_call(msg) => match &msg.message_oneof {
                 PolymeshVariant::identity_call(msg) => {
-                    PolymeshCall::Identity(PolymeshIdentity::encode_call(msg)?)
+                    PolymeshIdentity::encode_call(msg)?.map(PolymeshCall::Identity)
                 },
                 PolymeshVariant::None => {
                     return Err(EncodeError::InvalidCallIndex);
                 },
             },
             SigningVariant::staking_call(s) => {
-                PolymeshCall::Staking(PolymeshStaking::encode_call(s)?)
+                PolymeshStaking::encode_call(s)?.map(PolymeshCall::Staking)
             },
             SigningVariant::None => {
                 return Err(EncodeError::InvalidCallIndex);

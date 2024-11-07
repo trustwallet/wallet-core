@@ -58,11 +58,19 @@ impl GenericBalances {
             .try_into()
             .map_err(|_| EncodeError::InvalidValue)?;
 
-        Ok(ci.wrap(Self::AssetTransfer {
-            id: Compact(t.asset_id),
-            target: ctx.multi_address(address.into()),
-            amount: Compact(amount),
-        }))
+        let asset_id = t.asset_id;
+        if asset_id > 0 {
+            Ok(ci.wrap(Self::AssetTransfer {
+                id: Compact(asset_id),
+                target: ctx.multi_address(address.into()),
+                amount: Compact(amount),
+            }))
+        } else {
+            Ok(ci.wrap(Self::TransferAllowDeath {
+                dest: ctx.multi_address(address.into()),
+                value: Compact(amount),
+            }))
+        }
     }
 
     pub fn encode_call(ctx: &SubstrateContext, b: &Balance) -> WithCallIndexResult<Self> {
