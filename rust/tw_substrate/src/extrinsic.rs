@@ -60,38 +60,118 @@ impl From<SS58Address> for MultiAddress {
     }
 }
 
-impl_struct_scale!(
-    #[derive(Clone, Debug, Default)]
-    pub struct AdditionalSigned {
-        pub spec_version: u32,
-        pub tx_version: u32,
-        pub genesis_hash: BlockHash,
-        pub current_hash: BlockHash,
-    }
-);
+#[derive(Clone, Debug, Default)]
+pub struct TxExtensionData {
+    pub data: Encoded,
+    pub signed: Encoded,
+}
 
-impl AdditionalSigned {
-    pub fn with_check_metadata(
-        self,
-        metadata_hash: Option<BlockHash>,
-    ) -> AdditionalSignedWithCheckMetadata {
-        AdditionalSignedWithCheckMetadata {
-            additional: self,
-            metadata_hash,
-        }
+impl TxExtensionData {
+    pub fn encode_data<T: ToScale>(&mut self, data: &T) {
+        data.to_scale_into(&mut self.data.0);
+    }
+
+    pub fn encode_signed<T: ToScale>(&mut self, signed: &T) {
+        signed.to_scale_into(&mut self.signed.0);
     }
 }
 
-impl_struct_scale!(
-    #[derive(Clone, Debug)]
-    pub struct AdditionalSignedWithCheckMetadata {
-        additional: AdditionalSigned,
-        metadata_hash: Option<BlockHash>,
+pub trait TxExtension {
+    fn encode(&self, tx: &mut TxExtensionData);
+}
+
+impl TxExtension for () {
+    fn encode(&self, _tx: &mut TxExtensionData) {}
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct CheckVersion(pub u32);
+pub type CheckSpecVersion = CheckVersion;
+pub type CheckTxVersion = CheckVersion;
+
+impl TxExtension for CheckVersion {
+    fn encode(&self, tx: &mut TxExtensionData) {
+        tx.encode_signed(&self.0);
+    }
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct CheckGenesis(pub BlockHash);
+
+impl TxExtension for CheckGenesis {
+    fn encode(&self, tx: &mut TxExtensionData) {
+        tx.encode_signed(&self.0);
+    }
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct CheckEra {
+    pub era: Era,
+    pub current_hash: BlockHash,
+}
+
+impl TxExtension for CheckEra {
+    fn encode(&self, tx: &mut TxExtensionData) {
+        tx.encode_data(&self.era);
+        tx.encode_signed(&self.current_hash);
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct CheckNonce(pub Compact<u32>);
+
+impl CheckNonce {
+    pub fn new(nonce: u32) -> Self {
+        Self(Compact(nonce))
+    }
+}
+
+impl TxExtension for CheckNonce {
+    fn encode(&self, tx: &mut TxExtensionData) {
+        tx.encode_data(&self.0);
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct ChargeTransactionPayment(pub Compact<u128>);
+
+impl ChargeTransactionPayment {
+    pub fn new(tip: u128) -> Self {
+        Self(Compact(tip))
+    }
+}
+
+impl TxExtension for ChargeTransactionPayment {
+    fn encode(&self, tx: &mut TxExtensionData) {
+        tx.encode_data(&self.0);
+    }
+}
+
+impl_enum_scale!(
+    #[derive(Clone, Copy, Debug, Default)]
+    pub enum CheckMetadataMode {
+        #[default]
+        Disabled,
+        Enabled,
     }
 );
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Debug, Default)]
+pub struct CheckMetadataHash {
+    pub mode: CheckMetadataMode,
+    pub hash: Option<BlockHash>,
+}
+
+impl TxExtension for CheckMetadataHash {
+    fn encode(&self, tx: &mut TxExtensionData) {
+        tx.encode_data(&self.mode);
+        tx.encode_signed(&self.hash);
+    }
+}
+
+#[derive(Clone, Copy, Default, Debug, PartialEq)]
 pub enum Era {
+    #[default]
     Immortal,
     Mortal(u64, u64),
 }
@@ -133,60 +213,6 @@ impl ToScale for Era {
         }
     }
 }
-
-impl_struct_scale!(
-    #[derive(Clone, Debug)]
-    pub struct Extra {
-        era: Era,
-        nonce: Compact<u32>,
-        tip: Compact<u128>,
-    }
-);
-
-impl Extra {
-    pub fn new(era: Era, nonce: u32) -> Self {
-        Self {
-            era,
-            nonce: Compact(nonce),
-            tip: Compact(0u128),
-        }
-    }
-
-    pub fn nonce(&self) -> u32 {
-        self.nonce.0
-    }
-
-    pub fn tip(&self) -> u128 {
-        self.tip.0
-    }
-
-    pub fn with_check_metadata(self, check_metadata: bool) -> ExtraWithCheckMetadata {
-        ExtraWithCheckMetadata {
-            extra: self,
-            check_metadata: if check_metadata {
-                CheckMetadataMode::Enabled
-            } else {
-                CheckMetadataMode::Disabled
-            },
-        }
-    }
-}
-
-impl_enum_scale!(
-    #[derive(Clone, Copy, Debug)]
-    pub enum CheckMetadataMode {
-        Disabled,
-        Enabled,
-    }
-);
-
-impl_struct_scale!(
-    #[derive(Clone, Debug)]
-    pub struct ExtraWithCheckMetadata {
-        extra: Extra,
-        check_metadata: CheckMetadataMode,
-    }
-);
 
 #[derive(Clone, Debug)]
 pub struct CallIndex(Option<(u8, u8)>);
@@ -254,7 +280,7 @@ impl<T: ToScale> ToScale for WithCallIndex<T> {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Encoded(pub Vec<u8>);
 
 impl Encoded {
@@ -289,15 +315,39 @@ impl<'a> SignedPayload<'a> {
     }
 }
 
-/// UnsignedTransaction holds all data needed to sign a transaction.
-#[derive(Clone, Debug)]
-pub struct UnsignedTransaction {
+/// Helper to build transaction.
+#[derive(Clone, Debug, Default)]
+pub struct TransactionBuilder {
     call: Encoded,
-    extra: EncodedExtra,
-    additional: EncodedAdditionalSigned,
+    extensions: TxExtensionData,
 }
 
-impl UnsignedTransaction {
+impl TransactionBuilder {
+    pub fn new(call: Encoded) -> Self {
+        Self {
+            call,
+            ..Default::default()
+        }
+    }
+
+    pub fn extension<E: TxExtension>(&mut self, extension: E) {
+        extension.encode(&mut self.extensions);
+    }
+
+    pub fn build(self) -> PrepareTransaction {
+        PrepareTransaction::new(self.extensions.signed, self.extensions.data, self.call)
+    }
+}
+
+/// PrepareTransaction holds all data needed to sign a transaction.
+#[derive(Clone, Debug)]
+pub struct PrepareTransaction {
+    call: Encoded,
+    pub extra: EncodedExtra,
+    pub additional: EncodedAdditionalSigned,
+}
+
+impl PrepareTransaction {
     pub fn new(additional: EncodedAdditionalSigned, extra: EncodedExtra, call: Encoded) -> Self {
         Self {
             additional,
