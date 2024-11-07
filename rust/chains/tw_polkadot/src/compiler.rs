@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::signer::network_id_from_tw;
+use crate::ctx_from_tw;
 use crate::tx_builder::TxBuilder;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
@@ -32,7 +32,8 @@ impl PolkadotCompiler {
         coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
-        let unsigned_tx = TxBuilder::unsigned_tx_from_proto(coin, &input)?;
+        let ctx = ctx_from_tw(&input)?;
+        let unsigned_tx = TxBuilder::unsigned_tx_from_proto(&ctx, coin, &input)?;
         let pre_image = unsigned_tx.encode_payload()?;
 
         Ok(CompilerProto::PreSigningOutput {
@@ -66,10 +67,13 @@ impl PolkadotCompiler {
         } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
         let signature = Signature::try_from(signature.as_slice())?;
         let public_key = PublicKey::try_from(public_key.as_slice())?;
-        let network_id = network_id_from_tw(&input)?;
-        let account = SubstrateAddress(SS58Address::from_public_key(&public_key, network_id)?);
+        let ctx = ctx_from_tw(&input)?;
+        let account = ctx.multi_address(SubstrateAddress(SS58Address::from_public_key(
+            &public_key,
+            ctx.network,
+        )?));
 
-        let unsigned_tx = TxBuilder::unsigned_tx_from_proto(coin, &input)?;
+        let unsigned_tx = TxBuilder::unsigned_tx_from_proto(&ctx, coin, &input)?;
         let signed_tx = unsigned_tx.into_signed(account, signature)?;
         let encoded = signed_tx.to_scale();
 

@@ -1,5 +1,5 @@
 use tw_scale::ToScale;
-use tw_substrate::extrinsic::Era;
+use tw_substrate::Era;
 
 #[test]
 fn encode_era() {

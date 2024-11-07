@@ -1,5 +1,4 @@
-use tw_scale::ToScale;
-
+use crate::ctx_from_tw;
 use tw_proto::Polkadot::Proto::{
     self,
     mod_Balance::{BatchAssetTransfer, BatchTransfer, OneOfmessage_oneof as BalanceVariant},
@@ -11,6 +10,7 @@ use tw_proto::Polkadot::Proto::{
     },
     Balance, CallIndices, Staking,
 };
+use tw_scale::ToScale;
 use tw_ss58_address::NetworkId;
 use tw_substrate::*;
 
@@ -43,13 +43,6 @@ pub fn required_call_index(call_index: &Option<CallIndices>) -> EncodeResult<Cal
     CallIndex::required_from_tw(index)
 }
 
-#[derive(Debug, Clone)]
-pub struct SubstrateContext {
-    pub multi_address: bool,
-    pub network: NetworkId,
-    pub spec_version: u32,
-}
-
 pub trait TWPolkadotCallEncoder {
     fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded>;
     fn encode_batch(&self, calls: Vec<Encoded>) -> EncodeResult<Encoded>;
@@ -66,15 +59,8 @@ impl CallEncoder {
     }
 
     fn from_input(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<Self> {
-        let network =
-            NetworkId::try_from(input.network as u16).map_err(|_| EncodeError::InvalidNetworkId)?;
-
-        let ctx = SubstrateContext {
-            multi_address: input.multi_address,
-            network,
-            spec_version: input.spec_version,
-        };
-        let encoder = match network {
+        let ctx = ctx_from_tw(input)?;
+        let encoder = match ctx.network {
             NetworkId::POLKADOT => PolkadotCallEncoder::new(&ctx),
             NetworkId::KUSAMA => KusamaCallEncoder::new(&ctx),
             NetworkId::POLYMESH => PolymeshCallEncoder::new(&ctx),

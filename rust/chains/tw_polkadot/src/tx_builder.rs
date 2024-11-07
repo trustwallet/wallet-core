@@ -2,7 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::signer::network_id_from_tw;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_proto::Polkadot::Proto;
@@ -22,11 +21,11 @@ pub struct TxBuilder;
 
 impl TxBuilder {
     pub fn unsigned_tx_from_proto(
+        ctx: &SubstrateContext,
         _coin: &dyn CoinContext,
         input: &Proto::SigningInput<'_>,
     ) -> SigningResult<PrepareTransaction> {
-        let network_id = network_id_from_tw(&input)?;
-        let check_metadata = require_check_metadata(network_id, input.spec_version);
+        let check_metadata = require_check_metadata(ctx.network, input.spec_version);
         let call = CallEncoder::encode_input(&input)?;
         let era = match &input.era {
             Some(era) => Era::mortal(era.period, era.block_number),

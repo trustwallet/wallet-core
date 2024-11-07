@@ -8,7 +8,7 @@ use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::prefix::AddressPrefix;
 use tw_memory::Data;
-use tw_scale::impl_struct_scale;
+use tw_scale::{impl_struct_scale, ToScale};
 use tw_ss58_address::{NetworkId, SS58Address};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -65,5 +65,48 @@ impl FromStr for SubstrateAddress {
 impl fmt::Display for SubstrateAddress {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt::Display::fmt(&self.0, f)
+    }
+}
+
+pub type AccountId = SubstrateAddress;
+pub type AccountIndex = u32;
+
+#[derive(Clone, Debug)]
+pub struct MultiAddress {
+    account: AccountId,
+    multi: bool,
+}
+
+impl MultiAddress {
+    pub fn new(account: AccountId, multi: bool) -> Self {
+        Self { account, multi }
+    }
+}
+
+impl ToScale for MultiAddress {
+    fn to_scale_into(&self, out: &mut Vec<u8>) {
+        if self.multi {
+            // MultiAddress::Id variant.
+            out.push(0);
+        }
+        self.account.to_scale_into(out);
+    }
+}
+
+impl From<AccountId> for MultiAddress {
+    fn from(account: AccountId) -> Self {
+        Self {
+            account,
+            multi: true,
+        }
+    }
+}
+
+impl From<SS58Address> for MultiAddress {
+    fn from(other: SS58Address) -> Self {
+        Self {
+            account: SubstrateAddress(other),
+            multi: true,
+        }
     }
 }
