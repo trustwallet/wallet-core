@@ -24,7 +24,7 @@ impl TxBuilder {
     pub fn unsigned_tx_from_proto(
         _coin: &dyn CoinContext,
         input: &Proto::SigningInput<'_>,
-    ) -> SigningResult<UnsignedTransaction> {
+    ) -> SigningResult<PrepareTransaction> {
         let network_id = network_id_from_tw(&input)?;
         let check_metadata = require_check_metadata(network_id, input.spec_version);
         let call = CallEncoder::encode_input(&input)?;
@@ -32,30 +32,27 @@ impl TxBuilder {
             Some(era) => Era::mortal(era.period, era.block_number),
             None => Era::immortal(),
         };
-        let additional = AdditionalSigned {
-            spec_version: input.spec_version,
-            tx_version: input.transaction_version,
-            genesis_hash: input
-                .genesis_hash
-                .as_ref()
-                .try_into()
-                .map_err(|_| SigningErrorType::Error_input_parse)?,
-            current_hash: input
-                .block_hash
-                .as_ref()
-                .try_into()
-                .map_err(|_| SigningErrorType::Error_input_parse)?,
-        };
-        let extra = Extra::new(era, input.nonce as u32);
-        let (additional, extra) = if check_metadata {
-            // For now disable CheckMetadata extension.
-            (
-                Encoded::new(additional.with_check_metadata(None)),
-                Encoded::new(extra.with_check_metadata(false)),
-            )
-        } else {
-            (Encoded::new(additional), Encoded::new(extra))
-        };
-        Ok(UnsignedTransaction::new(additional, extra, call))
+        let genesis_hash = input
+            .genesis_hash
+            .as_ref()
+            .try_into()
+            .map_err(|_| SigningErrorType::Error_input_parse)?;
+        let current_hash = input
+            .block_hash
+            .as_ref()
+            .try_into()
+            .map_err(|_| SigningErrorType::Error_input_parse)?;
+        let mut builder = TransactionBuilder::new(call);
+        // Add chain extensions.
+        builder.extension(CheckVersion(input.spec_version));
+        builder.extension(CheckVersion(input.transaction_version));
+        builder.extension(CheckGenesis(genesis_hash));
+        builder.extension(CheckEra { era, current_hash });
+        builder.extension(CheckNonce::new(input.nonce as u32));
+        builder.extension(ChargeTransactionPayment::new(0));
+        if check_metadata {
+            builder.extension(CheckMetadataHash::default());
+        }
+        Ok(builder.build())
     }
 }
