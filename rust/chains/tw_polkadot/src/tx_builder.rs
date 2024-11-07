@@ -13,7 +13,7 @@ use crate::call_encoder::CallEncoder;
 
 fn require_check_metadata(network_id: NetworkId, spec_version: u32) -> bool {
     match network_id {
-        NetworkId::POLKADOT | NetworkId::KUSAMA if spec_version == 1_002_005 => true,
+        NetworkId::POLKADOT | NetworkId::KUSAMA if spec_version >= 1_002_005 => true,
         _ => false,
     }
 }
