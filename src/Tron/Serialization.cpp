@@ -291,6 +291,9 @@ json raw_dataJSON(const protocol::Transaction::raw& raw) {
     }
     raw_dataJSON["timestamp"] = raw.timestamp();
     raw_dataJSON["expiration"] = raw.expiration();
+    if (!raw.data().empty()) {
+        raw_dataJSON["data"] = hex(raw.data());
+    }
     raw_dataJSON["contract"] = json::array({contractJSON(raw.contract(0))});
 
     return raw_dataJSON;
