@@ -5,9 +5,10 @@
 #include "HexCoding.h"
 #include "uint256.h"
 #include "proto/Polkadot.pb.h"
-#include "Polkadot/Extrinsic.h"
+#include "proto/TransactionCompiler.pb.h"
 #include "PrivateKey.h"
 #include <TrustWalletCore/TWAnySigner.h>
+#include <TrustWalletCore/TWTransactionCompiler.h>
 
 #include "TestUtilities.h"
 #include <gtest/gtest.h>
@@ -16,6 +17,7 @@ namespace TW::Polkadot::tests {
 
 TEST(TWAnySignerAcala, Sign) {
     // Successfully broadcasted: https://acala.subscan.io/extrinsic/3893620-3
+    const auto coin = TWCoinTypePolkadot;
     auto secret = parse_hex("9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0");
 
     auto genesisHash = parse_hex("fc41b9bd8ef8fe53d58c7ea67c794c7ec9a73daf05e6d54b14ff6342c99ba64c");
@@ -46,9 +48,18 @@ TEST(TWAnySignerAcala, Sign) {
     callIndices->set_module_index(0x0a);
     callIndices->set_method_index(0x00);
 
-    auto extrinsic = Extrinsic(input);
-    auto preimage = extrinsic.encodePayload();
-    EXPECT_EQ(hex(preimage), "0a0000c8c602ded977c56076ae38d98026fa669ca10d6a2b5a0bfc4086ae7668ed1c60070010a5d4e8d502000000de08000002000000fc41b9bd8ef8fe53d58c7ea67c794c7ec9a73daf05e6d54b14ff6342c99ba64c707ffa05b7dc6cdb6356bd8bd51ff20b2757c3214a76277516080a10f1bc753700");
+    auto txInputData = data(input.SerializeAsString());
+    auto txInputDataPtr = WRAPD(TWDataCreateWithBytes(txInputData.data(), txInputData.size()));
+    const auto preImageHashes = WRAPD(TWTransactionCompilerPreImageHashes(coin, txInputDataPtr.get()));
+    auto preImageHash = data(TWDataBytes(preImageHashes.get()), TWDataSize(preImageHashes.get()));
+
+    TxCompiler::Proto::PreSigningOutput preSigningOutput;
+    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHash.data(), int(preImageHash.size())));
+    ASSERT_EQ(preSigningOutput.error(), Common::Proto::OK);
+
+    const auto preImageHashData = data(preSigningOutput.data_hash());
+
+    EXPECT_EQ(hex(preImageHashData), "0a0000c8c602ded977c56076ae38d98026fa669ca10d6a2b5a0bfc4086ae7668ed1c60070010a5d4e8d502000000de08000002000000fc41b9bd8ef8fe53d58c7ea67c794c7ec9a73daf05e6d54b14ff6342c99ba64c707ffa05b7dc6cdb6356bd8bd51ff20b2757c3214a76277516080a10f1bc753700");
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypePolkadot);

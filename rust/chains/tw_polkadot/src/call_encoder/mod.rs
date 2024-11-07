@@ -120,9 +120,7 @@ impl CallEncoder {
                 controller: ban.controller.clone(),
                 value: ban.value.clone(),
                 reward_destination: ban.reward_destination,
-                // TODO: `BondAndNominate` needs 3 call_indices values to support this.
-                //call_indices: ban.call_indices.clone(),
-                call_indices: None,
+                call_indices: ban.bond_call_indices.clone(),
             }),
         }))?;
 
@@ -130,9 +128,7 @@ impl CallEncoder {
         let second = self.encode_call(&SigningVariant::staking_call(Proto::Staking {
             message_oneof: StakingVariant::nominate(Nominate {
                 nominators: ban.nominators.clone(),
-                // TODO: `BondAndNominate` needs 3 call_indices values to support this.
-                //call_indices: ban.call_indices.clone(),
-                call_indices: None,
+                call_indices: ban.nominate_call_indices.clone(),
             }),
         }))?;
 
@@ -143,18 +139,14 @@ impl CallEncoder {
     fn encode_staking_chill_and_unbond(&self, cau: &ChillAndUnbond) -> EncodeResult<Encoded> {
         let first = self.encode_call(&SigningVariant::staking_call(Proto::Staking {
             message_oneof: StakingVariant::chill(Chill {
-                // TODO: `ChillAndUnbond` needs 3 call_indices values to support this.
-                //call_indices: cau.call_indices.clone(),
-                call_indices: None,
+                call_indices: cau.chill_call_indices.clone(),
             }),
         }))?;
 
         let second = self.encode_call(&SigningVariant::staking_call(Proto::Staking {
             message_oneof: StakingVariant::unbond(Unbond {
                 value: cau.value.clone(),
-                // TODO: `ChillAndUnbond` needs 3 call_indices values to support this.
-                //call_indices: cau.call_indices.clone(),
-                call_indices: None,
+                call_indices: cau.unbond_call_indices.clone(),
             }),
         }))?;
 
