@@ -62,6 +62,12 @@ impl FromStr for SubstrateAddress {
     }
 }
 
+impl From<SS58Address> for SubstrateAddress {
+    fn from(other: SS58Address) -> Self {
+        Self(other)
+    }
+}
+
 impl fmt::Display for SubstrateAddress {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt::Display::fmt(&self.0, f)

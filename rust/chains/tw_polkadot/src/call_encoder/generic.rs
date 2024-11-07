@@ -33,7 +33,7 @@ impl_enum_scale!(
 );
 
 impl GenericBalances {
-    fn encode_transfer(t: &Transfer) -> WithCallIndexResult<Self> {
+    fn encode_transfer(ctx: &SubstrateContext, t: &Transfer) -> WithCallIndexResult<Self> {
         let ci = validate_call_index(&t.call_indices)?;
         let address =
             SS58Address::from_str(&t.to_address).map_err(|_| EncodeError::InvalidAddress)?;
@@ -43,12 +43,15 @@ impl GenericBalances {
             .map_err(|_| EncodeError::InvalidValue)?;
 
         Ok(ci.wrap(Self::TransferAllowDeath {
-            dest: address.into(),
+            dest: ctx.multi_address(address.into()),
             value: Compact(value),
         }))
     }
 
-    fn encode_asset_transfer(t: &AssetTransfer) -> WithCallIndexResult<Self> {
+    fn encode_asset_transfer(
+        ctx: &SubstrateContext,
+        t: &AssetTransfer,
+    ) -> WithCallIndexResult<Self> {
         let ci = required_call_index(&t.call_indices)?;
         let address =
             SS58Address::from_str(&t.to_address).map_err(|_| EncodeError::InvalidAddress)?;
@@ -59,15 +62,15 @@ impl GenericBalances {
 
         Ok(ci.wrap(Self::AssetTransfer {
             id: Compact(t.asset_id),
-            target: address.into(),
+            target: ctx.multi_address(address.into()),
             amount: Compact(amount),
         }))
     }
 
-    pub fn encode_call(b: &Balance) -> WithCallIndexResult<Self> {
+    pub fn encode_call(ctx: &SubstrateContext, b: &Balance) -> WithCallIndexResult<Self> {
         match &b.message_oneof {
-            BalanceVariant::transfer(t) => Self::encode_transfer(t),
-            BalanceVariant::asset_transfer(t) => Self::encode_asset_transfer(t),
+            BalanceVariant::transfer(t) => Self::encode_transfer(ctx, t),
+            BalanceVariant::asset_transfer(t) => Self::encode_asset_transfer(ctx, t),
             _ => Err(EncodeError::InvalidCallIndex),
         }
     }
@@ -189,7 +192,7 @@ impl GenericStaking {
         }))
     }
 
-    fn encode_nominate(b: &Nominate) -> WithCallIndexResult<Self> {
+    fn encode_nominate(ctx: &SubstrateContext, b: &Nominate) -> WithCallIndexResult<Self> {
         let ci = validate_call_index(&b.call_indices)?;
         let targets = b
             .nominators
@@ -197,13 +200,13 @@ impl GenericStaking {
             .map(|target| {
                 let account =
                     SS58Address::from_str(&target).map_err(|_| EncodeError::InvalidAddress)?;
-                Ok(account.into())
+                Ok(ctx.multi_address(account.into()))
             })
             .collect::<EncodeResult<Vec<MultiAddress>>>()?;
         Ok(ci.wrap(Self::Nominate { targets }))
     }
 
-    pub fn encode_call(s: &Staking) -> WithCallIndexResult<Self> {
+    pub fn encode_call(ctx: &SubstrateContext, s: &Staking) -> WithCallIndexResult<Self> {
         match &s.message_oneof {
             StakingVariant::bond(b) => Self::encode_bond(b),
             StakingVariant::bond_extra(b) => Self::encode_bond_extra(b),
@@ -211,7 +214,7 @@ impl GenericStaking {
             StakingVariant::unbond(b) => Self::encode_unbond(b),
             StakingVariant::withdraw_unbonded(b) => Self::encode_withdraw_unbonded(b),
             StakingVariant::rebond(b) => Self::encode_rebond(b),
-            StakingVariant::nominate(b) => Self::encode_nominate(b),
+            StakingVariant::nominate(b) => Self::encode_nominate(ctx, b),
             _ => Err(EncodeError::InvalidCallIndex),
         }
     }
