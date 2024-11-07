@@ -51,7 +51,7 @@ fn polymesh_join_identity(auth_id: u64) -> Proto::mod_SigningInput::OneOfmessage
     polymesh_identity_call(
         Proto::mod_Identity::OneOfmessage_oneof::join_identity_as_key(
             Proto::mod_Identity::JoinIdentityAsKey {
-                call_indices: custom_call_indices(0x07, 0x04),
+                call_indices: None,
                 auth_id,
             },
         ),
@@ -101,7 +101,6 @@ fn polymesh_encode_authorization_join_identity() {
         network: 12,
         multi_address: true,
         message_oneof: polymesh_add_auth_call(Proto::mod_Identity::AddAuthorization {
-            call_indices: custom_call_indices(0x07, 0x0d),
             target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
             ..Default::default()
         }),
@@ -121,7 +120,6 @@ fn polymesh_encode_authorization_join_identity_with_zero_data() {
         network: 12,
         multi_address: true,
         message_oneof: polymesh_add_auth_call(Proto::mod_Identity::AddAuthorization {
-            call_indices: custom_call_indices(0x07, 0x0d),
             target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
             data: Some(AuthData {
                 asset: Some(Data {
@@ -152,7 +150,6 @@ fn polymesh_encode_authorization_join_identity_allowing_everything() {
         network: 12,
         multi_address: true,
         message_oneof: polymesh_add_auth_call(Proto::mod_Identity::AddAuthorization {
-            call_indices: custom_call_indices(0x07, 0x0d),
             target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
             data: Some(AuthData {
                 asset: None,
