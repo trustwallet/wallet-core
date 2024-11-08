@@ -13,7 +13,7 @@ class Bech32Tests: XCTestCase {
     }
 
     func testDecode()  {
-        let decoded = Bech32.decode(string: "abcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw")
+        let decoded = Bech32.decode(string: "abcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw")!
         XCTAssertEqual(decoded.hexString, "00443214c74254b635cf84653a56d7c675be77df")
     }
 
@@ -30,7 +30,7 @@ class Bech32Tests: XCTestCase {
     }
 
     func testDecodeM()  {
-        let decoded = Bech32.decodeM(string: "abcdef1l7aum6echk45nj3s0wdvt2fg8x9yrzpqzd3ryx")
+        let decoded = Bech32.decodeM(string: "abcdef1l7aum6echk45nj3s0wdvt2fg8x9yrzpqzd3ryx")!
         XCTAssertEqual(decoded.hexString, "ffbbcdeb38bdab49ca307b9ac5a928398a418820")
     }
 

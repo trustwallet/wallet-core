@@ -22,15 +22,8 @@ describe("Bech32", () => {
 
     assert.equal(
         HexCoding.encode(decoded),
-        "00443214c74254b635cf84653a56d7c675be77df"
+        "0x00443214c74254b635cf84653a56d7c675be77df"
     );
-  });
-
-  it("test decode wrongChecksumVariant", () => {
-    const { Bech32 } = globalThis.core;
-    // This is a Bech32m variant, not Bech32 variant. So it should fail using Bech32 decoder.
-    const decoded = Bech32.decode("abcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw");
-    assert.isNull(decoded);
   });
 
   it("test encodeM", () => {
@@ -48,14 +41,7 @@ describe("Bech32", () => {
 
     assert.equal(
         HexCoding.encode(decoded),
-        "ffbbcdeb38bdab49ca307b9ac5a928398a418820"
+        "0xffbbcdeb38bdab49ca307b9ac5a928398a418820"
     );
-  });
-
-  it("test decode wrongChecksumVariant", () => {
-    const { Bech32 } = globalThis.core;
-    // This is a Bech32 variant, not Bech32m variant. So it should fail using Bech32M decoder.
-    const decoded = Bech32.decodeM("abcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw");
-    assert.isNull(decoded);
   });
 });

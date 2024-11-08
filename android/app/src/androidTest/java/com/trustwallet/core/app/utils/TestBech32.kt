@@ -1,6 +1,6 @@
 package com.trustwallet.core.app.utils
 
-import org.junit.Assert.assertEquals
+import org.junit.Assert.*
 import org.junit.Test
 import wallet.core.jni.Bech32
 
