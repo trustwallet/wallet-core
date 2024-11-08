@@ -12,8 +12,8 @@ use tw_number::U256;
 use tw_proto::Polkadot::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 use tw_scale::ToScale;
-use tw_ss58_address::SS58Address;
 use tw_ss58_address::NetworkId;
+use tw_ss58_address::SS58Address;
 use tw_substrate::*;
 
 use crate::call_encoder::CallEncoder;
