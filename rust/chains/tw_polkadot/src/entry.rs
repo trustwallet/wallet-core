@@ -2,107 +2,143 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::compiler::PolkadotCompiler;
-use crate::signer::PolkadotSigner;
-use std::str::FromStr;
+use crate::ctx_from_tw;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
-use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::prelude::*;
-use tw_coin_entry::modules::json_signer::NoJsonSigner;
-use tw_coin_entry::modules::message_signer::NoMessageSigner;
-use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
-use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
-use tw_coin_entry::modules::transaction_util::NoTransactionUtil;
-use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
-use tw_coin_entry::prefix::AddressPrefix;
-use tw_keypair::tw::PublicKey;
+use tw_coin_entry::signing_output_error;
+use tw_keypair::ed25519::sha512::{KeyPair, PublicKey};
+use tw_keypair::traits::KeyPairTrait;
+use tw_number::U256;
 use tw_proto::Polkadot::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
-use tw_ss58_address::{NetworkId, SS58Address};
-use tw_substrate::address::{SubstrateAddress, SubstratePrefix};
+use tw_scale::ToScale;
+use tw_ss58_address::SS58Address;
+use tw_ss58_address::NetworkId;
+use tw_substrate::*;
+
+use crate::call_encoder::CallEncoder;
+
+fn require_check_metadata(network_id: NetworkId, spec_version: u32) -> bool {
+    match network_id {
+        NetworkId::POLKADOT | NetworkId::KUSAMA if spec_version >= 1_002_005 => true,
+        _ => false,
+    }
+}
 
 pub struct PolkadotEntry;
 
-impl CoinEntry for PolkadotEntry {
-    type AddressPrefix = SubstratePrefix;
-    type Address = SubstrateAddress;
+impl PolkadotEntry {
+    #[inline]
+    fn build_transaction_impl(
+        &self,
+        _coin: &dyn CoinContext,
+        mut public_key: Option<PublicKey>,
+        input: &Proto::SigningInput<'_>,
+    ) -> SigningResult<TransactionBuilder> {
+        let ctx = ctx_from_tw(&input)?;
+        let encoder = CallEncoder::from_ctx(&ctx)?;
+        let call = encoder.encode_call(&input.message_oneof)?;
+        let check_metadata = require_check_metadata(ctx.network, input.spec_version);
+        let era = match &input.era {
+            Some(era) => Era::mortal(era.period, era.block_number),
+            None => Era::immortal(),
+        };
+        let genesis_hash = input.genesis_hash.as_ref().try_into().unwrap_or_default();
+        let current_hash = input.block_hash.as_ref().try_into().unwrap_or_default();
+        let tip = U256::from_big_endian_slice(&input.tip)
+            .map_err(|_| EncodeError::InvalidValue)?
+            .try_into()
+            .map_err(|_| EncodeError::InvalidValue)?;
+
+        let mut builder = TransactionBuilder::new(ctx.multi_address, call);
+        // Add chain extensions.
+        builder.extension(CheckVersion(input.spec_version));
+        builder.extension(CheckVersion(input.transaction_version));
+        builder.extension(CheckGenesis(genesis_hash));
+        builder.extension(CheckEra { era, current_hash });
+        builder.extension(CheckNonce::new(input.nonce as u32));
+        if let Some(fee_asset_id) = ctx.fee_asset_id {
+            builder.extension(ChargeAssetTxPayment::new(tip, fee_asset_id));
+        } else {
+            builder.extension(ChargeTransactionPayment::new(tip));
+        }
+        if check_metadata {
+            builder.extension(CheckMetadataHash::default());
+        }
+        if input.private_key.len() > 0 {
+            if let Ok(keypair) = KeyPair::try_from(input.private_key.as_ref()) {
+                public_key = Some(keypair.public().clone());
+                builder.set_keypair(keypair);
+            }
+        }
+        if let Some(public_key) = public_key {
+            let account = SubstrateAddress(SS58Address::from_public_key(&public_key, ctx.network)?);
+            builder.set_account(account);
+        }
+        Ok(builder)
+    }
+
+    #[inline]
+    fn signing_output_impl(
+        &self,
+        _coin: &dyn CoinContext,
+        result: SigningResult<Encoded>,
+    ) -> SigningResult<Proto::SigningOutput<'static>> {
+        let encoded = result?.to_scale();
+        Ok(Proto::SigningOutput {
+            encoded: encoded.into(),
+            ..Default::default()
+        })
+    }
+
+    #[inline]
+    fn presigning_output_impl(
+        &self,
+        _coin: &dyn CoinContext,
+        result: SigningResult<Encoded>,
+    ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
+        let pre_image = result?.to_scale();
+        Ok(CompilerProto::PreSigningOutput {
+            // `pre_image` is already hashed if it is larger then 256 bytes.
+            data_hash: pre_image.clone().into(),
+            data: pre_image.into(),
+            ..Default::default()
+        })
+    }
+}
+
+impl SubstrateCoinEntry for PolkadotEntry {
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = Proto::SigningOutput<'static>;
     type PreSigningOutput = CompilerProto::PreSigningOutput<'static>;
 
-    // Optional modules:
-    type JsonSigner = NoJsonSigner;
-    type PlanBuilder = NoPlanBuilder;
-    type MessageSigner = NoMessageSigner;
-    type WalletConnector = NoWalletConnector;
-    type TransactionDecoder = NoTransactionDecoder;
-    type TransactionUtil = NoTransactionUtil;
-
     #[inline]
-    fn parse_address(
+    fn build_transaction(
         &self,
         coin: &dyn CoinContext,
-        address: &str,
-        prefix: Option<Self::AddressPrefix>,
-    ) -> AddressResult<Self::Address> {
-        let prefix = prefix.or_else(|| {
-            coin.ss58_prefix().and_then(|prefix| {
-                SubstratePrefix::try_from(AddressPrefix::SubstrateNetwork(prefix)).ok()
-            })
-        });
-        SubstrateAddress::from_str(address)?.with_network_check(prefix)
+        public_key: Option<PublicKey>,
+        input: &Self::SigningInput<'_>,
+    ) -> SigningResult<TransactionBuilder> {
+        self.build_transaction_impl(coin, public_key, input)
     }
 
     #[inline]
-    fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address> {
-        SubstrateAddress::from_str(address)
-    }
-
-    #[inline]
-    fn derive_address(
+    fn signing_output(
         &self,
         coin: &dyn CoinContext,
-        public_key: PublicKey,
-        _derivation: Derivation,
-        prefix: Option<Self::AddressPrefix>,
-    ) -> AddressResult<Self::Address> {
-        let network = prefix
-            .map(SubstratePrefix::network)
-            .or_else(|| {
-                coin.ss58_prefix()
-                    .and_then(|prefix| NetworkId::from_u16(prefix).ok())
-            })
-            .unwrap_or(NetworkId::POLKADOT);
-        let public_key = public_key
-            .to_ed25519()
-            .ok_or(AddressError::PublicKeyTypeMismatch)?;
-
-        SS58Address::from_public_key(public_key, network).map(SubstrateAddress)
-    }
-
-    #[inline]
-    fn sign(&self, coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput {
-        PolkadotSigner::sign(coin, input)
-    }
-
-    #[inline]
-    fn preimage_hashes(
-        &self,
-        coin: &dyn CoinContext,
-        input: Self::SigningInput<'_>,
-    ) -> Self::PreSigningOutput {
-        PolkadotCompiler::preimage_hashes(coin, input)
-    }
-
-    #[inline]
-    fn compile(
-        &self,
-        coin: &dyn CoinContext,
-        input: Self::SigningInput<'_>,
-        signatures: Vec<SignatureBytes>,
-        public_keys: Vec<PublicKeyBytes>,
+        result: SigningResult<Encoded>,
     ) -> Self::SigningOutput {
-        PolkadotCompiler::compile(coin, input, signatures, public_keys)
+        self.signing_output_impl(coin, result)
+            .unwrap_or_else(|e| signing_output_error!(Proto::SigningOutput, e))
+    }
+
+    #[inline]
+    fn presigning_output(
+        &self,
+        coin: &dyn CoinContext,
+        result: SigningResult<Encoded>,
+    ) -> Self::PreSigningOutput {
+        self.presigning_output_impl(coin, result)
+            .unwrap_or_else(|e| signing_output_error!(CompilerProto::PreSigningOutput, e))
     }
 }
