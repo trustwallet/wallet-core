@@ -9,7 +9,6 @@ use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_keypair::ed25519::sha512::PrivateKey;
-use tw_keypair::traits::VerifyingKeyTrait;
 use tw_number::U256;
 use tw_proto::Common::Proto::SigningError;
 use tw_proto::Polkadot::Proto;

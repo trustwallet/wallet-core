@@ -10,10 +10,7 @@ use tw_ss58_address::NetworkId;
 use tw_substrate::*;
 
 pub mod call_encoder;
-pub mod compiler;
 pub mod entry;
-pub mod signer;
-pub mod tx_builder;
 
 pub const POLKADOT_MULTI_ADDRESS_SPEC: u32 = 28;
 pub const KUSAMA_MULTI_ADDRESS_SPEC: u32 = 2028;

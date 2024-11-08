@@ -1,6 +1,12 @@
 use tw_coin_entry::error::prelude::*;
 use tw_ss58_address::NetworkId;
 
+pub mod entry;
+pub use entry::*;
+
+pub mod substrate_coin_entry;
+pub use substrate_coin_entry::*;
+
 pub mod address;
 pub use address::*;
 

@@ -131,23 +131,34 @@ impl<'a> SignedPayload<'a> {
 }
 
 /// Helper to build transaction.
-#[derive(Clone, Debug, Default)]
+#[derive(Debug, Default)]
 pub struct TransactionBuilder {
+    multi_address: bool,
+    keypair: Option<KeyPair>,
     call: Encoded,
     extensions: TxExtensionData,
     account: MultiAddress,
 }
 
 impl TransactionBuilder {
-    pub fn new(call: Encoded) -> Self {
+    pub fn new(multi_address: bool, call: Encoded) -> Self {
         Self {
+            multi_address,
             call,
             ..Default::default()
         }
     }
 
-    pub fn set_account(&mut self, account: MultiAddress) {
-        self.account = account;
+    pub fn set_keypair(&mut self, keypair: KeyPair) {
+        self.keypair = Some(keypair);
+    }
+
+    pub fn keypair(&self) -> Option<&KeyPair> {
+        self.keypair.as_ref()
+    }
+
+    pub fn set_account(&mut self, account: AccountId) {
+        self.account = MultiAddress::new(account, self.multi_address);
     }
 
     pub fn extension<E: TxExtension>(&mut self, extension: E) {
@@ -155,7 +166,8 @@ impl TransactionBuilder {
     }
 
     pub fn encode_payload(&self) -> Result<Vec<u8>, KeyPairError> {
-        let payload = SignedPayload::new(&self.call, &self.extensions.data, &self.extensions.signed);
+        let payload =
+            SignedPayload::new(&self.call, &self.extensions.data, &self.extensions.signed);
         // SCALE encode the SignedPayload and if the payload is large then we sign a hash
         // of the payload.
         let encoded = payload.to_scale();
@@ -166,23 +178,16 @@ impl TransactionBuilder {
         }
     }
 
-    pub fn sign(
-        self,
-        account: MultiAddress,
-        signer: &KeyPair,
-    ) -> Result<ExtrinsicV4, KeyPairError> {
+    pub fn sign(self) -> Result<ExtrinsicV4, KeyPairError> {
+        let keypair = self.keypair().ok_or(KeyPairError::InternalError)?;
         let payload = self.encode_payload()?;
-        let signature = signer.sign(payload)?;
-        self.into_signed(account, signature)
+        let signature = keypair.sign(payload)?;
+        self.into_signed(signature)
     }
 
-    pub fn into_signed(
-        self,
-        account: MultiAddress,
-        signature: Signature,
-    ) -> Result<ExtrinsicV4, KeyPairError> {
+    pub fn into_signed(self, signature: Signature) -> Result<ExtrinsicV4, KeyPairError> {
         Ok(ExtrinsicV4::signed(
-            account,
+            self.account,
             signature.into(),
             self.extensions.data,
             self.call,
