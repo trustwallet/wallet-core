@@ -11,13 +11,39 @@ class TestBech32 {
 
     @Test
     fun testEncode() {
-        val data = Numeric.hexStringToByteArray("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")
+        val data = Numeric.hexStringToByteArray("00443214c74254b635cf84653a56d7c675be77df")
         assertEquals(Bech32.encode("abcdef", data), "abcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw")
     }
 
     @Test
     fun testDecode() {
         val decoded = Bech32.decode("abcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw")
-        assertEquals(Numeric.toHexString(decoded), "0x000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")
+        assertEquals(Numeric.toHexString(decoded), "0x00443214c74254b635cf84653a56d7c675be77df")
+    }
+
+    @Test
+    fun testDecodeWrongChecksumVariant() {
+        // This is a Bech32m variant, not Bech32 variant. So it should fail using Bech32 decoder.
+        val decoded = Bech32.decode("abcdef1l7aum6echk45nj3s0wdvt2fg8x9yrzpqzd3ryx")
+        assertNull(decoded)
+    }
+
+    @Test
+    fun testEncodeM() {
+        val data = Numeric.hexStringToByteArray("ffbbcdeb38bdab49ca307b9ac5a928398a418820")
+        assertEquals(Bech32.encodeM("abcdef", data), "abcdef1l7aum6echk45nj3s0wdvt2fg8x9yrzpqzd3ryx")
+    }
+
+    @Test
+    fun testDecodeM() {
+        val decoded = Bech32.decodeM("abcdef1l7aum6echk45nj3s0wdvt2fg8x9yrzpqzd3ryx")
+        assertEquals(Numeric.toHexString(decoded), "0xffbbcdeb38bdab49ca307b9ac5a928398a418820")
+    }
+
+    @Test
+    fun testDecodeMWrongChecksumVariant() {
+        // This is a Bech32 variant, not Bech32m variant. So it should fail using Bech32M decoder.
+        val decoded = Bech32.decodeM("abcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw")
+        assertNull(decoded)
     }
 }

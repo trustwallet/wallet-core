@@ -10,7 +10,7 @@
 
 TEST(TWBech32, Encode) {
     const auto hrp = STRING("abcdef");
-    const auto data = DATA("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f");
+    const auto data = DATA("00443214c74254b635cf84653a56d7c675be77df");
     const auto result = WRAPS(TWBech32Encode(hrp.get(), data.get()));
     assertStringsEqual(result, "abcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw");
 }
@@ -18,11 +18,32 @@ TEST(TWBech32, Encode) {
 TEST(TWBech32, Decode) {
     const auto input = STRING("abcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw");
     const auto result = WRAPD(TWBech32Decode(input.get()));
-    assertHexEqual(result, "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f");
+    assertHexEqual(result, "00443214c74254b635cf84653a56d7c675be77df");
 }
 
 TEST(TWBech32, Decode_WrongChecksumVariant) {
-    const auto input = STRING("abcdef1l7aum6echk45nj3s0wdvt2fg8x9yrzpqzd3ryx");  // This is a Bech32m variant, not Bech32 variant. So it should fail.
+    // This is a Bech32m variant, not Bech32 variant. So it should fail using Bech32 decoder.
+    const auto input = STRING("abcdef1l7aum6echk45nj3s0wdvt2fg8x9yrzpqzd3ryx");
     const auto result = WRAPD(TWBech32Decode(input.get()));
+    ASSERT_EQ(result.get(), nullptr);
+}
+
+TEST(TWBech32, EncodeM) {
+    const auto hrp = STRING("abcdef");
+    const auto data = DATA("ffbbcdeb38bdab49ca307b9ac5a928398a418820");
+    const auto result = WRAPS(TWBech32EncodeM(hrp.get(), data.get()));
+    assertStringsEqual(result, "abcdef1l7aum6echk45nj3s0wdvt2fg8x9yrzpqzd3ryx");
+}
+
+TEST(TWBech32, DecodeM) {
+    const auto input = STRING("abcdef1l7aum6echk45nj3s0wdvt2fg8x9yrzpqzd3ryx");
+    auto result = WRAPD(TWBech32DecodeM(input.get()));
+    assertHexEqual(result, "ffbbcdeb38bdab49ca307b9ac5a928398a418820");
+}
+
+TEST(TWBech32, DecodeM_WrongChecksumVariant) {
+    // This is a Bech32 variant, not Bech32m variant. So it should fail using Bech32M decoder.
+    const auto input = STRING("abcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw");
+    const auto result = WRAPD(TWBech32DecodeM(input.get()));
     ASSERT_EQ(result.get(), nullptr);
 }
