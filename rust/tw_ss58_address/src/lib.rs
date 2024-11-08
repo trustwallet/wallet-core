@@ -13,7 +13,7 @@ use tw_scale::{Raw, ToScale};
 // - https://github.com/paritytech/polkadot-sdk/blob/master/substrate/primitives/core/src/crypto.rs
 //
 
-#[derive(Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
+#[derive(Debug, Default, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
 pub struct NetworkId(u16);
 
 impl NetworkId {
@@ -100,6 +100,15 @@ impl TryFrom<&[u8]> for NetworkId {
 pub struct SS58Address {
     key: Vec<u8>,
     network: NetworkId,
+}
+
+impl Default for SS58Address {
+    fn default() -> Self {
+        Self {
+            key: vec![0; Self::KEY_SIZE],
+            network: Default::default(),
+        }
+    }
 }
 
 impl SS58Address {

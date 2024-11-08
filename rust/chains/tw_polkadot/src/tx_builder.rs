@@ -25,7 +25,7 @@ impl TxBuilder {
         ctx: &SubstrateContext,
         _coin: &dyn CoinContext,
         input: &Proto::SigningInput<'_>,
-    ) -> SigningResult<PrepareTransaction> {
+    ) -> SigningResult<TransactionBuilder> {
         let encoder = CallEncoder::from_ctx(ctx)?;
         let call = encoder.encode_call(&input.message_oneof)?;
         let check_metadata = require_check_metadata(ctx.network, input.spec_version);
@@ -55,6 +55,6 @@ impl TxBuilder {
         if check_metadata {
             builder.extension(CheckMetadataHash::default());
         }
-        Ok(builder.build())
+        Ok(builder)
     }
 }

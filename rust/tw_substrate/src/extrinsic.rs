@@ -135,6 +135,7 @@ impl<'a> SignedPayload<'a> {
 pub struct TransactionBuilder {
     call: Encoded,
     extensions: TxExtensionData,
+    account: MultiAddress,
 }
 
 impl TransactionBuilder {
@@ -145,34 +146,16 @@ impl TransactionBuilder {
         }
     }
 
+    pub fn set_account(&mut self, account: MultiAddress) {
+        self.account = account;
+    }
+
     pub fn extension<E: TxExtension>(&mut self, extension: E) {
         extension.encode(&mut self.extensions);
     }
 
-    pub fn build(self) -> PrepareTransaction {
-        PrepareTransaction::new(self.extensions.signed, self.extensions.data, self.call)
-    }
-}
-
-/// PrepareTransaction holds all data needed to sign a transaction.
-#[derive(Clone, Debug)]
-pub struct PrepareTransaction {
-    call: Encoded,
-    pub extra: EncodedExtra,
-    pub additional: EncodedAdditionalSigned,
-}
-
-impl PrepareTransaction {
-    pub fn new(additional: EncodedAdditionalSigned, extra: EncodedExtra, call: Encoded) -> Self {
-        Self {
-            additional,
-            extra,
-            call,
-        }
-    }
-
     pub fn encode_payload(&self) -> Result<Vec<u8>, KeyPairError> {
-        let payload = SignedPayload::new(&self.call, &self.extra, &self.additional);
+        let payload = SignedPayload::new(&self.call, &self.extensions.data, &self.extensions.signed);
         // SCALE encode the SignedPayload and if the payload is large then we sign a hash
         // of the payload.
         let encoded = payload.to_scale();
@@ -201,7 +184,7 @@ impl PrepareTransaction {
         Ok(ExtrinsicV4::signed(
             account,
             signature.into(),
-            self.extra,
+            self.extensions.data,
             self.call,
         ))
     }
