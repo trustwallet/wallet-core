@@ -32,7 +32,7 @@ impl TryFrom<AddressPrefix> for SubstratePrefix {
 }
 
 impl_struct_scale!(
-    #[derive(Debug, Clone, PartialEq, Eq)]
+    #[derive(Debug, Default, Clone, PartialEq, Eq)]
     pub struct SubstrateAddress(pub SS58Address);
 );
 
@@ -77,7 +77,7 @@ impl fmt::Display for SubstrateAddress {
 pub type AccountId = SubstrateAddress;
 pub type AccountIndex = u32;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct MultiAddress {
     account: AccountId,
     multi: bool,
