@@ -44,11 +44,8 @@ TEST(TWAnySignerKusama, SignTransferKSM) {
     transfer.set_to_address(TWStringUTF8Bytes(toAddressStr.get()));
     transfer.set_value(value.data(), value.size());
 
-    /*
-     * TODO: Kusama C++ doesn't support.
     auto preimage = helper_encodePayload(TWCoinTypeKusama, input);
     ASSERT_EQ(hex(preimage), "040088dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0eee5c0000000e307000002000000b0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe4955dd4813f3e91ef3fd5a825b928af2fc50a71380085f753ccef00bb1582891");
-    */
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeKusama);

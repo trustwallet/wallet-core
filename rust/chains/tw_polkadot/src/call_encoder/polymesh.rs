@@ -107,7 +107,7 @@ impl_enum_scale!(
     #[derive(Clone, Debug)]
     pub enum AuthorizationData {
         JoinIdentity {
-            // TODO: Polkymesh permissions.
+            // TODO: Polymesh permissions.
             permissions: Encoded,
         } = 0x05,
     }
