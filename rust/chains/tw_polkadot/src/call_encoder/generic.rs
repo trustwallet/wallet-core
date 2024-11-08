@@ -110,7 +110,6 @@ impl RewardDestination {
     }
 }
 
-
 #[derive(Clone, Debug)]
 pub struct BondCall {
     controller: Option<MultiAddress>,
@@ -132,30 +131,19 @@ impl_enum_scale!(
     #[derive(Clone, Debug)]
     pub enum GenericStaking {
         Bond(BondCall) = 0x00,
-        BondExtra {
-            max_additional: Compact<u128>,
-        } = 0x01,
-        Unbond {
-            value: Compact<u128>,
-        } = 0x02,
-        WithdrawUnbonded {
-            num_slashing_spans: u32,
-        } = 0x03,
-        Nominate {
-            targets: Vec<MultiAddress>,
-        } = 0x05,
+        BondExtra { max_additional: Compact<u128> } = 0x01,
+        Unbond { value: Compact<u128> } = 0x02,
+        WithdrawUnbonded { num_slashing_spans: u32 } = 0x03,
+        Nominate { targets: Vec<MultiAddress> } = 0x05,
         Chill = 0x06,
-        Rebond {
-            value: Compact<u128>,
-        } = 0x13,
+        Rebond { value: Compact<u128> } = 0x13,
     }
 );
 
 impl GenericStaking {
     fn encode_bond(ctx: &SubstrateContext, b: &Bond) -> WithCallIndexResult<Self> {
         let ci = validate_call_index(&b.call_indices)?;
-        let controller =
-            SS58Address::from_str(&b.controller)
+        let controller = SS58Address::from_str(&b.controller)
             .map(|addr| ctx.multi_address(addr.into()))
             .ok();
         let value = U256::from_big_endian_slice(&b.value)

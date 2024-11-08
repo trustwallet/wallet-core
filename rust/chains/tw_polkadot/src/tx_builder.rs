@@ -33,16 +33,8 @@ impl TxBuilder {
             Some(era) => Era::mortal(era.period, era.block_number),
             None => Era::immortal(),
         };
-        let genesis_hash = input
-            .genesis_hash
-            .as_ref()
-            .try_into()
-            .unwrap_or_default();
-        let current_hash = input
-            .block_hash
-            .as_ref()
-            .try_into()
-            .unwrap_or_default();
+        let genesis_hash = input.genesis_hash.as_ref().try_into().unwrap_or_default();
+        let current_hash = input.block_hash.as_ref().try_into().unwrap_or_default();
         let tip = U256::from_big_endian_slice(&input.tip)
             .map_err(|_| EncodeError::InvalidValue)?
             .try_into()
