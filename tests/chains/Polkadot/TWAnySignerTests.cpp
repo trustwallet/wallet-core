@@ -14,6 +14,7 @@
 #include <TrustWalletCore/TWString.h>
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWTransactionCompiler.h>
 
 #include "TestUtilities.h"
@@ -25,7 +26,8 @@ namespace TW::Polkadot::tests {
 		auto kusamaPrefix = ss58Prefix(TWCoinTypeKusama);
     auto privateKey = PrivateKey(parse_hex("0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115"));
     auto privateKeyIOS = PrivateKey(parse_hex("37932b086586a6675e66e562fe68bd3eeea4177d066619c602fe3efc290ada62"));
-    auto privateKeyThrow2 = PrivateKey(parse_hex("70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f"));
+    auto privateKeyThrow2Data = DATA("70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f");
+    auto privateKeyThrow2 = TWPrivateKeyCreateWithData(privateKeyThrow2Data.get());
     auto privateKeyPolkadot = PrivateKey(parse_hex("298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266"));
     auto addressThrow2 = "14Ztd3KJDaB9xyJtRkREtSZDdhLSbm7UUKt8Z7AwSv7q85G2";
     auto publicKey = TWPublicKeyCreateWithData(DATA("0x88dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee").get(), TWPublicKeyTypeED25519);
@@ -72,11 +74,12 @@ TEST(TWAnySignerPolkadot, SignTransfer_9fd062) {
     input.set_nonce(3);
     input.set_spec_version(26);
     {
-        PublicKey pubKey = privateKeyThrow2.getPublicKey(TWPublicKeyTypeED25519);
-				const auto address = AnyAddress::createAddress(pubKey, TWCoinTypePolkadot);
-        EXPECT_EQ(address->address, addressThrow2);
+        auto pubKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(privateKeyThrow2));
+        const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey.get(), TWCoinTypePolkadot));
+        auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
+        ASSERT_STREQ(TWStringUTF8Bytes(addressStr.get()), addressThrow2);
     }
-    input.set_private_key(privateKeyThrow2.bytes.data(), privateKeyThrow2.bytes.size());
+    input.set_private_key(TWDataBytes(privateKeyThrow2Data.get()), TWDataSize(privateKeyThrow2Data.get()));
     input.set_network(ss58Prefix(TWCoinTypePolkadot));
     input.set_transaction_version(5);
 
@@ -178,11 +181,12 @@ TEST(TWAnySignerPolkadot, SignBond_8da66d) {
     input.set_nonce(0);
     input.set_spec_version(26);
     {
-        PublicKey pubKey = privateKeyThrow2.getPublicKey(TWPublicKeyTypeED25519);
-				const auto address = AnyAddress::createAddress(pubKey, TWCoinTypePolkadot);
-        EXPECT_EQ(address->address, addressThrow2);
+        auto pubKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(privateKeyThrow2));
+        const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey.get(), TWCoinTypePolkadot));
+        auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
+        ASSERT_STREQ(TWStringUTF8Bytes(addressStr.get()), addressThrow2);
     }
-    input.set_private_key(privateKeyThrow2.bytes.data(), privateKeyThrow2.bytes.size());
+    input.set_private_key(TWDataBytes(privateKeyThrow2Data.get()), TWDataSize(privateKeyThrow2Data.get()));
     input.set_network(ss58Prefix(TWCoinTypePolkadot));
     input.set_transaction_version(5);
 
@@ -240,7 +244,7 @@ TEST(TWAnySignerPolkadot, SignNominate_452522) {
     input.set_block_hash(blockHash.data(), blockHash.size());
     input.set_nonce(1);
     input.set_spec_version(26);
-    input.set_private_key(privateKeyThrow2.bytes.data(), privateKeyThrow2.bytes.size());
+    input.set_private_key(TWDataBytes(privateKeyThrow2Data.get()), TWDataSize(privateKeyThrow2Data.get()));
     input.set_network(ss58Prefix(TWCoinTypePolkadot));
     input.set_transaction_version(5);
 
@@ -341,7 +345,7 @@ TEST(TWAnySignerPolkadot, SignUnbond_070957) {
     input.set_block_hash(blockHash.data(), blockHash.size());
     input.set_nonce(2);
     input.set_spec_version(26);
-    input.set_private_key(privateKeyThrow2.bytes.data(), privateKeyThrow2.bytes.size());
+    input.set_private_key(TWDataBytes(privateKeyThrow2Data.get()), TWDataSize(privateKeyThrow2Data.get()));
     input.set_network(ss58Prefix(TWCoinTypePolkadot));
     input.set_transaction_version(5);
 
@@ -914,11 +918,12 @@ TEST(TWAnySignerPolkadot, SignTransfer_KusamaNewSpec) {
     input.set_nonce(150);
     input.set_spec_version(1002005);
     {
-        PublicKey pubKey = privateKeyThrow2.getPublicKey(TWPublicKeyTypeED25519);
-				const auto address = AnyAddress::createAddress(pubKey, TWCoinTypePolkadot);
-        EXPECT_EQ(address->address, addressThrow2);
+        auto pubKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(privateKeyThrow2));
+        const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey.get(), TWCoinTypePolkadot));
+        auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
+        ASSERT_STREQ(TWStringUTF8Bytes(addressStr.get()), addressThrow2);
     }
-    input.set_private_key(privateKeyThrow2.bytes.data(), privateKeyThrow2.bytes.size());
+    input.set_private_key(TWDataBytes(privateKeyThrow2Data.get()), TWDataSize(privateKeyThrow2Data.get()));
     input.set_network(ss58Prefix(TWCoinTypeKusama));
     input.set_transaction_version(26);
 
