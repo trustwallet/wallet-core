@@ -390,7 +390,7 @@ Data Extrinsic::encodeIdentityAddAuthorization(const Proto::Identity::AddAuthori
 
 static bool requires_new_spec_compatbility(uint32_t network, uint32_t specVersion) noexcept {
     // version 1002005 introduces a breaking change for Polkadot and Kusama
-    return ((network == 0 || network == 2) && specVersion >= 1002005);
+    return ((network == 0 || network == 2) && specVersion >= 1002005) || (network == 10 && specVersion >= 2270);
 }
 
 Data Extrinsic::encodePayload() const {
