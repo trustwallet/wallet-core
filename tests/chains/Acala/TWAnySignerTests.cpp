@@ -26,7 +26,7 @@ TEST(TWAnySignerAcala, Sign) {
     input.set_block_hash(blockHash.data(), blockHash.size());
 
     input.set_nonce(0);
-    input.set_spec_version(2170);
+    input.set_spec_version(2270);
     input.set_private_key(secret.data(), secret.size());
     input.set_network(10); // Acala
     input.set_transaction_version(2);
