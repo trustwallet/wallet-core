@@ -9,13 +9,14 @@
 
 namespace TW::Nimiq {
 
-const uint8_t NETWORK_ID = 42;
+const uint8_t NETWORK_ID = 24;
 const uint8_t EMPTY_FLAGS = 0;
 
 std::vector<uint8_t> Transaction::serialize() const {
     std::vector<uint8_t> data;
 
     data.push_back(0x00); // Basic TX type
+    data.push_back(0x00); // Signature Proof type and flags (Ed25519 type and no flags)
     data.insert(data.end(), sender_pub_key.begin(), sender_pub_key.end());
     data.insert(data.end(), destination.bytes.begin(), destination.bytes.end());
     encode64BE(amount, data);
@@ -42,6 +43,7 @@ std::vector<uint8_t> Transaction::getPreImage() const {
     encode32BE(vsh, data);
     data.push_back(NETWORK_ID);
     data.push_back(EMPTY_FLAGS);
+    data.push_back(0x00); // Sender Data size (+ 0 bytes of data)
 
     return data;
 }
