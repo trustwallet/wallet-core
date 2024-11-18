@@ -64,13 +64,13 @@ bool Transaction::isAlbatross() const {
     return false;
 }
 
-uint32_t Transaction::consensusNetworkId() const {
+uint8_t Transaction::consensusNetworkId() const {
     switch (networkId) {
         case Proto::NetworkId::UseDefault:
         case Proto::NetworkId::Mainnet:
-            return static_cast<uint32_t>(Proto::NetworkId::Mainnet);
+            return static_cast<uint8_t>(Proto::NetworkId::Mainnet);
         case Proto::NetworkId::MainnetAlbatross:
-            return static_cast<uint32_t>(Proto::NetworkId::MainnetAlbatross);
+            return static_cast<uint8_t>(Proto::NetworkId::MainnetAlbatross);
         default:
             throw std::invalid_argument("Invalid network ID");
     }

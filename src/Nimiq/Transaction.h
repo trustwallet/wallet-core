@@ -36,7 +36,7 @@ class Transaction {
 
   private:
     bool isAlbatross() const;
-    uint32_t consensusNetworkId() const;
+    uint8_t consensusNetworkId() const;
 };
 
 } // namespace TW::Nimiq
