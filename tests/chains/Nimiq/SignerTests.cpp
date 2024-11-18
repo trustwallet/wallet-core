@@ -30,14 +30,15 @@ TEST(NimiqSigner, Sign) {
         Address("NQ86 2H8F YGU5 RM77 QSN9 LYLH C56A CYYR 0MLA"),
         42042042,
         1000,
-        314159
+        314159,
+        Proto::NetworkId::Mainnet
     );
 
     Signer signer;
     signer.sign(privateKey, tx);
 
     ASSERT_EQ(hex(tx.signature),
-        "0ba678744be3bf9cd44fbcdabfb5be209f21739934836e26055610ab02720fa99489219d9f3581664473a1b40b30ad1f6e13150d59f8234a42c3f0de3d505405");
+        "74dc7f6e0ab58a0bf52cc6e8801b0cca132dd4229d9a3e3a3d2f90e4d8f045d981b771bf5fc3851a98f3c617b1a943228f963e910e061808a721cfa0e3cad50b");
 }
 
 } // namespace TW::Nimiq
