@@ -14,7 +14,7 @@ class NimiqTests: XCTestCase {
             $0.value = 42042042
             $0.fee = 1000
             $0.validityStartHeight = 314159
-            $0.networkId = .mainnetAlbatross
+            $0.networkID = .mainnetAlbatross
         }
 
         let output: NimiqSigningOutput = AnySigner.sign(input: input, coin: .nimiq)
