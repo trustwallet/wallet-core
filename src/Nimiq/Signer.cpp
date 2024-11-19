@@ -19,7 +19,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         /* destination */Address(input.destination()),
         /* amount */input.value(),
         /* fee */input.fee(),
-        /* vsh */input.validity_start_height()
+        /* vsh */input.validity_start_height(),
+        /* networkId */input.network_id()
     );
 
     auto signer = Signer();
