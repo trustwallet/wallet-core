@@ -6,6 +6,7 @@
 #include "Bitcoin/SigHashType.h"
 #include "HexCoding.h"
 #include "proto/Bitcoin.pb.h"
+#include "proto/BitcoinV2.pb.h"
 #include "TestUtilities.h"
 
 #include <TrustWalletCore/TWBitcoinSigHashType.h>
@@ -161,6 +162,76 @@ TEST(BitcoinCash, SignTransaction) {
             "e510000000000000" "1976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
         "00000000");
 }
+
+TEST(BitcoinCash, SignTransactionV2) {
+    auto privateKey = parse_hex("7fdafb9db5bc501f2096e7d13d331dc7a75d9594af3d251313ba8b6200f4e384");
+    auto txId = parse_hex("050d00e2e18ef13969606f1ceee290d3f49bd940684ce39898159352952b8ce2");
+    std::reverse(txId.begin(), txId.end());
+
+    BitcoinV2::Proto::SigningInput signing;
+    signing.add_private_keys(privateKey.data(), privateKey.size());
+    signing.mutable_chain_info()->set_p2pkh_prefix(0);
+    signing.mutable_chain_info()->set_p2sh_prefix(5);
+    signing.mutable_chain_info()->set_hrp("bitcoincash");
+
+    auto& builder = *signing.mutable_builder();
+    builder.set_version(BitcoinV2::Proto::TransactionVersion::V1);
+    builder.set_input_selector(BitcoinV2::Proto::InputSelector::UseAll);
+    builder.set_fixed_dust_threshold(546);
+
+    auto& in = *builder.add_inputs();
+    auto& inOutPoint = *in.mutable_out_point();
+    inOutPoint.set_hash(txId.data(), txId.size());
+    inOutPoint.set_vout(2);
+    in.set_value(5151);
+    // Cash address without prefix.
+    in.set_receiver_address("qzhlrcrcne07x94h99thved2pgzdtv8ccujjy73xya");
+    in.set_sighash_type(TWBitcoinSigHashTypeAll | TWBitcoinSigHashTypeFork);
+
+    auto& out0 = *builder.add_outputs();
+    out0.set_value(600);
+    // Legacy address.
+    out0.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
+
+    auto& explicitChangeOutput = *builder.add_outputs();
+    explicitChangeOutput.set_value(4325);
+    // Cash address with an explicit prefix.
+    explicitChangeOutput.set_to_address("bitcoincash:qz0q3xmg38sr94rw8wg45vujah7kzma3cskxymnw06");
+
+    Proto::SigningInput legacy;
+    *legacy.mutable_signing_v2() = signing;
+    legacy.set_coin_type(TWCoinTypeBitcoinCash);
+
+    Proto::TransactionPlan plan;
+    ANY_PLAN(legacy, plan, TWCoinTypeBitcoin);
+
+    ASSERT_EQ(plan.error(), Common::Proto::SigningError::OK);
+    const auto planV2 = plan.planning_result_v2();
+    EXPECT_EQ(planV2.error(), Common::Proto::SigningError::OK) << planV2.error_message();
+
+    EXPECT_EQ(planV2.inputs_size(), 1);
+    EXPECT_EQ(planV2.outputs_size(), 2);
+    EXPECT_EQ(planV2.vsize_estimate(), 227);
+    EXPECT_EQ(planV2.fee_estimate(), 226);
+    EXPECT_EQ(planV2.change(), 0);
+
+    Proto::SigningOutput output;
+    ANY_SIGN(legacy, TWCoinTypeBitcoin);
+
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+    ASSERT_TRUE(output.has_signing_result_v2());
+    const auto outputV2 = output.signing_result_v2();
+    EXPECT_EQ(outputV2.error(), Common::Proto::SigningError::OK) << outputV2.error_message();
+    ASSERT_EQ(hex(outputV2.encoded()),
+              "01000000"
+              "01"
+              "e28c2b955293159898e34c6840d99bf4d390e2ee1c6f606939f18ee1e2000d05" "02000000" "6b483045022100b70d158b43cbcded60e6977e93f9a84966bc0cec6f2dfd1463d1223a90563f0d02207548d081069de570a494d0967ba388ff02641d91cadb060587ead95a98d4e3534121038eab72ec78e639d02758e7860cdec018b49498c307791f785aa3019622f4ea5b" "ffffffff"
+              "02"
+              "5802000000000000" "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
+              "e510000000000000" "1976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
+              "00000000");
+}
+
 // clang-format on
 
 } // namespace TW::Bitcoin::tests
