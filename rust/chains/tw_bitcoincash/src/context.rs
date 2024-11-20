@@ -7,6 +7,7 @@ use tw_coin_entry::error::prelude::*;
 use tw_utxo::context::{AddressPrefixes, UtxoContext};
 use tw_utxo::script::Script;
 
+#[derive(Default)]
 pub struct BitcoinCashContext;
 
 impl UtxoContext for BitcoinCashContext {
