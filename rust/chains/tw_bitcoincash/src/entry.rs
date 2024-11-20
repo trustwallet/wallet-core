@@ -92,4 +92,14 @@ impl CoinEntry for BitcoinCashEntry {
     ) -> Self::SigningOutput {
         BitcoinCompiler::<BitcoinCashContext>::compile(coin, input, signatures, public_keys)
     }
+
+    #[inline]
+    fn plan_builder(&self) -> Option<Self::PlanBuilder> {
+        Some(BitcoinPlanner::<BitcoinCashContext>::default())
+    }
+
+    #[inline]
+    fn transaction_util(&self) -> Option<Self::TransactionUtil> {
+        Some(BitcoinTransactionUtil)
+    }
 }
