@@ -1,4 +1,4 @@
-use tw_scale::impl_enum_scale;
+use tw_scale::{impl_enum_scale, RawOwned};
 
 use tw_proto::Polkadot::Proto::mod_SigningInput::OneOfmessage_oneof as SigningVariant;
 
@@ -22,7 +22,7 @@ impl PolkadotCallEncoder {
 }
 
 impl TWPolkadotCallEncoder for PolkadotCallEncoder {
-    fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
+    fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<RawOwned> {
         let call = match msg {
             SigningVariant::balance_call(b) => {
                 GenericBalances::encode_call(&self.0, b)?.map(PolkadotCall::Balances)
@@ -34,12 +34,12 @@ impl TWPolkadotCallEncoder for PolkadotCallEncoder {
                 return Err(EncodeError::InvalidCallIndex);
             },
         };
-        Ok(Encoded(call.to_scale()))
+        Ok(RawOwned(call.to_scale()))
     }
 
-    fn encode_batch(&self, calls: Vec<Encoded>) -> EncodeResult<Encoded> {
+    fn encode_batch(&self, calls: Vec<RawOwned>) -> EncodeResult<RawOwned> {
         let call = PolkadotCall::Utility(GenericUtility::BatchAll { calls });
-        Ok(Encoded(call.to_scale()))
+        Ok(RawOwned(call.to_scale()))
     }
 }
 
@@ -61,7 +61,7 @@ impl KusamaCallEncoder {
 }
 
 impl TWPolkadotCallEncoder for KusamaCallEncoder {
-    fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
+    fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<RawOwned> {
         let call = match msg {
             SigningVariant::balance_call(b) => {
                 GenericBalances::encode_call(&self.0, b)?.map(KusamaCall::Balances)
@@ -73,11 +73,11 @@ impl TWPolkadotCallEncoder for KusamaCallEncoder {
                 return Err(EncodeError::InvalidCallIndex);
             },
         };
-        Ok(Encoded(call.to_scale()))
+        Ok(RawOwned(call.to_scale()))
     }
 
-    fn encode_batch(&self, calls: Vec<Encoded>) -> EncodeResult<Encoded> {
+    fn encode_batch(&self, calls: Vec<RawOwned>) -> EncodeResult<RawOwned> {
         let call = KusamaCall::Utility(GenericUtility::BatchAll { calls });
-        Ok(Encoded(call.to_scale()))
+        Ok(RawOwned(call.to_scale()))
     }
 }

@@ -4,7 +4,6 @@
 
 use crate::address::{SubstrateAddress, SubstratePrefix};
 use crate::substrate_coin_entry::SubstrateCoinEntry;
-use crate::Encoded;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
@@ -19,6 +18,7 @@ use tw_coin_entry::modules::transaction_util::NoTransactionUtil;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_coin_entry::prefix::AddressPrefix;
 use tw_keypair::{ed25519, tw::PublicKey};
+use tw_scale::RawOwned;
 use tw_ss58_address::{NetworkId, SS58Address};
 
 pub struct SubstrateEntry<T>(pub T);
@@ -29,10 +29,10 @@ impl<T: SubstrateCoinEntry> SubstrateEntry<T> {
         &self,
         coin: &dyn CoinContext,
         input: T::SigningInput<'_>,
-    ) -> SigningResult<Encoded> {
+    ) -> SigningResult<RawOwned> {
         let unsigned_tx = self.0.build_transaction(coin, None, &input)?;
         let signed_tx = unsigned_tx.sign()?;
-        Ok(Encoded::new(signed_tx))
+        Ok(RawOwned::new(signed_tx))
     }
 
     #[inline]
@@ -40,10 +40,10 @@ impl<T: SubstrateCoinEntry> SubstrateEntry<T> {
         &self,
         coin: &dyn CoinContext,
         input: T::SigningInput<'_>,
-    ) -> SigningResult<Encoded> {
+    ) -> SigningResult<RawOwned> {
         let unsigned_tx = self.0.build_transaction(coin, None, &input)?;
         let pre_image = unsigned_tx.encode_payload()?;
-        Ok(Encoded(pre_image))
+        Ok(RawOwned(pre_image))
     }
 
     #[inline]
@@ -53,7 +53,7 @@ impl<T: SubstrateCoinEntry> SubstrateEntry<T> {
         input: T::SigningInput<'_>,
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
-    ) -> SigningResult<Encoded> {
+    ) -> SigningResult<RawOwned> {
         let SingleSignaturePubkey {
             signature,
             public_key,
@@ -63,7 +63,7 @@ impl<T: SubstrateCoinEntry> SubstrateEntry<T> {
 
         let unsigned_tx = self.0.build_transaction(coin, Some(public_key), &input)?;
         let signed_tx = unsigned_tx.into_signed(signature)?;
-        Ok(Encoded::new(signed_tx))
+        Ok(RawOwned::new(signed_tx))
     }
 }
 

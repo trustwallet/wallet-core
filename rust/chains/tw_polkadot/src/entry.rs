@@ -11,7 +11,7 @@ use tw_keypair::traits::KeyPairTrait;
 use tw_number::U256;
 use tw_proto::Polkadot::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
-use tw_scale::ToScale;
+use tw_scale::{RawOwned, ToScale};
 use tw_ss58_address::NetworkId;
 use tw_ss58_address::SS58Address;
 use tw_substrate::*;
@@ -83,7 +83,7 @@ impl PolkadotEntry {
     fn signing_output_impl(
         &self,
         _coin: &dyn CoinContext,
-        result: SigningResult<Encoded>,
+        result: SigningResult<RawOwned>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let encoded = result?.to_scale();
         Ok(Proto::SigningOutput {
@@ -96,7 +96,7 @@ impl PolkadotEntry {
     fn presigning_output_impl(
         &self,
         _coin: &dyn CoinContext,
-        result: SigningResult<Encoded>,
+        result: SigningResult<RawOwned>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
         let pre_image = result?.to_scale();
         Ok(CompilerProto::PreSigningOutput {
@@ -127,7 +127,7 @@ impl SubstrateCoinEntry for PolkadotEntry {
     fn signing_output(
         &self,
         coin: &dyn CoinContext,
-        result: SigningResult<Encoded>,
+        result: SigningResult<RawOwned>,
     ) -> Self::SigningOutput {
         self.signing_output_impl(coin, result)
             .unwrap_or_else(|e| signing_output_error!(Proto::SigningOutput, e))
@@ -137,7 +137,7 @@ impl SubstrateCoinEntry for PolkadotEntry {
     fn presigning_output(
         &self,
         coin: &dyn CoinContext,
-        result: SigningResult<Encoded>,
+        result: SigningResult<RawOwned>,
     ) -> Self::PreSigningOutput {
         self.presigning_output_impl(coin, result)
             .unwrap_or_else(|e| signing_output_error!(CompilerProto::PreSigningOutput, e))

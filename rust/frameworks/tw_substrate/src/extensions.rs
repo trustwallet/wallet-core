@@ -1,10 +1,10 @@
-use crate::extrinsic::{BlockHash, Encoded};
-use tw_scale::{impl_enum_scale, Compact, ToScale};
+use crate::extrinsic::BlockHash;
+use tw_scale::{impl_enum_scale, Compact, RawOwned, ToScale};
 
 #[derive(Clone, Debug, Default)]
 pub struct TxExtensionData {
-    pub data: Encoded,
-    pub signed: Encoded,
+    pub data: RawOwned,
+    pub signed: RawOwned,
 }
 
 impl TxExtensionData {
