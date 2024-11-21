@@ -81,7 +81,7 @@ impl PolymeshBalances {
     pub fn encode_call(b: &Balance) -> WithCallIndexResult<Self> {
         match &b.message_oneof {
             BalanceVariant::transfer(t) => Self::encode_transfer(t),
-            _ => Err(EncodeError::InvalidCallIndex),
+            _ => Err(EncodeError::NotSupported),
         }
     }
 }
@@ -175,7 +175,7 @@ impl PolymeshIdentity {
         match &ident.message_oneof {
             IdentityVariant::join_identity_as_key(t) => Self::encode_join_identity(t),
             IdentityVariant::add_authorization(a) => Self::encode_add_authorization(a),
-            _ => Err(EncodeError::InvalidCallIndex),
+            _ => Err(EncodeError::NotSupported),
         }
     }
 }
@@ -295,7 +295,7 @@ impl PolymeshStaking {
             StakingVariant::withdraw_unbonded(b) => Self::encode_withdraw_unbonded(b),
             StakingVariant::rebond(b) => Self::encode_rebond(b),
             StakingVariant::nominate(b) => Self::encode_nominate(b),
-            _ => Err(EncodeError::InvalidCallIndex),
+            _ => Err(EncodeError::NotSupported),
         }
     }
 }
@@ -329,14 +329,14 @@ impl TWPolkadotCallEncoder for PolymeshCallEncoder {
                     PolymeshIdentity::encode_call(msg)?.map(PolymeshCall::Identity)
                 },
                 PolymeshVariant::None => {
-                    return Err(EncodeError::InvalidCallIndex);
+                    return Err(EncodeError::NotSupported);
                 },
             },
             SigningVariant::staking_call(s) => {
                 PolymeshStaking::encode_call(s)?.map(PolymeshCall::Staking)
             },
             SigningVariant::None => {
-                return Err(EncodeError::InvalidCallIndex);
+                return Err(EncodeError::NotSupported);
             },
         };
         Ok(RawOwned(call.to_scale()))

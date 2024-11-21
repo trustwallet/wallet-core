@@ -19,10 +19,11 @@ pub use extensions::*;
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum EncodeError {
     InvalidNetworkId,
-    MissingCallIndicesTable,
+    MissingCallIndices,
     InvalidCallIndex,
     InvalidAddress,
     InvalidValue,
+    NotSupported,
 }
 
 impl From<EncodeError> for SigningError {
@@ -31,7 +32,8 @@ impl From<EncodeError> for SigningError {
         TWError::new(match err {
             EncodeError::InvalidAddress => SigningErrorType::Error_invalid_address,
             EncodeError::InvalidValue => SigningErrorType::Error_input_parse,
-            EncodeError::MissingCallIndicesTable => SigningErrorType::Error_not_supported,
+            EncodeError::MissingCallIndices => SigningErrorType::Error_not_supported,
+            EncodeError::NotSupported => SigningErrorType::Error_not_supported,
             _ => SigningErrorType::Error_invalid_params,
         })
         .context(format!("{err:?}"))
