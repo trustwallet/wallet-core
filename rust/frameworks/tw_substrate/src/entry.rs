@@ -17,7 +17,7 @@ use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::modules::transaction_util::NoTransactionUtil;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_coin_entry::prefix::AddressPrefix;
-use tw_keypair::{ed25519, tw::PublicKey};
+use tw_keypair::{ed25519, traits::KeyPairTrait, tw::PublicKey};
 use tw_scale::RawOwned;
 use tw_ss58_address::{NetworkId, SS58Address};
 
@@ -30,8 +30,10 @@ impl<T: SubstrateCoinEntry> SubstrateEntry<T> {
         coin: &dyn CoinContext,
         input: T::SigningInput<'_>,
     ) -> SigningResult<RawOwned> {
-        let unsigned_tx = self.0.build_transaction(coin, None, &input)?;
-        let signed_tx = unsigned_tx.sign()?;
+        let keypair = self.0.get_keypair(coin, &input)?;
+        let public_key = Some(keypair.public().clone());
+        let unsigned_tx = self.0.build_transaction(coin, public_key, &input)?;
+        let signed_tx = unsigned_tx.sign(&keypair)?;
         Ok(RawOwned::new(signed_tx))
     }
 
@@ -41,7 +43,9 @@ impl<T: SubstrateCoinEntry> SubstrateEntry<T> {
         coin: &dyn CoinContext,
         input: T::SigningInput<'_>,
     ) -> SigningResult<RawOwned> {
-        let unsigned_tx = self.0.build_transaction(coin, None, &input)?;
+        let keypair = self.0.get_keypair(coin, &input).ok();
+        let public_key = keypair.map(|p| p.public().clone());
+        let unsigned_tx = self.0.build_transaction(coin, public_key, &input)?;
         let pre_image = unsigned_tx.encode_payload()?;
         Ok(RawOwned(pre_image))
     }
