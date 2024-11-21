@@ -38,119 +38,62 @@ fixed_impl!(u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize);
 #[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
 pub struct Compact<T>(pub T);
 
-// Implementations for Compact
+// SCALE encoding for common Compact numbers.
 
 impl ToScale for Compact<u8> {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
-        match self.0 {
-            0..=0b0011_1111 => out.push(self.0 << 2),
-            _ => (((self.0 as u16) << 2) | 0b01).to_scale_into(out),
-        }
+        Compact(U256::from(self.0)).to_scale_into(out)
     }
 }
 
 impl ToScale for Compact<u16> {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
-        match self.0 {
-            0..=0b0011_1111 => out.push((self.0 as u8) << 2),
-            0..=0b0011_1111_1111_1111 => ((self.0 << 2) | 0b01).to_scale_into(out),
-            _ => (((self.0 as u32) << 2) | 0b10).to_scale_into(out),
-        }
+        Compact(U256::from(self.0)).to_scale_into(out)
     }
 }
 
 impl ToScale for Compact<u32> {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
-        match self.0 {
-            0..=0b0011_1111 => out.push((self.0 as u8) << 2),
-            0..=0b0011_1111_1111_1111 => (((self.0 as u16) << 2) | 0b01).to_scale_into(out),
-            0..=0b0011_1111_1111_1111_1111_1111_1111_1111 => {
-                ((self.0 << 2) | 0b10).to_scale_into(out)
-            },
-            _ => {
-                out.push(0b11);
-                self.0.to_scale_into(out);
-            },
-        }
+        Compact(U256::from(self.0)).to_scale_into(out)
     }
 }
 
 impl ToScale for Compact<u64> {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
-        match self.0 {
-            0..=0b0011_1111 => out.push((self.0 as u8) << 2),
-            0..=0b0011_1111_1111_1111 => (((self.0 as u16) << 2) | 0b01).to_scale_into(out),
-            0..=0b0011_1111_1111_1111_1111_1111_1111_1111 => {
-                (((self.0 as u32) << 2) | 0b10).to_scale_into(out)
-            },
-            _ => {
-                let bytes_needed = 8 - self.0.leading_zeros() / 8;
-                out.reserve(bytes_needed as usize);
-                out.push(0b11 + ((bytes_needed - 4) << 2) as u8);
-                let mut x = self.0;
-                for _ in 0..bytes_needed {
-                    out.push(x as u8);
-                    x >>= 8;
-                }
-            },
-        }
+        Compact(U256::from(self.0)).to_scale_into(out)
     }
 }
 
 impl ToScale for Compact<u128> {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
-        match self.0 {
-            0..=0b0011_1111 => out.push((self.0 as u8) << 2),
-            0..=0b0011_1111_1111_1111 => (((self.0 as u16) << 2) | 0b01).to_scale_into(out),
-            0..=0b0011_1111_1111_1111_1111_1111_1111_1111 => {
-                (((self.0 as u32) << 2) | 0b10).to_scale_into(out)
-            },
-            _ => {
-                let bytes_needed = 16 - self.0.leading_zeros() / 8;
-                out.reserve(bytes_needed as usize);
-                out.push(0b11 + ((bytes_needed - 4) << 2) as u8);
-                let mut x = self.0;
-                for _ in 0..bytes_needed {
-                    out.push(x as u8);
-                    x >>= 8;
-                }
-            },
-        }
-    }
-}
-
-impl ToScale for Compact<U256> {
-    fn to_scale_into(&self, out: &mut Vec<u8>) {
-        // match syntax gets a bit cluttered without u256 literals, falling back to if's
-
-        if self.0 <= 0b0011_1111u64.into() {
-            return out.push(self.0.low_u8() << 2);
-        }
-
-        if self.0 <= 0b0011_1111_1111_1111u64.into() {
-            let v = u16::try_from(self.0).expect("cannot happen as we just checked the value");
-            return ((v << 2) | 0b01).to_scale_into(out);
-        }
-
-        if self.0 <= 0b0011_1111_1111_1111_1111_1111_1111_1111u64.into() {
-            let v = u32::try_from(self.0).expect("cannot happen as we just checked the value");
-            return ((v << 2) | 0b10).to_scale_into(out);
-        }
-
-        let bytes_needed = 32 - self.0.leading_zeros() / 8;
-        out.reserve(bytes_needed as usize);
-        out.push(0b11 + ((bytes_needed - 4) << 2) as u8);
-        let mut x = self.0;
-        for _ in 0..bytes_needed {
-            out.push(x.low_u8());
-            x >>= 8;
-        }
+        Compact(U256::from(self.0)).to_scale_into(out)
     }
 }
 
 impl ToScale for Compact<usize> {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
-        Compact(self.0 as u64).to_scale_into(out)
+        Compact(U256::from(self.0)).to_scale_into(out)
+    }
+}
+
+const COMPACT_1_BYTE_MAX: u32 = 0b0011_1111;
+const COMPACT_2_BYTE_MAX: u32 = 0b0011_1111_1111_1111;
+const COMPACT_4_BYTE_MAX: u32 = 0b0011_1111_1111_1111_1111_1111_1111_1111;
+
+impl ToScale for Compact<U256> {
+    fn to_scale_into(&self, out: &mut Vec<u8>) {
+        match u32::try_from(self.0) {
+            Ok(val) if val <= COMPACT_1_BYTE_MAX => out.push((val as u8) << 2),
+            Ok(val) if val <= COMPACT_2_BYTE_MAX => (((val as u16) << 2) | 0b01).to_scale_into(out),
+            Ok(val) if val <= COMPACT_4_BYTE_MAX => (((val as u32) << 2) | 0b10).to_scale_into(out),
+            _ => {
+                let bytes = self.0.to_little_endian_compact();
+                let bytes_needed = bytes.len();
+                out.reserve(bytes_needed);
+                out.push(0b11 + ((bytes_needed - 4) << 2) as u8);
+                out.extend_from_slice(&bytes[..]);
+            },
+        }
     }
 }
 
@@ -216,17 +159,6 @@ impl<'a> ToScale for Raw<'a> {
     }
 }
 
-pub struct RawIter<T>(pub T);
-
-impl<T> ToScale for RawIter<T>
-where
-    T: IntoIterator<Item = u8> + Clone,
-{
-    fn to_scale_into(&self, out: &mut Vec<u8>) {
-        out.extend(self.0.clone());
-    }
-}
-
 impl<T: ToScale> ToScale for &T {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
         (*self).to_scale_into(out)
@@ -235,7 +167,7 @@ impl<T: ToScale> ToScale for &T {
 
 #[cfg(test)]
 mod tests {
-    use super::{Compact, FixedLength, Raw, RawIter, ToScale};
+    use super::{Compact, FixedLength, Raw, ToScale};
     use tw_number::U256;
 
     #[test]
@@ -487,16 +419,6 @@ mod tests {
         assert_eq!(Raw(empty.as_slice()).to_scale(), empty);
         assert_eq!(
             Raw([4u8, 8, 15, 16, 23, 42].as_slice()).to_scale(),
-            &[0x04, 0x08, 0x0f, 0x10, 0x17, 0x2a],
-        );
-    }
-
-    #[test]
-    fn test_raw_iter() {
-        let empty: [u8; 0] = [];
-        assert_eq!(RawIter(empty.into_iter()).to_scale(), empty);
-        assert_eq!(
-            RawIter([4u8, 8, 15, 16, 23, 42].into_iter()).to_scale(),
             &[0x04, 0x08, 0x0f, 0x10, 0x17, 0x2a],
         );
     }

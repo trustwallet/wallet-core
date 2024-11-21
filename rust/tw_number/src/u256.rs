@@ -144,11 +144,6 @@ impl U256 {
     fn leading_zero_bytes(&self) -> usize {
         U256::BYTES - (self.0.bits() + 7) / 8
     }
-
-    #[inline]
-    pub fn leading_zeros(&self) -> u32 {
-        self.0.leading_zeros()
-    }
 }
 
 #[cfg(feature = "helpers")]
