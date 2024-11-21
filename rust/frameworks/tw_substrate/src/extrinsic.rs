@@ -48,7 +48,7 @@ impl CallIndex {
 
     pub fn required_from_tw(call_index: Option<(i32, i32)>) -> Result<Self, EncodeError> {
         if call_index.is_none() {
-            return Err(EncodeError::MissingCallIndicesTable);
+            return Err(EncodeError::MissingCallIndices);
         }
         Self::from_tw(call_index)
     }
