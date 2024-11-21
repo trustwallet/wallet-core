@@ -43,8 +43,11 @@ impl<T: SubstrateCoinEntry> SubstrateEntry<T> {
         coin: &dyn CoinContext,
         input: T::SigningInput<'_>,
     ) -> SigningResult<RawOwned> {
-        let keypair = self.0.get_keypair(coin, &input).ok();
-        let public_key = keypair.map(|p| p.public().clone());
+        let public_key = self
+            .0
+            .get_keypair(coin, &input)
+            .ok()
+            .map(|p| p.public().clone());
         let unsigned_tx = self.0.build_transaction(coin, public_key, &input)?;
         let pre_image = unsigned_tx.encode_payload()?;
         Ok(RawOwned(pre_image))

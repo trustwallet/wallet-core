@@ -23,7 +23,6 @@ pub enum EncodeError {
     InvalidCallIndex,
     InvalidAddress,
     InvalidValue,
-    MissingPrivateKey,
 }
 
 impl From<EncodeError> for SigningError {
