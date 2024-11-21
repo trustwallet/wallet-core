@@ -1,11 +1,7 @@
 use std::str::FromStr;
 
-use tw_scale::{impl_enum_scale, Compact, RawOwned, ToScale};
-
+use tw_hash::H256;
 use tw_number::U256;
-use tw_ss58_address::SS58Address;
-use tw_substrate::address::SubstrateAddress;
-
 use tw_proto::Polkadot::Proto::{
     mod_Balance::{OneOfmessage_oneof as BalanceVariant, Transfer},
     mod_Identity::{AddAuthorization, JoinIdentityAsKey, OneOfmessage_oneof as IdentityVariant},
@@ -16,11 +12,16 @@ use tw_proto::Polkadot::Proto::{
     },
     Balance, Identity, Staking,
 };
+use tw_scale::{impl_enum_scale, impl_struct_scale, Compact, RawOwned, ToScale};
+use tw_ss58_address::SS58Address;
+use tw_substrate::address::SubstrateAddress;
 
 use super::*;
 
-#[derive(Clone, Debug)]
-pub struct Memo(pub [u8; 32]);
+impl_struct_scale!(
+    #[derive(Clone, Debug)]
+    pub struct Memo(H256);
+);
 
 impl Memo {
     pub fn new(memo: &str) -> Self {
@@ -29,24 +30,14 @@ impl Memo {
         let len = memo.len().min(32);
         bytes[0..len].copy_from_slice(&memo[0..len]);
 
-        Self(bytes)
+        Self(bytes.into())
     }
 }
 
-impl ToScale for Memo {
-    fn to_scale_into(&self, out: &mut Vec<u8>) {
-        out.extend_from_slice(&self.0[..]);
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct IdentityId(pub [u8; 32]);
-
-impl ToScale for IdentityId {
-    fn to_scale_into(&self, out: &mut Vec<u8>) {
-        out.extend_from_slice(&self.0[..]);
-    }
-}
+impl_struct_scale!(
+    #[derive(Clone, Debug)]
+    pub struct IdentityId(H256);
+);
 
 impl_enum_scale!(
     #[derive(Clone, Debug)]
