@@ -20,6 +20,7 @@ members = [
     "chains/tw_ton",
     "frameworks/tw_ton_sdk",
     "frameworks/tw_utxo",
+    "frameworks/tw_substrate",
     "tw_any_coin",
     "tw_base58_address",
     "tw_bech32_address",
@@ -39,7 +40,6 @@ members = [
     "wallet_core_rs",
     "tw_ss58_address",
     "tw_scale",
-    "tw_substrate",
 ]
 
 [profile.release]
