@@ -10,7 +10,7 @@ use tw_proto::Polkadot::Proto::{
     },
     Balance, CallIndices, Staking,
 };
-use tw_scale::ToScale;
+use tw_scale::{RawOwned, ToScale};
 use tw_ss58_address::NetworkId;
 use tw_substrate::*;
 
@@ -44,8 +44,8 @@ pub fn required_call_index(call_index: &Option<CallIndices>) -> EncodeResult<Cal
 }
 
 pub trait TWPolkadotCallEncoder {
-    fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded>;
-    fn encode_batch(&self, calls: Vec<Encoded>) -> EncodeResult<Encoded>;
+    fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<RawOwned>;
+    fn encode_batch(&self, calls: Vec<RawOwned>) -> EncodeResult<RawOwned>;
 }
 
 pub struct CallEncoder {
@@ -63,13 +63,13 @@ impl CallEncoder {
         Ok(Self { encoder })
     }
 
-    pub fn encode_input(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<Encoded> {
+    pub fn encode_input(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<RawOwned> {
         let ctx = ctx_from_tw(input)?;
         let encoder = Self::from_ctx(&ctx)?;
         encoder.encode_call(&input.message_oneof)
     }
 
-    fn encode_batch_transfer(&self, bt: &BatchTransfer) -> EncodeResult<Encoded> {
+    fn encode_batch_transfer(&self, bt: &BatchTransfer) -> EncodeResult<RawOwned> {
         let transfers = bt
             .transfers
             .iter()
@@ -79,12 +79,12 @@ impl CallEncoder {
                 });
                 self.encode_call(&call)
             })
-            .collect::<EncodeResult<Vec<Encoded>>>()?;
+            .collect::<EncodeResult<Vec<RawOwned>>>()?;
 
         self.encode_batch(transfers, &bt.call_indices)
     }
 
-    fn encode_batch_asset_transfer(&self, bat: &BatchAssetTransfer) -> EncodeResult<Encoded> {
+    fn encode_batch_asset_transfer(&self, bat: &BatchAssetTransfer) -> EncodeResult<RawOwned> {
         let transfers = bat
             .transfers
             .iter()
@@ -94,12 +94,12 @@ impl CallEncoder {
                 });
                 self.encode_call(&call)
             })
-            .collect::<EncodeResult<Vec<Encoded>>>()?;
+            .collect::<EncodeResult<Vec<RawOwned>>>()?;
 
         self.encode_batch(transfers, &bat.call_indices)
     }
 
-    fn encode_balance_batch_call(&self, b: &Balance) -> EncodeResult<Option<Encoded>> {
+    fn encode_balance_batch_call(&self, b: &Balance) -> EncodeResult<Option<RawOwned>> {
         match &b.message_oneof {
             BalanceVariant::batchTransfer(bt) => {
                 let batch = self.encode_batch_transfer(bt)?;
@@ -113,7 +113,7 @@ impl CallEncoder {
         }
     }
 
-    fn encode_staking_bond_and_nominate(&self, ban: &BondAndNominate) -> EncodeResult<Encoded> {
+    fn encode_staking_bond_and_nominate(&self, ban: &BondAndNominate) -> EncodeResult<RawOwned> {
         // Encode a bond call
         let first = self.encode_call(&SigningVariant::staking_call(Proto::Staking {
             message_oneof: StakingVariant::bond(Bond {
@@ -136,7 +136,7 @@ impl CallEncoder {
         self.encode_batch(vec![first, second], &ban.call_indices)
     }
 
-    fn encode_staking_chill_and_unbond(&self, cau: &ChillAndUnbond) -> EncodeResult<Encoded> {
+    fn encode_staking_chill_and_unbond(&self, cau: &ChillAndUnbond) -> EncodeResult<RawOwned> {
         let first = self.encode_call(&SigningVariant::staking_call(Proto::Staking {
             message_oneof: StakingVariant::chill(Chill {
                 call_indices: cau.chill_call_indices.clone(),
@@ -154,7 +154,7 @@ impl CallEncoder {
         self.encode_batch(vec![first, second], &cau.call_indices)
     }
 
-    fn encode_staking_batch_call(&self, s: &Staking) -> EncodeResult<Option<Encoded>> {
+    fn encode_staking_batch_call(&self, s: &Staking) -> EncodeResult<Option<RawOwned>> {
         match &s.message_oneof {
             StakingVariant::bond_and_nominate(ban) => {
                 let batch = self.encode_staking_bond_and_nominate(&ban)?;
@@ -168,7 +168,7 @@ impl CallEncoder {
         }
     }
 
-    pub fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
+    pub fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<RawOwned> {
         // Special case for batches.
         match msg {
             SigningVariant::balance_call(b) => {
@@ -187,9 +187,13 @@ impl CallEncoder {
         self.encoder.encode_call(msg)
     }
 
-    fn encode_batch(&self, calls: Vec<Encoded>, ci: &Option<CallIndices>) -> EncodeResult<Encoded> {
+    fn encode_batch(
+        &self,
+        calls: Vec<RawOwned>,
+        ci: &Option<CallIndices>,
+    ) -> EncodeResult<RawOwned> {
         let ci = validate_call_index(ci)?;
         let call = ci.wrap(self.encoder.encode_batch(calls)?);
-        Ok(Encoded(call.to_scale()))
+        Ok(RawOwned(call.to_scale()))
     }
 }

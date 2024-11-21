@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use tw_scale::{impl_enum_scale, Compact, ToScale};
+use tw_scale::{impl_enum_scale, Compact, RawOwned, ToScale};
 
 use tw_number::U256;
 use tw_ss58_address::SS58Address;
@@ -108,7 +108,7 @@ impl_enum_scale!(
     pub enum AuthorizationData {
         JoinIdentity {
             // TODO: Polymesh permissions.
-            permissions: Encoded,
+            permissions: RawOwned,
         } = 0x05,
     }
 );
@@ -170,7 +170,7 @@ impl PolymeshIdentity {
         Ok(ci.wrap(Self::AddAuthorization {
             target: Signatory::Account(SubstrateAddress(target.into())),
             data: AuthorizationData::JoinIdentity {
-                permissions: Encoded(data),
+                permissions: RawOwned(data),
             },
             expiry: if auth.expiry > 0 {
                 Some(auth.expiry)
@@ -328,7 +328,7 @@ impl PolymeshCallEncoder {
 }
 
 impl TWPolkadotCallEncoder for PolymeshCallEncoder {
-    fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<Encoded> {
+    fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<RawOwned> {
         let call = match msg {
             SigningVariant::balance_call(b) => {
                 PolymeshBalances::encode_call(b)?.map(PolymeshCall::Balances)
@@ -348,11 +348,11 @@ impl TWPolkadotCallEncoder for PolymeshCallEncoder {
                 return Err(EncodeError::InvalidCallIndex);
             },
         };
-        Ok(Encoded(call.to_scale()))
+        Ok(RawOwned(call.to_scale()))
     }
 
-    fn encode_batch(&self, calls: Vec<Encoded>) -> EncodeResult<Encoded> {
+    fn encode_batch(&self, calls: Vec<RawOwned>) -> EncodeResult<RawOwned> {
         let call = PolymeshCall::Utility(GenericUtility::BatchAll { calls });
-        Ok(Encoded(call.to_scale()))
+        Ok(RawOwned(call.to_scale()))
     }
 }

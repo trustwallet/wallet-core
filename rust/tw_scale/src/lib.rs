@@ -129,6 +129,21 @@ where
     }
 }
 
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+pub struct RawOwned(pub Vec<u8>);
+
+impl RawOwned {
+    pub fn new<T: ToScale>(val: T) -> Self {
+        Self(val.to_scale())
+    }
+}
+
+impl ToScale for RawOwned {
+    fn to_scale_into(&self, out: &mut Vec<u8>) {
+        out.extend(&self.0);
+    }
+}
+
 impl<T> ToScale for Vec<T>
 where
     T: ToScale,

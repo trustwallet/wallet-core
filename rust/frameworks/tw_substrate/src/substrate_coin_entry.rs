@@ -2,10 +2,11 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::{Encoded, TransactionBuilder};
+use crate::TransactionBuilder;
 use tw_coin_entry::{coin_context::CoinContext, error::prelude::*};
 use tw_keypair::ed25519::sha512::PublicKey;
 use tw_proto::{MessageRead, MessageWrite};
+use tw_scale::RawOwned;
 
 pub trait SubstrateCoinEntry {
     type SigningInput<'a>: MessageRead<'a> + MessageWrite;
@@ -22,12 +23,12 @@ pub trait SubstrateCoinEntry {
     fn signing_output(
         &self,
         coin: &dyn CoinContext,
-        result: SigningResult<Encoded>,
+        result: SigningResult<RawOwned>,
     ) -> Self::SigningOutput;
 
     fn presigning_output(
         &self,
         coin: &dyn CoinContext,
-        result: SigningResult<Encoded>,
+        result: SigningResult<RawOwned>,
     ) -> Self::PreSigningOutput;
 }

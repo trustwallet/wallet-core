@@ -9,7 +9,7 @@ use tw_proto::Polkadot::Proto::{
     },
     Balance, Staking,
 };
-use tw_scale::{impl_enum_scale, Compact, ToScale};
+use tw_scale::{impl_enum_scale, Compact, RawOwned, ToScale};
 use tw_ss58_address::SS58Address;
 use tw_substrate::*;
 
@@ -237,6 +237,6 @@ impl GenericStaking {
 impl_enum_scale!(
     #[derive(Clone, Debug)]
     pub enum GenericUtility {
-        BatchAll { calls: Vec<Encoded> } = 0x02,
+        BatchAll { calls: Vec<RawOwned> } = 0x02,
     }
 );

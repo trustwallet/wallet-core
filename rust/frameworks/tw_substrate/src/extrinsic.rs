@@ -4,7 +4,7 @@ use tw_keypair::{
     traits::SigningKeyTrait,
     KeyPairError,
 };
-use tw_scale::{impl_enum_scale, impl_struct_scale, ToScale};
+use tw_scale::{impl_enum_scale, impl_struct_scale, RawOwned, ToScale};
 
 use crate::address::*;
 use crate::extensions::*;
@@ -95,55 +95,18 @@ impl<T: ToScale> ToScale for WithCallIndex<T> {
     }
 }
 
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
-pub struct Encoded(pub Vec<u8>);
-
-impl Encoded {
-    pub fn new<T: ToScale>(val: T) -> Self {
-        Self(val.to_scale())
-    }
-}
-
-impl ToScale for Encoded {
-    fn to_scale_into(&self, out: &mut Vec<u8>) {
-        out.extend(&self.0);
-    }
-}
-
-pub type EncodedExtra = Encoded;
-pub type EncodedAdditionalSigned = Encoded;
-pub struct SignedPayload<'a>(&'a Encoded, &'a EncodedExtra, &'a EncodedAdditionalSigned);
-
-impl<'a> ToScale for SignedPayload<'a> {
-    fn to_scale_into(&self, out: &mut Vec<u8>) {
-        self.0.to_scale_into(out);
-        self.1.to_scale_into(out);
-        self.2.to_scale_into(out);
-    }
-}
-
-impl<'a> SignedPayload<'a> {
-    pub fn new(
-        call: &'a Encoded,
-        extra: &'a EncodedExtra,
-        additional: &'a EncodedAdditionalSigned,
-    ) -> Self {
-        Self(call, extra, additional)
-    }
-}
-
 /// Helper to build transaction.
 #[derive(Debug, Default)]
 pub struct TransactionBuilder {
     multi_address: bool,
     keypair: Option<KeyPair>,
-    call: Encoded,
+    call: RawOwned,
     extensions: TxExtensionData,
     account: MultiAddress,
 }
 
 impl TransactionBuilder {
-    pub fn new(multi_address: bool, call: Encoded) -> Self {
+    pub fn new(multi_address: bool, call: RawOwned) -> Self {
         Self {
             multi_address,
             call,
@@ -168,15 +131,16 @@ impl TransactionBuilder {
     }
 
     pub fn encode_payload(&self) -> Result<Vec<u8>, KeyPairError> {
-        let payload =
-            SignedPayload::new(&self.call, &self.extensions.data, &self.extensions.signed);
-        // SCALE encode the SignedPayload and if the payload is large then we sign a hash
-        // of the payload.
-        let encoded = payload.to_scale();
-        if encoded.len() > MAX_PAYLOAD_SIZE {
-            Ok(blake2_b(&encoded, PAYLOAD_HASH_SIZE).map_err(|_| KeyPairError::InternalError)?)
+        // SCALE encode the payload that needs to be signed: (call, extensions.data, extensions.signed).
+        let mut payload = self.call.to_scale();
+        self.extensions.data.to_scale_into(&mut payload);
+        self.extensions.signed.to_scale_into(&mut payload);
+
+        // if the payload is large then we sign a hash of the payload.
+        if payload.len() > MAX_PAYLOAD_SIZE {
+            Ok(blake2_b(&payload, PAYLOAD_HASH_SIZE).map_err(|_| KeyPairError::InternalError)?)
         } else {
-            Ok(encoded)
+            Ok(payload)
         }
     }
 
@@ -202,7 +166,7 @@ impl_struct_scale!(
     pub struct ExtrinsicSignature {
         pub account: MultiAddress,
         pub signature: MultiSignature,
-        pub extra: EncodedExtra,
+        pub extra: RawOwned,
     }
 );
 
@@ -216,15 +180,15 @@ pub const PAYLOAD_HASH_SIZE: usize = 32;
 #[derive(Clone, Debug)]
 pub struct ExtrinsicV4 {
     pub signature: Option<ExtrinsicSignature>,
-    pub call: Encoded,
+    pub call: RawOwned,
 }
 
 impl ExtrinsicV4 {
     pub fn signed(
         account: MultiAddress,
         sig: MultiSignature,
-        extra: EncodedExtra,
-        call: Encoded,
+        extra: RawOwned,
+        call: RawOwned,
     ) -> Self {
         Self {
             signature: Some(ExtrinsicSignature {
