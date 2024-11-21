@@ -33,7 +33,8 @@ impl From<EncodeError> for SigningError {
             EncodeError::InvalidValue => SigningErrorType::Error_input_parse,
             EncodeError::MissingCallIndicesTable => SigningErrorType::Error_not_supported,
             _ => SigningErrorType::Error_invalid_params,
-        }).context(format!("{err:?}"))
+        })
+        .context(format!("{err:?}"))
     }
 }
 

@@ -138,27 +138,6 @@ where
     }
 }
 
-pub struct FixedLength<'a, T>(pub &'a [T]);
-
-impl<'a, T> ToScale for FixedLength<'a, T>
-where
-    T: ToScale,
-{
-    fn to_scale_into(&self, out: &mut Vec<u8>) {
-        for ts in self.0.iter() {
-            ts.to_scale_into(out);
-        }
-    }
-}
-
-pub struct Raw<'a>(pub &'a [u8]);
-
-impl<'a> ToScale for Raw<'a> {
-    fn to_scale_into(&self, out: &mut Vec<u8>) {
-        out.extend_from_slice(&self.0);
-    }
-}
-
 impl<T: ToScale> ToScale for &T {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
         (*self).to_scale_into(out)
@@ -167,7 +146,7 @@ impl<T: ToScale> ToScale for &T {
 
 #[cfg(test)]
 mod tests {
-    use super::{Compact, FixedLength, Raw, ToScale};
+    use super::{Compact, ToScale};
     use tw_number::U256;
 
     #[test]
@@ -401,31 +380,5 @@ mod tests {
             [4u16, 8, 15, 16, 23, 42].as_slice().to_scale(),
             &[0x18, 0x04, 0x00, 0x08, 0x00, 0x0f, 0x00, 0x10, 0x00, 0x17, 0x00, 0x2a, 0x00],
         );
-    }
-
-    #[test]
-    fn test_fixed_length() {
-        let empty: [u8; 0] = [];
-        assert_eq!(FixedLength(&empty).to_scale(), empty);
-        assert_eq!(
-            FixedLength(&[4u16, 8, 15, 16, 23, 42]).to_scale(),
-            &[0x04, 0x00, 0x08, 0x00, 0x0f, 0x00, 0x10, 0x00, 0x17, 0x00, 0x2a, 0x00],
-        );
-    }
-
-    #[test]
-    fn test_raw() {
-        let empty: [u8; 0] = [];
-        assert_eq!(Raw(empty.as_slice()).to_scale(), empty);
-        assert_eq!(
-            Raw([4u8, 8, 15, 16, 23, 42].as_slice()).to_scale(),
-            &[0x04, 0x08, 0x0f, 0x10, 0x17, 0x2a],
-        );
-    }
-
-    #[test]
-    fn test_tuple() {
-        assert_eq!((Compact(3u32), false).to_scale(), &[0x0c, 0x00]);
-        assert_eq!((1u8, 2u8, 3u8).to_scale(), &[0x01, 0x02, 0x03]);
     }
 }
