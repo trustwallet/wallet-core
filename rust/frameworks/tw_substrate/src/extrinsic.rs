@@ -112,11 +112,13 @@ impl ToScale for Encoded {
 
 pub type EncodedExtra = Encoded;
 pub type EncodedAdditionalSigned = Encoded;
-pub struct SignedPayload<'a>((&'a Encoded, &'a EncodedExtra, &'a EncodedAdditionalSigned));
+pub struct SignedPayload<'a>(&'a Encoded, &'a EncodedExtra, &'a EncodedAdditionalSigned);
 
 impl<'a> ToScale for SignedPayload<'a> {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
         self.0.to_scale_into(out);
+        self.1.to_scale_into(out);
+        self.2.to_scale_into(out);
     }
 }
 
@@ -126,7 +128,7 @@ impl<'a> SignedPayload<'a> {
         extra: &'a EncodedExtra,
         additional: &'a EncodedAdditionalSigned,
     ) -> Self {
-        Self((call, extra, additional))
+        Self(call, extra, additional)
     }
 }
 

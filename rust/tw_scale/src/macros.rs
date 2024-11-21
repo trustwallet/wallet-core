@@ -1,27 +1,3 @@
-use super::*;
-
-macro_rules! tuple_impl {
-    ($(,)?) => {};
-    ($first:tt, $($rest:tt),* $(,)?) => {
-        tuple_impl!($($rest),*,);
-        tuple_impl!(@make_impl $first $($rest)*);
-    };
-    (@make_impl $($t:tt)+) => {
-        #[allow(non_snake_case, unused_parens, unconditional_recursion)] // the compiler seems confused here
-        impl <$($t),+> ToScale for ($($t),+,) where $($t: ToScale),+ {
-            fn to_scale_into(&self, out: &mut Vec<u8>) {
-                let ($($t),*) = self;
-                $(
-                    $t.to_scale_into(out);
-                )*
-            }
-        }
-    };
-}
-
-//tuple_impl!(T0, T1, T2, T3, T4, T5, T6, T7);
-tuple_impl!(T0, T1, T2);
-
 #[macro_export]
 macro_rules! replace_ident {
     ($_t:tt $sub:ident) => {
@@ -285,7 +261,7 @@ macro_rules! impl_enum_scale {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::ToScale;
 
     impl_struct_scale!(
         #[derive(Debug, Default, Clone, Ord, PartialOrd, Eq, PartialEq)]

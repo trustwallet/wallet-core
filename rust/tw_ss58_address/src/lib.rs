@@ -5,7 +5,7 @@ use tw_coin_entry::error::prelude::*;
 use tw_encoding::{base58, hex};
 use tw_hash::blake2::blake2_b;
 use tw_keypair::ed25519::sha512::PublicKey;
-use tw_scale::{Raw, ToScale};
+use tw_scale::ToScale;
 
 //
 // Most of the materials implemented here are based on the following resources:
@@ -183,7 +183,7 @@ impl SS58Address {
 
 impl ToScale for SS58Address {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
-        Raw(self.key_bytes()).to_scale_into(out)
+        out.extend_from_slice(self.key_bytes())
     }
 }
 
