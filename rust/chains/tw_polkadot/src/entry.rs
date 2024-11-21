@@ -7,7 +7,6 @@ use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::ed25519::sha512::{KeyPair, PublicKey};
-use tw_keypair::traits::KeyPairTrait;
 use tw_number::U256;
 use tw_proto::Polkadot::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
@@ -30,10 +29,19 @@ pub struct PolkadotEntry;
 
 impl PolkadotEntry {
     #[inline]
+    fn get_keypair_impl(
+        &self,
+        _coin: &dyn CoinContext,
+        input: &Proto::SigningInput<'_>,
+    ) -> SigningResult<KeyPair> {
+        Ok(KeyPair::try_from(input.private_key.as_ref())?)
+    }
+
+    #[inline]
     fn build_transaction_impl(
         &self,
         _coin: &dyn CoinContext,
-        mut public_key: Option<PublicKey>,
+        public_key: Option<PublicKey>,
         input: &Proto::SigningInput<'_>,
     ) -> SigningResult<TransactionBuilder> {
         let ctx = ctx_from_tw(&input)?;
@@ -65,12 +73,6 @@ impl PolkadotEntry {
         }
         if check_metadata {
             builder.extension(CheckMetadataHash::default());
-        }
-        if input.private_key.len() > 0 {
-            if let Ok(keypair) = KeyPair::try_from(input.private_key.as_ref()) {
-                public_key = Some(keypair.public().clone());
-                builder.set_keypair(keypair);
-            }
         }
         if let Some(public_key) = public_key {
             let account = SubstrateAddress(SS58Address::from_public_key(&public_key, ctx.network)?);
@@ -112,6 +114,15 @@ impl SubstrateCoinEntry for PolkadotEntry {
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = Proto::SigningOutput<'static>;
     type PreSigningOutput = CompilerProto::PreSigningOutput<'static>;
+
+    #[inline]
+    fn get_keypair(
+        &self,
+        coin: &dyn CoinContext,
+        input: &Proto::SigningInput<'_>,
+    ) -> SigningResult<KeyPair> {
+        self.get_keypair_impl(coin, input)
+    }
 
     #[inline]
     fn build_transaction(

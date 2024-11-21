@@ -4,7 +4,7 @@
 
 use crate::TransactionBuilder;
 use tw_coin_entry::{coin_context::CoinContext, error::prelude::*};
-use tw_keypair::ed25519::sha512::PublicKey;
+use tw_keypair::ed25519::sha512::{KeyPair, PublicKey};
 use tw_proto::{MessageRead, MessageWrite};
 use tw_scale::RawOwned;
 
@@ -12,6 +12,12 @@ pub trait SubstrateCoinEntry {
     type SigningInput<'a>: MessageRead<'a> + MessageWrite;
     type SigningOutput: MessageWrite;
     type PreSigningOutput: MessageWrite;
+
+    fn get_keypair(
+        &self,
+        coin: &dyn CoinContext,
+        input: &Self::SigningInput<'_>,
+    ) -> SigningResult<KeyPair>;
 
     fn build_transaction(
         &self,

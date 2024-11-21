@@ -99,7 +99,6 @@ impl<T: ToScale> ToScale for WithCallIndex<T> {
 #[derive(Debug, Default)]
 pub struct TransactionBuilder {
     multi_address: bool,
-    keypair: Option<KeyPair>,
     call: RawOwned,
     extensions: TxExtensionData,
     account: MultiAddress,
@@ -112,14 +111,6 @@ impl TransactionBuilder {
             call,
             ..Default::default()
         }
-    }
-
-    pub fn set_keypair(&mut self, keypair: KeyPair) {
-        self.keypair = Some(keypair);
-    }
-
-    pub fn keypair(&self) -> Option<&KeyPair> {
-        self.keypair.as_ref()
     }
 
     pub fn set_account(&mut self, account: AccountId) {
@@ -144,8 +135,7 @@ impl TransactionBuilder {
         }
     }
 
-    pub fn sign(self) -> Result<ExtrinsicV4, KeyPairError> {
-        let keypair = self.keypair().ok_or(KeyPairError::InternalError)?;
+    pub fn sign(self, keypair: &KeyPair) -> Result<ExtrinsicV4, KeyPairError> {
         let payload = self.encode_payload()?;
         let signature = keypair.sign(payload)?;
         self.into_signed(signature)
