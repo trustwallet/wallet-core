@@ -93,7 +93,7 @@ static void blake2b_init0( blake2b_state *S )
 }
 
 /* init xors IV with input parameter block */
-int blake2b_init_param( blake2b_state *S, const blake2b_param *P )
+static int blake2b_init_param( blake2b_state *S, const blake2b_param *P )
 {
   const uint8_t *p = ( const uint8_t * )( P );
   size_t i = 0;
@@ -110,7 +110,7 @@ int blake2b_init_param( blake2b_state *S, const blake2b_param *P )
 
 
 /* Sequential blake2b initialization */
-int blake2b_Init( blake2b_state *S, size_t outlen )
+int tc_blake2b_Init( blake2b_state *S, size_t outlen )
 {
   blake2b_param P[1] = {0};
 
@@ -131,7 +131,7 @@ int blake2b_Init( blake2b_state *S, size_t outlen )
   return blake2b_init_param( S, P );
 }
 
-int blake2b_InitPersonal( blake2b_state *S, size_t outlen, const void *personal, size_t personal_len)
+int tc_blake2b_InitPersonal( blake2b_state *S, size_t outlen, const void *personal, size_t personal_len)
 {
   blake2b_param P[1] = {0};
 
@@ -153,7 +153,7 @@ int blake2b_InitPersonal( blake2b_state *S, size_t outlen, const void *personal,
   return blake2b_init_param( S, P );
 }
 
-int blake2b_InitKey( blake2b_state *S, size_t outlen, const void *key, size_t keylen )
+int tc_blake2b_InitKey( blake2b_state *S, size_t outlen, const void *key, size_t keylen )
 {
   blake2b_param P[1] = {0};
 
@@ -180,7 +180,7 @@ int blake2b_InitKey( blake2b_state *S, size_t outlen, const void *key, size_t ke
     uint8_t block[BLAKE2B_BLOCKBYTES] = {0};
     memzero( block, BLAKE2B_BLOCKBYTES );
     memcpy( block, key, keylen );
-    blake2b_Update( S, block, BLAKE2B_BLOCKBYTES );
+    tc_blake2b_Update( S, block, BLAKE2B_BLOCKBYTES );
     memzero( block, BLAKE2B_BLOCKBYTES ); /* Burn the key from stack */
   }
   return 0;
@@ -254,7 +254,7 @@ static void blake2b_compress( blake2b_state *S, const uint8_t block[BLAKE2B_BLOC
 #undef G
 #undef ROUND
 
-int blake2b_Update( blake2b_state *S, const void *pin, size_t inlen )
+int tc_blake2b_Update( blake2b_state *S, const void *pin, size_t inlen )
 {
   const unsigned char * in = (const unsigned char *)pin;
   if( inlen > 0 )
@@ -281,7 +281,7 @@ int blake2b_Update( blake2b_state *S, const void *pin, size_t inlen )
   return 0;
 }
 
-int blake2b_Final( blake2b_state *S, void *out, size_t outlen )
+int tc_blake2b_Final( blake2b_state *S, void *out, size_t outlen )
 {
   uint8_t buffer[BLAKE2B_OUTBYTES] = {0};
   size_t i = 0;
@@ -305,30 +305,30 @@ int blake2b_Final( blake2b_state *S, void *out, size_t outlen )
   return 0;
 }
 
-int blake2b(const uint8_t *msg, uint32_t msg_len, void *out, size_t outlen)
+int tc_blake2b(const uint8_t *msg, uint32_t msg_len, void *out, size_t outlen)
 {
     BLAKE2B_CTX ctx;
-    if (0 != blake2b_Init(&ctx, outlen)) return -1;
-    if (0 != blake2b_Update(&ctx, msg, msg_len)) return -1;
-    if (0 != blake2b_Final(&ctx, out, outlen)) return -1;
+    if (0 != tc_blake2b_Init(&ctx, outlen)) return -1;
+    if (0 != tc_blake2b_Update(&ctx, msg, msg_len)) return -1;
+    if (0 != tc_blake2b_Final(&ctx, out, outlen)) return -1;
     return 0;
 }
 
 // [wallet-core]
-int blake2b_Personal(const uint8_t *msg, uint32_t msg_len, const void *personal, size_t personal_len, void *out, size_t outlen)
+int tc_blake2b_Personal(const uint8_t *msg, uint32_t msg_len, const void *personal, size_t personal_len, void *out, size_t outlen)
 {
     BLAKE2B_CTX ctx;
-    if (0 != blake2b_InitPersonal(&ctx, outlen, personal, personal_len)) return -1;
-    if (0 != blake2b_Update(&ctx, msg, msg_len)) return -1;
-    if (0 != blake2b_Final(&ctx, out, outlen)) return -1;
+    if (0 != tc_blake2b_InitPersonal(&ctx, outlen, personal, personal_len)) return -1;
+    if (0 != tc_blake2b_Update(&ctx, msg, msg_len)) return -1;
+    if (0 != tc_blake2b_Final(&ctx, out, outlen)) return -1;
     return 0;
 }
 
-int blake2b_Key(const uint8_t *msg, uint32_t msg_len, const void *key, size_t keylen, void *out, size_t outlen)
+int tc_blake2b_Key(const uint8_t *msg, uint32_t msg_len, const void *key, size_t keylen, void *out, size_t outlen)
 {
     BLAKE2B_CTX ctx;
-    if (0 != blake2b_InitKey(&ctx, outlen, key, keylen)) return -1;
-    if (0 != blake2b_Update(&ctx, msg, msg_len)) return -1;
-    if (0 != blake2b_Final(&ctx, out, outlen)) return -1;
+    if (0 != tc_blake2b_InitKey(&ctx, outlen, key, keylen)) return -1;
+    if (0 != tc_blake2b_Update(&ctx, msg, msg_len)) return -1;
+    if (0 != tc_blake2b_Final(&ctx, out, outlen)) return -1;
     return 0;
 }

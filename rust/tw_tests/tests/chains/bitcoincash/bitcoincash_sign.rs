@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::chains::bitcoincash::test_cases::transfer_96ee20;
-use crate::chains::common::bitcoin::{btc_info, sign, TransactionOneof};
+use crate::chains::common::bitcoin::{btc_info, plan, sign, TransactionOneof};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_proto::BitcoinV2::Proto;
@@ -20,6 +20,16 @@ fn test_bitcoincash_sign_input_p2pkh_from_to_address() {
         ..Default::default()
     };
 
+    plan::BitcoinPlanHelper::new(&signing)
+        .coin(CoinType::BitcoinCash)
+        .plan(plan::Expected {
+            inputs: vec![5151],
+            outputs: vec![600, 4325],
+            vsize_estimate: 227,
+            fee_estimate: 226,
+            change: 0,
+        });
+
     // Successfully broadcasted:
     // https://blockchair.com/bitcoin-cash/transaction/96ee20002b34e468f9d3c5ee54f6a8ddaa61c118889c4f35395c2cd93ba5bbb4
     sign::BitcoinSignHelper::new(&signing)
@@ -29,7 +39,6 @@ fn test_bitcoincash_sign_input_p2pkh_from_to_address() {
             txid: transfer_96ee20::TX_ID,
             inputs: vec![5151],
             outputs: vec![600, 4325],
-            // `vsize` is different from the estimated value due to the signatures der serialization.
             vsize: 226,
             weight: 904,
             fee: 226,

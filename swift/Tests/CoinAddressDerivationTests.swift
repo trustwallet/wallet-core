@@ -130,7 +130,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .rootstock:
                     let expectedResult = "0xA2D7065F94F838a3aB9C04D67B312056846424Df"
-                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)       
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .filecoin:
                     let expectedResult = "f1zzykebxldfcakj5wdb5n3n7priul522fnmjzori"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
@@ -399,6 +399,9 @@ class CoinAddressDerivationTests: XCTestCase {
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .dydx:
                     let expectedResult = "dydx142j9u5eaduzd7faumygud6ruhdwme98qeayaky"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .pactus:
+                    let expectedResult = "pc1r7ys2g5a4xc2qtm0t4q987m4mvs57w5g0v4pvzg"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()

@@ -1,0 +1,66 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+syntax = "proto3";
+
+package TW.Pactus.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+message TransactionMessage {
+  // The lock time for the transaction.
+  uint32 lock_time = 1;
+  // The transaction fee in NanoPAC.
+  int64 fee = 2;
+  // A memo string for the transaction (optional).
+  string memo = 3;
+
+  oneof payload {
+    TransferPayload transfer = 10;
+    BondPayload bond = 11;
+  }
+}
+
+// Transfer payload for creating a Transfer transaction between two accounts.
+message TransferPayload {
+  // The sender's account address.
+  string sender = 1;
+  // The receiver's account address.
+  string receiver = 2;
+  // The amount to be transferred, specified in NanoPAC.
+  int64 amount = 3;
+}
+
+// Bond payload for creating a Bond transaction from an account to a validator.
+message BondPayload {
+  // The sender's account address.
+  string sender = 1;
+  // The receiver's validator address.
+  string receiver = 2;
+  // The stake amount in NanoPAC.
+  int64 stake = 3;
+  // The public key of the validator (only set when creating a new validator).
+  string public_key = 4;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+  bytes private_key = 1;
+  TransactionMessage transaction = 2;
+}
+
+// Transaction signing output.
+message SigningOutput {
+  // Transaction ID (Hash).
+  bytes transaction_id = 1;
+  // Signed and encoded transaction bytes.
+  bytes signed_transaction_data = 2;
+  // Signature the signed transaction.
+  bytes signature = 3;
+  // A possible error, `OK` if none.
+  Common.Proto.SigningError error = 4;
+  // Detailed error message, if any.
+  string error_message = 5;
+}

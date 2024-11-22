@@ -25,6 +25,7 @@ tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
 tw_native_evmos = { path = "../chains/tw_native_evmos" }
 tw_native_injective = { path = "../chains/tw_native_injective" }
+tw_pactus = { path = "../chains/tw_pactus" }
 tw_ronin = { path = "../chains/tw_ronin" }
 tw_solana = { path = "../chains/tw_solana" }
 tw_sui = { path = "../chains/tw_sui" }

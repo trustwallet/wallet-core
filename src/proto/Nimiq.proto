@@ -3,6 +3,14 @@ syntax = "proto3";
 package TW.Nimiq.Proto;
 option java_package = "wallet.core.jni.proto";
 
+enum NetworkId {
+    UseDefault = 0;
+    // Default PoW Mainnet.
+    Mainnet = 42;
+    // PoS Mainnet starting at the PoW block height 3’456’000.
+    MainnetAlbatross = 24;
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // The secret private key used for signing (32 bytes).
@@ -19,6 +27,9 @@ message SigningInput {
 
     // Validity start, in block height
     uint32 validity_start_height = 5;
+
+    // Network ID.
+    NetworkId network_id = 6;
 }
 
 // Result containing the signed and encoded transaction.
