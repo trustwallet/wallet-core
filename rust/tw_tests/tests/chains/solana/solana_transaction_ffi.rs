@@ -2,18 +2,17 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_any_coin::test_utils::address_utils::test_address_derive;
-use tw_any_coin::test_utils::sign_utils::{AnySignerHelper, PreImageHelper};
+use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_any_coin::test_utils::transaction_decode_utils::TransactionDecoderHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::base64::STANDARD;
-use tw_encoding::hex::{DecodeHex, ToHex};
+use tw_encoding::hex::DecodeHex;
 use tw_encoding::{base58, base64};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_memory::test_utils::tw_data_vector_helper::TWDataVectorHelper;
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
 use tw_proto::Common::Proto::SigningError;
-use tw_proto::Solana::Proto::{self, mod_SigningInput::OneOftransaction_type as TransactionType};
+use tw_proto::Solana::Proto::{self};
 use tw_solana::SOLANA_ALPHABET;
 use wallet_core_rs::ffi::solana::transaction::{
     tw_solana_transaction_get_compute_unit_limit, tw_solana_transaction_get_compute_unit_price,
