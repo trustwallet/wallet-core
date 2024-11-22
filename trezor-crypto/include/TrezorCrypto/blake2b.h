@@ -33,16 +33,16 @@ typedef struct __blake2b_state
 #define BLAKE2B_DIGEST_LENGTH  BLAKE2B_OUTBYTES
 #define BLAKE2B_KEY_LENGTH     BLAKE2B_KEYBYTES
 
-int blake2b_Init(blake2b_state *S, size_t outlen);
-int blake2b_InitKey(blake2b_state *S, size_t outlen, const void *key, size_t keylen);
-int blake2b_InitPersonal(blake2b_state *S, size_t outlen, const void *personal, size_t personal_len);
-int blake2b_Update(blake2b_state *S, const void *pin, size_t inlen);
-int blake2b_Final(blake2b_state *S, void *out, size_t outlen);
+int tc_blake2b_Init(blake2b_state *S, size_t outlen);
+int tc_blake2b_InitKey(blake2b_state *S, size_t outlen, const void *key, size_t keylen);
+int tc_blake2b_InitPersonal(blake2b_state *S, size_t outlen, const void *personal, size_t personal_len);
+int tc_blake2b_Update(blake2b_state *S, const void *pin, size_t inlen);
+int tc_blake2b_Final(blake2b_state *S, void *out, size_t outlen);
 
-int blake2b(const uint8_t *msg, uint32_t msg_len, void *out, size_t outlen);
+int tc_blake2b(const uint8_t *msg, uint32_t msg_len, void *out, size_t outlen);
 // [wallet-core]
-int blake2b_Personal(const uint8_t *msg, uint32_t msg_len, const void *personal, size_t personal_len, void *out, size_t outlen);
-int blake2b_Key(const uint8_t *msg, uint32_t msg_len, const void *key, size_t keylen, void *out, size_t outlen);
+int tc_blake2b_Personal(const uint8_t *msg, uint32_t msg_len, const void *personal, size_t personal_len, void *out, size_t outlen);
+int tc_blake2b_Key(const uint8_t *msg, uint32_t msg_len, const void *key, size_t keylen, void *out, size_t outlen);
 
 #ifdef __cplusplus
 } /* extern "C" */
