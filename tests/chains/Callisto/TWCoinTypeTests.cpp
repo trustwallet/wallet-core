@@ -25,8 +25,8 @@ TEST(TWCallistoCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeCallisto));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeCallisto));
     assertStringsEqual(symbol, "CLO");
-    assertStringsEqual(txUrl, "https://explorer.callisto.network/tx/t123");
-    assertStringsEqual(accUrl, "https://explorer.callisto.network/addr/a12");
+    assertStringsEqual(txUrl, "https://explorer.callistodao.org/tx/t123");
+    assertStringsEqual(accUrl, "https://explorer.callistodao.org/address/a12");
     assertStringsEqual(id, "callisto");
     assertStringsEqual(name, "Callisto");
 }
