@@ -4,6 +4,7 @@
 
 use crate::address::SolanaAddress;
 use crate::compiler::SolanaCompiler;
+use crate::modules::offchain_message_signer::OffchainMessageSigner;
 use crate::modules::transaction_decoder::SolanaTransactionDecoder;
 use crate::modules::transaction_util::SolanaTransactionUtil;
 use crate::modules::wallet_connect::connector::SolanaWalletConnector;
@@ -14,7 +15,6 @@ use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
-use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_keypair::tw::PublicKey;
@@ -32,7 +32,7 @@ impl CoinEntry for SolanaEntry {
     // Optional modules:
     type JsonSigner = NoJsonSigner;
     type PlanBuilder = NoPlanBuilder;
-    type MessageSigner = NoMessageSigner;
+    type MessageSigner = OffchainMessageSigner;
     type WalletConnector = SolanaWalletConnector;
     type TransactionDecoder = SolanaTransactionDecoder;
     type TransactionUtil = SolanaTransactionUtil;
@@ -86,6 +86,11 @@ impl CoinEntry for SolanaEntry {
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
         SolanaCompiler::compile(coin, input, signatures, public_keys)
+    }
+
+    #[inline]
+    fn message_signer(&self) -> Option<Self::MessageSigner> {
+        Some(OffchainMessageSigner)
     }
 
     #[inline]
