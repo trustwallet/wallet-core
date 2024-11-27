@@ -12,6 +12,12 @@ use tw_substrate::*;
 pub mod call_encoder;
 pub mod entry;
 
+pub const POLKADOT: NetworkId = NetworkId::new_unchecked(0);
+pub const KUSAMA: NetworkId = NetworkId::new_unchecked(2);
+pub const ACALA: NetworkId = NetworkId::new_unchecked(10);
+pub const POLYMESH: NetworkId = NetworkId::new_unchecked(12);
+pub const GENERIC_SUBSTRATE: NetworkId = NetworkId::new_unchecked(42);
+
 pub const POLKADOT_MULTI_ADDRESS_SPEC: u32 = 28;
 pub const KUSAMA_MULTI_ADDRESS_SPEC: u32 = 2028;
 
@@ -37,8 +43,8 @@ pub fn ctx_from_tw(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<Substrate
     let spec_version = input.spec_version;
     let multi_address = match (input.multi_address, network) {
         (true, _) => true,
-        (_, NetworkId::POLKADOT) if spec_version >= POLKADOT_MULTI_ADDRESS_SPEC => true,
-        (_, NetworkId::KUSAMA) if spec_version >= KUSAMA_MULTI_ADDRESS_SPEC => true,
+        (_, POLKADOT) if spec_version >= POLKADOT_MULTI_ADDRESS_SPEC => true,
+        (_, KUSAMA) if spec_version >= KUSAMA_MULTI_ADDRESS_SPEC => true,
         _ => false,
     };
     let fee_asset_id = fee_asset_id_from_tw(input);

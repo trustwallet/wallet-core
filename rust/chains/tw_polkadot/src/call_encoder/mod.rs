@@ -1,4 +1,4 @@
-use crate::ctx_from_tw;
+use crate::{ctx_from_tw, KUSAMA, POLKADOT, POLYMESH};
 use tw_proto::Polkadot::Proto::{
     self,
     mod_Balance::{BatchAssetTransfer, BatchTransfer, OneOfmessage_oneof as BalanceVariant},
@@ -11,7 +11,6 @@ use tw_proto::Polkadot::Proto::{
     Balance, CallIndices, Staking,
 };
 use tw_scale::{RawOwned, ToScale};
-use tw_ss58_address::NetworkId;
 use tw_substrate::*;
 
 pub mod generic;
@@ -55,9 +54,9 @@ pub struct CallEncoder {
 impl CallEncoder {
     pub fn from_ctx(ctx: &SubstrateContext) -> EncodeResult<Self> {
         let encoder = match ctx.network {
-            NetworkId::POLKADOT => PolkadotCallEncoder::new(ctx),
-            NetworkId::KUSAMA => KusamaCallEncoder::new(ctx),
-            NetworkId::POLYMESH => PolymeshCallEncoder::new(ctx),
+            POLKADOT => PolkadotCallEncoder::new(ctx),
+            KUSAMA => KusamaCallEncoder::new(ctx),
+            POLYMESH => PolymeshCallEncoder::new(ctx),
             _ => PolkadotCallEncoder::new(ctx),
         };
         Ok(Self { encoder })

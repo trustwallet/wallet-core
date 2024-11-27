@@ -120,7 +120,7 @@ impl<T: SubstrateCoinEntry> CoinEntry for SubstrateEntry<T> {
                 coin.ss58_prefix()
                     .and_then(|prefix| NetworkId::from_u16(prefix).ok())
             })
-            .unwrap_or(NetworkId::POLKADOT);
+            .unwrap_or_default();
         let public_key = public_key
             .to_ed25519()
             .ok_or(AddressError::PublicKeyTypeMismatch)?;
