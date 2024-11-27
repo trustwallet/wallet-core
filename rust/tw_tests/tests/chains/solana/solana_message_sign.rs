@@ -8,7 +8,6 @@ use tw_any_coin::ffi::tw_message_signer::{
 use tw_coin_entry::error::prelude::SigningErrorType;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
-use tw_keypair::ed25519;
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_proto::{deserialize, serialize, Solana, TxCompiler};
 
@@ -24,7 +23,7 @@ fn test_solana_message_signer_sign() {
 
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
     let output = TWDataHelper::wrap(unsafe {
-        tw_message_signer_sign(input_data.ptr(), CoinType::Solana as u32)
+        tw_message_signer_sign(CoinType::Solana as u32, input_data.ptr())
     })
     .to_vec()
     .expect("!tw_message_signer_sign returned nullptr");
@@ -40,16 +39,6 @@ fn test_solana_message_signer_sign() {
 
 #[test]
 fn test_solana_message_signer_verify() {
-    let pk = ed25519::sha512::PrivateKey::try_from(
-        "44f480ca27711895586074a14c552e58cc52e66a58edb6c58cf9b9b7295d4a2d"
-            .decode_hex()
-            .unwrap()
-            .as_slice(),
-    )
-    .unwrap();
-    let pk = pk.public();
-    println!("{}", pk.to_bytes().to_string());
-
     let input = Solana::Proto::MessageVerifyingInput {
         public_key: "ee6d61a89fc8f9909585a996bb0d2b2ac69ae23b5acf39a19f32631239ba06f9"
             .decode_hex()
@@ -60,7 +49,7 @@ fn test_solana_message_signer_verify() {
     };
 
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
-    let verified = unsafe { tw_message_signer_verify(input_data.ptr(), CoinType::Solana as u32) };
+    let verified = unsafe { tw_message_signer_verify(CoinType::Solana as u32, input_data.ptr()) };
     assert!(verified);
 }
 
@@ -78,7 +67,7 @@ fn test_solana_message_signer_pre_image_hashes() {
 
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
     let output = TWDataHelper::wrap(unsafe {
-        tw_message_signer_pre_image_hashes(input_data.ptr(), CoinType::Solana as u32)
+        tw_message_signer_pre_image_hashes(CoinType::Solana as u32, input_data.ptr())
     })
     .to_vec()
     .expect("!tw_message_signer_sign returned nullptr");
