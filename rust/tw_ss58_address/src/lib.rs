@@ -17,15 +17,7 @@ use tw_scale::ToScale;
 pub struct NetworkId(u16);
 
 impl NetworkId {
-    pub const POLKADOT: Self = Self::new_unchecked(0);
-    pub const KUSAMA: Self = Self::new_unchecked(2);
-    pub const ACALA: Self = Self::new_unchecked(10);
-    pub const POLYMESH: Self = Self::new_unchecked(12);
-    pub const GENERIC_SUBSTRATE: Self = Self::new_unchecked(42);
-}
-
-impl NetworkId {
-    const fn new_unchecked(value: u16) -> Self {
+    pub const fn new_unchecked(value: u16) -> Self {
         Self(value)
     }
 
@@ -208,6 +200,12 @@ mod tests {
     use tw_coin_entry::error::prelude::AddressError;
     use tw_keypair::ed25519::sha512::PublicKey;
 
+    const POLKADOT: NetworkId = NetworkId::new_unchecked(0);
+    const KUSAMA: NetworkId = NetworkId::new_unchecked(2);
+    const ASTAR: NetworkId = NetworkId::new_unchecked(5);
+    const PARALLEL: NetworkId = NetworkId::new_unchecked(172);
+    const GENERIC_SUBSTRATE: NetworkId = NetworkId::new_unchecked(42);
+
     fn networks() -> [(Vec<u8>, u16); 27] {
         [
             (vec![0x00], 0x00),
@@ -314,19 +312,19 @@ mod tests {
 
         test_case(
             "15KRsCq9LLNmCxNFhGk55s5bEyazKefunDxUH24GFZwsTxyu",
-            NetworkId::POLKADOT.value(),
+            POLKADOT.value(),
         );
         test_case(
             "5CK8D1sKNwF473wbuBP6NuhQfPaWUetNsWUNAAzVwTfxqjfr",
-            NetworkId::GENERIC_SUBSTRATE.value(),
+            GENERIC_SUBSTRATE.value(),
         );
         test_case(
             "CpjsLDC1JFyrhm3ftC9Gs4QoyrkHKhZKtK7YqGTRFtTafgp",
-            NetworkId::KUSAMA.value(),
+            KUSAMA.value(),
         );
         test_case(
             "Fu3r514w83euSVV7q1MyFGWErUR2xDzXS2goHzimUn4S12D",
-            NetworkId::KUSAMA.value(),
+            KUSAMA.value(),
         );
         test_case("ZG2d3dH5zfqNchsqReS6x4nBJuJCW7Z6Fh5eLvdA3ZXGkPd", 5);
         test_case("cEYtw6AVMB27hFUs4gVukajLM7GqxwxUfJkbPY3rNToHMcCgb", 64);
@@ -340,18 +338,15 @@ mod tests {
         let key_hex = "92fd9c237030356e26cfcc4568dc71055d5ec92dfe0ff903767e00611971bad3";
         let key = PublicKey::try_from(key_hex).expect("error creating test public key");
 
-        let addr = SS58Address::from_public_key(&key, NetworkId::POLKADOT)
-            .expect("error creating address");
+        let addr = SS58Address::from_public_key(&key, POLKADOT).expect("error creating address");
         assert_eq!(addr.network().value(), 0);
         assert_eq!(addr.key_bytes(), key.as_slice());
 
-        let addr = SS58Address::from_public_key(&key, NetworkId::new_unchecked(5))
-            .expect("error creating address");
+        let addr = SS58Address::from_public_key(&key, ASTAR).expect("error creating address");
         assert_eq!(addr.network().value(), 5);
         assert_eq!(addr.key_bytes(), key.as_slice());
 
-        let addr = SS58Address::from_public_key(&key, NetworkId::new_unchecked(172))
-            .expect("error creating address");
+        let addr = SS58Address::from_public_key(&key, PARALLEL).expect("error creating address");
         assert_eq!(addr.network().value(), 172);
         assert_eq!(addr.key_bytes(), key.as_slice());
     }

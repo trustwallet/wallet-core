@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::ctx_from_tw;
+use crate::{ctx_from_tw, ACALA, KUSAMA, POLKADOT};
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
@@ -19,8 +19,8 @@ use crate::call_encoder::CallEncoder;
 
 fn require_check_metadata(network_id: NetworkId, spec_version: u32) -> bool {
     match network_id {
-        NetworkId::POLKADOT | NetworkId::KUSAMA if spec_version >= 1_002_005 => true,
-        NetworkId::ACALA if spec_version >= 2_270 => true,
+        POLKADOT | KUSAMA if spec_version >= 1_002_005 => true,
+        ACALA if spec_version >= 2_270 => true,
         _ => false,
     }
 }
