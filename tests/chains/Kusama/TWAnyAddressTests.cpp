@@ -3,12 +3,11 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "HexCoding.h"
+#include "PrivateKey.h"
+#include "PublicKey.h"
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
-#include <TrustWalletCore/TWSS58AddressType.h>
-#include "PublicKey.h"
-#include "PrivateKey.h"
 
 #include "TestUtilities.h"
 #include <gtest/gtest.h>
@@ -36,25 +35,25 @@ TEST(KusamaAddress, Validation) {
 
 TEST(KusamaAddress, FromPrivateKey) {
     // from subkey: tiny escape drive pupil flavor endless love walk gadget match filter luxury
-		const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("0xa21981f3bb990c40837df44df639541ff57c5e600f9eb4ac00ed8d1f718364e5").get()));
-		const auto publicKey =  WRAP(TWPublicKey, TWPrivateKeyGetPublicKey(privateKey.get(), TWCoinTypeKusama));
-		const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeKusama));
-		const auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
-		EXPECT_TRUE(TWStringEqual(addressStr.get(), STRING("CeVXtoU4py9e7F6upfM2ZarVave299TjcdaTSxhDDZrYgnM").get()));
+    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("0xa21981f3bb990c40837df44df639541ff57c5e600f9eb4ac00ed8d1f718364e5").get()));
+    const auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKey(privateKey.get(), TWCoinTypeKusama));
+    const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeKusama));
+    const auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
+    EXPECT_TRUE(TWStringEqual(addressStr.get(), STRING("CeVXtoU4py9e7F6upfM2ZarVave299TjcdaTSxhDDZrYgnM").get()));
 }
 
 TEST(KusamaAddress, FromPublicKey) {
     auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(DATA("0x032eb287017c5cde2940b5dd062d413f9d09f8aa44723fc80bf46b96c81ac23d").get(), TWPublicKeyTypeED25519));
-		const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeKusama));
-		const auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
-		EXPECT_TRUE(TWStringEqual(addressStr.get(), STRING("CeVXtoU4py9e7F6upfM2ZarVave299TjcdaTSxhDDZrYgnM").get()));
+    const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeKusama));
+    const auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
+    EXPECT_TRUE(TWStringEqual(addressStr.get(), STRING("CeVXtoU4py9e7F6upfM2ZarVave299TjcdaTSxhDDZrYgnM").get()));
 }
 
 TEST(KusamaAddress, FromString) {
     auto addressStr1 = STRING("CeVXtoU4py9e7F6upfM2ZarVave299TjcdaTSxhDDZrYgnM");
-		const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(addressStr1.get(), TWCoinTypeKusama));
-		const auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
-		EXPECT_TRUE(TWStringEqual(addressStr.get(), addressStr1.get()));
+    const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(addressStr1.get(), TWCoinTypeKusama));
+    const auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
+    EXPECT_TRUE(TWStringEqual(addressStr.get(), addressStr1.get()));
 }
 
 } // namespace TW::Kusama::tests
