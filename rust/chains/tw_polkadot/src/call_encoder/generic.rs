@@ -87,11 +87,11 @@ impl GenericBalances {
 impl_enum_scale!(
     #[derive(Clone, Debug)]
     pub enum RewardDestination {
-        Staked,
-        Stash,
-        Controller,
-        Account(AccountId),
-        None,
+        Staked = 0x00,
+        Stash = 0x01,
+        Controller = 0x02,
+        Account(AccountId) = 0x03,
+        None = 0x04,
     }
 );
 

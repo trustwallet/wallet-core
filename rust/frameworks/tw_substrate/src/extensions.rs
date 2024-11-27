@@ -164,8 +164,8 @@ impl_enum_scale!(
     #[derive(Clone, Copy, Debug, Default)]
     pub enum CheckMetadataMode {
         #[default]
-        Disabled,
-        Enabled,
+        Disabled = 0x00,
+        Enabled = 0x01,
     }
 );
 
