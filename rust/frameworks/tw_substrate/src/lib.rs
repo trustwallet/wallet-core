@@ -56,13 +56,6 @@ impl From<EncodeError> for SigningErrorType {
     }
 }
 
-impl From<EncodeError> for SigningError {
-    #[inline]
-    fn from(err: EncodeError) -> Self {
-        TWError::new::<SigningErrorType>(err.clone().into()).context(format!("{err:?}"))
-    }
-}
-
 pub type EncodeResult<T> = Result<T, TWError<EncodeError>>;
 pub type WithCallIndexResult<T> = Result<WithCallIndex<T>, TWError<EncodeError>>;
 
