@@ -2,39 +2,42 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-#include "HexCoding.h"
 #include "AnyAddress.h"
+#include "Coin.h"
+#include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
 #include "proto/Polkadot.pb.h"
 #include "proto/TransactionCompiler.pb.h"
-#include "Coin.h"
 #include "uint256.h"
 
-#include <TrustWalletCore/TWString.h>
 #include <TrustWalletCore/TWAnyAddress.h>
-#include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWPrivateKey.h>
+#include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWString.h>
 #include <TrustWalletCore/TWTransactionCompiler.h>
 
 #include "TestUtilities.h"
 #include <gtest/gtest.h>
 
-
 namespace TW::Polkadot::tests {
-		auto polkadotPrefix = ss58Prefix(TWCoinTypePolkadot);
-		auto kusamaPrefix = ss58Prefix(TWCoinTypeKusama);
-    auto privateKey = PrivateKey(parse_hex("0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115"));
-    auto privateKeyIOS = PrivateKey(parse_hex("37932b086586a6675e66e562fe68bd3eeea4177d066619c602fe3efc290ada62"));
-    auto privateKeyThrow2Data = DATA("70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f");
-    auto privateKeyThrow2 = TWPrivateKeyCreateWithData(privateKeyThrow2Data.get());
-    auto privateKeyPolkadot = PrivateKey(parse_hex("298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266"));
-    auto addressThrow2 = "14Ztd3KJDaB9xyJtRkREtSZDdhLSbm7UUKt8Z7AwSv7q85G2";
-    auto publicKey = TWPublicKeyCreateWithData(DATA("0x88dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee").get(), TWPublicKeyTypeED25519);
-    auto genesisHash = parse_hex("91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3");
-    auto controller1 = "14xKzzU1ZYDnzFj7FgdtDAYSMJNARjDc2gNw4XAFDgr4uXgp";
+auto polkadotPrefix = ss58Prefix(TWCoinTypePolkadot);
+auto kusamaPrefix = ss58Prefix(TWCoinTypeKusama);
+auto astarPrefix = 5;
+auto polymeshPrefix = 12;
+auto parallelPrefix = 172;
 
-Data helper_encodePayload(TWCoinType coin, const Proto::SigningInput &input) {
+auto privateKey = PrivateKey(parse_hex("0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115"));
+auto privateKeyIOS = PrivateKey(parse_hex("37932b086586a6675e66e562fe68bd3eeea4177d066619c602fe3efc290ada62"));
+auto privateKeyThrow2Data = DATA("70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f");
+auto privateKeyThrow2 = TWPrivateKeyCreateWithData(privateKeyThrow2Data.get());
+auto privateKeyPolkadot = PrivateKey(parse_hex("298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266"));
+auto addressThrow2 = "14Ztd3KJDaB9xyJtRkREtSZDdhLSbm7UUKt8Z7AwSv7q85G2";
+auto publicKey = TWPublicKeyCreateWithData(DATA("0x88dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee").get(), TWPublicKeyTypeED25519);
+auto genesisHash = parse_hex("91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3");
+auto controller1 = "14xKzzU1ZYDnzFj7FgdtDAYSMJNARjDc2gNw4XAFDgr4uXgp";
+
+Data helper_encodePayload(TWCoinType coin, const Proto::SigningInput& input) {
     auto txInputData = data(input.SerializeAsString());
     auto txInputDataPtr = WRAPD(TWDataCreateWithBytes(txInputData.data(), txInputData.size()));
     const auto preImageHashes = WRAPD(TWTransactionCompilerPreImageHashes(coin, txInputDataPtr.get()));
@@ -47,7 +50,7 @@ Data helper_encodePayload(TWCoinType coin, const Proto::SigningInput &input) {
     return data(preSigningOutput.data());
 }
 
-Data helper_encodeTransaction(TWCoinType coin, const Proto::SigningInput &input, const Data &pubKey, const Data &signature) {
+Data helper_encodeTransaction(TWCoinType coin, const Proto::SigningInput& input, const Data& pubKey, const Data& signature) {
     auto txInputData = data(input.SerializeAsString());
     auto txInputDataPtr = WRAPD(TWDataCreateWithBytes(txInputData.data(), txInputData.size()));
 
@@ -56,7 +59,7 @@ Data helper_encodeTransaction(TWCoinType coin, const Proto::SigningInput &input,
         WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&signature)).get(),
         WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&pubKey)).get()));
 
-		Polkadot::Proto::SigningOutput output;
+    Polkadot::Proto::SigningOutput output;
     output.ParseFromArray(TWDataBytes(outputData.get()),
                           (int)TWDataSize(outputData.get()));
     EXPECT_EQ(output.error(), Common::Proto::OK);
@@ -65,7 +68,7 @@ Data helper_encodeTransaction(TWCoinType coin, const Proto::SigningInput &input,
 }
 
 TEST(TWAnySignerPolkadot, SignTransfer_9fd062) {
-		auto toAddressStr = STRING("13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5");
+    auto toAddressStr = STRING("13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5");
 
     auto input = Proto::SigningInput();
     input.set_genesis_hash(genesisHash.data(), genesisHash.size());
@@ -108,7 +111,7 @@ TEST(TWAnySignerPolkadot, SignTransferDOT) {
     auto blockHash = parse_hex("0x343a3f4258fd92f5ca6ca5abdf473d86a78b0bcd0dc09c568ca594245cc8c642");
     const auto toAddress = WRAP(TWAnyAddress, TWAnyAddressCreateSS58WithPublicKey(publicKey, TWCoinTypePolkadot, polkadotPrefix));
     const auto toAddressStr = WRAPS(TWAnyAddressDescription(toAddress.get()));
-		assertStringsEqual(toAddressStr, "146SvjUZXoMaemdeiecyxgALeYMm8ZWh1yrGo8RtpoPfe7WL");
+    assertStringsEqual(toAddressStr, "146SvjUZXoMaemdeiecyxgALeYMm8ZWh1yrGo8RtpoPfe7WL");
 
     auto input = Proto::SigningInput();
     input.set_genesis_hash(genesisHash.data(), genesisHash.size());
@@ -397,7 +400,7 @@ TEST(TWAnySignerPolkadot, PolymeshEncodeAndSign) {
     // tx on mainnet
     // https://polymesh.subscan.io/extrinsic/0x9a4283cc38f7e769c53ad2d1c5cf292fc85a740ec1c1aa80c180847e51928650
 
-		/// Step 1: Prepare transaction input (protobuf)
+    /// Step 1: Prepare transaction input (protobuf)
     const auto coin = TWCoinTypePolkadot;
 
     Polkadot::Proto::SigningInput input;
@@ -425,7 +428,7 @@ TEST(TWAnySignerPolkadot, PolymeshEncodeAndSign) {
     callIndices->set_module_index(0x05);
     callIndices->set_method_index(0x01);
 
-		/// Step 2: Obtain preimage hash
+    /// Step 2: Obtain preimage hash
     auto txInputData = data(input.SerializeAsString());
     auto txInputDataPtr = WRAPD(TWDataCreateWithBytes(txInputData.data(), txInputData.size()));
     const auto preImageHashes = WRAPD(TWTransactionCompilerPreImageHashes(coin, txInputDataPtr.get()));
@@ -448,15 +451,15 @@ TEST(TWAnySignerPolkadot, PolymeshEncodeAndSign) {
         WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&signature)).get(),
         WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&pubKey)).get()));
 
-		const auto ExpectedTx =
-				"bd0284004322cf71da08f9d56181a707af7c0c437dfcb93e6caac9825a5aba57548142ee000791ee378775eaff34ef7e529ab742f0d81d281fdf20ace0aa765ca484f5909c4eea0a59c8dbbc534c832704924b424ba3230c38acd0ad5360cef023ca2a420f25010400050100849e2f6b165d4b28b39ef3d98f86c0520d82bc349536324365c10af08f323f8302093d00014d454d4f20504144444544205749544820535041434553000000000000000000";
-		{
-				Polkadot::Proto::SigningOutput output;
+    const auto ExpectedTx =
+        "bd0284004322cf71da08f9d56181a707af7c0c437dfcb93e6caac9825a5aba57548142ee000791ee378775eaff34ef7e529ab742f0d81d281fdf20ace0aa765ca484f5909c4eea0a59c8dbbc534c832704924b424ba3230c38acd0ad5360cef023ca2a420f25010400050100849e2f6b165d4b28b39ef3d98f86c0520d82bc349536324365c10af08f323f8302093d00014d454d4f20504144444544205749544820535041434553000000000000000000";
+    {
+        Polkadot::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(TWDataBytes(outputData.get()),
                                           (int)TWDataSize(outputData.get())));
 
         EXPECT_EQ(hex(output.encoded()), ExpectedTx);
-		}
+    }
 }
 
 TEST(TWAnySignerPolkadot, PolymeshEncodeBondAndNominate) {
@@ -826,11 +829,11 @@ TEST(TWAnySignerPolkadot, encodeTransaction_Add_authorization) {
     // Set empty "These".
     auto* assets = authData->mutable_asset();
     auto empty = parse_hex("00");
-		assets->set_data(std::string(empty.begin(), empty.end()));
+    assets->set_data(std::string(empty.begin(), empty.end()));
     auto* extrinsics = authData->mutable_extrinsic();
-		extrinsics->set_data(std::string(empty.begin(), empty.end()));
+    extrinsics->set_data(std::string(empty.begin(), empty.end()));
     auto* portfolios = authData->mutable_portfolio();
-		portfolios->set_data(std::string(empty.begin(), empty.end()));
+    portfolios->set_data(std::string(empty.begin(), empty.end()));
 
     auto* callIndices = addAuthorization->mutable_call_indices()->mutable_custom();
     callIndices->set_module_index(0x07);
@@ -965,15 +968,15 @@ TEST(PolkadotExtrinsic, Polkadot_EncodePayloadWithNewSpec) {
     transfer->set_value(std::string(value.begin(), value.end()));
     transfer->set_asset_id(1984);
 
-    input.set_spec_version(1002000);  // breaking change happens at version 1002005
+    input.set_spec_version(1002000); // breaking change happens at version 1002005
     auto result = helper_encodePayload(TWCoinTypePolkadot, input);
     EXPECT_EQ(hex(result), "3205011f00a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943eda0d82a34cee00000000104a0f000000000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c35d2143bb808626d63ad7e1cda70fa8697059d670a992e82cd440fbb95ea40351");
 
-    input.set_spec_version(1002005);  // >= 1002005
+    input.set_spec_version(1002005); // >= 1002005
     result = helper_encodePayload(TWCoinTypePolkadot, input);
     EXPECT_EQ(hex(result), "3205011f00a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943eda0d82a34cee0000000000154a0f000000000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c35d2143bb808626d63ad7e1cda70fa8697059d670a992e82cd440fbb95ea4035100");
 
-    input.set_spec_version(1002006);  // >= 1002005
+    input.set_spec_version(1002006); // >= 1002005
     result = helper_encodePayload(TWCoinTypePolkadot, input);
     EXPECT_EQ(hex(result), "3205011f00a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943eda0d82a34cee0000000000164a0f000000000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c35d2143bb808626d63ad7e1cda70fa8697059d670a992e82cd440fbb95ea4035100");
 }
