@@ -8,7 +8,7 @@ use tw_scale::{impl_enum_scale, impl_struct_scale, RawOwned, ToScale};
 
 use crate::address::*;
 use crate::extensions::*;
-use crate::EncodeError;
+use crate::{EncodeError, EncodeResult};
 
 pub type TxHash = H256;
 pub type BlockHash = H256;
@@ -33,11 +33,12 @@ impl From<Signature> for MultiSignature {
 pub struct CallIndex(Option<(u8, u8)>);
 
 impl CallIndex {
-    pub fn from_tw(call_index: Option<(i32, i32)>) -> Result<Self, EncodeError> {
+    pub fn from_tw(call_index: Option<(i32, i32)>) -> EncodeResult<Self> {
         let call_index = match call_index {
             Some((module_index, method_index)) => {
                 if module_index > 0xff || method_index > 0xff {
-                    return Err(EncodeError::InvalidCallIndex);
+                    EncodeError::InvalidCallIndex
+                        .tw_result("Module or method call index too large.".to_string())?;
                 }
                 Some((module_index as u8, method_index as u8))
             },
@@ -46,9 +47,9 @@ impl CallIndex {
         Ok(Self(call_index))
     }
 
-    pub fn required_from_tw(call_index: Option<(i32, i32)>) -> Result<Self, EncodeError> {
+    pub fn required_from_tw(call_index: Option<(i32, i32)>) -> EncodeResult<Self> {
         if call_index.is_none() {
-            return Err(EncodeError::MissingCallIndices);
+            EncodeError::MissingCallIndices.tw_result("Call indices are required.".to_string())?;
         }
         Self::from_tw(call_index)
     }

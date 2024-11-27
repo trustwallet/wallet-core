@@ -26,22 +26,45 @@ pub enum EncodeError {
     NotSupported,
 }
 
-impl From<EncodeError> for SigningError {
+impl EncodeError {
+    /// Returns a TWError with the given error and context.
+    pub fn with_context(self, context: String) -> TWError<Self> {
+        TWError::new(self).context(context)
+    }
+
+    /// Returns a TWResult with the given error and context.
+    pub fn tw_result<T>(self, context: String) -> TWResult<T, Self> {
+        Err(self.with_context(context))
+    }
+
+    /// Convert another error type to this error type and return a TWError.
+    pub fn with_error<T: std::fmt::Debug>(self, err: T) -> TWError<Self> {
+        TWError::new(self).context(format!("{err:?}"))
+    }
+}
+
+impl From<EncodeError> for SigningErrorType {
     #[inline]
     fn from(err: EncodeError) -> Self {
-        TWError::new(match err {
+        match err {
             EncodeError::InvalidAddress => SigningErrorType::Error_invalid_address,
             EncodeError::InvalidValue => SigningErrorType::Error_input_parse,
             EncodeError::MissingCallIndices => SigningErrorType::Error_not_supported,
             EncodeError::NotSupported => SigningErrorType::Error_not_supported,
             _ => SigningErrorType::Error_invalid_params,
-        })
-        .context(format!("{err:?}"))
+        }
     }
 }
 
-pub type EncodeResult<T> = Result<T, EncodeError>;
-pub type WithCallIndexResult<T> = Result<WithCallIndex<T>, EncodeError>;
+impl From<EncodeError> for SigningError {
+    #[inline]
+    fn from(err: EncodeError) -> Self {
+        TWError::new::<SigningErrorType>(err.clone().into()).context(format!("{err:?}"))
+    }
+}
+
+pub type EncodeResult<T> = Result<T, TWError<EncodeError>>;
+pub type WithCallIndexResult<T> = Result<WithCallIndex<T>, TWError<EncodeError>>;
 
 #[derive(Debug, Clone)]
 pub struct SubstrateContext {

@@ -77,7 +77,9 @@ impl GenericBalances {
         match &b.message_oneof {
             BalanceVariant::transfer(t) => Self::encode_transfer(ctx, t),
             BalanceVariant::asset_transfer(t) => Self::encode_asset_transfer(ctx, t),
-            _ => Err(EncodeError::NotSupported),
+            _ => EncodeError::NotSupported.tw_result(
+                "Unsupported batched balance variants here (maybe nested batch calls?)".to_string(),
+            ),
         }
     }
 }
@@ -105,7 +107,7 @@ impl RewardDestination {
                 Ok(Self::Account(SubstrateAddress(account)))
             },
             5 => Ok(Self::None),
-            _ => Err(EncodeError::InvalidValue),
+            _ => EncodeError::InvalidValue.tw_result(format!("Invalid reward destination: {dest}")),
         }
     }
 }
@@ -229,7 +231,9 @@ impl GenericStaking {
             StakingVariant::withdraw_unbonded(b) => Self::encode_withdraw_unbonded(b),
             StakingVariant::rebond(b) => Self::encode_rebond(b),
             StakingVariant::nominate(b) => Self::encode_nominate(ctx, b),
-            _ => Err(EncodeError::NotSupported),
+            _ => EncodeError::NotSupported.tw_result(
+                "Unsupported batched staking variants here (maybe nested batch calls?)".to_string(),
+            ),
         }
     }
 }
