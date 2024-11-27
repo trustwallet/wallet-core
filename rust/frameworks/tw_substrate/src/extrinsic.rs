@@ -17,9 +17,9 @@ pub type BlockNumber = u32;
 impl_enum_scale!(
     #[derive(Clone, Debug)]
     pub enum MultiSignature {
-        Ed25519(H512),
-        Sr25519(H512),
-        //Ecdsa([u8; 65]),
+        Ed25519(H512) = 0x0,
+        Sr25519(H512) = 0x1,
+        //Ecdsa([u8; 65]) = 0x2,
     }
 );
 

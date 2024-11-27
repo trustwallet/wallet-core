@@ -89,8 +89,8 @@ impl PolymeshBalances {
 impl_enum_scale!(
     #[derive(Clone, Debug)]
     pub enum Signatory {
-        Identity(IdentityId),
-        Account(AccountId),
+        Identity(IdentityId) = 0x00,
+        Account(AccountId) = 0x01,
     }
 );
 

@@ -63,173 +63,28 @@ macro_rules! impl_enum_scale {
   (
     $(#[$enum_meta:meta])*
     pub enum $enum_name:ident {
-      $($unparsed_variants:tt)*
+      $(
+        $(#[$variant_meta:meta])*
+        $variant_name:ident $(($variant_tuple_ty:ty))? $({
+          $(
+            $variant_field_name:ident : $variant_field_ty:ty
+          ),+ $(,)?
+        })? = $variant_index:expr,
+      )*
     }
     $($rest:tt)*
-  ) => {
-    $crate::impl_enum_scale! {
-      @normalize
-      enum {
-        // Enum type
-        {
-          $(#[$enum_meta])*
-          pub enum $enum_name
-        }
-        // Enum variants.
-        []
-        // Variant counter.
-        [0]
-        // Variant encoding.
-        []
-        __internal_unparsed_variants {
-            $($unparsed_variants)*
-        }
-      }
-    }
-  };
-  // Parse enum variants wihtout custom index.
-  (@normalize
-    enum {
-      // Enum type
-      { $( $enum_type:tt )* }
-      // Enum variants.
-      [ $( $enum_variants:tt )* ]
-      // Variant counter.
-      [ $( $count_variant:tt )* ]
-      // Variant encoding.
-      [ $( $encode_variants:tt )* ]
-      __internal_unparsed_variants {
-        $(#[$variant_meta:meta])*
-        $variant_name:ident $(($variant_tuple_ty:ty))? $({
-          $(
-            $variant_field_name:ident : $variant_field_ty:ty
-          ),+ $(,)?
-        })?,
-        $($unparsed_variants:tt)*
-      }
-    }
-  ) => {
-    $crate::impl_enum_scale! {
-      @normalize
-      enum {
-        // Enum type
-        { $( $enum_type )* }
-        // Enum variants.
-        [
-          $( $enum_variants )*
-          $(#[$variant_meta])*
-          $variant_name $(($variant_tuple_ty))? $({
-            $(
-              $variant_field_name : $variant_field_ty
-            ),+
-          })?,
-        ]
-        // Variant counter.
-        [ $( $count_variant )* + 1 ]
-        // Variant encoding.
-        [
-          $( $encode_variants )*
-          {
-            ( $( $count_variant )* ): $variant_name $(($variant_tuple_ty))? $({
-              $(
-                $variant_field_name
-              ),+
-            })?
-          }
-        ]
-        __internal_unparsed_variants {
-            $($unparsed_variants)*
-        }
-      }
-    }
-  };
-  // Parse enum variants with custom index.
-  (@normalize
-    enum {
-      // Enum type
-      { $( $enum_type:tt )* }
-      // Enum variants.
-      [ $( $enum_variants:tt )* ]
-      // Variant counter.
-      [ $( $count_variant:tt )* ]
-      // Variant encoding.
-      [ $( $encode_variants:tt )* ]
-      __internal_unparsed_variants {
-        $(#[$variant_meta:meta])*
-        $variant_name:ident $(($variant_tuple_ty:ty))? $({
-          $(
-            $variant_field_name:ident : $variant_field_ty:ty
-          ),+ $(,)?
-        })? = $index:expr,
-        $($unparsed_variants:tt)*
-      }
-    }
-  ) => {
-    $crate::impl_enum_scale! {
-      @normalize
-      enum {
-        // Enum type
-        { $( $enum_type )* }
-        // Enum variants.
-        [
-          $( $enum_variants )*
-          $(#[$variant_meta])*
-          $variant_name $(($variant_tuple_ty))? $({
-            $(
-              $variant_field_name : $variant_field_ty
-            ),+
-          })? = $index,
-        ]
-        // Variant counter.
-        [ $index + 1 ]
-        // Variant encoding.
-        [
-          $( $encode_variants )*
-          {
-            ( $index ): $variant_name $(($variant_tuple_ty))? $({
-              $(
-                $variant_field_name
-              ),+
-            })?
-          }
-        ]
-        __internal_unparsed_variants {
-            $($unparsed_variants)*
-        }
-      }
-    }
-  };
-  // Finished parsing enum variants.
-  (@normalize
-    enum {
-      // Enum type
-      {
-        $(#[$enum_meta:meta])*
-        pub enum $enum_name:ident
-      }
-      // Enum variants.
-      [ $( $enum_variants:tt )* ]
-      // Variant counter.
-      [ $( $count_variant:tt )* ]
-      // Variant encoding.
-      [
-        $(
-          {
-            ( $( $variant_index:tt )* ): $variant_name:ident $(($variant_tuple_ty:ty))? $({
-              $(
-                $variant_field_name:ident
-              ),+
-            })?
-          }
-        )*
-      ]
-      __internal_unparsed_variants { }
-    }
   ) => {
     $(#[$enum_meta])*
     #[repr(u8)]
     pub enum $enum_name {
-      $( $enum_variants)*
+      $(
+          $(#[$variant_meta])*
+          $variant_name $(($variant_tuple_ty))? $({
+            $(
+              $variant_field_name : $variant_field_ty
+            ),+
+          })? = $variant_index,
+      )*
     }
 
     impl $crate::ToScale for $enum_name {
@@ -240,7 +95,7 @@ macro_rules! impl_enum_scale {
               $($variant_field_name),+
             })? => {
               // variant index.
-              out.push(($( $variant_index)*) as u8);
+              out.push($variant_index as u8);
               // Encode tuple variants.
               $(
                 $crate::replace_expr!($variant_tuple_ty {
@@ -299,13 +154,13 @@ mod tests {
         #[derive(Debug, Default, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
         pub enum TestEnum {
             #[default]
-            Variant0,
-            Variant1(u8),
+            Variant0 = 0,
+            Variant1(u8) = 1,
             Variant10 = 10,
             Struct {
                 id: u8,
                 id2: u8,
-            },
+            } = 11,
         }
     );
 
