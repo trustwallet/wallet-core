@@ -31,7 +31,8 @@ impl TWPolkadotCallEncoder for PolkadotCallEncoder {
                 GenericStaking::encode_call(&self.0, s)?.map(PolkadotCall::Staking)
             },
             _ => {
-                return Err(EncodeError::NotSupported);
+                return EncodeError::NotSupported
+                    .tw_result("Unsupported call variant.".to_string());
             },
         };
         Ok(RawOwned(call.to_scale()))
@@ -70,7 +71,8 @@ impl TWPolkadotCallEncoder for KusamaCallEncoder {
                 GenericStaking::encode_call(&self.0, s)?.map(KusamaCall::Staking)
             },
             _ => {
-                return Err(EncodeError::NotSupported);
+                return EncodeError::NotSupported
+                    .tw_result("Unsupported call variant.".to_string());
             },
         };
         Ok(RawOwned(call.to_scale()))

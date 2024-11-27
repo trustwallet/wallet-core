@@ -43,7 +43,7 @@ impl PolkadotEntry {
         _coin: &dyn CoinContext,
         public_key: Option<PublicKey>,
         input: &Proto::SigningInput<'_>,
-    ) -> SigningResult<TransactionBuilder> {
+    ) -> EncodeResult<TransactionBuilder> {
         let ctx = ctx_from_tw(&input)?;
         let encoder = CallEncoder::from_ctx(&ctx)?;
         let call = encoder.encode_call(&input.message_oneof)?;
@@ -75,7 +75,10 @@ impl PolkadotEntry {
             builder.extension(CheckMetadataHash::default());
         }
         if let Some(public_key) = public_key {
-            let account = SubstrateAddress(SS58Address::from_public_key(&public_key, ctx.network)?);
+            let account = SubstrateAddress(
+                SS58Address::from_public_key(&public_key, ctx.network)
+                    .map_err(|e| EncodeError::InvalidAddress.with_error(e))?,
+            );
             builder.set_account(account);
         }
         Ok(builder)
@@ -132,6 +135,7 @@ impl SubstrateCoinEntry for PolkadotEntry {
         input: &Self::SigningInput<'_>,
     ) -> SigningResult<TransactionBuilder> {
         self.build_transaction_impl(coin, public_key, input)
+            .map_err(|e| e.map_err(SigningErrorType::from))
     }
 
     #[inline]
