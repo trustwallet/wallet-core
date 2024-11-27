@@ -12,6 +12,21 @@ macro_rules! replace_expr {
     };
 }
 
+/// Macro to implement `ToScale` trait for a struct.
+///
+/// # Example
+/// ```rust
+/// use tw_scale::{impl_struct_scale, ToScale};
+///
+/// impl_struct_scale!(
+///   #[derive(Debug, Default, Clone, Ord, PartialOrd, Eq, PartialEq)]
+///   pub struct TestStruct {
+///     id: u8,
+///     id2: u8,
+///     data: Vec<u8>,
+///   }
+/// );
+/// ```
 #[macro_export]
 macro_rules! impl_struct_scale {
   // "New Type" struct
@@ -58,6 +73,26 @@ macro_rules! impl_struct_scale {
   }
 }
 
+/// Macro to implement `ToScale` trait for an enum.
+///
+/// # Example
+/// ```rust
+/// use tw_scale::{impl_enum_scale, ToScale};
+///
+/// impl_enum_scale!(
+///   #[derive(Debug, Default, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
+///   pub enum TestEnum {
+///     #[default]
+///     Variant0 = 0,
+///     Variant1(u8) = 1,
+///     Variant10 = 10,
+///     StructVariant {
+///       id: u8,
+///       id2: u8,
+///     } = 11,
+///   }
+/// );
+/// ```
 #[macro_export]
 macro_rules! impl_enum_scale {
   (
@@ -72,7 +107,6 @@ macro_rules! impl_enum_scale {
         })? = $variant_index:expr,
       )*
     }
-    $($rest:tt)*
   ) => {
     $(#[$enum_meta])*
     #[repr(u8)]
@@ -119,8 +153,10 @@ mod tests {
     use crate::ToScale;
 
     impl_struct_scale!(
+        /// Test struct.
         #[derive(Debug, Default, Clone, Ord, PartialOrd, Eq, PartialEq)]
         pub struct TestStruct {
+            /// Field id.
             id: u8,
             id2: u8,
             data: Vec<u8>,
@@ -141,8 +177,9 @@ mod tests {
     }
 
     impl_struct_scale!(
+        /// Test new type struct.
         #[derive(Debug, Default, Clone, Ord, PartialOrd, Eq, PartialEq)]
-        pub struct TestNewType(u8);
+        pub struct TestNewType(pub u8);
     );
 
     #[test]
@@ -151,16 +188,18 @@ mod tests {
     }
 
     impl_enum_scale!(
+        /// Test enum.
         #[derive(Debug, Default, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
         pub enum TestEnum {
+            /// Default variant.
             #[default]
             Variant0 = 0,
-            Variant1(u8) = 1,
+            /// Tuple variant.
+            Variant1(u8) = 0x01,
+            /// Variant with index 10.
             Variant10 = 10,
-            Struct {
-                id: u8,
-                id2: u8,
-            } = 11,
+            /// Struct variant.
+            Struct { id: u8, id2: u8 } = 11,
         }
     );
 
