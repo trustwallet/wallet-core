@@ -44,7 +44,6 @@ impl MessageSigner for OffchainMessageSigner {
         input: Self::MessageSigningInput<'_>,
     ) -> Self::MessagePreSigningOutput {
         CompilerProto::PreSigningOutput {
-            data_hash: input.message.as_bytes().to_vec().into(),
             data: input.message.as_bytes().to_vec().into(),
             ..CompilerProto::PreSigningOutput::default()
         }
