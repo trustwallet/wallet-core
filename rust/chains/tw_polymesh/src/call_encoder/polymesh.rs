@@ -3,7 +3,7 @@ use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::H256;
 use tw_number::U256;
-use tw_proto::Polkadot::Proto::{
+use tw_proto::Polymesh::Proto::{
     mod_Balance::{OneOfmessage_oneof as BalanceVariant, Transfer},
     mod_Identity::{AddAuthorization, JoinIdentityAsKey, OneOfmessage_oneof as IdentityVariant},
     mod_Staking::{

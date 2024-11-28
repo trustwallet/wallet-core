@@ -8,7 +8,7 @@ use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::ed25519::sha512::{KeyPair, PublicKey};
 use tw_number::U256;
-use tw_proto::Polkadot::Proto;
+use tw_proto::Polymesh::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 use tw_scale::{RawOwned, ToScale};
 use tw_ss58_address::SS58Address;

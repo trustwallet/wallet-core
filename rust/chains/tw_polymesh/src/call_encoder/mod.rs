@@ -1,9 +1,8 @@
 use crate::ctx_from_tw;
-use tw_proto::Polkadot::Proto::{
+use tw_proto::Polymesh::Proto::{
     self,
     mod_Balance::{BatchAssetTransfer, BatchTransfer, OneOfmessage_oneof as BalanceVariant},
     mod_CallIndices::OneOfvariant as CallIndicesVariant,
-    mod_PolymeshCall::OneOfmessage_oneof as PolymeshVariant,
     mod_SigningInput::OneOfmessage_oneof as SigningVariant,
     mod_Staking::{
         Bond, BondAndNominate, Chill, ChillAndUnbond, Nominate,
@@ -167,14 +166,8 @@ impl CallEncoder {
             SigningVariant::balance_call(b) => {
                 PolymeshBalances::encode_call(b)?.map(PolymeshCall::Balances)
             },
-            SigningVariant::polymesh_call(msg) => match &msg.message_oneof {
-                PolymeshVariant::identity_call(msg) => {
-                    PolymeshIdentity::encode_call(msg)?.map(PolymeshCall::Identity)
-                },
-                PolymeshVariant::None => {
-                    return EncodeError::NotSupported
-                        .tw_result("Polymesh call variant is None".to_string());
-                },
+            SigningVariant::identity_call(msg) => {
+                PolymeshIdentity::encode_call(msg)?.map(PolymeshCall::Identity)
             },
             SigningVariant::staking_call(s) => {
                 PolymeshStaking::encode_call(s)?.map(PolymeshCall::Staking)

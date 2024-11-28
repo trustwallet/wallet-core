@@ -7,7 +7,7 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
-#include "proto/Polkadot.pb.h"
+#include "proto/Polymesh.pb.h"
 #include "proto/TransactionCompiler.pb.h"
 #include "uint256.h"
 
@@ -22,7 +22,7 @@
 #include <pthread.h>
 
 using namespace TW;
-using namespace TW::Polkadot;
+using namespace TW::Polymesh;
 
 namespace TW::Polymesh::tests {
 auto polymeshPrefix = 12;
@@ -36,7 +36,7 @@ Data helper_encodeTransaction(TWCoinType coin, const Proto::SigningInput& input,
         WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&signature)).get(),
         WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&pubKey)).get()));
 
-    Polkadot::Proto::SigningOutput output;
+    Polymesh::Proto::SigningOutput output;
     output.ParseFromArray(TWDataBytes(outputData.get()),
                           (int)TWDataSize(outputData.get()));
     EXPECT_EQ(output.error(), Common::Proto::OK);
@@ -51,7 +51,7 @@ TEST(TWAnySignerPolymesh, PolymeshEncodeAndSign) {
     /// Step 1: Prepare transaction input (protobuf)
     const auto coin = TWCoinTypePolymesh;
 
-    Polkadot::Proto::SigningInput input;
+    Polymesh::Proto::SigningInput input;
     input.set_network(12);
     input.set_multi_address(true);
     auto blockHash = parse_hex("898bba6413c38f79a284aec8749f297f6c8734c501f67517b5a6aadc338d1102");
@@ -102,7 +102,7 @@ TEST(TWAnySignerPolymesh, PolymeshEncodeAndSign) {
     const auto ExpectedTx =
         "bd0284004322cf71da08f9d56181a707af7c0c437dfcb93e6caac9825a5aba57548142ee000791ee378775eaff34ef7e529ab742f0d81d281fdf20ace0aa765ca484f5909c4eea0a59c8dbbc534c832704924b424ba3230c38acd0ad5360cef023ca2a420f25010400050100849e2f6b165d4b28b39ef3d98f86c0520d82bc349536324365c10af08f323f8302093d00014d454d4f20504144444544205749544820535041434553000000000000000000";
     {
-        Polkadot::Proto::SigningOutput output;
+        Polymesh::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(TWDataBytes(outputData.get()),
                                           (int)TWDataSize(outputData.get())));
 
@@ -114,7 +114,7 @@ TEST(TWAnySignerPolymesh, encodeTransaction_Add_authorization) {
     // tx on mainnet
     // https://polymesh.subscan.io/extrinsic/0x7d9b9109027b36b72d37ba0648cb70e5254524d3d6752cc6b41601f4bdfb1af0
 
-    Polkadot::Proto::SigningInput input;
+    Polymesh::Proto::SigningInput input;
     input.set_network(12);
     input.set_multi_address(true);
     auto blockHash = parse_hex("ce0c2109db498e45abf8fd447580dcfa7b7a07ffc2bfb1a0fbdd1af3e8816d2b");
@@ -129,7 +129,7 @@ TEST(TWAnySignerPolymesh, encodeTransaction_Add_authorization) {
     era->set_block_number(4395451UL);
     era->set_period(64UL);
 
-    auto* addAuthorization = input.mutable_polymesh_call()->mutable_identity_call()->mutable_add_authorization();
+    auto* addAuthorization = input.mutable_identity_call()->mutable_add_authorization();
     addAuthorization->set_target("2HEVN4PHYKj7B1krQ9bctAQXZxHQQkANVNCcfbdYk2gZ4cBR");
     auto* authData = addAuthorization->mutable_data();
     // Set empty "These".
@@ -155,7 +155,7 @@ TEST(TWAnySignerPolymesh, encodeTransaction_JoinIdentityAsKey) {
     // tx on mainnet
     // https://polymesh.subscan.io/extrinsic/0x9d7297d8b38af5668861996cb115f321ed681989e87024fda64eae748c2dc542
 
-    Polkadot::Proto::SigningInput input;
+    Polymesh::Proto::SigningInput input;
     input.set_network(12);
     input.set_multi_address(true);
     auto blockHash = parse_hex("45c80153c47f5d16acc7a66d473870e8d4574437a7d8c813f47da74cae3812c2");
@@ -170,7 +170,7 @@ TEST(TWAnySignerPolymesh, encodeTransaction_JoinIdentityAsKey) {
     era->set_block_number(4395527UL);
     era->set_period(64UL);
 
-    auto* key = input.mutable_polymesh_call()->mutable_identity_call()->mutable_join_identity_as_key();
+    auto* key = input.mutable_identity_call()->mutable_join_identity_as_key();
     key->set_auth_id(21435);
     auto* callIndices = key->mutable_call_indices()->mutable_custom();
     callIndices->set_module_index(0x07);

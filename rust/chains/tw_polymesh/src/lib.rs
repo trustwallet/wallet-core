@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_proto::Polkadot::Proto::{
+use tw_proto::Polymesh::Proto::{
     self, mod_Balance::OneOfmessage_oneof as BalanceVariant,
     mod_SigningInput::OneOfmessage_oneof as SigningVariant,
 };

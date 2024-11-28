@@ -3,11 +3,11 @@ use std::default::Default;
 
 use tw_encoding::hex::ToHex;
 use tw_number::U256;
-use tw_proto::Polkadot::Proto;
-use tw_proto::Polkadot::Proto::mod_Balance::Transfer;
-use tw_proto::Polkadot::Proto::mod_Identity::mod_AddAuthorization::{AuthData, Data};
-use tw_proto::Polkadot::Proto::mod_Staking::{
-    Bond, BondExtra, Chill, Nominate, Rebond, Unbond, WithdrawUnbonded,
+use tw_proto::Polymesh::Proto::{
+    self,
+    mod_Balance::Transfer,
+    mod_Identity::mod_AddAuthorization::{AuthData, Data},
+    mod_Staking::{Bond, BondExtra, Chill, Nominate, Rebond, Unbond, WithdrawUnbonded},
 };
 use tw_substrate::EncodeResult;
 
@@ -21,12 +21,8 @@ fn encode_input(input: &Proto::SigningInput<'_>) -> EncodeResult<Vec<u8>> {
 fn polymesh_identity_call(
     call: Proto::mod_Identity::OneOfmessage_oneof,
 ) -> Proto::mod_SigningInput::OneOfmessage_oneof {
-    Proto::mod_SigningInput::OneOfmessage_oneof::polymesh_call(Proto::PolymeshCall {
-        message_oneof: Proto::mod_PolymeshCall::OneOfmessage_oneof::identity_call(
-            Proto::Identity {
-                message_oneof: call,
-            },
-        ),
+    Proto::mod_SigningInput::OneOfmessage_oneof::identity_call(Proto::Identity {
+        message_oneof: call,
     })
 }
 

@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use tw_proto::Polymesh::Proto;
+
 mod polymesh_address;
 mod polymesh_compile;
 mod polymesh_sign;
@@ -15,3 +17,19 @@ pub const PUBLIC_KEY_HEX_1: &str =
     "0x4bdb9ef424035e1621e228bd11c5917d7d1dac5965d244c4c72fc91170244f0c";
 
 pub const PUBLIC_KEY_2: &str = "2CpqFh8VnwJAjenw4xSUWCaaJ2QwGdhnCikoSEczMhjgqyj7";
+
+pub fn balance_call(
+    call: Proto::mod_Balance::OneOfmessage_oneof,
+) -> Proto::mod_SigningInput::OneOfmessage_oneof {
+    Proto::mod_SigningInput::OneOfmessage_oneof::balance_call(Proto::Balance {
+        message_oneof: call,
+    })
+}
+
+pub fn identity_call(
+    call: Proto::mod_Identity::OneOfmessage_oneof,
+) -> Proto::mod_SigningInput::OneOfmessage_oneof {
+    Proto::mod_SigningInput::OneOfmessage_oneof::identity_call(Proto::Identity {
+        message_oneof: call,
+    })
+}

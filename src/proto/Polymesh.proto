@@ -1,6 +1,10 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
 syntax = "proto3";
 
-package TW.Polkadot.Proto;
+package TW.Polymesh.Proto;
 option java_package = "wallet.core.jni.proto";
 
 import "Common.proto";
@@ -31,7 +35,7 @@ message CustomCallIndices {
 }
 
 // Optional call indices.
-// Must be set if `SigningInput::network` is different from `Polkadot` and `Kusama`.
+// Must be set if `SigningInput::network` is different from `Polymesh`.
 message CallIndices {
     oneof variant {
         CustomCallIndices custom = 1;
@@ -131,12 +135,6 @@ message Staking {
 
         // call indices
         CallIndices call_indices = 5;
-
-        // Staking.Bond call indices
-        CallIndices bond_call_indices = 6;
-
-        // Staking.Nominate call indices
-        CallIndices nominate_call_indices = 7;
     }
 
     // Bond extra amount
@@ -190,12 +188,6 @@ message Staking {
 
         // call indices
         CallIndices call_indices = 2;
-
-        // Staking.Chill call indices
-        CallIndices chill_call_indices = 3;
-
-        // Staking.Unbond call indices
-        CallIndices unbond_call_indices = 4;
     }
 
     // Chill
@@ -215,6 +207,53 @@ message Staking {
         Chill chill = 7;
         ChillAndUnbond chill_and_unbond = 8;
         Rebond rebond = 9;
+    }
+}
+
+// Identity module
+message Identity {
+    // Identity::join_identity_as_key call
+    message JoinIdentityAsKey {
+        // call indices
+        CallIndices call_indices = 1;
+
+        // auth id
+        uint64 auth_id = 2;
+    }
+
+    // Identity::add_authorization call
+    message AddAuthorization {
+        message Data {
+            bytes data = 1;
+        }
+
+        message AuthData {
+            // authorization data, empty means all permissions, null means no permissions
+            Data asset = 1;
+
+            // authorization data, empty means all permissions, null means no permissions
+            Data extrinsic = 2;
+
+            // authorization data, empty means all permissions, null means no permissions
+            Data portfolio = 3;
+        }
+
+        // call indices
+        CallIndices call_indices = 1;
+
+        // address that will be added to the Identity
+        string target = 2;
+
+        // authorization data, null means all permissions
+        AuthData data = 3;
+
+        // expire time, unix seconds
+        uint64 expiry = 4;
+    }
+
+    oneof message_oneof {
+        JoinIdentityAsKey join_identity_as_key = 1;
+        AddAuthorization add_authorization = 2;
     }
 }
 
@@ -254,6 +293,7 @@ message SigningInput {
     oneof message_oneof {
         Balance balance_call = 11;
         Staking staking_call = 12;
+        Identity identity_call = 13;
     }
 }
 
