@@ -320,3 +320,33 @@ message PreSigningOutput {
     // Error code description
     string error_message = 4;
 }
+
+message MessageSigningInput {
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 1;
+
+    // A UTF-8 regular message to sign.
+    string message = 2;
+}
+
+message MessageSigningOutput {
+    // The signature, Base58-encoded.
+    string signature = 1;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
+}
+
+message MessageVerifyingInput {
+    // The message signed.
+    string message = 1;
+
+    // Public key that will verify and recover the message from the signature.
+    bytes public_key = 2;
+
+    // The signature, Base58-encoded.
+    string signature = 3;
+}
