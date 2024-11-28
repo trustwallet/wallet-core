@@ -21,7 +21,7 @@ std::string signMessageRust(const PrivateKey& privateKey, const std::string& mes
     }
 
     Rust::TWDataWrapper inputData(data(input.SerializeAsString()));
-    Rust::TWDataWrapper outputPtr = Rust::tw_message_signer_sign(inputData.get(), TWCoinTypeEthereum);
+    Rust::TWDataWrapper outputPtr = Rust::tw_message_signer_sign(TWCoinTypeEthereum, inputData.get());
 
     auto outputData = outputPtr.toDataOrDefault();
     if (outputData.empty()) {
@@ -43,7 +43,7 @@ Data messagePreImageHashRust(const std::string& message, Proto::MessageType msgT
     input.set_message_type(msgType);
 
     Rust::TWDataWrapper inputData(data(input.SerializeAsString()));
-    Rust::TWDataWrapper outputPtr = Rust::tw_message_signer_pre_image_hashes(inputData.get(), TWCoinTypeEthereum);
+    Rust::TWDataWrapper outputPtr = Rust::tw_message_signer_pre_image_hashes(TWCoinTypeEthereum, inputData.get());
 
     auto outputData = outputPtr.toDataOrDefault();
     if (outputData.empty()) {
@@ -66,7 +66,7 @@ bool verifyMessageRust(const PublicKey& publicKey, const std::string& message, c
     input.set_signature(signature);
 
     Rust::TWDataWrapper inputData(data(input.SerializeAsString()));
-    return Rust::tw_message_signer_verify(inputData.get(), TWCoinTypeEthereum);
+    return Rust::tw_message_signer_verify(TWCoinTypeEthereum, inputData.get());
 }
 
 std::string MessageSigner::signMessage(const PrivateKey& privateKey, const std::string& message, MessageType msgType, MaybeChainId chainId) {

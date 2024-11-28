@@ -25,7 +25,7 @@ fn test_tw_message_signer_sign() {
 
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
     let output = TWDataHelper::wrap(unsafe {
-        tw_message_signer_sign(input_data.ptr(), CoinType::Ethereum as u32)
+        tw_message_signer_sign(CoinType::Ethereum as u32, input_data.ptr())
     })
     .to_vec()
     .expect("!tw_message_signer_sign returned nullptr");
@@ -45,7 +45,7 @@ fn test_tw_message_signer_verify() {
     };
 
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
-    let verified = unsafe { tw_message_signer_verify(input_data.ptr(), CoinType::Ethereum as u32) };
+    let verified = unsafe { tw_message_signer_verify(CoinType::Ethereum as u32, input_data.ptr()) };
     assert!(verified);
 }
 
@@ -58,7 +58,7 @@ fn test_tw_message_signer_verify_invalid() {
     };
 
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
-    let verified = unsafe { tw_message_signer_verify(input_data.ptr(), CoinType::Ethereum as u32) };
+    let verified = unsafe { tw_message_signer_verify(CoinType::Ethereum as u32, input_data.ptr()) };
     assert!(!verified);
 }
 
@@ -76,7 +76,7 @@ fn test_tw_message_signer_pre_image_hashes() {
 
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
     let output = TWDataHelper::wrap(unsafe {
-        tw_message_signer_pre_image_hashes(input_data.ptr(), CoinType::Ethereum as u32)
+        tw_message_signer_pre_image_hashes(CoinType::Ethereum as u32, input_data.ptr())
     })
     .to_vec()
     .expect("!tw_message_signer_sign returned nullptr");

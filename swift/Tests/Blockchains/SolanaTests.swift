@@ -329,4 +329,17 @@ class SolanaTests: XCTestCase {
         // https://explorer.solana.com/tx/2ho7wZUXbDNz12xGfsXg2kcNMqkBAQjv7YNXNcVcuCmbC4p9FZe9ELeM2gMjq9MKQPpmE3nBW5pbdgwVCfNLr1h8
         XCTAssertEqual(output.encoded, "AVUye82Mv+/aWeU2G+B6Nes365mUU2m8iqcGZn/8kFJvw4wY6AgKGG+vJHaknHlCDwE1yi1SIMVUUtNCOm3kHg8BAAIEODI+iWe7g68B9iwCy8bFkJKvsIEj350oSOpcv4gNnv/st+6qmqipl9lwMK6toB9TiL7LrJVfij+pKwr+pUKxfwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwZGb+UhFzL/7K26csOb57yM5bvF9xJrLEObOkAAAAAboZ09wD3Y5HNUl7aN8bwpCqowev1hMu7fSgziLswUSgMDAAUCECcAAAICAAEMAgAAAOgDAAAAAAAAAwAJA+gDAAAAAAAA")
     }
+    
+    func testSignUserMessage() throws {
+        let privateKey = Data(hexString: "44f480ca27711895586074a14c552e58cc52e66a58edb6c58cf9b9b7295d4a2d")!
+
+        let input = SolanaMessageSigningInput.with {
+            $0.privateKey = privateKey
+            $0.message = "Hello world"
+        }
+        let outputData = MessageSigner.sign(coin: .solana, input: try input.serializedData())!
+        let output = try SolanaMessageSigningOutput(serializedData: outputData)
+        XCTAssertEqual(output.error, .ok)
+        XCTAssertEqual(output.signature, "2iBZ6zrQRKHcbD8NWmm552gU5vGvh1dk3XV4jxnyEdRKm8up8AeQk1GFr9pJokSmchw7i9gMtNyFBdDt8tBxM1cG")
+    }
 }
