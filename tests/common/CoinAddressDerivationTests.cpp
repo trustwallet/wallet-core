@@ -399,6 +399,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypePactus:
             EXPECT_EQ(address, "pc1rehvlc6tfn79z0zjqqaj8zas5j5h9c2fe59a4ff");
             break;
+        case TWCoinTypePolymesh:
+            EXPECT_EQ(address, "2HqjMm2goapWvXQBqjjEdVaTZsUmunWwEq1TSToDR1pDzQ1F");
+            break;
             // end_of_coin_address_derivation_tests_marker_do_not_modify
             // no default branch here, intentionally, to better notice any missing coins
         }

@@ -1890,6 +1890,7 @@ dependencies = [
  "tw_native_injective",
  "tw_pactus",
  "tw_polkadot",
+ "tw_polymesh",
  "tw_ronin",
  "tw_solana",
  "tw_substrate",
@@ -2153,6 +2154,22 @@ dependencies = [
 
 [[package]]
 name = "tw_polkadot"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_number",
+ "tw_proto",
+ "tw_scale",
+ "tw_ss58_address",
+ "tw_substrate",
+]
+
+[[package]]
+name = "tw_polymesh"
 version = "0.1.0"
 dependencies = [
  "tw_coin_entry",

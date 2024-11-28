@@ -187,6 +187,34 @@ impl PolymeshIdentity {
 
 impl_enum_scale!(
     #[derive(Clone, Debug)]
+    pub enum RewardDestination {
+        Staked = 0x00,
+        Stash = 0x01,
+        Controller = 0x02,
+        Account(AccountId) = 0x03,
+        None = 0x04,
+    }
+);
+
+impl RewardDestination {
+    pub fn from_tw(dest: u8, account: &str) -> EncodeResult<Self> {
+        match dest {
+            0 => Ok(Self::Staked),
+            1 => Ok(Self::Stash),
+            2 => Ok(Self::Controller),
+            4 => {
+                let account =
+                    SS58Address::from_str(account).map_err(|_| EncodeError::InvalidAddress)?;
+                Ok(Self::Account(SubstrateAddress(account)))
+            },
+            5 => Ok(Self::None),
+            _ => EncodeError::InvalidValue.tw_result(format!("Invalid reward destination: {dest}")),
+        }
+    }
+}
+
+impl_enum_scale!(
+    #[derive(Clone, Debug)]
     pub enum PolymeshStaking {
         Bond {
             controller: MultiAddress,
@@ -208,7 +236,7 @@ impl_enum_scale!(
         Chill = 0x06,
         Rebond {
             value: Compact<u128>,
-        } = 0x18,
+        } = 0x13,
     }
 );
 
@@ -309,24 +337,31 @@ impl PolymeshStaking {
 
 impl_enum_scale!(
     #[derive(Clone, Debug)]
+    pub enum PolymeshUtility {
+        BatchAll { calls: Vec<RawOwned> } = 0x02,
+    }
+);
+
+impl_enum_scale!(
+    #[derive(Clone, Debug)]
     pub enum PolymeshCall {
         Balances(PolymeshBalances) = 0x05,
         Identity(PolymeshIdentity) = 0x07,
         Staking(PolymeshStaking) = 0x11,
-        Utility(GenericUtility) = 0x29,
+        Utility(PolymeshUtility) = 0x29,
     }
 );
 
 pub struct PolymeshCallEncoder;
 
 impl PolymeshCallEncoder {
-    pub fn new_boxed(_ctx: &SubstrateContext) -> Box<dyn TWPolkadotCallEncoder> {
-        Box::new(Self)
+    pub fn new(_ctx: &SubstrateContext) -> Self {
+        Self
     }
 }
 
-impl TWPolkadotCallEncoder for PolymeshCallEncoder {
-    fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<RawOwned> {
+impl PolymeshCallEncoder {
+    pub fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<RawOwned> {
         let call = match msg {
             SigningVariant::balance_call(b) => {
                 PolymeshBalances::encode_call(b)?.map(PolymeshCall::Balances)
@@ -353,8 +388,8 @@ impl TWPolkadotCallEncoder for PolymeshCallEncoder {
         Ok(RawOwned(call.to_scale()))
     }
 
-    fn encode_batch(&self, calls: Vec<RawOwned>) -> EncodeResult<RawOwned> {
-        let call = PolymeshCall::Utility(GenericUtility::BatchAll { calls });
+    pub fn encode_batch(&self, calls: Vec<RawOwned>) -> EncodeResult<RawOwned> {
+        let call = PolymeshCall::Utility(PolymeshUtility::BatchAll { calls });
         Ok(RawOwned(call.to_scale()))
     }
 }

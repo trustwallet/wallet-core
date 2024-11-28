@@ -1,4 +1,4 @@
-use crate::{ctx_from_tw, KUSAMA, POLKADOT};
+use crate::ctx_from_tw;
 use tw_proto::Polkadot::Proto::{
     self,
     mod_Balance::{BatchAssetTransfer, BatchTransfer, OneOfmessage_oneof as BalanceVariant},
@@ -13,11 +13,8 @@ use tw_proto::Polkadot::Proto::{
 use tw_scale::{RawOwned, ToScale};
 use tw_substrate::*;
 
-pub mod generic;
-use generic::*;
-
-pub mod polkadot;
-use polkadot::*;
+pub mod polymesh;
+use polymesh::*;
 
 pub fn validate_call_index(call_index: &Option<CallIndices>) -> EncodeResult<CallIndex> {
     let index = match call_index {
@@ -39,22 +36,13 @@ pub fn required_call_index(call_index: &Option<CallIndices>) -> EncodeResult<Cal
     CallIndex::required_from_tw(index)
 }
 
-pub trait TWPolkadotCallEncoder {
-    fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<RawOwned>;
-    fn encode_batch(&self, calls: Vec<RawOwned>) -> EncodeResult<RawOwned>;
-}
-
 pub struct CallEncoder {
-    encoder: Box<dyn TWPolkadotCallEncoder>,
+    encoder: PolymeshCallEncoder,
 }
 
 impl CallEncoder {
     pub fn from_ctx(ctx: &SubstrateContext) -> EncodeResult<Self> {
-        let encoder = match ctx.network {
-            POLKADOT => PolkadotCallEncoder::new_boxed(ctx),
-            KUSAMA => KusamaCallEncoder::new_boxed(ctx),
-            _ => PolkadotCallEncoder::new_boxed(ctx),
-        };
+        let encoder = PolymeshCallEncoder::new(ctx);
         Ok(Self { encoder })
     }
 
@@ -115,7 +103,9 @@ impl CallEncoder {
                 controller: ban.controller.clone(),
                 value: ban.value.clone(),
                 reward_destination: ban.reward_destination,
-                call_indices: ban.bond_call_indices.clone(),
+                // TODO: `BondAndNominate` needs 3 call_indices values to support this.
+                //call_indices: ban.call_indices.clone(),
+                call_indices: None,
             }),
         }))?;
 
@@ -123,7 +113,9 @@ impl CallEncoder {
         let second = self.encode_call(&SigningVariant::staking_call(Proto::Staking {
             message_oneof: StakingVariant::nominate(Nominate {
                 nominators: ban.nominators.clone(),
-                call_indices: ban.nominate_call_indices.clone(),
+                // TODO: `BondAndNominate` needs 3 call_indices values to support this.
+                //call_indices: ban.call_indices.clone(),
+                call_indices: None,
             }),
         }))?;
 
@@ -134,14 +126,18 @@ impl CallEncoder {
     fn encode_staking_chill_and_unbond(&self, cau: &ChillAndUnbond) -> EncodeResult<RawOwned> {
         let first = self.encode_call(&SigningVariant::staking_call(Proto::Staking {
             message_oneof: StakingVariant::chill(Chill {
-                call_indices: cau.chill_call_indices.clone(),
+                // TODO: `ChillAndUnbond` needs 3 call_indices values to support this.
+                //call_indices: cau.call_indices.clone(),
+                call_indices: None,
             }),
         }))?;
 
         let second = self.encode_call(&SigningVariant::staking_call(Proto::Staking {
             message_oneof: StakingVariant::unbond(Unbond {
                 value: cau.value.clone(),
-                call_indices: cau.unbond_call_indices.clone(),
+                // TODO: `ChillAndUnbond` needs 3 call_indices values to support this.
+                //call_indices: cau.call_indices.clone(),
+                call_indices: None,
             }),
         }))?;
 
@@ -152,11 +148,11 @@ impl CallEncoder {
     fn encode_staking_batch_call(&self, s: &Staking) -> EncodeResult<Option<RawOwned>> {
         match &s.message_oneof {
             StakingVariant::bond_and_nominate(ban) => {
-                let batch = self.encode_staking_bond_and_nominate(ban)?;
+                let batch = self.encode_staking_bond_and_nominate(&ban)?;
                 Ok(Some(batch))
             },
             StakingVariant::chill_and_unbond(cau) => {
-                let batch = self.encode_staking_chill_and_unbond(cau)?;
+                let batch = self.encode_staking_chill_and_unbond(&cau)?;
                 Ok(Some(batch))
             },
             _ => Ok(None),
