@@ -1,4 +1,5 @@
 [workspace]
+resolver = "2"
 members = [
     "chains/tw_aptos",
     "chains/tw_binance",
@@ -11,6 +12,7 @@ members = [
     "chains/tw_native_evmos",
     "chains/tw_native_injective",
     "chains/tw_pactus",
+    "chains/tw_polkadot",
     "chains/tw_ronin",
     "chains/tw_solana",
     "chains/tw_sui",
@@ -18,6 +20,7 @@ members = [
     "chains/tw_ton",
     "frameworks/tw_ton_sdk",
     "frameworks/tw_utxo",
+    "frameworks/tw_substrate",
     "tw_any_coin",
     "tw_base58_address",
     "tw_bech32_address",
@@ -35,6 +38,8 @@ members = [
     "tw_tests",
     "wallet_core_bin",
     "wallet_core_rs",
+    "tw_ss58_address",
+    "tw_scale",
 ]
 
 [profile.release]
