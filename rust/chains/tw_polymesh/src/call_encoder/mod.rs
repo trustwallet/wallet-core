@@ -3,6 +3,7 @@ use tw_proto::Polkadot::Proto::{
     self,
     mod_Balance::{BatchAssetTransfer, BatchTransfer, OneOfmessage_oneof as BalanceVariant},
     mod_CallIndices::OneOfvariant as CallIndicesVariant,
+    mod_PolymeshCall::OneOfmessage_oneof as PolymeshVariant,
     mod_SigningInput::OneOfmessage_oneof as SigningVariant,
     mod_Staking::{
         Bond, BondAndNominate, Chill, ChillAndUnbond, Nominate,
@@ -26,24 +27,11 @@ pub fn validate_call_index(call_index: &Option<CallIndices>) -> EncodeResult<Cal
     CallIndex::from_tw(index)
 }
 
-pub fn required_call_index(call_index: &Option<CallIndices>) -> EncodeResult<CallIndex> {
-    let index = match call_index {
-        Some(CallIndices {
-            variant: CallIndicesVariant::custom(c),
-        }) => Some((c.module_index, c.method_index)),
-        _ => None,
-    };
-    CallIndex::required_from_tw(index)
-}
-
-pub struct CallEncoder {
-    encoder: PolymeshCallEncoder,
-}
+pub struct CallEncoder;
 
 impl CallEncoder {
-    pub fn from_ctx(ctx: &SubstrateContext) -> EncodeResult<Self> {
-        let encoder = PolymeshCallEncoder::new(ctx);
-        Ok(Self { encoder })
+    pub fn from_ctx(_ctx: &SubstrateContext) -> EncodeResult<Self> {
+        Ok(Self)
     }
 
     pub fn encode_input(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<RawOwned> {
@@ -175,7 +163,28 @@ impl CallEncoder {
             _ => (),
         }
         // non-batch calls.
-        self.encoder.encode_call(msg)
+        let call = match msg {
+            SigningVariant::balance_call(b) => {
+                PolymeshBalances::encode_call(b)?.map(PolymeshCall::Balances)
+            },
+            SigningVariant::polymesh_call(msg) => match &msg.message_oneof {
+                PolymeshVariant::identity_call(msg) => {
+                    PolymeshIdentity::encode_call(msg)?.map(PolymeshCall::Identity)
+                },
+                PolymeshVariant::None => {
+                    return EncodeError::NotSupported
+                        .tw_result("Polymesh call variant is None".to_string());
+                },
+            },
+            SigningVariant::staking_call(s) => {
+                PolymeshStaking::encode_call(s)?.map(PolymeshCall::Staking)
+            },
+            SigningVariant::None => {
+                return EncodeError::NotSupported
+                    .tw_result("Staking call variant is None".to_string());
+            },
+        };
+        Ok(RawOwned(call.to_scale()))
     }
 
     fn encode_batch(
@@ -184,7 +193,8 @@ impl CallEncoder {
         ci: &Option<CallIndices>,
     ) -> EncodeResult<RawOwned> {
         let ci = validate_call_index(ci)?;
-        let call = ci.wrap(self.encoder.encode_batch(calls)?);
+        let call = PolymeshCall::Utility(PolymeshUtility::BatchAll { calls });
+        let call = ci.wrap(RawOwned(call.to_scale()));
         Ok(RawOwned(call.to_scale()))
     }
 }
