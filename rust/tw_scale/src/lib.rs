@@ -128,6 +128,12 @@ where
     }
 }
 
+impl ToScale for String {
+    fn to_scale_into(&self, out: &mut Vec<u8>) {
+        self.as_bytes().to_scale_into(out)
+    }
+}
+
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct RawOwned(pub Vec<u8>);
 
@@ -393,6 +399,20 @@ mod tests {
         assert_eq!(
             [4u16, 8, 15, 16, 23, 42].as_slice().to_scale(),
             &[0x18, 0x04, 0x00, 0x08, 0x00, 0x0f, 0x00, 0x10, 0x00, 0x17, 0x00, 0x2a, 0x00],
+        );
+    }
+
+    // Test SCALE encoding of String
+    #[test]
+    fn test_string() {
+        assert_eq!("".to_string().to_scale(), &[0x00]);
+        assert_eq!(
+            "hello".to_string().to_scale(),
+            &[0x14, 0x68, 0x65, 0x6c, 0x6c, 0x6f]
+        );
+        assert_eq!(
+            "hello world".to_string().to_scale(),
+            &[0x2c, 0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64]
         );
     }
 }
