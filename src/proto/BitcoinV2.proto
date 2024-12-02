@@ -142,6 +142,8 @@ message Input {
         // Retrieved from global_parameters.covenant_quorum.
         // Specifies the quorum required by the covenant committee for unbonding transactions to be confirmed.
         uint32 covenant_committee_quorum = 3;
+        // Signatures signed by covenant committees. There should be at least `covenant_committee_quorum` signatures.
+        repeated bytes covenant_committee_signatures = 4;
     }
 }
 
