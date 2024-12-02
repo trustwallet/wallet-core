@@ -210,6 +210,63 @@ message Staking {
     }
 }
 
+message IdentityId {
+    // 32 byte identity id.
+    bytes id = 1;
+}
+
+message AssetId {
+    // 16 byte asset id.
+    bytes id = 1;
+}
+
+message PortfolioId {
+    // IdentityId of the portfolio owner.
+    IdentityId identity = 1;
+    // If `default` is true ignore the `user` field.
+    bool default = 2;
+    // The users portfolio number.  (ignored if `default = true`)
+    uint64 user = 3;
+}
+
+message SecondaryKeyPermissions {
+    enum RestrictionKind {
+        Whole = 0;
+        These = 1;
+        Except = 2;
+    }
+
+    message AssetPermissions {
+        RestrictionKind kind = 1;
+        repeated AssetId assets = 2;
+    }
+
+    message PortfolioPermissions {
+        RestrictionKind kind = 1;
+        repeated PortfolioId portfolios = 2;
+    }
+
+    message PalletPermissions {
+        string pallet_name = 1;
+        RestrictionKind kind = 2;
+        repeated string extrinsic_names = 3;
+    }
+
+    message ExtrinsicPermissions {
+        RestrictionKind kind = 1;
+        repeated PalletPermissions pallets = 2;
+    }
+
+    // The assets permissions of the secondary key.
+    AssetPermissions asset = 1;
+
+    // The pallet/extrinsic permissions of the secondary key.
+    ExtrinsicPermissions extrinsic = 2;
+
+    // The portfolio permissions of the secondary key.
+    PortfolioPermissions portfolio = 3;
+}
+
 // Identity module
 message Identity {
     // Identity::join_identity_as_key call
@@ -223,19 +280,20 @@ message Identity {
 
     // Identity::add_authorization call
     message AddAuthorization {
-        message Data {
-            bytes data = 1;
-        }
-
-        message AuthData {
-            // authorization data, empty means all permissions, null means no permissions
-            Data asset = 1;
-
-            // authorization data, empty means all permissions, null means no permissions
-            Data extrinsic = 2;
-
-            // authorization data, empty means all permissions, null means no permissions
-            Data portfolio = 3;
+        message Authorization {
+            // Authorization data.
+            oneof auth_oneof {
+                // AttestPrimaryKeyRotation(IdentityId) = 1
+                // RotatePrimaryKey = 2
+                // TransferTicker(Ticker) = 3
+                // AddMultiSigSigner(AccountId) = 4
+                // TransferAssetOwnership(AssetId) = 5
+                SecondaryKeyPermissions join_identity = 6;
+                // PortfolioCustody(PortfolioId) = 7
+                // BecomeAgent(AssetId, AgentGroup) = 8
+                // AddRelayerPayingKey(AccountId, AccountId, Balance) = 9
+                // RotatePrimaryKeyToSecondary(Permissions) = 10
+            }
         }
 
         // call indices
@@ -244,8 +302,8 @@ message Identity {
         // address that will be added to the Identity
         string target = 2;
 
-        // authorization data, null means all permissions
-        AuthData data = 3;
+        // Authorization.
+        Authorization authorization = 3;
 
         // expire time, unix seconds
         uint64 expiry = 4;

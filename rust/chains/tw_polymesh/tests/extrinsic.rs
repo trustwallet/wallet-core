@@ -6,8 +6,14 @@ use tw_number::U256;
 use tw_proto::Polymesh::Proto::{
     self,
     mod_Balance::Transfer,
-    mod_Identity::mod_AddAuthorization::{AuthData, Data},
+    mod_Identity::mod_AddAuthorization::{
+        mod_Authorization::OneOfauth_oneof as AuthVariant, Authorization,
+    },
+    mod_SecondaryKeyPermissions::{
+        AssetPermissions, ExtrinsicPermissions, PortfolioPermissions, RestrictionKind,
+    },
     mod_Staking::{Bond, BondExtra, Chill, Nominate, Rebond, Unbond, WithdrawUnbonded},
+    SecondaryKeyPermissions,
 };
 use tw_substrate::EncodeResult;
 
@@ -93,6 +99,9 @@ fn polymesh_encode_authorization_join_identity() {
         multi_address: true,
         message_oneof: polymesh_add_auth_call(Proto::mod_Identity::AddAuthorization {
             target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
+            authorization: Some(Authorization {
+                auth_oneof: AuthVariant::join_identity(SecondaryKeyPermissions::default()),
+            }),
             ..Default::default()
         }),
         ..Default::default()
@@ -114,15 +123,23 @@ fn polymesh_encode_authorization_join_identity_with_zero_data() {
         multi_address: true,
         message_oneof: polymesh_add_auth_call(Proto::mod_Identity::AddAuthorization {
             target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
-            data: Some(AuthData {
-                asset: Some(Data {
-                    data: (&[0x00]).into(),
-                }),
-                extrinsic: Some(Data {
-                    data: (&[0x00]).into(),
-                }),
-                portfolio: Some(Data {
-                    data: (&[0x00]).into(),
+            authorization: Some(Authorization {
+                auth_oneof: AuthVariant::join_identity(SecondaryKeyPermissions {
+                    // No asset permissions.
+                    asset: Some(AssetPermissions {
+                        kind: RestrictionKind::These,
+                        assets: vec![],
+                    }),
+                    // No extrinsic permissions.
+                    extrinsic: Some(ExtrinsicPermissions {
+                        kind: RestrictionKind::These,
+                        pallets: vec![],
+                    }),
+                    // No portfolio permissions.
+                    portfolio: Some(PortfolioPermissions {
+                        kind: RestrictionKind::These,
+                        portfolios: vec![],
+                    }),
                 }),
             }),
             ..Default::default()
@@ -146,10 +163,15 @@ fn polymesh_encode_authorization_join_identity_allowing_everything() {
         multi_address: true,
         message_oneof: polymesh_add_auth_call(Proto::mod_Identity::AddAuthorization {
             target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
-            data: Some(AuthData {
-                asset: None,
-                extrinsic: None,
-                portfolio: None,
+            authorization: Some(Authorization {
+                auth_oneof: AuthVariant::join_identity(SecondaryKeyPermissions {
+                    // All asset permissions.
+                    asset: None,
+                    // All extrinsic permissions.
+                    extrinsic: None,
+                    // All portfolio permissions.
+                    portfolio: None,
+                }),
             }),
             ..Default::default()
         }),

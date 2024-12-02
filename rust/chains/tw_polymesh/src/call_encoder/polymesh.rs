@@ -1,16 +1,28 @@
-use std::str::FromStr;
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    str::FromStr,
+};
 
-use tw_coin_entry::error::prelude::*;
-use tw_hash::H256;
+use tw_coin_entry::error::prelude::TWError;
+use tw_hash::{Hash, H256};
 use tw_number::U256;
 use tw_proto::Polymesh::Proto::{
     mod_Balance::{OneOfmessage_oneof as BalanceVariant, Transfer},
-    mod_Identity::{AddAuthorization, JoinIdentityAsKey, OneOfmessage_oneof as IdentityVariant},
+    mod_Identity::{
+        mod_AddAuthorization::mod_Authorization::OneOfauth_oneof as AuthVariant, AddAuthorization,
+        JoinIdentityAsKey, OneOfmessage_oneof as IdentityVariant,
+    },
+    mod_SecondaryKeyPermissions::{
+        AssetPermissions as TWAssetPermissions, ExtrinsicPermissions as TWExtrinsicPermissions,
+        PalletPermissions as TWPalletPermissions, PortfolioPermissions as TWPortfolioPermissions,
+        RestrictionKind as TWRestrictionKind,
+    },
     mod_Staking::{
         Bond, BondExtra, Chill, Nominate, OneOfmessage_oneof as StakingVariant, Rebond, Unbond,
         WithdrawUnbonded,
     },
-    Balance, Identity, Staking,
+    AssetId as TWAssetId, Balance, Identity, IdentityId as TWIdentityId,
+    PortfolioId as TWPortfolioId, SecondaryKeyPermissions, Staking,
 };
 use tw_scale::{impl_enum_scale, impl_struct_scale, Compact, RawOwned};
 use tw_ss58_address::SS58Address;
@@ -34,10 +46,77 @@ impl Memo {
     }
 }
 
+pub type H128 = Hash<16>;
+
 impl_struct_scale!(
-    #[derive(Clone, Debug)]
+    #[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
+    pub struct AssetId(H128);
+);
+
+impl TryFrom<&TWAssetId<'_>> for AssetId {
+    type Error = TWError<EncodeError>;
+
+    fn try_from(id: &TWAssetId) -> Result<Self, Self::Error> {
+        let did = H128::try_from(id.id.as_ref()).map_err(|_| {
+            EncodeError::InvalidValue.with_context(format!("Expected 16 byte AssetId"))
+        })?;
+        Ok(Self(did))
+    }
+}
+
+impl_struct_scale!(
+    #[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
     pub struct IdentityId(H256);
 );
+
+impl TryFrom<&TWIdentityId<'_>> for IdentityId {
+    type Error = TWError<EncodeError>;
+
+    fn try_from(id: &TWIdentityId) -> Result<Self, Self::Error> {
+        let did = H256::try_from(id.id.as_ref()).map_err(|_| {
+            EncodeError::InvalidValue.with_context(format!("Expected 32 byte IdentityId"))
+        })?;
+        Ok(Self(did))
+    }
+}
+
+impl_enum_scale!(
+    #[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
+    pub enum PortfolioKind {
+        #[default]
+        Default = 0x00,
+        User(u64) = 0x01,
+    }
+);
+
+impl_struct_scale!(
+    #[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
+    pub struct PortfolioId {
+        did: IdentityId,
+        kind: PortfolioKind,
+    }
+);
+
+impl TryFrom<&TWPortfolioId<'_>> for PortfolioId {
+    type Error = TWError<EncodeError>;
+
+    fn try_from(portfolio: &TWPortfolioId) -> Result<Self, Self::Error> {
+        Ok(Self {
+            did: portfolio
+                .identity
+                .as_ref()
+                .ok_or_else(|| {
+                    EncodeError::InvalidValue.with_context(format!("Missing portfolio identity"))
+                })?
+                .try_into()?,
+            kind: if portfolio.default {
+                PortfolioKind::Default
+            } else {
+                PortfolioKind::User(portfolio.user)
+            },
+        })
+    }
+}
 
 impl_enum_scale!(
     #[derive(Clone, Debug)]
@@ -97,12 +176,208 @@ impl_enum_scale!(
 );
 
 impl_enum_scale!(
+    #[derive(Clone, Debug, Default, PartialEq, Eq)]
+    pub enum RestrictionKind {
+        #[default]
+        Whole = 0x00,
+        These = 0x01,
+        Except = 0x02,
+    }
+);
+
+impl From<TWRestrictionKind> for RestrictionKind {
+    fn from(kind: TWRestrictionKind) -> Self {
+        match kind {
+            TWRestrictionKind::Whole => Self::Whole,
+            TWRestrictionKind::These => Self::These,
+            TWRestrictionKind::Except => Self::Except,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct AssetPermissions {
+    kind: RestrictionKind,
+    assets: BTreeSet<AssetId>,
+}
+
+impl AssetPermissions {
+    /// Empty permissions means no access.
+    pub fn empty() -> Self {
+        Self {
+            kind: RestrictionKind::These,
+            assets: BTreeSet::new(),
+        }
+    }
+}
+
+impl ToScale for AssetPermissions {
+    fn to_scale_into(&self, data: &mut Vec<u8>) {
+        self.kind.to_scale_into(data);
+        if self.kind != RestrictionKind::Whole {
+            self.assets.to_scale_into(data);
+        }
+    }
+}
+
+impl TryFrom<&TWAssetPermissions<'_>> for AssetPermissions {
+    type Error = TWError<EncodeError>;
+
+    fn try_from(perms: &TWAssetPermissions) -> Result<Self, Self::Error> {
+        Ok(Self {
+            kind: perms.kind.into(),
+            assets: perms
+                .assets
+                .iter()
+                .map(|asset| Ok(asset.try_into()?))
+                .collect::<EncodeResult<BTreeSet<AssetId>>>()?,
+        })
+    }
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct PortfolioPermissions {
+    kind: RestrictionKind,
+    portfolios: BTreeSet<PortfolioId>,
+}
+
+impl PortfolioPermissions {
+    /// Empty permissions means no access.
+    pub fn empty() -> Self {
+        Self {
+            kind: RestrictionKind::These,
+            portfolios: BTreeSet::new(),
+        }
+    }
+}
+
+impl ToScale for PortfolioPermissions {
+    fn to_scale_into(&self, data: &mut Vec<u8>) {
+        self.kind.to_scale_into(data);
+        if self.kind != RestrictionKind::Whole {
+            self.portfolios.to_scale_into(data);
+        }
+    }
+}
+
+impl TryFrom<&TWPortfolioPermissions<'_>> for PortfolioPermissions {
+    type Error = TWError<EncodeError>;
+
+    fn try_from(perms: &TWPortfolioPermissions) -> Result<Self, Self::Error> {
+        Ok(Self {
+            kind: perms.kind.into(),
+            portfolios: perms
+                .portfolios
+                .iter()
+                .map(|portfolio| Ok(portfolio.try_into()?))
+                .collect::<EncodeResult<BTreeSet<PortfolioId>>>()?,
+        })
+    }
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct PalletPermissions {
+    kind: RestrictionKind,
+    extrinsic_names: BTreeSet<String>,
+}
+
+impl ToScale for PalletPermissions {
+    fn to_scale_into(&self, data: &mut Vec<u8>) {
+        self.kind.to_scale_into(data);
+        if self.kind != RestrictionKind::Whole {
+            self.extrinsic_names.to_scale_into(data);
+        }
+    }
+}
+
+impl From<&TWPalletPermissions<'_>> for PalletPermissions {
+    fn from(perms: &TWPalletPermissions) -> Self {
+        Self {
+            kind: perms.kind.into(),
+            extrinsic_names: perms
+                .extrinsic_names
+                .iter()
+                .map(|name| name.to_string())
+                .collect(),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct ExtrinsicPermissions {
+    kind: RestrictionKind,
+    pallets: BTreeMap<String, PalletPermissions>,
+}
+
+impl ExtrinsicPermissions {
+    /// Empty permissions means no access.
+    pub fn empty() -> Self {
+        Self {
+            kind: RestrictionKind::These,
+            pallets: BTreeMap::new(),
+        }
+    }
+}
+
+impl ToScale for ExtrinsicPermissions {
+    fn to_scale_into(&self, data: &mut Vec<u8>) {
+        self.kind.to_scale_into(data);
+        if self.kind != RestrictionKind::Whole {
+            self.pallets.to_scale_into(data);
+        }
+    }
+}
+
+impl From<&TWExtrinsicPermissions<'_>> for ExtrinsicPermissions {
+    fn from(perms: &TWExtrinsicPermissions) -> Self {
+        Self {
+            kind: perms.kind.into(),
+            pallets: perms
+                .pallets
+                .iter()
+                .map(|pallet| (pallet.pallet_name.to_string(), pallet.into()))
+                .collect(),
+        }
+    }
+}
+
+impl_struct_scale!(
+    #[derive(Clone, Debug, Default)]
+    pub struct Permissions {
+        asset: AssetPermissions,
+        extrinsic: ExtrinsicPermissions,
+        portfolio: PortfolioPermissions,
+    }
+);
+
+impl TryFrom<&SecondaryKeyPermissions<'_>> for Permissions {
+    type Error = TWError<EncodeError>;
+
+    fn try_from(perms: &SecondaryKeyPermissions) -> Result<Self, Self::Error> {
+        Ok(Self {
+            asset: if let Some(perms) = &perms.asset {
+                perms.try_into()?
+            } else {
+                AssetPermissions::default()
+            },
+            extrinsic: if let Some(perms) = &perms.extrinsic {
+                perms.into()
+            } else {
+                ExtrinsicPermissions::default()
+            },
+            portfolio: if let Some(perms) = &perms.portfolio {
+                perms.try_into()?
+            } else {
+                PortfolioPermissions::default()
+            },
+        })
+    }
+}
+
+impl_enum_scale!(
     #[derive(Clone, Debug)]
     pub enum AuthorizationData {
-        JoinIdentity {
-            // TODO: Polymesh permissions.
-            permissions: RawOwned,
-        } = 0x05,
+        JoinIdentity { permissions: Permissions } = 0x05,
     }
 );
 
@@ -132,39 +407,23 @@ impl PolymeshIdentity {
         let ci = validate_call_index(&auth.call_indices)?;
         let target =
             SS58Address::from_str(&auth.target).map_err(|_| EncodeError::InvalidAddress)?;
-        let mut data = Vec::new();
-        if let Some(auth_data) = &auth.data {
-            if let Some(asset) = &auth_data.asset {
-                data.push(0x01);
-                data.extend_from_slice(&asset.data);
-            } else {
-                data.push(0x00);
-            }
-
-            if let Some(extrinsic) = &auth_data.extrinsic {
-                data.push(0x01);
-                data.extend_from_slice(&extrinsic.data);
-            } else {
-                data.push(0x00);
-            }
-
-            if let Some(portfolio) = &auth_data.portfolio {
-                data.push(0x01);
-                data.extend_from_slice(&portfolio.data);
-            } else {
-                data.push(0x00);
+        let data = if let Some(auth) = &auth.authorization {
+            match &auth.auth_oneof {
+                AuthVariant::join_identity(perms) => AuthorizationData::JoinIdentity {
+                    permissions: perms.try_into().map_err(|_| EncodeError::InvalidValue)?,
+                },
+                AuthVariant::None => {
+                    return EncodeError::NotSupported
+                        .tw_result("Unsupported Authorization".to_string());
+                },
             }
         } else {
-            // Mark everything as authorized (asset, extrinsic, portfolio)
-            data.push(0x00);
-            data.push(0x00);
-            data.push(0x00);
-        }
+            return EncodeError::NotSupported.tw_result("Missing Authorization".to_string());
+        };
+
         Ok(ci.wrap(Self::AddAuthorization {
             target: Signatory::Account(SubstrateAddress(target)),
-            data: AuthorizationData::JoinIdentity {
-                permissions: RawOwned(data),
-            },
+            data,
             expiry: if auth.expiry > 0 {
                 Some(auth.expiry)
             } else {

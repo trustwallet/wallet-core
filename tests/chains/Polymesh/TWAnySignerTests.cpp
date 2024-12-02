@@ -131,15 +131,14 @@ TEST(TWAnySignerPolymesh, encodeTransaction_Add_authorization) {
 
     auto* addAuthorization = input.mutable_identity_call()->mutable_add_authorization();
     addAuthorization->set_target("2HEVN4PHYKj7B1krQ9bctAQXZxHQQkANVNCcfbdYk2gZ4cBR");
-    auto* authData = addAuthorization->mutable_data();
+    auto* keyPerms = addAuthorization->mutable_authorization()->mutable_join_identity();
     // Set empty "These".
-    auto* assets = authData->mutable_asset();
-    auto empty = parse_hex("00");
-    assets->set_data(std::string(empty.begin(), empty.end()));
-    auto* extrinsics = authData->mutable_extrinsic();
-    extrinsics->set_data(std::string(empty.begin(), empty.end()));
-    auto* portfolios = authData->mutable_portfolio();
-    portfolios->set_data(std::string(empty.begin(), empty.end()));
+    auto* assets = keyPerms->mutable_asset();
+    assets->set_kind(Polymesh::Proto::SecondaryKeyPermissions_RestrictionKind_These);
+    auto* extrinsics = keyPerms->mutable_extrinsic();
+    extrinsics->set_kind(Polymesh::Proto::SecondaryKeyPermissions_RestrictionKind_These);
+    auto* portfolios = keyPerms->mutable_portfolio();
+    portfolios->set_kind(Polymesh::Proto::SecondaryKeyPermissions_RestrictionKind_These);
 
     auto* callIndices = addAuthorization->mutable_call_indices()->mutable_custom();
     callIndices->set_module_index(0x07);

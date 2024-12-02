@@ -17,9 +17,13 @@ use tw_proto::Polymesh::Proto::{
     self,
     mod_Balance::Transfer,
     mod_Identity::{
-        mod_AddAuthorization::{AuthData, Data},
+        mod_AddAuthorization::{mod_Authorization::OneOfauth_oneof as AuthVariant, Authorization},
         AddAuthorization, JoinIdentityAsKey,
     },
+    mod_SecondaryKeyPermissions::{
+        AssetPermissions, ExtrinsicPermissions, PortfolioPermissions, RestrictionKind,
+    },
+    SecondaryKeyPermissions,
 };
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
@@ -33,9 +37,6 @@ fn test_polymesh_compile_add_authorization() {
         .decode_hex()
         .unwrap();
     let genesis_hash = GENESIS_HASH.decode_hex().unwrap();
-    let data = Data {
-        data: "0x00".decode_hex().unwrap().into(),
-    };
 
     let input = Proto::SigningInput {
         network: 12,
@@ -51,10 +52,24 @@ fn test_polymesh_compile_add_authorization() {
         message_oneof: identity_call(Proto::mod_Identity::OneOfmessage_oneof::add_authorization(
             AddAuthorization {
                 target: PUBLIC_KEY_1.into(),
-                data: Some(AuthData {
-                    asset: Some(data.clone()),
-                    portfolio: Some(data.clone()),
-                    extrinsic: Some(data),
+                authorization: Some(Authorization {
+                    auth_oneof: AuthVariant::join_identity(SecondaryKeyPermissions {
+                        // No asset permissions.
+                        asset: Some(AssetPermissions {
+                            kind: RestrictionKind::These,
+                            assets: vec![],
+                        }),
+                        // No extrinsic permissions.
+                        extrinsic: Some(ExtrinsicPermissions {
+                            kind: RestrictionKind::These,
+                            pallets: vec![],
+                        }),
+                        // No portfolio permissions.
+                        portfolio: Some(PortfolioPermissions {
+                            kind: RestrictionKind::These,
+                            portfolios: vec![],
+                        }),
+                    }),
                 }),
                 ..Default::default()
             },
