@@ -11,6 +11,7 @@ use tw_substrate::*;
 
 pub mod call_encoder;
 pub mod entry;
+pub mod types;
 
 pub const POLYMESH_PREFIX: u16 = 12;
 pub const POLYMESH: NetworkId = NetworkId::new_unchecked(POLYMESH_PREFIX);
