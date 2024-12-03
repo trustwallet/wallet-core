@@ -14,4 +14,3 @@ tw_number = { path = "../../tw_number" }
 tw_misc = { path = "../../tw_misc" }
 tw_proto = { path = "../../tw_proto" }
 tw_ton_sdk = { path = "../../frameworks/tw_ton_sdk" }
-zeroize = "1.8.1"

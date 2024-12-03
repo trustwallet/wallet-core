@@ -55,11 +55,6 @@ impl PrivateKey {
         Ok(&self.bytes[Self::EXTENDED_CARDANO_RANGE])
     }
 
-    /// Returns bytes (32 or 192 bytes).
-    pub fn bytes(&self) -> &[u8] {
-        &self.bytes
-    }
-
     /// Checks if the given `bytes` secret is valid in general (without a concrete curve).
     pub fn is_valid_general(bytes: &[u8]) -> bool {
         if bytes.len() != Self::SIZE && bytes.len() != Self::CARDANO_SIZE {
@@ -206,13 +201,5 @@ impl PrivateKey {
     /// Tries to convert [`PrivateKey::key`] to [`schnorr::PrivateKey`].
     fn to_schnorr_privkey(&self) -> KeyPairResult<schnorr::PrivateKey> {
         schnorr::PrivateKey::try_from(self.key().as_slice())
-    }
-}
-
-impl From<ed25519::sha512::PrivateKey> for PrivateKey {
-    fn from(key: ed25519::sha512::PrivateKey) -> Self {
-        PrivateKey {
-            bytes: key.bytes().to_vec(),
-        }
     }
 }

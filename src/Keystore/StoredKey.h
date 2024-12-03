@@ -7,8 +7,7 @@
 #include "Account.h"
 #include "EncryptionParameters.h"
 #include "Data.h"
-#include "HDWallet.h"
-#include "TheOpenNetwork/TONWallet.h"
+#include "../HDWallet.h"
 
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWDerivation.h>
@@ -21,13 +20,9 @@
 
 namespace TW::Keystore {
 
-/// An stored key can be either a private key, or a mnemonic phrase for a HD
-/// wallet, or a TON-specific mnemonic phrase.
-enum class StoredKeyType {
-    privateKey,
-    mnemonicPhrase,
-    tonMnemonicPhrase
-};
+/// An stored key can be either a private key or a mnemonic phrase for a HD
+/// wallet.
+enum class StoredKeyType { privateKey, mnemonicPhrase };
 
 /// Represents a key stored as an encrypted file.
 class StoredKey {
@@ -67,16 +62,6 @@ public:
     /// @throws std::invalid_argument if privateKeyData is not a valid private key
     static StoredKey createWithPrivateKeyAddDefaultAddress(const std::string& name, const Data& password, TWCoinType coin, const Data& privateKeyData, TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr);
 
-    /// Create a new StoredKey, with the given name and TON specific mnemonic.
-    /// @throws std::invalid_argument if menmonic is invalid
-    /// @note mnemonic created with a passphrase is not supported yet
-    static StoredKey createWithTonMnemonic(const std::string& name, const Data& password, const std::string& tonMnemonic, TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr);
-
-    /// Create a new StoredKey, with the given name and TON specific mnemonic, and also add the default address for the given coin.
-    /// @throws std::invalid_argument if menmonic is invalid
-    /// @note mnemonic created with a passphrase is not supported yet
-    static StoredKey createWithTonMnemonicAddDefaultAddress(const std::string& name, const Data& password, TWCoinType coin, const std::string& tonMnemonic, TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr);
-
     /// Create a StoredKey from a JSON object.
     static StoredKey createWithJson(const nlohmann::json& json);
 
@@ -85,31 +70,19 @@ public:
     /// @throws std::invalid_argument if this key is of a type other than `mnemonicPhrase`.
     const HDWallet<> wallet(const Data& password) const;
 
-    /// Returns the TONWallet for this key.
-    ///
-    /// @throws std::invalid_argument if this key is of a type other than `tonMnemonicPhrase`.
-    TheOpenNetwork::TONWallet tonWallet(const Data& password) const;
-
     /// Returns all the accounts for a specific coin: 0, 1, or more.
     std::vector<Account> getAccounts(TWCoinType coin) const;
 
-    /// If found, returns the account for a specific coin.
-    /// In case of multiple accounts, the default derivation is returned, or the first one is returned.
+    /// If found, returns the account for a specific coin. In case of muliple accounts, the default derivation is returned, or the first one is returned.
     /// If none exists, and wallet is not null, an account is created (with default derivation).
     std::optional<const Account> account(TWCoinType coin, const HDWallet<>* wallet);
 
-    /// If found, returns the account for a specific coin and derivation.
-    /// In case of multiple accounts, the first one is returned.
+    /// If found, returns the account for a specific coin and derivation.  In case of muliple accounts, the first one is returned.
     /// If none exists, an account is created.
     Account account(TWCoinType coin, TWDerivation derivation, const HDWallet<>& wallet);
 
-    /// If found, returns the account for a specific coin.
-    /// In case of multiple accounts, the first one is returned.
-    /// If none exists, an account is created.
-    Account account(TWCoinType coin, TWDerivation derivation, const TheOpenNetwork::TONWallet& tonWallet);
-
     /// Returns the account for a specific coin if it exists.
-    /// In case of multiple accounts, the default derivation is returned, or the first one is returned.
+    /// In case of muliple accounts, the default derivation is returned, or the first one is returned.
     std::optional<const Account> account(TWCoinType coin) const;
     
     /// Returns the account for a specific coin and derivation, if it exists.
@@ -199,9 +172,6 @@ private:
 
     /// Find account by coin+derivation (should be one, if multiple, first is returned)
     std::optional<Account> getAccount(TWCoinType coin, TWDerivation derivation, const HDWallet<>& wallet) const;
-
-    /// Find account by coin+derivation (should be one, if multiple, first is returned)
-    std::optional<Account> getAccount(TWCoinType coin, TWDerivation derivation, const TheOpenNetwork::TONWallet& wallet) const;
 
     /// Re-derive account address if missing
     Account fillAddressIfMissing(Account& account, const HDWallet<>* wallet) const;

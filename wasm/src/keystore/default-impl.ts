@@ -104,31 +104,6 @@ export class Default implements Types.IKeyStore {
     });
   }
 
-  importTON(
-      tonMnemonic: string,
-      name: string,
-      password: string,
-      coin: CoinType,
-      encryption: StoredKeyEncryption
-  ): Promise<Types.Wallet> {
-    return new Promise((resolve, reject) => {
-      const { StoredKey, TONWallet } = this.core;
-
-      const passphrase = "";
-      if (!TONWallet.isValidMnemonic(tonMnemonic, passphrase)) {
-        throw Types.Error.InvalidMnemonic;
-      }
-
-      let pass = Buffer.from(password);
-      let storedKey = StoredKey.importTONWalletWithEncryption(tonMnemonic, name, pass, coin, encryption);
-      let wallet = this.mapWallet(storedKey);
-      storedKey.delete();
-      this.importWallet(wallet)
-          .then(() => resolve(wallet))
-          .catch((error) => reject(error));
-    });
-  }
-
   addAccounts(
     id: string,
     password: string,
@@ -154,23 +129,11 @@ export class Default implements Types.IKeyStore {
   ): Promise<PrivateKey> {
     return this.load(id).then((wallet) => {
       let storedKey = this.mapStoredKey(wallet);
+      let hdWallet = storedKey.wallet(Buffer.from(password));
       let coin = (this.core.CoinType as any).values["" + account.coin];
-
-      let privateKey: PrivateKey;
-      switch (wallet.type) {
-        // In case of BIP39 mnemonic, we should use the custom derivation path.
-        case Types.WalletType.Mnemonic:
-          let hdWallet = storedKey.wallet(Buffer.from(password));
-          privateKey = hdWallet.getKey(coin, account.derivationPath);
-          hdWallet.delete();
-          break;
-        // Otherwise, use the default implementation.
-        default:
-          privateKey = storedKey.privateKey(coin, Buffer.from(password));
-          break;
-      }
-
+      let privateKey = hdWallet.getKey(coin, account.derivationPath);
       storedKey.delete();
+      hdWallet.delete();
       return privateKey;
     });
   }
@@ -185,9 +148,6 @@ export class Default implements Types.IKeyStore {
           break;
         case Types.WalletType.PrivateKey:
           value = storedKey.decryptPrivateKey(Buffer.from(password));
-          break;
-        case Types.WalletType.TonMnemonic:
-          value = storedKey.decryptTONMnemonic(Buffer.from(password));
           break;
         default:
           throw Types.Error.InvalidJSON;

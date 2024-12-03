@@ -13,15 +13,11 @@
 namespace TW::Rust {
 
 inline std::shared_ptr<TWAnyAddress> wrapTWAnyAddress(TWAnyAddress* anyAddress) {
-    return { anyAddress, tw_any_address_delete };
-}
-
-inline std::shared_ptr<TWPrivateKey> wrapTWPrivateKey(TWPrivateKey* privateKey) {
-    return { privateKey, tw_private_key_delete };
+    return std::shared_ptr<TWAnyAddress>(anyAddress, tw_any_address_delete);
 }
 
 inline std::shared_ptr<TWPublicKey> wrapTWPublicKey(TWPublicKey* publicKey) {
-    return { publicKey, tw_public_key_delete };
+    return std::shared_ptr<TWPublicKey>(publicKey, tw_public_key_delete);
 }
 
 struct TWDataVectorWrapper {

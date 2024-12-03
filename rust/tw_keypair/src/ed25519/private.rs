@@ -11,7 +11,6 @@ use crate::{KeyPairError, KeyPairResult};
 use std::fmt;
 use tw_encoding::hex;
 use tw_hash::H256;
-use tw_memory::Data;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::{ZeroizeOnDrop, Zeroizing};
 
@@ -38,12 +37,6 @@ impl<H: Hasher512> PrivateKey<H> {
         PublicKey::with_expanded_secret(&self.expanded_key)
     }
 
-    /// Returns a reference to the private key bytes.
-    /// Please note if clone bytes, it must be zeroized with [`zeroize::Zeroize::zeroize`].
-    pub fn bytes(&self) -> &H256 {
-        &self.secret
-    }
-
     /// `ed25519` signing uses a public key associated with the private key.
     pub(crate) fn sign_with_public_key(
         &self,
@@ -56,21 +49,11 @@ impl<H: Hasher512> PrivateKey<H> {
 }
 
 impl<H: Hasher512> SigningKeyTrait for PrivateKey<H> {
-    type SigningMessage = Data;
+    type SigningMessage = Vec<u8>;
     type Signature = Signature;
 
     fn sign(&self, message: Self::SigningMessage) -> KeyPairResult<Self::Signature> {
         self.sign_with_public_key(&self.public(), &message)
-    }
-}
-
-impl<H: Hasher512> From<H256> for PrivateKey<H> {
-    fn from(secret: H256) -> Self {
-        let expanded_key = ExpandedSecretKey::<H>::with_secret(secret);
-        PrivateKey {
-            secret,
-            expanded_key,
-        }
     }
 }
 
@@ -79,7 +62,11 @@ impl<H: Hasher512> TryFrom<&[u8]> for PrivateKey<H> {
 
     fn try_from(data: &[u8]) -> Result<Self, Self::Error> {
         let secret = H256::try_from(data).map_err(|_| KeyPairError::InvalidSecretKey)?;
-        Ok(PrivateKey::from(secret))
+        let expanded_key = ExpandedSecretKey::<H>::with_secret(secret);
+        Ok(PrivateKey {
+            secret,
+            expanded_key,
+        })
     }
 }
 
@@ -93,7 +80,7 @@ impl<'a, H: Hasher512> TryFrom<&'a str> for PrivateKey<H> {
 }
 
 impl<H: Hasher512> ToBytesZeroizing for PrivateKey<H> {
-    fn to_zeroizing_vec(&self) -> Zeroizing<Data> {
+    fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
         Zeroizing::new(self.secret.to_vec())
     }
 }

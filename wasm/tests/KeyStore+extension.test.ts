@@ -64,51 +64,6 @@ describe("KeyStore", async () => {
     });
   }).timeout(10000);
 
-  it("test ExtensionStorage TONWallet", async () => {
-    const { CoinType, HexCoding, StoredKeyEncryption } = globalThis.core;
-    const tonMnemonic = globalThis.tonMnemonic as string;
-    const password = globalThis.password as string;
-
-    const walletIdsKey = "all-wallet-ids";
-    const storage = new KeyStore.ExtensionStorage(
-        walletIdsKey,
-        new ChromeStorageMock()
-    );
-    const keystore = new KeyStore.Default(globalThis.core, storage);
-
-    const wallet = await keystore.importTON(tonMnemonic, "Coolton", password, CoinType.ton, StoredKeyEncryption.aes128Ctr);
-
-    assert.equal(wallet.name, "Coolton");
-    assert.equal(wallet.type, "ton-mnemonic");
-    assert.equal(wallet.version, 3);
-
-    const account = wallet.activeAccounts[0];
-    const key = await keystore.getKey(wallet.id, password, account);
-
-    assert.equal(
-        HexCoding.encode(key.data()),
-        "0x859cd74ab605afb7ce9f5316a1f6d59217a130b75b494efd249913be874c9d46"
-    );
-    assert.equal(account.address, "UQDdB2lMwYM9Gxc-ln--Tu8cz-TYksQxYuUsMs2Pd4cHerYz");
-    assert.isUndefined(account.extendedPublicKey);
-    assert.equal(
-        account.publicKey,
-        "c9af50596bd5c1c5a15fb32bef8d4f1ee5244b287aea1f49f6023a79f9b2f055"
-    );
-
-    assert.isTrue(await keystore.hasWallet(wallet.id));
-    assert.isFalse(await keystore.hasWallet("invalid-id"));
-
-    const exported = await keystore.export(wallet.id, password);
-    assert.equal(exported, tonMnemonic);
-
-    const wallets = await keystore.loadAll();
-
-    await wallets.forEach((w) => {
-      keystore.delete(w.id, password);
-    });
-  }).timeout(10000);
-
   it("test ExtensionStorage AES256", async () => {
     const { CoinType, HexCoding, StoredKeyEncryption } = globalThis.core;
     const mnemonic = globalThis.mnemonic as string;

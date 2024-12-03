@@ -74,29 +74,6 @@ struct TWStoredKey* _Nullable TWStoredKeyImportHDWallet(TWString* _Nonnull mnemo
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nullable TWStoredKeyImportHDWalletWithEncryption(TWString* _Nonnull mnemonic, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin, enum TWStoredKeyEncryption encryption);
 
-/// Imports a TON-specific wallet with a 24-words mnemonic.
-///
-/// \param tonMnemonic Non-null TON mnemonic
-/// \param name The name of the stored key to import as a non-null string
-/// \param password Non-null block of data, password of the stored key
-/// \param coin the coin type
-/// \note Returned object needs to be deleted with \TWStoredKeyDelete
-/// \return Nullptr if the key can't be imported, the stored key otherwise
-TW_EXPORT_STATIC_METHOD
-struct TWStoredKey* _Nullable TWStoredKeyImportTONWallet(TWString* _Nonnull tonMnemonic, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin);
-
-/// Imports a TON-specific wallet with a 24-words mnemonic.
-///
-/// \param tonMnemonic Non-null TON mnemonic
-/// \param name The name of the stored key to import as a non-null string
-/// \param password Non-null block of data, password of the stored key
-/// \param coin the coin type
-/// \param encryption cipher encryption mode
-/// \note Returned object needs to be deleted with \TWStoredKeyDelete
-/// \return Nullptr if the key can't be imported, the stored key otherwise
-TW_EXPORT_STATIC_METHOD
-struct TWStoredKey* _Nullable TWStoredKeyImportTONWalletWithEncryption(TWString* _Nonnull tonMnemonic, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin, enum TWStoredKeyEncryption encryption);
-
 /// Imports a key from JSON.
 ///
 /// \param json Json stored key import format as a non-null block of data
@@ -174,13 +151,6 @@ TWString* _Nonnull TWStoredKeyName(struct TWStoredKey* _Nonnull key);
 /// \return true if the given stored key is a mnemonic, false otherwise
 TW_EXPORT_PROPERTY
 bool TWStoredKeyIsMnemonic(struct TWStoredKey* _Nonnull key);
-
-/// Whether this key is a TON mnemonic phrase.
-///
-/// \param key Non-null pointer to a stored key
-/// \return true if the given stored key is a TON mnemonic, false otherwise
-TW_EXPORT_PROPERTY
-bool TWStoredKeyIsTONMnemonic(struct TWStoredKey* _Nonnull key);
 
 /// The number of accounts.
 ///
@@ -290,14 +260,6 @@ TWData* _Nullable TWStoredKeyDecryptPrivateKey(struct TWStoredKey* _Nonnull key,
 /// \return Bip39 decrypted mnemonic if success, null pointer otherwise
 TW_EXPORT_METHOD
 TWString* _Nullable TWStoredKeyDecryptMnemonic(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
-
-/// Decrypts the TON mnemonic phrase.
-///
-/// \param key Non-null pointer to a stored key
-/// \param password Non-null block of data, password of the stored key
-/// \return TON decrypted mnemonic if success, null pointer otherwise
-TW_EXPORT_METHOD
-TWString* _Nullable TWStoredKeyDecryptTONMnemonic(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
 
 /// Returns the private key for a specific coin.  Returned object needs to be deleted.
 ///

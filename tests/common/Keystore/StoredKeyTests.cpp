@@ -10,21 +10,28 @@
 #include "HexCoding.h"
 #include "Mnemonic.h"
 #include "PrivateKey.h"
-#include "StoredKeyConstants.h"
 
 #include <gtest/gtest.h>
 #include <stdexcept>
+
+extern std::string TESTS_ROOT;
 
 namespace TW::Keystore::tests {
 
 using namespace std;
 
-static const auto gMnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
-static const TWCoinType coinTypeBc = TWCoinTypeBitcoin;
-static const TWCoinType coinTypeBnb = TWCoinTypeBinance;
-static const TWCoinType coinTypeBsc = TWCoinTypeSmartChain;
-static const TWCoinType coinTypeEth = TWCoinTypeEthereum;
-static const TWCoinType coinTypeBscLegacy = TWCoinTypeSmartChainLegacy;
+const auto passwordString = "password";
+const auto gPassword = TW::data(string(passwordString));
+const auto gMnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
+const TWCoinType coinTypeBc = TWCoinTypeBitcoin;
+const TWCoinType coinTypeBnb = TWCoinTypeBinance;
+const TWCoinType coinTypeBsc = TWCoinTypeSmartChain;
+const TWCoinType coinTypeEth = TWCoinTypeEthereum;
+const TWCoinType coinTypeBscLegacy = TWCoinTypeSmartChainLegacy;
+
+const std::string testDataPath(const char* subpath) {
+    return TESTS_ROOT + "/common/Keystore/Data/" + subpath;
+}
 
 TEST(StoredKey, CreateWithMnemonic) {
     auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelDefault);
@@ -350,7 +357,6 @@ TEST(StoredKey, LoadLegacyMnemonic) {
     EXPECT_EQ(key.id, "629aad29-0b22-488e-a0e7-b4219d4f311c");
 
     const auto data = key.payload.decrypt(gPassword);
-    // In this case, the encrypted mnemonic contains `\0` value at the end.
     const auto mnemonic = string(reinterpret_cast<const char*>(data.data()));
     EXPECT_EQ(mnemonic, "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn back");
 

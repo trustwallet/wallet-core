@@ -2,12 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::ffi::privkey::{
-    tw_private_key_create_with_data, tw_private_key_data, tw_private_key_delete, TWPrivateKey,
-};
+use crate::ffi::privkey::{tw_private_key_create_with_data, tw_private_key_delete, TWPrivateKey};
 use tw_encoding::hex;
 use tw_memory::ffi::c_byte_array::CByteArray;
-use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_memory::Data;
 
 pub struct TWPrivateKeyHelper {
@@ -15,18 +12,6 @@ pub struct TWPrivateKeyHelper {
 }
 
 impl TWPrivateKeyHelper {
-    pub fn wrap(ptr: *mut TWPrivateKey) -> TWPrivateKeyHelper {
-        TWPrivateKeyHelper { ptr }
-    }
-
-    pub fn bytes(&self) -> Option<Data> {
-        if self.ptr.is_null() {
-            return None;
-        }
-        let data = TWDataHelper::wrap(unsafe { tw_private_key_data(self.ptr) });
-        data.to_vec()
-    }
-
     pub fn with_bytes<T: Into<Data>>(bytes: T) -> TWPrivateKeyHelper {
         let priv_key_raw = CByteArray::from(bytes.into());
         let ptr =
