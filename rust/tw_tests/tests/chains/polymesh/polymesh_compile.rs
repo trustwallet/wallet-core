@@ -18,7 +18,7 @@ use tw_proto::Polymesh::Proto::{
     mod_Balance::Transfer,
     mod_Identity::{
         mod_AddAuthorization::{mod_Authorization::OneOfauth_oneof as AuthVariant, Authorization},
-        AddAuthorization, JoinIdentityAsKey,
+        AddAuthorization, JoinIdentityAsKey, LeaveIdentityAsKey,
     },
     mod_SecondaryKeyPermissions::{
         AssetPermissions, ExtrinsicPermissions, PortfolioPermissions, RestrictionKind,
@@ -224,19 +224,18 @@ fn test_polymesh_compile_transfer() {
 
 // Test Leave identity transaction.
 #[test]
-#[ignore]
 fn test_polymesh_compile_leave_identity() {
     // https://polymesh.subscan.io/extrinsic/16102113-1
 
     // Step 1: Prepare input.
-    let block_hash = "77d32517dcc7b74501096afdcff3af72008a2c489e17083f56629d195e5c6a1d"
+    let block_hash = "6651325ae8f7c1726f8a610827b5e4300a504081d5fc85c17199d95bb6d9605c"
         .decode_hex()
         .unwrap();
     let genesis_hash = GENESIS_HASH.decode_hex().unwrap();
 
     let input = Proto::SigningInput {
         network: 12,
-        nonce: 1,
+        nonce: 2,
         block_hash: block_hash.into(),
         genesis_hash: genesis_hash.into(),
         spec_version: 7_000_005,
@@ -245,10 +244,8 @@ fn test_polymesh_compile_leave_identity() {
             block_number: 16_102_110,
             period: 64,
         }),
-        // TODO: This is not correct, need to fix.  This is a placeholder.
         message_oneof: identity_call(
-            Proto::mod_Identity::OneOfmessage_oneof::join_identity_as_key(JoinIdentityAsKey {
-                auth_id: 52_188,
+            Proto::mod_Identity::OneOfmessage_oneof::leave_identity_as_key(LeaveIdentityAsKey {
                 ..Default::default()
             }),
         ),
@@ -261,7 +258,7 @@ fn test_polymesh_compile_leave_identity() {
 
     assert_eq!(preimage_output.error, SigningError::OK);
 
-    assert_eq!(preimage_output.data.to_hex(), "0705..TODO....");
+    assert_eq!(preimage_output.data.to_hex(), "0705e5010800c5cf6a00070000006fbd74e5e1d0a61d52ccfe9d4adaed16dd3a7caa37c6bc4d0c2fa12e8b2f40636651325ae8f7c1726f8a610827b5e4300a504081d5fc85c17199d95bb6d9605c");
 
     // Step 3: Compile transaction info
 

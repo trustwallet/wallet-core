@@ -278,6 +278,12 @@ message Identity {
         uint64 auth_id = 2;
     }
 
+    // Identity::leave_identity_as_key call
+    message LeaveIdentityAsKey {
+        // call indices
+        CallIndices call_indices = 1;
+    }
+
     // Identity::add_authorization call
     message AddAuthorization {
         message Authorization {
@@ -312,6 +318,7 @@ message Identity {
     oneof message_oneof {
         JoinIdentityAsKey join_identity_as_key = 1;
         AddAuthorization add_authorization = 2;
+        LeaveIdentityAsKey leave_identity_as_key = 3;
     }
 }
 

@@ -11,7 +11,7 @@ use tw_proto::Polymesh::Proto::{
     mod_CallIndices::OneOfvariant as CallIndicesVariant,
     mod_Identity::{
         mod_AddAuthorization::mod_Authorization::OneOfauth_oneof as AuthVariant, AddAuthorization,
-        JoinIdentityAsKey, OneOfmessage_oneof as IdentityVariant,
+        JoinIdentityAsKey, LeaveIdentityAsKey, OneOfmessage_oneof as IdentityVariant,
     },
     mod_SigningInput::OneOfmessage_oneof as SigningVariant,
     mod_Staking::{
@@ -95,6 +95,7 @@ impl_enum_scale!(
         JoinIdentity {
             auth_id: u64,
         } = 0x04,
+        LeaveIdentity = 0x05,
         AddAuthorization {
             target: Signatory,
             data: AuthorizationData,
@@ -104,18 +105,22 @@ impl_enum_scale!(
 );
 
 impl PolymeshIdentity {
-    fn encode_join_identity(join: &JoinIdentityAsKey) -> WithCallIndexResult<Self> {
-        let ci = validate_call_index(&join.call_indices)?;
+    fn encode_join_identity(msg: &JoinIdentityAsKey) -> WithCallIndexResult<Self> {
+        let ci = validate_call_index(&msg.call_indices)?;
         Ok(ci.wrap(Self::JoinIdentity {
-            auth_id: join.auth_id,
+            auth_id: msg.auth_id,
         }))
     }
 
-    fn encode_add_authorization(auth: &AddAuthorization) -> WithCallIndexResult<Self> {
-        let ci = validate_call_index(&auth.call_indices)?;
-        let target =
-            SS58Address::from_str(&auth.target).map_err(|_| EncodeError::InvalidAddress)?;
-        let data = if let Some(auth) = &auth.authorization {
+    fn encode_leave_identity(msg: &LeaveIdentityAsKey) -> WithCallIndexResult<Self> {
+        let ci = validate_call_index(&msg.call_indices)?;
+        Ok(ci.wrap(Self::LeaveIdentity))
+    }
+
+    fn encode_add_authorization(msg: &AddAuthorization) -> WithCallIndexResult<Self> {
+        let ci = validate_call_index(&msg.call_indices)?;
+        let target = SS58Address::from_str(&msg.target).map_err(|_| EncodeError::InvalidAddress)?;
+        let data = if let Some(auth) = &msg.authorization {
             match &auth.auth_oneof {
                 AuthVariant::join_identity(perms) => AuthorizationData::JoinIdentity {
                     permissions: perms.try_into().map_err(|_| EncodeError::InvalidValue)?,
@@ -132,8 +137,8 @@ impl PolymeshIdentity {
         Ok(ci.wrap(Self::AddAuthorization {
             target: Signatory::Account(SubstrateAddress(target.into())),
             data,
-            expiry: if auth.expiry > 0 {
-                Some(auth.expiry)
+            expiry: if msg.expiry > 0 {
+                Some(msg.expiry)
             } else {
                 None
             },
@@ -143,6 +148,7 @@ impl PolymeshIdentity {
     pub fn encode_call(ident: &Identity) -> WithCallIndexResult<Self> {
         match &ident.message_oneof {
             IdentityVariant::join_identity_as_key(t) => Self::encode_join_identity(t),
+            IdentityVariant::leave_identity_as_key(t) => Self::encode_leave_identity(t),
             IdentityVariant::add_authorization(a) => Self::encode_add_authorization(a),
             _ => EncodeError::NotSupported.tw_result("Unsupported identity call".to_string()),
         }
