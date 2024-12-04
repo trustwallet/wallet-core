@@ -53,7 +53,6 @@ TEST(TWAnySignerPolymesh, PolymeshEncodeAndSign) {
 
     Polymesh::Proto::SigningInput input;
     input.set_network(12);
-    input.set_multi_address(true);
     auto blockHash = parse_hex("898bba6413c38f79a284aec8749f297f6c8734c501f67517b5a6aadc338d1102");
     auto vGenesisHash = parse_hex("6fbd74e5e1d0a61d52ccfe9d4adaed16dd3a7caa37c6bc4d0c2fa12e8b2f4063");
     input.set_block_hash(std::string(blockHash.begin(), blockHash.end()));
@@ -116,7 +115,6 @@ TEST(TWAnySignerPolymesh, encodeTransaction_Add_authorization) {
 
     Polymesh::Proto::SigningInput input;
     input.set_network(12);
-    input.set_multi_address(true);
     auto blockHash = parse_hex("ce0c2109db498e45abf8fd447580dcfa7b7a07ffc2bfb1a0fbdd1af3e8816d2b");
     auto vGenesisHash = parse_hex("6fbd74e5e1d0a61d52ccfe9d4adaed16dd3a7caa37c6bc4d0c2fa12e8b2f4063");
     input.set_block_hash(std::string(blockHash.begin(), blockHash.end()));
@@ -156,7 +154,6 @@ TEST(TWAnySignerPolymesh, encodeTransaction_JoinIdentityAsKey) {
 
     Polymesh::Proto::SigningInput input;
     input.set_network(12);
-    input.set_multi_address(true);
     auto blockHash = parse_hex("45c80153c47f5d16acc7a66d473870e8d4574437a7d8c813f47da74cae3812c2");
     auto vGenesisHash = parse_hex("6fbd74e5e1d0a61d52ccfe9d4adaed16dd3a7caa37c6bc4d0c2fa12e8b2f4063");
     input.set_block_hash(std::string(blockHash.begin(), blockHash.end()));

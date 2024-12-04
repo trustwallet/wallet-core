@@ -334,11 +334,8 @@ message SigningInput {
     // Network type
     uint32 network = 9;
 
-    // Whether enable MultiAddress
-    bool multi_address = 10;
-
     // Payload call
-    RuntimeCall runtime_call = 11;
+    RuntimeCall runtime_call = 10;
 }
 
 // Result containing the signed and encoded transaction.

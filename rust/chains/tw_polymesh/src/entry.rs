@@ -52,7 +52,7 @@ impl PolymeshEntry {
             .try_into()
             .map_err(|_| EncodeError::InvalidValue)?;
 
-        let mut builder = TransactionBuilder::new(ctx.multi_address, call);
+        let mut builder = TransactionBuilder::new(true, call);
         // Add chain extensions.
         builder.extension(CheckVersion(input.spec_version));
         builder.extension(CheckVersion(input.transaction_version));
