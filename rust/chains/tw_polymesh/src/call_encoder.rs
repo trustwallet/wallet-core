@@ -277,9 +277,9 @@ impl PolymeshStaking {
 impl_enum_scale!(
     #[derive(Clone, Debug)]
     pub enum PolymeshUtility {
-        Batch { calls: Vec<RawOwned> } = 0x01,
+        Batch { calls: Vec<RawOwned> } = 0x00,
         BatchAll { calls: Vec<RawOwned> } = 0x02,
-        ForceBatch { calls: Vec<RawOwned> } = 0x03,
+        ForceBatch { calls: Vec<RawOwned> } = 0x04,
     }
 );
 
