@@ -92,7 +92,7 @@ pub fn helper_encode_and_compile(
     (preimage, signed)
 }
 
-pub fn balance_call(
+fn balance_call(
     call: Proto::mod_Balance::OneOfmessage_oneof,
 ) -> Proto::mod_SigningInput::OneOfmessage_oneof {
     Proto::mod_SigningInput::OneOfmessage_oneof::balance_call(Proto::Balance {

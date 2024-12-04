@@ -18,9 +18,7 @@ pub const PUBLIC_KEY_HEX_1: &str =
 
 pub const PUBLIC_KEY_2: &str = "2CpqFh8VnwJAjenw4xSUWCaaJ2QwGdhnCikoSEczMhjgqyj7";
 
-pub fn balance_call(
-    call: Proto::mod_Balance::OneOfmessage_oneof,
-) -> Option<Proto::RuntimeCall<'_>> {
+fn balance_call(call: Proto::mod_Balance::OneOfmessage_oneof) -> Option<Proto::RuntimeCall<'_>> {
     Some(Proto::RuntimeCall {
         pallet_oneof: Proto::mod_RuntimeCall::OneOfpallet_oneof::balance_call(Proto::Balance {
             message_oneof: call,
@@ -28,9 +26,7 @@ pub fn balance_call(
     })
 }
 
-pub fn identity_call(
-    call: Proto::mod_Identity::OneOfmessage_oneof,
-) -> Option<Proto::RuntimeCall<'_>> {
+fn identity_call(call: Proto::mod_Identity::OneOfmessage_oneof) -> Option<Proto::RuntimeCall<'_>> {
     Some(Proto::RuntimeCall {
         pallet_oneof: Proto::mod_RuntimeCall::OneOfpallet_oneof::identity_call(Proto::Identity {
             message_oneof: call,
