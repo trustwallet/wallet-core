@@ -58,47 +58,9 @@ message Balance {
         // call indices
         CallIndices call_indices = 4;
     }
-    // batch tranfer
-    message BatchTransfer {
-        // call indices
-        CallIndices call_indices = 1;
-
-        repeated Transfer transfers = 2;
-    }
-    // asset transfer
-    message AssetTransfer {
-        // call indices
-        CallIndices call_indices = 1;
-
-        // destination
-        string to_address = 2;
-
-        // value - BigInteger
-        bytes value = 3;
-
-        // asset identifier
-        uint32 asset_id = 4;
-
-        // fee asset identifier
-        uint32 fee_asset_id = 5;
-    }
-
-    // batch asset transfer
-    message BatchAssetTransfer {
-        // call indices
-        CallIndices call_indices = 1;
-
-        // fee asset identifier
-        uint32 fee_asset_id = 2;
-
-        repeated AssetTransfer transfers = 3;
-    }
 
     oneof message_oneof {
         Transfer transfer = 1;
-        BatchTransfer batchTransfer = 2;
-        AssetTransfer asset_transfer = 3;
-        BatchAssetTransfer batch_asset_transfer = 4;
     }
 }
 
@@ -117,30 +79,6 @@ message Staking {
 
         // call indices
         CallIndices call_indices = 4;
-    }
-
-    // Bond to a controller, with nominators
-    message BondAndNominate {
-        // controller ID (optional)
-        string controller = 1;
-
-        // amount (uint256, serialized big endian)
-        bytes value = 2;
-
-        // destination for rewards
-        RewardDestination reward_destination = 3;
-
-        // list of nominators
-        repeated string nominators = 4;
-
-        // call indices
-        CallIndices call_indices = 5;
-
-        // Staking.Bond call indices
-        CallIndices bond_call_indices = 6;
-
-        // Staking.Nominate call indices
-        CallIndices nominate_call_indices = 7;
     }
 
     // Bond extra amount
@@ -187,21 +125,6 @@ message Staking {
         CallIndices call_indices = 2;
     }
 
-    // Chill and unbound
-    message ChillAndUnbond {
-        // amount (uint256, serialized big endian)
-        bytes value = 1;
-
-        // call indices
-        CallIndices call_indices = 2;
-
-        // Staking.Chill call indices
-        CallIndices chill_call_indices = 3;
-
-        // Staking.Unbond call indices
-        CallIndices unbond_call_indices = 4;
-    }
-
     // Chill
     message Chill {
         // call indices
@@ -211,14 +134,12 @@ message Staking {
     // Payload messsage
     oneof message_oneof {
         Bond bond = 1;
-        BondAndNominate bond_and_nominate = 2;
-        BondExtra bond_extra = 3;
-        Unbond unbond = 4;
-        WithdrawUnbonded withdraw_unbonded = 5;
-        Nominate nominate = 6;
-        Chill chill = 7;
-        ChillAndUnbond chill_and_unbond = 8;
-        Rebond rebond = 9;
+        BondExtra bond_extra = 2;
+        Unbond unbond = 3;
+        WithdrawUnbonded withdraw_unbonded = 4;
+        Nominate nominate = 5;
+        Chill chill = 6;
+        Rebond rebond = 7;
     }
 }
 
@@ -334,6 +255,56 @@ message Identity {
     }
 }
 
+// Utility pallet transaction
+message Utility {
+    enum BatchKind {
+        // Batch multiple calls, stoping on the first error.
+        //
+        // Each call in the batch is executed in its own transaction.
+        // When one call fails only that transaction will be rolled back
+        // and any following calls in the batch will be skipped.
+        StopOnError = 0;
+        // Batch multiple calls and execute them in a single atomic transaction.
+        // The whole transaction will rollback if any of the calls fail.
+        Atomic = 1;
+        // Batch multiple calls.  Unlike `Batch` this will continue even
+        // if one of the calls failed.
+        //
+        // Each call in the batch is executed in its own transaction.
+        // When a call fails its transaction will be rolled back and the error
+        // will be emitted in an event.
+        // 
+        // Execution will continue until all calls in the batch have been executed.
+        Optimistic = 2;
+    }
+
+    message Batch {
+        // The type of batch.
+        BatchKind kind = 1;
+
+        // batched calls.
+        repeated RuntimeCall calls = 2;
+
+        // call indices
+        CallIndices call_indices = 3;
+    }
+
+    oneof message_oneof {
+        Batch batch = 1;
+    }
+}
+
+// Polymesh runtime call.
+message RuntimeCall {
+    // Top-level pallets.
+    oneof pallet_oneof {
+        Balance balance_call = 1;
+        Staking staking_call = 2;
+        Identity identity_call = 3;
+        Utility utility_call = 4;
+    }
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // Recent block hash, or genesis hash if era is not set
@@ -366,12 +337,8 @@ message SigningInput {
     // Whether enable MultiAddress
     bool multi_address = 10;
 
-    // Payload message
-    oneof message_oneof {
-        Balance balance_call = 11;
-        Staking staking_call = 12;
-        Identity identity_call = 13;
-    }
+    // Payload call
+    RuntimeCall runtime_call = 11;
 }
 
 // Result containing the signed and encoded transaction.

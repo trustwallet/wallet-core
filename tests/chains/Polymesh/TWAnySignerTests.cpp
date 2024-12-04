@@ -66,7 +66,7 @@ TEST(TWAnySignerPolymesh, PolymeshEncodeAndSign) {
     era->set_block_number(4298130UL);
     era->set_period(64UL);
 
-    auto* transfer = input.mutable_balance_call()->mutable_transfer();
+    auto* transfer = input.mutable_runtime_call()->mutable_balance_call()->mutable_transfer();
     transfer->set_to_address("2FSoQykVV3uWe5ChZuazMDHBoaZmCPPuoYx5KHL5VqXooDQW");
     auto value = store(1000000);
     transfer->set_value(std::string(value.begin(), value.end()));
@@ -129,7 +129,7 @@ TEST(TWAnySignerPolymesh, encodeTransaction_Add_authorization) {
     era->set_block_number(4395451UL);
     era->set_period(64UL);
 
-    auto* addAuthorization = input.mutable_identity_call()->mutable_add_authorization();
+    auto* addAuthorization = input.mutable_runtime_call()->mutable_identity_call()->mutable_add_authorization();
     addAuthorization->set_target("2HEVN4PHYKj7B1krQ9bctAQXZxHQQkANVNCcfbdYk2gZ4cBR");
     auto* keyPerms = addAuthorization->mutable_authorization()->mutable_join_identity();
     // Set empty "These".
@@ -169,7 +169,7 @@ TEST(TWAnySignerPolymesh, encodeTransaction_JoinIdentityAsKey) {
     era->set_block_number(4395527UL);
     era->set_period(64UL);
 
-    auto* key = input.mutable_identity_call()->mutable_join_identity_as_key();
+    auto* key = input.mutable_runtime_call()->mutable_identity_call()->mutable_join_identity_as_key();
     key->set_auth_id(21435);
     auto* callIndices = key->mutable_call_indices()->mutable_custom();
     callIndices->set_module_index(0x07);

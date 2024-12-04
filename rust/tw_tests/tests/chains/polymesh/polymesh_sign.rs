@@ -38,7 +38,7 @@ fn test_polymesh_sign_join_identity() {
             block_number: 16_102_087,
             period: 64,
         }),
-        message_oneof: identity_call(
+        runtime_call: identity_call(
             Proto::mod_Identity::OneOfmessage_oneof::join_identity_as_key(JoinIdentityAsKey {
                 auth_id: 52_188,
                 ..Default::default()
@@ -82,7 +82,7 @@ fn test_polymesh_sign_transfer() {
             block_number: 16_102_106,
             period: 64,
         }),
-        message_oneof: balance_call(Proto::mod_Balance::OneOfmessage_oneof::transfer(Transfer {
+        runtime_call: balance_call(Proto::mod_Balance::OneOfmessage_oneof::transfer(Transfer {
             to_address: PUBLIC_KEY_2.into(),
             value: Cow::Owned(U256::from(value).to_big_endian().to_vec()),
             ..Default::default()

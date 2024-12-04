@@ -20,16 +20,20 @@ pub const PUBLIC_KEY_2: &str = "2CpqFh8VnwJAjenw4xSUWCaaJ2QwGdhnCikoSEczMhjgqyj7
 
 pub fn balance_call(
     call: Proto::mod_Balance::OneOfmessage_oneof,
-) -> Proto::mod_SigningInput::OneOfmessage_oneof {
-    Proto::mod_SigningInput::OneOfmessage_oneof::balance_call(Proto::Balance {
-        message_oneof: call,
+) -> Option<Proto::RuntimeCall<'_>> {
+    Some(Proto::RuntimeCall {
+        pallet_oneof: Proto::mod_RuntimeCall::OneOfpallet_oneof::balance_call(Proto::Balance {
+            message_oneof: call,
+        }),
     })
 }
 
 pub fn identity_call(
     call: Proto::mod_Identity::OneOfmessage_oneof,
-) -> Proto::mod_SigningInput::OneOfmessage_oneof {
-    Proto::mod_SigningInput::OneOfmessage_oneof::identity_call(Proto::Identity {
-        message_oneof: call,
+) -> Option<Proto::RuntimeCall<'_>> {
+    Some(Proto::RuntimeCall {
+        pallet_oneof: Proto::mod_RuntimeCall::OneOfpallet_oneof::identity_call(Proto::Identity {
+            message_oneof: call,
+        }),
     })
 }
