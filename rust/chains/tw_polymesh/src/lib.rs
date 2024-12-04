@@ -13,10 +13,6 @@ pub mod types;
 pub const POLYMESH_PREFIX: u16 = 12;
 pub const POLYMESH: NetworkId = NetworkId::new_unchecked(POLYMESH_PREFIX);
 
-pub fn network_id_from_tw(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<NetworkId> {
-    Ok(NetworkId::try_from(input.network as u16).map_err(|_| EncodeError::InvalidNetworkId)?)
-}
-
 pub fn ctx_from_tw(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<SubstrateContext> {
     let network =
         NetworkId::try_from(input.network as u16).map_err(|_| EncodeError::InvalidNetworkId)?;
