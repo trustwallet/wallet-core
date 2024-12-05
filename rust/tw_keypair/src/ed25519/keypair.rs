@@ -6,7 +6,6 @@ use crate::ed25519::{private::PrivateKey, public::PublicKey, signature::Signatur
 use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::{KeyPairError, KeyPairResult};
 use tw_encoding::hex;
-use tw_hash::H256;
 use zeroize::Zeroizing;
 
 /// Represents a pair of `ed25519` private and public keys.
@@ -44,14 +43,6 @@ impl<H: Hasher512> VerifyingKeyTrait for KeyPair<H> {
 
     fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool {
         self.public().verify(signature, message)
-    }
-}
-
-impl<H: Hasher512> From<H256> for KeyPair<H> {
-    fn from(secret: H256) -> Self {
-        let private = PrivateKey::from(secret);
-        let public = private.public();
-        KeyPair { private, public }
     }
 }
 

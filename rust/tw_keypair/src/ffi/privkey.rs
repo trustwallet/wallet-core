@@ -8,11 +8,10 @@ use crate::ffi::pubkey::TWPublicKey;
 use crate::tw::{Curve, PrivateKey, PublicKeyType};
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
-use tw_memory::ffi::tw_data::TWData;
 use tw_memory::ffi::RawPtrTrait;
 use tw_misc::{try_or_else, try_or_false};
 
-pub struct TWPrivateKey(pub PrivateKey);
+pub struct TWPrivateKey(pub(crate) PrivateKey);
 
 impl RawPtrTrait for TWPrivateKey {}
 
@@ -68,17 +67,6 @@ pub unsafe extern "C" fn tw_private_key_is_valid(
     PrivateKey::is_valid(priv_key_slice, curve)
 }
 
-/// Convert the given private key to raw-bytes block of data.
-///
-/// \param key Non-null pointer to the private key
-/// \note The returned block should be deleted with \tw_data_delete_zeroizing
-/// \return Non-null block of data (raw bytes) of the given private key
-#[no_mangle]
-pub unsafe extern "C" fn tw_private_key_data(key: *const TWPrivateKey) -> *mut TWData {
-    let key = try_or_else!(TWPrivateKey::from_ptr_as_ref(key), std::ptr::null_mut);
-    TWData::from(key.0.bytes().to_vec()).into_ptr()
-}
-
 /// Signs a digest using ECDSA and given curve.
 ///
 /// \param key *non-null* pointer to a Private key
@@ -88,7 +76,7 @@ pub unsafe extern "C" fn tw_private_key_data(key: *const TWPrivateKey) -> *mut T
 /// \return Signature as a C-compatible result with a C-compatible byte array.
 #[no_mangle]
 pub unsafe extern "C" fn tw_private_key_sign(
-    key: *const TWPrivateKey,
+    key: *mut TWPrivateKey,
     message: *const u8,
     message_len: usize,
     curve: u32,
@@ -112,7 +100,7 @@ pub unsafe extern "C" fn tw_private_key_sign(
 /// \return *non-null* pointer to the corresponding public key.
 #[no_mangle]
 pub unsafe extern "C" fn tw_private_key_get_public_key_by_type(
-    key: *const TWPrivateKey,
+    key: *mut TWPrivateKey,
     pubkey_type: u32,
 ) -> *mut TWPublicKey {
     let ty = try_or_else!(PublicKeyType::from_raw(pubkey_type), std::ptr::null_mut);

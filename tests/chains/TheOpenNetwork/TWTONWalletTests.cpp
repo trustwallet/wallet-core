@@ -9,25 +9,6 @@
 
 namespace TW::TheOpenNetwork::tests {
 
-TEST(TWTONWallet, IsValidMnemonic) {
-    const auto mnemonic = STRING("sight shed side garbage illness clean health wet all win bench wide exist find galaxy drift task suggest portion fresh valve crime radar combine");
-    const auto emptyPassphrase = STRING("");
-    const auto invalidPassphrase = STRING("Expected empty passphrase");
-    EXPECT_TRUE(TWTONWalletIsValidMnemonic(mnemonic.get(), nullptr));
-    EXPECT_TRUE(TWTONWalletIsValidMnemonic(mnemonic.get(), emptyPassphrase.get()));
-    EXPECT_FALSE(TWTONWalletIsValidMnemonic(mnemonic.get(), invalidPassphrase.get()));
-}
-
-TEST(TWTONWallet, MnemonicToPrivateKey) {
-    const auto mnemonic = STRING("sight shed side garbage illness clean health wet all win bench wide exist find galaxy drift task suggest portion fresh valve crime radar combine");
-    const auto wallet = WRAP(TWTONWallet, TWTONWalletCreateWithMnemonic(mnemonic.get(), nullptr));
-    EXPECT_TRUE(wallet);
-    const auto key = WRAP(TWPrivateKey, TWTONWalletGetKey(wallet.get()));
-    EXPECT_TRUE(key);
-    const auto keyBytes = WRAPD(TWPrivateKeyData(key.get()));
-    assertHexEqual(keyBytes, "b471884e691a9f5bb641b14f33bb9e555f759c24e368c4c0d997db3a60704220");
-}
-
 TEST(TWTONWallet, BuildV4R2StateInit) {
     auto publicKeyBytes = DATA("f229a9371fa7c2108b3d90ea22c9be705ff5d0cfeaee9cbb9366ff0171579357");
     auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(publicKeyBytes.get(), TWPublicKeyTypeED25519));

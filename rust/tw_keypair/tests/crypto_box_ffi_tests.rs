@@ -17,12 +17,11 @@ use tw_keypair::test_utils::tw_crypto_box_helpers::{
     TWCryptoBoxPublicKeyHelper, TWCryptoBoxSecretKeyHelper,
 };
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
-use tw_memory::test_utils::tw_wrapper::TWAutoWrapper;
+use tw_memory::test_utils::tw_wrapper::TWWrapper;
 
 fn random_key_pair() -> (TWCryptoBoxSecretKeyHelper, TWCryptoBoxPublicKeyHelper) {
-    let secret = TWAutoWrapper::wrap(unsafe { tw_crypto_box_secret_key_create() });
-    let pubkey =
-        TWAutoWrapper::wrap(unsafe { tw_crypto_box_secret_key_get_public_key(secret.ptr()) });
+    let secret = TWWrapper::wrap(unsafe { tw_crypto_box_secret_key_create() });
+    let pubkey = TWWrapper::wrap(unsafe { tw_crypto_box_secret_key_get_public_key(secret.ptr()) });
     (secret, pubkey)
 }
 
@@ -56,7 +55,7 @@ fn test_encrypt_decrypt_easy_error() {
             .decode_hex()
             .unwrap(),
     );
-    let other_pubkey = TWAutoWrapper::wrap(unsafe {
+    let other_pubkey = TWWrapper::wrap(unsafe {
         tw_crypto_box_public_key_create_with_data(other_pubkey_data.ptr())
     });
 
@@ -84,9 +83,8 @@ fn test_public_key() {
     let pubkey_data = TWDataHelper::create(pubkey_bytes.clone());
     assert!(unsafe { tw_crypto_box_public_key_is_valid(pubkey_data.ptr()) });
 
-    let pubkey = TWAutoWrapper::wrap(unsafe {
-        tw_crypto_box_public_key_create_with_data(pubkey_data.ptr())
-    });
+    let pubkey =
+        TWWrapper::wrap(unsafe { tw_crypto_box_public_key_create_with_data(pubkey_data.ptr()) });
     let actual_data = TWDataHelper::wrap(unsafe { tw_crypto_box_public_key_data(pubkey.ptr()) });
     assert_eq!(actual_data.to_vec().unwrap(), pubkey_bytes);
 }
@@ -100,9 +98,8 @@ fn test_secret_key() {
     let secret_data = TWDataHelper::create(secret_bytes.clone());
     assert!(unsafe { tw_crypto_box_secret_key_is_valid(secret_data.ptr()) });
 
-    let pubkey = TWAutoWrapper::wrap(unsafe {
-        tw_crypto_box_secret_key_create_with_data(secret_data.ptr())
-    });
+    let pubkey =
+        TWWrapper::wrap(unsafe { tw_crypto_box_secret_key_create_with_data(secret_data.ptr()) });
     let actual_data = TWDataHelper::wrap(unsafe { tw_crypto_box_secret_key_data(pubkey.ptr()) });
     assert_eq!(actual_data.to_vec().unwrap(), secret_bytes);
 }

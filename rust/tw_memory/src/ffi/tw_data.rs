@@ -5,7 +5,6 @@
 use crate::ffi::c_byte_array_ref::CByteArrayRef;
 use crate::ffi::RawPtrTrait;
 use crate::Data;
-use zeroize::Zeroize;
 
 /// Defines a resizable block of data.
 ///
@@ -78,18 +77,6 @@ pub unsafe extern "C" fn tw_data_create_with_bytes(bytes: *const u8, size: usize
 pub unsafe extern "C" fn tw_data_delete(data: *mut TWData) {
     // Take the ownership back to rust and drop the owner.
     let _ = TWData::from_ptr(data);
-}
-
-/// Deletes a block of data zeroizing the memory.
-///
-/// \param data A non-null valid block of data
-#[no_mangle]
-pub unsafe extern "C" fn tw_data_delete_zeroizing(data: *mut TWData) {
-    // Take the ownership back to rust and drop the owner.
-    let Some(mut data) = TWData::from_ptr(data) else {
-        return;
-    };
-    data.0.zeroize();
 }
 
 /// Returns the raw pointer to the contents of data.

@@ -25,17 +25,12 @@ extension KeyStore {
     var bnbWallet: Wallet {
         return wallets.first(where: { $0.identifier == "bnb_wallet.json"})!
     }
-
-    var tonWallet: Wallet? {
-        return wallets.first(where: { $0.identifier == "ton_wallet.json"})
-    }
 }
 
 class KeyStoreTests: XCTestCase {
     let keyAddress = AnyAddress(string: "0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b", coin: .ethereum)!
     let walletAddress = AnyAddress(string: "0x32dd55E0BCF509a35A3F5eEb8593fbEb244796b1", coin: .ethereum)!
     let mnemonic = "often tobacco bread scare imitate song kind common bar forest yard wisdom"
-    let tonMnemonic = "laundry myself fitness beyond prize piano match acid vacuum already abandon dance occur pause grocery company inject excuse weasel carpet fog grunt trick spike"
     let fileManager = FileManager.default
 
     var keyDirectory: URL!
@@ -78,17 +73,11 @@ class KeyStoreTests: XCTestCase {
 
         try? fileManager.removeItem(at: bnbWalletDestination)
         try? fileManager.copyItem(at: bnbWalletURL, to: bnbWalletDestination)
-
-        let tonWalletURL = Bundle(for: type(of: self)).url(forResource: "ton_wallet", withExtension: "json")!
-        let tonWalletDestination = keyDirectory.appendingPathComponent("ton_wallet.json")
-
-        try? fileManager.removeItem(at: tonWalletDestination)
-        try? fileManager.copyItem(at: tonWalletURL, to: tonWalletDestination)
     }
 
     func testLoadKeyStore() {
         let keyStore = try! KeyStore(keyDirectory: keyDirectory)
-        XCTAssertEqual(keyStore.wallets.count, 5)
+        XCTAssertEqual(keyStore.wallets.count, 4)
         XCTAssertEqual(keyStore.watches.count, 1)
     }
 
@@ -98,13 +87,13 @@ class KeyStoreTests: XCTestCase {
         let newWallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
 
         XCTAssertEqual(newWallet.accounts.count, 3)
-        XCTAssertEqual(keyStore.wallets.count, 6)
+        XCTAssertEqual(keyStore.wallets.count, 5)
         XCTAssertNoThrow(try newWallet.getAccount(password: "password", coin: .ethereum))
         XCTAssertNoThrow(try newWallet.getAccount(password: "password", coin: .binance))
         XCTAssertNoThrow(try newWallet.getAccount(password: "password", coin: .smartChain))
     }
 
-    func testUpdatePassword() throws {
+    func testUpdateKey() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let coins = [CoinType.ethereum, .callisto, .poanetwork]
         let wallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
@@ -121,21 +110,6 @@ class KeyStoreTests: XCTestCase {
         XCTAssertNotNil(data)
         XCTAssertNotNil(mnemonic)
         XCTAssert(Mnemonic.isValid(mnemonic: mnemonic!))
-        XCTAssertEqual(savedWallet.key.name, "name")
-    }
-
-    func testUpdatePasswordTON() throws {
-        let keyStore = try KeyStore(keyDirectory: keyDirectory)
-
-        try keyStore.update(wallet: keyStore.tonWallet!, password: "password", newPassword: "testpassword")
-
-        let savedKeyStore = try KeyStore(keyDirectory: keyDirectory)
-        let savedWallet = savedKeyStore.tonWallet!
-
-        let tonMnemonic = savedWallet.key.decryptTONMnemonic(password: Data("testpassword".utf8))!
-
-        XCTAssertEqual(savedWallet.accounts.count, 1)
-        XCTAssert(TONWallet.isValidMnemonic(mnemonic: tonMnemonic, passphrase: nil))
         XCTAssertEqual(savedWallet.key.name, "name")
     }
 
@@ -181,17 +155,6 @@ class KeyStoreTests: XCTestCase {
         XCTAssertEqual(savedWallet.accounts.count, 1)
         XCTAssertEqual(savedWallet.accounts[0].coin, coins.last)
     }
-    
-    func testRemoveTONAccounts() throws {
-        let keyStore = try KeyStore(keyDirectory: keyDirectory)
-
-        _ = try keyStore.removeAccounts(wallet: keyStore.tonWallet!, coins: [.ton], password: "password")
-
-        let savedKeyStore = try KeyStore(keyDirectory: keyDirectory)
-        let savedWallet = savedKeyStore.tonWallet!
-        // The only account should have been removed.
-        XCTAssertEqual(savedWallet.accounts.count, 0)
-    }
 
     func testDeleteKey() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
@@ -205,13 +168,6 @@ class KeyStoreTests: XCTestCase {
         let wallet = keyStore.hdWallet!
         try keyStore.delete(wallet: wallet, password: "password")
         XCTAssertNil(keyStore.hdWallet)
-    }
-    
-    func testDeleteTONWallet() throws {
-        let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let wallet = keyStore.tonWallet!
-        try keyStore.delete(wallet: wallet, password: "password")
-        XCTAssertNil(keyStore.tonWallet)
     }
 
     func testImportKey() throws {
@@ -276,60 +232,7 @@ class KeyStoreTests: XCTestCase {
         XCTAssertEqual(wallet.accounts.count, 1)
         XCTAssertNotNil(keyStore.hdWallet)
     }
-    
-    func testImportTONWallet() throws {
-        let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let wallet = try keyStore.importTON(tonMnemonic: tonMnemonic, name: "name", encryptPassword: "newPassword", coin: .ton, encryption: .aes128Ctr)
-        let storedData = wallet.key.decryptMnemonic(password: Data("newPassword".utf8))
 
-        XCTAssertNotNil(storedData)
-        XCTAssertEqual(wallet.accounts.count, 1)
-    }
-
-    func testImportTONWalletJSON() throws {
-        let json = """
-        {
-            "activeAccounts": [
-                {
-                    "address": "UQByxuJBNpeC4QjGdgnfeO8oM4G9srUG1FyIGmqX3YnVQ4p1",
-                    "coin": 607,
-                    "derivationPath": "",
-                    "publicKey": "3bab20a5f77e277e39443fc16c64e0479b4a9db542bf9e11c638598384c853f1"
-                }
-            ],
-            "crypto": {
-                "cipher": "aes-128-ctr",
-                "cipherparams": {
-                    "iv": "d7fdc3fa7a09e1163094d14a557ed1b6"
-                },
-                "ciphertext": "58017dfbee52c6f22fa1eed323cda21e3413de8da48083e09be9a826bc4f9c184f14e7a47ffcc5f539dc94435d1742dfdc0785e612d039c4858777da9dcd92960580cb9c755434832d94f88b8f562a23ad16f7b6165bbd709a701b3ec46efbe5f6aa858000ce19641abcb7d20475fa1e9cfed5f2f5dae7c76d6496d54bd6db593050617c85c0f6bc3cf8fac89b671d53924202037e1c0e1ecd521492e5",
-                "kdf": "scrypt",
-                "kdfparams": {
-                    "dklen": 32,
-                    "n": 16384,
-                    "p": 4,
-                    "r": 8,
-                    "salt": ""
-                },
-                "mac": "ddc49eecdec579021cd18526982ec9519a82f8c39ff20aa7d9aa7f02d5ebd36e"
-            },
-            "id": "e11e5404-73d5-416c-b957-a65164fb0171",
-            "name": "name",
-            "type": "ton-mnemonic",
-            "version": 3
-        }
-        """
-
-        let password = "password"
-        let keyStore = try KeyStore(keyDirectory: keyDirectory)
-
-        let wallet = try keyStore.import(json: Data(json.utf8), name: "newName", password: "password", newPassword: "newPassword", coins: [.ton])
-        XCTAssertEqual(wallet.accounts.first!.address, "UQByxuJBNpeC4QjGdgnfeO8oM4G9srUG1FyIGmqX3YnVQ4p1")
-        let actualMnemonic = try keyStore.exportTONMnemonic(wallet: wallet, password: "newPassword")
-        let expectedMnemonic = "slogan train glide measure mercy dizzy when satoshi vote change length pluck token walnut actress hollow guard soup solve rival summer vicious anxiety device"
-        XCTAssertEqual(actualMnemonic, expectedMnemonic)
-    }
-    
     func testImportJSON() throws {
         let expected = """
         {
@@ -428,14 +331,6 @@ class KeyStoreTests: XCTestCase {
         let exported = try keyStore.exportMnemonic(wallet: wallet, password: "newPassword")
 
         XCTAssertEqual(mnemonic, exported)
-    }
-    
-    func testExportTONMnemonic() throws {
-        let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let wallet = try keyStore.importTON(tonMnemonic: tonMnemonic, name: "name", encryptPassword: "newPassword", coin: .ton)
-        let exported = try keyStore.exportTONMnemonic(wallet: wallet, password: "newPassword")
-
-        XCTAssertEqual(tonMnemonic, exported)
     }
 
     func testFileName() {

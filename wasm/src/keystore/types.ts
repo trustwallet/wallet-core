@@ -9,7 +9,6 @@ export enum WalletType {
   PrivateKey = "privateKey",
   WatchOnly = "watchOnly",
   Hardware = "hardware",
-  TonMnemonic = "ton-mnemonic"
 }
 
 export enum Error {
@@ -69,15 +68,6 @@ export interface IKeyStore {
   // Import a Wallet object directly
   importWallet(wallet: Wallet): Promise<void>;
 
-  // Import a TON wallet by 24-words mnemonic, name, password and initial active account (from coinType)
-  importTON(
-      tonMnemonic: string,
-      name: string,
-      password: string,
-      coin: CoinType,
-      encryption: StoredKeyEncryption
-  ): Promise<Wallet>;
-
   // Add active accounts to a wallet by wallet id, password, coin
   addAccounts(id: string, password: string, coins: CoinType[]): Promise<Wallet>;
 
@@ -88,7 +78,7 @@ export interface IKeyStore {
     account: ActiveAccount
   ): Promise<PrivateKey>;
 
-  // Delete a wallet by wallet id and password
+  // Delete a wallet by wallet id and password.aq1aq
   delete(id: string, password: string): Promise<void>;
 
   // Export a wallet by wallet id and password, returns mnemonic or private key

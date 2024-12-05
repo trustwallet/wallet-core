@@ -46,10 +46,6 @@ DerivationPath::DerivationPath(const std::string& string) {
 }
 
 std::string DerivationPath::string() const noexcept {
-    if (indices.empty()) {
-        return {};
-    }
-
     std::string result = "m/";
     for (auto& index : indices) {
         result += index.string();

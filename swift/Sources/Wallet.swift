@@ -59,7 +59,7 @@ public final class Wallet: Hashable, Equatable {
         return account
     }
 
-    /// Returns the accounts for specific coins.
+    /// Returns the accounts for a specific coins.
     ///
     /// - Parameters:
     ///   - password: wallet encryption password
@@ -67,10 +67,6 @@ public final class Wallet: Hashable, Equatable {
     /// - Returns: the added accounts
     /// - Throws: `KeyStore.Error.invalidPassword` if the password is incorrect.
     public func getAccounts(password: String, coins: [CoinType]) throws -> [Account] {
-        if !key.isMnemonic {
-            return coins.compactMap({ key.accountForCoin(coin: $0, wallet: nil) })
-        }
-
         guard let wallet = key.wallet(password: Data(password.utf8)) else {
             throw KeyStore.Error.invalidPassword
         }
