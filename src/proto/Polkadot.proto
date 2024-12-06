@@ -131,6 +131,12 @@ message Staking {
 
         // call indices
         CallIndices call_indices = 5;
+
+        // Staking.Bond call indices
+        CallIndices bond_call_indices = 6;
+
+        // Staking.Nominate call indices
+        CallIndices nominate_call_indices = 7;
     }
 
     // Bond extra amount
@@ -184,6 +190,12 @@ message Staking {
 
         // call indices
         CallIndices call_indices = 2;
+
+        // Staking.Chill call indices
+        CallIndices chill_call_indices = 3;
+
+        // Staking.Unbond call indices
+        CallIndices unbond_call_indices = 4;
     }
 
     // Chill

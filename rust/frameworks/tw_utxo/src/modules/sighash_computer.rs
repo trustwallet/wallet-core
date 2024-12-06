@@ -60,11 +60,11 @@ where
             .input_args()
             .iter()
             .enumerate()
-            .map(|(input_index, utxo)| {
+            .map(|(signing_input_index, utxo)| {
                 let signing_method = utxo.signing_method;
 
                 let utxo_args = UtxoPreimageArgs {
-                    input_index,
+                    input_index: signing_input_index,
                     script_pubkey: utxo.script_pubkey.clone(),
                     amount: utxo.amount,
                     // TODO move `leaf_hash_code_separator` to `UtxoTaprootPreimageArgs`.
@@ -90,12 +90,14 @@ where
                         let tr_spent_script_pubkeys: Vec<Script> = unsigned_tx
                             .input_args()
                             .iter()
-                            .map(|utxo| {
-                                if utxo.signing_method == SigningMethod::Taproot {
-                                    // Taproot UTXOs scriptPubkeys should be signed as is.
+                            .enumerate()
+                            .map(|(i, utxo)| {
+                                if i == signing_input_index {
+                                    // Use the scriptPubkey required to spend this UTXO.
                                     utxo.script_pubkey.clone()
                                 } else {
-                                    // Use the original scriptPubkey declared in the unspent output.
+                                    // Use the original scriptPubkey declared in the unspent output for other UTXOs
+                                    // (different from that we sign at this iteration).
                                     utxo.prevout_script_pubkey.clone()
                                 }
                             })
