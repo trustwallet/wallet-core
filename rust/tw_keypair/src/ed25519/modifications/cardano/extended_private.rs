@@ -45,7 +45,13 @@ impl<H: Hasher512> ExtendedPrivateKey<H> {
     }
 
     /// `ed25519` signing uses a public key associated with the private key.
-    pub(crate) fn sign_with_public_key(
+    ///
+    /// # Unsafe
+    ///
+    /// Ensure that the public key is always correctly paired with the private key,
+    /// preventing scenarios where an arbitrary public key could be introduced into the signing process.
+    /// Security report: https://github.com/trustwallet/wallet-core/security/advisories/GHSA-7g72-jxww-q9vq
+    pub(crate) unsafe fn sign_with_public_key(
         &self,
         public: &ExtendedPublicKey<H>,
         message: &[u8],
@@ -61,7 +67,7 @@ impl<H: Hasher512> SigningKeyTrait for ExtendedPrivateKey<H> {
     type Signature = Signature;
 
     fn sign(&self, message: Self::SigningMessage) -> KeyPairResult<Self::Signature> {
-        self.sign_with_public_key(&self.public(), message.as_slice())
+        unsafe { self.sign_with_public_key(&self.public(), message.as_slice()) }
     }
 }
 

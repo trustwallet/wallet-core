@@ -43,8 +43,10 @@ impl<H: Hasher512> PrivateKey<H> {
         public: &PublicKey<H>,
         message: &[u8],
     ) -> KeyPairResult<Signature> {
-        self.expanded_key
-            .sign_with_pubkey(public.to_bytes(), message)
+        unsafe {
+            self.expanded_key
+                .sign_with_pubkey(public.to_bytes(), message)
+        }
     }
 }
 
