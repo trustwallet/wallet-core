@@ -4066,7 +4066,7 @@
     "id": "kaia",
     "name": "Kaia",
     "coinId": 10008217,
-    "symbol": "KLAY",
+    "symbol": "KAIA",
     "decimals": 18,
     "blockchain": "Ethereum",
     "derivation": [
