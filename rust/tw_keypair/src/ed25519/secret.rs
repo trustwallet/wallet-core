@@ -69,8 +69,14 @@ impl<H: Hasher512> ExpandedSecretKey<H> {
     /// Signs a message with this `ExpandedSecretKey`.
     /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/secret.rs#L389-L412
     /// Ported: https://github.com/trustwallet/wallet-core/blob/423f0e34725f69c0a9d535e1a32534c99682edea/trezor-crypto/crypto/ed25519-donna/ed25519.c#L97-L130
+    ///
+    /// # Important
+    ///
+    /// Ensure that the public key is always correctly paired with the private key,
+    /// preventing scenarios where an arbitrary public key could be introduced into the signing process.
+    /// Security report: https://github.com/trustwallet/wallet-core/security/advisories/GHSA-7g72-jxww-q9vq
     #[allow(non_snake_case)]
-    pub(crate) fn sign_with_pubkey(
+    pub(crate) fn dangerous_sign_with_pubkey(
         &self,
         pubkey: H256,
         message: &[u8],
@@ -122,7 +128,9 @@ mod tests {
         let message = hex::decode("f0").unwrap();
 
         // Anyway, the result signature has an expected value.
-        let sign = secret_key.sign_with_pubkey(public, &message).unwrap();
+        let sign = secret_key
+            .dangerous_sign_with_pubkey(public, &message)
+            .unwrap();
         let expected = H512::from("ed55bce14a845a275e7a3a7242420ed1eeaba79dc3141bebf42ca0d12169e209a6e56b6981a336f711ae3aaea8d063b72b0e79a8808311d08cb42cabfdd0450d");
         assert_eq!(sign.to_bytes(), expected);
     }
