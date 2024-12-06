@@ -4814,5 +4814,35 @@
       "rpc": "https://docs.pactus.org/api/http",
       "documentation": "https://docs.pactus.org"
     }
+  },
+  {
+    "id": "5ire",
+    "name": "5ire",
+    "coinId": 995,
+    "symbol": "5ire",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "995",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://5irescan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x50479e5fe74974fe0c5a1f8747897acefeeafa2d3f5b78fc085238412f0f377d",
+      "sampleAccount": "0x0d11f2f0ff55c4fcfc3ff86bdc8e78ffa7df99fd"
+    },
+    "info": {
+      "url": "https://5irescan.io",
+      "source": "https://github.com/5ire-tech",
+      "rpc": "https://rpc.5ire.network",
+      "documentation": "https://docs.5ire.org"
+    }
   }
 ]

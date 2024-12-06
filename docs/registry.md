@@ -161,3 +161,4 @@ This list is generated from [./registry.json](../registry.json)
 | 90000118 | Neutron          | NTRN   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/neutron/info/logo.png" width="32" />      | <https://neutron.org/>        |
 | 245022934 | Neon             | NEON   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/neon/info/logo.png" width="32" />         | <https://neonevm.org>         |
 | 1323161554 | Aurora           | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aurora/info/logo.png" width="32" />       | <https://aurora.dev/>         |
+| 995 | 5ire           | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/5ire/info/logo.png" width="32" />       | <https://docs.5ire.org/>         |
