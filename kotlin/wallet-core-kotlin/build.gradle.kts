@@ -58,7 +58,7 @@ kotlin {
             }
         }
 
-        getByName("commonTest") {
+        val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
             }
@@ -83,6 +83,13 @@ kotlin {
 
             dependencies {
                 implementation(npm(name = "webpack", version = "5.89.0"))
+            }
+        }
+
+        getByName("androidInstrumentedTest") {
+            dependsOn(commonTest)
+            dependencies {
+                implementation(libs.androidx.test.runner)
             }
         }
     }
@@ -119,6 +126,8 @@ android {
                 arguments += listOf("-DCMAKE_BUILD_TYPE=Release", "-DKOTLIN=True", "-DTW_UNITY_BUILD=ON")
             }
         }
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildFeatures {
@@ -130,12 +139,6 @@ android {
         resValues = false
         shaders = false
         viewBinding = false
-    }
-
-    androidComponents {
-        beforeVariants {
-            it.enable = it.name == "release"
-        }
     }
 
     externalNativeBuild {

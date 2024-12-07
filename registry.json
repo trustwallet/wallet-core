@@ -2541,9 +2541,9 @@
     "chainId": "820",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://explorer.callisto.network",
+      "url": "https://explorer.callistodao.org",
       "txPath": "/tx/",
-      "accountPath": "/addr/"
+      "accountPath": "/address/"
     },
     "info": {
       "url": "https://callisto.network",
