@@ -7,8 +7,8 @@
 #include <gtest/gtest.h>
 
 
-TEST(TWKlaytnCoinType, TWCoinType) {
-    const auto coin = TWCoinTypeKlaytn;
+TEST(TW5ireCoinType, TWCoinType) {
+    const auto coin = TW5ireCoinType;
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
