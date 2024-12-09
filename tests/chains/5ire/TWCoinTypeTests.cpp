@@ -8,7 +8,7 @@
 
 
 TEST(TW5ireCoinType, TWCoinType) {
-    const auto coin = TW5ireCoinType;
+    const auto coin = TWCoinType5ire;
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
@@ -20,7 +20,7 @@ TEST(TW5ireCoinType, TWCoinType) {
 
     assertStringsEqual(id, "5ire");
     assertStringsEqual(name, "5ire");
-    assertStringsEqual(symbol, "5ire");
+    assertStringsEqual(symbol, "5IRE");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
