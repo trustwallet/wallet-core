@@ -96,6 +96,13 @@ pub trait InsertInstruction {
     fn add_fee_payer(&mut self, account: SolanaAddress) -> SigningResult<()> {
         if self.account_keys_mut().contains(&account) {
             // For security reasons, we don't allow adding a fee payer if it's already in the account list.
+            //
+            // If the fee payer is already in the transaction and there is a malicious instruction to
+            // transfer tokens from the fee payer to another account, The fee payer may have inadvertently
+            // signed off on such transactions, which is not what they would expect.
+            //
+            // Such examples may be difficult to exploit, but we still took precautionary measures to prohibit
+            // the new fee payer from appearing in the account list of the transaction out of caution
             return SigningError::err(SigningErrorType::Error_internal)
                 .context("Fee payer account is already in the account list");
         }
