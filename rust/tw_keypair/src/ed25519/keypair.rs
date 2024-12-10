@@ -33,7 +33,7 @@ impl<H: Hasher512> SigningKeyTrait for KeyPair<H> {
     type Signature = Signature;
 
     fn sign(&self, message: Self::SigningMessage) -> KeyPairResult<Self::Signature> {
-        self.private().sign_with_public_key(self.public(), &message)
+        self.private().sign(message)
     }
 }
 
