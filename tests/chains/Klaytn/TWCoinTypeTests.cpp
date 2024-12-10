@@ -24,7 +24,7 @@ TEST(TWKaiaCoinType, TWCoinType) {
 
     assertStringsEqual(id, "kaia");
     assertStringsEqual(name, "Kaia");
-    assertStringsEqual(symbol, "KLAY");
+    assertStringsEqual(symbol, "KAIA");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
