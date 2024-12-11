@@ -176,7 +176,7 @@ pub const OP_CHECKMULTISIG: u8 = 0xae;
 pub const OP_CHECKMULTISIGVERIFY: u8 = 0xaf;
 pub const OP_NOP1: u8 = 0xb0;
 pub const OP_CLTV: u8 = 0xb1;
-pub const OP_CSV: u8 = 0xb2;
+pub const OP_CHECKSEQUENCEVERIFY: u8 = 0xb2;
 pub const OP_NOP4: u8 = 0xb3;
 pub const OP_NOP5: u8 = 0xb4;
 pub const OP_NOP6: u8 = 0xb5;
@@ -254,3 +254,16 @@ pub const OP_RETURN_252: u8 = 0xfc;
 pub const OP_RETURN_253: u8 = 0xfd;
 pub const OP_RETURN_254: u8 = 0xfe;
 pub const OP_INVALIDOPCODE: u8 = 0xff;
+
+// OP codes aliases:
+
+/// Push an empty array onto the stack.
+pub const OP_0: u8 = OP_PUSHBYTES_0;
+/// Empty stack is also FALSE.
+pub const OP_FALSE: u8 = OP_PUSHBYTES_0;
+/// Number 1 is also TRUE.
+pub const OP_TRUE: u8 = OP_PUSHNUM_1;
+/// Previously called OP_NOP2.
+pub const OP_NOP2: u8 = OP_CLTV;
+/// Previously called OP_NOP3.
+pub const OP_NOP3: u8 = OP_CHECKSEQUENCEVERIFY;
