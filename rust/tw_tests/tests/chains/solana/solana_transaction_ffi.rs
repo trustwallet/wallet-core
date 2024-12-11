@@ -15,9 +15,9 @@ use tw_proto::Common::Proto::SigningError;
 use tw_proto::Solana::Proto::{self};
 use tw_solana::SOLANA_ALPHABET;
 use wallet_core_rs::ffi::solana::transaction::{
-    tw_solana_transaction_add_fee_payer, tw_solana_transaction_get_compute_unit_limit,
-    tw_solana_transaction_get_compute_unit_price, tw_solana_transaction_set_compute_unit_limit,
-    tw_solana_transaction_set_compute_unit_price, tw_solana_transaction_update_blockhash_and_sign,
+    tw_solana_transaction_get_compute_unit_limit, tw_solana_transaction_get_compute_unit_price,
+    tw_solana_transaction_set_compute_unit_limit, tw_solana_transaction_set_compute_unit_price,
+    tw_solana_transaction_set_fee_payer, tw_solana_transaction_update_blockhash_and_sign,
 };
 
 #[test]
@@ -285,7 +285,7 @@ fn test_solana_transaction_set_priority_fee_transfer_with_address_lookup() {
 }
 
 #[test]
-fn test_solana_transaction_add_fee_payer() {
+fn test_solana_transaction_set_fee_payer() {
     let encoded_tx_str = "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAQABA2uEKrOPvZNBtdUtSFXcg8+kj4O/Z1Ht/hwvnaqq5s6mTXd3KtwUyJFfRs2PBfeQW8xCEZvNr/5J/Tx8ltbn0pwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACo+QRbvXWNKoOfaOL4cSpfYrmn/2TV+dBmct+HsmmwdAQICAAEMAgAAAACcnwYAAAAAAA==";
     let encoded_tx = TWStringHelper::create(encoded_tx_str);
 
@@ -294,7 +294,7 @@ fn test_solana_transaction_add_fee_payer() {
 
     // Step 1 - Add fee payer to the transaction.
     let updated_tx = TWStringHelper::wrap(unsafe {
-        tw_solana_transaction_add_fee_payer(encoded_tx.ptr(), fee_payer.ptr())
+        tw_solana_transaction_set_fee_payer(encoded_tx.ptr(), fee_payer.ptr())
     });
     let updated_tx = updated_tx.to_string().unwrap();
     assert_eq!(updated_tx, "AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAIAAQTLKvCJtWpVdze8Fxjgy/Iyz1sC4U7gqnxmdSM/X2+bV2uEKrOPvZNBtdUtSFXcg8+kj4O/Z1Ht/hwvnaqq5s6mTXd3KtwUyJFfRs2PBfeQW8xCEZvNr/5J/Tx8ltbn0pwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACo+QRbvXWNKoOfaOL4cSpfYrmn/2TV+dBmct+HsmmwdAQMCAQIMAgAAAACcnwYAAAAAAA==");
@@ -313,7 +313,7 @@ fn test_solana_transaction_add_fee_payer() {
         ..Proto::SigningInput::default()
     };
 
-    // Step 3: Obtain preimage hash
+    // Step 3 - Obtain preimage hash.
     let mut pre_imager = PreImageHelper::<Proto::PreSigningOutput>::default();
     let preimage_output = pre_imager.pre_image_hashes(CoinType::Solana, &signing_input);
 
@@ -323,7 +323,7 @@ fn test_solana_transaction_add_fee_payer() {
         "8002000104cb2af089b56a557737bc1718e0cbf232cf5b02e14ee0aa7c6675233f5f6f9b576b842ab38fbd9341b5d52d4855dc83cfa48f83bf6751edfe1c2f9daaaae6cea64d77772adc14c8915f46cd8f05f7905bcc42119bcdaffe49fd3c7c96d6e7d29c00000000000000000000000000000000000000000000000000000000000000002a3e4116ef5d634aa0e7da38be1c4a97d8ae69ffd9357e74199cb7e1ec9a6c1d01030201020c02000000009c9f060000000000"
     );
 
-    // Step 4: Compile transaction info
+    // Step 4 - Compile transaction info.
     // Simulate signature, normally obtained from signature server.
     let fee_payer_signature = "feb9f15cc345fa156450676100033860edbe80a6f61dab8199e94fdc47678ecfdb95e3bc10ec0a7f863ab8ef5c38edae72db7e5d72855db225fd935fd59b700a".decode_hex().unwrap();
     let fee_payer_public_key = base58::decode(fee_payer_str, SOLANA_ALPHABET).unwrap();
@@ -349,7 +349,7 @@ fn test_solana_transaction_add_fee_payer() {
 }
 
 #[test]
-fn test_solana_transaction_add_fee_payer_already_exists() {
+fn test_solana_transaction_set_fee_payer_already_exists() {
     let encoded_tx_str = "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAQABA2uEKrOPvZNBtdUtSFXcg8+kj4O/Z1Ht/hwvnaqq5s6mTXd3KtwUyJFfRs2PBfeQW8xCEZvNr/5J/Tx8ltbn0pwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACo+QRbvXWNKoOfaOL4cSpfYrmn/2TV+dBmct+HsmmwdAQICAAEMAgAAAACcnwYAAAAAAA==";
     let encoded_tx = TWStringHelper::create(encoded_tx_str);
 
@@ -357,10 +357,10 @@ fn test_solana_transaction_add_fee_payer_already_exists() {
     let fee_payer = TWStringHelper::create(fee_payer_str);
 
     let updated_tx = TWStringHelper::wrap(unsafe {
-        tw_solana_transaction_add_fee_payer(encoded_tx.ptr(), fee_payer.ptr())
+        tw_solana_transaction_set_fee_payer(encoded_tx.ptr(), fee_payer.ptr())
     });
 
     // The fee payer is already in the transaction.
-    // We expect tw_solana_transaction_add_fee_payer to return null.
+    // We expect tw_solana_transaction_set_fee_payer to return null.
     assert_eq!(updated_tx.to_string(), None);
 }

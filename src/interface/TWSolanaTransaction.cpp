@@ -87,3 +87,20 @@ TWString *_Nullable TWSolanaTransactionSetComputeUnitLimit(TWString *_Nonnull en
     auto updatedTx = updatedTxStr.toStringOrDefault();
     return TWStringCreateWithUTF8Bytes(updatedTx.c_str());
 }
+
+TWString *_Nullable TWSolanaTransactionSetFeePayer(TWString *_Nonnull encodedTx, TWString *_Nonnull feePayer) {
+    auto& encodedTxRef = *reinterpret_cast<const std::string*>(encodedTx);
+    auto& feePayerRef = *reinterpret_cast<const std::string*>(feePayer);
+
+    const Rust::TWStringWrapper encodedTxStr = encodedTxRef;
+    const Rust::TWStringWrapper feePayerStr = feePayerRef;
+
+    Rust::TWStringWrapper updatedTxStr = Rust::tw_solana_transaction_set_fee_payer(encodedTxStr.get(), feePayerStr.get());
+
+    if (!updatedTxStr) {
+        return nullptr;
+    }
+
+    const auto updatedTx = updatedTxStr.toStringOrDefault();
+    return TWStringCreateWithUTF8Bytes(updatedTx.c_str());
+}

@@ -137,10 +137,10 @@ pub unsafe extern "C" fn tw_solana_transaction_set_compute_unit_limit(
 /// Adds fee payer to the given transaction, and returns the updated transaction.
 ///
 /// \param encoded_tx base64 encoded Solana transaction.
-/// \price fee_payer fee payer account address. Must be a base58 encoded public key.
+/// \param fee_payer fee payer account address. Must be a base58 encoded public key. It must NOT be in the account list yet.
 /// \return base64 encoded Solana transaction. Null if an error occurred.
 #[no_mangle]
-pub unsafe extern "C" fn tw_solana_transaction_add_fee_payer(
+pub unsafe extern "C" fn tw_solana_transaction_set_fee_payer(
     encoded_tx: *const TWString,
     fee_payer: *const TWString,
 ) -> *mut TWString {
@@ -151,7 +151,7 @@ pub unsafe extern "C" fn tw_solana_transaction_add_fee_payer(
     let fee_payer = try_or_else!(fee_payer.as_str(), std::ptr::null_mut);
     let fee_payer = try_or_else!(fee_payer.parse(), std::ptr::null_mut);
 
-    match SolanaTransaction::add_fee_payer(encoded_tx, fee_payer) {
+    match SolanaTransaction::set_fee_payer(encoded_tx, fee_payer) {
         Ok(updated_tx) => TWString::from(updated_tx).into_ptr(),
         _ => std::ptr::null_mut(),
     }
