@@ -2,11 +2,11 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
+use tw_any_coin::test_utils::sign_utils::{AnySignerHelper, CompilerHelper, PreImageHelper};
 use tw_any_coin::test_utils::transaction_decode_utils::TransactionDecoderHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::base64::STANDARD;
-use tw_encoding::hex::DecodeHex;
+use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_encoding::{base58, base64};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_memory::test_utils::tw_data_vector_helper::TWDataVectorHelper;
@@ -17,7 +17,7 @@ use tw_solana::SOLANA_ALPHABET;
 use wallet_core_rs::ffi::solana::transaction::{
     tw_solana_transaction_get_compute_unit_limit, tw_solana_transaction_get_compute_unit_price,
     tw_solana_transaction_set_compute_unit_limit, tw_solana_transaction_set_compute_unit_price,
-    tw_solana_transaction_update_blockhash_and_sign,
+    tw_solana_transaction_set_fee_payer, tw_solana_transaction_update_blockhash_and_sign,
 };
 
 #[test]
@@ -282,4 +282,85 @@ fn test_solana_transaction_set_priority_fee_transfer_with_address_lookup() {
         signed_tx: "AcRmE7GRYYh3XKjfYpBRvTdXjYMLtowRUxaStETGPTm0qxa7sm11yqGXKiO3SgOdsRL2Y9IQRBMfqwkBZyrK9gKAAQACAwEFuF07bbuXk4EuSECBjRkLhDeGEZ4Jm4QbrRF/TN0CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADBkZv5SEXMv/srbpyw5vnvIzlu8X3EmssQ5s6QAAAABQT9t1PQCVM3yb4hmStvNpNTEdyegpbdZm5yq7uawiZAwIABQIQJwAAAQIAAwwCAAAA9AEAAAAAAAACAAkD6AMAAAAAAAABg6ubjXXDDLT4HDIIaUQTs2tXhM3DYb69M4nd4UWaFdMBAAA=",
         signature: "4vkDYvXnAyauDwgQUT9pjhvArCm1jZZFp6xFiT6SYKDHwabPNyNskzzd8YJZR4UJVXakBtRAFku3axVQoA7Apido",
     });
+}
+
+#[test]
+fn test_solana_transaction_set_fee_payer() {
+    let encoded_tx_str = "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAQABA2uEKrOPvZNBtdUtSFXcg8+kj4O/Z1Ht/hwvnaqq5s6mTXd3KtwUyJFfRs2PBfeQW8xCEZvNr/5J/Tx8ltbn0pwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACo+QRbvXWNKoOfaOL4cSpfYrmn/2TV+dBmct+HsmmwdAQICAAEMAgAAAACcnwYAAAAAAA==";
+    let encoded_tx = TWStringHelper::create(encoded_tx_str);
+
+    let fee_payer_str = "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ";
+    let fee_payer = TWStringHelper::create(fee_payer_str);
+
+    // Step 1 - Add fee payer to the transaction.
+    let updated_tx = TWStringHelper::wrap(unsafe {
+        tw_solana_transaction_set_fee_payer(encoded_tx.ptr(), fee_payer.ptr())
+    });
+    let updated_tx = updated_tx.to_string().unwrap();
+    assert_eq!(updated_tx, "AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAIAAQTLKvCJtWpVdze8Fxjgy/Iyz1sC4U7gqnxmdSM/X2+bV2uEKrOPvZNBtdUtSFXcg8+kj4O/Z1Ht/hwvnaqq5s6mTXd3KtwUyJFfRs2PBfeQW8xCEZvNr/5J/Tx8ltbn0pwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACo+QRbvXWNKoOfaOL4cSpfYrmn/2TV+dBmct+HsmmwdAQMCAQIMAgAAAACcnwYAAAAAAA==");
+
+    // Step 2 - Decode transaction into a `RawMessage` Protobuf.
+    let tx_data = base64::decode(&updated_tx, STANDARD).unwrap();
+    let mut decoder = TransactionDecoderHelper::<Proto::DecodingTransactionOutput>::default();
+    let output = decoder.decode(CoinType::Solana, tx_data);
+
+    assert_eq!(output.error, SigningError::OK);
+    let decoded_tx = output.transaction.unwrap();
+
+    let signing_input = Proto::SigningInput {
+        raw_message: Some(decoded_tx),
+        tx_encoding: Proto::Encoding::Base64,
+        ..Proto::SigningInput::default()
+    };
+
+    // Step 3 - Obtain preimage hash.
+    let mut pre_imager = PreImageHelper::<Proto::PreSigningOutput>::default();
+    let preimage_output = pre_imager.pre_image_hashes(CoinType::Solana, &signing_input);
+
+    assert_eq!(preimage_output.error, SigningError::OK);
+    assert_eq!(
+        preimage_output.data.to_hex(),
+        "8002000104cb2af089b56a557737bc1718e0cbf232cf5b02e14ee0aa7c6675233f5f6f9b576b842ab38fbd9341b5d52d4855dc83cfa48f83bf6751edfe1c2f9daaaae6cea64d77772adc14c8915f46cd8f05f7905bcc42119bcdaffe49fd3c7c96d6e7d29c00000000000000000000000000000000000000000000000000000000000000002a3e4116ef5d634aa0e7da38be1c4a97d8ae69ffd9357e74199cb7e1ec9a6c1d01030201020c02000000009c9f060000000000"
+    );
+
+    // Step 4 - Compile transaction info.
+    // Simulate signature, normally obtained from signature server.
+    let fee_payer_signature = "feb9f15cc345fa156450676100033860edbe80a6f61dab8199e94fdc47678ecfdb95e3bc10ec0a7f863ab8ef5c38edae72db7e5d72855db225fd935fd59b700a".decode_hex().unwrap();
+    let fee_payer_public_key = base58::decode(fee_payer_str, SOLANA_ALPHABET).unwrap();
+
+    let sol_sender_signature = "936cd6d176e701d1f748031925b2f029f6f1ab4b99aec76e24ccf05649ec269569a08ec0bd80f5fee1cb8d13ecd420bf50c5f64ae74c7afa267458cabb4e5804".decode_hex().unwrap();
+    let sol_sender_public_key = "6b842ab38fbd9341b5d52d4855dc83cfa48f83bf6751edfe1c2f9daaaae6cea6"
+        .decode_hex()
+        .unwrap();
+
+    let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
+    let output = compiler.compile(
+        CoinType::Solana,
+        &signing_input,
+        vec![fee_payer_signature, sol_sender_signature],
+        vec![fee_payer_public_key, sol_sender_public_key],
+    );
+
+    assert_eq!(output.error, SigningError::OK);
+    // Successfully broadcasted tx:
+    // https://explorer.solana.com/tx/66PAVjxFVGP4ctrkXmyNRhp6BdFT7gDe1k356DZzCRaBDTmJZF1ewGsbujWRjDTrt5utnz8oHZw3mg8qBNyct41w?cluster=devnet
+    assert_eq!(output.encoded, "Av658VzDRfoVZFBnYQADOGDtvoCm9h2rgZnpT9xHZ47P25XjvBDsCn+GOrjvXDjtrnLbfl1yhV2yJf2TX9WbcAqTbNbRducB0fdIAxklsvAp9vGrS5mux24kzPBWSewmlWmgjsC9gPX+4cuNE+zUIL9QxfZK50x6+iZ0WMq7TlgEgAIAAQTLKvCJtWpVdze8Fxjgy/Iyz1sC4U7gqnxmdSM/X2+bV2uEKrOPvZNBtdUtSFXcg8+kj4O/Z1Ht/hwvnaqq5s6mTXd3KtwUyJFfRs2PBfeQW8xCEZvNr/5J/Tx8ltbn0pwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACo+QRbvXWNKoOfaOL4cSpfYrmn/2TV+dBmct+HsmmwdAQMCAQIMAgAAAACcnwYAAAAAAA==");
+    assert_eq!(output.unsigned_tx, "gAIAAQTLKvCJtWpVdze8Fxjgy/Iyz1sC4U7gqnxmdSM/X2+bV2uEKrOPvZNBtdUtSFXcg8+kj4O/Z1Ht/hwvnaqq5s6mTXd3KtwUyJFfRs2PBfeQW8xCEZvNr/5J/Tx8ltbn0pwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACo+QRbvXWNKoOfaOL4cSpfYrmn/2TV+dBmct+HsmmwdAQMCAQIMAgAAAACcnwYAAAAAAA==");
+}
+
+#[test]
+fn test_solana_transaction_set_fee_payer_already_exists() {
+    let encoded_tx_str = "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAQABA2uEKrOPvZNBtdUtSFXcg8+kj4O/Z1Ht/hwvnaqq5s6mTXd3KtwUyJFfRs2PBfeQW8xCEZvNr/5J/Tx8ltbn0pwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACo+QRbvXWNKoOfaOL4cSpfYrmn/2TV+dBmct+HsmmwdAQICAAEMAgAAAACcnwYAAAAAAA==";
+    let encoded_tx = TWStringHelper::create(encoded_tx_str);
+
+    let fee_payer_str = "8EhWjZGEt58UKzeiburZVx6QQF3rbayScpDjPNqCx62q";
+    let fee_payer = TWStringHelper::create(fee_payer_str);
+
+    let updated_tx = TWStringHelper::wrap(unsafe {
+        tw_solana_transaction_set_fee_payer(encoded_tx.ptr(), fee_payer.ptr())
+    });
+
+    // The fee payer is already in the transaction.
+    // We expect tw_solana_transaction_set_fee_payer to return null.
+    assert_eq!(updated_tx.to_string(), None);
 }

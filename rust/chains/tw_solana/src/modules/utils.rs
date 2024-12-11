@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::address::SolanaAddress;
 use crate::defined_addresses::{COMPUTE_BUDGET_ADDRESS, SYSTEM_PROGRAM_ID_ADDRESS};
 use crate::modules::insert_instruction::InsertInstruction;
 use crate::modules::instruction_builder::compute_budget_instruction::{
@@ -157,6 +158,20 @@ impl SolanaTransaction {
         )?;
 
         tx.to_base64().tw_err(|_| SigningErrorType::Error_internal)
+    }
+
+    pub fn set_fee_payer(encoded_tx: &str, fee_payer: SolanaAddress) -> SigningResult<String> {
+        let tx_bytes = base64::decode(encoded_tx, STANDARD)?;
+        let mut tx: VersionedTransaction =
+            bincode::deserialize(&tx_bytes).map_err(|_| SigningErrorType::Error_input_parse)?;
+
+        tx.message.set_fee_payer(fee_payer)?;
+
+        // Set the correct number of zero signatures
+        let unsigned_tx = VersionedTransaction::unsigned(tx.message);
+        unsigned_tx
+            .to_base64()
+            .tw_err(|_| SigningErrorType::Error_internal)
     }
 }
 

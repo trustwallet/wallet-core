@@ -91,6 +91,37 @@ pub trait InsertInstruction {
         Ok(account_added_at)
     }
 
+    /// Adds a fee payer account to the message.
+    /// Note: The fee payer must NOT be in the account list yet.
+    fn set_fee_payer(&mut self, account: SolanaAddress) -> SigningResult<()> {
+        if self.account_keys_mut().contains(&account) {
+            // For security reasons, we don't allow adding a fee payer if it's already in the account list.
+            //
+            // If the fee payer is already in the transaction and there is a malicious instruction to
+            // transfer tokens from the fee payer to another account, The fee payer may have inadvertently
+            // signed off on such transactions, which is not what they would expect.
+            //
+            // Such examples may be difficult to exploit, but we still took precautionary measures to prohibit
+            // the new fee payer from appearing in the account list of the transaction out of caution
+            return SigningError::err(SigningErrorType::Error_internal)
+                .context("Fee payer account is already in the account list");
+        }
+
+        // Insert the fee payer account at the beginning of the account list.
+        self.account_keys_mut().insert(0, account);
+        self.message_header_mut().num_required_signatures += 1;
+
+        // Update `program id indexes` and `account id indexes` in every instruction as we inserted the account at the beginning of the list.
+        self.instructions_mut().iter_mut().for_each(|ix| {
+            ix.program_id_index += 1; // Update `program id indexes`
+            ix.accounts
+                .iter_mut()
+                .for_each(|account_id| *account_id += 1); // Update `account id indexes`
+        });
+
+        Ok(())
+    }
+
     /// Returns ALT (Address Lookup Tables) if supported by the message version.
     fn address_table_lookups(&self) -> Option<&[MessageAddressTableLookup]>;
 
