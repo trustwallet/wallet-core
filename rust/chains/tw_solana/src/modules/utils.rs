@@ -160,12 +160,12 @@ impl SolanaTransaction {
         tx.to_base64().tw_err(|_| SigningErrorType::Error_internal)
     }
 
-    pub fn add_fee_payer(encoded_tx: &str, fee_payer: SolanaAddress) -> SigningResult<String> {
+    pub fn set_fee_payer(encoded_tx: &str, fee_payer: SolanaAddress) -> SigningResult<String> {
         let tx_bytes = base64::decode(encoded_tx, STANDARD)?;
         let mut tx: VersionedTransaction =
             bincode::deserialize(&tx_bytes).map_err(|_| SigningErrorType::Error_input_parse)?;
 
-        tx.message.add_fee_payer(fee_payer)?;
+        tx.message.set_fee_payer(fee_payer)?;
 
         // Set the correct number of zero signatures
         let unsigned_tx = VersionedTransaction::unsigned(tx.message);

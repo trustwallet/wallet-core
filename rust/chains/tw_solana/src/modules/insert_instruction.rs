@@ -93,7 +93,7 @@ pub trait InsertInstruction {
 
     /// Adds a fee payer account to the message.
     /// Note: The fee payer must NOT be in the account list yet.
-    fn add_fee_payer(&mut self, account: SolanaAddress) -> SigningResult<()> {
+    fn set_fee_payer(&mut self, account: SolanaAddress) -> SigningResult<()> {
         if self.account_keys_mut().contains(&account) {
             // For security reasons, we don't allow adding a fee payer if it's already in the account list.
             //

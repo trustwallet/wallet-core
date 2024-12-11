@@ -50,7 +50,7 @@ TWString *_Nullable TWSolanaTransactionGetComputeUnitLimit(TWString *_Nonnull en
 /// and returns the updated transaction.
 ///
 /// \param encodedTx base64 encoded Solana transaction.
-/// \price Unit Price as a decimal string.
+/// \param price Unit Price as a decimal string.
 /// \return base64 encoded Solana transaction. Null if an error occurred.
 TW_EXPORT_STATIC_METHOD
 TWString *_Nullable TWSolanaTransactionSetComputeUnitPrice(TWString *_Nonnull encodedTx, TWString *_Nonnull price);
@@ -59,9 +59,17 @@ TWString *_Nullable TWSolanaTransactionSetComputeUnitPrice(TWString *_Nonnull en
 /// and returns the updated transaction.
 ///
 /// \param encodedTx base64 encoded Solana transaction.
-/// \limit Unit Limit as a decimal string.
+/// \param limit Unit Limit as a decimal string.
 /// \return base64 encoded Solana transaction. Null if an error occurred.
 TW_EXPORT_STATIC_METHOD
 TWString *_Nullable TWSolanaTransactionSetComputeUnitLimit(TWString *_Nonnull encodedTx, TWString *_Nonnull limit);
+
+/// Adds fee payer to the given transaction and returns the updated transaction.
+///
+/// \param encodedTx base64 encoded Solana transaction.
+/// \param feePayer fee payer account address. Must be a base58 encoded public key. It must NOT be in the account list yet.
+/// \return base64 encoded Solana transaction. Null if an error occurred.
+TW_EXPORT_STATIC_METHOD
+TWString *_Nullable TWSolanaTransactionSetFeePayer(TWString *_Nonnull encodedTx, TWString *_Nonnull feePayer);
 
 TW_EXTERN_C_END
