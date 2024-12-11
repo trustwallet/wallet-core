@@ -373,6 +373,112 @@ TEST(PolkadotSigner, PolymeshEncodeAndSign) {
     ASSERT_EQ(hex(encoded), "bd0284004322cf71da08f9d56181a707af7c0c437dfcb93e6caac9825a5aba57548142ee000791ee378775eaff34ef7e529ab742f0d81d281fdf20ace0aa765ca484f5909c4eea0a59c8dbbc534c832704924b424ba3230c38acd0ad5360cef023ca2a420f25010400050100849e2f6b165d4b28b39ef3d98f86c0520d82bc349536324365c10af08f323f8302093d00014d454d4f20504144444544205749544820535041434553000000000000000000");
 }
 
+TEST(PolkadotSigner, PolymeshEncodeBondAndNominate) {
+    // tx on mainnet
+    // https://polymesh.subscan.io/extrinsic/0xd516d4cb1f5ade29e557586e370e98c141c90d87a0b7547d98c6580eb2afaeeb
+
+    Polkadot::Proto::SigningInput input;
+    input.set_network(12);
+    input.set_multi_address(true);
+    auto blockHash = parse_hex("ab67744c78f1facfec9e517810a47ae23bc438315a01dac5ffee46beed5ad3d8");
+    auto vGenesisHash = parse_hex("6fbd74e5e1d0a61d52ccfe9d4adaed16dd3a7caa37c6bc4d0c2fa12e8b2f4063");
+    input.set_block_hash(std::string(blockHash.begin(), blockHash.end()));
+    input.set_genesis_hash(std::string(vGenesisHash.begin(), vGenesisHash.end()));
+    input.set_nonce(0UL);
+    input.set_spec_version(6003050u);
+    input.set_transaction_version(4u);
+
+    auto* era = input.mutable_era();
+    era->set_block_number(15742961UL);
+    era->set_period(64UL);
+
+    auto stakingCall = input.mutable_staking_call();
+    auto bondnom = stakingCall->mutable_bond_and_nominate();
+    auto value = store(uint256_t(4000000)); // 4.0 POLYX
+    bondnom->set_controller("2EYbDVDVWiFbXZWJgqGDJsiH5MfNeLr5fxqH3tX84LQZaETG");
+    bondnom->set_value(value.data(), value.size());
+    bondnom->set_reward_destination(Proto::RewardDestination::STAKED);
+    bondnom->add_nominators("2Gw8mSc4CUMxXMKEDqEsumQEXE5yTF8ACq2KdHGuigyXkwtz");
+
+    // Utiltity.batch_all
+    {
+      auto* callIndices = bondnom->mutable_call_indices()->mutable_custom();
+      callIndices->set_module_index(0x29);
+      callIndices->set_method_index(0x02);
+    }
+
+    // Staking.bond
+    {
+      auto* callIndices = bondnom->mutable_bond_call_indices()->mutable_custom();
+      callIndices->set_module_index(0x11);
+      callIndices->set_method_index(0x00);
+    }
+
+    // Staking.nominate
+    {
+      auto* callIndices = bondnom->mutable_nominate_call_indices()->mutable_custom();
+      callIndices->set_module_index(0x11);
+      callIndices->set_method_index(0x05);
+    }
+
+    auto preImage = Signer::signaturePreImage(input);
+    ASSERT_EQ(hex(preImage), "2902081100005ccc5c9276ab7976e7c93c70c190fbf1761578c07b892d0d1fe65972f6a290610224f4000011050400c6766ff780e1f506e41622f7798ec9323ab3b8bea43767d8c107e1e920581958150300006a995b00040000006fbd74e5e1d0a61d52ccfe9d4adaed16dd3a7caa37c6bc4d0c2fa12e8b2f4063ab67744c78f1facfec9e517810a47ae23bc438315a01dac5ffee46beed5ad3d8");
+
+    auto publicKey = parse_hex("5ccc5c9276ab7976e7c93c70c190fbf1761578c07b892d0d1fe65972f6a29061");
+    auto signature = parse_hex("685a2fd4b1bdf7775c55eb97302a0f86b0c10848fd9db3a7f6bbe912c4c2fa28bed16f6032852ec14f27f0553523dd2fc181a6dca79f19f9c7ed6cb660cf6480");
+    auto encoded = Signer::encodeTransaction(input, publicKey, signature);
+    ASSERT_EQ(hex(encoded), "d90284005ccc5c9276ab7976e7c93c70c190fbf1761578c07b892d0d1fe65972f6a2906100685a2fd4b1bdf7775c55eb97302a0f86b0c10848fd9db3a7f6bbe912c4c2fa28bed16f6032852ec14f27f0553523dd2fc181a6dca79f19f9c7ed6cb660cf6480150300002902081100005ccc5c9276ab7976e7c93c70c190fbf1761578c07b892d0d1fe65972f6a290610224f4000011050400c6766ff780e1f506e41622f7798ec9323ab3b8bea43767d8c107e1e920581958");
+}
+
+TEST(PolkadotSigner, PolymeshEncodeChillAndUnbond) {
+    // extrinsic on mainnet
+    // https://mainnet-app.polymesh.network/#/extrinsics/decode/0x29020811061102027a030a
+
+    Polkadot::Proto::SigningInput input;
+    input.set_network(12);
+    input.set_multi_address(true);
+    auto blockHash = parse_hex("ab67744c78f1facfec9e517810a47ae23bc438315a01dac5ffee46beed5ad3d8");
+    auto vGenesisHash = parse_hex("6fbd74e5e1d0a61d52ccfe9d4adaed16dd3a7caa37c6bc4d0c2fa12e8b2f4063");
+    input.set_block_hash(std::string(blockHash.begin(), blockHash.end()));
+    input.set_genesis_hash(std::string(vGenesisHash.begin(), vGenesisHash.end()));
+    input.set_nonce(0UL);
+    input.set_spec_version(6003050u);
+    input.set_transaction_version(4u);
+
+    auto* era = input.mutable_era();
+    era->set_block_number(15742961UL);
+    era->set_period(64UL);
+
+    auto stakingCall = input.mutable_staking_call();
+    auto chillBond = stakingCall->mutable_chill_and_unbond();
+    auto value = store(uint256_t(42000000)); // 42.0 POLYX
+    chillBond->set_value(value.data(), value.size());
+
+    // Utiltity.batch_all
+    {
+      auto* callIndices = chillBond->mutable_call_indices()->mutable_custom();
+      callIndices->set_module_index(0x29);
+      callIndices->set_method_index(0x02);
+    }
+
+    // Staking.bond
+    {
+      auto* callIndices = chillBond->mutable_chill_call_indices()->mutable_custom();
+      callIndices->set_module_index(0x11);
+      callIndices->set_method_index(0x06);
+    }
+
+    // Staking.nominate
+    {
+      auto* callIndices = chillBond->mutable_unbond_call_indices()->mutable_custom();
+      callIndices->set_module_index(0x11);
+      callIndices->set_method_index(0x02);
+    }
+
+    auto preImage = Signer::signaturePreImage(input);
+    ASSERT_EQ(hex(preImage), "29020811061102027a030a150300006a995b00040000006fbd74e5e1d0a61d52ccfe9d4adaed16dd3a7caa37c6bc4d0c2fa12e8b2f4063ab67744c78f1facfec9e517810a47ae23bc438315a01dac5ffee46beed5ad3d8");
+}
+
 TEST(PolkadotSigner, Statemint_encodeTransaction_transfer) {
     // tx on mainnet
     // https://statemint.subscan.io/extrinsic/2686030-2
