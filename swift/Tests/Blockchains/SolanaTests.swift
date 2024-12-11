@@ -342,7 +342,7 @@ class SolanaTests: XCTestCase {
         // Step 2 - Decode transaction into a `RawMessage` Protobuf.
         let updatedTxData = Base64.decode(string: updatedTx)!
         let decodeOutputData = TransactionDecoder.decode(coinType: .solana, encodedTx: updatedTxData)
-        var decodeOutput = try SolanaDecodingTransactionOutput(serializedData: decodeOutputData)
+        let decodeOutput = try SolanaDecodingTransactionOutput(serializedData: decodeOutputData)
 
         XCTAssertEqual(decodeOutput.error, .ok)
 
@@ -353,7 +353,7 @@ class SolanaTests: XCTestCase {
         }
         let txInputData = try signingInput.serializedData() // Serialize input
         let preImageHashes = TransactionCompiler.preImageHashes(coinType: .solana, txInputData: txInputData)
-        let preSigningOutput: BitcoinPreSigningOutput = try SolanaPreSigningOutput(serializedData: preImageHashes)
+        let preSigningOutput: SolanaPreSigningOutput = try SolanaPreSigningOutput(serializedData: preImageHashes)
         XCTAssertEqual(preSigningOutput.error, CommonSigningError.ok)
         XCTAssertEqual(preSigningOutput.data.hexString, "8002000104cb2af089b56a557737bc1718e0cbf232cf5b02e14ee0aa7c6675233f5f6f9b576b842ab38fbd9341b5d52d4855dc83cfa48f83bf6751edfe1c2f9daaaae6cea64d77772adc14c8915f46cd8f05f7905bcc42119bcdaffe49fd3c7c96d6e7d29c00000000000000000000000000000000000000000000000000000000000000002a3e4116ef5d634aa0e7da38be1c4a97d8ae69ffd9357e74199cb7e1ec9a6c1d01030201020c02000000009c9f060000000000")
 
@@ -370,10 +370,10 @@ class SolanaTests: XCTestCase {
         signatureVec.add(data: solSenderSignature)
         pubkeyVec.add(data: solSenderPublicKey)
 
-        let compileWithSignatures = TransactionCompiler.compileWithSignatures(coinType: coin, txInputData: txInputData, signatures: signatureVec, publicKeys: pubkeyVec)
+        let compileWithSignatures = TransactionCompiler.compileWithSignatures(coinType: solana, txInputData: txInputData, signatures: signatureVec, publicKeys: pubkeyVec)
         let expectedTx = "Av658VzDRfoVZFBnYQADOGDtvoCm9h2rgZnpT9xHZ47P25XjvBDsCn+GOrjvXDjtrnLbfl1yhV2yJf2TX9WbcAqTbNbRducB0fdIAxklsvAp9vGrS5mux24kzPBWSewmlWmgjsC9gPX+4cuNE+zUIL9QxfZK50x6+iZ0WMq7TlgEgAIAAQTLKvCJtWpVdze8Fxjgy/Iyz1sC4U7gqnxmdSM/X2+bV2uEKrOPvZNBtdUtSFXcg8+kj4O/Z1Ht/hwvnaqq5s6mTXd3KtwUyJFfRs2PBfeQW8xCEZvNr/5J/Tx8ltbn0pwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACo+QRbvXWNKoOfaOL4cSpfYrmn/2TV+dBmct+HsmmwdAQMCAQIMAgAAAACcnwYAAAAAAA=="
         let output: SolanaSigningOutput = try SolanaSigningOutput(serializedData: compileWithSignatures)
-        XCTAssertEqual(output.encoded.hexString, expectedTx)
+        XCTAssertEqual(output.encoded, expectedTx)
         // Successfully broadcasted tx:
         // https://explorer.solana.com/tx/66PAVjxFVGP4ctrkXmyNRhp6BdFT7gDe1k356DZzCRaBDTmJZF1ewGsbujWRjDTrt5utnz8oHZw3mg8qBNyct41w?cluster=devnet
     }
