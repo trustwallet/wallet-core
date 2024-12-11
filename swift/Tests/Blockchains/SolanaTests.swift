@@ -370,7 +370,7 @@ class SolanaTests: XCTestCase {
         signatureVec.add(data: solSenderSignature)
         pubkeyVec.add(data: solSenderPublicKey)
 
-        let compileWithSignatures = TransactionCompiler.compileWithSignatures(coinType: solana, txInputData: txInputData, signatures: signatureVec, publicKeys: pubkeyVec)
+        let compileWithSignatures = TransactionCompiler.compileWithSignatures(coinType: .solana, txInputData: txInputData, signatures: signatureVec, publicKeys: pubkeyVec)
         let expectedTx = "Av658VzDRfoVZFBnYQADOGDtvoCm9h2rgZnpT9xHZ47P25XjvBDsCn+GOrjvXDjtrnLbfl1yhV2yJf2TX9WbcAqTbNbRducB0fdIAxklsvAp9vGrS5mux24kzPBWSewmlWmgjsC9gPX+4cuNE+zUIL9QxfZK50x6+iZ0WMq7TlgEgAIAAQTLKvCJtWpVdze8Fxjgy/Iyz1sC4U7gqnxmdSM/X2+bV2uEKrOPvZNBtdUtSFXcg8+kj4O/Z1Ht/hwvnaqq5s6mTXd3KtwUyJFfRs2PBfeQW8xCEZvNr/5J/Tx8ltbn0pwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACo+QRbvXWNKoOfaOL4cSpfYrmn/2TV+dBmct+HsmmwdAQMCAQIMAgAAAACcnwYAAAAAAA=="
         let output: SolanaSigningOutput = try SolanaSigningOutput(serializedData: compileWithSignatures)
         XCTAssertEqual(output.encoded, expectedTx)
