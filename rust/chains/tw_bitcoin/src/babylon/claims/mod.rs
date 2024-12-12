@@ -30,16 +30,13 @@ impl StakingSpendInfo {
     pub fn new(
         staker: &schnorr::PublicKey,
         staking_locktime: u16,
-        finality_providers: &[schnorr::PublicKey],
+        finality_provider: &schnorr::PublicKey,
         covenants: &[schnorr::PublicKey],
         covenant_quorum: u32,
     ) -> SigningResult<StakingSpendInfo> {
         let staker_xonly = staker.x_only().bytes();
         let covenants_xonly: Vec<_> = covenants.iter().map(|pk| pk.x_only().bytes()).collect();
-        let fp_xonly: Vec<_> = finality_providers
-            .iter()
-            .map(|pk| pk.x_only().bytes())
-            .collect();
+        let fp_xonly: Vec<_> = vec![finality_provider.x_only().bytes()];
 
         let timelock_script =
             conditions::new_timelock_script(&staker_xonly, staking_locktime).into();

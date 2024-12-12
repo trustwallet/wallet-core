@@ -11,7 +11,7 @@ use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::hasher::sha256_ripemd;
 use tw_hash::sha2::sha256;
-use tw_hash::{Hash, H256};
+use tw_hash::{Hash, H256, H32};
 use tw_keypair::{ecdsa, schnorr};
 use tw_memory::Data;
 use tw_proto::BitcoinV2::Proto;
@@ -54,6 +54,9 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
                 BuilderType::brc20_inscribe(ref inscription) => self.brc20_inscribe(inscription),
                 BuilderType::op_return(ref data) => self.op_return(data),
                 BuilderType::babylon_staking(ref staking) => self.babylon_staking(staking),
+                BuilderType::babylon_staking_op_return(ref op_return) => {
+                    self.babylon_op_return(op_return)
+                },
                 BuilderType::None => SigningError::err(SigningErrorType::Error_invalid_params)
                     .context("No Output Builder type provided"),
                 _ => todo!(),
@@ -166,7 +169,7 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
             .try_into()
             .tw_err(|_| SigningErrorType::Error_invalid_params)
             .context("stakingTime cannot be greater than 65535")?;
-        let finality_providers = parse_schnorr_pks(&staking.finality_provider_public_keys)
+        let finality_provider = &parse_schnorr_pk(&staking.finality_provider_public_key)
             .context("Invalid finalityProviderPublicKeys")?;
         let covenant_committees = parse_schnorr_pks(&staking.covenant_committee_public_keys)
             .context("Invalid covenantCommitteePublicKeys")?;
@@ -174,10 +177,35 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
         self.prepare_builder()?.babylon_staking(
             &staker,
             staking_locktime,
-            &finality_providers,
+            &finality_provider,
             &covenant_committees,
             staking.covenant_committee_quorum,
         )
+    }
+
+    pub fn babylon_op_return(
+        &self,
+        op_return: &Proto::mod_Output::BabylonStakingOpReturn,
+    ) -> SigningResult<TransactionOutput> {
+        let tag = H32::try_from(&op_return.tag)
+            .into_tw()
+            .context("Expected exactly 4 bytes tag")?;
+        let staker =
+            parse_schnorr_pk(&op_return.staker_public_key).context("Invalid stakerPublicKey")?;
+        let staking_locktime: u16 = op_return
+            .staking_time
+            .try_into()
+            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .context("stakingTime cannot be greater than 65535")?;
+        let finality_provider = &parse_schnorr_pk(&op_return.finality_provider_public_key)
+            .context("Invalid finalityProviderPublicKeys")?;
+
+        Ok(self.prepare_builder()?.babylon_staking_op_return(
+            &tag,
+            &staker,
+            &finality_provider,
+            staking_locktime,
+        ))
     }
 
     pub fn custom_script(&self, script_data: Data) -> SigningResult<TransactionOutput> {

@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use tw_coin_entry::error::prelude::*;
-use tw_hash::H256;
+use tw_hash::{H256, H32};
 use tw_utxo::script::standard_script::opcodes::*;
 use tw_utxo::script::Script;
 
@@ -11,6 +11,30 @@ const VERIFY: bool = true;
 const NO_VERIFY: bool = false;
 /// We always require only one finality provider to sign.
 const FINALITY_PROVIDERS_QUORUM: u32 = 1;
+
+/// https://github.com/babylonchain/babylon/blob/dev/docs/transaction-impl-spec.md#op_return-output-description
+/// ```txt
+/// OP_RETURN OP_DATA_71 <Tag> <Version> <StakerPublicKey> <FinalityProviderPublicKey> <StakingTime>
+/// ```
+pub fn new_op_return_script(
+    tag: &H32,
+    version: u8,
+    staker_xonly: &H256,
+    finality_provider_xonly: &H256,
+    locktime: u16,
+) -> Script {
+    let mut buf = Vec::with_capacity(71);
+    buf.extend_from_slice(tag.as_slice());
+    buf.push(version);
+    buf.extend_from_slice(staker_xonly.as_slice());
+    buf.extend_from_slice(finality_provider_xonly.as_slice());
+    buf.extend_from_slice(&locktime.to_be_bytes());
+
+    let mut s = Script::new();
+    s.push(OP_RETURN);
+    s.push_slice(&buf);
+    s
+}
 
 /// The timelock path locks the staker's Bitcoin for a pre-determined number of Bitcoin blocks.
 /// https://github.com/babylonchain/babylon/blob/dev/docs/staking-script.md#1-timelock-path

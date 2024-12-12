@@ -220,9 +220,8 @@ message Output {
     message BabylonStakingOutput {
         // User's public key.
         bytes staker_public_key = 1;
-        // Finality providers' public keys chosen by the user. In most cases, only one finality provider is needed.
-        // If there is more than one, it means that delegation is re-staked.
-        repeated bytes finality_provider_public_keys = 2;
+        // Finality provider's public key chosen by the user.
+        bytes finality_provider_public_key = 2;
         // global_parameters.min_staking_time <= staking_time <= global_parameters.max_staking_time.
         uint32 staking_time = 3;
         // Retrieved from global_parameters.covenant_pks.
@@ -239,7 +238,7 @@ message Output {
         bytes tag = 1;
         // User's public key.
         bytes staker_public_key = 2;
-        // Chosen by the user sending the staking transaction.
+        // Finality provider's public key chosen by the user.
         bytes finality_provider_public_key = 3;
         // global_parameters.min_staking_time <= staking_time <= global_parameters.max_staking_time.
         uint32 staking_time = 4;
@@ -249,7 +248,7 @@ message Output {
     message BabylonUnbondingOutput {
         // User's public key.
         bytes staker_public_key = 1;
-        // Chosen by the user sending the staking transaction.
+        // Finality provider's public key chosen by the user.
         bytes finality_provider_public_key = 2;
         // Retrieved from global_parameters.covenant_pks.
         // Babylon nodes that can approve Unbonding tx or Slash the staked position when acting bad.
