@@ -180,12 +180,10 @@ message Output {
             OutputBrc20Inscription brc20_inscribe = 9;
             // OP_RETURN output. In most cases, with a zero-amount.
             bytes op_return = 12;
-            // Create a Babylon `Staking Output`.
+            // Create a Babylon `Staking` or `Unbonding` output.
             BabylonStakingOutput babylon_staking = 14;
             // Create a Babylon Staking OP_RETURN output.
             BabylonStakingOpReturn babylon_staking_op_return = 15;
-            // Create a Babylon `Unbonding Output`.
-            BabylonUnbondingOutput babylon_unbonding = 16;
         }
     }
 
@@ -215,14 +213,16 @@ message Output {
         string transfer_amount = 3;
     }
 
-    // Staker enters the system through the creation of a staking transaction which locks Bitcoin in the Bitcoin Staking script.
-    // Creates `Staking Output` which can only be spent through a script spending path.
+    // Bitcoin Babylon lock transaction. It can be used to create either Staking or Unbonding output.
+    // The lock output can only be spent through a script spending path.
     message BabylonStakingOutput {
         // User's public key.
         bytes staker_public_key = 1;
         // Finality provider's public key chosen by the user.
         bytes finality_provider_public_key = 2;
-        // global_parameters.min_staking_time <= staking_time <= global_parameters.max_staking_time.
+        // If it's a Staking output, it should be:
+        // `global_parameters.min_staking_time <= staking_time <= global_parameters.max_staking_time`.
+        // If it's an Unbonding output, it should be equal to `global_parameters.unbonding_time`.
         uint32 staking_time = 3;
         // Retrieved from global_parameters.covenant_pks.
         // Babylon nodes that can approve Unbonding tx or Slash the staked position when acting bad.
@@ -242,22 +242,6 @@ message Output {
         bytes finality_provider_public_key = 3;
         // global_parameters.min_staking_time <= staking_time <= global_parameters.max_staking_time.
         uint32 staking_time = 4;
-    }
-
-    // Creates `Unbonding Output` that allows staker to on-demand unbond their locked Bitcoin stake prior to its original timelock expiration.
-    message BabylonUnbondingOutput {
-        // User's public key.
-        bytes staker_public_key = 1;
-        // Finality provider's public key chosen by the user.
-        bytes finality_provider_public_key = 2;
-        // Retrieved from global_parameters.covenant_pks.
-        // Babylon nodes that can approve Unbonding tx or Slash the staked position when acting bad.
-        repeated bytes covenant_committee_public_keys = 3;
-        // Retrieved from global_parameters.covenant_quorum.
-        // Specifies the quorum required by the covenant committee for unbonding transactions to be confirmed.
-        uint32 covenant_committee_quorum = 4;
-        // Retrieved from global_parameters.unbonding_time.
-        uint32 unbonding_time = 5;
     }
 }
 

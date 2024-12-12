@@ -2,7 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::babylon;
 use crate::babylon::tx_builder::BabylonOutputBuilder;
 use crate::modules::tx_builder::BitcoinChainInfo;
 use std::borrow::Cow;
@@ -59,7 +58,6 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
                 },
                 BuilderType::None => SigningError::err(SigningErrorType::Error_invalid_params)
                     .context("No Output Builder type provided"),
-                _ => todo!(),
             },
             RecipientType::custom_script_pubkey(ref script) => self.custom_script(script.to_vec()),
             RecipientType::to_address(ref address) => self.recipient_address(address),
@@ -187,8 +185,8 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
         &self,
         op_return: &Proto::mod_Output::BabylonStakingOpReturn,
     ) -> SigningResult<TransactionOutput> {
-        let tag = H32::try_from(&op_return.tag)
-            .into_tw()
+        let tag = H32::try_from(op_return.tag.as_ref())
+            .tw_err(|_| SigningErrorType::Error_invalid_params)
             .context("Expected exactly 4 bytes tag")?;
         let staker =
             parse_schnorr_pk(&op_return.staker_public_key).context("Invalid stakerPublicKey")?;

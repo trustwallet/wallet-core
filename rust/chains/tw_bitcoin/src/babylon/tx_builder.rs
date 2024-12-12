@@ -18,18 +18,18 @@ pub trait BabylonOutputBuilder: Sized {
         self,
         staker: &schnorr::PublicKey,
         staking_locktime: u16,
-        finality_providers: &[schnorr::PublicKey],
+        finality_provider: &schnorr::PublicKey,
         covenants: &[schnorr::PublicKey],
         covenant_quorum: u32,
-    ) -> TransactionOutput;
+    ) -> SigningResult<TransactionOutput>;
 
     fn babylon_staking_op_return(
         self,
-        tag: &[u8],
+        tag: &H32,
         staker: &schnorr::PublicKey,
-        finality_providers: &[schnorr::PublicKey],
+        finality_provider: &schnorr::PublicKey,
         staking_locktime: u16,
-    ) -> SigningResult<TransactionOutput>;
+    ) -> TransactionOutput;
 }
 
 impl BabylonOutputBuilder for OutputBuilder {

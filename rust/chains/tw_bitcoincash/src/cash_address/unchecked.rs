@@ -6,7 +6,7 @@ use crate::cash_address::checksum::{calculate_checksum, CHECKSUM_LEN};
 use crate::cash_address::{cash_base32, CashAddress, CashAddressType};
 use std::fmt;
 use std::str::FromStr;
-use tw_coin_entry::error::prelude::{AddressError, AddressResult};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::bech32;
 use tw_hash::H160;
 use tw_memory::Data;
