@@ -47,10 +47,16 @@ pub fn ctx_from_tw(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<Substrate
         (_, KUSAMA) if spec_version >= KUSAMA_MULTI_ADDRESS_SPEC => true,
         _ => false,
     };
+    let check_metadata = match network {
+        POLKADOT | KUSAMA if spec_version >= 1_002_005 => true,
+        ACALA if spec_version >= 2_270 => true,
+        _ => false,
+    };
     let fee_asset_id = fee_asset_id_from_tw(input);
 
     Ok(SubstrateContext {
         multi_address,
+        check_metadata,
         network,
         spec_version,
         transaction_version: input.transaction_version,

@@ -36,7 +36,7 @@ impl CallIndex {
     pub fn from_tw(call_index: Option<(i32, i32)>) -> EncodeResult<Self> {
         let call_index = match call_index {
             Some((module_index, method_index)) => {
-                if module_index > 0xff || method_index > 0xff {
+                if module_index > u8::MAX as i32 || method_index > u8::MAX as i32 {
                     EncodeError::InvalidCallIndex
                         .tw_result("Module or method call index too large.".to_string())?;
                 }

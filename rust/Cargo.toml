@@ -38,8 +38,8 @@ members = [
     "tw_tests",
     "wallet_core_bin",
     "wallet_core_rs",
-    "tw_ss58_address",
     "tw_scale",
+    "tw_ss58_address",
 ]
 
 [profile.release]

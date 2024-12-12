@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::{ctx_from_tw, ACALA, KUSAMA, POLKADOT};
+use crate::ctx_from_tw;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
@@ -11,19 +11,10 @@ use tw_number::U256;
 use tw_proto::Polkadot::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 use tw_scale::{RawOwned, ToScale};
-use tw_ss58_address::NetworkId;
 use tw_ss58_address::SS58Address;
 use tw_substrate::*;
 
 use crate::call_encoder::CallEncoder;
-
-fn require_check_metadata(network_id: NetworkId, spec_version: u32) -> bool {
-    match network_id {
-        POLKADOT | KUSAMA if spec_version >= 1_002_005 => true,
-        ACALA if spec_version >= 2_270 => true,
-        _ => false,
-    }
-}
 
 pub struct PolkadotEntry;
 
@@ -37,7 +28,6 @@ impl PolkadotEntry {
         Ok(KeyPair::try_from(input.private_key.as_ref())?)
     }
 
-    #[inline]
     fn build_transaction_impl(
         &self,
         _coin: &dyn CoinContext,
@@ -47,7 +37,6 @@ impl PolkadotEntry {
         let ctx = ctx_from_tw(&input)?;
         let encoder = CallEncoder::from_ctx(&ctx)?;
         let call = encoder.encode_call(&input.message_oneof)?;
-        let check_metadata = require_check_metadata(ctx.network, input.spec_version);
         let era = match &input.era {
             Some(era) => Era::mortal(era.period, era.block_number),
             None => Era::immortal(),
@@ -71,7 +60,7 @@ impl PolkadotEntry {
         } else {
             builder.extension(ChargeTransactionPayment::new(tip));
         }
-        if check_metadata {
+        if ctx.check_metadata {
             builder.extension(CheckMetadataHash::default());
         }
         if let Some(public_key) = public_key {

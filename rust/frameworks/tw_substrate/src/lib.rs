@@ -62,6 +62,7 @@ pub type WithCallIndexResult<T> = Result<WithCallIndex<T>, TWError<EncodeError>>
 #[derive(Debug, Clone)]
 pub struct SubstrateContext {
     pub multi_address: bool,
+    pub check_metadata: bool,
     pub network: NetworkId,
     pub spec_version: u32,
     pub transaction_version: u32,
