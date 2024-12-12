@@ -33,7 +33,6 @@ auto privateKeyThrow2Data = DATA("70a794d4f1019c3ce002f33062f45029c4f930a56b3d20
 auto privateKeyThrow2 = TWPrivateKeyCreateWithData(privateKeyThrow2Data.get());
 auto privateKeyPolkadot = PrivateKey(parse_hex("298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266"));
 auto addressThrow2 = "14Ztd3KJDaB9xyJtRkREtSZDdhLSbm7UUKt8Z7AwSv7q85G2";
-auto publicKey = TWPublicKeyCreateWithData(DATA("0x88dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee").get(), TWPublicKeyTypeED25519);
 auto genesisHash = parse_hex("91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3");
 auto controller1 = "14xKzzU1ZYDnzFj7FgdtDAYSMJNARjDc2gNw4XAFDgr4uXgp";
 
@@ -109,9 +108,6 @@ TEST(TWAnySignerPolkadot, SignTransfer_9fd062) {
 
 TEST(TWAnySignerPolkadot, SignTransferDOT) {
     auto blockHash = parse_hex("0x343a3f4258fd92f5ca6ca5abdf473d86a78b0bcd0dc09c568ca594245cc8c642");
-    const auto toAddress = WRAP(TWAnyAddress, TWAnyAddressCreateSS58WithPublicKey(publicKey, TWCoinTypePolkadot, polkadotPrefix));
-    const auto toAddressStr = WRAPS(TWAnyAddressDescription(toAddress.get()));
-    assertStringsEqual(toAddressStr, "146SvjUZXoMaemdeiecyxgALeYMm8ZWh1yrGo8RtpoPfe7WL");
 
     auto input = Proto::SigningInput();
     input.set_genesis_hash(genesisHash.data(), genesisHash.size());
@@ -130,17 +126,17 @@ TEST(TWAnySignerPolkadot, SignTransferDOT) {
     auto balanceCall = input.mutable_balance_call();
     auto& transfer = *balanceCall->mutable_transfer();
     auto value = store(uint256_t(12345));
-    transfer.set_to_address(TWStringUTF8Bytes(toAddressStr.get()));
+    transfer.set_to_address("14E5nqKAp3oAJcmzgZhUD2RcptBeUBScxKHgJKU4HPNcKVf3");
     transfer.set_value(value.data(), value.size());
 
     auto preimage = helper_encodePayload(TWCoinTypePolkadot, input);
-    EXPECT_EQ(hex(preimage), "050088dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0eee5c032000000110000000300000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3343a3f4258fd92f5ca6ca5abdf473d86a78b0bcd0dc09c568ca594245cc8c642");
+    ASSERT_EQ(hex(preimage), "05008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c032000000110000000300000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3343a3f4258fd92f5ca6ca5abdf473d86a78b0bcd0dc09c568ca594245cc8c642");
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypePolkadot);
     EXPECT_EQ(output.error(), Common::Proto::OK);
 
-    ASSERT_EQ(hex(output.encoded()), "29028488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee0061ee605d8cdcedf93200ba01636572f032ff04d75ed2999b80c184bc03ecbca7df83d176d955551b8f1654d2f6f771565be8d573df82d0b7f2eaba6d5daa3f0232000000050088dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0eee5c0");
+    ASSERT_EQ(hex(output.encoded()), "29028488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee003d91a06263956d8ce3ce5c55455baefff299d9cb2bb3f76866b6828ee4083770b6c03b05d7b6eb510ac78d047002c1fe5c6ee4b37c9c5a8b09ea07677f12e50d3200000005008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c0");
 }
 
 TEST(TWAnySignerPolkadot, SignTransfer_72dd5b) {

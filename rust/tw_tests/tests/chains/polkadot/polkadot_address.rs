@@ -3,7 +3,8 @@
 // Copyright © 2017 Trust Wallet.
 
 use tw_any_coin::test_utils::address_utils::{
-    test_address_get_data, test_address_invalid, test_address_normalization, test_address_valid,
+    test_address_get_data, test_address_invalid, test_address_normalization,
+    test_address_ss58_is_valid, test_address_valid,
 };
 use tw_coin_registry::coin_type::CoinType;
 
@@ -21,6 +22,11 @@ fn test_polkadot_address_is_valid() {
     test_address_valid(
         CoinType::Polkadot,
         "12dyy3fArMPDXLsnRtapTqZsC2KCEimeqs1dop4AEERaKC6x",
+    );
+    test_address_ss58_is_valid(
+        CoinType::Polkadot,
+        "12dyy3fArMPDXLsnRtapTqZsC2KCEimeqs1dop4AEERaKC6x",
+        0,
     );
 }
 
