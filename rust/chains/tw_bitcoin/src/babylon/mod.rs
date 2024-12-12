@@ -2,5 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+pub mod claims;
 pub mod conditions;
-
+pub mod tx_builder;

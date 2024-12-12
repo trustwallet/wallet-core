@@ -145,6 +145,12 @@ impl From<Data> for Script {
     }
 }
 
+impl From<Script> for bitcoin::script::ScriptBuf {
+    fn from(script: Script) -> Self {
+        bitcoin::script::ScriptBuf::from_bytes(script.bytes)
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Witness {
     items: Vec<Script>,

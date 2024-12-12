@@ -58,6 +58,7 @@ impl<'a, Context: UtxoContext> UtxoProtobuf<'a, Context> {
                 BuilderType::brc20_inscribe(ref inscription) => self.brc20_inscribe(inscription),
                 BuilderType::None => SigningError::err(SigningErrorType::Error_invalid_params)
                     .context("No Input Builder type provided"),
+                _ => todo!()
             },
             ScriptType::script_data(ref script) => self.custom_script(script.to_vec()),
             ScriptType::receiver_address(ref address) => self.recipient_address(address),

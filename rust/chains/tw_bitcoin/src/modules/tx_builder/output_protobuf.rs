@@ -2,7 +2,10 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::babylon;
+use crate::babylon::tx_builder::BabylonOutputBuilder;
 use crate::modules::tx_builder::BitcoinChainInfo;
+use std::borrow::Cow;
 use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
@@ -50,8 +53,10 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
                 },
                 BuilderType::brc20_inscribe(ref inscription) => self.brc20_inscribe(inscription),
                 BuilderType::op_return(ref data) => self.op_return(data),
+                BuilderType::babylon_staking(ref staking) => self.babylon_staking(staking),
                 BuilderType::None => SigningError::err(SigningErrorType::Error_invalid_params)
                     .context("No Output Builder type provided"),
+                _ => todo!(),
             },
             RecipientType::custom_script_pubkey(ref script) => self.custom_script(script.to_vec()),
             RecipientType::to_address(ref address) => self.recipient_address(address),
@@ -150,6 +155,31 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
         )
     }
 
+    pub fn babylon_staking(
+        &self,
+        staking: &Proto::mod_Output::BabylonStakingOutput,
+    ) -> SigningResult<TransactionOutput> {
+        let staker =
+            parse_schnorr_pk(&staking.staker_public_key).context("Invalid stakerPublicKey")?;
+        let staking_locktime: u16 = staking
+            .staking_time
+            .try_into()
+            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .context("stakingTime cannot be greater than 65535")?;
+        let finality_providers = parse_schnorr_pks(&staking.finality_provider_public_keys)
+            .context("Invalid finalityProviderPublicKeys")?;
+        let covenant_committees = parse_schnorr_pks(&staking.covenant_committee_public_keys)
+            .context("Invalid covenantCommitteePublicKeys")?;
+
+        self.prepare_builder()?.babylon_staking(
+            &staker,
+            staking_locktime,
+            &finality_providers,
+            &covenant_committees,
+            staking.covenant_committee_quorum,
+        )
+    }
+
     pub fn custom_script(&self, script_data: Data) -> SigningResult<TransactionOutput> {
         let script = Script::from(script_data);
         Ok(self.prepare_builder()?.custom_script_pubkey(script))
@@ -220,4 +250,12 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
             .tw_err(|_| SigningErrorType::Error_invalid_params)
             .with_context(|| format!("Expected exactly {N} bytes public key hash"))
     }
+}
+
+fn parse_schnorr_pk(bytes: &Cow<[u8]>) -> SigningResult<schnorr::PublicKey> {
+    schnorr::PublicKey::try_from(bytes.as_ref()).into_tw()
+}
+
+fn parse_schnorr_pks(pks: &[Cow<[u8]>]) -> SigningResult<Vec<schnorr::PublicKey>> {
+    pks.iter().map(parse_schnorr_pk).collect()
 }

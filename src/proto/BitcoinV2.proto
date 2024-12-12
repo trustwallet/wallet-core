@@ -220,8 +220,9 @@ message Output {
     message BabylonStakingOutput {
         // User's public key.
         bytes staker_public_key = 1;
-        // Chosen by the user sending the staking transaction.
-        bytes finality_provider_public_key = 2;
+        // Finality providers' public keys chosen by the user. In most cases, only one finality provider is needed.
+        // If there is more than one, it means that delegation is re-staked.
+        repeated bytes finality_provider_public_keys = 2;
         // global_parameters.min_staking_time <= staking_time <= global_parameters.max_staking_time.
         uint32 staking_time = 3;
         // Retrieved from global_parameters.covenant_pks.
