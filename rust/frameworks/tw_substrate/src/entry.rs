@@ -16,7 +16,6 @@ use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::modules::transaction_util::NoTransactionUtil;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
-use tw_coin_entry::prefix::AddressPrefix;
 use tw_keypair::{ed25519, traits::KeyPairTrait, tw::PublicKey};
 use tw_scale::RawOwned;
 use tw_ss58_address::{NetworkId, SS58Address};
@@ -93,11 +92,7 @@ impl<T: SubstrateCoinEntry> CoinEntry for SubstrateEntry<T> {
         address: &str,
         prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        let prefix = prefix.or_else(|| {
-            coin.ss58_prefix().and_then(|prefix| {
-                SubstratePrefix::try_from(AddressPrefix::SubstrateNetwork(prefix)).ok()
-            })
-        });
+        let prefix = prefix.or_else(|| coin.ss58_prefix().map(SubstratePrefix::new_unchecked));
         SubstrateAddress::from_str(address)?.with_network_check(prefix)
     }
 

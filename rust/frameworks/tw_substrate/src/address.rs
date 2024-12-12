@@ -15,6 +15,14 @@ use tw_ss58_address::{NetworkId, SS58Address};
 pub struct SubstratePrefix(NetworkId);
 
 impl SubstratePrefix {
+    pub fn new(network: NetworkId) -> Self {
+        Self(network)
+    }
+
+    pub fn new_unchecked(prefix: u16) -> Self {
+        Self(NetworkId::new_unchecked(prefix))
+    }
+
     pub fn network(self) -> NetworkId {
         self.0
     }
