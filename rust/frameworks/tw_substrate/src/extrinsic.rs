@@ -85,7 +85,13 @@ impl<T: ToScale> ToScale for WithCallIndex<T> {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
         if let Some(call_index) = &self.call_index.0 {
             let mut value = self.value.to_scale();
-            assert!(value.len() >= 2);
+            if value.len() < 2 {
+                debug_assert!(
+                    false,
+                    "`WithCallIndex` inner value must include call indices in Scale representation"
+                );
+                return;
+            }
             // Override the first two bytes with the custom call index.
             value[0] = call_index.0;
             value[1] = call_index.1;
