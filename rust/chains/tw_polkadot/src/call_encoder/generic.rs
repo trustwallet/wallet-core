@@ -7,7 +7,7 @@ use tw_proto::Polkadot::Proto::{
         Bond, BondExtra, Chill, Nominate, OneOfmessage_oneof as StakingVariant, Rebond, Unbond,
         WithdrawUnbonded,
     },
-    Balance, Staking,
+    Balance, RewardDestination as TWRewardDestination, Staking,
 };
 use tw_scale::{impl_enum_scale, Compact, RawOwned, ToScale};
 use tw_ss58_address::SS58Address;
@@ -96,18 +96,16 @@ impl_enum_scale!(
 );
 
 impl RewardDestination {
-    pub fn from_tw(dest: u8, account: &str) -> EncodeResult<Self> {
+    pub fn from_tw(dest: &TWRewardDestination, account: &str) -> EncodeResult<Self> {
         match dest {
-            0 => Ok(Self::Staked),
-            1 => Ok(Self::Stash),
-            2 => Ok(Self::Controller),
-            4 => {
+            TWRewardDestination::STAKED => Ok(Self::Staked),
+            TWRewardDestination::STASH => Ok(Self::Stash),
+            TWRewardDestination::CONTROLLER => Ok(Self::Controller),
+            TWRewardDestination::ACCOUNT => {
                 let account =
                     SS58Address::from_str(account).map_err(|_| EncodeError::InvalidAddress)?;
                 Ok(Self::Account(SubstrateAddress(account)))
             },
-            5 => Ok(Self::None),
-            _ => EncodeError::InvalidValue.tw_result(format!("Invalid reward destination: {dest}")),
         }
     }
 }
@@ -156,7 +154,7 @@ impl GenericStaking {
         Ok(ci.wrap(Self::Bond(BondCall {
             controller,
             value: Compact(value),
-            reward: RewardDestination::from_tw(b.reward_destination as u8, &b.controller)?,
+            reward: RewardDestination::from_tw(&b.reward_destination, &b.controller)?,
         })))
     }
 
