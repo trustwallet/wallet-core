@@ -76,6 +76,8 @@ fn staking_call(
 
 #[test]
 fn polymesh_encode_transfer_with_memo() {
+    // https://mainnet-app.polymesh.network/#/extrinsics/decode/0x0501004c6c63e3dc083959f876788716b78885460b5f3c7ed9379f8d5f408e08639e0204014d454d4f20504144444544205749544820535041434553000000000000000000
+
     let input = Proto::SigningInput {
         network: 12,
         multi_address: true,
@@ -97,6 +99,8 @@ fn polymesh_encode_transfer_with_memo() {
 
 #[test]
 fn polymesh_encode_authorization_join_identity() {
+    // https://mainnet-app.polymesh.network/#/extrinsics/decode/0x070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320500000000
+
     let input = Proto::SigningInput {
         network: 12,
         multi_address: true,
@@ -116,6 +120,8 @@ fn polymesh_encode_authorization_join_identity() {
 
 #[test]
 fn polymesh_encode_authorization_join_identity_with_zero_data() {
+    // https://mainnet-app.polymesh.network/#/extrinsics/decode/0x070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320501000100010000
+
     let input = Proto::SigningInput {
         network: 12,
         multi_address: true,
@@ -146,6 +152,8 @@ fn polymesh_encode_authorization_join_identity_with_zero_data() {
 
 #[test]
 fn polymesh_encode_authorization_join_identity_allowing_everything() {
+    // https://mainnet-app.polymesh.network/#/extrinsics/decode/0x070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320500000000
+
     let input = Proto::SigningInput {
         network: 12,
         multi_address: true,
@@ -170,6 +178,8 @@ fn polymesh_encode_authorization_join_identity_allowing_everything() {
 
 #[test]
 fn polymesh_encode_identity() {
+    // https://mainnet-app.polymesh.network/#/extrinsics/decode/0x07040b13000000000000
+
     let input = Proto::SigningInput {
         network: 12,
         multi_address: true,
