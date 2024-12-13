@@ -220,7 +220,7 @@ impl PolymeshStaking {
         Ok(ci.wrap(Self::Bond {
             controller: controller.into(),
             value: Compact(value),
-            reward: RewardDestination::from_tw(&b.reward_destination, &b.controller)?,
+            reward: RewardDestination::from_tw(&b.reward_destination)?,
         }))
     }
 

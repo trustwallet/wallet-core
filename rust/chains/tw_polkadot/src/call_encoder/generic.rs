@@ -90,22 +90,16 @@ impl_enum_scale!(
         Staked = 0x00,
         Stash = 0x01,
         Controller = 0x02,
-        Account(AccountId) = 0x03,
         None = 0x04,
     }
 );
 
 impl RewardDestination {
-    pub fn from_tw(dest: &TWRewardDestination, account: &str) -> EncodeResult<Self> {
+    pub fn from_tw(dest: &TWRewardDestination) -> EncodeResult<Self> {
         match dest {
             TWRewardDestination::STAKED => Ok(Self::Staked),
             TWRewardDestination::STASH => Ok(Self::Stash),
             TWRewardDestination::CONTROLLER => Ok(Self::Controller),
-            TWRewardDestination::ACCOUNT => {
-                let account =
-                    SS58Address::from_str(account).map_err(|_| EncodeError::InvalidAddress)?;
-                Ok(Self::Account(SubstrateAddress(account)))
-            },
         }
     }
 }
@@ -154,7 +148,7 @@ impl GenericStaking {
         Ok(ci.wrap(Self::Bond(BondCall {
             controller,
             value: Compact(value),
-            reward: RewardDestination::from_tw(&b.reward_destination, &b.controller)?,
+            reward: RewardDestination::from_tw(&b.reward_destination)?,
         })))
     }
 

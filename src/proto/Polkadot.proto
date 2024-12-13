@@ -10,7 +10,6 @@ enum RewardDestination {
     STAKED = 0;
     STASH = 1;
     CONTROLLER = 2;
-    ACCOUNT = 3;
 }
 
 // An era, a period defined by a starting block and length
