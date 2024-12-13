@@ -2,9 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::babylon::tx_builder::BabylonOutputBuilder;
-use crate::modules::tx_builder::BitcoinChainInfo;
-use std::borrow::Cow;
+use crate::babylon::tx_builder::output::BabylonOutputBuilder;
+use crate::modules::tx_builder::{parse_schnorr_pk, parse_schnorr_pks, BitcoinChainInfo};
 use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
@@ -276,12 +275,4 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
             .tw_err(|_| SigningErrorType::Error_invalid_params)
             .with_context(|| format!("Expected exactly {N} bytes public key hash"))
     }
-}
-
-fn parse_schnorr_pk(bytes: &Cow<[u8]>) -> SigningResult<schnorr::PublicKey> {
-    schnorr::PublicKey::try_from(bytes.as_ref()).into_tw()
-}
-
-fn parse_schnorr_pks(pks: &[Cow<[u8]>]) -> SigningResult<Vec<schnorr::PublicKey>> {
-    pks.iter().map(parse_schnorr_pk).collect()
 }

@@ -2,9 +2,10 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::babylon::tx_builder::utxo::BabylonUtxoBuilder;
 use crate::modules::tx_builder::public_keys::PublicKeys;
 use crate::modules::tx_builder::script_parser::{StandardScript, StandardScriptParser};
-use crate::modules::tx_builder::BitcoinChainInfo;
+use crate::modules::tx_builder::{parse_schnorr_pk, parse_schnorr_pks, BitcoinChainInfo};
 use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
@@ -56,9 +57,12 @@ impl<'a, Context: UtxoContext> UtxoProtobuf<'a, Context> {
                 BuilderType::p2tr_key_path(ref key_path) => self.p2tr_key_path(key_path),
                 // BuilderType::p2tr_script_path(ref script) => self.p2tr_script_path(script),
                 BuilderType::brc20_inscribe(ref inscription) => self.brc20_inscribe(inscription),
+                BuilderType::babylon_timelock_path(ref timelock) => {
+                    self.babylon_timelock_path(timelock)
+                },
                 BuilderType::None => SigningError::err(SigningErrorType::Error_invalid_params)
                     .context("No Input Builder type provided"),
-                _ => todo!()
+                _ => todo!(),
             },
             ScriptType::script_data(ref script) => self.custom_script(script.to_vec()),
             ScriptType::receiver_address(ref address) => self.recipient_address(address),
@@ -128,6 +132,31 @@ impl<'a, Context: UtxoContext> UtxoProtobuf<'a, Context> {
             &public_key,
             inscription.ticker.to_string(),
             inscription.transfer_amount.to_string(),
+        )
+    }
+
+    pub fn babylon_timelock_path(
+        &self,
+        timelock: &Proto::mod_Input::BabylonStakingTimelockPath,
+    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        let staker =
+            parse_schnorr_pk(&timelock.staker_public_key).context("Invalid stakerPublicKey")?;
+        let staking_locktime: u16 = timelock
+            .staking_time
+            .try_into()
+            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .context("stakingTime cannot be greater than 65535")?;
+        let finality_provider = parse_schnorr_pk(&timelock.finality_provider_public_key)
+            .context("Invalid finalityProviderPublicKeys")?;
+        let covenant_committees = parse_schnorr_pks(&timelock.covenant_committee_public_keys)
+            .context("Invalid covenantCommitteePublicKeys")?;
+
+        self.prepare_builder()?.babylon_timelock_path(
+            &staker,
+            staking_locktime,
+            &finality_provider,
+            &covenant_committees,
+            timelock.covenant_committee_quorum,
         )
     }
 

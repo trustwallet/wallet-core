@@ -84,4 +84,36 @@ impl StakingSpendInfo {
             .or_tw_err(SigningErrorType::Error_internal)
             .context("No merkle root of the Babylon Staking transaction spend info")
     }
+
+    pub fn timelock_script(&self) -> &Script {
+        &self.timelock_script
+    }
+
+    pub fn unbonding_script(&self) -> &Script {
+        &self.unbonding_script
+    }
+
+    pub fn slashing_script(&self) -> &Script {
+        &self.slashing_script
+    }
+
+    pub fn timelock_control_block(&self) -> SigningResult<bitcoin::taproot::ControlBlock> {
+        self.control_block(&self.timelock_script)
+    }
+
+    pub fn unbonding_control_block(&self) -> SigningResult<bitcoin::taproot::ControlBlock> {
+        self.control_block(&self.unbonding_script)
+    }
+
+    pub fn slashing_control_block(&self) -> SigningResult<bitcoin::taproot::ControlBlock> {
+        self.control_block(&self.slashing_script)
+    }
+
+    fn control_block(&self, script: &Script) -> SigningResult<bitcoin::taproot::ControlBlock> {
+        let script = bitcoin::script::ScriptBuf::from_bytes(script.to_vec());
+        self.spend_info
+            .control_block(&(script, bitcoin::taproot::LeafVersion::TapScript))
+            .or_tw_err(SigningErrorType::Error_internal)
+            .context("'TaprootSpendInfo::control_block' is None")
+    }
 }
