@@ -210,6 +210,8 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking) const {
             bond->set_controller(staking.bond_and_nominate().controller());
             bond->set_value(staking.bond_and_nominate().value());
             bond->set_reward_destination(staking.bond_and_nominate().reward_destination());
+            auto callIndices = staking.bond_and_nominate().bond_call_indices();
+            bond->mutable_call_indices()->CopyFrom(callIndices);
             // recursive call
             call1 = encodeStakingCall(staking1);
         }
@@ -222,6 +224,8 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking) const {
             for (auto i = 0; i < staking.bond_and_nominate().nominators_size(); ++i) {
                 nominate->add_nominators(staking.bond_and_nominate().nominators(i));
             }
+            auto callIndices = staking.bond_and_nominate().nominate_call_indices();
+            nominate->mutable_call_indices()->CopyFrom(callIndices);
             // recursive call
             call2 = encodeStakingCall(staking2);
         }
@@ -283,7 +287,9 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking) const {
         Data call1;
         {
             auto staking1 = Proto::Staking();
-            staking1.mutable_chill();
+            auto* chill = staking1.mutable_chill();
+            auto callIndices = staking.chill_and_unbond().chill_call_indices();
+            chill->mutable_call_indices()->CopyFrom(callIndices);
             // recursive call
             call1 = encodeStakingCall(staking1);
         }
@@ -294,6 +300,8 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking) const {
             auto staking2 = Proto::Staking();
             auto* unbond = staking2.mutable_unbond();
             unbond->set_value(staking.chill_and_unbond().value());
+            auto callIndices = staking.chill_and_unbond().unbond_call_indices();
+            unbond->mutable_call_indices()->CopyFrom(callIndices);
             // recursive call
             call2 = encodeStakingCall(staking2);
         }

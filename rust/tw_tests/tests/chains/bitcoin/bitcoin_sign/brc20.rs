@@ -196,3 +196,77 @@ fn test_bitcoin_sign_brc20_transfer() {
             fee: 3000,
         });
 }
+
+/// Fixes `{"error":"-26: non-mandatory-script-verify-flag (Invalid Schnorr signature)"}` error.
+#[test]
+fn test_bitcoin_sign_brc20_reveal_with_extra_p2tr_input() {
+    // bc1puq428nh4eynlqph8gynwdtqg4je0hc03gp2ptgsf4c5ylxz0ll2sd34gk7
+    let alice_pk_bytes = "8efa479919269076eb331c304fff187b9d7aa60d1f6cd3d6b12a151a52f22582"
+        .decode_hex()
+        .unwrap();
+    let alice_private_key = schnorr::PrivateKey::try_from(alice_pk_bytes.as_slice()).unwrap();
+    let alice_pubkey = alice_private_key.public().compressed();
+    let my_address = "bc1puq428nh4eynlqph8gynwdtqg4je0hc03gp2ptgsf4c5ylxz0ll2sd34gk7";
+
+    let commit_txid = "164b459a49c5e3a817028df7f4545585874feff3985e48d6ff6792989a4823a8";
+    let commit_utxo = Proto::Input {
+        out_point: input::out_point(commit_txid, 0),
+        value: 546,
+        sighash_type: SIGHASH_ALL,
+        claiming_script: input::brc20_inscribe(alice_pubkey.to_vec(), "duna", "0.001"),
+        ..Default::default()
+    };
+
+    // Extra P2TR UTXO is used to cover transaction fee.
+    let p2tr_utxo = "164b459a49c5e3a817028df7f4545585874feff3985e48d6ff6792989a4823a8";
+    let extra_p2tr = Proto::Input {
+        out_point: input::out_point(p2tr_utxo, 1),
+        value: 11_210,
+        sighash_type: SIGHASH_ALL,
+        claiming_script: input::receiver_address(my_address),
+        ..Default::default()
+    };
+
+    let out1 = Proto::Output {
+        value: 546,
+        to_recipient: output::to_address(my_address),
+    };
+    let change_output = Proto::Output {
+        value: 0,
+        to_recipient: output::to_address(my_address),
+    };
+
+    let builder = Proto::TransactionBuilder {
+        version: Proto::TransactionVersion::V2,
+        inputs: vec![commit_utxo, extra_p2tr],
+        outputs: vec![out1],
+        change_output: Some(change_output),
+        input_selector: Proto::InputSelector::UseAll,
+        dust_policy: dust_threshold(DUST),
+        fee_per_vb: 9,
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![alice_pk_bytes.into()],
+        chain_info: btc_info(),
+        // We enable deterministic Schnorr signatures here
+        dangerous_use_fixed_schnorr_rng: true,
+        transaction: TransactionOneof::builder(builder),
+        ..Default::default()
+    };
+
+    // https://www.blockchain.com/explorer/transactions/btc/113dfc827e4535dccc6aa7fcff5482b4de0fb2ab70f52c44c12c12bca3be5847
+    sign::BitcoinSignHelper::new(&signing)
+        .coin(CoinType::Bitcoin)
+        .sign(sign::Expected {
+            encoded: "02000000000102a823489a989267ffd6485e98f3ef4f87855554f4f78d0217a8e3c5499a454b160000000000ffffffffa823489a989267ffd6485e98f3ef4f87855554f4f78d0217a8e3c5499a454b160100000000ffffffff022202000000000000225120e02aa3cef5c927f006e74126e6ac08acb2fbe1f1405415a209ae284f984fffd52d23000000000000225120e02aa3cef5c927f006e74126e6ac08acb2fbe1f1405415a209ae284f984fffd50340b90b099a8facd5d4e6008990d180f9afeeb07d62452570a6e700ca0f7968577da6113cb201e9ac3584caa04898cdc7113cce4df06604b8f294a3959d216d364f5e0063036f7264010118746578742f706c61696e3b636861727365743d7574662d38003a7b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a2264756e61222c22616d74223a22302e303031227d6821c02146f58256fcc00ef86a0e53fc14e943bbea2c7972b598b58178fdd6fa3ef79201401c5e54a0ead877e52146e42f8d197f4c7be84c7d2479a75f33128f15777584bfec410c3e130b4504fe061991a78365add223a3dfb5ca79a988f9ffcf46039b3100000000",
+            txid: "113dfc827e4535dccc6aa7fcff5482b4de0fb2ab70f52c44c12c12bca3be5847",
+            inputs: vec![546, 11_210],
+            outputs: vec![546, 9_005],
+            // `vsize` is different from the estimated value due to the signatures der serialization.
+            vsize: 244,
+            weight: 975,
+            fee: 2_205,
+        });
+}
