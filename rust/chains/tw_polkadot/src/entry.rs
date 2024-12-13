@@ -65,8 +65,9 @@ impl PolkadotEntry {
         }
         if let Some(public_key) = public_key {
             let account = SubstrateAddress(
-                SS58Address::from_public_key(&public_key, ctx.network)
-                    .map_err(|e| EncodeError::InvalidAddress.with_error(e))?,
+                SS58Address::from_public_key(&public_key, ctx.network).map_err(|e| {
+                    TWError::new(EncodeError::InvalidAddress).context(format!("{e:?}"))
+                })?,
             );
             builder.set_account(account);
         }

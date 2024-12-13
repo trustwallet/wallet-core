@@ -26,23 +26,6 @@ pub enum EncodeError {
     NotSupported,
 }
 
-impl EncodeError {
-    /// Returns a TWError with the given error and context.
-    pub fn with_context(self, context: String) -> TWError<Self> {
-        TWError::new(self).context(context)
-    }
-
-    /// Returns a TWResult with the given error and context.
-    pub fn tw_result<T>(self, context: String) -> TWResult<T, Self> {
-        Err(self.with_context(context))
-    }
-
-    /// Convert another error type to this error type and return a TWError.
-    pub fn with_error<T: std::fmt::Debug>(self, err: T) -> TWError<Self> {
-        TWError::new(self).context(format!("{err:?}"))
-    }
-}
-
 impl From<EncodeError> for SigningErrorType {
     #[inline]
     fn from(err: EncodeError) -> Self {

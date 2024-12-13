@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use tw_coin_entry::error::prelude::*;
 use tw_number::U256;
 use tw_proto::Polkadot::Proto::{
     mod_Balance::{AssetTransfer, OneOfmessage_oneof as BalanceVariant, Transfer},
@@ -77,9 +78,9 @@ impl GenericBalances {
         match &b.message_oneof {
             BalanceVariant::transfer(t) => Self::encode_transfer(ctx, t),
             BalanceVariant::asset_transfer(t) => Self::encode_asset_transfer(ctx, t),
-            _ => EncodeError::NotSupported.tw_result(
-                "Unsupported batched balance variants here (maybe nested batch calls?)".to_string(),
-            ),
+            _ => Err(EncodeError::NotSupported)
+                .into_tw()
+                .context("Unsupported batched balance variants here (maybe nested batch calls?)"),
         }
     }
 }
@@ -223,9 +224,9 @@ impl GenericStaking {
             StakingVariant::withdraw_unbonded(b) => Self::encode_withdraw_unbonded(b),
             StakingVariant::rebond(b) => Self::encode_rebond(b),
             StakingVariant::nominate(b) => Self::encode_nominate(ctx, b),
-            _ => EncodeError::NotSupported.tw_result(
-                "Unsupported batched staking variants here (maybe nested batch calls?)".to_string(),
-            ),
+            _ => Err(EncodeError::NotSupported)
+                .into_tw()
+                .context("Unsupported batched staking variants here (maybe nested batch calls?)"),
         }
     }
 }

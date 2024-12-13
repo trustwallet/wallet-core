@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use tw_coin_entry::error::prelude::*;
 use tw_hash::H256;
 use tw_number::U256;
 use tw_proto::Polkadot::Proto::{
@@ -81,7 +82,9 @@ impl PolymeshBalances {
     pub fn encode_call(b: &Balance) -> WithCallIndexResult<Self> {
         match &b.message_oneof {
             BalanceVariant::transfer(t) => Self::encode_transfer(t),
-            _ => EncodeError::NotSupported.tw_result("Unsupported balance call".to_string()),
+            _ => Err(EncodeError::NotSupported)
+                .into_tw()
+                .context("Unsupported balance call"),
         }
     }
 }
@@ -175,7 +178,9 @@ impl PolymeshIdentity {
         match &ident.message_oneof {
             IdentityVariant::join_identity_as_key(t) => Self::encode_join_identity(t),
             IdentityVariant::add_authorization(a) => Self::encode_add_authorization(a),
-            _ => EncodeError::NotSupported.tw_result("Unsupported identity call".to_string()),
+            _ => Err(EncodeError::NotSupported)
+                .into_tw()
+                .context("Unsupported identity call"),
         }
     }
 }
@@ -295,7 +300,9 @@ impl PolymeshStaking {
             StakingVariant::withdraw_unbonded(b) => Self::encode_withdraw_unbonded(b),
             StakingVariant::rebond(b) => Self::encode_rebond(b),
             StakingVariant::nominate(b) => Self::encode_nominate(b),
-            _ => EncodeError::NotSupported.tw_result("Unsupported staking call".to_string()),
+            _ => Err(EncodeError::NotSupported)
+                .into_tw()
+                .context("Unsupported staking call"),
         }
     }
 }
@@ -329,16 +336,18 @@ impl TWPolkadotCallEncoder for PolymeshCallEncoder {
                     PolymeshIdentity::encode_call(msg)?.map(PolymeshCall::Identity)
                 },
                 PolymeshVariant::None => {
-                    return EncodeError::NotSupported
-                        .tw_result("Polymesh call variant is None".to_string());
+                    return Err(EncodeError::NotSupported)
+                        .into_tw()
+                        .context("Polymesh call variant is None");
                 },
             },
             SigningVariant::staking_call(s) => {
                 PolymeshStaking::encode_call(s)?.map(PolymeshCall::Staking)
             },
             SigningVariant::None => {
-                return EncodeError::NotSupported
-                    .tw_result("Staking call variant is None".to_string());
+                return Err(EncodeError::NotSupported)
+                    .into_tw()
+                    .context("Staking call variant is None");
             },
         };
         Ok(RawOwned(call.to_scale()))

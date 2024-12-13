@@ -1,3 +1,4 @@
+use tw_coin_entry::error::prelude::*;
 use tw_hash::{blake2::blake2_b, H256, H512};
 use tw_keypair::{
     ed25519::{sha512::KeyPair, Signature},
@@ -37,8 +38,9 @@ impl CallIndex {
         let call_index = match call_index {
             Some((module_index, method_index)) => {
                 if module_index > u8::MAX as i32 || method_index > u8::MAX as i32 {
-                    EncodeError::InvalidCallIndex
-                        .tw_result("Module or method call index too large.".to_string())?;
+                    Err(EncodeError::InvalidCallIndex)
+                        .into_tw()
+                        .context("Module or method call index too large.")?;
                 }
                 Some((module_index as u8, method_index as u8))
             },
@@ -49,7 +51,9 @@ impl CallIndex {
 
     pub fn required_from_tw(call_index: Option<(i32, i32)>) -> EncodeResult<Self> {
         if call_index.is_none() {
-            EncodeError::MissingCallIndices.tw_result("Call indices are required.".to_string())?;
+            Err(EncodeError::MissingCallIndices)
+                .into_tw()
+                .context("Call indices are required.")?;
         }
         Self::from_tw(call_index)
     }

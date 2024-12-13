@@ -1,5 +1,6 @@
 use tw_scale::{impl_enum_scale, RawOwned};
 
+use tw_coin_entry::error::prelude::*;
 use tw_proto::Polkadot::Proto::mod_SigningInput::OneOfmessage_oneof as SigningVariant;
 
 use super::*;
@@ -31,8 +32,9 @@ impl TWPolkadotCallEncoder for PolkadotCallEncoder {
                 GenericStaking::encode_call(&self.0, s)?.map(PolkadotCall::Staking)
             },
             _ => {
-                return EncodeError::NotSupported
-                    .tw_result("Unsupported call variant.".to_string());
+                return Err(EncodeError::NotSupported)
+                    .into_tw()
+                    .context("Unsupported call variant.");
             },
         };
         Ok(RawOwned(call.to_scale()))
@@ -71,8 +73,9 @@ impl TWPolkadotCallEncoder for KusamaCallEncoder {
                 GenericStaking::encode_call(&self.0, s)?.map(KusamaCall::Staking)
             },
             _ => {
-                return EncodeError::NotSupported
-                    .tw_result("Unsupported call variant.".to_string());
+                return Err(EncodeError::NotSupported)
+                    .into_tw()
+                    .context("Unsupported call variant.");
             },
         };
         Ok(RawOwned(call.to_scale()))
