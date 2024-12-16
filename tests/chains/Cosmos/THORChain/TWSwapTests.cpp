@@ -322,6 +322,8 @@ TEST(TWTHORChainSwap, SwapRuneDoge) {
     auto& fee = *txInput.mutable_fee();
     fee.set_gas(50000000);
 
+    // Override the chainId as it has been after a hardfork recently.
+    txInput.set_chain_id("thorchain-mainnet-v1");
     txInput.set_account_number(75247);
     txInput.set_sequence(8);
 
@@ -382,6 +384,7 @@ TEST(TWTHORChainSwap, SwapRuneBnbStreamParams) {
     auto& fee = *txInput.mutable_fee();
     fee.set_gas(50000000);
 
+    txInput.set_chain_id("thorchain-mainnet-v1");
     txInput.set_account_number(76456);
     txInput.set_sequence(0);
 
