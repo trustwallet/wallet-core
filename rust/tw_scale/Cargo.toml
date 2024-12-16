@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-tw_number = { path = "../tw_number" }
 tw_hash = { path = "../tw_hash" }
+tw_number = { path = "../tw_number" }

@@ -18,9 +18,9 @@ members = [
     "chains/tw_sui",
     "chains/tw_thorchain",
     "chains/tw_ton",
+    "frameworks/tw_substrate",
     "frameworks/tw_ton_sdk",
     "frameworks/tw_utxo",
-    "frameworks/tw_substrate",
     "tw_any_coin",
     "tw_base58_address",
     "tw_bech32_address",
@@ -35,11 +35,11 @@ members = [
     "tw_misc",
     "tw_number",
     "tw_proto",
+    "tw_scale",
+    "tw_ss58_address",
     "tw_tests",
     "wallet_core_bin",
     "wallet_core_rs",
-    "tw_scale",
-    "tw_ss58_address",
 ]
 
 [profile.release]
