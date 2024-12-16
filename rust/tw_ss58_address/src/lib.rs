@@ -13,14 +13,29 @@ use tw_scale::ToScale;
 // - https://github.com/paritytech/polkadot-sdk/blob/master/substrate/primitives/core/src/crypto.rs
 //
 
+/// Represents a Substrate network identifier used in SS58 addresses.
+///
+/// The network ID is a 16-bit unsigned integer that identifies different Substrate-based networks.
+/// Valid network IDs range from 0 to 16383 (0x3fff).
+///
+/// Common network IDs include:
+/// - 0: Polkadot
+/// - 2: Kusama
+/// - 5: Astar
+/// - 12: Polymesh
+/// - 42: Generic Substrate
+/// - 172: Parallel
 #[derive(Debug, Default, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
 pub struct NetworkId(u16);
 
 impl NetworkId {
+    /// Creates a new NetworkId without checking the value range.
+    /// This should only be used for constant values that are known to be valid.
     pub const fn new_unchecked(value: u16) -> Self {
         Self(value)
     }
 
+    /// Creates a new NetworkId from a u16 value, checking that it's within the valid range (0..=0x3fff).
     pub fn from_u16(value: u16) -> AddressResult<Self> {
         match value {
             0..=0x3fff => Ok(Self::new_unchecked(value)),
@@ -28,6 +43,8 @@ impl NetworkId {
         }
     }
 
+    /// Extracts a NetworkId from the prefix bytes of an SS58 address.
+    /// The first byte determines if it's a single-byte (0..=63) or double-byte (64..=127) prefix.
     pub fn from_bytes(bytes: &[u8]) -> AddressResult<Self> {
         if bytes.is_empty() {
             return Err(AddressError::MissingPrefix);
@@ -45,10 +62,12 @@ impl NetworkId {
         .map(Self::new_unchecked)
     }
 
+    /// Returns the raw network identifier value.
     pub fn value(&self) -> u16 {
         self.0
     }
 
+    /// Returns the length of the network prefix in bytes (1 or 2).
     pub fn prefix_len(&self) -> usize {
         if self.value() < 64 {
             1
@@ -57,6 +76,7 @@ impl NetworkId {
         }
     }
 
+    /// Converts the network ID to its byte representation used in SS58 addresses.
     pub fn to_bytes(&self) -> Vec<u8> {
         let network = self.value();
         match network {
@@ -89,9 +109,31 @@ impl TryFrom<&[u8]> for NetworkId {
     }
 }
 
+/// Represents a Substrate SS58 address.
+///
+/// SS58 is an address format designed for Substrate-based chains. It is derived from
+/// the base-58 encoding format with some modifications. Each address contains:
+/// - A network identifier prefix
+/// - A public key (32 bytes)
+/// - A checksum
+///
+/// The format ensures that addresses are human-readable and network-specific,
+/// preventing accidental cross-chain transactions.
+///
+/// # Example
+/// ```
+/// use tw_ss58_address::{SS58Address, NetworkId};
+/// use std::str::FromStr;
+///
+/// // Parse an existing SS58 address
+/// let address = SS58Address::from_str("15KRsCq9LLNmCxNFhGk55s5bEyazKefunDxUH24GFZwsTxyu").unwrap();
+/// assert_eq!(address.network().value(), 0); // Polkadot network
+/// ```
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SS58Address {
+    /// The 32-byte public key component of the address
     key: Vec<u8>,
+    /// The network identifier component of the address
     network: NetworkId,
 }
 
@@ -105,10 +147,14 @@ impl Default for SS58Address {
 }
 
 impl SS58Address {
+    /// Size of the checksum in bytes
     const CHECKSUM_SIZE: usize = 2;
+    /// Size of the public key in bytes
     const KEY_SIZE: usize = 32;
+    /// SS58 format registry prefix used in checksum calculation
     const SS58_PREFIX: &'static [u8] = b"SS58PRE";
 
+    /// Computes the Blake2-b checksum for the address data
     fn compute_expected_checksum(decoded: &[u8]) -> Vec<u8> {
         let mut data = Vec::from(Self::SS58_PREFIX);
         data.extend(decoded);
@@ -118,6 +164,13 @@ impl SS58Address {
         bytes
     }
 
+    /// Parses an SS58 address from its base-58 string representation.
+    ///
+    /// # Errors
+    /// - `AddressError::FromBase58Error` if the string is not valid base-58
+    /// - `AddressError::MissingPrefix` if the decoded bytes are empty
+    /// - `AddressError::UnexpectedAddressPrefix` if the prefix is invalid
+    /// - `AddressError::InvalidChecksum` if the checksum verification fails
     pub fn parse(repr: &str) -> AddressResult<Self> {
         let decoded = base58::decode(repr, base58::Alphabet::Bitcoin)
             .map_err(|_| AddressError::FromBase58Error)?;
@@ -142,6 +195,7 @@ impl SS58Address {
         })
     }
 
+    /// Creates an SS58 address from a public key and network identifier.
     pub fn from_public_key(key: &PublicKey, network: NetworkId) -> AddressResult<Self> {
         Ok(Self {
             key: key.as_slice().to_owned(),
@@ -149,14 +203,17 @@ impl SS58Address {
         })
     }
 
+    /// Returns the network identifier of the address.
     pub fn network(&self) -> NetworkId {
         self.network
     }
 
+    /// Returns the public key bytes of the address.
     pub fn key_bytes(&self) -> &[u8] {
         &self.key
     }
 
+    /// Returns the complete address as bytes, including network prefix, public key, and checksum.
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut res = self.network.to_bytes();
         res.extend(self.key_bytes());
@@ -164,10 +221,12 @@ impl SS58Address {
         res
     }
 
+    /// Returns the base-58 string representation of the address.
     pub fn to_base58_string(&self) -> String {
         base58::encode(&self.to_bytes(), base58::Alphabet::Bitcoin)
     }
 
+    /// Returns the hexadecimal string representation of the address bytes.
     pub fn to_hex_string(&self) -> String {
         hex::encode(self.to_bytes(), false)
     }
