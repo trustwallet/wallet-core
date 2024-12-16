@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::babylon::tx_builder::output::BabylonOutputBuilder;
+use crate::babylon::tx_builder::BabylonStakingParams;
 use crate::modules::tx_builder::{parse_schnorr_pk, parse_schnorr_pks, BitcoinChainInfo};
 use std::marker::PhantomData;
 use std::str::FromStr;
@@ -166,18 +167,19 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
             .try_into()
             .tw_err(|_| SigningErrorType::Error_invalid_params)
             .context("stakingTime cannot be greater than 65535")?;
-        let finality_provider = &parse_schnorr_pk(&staking.finality_provider_public_key)
+        let finality_provider = parse_schnorr_pk(&staking.finality_provider_public_key)
             .context("Invalid finalityProviderPublicKeys")?;
-        let covenant_committees = parse_schnorr_pks(&staking.covenant_committee_public_keys)
+        let covenants = parse_schnorr_pks(&staking.covenant_committee_public_keys)
             .context("Invalid covenantCommitteePublicKeys")?;
 
-        self.prepare_builder()?.babylon_staking(
-            &staker,
-            staking_locktime,
-            &finality_provider,
-            &covenant_committees,
-            staking.covenant_committee_quorum,
-        )
+        self.prepare_builder()?
+            .babylon_staking(BabylonStakingParams {
+                staker,
+                staking_locktime,
+                finality_provider,
+                covenants,
+                covenant_quorum: staking.covenant_quorum,
+            })
     }
 
     pub fn babylon_op_return(

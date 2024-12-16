@@ -28,10 +28,10 @@ impl BitcoinChainInfo {
     }
 }
 
-fn parse_schnorr_pk(bytes: &Cow<[u8]>) -> SigningResult<schnorr::PublicKey> {
-    schnorr::PublicKey::try_from(bytes.as_ref()).into_tw()
+fn parse_schnorr_pk(bytes: &Cow<[u8]>) -> SigningResult<schnorr::XOnlyPublicKey> {
+    schnorr::XOnlyPublicKey::try_from(bytes.as_ref()).into_tw()
 }
 
-fn parse_schnorr_pks(pks: &[Cow<[u8]>]) -> SigningResult<Vec<schnorr::PublicKey>> {
+fn parse_schnorr_pks(pks: &[Cow<[u8]>]) -> SigningResult<Vec<schnorr::XOnlyPublicKey>> {
     pks.iter().map(parse_schnorr_pk).collect()
 }

@@ -94,17 +94,22 @@ pub fn new_p2tr_key_path(sig: Vec<u8>) -> Witness {
 /// (_witness_).
 ///
 /// ```txt
-/// <sig>
+/// <sig1>
+/// <sig2>
+/// ...
+/// <sigN>
 /// <payload>
 /// <control_block>
 /// ```
 pub fn new_p2tr_script_path(
-    sig: &BitcoinSchnorrSignature,
+    sigs: &[BitcoinSchnorrSignature],
     payload: Script,
     control_block: Vec<u8>,
 ) -> Witness {
     let mut w = Witness::new();
-    w.push_item(Script::from(sig.serialize()));
+    for sig in sigs {
+        w.push_item(Script::from(sig.serialize()));
+    }
     w.push_item(payload);
     w.push_item(Script::from(control_block));
     w

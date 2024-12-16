@@ -33,6 +33,7 @@ impl PublicKey {
     pub fn x_only(&self) -> XOnlyPublicKey {
         let (x_only_pubkey, _parity) = self.public.x_only_public_key();
         XOnlyPublicKey {
+            bytes: H256::from(x_only_pubkey.serialize()),
             public: x_only_pubkey,
         }
     }
@@ -64,12 +65,17 @@ impl<'a> TryFrom<&'a [u8]> for PublicKey {
 }
 
 pub struct XOnlyPublicKey {
+    pub(crate) bytes: H256,
     pub(crate) public: secp256k1::XOnlyPublicKey,
 }
 
 impl XOnlyPublicKey {
     pub fn bytes(&self) -> H256 {
-        H256::from(self.public.serialize())
+        self.bytes
+    }
+
+    pub fn as_slice(&self) -> &[u8] {
+        self.bytes.as_slice()
     }
 }
 
@@ -97,8 +103,9 @@ impl<'a> TryFrom<&'a [u8]> for XOnlyPublicKey {
             value
         };
 
+        let bytes = H256::try_from(x_only_slice).map_err(|_| KeyPairError::InvalidPublicKey)?;
         let public = secp256k1::XOnlyPublicKey::from_slice(x_only_slice)
             .map_err(|_| KeyPairError::InvalidPublicKey)?;
-        Ok(XOnlyPublicKey { public })
+        Ok(XOnlyPublicKey { bytes, public })
     }
 }

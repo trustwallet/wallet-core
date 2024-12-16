@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::babylon::tx_builder::utxo::BabylonUtxoBuilder;
+use crate::babylon::tx_builder::BabylonStakingParams;
 use crate::modules::tx_builder::public_keys::PublicKeys;
 use crate::modules::tx_builder::script_parser::{StandardScript, StandardScriptParser};
 use crate::modules::tx_builder::{parse_schnorr_pk, parse_schnorr_pks, BitcoinChainInfo};
@@ -17,6 +18,7 @@ use tw_proto::BitcoinV2::Proto;
 use tw_utxo::context::UtxoContext;
 use tw_utxo::script::Script;
 use tw_utxo::sighash::SighashType;
+use tw_utxo::signature::BitcoinSchnorrSignature;
 use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
 use tw_utxo::transaction::standard_transaction::TransactionInput;
 use tw_utxo::transaction::transaction_parts::OutPoint;
@@ -60,9 +62,11 @@ impl<'a, Context: UtxoContext> UtxoProtobuf<'a, Context> {
                 BuilderType::babylon_timelock_path(ref timelock) => {
                     self.babylon_timelock_path(timelock)
                 },
+                BuilderType::babylon_unbonding_path(ref unbonding) => {
+                    self.babylon_unbonding_path(unbonding)
+                },
                 BuilderType::None => SigningError::err(SigningErrorType::Error_invalid_params)
                     .context("No Input Builder type provided"),
-                _ => todo!(),
             },
             ScriptType::script_data(ref script) => self.custom_script(script.to_vec()),
             ScriptType::receiver_address(ref address) => self.recipient_address(address),
@@ -148,15 +152,51 @@ impl<'a, Context: UtxoContext> UtxoProtobuf<'a, Context> {
             .context("stakingTime cannot be greater than 65535")?;
         let finality_provider = parse_schnorr_pk(&timelock.finality_provider_public_key)
             .context("Invalid finalityProviderPublicKeys")?;
-        let covenant_committees = parse_schnorr_pks(&timelock.covenant_committee_public_keys)
+        let covenants = parse_schnorr_pks(&timelock.covenant_committee_public_keys)
             .context("Invalid covenantCommitteePublicKeys")?;
 
-        self.prepare_builder()?.babylon_timelock_path(
-            &staker,
-            staking_locktime,
-            &finality_provider,
-            &covenant_committees,
-            timelock.covenant_committee_quorum,
+        self.prepare_builder()?
+            .babylon_timelock_path(BabylonStakingParams {
+                staker,
+                staking_locktime,
+                finality_provider,
+                covenants,
+                covenant_quorum: timelock.covenant_quorum,
+            })
+    }
+
+    pub fn babylon_unbonding_path(
+        &self,
+        unbonding: &Proto::mod_Input::BabylonStakingUnbondingPath,
+    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        let staker =
+            parse_schnorr_pk(&unbonding.staker_public_key).context("Invalid stakerPublicKey")?;
+        let staking_locktime: u16 = unbonding
+            .staking_time
+            .try_into()
+            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .context("stakingTime cannot be greater than 65535")?;
+        let finality_provider = parse_schnorr_pk(&unbonding.finality_provider_public_key)
+            .context("Invalid finalityProviderPublicKeys")?;
+        let covenants = parse_schnorr_pks(&unbonding.covenant_committee_public_keys)
+            .context("Invalid covenantCommitteePublicKeys")?;
+
+        let sighash_ty = self.sighash_ty()?;
+        let covenant_signatures = unbonding
+            .covenant_committee_signatures
+            .iter()
+            .map(|pk_sig| parse_schnorr_pubkey_sig(pk_sig, sighash_ty))
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        self.prepare_builder()?.babylon_unbonding_path(
+            BabylonStakingParams {
+                staker,
+                staking_locktime,
+                finality_provider,
+                covenants,
+                covenant_quorum: unbonding.covenant_quorum,
+            },
+            &covenant_signatures,
         )
     }
 
@@ -204,7 +244,7 @@ impl<'a, Context: UtxoContext> UtxoProtobuf<'a, Context> {
 
     pub fn prepare_builder(&self) -> SigningResult<UtxoBuilder> {
         let OutPoint { hash, index } = parse_out_point(&self.input.out_point)?;
-        let sighash_ty = SighashType::from_u32(self.input.sighash_type)?;
+        let sighash_ty = self.sighash_ty()?;
 
         if self.input.value < 0 {
             return SigningError::err(SigningErrorType::Error_invalid_utxo_amount)
@@ -253,6 +293,10 @@ impl<'a, Context: UtxoContext> UtxoProtobuf<'a, Context> {
             .into_tw()
             .context("Expected a valid ecdsa secp256k1 public key")
     }
+
+    fn sighash_ty(&self) -> SigningResult<SighashType> {
+        SighashType::from_u32(self.input.sighash_type)
+    }
 }
 
 pub fn parse_out_point(maybe_out_point: &Option<Proto::OutPoint>) -> SigningResult<OutPoint> {
@@ -269,4 +313,16 @@ pub fn parse_out_point(maybe_out_point: &Option<Proto::OutPoint>) -> SigningResu
         hash,
         index: out_point.vout,
     })
+}
+
+pub fn parse_schnorr_pubkey_sig(
+    pubkey_sig: &Proto::PublicKeySignature,
+    sighash_ty: SighashType,
+) -> SigningResult<(schnorr::XOnlyPublicKey, BitcoinSchnorrSignature)> {
+    let pk = parse_schnorr_pk(&pubkey_sig.public_key)?;
+    let sig = schnorr::Signature::try_from(pubkey_sig.signature.as_ref())
+        .tw_err(|_| SigningErrorType::Error_invalid_params)
+        .context("Invalid signature")?;
+    let btc_sign = BitcoinSchnorrSignature::new(sig, sighash_ty)?;
+    Ok((pk, btc_sign))
 }

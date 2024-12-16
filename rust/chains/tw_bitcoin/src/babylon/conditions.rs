@@ -3,7 +3,8 @@
 // Copyright © 2017 Trust Wallet.
 
 use tw_coin_entry::error::prelude::*;
-use tw_hash::{H256, H32};
+use tw_hash::H32;
+use tw_keypair::schnorr;
 use tw_utxo::script::standard_script::opcodes::*;
 use tw_utxo::script::Script;
 
@@ -19,15 +20,15 @@ const FINALITY_PROVIDERS_QUORUM: u32 = 1;
 pub fn new_op_return_script(
     tag: &H32,
     version: u8,
-    staker_xonly: &H256,
-    finality_provider_xonly: &H256,
+    staker_key: &schnorr::XOnlyPublicKey,
+    finality_provider_key: &schnorr::XOnlyPublicKey,
     locktime: u16,
 ) -> Script {
     let mut buf = Vec::with_capacity(71);
     buf.extend_from_slice(tag.as_slice());
     buf.push(version);
-    buf.extend_from_slice(staker_xonly.as_slice());
-    buf.extend_from_slice(finality_provider_xonly.as_slice());
+    buf.extend_from_slice(staker_key.as_slice());
+    buf.extend_from_slice(finality_provider_key.as_slice());
     buf.extend_from_slice(&locktime.to_be_bytes());
 
     let mut s = Script::new();
@@ -42,9 +43,9 @@ pub fn new_op_return_script(
 /// ```txt
 /// <StakerPK> OP_CHECKSIGVERIFY  <TimelockBlocks> OP_CHECKSEQUENCEVERIFY
 /// ```
-pub fn new_timelock_script(staker_xonly: &H256, locktime: u16) -> Script {
+pub fn new_timelock_script(staker_key: &schnorr::XOnlyPublicKey, locktime: u16) -> Script {
     let mut s = Script::with_capacity(64);
-    append_single_sig(&mut s, staker_xonly, VERIFY);
+    append_single_sig(&mut s, staker_key, VERIFY);
     s.push_int(locktime as i64);
     s.push(OP_CHECKSEQUENCEVERIFY);
     s
@@ -59,16 +60,16 @@ pub fn new_timelock_script(staker_xonly: &H256, locktime: u16) -> Script {
 /// <CovenantThreshold> OP_NUMEQUAL
 /// ```
 pub fn new_unbonding_script(
-    staker_xonly: &H256,
-    covenants_xonly: Vec<H256>,
+    staker_key: &schnorr::XOnlyPublicKey,
+    covenants_keys: &[schnorr::XOnlyPublicKey],
     covenant_quorum: u32,
 ) -> SigningResult<Script> {
     let mut s = Script::with_capacity(64);
-    append_single_sig(&mut s, staker_xonly, VERIFY);
+    append_single_sig(&mut s, staker_key, VERIFY);
     // Covenant multisig is always last in script so we do not run verify and leave
     // last value on the stack. If we do not leave at least one element on the stack
     // script will always error.
-    append_multi_sig(&mut s, covenants_xonly, covenant_quorum, NO_VERIFY)?;
+    append_multi_sig(&mut s, covenants_keys, covenant_quorum, NO_VERIFY)?;
     Ok(s)
 }
 
@@ -83,29 +84,29 @@ pub fn new_unbonding_script(
 /// <CovenantThreshold> OP_NUMEQUAL
 /// ```
 pub fn new_slashing_script(
-    staker_xonly: &H256,
-    finality_providers_xonly: Vec<H256>,
-    covenants_xonly: Vec<H256>,
+    staker_key: &schnorr::XOnlyPublicKey,
+    finality_providers_keys: &[schnorr::XOnlyPublicKey],
+    covenants_keys: &[schnorr::XOnlyPublicKey],
     covenant_quorum: u32,
 ) -> SigningResult<Script> {
     let mut s = Script::with_capacity(64);
-    append_single_sig(&mut s, staker_xonly, VERIFY);
+    append_single_sig(&mut s, staker_key, VERIFY);
     // We need to run verify to clear the stack, as finality provider multisig is in the middle of the script.
     append_multi_sig(
         &mut s,
-        finality_providers_xonly,
+        finality_providers_keys,
         FINALITY_PROVIDERS_QUORUM,
         VERIFY,
     )?;
     // Covenant multisig is always last in script so we do not run verify and leave
     // last value on the stack. If we do not leave at least one element on the stack
     // script will always error.
-    append_multi_sig(&mut s, covenants_xonly, covenant_quorum, NO_VERIFY)?;
+    append_multi_sig(&mut s, covenants_keys, covenant_quorum, NO_VERIFY)?;
     Ok(s)
 }
 
-fn append_single_sig(dst: &mut Script, xonly: &H256, verify: bool) {
-    dst.push_slice(xonly.as_slice());
+fn append_single_sig(dst: &mut Script, key: &schnorr::XOnlyPublicKey, verify: bool) {
+    dst.push_slice(key.as_slice());
     if verify {
         dst.push(OP_CHECKSIGVERIFY);
     } else {
@@ -117,10 +118,10 @@ fn append_single_sig(dst: &mut Script, xonly: &H256, verify: bool) {
 /// successfully execute script.
 /// It validates whether threshold is not greater than number of keys.
 /// If there is only one key provided it will return single key sig script.
-/// Note: It is up to the caller to ensure that the keys are unique.
+/// Note: It is up to the caller to ensure that the keys are unique and sorted.
 fn append_multi_sig(
     dst: &mut Script,
-    mut covenants_xonly: Vec<H256>,
+    covenants_xonly: &[schnorr::XOnlyPublicKey],
     covenant_quorum: u32,
     verify: bool,
 ) -> SigningResult<()> {
@@ -137,9 +138,7 @@ fn append_multi_sig(
         return Ok(());
     }
 
-    // Sort the keys in lexicographical order bytes.
-    covenants_xonly.sort();
-    for (i, covenant_xonly) in covenants_xonly.into_iter().enumerate() {
+    for (i, covenant_xonly) in covenants_xonly.iter().enumerate() {
         dst.push_slice(covenant_xonly.as_slice());
         if i == 0 {
             dst.push(OP_CHECKSIG);

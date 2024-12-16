@@ -26,6 +26,14 @@ message PublicKeyOrHash {
     }
 }
 
+// Public key and corresponding signature.
+message PublicKeySignature {
+    // Public key bytes. Type of the public key depends on the context.
+    bytes public_key = 1;
+    // Signature 64-length byte array.
+    bytes signature = 2;
+}
+
 // Bitcoin transaction out-point reference.
 message OutPoint {
     // The hash of the referenced transaction (network byte order, usually needs to be reversed).
@@ -137,21 +145,27 @@ message Input {
         repeated bytes covenant_committee_public_keys = 4;
         // Retrieved from global_parameters.covenant_quorum.
         // Specifies the quorum required by the covenant committee for unbonding transactions to be confirmed.
-        uint32 covenant_committee_quorum = 5;
+        uint32 covenant_quorum = 5;
     }
 
     // Unbonding path can be used to on-demand unlock `Staking Output` before the timelock expires.
     message BabylonStakingUnbondingPath {
         // User's public key.
         bytes staker_public_key = 1;
+        // Finality provider's public key chosen by the user.
+        bytes finality_provider_public_key = 2;
+        // Staking Output's lock time.
+        // Must be expired to be spent.
+        uint32 staking_time = 3;
         // Retrieved from global_parameters.covenant_pks.
         // Babylon nodes that can approve Unbonding tx or Slash the staked position when acting bad.
-        repeated bytes covenant_committee_public_keys = 2;
+        repeated bytes covenant_committee_public_keys = 4;
         // Retrieved from global_parameters.covenant_quorum.
         // Specifies the quorum required by the covenant committee for unbonding transactions to be confirmed.
-        uint32 covenant_committee_quorum = 3;
-        // Signatures signed by covenant committees. There should be at least `covenant_committee_quorum` signatures.
-        repeated bytes covenant_committee_signatures = 4;
+        uint32 covenant_quorum = 5;
+        // Signatures signed by covenant committees. There should be at least `covenant_quorum` signatures.
+        // Public keys can be either compressed (33 bytes) or x-only (32 bytes).
+        repeated PublicKeySignature covenant_committee_signatures = 6;
     }
 }
 
@@ -237,7 +251,7 @@ message Output {
         repeated bytes covenant_committee_public_keys = 4;
         // Retrieved from global_parameters.covenant_quorum.
         // Specifies the quorum required by the covenant committee for unbonding transactions to be confirmed.
-        uint32 covenant_committee_quorum = 5;
+        uint32 covenant_quorum = 5;
     }
 
     // Creates an OP_RETURN output used to identify the staking transaction among other transactions in the Bitcoin ledger.

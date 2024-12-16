@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-pub mod claims;
 pub mod conditions;
+pub mod covenant_committee;
+pub mod spending_data;
+pub mod spending_info;
 pub mod tx_builder;

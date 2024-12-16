@@ -288,11 +288,31 @@ impl UtxoBuilder {
     }
 
     pub fn p2tr_script_path(
-        mut self,
+        self,
         internal_pubkey: &schnorr::PublicKey,
         payload: Script,
         control_block: Data,
         merkle_root: &H256,
+    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        let spending_data_ctor =
+            SpendingDataConstructor::schnorr(standard_constructor::P2TRScriptPath {
+                payload: payload.clone(),
+                control_block,
+            });
+        self.p2tr_script_path_with_spending_data_ctor(
+            internal_pubkey,
+            payload,
+            merkle_root,
+            spending_data_ctor,
+        )
+    }
+
+    pub fn p2tr_script_path_with_spending_data_ctor(
+        mut self,
+        internal_pubkey: &schnorr::PublicKey,
+        payload: Script,
+        merkle_root: &H256,
+        spending_data_constructor: SpendingDataConstructor,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
         // Construct the leaf hash.
         let script_buf = bitcoin::ScriptBuf::from_bytes(payload.to_vec());
@@ -319,12 +339,7 @@ impl UtxoBuilder {
                 // We use the full (revealed) script as scriptPubkey here.
                 script_pubkey: payload.clone(),
                 signing_method: SigningMethod::Taproot,
-                spending_data_constructor: SpendingDataConstructor::schnorr(
-                    standard_constructor::P2TRScriptPath {
-                        payload,
-                        control_block,
-                    },
-                ),
+                spending_data_constructor,
                 // Taproot ScriptPath input should be signed with a non-tweaked private key.
                 spender_public_key: internal_pubkey.compressed().to_vec(),
                 amount,

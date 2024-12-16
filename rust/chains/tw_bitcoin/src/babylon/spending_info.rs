@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::babylon::conditions;
+use crate::babylon::covenant_committee::CovenantCommittee;
 use bitcoin::hashes::Hash;
 use lazy_static::lazy_static;
 use tw_coin_entry::error::prelude::*;
@@ -29,36 +30,28 @@ pub struct StakingSpendInfo {
 
 impl StakingSpendInfo {
     pub fn new(
-        staker: &schnorr::PublicKey,
+        staker: &schnorr::XOnlyPublicKey,
         staking_locktime: u16,
-        finality_provider: &schnorr::PublicKey,
-        covenants: &[schnorr::PublicKey],
+        finality_provider: schnorr::XOnlyPublicKey,
+        mut covenants: Vec<schnorr::XOnlyPublicKey>,
         covenant_quorum: u32,
     ) -> SigningResult<StakingSpendInfo> {
-        let staker_xonly = staker.x_only().bytes();
-        let covenants_xonly: Vec<_> = covenants.iter().map(|pk| pk.x_only().bytes()).collect();
-        let fp_xonly: Vec<_> = vec![finality_provider.x_only().bytes()];
+        let fp_xonly = [finality_provider];
 
-        let timelock_script = conditions::new_timelock_script(&staker_xonly, staking_locktime);
-        let unbonding_script = conditions::new_unbonding_script(
-            &staker_xonly,
-            covenants_xonly.clone(),
-            covenant_quorum,
-        )
-        .context("Invalid number of covenants")?;
-        let slashing_script = conditions::new_slashing_script(
-            &staker_xonly,
-            fp_xonly,
-            covenants_xonly,
-            covenant_quorum,
-        )
-        .context("Invalid number of finality providers")?;
+        CovenantCommittee::sort_public_keys(&mut covenants);
+
+        let timelock_script = conditions::new_timelock_script(&staker, staking_locktime);
+        let unbonding_script =
+            conditions::new_unbonding_script(&staker, &covenants, covenant_quorum)
+                .context("Invalid number of covenants")?;
+        let slashing_script =
+            conditions::new_slashing_script(&staker, &fp_xonly, &covenants, covenant_quorum)
+                .context("Invalid number of finality providers")?;
 
         // IMPORTANT - order and leaf depths are important!
-        let internal_pubkey =
-            bitcoin::key::UntweakedPublicKey::from_slice(&staker_xonly.as_slice())
-                .tw_err(|_| SigningErrorType::Error_invalid_params)
-                .context("Invalid stakerPublicKey")?;
+        let internal_pubkey = bitcoin::key::UntweakedPublicKey::from_slice(staker.as_slice())
+            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .context("Invalid stakerPublicKey")?;
         let spend_info = bitcoin::taproot::TaprootBuilder::new()
             .add_leaf(2, timelock_script.clone().into())
             .expect("Leaf added at a valid depth")
