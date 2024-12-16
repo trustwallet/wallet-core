@@ -307,7 +307,7 @@ TEST(TWTHORChainSwap, SwapRuneDoge) {
     // invoke swap
     const auto outputTWData_ = WRAPD(TWTHORChainSwapBuildSwap(inputTWData_.get()));
     const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
-    EXPECT_EQ(outputData.size(), 153ul);
+    EXPECT_EQ(outputData.size(), 144ul);
     // parse result in proto
     Proto::SwapOutput outputProto;
     EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
@@ -369,7 +369,7 @@ TEST(TWTHORChainSwap, SwapRuneBnbStreamParams) {
     // invoke swap
     const auto outputTWData_ = WRAPD(TWTHORChainSwapBuildSwap(inputTWData_.get()));
     const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
-    EXPECT_EQ(outputData.size(), 156ul);
+    EXPECT_EQ(outputData.size(), 147ul);
     // parse result in proto
     Proto::SwapOutput outputProto;
     EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
