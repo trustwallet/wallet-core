@@ -40,7 +40,7 @@ fn test_polkadot_compile_transfer() {
     let public_key = "d84accbb64934815506288fafbfc7d275e64aa4e3cd9c5392db6e83b13256bf3";
 
     let (preimage, signed) =
-        helper_encode_and_compile(CoinType::Polkadot, input, signature, public_key);
+        helper_encode_and_compile(CoinType::Polkadot, input, signature, public_key, true);
 
     assert_eq!(
         preimage,
