@@ -2,9 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use std::borrow::Cow;
-use tw_coin_entry::error::prelude::*;
-use tw_keypair::schnorr;
 use tw_utxo::context::AddressPrefixes;
 
 pub mod output_protobuf;
@@ -26,12 +23,4 @@ impl BitcoinChainInfo {
             p2sh_prefix: self.p2sh_prefix,
         }
     }
-}
-
-fn parse_schnorr_pk(bytes: &Cow<[u8]>) -> SigningResult<schnorr::XOnlyPublicKey> {
-    schnorr::XOnlyPublicKey::try_from(bytes.as_ref()).into_tw()
-}
-
-fn parse_schnorr_pks(pks: &[Cow<[u8]>]) -> SigningResult<Vec<schnorr::XOnlyPublicKey>> {
-    pks.iter().map(parse_schnorr_pk).collect()
 }

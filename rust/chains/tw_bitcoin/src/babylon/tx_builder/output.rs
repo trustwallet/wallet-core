@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::babylon;
-use crate::babylon::tx_builder::BabylonStakingParams;
+use crate::babylon::tx_builder::{BabylonStakingParams, BabylonUnbondingParams};
 use tw_coin_entry::error::prelude::*;
 use tw_hash::H32;
 use tw_keypair::schnorr;
@@ -15,8 +15,10 @@ pub const VERSION: u8 = 0;
 
 /// An extension of the [`OutputBuilder`] with Babylon BTC Staking outputs.
 pub trait BabylonOutputBuilder: Sized {
+    /// Create a Staking Output.
     fn babylon_staking(self, params: BabylonStakingParams) -> SigningResult<TransactionOutput>;
 
+    /// Creates an OP_RETURN output used to identify the staking transaction among other transactions in the Bitcoin ledger.
     fn babylon_staking_op_return(
         self,
         tag: &H32,
@@ -24,6 +26,8 @@ pub trait BabylonOutputBuilder: Sized {
         finality_provider_key: &schnorr::XOnlyPublicKey,
         staking_locktime: u16,
     ) -> TransactionOutput;
+
+    fn babylon_unbonding(self, params: BabylonUnbondingParams) -> SigningResult<TransactionOutput>;
 }
 
 impl BabylonOutputBuilder for OutputBuilder {
@@ -65,5 +69,9 @@ impl BabylonOutputBuilder for OutputBuilder {
             value: self.get_amount(),
             script_pubkey: op_return,
         }
+    }
+
+    fn babylon_unbonding(self, _params: BabylonUnbondingParams) -> SigningResult<TransactionOutput> {
+        todo!()
     }
 }

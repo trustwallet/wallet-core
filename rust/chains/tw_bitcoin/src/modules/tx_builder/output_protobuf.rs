@@ -2,15 +2,14 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::babylon::tx_builder::output::BabylonOutputBuilder;
-use crate::babylon::tx_builder::BabylonStakingParams;
-use crate::modules::tx_builder::{parse_schnorr_pk, parse_schnorr_pks, BitcoinChainInfo};
+use crate::babylon::proto_builder::output_protobuf::BabylonOutputProtobuf;
+use crate::modules::tx_builder::BitcoinChainInfo;
 use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::hasher::sha256_ripemd;
 use tw_hash::sha2::sha256;
-use tw_hash::{Hash, H256, H32};
+use tw_hash::{Hash, H256};
 use tw_keypair::{ecdsa, schnorr};
 use tw_memory::Data;
 use tw_proto::BitcoinV2::Proto;
@@ -54,8 +53,9 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
                 BuilderType::op_return(ref data) => self.op_return(data),
                 BuilderType::babylon_staking(ref staking) => self.babylon_staking(staking),
                 BuilderType::babylon_staking_op_return(ref op_return) => {
-                    self.babylon_op_return(op_return)
+                    self.babylon_staking_op_return(op_return)
                 },
+                BuilderType::babylon_unbonding(ref unbonding) => self.babylon_unbonding(unbonding),
                 BuilderType::None => SigningError::err(SigningErrorType::Error_invalid_params)
                     .context("No Output Builder type provided"),
             },
@@ -154,57 +154,6 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
             inscription.ticker.to_string(),
             inscription.transfer_amount.to_string(),
         )
-    }
-
-    pub fn babylon_staking(
-        &self,
-        staking: &Proto::mod_Output::BabylonStakingOutput,
-    ) -> SigningResult<TransactionOutput> {
-        let staker =
-            parse_schnorr_pk(&staking.staker_public_key).context("Invalid stakerPublicKey")?;
-        let staking_locktime: u16 = staking
-            .staking_time
-            .try_into()
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
-            .context("stakingTime cannot be greater than 65535")?;
-        let finality_provider = parse_schnorr_pk(&staking.finality_provider_public_key)
-            .context("Invalid finalityProviderPublicKeys")?;
-        let covenants = parse_schnorr_pks(&staking.covenant_committee_public_keys)
-            .context("Invalid covenantCommitteePublicKeys")?;
-
-        self.prepare_builder()?
-            .babylon_staking(BabylonStakingParams {
-                staker,
-                staking_locktime,
-                finality_provider,
-                covenants,
-                covenant_quorum: staking.covenant_quorum,
-            })
-    }
-
-    pub fn babylon_op_return(
-        &self,
-        op_return: &Proto::mod_Output::BabylonStakingOpReturn,
-    ) -> SigningResult<TransactionOutput> {
-        let tag = H32::try_from(op_return.tag.as_ref())
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
-            .context("Expected exactly 4 bytes tag")?;
-        let staker =
-            parse_schnorr_pk(&op_return.staker_public_key).context("Invalid stakerPublicKey")?;
-        let staking_locktime: u16 = op_return
-            .staking_time
-            .try_into()
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
-            .context("stakingTime cannot be greater than 65535")?;
-        let finality_provider = &parse_schnorr_pk(&op_return.finality_provider_public_key)
-            .context("Invalid finalityProviderPublicKeys")?;
-
-        Ok(self.prepare_builder()?.babylon_staking_op_return(
-            &tag,
-            &staker,
-            &finality_provider,
-            staking_locktime,
-        ))
     }
 
     pub fn custom_script(&self, script_data: Data) -> SigningResult<TransactionOutput> {

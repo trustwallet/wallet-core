@@ -16,12 +16,16 @@ use tw_utxo::transaction::UtxoToSign;
 
 /// An extension of the [`UtxoBuilder`] with Babylon BTC Staking outputs.
 pub trait BabylonUtxoBuilder: Sized {
-    fn babylon_timelock_path(
+    /// Spend a Staking Output via timelock path (staking time expired).
+    /// In other words, create a Withdraw transaction.
+    fn babylon_staking_timelock_path(
         self,
         params: BabylonStakingParams,
     ) -> SigningResult<(TransactionInput, UtxoToSign)>;
 
-    fn babylon_unbonding_path(
+    /// Spend a Staking Output via unbonding path.
+    /// In other words, create an Unbonding transaction.
+    fn babylon_staking_unbonding_path(
         self,
         params: BabylonStakingParams,
         covenant_committee_signatures: &[(schnorr::XOnlyPublicKey, BitcoinSchnorrSignature)],
@@ -29,7 +33,7 @@ pub trait BabylonUtxoBuilder: Sized {
 }
 
 impl BabylonUtxoBuilder for UtxoBuilder {
-    fn babylon_timelock_path(
+    fn babylon_staking_timelock_path(
         self,
         params: BabylonStakingParams,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
@@ -55,7 +59,7 @@ impl BabylonUtxoBuilder for UtxoBuilder {
         )
     }
 
-    fn babylon_unbonding_path(
+    fn babylon_staking_unbonding_path(
         self,
         params: BabylonStakingParams,
         covenant_committee_signatures: &[(schnorr::XOnlyPublicKey, BitcoinSchnorrSignature)],

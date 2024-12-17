@@ -14,3 +14,9 @@ pub struct BabylonStakingParams {
     pub covenants: Vec<schnorr::XOnlyPublicKey>,
     pub covenant_quorum: u32,
 }
+
+pub struct BabylonUnbondingParams {
+    pub staker: schnorr::XOnlyPublicKey,
+    pub unbonding_locktime: u16,
+    pub finality_provider: schnorr::XOnlyPublicKey,
+}

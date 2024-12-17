@@ -4,6 +4,7 @@
 
 pub mod conditions;
 pub mod covenant_committee;
+pub mod proto_builder;
 pub mod spending_data;
 pub mod spending_info;
 pub mod tx_builder;
