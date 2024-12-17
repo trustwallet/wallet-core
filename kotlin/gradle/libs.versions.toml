@@ -9,6 +9,10 @@ kotlin = "1.8.21"
 agp = "8.0.0"
 wire = "4.5.6"
 
+androidx-test-runner = "1.5.2"
+
 [libraries]
 wire-runtime = { module = "com.squareup.wire:wire-runtime", version.ref = "wire" }
 wire-compiler = { module = "com.squareup.wire:wire-compiler", version.ref = "wire" }
+
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }

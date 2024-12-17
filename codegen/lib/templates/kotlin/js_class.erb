@@ -6,6 +6,21 @@
 actual class <%= entity.name %> constructor(
     val jsValue: Js<%= entity.name %>,
 ) {
+<%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
+    private val finalizationRegistry =
+        js(
+            """
+                new FinalizationRegistry(function(heldValue) {
+                    heldValue.delete();
+                })
+            """
+        )
+
+    init {
+        finalizationRegistry.register(this, jsValue)
+    }
+<% end -%>
+
 <%# Constructors -%>
 <%- constructors.each do |constructor| -%>
 

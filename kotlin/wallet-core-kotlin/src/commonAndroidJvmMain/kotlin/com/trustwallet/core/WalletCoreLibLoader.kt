@@ -34,9 +34,9 @@ object WalletCoreLibLoader {
     }
 
     private fun getLibResourcePath(): String {
-        val osNameOriginal = System.getProperty("os.name").lowercase()
+        val osNameOriginal = System.getProperty("os.name")!!.lowercase()
         val osName = osNameOriginal.lowercase()
-        val archOriginal = System.getProperty("os.arch").lowercase()
+        val archOriginal = System.getProperty("os.arch")!!.lowercase()
         val arch = archOriginal.lowercase()
 
         return when {
