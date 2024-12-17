@@ -2,6 +2,7 @@ use std::str::FromStr;
 
 use crate::ctx_from_tw;
 use crate::types::*;
+use tw_coin_entry::error::prelude::*;
 use tw_number::U256;
 use tw_proto::Polymesh::Proto::{
     self,
@@ -76,7 +77,9 @@ impl PolymeshBalances {
     pub fn encode_call(b: &Balance) -> WithCallIndexResult<Self> {
         match &b.message_oneof {
             BalanceVariant::transfer(t) => Self::encode_transfer(t),
-            _ => EncodeError::NotSupported.tw_result("Unsupported balance call".to_string()),
+            _ => Err(EncodeError::NotSupported)
+                .into_tw()
+                .context("Unsupported balance call".to_string()),
         }
     }
 }
@@ -125,12 +128,15 @@ impl PolymeshIdentity {
                     permissions: perms.try_into().map_err(|_| EncodeError::InvalidValue)?,
                 },
                 AuthVariant::None => {
-                    return EncodeError::NotSupported
-                        .tw_result("Unsupported Authorization".to_string());
+                    return Err(EncodeError::NotSupported)
+                        .into_tw()
+                        .context("Unsupported Authorization".to_string());
                 },
             }
         } else {
-            return EncodeError::NotSupported.tw_result("Missing Authorization".to_string());
+            return Err(EncodeError::NotSupported)
+                .into_tw()
+                .context("Missing Authorization".to_string());
         };
 
         Ok(ci.wrap(Self::AddAuthorization {
@@ -149,7 +155,9 @@ impl PolymeshIdentity {
             IdentityVariant::join_identity_as_key(t) => Self::encode_join_identity(t),
             IdentityVariant::leave_identity_as_key(t) => Self::encode_leave_identity(t),
             IdentityVariant::add_authorization(a) => Self::encode_add_authorization(a),
-            _ => EncodeError::NotSupported.tw_result("Unsupported identity call".to_string()),
+            _ => Err(EncodeError::NotSupported)
+                .into_tw()
+                .context("Unsupported identity call".to_string()),
         }
     }
 }
@@ -269,7 +277,9 @@ impl PolymeshStaking {
             StakingVariant::withdraw_unbonded(b) => Self::encode_withdraw_unbonded(b),
             StakingVariant::rebond(b) => Self::encode_rebond(b),
             StakingVariant::nominate(b) => Self::encode_nominate(b),
-            _ => EncodeError::NotSupported.tw_result("Unsupported staking call".to_string()),
+            _ => Err(EncodeError::NotSupported)
+                .into_tw()
+                .context("Unsupported staking call".to_string()),
         }
     }
 }
@@ -286,8 +296,9 @@ impl_enum_scale!(
 impl PolymeshUtility {
     pub fn encode_call(encoder: &mut CallEncoder, u: &Utility) -> WithCallIndexResult<Self> {
         if encoder.batch_depth > 0 {
-            return EncodeError::NotSupported
-                .tw_result("Nested batch calls not allowed".to_string());
+            return Err(EncodeError::NotSupported)
+                .into_tw()
+                .context("Nested batch calls not allowed");
         }
         encoder.batch_depth += 1;
         match &u.message_oneof {
@@ -306,7 +317,9 @@ impl PolymeshUtility {
                 };
                 Ok(ci.wrap(batch))
             },
-            _ => EncodeError::NotSupported.tw_result("Unsupported utility call".to_string()),
+            _ => Err(EncodeError::NotSupported)
+                .into_tw()
+                .context("Unsupported utility call"),
         }
     }
 }
@@ -333,9 +346,12 @@ impl CallEncoder {
     pub fn encode_input(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<RawOwned> {
         let ctx = ctx_from_tw(input)?;
         let mut encoder = Self::from_ctx(&ctx)?;
-        let call = input.runtime_call.as_ref().ok_or_else(|| {
-            EncodeError::InvalidValue.with_context("Missing runtime call".to_string())
-        })?;
+        let call = input
+            .runtime_call
+            .as_ref()
+            .ok_or(EncodeError::InvalidValue)
+            .into_tw()
+            .context("Missing runtime call")?;
         encoder.encode_runtime_call(&call)
     }
 
@@ -354,8 +370,9 @@ impl CallEncoder {
                 PolymeshUtility::encode_call(self, msg)?.map(PolymeshCall::Utility)
             },
             RuntimeCallVariant::None => {
-                return EncodeError::NotSupported
-                    .tw_result("Runtime call variant is None".to_string());
+                return Err(EncodeError::NotSupported)
+                    .into_tw()
+                    .context("Runtime call variant is None".to_string());
             },
         };
         Ok(RawOwned(call.to_scale()))

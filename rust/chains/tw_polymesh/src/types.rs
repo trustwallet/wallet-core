@@ -3,7 +3,7 @@ use std::{
     str::FromStr,
 };
 
-use tw_coin_entry::error::prelude::TWError;
+use tw_coin_entry::error::prelude::*;
 use tw_hash::{Hash, H256};
 use tw_proto::Polymesh::Proto::{
     mod_SecondaryKeyPermissions::{
@@ -47,9 +47,10 @@ impl TryFrom<&TWAssetId<'_>> for AssetId {
     type Error = TWError<EncodeError>;
 
     fn try_from(id: &TWAssetId) -> Result<Self, Self::Error> {
-        let did = H128::try_from(id.id.as_ref()).map_err(|_| {
-            EncodeError::InvalidValue.with_context(format!("Expected 16 byte AssetId"))
-        })?;
+        let did = H128::try_from(id.id.as_ref())
+            .map_err(|_| EncodeError::InvalidValue)
+            .into_tw()
+            .context("Expected 16 byte AssetId")?;
         Ok(Self(did))
     }
 }
@@ -63,9 +64,10 @@ impl TryFrom<&TWIdentityId<'_>> for IdentityId {
     type Error = TWError<EncodeError>;
 
     fn try_from(id: &TWIdentityId) -> Result<Self, Self::Error> {
-        let did = H256::try_from(id.id.as_ref()).map_err(|_| {
-            EncodeError::InvalidValue.with_context(format!("Expected 32 byte IdentityId"))
-        })?;
+        let did = H256::try_from(id.id.as_ref())
+            .map_err(|_| EncodeError::InvalidValue)
+            .into_tw()
+            .context("Expected 32 byte IdentityId")?;
         Ok(Self(did))
     }
 }
@@ -95,9 +97,9 @@ impl TryFrom<&TWPortfolioId<'_>> for PortfolioId {
             did: portfolio
                 .identity
                 .as_ref()
-                .ok_or_else(|| {
-                    EncodeError::InvalidValue.with_context(format!("Missing portfolio identity"))
-                })?
+                .ok_or(EncodeError::InvalidValue)
+                .into_tw()
+                .context("Missing portfolio identity")?
                 .try_into()?,
             kind: if portfolio.default {
                 PortfolioKind::Default

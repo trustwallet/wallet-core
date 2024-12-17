@@ -37,9 +37,12 @@ impl PolymeshEntry {
     ) -> EncodeResult<TransactionBuilder> {
         let ctx = ctx_from_tw(&input)?;
         let mut encoder = CallEncoder::from_ctx(&ctx)?;
-        let call = input.runtime_call.as_ref().ok_or_else(|| {
-            EncodeError::InvalidValue.with_context("Missing runtime call".to_string())
-        })?;
+        let call = input
+            .runtime_call
+            .as_ref()
+            .ok_or(EncodeError::InvalidValue)
+            .into_tw()
+            .context("Missing runtime call")?;
         let call = encoder.encode_runtime_call(&call)?;
         let era = match &input.era {
             Some(era) => Era::mortal(era.period, era.block_number),
@@ -62,8 +65,9 @@ impl PolymeshEntry {
         builder.extension(ChargeTransactionPayment::new(tip));
         if let Some(public_key) = public_key {
             let account = SubstrateAddress(
-                SS58Address::from_public_key(&public_key, ctx.network)
-                    .map_err(|e| EncodeError::InvalidAddress.with_error(e))?,
+                SS58Address::from_public_key(&public_key, ctx.network).map_err(|e| {
+                    TWError::new(EncodeError::InvalidAddress).context(format!("{e:?}"))
+                })?,
             );
             builder.set_account(account);
         }
