@@ -49,8 +49,8 @@ fn test_polymesh_compile_add_authorization() {
             block_number: 16_102_074,
             period: 64,
         }),
-        runtime_call: identity_call(Proto::mod_Identity::OneOfmessage_oneof::add_authorization(
-            AddAuthorization {
+        runtime_call: Some(identity_call(
+            Proto::mod_Identity::OneOfmessage_oneof::add_authorization(AddAuthorization {
                 target: PUBLIC_KEY_1.into(),
                 authorization: Some(Authorization {
                     auth_oneof: AuthVariant::join_identity(SecondaryKeyPermissions {
@@ -72,7 +72,7 @@ fn test_polymesh_compile_add_authorization() {
                     }),
                 }),
                 ..Default::default()
-            },
+            }),
         )),
         ..Default::default()
     };
@@ -110,12 +110,12 @@ fn test_polymesh_compile_join_identity() {
             block_number: 16_102_087,
             period: 64,
         }),
-        runtime_call: identity_call(
+        runtime_call: Some(identity_call(
             Proto::mod_Identity::OneOfmessage_oneof::join_identity_as_key(JoinIdentityAsKey {
                 auth_id: 52_188,
                 ..Default::default()
             }),
-        ),
+        )),
         ..Default::default()
     };
 
@@ -176,11 +176,13 @@ fn test_polymesh_compile_transfer() {
             block_number: 16_102_106,
             period: 64,
         }),
-        runtime_call: balance_call(Proto::mod_Balance::OneOfmessage_oneof::transfer(Transfer {
-            to_address: PUBLIC_KEY_2.into(),
-            value: Cow::Owned(U256::from(value).to_big_endian().to_vec()),
-            ..Default::default()
-        })),
+        runtime_call: Some(balance_call(
+            Proto::mod_Balance::OneOfmessage_oneof::transfer(Transfer {
+                to_address: PUBLIC_KEY_2.into(),
+                value: Cow::Owned(U256::from(value).to_big_endian().to_vec()),
+                ..Default::default()
+            }),
+        )),
         ..Default::default()
     };
 
@@ -244,11 +246,11 @@ fn test_polymesh_compile_leave_identity() {
             block_number: 16_102_110,
             period: 64,
         }),
-        runtime_call: identity_call(
+        runtime_call: Some(identity_call(
             Proto::mod_Identity::OneOfmessage_oneof::leave_identity_as_key(LeaveIdentityAsKey {
                 ..Default::default()
             }),
-        ),
+        )),
         ..Default::default()
     };
 

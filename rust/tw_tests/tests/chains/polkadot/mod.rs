@@ -107,15 +107,3 @@ pub fn staking_call(
         message_oneof: call,
     })
 }
-
-pub fn polymesh_call(
-    call: Proto::mod_Identity::OneOfmessage_oneof,
-) -> Proto::mod_SigningInput::OneOfmessage_oneof {
-    Proto::mod_SigningInput::OneOfmessage_oneof::polymesh_call(Proto::PolymeshCall {
-        message_oneof: Proto::mod_PolymeshCall::OneOfmessage_oneof::identity_call(
-            Proto::Identity {
-                message_oneof: call,
-            },
-        ),
-    })
-}
