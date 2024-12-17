@@ -24,5 +24,6 @@ pub fn ctx_from_tw(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<Substrate
         spec_version,
         transaction_version: input.transaction_version,
         fee_asset_id: None,
+        check_metadata: false,
     })
 }
