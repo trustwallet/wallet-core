@@ -1,7 +1,4 @@
-use std::{
-    collections::{BTreeMap, BTreeSet},
-    str::FromStr,
-};
+use std::collections::{BTreeMap, BTreeSet};
 
 use tw_coin_entry::error::prelude::*;
 use tw_hash::{Hash, H256};
@@ -12,11 +9,9 @@ use tw_proto::Polymesh::Proto::{
         RestrictionKind as TWRestrictionKind,
     },
     AssetId as TWAssetId, IdentityId as TWIdentityId, PortfolioId as TWPortfolioId,
-    SecondaryKeyPermissions,
+    RewardDestination as TWRewardDestination, SecondaryKeyPermissions,
 };
 use tw_scale::{impl_enum_scale, impl_struct_scale, ToScale};
-use tw_ss58_address::SS58Address;
-use tw_substrate::address::SubstrateAddress;
 
 use super::*;
 
@@ -336,18 +331,11 @@ impl_enum_scale!(
 );
 
 impl RewardDestination {
-    pub fn from_tw(dest: u8, account: &str) -> EncodeResult<Self> {
+    pub fn from_tw(dest: &TWRewardDestination) -> EncodeResult<Self> {
         match dest {
-            0 => Ok(Self::Staked),
-            1 => Ok(Self::Stash),
-            2 => Ok(Self::Controller),
-            4 => {
-                let account =
-                    SS58Address::from_str(account).map_err(|_| EncodeError::InvalidAddress)?;
-                Ok(Self::Account(SubstrateAddress(account)))
-            },
-            5 => Ok(Self::None),
-            _ => EncodeError::InvalidValue.tw_result(format!("Invalid reward destination: {dest}")),
+            TWRewardDestination::STAKED => Ok(Self::Staked),
+            TWRewardDestination::STASH => Ok(Self::Stash),
+            TWRewardDestination::CONTROLLER => Ok(Self::Controller),
         }
     }
 }
