@@ -3810,7 +3810,7 @@
     "chainId": "10000",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://www.smartscan.cash",
+      "url": "https://www.smartscout.cash",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x6413466b455b17d03c7a8ce2d7f99fec34bcd338628bdd2d0580a21e3197a4d9",
