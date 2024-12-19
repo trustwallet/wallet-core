@@ -20,7 +20,7 @@ lazy_static! {
         schnorr::PublicKey::try_from(UNSPENDABLE_KEY_PATH_BYTES.as_slice())
             .expect("Expected a valid unspendable key path");
     pub static ref UNSPENDABLE_KEY_PATH_XONLY: bitcoin::key::UntweakedPublicKey =
-        bitcoin::key::UntweakedPublicKey::from_slice(UNSPENDABLE_KEY_PATH.x_only().as_slice())
+        bitcoin::key::UntweakedPublicKey::from_slice(UNSPENDABLE_KEY_PATH.x_only().bytes().as_slice())
             .expect("Expected a valid unspendable key path");
 }
 
@@ -33,14 +33,16 @@ pub struct StakingSpendInfo {
 
 impl StakingSpendInfo {
     pub fn new(params: &BabylonStakingParams) -> SigningResult<StakingSpendInfo> {
-        let fp_xonly = [params.finality_provider.clone()];
         let staker_xonly = params.staker.x_only();
 
         let timelock_script =
             conditions::new_timelock_script(&staker_xonly, params.staking_locktime);
         let unbonding_script = conditions::new_unbonding_script(&staker_xonly, &params.covenants);
-        let slashing_script =
-            conditions::new_slashing_script(&staker_xonly, &fp_xonly, &params.covenants);
+        let slashing_script = conditions::new_slashing_script(
+            &staker_xonly,
+            &params.finality_providers,
+            &params.covenants,
+        );
 
         // IMPORTANT - order and leaf depths are important!
         let spend_info = bitcoin::taproot::TaprootBuilder::new()
@@ -50,7 +52,7 @@ impl StakingSpendInfo {
             .expect("Leaf added at a valid depth")
             .add_leaf(1, slashing_script.clone().into())
             .expect("Leaf added at a valid depth")
-            .finalize(&secp256k1::SECP256K1, UNSPENDABLE_KEY_PATH_XONLY.clone())
+            .finalize(secp256k1::SECP256K1, *UNSPENDABLE_KEY_PATH_XONLY)
             .expect("Expected a valid Taproot tree");
 
         Ok(StakingSpendInfo {
@@ -98,13 +100,15 @@ pub struct UnbondingSpendInfo {
 
 impl UnbondingSpendInfo {
     pub fn new(params: &BabylonStakingParams) -> SigningResult<UnbondingSpendInfo> {
-        let fp_xonly = [params.finality_provider.clone()];
         let staker_xonly = params.staker.x_only();
 
         let timelock_script =
             conditions::new_timelock_script(&staker_xonly, params.staking_locktime);
-        let slashing_script =
-            conditions::new_slashing_script(&staker_xonly, &fp_xonly, &params.covenants);
+        let slashing_script = conditions::new_slashing_script(
+            &staker_xonly,
+            &params.finality_providers,
+            &params.covenants,
+        );
 
         // IMPORTANT - order and leaf depths are important!
         let spend_info = bitcoin::taproot::TaprootBuilder::new()
@@ -112,7 +116,7 @@ impl UnbondingSpendInfo {
             .expect("Leaf added at a valid depth")
             .add_leaf(1, timelock_script.clone().into())
             .expect("Leaf added at a valid depth")
-            .finalize(&secp256k1::SECP256K1, UNSPENDABLE_KEY_PATH_XONLY.clone())
+            .finalize(secp256k1::SECP256K1, *UNSPENDABLE_KEY_PATH_XONLY)
             .expect("Expected a valid Taproot tree");
 
         Ok(UnbondingSpendInfo {

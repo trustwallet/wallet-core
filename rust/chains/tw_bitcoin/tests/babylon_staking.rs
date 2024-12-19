@@ -7,23 +7,21 @@ use bitcoin::taproot::TaprootBuilder;
 use bitcoin::ScriptBuf;
 use secp256k1::{PublicKey, SECP256K1};
 use tw_bitcoin::babylon::conditions;
+use tw_bitcoin::babylon::multi_sig_ordered::MultiSigOrderedKeys;
 use tw_encoding::hex::{DecodeHex, ToHex};
-use tw_hash::H256;
 use tw_keypair::schnorr;
 
 const BABYLON_MERKLE_ROOTS: &str = include_str!("data/babylon_staking_merkle_roots.json");
 const BABYLON_TRANSACTIONS: &str = include_str!("data/babylon_staking_transactions.json");
 
-/// Parses a JSON string as a XOnly public key bytes.
-fn parse_pk(value: &serde_json::Value) -> H256 {
+fn parse_pk(value: &serde_json::Value) -> schnorr::XOnlyPublicKey {
     let pk = value.as_str().unwrap().decode_hex().unwrap();
     schnorr::PublicKey::try_from(pk.as_slice())
         .unwrap()
         .x_only()
-        .bytes()
 }
 
-fn parse_pks(value: &serde_json::Value) -> Vec<H256> {
+fn parse_pks(value: &serde_json::Value) -> Vec<schnorr::XOnlyPublicKey> {
     value.as_array().unwrap().iter().map(parse_pk).collect()
 }
 
@@ -42,6 +40,10 @@ fn test_babylon_scripts() {
         let staker_public_key = parse_pk(&params["staker_public_key"]);
         let staker_time = params["staking_time"].as_u64().unwrap() as u16;
 
+        let covenants = MultiSigOrderedKeys::new(covenant_public_keys, convenant_quorum).unwrap();
+        let finality_providers =
+            MultiSigOrderedKeys::new(finality_provider_public_keys, 1).unwrap();
+
         let expected_timelock_script = expected["staking_transaction_timelock_script_hex"]
             .as_str()
             .unwrap();
@@ -53,31 +55,27 @@ fn test_babylon_scripts() {
             .unwrap();
 
         let timelock_script = conditions::new_timelock_script(&staker_public_key, staker_time);
-        let unbonding_script = conditions::new_unbonding_script(
-            &staker_public_key,
-            covenant_public_keys.clone(),
-            convenant_quorum,
-        )
-        .expect(name);
-        let slashing_script = conditions::new_slashing_script(
-            &staker_public_key,
-            finality_provider_public_keys,
-            covenant_public_keys,
-            convenant_quorum,
-        )
-        .expect(name);
+        let unbonding_script = conditions::new_unbonding_script(&staker_public_key, &covenants);
+        let slashing_script =
+            conditions::new_slashing_script(&staker_public_key, &finality_providers, &covenants);
 
         assert_eq!(
             timelock_script.as_slice().to_hex(),
-            expected_timelock_script
+            expected_timelock_script,
+            "Test '{}' Invalid timelock script",
+            name
         );
         assert_eq!(
             unbonding_script.as_slice().to_hex(),
-            expected_unbonding_script
+            expected_unbonding_script,
+            "Test '{}' Invalid unbonding script",
+            name
         );
         assert_eq!(
             slashing_script.as_slice().to_hex(),
-            expected_slashing_script
+            expected_slashing_script,
+            "Test '{}' Invalid slashing script",
+            name
         );
     }
 }

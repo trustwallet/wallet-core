@@ -13,17 +13,17 @@ use tw_utxo::signature::BitcoinSchnorrSignature;
 type OptionalSignature = Option<BitcoinSchnorrSignature>;
 type PubkeySigMap = BTreeMap<schnorr::XOnlyPublicKey, OptionalSignature>;
 
-pub struct CovenantCommittee {
+pub struct MultiSigOrderedKeys {
     pks: Vec<schnorr::XOnlyPublicKey>,
     quorum: u32,
 }
 
-impl CovenantCommittee {
+impl MultiSigOrderedKeys {
     /// Sort the keys in lexicographical order.
     pub fn new(mut pks: Vec<schnorr::XOnlyPublicKey>, quorum: u32) -> SigningResult<Self> {
         if pks.is_empty() {
             return SigningError::err(SigningErrorType::Error_invalid_params)
-                .context("No covenant public keys provided");
+                .context("No public keys provided");
         }
 
         if pks.len() < quorum as usize {
@@ -35,11 +35,11 @@ impl CovenantCommittee {
         // TODO it's not optimal to use a `HashSet` because the keys are sorted already.
         if !pks.iter().all_unique() {
             return SigningError::err(SigningErrorType::Error_invalid_params)
-                .context("Covenant committee public keys must be unique");
+                .context("Public keys must be unique");
         }
 
         pks.sort();
-        Ok(CovenantCommittee { pks, quorum })
+        Ok(MultiSigOrderedKeys { pks, quorum })
     }
 
     pub fn public_keys_ordered(&self) -> &[schnorr::XOnlyPublicKey] {
@@ -50,28 +50,25 @@ impl CovenantCommittee {
         self.quorum
     }
 
-    pub fn with_partial_signatures<'a, I>(
-        self,
-        sigs: I,
-    ) -> SigningResult<CovenantCommitteeSignatures>
+    pub fn with_partial_signatures<'a, I>(self, sigs: I) -> SigningResult<MultiSigOrdered>
     where
         I: IntoIterator<Item = &'a (schnorr::XOnlyPublicKey, BitcoinSchnorrSignature)>,
     {
-        let mut pk_sig_map = CovenantCommitteeSignatures::checked(self.pks, self.quorum);
+        let mut pk_sig_map = MultiSigOrdered::checked(self.pks, self.quorum);
         pk_sig_map.set_partial_signatures(sigs)?;
-        pk_sig_map.check_covenant_quorum()?;
+        pk_sig_map.check_quorum()?;
         Ok(pk_sig_map)
     }
 }
 
 #[derive(Clone, Debug)]
-pub struct CovenantCommitteeSignatures {
+pub struct MultiSigOrdered {
     pk_sig_map: PubkeySigMap,
     quorum: u32,
 }
 
-impl CovenantCommitteeSignatures {
-    /// `pk_sig_map` and `quorum` must be checked at [`CovenantCommittee::new`] already.
+impl MultiSigOrdered {
+    /// `pk_sig_map` and `quorum` must be checked at [`MultiSigOrderedKeys::new`] already.
     fn checked(pks: Vec<schnorr::XOnlyPublicKey>, quorum: u32) -> Self {
         let mut pk_sig_map = PubkeySigMap::new();
 
@@ -80,7 +77,7 @@ impl CovenantCommitteeSignatures {
             pk_sig_map.insert(pk, None);
         }
 
-        CovenantCommitteeSignatures { pk_sig_map, quorum }
+        MultiSigOrdered { pk_sig_map, quorum }
     }
 
     fn set_partial_signatures<'a, I>(&mut self, sigs: I) -> SigningResult<()>
@@ -88,30 +85,30 @@ impl CovenantCommitteeSignatures {
         I: IntoIterator<Item = &'a (schnorr::XOnlyPublicKey, BitcoinSchnorrSignature)>,
     {
         // Set the signatures for the specific public keys.
-        // There can be less signatures than covenant public keys, but not less than `covenant_quorum`.
+        // There can be less signatures than public keys, but not less than `quorum`.
         for (pk, sig) in sigs {
             // Find the signature of the corresponding public key.
             let pk_sig = self
                 .pk_sig_map
                 .get_mut(pk)
                 .or_tw_err(SigningErrorType::Error_invalid_params)
-                .context("Signature provided for an unknown covenant committee")?;
+                .context("Signature provided for an unknown public key")?;
 
             // Only one signature per public key allowed.
             if pk_sig.is_some() {
                 return SigningError::err(SigningErrorType::Error_invalid_params)
-                    .context("Duplicate covenant committee public key");
+                    .context("Duplicate public key");
             }
             *pk_sig = Some(sig.clone());
         }
         Ok(())
     }
 
-    fn check_covenant_quorum(&self) -> SigningResult<()> {
+    fn check_quorum(&self) -> SigningResult<()> {
         let sig_num = self.pk_sig_map.values().filter(|sig| sig.is_some()).count();
         if sig_num < self.quorum as usize {
             return SigningError::err(SigningErrorType::Error_invalid_params).context(format!(
-                "Number of covenant committee signatures '{sig_num}' is less than quorum '{}'",
+                "Number of signatures '{sig_num}' is less than quorum '{}'",
                 self.quorum
             ));
         }

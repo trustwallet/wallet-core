@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::babylon::covenant_committee::CovenantCommittee;
+use crate::babylon::multi_sig_ordered::MultiSigOrderedKeys;
 use tw_hash::H32;
 use tw_keypair::schnorr;
 use tw_utxo::script::standard_script::opcodes::*;
@@ -10,8 +10,6 @@ use tw_utxo::script::Script;
 
 const VERIFY: bool = true;
 const NO_VERIFY: bool = false;
-/// We always require only one finality provider to sign.
-const FINALITY_PROVIDERS_QUORUM: u32 = 1;
 
 /// https://github.com/babylonchain/babylon/blob/dev/docs/transaction-impl-spec.md#op_return-output-description
 /// ```txt
@@ -27,8 +25,8 @@ pub fn new_op_return_script(
     let mut buf = Vec::with_capacity(71);
     buf.extend_from_slice(tag.as_slice());
     buf.push(version);
-    buf.extend_from_slice(staker_key.as_slice());
-    buf.extend_from_slice(finality_provider_key.as_slice());
+    buf.extend_from_slice(staker_key.bytes().as_slice());
+    buf.extend_from_slice(finality_provider_key.bytes().as_slice());
     buf.extend_from_slice(&locktime.to_be_bytes());
 
     let mut s = Script::new();
@@ -61,7 +59,7 @@ pub fn new_timelock_script(staker_key: &schnorr::XOnlyPublicKey, locktime: u16) 
 /// ```
 pub fn new_unbonding_script(
     staker_key: &schnorr::XOnlyPublicKey,
-    covenants: &CovenantCommittee,
+    covenants: &MultiSigOrderedKeys,
 ) -> Script {
     let mut s = Script::with_capacity(64);
     append_single_sig(&mut s, staker_key, VERIFY);
@@ -89,16 +87,16 @@ pub fn new_unbonding_script(
 /// ```
 pub fn new_slashing_script(
     staker_key: &schnorr::XOnlyPublicKey,
-    finality_providers_keys: &[schnorr::XOnlyPublicKey],
-    covenants: &CovenantCommittee,
+    finality_providers_keys: &MultiSigOrderedKeys,
+    covenants: &MultiSigOrderedKeys,
 ) -> Script {
     let mut s = Script::with_capacity(64);
     append_single_sig(&mut s, staker_key, VERIFY);
     // We need to run verify to clear the stack, as finality provider multisig is in the middle of the script.
     append_multi_sig(
         &mut s,
-        finality_providers_keys,
-        FINALITY_PROVIDERS_QUORUM,
+        finality_providers_keys.public_keys_ordered(),
+        finality_providers_keys.quorum(),
         VERIFY,
     );
     // Covenant multisig is always last in script so we do not run verify and leave
@@ -114,7 +112,7 @@ pub fn new_slashing_script(
 }
 
 fn append_single_sig(dst: &mut Script, key: &schnorr::XOnlyPublicKey, verify: bool) {
-    dst.push_slice(key.as_slice());
+    dst.push_slice(key.bytes().as_slice());
     if verify {
         dst.push(OP_CHECKSIGVERIFY);
     } else {
@@ -138,7 +136,7 @@ fn append_multi_sig(
     }
 
     for (i, pk_xonly) in pubkeys.iter().enumerate() {
-        dst.push_slice(pk_xonly.as_slice());
+        dst.push_slice(pk_xonly.bytes().as_slice());
         if i == 0 {
             dst.push(OP_CHECKSIG);
         } else {

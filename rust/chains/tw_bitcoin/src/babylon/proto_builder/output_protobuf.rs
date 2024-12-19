@@ -57,7 +57,7 @@ impl<'a, Context: UtxoContext> BabylonOutputProtobuf for OutputProtobuf<'a, Cont
         Ok(self.prepare_builder()?.babylon_staking_op_return(
             &tag,
             &staker,
-            &finality_provider,
+            finality_provider,
             staking_locktime,
         ))
     }

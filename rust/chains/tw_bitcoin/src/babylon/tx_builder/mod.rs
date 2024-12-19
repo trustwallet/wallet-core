@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::babylon::covenant_committee::CovenantCommittee;
+use crate::babylon::multi_sig_ordered::MultiSigOrderedKeys;
 use tw_keypair::schnorr;
 
 pub mod output;
@@ -14,6 +14,6 @@ pub type BabylonUnbondingParams = BabylonStakingParams;
 pub struct BabylonStakingParams {
     pub staker: schnorr::PublicKey,
     pub staking_locktime: u16,
-    pub finality_provider: schnorr::XOnlyPublicKey,
-    pub covenants: CovenantCommittee,
+    pub finality_providers: MultiSigOrderedKeys,
+    pub covenants: MultiSigOrderedKeys,
 }

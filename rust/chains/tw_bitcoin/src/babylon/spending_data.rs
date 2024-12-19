@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::babylon::covenant_committee::CovenantCommitteeSignatures;
+use crate::babylon::multi_sig_ordered::MultiSigOrdered;
 use tw_memory::Data;
 use tw_utxo::script::standard_script::claims;
 use tw_utxo::script::Script;
@@ -15,14 +15,14 @@ pub struct BabylonUnbondingPath {
     control_block: Data,
     /// Signatures signed by covenant committees.
     /// Sorted by covenant committees public keys in reverse order.
-    covenant_committee_signatures: CovenantCommitteeSignatures,
+    covenant_committee_signatures: MultiSigOrdered,
 }
 
 impl BabylonUnbondingPath {
     pub fn new(
         unbonding_script: Script,
         control_block: Data,
-        covenant_committee_signatures: CovenantCommitteeSignatures,
+        covenant_committee_signatures: MultiSigOrdered,
     ) -> Self {
         BabylonUnbondingPath {
             unbonding_script,
