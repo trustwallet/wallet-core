@@ -74,7 +74,7 @@ impl SchnorrSpendingDataConstructor for P2TRScriptPath {
         SpendingData {
             script_sig: Script::default(),
             witness: claims::new_p2tr_script_path(
-                sig,
+                &[Some(sig.clone())],
                 self.payload.clone(),
                 self.control_block.clone(),
             ),

@@ -21,6 +21,10 @@ impl OutputBuilder {
         OutputBuilder { amount }
     }
 
+    pub fn get_amount(&self) -> Amount {
+        self.amount
+    }
+
     pub fn custom_script_pubkey(&self, script_pubkey: Script) -> TransactionOutput {
         TransactionOutput {
             value: self.amount,

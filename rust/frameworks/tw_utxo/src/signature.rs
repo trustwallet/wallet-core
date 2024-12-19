@@ -49,6 +49,7 @@ impl BitcoinEcdsaSignature {
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct BitcoinSchnorrSignature {
     sig: H512,
     sighash_ty: u8,

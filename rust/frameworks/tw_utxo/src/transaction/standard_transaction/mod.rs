@@ -15,7 +15,7 @@ use crate::transaction::transaction_sighash::fork_id_sighash::ForkIdSighash;
 use crate::transaction::transaction_sighash::legacy_sighash::LegacySighash;
 use crate::transaction::transaction_sighash::witness0_sighash::Witness0Sighash;
 use crate::transaction::{TransactionPreimage, UtxoPreimageArgs};
-use tw_coin_entry::error::prelude::{ResultContext, SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_hash::hasher::sha256_d;
 use tw_hash::H256;
 

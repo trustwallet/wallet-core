@@ -8,7 +8,7 @@ use crate::boc::binary_writer::BinaryWriter;
 use crate::cell::cell_parser::CellParser;
 use std::fmt;
 use std::sync::Arc;
-use tw_coin_entry::error::prelude::{MapTWError, OrTWError, ResultContext};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::base64::{self, URL_NO_PAD};
 use tw_encoding::hex::ToHex;
 use tw_hash::sha2::sha256;
