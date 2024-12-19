@@ -68,7 +68,8 @@ impl<'a, Context: UtxoContext> BabylonUtxoProtobuf for UtxoProtobuf<'a, Context>
         &self,
         _slashing: &Proto::mod_InputBuilder::StakingSlashingPath,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        todo!()
+        SigningError::err(SigningErrorType::Error_not_supported)
+            .context("'babylonStakingSlashing' is not supported at the moment")
     }
 
     fn babylon_unbonding_timelock(
@@ -84,6 +85,7 @@ impl<'a, Context: UtxoContext> BabylonUtxoProtobuf for UtxoProtobuf<'a, Context>
         &self,
         _slashing: &Proto::mod_InputBuilder::UnbondingSlashingPath,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        todo!()
+        SigningError::err(SigningErrorType::Error_not_supported)
+            .context("'babylonUnbondingSlashing' is not supported at the moment")
     }
 }
