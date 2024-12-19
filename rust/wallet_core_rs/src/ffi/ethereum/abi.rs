@@ -72,6 +72,27 @@ pub unsafe extern "C" fn tw_ethereum_abi_function_get_signature(
         .unwrap_or_else(|_| TWString::new().into_ptr())
 }
 
+/// Returns the function type signature, of the form "baz(int32,uint256)".
+///
+/// \param coin EVM-compatible coin type.
+/// \param abi The function ABI json string, for example: {"inputs":[{"internalType":"bool","name":"arg1","type":"bool"}],"name":"fun1","outputs":[],"stateMutability":"nonpayable","type":"function"}
+/// \return function type signature, null if the input is invalid.
+#[no_mangle]
+pub unsafe extern "C" fn tw_ethereum_abi_get_function_signature(
+    coin: u32,
+    abi: *const TWString,
+) -> *mut TWString {
+    let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
+    let abi_string = try_or_else!(TWString::from_ptr_as_ref(abi), std::ptr::null_mut);
+    let abi_str = try_or_else!(abi_string.as_str(), std::ptr::null_mut);
+
+    let evm_dispatcher = try_or_else!(evm_dispatcher(coin), std::ptr::null_mut);
+    evm_dispatcher
+        .get_function_signature_from_abi(abi_str)
+        .map(|str| TWString::from(str).into_ptr())
+        .unwrap_or_else(|_| std::ptr::null_mut())
+}
+
 /// Encode function inputs to Eth ABI binary.
 ///
 /// \param coin EVM-compatible coin type.
