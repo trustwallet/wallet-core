@@ -73,9 +73,11 @@ impl<'a, Context: UtxoContext> BabylonUtxoProtobuf for UtxoProtobuf<'a, Context>
 
     fn babylon_unbonding_timelock(
         &self,
-        _timelock: &Proto::mod_InputBuilder::UnbondingTimelockPath,
+        timelock: &Proto::mod_InputBuilder::UnbondingTimelockPath,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        todo!()
+        let params = staking_params_from_proto(&timelock.params)?;
+        self.prepare_builder()?
+            .babylon_unbonding_timelock_path(params)
     }
 
     fn babylon_unbonding_slashing(

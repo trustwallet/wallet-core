@@ -5,7 +5,7 @@
 use crate::babylon;
 use crate::babylon::spending_data;
 use crate::babylon::spending_info::UNSPENDABLE_KEY_PATH;
-use crate::babylon::tx_builder::BabylonStakingParams;
+use crate::babylon::tx_builder::{BabylonStakingParams, BabylonUnbondingParams};
 use tw_coin_entry::error::prelude::*;
 use tw_keypair::schnorr;
 use tw_utxo::signature::BitcoinSchnorrSignature;
@@ -29,6 +29,11 @@ pub trait BabylonUtxoBuilder: Sized {
         self,
         params: BabylonStakingParams,
         covenant_committee_signatures: &[(schnorr::XOnlyPublicKey, BitcoinSchnorrSignature)],
+    ) -> SigningResult<(TransactionInput, UtxoToSign)>;
+
+    fn babylon_unbonding_timelock_path(
+        self,
+        params: BabylonUnbondingParams,
     ) -> SigningResult<(TransactionInput, UtxoToSign)>;
 }
 
@@ -85,6 +90,27 @@ impl BabylonUtxoBuilder for UtxoBuilder {
             .control_block(unbonding_control_block)
             // For Babylon Unbonding path we use a custom spending data constructor.
             .custom_spending_data_ctor(spending_data_ctor)
+            .build()
+    }
+
+    fn babylon_unbonding_timelock_path(
+        self,
+        params: BabylonUnbondingParams,
+    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        let spend_info = babylon::spending_info::UnbondingSpendInfo::new(&params)?;
+
+        let control_block = spend_info.timelock_control_block()?.serialize();
+        let merkle_root = spend_info.merkle_root()?;
+        let timelock_script = spend_info.timelock_script().clone();
+
+        self.p2tr_script_path()
+            .reveal_script_pubkey(timelock_script.clone())
+            // Staker is responsible to sign the UTXO.
+            .spender_public_key(&params.staker)
+            // Babylon Staking or Unbonding output was created using an unspendable internal public key,
+            // that means taproot key spends is disabled.
+            .restore_prevout_script_pubkey(&UNSPENDABLE_KEY_PATH, &merkle_root)
+            .control_block(control_block)
             .build()
     }
 }

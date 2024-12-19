@@ -32,7 +32,7 @@ fn covenant_committees() -> Vec<Cow<'static, [u8]>> {
 }
 
 #[test]
-fn test_bitcoin_babylon_staking_tx() {
+fn test_bitcoin_babylon_stake() {
     const STAKING_TIME: u32 = 1000;
     const STAKING_AMOUNT: i64 = 30_000;
     const RBF_ENABLED: u32 = 0xFFFFFFFD;
@@ -124,7 +124,7 @@ fn test_bitcoin_babylon_staking_tx() {
 }
 
 #[test]
-fn test_bitcoin_babylon_unbonding_tx() {
+fn test_bitcoin_babylon_unbond() {
     const STAKING_TIME: u32 = 1000;
     const UNBONDING_TIME: u32 = 5;
     const STAKING_AMOUNT: i64 = 30_000;
@@ -190,6 +190,10 @@ fn test_bitcoin_babylon_unbonding_tx() {
 
     // Successfully broadcasted: https://mempool.signet.babylonchain.io/signet/tx/d7f7e34c4c3996f45f8a3ec291a27a9d5a3a636699d89c3ab22485295263fe77
     // Although, the signature is different because the real transaction was signed schnorr auxiliary random salt.
+    // - Sighash is `bb3a0dcd4a3aa41980c7765f6180d2b228e761a3933c4f659d25cae782218197`
+    // - Staker pubkey is `039789cdd12bc90bbd73445718f8a709956eb3cce362716a3425610abb75ea1132`
+    // - Broadcasted signature is `e0ea3c8f58a13afa13822db74fdcc527f7ca6fa60dd2e817a27bb7fd5f36551283c0a76a7b0fe4690fb1b8884a59fecaac150519518f7d9654720302cae951ed`
+    // - Signature in this test is `f3f6ff2a8b1aaf43cc7f6bb40b3ccf1aca14dd190a70f06528f594d26281e5c1afb792c454b5e9eda5e8f1a2723ebe463c5cf559710a9dbde6f4c329f1a64ec9`
     let txid = "d7f7e34c4c3996f45f8a3ec291a27a9d5a3a636699d89c3ab22485295263fe77";
     sign::BitcoinSignHelper::new(&signing)
         .coin(CoinType::Bitcoin)
@@ -201,5 +205,76 @@ fn test_bitcoin_babylon_unbonding_tx() {
             vsize: 203,
             weight: 812,
             fee: UNBONDING_FEE,
+        });
+}
+
+#[test]
+fn test_bitcoin_babylon_withdraw_unbonding_tx() {
+    const UNBONDING_TIME: u32 = 5;
+    const STAKING_AMOUNT: i64 = 30_000;
+    /// `global_parameters.unbonding_fee`
+    const UNBONDING_FEE: i64 = 3000;
+
+    let txid0 = "d7f7e34c4c3996f45f8a3ec291a27a9d5a3a636699d89c3ab22485295263fe77";
+    let utxo0 = Proto::Input {
+        out_point: input::out_point(txid0, 0),
+        value: STAKING_AMOUNT - UNBONDING_FEE,
+        sighash_type: SIGHASH_ALL,
+        // TODO figure out why the sequence is 5 here.
+        sequence: input::sequence(5),
+        // Same `StakingInfo` as used in Staking Output.
+        claiming_script: babylon::input::unbonding_timelock_path(BabylonProto::StakingInfo {
+            staker_public_key: PUBLIC_KEY_1.decode_hex().unwrap().into(),
+            finality_provider_public_key: FINALITY_PROVIDER_PUBKEY.decode_hex().unwrap().into(),
+            staking_time: UNBONDING_TIME,
+            covenant_committee_public_keys: covenant_committees(),
+            covenant_quorum: 2,
+        }),
+        ..Default::default()
+    };
+
+    // Regular P2TR transfer.
+    let explicit_max_out = Proto::Output {
+        value: 26_841,
+        to_recipient: output::p2tr_key_path(PUBLIC_KEY_1.decode_hex().unwrap()),
+    };
+
+    let builder = Proto::TransactionBuilder {
+        version: Proto::TransactionVersion::V2,
+        // Can be included in any block.
+        lock_time: 0,
+        inputs: vec![utxo0],
+        outputs: vec![explicit_max_out],
+        fee_per_vb: 1,
+        input_selector: Proto::InputSelector::UseAll,
+        dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![PRIVATE_KEY_1.decode_hex().unwrap().into()],
+        chain_info: btc_info(),
+        transaction: TransactionOneof::builder(builder),
+        dangerous_use_fixed_schnorr_rng: true,
+        ..Default::default()
+    };
+
+    // Successfully broadcasted: https://mempool.signet.babylonchain.io/signet/tx/48365f8c6afec38c2cd3a63f55685a10593a156869beda5165eb807886d089a5
+    // Although, the signature is different because the real transaction was signed schnorr auxiliary random salt.
+    // - Sighash is `478673e3ea9442f7f51072f0516ebeb1d4b9e5e812b0d052ee9edfa3dba431a2`
+    // - Staker pubkey is `039789cdd12bc90bbd73445718f8a709956eb3cce362716a3425610abb75ea1132`
+    // - Broadcasted signature is `ba5697f94a2d9f0583b70b41cf8cfe4d030bda0be6b18df7938eecd498c23363e5bb9100ebc72cb313594f9488e4db0c5c8ab22c8a671cf2b404b6b60e291d73`
+    // - Signature in this test is `2856dd1927e5f95fdc45346261f17455130244f5d3db225ceaef292ed233b66104fea4eb343f7f9ee99a8ee6d67b4e5a95d660bf0299b67d37a96e08e6839be8`
+    let txid = "48365f8c6afec38c2cd3a63f55685a10593a156869beda5165eb807886d089a5";
+    sign::BitcoinSignHelper::new(&signing)
+        .coin(CoinType::Bitcoin)
+        .sign(sign::Expected {
+            encoded: "0200000000010177fe6352298524b23a9cd89966633a5a9d7aa291c23e8a5ff496394c4ce3f7d700000000000500000001d9680000000000002251205d1b83f2e2991c2d80226a54d89255768a77905d63d0d5f51d18476143f90a8e03402856dd1927e5f95fdc45346261f17455130244f5d3db225ceaef292ed233b66104fea4eb343f7f9ee99a8ee6d67b4e5a95d660bf0299b67d37a96e08e6839be824209789cdd12bc90bbd73445718f8a709956eb3cce362716a3425610abb75ea1132ad55b241c050929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac0e494fdcafb7ee38a6636ab068f83d359e89af3b37ad3ed15b32354917f72254900000000",
+            txid,
+            inputs: vec![STAKING_AMOUNT - UNBONDING_FEE],
+            outputs: vec![26_841],
+            vsize: 137,
+            weight: 547,
+            fee: 159,
         });
 }

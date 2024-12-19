@@ -51,6 +51,16 @@ pub mod input {
             },
         ))
     }
+
+    pub fn unbonding_timelock_path(
+        params: BabylonProto::StakingInfo<'static>,
+    ) -> ClaimingScriptType<'static> {
+        claiming_script_builder(InputBuilderType::babylon_unbonding_timelock_path(
+            BabylonInput::UnbondingTimelockPath {
+                params: Some(params),
+            },
+        ))
+    }
 }
 
 pub mod output {
