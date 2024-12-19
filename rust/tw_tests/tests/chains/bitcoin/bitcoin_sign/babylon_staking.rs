@@ -15,8 +15,11 @@ use tw_proto::BitcoinV2::Proto;
 const PRIVATE_KEY_1: &str = "43fe106cf05afdd8c39476651ad3729fc71bfe2ff4dfbc3e8654b851677a19b2";
 const PUBLIC_KEY_1: &str = "039789cdd12bc90bbd73445718f8a709956eb3cce362716a3425610abb75ea1132";
 /// Babylon Foundation 0.
-const FINALITY_PROVIDER_PUBKEY: &str =
+const FINALITY_PROVIDER_BABYLON_FOUND_0: &str =
     "03d5a0bb72d71993e435d6c5a70e2aa4db500a62cfaae33c56050deefee64ec0";
+// Forbole (https://forbole.com).
+const FINALITY_PROVIDER_FORBOLE: &str =
+    "860639b311132fe18972d92d2ee8885312706f1f4075a157be30180ac9c757e9";
 const COVENANT_COMMITTEES: [&str; 3] = [
     "0249766ccd9e3cd94343e2040474a77fb37cdfd30530d05f9f1e96ae1e2102c86e",
     "0276d1ae01f8fb6bf30108731c884cddcf57ef6eef2d9d9559e130894e0e40c62c",
@@ -63,7 +66,10 @@ fn test_bitcoin_babylon_stake() {
         value: STAKING_AMOUNT,
         to_recipient: babylon::output::staking(BabylonProto::StakingInfo {
             staker_public_key: PUBLIC_KEY_1.decode_hex().unwrap().into(),
-            finality_provider_public_key: FINALITY_PROVIDER_PUBKEY.decode_hex().unwrap().into(),
+            finality_provider_public_key: FINALITY_PROVIDER_BABYLON_FOUND_0
+                .decode_hex()
+                .unwrap()
+                .into(),
             staking_time: STAKING_TIME,
             covenant_committee_public_keys: covenant_committees(),
             covenant_quorum: 2,
@@ -75,7 +81,7 @@ fn test_bitcoin_babylon_stake() {
         to_recipient: babylon::output::op_return(
             MAGIC_TAG,
             PUBLIC_KEY_1,
-            FINALITY_PROVIDER_PUBKEY,
+            FINALITY_PROVIDER_BABYLON_FOUND_0,
             STAKING_TIME,
         ),
     };
@@ -148,7 +154,10 @@ fn test_bitcoin_babylon_unbond() {
         claiming_script: babylon::input::staking_unbonding_path(
             BabylonProto::StakingInfo {
                 staker_public_key: PUBLIC_KEY_1.decode_hex().unwrap().into(),
-                finality_provider_public_key: FINALITY_PROVIDER_PUBKEY.decode_hex().unwrap().into(),
+                finality_provider_public_key: FINALITY_PROVIDER_BABYLON_FOUND_0
+                    .decode_hex()
+                    .unwrap()
+                    .into(),
                 staking_time: STAKING_TIME,
                 covenant_committee_public_keys: covenant_committees(),
                 covenant_quorum: 2,
@@ -162,7 +171,10 @@ fn test_bitcoin_babylon_unbond() {
         value: STAKING_AMOUNT - UNBONDING_FEE,
         to_recipient: babylon::output::unbonding(BabylonProto::StakingInfo {
             staker_public_key: PUBLIC_KEY_1.decode_hex().unwrap().into(),
-            finality_provider_public_key: FINALITY_PROVIDER_PUBKEY.decode_hex().unwrap().into(),
+            finality_provider_public_key: FINALITY_PROVIDER_BABYLON_FOUND_0
+                .decode_hex()
+                .unwrap()
+                .into(),
             staking_time: UNBONDING_TIME,
             covenant_committee_public_keys: covenant_committees(),
             covenant_quorum: 2,
@@ -220,12 +232,14 @@ fn test_bitcoin_babylon_withdraw_unbonding_tx() {
         out_point: input::out_point(txid0, 0),
         value: STAKING_AMOUNT - UNBONDING_FEE,
         sighash_type: SIGHASH_ALL,
-        // TODO figure out why the sequence is 5 here.
-        sequence: input::sequence(5),
+        sequence: input::sequence(UNBONDING_TIME),
         // Same `StakingInfo` as used in Staking Output.
         claiming_script: babylon::input::unbonding_timelock_path(BabylonProto::StakingInfo {
             staker_public_key: PUBLIC_KEY_1.decode_hex().unwrap().into(),
-            finality_provider_public_key: FINALITY_PROVIDER_PUBKEY.decode_hex().unwrap().into(),
+            finality_provider_public_key: FINALITY_PROVIDER_BABYLON_FOUND_0
+                .decode_hex()
+                .unwrap()
+                .into(),
             staking_time: UNBONDING_TIME,
             covenant_committee_public_keys: covenant_committees(),
             covenant_quorum: 2,
@@ -276,5 +290,67 @@ fn test_bitcoin_babylon_withdraw_unbonding_tx() {
             vsize: 137,
             weight: 547,
             fee: 159,
+        });
+}
+
+#[test]
+fn test_bitcoin_babylon_withdraw_staking_tx() {
+    const STAKING_TIME: u32 = 150;
+    const STAKING_AMOUNT: i64 = 30_000;
+
+    let txid0 = "69e8ff4bbc1006f9e967a2d48785f50d7906c69c6d89b9c5a29c648639079ef2";
+    let utxo0 = Proto::Input {
+        out_point: input::out_point(txid0, 0),
+        value: STAKING_AMOUNT,
+        sighash_type: SIGHASH_ALL,
+        sequence: input::sequence(STAKING_TIME),
+        // Same `StakingInfo` as used in Staking Output.
+        claiming_script: babylon::input::staking_timelock_path(BabylonProto::StakingInfo {
+            staker_public_key: PUBLIC_KEY_1.decode_hex().unwrap().into(),
+            finality_provider_public_key: FINALITY_PROVIDER_FORBOLE.decode_hex().unwrap().into(),
+            staking_time: STAKING_TIME,
+            covenant_committee_public_keys: covenant_committees(),
+            covenant_quorum: 2,
+        }),
+    };
+
+    // Regular P2TR transfer.
+    let max_out = Proto::Output {
+        value: 0,
+        to_recipient: output::p2tr_key_path(PUBLIC_KEY_1.decode_hex().unwrap()),
+    };
+
+    let builder = Proto::TransactionBuilder {
+        version: Proto::TransactionVersion::V2,
+        // Can be included in any block.
+        lock_time: 0,
+        inputs: vec![utxo0],
+        fee_per_vb: 1,
+        max_amount_output: Some(max_out),
+        input_selector: Proto::InputSelector::UseAll,
+        dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![PRIVATE_KEY_1.decode_hex().unwrap().into()],
+        chain_info: btc_info(),
+        transaction: TransactionOneof::builder(builder),
+        dangerous_use_fixed_schnorr_rng: true,
+        ..Default::default()
+    };
+
+    // Successfully broadcasted: https://mempool.signet.babylonchain.io/signet/tx/b85b36bb375a03f8d5f5b5aa0bca804b103b575dac15a96fb49dd2f760fe54cc%
+    let txid = "b85b36bb375a03f8d5f5b5aa0bca804b103b575dac15a96fb49dd2f760fe54cc";
+    sign::BitcoinSignHelper::new(&signing)
+        .coin(CoinType::Bitcoin)
+        .sign(sign::Expected {
+            encoded: "02000000000101f29e073986649ca2c5b9896d9cc606790df58587d4a267e9f90610bc4bffe869000000000096000000019e740000000000002251205d1b83f2e2991c2d80226a54d89255768a77905d63d0d5f51d18476143f90a8e0340641992c74bd77bac866fe4a3daa0ac85829f2defceba9acfae6e50a850bb1658518aabf9a12f57ddca77d272b6079248d17bfb0f91df374aa989c6483586ca8f26209789cdd12bc90bbd73445718f8a709956eb3cce362716a3425610abb75ea1132ad029600b261c050929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac08cec39f47bbd70eeda791f6b48a4bf906e878c87f6e5ca3f650008f39f1d4a51e77ab126d8d0a6c6ca6c2f1c0d31141352fb95112aa2bbd4390a7e4481e3d8dc00000000",
+            txid,
+            inputs: vec![STAKING_AMOUNT],
+            outputs: vec![29_854],
+            vsize: 146,
+            weight: 581,
+            fee: 146,
         });
 }
