@@ -307,7 +307,7 @@ TEST(TWTHORChainSwap, SwapRuneDoge) {
     // invoke swap
     const auto outputTWData_ = WRAPD(TWTHORChainSwapBuildSwap(inputTWData_.get()));
     const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
-    EXPECT_EQ(outputData.size(), 153ul);
+    EXPECT_EQ(outputData.size(), 144ul);
     // parse result in proto
     Proto::SwapOutput outputProto;
     EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
@@ -322,6 +322,8 @@ TEST(TWTHORChainSwap, SwapRuneDoge) {
     auto& fee = *txInput.mutable_fee();
     fee.set_gas(50000000);
 
+    // Override the chainId as it has been after a hardfork recently.
+    txInput.set_chain_id("thorchain-mainnet-v1");
     txInput.set_account_number(75247);
     txInput.set_sequence(8);
 
@@ -367,7 +369,7 @@ TEST(TWTHORChainSwap, SwapRuneBnbStreamParams) {
     // invoke swap
     const auto outputTWData_ = WRAPD(TWTHORChainSwapBuildSwap(inputTWData_.get()));
     const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
-    EXPECT_EQ(outputData.size(), 156ul);
+    EXPECT_EQ(outputData.size(), 147ul);
     // parse result in proto
     Proto::SwapOutput outputProto;
     EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
@@ -382,6 +384,7 @@ TEST(TWTHORChainSwap, SwapRuneBnbStreamParams) {
     auto& fee = *txInput.mutable_fee();
     fee.set_gas(50000000);
 
+    txInput.set_chain_id("thorchain-mainnet-v1");
     txInput.set_account_number(76456);
     txInput.set_sequence(0);
 
