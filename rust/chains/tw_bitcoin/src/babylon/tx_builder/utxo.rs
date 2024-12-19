@@ -37,26 +37,21 @@ impl BabylonUtxoBuilder for UtxoBuilder {
         self,
         params: BabylonStakingParams,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        let spend_info = babylon::spending_info::StakingSpendInfo::new(
-            &params.staker,
-            params.staking_locktime,
-            params.finality_provider,
-            params.covenants,
-            params.covenant_quorum,
-        )?;
+        let spend_info = babylon::spending_info::StakingSpendInfo::new(&params)?;
 
         let control_block = spend_info.timelock_control_block()?.serialize();
         let merkle_root = spend_info.merkle_root()?;
-        let timelock_payload = spend_info.timelock_script().clone();
+        let timelock_script = spend_info.timelock_script().clone();
 
-        self.p2tr_script_path(
+        self.p2tr_script_path()
+            .reveal_script_pubkey(timelock_script)
+            // Staker is responsible to sign the UTXO.
+            .spender_public_key(&params.staker)
             // Babylon Staking or Unbonding output was created using an unspendable internal public key,
             // that means taproot key spends is disabled.
-            &UNSPENDABLE_KEY_PATH,
-            timelock_payload,
-            control_block,
-            &merkle_root,
-        )
+            .restore_prevout_script_pubkey(&UNSPENDABLE_KEY_PATH, &merkle_root)
+            .control_block(control_block)
+            .build()
     }
 
     fn babylon_staking_unbonding_path(
@@ -64,30 +59,32 @@ impl BabylonUtxoBuilder for UtxoBuilder {
         params: BabylonStakingParams,
         covenant_committee_signatures: &[(schnorr::XOnlyPublicKey, BitcoinSchnorrSignature)],
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        let spend_info = babylon::spending_info::StakingSpendInfo::new(
-            &params.staker,
-            params.staking_locktime,
-            params.finality_provider,
-            params.covenants,
-            params.covenant_quorum,
-        )?;
+        let spend_info = babylon::spending_info::StakingSpendInfo::new(&params)?;
+        let signatures = params
+            .covenants
+            .with_partial_signatures(covenant_committee_signatures)?;
+        let unbonding_script = spend_info.unbonding_script();
 
         let unbonding_control_block = spend_info.unbonding_control_block()?.serialize();
         let spending_data_ctor =
             SpendingDataConstructor::schnorr(spending_data::BabylonUnbondingPath::new(
-                spend_info.unbonding_script().clone(),
-                unbonding_control_block,
-                covenant_committee_signatures,
+                unbonding_script.clone(),
+                unbonding_control_block.clone(),
+                signatures,
             ));
 
         let merkle_root = spend_info.merkle_root()?;
-        self.p2tr_script_path_with_spending_data_ctor(
+
+        self.p2tr_script_path()
+            .reveal_script_pubkey(unbonding_script.clone())
+            // Staker is responsible to sign the UTXO.
+            .spender_public_key(&params.staker)
             // Babylon Staking or Unbonding output was created using an unspendable internal public key,
             // that means taproot key spends is disabled.
-            &UNSPENDABLE_KEY_PATH,
-            spend_info.unbonding_script().clone(),
-            &merkle_root,
-            spending_data_ctor,
-        )
+            .restore_prevout_script_pubkey(&UNSPENDABLE_KEY_PATH, &merkle_root)
+            .control_block(unbonding_control_block)
+            // For Babylon Unbonding path we use a custom spending data constructor.
+            .custom_spending_data_ctor(spending_data_ctor)
+            .build()
     }
 }

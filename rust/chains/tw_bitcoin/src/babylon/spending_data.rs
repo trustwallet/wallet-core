@@ -2,8 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::babylon::covenant_committee::CovenantCommittee;
-use tw_keypair::schnorr;
+use crate::babylon::covenant_committee::CovenantCommitteeSignatures;
 use tw_memory::Data;
 use tw_utxo::script::standard_script::claims;
 use tw_utxo::script::Script;
@@ -14,18 +13,17 @@ use tw_utxo::spending_data::{SchnorrSpendingDataConstructor, SpendingData};
 pub struct BabylonUnbondingPath {
     unbonding_script: Script,
     control_block: Data,
-    /// Signatures signed by covenant committees. Sorted by covenant committees public keys.
-    covenant_committee_signatures: Vec<BitcoinSchnorrSignature>,
+    /// Signatures signed by covenant committees.
+    /// Sorted by covenant committees public keys in reverse order.
+    covenant_committee_signatures: CovenantCommitteeSignatures,
 }
 
 impl BabylonUnbondingPath {
     pub fn new(
         unbonding_script: Script,
         control_block: Data,
-        covenant_committee_signatures: &[(schnorr::XOnlyPublicKey, BitcoinSchnorrSignature)],
+        covenant_committee_signatures: CovenantCommitteeSignatures,
     ) -> Self {
-        let covenant_committee_signatures =
-            CovenantCommittee::sort_signatures(covenant_committee_signatures);
         BabylonUnbondingPath {
             unbonding_script,
             control_block,
@@ -36,12 +34,14 @@ impl BabylonUnbondingPath {
 
 impl SchnorrSpendingDataConstructor for BabylonUnbondingPath {
     fn get_spending_data(&self, sig: &BitcoinSchnorrSignature) -> SpendingData {
-        // User's signature is always first.
-        // Then, covenant committee signatures sorted by their public keys.
-        // For more info, see [`babylon::conditions::new_unbonding_script`].
-        let unbonding_sigs: Vec<_> = std::iter::once(sig.clone())
-            .chain(self.covenant_committee_signatures.iter().cloned())
-            .collect();
+        // Covenant committee signatures are sorted by corresponding public keys in reverse lexicographical order.
+        // That's because the script interpreter will pop the left-most byte-array as the first stack element,
+        // the second-left-most byte array as the second stack element, and so on.
+        let mut unbonding_sigs = self
+            .covenant_committee_signatures
+            .get_signatures_reverse_order();
+        // User's signature is always last.
+        unbonding_sigs.push(Some(sig.clone()));
 
         SpendingData {
             script_sig: Script::default(),

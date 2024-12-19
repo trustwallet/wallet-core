@@ -2,7 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::babylon::tx_builder::{BabylonStakingParams, BabylonUnbondingParams};
+use crate::babylon::covenant_committee::CovenantCommittee;
+use crate::babylon::tx_builder::BabylonStakingParams;
 use std::borrow::Cow;
 use tw_coin_entry::error::prelude::*;
 use tw_keypair::schnorr;
@@ -21,7 +22,9 @@ pub fn staking_params_from_proto(
         .or_tw_err(SigningErrorType::Error_invalid_params)
         .context("No 'StakingInfo' params provided")?;
 
-    let staker = parse_schnorr_pk(&params.staker_public_key).context("Invalid stakerPublicKey")?;
+    let staker = schnorr::PublicKey::try_from(params.staker_public_key.as_ref())
+        .into_tw()
+        .context("Invalid stakerPublicKey")?;
     let staking_locktime: u16 = params
         .staking_time
         .try_into()
@@ -29,39 +32,16 @@ pub fn staking_params_from_proto(
         .context("stakingTime cannot be greater than 65535")?;
     let finality_provider = parse_schnorr_pk(&params.finality_provider_public_key)
         .context("Invalid finalityProviderPublicKeys")?;
-    let covenants = parse_schnorr_pks(&params.covenant_committee_public_keys)
+
+    let covenants_pks = parse_schnorr_pks(&params.covenant_committee_public_keys)
         .context("Invalid covenantCommitteePublicKeys")?;
+    let covenants = CovenantCommittee::new(covenants_pks, params.covenant_quorum)?;
 
     Ok(BabylonStakingParams {
         staker,
         staking_locktime,
         finality_provider,
         covenants,
-        covenant_quorum: params.covenant_quorum,
-    })
-}
-
-pub fn unbonding_params_from_proto(
-    params: &Option<Proto::UnbondingInfo>,
-) -> SigningResult<BabylonUnbondingParams> {
-    let params = params
-        .as_ref()
-        .or_tw_err(SigningErrorType::Error_invalid_params)
-        .context("No 'UnbondingInfo' params provided")?;
-
-    let staker = parse_schnorr_pk(&params.staker_public_key).context("Invalid stakerPublicKey")?;
-    let unbonding_locktime: u16 = params
-        .unbonding_time
-        .try_into()
-        .tw_err(|_| SigningErrorType::Error_invalid_params)
-        .context("unbondingTime cannot be greater than 65535")?;
-    let finality_provider = parse_schnorr_pk(&params.finality_provider_public_key)
-        .context("Invalid finalityProviderPublicKeys")?;
-
-    Ok(BabylonUnbondingParams {
-        staker,
-        unbonding_locktime,
-        finality_provider,
     })
 }
 

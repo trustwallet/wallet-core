@@ -93,6 +93,8 @@ pub fn new_p2tr_key_path(sig: Vec<u8>) -> Witness {
 /// Creates witness script items to claim a P2TR complex Taproot transaction
 /// (_witness_).
 ///
+/// If a signature is None, it will be pushed as an empty witness item. It's useful in multi-sig.
+///
 /// ```txt
 /// <sig1>
 /// <sig2>
@@ -102,13 +104,17 @@ pub fn new_p2tr_key_path(sig: Vec<u8>) -> Witness {
 /// <control_block>
 /// ```
 pub fn new_p2tr_script_path(
-    sigs: &[BitcoinSchnorrSignature],
+    sigs: &[Option<BitcoinSchnorrSignature>],
     payload: Script,
     control_block: Vec<u8>,
 ) -> Witness {
     let mut w = Witness::new();
     for sig in sigs {
-        w.push_item(Script::from(sig.serialize()));
+        let witness_item = match sig {
+            Some(sig) => sig.serialize(),
+            None => Vec::default(),
+        };
+        w.push_item(Script::from(witness_item));
     }
     w.push_item(payload);
     w.push_item(Script::from(control_block));

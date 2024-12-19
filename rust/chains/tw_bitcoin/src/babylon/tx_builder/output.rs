@@ -32,13 +32,7 @@ pub trait BabylonOutputBuilder: Sized {
 
 impl BabylonOutputBuilder for OutputBuilder {
     fn babylon_staking(self, params: BabylonStakingParams) -> SigningResult<TransactionOutput> {
-        let spend_info = babylon::spending_info::StakingSpendInfo::new(
-            &params.staker,
-            params.staking_locktime,
-            params.finality_provider,
-            params.covenants,
-            params.covenant_quorum,
-        )?;
+        let spend_info = babylon::spending_info::StakingSpendInfo::new(&params)?;
         let merkle_root = spend_info.merkle_root()?;
 
         Ok(TransactionOutput {
@@ -71,7 +65,17 @@ impl BabylonOutputBuilder for OutputBuilder {
         }
     }
 
-    fn babylon_unbonding(self, _params: BabylonUnbondingParams) -> SigningResult<TransactionOutput> {
-        todo!()
+    fn babylon_unbonding(self, params: BabylonUnbondingParams) -> SigningResult<TransactionOutput> {
+        let spend_info = babylon::spending_info::UnbondingSpendInfo::new(&params)?;
+        let merkle_root = spend_info.merkle_root()?;
+
+        Ok(TransactionOutput {
+            value: self.get_amount(),
+            script_pubkey: conditions::new_p2tr_script_path(
+                // Using an unspendable key as a P2TR internal public key effectively disables taproot key spends.
+                &babylon::spending_info::UNSPENDABLE_KEY_PATH.compressed(),
+                &merkle_root,
+            ),
+        })
     }
 }

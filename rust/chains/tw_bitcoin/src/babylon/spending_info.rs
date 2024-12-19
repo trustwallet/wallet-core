@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::babylon::conditions;
-use crate::babylon::covenant_committee::CovenantCommittee;
+use crate::babylon::tx_builder::BabylonStakingParams;
 use bitcoin::hashes::Hash;
 use lazy_static::lazy_static;
 use tw_coin_entry::error::prelude::*;
@@ -19,6 +19,9 @@ lazy_static! {
     pub static ref UNSPENDABLE_KEY_PATH: schnorr::PublicKey =
         schnorr::PublicKey::try_from(UNSPENDABLE_KEY_PATH_BYTES.as_slice())
             .expect("Expected a valid unspendable key path");
+    pub static ref UNSPENDABLE_KEY_PATH_XONLY: bitcoin::key::UntweakedPublicKey =
+        bitcoin::key::UntweakedPublicKey::from_slice(UNSPENDABLE_KEY_PATH.x_only().as_slice())
+            .expect("Expected a valid unspendable key path");
 }
 
 pub struct StakingSpendInfo {
@@ -29,29 +32,17 @@ pub struct StakingSpendInfo {
 }
 
 impl StakingSpendInfo {
-    pub fn new(
-        staker: &schnorr::XOnlyPublicKey,
-        staking_locktime: u16,
-        finality_provider: schnorr::XOnlyPublicKey,
-        mut covenants: Vec<schnorr::XOnlyPublicKey>,
-        covenant_quorum: u32,
-    ) -> SigningResult<StakingSpendInfo> {
-        let fp_xonly = [finality_provider];
+    pub fn new(params: &BabylonStakingParams) -> SigningResult<StakingSpendInfo> {
+        let fp_xonly = [params.finality_provider.clone()];
+        let staker_xonly = params.staker.x_only();
 
-        CovenantCommittee::sort_public_keys(&mut covenants);
-
-        let timelock_script = conditions::new_timelock_script(&staker, staking_locktime);
-        let unbonding_script =
-            conditions::new_unbonding_script(&staker, &covenants, covenant_quorum)
-                .context("Invalid number of covenants")?;
+        let timelock_script =
+            conditions::new_timelock_script(&staker_xonly, params.staking_locktime);
+        let unbonding_script = conditions::new_unbonding_script(&staker_xonly, &params.covenants);
         let slashing_script =
-            conditions::new_slashing_script(&staker, &fp_xonly, &covenants, covenant_quorum)
-                .context("Invalid number of finality providers")?;
+            conditions::new_slashing_script(&staker_xonly, &fp_xonly, &params.covenants);
 
         // IMPORTANT - order and leaf depths are important!
-        let internal_pubkey = bitcoin::key::UntweakedPublicKey::from_slice(staker.as_slice())
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
-            .context("Invalid stakerPublicKey")?;
         let spend_info = bitcoin::taproot::TaprootBuilder::new()
             .add_leaf(2, timelock_script.clone().into())
             .expect("Leaf added at a valid depth")
@@ -59,7 +50,7 @@ impl StakingSpendInfo {
             .expect("Leaf added at a valid depth")
             .add_leaf(1, slashing_script.clone().into())
             .expect("Leaf added at a valid depth")
-            .finalize(&secp256k1::SECP256K1, internal_pubkey)
+            .finalize(&secp256k1::SECP256K1, UNSPENDABLE_KEY_PATH_XONLY.clone())
             .expect("Expected a valid Taproot tree");
 
         Ok(StakingSpendInfo {
@@ -71,11 +62,7 @@ impl StakingSpendInfo {
     }
 
     pub fn merkle_root(&self) -> SigningResult<H256> {
-        self.spend_info
-            .merkle_root()
-            .map(|root| H256::from(root.to_byte_array()))
-            .or_tw_err(SigningErrorType::Error_internal)
-            .context("No merkle root of the Babylon Staking transaction spend info")
+        merkle_root(&self.spend_info)
     }
 
     pub fn timelock_script(&self) -> &Script {
@@ -91,22 +78,86 @@ impl StakingSpendInfo {
     }
 
     pub fn timelock_control_block(&self) -> SigningResult<bitcoin::taproot::ControlBlock> {
-        self.control_block(&self.timelock_script)
+        control_block(&self.spend_info, &self.timelock_script)
     }
 
     pub fn unbonding_control_block(&self) -> SigningResult<bitcoin::taproot::ControlBlock> {
-        self.control_block(&self.unbonding_script)
+        control_block(&self.spend_info, &self.unbonding_script)
     }
 
     pub fn slashing_control_block(&self) -> SigningResult<bitcoin::taproot::ControlBlock> {
-        self.control_block(&self.slashing_script)
+        control_block(&self.spend_info, &self.slashing_script)
+    }
+}
+
+pub struct UnbondingSpendInfo {
+    timelock_script: Script,
+    slashing_script: Script,
+    spend_info: bitcoin::taproot::TaprootSpendInfo,
+}
+
+impl UnbondingSpendInfo {
+    pub fn new(params: &BabylonStakingParams) -> SigningResult<UnbondingSpendInfo> {
+        let fp_xonly = [params.finality_provider.clone()];
+        let staker_xonly = params.staker.x_only();
+
+        let timelock_script =
+            conditions::new_timelock_script(&staker_xonly, params.staking_locktime);
+        let slashing_script =
+            conditions::new_slashing_script(&staker_xonly, &fp_xonly, &params.covenants);
+
+        // IMPORTANT - order and leaf depths are important!
+        let spend_info = bitcoin::taproot::TaprootBuilder::new()
+            .add_leaf(1, slashing_script.clone().into())
+            .expect("Leaf added at a valid depth")
+            .add_leaf(1, timelock_script.clone().into())
+            .expect("Leaf added at a valid depth")
+            .finalize(&secp256k1::SECP256K1, UNSPENDABLE_KEY_PATH_XONLY.clone())
+            .expect("Expected a valid Taproot tree");
+
+        Ok(UnbondingSpendInfo {
+            timelock_script,
+            slashing_script,
+            spend_info,
+        })
     }
 
-    fn control_block(&self, script: &Script) -> SigningResult<bitcoin::taproot::ControlBlock> {
-        let script = bitcoin::script::ScriptBuf::from_bytes(script.to_vec());
-        self.spend_info
-            .control_block(&(script, bitcoin::taproot::LeafVersion::TapScript))
-            .or_tw_err(SigningErrorType::Error_internal)
-            .context("'TaprootSpendInfo::control_block' is None")
+    pub fn merkle_root(&self) -> SigningResult<H256> {
+        merkle_root(&self.spend_info)
     }
+
+    pub fn timelock_script(&self) -> &Script {
+        &self.timelock_script
+    }
+
+    pub fn slashing_script(&self) -> &Script {
+        &self.slashing_script
+    }
+
+    pub fn timelock_control_block(&self) -> SigningResult<bitcoin::taproot::ControlBlock> {
+        control_block(&self.spend_info, &self.timelock_script)
+    }
+
+    pub fn slashing_control_block(&self) -> SigningResult<bitcoin::taproot::ControlBlock> {
+        control_block(&self.spend_info, &self.slashing_script)
+    }
+}
+
+fn control_block(
+    spend_info: &bitcoin::taproot::TaprootSpendInfo,
+    script: &Script,
+) -> SigningResult<bitcoin::taproot::ControlBlock> {
+    let script = bitcoin::script::ScriptBuf::from_bytes(script.to_vec());
+    spend_info
+        .control_block(&(script, bitcoin::taproot::LeafVersion::TapScript))
+        .or_tw_err(SigningErrorType::Error_internal)
+        .context("'TaprootSpendInfo::control_block' is None")
+}
+
+fn merkle_root(spend_info: &bitcoin::taproot::TaprootSpendInfo) -> SigningResult<H256> {
+    spend_info
+        .merkle_root()
+        .map(|root| H256::from(root.to_byte_array()))
+        .or_tw_err(SigningErrorType::Error_internal)
+        .context("No merkle root of the Babylon Staking transaction spend info")
 }

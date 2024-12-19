@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_coin_entry::error::prelude::*;
+use crate::babylon::covenant_committee::CovenantCommittee;
 use tw_hash::H32;
 use tw_keypair::schnorr;
 use tw_utxo::script::standard_script::opcodes::*;
@@ -61,16 +61,20 @@ pub fn new_timelock_script(staker_key: &schnorr::XOnlyPublicKey, locktime: u16) 
 /// ```
 pub fn new_unbonding_script(
     staker_key: &schnorr::XOnlyPublicKey,
-    covenants_keys: &[schnorr::XOnlyPublicKey],
-    covenant_quorum: u32,
-) -> SigningResult<Script> {
+    covenants: &CovenantCommittee,
+) -> Script {
     let mut s = Script::with_capacity(64);
     append_single_sig(&mut s, staker_key, VERIFY);
     // Covenant multisig is always last in script so we do not run verify and leave
     // last value on the stack. If we do not leave at least one element on the stack
     // script will always error.
-    append_multi_sig(&mut s, covenants_keys, covenant_quorum, NO_VERIFY)?;
-    Ok(s)
+    append_multi_sig(
+        &mut s,
+        covenants.public_keys_ordered(),
+        covenants.quorum(),
+        NO_VERIFY,
+    );
+    s
 }
 
 /// The slashing path is utilized for punishing finality providers and their delegators in the case of double signing.
@@ -86,9 +90,8 @@ pub fn new_unbonding_script(
 pub fn new_slashing_script(
     staker_key: &schnorr::XOnlyPublicKey,
     finality_providers_keys: &[schnorr::XOnlyPublicKey],
-    covenants_keys: &[schnorr::XOnlyPublicKey],
-    covenant_quorum: u32,
-) -> SigningResult<Script> {
+    covenants: &CovenantCommittee,
+) -> Script {
     let mut s = Script::with_capacity(64);
     append_single_sig(&mut s, staker_key, VERIFY);
     // We need to run verify to clear the stack, as finality provider multisig is in the middle of the script.
@@ -97,12 +100,17 @@ pub fn new_slashing_script(
         finality_providers_keys,
         FINALITY_PROVIDERS_QUORUM,
         VERIFY,
-    )?;
+    );
     // Covenant multisig is always last in script so we do not run verify and leave
     // last value on the stack. If we do not leave at least one element on the stack
     // script will always error.
-    append_multi_sig(&mut s, covenants_keys, covenant_quorum, NO_VERIFY)?;
-    Ok(s)
+    append_multi_sig(
+        &mut s,
+        covenants.public_keys_ordered(),
+        covenants.quorum(),
+        NO_VERIFY,
+    );
+    s
 }
 
 fn append_single_sig(dst: &mut Script, key: &schnorr::XOnlyPublicKey, verify: bool) {
@@ -121,25 +129,16 @@ fn append_single_sig(dst: &mut Script, key: &schnorr::XOnlyPublicKey, verify: bo
 /// Note: It is up to the caller to ensure that the keys are unique and sorted.
 fn append_multi_sig(
     dst: &mut Script,
-    covenants_xonly: &[schnorr::XOnlyPublicKey],
-    covenant_quorum: u32,
+    pubkeys: &[schnorr::XOnlyPublicKey],
+    quorum: u32,
     verify: bool,
-) -> SigningResult<()> {
-    if covenants_xonly.is_empty() {
-        return SigningError::err(SigningErrorType::Error_invalid_params)
-            .context("No covenant public keys provided");
-    }
-    if covenants_xonly.len() < covenant_quorum as usize {
-        return SigningError::err(SigningErrorType::Error_invalid_params)
-            .context("Required number of valid signers is greater than number of provided keys");
-    }
-    if covenants_xonly.len() == 1 {
-        append_single_sig(dst, &covenants_xonly[0], verify);
-        return Ok(());
+) {
+    if pubkeys.len() == 1 {
+        return append_single_sig(dst, &pubkeys[0], verify);
     }
 
-    for (i, covenant_xonly) in covenants_xonly.iter().enumerate() {
-        dst.push_slice(covenant_xonly.as_slice());
+    for (i, pk_xonly) in pubkeys.iter().enumerate() {
+        dst.push_slice(pk_xonly.as_slice());
         if i == 0 {
             dst.push(OP_CHECKSIG);
         } else {
@@ -147,12 +146,10 @@ fn append_multi_sig(
         }
     }
 
-    dst.push_int(covenant_quorum as i64);
+    dst.push_int(quorum as i64);
     if verify {
         dst.push(OP_NUMEQUALVERIFY);
     } else {
         dst.push(OP_NUMEQUAL);
     }
-
-    Ok(())
 }

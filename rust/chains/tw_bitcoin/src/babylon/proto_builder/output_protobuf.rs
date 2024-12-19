@@ -2,9 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::babylon::proto_builder::{
-    parse_schnorr_pk, staking_params_from_proto, unbonding_params_from_proto,
-};
+use crate::babylon::proto_builder::{parse_schnorr_pk, staking_params_from_proto};
 use crate::babylon::tx_builder::output::BabylonOutputBuilder;
 use crate::modules::tx_builder::output_protobuf::OutputProtobuf;
 use tw_coin_entry::error::prelude::*;
@@ -68,7 +66,7 @@ impl<'a, Context: UtxoContext> BabylonOutputProtobuf for OutputProtobuf<'a, Cont
         &self,
         unbonding: &Proto::mod_OutputBuilder::UnbondingOutput,
     ) -> SigningResult<TransactionOutput> {
-        let params = unbonding_params_from_proto(&unbonding.params)?;
+        let params = staking_params_from_proto(&unbonding.params)?;
         self.prepare_builder()?.babylon_unbonding(params)
     }
 }
