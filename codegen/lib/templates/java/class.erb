@@ -1,5 +1,5 @@
 import java.security.InvalidParameterException;
-import java.util.HashSet;
+import wallet.core.java.GenericPhantomReference;
 
 <%  less = entity.static_methods.detect{ |i| i.name == 'Less' } -%>
 <%  equal = entity.static_methods.detect{ |i| i.name == 'Equal' } -%>
@@ -21,7 +21,7 @@ public final class <%= entity.name %> {
         <%= entity.name %> instance = new <%= entity.name %>();
         instance.nativeHandle = nativeHandle;
 <%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
-        <%= entity.name %>PhantomReference.register(instance, nativeHandle);
+        GenericPhantomReference.register(instance, nativeHandle, <%= entity.name %>::nativeDelete);
 <%  end -%>
         return instance;
     }
@@ -96,32 +96,8 @@ public final class <%= entity.name %> {
             throw new InvalidParameterException();
         }
 
-        <%= entity.name %>PhantomReference.register(this, nativeHandle);
+        GenericPhantomReference.register(this, nativeHandle, <%= entity.name %>::nativeDelete);
     }
 
 <%- end -%>
 }
-<%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
-class <%= entity.name %>PhantomReference extends java.lang.ref.PhantomReference<<%= entity.name %>> {
-    private static java.util.Set<<%= entity.name %>PhantomReference> references = new HashSet<<%= entity.name %>PhantomReference>();
-    private static java.lang.ref.ReferenceQueue<<%= entity.name %>> queue = new java.lang.ref.ReferenceQueue<<%= entity.name %>>();
-    private long nativeHandle;
-
-    private <%= entity.name %>PhantomReference(<%= entity.name %> referent, long nativeHandle) {
-        super(referent, queue);
-        this.nativeHandle = nativeHandle;
-    }
-
-    static void register(<%= entity.name %> referent, long nativeHandle) {
-        references.add(new <%= entity.name %>PhantomReference(referent, nativeHandle));
-    }
-
-    public static void doDeletes() {
-        <%= entity.name %>PhantomReference ref = (<%= entity.name %>PhantomReference) queue.poll();
-        for (; ref != null; ref = (<%= entity.name %>PhantomReference) queue.poll()) {
-            <%= entity.name %>.nativeDelete(ref.nativeHandle);
-            references.remove(ref);
-        }
-    }
-}
-<%  end -%>
