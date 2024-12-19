@@ -209,4 +209,31 @@ class TestEthereumAbiDecoder {
         assertEquals(decodingOutput.getTokens(0).name, "name")
         assertEquals(decodingOutput.getTokens(0).stringValue, "deadbeef")
     }
+
+    @Test
+    fun testEthereumAbiGetFunctionSignature() {
+        val abiJson = """
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_to",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transfer",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        """.trimIndent()
+
+        val functionSignature = wallet.core.jni.EthereumAbi.getFunctionSignature(abiJson)
+        assertEquals(functionSignature, "transfer(address,uint256)")
+    }
 }

@@ -66,6 +66,11 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     }
 
     #[inline]
+    pub fn get_function_signature_from_abi(abi: &str) -> AbiResult<String> {
+        Self::get_function_signature_from_abi_impl(abi)
+    }
+
+    #[inline]
     pub fn encode_contract_call(
         input: Proto::FunctionEncodingInput<'_>,
     ) -> Proto::FunctionEncodingOutput<'static> {
@@ -188,6 +193,16 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             ..Function::default()
         };
         fun.signature()
+    }
+
+    fn get_function_signature_from_abi_impl(function_abi: &str) -> AbiResult<String> {
+        let mut fun: Function = serde_json::from_str(function_abi)
+            .tw_err(|_| AbiErrorKind::Error_invalid_abi)
+            .context("Error deserializing Function ABI as JSON")?;
+
+        // Clear the `outputs` to avoid adding them to the signature.
+        fun.outputs.clear();
+        Ok(fun.signature())
     }
 
     fn encode_contract_call_impl(
