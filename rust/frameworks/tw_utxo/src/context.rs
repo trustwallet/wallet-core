@@ -4,7 +4,7 @@
 
 use crate::script::Script;
 use std::str::FromStr;
-use tw_coin_entry::error::prelude::{AddressError, SigningResult};
+use tw_coin_entry::error::prelude::*;
 
 pub struct AddressPrefixes {
     pub p2pkh_prefix: u8,

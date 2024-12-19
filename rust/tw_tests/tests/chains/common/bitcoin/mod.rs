@@ -8,6 +8,7 @@
 
 use tw_encoding::hex::DecodeHex;
 
+pub mod babylon;
 pub mod compile;
 pub mod data;
 pub mod plan;

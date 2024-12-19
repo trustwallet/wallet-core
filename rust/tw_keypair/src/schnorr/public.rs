@@ -63,6 +63,7 @@ impl<'a> TryFrom<&'a [u8]> for PublicKey {
     }
 }
 
+#[derive(Clone, Debug, Eq, Hash, Ord, PartialOrd, PartialEq)]
 pub struct XOnlyPublicKey {
     pub(crate) public: secp256k1::XOnlyPublicKey,
 }

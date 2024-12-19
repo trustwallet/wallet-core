@@ -1,4 +1,4 @@
-use tw_coin_entry::error::prelude::{SigningError, SigningErrorType};
+use tw_coin_entry::error::prelude::*;
 
 /// Errors encountered when encoding or decoding data.
 #[derive(Debug)]

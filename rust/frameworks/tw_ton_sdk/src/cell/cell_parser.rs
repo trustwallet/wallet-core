@@ -8,7 +8,7 @@ use crate::address::address_data::AddressData;
 use crate::error::{CellError, CellErrorType, CellResult};
 use bitreader::BitReader;
 use num_bigint::BigUint;
-use tw_coin_entry::error::prelude::{MapTWError, ResultContext};
+use tw_coin_entry::error::prelude::*;
 use tw_hash::H256;
 use tw_memory::Data;
 use tw_number::U256;

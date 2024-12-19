@@ -10,6 +10,8 @@ mod common;
 mod impls;
 
 #[allow(non_snake_case)]
+#[allow(unused_mut)]
+#[allow(unused_variables)]
 #[rustfmt::skip]
 mod generated {
     include!(concat!(env!("OUT_DIR"), "/proto/mod.rs"));
