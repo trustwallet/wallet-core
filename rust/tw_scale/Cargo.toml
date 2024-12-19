@@ -1,0 +1,8 @@
+[package]
+name = "tw_scale"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tw_hash = { path = "../tw_hash" }
+tw_number = { path = "../tw_number" }
