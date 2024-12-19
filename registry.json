@@ -1565,7 +1565,7 @@
     "publicKeyType": "ed25519Blake2b",
     "url": "https://nano.org",
     "explorer": {
-      "url": "https://www.nanolooker.com",
+      "url": "https://nanexplorer.com/nano",
       "txPath": "/block/",
       "accountPath": "/account/",
       "sampleTx": "C264DB7BF40738F0CEFF19B606746CB925B713E4B8699A055699E0DC8ABBC70F",
@@ -1786,8 +1786,8 @@
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
-      "url": "https://app.dappflow.org/explorer",
-      "txPath": "/transaction/",
+      "url": "https://allo.info",
+      "txPath": "/tx/",
       "accountPath": "/account/",
       "sampleTx": "CR7POXFTYDLC7TV3IXHA7AZKWABUJC52BACLHJQNXAKZJGRPQY3A",
       "sampleAccount": "J4AEINCSSLDA7LNBNWM4ZXFCTLTOZT5LG3F5BLMFPJYGFWVCMU37EZI2AM"
@@ -2541,9 +2541,9 @@
     "chainId": "820",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://explorer.callisto.network",
+      "url": "https://explorer.callistodao.org",
       "txPath": "/tx/",
-      "accountPath": "/addr/"
+      "accountPath": "/address/"
     },
     "info": {
       "url": "https://callisto.network",
@@ -3186,7 +3186,7 @@
     "publicKeyType": "secp256k1",
     "hrp": "thor",
     "addressHasher": "sha256ripemd",
-    "chainId": "thorchain-mainnet-v1",
+    "chainId": "thorchain-1",
     "explorer": {
       "url": "https://viewblock.io/thorchain",
       "txPath": "/tx/",
@@ -3197,7 +3197,7 @@
     "info": {
       "url": "https://thorchain.org",
       "source": "https://gitlab.com/thorchain/thornode",
-      "rpc": "https://seed.thorchain.info",
+      "rpc": "https://thornode.ninerealms.com",
       "documentation": "https://docs.thorchain.org"
     }
   },
@@ -3810,7 +3810,7 @@
     "chainId": "10000",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://www.smartscan.cash",
+      "url": "https://www.smartscout.cash",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x6413466b455b17d03c7a8ce2d7f99fec34bcd338628bdd2d0580a21e3197a4d9",
@@ -3872,7 +3872,7 @@
     "chainId": "288",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://blockexplorer.boba.network",
+      "url": "https://eth.bobascan.com",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x31533707c3feb3b10f7deeea387ff8893f229253e65ca6b14d2400bf95b5d103",
