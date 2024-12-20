@@ -86,3 +86,19 @@ TWData* _Nonnull TWEthereumAbiEncodeTyped(TWString* _Nonnull messageJson) {
     } catch (...) {} // return empty
     return TWDataCreateWithBytes(data.data(), data.size());
 }
+
+TWString* _Nullable TWEthereumAbiGetFunctionSignature(TWString* _Nonnull abi) {
+    try {
+        const Rust::TWStringWrapper abiStr = TWStringUTF8Bytes(abi);
+
+        const Rust::TWStringWrapper outputDataPtr = Rust::tw_ethereum_abi_get_function_signature(TWCoinTypeEthereum, abiStr.get());
+        if (!outputDataPtr) {
+            return nullptr;
+        }
+
+        return TWStringCreateWithUTF8Bytes(outputDataPtr.c_str());
+    }
+    catch(...) {
+        return nullptr;
+    }
+}

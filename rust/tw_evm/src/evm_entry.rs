@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::abi::AbiResult;
 use crate::evm_context::EvmContext;
 use crate::modules::abi_encoder::AbiEncoder;
 use crate::modules::rlp_encoder::RlpEncoder;
@@ -46,8 +47,14 @@ pub trait EvmEntry {
 
     /// Returns the function type signature, of the form "baz(int32,uint256)".
     #[inline]
-    fn get_abi_function_signature(input: AbiProto::FunctionGetTypeInput<'_>) -> String {
-        AbiEncoder::<Self::Context>::get_function_signature(input)
+    fn get_function_signature_from_proto(input: AbiProto::FunctionGetTypeInput<'_>) -> String {
+        AbiEncoder::<Self::Context>::get_function_signature_from_proto(input)
+    }
+
+    /// Returns the function type signature, of the form "baz(int32,uint256)".
+    #[inline]
+    fn get_function_signature_from_abi(abi: &str) -> AbiResult<String> {
+        AbiEncoder::<Self::Context>::get_function_signature_from_abi(abi)
     }
 
     // Encodes function inputs to Eth ABI binary.
@@ -71,7 +78,10 @@ pub trait EvmEntryExt {
     fn decode_abi_params(&self, input: &[u8]) -> ProtoResult<Data>;
 
     /// Returns the function type signature, of the form "baz(int32,uint256)".
-    fn get_abi_function_signature(&self, input: &[u8]) -> ProtoResult<String>;
+    fn get_function_signature_from_proto(&self, input: &[u8]) -> ProtoResult<String>;
+
+    /// Returns the function type signature, of the form "baz(int32,uint256)".
+    fn get_function_signature_from_abi(&self, abi: &str) -> AbiResult<String>;
 
     /// Encodes function inputs to Eth ABI binary.
     fn encode_abi_function(&self, input: &[u8]) -> ProtoResult<Data>;
@@ -102,9 +112,13 @@ where
         serialize(&output)
     }
 
-    fn get_abi_function_signature(&self, input: &[u8]) -> ProtoResult<String> {
+    fn get_function_signature_from_proto(&self, input: &[u8]) -> ProtoResult<String> {
         let input = deserialize(input)?;
-        Ok(<Self as EvmEntry>::get_abi_function_signature(input))
+        Ok(<Self as EvmEntry>::get_function_signature_from_proto(input))
+    }
+
+    fn get_function_signature_from_abi(&self, abi: &str) -> AbiResult<String> {
+        <Self as EvmEntry>::get_function_signature_from_abi(abi)
     }
 
     fn encode_abi_function(&self, input: &[u8]) -> ProtoResult<Data> {
