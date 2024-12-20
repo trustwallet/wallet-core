@@ -57,7 +57,7 @@ pub unsafe extern "C" fn tw_ethereum_abi_decode_params(
 /// \param input The serialized data of `TW.EthereumAbi.Proto.FunctionGetTypeInput`.
 /// \return function type signature as a Non-null string.
 #[no_mangle]
-pub unsafe extern "C" fn tw_ethereum_abi_function_get_signature(
+pub unsafe extern "C" fn tw_ethereum_abi_function_get_type(
     coin: u32,
     input: *const TWData,
 ) -> *mut TWString {
@@ -67,7 +67,7 @@ pub unsafe extern "C" fn tw_ethereum_abi_function_get_signature(
     let evm_dispatcher = try_or_else!(evm_dispatcher(coin), || TWString::new().into_ptr());
 
     evm_dispatcher
-        .get_abi_function_signature(input_data.as_slice())
+        .get_function_signature_from_proto(input_data.as_slice())
         .map(|str| TWString::from(str).into_ptr())
         .unwrap_or_else(|_| TWString::new().into_ptr())
 }

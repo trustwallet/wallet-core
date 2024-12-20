@@ -61,8 +61,8 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     }
 
     #[inline]
-    pub fn get_function_signature(input: Proto::FunctionGetTypeInput<'_>) -> String {
-        Self::get_function_signature_impl(input)
+    pub fn get_function_signature_from_proto(input: Proto::FunctionGetTypeInput<'_>) -> String {
+        Self::get_function_signature_from_proto_impl(input)
     }
 
     #[inline]
@@ -179,7 +179,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         })
     }
 
-    fn get_function_signature_impl(input: Proto::FunctionGetTypeInput<'_>) -> String {
+    fn get_function_signature_from_proto_impl(input: Proto::FunctionGetTypeInput<'_>) -> String {
         let function_inputs = input
             .inputs
             .into_iter()

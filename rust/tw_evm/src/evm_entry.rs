@@ -47,8 +47,8 @@ pub trait EvmEntry {
 
     /// Returns the function type signature, of the form "baz(int32,uint256)".
     #[inline]
-    fn get_abi_function_signature(input: AbiProto::FunctionGetTypeInput<'_>) -> String {
-        AbiEncoder::<Self::Context>::get_function_signature(input)
+    fn get_function_signature_from_proto(input: AbiProto::FunctionGetTypeInput<'_>) -> String {
+        AbiEncoder::<Self::Context>::get_function_signature_from_proto(input)
     }
 
     /// Returns the function type signature, of the form "baz(int32,uint256)".
@@ -78,7 +78,7 @@ pub trait EvmEntryExt {
     fn decode_abi_params(&self, input: &[u8]) -> ProtoResult<Data>;
 
     /// Returns the function type signature, of the form "baz(int32,uint256)".
-    fn get_abi_function_signature(&self, input: &[u8]) -> ProtoResult<String>;
+    fn get_function_signature_from_proto(&self, input: &[u8]) -> ProtoResult<String>;
 
     /// Returns the function type signature, of the form "baz(int32,uint256)".
     fn get_function_signature_from_abi(&self, abi: &str) -> AbiResult<String>;
@@ -112,9 +112,9 @@ where
         serialize(&output)
     }
 
-    fn get_abi_function_signature(&self, input: &[u8]) -> ProtoResult<String> {
+    fn get_function_signature_from_proto(&self, input: &[u8]) -> ProtoResult<String> {
         let input = deserialize(input)?;
-        Ok(<Self as EvmEntry>::get_abi_function_signature(input))
+        Ok(<Self as EvmEntry>::get_function_signature_from_proto(input))
     }
 
     fn get_function_signature_from_abi(&self, abi: &str) -> AbiResult<String> {
