@@ -8,8 +8,12 @@ import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.readBytes
 import kotlinx.cinterop.toCValues
 
-internal fun COpaquePointer?.readTwBytes(): ByteArray? =
-    TWDataBytes(this)?.readBytes(TWDataSize(this).toInt())
+internal fun COpaquePointer?.readTwBytes(): ByteArray? {
+    if (this == null) {
+        return null;
+    }
+    return TWDataBytes(this)?.readBytes(TWDataSize(this).toInt())
+}
 
 @OptIn(ExperimentalUnsignedTypes::class)
 internal fun ByteArray?.toTwData(): COpaquePointer? =
