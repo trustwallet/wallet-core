@@ -152,8 +152,10 @@ impl TransactionFactory {
                 let v = serde_json::from_str::<Value>(&input.any_encoded)
                     .into_tw()
                     .context("Error decoding 'SigningInput::any_encoded' as JSON")?;
+                let abi =
+                    serde_json::from_str::<Value>(&input.abi).unwrap_or(serde_json::json!([]));
                 if is_blind_sign {
-                    let entry_function = EntryFunction::try_from(v)?;
+                    let entry_function = EntryFunction::try_from((v, abi))?;
                     Ok(factory.payload(TransactionPayload::EntryFunction(entry_function)))
                 } else {
                     SigningError::err(SigningErrorType::Error_input_parse)

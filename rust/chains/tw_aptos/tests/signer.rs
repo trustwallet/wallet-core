@@ -53,6 +53,7 @@ fn setup_proto_transaction<'a>(
     timestamp: u64,
     gas_unit_price: u64,
     any_encoded: &'a str,
+    abi: &'a str,
     ops_details: Option<OpsDetails>,
 ) -> SigningInput<'a> {
     let private = hex::decode(keypair_str).unwrap();
@@ -148,6 +149,7 @@ fn setup_proto_transaction<'a>(
         private_key: private.into(),
         any_encoded: any_encoded.into(),
         transaction_payload: payload,
+        abi: abi.into(),
     };
 
     input
@@ -194,6 +196,7 @@ fn test_aptos_sign_transaction_transfer() {
         3664390082,
         100,
         "",
+        "",
         Some(OpsDetails::Transfer(Transfer {
             to: "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30".to_string(),
             amount: 1000,
@@ -237,6 +240,7 @@ fn test_aptos_sign_create_account() {
         3664390082,
         100,
         "",
+        "",
         Some(OpsDetails::AccountCreation(AccountCreation {
             to: "0x3aa1672641a4e17b3d913b4c0301e805755a80b12756fc729c5878f12344d30e".to_string(),
         })),
@@ -278,6 +282,7 @@ fn test_aptos_sign_coin_transfer() {
         3296766,
         3664390082,
         100,
+        "",
         "",
         Some(OpsDetails::TokenTransfer(TokenTransfer {
             transfer: Transfer {
@@ -328,6 +333,7 @@ fn test_implicit_aptos_sign_coin_transfer() {
                                         3664390082,
                                         100,
                                         "",
+                                        "",
                                         Some(OpsDetails::ImplicitTokenTransfer(TokenTransfer { transfer: Transfer { to: "0xb7c7d12080209e9dc14498c80200706e760363fb31782247e82cf57d1d6e5d6c".to_string(), amount: 10000 }, tag: TypeTag::from_str("0xe9c192ff55cffab3963c695cff6dbf9dad6aff2bb5ac19a6415cad26a81860d9::mee_coin::MeeCoin").unwrap() })),
     );
     let output = Signer::sign_proto(input);
@@ -367,6 +373,7 @@ fn test_aptos_nft_offer() {
         3296766,
         3664390082,
         100,
+        "",
         "",
         Some(OpsDetails::NftOps(NftOperation::Offer(Offer {
             receiver: AccountAddress::from_str(
@@ -424,6 +431,7 @@ fn test_aptos_cancel_nft_offer() {
         3664390082,
         100,
         "",
+        "",
         Some(OpsDetails::NftOps(NftOperation::Cancel(Offer {
             receiver: AccountAddress::from_str(
                 "0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee",
@@ -480,6 +488,7 @@ fn test_aptos_nft_claim() {
         3664390082,
         100,
         "",
+        "",
         Some(OpsDetails::NftOps(NftOperation::Claim(Claim {
             sender: AccountAddress::from_str(
                 "0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee",
@@ -534,6 +543,7 @@ fn test_aptos_register_token() {
                                         3664390082,
                                         100,
                                         "",
+                                        "",
                                         Some(OpsDetails::RegisterToken(RegisterToken { coin_type: TypeTag::from_str("0xe4497a32bf4a9fd5601b27661aa0b933a923191bf403bd08669ab2468d43b379::move_coin::MoveCoin").unwrap() })),
     );
     let output = Signer::sign_proto(input);
@@ -573,6 +583,7 @@ fn test_aptos_tortuga_stake() {
         5554,
         1670240203,
         100,
+        "",
         "",
         Some(OpsDetails::LiquidStakingOps(LiquidStakingOperation::Stake(
             Stake {
@@ -624,6 +635,7 @@ fn test_aptos_tortuga_unstake() {
         1670304949,
         120,
         "",
+        "",
         Some(OpsDetails::LiquidStakingOps(
             LiquidStakingOperation::Unstake(Unstake {
                 amount: 99178100,
@@ -673,6 +685,7 @@ fn test_aptos_tortuga_claim() {
         10,
         1682066783,
         148,
+        "",
         "",
         Some(OpsDetails::LiquidStakingOps(LiquidStakingOperation::Claim(
             liquid_staking::Claim {
@@ -737,6 +750,7 @@ fn test_aptos_blind_sign() {
                                                 ],
                                            "type": "entry_function_payload"
                                            }"#,
+        "",
         None,
     );
     let output = Signer::sign_proto(input);
@@ -772,6 +786,67 @@ fn test_aptos_blind_sign() {
                 }"#);
 }
 
+#[test]
+fn test_aptos_blind_sign_with_abi() {
+    let input = setup_proto_transaction(
+        "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
+        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec",   // Keypair
+        "blind_sign_json",
+        42, // Sequence number
+        1,
+        100011,
+        3664390082,
+        100,
+        r#"{
+                                            "function": "0x9770fa9c725cbd97eb50b2be5f7416efdfd1f1554beb0750d4dae4c64e860da3::controller::deposit",
+                                            "type_arguments": [
+                                                    "0x1::aptos_coin::AptosCoin"
+                                                ],
+                                           "arguments": [
+                                                    "0x4d61696e204163636f756e74",
+                                                    "10000000",
+                                                    false
+                                                ],
+                                           "type": "entry_function_payload"
+                                           }"#,
+        r#"[
+            "vector<u8>",
+            "u64",
+            "bool"
+        ]"#,
+        None,
+    );
+    let output = Signer::sign_proto(input);
+    test_tx_result(output,
+                   "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f302a00000000000000029770fa9c725cbd97eb50b2be5f7416efdfd1f1554beb0750d4dae4c64e860da30a636f6e74726f6c6c6572076465706f736974010700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e00030d0c4d61696e204163636f756e740880969800000000000100ab860100000000006400000000000000c2276ada0000000001", // Expected raw transaction bytes
+                   "b2f8b30d244d4c4127db00d81bac14586e5e8be4de2d273a03ea6109f4944af9016472b4a75da0d8adc505233a76a0de2e322a63ffbb8bf4a60eb9acab33e20b", // Expected signature
+                   "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f302a00000000000000029770fa9c725cbd97eb50b2be5f7416efdfd1f1554beb0750d4dae4c64e860da30a636f6e74726f6c6c6572076465706f736974010700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e00030d0c4d61696e204163636f756e740880969800000000000100ab860100000000006400000000000000c2276ada00000000010020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c40b2f8b30d244d4c4127db00d81bac14586e5e8be4de2d273a03ea6109f4944af9016472b4a75da0d8adc505233a76a0de2e322a63ffbb8bf4a60eb9acab33e20b", // Expected encoded transaction
+                   r#"{
+                    "expiration_timestamp_secs": "3664390082",
+                    "gas_unit_price": "100",
+                    "max_gas_amount": "100011",
+                    "payload": {
+                        "function": "0x9770fa9c725cbd97eb50b2be5f7416efdfd1f1554beb0750d4dae4c64e860da3::controller::deposit",
+                        "type_arguments": [
+                            "0x1::aptos_coin::AptosCoin"
+                        ],
+                        "arguments": [
+                            "0x4d61696e204163636f756e74",
+                            "10000000",
+                            false
+                        ],
+                        "type": "entry_function_payload"
+                    },
+                    "sender": "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+                    "sequence_number": "42",
+                    "signature": {
+                        "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+                        "signature": "0xb2f8b30d244d4c4127db00d81bac14586e5e8be4de2d273a03ea6109f4944af9016472b4a75da0d8adc505233a76a0de2e322a63ffbb8bf4a60eb9acab33e20b",
+                        "type": "ed25519_signature"
+                    }
+                }"#);
+}
+
 // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x25dca849cb4ebacbff223139f7ad5d24c37c225d9506b8b12a925de70429e685/payload
 #[test]
 fn test_aptos_blind_sign_staking() {
@@ -792,6 +867,7 @@ fn test_aptos_blind_sign_staking() {
                                             ],
                                             "type": "entry_function_payload"
                                         }"#,
+        "",
         None,
     );
     let output = Signer::sign_proto(input);
@@ -841,6 +917,7 @@ fn test_aptos_blind_sign_unstaking() {
                                             ],
                                             "type": "entry_function_payload"
                                         }"#,
+        "",
         None,
     );
     let output = Signer::sign_proto(input);

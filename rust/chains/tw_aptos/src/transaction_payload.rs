@@ -2,11 +2,14 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::aptos_move_types::{HexEncodedBytes, MoveType};
 use crate::serde_helper::vec_bytes;
+use move_core_types::account_address::AccountAddress;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::{ModuleId, StructTag, TypeTag};
 use move_core_types::parser::parse_transaction_argument;
 use move_core_types::transaction_argument::TransactionArgument;
+use move_core_types::u256;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::default::Default;
@@ -53,26 +56,39 @@ pub struct EntryFunction {
     json_args: Value,
 }
 
-impl TryFrom<Value> for EntryFunction {
+impl TryFrom<(Value, Value)> for EntryFunction {
     type Error = EntryFunctionError;
 
-    fn try_from(value: Value) -> EntryFunctionResult<Self> {
+    fn try_from((value, abi): (Value, Value)) -> EntryFunctionResult<Self> {
         let function_str = value["function"]
             .as_str()
             .ok_or(EntryFunctionError::MissingFunctionName)?;
         let tag = StructTag::from_str(function_str)
             .map_err(|_| EntryFunctionError::InvalidFunctionName)?;
 
+        let abi = abi
+            .as_array()
+            .ok_or(EntryFunctionError::MissingTypeArguments)?;
+        let get_abi_str =
+            |index: usize| -> Option<String> { abi.get(index)?.as_str().map(|s| s.to_string()) };
+
         let args = value["arguments"]
             .as_array()
             .ok_or(EntryFunctionError::MissingArguments)?
             .iter()
-            .map(|element| {
+            .enumerate()
+            .map(|(index, element)| {
                 let arg_str = element.to_string();
-                let arg = parse_transaction_argument(
-                    arg_str.trim_start_matches('"').trim_end_matches('"'),
-                )
-                .map_err(|_| EntryFunctionError::InvalidArguments)?;
+                let arg_str = arg_str.trim_start_matches('"').trim_end_matches('"');
+
+                let arg = if let Some(abi_str) = get_abi_str(index) {
+                    let abi_str = abi_str.trim_start_matches('"').trim_end_matches('"');
+                    parse_argument(arg_str, abi_str)
+                        .map_err(|_| EntryFunctionError::InvalidArguments)?
+                } else {
+                    parse_transaction_argument(arg_str)
+                        .map_err(|_| EntryFunctionError::InvalidArguments)?
+                };
                 serialize_argument(&arg).map_err(EntryFunctionError::from)
             })
             .collect::<EntryFunctionResult<Vec<Data>>>()?;
@@ -96,6 +112,41 @@ impl TryFrom<Value> for EntryFunction {
             args,
             json_args: value["arguments"].clone(),
         })
+    }
+}
+
+fn parse_argument(val: &str, abi_str: &str) -> anyhow::Result<TransactionArgument> {
+    let move_type: MoveType = abi_str.parse::<MoveType>()?;
+    Ok(match move_type {
+        MoveType::Bool => TransactionArgument::Bool(val.parse::<bool>()?),
+        MoveType::U8 => TransactionArgument::U8(val.parse::<u8>()?),
+        MoveType::U16 => TransactionArgument::U16(val.parse::<u16>()?),
+        MoveType::U32 => TransactionArgument::U32(val.parse::<u32>()?),
+        MoveType::U64 => TransactionArgument::U64(val.parse::<u64>()?),
+        MoveType::U128 => TransactionArgument::U128(val.parse::<u128>()?),
+        MoveType::U256 => TransactionArgument::U256(val.parse::<u256::U256>()?),
+        MoveType::Address => TransactionArgument::Address(AccountAddress::from_hex_literal(val)?),
+        MoveType::Vector { items } => parse_vector_argument(val, items)?,
+        _ => {
+            anyhow::bail!("unexpected move type {:?} for value {:?}", move_type, val)
+        },
+    })
+}
+
+fn parse_vector_argument(val: &str, layout: Box<MoveType>) -> anyhow::Result<TransactionArgument> {
+    let val = serde_json::to_value(val)?;
+    if matches!(*layout, MoveType::U8) {
+        Ok(TransactionArgument::U8Vector(
+            serde_json::from_value::<HexEncodedBytes>(val)?.into(),
+        ))
+    } else if let Value::Array(list) = val {
+        let vals = list
+            .into_iter()
+            .map(|v| serde_json::from_value::<u8>(v).map_err(|_| anyhow::anyhow!("expected u8")))
+            .collect::<anyhow::Result<_>>()?;
+        Ok(TransactionArgument::U8Vector(vals))
+    } else {
+        anyhow::bail!("expected vector<{:?}>, but got: {:?}", layout, val)
     }
 }
 

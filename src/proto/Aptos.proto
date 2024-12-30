@@ -166,6 +166,8 @@ message SigningInput {
     LiquidStaking liquid_staking_message = 14;
     TokenTransferCoinsMessage token_transfer_coins = 15;
   }
+
+  optional string abi = 16;
 }
 
 // Information related to the signed transaction
