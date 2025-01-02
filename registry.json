@@ -3511,6 +3511,36 @@
     }
   },
   {
+    "id": "sonic",
+    "name": "Sonic",
+    "coinId": 10000146,
+    "symbol": "S",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "146",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://sonicscan.org",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x21c85f99cf676fea9307c285b0f875d749868ca085a751d11b93c513d433d4d4",
+      "sampleAccount": "0x00ad14c150da7a21872d4e934f4fa37a13e3d8d0"
+    },
+    "info": {
+      "url": "https://www.soniclabs.com",
+      "client": "https://github.com/openethereum/openethereum",
+      "clientPublic": "https://rpc.soniclabs.com",
+      "clientDocs": "https://docs.soniclabs.com"
+    }
+  },
+  {
     "id": "cryptoorg",
     "name": "CryptoOrg",
     "displayName": "Crypto.org",
