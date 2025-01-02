@@ -167,7 +167,7 @@ message SigningInput {
     TokenTransferCoinsMessage token_transfer_coins = 15;
   }
 
-  optional string abi = 16;
+  optional string abi = 21;
 }
 
 // Information related to the signed transaction

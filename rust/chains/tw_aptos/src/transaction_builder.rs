@@ -155,7 +155,7 @@ impl TransactionFactory {
                 let abi =
                     serde_json::from_str::<Value>(&input.abi).unwrap_or(serde_json::json!([]));
                 if is_blind_sign {
-                    let entry_function = EntryFunction::try_from((v, abi))?;
+                    let entry_function = EntryFunction::parse_with_abi(v, abi)?;
                     Ok(factory.payload(TransactionPayload::EntryFunction(entry_function)))
                 } else {
                     SigningError::err(SigningErrorType::Error_input_parse)

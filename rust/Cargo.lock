@@ -1724,7 +1724,6 @@ dependencies = [
 name = "tw_aptos"
 version = "0.1.0"
 dependencies = [
- "anyhow",
  "move-core-types",
  "serde",
  "serde_bytes",

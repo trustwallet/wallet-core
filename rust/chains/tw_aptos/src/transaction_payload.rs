@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::aptos_move_types::{HexEncodedBytes, MoveType};
+use crate::aptos_move_types::MoveType;
 use crate::serde_helper::vec_bytes;
 use move_core_types::account_address::AccountAddress;
 use move_core_types::identifier::Identifier;
@@ -15,6 +15,7 @@ use serde_json::{json, Value};
 use std::default::Default;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
+use tw_encoding::hex::DecodeHex;
 use tw_encoding::{bcs, EncodingError, EncodingResult};
 use tw_memory::Data;
 use tw_proto::Aptos;
@@ -56,10 +57,16 @@ pub struct EntryFunction {
     json_args: Value,
 }
 
-impl TryFrom<(Value, Value)> for EntryFunction {
+impl TryFrom<Value> for EntryFunction {
     type Error = EntryFunctionError;
 
-    fn try_from((value, abi): (Value, Value)) -> EntryFunctionResult<Self> {
+    fn try_from(value: Value) -> EntryFunctionResult<Self> {
+        Self::parse_with_abi(value, json!([]))
+    }
+}
+
+impl EntryFunction {
+    pub fn parse_with_abi(value: Value, abi: Value) -> EntryFunctionResult<Self> {
         let function_str = value["function"]
             .as_str()
             .ok_or(EntryFunctionError::MissingFunctionName)?;
@@ -115,38 +122,67 @@ impl TryFrom<(Value, Value)> for EntryFunction {
     }
 }
 
-fn parse_argument(val: &str, abi_str: &str) -> anyhow::Result<TransactionArgument> {
-    let move_type: MoveType = abi_str.parse::<MoveType>()?;
+fn parse_argument(val: &str, abi_str: &str) -> EncodingResult<TransactionArgument> {
+    let move_type: MoveType = abi_str
+        .parse::<MoveType>()
+        .map_err(|_| EncodingError::InvalidInput)?;
     Ok(match move_type {
-        MoveType::Bool => TransactionArgument::Bool(val.parse::<bool>()?),
-        MoveType::U8 => TransactionArgument::U8(val.parse::<u8>()?),
-        MoveType::U16 => TransactionArgument::U16(val.parse::<u16>()?),
-        MoveType::U32 => TransactionArgument::U32(val.parse::<u32>()?),
-        MoveType::U64 => TransactionArgument::U64(val.parse::<u64>()?),
-        MoveType::U128 => TransactionArgument::U128(val.parse::<u128>()?),
-        MoveType::U256 => TransactionArgument::U256(val.parse::<u256::U256>()?),
-        MoveType::Address => TransactionArgument::Address(AccountAddress::from_hex_literal(val)?),
+        MoveType::Bool => TransactionArgument::Bool(
+            val.parse::<bool>()
+                .map_err(|_| EncodingError::InvalidInput)?,
+        ),
+        MoveType::U8 => {
+            TransactionArgument::U8(val.parse::<u8>().map_err(|_| EncodingError::InvalidInput)?)
+        },
+        MoveType::U16 => TransactionArgument::U16(
+            val.parse::<u16>()
+                .map_err(|_| EncodingError::InvalidInput)?,
+        ),
+        MoveType::U32 => TransactionArgument::U32(
+            val.parse::<u32>()
+                .map_err(|_| EncodingError::InvalidInput)?,
+        ),
+        MoveType::U64 => TransactionArgument::U64(
+            val.parse::<u64>()
+                .map_err(|_| EncodingError::InvalidInput)?,
+        ),
+        MoveType::U128 => TransactionArgument::U128(
+            val.parse::<u128>()
+                .map_err(|_| EncodingError::InvalidInput)?,
+        ),
+        MoveType::U256 => TransactionArgument::U256(
+            val.parse::<u256::U256>()
+                .map_err(|_| EncodingError::InvalidInput)?,
+        ),
+        MoveType::Address => TransactionArgument::Address(
+            AccountAddress::from_hex_literal(val).map_err(|_| EncodingError::InvalidInput)?,
+        ),
         MoveType::Vector { items } => parse_vector_argument(val, items)?,
         _ => {
-            anyhow::bail!("unexpected move type {:?} for value {:?}", move_type, val)
+            return Err(EncodingError::InvalidInput);
         },
     })
 }
 
-fn parse_vector_argument(val: &str, layout: Box<MoveType>) -> anyhow::Result<TransactionArgument> {
-    let val = serde_json::to_value(val)?;
+fn parse_vector_argument(
+    val_str: &str,
+    layout: Box<MoveType>,
+) -> EncodingResult<TransactionArgument> {
+    let val = serde_json::to_value(val_str).map_err(|_| EncodingError::InvalidInput)?;
     if matches!(*layout, MoveType::U8) {
         Ok(TransactionArgument::U8Vector(
-            serde_json::from_value::<HexEncodedBytes>(val)?.into(),
+            val_str
+                .decode_hex()
+                .map_err(|_| EncodingError::InvalidInput)?,
         ))
     } else if let Value::Array(list) = val {
         let vals = list
             .into_iter()
-            .map(|v| serde_json::from_value::<u8>(v).map_err(|_| anyhow::anyhow!("expected u8")))
-            .collect::<anyhow::Result<_>>()?;
+            .map(|v| serde_json::from_value::<u8>(v).map_err(|_| EncodingError::InvalidInput))
+            .collect::<EncodingResult<_>>()?;
         Ok(TransactionArgument::U8Vector(vals))
     } else {
-        anyhow::bail!("expected vector<{:?}>, but got: {:?}", layout, val)
+        return Err(EncodingError::InvalidInput);
     }
 }
 

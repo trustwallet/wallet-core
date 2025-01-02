@@ -2,77 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use anyhow::format_err;
 use move_core_types::{language_storage::TypeTag, parser::parse_type_tag};
-use serde::de::Error;
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use std::fmt;
 use std::str::FromStr;
-use tw_encoding::hex;
-
-/// Hex encoded bytes to allow for having bytes represented in JSON
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct HexEncodedBytes(pub Vec<u8>);
-
-impl HexEncodedBytes {
-    pub fn json(&self) -> anyhow::Result<serde_json::Value> {
-        Ok(serde_json::to_value(self)?)
-    }
-}
-
-impl FromStr for HexEncodedBytes {
-    type Err = anyhow::Error;
-
-    fn from_str(s: &str) -> anyhow::Result<Self, anyhow::Error> {
-        let hex_str = if let Some(hex) = s.strip_prefix("0x") {
-            hex
-        } else {
-            s
-        };
-        Ok(Self(hex::decode(hex_str).map_err(|e| {
-            format_err!(
-                "decode hex-encoded string({:?}) failed, caused by error: {}",
-                s,
-                e
-            )
-        })?))
-    }
-}
-
-impl fmt::Display for HexEncodedBytes {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "0x{}", hex::encode(&self.0, false))?;
-        Ok(())
-    }
-}
-
-impl Serialize for HexEncodedBytes {
-    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        self.to_string().serialize(serializer)
-    }
-}
-
-impl<'de> Deserialize<'de> for HexEncodedBytes {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let s = <String>::deserialize(deserializer)?;
-        s.parse().map_err(D::Error::custom)
-    }
-}
-
-impl From<Vec<u8>> for HexEncodedBytes {
-    fn from(bytes: Vec<u8>) -> Self {
-        Self(bytes)
-    }
-}
-
-impl From<HexEncodedBytes> for Vec<u8> {
-    fn from(bytes: HexEncodedBytes) -> Self {
-        bytes.0
-    }
-}
+use tw_encoding::EncodingError;
 
 /// An enum of Move's possible types on-chain
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -105,7 +37,7 @@ pub enum MoveType {
 }
 
 impl FromStr for MoveType {
-    type Err = anyhow::Error;
+    type Err = EncodingError;
 
     fn from_str(mut s: &str) -> Result<Self, Self::Err> {
         let mut is_ref = false;
@@ -175,9 +107,9 @@ impl From<&TypeTag> for MoveType {
 }
 
 impl TryFrom<MoveType> for TypeTag {
-    type Error = anyhow::Error;
+    type Error = EncodingError;
 
-    fn try_from(tag: MoveType) -> anyhow::Result<Self> {
+    fn try_from(tag: MoveType) -> Result<Self, Self::Error> {
         let ret = match tag {
             MoveType::Bool => TypeTag::Bool,
             MoveType::U8 => TypeTag::U8,
@@ -189,10 +121,7 @@ impl TryFrom<MoveType> for TypeTag {
             MoveType::Address => TypeTag::Address,
             MoveType::Vector { items } => TypeTag::Vector(Box::new((*items).try_into()?)),
             _ => {
-                return Err(anyhow::anyhow!(
-                    "Invalid move type for converting into `TypeTag`: {:?}",
-                    &tag
-                ))
+                return Err(EncodingError::InvalidInput);
             },
         };
         Ok(ret)
