@@ -57,4 +57,41 @@ TEST(TWAnySignerAptos, TxSign) {
     assertJSONEqual(expectedJson, parsedJson);
 }
 
+TEST(TWAnySignerAptos, TxSignWithABI) {
+    // Successfully broadcasted https://explorer.aptoslabs.com/txn/0x4eb6a65b1453e3f224d92b07aa8bf51eaa8b3f5bb5172cf28ebe62b527ae1010/payload?network=mainnet
+    Proto::SigningInput input;
+    input.set_sender("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
+    input.set_sequence_number(66);
+    input.set_max_gas_amount(100011);
+    input.set_gas_unit_price(100);
+    input.set_expiration_timestamp_secs(3664390082);
+    input.set_chain_id(1);
+    input.set_any_encoded(R"(
+        {
+            "function": "0x9770fa9c725cbd97eb50b2be5f7416efdfd1f1554beb0750d4dae4c64e860da3::controller::deposit",
+            "type_arguments": [
+                "0x1::aptos_coin::AptosCoin"
+            ],
+            "arguments": [
+                "0x4d61696e204163636f756e74",
+                "10000000",
+                false
+            ],
+            "type": "entry_function_payload"
+        }
+    )");
+    input.set_abi(R"([
+        "vector<u8>",
+        "u64",
+        "bool"
+    ])");
+    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeAptos);
+    ASSERT_EQ(hex(output.raw_txn()), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f304200000000000000029770fa9c725cbd97eb50b2be5f7416efdfd1f1554beb0750d4dae4c64e860da30a636f6e74726f6c6c6572076465706f736974010700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e00030d0c4d61696e204163636f756e740880969800000000000100ab860100000000006400000000000000c2276ada0000000001");
+    ASSERT_EQ(hex(output.authenticator().signature()), "9f9a5a075b643ed7f2f8c6afb492dc384ad0b9600645ece7394e0060b14d440c9103bd00cc50f22c473c21ff3a7f0475d8600b19c83184b71722f0d3f8472903");
+    ASSERT_EQ(hex(output.encoded()), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f304200000000000000029770fa9c725cbd97eb50b2be5f7416efdfd1f1554beb0750d4dae4c64e860da30a636f6e74726f6c6c6572076465706f736974010700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e00030d0c4d61696e204163636f756e740880969800000000000100ab860100000000006400000000000000c2276ada00000000010020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c409f9a5a075b643ed7f2f8c6afb492dc384ad0b9600645ece7394e0060b14d440c9103bd00cc50f22c473c21ff3a7f0475d8600b19c83184b71722f0d3f8472903");
+}
+
 } // namespace TW::Aptos::tests
