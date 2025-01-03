@@ -164,10 +164,7 @@ fn parse_argument(val: &str, abi_str: &str) -> EncodingResult<TransactionArgumen
     })
 }
 
-fn parse_vector_argument(
-    val_str: &str,
-    layout: MoveType,
-) -> EncodingResult<TransactionArgument> {
+fn parse_vector_argument(val_str: &str, layout: MoveType) -> EncodingResult<TransactionArgument> {
     let val = serde_json::to_value(val_str).map_err(|_| EncodingError::InvalidInput)?;
     if matches!(layout, MoveType::U8) {
         Ok(TransactionArgument::U8Vector(
