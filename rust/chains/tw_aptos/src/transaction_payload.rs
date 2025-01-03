@@ -157,7 +157,7 @@ fn parse_argument(val: &str, abi_str: &str) -> EncodingResult<TransactionArgumen
         MoveType::Address => TransactionArgument::Address(
             AccountAddress::from_hex_literal(val).map_err(|_| EncodingError::InvalidInput)?,
         ),
-        MoveType::Vector { items } => parse_vector_argument(val, items)?,
+        MoveType::Vector { items } => parse_vector_argument(val, *items)?,
         _ => {
             return Err(EncodingError::InvalidInput);
         },
@@ -166,10 +166,10 @@ fn parse_argument(val: &str, abi_str: &str) -> EncodingResult<TransactionArgumen
 
 fn parse_vector_argument(
     val_str: &str,
-    layout: Box<MoveType>,
+    layout: MoveType,
 ) -> EncodingResult<TransactionArgument> {
     let val = serde_json::to_value(val_str).map_err(|_| EncodingError::InvalidInput)?;
-    if matches!(*layout, MoveType::U8) {
+    if matches!(layout, MoveType::U8) {
         Ok(TransactionArgument::U8Vector(
             val_str
                 .decode_hex()
