@@ -8,7 +8,6 @@ use crate::modules::proto_builder::ProtoBuilder;
 use crate::modules::tx_signer::TxSigner;
 use crate::SOLANA_ALPHABET;
 use std::borrow::Cow;
-use std::collections::HashMap;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::error::prelude::*;
@@ -79,12 +78,13 @@ impl SolanaCompiler {
         }
 
         let builder = MessageBuilder::new(input);
-        let external_signatures = builder.external_signatures()?;
+        // `key_signs` is pre-initialized with external signatures present in the raw transaction already.
+        // Later, this will be extended with the `signatures` provided by the user.
+        let mut key_signs = builder.external_signatures()?;
         let unsigned_msg = builder.build()?;
         let data_to_sign = TxSigner::preimage_versioned(&unsigned_msg)?;
 
         // Verify the given signatures and collect the key-signature map.
-        let mut key_signs: HashMap<SolanaAddress, ed25519::Signature> = HashMap::default();
         for (sign, pubkey) in signatures.iter().zip(public_keys.iter()) {
             let signature = ed25519::Signature::try_from(sign.as_slice())?;
             let pubkey = ed25519::sha512::PublicKey::try_from(pubkey.as_slice())?;
@@ -99,12 +99,7 @@ impl SolanaCompiler {
             key_signs.insert(SolanaAddress::with_public_key_ed25519(&pubkey), signature);
         }
 
-        // Combine the external signatures and the given signatures.
-        // The given signatures will override the external signatures if they have the same key.
-        let mut final_key_signs = external_signatures.clone();
-        final_key_signs.extend(key_signs.clone());
-
-        let signed_tx = TxSigner::compile_versioned(unsigned_msg, final_key_signs)?;
+        let signed_tx = TxSigner::compile_versioned(unsigned_msg, key_signs)?;
 
         let signed_encoded = bincode::serialize(&signed_tx)
             .tw_err(|_| SigningErrorType::Error_internal)
