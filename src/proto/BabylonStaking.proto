@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package TW.BabylonStaking.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Public key and corresponding signature.
+message PublicKeySignature {
+    // Public key bytes. Can be either compressed (33 bytes) or x-only (32 bytes).
+    bytes public_key = 1;
+    // Signature 64-length byte array.
+    bytes signature = 2;
+}
+
+message StakingInfo {
+    // User's public key.
+    bytes staker_public_key = 1;
+    // Finality provider's public key chosen by the user.
+    bytes finality_provider_public_key = 2;
+    // Staking Output's lock time.
+    // Equal to `global_parameters.staking_time` when creating a Staking transaction.
+    // or `global_parameters.unbonding_time` when creating an Unbonding transaction.
+    uint32 staking_time = 3;
+    // Retrieved from global_parameters.covenant_pks.
+    // Babylon nodes that can approve Unbonding tx or Slash the staked position when acting bad.
+    repeated bytes covenant_committee_public_keys = 4;
+    // Retrieved from global_parameters.covenant_quorum.
+    // Specifies the quorum required by the covenant committee for unbonding transactions to be confirmed.
+    uint32 covenant_quorum = 5;
+}
+
+message InputBuilder {
+    // Spend a Staking Output via timelock path (staking time expired).
+    // In other words, create a Withdraw transaction.
+    message StakingTimelockPath {
+        StakingInfo params = 1;
+    }
+
+    // Spend a Staking Output via unbonding path.
+    // In other words, create an Unbonding transaction.
+    message StakingUnbondingPath {
+        StakingInfo params = 1;
+        // Signatures signed by covenant committees.
+        // There can be less signatures than covenant public keys, but not less than `covenant_quorum`.
+        repeated PublicKeySignature covenant_committee_signatures = 2;
+    }
+
+    // Spend a Staking Output via slashing path.
+    // Slashing path is only used in [ExpressOfInterest](https://github.com/babylonlabs-io/babylon-proto-ts/blob/ef42d04959b326849fe8c9773ab23802573ad407/src/generated/babylon/btcstaking/v1/tx.ts#L61).
+    // In other words, generate an unsigned Slashing transaction, pre-sign the staker's signature only and share to Babylon PoS chain.
+    message StakingSlashingPath {
+        StakingInfo params = 1;
+        // Empty in most of the cases. Staker's signature can be calculated without the fp signature.
+        PublicKeySignature finality_provider_signature = 2;
+    }
+
+    // Spend an Unbonding Output via timelock path (unbonding time expired).
+    // In other words, create a Withdraw transaction spending an Unbonding transaction.
+    message UnbondingTimelockPath {
+        StakingInfo params = 1;
+    }
+
+    // Spend an Unbonding Output via slashing path.
+    // Slashing path is only used in [ExpressOfInterest](https://github.com/babylonlabs-io/babylon-proto-ts/blob/ef42d04959b326849fe8c9773ab23802573ad407/src/generated/babylon/btcstaking/v1/tx.ts#L61).
+    // In other words, generate an unsigned Slashing transaction, pre-sign the staker's signature only and share to Babylon PoS chain.
+    message UnbondingSlashingPath {
+        StakingInfo params = 1;
+        // Empty in most of the cases. Staker's signature can be calculated without the fp signature.
+        PublicKeySignature finality_provider_signature = 2;
+    }
+}
+
+message OutputBuilder {
+    // Create a Staking Output.
+    message StakingOutput {
+        StakingInfo params = 1;
+    }
+
+    // Create an Unbonding Output.
+    message UnbondingOutput {
+        StakingInfo params = 1;
+    }
+
+    // Creates an OP_RETURN output used to identify the staking transaction among other transactions in the Bitcoin ledger.
+    message OpReturn {
+        // Retrieved from global_parameters.Tag.
+        bytes tag = 1;
+        // User's public key.
+        bytes staker_public_key = 2;
+        // Finality provider's public key chosen by the user.
+        bytes finality_provider_public_key = 3;
+        // global_parameters.min_staking_time <= staking_time <= global_parameters.max_staking_time.
+        uint32 staking_time = 4;
+    }
+}

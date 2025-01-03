@@ -3,6 +3,7 @@ syntax = "proto3";
 package TW.BitcoinV2.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "BabylonStaking.proto";
 import "Common.proto";
 
 enum InputSelector {
@@ -24,6 +25,14 @@ message PublicKeyOrHash {
         // Public key hash.
         bytes hash = 2;
     }
+}
+
+// Public key and corresponding signature.
+message PublicKeySignature {
+    // Public key bytes. Type of the public key depends on the context.
+    bytes public_key = 1;
+    // Signature 64-length byte array.
+    bytes signature = 2;
 }
 
 // Bitcoin transaction out-point reference.
@@ -96,6 +105,21 @@ message Input {
 
             // Create a BRC20 inscription.
             InputBrc20Inscription brc20_inscribe = 9;
+            // Spend a Staking Output via timelock path (staking time expired).
+            // In other words, create a Withdraw transaction.
+            BabylonStaking.Proto.InputBuilder.StakingTimelockPath babylon_staking_timelock_path = 15;
+            // Spend a Staking Output via unbonding path.
+            // In other words, create an Unbonding transaction.
+            BabylonStaking.Proto.InputBuilder.StakingUnbondingPath babylon_staking_unbonding_path = 16;
+            // Spend a Staking Output via slashing path.
+            // In other words, generate an unsigned slashing transaction, pre-sign the staker's signature only and share to Babylon PoS chain.
+            BabylonStaking.Proto.InputBuilder.StakingSlashingPath babylon_staking_slashing_path = 17;
+            // Spend an Unbonding Output via timelock path (unbonding time expired).
+            // In other words, create a Withdraw transaction spending an Unbonding transaction.
+            BabylonStaking.Proto.InputBuilder.UnbondingTimelockPath babylon_unbonding_timelock_path = 18;
+            // Spend an Unbonding Output via slashing path.
+            // In other words, generate an unsigned Slashing transaction, pre-sign the staker's signature only and share to Babylon PoS chain.
+            BabylonStaking.Proto.InputBuilder.UnbondingSlashingPath babylon_unbonding_slashing_path = 19;
         }
     }
 
@@ -149,6 +173,12 @@ message Output {
             OutputBrc20Inscription brc20_inscribe = 9;
             // OP_RETURN output. In most cases, with a zero-amount.
             bytes op_return = 12;
+            // Create a Babylon `Staking` output.
+            BabylonStaking.Proto.OutputBuilder.StakingOutput babylon_staking = 15;
+            // Create a Babylon `Unbonding` output.
+            BabylonStaking.Proto.OutputBuilder.UnbondingOutput babylon_unbonding = 16;
+            // Create a Babylon `Staking` OP_RETURN output.
+            BabylonStaking.Proto.OutputBuilder.OpReturn babylon_staking_op_return = 17;
         }
     }
 

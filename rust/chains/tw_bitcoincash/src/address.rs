@@ -7,7 +7,7 @@ use std::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::prelude::{AddressError, AddressResult};
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::prefix::BitcoinBase58Prefix;
 use tw_keypair::ecdsa;
 use tw_memory::Data;

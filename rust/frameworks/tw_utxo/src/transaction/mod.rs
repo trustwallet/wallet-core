@@ -52,10 +52,14 @@ pub struct UtxoTaprootPreimageArgs {
 pub struct UtxoToSign {
     /// Original `scriptPubkey` specified in the unspent transaction output.
     /// May be the same or different from [`UtxoToSign::script_pubkey`].
+    /// Used to compute P2TR scriptHash.
     pub prevout_script_pubkey: Script,
     /// `scriptPubkey` with which the UTXO needs to be signed.
-    /// For example, if [`UtxoToSign::original_script_pubkey`] is P2WPKH, then [`UtxoToSign::script_pubkey`] will be P2PKH.
-    pub script_pubkey: Script,
+    /// For example, if [`UtxoToSign::original_script_pubkey`] is P2WPKH, then [`UtxoToSign::reveal_script_pubkey`] will be P2PKH.
+    pub reveal_script_pubkey: Script,
+    /// Taproot script pubkey used to calculate sighash when signing this UTXO.
+    /// If not set, [`UtxoToSign::prevout_script_pubkey`] used instead.
+    pub taproot_reveal_script_pubkey: Option<Script>,
     pub signing_method: SigningMethod,
     pub spending_data_constructor: SpendingDataConstructor,
     pub spender_public_key: Data,
