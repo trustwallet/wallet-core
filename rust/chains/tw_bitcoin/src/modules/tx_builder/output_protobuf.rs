@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::babylon::proto_builder::output_protobuf::BabylonOutputProtobuf;
 use crate::modules::tx_builder::BitcoinChainInfo;
 use std::marker::PhantomData;
 use std::str::FromStr;
@@ -50,6 +51,11 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
                 },
                 BuilderType::brc20_inscribe(ref inscription) => self.brc20_inscribe(inscription),
                 BuilderType::op_return(ref data) => self.op_return(data),
+                BuilderType::babylon_staking(ref staking) => self.babylon_staking(staking),
+                BuilderType::babylon_staking_op_return(ref op_return) => {
+                    self.babylon_staking_op_return(op_return)
+                },
+                BuilderType::babylon_unbonding(ref unbonding) => self.babylon_unbonding(unbonding),
                 BuilderType::None => SigningError::err(SigningErrorType::Error_invalid_params)
                     .context("No Output Builder type provided"),
             },

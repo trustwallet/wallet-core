@@ -65,7 +65,7 @@ where
 
                 let utxo_args = UtxoPreimageArgs {
                     input_index: signing_input_index,
-                    script_pubkey: utxo.script_pubkey.clone(),
+                    script_pubkey: utxo.reveal_script_pubkey.clone(),
                     amount: utxo.amount,
                     // TODO move `leaf_hash_code_separator` to `UtxoTaprootPreimageArgs`.
                     leaf_hash_code_separator: utxo.leaf_hash_code_separator,
@@ -91,15 +91,14 @@ where
                             .input_args()
                             .iter()
                             .enumerate()
-                            .map(|(i, utxo)| {
-                                if i == signing_input_index {
-                                    // Use the scriptPubkey required to spend this UTXO.
-                                    utxo.script_pubkey.clone()
-                                } else {
-                                    // Use the original scriptPubkey declared in the unspent output for other UTXOs
-                                    // (different from that we sign at this iteration).
-                                    utxo.prevout_script_pubkey.clone()
-                                }
+                            .map(|(i, utxo)| match utxo.taproot_reveal_script_pubkey {
+                                // Use the scriptPubkey required to spend this UTXO.
+                                Some(ref tr_reveal_script) if i == signing_input_index => {
+                                    tr_reveal_script.clone()
+                                },
+                                // Use the original scriptPubkey declared in the unspent output for other UTXOs
+                                // (different from that we sign at this iteration).
+                                _ => utxo.prevout_script_pubkey.clone(),
                             })
                             .collect();
 
