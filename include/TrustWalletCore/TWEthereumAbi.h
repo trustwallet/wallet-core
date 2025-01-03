@@ -113,4 +113,11 @@ TWString* _Nullable TWEthereumAbiDecodeCall(TWData* _Nonnull data, TWString* _No
 TW_EXPORT_STATIC_METHOD
 TWData* _Nonnull TWEthereumAbiEncodeTyped(TWString* _Nonnull messageJson);
 
+/// Get function signature from Ethereum ABI json
+///
+/// \param abi The function ABI json string, for example: {"inputs":[{"internalType":"bool","name":"arg1","type":"bool"}],"name":"fun1","outputs":[],"stateMutability":"nonpayable","type":"function"}
+/// \return the function type signature, of the form "baz(int32,uint256)", null if the abi is invalid.
+TW_EXPORT_STATIC_METHOD
+TWString* _Nullable TWEthereumAbiGetFunctionSignature(TWString* _Nonnull abi);
+
 TW_EXTERN_C_END
