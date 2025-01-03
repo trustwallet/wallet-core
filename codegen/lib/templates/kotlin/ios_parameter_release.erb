@@ -1,0 +1,23 @@
+<%
+    method = locals[:method]
+    more_index = locals[:more_index] || 0
+
+    method.parameters.each do |param|  -%>
+<%    if param.type.name == :data -%>
+<%      if param.type.is_nullable -%>
+<%= ' ' * more_index %>        if (<%= KotlinHelper.fix_name(param.name) %>Data != null) {
+<%= ' ' * more_index %>            TWDataDelete(<%= KotlinHelper.fix_name(param.name) %>Data)
+<%= ' ' * more_index %>        }
+<%      else -%>
+<%= ' ' * more_index %>        TWDataDelete(<%= KotlinHelper.fix_name(param.name) %>Data)
+<%      end -%>
+<%    elsif param.type.name == :string -%>
+<%      if param.type.is_nullable -%>
+<%= ' ' * more_index %>        if (<%= KotlinHelper.fix_name(param.name) %>String != null) {
+<%= ' ' * more_index %>            TWStringDelete(<%= KotlinHelper.fix_name(param.name) %>String)
+<%= ' ' * more_index %>        }
+<%      else -%>
+<%= ' ' * more_index %>        TWStringDelete(<%= KotlinHelper.fix_name(param.name) %>String)
+<%      end -%>
+<%    end -%>
+<%  end -%>
