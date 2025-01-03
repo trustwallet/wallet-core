@@ -10,6 +10,7 @@ use crate::error::prelude::*;
 pub enum AddressPrefix {
     Hrp(String),
     BitcoinBase58(BitcoinBase58Prefix),
+    SubstrateNetwork(u16),
 }
 
 /// A blockchain's address prefix should be convertable from an `AddressPrefix`.

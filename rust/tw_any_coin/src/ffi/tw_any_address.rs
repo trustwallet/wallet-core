@@ -81,6 +81,27 @@ pub unsafe extern "C" fn tw_any_address_is_valid_base58(
     AnyAddress::is_valid(coin, string, Some(prefix))
 }
 
+/// Determines if the string is a valid Any address with the given SS58 prefixes.
+///
+/// \param string address to validate.
+/// \param coin coin type of the address.
+/// \param ss58 ss58 address prefix.
+/// \return bool indicating if the address is valid.
+#[no_mangle]
+pub unsafe extern "C" fn tw_any_address_is_valid_ss58(
+    string: *const TWString,
+    coin: u32,
+    ss58: u16,
+) -> bool {
+    let string = try_or_false!(TWString::from_ptr_as_ref(string));
+    let string = try_or_false!(string.as_str());
+
+    let coin = try_or_false!(CoinType::try_from(coin));
+
+    let prefix = AddressPrefix::SubstrateNetwork(ss58);
+    AnyAddress::is_valid(coin, string, Some(prefix))
+}
+
 /// Creates an address from a string representation and a coin type. Must be deleted with `TWAnyAddressDelete` after use.
 ///
 /// \param string address to create.
@@ -169,6 +190,32 @@ pub unsafe extern "C" fn tw_any_address_create_base58_with_public_key(
     let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
 
     let prefix = AddressPrefix::BitcoinBase58(BitcoinBase58Prefix { p2pkh, p2sh });
+    AnyAddress::with_public_key(
+        coin,
+        public_key.as_ref().clone(),
+        Derivation::default(),
+        Some(prefix),
+    )
+    .map(|any_address| TWAnyAddress(any_address).into_ptr())
+    .unwrap_or_else(|_| std::ptr::null_mut())
+}
+
+/// Creates an SS58 Substrate address from a public key and a given ss58 prefix.
+///
+/// \param public_key derivates the address from the public key.
+/// \param coin coin type of the address.
+/// \param ss58 SS58 address prefix.
+/// \return TWAnyAddress pointer or nullptr if public key is invalid.
+#[no_mangle]
+pub unsafe extern "C" fn tw_any_address_create_ss58_with_public_key(
+    public_key: *mut TWPublicKey,
+    coin: u32,
+    ss58: u16,
+) -> *mut TWAnyAddress {
+    let public_key = try_or_else!(TWPublicKey::from_ptr_as_ref(public_key), std::ptr::null_mut);
+    let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
+
+    let prefix = AddressPrefix::SubstrateNetwork(ss58);
     AnyAddress::with_public_key(
         coin,
         public_key.as_ref().clone(),

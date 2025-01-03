@@ -46,6 +46,11 @@ impl CoinContext for CoinRegistryContext {
     }
 
     #[inline]
+    fn ss58_prefix(&self) -> Option<u16> {
+        self.item.ss58_prefix
+    }
+
+    #[inline]
     fn derivations(&self) -> &[DerivationWithPath] {
         &self.item.derivation
     }

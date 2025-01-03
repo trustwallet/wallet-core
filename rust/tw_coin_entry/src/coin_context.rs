@@ -23,6 +23,9 @@ pub trait CoinContext {
     /// Optional p2sh prefix (Bitcoin specific).
     fn p2sh_prefix(&self) -> Option<u8>;
 
+    /// Optional ss58 prefix (Substrate specific).
+    fn ss58_prefix(&self) -> Option<u16>;
+
     /// Returns coin derivations.
     fn derivations(&self) -> &[DerivationWithPath];
 }

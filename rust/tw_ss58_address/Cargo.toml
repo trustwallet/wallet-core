@@ -1,0 +1,13 @@
+[package]
+name = "tw_ss58_address"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+tw_coin_entry = { path = "../tw_coin_entry" }
+tw_encoding = { path = "../tw_encoding" }
+tw_hash = { path = "../tw_hash" }
+tw_keypair = { path = "../tw_keypair" }
+tw_memory = { path = "../tw_memory" }
+tw_scale = { path = "../tw_scale" }
