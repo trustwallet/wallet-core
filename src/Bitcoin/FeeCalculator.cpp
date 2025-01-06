@@ -4,6 +4,7 @@
 
 #include "FeeCalculator.h"
 
+#include <algorithm>
 #include <cmath>
 
 using namespace TW;
@@ -49,8 +50,9 @@ static constexpr DecredFeeCalculator decredFeeCalculator{};
 static constexpr DecredFeeCalculator decredFeeCalculatorNoDustFilter(true);
 static constexpr SegwitFeeCalculator segwitFeeCalculator{};
 static constexpr SegwitFeeCalculator segwitFeeCalculatorNoDustFilter(true);
+static constexpr Zip0317FeeCalculator zip0317FeeCalculator{};
 
-const FeeCalculator& getFeeCalculator(TWCoinType coinType, bool disableFilter) noexcept {
+const FeeCalculator& getFeeCalculator(TWCoinType coinType, bool disableFilter, bool zip0317) noexcept {
     switch (coinType) {
     case TWCoinTypeDecred:
         if (disableFilter) {
@@ -71,12 +73,27 @@ const FeeCalculator& getFeeCalculator(TWCoinType coinType, bool disableFilter) n
         }
         return segwitFeeCalculator;
 
+    case TWCoinTypeZcash:
+    case TWCoinTypeKomodo:
+    case TWCoinTypeZelcash:
+        if (zip0317) {
+            return zip0317FeeCalculator;
+        }
+        return defaultFeeCalculator;
+
     default:
         if (disableFilter) {
             return defaultFeeCalculatorNoDustFilter;
         }
         return defaultFeeCalculator;
     }
+}
+
+// https://github.com/Zondax/ledger-zcash-tools/blob/5ecf1c04c69d2454b73aa7acea4eadda563dfeff/ledger-zcash-app-builder/src/txbuilder.rs#L342-L363
+int64_t Zip0317FeeCalculator::calculate(int64_t inputs, int64_t outputs, [[maybe_unused]] int64_t byteFee) const noexcept {
+    const auto logicalActions = std::max(inputs, outputs);
+    const auto actions = std::max(gGraceActions, logicalActions);
+    return gMarginalFee * actions;
 }
 
 } // namespace TW::Bitcoin
