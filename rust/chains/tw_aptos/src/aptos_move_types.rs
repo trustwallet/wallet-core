@@ -2,9 +2,106 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use move_core_types::{language_storage::TypeTag, parser::parse_type_tag};
+use move_core_types::{account_address::AccountAddress, identifier::Identifier, language_storage::{StructTag, TypeTag}, parser::parse_type_tag};
 use std::str::FromStr;
+use serde::{Serialize, Deserialize};
 use tw_encoding::EncodingError;
+
+/// The address of an account
+///
+/// This is represented in a string as a 64 character hex string, sometimes
+/// shortened by stripping leading 0s, and adding a 0x.
+#[derive(Copy, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub struct Address(AccountAddress);
+
+impl From<AccountAddress> for Address {
+    fn from(address: AccountAddress) -> Self {
+        Self(address)
+    }
+}
+
+impl From<Address> for AccountAddress {
+    fn from(address: Address) -> Self {
+        address.0
+    }
+}
+
+impl From<&Address> for AccountAddress {
+    fn from(address: &Address) -> Self {
+        address.0
+    }
+}
+
+/// A wrapper of a Move identifier
+#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize, Deserialize)]
+pub struct IdentifierWrapper(pub Identifier);
+
+impl From<IdentifierWrapper> for Identifier {
+    fn from(value: IdentifierWrapper) -> Identifier {
+        value.0
+    }
+}
+
+impl From<Identifier> for IdentifierWrapper {
+    fn from(value: Identifier) -> IdentifierWrapper {
+        Self(value)
+    }
+}
+
+impl From<&Identifier> for IdentifierWrapper {
+    fn from(value: &Identifier) -> IdentifierWrapper {
+        Self(value.clone())
+    }
+}
+
+/// A Move struct tag for referencing an onchain struct type
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct MoveStructTag {
+    pub address: Address,
+    pub module: IdentifierWrapper,
+    pub name: IdentifierWrapper,
+    /// Generic type parameters associated with the struct
+    pub generic_type_params: Vec<MoveType>,
+}
+
+impl From<StructTag> for MoveStructTag {
+    fn from(tag: StructTag) -> Self {
+        Self {
+            address: tag.address.into(),
+            module: tag.module.into(),
+            name: tag.name.into(),
+            generic_type_params: tag.type_params.into_iter().map(MoveType::from).collect(),
+        }
+    }
+}
+
+impl From<&StructTag> for MoveStructTag {
+    fn from(tag: &StructTag) -> Self {
+        Self {
+            address: tag.address.into(),
+            module: IdentifierWrapper::from(&tag.module),
+            name: IdentifierWrapper::from(&tag.name),
+            generic_type_params: tag.type_params.iter().map(MoveType::from).collect(),
+        }
+    }
+}
+
+impl TryFrom<MoveStructTag> for StructTag {
+    type Error = EncodingError;
+
+    fn try_from(tag: MoveStructTag) -> Result<Self, Self::Error> {
+        Ok(Self {
+            address: tag.address.into(),
+            module: tag.module.into(),
+            name: tag.name.into(),
+            type_params: tag
+                .generic_type_params
+                .into_iter()
+                .map(|p| p.try_into())
+                .collect::<Result<Vec<TypeTag>, Self::Error>>()?,
+        })
+    }
+}
 
 /// An enum of Move's possible types on-chain
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -25,8 +122,14 @@ pub enum MoveType {
     U256,
     /// A 32-byte account address
     Address,
+    /// An account signer
+    Signer,
     /// A Vector of [`MoveType`]
     Vector { items: Box<MoveType> },
+    /// A struct of [`MoveStructTag`]
+    Struct(MoveStructTag),
+    /// A generic type param with index
+    GenericTypeParam { index: u16 },
     /// A reference
     Reference { mutable: bool, to: Box<MoveType> },
     /// A move type that couldn't be parsed
@@ -79,10 +182,11 @@ impl From<TypeTag> for MoveType {
             TypeTag::U256 => MoveType::U256,
             TypeTag::U128 => MoveType::U128,
             TypeTag::Address => MoveType::Address,
+            TypeTag::Signer => MoveType::Signer,
             TypeTag::Vector(v) => MoveType::Vector {
                 items: Box::new(MoveType::from(*v)),
             },
-            _ => MoveType::Unparsable(tag.to_string()),
+            TypeTag::Struct(v) => MoveType::Struct((*v).into()),
         }
     }
 }
@@ -98,10 +202,11 @@ impl From<&TypeTag> for MoveType {
             TypeTag::U128 => MoveType::U128,
             TypeTag::U256 => MoveType::U256,
             TypeTag::Address => MoveType::Address,
+            TypeTag::Signer => MoveType::Signer,
             TypeTag::Vector(v) => MoveType::Vector {
                 items: Box::new(MoveType::from(v.as_ref())),
             },
-            _ => MoveType::Unparsable(tag.to_string()),
+            TypeTag::Struct(v) => MoveType::Struct((&**v).into()),
         }
     }
 }
@@ -119,7 +224,10 @@ impl TryFrom<MoveType> for TypeTag {
             MoveType::U128 => TypeTag::U128,
             MoveType::U256 => TypeTag::U256,
             MoveType::Address => TypeTag::Address,
+            MoveType::Signer => TypeTag::Signer,
             MoveType::Vector { items } => TypeTag::Vector(Box::new((*items).try_into()?)),
+            MoveType::Struct(v) => TypeTag::Struct(Box::new(v.try_into()?)),
+            MoveType::GenericTypeParam { index: _ } => TypeTag::Address, // Dummy type, allows for Object<T>
             _ => {
                 return Err(EncodingError::InvalidInput);
             },

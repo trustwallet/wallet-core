@@ -3,13 +3,15 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::aptos_move_types::MoveType;
+use crate::constants::{OBJECT_MODULE, OBJECT_STRUCT};
 use crate::serde_helper::vec_bytes;
 use move_core_types::account_address::AccountAddress;
 use move_core_types::identifier::Identifier;
-use move_core_types::language_storage::{ModuleId, StructTag, TypeTag};
+use move_core_types::language_storage::{ModuleId, StructTag, TypeTag, CORE_CODE_ADDRESS};
 use move_core_types::parser::parse_transaction_argument;
 use move_core_types::transaction_argument::TransactionArgument;
 use move_core_types::u256;
+use move_core_types::value::{MoveStruct, MoveStructLayout, MoveTypeLayout, MoveValue};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::default::Default;
@@ -88,15 +90,14 @@ impl EntryFunction {
                 let arg_str = element.to_string();
                 let arg_str = arg_str.trim_start_matches('"').trim_end_matches('"');
 
-                let arg = if let Some(abi_str) = get_abi_str(index) {
-                    let abi_str = abi_str.trim_start_matches('"').trim_end_matches('"');
-                    parse_argument(arg_str, abi_str)
-                        .map_err(|_| EntryFunctionError::InvalidArguments)?
+                if let Some(abi_str) = get_abi_str(index) {
+                    let arg = convert_to_move_value(&abi_str, element.clone())?;
+                    bcs::encode(&arg).map_err(EntryFunctionError::from)
                 } else {
-                    parse_transaction_argument(arg_str)
-                        .map_err(|_| EntryFunctionError::InvalidArguments)?
-                };
-                serialize_argument(&arg).map_err(EntryFunctionError::from)
+                    let arg = parse_transaction_argument(arg_str)
+                        .map_err(|_| EntryFunctionError::InvalidArguments)?;
+                    serialize_argument(&arg).map_err(EntryFunctionError::from)
+                }
             })
             .collect::<EntryFunctionResult<Vec<Data>>>()?;
 
@@ -122,65 +123,207 @@ impl EntryFunction {
     }
 }
 
-fn parse_argument(val: &str, abi_str: &str) -> EncodingResult<TransactionArgument> {
+fn convert_to_move_value(abi_str: &str, element: Value) -> EntryFunctionResult<MoveValue> {
     let move_type: MoveType = abi_str
-        .parse::<MoveType>()
-        .map_err(|_| EncodingError::InvalidInput)?;
-    Ok(match move_type {
-        MoveType::Bool => TransactionArgument::Bool(
-            val.parse::<bool>()
-                .map_err(|_| EncodingError::InvalidInput)?,
-        ),
-        MoveType::U8 => {
-            TransactionArgument::U8(val.parse::<u8>().map_err(|_| EncodingError::InvalidInput)?)
+        .parse()
+        .map_err(|_| EntryFunctionError::InvalidTypeArguments)?;
+    let type_tag: TypeTag = move_type.try_into().map_err(|_| EntryFunctionError::InvalidTypeArguments)?;
+    let layout = match type_tag {
+        TypeTag::Struct(ref boxed_struct) => {
+            // The current framework can't handle generics, so we handle this here
+            if boxed_struct.address == AccountAddress::ONE
+                && boxed_struct.module.as_ident_str() == OBJECT_MODULE
+                && boxed_struct.name.as_ident_str() == OBJECT_STRUCT
+            {
+                // Objects are just laid out as an address
+                MoveTypeLayout::Address
+            } else {
+                // For all other structs, use their set layout
+                build_type_layout(&type_tag)?
+            }
         },
-        MoveType::U16 => TransactionArgument::U16(
-            val.parse::<u16>()
+        _ => build_type_layout(&type_tag)?,
+    };
+    parse_argument(&layout, element)
+        .map_err(|_| EntryFunctionError::InvalidArguments)
+}
+
+fn build_type_layout(t: &TypeTag) -> EncodingResult<MoveTypeLayout> {
+    use TypeTag::*;
+    Ok(match t {
+        Bool => MoveTypeLayout::Bool,
+        U8 => MoveTypeLayout::U8,
+        U64 => MoveTypeLayout::U64,
+        U128 => MoveTypeLayout::U128,
+        Address => MoveTypeLayout::Address,
+        Vector(elem_t) => MoveTypeLayout::Vector(Box::new(build_type_layout(elem_t)?)),
+        Struct(s) => MoveTypeLayout::Struct(build_struct_layout(s)?),
+        U16 => MoveTypeLayout::U16,
+        U32 => MoveTypeLayout::U32,
+        U256 => MoveTypeLayout::U256,
+        Signer => Err(EncodingError::InvalidInput)?,
+    })
+}
+
+fn build_struct_layout(s: &StructTag) -> EncodingResult<MoveStructLayout> {
+    let type_arguments = s
+        .type_params
+        .iter()
+        .map(build_type_layout)
+        .collect::<EncodingResult<Vec<MoveTypeLayout>>>()?;
+    if type_arguments.is_empty() {
+        Ok(MoveStructLayout::WithTypes {
+            type_: s.clone(),
+            fields: vec![],
+        })
+    } else {
+        Ok(MoveStructLayout::Runtime(type_arguments))
+    }
+}
+
+fn parse_argument(layout: &MoveTypeLayout, val: Value) -> EncodingResult<MoveValue> {
+    let val_str = val
+        .to_string()
+        .trim_start_matches('"')
+        .trim_end_matches('"')
+        .to_string();
+    Ok(match layout {
+        MoveTypeLayout::Bool => MoveValue::Bool(
+            val_str
+                .parse::<bool>()
                 .map_err(|_| EncodingError::InvalidInput)?,
         ),
-        MoveType::U32 => TransactionArgument::U32(
-            val.parse::<u32>()
+        MoveTypeLayout::U8 => MoveValue::U8(
+            val_str
+                .parse::<u8>()
                 .map_err(|_| EncodingError::InvalidInput)?,
         ),
-        MoveType::U64 => TransactionArgument::U64(
-            val.parse::<u64>()
+        MoveTypeLayout::U16 => MoveValue::U16(
+            val_str
+                .parse::<u16>()
                 .map_err(|_| EncodingError::InvalidInput)?,
         ),
-        MoveType::U128 => TransactionArgument::U128(
-            val.parse::<u128>()
+        MoveTypeLayout::U32 => MoveValue::U32(
+            val_str
+                .parse::<u32>()
                 .map_err(|_| EncodingError::InvalidInput)?,
         ),
-        MoveType::U256 => TransactionArgument::U256(
-            val.parse::<u256::U256>()
+        MoveTypeLayout::U64 => MoveValue::U64(
+            val_str
+                .parse::<u64>()
                 .map_err(|_| EncodingError::InvalidInput)?,
         ),
-        MoveType::Address => TransactionArgument::Address(
-            AccountAddress::from_hex_literal(val).map_err(|_| EncodingError::InvalidInput)?,
+        MoveTypeLayout::U128 => MoveValue::U128(
+            val_str
+                .parse::<u128>()
+                .map_err(|_| EncodingError::InvalidInput)?,
         ),
-        MoveType::Vector { items } => parse_vector_argument(val, *items)?,
-        _ => {
+        MoveTypeLayout::U256 => MoveValue::U256(
+            val_str
+                .parse::<u256::U256>()
+                .map_err(|_| EncodingError::InvalidInput)?,
+        ),
+        MoveTypeLayout::Address => MoveValue::Address(
+            val_str
+                .parse::<AccountAddress>()
+                .map_err(|_| EncodingError::InvalidInput)?,
+        ),
+        MoveTypeLayout::Vector(item_layout) => parse_vector_argument(item_layout.as_ref(), val)?,
+        MoveTypeLayout::Struct(struct_layout) => parse_struct_argument(struct_layout, val)?,
+        // Some values, e.g., signer or ones with custom serialization
+        // (native), are not stored to storage and so we do not expect
+        // to see them here.
+        MoveTypeLayout::Signer => {
             return Err(EncodingError::InvalidInput);
         },
     })
 }
 
-fn parse_vector_argument(val_str: &str, layout: MoveType) -> EncodingResult<TransactionArgument> {
-    let val = serde_json::to_value(val_str).map_err(|_| EncodingError::InvalidInput)?;
-    if matches!(layout, MoveType::U8) {
-        Ok(TransactionArgument::U8Vector(
-            val_str
+fn parse_vector_argument(layout: &MoveTypeLayout, val: Value) -> EncodingResult<MoveValue> {
+    if matches!(layout, MoveTypeLayout::U8) {
+        Ok(MoveValue::Vector(
+            val.as_str()
+                .ok_or(EncodingError::InvalidInput)?
                 .decode_hex()
-                .map_err(|_| EncodingError::InvalidInput)?,
+                .map_err(|_| EncodingError::InvalidInput)?
+                .into_iter()
+                .map(MoveValue::U8)
+                .collect::<Vec<_>>(),
         ))
-    } else if let Value::Array(list) = val {
-        let vals = list
-            .into_iter()
-            .map(|v| serde_json::from_value::<u8>(v).map_err(|_| EncodingError::InvalidInput))
-            .collect::<EncodingResult<_>>()?;
-        Ok(TransactionArgument::U8Vector(vals))
+    } else {
+        let val = trim_if_needed(val)?;
+        if let Value::Array(list) = val {
+            let vals = list
+                .into_iter()
+                .map(|v| parse_argument(layout, v).map_err(|_| EncodingError::InvalidInput))
+                .collect::<EncodingResult<_>>()?;
+            Ok(MoveValue::Vector(vals))
+        } else {
+            Err(EncodingError::InvalidInput)
+        }
+    }
+}
+
+fn parse_struct_argument(layout: &MoveStructLayout, val: Value) -> EncodingResult<MoveValue> {
+    let field_layouts = match layout {
+        MoveStructLayout::Runtime(fields) => fields,
+        MoveStructLayout::WithTypes { type_, .. } => {
+            if is_utf8_string(type_) {
+                let string = val.as_str().ok_or(EncodingError::InvalidInput)?;
+                return Ok(new_vm_utf8_string(string));
+            } else {
+                return Err(EncodingError::InvalidInput);
+            }
+        },
+        _ => return Err(EncodingError::InvalidInput),
+    };
+    let val = trim_if_needed(val)?;
+    let field_values = if let Value::Array(fields) = val {
+        fields
     } else {
         return Err(EncodingError::InvalidInput);
+    };
+    let fields = field_layouts
+        .iter()
+        .zip(field_values.into_iter())
+        .map(|(field_layout, value)| {
+            let move_value = parse_argument(field_layout, value)?;
+            Ok(move_value)
+        })
+        .collect::<EncodingResult<_>>()?;
+
+    Ok(MoveValue::Struct(MoveStruct::Runtime(fields)))
+}
+
+fn trim_if_needed(val: Value) -> EncodingResult<Value> {
+    if val.is_string() {
+        let val_str = val.as_str().ok_or(EncodingError::InvalidInput)?;
+        let val_str = val_str
+            .trim_start_matches('"')
+            .trim_end_matches('"')
+            .to_string();
+        let val: Value = serde_json::from_str(&val_str).map_err(|_| EncodingError::InvalidInput)?;
+        Ok(val)
+    } else {
+        Ok(val)
     }
+}
+
+fn is_utf8_string(st: &StructTag) -> bool {
+    st.address == CORE_CODE_ADDRESS
+        && st.name.to_string() == "String"
+        && st.module.to_string() == "string"
+}
+
+fn new_vm_utf8_string(string: &str) -> MoveValue {
+    let byte_vector = MoveValue::Vector(
+        string
+            .as_bytes()
+            .iter()
+            .map(|byte| MoveValue::U8(*byte))
+            .collect(),
+    );
+    MoveValue::Struct(MoveStruct::Runtime(vec![byte_vector]))
 }
 
 fn serialize_argument(arg: &TransactionArgument) -> EncodingResult<Data> {
@@ -356,5 +499,141 @@ mod tests {
         // Serialize the new EntryFunction object and compare with the expected serialized value
         let serialized = bcs::encode(&tp).unwrap();
         assert_eq!(hex::encode(serialized, false), expected_serialized);
+    }
+
+    #[test]
+    fn test_payload_with_vector_of_u8() {
+        let payload_value: Value = json!({
+            "type":"entry_function_payload",
+            "function":"0x9770fa9c725cbd97eb50b2be5f7416efdfd1f1554beb0750d4dae4c64e860da3::controller::deposit",
+            "type_arguments":["0x1::aptos_coin::AptosCoin"],
+            "arguments":[
+                "0x010302"
+            ]
+        });
+        let abi = r#"[
+            "vector<u8>"
+        ]"#;
+        let abi_value: Value = serde_json::from_str(abi).unwrap();
+        let v = EntryFunction::parse_with_abi(payload_value.clone(), abi_value).unwrap();
+        let v = bcs::decode::<Vec<u8>>(&v.args[0]).unwrap();
+        assert_eq!(v, vec![1u8, 3u8, 2u8]);
+    }
+
+    #[test]
+    fn test_payload_with_vector_of_u64() {
+        let payload_value: Value = json!({
+            "type":"entry_function_payload",
+            "function":"0x9770fa9c725cbd97eb50b2be5f7416efdfd1f1554beb0750d4dae4c64e860da3::controller::deposit",
+            "type_arguments":["0x1::aptos_coin::AptosCoin"],
+            "arguments":[
+                "[\"1\", \"2\", \"3\"]"
+            ]
+        });
+        let abi = r#"[
+            "vector<u64>"
+        ]"#;
+        let abi_value: Value = serde_json::from_str(abi).unwrap();
+        let v = EntryFunction::parse_with_abi(payload_value.clone(), abi_value).unwrap();
+        let v = bcs::decode::<Vec<u64>>(&v.args[0]).unwrap();
+        assert_eq!(v, vec![1u64, 2u64, 3u64]);
+    }
+
+    #[test]
+    fn test_payload_with_vector_of_vector() {
+        let payload_value: Value = json!({
+            "type":"entry_function_payload",
+            "function":"0x9770fa9c725cbd97eb50b2be5f7416efdfd1f1554beb0750d4dae4c64e860da3::controller::deposit",
+            "type_arguments":["0x1::aptos_coin::AptosCoin"],
+            "arguments":[
+                "[\"0x4d61696e204163636f756e74\",\"0x6112\"]"
+            ]
+        });
+        let abi = r#"[
+            "vector<vector<u8>>"
+        ]"#;
+        let abi_value: Value = serde_json::from_str(abi).unwrap();
+        let v = EntryFunction::parse_with_abi(payload_value.clone(), abi_value).unwrap();
+        let v = bcs::decode::<Vec<Vec<u8>>>(&v.args[0]).unwrap();
+        assert_eq!(
+            hex::encode(v[0].clone(), true),
+            "0x4d61696e204163636f756e74"
+        );
+        assert_eq!(hex::encode(v[1].clone(), true), "0x6112");
+    }
+
+    #[test]
+    fn test_payload_with_struct_string() {
+        let payload_value: Value = json!({
+            "type":"entry_function_payload",
+            "function":"0x9770fa9c725cbd97eb50b2be5f7416efdfd1f1554beb0750d4dae4c64e860da3::controller::deposit",
+            "type_arguments":["0x1::aptos_coin::AptosCoin"],
+            "arguments":[
+                "123"
+            ]
+        });
+        let abi = r#"[
+            "0x1::string::String"
+        ]"#;
+        let abi_value: Value = serde_json::from_str(abi).unwrap();
+        let v = EntryFunction::parse_with_abi(payload_value.clone(), abi_value).unwrap();
+        let v = bcs::decode::<String>(&v.args[0]).unwrap();
+        assert_eq!(v, "123");
+    }
+
+    #[test]
+    fn test_payload_with_struct() {
+        let payload_value: Value = json!({
+            "type":"entry_function_payload",
+            "function":"0x9770fa9c725cbd97eb50b2be5f7416efdfd1f1554beb0750d4dae4c64e860da3::controller::deposit",
+            "type_arguments":["0x1::aptos_coin::AptosCoin"],
+            "arguments":[
+                "[10]"
+            ]
+        });
+        let abi = r#"[
+            "0x1::coin::Coin<u64>"
+        ]"#;
+        let abi_value: Value = serde_json::from_str(abi).unwrap();
+        let v = EntryFunction::parse_with_abi(payload_value.clone(), abi_value).unwrap();
+        let v = bcs::decode::<u64>(&v.args[0]).unwrap();
+        assert_eq!(v, 10u64);
+    }
+
+    #[test]
+    fn test_value_conversion() {
+        assert_value_conversion("u8", 1i32, MoveValue::U8(1));
+        assert_value_conversion("u64", "1", MoveValue::U64(1));
+        assert_value_conversion("u128", "1", MoveValue::U128(1));
+        assert_value_conversion("bool", true, MoveValue::Bool(true));
+
+        let address = AccountAddress::from_hex_literal("0x1").unwrap();
+        assert_value_conversion("address", "0x1", MoveValue::Address(address));
+
+        assert_value_conversion(
+            "0x1::string::String",
+            "hello",
+            new_vm_utf8_string("hello"),
+        );
+     
+        assert_value_conversion(
+            "vector<u8>",
+            "0x0102",
+            MoveValue::Vector(vec![MoveValue::U8(1), MoveValue::U8(2)]),
+        );
+        assert_value_conversion(
+            "vector<u64>",
+            ["1", "2"],
+            MoveValue::Vector(vec![MoveValue::U64(1), MoveValue::U64(2)]),
+        );
+
+        assert_value_conversion(
+            "0x1::guid::ID<u64, address>", // As we do not have access to the module resolver, the types of the struct should be provided as params
+            ["1", "0x1"],
+            MoveValue::Struct(MoveStruct::Runtime(vec![
+                MoveValue::U64(1),
+                MoveValue::Address(address),
+            ])),
+        );
     }
 }
