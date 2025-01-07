@@ -2,9 +2,14 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use move_core_types::{account_address::AccountAddress, identifier::Identifier, language_storage::{StructTag, TypeTag}, parser::parse_type_tag};
+use move_core_types::{
+    account_address::AccountAddress,
+    identifier::Identifier,
+    language_storage::{StructTag, TypeTag},
+    parser::parse_type_tag,
+};
+use serde::{Deserialize, Serialize};
 use std::str::FromStr;
-use serde::{Serialize, Deserialize};
 use tw_encoding::EncodingError;
 
 /// The address of an account

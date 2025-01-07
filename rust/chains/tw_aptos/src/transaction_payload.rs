@@ -127,7 +127,9 @@ fn convert_to_move_value(abi_str: &str, element: Value) -> EntryFunctionResult<M
     let move_type: MoveType = abi_str
         .parse()
         .map_err(|_| EntryFunctionError::InvalidTypeArguments)?;
-    let type_tag: TypeTag = move_type.try_into().map_err(|_| EntryFunctionError::InvalidTypeArguments)?;
+    let type_tag: TypeTag = move_type
+        .try_into()
+        .map_err(|_| EntryFunctionError::InvalidTypeArguments)?;
     let layout = match type_tag {
         TypeTag::Struct(ref boxed_struct) => {
             // The current framework can't handle generics, so we handle this here
@@ -144,8 +146,7 @@ fn convert_to_move_value(abi_str: &str, element: Value) -> EntryFunctionResult<M
         },
         _ => build_type_layout(&type_tag)?,
     };
-    parse_argument(&layout, element)
-        .map_err(|_| EntryFunctionError::InvalidArguments)
+    parse_argument(&layout, element).map_err(|_| EntryFunctionError::InvalidArguments)
 }
 
 fn build_type_layout(t: &TypeTag) -> EncodingResult<MoveTypeLayout> {
@@ -610,12 +611,8 @@ mod tests {
         let address = AccountAddress::from_hex_literal("0x1").unwrap();
         assert_value_conversion("address", "0x1", MoveValue::Address(address));
 
-        assert_value_conversion(
-            "0x1::string::String",
-            "hello",
-            new_vm_utf8_string("hello"),
-        );
-     
+        assert_value_conversion("0x1::string::String", "hello", new_vm_utf8_string("hello"));
+
         assert_value_conversion(
             "vector<u8>",
             "0x0102",
