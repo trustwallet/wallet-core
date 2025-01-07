@@ -601,6 +601,11 @@ mod tests {
         assert_eq!(v, 10u64);
     }
 
+    fn assert_value_conversion<V: Serialize>(abi_str: &str, v: V, expected: MoveValue) {
+        let vm_value = convert_to_move_value(abi_str, json!(v)).unwrap();
+        assert_eq!(vm_value, expected);
+    }
+
     #[test]
     fn test_value_conversion() {
         assert_value_conversion("u8", 1i32, MoveValue::U8(1));
