@@ -15,10 +15,10 @@ Amount FixedDustCalculator::dustAmount([[maybe_unused]] Amount byteFee) noexcept
 }
 
 LegacyDustCalculator::LegacyDustCalculator(TWCoinType coinType) noexcept
-    : feeCalculator(getFeeCalculator(coinType, false)) {
+    : feeCalculator(getFeeCalculator(coinType)) {
 }
 
-Amount LegacyDustCalculator::dustAmount([[maybe_unused]] Amount byteFee) noexcept {
+Amount LegacyDustCalculator::dustAmount(Amount byteFee) noexcept {
     return feeCalculator.calculateSingleInput(byteFee);
 }
 
