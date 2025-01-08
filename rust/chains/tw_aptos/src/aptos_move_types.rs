@@ -147,6 +147,7 @@ pub enum MoveType {
 impl FromStr for MoveType {
     type Err = EncodingError;
 
+    // Taken from: https://github.com/aptos-labs/aptos-core/blob/aaa3514c8ee4e5d38b89d916eadff7286a42e040/api/types/src/move_types.rs#L612-L639
     fn from_str(mut s: &str) -> Result<Self, Self::Err> {
         let mut is_ref = false;
         let mut is_mut = false;

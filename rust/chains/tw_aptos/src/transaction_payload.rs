@@ -130,6 +130,7 @@ fn convert_to_move_value(abi_str: &str, element: Value) -> EntryFunctionResult<M
     let type_tag: TypeTag = move_type
         .try_into()
         .map_err(|_| EntryFunctionError::InvalidTypeArguments)?;
+    // Taken from: https://github.com/aptos-labs/aptos-core/blob/aaa3514c8ee4e5d38b89d916eadff7286a42e040/api/types/src/convert.rs#L845-L872
     let layout = match type_tag {
         TypeTag::Struct(ref boxed_struct) => {
             // The current framework can't handle generics, so we handle this here
@@ -265,6 +266,10 @@ fn parse_vector_argument(layout: &MoveTypeLayout, val: Value) -> EncodingResult<
     }
 }
 
+// Inspired from: https://github.com/aptos-labs/aptos-core/blob/aaa3514c8ee4e5d38b89d916eadff7286a42e040/api/types/src/convert.rs#L924
+// However, we expect struct with strings and unnamed fields while the original code expects struct with named fields.
+// This is because the original code uses a module resolver internally to obtain the struct types and we don't have that here.
+// In order to be able to accept that as an API, we need to change the code to accept struct with unnamed fields.
 fn parse_struct_argument(layout: &MoveStructLayout, val: Value) -> EncodingResult<MoveValue> {
     let field_layouts = match layout {
         MoveStructLayout::Runtime(fields) => fields,
