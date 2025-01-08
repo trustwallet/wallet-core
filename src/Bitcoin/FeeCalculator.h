@@ -88,7 +88,20 @@ public:
     }
 };
 
+class Zip0317FeeCalculator: public FeeCalculator {
+public:
+    static constexpr int64_t gMarginalFee = 5000ul;
+    static constexpr int64_t gGraceActions = 2ul;
+
+    Zip0317FeeCalculator() noexcept = default;
+
+    [[nodiscard]] int64_t calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const noexcept final;
+    [[nodiscard]] int64_t calculateSingleInput([[maybe_unused]] int64_t byteFee) const noexcept final {
+        return gMarginalFee;
+    }
+};
+
 /// Return the fee calculator for the given coin.
-const FeeCalculator& getFeeCalculator(TWCoinType coinType, bool disableFilter = false) noexcept;
+const FeeCalculator& getFeeCalculator(TWCoinType coinType, bool disableFilter = false, bool zip0317 = false) noexcept;
 
 } // namespace TW::Bitcoin

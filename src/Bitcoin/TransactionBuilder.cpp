@@ -96,7 +96,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
     } else if (input.utxos.empty()) {
         plan.error = Common::Proto::Error_missing_input_utxos;
     } else {
-        const auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coinType), input.disableDustFilter);
+        const auto& feeCalculator = getFeeCalculator(input.coinType, input.disableDustFilter, input.zip0317);
         auto inputSelector = InputSelector<UTXO>(input.utxos, feeCalculator, input.dustCalculator);
         auto inputSum = InputSelector<UTXO>::sum(input.utxos);
 

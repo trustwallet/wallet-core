@@ -89,6 +89,26 @@ impl Script {
         self.bytes.extend_from_slice(data);
     }
 
+    /// Adds instructions to push an integer onto the stack.
+    ///
+    /// Integers are encoded as little-endian signed-magnitude numbers, but there are dedicated
+    /// opcodes to push some small integers.
+    pub fn push_int(&mut self, data: i64) {
+        // We can special-case -1, 1-16
+        if data == -1 || (1..=16).contains(&data) {
+            let opcode = (data - 1 + OP_TRUE as i64) as u8;
+            self.push(opcode)
+        }
+        // We can also special-case zero
+        else if data == 0 {
+            self.push(OP_0)
+        }
+        // Otherwise encode it as data
+        else {
+            self.push_int_non_minimal(data)
+        }
+    }
+
     /// Appends the given data to the end of the script as-is.
     pub fn append(&mut self, data: &[u8]) {
         self.bytes.extend_from_slice(data);
@@ -101,6 +121,16 @@ impl Script {
     pub fn to_vec(&self) -> Data {
         self.bytes.clone()
     }
+
+    /// Adds instructions to push an integer onto the stack without optimization.
+    ///
+    /// This uses the explicit encoding regardless of the availability of dedicated opcodes.
+    fn push_int_non_minimal(&mut self, data: i64) {
+        let mut buf = [0u8; 8];
+        // Use rust-bitcoin crate for now.
+        let len = bitcoin::script::write_scriptint(&mut buf, data);
+        self.push_slice(&buf[..len])
+    }
 }
 
 impl From<Script> for Data {
@@ -112,6 +142,12 @@ impl From<Script> for Data {
 impl From<Data> for Script {
     fn from(bytes: Data) -> Self {
         Script { bytes }
+    }
+}
+
+impl From<Script> for bitcoin::script::ScriptBuf {
+    fn from(script: Script) -> Self {
+        bitcoin::script::ScriptBuf::from_bytes(script.bytes)
     }
 }
 

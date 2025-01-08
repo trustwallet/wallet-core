@@ -474,3 +474,43 @@ fn test_solana_compile_with_partial_signature() {
     // Successfully broadcasted: https://solscan.io/tx/5NuXtYpE58FbtCfEzgk2cTHZgEdNF69Z76bd8TQhBgmEN1RC98DNGNiWhvp1VSDMPudCgpE3z8jD7BNRuBztUbpM
     assert_eq!(full_signed_tx, "Atr1azHjqXUEu1rbTGRwnN2CQHAJNdnhyumgWrAy3gS0acweAlh/nG1+VxkuT5x3EXiXqF0VkAcw2Qp/Vd6/aQrDIH0nd1ShqHK9yRATbpF/npAvAl5JPwwb89W0US//4DslDobk5o4g6Wqwm+sk13Bq4ziixdEfuyPXea5bjAcBAgAGDqMrdVJnGyKZfDMMU6yR6mjQRynQy91x5Ik0QW5S7HjblEDFOjfYkcjeiZdpl9opTtGz1XgRDjyGqc4Z5VKuBHI5lg1U5Wnl5tFnrGEI9Y2rG1BNC7tYK5PXpURkpupeap6naP7fZEyKrpuOIYit0GvFUPv3Fsgiuc5jx3g9lS4fsU4N5V6fuoY5br/VSM/4ySAR6se3W6qbLZxqhvWhcUEJ5qP+7PmQMuHB32uXItyzY057jjRAk2vDSwzByOtSH/zRQemDLK8QrZF0lcoPJxtbKTzUcCfqc3AH7UDrOaC9BIo+CMO0lb4X9FQn2JvsW4DH4mlcGGTXZ0PbOb7TRtYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFTlniTAUaihSnsel5fw4Szfp0kCFmUxlaalEqbxZmArjJclj04kifG7PRApFI4NgwtaE5na/xCEBI572Nvp+FkDBkZv5SEXMv/srbpyw5vnvIzlu8X3EmssQ5s6QAAAAAaBTtTK9ooXRnL9rIYDGmPoTqFe+h1EtyKT9tvbABZQBt324ddloZPZy+FGzut5rBy0he1fWzeROoz1hX7/AKnLHFG8r27UznARMamsTdStWltOfL+TLpgyxe4Hfqm8xQYIAgABDAIAAACghgEAAAAAAAoGAAIABggNAQEMCgcJAwECBQIGCA0JDqCGAQAAAAAACwAFAkANAwALAAkDgDgBAAAAAAAIAgAEDAIAAAC0/gAAAAAAAA==")
 }
+
+#[test]
+fn test_solana_compile_with_external_signature() {
+    // The following is a transaction which requires two signatures. The second signature is already included in the transaction.
+    // We expect the compiler to keep the second signature while adding the first signature.
+    let encoded_unsigned_tx = base64::decode("AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADDIH0nd1ShqHK9yRATbpF/npAvAl5JPwwb89W0US//4DslDobk5o4g6Wqwm+sk13Bq4ziixdEfuyPXea5bjAcBAgAGDqMrdVJnGyKZfDMMU6yR6mjQRynQy91x5Ik0QW5S7HjblEDFOjfYkcjeiZdpl9opTtGz1XgRDjyGqc4Z5VKuBHI5lg1U5Wnl5tFnrGEI9Y2rG1BNC7tYK5PXpURkpupeap6naP7fZEyKrpuOIYit0GvFUPv3Fsgiuc5jx3g9lS4fsU4N5V6fuoY5br/VSM/4ySAR6se3W6qbLZxqhvWhcUEJ5qP+7PmQMuHB32uXItyzY057jjRAk2vDSwzByOtSH/zRQemDLK8QrZF0lcoPJxtbKTzUcCfqc3AH7UDrOaC9BIo+CMO0lb4X9FQn2JvsW4DH4mlcGGTXZ0PbOb7TRtYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFTlniTAUaihSnsel5fw4Szfp0kCFmUxlaalEqbxZmArjJclj04kifG7PRApFI4NgwtaE5na/xCEBI572Nvp+FkDBkZv5SEXMv/srbpyw5vnvIzlu8X3EmssQ5s6QAAAAAaBTtTK9ooXRnL9rIYDGmPoTqFe+h1EtyKT9tvbABZQBt324ddloZPZy+FGzut5rBy0he1fWzeROoz1hX7/AKnLHFG8r27UznARMamsTdStWltOfL+TLpgyxe4Hfqm8xQYIAgABDAIAAACghgEAAAAAAAoGAAIABggNAQEMCgcJAwECBQIGCA0JDqCGAQAAAAAACwAFAkANAwALAAkDgDgBAAAAAAAIAgAEDAIAAAC0/gAAAAAAAA==", STANDARD).unwrap();
+
+    // Step 1: Decode the transaction, get the raw message, and prepare the signing input
+    let mut decoder = TransactionDecoderHelper::<Proto::DecodingTransactionOutput>::default();
+    let output = decoder.decode(CoinType::Solana, encoded_unsigned_tx);
+    assert_eq!(output.error, SigningError::OK);
+
+    let input = Proto::SigningInput {
+        raw_message: output.transaction,
+        ..Proto::SigningInput::default()
+    };
+
+    // Step 2: Simulate signature (the first signature), normally obtained from signature server.
+    let signature1 = "daf56b31e3a97504bb5adb4c64709cdd8240700935d9e1cae9a05ab032de04b469cc1e02587f9c6d7e57192e4f9c77117897a85d15900730d90a7f55debf690a".decode_hex().unwrap();
+    let public_key1 = "a32b7552671b22997c330c53ac91ea68d04729d0cbdd71e48934416e52ec78db"
+        .decode_hex()
+        .unwrap();
+
+    // Step 3: Compile the transaction with the first signature
+    let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
+    let output = compiler.compile(
+        CoinType::Solana,
+        &input,
+        vec![signature1],
+        vec![public_key1],
+    );
+    assert_eq!(output.error, SigningError::OK);
+    assert_eq!(output.encoded, "YziLZ5ChTunpGLAAufaXrSpPrFZsL9fsiyo2NshjFMUXbyRrFbpTZpLdsWWULCvKeg4oSdxDuaDqazKZjNgdFjh9G1b69ZFkRtcysEditBaRioLTEq9k4qNVXQQnj1owrjwxcgxQkfQAKPVXjSHnt8nQN9wk3FwPkuYKUZxVz9G3bp3mG55y3Hom3oanmTZhcWWdGEr7JTtqMWJCxvKZHkTozcB8YrvnR9R5Yy7ZqraEq7xzVyFundwzbs2iJq3VgChtRUUj5ed34GgeHQa1J3Z8sjafcc6rax4gwexUkJZkJQG2zYeE59G5oeYLY9hYiigpX6BVgCF4y5YjX9PyJoypFTTtMz49JfgEKASDBhDVdPFXsQapcgpjeikxazfGRrZNgMs5Zubxb9kTmoJ3u12EVmTVGjoSZBt6ytnBRSeqizVz3aMjVomHnkfLPyivUhCYQs9RHkcsRXjPo6azvy6MPXaPBWXGGn9LtYLkBJfWcQpx25zkDn7Y6UpLaezncUtXFB6hXVZCauhL2FHzQSro7ifo3Scv1ATUh8UwqUs1e3ZtPAz7GagSV2mgeL9mWv6A25q8v3PwAzxoudmd8q4fgyDqR2zM5xwmXj6GDkUsPZWVMKyNq1YHdmJQVLQnEvtvMkfixtbZ42i44gwjYXjU9qq1RL85nVidgDkxN7iYJPxYvXhDH52gyMeBuxM3gJ2wmz1vXyzSP5S3y7RUsWTLNJCLwG9YqaCx6oVVvQu68GiFSj7u9Lxc9o9MztUwQF183WmE8HnnTXEViEGwo7E8WNxdWSR5nPuSqkbaWmQAGCuKDWBvcohPKuTnuZCnqfBQBiZEnoy5mD7Aw2cbQBSSukMULN7VAruGMBLjxiDZ7Bu6c95kBEEwxmDz8x4fQZuVberRFwexbfyoKfmsR8ohWZdLbDGcr56niEsHTHoGhUkSkWY78Vjjcaj");
+
+    // output.encoded is base58 encoded transaction, convert it to base64
+    let signed_tx = base58::decode(output.encoded.as_ref(), Alphabet::Bitcoin).unwrap();
+    let signed_tx_base64 = base64::encode(&signed_tx, STANDARD);
+    // Successfully broadcasted: https://solscan.io/tx/5NuXtYpE58FbtCfEzgk2cTHZgEdNF69Z76bd8TQhBgmEN1RC98DNGNiWhvp1VSDMPudCgpE3z8jD7BNRuBztUbpM
+    assert_eq!(signed_tx_base64, "Atr1azHjqXUEu1rbTGRwnN2CQHAJNdnhyumgWrAy3gS0acweAlh/nG1+VxkuT5x3EXiXqF0VkAcw2Qp/Vd6/aQrDIH0nd1ShqHK9yRATbpF/npAvAl5JPwwb89W0US//4DslDobk5o4g6Wqwm+sk13Bq4ziixdEfuyPXea5bjAcBAgAGDqMrdVJnGyKZfDMMU6yR6mjQRynQy91x5Ik0QW5S7HjblEDFOjfYkcjeiZdpl9opTtGz1XgRDjyGqc4Z5VKuBHI5lg1U5Wnl5tFnrGEI9Y2rG1BNC7tYK5PXpURkpupeap6naP7fZEyKrpuOIYit0GvFUPv3Fsgiuc5jx3g9lS4fsU4N5V6fuoY5br/VSM/4ySAR6se3W6qbLZxqhvWhcUEJ5qP+7PmQMuHB32uXItyzY057jjRAk2vDSwzByOtSH/zRQemDLK8QrZF0lcoPJxtbKTzUcCfqc3AH7UDrOaC9BIo+CMO0lb4X9FQn2JvsW4DH4mlcGGTXZ0PbOb7TRtYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFTlniTAUaihSnsel5fw4Szfp0kCFmUxlaalEqbxZmArjJclj04kifG7PRApFI4NgwtaE5na/xCEBI572Nvp+FkDBkZv5SEXMv/srbpyw5vnvIzlu8X3EmssQ5s6QAAAAAaBTtTK9ooXRnL9rIYDGmPoTqFe+h1EtyKT9tvbABZQBt324ddloZPZy+FGzut5rBy0he1fWzeROoz1hX7/AKnLHFG8r27UznARMamsTdStWltOfL+TLpgyxe4Hfqm8xQYIAgABDAIAAACghgEAAAAAAAoGAAIABggNAQEMCgcJAwECBQIGCA0JDqCGAQAAAAAACwAFAkANAwALAAkDgDgBAAAAAAAIAgAEDAIAAAC0/gAAAAAAAA==")
+}

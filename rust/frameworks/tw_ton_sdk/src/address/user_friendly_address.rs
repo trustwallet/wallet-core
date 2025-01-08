@@ -4,7 +4,7 @@
 
 use crate::address::address_data::AddressData;
 use crate::crc::CRC_16_XMODEM;
-use tw_coin_entry::error::prelude::{AddressError, AddressResult};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::base64;
 use tw_encoding::base64::{NO_PAD, URL_NO_PAD};
 use tw_hash::{H256, H288};

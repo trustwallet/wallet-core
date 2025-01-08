@@ -198,6 +198,7 @@ dependencies = [
  "bitcoin_hashes",
  "hex_lit",
  "secp256k1",
+ "serde",
 ]
 
 [[package]]
@@ -213,6 +214,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5d7066118b13d4b20b23645932dfb3a81ce7e29f95726c2036fa33cd7b092501"
 dependencies = [
  "bitcoin-private",
+ "serde",
 ]
 
 [[package]]
@@ -1389,6 +1391,7 @@ dependencies = [
  "bitcoin_hashes",
  "rand",
  "secp256k1-sys",
+ "serde",
 ]
 
 [[package]]
@@ -1785,6 +1788,8 @@ name = "tw_bitcoin"
 version = "0.1.0"
 dependencies = [
  "bitcoin",
+ "itertools",
+ "lazy_static",
  "secp256k1",
  "serde",
  "serde_json",

@@ -32,6 +32,9 @@ public:
     // Transaction fee per byte
     Amount byteFee = 0;
 
+    // Whether to calculate the fee according to ZIP-0317 for the given transaction
+    bool zip0317 = false;
+
     // Recipient's address
     std::string toAddress;
 

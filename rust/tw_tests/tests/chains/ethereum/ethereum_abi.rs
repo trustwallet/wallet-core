@@ -12,7 +12,7 @@ use tw_proto::{deserialize, serialize};
 use wallet_core_rs::ffi::ethereum::abi::{
     tw_ethereum_abi_decode_contract_call, tw_ethereum_abi_decode_params,
     tw_ethereum_abi_decode_value, tw_ethereum_abi_encode_function,
-    tw_ethereum_abi_function_get_signature,
+    tw_ethereum_abi_function_get_type, tw_ethereum_abi_get_function_signature,
 };
 
 use tw_coin_registry::coin_type::CoinType;
@@ -117,7 +117,7 @@ fn test_ethereum_abi_decode_params() {
 }
 
 #[test]
-fn test_ethereum_abi_function_get_signature() {
+fn test_ethereum_abi_function_get_type() {
     let input = AbiProto::FunctionGetTypeInput {
         function_name: "baz".into(),
         inputs: vec![
@@ -132,10 +132,10 @@ fn test_ethereum_abi_function_get_signature() {
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
 
     let actual = TWStringHelper::wrap(unsafe {
-        tw_ethereum_abi_function_get_signature(CoinType::Ethereum as u32, input_data.ptr())
+        tw_ethereum_abi_function_get_type(CoinType::Ethereum as u32, input_data.ptr())
     })
     .to_string()
-    .expect("!tw_ethereum_abi_function_get_signature returned nullptr");
+    .expect("!tw_ethereum_abi_function_get_type returned nullptr");
 
     assert_eq!(actual, "baz(uint64,address)");
 }
@@ -190,4 +190,103 @@ fn test_ethereum_abi_decode_value() {
     assert_eq!(output.error, AbiErrorKind::OK);
     assert!(output.error_message.is_empty());
     assert_eq!(output.param_str, "42");
+}
+
+#[test]
+fn test_ethereum_abi_get_function_signature() {
+    let abi = r#"{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}"#;
+
+    let abi_string = TWStringHelper::create(abi);
+
+    let actual = TWStringHelper::wrap(unsafe {
+        tw_ethereum_abi_get_function_signature(CoinType::Ethereum as u32, abi_string.ptr())
+    })
+    .to_string()
+    .expect("!tw_ethereum_abi_get_function_signature returned nullptr");
+
+    assert_eq!(actual, "transfer(address,uint256)");
+}
+
+#[test]
+fn test_ethereum_get_function_signature_complex() {
+    // From: https://docs.soliditylang.org/en/latest/abi-spec.html#handling-tuple-types
+    let abi = r#"
+{
+  "inputs": [
+    {
+      "components": [
+        {
+          "internalType": "uint256",
+          "name": "a",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "b",
+          "type": "uint256[]"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "x",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "y",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct Test.T[]",
+          "name": "c",
+          "type": "tuple[]"
+        }
+      ],
+      "internalType": "struct Test.S",
+      "name": "",
+      "type": "tuple"
+    },
+    {
+      "components": [
+        {
+          "internalType": "uint256",
+          "name": "x",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "y",
+          "type": "uint256"
+        }
+      ],
+      "internalType": "struct Test.T",
+      "name": "",
+      "type": "tuple"
+    },
+    {
+      "internalType": "uint256",
+      "name": "",
+      "type": "uint256"
+    }
+  ],
+  "name": "f",
+  "outputs": [],
+  "stateMutability": "pure",
+  "type": "function"
+}
+"#;
+
+    let abi_string = TWStringHelper::create(abi);
+
+    let actual = TWStringHelper::wrap(unsafe {
+        tw_ethereum_abi_get_function_signature(CoinType::Ethereum as u32, abi_string.ptr())
+    })
+    .to_string()
+    .expect("!tw_ethereum_abi_get_function_signature returned nullptr");
+
+    assert_eq!(
+        actual,
+        "f((uint256,uint256[],(uint256,uint256)[]),(uint256,uint256),uint256)"
+    );
 }

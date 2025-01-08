@@ -38,6 +38,7 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
     }
     lockTime = input.lock_time();
     time = input.time();
+    zip0317 = input.zip_0317();
 
     extraOutputsAmount = 0;
     for (auto& output: input.extra_outputs()) {
