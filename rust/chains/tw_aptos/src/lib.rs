@@ -4,6 +4,7 @@
 
 pub mod address;
 pub mod aptos_move_packages;
+pub mod aptos_move_types;
 pub mod constants;
 pub mod entry;
 mod serde_helper;
