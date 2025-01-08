@@ -62,7 +62,7 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
         let tx_hasher = TxBuilder::<Context>::tx_hasher_from_proto(&input);
-        let preimage = match TxBuilder::<Context>::try_sign_direct_args(&input) {
+        let preimage = match TxBuilder::<Context>::try_sign_direct_args(coin, &input) {
             // If there was a `SignDirect` message in the signing input, generate the tx preimage directly.
             Ok(Some(sign_direct_args)) => {
                 ProtobufPreimager::<Context>::preimage_hash_direct(&sign_direct_args, tx_hasher)?
@@ -128,7 +128,7 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
         let params = TxBuilder::<Context>::public_key_params_from_proto(&input);
         let public_key = Context::PublicKey::from_bytes(coin, &public_key, params)?;
 
-        let signed_tx_raw = match TxBuilder::<Context>::try_sign_direct_args(&input) {
+        let signed_tx_raw = match TxBuilder::<Context>::try_sign_direct_args(coin, &input) {
             // If there was a `SignDirect` message in the signing input, generate the `TxRaw` directly.
             Ok(Some(sign_direct_args)) => ProtobufSerializer::<Context>::build_direct_signed_tx(
                 &sign_direct_args,
