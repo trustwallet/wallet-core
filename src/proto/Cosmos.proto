@@ -240,8 +240,10 @@ message Message {
     // For signing an already serialized transaction. Account number and chain ID must be set outside.
     message SignDirect {
         // The prepared serialized TxBody
+        // Required
         bytes body_bytes = 1;
         // The prepared serialized AuthInfo
+        // Optional. If not provided, will be generated from `SigningInput` parameters.
         bytes auth_info_bytes = 2;
     }
 

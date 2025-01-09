@@ -4,7 +4,7 @@
 
 use crate::address::Address;
 use crate::context::CosmosContext;
-use crate::modules::serializer::protobuf_serializer::SignDirectArgs;
+use crate::modules::serializer::protobuf_serializer::{ProtobufSerializer, SignDirectArgs};
 use crate::public_key::{CosmosPublicKey, PublicKeyParams};
 use crate::transaction::message::cosmos_generic_message::JsonRawMessage;
 use crate::transaction::message::{CosmosMessage, CosmosMessageBox};
@@ -34,16 +34,10 @@ where
         coin: &dyn CoinContext,
         input: &Proto::SigningInput<'_>,
     ) -> SigningResult<UnsignedTransaction<Context>> {
-        let fee = input
-            .fee
-            .as_ref()
-            .or_tw_err(SigningErrorType::Error_wrong_fee)
-            .context("No fee specified")?;
         let signer = Self::signer_info_from_proto(coin, input)?;
-
         Ok(UnsignedTransaction {
             signer,
-            fee: Self::fee_from_proto(fee)?,
+            fee: Self::fee_from_proto(&input.fee)?,
             chain_id: input.chain_id.to_string(),
             account_number: input.account_number,
             tx_body: Self::tx_body_from_proto(coin, input)?,
@@ -86,15 +80,20 @@ where
         }
     }
 
-    fn fee_from_proto(input: &Proto::Fee) -> SigningResult<Fee<Context::Address>> {
-        let amounts = input
+    fn fee_from_proto(input: &Option<Proto::Fee>) -> SigningResult<Fee<Context::Address>> {
+        let fee_input = input
+            .as_ref()
+            .or_tw_err(SigningErrorType::Error_wrong_fee)
+            .context("No fee specified")?;
+
+        let amounts = fee_input
             .amounts
             .iter()
             .map(Self::coin_from_proto)
             .collect::<SigningResult<_>>()?;
         Ok(Fee {
             amounts,
-            gas_limit: input.gas,
+            gas_limit: fee_input.gas,
             payer: None,
             granter: None,
         })
@@ -133,6 +132,7 @@ where
     }
 
     pub fn try_sign_direct_args(
+        context: &dyn CoinContext,
         input: &Proto::SigningInput<'_>,
     ) -> SigningResult<Option<SignDirectArgs>> {
         use Proto::mod_Message::OneOfmessage_oneof as MessageEnum;
@@ -141,15 +141,30 @@ where
             return Ok(None);
         };
 
-        match msg.message_oneof {
-            MessageEnum::sign_direct_message(ref direct) => Ok(Some(SignDirectArgs {
-                tx_body: direct.body_bytes.to_vec(),
-                auth_info: direct.auth_info_bytes.to_vec(),
-                chain_id: input.chain_id.to_string(),
-                account_number: input.account_number,
-            })),
-            _ => Ok(None),
+        let MessageEnum::sign_direct_message(ref direct) = msg.message_oneof else {
+            return Ok(None);
+        };
+
+        if direct.body_bytes.is_empty() {
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("`body_bytes` must not be empty");
         }
+
+        let auth_info = if direct.auth_info_bytes.is_empty() {
+            let signer = Self::signer_info_from_proto(context, input)?;
+            let fee = Self::fee_from_proto(&input.fee)?;
+            let auth_info = ProtobufSerializer::<Context>::build_auth_info(&signer, &fee);
+            serialize(&auth_info)?
+        } else {
+            direct.auth_info_bytes.to_vec()
+        };
+
+        Ok(Some(SignDirectArgs {
+            tx_body: direct.body_bytes.to_vec(),
+            auth_info,
+            chain_id: input.chain_id.to_string(),
+            account_number: input.account_number,
+        }))
     }
 
     pub fn tx_message(

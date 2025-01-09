@@ -285,6 +285,45 @@ fn test_sign_direct() {
     });
 }
 
+/// Build and sign a transaction with `TxBody` bytes only,
+/// and `AuthInfo` will be generated from `SigningInput` parameters.
+#[test]
+fn test_sign_direct_with_body_bytes() {
+    use tw_cosmos_sdk::proto::cosmos::tx::v1beta1 as tx_proto;
+
+    let coin = TestCoinContext::default()
+        .with_public_key_type(PublicKeyType::Secp256k1)
+        .with_hrp("cosmos");
+
+    let body_bytes = "0a89010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412690a2d636f736d6f733168736b366a727979716a6668703564686335357463396a74636b796778306570683664643032122d636f736d6f73317a743530617a7570616e716c66616d356166687633686578777975746e756b656834633537331a090a046d756f6e120131".decode_hex().unwrap();
+
+    let sign_direct = Proto::mod_Message::SignDirect {
+        body_bytes: Cow::from(body_bytes),
+        // Do not specify the `AuthInfo` bytes.
+        auth_info_bytes: Cow::default(),
+    };
+    let mut input = Proto::SigningInput {
+        account_number: 1037,
+        chain_id: "gaia-13003".into(),
+        fee: Some(make_fee(200000, make_amount("muon", "200"))),
+        sequence: 8,
+        private_key: account_1037_private_key(),
+        messages: vec![make_message(MessageEnum::sign_direct_message(sign_direct))],
+        ..Proto::SigningInput::default()
+    };
+
+    // real-world tx: https://www.mintscan.io/cosmos/txs/817101F3D96314AD028733248B28BAFAD535024D7D2C8875D3FE31DC159F096B
+    // curl -H 'Content-Type: application/json' --data-binary '{"tx_bytes": "Cr4BCr...1yKOU=", "mode": "BROADCAST_MODE_BLOCK"}' https://api.cosmos.network/cosmos/tx/v1beta1/txs
+    // also similar TX: BCDAC36B605576C8182C2829C808B30A69CAD4959D5ED1E6FF9984ABF280D603
+    test_sign_protobuf::<StandardCosmosContext>(TestInput {
+        coin: &coin,
+        input: input.clone(),
+        tx: r#"{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CowBCokBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmkKLWNvc21vczFoc2s2anJ5eXFqZmhwNWRoYzU1dGM5anRja3lneDBlcGg2ZGQwMhItY29zbW9zMXp0NTBhenVwYW5xbGZhbTVhZmh2M2hleHd5dXRudWtlaDRjNTczGgkKBG11b24SATESZQpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3FEgQKAggBGAgSEQoLCgRtdW9uEgMyMDAQwJoMGkD54fQAFlekIAnE62hZYl0uQelh/HLv0oQpCciY5Dn8H1SZFuTsrGdu41PH1Uxa4woptCELi/8Ov9yzdeEFAC9H"}"#,
+        signature: "f9e1f4001657a42009c4eb6859625d2e41e961fc72efd2842909c898e439fc1f549916e4ecac676ee353c7d54c5ae30a29b4210b8bff0ebfdcb375e105002f47",
+        signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"+eH0ABZXpCAJxOtoWWJdLkHpYfxy79KEKQnImOQ5/B9UmRbk7KxnbuNTx9VMWuMKKbQhC4v/Dr/cs3XhBQAvRw=="}]"#,
+    });
+}
+
 #[test]
 fn test_sign_direct_0a90010a() {
     let coin = TestCoinContext::default()
