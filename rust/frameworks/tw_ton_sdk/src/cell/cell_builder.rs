@@ -11,7 +11,7 @@ use crate::cell::{Cell, CellArc};
 use crate::error::{CellError, CellErrorType, CellResult};
 use bitstream_io::Numeric;
 use std::sync::Arc;
-use tw_coin_entry::error::prelude::{MapTWError, ResultContext};
+use tw_coin_entry::error::prelude::*;
 use tw_number::U256;
 
 const MAX_CELL_BITS: usize = 1023;

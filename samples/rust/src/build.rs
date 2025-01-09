@@ -24,6 +24,7 @@ fn main() {
         .input(proto_src.to_string() + "/Common.proto")
         .input(proto_src.to_string() + "/Bitcoin.proto")
         .input(proto_src.to_string() + "/BitcoinV2.proto")
+        .input(proto_src.to_string() + "/BabylonStaking.proto")
         .input(proto_src.to_string() + "/Ethereum.proto")
         .include(proto_src)
         .run()
