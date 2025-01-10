@@ -709,11 +709,11 @@
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
-      "url": "https://explorer.sui.io/",
-      "txPath": "/txblock/",
-      "accountPath": "/address/",
-      "sampleTx": "5i8fbSL6r8yw2xcKmXxwkzHu3wpiyMLsyf2htCvDH8Ao",
-      "sampleAccount": "0x259ff8074ab425cbb489f236e18e08f03f1a7856bdf7c7a2877bd64f738b5015"
+      "url": "https://suiscan.xyz/mainnet",
+      "txPath": "/tx/",
+      "accountPath": "/account/",
+      "sampleTx": "68wBKsZyYXmCUydDmabQ71kTcFWTfDG7tFmTLk1HgNdN",
+      "sampleAccount": "0x54e80d76d790c277f5a44f3ce92f53d26f5894892bf395dee6375988876be6b2"
     },
     "info": {
       "url": "https://sui.io/",
