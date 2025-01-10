@@ -153,7 +153,7 @@ impl TransactionFactory {
                     AccountAddress::from_str(&fungible_asset_transfer.metadata_address)
                         .map_err(from_account_error)
                         .into_tw()
-                        .context("Invalid destination address")?,
+                        .context("Invalid metadata address")?,
                     AccountAddress::from_str(&fungible_asset_transfer.to)
                         .map_err(from_account_error)
                         .into_tw()

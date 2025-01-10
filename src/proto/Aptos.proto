@@ -49,7 +49,7 @@ message TokenTransferCoinsMessage {
 }
 
 message FungibleAssetTransferMessage {
-  // Metadata address (string)
+  // Fungible Asset address (string)
   string metadata_address = 1;
   // Destination Account address (string)
   string to = 2;
