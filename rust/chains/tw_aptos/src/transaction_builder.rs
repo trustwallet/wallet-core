@@ -5,8 +5,9 @@
 use crate::address::from_account_error;
 use crate::aptos_move_packages::{
     aptos_account_create_account, aptos_account_transfer, aptos_account_transfer_coins,
-    coin_transfer, managed_coin_register, token_transfers_cancel_offer_script,
-    token_transfers_claim_script, token_transfers_offer_script,
+    coin_transfer, fungible_asset_transfer, managed_coin_register,
+    token_transfers_cancel_offer_script, token_transfers_claim_script,
+    token_transfers_offer_script,
 };
 use crate::constants::{GAS_UNIT_PRICE, MAX_GAS_AMOUNT};
 use crate::liquid_staking::{
@@ -147,6 +148,18 @@ impl TransactionFactory {
                     convert_proto_struct_tag_to_type_tag(func)?,
                 )
             },
+            OneOftransaction_payload::fungible_asset_transfer(fungible_asset_transfer) => factory
+                .fungible_asset_transfer(
+                    AccountAddress::from_str(&fungible_asset_transfer.metadata_address)
+                        .map_err(from_account_error)
+                        .into_tw()
+                        .context("Invalid destination address")?,
+                    AccountAddress::from_str(&fungible_asset_transfer.to)
+                        .map_err(from_account_error)
+                        .into_tw()
+                        .context("Invalid destination address")?,
+                    fungible_asset_transfer.amount,
+                ),
             OneOftransaction_payload::None => {
                 let is_blind_sign = !input.any_encoded.is_empty();
                 let v = serde_json::from_str::<Value>(&input.any_encoded)
@@ -251,6 +264,15 @@ impl TransactionFactory {
         coin_type: TypeTag,
     ) -> SigningResult<TransactionBuilder> {
         Ok(self.payload(coin_transfer(coin_type, to, amount)?))
+    }
+
+    pub fn fungible_asset_transfer(
+        &self,
+        metadata_address: AccountAddress,
+        to: AccountAddress,
+        amount: u64,
+    ) -> SigningResult<TransactionBuilder> {
+        Ok(self.payload(fungible_asset_transfer(metadata_address, to, amount)?))
     }
 
     pub fn implicitly_create_user_and_coins_transfer(

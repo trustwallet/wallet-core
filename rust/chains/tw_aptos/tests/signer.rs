@@ -29,6 +29,12 @@ pub struct TokenTransfer {
     tag: TypeTag,
 }
 
+pub struct FungibleAssetTransfer {
+    metadata_address: String,
+    to: String,
+    amount: u64,
+}
+
 pub struct RegisterToken {
     coin_type: TypeTag,
 }
@@ -41,6 +47,7 @@ pub enum OpsDetails {
     TokenTransfer(TokenTransfer),
     ImplicitTokenTransfer(TokenTransfer),
     NftOps(NftOperation),
+    FungibleAssetTransfer(FungibleAssetTransfer),
 }
 
 fn setup_proto_transaction<'a>(
@@ -130,6 +137,20 @@ fn setup_proto_transaction<'a>(
             if let OpsDetails::LiquidStakingOps(liquid_staking_ops) = ops_details.unwrap() {
                 Proto::mod_SigningInput::OneOftransaction_payload::liquid_staking_message(
                     liquid_staking_ops.into(),
+                )
+            } else {
+                panic!("Unsupported arguments")
+            }
+        },
+        "fungible_asset_transfer" => {
+            if let OpsDetails::FungibleAssetTransfer(fungible_asset_transfer) = ops_details.unwrap()
+            {
+                Proto::mod_SigningInput::OneOftransaction_payload::fungible_asset_transfer(
+                    Proto::FungibleAssetTransferMessage {
+                        to: fungible_asset_transfer.to.into(),
+                        amount: fungible_asset_transfer.amount,
+                        metadata_address: fungible_asset_transfer.metadata_address.into(),
+                    },
                 )
             } else {
                 panic!("Unsupported arguments")
@@ -316,6 +337,52 @@ fn test_aptos_sign_coin_transfer() {
                     "signature": {
                         "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
                         "signature": "0x7643ec8aae6198bd13ca6ea2962265859cba5a228e7d181131f6c022700dd02a7a04dc0345ad99a0289e5ab80b130b3864e6404079980bc226f1a13aee7d280a",
+                        "type": "ed25519_signature"
+                    }
+                }"#);
+}
+
+// Successfully broadcasted https://explorer.aptoslabs.com/txn/0x475fc97bcba87907166a720676e1b2f5320e613fd13014df37dcf17b09ff0e98/balanceChange?network=mainnet
+#[test]
+fn test_aptos_sign_fungible_asset_transfer() {
+    let input = setup_proto_transaction(
+        "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
+        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec",   // Keypair
+        "fungible_asset_transfer",
+        74, // Sequence number
+        1,
+        20,
+        1736060099,
+        100,
+        "",
+        "",
+        Some(OpsDetails::FungibleAssetTransfer(FungibleAssetTransfer {
+            metadata_address: "0x2ebb2ccac5e027a87fa0e2e5f656a3a4238d6a48d93ec9b610d570fc0aa0df12"
+                .to_string(),
+            to: "0x2d92d71078f11d923c2b703b95a288c0e2ae63c0d29154e6278bf8004f9b4e52".to_string(),
+            amount: 100000000,
+        })),
+    );
+    let output = Signer::sign_proto(input);
+    test_tx_result(output,
+                   "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f304a00000000000000020000000000000000000000000000000000000000000000000000000000000001167072696d6172795f66756e6769626c655f73746f7265087472616e73666572010700000000000000000000000000000000000000000000000000000000000000010e66756e6769626c655f6173736574084d657461646174610003202ebb2ccac5e027a87fa0e2e5f656a3a4238d6a48d93ec9b610d570fc0aa0df12202d92d71078f11d923c2b703b95a288c0e2ae63c0d29154e6278bf8004f9b4e520800e1f5050000000014000000000000006400000000000000c32c7a670000000001", // Expected raw transaction bytes
+                   "2d4c5cbb710b6ef92813597054dbf8d3014529a7d85f6393f01e2a3e978c461c6aa656475b98b453ed3faebf7aa1fdd912bfc59a0c1b6fc44330793994b2e40c", // Expected signature
+                   "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f304a00000000000000020000000000000000000000000000000000000000000000000000000000000001167072696d6172795f66756e6769626c655f73746f7265087472616e73666572010700000000000000000000000000000000000000000000000000000000000000010e66756e6769626c655f6173736574084d657461646174610003202ebb2ccac5e027a87fa0e2e5f656a3a4238d6a48d93ec9b610d570fc0aa0df12202d92d71078f11d923c2b703b95a288c0e2ae63c0d29154e6278bf8004f9b4e520800e1f5050000000014000000000000006400000000000000c32c7a6700000000010020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c402d4c5cbb710b6ef92813597054dbf8d3014529a7d85f6393f01e2a3e978c461c6aa656475b98b453ed3faebf7aa1fdd912bfc59a0c1b6fc44330793994b2e40c", // Expected encoded transaction
+                   r#"{
+                    "expiration_timestamp_secs": "1736060099",
+                    "gas_unit_price": "100",
+                    "max_gas_amount": "20",
+                    "payload": {
+                        "arguments": ["0x2ebb2ccac5e027a87fa0e2e5f656a3a4238d6a48d93ec9b610d570fc0aa0df12","0x2d92d71078f11d923c2b703b95a288c0e2ae63c0d29154e6278bf8004f9b4e52", "100000000"],
+                        "function": "0x1::primary_fungible_store::transfer",
+                        "type": "entry_function_payload",
+                        "type_arguments": ["0x1::fungible_asset::Metadata"]
+                    },
+                    "sender": "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+                    "sequence_number": "74",
+                    "signature": {
+                        "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+                        "signature": "0x2d4c5cbb710b6ef92813597054dbf8d3014529a7d85f6393f01e2a3e978c461c6aa656475b98b453ed3faebf7aa1fdd912bfc59a0c1b6fc44330793994b2e40c",
                         "type": "ed25519_signature"
                     }
                 }"#);
