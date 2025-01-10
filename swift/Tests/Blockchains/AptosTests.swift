@@ -122,4 +122,31 @@ class AptosTests: XCTestCase {
         XCTAssertEqual(output.authenticator.signature.hexString, expectedSignature)
         XCTAssertEqual(output.encoded.hexString, expectedSignedTx)
     }
+    
+    func testSignFungibleAssetTransfer() {
+        // Successfully broadcasted https://explorer.aptoslabs.com/txn/0x475fc97bcba87907166a720676e1b2f5320e613fd13014df37dcf17b09ff0e98/balanceChange?network=mainnet
+        let privateKeyData = Data(hexString: "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec")!
+        let fungibleAssetTransferMsg = AptosFungibleAssetTransferMessage.with {
+            $0.metadataAddress = "0x2ebb2ccac5e027a87fa0e2e5f656a3a4238d6a48d93ec9b610d570fc0aa0df12"
+            $0.to = "0x2d92d71078f11d923c2b703b95a288c0e2ae63c0d29154e6278bf8004f9b4e52"
+            $0.amount = 100000000
+        }
+        let input = AptosSigningInput.with {
+            $0.chainID = 1
+            $0.sender = "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30"
+            $0.expirationTimestampSecs = 1736060099
+            $0.gasUnitPrice = 100
+            $0.maxGasAmount = 20
+            $0.sequenceNumber = 74
+            $0.fungibleAssetTransfer = fungibleAssetTransferMsg
+            $0.privateKey = privateKeyData
+        }
+        let output: AptosSigningOutput = AnySigner.sign(input: input, coin: .aptos)
+        let expectedRawTx = "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f304a00000000000000020000000000000000000000000000000000000000000000000000000000000001167072696d6172795f66756e6769626c655f73746f7265087472616e73666572010700000000000000000000000000000000000000000000000000000000000000010e66756e6769626c655f6173736574084d657461646174610003202ebb2ccac5e027a87fa0e2e5f656a3a4238d6a48d93ec9b610d570fc0aa0df12202d92d71078f11d923c2b703b95a288c0e2ae63c0d29154e6278bf8004f9b4e520800e1f5050000000014000000000000006400000000000000c32c7a670000000001"
+        let expectedSignature = "2d4c5cbb710b6ef92813597054dbf8d3014529a7d85f6393f01e2a3e978c461c6aa656475b98b453ed3faebf7aa1fdd912bfc59a0c1b6fc44330793994b2e40c"
+        let expectedSignedTx = "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f304a00000000000000020000000000000000000000000000000000000000000000000000000000000001167072696d6172795f66756e6769626c655f73746f7265087472616e73666572010700000000000000000000000000000000000000000000000000000000000000010e66756e6769626c655f6173736574084d657461646174610003202ebb2ccac5e027a87fa0e2e5f656a3a4238d6a48d93ec9b610d570fc0aa0df12202d92d71078f11d923c2b703b95a288c0e2ae63c0d29154e6278bf8004f9b4e520800e1f5050000000014000000000000006400000000000000c32c7a6700000000010020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c402d4c5cbb710b6ef92813597054dbf8d3014529a7d85f6393f01e2a3e978c461c6aa656475b98b453ed3faebf7aa1fdd912bfc59a0c1b6fc44330793994b2e40c"
+        XCTAssertEqual(output.rawTxn.hexString, expectedRawTx)
+        XCTAssertEqual(output.authenticator.signature.hexString, expectedSignature)
+        XCTAssertEqual(output.encoded.hexString, expectedSignedTx)
+    }
 }
