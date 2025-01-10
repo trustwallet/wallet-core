@@ -223,8 +223,7 @@ pub fn fungible_asset_transfer(
         ),
         ident_str!("transfer").to_owned(),
         vec![TypeTag::from_str("0x1::fungible_asset::Metadata")
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
-            .with_context(|| "Invalid metadata address")?],
+            .tw_err(|_| SigningErrorType::Error_internal)?],
         vec![
             bcs::encode(&metadata_address)?,
             bcs::encode(&to)?,
