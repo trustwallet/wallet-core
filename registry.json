@@ -4814,5 +4814,36 @@
       "rpc": "https://docs.pactus.org/api/http",
       "documentation": "https://docs.pactus.org"
     }
+  },
+  {
+  "id": "alph",
+  "name": "Alph Network",
+  "coinId": 8738,
+  "symbol": "ALPH",
+  "decimals": 18,
+  "blockchain": "Ethereum",
+  "derivation": [
+    {
+      "path": "m/44'/60'/0'/0/0"
+    }
+  ],
+  "curve": "secp256k1",
+  "publicKeyType": "secp256k1Extended",
+  "chainId": "0x2222",
+  "addressHasher": "keccak256",
+  "explorer": {
+    "url": "https://explorer.alph.network",
+    "txPath": "/tx/",
+    "accountPath": "/address/",
+    "sampleTx": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    "sampleAccount": "0x720E1fa107A1Df39Db4E78A3633121ac36Bec132"
+  },
+  "info": {
+    "url": "https://alph.network",
+    "source": "https://github.com/alph-network",
+    "rpc": "https://rpc.alph.network",
+    "documentation": "https://docs.alph.network"
   }
+}
+
 ]
