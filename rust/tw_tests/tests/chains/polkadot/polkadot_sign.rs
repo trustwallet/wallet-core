@@ -453,6 +453,7 @@ fn test_polymesh_encode_and_sign() {
         message_oneof: balance_call(Proto::mod_Balance::OneOfmessage_oneof::transfer(Transfer {
             to_address: "2FSoQykVV3uWe5ChZuazMDHBoaZmCPPuoYx5KHL5VqXooDQW".into(),
             value: Cow::Owned(U256::from(1000000u64).to_big_endian().to_vec()),
+            // The original C++ test had the wrong memo, since it didn't space pad the memo to 32 bytes.
             memo: "MEMO PADDED WITH SPACES         ".into(),
             call_indices: custom_call_indices(0x05, 0x01),
             ..Default::default()
@@ -463,10 +464,12 @@ fn test_polymesh_encode_and_sign() {
     let public_key = "4322cf71da08f9d56181a707af7c0c437dfcb93e6caac9825a5aba57548142ee";
     let signature = "0791ee378775eaff34ef7e529ab742f0d81d281fdf20ace0aa765ca484f5909c4eea0a59c8dbbc534c832704924b424ba3230c38acd0ad5360cef023ca2a420f";
 
+    // Compile and verify the ED25519 signature.
     let (preimage, signed) =
         helper_encode_and_compile(CoinType::Polkadot, input, signature, public_key, true);
 
     assert_eq!(preimage, "050100849e2f6b165d4b28b39ef3d98f86c0520d82bc349536324365c10af08f323f8302093d00014d454d4f2050414444454420574954482053504143455320202020202020202025010400c20b0000020000006fbd74e5e1d0a61d52ccfe9d4adaed16dd3a7caa37c6bc4d0c2fa12e8b2f4063898bba6413c38f79a284aec8749f297f6c8734c501f67517b5a6aadc338d1102");
+    // This signed tranaction is different from the original C++ test, but matches the transaction on Polymesh.
     assert_eq!(signed, "bd0284004322cf71da08f9d56181a707af7c0c437dfcb93e6caac9825a5aba57548142ee000791ee378775eaff34ef7e529ab742f0d81d281fdf20ace0aa765ca484f5909c4eea0a59c8dbbc534c832704924b424ba3230c38acd0ad5360cef023ca2a420f25010400050100849e2f6b165d4b28b39ef3d98f86c0520d82bc349536324365c10af08f323f8302093d00014d454d4f20504144444544205749544820535041434553202020202020202020");
 }
 
