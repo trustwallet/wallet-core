@@ -71,7 +71,8 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
 
         case THORChainSwap::Proto::ETH:
         case THORChainSwap::Proto::BSC:
-        case THORChainSwap::Proto::AVAX: {
+        case THORChainSwap::Proto::AVAX:
+        case THORChainSwap::Proto::BASE: {
             Ethereum::Proto::SigningInput ethInput;
             if (!ethInput.ParseFromArray(txInput.data(), static_cast<int>(txInput.size()))) {
                 outputProto.mutable_error()->set_code(THORChainSwap::Proto::ErrorCode::Error_Input_proto_deserialization);
