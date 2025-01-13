@@ -58,7 +58,7 @@ std::string RustCoinEntry::deriveAddress(TWCoinType coin, const PublicKey& publi
     } else if (const auto* ss58Prefix = std::get_if<SS58Prefix>(&addressPrefix); ss58Prefix) {
         anyAddressRaw = Rust::tw_any_address_create_ss58_with_public_key(twPublicKey.get(),
                                                                            static_cast<uint32_t>(coin),
-                                                                           *ss58Prefix);
+                                                                           static_cast<uint16_t>(*ss58Prefix));
     } else {
         throw std::invalid_argument("`Rust::tw_any_address_create_with_public_key_filecoin_address_type` are not supported yet");
     }
