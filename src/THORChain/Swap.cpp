@@ -63,6 +63,8 @@ TWCoinType chainCoinType(Chain chain) {
         return TWCoinTypeCosmos;
     case Chain::BSC:
         return TWCoinTypeSmartChain;
+    case Chain::BASE:
+        return TWCoinTypeBase;
     case Chain::THOR:
     default:
         return TWCoinTypeTHORChain;
@@ -89,6 +91,8 @@ std::string chainName(Chain chain) {
         return "LTC";
     case Chain::ATOM:
         return "GAIA";
+    case Chain::BASE:
+        return "BASE";
     case Chain::THOR:
     default:
         return "THOR";
@@ -128,6 +132,7 @@ SwapBundled SwapBuilder::build(bool shortened) {
     case Chain::ETH:
     case Chain::AVAX:
     case Chain::BSC:
+    case Chain::BASE:
         return buildEth(fromAmountNum, memo);
     }
     default:
