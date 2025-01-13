@@ -86,7 +86,7 @@ impl NetworkId {
             _ => {
                 let first = ((network & 0b0000_0000_1111_1100) as u8) >> 2;
                 let second =
-                    ((network >> 8) as u8) | ((network & 0b0000_0000_0000_0011) as u8) << 6;
+                    ((network >> 8) as u8) | (((network & 0b0000_0000_0000_0011) as u8) << 6);
                 vec![first | 0b01000000, second]
             },
         }

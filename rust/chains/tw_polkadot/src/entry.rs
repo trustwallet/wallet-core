@@ -34,7 +34,7 @@ impl PolkadotEntry {
         public_key: Option<PublicKey>,
         input: &Proto::SigningInput<'_>,
     ) -> EncodeResult<TransactionBuilder> {
-        let ctx = ctx_from_tw(&input)?;
+        let ctx = ctx_from_tw(input)?;
         let encoder = CallEncoder::from_ctx(&ctx)?;
         let call = encoder.encode_call(&input.message_oneof)?;
         let era = match &input.era {

@@ -6,7 +6,6 @@ pub mod macros;
 ///
 /// SCALE encoding implementation (see https://docs.substrate.io/reference/scale-codec)
 ///
-
 pub trait ToScale {
     fn to_scale(&self) -> Vec<u8> {
         let mut data = Vec::new();
@@ -85,7 +84,7 @@ impl ToScale for Compact<U256> {
         match u32::try_from(self.0) {
             Ok(val) if val <= COMPACT_1_BYTE_MAX => out.push((val as u8) << 2),
             Ok(val) if val <= COMPACT_2_BYTE_MAX => (((val as u16) << 2) | 0b01).to_scale_into(out),
-            Ok(val) if val <= COMPACT_4_BYTE_MAX => (((val as u32) << 2) | 0b10).to_scale_into(out),
+            Ok(val) if val <= COMPACT_4_BYTE_MAX => ((val << 2) | 0b10).to_scale_into(out),
             _ => {
                 let bytes = self.0.to_little_endian_compact();
                 let bytes_needed = bytes.len();

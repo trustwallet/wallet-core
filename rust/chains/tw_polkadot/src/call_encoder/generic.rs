@@ -208,7 +208,7 @@ impl GenericStaking {
             .iter()
             .map(|target| {
                 let account =
-                    SS58Address::from_str(&target).map_err(|_| EncodeError::InvalidAddress)?;
+                    SS58Address::from_str(target).map_err(|_| EncodeError::InvalidAddress)?;
                 Ok(ctx.multi_address(account.into()))
             })
             .collect::<EncodeResult<Vec<MultiAddress>>>()?;

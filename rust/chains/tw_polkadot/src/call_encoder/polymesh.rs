@@ -162,7 +162,7 @@ impl PolymeshIdentity {
             data.push(0x00);
         }
         Ok(ci.wrap(Self::AddAuthorization {
-            target: Signatory::Account(SubstrateAddress(target.into())),
+            target: Signatory::Account(SubstrateAddress(target)),
             data: AuthorizationData::JoinIdentity {
                 permissions: RawOwned(data),
             },
@@ -284,7 +284,7 @@ impl PolymeshStaking {
             .iter()
             .map(|target| {
                 let account =
-                    SS58Address::from_str(&target).map_err(|_| EncodeError::InvalidAddress)?;
+                    SS58Address::from_str(target).map_err(|_| EncodeError::InvalidAddress)?;
                 Ok(account.into())
             })
             .collect::<EncodeResult<Vec<MultiAddress>>>()?;
@@ -320,7 +320,7 @@ impl_enum_scale!(
 pub struct PolymeshCallEncoder;
 
 impl PolymeshCallEncoder {
-    pub fn new(_ctx: &SubstrateContext) -> Box<dyn TWPolkadotCallEncoder> {
+    pub fn new_boxed(_ctx: &SubstrateContext) -> Box<dyn TWPolkadotCallEncoder> {
         Box::new(Self)
     }
 }

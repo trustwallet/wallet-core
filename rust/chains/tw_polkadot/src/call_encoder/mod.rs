@@ -54,10 +54,10 @@ pub struct CallEncoder {
 impl CallEncoder {
     pub fn from_ctx(ctx: &SubstrateContext) -> EncodeResult<Self> {
         let encoder = match ctx.network {
-            POLKADOT => PolkadotCallEncoder::new(ctx),
-            KUSAMA => KusamaCallEncoder::new(ctx),
-            POLYMESH => PolymeshCallEncoder::new(ctx),
-            _ => PolkadotCallEncoder::new(ctx),
+            POLKADOT => PolkadotCallEncoder::new_boxed(ctx),
+            KUSAMA => KusamaCallEncoder::new_boxed(ctx),
+            POLYMESH => PolymeshCallEncoder::new_boxed(ctx),
+            _ => PolkadotCallEncoder::new_boxed(ctx),
         };
         Ok(Self { encoder })
     }
@@ -156,11 +156,11 @@ impl CallEncoder {
     fn encode_staking_batch_call(&self, s: &Staking) -> EncodeResult<Option<RawOwned>> {
         match &s.message_oneof {
             StakingVariant::bond_and_nominate(ban) => {
-                let batch = self.encode_staking_bond_and_nominate(&ban)?;
+                let batch = self.encode_staking_bond_and_nominate(ban)?;
                 Ok(Some(batch))
             },
             StakingVariant::chill_and_unbond(cau) => {
-                let batch = self.encode_staking_chill_and_unbond(&cau)?;
+                let batch = self.encode_staking_chill_and_unbond(cau)?;
                 Ok(Some(batch))
             },
             _ => Ok(None),

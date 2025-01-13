@@ -17,7 +17,7 @@ impl_enum_scale!(
 pub struct PolkadotCallEncoder(SubstrateContext);
 
 impl PolkadotCallEncoder {
-    pub fn new(ctx: &SubstrateContext) -> Box<dyn TWPolkadotCallEncoder> {
+    pub fn new_boxed(ctx: &SubstrateContext) -> Box<dyn TWPolkadotCallEncoder> {
         Box::new(Self(ctx.clone()))
     }
 }
@@ -58,7 +58,7 @@ impl_enum_scale!(
 pub struct KusamaCallEncoder(SubstrateContext);
 
 impl KusamaCallEncoder {
-    pub fn new(ctx: &SubstrateContext) -> Box<dyn TWPolkadotCallEncoder> {
+    pub fn new_boxed(ctx: &SubstrateContext) -> Box<dyn TWPolkadotCallEncoder> {
         Box::new(Self(ctx.clone()))
     }
 }
