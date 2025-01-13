@@ -16,7 +16,7 @@ bool RustCoinEntry::validateAddress(TWCoinType coin, const std::string &address,
         Rust::TWStringWrapper hrpStr = std::string(*hrpPrefix);
         return Rust::tw_any_address_is_valid_bech32(addressStr.get(), static_cast<uint32_t>(coin), hrpStr.get());
     } else if (const auto* ss58Prefix = std::get_if<SS58Prefix>(&addressPrefix); ss58Prefix) {
-        return Rust::tw_any_address_is_valid_ss58(addressStr.get(), static_cast<uint32_t>(coin), *ss58Prefix);
+        return Rust::tw_any_address_is_valid_ss58(addressStr.get(), static_cast<uint32_t>(coin), static_cast<uint16_t>(*ss58Prefix));
     } else {
         throw std::invalid_argument("`Rust::tw_any_address_create_with_public_key_filecoin_address_type` are not supported yet");
     }
