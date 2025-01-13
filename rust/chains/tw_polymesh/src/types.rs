@@ -167,7 +167,7 @@ impl TryFrom<&TWAssetPermissions<'_>> for AssetPermissions {
             assets: perms
                 .assets
                 .iter()
-                .map(|asset| Ok(asset.try_into()?))
+                .map(|asset| asset.try_into())
                 .collect::<EncodeResult<BTreeSet<AssetId>>>()?,
         })
     }
@@ -207,7 +207,7 @@ impl TryFrom<&TWPortfolioPermissions<'_>> for PortfolioPermissions {
             portfolios: perms
                 .portfolios
                 .iter()
-                .map(|portfolio| Ok(portfolio.try_into()?))
+                .map(|portfolio| portfolio.try_into())
                 .collect::<EncodeResult<BTreeSet<PortfolioId>>>()?,
         })
     }

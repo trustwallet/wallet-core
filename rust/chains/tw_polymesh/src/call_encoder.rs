@@ -140,7 +140,7 @@ impl PolymeshIdentity {
         };
 
         Ok(ci.wrap(Self::AddAuthorization {
-            target: Signatory::Account(SubstrateAddress(target.into())),
+            target: Signatory::Account(SubstrateAddress(target)),
             data,
             expiry: if msg.expiry > 0 {
                 Some(msg.expiry)
@@ -261,7 +261,7 @@ impl PolymeshStaking {
             .iter()
             .map(|target| {
                 let account =
-                    SS58Address::from_str(&target).map_err(|_| EncodeError::InvalidAddress)?;
+                    SS58Address::from_str(target).map_err(|_| EncodeError::InvalidAddress)?;
                 Ok(account.into())
             })
             .collect::<EncodeResult<Vec<MultiAddress>>>()?;
@@ -352,7 +352,7 @@ impl CallEncoder {
             .ok_or(EncodeError::InvalidValue)
             .into_tw()
             .context("Missing runtime call")?;
-        encoder.encode_runtime_call(&call)
+        encoder.encode_runtime_call(call)
     }
 
     pub fn encode_runtime_call(&mut self, call: &Proto::RuntimeCall) -> EncodeResult<RawOwned> {

@@ -35,7 +35,7 @@ impl PolymeshEntry {
         public_key: Option<PublicKey>,
         input: &Proto::SigningInput<'_>,
     ) -> EncodeResult<TransactionBuilder> {
-        let ctx = ctx_from_tw(&input)?;
+        let ctx = ctx_from_tw(input)?;
         let mut encoder = CallEncoder::from_ctx(&ctx)?;
         let call = input
             .runtime_call
@@ -43,7 +43,7 @@ impl PolymeshEntry {
             .ok_or(EncodeError::InvalidValue)
             .into_tw()
             .context("Missing runtime call")?;
-        let call = encoder.encode_runtime_call(&call)?;
+        let call = encoder.encode_runtime_call(call)?;
         let era = match &input.era {
             Some(era) => Era::mortal(era.period, era.block_number),
             None => Era::immortal(),
