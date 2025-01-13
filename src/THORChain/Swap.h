@@ -27,6 +27,7 @@ enum Chain {
     ATOM = 7,
     AVAX = 8,
     BSC = 9,
+    BASE = 10,
 };
 
 using SwapErrorCode = int;
