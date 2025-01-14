@@ -3,11 +3,11 @@ apply plugin: 'kotlin-android'
 
 android {
     namespace 'com.trustwallet.core.app'
-    compileSdkVersion 32
-    ndkVersion '23.1.7779620'
+    compileSdk 35
+    ndkVersion '28.0.12674087'
     defaultConfig {
         applicationId "com.trustwallet.core.app"
-        minSdkVersion 23
+        minSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
