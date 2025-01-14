@@ -8,7 +8,7 @@ android {
     compileSdk 35
     ndkVersion '28.0.12674087'
     defaultConfig {
-        minSdkVersion 28
+        minSdkVersion 23
         externalNativeBuild {
             cmake {
                 arguments "-DCMAKE_BUILD_TYPE=Release", "-DTW_UNITY_BUILD=ON"
