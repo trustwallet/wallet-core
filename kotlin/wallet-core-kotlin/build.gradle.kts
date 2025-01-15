@@ -23,6 +23,7 @@ kotlin {
             }
         }
     }
+    jvmToolchain(17)
 
     val nativeTargets =
         listOf(
