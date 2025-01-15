@@ -1,9 +1,16 @@
 <%
   method = locals[:method]
+  is_source = locals[:is_source]
+
+  maybe_unused = ''
+  if is_source
+    maybe_unused = '[[maybe_unused]] '
+  end
+
   if method.static
-    parameters = '[[maybe_unused]] jclass thisClass' + JNIHelper.parameters(method.parameters)
+    parameters = maybe_unused + 'jclass thisClass' + JNIHelper.parameters(method.parameters)
   else
-    parameters = '[[maybe_unused]] jobject thisObject' + JNIHelper.parameters(method.parameters.drop(1))
+    parameters = maybe_unused + 'jobject thisObject' + JNIHelper.parameters(method.parameters.drop(1))
   end
 -%>
-<%= JNIHelper.type(method.return_type) %> JNICALL <%= JNIHelper.function_name(entity: entity, function: method) %>([[maybe_unused]] JNIEnv *env, <%= parameters %>)<% -%>
+<%= JNIHelper.type(method.return_type) %> JNICALL <%= JNIHelper.function_name(entity: entity, function: method) %>(<%= maybe_unused %>JNIEnv *env, <%= parameters %>)<% -%>
