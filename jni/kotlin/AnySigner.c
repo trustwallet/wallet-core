@@ -9,7 +9,7 @@
 #include "AnySigner.h"
 #include "TWJNI.h"
 
-jbyteArray JNICALL Java_com_trustwallet_core_AnySigner_sign(JNIEnv *env, jclass thisClass, jbyteArray input, jobject coin) {
+jbyteArray JNICALL Java_com_trustwallet_core_AnySigner_sign(JNIEnv *env, [[maybe_unused]] jclass thisClass, jbyteArray input, jobject coin) {
     jclass coinClass = (*env)->GetObjectClass(env, coin);
     jmethodID coinValueMethodID = (*env)->GetMethodID(env, coinClass, "value", "()I");
     uint32_t coinValue = (*env)->CallIntMethod(env, coin, coinValueMethodID);
@@ -21,14 +21,14 @@ jbyteArray JNICALL Java_com_trustwallet_core_AnySigner_sign(JNIEnv *env, jclass 
     return resultData;
 }
 
-jboolean JNICALL Java_com_trustwallet_core_AnySigner_supportsJson(JNIEnv *env, jclass thisClass, jobject coin) {
+jboolean JNICALL Java_com_trustwallet_core_AnySigner_supportsJson(JNIEnv *env, [[maybe_unused]] jclass thisClass, jobject coin) {
     jclass coinClass = (*env)->GetObjectClass(env, coin);
     jmethodID coinValueMethodID = (*env)->GetMethodID(env, coinClass, "value", "()I");
     uint32_t coinValue = (*env)->CallIntMethod(env, coin, coinValueMethodID);
     return TWAnySignerSupportsJSON(coinValue);
 }
 
-jstring JNICALL Java_com_trustwallet_core_AnySigner_signJson(JNIEnv *env, jclass thisClass, jstring json, jbyteArray key, jobject coin) {
+jstring JNICALL Java_com_trustwallet_core_AnySigner_signJson(JNIEnv *env, [[maybe_unused]] jclass thisClass, jstring json, jbyteArray key, jobject coin) {
     jclass coinClass = (*env)->GetObjectClass(env, coin);
     jmethodID coinValueMethodID = (*env)->GetMethodID(env, coinClass, "value", "()I");
     uint32_t coinValue = (*env)->CallIntMethod(env, coin, coinValueMethodID);
@@ -41,7 +41,7 @@ jstring JNICALL Java_com_trustwallet_core_AnySigner_signJson(JNIEnv *env, jclass
     return TWStringJString(result, env);
 }
 
-jbyteArray JNICALL Java_com_trustwallet_core_AnySigner_plan(JNIEnv *env, jclass thisClass, jbyteArray input, jobject coin) {
+jbyteArray JNICALL Java_com_trustwallet_core_AnySigner_plan(JNIEnv *env, [[maybe_unused]] jclass thisClass, jbyteArray input, jobject coin) {
     jclass coinClass = (*env)->GetObjectClass(env, coin);
     jmethodID coinValueMethodID = (*env)->GetMethodID(env, coinClass, "value", "()I");
     uint32_t coinValue = (*env)->CallIntMethod(env, coin, coinValueMethodID);
