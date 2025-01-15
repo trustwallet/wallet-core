@@ -84,7 +84,7 @@ elseif (${TW_COMPILE_JAVA})
                 kotlin/wallet-core-kotlin/src/commonAndroidJvmMain/cpp/generated/*.c
                 )
 
-        SET_SOURCE_FILES_PROPERTIES(${KOTLIN_SOURCES} PROPERTIES LANGUAGE CXX )
+        set_source_files_properties(${KOTLIN_SOURCES} PROPERTIES LANGUAGE CXX )
     else ()
         file(GLOB_RECURSE specific_sources jni/android/*.h jni/android/*.c)
     endif ()
