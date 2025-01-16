@@ -2,6 +2,9 @@ package com.trustwallet.core
 
 import java.lang.ref.PhantomReference
 import java.lang.ref.ReferenceQueue
+import java.util.Collections
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 internal class GenericPhantomReference private constructor(
     referent: Any,
@@ -10,8 +13,9 @@ internal class GenericPhantomReference private constructor(
 ) : PhantomReference<Any>(referent, queue) {
 
     companion object {
-        private val references: MutableSet<GenericPhantomReference> = HashSet()
+        private val references: MutableSet<GenericPhantomReference> = Collections.synchronizedSet(HashSet())
         private val queue: ReferenceQueue<Any> = ReferenceQueue()
+        private val lock = ReentrantLock()
 
         init {
             Thread {
@@ -33,14 +37,18 @@ internal class GenericPhantomReference private constructor(
             handle: Long,
             onDelete: (Long) -> Unit,
         ) {
-            references.add(GenericPhantomReference(referent, handle, onDelete))
+            lock.withLock {
+                references.add(GenericPhantomReference(referent, handle, onDelete))
+            }
         }
 
         private fun doDeletes() {
             while (true) {
                 val ref = queue.remove() as GenericPhantomReference
                 ref.onDelete(ref.handle)
-                references.remove(ref)
+                lock.withLock {
+                    references.remove(ref)
+                }
             }
         }
     }
