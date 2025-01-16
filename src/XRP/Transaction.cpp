@@ -161,12 +161,12 @@ Data Transaction::getPreImage() const {
     return preImage;
 }
 
-Data Transaction::serializeAmount(int64_t amount) {
-    if (amount < 0) {
+Data Transaction::serializeAmount(int64_t p_amount) {
+    if (p_amount < 0) {
         return Data();
     }
     auto data = Data();
-    encode64BE(uint64_t(amount), data);
+    encode64BE(uint64_t(p_amount), data);
     /// clear first bit to indicate XRP
     data[0] &= 0x7F;
     /// set second bit to indicate positive number

@@ -30,34 +30,34 @@ jbyteArray JNICALL <%= JNIHelper.function_name(entity: entity, function: method)
 <%# Static property declarations -%>
 <% entity.static_properties.each do |property| -%>
 JNIEXPORT
-<%=  render('jni/method_prototype.erb', { method: property }) %>;
+<%=  render('jni/method_prototype.erb', { method: property, maybe_unused: false }) %>;
 
 <% end -%>
 <%# Static method declarations -%>
 <%  entity.static_methods.each do |method| -%>
 <%    next if method.name.start_with?('Create') || method.name.start_with?('Init') -%>
 JNIEXPORT
-<%=   render('jni/method_prototype.erb', { method: method }) %>;
+<%=   render('jni/method_prototype.erb', { method: method, maybe_unused: false }) %>;
 
 <%  end -%>
 <%# Property declarations -%>
 <% entity.properties.each do |property| -%>
 JNIEXPORT
-<%=  render('jni/method_prototype.erb', { method: property }) %>;
+<%=  render('jni/method_prototype.erb', { method: property, maybe_unused: false }) %>;
 
 <% end -%>
 <%# Method declarations -%>
 <% entity.methods.each do |method| -%>
 <%   next if method.name.start_with?('Delete') -%>
 JNIEXPORT
-<%=  render('jni/method_prototype.erb', { method: method }) %>;
+<%=  render('jni/method_prototype.erb', { method: method, maybe_unused: false }) %>;
 
 <% end -%>
 <%  less = entity.static_methods.detect{ |i| i.name == 'Less' } -%>
 <%  equal = entity.static_methods.detect{ |i| i.name == 'Equal' } -%>
 <%  if !less.nil? && !equal.nil? -%>
 JNIEXPORT
-<%=   render('jni/method_prototype.erb', { method: JNIHelper.compareMethod(entity) }) %>;
+<%=   render('jni/method_prototype.erb', { method: JNIHelper.compareMethod(entity), maybe_unused: false }) %>;
 
 <%  end -%>
 
