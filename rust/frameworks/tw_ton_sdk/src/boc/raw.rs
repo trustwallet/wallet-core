@@ -263,7 +263,7 @@ fn write_raw_cell(
     if !full_bytes {
         writer.write_bytes(&data[..data_len_bytes - 1])?;
         let last_byte = data[data_len_bytes - 1];
-        let l = last_byte | 1 << (8 - padding_bits - 1);
+        let l = last_byte | (1 << (8 - padding_bits - 1));
         writer.write(8, l)?;
     } else {
         writer.write_bytes(data)?;
