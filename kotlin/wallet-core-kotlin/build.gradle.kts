@@ -12,7 +12,7 @@ plugins {
 kotlin {
     targetHierarchy.default()
 
-    android {
+    androidTarget {
         publishLibraryVariants = listOf("release")
     }
 
@@ -23,6 +23,7 @@ kotlin {
             }
         }
     }
+    jvmToolchain(17)
 
     val nativeTargets =
         listOf(

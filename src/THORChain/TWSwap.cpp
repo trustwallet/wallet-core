@@ -35,7 +35,7 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
         .affFeeAddress(inputProto.affiliate_fee_address())
         .affFeeRate(inputProto.affiliate_fee_rate_bp())
         .extraMemo(inputProto.extra_memo())
-        .expirationPolicy(inputProto.expiration_time());
+        .expirationPolicy(static_cast<size_t>(inputProto.expiration_time()));
     if (inputProto.has_stream_params()) {
         const auto& streamParams = inputProto.stream_params();
         builder

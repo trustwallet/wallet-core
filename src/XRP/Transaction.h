@@ -76,12 +76,12 @@ class Transaction {
     Data token_offers;
     TransactionType transaction_type;
 
-    Transaction(int64_t fee, int64_t flags, int32_t sequence, int32_t last_ledger_sequence, Address p_account)
+    Transaction(int64_t p_fee, int64_t p_flags, int32_t p_sequence, int32_t p_last_ledger_sequence, Address p_account)
         : amount(0)
-        , fee(fee)
-        , flags(flags)
-        , sequence(sequence)
-        , last_ledger_sequence(last_ledger_sequence)
+        , fee(p_fee)
+        , flags(p_flags)
+        , sequence(p_sequence)
+        , last_ledger_sequence(p_last_ledger_sequence)
         , account(p_account)
         , encode_tag(false)
         , destination_tag(0)
@@ -99,53 +99,53 @@ class Transaction {
         setDestination(p_destination, p_destination_tag);
     }
 
-    void createTrustSet(const std::string& currency, const std::string& issuer) { 
+    void createTrustSet(const std::string& p_currency, const std::string& p_issuer) { 
         // Use maximum amount
         // https://xrpl.org/currency-formats.html
         std::string value("9999999999999999e80");
-        createTrustSet(currency, value, issuer);
+        createTrustSet(p_currency, value, p_issuer);
     }
 
-    void createTrustSet(const std::string& currency, const std::string& value, const std::string& issuer) {
+    void createTrustSet(const std::string& p_currency, const std::string& p_value, const std::string& p_issuer) {
         transaction_type = TransactionType::TrustSet;
-        setCurrencyAmount(limit_amount, currency, value, issuer);
+        setCurrencyAmount(limit_amount, p_currency, p_value, p_issuer);
     }
 
-    void createTokenPayment(const std::string& currency, const std::string& value, const std::string& issuer,
+    void createTokenPayment(const std::string& p_currency, const std::string& p_value, const std::string& p_issuer,
                             const std::string& p_destination, int64_t p_destination_tag) {
         transaction_type = TransactionType::payment;
         setDestination(p_destination, p_destination_tag);
-        setCurrencyAmount(currency_amount, currency, value, issuer);
+        setCurrencyAmount(currency_amount, p_currency, p_value, p_issuer);
     }
 
-    void createEscrowCreate(int64_t amount, const std::string& destination, int64_t destination_tag,
-                            int64_t cancel_after, int64_t finish_after, const std::string& condition) {
+    void createEscrowCreate(int64_t p_amount, const std::string& p_destination, int64_t p_destination_tag,
+                            int64_t p_cancel_after, int64_t p_finish_after, const std::string& p_condition) {
         transaction_type = TransactionType::EscrowCreate;
-        if (cancel_after == 0 && finish_after == 0) {
+        if (p_cancel_after == 0 && p_finish_after == 0) {
             throw std::invalid_argument("Either CancelAfter or FinishAfter must be specified");
-        } else if (finish_after == 0 && condition.length() == 0) {
+        } else if (p_finish_after == 0 && p_condition.empty()) {
             throw std::invalid_argument("Either Condition or FinishAfter must be specified");
         }
-        this->amount = amount;
-        setDestination(destination, destination_tag);
-        this->cancel_after = cancel_after;
-        this->finish_after = finish_after;
-        this->condition = parse_hex(condition);
+        this->amount = p_amount;
+        setDestination(p_destination, p_destination_tag);
+        this->cancel_after = p_cancel_after;
+        this->finish_after = p_finish_after;
+        this->condition = parse_hex(p_condition);
     }
 
-    void createEscrowCancel(const std::string& owner, int32_t offer_sequence) {
+    void createEscrowCancel(const std::string& p_owner, int32_t p_offer_sequence) {
         transaction_type = TransactionType::EscrowCancel;
-        setAccount(owner, this->owner);
-         this->offer_sequence = offer_sequence;
+        setAccount(p_owner, this->owner);
+         this->offer_sequence = p_offer_sequence;
     }
 
-    void createEscrowFinish(const std::string& owner, int32_t offer_sequence, 
-                            const std::string& condition, const std::string& fulfillment) {
+    void createEscrowFinish(const std::string& p_owner, int32_t p_offer_sequence,
+                            const std::string& p_condition, const std::string& p_fulfillment) {
         transaction_type = TransactionType::EscrowFinish;
-        setAccount(owner, this->owner);
-        this->offer_sequence = offer_sequence;
-        this->condition = parse_hex(condition);
-        this->fulfillment = parse_hex(fulfillment);
+        setAccount(p_owner, this->owner);
+        this->offer_sequence = p_offer_sequence;
+        this->condition = parse_hex(p_condition);
+        this->fulfillment = parse_hex(p_fulfillment);
     }
 
     void createNFTokenBurn(const std::string& p_nftoken_id) {
@@ -165,9 +165,9 @@ class Transaction {
         sell_offer = parse_hex(p_sell_offer);
     }
 
-    void createNFTokenCancelOffer(const std::vector<std::string> p_token_offers) {
+    void createNFTokenCancelOffer(const std::vector<std::string>& p_token_offers) {
         transaction_type = TransactionType::NFTokenCancelOffer;
-        for (auto i : p_token_offers) {
+        for (const auto& i : p_token_offers) {
             Data token_offer = parse_hex(i);
             token_offers.insert(token_offers.end(), token_offer.begin(), token_offer.end());
         }
@@ -179,15 +179,15 @@ class Transaction {
     Data serialize() const;
     Data getPreImage() const;
 
-    static Data serializeAmount(int64_t amount);
+    static Data serializeAmount(int64_t p_amount);
     static Data serializeCurrencyAmount(const CurrencyAmount& currency_amount);
     static Data serializeAddress(Address address);
 
   private:
-    void setCurrencyAmount(CurrencyAmount& p_currency_amount, const std::string& currency, const std::string& value, const std::string& issuer) {
-        p_currency_amount.currency = Data(currency.begin(), currency.end());
-        p_currency_amount.value = Data(value.begin(), value.end());
-        setAccount(issuer, p_currency_amount.issuer);
+    void setCurrencyAmount(CurrencyAmount& p_currency_amount, const std::string& p_currency, const std::string& p_value, const std::string& p_issuer) {
+        p_currency_amount.currency = Data(p_currency.begin(), p_currency.end());
+        p_currency_amount.value = Data(p_value.begin(), p_value.end());
+        setAccount(p_issuer, p_currency_amount.issuer);
     }
 
     void setDestination(const std::string& p_destination, int64_t p_destination_tag) {
@@ -204,13 +204,13 @@ class Transaction {
         }
     }
 
-    void setAccount(const std::string& p_account, Data& data) {
+    static void setAccount(const std::string& p_account, Data& p_data) {
         try {
             auto address = Address(p_account);
-            data = Data(address.bytes.begin() + 1, address.bytes.end());
+            p_data = Data(address.bytes.begin() + 1, address.bytes.end());
         } catch(const std::exception& e) {
             auto xAddress = XAddress(p_account);
-            data = Data(xAddress.bytes.begin(), xAddress.bytes.end());
+            p_data = Data(xAddress.bytes.begin(), xAddress.bytes.end());
         }
     }
 };
