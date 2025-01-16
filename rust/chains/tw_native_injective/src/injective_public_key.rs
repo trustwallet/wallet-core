@@ -53,7 +53,7 @@ impl JsonPublicKey for InjectiveEthSecp256PublicKey {
 }
 
 impl ProtobufPublicKey for InjectiveEthSecp256PublicKey {
-    fn to_proto(&self) -> google::protobuf::Any<'static> {
+    fn to_proto(&self) -> google::protobuf::Any {
         self.0.to_proto()
     }
 }

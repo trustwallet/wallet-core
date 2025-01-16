@@ -3,7 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 use quick_protobuf::{BytesReader, MessageInfo, Writer};
-use std::borrow::Cow;
 
 #[allow(non_snake_case)]
 #[rustfmt::skip]
@@ -15,8 +14,6 @@ mod impls;
 #[allow(unused_variables)]
 #[rustfmt::skip]
 mod generated {
-    use crate::google;
-
     include!(concat!(env!("OUT_DIR"), "/proto/mod.rs"));
 }
 
@@ -45,21 +42,20 @@ pub fn deserialize<'a, T: MessageRead<'a>>(data: &'a [u8]) -> ProtoResult<T> {
     T::from_reader(&mut reader, data)
 }
 
-pub fn to_any<T>(message: &T) -> google::protobuf::Any<'static>
+pub fn to_any<T>(message: &T) -> google::protobuf::Any
 where
     T: MessageInfo + MessageWrite,
 {
-    let value = Cow::from(serialize(message).expect("Protobuf serialization should never fail"));
-    let type_url = Cow::from(type_url::<T>());
+    let value = serialize(message).expect("Protobuf serialization should never fail");
+    let type_url = type_url::<T>();
     google::protobuf::Any { type_url, value }
 }
 
-pub fn to_any_with_type_url<T>(message: &T, type_url: String) -> google::protobuf::Any<'static>
+pub fn to_any_with_type_url<T>(message: &T, type_url: String) -> google::protobuf::Any
 where
     T: MessageInfo + MessageWrite,
 {
-    let type_url = Cow::from(type_url);
-    let value = Cow::from(serialize(message).expect("Protobuf serialization should never fail"));
+    let value = serialize(message).expect("Protobuf serialization should never fail");
     google::protobuf::Any { type_url, value }
 }
 

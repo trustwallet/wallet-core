@@ -68,7 +68,6 @@ impl<Context: UtxoContext> PsbtPlanner<Context> {
         let out_point = Proto::OutPoint {
             hash: txin.previous_output.hash.to_vec().into(),
             vout: txin.previous_output.index,
-            ..Proto::OutPoint::default()
         };
         let sequence = Proto::mod_Input::Sequence {
             sequence: txin.sequence,
