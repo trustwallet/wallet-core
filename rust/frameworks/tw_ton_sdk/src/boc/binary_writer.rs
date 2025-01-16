@@ -4,7 +4,7 @@
 
 use crate::error::{CellErrorType, CellResult};
 use bitstream_io::{BigEndian, BitWrite, BitWriter, Numeric};
-use tw_coin_entry::error::prelude::{MapTWError, OrTWError, ResultContext};
+use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 
 pub struct BinaryWriter {

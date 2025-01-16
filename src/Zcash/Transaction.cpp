@@ -19,10 +19,12 @@ const auto joinsplitsHashPersonalization = Data({'Z', 'c', 'a', 's', 'h', 'J', '
 const auto shieldedSpendHashPersonalization = Data({'Z', 'c', 'a', 's', 'h', 'S', 'S', 'p', 'e', 'n', 'd', 's', 'H', 'a', 's', 'h'});
 const auto shieldedOutputsHashPersonalization = Data({'Z', 'c', 'a', 's', 'h', 'S', 'O', 'u', 't', 'p', 'u', 't', 'H', 'a', 's', 'h'});
 
-/// See https://github.com/zcash/zips/blob/master/zip-0205.rst#sapling-deployment BRANCH_ID section
+/// See https://github.com/zcash/zips/blob/master/zips/zip-0205.rst#sapling-deployment BRANCH_ID section
 const std::array<TW::byte, 4> SaplingBranchID = {0xbb, 0x09, 0xb8, 0x76};
-/// See https://github.com/zcash/zips/blob/master/zip-0206.rst#blossom-deployment BRANCH_ID section
+/// See https://github.com/zcash/zips/blob/master/zips/zip-0206.rst#blossom-deployment BRANCH_ID section
 const std::array<TW::byte, 4> BlossomBranchID = {0x60, 0x0e, 0xb4, 0x2b};
+/// See https://github.com/zcash/zips/blob/main/zips/zip-0253.md#nu6-deployment CONSENSUS_BRANCH_ID section
+const std::array<byte, 4> Nu6BranchID = {0x55, 0x10, 0xe7, 0xc8};
 
 Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
                               uint64_t amount) const {

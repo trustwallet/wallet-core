@@ -134,7 +134,8 @@ impl UtxoBuilder {
             self.input,
             UtxoToSign {
                 prevout_script_pubkey: script_pubkey.clone(),
-                script_pubkey,
+                reveal_script_pubkey: script_pubkey,
+                taproot_reveal_script_pubkey: None,
                 // P2PK output can be spent by a legacy address only.
                 signing_method: SigningMethod::Legacy,
                 // When the sighash is signed, build a P2PK script_sig.
@@ -168,7 +169,8 @@ impl UtxoBuilder {
             self.input,
             UtxoToSign {
                 prevout_script_pubkey: script_pubkey.clone(),
-                script_pubkey,
+                reveal_script_pubkey: script_pubkey,
+                taproot_reveal_script_pubkey: None,
                 // P2PK output can be spent by a legacy address only.
                 signing_method: SigningMethod::Legacy,
                 // When the sighash is signed, build a P2PKH script_sig.
@@ -229,7 +231,8 @@ impl UtxoBuilder {
                 // To spend a P2WPKH UTXO, we need to sign the transaction with a corresponding P2PKH UTXO.
                 // Then the result script_sig will be published as a witness.
                 // Generating special scriptPubkey for P2WPKH.
-                script_pubkey: conditions::new_p2pkh(&pubkey_hash),
+                reveal_script_pubkey: conditions::new_p2pkh(&pubkey_hash),
+                taproot_reveal_script_pubkey: None,
                 // When the sighash is signed, build a P2WPKH witness.
                 spending_data_constructor: SpendingDataConstructor::ecdsa(
                     standard_constructor::P2WPKH {
@@ -270,7 +273,8 @@ impl UtxoBuilder {
             self.input,
             UtxoToSign {
                 prevout_script_pubkey: script_pubkey.clone(),
-                script_pubkey,
+                reveal_script_pubkey: script_pubkey,
+                taproot_reveal_script_pubkey: None,
                 // P2TR output can be spent by a Witness (eg "bc1") address only.
                 signing_method: SigningMethod::Taproot,
                 // When the sighash is signed, build a P2TR witness.
@@ -287,53 +291,8 @@ impl UtxoBuilder {
         ))
     }
 
-    pub fn p2tr_script_path(
-        mut self,
-        internal_pubkey: &schnorr::PublicKey,
-        payload: Script,
-        control_block: Data,
-        merkle_root: &H256,
-    ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        // Construct the leaf hash.
-        let script_buf = bitcoin::ScriptBuf::from_bytes(payload.to_vec());
-        let leaf_hash = bitcoin::taproot::TapLeafHash::from_script(
-            &script_buf,
-            bitcoin::taproot::LeafVersion::TapScript,
-        );
-
-        // Convert to native.
-        let leaf_hash: H256 = H256::from(leaf_hash.to_byte_array());
-
-        self.finalize_out_point()?;
-        let amount = self.finalize_amount()?;
-        let sighash_ty = self.finalize_sighash_type()?;
-
-        // Restore the original scriptPubkey declared at the unspent P2TR output.
-        let prevout_script_pubkey =
-            conditions::new_p2tr_script_path(&internal_pubkey.compressed(), merkle_root);
-
-        Ok((
-            self.input,
-            UtxoToSign {
-                prevout_script_pubkey,
-                // We use the full (revealed) script as scriptPubkey here.
-                script_pubkey: payload.clone(),
-                signing_method: SigningMethod::Taproot,
-                spending_data_constructor: SpendingDataConstructor::schnorr(
-                    standard_constructor::P2TRScriptPath {
-                        payload,
-                        control_block,
-                    },
-                ),
-                // Taproot ScriptPath input should be signed with a non-tweaked private key.
-                spender_public_key: internal_pubkey.compressed().to_vec(),
-                amount,
-                leaf_hash_code_separator: Some((leaf_hash, u32::MAX)),
-                // Note that we don't use the default double-hasher.
-                tx_hasher: Hasher::Sha256,
-                sighash_ty,
-            },
-        ))
+    pub fn p2tr_script_path(self) -> P2TRScriptPathUtxoBuilder {
+        P2TRScriptPathUtxoBuilder::new(self)
     }
 
     pub fn brc20_transfer(
@@ -358,12 +317,160 @@ impl UtxoBuilder {
         let merkle_root = transfer.merkle_root()?;
         let transfer_payload = Script::from(transfer.script.to_bytes());
 
-        self.p2tr_script_path(
-            pubkey,
-            transfer_payload,
-            control_block.serialize(),
-            &merkle_root,
-        )
+        self.p2tr_script_path()
+            .reveal_script_pubkey(transfer_payload.clone())
+            .spender_public_key(pubkey)
+            // BRC20 transfer UTXO should be signed by revealing actual script pubkey.
+            .taproot_reveal_script_pubkey(transfer_payload)
+            .restore_prevout_script_pubkey(pubkey, &merkle_root)
+            .control_block(control_block.serialize())
+            .build()
+    }
+}
+
+pub struct P2TRScriptPathUtxoBuilder {
+    /// Required.
+    reveal_script_pubkey: Option<Script>,
+    /// Required.
+    spender_public_key: Option<Data>,
+    /// Required.
+    prevout_script_pubkey: Option<Script>,
+    /// Required.
+    control_block: Option<Data>,
+
+    /// Optional.
+    /// If not specified, `standard_constructor::P2TRScriptPath` will be created from [`P2TRScriptPathUtxoBuilder::control_block`].
+    spending_data_ctor: Option<SpendingDataConstructor>,
+
+    /// Optional.
+    taproot_reveal_script_pubkey: Option<Script>,
+
+    /// Inner UTXO builder.
+    utxo_builder: UtxoBuilder,
+}
+
+impl P2TRScriptPathUtxoBuilder {
+    pub fn new(utxo_builder: UtxoBuilder) -> P2TRScriptPathUtxoBuilder {
+        P2TRScriptPathUtxoBuilder {
+            reveal_script_pubkey: None,
+            spender_public_key: None,
+            prevout_script_pubkey: None,
+            control_block: None,
+            spending_data_ctor: None,
+            taproot_reveal_script_pubkey: None,
+            utxo_builder,
+        }
+    }
+
+    pub fn reveal_script_pubkey(mut self, reveal_script_pubkey: Script) -> Self {
+        self.reveal_script_pubkey = Some(reveal_script_pubkey);
+        self
+    }
+
+    pub fn spender_public_key(mut self, spender: &schnorr::PublicKey) -> Self {
+        self.spender_public_key = Some(spender.compressed().to_vec());
+        self
+    }
+
+    /// Restore the original scriptPubkey declared at the unspent P2TR output.
+    ///
+    /// # Note
+    ///
+    /// `internal_key` can differ from [`P2TRScriptPathUtxoBuilder::spender_public_key`].
+    pub fn restore_prevout_script_pubkey(
+        mut self,
+        internal_key: &schnorr::PublicKey,
+        merkle_root: &H256,
+    ) -> Self {
+        self.prevout_script_pubkey = Some(conditions::new_p2tr_script_path(
+            &internal_key.compressed(),
+            merkle_root,
+        ));
+        self
+    }
+
+    pub fn control_block(mut self, control_block: Data) -> Self {
+        self.control_block = Some(control_block);
+        self
+    }
+
+    /// Set custom spending data constructor.
+    pub fn custom_spending_data_ctor(
+        mut self,
+        spending_data_ctor: SpendingDataConstructor,
+    ) -> Self {
+        self.spending_data_ctor = Some(spending_data_ctor);
+        self
+    }
+
+    pub fn taproot_reveal_script_pubkey(mut self, taproot_reveal_script_pubkey: Script) -> Self {
+        self.taproot_reveal_script_pubkey = Some(taproot_reveal_script_pubkey);
+        self
+    }
+
+    pub fn build(mut self) -> SigningResult<(TransactionInput, UtxoToSign)> {
+        let reveal_script_pubkey = self
+            .reveal_script_pubkey
+            .or_tw_err(SigningErrorType::Error_internal)
+            .context("P2TRScriptPathUtxoBuilder::reveal_script_pubkey must be specified")?;
+
+        let spender_public_key = self
+            .spender_public_key
+            .or_tw_err(SigningErrorType::Error_internal)
+            .context("P2TRScriptPathUtxoBuilder::spender_public_key must be specified")?;
+
+        let prevout_script_pubkey = self
+            .prevout_script_pubkey
+            .or_tw_err(SigningErrorType::Error_internal)
+            .context("P2TRScriptPathUtxoBuilder::prevout_script_pubkey must be specified")?;
+
+        let control_block = self
+            .control_block
+            .or_tw_err(SigningErrorType::Error_internal)
+            .context("P2TRScriptPathUtxoBuilder::control_block must be specified")?;
+
+        let spending_data_constructor = match self.spending_data_ctor {
+            Some(ctor) => ctor,
+            None => SpendingDataConstructor::schnorr(standard_constructor::P2TRScriptPath {
+                payload: reveal_script_pubkey.clone(),
+                control_block,
+            }),
+        };
+
+        let leaf_hash = Self::leaf_hash(&reveal_script_pubkey);
+
+        self.utxo_builder.finalize_out_point()?;
+        let amount = self.utxo_builder.finalize_amount()?;
+        let sighash_ty = self.utxo_builder.finalize_sighash_type()?;
+
+        Ok((
+            self.utxo_builder.input,
+            UtxoToSign {
+                prevout_script_pubkey,
+                // We use the full (revealed) script as scriptPubkey here.
+                reveal_script_pubkey,
+                taproot_reveal_script_pubkey: self.taproot_reveal_script_pubkey,
+                signing_method: SigningMethod::Taproot,
+                spending_data_constructor,
+                // Taproot ScriptPath input should be signed with a non-tweaked private key.
+                spender_public_key,
+                amount,
+                leaf_hash_code_separator: Some((leaf_hash, u32::MAX)),
+                // Note that we don't use the default double-hasher.
+                tx_hasher: Hasher::Sha256,
+                sighash_ty,
+            },
+        ))
+    }
+
+    /// Construct the leaf hash.
+    fn leaf_hash(reveal_script_pubkey: &Script) -> H256 {
+        let script_buf = bitcoin::ScriptBuf::from_bytes(reveal_script_pubkey.to_vec());
+        let leaf_hash = bitcoin::taproot::TapLeafHash::from_script(
+            &script_buf,
+            bitcoin::taproot::LeafVersion::TapScript,
+        );
+        H256::from(leaf_hash.to_byte_array())
     }
 }
 

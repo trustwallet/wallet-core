@@ -5,7 +5,7 @@
 use crate::address::SolanaAddress;
 use crate::transaction::versioned::VersionedMessage;
 use crate::transaction::CompiledInstruction;
-use tw_coin_entry::error::prelude::{OrTWError, ResultContext, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 
 /// [`Instruction`] without `accounts` field.

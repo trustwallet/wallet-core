@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::babylon::proto_builder::utxo_protobuf::BabylonUtxoProtobuf;
 use crate::modules::tx_builder::public_keys::PublicKeys;
 use crate::modules::tx_builder::script_parser::{StandardScript, StandardScriptParser};
 use crate::modules::tx_builder::BitcoinChainInfo;
@@ -56,6 +57,21 @@ impl<'a, Context: UtxoContext> UtxoProtobuf<'a, Context> {
                 BuilderType::p2tr_key_path(ref key_path) => self.p2tr_key_path(key_path),
                 // BuilderType::p2tr_script_path(ref script) => self.p2tr_script_path(script),
                 BuilderType::brc20_inscribe(ref inscription) => self.brc20_inscribe(inscription),
+                BuilderType::babylon_staking_timelock_path(ref timelock) => {
+                    self.babylon_staking_timelock(timelock)
+                },
+                BuilderType::babylon_staking_unbonding_path(ref unbonding) => {
+                    self.babylon_staking_unbonding(unbonding)
+                },
+                BuilderType::babylon_staking_slashing_path(ref slashing) => {
+                    self.babylon_staking_slashing(slashing)
+                },
+                BuilderType::babylon_unbonding_timelock_path(ref timelock) => {
+                    self.babylon_unbonding_timelock(timelock)
+                },
+                BuilderType::babylon_unbonding_slashing_path(ref slashing) => {
+                    self.babylon_unbonding_slashing(slashing)
+                },
                 BuilderType::None => SigningError::err(SigningErrorType::Error_invalid_params)
                     .context("No Input Builder type provided"),
             },
@@ -174,7 +190,7 @@ impl<'a, Context: UtxoContext> UtxoProtobuf<'a, Context> {
 
     pub fn prepare_builder(&self) -> SigningResult<UtxoBuilder> {
         let OutPoint { hash, index } = parse_out_point(&self.input.out_point)?;
-        let sighash_ty = SighashType::from_u32(self.input.sighash_type)?;
+        let sighash_ty = self.sighash_ty()?;
 
         if self.input.value < 0 {
             return SigningError::err(SigningErrorType::Error_invalid_utxo_amount)
@@ -195,6 +211,10 @@ impl<'a, Context: UtxoContext> UtxoProtobuf<'a, Context> {
             .sequence(sequence)
             .amount(self.input.value)
             .sighash_type(sighash_ty))
+    }
+
+    pub fn sighash_ty(&self) -> SigningResult<SighashType> {
+        SighashType::from_u32(self.input.sighash_type)
     }
 
     /// Tries to convert [`Proto::PublicKeyOrHash`] to [`Hash<N>`].

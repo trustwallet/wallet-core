@@ -11,7 +11,7 @@ use crate::error::{CellErrorType, CellResult};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::sync::Arc;
-use tw_coin_entry::error::prelude::{OrTWError, ResultContext};
+use tw_coin_entry::error::prelude::*;
 use tw_hash::H256;
 
 type IndexedCellRef = RefCell<IndexedCell>;

@@ -48,6 +48,15 @@ message TokenTransferCoinsMessage {
   StructTag function = 3;
 }
 
+message FungibleAssetTransferMessage {
+  // Fungible Asset address (string)
+  string metadata_address = 1;
+  // Destination Account address (string)
+  string to = 2;
+  // Amount to be transferred (uint64)
+  uint64 amount = 3;
+}
+
 // Necessary fields to process a ManagedTokensRegisterMessage
 message ManagedTokensRegisterMessage {
   // token function to register, e.g BTC: 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC
@@ -165,7 +174,10 @@ message SigningInput {
     ManagedTokensRegisterMessage register_token = 13;
     LiquidStaking liquid_staking_message = 14;
     TokenTransferCoinsMessage token_transfer_coins = 15;
+    FungibleAssetTransferMessage fungible_asset_transfer = 16;
   }
+
+  string abi = 21;
 }
 
 // Information related to the signed transaction

@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use std::str::FromStr;
+
 use crate::transaction_payload::{EntryFunction, TransactionPayload};
 use move_core_types::account_address::AccountAddress;
 use move_core_types::ident_str;
@@ -204,4 +206,33 @@ pub fn managed_coin_register(coin_type: TypeTag) -> TransactionPayload {
         vec![],
         json!([]),
     ))
+}
+
+pub fn fungible_asset_transfer(
+    metadata_address: AccountAddress,
+    to: AccountAddress,
+    amount: u64,
+) -> SigningResult<TransactionPayload> {
+    Ok(TransactionPayload::EntryFunction(EntryFunction::new(
+        ModuleId::new(
+            AccountAddress::new([
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 1,
+            ]),
+            ident_str!("primary_fungible_store").to_owned(),
+        ),
+        ident_str!("transfer").to_owned(),
+        vec![TypeTag::from_str("0x1::fungible_asset::Metadata")
+            .tw_err(|_| SigningErrorType::Error_internal)?],
+        vec![
+            bcs::encode(&metadata_address)?,
+            bcs::encode(&to)?,
+            bcs::encode(&amount)?,
+        ],
+        json!([
+            metadata_address.to_hex_literal(),
+            to.to_hex_literal(),
+            amount.to_string()
+        ]),
+    )))
 }

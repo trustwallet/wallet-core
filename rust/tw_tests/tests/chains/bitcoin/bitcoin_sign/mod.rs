@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+mod babylon_staking;
 mod brc20;
 mod op_return;
 mod ordinal_nft;
