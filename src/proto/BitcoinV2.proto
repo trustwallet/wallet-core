@@ -5,7 +5,6 @@ option java_package = "wallet.core.jni.proto";
 
 import "BabylonStaking.proto";
 import "Common.proto";
-import "google/protobuf/any.proto";
 
 enum InputSelector {
     // Automatically select enough inputs in an ascending order to cover the outputs of the transaction.
@@ -44,10 +43,6 @@ message OutPoint {
 
     // The position in the previous transactions output that this input references.
     uint32 vout = 2;
-
-    // Chain specific arguments, like for Decred.
-    // Should be empty for Bitcoin chain.
-    google.protobuf.Any chain_specific = 3;
 }
 
 message Input {
@@ -258,9 +253,6 @@ message TransactionBuilder {
     // If set, `SigningInput.outputs` and `SigningInput.change` will be ignored.
     // The `Output.value` will be overwritten, leave default.
     Output max_amount_output = 8;
-    // Chain specific arguments, like for ZCash.
-    // Should be empty for Bitcoin chain.
-    google.protobuf.Any chain_specific = 12;
     // One of the "Dust" amount policies.
     // Later, we plan to add support for `DynamicDust` policy with a `min_relay_fee` amount.
     oneof dust_policy {
