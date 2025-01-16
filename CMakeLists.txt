@@ -77,14 +77,12 @@ elseif (${TW_COMPILE_JAVA})
     message("Configuring for JNI")
     file(GLOB_RECURSE core_sources src/*.c src/*.cc src/*.cpp src/*.h jni/cpp/*.cpp jni/cpp/*.h)
     if (${TW_COMPILE_KOTLIN})
-        file(GLOB_RECURSE KOTLIN_SOURCES
+        file(GLOB_RECURSE specific_sources
                 jni/kotlin/*.h
                 jni/kotlin/*.c
                 kotlin/wallet-core-kotlin/src/commonAndroidJvmMain/cpp/generated/*.h
                 kotlin/wallet-core-kotlin/src/commonAndroidJvmMain/cpp/generated/*.c
                 )
-
-        set_source_files_properties(${KOTLIN_SOURCES} PROPERTIES LANGUAGE CXX )
     else ()
         file(GLOB_RECURSE specific_sources jni/android/*.h jni/android/*.c)
     endif ()

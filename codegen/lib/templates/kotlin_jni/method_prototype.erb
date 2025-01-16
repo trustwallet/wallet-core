@@ -1,16 +1,16 @@
 <%
   method = locals[:method]
-  is_source = locals[:is_source]
+  maybe_unused = locals[:maybe_unused]
 
-  maybe_unused = ''
-  if is_source
-    maybe_unused = '[[maybe_unused]] '
+  maybe_unused_str = ''
+  if maybe_unused
+    maybe_unused_str = '[[maybe_unused]] '
   end
 
   if method.static
-    parameters = maybe_unused + 'jclass thisClass' + KotlinJniHelper.parameters(method.parameters)
+    parameters = maybe_unused_str + 'jclass thisClass' + KotlinJniHelper.parameters(method.parameters)
   else
-    parameters = maybe_unused + 'jobject thisObject' + KotlinJniHelper.parameters(method.parameters.drop(1))
+    parameters = maybe_unused_str + 'jobject thisObject' + KotlinJniHelper.parameters(method.parameters.drop(1))
   end
 -%>
-<%= KotlinJniHelper.type(method.return_type) %> JNICALL <%= KotlinJniHelper.function_name(entity: entity, function: method) %>(<%= maybe_unused %>JNIEnv *env, <%= parameters %>)<% -%>
+<%= KotlinJniHelper.type(method.return_type) %> JNICALL <%= KotlinJniHelper.function_name(entity: entity, function: method) %>(<%= maybe_unused_str %>JNIEnv *env, <%= parameters %>)<% -%>
