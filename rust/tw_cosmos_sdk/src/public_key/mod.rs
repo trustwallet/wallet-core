@@ -39,7 +39,7 @@ pub trait CosmosPublicKey: JsonPublicKey + ProtobufPublicKey + Sized {
 }
 
 pub trait ProtobufPublicKey {
-    fn to_proto(&self) -> google::protobuf::Any;
+    fn to_proto(&self) -> google::protobuf::Any<'static>;
 }
 
 pub trait JsonPublicKey {

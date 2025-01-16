@@ -632,10 +632,11 @@ where
 
         let grant_msg = match auth.grant_type {
             ProtoGrantType::grant_stake(ref stake) => google::protobuf::Any {
-                type_url: STAKE_AUTHORIZATION_MSG_TYPE.to_string(),
+                type_url: STAKE_AUTHORIZATION_MSG_TYPE.to_string().into(),
                 value: serialize(stake)
                     .tw_err(|_| SigningErrorType::Error_invalid_params)
-                    .context("Error serializing Grant Stake Protobuf message")?,
+                    .context("Error serializing Grant Stake Protobuf message")?
+                    .into(),
             },
             ProtoGrantType::None => {
                 return SigningError::err(SigningErrorType::Error_invalid_params)

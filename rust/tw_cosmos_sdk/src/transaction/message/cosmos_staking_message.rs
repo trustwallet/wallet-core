@@ -31,8 +31,8 @@ impl<Address: CosmosAddress> CosmosMessage for DelegateMessage<Address> {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let proto_msg = cosmos::staking::v1beta1::MsgDelegate {
             amount: Some(build_coin(&self.amount)),
-            delegator_address: self.delegator_address.to_string(),
-            validator_address: self.validator_address.to_string(),
+            delegator_address: self.delegator_address.to_string().into(),
+            validator_address: self.validator_address.to_string().into(),
         };
         Ok(to_any(&proto_msg))
     }
@@ -60,8 +60,8 @@ impl<Address: CosmosAddress> CosmosMessage for UndelegateMessage<Address> {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let proto_msg = cosmos::staking::v1beta1::MsgUndelegate {
             amount: Some(build_coin(&self.amount)),
-            delegator_address: self.delegator_address.to_string(),
-            validator_address: self.validator_address.to_string(),
+            delegator_address: self.delegator_address.to_string().into(),
+            validator_address: self.validator_address.to_string().into(),
         };
         Ok(to_any(&proto_msg))
     }
@@ -90,9 +90,9 @@ impl<Address: CosmosAddress> CosmosMessage for BeginRedelegateMessage<Address> {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let proto_msg = cosmos::staking::v1beta1::MsgBeginRedelegate {
             amount: Some(build_coin(&self.amount)),
-            delegator_address: self.delegator_address.to_string(),
-            validator_src_address: self.validator_src_address.to_string(),
-            validator_dst_address: self.validator_dst_address.to_string(),
+            delegator_address: self.delegator_address.to_string().into(),
+            validator_src_address: self.validator_src_address.to_string().into(),
+            validator_dst_address: self.validator_dst_address.to_string().into(),
         };
         Ok(to_any(&proto_msg))
     }
@@ -118,8 +118,8 @@ pub struct WithdrawDelegationRewardMessage<Address: CosmosAddress> {
 impl<Address: CosmosAddress> CosmosMessage for WithdrawDelegationRewardMessage<Address> {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let proto_msg = cosmos::distribution::v1beta1::MsgWithdrawDelegatorReward {
-            delegator_address: self.delegator_address.to_string(),
-            validator_address: self.validator_address.to_string(),
+            delegator_address: self.delegator_address.to_string().into(),
+            validator_address: self.validator_address.to_string().into(),
         };
         Ok(to_any(&proto_msg))
     }
@@ -145,8 +145,8 @@ pub struct SetWithdrawAddressMessage<Address: CosmosAddress> {
 impl<Address: CosmosAddress> CosmosMessage for SetWithdrawAddressMessage<Address> {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let proto_msg = cosmos::distribution::v1beta1::MsgSetWithdrawAddress {
-            delegator_address: self.delegator_address.to_string(),
-            withdraw_address: self.withdraw_address.to_string(),
+            delegator_address: self.delegator_address.to_string().into(),
+            withdraw_address: self.withdraw_address.to_string().into(),
         };
         Ok(to_any(&proto_msg))
     }
