@@ -12,7 +12,7 @@ use tw_proto::{google, to_any};
 pub struct AuthGrantMessage<Address: CosmosAddress> {
     pub granter: Address,
     pub grantee: Address,
-    pub grant_msg: google::protobuf::Any,
+    pub grant_msg: ProtobufMessage,
     pub expiration_secs: i64,
 }
 
@@ -28,8 +28,8 @@ impl<Address: CosmosAddress> CosmosMessage for AuthGrantMessage<Address> {
         };
 
         let proto_msg = cosmos::authz::v1beta1::MsgGrant {
-            granter: self.granter.to_string(),
-            grantee: self.grantee.to_string(),
+            granter: self.granter.to_string().into(),
+            grantee: self.grantee.to_string().into(),
             grant: Some(grant),
         };
         Ok(to_any(&proto_msg))
@@ -46,9 +46,9 @@ pub struct AuthRevokeMessage<Address: CosmosAddress> {
 impl<Address: CosmosAddress> CosmosMessage for AuthRevokeMessage<Address> {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let proto_msg = cosmos::authz::v1beta1::MsgRevoke {
-            granter: self.granter.to_string(),
-            grantee: self.grantee.to_string(),
-            msg_type_url: self.msg_type_url.clone(),
+            granter: self.granter.to_string().into(),
+            grantee: self.grantee.to_string().into(),
+            msg_type_url: self.msg_type_url.clone().into(),
         };
         Ok(to_any(&proto_msg))
     }

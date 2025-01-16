@@ -75,6 +75,7 @@ pub mod input {
         Some(Proto::OutPoint {
             hash: reverse_txid(txid).into(),
             vout,
+            ..Proto::OutPoint::default()
         })
     }
 

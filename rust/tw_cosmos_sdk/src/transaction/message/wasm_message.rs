@@ -63,9 +63,9 @@ pub struct WasmExecuteContractMessage<Address: CosmosAddress> {
 impl<Address: CosmosAddress> CosmosMessage for WasmExecuteContractMessage<Address> {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let proto_msg = cosmwasm::wasm::v1::MsgExecuteContract {
-            sender: self.sender.to_string(),
-            contract: self.contract.to_string(),
-            msg: self.msg.to_bytes(),
+            sender: self.sender.to_string().into(),
+            contract: self.contract.to_string().into(),
+            msg: self.msg.to_bytes().into(),
             funds: self.coins.iter().map(build_coin).collect(),
         };
         Ok(to_any(&proto_msg))

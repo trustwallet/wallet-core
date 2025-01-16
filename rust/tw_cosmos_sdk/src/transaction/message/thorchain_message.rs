@@ -21,9 +21,9 @@ pub struct ThorchainAsset {
 impl ThorchainAsset {
     pub fn to_proto(&self) -> types::Asset {
         types::Asset {
-            chain: self.chain.clone(),
-            symbol: self.symbol.clone(),
-            ticker: self.ticker.clone(),
+            chain: self.chain.clone().into(),
+            symbol: self.symbol.clone().into(),
+            ticker: self.ticker.clone().into(),
             synth: self.synth,
         }
     }
@@ -39,7 +39,7 @@ impl ThorchainCoin {
     pub fn to_proto(&self) -> types::Coin {
         types::Coin {
             asset: Some(self.asset.to_proto()),
-            amount: self.amount.to_string(),
+            amount: self.amount.to_string().into(),
             decimals: self.decimals,
         }
     }
@@ -54,8 +54,8 @@ pub struct ThorchainSendMessage {
 impl CosmosMessage for ThorchainSendMessage {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let proto_msg = types::MsgSend {
-            from_address: self.from_address.clone(),
-            to_address: self.to_address.clone(),
+            from_address: self.from_address.clone().into(),
+            to_address: self.to_address.clone().into(),
             amount: self.amount.iter().map(build_coin).collect(),
         };
         Ok(to_any(&proto_msg))
@@ -72,8 +72,8 @@ impl CosmosMessage for ThorchainDepositMessage {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let proto_msg = types::MsgDeposit {
             coins: self.coins.iter().map(ThorchainCoin::to_proto).collect(),
-            memo: self.memo.clone(),
-            signer: self.signer.clone(),
+            memo: self.memo.clone().into(),
+            signer: self.signer.clone().into(),
         };
         Ok(to_any(&proto_msg))
     }

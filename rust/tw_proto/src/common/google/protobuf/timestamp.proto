@@ -32,7 +32,7 @@
 // To recompile the file use the following command inside `wallet-core` directory:
 // ```
 // cargo install pb-rs
-// pb-rs --dont_use_cow --single-mod --output_directory rust/tw_proto/common_proto/google/protobuf/ rust/tw_proto/common_proto/google/protobuf/any.proto
+// pb-rs --single-mod --output_directory rust/tw_proto/src/common/google/protobuf/ rust/tw_proto/src/common/google/protobuf/timestamp.proto
 // ```
 
 syntax = "proto3";

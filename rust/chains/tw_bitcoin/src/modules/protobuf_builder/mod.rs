@@ -32,6 +32,7 @@ impl ProtobufBuilder {
             out_point: Some(Proto::OutPoint {
                 hash: Cow::from(input.previous_output.hash.to_vec()),
                 vout: input.previous_output.index,
+                ..Proto::OutPoint::default()
             }),
             sequence: input.sequence,
             script_sig: Self::script_data(&input.script_sig),
