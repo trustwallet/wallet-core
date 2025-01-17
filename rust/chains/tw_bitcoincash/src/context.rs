@@ -5,13 +5,17 @@
 use crate::address::Address;
 use tw_coin_entry::error::prelude::*;
 use tw_utxo::context::{AddressPrefixes, UtxoContext};
+use tw_utxo::fee::fee_estimator::StandardFeeEstimator;
 use tw_utxo::script::Script;
+use tw_utxo::transaction::standard_transaction::Transaction;
 
 #[derive(Default)]
 pub struct BitcoinCashContext;
 
 impl UtxoContext for BitcoinCashContext {
     type Address = Address;
+    type Transaction = Transaction;
+    type FeeEstimator = StandardFeeEstimator<Transaction>;
 
     fn addr_to_script_pubkey(
         addr: &Self::Address,

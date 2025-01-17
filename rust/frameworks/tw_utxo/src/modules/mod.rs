@@ -2,7 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-pub mod fee_estimator;
 pub mod keys_manager;
 pub mod sighash_computer;
 pub mod sighash_verifier;

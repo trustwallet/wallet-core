@@ -11,6 +11,7 @@ mod common;
 mod impls;
 
 #[allow(non_snake_case)]
+#[allow(unused_imports)]
 #[allow(unused_mut)]
 #[allow(unused_variables)]
 #[rustfmt::skip]

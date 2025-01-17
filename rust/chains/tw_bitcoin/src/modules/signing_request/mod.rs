@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::context::StandardBitcoinContext;
 use crate::modules::tx_builder::output_protobuf::OutputProtobuf;
 use crate::modules::tx_builder::public_keys::PublicKeys;
 use crate::modules::tx_builder::utxo_protobuf::UtxoProtobuf;
@@ -13,15 +14,18 @@ use tw_misc::traits::OptionalEmpty;
 use tw_proto::BitcoinV2::Proto;
 use tw_utxo::context::UtxoContext;
 use tw_utxo::dust::DustPolicy;
+use tw_utxo::fee::fee_estimator::StandardFeeEstimator;
+use tw_utxo::fee::FeePolicy;
 use tw_utxo::modules::tx_planner::{PlanRequest, RequestType};
 use tw_utxo::modules::utxo_selector::InputSelector;
 use tw_utxo::transaction::standard_transaction::builder::TransactionBuilder;
 use tw_utxo::transaction::standard_transaction::Transaction;
 use Proto::mod_TransactionBuilder::OneOfdust_policy as ProtoDustPolicy;
+use Proto::mod_TransactionBuilder::OneOffee_policy as ProtoFeePolicy;
 
 const DEFAULT_TX_VERSION: u32 = 1;
 
-pub type StandardSigningRequest = PlanRequest<Transaction>;
+pub type StandardSigningRequest = PlanRequest<StandardBitcoinContext>;
 
 pub struct SigningRequestBuilder<Context: UtxoContext> {
     _phantom: PhantomData<Context>,
@@ -35,7 +39,7 @@ impl<Context: UtxoContext> SigningRequestBuilder<Context> {
     ) -> SigningResult<StandardSigningRequest> {
         let chain_info = Self::chain_info(coin, &input.chain_info)?;
         let dust_policy = Self::dust_policy(&transaction_builder.dust_policy)?;
-        let fee_per_vbyte = transaction_builder.fee_per_vb;
+        let fee_estimator = Self::fee_estimator(&transaction_builder.fee_policy)?;
         let version = Self::transaction_version(&transaction_builder.version);
 
         let public_keys = Self::get_public_keys(input)?;
@@ -68,7 +72,7 @@ impl<Context: UtxoContext> SigningRequestBuilder<Context> {
             return Ok(StandardSigningRequest {
                 ty: RequestType::SendMax { unsigned_tx },
                 dust_policy,
-                fee_per_vbyte,
+                fee_estimator,
             });
         }
 
@@ -101,7 +105,7 @@ impl<Context: UtxoContext> SigningRequestBuilder<Context> {
                 input_selector,
             },
             dust_policy,
-            fee_per_vbyte,
+            fee_estimator,
         })
     }
 
@@ -136,6 +140,14 @@ impl<Context: UtxoContext> SigningRequestBuilder<Context> {
             ProtoDustPolicy::None => SigningError::err(SigningErrorType::Error_invalid_params)
                 .context("No dust policy provided"),
         }
+    }
+
+    fn fee_estimator(proto: &ProtoFeePolicy) -> SigningResult<StandardFeeEstimator<Transaction>> {
+        let fee_policy = match proto {
+            ProtoFeePolicy::fee_per_vb(fee_per_vb) => FeePolicy::FeePerVb(*fee_per_vb),
+            ProtoFeePolicy::None => FeePolicy::FeePerVb(0),
+        };
+        Ok(StandardFeeEstimator::new(fee_policy))
     }
 
     fn transaction_version(proto: &Proto::TransactionVersion) -> u32 {

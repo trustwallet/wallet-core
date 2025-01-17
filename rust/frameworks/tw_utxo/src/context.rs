@@ -2,7 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::fee::fee_estimator::FeeEstimator;
 use crate::script::Script;
+use crate::transaction::transaction_interface::TransactionInterface;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 
@@ -13,6 +15,8 @@ pub struct AddressPrefixes {
 
 pub trait UtxoContext {
     type Address: FromStr<Err = AddressError>;
+    type Transaction: TransactionInterface;
+    type FeeEstimator: FeeEstimator<Self::Transaction>;
 
     fn addr_to_script_pubkey(
         addr: &Self::Address,

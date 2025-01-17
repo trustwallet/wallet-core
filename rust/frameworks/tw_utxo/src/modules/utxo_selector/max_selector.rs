@@ -4,13 +4,12 @@
 
 use crate::constants::MAX_TRANSACTION_WEIGHT;
 use crate::dust::DustPolicy;
-use crate::modules::fee_estimator::FeeEstimator;
+use crate::fee::fee_estimator::FeeEstimator;
 use crate::modules::utxo_selector::{SelectPlan, SelectResult};
 use crate::script::{Script, Witness};
 use crate::transaction::transaction_interface::{
     TransactionInterface, TxInputInterface, TxOutputInterface,
 };
-use crate::transaction::transaction_parts::Amount;
 use crate::transaction::unsigned_transaction::UnsignedTransaction;
 use crate::transaction::UtxoToSign;
 use itertools::Itertools;
@@ -30,8 +29,8 @@ where
 
     pub fn select_max(
         mut self,
-        fee_rate: Amount,
         dust_policy: DustPolicy,
+        fee_estimator: &dyn FeeEstimator<Transaction>,
     ) -> SigningResult<SelectResult<Transaction>> {
         if self.unsigned_tx.transaction().outputs().len() != 1 {
             return SigningError::err(SigningErrorType::Error_invalid_params)
@@ -88,7 +87,7 @@ where
         self.unsigned_tx
             .set_inputs(selected_utxos, selected_utxo_args)?;
 
-        let tx_fee = FeeEstimator::estimate_fee(&estimated_tx, fee_rate)?;
+        let tx_fee = fee_estimator.estimate_fee(&estimated_tx)?;
         let dust_threshold = dust_policy.dust_threshold();
 
         // Check if the total input amount covers the fee, and the remaining amount is not dust.
