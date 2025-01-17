@@ -5,8 +5,8 @@
 use serde::Serialize;
 use serde_repr::Serialize_repr;
 
-/// Code snippets from:
-/// https://github.com/MystenLabs/sui/blob/a16c942b72c13f42846b3c543b6622af85a5f634/crates/shared-crypto/src/intent.rs
+// Code snippets from:
+// https://github.com/MystenLabs/sui/blob/a16c942b72c13f42846b3c543b6622af85a5f634/crates/shared-crypto/src/intent.rs
 
 /// This enums specifies the intent scope.
 #[derive(Serialize_repr)]

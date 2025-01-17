@@ -289,8 +289,6 @@ fn test_sign_direct() {
 /// and `AuthInfo` will be generated from `SigningInput` parameters.
 #[test]
 fn test_sign_direct_with_body_bytes() {
-    use tw_cosmos_sdk::proto::cosmos::tx::v1beta1 as tx_proto;
-
     let coin = TestCoinContext::default()
         .with_public_key_type(PublicKeyType::Secp256k1)
         .with_hrp("cosmos");
@@ -302,7 +300,7 @@ fn test_sign_direct_with_body_bytes() {
         // Do not specify the `AuthInfo` bytes.
         auth_info_bytes: Cow::default(),
     };
-    let mut input = Proto::SigningInput {
+    let input = Proto::SigningInput {
         account_number: 1037,
         chain_id: "gaia-13003".into(),
         fee: Some(make_fee(200000, make_amount("muon", "200"))),
