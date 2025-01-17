@@ -55,6 +55,22 @@ fn test_sui_message_signer_verify() {
 }
 
 #[test]
+fn test_sui_message_signer_verify_different_public_key() {
+    let input = Sui::Proto::MessageVerifyingInput {
+        public_key: "50af6683c41cd209ad48051ddae8bc588fc56bdbfbce74484768fde68cd93cac" // random public key
+            .decode_hex()
+            .unwrap()
+            .into(),
+        message: "Hello world".into(),
+        signature: "ABUNBl59ILPhyGpdgWpXJIQtEIMidR27As1771Hn7j9wVR/5IetQslRPMBrUC2THM+yGHw7h2N/Mr/0DMOpXLQ7ubWGon8j5kJWFqZa7DSsqxpriO1rPOaGfMmMSOboG+Q==".into(),
+    };
+
+    let input_data = TWDataHelper::create(serialize(&input).unwrap());
+    let verified = unsafe { tw_message_signer_verify(CoinType::Sui as u32, input_data.ptr()) };
+    assert_eq!(verified, false);
+}
+
+#[test]
 fn test_sui_message_signer_pre_image_hashes() {
     let message = "Hello world";
 
