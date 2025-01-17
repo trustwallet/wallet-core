@@ -14,7 +14,8 @@ use quick_protobuf::sizeofs::*;
 use super::*;
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, arbitrary::Arbitrary, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone)]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct Timestamp {
     pub seconds: i64,
     pub nanos: i32,

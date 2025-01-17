@@ -30,9 +30,7 @@ impl<Transaction: TransactionInterface> FeeEstimator<Transaction>
     for StandardFeeEstimator<Transaction>
 {
     fn estimate_fee(&self, tx: &Transaction) -> SigningResult<Amount> {
-        let fee_per_vbyte = match self.policy {
-            FeePolicy::FeePerVb(fee_per_vbyte) => fee_per_vbyte,
-        };
+        let FeePolicy::FeePerVb(fee_per_vbyte) = self.policy;
 
         let vsize = tx.vsize();
         Amount::try_from(vsize)
