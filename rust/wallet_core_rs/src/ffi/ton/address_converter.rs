@@ -5,6 +5,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use std::str::FromStr;
+use tw_macros::tw_ffi;
 use tw_memory::ffi::tw_string::TWString;
 use tw_memory::ffi::RawPtrTrait;
 use tw_misc::try_or_else;
@@ -17,6 +18,7 @@ use tw_ton::modules::address_converter::AddressConverter;
 ///
 /// \param address Address to be converted into a Bag Of Cells (BoC).
 /// \return Pointer to a base64 encoded Bag Of Cells (BoC). Null if invalid address provided.
+#[tw_ffi(ty = static_function, class = TWTONAddressConverter, name = ToBoc)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_ton_address_converter_to_boc(
     address: *const TWString,
@@ -39,6 +41,7 @@ pub unsafe extern "C" fn tw_ton_address_converter_to_boc(
 ///
 /// \param boc Base64 encoded Bag Of Cells (BoC).
 /// \return Pointer to a Jetton address.
+#[tw_ffi(ty = static_function, class = TWTONAddressConverter, name = FromBoc)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_ton_address_converter_from_boc(boc: *const TWString) -> *mut TWString {
     let boc = try_or_else!(TWString::from_ptr_as_ref(boc), std::ptr::null_mut);
@@ -58,6 +61,7 @@ pub unsafe extern "C" fn tw_ton_address_converter_from_boc(boc: *const TWString)
 /// \param bounceable whether the result address should be bounceable.
 /// \param testnet whether the result address should be testnet.
 /// \return user-friendly address str.
+#[tw_ffi(ty = static_function, class = TWTONAddressConverter, name = ToUserFriendly)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_ton_address_converter_to_user_friendly(
     address: *const TWString,
