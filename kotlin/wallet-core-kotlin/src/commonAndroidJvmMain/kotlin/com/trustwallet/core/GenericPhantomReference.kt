@@ -2,6 +2,7 @@ package com.trustwallet.core
 
 import java.lang.ref.PhantomReference
 import java.lang.ref.ReferenceQueue
+import java.util.Collections
 
 internal class GenericPhantomReference private constructor(
     referent: Any,
@@ -10,7 +11,7 @@ internal class GenericPhantomReference private constructor(
 ) : PhantomReference<Any>(referent, queue) {
 
     companion object {
-        private val references: MutableSet<GenericPhantomReference> = HashSet()
+        private val references: MutableSet<GenericPhantomReference> = Collections.synchronizedSet(HashSet())
         private val queue: ReferenceQueue<Any> = ReferenceQueue()
 
         init {

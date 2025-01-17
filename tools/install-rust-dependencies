@@ -27,5 +27,5 @@ cargo install cbindgen --locked
 
 if [[ "$1" == "dev" ]]; then
   rustup component add llvm-tools-preview clippy rustfmt
-  cargo install cargo-llvm-cov --locked
+  cargo install --version 0.6.14 cargo-llvm-cov --locked
 fi
