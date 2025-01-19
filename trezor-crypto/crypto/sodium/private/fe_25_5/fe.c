@@ -25,7 +25,7 @@ uint64_t load_4(const unsigned char *in) {
  Ignores top bit of h.
  */
 
-#if 0
+#ifndef ALREADY_HAS_SODIUM
 void fe25519_frombytes(fe25519 h, const unsigned char *s) {
     int64_t h0 = load_4(s);
     int64_t h1 = load_3(s + 4) << 6;
@@ -200,7 +200,7 @@ void fe25519_reduce(fe25519 h, const fe25519 f) {
  Goal: Output h0+...+2^230 h9.
  */
 
-#if 0
+#ifndef ALREADY_HAS_SODIUM
 void fe25519_tobytes(unsigned char *s, const fe25519 h) {
     fe25519 t;
 

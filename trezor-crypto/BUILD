@@ -21,6 +21,9 @@ cc_library(
     deps = [
         ":trezor_headers",
     ],
+    copts = [
+        "-DALREADY_HAS_SODIUM",
+    ],
 )
 
 cc_library(
@@ -61,6 +64,9 @@ cc_library(
             "crypto/tools/**/*",
         ],
     ),
+    copts = [
+        "-DALREADY_HAS_SODIUM",
+    ],
     visibility = ["//visibility:public"],
     deps = [
         ":ed25519",

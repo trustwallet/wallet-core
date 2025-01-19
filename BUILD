@@ -3,13 +3,13 @@ cc_library(
     hdrs = glob([
         "include/**/*.h",
     ]),
+    copts = [
+        "-D_Nonnull=",
+    ],
     strip_include_prefix = "/3rdparty/trustwallet/include",
     visibility = ["//visibility:public"],
     deps = [
     ],
-    copts = [
-            "-D_Nonnull=",
-            ],
 )
 
 cc_library(
@@ -22,6 +22,9 @@ cc_library(
         "src/**/*.h",
         "src/**/*.hpp",
     ]),
+    copts = [
+        "-D_Nonnull=",
+    ],
     strip_include_prefix = "/3rdparty/trustwallet/src",
     visibility = ["//visibility:public"],
     deps = [
@@ -38,9 +41,6 @@ cc_library(
         "@boost//:serialization",
         "@boost//:uuid",
         "@org_libsodium//:libsodium",
-        "@protobuf//:protobuf",
+        "@protobuf",
     ],
-    copts = [
-        "-D_Nonnull=",
-        ],
 )
