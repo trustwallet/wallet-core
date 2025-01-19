@@ -2,8 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-// #include <google/protobuf/stubs/strutil.h>
-
 #include "Transaction.h"
 #include "AddressV3.h"
 
