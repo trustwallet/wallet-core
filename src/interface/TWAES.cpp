@@ -4,7 +4,7 @@
 
 #include <TrustWalletCore/TWAES.h>
 
-#include <../../src/Encrypt.h>
+#include <Encrypt.h>
 
 using namespace TW;
 

@@ -17,6 +17,7 @@
 #include <TrezorCrypto/sodium/private/fe_25_5/constants.h>
 #include <TrezorCrypto/sodium/private/fe_25_5/fe.h>
 
+#if 0
 void fe25519_invert(fe25519 out, const fe25519 z) {
     fe25519 t0;
     fe25519 t1;
@@ -72,6 +73,7 @@ void fe25519_invert(fe25519 out, const fe25519 z) {
     }
     fe25519_mul(out, t1, t0);
 }
+#endif
 
 void fe25519_pow22523(fe25519 out, const fe25519 z) {
     fe25519 t0;
@@ -146,6 +148,7 @@ void ge25519_add2(ge25519_p1p1_1 *r, const ge25519_p3 *p, const ge25519_cached *
     fe25519_sub(r->T, t0, r->T);
 }
 
+#if 0
 int ge25519_frombytes_negate_vartime(ge25519_p3 *h, const unsigned char *s) {
     fe25519 u;
     fe25519 v;
@@ -188,17 +191,20 @@ int ge25519_frombytes_negate_vartime(ge25519_p3 *h, const unsigned char *s) {
 
     return 0;
 }
+#endif
 
 /*
  r = p
  */
 
+#if 0
 void ge25519_p1p1_to_p3(ge25519_p3 *r, const ge25519_p1p1_1 *p) {
     fe25519_mul(r->X, p->X, p->T);
     fe25519_mul(r->Y, p->Y, p->Z);
     fe25519_mul(r->Z, p->Z, p->T);
     fe25519_mul(r->T, p->X, p->Y);
 }
+#endif
 
 /*
  r = 2 * p
@@ -319,6 +325,7 @@ void ge25519_cmov_cached(ge25519_cached *t, const ge25519_cached *u, unsigned ch
  r = p - q
  */
 
+#if 0
 void ge25519_sub(ge25519_p1p1_1 *r, const ge25519_p3 *p, const ge25519_cached *q) {
     fe25519 t0;
 
@@ -346,6 +353,7 @@ void ge25519_tobytes(unsigned char *s, const ge25519_p2 *h) {
     fe25519_tobytes(s, y);
     s[31] ^= fe25519_isnegative(x) << 7;
 }
+#endif
 
 /* multiply by the order of the main subgroup l = 2^252+27742317777372353535851937790883648493 */
 void ge25519_mul_l(ge25519_p3 *r, const ge25519_p3 *A) {
@@ -409,6 +417,7 @@ void ge25519_mul_l(ge25519_p3 *r, const ge25519_p3 *A) {
     }
 }
 
+#if 0
 int ge25519_is_on_main_subgroup(const ge25519_p3 *p) {
     ge25519_p3 pl;
 
@@ -416,6 +425,7 @@ int ge25519_is_on_main_subgroup(const ge25519_p3 *p) {
 
     return fe25519_iszero(pl.X);
 }
+#endif
 
 #ifndef CRYPTO_ALIGN
 #if defined(__INTEL_COMPILER) || defined(_MSC_VER)
@@ -427,6 +437,7 @@ int ge25519_is_on_main_subgroup(const ge25519_p3 *p) {
 
 #define COMPILER_ASSERT(X) (void)sizeof(char[(X) ? 1 : -1])
 
+#if 0
 int ge25519_has_small_order(const unsigned char s[32]) {
     CRYPTO_ALIGN(16)
     const unsigned char blacklist[][32] = {
@@ -479,3 +490,4 @@ int ge25519_has_small_order(const unsigned char s[32]) {
     }
     return (int)((k >> 8) & 1);
 }
+#endif

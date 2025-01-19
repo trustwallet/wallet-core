@@ -18,7 +18,7 @@ inline constexpr double gSegwitBytesBase{gDefaultBytesBase};
 /// Interface for transaction fee calculator.
 class FeeCalculator {
 public:
-    virtual ~FeeCalculator() noexcept = default;
+    constexpr virtual ~FeeCalculator() noexcept {}
     [[nodiscard]] virtual int64_t calculate(int64_t inputs, int64_t outputs,
                                             int64_t byteFee) const noexcept = 0;
     [[nodiscard]] virtual int64_t calculateSingleInput(int64_t byteFee) const noexcept = 0;
@@ -27,6 +27,8 @@ public:
 /// Generic fee calculator with linear input and output size, and a fix size
 class LinearFeeCalculator : public FeeCalculator {
 public:
+    constexpr virtual ~LinearFeeCalculator() noexcept {}
+
     const double bytesPerInput;
     const double bytesPerOutput;
     const double bytesBase;
@@ -42,6 +44,8 @@ public:
 /// Constant fee calculator
 class ConstantFeeCalculator : public FeeCalculator {
 public:
+    constexpr virtual ~ConstantFeeCalculator() noexcept {}
+
     const int64_t fee;
     explicit constexpr ConstantFeeCalculator(int64_t fee) noexcept : fee(fee) {}
 
@@ -58,6 +62,8 @@ private:
     bool disableDustFilter = false;
 
 public:
+    constexpr virtual ~DefaultFeeCalculator() noexcept {}
+
     constexpr DefaultFeeCalculator(bool disableFilter = false) noexcept
         : LinearFeeCalculator(gDefaultBytesPerInput, gDefaultBytesPerOutput, gDefaultBytesBase)
         , disableDustFilter(disableFilter) {}
@@ -76,6 +82,8 @@ private:
     bool disableDustFilter = false;
 
 public:
+    constexpr virtual ~SegwitFeeCalculator() noexcept {}
+
     constexpr SegwitFeeCalculator(bool disableFilter = false) noexcept
         : LinearFeeCalculator(gSegwitBytesPerInput, gSegwitBytesPerOutput, gSegwitBytesBase)
         , disableDustFilter(disableFilter) {}
@@ -90,6 +98,8 @@ public:
 
 class Zip0317FeeCalculator: public FeeCalculator {
 public:
+    constexpr virtual ~Zip0317FeeCalculator() noexcept {}
+
     static constexpr int64_t gMarginalFee = 5000ul;
     static constexpr int64_t gGraceActions = 2ul;
 

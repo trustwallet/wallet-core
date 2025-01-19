@@ -32,6 +32,8 @@ private:
     bool disableDustFilter = false;
 
 public:
+    constexpr ~DecredFeeCalculator() noexcept override {}
+
     constexpr DecredFeeCalculator(bool disableFilter = false) noexcept
         : LinearFeeCalculator(gDecredBytesPerInput, gDecredBytesPerOutput, gDecredBytesBase)
         , disableDustFilter(disableFilter) {}

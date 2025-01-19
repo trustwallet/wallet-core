@@ -223,6 +223,7 @@ int fe25519_isnegative(const fe25519 f) {
     return s[0] & 1;
 }
 
+#if 0
 int sodium_is_zero(const unsigned char *n, const size_t nlen) {
     size_t i;
     volatile unsigned char d = 0U;
@@ -232,6 +233,7 @@ int sodium_is_zero(const unsigned char *n, const size_t nlen) {
     }
     return 1 & ((d - 1) >> 8);
 }
+#endif
 
 /*
  return 1 if f == 0
