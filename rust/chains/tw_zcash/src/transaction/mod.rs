@@ -4,7 +4,7 @@
 
 use crate::modules::zcash_sighash::ZcashSighash;
 use tw_coin_entry::error::prelude::{ResultContext, SigningError, SigningErrorType, SigningResult};
-use tw_hash::H256;
+use tw_hash::{H256, H32};
 use tw_utxo::encode::compact_integer::CompactInteger;
 use tw_utxo::encode::stream::Stream;
 use tw_utxo::encode::Encodable;
@@ -12,13 +12,16 @@ use tw_utxo::signing_mode::SigningMethod;
 use tw_utxo::transaction::standard_transaction::{
     TransactionInput, TransactionOutput, SEGWIT_SCALE_FACTOR,
 };
-use tw_utxo::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
+use tw_utxo::transaction::transaction_interface::TransactionInterface;
 use tw_utxo::transaction::transaction_parts::Amount;
-use tw_utxo::transaction::transaction_sighash::fork_id_sighash::ForkIdSighash;
-use tw_utxo::transaction::transaction_sighash::legacy_sighash::LegacySighash;
-use tw_utxo::transaction::transaction_sighash::taproot1_sighash::Taproot1Sighash;
-use tw_utxo::transaction::transaction_sighash::witness0_sighash::Witness0Sighash;
 use tw_utxo::transaction::{TransactionPreimage, UtxoPreimageArgs, UtxoTaprootPreimageArgs};
+
+/// An overflow happens while converting to `i32` because 0x80000004 is greater than [`i32::MAX`].
+/// However, the value will be serialized correctly.
+pub const TRANSACTION_VERSION_4: i32 = 0x80000004_u32 as i32;
+pub const TRANSACTION_VERSION_GROUP_ID: u32 = 0x892F2085;
+/// See https://github.com/zcash/zips/blob/main/zips/zip-0253.md#nu6-deployment CONSENSUS_BRANCH_ID section
+pub const NU6_BRANCH_ID: H32 = H32::from_array([0x55, 0x10, 0xe7, 0xc8]);
 
 const SEGWIT_NOT_SUPPORTED: bool = false;
 const SAPLING_SPENDING_LEN: usize = 0;
@@ -28,6 +31,7 @@ const JOIN_SPLITS_LEN: usize = 0;
 /// Transparent ZCash transaction (transparent).
 /// https://github.com/zcash/zips/blob/998a97f2a1e5686e0d5c57f399a08b4daf100f8e/zips/zip-0243.rst
 /// https://github.com/zcash/zcash/blob/a3435336b0c561799ac6805a27993eca3f9656df/src/primitives/transaction.h#L454
+#[derive(Clone, Debug)]
 pub struct ZcashTransaction {
     /// Transaction version.
     /// Currently, version 4 (0x80000004) is supported only.
@@ -54,6 +58,9 @@ pub struct ZcashTransaction {
     /// Sapling value balance for the transaction.
     /// Always 0 for a transparent transaction.
     pub sapling_value_balance: Amount,
+    /// Consensus branch ID for the epoch of the block containing the transaction.
+    /// Note it's not used in the final transaction encoding, but in the sighash computing.
+    pub branch_id: H32,
 }
 
 impl ZcashTransaction {

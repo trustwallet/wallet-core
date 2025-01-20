@@ -3,7 +3,8 @@
 // Copyright © 2017 Trust Wallet.
 
 pub mod compiler;
+pub mod context;
 pub mod entry;
 pub mod modules;
 pub mod signer;
-mod transaction;
+pub mod transaction;

@@ -125,7 +125,7 @@ impl<Context: UtxoContext> SigningRequestBuilder<Context> {
         Ok(public_keys)
     }
 
-    fn input_selector(selector: &Proto::InputSelector) -> InputSelector {
+    pub fn input_selector(selector: &Proto::InputSelector) -> InputSelector {
         match selector {
             Proto::InputSelector::SelectAscending => InputSelector::Ascending,
             Proto::InputSelector::SelectInOrder => InputSelector::InOrder,
@@ -134,7 +134,7 @@ impl<Context: UtxoContext> SigningRequestBuilder<Context> {
         }
     }
 
-    fn dust_policy(proto: &ProtoDustPolicy) -> SigningResult<DustPolicy> {
+    pub fn dust_policy(proto: &ProtoDustPolicy) -> SigningResult<DustPolicy> {
         match proto {
             ProtoDustPolicy::fixed_dust_threshold(fixed) => Ok(DustPolicy::FixedAmount(*fixed)),
             ProtoDustPolicy::None => SigningError::err(SigningErrorType::Error_invalid_params)
@@ -142,7 +142,9 @@ impl<Context: UtxoContext> SigningRequestBuilder<Context> {
         }
     }
 
-    fn fee_estimator(proto: &ProtoFeePolicy) -> SigningResult<StandardFeeEstimator<Transaction>> {
+    pub fn fee_estimator(
+        proto: &ProtoFeePolicy,
+    ) -> SigningResult<StandardFeeEstimator<Transaction>> {
         let fee_policy = match proto {
             ProtoFeePolicy::fee_per_vb(fee_per_vb) => FeePolicy::FeePerVb(*fee_per_vb),
             ProtoFeePolicy::None => FeePolicy::FeePerVb(0),
@@ -150,7 +152,7 @@ impl<Context: UtxoContext> SigningRequestBuilder<Context> {
         Ok(StandardFeeEstimator::new(fee_policy))
     }
 
-    fn transaction_version(proto: &Proto::TransactionVersion) -> u32 {
+    pub fn transaction_version(proto: &Proto::TransactionVersion) -> u32 {
         match proto {
             Proto::TransactionVersion::UseDefault => DEFAULT_TX_VERSION,
             Proto::TransactionVersion::V1 => 1,

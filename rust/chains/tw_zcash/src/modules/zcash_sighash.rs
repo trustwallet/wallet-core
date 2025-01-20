@@ -4,13 +4,14 @@
 
 use crate::transaction::ZcashTransaction;
 use tw_coin_entry::error::prelude::*;
-use tw_hash::H256;
+use tw_hash::blake2::blake2_b_personal;
+use tw_hash::{H128, H256};
 use tw_utxo::encode::stream::Stream;
-use tw_utxo::transaction::transaction_interface::TransactionInterface;
 use tw_utxo::transaction::transaction_sighash::legacy_sighash::LegacySighash;
 use tw_utxo::transaction::UtxoPreimageArgs;
 
 const DEFAULT_HASH: H256 = H256::new();
+const PERSONALISATION_PREFIX: &[u8] = b"ZcashSigHash";
 
 type ZcashLegacySighash = LegacySighash<ZcashTransaction>;
 
@@ -21,6 +22,19 @@ pub struct ZcashSighash;
 
 impl ZcashSighash {
     pub fn sighash_tx(tx: &ZcashTransaction, args: &UtxoPreimageArgs) -> SigningResult<H256> {
+        let mut personalisation = H128::new();
+        personalisation[..PERSONALISATION_PREFIX.len()].copy_from_slice(PERSONALISATION_PREFIX);
+        personalisation[PERSONALISATION_PREFIX.len()..].copy_from_slice(tx.branch_id.as_slice());
+
+        let preimage = Self::preimage_tx(tx, args)?;
+        // Ignore `args.tx_hasher` and use `blake2_b_personal` instead.
+        blake2_b_personal(preimage.as_slice(), H256::LEN, personalisation.as_slice())
+            .and_then(|sighash| H256::try_from(sighash.as_slice()))
+            .tw_err(|_| SigningErrorType::Error_internal)
+            .context("'blake2_b_personal' failed")
+    }
+
+    pub fn preimage_tx(tx: &ZcashTransaction, args: &UtxoPreimageArgs) -> SigningResult<H256> {
         let utxo_to_hash = ZcashLegacySighash::inputs_for_preimage(tx, args)?;
         let outputs_to_hash = ZcashLegacySighash::outputs_for_preimage(tx, args);
 
@@ -49,11 +63,11 @@ impl ZcashSighash {
 
         // The input being signed (replacing the scriptSig with scriptCode + amount)
         // The prevout may already be contained in hashPrevout, and the nSequence
-        // may already be contain in hashSequence.
+        // may already be contained in hashSequence.
         let utxo = tx
             .transparent_inputs
             .get(args.input_index)
-            .or_tw_err(|| SigningErrorType::Error_internal)
+            .or_tw_err(SigningErrorType::Error_internal)
             .context("Zcash sighash error: input_index is out of bounds")?;
 
         stream
