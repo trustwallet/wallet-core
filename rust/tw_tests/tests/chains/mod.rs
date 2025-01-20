@@ -21,4 +21,5 @@ mod sui;
 mod tbinance;
 mod thorchain;
 mod ton;
+mod zcash;
 mod zetachain;

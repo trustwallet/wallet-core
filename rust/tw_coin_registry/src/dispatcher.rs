@@ -25,6 +25,7 @@ use tw_solana::entry::SolanaEntry;
 use tw_sui::entry::SuiEntry;
 use tw_thorchain::entry::ThorchainEntry;
 use tw_ton::entry::TheOpenNetworkEntry;
+use tw_zcash::entry::ZcashEntry;
 
 pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;
 pub type EvmEntryExtStaticRef = &'static dyn EvmEntryExt;
@@ -46,6 +47,7 @@ const SOLANA: SolanaEntry = SolanaEntry;
 const SUI: SuiEntry = SuiEntry;
 const THE_OPEN_NETWORK: TheOpenNetworkEntry = TheOpenNetworkEntry;
 const THORCHAIN: ThorchainEntry = ThorchainEntry;
+const ZCASH: ZcashEntry = ZcashEntry;
 // end_of_blockchain_entries - USED TO GENERATE CODE
 
 pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinEntryExtStaticRef> {
@@ -67,6 +69,7 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::Sui => Ok(&SUI),
         BlockchainType::TheOpenNetwork => Ok(&THE_OPEN_NETWORK),
         BlockchainType::Thorchain => Ok(&THORCHAIN),
+        BlockchainType::Zcash => Ok(&ZCASH),
         // end_of_blockchain_dispatcher - USED TO GENERATE CODE
         BlockchainType::Unsupported => Err(RegistryError::Unsupported),
     }

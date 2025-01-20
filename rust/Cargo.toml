@@ -16,6 +16,7 @@ members = [
     "chains/tw_sui",
     "chains/tw_thorchain",
     "chains/tw_ton",
+    "chains/tw_zcash",
     "frameworks/tw_ton_sdk",
     "frameworks/tw_utxo",
     "tw_any_coin",

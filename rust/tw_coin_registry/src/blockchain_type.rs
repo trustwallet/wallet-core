@@ -25,6 +25,7 @@ pub enum BlockchainType {
     Sui,
     TheOpenNetwork,
     Thorchain,
+    Zcash,
     // end_of_blockchain_type - USED TO GENERATE CODE
     #[serde(other)]
     Unsupported,

@@ -25,15 +25,15 @@ use super::UtxoTaprootPreimageArgs;
 pub mod builder;
 
 /// Must be zero.
-const WITNESS_MARKER: u8 = 0;
+pub const WITNESS_MARKER: u8 = 0;
 /// Must be nonzero.
-const WITNESS_FLAG: u8 = 1;
+pub const WITNESS_FLAG: u8 = 1;
 
 // Sizes of various transaction fields.
-const WITNESS_FLAG_MARKER: usize = 2;
+pub const WITNESS_FLAG_MARKER: usize = 2;
 
 // The Segwit scale factor (witnesses are deducted).
-const SEGWIT_SCALE_FACTOR: usize = 4;
+pub const SEGWIT_SCALE_FACTOR: usize = 4;
 
 /// A standard Bitcoin transaction.
 ///
