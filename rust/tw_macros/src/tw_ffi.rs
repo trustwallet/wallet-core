@@ -1,13 +1,14 @@
 use derive_syn_parse::Parse;
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
-use syn::{parse::{Parse, ParseStream}, parse2, parse_quote, Ident, Result, Token};
-use serde::{Deserialize, Serialize};
+use syn::{parse::{Parse, ParseStream}, parse2, Ident, Result, Token};
 
 use std::env;
 use std::fs;
 use std::path::Path;
-use std::path::PathBuf;
+
+use tw_misc::code_gen::{TWConfig, TWStaticFunction, TWArg};
+
 pub mod keywords {
     use syn::custom_keyword;
 
@@ -44,48 +45,27 @@ impl ToString for TWFFIType {
 
 #[derive(Parse, Clone)]
 pub struct TWFFIAttrArgs {
-    pub ty_keyword: Option<keywords::ty>,
-    #[parse_if(ty_keyword.is_some())]
+    pub _ty_keyword: Option<keywords::ty>,
+    #[parse_if(_ty_keyword.is_some())]
     pub _eq: Option<Token![=]>,
-    #[parse_if(ty_keyword.is_some())]
-    pub ty: Option<TWFFIType>,
-    #[parse_if(ty_keyword.is_some())]
+    #[parse_if(_ty_keyword.is_some())]
+    pub _ty: Option<TWFFIType>,
+    #[parse_if(_ty_keyword.is_some())]
     pub _comma: Option<Token![,]>,
 
-    pub class_keyword: Option<keywords::class>,
-    #[parse_if(class_keyword.is_some())]
+    pub _class_keyword: Option<keywords::class>,
+    #[parse_if(_class_keyword.is_some())]
     pub _eq2: Option<Token![=]>,
-    #[parse_if(class_keyword.is_some())]
+    #[parse_if(_class_keyword.is_some())]
     pub class: Option<Ident>,
-    #[parse_if(class_keyword.is_some())]
+    #[parse_if(_class_keyword.is_some())]
     pub _comma2: Option<Token![,]>,
 
-    pub name_keyword: Option<keywords::name>,
-    #[parse_if(name_keyword.is_some())]
+    pub _name_keyword: Option<keywords::name>,
+    #[parse_if(_name_keyword.is_some())]
     pub _eq3: Option<Token![=]>,
-    #[parse_if(name_keyword.is_some())]
+    #[parse_if(_name_keyword.is_some())]
     pub name: Option<Ident>,
-}
-
-
-#[derive(Deserialize, Serialize, Debug)]
-pub struct TWConfig {
-    pub class: String,
-    pub static_functions: Vec<TWStaticFunction>,
-}
-
-#[derive(Deserialize, Serialize, Debug)]
-pub struct TWStaticFunction {
-    pub name: String,
-    pub rust_name: String,
-    pub args: Vec<TWArg>,
-    pub return_type: String,
-}
-
-#[derive(Deserialize, Serialize, Debug)]
-pub struct TWArg {
-    pub name: String,
-    pub ty: String,
 }
 
 pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
@@ -130,7 +110,11 @@ pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
                 static_functions: vec![],
             }
         }; 
-        config.static_functions.push(static_function);
+        if let Some(idx) = config.static_functions.iter().position(|f| f.name == static_function.name) {
+            config.static_functions[idx] = static_function;
+        } else {
+            config.static_functions.push(static_function);
+        }
         
         let yaml_output: String = serde_yaml::to_string(&config).expect("Failed to serialize to YAML");        
         fs::write(&yaml_file_path, yaml_output).expect("Failed to write YAML file");
