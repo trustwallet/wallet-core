@@ -7,6 +7,7 @@
 #include "TWBase.h"
 #include "TWData.h"
 #include "TWString.h"
+#include "TWPublicKey.h"
 
 TW_EXTERN_C_BEGIN
 

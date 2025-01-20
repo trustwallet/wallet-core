@@ -2,6 +2,7 @@
 
 import kotlinx.cinterop.toCValues
 
+@OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
 actual object <%= entity.name %> {
 <%# Static property declarations -%>
 <%  entity.static_properties.each do |property| -%>

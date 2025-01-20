@@ -1,7 +1,7 @@
 <%  less = locals[:less] -%>
 <%  equal = locals[:equal] -%>
 <%  compareMethod = JNIHelper.compareMethod(entity) -%>
-<%= render('jni/method_prototype.erb', { method: compareMethod }) %> {
+<%= render('jni/method_prototype.erb', { method: compareMethod, maybe_unused: true }) %> {
 <%= render('jni/instance_access.erb', { entity: entity }) %>
 <%= render('jni/parameter_access.erb', { method: compareMethod }) -%>
 <%  if entity.struct? -%>

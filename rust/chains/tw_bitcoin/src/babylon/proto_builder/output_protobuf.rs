@@ -28,7 +28,7 @@ pub trait BabylonOutputProtobuf {
     ) -> SigningResult<TransactionOutput>;
 }
 
-impl<'a, Context: UtxoContext> BabylonOutputProtobuf for OutputProtobuf<'a, Context> {
+impl<Context: UtxoContext> BabylonOutputProtobuf for OutputProtobuf<'_, Context> {
     fn babylon_staking(
         &self,
         staking: &Proto::mod_OutputBuilder::StakingOutput,
