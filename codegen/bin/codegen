@@ -63,13 +63,11 @@ end.parse!
 
 entities = []
 files = []
-file_paths = []
 [options.input, options.input_generated].each do |input_dir|
   Dir.foreach(input_dir) do |item|
     next if ['.', '..', '.DS_Store'].include?(item)
 
     file_path = File.expand_path(File.join(input_dir, item))
-    file_paths << file_path
     entity = Parser.new(path: file_path).parse
     next if entity.nil?
 
