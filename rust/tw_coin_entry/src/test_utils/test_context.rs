@@ -51,6 +51,10 @@ impl CoinContext for TestCoinContext {
         self.p2sh
     }
 
+    fn ss58_prefix(&self) -> Option<u16> {
+        unimplemented!()
+    }
+
     fn derivations(&self) -> &[DerivationWithPath] {
         unimplemented!()
     }

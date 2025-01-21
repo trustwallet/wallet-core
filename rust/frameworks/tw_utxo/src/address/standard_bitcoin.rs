@@ -35,6 +35,7 @@ impl TryFrom<AddressPrefix> for StandardBitcoinPrefix {
         match prefix {
             AddressPrefix::BitcoinBase58(base58) => Ok(StandardBitcoinPrefix::Base58(base58)),
             AddressPrefix::Hrp(hrp) => Ok(StandardBitcoinPrefix::Bech32(Bech32Prefix { hrp })),
+            AddressPrefix::SubstrateNetwork(_) => Err(AddressError::UnexpectedAddressPrefix),
         }
     }
 }

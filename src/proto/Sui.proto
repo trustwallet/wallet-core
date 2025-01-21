@@ -152,3 +152,40 @@ message SigningOutput {
     // Error description.
     string error_message = 4;
 }
+
+// Message signing input.
+message MessageSigningInput {
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 1;
+
+    // A UTF-8 regular message to sign.
+    string message = 2;
+}
+
+// Message signing output.
+message MessageSigningOutput {
+    // The signature, a 97-byte array encoded in base64.
+    // The first byte indicates the signature scheme (currently set to 0x00, as we only support ED25519).
+    // The following 64 bytes represent the raw ED25519 signature, while the next 32 bytes contain the public key.
+    string signature = 1;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
+}
+
+// Message verifying input.
+message MessageVerifyingInput {
+    // The message signed.
+    string message = 1;
+
+    // Public key that will verify the message.
+    // It must be equal to the public key encoded in the signature.
+    bytes public_key = 2;
+
+    // The signature, a 97-byte array encoded in base64.
+    // Same as the signature field in MessageSigningOutput.
+    string signature = 3;
+}

@@ -36,6 +36,7 @@ pub struct CoinItem {
     pub hrp: Option<String>,
     pub p2pkh_prefix: Option<u8>,
     pub p2sh_prefix: Option<u8>,
+    pub ss58_prefix: Option<u16>,
 }
 
 #[inline]
