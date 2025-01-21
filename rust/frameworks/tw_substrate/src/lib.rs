@@ -16,6 +16,8 @@ pub use extrinsic::*;
 pub mod extensions;
 pub use extensions::*;
 
+pub mod modules;
+
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum EncodeError {
     InvalidNetworkId,
