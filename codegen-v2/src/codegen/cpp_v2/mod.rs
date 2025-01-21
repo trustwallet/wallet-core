@@ -25,8 +25,8 @@ fn generate_conversion_code(ty: &str, name: &str) -> (String, String) {
 
 pub fn generate_cpp_bindings() -> Result<()> {
     const IN_DIR: &str = "../rust/bindings/";
-    const HEADER_OUT_DIR: &str = "../include/TrustWalletCore/";
-    const SOURCE_OUT_DIR: &str = "../src/interface/";
+    const HEADER_OUT_DIR: &str = "../include/Generated/TrustWalletCore/";
+    const SOURCE_OUT_DIR: &str = "../src/Generated/";
     
     std::fs::create_dir_all(HEADER_OUT_DIR)?;
     std::fs::create_dir_all(SOURCE_OUT_DIR)?;
@@ -46,19 +46,19 @@ pub fn generate_cpp_bindings() -> Result<()> {
 
         let info: TWConfig = serde_yaml::from_str(&file_contents).expect("Failed to parse YAML file");
 
-        let file_path = format!("{HEADER_OUT_DIR}/{}Gen.h", info.class);
+        let file_path = format!("{HEADER_OUT_DIR}/{}.h", info.class);
 
         let mut file = std::fs::File::create(&file_path)?;
         writeln!(file, "// Copyright © 2017 Trust Wallet.\n")?;
         writeln!(file, "#pragma once\n")?;
-        writeln!(file, "#include \"TWBase.h\"")?;
+        writeln!(file, "#include <TrustWalletCore/TWBase.h>")?;
         
         // Include headers based on argument types
         let mut included_headers = std::collections::HashSet::new();
         for func in &info.static_functions {
             for arg in &func.args {
                 if arg.ty.contains("TWString") && included_headers.insert("TWString.h") {
-                    writeln!(file, "#include \"TWString.h\"")?;
+                    writeln!(file, "#include <TrustWalletCore/TWString.h>")?;
                 }
                 // Additional type checks can be added here in the future
             }
@@ -88,11 +88,11 @@ pub fn generate_cpp_bindings() -> Result<()> {
 
         file.flush()?;
         
-        let file_path = format!("{SOURCE_OUT_DIR}/{}Gen.cpp", info.class);
+        let file_path = format!("{SOURCE_OUT_DIR}/{}.cpp", info.class);
 
         let mut file = std::fs::File::create(&file_path)?;
         writeln!(file, "// Copyright © 2017 Trust Wallet.\n")?;
-        writeln!(file, "{}", format!("#include <TrustWalletCore/{}Gen.h>", info.class))?;
+        writeln!(file, "{}", format!("#include <Generated/TrustWalletCore/{}.h>", info.class))?;
         writeln!(file, "#include \"rust/Wrapper.h\"")?;
 
         writeln!(file, "\nusing namespace TW;\n")?;
@@ -125,6 +125,15 @@ pub fn generate_cpp_bindings() -> Result<()> {
                 func_dec += ");\n";
                 func_dec += format!("    if (!result) return nullptr;\n").as_str();
                 func_dec += format!("    return TWStringCreateWithUTF8Bytes(result.c_str());\n").as_str();
+            } else {
+                func_dec += format!("    return Rust::{}(", func.rust_name).as_str();
+                for (i, arg) in conversion_code.iter().enumerate() {
+                    func_dec += format!("{}", arg.1).as_str();
+                    if i < conversion_code.len() - 1 {
+                        func_dec += ", ";
+                    }
+                }
+                func_dec += ");\n";
             }
             func_dec += "}\n";
             writeln!(file, "{}", func_dec)?;

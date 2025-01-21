@@ -4,7 +4,7 @@
 
 #include "TestUtilities.h"
 
-#include "TrustWalletCore/TWTONAddressConverterGen.h"
+#include "TrustWalletCore/TWTONAddressConverter.h"
 
 namespace TW::TheOpenNetwork::tests {
 

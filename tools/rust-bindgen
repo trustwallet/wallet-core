@@ -72,6 +72,9 @@ cbindgen --crate $CRATE --output ../src/rust/bindgen/$HEADER_NAME
 cd -
 [[ -e rust/target/release/${TARGET_NAME} ]] && cp rust/target/release/${TARGET_NAME} build/local/lib/
 
+echo "Generating C++ files..."
+pushd codegen-v2 && cargo run -- cpp && popd
+
 if isTargetSpecified "ios" && [[ $(uname) == "Darwin" ]]; then
 cd rust
 cat > $TARGET_XCFRAMEWORK_NAME/Info.plist << EOF
@@ -146,3 +149,4 @@ cat > $TARGET_XCFRAMEWORK_NAME/Info.plist << EOF
 EOF
 cd -
 fi
+
