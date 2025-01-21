@@ -15,10 +15,16 @@ fn map_type(ty: &str) -> String {
 fn generate_conversion_code(ty: &str, name: &str) -> (String, String) {
     match ty {
         "TWString *_Nonnull" => {
-            let code = format!("    auto& {name}String = *reinterpret_cast<const std::string*>({name});\n", name=name) +
-            format!("    const Rust::TWStringWrapper {name}RustStr = {name}String;\n", name=name).as_str();
+            let code = format!(
+                "    auto& {name}String = *reinterpret_cast<const std::string*>({name});\n",
+                name = name
+            ) + format!(
+                "    const Rust::TWStringWrapper {name}RustStr = {name}String;\n",
+                name = name
+            )
+            .as_str();
             (code, format!("{}RustStr.get()", name))
-        },
+        }
         _ => ("".to_string(), name.to_string()),
     }
 }
@@ -27,7 +33,7 @@ pub fn generate_cpp_bindings() -> Result<()> {
     const IN_DIR: &str = "../rust/bindings/";
     const HEADER_OUT_DIR: &str = "../include/Generated/TrustWalletCore/";
     const SOURCE_OUT_DIR: &str = "../src/Generated/";
-    
+
     std::fs::create_dir_all(HEADER_OUT_DIR)?;
     std::fs::create_dir_all(SOURCE_OUT_DIR)?;
 
@@ -44,7 +50,8 @@ pub fn generate_cpp_bindings() -> Result<()> {
 
         let file_contents = fs::read_to_string(&file_path)?;
 
-        let info: TWConfig = serde_yaml::from_str(&file_contents).expect("Failed to parse YAML file");
+        let info: TWConfig =
+            serde_yaml::from_str(&file_contents).expect("Failed to parse YAML file");
 
         let file_path = format!("{HEADER_OUT_DIR}/{}.h", info.class);
 
@@ -52,7 +59,7 @@ pub fn generate_cpp_bindings() -> Result<()> {
         writeln!(file, "// Copyright © 2017 Trust Wallet.\n")?;
         writeln!(file, "#pragma once\n")?;
         writeln!(file, "#include <TrustWalletCore/TWBase.h>")?;
-        
+
         // Include headers based on argument types
         let mut included_headers = std::collections::HashSet::new();
         for func in &info.static_functions {
@@ -72,7 +79,11 @@ pub fn generate_cpp_bindings() -> Result<()> {
 
         for func in &info.static_functions {
             let return_type = map_type(&func.return_type);
-            let mut func_dec = format!("TW_EXPORT_STATIC_METHOD\n{} {}(", return_type, class_name.clone() + &func.name);
+            let mut func_dec = format!(
+                "TW_EXPORT_STATIC_METHOD\n{} {}(",
+                return_type,
+                class_name.clone() + &func.name
+            );
             for (i, arg) in func.args.iter().enumerate() {
                 let func_type = map_type(&arg.ty);
                 func_dec += format!("{} {}", func_type, arg.name).as_str();
@@ -87,12 +98,16 @@ pub fn generate_cpp_bindings() -> Result<()> {
         writeln!(file, "TW_EXTERN_C_END")?;
 
         file.flush()?;
-        
+
         let file_path = format!("{SOURCE_OUT_DIR}/{}.cpp", info.class);
 
         let mut file = std::fs::File::create(&file_path)?;
         writeln!(file, "// Copyright © 2017 Trust Wallet.\n")?;
-        writeln!(file, "{}", format!("#include <Generated/TrustWalletCore/{}.h>", info.class))?;
+        writeln!(
+            file,
+            "{}",
+            format!("#include <Generated/TrustWalletCore/{}.h>", info.class)
+        )?;
         writeln!(file, "#include \"rust/Wrapper.h\"")?;
 
         writeln!(file, "\nusing namespace TW;\n")?;
@@ -115,7 +130,11 @@ pub fn generate_cpp_bindings() -> Result<()> {
                 func_dec += code.0.as_str();
             }
             if return_type == "TWString *_Nullable" {
-                func_dec += format!("    const Rust::TWStringWrapper result = Rust::{}(", func.rust_name).as_str();
+                func_dec += format!(
+                    "    const Rust::TWStringWrapper result = Rust::{}(",
+                    func.rust_name
+                )
+                .as_str();
                 for (i, arg) in conversion_code.iter().enumerate() {
                     func_dec += format!("{}", arg.1).as_str();
                     if i < conversion_code.len() - 1 {
@@ -124,7 +143,8 @@ pub fn generate_cpp_bindings() -> Result<()> {
                 }
                 func_dec += ");\n";
                 func_dec += format!("    if (!result) return nullptr;\n").as_str();
-                func_dec += format!("    return TWStringCreateWithUTF8Bytes(result.c_str());\n").as_str();
+                func_dec +=
+                    format!("    return TWStringCreateWithUTF8Bytes(result.c_str());\n").as_str();
             } else {
                 func_dec += format!("    return Rust::{}(", func.rust_name).as_str();
                 for (i, arg) in conversion_code.iter().enumerate() {
@@ -141,6 +161,6 @@ pub fn generate_cpp_bindings() -> Result<()> {
 
         file.flush()?;
     }
-    
+
     Ok(())
 }

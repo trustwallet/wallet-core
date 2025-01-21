@@ -1,13 +1,16 @@
 use derive_syn_parse::Parse;
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
-use syn::{parse::{Parse, ParseStream}, parse2, Ident, Result, Token};
+use syn::{
+    parse::{Parse, ParseStream},
+    parse2, Ident, Result, Token,
+};
 
 use std::env;
 use std::fs;
 use std::path::Path;
 
-use tw_misc::code_gen::{TWConfig, TWStaticFunction, TWArg};
+use tw_misc::code_gen::{TWArg, TWConfig, TWStaticFunction};
 
 pub mod keywords {
     use syn::custom_keyword;
@@ -73,15 +76,19 @@ pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
 
     let func = parse2::<syn::ItemFn>(item.clone())?;
     let func_name = func.sig.ident.to_string();
-    let func_args = func.sig.inputs.iter().map(|arg| match arg {
-        syn::FnArg::Typed(syn::PatType { pat, ty, .. }) => (quote!( #pat ), quote!( #ty )),
-        _ => (quote!(), quote!()),
-    })
-    .map(|(name, ty)| TWArg {
-        name: name.to_string(),
-        ty: ty.to_string(),
-    })
-    .collect::<Vec<TWArg>>();
+    let func_args = func
+        .sig
+        .inputs
+        .iter()
+        .map(|arg| match arg {
+            syn::FnArg::Typed(syn::PatType { pat, ty, .. }) => (quote!( #pat ), quote!( #ty )),
+            _ => (quote!(), quote!()),
+        })
+        .map(|(name, ty)| TWArg {
+            name: name.to_string(),
+            ty: ty.to_string(),
+        })
+        .collect::<Vec<TWArg>>();
 
     let return_type = func.sig.output;
     let return_type = match return_type {
@@ -101,22 +108,30 @@ pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
         let bindings_dir = Path::new(&out_dir).join("bindings");
         fs::create_dir_all(&bindings_dir).expect("Failed to create bindings directory");
         let yaml_file_path = bindings_dir.join(format!("{}.yaml", class));
-        
+
         let mut config = if yaml_file_path.exists() {
-            serde_yaml::from_str(&fs::read_to_string(&yaml_file_path).expect("Failed to read existing YAML file")).expect("Failed to parse YAML file")
+            serde_yaml::from_str(
+                &fs::read_to_string(&yaml_file_path).expect("Failed to read existing YAML file"),
+            )
+            .expect("Failed to parse YAML file")
         } else {
             TWConfig {
                 class,
                 static_functions: vec![],
             }
-        }; 
-        if let Some(idx) = config.static_functions.iter().position(|f| f.name == static_function.name) {
+        };
+        if let Some(idx) = config
+            .static_functions
+            .iter()
+            .position(|f| f.name == static_function.name)
+        {
             config.static_functions[idx] = static_function;
         } else {
             config.static_functions.push(static_function);
         }
-        
-        let yaml_output: String = serde_yaml::to_string(&config).expect("Failed to serialize to YAML");        
+
+        let yaml_output: String =
+            serde_yaml::to_string(&config).expect("Failed to serialize to YAML");
         fs::write(&yaml_file_path, yaml_output).expect("Failed to write YAML file");
     } else {
         panic!("CARGO_WORKSPACE_DIR is not set");
@@ -127,9 +142,10 @@ pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
 
 #[test]
 fn test_ffi_attr_arg_parsing() {
-    let args = parse2::<TWFFIAttrArgs>(quote!{
+    let args = parse2::<TWFFIAttrArgs>(quote! {
         ty = static_function,
         class = MyClass,
         name = MyName
-    }).unwrap();
+    })
+    .unwrap();
 }

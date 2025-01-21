@@ -9,4 +9,3 @@ pub fn tw_ffi(attr: TokenStream, item: TokenStream) -> TokenStream {
         Err(e) => e.to_compile_error().into(),
     }
 }
-
