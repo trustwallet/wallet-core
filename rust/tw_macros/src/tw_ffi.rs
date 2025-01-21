@@ -7,6 +7,7 @@ use syn::{
 };
 
 use std::env;
+use std::fmt;
 use std::fs;
 use std::path::Path;
 
@@ -38,10 +39,10 @@ impl Parse for TWFFIType {
     }
 }
 
-impl ToString for TWFFIType {
-    fn to_string(&self) -> String {
+impl fmt::Display for TWFFIType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            TWFFIType::StaticFunction => "static_function".to_string(),
+            TWFFIType::StaticFunction => write!(f, "static_function"),
         }
     }
 }
