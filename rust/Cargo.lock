@@ -2218,6 +2218,7 @@ name = "tw_substrate"
 version = "0.1.0"
 dependencies = [
  "tw_coin_entry",
+ "tw_encoding",
  "tw_hash",
  "tw_keypair",
  "tw_memory",
