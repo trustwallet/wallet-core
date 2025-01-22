@@ -21,5 +21,3 @@ serde_yaml = "0.9.21"
 toml_edit = "0.21.0"
 handlebars = "4.3.6"
 heck = "0.4.1"
-tw_macros = { path = "../rust/tw_macros" }
-tw_misc = { path = "../rust/tw_misc", features = ["serde"] }

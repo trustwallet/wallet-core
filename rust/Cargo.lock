@@ -2070,7 +2070,6 @@ dependencies = [
  "serde",
  "serde_yaml",
  "syn 2.0.96",
- "tw_misc",
 ]
 
 [[package]]

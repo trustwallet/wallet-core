@@ -2,8 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-#[cfg(feature = "serde")]
-pub mod code_gen;
 pub mod macros;
 #[cfg(feature = "serde")]
 pub mod serde;

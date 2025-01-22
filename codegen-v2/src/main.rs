@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use libparser::codegen::cpp_v2::generate_cpp_bindings;
+use libparser::codegen::cpp::code_gen::generate_cpp_bindings;
 use libparser::codegen::swift::RenderIntput;
 use libparser::codegen::{cpp, proto, rust};
 use libparser::coin_id::CoinId;

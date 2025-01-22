@@ -1,5 +1,6 @@
 use proc_macro::TokenStream;
 
+mod code_gen;
 mod tw_ffi;
 
 #[proc_macro_attribute]

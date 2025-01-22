@@ -11,7 +11,7 @@ use std::fmt;
 use std::fs;
 use std::path::Path;
 
-use tw_misc::code_gen::{TWArg, TWConfig, TWStaticFunction};
+use crate::code_gen::{TWArg, TWConfig, TWStaticFunction};
 
 pub mod keywords {
     use syn::custom_keyword;
@@ -141,12 +141,20 @@ pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
     Ok(item)
 }
 
-#[test]
-fn test_ffi_attr_arg_parsing() {
-    let args = parse2::<TWFFIAttrArgs>(quote! {
-        ty = static_function,
-        class = MyClass,
-        name = MyName
-    })
-    .unwrap();
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use proc_macro2::Span;
+
+    #[test]
+    fn test_ffi_attr_arg_parsing() {
+        let args = parse2::<TWFFIAttrArgs>(quote! {
+            ty = static_function,
+            class = MyClass,
+            name = MyName
+        })
+        .unwrap();
+        assert_eq!(args.class, Some(Ident::new("MyClass", Span::call_site())));
+        assert_eq!(args.name, Some(Ident::new("MyName", Span::call_site())));
+    }
 }

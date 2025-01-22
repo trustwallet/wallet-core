@@ -3,7 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 pub mod cpp;
-pub mod cpp_v2;
 pub mod proto;
 pub mod rust;
 pub mod swift;
