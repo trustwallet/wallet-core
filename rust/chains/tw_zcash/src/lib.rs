@@ -6,5 +6,4 @@ pub mod compiler;
 pub mod context;
 pub mod entry;
 pub mod modules;
-pub mod signer;
 pub mod transaction;

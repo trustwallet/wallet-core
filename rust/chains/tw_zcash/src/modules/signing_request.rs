@@ -19,10 +19,10 @@ use tw_utxo::fee::FeePolicy;
 use tw_utxo::modules::tx_planner::{PlanRequest, RequestType};
 
 use crate::modules::transaction_builder::ZcashTransactionBuilder;
+use tw_bitcoin::modules::signing_request::standard_signing_request::{
+    chain_info, StandardSigningRequestBuilder,
+};
 use tw_hash::H32;
-use Proto::mod_TransactionBuilder::OneOffee_policy as ProtoFeePolicy;
-
-type SigningRequestBuilderImpl = SigningRequestBuilder<ZcashContext>;
 
 pub type ZcashSigningRequest = PlanRequest<ZcashContext>;
 
@@ -33,20 +33,21 @@ pub struct ZcashExtraData {
 
 pub struct ZcashSigningRequestBuilder;
 
-impl ZcashSigningRequestBuilder {
-    pub fn build(
+impl SigningRequestBuilder<ZcashContext> for ZcashSigningRequestBuilder {
+    fn build(
         coin: &dyn CoinContext,
         input: &Proto::SigningInput,
         transaction_builder: &Proto::TransactionBuilder,
     ) -> SigningResult<ZcashSigningRequest> {
         let extra_data = Self::extra_data(&transaction_builder.zcash_extra_data)?;
 
-        let chain_info = SigningRequestBuilderImpl::chain_info(coin, &input.chain_info)?;
-        let dust_policy = SigningRequestBuilderImpl::dust_policy(&transaction_builder.dust_policy)?;
-        let fee_estimator = Self::fee_estimator(&transaction_builder.fee_policy, &extra_data)?;
+        let chain_info = chain_info(coin, &input.chain_info)?;
+        let dust_policy =
+            StandardSigningRequestBuilder::dust_policy(&transaction_builder.dust_policy)?;
+        let fee_estimator = Self::fee_estimator(transaction_builder, &extra_data)?;
         let version = Self::transaction_version(&transaction_builder.version)?;
 
-        let public_keys = SigningRequestBuilderImpl::get_public_keys(input)?;
+        let public_keys = StandardSigningRequestBuilder::get_public_keys(input)?;
 
         let mut builder = ZcashTransactionBuilder::default();
         builder
@@ -102,7 +103,7 @@ impl ZcashSigningRequestBuilder {
             .transpose()?;
 
         let input_selector =
-            SigningRequestBuilderImpl::input_selector(&transaction_builder.input_selector);
+            StandardSigningRequestBuilder::input_selector(&transaction_builder.input_selector);
 
         let unsigned_tx = builder.build()?;
         Ok(ZcashSigningRequest {
@@ -115,7 +116,9 @@ impl ZcashSigningRequestBuilder {
             fee_estimator,
         })
     }
+}
 
+impl ZcashSigningRequestBuilder {
     pub fn transaction_version(proto: &Proto::TransactionVersion) -> SigningResult<i32> {
         match proto {
             Proto::TransactionVersion::UseDefault => Ok(TRANSACTION_VERSION_4),
@@ -125,18 +128,15 @@ impl ZcashSigningRequestBuilder {
     }
 
     pub fn fee_estimator(
-        proto: &ProtoFeePolicy,
+        proto: &Proto::TransactionBuilder,
         extra_data: &ZcashExtraData,
     ) -> SigningResult<ZcashFeeEstimator> {
         if extra_data.zip_0317 {
             return Ok(ZcashFeeEstimator::Zip0317);
         }
 
-        let fee_per_vb = match proto {
-            ProtoFeePolicy::fee_per_vb(fee_per_vb) => *fee_per_vb,
-            ProtoFeePolicy::None => 0,
-        };
-        let standard = StandardFeeEstimator::new(FeePolicy::FeePerVb(fee_per_vb));
+        let fee_per_vb = FeePolicy::FeePerVb(proto.fee_per_vb);
+        let standard = StandardFeeEstimator::new(fee_per_vb);
         Ok(ZcashFeeEstimator::Standard(standard))
     }
 

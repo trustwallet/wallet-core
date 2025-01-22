@@ -113,17 +113,16 @@ impl TransactionInterface for Transaction {
     fn weight(&self) -> usize {
         self.base_size() * 3 + self.total_size()
     }
-}
 
-impl Transaction {
-    /// TODO move to the `TransactionInterface` trait.
-    pub fn txid(&self) -> Vec<u8> {
+    fn txid(&self) -> Vec<u8> {
         let encoded = self.without_witness().encode_out();
         let mut tx_hash = sha256_d(&encoded);
         tx_hash.reverse();
         tx_hash
     }
+}
 
+impl Transaction {
     /// Returns the same transaction with [`TransactionInput::script_witness`] being empty.
     /// It's mostly used to calculate transaction hash (aka TXID).
     pub fn without_witness(&self) -> Transaction {
@@ -132,12 +131,6 @@ impl Transaction {
             input.set_witness(Witness::default());
         }
         without_witness
-    }
-
-    pub fn encode_out(&self) -> Vec<u8> {
-        let mut stream = Stream::new();
-        self.encode(&mut stream);
-        stream.out()
     }
 
     pub fn size(&self) -> usize {
@@ -281,6 +274,14 @@ impl TxInputInterface for TransactionInput {
 
     fn sequence(&self) -> u32 {
         self.sequence
+    }
+
+    fn script_sig(&self) -> &Script {
+        &self.script_sig
+    }
+
+    fn witness(&self) -> &Witness {
+        &self.witness
     }
 
     fn set_sequence(&mut self, sequence: u32) {

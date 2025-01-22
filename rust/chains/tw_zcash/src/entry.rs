@@ -2,9 +2,10 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::compiler::ZcashCompiler;
-use crate::signer::ZcashSigner;
+use crate::context::ZcashContext;
 use std::str::FromStr;
+use tw_bitcoin::modules::compiler::BitcoinCompiler;
+use tw_bitcoin::modules::signer::BitcoinSigner;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
@@ -17,7 +18,6 @@ use tw_coin_entry::modules::transaction_util::NoTransactionUtil;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_keypair::tw::PublicKey;
 use tw_proto::BitcoinV2::Proto as BitcoinV2Proto;
-use tw_proto::TxCompiler::Proto as CompilerProto;
 use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
 
 pub struct ZcashEntry;
@@ -27,7 +27,7 @@ impl CoinEntry for ZcashEntry {
     type Address = StandardBitcoinAddress;
     type SigningInput<'a> = BitcoinV2Proto::SigningInput<'a>;
     type SigningOutput = BitcoinV2Proto::SigningOutput<'static>;
-    type PreSigningOutput = CompilerProto::PreSigningOutput<'static>;
+    type PreSigningOutput = BitcoinV2Proto::PreSigningOutput<'static>;
 
     // Optional modules:
     type JsonSigner = NoJsonSigner;
@@ -65,7 +65,7 @@ impl CoinEntry for ZcashEntry {
 
     #[inline]
     fn sign(&self, coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput {
-        ZcashSigner::sign(coin, input)
+        BitcoinSigner::<ZcashContext>::sign(coin, &input)
     }
 
     #[inline]
@@ -74,7 +74,7 @@ impl CoinEntry for ZcashEntry {
         coin: &dyn CoinContext,
         input: Self::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        ZcashCompiler::preimage_hashes(coin, input)
+        BitcoinCompiler::<ZcashContext>::preimage_hashes(coin, input)
     }
 
     #[inline]
@@ -85,6 +85,6 @@ impl CoinEntry for ZcashEntry {
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
-        ZcashCompiler::compile(coin, input, signatures, public_keys)
+        BitcoinCompiler::<ZcashContext>::compile(coin, input, signatures, public_keys)
     }
 }

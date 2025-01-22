@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+pub mod protobuf_builder;
 pub mod signing_request;
 pub mod transaction_builder;
 pub mod zcash_fee_estimator;

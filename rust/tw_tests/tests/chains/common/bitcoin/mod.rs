@@ -43,6 +43,7 @@ pub use tw_proto::BitcoinV2::Proto::mod_PublicKeyOrHash::OneOfvariant as PublicK
 pub use tw_proto::BitcoinV2::Proto::mod_SigningInput::OneOftransaction as TransactionOneof;
 
 use tw_proto::BitcoinV2::Proto;
+use tw_proto::Utxo::Proto as UtxoProto;
 
 pub fn btc_info() -> Option<Proto::ChainInfo<'static>> {
     Some(Proto::ChainInfo {
@@ -71,11 +72,10 @@ pub mod input {
         txid.decode_hex().unwrap().into_iter().rev().collect()
     }
 
-    pub fn out_point(txid: &str, vout: u32) -> Option<Proto::OutPoint<'static>> {
-        Some(Proto::OutPoint {
+    pub fn out_point(txid: &str, vout: u32) -> Option<UtxoProto::OutPoint<'static>> {
+        Some(UtxoProto::OutPoint {
             hash: reverse_txid(txid).into(),
             vout,
-            ..Proto::OutPoint::default()
         })
     }
 
