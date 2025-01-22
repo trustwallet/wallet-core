@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::context::ZcashContext;
+use crate::t_address::TAddress;
 use std::str::FromStr;
 use tw_bitcoin::modules::compiler::BitcoinCompiler;
 use tw_bitcoin::modules::signer::BitcoinSigner;
@@ -16,15 +17,15 @@ use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::modules::transaction_util::NoTransactionUtil;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
+use tw_coin_entry::prefix::BitcoinBase58Prefix;
 use tw_keypair::tw::PublicKey;
 use tw_proto::BitcoinV2::Proto as BitcoinV2Proto;
-use tw_utxo::address::standard_bitcoin::{StandardBitcoinAddress, StandardBitcoinPrefix};
 
 pub struct ZcashEntry;
 
 impl CoinEntry for ZcashEntry {
-    type AddressPrefix = StandardBitcoinPrefix;
-    type Address = StandardBitcoinAddress;
+    type AddressPrefix = BitcoinBase58Prefix;
+    type Address = TAddress;
     type SigningInput<'a> = BitcoinV2Proto::SigningInput<'a>;
     type SigningOutput = BitcoinV2Proto::SigningOutput<'static>;
     type PreSigningOutput = BitcoinV2Proto::PreSigningOutput<'static>;
@@ -44,12 +45,12 @@ impl CoinEntry for ZcashEntry {
         address: &str,
         prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        StandardBitcoinAddress::from_str_with_coin_and_prefix(coin, address, prefix)
+        TAddress::from_str_with_coin_and_prefix(coin, address, prefix)
     }
 
     #[inline]
     fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address> {
-        StandardBitcoinAddress::from_str(address)
+        TAddress::from_str(address)
     }
 
     #[inline]
@@ -57,10 +58,10 @@ impl CoinEntry for ZcashEntry {
         &self,
         coin: &dyn CoinContext,
         public_key: PublicKey,
-        derivation: Derivation,
+        _derivation: Derivation,
         prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        StandardBitcoinAddress::derive_as_tw(coin, &public_key, derivation, prefix)
+        TAddress::p2pkh_with_coin_and_prefix(coin, &public_key, prefix)
     }
 
     #[inline]
