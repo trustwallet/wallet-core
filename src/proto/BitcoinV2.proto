@@ -251,8 +251,10 @@ message TransactionBuilder {
         // Use a constant "Dust" threshold.
         int64 fixed_dust_threshold = 10;
     }
-    // ZCash specific transaction data.
-    Zcash.Proto.TransactionBuilderExtraData zcash_extra_data = 20;
+    oneof chain_specific {
+        // ZCash specific transaction data.
+        Zcash.Proto.TransactionBuilderExtraData zcash_extra_data = 20;
+    }
 }
 
 // Partially Signed Bitcoin Transaction.

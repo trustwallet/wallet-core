@@ -32,6 +32,8 @@ fn test_zcash_address_is_valid() {
     test_address_valid(CoinType::Zcash, "t1TWk2mmvESDnE4dmCfT7MQ97ij6ZqLpNVU");
     test_address_valid(CoinType::Zcash, "t3RD6RFKhWSotNbPEY4Vw7Ku9QCfKkzrbBL");
     test_address_valid(CoinType::Zcash, "t1Wg9uPPAfwhBWeRjtDPa5ZHNzyBx9rJVKY");
+    test_address_valid(CoinType::Zcash, "t1TKCtCETHPrAdA6eY1fdhhnTkTmb371oPt");
+    test_address_valid(CoinType::Zcash, "t1cWhcXydPYTG1pgHMsZ6JEPsWGxVMdJ5t6");
 }
 
 #[test]

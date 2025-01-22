@@ -19,11 +19,20 @@ pub struct Taproot1Sighash<Transaction: TransactionInterface> {
 
 impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
     pub fn sighash_tx(tx: &Transaction, tr: &UtxoTaprootPreimageArgs) -> SigningResult<H256> {
+        let args = &tr.args;
+
         // TODO if anyone_can_pay flag is set, there is no need to append these hashes.
         // See https://github.com/rust-bitcoin/rust-bitcoin/blob/b0870634f0e4bd4c36e7ab0b7c9c7deb23ae62bf/bitcoin/src/crypto/sighash.rs#L608-L622
-        let prevout_hash = TransactionHasher::<Transaction>::preimage_prevout_hash(tx, &tr.args);
-        let sequence_hash = TransactionHasher::<Transaction>::preimage_sequence_hash(tx, &tr.args);
-        let outputs_hash = TransactionHasher::<Transaction>::preimage_outputs_hash(tx, &tr.args);
+        let prevout_hash =
+            TransactionHasher::preimage_prevout_hash(tx, args.sighash_ty, args.tx_hasher);
+        let sequence_hash =
+            TransactionHasher::preimage_sequence_hash(tx, args.sighash_ty, args.tx_hasher);
+        let outputs_hash = TransactionHasher::preimage_outputs_hash(
+            tx,
+            args.input_index,
+            args.sighash_ty,
+            args.tx_hasher,
+        );
         let spent_amounts_hash = TransactionHasher::<Transaction>::spent_amount_hash(tr);
         let raw_sighash = tr.args.sighash_ty.serialize_as_taproot()?;
 

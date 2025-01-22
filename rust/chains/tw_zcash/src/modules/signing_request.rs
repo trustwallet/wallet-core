@@ -10,10 +10,9 @@ use tw_bitcoin::modules::tx_builder::output_protobuf::OutputProtobuf;
 use tw_bitcoin::modules::tx_builder::utxo_protobuf::UtxoProtobuf;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::{
-    MapTWError, OrTWError, ResultContext, SigningError, SigningErrorType, SigningResult,
+    MapTWError, ResultContext, SigningError, SigningErrorType, SigningResult,
 };
 use tw_proto::BitcoinV2::Proto;
-use tw_proto::Zcash::Proto as ZcashProto;
 use tw_utxo::fee::fee_estimator::StandardFeeEstimator;
 use tw_utxo::fee::FeePolicy;
 use tw_utxo::modules::tx_planner::{PlanRequest, RequestType};
@@ -28,6 +27,7 @@ pub type ZcashSigningRequest = PlanRequest<ZcashContext>;
 
 pub struct ZcashExtraData {
     pub branch_id: H32,
+    pub expiry_height: u32,
     pub zip_0317: bool,
 }
 
@@ -39,7 +39,7 @@ impl SigningRequestBuilder<ZcashContext> for ZcashSigningRequestBuilder {
         input: &Proto::SigningInput,
         transaction_builder: &Proto::TransactionBuilder,
     ) -> SigningResult<ZcashSigningRequest> {
-        let extra_data = Self::extra_data(&transaction_builder.zcash_extra_data)?;
+        let extra_data = Self::extra_data(transaction_builder)?;
 
         let chain_info = chain_info(coin, &input.chain_info)?;
         let dust_policy =
@@ -53,6 +53,7 @@ impl SigningRequestBuilder<ZcashContext> for ZcashSigningRequestBuilder {
         builder
             .version(version)
             .lock_time(transaction_builder.lock_time)
+            .expiry_height(extra_data.expiry_height)
             .branch_id(extra_data.branch_id);
 
         // Parse all UTXOs.
@@ -140,19 +141,23 @@ impl ZcashSigningRequestBuilder {
         Ok(ZcashFeeEstimator::Standard(standard))
     }
 
-    pub fn extra_data(
-        proto: &Option<ZcashProto::TransactionBuilderExtraData>,
-    ) -> SigningResult<ZcashExtraData> {
-        let extra_data = proto
-            .as_ref()
-            .or_tw_err(SigningErrorType::Error_invalid_params)
-            .context("Expected 'TransactionBuilder.zcash_extra_data' to be set")?;
+    pub fn extra_data(proto: &Proto::TransactionBuilder) -> SigningResult<ZcashExtraData> {
+        use Proto::mod_TransactionBuilder::OneOfchain_specific as ChainSpecific;
+
+        let extra_data = match proto.chain_specific {
+            ChainSpecific::zcash_extra_data(ref zcash) => zcash,
+            _ => {
+                return SigningError::err(SigningErrorType::Error_invalid_params)
+                    .context("Expected 'TransactionBuilder.zcash_extra_data' to be set")
+            },
+        };
 
         let branch_id = H32::try_from(extra_data.branch_id.as_ref())
             .tw_err(|_| SigningErrorType::Error_invalid_params)
             .context("Invalid 'branchId', expected 4-byte array")?;
         Ok(ZcashExtraData {
             branch_id,
+            expiry_height: extra_data.expiry_height,
             zip_0317: extra_data.zip_0317,
         })
     }

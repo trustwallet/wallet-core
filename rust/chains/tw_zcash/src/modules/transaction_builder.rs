@@ -43,6 +43,11 @@ impl ZcashTransactionBuilder {
         self
     }
 
+    pub fn expiry_height(&mut self, expiry_height: u32) -> &mut Self {
+        self.transaction.expiry_height = expiry_height;
+        self
+    }
+
     pub fn branch_id(&mut self, branch_id: H32) -> &mut Self {
         self.transaction.branch_id = branch_id;
         self

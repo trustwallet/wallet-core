@@ -5,18 +5,19 @@
 use crate::modules::protobuf_builder::ZcashProtobufBuilder;
 use crate::modules::signing_request::ZcashSigningRequestBuilder;
 use crate::modules::zcash_fee_estimator::ZcashFeeEstimator;
+use crate::t_address::TAddress;
 use crate::transaction::ZcashTransaction;
-use tw_bitcoin::context::{StandardBitcoinContext, BitcoinSigningContext};
+use tw_bitcoin::context::BitcoinSigningContext;
 use tw_bitcoin::modules::psbt_request::NoPsbtRequestBuilder;
 use tw_coin_entry::error::prelude::SigningResult;
-use tw_utxo::address::standard_bitcoin::StandardBitcoinAddress;
 use tw_utxo::context::{AddressPrefixes, UtxoContext};
 use tw_utxo::script::Script;
 
+#[derive(Default)]
 pub struct ZcashContext;
 
 impl UtxoContext for ZcashContext {
-    type Address = StandardBitcoinAddress;
+    type Address = TAddress;
     type Transaction = ZcashTransaction;
     type FeeEstimator = ZcashFeeEstimator;
 
@@ -24,7 +25,7 @@ impl UtxoContext for ZcashContext {
         addr: &Self::Address,
         prefixes: AddressPrefixes,
     ) -> SigningResult<Script> {
-        StandardBitcoinContext::addr_to_script_pubkey(addr, prefixes)
+        addr.to_script_pubkey(prefixes.p2pkh_prefix, prefixes.p2sh_prefix)
     }
 }
 

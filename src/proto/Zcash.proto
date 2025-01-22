@@ -10,9 +10,12 @@ message TransactionBuilderExtraData {
     // There can also be `version_group_id` configured in the future.
     bytes branch_id = 1;
 
+    // Zero in most cases.
+    uint32 expiry_height = 2;
+
     // Whether to calculate the fee according to ZIP-0317 for the given transaction
     // https://zips.z.cash/zip-0317#fee-calculation
-    bool zip_0317 = 2;
+    bool zip_0317 = 3;
 }
 
 message Transaction {

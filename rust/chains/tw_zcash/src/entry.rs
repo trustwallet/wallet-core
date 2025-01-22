@@ -6,6 +6,7 @@ use crate::context::ZcashContext;
 use crate::t_address::TAddress;
 use std::str::FromStr;
 use tw_bitcoin::modules::compiler::BitcoinCompiler;
+use tw_bitcoin::modules::planner::BitcoinPlanner;
 use tw_bitcoin::modules::signer::BitcoinSigner;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
@@ -13,7 +14,6 @@ use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
-use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::modules::transaction_util::NoTransactionUtil;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
@@ -32,7 +32,7 @@ impl CoinEntry for ZcashEntry {
 
     // Optional modules:
     type JsonSigner = NoJsonSigner;
-    type PlanBuilder = NoPlanBuilder;
+    type PlanBuilder = BitcoinPlanner<ZcashContext>;
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
@@ -87,5 +87,10 @@ impl CoinEntry for ZcashEntry {
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
         BitcoinCompiler::<ZcashContext>::compile(coin, input, signatures, public_keys)
+    }
+
+    #[inline]
+    fn plan_builder(&self) -> Option<Self::PlanBuilder> {
+        Some(BitcoinPlanner::<ZcashContext>::default())
     }
 }
