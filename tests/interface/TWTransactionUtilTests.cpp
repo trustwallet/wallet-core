@@ -71,3 +71,19 @@ TEST(TWTransactionUtil, CalcTxHashSui) {
 
     assertStringsEqual(txHashResult, "HkPo6rYPyDY53x1MBszvSZVZyixVN7CHvCJGX381czAh");
 }
+
+TEST(TWTransactionUtil, CalcTxHashPolkadot) {
+    constexpr auto coin = TWCoinTypePolkadot;
+    const auto encodedTxPtr = WRAPS(TWStringCreateWithUTF8Bytes("3d02849dca538b7a925b8ea979cc546464a3c5f81d2398a3a272f6f93bdf4803f2f783009025843bc49c1c4fbc99dbbd290c92f9879665d55b02f110abfb4800f0e7630877d2cffd853deae7466c22fbc8616a609e1b92615bb365ea8adccba5ef7624050503000007009dca538b7a925b8ea979cc546464a3c5f81d2398a3a272f6f93bdf4803f2f7830700aea68f0201"));
+    const auto txHashResult = WRAPS(TWTransactionUtilCalcTxHash(coin, encodedTxPtr.get()));
+
+    assertStringsEqual(txHashResult, "0x8da66d3fe0f592cff714ec107289370365117a1abdb72a19ac91181fdcf62bba");
+}
+
+TEST(TWTransactionUtil, CalcTxHashAcala) {
+    constexpr auto coin = TWCoinTypeAcala;
+    const auto encodedTxPtr = WRAPS(TWStringCreateWithUTF8Bytes("41028400e9590e4d99264a14a85e21e69537e4a64f66a875d38cb8f76b305f41fabe24a900dd54466dffd1e3c80b76013e9459fbdcd17805bd5fdbca0961a643bad1cbd2b7fe005c62c51c18b67f31eb9e61b187a911952fee172ef18402d07c703eec3100d50200000a0000c8c602ded977c56076ae38d98026fa669ca10d6a2b5a0bfc4086ae7668ed1c60070010a5d4e8"));
+    const auto txHashResult = WRAPS(TWTransactionUtilCalcTxHash(coin, encodedTxPtr.get()));
+
+    assertStringsEqual(txHashResult, "0xb2450990defef55f075f41969c8ae7965ddf8446a0aae9510b8bbdbacb4ff344");
+}

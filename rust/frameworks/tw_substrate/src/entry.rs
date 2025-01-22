@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::{SubstrateAddress, SubstratePrefix};
+use crate::modules::transaction_util::SubstrateTransactionUtil;
 use crate::substrate_coin_entry::SubstrateCoinEntry;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -14,7 +15,6 @@ use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
-use tw_coin_entry::modules::transaction_util::NoTransactionUtil;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_keypair::{ed25519, traits::KeyPairTrait, tw::PublicKey};
 use tw_scale::RawOwned;
@@ -83,7 +83,7 @@ impl<T: SubstrateCoinEntry> CoinEntry for SubstrateEntry<T> {
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
-    type TransactionUtil = NoTransactionUtil;
+    type TransactionUtil = SubstrateTransactionUtil;
 
     #[inline]
     fn parse_address(
@@ -149,5 +149,10 @@ impl<T: SubstrateCoinEntry> CoinEntry for SubstrateEntry<T> {
     ) -> Self::SigningOutput {
         let res = self.compile_impl(coin, input, signatures, public_keys);
         self.0.signing_output(coin, res)
+    }
+
+    #[inline]
+    fn transaction_util(&self) -> Option<Self::TransactionUtil> {
+        Some(SubstrateTransactionUtil)
     }
 }
