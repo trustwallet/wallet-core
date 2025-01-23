@@ -4,7 +4,7 @@
 
 use tw_any_coin::test_utils::address_utils::{
     test_address_derive, test_address_get_data, test_address_invalid, test_address_normalization,
-    test_address_valid,
+    test_address_valid, KeyType,
 };
 use tw_coin_registry::coin_type::CoinType;
 
@@ -12,7 +12,7 @@ use tw_coin_registry::coin_type::CoinType;
 fn test_zcash_address_derive() {
     test_address_derive(
         CoinType::Zcash,
-        "2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54",
+        KeyType::PrivateKey("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"),
         "t1Wg9uPPAfwhBWeRjtDPa5ZHNzyBx9rJVKY",
     );
 }

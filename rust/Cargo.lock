@@ -2043,7 +2043,6 @@ dependencies = [
  "tw_bitcoin",
  "tw_coin_entry",
  "tw_keypair",
- "tw_memory",
  "tw_proto",
  "tw_utxo",
  "tw_zcash",

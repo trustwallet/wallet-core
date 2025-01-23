@@ -5,7 +5,7 @@
 use tw_any_coin::test_utils::address_utils::{
     test_address_base58_is_valid, test_address_create_base58_with_public_key, test_address_derive,
     test_address_get_data, test_address_invalid, test_address_normalization, test_address_valid,
-    AddressBase58IsValid, AddressCreateBase58WithPublicKey,
+    AddressBase58IsValid, AddressCreateBase58WithPublicKey, KeyType,
 };
 use tw_coin_registry::coin_type::CoinType;
 use tw_keypair::tw::PublicKeyType;
@@ -14,7 +14,7 @@ use tw_keypair::tw::PublicKeyType;
 fn test_bitcoincash_address_derive() {
     test_address_derive(
         CoinType::BitcoinCash,
-        "28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4",
+        KeyType::PrivateKey("28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4"),
         "bitcoincash:qruxj7zq6yzpdx8dld0e9hfvt7u47zrw9gfr5hy0vh",
     );
 }
