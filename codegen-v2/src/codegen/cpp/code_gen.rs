@@ -32,8 +32,12 @@ pub struct TWArg {
 
 fn convert_rust_type_to_cpp(ty: &str) -> String {
     match ty.trim() {
-        s if s.starts_with("* const") => format!("{} *_Nonnull", &s[8..]),
-        s if s.starts_with("* mut") => format!("{} *_Nullable", &s[6..]),
+        s if s.starts_with("* const ") => {
+            format!("{} *_Nonnull", s.strip_prefix("* const ").expect("Checked"))
+        }
+        s if s.starts_with("* mut ") => {
+            format!("{} *_Nullable", s.strip_prefix("* mut ").expect("Checked"))
+        }
         "bool" => "bool".to_string(),
         _ => ty.to_string(),
     }
