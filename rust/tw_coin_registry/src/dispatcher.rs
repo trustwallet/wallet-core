@@ -26,6 +26,7 @@ use tw_sui::entry::SuiEntry;
 use tw_thorchain::entry::ThorchainEntry;
 use tw_ton::entry::TheOpenNetworkEntry;
 use tw_zcash::entry::ZcashEntry;
+use tw_komodo::entry::KomodoEntry;
 
 pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;
 pub type EvmEntryExtStaticRef = &'static dyn EvmEntryExt;
@@ -39,6 +40,7 @@ const COSMOS: CosmosEntry = CosmosEntry;
 const ETHEREUM: EthereumEntry = EthereumEntry;
 const GREENFIELD: GreenfieldEntry = GreenfieldEntry;
 const INTERNET_COMPUTER: InternetComputerEntry = InternetComputerEntry;
+const KOMODO: KomodoEntry = KomodoEntry;
 const NATIVE_EVMOS: NativeEvmosEntry = NativeEvmosEntry;
 const NATIVE_INJECTIVE: NativeInjectiveEntry = NativeInjectiveEntry;
 const PACTUS: PactusEntry = PactusEntry;
@@ -61,6 +63,7 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::Ethereum => Ok(&ETHEREUM),
         BlockchainType::Greenfield => Ok(&GREENFIELD),
         BlockchainType::InternetComputer => Ok(&INTERNET_COMPUTER),
+        BlockchainType::Komodo => Ok(&KOMODO),
         BlockchainType::NativeEvmos => Ok(&NATIVE_EVMOS),
         BlockchainType::NativeInjective => Ok(&NATIVE_INJECTIVE),
         BlockchainType::Pactus => Ok(&PACTUS),

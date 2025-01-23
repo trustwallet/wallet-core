@@ -4,7 +4,7 @@
 
 use crate::context::ZcashContext;
 use crate::modules::zcash_fee_estimator::ZcashFeeEstimator;
-use crate::transaction::TRANSACTION_VERSION_4;
+use crate::transaction::{ZcashTransaction, TRANSACTION_VERSION_4};
 use tw_bitcoin::modules::signing_request::SigningRequestBuilder;
 use tw_bitcoin::modules::tx_builder::output_protobuf::OutputProtobuf;
 use tw_bitcoin::modules::tx_builder::utxo_protobuf::UtxoProtobuf;
@@ -22,8 +22,7 @@ use tw_bitcoin::modules::signing_request::standard_signing_request::{
     chain_info, StandardSigningRequestBuilder,
 };
 use tw_hash::H32;
-
-pub type ZcashSigningRequest = PlanRequest<ZcashContext>;
+use tw_utxo::context::UtxoContext;
 
 pub struct ZcashExtraData {
     pub branch_id: H32,
@@ -33,12 +32,15 @@ pub struct ZcashExtraData {
 
 pub struct ZcashSigningRequestBuilder;
 
-impl SigningRequestBuilder<ZcashContext> for ZcashSigningRequestBuilder {
+impl<Context> SigningRequestBuilder<Context> for ZcashSigningRequestBuilder
+where
+    Context: UtxoContext<Transaction = ZcashTransaction, FeeEstimator = ZcashFeeEstimator>,
+{
     fn build(
         coin: &dyn CoinContext,
         input: &Proto::SigningInput,
         transaction_builder: &Proto::TransactionBuilder,
-    ) -> SigningResult<ZcashSigningRequest> {
+    ) -> SigningResult<PlanRequest<Context>> {
         let extra_data = Self::extra_data(transaction_builder)?;
 
         let chain_info = chain_info(coin, &input.chain_info)?;
@@ -77,7 +79,7 @@ impl SigningRequestBuilder<ZcashContext> for ZcashSigningRequestBuilder {
             builder.push_output(max_output);
 
             let unsigned_tx = builder.build()?;
-            return Ok(ZcashSigningRequest {
+            return Ok(PlanRequest {
                 ty: RequestType::SendMax { unsigned_tx },
                 dust_policy,
                 fee_estimator,
@@ -107,7 +109,7 @@ impl SigningRequestBuilder<ZcashContext> for ZcashSigningRequestBuilder {
             StandardSigningRequestBuilder::input_selector(&transaction_builder.input_selector);
 
         let unsigned_tx = builder.build()?;
-        Ok(ZcashSigningRequest {
+        Ok(PlanRequest {
             ty: RequestType::SendExact {
                 unsigned_tx,
                 change_output,

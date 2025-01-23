@@ -21,6 +21,7 @@ tw_greenfield = { path = "../chains/tw_greenfield" }
 tw_hash = { path = "../tw_hash" }
 tw_internet_computer = { path = "../chains/tw_internet_computer" }
 tw_keypair = { path = "../tw_keypair" }
+tw_komodo = { path = "../chains/tw_komodo" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
 tw_native_evmos = { path = "../chains/tw_native_evmos" }

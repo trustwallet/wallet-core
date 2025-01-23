@@ -155,6 +155,8 @@ fn test_coin_address_derivation() {
             CoinType::TON => "UQCj3jAU_Ec2kXdAqweKt4rYjiwTNwiCfaUnIDHGh7wTwx_G",
             CoinType::Pactus => "pc1rk2qaaeu9pj3zwtvm49d3d4yqxzpp4te87cx0am",
             CoinType::Zcash => "t1SUmK7UVqTXQDpEAqHcJWBv7pNUFHJRpDx",
+            CoinType::Zelcash => "t1SUmK7UVqTXQDpEAqHcJWBv7pNUFHJRpDx",
+            CoinType::Komodo => "RHtMPHweTxYNhBYUN2nJTu9QKyjm7MRKsF",
             // end_of_coin_address_derivation_tests_marker_do_not_modify
             _ => panic!("{:?} must be covered", coin),
         };

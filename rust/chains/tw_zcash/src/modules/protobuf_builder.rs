@@ -2,16 +2,19 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::context::ZcashContext;
 use crate::transaction::ZcashTransaction;
 use tw_bitcoin::modules::protobuf_builder::standard_protobuf_builder::StandardProtobufBuilder;
 use tw_bitcoin::modules::protobuf_builder::{ProtobufBuilder, ProtobufTransaction};
 use tw_proto::Zcash::Proto as ZcashProto;
+use tw_utxo::context::UtxoContext;
 use tw_utxo::transaction::transaction_interface::TransactionInterface;
 
 pub struct ZcashProtobufBuilder;
 
-impl ProtobufBuilder<ZcashContext> for ZcashProtobufBuilder {
+impl<Context> ProtobufBuilder<Context> for ZcashProtobufBuilder
+where
+    Context: UtxoContext<Transaction = ZcashTransaction>,
+{
     fn tx_to_proto(tx: &ZcashTransaction) -> ProtobufTransaction<'static> {
         let inputs = tx
             .inputs()

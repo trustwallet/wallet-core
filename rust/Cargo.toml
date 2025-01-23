@@ -8,6 +8,7 @@ members = [
     "chains/tw_ethereum",
     "chains/tw_greenfield",
     "chains/tw_internet_computer",
+    "chains/tw_komodo",
     "chains/tw_native_evmos",
     "chains/tw_native_injective",
     "chains/tw_pactus",

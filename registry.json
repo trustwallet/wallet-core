@@ -1397,7 +1397,7 @@
     "coinId": 141,
     "symbol": "KMD",
     "decimals": 8,
-    "blockchain": "Zcash",
+    "blockchain": "Komodo",
     "derivation": [
       {
         "path": "m/44'/141'/0'/0/0",

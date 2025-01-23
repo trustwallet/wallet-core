@@ -17,6 +17,7 @@ pub enum BlockchainType {
     Ethereum,
     Greenfield,
     InternetComputer,
+    Komodo,
     NativeEvmos,
     NativeInjective,
     Pactus,

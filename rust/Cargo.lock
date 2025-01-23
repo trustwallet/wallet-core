@@ -1858,6 +1858,7 @@ dependencies = [
  "tw_hash",
  "tw_internet_computer",
  "tw_keypair",
+ "tw_komodo",
  "tw_memory",
  "tw_misc",
  "tw_native_evmos",
@@ -2033,6 +2034,19 @@ dependencies = [
  "tw_memory",
  "tw_misc",
  "zeroize",
+]
+
+[[package]]
+name = "tw_komodo"
+version = "0.1.0"
+dependencies = [
+ "tw_bitcoin",
+ "tw_coin_entry",
+ "tw_keypair",
+ "tw_memory",
+ "tw_proto",
+ "tw_utxo",
+ "tw_zcash",
 ]
 
 [[package]]

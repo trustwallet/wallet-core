@@ -13,6 +13,7 @@ mod ecash;
 mod ethereum;
 mod greenfield;
 mod internet_computer;
+mod komodo;
 mod native_evmos;
 mod native_injective;
 mod pactus;
