@@ -17,6 +17,7 @@ import wallet.core.jni.PublicKeyType
 import wallet.core.jni.proto.Bitcoin
 import wallet.core.jni.proto.Bitcoin.SigningOutput
 import wallet.core.jni.proto.BitcoinV2
+import wallet.core.jni.proto.Utxo
 import wallet.core.jni.proto.Common.SigningError
 
 class TestBitcoinSigning {
@@ -172,7 +173,7 @@ class TestBitcoinSigning {
         val publicKey = ByteString.copyFrom(privateKey.getPublicKeySecp256k1(true).data())
 
         val utxo0 = BitcoinV2.Input.newBuilder()
-            .setOutPoint(BitcoinV2.OutPoint.newBuilder().apply {
+            .setOutPoint(Utxo.OutPoint.newBuilder().apply {
                 hash = ByteString.copyFrom(txId)
                 vout = 1
             })
@@ -238,7 +239,7 @@ class TestBitcoinSigning {
         val publicKey = ByteString.copyFrom(privateKey.getPublicKeySecp256k1(true).data())
 
         val utxo0 = BitcoinV2.Input.newBuilder()
-            .setOutPoint(BitcoinV2.OutPoint.newBuilder().apply {
+            .setOutPoint(Utxo.OutPoint.newBuilder().apply {
                 hash = ByteString.copyFrom(txIdCommit)
                 vout = 0
             })
@@ -299,7 +300,7 @@ class TestBitcoinSigning {
         val bobAddress = "bc1qazgc2zhu2kmy42py0vs8d7yff67l3zgpwfzlpk"
 
         val utxo0 = BitcoinV2.Input.newBuilder()
-            .setOutPoint(BitcoinV2.OutPoint.newBuilder().apply {
+            .setOutPoint(Utxo.OutPoint.newBuilder().apply {
                 hash = ByteString.copyFrom(txIdInscription)
                 vout = 0
             })
@@ -310,7 +311,7 @@ class TestBitcoinSigning {
             })
 
         val utxo1 = BitcoinV2.Input.newBuilder()
-            .setOutPoint(BitcoinV2.OutPoint.newBuilder().apply {
+            .setOutPoint(Utxo.OutPoint.newBuilder().apply {
                 hash = ByteString.copyFrom(txIdForFees)
                 vout = 1
             })
