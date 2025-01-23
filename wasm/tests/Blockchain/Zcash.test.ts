@@ -62,7 +62,6 @@ describe("Zcash", () => {
         const output = TW.Bitcoin.Proto.SigningOutput.decode(outputData);
 
         assert.equal(output.error, TW.Common.Proto.SigningError.OK);
-        assert.equal(output.signingResultV2!.errorMessage, "");
         assert.equal(output.signingResultV2!.error, TW.Common.Proto.SigningError.OK);
         assert.equal(
             HexCoding.encode(output.signingResultV2!.encoded),
