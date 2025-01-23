@@ -40,7 +40,7 @@ fn test_komodo_address_invalid() {
 fn test_komodo_address_get_data() {
     test_address_get_data(
         CoinType::Komodo,
-        "RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA",
-        "f1dce4182fce875748c4986b240ff7d7bc3fffb0",
+        "RALiENnMMjyubc38hM31h6oicPsuWdAMYg",
+        "0ba28b3eebfe1d39dab038324be2c66090ee21a3",
     );
 }

@@ -2,7 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::context::ZcashContext;
 use crate::modules::zcash_fee_estimator::ZcashFeeEstimator;
 use crate::transaction::{ZcashTransaction, TRANSACTION_VERSION_4};
 use tw_bitcoin::modules::signing_request::SigningRequestBuilder;
@@ -60,8 +59,7 @@ where
 
         // Parse all UTXOs.
         for utxo_proto in transaction_builder.inputs.iter() {
-            let utxo_builder =
-                UtxoProtobuf::<ZcashContext>::new(&chain_info, utxo_proto, &public_keys);
+            let utxo_builder = UtxoProtobuf::<Context>::new(&chain_info, utxo_proto, &public_keys);
 
             let (utxo, utxo_args) = utxo_builder
                 .utxo_from_proto()
@@ -71,7 +69,7 @@ where
 
         // If `max_amount_output` is set, construct a transaction with only one output.
         if let Some(max_output_proto) = transaction_builder.max_amount_output.as_ref() {
-            let output_builder = OutputProtobuf::<ZcashContext>::new(&chain_info, max_output_proto);
+            let output_builder = OutputProtobuf::<Context>::new(&chain_info, max_output_proto);
 
             let max_output = output_builder
                 .output_from_proto()
@@ -88,7 +86,7 @@ where
 
         // `max_amount_output` isn't set, parse all Outputs.
         for output_proto in transaction_builder.outputs.iter() {
-            let output = OutputProtobuf::<ZcashContext>::new(&chain_info, output_proto)
+            let output = OutputProtobuf::<Context>::new(&chain_info, output_proto)
                 .output_from_proto()
                 .context("Error creating Output from Proto")?;
             builder.push_output(output);
@@ -99,7 +97,7 @@ where
             .change_output
             .as_ref()
             .map(|change_output_proto| {
-                OutputProtobuf::<ZcashContext>::new(&chain_info, change_output_proto)
+                OutputProtobuf::<Context>::new(&chain_info, change_output_proto)
                     .output_from_proto()
                     .context("Error creating Change Output from Proto")
             })
