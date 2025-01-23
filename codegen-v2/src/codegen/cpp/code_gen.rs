@@ -205,7 +205,7 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
 
 fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(String, String)> {
     match ty {
-        "TWString *_Nonnull" => {
+        "TWString *_Nonnull" | "TWString *_Nullable" => {
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
