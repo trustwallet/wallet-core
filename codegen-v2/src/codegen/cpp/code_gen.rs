@@ -1,7 +1,9 @@
 use serde::{Deserialize, Serialize};
+use std::fmt::Write as _;
 use std::fs;
 use std::io::Write;
 
+use crate::Error::BadFormat;
 use crate::Result;
 
 static IN_DIR: &str = "../rust/bindings/";
@@ -38,6 +40,8 @@ fn convert_rust_type_to_cpp(ty: &str) -> String {
 }
 
 fn generate_license(file: &mut std::fs::File) -> Result<()> {
+    writeln!(file, "// SPDX-License-Identifier: Apache-2.0")?;
+    writeln!(file, "//")?;
     writeln!(file, "// Copyright © 2017 Trust Wallet.\n")?;
     Ok(())
 }
@@ -65,9 +69,7 @@ fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
 }
 
 fn generate_class_declaration(file: &mut std::fs::File, info: &TWConfig) -> Result<()> {
-    let class_name = format!("{}", info.class);
-    let class_dec = format!("TW_EXPORT_CLASS\nstruct {};\n", class_name.clone());
-    writeln!(file, "{}", class_dec)?;
+    writeln!(file, "TW_EXPORT_CLASS\nstruct {};\n", info.class)?;
     Ok(())
 }
 
@@ -75,28 +77,29 @@ fn generate_function_signature(
     class_name: &str,
     func: &TWStaticFunction,
     is_declaration: bool,
-) -> String {
+) -> Result<String> {
     let return_type = convert_rust_type_to_cpp(&func.return_type);
-    let mut signature = format!(
-        "{}{} {}{}",
-        if is_declaration {
-            "TW_EXPORT_STATIC_METHOD "
-        } else {
-            ""
-        },
-        return_type,
-        class_name,
-        &func.name
-    );
+    let whether_export = if is_declaration {
+        "TW_EXPORT_STATIC_METHOD "
+    } else {
+        ""
+    };
+    let mut signature = format!("{whether_export}{return_type} {class_name}{}", func.name);
     signature += "(";
     for (i, arg) in func.args.iter().enumerate() {
-        signature += format!("{} {}", convert_rust_type_to_cpp(&arg.ty), arg.name).as_str();
+        write!(
+            &mut signature,
+            "{} {}",
+            convert_rust_type_to_cpp(&arg.ty),
+            arg.name
+        )
+        .map_err(|e| BadFormat(e.to_string()))?;
         if i < func.args.len() - 1 {
             signature += ", ";
         }
     }
     signature += ")";
-    signature
+    Ok(signature)
 }
 
 fn generate_function_declaration(
@@ -104,9 +107,8 @@ fn generate_function_declaration(
     class_name: &str,
     func: &TWStaticFunction,
 ) -> Result<()> {
-    let mut func_dec = generate_function_signature(class_name, func, true);
-    func_dec += ";\n";
-    writeln!(file, "{}", func_dec)?;
+    let func_dec = generate_function_signature(class_name, func, true)?;
+    writeln!(file, "{func_dec};\n")?;
     Ok(())
 }
 
@@ -135,61 +137,72 @@ pub fn generate_header(info: &TWConfig) -> Result<()> {
 fn generate_source_includes(file: &mut std::fs::File, info: &TWConfig) -> Result<()> {
     writeln!(
         file,
-        "{}",
-        format!("#include <Generated/TrustWalletCore/{}.h>", info.class)
+        "#include <Generated/TrustWalletCore/{}.h>",
+        info.class
     )?;
     writeln!(file, "#include \"rust/Wrapper.h\"")?;
     Ok(())
 }
 
-fn generate_function_call(args: &Vec<String>) -> String {
+fn generate_function_call(args: &Vec<String>) -> Result<String> {
     let mut func_call = "(".to_string();
     for (i, arg) in args.iter().enumerate() {
-        func_call += format!("{}", arg).as_str();
+        write!(&mut func_call, "{arg}").map_err(|e| BadFormat(e.to_string()))?;
         if i < args.len() - 1 {
             func_call += ", ";
         }
     }
     func_call += ");\n";
-    func_call
+    Ok(func_call)
 }
 
-fn generate_return_string(func: &TWStaticFunction, converted_args: &Vec<String>) -> String {
+fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -> Result<String> {
     let mut return_string = String::new();
     match func.return_type.as_str() {
         "* mut TWString" => {
-            return_string += format!(
+            write!(
+                &mut return_string,
                 "    const Rust::TWStringWrapper result = Rust::{}",
                 func.rust_name
             )
-            .as_str();
-            return_string += generate_function_call(&converted_args).as_str();
-            return_string += format!("    if (!result) {{ return nullptr; }}\n").as_str();
-            return_string +=
-                format!("    return TWStringCreateWithUTF8Bytes(result.c_str());\n").as_str();
+            .map_err(|e| BadFormat(e.to_string()))?;
+            return_string += generate_function_call(&converted_args)?.as_str();
+            writeln!(&mut return_string, "    if (!result) {{ return nullptr; }}")
+                .map_err(|e| BadFormat(e.to_string()))?;
+            writeln!(
+                &mut return_string,
+                "    return TWStringCreateWithUTF8Bytes(result.c_str());"
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
         }
         _ => {
-            return_string += format!("    return Rust::{}(", func.rust_name).as_str();
-            return_string += generate_function_call(&converted_args).as_str();
+            writeln!(&mut return_string, "    return Rust::{}", func.rust_name)
+                .map_err(|e| BadFormat(e.to_string()))?;
+            return_string += generate_function_call(&converted_args)?.as_str();
         }
     }
-    return_string
+    Ok(return_string)
 }
 
-fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> (String, String) {
+fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(String, String)> {
     match ty {
         "TWString *_Nonnull" => {
-            let code = format!(
-                "    auto& {name}String = *reinterpret_cast<const std::string*>({name});\n",
-                name = name
-            ) + format!(
-                "    const Rust::TWStringWrapper {name}RustStr = {name}String;\n",
+            let mut conversion_code = String::new();
+            writeln!(
+                &mut conversion_code,
+                "    auto& {name}String = *reinterpret_cast<const std::string*>({name});",
                 name = name
             )
-            .as_str();
-            (code, format!("{}RustStr.get()", name))
+            .map_err(|e| BadFormat(e.to_string()))?;
+            writeln!(
+                &mut conversion_code,
+                "    const Rust::TWStringWrapper {name}RustStr = {name}String;",
+                name = name
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+            Ok((conversion_code, format!("{}RustStr.get()", name)))
         }
-        _ => ("".to_string(), name.to_string()),
+        _ => Ok(("".to_string(), name.to_string())),
     }
 }
 
@@ -198,17 +211,17 @@ fn generate_function_definition(
     info: &TWConfig,
     func: &TWStaticFunction,
 ) -> Result<()> {
-    let mut func_def = generate_function_signature(&info.class, func, false);
+    let mut func_def = generate_function_signature(&info.class, func, false)?;
     func_def += " {\n";
     let mut converted_args = vec![];
     for arg in func.args.iter() {
         let func_type = convert_rust_type_to_cpp(&arg.ty);
         let (conversion_code, converted_arg) =
-            generate_conversion_code_with_var_name(&func_type, &arg.name);
+            generate_conversion_code_with_var_name(&func_type, &arg.name)?;
         func_def += conversion_code.as_str();
         converted_args.push(converted_arg);
     }
-    let return_string = generate_return_string(func, &converted_args);
+    let return_string = generate_return_type(func, &converted_args)?;
     func_def += return_string.as_str();
     func_def += "}\n";
     writeln!(file, "{}", func_def)?;
