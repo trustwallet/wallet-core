@@ -21,8 +21,10 @@ use tw_komodo::entry::KomodoEntry;
 use tw_native_evmos::entry::NativeEvmosEntry;
 use tw_native_injective::entry::NativeInjectiveEntry;
 use tw_pactus::entry::PactusEntry;
+use tw_polkadot::entry::PolkadotEntry;
 use tw_ronin::entry::RoninEntry;
 use tw_solana::entry::SolanaEntry;
+use tw_substrate::entry::SubstrateEntry;
 use tw_sui::entry::SuiEntry;
 use tw_thorchain::entry::ThorchainEntry;
 use tw_ton::entry::TheOpenNetworkEntry;
@@ -44,6 +46,7 @@ const KOMODO: KomodoEntry = KomodoEntry;
 const NATIVE_EVMOS: NativeEvmosEntry = NativeEvmosEntry;
 const NATIVE_INJECTIVE: NativeInjectiveEntry = NativeInjectiveEntry;
 const PACTUS: PactusEntry = PactusEntry;
+const POLKADOT: SubstrateEntry<PolkadotEntry> = SubstrateEntry(PolkadotEntry);
 const RONIN: RoninEntry = RoninEntry;
 const SOLANA: SolanaEntry = SolanaEntry;
 const SUI: SuiEntry = SuiEntry;
@@ -67,6 +70,8 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::NativeEvmos => Ok(&NATIVE_EVMOS),
         BlockchainType::NativeInjective => Ok(&NATIVE_INJECTIVE),
         BlockchainType::Pactus => Ok(&PACTUS),
+        BlockchainType::Polkadot => Ok(&POLKADOT),
+        BlockchainType::Kusama => Ok(&POLKADOT),
         BlockchainType::Ronin => Ok(&RONIN),
         BlockchainType::Solana => Ok(&SOLANA),
         BlockchainType::Sui => Ok(&SUI),

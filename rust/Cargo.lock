@@ -1864,8 +1864,10 @@ dependencies = [
  "tw_native_evmos",
  "tw_native_injective",
  "tw_pactus",
+ "tw_polkadot",
  "tw_ronin",
  "tw_solana",
+ "tw_substrate",
  "tw_sui",
  "tw_thorchain",
  "tw_ton",
@@ -2113,6 +2115,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_polkadot"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_number",
+ "tw_proto",
+ "tw_scale",
+ "tw_ss58_address",
+ "tw_substrate",
+]
+
+[[package]]
 name = "tw_proto"
 version = "0.1.0"
 dependencies = [
@@ -2135,6 +2153,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_scale"
+version = "0.1.0"
+dependencies = [
+ "tw_hash",
+ "tw_number",
+]
+
+[[package]]
 name = "tw_solana"
 version = "0.1.0"
 dependencies = [
@@ -2150,6 +2176,33 @@ dependencies = [
  "tw_memory",
  "tw_misc",
  "tw_proto",
+]
+
+[[package]]
+name = "tw_ss58_address"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_scale",
+]
+
+[[package]]
+name = "tw_substrate"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_number",
+ "tw_proto",
+ "tw_scale",
+ "tw_ss58_address",
 ]
 
 [[package]]

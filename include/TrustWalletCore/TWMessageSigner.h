@@ -14,6 +14,14 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_CLASS
 struct TWMessageSigner;
 
+/// Computes preimage hashes of a message, needed for external signing.
+///
+/// \param coin The given coin type to sign the message for.
+/// \param input The serialized data of a `MessageSigningInput` proto object, (e.g. `TW.Solana.Proto.MessageSigningInput`).
+/// \return The serialized data of a `PreSigningOutput` proto object, (e.g. `TxCompiler::Proto::PreSigningOutput`).
+TW_EXPORT_STATIC_METHOD
+TWData* _Nullable TWMessageSignerPreImageHashes(enum TWCoinType coin, TWData* _Nonnull input);
+
 /// Signs an arbitrary message to prove ownership of an address for off-chain services.
 ///
 /// \param coin The given coin type to sign the message for.
