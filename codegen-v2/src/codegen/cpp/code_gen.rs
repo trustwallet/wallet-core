@@ -1,3 +1,4 @@
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::fmt::Write as _;
 use std::fs;
@@ -31,15 +32,29 @@ pub struct TWArg {
 }
 
 fn convert_rust_type_to_cpp(ty: &str) -> String {
-    match ty.trim() {
-        s if s.starts_with("* const ") => {
-            format!("{} *_Nonnull", s.strip_prefix("* const ").expect("Checked"))
-        }
-        s if s.starts_with("* mut ") => {
-            format!("{} *_Nullable", s.strip_prefix("* mut ").expect("Checked"))
-        }
-        "bool" => "bool".to_string(),
-        _ => ty.to_string(),
+    let trimmed = ty.replace(" ", "");
+    if let Some(captures) = Regex::new(r"^Nonnull<(.+)>$")
+        .expect("Failed to create regex")
+        .captures(&trimmed)
+    {
+        format!("{} *_Nonnull", &captures[1])
+    } else if let Some(captures) = Regex::new(r"^NonnullMut<(.+)>$")
+        .expect("Failed to create regex")
+        .captures(&trimmed)
+    {
+        format!("{} *_Nonnull", &captures[1])
+    } else if let Some(captures) = Regex::new(r"^Nullable<(.+)>$")
+        .expect("Failed to create regex")
+        .captures(&trimmed)
+    {
+        format!("{} *_Nullable", &captures[1])
+    } else if let Some(captures) = Regex::new(r"^NullableMut<(.+)>$")
+        .expect("Failed to create regex")
+        .captures(&trimmed)
+    {
+        format!("{} *_Nullable", &captures[1])
+    } else {
+        ty.to_string()
     }
 }
 
@@ -162,8 +177,8 @@ fn generate_function_call(args: &Vec<String>) -> Result<String> {
 
 fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -> Result<String> {
     let mut return_string = String::new();
-    match func.return_type.as_str() {
-        "* mut TWString" => {
+    match func.return_type.replace(" ", "").as_str() {
+        "NullableMut<TWString>" | "Nullable<TWString>" => {
             write!(
                 &mut return_string,
                 "    const Rust::TWStringWrapper result = Rust::{}",

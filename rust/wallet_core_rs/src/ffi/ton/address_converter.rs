@@ -7,7 +7,7 @@
 use std::str::FromStr;
 use tw_macros::tw_ffi;
 use tw_memory::ffi::tw_string::TWString;
-use tw_memory::ffi::RawPtrTrait;
+use tw_memory::ffi::{Nonnull, NullableMut, RawPtrTrait};
 use tw_misc::try_or_else;
 use tw_ton::address::TonAddress;
 use tw_ton::modules::address_converter::AddressConverter;
@@ -21,8 +21,8 @@ use tw_ton::modules::address_converter::AddressConverter;
 #[tw_ffi(ty = static_function, class = TWTONAddressConverter, name = ToBoc)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_ton_address_converter_to_boc(
-    address: *const TWString,
-) -> *mut TWString {
+    address: Nonnull<TWString>,
+) -> NullableMut<TWString> {
     let address = try_or_else!(TWString::from_ptr_as_ref(address), std::ptr::null_mut);
     let address_str = try_or_else!(address.as_str(), std::ptr::null_mut);
     let address_ton = try_or_else!(TonAddress::from_str(address_str), std::ptr::null_mut);
@@ -43,7 +43,7 @@ pub unsafe extern "C" fn tw_ton_address_converter_to_boc(
 /// \return Pointer to a Jetton address.
 #[tw_ffi(ty = static_function, class = TWTONAddressConverter, name = FromBoc)]
 #[no_mangle]
-pub unsafe extern "C" fn tw_ton_address_converter_from_boc(boc: *const TWString) -> *mut TWString {
+pub unsafe extern "C" fn tw_ton_address_converter_from_boc(boc: Nonnull<TWString>) -> NullableMut<TWString> {
     let boc = try_or_else!(TWString::from_ptr_as_ref(boc), std::ptr::null_mut);
     let boc_str = try_or_else!(boc.as_str(), std::ptr::null_mut);
 
@@ -64,10 +64,10 @@ pub unsafe extern "C" fn tw_ton_address_converter_from_boc(boc: *const TWString)
 #[tw_ffi(ty = static_function, class = TWTONAddressConverter, name = ToUserFriendly)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_ton_address_converter_to_user_friendly(
-    address: *const TWString,
+    address: Nonnull<TWString>,
     bounceable: bool,
     testnet: bool,
-) -> *mut TWString {
+) -> NullableMut<TWString> {
     let address = try_or_else!(TWString::from_ptr_as_ref(address), std::ptr::null_mut);
     let address_str = try_or_else!(address.as_str(), std::ptr::null_mut);
     let address_ton = try_or_else!(TonAddress::from_str(address_str), std::ptr::null_mut)
