@@ -102,7 +102,7 @@ pub struct Blake2bPersonalHasher<'a> {
 impl<'a> Blake2bPersonalHasher<'a> {
     pub fn new(hash_len: usize, personalisation: &'a [u8]) -> Result<Self, Error> {
         verify_hash_size(hash_len)?;
-        verify_personal(&personalisation)?;
+        verify_personal(personalisation)?;
         Ok(Blake2bPersonalHasher {
             hash_len,
             personalisation,
@@ -110,7 +110,7 @@ impl<'a> Blake2bPersonalHasher<'a> {
     }
 }
 
-impl<'a> HasherOps for Blake2bPersonalHasher<'a> {
+impl HasherOps for Blake2bPersonalHasher<'_> {
     fn hash(&self, data: &[u8]) -> Data {
         blake2_b_personal(data, self.hash_len, self.personalisation).expect(
             "'hash_len' and 'personalisation' are checked in `Blake2bPersonalHasher::new()`",

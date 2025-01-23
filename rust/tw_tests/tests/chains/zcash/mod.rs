@@ -8,8 +8,8 @@ use tw_proto::Zcash::Proto as ZcashProto;
 
 mod zcash_address;
 mod zcash_compile;
-mod zcash_sign;
 mod zcash_plan;
+mod zcash_sign;
 
 /// See https://github.com/zcash/zips/blob/master/zips/zip-0205.rst#sapling-deployment BRANCH_ID section
 pub const SAPLING_BRANCH_ID: &[u8] = &[0xbb, 0x09, 0xb8, 0x76];

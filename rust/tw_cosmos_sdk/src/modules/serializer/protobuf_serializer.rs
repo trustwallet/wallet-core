@@ -129,7 +129,9 @@ impl<Context: CosmosContext> ProtobufSerializer<Context> {
         })
     }
 
-    pub fn build_signer_info(signer: &SignerInfo<Context::PublicKey>) -> tx_proto::SignerInfo<'static> {
+    pub fn build_signer_info(
+        signer: &SignerInfo<Context::PublicKey>,
+    ) -> tx_proto::SignerInfo<'static> {
         use tx_proto::mod_ModeInfo::{self as mode_info, OneOfsum as SumEnum};
 
         // Single is the mode info for a single signer. It is structured as a message

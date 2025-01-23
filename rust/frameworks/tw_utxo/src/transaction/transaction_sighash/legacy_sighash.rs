@@ -9,8 +9,8 @@ use crate::transaction::transaction_interface::{TransactionInterface, TxInputInt
 use crate::transaction::UtxoPreimageArgs;
 use std::marker::PhantomData;
 use tw_coin_entry::error::prelude::*;
-use tw_hash::H256;
 use tw_hash::hasher::HasherOps;
+use tw_hash::H256;
 
 /// `LegacySighash` is used to calculate a preimage hash of a P2PK, P2PKH or P2SH unspent output.
 pub struct LegacySighash<Transaction: std::fmt::Debug + TransactionInterface> {

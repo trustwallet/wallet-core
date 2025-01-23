@@ -3,12 +3,15 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::chains::common::bitcoin::{
-    dust_threshold, input, output, plan, sign, TransactionOneof, DUST, SIGHASH_ALL,
+    dust_threshold, input, output, plan, sign, transaction_psbt, TransactionOneof, DUST,
+    SIGHASH_ALL,
 };
 use crate::chains::zcash::{zcash_extra_data, zec_info, SAPLING_BRANCH_ID};
+use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_proto::BitcoinV2::Proto;
+use tw_proto::Common::Proto::SigningError;
 use tw_proto::Zcash::Proto as ZcashProto;
 
 /// Successfully broadcasted:
@@ -82,4 +85,20 @@ fn test_zcash_sign_sapling_era() {
             weight: 211 * 4,
             fee: 6_000,
         });
+}
+
+#[test]
+fn test_zcash_sign_psbt_not_supported() {
+    const DUMMY_PRIV: &str = "a9684f5bebd0e1208aae2e02bc9e9163bd1965ad23d8538644e1df8b99b99559";
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![DUMMY_PRIV.decode_hex().unwrap().into()],
+        chain_info: zec_info(),
+        transaction: transaction_psbt("01020304"),
+        ..Default::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Zcash, signing);
+    assert_eq!(output.error, SigningError::Error_not_supported);
 }
