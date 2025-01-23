@@ -43,7 +43,9 @@ pub unsafe extern "C" fn tw_ton_address_converter_to_boc(
 /// \return Pointer to a Jetton address.
 #[tw_ffi(ty = static_function, class = TWTONAddressConverter, name = FromBoc)]
 #[no_mangle]
-pub unsafe extern "C" fn tw_ton_address_converter_from_boc(boc: Nonnull<TWString>) -> NullableMut<TWString> {
+pub unsafe extern "C" fn tw_ton_address_converter_from_boc(
+    boc: Nonnull<TWString>,
+) -> NullableMut<TWString> {
     let boc = try_or_else!(TWString::from_ptr_as_ref(boc), std::ptr::null_mut);
     let boc_str = try_or_else!(boc.as_str(), std::ptr::null_mut);
 
