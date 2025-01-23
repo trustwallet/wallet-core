@@ -54,7 +54,7 @@ class TestZcashSigner {
             .addOutputs(out0)
             .setInputSelector(BitcoinV2.InputSelector.UseAll)
             .setFixedDustThreshold(dustSatoshis)
-            // Set a ZCash specific extra parameters.
+            // Set ZCash specific extra parameters.
             .setZcashExtraData(Zcash.TransactionBuilderExtraData.newBuilder().apply {
                 branchId = ByteString.copyFrom(sapplingBranchId)
             })
