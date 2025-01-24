@@ -23,6 +23,7 @@ pub struct TWStaticFunction {
     pub rust_name: String,
     pub args: Vec<TWArg>,
     pub return_type: String,
+    pub docs: Vec<String>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -127,6 +128,9 @@ fn generate_function_declaration(
     func: &TWStaticFunction,
 ) -> Result<()> {
     let func_dec = generate_function_signature(class_name, func, true)?;
+    for doc in &func.docs {
+        writeln!(file, "/// {}", doc)?;
+    }
     writeln!(file, "{func_dec};\n")?;
     Ok(())
 }

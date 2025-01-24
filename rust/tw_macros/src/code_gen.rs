@@ -12,6 +12,7 @@ pub struct TWStaticFunction {
     pub rust_name: String,
     pub args: Vec<TWArg>,
     pub return_type: String,
+    pub docs: Vec<String>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
