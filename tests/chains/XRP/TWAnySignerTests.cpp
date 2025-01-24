@@ -140,6 +140,27 @@ TEST(TWAnySignerRipple, SignTokenPayment1) {
     EXPECT_EQ(hex(output.encoded()), "12000022000000002401ec61e0201b01ec61f561d48a68d1c931200000000000000000000000000055534400000000004b4e9c06f24296074f7bc48f92a97916c6dc5ea968400000000000000a73210348c331ab218ba964150490c83875b06ccad2100b1f5707f296764712738cf1ca74473045022100a938783258d33e2e3e6099d1ab68fd85c3fd21adfa00e136a67bed8fddec6c9a02206cc6784c1f212f19dc939207643d361ceaa8334eb366722cf33b24dc7669dd7a81143a2f2f189d05abb8519cc9dee0e2dbc6fa53924183148132e4e20aecf29090ac428a9c43f230a829220d");
 }
 
+TEST(TWAnySignerRipple, SignTokenPaymentNonStandardCurrencyCode) {
+    // https://livenet.xrpl.org/transactions/6A1229450BB795E450C4AFAA7B72B58962621C0B8760372634796B3941718BFB
+    auto key = parse_hex("574e99f7946cfa2a6ca9368ca72fd37e42583cddb9ecc746aa4cb194ef4b2480");
+    Proto::SigningInput input;
+
+    input.mutable_op_payment()->mutable_currency_amount()->set_currency("524C555344000000000000000000000000000000");
+    input.mutable_op_payment()->mutable_currency_amount()->set_value("1");
+    input.mutable_op_payment()->mutable_currency_amount()->set_issuer("rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De");
+    input.mutable_op_payment()->set_destination("r4oPb529jpRA1tVTDARmBuZPYB2CJjKFac");
+    input.set_fee(12);
+    input.set_sequence(93674951);
+    input.set_last_ledger_sequence(187349950);
+    input.set_account("rDgEGKXWkHHr1HYq2ETnNAs9MdV4R8Gyt");
+    input.set_private_key(key.data(), key.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeXRP);
+
+    EXPECT_EQ(hex(output.encoded()), "12000022000000002405955dc7201b0b2abbbe61d4838d7ea4c68000524c555344000000000000000000000000000000e5e961c6a025c9404aa7b662dd1df975be75d13e68400000000000000c7321039c77e9329017ced5f8673ebafcd29687a1fff181140c030062fa77865688fc5d744630440220552e90f417c2cabe39368bb45cf7495ba6ebe395f259a6509c9f3a7296e76a0d02201b37dae0c4c77fa70a451cd4a61c10575c8b052c282c082a32c229e7624a05e381140265c09d122fab2a261a80ee59f1f4cd8fba8cf88314ef20a3d93b00cc729eec11a3058d3d1feb4465e0");
+}
+
 TEST(TWAnySignerRipple, SignEscrowCreateMain) {
     // https://xrpscan.com/tx/3576E5D413CBDC228D13F281BB66304C1EE9DDEAA5563F1783EDB1848266D739
     auto key = parse_hex("a3cf20a85b25be4c955f0814718cc7a02eae9195159bd72ede5dd5c4e60d22c4");
