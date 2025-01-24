@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-import { CoinType, PrivateKey, StoredKeyEncryption } from "../wallet-core";
+import { CoinType, Derivation, PrivateKey, StoredKeyEncryption } from "../wallet-core";
 
 export enum WalletType {
   Mnemonic = "mnemonic",
@@ -70,6 +70,14 @@ export interface IKeyStore {
 
   // Add active accounts to a wallet by wallet id, password, coin
   addAccounts(id: string, password: string, coins: CoinType[]): Promise<Wallet>;
+
+  // Add an active account to a wallet by wallet id, password, coin, using given derivation.
+  addAccountDerivation(
+      id: string,
+      password: string,
+      coin: CoinType,
+      derivation: Derivation,
+  ): Promise<Wallet>;
 
   // Get private key of an account by wallet id, password, coin and derivation path
   getKey(

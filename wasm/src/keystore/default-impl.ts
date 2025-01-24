@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-import {WalletCore, CoinType, PrivateKey, StoredKey, StoredKeyEncryption} from "../wallet-core";
+import {WalletCore, CoinType, Derivation, PrivateKey, StoredKey, StoredKeyEncryption} from "../wallet-core";
 import * as Types from "./types";
 
 export class Default implements Types.IKeyStore {
@@ -115,6 +115,23 @@ export class Default implements Types.IKeyStore {
       coins.forEach((coin) => {
         storedKey.accountForCoin(coin, hdWallet);
       });
+      let newWallet = this.mapWallet(storedKey);
+      storedKey.delete();
+      hdWallet.delete();
+      return this.importWallet(newWallet).then(() => newWallet);
+    });
+  }
+
+  addAccountDerivation(
+      id: string,
+      password: string,
+      coin: CoinType,
+      derivation: Derivation,
+  ): Promise<Types.Wallet> {
+    return this.load(id).then((wallet) => {
+      let storedKey = this.mapStoredKey(wallet);
+      let hdWallet = storedKey.wallet(Buffer.from(password));
+      storedKey.accountForCoinDerivation(coin, derivation, hdWallet);
       let newWallet = this.mapWallet(storedKey);
       storedKey.delete();
       hdWallet.delete();
