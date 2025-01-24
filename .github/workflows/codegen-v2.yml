@@ -2,9 +2,10 @@ name: Codegen-v2 Tests
 
 on:
   push:
-    branches: [ dev, master ]
-  pull_request:
-    branches: [ dev, master ]
+    branches: [ s/fix-jvm-synchronization ]
+#    branches: [ dev, master ]
+#  pull_request:
+#    branches: [ dev, master ]
 
 env:
   SCCACHE_GHA_ENABLED: "true"
