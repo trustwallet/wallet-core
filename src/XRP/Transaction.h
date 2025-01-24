@@ -47,7 +47,7 @@ class Transaction {
     /// See https://github.com/trezor/trezor-core/tree/master/src/apps/ripple#transactions
   public:
       struct CurrencyAmount {
-        Data currency;
+        std::string currency;
         Data value;
         Data issuer;
     };
@@ -182,10 +182,11 @@ class Transaction {
     static Data serializeAmount(int64_t amount);
     static Data serializeCurrencyAmount(const CurrencyAmount& currency_amount);
     static Data serializeAddress(Address address);
+    static void serializeCurrencyCode(Data& out, const std::string& currency_code);
 
   private:
-    void setCurrencyAmount(CurrencyAmount& p_currency_amount, const std::string& currency, const std::string& value, const std::string& issuer) {
-        p_currency_amount.currency = Data(currency.begin(), currency.end());
+    void setCurrencyAmount(CurrencyAmount& p_currency_amount, const std::string& p_currency, const std::string& value, const std::string& issuer) {
+        p_currency_amount.currency = p_currency;
         p_currency_amount.value = Data(value.begin(), value.end());
         setAccount(issuer, p_currency_amount.issuer);
     }

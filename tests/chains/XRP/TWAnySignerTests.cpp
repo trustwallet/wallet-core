@@ -80,6 +80,27 @@ TEST(TWAnySignerRipple, SignTrustSetPayment) {
     EXPECT_EQ(hex(output.encoded()), "12001422000000002401ec60b9201b01ec60ce63d4c38d7ea4c6800000000000000000000000000055534400000000004b4e9c06f24296074f7bc48f92a97916c6dc5ea968400000000000000a732103dc4a0dae2d550de7cace9c26c1a331a114e3e7efee5577204b476d27e2dc683a7446304402206ebcc7a689845df373dd2566cd3789862d426d9ad4e6a09c2d2772b57e82696a022066b1f217a0f0d834d167613a313f74097423a9ccd11f1ae7f90ffab0d2fc26b58114308ea8e515b64f2e6616a33b42e1bbb9fa00bbd2");
 }
 
+TEST(TWAnySignerRipple, SignTrustSetPaymentNonStandardCurrencyCode) {
+    // https://livenet.xrpl.org/transactions/31ABD41ECAD459BCD008DBA4377047413AEE7A965517DB240016B66A3F4A97E1
+    auto key = parse_hex("574e99f7946cfa2a6ca9368ca72fd37e42583cddb9ecc746aa4cb194ef4b2480");
+    Proto::SigningInput input;
+
+    input.mutable_op_trust_set()->mutable_limit_amount()->set_currency("524C555344000000000000000000000000000000");
+    input.mutable_op_trust_set()->mutable_limit_amount()->set_value("1000000000");
+    input.mutable_op_trust_set()->mutable_limit_amount()->set_issuer("rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De");
+    input.set_fee(500);
+    input.set_sequence(93674950);
+    input.set_last_ledger_sequence(187349950);
+    input.set_account("rDgEGKXWkHHr1HYq2ETnNAs9MdV4R8Gyt");
+    input.set_private_key(key.data(), key.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeXRP);
+
+    EXPECT_EQ(hex(output.encoded()), "12001422000000002405955dc6201b0b2abbbe63d6c38d7ea4c68000524c555344000000000000000000000000000000e5e961c6a025c9404aa7b662dd1df975be75d13e6840000000000001f47321039c77e9329017ced5f8673ebafcd29687a1fff181140c030062fa77865688fc5d74473045022100aa5f7ffc2e11008a3fe98173c66360937cd3a72cb0951aa1b46ba32675c36b2d02206bc02de3a609e5c4b9e1510a6431a7d7efc0fba4ab9586d6595b86047e46bac281140265c09d122fab2a261a80ee59f1f4cd8fba8cf8");
+}
+
+
 TEST(TWAnySignerRipple, SignTokenPayment0) {
     // https://testnet.xrpl.org/transactions/8F7820892294598B58CFA2E1101D15ED98C179B25A2BA6DAEB4F5B727CB00D4E
     auto key = parse_hex("4ba5fd2ebf0f5d7e579b3c354c263ebb39cda4093845125786a280301af14e21");
