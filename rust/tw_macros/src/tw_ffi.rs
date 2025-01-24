@@ -98,16 +98,24 @@ pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
     };
 
     let class = args.class.unwrap().to_string();
-    let docs = func.attrs.iter().flat_map(|attr| {
-        if let syn::Meta::NameValue(meta) = &attr.meta {
-            if meta.path.is_ident("doc") {
-                if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit), .. }) = &meta.value {
-                    return Some(lit.value().trim().to_string());
+    let docs = func
+        .attrs
+        .iter()
+        .flat_map(|attr| {
+            if let syn::Meta::NameValue(meta) = &attr.meta {
+                if meta.path.is_ident("doc") {
+                    if let syn::Expr::Lit(syn::ExprLit {
+                        lit: syn::Lit::Str(lit),
+                        ..
+                    }) = &meta.value
+                    {
+                        return Some(lit.value().trim().to_string());
+                    }
                 }
             }
-        }
-        None
-    }).collect::<Vec<_>>();
+            None
+        })
+        .collect::<Vec<_>>();
     let static_function = TWStaticFunction {
         name: args.name.unwrap().to_string(),
         rust_name: func_name,
