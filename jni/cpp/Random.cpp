@@ -14,7 +14,7 @@ extern "C" {
     void random_buffer(uint8_t *buf, size_t len);
 }
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserved) {
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, [[maybe_unused]] void *reserved) {
     cachedJVM = jvm;
     return JNI_VERSION_1_2;
 }

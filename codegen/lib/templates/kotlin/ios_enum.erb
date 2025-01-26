@@ -6,6 +6,7 @@ import com.trustwallet.core.<%= "TW#{entity.name}" %>.*
 
 <%  end -%>
 <%  type = ": TW#{entity.name}" -%>
+@OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
 actual enum class <%= entity.name %>(
 <%  if has_string -%>
     val nativeValue<%= type %>,

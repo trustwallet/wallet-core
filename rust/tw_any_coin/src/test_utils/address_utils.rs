@@ -7,7 +7,7 @@ use crate::ffi::tw_any_address::{
     tw_any_address_create_with_public_key_derivation, tw_any_address_create_with_string,
     tw_any_address_data, tw_any_address_delete, tw_any_address_description,
     tw_any_address_is_valid, tw_any_address_is_valid_base58, tw_any_address_is_valid_bech32,
-    TWAnyAddress,
+    tw_any_address_is_valid_ss58, TWAnyAddress,
 };
 use tw_coin_registry::coin_type::CoinType;
 use tw_coin_registry::registry::get_coin_item;
@@ -80,10 +80,28 @@ pub fn test_address_valid(coin: CoinType, address: &str) {
     );
 }
 
+pub fn test_address_ss58_is_valid(coin: CoinType, address: &str, ss58: u16) {
+    let addr = TWStringHelper::create(address);
+    assert!(
+        unsafe { tw_any_address_is_valid_ss58(addr.ptr(), coin as u32, ss58) },
+        "'{}' expected to be valid",
+        address
+    );
+}
+
 pub fn test_address_invalid(coin: CoinType, address: &str) {
     let addr = TWStringHelper::create(address);
     assert!(
         !unsafe { tw_any_address_is_valid(addr.ptr(), coin as u32) },
+        "'{}' expected to be invalid",
+        address
+    );
+}
+
+pub fn test_address_ss58_is_invalid(coin: CoinType, address: &str, ss58: u16) {
+    let addr = TWStringHelper::create(address);
+    assert!(
+        !unsafe { tw_any_address_is_valid_ss58(addr.ptr(), coin as u32, ss58) },
         "'{}' expected to be invalid",
         address
     );

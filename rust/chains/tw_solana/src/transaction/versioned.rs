@@ -189,7 +189,7 @@ impl<'de> Deserialize<'de> for MessagePrefix {
     {
         struct PrefixVisitor;
 
-        impl<'de> Visitor<'de> for PrefixVisitor {
+        impl Visitor<'_> for PrefixVisitor {
             type Value = MessagePrefix;
 
             fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {

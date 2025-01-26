@@ -6,12 +6,11 @@ use crate::{NumberError, NumberResult};
 use std::borrow::Cow;
 use std::fmt;
 use std::fmt::Formatter;
-use std::ops::Add;
 use std::str::FromStr;
 use tw_hash::H256;
 use tw_memory::Data;
 
-#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct U256(pub(crate) primitive_types::U256);
 
@@ -178,18 +177,58 @@ impl fmt::Display for U256 {
     }
 }
 
-/// Implements `Add<u8>`, `Add<u16>` etc for [U256].
-impl<T> Add<T> for U256
-where
-    T: Into<primitive_types::U256>,
-{
-    type Output = U256;
+/// Implements std::ops traits for [U256] and types that can be converted into it.
+macro_rules! impl_ops {
+    ($trait_name:ident, $func_name:ident, $op:tt) => {
+        impl<T> std::ops::$trait_name<T> for U256
+        where
+        T: Into<primitive_types::U256>,
+        {
+            type Output = U256;
 
-    #[inline]
-    fn add(self, rhs: T) -> Self::Output {
-        U256(self.0 + rhs.into())
-    }
+            #[inline]
+            fn $func_name(self, rhs: T) -> Self::Output {
+                U256(self.0 $op rhs.into())
+            }
+        }
+    };
 }
+
+macro_rules! impl_ops_assign {
+    ($trait_name:ident, $func_name:ident, $op:tt) => {
+        impl<T> std::ops::$trait_name<T> for U256
+        where
+        T: Into<primitive_types::U256>,
+        {
+            #[inline]
+            fn $func_name(&mut self, rhs: T) {
+                *self = *self $op rhs;
+            }
+        }
+    };
+}
+
+impl_ops!(Add, add, +);
+impl_ops!(Sub, sub, -);
+impl_ops!(Mul, mul, *);
+impl_ops!(Div, div, /);
+impl_ops!(Rem, rem, %);
+impl_ops!(BitAnd, bitand, &);
+impl_ops!(BitOr, bitor, |);
+impl_ops!(BitXor, bitxor, ^);
+impl_ops!(Shl, shl, <<);
+impl_ops!(Shr, shr, >>);
+
+impl_ops_assign!(AddAssign, add_assign, +);
+impl_ops_assign!(SubAssign, sub_assign, -);
+impl_ops_assign!(MulAssign, mul_assign, *);
+impl_ops_assign!(DivAssign, div_assign, /);
+impl_ops_assign!(RemAssign, rem_assign, %);
+impl_ops_assign!(BitAndAssign, bitand_assign, &);
+impl_ops_assign!(BitOrAssign, bitor_assign, |);
+impl_ops_assign!(BitXorAssign, bitxor_assign, ^);
+impl_ops_assign!(ShlAssign, shl_assign, <<);
+impl_ops_assign!(ShrAssign, shr_assign, >>);
 
 #[cfg(feature = "serde")]
 mod impl_serde {
@@ -245,6 +284,7 @@ impl_map_from!(U256, u8);
 impl_map_from!(U256, u16);
 impl_map_from!(U256, u32);
 impl_map_from!(U256, u64);
+impl_map_from!(U256, u128);
 impl_map_from!(U256, usize);
 
 #[cfg(test)]

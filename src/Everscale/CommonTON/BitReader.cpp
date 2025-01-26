@@ -25,7 +25,7 @@ std::optional<uint8_t> BitReader::readU8(uint8_t bitCount) {
 }
 
 std::optional<Data> BitReader::readU8Slice(uint64_t byteCount) {
-    Rust::CByteArrayResultWrapper res = Rust::tw_bit_reader_read_u8_slice(reader.get(), byteCount);
+    Rust::CByteArrayResultWrapper res = Rust::tw_bit_reader_read_u8_slice(reader.get(), static_cast<uintptr_t>(byteCount));
     if (res.isErr()) {
         return std::nullopt;
     }

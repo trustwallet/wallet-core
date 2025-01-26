@@ -7,6 +7,19 @@
 
 using namespace TW;
 
+TWData* _Nullable TWMessageSignerPreImageHashes(enum TWCoinType coin, TWData* _Nonnull input) {
+    const Data& dataIn = *(reinterpret_cast<const Data*>(input));
+
+    Rust::TWDataWrapper inputData(dataIn);
+    Rust::TWDataWrapper outputPtr = Rust::tw_message_signer_pre_image_hashes(coin, inputData.get());
+
+    auto outputData = outputPtr.toDataOrDefault();
+    if (outputData.empty()) {
+        return nullptr;
+    }
+    return TWDataCreateWithBytes(outputData.data(), outputData.size());
+}
+
 TWData* _Nullable TWMessageSignerSign(enum TWCoinType coin, TWData* _Nonnull input) {
     const Data& dataIn = *(reinterpret_cast<const Data*>(input));
 

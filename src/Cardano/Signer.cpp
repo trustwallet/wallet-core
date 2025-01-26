@@ -343,7 +343,7 @@ std::vector<TxInput> Signer::selectInputsWithTokens(const std::vector<TxInput>& 
 
 // Create a simple plan, used for estimation
 TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, const std::vector<TxInput>& selectedInputs, bool maxAmount, uint64_t deposit, uint64_t undeposit, const std::vector<TxOutput>& extraOutputs) {
-    TransactionPlan plan{.utxos = selectedInputs, .extraOutputs = extraOutputs, .amount = amount, .deposit = deposit, .undeposit = undeposit};
+    TransactionPlan plan{.utxos = selectedInputs, .extraOutputs = extraOutputs, .amount = amount, .deposit = deposit, .undeposit = undeposit, .availableTokens{}, .outputTokens{}, .changeTokens{}};
     // Sum availableAmount
     plan.availableAmount = 0;
     for (auto& u : plan.utxos) {

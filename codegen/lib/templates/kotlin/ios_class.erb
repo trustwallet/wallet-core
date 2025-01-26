@@ -7,12 +7,13 @@ import kotlinx.cinterop.toCValues
 <% constructors = entity.static_methods.select { |method| method.name.start_with?('Create') } -%>
 <% methods = entity.methods.select { |method| not method.name.start_with?('Delete') } -%>
 <% static_methods = entity.static_methods.select { |method| not method.name.start_with?('Create') } -%>
+@OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
 actual class <%= entity.name %> constructor(
     val pointer: CPointer<TW<%= entity.name %>>,
 ) {
 <%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
-    @OptIn(ExperimentalStdlibApi::class)
-    private val cleaner = kotlin.native.internal.createCleaner(pointer) { ptr ->
+    @OptIn(kotlin.experimental.ExperimentalNativeApi::class)
+    private val cleaner = kotlin.native.ref.createCleaner(pointer) { ptr ->
         TW<%= entity.name %>Delete(ptr)
     }
 <%  end -%>

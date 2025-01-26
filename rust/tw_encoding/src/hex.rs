@@ -30,7 +30,7 @@ pub trait DecodeHex {
     fn decode_hex(&self) -> FromHexResult<Data>;
 }
 
-impl<'a> DecodeHex for &'a str {
+impl DecodeHex for &str {
     fn decode_hex(&self) -> FromHexResult<Data> {
         decode(self)
     }

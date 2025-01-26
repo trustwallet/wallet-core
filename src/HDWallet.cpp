@@ -44,7 +44,7 @@ HDWallet<seedSize>::HDWallet(const Data& seed) {
 }
 
 template <std::size_t seedSize>
-void HDWallet<seedSize>::updateSeedAndEntropy(bool check) {
+void HDWallet<seedSize>::updateSeedAndEntropy([[maybe_unused]] bool check) {
     assert(!check || Mnemonic::isValid(mnemonic)); // precondition
 
     // generate seed from mnemonic

@@ -20,7 +20,7 @@
 <%# Constructors -%>
 <%  entity.static_methods.each do |method| -%>
 <%    next unless method.name.start_with?('Create') -%>
-jlong JNICALL <%= JNIHelper.function_name(entity: entity, function: method, native_prefix: true) %>(JNIEnv *env, jclass thisClass<%= JNIHelper.parameters(method.parameters) %>) {
+jlong JNICALL <%= JNIHelper.function_name(entity: entity, function: method, native_prefix: true) %>([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jclass thisClass<%= JNIHelper.parameters(method.parameters) %>) {
 <%=   render('jni/parameter_access.erb', { method: method }) -%>
     struct TW<%= entity.name %> *instance = TW<%= entity.name %><%= method.name %>(<%= JNIHelper.arguments(method.parameters).join(', ') %>);
 <%=   render('jni/parameter_release.erb', { method: method }) -%>
@@ -31,7 +31,7 @@ jlong JNICALL <%= JNIHelper.function_name(entity: entity, function: method, nati
 <%# Destructors -%>
 <%  entity.methods.each do |method| -%>
 <%    next unless method.name.start_with?('Delete') -%>
-void JNICALL <%= JNIHelper.function_name(entity: entity, function: method, native_prefix: true) %>(JNIEnv *env, jclass thisClass, jlong handle) {
+void JNICALL <%= JNIHelper.function_name(entity: entity, function: method, native_prefix: true) %>([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jclass thisClass, jlong handle) {
     TW<%= entity.name %>Delete((struct TW<%= entity.name %> *) handle);
 }
 
@@ -39,7 +39,7 @@ void JNICALL <%= JNIHelper.function_name(entity: entity, function: method, nativ
 <%# Initializers -%>
 <%  entity.static_methods.each do |method| -%>
 <%    next unless method.name.start_with?('Init') -%>
-jbyteArray JNICALL <%= JNIHelper.function_name(entity: entity, function: method) %>(JNIEnv *env, jclass thisClass<%= JNIHelper.parameters(method.parameters.drop(1)) %>) {
+jbyteArray JNICALL <%= JNIHelper.function_name(entity: entity, function: method) %>(JNIEnv *env, [[maybe_unused]] jclass thisClass<%= JNIHelper.parameters(method.parameters.drop(1)) %>) {
     jbyteArray array = (*env)->NewByteArray(env, sizeof(struct TW<%= entity.name %>));
     jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, array, NULL);
     struct TW<%= entity.name %> *instance = (struct TW<%= entity.name %> *) bytesBuffer;

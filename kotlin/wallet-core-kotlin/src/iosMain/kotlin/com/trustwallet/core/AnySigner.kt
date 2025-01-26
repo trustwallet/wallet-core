@@ -6,6 +6,7 @@ package com.trustwallet.core
 
 import kotlinx.cinterop.toCValues
 
+@OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
 actual object AnySigner {
 
     actual fun sign(input: ByteArray, coin: CoinType): ByteArray {
