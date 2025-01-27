@@ -43,6 +43,7 @@ tw_hash = { path = "../tw_hash", optional = true }
 tw_keypair = { path = "../tw_keypair", optional = true }
 tw_memory = { path = "../tw_memory", optional = true }
 tw_number = { path = "../tw_number", optional = true }
+tw_macros = { path = "../tw_macros" }
 tw_misc = { path = "../tw_misc" }
 tw_proto = { path = "../tw_proto", optional = true }
 tw_solana = { path = "../chains/tw_solana", optional = true }
