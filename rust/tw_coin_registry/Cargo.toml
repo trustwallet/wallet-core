@@ -21,6 +21,7 @@ tw_greenfield = { path = "../chains/tw_greenfield" }
 tw_hash = { path = "../tw_hash" }
 tw_internet_computer = { path = "../chains/tw_internet_computer" }
 tw_keypair = { path = "../tw_keypair" }
+tw_komodo = { path = "../chains/tw_komodo" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
 tw_native_evmos = { path = "../chains/tw_native_evmos" }
@@ -34,6 +35,7 @@ tw_sui = { path = "../chains/tw_sui" }
 tw_thorchain = { path = "../chains/tw_thorchain" }
 tw_ton = { path = "../chains/tw_ton" }
 tw_utxo = { path = "../frameworks/tw_utxo" }
+tw_zcash = { path = "../chains/tw_zcash" }
 
 [build-dependencies]
 itertools = "0.10.5"

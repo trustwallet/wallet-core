@@ -19,6 +19,8 @@ if [[ "$1" == "wasm" ]]; then
   export CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_RUNNER=node
 
   cargo test --target wasm32-unknown-emscripten --profile wasm-test --workspace --exclude wallet_core_bin
+elif [[ "$1" == "doc" ]]; then
+  cargo test --doc
 else
   cargo test --all
 fi

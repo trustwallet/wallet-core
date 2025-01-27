@@ -2,8 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::modules::psbt_request::PsbtRequest;
-use crate::modules::signing_request::SigningRequestBuilder;
+use crate::context::BitcoinSigningContext;
+use crate::modules::psbt_request::{PsbtRequest, PsbtRequestBuilder};
+use crate::modules::signing_request::standard_signing_request::chain_info;
 use crate::modules::tx_builder::script_parser::StandardScriptParser;
 use crate::modules::tx_builder::BitcoinChainInfo;
 use std::marker::PhantomData;
@@ -12,23 +13,26 @@ use tw_coin_entry::error::prelude::*;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::BitcoinV2::Proto::mod_Input::OneOfclaiming_script as ClaimingScriptProto;
 use tw_proto::BitcoinV2::Proto::mod_Output::OneOfto_recipient as ToRecipientProto;
-use tw_utxo::context::UtxoContext;
-use tw_utxo::transaction::standard_transaction::{TransactionInput, TransactionOutput};
-use tw_utxo::transaction::transaction_interface::TransactionInterface;
+use tw_proto::Utxo::Proto as UtxoProto;
+use tw_utxo::context::{ContextTransactionInput, ContextTransactionOutput};
+use tw_utxo::transaction::transaction_interface::{
+    TransactionInterface, TxInputInterface, TxOutputInterface,
+};
 use tw_utxo::transaction::UtxoToSign;
 
-pub struct PsbtPlanner<Context: UtxoContext> {
+pub struct PsbtPlanner<Context: BitcoinSigningContext> {
     _phantom: PhantomData<Context>,
 }
 
-impl<Context: UtxoContext> PsbtPlanner<Context> {
+impl<Context: BitcoinSigningContext> PsbtPlanner<Context> {
     pub fn plan_psbt(
         coin: &dyn CoinContext,
         input: &Proto::SigningInput,
         psbt_input: &Proto::Psbt,
     ) -> SigningResult<Proto::TransactionPlan<'static>> {
-        let chain_info = SigningRequestBuilder::<Context>::chain_info(coin, &input.chain_info)?;
-        let PsbtRequest { unsigned_tx, .. } = PsbtRequest::<Context>::build(input, psbt_input)?;
+        let chain_info = chain_info(coin, &input.chain_info)?;
+        let PsbtRequest { unsigned_tx, .. } =
+            Context::PsbtRequestBuilder::build(input, psbt_input)?;
 
         let total_input = unsigned_tx.total_input()?;
         let fee_estimate = unsigned_tx.fee()?;
@@ -62,17 +66,18 @@ impl<Context: UtxoContext> PsbtPlanner<Context> {
 
     pub fn utxo_to_proto(
         unsigned_txin: &UtxoToSign,
-        txin: &TransactionInput,
+        txin: &ContextTransactionInput<Context>,
         chain_info: &BitcoinChainInfo,
     ) -> SigningResult<Proto::Input<'static>> {
-        let out_point = Proto::OutPoint {
-            hash: txin.previous_output.hash.to_vec().into(),
-            vout: txin.previous_output.index,
+        let out_point = UtxoProto::OutPoint {
+            hash: txin.previous_output().hash.to_vec().into(),
+            vout: txin.previous_output().index,
         };
         let sequence = Proto::mod_Input::Sequence {
-            sequence: txin.sequence,
+            sequence: txin.sequence(),
         };
 
+        // TODO add `UtxoSigningContext::ScriptParser` associative type.
         let from_address = StandardScriptParser
             .parse(&unsigned_txin.prevout_script_pubkey)?
             .try_to_address(chain_info)?
@@ -90,20 +95,21 @@ impl<Context: UtxoContext> PsbtPlanner<Context> {
     }
 
     pub fn output_to_proto(
-        output: &TransactionOutput,
+        output: &ContextTransactionOutput<Context>,
         chain_info: &BitcoinChainInfo,
     ) -> SigningResult<Proto::Output<'static>> {
+        // TODO add `UtxoSigningContext::ScriptParser` associative type.
         let to_recipient = match StandardScriptParser
-            .parse(&output.script_pubkey)?
+            .parse(output.script_pubkey())?
             .try_to_address(chain_info)?
         {
             Some(to_addr) => ToRecipientProto::to_address(to_addr.to_string().into()),
             // Cannot convert the output scriptPubkey into an address. Return it as is.
-            None => ToRecipientProto::custom_script_pubkey(output.script_pubkey.to_vec().into()),
+            None => ToRecipientProto::custom_script_pubkey(output.script_pubkey().to_vec().into()),
         };
 
         Ok(Proto::Output {
-            value: output.value,
+            value: output.value(),
             to_recipient,
         })
     }

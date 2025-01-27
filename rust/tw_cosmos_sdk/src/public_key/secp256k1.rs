@@ -62,9 +62,9 @@ impl CosmosPublicKey for Secp256PublicKey {
 }
 
 impl ProtobufPublicKey for Secp256PublicKey {
-    fn to_proto(&self) -> google::protobuf::Any {
+    fn to_proto(&self) -> google::protobuf::Any<'static> {
         let proto = cosmos::crypto::secp256k1::PubKey {
-            key: self.public_key.clone(),
+            key: self.public_key.clone().into(),
         };
         to_any_with_type_url(&proto, self.protobuf_type_url.clone())
     }

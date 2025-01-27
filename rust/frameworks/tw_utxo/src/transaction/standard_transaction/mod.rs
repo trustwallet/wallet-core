@@ -25,15 +25,15 @@ use super::UtxoTaprootPreimageArgs;
 pub mod builder;
 
 /// Must be zero.
-const WITNESS_MARKER: u8 = 0;
+pub const WITNESS_MARKER: u8 = 0;
 /// Must be nonzero.
-const WITNESS_FLAG: u8 = 1;
+pub const WITNESS_FLAG: u8 = 1;
 
 // Sizes of various transaction fields.
-const WITNESS_FLAG_MARKER: usize = 2;
+pub const WITNESS_FLAG_MARKER: usize = 2;
 
 // The Segwit scale factor (witnesses are deducted).
-const SEGWIT_SCALE_FACTOR: usize = 4;
+pub const SEGWIT_SCALE_FACTOR: usize = 4;
 
 /// A standard Bitcoin transaction.
 ///
@@ -113,17 +113,16 @@ impl TransactionInterface for Transaction {
     fn weight(&self) -> usize {
         self.base_size() * 3 + self.total_size()
     }
-}
 
-impl Transaction {
-    /// TODO move to the `TransactionInterface` trait.
-    pub fn txid(&self) -> Vec<u8> {
+    fn txid(&self) -> Vec<u8> {
         let encoded = self.without_witness().encode_out();
         let mut tx_hash = sha256_d(&encoded);
         tx_hash.reverse();
         tx_hash
     }
+}
 
+impl Transaction {
     /// Returns the same transaction with [`TransactionInput::script_witness`] being empty.
     /// It's mostly used to calculate transaction hash (aka TXID).
     pub fn without_witness(&self) -> Transaction {
@@ -132,12 +131,6 @@ impl Transaction {
             input.set_witness(Witness::default());
         }
         without_witness
-    }
-
-    pub fn encode_out(&self) -> Vec<u8> {
-        let mut stream = Stream::new();
-        self.encode(&mut stream);
-        stream.out()
     }
 
     pub fn size(&self) -> usize {
@@ -281,6 +274,14 @@ impl TxInputInterface for TransactionInput {
 
     fn sequence(&self) -> u32 {
         self.sequence
+    }
+
+    fn script_sig(&self) -> &Script {
+        &self.script_sig
+    }
+
+    fn witness(&self) -> &Witness {
+        &self.witness
     }
 
     fn set_sequence(&mut self, sequence: u32) {

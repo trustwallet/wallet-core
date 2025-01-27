@@ -3,15 +3,23 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::Address;
+use tw_bitcoin::context::BitcoinSigningContext;
+use tw_bitcoin::modules::protobuf_builder::standard_protobuf_builder::StandardProtobufBuilder;
+use tw_bitcoin::modules::psbt_request::standard_psbt_request_builder::StandardPsbtRequestBuilder;
+use tw_bitcoin::modules::signing_request::standard_signing_request::StandardSigningRequestBuilder;
 use tw_coin_entry::error::prelude::*;
 use tw_utxo::context::{AddressPrefixes, UtxoContext};
+use tw_utxo::fee::fee_estimator::StandardFeeEstimator;
 use tw_utxo::script::Script;
+use tw_utxo::transaction::standard_transaction::Transaction;
 
 #[derive(Default)]
 pub struct BitcoinCashContext;
 
 impl UtxoContext for BitcoinCashContext {
     type Address = Address;
+    type Transaction = Transaction;
+    type FeeEstimator = StandardFeeEstimator<Transaction>;
 
     fn addr_to_script_pubkey(
         addr: &Self::Address,
@@ -28,4 +36,10 @@ impl UtxoContext for BitcoinCashContext {
             },
         }
     }
+}
+
+impl BitcoinSigningContext for BitcoinCashContext {
+    type SigningRequestBuilder = StandardSigningRequestBuilder;
+    type ProtobufBuilder = StandardProtobufBuilder;
+    type PsbtRequestBuilder = StandardPsbtRequestBuilder;
 }

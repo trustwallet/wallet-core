@@ -8,7 +8,7 @@ use std::marker::PhantomData;
 use tw_coin_entry::error::prelude::*;
 use tw_encoding::base58;
 use tw_encoding::base58::Alphabet;
-use tw_hash::hasher::Hasher;
+use tw_hash::hasher::{Hasher, HasherOps};
 
 #[derive(Debug, Clone, Eq, Hash, PartialEq)]
 pub struct Base58Address<const SIZE: usize, const CHECKSUM_SIZE: usize> {

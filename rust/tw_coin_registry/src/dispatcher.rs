@@ -17,6 +17,7 @@ use tw_ethereum::entry::EthereumEntry;
 use tw_evm::evm_entry::EvmEntryExt;
 use tw_greenfield::entry::GreenfieldEntry;
 use tw_internet_computer::entry::InternetComputerEntry;
+use tw_komodo::entry::KomodoEntry;
 use tw_native_evmos::entry::NativeEvmosEntry;
 use tw_native_injective::entry::NativeInjectiveEntry;
 use tw_pactus::entry::PactusEntry;
@@ -27,6 +28,7 @@ use tw_substrate::entry::SubstrateEntry;
 use tw_sui::entry::SuiEntry;
 use tw_thorchain::entry::ThorchainEntry;
 use tw_ton::entry::TheOpenNetworkEntry;
+use tw_zcash::entry::ZcashEntry;
 
 pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;
 pub type EvmEntryExtStaticRef = &'static dyn EvmEntryExt;
@@ -40,6 +42,7 @@ const COSMOS: CosmosEntry = CosmosEntry;
 const ETHEREUM: EthereumEntry = EthereumEntry;
 const GREENFIELD: GreenfieldEntry = GreenfieldEntry;
 const INTERNET_COMPUTER: InternetComputerEntry = InternetComputerEntry;
+const KOMODO: KomodoEntry = KomodoEntry;
 const NATIVE_EVMOS: NativeEvmosEntry = NativeEvmosEntry;
 const NATIVE_INJECTIVE: NativeInjectiveEntry = NativeInjectiveEntry;
 const PACTUS: PactusEntry = PactusEntry;
@@ -49,6 +52,7 @@ const SOLANA: SolanaEntry = SolanaEntry;
 const SUI: SuiEntry = SuiEntry;
 const THE_OPEN_NETWORK: TheOpenNetworkEntry = TheOpenNetworkEntry;
 const THORCHAIN: ThorchainEntry = ThorchainEntry;
+const ZCASH: ZcashEntry = ZcashEntry;
 // end_of_blockchain_entries - USED TO GENERATE CODE
 
 pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinEntryExtStaticRef> {
@@ -62,6 +66,7 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::Ethereum => Ok(&ETHEREUM),
         BlockchainType::Greenfield => Ok(&GREENFIELD),
         BlockchainType::InternetComputer => Ok(&INTERNET_COMPUTER),
+        BlockchainType::Komodo => Ok(&KOMODO),
         BlockchainType::NativeEvmos => Ok(&NATIVE_EVMOS),
         BlockchainType::NativeInjective => Ok(&NATIVE_INJECTIVE),
         BlockchainType::Pactus => Ok(&PACTUS),
@@ -72,6 +77,7 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::Sui => Ok(&SUI),
         BlockchainType::TheOpenNetwork => Ok(&THE_OPEN_NETWORK),
         BlockchainType::Thorchain => Ok(&THORCHAIN),
+        BlockchainType::Zcash => Ok(&ZCASH),
         // end_of_blockchain_dispatcher - USED TO GENERATE CODE
         BlockchainType::Unsupported => Err(RegistryError::Unsupported),
     }

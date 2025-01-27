@@ -14,6 +14,7 @@ use tw_keypair::{ecdsa, schnorr};
 use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
+use tw_proto::Utxo::Proto as UtxoProto;
 use tw_utxo::context::UtxoContext;
 use tw_utxo::script::Script;
 use tw_utxo::sighash::SighashType;
@@ -245,7 +246,7 @@ impl<'a, Context: UtxoContext> UtxoProtobuf<'a, Context> {
     }
 }
 
-pub fn parse_out_point(maybe_out_point: &Option<Proto::OutPoint>) -> SigningResult<OutPoint> {
+pub fn parse_out_point(maybe_out_point: &Option<UtxoProto::OutPoint>) -> SigningResult<OutPoint> {
     let out_point = maybe_out_point
         .as_ref()
         .or_tw_err(SigningErrorType::Error_invalid_params)

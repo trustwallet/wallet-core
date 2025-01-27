@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package TW.Zcash.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Utxo.proto";
+
+message TransactionBuilderExtraData {
+    // Currently, `branch_id` is the only configurable Zcash specific parameter.
+    // There can also be `version_group_id` configured in the future.
+    bytes branch_id = 1;
+
+    // Zero in most cases.
+    uint32 expiry_height = 2;
+
+    // Whether to calculate the fee according to ZIP-0317 for the given transaction
+    // https://zips.z.cash/zip-0317#fee-calculation
+    bool zip_0317 = 3;
+}
+
+message Transaction {
+    /// Transaction version.
+    /// Currently, version 4 (0x80000004) is supported only.
+    int32 version = 1;
+    // If transaction version is 4 (0x80000004), version group ID is 0x892F2085.
+    uint32 version_group_id = 2;
+    // The transaction inputs.
+    repeated Utxo.Proto.TransactionInput inputs = 3;
+    // The transaction outputs.
+    repeated Utxo.Proto.TransactionOutput outputs = 4;
+    // Block height or timestamp indicating at what point transactions can be included in a block.
+    // Zero by default.
+    uint32 lock_time = 5;
+    // Expiry height.
+    uint32 expiry_height = 6;
+    // Sapling value balance for the transaction.
+    // Always 0 for a transparent transaction.
+    int64 sapling_value_balance = 7;
+    // Consensus branch ID for the epoch of the block containing the transaction.
+    bytes branch_id = 8;
+}

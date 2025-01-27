@@ -26,8 +26,8 @@ pub struct SendMessage<Address: CosmosAddress> {
 impl<Address: CosmosAddress> CosmosMessage for SendMessage<Address> {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let proto_msg = cosmos::bank::v1beta1::MsgSend {
-            from_address: self.from_address.to_string(),
-            to_address: self.to_address.to_string(),
+            from_address: self.from_address.to_string().into(),
+            to_address: self.to_address.to_string().into(),
             amount: self.amount.iter().map(build_coin).collect(),
         };
         Ok(to_any(&proto_msg))

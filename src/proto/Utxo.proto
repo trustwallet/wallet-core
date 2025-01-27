@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package TW.Utxo.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Bitcoin transaction out-point reference.
+message OutPoint {
+    // The hash of the referenced transaction (network byte order, usually needs to be reversed).
+    // The referenced transaction ID in REVERSED order.
+    bytes hash = 1;
+    // The position in the previous transactions output that this input references.
+    uint32 vout = 2;
+}
+
+message TransactionInput {
+    // Reference to the previous transaction's output.
+    OutPoint out_point = 1;
+    // The sequence number, used for timelocks, replace-by-fee, etc.
+    uint32 sequence = 2;
+    // The script for claiming the input (non-Segwit/non-Taproot).
+    bytes script_sig = 3;
+    // The script for claiming the input (Segit/Taproot).
+    repeated bytes witness_items = 4;
+}
+
+message TransactionOutput {
+    // The condition for claiming the output.
+    bytes script_pubkey = 1;
+    // The amount of satoshis to spend.
+    int64 value = 2;
+}
+
+message Transaction {
+    // The protocol version, is currently expected to be 1 or 2 (BIP68).
+    int32 version = 1;
+    // Block height or timestamp indicating at what point transactions can be included in a block.
+    // Zero by default.
+    uint32 lock_time = 2;
+    // The transaction inputs.
+    repeated TransactionInput inputs = 3;
+    // The transaction outputs.
+    repeated TransactionOutput outputs = 4;
+}

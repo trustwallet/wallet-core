@@ -11,6 +11,7 @@ use tw_encoding::hex::ToHex;
 use zeroize::DefaultIsZeroes;
 
 pub type H32 = Hash<4>;
+pub type H128 = Hash<16>;
 pub type H160 = Hash<20>;
 pub type H192 = Hash<24>;
 pub type H256 = Hash<32>;
@@ -50,6 +51,10 @@ impl<const N: usize> Hash<N> {
 
     pub const fn new() -> Self {
         Hash([0; N])
+    }
+
+    pub const fn from_array(data: [u8; N]) -> Self {
+        Hash(data)
     }
 
     pub fn as_slice(&self) -> &[u8] {

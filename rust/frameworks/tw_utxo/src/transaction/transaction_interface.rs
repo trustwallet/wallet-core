@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::encode::Encodable;
+use tw_memory::Data;
 
 use crate::script::{Script, Witness};
 use crate::transaction::transaction_parts::OutPoint;
@@ -40,12 +41,20 @@ pub trait TransactionInterface: Clone + Encodable {
     fn vsize(&self) -> usize;
 
     fn weight(&self) -> usize;
+
+    fn txid(&self) -> Data;
 }
 
 pub trait TxInputInterface: Clone {
     fn previous_output(&self) -> &OutPoint;
 
     fn sequence(&self) -> u32;
+
+    /// Can return an empty scriptSig.
+    fn script_sig(&self) -> &Script;
+
+    /// Can return an empty witness stack.
+    fn witness(&self) -> &Witness;
 
     fn set_sequence(&mut self, sequence: u32);
 

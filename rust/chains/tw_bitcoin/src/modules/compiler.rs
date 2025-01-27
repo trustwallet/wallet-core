@@ -2,8 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::context::BitcoinSigningContext;
 use crate::modules::protobuf_builder::ProtobufBuilder;
-use crate::modules::psbt_request::PsbtRequest;
+use crate::modules::psbt_request::{PsbtRequest, PsbtRequestBuilder};
 use crate::modules::signing_request::SigningRequestBuilder;
 use std::borrow::Cow;
 use std::marker::PhantomData;
@@ -17,6 +18,7 @@ use tw_proto::BitcoinV2::Proto::mod_PreSigningOutput::{
 };
 use tw_proto::BitcoinV2::Proto::mod_SigningInput::OneOftransaction as TransactionType;
 use tw_utxo::context::UtxoContext;
+use tw_utxo::encode::Encodable;
 use tw_utxo::modules::sighash_computer::{SighashComputer, TaprootTweak, TxPreimage};
 use tw_utxo::modules::sighash_verifier::SighashVerifier;
 use tw_utxo::modules::tx_compiler::TxCompiler;
@@ -29,7 +31,7 @@ pub struct BitcoinCompiler<Context: UtxoContext> {
     _phantom: PhantomData<Context>,
 }
 
-impl<Context: UtxoContext> BitcoinCompiler<Context> {
+impl<Context: BitcoinSigningContext> BitcoinCompiler<Context> {
     /// Please note that [`Proto::SigningInput::public_key`] must be set.
     /// If the public key should be derived from a private key, please do it before this method is called.
     #[inline]
@@ -47,11 +49,11 @@ impl<Context: UtxoContext> BitcoinCompiler<Context> {
     ) -> SigningResult<Proto::PreSigningOutput<'static>> {
         let unsigned_tx = match input.transaction {
             TransactionType::builder(ref tx_builder) => {
-                let request = SigningRequestBuilder::<Context>::build(coin, &input, tx_builder)?;
+                let request = Context::SigningRequestBuilder::build(coin, &input, tx_builder)?;
                 TxPlanner::plan(request)?.unsigned_tx
             },
             TransactionType::psbt(ref psbt) => {
-                PsbtRequest::<Context>::build(&input, psbt)?.unsigned_tx
+                Context::PsbtRequestBuilder::build(&input, psbt)?.unsigned_tx
             },
             TransactionType::None => {
                 return SigningError::err(SigningErrorType::Error_invalid_params)
@@ -110,15 +112,14 @@ impl<Context: UtxoContext> BitcoinCompiler<Context> {
         tx_builder_input: &Proto::TransactionBuilder,
         signatures: Vec<SignatureBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        let request = SigningRequestBuilder::<Context>::build(coin, input, tx_builder_input)?;
+        let request = Context::SigningRequestBuilder::build(coin, input, tx_builder_input)?;
         let SelectResult { unsigned_tx, plan } = TxPlanner::plan(request)?;
 
         SighashVerifier::verify_signatures(&unsigned_tx, &signatures)?;
         let signed_tx = TxCompiler::compile(unsigned_tx, &signatures)?;
-        let tx_proto = ProtobufBuilder::tx_to_proto(&signed_tx);
 
         Ok(Proto::SigningOutput {
-            transaction: Some(tx_proto),
+            transaction: Context::ProtobufBuilder::tx_to_proto(&signed_tx),
             encoded: Cow::from(signed_tx.encode_out()),
             txid: Cow::from(signed_tx.txid()),
             // `vsize` could have been changed after the transaction being signed.
@@ -136,15 +137,14 @@ impl<Context: UtxoContext> BitcoinCompiler<Context> {
         psbt: &Proto::Psbt,
         signatures: Vec<SignatureBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        let PsbtRequest { unsigned_tx, .. } = PsbtRequest::<Context>::build(input, psbt)?;
+        let PsbtRequest { unsigned_tx, .. } = Context::PsbtRequestBuilder::build(input, psbt)?;
         let fee = unsigned_tx.fee()?;
 
         SighashVerifier::verify_signatures(&unsigned_tx, &signatures)?;
         let signed_tx = TxCompiler::compile(unsigned_tx, &signatures)?;
-        let tx_proto = ProtobufBuilder::tx_to_proto(&signed_tx);
 
         Ok(Proto::SigningOutput {
-            transaction: Some(tx_proto),
+            transaction: Context::ProtobufBuilder::tx_to_proto(&signed_tx),
             encoded: Cow::from(signed_tx.encode_out()),
             txid: Cow::from(signed_tx.txid()),
             // `vsize` could have been changed after the transaction being signed.

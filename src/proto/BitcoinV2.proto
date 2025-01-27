@@ -5,6 +5,8 @@ option java_package = "wallet.core.jni.proto";
 
 import "BabylonStaking.proto";
 import "Common.proto";
+import "Utxo.proto";
+import "Zcash.proto";
 
 enum InputSelector {
     // Automatically select enough inputs in an ascending order to cover the outputs of the transaction.
@@ -35,19 +37,9 @@ message PublicKeySignature {
     bytes signature = 2;
 }
 
-// Bitcoin transaction out-point reference.
-message OutPoint {
-    // The hash of the referenced transaction (network byte order, usually needs to be reversed).
-    // The referenced transaction ID in REVERSED order.
-    bytes hash = 1;
-
-    // The position in the previous transactions output that this input references.
-    uint32 vout = 2;
-}
-
 message Input {
     // Reference to the previous transaction's output.
-    OutPoint out_point = 1;
+    Utxo.Proto.OutPoint out_point = 1;
     // The amount of satoshis of this input.
     int64 value = 2;
     // The sighash type, normally `All`.
@@ -257,7 +249,11 @@ message TransactionBuilder {
     // Later, we plan to add support for `DynamicDust` policy with a `min_relay_fee` amount.
     oneof dust_policy {
         // Use a constant "Dust" threshold.
-        int64 fixed_dust_threshold = 14;
+        int64 fixed_dust_threshold = 10;
+    }
+    oneof chain_specific {
+        // ZCash specific transaction data.
+        Zcash.Proto.TransactionBuilderExtraData zcash_extra_data = 20;
     }
 }
 
@@ -287,36 +283,6 @@ message SigningInput {
         TransactionBuilder builder = 10;
         // Finalize a Partially Signed Bitcoin Transaction by signing the rest of UTXOs.
         Psbt psbt = 11;
-    }
-}
-
-message Transaction {
-    // The protocol version, is currently expected to be 1 or 2 (BIP68).
-    int32 version = 1;
-    // Block height or timestamp indicating at what point transactions can be included in a block.
-    // Zero by default.
-    uint32 lock_time = 2;
-    // The transaction inputs.
-    repeated TransactionInput inputs = 3;
-    // The transaction outputs.
-    repeated TransactionOutput outputs = 4;
-
-    message TransactionInput {
-        // Reference to the previous transaction's output.
-        OutPoint out_point = 1;
-        // The sequence number, used for timelocks, replace-by-fee, etc.
-        uint32 sequence = 2;
-        // The script for claiming the input (non-Segwit/non-Taproot).
-        bytes script_sig = 3;
-        // The script for claiming the input (Segit/Taproot).
-        repeated bytes witness_items = 4;
-    }
-
-    message TransactionOutput {
-        // The condition for claiming the output.
-        bytes script_pubkey = 1;
-        // The amount of satoshis to spend.
-        int64 value = 2;
     }
 }
 
@@ -388,8 +354,6 @@ message SigningOutput {
     Common.Proto.SigningError error = 1;
     // Error description.
     string error_message = 2;
-    // Resulting transaction.
-    Transaction transaction = 3;
     // The encoded transaction that can be submitted to the network.
     bytes encoded = 4;
     // The transaction ID (hash).
@@ -406,4 +370,11 @@ message SigningOutput {
     // Optional. Signed transaction serialized as PSBT.
     // Set if `SigningInput.psbt` is used.
     Psbt psbt = 9;
+    // Resulting transaction.
+    oneof transaction {
+        // Standard Bitcoin transaction.
+        Utxo.Proto.Transaction bitcoin = 15;
+        // ZCash transaction.
+        Zcash.Proto.Transaction zcash = 16;
+    }
 }
