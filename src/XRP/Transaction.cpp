@@ -14,6 +14,8 @@
 namespace TW::Ripple {
 
 const int NETWORK_PREFIX = 0x53545800;
+const size_t CURRENCY_CODE_SIZE = 20;
+const size_t CURRENCY_CODE_HEX_SIZE = CURRENCY_CODE_SIZE * 2;
 
 Data Transaction::serialize() const {
 	// See https://xrpl.org/serialization.html
@@ -269,7 +271,7 @@ Data Transaction::serializeAddress(Address address) {
 }
 
 void Transaction::serializeCurrencyCode(Data& out, const std::string& currency_code) {
-    if (currency_code.size() == 40) {
+    if (currency_code.size() == CURRENCY_CODE_HEX_SIZE) {
         auto code_bytes = parse_hex(currency_code);
         out.insert(out.end(), code_bytes.begin(), code_bytes.end());
         return;
