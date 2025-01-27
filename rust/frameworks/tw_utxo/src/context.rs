@@ -9,6 +9,11 @@ use crate::transaction::TransactionPreimage;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 
+pub type ContextTransactionInput<Context> =
+    <<Context as UtxoContext>::Transaction as TransactionInterface>::Input;
+pub type ContextTransactionOutput<Context> =
+    <<Context as UtxoContext>::Transaction as TransactionInterface>::Output;
+
 pub struct AddressPrefixes {
     pub p2pkh_prefix: u8,
     pub p2sh_prefix: u8,

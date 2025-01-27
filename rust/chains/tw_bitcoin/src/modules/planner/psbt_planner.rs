@@ -14,6 +14,7 @@ use tw_proto::BitcoinV2::Proto;
 use tw_proto::BitcoinV2::Proto::mod_Input::OneOfclaiming_script as ClaimingScriptProto;
 use tw_proto::BitcoinV2::Proto::mod_Output::OneOfto_recipient as ToRecipientProto;
 use tw_proto::Utxo::Proto as UtxoProto;
+use tw_utxo::context::{ContextTransactionInput, ContextTransactionOutput};
 use tw_utxo::transaction::transaction_interface::{
     TransactionInterface, TxInputInterface, TxOutputInterface,
 };
@@ -65,7 +66,7 @@ impl<Context: BitcoinSigningContext> PsbtPlanner<Context> {
 
     pub fn utxo_to_proto(
         unsigned_txin: &UtxoToSign,
-        txin: &<Context::Transaction as TransactionInterface>::Input,
+        txin: &ContextTransactionInput<Context>,
         chain_info: &BitcoinChainInfo,
     ) -> SigningResult<Proto::Input<'static>> {
         let out_point = UtxoProto::OutPoint {
@@ -94,7 +95,7 @@ impl<Context: BitcoinSigningContext> PsbtPlanner<Context> {
     }
 
     pub fn output_to_proto(
-        output: &<Context::Transaction as TransactionInterface>::Output,
+        output: &ContextTransactionOutput<Context>,
         chain_info: &BitcoinChainInfo,
     ) -> SigningResult<Proto::Output<'static>> {
         // TODO add `UtxoSigningContext::ScriptParser` associative type.
