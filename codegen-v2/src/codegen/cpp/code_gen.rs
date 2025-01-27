@@ -209,21 +209,31 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
 
 fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(String, String)> {
     match ty {
-        "TWString *_Nonnull" | "TWString *_Nullable" => {
+        "TWString *_Nonnull" => {
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
-                "    auto& {name}String = *reinterpret_cast<const std::string*>({name});",
-                name = name
-            )
-            .map_err(|e| BadFormat(e.to_string()))?;
-            writeln!(
-                &mut conversion_code,
-                "    const Rust::TWStringWrapper {name}RustStr = {name}String;",
-                name = name
+                "\tauto& {name}String = *reinterpret_cast<const std::string*>({name});\n\
+                \tconst Rust::TWStringWrapper {name}RustStr = {name}String;"
             )
             .map_err(|e| BadFormat(e.to_string()))?;
             Ok((conversion_code, format!("{}RustStr.get()", name)))
+        }
+        "TWString *_Nullable" => {
+            let mut conversion_code = String::new();
+            writeln!(
+                &mut conversion_code,
+                "\tconst TW::Rust::TWString* {name}Ptr;\n\
+                \tif ({name} != nullptr) {{\n\
+                    \t\tauto& {name}String = *reinterpret_cast<const std::string*>({name});\n\
+                    \t\tconst Rust::TWStringWrapper {name}RustStr = {name}String;\n\
+                    \t\t{name}Ptr = {name}RustStr.get();\n\
+                \t}} else {{\n\
+                    \t\t{name}Ptr = nullptr;\n\
+                \t}}"
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+            Ok((conversion_code, format!("{}Ptr", name)))
         }
         _ => Ok(("".to_string(), name.to_string())),
     }
