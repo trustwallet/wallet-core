@@ -56,14 +56,14 @@ mkdir -p swift/Sources/Generated/Protobuf swift/Sources/Generated/Enums
 # Generate coins info from registry.json
 codegen/bin/coins
 
+# Generate rust bindgen
+tools/rust-bindgen "$@"
+
 # Generate interface code, Swift bindings excluded.
 codegen/bin/codegen
 
 # Convert doxygen comments to appropriate format
 tools/doxygen_convert_comments
-
-# Generate rust bindgen
-tools/rust-bindgen "$@"
 
 # Generate Java, C++ and Swift Protobuf files
 
