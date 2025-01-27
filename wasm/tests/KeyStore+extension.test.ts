@@ -65,7 +65,7 @@ describe("KeyStore", async () => {
   }).timeout(10000);
 
   it("test ExtensionStorage AES256", async () => {
-    const { CoinType, HexCoding, StoredKeyEncryption } = globalThis.core;
+    const { CoinType, Derivation, HexCoding, StoredKeyEncryption } = globalThis.core;
     const mnemonic = globalThis.mnemonic as string;
     const password = globalThis.password as string;
 
@@ -84,7 +84,7 @@ describe("KeyStore", async () => {
     assert.equal(wallet.type, "mnemonic");
     assert.equal(wallet.version, 3);
 
-    const account = wallet.activeAccounts[0];
+    var account = wallet.activeAccounts[0];
     const key = await keystore.getKey(wallet.id, password, account);
 
     assert.equal(
@@ -109,6 +109,14 @@ describe("KeyStore", async () => {
     assert.equal(wallet.activeAccounts.length, 3);
     assert.isTrue(await keystore.hasWallet(wallet.id));
     assert.isFalse(await keystore.hasWallet("invalid-id"));
+
+    wallet = await keystore.addAccountsWithDerivations(wallet.id, password, [{
+      coin: CoinType.solana,
+      derivation: Derivation.solanaSolana,
+    }]);
+    assert.equal(wallet.activeAccounts.length, 4);
+    account = wallet.activeAccounts[3];
+    assert.equal(account.address, "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C");
 
     const exported = await keystore.export(wallet.id, password);
     assert.equal(exported, mnemonic);
