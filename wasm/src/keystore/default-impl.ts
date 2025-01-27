@@ -109,6 +109,8 @@ export class Default implements Types.IKeyStore {
     password: string,
     coins: CoinType[]
   ): Promise<Types.Wallet> {
+    const { Derivation } = this.core;
+
     let coins_with_derivations = coins.map(coin => ({
       coin: coin,
       derivation: Derivation.default,
