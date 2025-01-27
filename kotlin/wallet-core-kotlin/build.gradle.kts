@@ -100,7 +100,13 @@ kotlin {
             val main by compilations.getting
             main.cinterops.create("WalletCore") {
                 packageName = "com.trustwallet.core"
-                headers(rootDir.parentFile.resolve("include/TrustWalletCore").listFiles()!!)
+                includeDirs(
+                    rootDir.parentFile.resolve("include"),
+                    rootDir.parentFile.resolve("include/TrustWalletCore"),
+                    rootDir.parentFile.resolve("include/Generated/TrustWalletCore")
+                )
+                headers(rootDir.parentFile.resolve("include/Generated/TrustWalletCore").listFiles()!! +
+                       rootDir.parentFile.resolve("include/TrustWalletCore").listFiles()!!)
             }
         }
     }
