@@ -14,6 +14,8 @@
 namespace TW::Ripple {
 
 const int NETWORK_PREFIX = 0x53545800;
+const size_t CURRENCY_CODE_SIZE = 20;
+const size_t CURRENCY_CODE_HEX_SIZE = CURRENCY_CODE_SIZE * 2;
 
 Data Transaction::serialize() const {
 	// See https://xrpl.org/serialization.html
@@ -85,7 +87,7 @@ Data Transaction::serialize() const {
         (transaction_type == TransactionType::NFTokenCreateOffer)) {
         encodeType(FieldType::amount, 1, data);
         append(data,
-               (currency_amount.currency.size() > 0) ?
+               (!currency_amount.currency.empty()) ?
                  serializeCurrencyAmount(currency_amount) :
                  serializeAmount(amount));
     } else if (transaction_type == TransactionType::TrustSet) {
@@ -257,17 +259,7 @@ Data Transaction::serializeCurrencyAmount(const CurrencyAmount& currency_amount)
 	// https://xrpl.org/serialization.html#amount-fields
     auto data = Data();
     encode64BE(amount_cast.value, data);
-
-    // ISO-4217 currency code
-    encodeZeros(1, data); // type code (0x00)
-    encodeZeros(11, data); // reserved
-    if (currency_amount.currency.size() == 3) {
-        data.insert(data.end(), currency_amount.currency.begin(), currency_amount.currency.end());
-    } else {
-        encodeZeros(3, data); // none
-    }
-
-    encodeZeros(5, data); // reserved
+    serializeCurrencyCode(data, currency_amount.currency);
     data.insert(data.end(), currency_amount.issuer.begin(), currency_amount.issuer.end());
     return data;
 }
@@ -276,6 +268,26 @@ Data Transaction::serializeAddress(Address address) {
     auto data = Data(20);
     std::copy(&address.bytes[0] + 1, &address.bytes[0] + std::min(address.bytes.size(), size_t(21)), &data[0]);
     return data;
+}
+
+void Transaction::serializeCurrencyCode(Data& out, const std::string& currency_code) {
+    if (currency_code.size() == CURRENCY_CODE_HEX_SIZE) {
+        auto code_bytes = parse_hex(currency_code);
+        out.insert(out.end(), code_bytes.begin(), code_bytes.end());
+        return;
+    }
+
+    // Standard ISO-4217 currency code
+    encodeZeros(1, out); // type code (0x00)
+    encodeZeros(11, out); // reserved
+
+    if (currency_code.size() == 3) {
+        out.insert(out.end(), currency_code.begin(), currency_code.end());
+    } else {
+        encodeZeros(3, out); // none
+    }
+
+    encodeZeros(5, out); // reserved
 }
 
 } // namespace TW::Ripple

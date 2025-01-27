@@ -36,6 +36,7 @@ swift/wallet-core/
 codegen-v2/bindings/
 
 src/Generated/*.cpp
+include/Generated/TrustWalletCore/*.h
 include/TrustWalletCore/TWHRP.h
 include/TrustWalletCore/TW*Proto.h
 include/TrustWalletCore/TWEthereumChainID.h
