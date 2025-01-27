@@ -110,7 +110,10 @@ describe("KeyStore", async () => {
     assert.isTrue(await keystore.hasWallet(wallet.id));
     assert.isFalse(await keystore.hasWallet("invalid-id"));
 
-    wallet = await keystore.addAccountDerivation(wallet.id, password, CoinType.solana, Derivation.solanaSolana);
+    wallet = await keystore.addAccountsWithDerivations(wallet.id, password, [{
+      coin: CoinType.solana,
+      derivation: Derivation.solanaSolana,
+    }]);
     assert.equal(wallet.activeAccounts.length, 4);
     account = wallet.activeAccounts[3];
     assert.equal(account.address, "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C");

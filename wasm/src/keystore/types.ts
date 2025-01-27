@@ -37,6 +37,11 @@ export interface Wallet {
   activeAccounts: ActiveAccount[];
 }
 
+export interface CoinWithDerivation {
+  coin: CoinType,
+  derivation: Derivation,
+}
+
 export interface IKeyStore {
   // Check if wallet id exists
   hasWallet(id: string): Promise<boolean>;
@@ -71,13 +76,8 @@ export interface IKeyStore {
   // Add active accounts to a wallet by wallet id, password, coin
   addAccounts(id: string, password: string, coins: CoinType[]): Promise<Wallet>;
 
-  // Add an active account to a wallet by wallet id, password, coin, using given derivation.
-  addAccountDerivation(
-      id: string,
-      password: string,
-      coin: CoinType,
-      derivation: Derivation,
-  ): Promise<Wallet>;
+  // Add active accounts paired with corresponding derivations to a wallet by wallet id, password, coin.
+  addAccountsWithDerivations(id: string, password: string, coins: CoinWithDerivation[]): Promise<Wallet>;
 
   // Get private key of an account by wallet id, password, coin and derivation path
   getKey(
