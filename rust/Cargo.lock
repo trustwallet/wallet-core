@@ -1889,6 +1889,7 @@ dependencies = [
  "tw_native_injective",
  "tw_pactus",
  "tw_polkadot",
+ "tw_ripple",
  "tw_ronin",
  "tw_solana",
  "tw_substrate",
@@ -2173,6 +2174,16 @@ dependencies = [
  "arbitrary 1.3.0",
  "pb-rs",
  "quick-protobuf",
+]
+
+[[package]]
+name = "tw_ripple"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_keypair",
+ "tw_memory",
+ "tw_proto",
 ]
 
 [[package]]

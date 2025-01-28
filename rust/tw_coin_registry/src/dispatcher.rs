@@ -29,6 +29,7 @@ use tw_sui::entry::SuiEntry;
 use tw_thorchain::entry::ThorchainEntry;
 use tw_ton::entry::TheOpenNetworkEntry;
 use tw_zcash::entry::ZcashEntry;
+use tw_ripple::entry::RippleEntry;
 
 pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;
 pub type EvmEntryExtStaticRef = &'static dyn EvmEntryExt;
@@ -47,6 +48,7 @@ const NATIVE_EVMOS: NativeEvmosEntry = NativeEvmosEntry;
 const NATIVE_INJECTIVE: NativeInjectiveEntry = NativeInjectiveEntry;
 const PACTUS: PactusEntry = PactusEntry;
 const POLKADOT: SubstrateEntry<PolkadotEntry> = SubstrateEntry(PolkadotEntry);
+const RIPPLE: RippleEntry = RippleEntry;
 const RONIN: RoninEntry = RoninEntry;
 const SOLANA: SolanaEntry = SolanaEntry;
 const SUI: SuiEntry = SuiEntry;
@@ -67,11 +69,12 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::Greenfield => Ok(&GREENFIELD),
         BlockchainType::InternetComputer => Ok(&INTERNET_COMPUTER),
         BlockchainType::Komodo => Ok(&KOMODO),
+        BlockchainType::Kusama => Ok(&POLKADOT),
         BlockchainType::NativeEvmos => Ok(&NATIVE_EVMOS),
         BlockchainType::NativeInjective => Ok(&NATIVE_INJECTIVE),
         BlockchainType::Pactus => Ok(&PACTUS),
         BlockchainType::Polkadot => Ok(&POLKADOT),
-        BlockchainType::Kusama => Ok(&POLKADOT),
+        BlockchainType::Ripple => Ok(&RIPPLE),
         BlockchainType::Ronin => Ok(&RONIN),
         BlockchainType::Solana => Ok(&SOLANA),
         BlockchainType::Sui => Ok(&SUI),

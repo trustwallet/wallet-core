@@ -20,6 +20,7 @@ mod native_injective;
 mod pactus;
 mod polkadot;
 mod polymesh;
+mod ripple;
 mod solana;
 mod sui;
 mod tbinance;
