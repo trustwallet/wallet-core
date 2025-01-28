@@ -2180,7 +2180,12 @@ dependencies = [
 name = "tw_ripple"
 version = "0.1.0"
 dependencies = [
+ "byteorder",
+ "strum_macros",
+ "tw_base58_address",
  "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
  "tw_keypair",
  "tw_memory",
  "tw_proto",

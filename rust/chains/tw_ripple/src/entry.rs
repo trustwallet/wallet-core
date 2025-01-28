@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::address::classic_address::ClassicAddress;
 use crate::address::RippleAddress;
 use crate::compiler::RippleCompiler;
 use crate::signer::RippleSigner;
@@ -42,10 +43,10 @@ impl CoinEntry for RippleEntry {
     fn parse_address(
         &self,
         _coin: &dyn CoinContext,
-        _address: &str,
+        address: &str,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        RippleAddress::from_str(address)
     }
 
     #[inline]
@@ -57,11 +58,14 @@ impl CoinEntry for RippleEntry {
     fn derive_address(
         &self,
         _coin: &dyn CoinContext,
-        _public_key: PublicKey,
+        public_key: PublicKey,
         _derivation: Derivation,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        let public_key = public_key
+            .to_secp256k1()
+            .ok_or(AddressError::PublicKeyTypeMismatch)?;
+        ClassicAddress::with_public_key(public_key).map(RippleAddress::Classic)
     }
 
     #[inline]
