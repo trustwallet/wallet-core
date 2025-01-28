@@ -130,10 +130,22 @@ pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
         let yaml_file_path = bindings_dir.join(format!("{}.yaml", class));
 
         let mut config = if yaml_file_path.exists() {
-            serde_yaml::from_str(
-                &fs::read_to_string(&yaml_file_path).expect("Failed to read existing YAML file"),
-            )
-            .expect("Failed to parse YAML file")
+            match fs::read_to_string(&yaml_file_path) {
+                Ok(contents) => match serde_yaml::from_str(&contents) {
+                    Ok(config) => config,
+                    Err(_) => {
+                        fs::remove_file(&yaml_file_path).expect("Failed to delete invalid YAML file");
+                        TWConfig {
+                            class,
+                            static_functions: vec![],
+                        }
+                    }
+                },
+                Err(_) => TWConfig {
+                    class,
+                    static_functions: vec![],
+                }
+            }
         } else {
             TWConfig {
                 class,
