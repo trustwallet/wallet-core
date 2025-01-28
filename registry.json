@@ -4789,6 +4789,36 @@
     }
   },
   {
+    "id": "sonic",
+    "name": "Sonic",
+    "coinId": 10000146,
+    "symbol": "S",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "146",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://sonicscan.org",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x886c34de9e054c741b2bcb15c3a3e0382e3ed7a48f2c6f2a489f6d82abdd4a7c",
+      "sampleAccount": "0x9c174f0e2d11559447e5fe2815d930475be19016"
+    },
+    "info": {
+      "url": "https://www.soniclabs.com",
+      "source": "https://github.com/Fantom-foundation/Sonic",
+      "rpc": "https://rpc.soniclabs.com",
+      "documentation": "https://docs.soniclabs.com"
+    }
+  },
+  {
     "id": "pactus",
     "name": "Pactus",
     "coinId": 21888,
