@@ -29,22 +29,35 @@ impl WithDestructor for TWAnyAddress {
     }
 }
 
-pub fn test_address_derive(coin: CoinType, private_key: &str, address: &str) {
-    test_address_derive_with_derivation(coin, private_key, address, TWDerivation::Default)
+pub enum KeyType {
+    PrivateKey(&'static str),
+    PublicKey(&'static str),
+}
+
+pub fn test_address_derive(coin: CoinType, key: KeyType, address: &str) {
+    test_address_derive_with_derivation(coin, key, address, TWDerivation::Default)
 }
 
 pub fn test_address_derive_with_derivation(
     coin: CoinType,
-    private_key: &str,
+    key: KeyType,
     address: &str,
     derivation: TWDerivation,
 ) {
     let coin_item = get_coin_item(coin).unwrap();
 
-    let private_key = TWPrivateKeyHelper::with_hex(private_key);
-    let public_key = TWPublicKeyHelper::wrap(unsafe {
-        tw_private_key_get_public_key_by_type(private_key.ptr(), coin_item.public_key_type as u32)
-    });
+    let public_key = match key {
+        KeyType::PrivateKey(key) => {
+            let private_key = TWPrivateKeyHelper::with_hex(key);
+            TWPublicKeyHelper::wrap(unsafe {
+                tw_private_key_get_public_key_by_type(
+                    private_key.ptr(),
+                    coin_item.public_key_type as u32,
+                )
+            })
+        },
+        KeyType::PublicKey(key) => TWPublicKeyHelper::with_hex(key, coin_item.public_key_type),
+    };
 
     let any_address = TWAnyAddressHelper::wrap(unsafe {
         tw_any_address_create_with_public_key_derivation(

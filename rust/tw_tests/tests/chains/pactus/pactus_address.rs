@@ -4,7 +4,7 @@
 
 use tw_any_coin::test_utils::address_utils::{
     test_address_derive, test_address_get_data, test_address_invalid, test_address_normalization,
-    test_address_valid,
+    test_address_valid, KeyType,
 };
 use tw_coin_registry::coin_type::CoinType;
 
@@ -12,7 +12,7 @@ use tw_coin_registry::coin_type::CoinType;
 fn test_pactus_address_derive() {
     test_address_derive(
         CoinType::Pactus,
-        "2134ae97465505dfd5a1fd05a8a0f146209c601eb3f1b0363b4cfe4b47ba1ab4",
+        KeyType::PrivateKey("2134ae97465505dfd5a1fd05a8a0f146209c601eb3f1b0363b4cfe4b47ba1ab4"),
         "pc1r7jkvfnegf0rf5ua05fzu9krjhjxcrrygl3v4nl",
     );
 }

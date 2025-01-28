@@ -19,7 +19,7 @@ pub mod terra_wasm_message;
 pub mod thorchain_message;
 pub mod wasm_message;
 
-pub type ProtobufMessage = google::protobuf::Any;
+pub type ProtobufMessage = google::protobuf::Any<'static>;
 pub type CosmosMessageBox = Box<dyn CosmosMessage>;
 pub type JsonMessage = AnyMsg<Json>;
 

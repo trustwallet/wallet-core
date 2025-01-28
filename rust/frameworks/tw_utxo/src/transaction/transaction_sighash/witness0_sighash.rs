@@ -8,6 +8,7 @@ use crate::transaction::transaction_interface::{TransactionInterface, TxInputInt
 use crate::transaction::UtxoPreimageArgs;
 use std::marker::PhantomData;
 use tw_coin_entry::error::prelude::*;
+use tw_hash::hasher::HasherOps;
 use tw_hash::H256;
 
 /// `Witness0Sighash`is used to calculate a preimage hash of a P2WPKH or P2WSH unspent output.
@@ -23,9 +24,16 @@ impl<Transaction: TransactionInterface> Witness0Sighash<Transaction> {
             .or_tw_err(SigningErrorType::Error_internal)
             .context("Witness sighash error: input_index is out of bounds")?;
 
-        let prevout_hash = TransactionHasher::<Transaction>::preimage_prevout_hash(tx, args);
-        let sequence_hash = TransactionHasher::<Transaction>::preimage_sequence_hash(tx, args);
-        let outputs_hash = TransactionHasher::<Transaction>::preimage_outputs_hash(tx, args);
+        let prevout_hash =
+            TransactionHasher::preimage_prevout_hash(tx, args.sighash_ty, args.tx_hasher);
+        let sequence_hash =
+            TransactionHasher::preimage_sequence_hash(tx, args.sighash_ty, args.tx_hasher);
+        let outputs_hash = TransactionHasher::preimage_outputs_hash(
+            tx,
+            args.input_index,
+            args.sighash_ty,
+            args.tx_hasher,
+        );
 
         let mut stream = Stream::default();
 

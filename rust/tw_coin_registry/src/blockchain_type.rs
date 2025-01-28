@@ -17,6 +17,7 @@ pub enum BlockchainType {
     Ethereum,
     Greenfield,
     InternetComputer,
+    Komodo,
     NativeEvmos,
     NativeInjective,
     Pactus,
@@ -27,6 +28,7 @@ pub enum BlockchainType {
     Sui,
     TheOpenNetwork,
     Thorchain,
+    Zcash,
     // end_of_blockchain_type - USED TO GENERATE CODE
     #[serde(other)]
     Unsupported,

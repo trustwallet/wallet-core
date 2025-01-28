@@ -20,9 +20,9 @@ impl JsonPublicKey for GreenfieldPublicKey {
 }
 
 impl ProtobufPublicKey for GreenfieldPublicKey {
-    fn to_proto(&self) -> google::protobuf::Any {
+    fn to_proto(&self) -> google::protobuf::Any<'static> {
         let proto = tw_cosmos_sdk::proto::cosmos::crypto::eth::ethsecp256k1::PubKey {
-            key: self.0.compressed().to_vec(),
+            key: self.0.compressed().to_vec().into(),
         };
         to_any(&proto)
     }

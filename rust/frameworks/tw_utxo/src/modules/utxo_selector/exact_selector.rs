@@ -4,13 +4,12 @@
 
 use crate::constants::MAX_TRANSACTION_WEIGHT;
 use crate::dust::DustPolicy;
-use crate::modules::fee_estimator::FeeEstimator;
+use crate::fee::fee_estimator::FeeEstimator;
 use crate::modules::utxo_selector::{InputSelector, SelectPlan, SelectResult};
 use crate::script::{Script, Witness};
 use crate::transaction::transaction_interface::{
     TransactionInterface, TxInputInterface, TxOutputInterface,
 };
-use crate::transaction::transaction_parts::Amount;
 use crate::transaction::unsigned_transaction::UnsignedTransaction;
 use crate::transaction::UtxoToSign;
 use tw_coin_entry::error::prelude::*;
@@ -41,7 +40,7 @@ where
         mut self,
         dust_policy: DustPolicy,
         selector: InputSelector,
-        fee_rate: Amount,
+        fee_estimator: &dyn FeeEstimator<Transaction>,
     ) -> SigningResult<SelectResult<Transaction>> {
         let mut estimated_tx = self.unsigned_tx.estimate_transaction();
 
@@ -104,7 +103,7 @@ where
             }
 
             // Estimate the transaction fee.
-            tx_fee = FeeEstimator::estimate_fee(&estimated_tx, fee_rate)?;
+            tx_fee = fee_estimator.estimate_fee(&estimated_tx)?;
 
             // Check if the total input amount covers the total output amount
             // and the fee.

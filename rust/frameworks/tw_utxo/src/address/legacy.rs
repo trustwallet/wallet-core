@@ -8,12 +8,14 @@ use std::fmt;
 use std::str::FromStr;
 use tw_base58_address::Base58Address;
 use tw_coin_entry::coin_context::CoinContext;
+use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::prefix::BitcoinBase58Prefix;
 use tw_encoding::base58::Alphabet;
 use tw_hash::hasher::{sha256_ripemd, Hasher};
 use tw_hash::H160;
 use tw_keypair::{ecdsa, tw};
+use tw_memory::Data;
 
 pub const BITCOIN_ADDRESS_SIZE: usize = 21;
 pub const BITCOIN_ADDRESS_CHECKSUM_SIZE: usize = 4;
@@ -147,5 +149,11 @@ impl<'a> TryFrom<&'a [u8]> for LegacyAddress {
 impl fmt::Display for LegacyAddress {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
+    }
+}
+
+impl CoinAddress for LegacyAddress {
+    fn data(&self) -> Data {
+        self.bytes().to_vec()
     }
 }

@@ -9,6 +9,7 @@ use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::ToHex;
 use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
+use tw_proto::BitcoinV2::Proto::mod_SigningOutput::OneOftransaction as ProtobufTransaction;
 use tw_proto::Common::Proto::SigningError;
 
 type UtxoMap = HashMap<OutPoint, i64>;
@@ -55,12 +56,10 @@ impl<'a> BitcoinSignHelper<'a> {
     pub fn verify_output(self, output: Proto::SigningOutput, expected: Expected) {
         assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
 
-        let tx = output.transaction.as_ref().unwrap();
-
         // Collect all the UTXO amounts by using `OutPoint`.
-        let output_inputs = self.transaction_input_amounts(tx);
+        let output_inputs = self.transaction_input_amounts(&output.transaction);
         // Collect all the Output amounts.
-        let output_outputs: Vec<_> = tx.outputs.iter().map(|output| output.value).collect();
+        let output_outputs: Vec<_> = self.transaction_output_amounts(&output.transaction);
 
         assert_eq!(
             output.encoded.to_hex(),
@@ -87,11 +86,17 @@ impl<'a> BitcoinSignHelper<'a> {
     }
 
     /// Collect all the UTXO amounts by using `OutPoint`.
-    fn transaction_input_amounts(&self, tx: &Proto::Transaction) -> Vec<i64> {
+    fn transaction_input_amounts(&self, tx: &ProtobufTransaction) -> Vec<i64> {
         let utxo_map = self.utxo_map();
 
-        let mut output_inputs = Vec::with_capacity(tx.inputs.len());
-        for utxo in tx.inputs.iter() {
+        let tx_inputs = match tx {
+            ProtobufTransaction::bitcoin(btc) => &btc.inputs,
+            ProtobufTransaction::zcash(zcash) => &zcash.inputs,
+            ProtobufTransaction::None => panic!("'SigningOutput.transaction' isn't set"),
+        };
+
+        let mut output_inputs = Vec::with_capacity(tx_inputs.len());
+        for utxo in tx_inputs.iter() {
             let searching_out_point = OutPoint::from_proto(&utxo.out_point);
             let utxo_amount = *utxo_map.get(&searching_out_point).unwrap_or_else(|| {
                 panic!("Signed transaction does not contain {searching_out_point:?} UTXO")
@@ -100,6 +105,17 @@ impl<'a> BitcoinSignHelper<'a> {
         }
 
         output_inputs
+    }
+
+    /// Collect all the UTXO amounts by using `OutPoint`.
+    fn transaction_output_amounts(&self, tx: &ProtobufTransaction) -> Vec<i64> {
+        let tx_outputs = match tx {
+            ProtobufTransaction::bitcoin(btc) => &btc.outputs,
+            ProtobufTransaction::zcash(zcash) => &zcash.outputs,
+            ProtobufTransaction::None => panic!("'SigningOutput.transaction' isn't set"),
+        };
+
+        tx_outputs.iter().map(|output| output.value).collect()
     }
 
     fn transaction_builder(&self) -> &Proto::TransactionBuilder<'_> {
@@ -120,7 +136,7 @@ struct OutPoint {
 }
 
 impl OutPoint {
-    fn from_proto(proto: &Option<Proto::OutPoint>) -> OutPoint {
+    fn from_proto(proto: &Option<UtxoProto::OutPoint>) -> OutPoint {
         let out_point = proto.as_ref().expect("No OutPoint specified");
         OutPoint {
             hash: out_point.hash.to_vec(),

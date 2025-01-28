@@ -4,7 +4,9 @@ use tw_keypair::ecdsa::secp256k1::PrivateKey;
 use tw_keypair::traits::SigningKeyTrait;
 use tw_keypair::{ecdsa, schnorr};
 use tw_misc::traits::ToBytesVec;
-use tw_utxo::modules::fee_estimator::FeeEstimator;
+use tw_utxo::encode::Encodable;
+use tw_utxo::fee::fee_estimator::{FeeEstimator, StandardFeeEstimator};
+use tw_utxo::fee::FeePolicy;
 use tw_utxo::modules::sighash_computer::SighashComputer;
 use tw_utxo::modules::tx_compiler::TxCompiler;
 use tw_utxo::sighash::SighashType;
@@ -23,7 +25,9 @@ fn verify_fee<Transaction: TransactionInterface>(
     fee_per_vbyte: i64,
     expected: i64,
 ) {
-    let actual = FeeEstimator::estimate_fee(tx, fee_per_vbyte).unwrap();
+    let actual = StandardFeeEstimator::new(FeePolicy::FeePerVb(fee_per_vbyte))
+        .estimate_fee(tx)
+        .unwrap();
     assert_eq!(actual, expected);
 }
 

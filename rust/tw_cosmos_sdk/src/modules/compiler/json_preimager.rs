@@ -8,7 +8,7 @@ use crate::public_key::JsonPublicKey;
 use crate::transaction::UnsignedTransaction;
 use std::marker::PhantomData;
 use tw_coin_entry::error::prelude::*;
-use tw_hash::hasher::Hasher;
+use tw_hash::hasher::{Hasher, HasherOps};
 use tw_memory::Data;
 
 pub struct JsonTxPreimage {
