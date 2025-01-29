@@ -9,7 +9,6 @@ use std::str::FromStr;
 use tw_base58_address::Base58Address;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::{AddressError, AddressResult};
-use tw_encoding::base58;
 use tw_encoding::base58::Alphabet;
 use tw_hash::hasher::Hasher;
 use tw_hash::H160;
@@ -27,9 +26,9 @@ const TAG_STARTS_AT: usize = 23;
 const TAG_LEN: usize = size_of::<u32>();
 const TAG_RANGE: Range<usize> = TAG_STARTS_AT..(TAG_STARTS_AT + TAG_LEN);
 
-const KEY_HASH_RANGE: Range<usize> = 2..H160::LEN;
+const KEY_HASH_RANGE: Range<usize> = 2..H160::LEN + 2;
 
-#[derive(strum_macros::FromRepr)]
+#[derive(Copy, Clone, Debug, PartialEq, strum_macros::FromRepr)]
 #[repr(u8)]
 pub enum TagFlag {
     None = 0x00,
@@ -48,6 +47,14 @@ impl XAddress {
     pub fn public_key_hash(&self) -> H160 {
         H160::try_from(&self.inner.bytes[KEY_HASH_RANGE])
             .expect("'KEY_HASH_RANGE' must be 20 bytes length")
+    }
+
+    pub fn destination_tag(&self) -> u32 {
+        self.tag
+    }
+
+    pub fn tag_flag(&self) -> TagFlag {
+        self.tag_flag
     }
 
     fn decode_tag_flag(bytes: &[u8; 31]) -> AddressResult<TagFlag> {
