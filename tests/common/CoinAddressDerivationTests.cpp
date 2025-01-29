@@ -45,7 +45,6 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeCelo:
         case TWCoinTypeConfluxeSpace:
         case TWCoinTypeCronosChain:
-        case TWCoinTypeECOChain:
         case TWCoinTypeEthereumClassic:
         case TWCoinTypeEvmos:
         case TWCoinTypeFantom:
