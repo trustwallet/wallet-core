@@ -2,21 +2,12 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::address::x_address::XAddress;
-use crate::address::RippleAddress;
 use crate::definitions::DEFINITIONS;
 use crate::modules::encode::field_instance::FieldInstance;
 use serde_json::{Map as JsonMap, Value as Json};
-use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 
-const ACCOUNT: &str = "Account";
-const SOURCE_TAG: &str = "SourceTag";
-const DESTINATION: &str = "Destination";
-const DESTINATION_TAG: &str = "DestinationTag";
-
-type TransactionJson = JsonMap<String, Json>;
 type PreProcessedObject = JsonMap<String, Json>;
 
 /// Class for serializing/deserializing Indexmaps of objects.
@@ -80,7 +71,7 @@ impl STObject {
 
         for field_instance in sorted_keys.iter() {
             let field_name = field_instance.name.as_str();
-            let associated_value = pre_processed
+            let _associated_value = pre_processed
                 .get(field_name)
                 .or_tw_err(SigningErrorType::Error_internal)
                 .with_context(|| {
@@ -161,6 +152,12 @@ impl STObject {
     }
 
     // TODO consider using it when adding support for dapps.
+    // type TransactionJson = JsonMap<String, Json>;
+    // const DESTINATION_TAG: &str = "DestinationTag";
+    // const DESTINATION: &str = "Destination";
+    // const SOURCE_TAG: &str = "SourceTag";
+    // const ACCOUNT: &str = "Account";
+    //
     // fn pre_process_x_addr(
     //     tx_object: &TransactionJson,
     //     pre_processed: &mut PreProcessedObject,

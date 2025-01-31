@@ -9,8 +9,8 @@ use tw_coin_entry::error::prelude::SigningResult;
 pub struct TransactionSigner;
 
 impl TransactionSigner {
-    pub fn sign<Transaction: RippleTransaction>(mut tx: Transaction) -> SigningResult<Transaction> {
-        let encoded_tx = TransactionEncoder::encode(&tx)?;
+    pub fn sign<Transaction: RippleTransaction>(tx: Transaction) -> SigningResult<Transaction> {
+        let _encoded_tx = TransactionEncoder::encode(&tx)?;
         todo!()
     }
 }

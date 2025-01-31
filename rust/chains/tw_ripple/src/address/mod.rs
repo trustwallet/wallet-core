@@ -2,7 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use serde_with::{DeserializeFromStr, SerializeDisplay};
 use std::fmt;
 use std::str::FromStr;
 
@@ -14,13 +13,16 @@ use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::AddressError;
 use tw_hash::H160;
 use tw_memory::Data;
+use tw_misc::serde_as_string;
 use x_address::XAddress;
 
-#[derive(Clone, Debug, DeserializeFromStr, PartialEq, Eq, SerializeDisplay)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum RippleAddress {
     Classic(ClassicAddress),
     X(XAddress),
 }
+
+serde_as_string!(RippleAddress);
 
 impl RippleAddress {
     pub fn public_key_hash(&self) -> H160 {

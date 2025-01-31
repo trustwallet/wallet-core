@@ -4,12 +4,10 @@
 
 use crate::modules::encode::serializer::{Encodable, Encoder};
 use crate::types::account_id::AccountId;
+use crate::types::amount::POS_SIGN_BIT_MASK;
 use crate::types::currency::Currency;
 use bigdecimal::{BigDecimal, Signed, ToPrimitive, Zero};
 use serde::{Deserialize, Serialize, Serializer};
-use serde_json::Map as JsonMap;
-use std::fmt;
-use std::str::FromStr;
 use tw_coin_entry::error::prelude::{ResultContext, SigningError, SigningErrorType, SigningResult};
 use tw_hash::H64;
 use tw_misc::serde::as_string;
@@ -18,9 +16,7 @@ const ZERO_IC_VALUE: u64 = 0x8000000000000000;
 const MIN_MANTISSA: u128 = u128::pow(10, 15);
 const MAX_MANTISSA: u128 = u128::pow(10, 16) - 1;
 const MIN_IOU_EXPONENT: i32 = -96;
-const MAX_IOU_PRECISION: u8 = 16;
 pub const MAX_IOU_EXPONENT: i32 = 80;
-const POS_SIGN_BIT_MASK: i64 = 0x4000000000000000;
 
 /// Normally when using bigdecimal "serde_json" feature a `1` will be serialized as `1.000000000000000`.
 /// This function normalizes a `BigDecimal` before serializing to a string.
@@ -30,7 +26,7 @@ fn serialize_bigdecimal<S: Serializer>(value: &BigDecimal, s: S) -> Result<S::Ok
 }
 
 /// An Issued Currency object.
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub struct IssuedCurrency {
     #[serde(
         deserialize_with = "as_string::deserialize",

@@ -5,11 +5,7 @@
 use crate::types::account_id::AccountId;
 use crate::types::amount::Amount;
 use crate::types::blob::Blob;
-use serde_json::Value as Json;
-use std::str::FromStr;
-use tw_coin_entry::error::prelude::SigningResult;
-use tw_hash::{H128, H160, H256};
-use tw_memory::Data;
+use tw_hash::H256;
 
 /// Only supported types.
 pub enum XRPLTypes {

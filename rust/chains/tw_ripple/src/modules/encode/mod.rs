@@ -16,11 +16,11 @@ pub mod xrpl_types;
 pub struct TransactionEncoder;
 
 impl TransactionEncoder {
-    pub fn encode<Transaction: RippleTransaction>(tx: &Transaction) -> SigningResult<Data> {
+    pub fn encode<Transaction: RippleTransaction>(_tx: &Transaction) -> SigningResult<Data> {
         todo!()
     }
 
-    pub fn encode_json_for_signing(json: &serde_json::Value) -> SigningResult<Data> {
+    pub fn encode_json_for_signing(_json: &serde_json::Value) -> SigningResult<Data> {
         todo!()
     }
 }

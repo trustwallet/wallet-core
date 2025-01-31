@@ -2,9 +2,5 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::transaction::RippleTransaction;
-use tw_coin_entry::error::prelude::SigningResult;
-
 pub mod encode;
 pub mod signer;
-

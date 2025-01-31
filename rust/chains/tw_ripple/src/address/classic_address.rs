@@ -2,7 +2,6 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use serde_with::{DeserializeFromStr, SerializeDisplay};
 use std::fmt;
 use std::str::FromStr;
 use tw_base58_address::Base58Address;
@@ -13,14 +12,17 @@ use tw_hash::hasher::{sha256_ripemd, Hasher};
 use tw_hash::H160;
 use tw_keypair::ecdsa;
 use tw_memory::Data;
+use tw_misc::serde_as_string;
 
 pub const RIPPLE_ADDRESS_SIZE: usize = 21;
 pub const RIPPLE_ADDRESS_CHECKSUM_SIZE: usize = 4;
 /// See address type prefix: https://developers.ripple.com/base58-encodings.html
 pub const RIPPLE_ADDRESS_PREFIX: u8 = 0x00;
 
-#[derive(Clone, Debug, DeserializeFromStr, PartialEq, Eq, SerializeDisplay)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ClassicAddress(Base58Address<RIPPLE_ADDRESS_SIZE, RIPPLE_ADDRESS_CHECKSUM_SIZE>);
+
+serde_as_string!(ClassicAddress);
 
 impl ClassicAddress {
     pub fn new(public_key_hash: &[u8]) -> AddressResult<ClassicAddress> {

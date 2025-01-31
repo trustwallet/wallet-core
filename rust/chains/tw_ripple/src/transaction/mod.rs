@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 pub mod common_fields;
 pub mod transaction_type;

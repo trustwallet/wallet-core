@@ -5,15 +5,16 @@
 use crate::address::classic_address::ClassicAddress;
 use crate::address::RippleAddress;
 use crate::modules::encode::serializer::{Encodable, Encoder};
-use serde::{Deserialize, Serialize};
-use serde_with::{DeserializeFromStr, SerializeDisplay};
 use std::fmt;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::{IntoTWError, ResultContext, SigningError, SigningResult};
 use tw_hash::H160;
+use tw_misc::serde_as_string;
 
-#[derive(Debug, SerializeDisplay, DeserializeFromStr, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct AccountId(ClassicAddress);
+
+serde_as_string!(AccountId);
 
 impl Encodable for AccountId {
     fn encode(&self, dst: &mut Encoder) -> SigningResult<()> {

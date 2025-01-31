@@ -3,7 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::modules::encode::serializer::{Encodable, Encoder};
-use serde_with::{DeserializeFromStr, SerializeDisplay};
 use std::fmt;
 use std::ops::Range;
 use std::str::FromStr;
@@ -11,21 +10,22 @@ use tw_coin_entry::error::prelude::{
     MapTWError, ResultContext, SigningError, SigningErrorType, SigningResult,
 };
 use tw_hash::H160;
+use tw_misc::serde_as_string;
 
 pub const NATIVE_CODE: &str = "XRP";
 pub const NATIVE_CODE_BYTES: H160 = H160::new();
 
-const LEFT_PADDING_RANGE: Range<usize> = 0..12;
 const ISO_CODE_RANGE: Range<usize> = 12..15;
-const RIGHT_PADDING_RANGE: Range<usize> = 15..H160::LEN;
 
 /// Either ISO-4217 currency code (3 symbols) or a custom code with
-#[derive(Clone, Debug, DeserializeFromStr, SerializeDisplay)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Currency {
     Native,
     ISO(String),
     Custom(H160),
 }
+
+serde_as_string!(Currency);
 
 impl FromStr for Currency {
     type Err = SigningError;

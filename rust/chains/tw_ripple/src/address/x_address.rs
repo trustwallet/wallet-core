@@ -4,7 +4,6 @@
 
 use crate::address::classic_address::ClassicAddress;
 use byteorder::{LittleEndian, ReadBytesExt};
-use serde_with::{DeserializeFromStr, SerializeDisplay};
 use std::fmt;
 use std::ops::Range;
 use std::str::FromStr;
@@ -15,6 +14,7 @@ use tw_encoding::base58::Alphabet;
 use tw_hash::hasher::Hasher;
 use tw_hash::H160;
 use tw_memory::Data;
+use tw_misc::serde_as_string;
 
 const X_ADDRESS_LEN: usize = 31;
 const X_ADDRESS_CHECKSUM_LEN: usize = 4;
@@ -37,7 +37,7 @@ pub enum TagFlag {
     Classic = 0x01,
 }
 
-#[derive(Clone, Debug, DeserializeFromStr, PartialEq, Eq, SerializeDisplay)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct XAddress {
     /// Destination tag.
     tag: u32,
@@ -45,6 +45,8 @@ pub struct XAddress {
     /// Destination tag flag, none/32/64bit.
     tag_flag: TagFlag,
 }
+
+serde_as_string!(XAddress);
 
 impl XAddress {
     pub fn public_key_hash(&self) -> H160 {
