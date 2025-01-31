@@ -2,15 +2,24 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use std::borrow::Cow;
+use std::str::FromStr;
+
 use crate::address::SuiAddress;
 use crate::constants::{
     ADD_STAKE_MUL_COIN_FUN_NAME, SUI_SYSTEM_MODULE_NAME, SUI_SYSTEM_PACKAGE_ID,
     WITHDRAW_STAKE_FUN_NAME,
 };
 use crate::transaction::command::Command;
-use crate::transaction::programmable_transaction::ProgrammableTransactionBuilder;
-use crate::transaction::sui_types::{CallArg, ObjectArg, ObjectRef};
+use crate::transaction::programmable_transaction::{
+    ProgrammableTransaction, ProgrammableTransactionBuilder,
+};
+use crate::transaction::raw_types::{InputArg, RawTransaction, Transaction};
+use crate::transaction::sui_types::{
+    CallArg, ObjectArg, ObjectDigest, ObjectID, ObjectRef, SequenceNumber,
+};
 use crate::transaction::transaction_data::{TransactionData, TransactionKind};
+use move_core_types::identifier::Identifier;
 use tw_coin_entry::error::prelude::*;
 use tw_encoding::bcs;
 
@@ -181,6 +190,79 @@ impl TransactionBuilder {
             gas,
             gas_budget,
             gas_price,
+        ))
+    }
+
+    pub fn raw_json(raw_json: Cow<'_, str>) -> SigningResult<TransactionData> {
+        let raw_transaction: RawTransaction = serde_json::from_str(&raw_json)?;
+
+        let inputs = raw_transaction
+            .inputs
+            .iter()
+            .map(|input| -> SigningResult<CallArg> {
+                match &input.value {
+                    InputArg::Pure(data) => Ok(CallArg::Pure(data.clone())),
+                    InputArg::Object(object) => Ok(CallArg::Object(object.try_into()?)),
+                }
+            })
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        let commands = raw_transaction
+            .transactions
+            .iter()
+            .map(|transaction| match transaction {
+                Transaction::SplitCoins { coin, amounts } => Command::SplitCoins(
+                    coin.into(),
+                    amounts.iter().map(|amount| amount.into()).collect(),
+                ),
+                Transaction::MoveCall {
+                    target,
+                    type_arguments,
+                    arguments,
+                } => {
+                    let parts: Vec<&str> = target.split("::").collect();
+                    let package = ObjectID::from_str(parts[0]).unwrap();
+                    let module = Identifier::from_str(parts[1]).unwrap();
+                    let function = Identifier::from_str(parts[2]).unwrap();
+                    Command::move_call(
+                        package,
+                        module,
+                        function,
+                        type_arguments.to_vec(),
+                        arguments.iter().map(|argument| argument.into()).collect(),
+                    )
+                },
+                Transaction::TransferObjects { objects, address } => Command::TransferObjects(
+                    objects.iter().map(|object| object.into()).collect(),
+                    address.into(),
+                ),
+            })
+            .collect::<Vec<_>>();
+
+        let pt = ProgrammableTransaction { inputs, commands };
+        let gas_payments = raw_transaction
+            .gas_config
+            .payment
+            .iter()
+            .map(|payment| {
+                (
+                    ObjectID::from_str(&payment.object_id).unwrap(),
+                    SequenceNumber(payment.version),
+                    ObjectDigest::from_str(&payment.digest).unwrap(),
+                )
+            })
+            .collect::<Vec<_>>();
+        let Some(gas_payment) = gas_payments.first() else {
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Gas payment is missing from the transaction");
+        };
+
+        Ok(TransactionData::new(
+            TransactionKind::ProgrammableTransaction(pt),
+            raw_transaction.sender,
+            *gas_payment,
+            raw_transaction.gas_config.budget,
+            raw_transaction.gas_config.price,
         ))
     }
 }
