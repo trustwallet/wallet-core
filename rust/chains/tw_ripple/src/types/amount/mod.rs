@@ -2,7 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::encode::serializer::{Encodable, Encoder};
+use crate::encode::encoder::Encoder;
+use crate::encode::Encodable;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as Json;
 use std::str::FromStr;

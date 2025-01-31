@@ -4,6 +4,7 @@
 
 use crate::definitions::DEFINITIONS;
 use crate::encode::field_instance::FieldInstance;
+use crate::encode::xrpl_types::XRPLTypes;
 use serde_json::{Map as JsonMap, Value as Json};
 use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
@@ -71,12 +72,22 @@ impl STObject {
 
         for field_instance in sorted_keys.iter() {
             let field_name = field_instance.name.as_str();
-            let _associated_value = pre_processed
+            let associated_type = field_instance.associated_type.as_str();
+
+            let associated_value = pre_processed
                 .get(field_name)
                 .or_tw_err(SigningErrorType::Error_internal)
                 .with_context(|| {
                     format!("Pre-processes object doesn't contain '{field_name}' field")
+                })?
+                .clone();
+
+            let _associated_value = XRPLTypes::from_value(associated_type, associated_value)
+                .with_context(|| {
+                    format!("Error parsing '{field_name}' field with '{associated_type}' type")
                 })?;
+
+            todo!()
         }
 
         todo!()

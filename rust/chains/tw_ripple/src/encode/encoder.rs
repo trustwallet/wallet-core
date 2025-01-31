@@ -3,12 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use std::io::Write;
-use tw_coin_entry::error::prelude::SigningResult;
 use tw_memory::Data;
-
-pub trait Encodable {
-    fn encode(&self, dst: &mut Encoder) -> SigningResult<()>;
-}
 
 #[derive(Default)]
 pub struct Encoder {

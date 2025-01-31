@@ -2,7 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::encode::serializer::{Encodable, Encoder};
+use crate::encode::encoder::Encoder;
+use crate::encode::Encodable;
 use std::fmt;
 use std::ops::Range;
 use std::str::FromStr;

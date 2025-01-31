@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::encode::encoder::Encoder;
+use crate::encode::Encodable;
 use crate::types::account_id::AccountId;
 use crate::types::amount::Amount;
 use crate::types::blob::Blob;
@@ -33,7 +35,6 @@ pub enum XRPLTypes {
     UInt32(u32),
     UInt64(u64),
     // XChainBridge(XChainBridge),
-    Unknown,
 }
 
 impl XRPLTypes {
@@ -76,6 +77,25 @@ impl XRPLTypes {
         } else {
             // `STArray` isn't supported for now.
             unsupported_error(type_name)
+        }
+    }
+}
+
+impl Encodable for XRPLTypes {
+    fn encode(&self, dst: &mut Encoder) -> SigningResult<()> {
+        match self {
+            XRPLTypes::AccountID(ty) => ty.encode(dst),
+            XRPLTypes::Amount(ty) => ty.encode(dst),
+            XRPLTypes::Blob(ty) => ty.encode(dst),
+            XRPLTypes::Currency(ty) => ty.encode(dst),
+            XRPLTypes::Hash128(ty) => ty.encode(dst),
+            XRPLTypes::Hash160(ty) => ty.encode(dst),
+            XRPLTypes::Hash256(ty) => ty.encode(dst),
+            XRPLTypes::Vector256(ty) => ty.encode(dst),
+            XRPLTypes::UInt8(ty) => ty.encode(dst),
+            XRPLTypes::UInt16(ty) => ty.encode(dst),
+            XRPLTypes::UInt32(ty) => ty.encode(dst),
+            XRPLTypes::UInt64(ty) => ty.encode(dst),
         }
     }
 }

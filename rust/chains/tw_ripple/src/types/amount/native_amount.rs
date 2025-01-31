@@ -2,7 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::encode::serializer::{Encodable, Encoder};
+use crate::encode::encoder::Encoder;
+use crate::encode::Encodable;
 use crate::types::amount::POS_SIGN_BIT_MASK;
 use bigdecimal::ToPrimitive;
 use std::fmt;

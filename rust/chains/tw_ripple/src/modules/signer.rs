@@ -2,15 +2,13 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::encode::TransactionEncoder;
 use crate::transaction::RippleTransaction;
 use tw_coin_entry::error::prelude::SigningResult;
 
 pub struct TransactionSigner;
 
 impl TransactionSigner {
-    pub fn sign<Transaction: RippleTransaction>(tx: Transaction) -> SigningResult<Transaction> {
-        let _encoded_tx = TransactionEncoder::encode(&tx)?;
+    pub fn sign<Transaction: RippleTransaction>(_tx: Transaction) -> SigningResult<Transaction> {
         todo!()
     }
 }

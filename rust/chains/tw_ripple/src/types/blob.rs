@@ -2,7 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::encode::serializer::{Encodable, Encoder};
+use crate::encode::encoder::Encoder;
+use crate::encode::Encodable;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::{
     MapTWError, ResultContext, SigningError, SigningErrorType, SigningResult,
