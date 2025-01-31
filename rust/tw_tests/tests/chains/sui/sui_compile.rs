@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use std::borrow::Cow;
+
 use crate::chains::sui::test_cases::{transfer_d4ay9tdb, PRIVATE_KEY_54E80D76, SENDER_54E80D76};
 use tw_any_coin::test_utils::sign_utils::{CompilerHelper, PreImageHelper};
 use tw_coin_registry::coin_type::CoinType;
@@ -88,5 +90,26 @@ fn test_sui_compile_direct_transfer() {
         tx_hash: transfer_d4ay9tdb::TX_HASH,
         unsigned_tx_data: transfer_d4ay9tdb::UNSIGNED_TX,
         signature: transfer_d4ay9tdb::SIGNATURE,
+    });
+}
+
+#[test]
+fn test_sui_compile_raw_json() {
+    let raw_json = Cow::Borrowed(include_str!("fixtures/aftermath_tx_1.json"));
+    let input = Proto::SigningInput {
+        transaction_payload: TransactionType::raw_json(raw_json),
+        private_key: PRIVATE_KEY_54E80D76.decode_hex().unwrap().into(),
+        ..Proto::SigningInput::default()
+    };
+
+    let expected_json = include_str!("./fixtures/aftermath_tx_1_serialized.json"); // Generated via aftermath-sdk
+    let expected: serde_json::Value = serde_json::from_str(expected_json).unwrap();
+    let expected_unsigned_tx_data = expected["serializedTransaction"].as_str().unwrap();
+    test_sui_compile_impl(SuiCompileArgs {
+        input,
+        private_key: PRIVATE_KEY_54E80D76,
+        tx_hash: "75fe8ed844ab7e84c18051e808693b22c63a7e291d66b2e3a9336cc20730ac0e",
+        unsigned_tx_data: expected_unsigned_tx_data,
+        signature: "ABl18CtTKml1sbI+HC1ciDlew7NiizEUK2KYfOgEDFVvrCcYbV2TSQI6lBkT710s+L+HrASGVvxVj/igpgB+dAyF69FEH+T5VPvl3GB3vwCOEZpeJpKXxvcIPQAdKsh2/g=="
     });
 }
