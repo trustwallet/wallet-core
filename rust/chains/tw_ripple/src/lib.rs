@@ -4,5 +4,9 @@
 
 pub mod address;
 pub mod compiler;
+pub mod definitions;
 pub mod entry;
+pub mod modules;
 pub mod signer;
+pub mod transaction;
+pub mod types;

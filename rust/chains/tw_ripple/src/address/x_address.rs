@@ -2,7 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::address::classic_address::ClassicAddress;
 use byteorder::{LittleEndian, ReadBytesExt};
+use serde_with::{DeserializeFromStr, SerializeDisplay};
 use std::fmt;
 use std::ops::Range;
 use std::str::FromStr;
@@ -28,13 +30,14 @@ const TAG_RANGE: Range<usize> = TAG_STARTS_AT..(TAG_STARTS_AT + TAG_LEN);
 
 const KEY_HASH_RANGE: Range<usize> = 2..H160::LEN + 2;
 
-#[derive(Copy, Clone, Debug, PartialEq, strum_macros::FromRepr)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, strum_macros::FromRepr)]
 #[repr(u8)]
 pub enum TagFlag {
     None = 0x00,
     Classic = 0x01,
 }
 
+#[derive(Clone, Debug, DeserializeFromStr, PartialEq, Eq, SerializeDisplay)]
 pub struct XAddress {
     /// Destination tag.
     tag: u32,
@@ -55,6 +58,10 @@ impl XAddress {
 
     pub fn tag_flag(&self) -> TagFlag {
         self.tag_flag
+    }
+
+    pub fn to_classic(&self) -> AddressResult<ClassicAddress> {
+        ClassicAddress::new(self.public_key_hash().as_slice())
     }
 
     fn decode_tag_flag(bytes: &[u8; 31]) -> AddressResult<TagFlag> {
