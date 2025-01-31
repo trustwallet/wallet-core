@@ -37,7 +37,7 @@ void TransactionFactoryConfig::setMinGasLimit(uint32_t value) {
 }
 
 uint32_t TransactionFactoryConfig::getExtraGasLimitForGuardedTransaction() const {
-    return this->minGasLimit;
+    return this->extraGasLimitForGuardedTransaction;
 }
 
 void TransactionFactoryConfig::setExtraGasLimitForGuardedTransaction(uint32_t value) {
@@ -45,7 +45,7 @@ void TransactionFactoryConfig::setExtraGasLimitForGuardedTransaction(uint32_t va
 }
 
 uint32_t TransactionFactoryConfig::getExtraGasLimitForRelayedTransaction() const {
-    return this->minGasLimit;
+    return this->extraGasLimitForRelayedTransaction;
 }
 
 void TransactionFactoryConfig::setExtraGasLimitForRelayedTransaction(uint32_t value) {
