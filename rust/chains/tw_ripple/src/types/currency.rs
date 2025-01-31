@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::modules::encode::serializer::{Encodable, Encoder};
+use crate::encode::serializer::{Encodable, Encoder};
 use std::fmt;
 use std::ops::Range;
 use std::str::FromStr;
@@ -42,7 +42,7 @@ impl FromStr for Currency {
 
         // Custom currency code as a hex value.
         let bytes = H160::from_str(s)
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .with_context(|| format!("Invalid Currency code: {s}"))?;
 
         if bytes.is_zero() {

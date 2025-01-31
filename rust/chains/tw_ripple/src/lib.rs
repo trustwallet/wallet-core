@@ -5,6 +5,7 @@
 pub mod address;
 pub mod compiler;
 pub mod definitions;
+pub mod encode;
 pub mod entry;
 pub mod modules;
 pub mod signer;

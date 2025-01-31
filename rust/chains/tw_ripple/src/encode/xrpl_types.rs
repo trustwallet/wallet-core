@@ -1,0 +1,110 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+use crate::types::account_id::AccountId;
+use crate::types::amount::Amount;
+use crate::types::blob::Blob;
+use crate::types::currency::Currency;
+use serde_json::Value as Json;
+use std::num::{ParseIntError, TryFromIntError};
+use std::str::FromStr;
+use tw_coin_entry::error::prelude::*;
+use tw_hash::{Hash, H128, H160, H256};
+
+/// Only supported types.
+pub enum XRPLTypes {
+    AccountID(AccountId),
+    Amount(Amount),
+    Blob(Blob),
+    Currency(Currency),
+    Hash128(H128),
+    Hash160(H160),
+    Hash256(H256),
+    // Issue(Issue),
+    // Path(Path),
+    // PathSet(PathSet),
+    // PathStep(PathStep),
+    Vector256(H256),
+    // STArray(STArray),
+    // STObject(STObject),
+    UInt8(u8),
+    UInt16(u16),
+    UInt32(u32),
+    UInt64(u64),
+    // XChainBridge(XChainBridge),
+    Unknown,
+}
+
+impl XRPLTypes {
+    pub fn from_value(type_name: &str, mut value: Json) -> SigningResult<XRPLTypes> {
+        if value.is_null() {
+            value = Json::Number(0.into());
+        }
+
+        if let Some(value) = value.as_str() {
+            let xrpl_type = match type_name {
+                "AccountID" => XRPLTypes::AccountID(AccountId::from_str(value)?),
+                "Amount" => XRPLTypes::Amount(Amount::from_str(value)?),
+                "Blob" => XRPLTypes::Blob(Blob::from_str(value)?),
+                "Currency" => XRPLTypes::Currency(Currency::from_str(value)?),
+                "Hash128" => XRPLTypes::Hash128(parse_hash(value)?),
+                "Hash160" => XRPLTypes::Hash160(parse_hash(value)?),
+                "Hash256" => XRPLTypes::Hash256(parse_hash(value)?),
+                "XChainClaimID" => XRPLTypes::Hash256(parse_hash(value)?),
+                "UInt8" => XRPLTypes::UInt8(parse_int(value)?),
+                "UInt16" => XRPLTypes::UInt16(parse_int(value)?),
+                "UInt32" => XRPLTypes::UInt32(parse_int(value)?),
+                "UInt64" => XRPLTypes::UInt64(parse_int(value)?),
+                _ => return unsupported_error(type_name),
+            };
+            Ok(xrpl_type)
+        } else if let Some(value) = value.as_u64() {
+            match type_name {
+                "UInt8" => Ok(XRPLTypes::UInt8(cast_int(value)?)),
+                "UInt16" => Ok(XRPLTypes::UInt16(cast_int(value)?)),
+                "UInt32" => Ok(XRPLTypes::UInt32(cast_int(value)?)),
+                "UInt64" => Ok(XRPLTypes::UInt64(value)),
+                _ => unsupported_error(type_name),
+            }
+        } else if value.is_object() {
+            match type_name {
+                "Amount" => Ok(XRPLTypes::Amount(Amount::try_from(value)?)),
+                // `STObject`, `XChainBridge` types aren't supported yet.
+                _ => unsupported_error(type_name),
+            }
+        } else {
+            // `STArray` isn't supported for now.
+            unsupported_error(type_name)
+        }
+    }
+}
+
+fn parse_hash<const N: usize>(s: &str) -> SigningResult<Hash<N>> {
+    Hash::from_str(s)
+        .tw_err(SigningErrorType::Error_input_parse)
+        .with_context(|| format!("Error parsing H{}", N * 8))
+}
+
+fn parse_int<T>(s: &str) -> SigningResult<T>
+where
+    T: FromStr<Err = ParseIntError>,
+{
+    T::from_str(s)
+        .tw_err(SigningErrorType::Error_input_parse)
+        .context("Expected valid integer")
+}
+
+fn cast_int<T>(value: u64) -> SigningResult<T>
+where
+    T: TryFrom<u64, Error = TryFromIntError>,
+{
+    T::try_from(value)
+        .tw_err(SigningErrorType::Error_input_parse)
+        .context("Integer value is too large")
+}
+
+fn unsupported_error<T>(type_name: &str) -> SigningResult<T> {
+    SigningError::err(SigningErrorType::Error_not_supported)
+        .context(format!("Unknown/unsupported XRPL type '{type_name}'"))
+}

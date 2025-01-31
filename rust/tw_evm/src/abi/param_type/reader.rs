@@ -110,6 +110,6 @@ fn parse_usize(usize_str: &str) -> AbiResult<Option<usize>> {
     }
     usize::from_str(usize_str)
         .map(Some)
-        .tw_err(|_| AbiErrorKind::Error_invalid_param_type)
+        .tw_err(AbiErrorKind::Error_invalid_param_type)
         .with_context(|| format!("Expected a decimal string: {usize_str}"))
 }

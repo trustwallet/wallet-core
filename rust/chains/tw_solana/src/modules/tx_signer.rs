@@ -66,7 +66,7 @@ impl TxSigner {
 
     pub fn preimage_versioned(msg: &versioned::VersionedMessage) -> SigningResult<Data> {
         bincode::serialize(&msg)
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("Error serializing Solana Message as 'bincode'")
     }
 }

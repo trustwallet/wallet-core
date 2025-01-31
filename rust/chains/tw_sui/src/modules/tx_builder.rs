@@ -60,7 +60,7 @@ impl<'a> TWTransactionBuilder<'a> {
 
     fn sign_direct_from_proto(&self, sign_direct: &Proto::SignDirect<'_>) -> SigningResult<Data> {
         base64::decode(&sign_direct.unsigned_tx_msg, STANDARD)
-            .tw_err(|_| SigningErrorType::Error_input_parse)
+            .tw_err(SigningErrorType::Error_input_parse)
             .context("Error parsing Raw Unsigned TX message as base64")
     }
 

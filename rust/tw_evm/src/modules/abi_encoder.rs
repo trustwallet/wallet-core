@@ -92,7 +92,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
 
         let mut abi_json: SmartContractCallAbiJson =
             serde_json::from_str(&input.smart_contract_abi_json)
-                .tw_err(|_| AbiErrorKind::Error_invalid_abi)
+                .tw_err(AbiErrorKind::Error_invalid_abi)
                 .context("Error deserializing Smart Contract ABI as JSON")?;
 
         let function = abi_json
@@ -118,7 +118,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             inputs: &decoded_tokens,
         };
         let decoded_json = serde_json::to_string(&decoded_res)
-            .tw_err(|_| AbiErrorKind::Error_internal)
+            .tw_err(AbiErrorKind::Error_internal)
             .context("Error serializing Smart Contract Input as JSON")?;
 
         // Serialize the Proto parameters.
@@ -139,7 +139,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     ) -> AbiResult<Proto::ParamsDecodingOutput<'static>> {
         let abi = match input.abi {
             AbiEnum::abi_json(abi_json) => serde_json::from_str(&abi_json)
-                .tw_err(|_| AbiErrorKind::Error_invalid_abi)
+                .tw_err(AbiErrorKind::Error_invalid_abi)
                 .context("Error deserializing ABI as JSON")?,
             AbiEnum::abi_params(abi_params) => abi_params
                 .params
@@ -197,7 +197,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
 
     fn get_function_signature_from_abi_impl(function_abi: &str) -> AbiResult<String> {
         let mut fun: Function = serde_json::from_str(function_abi)
-            .tw_err(|_| AbiErrorKind::Error_invalid_abi)
+            .tw_err(AbiErrorKind::Error_invalid_abi)
             .context("Error deserializing Function ABI as JSON")?;
 
         // Clear the `outputs` to avoid adding them to the signature.
@@ -279,8 +279,8 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             },
             TokenEnum::string_value(str) => Ok(Token::String(str.to_string())),
             TokenEnum::address(addr) => {
-                let addr = Address::from_str(&addr)
-                    .tw_err(|_| AbiErrorKind::Error_invalid_address_value)?;
+                let addr =
+                    Address::from_str(&addr).tw_err(AbiErrorKind::Error_invalid_address_value)?;
                 Ok(Token::Address(addr))
             },
             TokenEnum::byte_array(bytes) => Ok(Token::Bytes(bytes.to_vec())),
@@ -449,11 +449,11 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     }
 
     fn s_number_n_from_proto(encoded: &[u8]) -> AbiResult<I256> {
-        I256::from_big_endian_slice(encoded).tw_err(|_| AbiErrorKind::Error_invalid_uint_value)
+        I256::from_big_endian_slice(encoded).tw_err(AbiErrorKind::Error_invalid_uint_value)
     }
 
     fn u_number_n_from_proto(encoded: &[u8]) -> AbiResult<U256> {
-        U256::from_big_endian_slice(encoded).tw_err(|_| AbiErrorKind::Error_invalid_uint_value)
+        U256::from_big_endian_slice(encoded).tw_err(AbiErrorKind::Error_invalid_uint_value)
     }
 
     fn s_number_n_proto(i: I256, bits: UintBits) -> Proto::NumberNParam<'static> {

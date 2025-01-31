@@ -22,6 +22,7 @@ use tw_native_evmos::entry::NativeEvmosEntry;
 use tw_native_injective::entry::NativeInjectiveEntry;
 use tw_pactus::entry::PactusEntry;
 use tw_polkadot::entry::PolkadotEntry;
+use tw_ripple::entry::RippleEntry;
 use tw_ronin::entry::RoninEntry;
 use tw_solana::entry::SolanaEntry;
 use tw_substrate::entry::SubstrateEntry;
@@ -29,7 +30,6 @@ use tw_sui::entry::SuiEntry;
 use tw_thorchain::entry::ThorchainEntry;
 use tw_ton::entry::TheOpenNetworkEntry;
 use tw_zcash::entry::ZcashEntry;
-use tw_ripple::entry::RippleEntry;
 
 pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;
 pub type EvmEntryExtStaticRef = &'static dyn EvmEntryExt;

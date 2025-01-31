@@ -5,7 +5,6 @@
 use crate::address::RippleAddress;
 use crate::transaction::transaction_type::TransactionType;
 use crate::types::amount::native_amount::NativeAmount;
-use crate::types::amount::Amount;
 use serde::{Deserialize, Serialize};
 
 /// The base fields for all transaction models.

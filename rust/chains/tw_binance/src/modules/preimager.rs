@@ -16,7 +16,7 @@ pub struct JsonPreimager;
 impl JsonPreimager {
     pub fn preimage_hash(unsigned: &UnsignedTransaction) -> SigningResult<JsonTxPreimage> {
         let encoded_tx =
-            serde_json::to_string(unsigned).tw_err(|_| SigningErrorType::Error_internal)?;
+            serde_json::to_string(unsigned).tw_err(SigningErrorType::Error_internal)?;
         let tx_hash = sha2::sha256(encoded_tx.as_bytes());
         let tx_hash = H256::try_from(tx_hash.as_slice()).expect("sha256 must return 32 bytes");
         Ok(JsonTxPreimage {

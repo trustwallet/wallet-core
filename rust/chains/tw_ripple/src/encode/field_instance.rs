@@ -53,7 +53,7 @@ impl FieldInstance {
             associated_type,
             name: field_name,
             type_code,
-            ordinal: (type_code as i32) << 16 | field_info.nth as i32,
+            ordinal: ((type_code as i32) << 16) | field_info.nth as i32,
         })
     }
 }

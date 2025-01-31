@@ -46,11 +46,11 @@ impl SuiMessageSigner {
         let data = PersonalMessage { message };
         let intent_msg = IntentMessage::new(Intent::personal_message(), data);
 
-        let data_to_sign = bcs::encode(&intent_msg).tw_err(|_| SigningErrorType::Error_internal)?;
+        let data_to_sign = bcs::encode(&intent_msg).tw_err(SigningErrorType::Error_internal)?;
 
         let data_to_sign = blake2_b(&data_to_sign, H256::LEN)
             .and_then(|hash| H256::try_from(hash.as_slice()))
-            .tw_err(|_| SigningErrorType::Error_internal)?;
+            .tw_err(SigningErrorType::Error_internal)?;
 
         Ok(data_to_sign)
     }

@@ -350,7 +350,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
         let mut access = Access::new(addr);
         for key_proto in access_proto.stored_keys.iter() {
             let storage_key = H256::try_from(key_proto.as_ref())
-                .tw_err(|_| SigningErrorType::Error_invalid_params)
+                .tw_err(SigningErrorType::Error_invalid_params)
                 .context("Invalid storage key")?;
             access.add_storage_key(storage_key);
         }

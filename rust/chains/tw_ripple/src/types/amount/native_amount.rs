@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::modules::encode::serializer::{Encodable, Encoder};
+use crate::encode::serializer::{Encodable, Encoder};
 use crate::types::amount::POS_SIGN_BIT_MASK;
 use bigdecimal::ToPrimitive;
 use std::fmt;
@@ -34,7 +34,7 @@ impl FromStr for NativeAmount {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let decimal = bigdecimal::BigDecimal::from_str(s)
-            .tw_err(|_| SigningErrorType::Error_input_parse)
+            .tw_err(SigningErrorType::Error_input_parse)
             .with_context(|| format!("Expected a valid XRPL 'Amount': {s}"))?;
         let value = decimal
             .to_i64()

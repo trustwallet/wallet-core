@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::modules::encode::serializer::{Encodable, Encoder};
+use crate::encode::serializer::{Encodable, Encoder};
 use crate::types::account_id::AccountId;
 use crate::types::amount::POS_SIGN_BIT_MASK;
 use crate::types::currency::Currency;

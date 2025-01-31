@@ -2,8 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::modules::encode::serializer::{Encodable, Encoder};
+use crate::encode::serializer::{Encodable, Encoder};
 use serde::{Deserialize, Serialize};
+use serde_json::Value as Json;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 
@@ -20,6 +21,16 @@ pub(crate) const POS_SIGN_BIT_MASK: i64 = 0x4000000000000000;
 pub enum Amount {
     IssuedCurrency(IssuedCurrency),
     NativeAmount(NativeAmount),
+}
+
+impl TryFrom<Json> for Amount {
+    type Error = SigningError;
+
+    fn try_from(value: Json) -> Result<Self, Self::Error> {
+        serde_json::from_value(value)
+            .tw_err(SigningErrorType::Error_input_parse)
+            .context("Error parsing 'Amount' type")
+    }
 }
 
 impl Encodable for Amount {

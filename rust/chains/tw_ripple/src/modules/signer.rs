@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::modules::encode::TransactionEncoder;
+use crate::encode::TransactionEncoder;
 use crate::transaction::RippleTransaction;
 use tw_coin_entry::error::prelude::SigningResult;
 

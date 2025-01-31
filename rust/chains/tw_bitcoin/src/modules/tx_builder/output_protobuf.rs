@@ -118,7 +118,7 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
         tweaked_pubkey: &[u8],
     ) -> SigningResult<TransactionOutput> {
         let tweaked_x_only = H256::try_from(tweaked_pubkey)
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid P2TR tweaked public key. Expected 32 bytes x-only public key")?;
         Ok(self
             .prepare_builder()?
@@ -136,7 +136,7 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
             )?;
 
         let merkle_root = H256::try_from(taproot_script_path.merkle_root.as_ref())
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid OutputTaprootScriptPath.merkle_root. Must be a 32 byte array")?;
 
         Ok(self
@@ -195,7 +195,7 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
             },
         };
         Hash::<N>::try_from(hash_data.as_slice())
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .with_context(|| format!("Expected exactly {N} bytes redeem script hash"))
     }
 
@@ -223,7 +223,7 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
             },
         };
         Hash::<N>::try_from(hash_data.as_slice())
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .with_context(|| format!("Expected exactly {N} bytes public key hash"))
     }
 }

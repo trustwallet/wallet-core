@@ -123,7 +123,7 @@ impl TaprootAddress {
 
     pub fn to_script_pubkey(&self) -> SigningResult<Script> {
         let tweaked_pubkey_hash = H256::try_from(self.witness_program())
-            .tw_err(|_| SigningErrorType::Error_invalid_address)
+            .tw_err(SigningErrorType::Error_invalid_address)
             .context("P2TR 'witness_program' should be 32-bytes array")?;
         Ok(conditions::new_p2tr_dangerous_assume_tweaked(
             &tweaked_pubkey_hash,

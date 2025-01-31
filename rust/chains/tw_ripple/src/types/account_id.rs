@@ -4,7 +4,7 @@
 
 use crate::address::classic_address::ClassicAddress;
 use crate::address::RippleAddress;
-use crate::modules::encode::serializer::{Encodable, Encoder};
+use crate::encode::serializer::{Encodable, Encoder};
 use std::fmt;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::{IntoTWError, ResultContext, SigningError, SigningResult};

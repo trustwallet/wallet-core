@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::definitions::DEFINITIONS;
-use crate::modules::encode::field_instance::FieldInstance;
+use crate::encode::field_instance::FieldInstance;
 use serde_json::{Map as JsonMap, Value as Json};
 use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;

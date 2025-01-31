@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::modules::encode::serializer::{Encodable, Encoder};
+use crate::encode::serializer::{Encodable, Encoder};
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::{
     MapTWError, ResultContext, SigningError, SigningErrorType, SigningResult,
@@ -25,7 +25,7 @@ impl FromStr for Blob {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         s.decode_hex()
             .map(Blob)
-            .tw_err(|_| SigningErrorType::Error_input_parse)
+            .tw_err(SigningErrorType::Error_input_parse)
             .context("Error parsing Blob")
     }
 }

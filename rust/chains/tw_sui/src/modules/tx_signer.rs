@@ -38,7 +38,7 @@ impl TxSigner {
         }
 
         let unsigned_tx_data = bcs::encode(tx)
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("Error serializing TransactionData")?;
         Self::sign_direct(unsigned_tx_data, signer_key)
     }
@@ -55,7 +55,7 @@ impl TxSigner {
 
     pub fn preimage(tx: &TransactionData) -> SigningResult<TransactionPreimage> {
         let unsigned_tx_data = bcs::encode(tx)
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("Error serializing TransactionData")?;
         Self::preimage_direct(unsigned_tx_data)
     }
@@ -63,7 +63,7 @@ impl TxSigner {
     pub fn preimage_direct(unsigned_tx_data: Data) -> SigningResult<TransactionPreimage> {
         let intent = Intent::sui_transaction();
         let intent_data = bcs::encode(&intent)
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("Error serializing Intent message")?;
 
         let tx_data_to_sign: Data = intent_data
@@ -72,7 +72,7 @@ impl TxSigner {
             .collect();
         let tx_hash_to_sign = blake2_b(&tx_data_to_sign, H256::LEN)
             .and_then(|hash| H256::try_from(hash.as_slice()))
-            .tw_err(|_| SigningErrorType::Error_internal)?;
+            .tw_err(SigningErrorType::Error_internal)?;
 
         Ok(TransactionPreimage {
             unsigned_tx_data,

@@ -2,5 +2,4 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-pub mod encode;
 pub mod signer;

@@ -17,7 +17,7 @@ pub use utxo::UtxoBuilder;
 
 pub fn txid_from_str(txid: &str) -> SigningResult<H256> {
     H256::from_str(txid)
-        .tw_err(|_| SigningErrorType::Error_invalid_params)
+        .tw_err(SigningErrorType::Error_invalid_params)
         .context("Invalid txid")
 }
 

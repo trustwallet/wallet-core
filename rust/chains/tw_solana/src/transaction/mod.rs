@@ -54,11 +54,11 @@ impl FromStr for Signature {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let data = base58::decode(s, SOLANA_ALPHABET)
-            .tw_err(|_| SigningErrorType::Error_input_parse)
+            .tw_err(SigningErrorType::Error_input_parse)
             .context("Error decoding Solana Signature from base58")?;
         H512::try_from(data.as_slice())
             .map(Signature)
-            .tw_err(|_| SigningErrorType::Error_input_parse)
+            .tw_err(SigningErrorType::Error_input_parse)
             .context("Solana Signature must be 64 byte length")
     }
 }
