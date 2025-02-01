@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::definitions::DEFINITIONS;
+use crate::encode::encoder::Encoder;
 use crate::encode::field_instance::FieldInstance;
 use crate::encode::xrpl_types::XRPLTypes;
 use serde_json::{Map as JsonMap, Value as Json};
@@ -70,6 +71,7 @@ impl STObject {
             sorted_keys.retain(|k| k.is_signing);
         }
 
+        let mut encoder = Encoder::default();
         for field_instance in sorted_keys.iter() {
             let field_name = field_instance.name.as_str();
             let associated_type = field_instance.associated_type.as_str();
@@ -82,46 +84,26 @@ impl STObject {
                 })?
                 .clone();
 
-            let _associated_value = XRPLTypes::from_value(associated_type, associated_value)
+            let associated_value = XRPLTypes::from_value(associated_type, associated_value)
                 .with_context(|| {
                     format!("Error parsing '{field_name}' field with '{associated_type}' type")
                 })?;
 
-            todo!()
+            encoder
+                .append_field_and_value(field_instance, &associated_value)
+                .with_context(|| {
+                    format!("Error encoding '{field_name}' field with '{associated_type}' type")
+                })?;
+
+            // TODO uncomment when nested STObject's supported.
+            // const ST_OBJECT: &str = "STObject";
+            // const OBJECT_END_MARKER_BYTE: u8 = 0xE1;
+            // if field_instance.associated_type == ST_OBJECT {
+            //     encoder.push_byte(OBJECT_END_MARKER_BYTE);
+            // }
         }
 
-        todo!()
-
-        // TODO continue
-        // let mut is_unl_modify = false;
-        //
-        // for field_instance in &sorted_keys {
-        //     let associated_value = processed_values.get(&field_instance.name).ok_or(
-        //         exceptions::XRPLTypeException::MissingField(field_instance.name.clone()),
-        //     )?;
-        //     let associated_value = XRPLTypes::from_value(
-        //         &field_instance.associated_type,
-        //         associated_value.to_owned(),
-        //     )?;
-        //     let associated_value: SerializedType = associated_value.into();
-        //     if field_instance.name == "TransactionType"
-        //         && associated_value.to_string() == UNL_MODIFY_TX_TYPE
-        //     {
-        //         is_unl_modify = true;
-        //     }
-        //     let is_unl_modify_workaround = field_instance.name == "Account" && is_unl_modify;
-        //
-        //     serializer.write_field_and_value(
-        //         field_instance.to_owned(),
-        //         associated_value.as_ref(),
-        //         is_unl_modify_workaround,
-        //     );
-        //     if field_instance.associated_type == ST_OBJECT {
-        //         serializer.append(OBJECT_END_MARKER_BYTES.to_vec().as_mut());
-        //     }
-        // }
-        //
-        // Ok(STObject(serializer.into()))
+        Ok(STObject(encoder.finish()))
     }
 
     fn pre_process_json(value: Json) -> SigningResult<PreProcessedObject> {
