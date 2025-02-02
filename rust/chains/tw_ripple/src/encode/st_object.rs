@@ -2,15 +2,26 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::address::x_address::XAddress;
+use crate::address::RippleAddress;
 use crate::definitions::DEFINITIONS;
 use crate::encode::encoder::Encoder;
 use crate::encode::field_instance::FieldInstance;
 use crate::encode::xrpl_types::XRPLTypes;
 use serde_json::{Map as JsonMap, Value as Json};
+use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 
 type PreProcessedObject = JsonMap<String, Json>;
+type TransactionJson = JsonMap<String, Json>;
+
+const DESTINATION_TAG: &str = "DestinationTag";
+const DESTINATION: &str = "Destination";
+const SOURCE_TAG: &str = "SourceTag";
+const ACCOUNT: &str = "Account";
+const ST_OBJECT: &str = "STObject";
+const OBJECT_END_MARKER_BYTE: u8 = 0xE1;
 
 /// Class for serializing/deserializing Indexmaps of objects.
 ///
@@ -95,12 +106,9 @@ impl STObject {
                     format!("Error encoding '{field_name}' field with '{associated_type}' type")
                 })?;
 
-            // TODO uncomment when nested STObject's supported.
-            // const ST_OBJECT: &str = "STObject";
-            // const OBJECT_END_MARKER_BYTE: u8 = 0xE1;
-            // if field_instance.associated_type == ST_OBJECT {
-            //     encoder.push_byte(OBJECT_END_MARKER_BYTE);
-            // }
+            if field_instance.associated_type == ST_OBJECT {
+                encoder.push_byte(OBJECT_END_MARKER_BYTE);
+            }
         }
 
         Ok(STObject(encoder.finish()))
@@ -119,11 +127,10 @@ impl STObject {
                 continue;
             };
 
-            // TODO consider uncommenting this to handle Source/Destination XAddresses
-            // when adding support for dapps.
-            // if let Ok(RippleAddress::X(x_addr)) = RippleAddress::from_str(value) {
-            //     Self::pre_process_x_addr(&object, &mut pre_processed, field.to_string(), x_addr)?;
-            // }
+            if let Ok(RippleAddress::X(x_addr)) = RippleAddress::from_str(value) {
+                Self::pre_process_x_addr(&object, &mut pre_processed, field.to_string(), x_addr)?;
+                continue;
+            }
 
             if field == "TransactionType" || field == "LedgerEntryType" {
                 let transaction_type_code = *DEFINITIONS
@@ -144,46 +151,39 @@ impl STObject {
         Ok(pre_processed)
     }
 
-    // TODO consider using it when adding support for dapps.
-    // type TransactionJson = JsonMap<String, Json>;
-    // const DESTINATION_TAG: &str = "DestinationTag";
-    // const DESTINATION: &str = "Destination";
-    // const SOURCE_TAG: &str = "SourceTag";
-    // const ACCOUNT: &str = "Account";
-    //
-    // fn pre_process_x_addr(
-    //     tx_object: &TransactionJson,
-    //     pre_processed: &mut PreProcessedObject,
-    //     field: String,
-    //     addr: XAddress,
-    // ) -> SigningResult<()> {
-    //     let classic_addr = addr
-    //         .to_classic()
-    //         .into_tw()
-    //         .context("Error converting an XAddress to Classic")?
-    //         .to_string();
-    //
-    //     let tag = Json::Number(addr.destination_tag().into());
-    //     let tag_name = if field == DESTINATION {
-    //         DESTINATION_TAG
-    //     } else if field == ACCOUNT {
-    //         SOURCE_TAG
-    //     } else {
-    //         return SigningError::err(SigningErrorType::Error_invalid_address).context(format!(
-    //             "Field `{field}` is not allowed to have an associated tag."
-    //         ));
-    //     };
-    //
-    //     // Check whether the Transaction object contains the tag already.
-    //     // If so, it must be equal to the tag of a corresponding XAddress.
-    //     if let Some(handled_tag) = tx_object.get(tag_name) {
-    //         if handled_tag != &tag {
-    //             return SigningError::err(SigningErrorType::Error_invalid_params).context("Cannot have mismatched Account/Destination X-Address and SourceTag/DestinationTag");
-    //         }
-    //     }
-    //
-    //     pre_processed.insert(field, Json::String(classic_addr));
-    //     pre_processed.insert(tag_name.to_string(), tag);
-    //     Ok(())
-    // }
+    fn pre_process_x_addr(
+        tx_object: &TransactionJson,
+        pre_processed: &mut PreProcessedObject,
+        field: String,
+        addr: XAddress,
+    ) -> SigningResult<()> {
+        let classic_addr = addr
+            .to_classic()
+            .into_tw()
+            .context("Error converting an XAddress to Classic")?
+            .to_string();
+
+        let tag = Json::Number(addr.destination_tag().into());
+        let tag_name = if field == DESTINATION {
+            DESTINATION_TAG
+        } else if field == ACCOUNT {
+            SOURCE_TAG
+        } else {
+            return SigningError::err(SigningErrorType::Error_invalid_address).context(format!(
+                "Field `{field}` is not allowed to have an associated tag."
+            ));
+        };
+
+        // Check whether the Transaction object contains the tag already.
+        // If so, it must be equal to the tag of a corresponding XAddress.
+        if let Some(handled_tag) = tx_object.get(tag_name) {
+            if handled_tag != &tag {
+                return SigningError::err(SigningErrorType::Error_invalid_params).context("Cannot have mismatched Account/Destination X-Address and SourceTag/DestinationTag");
+            }
+        }
+
+        pre_processed.insert(field, Json::String(classic_addr));
+        pre_processed.insert(tag_name.to_string(), tag);
+        Ok(())
+    }
 }

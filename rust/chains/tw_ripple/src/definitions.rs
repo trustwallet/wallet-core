@@ -5,6 +5,7 @@
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use tw_misc::serde::hashmap_as_tupple_list;
 
 pub const DEFINITIONS_JSON: &str = include_str!("../definitions/definitions.json");
 
@@ -38,10 +39,11 @@ pub struct FieldInfo {
 #[serde(rename_all = "UPPERCASE")]
 pub struct Definitions {
     pub types: HashMap<String, i16>,
+    #[serde(with = "hashmap_as_tupple_list")]
     pub fields: HashMap<String, FieldInfo>,
     pub transaction_types: HashMap<String, i16>,
 }
 
 fn parse_definitions_json() -> Definitions {
-    serde_json::from_str(DEFINITIONS_JSON).expect("registry.json expected to be valid")
+    serde_json::from_str(DEFINITIONS_JSON).expect("definitions.json expected to be valid")
 }

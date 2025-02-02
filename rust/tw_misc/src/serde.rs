@@ -44,6 +44,71 @@ macro_rules! deserialize_from_str {
     };
 }
 
+pub mod hashmap_as_tupple_list {
+    use serde::de::{SeqAccess, Visitor};
+    use serde::ser::SerializeSeq;
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+    use std::collections::HashMap;
+    use std::fmt;
+    use std::hash::Hash;
+
+    pub fn serialize<K, V, S>(map: &HashMap<K, V>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        K: Serialize,
+        V: Serialize,
+        S: Serializer,
+    {
+        let mut seq = serializer.serialize_seq(Some(map.len()))?;
+        for (k, v) in map {
+            seq.serialize_element(&(k, v))?;
+        }
+        seq.end()
+    }
+
+    /// Deserialize a value from a string.
+    pub fn deserialize<'de, D, K, V>(deserializer: D) -> Result<HashMap<K, V>, D::Error>
+    where
+        D: Deserializer<'de>,
+        K: Deserialize<'de> + Eq + Hash,
+        V: Deserialize<'de>,
+    {
+        struct MapVisitor<K, V> {
+            marker: std::marker::PhantomData<fn() -> HashMap<K, V>>,
+        }
+
+        impl<'de, K, V> Visitor<'de> for MapVisitor<K, V>
+        where
+            K: Deserialize<'de> + Eq + Hash,
+            V: Deserialize<'de>,
+        {
+            type Value = HashMap<K, V>;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a sequence of key-value pairs")
+            }
+
+            fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
+            where
+                A: SeqAccess<'de>,
+            {
+                let mut map = match seq.size_hint() {
+                    Some(capacity) => HashMap::with_capacity(capacity),
+                    None => HashMap::new(),
+                };
+                while let Some((k, v)) = seq.next_element()? {
+                    map.insert(k, v);
+                }
+
+                Ok(map)
+            }
+        }
+
+        deserializer.deserialize_seq(MapVisitor {
+            marker: std::marker::PhantomData,
+        })
+    }
+}
+
 pub mod as_string {
     use serde::de::Error as DeError;
     use serde::{Deserialize, Deserializer, Serialize, Serializer};

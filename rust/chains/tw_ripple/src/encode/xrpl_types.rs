@@ -14,7 +14,15 @@ use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::{Hash, H128, H160, H256};
 
-/// Only supported types.
+/// XRPL supported types.
+/// Missing types:
+/// * Issue
+/// * Path
+/// * PathSet
+/// * PathStep
+/// * STArray
+/// * STObject
+/// * XChainBridge
 pub enum XRPLTypes {
     AccountID(AccountId),
     Amount(Amount),
@@ -23,18 +31,11 @@ pub enum XRPLTypes {
     Hash128(H128),
     Hash160(H160),
     Hash256(H256),
-    // Issue(Issue),
-    // Path(Path),
-    // PathSet(PathSet),
-    // PathStep(PathStep),
     Vector256(H256),
-    // STArray(STArray),
-    // STObject(STObject),
     UInt8(u8),
     UInt16(u16),
     UInt32(u32),
     UInt64(u64),
-    // XChainBridge(XChainBridge),
 }
 
 impl XRPLTypes {
