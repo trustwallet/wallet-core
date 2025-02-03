@@ -184,7 +184,11 @@ impl<'a> TWTransactionBuilder<'a> {
     }
 
     fn raw_json_from_proto(&self, raw_json: &str) -> SigningResult<TransactionData> {
-        TransactionBuilder::raw_json(raw_json)
+        TransactionBuilder::raw_json(
+            raw_json,
+            self.input.gas_budget,
+            self.input.reference_gas_price,
+        )
     }
 
     fn signer_address(&self) -> SigningResult<SuiAddress> {

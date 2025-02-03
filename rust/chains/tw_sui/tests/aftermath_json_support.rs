@@ -5,7 +5,7 @@ use tw_sui::transaction::transaction_builder::TransactionBuilder;
 #[test]
 fn test_aftermath_json_support() {
     let raw_json = include_str!("./fixtures/aftermath_tx_1.json");
-    let result = TransactionBuilder::raw_json(raw_json);
+    let result = TransactionBuilder::raw_json(raw_json, 0, 0);
     assert!(result.is_ok());
 
     let data = result.unwrap();

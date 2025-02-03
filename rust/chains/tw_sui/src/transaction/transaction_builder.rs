@@ -192,7 +192,11 @@ impl TransactionBuilder {
         ))
     }
 
-    pub fn raw_json(raw_json: &str) -> SigningResult<TransactionData> {
+    pub fn raw_json(
+        raw_json: &str,
+        gas_budget: u64,
+        gas_price: u64,
+    ) -> SigningResult<TransactionData> {
         let raw_transaction: RawTransaction = serde_json::from_str(raw_json)
             .map_err(|e| SigningError::from(e).context("Failed to parse raw JSON"))?;
 
@@ -270,12 +274,24 @@ impl TransactionBuilder {
                 .context("Gas payment is missing from the transaction");
         };
 
+        let gas_budget = if gas_budget != 0 {
+            gas_budget
+        } else {
+            raw_transaction.gas_config.budget
+        };
+
+        let gas_price = if gas_price != 0 {
+            gas_price
+        } else {
+            raw_transaction.gas_config.price
+        };
+
         Ok(TransactionData::new(
             TransactionKind::ProgrammableTransaction(pt),
             raw_transaction.sender,
             *gas_payment,
-            raw_transaction.gas_config.budget,
-            raw_transaction.gas_config.price,
+            gas_budget,
+            gas_price,
         ))
     }
 }
