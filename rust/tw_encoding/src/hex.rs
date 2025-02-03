@@ -69,6 +69,47 @@ pub mod as_hex {
     use serde::{Deserialize, Deserializer, Serialize, Serializer};
     use std::fmt;
 
+    /// Helps to serialize certain types as hex.
+    /// For example,
+    /// ```rust
+    /// # use serde::Serialize;
+    /// # use tw_encoding::hex::as_hex::AsHex;
+    ///
+    /// #[derive(Serialize)]
+    /// struct Foo {
+    ///   // Compile error (as_hex doesn't work for optional):
+    ///   // #[serde(with = "tw_encoding::hex::as_hex")]
+    ///   // data: Option<Vec<u8>>,
+    ///   data: Option<AsHex<Vec<u8>>>,
+    /// }
+    /// ```
+    ///
+    /// Consider using `#[serde(with = "as_hex")]` when possible.
+    #[derive(Clone, Debug, Eq, PartialEq)]
+    pub struct AsHex<T>(pub T);
+
+    impl<T: ToHex> Serialize for AsHex<T> {
+        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: Serializer,
+        {
+            serialize(&self.0, serializer)
+        }
+    }
+
+    impl<'de, T, E> Deserialize<'de> for AsHex<T>
+    where
+        T: for<'a> TryFrom<&'a [u8], Error = E>,
+        E: fmt::Debug,
+    {
+        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where
+            D: Deserializer<'de>,
+        {
+            deserialize(deserializer).map(AsHex)
+        }
+    }
+
     /// Serializes the `value` as a hex.
     pub fn serialize<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
     where

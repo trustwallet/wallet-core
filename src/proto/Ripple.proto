@@ -7,17 +7,17 @@ import "Common.proto";
 
 // https://xrpl.org/currency-formats.html#token-amounts
 message CurrencyAmount {
-	// Currency code
-	// https://xrpl.org/currency-formats.html#currency-codes
-	string currency = 1;
+    // Currency code
+    // https://xrpl.org/currency-formats.html#currency-codes
+    string currency = 1;
 
-	// String number
-	// https://xrpl.org/currency-formats.html#string-numbers
-	string value = 2;
+    // String number
+    // https://xrpl.org/currency-formats.html#string-numbers
+    string value = 2;
 
-	// Account
-	// https://xrpl.org/accounts.html
-	string issuer = 3;
+    // Account
+    // https://xrpl.org/accounts.html
+    string issuer = 3;
 }
 
 // https://xrpl.org/trustset.html
@@ -28,16 +28,16 @@ message OperationTrustSet {
 // https://xrpl.org/payment.html
 message OperationPayment {
     // Transfer amount
-	oneof amount_oneof {
-		int64 amount = 1;
-		CurrencyAmount currency_amount = 2;
-	}
+    oneof amount_oneof {
+        int64 amount = 1;
+        CurrencyAmount currency_amount = 2;
+    }
 
     // Target account
-	string destination = 3;
+    string destination = 3;
 
     // A Destination Tag
-	int64 destination_tag = 4;
+    uint32 destination_tag = 4;
 }
 
 // https://xrpl.org/escrowcreate.html
@@ -119,16 +119,16 @@ message SigningInput {
     int64 fee = 1;
 
     // Account sequence number
-    int32 sequence = 2;
+    uint32 sequence = 2;
 
     // Ledger sequence number
-    int32 last_ledger_sequence = 3;
+    uint32 last_ledger_sequence = 3;
 
     // Source account
     string account = 4;
 
     // Transaction flags, optional
-    int64 flags = 5;
+    uint32 flags = 5;
 
     // The secret private key used for signing (32 bytes).
     bytes private_key = 6;

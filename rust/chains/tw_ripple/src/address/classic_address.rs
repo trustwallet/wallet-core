@@ -18,6 +18,8 @@ pub const RIPPLE_ADDRESS_SIZE: usize = 21;
 pub const RIPPLE_ADDRESS_CHECKSUM_SIZE: usize = 4;
 /// See address type prefix: https://developers.ripple.com/base58-encodings.html
 pub const RIPPLE_ADDRESS_PREFIX: u8 = 0x00;
+// https://xrpl.org/docs/concepts/accounts/addresses#special-addresses
+pub const ACCOUNT_ZERO_BYTES: [u8; RIPPLE_ADDRESS_SIZE] = [0; RIPPLE_ADDRESS_SIZE];
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ClassicAddress(Base58Address<RIPPLE_ADDRESS_SIZE, RIPPLE_ADDRESS_CHECKSUM_SIZE>);
@@ -50,6 +52,18 @@ impl ClassicAddress {
     }
 }
 
+impl Default for ClassicAddress {
+    fn default() -> Self {
+        Base58Address::new(
+            ACCOUNT_ZERO_BYTES.as_slice(),
+            Alphabet::Ripple,
+            Hasher::Sha256d,
+        )
+        .map(ClassicAddress)
+        .expect("'ACCOUNT_ZERO_BYTES' is expected to be valid address bytes")
+    }
+}
+
 impl CoinAddress for ClassicAddress {
     #[inline]
     fn data(&self) -> Data {
@@ -73,5 +87,16 @@ impl FromStr for ClassicAddress {
 impl fmt::Display for ClassicAddress {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_account_zero() {
+        let addr = ClassicAddress::default();
+        assert_eq!(addr.to_string(), "rrrrrrrrrrrrrrrrrrrrrhoLvTp");
     }
 }

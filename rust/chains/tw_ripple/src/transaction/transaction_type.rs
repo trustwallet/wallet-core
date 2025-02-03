@@ -2,19 +2,40 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::transaction::common_fields::CommonFields;
+use crate::transaction::transactions::escrow_cancel::EscrowCancel;
+use crate::transaction::transactions::payment::Payment;
+use crate::transaction::RippleTransaction;
 use serde::{Deserialize, Serialize};
 
-/// Enum containing the different Transaction types.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
-#[repr(u32)]
+/// One of the supported XRPL transactions.
+/// It's serialized flatten:
+/// ```json
+/// {
+///   "TransactionType": "Payment",
+///   "Account": "...",
+///   "Destination": "..."
+/// }
+/// ```
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(tag = "TransactionType")]
 pub enum TransactionType {
-    Payment = 0,
-    EscrowCreate = 1,
-    EscrowFinish = 2,
-    EscrowCancel = 4,
-    TrustSet = 20,
-    NFTokenBurn = 26,
-    NFTokenCreateOffer = 27,
-    NFTokenCancelOffer = 28,
-    NFTokenAcceptOffer = 29,
+    Payment(Payment),
+    EscrowCancel(EscrowCancel),
+}
+
+impl RippleTransaction for TransactionType {
+    fn common_types(&self) -> &CommonFields {
+        match self {
+            TransactionType::Payment(payment) => payment.common_types(),
+            TransactionType::EscrowCancel(escrow) => escrow.common_types(),
+        }
+    }
+
+    fn common_types_mut(&mut self) -> &mut CommonFields {
+        match self {
+            TransactionType::Payment(payment) => payment.common_types_mut(),
+            TransactionType::EscrowCancel(escrow) => escrow.common_types_mut(),
+        }
+    }
 }

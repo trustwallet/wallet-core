@@ -3,3 +3,4 @@
 // Copyright © 2017 Trust Wallet.
 
 pub mod escrow_cancel;
+pub mod payment;

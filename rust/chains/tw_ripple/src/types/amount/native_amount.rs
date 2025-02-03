@@ -12,7 +12,7 @@ use tw_coin_entry::error::prelude::*;
 use tw_misc::serde_as_string;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct NativeAmount(i64);
+pub struct NativeAmount(pub i64);
 
 serde_as_string!(NativeAmount);
 

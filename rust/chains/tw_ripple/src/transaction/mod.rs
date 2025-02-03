@@ -6,6 +6,7 @@ use serde::de::DeserializeOwned;
 use serde::Serialize;
 
 pub mod common_fields;
+pub mod transaction_builder;
 pub mod transaction_type;
 pub mod transactions;
 
@@ -13,6 +14,10 @@ pub mod transactions;
 macro_rules! ripple_tx {
     ($tx:ty) => {
         impl $crate::transaction::RippleTransaction for $tx {
+            fn common_types(&self) -> &$crate::transaction::common_fields::CommonFields {
+                &self.common_fields
+            }
+
             fn common_types_mut(
                 &mut self,
             ) -> &mut $crate::transaction::common_fields::CommonFields {
@@ -23,5 +28,7 @@ macro_rules! ripple_tx {
 }
 
 pub trait RippleTransaction: DeserializeOwned + Serialize {
+    fn common_types(&self) -> &common_fields::CommonFields;
+
     fn common_types_mut(&mut self) -> &mut common_fields::CommonFields;
 }

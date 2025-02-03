@@ -10,7 +10,7 @@ pub mod x_address;
 
 use classic_address::ClassicAddress;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::prelude::AddressError;
+use tw_coin_entry::error::prelude::{AddressError, AddressResult};
 use tw_hash::H160;
 use tw_memory::Data;
 use tw_misc::serde_as_string;
@@ -29,6 +29,13 @@ impl RippleAddress {
         match self {
             RippleAddress::Classic(classic) => classic.public_key_hash(),
             RippleAddress::X(x) => x.public_key_hash(),
+        }
+    }
+
+    pub fn to_classic_address(&self) -> AddressResult<ClassicAddress> {
+        match self {
+            RippleAddress::Classic(classic) => Ok(classic.clone()),
+            RippleAddress::X(x) => x.to_classic(),
         }
     }
 }
