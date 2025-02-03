@@ -53,7 +53,7 @@ impl<'a> TWTransactionBuilder<'a> {
             TransactionType::transfer_object(ref transfer_obj) => {
                 self.transfer_object_from_proto(transfer_obj)
             },
-            TransactionType::raw_json(ref raw_json) => self.raw_json_from_proto(raw_json.clone()),
+            TransactionType::raw_json(ref raw_json) => self.raw_json_from_proto(raw_json),
             TransactionType::None => SigningError::err(SigningErrorType::Error_invalid_params),
         }?;
         Ok(TWTransaction::Transaction(tx_data))
@@ -183,7 +183,7 @@ impl<'a> TWTransactionBuilder<'a> {
         )
     }
 
-    fn raw_json_from_proto(&self, raw_json: Cow<'_, str>) -> SigningResult<TransactionData> {
+    fn raw_json_from_proto(&self, raw_json: &str) -> SigningResult<TransactionData> {
         TransactionBuilder::raw_json(raw_json)
     }
 

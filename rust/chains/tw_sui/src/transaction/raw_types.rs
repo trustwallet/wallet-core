@@ -44,19 +44,19 @@ pub enum InputObjectArg {
     },
 }
 
-impl TryFrom<&InputObjectArg> for ObjectArg {
+impl TryFrom<InputObjectArg> for ObjectArg {
     type Error = SigningError;
 
-    fn try_from(arg: &InputObjectArg) -> Result<Self, Self::Error> {
+    fn try_from(arg: InputObjectArg) -> Result<Self, Self::Error> {
         match arg {
             InputObjectArg::Shared {
                 mutable,
                 initial_shared_version,
                 object_id,
             } => Ok(ObjectArg::SharedObject {
-                id: ObjectID::from_str(object_id)?,
-                initial_shared_version: SequenceNumber(*initial_shared_version),
-                mutable: *mutable,
+                id: ObjectID::from_str(&object_id)?,
+                initial_shared_version: SequenceNumber(initial_shared_version),
+                mutable,
             }),
         }
     }
@@ -86,12 +86,12 @@ pub enum TransactionArg {
     Result { index: u16 },
 }
 
-impl From<&TransactionArg> for Argument {
-    fn from(arg: &TransactionArg) -> Self {
+impl From<TransactionArg> for Argument {
+    fn from(arg: TransactionArg) -> Self {
         match arg {
             TransactionArg::GasCoin => Argument::GasCoin,
-            TransactionArg::Input { index } => Argument::Input(*index),
-            TransactionArg::Result { index } => Argument::Result(*index),
+            TransactionArg::Input { index } => Argument::Input(index),
+            TransactionArg::Result { index } => Argument::Result(index),
         }
     }
 }

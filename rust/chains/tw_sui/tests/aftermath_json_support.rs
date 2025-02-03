@@ -1,12 +1,10 @@
-use std::borrow::Cow;
-
 use tw_encoding::base64::{self, STANDARD};
 use tw_encoding::bcs;
 use tw_sui::transaction::transaction_builder::TransactionBuilder;
 
 #[test]
 fn test_aftermath_json_support() {
-    let raw_json = Cow::Borrowed(include_str!("./fixtures/aftermath_tx_1.json"));
+    let raw_json = include_str!("./fixtures/aftermath_tx_1.json");
     let result = TransactionBuilder::raw_json(raw_json);
     assert!(result.is_ok());
 
