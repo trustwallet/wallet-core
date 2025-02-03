@@ -23,7 +23,8 @@ std::map<std::string, int> fields_order{
     {"version", 11},
     {"signature", 12},
     {"options", 13},
-    {"guardian", 14}};
+    {"guardian", 14},
+    {"relayer", 15}};
 
 struct FieldsSorter {
     bool operator()(const std::string& lhs, const std::string& rhs) const {
@@ -67,6 +68,10 @@ sorted_json preparePayload(const MultiversX::Transaction& transaction) {
 
     if (!transaction.guardian.empty()) {
         payload["guardian"] = json(transaction.guardian);
+    }
+
+    if (!transaction.relayer.empty()) {
+        payload["relayer"] = json(transaction.relayer);
     }
 
     return payload;
