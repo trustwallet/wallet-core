@@ -1,9 +1,9 @@
 use move_core_types::language_storage::TypeTag;
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, DisplayFromStr};
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::SigningError;
 use tw_memory::Data;
+use tw_misc::serde::as_string;
 
 use crate::address::SuiAddress;
 
@@ -12,33 +12,30 @@ use super::{
     sui_types::{ObjectArg, ObjectID, SequenceNumber},
 };
 
-#[serde_as]
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PaymentConfig {
     pub object_id: String,
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "as_string")]
     pub version: u64,
     pub digest: String,
 }
 
-#[serde_as]
 #[derive(Debug, Deserialize, Serialize)]
 pub struct GasConfig {
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "as_string")]
     pub budget: u64,
-    #[serde_as(as = "DisplayFromStr")]
+    #[serde(with = "as_string")]
     pub price: u64,
     pub payment: Vec<PaymentConfig>,
 }
 
-#[serde_as]
 #[derive(Debug, Deserialize, Serialize)]
 pub enum InputObjectArg {
     #[serde(rename_all = "camelCase")]
     Shared {
         mutable: bool,
-        #[serde_as(as = "DisplayFromStr")]
+        #[serde(with = "as_string")]
         initial_shared_version: u64,
         object_id: String,
     },
@@ -96,7 +93,15 @@ impl From<TransactionArg> for Argument {
     }
 }
 
-#[serde_as]
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct TypeTagWrapper(#[serde(with = "as_string")] TypeTag);
+
+impl From<TypeTagWrapper> for TypeTag {
+    fn from(value: TypeTagWrapper) -> Self {
+        value.0
+    }
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(tag = "kind")]
 pub enum Transaction {
@@ -107,8 +112,7 @@ pub enum Transaction {
     #[serde(rename_all = "camelCase")]
     MoveCall {
         target: String,
-        #[serde_as(as = "Vec<DisplayFromStr>")]
-        type_arguments: Vec<TypeTag>,
+        type_arguments: Vec<TypeTagWrapper>,
         arguments: Vec<TransactionArg>,
     },
     TransferObjects {

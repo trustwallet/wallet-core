@@ -237,7 +237,7 @@ impl TransactionBuilder {
                         package,
                         module,
                         function,
-                        type_arguments.to_vec(),
+                        type_arguments.into_iter().map(|tag| tag.into()).collect(),
                         arguments
                             .into_iter()
                             .map(|argument| argument.into())
