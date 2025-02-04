@@ -90,6 +90,38 @@ class TestMultiversXSigner {
     }
 
     @Test
+    fun signGenericActionWithRelayer() {
+        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray()).data())
+
+        val accounts = MultiversX.Accounts.newBuilder()
+            .setSenderNonce(42)
+            .setSender(aliceBech32)
+            .setReceiver(bobBech32)
+            .setRelayer(carolBech32)
+            .build()
+
+        val genericAction = MultiversX.GenericAction.newBuilder()
+            .setAccounts(accounts)
+            .setValue("1000000000000000000")
+            .setVersion(2)
+            .build()
+
+        val signingInput = MultiversX.SigningInput.newBuilder()
+            .setGenericAction(genericAction)
+            .setGasPrice(1000000000)
+            .setGasLimit(100000)
+            .setChainId("1")
+            .setPrivateKey(privateKey)
+            .build()
+
+        val output = AnySigner.sign(signingInput, CoinType.MULTIVERSX, MultiversX.SigningOutput.parser())
+        val expectedSignature = "f0137ce0303a33814691975598dab3b82bb91b017aa251640a48827edc48048aa0f916dd3e7915dd3be27db3304fc238a719123b6ae2285731ab24b794665003"
+
+        assertEquals(expectedSignature, output.signature)
+        assertEquals("""{"nonce":42,"value":"1000000000000000000","receiver":"$bobBech32","sender":"$aliceBech32","gasPrice":1000000000,"gasLimit":100000,"chainID":"1","version":2,"signature":"$expectedSignature","relayer":"$carolBech32"}""", output.encoded)
+    }
+
+    @Test
     fun signGenericActionUndelegate() {
         // Successfully broadcasted https://explorer.multiversx.com/transactions/3301ae5a6a77f0ab9ceb5125258f12539a113b0c6787de76a5c5867f2c515d65
         val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray()).data())
