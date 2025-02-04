@@ -9,7 +9,7 @@ use crate::types::amount::POS_SIGN_BIT_MASK;
 use crate::types::currency::Currency;
 use bigdecimal::{BigDecimal, Signed, ToPrimitive, Zero};
 use serde::{Deserialize, Serialize, Serializer};
-use tw_coin_entry::error::prelude::{ResultContext, SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_hash::H64;
 use tw_misc::serde::as_string;
 

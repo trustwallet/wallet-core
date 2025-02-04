@@ -5,9 +5,7 @@
 use crate::encode::field_instance::FieldInstance;
 use crate::encode::Encodable;
 use std::io::Write;
-use tw_coin_entry::error::prelude::{
-    MapTWError, ResultContext, SigningError, SigningErrorType, SigningResult,
-};
+use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 
 const MAX_SINGLE_BYTE_LENGTH: usize = 192;

@@ -8,6 +8,8 @@ use crate::types::account_id::AccountId;
 use crate::types::amount::Amount;
 use crate::types::blob::Blob;
 use crate::types::currency::Currency;
+use crate::types::vector256::Vector256;
+use serde::de::DeserializeOwned;
 use serde_json::Value as Json;
 use std::num::{ParseIntError, TryFromIntError};
 use std::str::FromStr;
@@ -31,7 +33,7 @@ pub enum XRPLTypes {
     Hash128(H128),
     Hash160(H160),
     Hash256(H256),
-    Vector256(H256),
+    Vector256(Vector256),
     UInt8(u8),
     UInt16(u16),
     UInt32(u32),
@@ -75,8 +77,13 @@ impl XRPLTypes {
                 // `STObject`, `XChainBridge` types aren't supported yet.
                 _ => unsupported_error(type_name),
             }
+        } else if value.is_array() {
+            match type_name {
+                "Vector256" => Ok(XRPLTypes::Vector256(deserialize_json(value)?)),
+                // `STObject`, `XChainBridge` types aren't supported yet.
+                _ => unsupported_error(type_name),
+            }
         } else {
-            // `STArray` isn't supported for now.
             unsupported_error(type_name)
         }
     }
@@ -123,6 +130,13 @@ where
     T::try_from(value)
         .tw_err(SigningErrorType::Error_input_parse)
         .context("Integer value is too large")
+}
+
+fn deserialize_json<T>(value: Json) -> SigningResult<T>
+where
+    T: DeserializeOwned,
+{
+    serde_json::from_value(value).tw_err(SigningErrorType::Error_input_parse)
 }
 
 fn unsupported_error<T>(type_name: &str) -> SigningResult<T> {

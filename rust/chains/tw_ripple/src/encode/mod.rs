@@ -6,7 +6,7 @@ use crate::encode::encoder::Encoder;
 use crate::encode::st_object::STObject;
 use crate::transaction::RippleTransaction;
 use serde_json::Value as Json;
-use tw_coin_entry::error::prelude::{IntoTWError, ResultContext, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 
 pub const TRANSACTION_SIGNATURE_PREFIX: i32 = 0x53545800;
@@ -30,7 +30,7 @@ pub fn encode_tx<Transaction: RippleTransaction>(
     tx: &Transaction,
     signing_only: bool,
 ) -> SigningResult<TxEncoded> {
-    let json = serde_json::to_value(&tx)
+    let json = serde_json::to_value(tx)
         .into_tw()
         .context("Error serializing a Ripple transaction as JSON")?;
 

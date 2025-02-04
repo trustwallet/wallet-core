@@ -6,9 +6,7 @@ use crate::address::classic_address::ClassicAddress;
 use crate::encode::{encode_tx, TxEncoded};
 use crate::transaction::RippleTransaction;
 use serde_json::Value as Json;
-use tw_coin_entry::error::prelude::{
-    IntoTWError, OrTWError, ResultContext, SigningError, SigningErrorType, SigningResult,
-};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex::as_hex::AsHex;
 use tw_hash::sha2::sha512;
 use tw_hash::H256;
@@ -84,7 +82,7 @@ impl TransactionSigner {
             .into_tw()
             .context("Internal: error converting an X address to Classic")?;
 
-        let actual_account = ClassicAddress::with_public_key(&public_key)
+        let actual_account = ClassicAddress::with_public_key(public_key)
             .into_tw()
             .context("Error generating an account address from PrivateKey")?;
         if expected_account != actual_account {

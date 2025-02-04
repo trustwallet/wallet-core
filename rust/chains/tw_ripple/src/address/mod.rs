@@ -10,7 +10,7 @@ pub mod x_address;
 
 use classic_address::ClassicAddress;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::prelude::{AddressError, AddressResult};
+use tw_coin_entry::error::prelude::*;
 use tw_hash::H160;
 use tw_memory::Data;
 use tw_misc::serde_as_string;

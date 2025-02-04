@@ -40,7 +40,9 @@ impl<'a> ProtobufBuilder<'a> {
             OperationType::op_nftoken_burn(ref burn) => self.nftoken_burn(burn),
             OperationType::op_nftoken_create_offer(ref create) => self.nftoken_create_offer(create),
             OperationType::op_nftoken_accept_offer(ref accept) => self.nftoken_accept_offer(accept),
-            _ => todo!(),
+            OperationType::op_nftoken_cancel_offer(ref cancel) => self.nftoken_cancel_offer(cancel),
+            OperationType::None => SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("`SigningInput.operation` is not provided"),
         }
     }
 
@@ -152,7 +154,7 @@ impl<'a> ProtobufBuilder<'a> {
         &self,
         burn: &Proto::OperationNFTokenBurn,
     ) -> SigningResult<TransactionType> {
-        let nftoken_id = H256::try_from(burn.nftoken_id.as_ref())
+        let nftoken_id = H256::from_str(burn.nftoken_id.as_ref())
             .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid 'OperationNFTokenBurn.nftokenId'")?;
 
@@ -167,7 +169,7 @@ impl<'a> ProtobufBuilder<'a> {
         &self,
         create: &Proto::OperationNFTokenCreateOffer,
     ) -> SigningResult<TransactionType> {
-        let nftoken_id = H256::try_from(create.nftoken_id.as_ref())
+        let nftoken_id = H256::from_str(create.nftoken_id.as_ref())
             .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid 'OperationNFTokenCreateOffer.nftokenId'")?;
         let destination = ClassicAddress::from_str(create.destination.as_ref())
@@ -189,7 +191,7 @@ impl<'a> ProtobufBuilder<'a> {
         &self,
         accept: &Proto::OperationNFTokenAcceptOffer,
     ) -> SigningResult<TransactionType> {
-        let nftoken_sell_offer = H256::try_from(accept.sell_offer.as_ref())
+        let nftoken_sell_offer = H256::from_str(accept.sell_offer.as_ref())
             .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid 'OperationNFTokenAcceptOffer.sellOffer'")?;
         // Currently, only sell offer supported.
@@ -198,6 +200,23 @@ impl<'a> ProtobufBuilder<'a> {
         self.prepare_builder()?
             .nftoken_accept_offer(Some(nftoken_sell_offer), nftoken_buy_offer)
             .map(TransactionType::NFTokenAcceptOffer)
+    }
+
+    pub fn nftoken_cancel_offer(
+        &self,
+        cancel: &Proto::OperationNFTokenCancelOffer,
+    ) -> SigningResult<TransactionType> {
+        let nftoken_offers = cancel
+            .token_offers
+            .iter()
+            .map(|offer| H256::from_str(offer.as_ref()))
+            .collect::<Result<Vec<_>, _>>()
+            .tw_err(SigningErrorType::Error_invalid_params)
+            .context("Invalid 'OperationNFTokenCancelOffer.tokenOffers'")?;
+
+        self.prepare_builder()?
+            .nftoken_cancel_offer(nftoken_offers)
+            .map(TransactionType::NFTokenCancelOffer)
     }
 
     pub fn prepare_builder(&self) -> SigningResult<TransactionBuilder> {

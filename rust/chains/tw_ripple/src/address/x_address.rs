@@ -9,7 +9,7 @@ use std::ops::Range;
 use std::str::FromStr;
 use tw_base58_address::Base58Address;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::prelude::{AddressError, AddressResult};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::base58::Alphabet;
 use tw_hash::hasher::Hasher;
 use tw_hash::H160;

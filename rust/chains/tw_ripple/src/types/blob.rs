@@ -5,9 +5,7 @@
 use crate::encode::encoder::Encoder;
 use crate::encode::Encodable;
 use std::str::FromStr;
-use tw_coin_entry::error::prelude::{
-    MapTWError, ResultContext, SigningError, SigningErrorType, SigningResult,
-};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex::DecodeHex;
 use tw_memory::Data;
 

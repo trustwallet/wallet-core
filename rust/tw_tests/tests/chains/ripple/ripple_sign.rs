@@ -611,10 +611,7 @@ fn test_ripple_sign_nftoken_burn() {
         .unwrap();
 
     let burn = Proto::OperationNFTokenBurn {
-        nftoken_id: "000b013a95f14b0044f78a264e41713c64b5f89242540ee208c3098e00000d65"
-            .decode_hex()
-            .unwrap()
-            .into(),
+        nftoken_id: "000b013a95f14b0044f78a264e41713c64b5f89242540ee208c3098e00000d65".into(),
     };
     let input = Proto::SigningInput {
         fee: 10,
@@ -644,10 +641,7 @@ fn test_ripple_sign_nftoken_create_offer() {
         .unwrap();
 
     let create_offer = Proto::OperationNFTokenCreateOffer {
-        nftoken_id: "000b013a95f14b0044f78a264e41713c64b5f89242540ee208c3098e00000d65"
-            .decode_hex()
-            .unwrap()
-            .into(),
+        nftoken_id: "000b013a95f14b0044f78a264e41713c64b5f89242540ee208c3098e00000d65".into(),
         destination: "rDxTa8vhigDUCq9nmZY8jAkFne5XrcYbxG".into(),
     };
     let input = Proto::SigningInput {
@@ -679,10 +673,7 @@ fn test_ripple_sign_nftoken_accept_offer() {
         .unwrap();
 
     let accept_offer = Proto::OperationNFTokenAcceptOffer {
-        sell_offer: "000b013a95f14b0044f78a264e41713c64b5f89242540ee208c3098e00000d65"
-            .decode_hex()
-            .unwrap()
-            .into(),
+        sell_offer: "000b013a95f14b0044f78a264e41713c64b5f89242540ee208c3098e00000d65".into(),
     };
     let input = Proto::SigningInput {
         fee: 10,
@@ -702,5 +693,37 @@ fn test_ripple_sign_nftoken_accept_offer() {
     assert_eq!(
         output.encoded.to_hex(),
         "12001d220000000024015cc80f201b015cc824501d000b013a95f14b0044f78a264e41713c64b5f89242540ee208c3098e00000d6568400000000000000a73210331c298cb86428b9126bd4af6a952870cfe3fe5065dc093cf97f3edbb27e9dd15744630440220797922caaa593c4e91fa6b63a38c92ef9f5e2183128918dda166f4292882e137022057702b668d7463ef1d01dad5ee6633bd36f0aa358dacc90d6b68d248672a400f8114f260a758132d3ed27e52d7f55ef0481606f090d4"
+    );
+}
+
+#[test]
+fn test_ripple_sign_nftoken_cancel_offer() {
+    let private_key = "3e50cc102d8c96abd55f047a536b6425154514ba8abdf5f09335a7c644176c5d"
+        .decode_hex()
+        .unwrap();
+
+    let cancel_offer = Proto::OperationNFTokenCancelOffer {
+        token_offers: vec![
+            "000b013a95f14b0044f78a264e41713c64b5f89242540ee208c3098e00000d65".into(),
+        ],
+    };
+    let input = Proto::SigningInput {
+        fee: 10,
+        sequence: 22_857_838,
+        last_ledger_sequence: 22_857_859,
+        account: "rPqczdU9bzow966hQKQejsXrMJspM7G4CC".into(),
+        private_key: private_key.into(),
+        operation_oneof: OperationType::op_nftoken_cancel_offer(cancel_offer),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::XRP, input);
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+
+    // https://devnet.xrpl.org/transactions/CBA148308A0D1561E5E8CDF1F2E8D5562C320C221AC4053AA5F495CEF4B5D5D4
+    assert_eq!(
+        output.encoded.to_hex(),
+        "12001c220000000024015cc86e201b015cc88368400000000000000a7321022250f103fd045edf2e552df2d20aca01a52dc6aedd522d68767f1c744fedb39d74463044022015fff495fc5d61cd71e5815e4d23845ec26f4dc94adb85207feba2c97e19856502207297ec84afc0bb74aa8a20d7254025a82d9b9f177f648845d8c72ee62884ff618114fa84c77f2a5245ef774845d40428d2a6f9603415041320000b013a95f14b0044f78a264e41713c64b5f89242540ee208c3098e00000d65"
     );
 }

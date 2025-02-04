@@ -10,16 +10,16 @@ use crate::transaction::transactions::escrow_create::EscrowCreate;
 use crate::transaction::transactions::escrow_finish::EscrowFinish;
 use crate::transaction::transactions::nftoken_accept_offer::NFTokenAcceptOffer;
 use crate::transaction::transactions::nftoken_burn::NFTokenBurn;
+use crate::transaction::transactions::nftoken_cancel_offer::NFTokenCancelOffer;
 use crate::transaction::transactions::nftoken_create_offer::NFTokenCreateOffer;
 use crate::transaction::transactions::payment::Payment;
 use crate::transaction::transactions::trust_set::TrustSet;
 use crate::types::amount::issued_currency::IssuedCurrency;
 use crate::types::amount::native_amount::NativeAmount;
 use crate::types::amount::Amount;
+use crate::types::vector256::Vector256;
 use std::str::FromStr;
-use tw_coin_entry::error::prelude::{
-    IntoTWError, ResultContext, SigningError, SigningErrorType, SigningResult,
-};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex::as_hex::AsHex;
 use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1;
@@ -219,6 +219,17 @@ impl TransactionBuilder {
             common_fields: self.common_fields,
             nftoken_sell_offer: nftoken_sell_offer.map(AsHex),
             nftoken_buy_offer: nftoken_buy_offer.map(AsHex),
+        })
+    }
+
+    pub fn nftoken_cancel_offer(
+        self,
+        nftoken_offers: Vec<H256>,
+    ) -> SigningResult<NFTokenCancelOffer> {
+        self.check_ready()?;
+        Ok(NFTokenCancelOffer {
+            common_fields: self.common_fields,
+            nftoken_offers: Vector256::new(nftoken_offers),
         })
     }
 

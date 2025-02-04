@@ -8,7 +8,7 @@ use crate::encode::encoder::Encoder;
 use crate::encode::Encodable;
 use std::fmt;
 use std::str::FromStr;
-use tw_coin_entry::error::prelude::{IntoTWError, ResultContext, SigningError, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_hash::H160;
 use tw_misc::serde_as_string;
 

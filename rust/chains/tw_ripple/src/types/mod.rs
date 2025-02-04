@@ -6,3 +6,4 @@ pub mod account_id;
 pub mod amount;
 pub mod blob;
 pub mod currency;
+pub mod vector256;

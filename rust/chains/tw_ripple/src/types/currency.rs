@@ -7,9 +7,7 @@ use crate::encode::Encodable;
 use std::fmt;
 use std::ops::Range;
 use std::str::FromStr;
-use tw_coin_entry::error::prelude::{
-    MapTWError, ResultContext, SigningError, SigningErrorType, SigningResult,
-};
+use tw_coin_entry::error::prelude::*;
 use tw_hash::H160;
 use tw_misc::serde_as_string;
 
