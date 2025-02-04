@@ -7,6 +7,7 @@ use crate::transaction::transactions::escrow_cancel::EscrowCancel;
 use crate::transaction::transactions::escrow_create::EscrowCreate;
 use crate::transaction::transactions::escrow_finish::EscrowFinish;
 use crate::transaction::transactions::nftoken_burn::NFTokenBurn;
+use crate::transaction::transactions::nftoken_create_offer::NFTokenCreateOffer;
 use crate::transaction::transactions::payment::Payment;
 use crate::transaction::transactions::trust_set::TrustSet;
 use crate::transaction::RippleTransaction;
@@ -30,6 +31,7 @@ pub enum TransactionType {
     EscrowCancel(EscrowCancel),
     EscrowFinish(EscrowFinish),
     NFTokenBurn(NFTokenBurn),
+    NFTokenCreateOffer(NFTokenCreateOffer),
 }
 
 impl RippleTransaction for TransactionType {
@@ -41,6 +43,7 @@ impl RippleTransaction for TransactionType {
             TransactionType::EscrowCancel(escrow_cancel) => escrow_cancel.common_types(),
             TransactionType::EscrowFinish(escrow_finish) => escrow_finish.common_types(),
             TransactionType::NFTokenBurn(burn) => burn.common_types(),
+            TransactionType::NFTokenCreateOffer(create) => create.common_types(),
         }
     }
 
@@ -52,6 +55,7 @@ impl RippleTransaction for TransactionType {
             TransactionType::EscrowCancel(escrow) => escrow.common_types_mut(),
             TransactionType::EscrowFinish(escrow_finish) => escrow_finish.common_types_mut(),
             TransactionType::NFTokenBurn(burn) => burn.common_types_mut(),
+            TransactionType::NFTokenCreateOffer(create) => create.common_types_mut(),
         }
     }
 }

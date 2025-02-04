@@ -38,6 +38,7 @@ impl<'a> ProtobufBuilder<'a> {
             OperationType::op_escrow_cancel(ref escrow_cancel) => self.escrow_cancel(escrow_cancel),
             OperationType::op_escrow_finish(ref escrow_finish) => self.escrow_finish(escrow_finish),
             OperationType::op_nftoken_burn(ref burn) => self.nftoken_burn(burn),
+            OperationType::op_nftoken_create_offer(ref create) => self.nftoken_create_offer(create),
             _ => todo!(),
         }
     }
@@ -159,6 +160,28 @@ impl<'a> ProtobufBuilder<'a> {
         self.prepare_builder()?
             .nftoken_burn(nftoken_id, owner)
             .map(TransactionType::NFTokenBurn)
+    }
+
+    pub fn nftoken_create_offer(
+        &self,
+        create: &Proto::OperationNFTokenCreateOffer,
+    ) -> SigningResult<TransactionType> {
+        let nftoken_id = H256::try_from(create.nftoken_id.as_ref())
+            .tw_err(SigningErrorType::Error_invalid_params)
+            .context("Invalid 'OperationNFTokenCreateOffer.nftokenId'")?;
+        let destination = ClassicAddress::from_str(create.destination.as_ref())
+            .into_tw()
+            .context("Invalid 'OperationNFTokenCreateOffer.destination'")?;
+
+        // Currently, owner of the token can only give it away, gratis to the account identified by the `Destination` field.
+        let amount = Amount::NativeAmount(NativeAmount(0));
+        // Owner is the transaction signer.
+        let owner = None;
+        let expiration = None;
+
+        self.prepare_builder()?
+            .nftoken_create_offer(nftoken_id, amount, owner, expiration, Some(destination))
+            .map(TransactionType::NFTokenCreateOffer)
     }
 
     pub fn prepare_builder(&self) -> SigningResult<TransactionBuilder> {

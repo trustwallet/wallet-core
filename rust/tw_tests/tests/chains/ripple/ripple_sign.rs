@@ -10,6 +10,8 @@ use tw_proto::Ripple::Proto;
 use tw_proto::Ripple::Proto::mod_OperationPayment::OneOfamount_oneof as AmountType;
 use tw_proto::Ripple::Proto::mod_SigningInput::OneOfoperation_oneof as OperationType;
 
+const SELL_NFTOKEN_FLAG: u32 = 0x00000001;
+
 #[test]
 fn test_ripple_sign_xrp_payment_0() {
     let private_key = "a5576c0f63da10e584568c8d134569ff44017b0a249eb70657127ae04f38cc77"
@@ -560,7 +562,7 @@ fn test_ripple_sign_escrow_finish_with_condition_0() {
     assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
 
     // https://xrpscan.com/tx/7E9AC2C8286E3EC0410784920A0F8048C79257EDF19B392F98A31F62E3CF4FAD
-    assert_eq! (
+    assert_eq!(
         output.encoded.to_hex(),
         "120002220000000024050748d12019050747da201b050748f76840000000000001a77321025a4c754a3f836ebe18520e7d3861c6e38a4adfe466465d5db6cbb2d745d27ee574473045022100f06a6ac18efc1280f9d26cbb47c31f7ecd72ed200f9d05c6c762ffcf18b53534022049c6bb4ac8e79c478939a55dd1cb571d56ec929e5200332e410fd69c0fe1ef48701024a02280205d729ac237c4c7976403817b6409be7190efbfad49af2cf974b9582a854e8794701127a0258020c26add2db64dd6d5700a5e2721c1e908d599901627b8dc82f25b3e035ec4004b8101208114a0a67483ad4d51b2524eb304c0fcef6b2025b86582143194b932f389b95922fba31662f3c8a606fedfd6"
     );
@@ -596,7 +598,7 @@ fn test_ripple_sign_escrow_finish_with_condition_1() {
     assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
 
     // https://testnet.xrpl.org/transactions/4A49D4AD05FBDC4A354E31C7453829509F59DD2B51CDE560C4350155F5DBFD86
-    assert_eq! (
+    assert_eq!(
         output.encoded.to_hex(),
         "120002220000000024027ef3c42019027ef3c2201b027ef3da6840000000000001a773210277c5d02c3c774c96017234a532dae12023ac8fb499c5d90a56488900ecc746d07446304402206698c1d296bf1493c97beb64945558724c6c88474cd3e0b90e9dc9e7313ac1970220175fef60c48646be934be28a964af0cc55843fb6e6ef17c886716a03af849f74701024a022802049b9ab20ca85b55d0c12b948ec7c524f843c77be1ef1561a42b7167dce174b7a701127a0258020ffecf1ae6182f10efebe0c0896cd6b044df7b27d33b05030033ef63d47e2b25081012081145da8080d21fecf98f24ea2223482e5d24f10779982140e9c9b31b826671aaa387555cdeccab82a784020"
     );
@@ -629,8 +631,43 @@ fn test_ripple_sign_nftoken_burn() {
     assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
 
     // https://devnet.xrpl.org/transactions/37DA90BE3C30016B3A2C3D47D9677278A3F6D4141B318793CE6AA467A6530E2D
-    assert_eq! (
+    assert_eq!(
         output.encoded.to_hex(),
         "12001a220000000024015cca9b201b015ccab05a000b013a95f14b0044f78a264e41713c64b5f89242540ee208c3098e00000d6568400000000000000a73210254fc876043109af1ff11b832320be4436ef51dcc344da5970c9b6c6d1fbcddcf744730450221008b4d437bc92aa4643b275b17c0f88a1bef2c1c160ece5faf93b03e2d31b8278602207640e7e35426352deaafecf61e2b401a4ea1fc645839280370a72fa3c41aea7d8114259cbcf9635360bc302f27d0ce72c18d4dbe9c8d"
+    );
+}
+
+#[test]
+fn test_ripple_sign_nftoken_create_offer() {
+    let private_key = "1963884da4a4da79ad7681d106b2c55fb652c68ca7b288dd12bb86cd40b9d940"
+        .decode_hex()
+        .unwrap();
+
+    let create_offer = Proto::OperationNFTokenCreateOffer {
+        nftoken_id: "000b013a95f14b0044f78a264e41713c64b5f89242540ee208c3098e00000d65"
+            .decode_hex()
+            .unwrap()
+            .into(),
+        destination: "rDxTa8vhigDUCq9nmZY8jAkFne5XrcYbxG".into(),
+    };
+    let input = Proto::SigningInput {
+        fee: 10,
+        sequence: 22_857_522,
+        last_ledger_sequence: 22_857_543,
+        account: "rJdxtrVoL3Tak74EzN8SdMxFF6RP9smjJJ".into(),
+        flags: SELL_NFTOKEN_FLAG,
+        private_key: private_key.into(),
+        operation_oneof: OperationType::op_nftoken_create_offer(create_offer),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::XRP, input);
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+
+    // https://devnet.xrpl.org/transactions/E61D66E261DB89CEAAB4F54ECF792B329296CB524E8B40EA99D27CF5E16DD27D
+    assert_eq!(
+        output.encoded.to_hex(),
+        "12001b220000000124015cc732201b015cc7475a000b013a95f14b0044f78a264e41713c64b5f89242540ee208c3098e00000d6561400000000000000068400000000000000a7321022707066e4f8b87b749ef802338be064065dc978f0ea52ea9c8c8ea0a6145571974473045022100a148140469b8e9e2f9aa43631f3101e532d161d49a05e739cd3494ea208bd657022029a9752df3fc0d23b8fdb46d2274e69ab198ce6f373aeb7cdd0d81ab05aff6f48114c177c23ed1f5d175f42fd7970ece74ac18d61c4d83148e1e2ca343165bf30e96abead961f7a34510ad93"
     );
 }

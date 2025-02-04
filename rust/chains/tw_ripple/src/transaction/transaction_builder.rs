@@ -9,6 +9,7 @@ use crate::transaction::transactions::escrow_cancel::EscrowCancel;
 use crate::transaction::transactions::escrow_create::EscrowCreate;
 use crate::transaction::transactions::escrow_finish::EscrowFinish;
 use crate::transaction::transactions::nftoken_burn::NFTokenBurn;
+use crate::transaction::transactions::nftoken_create_offer::NFTokenCreateOffer;
 use crate::transaction::transactions::payment::Payment;
 use crate::transaction::transactions::trust_set::TrustSet;
 use crate::types::amount::issued_currency::IssuedCurrency;
@@ -185,6 +186,25 @@ impl TransactionBuilder {
             common_fields: self.common_fields,
             nftoken_id,
             owner,
+        })
+    }
+
+    pub fn nftoken_create_offer(
+        self,
+        nftoken_id: H256,
+        amount: Amount,
+        owner: Option<ClassicAddress>,
+        expiration: Option<u32>,
+        destination: Option<ClassicAddress>,
+    ) -> SigningResult<NFTokenCreateOffer> {
+        self.check_ready()?;
+        Ok(NFTokenCreateOffer {
+            common_fields: self.common_fields,
+            nftoken_id,
+            amount,
+            owner,
+            expiration,
+            destination,
         })
     }
 
