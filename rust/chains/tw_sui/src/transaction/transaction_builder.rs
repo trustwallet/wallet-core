@@ -186,7 +186,7 @@ impl TransactionBuilder {
         Ok(TransactionData::new(
             TransactionKind::ProgrammableTransaction(builder.finish()),
             signer,
-            gas,
+            vec![gas],
             gas_budget,
             gas_price,
         ))
@@ -269,10 +269,6 @@ impl TransactionBuilder {
                 ))
             })
             .collect::<SigningResult<Vec<_>>>()?;
-        let Some(gas_payment) = gas_payments.first() else {
-            return SigningError::err(SigningErrorType::Error_invalid_params)
-                .context("Gas payment is missing from the transaction");
-        };
 
         let gas_budget = if gas_budget != 0 {
             gas_budget
@@ -289,7 +285,7 @@ impl TransactionBuilder {
         Ok(TransactionData::new(
             TransactionKind::ProgrammableTransaction(pt),
             raw_transaction.sender,
-            *gas_payment,
+            gas_payments,
             gas_budget,
             gas_price,
         ))
