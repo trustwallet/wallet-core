@@ -15,4 +15,8 @@ fn test_aftermath_json_support() {
     let expected: serde_json::Value = serde_json::from_str(expected_json).unwrap();
     let expected_bytes = expected["serializedTransaction"].as_str().unwrap();
     assert_eq!(expected_bytes, bytes);
+
+    let raw_json_2 = include_str!("./fixtures/aftermath_tx_2.json");
+    let result_2 = TransactionBuilder::raw_json(raw_json_2, 0, 0);
+    assert!(result_2.is_ok());
 }

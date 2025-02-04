@@ -81,6 +81,8 @@ pub enum TransactionArg {
     GasCoin,
     Input { index: u16 },
     Result { index: u16 },
+    #[serde(rename_all = "camelCase")]
+    NestedResult { index: u16, result_index: u16 },
 }
 
 impl From<TransactionArg> for Argument {
@@ -89,6 +91,9 @@ impl From<TransactionArg> for Argument {
             TransactionArg::GasCoin => Argument::GasCoin,
             TransactionArg::Input { index } => Argument::Input(index),
             TransactionArg::Result { index } => Argument::Result(index),
+            TransactionArg::NestedResult { index, result_index } => {
+                Argument::NestedResult(index, result_index)
+            }
         }
     }
 }
