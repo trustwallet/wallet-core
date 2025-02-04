@@ -601,3 +601,36 @@ fn test_ripple_sign_escrow_finish_with_condition_1() {
         "120002220000000024027ef3c42019027ef3c2201b027ef3da6840000000000001a773210277c5d02c3c774c96017234a532dae12023ac8fb499c5d90a56488900ecc746d07446304402206698c1d296bf1493c97beb64945558724c6c88474cd3e0b90e9dc9e7313ac1970220175fef60c48646be934be28a964af0cc55843fb6e6ef17c886716a03af849f74701024a022802049b9ab20ca85b55d0c12b948ec7c524f843c77be1ef1561a42b7167dce174b7a701127a0258020ffecf1ae6182f10efebe0c0896cd6b044df7b27d33b05030033ef63d47e2b25081012081145da8080d21fecf98f24ea2223482e5d24f10779982140e9c9b31b826671aaa387555cdeccab82a784020"
     );
 }
+
+#[test]
+fn test_ripple_sign_nftoken_burn() {
+    let private_key = "7c2ea5c7b1fd7dfc62d879918b7fc779cdff6bf6391d02ec99854297e916318e"
+        .decode_hex()
+        .unwrap();
+
+    let burn = Proto::OperationNFTokenBurn {
+        nftoken_id: "000b013a95f14b0044f78a264e41713c64b5f89242540ee208c3098e00000d65"
+            .decode_hex()
+            .unwrap()
+            .into(),
+    };
+    let input = Proto::SigningInput {
+        fee: 10,
+        sequence: 22_858_395,
+        last_ledger_sequence: 22_858_416,
+        account: "rhR1mTXkg4iSGhz7zsEKBLbV3MkopivPVF".into(),
+        private_key: private_key.into(),
+        operation_oneof: OperationType::op_nftoken_burn(burn),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::XRP, input);
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+
+    // https://devnet.xrpl.org/transactions/37DA90BE3C30016B3A2C3D47D9677278A3F6D4141B318793CE6AA467A6530E2D
+    assert_eq! (
+        output.encoded.to_hex(),
+        "12001a220000000024015cca9b201b015ccab05a000b013a95f14b0044f78a264e41713c64b5f89242540ee208c3098e00000d6568400000000000000a73210254fc876043109af1ff11b832320be4436ef51dcc344da5970c9b6c6d1fbcddcf744730450221008b4d437bc92aa4643b275b17c0f88a1bef2c1c160ece5faf93b03e2d31b8278602207640e7e35426352deaafecf61e2b401a4ea1fc645839280370a72fa3c41aea7d8114259cbcf9635360bc302f27d0ce72c18d4dbe9c8d"
+    );
+}

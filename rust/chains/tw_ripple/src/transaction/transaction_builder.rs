@@ -8,6 +8,7 @@ use crate::transaction::common_fields::CommonFields;
 use crate::transaction::transactions::escrow_cancel::EscrowCancel;
 use crate::transaction::transactions::escrow_create::EscrowCreate;
 use crate::transaction::transactions::escrow_finish::EscrowFinish;
+use crate::transaction::transactions::nftoken_burn::NFTokenBurn;
 use crate::transaction::transactions::payment::Payment;
 use crate::transaction::transactions::trust_set::TrustSet;
 use crate::types::amount::issued_currency::IssuedCurrency;
@@ -18,6 +19,7 @@ use tw_coin_entry::error::prelude::{
     IntoTWError, ResultContext, SigningError, SigningErrorType, SigningResult,
 };
 use tw_encoding::hex::as_hex::AsHex;
+use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1;
 use tw_memory::Data;
 
@@ -170,6 +172,19 @@ impl TransactionBuilder {
             offer_sequence,
             condition: condition.map(AsHex),
             fulfillment: fulfillment.map(AsHex),
+        })
+    }
+
+    pub fn nftoken_burn(
+        self,
+        nftoken_id: H256,
+        owner: Option<ClassicAddress>,
+    ) -> SigningResult<NFTokenBurn> {
+        self.check_ready()?;
+        Ok(NFTokenBurn {
+            common_fields: self.common_fields,
+            nftoken_id,
+            owner,
         })
     }
 

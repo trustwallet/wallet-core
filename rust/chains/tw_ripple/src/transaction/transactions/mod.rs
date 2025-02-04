@@ -5,5 +5,6 @@
 pub mod escrow_cancel;
 pub mod escrow_create;
 pub mod escrow_finish;
+pub mod nftoken_burn;
 pub mod payment;
 pub mod trust_set;

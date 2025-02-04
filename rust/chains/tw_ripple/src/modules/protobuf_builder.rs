@@ -15,6 +15,7 @@ use bigdecimal::BigDecimal;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex::DecodeHex;
+use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1;
 use tw_misc::traits::{OptionalEmpty, OptionalInt};
 use tw_proto::Ripple::Proto;
@@ -36,6 +37,7 @@ impl<'a> ProtobufBuilder<'a> {
             OperationType::op_escrow_create(ref escrow_create) => self.escrow_create(escrow_create),
             OperationType::op_escrow_cancel(ref escrow_cancel) => self.escrow_cancel(escrow_cancel),
             OperationType::op_escrow_finish(ref escrow_finish) => self.escrow_finish(escrow_finish),
+            OperationType::op_nftoken_burn(ref burn) => self.nftoken_burn(burn),
             _ => todo!(),
         }
     }
@@ -142,6 +144,21 @@ impl<'a> ProtobufBuilder<'a> {
         self.prepare_builder()?
             .escrow_finish(owner, escrow_finish.offer_sequence, condition, fulfillment)
             .map(TransactionType::EscrowFinish)
+    }
+
+    pub fn nftoken_burn(
+        &self,
+        burn: &Proto::OperationNFTokenBurn,
+    ) -> SigningResult<TransactionType> {
+        let nftoken_id = H256::try_from(burn.nftoken_id.as_ref())
+            .tw_err(SigningErrorType::Error_invalid_params)
+            .context("Invalid 'OperationNFTokenBurn.nftokenId'")?;
+
+        // Owner is the transaction signer.
+        let owner = None;
+        self.prepare_builder()?
+            .nftoken_burn(nftoken_id, owner)
+            .map(TransactionType::NFTokenBurn)
     }
 
     pub fn prepare_builder(&self) -> SigningResult<TransactionBuilder> {
