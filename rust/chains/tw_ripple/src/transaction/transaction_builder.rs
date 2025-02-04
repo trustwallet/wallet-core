@@ -7,6 +7,7 @@ use crate::address::RippleAddress;
 use crate::transaction::common_fields::CommonFields;
 use crate::transaction::transactions::escrow_cancel::EscrowCancel;
 use crate::transaction::transactions::escrow_create::EscrowCreate;
+use crate::transaction::transactions::escrow_finish::EscrowFinish;
 use crate::transaction::transactions::payment::Payment;
 use crate::transaction::transactions::trust_set::TrustSet;
 use crate::types::amount::issued_currency::IssuedCurrency;
@@ -152,6 +153,23 @@ impl TransactionBuilder {
             common_fields: self.common_fields,
             owner,
             offer_sequence,
+        })
+    }
+
+    pub fn escrow_finish(
+        self,
+        owner: ClassicAddress,
+        offer_sequence: u32,
+        condition: Option<Data>,
+        fulfillment: Option<Data>,
+    ) -> SigningResult<EscrowFinish> {
+        self.check_ready()?;
+        Ok(EscrowFinish {
+            common_fields: self.common_fields,
+            owner,
+            offer_sequence,
+            condition: condition.map(AsHex),
+            fulfillment: fulfillment.map(AsHex),
         })
     }
 

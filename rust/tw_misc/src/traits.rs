@@ -45,6 +45,16 @@ pub trait OptionalEmpty: Sized {
     fn empty_or_some(self) -> Option<Self>;
 }
 
+impl<T> OptionalEmpty for Vec<T> {
+    fn empty_or_some(self) -> Option<Self> {
+        if self.is_empty() {
+            None
+        } else {
+            Some(self)
+        }
+    }
+}
+
 impl OptionalEmpty for String {
     fn empty_or_some(self) -> Option<Self> {
         if self.is_empty() {

@@ -35,6 +35,7 @@ impl<'a> ProtobufBuilder<'a> {
             OperationType::op_trust_set(ref trust_set) => self.trust_set(trust_set),
             OperationType::op_escrow_create(ref escrow_create) => self.escrow_create(escrow_create),
             OperationType::op_escrow_cancel(ref escrow_cancel) => self.escrow_cancel(escrow_cancel),
+            OperationType::op_escrow_finish(ref escrow_finish) => self.escrow_finish(escrow_finish),
             _ => todo!(),
         }
     }
@@ -84,14 +85,14 @@ impl<'a> ProtobufBuilder<'a> {
         let destination = RippleAddress::from_str(escrow_create.destination.as_ref())
             .into_tw()
             .context("Invalid 'EscrowCreate.destination' address")?;
+
         let condition = escrow_create
             .condition
-            .to_string()
-            .empty_or_some()
-            .map(|condition| condition.decode_hex())
-            .transpose()
+            .decode_hex()
             .tw_err(SigningErrorType::Error_invalid_params)
-            .context("Invalid 'OperationEscrowCreate.condition'")?;
+            .context("Invalid 'OperationEscrowCreate.condition'")?
+            .empty_or_some();
+
         self.prepare_builder()?
             .escrow_create(
                 NativeAmount(escrow_create.amount),
@@ -114,6 +115,33 @@ impl<'a> ProtobufBuilder<'a> {
         self.prepare_builder()?
             .escrow_cancel(owner, escrow_cancel.offer_sequence)
             .map(TransactionType::EscrowCancel)
+    }
+
+    pub fn escrow_finish(
+        &self,
+        escrow_finish: &Proto::OperationEscrowFinish,
+    ) -> SigningResult<TransactionType> {
+        let owner = ClassicAddress::from_str(escrow_finish.owner.as_ref())
+            .into_tw()
+            .context("Invalid 'OperationEscrowFinish.owner' address")?;
+
+        let condition = escrow_finish
+            .condition
+            .decode_hex()
+            .tw_err(SigningErrorType::Error_invalid_params)
+            .context("Invalid 'OperationEscrowFinish.condition'")?
+            .empty_or_some();
+
+        let fulfillment = escrow_finish
+            .fulfillment
+            .decode_hex()
+            .tw_err(SigningErrorType::Error_invalid_params)
+            .context("Invalid 'OperationEscrowFinish.fulfillment'")?
+            .empty_or_some();
+
+        self.prepare_builder()?
+            .escrow_finish(owner, escrow_finish.offer_sequence, condition, fulfillment)
+            .map(TransactionType::EscrowFinish)
     }
 
     pub fn prepare_builder(&self) -> SigningResult<TransactionBuilder> {
