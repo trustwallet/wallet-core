@@ -251,3 +251,38 @@ fn test_ripple_sign_token_payment_with_currency_amount() {
         "12000022000000002405955dc7201b0b2abbbe61d4838d7ea4c68000524c555344000000000000000000000000000000e5e961c6a025c9404aa7b662dd1df975be75d13e68400000000000000c7321039c77e9329017ced5f8673ebafcd29687a1fff181140c030062fa77865688fc5d744630440220552e90f417c2cabe39368bb45cf7495ba6ebe395f259a6509c9f3a7296e76a0d02201b37dae0c4c77fa70a451cd4a61c10575c8b052c282c082a32c229e7624a05e381140265c09d122fab2a261a80ee59f1f4cd8fba8cf88314ef20a3d93b00cc729eec11a3058d3d1feb4465e0"
     );
 }
+
+#[test]
+fn test_ripple_sign_escrow_create_main() {
+    let private_key = "a3cf20a85b25be4c955f0814718cc7a02eae9195159bd72ede5dd5c4e60d22c4"
+        .decode_hex()
+        .unwrap();
+
+    let escrow_create = Proto::OperationEscrowCreate {
+        amount: 21_300,
+        destination: "rEeSXUWEYyEADhDHvi3mtahkFVn7dYNH2G".into(),
+        destination_tag: 67,
+        cancel_after: 755_015_907,
+        finish_after: 755_015_897,
+        ..Proto::OperationEscrowCreate::default()
+    };
+    let input = Proto::SigningInput {
+        fee: 12,
+        sequence: 84_363_229,
+        last_ledger_sequence: 84_363_920,
+        account: "rnXwGtLDXXcV63CnRoNaesSsJCZZkJwo9w".into(),
+        private_key: private_key.into(),
+        operation_oneof: OperationType::op_escrow_create(escrow_create),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::XRP, input);
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+
+    // https://xrpscan.com/tx/3576E5D413CBDC228D13F281BB66304C1EE9DDEAA5563F1783EDB1848266D739
+    assert_eq!(
+        output.encoded.to_hex(),
+        "120001220000000024050747dd2e00000043201b05074a9020242d00a0e320252d00a0d961400000000000533468400000000000000c7321029b557f4db390d68d39d3457204c225d4a68ed86854567a1da99d3e2cd640717374473045022100e62d5005401f1d2b1d9eaa42e0fdbb8b8a433d0cfe71455e782882aa6ab0656f02207b589489b4f344e87a956382e5ede6a55fbfc7e38701364c1fe7d056e9a3253a81143194b932f389b95922fba31662f3c8a606fedfd68314a0a67483ad4d51b2524eb304c0fcef6b2025b865"
+    );
+}

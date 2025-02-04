@@ -49,13 +49,13 @@ message OperationEscrowCreate {
     string destination = 2;
 
     // Destination Tag
-    int64 destination_tag = 3;
+    uint32 destination_tag = 3;
 
     // Escrow expire time
-    int64 cancel_after = 4;
+    uint32 cancel_after = 4;
 
     // Escrow release time
-    int64 finish_after = 5;
+    uint32 finish_after = 5;
 
     // Crypto condition
     // https://datatracker.ietf.org/doc/html/draft-thomas-crypto-conditions-02#section-8.1

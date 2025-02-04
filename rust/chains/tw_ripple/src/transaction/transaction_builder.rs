@@ -6,6 +6,7 @@ use crate::address::classic_address::ClassicAddress;
 use crate::address::RippleAddress;
 use crate::transaction::common_fields::CommonFields;
 use crate::transaction::transactions::escrow_cancel::EscrowCancel;
+use crate::transaction::transactions::escrow_create::EscrowCreate;
 use crate::transaction::transactions::payment::Payment;
 use crate::transaction::transactions::trust_set::TrustSet;
 use crate::types::amount::issued_currency::IssuedCurrency;
@@ -16,6 +17,7 @@ use tw_coin_entry::error::prelude::{
     IntoTWError, ResultContext, SigningError, SigningErrorType, SigningResult,
 };
 use tw_encoding::hex::as_hex::AsHex;
+use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1;
 
 #[derive(Default)]
@@ -105,6 +107,38 @@ impl TransactionBuilder {
         Ok(TrustSet {
             common_fields: self.common_fields,
             limit_amount,
+        })
+    }
+
+    pub fn escrow_create(
+        self,
+        amount: NativeAmount,
+        destination: RippleAddress,
+        destination_tag: Option<u32>,
+        cancel_after: Option<u32>,
+        finish_after: Option<u32>,
+        condition: Option<H256>,
+    ) -> SigningResult<EscrowCreate> {
+        self.check_ready()?;
+
+        if cancel_after.is_none() && finish_after.is_none() {
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Either CancelAfter or FinishAfter must be specified");
+        }
+
+        if finish_after.is_none() && condition.is_none() {
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Either Condition or FinishAfter must be specified");
+        }
+
+        Ok(EscrowCreate {
+            common_fields: self.common_fields,
+            amount,
+            destination,
+            destination_tag,
+            cancel_after,
+            finish_after,
+            condition: condition.map(AsHex),
         })
     }
 

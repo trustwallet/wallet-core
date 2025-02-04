@@ -13,8 +13,9 @@ use crate::types::currency::Currency;
 use bigdecimal::BigDecimal;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
+use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1;
-use tw_misc::traits::OptionalInt;
+use tw_misc::traits::{OptionalEmpty, OptionalInt};
 use tw_proto::Ripple::Proto;
 use tw_proto::Ripple::Proto::mod_SigningInput::OneOfoperation_oneof as OperationType;
 
@@ -31,6 +32,7 @@ impl<'a> ProtobufBuilder<'a> {
         match self.input.operation_oneof {
             OperationType::op_payment(ref payment) => self.payment(payment),
             OperationType::op_trust_set(ref trust_set) => self.trust_set(trust_set),
+            OperationType::op_escrow_create(ref escrow_create) => self.escrow_create(escrow_create),
             _ => todo!(),
         }
     }
@@ -71,6 +73,33 @@ impl<'a> ProtobufBuilder<'a> {
         self.prepare_builder()?
             .trust_set(limit_amount)
             .map(TransactionType::TrustSet)
+    }
+
+    pub fn escrow_create(
+        &self,
+        escrow_create: &Proto::OperationEscrowCreate,
+    ) -> SigningResult<TransactionType> {
+        let destination = RippleAddress::from_str(escrow_create.destination.as_ref())
+            .into_tw()
+            .context("Invalid 'EscrowCreate.destination' address")?;
+        let condition = escrow_create
+            .condition
+            .to_string()
+            .empty_or_some()
+            .map(|condition| H256::from_str(condition.as_str()))
+            .transpose()
+            .tw_err(SigningErrorType::Error_invalid_params)
+            .context("Invalid 'OperationEscrowCreate.condition'")?;
+        self.prepare_builder()?
+            .escrow_create(
+                NativeAmount(escrow_create.amount),
+                destination,
+                escrow_create.destination_tag.zero_or_some(),
+                escrow_create.cancel_after.zero_or_some(),
+                escrow_create.finish_after.zero_or_some(),
+                condition,
+            )
+            .map(TransactionType::EscrowCreate)
     }
 
     pub fn prepare_builder(&self) -> SigningResult<TransactionBuilder> {
