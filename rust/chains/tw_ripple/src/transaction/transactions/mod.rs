@@ -5,6 +5,7 @@
 pub mod escrow_cancel;
 pub mod escrow_create;
 pub mod escrow_finish;
+pub mod nftoken_accept_offer;
 pub mod nftoken_burn;
 pub mod nftoken_create_offer;
 pub mod payment;

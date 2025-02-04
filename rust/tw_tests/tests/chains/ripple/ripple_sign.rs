@@ -671,3 +671,36 @@ fn test_ripple_sign_nftoken_create_offer() {
         "12001b220000000124015cc732201b015cc7475a000b013a95f14b0044f78a264e41713c64b5f89242540ee208c3098e00000d6561400000000000000068400000000000000a7321022707066e4f8b87b749ef802338be064065dc978f0ea52ea9c8c8ea0a6145571974473045022100a148140469b8e9e2f9aa43631f3101e532d161d49a05e739cd3494ea208bd657022029a9752df3fc0d23b8fdb46d2274e69ab198ce6f373aeb7cdd0d81ab05aff6f48114c177c23ed1f5d175f42fd7970ece74ac18d61c4d83148e1e2ca343165bf30e96abead961f7a34510ad93"
     );
 }
+
+#[test]
+fn test_ripple_sign_nftoken_accept_offer() {
+    let private_key = "3c01b3458d2b2a4b86a5699d11682d791b5c3136692c5594f7a8ca7f3967e7ae"
+        .decode_hex()
+        .unwrap();
+
+    let accept_offer = Proto::OperationNFTokenAcceptOffer {
+        sell_offer: "000b013a95f14b0044f78a264e41713c64b5f89242540ee208c3098e00000d65"
+            .decode_hex()
+            .unwrap()
+            .into(),
+    };
+    let input = Proto::SigningInput {
+        fee: 10,
+        sequence: 22_857_743,
+        last_ledger_sequence: 22_857_764,
+        account: "rPa2KsEuSuZnmjosds99nhgsoiKtw85j6Z".into(),
+        private_key: private_key.into(),
+        operation_oneof: OperationType::op_nftoken_accept_offer(accept_offer),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::XRP, input);
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+
+    // https://devnet.xrpl.org/transactions/6BB00A7BABB8797D60E3AB0E52DB64562524D014833977D87B04CA9FA3F56AD7
+    assert_eq!(
+        output.encoded.to_hex(),
+        "12001d220000000024015cc80f201b015cc824501d000b013a95f14b0044f78a264e41713c64b5f89242540ee208c3098e00000d6568400000000000000a73210331c298cb86428b9126bd4af6a952870cfe3fe5065dc093cf97f3edbb27e9dd15744630440220797922caaa593c4e91fa6b63a38c92ef9f5e2183128918dda166f4292882e137022057702b668d7463ef1d01dad5ee6633bd36f0aa358dacc90d6b68d248672a400f8114f260a758132d3ed27e52d7f55ef0481606f090d4"
+    );
+}
