@@ -4,3 +4,4 @@
 
 pub mod escrow_cancel;
 pub mod payment;
+pub mod trust_set;

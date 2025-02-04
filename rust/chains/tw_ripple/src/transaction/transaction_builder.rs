@@ -7,6 +7,8 @@ use crate::address::RippleAddress;
 use crate::transaction::common_fields::CommonFields;
 use crate::transaction::transactions::escrow_cancel::EscrowCancel;
 use crate::transaction::transactions::payment::Payment;
+use crate::transaction::transactions::trust_set::TrustSet;
+use crate::types::amount::issued_currency::IssuedCurrency;
 use crate::types::amount::native_amount::NativeAmount;
 use crate::types::amount::Amount;
 use std::str::FromStr;
@@ -95,6 +97,14 @@ impl TransactionBuilder {
             amount,
             destination,
             destination_tag,
+        })
+    }
+
+    pub fn trust_set(self, limit_amount: IssuedCurrency) -> SigningResult<TrustSet> {
+        self.check_ready()?;
+        Ok(TrustSet {
+            common_fields: self.common_fields,
+            limit_amount,
         })
     }
 

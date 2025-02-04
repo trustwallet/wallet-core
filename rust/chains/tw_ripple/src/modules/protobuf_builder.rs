@@ -30,12 +30,12 @@ impl<'a> ProtobufBuilder<'a> {
     pub fn build_tx(self) -> SigningResult<TransactionType> {
         match self.input.operation_oneof {
             OperationType::op_payment(ref payment) => self.payment(payment),
-            // OperationType::op_trust_set(ref trust_set) =>
+            OperationType::op_trust_set(ref trust_set) => self.trust_set(trust_set),
             _ => todo!(),
         }
     }
 
-    fn payment(&self, payment: &Proto::OperationPayment) -> SigningResult<TransactionType> {
+    pub fn payment(&self, payment: &Proto::OperationPayment) -> SigningResult<TransactionType> {
         use tw_proto::Ripple::Proto::mod_OperationPayment::OneOfamount_oneof as AmountType;
 
         let amount = match payment.amount_oneof {
@@ -57,7 +57,23 @@ impl<'a> ProtobufBuilder<'a> {
             .map(TransactionType::Payment)
     }
 
-    fn prepare_builder(&self) -> SigningResult<TransactionBuilder> {
+    pub fn trust_set(
+        &self,
+        trust_set: &Proto::OperationTrustSet,
+    ) -> SigningResult<TransactionType> {
+        let limit_amount_proto = trust_set
+            .limit_amount
+            .as_ref()
+            .or_tw_err(SigningErrorType::Error_invalid_requested_token_amount)
+            .context("No 'OperationTrustSet.limitAmount' provided")?;
+
+        let limit_amount = Self::issued_currency(limit_amount_proto)?;
+        self.prepare_builder()?
+            .trust_set(limit_amount)
+            .map(TransactionType::TrustSet)
+    }
+
+    pub fn prepare_builder(&self) -> SigningResult<TransactionBuilder> {
         let signing_public_key = if !self.input.private_key.is_empty() {
             secp256k1::PrivateKey::try_from(self.input.private_key.as_ref())
                 .into_tw()

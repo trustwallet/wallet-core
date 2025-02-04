@@ -19,8 +19,8 @@ use tw_memory::Data;
 pub const NETWORK_PREFIX: [u8; 4] = [0x53, 0x54, 0x58, 0x00];
 
 pub struct TxPreImage {
-    unsigned_tx: Json,
-    hash_to_sign: H256,
+    pub unsigned_tx: Json,
+    pub hash_to_sign: H256,
 }
 
 pub struct TransactionSigner;
