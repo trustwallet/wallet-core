@@ -2,15 +2,23 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use std::str::FromStr;
+
 use crate::address::SuiAddress;
 use crate::constants::{
     ADD_STAKE_MUL_COIN_FUN_NAME, SUI_SYSTEM_MODULE_NAME, SUI_SYSTEM_PACKAGE_ID,
     WITHDRAW_STAKE_FUN_NAME,
 };
 use crate::transaction::command::Command;
-use crate::transaction::programmable_transaction::ProgrammableTransactionBuilder;
-use crate::transaction::sui_types::{CallArg, ObjectArg, ObjectRef};
+use crate::transaction::programmable_transaction::{
+    ProgrammableTransaction, ProgrammableTransactionBuilder,
+};
+use crate::transaction::raw_types::{InputArg, RawTransaction, Transaction};
+use crate::transaction::sui_types::{
+    CallArg, ObjectArg, ObjectDigest, ObjectID, ObjectRef, SequenceNumber,
+};
 use crate::transaction::transaction_data::{TransactionData, TransactionKind};
+use move_core_types::identifier::Identifier;
 use tw_coin_entry::error::prelude::*;
 use tw_encoding::bcs;
 
@@ -178,7 +186,106 @@ impl TransactionBuilder {
         Ok(TransactionData::new(
             TransactionKind::ProgrammableTransaction(builder.finish()),
             signer,
-            gas,
+            vec![gas],
+            gas_budget,
+            gas_price,
+        ))
+    }
+
+    pub fn raw_json(
+        raw_json: &str,
+        gas_budget: u64,
+        gas_price: u64,
+    ) -> SigningResult<TransactionData> {
+        let raw_transaction: RawTransaction = serde_json::from_str(raw_json)
+            .map_err(|e| SigningError::from(e).context("Failed to parse raw JSON"))?;
+
+        let inputs = raw_transaction
+            .inputs
+            .into_iter()
+            .map(|input| -> SigningResult<CallArg> {
+                match input.value {
+                    InputArg::Pure(data) => Ok(CallArg::Pure(data)),
+                    InputArg::Object(object) => Ok(CallArg::Object(object.try_into()?)),
+                }
+            })
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        let commands = raw_transaction
+            .transactions
+            .into_iter()
+            .map(|transaction| match transaction {
+                Transaction::SplitCoins { coin, amounts } => Ok(Command::SplitCoins(
+                    coin.into(),
+                    amounts.into_iter().map(|amount| amount.into()).collect(),
+                )),
+                Transaction::MoveCall {
+                    target,
+                    type_arguments,
+                    arguments,
+                } => {
+                    let parts: Vec<&str> = target.split("::").collect();
+                    if parts.len() != 3 {
+                        return SigningError::err(SigningErrorType::Error_invalid_params)
+                            .context("Invalid target format for MoveCall command");
+                    }
+                    let package =
+                        ObjectID::from_str(parts[0]).context("Failed to parse package ID")?;
+                    let module = Identifier::from_str(parts[1])
+                        .tw_err(|_| SigningErrorType::Error_invalid_params)
+                        .context("Failed to parse module")?;
+                    let function = Identifier::from_str(parts[2])
+                        .tw_err(|_| SigningErrorType::Error_invalid_params)
+                        .context("Failed to parse function")?;
+                    Ok(Command::move_call(
+                        package,
+                        module,
+                        function,
+                        type_arguments.into_iter().map(|tag| tag.into()).collect(),
+                        arguments
+                            .into_iter()
+                            .map(|argument| argument.into())
+                            .collect(),
+                    ))
+                },
+                Transaction::TransferObjects { objects, address } => Ok(Command::TransferObjects(
+                    objects.into_iter().map(|object| object.into()).collect(),
+                    address.into(),
+                )),
+            })
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        let pt = ProgrammableTransaction { inputs, commands };
+        let gas_payments = raw_transaction
+            .gas_config
+            .payment
+            .into_iter()
+            .map(|payment| {
+                Ok((
+                    ObjectID::from_str(&payment.object_id).context("Failed to parse object ID")?,
+                    SequenceNumber(payment.version),
+                    ObjectDigest::from_str(&payment.digest)
+                        .context("Failed to parse object digest")?,
+                ))
+            })
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        let gas_budget = if gas_budget != 0 {
+            gas_budget
+        } else {
+            raw_transaction.gas_config.budget
+        };
+
+        let gas_price = if gas_price != 0 {
+            gas_price
+        } else {
+            raw_transaction.gas_config.price
+        };
+
+        Ok(TransactionData::new(
+            TransactionKind::ProgrammableTransaction(pt),
+            raw_transaction.sender,
+            gas_payments,
             gas_budget,
             gas_price,
         ))
