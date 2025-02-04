@@ -68,7 +68,7 @@ message OperationEscrowCancel {
     string owner = 1;
 
     // Escrow transaction sequence
-    int32 offer_sequence = 2;
+    uint32 offer_sequence = 2;
 }
 
 // https://xrpl.org/escrowfinish.html
@@ -77,7 +77,7 @@ message OperationEscrowFinish {
     string owner = 1;
 
     // Escrow transaction sequence
-    int32 offer_sequence = 2;
+    uint32 offer_sequence = 2;
 
     // Crypto condition
     string condition = 3;

@@ -11,7 +11,7 @@ use tw_proto::Ripple::Proto::mod_OperationPayment::OneOfamount_oneof as AmountTy
 use tw_proto::Ripple::Proto::mod_SigningInput::OneOfoperation_oneof as OperationType;
 
 #[test]
-fn test_ripple_sign_xrp_payment() {
+fn test_ripple_sign_xrp_payment_0() {
     let private_key = "a5576c0f63da10e584568c8d134569ff44017b0a249eb70657127ae04f38cc77"
         .decode_hex()
         .unwrap();
@@ -43,7 +43,7 @@ fn test_ripple_sign_xrp_payment() {
 }
 
 #[test]
-fn test_ripple_sign_xrp_payment_main() {
+fn test_ripple_sign_xrp_payment_1() {
     let private_key = "acf1bbf6264e699da0cc65d17ac03fcca6ded1522d19529df7762db46097ff9f"
         .decode_hex()
         .unwrap();
@@ -145,7 +145,7 @@ fn test_ripple_sign_trust_set_with_currency_amount() {
 }
 
 #[test]
-fn test_ripple_sign_token_payment() {
+fn test_ripple_sign_token_payment_0() {
     let private_key = "4ba5fd2ebf0f5d7e579b3c354c263ebb39cda4093845125786a280301af14e21"
         .decode_hex()
         .unwrap();
@@ -253,7 +253,7 @@ fn test_ripple_sign_token_payment_with_currency_amount() {
 }
 
 #[test]
-fn test_ripple_sign_escrow_create_main() {
+fn test_ripple_sign_escrow_create_0() {
     let private_key = "a3cf20a85b25be4c955f0814718cc7a02eae9195159bd72ede5dd5c4e60d22c4"
         .decode_hex()
         .unwrap();
@@ -288,7 +288,7 @@ fn test_ripple_sign_escrow_create_main() {
 }
 
 #[test]
-fn test_ripple_sign_escrow_create() {
+fn test_ripple_sign_escrow_create_1() {
     let private_key = "f157cf7951908b9a2b28d6c5817a3212c3971d8c05a1e964bbafaa5ad7529cb0"
         .decode_hex()
         .unwrap();
@@ -324,7 +324,7 @@ fn test_ripple_sign_escrow_create() {
 
 /// `EscrowCreate` with cancel after > 0x7fffffff.
 #[test]
-fn test_ripple_sign_escrow_create_1() {
+fn test_ripple_sign_escrow_create_2() {
     let private_key = "8b488ed9b9875174140a97cad53cd8c652789889612f94a9006b7ced18a1c6ef"
         .decode_hex()
         .unwrap();
@@ -358,7 +358,7 @@ fn test_ripple_sign_escrow_create_1() {
 }
 
 #[test]
-fn test_ripple_sign_escrow_create_with_condition_main() {
+fn test_ripple_sign_escrow_create_with_condition_0() {
     let private_key = "a3cf20a85b25be4c955f0814718cc7a02eae9195159bd72ede5dd5c4e60d22c4"
         .decode_hex()
         .unwrap();
@@ -395,7 +395,7 @@ fn test_ripple_sign_escrow_create_with_condition_main() {
 }
 
 #[test]
-fn test_ripple_sign_escrow_create_with_condition() {
+fn test_ripple_sign_escrow_create_with_condition_1() {
     let private_key = "a3cf20a85b25be4c955f0814718cc7a02eae9195159bd72ede5dd5c4e60d22c4"
         .decode_hex()
         .unwrap();
@@ -432,7 +432,7 @@ fn test_ripple_sign_escrow_create_with_condition() {
 }
 
 #[test]
-fn test_ripple_sign_escrow_create_with_condition_1() {
+fn test_ripple_sign_escrow_create_with_condition_2() {
     let private_key = "be60f33cbeb2b5ee688dcb1e93986f2522d8ad76b3c48398bf2be02a6699e781"
         .decode_hex()
         .unwrap();
@@ -465,5 +465,67 @@ fn test_ripple_sign_escrow_create_with_condition_1() {
     assert_eq!(
         output.encoded.to_hex(),
         "120001220000000024027ef3c22e000009a3201b027ef3d820242cb5890c614000000001b99cc268400000000000000c7321035e6cd73289f9b1a796fba572f7a2732aae23b2a9ea6b0ec239d5b9feb388774074473045022100c4bb3b65acd5d30aa8f85ea2a0d2c0e18d2025a005a827722059a9a636eb1bca02207d73b4a64d679e605a6cb31881d7ea3642c1e54e3bf38d13d0dd4219c27d1420701127a0258020ffecf1ae6182f10efebe0c0896cd6b044df7b27d33b05030033ef63d47e2b25081012081140e9c9b31b826671aaa387555cdeccab82a78402083145da8080d21fecf98f24ea2223482e5d24f107799"
+    );
+}
+
+#[test]
+fn test_ripple_sign_escrow_cancel_0() {
+    let private_key = "a3cf20a85b25be4c955f0814718cc7a02eae9195159bd72ede5dd5c4e60d22c4"
+        .decode_hex()
+        .unwrap();
+
+    let escrow_cancel = Proto::OperationEscrowCancel {
+        owner: "rnXwGtLDXXcV63CnRoNaesSsJCZZkJwo9w".into(),
+        offer_sequence: 84_363_227,
+    };
+    let input = Proto::SigningInput {
+        fee: 12,
+        sequence: 84_363_228,
+        last_ledger_sequence: 84_363_740,
+        account: "rnXwGtLDXXcV63CnRoNaesSsJCZZkJwo9w".into(),
+        private_key: private_key.into(),
+        operation_oneof: OperationType::op_escrow_cancel(escrow_cancel),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::XRP, input);
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+
+    // https://xrpscan.com/tx/949B3C3D8B4528C95D07654BBA10B08ABA65FFD339E31706BC93CB0824427F97
+    assert_eq!(
+        output.encoded.to_hex(),
+        "120004220000000024050747dc2019050747db201b050749dc68400000000000000c7321029b557f4db390d68d39d3457204c225d4a68ed86854567a1da99d3e2cd64071737446304402202c0416934dbf3a0c42d0b0da9e893cec69e42c81f41424f4a388c3ba8862e65a02201781e22ef85b251902e918f6d923769993757a79b865a62ecdebc1a015368f1f81143194b932f389b95922fba31662f3c8a606fedfd682143194b932f389b95922fba31662f3c8a606fedfd6"
+    );
+}
+
+#[test]
+fn test_ripple_sign_escrow_cancel_1() {
+    let private_key = "bf9810cc4f7cc5e6dea8a0c29f3389d9d511e795d467b402a870e71d93243705"
+        .decode_hex()
+        .unwrap();
+
+    let escrow_cancel = Proto::OperationEscrowCancel {
+        owner: "rE16pf2ZQUZBDLKAyTFF9Q1b3YY1nc7v2J".into(),
+        offer_sequence: 41_875_229,
+    };
+    let input = Proto::SigningInput {
+        fee: 12,
+        sequence: 41_875_230,
+        last_ledger_sequence: 41_875_263,
+        account: "rE16pf2ZQUZBDLKAyTFF9Q1b3YY1nc7v2J".into(),
+        private_key: private_key.into(),
+        operation_oneof: OperationType::op_escrow_cancel(escrow_cancel),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::XRP, input);
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+
+    // https://testnet.xrpl.org/transactions/5B0F8766FFBDE7D3A9ACAA63361BF00FE0739DC8718507776EB2C1AD980BC965
+    assert_eq!(
+        output.encoded.to_hex(),
+        "120004220000000024027ef71e2019027ef71d201b027ef73f68400000000000000c73210277314966f72e9520199faa3941bd45b89e444f7eabf203e805527f880de80b8674473045022100ec04d05db5725ce154a511f93056fde0b825b7e0bb4a59b4d4264a008eafdcfe0220676f30f916c6ea0644c11c0bcafcfa8209a083041742d672a726a5c8d99230ea8114a327f724d30f2732f78a4ec6744db298e827ba2b8214a327f724d30f2732f78a4ec6744db298e827ba2b"
     );
 }

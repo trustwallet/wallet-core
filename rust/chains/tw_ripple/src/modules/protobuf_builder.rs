@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::address::classic_address::ClassicAddress;
 use crate::address::RippleAddress;
 use crate::transaction::transaction_builder::TransactionBuilder;
 use crate::transaction::transaction_type::TransactionType;
@@ -33,6 +34,7 @@ impl<'a> ProtobufBuilder<'a> {
             OperationType::op_payment(ref payment) => self.payment(payment),
             OperationType::op_trust_set(ref trust_set) => self.trust_set(trust_set),
             OperationType::op_escrow_create(ref escrow_create) => self.escrow_create(escrow_create),
+            OperationType::op_escrow_cancel(ref escrow_cancel) => self.escrow_cancel(escrow_cancel),
             _ => todo!(),
         }
     }
@@ -100,6 +102,18 @@ impl<'a> ProtobufBuilder<'a> {
                 condition,
             )
             .map(TransactionType::EscrowCreate)
+    }
+
+    pub fn escrow_cancel(
+        &self,
+        escrow_cancel: &Proto::OperationEscrowCancel,
+    ) -> SigningResult<TransactionType> {
+        let owner = ClassicAddress::from_str(escrow_cancel.owner.as_ref())
+            .into_tw()
+            .context("Invalid 'EscrowCancel.owner' address")?;
+        self.prepare_builder()?
+            .escrow_cancel(owner, escrow_cancel.offer_sequence)
+            .map(TransactionType::EscrowCancel)
     }
 
     pub fn prepare_builder(&self) -> SigningResult<TransactionBuilder> {
