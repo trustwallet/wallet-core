@@ -13,7 +13,7 @@ use crate::types::currency::Currency;
 use bigdecimal::BigDecimal;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
-use tw_hash::H256;
+use tw_encoding::hex::DecodeHex;
 use tw_keypair::ecdsa::secp256k1;
 use tw_misc::traits::{OptionalEmpty, OptionalInt};
 use tw_proto::Ripple::Proto;
@@ -86,7 +86,7 @@ impl<'a> ProtobufBuilder<'a> {
             .condition
             .to_string()
             .empty_or_some()
-            .map(|condition| H256::from_str(condition.as_str()))
+            .map(|condition| condition.decode_hex())
             .transpose()
             .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid 'OperationEscrowCreate.condition'")?;

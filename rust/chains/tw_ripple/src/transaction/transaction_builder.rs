@@ -17,8 +17,8 @@ use tw_coin_entry::error::prelude::{
     IntoTWError, ResultContext, SigningError, SigningErrorType, SigningResult,
 };
 use tw_encoding::hex::as_hex::AsHex;
-use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1;
+use tw_memory::Data;
 
 #[derive(Default)]
 pub struct TransactionBuilder {
@@ -117,7 +117,7 @@ impl TransactionBuilder {
         destination_tag: Option<u32>,
         cancel_after: Option<u32>,
         finish_after: Option<u32>,
-        condition: Option<H256>,
+        condition: Option<Data>,
     ) -> SigningResult<EscrowCreate> {
         self.check_ready()?;
 

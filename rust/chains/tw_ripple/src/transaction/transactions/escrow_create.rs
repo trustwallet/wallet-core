@@ -8,7 +8,7 @@ use crate::transaction::common_fields::CommonFields;
 use crate::types::amount::native_amount::NativeAmount;
 use serde::{Deserialize, Serialize};
 use tw_encoding::hex::as_hex::AsHex;
-use tw_hash::H256;
+use tw_memory::Data;
 
 /// Creates an Escrow, which requests XRP until the escrow process either finishes or is canceled.
 ///
@@ -53,7 +53,7 @@ pub struct EscrowCreate {
     /// before the expiration time specified in the CancelAfter
     /// field, the XRP can only revert to the sender.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub condition: Option<AsHex<H256>>,
+    pub condition: Option<AsHex<Data>>,
 }
 
 ripple_tx!(EscrowCreate);

@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 pub use hex::FromHexError;
+use std::ops::Deref;
 use tw_memory::Data;
 
 pub type FromHexResult<T> = Result<T, FromHexError>;
@@ -30,9 +31,12 @@ pub trait DecodeHex {
     fn decode_hex(&self) -> FromHexResult<Data>;
 }
 
-impl DecodeHex for &str {
+impl<T> DecodeHex for T
+where
+    T: Deref<Target = str>,
+{
     fn decode_hex(&self) -> FromHexResult<Data> {
-        decode(self)
+        decode(self.deref())
     }
 }
 

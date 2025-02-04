@@ -286,3 +286,184 @@ fn test_ripple_sign_escrow_create_main() {
         "120001220000000024050747dd2e00000043201b05074a9020242d00a0e320252d00a0d961400000000000533468400000000000000c7321029b557f4db390d68d39d3457204c225d4a68ed86854567a1da99d3e2cd640717374473045022100e62d5005401f1d2b1d9eaa42e0fdbb8b8a433d0cfe71455e782882aa6ab0656f02207b589489b4f344e87a956382e5ede6a55fbfc7e38701364c1fe7d056e9a3253a81143194b932f389b95922fba31662f3c8a606fedfd68314a0a67483ad4d51b2524eb304c0fcef6b2025b865"
     );
 }
+
+#[test]
+fn test_ripple_sign_escrow_create() {
+    let private_key = "f157cf7951908b9a2b28d6c5817a3212c3971d8c05a1e964bbafaa5ad7529cb0"
+        .decode_hex()
+        .unwrap();
+
+    let escrow_create = Proto::OperationEscrowCreate {
+        amount: 345_941_506,
+        destination: "rNS1tYfynXoKC3eX52gvVnSyU9mqWXvCgh".into(),
+        destination_tag: 2_467,
+        cancel_after: 0,
+        finish_after: 750_095_491,
+        ..Proto::OperationEscrowCreate::default()
+    };
+    let input = Proto::SigningInput {
+        fee: 12,
+        sequence: 41_874_843,
+        last_ledger_sequence: 41_874_865,
+        account: "rL6iE1bbAHekMavpGot6gRxqkQKm6yfoQ6".into(),
+        private_key: private_key.into(),
+        operation_oneof: OperationType::op_escrow_create(escrow_create),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::XRP, input);
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+
+    // https://testnet.xrpl.org/transactions/3F581927C742D5FAE65FB0759D0F04EF3B64B4A087911B07975816ECCB59915B
+    assert_eq!(
+        output.encoded.to_hex(),
+        "120001220000000024027ef59b2e000009a3201b027ef5b120252cb58c836140000000149ea60268400000000000000c7321021846a49ea81238d03dff5a89a9da82eb06b23a276af9a06b45d4aba39713311f744630440220176318f29d2b815f599072230690397f91262c1f801bafada9820d89c719359c0220756eb74d815e20e86f6748c6821d3204f93221a95b4481a572a10530f5776c698114d8242542e6108fccf75a7f5bb0059cfae6d155378314937e838cb1033342c72acfae58fe2e3875ce7693"
+    );
+}
+
+/// `EscrowCreate` with cancel after > 0x7fffffff.
+#[test]
+fn test_ripple_sign_escrow_create_1() {
+    let private_key = "8b488ed9b9875174140a97cad53cd8c652789889612f94a9006b7ced18a1c6ef"
+        .decode_hex()
+        .unwrap();
+
+    let escrow_create = Proto::OperationEscrowCreate {
+        amount: 88_941_506,
+        destination: "rfC73DuBhDqF3Zw1K3uxaQNCkwT8pPKyf5".into(),
+        destination_tag: 0,
+        cancel_after: 2_147_483_648,
+        finish_after: 750_097_108,
+        ..Proto::OperationEscrowCreate::default()
+    };
+    let input = Proto::SigningInput {
+        fee: 12,
+        sequence: 41_875_372,
+        last_ledger_sequence: 41_875_394,
+        account: "rEE4PdEYhEikJ1bvQjdE9HdjBV8yp8FsGC".into(),
+        private_key: private_key.into(),
+        operation_oneof: OperationType::op_escrow_create(escrow_create),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::XRP, input);
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+
+    assert_eq!(
+        output.encoded.to_hex(),
+        "120001220000000024027ef7ac201b027ef7c220248000000020252cb592d46140000000054d23c268400000000000000c73210211cfeb81bc410e694e98c6a0f17c9c89d85e2b89bc17d2699063c0920217ab0574463044022038d27cd842422d8ee72d5cab11734ce128aef21d7cec17654d21c27d0556d23e0220059f913178a4c65a5d3289896876989e0fcaf3add9769459fb232ab94398368a81149c4970a2b763b9484e3b65d67f3d9b7b1698cb7f83144917342345fbe5cef1e22d3f1353fc468bf696ac"
+    );
+}
+
+#[test]
+fn test_ripple_sign_escrow_create_with_condition_main() {
+    let private_key = "a3cf20a85b25be4c955f0814718cc7a02eae9195159bd72ede5dd5c4e60d22c4"
+        .decode_hex()
+        .unwrap();
+
+    let escrow_create = Proto::OperationEscrowCreate {
+        amount: 37_000,
+        destination: "rEeSXUWEYyEADhDHvi3mtahkFVn7dYNH2G".into(),
+        destination_tag: 0,
+        cancel_after: 755_014_300,
+        finish_after: 0,
+        condition: "a0258020c26add2db64dd6d5700a5e2721c1e908d599901627b8dc82f25b3e035ec4004b810120"
+            .into(),
+        ..Proto::OperationEscrowCreate::default()
+    };
+    let input = Proto::SigningInput {
+        fee: 12,
+        sequence: 84_363_226,
+        last_ledger_sequence: 84_363_509,
+        account: "rnXwGtLDXXcV63CnRoNaesSsJCZZkJwo9w".into(),
+        private_key: private_key.into(),
+        operation_oneof: OperationType::op_escrow_create(escrow_create),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::XRP, input);
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+
+    // https://xrpscan.com/tx/77E01FD30A788BFC96F28960F099D4076255252F33FCD31EEBBCBB61E3318544
+    assert_eq!(
+        output.encoded.to_hex(),
+        "120001220000000024050747da201b050748f520242d009a9c61400000000000908868400000000000000c7321029b557f4db390d68d39d3457204c225d4a68ed86854567a1da99d3e2cd6407173744630440220307f4c91e91166db1428eb1ab8f65a84bd9b89542ed844045ffd040f5e13d12b022061120350b9685381e9941c7ec54ce154ca0ef0d01f630aeb3e78dd9fd087ff80701127a0258020c26add2db64dd6d5700a5e2721c1e908d599901627b8dc82f25b3e035ec4004b81012081143194b932f389b95922fba31662f3c8a606fedfd68314a0a67483ad4d51b2524eb304c0fcef6b2025b865"
+    );
+}
+
+#[test]
+fn test_ripple_sign_escrow_create_with_condition() {
+    let private_key = "a3cf20a85b25be4c955f0814718cc7a02eae9195159bd72ede5dd5c4e60d22c4"
+        .decode_hex()
+        .unwrap();
+
+    let escrow_create = Proto::OperationEscrowCreate {
+        amount: 30_941_506,
+        destination: "rEeSXUWEYyEADhDHvi3mtahkFVn7dYNH2G".into(),
+        destination_tag: 0,
+        cancel_after: 750_090_371,
+        finish_after: 0,
+        condition: "a0258020b3dda5c580919ce0fd6acdf013c337461951946e54b41446467961568cdd9e7b810120"
+            .into(),
+        ..Proto::OperationEscrowCreate::default()
+    };
+    let input = Proto::SigningInput {
+        fee: 12,
+        sequence: 41_872_968,
+        last_ledger_sequence: 41_873_012,
+        account: "rnXwGtLDXXcV63CnRoNaesSsJCZZkJwo9w".into(),
+        private_key: private_key.into(),
+        operation_oneof: OperationType::op_escrow_create(escrow_create),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::XRP, input);
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+
+    // https://testnet.xrpl.org/transactions/A8EE35E26CD09E3D6A415DDEFEA6723CA5AFEB1838C5FE06835937FA49DEF3A0
+    assert_eq!(
+        output.encoded.to_hex(),
+        "120001220000000024027eee48201b027eee7420242cb57883614000000001d8214268400000000000000c7321029b557f4db390d68d39d3457204c225d4a68ed86854567a1da99d3e2cd640717374473045022100931b3a6634471fa22f709417d7280b76564a8f3a700cf51a50a2c1b1e0162d570220217c0f2e3922e9bc5b2175712c0e244f2f05bf42ccd1e632b06476f66704203f701127a0258020b3dda5c580919ce0fd6acdf013c337461951946e54b41446467961568cdd9e7b81012081143194b932f389b95922fba31662f3c8a606fedfd68314a0a67483ad4d51b2524eb304c0fcef6b2025b865"
+    );
+}
+
+#[test]
+fn test_ripple_sign_escrow_create_with_condition_1() {
+    let private_key = "be60f33cbeb2b5ee688dcb1e93986f2522d8ad76b3c48398bf2be02a6699e781"
+        .decode_hex()
+        .unwrap();
+
+    let escrow_create = Proto::OperationEscrowCreate {
+        amount: 28_941_506,
+        destination: "r9YD31TAtbS8EPwEt2gzGDjsaMDyV1s5QE".into(),
+        destination_tag: 2_467,
+        cancel_after: 750_094_604,
+        finish_after: 0,
+        condition: "a0258020ffecf1ae6182f10efebe0c0896cd6b044df7b27d33b05030033ef63d47e2b250810120"
+            .into(),
+        ..Proto::OperationEscrowCreate::default()
+    };
+    let input = Proto::SigningInput {
+        fee: 12,
+        sequence: 41_874_370,
+        last_ledger_sequence: 41_874_392,
+        account: "rpLGh11T9B6b4UjAU1WRCJowLw8uk7vS44".into(),
+        private_key: private_key.into(),
+        operation_oneof: OperationType::op_escrow_create(escrow_create),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::XRP, input);
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+
+    // https://testnet.xrpl.org/transactions/25AE9F7CBC9944B140A4BE338A47DD8C2C29313B44694533D9D47CD758A60A8F
+    assert_eq!(
+        output.encoded.to_hex(),
+        "120001220000000024027ef3c22e000009a3201b027ef3d820242cb5890c614000000001b99cc268400000000000000c7321035e6cd73289f9b1a796fba572f7a2732aae23b2a9ea6b0ec239d5b9feb388774074473045022100c4bb3b65acd5d30aa8f85ea2a0d2c0e18d2025a005a827722059a9a636eb1bca02207d73b4a64d679e605a6cb31881d7ea3642c1e54e3bf38d13d0dd4219c27d1420701127a0258020ffecf1ae6182f10efebe0c0896cd6b044df7b27d33b05030033ef63d47e2b25081012081140e9c9b31b826671aaa387555cdeccab82a78402083145da8080d21fecf98f24ea2223482e5d24f107799"
+    );
+}
