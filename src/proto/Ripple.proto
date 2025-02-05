@@ -155,6 +155,10 @@ message SigningInput {
 
     // Only used by tss chain-integration.
     bytes public_key = 15;
+
+    // Arbitrary integer used to identify the reason for this payment, or a sender on whose behalf this transaction is made.
+    // Conventionally, a refund should specify the initial payment's SourceTag as the refund payment's DestinationTag.
+    uint32 source_tag = 25;
 }
 
 // Result containing the signed and encoded transaction.

@@ -242,6 +242,9 @@ impl<'a> ProtobufBuilder<'a> {
             .last_ledger_sequence(self.input.last_ledger_sequence)
             .account_str(self.input.account.as_ref())?
             .signing_pub_key(&signing_public_key);
+        if self.input.source_tag != 0 {
+            builder.source_tag(self.input.source_tag);
+        }
         Ok(builder)
     }
 

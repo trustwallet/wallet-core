@@ -77,6 +77,40 @@ fn test_ripple_sign_xrp_payment_1() {
 }
 
 #[test]
+fn test_ripple_sign_xrp_payment_with_source_tag() {
+    let private_key = "6da2485443b6856cef6414d45d880434371522cdceb5baf7bd7114e135d71424"
+        .decode_hex()
+        .unwrap();
+
+    let payment = Proto::OperationPayment {
+        amount_oneof: AmountType::amount(20000),
+        destination: "rp1ygcibUauhqdTrzo7y3QEJ3WL2sYnSpC".into(),
+        ..Proto::OperationPayment::default()
+    };
+    let input = Proto::SigningInput {
+        fee: 12,
+        sequence: 93_933_582,
+        last_ledger_sequence: 93_938_147,
+        account: "rUFSa2D2JYGn5AiRZiQxSupZxV5KcHECG".into(),
+        private_key: private_key.into(),
+        operation_oneof: OperationType::op_payment(payment),
+        // `First Ledger` source tag.
+        source_tag: 74_920_348,
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::XRP, input);
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+
+    // https://xrpscan.com/tx/7ED44A908AD150EDEB3D022F3BF1B69A8C06999E143A914E0F3E7D59299693F1
+    assert_eq!(
+        output.encoded.to_hex(),
+        "1200002200000000230477319c240599500e201b059961e3614000000000004e2068400000000000000c732103df650aab92e1b0a95cbda6a5a0fc3bfdbe991901e5b1cdfcd238b769cb4934a77446304402204f104f0fcb8f6ab6d2de9051e99e15af285c6946f01ee53cc630b8ff00b70b840220015d1c5e09b398d830b1255358b4b504628628f36c4b82825442456d8fe3d1b98114023c2b9f15b95198d270b1bf92a4700c40272ca48314149c3d92a8c04140f028ebdb6fac746824384c94"
+    );
+}
+
+#[test]
 fn test_ripple_sign_trust_set() {
     let private_key = "8753e78ee2963f301f82e5eeab2754f593fc242ce94273dd2fb0684e3b0f2b91"
         .decode_hex()
