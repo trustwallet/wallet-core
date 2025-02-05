@@ -11,13 +11,14 @@ use tw_encoding::hex::as_hex::AsHex;
 use tw_hash::sha2::sha512;
 use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1;
-use tw_keypair::traits::SigningKeyTrait;
+use tw_keypair::traits::{SigningKeyTrait, VerifyingKeyTrait};
 use tw_memory::Data;
 
 pub const NETWORK_PREFIX: [u8; 4] = [0x53, 0x54, 0x58, 0x00];
 
 pub struct TxPreImage {
     pub unsigned_tx: Json,
+    pub pre_image_tx_data: Data,
     pub hash_to_sign: H256,
 }
 
@@ -25,7 +26,7 @@ pub struct TransactionSigner;
 
 impl TransactionSigner {
     pub fn sign<Transaction: RippleTransaction>(
-        mut tx: Transaction,
+        tx: Transaction,
         private_key: &secp256k1::PrivateKey,
     ) -> SigningResult<Transaction> {
         let public_key = private_key.public();
@@ -42,14 +43,7 @@ impl TransactionSigner {
             .sign(hash_to_sign)
             .into_tw()
             .context("Error signing transaction")?;
-        let der_signature = signature
-            .to_der()
-            .into_tw()
-            .context("Error converting a secp256k1 signature to DER")?;
-
-        // Set the signature.
-        tx.common_types_mut().txn_signature = Some(AsHex(der_signature));
-        Ok(tx)
+        Self::compile_unchecked(tx, &signature)
     }
 
     pub fn pre_image<Transaction: RippleTransaction>(
@@ -63,8 +57,43 @@ impl TransactionSigner {
         let hash256 = H256::try_from(&hash512[..H256::LEN]).expect("Expected a valid H512 length");
         Ok(TxPreImage {
             unsigned_tx: json,
+            pre_image_tx_data: pre_image,
             hash_to_sign: hash256,
         })
+    }
+
+    /// Compiles `signature` into the `transaction` validating the signature.
+    pub fn compile<Transaction: RippleTransaction>(
+        tx: Transaction,
+        signature: &secp256k1::Signature,
+        public_key: &secp256k1::PublicKey,
+    ) -> SigningResult<Transaction> {
+        let TxPreImage { hash_to_sign, .. } = Self::pre_image(&tx)?;
+        Self::check_source_account(&tx, public_key)?;
+        Self::check_signing_public_key(&tx, public_key)?;
+
+        if !public_key.verify(signature.to_verify_sig(), hash_to_sign) {
+            return SigningError::err(SigningErrorType::Error_signing)
+                .context("Error verifying the given signature");
+        }
+
+        Self::compile_unchecked(tx, signature)
+    }
+
+    /// Compiles `signature` into the `transaction` without signature validation.
+    /// Should only be used at [`TransactionSigner::sign`].
+    fn compile_unchecked<Transaction: RippleTransaction>(
+        mut tx: Transaction,
+        signature: &secp256k1::Signature,
+    ) -> SigningResult<Transaction> {
+        let der_signature = signature
+            .to_der()
+            .into_tw()
+            .context("Error converting a secp256k1 signature to DER")?;
+
+        // Set the signature.
+        tx.common_types_mut().txn_signature = Some(AsHex(der_signature));
+        Ok(tx)
     }
 
     /// Checks whether the given transaction has an expected source account (if provided).

@@ -2,10 +2,16 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::encode::encode_tx;
+use crate::modules::protobuf_builder::ProtobufBuilder;
+use crate::modules::transaction_signer::{TransactionSigner, TxPreImage};
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
+use tw_coin_entry::common::compile_input::SingleSignaturePubkey;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
+use tw_keypair::ecdsa::secp256k1;
+use tw_misc::traits::ToBytesVec;
 use tw_proto::Ripple::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
@@ -23,9 +29,20 @@ impl RippleCompiler {
 
     fn preimage_hashes_impl(
         _coin: &dyn CoinContext,
-        _input: Proto::SigningInput<'_>,
+        input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
-        todo!()
+        let unsigned_tx = ProtobufBuilder::new(&input).build_tx()?;
+        let TxPreImage {
+            pre_image_tx_data,
+            hash_to_sign,
+            ..
+        } = TransactionSigner::pre_image(&unsigned_tx)?;
+
+        Ok(CompilerProto::PreSigningOutput {
+            data_hash: hash_to_sign.to_vec().into(),
+            data: pre_image_tx_data.into(),
+            ..CompilerProto::PreSigningOutput::default()
+        })
     }
 
     #[inline]
@@ -41,10 +58,30 @@ impl RippleCompiler {
 
     fn compile_impl(
         _coin: &dyn CoinContext,
-        _input: Proto::SigningInput<'_>,
-        _signatures: Vec<SignatureBytes>,
-        _public_keys: Vec<PublicKeyBytes>,
+        input: Proto::SigningInput<'_>,
+        signatures: Vec<SignatureBytes>,
+        public_keys: Vec<PublicKeyBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        todo!()
+        let SingleSignaturePubkey {
+            signature,
+            public_key,
+        } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
+
+        let signature = secp256k1::Signature::from_bytes(signature.as_slice())
+            .into_tw()
+            .context("Invalid signature")?;
+        let public_key = secp256k1::PublicKey::try_from(public_key.as_slice())
+            .into_tw()
+            .context("Invalid public key")?;
+
+        let unsigned_tx = ProtobufBuilder::new(&input).build_tx()?;
+        let signed_tx = TransactionSigner::compile(unsigned_tx, &signature, &public_key)?;
+
+        let signing_only = false;
+        let encoded = encode_tx(&signed_tx, signing_only)?.encoded;
+        Ok(Proto::SigningOutput {
+            encoded: encoded.into(),
+            ..Proto::SigningOutput::default()
+        })
     }
 }
