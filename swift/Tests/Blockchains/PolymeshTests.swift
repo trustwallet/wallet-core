@@ -39,7 +39,7 @@ class PolymeshTests: XCTestCase {
                 $0.period = 64
             }
             $0.runtimeCall = PolymeshRuntimeCall.with {
-                $0.balanceCall = PolymeshBalance.Transfer.with {
+                $0.balanceCall.transfer = PolymeshBalance.Transfer.with {
                     $0.toAddress = "2CpqFh8VnwJAjenw4xSUWCaaJ2QwGdhnCikoSEczMhjgqyj7"
                     $0.value = Data(hexString: "0x0F4240")! // 1.0 POLYX
                 }
