@@ -7,6 +7,7 @@ use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::TypeTag;
 use serde::{Deserialize, Serialize};
 
+// Taken from here: https://github.com/MystenLabs/sui/blob/93f02057bb55eca407f04f551e6514f123005b65/crates/sui-types/src/transaction.rs#L660
 /// A single command in a programmable transaction.
 #[derive(Debug, Deserialize, Serialize)]
 pub enum Command {
@@ -30,6 +31,14 @@ pub enum Command {
     /// Given n-values of the same type, it constructs a vector. For non objects or an empty vector,
     /// the type tag must be specified.
     MakeMoveVec(Option<TypeTag>, Vec<Argument>),
+    /// Upgrades a Move package
+    /// Takes (in order):
+    /// 1. A vector of serialized modules for the package.
+    /// 2. A vector of object ids for the transitive dependencies of the new package.
+    /// 3. The object ID of the package being upgraded.
+    /// 4. An argument holding the `UpgradeTicket` that must have been produced from an earlier command in the same
+    ///    programmable transaction.
+    Upgrade(Vec<Vec<u8>>, Vec<ObjectID>, ObjectID, Argument),
 }
 
 impl Command {
