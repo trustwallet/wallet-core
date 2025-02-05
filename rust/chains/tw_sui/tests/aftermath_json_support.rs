@@ -92,3 +92,74 @@ fn test_raw_json_with_none_expiration() {
     let result = TransactionBuilder::raw_json(raw_json, 0, 0);
     assert!(result.is_ok());
 }
+
+#[test]
+fn test_raw_json_with_all_transactions() {
+    let raw_json = r#"
+    {
+        "version": 1,
+        "sender": "0x1",
+        "expiration": null,
+        "gasConfig": {
+            "budget": "30216120",
+            "price": "750",
+            "payment": []
+        },
+        "inputs": [],
+        "transactions": [
+            {
+                "kind": "MoveCall",
+                "target": "0x5306f64e312b581766351c07af79c72fcb1cd25147157fdc2f8ad76de9a3fb6a::vaa::parse_and_verify",
+                "typeArguments": [],
+                "arguments": []
+            },
+            {
+                "kind": "TransferObjects",
+                "objects": [],
+                "address": {
+                    "kind": "Input",
+                    "index": 0
+                }
+            },
+            {
+                "kind": "SplitCoins",
+                "coin": {
+                    "kind": "Input",
+                    "index": 0
+                },
+                "amounts": []
+            },
+            {
+                "kind": "MergeCoins",
+                "destination": {
+                    "kind": "Input",
+                    "index": 0
+                },
+                "sources": []
+            },
+            {
+                "kind": "Publish",
+                "modules": [],
+                "dependencies": []
+            },
+            {
+                "kind": "MakeMoveVec",
+                "typeTag": null,
+                "arguments": []
+            },
+            {
+                "kind": "Upgrade",
+                "modules": [],
+                "dependencies": [],
+                "packageId": "0x5306f64e312b581766351c07af79c72fcb1cd25147157fdc2f8ad76de9a3fb6a",
+                "ticket": {
+                    "kind": "Input",
+                    "index": 0
+                }
+            }
+        ]
+    }
+    "#;
+    let result = TransactionBuilder::raw_json(raw_json, 0, 0);
+    assert!(result.is_ok());
+}
