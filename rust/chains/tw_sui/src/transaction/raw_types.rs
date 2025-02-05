@@ -267,7 +267,7 @@ impl TryFrom<Transaction> for Command {
                 dependencies
                     .into_iter()
                     .map(|dependency| {
-                        Ok(ObjectID::from_str(&dependency).context("Failed to parse object ID")?)
+                        ObjectID::from_str(&dependency).context("Failed to parse object ID")
                     })
                     .collect::<SigningResult<Vec<_>>>()?,
             )),
@@ -291,7 +291,7 @@ impl TryFrom<Transaction> for Command {
                 dependencies
                     .into_iter()
                     .map(|dependency| {
-                        Ok(ObjectID::from_str(&dependency).context("Failed to parse object ID")?)
+                        ObjectID::from_str(&dependency).context("Failed to parse object ID")
                     })
                     .collect::<SigningResult<Vec<_>>>()?,
                 ObjectID::from_str(&package_id).context("Failed to parse object ID")?,
