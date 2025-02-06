@@ -161,7 +161,7 @@ fn test_coin_address_derivation() {
             CoinType::Zcash => "t1SUmK7UVqTXQDpEAqHcJWBv7pNUFHJRpDx",
             CoinType::Zelcash => "t1SUmK7UVqTXQDpEAqHcJWBv7pNUFHJRpDx",
             CoinType::Komodo => "RHtMPHweTxYNhBYUN2nJTu9QKyjm7MRKsF",
-            CoinType::XRP => todo!(),
+            CoinType::XRP => "r9cwJ8hM13jodBBGtioB44FUZ5HwWGwqfX",
             // end_of_coin_address_derivation_tests_marker_do_not_modify
             _ => panic!("{:?} must be covered", coin),
         };

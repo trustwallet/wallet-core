@@ -131,7 +131,7 @@ fn verify_valid_ic_value(ic_value: &BigDecimal) -> SigningResult<()> {
             .context(error);
     }
 
-    if scale < MIN_IOU_EXPONENT || scale > MAX_IOU_EXPONENT {
+    if !(MIN_IOU_EXPONENT..=MAX_IOU_EXPONENT).contains(&scale) {
         let error = format!(
             "Invalid Issued Currency scale is out of available range (min: {MIN_IOU_EXPONENT} max: {MAX_IOU_EXPONENT} found: {scale})"
         );

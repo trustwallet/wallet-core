@@ -4,6 +4,7 @@
 
 use crate::address::classic_address::ClassicAddress;
 use crate::encode::{encode_tx, TxEncoded};
+use crate::transaction::transaction_type::TransactionType;
 use crate::transaction::RippleTransaction;
 use serde_json::Value as Json;
 use tw_coin_entry::error::prelude::*;
@@ -25,10 +26,10 @@ pub struct TxPreImage {
 pub struct TransactionSigner;
 
 impl TransactionSigner {
-    pub fn sign<Transaction: RippleTransaction>(
-        tx: Transaction,
+    pub fn sign(
+        tx: TransactionType,
         private_key: &secp256k1::PrivateKey,
-    ) -> SigningResult<Transaction> {
+    ) -> SigningResult<TransactionType> {
         let public_key = private_key.public();
         Self::check_signing_public_key(&tx, &public_key)?;
         Self::check_source_account(&tx, &public_key)?;
@@ -38,7 +39,7 @@ impl TransactionSigner {
                 .context("Transaction is signed already");
         }
 
-        let TxPreImage { hash_to_sign, .. } = Self::pre_image::<Transaction>(&tx)?;
+        let TxPreImage { hash_to_sign, .. } = Self::pre_image(&tx)?;
         let signature = private_key
             .sign(hash_to_sign)
             .into_tw()
@@ -46,9 +47,7 @@ impl TransactionSigner {
         Self::compile_unchecked(tx, &signature)
     }
 
-    pub fn pre_image<Transaction: RippleTransaction>(
-        tx: &Transaction,
-    ) -> SigningResult<TxPreImage> {
+    pub fn pre_image(tx: &TransactionType) -> SigningResult<TxPreImage> {
         let signing_only = true;
         let TxEncoded { json, encoded } = encode_tx(tx, signing_only)?;
         let pre_image: Data = NETWORK_PREFIX.iter().copied().chain(encoded).collect();
@@ -63,11 +62,11 @@ impl TransactionSigner {
     }
 
     /// Compiles `signature` into the `transaction` validating the signature.
-    pub fn compile<Transaction: RippleTransaction>(
-        tx: Transaction,
+    pub fn compile(
+        tx: TransactionType,
         signature: &secp256k1::Signature,
         public_key: &secp256k1::PublicKey,
-    ) -> SigningResult<Transaction> {
+    ) -> SigningResult<TransactionType> {
         let TxPreImage { hash_to_sign, .. } = Self::pre_image(&tx)?;
         Self::check_source_account(&tx, public_key)?;
         Self::check_signing_public_key(&tx, public_key)?;
