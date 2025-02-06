@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bigdecimal = "0.4.7"
+bigdecimal = "0.3.1"
 byteorder = "1.4"
 lazy_static = "1.4.0"
 serde = "1.0"

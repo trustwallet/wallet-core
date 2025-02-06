@@ -108,18 +108,23 @@ impl Encodable for IssuedCurrency {
 }
 
 fn calculate_precision(value: &BigDecimal) -> usize {
-    let (int, _) = value.normalized().into_bigint_and_scale();
+    let (int, _) = value.normalized().into_bigint_and_exponent();
     let (_sign, uint) = int.into_parts();
     uint.to_string().len()
 }
 
+fn calculate_exponent(value: &BigDecimal) -> i32 {
+    let decimal = value.normalized();
+    let (_, reversed_exponent) = decimal.as_bigint_and_exponent();
+    -(reversed_exponent as i32)
+}
+
 /// Validates the format of an issued currency amount value.
 fn verify_valid_ic_value(ic_value: &BigDecimal) -> SigningResult<()> {
-    let decimal = ic_value.normalized();
-    let scale = -(decimal.fractional_digit_count() as i32);
+    let exponent = calculate_exponent(ic_value);
     let prec = calculate_precision(ic_value);
 
-    if decimal.is_zero() {
+    if ic_value.is_zero() {
         return Ok(());
     }
 
@@ -131,9 +136,9 @@ fn verify_valid_ic_value(ic_value: &BigDecimal) -> SigningResult<()> {
             .context(error);
     }
 
-    if !(MIN_IOU_EXPONENT..=MAX_IOU_EXPONENT).contains(&scale) {
+    if !(MIN_IOU_EXPONENT..=MAX_IOU_EXPONENT).contains(&exponent) {
         let error = format!(
-            "Invalid Issued Currency scale is out of available range (min: {MIN_IOU_EXPONENT} max: {MAX_IOU_EXPONENT} found: {scale})"
+            "Invalid Issued Currency scale is out of available range (min: {MIN_IOU_EXPONENT} max: {MAX_IOU_EXPONENT} found: {exponent})"
         );
         return SigningError::err(SigningErrorType::Error_invalid_requested_token_amount)
             .context(error);
@@ -157,6 +162,16 @@ mod tests {
             calculate_precision(&num),
             precision,
             "Invalid precision for '{number}'"
+        );
+    }
+
+    #[track_caller]
+    fn test_calculate_exponent_impl(number: &str, exponent: i32) {
+        let num = BigDecimal::from_str(number).unwrap();
+        assert_eq!(
+            calculate_exponent(&num),
+            exponent,
+            "Invalid exponent for '{number}'"
         );
     }
 
@@ -196,5 +211,30 @@ mod tests {
         test_calculate_precision_impl("11111000.00000001", 16);
         test_calculate_precision_impl("1.111111111111111e-3", 16);
         test_calculate_precision_impl("-1.111111111111111e-3", 16);
+    }
+
+    #[test]
+    fn test_calculate_exponent() {
+        test_calculate_exponent_impl("0", 0);
+        test_calculate_exponent_impl("1", 0);
+        test_calculate_exponent_impl("2", 0);
+        test_calculate_exponent_impl("-2", 0);
+        test_calculate_exponent_impl("2.1", -1);
+        test_calculate_exponent_impl("1111111111111111", 0);
+        test_calculate_exponent_impl("1694.768", -3);
+        test_calculate_exponent_impl("-1.1111", -4);
+        test_calculate_exponent_impl("1111111111111111.0", 0);
+        test_calculate_exponent_impl("0.00000000001", -11);
+        test_calculate_exponent_impl("-0.00000000001", -11);
+        test_calculate_exponent_impl("1.111111111111111e-3", -18);
+        test_calculate_exponent_impl("2E+2", 2);
+        test_calculate_exponent_impl(
+            "0.000000000000000000000000000000000000000000000000000000000000000000000000001",
+            -75,
+        );
+        test_calculate_exponent_impl("1.111111111111111", -15);
+        test_calculate_exponent_impl("11.11111111111111", -14);
+        test_calculate_exponent_impl("1111111111111111.1", -1);
+        test_calculate_exponent_impl("11111000.00000001", -8);
     }
 }
