@@ -47,6 +47,7 @@ fn test_coin_address_derivation() {
             | CoinType::Celo
             | CoinType::ConfluxeSpace
             | CoinType::CronosChain
+            | CoinType::ECOChain
             | CoinType::EthereumClassic
             | CoinType::Evmos
             | CoinType::Fantom
