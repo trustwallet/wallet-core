@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::address::RippleAddress;
+use crate::address::classic_address::ClassicAddress;
 use crate::ripple_tx;
 use crate::transaction::common_fields::CommonFields;
 use crate::types::amount::Amount;
@@ -41,7 +41,7 @@ pub struct Payment {
     /// amount instead.
     pub amount: Amount,
     /// The unique address of the account receiving the payment.
-    pub destination: RippleAddress,
+    pub destination: ClassicAddress,
     /// Arbitrary tag that identifies the reason for the payment to the destination,
     /// or a hosted recipient to pay.
     /// Can also be specified in [`Payment::destination`] as an `XAddress`.

@@ -95,7 +95,7 @@ impl TransactionBuilder {
     pub fn payment(
         self,
         amount: Amount,
-        destination: RippleAddress,
+        destination: ClassicAddress,
         destination_tag: Option<u32>,
     ) -> SigningResult<Payment> {
         self.check_ready()?;
@@ -118,7 +118,7 @@ impl TransactionBuilder {
     pub fn escrow_create(
         self,
         amount: NativeAmount,
-        destination: RippleAddress,
+        destination: ClassicAddress,
         destination_tag: Option<u32>,
         cancel_after: Option<u32>,
         finish_after: Option<u32>,

@@ -63,10 +63,15 @@ impl<'a> ProtobufBuilder<'a> {
                     .context("'OperationPayment.amount' isn't specified");
             },
         };
+
         let destination = RippleAddress::from_str(payment.destination.as_ref())
             .into_tw()
-            .context("Invalid 'Payment.destination' address")?;
+            .context("Invalid 'Payment.destination' address")?
+            .to_classic_address()
+            .into_tw()
+            .context("Error converting 'Payment.destination' to a Classic address")?;
         let destination_tag = payment.destination_tag.zero_or_some();
+
         self.prepare_builder()?
             .payment(amount, destination, destination_tag)
             .map(TransactionType::Payment)
@@ -94,7 +99,10 @@ impl<'a> ProtobufBuilder<'a> {
     ) -> SigningResult<TransactionType> {
         let destination = RippleAddress::from_str(escrow_create.destination.as_ref())
             .into_tw()
-            .context("Invalid 'EscrowCreate.destination' address")?;
+            .context("Invalid 'EscrowCreate.destination' address")?
+            .to_classic_address()
+            .into_tw()
+            .context("Error converting 'OperationEscrowCreate.destination' to a Classic address")?;
 
         let condition = escrow_create
             .condition

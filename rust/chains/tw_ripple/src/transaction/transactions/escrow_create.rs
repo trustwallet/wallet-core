@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::address::RippleAddress;
+use crate::address::classic_address::ClassicAddress;
 use crate::ripple_tx;
 use crate::transaction::common_fields::CommonFields;
 use crate::types::amount::native_amount::NativeAmount;
@@ -32,7 +32,7 @@ pub struct EscrowCreate {
     /// (after the FinishAfter time) or returned to the sender (after the CancelAfter time).
     pub amount: NativeAmount,
     /// Address to receive escrowed XRP.
-    pub destination: RippleAddress,
+    pub destination: ClassicAddress,
     /// Arbitrary tag to further specify the destination for this escrowed
     /// payment, such as a hosted recipient at the destination address.
     #[serde(skip_serializing_if = "Option::is_none")]

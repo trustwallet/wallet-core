@@ -34,29 +34,31 @@
 //! ## Rust Usage
 //!
 //! ```rust,no_run
-//! use std::str::FromStr;
-//! use tw_keypair::ecdsa::secp256k1;
-//! use tw_keypair::traits::KeyPairTrait;
-//! use tw_ripple::address::RippleAddress;
-//! use tw_ripple::encode::encode_tx;
-//! use tw_ripple::modules::transaction_signer::TransactionSigner;
-//! use tw_ripple::transaction::transaction_builder::TransactionBuilder;
-//! use tw_ripple::transaction::transaction_type::TransactionType;
-//! use tw_ripple::types::amount::Amount;
-//! use tw_ripple::types::amount::native_amount::NativeAmount;
-//!
-//! let key: secp256k1::KeyPair = todo!();
+//! # use std::str::FromStr;
+//! # use tw_keypair::ecdsa::secp256k1;
+//! # use tw_keypair::traits::KeyPairTrait;
+//! # use tw_ripple::address::classic_address::ClassicAddress;
+//! # use tw_ripple::address::RippleAddress;
+//! # use tw_ripple::encode::encode_tx;
+//! # use tw_ripple::modules::transaction_signer::TransactionSigner;
+//! # use tw_ripple::transaction::transaction_builder::TransactionBuilder;
+//! # use tw_ripple::transaction::transaction_type::TransactionType;
+//! # use tw_ripple::types::amount::Amount;
+//! # use tw_ripple::types::amount::native_amount::NativeAmount;
+//! #
+//! # let key: secp256k1::KeyPair = todo!();
 //!
 //! let mut builder = TransactionBuilder::default();
 //! builder
 //!     .fee(NativeAmount::new(10).unwrap())
 //!     .sequence(32_268_248_u32)
 //!     .last_ledger_sequence(32_268_269_u32)
-//!     .account_str("rfxdLwsZnoespnTDDb1Xhvbc8EFNdztaoq")?
+//!     .account_str("rfxdLwsZnoespnTDDb1Xhvbc8EFNdztaoq")
+//!     .unwrap()
 //!     .signing_pub_key(&key.public());
 //!
 //! let xrp_amount = Amount::NativeAmount(NativeAmount::new(10).unwrap());
-//! let destination = RippleAddress::from_str("rU893viamSnsfP3zjzM2KPxjqZjXSXK6VF").unwrap();
+//! let destination = ClassicAddress::from_str("rU893viamSnsfP3zjzM2KPxjqZjXSXK6VF").unwrap();
 //! let destination_tag = None;
 //!
 //! let payment = builder.payment(xrp_amount, destination, destination_tag).unwrap();
