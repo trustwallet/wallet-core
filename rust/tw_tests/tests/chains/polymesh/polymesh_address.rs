@@ -5,13 +5,17 @@
 use crate::chains::polymesh::{PRIVATE_KEY_1, PUBLIC_KEY_1, PUBLIC_KEY_2, PUBLIC_KEY_HEX_1};
 use tw_any_coin::test_utils::address_utils::{
     test_address_derive, test_address_get_data, test_address_invalid, test_address_normalization,
-    test_address_ss58_is_invalid, test_address_ss58_is_valid, test_address_valid,
+    test_address_ss58_is_invalid, test_address_ss58_is_valid, test_address_valid, KeyType,
 };
 use tw_coin_registry::coin_type::CoinType;
 
 #[test]
 fn test_polymesh_address_derive() {
-    test_address_derive(CoinType::Polymesh, PRIVATE_KEY_1, PUBLIC_KEY_1);
+    test_address_derive(
+        CoinType::Polymesh,
+        KeyType::PrivateKey(PRIVATE_KEY_1),
+        PUBLIC_KEY_1,
+    );
 }
 
 #[test]
