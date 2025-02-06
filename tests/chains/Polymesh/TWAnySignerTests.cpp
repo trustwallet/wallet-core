@@ -25,7 +25,7 @@ using namespace TW;
 using namespace TW::Polymesh;
 
 namespace TW::Polymesh::tests {
-auto polymeshPrefix = 12;
+uint32_t polymeshPrefix = 12;
 
 Data helper_encodeTransaction(TWCoinType coin, const Proto::SigningInput& input, const Data& pubKey, const Data& signature) {
     auto txInputData = data(input.SerializeAsString());
