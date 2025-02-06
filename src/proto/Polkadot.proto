@@ -218,60 +218,6 @@ message Staking {
     }
 }
 
-// Identity module
-message Identity {
-    // Identity::join_identity_as_key call
-    message JoinIdentityAsKey {
-        // call indices
-        CallIndices call_indices = 1;
-
-        // auth id
-        uint64 auth_id = 2;
-    }
-
-    // Identity::add_authorization call
-    message AddAuthorization {
-        message Data {
-            bytes data = 1;
-        }
-
-        message AuthData {
-            // authorization data, empty means all permissions, null means no permissions
-            Data asset = 1;
-
-            // authorization data, empty means all permissions, null means no permissions
-            Data extrinsic = 2;
-
-            // authorization data, empty means all permissions, null means no permissions
-            Data portfolio = 3;
-        }
-
-        // call indices
-        CallIndices call_indices = 1;
-
-        // address that will be added to the Identity
-        string target = 2;
-
-        // authorization data, null means all permissions
-        AuthData data = 3;
-
-        // expire time, unix seconds
-        uint64 expiry = 4;
-    }
-
-    oneof message_oneof {
-        JoinIdentityAsKey join_identity_as_key = 1;
-        AddAuthorization add_authorization = 2;
-    }
-}
-
-// Polymesh call
-message PolymeshCall {
-    oneof message_oneof {
-        Identity identity_call = 2;
-    }
-}
-
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // Recent block hash, or genesis hash if era is not set
@@ -308,7 +254,6 @@ message SigningInput {
     oneof message_oneof {
         Balance balance_call = 11;
         Staking staking_call = 12;
-        PolymeshCall polymesh_call = 13;
     }
 }
 
