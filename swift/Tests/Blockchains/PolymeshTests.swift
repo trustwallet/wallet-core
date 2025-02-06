@@ -16,7 +16,7 @@ class PolymeshTests: XCTestCase {
         let address = AnyAddress(publicKey: pubkey, coin: .polymesh)
         let addressFromString = AnyAddress(string: "2EANwBfNsFu9KV8JsW5sbhF6ft8bzvw5EW1LCrgHhrqtK6Ys", coin: .polymesh)!
 
-        XCTAssertEqual(pubkey.data.hexString, "0x4bdb9ef424035e1621e228bd11c5917d7d1dac5965d244c4c72fc91170244f0c")
+        XCTAssertEqual(pubkey.data.hexString, "4bdb9ef424035e1621e228bd11c5917d7d1dac5965d244c4c72fc91170244f0c")
         XCTAssertEqual(address.description, addressFromString.description)
     }
 
@@ -45,7 +45,7 @@ class PolymeshTests: XCTestCase {
                 }
             }
         }
-        let output: PolymeshSigningOutput = AnySigner.sign(input: input, coin: .polkadot)
+        let output: PolymeshSigningOutput = AnySigner.sign(input: input, coin: .polymesh)
 
         XCTAssertEqual(output.encoded.hexString, "390284004bdb9ef424035e1621e228bd11c5917d7d1dac5965d244c4c72fc91170244f0c00e9b4742a2b66931e0cf29f6811e4d44545b4f278a667b9eb1217c4b2de8763c8037e4501dd4a21179b737beb33415f458788f2d1093b527cae8bee8b2d55210ba501040005000010b713ceeb165c1ac7c450f5b138a6da0eba50bb18849f5b8e83985daa45a87e02093d00")
     }
