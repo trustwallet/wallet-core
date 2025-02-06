@@ -22,20 +22,16 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Payment {
-    // The base fields for all transaction models.
-    //
-    // See Transaction Types:
-    // `<https://xrpl.org/transaction-types.html>`
-    //
-    // See Transaction Common Fields:
-    // `<https://xrpl.org/transaction-common-fields.html>`
+    /// The base fields for all transaction models.
+    ///
+    /// See Transaction Types:
+    /// `<https://xrpl.org/transaction-types.html>`
+    ///
+    /// See Transaction Common Fields:
+    /// `<https://xrpl.org/transaction-common-fields.html>`
     /// The type of transaction.
     #[serde(flatten)]
     pub common_fields: CommonFields,
-    // The custom fields for the Payment model.
-    //
-    // See Payment fields:
-    // `<https://xrpl.org/payment.html#payment-fields>`
     /// The amount of currency to deliver. For non-XRP amounts, the nested field names
     /// MUST be lower-case. If the tfPartialPayment flag is set, deliver up to this
     /// amount instead.

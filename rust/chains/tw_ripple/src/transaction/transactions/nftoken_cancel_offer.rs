@@ -18,8 +18,6 @@ pub struct NFTokenCancelOffer {
     /// `<https://xrpl.org/transaction-common-fields.html>`
     #[serde(flatten)]
     pub common_fields: CommonFields,
-    /// See NFTokenCancelOffer fields:
-    /// `<https://xrpl.org/nftokencanceloffer.html#nftokencanceloffer-fields>`
     /// Lifetime issue
     /// An array of IDs of the NFTokenOffer objects to cancel (not the IDs of NFToken
     /// objects, but the IDs of the NFTokenOffer objects). Each entry must be a

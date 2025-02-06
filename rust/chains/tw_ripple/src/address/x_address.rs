@@ -106,7 +106,6 @@ impl fmt::Display for XAddress {
 
 impl CoinAddress for XAddress {
     fn data(&self) -> Data {
-        // TODO consider using another data to return.
         self.public_key_hash().to_vec()
     }
 }

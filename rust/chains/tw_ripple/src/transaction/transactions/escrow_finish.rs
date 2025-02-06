@@ -26,10 +26,6 @@ pub struct EscrowFinish {
     /// The type of transaction.
     #[serde(flatten)]
     pub common_fields: CommonFields,
-    /// The custom fields for the EscrowFinish model.
-    ///
-    /// See EscrowFinish fields:
-    /// `<https://xrpl.org/escrowfinish.html#escrowfinish-fields>`
     /// Address of the source account that funded the held payment.
     pub owner: ClassicAddress,
     /// Transaction sequence of EscrowCreate transaction that created the held payment to finish.

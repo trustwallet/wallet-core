@@ -25,8 +25,6 @@ pub struct NFTokenAcceptOffer {
     /// The type of transaction.
     #[serde(flatten)]
     pub common_fields: CommonFields,
-    /// See NFTokenAcceptOffer fields:
-    /// `<https://xrpl.org/nftokenacceptoffer.html#nftokenacceptoffer-fields>`
     /// Identifies the NFTokenOffer that offers to sell the NFToken.
     #[serde(rename = "NFTokenSellOffer")]
     #[serde(skip_serializing_if = "Option::is_none")]

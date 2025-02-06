@@ -24,10 +24,6 @@ pub struct TrustSet {
     /// The type of transaction.
     #[serde(flatten)]
     pub common_fields: CommonFields,
-    /// The custom fields for the TrustSet model.
-    ///
-    /// See TrustSet fields:
-    /// `<https://xrpl.org/trustset.html#trustset-fields>`
     /// Object defining the trust line to create or modify, in the format of a Currency Amount.
     pub limit_amount: IssuedCurrency,
 }

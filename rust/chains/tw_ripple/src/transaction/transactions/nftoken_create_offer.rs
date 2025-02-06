@@ -29,10 +29,6 @@ pub struct NFTokenCreateOffer {
     /// The type of transaction.
     #[serde(flatten)]
     pub common_fields: CommonFields,
-    // The custom fields for the NFTokenCreateOffer model.
-    //
-    // See NFTokenCreateOffer fields:
-    // `<https://xrpl.org/nftokencreateoffer.html#nftokencreateoffer-fields>`
     /// Identifies the NFToken object that the offer references.
     #[serde(rename = "NFTokenID")]
     #[serde(with = "as_hex")]

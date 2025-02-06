@@ -6,6 +6,11 @@
 //! This crate is designed to facilitate the development of applications that interact with the Ripple network
 //! by providing essential functionalities such as address generation, transaction building, signing, and more.
 //!
+//! ## Source Code
+//!
+//! The code of this crate is mainly inspired by [xrpl-rust](https://github.com/sephynox/xrpl-rust) and [xrpl-py](https://github.com/XRPLF/xrpl-py),
+//! and tested well against unit tests from `xrpl-py`.
+//!
 //! ## Features
 //!
 //! ### Address Generation

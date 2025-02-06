@@ -27,12 +27,8 @@ pub struct NFTokenBurn {
     /// The type of transaction.
     #[serde(flatten)]
     pub common_fields: CommonFields,
-    /// The custom fields for the NFTokenBurn model.
-    ///
-    /// See NFTokenBurn fields:
-    /// `<https://xrpl.org/nftokenburn.html#nftokenburn-fields>`
-    #[serde(rename = "NFTokenID")]
     /// The NFToken to be removed by this transaction.
+    #[serde(rename = "NFTokenID")]
     #[serde(with = "as_hex")]
     pub nftoken_id: H256,
     /// The owner of the NFToken to burn. Only used if that owner is

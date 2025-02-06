@@ -23,10 +23,6 @@ pub struct EscrowCreate {
     /// `<https://xrpl.org/transaction-common-fields.html>`
     #[serde(flatten)]
     pub common_fields: CommonFields,
-    // The custom fields for the EscrowCreate model.
-    //
-    // See EscrowCreate fields:
-    // `<https://xrpl.org/escrowcreate.html>`
     /// Amount of XRP, in drops, to deduct from the sender's balance and escrow.
     /// Once escrowed, the XRP can either go to the Destination address
     /// (after the FinishAfter time) or returned to the sender (after the CancelAfter time).
