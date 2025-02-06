@@ -46,7 +46,7 @@ public:
     Transaction fromESDTNFTTransfer(const Proto::SigningInput& input);
 
 private:
-    uint64_t computeGasLimit(size_t dataLength, uint64_t executionGasLimit, bool hasGuardian);
+    uint64_t computeGasLimit(size_t dataLength, uint64_t executionGasLimit, bool hasGuardian, bool hasRelayer);
     uint64_t coalesceGasLimit(uint64_t providedGasLimit, uint64_t estimatedGasLimit);
     uint64_t coalesceGasPrice(uint64_t gasPrice);
     std::string coalesceChainId(std::string chainID);

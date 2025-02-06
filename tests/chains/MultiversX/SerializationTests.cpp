@@ -112,4 +112,29 @@ TEST(MultiversXSerialization, SerializeTransactionWithGuardianAddress) {
     ASSERT_EQ(expected, actual);
 }
 
+TEST(MultiversXSerialization, SerializeTransactionWithRelayerAddress) {
+    Transaction transaction;
+    transaction.nonce = 42;
+    transaction.value = "1000000000000000000";
+    transaction.sender = ALICE_BECH32;
+    transaction.receiver = BOB_BECH32;
+    transaction.relayer = CAROL_BECH32;
+    transaction.gasPrice = 1000000000;
+    transaction.gasLimit = 100000;
+    transaction.chainID = "1";
+    transaction.version = 2;
+
+    string expected =
+        "{"
+        R"("nonce":42,"value":"1000000000000000000",)"
+        R"("receiver":"erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx",)"
+        R"("sender":"erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th",)"
+        R"("gasPrice":1000000000,"gasLimit":100000,"chainID":"1","version":2,)"
+        R"("relayer":"erd1k2s324ww2g0yj38qn2ch2jwctdy8mnfxep94q9arncc6xecg3xaq6mjse8")"
+        "}";
+
+    string actual = serializeTransaction(transaction);
+    ASSERT_EQ(expected, actual);
+}
+
 } // namespace TW::MultiversX::tests

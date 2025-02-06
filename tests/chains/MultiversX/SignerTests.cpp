@@ -5,7 +5,6 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-#include "boost/format.hpp"
 #include "HexCoding.h"
 #include "MultiversX/Address.h"
 #include "MultiversX/Codec.h"
@@ -15,6 +14,7 @@
 #include "PublicKey.h"
 #include "TestAccounts.h"
 #include "TestUtilities.h"
+#include "boost/format.hpp"
 
 using namespace TW;
 
@@ -600,6 +600,77 @@ TEST(MultiversXSigner, SignEGLDTransferWithGuardian) {
                                      "receiver":"erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx",
                                      "sender":"erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th",
                                      "signature":"741dd0d24db4df37a050f693f8481b6e51b8dd6dfc2f01a4f90aa1af3e59c89a8b0ef9d710af33103970e353d9f0cb9fd128a2e174731cbc88265d9737ed5604",
+                                     "value":"1000000000000000000",
+                                     "version":2
+                                    })"_json;
+
+    ASSERT_EQ(expectedSignature, signature);
+    assertJSONEqual(expected, nlohmann::json::parse(encoded));
+}
+
+TEST(MultiversXSigner, SignGenericActionWithRelayer) {
+    auto input = Proto::SigningInput();
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(42);
+    input.mutable_generic_action()->mutable_accounts()->set_sender(ALICE_BECH32);
+    input.mutable_generic_action()->mutable_accounts()->set_receiver(BOB_BECH32);
+    input.mutable_generic_action()->mutable_accounts()->set_relayer(CAROL_BECH32);
+    input.mutable_generic_action()->set_value("1000000000000000000");
+    input.mutable_generic_action()->set_data("");
+    input.mutable_generic_action()->set_version(2);
+    input.set_gas_price(1000000000);
+    input.set_gas_limit(100000);
+    input.set_chain_id("1");
+
+    auto output = Signer::sign(input);
+    auto signature = output.signature();
+    auto encoded = output.encoded();
+    auto expectedSignature = "f0137ce0303a33814691975598dab3b82bb91b017aa251640a48827edc48048aa0f916dd3e7915dd3be27db3304fc238a719123b6ae2285731ab24b794665003";
+    nlohmann::json expected = R"(
+                                    {
+                                     "chainID":"1",
+                                     "gasLimit":100000,
+                                     "gasPrice":1000000000,
+                                     "relayer":"erd1k2s324ww2g0yj38qn2ch2jwctdy8mnfxep94q9arncc6xecg3xaq6mjse8",
+                                     "nonce":42,
+                                     "receiver":"erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx",
+                                     "sender":"erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th",
+                                     "signature":"f0137ce0303a33814691975598dab3b82bb91b017aa251640a48827edc48048aa0f916dd3e7915dd3be27db3304fc238a719123b6ae2285731ab24b794665003",
+                                     "value":"1000000000000000000",
+                                     "version":2
+                                    })"_json;
+
+    ASSERT_EQ(expectedSignature, signature);
+    assertJSONEqual(expected, nlohmann::json::parse(encoded));
+}
+
+TEST(MultiversXSigner, SignEGLDTransferWithRelayer) {
+    auto input = Proto::SigningInput();
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    input.mutable_egld_transfer()->mutable_accounts()->set_sender_nonce(7);
+    input.mutable_egld_transfer()->mutable_accounts()->set_sender(ALICE_BECH32);
+    input.mutable_egld_transfer()->mutable_accounts()->set_receiver(BOB_BECH32);
+    input.mutable_egld_transfer()->mutable_accounts()->set_relayer(CAROL_BECH32);
+    input.mutable_egld_transfer()->set_amount("1000000000000000000");
+
+    auto output = Signer::sign(input);
+    auto signature = output.signature();
+    auto encoded = output.encoded();
+    auto expectedSignature = "c86491a51d553889df9fb7ff75880843e2b21aec97ae3e4004b70801a5494a8958af8daf56906f9720b0af6a25ad2ab82b3af05940fb6dfe0dea529f1bf8d90f";
+    nlohmann::json expected = R"(
+                                    {
+                                     "chainID":"1",
+                                     "gasLimit":100000,
+                                     "gasPrice":1000000000,
+                                     "relayer":"erd1k2s324ww2g0yj38qn2ch2jwctdy8mnfxep94q9arncc6xecg3xaq6mjse8",
+                                     "nonce":7,
+                                     "receiver":"erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx",
+                                     "sender":"erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th",
+                                     "signature":"c86491a51d553889df9fb7ff75880843e2b21aec97ae3e4004b70801a5494a8958af8daf56906f9720b0af6a25ad2ab82b3af05940fb6dfe0dea529f1bf8d90f",
                                      "value":"1000000000000000000",
                                      "version":2
                                     })"_json;

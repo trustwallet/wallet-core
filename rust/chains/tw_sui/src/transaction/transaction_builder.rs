@@ -8,7 +8,10 @@ use crate::constants::{
     WITHDRAW_STAKE_FUN_NAME,
 };
 use crate::transaction::command::Command;
-use crate::transaction::programmable_transaction::ProgrammableTransactionBuilder;
+use crate::transaction::programmable_transaction::{
+    ProgrammableTransaction, ProgrammableTransactionBuilder,
+};
+use crate::transaction::raw_types::RawTransaction;
 use crate::transaction::sui_types::{CallArg, ObjectArg, ObjectRef};
 use crate::transaction::transaction_data::{TransactionData, TransactionKind};
 use tw_coin_entry::error::prelude::*;
@@ -178,9 +181,65 @@ impl TransactionBuilder {
         Ok(TransactionData::new(
             TransactionKind::ProgrammableTransaction(builder.finish()),
             signer,
-            gas,
+            vec![gas],
             gas_budget,
             gas_price,
+            None,
+        ))
+    }
+
+    pub fn raw_json(
+        raw_json: &str,
+        gas_budget: u64,
+        gas_price: u64,
+    ) -> SigningResult<TransactionData> {
+        let raw_transaction: RawTransaction = serde_json::from_str(raw_json)
+            .map_err(|e| SigningError::from(e).context("Failed to parse raw JSON"))?;
+
+        if raw_transaction.version != 1 {
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Invalid transaction version. Only version 1 is supported.");
+        }
+
+        let inputs = raw_transaction
+            .inputs
+            .into_iter()
+            .map(|input| input.value.try_into())
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        let commands = raw_transaction
+            .transactions
+            .into_iter()
+            .map(|transaction| transaction.try_into())
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        let pt = ProgrammableTransaction { inputs, commands };
+        let gas_payments = raw_transaction
+            .gas_config
+            .payment
+            .into_iter()
+            .map(|payment| payment.try_into())
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        let gas_budget = if gas_budget != 0 {
+            gas_budget
+        } else {
+            raw_transaction.gas_config.budget
+        };
+
+        let gas_price = if gas_price != 0 {
+            gas_price
+        } else {
+            raw_transaction.gas_config.price
+        };
+
+        Ok(TransactionData::new(
+            TransactionKind::ProgrammableTransaction(pt),
+            raw_transaction.sender,
+            gas_payments,
+            gas_budget,
+            gas_price,
+            raw_transaction.expiration.map(|e| e.into()),
         ))
     }
 }

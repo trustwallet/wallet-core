@@ -129,6 +129,7 @@ message SigningInput {
         RequestAddStake request_add_stake = 7;
         RequestWithdrawStake request_withdraw_stake = 8;
         TransferObject transfer_object = 9;
+        string raw_json = 10;
     }
 
     // The gas budget, the transaction will fail if the gas cost exceed the budget.

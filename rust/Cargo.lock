@@ -2290,6 +2290,7 @@ dependencies = [
  "indexmap",
  "move-core-types",
  "serde",
+ "serde_json",
  "serde_repr",
  "tw_coin_entry",
  "tw_encoding",
