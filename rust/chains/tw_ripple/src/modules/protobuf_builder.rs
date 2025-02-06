@@ -50,7 +50,11 @@ impl<'a> ProtobufBuilder<'a> {
         use tw_proto::Ripple::Proto::mod_OperationPayment::OneOfamount_oneof as AmountType;
 
         let amount = match payment.amount_oneof {
-            AmountType::amount(native) => Amount::NativeAmount(NativeAmount(native)),
+            AmountType::amount(native) => {
+                let native =
+                    NativeAmount::new(native).context("Invalid 'OperationPayment.amount'")?;
+                Amount::NativeAmount(native)
+            },
             AmountType::currency_amount(ref currency) => {
                 Amount::IssuedCurrency(Self::issued_currency(currency)?)
             },
@@ -99,9 +103,12 @@ impl<'a> ProtobufBuilder<'a> {
             .context("Invalid 'OperationEscrowCreate.condition'")?
             .empty_or_some();
 
+        let native_amount = NativeAmount::new(escrow_create.amount)
+            .context("Invalid 'OperationEscrowCreate.amount'")?;
+
         self.prepare_builder()?
             .escrow_create(
-                NativeAmount(escrow_create.amount),
+                native_amount,
                 destination,
                 escrow_create.destination_tag.zero_or_some(),
                 escrow_create.cancel_after.zero_or_some(),
@@ -177,7 +184,7 @@ impl<'a> ProtobufBuilder<'a> {
             .context("Invalid 'OperationNFTokenCreateOffer.destination'")?;
 
         // Currently, owner of the token can only give it away, gratis to the account identified by the `Destination` field.
-        let amount = Amount::NativeAmount(NativeAmount(0));
+        let amount = Amount::NativeAmount(NativeAmount::default());
         // Owner is the transaction signer.
         let owner = None;
         let expiration = None;
@@ -234,9 +241,11 @@ impl<'a> ProtobufBuilder<'a> {
                 .context("Expected either 'privateKey' or 'publicKey' to be provided");
         };
 
+        let fee = NativeAmount::new(self.input.fee).context("Invalid fee")?;
+
         let mut builder = TransactionBuilder::default();
         builder
-            .fee(NativeAmount(self.input.fee))
+            .fee(fee)
             .flags(self.input.flags)
             .sequence(self.input.sequence)
             .last_ledger_sequence(self.input.last_ledger_sequence)

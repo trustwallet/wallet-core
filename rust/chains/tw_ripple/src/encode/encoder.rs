@@ -105,3 +105,27 @@ impl Encoder {
         ))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tw_encoding::hex::ToHex;
+
+    fn test_encode_variable_length_impl(len: usize, expected: &str) {
+        let mut encoder = Encoder::default();
+        encoder.encode_variable_length(len).unwrap();
+        assert_eq!(encoder.finish().to_hex(), expected);
+    }
+
+    /// Tested with [xrpl-py](https://github.com/XRPLF/xrpl-py).
+    #[test]
+    fn test_encode_variable_length() {
+        test_encode_variable_length_impl(180, "b4");
+        test_encode_variable_length_impl(1000, "c427");
+        test_encode_variable_length_impl(12080, "ef6f");
+        test_encode_variable_length_impl(12580, "f10063");
+        test_encode_variable_length_impl(20000, "f11d5f");
+        test_encode_variable_length_impl(110000, "f27cef");
+        test_encode_variable_length_impl(918744, "fed417");
+    }
+}
