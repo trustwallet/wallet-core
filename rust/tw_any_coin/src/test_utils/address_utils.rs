@@ -4,7 +4,8 @@
 
 use crate::ffi::tw_any_address::{
     tw_any_address_create_base58_with_public_key, tw_any_address_create_bech32_with_public_key,
-    tw_any_address_create_with_public_key_derivation, tw_any_address_create_with_string,
+    tw_any_address_create_ss58_with_public_key, tw_any_address_create_with_public_key_derivation,
+    tw_any_address_create_with_string, tw_any_address_create_with_string_unchecked,
     tw_any_address_data, tw_any_address_delete, tw_any_address_description,
     tw_any_address_is_valid, tw_any_address_is_valid_base58, tw_any_address_is_valid_bech32,
     tw_any_address_is_valid_ss58, TWAnyAddress,
@@ -82,6 +83,16 @@ pub fn test_address_normalization(coin: CoinType, denormalized: &str, normalized
     let normalized = TWStringHelper::wrap(unsafe { tw_any_address_description(any_address.ptr()) });
 
     assert_eq!(normalized.to_string(), Some(expected.to_string()));
+
+    // Double check if the address is also valid by using `tw_any_address_create_with_string_unchecked`.
+    let any_address_unchecked = TWAnyAddressHelper::wrap(unsafe {
+        tw_any_address_create_with_string_unchecked(denormalized.ptr(), coin as u32)
+    });
+    let normalized_unchecked =
+        TWStringHelper::wrap(unsafe { tw_any_address_description(any_address_unchecked.ptr()) });
+    normalized_unchecked
+        .to_string()
+        .expect("!tw_any_address_create_with_string_unchecked");
 }
 
 pub fn test_address_valid(coin: CoinType, address: &str) {
@@ -213,4 +224,23 @@ pub fn test_address_base58_is_valid(input: AddressBase58IsValid<'_>) {
         tw_any_address_is_valid_base58(addr_str.ptr(), input.coin as u32, input.p2pkh, input.p2sh)
     };
     assert!(is_valid, "!tw_any_address_is_valid_base58");
+}
+
+pub struct AddressCreateSS58WithPublicKey<'a> {
+    pub coin: CoinType,
+    pub public_key: &'a str,
+    pub public_key_type: PublicKeyType,
+    pub ss58: u16,
+    pub expected: &'a str,
+}
+
+pub fn test_address_create_ss58_with_public_key(input: AddressCreateSS58WithPublicKey<'_>) {
+    let public_key = TWPublicKeyHelper::with_hex(input.public_key, input.public_key_type);
+
+    let any_address = TWAnyAddressHelper::wrap(unsafe {
+        tw_any_address_create_ss58_with_public_key(public_key.ptr(), input.coin as u32, input.ss58)
+    });
+
+    let actual = TWStringHelper::wrap(unsafe { tw_any_address_description(any_address.ptr()) });
+    assert_eq!(actual.to_string(), Some(input.expected.to_string()));
 }

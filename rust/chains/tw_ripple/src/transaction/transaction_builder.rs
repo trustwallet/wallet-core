@@ -68,28 +68,9 @@ impl TransactionBuilder {
         self
     }
 
-    pub fn signing_pub_key_str(&mut self, signing_pub_key: &str) -> SigningResult<&mut Self> {
-        let signing_pub_key = secp256k1::PublicKey::try_from(signing_pub_key)
-            .into_tw()
-            .context("Invalid signing public key")?;
-        Ok(self.signing_pub_key(&signing_pub_key))
-    }
-
     pub fn source_tag(&mut self, source_tag: u32) -> &mut Self {
         self.common_fields.source_tag = Some(source_tag);
         self
-    }
-
-    pub fn txn_signature(
-        &mut self,
-        txn_signature: &secp256k1::Signature,
-    ) -> SigningResult<&mut Self> {
-        let sign = txn_signature
-            .to_der()
-            .into_tw()
-            .context("Error encoding secp256k1 signature as DER")?;
-        self.common_fields.txn_signature = Some(AsHex(sign));
-        Ok(self)
     }
 
     pub fn payment(

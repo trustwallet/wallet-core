@@ -60,14 +60,20 @@ fn test_ripple_address_invalid() {
 
 #[test]
 fn test_ripple_address_get_data() {
-    let public_key = "0303E20EC6B4A39A629815AE02C0A1393B9225E3B890CAE45B59F42FA29BE9668D"
+    let public_key = "034AADB09CFF4A4804073701EC53C3510CDC95917C2BB0150FB742D0C66E6CEE9E"
         .decode_hex()
         .unwrap();
     let public_key_hash = sha256_ripemd(&public_key);
 
     test_address_get_data(
         CoinType::XRP,
-        "rnBFvgZphmN39GWzUJeUitaP22Fr9be75H",
+        "r3kmLJN5D28dHuH8vZNUZpMC43pEHpaocV",
+        &public_key_hash.to_hex(),
+    );
+
+    test_address_get_data(
+        CoinType::XRP,
+        "X7tFPvjMH7nDxP8nTGkeeggcUpCZj8UbyT2QoiRHGDfjqrB",
         &public_key_hash.to_hex(),
     );
 }

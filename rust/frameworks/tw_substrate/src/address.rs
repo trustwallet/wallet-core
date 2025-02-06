@@ -20,7 +20,7 @@ impl SubstratePrefix {
     }
 
     pub fn new_unchecked(prefix: u16) -> Self {
-        Self(NetworkId::new_unchecked(prefix))
+        SubstratePrefix::new(NetworkId::new_unchecked(prefix))
     }
 
     pub fn network(self) -> NetworkId {
@@ -104,15 +104,6 @@ impl ToScale for MultiAddress {
             out.push(0);
         }
         self.account.to_scale_into(out);
-    }
-}
-
-impl From<AccountId> for MultiAddress {
-    fn from(account: AccountId) -> Self {
-        Self {
-            account,
-            multi: true,
-        }
     }
 }
 
