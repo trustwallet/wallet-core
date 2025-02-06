@@ -15,7 +15,6 @@ Encoding.default_internal = Encoding::UTF_8
 options = OpenStruct.new
 # default input / output path
 options.input = "#{CurrentDir}/../../include/TrustWalletCore"
-options.input_generated = "#{CurrentDir}/../../include/Generated/TrustWalletCore"
 options.output = "#{CurrentDir}/../../"
 options.swift = true
 options.java = true
@@ -63,17 +62,15 @@ end.parse!
 
 entities = []
 files = []
-[options.input, options.input_generated].each do |input_dir|
-  Dir.foreach(input_dir) do |item|
-    next if ['.', '..', '.DS_Store'].include?(item)
+Dir.foreach(options.input) do |item|
+  next if ['.', '..', '.DS_Store'].include?(item)
 
-    file_path = File.expand_path(File.join(input_dir, item))
-    entity = Parser.new(path: file_path).parse
-    next if entity.nil?
+  file_path = File.expand_path(File.join(options.input, item))
+  entity = Parser.new(path: file_path).parse
+  next if entity.nil?
 
-    entities << entity
-    files << File.basename(item, '.h').sub(/^TW/, '')
-  end
+  entities << entity
+  files << File.basename(item, '.h').sub(/^TW/, '')
 end
 
 generator = CodeGenerator.new(entities: entities, files: files, output_folder: options.output)
