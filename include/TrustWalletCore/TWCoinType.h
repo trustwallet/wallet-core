@@ -100,6 +100,7 @@ enum TWCoinType {
     TWCoinTypeOptimism = 10000070,
     TWCoinTypeZksync = 10000324,
     TWCoinTypeArbitrum = 10042221,
+    TWCoinTypeECOChain = 10000553,
     TWCoinTypeAvalancheCChain = 10009000,
     TWCoinTypeXDai = 10000100,
     TWCoinTypeFantom = 10000250,
