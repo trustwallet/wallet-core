@@ -137,14 +137,6 @@ impl FromStr for TAddress {
     }
 }
 
-impl<'a> TryFrom<&'a [u8]> for TAddress {
-    type Error = AddressError;
-
-    fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
-        ZcashBase58Address::new(bytes, Alphabet::Bitcoin, Hasher::Sha256d).map(TAddress)
-    }
-}
-
 impl fmt::Display for TAddress {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)

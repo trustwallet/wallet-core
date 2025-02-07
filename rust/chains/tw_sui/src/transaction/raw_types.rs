@@ -228,10 +228,10 @@ impl TryFrom<Transaction> for Command {
                 }
                 let package = ObjectID::from_str(parts[0]).context("Failed to parse package ID")?;
                 let module = Identifier::from_str(parts[1])
-                    .tw_err(|_| SigningErrorType::Error_invalid_params)
+                    .tw_err(SigningErrorType::Error_invalid_params)
                     .context("Failed to parse module")?;
                 let function = Identifier::from_str(parts[2])
-                    .tw_err(|_| SigningErrorType::Error_invalid_params)
+                    .tw_err(SigningErrorType::Error_invalid_params)
                     .context("Failed to parse function")?;
                 Ok(Command::move_call(
                     package,

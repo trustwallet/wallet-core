@@ -41,7 +41,7 @@ impl TxBuilder {
         let fee = Self::fee_from_proto(fee, &signer)?;
 
         let eth_chain_id = U256::from_str(&input.eth_chain_id)
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid ETH chain ID")?;
 
         Ok(GreenfieldUnsignedTransaction {

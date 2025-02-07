@@ -61,8 +61,8 @@ impl<Context: InternetComputerContext> Signer<Context> {
         let signed_transaction =
             sign_transaction(private_key, canister_id, &transaction.transaction_oneof)?;
 
-        let cbor_encoded_signed_transaction = tw_encoding::cbor::encode(&signed_transaction)
-            .tw_err(|_| CommonError::Error_internal)?;
+        let cbor_encoded_signed_transaction =
+            tw_encoding::cbor::encode(&signed_transaction).tw_err(CommonError::Error_internal)?;
 
         Ok(Proto::SigningOutput {
             signed_transaction: cbor_encoded_signed_transaction.into(),

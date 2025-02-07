@@ -21,7 +21,7 @@ impl<'a> OutputPsbt<'a> {
             .output
             .value
             .try_into()
-            .tw_err(|_| SigningErrorType::Error_invalid_utxo_amount)
+            .tw_err(SigningErrorType::Error_invalid_utxo_amount)
             .context("PSBT Output amount is too large")?;
         let script_pubkey = Script::from(self.output.script_pubkey.to_bytes());
         Ok(TransactionOutput {

@@ -64,7 +64,7 @@ impl SighashType {
     pub fn serialize(&self) -> SigningResult<u8> {
         self.raw_sighash
             .try_into()
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("sighashType must fit uint8")
     }
 
@@ -77,7 +77,7 @@ impl SighashType {
         } else {
             self.raw_sighash
                 .try_into()
-                .tw_err(|_| SigningErrorType::Error_invalid_params)
+                .tw_err(SigningErrorType::Error_invalid_params)
                 .context("Taproot sighashType must fit uint8")
         }
     }

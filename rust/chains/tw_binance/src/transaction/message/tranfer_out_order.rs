@@ -42,7 +42,7 @@ impl TWBinanceProto for TransferOutOrder {
         let from = BinanceAddress::from_key_hash_with_coin(coin, msg.from.to_vec())?;
 
         let to_bytes =
-            H160::try_from(msg.to.as_ref()).tw_err(|_| SigningErrorType::Error_invalid_address)?;
+            H160::try_from(msg.to.as_ref()).tw_err(SigningErrorType::Error_invalid_address)?;
         let to = EthereumAddress::from_bytes(to_bytes);
 
         let amount_proto = msg

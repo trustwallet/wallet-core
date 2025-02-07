@@ -199,7 +199,7 @@ impl CellBuilder {
         let vec = self
             .bit_writer
             .finish()
-            .tw_err(|_| CellErrorType::InternalError)
+            .tw_err(CellErrorType::InternalError)
             .context("Stream must be byte-aligned already")?;
 
         let bit_len = vec.len() * 8 - trailing_zeros;

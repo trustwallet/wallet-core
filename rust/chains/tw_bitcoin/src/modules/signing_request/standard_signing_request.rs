@@ -168,7 +168,7 @@ pub fn chain_info(
     fn prefix_to_u8(prefix: u32, prefix_name: &str) -> SigningResult<u8> {
         prefix
             .try_into()
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .with_context(|| format!("Invalid {prefix_name} prefix. It must fit uint8"))
     }
 
