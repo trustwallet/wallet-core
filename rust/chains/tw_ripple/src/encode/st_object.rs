@@ -16,12 +16,35 @@ use tw_memory::Data;
 type PreProcessedObject = JsonMap<String, Json>;
 type TransactionJson = JsonMap<String, Json>;
 
-const DESTINATION_TAG: &str = "DestinationTag";
-const DESTINATION: &str = "Destination";
-const SOURCE_TAG: &str = "SourceTag";
-const ACCOUNT: &str = "Account";
-const ST_OBJECT: &str = "STObject";
 const OBJECT_END_MARKER_BYTE: u8 = 0xE1;
+
+#[derive(Debug, strum_macros::Display)]
+enum SpecialField {
+    Destination,
+    DestinationTag,
+    SourceTag,
+    Account,
+    STObject,
+    TransactionType,
+    LedgerEntryType,
+    TransactionResult,
+}
+
+impl SpecialField {
+    fn from_str(s: &str) -> Option<Self> {
+        match s {
+            "Destination" => Some(SpecialField::Destination),
+            "DestinationTag" => Some(SpecialField::DestinationTag),
+            "SourceTag" => Some(SpecialField::SourceTag),
+            "Account" => Some(SpecialField::Account),
+            "STObject" => Some(SpecialField::STObject),
+            "TransactionType" => Some(SpecialField::TransactionType),
+            "LedgerEntryType" => Some(SpecialField::LedgerEntryType),
+            "TransactionResult" => Some(SpecialField::TransactionResult),
+            _ => None,
+        }
+    }
+}
 
 /// Class for serializing/deserializing Indexmaps of objects.
 ///
@@ -60,18 +83,21 @@ impl STObject {
     pub fn try_from_value(value: Json, signing_only: bool) -> SigningResult<Self> {
         let pre_processed = Self::pre_process_json(value)?;
 
-        let mut sorted_keys: Vec<FieldInstance> = Vec::new();
+        let mut sorted_keys: Vec<FieldInstance> = Vec::with_capacity(pre_processed.len());
         for (field, _) in pre_processed.iter() {
             let field_instance = FieldInstance::load(field.clone())?;
+
+            // If `signing_only` mode is enabled, and the field is not serialized in transaction signing process,
+            // do not include it to the result.
+            if signing_only && !field_instance.is_signing {
+                continue;
+            }
             if field_instance.is_serialized {
                 sorted_keys.push(field_instance);
             }
         }
 
         sorted_keys.sort_by_key(|k| k.ordinal);
-        if signing_only {
-            sorted_keys.retain(|k| k.is_signing);
-        }
 
         let mut encoder = Encoder::default();
         for field_instance in sorted_keys.iter() {
@@ -97,7 +123,9 @@ impl STObject {
                     format!("Error encoding '{field_name}' field with '{associated_type}' type")
                 })?;
 
-            if field_instance.associated_type == ST_OBJECT {
+            if let Some(SpecialField::STObject) =
+                SpecialField::from_str(&field_instance.associated_type)
+            {
                 encoder.push_byte(OBJECT_END_MARKER_BYTE);
             }
         }
@@ -123,19 +151,25 @@ impl STObject {
                 continue;
             }
 
-            if field == "TransactionType" || field == "LedgerEntryType" {
-                let transaction_type_code = *DEFINITIONS
-                    .transaction_types
-                    .get(value)
-                    .or_tw_err(SigningErrorType::Error_input_parse)
-                    .with_context(|| format!("Unexpected transaction type '{value}'"))?;
+            match SpecialField::from_str(field) {
+                Some(SpecialField::TransactionType) | Some(SpecialField::LedgerEntryType) => {
+                    let transaction_type_code = *DEFINITIONS
+                        .transaction_types
+                        .get(value)
+                        .or_tw_err(SigningErrorType::Error_input_parse)
+                        .with_context(|| format!("Unexpected transaction type '{value}'"))?;
 
-                pre_processed.insert(field.to_owned(), Json::Number(transaction_type_code.into()));
-            } else if field == "TransactionResult" {
-                return SigningError::err(SigningErrorType::Error_not_supported)
-                    .context("'TransactionResult' field isn't supported yet");
-            } else {
-                pre_processed.insert(field.to_owned(), Json::String(value.to_owned()));
+                    pre_processed
+                        .insert(field.to_owned(), Json::Number(transaction_type_code.into()));
+                },
+                Some(SpecialField::TransactionResult) => {
+                    return SigningError::err(SigningErrorType::Error_not_supported)
+                        .context("'TransactionResult' field isn't supported yet");
+                },
+                // The field doesn't require handling, and can be serialized as is.
+                _ => {
+                    pre_processed.insert(field.to_owned(), Json::String(value.to_owned()));
+                },
             }
         }
 
@@ -155,26 +189,27 @@ impl STObject {
             .to_string();
 
         let tag = Json::Number(addr.destination_tag().into());
-        let tag_name = if field == DESTINATION {
-            DESTINATION_TAG
-        } else if field == ACCOUNT {
-            SOURCE_TAG
-        } else {
-            return SigningError::err(SigningErrorType::Error_invalid_address).context(format!(
-                "Field `{field}` is not allowed to have an associated tag."
-            ));
-        };
+        let tag_name = match SpecialField::from_str(&field) {
+            Some(SpecialField::Destination) => SpecialField::DestinationTag,
+            Some(SpecialField::Account) => SpecialField::SourceTag,
+            _ => {
+                return SigningError::err(SigningErrorType::Error_invalid_address).context(format!(
+                    "Field `{field:?}` is not allowed to have an associated tag."
+                ))
+            },
+        }
+        .to_string();
 
         // Check whether the Transaction object contains the tag already.
         // If so, it must be equal to the tag of a corresponding XAddress.
-        if let Some(handled_tag) = tx_object.get(tag_name) {
+        if let Some(handled_tag) = tx_object.get(&tag_name) {
             if handled_tag != &tag {
                 return SigningError::err(SigningErrorType::Error_invalid_params).context("Cannot have mismatched Account/Destination X-Address and SourceTag/DestinationTag");
             }
         }
 
         pre_processed.insert(field, Json::String(classic_addr));
-        pre_processed.insert(tag_name.to_string(), tag);
+        pre_processed.insert(tag_name, tag);
         Ok(())
     }
 }
