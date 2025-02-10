@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+#![allow(clippy::missing_safety_doc)]
+
 use tw_macros::tw_ffi;
 use tw_memory::ffi::{tw_string::TWString, Nonnull, NullableMut, RawPtrTrait};
 use tw_misc::try_or_else;
