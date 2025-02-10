@@ -55,7 +55,17 @@ fn convert_rust_type_to_cpp(ty: &str) -> String {
     {
         format!("{} *_Nullable", &captures[1])
     } else {
-        ty.to_string()
+        match ty {
+            "u8" => "uint8_t".to_string(),
+            "u16" => "uint16_t".to_string(),
+            "u32" => "uint32_t".to_string(),
+            "u64" => "uint64_t".to_string(),
+            "i8" => "int8_t".to_string(),
+            "i16" => "int16_t".to_string(),
+            "i32" => "int32_t".to_string(),
+            "i64" => "int64_t".to_string(),
+            _ => ty.to_string(),
+        }
     }
 }
 
@@ -199,7 +209,7 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
             .map_err(|e| BadFormat(e.to_string()))?;
         }
         _ => {
-            writeln!(&mut return_string, "    return Rust::{}", func.rust_name)
+            write!(&mut return_string, "    return Rust::{}", func.rust_name)
                 .map_err(|e| BadFormat(e.to_string()))?;
             return_string += generate_function_call(&converted_args)?.as_str();
         }
