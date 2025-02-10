@@ -38,7 +38,7 @@ impl ExecuteMsg {
 
     pub fn json<Payload: Serialize>(payload: Payload) -> SigningResult<ExecuteMsg> {
         let payload = serde_json::to_value(payload)
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("Error serializing message payload to JSON")?;
         Ok(ExecuteMsg::Json(payload))
     }

@@ -40,11 +40,11 @@ impl FromStr for ObjectDigest {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let bytes = base58::decode(s, Alphabet::Bitcoin)
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid Object Digest: expected valid base58 string")?;
         H256::try_from(bytes.as_slice())
             .map(ObjectDigest)
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid Object Digest: expected exactly 32 bytes")
     }
 }
@@ -61,6 +61,7 @@ impl CallArg {
     pub const SUI_SYSTEM_MUT: Self = Self::Object(ObjectArg::SUI_SYSTEM_MUT);
 }
 
+// Taken from here: https://github.com/MystenLabs/sui/blob/93f02057bb55eca407f04f551e6514f123005b65/crates/sui-types/src/transaction.rs#L107
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
 pub enum ObjectArg {
     // A Move object, either immutable, or owned mutable.
@@ -72,6 +73,8 @@ pub enum ObjectArg {
         initial_shared_version: SequenceNumber,
         mutable: bool,
     },
+    // A Move object that can be received in this transaction.
+    Receiving(ObjectRef),
 }
 
 impl ObjectArg {
@@ -84,6 +87,7 @@ impl ObjectArg {
     pub fn id(&self) -> ObjectID {
         match self {
             ObjectArg::ImmOrOwnedObject((id, _, _)) | ObjectArg::SharedObject { id, .. } => *id,
+            ObjectArg::Receiving((id, _, _)) => *id,
         }
     }
 }

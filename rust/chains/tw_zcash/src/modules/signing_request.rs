@@ -153,7 +153,7 @@ impl ZcashSigningRequestBuilder {
         };
 
         let branch_id = H32::try_from(extra_data.branch_id.as_ref())
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid 'branchId', expected 4-byte array")?;
         Ok(ZcashExtraData {
             branch_id,

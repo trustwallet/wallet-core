@@ -168,9 +168,9 @@ checksum = "d86b93f97252c47b41663388e6d155714a9d0c398b99f1005cbc5f978b29f445"
 
 [[package]]
 name = "bigdecimal"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6aaf33151a6429fe9211d1b276eafdf70cdff28b071e76c0b0e1503221ea3744"
+checksum = "a6773ddc0eafc0e509fb60e48dff7f450f8e674a0686ae8605e8d9901bd5eefa"
 dependencies = [
  "num-bigint",
  "num-integer",
@@ -1852,11 +1852,11 @@ dependencies = [
  "derivation-path",
  "serde",
  "serde_json",
+ "strum_macros",
  "tw_encoding",
  "tw_hash",
  "tw_keypair",
  "tw_memory",
- "tw_misc",
  "tw_number",
  "tw_proto",
 ]
@@ -1890,6 +1890,7 @@ dependencies = [
  "tw_native_injective",
  "tw_pactus",
  "tw_polkadot",
+ "tw_ripple",
  "tw_ronin",
  "tw_solana",
  "tw_substrate",
@@ -2174,6 +2175,26 @@ dependencies = [
  "arbitrary 1.3.0",
  "pb-rs",
  "quick-protobuf",
+]
+
+[[package]]
+name = "tw_ripple"
+version = "0.1.0"
+dependencies = [
+ "bigdecimal",
+ "byteorder",
+ "lazy_static",
+ "serde",
+ "serde_json",
+ "strum_macros",
+ "tw_base58_address",
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_misc",
+ "tw_proto",
 ]
 
 [[package]]

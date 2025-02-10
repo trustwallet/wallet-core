@@ -29,14 +29,6 @@ pub struct OutAction {
 }
 
 impl OutAction {
-    pub fn new(typ: OutActionType, mode: u8, out_msg: CellArc) -> Self {
-        OutAction {
-            typ,
-            mode,
-            data: out_msg,
-        }
-    }
-
     pub fn build(&self) -> CellResult<Cell> {
         match self.typ {
             OutActionType::SendMsg => self.build_out_action_send_msg(),

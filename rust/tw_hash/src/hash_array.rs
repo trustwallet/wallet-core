@@ -11,6 +11,7 @@ use tw_encoding::hex::ToHex;
 use zeroize::DefaultIsZeroes;
 
 pub type H32 = Hash<4>;
+pub type H64 = Hash<8>;
 pub type H128 = Hash<16>;
 pub type H160 = Hash<20>;
 pub type H192 = Hash<24>;

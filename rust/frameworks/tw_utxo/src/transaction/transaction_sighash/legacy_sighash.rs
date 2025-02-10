@@ -33,7 +33,7 @@ impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transact
 
         let hash = args.tx_hasher.hash(&stream.out());
         H256::try_from(hash.as_slice())
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("Bitcoin sighash must be H256")
     }
 

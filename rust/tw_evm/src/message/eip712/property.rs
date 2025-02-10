@@ -114,7 +114,7 @@ impl FromStr for PropertyType {
     type Err = MessageSigningError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Reader::parse_type(s).tw_err(|_| MessageSigningErrorKind::InvalidParameterType)
+        Reader::parse_type(s).tw_err(MessageSigningErrorKind::InvalidParameterType)
     }
 }
 

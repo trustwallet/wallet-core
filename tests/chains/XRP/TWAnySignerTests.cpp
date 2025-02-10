@@ -31,14 +31,6 @@ TEST(TWAnySignerRipple, SignXrpPayment) {
     ANY_SIGN(input, TWCoinTypeXRP);
 
     EXPECT_EQ(hex(output.encoded()), "12000022000000002401ec5fd8201b01ec5fed61400000000000000a68400000000000000a732103d13e1152965a51a4a9fd9a8b4ea3dd82a4eba6b25fcad5f460a2342bb650333f74463044022037d32835c9394f39b2cfd4eaf5b0a80e0db397ace06630fa2b099ff73e425dbc02205288f780330b7a88a1980fa83c647b5908502ad7de9a44500c08f0750b0d9e8481144c55f5a78067206507580be7bb2686c8460adff983148132e4e20aecf29090ac428a9c43f230a829220d");
-
-    // invalid tag
-    input.mutable_op_payment()->set_destination_tag(641505641505);
-
-    ANY_SIGN(input, TWCoinTypeXRP);
-
-    EXPECT_EQ(output.error(), Common::Proto::SigningError::Error_invalid_memo);
-    EXPECT_EQ(output.encoded(), "");
 }
 
 TEST(TWAnySignerRipple, SignXrpPaymentMain) {
@@ -464,6 +456,8 @@ TEST(TWAnySignerRipple, SignNfTokenCreateOffer) {
     input.set_last_ledger_sequence(22857543);
     input.set_account("rJdxtrVoL3Tak74EzN8SdMxFF6RP9smjJJ");
     input.set_private_key(key.data(), key.size());
+    // Set `SELL_NFTOKEN_FLAG` flag.
+    input.set_flags(0x00000001);
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeXRP);

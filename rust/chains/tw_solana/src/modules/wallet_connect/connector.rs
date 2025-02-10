@@ -46,11 +46,11 @@ impl SolanaWalletConnector {
         request: WCProto::ParseRequestInput<'_>,
     ) -> SigningResult<WCProto::ParseRequestOutput<'static>> {
         let sign_req: SignTransactionRequest = serde_json::from_str(&request.payload)
-            .tw_err(|_| SigningErrorType::Error_input_parse)
+            .tw_err(SigningErrorType::Error_input_parse)
             .context("Error parsing WalletConnect signing request as JSON")?;
 
         let transaction: VersionedTransaction = bincode::deserialize(&sign_req.transaction.0)
-            .tw_err(|_| SigningErrorType::Error_input_parse)
+            .tw_err(SigningErrorType::Error_input_parse)
             .context("Error deserializing Solana transaction as 'bincode'")?;
 
         let signing_input = Proto::SigningInput {

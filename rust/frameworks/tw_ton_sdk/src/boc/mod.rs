@@ -66,7 +66,7 @@ impl BagOfCells {
                 references,
                 raw_cell.is_exotic,
             )
-            .tw_err(|_| CellErrorType::BagOfCellsDeserializationError)?;
+            .tw_err(CellErrorType::BagOfCellsDeserializationError)?;
             cells.push(cell.into_arc());
         }
 
@@ -91,7 +91,7 @@ impl BagOfCells {
 
     pub fn parse_base64(base64: &str) -> CellResult<BagOfCells> {
         let bin = base64::decode(base64, STANDARD)
-            .tw_err(|_| CellErrorType::BagOfCellsDeserializationError)
+            .tw_err(CellErrorType::BagOfCellsDeserializationError)
             .context("Expected base64 encoded BagOfCells")?;
         Self::parse(&bin)
     }

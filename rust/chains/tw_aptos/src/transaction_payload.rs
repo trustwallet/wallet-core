@@ -353,7 +353,7 @@ pub fn convert_proto_struct_tag_to_type_tag(
         "{}::{}::{}",
         struct_tag.account_address, struct_tag.module, struct_tag.name
     ))
-    .tw_err(|_| SigningErrorType::Error_invalid_params)
+    .tw_err(SigningErrorType::Error_invalid_params)
 }
 
 pub fn convert_type_tag_to_struct_tag(type_tag: TypeTag) -> Aptos::Proto::StructTag<'static> {

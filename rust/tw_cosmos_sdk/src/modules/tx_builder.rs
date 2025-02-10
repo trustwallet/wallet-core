@@ -424,7 +424,7 @@ where
         raw: &Proto::mod_Message::RawJSON<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         let value = serde_json::from_str(&raw.value)
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("Error parsing raw JSON")?;
 
         let msg = JsonRawMessage {
@@ -634,7 +634,7 @@ where
             ProtoGrantType::grant_stake(ref stake) => google::protobuf::Any {
                 type_url: STAKE_AUTHORIZATION_MSG_TYPE.to_string().into(),
                 value: serialize(stake)
-                    .tw_err(|_| SigningErrorType::Error_invalid_params)
+                    .tw_err(SigningErrorType::Error_invalid_params)
                     .context("Error serializing Grant Stake Protobuf message")?
                     .into(),
             },
