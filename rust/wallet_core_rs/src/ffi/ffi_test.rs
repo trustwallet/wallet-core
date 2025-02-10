@@ -78,3 +78,83 @@ pub unsafe extern "C" fn tw_ffi_test_string_with_u8(
     result.push(b as char);
     TWString::from(result).into_ptr()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_unsigned_sum_u8() {
+        let a = 1;
+        let b = 2;
+        let result = unsafe { tw_ffi_test_unsigned_sum_u8(a, b) };
+        assert_eq!(result, 3);
+    }
+
+    #[test]
+    fn test_unsigned_sum_u16() {
+        let a = 1;
+        let b = 2;
+        let result = unsafe { tw_ffi_test_unsigned_sum_u16(a, b) };
+        assert_eq!(result, 3);
+    }
+
+    #[test]
+    fn test_unsigned_sum_u32() {
+        let a = 1;
+        let b = 2;
+        let result = unsafe { tw_ffi_test_unsigned_sum_u32(a, b) };
+        assert_eq!(result, 3);
+    }
+
+    #[test]
+    fn test_unsigned_sum_u64() {
+        let a = 1;
+        let b = 2;
+        let result = unsafe { tw_ffi_test_unsigned_sum_u64(a, b) };
+        assert_eq!(result, 3);
+    }
+
+    #[test]
+    fn test_signed_sum_i8() {
+        let a = 1;
+        let b = 2;
+        let result = unsafe { tw_ffi_test_signed_sum_i8(a, b) };
+        assert_eq!(result, 3);
+    }
+
+    #[test]
+    fn test_signed_sum_i16() {
+        let a = 1;
+        let b = 2;
+        let result = unsafe { tw_ffi_test_signed_sum_i16(a, b) };
+        assert_eq!(result, 3);
+    }
+
+    #[test]
+    fn test_signed_sum_i32() {
+        let a = 1;
+        let b = 2;
+        let result = unsafe { tw_ffi_test_signed_sum_i32(a, b) };
+        assert_eq!(result, 3);
+    }
+
+    #[test]
+    fn test_signed_sum_i64() {
+        let a = 1;
+        let b = 2;
+        let result = unsafe { tw_ffi_test_signed_sum_i64(a, b) };
+        assert_eq!(result, 3);
+    }
+
+    #[test]
+    fn test_string_with_u8() {
+        let a = "Hello";
+        let b = 98; // 'b
+        let a_str = TWString::from(a.to_string());
+        let result = unsafe { tw_ffi_test_string_with_u8(a_str.into_ptr(), b) };
+        let string = unsafe { TWString::from_ptr_as_ref(result) };
+        let string = string.unwrap().as_str();
+        assert_eq!(string, Some("Hellob"));
+    }
+}
