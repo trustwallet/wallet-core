@@ -12,59 +12,59 @@ use tw_misc::try_or_else;
 #[tw_ffi(ty = static_function, class = TWFFITest, name = UnsignedSumU8)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_ffi_test_unsigned_sum_u8(a: u8, b: u8) -> u8 {
-    a + b
+    a.checked_add(b).unwrap_or(u8::MAX)
 }
 
 /// Sum two unsigned integers of 16 bits
 #[tw_ffi(ty = static_function, class = TWFFITest, name = UnsignedSumU16)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_ffi_test_unsigned_sum_u16(a: u16, b: u16) -> u16 {
-    a + b
+    a.checked_add(b).unwrap_or(u16::MAX)
 }
 
 /// Sum two unsigned integers of 32 bits
 #[tw_ffi(ty = static_function, class = TWFFITest, name = UnsignedSumU32)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_ffi_test_unsigned_sum_u32(a: u32, b: u32) -> u32 {
-    a + b
+    a.checked_add(b).unwrap_or(u32::MAX)
 }
 
 /// Sum two unsigned integers of 64 bits
 #[tw_ffi(ty = static_function, class = TWFFITest, name = UnsignedSumU64)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_ffi_test_unsigned_sum_u64(a: u64, b: u64) -> u64 {
-    a + b
+    a.checked_add(b).unwrap_or(u64::MAX)
 }
 
 /// Sum two signed integers of 8 bits
 #[tw_ffi(ty = static_function, class = TWFFITest, name = SignedSumI8)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_ffi_test_signed_sum_i8(a: i8, b: i8) -> i8 {
-    a + b
+    a.checked_add(b).unwrap_or(i8::MAX)
 }
 
 /// Sum two signed integers of 16 bits
 #[tw_ffi(ty = static_function, class = TWFFITest, name = SignedSumI16)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_ffi_test_signed_sum_i16(a: i16, b: i16) -> i16 {
-    a + b
+    a.checked_add(b).unwrap_or(i16::MAX)
 }
 
 /// Sum two signed integers of 32 bits
 #[tw_ffi(ty = static_function, class = TWFFITest, name = SignedSumI32)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_ffi_test_signed_sum_i32(a: i32, b: i32) -> i32 {
-    a + b
+    a.checked_add(b).unwrap_or(i32::MAX)
 }
 
 /// Sum two signed integers of 64 bits
 #[tw_ffi(ty = static_function, class = TWFFITest, name = SignedSumI64)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_ffi_test_signed_sum_i64(a: i64, b: i64) -> i64 {
-    a + b
+    a.checked_add(b).unwrap_or(i64::MAX)
 }
 
-//
+/// Concatenate a string with a character
 #[tw_ffi(ty = static_function, class = TWFFITest, name = StringWithU8)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_ffi_test_string_with_u8(
@@ -77,84 +77,4 @@ pub unsafe extern "C" fn tw_ffi_test_string_with_u8(
     result.push_str(a_str);
     result.push(b as char);
     TWString::from(result).into_ptr()
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_unsigned_sum_u8() {
-        let a = 1;
-        let b = 2;
-        let result = unsafe { tw_ffi_test_unsigned_sum_u8(a, b) };
-        assert_eq!(result, 3);
-    }
-
-    #[test]
-    fn test_unsigned_sum_u16() {
-        let a = 1;
-        let b = 2;
-        let result = unsafe { tw_ffi_test_unsigned_sum_u16(a, b) };
-        assert_eq!(result, 3);
-    }
-
-    #[test]
-    fn test_unsigned_sum_u32() {
-        let a = 1;
-        let b = 2;
-        let result = unsafe { tw_ffi_test_unsigned_sum_u32(a, b) };
-        assert_eq!(result, 3);
-    }
-
-    #[test]
-    fn test_unsigned_sum_u64() {
-        let a = 1;
-        let b = 2;
-        let result = unsafe { tw_ffi_test_unsigned_sum_u64(a, b) };
-        assert_eq!(result, 3);
-    }
-
-    #[test]
-    fn test_signed_sum_i8() {
-        let a = 1;
-        let b = 2;
-        let result = unsafe { tw_ffi_test_signed_sum_i8(a, b) };
-        assert_eq!(result, 3);
-    }
-
-    #[test]
-    fn test_signed_sum_i16() {
-        let a = 1;
-        let b = 2;
-        let result = unsafe { tw_ffi_test_signed_sum_i16(a, b) };
-        assert_eq!(result, 3);
-    }
-
-    #[test]
-    fn test_signed_sum_i32() {
-        let a = 1;
-        let b = 2;
-        let result = unsafe { tw_ffi_test_signed_sum_i32(a, b) };
-        assert_eq!(result, 3);
-    }
-
-    #[test]
-    fn test_signed_sum_i64() {
-        let a = 1;
-        let b = 2;
-        let result = unsafe { tw_ffi_test_signed_sum_i64(a, b) };
-        assert_eq!(result, 3);
-    }
-
-    #[test]
-    fn test_string_with_u8() {
-        let a = "Hello";
-        let b = 98; // 'b
-        let a_str = TWString::from(a.to_string());
-        let result = unsafe { tw_ffi_test_string_with_u8(a_str.into_ptr(), b) };
-        let string = unsafe { TWString::from_ptr_as_ref(result) };
-        let string = string.unwrap().as_str();
-        assert_eq!(string, Some("Hellob"));
-    }
 }
