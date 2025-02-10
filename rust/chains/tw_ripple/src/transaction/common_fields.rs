@@ -34,7 +34,8 @@ pub struct CommonFields {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub fee: Option<NativeAmount>,
     /// Set of bit-flags for this transaction.
-    pub flags: u32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub flags: Option<u32>,
     /// Highest ledger index this transaction can appear in.
     /// Specifying this field places a strict upper limit on how long
     /// the transaction can wait to be validated or rejected.

@@ -4,7 +4,8 @@
 
 use crate::encode::encode_tx;
 use crate::modules::protobuf_builder::ProtobufBuilder;
-use crate::modules::transaction_signer::{TransactionSigner, TxPreImage};
+use crate::modules::transaction_signer::TransactionSigner;
+use crate::transaction::RippleTransaction;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::common::compile_input::SingleSignaturePubkey;
@@ -31,16 +32,17 @@ impl RippleCompiler {
         _coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
-        let unsigned_tx = ProtobufBuilder::new(&input).build_tx()?;
-        let TxPreImage {
-            pre_image_tx_data,
-            hash_to_sign,
-            ..
-        } = TransactionSigner::pre_image(&unsigned_tx)?;
+        let pre_image = if input.raw_json.is_empty() {
+            let unsigned_tx = ProtobufBuilder::new(&input).build_tx()?;
+            TransactionSigner::pre_image(&unsigned_tx)?
+        } else {
+            let tx_json = ProtobufBuilder::new(&input).build_tx_json()?;
+            TransactionSigner::pre_image(&tx_json)?
+        };
 
         Ok(CompilerProto::PreSigningOutput {
-            data_hash: hash_to_sign.to_vec().into(),
-            data: pre_image_tx_data.into(),
+            data_hash: pre_image.hash_to_sign.to_vec().into(),
+            data: pre_image.pre_image_tx_data.into(),
             ..CompilerProto::PreSigningOutput::default()
         })
     }
@@ -62,6 +64,20 @@ impl RippleCompiler {
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
+        if input.raw_json.is_empty() {
+            let unsigned_tx = ProtobufBuilder::new(&input).build_tx()?;
+            Self::compile_tx(unsigned_tx, signatures, public_keys)
+        } else {
+            let json_tx = ProtobufBuilder::new(&input).build_tx_json()?;
+            Self::compile_tx(json_tx, signatures, public_keys)
+        }
+    }
+
+    fn compile_tx<Transaction: RippleTransaction>(
+        unsigned_tx: Transaction,
+        signatures: Vec<SignatureBytes>,
+        public_keys: Vec<PublicKeyBytes>,
+    ) -> SigningResult<Proto::SigningOutput<'static>> {
         let SingleSignaturePubkey {
             signature,
             public_key,
@@ -74,7 +90,6 @@ impl RippleCompiler {
             .into_tw()
             .context("Invalid public key")?;
 
-        let unsigned_tx = ProtobufBuilder::new(&input).build_tx()?;
         let signed_tx = TransactionSigner::compile(unsigned_tx, &signature, &public_key)?;
 
         let signing_only = false;

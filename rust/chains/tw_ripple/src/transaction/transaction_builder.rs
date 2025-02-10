@@ -49,7 +49,7 @@ impl TransactionBuilder {
     }
 
     pub fn flags(&mut self, flags: u32) -> &mut Self {
-        self.common_fields.flags = flags;
+        self.common_fields.flags = Some(flags);
         self
     }
 

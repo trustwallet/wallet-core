@@ -14,6 +14,7 @@ pub const TRANSACTION_SIGNATURE_PREFIX: i32 = 0x53545800;
 pub mod encoder;
 pub mod field_instance;
 pub mod impls;
+pub mod st_array;
 pub mod st_object;
 pub mod xrpl_types;
 

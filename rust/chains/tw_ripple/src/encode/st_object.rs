@@ -8,6 +8,7 @@ use crate::definitions::DEFINITIONS;
 use crate::encode::encoder::Encoder;
 use crate::encode::field_instance::FieldInstance;
 use crate::encode::xrpl_types::XRPLTypes;
+use crate::encode::Encodable;
 use serde_json::{Map as JsonMap, Value as Json};
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
@@ -210,6 +211,13 @@ impl STObject {
 
         pre_processed.insert(field, Json::String(classic_addr));
         pre_processed.insert(tag_name, tag);
+        Ok(())
+    }
+}
+
+impl Encodable for STObject {
+    fn encode(&self, dst: &mut Encoder) -> SigningResult<()> {
+        dst.append_raw_slice(&self.0);
         Ok(())
     }
 }

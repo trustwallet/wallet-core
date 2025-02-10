@@ -4,6 +4,7 @@
 
 use crate::address::classic_address::ClassicAddress;
 use crate::address::RippleAddress;
+use crate::transaction::json_transaction::JsonTransaction;
 use crate::transaction::transaction_builder::TransactionBuilder;
 use crate::transaction::transaction_type::TransactionType;
 use crate::types::account_id::AccountId;
@@ -14,6 +15,7 @@ use crate::types::currency::Currency;
 use bigdecimal::BigDecimal;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
+use tw_encoding::hex::as_hex::AsHex;
 use tw_encoding::hex::DecodeHex;
 use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1;
@@ -28,6 +30,51 @@ pub struct ProtobufBuilder<'a> {
 impl<'a> ProtobufBuilder<'a> {
     pub fn new(input: &'a Proto::SigningInput<'a>) -> Self {
         ProtobufBuilder { input }
+    }
+
+    /// Builds a transaction from `SigningInput.rawJson` JSON object,
+    /// returns a [`JsonTransaction`] with deserialized [`CommonFields`].
+    ///
+    /// Note [`JsonTransaction`] implements [`RippleTransaction`]
+    pub fn build_tx_json(self) -> SigningResult<JsonTransaction> {
+        let mut tx: JsonTransaction = serde_json::from_str(self.input.raw_json.as_ref())
+            .tw_err(SigningErrorType::Error_input_parse)
+            .context("Invalid 'SigningInput.rawJson'")?;
+
+        let expected_signing_pubkey = self.signing_public_key()?;
+
+        // Check whether JSON transaction contains `SigningPubKey` field, otherwise set it.
+        if tx.common_fields.signing_pub_key.is_none() {
+            tx.common_fields.signing_pub_key = Some(AsHex(expected_signing_pubkey.compressed()));
+        }
+
+        // Check whether JSON transaction contains `Account` field, otherwise set it.
+        if tx.common_fields.account.is_none() {
+            let address = ClassicAddress::with_public_key(&expected_signing_pubkey)
+                .into_tw()
+                .context("Internal: error generating an address for the signing public key")?;
+            tx.common_fields.account = Some(RippleAddress::Classic(address));
+        }
+
+        // Check whether `SigningInput.fee` is specified, or JSON transaction doesn't contain that field,
+        // then override the field.
+        if self.input.fee != 0 || tx.common_fields.fee.is_none() {
+            tx.common_fields.fee = Some(self.fee()?);
+        }
+
+        // Check whether `SigningInput.sequence` is specified, or JSON transaction doesn't contain that field,
+        // then override the field.
+        if self.input.sequence != 0 || tx.common_fields.sequence.is_none() {
+            tx.common_fields.sequence = Some(self.input.sequence);
+        }
+
+        // Check whether `SigningInput.last_ledger_sequence` is specified, or JSON transaction doesn't contain that field,
+        // then override the field.
+        if self.input.last_ledger_sequence != 0 || tx.common_fields.last_ledger_sequence.is_none() {
+            tx.common_fields.last_ledger_sequence = Some(self.input.last_ledger_sequence);
+        }
+
+        Ok(tx)
     }
 
     pub fn build_tx(self) -> SigningResult<TransactionType> {
@@ -235,21 +282,8 @@ impl<'a> ProtobufBuilder<'a> {
     }
 
     pub fn prepare_builder(&self) -> SigningResult<TransactionBuilder> {
-        let signing_public_key = if !self.input.private_key.is_empty() {
-            secp256k1::PrivateKey::try_from(self.input.private_key.as_ref())
-                .into_tw()
-                .context("Invalid private key")?
-                .public()
-        } else if !self.input.public_key.is_empty() {
-            secp256k1::PublicKey::try_from(self.input.public_key.as_ref())
-                .into_tw()
-                .context("Invalid public key")?
-        } else {
-            return SigningError::err(SigningErrorType::Error_invalid_params)
-                .context("Expected either 'privateKey' or 'publicKey' to be provided");
-        };
-
-        let fee = NativeAmount::new(self.input.fee).context("Invalid fee")?;
+        let signing_public_key = self.signing_public_key()?;
+        let fee = self.fee()?;
 
         let mut builder = TransactionBuilder::default();
         builder
@@ -263,6 +297,26 @@ impl<'a> ProtobufBuilder<'a> {
             builder.source_tag(self.input.source_tag);
         }
         Ok(builder)
+    }
+
+    fn signing_public_key(&self) -> SigningResult<secp256k1::PublicKey> {
+        if !self.input.private_key.is_empty() {
+            secp256k1::PrivateKey::try_from(self.input.private_key.as_ref())
+                .into_tw()
+                .context("Invalid private key")
+                .map(|key| key.public())
+        } else if !self.input.public_key.is_empty() {
+            secp256k1::PublicKey::try_from(self.input.public_key.as_ref())
+                .into_tw()
+                .context("Invalid public key")
+        } else {
+            SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Expected either 'privateKey' or 'publicKey' to be provided")
+        }
+    }
+
+    fn fee(&self) -> SigningResult<NativeAmount> {
+        NativeAmount::new(self.input.fee).context("Invalid fee")
     }
 
     fn issued_currency(input: &Proto::CurrencyAmount) -> SigningResult<IssuedCurrency> {

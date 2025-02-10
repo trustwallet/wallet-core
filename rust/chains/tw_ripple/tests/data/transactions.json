@@ -252,5 +252,32 @@
             "TransactionType": "Payment",
             "TxnSignature": "304502210091DCA7AF189CD9DC93BDE24DEAE87381FBF16789C43113EE312241D648982B2402201C6055FEFFF1F119640AAC0B32C4F37375B0A96033E0527A21C1366920D6A524"
         }
+    },
+    {
+        "description": "Memos is a STArray",
+        "binary_no_signing": "120007220008000024000003EB2019000003EA201B005EE96764400000000D4D5FFA65D5038D7EA4C68000000000000000000000000000584D4D0000000000A426093A78AA86EB2B878E5C2E33FEC224A0184968400000000000000F8114F990B9E746546554A7B50A5E013BCB57095C6BB8F9EA7C09584D4D2076616C75657D07322E3230393635E1F1",
+        "json": {
+            "TakerPays": "223174650",
+            "Account": "rPk2dXr27rMw9G5Ej9ad2Tt7RJzGy8ycBp",
+            "TransactionType": "OfferCreate",
+            "Memos": [
+                {
+                    "Memo": {
+                        "MemoType": "584D4D2076616C7565",
+                        "MemoData": "322E3230393635"
+                    }
+                }
+            ],
+            "Fee": "15",
+            "OfferSequence": 1002,
+            "TakerGets": {
+                "currency": "XMM",
+                "value": "100",
+                "issuer": "rExAPEZvbkZqYPuNcZ7XEBLENEshsWDQc8"
+            },
+            "Flags": 524288,
+            "Sequence": 1003,
+            "LastLedgerSequence": 6220135
+        }
     }
 ]

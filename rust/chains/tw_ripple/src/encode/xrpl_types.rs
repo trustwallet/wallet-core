@@ -3,6 +3,8 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::encode::encoder::Encoder;
+use crate::encode::st_array::STArray;
+use crate::encode::st_object::STObject;
 use crate::encode::Encodable;
 use crate::types::account_id::AccountId;
 use crate::types::amount::Amount;
@@ -34,6 +36,8 @@ pub enum XRPLTypes {
     Hash160(H160),
     Hash256(H256),
     Vector256(Vector256),
+    STArray(STArray),
+    STObject(STObject),
     UInt8(u8),
     UInt16(u16),
     UInt32(u32),
@@ -73,13 +77,14 @@ impl XRPLTypes {
         } else if value.is_object() {
             match type_name {
                 "Amount" => Ok(XRPLTypes::Amount(Amount::try_from(value)?)),
-                // `STObject`, `XChainBridge` types aren't supported yet.
+                "STObject" => Ok(XRPLTypes::STObject(STObject::try_from_value(value, false)?)),
+                // `XChainBridge` types isn't supported yet.
                 _ => unsupported_error(type_name),
             }
         } else if value.is_array() {
             match type_name {
                 "Vector256" => Ok(XRPLTypes::Vector256(deserialize_json(value)?)),
-                // `STObject`, `XChainBridge` types aren't supported yet.
+                "STArray" => Ok(XRPLTypes::STArray(deserialize_json(value)?)),
                 _ => unsupported_error(type_name),
             }
         } else {
@@ -99,6 +104,8 @@ impl Encodable for XRPLTypes {
             XRPLTypes::Hash160(ty) => ty.encode(dst),
             XRPLTypes::Hash256(ty) => ty.encode(dst),
             XRPLTypes::Vector256(ty) => ty.encode(dst),
+            XRPLTypes::STArray(ty) => ty.encode(dst),
+            XRPLTypes::STObject(ty) => ty.encode(dst),
             XRPLTypes::UInt8(ty) => ty.encode(dst),
             XRPLTypes::UInt16(ty) => ty.encode(dst),
             XRPLTypes::UInt32(ty) => ty.encode(dst),
