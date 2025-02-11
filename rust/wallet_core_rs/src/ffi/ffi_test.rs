@@ -5,7 +5,9 @@
 #![allow(clippy::missing_safety_doc)]
 
 use tw_macros::tw_ffi;
-use tw_memory::ffi::{tw_string::TWString, Nonnull, NullableMut, RawPtrTrait};
+use tw_memory::ffi::{
+    tw_data::TWData, tw_string::TWString, Nonnull, Nullable, NullableMut, RawPtrTrait,
+};
 use tw_misc::try_or_else;
 
 /// Sum two unsigned integers of 8 bits
@@ -77,6 +79,32 @@ pub unsafe extern "C" fn tw_ffi_test_string_with_u8(
     result.push_str(a_str);
     result.push(b as char);
     TWString::from(result).into_ptr()
+}
+
+#[tw_ffi(ty = static_function, class = TWFFITest, name = DataWithU8)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_ffi_test_data_with_u8(
+    a: Nonnull<TWData>,
+    b: u8,
+) -> NullableMut<TWData> {
+    let a = try_or_else!(TWData::from_ptr_as_ref(a), std::ptr::null_mut);
+    let mut data = Vec::new();
+    data.extend_from_slice(a.clone().into_vec().as_slice());
+    data.push(b);
+    TWData::from(data).into_ptr()
+}
+
+#[tw_ffi(ty = static_function, class = TWFFITest, name = NullableDataWithU8)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_ffi_test_nullable_data_with_u8(
+    a: Nullable<TWData>,
+    b: u8,
+) -> NullableMut<TWData> {
+    let a = try_or_else!(TWData::from_ptr_as_ref(a), std::ptr::null_mut);
+    let mut data = Vec::new();
+    data.extend_from_slice(a.clone().into_vec().as_slice());
+    data.push(b);
+    TWData::from(data).into_ptr()
 }
 
 #[cfg(test)]
@@ -156,5 +184,16 @@ mod tests {
         let string = unsafe { TWString::from_ptr_as_ref(result) };
         let string = string.unwrap().as_str();
         assert_eq!(string, Some("Hellob"));
+    }
+
+    #[test]
+    fn test_data_with_u8() {
+        let a = "Hello";
+        let b = 98; // 'b
+        let a_data: TWData = a.as_bytes().to_vec().into();
+        let result = unsafe { tw_ffi_test_data_with_u8(a_data.into_ptr(), b) };
+        let data = unsafe { TWData::from_ptr_as_ref(result) };
+        let data = data.unwrap().clone().into_vec();
+        assert_eq!(data, vec![72, 101, 108, 108, 111, 98]);
     }
 }

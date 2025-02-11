@@ -91,6 +91,9 @@ fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
             if arg.ty.contains("TWString") && included_headers.insert("TWString.h") {
                 writeln!(file, "#include \"TWString.h\"")?;
             }
+            if arg.ty.contains("TWData") && included_headers.insert("TWData.h") {
+                writeln!(file, "#include \"TWData.h\"")?;
+            }
             // Additional type checks can be added here in the future
         }
     }
@@ -208,6 +211,22 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
             )
             .map_err(|e| BadFormat(e.to_string()))?;
         }
+        "NullableMut<TWData>" | "Nullable<TWData>" => {
+            write!(
+                &mut return_string,
+                "    const Rust::TWDataWrapper resultPtr = Rust::{}",
+                func.rust_name
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+            return_string += generate_function_call(&converted_args)?.as_str();
+            writeln!(&mut return_string, "    const auto resultData = resultPtr.toDataOrDefault();")
+                .map_err(|e| BadFormat(e.to_string()))?;
+            writeln!(
+                &mut return_string,
+                "    return TWDataCreateWithBytes(resultData.data(), resultData.size());"
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+        }
         _ => {
             write!(&mut return_string, "    return Rust::{}", func.rust_name)
                 .map_err(|e| BadFormat(e.to_string()))?;
@@ -238,6 +257,32 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
                     \t\tauto& {name}String = *reinterpret_cast<const std::string*>({name});\n\
                     \t\tconst Rust::TWStringWrapper {name}RustStr = {name}String;\n\
                     \t\t{name}Ptr = {name}RustStr.get();\n\
+                \t}} else {{\n\
+                    \t\t{name}Ptr = nullptr;\n\
+                \t}}"
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+            Ok((conversion_code, format!("{}Ptr", name)))
+        }
+        "TWData *_Nonnull" => {
+            let mut conversion_code = String::new();
+            writeln!(
+                &mut conversion_code,
+                "\tauto& {name}Data = *reinterpret_cast<const TW::Data*>({name});\n\
+                \tconst Rust::TWDataWrapper {name}RustData = {name}Data;"
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+            Ok((conversion_code, format!("{}RustData.get()", name)))
+        }
+        "TWData *_Nullable" => {
+            let mut conversion_code = String::new();
+            writeln!(
+                &mut conversion_code,
+                "\tconst TW::Rust::TWData* {name}Ptr;\n\
+                \tif ({name} != nullptr) {{\n\
+                    \t\tauto& {name}Data = *reinterpret_cast<const TW::Data*>({name});\n\
+                    \t\tconst Rust::TWDataWrapper {name}RustData = {name}Data;\n\
+                    \t\t{name}Ptr = {name}RustData.get();\n\
                 \t}} else {{\n\
                     \t\t{name}Ptr = nullptr;\n\
                 \t}}"
