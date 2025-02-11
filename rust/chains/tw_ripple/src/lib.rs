@@ -44,7 +44,7 @@
 //! # use tw_keypair::traits::KeyPairTrait;
 //! # use tw_ripple::address::classic_address::ClassicAddress;
 //! # use tw_ripple::address::RippleAddress;
-//! # use tw_ripple::encode::encode_tx;
+//! # use tw_ripple::encode::{encode_tx, EncodeMode};
 //! # use tw_ripple::modules::transaction_signer::TransactionSigner;
 //! # use tw_ripple::transaction::transaction_builder::TransactionBuilder;
 //! # use tw_ripple::transaction::transaction_type::TransactionType;
@@ -70,8 +70,7 @@
 //! let unsigned_tx = TransactionType::Payment(payment);
 //!
 //! let signed_tx = TransactionSigner::sign(unsigned_tx, key.private()).unwrap();
-//! let signing_only = false;
-//! let _encoded_tx = encode_tx(&signed_tx, signing_only).unwrap();
+//! let _encoded_tx = encode_tx(&signed_tx, EncodeMode::All).unwrap();
 //! ```
 //!
 //! ## Integration with WalletCore
