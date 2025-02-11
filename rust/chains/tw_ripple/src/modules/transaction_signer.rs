@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::classic_address::ClassicAddress;
-use crate::encode::{encode_tx, TxEncoded};
+use crate::encode::{encode_tx, EncodeMode, TxEncoded};
 use crate::transaction::RippleTransaction;
 use serde_json::Value as Json;
 use tw_coin_entry::error::prelude::*;
@@ -49,8 +49,7 @@ impl TransactionSigner {
     pub fn pre_image<Transaction: RippleTransaction>(
         tx: &Transaction,
     ) -> SigningResult<TxPreImage> {
-        let signing_only = true;
-        let TxEncoded { json, encoded } = encode_tx(tx, signing_only)?;
+        let TxEncoded { json, encoded } = encode_tx(tx, EncodeMode::SigningOnly)?;
         let pre_image: Data = NETWORK_PREFIX.iter().copied().chain(encoded).collect();
 
         let hash512 = sha512(&pre_image);

@@ -27,14 +27,22 @@ pub struct TxEncoded {
     pub encoded: Data,
 }
 
+pub enum EncodeMode {
+    /// Encode all fields (only if `isSerialized: true`).
+    All,
+    /// Encode `isSigningField: true` transaction fields only.
+    SigningOnly,
+}
+
 pub fn encode_tx<Transaction: RippleTransaction>(
     tx: &Transaction,
-    signing_only: bool,
+    mode: EncodeMode,
 ) -> SigningResult<TxEncoded> {
     let json = serde_json::to_value(tx)
         .into_tw()
         .context("Error serializing a Ripple transaction as JSON")?;
 
+    let signing_only = matches!(mode, EncodeMode::SigningOnly);
     let st_object = STObject::try_from_value(json.clone(), signing_only)?;
     Ok(TxEncoded {
         json,
