@@ -4,15 +4,18 @@
 
 use crate::address::classic_address::ClassicAddress;
 use crate::address::RippleAddress;
+use crate::transaction::common_fields::CommonFields;
 use crate::transaction::json_transaction::JsonTransaction;
 use crate::transaction::transaction_builder::TransactionBuilder;
 use crate::transaction::transaction_type::TransactionType;
+use crate::transaction::RippleTransaction;
 use crate::types::account_id::AccountId;
 use crate::types::amount::issued_currency::IssuedCurrency;
 use crate::types::amount::native_amount::NativeAmount;
 use crate::types::amount::Amount;
 use crate::types::currency::Currency;
 use bigdecimal::BigDecimal;
+use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex::as_hex::AsHex;
@@ -23,6 +26,30 @@ use tw_misc::traits::{OptionalEmpty, OptionalInt};
 use tw_proto::Ripple::Proto;
 use tw_proto::Ripple::Proto::mod_SigningInput::OneOfoperation_oneof as OperationType;
 
+#[derive(Deserialize, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum SigningRequest {
+    Typed(TransactionType),
+    RawJSON(JsonTransaction),
+}
+
+impl RippleTransaction for SigningRequest {
+    fn common_types(&self) -> &CommonFields {
+        match self {
+            SigningRequest::Typed(ty) => ty.common_types(),
+            SigningRequest::RawJSON(json) => json.common_types(),
+        }
+    }
+
+    fn common_types_mut(&mut self) -> &mut CommonFields {
+        match self {
+            SigningRequest::Typed(ty) => ty.common_types_mut(),
+            SigningRequest::RawJSON(json) => json.common_types_mut(),
+        }
+    }
+}
+
 pub struct ProtobufBuilder<'a> {
     input: &'a Proto::SigningInput<'a>,
 }
@@ -30,6 +57,14 @@ pub struct ProtobufBuilder<'a> {
 impl<'a> ProtobufBuilder<'a> {
     pub fn new(input: &'a Proto::SigningInput<'a>) -> Self {
         ProtobufBuilder { input }
+    }
+
+    pub fn build(self) -> SigningResult<SigningRequest> {
+        if self.input.raw_json.is_empty() {
+            self.build_typed().map(SigningRequest::Typed)
+        } else {
+            self.build_tx_json().map(SigningRequest::RawJSON)
+        }
     }
 
     /// Builds a transaction from `SigningInput.rawJson` JSON object,
@@ -77,7 +112,7 @@ impl<'a> ProtobufBuilder<'a> {
         Ok(tx)
     }
 
-    pub fn build_tx(self) -> SigningResult<TransactionType> {
+    pub fn build_typed(self) -> SigningResult<TransactionType> {
         match self.input.operation_oneof {
             OperationType::op_payment(ref payment) => self.payment(payment),
             OperationType::op_trust_set(ref trust_set) => self.trust_set(trust_set),
