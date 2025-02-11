@@ -64,6 +64,7 @@ pub enum InputObjectArg {
     #[serde(rename_all = "camelCase")]
     Receiving {
         digest: String,
+        #[serde(with = "as_string")]
         version: u64,
         object_id: String,
     },
