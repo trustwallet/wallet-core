@@ -58,12 +58,12 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "WalletCore",
-            url: ${core_download_url},
+            url: "${core_download_url}",
             checksum: "${core_hash}"
         ),
         .binaryTarget(
             name: "SwiftProtobuf",
-            url: ${protobuf_download_url},
+            url: "${protobuf_download_url}",
             checksum: "${protobuf_hash}"
         )
     ]
