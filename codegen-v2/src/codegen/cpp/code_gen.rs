@@ -32,28 +32,36 @@ pub struct TWArg {
     pub ty: String,
 }
 
+fn convert_standard_type_to_cpp(ty: &str) -> String {
+    match ty {
+        "TWPrivateKey" => "struct TWPrivateKey".to_string(),
+        "TWPublicKey" => "struct TWPublicKey".to_string(),
+        _ => ty.to_string(),
+    }
+}
+
 fn convert_rust_type_to_cpp(ty: &str) -> String {
     let trimmed = ty.replace(" ", "");
     if let Some(captures) = Regex::new(r"^Nonnull<(.+)>$")
         .expect("Failed to create regex")
         .captures(&trimmed)
     {
-        format!("{} *_Nonnull", &captures[1])
+        format!("{} *_Nonnull", convert_standard_type_to_cpp(&captures[1]))
     } else if let Some(captures) = Regex::new(r"^NonnullMut<(.+)>$")
         .expect("Failed to create regex")
         .captures(&trimmed)
     {
-        format!("{} *_Nonnull", &captures[1])
+        format!("{} *_Nonnull", convert_standard_type_to_cpp(&captures[1]))
     } else if let Some(captures) = Regex::new(r"^Nullable<(.+)>$")
         .expect("Failed to create regex")
         .captures(&trimmed)
     {
-        format!("{} *_Nullable", &captures[1])
+        format!("{} *_Nullable", convert_standard_type_to_cpp(&captures[1]))
     } else if let Some(captures) = Regex::new(r"^NullableMut<(.+)>$")
         .expect("Failed to create regex")
         .captures(&trimmed)
     {
-        format!("{} *_Nullable", &captures[1])
+        format!("{} *_Nullable", convert_standard_type_to_cpp(&captures[1]))
     } else {
         match ty {
             "u8" => "uint8_t".to_string(),
@@ -240,9 +248,9 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
                 &mut return_string,
                 "\tconst auto result = Rust::{}{}\n\
                 \tif (!result) {{ return nullptr; }}\n\
-                \tauto resultData = Rust::tw_private_key_bytes(result);\n\
-                \tauto resultSize = Rust::tw_private_key_size(result);\n\
-                \tData out(resultData, resultData + resultSize);\n\
+                \tconst auto resultData = Rust::tw_private_key_bytes(result);\n\
+                \tconst auto resultSize = Rust::tw_private_key_size(result);\n\
+                \tconst Data out(resultData, resultData + resultSize);\n\
                 \treturn new TWPrivateKey {{ PrivateKey(out) }};\n",
                 func.rust_name,
                 generate_function_call(&converted_args)?.as_str()
@@ -254,13 +262,20 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
                 &mut return_string,
                 "\tconst auto result = Rust::{}{}\n\
                 \tif (!result) {{ return nullptr; }}\n\
-                \tauto resultData = Rust::tw_public_key_data(result);\n\
-                \tData out(resultData.data, resultData.data + resultData.size);\n\
+                \tconst auto resultData = Rust::tw_public_key_data(result);\n\
+                \tconst Data out(resultData.data, resultData.data + resultData.size);\n\
                 \treturn new TWPublicKey {{ PublicKey(out, a->impl.type) }};\n",
                 func.rust_name,
                 generate_function_call(&converted_args)?.as_str()
             )
             .map_err(|e| BadFormat(e.to_string()))?;
+        }
+        ty if Regex::new(r"^Nonnull(Mut)?<(.+)>$")
+            .expect("Failed to create regex")
+            .captures(&ty.replace(" ", ""))
+            .is_some() =>
+        {
+            panic!("Nonnull types are not supported in C++");
         }
         _ => {
             write!(
@@ -291,13 +306,12 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
-                "\tconst TW::Rust::TWString* {name}Ptr;\n\
+                "\tconst TW::Rust::TWString* {name}Ptr = nullptr;\n\
+                \tRust::TWStringWrapper {name}RustStr;\n\
                 \tif ({name} != nullptr) {{\n\
                     \t\tauto& {name}String = *reinterpret_cast<const std::string*>({name});\n\
-                    \t\tconst Rust::TWStringWrapper {name}RustStr = {name}String;\n\
+                    \t\t{name}RustStr = {name}String;\n\
                     \t\t{name}Ptr = {name}RustStr.get();\n\
-                \t}} else {{\n\
-                    \t\t{name}Ptr = nullptr;\n\
                 \t}}"
             )
             .map_err(|e| BadFormat(e.to_string()))?;
@@ -317,69 +331,64 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
-                "\tconst TW::Rust::TWData* {name}Ptr;\n\
+                "\tconst TW::Rust::TWData* {name}Ptr = nullptr;\n\
+                \tRust::TWDataWrapper {name}RustData;\n\
                 \tif ({name} != nullptr) {{\n\
                     \t\tauto& {name}Data = *reinterpret_cast<const TW::Data*>({name});\n\
-                    \t\tconst Rust::TWDataWrapper {name}RustData = {name}Data;\n\
+                    \t\t{name}RustData = {name}Data;\n\
                     \t\t{name}Ptr = {name}RustData.get();\n\
-                \t}} else {{\n\
-                    \t\t{name}Ptr = nullptr;\n\
                 \t}}"
             )
             .map_err(|e| BadFormat(e.to_string()))?;
             Ok((conversion_code, format!("{}Ptr", name)))
         }
-        "TWPrivateKey *_Nonnull" => {
+        "struct TWPrivateKey *_Nonnull" => {
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
-                "\tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}->impl.bytes.data(), {name}->impl.bytes.size());\n\
-                \tconst auto {name}RustPrivateKey = std::shared_ptr<Rust::TWPrivateKey>({name}RustRaw, Rust::tw_private_key_delete);"
+                "\tauto &{name}PrivateKey = *reinterpret_cast<const TW::PrivateKey*>(a);\n\
+                \tconst Rust::TWPrivateKey* {name}RustPrivateKey = Rust::tw_private_key_create_with_data({name}PrivateKey.bytes.data(), {name}PrivateKey.bytes.size());"
             )
             .map_err(|e| BadFormat(e.to_string()))?;
-            Ok((conversion_code, format!("{}RustPrivateKey.get()", name)))
+            Ok((conversion_code, format!("{}RustPrivateKey", name)))
         }
-        "TWPrivateKey *_Nullable" => {
+        "struct TWPrivateKey *_Nullable" => {
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
-                "\tconst TW::Rust::TWPrivateKey* {name}Ptr;\n\
+                "\tconst TW::Rust::TWPrivateKey* {name}Ptr = nullptr;\n\
+                \tstd::shared_ptr<TW::Rust::TWPrivateKey> {name}RustPrivateKey;\n\
                 \tif ({name} != nullptr) {{\n\
-                    \t\tconst auto {name}PrivateKey = *{name};\n\
-                    \t\tauto& {name}Data = {name}PrivateKey.impl.bytes;\n\
-                    \t\tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}Data.data(), {name}Data.size());\n\
-                    \t\tconst auto {name}RustPrivateKey = std::shared_ptr<Rust::TWPrivateKey>({name}RustRaw, Rust::tw_private_key_delete);\n\
+                    \t\tconst auto& {name}PrivateKey = {name};\n\
+                    \t\tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}PrivateKey->impl.bytes.data(), {name}PrivateKey->impl.bytes.size());\n\
+                    \t\t{name}RustPrivateKey = Rust::wrapTWPrivateKey({name}RustRaw);\n\
                     \t\t{name}Ptr = {name}RustPrivateKey.get();\n\
-                \t}} else {{\n\
-                    \t\t{name}Ptr = nullptr;\n\
                 \t}}"
             )
             .map_err(|e| BadFormat(e.to_string()))?;
             Ok((conversion_code, format!("{}Ptr", name)))
         }
-        "TWPublicKey *_Nonnull" => {
+        "struct TWPublicKey *_Nonnull" => {
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
-                "\tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}->impl.bytes.data(), {name}->impl.bytes.size(), {name}->impl.type);\n\
-                \tconst auto {name}RustPublicKey = std::shared_ptr<Rust::TWPublicKey>({name}RustRaw, Rust::tw_public_key_delete);"
+                "\tauto &{name}PublicKey = *reinterpret_cast<const TW::PublicKey*>(a);\n\
+                \tconst Rust::TWPublicKey* {name}RustPublicKey = Rust::tw_public_key_create_with_data({name}PublicKey.bytes.data(), {name}PublicKey.bytes.size(), {name}PublicKey.type);"
             )
             .map_err(|e| BadFormat(e.to_string()))?;
-            Ok((conversion_code, format!("{}RustPublicKey.get()", name)))
+            Ok((conversion_code, format!("{}RustPublicKey", name)))
         }
-        "TWPublicKey *_Nullable" => {
+        "struct TWPublicKey *_Nullable" => {
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
-                "\tconst TW::Rust::TWPublicKey* {name}Ptr;\n\
+                "\tconst TW::Rust::TWPublicKey* {name}Ptr = nullptr;\n\
+                \tstd::shared_ptr<TW::Rust::TWPublicKey> {name}RustPublicKey;\n\
                 \tif ({name} != nullptr) {{\n\
-                    \t\tconst auto {name}PublicKey = *{name};\n\
-                    \t\tauto& {name}Data = {name}PublicKey.impl.bytes;\n\
-                    \t\tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}Data.data(), {name}Data.size(), {name}PublicKey.impl.type);\n\
-                    \t\tconst auto {name}RustPublicKey = std::shared_ptr<Rust::TWPublicKey>({name}RustRaw, Rust::tw_public_key_delete);\n\
+                    \t\tconst auto& {name}PublicKey = {name};\n\
+                    \t\tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}PublicKey->impl.bytes.data(), {name}PublicKey->impl.bytes.size(), {name}PublicKey->impl.type);\n\
+                    \t\t{name}RustPublicKey = Rust::wrapTWPublicKey({name}RustRaw);\n\
                     \t\t{name}Ptr = {name}RustPublicKey.get();\n\
-                \t}} else {{\n\
-                    \t\t{name}Ptr = nullptr;\n\
                 \t}}"
             )
             .map_err(|e| BadFormat(e.to_string()))?;

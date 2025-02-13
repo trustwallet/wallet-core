@@ -74,7 +74,7 @@ pub unsafe extern "C" fn tw_ffi_test_signed_sum_i64(a: i64, b: i64) -> i64 {
 #[tw_ffi(ty = static_function, class = TWFFITest, name = StringWithU8)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_ffi_test_string_with_u8(
-    a: Nonnull<TWString>,
+    a: Nullable<TWString>,
     b: u8,
 ) -> NullableMut<TWString> {
     let a = try_or_else!(TWString::from_ptr_as_ref(a), std::ptr::null_mut);
@@ -120,10 +120,32 @@ pub unsafe extern "C" fn tw_ffi_test_private_key(
     tw_private_key_create_with_data(c.as_ref().bytes().as_ptr(), c.as_ref().bytes().len())
 }
 
+#[tw_ffi(ty = static_function, class = TWFFITest, name = NullablePrivateKey)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_ffi_test_nullable_private_key(
+    a: Nullable<TWPrivateKey>,
+) -> NullableMut<TWPrivateKey> {
+    let c = try_or_else!(TWPrivateKey::from_ptr_as_ref(a), std::ptr::null_mut);
+    tw_private_key_create_with_data(c.as_ref().bytes().as_ptr(), c.as_ref().bytes().len())
+}
+
 #[tw_ffi(ty = static_function, class = TWFFITest, name = PublicKey)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_ffi_test_public_key(
     a: Nonnull<TWPublicKey>,
+) -> NullableMut<TWPublicKey> {
+    let c = try_or_else!(TWPublicKey::from_ptr_as_ref(a), std::ptr::null_mut);
+    tw_public_key_create_with_data(
+        c.as_ref().to_bytes().as_ptr(),
+        c.as_ref().to_bytes().len(),
+        c.as_ref().public_key_type() as u32,
+    )
+}
+
+#[tw_ffi(ty = static_function, class = TWFFITest, name = NullablePublicKey)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_ffi_test_nullable_public_key(
+    a: Nullable<TWPublicKey>,
 ) -> NullableMut<TWPublicKey> {
     let c = try_or_else!(TWPublicKey::from_ptr_as_ref(a), std::ptr::null_mut);
     tw_public_key_create_with_data(
