@@ -12,7 +12,8 @@ use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::prefix::BitcoinBase58Prefix;
 use tw_encoding::base58::Alphabet;
-use tw_hash::hasher::{sha256_ripemd, Hasher};
+use tw_hash::hasher::Hasher;
+use tw_hash::ripemd::sha256_ripemd;
 use tw_hash::H160;
 use tw_keypair::{ecdsa, tw};
 use tw_memory::Data;
@@ -20,7 +21,7 @@ use tw_memory::Data;
 pub const BITCOIN_ADDRESS_SIZE: usize = 21;
 pub const BITCOIN_ADDRESS_CHECKSUM_SIZE: usize = 4;
 
-type BitcoinBase58Address = Base58Address<BITCOIN_ADDRESS_SIZE, BITCOIN_ADDRESS_CHECKSUM_SIZE>;
+pub type BitcoinBase58Address = Base58Address<BITCOIN_ADDRESS_SIZE, BITCOIN_ADDRESS_CHECKSUM_SIZE>;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LegacyAddress(BitcoinBase58Address);

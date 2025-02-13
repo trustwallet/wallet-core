@@ -10,7 +10,8 @@ use crate::{
 };
 use bitcoin::hashes::Hash;
 use tw_coin_entry::error::prelude::*;
-use tw_hash::{hasher::Hasher, ripemd::bitcoin_hash_160, H160, H256};
+use tw_hash::ripemd::sha256_ripemd;
+use tw_hash::{hasher::Hasher, H160, H256};
 use tw_keypair::{ecdsa, schnorr};
 use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
@@ -94,7 +95,7 @@ impl UtxoBuilder {
 
     // TODO next iteration.
     // pub fn p2sh(self, redeem_script: Script) -> SigningResult<(TransactionInput, UtxoToSign)> {
-    //     let h = bitcoin_hash_160(redeem_script.as_slice());
+    //     let h = sha256_ripemd(redeem_script.as_slice());
     //     let redeem_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
     //
     //     self.p2sh_with_hash(redeem_hash)
@@ -155,7 +156,7 @@ impl UtxoBuilder {
         mut self,
         pubkey: &ecdsa::secp256k1::PublicKey,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        let h = bitcoin_hash_160(pubkey.compressed().as_slice());
+        let h = sha256_ripemd(pubkey.compressed().as_slice());
         let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
 
         self.finalize_out_point()?;
@@ -216,7 +217,7 @@ impl UtxoBuilder {
         mut self,
         pubkey: &ecdsa::secp256k1::PublicKey,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        let h = bitcoin_hash_160(pubkey.compressed().as_slice());
+        let h = sha256_ripemd(pubkey.compressed().as_slice());
         let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
 
         self.finalize_out_point()?;

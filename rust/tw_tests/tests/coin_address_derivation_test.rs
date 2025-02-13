@@ -162,6 +162,7 @@ fn test_coin_address_derivation() {
             CoinType::Zelcash => "t1SUmK7UVqTXQDpEAqHcJWBv7pNUFHJRpDx",
             CoinType::Komodo => "RHtMPHweTxYNhBYUN2nJTu9QKyjm7MRKsF",
             CoinType::XRP => "r9cwJ8hM13jodBBGtioB44FUZ5HwWGwqfX",
+            CoinType::Groestlcoin => todo!(),
             // end_of_coin_address_derivation_tests_marker_do_not_modify
             _ => panic!("{:?} must be covered", coin),
         };
