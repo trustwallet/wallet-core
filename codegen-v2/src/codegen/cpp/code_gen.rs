@@ -247,9 +247,10 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
             write!(
                 &mut return_string,
                 "\tconst auto result = Rust::{}{}\n\
-                \tif (!result) {{ return nullptr; }}\n\
-                \tconst auto resultData = Rust::tw_private_key_bytes(result);\n\
-                \tconst auto resultSize = Rust::tw_private_key_size(result);\n\
+                \tstd::shared_ptr<TW::Rust::TWPrivateKey> resultRustPrivateKey = Rust::wrapTWPrivateKey(result);\n\
+                \tif (!resultRustPrivateKey.get()) {{ return nullptr; }}\n\
+                \tconst auto resultData = Rust::tw_private_key_bytes(resultRustPrivateKey.get());\n\
+                \tconst auto resultSize = Rust::tw_private_key_size(resultRustPrivateKey.get());\n\
                 \tconst Data out(resultData, resultData + resultSize);\n\
                 \treturn new TWPrivateKey {{ PrivateKey(out) }};\n",
                 func.rust_name,
@@ -261,8 +262,9 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
             write!(
                 &mut return_string,
                 "\tconst auto result = Rust::{}{}\n\
-                \tif (!result) {{ return nullptr; }}\n\
-                \tconst auto resultData = Rust::tw_public_key_data(result);\n\
+                \tstd::shared_ptr<TW::Rust::TWPublicKey> resultRustPublicKey = Rust::wrapTWPublicKey(result);\n\
+                \tif (!resultRustPublicKey.get()) {{ return nullptr; }}\n\
+                \tconst auto resultData = Rust::tw_public_key_data(resultRustPublicKey.get());\n\
                 \tconst Data out(resultData.data, resultData.data + resultData.size);\n\
                 \treturn new TWPublicKey {{ PublicKey(out, a->impl.type) }};\n",
                 func.rust_name,
