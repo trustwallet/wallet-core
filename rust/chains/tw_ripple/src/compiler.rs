@@ -2,9 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::encode::encode_tx;
+use crate::encode::{encode_tx, EncodeMode};
 use crate::modules::protobuf_builder::ProtobufBuilder;
-use crate::modules::transaction_signer::{TransactionSigner, TxPreImage};
+use crate::modules::transaction_signer::TransactionSigner;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::common::compile_input::SingleSignaturePubkey;
@@ -31,16 +31,12 @@ impl RippleCompiler {
         _coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
-        let unsigned_tx = ProtobufBuilder::new(&input).build_tx()?;
-        let TxPreImage {
-            pre_image_tx_data,
-            hash_to_sign,
-            ..
-        } = TransactionSigner::pre_image(&unsigned_tx)?;
+        let unsigned_tx = ProtobufBuilder::new(&input).build()?;
+        let pre_image = TransactionSigner::pre_image(&unsigned_tx)?;
 
         Ok(CompilerProto::PreSigningOutput {
-            data_hash: hash_to_sign.to_vec().into(),
-            data: pre_image_tx_data.into(),
+            data_hash: pre_image.hash_to_sign.to_vec().into(),
+            data: pre_image.pre_image_tx_data.into(),
             ..CompilerProto::PreSigningOutput::default()
         })
     }
@@ -74,11 +70,10 @@ impl RippleCompiler {
             .into_tw()
             .context("Invalid public key")?;
 
-        let unsigned_tx = ProtobufBuilder::new(&input).build_tx()?;
+        let unsigned_tx = ProtobufBuilder::new(&input).build()?;
         let signed_tx = TransactionSigner::compile(unsigned_tx, &signature, &public_key)?;
 
-        let signing_only = false;
-        let encoded = encode_tx(&signed_tx, signing_only)?.encoded;
+        let encoded = encode_tx(&signed_tx, EncodeMode::All)?.encoded;
         Ok(Proto::SigningOutput {
             encoded: encoded.into(),
             ..Proto::SigningOutput::default()

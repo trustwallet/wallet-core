@@ -3,8 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::classic_address::ClassicAddress;
-use crate::encode::{encode_tx, TxEncoded};
-use crate::transaction::transaction_type::TransactionType;
+use crate::encode::{encode_tx, EncodeMode, TxEncoded};
 use crate::transaction::RippleTransaction;
 use serde_json::Value as Json;
 use tw_coin_entry::error::prelude::*;
@@ -26,10 +25,10 @@ pub struct TxPreImage {
 pub struct TransactionSigner;
 
 impl TransactionSigner {
-    pub fn sign(
-        tx: TransactionType,
+    pub fn sign<Transaction: RippleTransaction>(
+        tx: Transaction,
         private_key: &secp256k1::PrivateKey,
-    ) -> SigningResult<TransactionType> {
+    ) -> SigningResult<Transaction> {
         let public_key = private_key.public();
         Self::check_signing_public_key(&tx, &public_key)?;
         Self::check_source_account(&tx, &public_key)?;
@@ -47,9 +46,10 @@ impl TransactionSigner {
         Self::compile_unchecked(tx, &signature)
     }
 
-    pub fn pre_image(tx: &TransactionType) -> SigningResult<TxPreImage> {
-        let signing_only = true;
-        let TxEncoded { json, encoded } = encode_tx(tx, signing_only)?;
+    pub fn pre_image<Transaction: RippleTransaction>(
+        tx: &Transaction,
+    ) -> SigningResult<TxPreImage> {
+        let TxEncoded { json, encoded } = encode_tx(tx, EncodeMode::SigningOnly)?;
         let pre_image: Data = NETWORK_PREFIX.iter().copied().chain(encoded).collect();
 
         let hash512 = sha512(&pre_image);
@@ -62,11 +62,11 @@ impl TransactionSigner {
     }
 
     /// Compiles `signature` into the `transaction` validating the signature.
-    pub fn compile(
-        tx: TransactionType,
+    pub fn compile<Transaction: RippleTransaction>(
+        tx: Transaction,
         signature: &secp256k1::Signature,
         public_key: &secp256k1::PublicKey,
-    ) -> SigningResult<TransactionType> {
+    ) -> SigningResult<Transaction> {
         let TxPreImage { hash_to_sign, .. } = Self::pre_image(&tx)?;
         Self::check_source_account(&tx, public_key)?;
         Self::check_signing_public_key(&tx, public_key)?;

@@ -6,6 +6,7 @@ use serde::de::DeserializeOwned;
 use serde::Serialize;
 
 pub mod common_fields;
+pub mod json_transaction;
 pub mod transaction_builder;
 pub mod transaction_type;
 pub mod transactions;

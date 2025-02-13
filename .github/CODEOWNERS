@@ -3,5 +3,5 @@
 # @global-owner1 and @global-owner2 will be requested for
 # review when someone opens a pull request.
 
-* @milerius @satoshiotomakan @ar-g
-kotlin/ @ar-g @JaimeToca @rkokhatskyi
+* @satoshiotomakan @gupnik
+kotlin/ @JaimeToca @rkokhatskyi
