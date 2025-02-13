@@ -50,6 +50,7 @@ pub unsafe extern "C" fn tw_private_key_delete(key: *mut TWPrivateKey) {
     let _ = TWPrivateKey::from_ptr(key);
 }
 
+/// Returns the raw pointer to the underlying bytes of the private key.
 ///
 /// \param data A non-null valid block of private key
 /// \return the raw pointer to the contents of private key
