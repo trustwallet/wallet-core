@@ -37,6 +37,10 @@ impl PrivateKey {
         Ok(PrivateKey { bytes })
     }
 
+    pub fn bytes(&self) -> &[u8] {
+        &self.bytes
+    }
+
     /// Returns the 32 byte array - the essential private key data.
     pub fn key(&self) -> H256 {
         assert!(

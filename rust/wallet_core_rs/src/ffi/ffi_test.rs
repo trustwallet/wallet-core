@@ -4,6 +4,7 @@
 
 #![allow(clippy::missing_safety_doc)]
 
+use tw_keypair::ffi::privkey::{tw_private_key_create_with_data, TWPrivateKey};
 use tw_macros::tw_ffi;
 use tw_memory::ffi::{
     tw_data::TWData, tw_string::TWString, Nonnull, Nullable, NullableMut, RawPtrTrait,
@@ -105,4 +106,13 @@ pub unsafe extern "C" fn tw_ffi_test_nullable_data_with_u8(
     data.extend_from_slice(a.clone().into_vec().as_slice());
     data.push(b);
     TWData::from(data).into_ptr()
+}
+
+#[tw_ffi(ty = static_function, class = TWFFITest, name = PrivateKey)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_ffi_test_private_key(
+    a: Nonnull<TWPrivateKey>,
+) -> NullableMut<TWPrivateKey> {
+    let c = try_or_else!(TWPrivateKey::from_ptr_as_ref(a), std::ptr::null_mut);
+    tw_private_key_create_with_data(c.as_ref().bytes().as_ptr(), c.as_ref().bytes().len())
 }
