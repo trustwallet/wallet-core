@@ -247,7 +247,7 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
             write!(
                 &mut return_string,
                 "\tconst auto result = Rust::{}{}\n\
-                \tstd::shared_ptr<TW::Rust::TWPrivateKey> resultRustPrivateKey = Rust::wrapTWPrivateKey(result);\n\
+                \tconst auto resultRustPrivateKey = Rust::wrapTWPrivateKey(result);\n\
                 \tif (!resultRustPrivateKey.get()) {{ return nullptr; }}\n\
                 \tconst auto resultData = Rust::tw_private_key_bytes(resultRustPrivateKey.get());\n\
                 \tconst auto resultSize = Rust::tw_private_key_size(resultRustPrivateKey.get());\n\
@@ -262,7 +262,7 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
             write!(
                 &mut return_string,
                 "\tconst auto result = Rust::{}{}\n\
-                \tstd::shared_ptr<TW::Rust::TWPublicKey> resultRustPublicKey = Rust::wrapTWPublicKey(result);\n\
+                \tconst auto resultRustPublicKey = Rust::wrapTWPublicKey(result);\n\
                 \tif (!resultRustPublicKey.get()) {{ return nullptr; }}\n\
                 \tconst auto resultData = Rust::tw_public_key_data(resultRustPublicKey.get());\n\
                 \tconst Data out(resultData.data, resultData.data + resultData.size);\n\
@@ -340,7 +340,7 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
                 &mut conversion_code,
                 "\tauto &{name}PrivateKey = *reinterpret_cast<const TW::PrivateKey*>(a);\n\
                 \tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}PrivateKey.bytes.data(), {name}PrivateKey.bytes.size());\n\
-                \tstd::shared_ptr<TW::Rust::TWPrivateKey> {name}RustPrivateKey = Rust::wrapTWPrivateKey({name}RustRaw);"
+                \tconst auto {name}RustPrivateKey = Rust::wrapTWPrivateKey({name}RustRaw);"
             )
             .map_err(|e| BadFormat(e.to_string()))?;
             Ok((conversion_code, format!("{}RustPrivateKey.get()", name)))
@@ -365,7 +365,7 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
                 &mut conversion_code,
                 "\tauto &{name}PublicKey = *reinterpret_cast<const TW::PublicKey*>(a);\n\
                 \tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}PublicKey.bytes.data(), {name}PublicKey.bytes.size(), {name}PublicKey.type);\n\
-                \tstd::shared_ptr<TW::Rust::TWPublicKey> {name}RustPublicKey = Rust::wrapTWPublicKey({name}RustRaw);"
+                \tconst auto {name}RustPublicKey = Rust::wrapTWPublicKey({name}RustRaw);"
             )
             .map_err(|e| BadFormat(e.to_string()))?;
             Ok((conversion_code, format!("{}RustPublicKey.get()", name)))
