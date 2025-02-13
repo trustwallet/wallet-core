@@ -306,16 +306,13 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
-                "\tconst TW::Rust::TWString* {name}Ptr = nullptr;\n\
-                \tRust::TWStringWrapper {name}RustStr;\n\
+                "\tRust::TWStringWrapper {name}RustStr;\n\
                 \tif ({name} != nullptr) {{\n\
-                    \t\tauto& {name}String = *reinterpret_cast<const std::string*>({name});\n\
-                    \t\t{name}RustStr = {name}String;\n\
-                    \t\t{name}Ptr = {name}RustStr.get();\n\
+                    \t\t{name}RustStr = *reinterpret_cast<const std::string*>({name});\n\
                 \t}}"
             )
             .map_err(|e| BadFormat(e.to_string()))?;
-            Ok((conversion_code, format!("{}Ptr", name)))
+            Ok((conversion_code, format!("{}RustStr.get()", name)))
         }
         "TWData *_Nonnull" => {
             let mut conversion_code = String::new();
@@ -331,68 +328,63 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
-                "\tconst TW::Rust::TWData* {name}Ptr = nullptr;\n\
-                \tRust::TWDataWrapper {name}RustData;\n\
+                "\tRust::TWDataWrapper {name}RustData;\n\
                 \tif ({name} != nullptr) {{\n\
-                    \t\tauto& {name}Data = *reinterpret_cast<const TW::Data*>({name});\n\
-                    \t\t{name}RustData = {name}Data;\n\
-                    \t\t{name}Ptr = {name}RustData.get();\n\
+                    \t\t{name}RustData = *reinterpret_cast<const TW::Data*>({name});\n\
                 \t}}"
             )
             .map_err(|e| BadFormat(e.to_string()))?;
-            Ok((conversion_code, format!("{}Ptr", name)))
+            Ok((conversion_code, format!("{}RustData.get()", name)))
         }
         "struct TWPrivateKey *_Nonnull" => {
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
                 "\tauto &{name}PrivateKey = *reinterpret_cast<const TW::PrivateKey*>(a);\n\
-                \tconst Rust::TWPrivateKey* {name}RustPrivateKey = Rust::tw_private_key_create_with_data({name}PrivateKey.bytes.data(), {name}PrivateKey.bytes.size());"
+                \tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}PrivateKey.bytes.data(), {name}PrivateKey.bytes.size());\n\
+                \tstd::shared_ptr<TW::Rust::TWPrivateKey> {name}RustPrivateKey = Rust::wrapTWPrivateKey({name}RustRaw);"
             )
             .map_err(|e| BadFormat(e.to_string()))?;
-            Ok((conversion_code, format!("{}RustPrivateKey", name)))
+            Ok((conversion_code, format!("{}RustPrivateKey.get()", name)))
         }
         "struct TWPrivateKey *_Nullable" => {
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
-                "\tconst TW::Rust::TWPrivateKey* {name}Ptr = nullptr;\n\
-                \tstd::shared_ptr<TW::Rust::TWPrivateKey> {name}RustPrivateKey;\n\
+                "\tstd::shared_ptr<TW::Rust::TWPrivateKey> {name}RustPrivateKey;\n\
                 \tif ({name} != nullptr) {{\n\
                     \t\tconst auto& {name}PrivateKey = {name};\n\
                     \t\tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}PrivateKey->impl.bytes.data(), {name}PrivateKey->impl.bytes.size());\n\
                     \t\t{name}RustPrivateKey = Rust::wrapTWPrivateKey({name}RustRaw);\n\
-                    \t\t{name}Ptr = {name}RustPrivateKey.get();\n\
                 \t}}"
             )
             .map_err(|e| BadFormat(e.to_string()))?;
-            Ok((conversion_code, format!("{}Ptr", name)))
+            Ok((conversion_code, format!("{}RustPrivateKey.get()", name)))
         }
         "struct TWPublicKey *_Nonnull" => {
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
                 "\tauto &{name}PublicKey = *reinterpret_cast<const TW::PublicKey*>(a);\n\
-                \tconst Rust::TWPublicKey* {name}RustPublicKey = Rust::tw_public_key_create_with_data({name}PublicKey.bytes.data(), {name}PublicKey.bytes.size(), {name}PublicKey.type);"
+                \tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}PublicKey.bytes.data(), {name}PublicKey.bytes.size(), {name}PublicKey.type);\n\
+                \tstd::shared_ptr<TW::Rust::TWPublicKey> {name}RustPublicKey = Rust::wrapTWPublicKey({name}RustRaw);"
             )
             .map_err(|e| BadFormat(e.to_string()))?;
-            Ok((conversion_code, format!("{}RustPublicKey", name)))
+            Ok((conversion_code, format!("{}RustPublicKey.get()", name)))
         }
         "struct TWPublicKey *_Nullable" => {
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
-                "\tconst TW::Rust::TWPublicKey* {name}Ptr = nullptr;\n\
-                \tstd::shared_ptr<TW::Rust::TWPublicKey> {name}RustPublicKey;\n\
+                "\tstd::shared_ptr<TW::Rust::TWPublicKey> {name}RustPublicKey;\n\
                 \tif ({name} != nullptr) {{\n\
                     \t\tconst auto& {name}PublicKey = {name};\n\
                     \t\tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}PublicKey->impl.bytes.data(), {name}PublicKey->impl.bytes.size(), {name}PublicKey->impl.type);\n\
                     \t\t{name}RustPublicKey = Rust::wrapTWPublicKey({name}RustRaw);\n\
-                    \t\t{name}Ptr = {name}RustPublicKey.get();\n\
                 \t}}"
             )
             .map_err(|e| BadFormat(e.to_string()))?;
-            Ok((conversion_code, format!("{}Ptr", name)))
+            Ok((conversion_code, format!("{}RustPublicKey.get()", name)))
         }
         _ => Ok(("".to_string(), name.to_string())),
     }
