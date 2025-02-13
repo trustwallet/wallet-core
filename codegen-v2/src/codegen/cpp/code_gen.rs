@@ -272,11 +272,7 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
             )
             .map_err(|e| BadFormat(e.to_string()))?;
         }
-        ty if Regex::new(r"^Nonnull(Mut)?<(.+)>$")
-            .expect("Failed to create regex")
-            .captures(&ty.replace(" ", ""))
-            .is_some() =>
-        {
+        ty if ty.contains("Nonnull") => {
             panic!("Nonnull types are not supported in C++");
         }
         _ => {
