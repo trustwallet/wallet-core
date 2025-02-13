@@ -4,7 +4,10 @@
 
 #![allow(clippy::missing_safety_doc)]
 
-use tw_keypair::ffi::privkey::{tw_private_key_create_with_data, TWPrivateKey};
+use tw_keypair::ffi::{
+    privkey::{tw_private_key_create_with_data, TWPrivateKey},
+    pubkey::{tw_public_key_create_with_data, TWPublicKey},
+};
 use tw_macros::tw_ffi;
 use tw_memory::ffi::{
     tw_data::TWData, tw_string::TWString, Nonnull, Nullable, NullableMut, RawPtrTrait,
@@ -115,4 +118,17 @@ pub unsafe extern "C" fn tw_ffi_test_private_key(
 ) -> NullableMut<TWPrivateKey> {
     let c = try_or_else!(TWPrivateKey::from_ptr_as_ref(a), std::ptr::null_mut);
     tw_private_key_create_with_data(c.as_ref().bytes().as_ptr(), c.as_ref().bytes().len())
+}
+
+#[tw_ffi(ty = static_function, class = TWFFITest, name = PublicKey)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_ffi_test_public_key(
+    a: Nonnull<TWPublicKey>,
+) -> NullableMut<TWPublicKey> {
+    let c = try_or_else!(TWPublicKey::from_ptr_as_ref(a), std::ptr::null_mut);
+    tw_public_key_create_with_data(
+        c.as_ref().to_bytes().as_ptr(),
+        c.as_ref().to_bytes().len(),
+        c.as_ref().public_key_type() as u32,
+    )
 }

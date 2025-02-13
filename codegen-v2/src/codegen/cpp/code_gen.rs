@@ -97,6 +97,9 @@ fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
             if arg.ty.contains("TWPrivateKey") && included_headers.insert("TWPrivateKey.h") {
                 writeln!(file, "#include \"TWPrivateKey.h\"")?;
             }
+            if arg.ty.contains("TWPublicKey") && included_headers.insert("TWPublicKey.h") {
+                writeln!(file, "#include \"TWPublicKey.h\"")?;
+            }
             // Additional type checks can be added here in the future
         }
     }
@@ -174,11 +177,7 @@ pub fn generate_header(info: &TWConfig) -> Result<()> {
 }
 
 fn generate_source_includes(file: &mut std::fs::File, info: &TWConfig) -> Result<()> {
-    writeln!(
-        file,
-        "#include <TrustWalletCore/{}.h>",
-        info.class
-    )?;
+    writeln!(file, "#include <TrustWalletCore/{}.h>", info.class)?;
     writeln!(file, "#include \"rust/Wrapper.h\"")?;
 
     // Include headers based on argument types
@@ -188,10 +187,13 @@ fn generate_source_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
             if arg.ty.contains("TWPrivateKey") && included_headers.insert("TWPrivateKey.h") {
                 writeln!(file, "#include \"../PrivateKey.h\"")?;
             }
+            if arg.ty.contains("TWPublicKey") && included_headers.insert("TWPublicKey.h") {
+                writeln!(file, "#include \"../PublicKey.h\"")?;
+            }
             // Additional type checks can be added here in the future
         }
     }
-    
+
     Ok(())
 }
 
@@ -242,6 +244,19 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
                 \tauto resultSize = Rust::tw_private_key_size(result);\n\
                 \tData out(resultData, resultData + resultSize);\n\
                 \treturn new TWPrivateKey {{ PrivateKey(out) }};\n",
+                func.rust_name,
+                generate_function_call(&converted_args)?.as_str()
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+        }
+        "NullableMut<TWPublicKey>" | "Nullable<TWPublicKey>" => {
+            write!(
+                &mut return_string,
+                "\tconst auto result = Rust::{}{}\n\
+                \tif (!result) {{ return nullptr; }}\n\
+                \tauto resultData = Rust::tw_public_key_data(result);\n\
+                \tData out(resultData.data, resultData.data + resultData.size);\n\
+                \treturn new TWPublicKey {{ PublicKey(out, a->impl.type) }};\n",
                 func.rust_name,
                 generate_function_call(&converted_args)?.as_str()
             )
@@ -335,6 +350,34 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
                     \t\tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}Data.data(), {name}Data.size());\n\
                     \t\tconst auto {name}RustPrivateKey = std::shared_ptr<Rust::TWPrivateKey>({name}RustRaw, Rust::tw_private_key_delete);\n\
                     \t\t{name}Ptr = {name}RustPrivateKey.get();\n\
+                \t}} else {{\n\
+                    \t\t{name}Ptr = nullptr;\n\
+                \t}}"
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+            Ok((conversion_code, format!("{}Ptr", name)))
+        }
+        "TWPublicKey *_Nonnull" => {
+            let mut conversion_code = String::new();
+            writeln!(
+                &mut conversion_code,
+                "\tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}->impl.bytes.data(), {name}->impl.bytes.size(), {name}->impl.type);\n\
+                \tconst auto {name}RustPublicKey = std::shared_ptr<Rust::TWPublicKey>({name}RustRaw, Rust::tw_public_key_delete);"
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+            Ok((conversion_code, format!("{}RustPublicKey.get()", name)))
+        }
+        "TWPublicKey *_Nullable" => {
+            let mut conversion_code = String::new();
+            writeln!(
+                &mut conversion_code,
+                "\tconst TW::Rust::TWPublicKey* {name}Ptr;\n\
+                \tif ({name} != nullptr) {{\n\
+                    \t\tconst auto {name}PublicKey = *{name};\n\
+                    \t\tauto& {name}Data = {name}PublicKey.impl.bytes;\n\
+                    \t\tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}Data.data(), {name}Data.size(), {name}PublicKey.impl.type);\n\
+                    \t\tconst auto {name}RustPublicKey = std::shared_ptr<Rust::TWPublicKey>({name}RustRaw, Rust::tw_public_key_delete);\n\
+                    \t\t{name}Ptr = {name}RustPublicKey.get();\n\
                 \t}} else {{\n\
                     \t\t{name}Ptr = nullptr;\n\
                 \t}}"
