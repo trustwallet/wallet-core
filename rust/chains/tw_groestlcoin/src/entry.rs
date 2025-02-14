@@ -58,10 +58,10 @@ impl CoinEntry for GroestlcoinEntry {
         &self,
         coin: &dyn CoinContext,
         public_key: PublicKey,
-        _derivation: Derivation,
+        derivation: Derivation,
         prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        GroestlAddress::derive_as_tw(coin, &public_key, prefix)
+        GroestlAddress::derive_as_tw(coin, &public_key, derivation, prefix)
     }
 
     #[inline]

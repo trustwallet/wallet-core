@@ -6,9 +6,11 @@ use std::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
+use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::prelude::*;
 use tw_keypair::tw;
 use tw_memory::Data;
+use tw_utxo::address::derivation::BitcoinDerivation;
 use tw_utxo::address::segwit::SegwitAddress;
 use tw_utxo::address::standard_bitcoin::StandardBitcoinPrefix;
 
@@ -60,20 +62,36 @@ impl GroestlAddress {
     pub fn derive_as_tw(
         coin: &dyn CoinContext,
         public_key: &tw::PublicKey,
+        derivation: Derivation,
         maybe_prefix: Option<StandardBitcoinPrefix>,
     ) -> AddressResult<GroestlAddress> {
         match maybe_prefix {
             Some(StandardBitcoinPrefix::Base58(prefix)) => {
-                GroestlLegacyAddress::p2pkh_with_coin_and_prefix(coin, public_key, Some(prefix))
-                    .map(GroestlAddress::Legacy)
+                return GroestlLegacyAddress::p2pkh_with_coin_and_prefix(
+                    coin,
+                    public_key,
+                    Some(prefix),
+                )
+                .map(GroestlAddress::Legacy);
             },
             Some(StandardBitcoinPrefix::Bech32(prefix)) => {
-                SegwitAddress::p2wpkh_with_coin_and_prefix(coin, public_key, Some(prefix))
+                return SegwitAddress::p2wpkh_with_coin_and_prefix(coin, public_key, Some(prefix))
+                    .map(GroestlAddress::Segwit);
+            },
+            // Derive an address as declared in registry.json.
+            None => (),
+        }
+
+        match BitcoinDerivation::tw_derivation(coin, derivation) {
+            BitcoinDerivation::Legacy => {
+                GroestlLegacyAddress::p2pkh_with_coin_and_prefix(coin, public_key, None)
+                    .map(GroestlAddress::Legacy)
+            },
+            BitcoinDerivation::Segwit => {
+                SegwitAddress::p2wpkh_with_coin_and_prefix(coin, public_key, None)
                     .map(GroestlAddress::Segwit)
             },
-            // Derive a segwit address without a prefix.
-            None => SegwitAddress::p2wpkh_with_coin_and_prefix(coin, public_key, None)
-                .map(GroestlAddress::Segwit),
+            BitcoinDerivation::Taproot => Err(AddressError::InvalidRegistry),
         }
     }
 }
