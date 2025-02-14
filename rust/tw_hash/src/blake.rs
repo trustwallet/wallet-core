@@ -12,5 +12,6 @@ pub fn blake_256(input: &[u8]) -> Vec<u8> {
     result.to_vec()
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Blake256;
 impl_static_hasher!(Blake256, blake_256, 32);

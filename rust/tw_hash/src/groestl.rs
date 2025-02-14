@@ -14,8 +14,10 @@ pub fn groestl_512d(data: &[u8]) -> Data {
     groestl_512(&groestl_512(data))
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Groestl512;
 impl_static_hasher!(Groestl512, groestl_512, 64);
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Groestl512d;
 impl_static_hasher!(Groestl512d, groestl_512d, 64);

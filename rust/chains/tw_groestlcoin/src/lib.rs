@@ -4,5 +4,6 @@
 
 pub mod address;
 pub mod compiler;
+pub mod context;
 pub mod entry;
 pub mod signer;

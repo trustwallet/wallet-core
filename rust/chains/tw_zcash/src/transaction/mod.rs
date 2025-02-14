@@ -4,7 +4,7 @@
 
 use crate::modules::zcash_sighash::ZcashSighash;
 use tw_coin_entry::error::prelude::{ResultContext, SigningError, SigningErrorType, SigningResult};
-use tw_hash::hasher::sha256_d;
+use tw_hash::sha2::sha256_d;
 use tw_hash::{H256, H32};
 use tw_utxo::encode::compact_integer::CompactInteger;
 use tw_utxo::encode::stream::Stream;

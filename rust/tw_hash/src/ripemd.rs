@@ -17,5 +17,10 @@ pub fn sha256_ripemd(data: &[u8]) -> Data {
     ripemd_160(&sha256(data))
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Ripemd160;
 impl_static_hasher!(Ripemd160, ripemd_160, 20);
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Sha256Ripemd;
+impl_static_hasher!(Sha256Ripemd, sha256_ripemd, 20);

@@ -11,7 +11,7 @@ use tw_base58_address::Base58Address;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
 use tw_encoding::base58::Alphabet;
-use tw_hash::hasher::Hasher;
+use tw_hash::sha2::Sha256d;
 use tw_hash::H160;
 use tw_memory::Data;
 use tw_misc::serde_as_string;
@@ -41,7 +41,7 @@ pub enum TagFlag {
 pub struct XAddress {
     /// Destination tag.
     tag: u32,
-    inner: Base58Address<X_ADDRESS_LEN, X_ADDRESS_CHECKSUM_LEN>,
+    inner: Base58Address<X_ADDRESS_LEN, X_ADDRESS_CHECKSUM_LEN, Sha256d>,
     /// Destination tag flag, none/32/64bit.
     tag_flag: TagFlag,
 }
@@ -81,7 +81,7 @@ impl FromStr for XAddress {
     type Err = AddressError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let inner = Base58Address::from_str_with_alphabet(s, Alphabet::Ripple, Hasher::Sha256d)?;
+        let inner = Base58Address::from_str_with_alphabet(s, Alphabet::Ripple)?;
 
         // Check prefix.
         if inner.bytes[PREFIX_RANGE] != MAINNET_PREFIX {

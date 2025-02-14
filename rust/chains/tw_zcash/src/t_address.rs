@@ -12,8 +12,8 @@ use tw_coin_entry::error::prelude::{
 };
 use tw_coin_entry::prefix::BitcoinBase58Prefix;
 use tw_encoding::base58::Alphabet;
-use tw_hash::hasher::Hasher;
 use tw_hash::ripemd::sha256_ripemd;
+use tw_hash::sha2::Sha256d;
 use tw_hash::H160;
 use tw_keypair::{ecdsa, tw};
 use tw_memory::Data;
@@ -25,7 +25,7 @@ pub const ZCASH_ADDRESS_CHECKSUM_SIZE: usize = 4;
 /// For now, T-prefix is a constant value.
 pub const ZCASH_T_PREFIX: u8 = 0x1C;
 
-type ZcashBase58Address = Base58Address<ZCASH_ADDRESS_SIZE, ZCASH_ADDRESS_CHECKSUM_SIZE>;
+type ZcashBase58Address = Base58Address<ZCASH_ADDRESS_SIZE, ZCASH_ADDRESS_CHECKSUM_SIZE, Sha256d>;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TAddress(ZcashBase58Address);
@@ -38,7 +38,7 @@ impl TAddress {
         bytes.push(prefix);
         bytes.extend_from_slice(data);
 
-        ZcashBase58Address::new(&bytes, Alphabet::Bitcoin, Hasher::Sha256d).map(TAddress)
+        ZcashBase58Address::new(&bytes, Alphabet::Bitcoin).map(TAddress)
     }
 
     pub fn p2pkh_with_public_key(
@@ -133,8 +133,7 @@ impl FromStr for TAddress {
     type Err = AddressError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        ZcashBase58Address::from_str_with_alphabet(s, Alphabet::Bitcoin, Hasher::Sha256d)
-            .map(TAddress)
+        ZcashBase58Address::from_str_with_alphabet(s, Alphabet::Bitcoin).map(TAddress)
     }
 }
 

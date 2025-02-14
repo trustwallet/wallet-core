@@ -2,66 +2,67 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::address::GroestlcoinAddress;
+use crate::address::GroestlAddress;
 use crate::compiler::GroestlcoinCompiler;
+use crate::context::GroestlContext;
 use crate::signer::GroestlcoinSigner;
 use std::str::FromStr;
+use tw_bitcoin::modules::planner::BitcoinPlanner;
+use tw_bitcoin::modules::transaction_util::BitcoinTransactionUtil;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
-use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
-use tw_coin_entry::modules::transaction_util::NoTransactionUtil;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
-use tw_coin_entry::prefix::NoPrefix;
 use tw_keypair::tw::PublicKey;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
+use tw_utxo::address::standard_bitcoin::StandardBitcoinPrefix;
 
 pub struct GroestlcoinEntry;
 
 impl CoinEntry for GroestlcoinEntry {
-    type AddressPrefix = NoPrefix;
-    type Address = GroestlcoinAddress;
+    type AddressPrefix = StandardBitcoinPrefix;
+    type Address = GroestlAddress;
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = Proto::SigningOutput<'static>;
     type PreSigningOutput = CompilerProto::PreSigningOutput<'static>;
 
     // Optional modules:
     type JsonSigner = NoJsonSigner;
-    type PlanBuilder = NoPlanBuilder;
+    type PlanBuilder = BitcoinPlanner<GroestlContext>;
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
-    type TransactionUtil = NoTransactionUtil;
+    type TransactionUtil = BitcoinTransactionUtil;
 
     #[inline]
     fn parse_address(
         &self,
-        _coin: &dyn CoinContext,
-        _address: &str,
-        _prefix: Option<Self::AddressPrefix>,
+        coin: &dyn CoinContext,
+        address: &str,
+        prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        GroestlAddress::from_str_with_coin_and_prefix(coin, address, prefix)
     }
 
     #[inline]
     fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address> {
-        GroestlcoinAddress::from_str(address)
+        GroestlAddress::from_str(address)
     }
 
     #[inline]
     fn derive_address(
         &self,
-        _coin: &dyn CoinContext,
-        _public_key: PublicKey,
+        coin: &dyn CoinContext,
+        public_key: PublicKey,
         _derivation: Derivation,
-        _prefix: Option<Self::AddressPrefix>,
+        prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        GroestlAddress::derive_as_tw(coin, &public_key, prefix)
     }
 
     #[inline]

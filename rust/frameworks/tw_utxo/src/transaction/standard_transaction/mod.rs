@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use super::transaction_sighash::taproot1_sighash::Taproot1Sighash;
+use super::UtxoTaprootPreimageArgs;
 use crate::encode::compact_integer::CompactInteger;
 use crate::encode::stream::Stream;
 use crate::encode::Encodable;
@@ -16,11 +18,11 @@ use crate::transaction::transaction_sighash::legacy_sighash::LegacySighash;
 use crate::transaction::transaction_sighash::witness0_sighash::Witness0Sighash;
 use crate::transaction::{TransactionPreimage, UtxoPreimageArgs};
 use tw_coin_entry::error::prelude::*;
-use tw_hash::hasher::sha256_d;
+use tw_hash::hasher::Hasher;
+use tw_hash::sha2::sha256_d;
 use tw_hash::H256;
 
-use super::transaction_sighash::taproot1_sighash::Taproot1Sighash;
-use super::UtxoTaprootPreimageArgs;
+pub const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 
 pub mod builder;
 

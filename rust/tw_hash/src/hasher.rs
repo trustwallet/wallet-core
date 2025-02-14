@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::ripemd::sha256_ripemd;
-use crate::sha2::sha256;
+use crate::sha2::{sha256, sha256_d};
 use crate::sha3::keccak256;
 use crate::{H160, H256};
 use serde::Deserialize;
@@ -13,12 +13,10 @@ use tw_memory::Data;
 macro_rules! impl_static_hasher {
     ($name:ty, $hash_fun:ident, $hash_len:literal) => {
         impl $crate::hasher::StaticHasher for $name {
+            const HASH_LEN: usize = $hash_len;
+
             fn hash(data: &[u8]) -> Vec<u8> {
                 $hash_fun(data)
-            }
-
-            fn hash_len() -> usize {
-                $hash_len
             }
         }
 
@@ -32,11 +30,6 @@ macro_rules! impl_static_hasher {
             }
         }
     };
-}
-
-/// SHA256 hash of the SHA256 hash.
-pub fn sha256_d(data: &[u8]) -> Data {
-    sha256(&sha256(data))
 }
 
 /// TapSighash, required for Bitcoin Taproot. This function computes
@@ -59,15 +52,14 @@ pub fn tapsighash(data: &[u8]) -> Data {
 
 /// A trait for hashing algorithms that do not require pre-configuration, and can be used statically.
 pub trait StaticHasher {
+    const HASH_LEN: usize;
+
     fn hash(data: &[u8]) -> Data;
 
     /// Returns a zeroized hash with a corresponding len.
     fn zero_hash() -> Data {
-        vec![0; Self::hash_len()]
+        vec![0; Self::HASH_LEN]
     }
-
-    /// Returns a corresponding hash len.
-    fn hash_len() -> usize;
 }
 
 /// A trait for hashing algorithms that require pre-configuration,

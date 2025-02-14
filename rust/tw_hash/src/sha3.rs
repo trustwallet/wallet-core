@@ -21,14 +21,18 @@ pub fn sha3_512(input: &[u8]) -> Vec<u8> {
     hasher::<sha3::Sha3_512>(input)
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Keccak256;
 impl_static_hasher!(Keccak256, keccak256, 32);
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Keccak512;
 impl_static_hasher!(Keccak512, keccak512, 64);
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Sha3_256;
 impl_static_hasher!(Sha3_256, sha3_256, 32);
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Sha3_512;
 impl_static_hasher!(Sha3_512, sha3_512, 64);
