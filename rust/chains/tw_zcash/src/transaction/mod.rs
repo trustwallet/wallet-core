@@ -4,7 +4,7 @@
 
 use crate::modules::zcash_sighash::ZcashSighash;
 use tw_coin_entry::error::prelude::{ResultContext, SigningError, SigningErrorType, SigningResult};
-use tw_hash::sha2::sha256_d;
+use tw_hash::hasher::{Hasher, StatefulHasher};
 use tw_hash::{H256, H32};
 use tw_utxo::encode::compact_integer::CompactInteger;
 use tw_utxo::encode::stream::Stream;
@@ -140,9 +140,9 @@ impl TransactionInterface for ZcashTransaction {
         self.total_size() * SEGWIT_SCALE_FACTOR
     }
 
-    fn txid(&self) -> Vec<u8> {
+    fn txid(&self, hasher: Hasher) -> Vec<u8> {
         let encoded = self.encode_out();
-        let mut tx_hash = sha256_d(&encoded);
+        let mut tx_hash = hasher.hash(&encoded);
         tx_hash.reverse();
         tx_hash
     }

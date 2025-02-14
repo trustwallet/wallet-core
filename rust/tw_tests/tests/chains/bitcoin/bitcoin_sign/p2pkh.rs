@@ -4,7 +4,7 @@ use crate::chains::common::bitcoin::{
 };
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
-use tw_hash::hasher::sha256_ripemd;
+use tw_hash::ripemd::sha256_ripemd;
 use tw_keypair::ecdsa;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;

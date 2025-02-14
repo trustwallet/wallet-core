@@ -3,11 +3,11 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::GroestlAddress;
-use crate::compiler::GroestlcoinCompiler;
 use crate::context::GroestlContext;
-use crate::signer::GroestlcoinSigner;
 use std::str::FromStr;
+use tw_bitcoin::modules::compiler::BitcoinCompiler;
 use tw_bitcoin::modules::planner::BitcoinPlanner;
+use tw_bitcoin::modules::signer::BitcoinSigner;
 use tw_bitcoin::modules::transaction_util::BitcoinTransactionUtil;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
@@ -19,7 +19,6 @@ use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
 use tw_keypair::tw::PublicKey;
 use tw_proto::BitcoinV2::Proto;
-use tw_proto::TxCompiler::Proto as CompilerProto;
 use tw_utxo::address::standard_bitcoin::StandardBitcoinPrefix;
 
 pub struct GroestlcoinEntry;
@@ -29,7 +28,7 @@ impl CoinEntry for GroestlcoinEntry {
     type Address = GroestlAddress;
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = Proto::SigningOutput<'static>;
-    type PreSigningOutput = CompilerProto::PreSigningOutput<'static>;
+    type PreSigningOutput = Proto::PreSigningOutput<'static>;
 
     // Optional modules:
     type JsonSigner = NoJsonSigner;
@@ -67,7 +66,7 @@ impl CoinEntry for GroestlcoinEntry {
 
     #[inline]
     fn sign(&self, coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput {
-        GroestlcoinSigner::sign(coin, input)
+        BitcoinSigner::<GroestlContext>::sign(coin, &input)
     }
 
     #[inline]
@@ -76,7 +75,7 @@ impl CoinEntry for GroestlcoinEntry {
         coin: &dyn CoinContext,
         input: Self::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        GroestlcoinCompiler::preimage_hashes(coin, input)
+        BitcoinCompiler::<GroestlContext>::preimage_hashes(coin, input)
     }
 
     #[inline]
@@ -87,6 +86,11 @@ impl CoinEntry for GroestlcoinEntry {
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
-        GroestlcoinCompiler::compile(coin, input, signatures, public_keys)
+        BitcoinCompiler::<GroestlContext>::compile(coin, input, signatures, public_keys)
+    }
+
+    #[inline]
+    fn plan_builder(&self) -> Option<Self::PlanBuilder> {
+        Some(BitcoinPlanner::<GroestlContext>::default())
     }
 }
