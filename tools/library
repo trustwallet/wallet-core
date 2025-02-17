@@ -26,5 +26,5 @@ wc_upload_asset() {
 
     gh release upload $tag $filename --clobber
     download_url=$(gh release view $tag --json assets --jq '.assets.[] | select(.name == "'"${filename}"'") | .url')
-    echo ${download_url}
+    echo "\"${download_url}\""
 }
