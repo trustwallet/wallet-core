@@ -4,12 +4,12 @@
 
 use crate::fee::fee_estimator::FeeEstimator;
 use crate::script::Script;
+use crate::transaction::standard_transaction::DEFAULT_TX_HASHER;
 use crate::transaction::transaction_interface::TransactionInterface;
 use crate::transaction::TransactionPreimage;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::hasher::Hasher;
-use crate::transaction::standard_transaction::DEFAULT_TX_HASHER;
 
 pub type ContextTransactionInput<Context> =
     <<Context as UtxoContext>::Transaction as TransactionInterface>::Input;
