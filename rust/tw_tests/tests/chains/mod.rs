@@ -13,6 +13,7 @@ mod dydx;
 mod ecash;
 mod ethereum;
 mod greenfield;
+mod groestlcoin;
 mod internet_computer;
 mod komodo;
 mod kusama;

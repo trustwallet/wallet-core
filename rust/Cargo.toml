@@ -9,6 +9,7 @@ members = [
     "chains/tw_decred",
     "chains/tw_ethereum",
     "chains/tw_greenfield",
+    "chains/tw_groestlcoin",
     "chains/tw_internet_computer",
     "chains/tw_komodo",
     "chains/tw_native_evmos",

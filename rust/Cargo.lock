@@ -1881,6 +1881,7 @@ dependencies = [
  "tw_ethereum",
  "tw_evm",
  "tw_greenfield",
+ "tw_groestlcoin",
  "tw_hash",
  "tw_internet_computer",
  "tw_keypair",
@@ -2010,6 +2011,21 @@ dependencies = [
  "tw_misc",
  "tw_number",
  "tw_proto",
+]
+
+[[package]]
+name = "tw_groestlcoin"
+version = "0.1.0"
+dependencies = [
+ "tw_base58_address",
+ "tw_bitcoin",
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_proto",
+ "tw_utxo",
 ]
 
 [[package]]

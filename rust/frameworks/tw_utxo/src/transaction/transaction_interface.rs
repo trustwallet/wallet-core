@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::encode::Encodable;
+use tw_hash::hasher::Hasher;
 use tw_memory::Data;
 
 use crate::script::{Script, Witness};
@@ -44,7 +45,7 @@ pub trait TransactionInterface: Clone + Encodable {
 
     fn weight(&self) -> usize;
 
-    fn txid(&self) -> Data;
+    fn txid(&self, hasher: Hasher) -> Data;
 }
 
 pub trait TxInputInterface: Clone {

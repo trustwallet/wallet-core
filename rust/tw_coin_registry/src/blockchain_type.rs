@@ -17,6 +17,7 @@ pub enum BlockchainType {
     Decred,
     Ethereum,
     Greenfield,
+    Groestlcoin,
     InternetComputer,
     Komodo,
     Kusama,

@@ -4,8 +4,7 @@
 
 use crate::transaction::ZcashTransaction;
 use tw_coin_entry::error::prelude::*;
-use tw_hash::blake2::blake2_b_personal;
-use tw_hash::hasher::Blake2bPersonalHasher;
+use tw_hash::blake2::{blake2_b_personal, Blake2bPersonalHasher};
 use tw_hash::{H128, H256};
 use tw_memory::Data;
 use tw_utxo::encode::stream::Stream;

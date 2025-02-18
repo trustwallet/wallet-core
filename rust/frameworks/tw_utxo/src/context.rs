@@ -4,10 +4,12 @@
 
 use crate::fee::fee_estimator::FeeEstimator;
 use crate::script::Script;
+use crate::transaction::standard_transaction::DEFAULT_TX_HASHER;
 use crate::transaction::transaction_interface::TransactionInterface;
 use crate::transaction::TransactionPreimage;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
+use tw_hash::hasher::Hasher;
 
 pub type ContextTransactionInput<Context> =
     <<Context as UtxoContext>::Transaction as TransactionInterface>::Input;
@@ -23,6 +25,8 @@ pub trait UtxoContext {
     type Address: FromStr<Err = AddressError>;
     type Transaction: TransactionPreimage + TransactionInterface;
     type FeeEstimator: FeeEstimator<Self::Transaction>;
+
+    const TX_HASHER: Hasher = DEFAULT_TX_HASHER;
 
     fn addr_to_script_pubkey(
         addr: &Self::Address,

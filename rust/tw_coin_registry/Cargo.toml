@@ -19,6 +19,7 @@ tw_decred = { path = "../chains/tw_decred" }
 tw_ethereum = { path = "../chains/tw_ethereum" }
 tw_evm = { path = "../tw_evm" }
 tw_greenfield = { path = "../chains/tw_greenfield" }
+tw_groestlcoin = { path = "../chains/tw_groestlcoin" }
 tw_hash = { path = "../tw_hash" }
 tw_internet_computer = { path = "../chains/tw_internet_computer" }
 tw_keypair = { path = "../tw_keypair" }
