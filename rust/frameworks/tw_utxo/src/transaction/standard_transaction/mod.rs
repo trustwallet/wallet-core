@@ -43,9 +43,9 @@ pub const SEGWIT_SCALE_FACTOR: usize = 4;
 /// Otherwise, consider adding a new type of transaction that implements the [`UnsignedTransaction`] trait.
 #[derive(Clone, Debug)]
 pub struct Transaction {
-    /// Transaction data format version (note, this is signed).
+    /// Transaction data format version (note, this is used in encoding and signing).
     pub version: i32,
-    /// Unsigned transaction inputs.
+    /// Transaction inputs.
     pub inputs: Vec<TransactionInput>,
     /// Transaction outputs.
     pub outputs: Vec<TransactionOutput>,
@@ -96,10 +96,6 @@ impl TransactionInterface for Transaction {
 
     fn push_output(&mut self, output: Self::Output) {
         self.outputs.push(output);
-    }
-
-    fn has_witness(&self) -> bool {
-        self.inputs.iter().any(|input| input.has_witness())
     }
 
     fn locktime(&self) -> u32 {
@@ -280,8 +276,8 @@ impl TxInputInterface for TransactionInput {
         &self.script_sig
     }
 
-    fn witness(&self) -> &Witness {
-        &self.witness
+    fn witness(&self) -> Option<&Witness> {
+        Some(&self.witness)
     }
 
     fn set_sequence(&mut self, sequence: u32) {

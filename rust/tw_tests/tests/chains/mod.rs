@@ -8,6 +8,7 @@ mod bitcoin;
 mod bitcoincash;
 mod common;
 mod cosmos;
+mod decred;
 mod dydx;
 mod ecash;
 mod ethereum;

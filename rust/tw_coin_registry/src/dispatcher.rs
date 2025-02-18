@@ -30,6 +30,7 @@ use tw_sui::entry::SuiEntry;
 use tw_thorchain::entry::ThorchainEntry;
 use tw_ton::entry::TheOpenNetworkEntry;
 use tw_zcash::entry::ZcashEntry;
+use tw_decred::entry::DecredEntry;
 
 pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;
 pub type EvmEntryExtStaticRef = &'static dyn EvmEntryExt;
@@ -40,6 +41,7 @@ const BINANCE: BinanceEntry = BinanceEntry;
 const BITCOIN: BitcoinEntry = BitcoinEntry;
 const BITCOIN_CASH: BitcoinCashEntry = BitcoinCashEntry;
 const COSMOS: CosmosEntry = CosmosEntry;
+const DECRED: DecredEntry = DecredEntry;
 const ETHEREUM: EthereumEntry = EthereumEntry;
 const GREENFIELD: GreenfieldEntry = GreenfieldEntry;
 const INTERNET_COMPUTER: InternetComputerEntry = InternetComputerEntry;
@@ -65,6 +67,7 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::Bitcoin => Ok(&BITCOIN),
         BlockchainType::BitcoinCash => Ok(&BITCOIN_CASH),
         BlockchainType::Cosmos => Ok(&COSMOS),
+        BlockchainType::Decred => Ok(&DECRED),
         BlockchainType::Ethereum => Ok(&ETHEREUM),
         BlockchainType::Greenfield => Ok(&GREENFIELD),
         BlockchainType::InternetComputer => Ok(&INTERNET_COMPUTER),
