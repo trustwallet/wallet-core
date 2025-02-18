@@ -2,9 +2,11 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::hasher::StatefulHasher;
 use crate::Error;
 use blake2b_ref::Blake2bBuilder;
 use std::ops::RangeInclusive;
+use tw_memory::Data;
 
 pub const OUTPUT_HASH_LEN_RANGE: RangeInclusive<usize> = 1..=64;
 pub const PERSONAL_INPUT_MAX_LEN: usize = 16;
@@ -49,6 +51,34 @@ pub fn verify_personal(personal: &[u8]) -> Result<(), Error> {
         Ok(())
     } else {
         Err(Error::InvalidArgument)
+    }
+}
+
+pub struct Blake2bPersonalHasher<'a> {
+    pub hash_len: usize,
+    pub personalisation: &'a [u8],
+}
+
+impl<'a> Blake2bPersonalHasher<'a> {
+    pub fn new(hash_len: usize, personalisation: &'a [u8]) -> Result<Self, Error> {
+        verify_hash_size(hash_len)?;
+        verify_personal(personalisation)?;
+        Ok(Blake2bPersonalHasher {
+            hash_len,
+            personalisation,
+        })
+    }
+}
+
+impl StatefulHasher for Blake2bPersonalHasher<'_> {
+    fn hash(&self, data: &[u8]) -> Data {
+        blake2_b_personal(data, self.hash_len, self.personalisation).expect(
+            "'hash_len' and 'personalisation' are checked in `Blake2bPersonalHasher::new()`",
+        )
+    }
+
+    fn hash_len(&self) -> usize {
+        self.hash_len
     }
 }
 

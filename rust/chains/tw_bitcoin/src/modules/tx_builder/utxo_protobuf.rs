@@ -211,7 +211,8 @@ impl<'a, Context: UtxoContext> UtxoProtobuf<'a, Context> {
             .prev_index(index)
             .sequence(sequence)
             .amount(self.input.value)
-            .sighash_type(sighash_ty))
+            .sighash_type(sighash_ty)
+            .tx_hasher(Context::TX_HASHER))
     }
 
     pub fn sighash_ty(&self) -> SigningResult<SighashType> {

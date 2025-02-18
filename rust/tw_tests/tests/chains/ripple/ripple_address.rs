@@ -8,7 +8,7 @@ use tw_any_coin::test_utils::address_utils::{
 };
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
-use tw_hash::hasher::sha256_ripemd;
+use tw_hash::ripemd::sha256_ripemd;
 
 #[test]
 fn test_ripple_address_derive() {

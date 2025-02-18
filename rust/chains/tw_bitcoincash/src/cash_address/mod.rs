@@ -8,7 +8,7 @@ use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
 use tw_encoding::bech32;
-use tw_hash::hasher::sha256_ripemd;
+use tw_hash::ripemd::sha256_ripemd;
 use tw_hash::H160;
 use tw_keypair::ecdsa;
 use tw_memory::Data;
