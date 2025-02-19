@@ -86,7 +86,7 @@ bool AddressV3::parseAndCheckV3(const std::string& addr, NetworkId& networkId, K
 
 bool AddressV3::isValid(const std::string& addr) {
     NetworkId networkId;
-    Kind kind;
+    Kind kind = Kind_Base;
     Data key;
     return parseAndCheckV3(addr, networkId, kind, key);
 }
