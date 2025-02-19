@@ -2,18 +2,30 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use tw_hash::hasher::{Hasher, StatefulHasher};
 use tw_memory::Data;
+use tw_utxo::encode::compact_integer::CompactInteger;
 use tw_utxo::encode::stream::Stream;
 use tw_utxo::encode::Encodable;
 use tw_utxo::script::{Script, Witness};
-use tw_utxo::transaction::standard_transaction::TransactionOutput;
+use tw_utxo::transaction::standard_transaction::{TransactionOutput, SEGWIT_SCALE_FACTOR};
 use tw_utxo::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
 use tw_utxo::transaction::transaction_parts::{Amount, OutPoint};
+
+const DEFAULT_VERSION: i32 = 1;
+
+#[derive(Copy, Clone)]
+#[repr(u32)]
+pub enum SerializeType {
+    Full = 0,
+    NoWitness = 1,
+    OnlyWitness = 2,
+}
 
 #[derive(Clone, Debug)]
 pub struct DecredTransaction {
     /// Transaction data format version (note, this is signed).
-    pub version: i32,
+    pub version: u32,
     /// Transaction inputs.
     pub inputs: Vec<DecredTransactionInput>,
     /// Transaction outputs.
@@ -34,13 +46,67 @@ pub struct DecredTransaction {
     pub expiry: u32,
 }
 
+impl DecredTransaction {
+    /// Encodes both prefix and witnesses of the transaction.
+    /// https://devdocs.decred.org/developer-guides/transactions/transaction-format/
+    pub fn encode(&self, stream: &mut Stream, serialize_type: SerializeType) {
+        // Encode version and serialize type as a single unsigned integer.
+        let serialize_type_shift = (serialize_type as u32) << 16;
+        let version_and_type = self.version | serialize_type_shift;
+        stream.append(&version_and_type);
+
+        match serialize_type {
+            SerializeType::Full => {
+                self.encode_prefix(stream);
+                self.encode_witness(stream);
+            },
+            SerializeType::NoWitness => {
+                self.encode_prefix(stream);
+            },
+            SerializeType::OnlyWitness => {
+                self.encode_witness(stream);
+            },
+        }
+    }
+
+    /// Encodes a prefix of the transaction.
+    /// https://devdocs.decred.org/developer-guides/transactions/transaction-format/
+    pub fn encode_prefix(&self, stream: &mut Stream) {
+        // Encode inputs (base without witnesses).
+        // Please note we cannot simply encode the vector of inputs because we should use [`DecredTransactionInput::encode_base`].
+        CompactInteger::from(self.inputs.len()).encode(stream);
+        for input in self.inputs.iter() {
+            input.encode_base(stream);
+        }
+
+        // Encode outputs.
+        stream.append_list(&self.outputs);
+
+        // Encode other fields.
+        stream.append(&self.locktime).append(&self.expiry);
+    }
+
+    /// Encodes the transaction’s witness data only.
+    /// For each input, this includes its value, block height, block index, and signature script.
+    /// https://devdocs.decred.org/developer-guides/transactions/transaction-format/
+    pub fn encode_witness(&self, stream: &mut Stream) {
+        // Encode inputs witnesses only.
+        // Please note we cannot simply encode the vector of inputs because we should use [`DecredTransactionInput::encode_witness`].
+        CompactInteger::from(self.inputs.len()).encode(stream);
+        for input in self.inputs.iter() {
+            input.encode_witness(stream);
+        }
+    }
+}
+
 impl Encodable for DecredTransaction {
     fn encode(&self, stream: &mut Stream) {
-        todo!()
+        self.encode(stream, SerializeType::Full);
     }
 
     fn encoded_size(&self) -> usize {
-        todo!()
+        // TODO consider optimising it by calculating encoded size manually without allocating extra memory.
+        self.encode_out().len()
     }
 }
 
@@ -49,7 +115,7 @@ impl TransactionInterface for DecredTransaction {
     type Output = TransactionOutput;
 
     fn version(&self) -> i32 {
-        self.version
+        self.version.try_into().unwrap_or(DEFAULT_VERSION)
     }
 
     fn inputs(&self) -> &[Self::Input] {
@@ -85,15 +151,17 @@ impl TransactionInterface for DecredTransaction {
     }
 
     fn vsize(&self) -> usize {
-        todo!()
+        self.encoded_size()
     }
 
     fn weight(&self) -> usize {
-        todo!()
+        self.encoded_size() * SEGWIT_SCALE_FACTOR
     }
 
-    fn txid(&self) -> Data {
-        todo!()
+    fn txid(&self, hasher: Hasher) -> Data {
+        let mut stream = Stream::new();
+        self.encode(&mut stream, SerializeType::NoWitness);
+        hasher.hash(&stream.out())
     }
 }
 
@@ -118,8 +186,6 @@ pub struct DecredTransactionInput {
     /// Computational Script for confirming transaction authorization.
     /// Please note it can contain Witness.
     pub script_sig: Script,
-    /// Witness stack.
-    pub witness: Witness,
 }
 
 impl TxInputInterface for DecredTransactionInput {
@@ -136,7 +202,7 @@ impl TxInputInterface for DecredTransactionInput {
     }
 
     fn witness(&self) -> Option<&Witness> {
-        Some(&self.witness)
+        None
     }
 
     fn set_sequence(&mut self, sequence: u32) {
@@ -147,8 +213,8 @@ impl TxInputInterface for DecredTransactionInput {
         self.script_sig = script_sig;
     }
 
-    fn set_witness(&mut self, witness: Witness) {
-        self.witness = witness;
+    fn set_witness(&mut self, _witness: Witness) {
+        // Do nothing as segwit witness not supported.
     }
 
     fn has_script_sig(&self) -> bool {
@@ -156,7 +222,8 @@ impl TxInputInterface for DecredTransactionInput {
     }
 
     fn has_witness(&self) -> bool {
-        !self.witness.is_empty()
+        // Segwit witness not supported.
+        false
     }
 }
 
@@ -169,15 +236,7 @@ impl DecredTransactionInput {
         stream
             .append(&self.value_in)
             .append(&self.block_height)
-            .append(&self.block_index);
-
-        // Encode only one - either witness if one provided or script.
-        // TODO
-        if !self.witness.is_empty() {
-            stream.append(&self.witness);
-            return;
-        }
-
-        stream.append(&self.script_sig);
+            .append(&self.block_index)
+            .append(&self.script_sig);
     }
 }
