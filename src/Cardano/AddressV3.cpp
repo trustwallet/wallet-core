@@ -21,6 +21,8 @@ bool AddressV3::checkLength(Kind kind, size_t length) noexcept {
     case Kind_Enterprise:
     case Kind_Reward:
         return (length == EncodedSize1);
+    case Kind_DRep:
+        return (length == HashSize);
 
     default:
         // accept other types as well
@@ -33,15 +35,23 @@ bool AddressV3::parseAndCheckV3(const Data& raw, NetworkId& networkId, Kind& kin
         // too short, cannot extract kind and networkId
         return false;
     }
-    kind = kindFromFirstByte(raw[0]);
-    networkId = networkIdFromFirstByte(raw[0]);
-    if (networkId != Network_Production) {
-        return false;
-    }
-
+    kind = (kind != Kind_DRep) ? kindFromFirstByte(raw[0]) : Kind_DRep;
     bytes = Data();
-    std::copy(cbegin(raw) + 1, cend(raw), std::back_inserter(bytes));
-
+    switch (kind) {
+    case Kind_DRep:
+        std::copy(cbegin(raw), cend(raw), std::back_inserter(bytes));
+        break;
+    case Kind_Enterprise:
+    case Kind_Base:
+    case Kind_Reward:
+    default:
+        std::copy(cbegin(raw) + 1, cend(raw), std::back_inserter(bytes));
+        networkId = networkIdFromFirstByte(raw[0]);
+        if (networkId != Network_Production) {
+            return false;
+        }
+        break;
+    }
     return checkLength(kind, raw.size());
 }
 
@@ -136,6 +146,15 @@ AddressV3 AddressV3::createReward(NetworkId networkId, const TW::Data& stakingKe
     return addr;
 }
 
+AddressV3 AddressV3::createDRep(const std::string& addr) {
+    auto address = AddressV3();
+    address.kind = Kind_DRep;
+    if (!address.parseAndCheckV3(addr, address.networkId, address.kind, address.bytes)) {
+        throw std::invalid_argument("Invalid DRep address");
+    }
+    return address;
+}
+
 AddressV3::AddressV3(const std::string& addr) {
     if (parseAndCheckV3(addr, networkId, kind, bytes)) {
         // values stored
@@ -181,6 +200,8 @@ std::string AddressV3::getHrp(Kind kind) noexcept {
         return stringForHRP(TWHRPCardano);
     case Kind_Reward:
         return "stake";
+    case Kind_DRep:
+        return "drep";
     }
 }
 

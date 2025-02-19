@@ -67,14 +67,14 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
         const auto stakingAddress = AddressV3(input.register_staking_key().staking_address());
         // here we need the bare staking key
         const auto key = stakingAddress.bytes;
-        tx.certificates.emplace_back(Certificate{Certificate::SkatingKeyRegistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data()});
+        tx.certificates.emplace_back(Certificate{Certificate::SkatingKeyRegistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data(), std::nullopt});
     }
     if (input.has_delegate()) {
         const auto stakingAddress = AddressV3(input.delegate().staking_address());
         // here we need the bare staking key
         const auto key = stakingAddress.bytes;
         const auto poolId = data(input.delegate().pool_id());
-        tx.certificates.emplace_back(Certificate{Certificate::Delegation, {CertificateKey{CertificateKey::AddressKeyHash, key}}, poolId});
+        tx.certificates.emplace_back(Certificate{Certificate::Delegation, {CertificateKey{CertificateKey::AddressKeyHash, key}}, poolId, std::nullopt});
     }
     if (input.has_withdraw()) {
         const auto stakingAddress = AddressV3(input.withdraw().staking_address());
@@ -86,7 +86,18 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
         const auto stakingAddress = AddressV3(input.deregister_staking_key().staking_address());
         // here we need the bare staking key
         const auto key = stakingAddress.bytes;
-        tx.certificates.emplace_back(Certificate{Certificate::StakingKeyDeregistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data()});
+        tx.certificates.emplace_back(Certificate{Certificate::StakingKeyDeregistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data(), std::nullopt});
+    }
+    if (input.has_vote_delegation()) {
+        const auto stakingAddress = AddressV3(input.vote_delegation().staking_address());
+        // here we need the bare staking key
+        const auto key = stakingAddress.bytes;
+        Data dRepKey;
+        if (!input.vote_delegation().drep_id().empty()) {
+            const auto dRepAddress = AddressV3::createDRep(input.vote_delegation().drep_id());
+            dRepKey = dRepAddress.bytes;
+        }
+        tx.certificates.emplace_back(Certificate{Certificate::VoteDelegation, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data(), DRepKey{static_cast<DRepKey::KeyType>(input.vote_delegation().drep_type()), dRepKey}});
     }
 
     return Common::Proto::OK;
@@ -149,6 +160,9 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
     }
     if (input.has_withdraw()) {
         addresses.emplace_back(input.withdraw().staking_address());
+    }
+    if (input.has_vote_delegation()) {
+        addresses.emplace_back(input.vote_delegation().staking_address());
     }
     // discard duplicates (std::set, std::copy_if, std::unique does not work well here)
     std::vector<std::string> addressesUnique;
@@ -276,16 +290,16 @@ Common::Proto::SigningError Signer::encodeTransaction(Data& encoded, Data& txId,
 
     const auto sigsCbor = cborizeSignatures(signatures, hasLegacyUtxos);
 
+    std::vector<Cbor::Encode> cbor;
+    cbor.emplace_back(Cbor::Encode::fromRaw(txAux.encode()));
+    cbor.emplace_back(sigsCbor);
+    if (input.has_vote_delegation()) {
+        cbor.emplace_back(Cbor::Encode::version(21));
+    }
+    cbor.emplace_back(Cbor::Encode::null());
+
     // Cbor-encode txAux & signatures
-    const auto cbor = Cbor::Encode::array({
-        // txaux
-        Cbor::Encode::fromRaw(txAux.encode()),
-        // signatures
-        sigsCbor,
-        // aux data
-        Cbor::Encode::null(),
-    });
-    encoded = cbor.encoded();
+    encoded = Cbor::Encode::array(cbor).encoded();
     return Common::Proto::OK;
 }
 
