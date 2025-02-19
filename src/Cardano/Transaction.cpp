@@ -261,7 +261,6 @@ Cbor::Encode cborizeInputs(const std::vector<OutPoint>& inputs) {
         }));
     }
     // clang-format on
-    // return Cbor::Encode::tag(258, Cbor::Encode::array(ii));
     return Cbor::Encode::array(ii);
 }
 
@@ -346,7 +345,6 @@ Cbor::Encode cborizeCerts(const std::vector<Certificate>& certs) {
     for (const auto& i : certs) {
         c.emplace_back(cborizeCert(i));
     }
-    // return Cbor::Encode::tag(258, Cbor::Encode::array(c));
     return Cbor::Encode::array(c);
 }
 
@@ -376,7 +374,6 @@ Data Transaction::encode() const {
     if (!withdrawals.empty()) {
         mapElems.emplace(Cbor::Encode::uint(5), cborizeWithdrawals(withdrawals));
     }
-    // mapElems.emplace(Cbor::Encode::uint(8), Cbor::Encode::uint(0));
 
     Cbor::Encode encode = Cbor::Encode::map(mapElems);
     return encode.encoded();
