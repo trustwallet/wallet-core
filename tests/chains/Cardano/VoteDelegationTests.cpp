@@ -20,9 +20,10 @@ namespace TW::Cardano::VoteDelegationTests {
 const auto privateKeyTest1 = "40b03ce671f57c56b3483a9f946d4650ed03b1583357018b40aeef3bec81e74df8472ff07b6dfe76e83ea50102f7063595fb24aedaaf01dd9b2cd526a5c7f2db2275254e04a05729852388f1be93a47f859f42087c22e4c78f9d4f6f09d9557820716973437afb26051f2493813d22fc356a1fbdd91ab44f3294ca26ec81e74d7729d9e2323846c7545e6d780bbeb2df204c1a9a1b58abfac647200aefa3cbc1e0746aaad10f546ceb656c75e4d6dadffa5197cf9dc58579f1348a6b3d397d58";
 const auto ownAddress1 = "addr1qx2v7hcfyctmv9vv42yntu40um8t67lxkdzq24gvkfjmy8mlajpf8n6kj3v2sprfkaqfqhtayzjy7nx6apm0vn3j0dqs8x4237";
 const auto stakingAddress1 = "stake1u9l7eq5neatfgk9gq35mwsyst47jpfz0fndwsahkfce8ksgsx8ef2";
-const auto dRepAddress = "drep13d6sxkyz6st9h65qqrzd8ukpywhr8swe9f6357qntgjqye0gttd"; // Eternl DRep Committee
+const auto dRepAddressCIP129 = "drep1y29h2q6cst2pvkl2sqqvf5ljcy36uv7pmy482xnczddzgqshus24w"; // Eternl DRep Committee
+const auto dRepAddressCIP105 = "drep13d6sxkyz6st9h65qqrzd8ukpywhr8swe9f6357qntgjqye0gttd"; // Eternl DRep Committee
 
-TEST(CardanoVoteDelegation, DelegateToSpecificDRep) {
+TEST(CardanoVoteDelegation, DelegateToSpecificDRepCIP129) {
     const auto privateKeyData = parse_hex(privateKeyTest1);
     const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
@@ -48,7 +49,64 @@ TEST(CardanoVoteDelegation, DelegateToSpecificDRep) {
     // Vote delegate to always abstain
     input.mutable_vote_delegation()->set_staking_address(stakingAddress);
     input.mutable_vote_delegation()->set_drep_type(Proto::VoteDelegation::DREP_ID);
-    input.mutable_vote_delegation()->set_drep_id(dRepAddress);
+    input.mutable_vote_delegation()->set_drep_id(dRepAddressCIP129);
+
+    const auto amount = 4617164ul;
+    input.mutable_plan()->set_amount(amount);
+    input.mutable_plan()->set_available_amount(4790541ul);
+    input.mutable_plan()->set_fee(173377);
+    input.mutable_plan()->set_change(0);
+    *(input.mutable_plan()->add_utxos()) = input.utxos(0);
+    input.mutable_plan()->set_error(Common::Proto::OK);
+
+    auto signer = Signer(input);
+    const auto output = signer.sign();
+
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+
+    const auto txid = data(output.tx_id());
+    // Broadcasted here: https://cardanoscan.io/transaction/290f07d69f75f396e78b4ee65088dbf7dc63b86d5b3a5bb7d6aeec59bd487d25
+    EXPECT_EQ(hex(txid), "290f07d69f75f396e78b4ee65088dbf7dc63b86d5b3a5bb7d6aeec59bd487d25");
+
+    const auto encoded = data(output.encoded());
+    const auto txHex = hex(encoded);
+    EXPECT_EQ(txHex, "84a50081825820b02dfc255f1048260d1915c9ebcfcdb69bab7677e75d45ec1245c468f0283d7e0001818258390194cf5f092617b6158caa8935f2afe6cebd7be6b34405550cb265b21f7fec8293cf569458a80469b740905d7d20a44f4cdae876f64e327b411a004673cc021a0002a541031a08d8607a048183098200581c7fec8293cf569458a80469b740905d7d20a44f4cdae876f64e327b418200581c8b75035882d4165bea8000c4d3f2c123ae33c1d92a751a78135a2402a10082825820b4ccb8cb788b37b038d327f0da87b32c6abedf4b131c87103637ef2ed04710365840c3f26171f723e4876cccbbac40edb373c64ccee8b5eec1b39bfa2a478f0b963540a7e91f10423b2a42b43732c5fbbe536c85dbc228e9b395889c05bf5cb1190982582064982cd6a2a0f49aa8225ab48b3ae3bffab2e19e486f932b303052dc227bc4035840518b68bcca2b0d732614b114f384abfffe79b92877d599bf7e9810642f4eef2df696ea113b698eff6a6e25a791d342faef0ef565aaeed3226c7b88f357ba1900f5f6");
+
+    {
+        const auto decode = Cbor::Decode(encoded);
+        ASSERT_TRUE(decode.isValid());
+        EXPECT_EQ(decode.dumpToString(), "[{0: [[h\"b02dfc255f1048260d1915c9ebcfcdb69bab7677e75d45ec1245c468f0283d7e\", 0]], 1: [[h\"0194cf5f092617b6158caa8935f2afe6cebd7be6b34405550cb265b21f7fec8293cf569458a80469b740905d7d20a44f4cdae876f64e327b41\", 4617164]], 2: 173377, 3: 148398202, 4: [[9, [0, h\"7fec8293cf569458a80469b740905d7d20a44f4cdae876f64e327b41\"], [0, h\"8b75035882d4165bea8000c4d3f2c123ae33c1d92a751a78135a2402\"]]]}, {0: [[h\"b4ccb8cb788b37b038d327f0da87b32c6abedf4b131c87103637ef2ed0471036\", h\"c3f26171f723e4876cccbbac40edb373c64ccee8b5eec1b39bfa2a478f0b963540a7e91f10423b2a42b43732c5fbbe536c85dbc228e9b395889c05bf5cb11909\"], [h\"64982cd6a2a0f49aa8225ab48b3ae3bffab2e19e486f932b303052dc227bc403\", h\"518b68bcca2b0d732614b114f384abfffe79b92877d599bf7e9810642f4eef2df696ea113b698eff6a6e25a791d342faef0ef565aaeed3226c7b88f357ba1900\"]]}, spec 21, null]");
+        EXPECT_EQ(decode.getArrayElements().size(), 4ul);
+    }
+}
+
+TEST(CardanoVoteDelegation, DelegateToSpecificDRepCIP105) {
+    const auto privateKeyData = parse_hex(privateKeyTest1);
+    const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
+    const auto ownAddress = AddressV3(publicKey).string();
+    EXPECT_EQ(ownAddress, ownAddress1);
+    const auto stakingAddress = AddressV3(publicKey).getStakingAddress();
+    EXPECT_EQ(stakingAddress, stakingAddress1);
+
+    Proto::SigningInput input;
+    auto* utxo1 = input.add_utxos();
+    const auto txHash1 = parse_hex("b02dfc255f1048260d1915c9ebcfcdb69bab7677e75d45ec1245c468f0283d7e");
+    utxo1->mutable_out_point()->set_tx_hash(txHash1.data(), txHash1.size());
+    utxo1->mutable_out_point()->set_output_index(0);
+    utxo1->set_address(ownAddress);
+    utxo1->set_amount(4790541ul);
+
+    input.add_private_key(privateKeyData.data(), privateKeyData.size());
+
+    input.mutable_transfer_message()->set_to_address(ownAddress);
+    input.mutable_transfer_message()->set_change_address(ownAddress);
+    input.mutable_transfer_message()->set_use_max_amount(true);
+    input.set_ttl(148398202);
+
+    // Vote delegate to always abstain
+    input.mutable_vote_delegation()->set_staking_address(stakingAddress);
+    input.mutable_vote_delegation()->set_drep_type(Proto::VoteDelegation::DREP_ID);
+    input.mutable_vote_delegation()->set_drep_id(dRepAddressCIP105);
 
     const auto amount = 4617164ul;
     input.mutable_plan()->set_amount(amount);

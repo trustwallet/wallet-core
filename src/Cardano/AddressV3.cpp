@@ -22,7 +22,8 @@ bool AddressV3::checkLength(Kind kind, size_t length) noexcept {
     case Kind_Reward:
         return (length == EncodedSize1);
     case Kind_DRep:
-        return (length == HashSize);
+        // In case of DRep, the address can be either 28 (CIP105) or 29 bytes (CIP129) long
+        return (length == EncodedSize1 || length == HashSize);
 
     default:
         // accept other types as well
@@ -30,6 +31,7 @@ bool AddressV3::checkLength(Kind kind, size_t length) noexcept {
     }
 }
 
+// In case of DRep, this function does not compute the kind, but expects it to be provided
 bool AddressV3::parseAndCheckV3(const Data& raw, NetworkId& networkId, Kind& kind, Data& bytes) noexcept {
     if (raw.empty()) {
         // too short, cannot extract kind and networkId
@@ -39,7 +41,13 @@ bool AddressV3::parseAndCheckV3(const Data& raw, NetworkId& networkId, Kind& kin
     bytes = Data();
     switch (kind) {
     case Kind_DRep:
-        std::copy(cbegin(raw), cend(raw), std::back_inserter(bytes));
+        if (raw.size() == EncodedSize1) {
+            std::copy(cbegin(raw) + 1, cend(raw), std::back_inserter(bytes));
+        } else if (raw.size() == HashSize) {
+            std::copy(cbegin(raw), cend(raw), std::back_inserter(bytes));
+        } else {
+            return false;
+        }
         break;
     case Kind_Enterprise:
     case Kind_Base:
