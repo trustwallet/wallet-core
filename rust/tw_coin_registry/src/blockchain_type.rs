@@ -16,6 +16,7 @@ pub enum BlockchainType {
     Cosmos,
     Ethereum,
     Greenfield,
+    Groestlcoin,
     InternetComputer,
     Komodo,
     Kusama,

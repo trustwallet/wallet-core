@@ -16,6 +16,7 @@ use tw_cosmos::entry::CosmosEntry;
 use tw_ethereum::entry::EthereumEntry;
 use tw_evm::evm_entry::EvmEntryExt;
 use tw_greenfield::entry::GreenfieldEntry;
+use tw_groestlcoin::entry::GroestlcoinEntry;
 use tw_internet_computer::entry::InternetComputerEntry;
 use tw_komodo::entry::KomodoEntry;
 use tw_native_evmos::entry::NativeEvmosEntry;
@@ -42,6 +43,7 @@ const BITCOIN_CASH: BitcoinCashEntry = BitcoinCashEntry;
 const COSMOS: CosmosEntry = CosmosEntry;
 const ETHEREUM: EthereumEntry = EthereumEntry;
 const GREENFIELD: GreenfieldEntry = GreenfieldEntry;
+const GROESTLCOIN: GroestlcoinEntry = GroestlcoinEntry;
 const INTERNET_COMPUTER: InternetComputerEntry = InternetComputerEntry;
 const KOMODO: KomodoEntry = KomodoEntry;
 const NATIVE_EVMOS: NativeEvmosEntry = NativeEvmosEntry;
@@ -67,6 +69,7 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::Cosmos => Ok(&COSMOS),
         BlockchainType::Ethereum => Ok(&ETHEREUM),
         BlockchainType::Greenfield => Ok(&GREENFIELD),
+        BlockchainType::Groestlcoin => Ok(&GROESTLCOIN),
         BlockchainType::InternetComputer => Ok(&INTERNET_COMPUTER),
         BlockchainType::Komodo => Ok(&KOMODO),
         BlockchainType::Kusama => Ok(&POLKADOT),

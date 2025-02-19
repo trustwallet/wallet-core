@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use super::transaction_sighash::taproot1_sighash::Taproot1Sighash;
+use super::UtxoTaprootPreimageArgs;
 use crate::encode::compact_integer::CompactInteger;
 use crate::encode::stream::Stream;
 use crate::encode::Encodable;
@@ -16,11 +18,10 @@ use crate::transaction::transaction_sighash::legacy_sighash::LegacySighash;
 use crate::transaction::transaction_sighash::witness0_sighash::Witness0Sighash;
 use crate::transaction::{TransactionPreimage, UtxoPreimageArgs};
 use tw_coin_entry::error::prelude::*;
-use tw_hash::hasher::sha256_d;
+use tw_hash::hasher::{Hasher, StatefulHasher};
 use tw_hash::H256;
 
-use super::transaction_sighash::taproot1_sighash::Taproot1Sighash;
-use super::UtxoTaprootPreimageArgs;
+pub const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 
 pub mod builder;
 
@@ -114,9 +115,9 @@ impl TransactionInterface for Transaction {
         self.base_size() * 3 + self.total_size()
     }
 
-    fn txid(&self) -> Vec<u8> {
+    fn txid(&self, hasher: Hasher) -> Vec<u8> {
         let encoded = self.without_witness().encode_out();
-        let mut tx_hash = sha256_d(&encoded);
+        let mut tx_hash = hasher.hash(&encoded);
         tx_hash.reverse();
         tx_hash
     }

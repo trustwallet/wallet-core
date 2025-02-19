@@ -10,7 +10,7 @@ use tw_coin_entry::modules::transaction_util::TransactionUtil;
 use tw_encoding::base64;
 use tw_encoding::base64::STANDARD;
 use tw_encoding::hex::encode;
-use tw_hash::hasher::HasherOps;
+use tw_hash::hasher::StatefulHasher;
 
 pub struct CosmosTransactionUtil<Context: CosmosContext> {
     _phantom: PhantomData<Context>,

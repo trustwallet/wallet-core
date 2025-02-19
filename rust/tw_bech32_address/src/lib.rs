@@ -10,7 +10,7 @@ use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
 use tw_encoding::bech32;
-use tw_hash::hasher::{Hasher, HasherOps};
+use tw_hash::hasher::{Hasher, StatefulHasher};
 use tw_hash::H160;
 use tw_keypair::tw::{PrivateKey, PublicKey, PublicKeyType};
 use tw_memory::Data;
