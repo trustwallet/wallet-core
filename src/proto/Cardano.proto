@@ -104,7 +104,7 @@ message DeregisterStakingKey {
     uint64 undeposit_amount = 2;
 }
 
-// Add after DeregisterStakingKey message
+// Vote delegation to a specific DRep or always abstain or no confidence
 message VoteDelegation {
     enum DRepType {
         DREP_ID = 0;
