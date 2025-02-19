@@ -104,6 +104,24 @@ message DeregisterStakingKey {
     uint64 undeposit_amount = 2;
 }
 
+// Vote delegation to a specific DRep or always abstain or no confidence
+message VoteDelegation {
+    enum DRepType {
+        DREP_ID = 0;
+        DREP_ALWAYS_ABSTAIN = 2;
+        DREP_NO_CONFIDENCE = 3;
+    }
+
+    // Staking address (as string)
+    string staking_address = 1;
+
+    // DRep type
+    DRepType drep_type = 2;
+
+    // DRep ID (only used when drep_type is DREP_ID)
+    string drep_id = 3;
+}
+
 // Delegate funds in this account to a specified staking pool.
 message Delegate {
     // Staking address (as string)
@@ -187,6 +205,9 @@ message SigningInput {
 
     // Optional
     DeregisterStakingKey deregister_staking_key = 9;
+
+    // Optional, used for vote delegation
+    VoteDelegation vote_delegation = 11;
 
     // Time-to-live time of the TX
     uint64 ttl = 4;

@@ -43,6 +43,8 @@ public:
     static Encode tag(uint64_t value, const Encode& elem);
     /// encode a null value (special)
     static Encode null();
+    /// encode a version
+    static Encode version(uint64_t value);
 
     /// Stateful building (for indefinite length)
     /// Start an indefinite-length array
