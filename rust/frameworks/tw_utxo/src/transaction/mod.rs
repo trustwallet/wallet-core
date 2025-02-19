@@ -7,7 +7,7 @@ use crate::sighash::SighashType;
 use crate::signing_mode::SigningMethod;
 use crate::spending_data::SpendingDataConstructor;
 use crate::transaction::transaction_parts::Amount;
-use tw_coin_entry::error::prelude::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_hash::hasher::Hasher;
 use tw_hash::H256;
 use tw_memory::Data;

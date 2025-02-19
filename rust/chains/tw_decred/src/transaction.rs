@@ -2,7 +2,10 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::modules::decred_sighash::DecredSighash;
+use tw_coin_entry::error::prelude::{ResultContext, SigningError, SigningErrorType, SigningResult};
 use tw_hash::hasher::{Hasher, StatefulHasher};
+use tw_hash::H256;
 use tw_memory::Data;
 use tw_utxo::encode::compact_integer::CompactInteger;
 use tw_utxo::encode::stream::Stream;
@@ -11,6 +14,7 @@ use tw_utxo::script::{Script, Witness};
 use tw_utxo::transaction::standard_transaction::{TransactionOutput, SEGWIT_SCALE_FACTOR};
 use tw_utxo::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
 use tw_utxo::transaction::transaction_parts::{Amount, OutPoint};
+use tw_utxo::transaction::{TransactionPreimage, UtxoPreimageArgs, UtxoTaprootPreimageArgs};
 
 const DEFAULT_VERSION: i32 = 1;
 
@@ -50,10 +54,7 @@ impl DecredTransaction {
     /// Encodes both prefix and witnesses of the transaction.
     /// https://devdocs.decred.org/developer-guides/transactions/transaction-format/
     pub fn encode(&self, stream: &mut Stream, serialize_type: SerializeType) {
-        // Encode version and serialize type as a single unsigned integer.
-        let serialize_type_shift = (serialize_type as u32) << 16;
-        let version_and_type = self.version | serialize_type_shift;
-        stream.append(&version_and_type);
+        self.encode_version_and_serialize_type(stream, serialize_type);
 
         match serialize_type {
             SerializeType::Full => {
@@ -96,6 +97,16 @@ impl DecredTransaction {
         for input in self.inputs.iter() {
             input.encode_witness(stream);
         }
+    }
+
+    fn encode_version_and_serialize_type(
+        &self,
+        stream: &mut Stream,
+        serialize_type: SerializeType,
+    ) {
+        let serialize_type_shift = (serialize_type as u32) << 16;
+        let version_and_type = self.version | serialize_type_shift;
+        stream.append(&version_and_type);
     }
 }
 
@@ -162,6 +173,18 @@ impl TransactionInterface for DecredTransaction {
         let mut stream = Stream::new();
         self.encode(&mut stream, SerializeType::NoWitness);
         hasher.hash(&stream.out())
+    }
+}
+
+impl TransactionPreimage for DecredTransaction {
+    fn preimage_tx(&self, args: &UtxoPreimageArgs) -> SigningResult<H256> {
+        DecredSighash::sighash_tx(self, args)
+    }
+
+    fn preimage_taproot_tx(&self, _args: &UtxoTaprootPreimageArgs) -> SigningResult<H256> {
+        SigningError::err(SigningErrorType::Error_internal).context(
+            "Decred transaction doesn't support 'TransactionPreimage::preimage_taproot_tx'",
+        )
     }
 }
 
