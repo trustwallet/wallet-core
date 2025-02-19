@@ -97,7 +97,11 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
             const auto dRepAddress = AddressV3::createDRep(input.vote_delegation().drep_id());
             dRepKey = dRepAddress.bytes;
         }
-        tx.certificates.emplace_back(Certificate{Certificate::VoteDelegation, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data(), DRepKey{static_cast<DRepKey::KeyType>(input.vote_delegation().drep_type()), dRepKey}});
+        const DRepKey dRepKeyArg {
+            static_cast<DRepKey::KeyType>(input.vote_delegation().drep_type()),
+            dRepKey
+        };
+        tx.certificates.emplace_back(Certificate{Certificate::VoteDelegation, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data(), dRepKeyArg});
     }
 
     return Common::Proto::OK;
@@ -293,9 +297,11 @@ Common::Proto::SigningError Signer::encodeTransaction(Data& encoded, Data& txId,
     std::vector<Cbor::Encode> cbor;
     cbor.emplace_back(Cbor::Encode::fromRaw(txAux.encode()));
     cbor.emplace_back(sigsCbor);
+    // Add a spec version for the vote delegation message
     if (input.has_vote_delegation()) {
         cbor.emplace_back(Cbor::Encode::version(21));
     }
+    // Add a null value for the auxiliary data
     cbor.emplace_back(Cbor::Encode::null());
 
     // Cbor-encode txAux & signatures
