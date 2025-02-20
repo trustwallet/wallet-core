@@ -65,17 +65,17 @@ impl Eip712Signer {
         let msg_to_sign = Eip712Message {
             types: types_builder.build(),
             domain: serde_json::to_value(domain)
-                .tw_err(|_| SigningErrorType::Error_internal)
+                .tw_err(SigningErrorType::Error_internal)
                 .context("Error serializing EIP712Domain as JSON")?,
             primary_type: Eip712Transaction::TYPE_NAME.to_string(),
             message: serde_json::to_value(tx_to_sign)
-                .tw_err(|_| SigningErrorType::Error_internal)
+                .tw_err(SigningErrorType::Error_internal)
                 .context("Error serializing EIP712 message payload as JSON")?,
         };
 
         let tx_hash = msg_to_sign.hash().map_err(to_signing)?;
         let eip712_tx =
-            serde_json::to_string(&msg_to_sign).tw_err(|_| SigningErrorType::Error_internal)?;
+            serde_json::to_string(&msg_to_sign).tw_err(SigningErrorType::Error_internal)?;
 
         Ok(Eip712TxPreimage { eip712_tx, tx_hash })
     }

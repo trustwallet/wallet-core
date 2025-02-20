@@ -47,7 +47,7 @@ impl BroadcastMsg {
         }
         .to_string();
         let tx = serde_json::to_value(tx)
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("Error serializing transaction to sign as JSON")?;
         Ok(BroadcastMsg::Json { mode, tx })
     }

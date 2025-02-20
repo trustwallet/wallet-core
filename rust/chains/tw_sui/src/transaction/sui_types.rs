@@ -40,11 +40,11 @@ impl FromStr for ObjectDigest {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let bytes = base58::decode(s, Alphabet::Bitcoin)
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid Object Digest: expected valid base58 string")?;
         H256::try_from(bytes.as_slice())
             .map(ObjectDigest)
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid Object Digest: expected exactly 32 bytes")
     }
 }

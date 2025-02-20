@@ -7,7 +7,8 @@ use crate::{
     },
 };
 use tw_coin_entry::error::prelude::*;
-use tw_hash::{ripemd::bitcoin_hash_160, sha2::sha256, H160, H256};
+use tw_hash::ripemd::sha256_ripemd;
+use tw_hash::{sha2::sha256, H160, H256};
 use tw_keypair::{ecdsa, schnorr};
 
 pub const OP_RETURN_DATA_LIMIT: usize = 80;
@@ -33,7 +34,7 @@ impl OutputBuilder {
     }
 
     pub fn p2sh(self, redeem_script: &[u8]) -> TransactionOutput {
-        let h = bitcoin_hash_160(redeem_script);
+        let h = sha256_ripemd(redeem_script);
         let redeem_hash: H160 = h
             .as_slice()
             .try_into()
@@ -57,7 +58,7 @@ impl OutputBuilder {
     }
 
     pub fn p2pkh(self, pubkey: &ecdsa::secp256k1::PublicKey) -> TransactionOutput {
-        let h = bitcoin_hash_160(pubkey.compressed().as_slice());
+        let h = sha256_ripemd(pubkey.compressed().as_slice());
         let pubkey_hash: H160 = h
             .as_slice()
             .try_into()
@@ -88,7 +89,7 @@ impl OutputBuilder {
     }
 
     pub fn p2wpkh(self, pubkey: &ecdsa::secp256k1::PublicKey) -> TransactionOutput {
-        let h = bitcoin_hash_160(pubkey.compressed().as_slice());
+        let h = sha256_ripemd(pubkey.compressed().as_slice());
         let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
 
         self.p2wpkh_from_hash(&pubkey_hash)

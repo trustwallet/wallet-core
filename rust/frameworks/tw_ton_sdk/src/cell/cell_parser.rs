@@ -31,25 +31,25 @@ impl<'a> CellParser<'a> {
     pub fn load_bit(&mut self) -> CellResult<bool> {
         self.bit_reader
             .read_bool()
-            .tw_err(|_| CellErrorType::CellParserError)
+            .tw_err(CellErrorType::CellParserError)
     }
 
     pub fn load_u8(&mut self, bit_len: usize) -> CellResult<u8> {
         self.bit_reader
             .read_u8(bit_len as u8)
-            .tw_err(|_| CellErrorType::CellParserError)
+            .tw_err(CellErrorType::CellParserError)
     }
 
     pub fn load_u32(&mut self, bit_len: usize) -> CellResult<u32> {
         self.bit_reader
             .read_u32(bit_len as u8)
-            .tw_err(|_| CellErrorType::CellParserError)
+            .tw_err(CellErrorType::CellParserError)
     }
 
     pub fn load_u64(&mut self, bit_len: usize) -> CellResult<u64> {
         self.bit_reader
             .read_u64(bit_len as u8)
-            .tw_err(|_| CellErrorType::CellParserError)
+            .tw_err(CellErrorType::CellParserError)
     }
 
     pub fn load_uint(&mut self, bit_len: usize) -> CellResult<U256> {
@@ -64,7 +64,7 @@ impl<'a> CellParser<'a> {
         }
         let big_uint = BigUint::new(words);
         let uint = U256::from_big_endian_slice(&big_uint.to_bytes_be())
-            .tw_err(|_| CellErrorType::CellParserError)
+            .tw_err(CellErrorType::CellParserError)
             .context("Expected up to 32 bytes of uint")?;
         Ok(uint)
     }
@@ -72,7 +72,7 @@ impl<'a> CellParser<'a> {
     pub fn load_slice(&mut self, slice: &mut [u8]) -> CellResult<()> {
         self.bit_reader
             .read_u8_slice(slice)
-            .tw_err(|_| CellErrorType::CellParserError)
+            .tw_err(CellErrorType::CellParserError)
     }
 
     pub fn load_bytes(&mut self, num_bytes: usize) -> CellResult<Data> {
@@ -83,7 +83,7 @@ impl<'a> CellParser<'a> {
 
     pub fn load_string(&mut self, num_bytes: usize) -> CellResult<String> {
         let bytes = self.load_bytes(num_bytes)?;
-        String::from_utf8(bytes).tw_err(|_| CellErrorType::CellParserError)
+        String::from_utf8(bytes).tw_err(CellErrorType::CellParserError)
     }
 
     pub fn load_coins(&mut self) -> CellResult<U256> {

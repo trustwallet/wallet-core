@@ -4,8 +4,7 @@
 
 use crate::transaction::ZcashTransaction;
 use tw_coin_entry::error::prelude::*;
-use tw_hash::blake2::blake2_b_personal;
-use tw_hash::hasher::Blake2bPersonalHasher;
+use tw_hash::blake2::{blake2_b_personal, Blake2bPersonalHasher};
 use tw_hash::{H128, H256};
 use tw_memory::Data;
 use tw_utxo::encode::stream::Stream;
@@ -37,7 +36,7 @@ impl ZcashSighash {
         // Ignore `args.tx_hasher` and use `blake2_b_personal` instead.
         blake2_b_personal(preimage.as_slice(), H256::LEN, personalisation.as_slice())
             .and_then(|sighash| H256::try_from(sighash.as_slice()))
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("'blake2_b_personal' failed")
     }
 

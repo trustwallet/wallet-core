@@ -13,7 +13,7 @@ use tw_coin_entry::error::prelude::*;
 
 pub fn try_into_u8(num: usize) -> SigningResult<u8> {
     u8::try_from(num)
-        .tw_err(|_| SigningErrorType::Error_tx_too_big)
+        .tw_err(SigningErrorType::Error_tx_too_big)
         .context("There are too many accounts in the transaction")
 }
 

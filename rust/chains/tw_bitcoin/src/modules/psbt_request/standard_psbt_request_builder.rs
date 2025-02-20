@@ -25,14 +25,14 @@ where
         psbt_input: &Proto::Psbt,
     ) -> SigningResult<PsbtRequest<Context>> {
         let psbt = Psbt::deserialize(&psbt_input.psbt)
-            .tw_err(|_| SigningErrorType::Error_input_parse)
+            .tw_err(SigningErrorType::Error_input_parse)
             .context("Error deserializing PSBT")?;
 
         let version = psbt
             .unsigned_tx
             .version
             .try_into()
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid PSBT transaction version")?;
         let lock_time = psbt.unsigned_tx.lock_time.to_consensus_u32();
 

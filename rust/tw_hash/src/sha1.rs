@@ -3,8 +3,12 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::hash_wrapper::hasher;
-use sha1::Sha1;
+use crate::impl_static_hasher;
 
 pub fn sha1(input: &[u8]) -> Vec<u8> {
-    hasher::<Sha1>(input)
+    hasher::<sha1::Sha1>(input)
 }
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Sha1;
+impl_static_hasher!(Sha1, sha1, 20);

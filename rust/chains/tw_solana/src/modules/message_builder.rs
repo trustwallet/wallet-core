@@ -19,6 +19,7 @@ use crate::modules::PubkeySignatureMap;
 use crate::transaction::versioned::VersionedMessage;
 use crate::transaction::{legacy, v0, CompiledInstruction, MessageHeader, Signature};
 use std::borrow::Cow;
+use std::num::TryFromIntError;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_keypair::ed25519;
@@ -368,7 +369,7 @@ impl<'a> MessageBuilder<'a> {
         let decimals = token_transfer
             .decimals
             .try_into()
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid token decimals. Expected lower than 256")?;
 
         let references = Self::parse_references(&token_transfer.references)?;
@@ -425,7 +426,7 @@ impl<'a> MessageBuilder<'a> {
         let decimals = create_and_transfer
             .decimals
             .try_into()
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid token decimals. Expected lower than 256")?;
 
         let create_account_instruction = TokenInstructionBuilder::create_account(
@@ -769,9 +770,9 @@ impl RawMessageBuilder {
 
 fn try_into_u8<T>(num: T) -> SigningResult<u8>
 where
-    u8: TryFrom<T>,
+    u8: TryFrom<T, Error = TryFromIntError>,
 {
-    u8::try_from(num).tw_err(|_| SigningErrorType::Error_tx_too_big)
+    u8::try_from(num).tw_err(SigningErrorType::Error_tx_too_big)
 }
 
 fn match_program_id(program_id: Proto::TokenProgramId) -> SolanaAddress {

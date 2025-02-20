@@ -8,7 +8,7 @@ use crate::Error::BadFormat;
 use crate::Result;
 
 static IN_DIR: &str = "../rust/bindings/";
-static HEADER_OUT_DIR: &str = "../include/Generated/TrustWalletCore/";
+static HEADER_OUT_DIR: &str = "../include/TrustWalletCore/";
 static SOURCE_OUT_DIR: &str = "../src/Generated/";
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -32,30 +32,48 @@ pub struct TWArg {
     pub ty: String,
 }
 
+fn convert_standard_type_to_cpp(ty: &str) -> String {
+    match ty {
+        "TWPrivateKey" => "struct TWPrivateKey".to_string(),
+        "TWPublicKey" => "struct TWPublicKey".to_string(),
+        _ => ty.to_string(),
+    }
+}
+
 fn convert_rust_type_to_cpp(ty: &str) -> String {
     let trimmed = ty.replace(" ", "");
     if let Some(captures) = Regex::new(r"^Nonnull<(.+)>$")
         .expect("Failed to create regex")
         .captures(&trimmed)
     {
-        format!("{} *_Nonnull", &captures[1])
+        format!("{} *_Nonnull", convert_standard_type_to_cpp(&captures[1]))
     } else if let Some(captures) = Regex::new(r"^NonnullMut<(.+)>$")
         .expect("Failed to create regex")
         .captures(&trimmed)
     {
-        format!("{} *_Nonnull", &captures[1])
+        format!("{} *_Nonnull", convert_standard_type_to_cpp(&captures[1]))
     } else if let Some(captures) = Regex::new(r"^Nullable<(.+)>$")
         .expect("Failed to create regex")
         .captures(&trimmed)
     {
-        format!("{} *_Nullable", &captures[1])
+        format!("{} *_Nullable", convert_standard_type_to_cpp(&captures[1]))
     } else if let Some(captures) = Regex::new(r"^NullableMut<(.+)>$")
         .expect("Failed to create regex")
         .captures(&trimmed)
     {
-        format!("{} *_Nullable", &captures[1])
+        format!("{} *_Nullable", convert_standard_type_to_cpp(&captures[1]))
     } else {
-        ty.to_string()
+        match ty {
+            "u8" => "uint8_t".to_string(),
+            "u16" => "uint16_t".to_string(),
+            "u32" => "uint32_t".to_string(),
+            "u64" => "uint64_t".to_string(),
+            "i8" => "int8_t".to_string(),
+            "i16" => "int16_t".to_string(),
+            "i32" => "int32_t".to_string(),
+            "i64" => "int64_t".to_string(),
+            _ => ty.to_string(),
+        }
     }
 }
 
@@ -72,14 +90,23 @@ fn generate_header_guard(file: &mut std::fs::File) -> Result<()> {
 }
 
 fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result<()> {
-    writeln!(file, "#include <TrustWalletCore/TWBase.h>")?;
+    writeln!(file, "#include \"TWBase.h\"")?;
 
     // Include headers based on argument types
     let mut included_headers = std::collections::HashSet::new();
     for func in &info.static_functions {
         for arg in &func.args {
             if arg.ty.contains("TWString") && included_headers.insert("TWString.h") {
-                writeln!(file, "#include <TrustWalletCore/TWString.h>")?;
+                writeln!(file, "#include \"TWString.h\"")?;
+            }
+            if arg.ty.contains("TWData") && included_headers.insert("TWData.h") {
+                writeln!(file, "#include \"TWData.h\"")?;
+            }
+            if arg.ty.contains("TWPrivateKey") && included_headers.insert("TWPrivateKey.h") {
+                writeln!(file, "#include \"TWPrivateKey.h\"")?;
+            }
+            if arg.ty.contains("TWPublicKey") && included_headers.insert("TWPublicKey.h") {
+                writeln!(file, "#include \"TWPublicKey.h\"")?;
             }
             // Additional type checks can be added here in the future
         }
@@ -158,12 +185,23 @@ pub fn generate_header(info: &TWConfig) -> Result<()> {
 }
 
 fn generate_source_includes(file: &mut std::fs::File, info: &TWConfig) -> Result<()> {
-    writeln!(
-        file,
-        "#include <Generated/TrustWalletCore/{}.h>",
-        info.class
-    )?;
+    writeln!(file, "#include <TrustWalletCore/{}.h>", info.class)?;
     writeln!(file, "#include \"rust/Wrapper.h\"")?;
+
+    // Include headers based on argument types
+    let mut included_headers = std::collections::HashSet::new();
+    for func in &info.static_functions {
+        for arg in &func.args {
+            if arg.ty.contains("TWPrivateKey") && included_headers.insert("TWPrivateKey.h") {
+                writeln!(file, "#include \"../PrivateKey.h\"")?;
+            }
+            if arg.ty.contains("TWPublicKey") && included_headers.insert("TWPublicKey.h") {
+                writeln!(file, "#include \"../PublicKey.h\"")?;
+            }
+            // Additional type checks can be added here in the future
+        }
+    }
+
     Ok(())
 }
 
@@ -175,7 +213,7 @@ fn generate_function_call(args: &Vec<String>) -> Result<String> {
             func_call += ", ";
         }
     }
-    func_call += ");\n";
+    func_call += ");";
     Ok(func_call)
 }
 
@@ -185,23 +223,66 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
         "NullableMut<TWString>" | "Nullable<TWString>" => {
             write!(
                 &mut return_string,
-                "    const Rust::TWStringWrapper result = Rust::{}",
-                func.rust_name
-            )
-            .map_err(|e| BadFormat(e.to_string()))?;
-            return_string += generate_function_call(&converted_args)?.as_str();
-            writeln!(&mut return_string, "    if (!result) {{ return nullptr; }}")
-                .map_err(|e| BadFormat(e.to_string()))?;
-            writeln!(
-                &mut return_string,
-                "    return TWStringCreateWithUTF8Bytes(result.c_str());"
+                "\tconst Rust::TWStringWrapper result = Rust::{}{}\n\
+                \tif (!result) {{ return nullptr; }}\n\
+                \treturn TWStringCreateWithUTF8Bytes(result.c_str());\n",
+                func.rust_name,
+                generate_function_call(&converted_args)?.as_str()
             )
             .map_err(|e| BadFormat(e.to_string()))?;
         }
+        "NullableMut<TWData>" | "Nullable<TWData>" => {
+            write!(
+                &mut return_string,
+                "\tconst Rust::TWDataWrapper result = Rust::{}{}\n\
+                \tif (!result.ptr) {{ return nullptr; }}\n\
+                \tconst auto resultData = result.toDataOrDefault();\n\
+                \treturn TWDataCreateWithBytes(resultData.data(), resultData.size());\n",
+                func.rust_name,
+                generate_function_call(&converted_args)?.as_str()
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+        }
+        "NullableMut<TWPrivateKey>" | "Nullable<TWPrivateKey>" => {
+            write!(
+                &mut return_string,
+                "\tconst auto result = Rust::{}{}\n\
+                \tconst auto resultRustPrivateKey = Rust::wrapTWPrivateKey(result);\n\
+                \tif (!resultRustPrivateKey.get()) {{ return nullptr; }}\n\
+                \tconst auto resultData = Rust::tw_private_key_bytes(resultRustPrivateKey.get());\n\
+                \tconst auto resultSize = Rust::tw_private_key_size(resultRustPrivateKey.get());\n\
+                \tconst Data out(resultData, resultData + resultSize);\n\
+                \treturn new TWPrivateKey {{ PrivateKey(out) }};\n",
+                func.rust_name,
+                generate_function_call(&converted_args)?.as_str()
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+        }
+        "NullableMut<TWPublicKey>" | "Nullable<TWPublicKey>" => {
+            write!(
+                &mut return_string,
+                "\tconst auto result = Rust::{}{}\n\
+                \tconst auto resultRustPublicKey = Rust::wrapTWPublicKey(result);\n\
+                \tif (!resultRustPublicKey.get()) {{ return nullptr; }}\n\
+                \tconst auto resultData = Rust::tw_public_key_data(resultRustPublicKey.get());\n\
+                \tconst Data out(resultData.data, resultData.data + resultData.size);\n\
+                \treturn new TWPublicKey {{ PublicKey(out, a->impl.type) }};\n",
+                func.rust_name,
+                generate_function_call(&converted_args)?.as_str()
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+        }
+        ty if ty.contains("Nonnull") => {
+            panic!("Nonnull types are not supported in C++");
+        }
         _ => {
-            writeln!(&mut return_string, "    return Rust::{}", func.rust_name)
-                .map_err(|e| BadFormat(e.to_string()))?;
-            return_string += generate_function_call(&converted_args)?.as_str();
+            write!(
+                &mut return_string,
+                "\treturn Rust::{}{}\n",
+                func.rust_name,
+                generate_function_call(&converted_args)?.as_str()
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
         }
     }
     Ok(return_string)
@@ -223,17 +304,85 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
-                "\tconst TW::Rust::TWString* {name}Ptr;\n\
+                "\tRust::TWStringWrapper {name}RustStr;\n\
                 \tif ({name} != nullptr) {{\n\
-                    \t\tauto& {name}String = *reinterpret_cast<const std::string*>({name});\n\
-                    \t\tconst Rust::TWStringWrapper {name}RustStr = {name}String;\n\
-                    \t\t{name}Ptr = {name}RustStr.get();\n\
-                \t}} else {{\n\
-                    \t\t{name}Ptr = nullptr;\n\
+                    \t\t{name}RustStr = *reinterpret_cast<const std::string*>({name});\n\
                 \t}}"
             )
             .map_err(|e| BadFormat(e.to_string()))?;
-            Ok((conversion_code, format!("{}Ptr", name)))
+            Ok((conversion_code, format!("{}RustStr.get()", name)))
+        }
+        "TWData *_Nonnull" => {
+            let mut conversion_code = String::new();
+            writeln!(
+                &mut conversion_code,
+                "\tauto& {name}Data = *reinterpret_cast<const TW::Data*>({name});\n\
+                \tconst Rust::TWDataWrapper {name}RustData = {name}Data;"
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+            Ok((conversion_code, format!("{}RustData.get()", name)))
+        }
+        "TWData *_Nullable" => {
+            let mut conversion_code = String::new();
+            writeln!(
+                &mut conversion_code,
+                "\tRust::TWDataWrapper {name}RustData;\n\
+                \tif ({name} != nullptr) {{\n\
+                    \t\t{name}RustData = *reinterpret_cast<const TW::Data*>({name});\n\
+                \t}}"
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+            Ok((conversion_code, format!("{}RustData.get()", name)))
+        }
+        "struct TWPrivateKey *_Nonnull" => {
+            let mut conversion_code = String::new();
+            writeln!(
+                &mut conversion_code,
+                "\tauto &{name}PrivateKey = *reinterpret_cast<const TW::PrivateKey*>(a);\n\
+                \tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}PrivateKey.bytes.data(), {name}PrivateKey.bytes.size());\n\
+                \tconst auto {name}RustPrivateKey = Rust::wrapTWPrivateKey({name}RustRaw);"
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+            Ok((conversion_code, format!("{}RustPrivateKey.get()", name)))
+        }
+        "struct TWPrivateKey *_Nullable" => {
+            let mut conversion_code = String::new();
+            writeln!(
+                &mut conversion_code,
+                "\tstd::shared_ptr<TW::Rust::TWPrivateKey> {name}RustPrivateKey;\n\
+                \tif ({name} != nullptr) {{\n\
+                    \t\tconst auto& {name}PrivateKey = {name};\n\
+                    \t\tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}PrivateKey->impl.bytes.data(), {name}PrivateKey->impl.bytes.size());\n\
+                    \t\t{name}RustPrivateKey = Rust::wrapTWPrivateKey({name}RustRaw);\n\
+                \t}}"
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+            Ok((conversion_code, format!("{}RustPrivateKey.get()", name)))
+        }
+        "struct TWPublicKey *_Nonnull" => {
+            let mut conversion_code = String::new();
+            writeln!(
+                &mut conversion_code,
+                "\tauto &{name}PublicKey = *reinterpret_cast<const TW::PublicKey*>(a);\n\
+                \tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}PublicKey.bytes.data(), {name}PublicKey.bytes.size(), {name}PublicKey.type);\n\
+                \tconst auto {name}RustPublicKey = Rust::wrapTWPublicKey({name}RustRaw);"
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+            Ok((conversion_code, format!("{}RustPublicKey.get()", name)))
+        }
+        "struct TWPublicKey *_Nullable" => {
+            let mut conversion_code = String::new();
+            writeln!(
+                &mut conversion_code,
+                "\tstd::shared_ptr<TW::Rust::TWPublicKey> {name}RustPublicKey;\n\
+                \tif ({name} != nullptr) {{\n\
+                    \t\tconst auto& {name}PublicKey = {name};\n\
+                    \t\tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}PublicKey->impl.bytes.data(), {name}PublicKey->impl.bytes.size(), {name}PublicKey->impl.type);\n\
+                    \t\t{name}RustPublicKey = Rust::wrapTWPublicKey({name}RustRaw);\n\
+                \t}}"
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+            Ok((conversion_code, format!("{}RustPublicKey.get()", name)))
         }
         _ => Ok(("".to_string(), name.to_string())),
     }

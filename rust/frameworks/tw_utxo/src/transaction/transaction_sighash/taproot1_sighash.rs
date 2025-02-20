@@ -82,7 +82,7 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
 
         let hash = tapsighash(&stream.out());
         H256::try_from(hash.as_slice())
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("Taproot sighash must be H256")
     }
 }

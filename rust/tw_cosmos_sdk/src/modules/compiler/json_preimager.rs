@@ -8,7 +8,7 @@ use crate::public_key::JsonPublicKey;
 use crate::transaction::UnsignedTransaction;
 use std::marker::PhantomData;
 use tw_coin_entry::error::prelude::*;
-use tw_hash::hasher::{Hasher, HasherOps};
+use tw_hash::hasher::{Hasher, StatefulHasher};
 use tw_memory::Data;
 
 pub struct JsonTxPreimage {
@@ -30,7 +30,7 @@ where
     ) -> SigningResult<JsonTxPreimage> {
         let tx_to_sign = JsonSerializer::build_unsigned_tx(unsigned)?;
         let encoded_tx = serde_json::to_string(&tx_to_sign)
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("Error serializing transaction to sign as JSON")?;
         let tx_hash = hasher.hash(encoded_tx.as_bytes());
 

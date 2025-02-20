@@ -151,7 +151,7 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
         let signature_json =
             JsonSerializer::<Context>::serialize_signature(&public_key, signature.to_vec());
         let signature_json = serde_json::to_string(&[signature_json])
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("Error serializing signatures as JSON")?;
 
         Ok(Proto::SigningOutput {
@@ -188,7 +188,7 @@ impl<Context: CosmosContext> TWTransactionCompiler<Context> {
         let broadcast_tx = BroadcastMsg::json(broadcast_mode, &signed_tx_json)?.to_json_string();
 
         let signature_json = serde_json::to_string(&signed_tx_json.signatures)
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("Error serializing signatures as JSON")?;
 
         Ok(Proto::SigningOutput {

@@ -70,7 +70,7 @@ impl<Context: BitcoinSigningContext> BitcoinSigner<Context> {
         Ok(Proto::SigningOutput {
             transaction: Context::ProtobufBuilder::tx_to_proto(&signed_tx),
             encoded: Cow::from(signed_tx.encode_out()),
-            txid: Cow::from(signed_tx.txid()),
+            txid: Cow::from(signed_tx.txid(Context::TX_HASHER)),
             // `vsize` could have been changed after the transaction being signed.
             vsize: signed_tx.vsize() as u64,
             // `fee` should haven't been changed since it's a difference between `sum(inputs)` and `sum(outputs)`.
@@ -107,7 +107,7 @@ impl<Context: BitcoinSigningContext> BitcoinSigner<Context> {
         Ok(Proto::SigningOutput {
             transaction: Context::ProtobufBuilder::tx_to_proto(&signed_tx),
             encoded: Cow::from(signed_tx.encode_out()),
-            txid: Cow::from(signed_tx.txid()),
+            txid: Cow::from(signed_tx.txid(Context::TX_HASHER)),
             // `vsize` could have been changed after the transaction being signed.
             vsize: signed_tx.vsize() as u64,
             fee,

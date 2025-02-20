@@ -163,3 +163,69 @@ fn test_raw_json_with_all_transactions() {
     let result = TransactionBuilder::raw_json(raw_json, 0, 0);
     assert!(result.is_ok());
 }
+
+#[test]
+fn test_raw_json_with_rall_inputs() {
+    let raw_json = r#"
+    {
+        "version": 1,
+        "sender": "0x1",
+        "expiration": null,
+        "gasConfig": {
+            "budget": "30216120",
+            "price": "750",
+            "payment": []
+        },
+        "inputs": [
+            {
+                "kind": "Input",
+                "index": 1,
+                "value": {
+                    "Pure": [
+                    89,
+                    93,
+                    60,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                    ]
+                },
+                "type": "pure"
+            },
+            {
+                "kind": "Input",
+                "index": 2,
+                "value": {
+                    "Object": {
+                        "Shared": {
+                            "mutable": false,
+                            "initialSharedVersion": "228660837",
+                            "objectId": "0x72fbc93a45192357c87557fe73ea62fe5968efb5482834e9243f850377251534"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            {
+                "kind": "Input",
+                "index": 3,
+                "value": {
+                    "Object": {
+                        "Receiving": {
+                            "digest": "3ruaZRSLjur2FPsUmcueZF91umNEckEitmxTNrgHrJFc",
+                            "version": "488916618",
+                            "objectId": "0x72fbc93a45192357c87557fe73ea62fe5968efb5482834e9243f850377251534"
+                        }
+                    }
+                },
+                "type": "object"
+            }
+        ],
+        "transactions": []
+    }
+    "#;
+    let result = TransactionBuilder::raw_json(raw_json, 0, 0);
+    assert!(result.is_ok());
+}

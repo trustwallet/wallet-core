@@ -24,25 +24,25 @@ impl<'a> BinaryReader<'a> {
     pub fn read_u8(&mut self) -> CellResult<u8> {
         self.reader
             .read::<u8>()
-            .tw_err(|_| CellErrorType::BagOfCellsDeserializationError)
+            .tw_err(CellErrorType::BagOfCellsDeserializationError)
     }
 
     pub fn read_u32(&mut self) -> CellResult<u32> {
         self.reader
             .read::<u32>()
-            .tw_err(|_| CellErrorType::BagOfCellsDeserializationError)
+            .tw_err(CellErrorType::BagOfCellsDeserializationError)
     }
 
     pub fn read_bytes(&mut self, buf: &mut [u8]) -> CellResult<()> {
         self.reader
             .read_bytes(buf)
-            .tw_err(|_| CellErrorType::BagOfCellsDeserializationError)
+            .tw_err(CellErrorType::BagOfCellsDeserializationError)
     }
 
     pub fn read_to_vec(&mut self, num_bytes: usize) -> CellResult<Data> {
         self.reader
             .read_to_vec(num_bytes)
-            .tw_err(|_| CellErrorType::BagOfCellsDeserializationError)
+            .tw_err(CellErrorType::BagOfCellsDeserializationError)
     }
 
     pub fn read_var_size(&mut self, num_bytes: usize) -> CellResult<usize> {
@@ -60,6 +60,6 @@ impl<'a> BinaryReader<'a> {
     pub fn skip(&mut self, num_bytes: u32) -> CellResult<()> {
         self.reader
             .skip(num_bytes)
-            .tw_err(|_| CellErrorType::BagOfCellsDeserializationError)
+            .tw_err(CellErrorType::BagOfCellsDeserializationError)
     }
 }

@@ -18,6 +18,7 @@ tw_cosmos = { path = "../chains/tw_cosmos" }
 tw_ethereum = { path = "../chains/tw_ethereum" }
 tw_evm = { path = "../tw_evm" }
 tw_greenfield = { path = "../chains/tw_greenfield" }
+tw_groestlcoin = { path = "../chains/tw_groestlcoin" }
 tw_hash = { path = "../tw_hash" }
 tw_internet_computer = { path = "../chains/tw_internet_computer" }
 tw_keypair = { path = "../tw_keypair" }
@@ -29,6 +30,7 @@ tw_native_injective = { path = "../chains/tw_native_injective" }
 tw_pactus = { path = "../chains/tw_pactus" }
 tw_polkadot = { path = "../chains/tw_polkadot" }
 tw_polymesh = { path = "../chains/tw_polymesh" }
+tw_ripple = { path = "../chains/tw_ripple" }
 tw_ronin = { path = "../chains/tw_ronin" }
 tw_solana = { path = "../chains/tw_solana" }
 tw_substrate = { path = "../frameworks/tw_substrate" }

@@ -15,6 +15,7 @@ use tw_proto::TxCompiler::Proto::{self as CompilerProto, PreSigningOutput};
 mod polkadot_address;
 mod polkadot_compile;
 mod polkadot_sign;
+mod polkadot_transaction_util;
 
 const GENESIS_HASH: &str = "91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3";
 const PRIVATE_KEY: &str = "abf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115";

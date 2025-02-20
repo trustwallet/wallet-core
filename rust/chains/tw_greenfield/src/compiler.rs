@@ -95,7 +95,7 @@ impl GreenfieldCompiler {
             signature_bytes.clone(),
         );
         let signature_json = serde_json::to_string(&[signature_json])
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("Error serializing signatures as JSON")?;
 
         Ok(Proto::SigningOutput {

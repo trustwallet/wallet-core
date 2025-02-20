@@ -10,7 +10,7 @@ use core::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
-use tw_hash::hasher::sha256_ripemd;
+use tw_hash::ripemd::sha256_ripemd;
 use tw_hash::sha2::sha256;
 use tw_hash::{H160, H256};
 use tw_keypair::tw;

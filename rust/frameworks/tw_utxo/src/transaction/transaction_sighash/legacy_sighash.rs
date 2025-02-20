@@ -9,7 +9,7 @@ use crate::transaction::transaction_interface::{TransactionInterface, TxInputInt
 use crate::transaction::UtxoPreimageArgs;
 use std::marker::PhantomData;
 use tw_coin_entry::error::prelude::*;
-use tw_hash::hasher::HasherOps;
+use tw_hash::hasher::StatefulHasher;
 use tw_hash::H256;
 
 /// `LegacySighash` is used to calculate a preimage hash of a P2PK, P2PKH or P2SH unspent output.
@@ -33,7 +33,7 @@ impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transact
 
         let hash = args.tx_hasher.hash(&stream.out());
         H256::try_from(hash.as_slice())
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("Bitcoin sighash must be H256")
     }
 

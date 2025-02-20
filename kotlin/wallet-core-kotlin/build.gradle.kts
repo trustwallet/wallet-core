@@ -103,10 +103,8 @@ kotlin {
                 includeDirs(
                     rootDir.parentFile.resolve("include"),
                     rootDir.parentFile.resolve("include/TrustWalletCore"),
-                    rootDir.parentFile.resolve("include/Generated/TrustWalletCore")
                 )
-                headers(rootDir.parentFile.resolve("include/Generated/TrustWalletCore").listFiles()!! +
-                       rootDir.parentFile.resolve("include/TrustWalletCore").listFiles()!!)
+                headers(rootDir.parentFile.resolve("include/TrustWalletCore").listFiles()!!)
             }
         }
     }

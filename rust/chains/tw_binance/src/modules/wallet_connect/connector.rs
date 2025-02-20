@@ -42,7 +42,7 @@ impl BinanceWalletConnector {
         request: WCProto::ParseRequestInput<'_>,
     ) -> SigningResult<WCProto::ParseRequestOutput<'static>> {
         let amino_req: SignAminoRequest = serde_json::from_str(&request.payload)
-            .tw_err(|_| SigningErrorType::Error_input_parse)
+            .tw_err(SigningErrorType::Error_input_parse)
             .context("Error deserializing WalletConnect signAmino request as JSON")?;
 
         // Parse a `SigningInput` from the given `signDoc`.
