@@ -3,7 +3,8 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::chains::polymesh::{
-    balance_call, identity_call, GENESIS_HASH, PUBLIC_KEY_1, PUBLIC_KEY_2, PUBLIC_KEY_HEX_1,
+    balance_call, identity_call, staking_call, GENESIS_HASH, PUBLIC_KEY_1, PUBLIC_KEY_2,
+    PUBLIC_KEY_HEX_1, TESTNET_GENESIS_HASH,
 };
 use std::borrow::Cow;
 use tw_any_coin::test_utils::sign_utils::{CompilerHelper, PreImageHelper};
@@ -24,6 +25,7 @@ use tw_proto::Polymesh::Proto::{
     mod_SecondaryKeyPermissions::{
         AssetPermissions, ExtrinsicPermissions, PortfolioPermissions, RestrictionKind,
     },
+    mod_Staking::{OneOfmessage_oneof as StakingVariant, Rebond},
     SecondaryKeyPermissions,
 };
 use tw_proto::TxCompiler::Proto as CompilerProto;
@@ -287,5 +289,69 @@ fn test_polymesh_compile_leave_identity() {
     assert_eq!(
         output.encoded.to_hex(),
         "a50184004bdb9ef424035e1621e228bd11c5917d7d1dac5965d244c4c72fc91170244f0c0057232b54338939c6d9742f7a982cc668b45933bbabcb1df100f5e25ec0879eed803c04bcea28734f5e4e034f0f02aac0a8b81dcc860ddcc6b910458fc8cddb08e50108000705"
+    );
+}
+
+/// Test Staking.Rebond
+#[test]
+fn test_polymesh_compile_staking_rebond() {
+    // https://polymesh-testnet.subscan.io/extrinsic/17691406-1
+
+    // Step 1: Prepare the input data.
+    let block_hash = "7e8792533670a2063359ddd17e14923e4b37768261df38ae02d45ffef84dc6fd"
+        .decode_hex()
+        .unwrap();
+    let genesis_hash = TESTNET_GENESIS_HASH.decode_hex().unwrap();
+
+    let input = Proto::SigningInput {
+        network: 12,
+        nonce: 2,
+        block_hash: block_hash.into(),
+        genesis_hash: genesis_hash.into(),
+        spec_version: 7_001_000,
+        transaction_version: 7,
+        era: Some(Era {
+            block_number: 17_691_403,
+            period: 64,
+        }),
+        runtime_call: Some(staking_call(StakingVariant::rebond(Rebond {
+            value: Cow::Owned(U256::from(42_000000u64).to_big_endian().to_vec()), // 42 POLYX
+            call_indices: None,
+        }))),
+        ..Default::default()
+    };
+
+    // Step 2: Obtain preimage hash
+    let mut pre_imager = PreImageHelper::<CompilerProto::PreSigningOutput>::default();
+    let preimage_output = pre_imager.pre_image_hashes(CoinType::Polymesh, &input);
+
+    assert_eq!(preimage_output.error, SigningError::OK);
+
+    assert_eq!(preimage_output.data.to_hex(), "1113027a030ab5000800a8d36a00070000002ace05e703aa50b48c0ccccfc8b424f7aab9a1e2c424ed12e45d20b1e8ffd0d67e8792533670a2063359ddd17e14923e4b37768261df38ae02d45ffef84dc6fd");
+
+    // Step 3: Compile transaction info
+
+    // Simulate signature, normally obtained from signature server
+    let signature_bytes = "9ef68cca8ed897bf10e8aa5a8dd1dbafbd78e379167f7ba294a02ff059b88f8ca9d9530fb508d29a6e48a7c55e46f67e8267b447414b2ebfaf68a1abca1a040f".decode_hex().unwrap();
+    let signature = Signature::try_from(signature_bytes.as_slice()).unwrap();
+    let public_key = PUBLIC_KEY_HEX_1.decode_hex().unwrap();
+    let public = PublicKey::try_from(public_key.as_slice()).unwrap();
+
+    // Verify signature (pubkey & hash & signature)
+    assert!(public.verify(signature, preimage_output.data.into()));
+
+    // Compile transaction info
+    let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
+    let output = compiler.compile(
+        CoinType::Polymesh,
+        &input,
+        vec![signature_bytes],
+        vec![public_key],
+    );
+    assert_eq!(output.error, SigningError::OK);
+
+    assert_eq!(
+        output.encoded.to_hex(),
+        "b50184004bdb9ef424035e1621e228bd11c5917d7d1dac5965d244c4c72fc91170244f0c009ef68cca8ed897bf10e8aa5a8dd1dbafbd78e379167f7ba294a02ff059b88f8ca9d9530fb508d29a6e48a7c55e46f67e8267b447414b2ebfaf68a1abca1a040fb50008001113027a030a"
     );
 }
