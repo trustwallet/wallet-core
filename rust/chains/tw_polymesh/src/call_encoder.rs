@@ -79,7 +79,7 @@ impl PolymeshBalances {
             BalanceVariant::transfer(t) => Self::encode_transfer(t),
             _ => Err(EncodeError::NotSupported)
                 .into_tw()
-                .context("Unsupported balance call".to_string()),
+                .context("Unsupported balance call"),
         }
     }
 }
@@ -130,13 +130,13 @@ impl PolymeshIdentity {
                 AuthVariant::None => {
                     return Err(EncodeError::NotSupported)
                         .into_tw()
-                        .context("Unsupported Authorization".to_string());
+                        .context("Unsupported Authorization");
                 },
             }
         } else {
             return Err(EncodeError::NotSupported)
                 .into_tw()
-                .context("Missing Authorization".to_string());
+                .context("Missing Authorization");
         };
 
         Ok(ci.wrap(Self::AddAuthorization {
@@ -157,7 +157,7 @@ impl PolymeshIdentity {
             IdentityVariant::add_authorization(a) => Self::encode_add_authorization(a),
             _ => Err(EncodeError::NotSupported)
                 .into_tw()
-                .context("Unsupported identity call".to_string()),
+                .context("Unsupported identity call"),
         }
     }
 }
@@ -279,7 +279,7 @@ impl PolymeshStaking {
             StakingVariant::nominate(b) => Self::encode_nominate(b),
             _ => Err(EncodeError::NotSupported)
                 .into_tw()
-                .context("Unsupported staking call".to_string()),
+                .context("Unsupported staking call"),
         }
     }
 }
@@ -372,7 +372,7 @@ impl CallEncoder {
             RuntimeCallVariant::None => {
                 return Err(EncodeError::NotSupported)
                     .into_tw()
-                    .context("Runtime call variant is None".to_string());
+                    .context("Runtime call variant is None");
             },
         };
         Ok(RawOwned(call.to_scale()))
