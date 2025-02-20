@@ -46,7 +46,10 @@ where
         let dust_policy =
             StandardSigningRequestBuilder::dust_policy(&transaction_builder.dust_policy)?;
         let fee_estimator = Self::fee_estimator(transaction_builder, &extra_data)?;
-        let version = Self::transaction_version(&transaction_builder.version)?;
+        let version = StandardSigningRequestBuilder::expect_transaction_version(
+            &transaction_builder.version,
+            TRANSACTION_VERSION_4,
+        )?;
 
         let public_keys = StandardSigningRequestBuilder::get_public_keys(input)?;
 

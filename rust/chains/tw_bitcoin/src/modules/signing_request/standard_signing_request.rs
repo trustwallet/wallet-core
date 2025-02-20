@@ -22,7 +22,7 @@ use tw_utxo::transaction::standard_transaction::builder::TransactionBuilder;
 use tw_utxo::transaction::standard_transaction::Transaction;
 use Proto::mod_TransactionBuilder::OneOfdust_policy as ProtoDustPolicy;
 
-const DEFAULT_TX_VERSION: u32 = 1;
+const DEFAULT_TX_VERSION: i32 = 1;
 
 pub type StandardSigningRequest = PlanRequest<StandardBitcoinContext>;
 
@@ -41,7 +41,7 @@ where
         let chain_info = chain_info(coin, &input.chain_info)?;
         let dust_policy = Self::dust_policy(&transaction_builder.dust_policy)?;
         let fee_estimator = Self::fee_estimator(transaction_builder)?;
-        let version = Self::transaction_version(&transaction_builder.version);
+        let version = Self::transaction_version(&transaction_builder.version, DEFAULT_TX_VERSION);
 
         let public_keys = Self::get_public_keys(input)?;
 
@@ -145,19 +145,31 @@ impl StandardSigningRequestBuilder {
         }
     }
 
-    pub fn fee_estimator(
+    pub fn fee_estimator<Transaction>(
         proto: &Proto::TransactionBuilder,
     ) -> SigningResult<StandardFeeEstimator<Transaction>> {
         let fee_policy = FeePolicy::FeePerVb(proto.fee_per_vb);
         Ok(StandardFeeEstimator::new(fee_policy))
     }
 
-    pub fn transaction_version(proto: &Proto::TransactionVersion) -> u32 {
+    pub fn transaction_version(proto: &Proto::TransactionVersion, default: i32) -> i32 {
         match proto {
-            Proto::TransactionVersion::UseDefault => DEFAULT_TX_VERSION,
+            Proto::TransactionVersion::UseDefault => default,
             Proto::TransactionVersion::V1 => 1,
             Proto::TransactionVersion::V2 => 2,
         }
+    }
+
+    pub fn expect_transaction_version(
+        proto: &Proto::TransactionVersion,
+        expected: i32,
+    ) -> SigningResult<i32> {
+        if Self::transaction_version(proto, expected) != expected {
+            return SigningError::err(SigningErrorType::Error_invalid_params).context(format!(
+                "Invalid transaction 'version'. Expected Default or V{expected}"
+            ));
+        }
+        Ok(expected)
     }
 }
 

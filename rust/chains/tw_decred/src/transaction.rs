@@ -11,12 +11,14 @@ use tw_utxo::encode::compact_integer::CompactInteger;
 use tw_utxo::encode::stream::Stream;
 use tw_utxo::encode::Encodable;
 use tw_utxo::script::{Script, Witness};
-use tw_utxo::transaction::standard_transaction::{TransactionOutput, SEGWIT_SCALE_FACTOR};
-use tw_utxo::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
+use tw_utxo::transaction::standard_transaction::SEGWIT_SCALE_FACTOR;
+use tw_utxo::transaction::transaction_interface::{
+    TransactionInterface, TxInputInterface, TxOutputInterface,
+};
 use tw_utxo::transaction::transaction_parts::{Amount, OutPoint};
 use tw_utxo::transaction::{TransactionPreimage, UtxoPreimageArgs, UtxoTaprootPreimageArgs};
 
-const DEFAULT_VERSION: i32 = 1;
+pub const TRANSACTION_VERSION_1: i32 = 1;
 
 #[derive(Copy, Clone)]
 #[repr(u32)]
@@ -29,11 +31,11 @@ pub enum SerializeType {
 #[derive(Clone, Debug)]
 pub struct DecredTransaction {
     /// Transaction data format version (note, this is signed).
-    pub version: u32,
+    pub version: i32,
     /// Transaction inputs.
     pub inputs: Vec<DecredTransactionInput>,
     /// Transaction outputs.
-    pub outputs: Vec<TransactionOutput>,
+    pub outputs: Vec<DecredTransactionOutput>,
     /// The block number or timestamp at which this transaction is unlocked.
     ///
     /// | Value          | Description
@@ -105,7 +107,7 @@ impl DecredTransaction {
         serialize_type: SerializeType,
     ) {
         let serialize_type_shift = (serialize_type as u32) << 16;
-        let version_and_type = self.version | serialize_type_shift;
+        let version_and_type = self.version.try_into().unwrap_or(1) | serialize_type_shift;
         stream.append(&version_and_type);
     }
 }
@@ -123,10 +125,10 @@ impl Encodable for DecredTransaction {
 
 impl TransactionInterface for DecredTransaction {
     type Input = DecredTransactionInput;
-    type Output = TransactionOutput;
+    type Output = DecredTransactionOutput;
 
     fn version(&self) -> i32 {
-        self.version.try_into().unwrap_or(DEFAULT_VERSION)
+        self.version
     }
 
     fn inputs(&self) -> &[Self::Input] {
@@ -211,6 +213,20 @@ pub struct DecredTransactionInput {
     pub script_sig: Script,
 }
 
+impl DecredTransactionInput {
+    pub fn encode_base(&self, stream: &mut Stream) {
+        stream.append(&self.previous_output).append(&self.sequence);
+    }
+
+    pub fn encode_witness(&self, stream: &mut Stream) {
+        stream
+            .append(&self.value_in)
+            .append(&self.block_height)
+            .append(&self.block_index)
+            .append(&self.script_sig);
+    }
+}
+
 impl TxInputInterface for DecredTransactionInput {
     fn previous_output(&self) -> &OutPoint {
         &self.previous_output
@@ -250,16 +266,50 @@ impl TxInputInterface for DecredTransactionInput {
     }
 }
 
-impl DecredTransactionInput {
-    pub fn encode_base(&self, stream: &mut Stream) {
-        stream.append(&self.previous_output).append(&self.sequence);
+#[derive(Clone, Debug)]
+pub struct DecredTransactionOutput {
+    /// Transaction amount.
+    pub value: Amount,
+    /// Transaction output version.
+    pub version: u16,
+    /// Usually contains the public key as a Bitcoin script setting up
+    /// conditions to claim this output.
+    pub script_pubkey: Script,
+}
+
+impl Default for DecredTransactionOutput {
+    fn default() -> Self {
+        DecredTransactionOutput {
+            value: -1,
+            version: 0,
+            script_pubkey: Script::default(),
+        }
+    }
+}
+
+impl Encodable for DecredTransactionOutput {
+    fn encode(&self, stream: &mut Stream) {
+        stream
+            .append(&self.value)
+            .append(&self.version)
+            .append(&self.script_pubkey);
     }
 
-    pub fn encode_witness(&self, stream: &mut Stream) {
-        stream
-            .append(&self.value_in)
-            .append(&self.block_height)
-            .append(&self.block_index)
-            .append(&self.script_sig);
+    fn encoded_size(&self) -> usize {
+        self.value.encoded_size() + self.version.encoded_size() + self.script_pubkey.encoded_size()
+    }
+}
+
+impl TxOutputInterface for DecredTransactionOutput {
+    fn value(&self) -> Amount {
+        self.value
+    }
+
+    fn set_value(&mut self, value: Amount) {
+        self.value = value;
+    }
+
+    fn script_pubkey(&self) -> &Script {
+        &self.script_pubkey
     }
 }
