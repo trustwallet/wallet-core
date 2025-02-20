@@ -8,39 +8,7 @@ package TW.Polymesh.Proto;
 option java_package = "wallet.core.jni.proto";
 
 import "Common.proto";
-
-// Destination options for reward
-enum RewardDestination {
-    STAKED = 0;
-    STASH = 1;
-    CONTROLLER = 2;
-}
-
-// An era, a period defined by a starting block and length
-message Era {
-    // recent block number (called phase in polkadot code), should match block hash
-    uint64 block_number = 1;
-
-    // length of period, calculated from block number, e.g. 64
-    uint64 period = 2;
-}
-
-// Readable decoded call indices can be found at https://www.subscan.io/
-message CustomCallIndices {
-    // Module index.
-    int32 module_index = 4;
-
-    // Method index.
-    int32 method_index = 5;
-}
-
-// Optional call indices.
-// Must be set if `SigningInput::network` is different from `Polymesh`.
-message CallIndices {
-    oneof variant {
-        CustomCallIndices custom = 1;
-    }
-}
+import "Polkadot.proto";
 
 // Balance transfer transaction
 message Balance {
@@ -56,7 +24,7 @@ message Balance {
         string memo = 3;
 
         // call indices
-        CallIndices call_indices = 4;
+        Polkadot.Proto.CallIndices call_indices = 4;
     }
 
     oneof message_oneof {
@@ -75,10 +43,10 @@ message Staking {
         bytes value = 2;
 
         // destination for rewards
-        RewardDestination reward_destination = 3;
+        Polkadot.Proto.RewardDestination reward_destination = 3;
 
         // call indices
-        CallIndices call_indices = 4;
+        Polkadot.Proto.CallIndices call_indices = 4;
     }
 
     // Bond extra amount
@@ -87,7 +55,7 @@ message Staking {
         bytes value = 1;
 
         // call indices
-        CallIndices call_indices = 2;
+        Polkadot.Proto.CallIndices call_indices = 2;
     }
 
     // Unbond
@@ -96,7 +64,7 @@ message Staking {
         bytes value = 1;
 
         // call indices
-        CallIndices call_indices = 2;
+        Polkadot.Proto.CallIndices call_indices = 2;
     }
 
     // Rebond
@@ -105,7 +73,7 @@ message Staking {
         bytes value = 1;
 
         // call indices
-        CallIndices call_indices = 2;
+        Polkadot.Proto.CallIndices call_indices = 2;
     }
 
     // Withdraw unbonded amounts
@@ -113,7 +81,7 @@ message Staking {
         int32 slashing_spans = 1;
 
         // call indices
-        CallIndices call_indices = 2;
+        Polkadot.Proto.CallIndices call_indices = 2;
     }
 
     // Nominate
@@ -122,13 +90,13 @@ message Staking {
         repeated string nominators = 1;
 
         // call indices
-        CallIndices call_indices = 2;
+        Polkadot.Proto.CallIndices call_indices = 2;
     }
 
     // Chill
     message Chill {
         // call indices
-        CallIndices call_indices = 1;
+        Polkadot.Proto.CallIndices call_indices = 1;
     }
 
     // Payload messsage
@@ -205,7 +173,7 @@ message Identity {
     // Identity::join_identity_as_key call
     message JoinIdentityAsKey {
         // call indices
-        CallIndices call_indices = 1;
+        Polkadot.Proto.CallIndices call_indices = 1;
 
         // auth id
         uint64 auth_id = 2;
@@ -214,7 +182,7 @@ message Identity {
     // Identity::leave_identity_as_key call
     message LeaveIdentityAsKey {
         // call indices
-        CallIndices call_indices = 1;
+        Polkadot.Proto.CallIndices call_indices = 1;
     }
 
     // Identity::add_authorization call
@@ -236,7 +204,7 @@ message Identity {
         }
 
         // call indices
-        CallIndices call_indices = 1;
+        Polkadot.Proto.CallIndices call_indices = 1;
 
         // address that will be added to the Identity
         string target = 2;
@@ -286,7 +254,7 @@ message Utility {
         repeated RuntimeCall calls = 2;
 
         // call indices
-        CallIndices call_indices = 3;
+        Polkadot.Proto.CallIndices call_indices = 3;
     }
 
     oneof message_oneof {
@@ -326,7 +294,7 @@ message SigningInput {
     bytes tip = 6;
 
     // Optional time validity limit, recommended, for replay-protection.  Empty means Immortal.
-    Era era = 7;
+    Polkadot.Proto.Era era = 7;
 
     // The secret private key used for signing (32 bytes).
     bytes private_key = 8;

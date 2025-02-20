@@ -2,6 +2,7 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use tw_coin_entry::error::prelude::*;
 use tw_hash::{Hash, H256};
+use tw_proto::Polkadot::Proto::RewardDestination as TWRewardDestination;
 use tw_proto::Polymesh::Proto::{
     mod_SecondaryKeyPermissions::{
         AssetPermissions as TWAssetPermissions, ExtrinsicPermissions as TWExtrinsicPermissions,
@@ -9,7 +10,7 @@ use tw_proto::Polymesh::Proto::{
         RestrictionKind as TWRestrictionKind,
     },
     AssetId as TWAssetId, IdentityId as TWIdentityId, PortfolioId as TWPortfolioId,
-    RewardDestination as TWRewardDestination, SecondaryKeyPermissions,
+    SecondaryKeyPermissions,
 };
 use tw_scale::{impl_enum_scale, impl_struct_scale, ToScale};
 

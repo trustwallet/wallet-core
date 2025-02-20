@@ -4,10 +4,10 @@ use crate::ctx_from_tw;
 use crate::types::*;
 use tw_coin_entry::error::prelude::*;
 use tw_number::U256;
+use tw_proto::Polkadot::Proto::{mod_CallIndices::OneOfvariant as CallIndicesVariant, CallIndices};
 use tw_proto::Polymesh::Proto::{
     self,
     mod_Balance::{OneOfmessage_oneof as BalanceVariant, Transfer},
-    mod_CallIndices::OneOfvariant as CallIndicesVariant,
     mod_Identity::{
         mod_AddAuthorization::mod_Authorization::OneOfauth_oneof as AuthVariant, AddAuthorization,
         JoinIdentityAsKey, LeaveIdentityAsKey, OneOfmessage_oneof as IdentityVariant,
@@ -18,7 +18,7 @@ use tw_proto::Polymesh::Proto::{
         WithdrawUnbonded,
     },
     mod_Utility::{BatchKind, OneOfmessage_oneof as UtilityVariant},
-    Balance, CallIndices, Identity, Staking, Utility,
+    Balance, Identity, Staking, Utility,
 };
 use tw_scale::{impl_enum_scale, Compact, RawOwned, ToScale};
 use tw_ss58_address::SS58Address;

@@ -3,6 +3,7 @@ use std::default::Default;
 
 use tw_encoding::hex::ToHex;
 use tw_number::U256;
+use tw_proto::Polkadot::Proto::RewardDestination;
 use tw_proto::Polymesh::Proto::{
     self,
     mod_Balance::{OneOfmessage_oneof as BalanceVariant, Transfer},
@@ -223,7 +224,7 @@ fn encode_staking_bond() {
     let input = build_input(staking_call(StakingVariant::bond(Bond {
         controller: "2HqjMm2goapWvXQBqjjEdVaTZsUmunWwEq1TSToDR1pDzQ1F".into(),
         value: U256::from(808081u64).to_big_endian().to_vec().into(),
-        reward_destination: Proto::RewardDestination::STAKED,
+        reward_destination: RewardDestination::STAKED,
         call_indices: None,
     })));
 
@@ -288,7 +289,7 @@ fn encode_staking_batch_bond_and_nominate() {
             staking_call(StakingVariant::bond(Bond {
                 controller: "2HqjMm2goapWvXQBqjjEdVaTZsUmunWwEq1TSToDR1pDzQ1F".into(),
                 value: U256::from(808081u64).to_big_endian().to_vec().into(),
-                reward_destination: Proto::RewardDestination::STAKED,
+                reward_destination: RewardDestination::STAKED,
                 call_indices: None,
             })),
             staking_call(StakingVariant::nominate(Nominate {

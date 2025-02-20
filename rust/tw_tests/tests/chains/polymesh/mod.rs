@@ -9,6 +9,7 @@ use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_keypair::ed25519::{sha512::PublicKey, Signature};
 use tw_keypair::traits::VerifyingKeyTrait;
 use tw_proto::Common::Proto::SigningError;
+use tw_proto::Polkadot::Proto as PolkadotProto;
 use tw_proto::Polymesh::Proto::{self, SigningInput};
 use tw_proto::TxCompiler::Proto::{self as CompilerProto, PreSigningOutput};
 
@@ -26,12 +27,14 @@ pub const PUBLIC_KEY_HEX_1: &str =
 
 pub const PUBLIC_KEY_2: &str = "2CpqFh8VnwJAjenw4xSUWCaaJ2QwGdhnCikoSEczMhjgqyj7";
 
-fn custom_call_indices(module: u8, method: u8) -> Option<Proto::CallIndices> {
-    Some(Proto::CallIndices {
-        variant: Proto::mod_CallIndices::OneOfvariant::custom(Proto::CustomCallIndices {
-            module_index: module as i32,
-            method_index: method as i32,
-        }),
+fn custom_call_indices(module: u8, method: u8) -> Option<PolkadotProto::CallIndices> {
+    Some(PolkadotProto::CallIndices {
+        variant: PolkadotProto::mod_CallIndices::OneOfvariant::custom(
+            PolkadotProto::CustomCallIndices {
+                module_index: module as i32,
+                method_index: method as i32,
+            },
+        ),
     })
 }
 
@@ -113,7 +116,7 @@ fn identity_add_auth_call(
 
 fn identity_join_identity(
     auth_id: u64,
-    call_indices: Option<Proto::CallIndices>,
+    call_indices: Option<PolkadotProto::CallIndices>,
 ) -> Proto::RuntimeCall<'static> {
     identity_call(
         Proto::mod_Identity::OneOfmessage_oneof::join_identity_as_key(

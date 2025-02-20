@@ -13,6 +13,7 @@ use tw_keypair::ed25519::{sha512::PublicKey, Signature};
 use tw_keypair::traits::VerifyingKeyTrait;
 use tw_number::U256;
 use tw_proto::Common::Proto::SigningError;
+use tw_proto::Polkadot::Proto::Era;
 use tw_proto::Polymesh::Proto::{
     self,
     mod_Balance::Transfer,
@@ -45,7 +46,7 @@ fn test_polymesh_compile_add_authorization() {
         genesis_hash: genesis_hash.into(),
         spec_version: 7_000_005,
         transaction_version: 7,
-        era: Some(Proto::Era {
+        era: Some(Era {
             block_number: 16_102_074,
             period: 64,
         }),
@@ -106,7 +107,7 @@ fn test_polymesh_compile_join_identity() {
         genesis_hash: genesis_hash.into(),
         spec_version: 7_000_005,
         transaction_version: 7,
-        era: Some(Proto::Era {
+        era: Some(Era {
             block_number: 16_102_087,
             period: 64,
         }),
@@ -172,7 +173,7 @@ fn test_polymesh_compile_transfer() {
         genesis_hash: genesis_hash.into(),
         spec_version: 7_000_005,
         transaction_version: 7,
-        era: Some(Proto::Era {
+        era: Some(Era {
             block_number: 16_102_106,
             period: 64,
         }),
@@ -242,7 +243,7 @@ fn test_polymesh_compile_leave_identity() {
         genesis_hash: genesis_hash.into(),
         spec_version: 7_000_005,
         transaction_version: 7,
-        era: Some(Proto::Era {
+        era: Some(Era {
             block_number: 16_102_110,
             period: 64,
         }),

@@ -11,6 +11,7 @@ use std::borrow::Cow;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_number::U256;
+use tw_proto::Polkadot::Proto::{Era, RewardDestination};
 use tw_proto::Polymesh::Proto::{
     self,
     mod_Balance::{OneOfmessage_oneof as BalanceVariant, Transfer},
@@ -47,7 +48,7 @@ fn test_polymesh_sign_join_identity() {
         genesis_hash: genesis_hash.into(),
         spec_version: 7_000_005,
         transaction_version: 7,
-        era: Some(Proto::Era {
+        era: Some(Era {
             block_number: 16_102_087,
             period: 64,
         }),
@@ -89,7 +90,7 @@ fn test_polymesh_sign_transfer() {
         genesis_hash: genesis_hash.into(),
         spec_version: 7_000_005,
         transaction_version: 7,
-        era: Some(Proto::Era {
+        era: Some(Era {
             block_number: 16_102_106,
             period: 64,
         }),
@@ -127,7 +128,7 @@ fn test_polymesh_encode_and_sign() {
         genesis_hash: genesis_hash.into(),
         spec_version: 3010,
         transaction_version: 2,
-        era: Some(Proto::Era {
+        era: Some(Era {
             block_number: 4298130,
             period: 64,
         }),
@@ -171,7 +172,7 @@ fn test_polymesh_encode_bond_and_nominate() {
         genesis_hash: genesis_hash.into(),
         spec_version: 6003050,
         transaction_version: 4,
-        era: Some(Proto::Era {
+        era: Some(Era {
             block_number: 15742961,
             period: 64,
         }),
@@ -181,7 +182,7 @@ fn test_polymesh_encode_bond_and_nominate() {
                 staking_call(StakingVariant::bond(Bond {
                     controller: "2EYbDVDVWiFbXZWJgqGDJsiH5MfNeLr5fxqH3tX84LQZaETG".into(),
                     value: Cow::Owned(U256::from(4000000u64).to_big_endian().to_vec()), // 4.0 POLYX
-                    reward_destination: Proto::RewardDestination::STAKED.into(),
+                    reward_destination: RewardDestination::STAKED.into(),
                     call_indices: None,
                 })),
                 staking_call(StakingVariant::nominate(Nominate {
@@ -227,7 +228,7 @@ fn test_polymesh_encode_chill_and_unbond() {
         genesis_hash: genesis_hash.into(),
         spec_version: 6003050,
         transaction_version: 4,
-        era: Some(Proto::Era {
+        era: Some(Era {
             block_number: 15742961,
             period: 64,
         }),
@@ -269,7 +270,7 @@ fn test_encode_transaction_add_authorization() {
         genesis_hash: genesis_hash.into(),
         spec_version: 3010,
         transaction_version: 2,
-        era: Some(Proto::Era {
+        era: Some(Era {
             block_number: 4395451,
             period: 64,
         }),
@@ -329,7 +330,7 @@ fn test_encode_transaction_join_identity_as_key() {
         genesis_hash: genesis_hash.into(),
         spec_version: 3010,
         transaction_version: 2,
-        era: Some(Proto::Era {
+        era: Some(Era {
             block_number: 4395527,
             period: 64,
         }),
