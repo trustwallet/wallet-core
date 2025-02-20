@@ -28,8 +28,10 @@ fn main() {
 
     let bindings_dir = PathBuf::from(env::var("CARGO_WORKSPACE_DIR").unwrap()).join("bindings");
     // Delete all old generated files before re-generating new ones
-    if bindings_dir.exists() {
-        fs::remove_dir_all(&bindings_dir).expect("Error removing out directory");
+    if let Ok(exists) = bindings_dir.try_exists() {
+        if exists {
+            fs::remove_dir_all(&bindings_dir).expect("Error removing out directory");
+        }
     }
     fs::DirBuilder::new()
         .recursive(true)
