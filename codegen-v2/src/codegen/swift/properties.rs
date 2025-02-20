@@ -28,7 +28,7 @@ pub(super) fn process_properties(
 
         let mut ops = vec![];
 
-        // Initalize the 'self' type, which is then passed on to the underlying
+        // Initialize the 'self' type, which is then passed on to the underlying
         // C FFI function.
         ops.push(match object {
             // E.g. `let obj = self.rawValue`
