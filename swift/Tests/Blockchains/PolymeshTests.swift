@@ -34,7 +34,7 @@ class PolymeshTests: XCTestCase {
             $0.network = CoinType.polymesh.ss58Prefix
             $0.transactionVersion = 7
             $0.privateKey = testKey1
-            $0.era = PolymeshEra.with {
+            $0.era = PolkadotEra.with {
                 $0.blockNumber = 16102106
                 $0.period = 64
             }

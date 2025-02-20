@@ -10,6 +10,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.POLYMESH
+import wallet.core.jni.proto.Polkadot
 import wallet.core.jni.proto.Polymesh
 import wallet.core.jni.proto.Polymesh.SigningOutput
 
@@ -38,7 +39,7 @@ class TestPolymeshSigner {
         val input = Polymesh.SigningInput.newBuilder().apply {
             genesisHash = genesisHashStr
             blockHash = blockHashStr
-            era = Polymesh.Era.newBuilder().apply {
+            era = Polkadot.Era.newBuilder().apply {
                 blockNumber = 16_102_106
                 period = 64
             }.build()
