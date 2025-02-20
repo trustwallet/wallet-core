@@ -28,7 +28,7 @@ pub(super) fn process_methods(
 
         let mut ops = vec![];
 
-        // Initalize the 'self' type, which is then passed on to the underlying
+        // Initialize the 'self' type, which is then passed on to the underlying
         // C FFI function, assuming the function is not static.
         //
         // E.g:
