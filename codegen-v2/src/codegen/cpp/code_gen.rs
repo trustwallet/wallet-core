@@ -338,7 +338,7 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
-                "\tauto &{name}PrivateKey = *reinterpret_cast<const TW::PrivateKey*>(a);\n\
+                "\tauto &{name}PrivateKey = *reinterpret_cast<const TW::PrivateKey*>({name});\n\
                 \tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}PrivateKey.bytes.data(), {name}PrivateKey.bytes.size());\n\
                 \tconst auto {name}RustPrivateKey = Rust::wrapTWPrivateKey({name}RustRaw);"
             )
@@ -363,7 +363,7 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
-                "\tauto &{name}PublicKey = *reinterpret_cast<const TW::PublicKey*>(a);\n\
+                "\tauto &{name}PublicKey = *reinterpret_cast<const TW::PublicKey*>({name});\n\
                 \tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}PublicKey.bytes.data(), {name}PublicKey.bytes.size(), {name}PublicKey.type);\n\
                 \tconst auto {name}RustPublicKey = Rust::wrapTWPublicKey({name}RustRaw);"
             )
