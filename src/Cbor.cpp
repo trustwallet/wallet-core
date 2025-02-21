@@ -75,6 +75,12 @@ Encode Encode::null() {
     return e;
 }
 
+Encode Encode::version(uint64_t value) {
+    Encode e;
+    e.appendValue(Decode::MT_special, value);
+    return e;
+}
+
 Encode Encode::indefArray() {
     Encode e;
     e.appendIndefinite(Decode::MT_array);

@@ -318,12 +318,24 @@ Cbor::Encode cborizeCertificateKey(const CertificateKey& certKey) {
     return Cbor::Encode::array(c);
 }
 
+Cbor::Encode cborizeDRepKey(const DRepKey& drepKey) {
+    std::vector<Cbor::Encode> c;
+    c.emplace_back(Cbor::Encode::uint(static_cast<uint8_t>(drepKey.type)));
+    if (drepKey.type == DRepKey::KeyType::AddressKeyHash) {
+        c.emplace_back(Cbor::Encode::bytes(drepKey.key));
+    }
+    return Cbor::Encode::array(c);
+}
+
 Cbor::Encode cborizeCert(const Certificate& cert) {
     std::vector<Cbor::Encode> c;
     c.emplace_back(Cbor::Encode::uint(static_cast<uint8_t>(cert.type)));
     c.emplace_back(cborizeCertificateKey(cert.certKey));
     if (!cert.poolId.empty()) {
         c.emplace_back(Cbor::Encode::bytes(cert.poolId));
+    }
+    if (cert.drepKey.has_value()) {
+        c.emplace_back(cborizeDRepKey(cert.drepKey.value()));
     }
     return Cbor::Encode::array(c);
 }

@@ -121,7 +121,7 @@ impl<Context: BitcoinSigningContext> BitcoinCompiler<Context> {
         Ok(Proto::SigningOutput {
             transaction: Context::ProtobufBuilder::tx_to_proto(&signed_tx),
             encoded: Cow::from(signed_tx.encode_out()),
-            txid: Cow::from(signed_tx.txid()),
+            txid: Cow::from(signed_tx.txid(Context::TX_HASHER)),
             // `vsize` could have been changed after the transaction being signed.
             vsize: signed_tx.vsize() as u64,
             weight: signed_tx.weight() as u64,
@@ -146,7 +146,7 @@ impl<Context: BitcoinSigningContext> BitcoinCompiler<Context> {
         Ok(Proto::SigningOutput {
             transaction: Context::ProtobufBuilder::tx_to_proto(&signed_tx),
             encoded: Cow::from(signed_tx.encode_out()),
-            txid: Cow::from(signed_tx.txid()),
+            txid: Cow::from(signed_tx.txid(Context::TX_HASHER)),
             // `vsize` could have been changed after the transaction being signed.
             vsize: signed_tx.vsize() as u64,
             weight: signed_tx.weight() as u64,
