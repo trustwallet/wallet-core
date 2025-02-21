@@ -8,8 +8,8 @@ use tw_encoding::hex::ToHex;
 use tw_keypair::ed25519;
 use tw_keypair::ffi::privkey::TWPrivateKey;
 use tw_macros::tw_ffi;
-use tw_memory::ffi::{Nonnull, NullableMut, RawPtrTrait};
 use tw_memory::ffi::tw_string::TWString;
+use tw_memory::ffi::{Nonnull, NullableMut, RawPtrTrait};
 use tw_misc::try_or_else;
 use tw_ton::modules::personal_message_signer::PersonalMessageSigner;
 

@@ -1,3 +1,4 @@
+use heck::ToLowerCamelCase;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::fmt::Write as _;
@@ -138,7 +139,7 @@ fn generate_function_signature(
             &mut signature,
             "{} {}",
             convert_rust_type_to_cpp(&arg.ty),
-            arg.name
+            arg.name.to_lower_camel_case()
         )
         .map_err(|e| BadFormat(e.to_string()))?;
         if i < func.args.len() - 1 {
@@ -399,7 +400,7 @@ fn generate_function_definition(
     for arg in func.args.iter() {
         let func_type = convert_rust_type_to_cpp(&arg.ty);
         let (conversion_code, converted_arg) =
-            generate_conversion_code_with_var_name(&func_type, &arg.name)?;
+            generate_conversion_code_with_var_name(&func_type, &arg.name.to_lower_camel_case())?;
         func_def += conversion_code.as_str();
         converted_args.push(converted_arg);
     }
