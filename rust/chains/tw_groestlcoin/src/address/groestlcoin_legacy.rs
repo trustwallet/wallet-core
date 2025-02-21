@@ -4,6 +4,6 @@
 
 use tw_hash::groestl::Groestl512d;
 use tw_hash::ripemd::Sha256Ripemd;
-use tw_utxo::address::legacy::PrefixedBase58Address;
+use tw_utxo::address::prefixed_b58_address::PrefixedB58Address;
 
-pub type GroestlLegacyAddress = PrefixedBase58Address<Sha256Ripemd, Groestl512d>;
+pub type GroestlLegacyAddress = PrefixedB58Address<Sha256Ripemd, Groestl512d>;

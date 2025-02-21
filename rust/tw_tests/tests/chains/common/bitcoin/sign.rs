@@ -11,6 +11,7 @@ use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto::mod_SigningOutput::OneOftransaction as ProtobufTransaction;
 use tw_proto::Common::Proto::SigningError;
+use tw_proto::DecredV2::Proto as DecredProto;
 
 type UtxoMap = HashMap<OutPoint, i64>;
 
@@ -89,15 +90,15 @@ impl<'a> BitcoinSignHelper<'a> {
     fn transaction_input_amounts(&self, tx: &ProtobufTransaction) -> Vec<i64> {
         let utxo_map = self.utxo_map();
 
-        let tx_inputs = match tx {
-            ProtobufTransaction::bitcoin(btc) => &btc.inputs,
-            ProtobufTransaction::zcash(zcash) => &zcash.inputs,
+        let out_points: Vec<_> = match tx {
+            ProtobufTransaction::bitcoin(btc) => transaction_out_points(&btc.inputs),
+            ProtobufTransaction::zcash(zcash) => transaction_out_points(&zcash.inputs),
+            ProtobufTransaction::decred(decred) => decred_transaction_out_points(&decred.inputs),
             ProtobufTransaction::None => panic!("'SigningOutput.transaction' isn't set"),
         };
 
-        let mut output_inputs = Vec::with_capacity(tx_inputs.len());
-        for utxo in tx_inputs.iter() {
-            let searching_out_point = OutPoint::from_proto(&utxo.out_point);
+        let mut output_inputs = Vec::with_capacity(out_points.len());
+        for searching_out_point in out_points.iter() {
             let utxo_amount = *utxo_map.get(&searching_out_point).unwrap_or_else(|| {
                 panic!("Signed transaction does not contain {searching_out_point:?} UTXO")
             });
@@ -109,13 +110,14 @@ impl<'a> BitcoinSignHelper<'a> {
 
     /// Collect all the UTXO amounts by using `OutPoint`.
     fn transaction_output_amounts(&self, tx: &ProtobufTransaction) -> Vec<i64> {
-        let tx_outputs = match tx {
-            ProtobufTransaction::bitcoin(btc) => &btc.outputs,
-            ProtobufTransaction::zcash(zcash) => &zcash.outputs,
+        match tx {
+            ProtobufTransaction::bitcoin(btc) => transaction_output_amounts(&btc.outputs),
+            ProtobufTransaction::zcash(zcash) => transaction_output_amounts(&zcash.outputs),
+            ProtobufTransaction::decred(decred) => {
+                decred_transaction_output_amounts(&decred.outputs)
+            },
             ProtobufTransaction::None => panic!("'SigningOutput.transaction' isn't set"),
-        };
-
-        tx_outputs.iter().map(|output| output.value).collect()
+        }
     }
 
     fn transaction_builder(&self) -> &Proto::TransactionBuilder<'_> {
@@ -129,6 +131,28 @@ impl<'a> BitcoinSignHelper<'a> {
     }
 }
 
+fn decred_transaction_out_points(inputs: &[DecredProto::TransactionInput]) -> Vec<OutPoint> {
+    inputs
+        .iter()
+        .map(|input| OutPoint::from_decred_proto(&input.out_point))
+        .collect()
+}
+
+fn transaction_out_points(inputs: &[UtxoProto::TransactionInput]) -> Vec<OutPoint> {
+    inputs
+        .iter()
+        .map(|input| OutPoint::from_proto(&input.out_point))
+        .collect()
+}
+
+fn decred_transaction_output_amounts(outputs: &[DecredProto::TransactionOutput]) -> Vec<i64> {
+    outputs.iter().map(|output| output.value).collect()
+}
+
+fn transaction_output_amounts(outputs: &[UtxoProto::TransactionOutput]) -> Vec<i64> {
+    outputs.iter().map(|output| output.value).collect()
+}
+
 #[derive(Debug, Eq, Hash, PartialEq)]
 struct OutPoint {
     hash: Data,
@@ -136,6 +160,14 @@ struct OutPoint {
 }
 
 impl OutPoint {
+    fn from_decred_proto(proto: &Option<DecredProto::OutPoint>) -> OutPoint {
+        let out_point = proto.as_ref().expect("No OutPoint specified");
+        OutPoint {
+            hash: out_point.hash.to_vec(),
+            vout: out_point.vout,
+        }
+    }
+
     fn from_proto(proto: &Option<UtxoProto::OutPoint>) -> OutPoint {
         let out_point = proto.as_ref().expect("No OutPoint specified");
         OutPoint {

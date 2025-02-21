@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::blake::blake_256;
 use crate::hash_wrapper::hasher;
 use crate::impl_static_hasher;
 use crate::sha2::sha256;
@@ -17,6 +18,10 @@ pub fn sha256_ripemd(data: &[u8]) -> Data {
     ripemd_160(&sha256(data))
 }
 
+pub fn blake256_ripemd(input: &[u8]) -> Vec<u8> {
+    ripemd_160(&blake_256(input))
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Ripemd160;
 impl_static_hasher!(Ripemd160, ripemd_160, 20);
@@ -24,3 +29,7 @@ impl_static_hasher!(Ripemd160, ripemd_160, 20);
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Sha256Ripemd;
 impl_static_hasher!(Sha256Ripemd, sha256_ripemd, 20);
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Blake256Ripemd;
+impl_static_hasher!(Blake256Ripemd, blake256_ripemd, 20);

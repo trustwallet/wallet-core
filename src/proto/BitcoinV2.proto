@@ -5,6 +5,7 @@ option java_package = "wallet.core.jni.proto";
 
 import "BabylonStaking.proto";
 import "Common.proto";
+import "DecredV2.proto";
 import "Utxo.proto";
 import "Zcash.proto";
 
@@ -376,5 +377,7 @@ message SigningOutput {
         Utxo.Proto.Transaction bitcoin = 15;
         // ZCash transaction.
         Zcash.Proto.Transaction zcash = 16;
+        // Decred transaction.
+        DecredV2.Proto.Transaction decred = 17;
     }
 }

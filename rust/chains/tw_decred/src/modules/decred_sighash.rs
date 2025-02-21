@@ -1,0 +1,48 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+use crate::transaction::{DecredTransaction, SerializeType};
+use tw_coin_entry::error::prelude::*;
+use tw_hash::blake::blake_256;
+use tw_hash::H256;
+use tw_memory::Data;
+use tw_utxo::encode::stream::Stream;
+use tw_utxo::transaction::transaction_interface::TransactionInterface;
+use tw_utxo::transaction::transaction_sighash::legacy_sighash::LegacySighash;
+use tw_utxo::transaction::UtxoPreimageArgs;
+
+pub struct DecredSighash;
+
+impl DecredSighash {
+    pub fn sighash_tx(tx: &DecredTransaction, args: &UtxoPreimageArgs) -> SigningResult<H256> {
+        let mut tx_preimage = tx.clone();
+
+        let inputs_to_preimage = LegacySighash::inputs_for_preimage(&tx_preimage, args)?;
+        let outpus_to_preimage = LegacySighash::outputs_for_preimage(&tx_preimage, args);
+
+        tx_preimage.replace_inputs(inputs_to_preimage);
+        tx_preimage.replace_outputs(outpus_to_preimage);
+
+        let prefix_hash = Self::tx_prefix_hash(&tx_preimage);
+        let witness_hash = Self::tx_witness_hash(&tx_preimage);
+
+        let concat_hash: Vec<_> = prefix_hash.into_iter().chain(witness_hash).collect();
+        let preimage_hash = blake_256(&concat_hash);
+        H256::try_from(preimage_hash.as_slice())
+            .tw_err(SigningErrorType::Error_internal)
+            .context("'blake_256' hash should return exactly 32 bytes")
+    }
+
+    pub fn tx_prefix_hash(tx: &DecredTransaction) -> Data {
+        let mut prefix_preimage = Stream::new();
+        tx.encode(&mut prefix_preimage, SerializeType::NoWitness);
+        blake_256(&prefix_preimage.out())
+    }
+
+    pub fn tx_witness_hash(tx: &DecredTransaction) -> Data {
+        let mut witness_preimage = Stream::new();
+        tx.encode(&mut witness_preimage, SerializeType::OnlyWitness);
+        blake_256(&witness_preimage.out())
+    }
+}

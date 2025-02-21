@@ -1877,6 +1877,7 @@ dependencies = [
  "tw_bitcoincash",
  "tw_coin_entry",
  "tw_cosmos",
+ "tw_decred",
  "tw_ethereum",
  "tw_evm",
  "tw_greenfield",
@@ -1930,6 +1931,21 @@ dependencies = [
  "tw_misc",
  "tw_number",
  "tw_proto",
+]
+
+[[package]]
+name = "tw_decred"
+version = "0.1.0"
+dependencies = [
+ "tw_base58_address",
+ "tw_bitcoin",
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_proto",
+ "tw_utxo",
 ]
 
 [[package]]

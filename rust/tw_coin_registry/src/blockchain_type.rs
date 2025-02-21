@@ -14,6 +14,7 @@ pub enum BlockchainType {
     Bitcoin,
     BitcoinCash,
     Cosmos,
+    Decred,
     Ethereum,
     Greenfield,
     Groestlcoin,
