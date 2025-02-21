@@ -4,8 +4,10 @@
 
 pub mod derivation;
 pub mod legacy;
+pub mod prefixed_b58_address;
 pub mod segwit;
 pub mod standard_bitcoin;
+pub mod statically_prefixed_base58_address;
 pub mod taproot;
 pub mod witness_program;
 

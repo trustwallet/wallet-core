@@ -6,6 +6,7 @@ use crate::context::DecredContext;
 use crate::transaction::{
     DecredTransaction, DecredTransactionInput, DecredTransactionOutput, SerializeType,
 };
+use std::borrow::Cow;
 use tw_bitcoin::modules::protobuf_builder::standard_protobuf_builder::StandardProtobufBuilder;
 use tw_bitcoin::modules::protobuf_builder::{ProtobufBuilder, ProtobufTransaction};
 use tw_proto::DecredV2::Proto as DecredProto;
@@ -18,9 +19,11 @@ impl DecredProtobufBuilder {
         input: &DecredTransactionInput,
     ) -> DecredProto::TransactionInput<'static> {
         DecredProto::TransactionInput {
-            out_point: Some(StandardProtobufBuilder::out_point_to_proto(
-                &input.previous_output,
-            )),
+            out_point: Some(DecredProto::OutPoint {
+                hash: Cow::from(input.previous_output.out_point.hash.to_vec()),
+                vout: input.previous_output.out_point.index,
+                tree: input.previous_output.tree as u32,
+            }),
             sequence: input.sequence,
             value: input.value_in,
             block_height: input.block_height,

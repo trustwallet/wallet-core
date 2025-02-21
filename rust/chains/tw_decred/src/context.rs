@@ -21,10 +21,10 @@ impl UtxoContext for DecredContext {
     type FeeEstimator = StandardFeeEstimator<DecredTransaction>;
 
     fn addr_to_script_pubkey(
-        _addr: &Self::Address,
-        _prefixes: AddressPrefixes,
+        addr: &Self::Address,
+        prefixes: AddressPrefixes,
     ) -> SigningResult<Script> {
-        todo!()
+        addr.to_script_pubkey(prefixes.p2pkh_prefix, prefixes.p2sh_prefix)
     }
 }
 

@@ -63,6 +63,7 @@ impl DecredTransactionBuilder {
         arg: UtxoToSign,
     ) -> SigningResult<&mut Self> {
         let (decred_input, arg) = DecredUtxoBuilder::try_from_standard_input(standard_input, arg)?
+            .out_point_tree(0)
             .block_height(0)
             .block_index(0)
             .build();

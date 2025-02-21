@@ -3,35 +3,36 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::DecredAddress;
-use crate::compiler::DecredCompiler;
-use crate::signer::DecredSigner;
+use crate::context::DecredContext;
 use std::str::FromStr;
+use tw_bitcoin::modules::compiler::BitcoinCompiler;
+use tw_bitcoin::modules::planner::BitcoinPlanner;
+use tw_bitcoin::modules::signer::BitcoinSigner;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
-use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::modules::transaction_util::NoTransactionUtil;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
-use tw_coin_entry::prefix::NoPrefix;
+use tw_coin_entry::prefix::BitcoinBase58Prefix;
 use tw_keypair::tw::PublicKey;
-use tw_proto::BitcoinV2::Proto;
+use tw_proto::BitcoinV2::Proto as BitcoinV2Proto;
 
 pub struct DecredEntry;
 
 impl CoinEntry for DecredEntry {
-    type AddressPrefix = NoPrefix;
+    type AddressPrefix = BitcoinBase58Prefix;
     type Address = DecredAddress;
-    type SigningInput<'a> = Proto::SigningInput<'a>;
-    type SigningOutput = Proto::SigningOutput<'static>;
-    type PreSigningOutput = Proto::PreSigningOutput<'static>;
+    type SigningInput<'a> = BitcoinV2Proto::SigningInput<'a>;
+    type SigningOutput = BitcoinV2Proto::SigningOutput<'static>;
+    type PreSigningOutput = BitcoinV2Proto::PreSigningOutput<'static>;
 
     // Optional modules:
     type JsonSigner = NoJsonSigner;
-    type PlanBuilder = NoPlanBuilder;
+    type PlanBuilder = BitcoinPlanner<DecredContext>;
     type MessageSigner = NoMessageSigner;
     type WalletConnector = NoWalletConnector;
     type TransactionDecoder = NoTransactionDecoder;
@@ -40,11 +41,11 @@ impl CoinEntry for DecredEntry {
     #[inline]
     fn parse_address(
         &self,
-        _coin: &dyn CoinContext,
-        _address: &str,
-        _prefix: Option<Self::AddressPrefix>,
+        coin: &dyn CoinContext,
+        address: &str,
+        prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        DecredAddress::from_str_with_coin_and_prefix(coin, address, prefix)
     }
 
     #[inline]
@@ -55,17 +56,17 @@ impl CoinEntry for DecredEntry {
     #[inline]
     fn derive_address(
         &self,
-        _coin: &dyn CoinContext,
-        _public_key: PublicKey,
+        coin: &dyn CoinContext,
+        public_key: PublicKey,
         _derivation: Derivation,
-        _prefix: Option<Self::AddressPrefix>,
+        prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        DecredAddress::p2pkh_with_coin_and_prefix(coin, &public_key, prefix)
     }
 
     #[inline]
     fn sign(&self, coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput {
-        DecredSigner::sign(coin, input)
+        BitcoinSigner::<DecredContext>::sign(coin, &input)
     }
 
     #[inline]
@@ -74,7 +75,7 @@ impl CoinEntry for DecredEntry {
         coin: &dyn CoinContext,
         input: Self::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        DecredCompiler::preimage_hashes(coin, input)
+        BitcoinCompiler::<DecredContext>::preimage_hashes(coin, input)
     }
 
     #[inline]
@@ -85,6 +86,6 @@ impl CoinEntry for DecredEntry {
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
-        DecredCompiler::compile(coin, input, signatures, public_keys)
+        BitcoinCompiler::<DecredContext>::compile(coin, input, signatures, public_keys)
     }
 }

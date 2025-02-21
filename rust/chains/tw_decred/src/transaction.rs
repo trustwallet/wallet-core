@@ -191,9 +191,27 @@ impl TransactionPreimage for DecredTransaction {
 }
 
 #[derive(Clone, Debug)]
+pub struct DecredOutPoint {
+    pub out_point: OutPoint,
+    /// Which tree the output being spent is in. This is required because there
+    /// is more than one tree used to locate transactions in a block.
+    pub tree: u8,
+}
+
+impl Encodable for DecredOutPoint {
+    fn encode(&self, stream: &mut Stream) {
+        stream.append(&self.out_point).append(&self.tree);
+    }
+
+    fn encoded_size(&self) -> usize {
+        self.out_point.encoded_size() + self.tree.encoded_size()
+    }
+}
+
+#[derive(Clone, Debug)]
 pub struct DecredTransactionInput {
     /// Reference to the previous transaction's output.
-    pub previous_output: OutPoint,
+    pub previous_output: DecredOutPoint,
     /// Transaction version as defined by the sender.
     ///
     /// Intended for "replacement" of transactions when information is updated
@@ -229,7 +247,7 @@ impl DecredTransactionInput {
 
 impl TxInputInterface for DecredTransactionInput {
     fn previous_output(&self) -> &OutPoint {
-        &self.previous_output
+        &self.previous_output.out_point
     }
 
     fn sequence(&self) -> u32 {

@@ -5,6 +5,17 @@ option java_package = "wallet.core.jni.proto";
 
 import "Utxo.proto";
 
+// Decred transaction out-point reference.
+message OutPoint {
+    // The hash of the referenced transaction (network byte order, usually needs to be reversed).
+    // The referenced transaction ID in REVERSED order.
+    bytes hash = 1;
+    // The position in the previous transactions output that this input references.
+    uint32 vout = 2;
+    // The tree in utxo, only works for DCR.
+    uint32 tree = 3;
+}
+
 // A transfer transaction
 message Transaction {
     // Serialization format
@@ -26,7 +37,7 @@ message Transaction {
 // Decred transaction input.
 message TransactionInput {
     // Reference to the previous transaction's output.
-    Utxo.Proto.OutPoint out_point = 1;
+    OutPoint out_point = 1;
     // Transaction version as defined by the sender.
     uint32 sequence = 2;
     // The amount of the input.
