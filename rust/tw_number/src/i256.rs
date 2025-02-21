@@ -79,6 +79,10 @@ impl I256 {
         self.to_u256_repr().to_big_endian_compact()
     }
 
+    pub fn to_big_endian_compact_min_len(&self, min_len: usize) -> Data {
+         self.to_u256_repr().to_big_endian_compact_min_len(min_len)
+    }
+
     /// Returns the sign of the integer.
     pub fn sign(&self) -> Sign {
         let most_significant_bit = self.0 & *NEGATIVE_BIT_MASK;
