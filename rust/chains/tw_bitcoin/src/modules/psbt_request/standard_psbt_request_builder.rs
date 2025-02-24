@@ -31,7 +31,7 @@ where
         let version = psbt.unsigned_tx.version;
         let lock_time = psbt.unsigned_tx.lock_time.to_consensus_u32();
 
-        let public_keys = StandardSigningRequestBuilder::get_public_keys(input)?;
+        let public_keys = StandardSigningRequestBuilder::get_public_keys::<Context>(input)?;
 
         let mut builder = TransactionBuilder::default();
         builder.version(version).lock_time(lock_time);

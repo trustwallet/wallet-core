@@ -16,6 +16,11 @@ mod utxo;
 pub use output::DecredOutputBuilder;
 pub use utxo::DecredUtxoBuilder;
 
+pub const DEFAULT_BLOCK_HEIGHT: u32 = 0;
+pub const DEFAULT_BLOCK_INDEX: u32 = u32::MAX;
+/// Regular transaction tree.
+pub const REGULAR_PREVIOUS_OUTPUT_TREE: u8 = 0;
+
 pub struct DecredTransactionBuilder {
     transaction: DecredTransaction,
     utxo_args: Vec<UtxoToSign>,
@@ -63,9 +68,9 @@ impl DecredTransactionBuilder {
         arg: UtxoToSign,
     ) -> SigningResult<&mut Self> {
         let (decred_input, arg) = DecredUtxoBuilder::try_from_standard_input(standard_input, arg)?
-            .out_point_tree(0)
-            .block_height(0)
-            .block_index(0)
+            .out_point_tree(REGULAR_PREVIOUS_OUTPUT_TREE)
+            .block_height(DEFAULT_BLOCK_HEIGHT)
+            .block_index(DEFAULT_BLOCK_INDEX)
             .build();
         Ok(self.push_input(decred_input, arg))
     }

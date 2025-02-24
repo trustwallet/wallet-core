@@ -35,7 +35,7 @@ impl SigningRequestBuilder<DecredContext> for DecredSigningRequestBuilder {
             TRANSACTION_VERSION_1,
         )?;
 
-        let public_keys = StandardSigningRequestBuilder::get_public_keys(input)?;
+        let public_keys = StandardSigningRequestBuilder::get_public_keys::<DecredContext>(input)?;
 
         let mut builder = DecredTransactionBuilder::new();
         builder

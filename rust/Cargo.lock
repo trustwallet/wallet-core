@@ -2102,6 +2102,7 @@ version = "0.1.0"
 dependencies = [
  "tw_bitcoin",
  "tw_coin_entry",
+ "tw_hash",
  "tw_keypair",
  "tw_proto",
  "tw_utxo",

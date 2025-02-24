@@ -51,7 +51,7 @@ where
             TRANSACTION_VERSION_4,
         )?;
 
-        let public_keys = StandardSigningRequestBuilder::get_public_keys(input)?;
+        let public_keys = StandardSigningRequestBuilder::get_public_keys::<Context>(input)?;
 
         let mut builder = ZcashTransactionBuilder::default();
         builder

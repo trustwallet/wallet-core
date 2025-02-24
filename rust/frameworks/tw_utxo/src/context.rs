@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::address::DEFAULT_PUBLIC_KEY_HASHER;
 use crate::fee::fee_estimator::FeeEstimator;
 use crate::script::Script;
 use crate::transaction::standard_transaction::DEFAULT_TX_HASHER;
@@ -27,6 +28,7 @@ pub trait UtxoContext {
     type FeeEstimator: FeeEstimator<Self::Transaction>;
 
     const TX_HASHER: Hasher = DEFAULT_TX_HASHER;
+    const PUBLIC_KEY_HASHER: Hasher = DEFAULT_PUBLIC_KEY_HASHER;
 
     fn addr_to_script_pubkey(
         addr: &Self::Address,

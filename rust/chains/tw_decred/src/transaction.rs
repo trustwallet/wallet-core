@@ -25,7 +25,7 @@ pub const TRANSACTION_VERSION_1: i32 = 1;
 pub enum SerializeType {
     Full = 0,
     NoWitness = 1,
-    OnlyWitness = 2,
+    OnlyWitness = 3,
 }
 
 #[derive(Clone, Debug)]
@@ -101,7 +101,7 @@ impl DecredTransaction {
         }
     }
 
-    fn encode_version_and_serialize_type(
+    pub fn encode_version_and_serialize_type(
         &self,
         stream: &mut Stream,
         serialize_type: SerializeType,

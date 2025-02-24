@@ -88,4 +88,9 @@ impl CoinEntry for DecredEntry {
     ) -> Self::SigningOutput {
         BitcoinCompiler::<DecredContext>::compile(coin, input, signatures, public_keys)
     }
+
+    #[inline]
+    fn plan_builder(&self) -> Option<Self::PlanBuilder> {
+        Some(BitcoinPlanner::<DecredContext>::default())
+    }
 }
