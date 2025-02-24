@@ -1,3 +1,4 @@
+use heck::ToLowerCamelCase;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::fmt::Write as _;
@@ -138,7 +139,7 @@ fn generate_function_signature(
             &mut signature,
             "{} {}",
             convert_rust_type_to_cpp(&arg.ty),
-            arg.name
+            arg.name.to_lower_camel_case()
         )
         .map_err(|e| BadFormat(e.to_string()))?;
         if i < func.args.len() - 1 {
@@ -338,7 +339,7 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
-                "\tauto &{name}PrivateKey = *reinterpret_cast<const TW::PrivateKey*>(a);\n\
+                "\tauto &{name}PrivateKey = *reinterpret_cast<const TW::PrivateKey*>({name});\n\
                 \tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}PrivateKey.bytes.data(), {name}PrivateKey.bytes.size());\n\
                 \tconst auto {name}RustPrivateKey = Rust::wrapTWPrivateKey({name}RustRaw);"
             )
@@ -363,8 +364,9 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
-                "\tauto &{name}PublicKey = *reinterpret_cast<const TW::PublicKey*>(a);\n\
-                \tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}PublicKey.bytes.data(), {name}PublicKey.bytes.size(), {name}PublicKey.type);\n\
+                "\tauto &{name}PublicKey = *reinterpret_cast<const TW::PublicKey*>({name});\n\
+                \tconst auto {name}PublicKeyType = static_cast<uint32_t>({name}PublicKey.type);\n\
+                \tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}PublicKey.bytes.data(), {name}PublicKey.bytes.size(), {name}PublicKeyType);\n\
                 \tconst auto {name}RustPublicKey = Rust::wrapTWPublicKey({name}RustRaw);"
             )
             .map_err(|e| BadFormat(e.to_string()))?;
@@ -377,7 +379,8 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
                 "\tstd::shared_ptr<TW::Rust::TWPublicKey> {name}RustPublicKey;\n\
                 \tif ({name} != nullptr) {{\n\
                     \t\tconst auto& {name}PublicKey = {name};\n\
-                    \t\tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}PublicKey->impl.bytes.data(), {name}PublicKey->impl.bytes.size(), {name}PublicKey->impl.type);\n\
+                    \t\tconst auto {name}PublicKeyType = static_cast<uint32_t>({name}PublicKey->impl.type);\n\
+                    \t\tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}PublicKey->impl.bytes.data(), {name}PublicKey->impl.bytes.size(), {name}PublicKeyType);\n\
                     \t\t{name}RustPublicKey = Rust::wrapTWPublicKey({name}RustRaw);\n\
                 \t}}"
             )
@@ -399,7 +402,7 @@ fn generate_function_definition(
     for arg in func.args.iter() {
         let func_type = convert_rust_type_to_cpp(&arg.ty);
         let (conversion_code, converted_arg) =
-            generate_conversion_code_with_var_name(&func_type, &arg.name)?;
+            generate_conversion_code_with_var_name(&func_type, &arg.name.to_lower_camel_case())?;
         func_def += conversion_code.as_str();
         converted_args.push(converted_arg);
     }
