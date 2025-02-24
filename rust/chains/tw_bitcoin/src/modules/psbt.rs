@@ -18,9 +18,13 @@ pub fn update_psbt_signed<Transaction: TransactionInterface>(
             ));
         }
 
-        if signed_txin.has_witness() {
+        if let Some(witness) = signed_txin.witness() {
+            if witness.is_empty() {
+                continue;
+            }
+
             let mut final_witness = bitcoin::Witness::new();
-            for witness_item in signed_txin.witness().as_items() {
+            for witness_item in witness.as_items() {
                 final_witness.push(bitcoin::ScriptBuf::from_bytes(witness_item.to_vec()));
             }
             utxo_psbt.final_script_witness = Some(final_witness);

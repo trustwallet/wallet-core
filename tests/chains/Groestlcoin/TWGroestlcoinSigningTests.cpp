@@ -255,7 +255,7 @@ TEST(GroestlcoinSigning, SignV2P2WPKH) {
     ASSERT_TRUE(plan.has_planning_result_v2());
     EXPECT_EQ(plan.planning_result_v2().error(), Common::Proto::SigningError::OK)
                     << plan.planning_result_v2().error_message();
-    EXPECT_EQ(plan.planning_result_v2().vsize_estimate(), 145);
+    EXPECT_EQ(plan.planning_result_v2().vsize_estimate(), 145ul);
 
     Bitcoin::Proto::SigningOutput output;
     ANY_SIGN(legacy, TWCoinTypeGroestlcoin);

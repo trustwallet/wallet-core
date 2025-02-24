@@ -11,6 +11,7 @@ use tw_utxo::transaction::standard_transaction::{
     Transaction, TransactionInput, TransactionOutput,
 };
 use tw_utxo::transaction::transaction_interface::TransactionInterface;
+use tw_utxo::transaction::transaction_parts::OutPoint;
 
 pub struct StandardProtobufBuilder;
 
@@ -34,10 +35,7 @@ where
 impl StandardProtobufBuilder {
     pub fn tx_input_to_proto(input: &TransactionInput) -> UtxoProto::TransactionInput<'static> {
         UtxoProto::TransactionInput {
-            out_point: Some(UtxoProto::OutPoint {
-                hash: Cow::from(input.previous_output.hash.to_vec()),
-                vout: input.previous_output.index,
-            }),
+            out_point: Some(Self::out_point_to_proto(&input.previous_output)),
             sequence: input.sequence,
             script_sig: Self::script_data(&input.script_sig),
             witness_items: Self::witness_to_proto(&input.witness),
@@ -51,11 +49,18 @@ impl StandardProtobufBuilder {
         }
     }
 
-    fn witness_to_proto(witness: &Witness) -> Vec<Cow<'static, [u8]>> {
+    pub fn out_point_to_proto(previous_output: &OutPoint) -> UtxoProto::OutPoint<'static> {
+        UtxoProto::OutPoint {
+            hash: Cow::from(previous_output.hash.to_vec()),
+            vout: previous_output.index,
+        }
+    }
+
+    pub fn witness_to_proto(witness: &Witness) -> Vec<Cow<'static, [u8]>> {
         witness.as_items().iter().map(Self::script_data).collect()
     }
 
-    fn script_data(script: &Script) -> Cow<'static, [u8]> {
+    pub fn script_data(script: &Script) -> Cow<'static, [u8]> {
         Cow::from(script.to_vec())
     }
 }

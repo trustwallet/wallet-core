@@ -63,56 +63,45 @@ where
             .map(|(signing_input_index, utxo)| {
                 let signing_method = utxo.signing_method;
 
+                let tr_spent_amounts: Vec<Amount> = unsigned_tx
+                    .input_args()
+                    .iter()
+                    .map(|utxo| utxo.amount)
+                    .collect();
+
+                let tr_spent_script_pubkeys: Vec<Script> = unsigned_tx
+                    .input_args()
+                    .iter()
+                    .enumerate()
+                    .map(|(i, utxo)| match utxo.taproot_reveal_script_pubkey {
+                        // Use the scriptPubkey required to spend this UTXO.
+                        Some(ref tr_reveal_script) if i == signing_input_index => {
+                            tr_reveal_script.clone()
+                        },
+                        // Use the original scriptPubkey declared in the unspent output for other UTXOs
+                        // (different from that we sign at this iteration).
+                        _ => utxo.prevout_script_pubkey.clone(),
+                    })
+                    .collect();
+
                 let utxo_args = UtxoPreimageArgs {
                     input_index: signing_input_index,
                     script_pubkey: utxo.reveal_script_pubkey.clone(),
                     amount: utxo.amount,
-                    // TODO move `leaf_hash_code_separator` to `UtxoTaprootPreimageArgs`.
-                    leaf_hash_code_separator: utxo.leaf_hash_code_separator,
                     sighash_ty: utxo.sighash_ty,
                     tx_hasher: utxo.tx_hasher,
                     signing_method,
+                    taproot_args: UtxoTaprootPreimageArgs {
+                        leaf_hash_code_separator: utxo.leaf_hash_code_separator,
+                        spent_amounts: tr_spent_amounts,
+                        spent_script_pubkeys: tr_spent_script_pubkeys.clone(),
+                    },
                 };
 
-                let (sighash, taproot_tweak) = match signing_method {
-                    SigningMethod::Legacy | SigningMethod::Segwit => {
-                        let sighash = unsigned_tx.transaction().preimage_tx(&utxo_args)?;
-                        (sighash, None)
-                    },
-                    SigningMethod::Taproot => {
-                        // TODO Move `tr_spent_amounts` and `tr_spent_script_pubkeys` logic to `Transaction::preimage_taproot_tx()`.
-                        let tr_spent_amounts: Vec<Amount> = unsigned_tx
-                            .input_args()
-                            .iter()
-                            .map(|utxo| utxo.amount)
-                            .collect();
-
-                        let tr_spent_script_pubkeys: Vec<Script> = unsigned_tx
-                            .input_args()
-                            .iter()
-                            .enumerate()
-                            .map(|(i, utxo)| match utxo.taproot_reveal_script_pubkey {
-                                // Use the scriptPubkey required to spend this UTXO.
-                                Some(ref tr_reveal_script) if i == signing_input_index => {
-                                    tr_reveal_script.clone()
-                                },
-                                // Use the original scriptPubkey declared in the unspent output for other UTXOs
-                                // (different from that we sign at this iteration).
-                                _ => utxo.prevout_script_pubkey.clone(),
-                            })
-                            .collect();
-
-                        let tr = UtxoTaprootPreimageArgs {
-                            args: utxo_args,
-                            spent_amounts: tr_spent_amounts,
-                            spent_script_pubkeys: tr_spent_script_pubkeys.clone(),
-                        };
-
-                        let sighash = unsigned_tx.transaction().preimage_taproot_tx(&tr)?;
-                        let taproot_tweak = Self::get_taproot_tweak(utxo);
-
-                        (sighash, taproot_tweak)
-                    },
+                let sighash = unsigned_tx.transaction().preimage_tx(&utxo_args)?;
+                let taproot_tweak = match signing_method {
+                    SigningMethod::Legacy | SigningMethod::Segwit => None,
+                    SigningMethod::Taproot => Self::get_taproot_tweak(utxo),
                 };
 
                 Ok(UtxoSighash {
