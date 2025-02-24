@@ -126,6 +126,26 @@ fn polymesh_encode_authorization_join_identity() {
     );
 }
 
+/// Test add authorization with expiry.
+#[test]
+fn polymesh_encode_authorization_with_expiry() {
+    // https://mainnet-app.polymesh.network/#/extrinsics/decode/0x070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c13205000000012a00000000000000
+
+    let input = build_input(polymesh_add_auth_call(AddAuthorization {
+        target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
+        authorization: Some(Authorization {
+            auth_oneof: AuthVariant::join_identity(SecondaryKeyPermissions::default()),
+        }),
+        expiry: 42,
+        ..Default::default()
+    }));
+
+    expect_encoded(
+        &input,
+        "070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c13205000000012a00000000000000"
+    );
+}
+
 /// Test add authorization to join identity with no permissions.
 #[test]
 fn polymesh_encode_authorization_join_identity_with_zero_data() {
@@ -479,14 +499,22 @@ fn encode_nested_batch_calls() {
     assert!(context.contains("Nested batch calls not allowed"));
 }
 
+fn expect_encode_err(call: RuntimeCall<'_>, err: EncodeError) {
+    let input = build_input(call);
+    let res = CallEncoder::encode_input(&input).expect_err("The call should not be supported");
+    assert_eq!(res.error_type(), &err);
+}
+
 /// Test "Unsupported X call" errors.
 #[test]
 fn unsupported_calls() {
-    let expect_encode_err = |call, err| {
-        let input = build_input(call);
-        let res = CallEncoder::encode_input(&input).expect_err("The call should not be supported");
-        assert_eq!(res.error_type(), &err);
-    };
+    // Invalid runtime call.
+    expect_encode_err(
+        RuntimeCall {
+            pallet_oneof: CallVariant::None,
+        },
+        EncodeError::NotSupported,
+    );
 
     // Invalid balance call.
     expect_encode_err(
@@ -514,18 +542,6 @@ fn unsupported_calls() {
     expect_encode_err(
         polymesh_identity_call(Proto::mod_Identity::OneOfmessage_oneof::None),
         EncodeError::NotSupported,
-    );
-
-    // Invalid Polymesh add authorization target.
-    expect_encode_err(
-        polymesh_add_auth_call(AddAuthorization {
-            target: "BAD".into(),
-            authorization: Some(Authorization {
-                auth_oneof: AuthVariant::join_identity(SecondaryKeyPermissions::default()),
-            }),
-            ..Default::default()
-        }),
-        EncodeError::InvalidAddress,
     );
 
     // Invalid Polymesh add authorization type.
@@ -592,5 +608,125 @@ fn unsupported_calls() {
             ..Default::default()
         }),
         EncodeError::InvalidValue,
-    )
+    );
+}
+
+/// Test invalid address errors.
+#[test]
+fn invalid_address() {
+    // Invalid account in POLYX transfer
+    expect_encode_err(
+        balance_call(Proto::mod_Balance::OneOfmessage_oneof::transfer(Transfer {
+            to_address: "BAD".into(),
+            value: Cow::Owned(U256::from(1u64).to_big_endian().to_vec()),
+            ..Default::default()
+        })),
+        EncodeError::InvalidAddress,
+    );
+
+    // Invalid Polymesh add authorization target.
+    expect_encode_err(
+        polymesh_add_auth_call(AddAuthorization {
+            target: "BAD".into(),
+            authorization: Some(Authorization {
+                auth_oneof: AuthVariant::join_identity(SecondaryKeyPermissions::default()),
+            }),
+            ..Default::default()
+        }),
+        EncodeError::InvalidAddress,
+    );
+
+    // Invalid controller address in bond.
+    expect_encode_err(
+        staking_call(Proto::mod_Staking::OneOfmessage_oneof::bond(Bond {
+            controller: "BAD".into(),
+            value: U256::from(808081u64).to_big_endian().to_vec().into(),
+            reward_destination: RewardDestination::STAKED,
+            call_indices: None,
+        })),
+        EncodeError::InvalidAddress,
+    );
+
+    // Invalid address in nomination.
+    expect_encode_err(
+        staking_call(Proto::mod_Staking::OneOfmessage_oneof::nominate(Nominate {
+            nominators: vec!["BAD".into()],
+            call_indices: None,
+        })),
+        EncodeError::InvalidAddress,
+    );
+}
+
+fn test_invalid_value(value: Vec<u8>) {
+    // Invalid balance in POLYX transfer.
+    expect_encode_err(
+        balance_call(Proto::mod_Balance::OneOfmessage_oneof::transfer(Transfer {
+            to_address: "2EB7wW2fYfFskkSx2d65ivn34ewpuEjcowfJYBL79ty5FsZF".into(),
+            // value is too long.
+            value: value.clone().into(),
+            ..Default::default()
+        })),
+        EncodeError::InvalidValue,
+    );
+
+    // Invalid bond amount.
+    expect_encode_err(
+        staking_call(Proto::mod_Staking::OneOfmessage_oneof::bond(Bond {
+            controller: "2EANwBfNsFu9KV8JsW5sbhF6ft8bzvw5EW1LCrgHhrqtK6Ys".into(),
+            value: value.clone().into(),
+            reward_destination: RewardDestination::STAKED,
+            call_indices: None,
+        })),
+        EncodeError::InvalidValue,
+    );
+
+    // Invalid bond extra amount.
+    expect_encode_err(
+        staking_call(Proto::mod_Staking::OneOfmessage_oneof::bond_extra(
+            BondExtra {
+                value: value.clone().into(),
+                call_indices: None,
+            },
+        )),
+        EncodeError::InvalidValue,
+    );
+
+    // Invalid unbond amount.
+    expect_encode_err(
+        staking_call(Proto::mod_Staking::OneOfmessage_oneof::unbond(Unbond {
+            value: value.clone().into(),
+            call_indices: None,
+        })),
+        EncodeError::InvalidValue,
+    );
+
+    // Invalid rebond amount.
+    expect_encode_err(
+        staking_call(Proto::mod_Staking::OneOfmessage_oneof::rebond(Rebond {
+            value: value.clone().into(),
+            call_indices: None,
+        })),
+        EncodeError::InvalidValue,
+    );
+}
+
+/// Test invalid value errors.
+#[test]
+fn invalid_value() {
+    // Test with value is not a valid `U256`.
+    test_invalid_value(vec![0u8; 33]);
+
+    // Invalid balance in POLYX transfer (value is too larger for `u128`)
+    test_invalid_value(U256::MAX.to_big_endian().to_vec());
+}
+
+/// Test invalid network id.
+#[test]
+fn invalid_network_id() {
+    let input = Proto::SigningInput {
+        network: 0xFFFF,
+        ..Default::default()
+    };
+    let res = CallEncoder::encode_input(&input).expect_err("The call should not be supported");
+    assert_eq!(res.error_type(), &EncodeError::InvalidNetworkId);
 }
