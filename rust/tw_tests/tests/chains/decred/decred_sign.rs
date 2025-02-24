@@ -3,7 +3,8 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::chains::common::bitcoin::{
-    dust_threshold, input, output, plan, sign, TransactionOneof, DUST, SIGHASH_ALL,
+    dust_threshold, input, output, plan, sign, TransactionOneof, DUST, SIGHASH_ALL, SIGHASH_NONE,
+    SIGHASH_SINGLE,
 };
 use crate::chains::decred::decred_info;
 use tw_coin_registry::coin_type::CoinType;
@@ -117,7 +118,7 @@ fn test_decred_sign_p2pkh() {
         inputs: vec![tx1],
         outputs: vec![out1, out2],
         change_output: Some(change_out),
-        input_selector: Proto::InputSelector::UseAll,
+        input_selector: Proto::InputSelector::SelectDescending,
         fee_per_vb: 10,
         dust_policy: dust_threshold(DUST),
         ..Default::default()
@@ -152,5 +153,171 @@ fn test_decred_sign_p2pkh() {
             vsize: 288,
             weight: 288 * 4,
             fee: 2890,
+        });
+}
+
+#[test]
+fn test_decred_sign_p2pkh_max() {
+    const PRIVATE_KEY: &str = "99ed469e6b7d9f188962940d9d0f9fd8582c6c37e52394348f177ff0526b8a03";
+    const MY_ADDRESS: &str = "DscNJ2Ki7HUPHrLGF2teBxSda3uxKSY7Fm6";
+
+    let private_key = secp256k1::PrivateKey::try_from(PRIVATE_KEY).unwrap();
+    let public_key = private_key.public();
+
+    // Spend two inputs of the same transaction.
+    let txid = "0934163f403cf9d256447890fed972e1f8b66309ecd41dec8a4dcfb657906a68";
+
+    let tx1 = Proto::Input {
+        out_point: input::out_point(txid, 1),
+        // 0.1 DCR
+        value: 5_000_000,
+        sighash_type: SIGHASH_ALL,
+        claiming_script: input::receiver_address(MY_ADDRESS),
+        ..Default::default()
+    };
+
+    let tx2 = Proto::Input {
+        out_point: input::out_point(txid, 2),
+        // 0.05 DCR
+        value: 84_997_110,
+        sighash_type: SIGHASH_ALL,
+        claiming_script: input::p2pkh(public_key.compressed().to_vec()),
+        ..Default::default()
+    };
+
+    // Send max amount to the same address.
+    let max_out = Proto::Output {
+        value: 0,
+        to_recipient: output::to_address(MY_ADDRESS),
+    };
+
+    let builder = Proto::TransactionBuilder {
+        version: Proto::TransactionVersion::V1,
+        inputs: vec![tx1, tx2],
+        max_amount_output: Some(max_out),
+        input_selector: Proto::InputSelector::SelectDescending,
+        fee_per_vb: 10,
+        dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
+        chain_info: decred_info(),
+        transaction: TransactionOneof::builder(builder),
+        ..Default::default()
+    };
+
+    plan::BitcoinPlanHelper::new(&signing)
+        .coin(CoinType::Decred)
+        .plan(plan::Expected {
+            inputs: vec![84_997_110, 5_000_000],
+            outputs: vec![89_993_280],
+            vsize_estimate: 383,
+            fee_estimate: 3830,
+            change: 0,
+        });
+
+    // Successfully broadcasted tx:
+    // https://dcrdata.decred.org/tx/d979e75330ffaea3cff75f2de01d7eaaa93513bbcafed0ac0b40af267ac907ca
+    sign::BitcoinSignHelper::new(&signing)
+        .coin(CoinType::Decred)
+        .sign(sign::Expected {
+            encoded: "0100000002686a9057b6cf4d8aec1dd4ec0963b6f8e172d9fe90784456d2f93c403f1634090200000000ffffffff686a9057b6cf4d8aec1dd4ec0963b6f8e172d9fe90784456d2f93c403f1634090100000000ffffffff0140305d050000000000001976a9147d15c291fb7de05a38e39121df1e02f875a49f8988ac000000000000000002f6f310050000000000000000ffffffff6a47304402200c50d153b569b4f9d3155fc94901d80899ae09f067fcea6596efae36905d9f2e022047d3b91a4715b2bdae280efc6af8f7d2282a15477951872aa237db5b595337dc01210241d97dd9273a477c3560f1c5dba9dfd49624d8718ccca5619ff4a688dfcef01b404b4c000000000000000000ffffffff6b483045022100a9375cd1f0b827c01d76bb7a523dc34e8a2c35c5fc6f5eb695807ba2ca90c916022008454ba4dc04b4ba6f4638ebf5040342dfa46171fd824a8ecf207b78a7b7e0b701210241d97dd9273a477c3560f1c5dba9dfd49624d8718ccca5619ff4a688dfcef01b",
+            txid: "ca07c97a26af400bacd0fecabb1335a9aa7e1de02d5ff7cfa3aeff3053e779d9",
+            inputs: vec![84_997_110, 5_000_000],
+            outputs: vec![89_993_280],
+            vsize: 380,
+            weight: 380 * 4,
+            fee: 3830,
+        });
+}
+
+#[test]
+fn test_decred_sign_p2pkh_different_sighashes() {
+    const PRIVATE_KEY: &str = "99ed469e6b7d9f188962940d9d0f9fd8582c6c37e52394348f177ff0526b8a03";
+    const SENDER_ADDRESS: &str = "DscNJ2Ki7HUPHrLGF2teBxSda3uxKSY7Fm6";
+    const TO_ADDRESS: &str = "Dsofok7qyhDLVRXcTqYdFgmGsUFSiHonbWH";
+
+    // Create transaction with P2PKH as input and output.
+    let txid = "311611d3e5662ae20be5befde0213a6d14ff8792974a9ddbe78288229eb2ddbd";
+
+    let tx1 = Proto::Input {
+        out_point: input::out_point(txid, 0),
+        // 0.15 DCR
+        value: 15_000_000,
+        sighash_type: SIGHASH_SINGLE,
+        claiming_script: input::receiver_address(SENDER_ADDRESS),
+        ..Default::default()
+    };
+
+    let tx2 = Proto::Input {
+        out_point: input::out_point(txid, 1),
+        // 0.05 DCR
+        value: 5_000_000,
+        sighash_type: SIGHASH_SINGLE,
+        claiming_script: input::receiver_address(SENDER_ADDRESS),
+        ..Default::default()
+    };
+
+    let tx3 = Proto::Input {
+        out_point: input::out_point(txid, 2),
+        // 0.01 DCR
+        value: 1_000_000,
+        sighash_type: SIGHASH_NONE,
+        claiming_script: input::receiver_address(SENDER_ADDRESS),
+        ..Default::default()
+    };
+
+    let out1 = Proto::Output {
+        // 0.2 DCR
+        value: 20_000_000,
+        to_recipient: output::to_address(TO_ADDRESS),
+    };
+    let change_out = Proto::Output {
+        value: 0,
+        to_recipient: output::to_address(SENDER_ADDRESS),
+    };
+
+    let builder = Proto::TransactionBuilder {
+        version: Proto::TransactionVersion::V1,
+        inputs: vec![tx1, tx2, tx3],
+        outputs: vec![out1],
+        change_output: Some(change_out),
+        input_selector: Proto::InputSelector::UseAll,
+        fee_per_vb: 10,
+        dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
+        chain_info: decred_info(),
+        transaction: TransactionOneof::builder(builder),
+        ..Default::default()
+    };
+
+    plan::BitcoinPlanHelper::new(&signing)
+        .coin(CoinType::Decred)
+        .plan(plan::Expected {
+            inputs: vec![15_000_000, 5_000_000, 1_000_000],
+            outputs: vec![20_000_000, 994_150],
+            vsize_estimate: 585,
+            fee_estimate: 5850,
+            change: 994_150,
+        });
+
+    // Successfully broadcasted tx:
+    // https://dcrdata.decred.org/tx/65b4fb5a1539d70414b13a5e4093bbb6dc999b2897614217ef4caa0edb9fa3e5
+    sign::BitcoinSignHelper::new(&signing)
+        .coin(CoinType::Decred)
+        .sign(sign::Expected {
+            encoded: "0100000003bdddb29e228882e7db9d4a979287ff146d3a21e0fdbee50be22a66e5d31116310000000000ffffffffbdddb29e228882e7db9d4a979287ff146d3a21e0fdbee50be22a66e5d31116310100000000ffffffffbdddb29e228882e7db9d4a979287ff146d3a21e0fdbee50be22a66e5d31116310200000000ffffffff02002d31010000000000001976a914f90f06478396b97df24c012b922f953fa894676188ac662b0f000000000000001976a9147d15c291fb7de05a38e39121df1e02f875a49f8988ac000000000000000003c0e1e4000000000000000000ffffffff6a473044022023f5729e121a040585109b408d638daaef8306e739eabe2563981d00f42904d902200848003bdecb96f82090bb741b550398742f91c37a88ebbe3132aaff1077f3ee03210241d97dd9273a477c3560f1c5dba9dfd49624d8718ccca5619ff4a688dfcef01b404b4c000000000000000000ffffffff6a47304402201238763fbfc9e93409ce7310416c684a4a18442df53cbb27e0c5e72e4d41cede02200a76adfe4298a016423aec0570f0da999abea7794ed5ca1ac682d4c6d225df3e03210241d97dd9273a477c3560f1c5dba9dfd49624d8718ccca5619ff4a688dfcef01b40420f000000000000000000ffffffff6a47304402201ff95bdcb8db9718cc092f5346fe08c884b3d3de2144a050ac50feff64e1084402206879dfbd5fa03906c41de5e89660247bdf0208301b4f7b512fd43634c5a1b82502210241d97dd9273a477c3560f1c5dba9dfd49624d8718ccca5619ff4a688dfcef01b",
+            txid: "e5a39fdb0eaa4cef17426197289b99dcb6bb93405e3ab11404d739155afbb465",
+            inputs: vec![15_000_000, 5_000_000, 1_000_000],
+            outputs: vec![20_000_000, 994_150],
+            vsize: 579,
+            weight: 579 * 4,
+            fee: 5850,
         });
 }

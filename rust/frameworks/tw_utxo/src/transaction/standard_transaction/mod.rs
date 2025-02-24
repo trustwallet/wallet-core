@@ -3,7 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 use super::transaction_sighash::taproot1_sighash::Taproot1Sighash;
-use super::UtxoTaprootPreimageArgs;
 use crate::encode::compact_integer::CompactInteger;
 use crate::encode::stream::Stream;
 use crate::encode::Encodable;
@@ -215,21 +214,7 @@ impl TransactionPreimage for Transaction {
             },
             SigningMethod::Legacy => LegacySighash::<Self>::sighash_tx(self, args),
             SigningMethod::Segwit => Witness0Sighash::<Self>::sighash_tx(self, args),
-            SigningMethod::Taproot => SigningError::err(SigningErrorType::Error_internal).context(
-                "'TransactionPreimage::preimage_tx' is called with Taproot signing method",
-            ),
-        }
-    }
-
-    fn preimage_taproot_tx(&self, tr: &UtxoTaprootPreimageArgs) -> SigningResult<H256> {
-        match tr.args.signing_method {
-            SigningMethod::Legacy | SigningMethod::Segwit => {
-                SigningError::err(SigningErrorType::Error_internal).context(format!(
-                    "'TransactionPreimage::preimage_taproot_tx' is called with {:?} signing method",
-                    tr.args.signing_method
-                ))
-            },
-            SigningMethod::Taproot => Taproot1Sighash::<Self>::sighash_tx(self, tr),
+            SigningMethod::Taproot => Taproot1Sighash::<Self>::sighash_tx(self, args),
         }
     }
 }

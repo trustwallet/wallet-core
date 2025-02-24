@@ -12,7 +12,7 @@ use tw_bitcoin::modules::signing_request::SigningRequestBuilder;
 use tw_bitcoin::modules::tx_builder::output_protobuf::OutputProtobuf;
 use tw_bitcoin::modules::tx_builder::utxo_protobuf::UtxoProtobuf;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::prelude::{ResultContext, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_proto::BitcoinV2::Proto::{SigningInput, TransactionBuilder};
 use tw_utxo::modules::tx_planner::{PlanRequest, RequestType};
 

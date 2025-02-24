@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::transaction::{DecredOutPoint, DecredTransactionInput};
-use tw_coin_entry::error::prelude::{ResultContext, SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_utxo::script::Script;
 use tw_utxo::signing_mode::SigningMethod;
 use tw_utxo::transaction::standard_transaction::TransactionInput;

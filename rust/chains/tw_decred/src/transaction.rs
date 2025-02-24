@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::modules::decred_sighash::DecredSighash;
-use tw_coin_entry::error::prelude::{ResultContext, SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::SigningResult;
 use tw_hash::hasher::{Hasher, StatefulHasher};
 use tw_hash::H256;
 use tw_memory::Data;
@@ -16,7 +16,7 @@ use tw_utxo::transaction::transaction_interface::{
     TransactionInterface, TxInputInterface, TxOutputInterface,
 };
 use tw_utxo::transaction::transaction_parts::{Amount, OutPoint};
-use tw_utxo::transaction::{TransactionPreimage, UtxoPreimageArgs, UtxoTaprootPreimageArgs};
+use tw_utxo::transaction::{TransactionPreimage, UtxoPreimageArgs};
 
 pub const TRANSACTION_VERSION_1: i32 = 1;
 
@@ -181,12 +181,6 @@ impl TransactionInterface for DecredTransaction {
 impl TransactionPreimage for DecredTransaction {
     fn preimage_tx(&self, args: &UtxoPreimageArgs) -> SigningResult<H256> {
         DecredSighash::sighash_tx(self, args)
-    }
-
-    fn preimage_taproot_tx(&self, _args: &UtxoTaprootPreimageArgs) -> SigningResult<H256> {
-        SigningError::err(SigningErrorType::Error_internal).context(
-            "Decred transaction doesn't support 'TransactionPreimage::preimage_taproot_tx'",
-        )
     }
 }
 

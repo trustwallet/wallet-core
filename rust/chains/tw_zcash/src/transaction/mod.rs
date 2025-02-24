@@ -3,19 +3,18 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::modules::zcash_sighash::ZcashSighash;
-use tw_coin_entry::error::prelude::{ResultContext, SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_hash::hasher::{Hasher, StatefulHasher};
 use tw_hash::{H256, H32};
 use tw_utxo::encode::compact_integer::CompactInteger;
 use tw_utxo::encode::stream::Stream;
 use tw_utxo::encode::Encodable;
-use tw_utxo::signing_mode::SigningMethod;
 use tw_utxo::transaction::standard_transaction::{
     TransactionInput, TransactionOutput, SEGWIT_SCALE_FACTOR,
 };
 use tw_utxo::transaction::transaction_interface::TransactionInterface;
 use tw_utxo::transaction::transaction_parts::Amount;
-use tw_utxo::transaction::{TransactionPreimage, UtxoPreimageArgs, UtxoTaprootPreimageArgs};
+use tw_utxo::transaction::{TransactionPreimage, UtxoPreimageArgs};
 
 /// An overflow happens while converting to `i32` because 0x80000004 is greater than [`i32::MAX`].
 /// However, the value will be serialized correctly.
@@ -173,17 +172,6 @@ impl Encodable for ZcashTransaction {
 
 impl TransactionPreimage for ZcashTransaction {
     fn preimage_tx(&self, args: &UtxoPreimageArgs) -> SigningResult<H256> {
-        match args.signing_method {
-            SigningMethod::Legacy => ZcashSighash::sighash_tx(self, args),
-            SigningMethod::Segwit | SigningMethod::Taproot => {
-                SigningError::err(SigningErrorType::Error_internal)
-                    .context("ZCash transaction supports Legacy signing method only")
-            },
-        }
-    }
-
-    fn preimage_taproot_tx(&self, _tr: &UtxoTaprootPreimageArgs) -> SigningResult<H256> {
-        SigningError::err(SigningErrorType::Error_internal)
-            .context("ZCash transaction doesn't support 'TransactionPreimage::preimage_taproot_tx'")
+        ZcashSighash::sighash_tx(self, args)
     }
 }

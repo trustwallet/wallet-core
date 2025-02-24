@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_coin_entry::error::prelude::{ResultContext, SigningError, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::base64::{self, STANDARD};
 use tw_hash::{H256, H512};
 use tw_keypair::{ed25519, KeyPairError};

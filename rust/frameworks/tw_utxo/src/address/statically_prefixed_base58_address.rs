@@ -10,9 +10,7 @@ use std::str::FromStr;
 use tw_base58_address::Base58Address;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::prelude::{
-    AddressError, AddressResult, ResultContext, SigningError, SigningErrorType, SigningResult,
-};
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::prefix::BitcoinBase58Prefix;
 use tw_encoding::base58::Alphabet;
 use tw_hash::hasher::StaticHasher;
