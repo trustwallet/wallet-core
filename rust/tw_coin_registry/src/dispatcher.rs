@@ -13,6 +13,7 @@ use tw_bitcoin::entry::BitcoinEntry;
 use tw_bitcoincash::entry::BitcoinCashEntry;
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_cosmos::entry::CosmosEntry;
+use tw_decred::entry::DecredEntry;
 use tw_ethereum::entry::EthereumEntry;
 use tw_evm::evm_entry::EvmEntryExt;
 use tw_greenfield::entry::GreenfieldEntry;
@@ -31,7 +32,6 @@ use tw_sui::entry::SuiEntry;
 use tw_thorchain::entry::ThorchainEntry;
 use tw_ton::entry::TheOpenNetworkEntry;
 use tw_zcash::entry::ZcashEntry;
-use tw_decred::entry::DecredEntry;
 
 pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;
 pub type EvmEntryExtStaticRef = &'static dyn EvmEntryExt;
