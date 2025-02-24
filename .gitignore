@@ -43,6 +43,8 @@ include/TrustWalletCore/TWEthereumChainID.h
 # Generated
 include/TrustWalletCore/TWTONAddressConverter.h
 include/TrustWalletCore/TWFFITest.h
+include/TrustWalletCore/TWTONWallet.h
+include/TrustWalletCore/TWTONMessageSigner.h
 
 # Wasm
 emsdk/
