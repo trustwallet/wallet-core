@@ -140,16 +140,6 @@ pub struct AssetPermissions {
     assets: BTreeSet<AssetId>,
 }
 
-impl AssetPermissions {
-    /// Empty permissions means no access.
-    pub fn empty() -> Self {
-        Self {
-            kind: RestrictionKind::These,
-            assets: BTreeSet::new(),
-        }
-    }
-}
-
 impl ToScale for AssetPermissions {
     fn to_scale_into(&self, data: &mut Vec<u8>) {
         self.kind.to_scale_into(data);
@@ -178,16 +168,6 @@ impl TryFrom<&TWAssetPermissions<'_>> for AssetPermissions {
 pub struct PortfolioPermissions {
     kind: RestrictionKind,
     portfolios: BTreeSet<PortfolioId>,
-}
-
-impl PortfolioPermissions {
-    /// Empty permissions means no access.
-    pub fn empty() -> Self {
-        Self {
-            kind: RestrictionKind::These,
-            portfolios: BTreeSet::new(),
-        }
-    }
 }
 
 impl ToScale for PortfolioPermissions {
@@ -246,16 +226,6 @@ impl From<&TWPalletPermissions<'_>> for PalletPermissions {
 pub struct ExtrinsicPermissions {
     kind: RestrictionKind,
     pallets: BTreeMap<String, PalletPermissions>,
-}
-
-impl ExtrinsicPermissions {
-    /// Empty permissions means no access.
-    pub fn empty() -> Self {
-        Self {
-            kind: RestrictionKind::These,
-            pallets: BTreeMap::new(),
-        }
-    }
 }
 
 impl ToScale for ExtrinsicPermissions {

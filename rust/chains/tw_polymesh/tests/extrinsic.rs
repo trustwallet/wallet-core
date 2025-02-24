@@ -1,7 +1,7 @@
 use std::borrow::Cow;
 use std::default::Default;
 
-use tw_encoding::hex::ToHex;
+use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_number::U256;
 use tw_proto::Polkadot::Proto::RewardDestination;
 use tw_proto::Polymesh::Proto::{
@@ -13,17 +13,20 @@ use tw_proto::Polymesh::Proto::{
     },
     mod_RuntimeCall::OneOfpallet_oneof as CallVariant,
     mod_SecondaryKeyPermissions::{
-        AssetPermissions, ExtrinsicPermissions, PortfolioPermissions, RestrictionKind,
+        AssetPermissions, ExtrinsicPermissions, PalletPermissions, PortfolioPermissions,
+        RestrictionKind,
     },
     mod_Staking::{
         Bond, BondExtra, Chill, Nominate, OneOfmessage_oneof as StakingVariant, Rebond, Unbond,
         WithdrawUnbonded,
     },
     mod_Utility::{Batch, BatchKind, OneOfmessage_oneof as UtilityVariant},
-    Balance, Identity, RuntimeCall, SecondaryKeyPermissions, Staking, Utility,
+    AssetId, Balance, Identity, IdentityId, PortfolioId, RuntimeCall, SecondaryKeyPermissions,
+    Staking, Utility,
 };
 
 use tw_polymesh::call_encoder::CallEncoder;
+use tw_substrate::EncodeError;
 
 fn expect_encoded(input: &Proto::SigningInput<'_>, expected_value: &str) {
     let encoded = CallEncoder::encode_input(input).expect("error encoding call");
@@ -155,6 +158,69 @@ fn polymesh_encode_authorization_join_identity_with_zero_data() {
     expect_encoded(
         &input,
         "070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320501000100010000",
+    );
+}
+
+/// Test add authorization to join identity with custom permissions
+#[test]
+fn polymesh_encode_authorization_join_identity_with_custom_permissions() {
+    // https://mainnet-app.polymesh.network/#/extrinsics/decode/0x070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c132050104cadc557ef87f4410b6a4bf446901930e010414417373657401045872656769737465725f756e697175655f7469636b65720108010000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001010000000000000000
+
+    // asset
+    let asset = "0xcadc557ef87f4410b6a4bf446901930e"
+        .decode_hex()
+        .expect("valid asset hex");
+    // Identity
+    let did = "0x0100000000000000000000000000000000000000000000000000000000000000"
+        .decode_hex()
+        .expect("valid did hex");
+
+    let input = build_input(polymesh_add_auth_call(AddAuthorization {
+        target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
+        authorization: Some(Authorization {
+            auth_oneof: AuthVariant::join_identity(SecondaryKeyPermissions {
+                // Allow one asset permission.
+                asset: Some(AssetPermissions {
+                    kind: RestrictionKind::These,
+                    assets: vec![AssetId { id: asset.into() }],
+                }),
+                // Allow one extrinsic permissions.
+                extrinsic: Some(ExtrinsicPermissions {
+                    kind: RestrictionKind::These,
+                    pallets: vec![PalletPermissions {
+                        pallet_name: "Asset".into(),
+                        kind: RestrictionKind::These,
+                        extrinsic_names: vec!["register_unique_ticker".into()],
+                    }],
+                }),
+                // Allow some portfolios permissions.
+                portfolio: Some(PortfolioPermissions {
+                    kind: RestrictionKind::These,
+                    portfolios: vec![
+                        // Default portfolio.
+                        PortfolioId {
+                            identity: Some(IdentityId {
+                                id: did.clone().into(),
+                            }),
+                            default: true,
+                            user: 0,
+                        },
+                        // User portfolio 1.
+                        PortfolioId {
+                            identity: Some(IdentityId { id: did.into() }),
+                            default: false,
+                            user: 1,
+                        },
+                    ],
+                }),
+            }),
+        }),
+        ..Default::default()
+    }));
+
+    expect_encoded(
+        &input,
+        "070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c132050104cadc557ef87f4410b6a4bf446901930e010414417373657401045872656769737465725f756e697175655f7469636b65720108010000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001010000000000000000"
     );
 }
 
@@ -407,11 +473,124 @@ fn encode_nested_batch_calls() {
 
     let tw_err =
         CallEncoder::encode_input(&input).expect_err("nested batch calls should not be allowed");
-    assert_eq!(
-        tw_err.error_type(),
-        &tw_substrate::EncodeError::NotSupported
-    );
+    assert_eq!(tw_err.error_type(), &EncodeError::NotSupported);
     // Ensure the error message contains the expected context.
     let context = format!("{:?}", tw_err);
     assert!(context.contains("Nested batch calls not allowed"));
+}
+
+/// Test "Unsupported X call" errors.
+#[test]
+fn unsupported_calls() {
+    let expect_encode_err = |call, err| {
+        let input = build_input(call);
+        let res = CallEncoder::encode_input(&input).expect_err("The call should not be supported");
+        assert_eq!(res.error_type(), &err);
+    };
+
+    // Invalid balance call.
+    expect_encode_err(
+        balance_call(Proto::mod_Balance::OneOfmessage_oneof::None),
+        EncodeError::NotSupported,
+    );
+
+    // Invalid staking call.
+    expect_encode_err(
+        staking_call(Proto::mod_Staking::OneOfmessage_oneof::None),
+        EncodeError::NotSupported,
+    );
+
+    // Invalid Utility call.
+    expect_encode_err(
+        RuntimeCall {
+            pallet_oneof: CallVariant::utility_call(Utility {
+                message_oneof: UtilityVariant::None,
+            }),
+        },
+        EncodeError::NotSupported,
+    );
+
+    // Invalid Identity call.
+    expect_encode_err(
+        polymesh_identity_call(Proto::mod_Identity::OneOfmessage_oneof::None),
+        EncodeError::NotSupported,
+    );
+
+    // Invalid Polymesh add authorization target.
+    expect_encode_err(
+        polymesh_add_auth_call(AddAuthorization {
+            target: "BAD".into(),
+            authorization: Some(Authorization {
+                auth_oneof: AuthVariant::join_identity(SecondaryKeyPermissions::default()),
+            }),
+            ..Default::default()
+        }),
+        EncodeError::InvalidAddress,
+    );
+
+    // Invalid Polymesh add authorization type.
+    expect_encode_err(
+        polymesh_add_auth_call(AddAuthorization {
+            target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
+            authorization: Some(Authorization {
+                auth_oneof: AuthVariant::None,
+            }),
+            ..Default::default()
+        }),
+        EncodeError::NotSupported,
+    );
+
+    // Invalid Polymesh add authorization (no authorization)
+    expect_encode_err(
+        polymesh_add_auth_call(AddAuthorization {
+            target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
+            authorization: None,
+            ..Default::default()
+        }),
+        EncodeError::NotSupported,
+    );
+
+    // Invalid asset id in permissions.
+    expect_encode_err(
+        polymesh_add_auth_call(AddAuthorization {
+            target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
+            authorization: Some(Authorization {
+                auth_oneof: AuthVariant::join_identity(SecondaryKeyPermissions {
+                    // One invalid asset permission.
+                    asset: Some(AssetPermissions {
+                        kind: RestrictionKind::Except,
+                        assets: vec![AssetId {
+                            id: vec![0u8].into(),
+                        }],
+                    }),
+                    ..Default::default()
+                }),
+            }),
+            ..Default::default()
+        }),
+        EncodeError::InvalidValue,
+    );
+
+    // Invalid identity id in portfolio permissions.
+    expect_encode_err(
+        polymesh_add_auth_call(AddAuthorization {
+            target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
+            authorization: Some(Authorization {
+                auth_oneof: AuthVariant::join_identity(SecondaryKeyPermissions {
+                    // One invalid portfolio permission.
+                    portfolio: Some(PortfolioPermissions {
+                        kind: RestrictionKind::Except,
+                        portfolios: vec![PortfolioId {
+                            identity: Some(IdentityId { id: vec![0].into() }),
+                            default: true,
+                            user: 0,
+                        }],
+                    }),
+                    ..Default::default()
+                }),
+            }),
+            ..Default::default()
+        }),
+        EncodeError::InvalidValue,
+    )
 }
