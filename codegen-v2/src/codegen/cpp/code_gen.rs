@@ -365,7 +365,8 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
             writeln!(
                 &mut conversion_code,
                 "\tauto &{name}PublicKey = *reinterpret_cast<const TW::PublicKey*>({name});\n\
-                \tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}PublicKey.bytes.data(), {name}PublicKey.bytes.size(), {name}PublicKey.type);\n\
+                \tconst auto {name}PublicKeyType = static_cast<uint32_t>({name}PublicKey.type);\n\
+                \tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}PublicKey.bytes.data(), {name}PublicKey.bytes.size(), {name}PublicKeyType);\n\
                 \tconst auto {name}RustPublicKey = Rust::wrapTWPublicKey({name}RustRaw);"
             )
             .map_err(|e| BadFormat(e.to_string()))?;
@@ -378,7 +379,8 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
                 "\tstd::shared_ptr<TW::Rust::TWPublicKey> {name}RustPublicKey;\n\
                 \tif ({name} != nullptr) {{\n\
                     \t\tconst auto& {name}PublicKey = {name};\n\
-                    \t\tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}PublicKey->impl.bytes.data(), {name}PublicKey->impl.bytes.size(), {name}PublicKey->impl.type);\n\
+                    \t\tconst auto {name}PublicKeyType = static_cast<uint32_t>({name}PublicKey->impl.type);\n\
+                    \t\tauto* {name}RustRaw = Rust::tw_public_key_create_with_data({name}PublicKey->impl.bytes.data(), {name}PublicKey->impl.bytes.size(), {name}PublicKeyType);\n\
                     \t\t{name}RustPublicKey = Rust::wrapTWPublicKey({name}RustRaw);\n\
                 \t}}"
             )
