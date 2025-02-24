@@ -24,6 +24,7 @@ pub enum BlockchainType {
     NativeInjective,
     Pactus,
     Polkadot,
+    Polymesh,
     Ripple,
     Ronin,
     Solana,
