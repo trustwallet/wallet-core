@@ -3,8 +3,6 @@ syntax = "proto3";
 package TW.DecredV2.Proto;
 option java_package = "wallet.core.jni.proto";
 
-import "Utxo.proto";
-
 // Decred transaction out-point reference.
 message OutPoint {
     // The hash of the referenced transaction (network byte order, usually needs to be reversed).
