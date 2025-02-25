@@ -9,7 +9,7 @@ use crate::TWFFICoinType;
 use tw_coin_registry::coin_type::CoinType;
 use tw_macros::tw_ffi;
 use tw_memory::ffi::tw_data::TWData;
-use tw_memory::ffi::{Nonnull, NullableMut, RawPtrTrait};
+use tw_memory::ffi::{Nonnull, RawPtrTrait};
 use tw_misc::try_or_else;
 
 /// Parses the WalletConnect signing request as a `SigningInput`.
@@ -22,7 +22,7 @@ use tw_misc::try_or_else;
 pub unsafe extern "C" fn tw_wallet_connect_request_parse(
     coin: TWFFICoinType,
     input: Nonnull<TWData>,
-) -> NullableMut<TWData> {
+) -> Nonnull<TWData> {
     let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
     let input = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
 

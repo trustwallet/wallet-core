@@ -243,7 +243,7 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
             )
             .map_err(|e| BadFormat(e.to_string()))?;
         }
-        "NullableMut<TWData>" | "Nullable<TWData>" => {
+        "NullableMut<TWData>" | "Nullable<TWData>" | "Nonnull<TWData>" | "NonnullMut<TWData>" => {
             write!(
                 &mut return_string,
                 "\tconst Rust::TWDataWrapper result = Rust::{}{}\n\
@@ -285,7 +285,7 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
             .map_err(|e| BadFormat(e.to_string()))?;
         }
         ty if ty.contains("Nonnull") => {
-            panic!("Nonnull types are not supported in C++");
+            panic!("Nonnull types are not supported in C++ except for TWData");
         }
         _ => {
             write!(

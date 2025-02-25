@@ -271,7 +271,7 @@ class SolanaTests: XCTestCase {
             $0.method = .solanaSignTransaction
             $0.payload = requestPayload
         }
-        let parsingInputBytes = try! parsingInput.serializedData()
+        let parsingInputBytes = try parsingInput.serializedData()
         
         let parsingOutputBytes = WalletConnectRequest.parse(coin: .solana, input: parsingInputBytes)
         let parsingOutput = try WalletConnectParseRequestOutput(serializedData: parsingOutputBytes)
