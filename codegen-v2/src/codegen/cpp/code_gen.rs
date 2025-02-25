@@ -37,6 +37,7 @@ fn convert_standard_type_to_cpp(ty: &str) -> String {
     match ty {
         "TWPrivateKey" => "struct TWPrivateKey".to_string(),
         "TWPublicKey" => "struct TWPublicKey".to_string(),
+        "TWDataVector" => "struct TWDataVector".to_string(),
         _ => ty.to_string(),
     }
 }
@@ -73,6 +74,7 @@ fn convert_rust_type_to_cpp(ty: &str) -> String {
             "i16" => "int16_t".to_string(),
             "i32" => "int32_t".to_string(),
             "i64" => "int64_t".to_string(),
+            "TWFFICoinType" => "enum TWCoinType".to_string(),
             _ => ty.to_string(),
         }
     }
@@ -108,6 +110,12 @@ fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
             }
             if arg.ty.contains("TWPublicKey") && included_headers.insert("TWPublicKey.h") {
                 writeln!(file, "#include \"TWPublicKey.h\"")?;
+            }
+            if arg.ty.contains("TWDataVector") && included_headers.insert("TWDataVector.h") {
+                writeln!(file, "#include \"TWDataVector.h\"")?;
+            }
+            if arg.ty.contains("TWFFICoinType") && included_headers.insert("TWCoinType.h") {
+                writeln!(file, "#include \"TWCoinType.h\"")?;
             }
             // Additional type checks can be added here in the future
         }
@@ -199,6 +207,9 @@ fn generate_source_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
             if arg.ty.contains("TWPublicKey") && included_headers.insert("TWPublicKey.h") {
                 writeln!(file, "#include \"../PublicKey.h\"")?;
             }
+            if arg.ty.contains("TWDataVector") && included_headers.insert("TWDataVector.h") {
+                writeln!(file, "#include \"../DataVector.h\"")?;
+            }
             // Additional type checks can be added here in the future
         }
     }
@@ -244,6 +255,17 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
             )
             .map_err(|e| BadFormat(e.to_string()))?;
         }
+        "Nonnull<TWData>" | "NonnullMut<TWData>" => {
+            write!(
+                &mut return_string,
+                "\tconst Rust::TWDataWrapper result = Rust::{}{}\n\
+                \tconst auto resultData = result.toDataOrDefault();\n\
+                \treturn TWDataCreateWithBytes(resultData.data(), resultData.size());\n",
+                func.rust_name,
+                generate_function_call(&converted_args)?.as_str()
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+        }
         "NullableMut<TWPrivateKey>" | "Nullable<TWPrivateKey>" => {
             write!(
                 &mut return_string,
@@ -274,7 +296,7 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
             .map_err(|e| BadFormat(e.to_string()))?;
         }
         ty if ty.contains("Nonnull") => {
-            panic!("Nonnull types are not supported in C++");
+            panic!("Nonnull types are not supported in C++ except for TWData");
         }
         _ => {
             write!(
@@ -386,6 +408,27 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
             )
             .map_err(|e| BadFormat(e.to_string()))?;
             Ok((conversion_code, format!("{}RustPublicKey.get()", name)))
+        }
+        "struct TWDataVector *_Nonnull" => {
+            let mut conversion_code = String::new();
+            writeln!(
+                &mut conversion_code,
+                "\tconst Rust::TWDataVectorWrapper {name}RustDataVector = createFromTWDataVector({name});"
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+            Ok((conversion_code, format!("{}RustDataVector.get()", name)))
+        }
+        "struct TWDataVector *_Nullable" => {
+            let mut conversion_code = String::new();
+            writeln!(
+                &mut conversion_code,
+                "\tstd::shared_ptr<TW::Rust::TWDataVector> {name}RustDataVector;\n\
+                \tif ({name} != nullptr) {{\n\
+                    \t\t{name}RustDataVector = createFromTWDataVector({name});\n\
+                \t}}"
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+            Ok((conversion_code, format!("{}RustDataVector.get()", name)))
         }
         _ => Ok(("".to_string(), name.to_string())),
     }
