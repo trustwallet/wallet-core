@@ -12,6 +12,7 @@ tw_keypair = { path = "../tw_keypair" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
 tw_proto = { path = "../tw_proto", optional = true }
+tw_macros = { path = "../tw_macros" }
 
 [features]
 test-utils = [

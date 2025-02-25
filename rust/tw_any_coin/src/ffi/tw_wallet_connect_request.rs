@@ -6,20 +6,23 @@
 
 use crate::wallet_connect_request::WalletConnectRequest;
 use tw_coin_registry::coin_type::CoinType;
+use crate::TWFFICoinType;
 use tw_memory::ffi::tw_data::TWData;
-use tw_memory::ffi::RawPtrTrait;
+use tw_memory::ffi::{Nonnull, NullableMut, RawPtrTrait};
 use tw_misc::try_or_else;
+use tw_macros::tw_ffi;
 
 /// Parses the WalletConnect signing request as a `SigningInput`.
 ///
 /// \param coin The given coin type to plan the transaction for.
 /// \param input The serialized data of a `WalletConnect::Proto::ParseRequestInput` proto object.
 /// \return The serialized data of `WalletConnect::Proto::ParseRequestOutput` proto object.
+#[tw_ffi(ty = static_function, class = TWWalletConnectRequest, name = Parse)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_wallet_connect_request_parse(
-    coin: u32,
-    input: *const TWData,
-) -> *mut TWData {
+    coin: TWFFICoinType,
+    input: Nonnull<TWData>,
+) -> NullableMut<TWData> {
     let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
     let input = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
 

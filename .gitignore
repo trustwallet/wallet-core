@@ -45,6 +45,9 @@ include/TrustWalletCore/TWTONAddressConverter.h
 include/TrustWalletCore/TWFFITest.h
 include/TrustWalletCore/TWTONWallet.h
 include/TrustWalletCore/TWTONMessageSigner.h
+include/TrustWalletCore/TWMessageSigner.h
+include/TrustWalletCore/TWWalletConnectRequest.h
+include/TrustWalletCore/TWSolanaTransaction.h
 
 # Wasm
 emsdk/
