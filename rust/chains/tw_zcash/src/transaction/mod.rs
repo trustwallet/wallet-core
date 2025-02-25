@@ -18,7 +18,7 @@ use tw_utxo::transaction::{TransactionPreimage, UtxoPreimageArgs};
 
 /// An overflow happens while converting to `i32` because 0x80000004 is greater than [`i32::MAX`].
 /// However, the value will be serialized correctly.
-pub const TRANSACTION_VERSION_4: i32 = 0x80000004_u32 as i32;
+pub const TRANSACTION_VERSION_4: u32 = 0x80000004_u32;
 pub const TRANSACTION_VERSION_GROUP_ID: u32 = 0x892F2085;
 /// See https://github.com/zcash/zips/blob/main/zips/zip-0253.md#nu6-deployment CONSENSUS_BRANCH_ID section
 pub const NU6_BRANCH_ID: H32 = H32::from_array([0x55, 0x10, 0xe7, 0xc8]);
@@ -35,7 +35,7 @@ const JOIN_SPLITS_LEN: usize = 0;
 pub struct ZcashTransaction {
     /// Transaction version.
     /// Currently, version 4 (0x80000004) is supported only.
-    pub version: i32,
+    pub version: u32,
     // If transaction version is 4 (0x80000004), version group ID is 0x892F2085.
     pub version_group_id: u32,
     /// Unsigned transaction inputs.
@@ -91,7 +91,7 @@ impl TransactionInterface for ZcashTransaction {
     type Input = TransactionInput;
     type Output = TransactionOutput;
 
-    fn version(&self) -> i32 {
+    fn version(&self) -> u32 {
         self.version
     }
 

@@ -18,7 +18,7 @@ use tw_utxo::transaction::transaction_interface::{
 use tw_utxo::transaction::transaction_parts::{Amount, OutPoint};
 use tw_utxo::transaction::{TransactionPreimage, UtxoPreimageArgs};
 
-pub const TRANSACTION_VERSION_1: i32 = 1;
+pub const TRANSACTION_VERSION_1: u32 = 1;
 
 #[derive(Copy, Clone)]
 #[repr(u32)]
@@ -31,7 +31,7 @@ pub enum SerializeType {
 #[derive(Clone, Debug)]
 pub struct DecredTransaction {
     /// Transaction data format version (note, this is signed).
-    pub version: i32,
+    pub version: u32,
     /// Transaction inputs.
     pub inputs: Vec<DecredTransactionInput>,
     /// Transaction outputs.
@@ -107,7 +107,7 @@ impl DecredTransaction {
         serialize_type: SerializeType,
     ) {
         let serialize_type_shift = (serialize_type as u32) << 16;
-        let version_and_type = self.version.try_into().unwrap_or(1) | serialize_type_shift;
+        let version_and_type = self.version | serialize_type_shift;
         stream.append(&version_and_type);
     }
 }
@@ -127,7 +127,7 @@ impl TransactionInterface for DecredTransaction {
     type Input = DecredTransactionInput;
     type Output = DecredTransactionOutput;
 
-    fn version(&self) -> i32 {
+    fn version(&self) -> u32 {
         self.version
     }
 

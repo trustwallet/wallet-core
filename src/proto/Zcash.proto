@@ -21,7 +21,7 @@ message TransactionBuilderExtraData {
 message Transaction {
     /// Transaction version.
     /// Currently, version 4 (0x80000004) is supported only.
-    int32 version = 1;
+    uint32 version = 1;
     // If transaction version is 4 (0x80000004), version group ID is 0x892F2085.
     uint32 version_group_id = 2;
     // The transaction inputs.

@@ -44,7 +44,7 @@ pub const SEGWIT_SCALE_FACTOR: usize = 4;
 #[derive(Clone, Debug)]
 pub struct Transaction {
     /// Transaction data format version (note, this is used in encoding and signing).
-    pub version: i32,
+    pub version: u32,
     /// Transaction inputs.
     pub inputs: Vec<TransactionInput>,
     /// Transaction outputs.
@@ -66,7 +66,7 @@ impl TransactionInterface for Transaction {
     type Input = TransactionInput;
     type Output = TransactionOutput;
 
-    fn version(&self) -> i32 {
+    fn version(&self) -> u32 {
         self.version
     }
 

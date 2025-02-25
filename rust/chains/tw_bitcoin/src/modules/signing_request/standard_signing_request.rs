@@ -22,7 +22,7 @@ use tw_utxo::transaction::standard_transaction::builder::TransactionBuilder;
 use tw_utxo::transaction::standard_transaction::Transaction;
 use Proto::mod_TransactionBuilder::OneOfdust_policy as ProtoDustPolicy;
 
-const DEFAULT_TX_VERSION: i32 = 1;
+const DEFAULT_TX_VERSION: u32 = 1;
 
 pub type StandardSigningRequest = PlanRequest<StandardBitcoinContext>;
 
@@ -154,7 +154,7 @@ impl StandardSigningRequestBuilder {
         Ok(StandardFeeEstimator::new(fee_policy))
     }
 
-    pub fn transaction_version(proto: &Proto::TransactionVersion, default: i32) -> i32 {
+    pub fn transaction_version(proto: &Proto::TransactionVersion, default: u32) -> u32 {
         match proto {
             Proto::TransactionVersion::UseDefault => default,
             Proto::TransactionVersion::V1 => 1,
@@ -164,8 +164,8 @@ impl StandardSigningRequestBuilder {
 
     pub fn expect_transaction_version(
         proto: &Proto::TransactionVersion,
-        expected: i32,
-    ) -> SigningResult<i32> {
+        expected: u32,
+    ) -> SigningResult<u32> {
         if Self::transaction_version(proto, expected) != expected {
             return SigningError::err(SigningErrorType::Error_invalid_params).context(format!(
                 "Invalid transaction 'version'. Expected Default or V{expected}"

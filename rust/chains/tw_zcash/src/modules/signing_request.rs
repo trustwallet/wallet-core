@@ -121,7 +121,7 @@ where
 }
 
 impl ZcashSigningRequestBuilder {
-    pub fn transaction_version(proto: &Proto::TransactionVersion) -> SigningResult<i32> {
+    pub fn transaction_version(proto: &Proto::TransactionVersion) -> SigningResult<u32> {
         match proto {
             Proto::TransactionVersion::UseDefault => Ok(TRANSACTION_VERSION_4),
             _ => SigningError::err(SigningErrorType::Error_invalid_params)

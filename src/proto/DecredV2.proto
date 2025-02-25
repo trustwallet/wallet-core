@@ -20,7 +20,7 @@ message Transaction {
     uint32 serialize_type = 1;
     // Transaction version.
     // Currently, version 1 is supported only.
-    int32 version = 2;
+    uint32 version = 2;
     // A list of 1 or more transaction inputs or sources for coins.
     repeated TransactionInput inputs = 3;
     // A list of 1 or more transaction outputs or destinations for coins

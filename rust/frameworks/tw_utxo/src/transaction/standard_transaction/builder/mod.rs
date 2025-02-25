@@ -28,7 +28,7 @@ pub fn txid_from_str_and_rev(txid: &str) -> SigningResult<H256> {
 /// Transaction builder for standard Bitcoin transaction only.
 /// It parses `BitcoinV2::Proto::SigningInput` as the standard [`super::Transaction`].
 pub struct TransactionBuilder {
-    version: i32,
+    version: u32,
     inputs: Vec<TransactionInput>,
     outputs: Vec<TransactionOutput>,
     locktime: u32,
@@ -46,7 +46,7 @@ impl TransactionBuilder {
         }
     }
 
-    pub fn version(&mut self, version: i32) -> &mut Self {
+    pub fn version(&mut self, version: u32) -> &mut Self {
         self.version = version;
         self
     }

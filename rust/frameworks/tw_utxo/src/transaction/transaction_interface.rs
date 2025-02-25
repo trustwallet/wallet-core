@@ -16,7 +16,7 @@ pub trait TransactionInterface: Clone + Encodable {
     type Input: TxInputInterface;
     type Output: TxOutputInterface;
 
-    fn version(&self) -> i32;
+    fn version(&self) -> u32;
 
     fn inputs(&self) -> &[Self::Input];
 

@@ -33,7 +33,7 @@ impl ZcashTransactionBuilder {
         }
     }
 
-    pub fn version(&mut self, version: i32) -> &mut Self {
+    pub fn version(&mut self, version: u32) -> &mut Self {
         self.transaction.version = version;
         self
     }
