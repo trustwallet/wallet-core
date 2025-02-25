@@ -3,7 +3,6 @@ use move_core_types::language_storage::TypeTag;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
-use tw_coin_entry::error::prelude::{SigningError, SigningErrorType, SigningResult};
 use tw_memory::Data;
 use tw_misc::serde::as_string;
 

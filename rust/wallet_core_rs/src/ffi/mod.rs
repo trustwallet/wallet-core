@@ -6,8 +6,6 @@
 pub mod bitcoin;
 #[cfg(feature = "ethereum")]
 pub mod ethereum;
-// Test file for FFI
-// pub mod ffi_test;
 #[cfg(feature = "solana")]
 pub mod solana;
 #[cfg(feature = "ton")]

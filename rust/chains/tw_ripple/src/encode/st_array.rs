@@ -7,7 +7,7 @@ use crate::encode::st_object::STObject;
 use crate::encode::Encodable;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as Json;
-use tw_coin_entry::error::prelude::{ResultContext, SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 
 const ARRAY_END_MARKER: u8 = 0xF1;
 

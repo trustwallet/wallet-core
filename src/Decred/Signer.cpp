@@ -14,11 +14,22 @@
 namespace TW::Decred {
 
 Bitcoin::Proto::TransactionPlan Signer::plan(const Bitcoin::Proto::SigningInput& input) noexcept {
+    if (input.has_signing_v2()) {
+        return Bitcoin::Signer::planAsV2(input);
+    }
+
     auto signer = Signer(input);
     return signer.txPlan.proto();
 }
 
 Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs) noexcept {
+    if (input.has_signing_v2()) {
+        const auto output = Bitcoin::Signer::signAsV2(input);
+        Proto::SigningOutput decredOutput;
+        *decredOutput.mutable_signing_result_v2() = output.signing_result_v2();
+        return decredOutput;
+    }
+
     SigningMode signingMode = optionalExternalSigs.has_value() ? SigningMode_External : SigningMode_Normal;
     auto signer = Signer(std::move(input), signingMode, optionalExternalSigs);
     auto result = signer.sign();
@@ -42,6 +53,10 @@ Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input, std
 }
 
 Bitcoin::Proto::PreSigningOutput Signer::preImageHashes(const Bitcoin::Proto::SigningInput& input) noexcept {
+    if (input.has_signing_v2()) {
+        return Bitcoin::Signer::preImageHashesAsV2(input);
+    }
+
     Bitcoin::Proto::PreSigningOutput output;
 
     auto signer = Signer(std::move(input), SigningMode_HashOnly);

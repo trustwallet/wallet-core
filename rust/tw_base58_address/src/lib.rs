@@ -14,7 +14,6 @@ use tw_hash::hasher::StaticHasher;
 pub struct Base58Address<const SIZE: usize, const CHECKSUM_SIZE: usize, ChecksumHash> {
     pub bytes: [u8; SIZE],
     pub address_str: String,
-    _phantom_size: PhantomData<[(); CHECKSUM_SIZE]>,
     _phantom_hash: PhantomData<ChecksumHash>,
 }
 
@@ -49,7 +48,6 @@ impl<const SIZE: usize, const CHECKSUM_SIZE: usize, ChecksumHash: StaticHasher>
         Ok(Base58Address {
             bytes,
             address_str,
-            _phantom_size: PhantomData,
             _phantom_hash: PhantomData,
         })
     }

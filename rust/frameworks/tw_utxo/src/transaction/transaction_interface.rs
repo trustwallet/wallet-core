@@ -16,7 +16,7 @@ pub trait TransactionInterface: Clone + Encodable {
     type Input: TxInputInterface;
     type Output: TxOutputInterface;
 
-    fn version(&self) -> i32;
+    fn version(&self) -> u32;
 
     fn inputs(&self) -> &[Self::Input];
 
@@ -32,7 +32,9 @@ pub trait TransactionInterface: Clone + Encodable {
 
     fn push_output(&mut self, output: Self::Output);
 
-    fn has_witness(&self) -> bool;
+    fn has_witness(&self) -> bool {
+        self.inputs().iter().any(|input| input.has_witness())
+    }
 
     fn locktime(&self) -> u32;
 
@@ -54,8 +56,9 @@ pub trait TxInputInterface: Clone {
     /// Can return an empty scriptSig.
     fn script_sig(&self) -> &Script;
 
-    /// Can return an empty witness stack.
-    fn witness(&self) -> &Witness;
+    /// Returns `None` if witness isn't supported.
+    /// Returns `Some(empty)` withenss if not set yet.
+    fn witness(&self) -> Option<&Witness>;
 
     fn set_sequence(&mut self, sequence: u32);
 

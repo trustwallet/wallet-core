@@ -211,7 +211,7 @@ TEST(BitcoinCash, SignTransactionV2) {
 
     EXPECT_EQ(planV2.inputs_size(), 1);
     EXPECT_EQ(planV2.outputs_size(), 2);
-    EXPECT_EQ(planV2.vsize_estimate(), 227);
+    EXPECT_EQ(planV2.vsize_estimate(), 227ul);
     EXPECT_EQ(planV2.fee_estimate(), 226);
     EXPECT_EQ(planV2.change(), 0);
 

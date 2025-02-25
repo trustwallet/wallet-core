@@ -108,7 +108,6 @@ fn test_ton_sign_wallet_v5r1_transfer_all_balance() {
 
     assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
     // Successfully broadcasted: https://tonviewer.com/transaction/q7MJULnzKZ1DY4itqKfHg_cj48ueFRIlT6I2O8rSLt0=
-    println!("{}", output.encoded);
     assert_eq_boc(&output.encoded, "te6cckEBBQEAuAABRYgBQ8awIH6gcEaSzgT9ZAPxWhgEMUrjdKCkL1PJZ6pq4mgMAQGhc2lnbn///xFmukKfAAAABKg9bRJRcUN/+LR7Bny8XjKzf3+GzopWEf+n7ibzPpr9ZOZs5CRon4i0XFBiFMVVwfcnDI4RVWht6Jf5eSzOjwEgAgIKDsPIbYIEAwFgYgAKb0c/JU6mMI04bqdt/4TAI41Ecel4xCwiUKhY0qFRpoAAAAAAAAAAAAAAAAABBAAANXkwpA==");
     assert_eq!(
         output.hash.to_hex(),
