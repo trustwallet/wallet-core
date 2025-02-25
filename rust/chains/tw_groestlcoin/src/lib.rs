@@ -23,17 +23,15 @@
 //!
 //! ```rust,no_run
 //! # use std::str::FromStr;
-//! use tw_groestlcoin::address::groestlcoin_legacy::GroestlLegacyAddress;
-//! # use tw_hash::{H256, H32};
+//! # use tw_groestlcoin::address::groestlcoin_legacy::GroestlLegacyAddress;
+//! # use tw_hash::H256;
 //! # use tw_keypair::ecdsa::secp256k1;
 //! # use tw_utxo::modules::keys_manager::KeysManager;
 //! # use tw_utxo::modules::tx_signer::TxSigner;
 //! # use tw_utxo::sighash::{SighashBase, SighashType};
 //! # use tw_utxo::transaction::standard_transaction::builder::{OutputBuilder, TransactionBuilder, UtxoBuilder};
 //! #
-//! # let private_key: secp256k1::PrivateKey;
 //! # let public_key: secp256k1::PublicKey;
-//! # let branch_id: H32;
 //! # let txid: H256;
 //! # let keys_manager: KeysManager = unimplemented!();
 //!

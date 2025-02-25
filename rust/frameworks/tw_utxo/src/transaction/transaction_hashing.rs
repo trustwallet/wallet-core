@@ -10,7 +10,7 @@ use std::marker::PhantomData;
 use tw_hash::hasher::StatefulHasher;
 use tw_memory::Data;
 
-use super::UtxoTaprootPreimageArgs;
+use super::UtxoPreimageArgs;
 
 /// A helper structure that hashes some parts of the transaction.
 pub struct TransactionHasher<Transaction> {
@@ -41,21 +41,21 @@ impl<Transaction: TransactionInterface> TransactionHasher<Transaction> {
     }
 
     /// Computes a hash of all `spent_amounts`. Required for TapSighash.
-    pub fn spent_amount_hash(tr: &UtxoTaprootPreimageArgs) -> Data {
+    pub fn spent_amount_hash(args: &UtxoPreimageArgs) -> Data {
         let mut stream = Stream::default();
-        for amount in &tr.spent_amounts {
+        for amount in &args.taproot_args.spent_amounts {
             stream.append(amount);
         }
-        tr.args.tx_hasher.hash(&stream.out())
+        args.tx_hasher.hash(&stream.out())
     }
 
     /// Computes a hash of all `script_pubkeys`. Required for TapSighash.
-    pub fn spent_script_pubkeys(tr: &UtxoTaprootPreimageArgs) -> Data {
+    pub fn spent_script_pubkeys(args: &UtxoPreimageArgs) -> Data {
         let mut stream = Stream::default();
-        for script in &tr.spent_script_pubkeys {
+        for script in &args.taproot_args.spent_script_pubkeys {
             stream.append(script);
         }
-        tr.args.tx_hasher.hash(&stream.out())
+        args.tx_hasher.hash(&stream.out())
     }
 
     /// Computes a hash of all [`SignedUtxo::sequence`].

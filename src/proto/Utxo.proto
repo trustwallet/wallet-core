@@ -32,7 +32,7 @@ message TransactionOutput {
 
 message Transaction {
     // The protocol version, is currently expected to be 1 or 2 (BIP68).
-    int32 version = 1;
+    uint32 version = 1;
     // Block height or timestamp indicating at what point transactions can be included in a block.
     // Zero by default.
     uint32 lock_time = 2;

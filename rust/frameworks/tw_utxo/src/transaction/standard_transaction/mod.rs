@@ -3,7 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 use super::transaction_sighash::taproot1_sighash::Taproot1Sighash;
-use super::UtxoTaprootPreimageArgs;
 use crate::encode::compact_integer::CompactInteger;
 use crate::encode::stream::Stream;
 use crate::encode::Encodable;
@@ -22,6 +21,8 @@ use tw_hash::hasher::{Hasher, StatefulHasher};
 use tw_hash::H256;
 
 pub const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
+pub const DEFAULT_LOCKTIME: u32 = 0;
+pub const DEFAULT_OUTPUT_VALUE: Amount = -1;
 
 pub mod builder;
 
@@ -44,9 +45,9 @@ pub const SEGWIT_SCALE_FACTOR: usize = 4;
 /// Otherwise, consider adding a new type of transaction that implements the [`UnsignedTransaction`] trait.
 #[derive(Clone, Debug)]
 pub struct Transaction {
-    /// Transaction data format version (note, this is signed).
-    pub version: i32,
-    /// Unsigned transaction inputs.
+    /// Transaction data format version (note, this is used in encoding and signing).
+    pub version: u32,
+    /// Transaction inputs.
     pub inputs: Vec<TransactionInput>,
     /// Transaction outputs.
     pub outputs: Vec<TransactionOutput>,
@@ -67,7 +68,7 @@ impl TransactionInterface for Transaction {
     type Input = TransactionInput;
     type Output = TransactionOutput;
 
-    fn version(&self) -> i32 {
+    fn version(&self) -> u32 {
         self.version
     }
 
@@ -97,10 +98,6 @@ impl TransactionInterface for Transaction {
 
     fn push_output(&mut self, output: Self::Output) {
         self.outputs.push(output);
-    }
-
-    fn has_witness(&self) -> bool {
-        self.inputs.iter().any(|input| input.has_witness())
     }
 
     fn locktime(&self) -> u32 {
@@ -219,21 +216,7 @@ impl TransactionPreimage for Transaction {
             },
             SigningMethod::Legacy => LegacySighash::<Self>::sighash_tx(self, args),
             SigningMethod::Segwit => Witness0Sighash::<Self>::sighash_tx(self, args),
-            SigningMethod::Taproot => SigningError::err(SigningErrorType::Error_internal).context(
-                "'TransactionPreimage::preimage_tx' is called with Taproot signing method",
-            ),
-        }
-    }
-
-    fn preimage_taproot_tx(&self, tr: &UtxoTaprootPreimageArgs) -> SigningResult<H256> {
-        match tr.args.signing_method {
-            SigningMethod::Legacy | SigningMethod::Segwit => {
-                SigningError::err(SigningErrorType::Error_internal).context(format!(
-                    "'TransactionPreimage::preimage_taproot_tx' is called with {:?} signing method",
-                    tr.args.signing_method
-                ))
-            },
-            SigningMethod::Taproot => Taproot1Sighash::<Self>::sighash_tx(self, tr),
+            SigningMethod::Taproot => Taproot1Sighash::<Self>::sighash_tx(self, args),
         }
     }
 }
@@ -281,8 +264,8 @@ impl TxInputInterface for TransactionInput {
         &self.script_sig
     }
 
-    fn witness(&self) -> &Witness {
-        &self.witness
+    fn witness(&self) -> Option<&Witness> {
+        Some(&self.witness)
     }
 
     fn set_sequence(&mut self, sequence: u32) {
@@ -331,7 +314,7 @@ pub struct TransactionOutput {
 impl Default for TransactionOutput {
     fn default() -> Self {
         TransactionOutput {
-            value: -1,
+            value: DEFAULT_OUTPUT_VALUE,
             script_pubkey: Script::default(),
         }
     }

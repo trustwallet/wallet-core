@@ -8,9 +8,7 @@ use tw_bitcoin::modules::signing_request::SigningRequestBuilder;
 use tw_bitcoin::modules::tx_builder::output_protobuf::OutputProtobuf;
 use tw_bitcoin::modules::tx_builder::utxo_protobuf::UtxoProtobuf;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::prelude::{
-    MapTWError, ResultContext, SigningError, SigningErrorType, SigningResult,
-};
+use tw_coin_entry::error::prelude::*;
 use tw_proto::BitcoinV2::Proto;
 use tw_utxo::fee::fee_estimator::StandardFeeEstimator;
 use tw_utxo::fee::FeePolicy;
@@ -46,9 +44,12 @@ where
         let dust_policy =
             StandardSigningRequestBuilder::dust_policy(&transaction_builder.dust_policy)?;
         let fee_estimator = Self::fee_estimator(transaction_builder, &extra_data)?;
-        let version = Self::transaction_version(&transaction_builder.version)?;
+        let version = StandardSigningRequestBuilder::expect_transaction_version(
+            &transaction_builder.version,
+            TRANSACTION_VERSION_4,
+        )?;
 
-        let public_keys = StandardSigningRequestBuilder::get_public_keys(input)?;
+        let public_keys = StandardSigningRequestBuilder::get_public_keys::<Context>(input)?;
 
         let mut builder = ZcashTransactionBuilder::default();
         builder
@@ -120,7 +121,7 @@ where
 }
 
 impl ZcashSigningRequestBuilder {
-    pub fn transaction_version(proto: &Proto::TransactionVersion) -> SigningResult<i32> {
+    pub fn transaction_version(proto: &Proto::TransactionVersion) -> SigningResult<u32> {
         match proto {
             Proto::TransactionVersion::UseDefault => Ok(TRANSACTION_VERSION_4),
             _ => SigningError::err(SigningErrorType::Error_invalid_params)

@@ -6,7 +6,7 @@ use crate::encode::stream::Stream;
 use crate::sighash::SighashBase;
 use crate::transaction::transaction_hashing::TransactionHasher;
 use crate::transaction::transaction_interface::TransactionInterface;
-use crate::transaction::UtxoTaprootPreimageArgs;
+use crate::transaction::UtxoPreimageArgs;
 use std::marker::PhantomData;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::hasher::tapsighash;
@@ -18,9 +18,7 @@ pub struct Taproot1Sighash<Transaction: TransactionInterface> {
 }
 
 impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
-    pub fn sighash_tx(tx: &Transaction, tr: &UtxoTaprootPreimageArgs) -> SigningResult<H256> {
-        let args = &tr.args;
-
+    pub fn sighash_tx(tx: &Transaction, args: &UtxoPreimageArgs) -> SigningResult<H256> {
         // TODO if anyone_can_pay flag is set, there is no need to append these hashes.
         // See https://github.com/rust-bitcoin/rust-bitcoin/blob/b0870634f0e4bd4c36e7ab0b7c9c7deb23ae62bf/bitcoin/src/crypto/sighash.rs#L608-L622
         let prevout_hash =
@@ -33,10 +31,11 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
             args.sighash_ty,
             args.tx_hasher,
         );
-        let spent_amounts_hash = TransactionHasher::<Transaction>::spent_amount_hash(tr);
-        let raw_sighash = tr.args.sighash_ty.serialize_as_taproot()?;
+        let spent_amounts_hash = TransactionHasher::<Transaction>::spent_amount_hash(args);
+        let raw_sighash = args.sighash_ty.serialize_as_taproot()?;
 
-        let spent_script_pubkeys_hash = TransactionHasher::<Transaction>::spent_script_pubkeys(tr);
+        let spent_script_pubkeys_hash =
+            TransactionHasher::<Transaction>::spent_script_pubkeys(args);
 
         let mut stream = Stream::default();
 
@@ -55,25 +54,25 @@ impl<Transaction: TransactionInterface> Taproot1Sighash<Transaction> {
 
         let mut spend_type = 0u8;
 
-        if tr.args.leaf_hash_code_separator.is_some() {
+        if args.taproot_args.leaf_hash_code_separator.is_some() {
             spend_type |= 2u8;
         }
 
         stream.append(&spend_type);
 
-        if tr.args.sighash_ty.anyone_can_pay() {
+        if args.sighash_ty.anyone_can_pay() {
             return SigningError::err(SigningErrorType::Error_not_supported)
                 .context("'anyone can pay' sighash type is not supported for Taproot yet");
         } else {
-            stream.append(&(tr.args.input_index as u32));
+            stream.append(&(args.input_index as u32));
         }
 
-        if tr.args.sighash_ty.base_type() == SighashBase::Single {
+        if args.sighash_ty.base_type() == SighashBase::Single {
             return SigningError::err(SigningErrorType::Error_not_supported)
                 .context("'single' sighash type is not supported for Taproot yet");
         }
 
-        if let Some((leaf_hash, separator)) = tr.args.leaf_hash_code_separator {
+        if let Some((leaf_hash, separator)) = args.taproot_args.leaf_hash_code_separator {
             stream
                 .append_raw_slice(leaf_hash.as_slice())
                 .append(&0u8) // key-version 0

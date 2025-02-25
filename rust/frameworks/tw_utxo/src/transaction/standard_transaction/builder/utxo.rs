@@ -1,4 +1,5 @@
 use super::TransactionInput;
+use crate::address::DEFAULT_PUBLIC_KEY_HASHER;
 use crate::sighash::SighashType;
 use crate::spending_data::{standard_constructor, SpendingDataConstructor};
 use crate::transaction::standard_transaction::DEFAULT_TX_HASHER;
@@ -11,7 +12,7 @@ use crate::{
 };
 use bitcoin::hashes::Hash;
 use tw_coin_entry::error::prelude::*;
-use tw_hash::ripemd::sha256_ripemd;
+use tw_hash::hasher::StatefulHasher;
 use tw_hash::{hasher::Hasher, H160, H256};
 use tw_keypair::{ecdsa, schnorr};
 use tw_memory::Data;
@@ -24,8 +25,9 @@ pub struct UtxoBuilder {
     amount: Option<Amount>,
     sighash_ty: Option<SighashType>,
     /// Transaction hasher used to pre-image transaction or get a transaction hash.
-    /// Note it doesn't affect Taproot transactions.
+    /// Note it's ignored for Taproot transactions as they require Sha256.
     tx_hasher: Hasher,
+    public_key_hasher: Hasher,
 }
 
 impl UtxoBuilder {
@@ -42,6 +44,7 @@ impl UtxoBuilder {
             amount: None,
             sighash_ty: None,
             tx_hasher: DEFAULT_TX_HASHER,
+            public_key_hasher: DEFAULT_PUBLIC_KEY_HASHER,
         }
     }
 
@@ -74,6 +77,11 @@ impl UtxoBuilder {
     /// Note it doesn't affect Taproot transactions.
     pub fn tx_hasher(mut self, tx_hasher: Hasher) -> Self {
         self.tx_hasher = tx_hasher;
+        self
+    }
+
+    pub fn public_key_hasher(mut self, public_key_hasher: Hasher) -> Self {
+        self.public_key_hasher = public_key_hasher;
         self
     }
 
@@ -166,7 +174,7 @@ impl UtxoBuilder {
         mut self,
         pubkey: &ecdsa::secp256k1::PublicKey,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        let h = sha256_ripemd(pubkey.compressed().as_slice());
+        let h = self.public_key_hasher.hash(pubkey.compressed().as_slice());
         let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
 
         self.finalize_out_point()?;
@@ -227,7 +235,7 @@ impl UtxoBuilder {
         mut self,
         pubkey: &ecdsa::secp256k1::PublicKey,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        let h = sha256_ripemd(pubkey.compressed().as_slice());
+        let h = self.public_key_hasher.hash(pubkey.compressed().as_slice());
         let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
 
         self.finalize_out_point()?;

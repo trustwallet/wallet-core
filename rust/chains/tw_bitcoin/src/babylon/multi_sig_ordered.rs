@@ -4,9 +4,7 @@
 
 use itertools::Itertools;
 use std::collections::BTreeMap;
-use tw_coin_entry::error::prelude::{
-    OrTWError, ResultContext, SigningError, SigningErrorType, SigningResult,
-};
+use tw_coin_entry::error::prelude::*;
 use tw_keypair::schnorr;
 use tw_utxo::signature::BitcoinSchnorrSignature;
 

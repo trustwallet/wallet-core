@@ -41,9 +41,9 @@ where
         let chain_info = chain_info(coin, &input.chain_info)?;
         let dust_policy = Self::dust_policy(&transaction_builder.dust_policy)?;
         let fee_estimator = Self::fee_estimator(transaction_builder)?;
-        let version = Self::transaction_version(&transaction_builder.version);
+        let version = Self::transaction_version(&transaction_builder.version, DEFAULT_TX_VERSION);
 
-        let public_keys = Self::get_public_keys(input)?;
+        let public_keys = Self::get_public_keys::<Context>(input)?;
 
         let mut builder = TransactionBuilder::default();
         builder
@@ -112,12 +112,14 @@ where
 }
 
 impl StandardSigningRequestBuilder {
-    pub fn get_public_keys(input: &Proto::SigningInput) -> SigningResult<PublicKeys> {
-        let mut public_keys = PublicKeys::default();
+    pub fn get_public_keys<Context: UtxoContext>(
+        input: &Proto::SigningInput,
+    ) -> SigningResult<PublicKeys> {
+        let mut public_keys = PublicKeys::with_public_key_hasher(Context::PUBLIC_KEY_HASHER);
 
         if input.private_keys.is_empty() {
             for public in input.public_keys.iter() {
-                public_keys.add_public_key(public.to_vec());
+                public_keys.add_public_key(public.to_vec())?;
             }
         } else {
             for private in input.private_keys.iter() {
@@ -145,19 +147,31 @@ impl StandardSigningRequestBuilder {
         }
     }
 
-    pub fn fee_estimator(
+    pub fn fee_estimator<Transaction>(
         proto: &Proto::TransactionBuilder,
     ) -> SigningResult<StandardFeeEstimator<Transaction>> {
         let fee_policy = FeePolicy::FeePerVb(proto.fee_per_vb);
         Ok(StandardFeeEstimator::new(fee_policy))
     }
 
-    pub fn transaction_version(proto: &Proto::TransactionVersion) -> u32 {
+    pub fn transaction_version(proto: &Proto::TransactionVersion, default: u32) -> u32 {
         match proto {
-            Proto::TransactionVersion::UseDefault => DEFAULT_TX_VERSION,
+            Proto::TransactionVersion::UseDefault => default,
             Proto::TransactionVersion::V1 => 1,
             Proto::TransactionVersion::V2 => 2,
         }
+    }
+
+    pub fn expect_transaction_version(
+        proto: &Proto::TransactionVersion,
+        expected: u32,
+    ) -> SigningResult<u32> {
+        if Self::transaction_version(proto, expected) != expected {
+            return SigningError::err(SigningErrorType::Error_invalid_params).context(format!(
+                "Invalid transaction 'version'. Expected Default or V{expected}"
+            ));
+        }
+        Ok(expected)
     }
 }
 
