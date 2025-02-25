@@ -36,7 +36,7 @@ impl PolymeshEntry {
         input: &Proto::SigningInput<'_>,
     ) -> EncodeResult<TransactionBuilder> {
         let ctx = ctx_from_tw(input)?;
-        let mut encoder = CallEncoder::from_ctx(&ctx)?;
+        let mut encoder = CallEncoder::from_ctx(&ctx);
         let call = input
             .runtime_call
             .as_ref()

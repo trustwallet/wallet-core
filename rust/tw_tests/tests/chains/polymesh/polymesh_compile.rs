@@ -355,3 +355,136 @@ fn test_polymesh_compile_staking_rebond() {
         "b50184004bdb9ef424035e1621e228bd11c5917d7d1dac5965d244c4c72fc91170244f0c009ef68cca8ed897bf10e8aa5a8dd1dbafbd78e379167f7ba294a02ff059b88f8ca9d9530fb508d29a6e48a7c55e46f67e8267b447414b2ebfaf68a1abca1a040fb50008001113027a030a"
     );
 }
+
+/// Test Immortal Era
+#[test]
+fn test_immortal_era_polyx_transfer() {
+    // https://polymesh-testnet.subscan.io/extrinsic/17760249-1
+
+    // Step 1: Prepare the input data.
+    let genesis_hash = TESTNET_GENESIS_HASH.decode_hex().unwrap();
+
+    let input = Proto::SigningInput {
+        network: 12,
+        nonce: 3,
+        block_hash: genesis_hash.clone().into(),
+        genesis_hash: genesis_hash.into(),
+        spec_version: 7_001_000,
+        transaction_version: 7,
+        era: None,
+        runtime_call: Some(balance_call(
+            Proto::mod_Balance::OneOfmessage_oneof::transfer(Transfer {
+                to_address: "5ECU7u4xW4UnBpndxZ3bcDXpHzuxsMujuVuKnFh174pKk3nf".into(),
+                value: Cow::Owned(U256::from(1_000_000u64).to_big_endian().to_vec()),
+                ..Default::default()
+            }),
+        )),
+        ..Default::default()
+    };
+
+    // Step 2: Obtain preimage hash
+    let mut pre_imager = PreImageHelper::<CompilerProto::PreSigningOutput>::default();
+    let preimage_output = pre_imager.pre_image_hashes(CoinType::Polymesh, &input);
+
+    assert_eq!(preimage_output.error, SigningError::OK);
+
+    assert_eq!(
+        preimage_output.data.to_hex(),
+        "0500005e642f954a7f8129e62ac03afaf094d0a0e56a4255ced9db189aa13a3649ce6c02093d00000c00a8d36a00070000002ace05e703aa50b48c0ccccfc8b424f7aab9a1e2c424ed12e45d20b1e8ffd0d62ace05e703aa50b48c0ccccfc8b424f7aab9a1e2c424ed12e45d20b1e8ffd0d6"
+    );
+
+    // Step 3: Compile transaction info
+
+    // Simulate signature, normally obtained from signature server
+    let signature_bytes = "07123e08cbfb78611e1690ea84ea5ce4599598502a4a8cee9d3fb4d727192ee3b380618d05c7e10865efa2284b433856d4c814eb9c841237a9634c88d0171503".decode_hex().unwrap();
+    let signature = Signature::try_from(signature_bytes.as_slice()).unwrap();
+    let public_key = PUBLIC_KEY_HEX_1.decode_hex().unwrap();
+    let public = PublicKey::try_from(public_key.as_slice()).unwrap();
+
+    // Verify signature (pubkey & hash & signature)
+    assert!(public.verify(signature, preimage_output.data.into()));
+
+    // Compile transaction info
+    let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
+    let output = compiler.compile(
+        CoinType::Polymesh,
+        &input,
+        vec![signature_bytes],
+        vec![public_key],
+    );
+    assert_eq!(output.error, SigningError::OK);
+
+    assert_eq!(
+        output.encoded.to_hex(),
+        "350284004bdb9ef424035e1621e228bd11c5917d7d1dac5965d244c4c72fc91170244f0c0007123e08cbfb78611e1690ea84ea5ce4599598502a4a8cee9d3fb4d727192ee3b380618d05c7e10865efa2284b433856d4c814eb9c841237a9634c88d0171503000c000500005e642f954a7f8129e62ac03afaf094d0a0e56a4255ced9db189aa13a3649ce6c02093d00"
+    );
+}
+
+/// Test invalid signing input.
+#[test]
+fn test_invalid_signing_input() {
+    // Step 1: Prepare the input data.
+    let genesis_hash = TESTNET_GENESIS_HASH.decode_hex().unwrap();
+
+    let mut input = Proto::SigningInput {
+        network: 12,
+        nonce: 3,
+        block_hash: genesis_hash.clone().into(),
+        genesis_hash: genesis_hash.into(),
+        spec_version: 7_001_000,
+        transaction_version: 7,
+        era: None,
+        runtime_call: Some(balance_call(
+            Proto::mod_Balance::OneOfmessage_oneof::transfer(Transfer {
+                to_address: "5ECU7u4xW4UnBpndxZ3bcDXpHzuxsMujuVuKnFh174pKk3nf".into(),
+                value: Cow::Owned(U256::from(1_000_000u64).to_big_endian().to_vec()),
+                ..Default::default()
+            }),
+        )),
+        ..Default::default()
+    };
+
+    // Test invalid U256 in `tip`, too many bytes.
+    {
+        let mut pre_imager = PreImageHelper::<CompilerProto::PreSigningOutput>::default();
+        input.tip = vec![0u8; 33].into();
+        let preimage_output = pre_imager.pre_image_hashes(CoinType::Polymesh, &input);
+        assert_eq!(preimage_output.error, SigningError::Error_input_parse);
+    }
+
+    // Test invalid `tip`, too large for `u128`.
+    {
+        let mut pre_imager = PreImageHelper::<CompilerProto::PreSigningOutput>::default();
+        input.tip = U256::MAX.to_big_endian().to_vec().into();
+        let preimage_output = pre_imager.pre_image_hashes(CoinType::Polymesh, &input);
+        assert_eq!(preimage_output.error, SigningError::Error_input_parse);
+    }
+    input.tip = U256::from(0u64).to_big_endian().to_vec().into();
+
+    // Test invalid network id
+    {
+        let mut pre_imager = PreImageHelper::<CompilerProto::PreSigningOutput>::default();
+        input.network = 0xffff;
+        let preimage_output = pre_imager.pre_image_hashes(CoinType::Polymesh, &input);
+        assert_eq!(preimage_output.error, SigningError::Error_invalid_params);
+    }
+    input.network = 12;
+
+    // Test missing runtime call
+    {
+        let mut pre_imager = PreImageHelper::<CompilerProto::PreSigningOutput>::default();
+        input.runtime_call = None;
+        let preimage_output = pre_imager.pre_image_hashes(CoinType::Polymesh, &input);
+        assert_eq!(preimage_output.error, SigningError::Error_input_parse);
+    }
+
+    // Test invalid runtime call variant.
+    {
+        let mut pre_imager = PreImageHelper::<CompilerProto::PreSigningOutput>::default();
+        input.runtime_call = Some(Proto::RuntimeCall {
+            pallet_oneof: Proto::mod_RuntimeCall::OneOfpallet_oneof::None,
+        });
+        let preimage_output = pre_imager.pre_image_hashes(CoinType::Polymesh, &input);
+        assert_eq!(preimage_output.error, SigningError::Error_not_supported);
+    }
+}

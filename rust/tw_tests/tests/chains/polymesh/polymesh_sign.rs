@@ -8,9 +8,11 @@ use crate::chains::polymesh::{
     GENESIS_HASH, PRIVATE_KEY_1, PUBLIC_KEY_2,
 };
 use std::borrow::Cow;
+use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_number::U256;
+use tw_proto::Common::Proto::SigningError;
 use tw_proto::Polkadot::Proto::{Era, RewardDestination};
 use tw_proto::Polymesh::Proto::{
     self,
@@ -67,6 +69,33 @@ fn test_polymesh_sign_join_identity() {
         signed,
         "c50184004bdb9ef424035e1621e228bd11c5917d7d1dac5965d244c4c72fc91170244f0c00b40292db45bc8f910b580a586ff81f6c1655fc928d0bf0f41929385b26fda364985d9dee576dec47712a215bb7f70f4c926d1853533cdb693a45c65e8c017904750000000704dccb000000000000"
     );
+}
+
+/// Test invalid input when signing.
+#[test]
+fn test_polymesh_sign_invalid_input() {
+    // Step 1: Prepare input.
+    let private_key = PRIVATE_KEY_1.decode_hex().unwrap();
+    let block_hash = "cd19ce1ee3d725d5a62f29c41925d25f0655043e579231d24fb0175268b7e340"
+        .decode_hex()
+        .unwrap();
+    let genesis_hash = GENESIS_HASH.decode_hex().unwrap();
+
+    let input = Proto::SigningInput {
+        network: 12,
+        private_key: private_key.into(),
+        nonce: 0,
+        block_hash: block_hash.into(),
+        genesis_hash: genesis_hash.into(),
+        spec_version: 7_000_005,
+        transaction_version: 7,
+        runtime_call: None,
+        ..Default::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let signed_output = signer.sign(CoinType::Polymesh, input);
+    assert_eq!(signed_output.error, SigningError::Error_input_parse);
 }
 
 /// Test a simple POLYX transfer.

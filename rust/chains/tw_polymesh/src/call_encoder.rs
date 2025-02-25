@@ -339,13 +339,13 @@ pub struct CallEncoder {
 }
 
 impl CallEncoder {
-    pub fn from_ctx(_ctx: &SubstrateContext) -> EncodeResult<Self> {
-        Ok(Self { batch_depth: 0 })
+    pub fn from_ctx(_ctx: &SubstrateContext) -> Self {
+        Self { batch_depth: 0 }
     }
 
     pub fn encode_input(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<RawOwned> {
         let ctx = ctx_from_tw(input)?;
-        let mut encoder = Self::from_ctx(&ctx)?;
+        let mut encoder = Self::from_ctx(&ctx);
         let call = input
             .runtime_call
             .as_ref()
