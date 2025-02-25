@@ -422,7 +422,7 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
             let mut conversion_code = String::new();
             writeln!(
                 &mut conversion_code,
-                "\tRust::TWDataVectorWrapper {name}RustDataVector;\n\
+                "\tstd::shared_ptr<TW::Rust::TWDataVector> {name}RustDataVector;\n\
                 \tif ({name} != nullptr) {{\n\
                     \t\t{name}RustDataVector = createFromTWDataVector({name});\n\
                 \t}}"
