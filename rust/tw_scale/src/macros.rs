@@ -117,7 +117,7 @@ macro_rules! impl_enum_scale {
             $(
               $variant_field_name : $variant_field_ty
             ),+
-          })? = $variant_index,
+          })?,
       )*
     }
 
@@ -200,6 +200,8 @@ mod tests {
             Variant10 = 10,
             /// Struct variant.
             Struct { id: u8, id2: u8 } = 11,
+            /// Struct variant v2.  Variants can use the same index.  This allows for backwards compatibility.
+            StructV2 { id: u8, id2: u16 } = 11,
         }
     );
 
@@ -211,6 +213,10 @@ mod tests {
         assert_eq!(
             TestEnum::Struct { id: 1, id2: 2 }.to_scale(),
             &[0x0B, 0x01, 0x02]
+        );
+        assert_eq!(
+            TestEnum::StructV2 { id: 1, id2: 2 }.to_scale(),
+            &[0x0B, 0x01, 0x02, 0x00]
         );
     }
 }

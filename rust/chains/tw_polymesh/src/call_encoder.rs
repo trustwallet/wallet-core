@@ -1,44 +1,39 @@
 use std::str::FromStr;
 
+use crate::ctx_from_tw;
+use crate::types::*;
 use tw_coin_entry::error::prelude::*;
-use tw_hash::H256;
 use tw_number::U256;
-use tw_proto::Polkadot::Proto::{
+use tw_proto::Polkadot::Proto::{mod_CallIndices::OneOfvariant as CallIndicesVariant, CallIndices};
+use tw_proto::Polymesh::Proto::{
+    self,
     mod_Balance::{OneOfmessage_oneof as BalanceVariant, Transfer},
-    mod_Identity::{AddAuthorization, JoinIdentityAsKey, OneOfmessage_oneof as IdentityVariant},
-    mod_PolymeshCall::OneOfmessage_oneof as PolymeshVariant,
+    mod_Identity::{
+        mod_AddAuthorization::mod_Authorization::OneOfauth_oneof as AuthVariant, AddAuthorization,
+        JoinIdentityAsKey, LeaveIdentityAsKey, OneOfmessage_oneof as IdentityVariant,
+    },
+    mod_RuntimeCall::OneOfpallet_oneof as RuntimeCallVariant,
     mod_Staking::{
         Bond, BondExtra, Chill, Nominate, OneOfmessage_oneof as StakingVariant, Rebond, Unbond,
         WithdrawUnbonded,
     },
-    Balance, Identity, Staking,
+    mod_Utility::{BatchKind, OneOfmessage_oneof as UtilityVariant},
+    Balance, Identity, Staking, Utility,
 };
-use tw_scale::{impl_enum_scale, impl_struct_scale, Compact, RawOwned, ToScale};
+use tw_scale::{impl_enum_scale, Compact, RawOwned, ToScale};
 use tw_ss58_address::SS58Address;
 use tw_substrate::address::SubstrateAddress;
+use tw_substrate::*;
 
-use super::*;
-
-impl_struct_scale!(
-    #[derive(Clone, Debug)]
-    pub struct Memo(H256);
-);
-
-impl Memo {
-    pub fn new(memo: &str) -> Self {
-        let memo = memo.as_bytes();
-        let mut bytes = [0; 32];
-        let len = memo.len().min(32);
-        bytes[0..len].copy_from_slice(&memo[0..len]);
-
-        Self(bytes.into())
-    }
+fn validate_call_index(call_index: &Option<CallIndices>) -> EncodeResult<CallIndex> {
+    let index = match call_index {
+        Some(CallIndices {
+            variant: CallIndicesVariant::custom(c),
+        }) => Some((c.module_index, c.method_index)),
+        _ => None,
+    };
+    CallIndex::from_tw(index)
 }
-
-impl_struct_scale!(
-    #[derive(Clone, Debug)]
-    pub struct IdentityId(H256);
-);
 
 impl_enum_scale!(
     #[derive(Clone, Debug)]
@@ -91,19 +86,8 @@ impl PolymeshBalances {
 
 impl_enum_scale!(
     #[derive(Clone, Debug)]
-    pub enum Signatory {
-        Identity(IdentityId) = 0x00,
-        Account(AccountId) = 0x01,
-    }
-);
-
-impl_enum_scale!(
-    #[derive(Clone, Debug)]
     pub enum AuthorizationData {
-        JoinIdentity {
-            // TODO: Polymesh permissions.
-            permissions: RawOwned,
-        } = 0x05,
+        JoinIdentity { permissions: Permissions } = 0x05,
     }
 );
 
@@ -113,6 +97,7 @@ impl_enum_scale!(
         JoinIdentity {
             auth_id: u64,
         } = 0x04,
+        LeaveIdentity = 0x05,
         AddAuthorization {
             target: Signatory,
             data: AuthorizationData,
@@ -122,52 +107,43 @@ impl_enum_scale!(
 );
 
 impl PolymeshIdentity {
-    fn encode_join_identity(join: &JoinIdentityAsKey) -> WithCallIndexResult<Self> {
-        let ci = validate_call_index(&join.call_indices)?;
+    fn encode_join_identity(msg: &JoinIdentityAsKey) -> WithCallIndexResult<Self> {
+        let ci = validate_call_index(&msg.call_indices)?;
         Ok(ci.wrap(Self::JoinIdentity {
-            auth_id: join.auth_id,
+            auth_id: msg.auth_id,
         }))
     }
 
-    fn encode_add_authorization(auth: &AddAuthorization) -> WithCallIndexResult<Self> {
-        let ci = validate_call_index(&auth.call_indices)?;
-        let target =
-            SS58Address::from_str(&auth.target).map_err(|_| EncodeError::InvalidAddress)?;
-        let mut data = Vec::new();
-        if let Some(auth_data) = &auth.data {
-            if let Some(asset) = &auth_data.asset {
-                data.push(0x01);
-                data.extend_from_slice(&asset.data);
-            } else {
-                data.push(0x00);
-            }
+    fn encode_leave_identity(msg: &LeaveIdentityAsKey) -> WithCallIndexResult<Self> {
+        let ci = validate_call_index(&msg.call_indices)?;
+        Ok(ci.wrap(Self::LeaveIdentity))
+    }
 
-            if let Some(extrinsic) = &auth_data.extrinsic {
-                data.push(0x01);
-                data.extend_from_slice(&extrinsic.data);
-            } else {
-                data.push(0x00);
-            }
-
-            if let Some(portfolio) = &auth_data.portfolio {
-                data.push(0x01);
-                data.extend_from_slice(&portfolio.data);
-            } else {
-                data.push(0x00);
+    fn encode_add_authorization(msg: &AddAuthorization) -> WithCallIndexResult<Self> {
+        let ci = validate_call_index(&msg.call_indices)?;
+        let target = SS58Address::from_str(&msg.target).map_err(|_| EncodeError::InvalidAddress)?;
+        let data = if let Some(auth) = &msg.authorization {
+            match &auth.auth_oneof {
+                AuthVariant::join_identity(perms) => AuthorizationData::JoinIdentity {
+                    permissions: perms.try_into().map_err(|_| EncodeError::InvalidValue)?,
+                },
+                AuthVariant::None => {
+                    return Err(EncodeError::NotSupported)
+                        .into_tw()
+                        .context("Unsupported Authorization");
+                },
             }
         } else {
-            // Mark everything as authorized (asset, extrinsic, portfolio)
-            data.push(0x00);
-            data.push(0x00);
-            data.push(0x00);
-        }
+            return Err(EncodeError::NotSupported)
+                .into_tw()
+                .context("Missing Authorization");
+        };
+
         Ok(ci.wrap(Self::AddAuthorization {
             target: Signatory::Account(SubstrateAddress(target)),
-            data: AuthorizationData::JoinIdentity {
-                permissions: RawOwned(data),
-            },
-            expiry: if auth.expiry > 0 {
-                Some(auth.expiry)
+            data,
+            expiry: if msg.expiry > 0 {
+                Some(msg.expiry)
             } else {
                 None
             },
@@ -177,6 +153,7 @@ impl PolymeshIdentity {
     pub fn encode_call(ident: &Identity) -> WithCallIndexResult<Self> {
         match &ident.message_oneof {
             IdentityVariant::join_identity_as_key(t) => Self::encode_join_identity(t),
+            IdentityVariant::leave_identity_as_key(t) => Self::encode_leave_identity(t),
             IdentityVariant::add_authorization(a) => Self::encode_add_authorization(a),
             _ => Err(EncodeError::NotSupported)
                 .into_tw()
@@ -208,7 +185,7 @@ impl_enum_scale!(
         Chill = 0x06,
         Rebond {
             value: Compact<u128>,
-        } = 0x18,
+        } = 0x13,
     }
 );
 
@@ -309,52 +286,95 @@ impl PolymeshStaking {
 
 impl_enum_scale!(
     #[derive(Clone, Debug)]
+    pub enum PolymeshUtility {
+        Batch { calls: Vec<RawOwned> } = 0x00,
+        BatchAll { calls: Vec<RawOwned> } = 0x02,
+        ForceBatch { calls: Vec<RawOwned> } = 0x04,
+    }
+);
+
+impl PolymeshUtility {
+    pub fn encode_call(encoder: &mut CallEncoder, u: &Utility) -> WithCallIndexResult<Self> {
+        if encoder.batch_depth > 0 {
+            return Err(EncodeError::NotSupported)
+                .into_tw()
+                .context("Nested batch calls not allowed");
+        }
+        encoder.batch_depth += 1;
+        match &u.message_oneof {
+            UtilityVariant::batch(b) => {
+                let ci = validate_call_index(&b.call_indices)?;
+                let calls = b
+                    .calls
+                    .iter()
+                    .map(|call| encoder.encode_runtime_call(call))
+                    .collect::<EncodeResult<Vec<RawOwned>>>()?;
+                encoder.batch_depth -= 1;
+                let batch = match b.kind {
+                    BatchKind::StopOnError => Self::Batch { calls },
+                    BatchKind::Atomic => Self::BatchAll { calls },
+                    BatchKind::Optimistic => Self::ForceBatch { calls },
+                };
+                Ok(ci.wrap(batch))
+            },
+            _ => Err(EncodeError::NotSupported)
+                .into_tw()
+                .context("Unsupported utility call"),
+        }
+    }
+}
+
+impl_enum_scale!(
+    #[derive(Clone, Debug)]
     pub enum PolymeshCall {
         Balances(PolymeshBalances) = 0x05,
         Identity(PolymeshIdentity) = 0x07,
         Staking(PolymeshStaking) = 0x11,
-        Utility(GenericUtility) = 0x29,
+        Utility(PolymeshUtility) = 0x29,
     }
 );
 
-pub struct PolymeshCallEncoder;
-
-impl PolymeshCallEncoder {
-    pub fn new_boxed(_ctx: &SubstrateContext) -> Box<dyn TWPolkadotCallEncoder> {
-        Box::new(Self)
-    }
+pub struct CallEncoder {
+    pub batch_depth: u32,
 }
 
-impl TWPolkadotCallEncoder for PolymeshCallEncoder {
-    fn encode_call(&self, msg: &SigningVariant<'_>) -> EncodeResult<RawOwned> {
-        let call = match msg {
-            SigningVariant::balance_call(b) => {
-                PolymeshBalances::encode_call(b)?.map(PolymeshCall::Balances)
-            },
-            SigningVariant::polymesh_call(msg) => match &msg.message_oneof {
-                PolymeshVariant::identity_call(msg) => {
-                    PolymeshIdentity::encode_call(msg)?.map(PolymeshCall::Identity)
-                },
-                PolymeshVariant::None => {
-                    return Err(EncodeError::NotSupported)
-                        .into_tw()
-                        .context("Polymesh call variant is None");
-                },
-            },
-            SigningVariant::staking_call(s) => {
-                PolymeshStaking::encode_call(s)?.map(PolymeshCall::Staking)
-            },
-            SigningVariant::None => {
-                return Err(EncodeError::NotSupported)
-                    .into_tw()
-                    .context("Staking call variant is None");
-            },
-        };
-        Ok(RawOwned(call.to_scale()))
+impl CallEncoder {
+    pub fn from_ctx(_ctx: &SubstrateContext) -> Self {
+        Self { batch_depth: 0 }
     }
 
-    fn encode_batch(&self, calls: Vec<RawOwned>) -> EncodeResult<RawOwned> {
-        let call = PolymeshCall::Utility(GenericUtility::BatchAll { calls });
+    pub fn encode_input(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<RawOwned> {
+        let ctx = ctx_from_tw(input)?;
+        let mut encoder = Self::from_ctx(&ctx);
+        let call = input
+            .runtime_call
+            .as_ref()
+            .ok_or(EncodeError::InvalidValue)
+            .into_tw()
+            .context("Missing runtime call")?;
+        encoder.encode_runtime_call(call)
+    }
+
+    pub fn encode_runtime_call(&mut self, call: &Proto::RuntimeCall) -> EncodeResult<RawOwned> {
+        let call = match &call.pallet_oneof {
+            RuntimeCallVariant::balance_call(msg) => {
+                PolymeshBalances::encode_call(msg)?.map(PolymeshCall::Balances)
+            },
+            RuntimeCallVariant::identity_call(msg) => {
+                PolymeshIdentity::encode_call(msg)?.map(PolymeshCall::Identity)
+            },
+            RuntimeCallVariant::staking_call(msg) => {
+                PolymeshStaking::encode_call(msg)?.map(PolymeshCall::Staking)
+            },
+            RuntimeCallVariant::utility_call(msg) => {
+                PolymeshUtility::encode_call(self, msg)?.map(PolymeshCall::Utility)
+            },
+            RuntimeCallVariant::None => {
+                return Err(EncodeError::NotSupported)
+                    .into_tw()
+                    .context("Runtime call variant is None");
+            },
+        };
         Ok(RawOwned(call.to_scale()))
     }
 }

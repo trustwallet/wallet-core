@@ -24,6 +24,7 @@ use tw_native_evmos::entry::NativeEvmosEntry;
 use tw_native_injective::entry::NativeInjectiveEntry;
 use tw_pactus::entry::PactusEntry;
 use tw_polkadot::entry::PolkadotEntry;
+use tw_polymesh::entry::PolymeshEntry;
 use tw_ripple::entry::RippleEntry;
 use tw_ronin::entry::RoninEntry;
 use tw_solana::entry::SolanaEntry;
@@ -52,6 +53,7 @@ const NATIVE_EVMOS: NativeEvmosEntry = NativeEvmosEntry;
 const NATIVE_INJECTIVE: NativeInjectiveEntry = NativeInjectiveEntry;
 const PACTUS: PactusEntry = PactusEntry;
 const POLKADOT: SubstrateEntry<PolkadotEntry> = SubstrateEntry(PolkadotEntry);
+const POLYMESH: SubstrateEntry<PolymeshEntry> = SubstrateEntry(PolymeshEntry);
 const RIPPLE: RippleEntry = RippleEntry;
 const RONIN: RoninEntry = RoninEntry;
 const SOLANA: SolanaEntry = SolanaEntry;
@@ -80,6 +82,7 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::NativeInjective => Ok(&NATIVE_INJECTIVE),
         BlockchainType::Pactus => Ok(&PACTUS),
         BlockchainType::Polkadot => Ok(&POLKADOT),
+        BlockchainType::Polymesh => Ok(&POLYMESH),
         BlockchainType::Ripple => Ok(&RIPPLE),
         BlockchainType::Ronin => Ok(&RONIN),
         BlockchainType::Solana => Ok(&SOLANA),

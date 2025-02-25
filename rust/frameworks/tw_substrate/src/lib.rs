@@ -58,11 +58,4 @@ impl SubstrateContext {
     pub fn multi_address(&self, account: AccountId) -> MultiAddress {
         MultiAddress::new(account, self.multi_address)
     }
-
-    pub fn multi_addresses(&self, accounts: Vec<AccountId>) -> Vec<MultiAddress> {
-        accounts
-            .into_iter()
-            .map(|account| MultiAddress::new(account, self.multi_address))
-            .collect()
-    }
 }

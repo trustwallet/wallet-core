@@ -18,7 +18,6 @@ namespace TW::Polkadot::tests {
 extern uint32_t polkadotPrefix;
 extern uint32_t kusamaPrefix;
 extern uint32_t astarPrefix;
-extern uint32_t polymeshPrefix;
 extern uint32_t parallelPrefix;
 
 TEST(PolkadotAddress, Validation) {
@@ -40,10 +39,6 @@ TEST(PolkadotAddress, Validation) {
 
     ASSERT_TRUE(TWAnyAddressIsValidSS58(STRING("cEYtw6AVMB27hFUs4gVukajLM7GqxwxUfJkbPY3rNToHMcCgb").get(), TWCoinTypePolkadot, 64));
     ASSERT_FALSE(TWAnyAddressIsValidSS58(STRING("JCViCkwMdGWKpf7Wogb8EFtDmaYTEZGEg6ah4svUPGnnpc7A").get(), TWCoinTypePolkadot, 64));
-
-    // Polymesh
-    ASSERT_TRUE(TWAnyAddressIsValidSS58(STRING("2DxwekgWwK7sqVeuXGmaXLZUvwnewLTs2rvU2CFKLgvvYwCG").get(), TWCoinTypePolkadot, polymeshPrefix));
-    ASSERT_FALSE(TWAnyAddressIsValidSS58(STRING("JCViCkwMdGWKpf7Wogb8EFtDmaYTEZGEg6ah4svUPGnnpc7A").get(), TWCoinTypePolkadot, polymeshPrefix));
 }
 
 TEST(PolkadotAddress, FromPrivateKey) {
@@ -85,15 +80,6 @@ TEST(PolkadotAddress, FromPublicKeyWithPrefix) {
         const auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
         EXPECT_TRUE(TWStringEqual(addressStr.get(), addressParallel.get()));
     }
-
-    // polymesh
-    publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(DATA("849e2f6b165d4b28b39ef3d98f86c0520d82bc349536324365c10af08f323f83").get(), TWPublicKeyTypeED25519));
-    const auto addressPolymesh = STRING("2FSoQykVV3uWe5ChZuazMDHBoaZmCPPuoYx5KHL5VqXooDQW");
-    {
-        const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateSS58WithPublicKey(publicKey.get(), TWCoinTypePolkadot, polymeshPrefix));
-        const auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
-        EXPECT_TRUE(TWStringEqual(addressStr.get(), addressPolymesh.get()));
-    }
 }
 
 TEST(PolkadotAddress, FromString) {
@@ -116,14 +102,6 @@ TEST(PolkadotAddress, FromStringWithPrefix) {
         const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateSS58(addressParallel.get(), TWCoinTypePolkadot, parallelPrefix));
         const auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
         EXPECT_TRUE(TWStringEqual(addressStr.get(), addressParallel.get()));
-    }
-
-    // polymesh
-    auto addressPolymesh = STRING("2FSoQykVV3uWe5ChZuazMDHBoaZmCPPuoYx5KHL5VqXooDQW");
-    {
-        const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateSS58(addressPolymesh.get(), TWCoinTypePolkadot, polymeshPrefix));
-        const auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
-        EXPECT_TRUE(TWStringEqual(addressStr.get(), addressPolymesh.get()));
     }
 }
 
