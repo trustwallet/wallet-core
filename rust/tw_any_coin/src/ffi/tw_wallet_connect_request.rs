@@ -5,12 +5,12 @@
 #![allow(clippy::missing_safety_doc)]
 
 use crate::wallet_connect_request::WalletConnectRequest;
-use tw_coin_registry::coin_type::CoinType;
 use crate::TWFFICoinType;
+use tw_coin_registry::coin_type::CoinType;
+use tw_macros::tw_ffi;
 use tw_memory::ffi::tw_data::TWData;
 use tw_memory::ffi::{Nonnull, NullableMut, RawPtrTrait};
 use tw_misc::try_or_else;
-use tw_macros::tw_ffi;
 
 /// Parses the WalletConnect signing request as a `SigningInput`.
 ///

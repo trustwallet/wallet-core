@@ -7,9 +7,9 @@
 use crate::message_signer::MessageSigner;
 use crate::TWFFICoinType;
 use tw_coin_registry::coin_type::CoinType;
+use tw_macros::tw_ffi;
 use tw_memory::ffi::{tw_data::TWData, Nonnull};
 use tw_memory::ffi::{NullableMut, RawPtrTrait};
-use tw_macros::tw_ffi;
 use tw_misc::{try_or_else, try_or_false};
 
 /// Signs an arbitrary message to prove ownership of an address for off-chain services.
@@ -19,7 +19,10 @@ use tw_misc::{try_or_else, try_or_false};
 /// \return The serialized data of a `SigningOutput` proto object. (e.g. TW.Ethereum.Proto.MessageSigningOutput).
 #[tw_ffi(ty = static_function, class = TWMessageSigner, name = Sign)]
 #[no_mangle]
-pub unsafe extern "C" fn tw_message_signer_sign(coin: TWFFICoinType, input: Nonnull<TWData>) -> NullableMut<TWData> {
+pub unsafe extern "C" fn tw_message_signer_sign(
+    coin: TWFFICoinType,
+    input: Nonnull<TWData>,
+) -> NullableMut<TWData> {
     let input = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
     let coin = try_or_else!(CoinType::try_from(coin), std::ptr::null_mut);
 
@@ -35,7 +38,10 @@ pub unsafe extern "C" fn tw_message_signer_sign(coin: TWFFICoinType, input: Nonn
 /// \return whether the signature is valid.
 #[tw_ffi(ty = static_function, class = TWMessageSigner, name = Verify)]
 #[no_mangle]
-pub unsafe extern "C" fn tw_message_signer_verify(coin: TWFFICoinType, input: Nonnull<TWData>) -> bool {
+pub unsafe extern "C" fn tw_message_signer_verify(
+    coin: TWFFICoinType,
+    input: Nonnull<TWData>,
+) -> bool {
     let input = try_or_false!(TWData::from_ptr_as_ref(input));
     let coin = try_or_false!(CoinType::try_from(coin));
     MessageSigner::verify_message(input.as_slice(), coin).unwrap_or_default()

@@ -4,13 +4,13 @@
 
 #![allow(clippy::missing_safety_doc)]
 
+use tw_macros::tw_ffi;
 use tw_memory::ffi::tw_data::TWData;
 use tw_memory::ffi::tw_data_vector::TWDataVector;
 use tw_memory::ffi::tw_string::TWString;
 use tw_memory::ffi::{Nonnull, NullableMut, RawPtrTrait};
 use tw_misc::try_or_else;
 use tw_solana::modules::utils::SolanaTransaction;
-use tw_macros::tw_ffi;
 
 /// Decode Solana transaction, update the recent blockhash and re-sign the transaction.
 ///
