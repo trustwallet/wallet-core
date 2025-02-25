@@ -41,3 +41,32 @@ pub fn abi_to_signing_error(abi: AbiError) -> SigningError {
         _ => SigningErrorType::Error_invalid_params,
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_abi_to_signing_error() {
+        // Test OK case
+        let abi_ok = AbiError::new(AbiErrorKind::OK);
+        let signing_ok = abi_to_signing_error(abi_ok);
+        assert_eq!(*signing_ok.error_type(), SigningErrorType::OK);
+
+        // Test internal error case
+        let abi_internal = AbiError::new(AbiErrorKind::Error_internal);
+        let signing_internal = abi_to_signing_error(abi_internal);
+        assert_eq!(
+            *signing_internal.error_type(),
+            SigningErrorType::Error_internal
+        );
+
+        // Test other error cases map to invalid params
+        let abi_other = AbiError::new(AbiErrorKind::Error_invalid_abi);
+        let signing_other = abi_to_signing_error(abi_other);
+        assert_eq!(
+            *signing_other.error_type(),
+            SigningErrorType::Error_invalid_params
+        );
+    }
+}
