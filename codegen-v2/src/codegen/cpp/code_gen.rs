@@ -243,11 +243,22 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
             )
             .map_err(|e| BadFormat(e.to_string()))?;
         }
-        "NullableMut<TWData>" | "Nullable<TWData>" | "Nonnull<TWData>" | "NonnullMut<TWData>" => {
+        "NullableMut<TWData>" | "Nullable<TWData>" => {
             write!(
                 &mut return_string,
                 "\tconst Rust::TWDataWrapper result = Rust::{}{}\n\
                 \tif (!result.ptr) {{ return nullptr; }}\n\
+                \tconst auto resultData = result.toDataOrDefault();\n\
+                \treturn TWDataCreateWithBytes(resultData.data(), resultData.size());\n",
+                func.rust_name,
+                generate_function_call(&converted_args)?.as_str()
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+        }
+        "Nonnull<TWData>" | "NonnullMut<TWData>" => {
+            write!(
+                &mut return_string,
+                "\tconst Rust::TWDataWrapper result = Rust::{}{}\n\
                 \tconst auto resultData = result.toDataOrDefault();\n\
                 \treturn TWDataCreateWithBytes(resultData.data(), resultData.size());\n",
                 func.rust_name,
