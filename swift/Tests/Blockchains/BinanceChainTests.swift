@@ -247,7 +247,7 @@ class BinanceChainTests: XCTestCase {
             $0.method = .cosmosSignAmino
             $0.payload = requestPayload
         }
-        let parsingInputBytes = try parsingInput.serializedData()
+        let parsingInputBytes = try! parsingInput.serializedData()
         
         let parsingOutputBytes = WalletConnectRequest.parse(coin: .binance, input: parsingInputBytes)
         let parsingOutput = try WalletConnectParseRequestOutput(serializedData: parsingOutputBytes)
