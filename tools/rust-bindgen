@@ -68,6 +68,9 @@ if isTargetSpecified "ios" && [[ $(uname) == "Darwin" ]]; then
   create_xc_framework
 fi
 
+# Build tw_any_coin to ensure ffi bindings are generated
+cargo build -p tw_any_coin
+
 cbindgen --crate $CRATE --output ../src/rust/bindgen/$HEADER_NAME
 cd -
 [[ -e rust/target/release/${TARGET_NAME} ]] && cp rust/target/release/${TARGET_NAME} build/local/lib/
