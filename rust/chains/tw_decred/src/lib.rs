@@ -7,7 +7,7 @@
 //! This crate reuses Bitcoin's transaction Signer, SigHasher, and compiler APIs, ensuring a familiar
 //! and efficient experience for developers who have previously integrated Bitcoin via WalletCore.
 //!
-//! Unlike Bitcoin, ZCash introduces a different transaction structure and transaction builder.
+//! Unlike Bitcoin, Decred introduces a different transaction structure and transaction builder.
 //!
 //! ## Key Features
 //!

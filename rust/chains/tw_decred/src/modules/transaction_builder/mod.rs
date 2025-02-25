@@ -6,7 +6,9 @@ use crate::transaction::{
     DecredTransaction, DecredTransactionInput, DecredTransactionOutput, TRANSACTION_VERSION_1,
 };
 use tw_coin_entry::error::prelude::SigningResult;
-use tw_utxo::transaction::standard_transaction::{TransactionInput, TransactionOutput};
+use tw_utxo::transaction::standard_transaction::{
+    TransactionInput, TransactionOutput, DEFAULT_LOCKTIME,
+};
 use tw_utxo::transaction::unsigned_transaction::UnsignedTransaction;
 use tw_utxo::transaction::UtxoToSign;
 
@@ -18,6 +20,7 @@ pub use utxo::DecredUtxoBuilder;
 
 pub const DEFAULT_BLOCK_HEIGHT: u32 = 0;
 pub const DEFAULT_BLOCK_INDEX: u32 = u32::MAX;
+pub const DISABLE_EXPIRY: u32 = 0;
 /// Regular transaction tree.
 pub const REGULAR_PREVIOUS_OUTPUT_TREE: u8 = 0;
 
@@ -39,8 +42,8 @@ impl DecredTransactionBuilder {
                 version: TRANSACTION_VERSION_1,
                 inputs: Vec::default(),
                 outputs: Vec::default(),
-                locktime: 0,
-                expiry: 0,
+                locktime: DEFAULT_LOCKTIME,
+                expiry: DISABLE_EXPIRY,
             },
             utxo_args: Vec::default(),
         }

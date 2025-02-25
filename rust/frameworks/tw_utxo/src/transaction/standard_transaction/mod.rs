@@ -21,6 +21,7 @@ use tw_hash::hasher::{Hasher, StatefulHasher};
 use tw_hash::H256;
 
 pub const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
+pub const DEFAULT_LOCKTIME: u32 = 0;
 
 pub mod builder;
 

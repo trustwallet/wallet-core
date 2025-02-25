@@ -5,6 +5,8 @@
 use crate::transaction::DecredTransactionOutput;
 use tw_utxo::transaction::standard_transaction::TransactionOutput;
 
+pub const STANDARD_SCRIPT_VERSION: u16 = 0;
+
 pub struct DecredOutputBuilder {
     output: DecredTransactionOutput,
 }
@@ -14,7 +16,7 @@ impl DecredOutputBuilder {
         DecredOutputBuilder {
             output: DecredTransactionOutput {
                 value: standard_output.value,
-                version: 0,
+                version: STANDARD_SCRIPT_VERSION,
                 script_pubkey: standard_output.script_pubkey,
             },
         }

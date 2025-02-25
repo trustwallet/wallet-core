@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use super::{Transaction, TransactionInput, TransactionOutput};
+use super::{Transaction, TransactionInput, TransactionOutput, DEFAULT_LOCKTIME};
 use crate::transaction::unsigned_transaction::UnsignedTransaction;
 use crate::transaction::UtxoToSign;
 use std::str::FromStr;
@@ -41,7 +41,7 @@ impl TransactionBuilder {
             version: 2,
             inputs: Vec::new(),
             outputs: Vec::new(),
-            locktime: 0,
+            locktime: DEFAULT_LOCKTIME,
             utxo_args: Vec::default(),
         }
     }
