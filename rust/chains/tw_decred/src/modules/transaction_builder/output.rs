@@ -2,10 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::transaction::DecredTransactionOutput;
+use crate::transaction::{DecredTransactionOutput, STANDARD_SCRIPT_VERSION};
 use tw_utxo::transaction::standard_transaction::TransactionOutput;
-
-pub const STANDARD_SCRIPT_VERSION: u16 = 0;
 
 pub struct DecredOutputBuilder {
     output: DecredTransactionOutput,

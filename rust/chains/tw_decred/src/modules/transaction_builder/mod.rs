@@ -3,7 +3,8 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::transaction::{
-    DecredTransaction, DecredTransactionInput, DecredTransactionOutput, TRANSACTION_VERSION_1,
+    DecredTransaction, DecredTransactionInput, DecredTransactionOutput, DEFAULT_BLOCK_HEIGHT,
+    DEFAULT_BLOCK_INDEX, DISABLE_EXPIRY, REGULAR_PREVIOUS_OUTPUT_TREE, TRANSACTION_VERSION_1,
 };
 use tw_coin_entry::error::prelude::SigningResult;
 use tw_utxo::transaction::standard_transaction::{
@@ -17,12 +18,6 @@ mod utxo;
 
 pub use output::DecredOutputBuilder;
 pub use utxo::DecredUtxoBuilder;
-
-pub const DEFAULT_BLOCK_HEIGHT: u32 = 0;
-pub const DEFAULT_BLOCK_INDEX: u32 = u32::MAX;
-pub const DISABLE_EXPIRY: u32 = 0;
-/// Regular transaction tree.
-pub const REGULAR_PREVIOUS_OUTPUT_TREE: u8 = 0;
 
 pub struct DecredTransactionBuilder {
     transaction: DecredTransaction,

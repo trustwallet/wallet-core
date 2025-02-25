@@ -2,7 +2,10 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::transaction::{DecredOutPoint, DecredTransactionInput};
+use crate::transaction::{
+    DecredOutPoint, DecredTransactionInput, DEFAULT_BLOCK_HEIGHT, DEFAULT_BLOCK_INDEX,
+    REGULAR_PREVIOUS_OUTPUT_TREE,
+};
 use tw_coin_entry::error::prelude::*;
 use tw_utxo::script::Script;
 use tw_utxo::signing_mode::SigningMethod;
@@ -22,12 +25,12 @@ impl DecredUtxoBuilder {
         let input = DecredTransactionInput {
             previous_output: DecredOutPoint {
                 out_point: standard_input.previous_output,
-                tree: 0,
+                tree: REGULAR_PREVIOUS_OUTPUT_TREE,
             },
             sequence: standard_input.sequence,
             value_in: args.amount,
-            block_height: 0,
-            block_index: 0,
+            block_height: DEFAULT_BLOCK_HEIGHT,
+            block_index: DEFAULT_BLOCK_INDEX,
             script_sig: Script::default(),
         };
         if !matches!(args.signing_method, SigningMethod::Legacy) {

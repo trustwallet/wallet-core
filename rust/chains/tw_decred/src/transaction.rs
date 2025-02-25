@@ -11,7 +11,7 @@ use tw_utxo::encode::compact_integer::CompactInteger;
 use tw_utxo::encode::stream::Stream;
 use tw_utxo::encode::Encodable;
 use tw_utxo::script::{Script, Witness};
-use tw_utxo::transaction::standard_transaction::SEGWIT_SCALE_FACTOR;
+use tw_utxo::transaction::standard_transaction::{DEFAULT_OUTPUT_VALUE, SEGWIT_SCALE_FACTOR};
 use tw_utxo::transaction::transaction_interface::{
     TransactionInterface, TxInputInterface, TxOutputInterface,
 };
@@ -19,6 +19,12 @@ use tw_utxo::transaction::transaction_parts::{Amount, OutPoint};
 use tw_utxo::transaction::{TransactionPreimage, UtxoPreimageArgs};
 
 pub const TRANSACTION_VERSION_1: u32 = 1;
+pub const STANDARD_SCRIPT_VERSION: u16 = 0;
+pub const DEFAULT_BLOCK_HEIGHT: u32 = 0;
+pub const DEFAULT_BLOCK_INDEX: u32 = u32::MAX;
+/// Regular transaction tree.
+pub const REGULAR_PREVIOUS_OUTPUT_TREE: u8 = 0;
+pub const DISABLE_EXPIRY: u32 = 0;
 
 #[derive(Copy, Clone)]
 #[repr(u32)]
@@ -292,8 +298,8 @@ pub struct DecredTransactionOutput {
 impl Default for DecredTransactionOutput {
     fn default() -> Self {
         DecredTransactionOutput {
-            value: -1,
-            version: 0,
+            value: DEFAULT_OUTPUT_VALUE,
+            version: STANDARD_SCRIPT_VERSION,
             script_pubkey: Script::default(),
         }
     }
