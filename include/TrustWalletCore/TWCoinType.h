@@ -188,6 +188,7 @@ enum TWCoinType {
     TWCoinTypeZkLinkNova = 810180,
     TWCoinTypePactus = 21888,
     TWCoinTypeSonic = 10000146,
+    TWCoinTypeEventumMainnet = 10161803,
     // end_of_tw_coin_type_marker_do_not_modify
 };
 

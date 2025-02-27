@@ -4844,5 +4844,36 @@
       "rpc": "https://docs.pactus.org/api/http",
       "documentation": "https://docs.pactus.org"
     }
+  },
+  {
+    "id": "eventum",
+    "name": "Eventum Mainnet",
+    "coinId": 10161803,
+    "slip44": 60,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "161803",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.evedex.com/",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xfb74c2f7645f0add57f4d1bd3a4184c041dbcb7424fbdadd0d0f9e1f4eee2406",
+      "sampleAccount": "0x658B13b773b0ceD400eC57cf7C03288d8Aa13805"
+    },
+    "info": {
+      "url": "https://evedex.com",
+      "source": "",
+      "rpc": "https://mainnet-rpc.evedex.com",
+      "documentation": ""
+    }
   }
 ]
