@@ -69,6 +69,7 @@
 #include "BitcoinCash/Entry.h"
 #include "Pactus/Entry.h"
 #include "Komodo/Entry.h"
+#include "Polymesh/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -131,6 +132,7 @@ NativeInjective::Entry NativeInjectiveDP;
 BitcoinCash::Entry BitcoinCashDP;
 Pactus::Entry PactusDP;
 Komodo::Entry KomodoDP;
+Polymesh::Entry PolymeshDP;
 // end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
@@ -195,6 +197,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainBitcoinCash: entry = &BitcoinCashDP; break;
         case TWBlockchainPactus: entry = &PactusDP; break;
         case TWBlockchainKomodo: entry = &KomodoDP; break;
+        case TWBlockchainPolymesh: entry = &PolymeshDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;

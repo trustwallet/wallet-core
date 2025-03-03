@@ -67,11 +67,6 @@ impl CallIndex {
         Self::from_tw(call_index)
     }
 
-    /// Returns true if the CallIndex contains valid indices.
-    pub fn has_call_index(&self) -> bool {
-        self.0.is_some()
-    }
-
     /// Wraps a SCALE-encodable value with this CallIndex.
     pub fn wrap<T: ToScale>(self, value: T) -> WithCallIndex<T> {
         WithCallIndex {
