@@ -35,7 +35,7 @@ pub unsafe extern "C" fn tw_crypto_box_secret_key_is_valid(data: Nonnull<TWData>
 /// \return Nullable pointer to Private Key.
 #[tw_ffi(ty = constructor, class = TWCryptoBoxSecretKey, name = Create)]
 #[no_mangle]
-pub unsafe extern "C" fn tw_crypto_box_secret_key_create() -> NullableMut<TWCryptoBoxSecretKey> {
+pub unsafe extern "C" fn tw_crypto_box_secret_key_create() -> NonnullMut<TWCryptoBoxSecretKey> {
     TWCryptoBoxSecretKey(SecretKey::random()).into_ptr()
 }
 
@@ -71,11 +71,11 @@ pub unsafe extern "C" fn tw_crypto_box_secret_key_delete(key: NonnullMut<TWCrypt
 ///
 /// \param key *non-null* pointer to the private key.
 /// \return *non-null* pointer to the corresponding public key.
-#[tw_ffi(ty = static_function, class = TWCryptoBoxSecretKey, name = GetPublicKey)]
+#[tw_ffi(ty = method, class = TWCryptoBoxSecretKey, name = GetPublicKey)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_crypto_box_secret_key_get_public_key(
     key: NonnullMut<TWCryptoBoxSecretKey>,
-) -> NullableMut<TWCryptoBoxPublicKey> {
+) -> NonnullMut<TWCryptoBoxPublicKey> {
     let secret = try_or_else!(
         TWCryptoBoxSecretKey::from_ptr_as_ref(key),
         std::ptr::null_mut
@@ -87,11 +87,11 @@ pub unsafe extern "C" fn tw_crypto_box_secret_key_get_public_key(
 ///
 /// \param secret_key *non-null* pointer to a secret key.
 /// \return C-compatible result with a C-compatible byte array.
-#[tw_ffi(ty = static_function, class = TWCryptoBoxSecretKey, name = Data)]
+#[tw_ffi(ty = property, class = TWCryptoBoxSecretKey, name = Data)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_crypto_box_secret_key_data(
     secret_key: Nonnull<TWCryptoBoxSecretKey>,
-) -> NullableMut<TWData> {
+) -> NonnullMut<TWData> {
     let secret_ref = try_or_else!(
         TWCryptoBoxSecretKey::from_ptr_as_ref(secret_key),
         std::ptr::null_mut

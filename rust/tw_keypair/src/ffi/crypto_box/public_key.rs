@@ -60,11 +60,11 @@ pub unsafe extern "C" fn tw_crypto_box_public_key_delete(
 ///
 /// \param public_key *non-null* pointer to a public key.
 /// \return C-compatible result with a C-compatible byte array.
-#[tw_ffi(ty = static_function, class = TWCryptoBoxPublicKey, name = Data)]
+#[tw_ffi(ty = property, class = TWCryptoBoxPublicKey, name = Data)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_crypto_box_public_key_data(
     public_key: Nonnull<TWCryptoBoxPublicKey>,
-) -> NullableMut<TWData> {
+) -> NonnullMut<TWData> {
     let pubkey_ref = try_or_else!(
         TWCryptoBoxPublicKey::from_ptr_as_ref(public_key),
         std::ptr::null_mut

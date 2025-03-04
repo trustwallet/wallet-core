@@ -22,6 +22,8 @@ pub mod keywords {
     custom_keyword!(static_function);
     custom_keyword!(constructor);
     custom_keyword!(destructor);
+    custom_keyword!(method);
+    custom_keyword!(property);
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -29,6 +31,8 @@ pub enum TWFFIType {
     StaticFunction,
     Constructor,
     Destructor,
+    Method,
+    Property,
 }
 
 impl Parse for TWFFIType {
@@ -43,6 +47,12 @@ impl Parse for TWFFIType {
         } else if lookahead.peek(keywords::destructor) {
             input.parse::<keywords::destructor>()?;
             Ok(Self::Destructor)
+        } else if lookahead.peek(keywords::method) {
+            input.parse::<keywords::method>()?;
+            Ok(Self::Method)
+        } else if lookahead.peek(keywords::property) {
+            input.parse::<keywords::property>()?;
+            Ok(Self::Property)
         } else {
             Err(lookahead.error())
         }
@@ -55,6 +65,8 @@ impl fmt::Display for TWFFIType {
             TWFFIType::StaticFunction => write!(f, "static_function"),
             TWFFIType::Constructor => write!(f, "constructor"),
             TWFFIType::Destructor => write!(f, "destructor"),
+            TWFFIType::Method => write!(f, "method"),
+            TWFFIType::Property => write!(f, "property"),
         }
     }
 }
@@ -82,6 +94,18 @@ pub struct TWFFIAttrArgs {
     pub _eq3: Option<Token![=]>,
     #[parse_if(_name_keyword.is_some())]
     pub name: Option<Ident>,
+}
+
+fn update_or_append_function(functions: &mut Option<Vec<TWFunction>>, function: TWFunction) {
+    if let Some(funcs) = functions {
+        if let Some(idx) = funcs.iter().position(|f| f.name == function.name) {
+            funcs[idx] = function;
+        } else {
+            funcs.push(function);
+        }
+    } else {
+        *functions = Some(vec![function]);
+    }
 }
 
 pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
@@ -177,18 +201,16 @@ pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
                 }
             },
             Some(TWFFIType::Constructor) => {
-                if let Some(constructors) = &mut config.constructors {
-                    if let Some(idx) = constructors.iter().position(|f| f.name == function.name) {
-                        constructors[idx] = function;
-                    } else {
-                        constructors.push(function);
-                    }
-                } else {
-                    config.constructors = Some(vec![function]);
-                }
+                update_or_append_function(&mut config.constructors, function);
             },
             Some(TWFFIType::Destructor) => {
                 config.destructor = Some(function);
+            },
+            Some(TWFFIType::Method) => {
+                update_or_append_function(&mut config.methods, function);
+            },
+            Some(TWFFIType::Property) => {
+                update_or_append_function(&mut config.properties, function);
             },
             _ => panic!("Invalid FFI type"),
         }

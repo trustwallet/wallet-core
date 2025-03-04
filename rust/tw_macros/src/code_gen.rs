@@ -6,6 +6,8 @@ pub struct TWConfig {
     pub static_functions: Vec<TWFunction>,
     pub constructors: Option<Vec<TWFunction>>,
     pub destructor: Option<TWFunction>,
+    pub methods: Option<Vec<TWFunction>>,
+    pub properties: Option<Vec<TWFunction>>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]

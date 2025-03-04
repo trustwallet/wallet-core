@@ -12,23 +12,47 @@ static IN_DIR: &str = "../rust/bindings/";
 static HEADER_OUT_DIR: &str = "../include/TrustWalletCore/";
 static SOURCE_OUT_DIR: &str = "../src/Generated/";
 
+enum TWFunctionType {
+    StaticFunction,
+    Constructor,
+    Destructor,
+    Method,
+    Property,
+}
+
 #[derive(Deserialize, Serialize, Debug, Default)]
 pub struct TWConfig {
     pub class: String,
     pub static_functions: Vec<TWFunction>,
     pub constructors: Option<Vec<TWFunction>>,
     pub destructor: Option<TWFunction>,
+    pub methods: Option<Vec<TWFunction>>,
+    pub properties: Option<Vec<TWFunction>>,
 }
 
 impl TWConfig {
-    fn functions(&self, include_destructor: bool) -> Vec<&TWFunction> {
-        let mut functions = self.static_functions.iter().collect::<Vec<_>>();
+    fn functions(&self, include_destructor: bool) -> Vec<(TWFunctionType, &TWFunction)> {
+        let mut functions = self
+            .static_functions
+            .iter()
+            .map(|f| (TWFunctionType::StaticFunction, f))
+            .collect::<Vec<_>>();
         if let Some(constructors) = &self.constructors {
-            functions.extend(constructors.iter());
+            functions.extend(
+                constructors
+                    .iter()
+                    .map(|f| (TWFunctionType::Constructor, f)),
+            );
+        }
+        if let Some(methods) = &self.methods {
+            functions.extend(methods.iter().map(|f| (TWFunctionType::Method, f)));
+        }
+        if let Some(properties) = &self.properties {
+            functions.extend(properties.iter().map(|f| (TWFunctionType::Property, f)));
         }
         if include_destructor {
             if let Some(destructor) = &self.destructor {
-                functions.push(destructor);
+                functions.push((TWFunctionType::Destructor, destructor));
             }
         }
         functions
@@ -159,7 +183,7 @@ fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
 
     // Include headers based on argument types
     let mut included_headers = std::collections::HashSet::new();
-    for func in info.functions(true) {
+    for (_, func) in info.functions(true) {
         for ty in func.types() {
             if let Some((_, header_name)) = extract_pointer_type(&ty, false) {
                 if header_name == info.class {
@@ -187,12 +211,19 @@ fn generate_class_declaration(file: &mut std::fs::File, info: &TWConfig) -> Resu
 
 fn generate_function_signature(
     class_name: &str,
+    func_type: TWFunctionType,
     func: &TWFunction,
     is_declaration: bool,
 ) -> Result<String> {
     let return_type = convert_rust_type_to_cpp(&func.return_type, false);
     let whether_export = if is_declaration {
-        "TW_EXPORT_STATIC_METHOD "
+        match func_type {
+            TWFunctionType::StaticFunction | TWFunctionType::Constructor => {
+                "TW_EXPORT_STATIC_METHOD "
+            }
+            TWFunctionType::Method | TWFunctionType::Destructor => "TW_EXPORT_METHOD ",
+            TWFunctionType::Property => "TW_EXPORT_PROPERTY ",
+        }
     } else {
         ""
     };
@@ -217,9 +248,10 @@ fn generate_function_signature(
 fn generate_function_declaration(
     file: &mut std::fs::File,
     class_name: &str,
+    func_type: TWFunctionType,
     func: &TWFunction,
 ) -> Result<()> {
-    let func_dec = generate_function_signature(class_name, func, true)?;
+    let func_dec = generate_function_signature(class_name, func_type, func, true)?;
     for doc in &func.docs {
         writeln!(file, "/// {}", doc)?;
     }
@@ -238,8 +270,8 @@ pub fn generate_header(info: &TWConfig) -> Result<()> {
     writeln!(file, "\nTW_EXTERN_C_BEGIN\n")?;
 
     generate_class_declaration(&mut file, info)?;
-    for func in info.functions(true) {
-        generate_function_declaration(&mut file, &info.class, func)?;
+    for (func_type, func) in info.functions(true) {
+        generate_function_declaration(&mut file, &info.class, func_type, func)?;
     }
 
     writeln!(file, "TW_EXTERN_C_END")?;
@@ -292,7 +324,7 @@ fn generate_source_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
 
     // Include headers based on argument types
     let mut included_headers = std::collections::HashSet::new();
-    for func in info.functions(true) {
+    for (_, func) in info.functions(true) {
         for ty in func.types() {
             if let Some((_, ty)) = extract_pointer_type(&ty, false) {
                 if ty.contains("TWPrivateKey")
@@ -347,6 +379,9 @@ fn generate_return_type(func: &TWFunction, converted_args: &Vec<String>) -> Resu
             )
             .map_err(|e| BadFormat(e.to_string()))?;
         }
+        "NonnullMut<TWString>" | "Nonnull<TWString>" => {
+            panic!("Nonnull TWString is not supported");
+        }
         "NullableMut<TWData>" | "Nullable<TWData>" => {
             write!(
                 &mut return_string,
@@ -385,6 +420,9 @@ fn generate_return_type(func: &TWFunction, converted_args: &Vec<String>) -> Resu
             )
             .map_err(|e| BadFormat(e.to_string()))?;
         }
+        "NonnullMut<TWPrivateKey>" | "Nonnull<TWPrivateKey>" => {
+            panic!("Nonnull TWPrivateKey is not supported");
+        }
         "NullableMut<TWPublicKey>" | "Nullable<TWPublicKey>" => {
             write!(
                 &mut return_string,
@@ -399,11 +437,22 @@ fn generate_return_type(func: &TWFunction, converted_args: &Vec<String>) -> Resu
             )
             .map_err(|e| BadFormat(e.to_string()))?;
         }
-        ty if ty.contains("NullableMut") || ty.contains("Nullable") => {
-            let regex_pattern = if ty.contains("NullableMut") {
-                r"^NullableMut<(.+)>$"
+        "NonnullMut<TWPublicKey>" | "Nonnull<TWPublicKey>" => {
+            panic!("Nonnull TWPublicKey is not supported");
+        }
+        ty if ty.contains("NullableMut")
+            || ty.contains("Nullable")
+            || ty.contains("NonnullMut")
+            || ty.contains("Nonnull") =>
+        {
+            let (regex_pattern, nullable) = if ty.contains("NullableMut") {
+                (r"^NullableMut<(.+)>$", true)
+            } else if ty.contains("Nullable") {
+                (r"^Nullable<(.+)>$", true)
+            } else if ty.contains("NonnullMut") {
+                (r"^NonnullMut<(.+)>$", false)
             } else {
-                r"^Nullable<(.+)>$"
+                (r"^Nonnull<(.+)>$", false)
             };
             let Some(captures) = Regex::new(regex_pattern)
                 .expect("Failed to create regex")
@@ -413,19 +462,21 @@ fn generate_return_type(func: &TWFunction, converted_args: &Vec<String>) -> Resu
             };
             let class_name = captures[1].to_string();
             let wrapper_class_name = class_name.replace("TW", "");
+            let null_return = if nullable {
+                "if (!resultRaw) {{ return nullptr; }}\n"
+            } else {
+                ""
+            };
             write!(
                 &mut return_string,
                 "\tauto* resultRaw = Rust::{}{}\n\
-                \tif (!resultRaw) {{ return nullptr; }}\n\
+                {null_return}\
                 \tconst {wrapper_class_name} resultWrapped(resultRaw);\n\
                 \treturn new {class_name} {{ resultWrapped }};\n",
                 func.rust_name,
                 generate_function_call(&converted_args)?.as_str()
             )
             .map_err(|e| BadFormat(e.to_string()))?;
-        }
-        ty if ty.contains("Nonnull") => {
-            panic!("Nonnull types are not supported in C++ except for TWData");
         }
         "void" => {
             write!(
@@ -576,9 +627,10 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
 fn generate_function_definition(
     file: &mut std::fs::File,
     info: &TWConfig,
+    func_type: TWFunctionType,
     func: &TWFunction,
 ) -> Result<()> {
-    let mut func_def = generate_function_signature(&info.class, func, false)?;
+    let mut func_def = generate_function_signature(&info.class, func_type, func, false)?;
     func_def += " {\n";
     let mut converted_args = vec![];
     for arg in func.args.iter() {
@@ -600,7 +652,8 @@ fn generate_destructor_definition(
     info: &TWConfig,
     destructor: &TWFunction,
 ) -> Result<()> {
-    let function_signature = generate_function_signature(&info.class, destructor, false)?;
+    let function_signature =
+        generate_function_signature(&info.class, TWFunctionType::Destructor, destructor, false)?;
     assert!(
         destructor.args.len() == 1,
         "Destructor must have exactly one argument"
@@ -624,8 +677,8 @@ fn generate_source(info: &TWConfig) -> Result<()> {
 
     writeln!(file, "\nusing namespace TW;\n")?;
 
-    for func in info.functions(false) {
-        generate_function_definition(&mut file, info, func)?;
+    for (func_type, func) in info.functions(false) {
+        generate_function_definition(&mut file, info, func_type, func)?;
     }
     if let Some(destructor) = &info.destructor {
         generate_destructor_definition(&mut file, info, destructor)?;
