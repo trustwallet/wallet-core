@@ -68,6 +68,7 @@ enum TWBlockchain {
     TWBlockchainBitcoinCash = 55,
     TWBlockchainPactus = 56,
     TWBlockchainKomodo = 57,
+    TWBlockchainPolymesh = 58, // Substrate
 };
 
 TW_EXTERN_C_END

@@ -30,6 +30,7 @@ tw_native_evmos = { path = "../chains/tw_native_evmos" }
 tw_native_injective = { path = "../chains/tw_native_injective" }
 tw_pactus = { path = "../chains/tw_pactus" }
 tw_polkadot = { path = "../chains/tw_polkadot" }
+tw_polymesh = { path = "../chains/tw_polymesh" }
 tw_ripple = { path = "../chains/tw_ripple" }
 tw_ronin = { path = "../chains/tw_ronin" }
 tw_solana = { path = "../chains/tw_solana" }

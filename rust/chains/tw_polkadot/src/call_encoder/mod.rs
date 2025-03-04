@@ -1,4 +1,4 @@
-use crate::{ctx_from_tw, KUSAMA, POLKADOT, POLYMESH};
+use crate::{ctx_from_tw, KUSAMA, POLKADOT};
 use tw_proto::Polkadot::Proto::{
     self,
     mod_Balance::{BatchAssetTransfer, BatchTransfer, OneOfmessage_oneof as BalanceVariant},
@@ -18,9 +18,6 @@ use generic::*;
 
 pub mod polkadot;
 use polkadot::*;
-
-pub mod polymesh;
-use polymesh::*;
 
 pub fn validate_call_index(call_index: &Option<CallIndices>) -> EncodeResult<CallIndex> {
     let index = match call_index {
@@ -56,7 +53,6 @@ impl CallEncoder {
         let encoder = match ctx.network {
             POLKADOT => PolkadotCallEncoder::new_boxed(ctx),
             KUSAMA => KusamaCallEncoder::new_boxed(ctx),
-            POLYMESH => PolymeshCallEncoder::new_boxed(ctx),
             _ => PolkadotCallEncoder::new_boxed(ctx),
         };
         Ok(Self { encoder })

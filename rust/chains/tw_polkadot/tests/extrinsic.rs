@@ -5,7 +5,6 @@ use tw_encoding::hex::ToHex;
 use tw_number::U256;
 use tw_proto::Polkadot::Proto;
 use tw_proto::Polkadot::Proto::mod_Balance::{AssetTransfer, BatchAssetTransfer, Transfer};
-use tw_proto::Polkadot::Proto::mod_Identity::mod_AddAuthorization::{AuthData, Data};
 use tw_proto::Polkadot::Proto::mod_Staking::{
     Bond, BondExtra, Chill, Nominate, Rebond, Unbond, WithdrawUnbonded,
 };
@@ -27,37 +26,6 @@ fn custom_call_indices(module: u8, method: u8) -> Option<Proto::CallIndices> {
     })
 }
 
-fn polymesh_identity_call(
-    call: Proto::mod_Identity::OneOfmessage_oneof,
-) -> Proto::mod_SigningInput::OneOfmessage_oneof {
-    Proto::mod_SigningInput::OneOfmessage_oneof::polymesh_call(Proto::PolymeshCall {
-        message_oneof: Proto::mod_PolymeshCall::OneOfmessage_oneof::identity_call(
-            Proto::Identity {
-                message_oneof: call,
-            },
-        ),
-    })
-}
-
-fn polymesh_add_auth_call(
-    add_auth: Proto::mod_Identity::AddAuthorization,
-) -> Proto::mod_SigningInput::OneOfmessage_oneof {
-    polymesh_identity_call(Proto::mod_Identity::OneOfmessage_oneof::add_authorization(
-        add_auth,
-    ))
-}
-
-fn polymesh_join_identity(auth_id: u64) -> Proto::mod_SigningInput::OneOfmessage_oneof<'static> {
-    polymesh_identity_call(
-        Proto::mod_Identity::OneOfmessage_oneof::join_identity_as_key(
-            Proto::mod_Identity::JoinIdentityAsKey {
-                call_indices: None,
-                auth_id,
-            },
-        ),
-    )
-}
-
 fn balance_call(
     call: Proto::mod_Balance::OneOfmessage_oneof,
 ) -> Proto::mod_SigningInput::OneOfmessage_oneof {
@@ -75,17 +43,14 @@ fn staking_call(
 }
 
 #[test]
-fn polymesh_encode_transfer_with_memo() {
-    // https://mainnet-app.polymesh.network/#/extrinsics/decode/0x0501004c6c63e3dc083959f876788716b78885460b5f3c7ed9379f8d5f408e08639e0204014d454d4f20504144444544205749544820535041434553000000000000000000
-
+fn polkadot_encode_transfer() {
     let input = Proto::SigningInput {
-        network: 12,
+        network: 0,
         multi_address: true,
         message_oneof: balance_call(Proto::mod_Balance::OneOfmessage_oneof::transfer(Transfer {
-            to_address: "2EB7wW2fYfFskkSx2d65ivn34ewpuEjcowfJYBL79ty5FsZF".into(),
+            to_address: "14ixj163bkk2UEKLEXsEWosuFNuijpqEWZbX5JzN4yMHbUVD".into(),
             value: Cow::Owned(U256::from(1u64).to_big_endian().to_vec()),
-            memo: "MEMO PADDED WITH SPACES".into(),
-            call_indices: custom_call_indices(0x05, 0x01),
+            ..Default::default()
         })),
         ..Default::default()
     };
@@ -93,102 +58,8 @@ fn polymesh_encode_transfer_with_memo() {
     let encoded = encode_input(&input).expect("error encoding call");
     assert_eq!(
         encoded.to_hex(),
-        "0501004c6c63e3dc083959f876788716b78885460b5f3c7ed9379f8d5f408e08639e0204014d454d4f20504144444544205749544820535041434553000000000000000000"
+        "050000a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943eda0d04"
     );
-}
-
-#[test]
-fn polymesh_encode_authorization_join_identity() {
-    // https://mainnet-app.polymesh.network/#/extrinsics/decode/0x070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320500000000
-
-    let input = Proto::SigningInput {
-        network: 12,
-        multi_address: true,
-        message_oneof: polymesh_add_auth_call(Proto::mod_Identity::AddAuthorization {
-            target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
-            ..Default::default()
-        }),
-        ..Default::default()
-    };
-
-    let encoded = encode_input(&input).expect("error encoding call");
-    assert_eq!(
-        encoded.to_hex(),
-        "070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320500000000"
-    );
-}
-
-#[test]
-fn polymesh_encode_authorization_join_identity_with_zero_data() {
-    // https://mainnet-app.polymesh.network/#/extrinsics/decode/0x070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320501000100010000
-
-    let input = Proto::SigningInput {
-        network: 12,
-        multi_address: true,
-        message_oneof: polymesh_add_auth_call(Proto::mod_Identity::AddAuthorization {
-            target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
-            data: Some(AuthData {
-                asset: Some(Data {
-                    data: (&[0x00]).into(),
-                }),
-                extrinsic: Some(Data {
-                    data: (&[0x00]).into(),
-                }),
-                portfolio: Some(Data {
-                    data: (&[0x00]).into(),
-                }),
-            }),
-            ..Default::default()
-        }),
-        ..Default::default()
-    };
-
-    let encoded = encode_input(&input).expect("error encoding call");
-    assert_eq!(
-        encoded.to_hex(),
-        "070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320501000100010000"
-    );
-}
-
-#[test]
-fn polymesh_encode_authorization_join_identity_allowing_everything() {
-    // https://mainnet-app.polymesh.network/#/extrinsics/decode/0x070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320500000000
-
-    let input = Proto::SigningInput {
-        network: 12,
-        multi_address: true,
-        message_oneof: polymesh_add_auth_call(Proto::mod_Identity::AddAuthorization {
-            target: "2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc".into(),
-            data: Some(AuthData {
-                asset: None,
-                extrinsic: None,
-                portfolio: None,
-            }),
-            ..Default::default()
-        }),
-        ..Default::default()
-    };
-
-    let encoded = encode_input(&input).expect("error encoding call");
-    assert_eq!(
-        encoded.to_hex(),
-        "070a0180436894d47a18e0bcfea6940bd90226f7104fbd037a259aeff6b47b8257c1320500000000"
-    );
-}
-
-#[test]
-fn polymesh_encode_identity() {
-    // https://mainnet-app.polymesh.network/#/extrinsics/decode/0x07040b13000000000000
-
-    let input = Proto::SigningInput {
-        network: 12,
-        multi_address: true,
-        message_oneof: polymesh_join_identity(4875),
-        ..Default::default()
-    };
-
-    let encoded = encode_input(&input).expect("error encoding call");
-    assert_eq!(encoded.to_hex(), "07040b13000000000000");
 }
 
 #[test]
@@ -318,7 +189,7 @@ fn encode_staking_chill() {
 #[test]
 fn encode_staking_bond_with_controller() {
     let input = Proto::SigningInput {
-        network: 12,
+        network: 0,
         multi_address: true,
         message_oneof: staking_call(Proto::mod_Staking::OneOfmessage_oneof::bond(Bond {
             controller: "13wQDQTMM6E9g5WD27e6UsWWTwHLaW763FQxnkbVaoKmsBQy".into(),
@@ -332,7 +203,7 @@ fn encode_staking_bond_with_controller() {
     let encoded = encode_input(&input).expect("error encoding call");
     assert_eq!(
         encoded.to_hex(),
-        "11000081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c914652310002"
+        "07000081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c914652310002"
     );
 }
 
