@@ -146,8 +146,7 @@ pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
                 Ok(contents) => match serde_yaml::from_str(&contents) {
                     Ok(config) => config,
                     Err(_) => {
-                        fs::remove_file(&yaml_file_path)
-                            .expect("Failed to delete invalid YAML file");
+                        let _ = fs::remove_file(&yaml_file_path);
                         TWConfig {
                             class,
                             ..Default::default()
