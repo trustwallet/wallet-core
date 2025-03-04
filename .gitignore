@@ -35,6 +35,7 @@ swift/Sources/Generated
 swift/wallet-core/
 codegen-v2/bindings/
 
+src/Generated/*.h
 src/Generated/*.cpp
 include/TrustWalletCore/TWHRP.h
 include/TrustWalletCore/TW*Proto.h
@@ -48,6 +49,8 @@ include/TrustWalletCore/TWTONMessageSigner.h
 include/TrustWalletCore/TWMessageSigner.h
 include/TrustWalletCore/TWWalletConnectRequest.h
 include/TrustWalletCore/TWSolanaTransaction.h
+include/TrustWalletCore/TWCryptoBoxPublicKey.h
+include/TrustWalletCore/TWCryptoBoxSecretKey.h
 
 # Wasm
 emsdk/

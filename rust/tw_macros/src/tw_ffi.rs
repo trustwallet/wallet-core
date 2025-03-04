@@ -11,7 +11,7 @@ use std::fmt;
 use std::fs;
 use std::path::Path;
 
-use crate::code_gen::{TWArg, TWConfig, TWStaticFunction};
+use crate::code_gen::{TWArg, TWConfig, TWFunction};
 
 pub mod keywords {
     use syn::custom_keyword;
@@ -20,11 +20,15 @@ pub mod keywords {
     custom_keyword!(class);
     custom_keyword!(name);
     custom_keyword!(static_function);
+    custom_keyword!(constructor);
+    custom_keyword!(destructor);
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum TWFFIType {
     StaticFunction,
+    Constructor,
+    Destructor,
 }
 
 impl Parse for TWFFIType {
@@ -33,6 +37,12 @@ impl Parse for TWFFIType {
         if lookahead.peek(keywords::static_function) {
             input.parse::<keywords::static_function>()?;
             Ok(Self::StaticFunction)
+        } else if lookahead.peek(keywords::constructor) {
+            input.parse::<keywords::constructor>()?;
+            Ok(Self::Constructor)
+        } else if lookahead.peek(keywords::destructor) {
+            input.parse::<keywords::destructor>()?;
+            Ok(Self::Destructor)
         } else {
             Err(lookahead.error())
         }
@@ -43,6 +53,8 @@ impl fmt::Display for TWFFIType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             TWFFIType::StaticFunction => write!(f, "static_function"),
+            TWFFIType::Constructor => write!(f, "constructor"),
+            TWFFIType::Destructor => write!(f, "destructor"),
         }
     }
 }
@@ -53,7 +65,7 @@ pub struct TWFFIAttrArgs {
     #[parse_if(_ty_keyword.is_some())]
     pub _eq: Option<Token![=]>,
     #[parse_if(_ty_keyword.is_some())]
-    pub _ty: Option<TWFFIType>,
+    pub ty: Option<TWFFIType>,
     #[parse_if(_ty_keyword.is_some())]
     pub _comma: Option<Token![,]>,
 
@@ -116,7 +128,7 @@ pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
             None
         })
         .collect::<Vec<_>>();
-    let static_function = TWStaticFunction {
+    let function = TWFunction {
         name: args.name.unwrap().to_string(),
         rust_name: func_name,
         args: func_args,
@@ -138,31 +150,49 @@ pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
                             .expect("Failed to delete invalid YAML file");
                         TWConfig {
                             class,
-                            static_functions: vec![],
+                            ..Default::default()
                         }
                     },
                 },
                 Err(_) => TWConfig {
                     class,
-                    static_functions: vec![],
+                    ..Default::default()
                 },
             }
         } else {
             TWConfig {
                 class,
-                static_functions: vec![],
+                ..Default::default()
             }
         };
-        if let Some(idx) = config
-            .static_functions
-            .iter()
-            .position(|f| f.name == static_function.name)
-        {
-            config.static_functions[idx] = static_function;
-        } else {
-            config.static_functions.push(static_function);
+        match args.ty {
+            Some(TWFFIType::StaticFunction) => {
+                if let Some(idx) = config
+                    .static_functions
+                    .iter()
+                    .position(|f| f.name == function.name)
+                {
+                    config.static_functions[idx] = function;
+                } else {
+                    config.static_functions.push(function);
+                }
+            },
+            Some(TWFFIType::Constructor) => {
+                if let Some(constructors) = &mut config.constructors {
+                    if let Some(idx) = constructors.iter().position(|f| f.name == function.name) {
+                        constructors[idx] = function;
+                    } else {
+                        constructors.push(function);
+                    }
+                } else {
+                    config.constructors = Some(vec![function]);
+                }
+            },
+            Some(TWFFIType::Destructor) => {
+                config.destructor = Some(function);
+            },
+            _ => panic!("Invalid FFI type"),
         }
-
         let yaml_output: String =
             serde_yaml::to_string(&config).expect("Failed to serialize to YAML");
         fs::write(&yaml_file_path, yaml_output).expect("Failed to write YAML file");

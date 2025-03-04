@@ -12,19 +12,51 @@ static IN_DIR: &str = "../rust/bindings/";
 static HEADER_OUT_DIR: &str = "../include/TrustWalletCore/";
 static SOURCE_OUT_DIR: &str = "../src/Generated/";
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Default)]
 pub struct TWConfig {
     pub class: String,
-    pub static_functions: Vec<TWStaticFunction>,
+    pub static_functions: Vec<TWFunction>,
+    pub constructors: Option<Vec<TWFunction>>,
+    pub destructor: Option<TWFunction>,
+}
+
+impl TWConfig {
+    fn functions(&self, include_destructor: bool) -> Vec<&TWFunction> {
+        let mut functions = self.static_functions.iter().collect::<Vec<_>>();
+        if let Some(constructors) = &self.constructors {
+            functions.extend(constructors.iter());
+        }
+        if include_destructor {
+            if let Some(destructor) = &self.destructor {
+                functions.push(destructor);
+            }
+        }
+        functions
+    }
+
+    fn is_wrapped(&self) -> bool {
+        self.constructors.is_some() && self.destructor.is_some()
+    }
 }
 
 #[derive(Deserialize, Serialize, Debug)]
-pub struct TWStaticFunction {
+pub struct TWFunction {
     pub name: String,
     pub rust_name: String,
     pub args: Vec<TWArg>,
     pub return_type: String,
     pub docs: Vec<String>,
+}
+
+impl TWFunction {
+    fn types(&self) -> Vec<String> {
+        let mut types = vec![];
+        for arg in &self.args {
+            types.push(arg.ty.clone());
+        }
+        types.push(self.return_type.clone());
+        types
+    }
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -33,37 +65,67 @@ pub struct TWArg {
     pub ty: String,
 }
 
-fn convert_standard_type_to_cpp(ty: &str) -> String {
-    match ty {
-        "TWPrivateKey" => "struct TWPrivateKey".to_string(),
-        "TWPublicKey" => "struct TWPublicKey".to_string(),
-        "TWDataVector" => "struct TWDataVector".to_string(),
-        _ => ty.to_string(),
+fn convert_standard_type_to_cpp(ty: &str, is_nullable: bool, is_wrapper: bool) -> String {
+    if !is_wrapper {
+        let ty = match ty {
+            "TWString" | "TWData" => ty.to_string(),
+            _ => format!("struct {}", ty),
+        };
+        if is_nullable {
+            format!("{} *_Nullable", ty)
+        } else {
+            format!("{} *_Nonnull", ty)
+        }
+    } else {
+        match ty {
+            "TWData" => if is_nullable { "Data" } else { "const Data&" }.to_string(),
+            _ => ty.replace("TW", ""),
+        }
     }
 }
 
-fn convert_rust_type_to_cpp(ty: &str) -> String {
+fn extract_pointer_type(ty: &str, is_wrapper: bool) -> Option<(String, String)> {
     let trimmed = ty.replace(" ", "");
     if let Some(captures) = Regex::new(r"^Nonnull<(.+)>$")
         .expect("Failed to create regex")
         .captures(&trimmed)
     {
-        format!("{} *_Nonnull", convert_standard_type_to_cpp(&captures[1]))
+        Some((
+            convert_standard_type_to_cpp(&captures[1], false, is_wrapper),
+            captures[1].to_string(),
+        ))
     } else if let Some(captures) = Regex::new(r"^NonnullMut<(.+)>$")
         .expect("Failed to create regex")
         .captures(&trimmed)
     {
-        format!("{} *_Nonnull", convert_standard_type_to_cpp(&captures[1]))
+        Some((
+            convert_standard_type_to_cpp(&captures[1], false, is_wrapper),
+            captures[1].to_string(),
+        ))
     } else if let Some(captures) = Regex::new(r"^Nullable<(.+)>$")
         .expect("Failed to create regex")
         .captures(&trimmed)
     {
-        format!("{} *_Nullable", convert_standard_type_to_cpp(&captures[1]))
+        Some((
+            convert_standard_type_to_cpp(&captures[1], true, is_wrapper),
+            captures[1].to_string(),
+        ))
     } else if let Some(captures) = Regex::new(r"^NullableMut<(.+)>$")
         .expect("Failed to create regex")
         .captures(&trimmed)
     {
-        format!("{} *_Nullable", convert_standard_type_to_cpp(&captures[1]))
+        Some((
+            convert_standard_type_to_cpp(&captures[1], true, is_wrapper),
+            captures[1].to_string(),
+        ))
+    } else {
+        None
+    }
+}
+
+fn convert_rust_type_to_cpp(ty: &str, is_wrapper: bool) -> String {
+    if let Some((val, _)) = extract_pointer_type(&ty, is_wrapper) {
+        val
     } else {
         match ty {
             "u8" => "uint8_t".to_string(),
@@ -97,27 +159,21 @@ fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
 
     // Include headers based on argument types
     let mut included_headers = std::collections::HashSet::new();
-    for func in &info.static_functions {
-        for arg in &func.args {
-            if arg.ty.contains("TWString") && included_headers.insert("TWString.h") {
-                writeln!(file, "#include \"TWString.h\"")?;
-            }
-            if arg.ty.contains("TWData") && included_headers.insert("TWData.h") {
-                writeln!(file, "#include \"TWData.h\"")?;
-            }
-            if arg.ty.contains("TWPrivateKey") && included_headers.insert("TWPrivateKey.h") {
-                writeln!(file, "#include \"TWPrivateKey.h\"")?;
-            }
-            if arg.ty.contains("TWPublicKey") && included_headers.insert("TWPublicKey.h") {
-                writeln!(file, "#include \"TWPublicKey.h\"")?;
-            }
-            if arg.ty.contains("TWDataVector") && included_headers.insert("TWDataVector.h") {
-                writeln!(file, "#include \"TWDataVector.h\"")?;
-            }
-            if arg.ty.contains("TWFFICoinType") && included_headers.insert("TWCoinType.h") {
+    for func in info.functions(true) {
+        for ty in func.types() {
+            if let Some((_, header_name)) = extract_pointer_type(&ty, false) {
+                if header_name == info.class {
+                    continue;
+                }
+                if included_headers.insert(header_name.clone()) {
+                    writeln!(file, "#include \"{}.h\"", header_name)?;
+                }
+            } else if ty.contains("TWFFICoinType")
+                && included_headers.insert("TWCoinType.h".to_string())
+            {
+                // Need to handle this case separately because it's not a pointer type
                 writeln!(file, "#include \"TWCoinType.h\"")?;
             }
-            // Additional type checks can be added here in the future
         }
     }
 
@@ -131,10 +187,10 @@ fn generate_class_declaration(file: &mut std::fs::File, info: &TWConfig) -> Resu
 
 fn generate_function_signature(
     class_name: &str,
-    func: &TWStaticFunction,
+    func: &TWFunction,
     is_declaration: bool,
 ) -> Result<String> {
-    let return_type = convert_rust_type_to_cpp(&func.return_type);
+    let return_type = convert_rust_type_to_cpp(&func.return_type, false);
     let whether_export = if is_declaration {
         "TW_EXPORT_STATIC_METHOD "
     } else {
@@ -146,7 +202,7 @@ fn generate_function_signature(
         write!(
             &mut signature,
             "{} {}",
-            convert_rust_type_to_cpp(&arg.ty),
+            convert_rust_type_to_cpp(&arg.ty, false),
             arg.name.to_lower_camel_case()
         )
         .map_err(|e| BadFormat(e.to_string()))?;
@@ -161,7 +217,7 @@ fn generate_function_signature(
 fn generate_function_declaration(
     file: &mut std::fs::File,
     class_name: &str,
-    func: &TWStaticFunction,
+    func: &TWFunction,
 ) -> Result<()> {
     let func_dec = generate_function_signature(class_name, func, true)?;
     for doc in &func.docs {
@@ -182,7 +238,7 @@ pub fn generate_header(info: &TWConfig) -> Result<()> {
     writeln!(file, "\nTW_EXTERN_C_BEGIN\n")?;
 
     generate_class_declaration(&mut file, info)?;
-    for func in &info.static_functions {
+    for func in info.functions(true) {
         generate_function_declaration(&mut file, &info.class, func)?;
     }
 
@@ -193,24 +249,72 @@ pub fn generate_header(info: &TWConfig) -> Result<()> {
     Ok(())
 }
 
+fn generate_wrapper_header(info: &TWConfig) -> Result<()> {
+    let class_name = &info.class;
+    let wrapper_class_name = class_name.replace("TW", "");
+    let file_path = format!("{SOURCE_OUT_DIR}/{}.h", wrapper_class_name);
+    let mut file = std::fs::File::create(&file_path)?;
+
+    generate_license(&mut file)?;
+    generate_header_guard(&mut file)?;
+
+    writeln!(file, "#include \"rust/Wrapper.h\"\n")?;
+
+    writeln!(
+        file,
+        "using {wrapper_class_name}Ptr = std::shared_ptr<TW::Rust::{class_name}>;\n",
+    )?;
+
+    writeln!(file, "struct {} {{", wrapper_class_name)?;
+
+    let Some(destructor) = &info.destructor else {
+        panic!("No destructor found for {}", wrapper_class_name);
+    };
+    let destructor_name = &destructor.rust_name;
+    writeln!(
+        file,
+        "\texplicit {wrapper_class_name}(TW::Rust::{class_name}* raw_ptr): ptr(raw_ptr, TW::Rust::{destructor_name}) {{}}\n",
+    )?;
+
+    writeln!(file, "\t{wrapper_class_name}Ptr ptr;")?;
+    writeln!(file, "}};\n")?;
+
+    writeln!(file, "struct {} {{", class_name)?;
+    writeln!(file, "\t{wrapper_class_name} impl;")?;
+    writeln!(file, "}};\n")?;
+
+    Ok(())
+}
+
 fn generate_source_includes(file: &mut std::fs::File, info: &TWConfig) -> Result<()> {
     writeln!(file, "#include <TrustWalletCore/{}.h>", info.class)?;
     writeln!(file, "#include \"rust/Wrapper.h\"")?;
 
     // Include headers based on argument types
     let mut included_headers = std::collections::HashSet::new();
-    for func in &info.static_functions {
-        for arg in &func.args {
-            if arg.ty.contains("TWPrivateKey") && included_headers.insert("TWPrivateKey.h") {
-                writeln!(file, "#include \"../PrivateKey.h\"")?;
+    for func in info.functions(true) {
+        for ty in func.types() {
+            if let Some((_, ty)) = extract_pointer_type(&ty, false) {
+                if ty.contains("TWPrivateKey")
+                    && included_headers.insert("TWPrivateKey.h".to_string())
+                {
+                    writeln!(file, "#include \"../PrivateKey.h\"")?;
+                } else if ty.contains("TWPublicKey")
+                    && included_headers.insert("TWPublicKey.h".to_string())
+                {
+                    writeln!(file, "#include \"../PublicKey.h\"")?;
+                } else if ty.contains("TWDataVector")
+                    && included_headers.insert("TWDataVector.h".to_string())
+                {
+                    writeln!(file, "#include \"../DataVector.h\"")?;
+                } else if !ty.contains("TWString") && !ty.contains("TWData") {
+                    // Do not need wrapper headers for these types
+                    let wrapper_header_name = ty.replace("TW", "");
+                    if included_headers.insert(wrapper_header_name.clone()) {
+                        writeln!(file, "#include \"{}.h\"", wrapper_header_name)?;
+                    }
+                }
             }
-            if arg.ty.contains("TWPublicKey") && included_headers.insert("TWPublicKey.h") {
-                writeln!(file, "#include \"../PublicKey.h\"")?;
-            }
-            if arg.ty.contains("TWDataVector") && included_headers.insert("TWDataVector.h") {
-                writeln!(file, "#include \"../DataVector.h\"")?;
-            }
-            // Additional type checks can be added here in the future
         }
     }
 
@@ -229,7 +333,7 @@ fn generate_function_call(args: &Vec<String>) -> Result<String> {
     Ok(func_call)
 }
 
-fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -> Result<String> {
+fn generate_return_type(func: &TWFunction, converted_args: &Vec<String>) -> Result<String> {
     let mut return_string = String::new();
     match func.return_type.replace(" ", "").as_str() {
         "NullableMut<TWString>" | "Nullable<TWString>" => {
@@ -295,8 +399,42 @@ fn generate_return_type(func: &TWStaticFunction, converted_args: &Vec<String>) -
             )
             .map_err(|e| BadFormat(e.to_string()))?;
         }
+        ty if ty.contains("NullableMut") || ty.contains("Nullable") => {
+            let regex_pattern = if ty.contains("NullableMut") {
+                r"^NullableMut<(.+)>$"
+            } else {
+                r"^Nullable<(.+)>$"
+            };
+            let Some(captures) = Regex::new(regex_pattern)
+                .expect("Failed to create regex")
+                .captures(&ty)
+            else {
+                panic!("Failed to capture type in {}", ty);
+            };
+            let class_name = captures[1].to_string();
+            let wrapper_class_name = class_name.replace("TW", "");
+            write!(
+                &mut return_string,
+                "\tauto* resultRaw = Rust::{}{}\n\
+                \tif (!resultRaw) {{ return nullptr; }}\n\
+                \tconst {wrapper_class_name} resultWrapped(resultRaw);\n\
+                \treturn new {class_name} {{ resultWrapped }};\n",
+                func.rust_name,
+                generate_function_call(&converted_args)?.as_str()
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
+        }
         ty if ty.contains("Nonnull") => {
             panic!("Nonnull types are not supported in C++ except for TWData");
+        }
+        "void" => {
+            write!(
+                &mut return_string,
+                "\tRust::{}{}\n",
+                func.rust_name,
+                generate_function_call(&converted_args)?.as_str()
+            )
+            .map_err(|e| BadFormat(e.to_string()))?;
         }
         _ => {
             write!(
@@ -430,6 +568,7 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
             .map_err(|e| BadFormat(e.to_string()))?;
             Ok((conversion_code, format!("{}RustDataVector.get()", name)))
         }
+        ty if ty.starts_with("struct ") => Ok(("".to_string(), format!("{name}->impl.ptr.get()"))),
         _ => Ok(("".to_string(), name.to_string())),
     }
 }
@@ -437,13 +576,13 @@ fn generate_conversion_code_with_var_name(ty: &str, name: &str) -> Result<(Strin
 fn generate_function_definition(
     file: &mut std::fs::File,
     info: &TWConfig,
-    func: &TWStaticFunction,
+    func: &TWFunction,
 ) -> Result<()> {
     let mut func_def = generate_function_signature(&info.class, func, false)?;
     func_def += " {\n";
     let mut converted_args = vec![];
     for arg in func.args.iter() {
-        let func_type = convert_rust_type_to_cpp(&arg.ty);
+        let func_type = convert_rust_type_to_cpp(&arg.ty, false);
         let (conversion_code, converted_arg) =
             generate_conversion_code_with_var_name(&func_type, &arg.name.to_lower_camel_case())?;
         func_def += conversion_code.as_str();
@@ -456,6 +595,26 @@ fn generate_function_definition(
     Ok(())
 }
 
+fn generate_destructor_definition(
+    file: &mut std::fs::File,
+    info: &TWConfig,
+    destructor: &TWFunction,
+) -> Result<()> {
+    let function_signature = generate_function_signature(&info.class, destructor, false)?;
+    assert!(
+        destructor.args.len() == 1,
+        "Destructor must have exactly one argument"
+    );
+    let arg_name = &destructor.args[0].name.to_lower_camel_case();
+    writeln!(
+        file,
+        "{function_signature}{{\n\
+        \tdelete {arg_name};\n\
+        }}"
+    )?;
+    Ok(())
+}
+
 fn generate_source(info: &TWConfig) -> Result<()> {
     let file_path = format!("{SOURCE_OUT_DIR}/{}.cpp", info.class);
     let mut file = std::fs::File::create(&file_path)?;
@@ -465,8 +624,11 @@ fn generate_source(info: &TWConfig) -> Result<()> {
 
     writeln!(file, "\nusing namespace TW;\n")?;
 
-    for func in &info.static_functions {
+    for func in info.functions(false) {
         generate_function_definition(&mut file, info, func)?;
+    }
+    if let Some(destructor) = &info.destructor {
+        generate_destructor_definition(&mut file, info, destructor)?;
     }
 
     file.flush()?;
@@ -489,6 +651,10 @@ pub fn generate_cpp_bindings() -> Result<()> {
         let file_contents = fs::read_to_string(&file_path)?;
         let info: TWConfig =
             serde_yaml::from_str(&file_contents).expect("Failed to parse YAML file");
+
+        if info.is_wrapped() {
+            generate_wrapper_header(&info)?;
+        }
 
         generate_header(&info)?;
         generate_source(&info)?;

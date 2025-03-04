@@ -1,13 +1,15 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Default)]
 pub struct TWConfig {
     pub class: String,
-    pub static_functions: Vec<TWStaticFunction>,
+    pub static_functions: Vec<TWFunction>,
+    pub constructors: Option<Vec<TWFunction>>,
+    pub destructor: Option<TWFunction>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
-pub struct TWStaticFunction {
+pub struct TWFunction {
     pub name: String,
     pub rust_name: String,
     pub args: Vec<TWArg>,

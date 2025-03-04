@@ -2092,6 +2092,7 @@ dependencies = [
  "tw_encoding",
  "tw_hash",
  "tw_keypair",
+ "tw_macros",
  "tw_memory",
  "tw_misc",
  "zeroize",
