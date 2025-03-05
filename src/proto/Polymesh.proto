@@ -1,0 +1,319 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+syntax = "proto3";
+
+package TW.Polymesh.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+import "Polkadot.proto";
+
+// Balance transfer transaction
+message Balance {
+    // transfer
+    message Transfer {
+        // destination address
+        string to_address = 1;
+
+        // amount (uint256, serialized big endian)
+        bytes value = 2;
+
+        // max 32 chars
+        string memo = 3;
+
+        // call indices
+        Polkadot.Proto.CallIndices call_indices = 4;
+    }
+
+    oneof message_oneof {
+        Transfer transfer = 1;
+    }
+}
+
+// Staking transaction
+message Staking {
+    // Bond to a controller
+    message Bond {
+        // controller ID (optional)
+        string controller = 1;
+
+        // amount (uint256, serialized big endian)
+        bytes value = 2;
+
+        // destination for rewards
+        Polkadot.Proto.RewardDestination reward_destination = 3;
+
+        // call indices
+        Polkadot.Proto.CallIndices call_indices = 4;
+    }
+
+    // Bond extra amount
+    message BondExtra {
+        // amount (uint256, serialized big endian)
+        bytes value = 1;
+
+        // call indices
+        Polkadot.Proto.CallIndices call_indices = 2;
+    }
+
+    // Unbond
+    message Unbond {
+        // amount (uint256, serialized big endian)
+        bytes value = 1;
+
+        // call indices
+        Polkadot.Proto.CallIndices call_indices = 2;
+    }
+
+    // Rebond
+    message Rebond {
+        // amount (uint256, serialized big endian)
+        bytes value = 1;
+
+        // call indices
+        Polkadot.Proto.CallIndices call_indices = 2;
+    }
+
+    // Withdraw unbonded amounts
+    message WithdrawUnbonded {
+        int32 slashing_spans = 1;
+
+        // call indices
+        Polkadot.Proto.CallIndices call_indices = 2;
+    }
+
+    // Nominate
+    message Nominate {
+        // list of nominators
+        repeated string nominators = 1;
+
+        // call indices
+        Polkadot.Proto.CallIndices call_indices = 2;
+    }
+
+    // Chill
+    message Chill {
+        // call indices
+        Polkadot.Proto.CallIndices call_indices = 1;
+    }
+
+    // Payload messsage
+    oneof message_oneof {
+        Bond bond = 1;
+        BondExtra bond_extra = 2;
+        Unbond unbond = 3;
+        WithdrawUnbonded withdraw_unbonded = 4;
+        Nominate nominate = 5;
+        Chill chill = 6;
+        Rebond rebond = 7;
+    }
+}
+
+message IdentityId {
+    // 32 byte identity id.
+    bytes id = 1;
+}
+
+message AssetId {
+    // 16 byte asset id.
+    bytes id = 1;
+}
+
+message PortfolioId {
+    // IdentityId of the portfolio owner.
+    IdentityId identity = 1;
+    // If `default` is true ignore the `user` field.
+    bool default = 2;
+    // The users portfolio number.  (ignored if `default = true`)
+    uint64 user = 3;
+}
+
+message SecondaryKeyPermissions {
+    enum RestrictionKind {
+        Whole = 0;
+        These = 1;
+        Except = 2;
+    }
+
+    message AssetPermissions {
+        RestrictionKind kind = 1;
+        repeated AssetId assets = 2;
+    }
+
+    message PortfolioPermissions {
+        RestrictionKind kind = 1;
+        repeated PortfolioId portfolios = 2;
+    }
+
+    message PalletPermissions {
+        string pallet_name = 1;
+        RestrictionKind kind = 2;
+        repeated string extrinsic_names = 3;
+    }
+
+    message ExtrinsicPermissions {
+        RestrictionKind kind = 1;
+        repeated PalletPermissions pallets = 2;
+    }
+
+    // The assets permissions of the secondary key.
+    AssetPermissions asset = 1;
+
+    // The pallet/extrinsic permissions of the secondary key.
+    ExtrinsicPermissions extrinsic = 2;
+
+    // The portfolio permissions of the secondary key.
+    PortfolioPermissions portfolio = 3;
+}
+
+// Identity module
+message Identity {
+    // Identity::join_identity_as_key call
+    message JoinIdentityAsKey {
+        // call indices
+        Polkadot.Proto.CallIndices call_indices = 1;
+
+        // auth id
+        uint64 auth_id = 2;
+    }
+
+    // Identity::leave_identity_as_key call
+    message LeaveIdentityAsKey {
+        // call indices
+        Polkadot.Proto.CallIndices call_indices = 1;
+    }
+
+    // Identity::add_authorization call
+    message AddAuthorization {
+        message Authorization {
+            // Authorization data.
+            oneof auth_oneof {
+                // AttestPrimaryKeyRotation(IdentityId) = 1
+                // RotatePrimaryKey = 2
+                // TransferTicker(Ticker) = 3
+                // AddMultiSigSigner(AccountId) = 4
+                // TransferAssetOwnership(AssetId) = 5
+                SecondaryKeyPermissions join_identity = 6;
+                // PortfolioCustody(PortfolioId) = 7
+                // BecomeAgent(AssetId, AgentGroup) = 8
+                // AddRelayerPayingKey(AccountId, AccountId, Balance) = 9
+                // RotatePrimaryKeyToSecondary(Permissions) = 10
+            }
+        }
+
+        // call indices
+        Polkadot.Proto.CallIndices call_indices = 1;
+
+        // address that will be added to the Identity
+        string target = 2;
+
+        // Authorization.
+        Authorization authorization = 3;
+
+        // expire time, unix seconds
+        uint64 expiry = 4;
+    }
+
+    oneof message_oneof {
+        JoinIdentityAsKey join_identity_as_key = 1;
+        AddAuthorization add_authorization = 2;
+        LeaveIdentityAsKey leave_identity_as_key = 3;
+    }
+}
+
+// Utility pallet transaction
+message Utility {
+    enum BatchKind {
+        // Batch multiple calls, stoping on the first error.
+        //
+        // Each call in the batch is executed in its own transaction.
+        // When one call fails only that transaction will be rolled back
+        // and any following calls in the batch will be skipped.
+        StopOnError = 0;
+        // Batch multiple calls and execute them in a single atomic transaction.
+        // The whole transaction will rollback if any of the calls fail.
+        Atomic = 1;
+        // Batch multiple calls.  Unlike `Batch` this will continue even
+        // if one of the calls failed.
+        //
+        // Each call in the batch is executed in its own transaction.
+        // When a call fails its transaction will be rolled back and the error
+        // will be emitted in an event.
+        // 
+        // Execution will continue until all calls in the batch have been executed.
+        Optimistic = 2;
+    }
+
+    message Batch {
+        // The type of batch.
+        BatchKind kind = 1;
+
+        // batched calls.
+        repeated RuntimeCall calls = 2;
+
+        // call indices
+        Polkadot.Proto.CallIndices call_indices = 3;
+    }
+
+    oneof message_oneof {
+        Batch batch = 1;
+    }
+}
+
+// Polymesh runtime call.
+message RuntimeCall {
+    // Top-level pallets.
+    oneof pallet_oneof {
+        Balance balance_call = 1;
+        Staking staking_call = 2;
+        Identity identity_call = 3;
+        Utility utility_call = 4;
+    }
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Recent block hash, or genesis hash if era is not set
+    bytes block_hash = 1;
+
+    // Genesis block hash (identifies the chain)
+    bytes genesis_hash = 2;
+
+    // Current account nonce
+    uint64 nonce = 3;
+
+    // Specification version, e.g. 26.
+    uint32 spec_version = 4;
+
+    // Transaction version, e.g. 5.
+    uint32 transaction_version = 5;
+
+    // Optional tip to pay, big integer
+    bytes tip = 6;
+
+    // Optional time validity limit, recommended, for replay-protection.  Empty means Immortal.
+    Polkadot.Proto.Era era = 7;
+
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 8;
+
+    // Network type
+    uint32 network = 9;
+
+    // Payload call
+    RuntimeCall runtime_call = 10;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
+}

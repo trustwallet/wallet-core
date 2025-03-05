@@ -128,6 +128,13 @@ where
     }
 }
 
+impl ToScale for String {
+    fn to_scale_into(&self, out: &mut Vec<u8>) {
+        self.as_bytes().to_scale_into(out)
+    }
+}
+
+/// RawOwned is used to wrap data that is already encoded in SCALE format.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct RawOwned(pub Vec<u8>);
 
@@ -143,6 +150,35 @@ impl ToScale for RawOwned {
     }
 }
 
+// Implement ToScale for BTreeSet collection.
+impl<T> ToScale for std::collections::BTreeSet<T>
+where
+    T: ToScale,
+{
+    fn to_scale_into(&self, out: &mut Vec<u8>) {
+        Compact(self.len()).to_scale_into(out);
+        for ts in self.iter() {
+            ts.to_scale_into(out);
+        }
+    }
+}
+
+// Implement ToScale for BTreeMap collection.
+impl<K, V> ToScale for std::collections::BTreeMap<K, V>
+where
+    K: ToScale,
+    V: ToScale,
+{
+    fn to_scale_into(&self, out: &mut Vec<u8>) {
+        Compact(self.len()).to_scale_into(out);
+        for (k, v) in self.iter() {
+            k.to_scale_into(out);
+            v.to_scale_into(out);
+        }
+    }
+}
+
+// Implement ToScale for Vec collection.
 impl<T> ToScale for Vec<T>
 where
     T: ToScale,
@@ -152,6 +188,7 @@ where
     }
 }
 
+// Implement ToScale for references to types that implement ToScale.
 impl<T: ToScale> ToScale for &T {
     fn to_scale_into(&self, out: &mut Vec<u8>) {
         (*self).to_scale_into(out)
@@ -393,6 +430,47 @@ mod tests {
         assert_eq!(
             [4u16, 8, 15, 16, 23, 42].as_slice().to_scale(),
             &[0x18, 0x04, 0x00, 0x08, 0x00, 0x0f, 0x00, 0x10, 0x00, 0x17, 0x00, 0x2a, 0x00],
+        );
+    }
+
+    // Test SCALE encoding of String
+    #[test]
+    fn test_string() {
+        assert_eq!("".to_string().to_scale(), &[0x00]);
+        assert_eq!(
+            "hello".to_string().to_scale(),
+            &[0x14, 0x68, 0x65, 0x6c, 0x6c, 0x6f]
+        );
+        assert_eq!(
+            "hello world".to_string().to_scale(),
+            &[0x2c, 0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64]
+        );
+    }
+
+    // Test SCALE encoding of BTreeSet
+    #[test]
+    fn test_btree_set() {
+        use std::collections::BTreeSet;
+        let mut set = BTreeSet::new();
+        set.insert(10u8);
+        set.insert(30u8);
+        set.insert(20u8);
+        // The values are encoded in sorted order.
+        assert_eq!(set.to_scale(), &[0x0c, 10, 20, 30]);
+    }
+
+    // Test SCALE encoding of BTreeMap
+    #[test]
+    fn test_btree_map() {
+        use std::collections::BTreeMap;
+        let mut map = BTreeMap::new();
+        map.insert(30u8, 300u16);
+        map.insert(10u8, 100u16);
+        map.insert(20u8, 200u16);
+        // The keys/value pairs are encoded in sorted order (by key order).
+        assert_eq!(
+            map.to_scale(),
+            &[0x0c, 10, 0x64, 0x00, 20, 0xc8, 0x00, 30, 0x2c, 0x01]
         );
     }
 }
