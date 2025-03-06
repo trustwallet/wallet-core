@@ -139,11 +139,9 @@ export class Default implements Types.IKeyStore {
   ): Promise<PrivateKey> {
     return this.load(id).then((wallet) => {
       let storedKey = this.mapStoredKey(wallet);
-      let hdWallet = storedKey.wallet(Buffer.from(password));
       let coin = (this.core.CoinType as any).values["" + account.coin];
-      let privateKey = hdWallet.getKey(coin, account.derivationPath);
+      let privateKey = storedKey.privateKey(coin, Buffer.from(password));
       storedKey.delete();
-      hdWallet.delete();
       return privateKey;
     });
   }

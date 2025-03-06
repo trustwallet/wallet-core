@@ -6,7 +6,7 @@ import { CoinType, Derivation, PrivateKey, StoredKeyEncryption } from "../wallet
 
 export enum WalletType {
   Mnemonic = "mnemonic",
-  PrivateKey = "privateKey",
+  PrivateKey = "private-key",
   WatchOnly = "watchOnly",
   Hardware = "hardware",
 }
