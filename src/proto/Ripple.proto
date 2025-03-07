@@ -37,7 +37,8 @@ message OperationPayment {
     string destination = 3;
 
     // A Destination Tag
-    uint32 destination_tag = 4;
+    // It must fit uint32
+    uint64 destination_tag = 4;
 }
 
 // https://xrpl.org/escrowcreate.html
@@ -49,13 +50,16 @@ message OperationEscrowCreate {
     string destination = 2;
 
     // Destination Tag
-    uint32 destination_tag = 3;
+    // It must fit uint32
+    uint64 destination_tag = 3;
 
     // Escrow expire time
-    uint32 cancel_after = 4;
+    // It must fit uint32
+    uint64 cancel_after = 4;
 
     // Escrow release time
-    uint32 finish_after = 5;
+    // It must fit uint32
+    uint64 finish_after = 5;
 
     // Hex-encoded crypto condition
     // https://datatracker.ietf.org/doc/html/draft-thomas-crypto-conditions-02#section-8.1
@@ -86,13 +90,13 @@ message OperationEscrowFinish {
     string fulfillment = 4;
 }
 
-// https://xrpl.org/nftokenburn.html 
+// https://xrpl.org/nftokenburn.html
 message OperationNFTokenBurn {
     // Hex-encoded H256 NFTokenId
     string nftoken_id = 1;
 }
 
-// https://xrpl.org/nftokencreateoffer.html 
+// https://xrpl.org/nftokencreateoffer.html
 message OperationNFTokenCreateOffer {
     // Hex-encoded Hash256 NFTokenId
     string nftoken_id = 1;
@@ -101,13 +105,13 @@ message OperationNFTokenCreateOffer {
     string destination = 2;
 }
 
-// https://xrpl.org/nftokenacceptoffer.html 
+// https://xrpl.org/nftokenacceptoffer.html
 message OperationNFTokenAcceptOffer {
     // Hex-encoded Hash256 NFTokenOffer
     string sell_offer = 1;
 }
 
-// https://xrpl.org/nftokencanceloffer.html 
+// https://xrpl.org/nftokencanceloffer.html
 message OperationNFTokenCancelOffer {
     // Hex-encoded Vector256 NFTokenOffers
     repeated string token_offers = 1;
@@ -128,7 +132,8 @@ message SigningInput {
     string account = 4;
 
     // Transaction flags, optional
-    uint32 flags = 5;
+    // It must fit uint32
+    uint64 flags = 5;
 
     // The secret private key used for signing (32 bytes).
     bytes private_key = 6;
@@ -167,7 +172,8 @@ message SigningInput {
 
     // Arbitrary integer used to identify the reason for this payment, or a sender on whose behalf this transaction is made.
     // Conventionally, a refund should specify the initial payment's SourceTag as the refund payment's DestinationTag.
-    uint32 source_tag = 25;
+    // It must fit uint32.
+    uint64 source_tag = 25;
 }
 
 // Result containing the signed and encoded transaction.
