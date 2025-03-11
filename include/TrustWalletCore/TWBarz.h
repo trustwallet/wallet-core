@@ -55,7 +55,6 @@ TWData *_Nonnull TWBarzGetPrefixedMsgHash(TWData* _Nonnull msgHash, TWString* _N
 /// \return The encoded bytes of diamondCut function call
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWBarzGetDiamondCutCode(TWData *_Nonnull input);
-TW_EXTERN_C_END
 
 /// Computes an Authorization hash in [EIP-7702 format](https://eips.ethereum.org/EIPS/eip-7702)
 /// `keccak256('0x05' || rlp([chain_id, address, nonce]))`.
@@ -66,3 +65,5 @@ TW_EXTERN_C_END
 /// \return The authorization hash
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWBarzGetAuthorizationHash(TWString* _Nonnull chainId, TWString* _Nonnull contractAddress, TWString* _Nonnull nonce);
+
+TW_EXTERN_C_END
