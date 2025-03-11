@@ -6,6 +6,7 @@
 #include <TrustWalletCore/TWData.h>
 #include <string>
 #include "Ethereum/Barz.h"
+#include "uint256.h"
 
 TWString *_Nonnull TWBarzGetCounterfactualAddress(TWData *_Nonnull input) {
     TW::Barz::Proto::ContractAddressInput inputProto;
@@ -59,8 +60,12 @@ TWData *_Nonnull TWBarzGetDiamondCutCode(TWData *_Nonnull input) {
     return TWDataCreateWithData(&diamondCutCode);
 }
 
-TWData *_Nonnull TWBarzGetAuthorizationHash(TW::uint256_t chainId, TWString* _Nonnull contractAddress, TW::uint256_t nonce) {
+TWData *_Nonnull TWBarzGetAuthorizationHash(TWString* _Nonnull chainId, TWString* _Nonnull contractAddress, TWString* _Nonnull nonce) {
+    const auto& chainIdStr = *reinterpret_cast<const std::string*>(chainId);
+    const auto chainIdU256 = TW::load(chainIdStr);
     const auto& contractAddressStr = *reinterpret_cast<const std::string*>(contractAddress);
-    const auto authorizationHash = TW::Barz::getAuthorizationHash(chainId, contractAddressStr, nonce);
+    const auto& nonceStr = *reinterpret_cast<const std::string*>(nonce);
+    const auto nonceU256 = TW::load(nonceStr);
+    const auto authorizationHash = TW::Barz::getAuthorizationHash(chainIdU256, contractAddressStr, nonceU256);
     return TWDataCreateWithData(&authorizationHash);
 }

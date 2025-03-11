@@ -7,7 +7,6 @@
 #include "TWData.h"
 #include "TWString.h"
 #include "TWPublicKey.h"
-#include "uint256.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -66,4 +65,4 @@ TW_EXTERN_C_END
 /// \param nonce The nonce of the transaction
 /// \return The authorization hash
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWBarzGetAuthorizationHash(TW::uint256_t chainId, TWString* _Nonnull contractAddress, TW::uint256_t nonce);
+TWData *_Nonnull TWBarzGetAuthorizationHash(TWString* _Nonnull chainId, TWString* _Nonnull contractAddress, TWString* _Nonnull nonce);
