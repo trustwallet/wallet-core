@@ -220,17 +220,15 @@ Data getDiamondCutCode(const Proto::DiamondCutInput& input) {
     return encoded;
 }
 
-Data getAuthorizationHash(const uint256_t chainId, const std::string& contractAddress, const uint256_t nonce) {
+Data getAuthorizationHash(const Data& chainId, const std::string& contractAddress, const Data& nonce) {
     EthereumRlp::Proto::EncodingInput input;
     auto* list = input.mutable_item()->mutable_list();
 
-    Data chainIdData = store(chainId);
-    list->add_items()->set_number_u256(chainIdData.data(), chainIdData.size());
+    list->add_items()->set_number_u256(chainId.data(), chainId.size());
 
     list->add_items()->set_address(contractAddress);
 
-    Data nonceData = store(nonce);
-    list->add_items()->set_number_u256(nonceData.data(), nonceData.size());
+    list->add_items()->set_number_u256(nonce.data(), nonce.size());
 
     auto dataOut = Ethereum::RLP::encode(input);
 

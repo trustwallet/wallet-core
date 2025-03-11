@@ -64,6 +64,6 @@ TWData *_Nonnull TWBarzGetDiamondCutCode(TWData *_Nonnull input);
 /// \param nonce The nonce of the transaction
 /// \return The authorization hash
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWBarzGetAuthorizationHash(TWString* _Nonnull chainId, TWString* _Nonnull contractAddress, TWString* _Nonnull nonce);
+TWData *_Nonnull TWBarzGetAuthorizationHash(TWData* _Nonnull chainId, TWString* _Nonnull contractAddress, TWData* _Nonnull nonce);
 
 TW_EXTERN_C_END
