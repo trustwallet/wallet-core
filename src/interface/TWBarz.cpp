@@ -6,7 +6,6 @@
 #include <TrustWalletCore/TWData.h>
 #include <string>
 #include "Ethereum/Barz.h"
-#include "uint256.h"
 
 TWString *_Nonnull TWBarzGetCounterfactualAddress(TWData *_Nonnull input) {
     TW::Barz::Proto::ContractAddressInput inputProto;
