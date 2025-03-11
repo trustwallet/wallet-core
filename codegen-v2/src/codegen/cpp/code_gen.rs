@@ -8,7 +8,7 @@ use crate::Error::BadFormat;
 use crate::Result;
 
 static IN_DIR: &str = "../rust/bindings/";
-static HEADER_OUT_DIR: &str = "../include/TrustWalletCore/";
+static HEADER_OUT_DIR: &str = "../include/TrustWalletCore/Generated/";
 static SOURCE_OUT_DIR: &str = "../src/Generated/";
 
 fn generate_license(file: &mut std::fs::File) -> Result<()> {
@@ -24,7 +24,7 @@ fn generate_header_guard(file: &mut std::fs::File) -> Result<()> {
 }
 
 fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result<()> {
-    writeln!(file, "#include \"TWBase.h\"")?;
+    writeln!(file, "#include <TrustWalletCore/TWBase.h>")?;
 
     // Include headers based on argument types
     let mut included_headers = std::collections::HashSet::new();
@@ -37,7 +37,11 @@ fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
                         continue;
                     }
                     if included_headers.insert(header_name.clone()) {
-                        writeln!(file, "#include \"{}.h\"", header_name)?;
+                        if let Ok(true) = fs::exists(format!("{}{}.h", HEADER_OUT_DIR, header_name)) {
+                            writeln!(file, "#include <TrustWalletCore/Generated/{}.h>", header_name)?;
+                        } else {
+                            writeln!(file, "#include <TrustWalletCore/{}.h>", header_name)?;
+                        }
                     }
                 }
                 TWType::Standard(ty) => {
@@ -45,7 +49,7 @@ fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
                         && included_headers.insert("TWCoinType.h".to_string())
                     {
                         // Need to handle this case separately because it's not a pointer type
-                        writeln!(file, "#include \"TWCoinType.h\"")?;
+                        writeln!(file, "#include <TrustWalletCore/TWCoinType.h>")?;
                     }
                 }
             }
@@ -170,7 +174,7 @@ fn generate_wrapper_header(info: &TWConfig) -> Result<()> {
 }
 
 fn generate_source_includes(file: &mut std::fs::File, info: &TWConfig) -> Result<()> {
-    writeln!(file, "#include <TrustWalletCore/{}.h>", info.class)?;
+    writeln!(file, "#include <TrustWalletCore/Generated/{}.h>", info.class)?;
     writeln!(file, "#include \"rust/Wrapper.h\"")?;
 
     // Include headers based on argument types
