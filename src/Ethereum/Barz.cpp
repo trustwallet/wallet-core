@@ -12,6 +12,8 @@
 #include "../proto/Barz.pb.h"
 #include "AsnParser.h"
 #include "Base64.h"
+#include "../proto/EthereumRlp.pb.h"
+#include "RLP.h"
 
 namespace TW::Barz {
 
@@ -216,6 +218,25 @@ Data getDiamondCutCode(const Proto::DiamondCutInput& input) {
     append(encoded, parse_hex(padding));
 
     return encoded;
+}
+
+Data getAuthorizationHash(const Data& chainId, const std::string& contractAddress, const Data& nonce) {
+    EthereumRlp::Proto::EncodingInput input;
+    auto* list = input.mutable_item()->mutable_list();
+
+    list->add_items()->set_number_u256(chainId.data(), chainId.size());
+
+    list->add_items()->set_address(contractAddress);
+
+    list->add_items()->set_number_u256(nonce.data(), nonce.size());
+
+    auto dataOut = Ethereum::RLP::encode(input);
+
+    Data encoded;
+    append(encoded, parse_hex("0x05"));
+    append(encoded, dataOut);
+
+    return Hash::keccak256(encoded);
 }
 
 } // namespace TW::Barz
