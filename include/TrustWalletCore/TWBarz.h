@@ -7,6 +7,7 @@
 #include "TWData.h"
 #include "TWString.h"
 #include "TWPublicKey.h"
+#include "uint256.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -56,3 +57,13 @@ TWData *_Nonnull TWBarzGetPrefixedMsgHash(TWData* _Nonnull msgHash, TWString* _N
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWBarzGetDiamondCutCode(TWData *_Nonnull input);
 TW_EXTERN_C_END
+
+/// Computes an Authorization hash in [EIP-7702 format](https://eips.ethereum.org/EIPS/eip-7702)
+/// `keccak256('0x05' || rlp([chain_id, address, nonce]))`.
+///
+/// \param chainId The chainId of the network
+/// \param contractAddress The address of the contract to be authorized
+/// \param nonce The nonce of the transaction
+/// \return The authorization hash
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWBarzGetAuthorizationHash(TW::uint256_t chainId, TWString* _Nonnull contractAddress, TW::uint256_t nonce);

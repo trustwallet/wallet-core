@@ -15,7 +15,6 @@
 #include <TrustWalletCore/TWEthereumAbiFunction.h>
 
 namespace TW::Barz::tests {
-
 // https://testnet.bscscan.com/tx/0x6c6e1fe81c722c0abce1856b9b4e078ab2cad06d51f2d1b04945e5ba2286d1b4
 TEST(Barz, GetInitCode) {
     const PublicKey& publicKey = PublicKey(parse_hex("0x04e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b02"), TWPublicKeyTypeNIST256p1Extended);
@@ -414,5 +413,15 @@ TEST(Barz, GetDiamondCutCodeWithLongInitData) {
     }
 }
 
+TEST(Barz, GetAuthorizationHash) {
+    {
+        const auto chainId = 1;
+        const auto contractAddress = "0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1";
+        const auto nonce = 1;
+        
+        const auto& authorizationHash = Barz::getAuthorizationHash(chainId, contractAddress, nonce);
+        ASSERT_EQ(hexEncoded(authorizationHash), "0x3ae543b2fa103a39a6985d964a67caed05f6b9bb2430ad6d498cda743fe911d9"); // Verified with viem
+    }
 }
 
+}

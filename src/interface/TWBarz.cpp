@@ -58,3 +58,9 @@ TWData *_Nonnull TWBarzGetDiamondCutCode(TWData *_Nonnull input) {
     const auto diamondCutCode = TW::Barz::getDiamondCutCode(inputProto);
     return TWDataCreateWithData(&diamondCutCode);
 }
+
+TWData *_Nonnull TWBarzGetAuthorizationHash(TW::uint256_t chainId, TWString* _Nonnull contractAddress, TW::uint256_t nonce) {
+    const auto& contractAddressStr = *reinterpret_cast<const std::string*>(contractAddress);
+    const auto authorizationHash = TW::Barz::getAuthorizationHash(chainId, contractAddressStr, nonce);
+    return TWDataCreateWithData(&authorizationHash);
+}
