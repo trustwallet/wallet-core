@@ -341,7 +341,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
         };
 
         let init_code = if let Some(factory_address) =
-            Self::parse_address_optional(&user_op_v0_7.factory.as_ref())
+            Self::parse_address_optional(user_op_v0_7.factory.as_ref())
                 .context("Invalid factory address")?
         {
             let mut init_code = factory_address.bytes().into_vec();
