@@ -142,10 +142,10 @@ message UserOperationV_07 {
     string entry_point = 1;
 
     // Account factory contract address
-    optional string factory = 2;
+    string factory = 2;
 
     // Account factory data
-    optional bytes factory_data = 3;
+    bytes factory_data = 3;
 
     // Account logic contract address
     string sender = 4;
@@ -157,16 +157,16 @@ message UserOperationV_07 {
     bytes verification_gas_limit = 6;
 
     // Address of paymaster
-    optional string paymaster = 7;
+    string paymaster = 7;
 
     // The amount of gas to allocate for the paymaster verification step
-    optional bytes paymaster_verification_gas_limit = 8;
+    bytes paymaster_verification_gas_limit = 8;
 
     // The amount of gas to allocate for paymaster post ops
-    optional bytes paymaster_post_op_gas_limit = 9;
+    bytes paymaster_post_op_gas_limit = 9;
 
     // Paymaster data
-    optional bytes paymaster_data = 10;
+    bytes paymaster_data = 10;
 }
 
 // An item of the [EIP-2930](https://eips.ethereum.org/EIPS/eip-2930) access list.
