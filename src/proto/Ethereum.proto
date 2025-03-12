@@ -110,6 +110,9 @@ enum TransactionMode {
 
     // EIP4337-compatible UserOperation
     UserOp = 2;
+
+    // EIP7702-compatible UserOperation
+    UserOpV0_7 = 3;
 }
 
 // ERC-4337 structure that describes a transaction to be sent on behalf of a user
@@ -131,6 +134,39 @@ message UserOperation {
 
     // Address of paymaster sponsoring the transaction, followed by extra data to send to the paymaster (empty for self-sponsored transaction)
     bytes paymaster_and_data = 6;
+}
+
+// EIP-7702 compatible ERC-4337 structure that describes a transaction to be sent on behalf of a user
+message UserOperationV_07 {
+    // Entry point contract address
+    string entry_point = 1;
+
+    // Account factory contract address
+    optional string factory = 2;
+
+    // Account factory data
+    optional bytes factory_data = 3;
+
+    // Account logic contract address
+    string sender = 4;
+
+    // The amount of gas to pay for to compensate the bundler for pre-verification execution and calldata
+    bytes pre_verification_gas = 5;
+
+    // The amount of gas to allocate for the verification step
+    bytes verification_gas_limit = 6;
+
+    // Address of paymaster
+    optional string paymaster = 7;
+
+    // The amount of gas to allocate for the paymaster verification step
+    optional bytes paymaster_verification_gas_limit = 8;
+
+    // The amount of gas to allocate for paymaster post ops
+    optional bytes paymaster_post_op_gas_limit = 9;
+
+    // Paymaster data
+    optional bytes paymaster_data = 10;
 }
 
 // An item of the [EIP-2930](https://eips.ethereum.org/EIPS/eip-2930) access list.
@@ -184,6 +220,9 @@ message SigningInput {
     // Optional list of addresses and storage keys that the transaction plans to access.
     // Used in `TransactionMode::Enveloped` only.
     repeated Access access_list = 12;
+
+    // UserOperation for EIP-7702 compatible ERC-4337 wallets
+    UserOperationV_07 user_operation_v0_7 = 13;
 }
 
 // Result containing the signed and encoded transaction.
