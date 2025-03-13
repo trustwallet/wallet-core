@@ -260,7 +260,7 @@ fn concat_u128_be(a: u128, b: u128) -> [u8; 32] {
 mod tests {
     use super::*;
     use std::str::FromStr;
-    use tw_encoding::hex::DecodeHex;
+    use tw_encoding::hex::{DecodeHex, ToHex};
 
     // Replicates https://github.com/alchemyplatform/rundler/blob/0caa06ce10717a2214c554995a8fb9f4bd18fa4b/crates/types/src/user_operation/v0_7.rs#L1189
     #[test]
@@ -287,5 +287,57 @@ mod tests {
         let expected_pre_hash =
             H256::from("e486401370d145766c3cf7ba089553214a1230d38662ae532c9b62eb6dadcf7e");
         assert_eq!(pre_hash, expected_pre_hash);
+    }
+
+    #[test]
+    fn test_encode_user_operation_2() {
+        let chain_id = U256::from(31337u64);
+        let entry_point = Address::from("0x0000000071727De22E5E9d8BAf0edAc6f37da032");
+
+        let user_op = UserOperationV0_7 {
+            sender: Address::from("0x174a240e5147D02dE4d7724D5D3E1c1bF11cE029"),
+            nonce: U256::from(0u64),
+            factory: Some(Address::from("0xf471789937856d80e589f5996cf8b0511ddd9de4")),
+            factory_data: "f471789937856d80e589f5996cf8b0511ddd9de4".decode_hex().unwrap(),
+            call_data: "00".decode_hex().unwrap(),
+            call_data_gas_limit: 100000u128,
+            verification_gas_limit: 100000u128,
+            pre_verification_gas: U256::from(1000000u64),
+            max_fee_per_gas: 100000u128,
+            max_priority_fee_per_gas: 100000u128,
+            paymaster: Some(Address::from("0xf62849f9a0b5bf2913b396098f7c7019b51a820a")),
+            paymaster_verification_gas_limit: 99999u128,
+            paymaster_post_op_gas_limit: 88888u128,
+            paymaster_data: "00000000000b0000000000002e234dae75c793f67a35089c9d99245e1c58470b00000000000000000000000000000000000000000000000000000000000186a0072f35038bcacc31bcdeda87c1d9857703a26fb70a053f6e87da5a4e7a1e1f3c4b09fbe2dbff98e7a87ebb45a635234f4b79eff3225d07560039c7764291c97e1b".decode_hex().unwrap(),
+            entry_point: Address::from("0x0000000071727De22E5E9d8BAf0edAc6f37da032"),
+        };
+        let packed_user_op = PackedUserOperation::new(&user_op);
+
+        let expected_packed_user_op = PackedUserOperation {
+            sender: Address::from("0x174a240e5147D02dE4d7724D5D3E1c1bF11cE029"),
+            nonce: U256::from(0u64),
+            init_code: "f471789937856d80e589f5996cf8b0511ddd9de4f471789937856d80e589f5996cf8b0511ddd9de4".decode_hex().unwrap(),
+            call_data: "00".decode_hex().unwrap(),
+            account_gas_limits:concat_u128_be(100000u128, 100000u128).to_vec(),
+            pre_verification_gas: U256::from(1000000u64),
+            gas_fees: concat_u128_be(100000u128, 100000u128).to_vec(),
+            paymaster_and_data: "f62849f9a0b5bf2913b396098f7c7019b51a820a0000000000000000000000000001869f00000000000000000000000000015b3800000000000b0000000000002e234dae75c793f67a35089c9d99245e1c58470b00000000000000000000000000000000000000000000000000000000000186a0072f35038bcacc31bcdeda87c1d9857703a26fb70a053f6e87da5a4e7a1e1f3c4b09fbe2dbff98e7a87ebb45a635234f4b79eff3225d07560039c7764291c97e1b".decode_hex().unwrap(),
+        };
+        assert_eq!(packed_user_op.init_code, expected_packed_user_op.init_code);
+        assert_eq!(
+            packed_user_op.paymaster_and_data,
+            expected_packed_user_op.paymaster_and_data
+        );
+
+        let pre_hash = packed_user_op.pre_hash(chain_id, entry_point);
+        assert_eq!(
+            H256::to_hex(&pre_hash),
+            "648c415fb11c6fad4b274a0aea51e808e6e3ad2e500d5e76ee2fb61e7ea4d07c"
+        );
+        let expected_pre_hash = expected_packed_user_op.pre_hash(chain_id, entry_point);
+        assert_eq!(
+            H256::to_hex(&expected_pre_hash),
+            "648c415fb11c6fad4b274a0aea51e808e6e3ad2e500d5e76ee2fb61e7ea4d07c"
+        );
     }
 }
