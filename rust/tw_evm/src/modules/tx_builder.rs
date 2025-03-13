@@ -340,98 +340,88 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 .context("No user operation v0_7 specified");
         };
 
-        let init_code = if let Some(factory_address) =
-            Self::parse_address_optional(user_op_v0_7.factory.as_ref())
-                .context("Invalid factory address")?
-        {
-            let mut init_code = factory_address.bytes().into_vec();
-            init_code.extend_from_slice(&user_op_v0_7.factory_data);
-            init_code
-        } else {
-            vec![]
-        };
+        let sender = Self::parse_address(user_op_v0_7.sender.as_ref())
+            .context("Invalid User Operation sender")?;
 
-        let verification_gas_limit: u128 =
+        let nonce = U256::from_big_endian_slice(&input.nonce)
+            .into_tw()
+            .context("Invalid nonce")?;
+
+        let factory = Self::parse_address_optional(user_op_v0_7.factory.as_ref())
+            .context("Invalid factory address")?;
+
+        let call_data_gas_limit = U256::from_big_endian_slice(&input.gas_limit)
+            .into_tw()
+            .context("Invalid gas limit")?
+            .try_into()
+            .into_tw()
+            .context("Gas limit exceeds u128")?;
+
+        let verification_gas_limit =
             U256::from_big_endian_slice(&user_op_v0_7.verification_gas_limit)
                 .into_tw()
                 .context("Invalid verification gas limit")?
                 .try_into()
                 .into_tw()
                 .context("Verification gas limit exceeds u128")?;
-        let gas_limit: u128 = U256::from_big_endian_slice(&input.gas_limit)
+
+        let pre_verification_gas = U256::from_big_endian_slice(&user_op_v0_7.pre_verification_gas)
             .into_tw()
-            .context("Invalid gas limit")?
+            .context("Invalid pre-verification gas")?;
+
+        let max_fee_per_gas = U256::from_big_endian_slice(&input.max_fee_per_gas)
+            .into_tw()
+            .context("Invalid max fee per gas")?
             .try_into()
             .into_tw()
-            .context("Gas limit exceeds u128")?;
-        let account_gas_limits = concat_u128_be(verification_gas_limit, gas_limit);
+            .context("Max fee per gas exceeds u128")?;
 
-        let max_inclusion_fee_per_gas: u128 =
+        let max_priority_fee_per_gas =
             U256::from_big_endian_slice(&input.max_inclusion_fee_per_gas)
                 .into_tw()
                 .context("Invalid max inclusion fee per gas")?
                 .try_into()
                 .into_tw()
                 .context("Max inclusion fee per gas exceeds u128")?;
-        let max_fee_per_gas: u128 = U256::from_big_endian_slice(&input.max_fee_per_gas)
-            .into_tw()
-            .context("Invalid max fee per gas")?
-            .try_into()
-            .into_tw()
-            .context("Max fee per gas exceeds u128")?;
-        let gas_fees = concat_u128_be(max_inclusion_fee_per_gas, max_fee_per_gas);
 
-        let nonce = U256::from_big_endian_slice(&input.nonce)
-            .into_tw()
-            .context("Invalid nonce")?;
+        let paymaster = Self::parse_address_optional(user_op_v0_7.paymaster.as_ref())
+            .context("Invalid paymaster address")?;
+
+        let paymaster_verification_gas_limit =
+            U256::from_big_endian_slice(&user_op_v0_7.paymaster_verification_gas_limit)
+                .into_tw()
+                .context("Invalid paymaster verification gas limit")?
+                .try_into()
+                .into_tw()
+                .context("Paymaster verification gas limit exceeds u128")?;
+
+        let paymaster_post_op_gas_limit =
+            U256::from_big_endian_slice(&user_op_v0_7.paymaster_post_op_gas_limit)
+                .into_tw()
+                .context("Invalid paymaster post-op gas limit")?
+                .try_into()
+                .into_tw()
+                .context("Paymaster post-op gas limit exceeds u128")?;
 
         let entry_point = Self::parse_address(user_op_v0_7.entry_point.as_ref())
             .context("Invalid entry point")?;
 
-        let sender = Self::parse_address(user_op_v0_7.sender.as_ref())
-            .context("Invalid User Operation sender")?;
-
-        let pre_verification_gas = U256::from_big_endian_slice(&user_op_v0_7.pre_verification_gas)
-            .into_tw()
-            .context("Invalid pre-verification gas")?;
-
-        let paymaster_and_data = if let Some(paymaster) =
-            Self::parse_address_optional(user_op_v0_7.paymaster.as_ref())
-                .context("Invalid paymaster address")?
-        {
-            let paymaster_verification_gas_limit: u128 =
-                U256::from_big_endian_slice(&user_op_v0_7.paymaster_verification_gas_limit)
-                    .into_tw()
-                    .context("Invalid paymaster verification gas limit")?
-                    .try_into()
-                    .into_tw()
-                    .context("Paymaster verification gas limit exceeds u128")?;
-            let paymaster_post_op_gas_limit: u128 =
-                U256::from_big_endian_slice(&user_op_v0_7.paymaster_post_op_gas_limit)
-                    .into_tw()
-                    .context("Invalid paymaster post-op gas limit")?
-                    .try_into()
-                    .into_tw()
-                    .context("Paymaster post-op gas limit exceeds u128")?;
-            let mut paymaster_and_data = paymaster.bytes().into_vec();
-            paymaster_and_data.extend_from_slice(&paymaster_verification_gas_limit.to_be_bytes());
-            paymaster_and_data.extend_from_slice(&paymaster_post_op_gas_limit.to_be_bytes());
-            paymaster_and_data.extend_from_slice(&user_op_v0_7.paymaster_data);
-            paymaster_and_data
-        } else {
-            vec![]
-        };
-
         Ok(UserOperationV0_7 {
-            nonce,
-            entry_point,
             sender,
-            init_code,
-            account_gas_limits: account_gas_limits.to_vec(),
-            gas_fees: gas_fees.to_vec(),
+            nonce,
+            factory,
+            factory_data: user_op_v0_7.factory_data.to_vec(),
+            call_data: erc4337_payload,
+            call_data_gas_limit,
+            verification_gas_limit,
             pre_verification_gas,
-            paymaster_and_data,
-            payload: erc4337_payload,
+            max_fee_per_gas,
+            max_priority_fee_per_gas,
+            paymaster,
+            paymaster_verification_gas_limit,
+            paymaster_post_op_gas_limit,
+            paymaster_data: user_op_v0_7.paymaster_data.to_vec(),
+            entry_point,
         })
     }
 
@@ -470,16 +460,4 @@ impl<Context: EvmContext> TxBuilder<Context> {
         }
         Ok(access)
     }
-}
-
-fn concat_u128_be(a: u128, b: u128) -> [u8; 32] {
-    let a = a.to_be_bytes();
-    let b = b.to_be_bytes();
-    std::array::from_fn(|i| {
-        if let Some(i) = i.checked_sub(a.len()) {
-            b[i]
-        } else {
-            a[i]
-        }
-    })
 }
