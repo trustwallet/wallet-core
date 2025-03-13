@@ -43,7 +43,9 @@ fn test_barz_transfer_account_deployed() {
         transaction: Some(Proto::Transaction {
             transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::transfer(transfer),
         }),
-        user_operation: Some(user_op),
+        user_operation_oneof: Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation(
+            user_op,
+        ),
         ..Proto::SigningInput::default()
     };
 
@@ -96,7 +98,9 @@ fn test_barz_transfer_account_not_deployed() {
         transaction: Some(Proto::Transaction {
             transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::transfer(transfer),
         }),
-        user_operation: Some(user_op),
+        user_operation_oneof: Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation(
+            user_op,
+        ),
         ..Proto::SigningInput::default()
     };
 
@@ -173,7 +177,9 @@ fn test_barz_batched_account_deployed() {
                 Proto::mod_Transaction::Batch { calls },
             ),
         }),
-        user_operation: Some(user_op),
+        user_operation_oneof: Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation(
+            user_op,
+        ),
         ..Proto::SigningInput::default()
     };
 

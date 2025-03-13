@@ -110,9 +110,6 @@ enum TransactionMode {
 
     // EIP4337-compatible UserOperation
     UserOp = 2;
-
-    // EIP7702-compatible UserOperation
-    UserOpV0_7 = 3;
 }
 
 // ERC-4337 structure that describes a transaction to be sent on behalf of a user
@@ -137,7 +134,7 @@ message UserOperation {
 }
 
 // EIP-7702 compatible ERC-4337 structure that describes a transaction to be sent on behalf of a user
-message UserOperationV_07 {
+message UserOperationV0_7 {
     // Entry point contract address
     string entry_point = 1;
 
@@ -215,14 +212,16 @@ message SigningInput {
     Transaction transaction = 10;
 
     // UserOperation for ERC-4337 wallets
-    UserOperation user_operation = 11;
+    oneof user_operation_oneof {
+        UserOperation user_operation = 11;
+
+        // EIP-7702 compatible
+        UserOperationV0_7 user_operation_v0_7 = 13;
+    }
 
     // Optional list of addresses and storage keys that the transaction plans to access.
     // Used in `TransactionMode::Enveloped` only.
     repeated Access access_list = 12;
-
-    // UserOperation for EIP-7702 compatible ERC-4337 wallets
-    UserOperationV_07 user_operation_v0_7 = 13;
 }
 
 // Result containing the signed and encoded transaction.

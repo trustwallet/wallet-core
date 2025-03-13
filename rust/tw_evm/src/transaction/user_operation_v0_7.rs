@@ -28,6 +28,7 @@ pub struct PackedUserOperation {
 }
 
 impl PackedUserOperation {
+    // Taken from https://github.com/alchemyplatform/rundler/blob/0caa06ce10717a2214c554995a8fb9f4bd18fa4b/crates/types/src/user_operation/v0_7.rs#L1017
     fn new(user_op: &UserOperationV0_7) -> Self {
         let init_code = if let Some(factory) = user_op.factory {
             let mut init_code = factory.bytes().into_vec();
@@ -210,7 +211,6 @@ impl SignedTransaction for SignedUserOperationV0_7 {
                 .to_string(),
             paymaster_post_op_gas_limit: self.unsigned.paymaster_post_op_gas_limit.to_string(),
             paymaster_data: hex::encode(&self.unsigned.paymaster_data, prefix),
-            entry_point: self.unsigned.entry_point.to_string(),
             signature: hex::encode(signature.as_slice(), prefix),
         };
         serde_json::to_string(&tx)
@@ -241,8 +241,6 @@ struct SignedUserOperationV0_7Serde {
     paymaster_verification_gas_limit: String,
     paymaster_post_op_gas_limit: String,
     paymaster_data: String,
-
-    entry_point: String,
     signature: String,
 }
 
