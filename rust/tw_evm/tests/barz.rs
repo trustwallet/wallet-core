@@ -5,6 +5,7 @@
 use std::borrow::Cow;
 use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex;
+use tw_encoding::hex::DecodeHex;
 use tw_evm::abi::prebuild::erc20::Erc20;
 use tw_evm::address::Address;
 use tw_evm::evm_context::StandardEvmContext;
@@ -43,7 +44,9 @@ fn test_barz_transfer_account_deployed() {
         transaction: Some(Proto::Transaction {
             transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::transfer(transfer),
         }),
-        user_operation: Some(user_op),
+        user_operation_oneof: Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation(
+            user_op,
+        ),
         ..Proto::SigningInput::default()
     };
 
@@ -96,7 +99,9 @@ fn test_barz_transfer_account_not_deployed() {
         transaction: Some(Proto::Transaction {
             transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::transfer(transfer),
         }),
-        user_operation: Some(user_op),
+        user_operation_oneof: Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation(
+            user_op,
+        ),
         ..Proto::SigningInput::default()
     };
 
@@ -173,7 +178,9 @@ fn test_barz_batched_account_deployed() {
                 Proto::mod_Transaction::Batch { calls },
             ),
         }),
-        user_operation: Some(user_op),
+        user_operation_oneof: Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation(
+            user_op,
+        ),
         ..Proto::SigningInput::default()
     };
 
@@ -188,5 +195,54 @@ fn test_barz_batched_account_deployed() {
     assert_eq!(
         hex::encode(output.pre_hash, false),
         "84d0464f5a2b191e06295443970ecdcd2d18f565d0d52b5a79443192153770ab"
+    );
+}
+
+#[test]
+fn test_barz_transfer_account_deployed_v0_7() {
+    let private_key =
+        hex::decode("0x3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483").unwrap();
+
+    let transfer = Proto::mod_Transaction::Transfer {
+        amount: U256::encode_be_compact(0x23_86f2_6fc1_0000),
+        data: Cow::default(),
+    };
+    let user_op = Proto::UserOperationV0_7 {
+        entry_point: "0x0000000071727De22E5E9d8BAf0edAc6f37da032".into(),
+        sender: "0x174a240e5147D02dE4d7724D5D3E1c1bF11cE029".into(),
+        pre_verification_gas: U256::from(1000000u64).to_big_endian_compact().into(),
+        verification_gas_limit: U256::from(100000u128).to_big_endian_compact().into(),
+        factory: "0xf471789937856d80e589f5996cf8b0511ddd9de4".into(),
+        factory_data: "f471789937856d80e589f5996cf8b0511ddd9de4".decode_hex().unwrap().into(),
+        paymaster: "0xf62849f9a0b5bf2913b396098f7c7019b51a820a".into(),
+        paymaster_verification_gas_limit: U256::from(99999u128).to_big_endian_compact().into(),
+        paymaster_post_op_gas_limit: U256::from(88888u128).to_big_endian_compact().into(),
+        paymaster_data: "00000000000b0000000000002e234dae75c793f67a35089c9d99245e1c58470b00000000000000000000000000000000000000000000000000000000000186a0072f35038bcacc31bcdeda87c1d9857703a26fb70a053f6e87da5a4e7a1e1f3c4b09fbe2dbff98e7a87ebb45a635234f4b79eff3225d07560039c7764291c97e1b".decode_hex().unwrap().into(),
+    };
+
+    let input = Proto::SigningInput {
+        chain_id: U256::encode_be_compact(31337u64),
+        nonce: U256::encode_be_compact(0u64),
+        tx_mode: Proto::TransactionMode::UserOp,
+        gas_limit: U256::from(100000u128).to_big_endian_compact().into(),
+        max_fee_per_gas: U256::from(100000u128).to_big_endian_compact().into(),
+        max_inclusion_fee_per_gas: U256::from(100000u128).to_big_endian_compact().into(),
+        to_address: "0x61061fCAE11fD5461535e134EfF67A98CFFF44E9".into(),
+        private_key: private_key.into(),
+        transaction: Some(Proto::Transaction {
+            transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::transfer(transfer),
+        }),
+        user_operation_oneof:
+            Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation_v0_7(user_op),
+        ..Proto::SigningInput::default()
+    };
+
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
+    assert_eq!(output.error, SigningErrorType::OK);
+    assert!(output.error_message.is_empty());
+
+    assert_eq!(
+        hex::encode(output.pre_hash, false),
+        "f177858c1c500e51f38ffe937bed7e4d3a8678725900be4682d3ce04d97071eb"
     );
 }
