@@ -13,6 +13,7 @@ use crate::transaction::access_list::{Access, AccessList};
 use crate::transaction::transaction_eip1559::TransactionEip1559;
 use crate::transaction::transaction_non_typed::TransactionNonTyped;
 use crate::transaction::user_operation::UserOperation;
+use crate::transaction::user_operation_v0_7::UserOperationV0_7;
 use crate::transaction::UnsignedTransactionBox;
 use std::marker::PhantomData;
 use std::str::FromStr;
@@ -31,6 +32,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
     pub fn tx_from_proto(
         input: &Proto::SigningInput<'_>,
     ) -> SigningResult<Box<dyn UnsignedTransactionBox>> {
+        use Proto::mod_SigningInput::OneOfuser_operation_oneof as UserOp;
         use Proto::mod_Transaction::OneOftransaction_oneof as Tx;
         use Proto::TransactionMode as TxMode;
 
@@ -148,8 +150,18 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 let payload = Erc4337SimpleAccount::encode_execute_batch(calls)
                     .map_err(abi_to_signing_error)?;
 
-                return Self::user_operation_from_proto(input, payload)
-                    .map(UserOperation::into_boxed);
+                return match &input.user_operation_oneof {
+                    UserOp::user_operation_v0_7(user_op_v0_7) => {
+                        Self::user_operation_v0_7_from_proto(input, user_op_v0_7, payload)
+                            .map(UserOperationV0_7::into_boxed)
+                    },
+                    UserOp::user_operation(user_op) => {
+                        Self::user_operation_from_proto(input, user_op, payload)
+                            .map(UserOperation::into_boxed)
+                    },
+                    UserOp::None => SigningError::err(SigningErrorType::Error_invalid_params)
+                        .context("No user operation specified"),
+                };
             },
             Tx::None => {
                 return SigningError::err(SigningErrorType::Error_invalid_params)
@@ -176,7 +188,18 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 })
                 .map_err(abi_to_signing_error)?;
 
-                Self::user_operation_from_proto(input, payload)?.into_boxed()
+                match &input.user_operation_oneof {
+                    UserOp::user_operation_v0_7(user_op_v0_7) => {
+                        Self::user_operation_v0_7_from_proto(input, user_op_v0_7, payload)
+                            .map(UserOperationV0_7::into_boxed)
+                    },
+                    UserOp::user_operation(user_op) => {
+                        Self::user_operation_from_proto(input, user_op, payload)
+                            .map(UserOperation::into_boxed)
+                    },
+                    UserOp::None => SigningError::err(SigningErrorType::Error_invalid_params)
+                        .context("No user operation specified"),
+                }?
             },
         };
         Ok(tx)
@@ -268,13 +291,9 @@ impl<Context: EvmContext> TxBuilder<Context> {
 
     fn user_operation_from_proto(
         input: &Proto::SigningInput,
+        user_op: &Proto::UserOperation,
         erc4337_payload: Data,
     ) -> SigningResult<UserOperation> {
-        let Some(ref user_op) = input.user_operation else {
-            return SigningError::err(CommonError::Error_invalid_params)
-                .context("No user operation specified");
-        };
-
         let nonce = U256::from_big_endian_slice(&input.nonce)
             .into_tw()
             .context("Invalid nonce")?;
@@ -318,6 +337,96 @@ impl<Context: EvmContext> TxBuilder<Context> {
             pre_verification_gas,
             paymaster_and_data: user_op.paymaster_and_data.to_vec(),
             payload: erc4337_payload,
+        })
+    }
+
+    fn user_operation_v0_7_from_proto(
+        input: &Proto::SigningInput,
+        user_op_v0_7: &Proto::UserOperationV0_7,
+        erc4337_payload: Data,
+    ) -> SigningResult<UserOperationV0_7> {
+        let sender = Self::parse_address(user_op_v0_7.sender.as_ref())
+            .context("Invalid User Operation sender")?;
+
+        let nonce = U256::from_big_endian_slice(&input.nonce)
+            .into_tw()
+            .context("Invalid nonce")?;
+
+        let factory = Self::parse_address_optional(user_op_v0_7.factory.as_ref())
+            .context("Invalid factory address")?;
+
+        let call_data_gas_limit = U256::from_big_endian_slice(&input.gas_limit)
+            .into_tw()
+            .context("Invalid gas limit")?
+            .try_into()
+            .into_tw()
+            .context("Gas limit exceeds u128")?;
+
+        let verification_gas_limit =
+            U256::from_big_endian_slice(&user_op_v0_7.verification_gas_limit)
+                .into_tw()
+                .context("Invalid verification gas limit")?
+                .try_into()
+                .into_tw()
+                .context("Verification gas limit exceeds u128")?;
+
+        let pre_verification_gas = U256::from_big_endian_slice(&user_op_v0_7.pre_verification_gas)
+            .into_tw()
+            .context("Invalid pre-verification gas")?;
+
+        let max_fee_per_gas = U256::from_big_endian_slice(&input.max_fee_per_gas)
+            .into_tw()
+            .context("Invalid max fee per gas")?
+            .try_into()
+            .into_tw()
+            .context("Max fee per gas exceeds u128")?;
+
+        let max_priority_fee_per_gas =
+            U256::from_big_endian_slice(&input.max_inclusion_fee_per_gas)
+                .into_tw()
+                .context("Invalid max inclusion fee per gas")?
+                .try_into()
+                .into_tw()
+                .context("Max inclusion fee per gas exceeds u128")?;
+
+        let paymaster = Self::parse_address_optional(user_op_v0_7.paymaster.as_ref())
+            .context("Invalid paymaster address")?;
+
+        let paymaster_verification_gas_limit =
+            U256::from_big_endian_slice(&user_op_v0_7.paymaster_verification_gas_limit)
+                .into_tw()
+                .context("Invalid paymaster verification gas limit")?
+                .try_into()
+                .into_tw()
+                .context("Paymaster verification gas limit exceeds u128")?;
+
+        let paymaster_post_op_gas_limit =
+            U256::from_big_endian_slice(&user_op_v0_7.paymaster_post_op_gas_limit)
+                .into_tw()
+                .context("Invalid paymaster post-op gas limit")?
+                .try_into()
+                .into_tw()
+                .context("Paymaster post-op gas limit exceeds u128")?;
+
+        let entry_point = Self::parse_address(user_op_v0_7.entry_point.as_ref())
+            .context("Invalid entry point")?;
+
+        Ok(UserOperationV0_7 {
+            sender,
+            nonce,
+            factory,
+            factory_data: user_op_v0_7.factory_data.to_vec(),
+            call_data: erc4337_payload,
+            call_data_gas_limit,
+            verification_gas_limit,
+            pre_verification_gas,
+            max_fee_per_gas,
+            max_priority_fee_per_gas,
+            paymaster,
+            paymaster_verification_gas_limit,
+            paymaster_post_op_gas_limit,
+            paymaster_data: user_op_v0_7.paymaster_data.to_vec(),
+            entry_point,
         })
     }
 

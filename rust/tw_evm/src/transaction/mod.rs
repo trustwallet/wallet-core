@@ -21,6 +21,7 @@ pub mod signature;
 pub mod transaction_eip1559;
 pub mod transaction_non_typed;
 pub mod user_operation;
+pub mod user_operation_v0_7;
 
 pub trait TransactionCommon {
     fn payload(&self) -> Data;
