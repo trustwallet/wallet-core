@@ -438,4 +438,14 @@ TEST(Barz, GetEncodedHash) {
         ASSERT_EQ(hexEncoded(encodedHash), "0x59ebb8c4e48c115eeaf2ea7d3a0802754462761c5019df8d2a38effb226191d5");
     }
 }
+
+TEST(Barz, GetSignedHash) {
+    {
+        const auto hash = "0x59ebb8c4e48c115eeaf2ea7d3a0802754462761c5019df8d2a38effb226191d5";
+        const auto privateKey = "0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8";
+        const auto signedHash = Barz::getSignedHash(hash, privateKey);
+        ASSERT_EQ(hexEncoded(signedHash), "0x34a7792a140f52358925a57bca8ea936d70133b285396040ac0507597ed5c70a3148964ba1e0b32b8f59fbd9c098a4ec2b9ae5e5739ce4aeccae0f73279d50da1b");
+    }
+}
+
 }

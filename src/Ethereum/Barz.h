@@ -18,4 +18,5 @@ Data getPrefixedMsgHash(const Data msgHash, const std::string& barzAddress, cons
 Data getDiamondCutCode(const Proto::DiamondCutInput& input); // action should be one of 0, 1, 2. 0 = Add, 1 = Remove, 2 = Replace
 Data getAuthorizationHash(const Data& chainId, const std::string& contractAddress, const Data& nonce);
 Data getEncodedHash(const Data& chainId, const std::string& wallet, const std::string& version, const std::string& typeHash, const std::string& domainSeparatorHash, const std::string& hash);
+Data getSignedHash(const std::string& hash, const std::string& privateKey);
 }

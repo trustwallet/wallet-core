@@ -14,6 +14,7 @@
 #include "Base64.h"
 #include "../proto/EthereumRlp.pb.h"
 #include "RLP.h"
+#include "PrivateKey.h"
 
 namespace TW::Barz {
 
@@ -269,4 +270,29 @@ Data getEncodedHash(const Data& chainId, const std::string& wallet, const std::s
     append(encoded, messageHash);
     return Hash::keccak256(encoded);
 }
+
+Data getSignedHash(const std::string& hash, const std::string& privateKey) {
+    auto privateKeyData = parse_hex(privateKey);
+    auto* priv = Rust::tw_private_key_create_with_data(privateKeyData.data(), privateKeyData.size());
+    if (priv == nullptr) {
+        return {};
+    }
+    auto hashData = parse_hex(hash);
+    Rust::CByteArrayWrapper res = Rust::tw_private_key_sign(priv, hashData.data(), hashData.size(), static_cast<uint32_t>(TWCurveSECP256k1));
+    Rust::tw_private_key_delete(priv);
+    auto signature = res.data;
+
+    // Extract r, s, v values from the signature
+    Data result;
+    // r value (first 32 bytes)
+    append(result, subData(signature, 0, 32));
+    // s value (next 32 bytes)
+    append(result, subData(signature, 32, 32));
+    // v value (last byte, should be 0 or 1, add 27 to make it 27 or 28)
+    uint8_t v = signature[64] + 27;
+    append(result, v);
+    
+    return result;
+}
+
 } // namespace TW::Barz

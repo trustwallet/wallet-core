@@ -78,4 +78,12 @@ TWData *_Nonnull TWBarzGetAuthorizationHash(TWData* _Nonnull chainId, TWString* 
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWBarzGetEncodedHash(TWData* _Nonnull chainId, TWString* _Nonnull wallet, TWString* _Nonnull version, TWString* _Nonnull typeHash, TWString* _Nonnull domainSeparatorHash, TWString* _Nonnull hash);
 
+/// Signs a message using the private key
+///
+/// \param hash The hash to sign
+/// \param privateKey The private key
+/// \return The signature
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWBarzGetSignedHash(TWString* _Nonnull hash, TWString* _Nonnull privateKey);
+
 TW_EXTERN_C_END

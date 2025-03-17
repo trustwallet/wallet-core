@@ -77,3 +77,10 @@ TWData *_Nonnull TWBarzGetEncodedHash(TWData* _Nonnull chainId, TWString* _Nonnu
     const auto encodedHash = TW::Barz::getEncodedHash(chainIdData, walletStr, versionStr, typeHashStr, domainSeparatorHashStr, hashStr);
     return TWDataCreateWithData(&encodedHash);
 }
+
+TWData *_Nonnull TWBarzGetSignedHash(TWString* _Nonnull hash, TWString* _Nonnull privateKey) {
+    const auto& hashStr = *reinterpret_cast<const std::string*>(hash);
+    const auto& privateKeyStr = *reinterpret_cast<const std::string*>(privateKey);
+    const auto signedHash = TW::Barz::getSignedHash(hashStr, privateKeyStr);
+    return TWDataCreateWithData(&signedHash);
+}
