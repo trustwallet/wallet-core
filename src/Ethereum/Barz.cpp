@@ -239,4 +239,37 @@ Data getAuthorizationHash(const Data& chainId, const std::string& contractAddres
     return Hash::keccak256(encoded);
 }
 
+Data getEncodedHash(const Data& chainId, const std::string& wallet, const std::string& version, const std::string& typeHash, const std::string& domainSeparatorHash, const std::string& hash) {
+    // Create domain separator: keccak256(abi.encode(BIZ_DOMAIN_SEPARATOR_HASH, block.chainid, wallet, "v0.1.0"))
+    Data domainSeparator;
+    Ethereum::ABI::ValueEncoder::encodeBytes(parse_hex(domainSeparatorHash), domainSeparator);
+    Ethereum::ABI::ValueEncoder::encodeBytes(chainId, domainSeparator);
+    Ethereum::ABI::ValueEncoder::encodeAddress(parse_hex(wallet), domainSeparator);
+    Ethereum::ABI::ValueEncoder::encodeUInt256(uint256_t(128), domainSeparator);
+    Ethereum::ABI::ValueEncoder::encodeUInt256(uint256_t(version.size()), domainSeparator);
+    Data versionData = data(version);
+    size_t paddingSize = 32 - (versionData.size() % 32);
+    if (paddingSize < 32) {
+        versionData.resize(versionData.size() + paddingSize, 0);
+    }
+    append(domainSeparator, versionData);
+    domainSeparator = Hash::keccak256(domainSeparator);
+    
+    // Create message hash: keccak256(abi.encode(typeHash, keccak256(abi.encode(hash))))
+    Data encodedHash;
+    Ethereum::ABI::ValueEncoder::encodeBytes(parse_hex(hash), encodedHash);
+    Data innerHash = Hash::keccak256(encodedHash);
+
+    Data messageData;
+    Ethereum::ABI::ValueEncoder::encodeBytes(parse_hex(typeHash), messageData);
+    Ethereum::ABI::ValueEncoder::encodeBytes(innerHash, messageData);
+    Data messageHash = Hash::keccak256(messageData);
+    
+    // Final hash: keccak256(abi.encodePacked("\x19\x01", domainSeparator, messageHash))
+    Data encoded;
+    append(encoded, parse_hex("0x1901"));
+    append(encoded, domainSeparator);
+    append(encoded, messageHash);
+    return Hash::keccak256(encoded);
+}
 } // namespace TW::Barz

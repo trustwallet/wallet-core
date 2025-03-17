@@ -424,4 +424,18 @@ TEST(Barz, GetAuthorizationHash) {
     }
 }
 
+TEST(Barz, GetEncodedHash) {
+    {
+        const auto chainId = store(uint256_t(31337), 32);
+        std::cout << "chainId: " << hexEncoded(chainId) << std::endl;
+        const auto wallet = "0x174a240e5147D02dE4d7724D5D3E1c1bF11cE029";
+        const auto version = "v0.1.0";
+        const auto typeHash = "0x4f51e7a567f083a31264743067875fc6a7ae45c32c5bd71f6a998c4625b13867";
+        const auto domainSeparatorHash = "0x293ce8821a350a49f08b53d14e10112c36c7fbf3b8eb7078497893f3ea477f6b";
+        const auto hash = "0xf177858c1c500e51f38ffe937bed7e4d3a8678725900be4682d3ce04d97071eb";
+
+        const auto& encodedHash = Barz::getEncodedHash(chainId, wallet, version, typeHash, domainSeparatorHash, hash);
+        ASSERT_EQ(hexEncoded(encodedHash), "0x59ebb8c4e48c115eeaf2ea7d3a0802754462761c5019df8d2a38effb226191d5");
+    }
+}
 }

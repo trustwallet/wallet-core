@@ -66,4 +66,16 @@ TWData *_Nonnull TWBarzGetDiamondCutCode(TWData *_Nonnull input);
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWBarzGetAuthorizationHash(TWData* _Nonnull chainId, TWString* _Nonnull contractAddress, TWData* _Nonnull nonce);
 
+/// Returns the encoded hash of the user operation
+///
+/// \param chainId The chainId of the network
+/// \param wallet The address of the wallet
+/// \param version The version of the wallet
+/// \param typeHash The type hash of the transaction
+/// \param domainSeparatorHash The domain separator hash of the wallet
+/// \param hash The hash of the user operation
+/// \return The encoded hash of the user operation
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWBarzGetEncodedHash(TWData* _Nonnull chainId, TWString* _Nonnull wallet, TWString* _Nonnull version, TWString* _Nonnull typeHash, TWString* _Nonnull domainSeparatorHash, TWString* _Nonnull hash);
+
 TW_EXTERN_C_END
