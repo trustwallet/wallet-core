@@ -66,6 +66,16 @@ TWData *_Nonnull TWBarzGetDiamondCutCode(TWData *_Nonnull input);
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWBarzGetAuthorizationHash(TWData* _Nonnull chainId, TWString* _Nonnull contractAddress, TWData* _Nonnull nonce);
 
+/// Returns the signed authorization hash
+///
+/// \param chainId The chainId of the network
+/// \param contractAddress The address of the contract to be authorized
+/// \param nonce The nonce of the transaction
+/// \param privateKey The private key
+/// \return A json string of the signed authorization
+TW_EXPORT_STATIC_METHOD
+TWString *_Nonnull TWBarzSignAuthorization(TWData* _Nonnull chainId, TWString* _Nonnull contractAddress, TWData* _Nonnull nonce, TWString* _Nonnull privateKey);
+
 /// Returns the encoded hash of the user operation
 ///
 /// \param chainId The chainId of the network

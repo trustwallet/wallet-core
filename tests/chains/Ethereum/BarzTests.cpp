@@ -424,6 +424,25 @@ TEST(Barz, GetAuthorizationHash) {
     }
 }
 
+TEST(Barz, SignAuthorization) {
+    {
+        const auto chainId = store(uint256_t(1));
+        const auto contractAddress = "0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1";
+        const auto nonce = store(uint256_t(1));
+        const auto privateKey = "0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8";
+
+        const auto signedAuthorization = Barz::signAuthorization(chainId, contractAddress, nonce, privateKey);
+        auto json = nlohmann::json::parse(signedAuthorization);
+        // Verified with viem
+        ASSERT_EQ(json["chainId"], hexEncoded(chainId));
+        ASSERT_EQ(json["address"], contractAddress);
+        ASSERT_EQ(json["nonce"], hexEncoded(nonce));
+        ASSERT_EQ(json["yParity"], hexEncoded(store(uint256_t(1))));
+        ASSERT_EQ(json["r"], "0x2c39f2f64441dd38c364ee175dc6b9a87f34ca330bce968f6c8e22811e3bb710");
+        ASSERT_EQ(json["s"], "0x5f1bcde93dee4b214e60bc0e63babcc13e4fecb8a23c4098fd89844762aa012c");
+    }
+}
+
 TEST(Barz, GetEncodedHash) {
     {
         const auto chainId = store(uint256_t(31337), 32);

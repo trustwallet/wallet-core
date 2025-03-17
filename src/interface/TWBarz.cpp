@@ -67,6 +67,15 @@ TWData *_Nonnull TWBarzGetAuthorizationHash(TWData* _Nonnull chainId, TWString* 
     return TWDataCreateWithData(&authorizationHash);
 }
 
+TWString *_Nonnull TWBarzSignAuthorization(TWData* _Nonnull chainId, TWString* _Nonnull contractAddress, TWData* _Nonnull nonce, TWString* _Nonnull privateKey) {
+    const auto& chainIdData = *reinterpret_cast<const TW::Data*>(chainId);
+    const auto& contractAddressStr = *reinterpret_cast<const std::string*>(contractAddress);
+    const auto& nonceData = *reinterpret_cast<const TW::Data*>(nonce);
+    const auto& privateKeyStr = *reinterpret_cast<const std::string*>(privateKey);
+    const auto signedAuthorization = TW::Barz::signAuthorization(chainIdData, contractAddressStr, nonceData, privateKeyStr);
+    return TWStringCreateWithUTF8Bytes(signedAuthorization.c_str());
+}
+
 TWData *_Nonnull TWBarzGetEncodedHash(TWData* _Nonnull chainId, TWString* _Nonnull wallet, TWString* _Nonnull version, TWString* _Nonnull typeHash, TWString* _Nonnull domainSeparatorHash, TWString* _Nonnull hash) {
     const auto& chainIdData = *reinterpret_cast<const TW::Data*>(chainId);
     const auto& walletStr = *reinterpret_cast<const std::string*>(wallet);

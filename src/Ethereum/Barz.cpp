@@ -15,6 +15,7 @@
 #include "../proto/EthereumRlp.pb.h"
 #include "RLP.h"
 #include "PrivateKey.h"
+#include <nlohmann/json.hpp>
 
 namespace TW::Barz {
 
@@ -240,6 +241,50 @@ Data getAuthorizationHash(const Data& chainId, const std::string& contractAddres
     return Hash::keccak256(encoded);
 }
 
+std::vector<Data> getRSVY(const Data& hash, const std::string& privateKey) {
+    auto privateKeyData = parse_hex(privateKey);
+    auto* priv = Rust::tw_private_key_create_with_data(privateKeyData.data(), privateKeyData.size());
+    if (priv == nullptr) {
+        return {};
+    }
+    Rust::CByteArrayWrapper res = Rust::tw_private_key_sign(priv, hash.data(), hash.size(), static_cast<uint32_t>(TWCurveSECP256k1));
+    Rust::tw_private_key_delete(priv);
+    auto signature = res.data;
+
+    // Extract r, s, v values from the signature
+    Data r;
+    Data s;
+    Data v;
+    Data yParity;
+    // r value (first 32 bytes)
+    append(r, subData(signature, 0, 32));
+    // s value (next 32 bytes)
+    append(s, subData(signature, 32, 32));
+    // v value (last byte, should be 0 or 1, add 27 to make it 27 or 28)
+    uint8_t vValue = signature[64] + 27;
+    append(v, vValue);
+    // yParity value (last byte)
+    uint8_t yParityValue = signature[64];
+    append(yParity, yParityValue);
+
+    return {r, s, v, yParity};
+}
+
+std::string signAuthorization(const Data& chainId, const std::string& contractAddress, const Data& nonce, const std::string& privateKey) {
+    auto authorizationHash = getAuthorizationHash(chainId, contractAddress, nonce);
+    auto rsvy = getRSVY(authorizationHash, privateKey);
+    
+    nlohmann::json jsonObj;
+    jsonObj["chainId"] = hexEncoded(chainId);
+    jsonObj["address"] = contractAddress;
+    jsonObj["nonce"] = hexEncoded(nonce);
+    jsonObj["yParity"] = hexEncoded(rsvy[3]);
+    jsonObj["r"] = hexEncoded(rsvy[0]);
+    jsonObj["s"] = hexEncoded(rsvy[1]);
+    
+    return jsonObj.dump();
+}
+
 Data getEncodedHash(const Data& chainId, const std::string& wallet, const std::string& version, const std::string& typeHash, const std::string& domainSeparatorHash, const std::string& hash) {
     // Create domain separator: keccak256(abi.encode(BIZ_DOMAIN_SEPARATOR_HASH, block.chainid, wallet, "v0.1.0"))
     auto domainSeparator = Ethereum::ABI::Function::encodeParams(Ethereum::ABI::BaseParams {
@@ -272,26 +317,13 @@ Data getEncodedHash(const Data& chainId, const std::string& wallet, const std::s
 }
 
 Data getSignedHash(const std::string& hash, const std::string& privateKey) {
-    auto privateKeyData = parse_hex(privateKey);
-    auto* priv = Rust::tw_private_key_create_with_data(privateKeyData.data(), privateKeyData.size());
-    if (priv == nullptr) {
-        return {};
-    }
-    auto hashData = parse_hex(hash);
-    Rust::CByteArrayWrapper res = Rust::tw_private_key_sign(priv, hashData.data(), hashData.size(), static_cast<uint32_t>(TWCurveSECP256k1));
-    Rust::tw_private_key_delete(priv);
-    auto signature = res.data;
-
-    // Extract r, s, v values from the signature
-    Data result;
-    // r value (first 32 bytes)
-    append(result, subData(signature, 0, 32));
-    // s value (next 32 bytes)
-    append(result, subData(signature, 32, 32));
-    // v value (last byte, should be 0 or 1, add 27 to make it 27 or 28)
-    uint8_t v = signature[64] + 27;
-    append(result, v);
+    auto rsvy = getRSVY(parse_hex(hash), privateKey);
     
+    Data result;
+    append(result, rsvy[0]);
+    append(result, rsvy[1]);
+    append(result, rsvy[2]);
+
     return result;
 }
 
