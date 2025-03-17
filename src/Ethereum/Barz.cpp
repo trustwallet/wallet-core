@@ -239,26 +239,18 @@ Data getAuthorizationHash(const Data& chainId, const std::string& contractAddres
     return Hash::keccak256(encoded);
 }
 
-Data encodeVersion(const std::string& version, Data& output) {
-    Ethereum::ABI::ValueEncoder::encodeUInt256(uint256_t(128), output);
-    Ethereum::ABI::ValueEncoder::encodeUInt256(uint256_t(version.size()), output);
-    Data strData = data(version);
-    size_t paddingSize = 32 - (strData.size() % 32);
-    if (paddingSize < 32) {
-        strData.resize(strData.size() + paddingSize, 0);
-    }
-    return strData;
-}
-
 Data getEncodedHash(const Data& chainId, const std::string& wallet, const std::string& version, const std::string& typeHash, const std::string& domainSeparatorHash, const std::string& hash) {
     // Create domain separator: keccak256(abi.encode(BIZ_DOMAIN_SEPARATOR_HASH, block.chainid, wallet, "v0.1.0"))
-    Data domainSeparator;
-    Ethereum::ABI::ValueEncoder::encodeBytes(parse_hex(domainSeparatorHash), domainSeparator);
-    Ethereum::ABI::ValueEncoder::encodeBytes(chainId, domainSeparator);
-    Ethereum::ABI::ValueEncoder::encodeAddress(parse_hex(wallet), domainSeparator);
-    Data versionData = encodeVersion(version, domainSeparator);
-    append(domainSeparator, versionData);
-    domainSeparator = Hash::keccak256(domainSeparator);
+    auto domainSeparator = Ethereum::ABI::Function::encodeParams(Ethereum::ABI::BaseParams {
+        std::make_shared<Ethereum::ABI::ProtoBytes32>(parse_hex(domainSeparatorHash)),
+        std::make_shared<Ethereum::ABI::ProtoUInt256>(chainId),
+        std::make_shared<Ethereum::ABI::ProtoAddress>(wallet),
+        std::make_shared<Ethereum::ABI::ProtoString>(version)
+    });
+    if (!domainSeparator.has_value()) {
+        return {};
+    }
+    Data domainSeparatorEncodedHash = Hash::keccak256(domainSeparator.value());
     
     // Create message hash: keccak256(abi.encode(typeHash, keccak256(abi.encode(hash))))
     Data encodedHash;
@@ -273,7 +265,7 @@ Data getEncodedHash(const Data& chainId, const std::string& wallet, const std::s
     // Final hash: keccak256(abi.encodePacked("\x19\x01", domainSeparator, messageHash))
     Data encoded;
     append(encoded, parse_hex("0x1901"));
-    append(encoded, domainSeparator);
+    append(encoded, domainSeparatorEncodedHash);
     append(encoded, messageHash);
     return Hash::keccak256(encoded);
 }
