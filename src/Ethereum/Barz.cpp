@@ -243,14 +243,11 @@ Data getAuthorizationHash(const Data& chainId, const std::string& contractAddres
 
 std::vector<Data> getRSVY(const Data& hash, const std::string& privateKey) {
     auto privateKeyData = parse_hex(privateKey);
-    auto* priv = Rust::tw_private_key_create_with_data(privateKeyData.data(), privateKeyData.size());
-    if (priv == nullptr) {
+    auto privateKeyObj = PrivateKey(privateKeyData);
+    auto signature = privateKeyObj.sign(hash, TWCurveSECP256k1);
+    if (signature.empty()) {
         return {};
     }
-    Rust::CByteArrayWrapper res = Rust::tw_private_key_sign(priv, hash.data(), hash.size(), static_cast<uint32_t>(TWCurveSECP256k1));
-    Rust::tw_private_key_delete(priv);
-    auto signature = res.data;
-
     // Extract r, s, v values from the signature
     Data r;
     Data s;
