@@ -3079,8 +3079,8 @@
   },
   {
     "id": "smartchain",
-    "name": "Smart Chain",
-    "displayName": "BNB Smart Chain",
+    "name": "BNB Chain",
+    "displayName": "BNB Chain",
     "coinId": 20000714,
     "slip44": 714,
     "symbol": "BNB",

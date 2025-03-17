@@ -148,7 +148,7 @@ This list is generated from [./registry.json](../registry.json)
 | 18000118 | Noble            | USDC   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/noble/info/logo.png" width="32" />        | <https://nobleassets.xyz/>    |
 | 19000118 | Sei              | SEI    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/sei/info/logo.png" width="32" />          | <https://sei.io/>             |
 | 20000118 | Stargaze         | STARS  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/stargaze/info/logo.png" width="32" />     | <https://www.stargaze.zone/>  |
-| 20000714 | BNB Smart Chain  | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png" width="32" />   | <https://www.binance.org/en/smartChain> |
+| 20000714 | BNB Chain        | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png" width="32" />   | <https://www.binance.org/en/smartChain> |
 | 20007000 | Zeta EVM         | ZETA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zetaevm/info/logo.png" width="32" />      | <https://www.zetachain.com/>  |
 | 20009001 | Native Evmos     | EVMOS  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nativeevmos/info/logo.png" width="32" />  | <https://evmos.org/>          |
 | 21000118 | Celestia         | TIA    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tia/info/logo.png" width="32" />          | <https://celestia.org/>       |
