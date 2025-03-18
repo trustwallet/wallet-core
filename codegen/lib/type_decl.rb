@@ -14,7 +14,7 @@ class TypeDecl
     @is_nullable = options.fetch(:is_nullable, false)
     @is_inout = options.fetch(:is_inout, false)
     @size = options.fetch(:size, nil)
-    @is_generated = File.exist?("include/TrustWalletCore/Generated/TW#{name}.h")
+    @is_generated = !File.exist?("include/TrustWalletCore/TW#{name}.h")
   end
 
   def self.fromPrimitive(string)
