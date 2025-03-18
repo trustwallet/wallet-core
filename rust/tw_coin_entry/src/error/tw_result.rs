@@ -26,11 +26,9 @@ pub trait IntoTWError<T, E> {
     fn into_tw(self) -> TWResult<T, E>;
 }
 
-pub trait MapTWError<T, E, PrevE> {
+pub trait MapTWError<T, E> {
     /// Maps `PrevE` into [`TWError<E>`] with an `F` mapper.
-    fn tw_err<F>(self, f: F) -> TWResult<T, E>
-    where
-        F: FnOnce(PrevE) -> E;
+    fn tw_err(self, error: E) -> TWResult<T, E>;
 }
 
 pub trait OrTWError<T, E> {
@@ -65,12 +63,12 @@ where
     }
 }
 
-impl<T, E, PrevE> MapTWError<T, E, PrevE> for Result<T, PrevE> {
-    fn tw_err<F>(self, f: F) -> TWResult<T, E>
-    where
-        F: FnOnce(PrevE) -> E,
-    {
-        self.map_err(|e| TWError::new(f(e)))
+impl<T, E, PrevE> MapTWError<T, E> for Result<T, PrevE>
+where
+    PrevE: fmt::Debug,
+{
+    fn tw_err(self, error: E) -> TWResult<T, E> {
+        self.map_err(|prev_e| TWError::new(error).context(format!("{prev_e:?}")))
     }
 }
 

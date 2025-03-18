@@ -31,6 +31,13 @@ pub struct SighashType {
 }
 
 impl SighashType {
+    pub fn from_base(base: SighashBase) -> Self {
+        SighashType {
+            raw_sighash: base as u32,
+            base,
+        }
+    }
+
     /// Creates Sighash from any u32.
     pub fn from_u32(u: u32) -> SigningResult<Self> {
         let base = match u & BASE_FLAG {
@@ -57,7 +64,7 @@ impl SighashType {
     pub fn serialize(&self) -> SigningResult<u8> {
         self.raw_sighash
             .try_into()
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("sighashType must fit uint8")
     }
 
@@ -70,7 +77,7 @@ impl SighashType {
         } else {
             self.raw_sighash
                 .try_into()
-                .tw_err(|_| SigningErrorType::Error_invalid_params)
+                .tw_err(SigningErrorType::Error_invalid_params)
                 .context("Taproot sighashType must fit uint8")
         }
     }

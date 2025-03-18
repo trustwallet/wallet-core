@@ -19,7 +19,7 @@ pub mod terra_wasm_message;
 pub mod thorchain_message;
 pub mod wasm_message;
 
-pub type ProtobufMessage = google::protobuf::Any;
+pub type ProtobufMessage = google::protobuf::Any<'static>;
 pub type CosmosMessageBox = Box<dyn CosmosMessage>;
 pub type JsonMessage = AnyMsg<Json>;
 
@@ -48,7 +48,7 @@ pub trait CosmosMessage {
 /// This suits any message type that implements the `serialize` trait.
 pub fn message_to_json<T: Serialize>(msg_type: &str, msg: &T) -> SigningResult<JsonMessage> {
     let value = serde_json::to_value(msg)
-        .tw_err(|_| SigningErrorType::Error_internal)
+        .tw_err(SigningErrorType::Error_internal)
         .context("Error serializing Cosmos message to JSON")?;
     Ok(JsonMessage {
         msg_type: msg_type.to_string(),

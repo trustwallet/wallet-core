@@ -65,8 +65,8 @@ pub struct GreenfieldTransferOut {
 impl CosmosMessage for GreenfieldTransferOut {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let msg = GreenfieldProto::bridge::MsgTransferOut {
-            from: self.from.to_string(),
-            to: self.to.to_string(),
+            from: self.from.to_string().into(),
+            to: self.to.to_string().into(),
             amount: Some(build_coin(&self.amount)),
         };
         Ok(to_any(&msg))

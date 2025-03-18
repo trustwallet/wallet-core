@@ -55,7 +55,7 @@ impl BinanceSigner {
         let encoded_tx = BinanceAminoSerializer::serialize_signed_tx(&signed_tx)?;
 
         let signature_json =
-            serde_json::to_string(&signature_json).tw_err(|_| SigningErrorType::Error_internal)?;
+            serde_json::to_string(&signature_json).tw_err(SigningErrorType::Error_internal)?;
         Ok(Proto::SigningOutput {
             encoded: encoded_tx.into(),
             signature: signature_bytes.into(),

@@ -38,11 +38,11 @@ impl<Address: CosmosAddress> CosmosMessage for TransferTokensMessage<Address> {
         };
 
         let proto_msg = ibc::applications::transfer::v1::MsgTransfer {
-            source_port: self.source_port.clone(),
-            source_channel: self.source_channel.clone(),
+            source_port: self.source_port.clone().into(),
+            source_channel: self.source_channel.clone().into(),
             token: Some(build_coin(&self.token)),
-            sender: self.sender.to_string(),
-            receiver: self.receiver.to_string(),
+            sender: self.sender.to_string().into(),
+            receiver: self.receiver.to_string().into(),
             timeout_height: Some(height),
             timeout_timestamp: self.timeout_timestamp,
         };

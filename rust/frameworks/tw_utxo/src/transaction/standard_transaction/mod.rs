@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use super::transaction_sighash::taproot1_sighash::Taproot1Sighash;
 use crate::encode::compact_integer::CompactInteger;
 use crate::encode::stream::Stream;
 use crate::encode::Encodable;
@@ -16,24 +17,25 @@ use crate::transaction::transaction_sighash::legacy_sighash::LegacySighash;
 use crate::transaction::transaction_sighash::witness0_sighash::Witness0Sighash;
 use crate::transaction::{TransactionPreimage, UtxoPreimageArgs};
 use tw_coin_entry::error::prelude::*;
-use tw_hash::hasher::sha256_d;
+use tw_hash::hasher::{Hasher, StatefulHasher};
 use tw_hash::H256;
 
-use super::transaction_sighash::taproot1_sighash::Taproot1Sighash;
-use super::UtxoTaprootPreimageArgs;
+pub const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
+pub const DEFAULT_LOCKTIME: u32 = 0;
+pub const DEFAULT_OUTPUT_VALUE: Amount = -1;
 
 pub mod builder;
 
 /// Must be zero.
-const WITNESS_MARKER: u8 = 0;
+pub const WITNESS_MARKER: u8 = 0;
 /// Must be nonzero.
-const WITNESS_FLAG: u8 = 1;
+pub const WITNESS_FLAG: u8 = 1;
 
 // Sizes of various transaction fields.
-const WITNESS_FLAG_MARKER: usize = 2;
+pub const WITNESS_FLAG_MARKER: usize = 2;
 
 // The Segwit scale factor (witnesses are deducted).
-const SEGWIT_SCALE_FACTOR: usize = 4;
+pub const SEGWIT_SCALE_FACTOR: usize = 4;
 
 /// A standard Bitcoin transaction.
 ///
@@ -43,9 +45,9 @@ const SEGWIT_SCALE_FACTOR: usize = 4;
 /// Otherwise, consider adding a new type of transaction that implements the [`UnsignedTransaction`] trait.
 #[derive(Clone, Debug)]
 pub struct Transaction {
-    /// Transaction data format version (note, this is signed).
-    pub version: i32,
-    /// Unsigned transaction inputs.
+    /// Transaction data format version (note, this is used in encoding and signing).
+    pub version: u32,
+    /// Transaction inputs.
     pub inputs: Vec<TransactionInput>,
     /// Transaction outputs.
     pub outputs: Vec<TransactionOutput>,
@@ -66,7 +68,7 @@ impl TransactionInterface for Transaction {
     type Input = TransactionInput;
     type Output = TransactionOutput;
 
-    fn version(&self) -> i32 {
+    fn version(&self) -> u32 {
         self.version
     }
 
@@ -98,10 +100,6 @@ impl TransactionInterface for Transaction {
         self.outputs.push(output);
     }
 
-    fn has_witness(&self) -> bool {
-        self.inputs.iter().any(|input| input.has_witness())
-    }
-
     fn locktime(&self) -> u32 {
         self.locktime
     }
@@ -113,17 +111,16 @@ impl TransactionInterface for Transaction {
     fn weight(&self) -> usize {
         self.base_size() * 3 + self.total_size()
     }
-}
 
-impl Transaction {
-    /// TODO move to the `TransactionInterface` trait.
-    pub fn txid(&self) -> Vec<u8> {
+    fn txid(&self, hasher: Hasher) -> Vec<u8> {
         let encoded = self.without_witness().encode_out();
-        let mut tx_hash = sha256_d(&encoded);
+        let mut tx_hash = hasher.hash(&encoded);
         tx_hash.reverse();
         tx_hash
     }
+}
 
+impl Transaction {
     /// Returns the same transaction with [`TransactionInput::script_witness`] being empty.
     /// It's mostly used to calculate transaction hash (aka TXID).
     pub fn without_witness(&self) -> Transaction {
@@ -132,12 +129,6 @@ impl Transaction {
             input.set_witness(Witness::default());
         }
         without_witness
-    }
-
-    pub fn encode_out(&self) -> Vec<u8> {
-        let mut stream = Stream::new();
-        self.encode(&mut stream);
-        stream.out()
     }
 
     pub fn size(&self) -> usize {
@@ -225,21 +216,7 @@ impl TransactionPreimage for Transaction {
             },
             SigningMethod::Legacy => LegacySighash::<Self>::sighash_tx(self, args),
             SigningMethod::Segwit => Witness0Sighash::<Self>::sighash_tx(self, args),
-            SigningMethod::Taproot => SigningError::err(SigningErrorType::Error_internal).context(
-                "'TransactionPreimage::preimage_tx' is called with Taproot signing method",
-            ),
-        }
-    }
-
-    fn preimage_taproot_tx(&self, tr: &UtxoTaprootPreimageArgs) -> SigningResult<H256> {
-        match tr.args.signing_method {
-            SigningMethod::Legacy | SigningMethod::Segwit => {
-                SigningError::err(SigningErrorType::Error_internal).context(format!(
-                    "'TransactionPreimage::preimage_taproot_tx' is called with {:?} signing method",
-                    tr.args.signing_method
-                ))
-            },
-            SigningMethod::Taproot => Taproot1Sighash::<Self>::sighash_tx(self, tr),
+            SigningMethod::Taproot => Taproot1Sighash::<Self>::sighash_tx(self, args),
         }
     }
 }
@@ -281,6 +258,14 @@ impl TxInputInterface for TransactionInput {
 
     fn sequence(&self) -> u32 {
         self.sequence
+    }
+
+    fn script_sig(&self) -> &Script {
+        &self.script_sig
+    }
+
+    fn witness(&self) -> Option<&Witness> {
+        Some(&self.witness)
     }
 
     fn set_sequence(&mut self, sequence: u32) {
@@ -329,7 +314,7 @@ pub struct TransactionOutput {
 impl Default for TransactionOutput {
     fn default() -> Self {
         TransactionOutput {
-            value: -1,
+            value: DEFAULT_OUTPUT_VALUE,
             script_pubkey: Script::default(),
         }
     }

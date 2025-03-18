@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package TW.DecredV2.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Decred transaction out-point reference.
+message OutPoint {
+    // The hash of the referenced transaction (network byte order, usually needs to be reversed).
+    // The referenced transaction ID in REVERSED order.
+    bytes hash = 1;
+    // The position in the previous transactions output that this input references.
+    uint32 vout = 2;
+    // The tree in utxo, only works for DCR.
+    uint32 tree = 3;
+}
+
+// A transfer transaction
+message Transaction {
+    // Serialization format
+    uint32 serialize_type = 1;
+    // Transaction version.
+    // Currently, version 1 is supported only.
+    uint32 version = 2;
+    // A list of 1 or more transaction inputs or sources for coins.
+    repeated TransactionInput inputs = 3;
+    // A list of 1 or more transaction outputs or destinations for coins
+    repeated TransactionOutput outputs = 4;
+    // Block height or timestamp indicating at what point transactions can be included in a block.
+    // Zero by default.
+    uint32 lock_time = 5;
+    // The block height at which the transaction expires and is no longer valid.
+    uint32 expiry = 6;
+}
+
+// Decred transaction input.
+message TransactionInput {
+    // Reference to the previous transaction's output.
+    OutPoint out_point = 1;
+    // Transaction version as defined by the sender.
+    uint32 sequence = 2;
+    // The amount of the input.
+    int64 value = 3;
+    // Creation block height.
+    uint32 block_height = 4;
+    // Index within the block.
+    uint32 block_index = 5;
+    // Computational script for confirming transaction authorization.
+    bytes script_sig = 6;
+}
+
+// Decred transaction output.
+message TransactionOutput {
+    // Transaction amount.
+    int64 value = 1;
+    // Transaction output version.
+    uint32 version = 2;
+    // Usually contains the public key as a Decred script setting up conditions to claim this output.
+    bytes script = 3;
+}

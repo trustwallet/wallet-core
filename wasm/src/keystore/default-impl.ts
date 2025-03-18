@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-import {WalletCore, CoinType, PrivateKey, StoredKey, StoredKeyEncryption} from "../wallet-core";
+import {WalletCore, CoinType, Derivation, PrivateKey, StoredKey, StoredKeyEncryption} from "../wallet-core";
 import * as Types from "./types";
 
 export class Default implements Types.IKeyStore {
@@ -109,11 +109,21 @@ export class Default implements Types.IKeyStore {
     password: string,
     coins: CoinType[]
   ): Promise<Types.Wallet> {
+    const { Derivation } = this.core;
+
+    let coins_with_derivations = coins.map(coin => ({
+      coin: coin,
+      derivation: Derivation.default,
+    }));
+    return this.addAccountsWithDerivations(id, password, coins_with_derivations);
+  }
+
+  addAccountsWithDerivations(id: string, password: string, coins: Types.CoinWithDerivation[]): Promise<Types.Wallet> {
     return this.load(id).then((wallet) => {
       let storedKey = this.mapStoredKey(wallet);
       let hdWallet = storedKey.wallet(Buffer.from(password));
-      coins.forEach((coin) => {
-        storedKey.accountForCoin(coin, hdWallet);
+      coins.forEach((item) => {
+        storedKey.accountForCoinDerivation(item.coin, item.derivation, hdWallet);
       });
       let newWallet = this.mapWallet(storedKey);
       storedKey.delete();
@@ -129,11 +139,9 @@ export class Default implements Types.IKeyStore {
   ): Promise<PrivateKey> {
     return this.load(id).then((wallet) => {
       let storedKey = this.mapStoredKey(wallet);
-      let hdWallet = storedKey.wallet(Buffer.from(password));
       let coin = (this.core.CoinType as any).values["" + account.coin];
-      let privateKey = hdWallet.getKey(coin, account.derivationPath);
+      let privateKey = storedKey.privateKey(coin, Buffer.from(password));
       storedKey.delete();
-      hdWallet.delete();
       return privateKey;
     });
   }

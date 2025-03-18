@@ -20,7 +20,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         
         let utxo0 = BitcoinV2Input.with {
-            $0.outPoint = BitcoinV2OutPoint.with {
+            $0.outPoint = UtxoOutPoint.with {
                 $0.hash = txId
                 $0.vout = 1
             }
@@ -92,7 +92,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         
         let utxo0 = BitcoinV2Input.with {
-            $0.outPoint = BitcoinV2OutPoint.with {
+            $0.outPoint = UtxoOutPoint.with {
                 $0.hash = txIdCommit
                 $0.vout = 0
             }
@@ -158,7 +158,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let bobAddress = "bc1qazgc2zhu2kmy42py0vs8d7yff67l3zgpwfzlpk"
         
         let utxo0 = BitcoinV2Input.with {
-            $0.outPoint = BitcoinV2OutPoint.with {
+            $0.outPoint = UtxoOutPoint.with {
                 $0.hash = txIdReveal
                 $0.vout = 0
             }
@@ -172,7 +172,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         }
         
         let utxo1 = BitcoinV2Input.with {
-            $0.outPoint = BitcoinV2OutPoint.with {
+            $0.outPoint = UtxoOutPoint.with {
                 $0.hash = txIdForFee
                 $0.vout = 1
             }

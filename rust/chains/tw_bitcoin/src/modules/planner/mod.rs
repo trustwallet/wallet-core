@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::context::BitcoinSigningContext;
 use crate::modules::signing_request::SigningRequestBuilder;
 use crate::modules::tx_builder::utxo_protobuf::parse_out_point;
 use std::borrow::Cow;
@@ -15,6 +16,9 @@ use tw_proto::BitcoinV2::Proto;
 use tw_utxo::context::UtxoContext;
 use tw_utxo::modules::tx_planner::TxPlanner;
 use tw_utxo::modules::utxo_selector::SelectResult;
+use tw_utxo::transaction::transaction_interface::{
+    TransactionInterface, TxInputInterface, TxOutputInterface,
+};
 
 pub mod psbt_planner;
 
@@ -23,7 +27,7 @@ pub struct BitcoinPlanner<Context: UtxoContext> {
     _phantom: PhantomData<Context>,
 }
 
-impl<Context: UtxoContext> BitcoinPlanner<Context> {
+impl<Context: BitcoinSigningContext> BitcoinPlanner<Context> {
     pub fn plan_impl<'a>(
         coin: &dyn CoinContext,
         input: &Proto::SigningInput<'a>,
@@ -45,7 +49,7 @@ impl<Context: UtxoContext> BitcoinPlanner<Context> {
         input: &Proto::SigningInput<'a>,
         tx_builder: &Proto::TransactionBuilder<'a>,
     ) -> SigningResult<Proto::TransactionPlan<'a>> {
-        let request = SigningRequestBuilder::<Context>::build(coin, input, tx_builder)?;
+        let request = Context::SigningRequestBuilder::build(coin, input, tx_builder)?;
         let SelectResult { unsigned_tx, plan } = TxPlanner::plan(request)?;
 
         // Prepare a map of source Inputs Proto `{ OutPoint -> Input }`.
@@ -64,23 +68,23 @@ impl<Context: UtxoContext> BitcoinPlanner<Context> {
         let mut selected_inputs_proto = Vec::with_capacity(unsigned_tx.inputs().len());
         for selected_utxo in unsigned_tx.inputs() {
             let utxo_proto = inputs_map
-                .get(&selected_utxo.previous_output)
+                .get(selected_utxo.previous_output())
                 .or_tw_err(SigningErrorType::Error_internal)
                 .context("Planned transaction contains an unknown UTXO")?;
             selected_inputs_proto.push((*utxo_proto).clone());
         }
 
         // Fill out the Output Proto.
-        let mut outputs_proto = Vec::with_capacity(unsigned_tx.transaction().outputs.len());
-        for selected_output in unsigned_tx.transaction().outputs.iter() {
+        let mut outputs_proto = Vec::with_capacity(unsigned_tx.transaction().outputs().len());
+        for selected_output in unsigned_tx.transaction().outputs().iter() {
             // For now, just provide a scriptPubkey as is.
             // Later it's probably worth to return the same output builders as in `SigningInput`.
             let to_recipient = Proto::mod_Output::OneOfto_recipient::custom_script_pubkey(
-                Cow::from(selected_output.script_pubkey.to_vec()),
+                Cow::from(selected_output.script_pubkey().to_vec()),
             );
 
             outputs_proto.push(Proto::Output {
-                value: selected_output.value,
+                value: selected_output.value(),
                 to_recipient,
             })
         }
@@ -98,7 +102,7 @@ impl<Context: UtxoContext> BitcoinPlanner<Context> {
     }
 }
 
-impl<Context: UtxoContext> PlanBuilder for BitcoinPlanner<Context> {
+impl<Context: BitcoinSigningContext> PlanBuilder for BitcoinPlanner<Context> {
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type Plan<'a> = Proto::TransactionPlan<'a>;
 

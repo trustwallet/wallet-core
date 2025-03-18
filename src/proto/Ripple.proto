@@ -7,17 +7,17 @@ import "Common.proto";
 
 // https://xrpl.org/currency-formats.html#token-amounts
 message CurrencyAmount {
-	// Currency code
-	// https://xrpl.org/currency-formats.html#currency-codes
-	string currency = 1;
+    // Currency code
+    // https://xrpl.org/currency-formats.html#currency-codes
+    string currency = 1;
 
-	// String number
-	// https://xrpl.org/currency-formats.html#string-numbers
-	string value = 2;
+    // String number
+    // https://xrpl.org/currency-formats.html#string-numbers
+    string value = 2;
 
-	// Account
-	// https://xrpl.org/accounts.html
-	string issuer = 3;
+    // Account
+    // https://xrpl.org/accounts.html
+    string issuer = 3;
 }
 
 // https://xrpl.org/trustset.html
@@ -28,16 +28,17 @@ message OperationTrustSet {
 // https://xrpl.org/payment.html
 message OperationPayment {
     // Transfer amount
-	oneof amount_oneof {
-		int64 amount = 1;
-		CurrencyAmount currency_amount = 2;
-	}
+    oneof amount_oneof {
+        int64 amount = 1;
+        CurrencyAmount currency_amount = 2;
+    }
 
     // Target account
-	string destination = 3;
+    string destination = 3;
 
     // A Destination Tag
-	int64 destination_tag = 4;
+    // It must fit uint32
+    uint64 destination_tag = 4;
 }
 
 // https://xrpl.org/escrowcreate.html
@@ -49,15 +50,18 @@ message OperationEscrowCreate {
     string destination = 2;
 
     // Destination Tag
-    int64 destination_tag = 3;
+    // It must fit uint32
+    uint64 destination_tag = 3;
 
     // Escrow expire time
-    int64 cancel_after = 4;
+    // It must fit uint32
+    uint64 cancel_after = 4;
 
     // Escrow release time
-    int64 finish_after = 5;
+    // It must fit uint32
+    uint64 finish_after = 5;
 
-    // Crypto condition
+    // Hex-encoded crypto condition
     // https://datatracker.ietf.org/doc/html/draft-thomas-crypto-conditions-02#section-8.1
     string condition = 6;
 }
@@ -68,7 +72,7 @@ message OperationEscrowCancel {
     string owner = 1;
 
     // Escrow transaction sequence
-    int32 offer_sequence = 2;
+    uint32 offer_sequence = 2;
 }
 
 // https://xrpl.org/escrowfinish.html
@@ -77,40 +81,40 @@ message OperationEscrowFinish {
     string owner = 1;
 
     // Escrow transaction sequence
-    int32 offer_sequence = 2;
+    uint32 offer_sequence = 2;
 
-    // Crypto condition
+    // Hex-encoded crypto condition
     string condition = 3;
 
-    // Fulfillment matching condition
+    // Hex-encoded fulfillment matching condition
     string fulfillment = 4;
 }
 
-// https://xrpl.org/nftokenburn.html 
+// https://xrpl.org/nftokenburn.html
 message OperationNFTokenBurn {
-    // Hash256 NFTokenId
-    bytes nftoken_id = 1;
+    // Hex-encoded H256 NFTokenId
+    string nftoken_id = 1;
 }
 
-// https://xrpl.org/nftokencreateoffer.html 
+// https://xrpl.org/nftokencreateoffer.html
 message OperationNFTokenCreateOffer {
-    // Hash256 NFTokenId
-    bytes nftoken_id = 1;
+    // Hex-encoded Hash256 NFTokenId
+    string nftoken_id = 1;
 
     // Destination account
     string destination = 2;
 }
 
-// https://xrpl.org/nftokenacceptoffer.html 
+// https://xrpl.org/nftokenacceptoffer.html
 message OperationNFTokenAcceptOffer {
-    // Hash256 NFTokenOffer
-    bytes sell_offer = 1;
+    // Hex-encoded Hash256 NFTokenOffer
+    string sell_offer = 1;
 }
 
-// https://xrpl.org/nftokencanceloffer.html 
+// https://xrpl.org/nftokencanceloffer.html
 message OperationNFTokenCancelOffer {
-    // Vector256 NFTokenOffers
-    repeated bytes token_offers = 1;
+    // Hex-encoded Vector256 NFTokenOffers
+    repeated string token_offers = 1;
 }
 
 // Input data necessary to create a signed transaction.
@@ -119,16 +123,17 @@ message SigningInput {
     int64 fee = 1;
 
     // Account sequence number
-    int32 sequence = 2;
+    uint32 sequence = 2;
 
     // Ledger sequence number
-    int32 last_ledger_sequence = 3;
+    uint32 last_ledger_sequence = 3;
 
     // Source account
     string account = 4;
 
     // Transaction flags, optional
-    int64 flags = 5;
+    // It must fit uint32
+    uint64 flags = 5;
 
     // The secret private key used for signing (32 bytes).
     bytes private_key = 6;
@@ -155,6 +160,20 @@ message SigningInput {
 
     // Only used by tss chain-integration.
     bytes public_key = 15;
+
+    // Generate a transaction from its JSON representation.
+    // The following parameters can be replaced from the `SigningInput` Protobuf:
+    // * Account
+    // * SigningPubKey
+    // * Fee
+    // * Sequence
+    // * LastLedgerSequence
+    string raw_json = 20;
+
+    // Arbitrary integer used to identify the reason for this payment, or a sender on whose behalf this transaction is made.
+    // Conventionally, a refund should specify the initial payment's SourceTag as the refund payment's DestinationTag.
+    // It must fit uint32.
+    uint64 source_tag = 25;
 }
 
 // Result containing the signed and encoded transaction.

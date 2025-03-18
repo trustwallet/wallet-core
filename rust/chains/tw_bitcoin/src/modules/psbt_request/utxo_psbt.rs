@@ -115,7 +115,7 @@ impl<'a> UtxoPsbt<'a> {
 
         let amount = amount
             .try_into()
-            .tw_err(|_| SigningErrorType::Error_invalid_utxo_amount)
+            .tw_err(SigningErrorType::Error_invalid_utxo_amount)
             .context("PSBT UTXO amount is too large")?;
 
         Ok(UtxoBuilder::default()

@@ -17,6 +17,7 @@ class TransactionFactoryConfig {
     uint32_t gasPerDataByte;
     uint32_t minGasLimit;
     uint32_t extraGasLimitForGuardedTransaction;
+    uint32_t extraGasLimitForRelayedTransaction;
     uint64_t minGasPrice;
 
     /// GasSchedule entries of interest (only one at this moment), according to: https://github.com/multiversx/mx-chain-mainnet-config/blob/master/gasSchedules.
@@ -46,6 +47,9 @@ public:
 
     uint32_t getExtraGasLimitForGuardedTransaction() const;
     void setExtraGasLimitForGuardedTransaction(uint32_t value);
+
+    uint32_t getExtraGasLimitForRelayedTransaction() const;
+    void setExtraGasLimitForRelayedTransaction(uint32_t value);
 
     uint64_t getMinGasPrice() const;
     void setMinGasPrice(uint64_t value);

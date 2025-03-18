@@ -186,11 +186,11 @@ impl CellType {
         let hashes = (0..level)
             .map(|_| reader.read::<RawCellHash>().map(H256::from))
             .collect::<Result<Vec<_>, _>>()
-            .tw_err(|_| CellErrorType::CellBuilderError)?;
+            .tw_err(CellErrorType::CellBuilderError)?;
         let depths = (0..level)
             .map(|_| reader.read::<u16>())
             .collect::<Result<Vec<_>, _>>()
-            .tw_err(|_| CellErrorType::CellBuilderError)?;
+            .tw_err(CellErrorType::CellBuilderError)?;
 
         let result = hashes
             .into_iter()

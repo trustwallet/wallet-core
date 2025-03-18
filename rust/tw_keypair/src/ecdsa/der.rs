@@ -25,7 +25,7 @@ pub type SignatureBytes = H512;
 /// ```
 ///
 /// [RFC5912 Appendix A]: https://www.rfc-editor.org/rfc/rfc5912#appendix-A
-#[derive(Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Signature {
     r: H256,
     s: H256,
@@ -93,6 +93,20 @@ impl Signature {
 
     pub fn to_vec(&self) -> Vec<u8> {
         self.to_bytes().to_vec()
+    }
+}
+
+impl AsRef<[u8]> for Signature {
+    fn as_ref(&self) -> &[u8] {
+        &self.der_bytes
+    }
+}
+
+impl<'a> TryFrom<&'a [u8]> for Signature {
+    type Error = KeyPairError;
+
+    fn try_from(value: &'a [u8]) -> Result<Self, Self::Error> {
+        Signature::from_bytes(value)
     }
 }
 

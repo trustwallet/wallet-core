@@ -102,7 +102,7 @@ impl SolanaCompiler {
         let signed_tx = TxSigner::compile_versioned(unsigned_msg, key_signs)?;
 
         let signed_encoded = bincode::serialize(&signed_tx)
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("Error serializing signed transaction")?;
         let signed_encoded = encode(&signed_encoded);
         let unsigned_encoded = encode(&data_to_sign);

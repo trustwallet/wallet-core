@@ -1,6 +1,8 @@
 use super::TransactionInput;
+use crate::address::DEFAULT_PUBLIC_KEY_HASHER;
 use crate::sighash::SighashType;
 use crate::spending_data::{standard_constructor, SpendingDataConstructor};
+use crate::transaction::standard_transaction::DEFAULT_TX_HASHER;
 use crate::transaction::UtxoToSign;
 use crate::{
     script::{standard_script::conditions, Script, Witness},
@@ -10,12 +12,11 @@ use crate::{
 };
 use bitcoin::hashes::Hash;
 use tw_coin_entry::error::prelude::*;
-use tw_hash::{hasher::Hasher, ripemd::bitcoin_hash_160, H160, H256};
+use tw_hash::hasher::StatefulHasher;
+use tw_hash::{hasher::Hasher, H160, H256};
 use tw_keypair::{ecdsa, schnorr};
 use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
-
-pub const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 
 pub struct UtxoBuilder {
     input: TransactionInput,
@@ -23,6 +24,10 @@ pub struct UtxoBuilder {
     prev_index: Option<u32>,
     amount: Option<Amount>,
     sighash_ty: Option<SighashType>,
+    /// Transaction hasher used to pre-image transaction or get a transaction hash.
+    /// Note it's ignored for Taproot transactions as they require Sha256.
+    tx_hasher: Hasher,
+    public_key_hasher: Hasher,
 }
 
 impl UtxoBuilder {
@@ -38,6 +43,8 @@ impl UtxoBuilder {
             prev_index: None,
             amount: None,
             sighash_ty: None,
+            tx_hasher: DEFAULT_TX_HASHER,
+            public_key_hasher: DEFAULT_PUBLIC_KEY_HASHER,
         }
     }
 
@@ -63,6 +70,18 @@ impl UtxoBuilder {
 
     pub fn sighash_type(mut self, sighash_ty: SighashType) -> Self {
         self.sighash_ty = Some(sighash_ty);
+        self
+    }
+
+    /// Specify a transaction hash algorithm used to pre-image transaction or get a transaction hash.
+    /// Note it doesn't affect Taproot transactions.
+    pub fn tx_hasher(mut self, tx_hasher: Hasher) -> Self {
+        self.tx_hasher = tx_hasher;
+        self
+    }
+
+    pub fn public_key_hasher(mut self, public_key_hasher: Hasher) -> Self {
+        self.public_key_hasher = public_key_hasher;
         self
     }
 
@@ -94,7 +113,7 @@ impl UtxoBuilder {
 
     // TODO next iteration.
     // pub fn p2sh(self, redeem_script: Script) -> SigningResult<(TransactionInput, UtxoToSign)> {
-    //     let h = bitcoin_hash_160(redeem_script.as_slice());
+    //     let h = sha256_ripemd(redeem_script.as_slice());
     //     let redeem_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
     //
     //     self.p2sh_with_hash(redeem_hash)
@@ -145,7 +164,7 @@ impl UtxoBuilder {
                 spender_public_key: pubkey.compressed().to_vec(),
                 amount,
                 leaf_hash_code_separator: None,
-                tx_hasher: DEFAULT_TX_HASHER,
+                tx_hasher: self.tx_hasher,
                 sighash_ty,
             },
         ))
@@ -155,7 +174,7 @@ impl UtxoBuilder {
         mut self,
         pubkey: &ecdsa::secp256k1::PublicKey,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        let h = bitcoin_hash_160(pubkey.compressed().as_slice());
+        let h = self.public_key_hasher.hash(pubkey.compressed().as_slice());
         let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
 
         self.finalize_out_point()?;
@@ -182,7 +201,7 @@ impl UtxoBuilder {
                 spender_public_key: pubkey.compressed().to_vec(),
                 amount,
                 leaf_hash_code_separator: None,
-                tx_hasher: DEFAULT_TX_HASHER,
+                tx_hasher: self.tx_hasher,
                 sighash_ty,
             },
         ))
@@ -206,7 +225,7 @@ impl UtxoBuilder {
     //             spending_data_constructor: SpendingDataConstructor::ecdsa(todo!()),
     //             amount,
     //             leaf_hash_code_separator: None,
-    //             tx_hasher: DEFAULT_TX_HASHER,
+    //             tx_hasher: self.tx_hasher,
     //             sighash_ty,
     //         },
     //     ))
@@ -216,7 +235,7 @@ impl UtxoBuilder {
         mut self,
         pubkey: &ecdsa::secp256k1::PublicKey,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        let h = bitcoin_hash_160(pubkey.compressed().as_slice());
+        let h = self.public_key_hasher.hash(pubkey.compressed().as_slice());
         let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
 
         self.finalize_out_point()?;
@@ -244,7 +263,7 @@ impl UtxoBuilder {
                 signing_method: SigningMethod::Segwit,
                 amount,
                 leaf_hash_code_separator: None,
-                tx_hasher: DEFAULT_TX_HASHER,
+                tx_hasher: self.tx_hasher,
                 sighash_ty,
             },
         ))
@@ -284,7 +303,7 @@ impl UtxoBuilder {
                 spender_public_key: tweaked_pubkey.bytes().to_vec(),
                 amount,
                 leaf_hash_code_separator: None,
-                // Note that we don't use the default double-hasher.
+                // Note Taproot transactions use Sha256 hash, not [`UtxoToSign::tx_hasher`].
                 tx_hasher: Hasher::Sha256,
                 sighash_ty,
             },
@@ -456,7 +475,7 @@ impl P2TRScriptPathUtxoBuilder {
                 spender_public_key,
                 amount,
                 leaf_hash_code_separator: Some((leaf_hash, u32::MAX)),
-                // Note that we don't use the default double-hasher.
+                // Note Taproot transactions use Sha256 hash, not [`UtxoToSign::tx_hasher`].
                 tx_hasher: Hasher::Sha256,
                 sighash_ty,
             },

@@ -7,8 +7,9 @@
 use tw_encoding::hex::ToHex;
 use tw_keypair::ed25519;
 use tw_keypair::ffi::privkey::TWPrivateKey;
+use tw_macros::tw_ffi;
 use tw_memory::ffi::tw_string::TWString;
-use tw_memory::ffi::RawPtrTrait;
+use tw_memory::ffi::{Nonnull, NullableMut, RawPtrTrait};
 use tw_misc::try_or_else;
 use tw_ton::modules::personal_message_signer::PersonalMessageSigner;
 
@@ -18,11 +19,12 @@ use tw_ton::modules::personal_message_signer::PersonalMessageSigner;
 /// \param private_key: the private key used for signing
 /// \param message: A custom message which is input to the signing.
 /// \returns the signature, Hex-encoded. On invalid input null is returned. Returned object needs to be deleted after use.
+#[tw_ffi(ty = static_function, class = TWTONMessageSigner, name = SignMessage)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_ton_message_signer_sign_message(
-    private_key: *const TWPrivateKey,
-    message: *const TWString,
-) -> *mut TWString {
+    private_key: Nonnull<TWPrivateKey>,
+    message: Nonnull<TWString>,
+) -> NullableMut<TWString> {
     let private_key = try_or_else!(
         TWPrivateKey::from_ptr_as_ref(private_key),
         std::ptr::null_mut

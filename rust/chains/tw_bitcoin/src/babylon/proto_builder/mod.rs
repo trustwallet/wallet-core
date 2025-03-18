@@ -32,7 +32,7 @@ pub fn staking_params_from_proto(
     let staking_locktime: u16 = params
         .staking_time
         .try_into()
-        .tw_err(|_| SigningErrorType::Error_invalid_params)
+        .tw_err(SigningErrorType::Error_invalid_params)
         .context("stakingTime cannot be greater than 65535")?;
 
     let covenants_pks = parse_schnorr_pks(&params.covenant_committee_public_keys)
@@ -71,7 +71,7 @@ pub fn parse_schnorr_pubkey_sig(
 ) -> SigningResult<(schnorr::XOnlyPublicKey, BitcoinSchnorrSignature)> {
     let pk = parse_schnorr_pk(pubkey_sig.public_key.as_ref())?;
     let sig = schnorr::Signature::try_from(pubkey_sig.signature.as_ref())
-        .tw_err(|_| SigningErrorType::Error_invalid_params)
+        .tw_err(SigningErrorType::Error_invalid_params)
         .context("Invalid signature")?;
     let btc_sign = BitcoinSchnorrSignature::new(sig, sighash_ty)?;
     Ok((pk, btc_sign))

@@ -1,4 +1,5 @@
 use super::TransactionOutput;
+use crate::address::DEFAULT_PUBLIC_KEY_HASHER;
 use crate::{
     script::{standard_script::conditions, Script},
     transaction::{
@@ -7,18 +8,32 @@ use crate::{
     },
 };
 use tw_coin_entry::error::prelude::*;
-use tw_hash::{ripemd::bitcoin_hash_160, sha2::sha256, H160, H256};
+use tw_hash::hasher::{Hasher, StatefulHasher};
+use tw_hash::ripemd::sha256_ripemd;
+use tw_hash::sha2::sha256;
+use tw_hash::{H160, H256};
 use tw_keypair::{ecdsa, schnorr};
 
 pub const OP_RETURN_DATA_LIMIT: usize = 80;
 
 pub struct OutputBuilder {
     amount: Amount,
+    public_key_hasher: Hasher,
 }
 
 impl OutputBuilder {
     pub fn new(amount: Amount) -> Self {
-        OutputBuilder { amount }
+        OutputBuilder {
+            amount,
+            public_key_hasher: DEFAULT_PUBLIC_KEY_HASHER,
+        }
+    }
+
+    pub fn with_public_key_hasher(amount: Amount, public_key_hasher: Hasher) -> Self {
+        OutputBuilder {
+            amount,
+            public_key_hasher,
+        }
     }
 
     pub fn get_amount(&self) -> Amount {
@@ -33,7 +48,8 @@ impl OutputBuilder {
     }
 
     pub fn p2sh(self, redeem_script: &[u8]) -> TransactionOutput {
-        let h = bitcoin_hash_160(redeem_script);
+        // TODO consider adding [`OutputBuilder::script_hasher`] if needed.
+        let h = sha256_ripemd(redeem_script);
         let redeem_hash: H160 = h
             .as_slice()
             .try_into()
@@ -57,7 +73,7 @@ impl OutputBuilder {
     }
 
     pub fn p2pkh(self, pubkey: &ecdsa::secp256k1::PublicKey) -> TransactionOutput {
-        let h = bitcoin_hash_160(pubkey.compressed().as_slice());
+        let h = self.public_key_hasher.hash(pubkey.compressed().as_slice());
         let pubkey_hash: H160 = h
             .as_slice()
             .try_into()
@@ -74,6 +90,7 @@ impl OutputBuilder {
     }
 
     pub fn p2wsh(self, redeem_script: &Script) -> TransactionOutput {
+        // TODO consider adding [`OutputBuilder::witness_script_hasher`] if needed.
         let h = sha256(redeem_script.as_slice());
         let redeem_hash: H256 = h.as_slice().try_into().expect("hash length is 32 bytes");
 
@@ -88,7 +105,7 @@ impl OutputBuilder {
     }
 
     pub fn p2wpkh(self, pubkey: &ecdsa::secp256k1::PublicKey) -> TransactionOutput {
-        let h = bitcoin_hash_160(pubkey.compressed().as_slice());
+        let h = self.public_key_hasher.hash(pubkey.compressed().as_slice());
         let pubkey_hash: H160 = h.as_slice().try_into().expect("hash length is 20 bytes");
 
         self.p2wpkh_from_hash(&pubkey_hash)
