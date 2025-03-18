@@ -3,7 +3,7 @@
 # Type declaration
 class TypeDecl
   attr_reader :name
-  attr_accessor :is_class, :is_struct, :is_enum, :is_proto, :is_nullable, :is_inout, :size
+  attr_accessor :is_class, :is_struct, :is_enum, :is_proto, :is_nullable, :is_inout, :size, :is_generated
 
   def initialize(name:, **options)
     @name = name
@@ -14,6 +14,7 @@ class TypeDecl
     @is_nullable = options.fetch(:is_nullable, false)
     @is_inout = options.fetch(:is_inout, false)
     @size = options.fetch(:size, nil)
+    @is_generated = File.exist?("include/TrustWalletCore/Generated/TW#{name}.h")
   end
 
   def self.fromPrimitive(string)
