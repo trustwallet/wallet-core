@@ -5,7 +5,7 @@
 #include "TestUtilities.h"
 
 #include "HexCoding.h"
-#include "TrustWalletCore/TWTONMessageSigner.h"
+#include "TrustWalletCore/Generated/TWTONMessageSigner.h"
 
 namespace TW::TheOpenNetwork::tests {
 
