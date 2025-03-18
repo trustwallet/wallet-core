@@ -8,6 +8,7 @@ use crate::Error::BadFormat;
 use crate::Result;
 
 static IN_DIR: &str = "../rust/bindings/";
+static HEADER_IN_DIR: &str = "../include/TrustWalletCore/";
 static HEADER_OUT_DIR: &str = "../include/TrustWalletCore/Generated/";
 static SOURCE_OUT_DIR: &str = "../src/Generated/";
 
@@ -37,10 +38,10 @@ fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
                         continue;
                     }
                     if included_headers.insert(header_name.clone()) {
-                        if let Ok(true) = fs::exists(format!("{}{}.h", HEADER_OUT_DIR, header_name)) {
-                            writeln!(file, "#include <TrustWalletCore/Generated/{}.h>", header_name)?;
-                        } else {
+                        if let Ok(true) = fs::exists(format!("{}{}.h", HEADER_IN_DIR, header_name)) {
                             writeln!(file, "#include <TrustWalletCore/{}.h>", header_name)?;
+                        } else {
+                            writeln!(file, "#include <TrustWalletCore/Generated/{}.h>", header_name)?;
                         }
                     }
                 }
