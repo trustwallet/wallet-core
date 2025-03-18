@@ -236,4 +236,73 @@ class TestBarz {
         val authorizationHash = WCBarz.getAuthorizationHash(chainId, contractAddress, nonce)
         assertEquals(Numeric.toHexString(authorizationHash), "0x3ae543b2fa103a39a6985d964a67caed05f6b9bb2430ad6d498cda743fe911d9") // Verified with viem
     }
+
+    @Test
+    fun testSignAuthorization() {
+        val chainId = "0x01".toHexByteArray()
+        val contractAddress = "0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1"
+        val nonce = "0x01".toHexByteArray()
+        val privateKey = "0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8"
+        
+        val signedAuthorization = WCBarz.signAuthorization(chainId, contractAddress, nonce, privateKey)
+        val json = org.json.JSONObject(signedAuthorization)
+        
+        // Verified with viem
+        assertEquals(Numeric.toHexString(chainId), json.getString("chainId"))
+        assertEquals(contractAddress, json.getString("address"))
+        assertEquals(Numeric.toHexString(nonce), json.getString("nonce"))
+        assertEquals("0x01", json.getString("yParity"))
+        assertEquals("0x2c39f2f64441dd38c364ee175dc6b9a87f34ca330bce968f6c8e22811e3bb710", json.getString("r"))
+        assertEquals("0x5f1bcde93dee4b214e60bc0e63babcc13e4fecb8a23c4098fd89844762aa012c", json.getString("s"))
+    }
+
+    @Test
+    fun testBarzTransferAccountDeployedV07() {
+        val transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
+            amount = ByteString.copyFrom("0x2386f26fc10000".toHexByteArray())
+            data = ByteString.EMPTY
+        }.build()
+
+        val userOpV07 = Ethereum.UserOperationV0_7.newBuilder().apply {
+            entryPoint = "0x0000000071727De22E5E9d8BAf0edAc6f37da032"
+            sender = "0x174a240e5147D02dE4d7724D5D3E1c1bF11cE029"
+            preVerificationGas = ByteString.copyFrom("0xF4240".toHexByteArray())          // 1000000
+            verificationGasLimit = ByteString.copyFrom("0x186A0".toHexByteArray())        // 100000
+            factory = "0xf471789937856d80e589f5996cf8b0511ddd9de4"
+            factoryData = ByteString.copyFrom("0xf471789937856d80e589f5996cf8b0511ddd9de4".toHexByteArray())
+            paymaster = "0xf62849f9a0b5bf2913b396098f7c7019b51a820a"
+            paymasterVerificationGasLimit = ByteString.copyFrom("0x1869F".toHexByteArray()) // 99999
+            paymasterPostOpGasLimit = ByteString.copyFrom("0x15B38".toHexByteArray())      // 88888
+            paymasterData = ByteString.copyFrom(
+                "0x00000000000b0000000000002e234dae75c793f67a35089c9d99245e1c58470b00000000000000000000000000000000000000000000000000000000000186a0072f35038bcacc31bcdeda87c1d9857703a26fb70a053f6e87da5a4e7a1e1f3c4b09fbe2dbff98e7a87ebb45a635234f4b79eff3225d07560039c7764291c97e1b"
+                    .toHexByteArray()
+            )
+        }.build()
+
+        // Create signing input
+        val signingInput = Ethereum.SigningInput.newBuilder().apply {
+            privateKey = ByteString.copyFrom(PrivateKey("3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483".toHexByteArray()).data())
+            chainId = ByteString.copyFrom("0x7A69".toHexByteArray())               // 31337
+            nonce = ByteString.copyFrom("0x00".toHexByteArray())
+            txMode = Ethereum.TransactionMode.UserOp
+            gasLimit = ByteString.copyFrom("0x186A0".toHexByteArray())            // 100000
+            maxFeePerGas = ByteString.copyFrom("0x186A0".toHexByteArray())        // 100000
+            maxInclusionFeePerGas = ByteString.copyFrom("0x186A0".toHexByteArray())
+            toAddress = "0x61061fCAE11fD5461535e134EfF67A98CFFF44E9"
+
+            transaction = Ethereum.Transaction.newBuilder().apply {
+                this.transfer = transfer
+            }.build()
+
+            userOperationV07 = userOpV07
+        }.build()
+
+        val output = AnySigner.sign(signingInput, CoinType.ETHEREUM, Ethereum.SigningOutput.parser())
+
+        assertEquals(
+            "0xf177858c1c500e51f38ffe937bed7e4d3a8678725900be4682d3ce04d97071eb",
+            Numeric.toHexString(output.preHash.toByteArray())
+        )
+    }
+
 }
