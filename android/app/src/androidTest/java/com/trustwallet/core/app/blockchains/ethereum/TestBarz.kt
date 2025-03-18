@@ -258,6 +258,9 @@ class TestBarz {
 
     @Test
     fun testBarzTransferAccountDeployedV07() {
+        val chainIdByteArray = "0x7A69".toHexByteArray() // 31337
+        val wallet = "0x174a240e5147D02dE4d7724D5D3E1c1bF11cE029"
+
         val transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
             amount = ByteString.copyFrom("0x2386f26fc10000".toHexByteArray())
             data = ByteString.EMPTY
@@ -265,7 +268,7 @@ class TestBarz {
 
         val userOpV07 = Ethereum.UserOperationV0_7.newBuilder().apply {
             entryPoint = "0x0000000071727De22E5E9d8BAf0edAc6f37da032"
-            sender = "0x174a240e5147D02dE4d7724D5D3E1c1bF11cE029"
+            sender = wallet
             preVerificationGas = ByteString.copyFrom("0xF4240".toHexByteArray())          // 1000000
             verificationGasLimit = ByteString.copyFrom("0x186A0".toHexByteArray())        // 100000
             factory = "0xf471789937856d80e589f5996cf8b0511ddd9de4"
@@ -282,7 +285,7 @@ class TestBarz {
         // Create signing input
         val signingInput = Ethereum.SigningInput.newBuilder().apply {
             privateKey = ByteString.copyFrom(PrivateKey("3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483".toHexByteArray()).data())
-            chainId = ByteString.copyFrom("0x7A69".toHexByteArray())               // 31337
+            chainId = ByteString.copyFrom(chainIdByteArray)               // 31337
             nonce = ByteString.copyFrom("0x00".toHexByteArray())
             txMode = Ethereum.TransactionMode.UserOp
             gasLimit = ByteString.copyFrom("0x186A0".toHexByteArray())            // 100000
@@ -303,6 +306,26 @@ class TestBarz {
             "0xf177858c1c500e51f38ffe937bed7e4d3a8678725900be4682d3ce04d97071eb",
             Numeric.toHexString(output.preHash.toByteArray())
         )
-    }
 
+        val version = "v0.1.0"
+        val typeHash = "0x4f51e7a567f083a31264743067875fc6a7ae45c32c5bd71f6a998c4625b13867"
+        val domainSeparatorHash = "0x293ce8821a350a49f08b53d14e10112c36c7fbf3b8eb7078497893f3ea477f6b"
+        val hash = "0xf177858c1c500e51f38ffe937bed7e4d3a8678725900be4682d3ce04d97071eb"
+
+        val encodedHash = WCBarz.getEncodedHash(chainIdByteArray, wallet, version, typeHash, domainSeparatorHash, hash)
+        assertEquals(
+            "0x59ebb8c4e48c115eeaf2ea7d3a0802754462761c5019df8d2a38effb226191d5",
+            Numeric.toHexString(encodedHash)
+        )
+
+        val privateKey = "0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8"
+        val signedHash = WCBarz.getSignedHash(
+            "0x59ebb8c4e48c115eeaf2ea7d3a0802754462761c5019df8d2a38effb226191d5",
+            privateKey
+        )
+        assertEquals(
+            "0x34a7792a140f52358925a57bca8ea936d70133b285396040ac0507597ed5c70a3148964ba1e0b32b8f59fbd9c098a4ec2b9ae5e5739ce4aeccae0f73279d50da1b",
+            Numeric.toHexString(signedHash)
+        )
+    }
 }
