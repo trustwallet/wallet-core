@@ -226,4 +226,106 @@ class TestBarz {
         assertEquals(Numeric.toHexString(output.preHash.toByteArray()), "0x84d0464f5a2b191e06295443970ecdcd2d18f565d0d52b5a79443192153770ab");
         assertEquals(output.encoded.toStringUtf8(), "{\"callData\":\"0x47e1da2a000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000200000000000000000000000003bbb5660b8687c2aa453a0e42dcb6e0732b126600000000000000000000000003bbb5660b8687c2aa453a0e42dcb6e0732b12660000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000044095ea7b30000000000000000000000005ff137d4b0fdcd49dca30c7cf57e578a026d27890000000000000000000000000000000000000000000000008ac7230489e80000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000044a9059cbb0000000000000000000000005ff137d4b0fdcd49dca30c7cf57e578a026d27890000000000000000000000000000000000000000000000008ac7230489e8000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"88673\",\"initCode\":\"0x\",\"maxFeePerGas\":\"10000000000\",\"maxPriorityFeePerGas\":\"10000000000\",\"nonce\":\"3\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"56060\",\"sender\":\"0x1E6c542ebC7c960c6A155A9094DB838cEf842cf5\",\"signature\":\"0x0747b665fe9f3a52407f95a35ac3e76de37c9b89483ae440431244e89a77985f47df712c7364c1a299a5ef62d0b79a2cf4ed63d01772275dd61f72bd1ad5afce1c\",\"verificationGasLimit\":\"522180\"}")
     }
+
+    @Test
+    fun testAuthorizationHash() {
+        val chainId = "0x01".toHexByteArray()
+        val contractAddress = "0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1"
+        val nonce = "0x01".toHexByteArray()
+        
+        val authorizationHash = WCBarz.getAuthorizationHash(chainId, contractAddress, nonce)
+        assertEquals(Numeric.toHexString(authorizationHash), "0x3ae543b2fa103a39a6985d964a67caed05f6b9bb2430ad6d498cda743fe911d9") // Verified with viem
+    }
+
+    @Test
+    fun testSignAuthorization() {
+        val chainId = "0x01".toHexByteArray()
+        val contractAddress = "0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1"
+        val nonce = "0x01".toHexByteArray()
+        val privateKey = "0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8"
+        
+        val signedAuthorization = WCBarz.signAuthorization(chainId, contractAddress, nonce, privateKey)
+        val json = org.json.JSONObject(signedAuthorization)
+        
+        // Verified with viem
+        assertEquals(Numeric.toHexString(chainId), json.getString("chainId"))
+        assertEquals(contractAddress, json.getString("address"))
+        assertEquals(Numeric.toHexString(nonce), json.getString("nonce"))
+        assertEquals("0x01", json.getString("yParity"))
+        assertEquals("0x2c39f2f64441dd38c364ee175dc6b9a87f34ca330bce968f6c8e22811e3bb710", json.getString("r"))
+        assertEquals("0x5f1bcde93dee4b214e60bc0e63babcc13e4fecb8a23c4098fd89844762aa012c", json.getString("s"))
+    }
+
+    @Test
+    fun testBarzTransferAccountDeployedV07() {
+        val chainIdByteArray = "0x7A69".toHexByteArray() // 31337
+        val wallet = "0x174a240e5147D02dE4d7724D5D3E1c1bF11cE029"
+
+        val transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
+            amount = ByteString.copyFrom("0x2386f26fc10000".toHexByteArray())
+            data = ByteString.EMPTY
+        }.build()
+
+        val userOpV07 = Ethereum.UserOperationV0_7.newBuilder().apply {
+            entryPoint = "0x0000000071727De22E5E9d8BAf0edAc6f37da032"
+            sender = wallet
+            preVerificationGas = ByteString.copyFrom("0xF4240".toHexByteArray())          // 1000000
+            verificationGasLimit = ByteString.copyFrom("0x186A0".toHexByteArray())        // 100000
+            factory = "0xf471789937856d80e589f5996cf8b0511ddd9de4"
+            factoryData = ByteString.copyFrom("0xf471789937856d80e589f5996cf8b0511ddd9de4".toHexByteArray())
+            paymaster = "0xf62849f9a0b5bf2913b396098f7c7019b51a820a"
+            paymasterVerificationGasLimit = ByteString.copyFrom("0x1869F".toHexByteArray()) // 99999
+            paymasterPostOpGasLimit = ByteString.copyFrom("0x15B38".toHexByteArray())      // 88888
+            paymasterData = ByteString.copyFrom(
+                "0x00000000000b0000000000002e234dae75c793f67a35089c9d99245e1c58470b00000000000000000000000000000000000000000000000000000000000186a0072f35038bcacc31bcdeda87c1d9857703a26fb70a053f6e87da5a4e7a1e1f3c4b09fbe2dbff98e7a87ebb45a635234f4b79eff3225d07560039c7764291c97e1b"
+                    .toHexByteArray()
+            )
+        }.build()
+
+        // Create signing input
+        val signingInput = Ethereum.SigningInput.newBuilder().apply {
+            privateKey = ByteString.copyFrom(PrivateKey("3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483".toHexByteArray()).data())
+            chainId = ByteString.copyFrom(chainIdByteArray)               // 31337
+            nonce = ByteString.copyFrom("0x00".toHexByteArray())
+            txMode = Ethereum.TransactionMode.UserOp
+            gasLimit = ByteString.copyFrom("0x186A0".toHexByteArray())            // 100000
+            maxFeePerGas = ByteString.copyFrom("0x186A0".toHexByteArray())        // 100000
+            maxInclusionFeePerGas = ByteString.copyFrom("0x186A0".toHexByteArray())
+            toAddress = "0x61061fCAE11fD5461535e134EfF67A98CFFF44E9"
+
+            transaction = Ethereum.Transaction.newBuilder().apply {
+                this.transfer = transfer
+            }.build()
+
+            userOperationV07 = userOpV07
+        }.build()
+
+        val output = AnySigner.sign(signingInput, CoinType.ETHEREUM, Ethereum.SigningOutput.parser())
+
+        assertEquals(
+            "0xf177858c1c500e51f38ffe937bed7e4d3a8678725900be4682d3ce04d97071eb",
+            Numeric.toHexString(output.preHash.toByteArray())
+        )
+
+        val version = "v0.1.0"
+        val typeHash = "0x4f51e7a567f083a31264743067875fc6a7ae45c32c5bd71f6a998c4625b13867"
+        val domainSeparatorHash = "0x293ce8821a350a49f08b53d14e10112c36c7fbf3b8eb7078497893f3ea477f6b"
+        val hash = "0xf177858c1c500e51f38ffe937bed7e4d3a8678725900be4682d3ce04d97071eb"
+
+        val encodedHash = WCBarz.getEncodedHash(chainIdByteArray, wallet, version, typeHash, domainSeparatorHash, hash)
+        assertEquals(
+            "0x59ebb8c4e48c115eeaf2ea7d3a0802754462761c5019df8d2a38effb226191d5",
+            Numeric.toHexString(encodedHash)
+        )
+
+        val privateKey = "0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8"
+        val signedHash = WCBarz.getSignedHash(
+            "0x59ebb8c4e48c115eeaf2ea7d3a0802754462761c5019df8d2a38effb226191d5",
+            privateKey
+        )
+        assertEquals(
+            "0x34a7792a140f52358925a57bca8ea936d70133b285396040ac0507597ed5c70a3148964ba1e0b32b8f59fbd9c098a4ec2b9ae5e5739ce4aeccae0f73279d50da1b",
+            Numeric.toHexString(signedHash)
+        )
+    }
 }
