@@ -25,7 +25,7 @@ fn generate_header_guard(file: &mut std::fs::File) -> Result<()> {
 }
 
 fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result<()> {
-    writeln!(file, "#include <TrustWalletCore/TWBase.h>")?;
+    writeln!(file, "#include \"../TWBase.h\"")?;
 
     // Include headers based on argument types
     let mut included_headers = std::collections::HashSet::new();
@@ -39,9 +39,9 @@ fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
                     }
                     if included_headers.insert(header_name.clone()) {
                         if std::path::Path::new(&format!("{}{}.h", HEADER_IN_DIR, header_name)).exists() {
-                            writeln!(file, "#include <TrustWalletCore/{}.h>", header_name)?;
+                            writeln!(file, "#include \"../{}.h\"", header_name)?;
                         } else {
-                            writeln!(file, "#include <TrustWalletCore/Generated/{}.h>", header_name)?;
+                            writeln!(file, "#include \"{}.h\"", header_name)?;
                         }
                     }
                 }
@@ -50,7 +50,7 @@ fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
                         && included_headers.insert("TWCoinType.h".to_string())
                     {
                         // Need to handle this case separately because it's not a pointer type
-                        writeln!(file, "#include <TrustWalletCore/TWCoinType.h>")?;
+                        writeln!(file, "#include \"../TWCoinType.h\"")?;
                     }
                 }
             }
