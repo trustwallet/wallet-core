@@ -27,8 +27,6 @@ targets:
         headerVisibility: public
         excludes:
           - "TrustWalletCore/TW*Proto.h"
-      - path: include/TrustWalletCore/Generated
-        headerVisibility: public
       - path: wallet-core
         headerVisibility: project
         excludes:
