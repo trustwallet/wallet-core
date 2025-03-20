@@ -3,11 +3,12 @@
 # Class or struct declaration
 class EntityDecl
   attr_reader :name, :comment
-  attr_accessor :is_struct, :methods, :properties, :static_methods, :static_properties
+  attr_accessor :is_struct, :is_generated, :methods, :properties, :static_methods, :static_properties
 
-  def initialize(name:, is_struct:, comment:)
+  def initialize(name:, is_struct:, is_generated:, comment:)
     @name = name
     @is_struct = is_struct
+    @is_generated = is_generated
     @methods = []
     @properties = []
     @static_methods = []
@@ -17,6 +18,10 @@ class EntityDecl
 
   def struct?
     is_struct
+  end
+
+  def generated?
+    is_generated
   end
 
   def class?
