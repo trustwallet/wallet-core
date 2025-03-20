@@ -174,6 +174,13 @@ message Access {
     repeated bytes stored_keys = 2;
 }
 
+enum UserOperationMode {
+    // ERC-4337 compatible smart contract wallet.
+    Erc4337Contract = 0;
+    // EOA (externally owned account) using ERC-4337 functionalities through ERC-7702.
+    Erc7702Eoa = 1;
+}
+
 // Input data necessary to create a signed transaction.
 // Legacy and EIP2718/EIP1559 transactions supported, see TransactionMode.
 message SigningInput {
@@ -222,6 +229,9 @@ message SigningInput {
     // Optional list of addresses and storage keys that the transaction plans to access.
     // Used in `TransactionMode::Enveloped` only.
     repeated Access access_list = 12;
+
+    // UserOperation mode.
+    UserOperationMode user_operation_mode = 14;
 }
 
 // Result containing the signed and encoded transaction.

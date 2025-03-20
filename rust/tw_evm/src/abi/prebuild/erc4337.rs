@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::abi::contract::Contract;
+use crate::abi::function::Function;
 use crate::abi::param_type::ParamType;
 use crate::abi::token::Token;
 use crate::abi::AbiResult;
@@ -14,10 +15,13 @@ use tw_number::U256;
 /// Generated via https://remix.ethereum.org
 /// https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/samples/SimpleAccount.sol
 const ERC4337_SIMPLE_ACCOUNT_ABI: &str = include_str!("resource/erc4337.simple_account.abi.json");
+const ERC4337_BIZ_ACCOUNT_ABI: &str = include_str!("resource/erc4337.biz_account.abi.json");
 
 lazy_static! {
     static ref ERC4337_SIMPLE_ACCOUNT: Contract =
         serde_json::from_str(ERC4337_SIMPLE_ACCOUNT_ABI).unwrap();
+    static ref ERC4337_BIZ_ACCOUNT: Contract =
+        serde_json::from_str(ERC4337_BIZ_ACCOUNT_ABI).unwrap();
 }
 
 pub struct ExecuteArgs {
@@ -38,12 +42,35 @@ impl Erc4337SimpleAccount {
         ])
     }
 
+    pub fn encode_execute_4337_op(args: ExecuteArgs) -> AbiResult<Data> {
+        let func = ERC4337_BIZ_ACCOUNT.function("execute4337Op")?;
+        func.encode_input(&[
+            Token::Address(args.to),
+            Token::u256(args.value),
+            Token::Bytes(args.data),
+        ])
+    }
+
     pub fn encode_execute_batch<I>(args: I) -> AbiResult<Data>
     where
         I: IntoIterator<Item = ExecuteArgs>,
     {
         let func = ERC4337_SIMPLE_ACCOUNT.function("executeBatch")?;
+        Self::batch_exec(func, args)
+    }
 
+    pub fn encode_execute_4337_op_batch<I>(args: I) -> AbiResult<Data>
+    where
+        I: IntoIterator<Item = ExecuteArgs>,
+    {
+        let func = ERC4337_BIZ_ACCOUNT.function("execute4337Ops")?;
+        Self::batch_exec(func, args)
+    }
+
+    pub fn batch_exec<I>(func: &Function, args: I) -> AbiResult<Data>
+    where
+        I: IntoIterator<Item = ExecuteArgs>,
+    {
         let args = args.into_iter();
         let capacity = {
             let (lower, upper) = args.size_hint();

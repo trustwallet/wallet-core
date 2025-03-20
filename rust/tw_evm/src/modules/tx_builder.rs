@@ -23,6 +23,10 @@ use tw_memory::Data;
 use tw_number::U256;
 use tw_proto::Common::Proto::SigningError as CommonError;
 use tw_proto::Ethereum::Proto;
+use Proto::mod_SigningInput::OneOfuser_operation_oneof as UserOp;
+use Proto::mod_Transaction::OneOftransaction_oneof as Tx;
+use Proto::TransactionMode as TxMode;
+use Proto::UserOperationMode as UserOpMode;
 
 pub struct TxBuilder<Context: EvmContext> {
     _phantom: PhantomData<Context>,
@@ -32,10 +36,6 @@ impl<Context: EvmContext> TxBuilder<Context> {
     pub fn tx_from_proto(
         input: &Proto::SigningInput<'_>,
     ) -> SigningResult<Box<dyn UnsignedTransactionBox>> {
-        use Proto::mod_SigningInput::OneOfuser_operation_oneof as UserOp;
-        use Proto::mod_Transaction::OneOftransaction_oneof as Tx;
-        use Proto::TransactionMode as TxMode;
-
         let Some(ref transaction) = input.transaction else {
             return SigningError::err(CommonError::Error_invalid_params)
                 .context("No transaction specified");
@@ -150,18 +150,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 let payload = Erc4337SimpleAccount::encode_execute_batch(calls)
                     .map_err(abi_to_signing_error)?;
 
-                return match &input.user_operation_oneof {
-                    UserOp::user_operation_v0_7(user_op_v0_7) => {
-                        Self::user_operation_v0_7_from_proto(input, user_op_v0_7, payload)
-                            .map(UserOperationV0_7::into_boxed)
-                    },
-                    UserOp::user_operation(user_op) => {
-                        Self::user_operation_from_proto(input, user_op, payload)
-                            .map(UserOperation::into_boxed)
-                    },
-                    UserOp::None => SigningError::err(SigningErrorType::Error_invalid_params)
-                        .context("No user operation specified"),
-                };
+                return Self::user_operation_from_proto(input, payload);
             },
             Tx::None => {
                 return SigningError::err(SigningErrorType::Error_invalid_params)
@@ -180,29 +169,40 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 let to = to
                     .or_tw_err(SigningErrorType::Error_invalid_address)
                     .context("No contract/destination address specified")?;
-                // Payload should match the ERC4337 standard.
-                let payload = Erc4337SimpleAccount::encode_execute(ExecuteArgs {
+                let args = ExecuteArgs {
                     to,
                     value: eth_amount,
                     data: payload,
-                })
-                .map_err(abi_to_signing_error)?;
+                };
 
-                match &input.user_operation_oneof {
-                    UserOp::user_operation_v0_7(user_op_v0_7) => {
-                        Self::user_operation_v0_7_from_proto(input, user_op_v0_7, payload)
-                            .map(UserOperationV0_7::into_boxed)
-                    },
-                    UserOp::user_operation(user_op) => {
-                        Self::user_operation_from_proto(input, user_op, payload)
-                            .map(UserOperation::into_boxed)
-                    },
-                    UserOp::None => SigningError::err(SigningErrorType::Error_invalid_params)
-                        .context("No user operation specified"),
-                }?
+                let user_op_payload = match input.user_operation_mode {
+                    UserOpMode::Erc4337Contract => Erc4337SimpleAccount::encode_execute(args),
+                    UserOpMode::Erc7702Eoa => Erc4337SimpleAccount::encode_execute_4337_op(args),
+                }
+                .map_err(abi_to_signing_error)?;
+                Self::user_operation_from_proto(input, user_op_payload)?
             },
         };
         Ok(tx)
+    }
+
+    #[inline]
+    fn user_operation_from_proto(
+        input: &Proto::SigningInput<'_>,
+        user_op_payload: Data,
+    ) -> SigningResult<Box<dyn UnsignedTransactionBox>> {
+        match input.user_operation_oneof {
+            UserOp::user_operation_v0_7(ref user_op_v0_7) => {
+                Self::user_operation_v0_7_from_proto(input, user_op_v0_7, user_op_payload)
+                    .map(UserOperationV0_7::into_boxed)
+            },
+            UserOp::user_operation(ref user_op) => {
+                Self::user_operation_v0_6_from_proto(input, user_op, user_op_payload)
+                    .map(UserOperation::into_boxed)
+            },
+            UserOp::None => SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("No user operation specified"),
+        }
     }
 
     #[inline]
@@ -289,7 +289,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
         })
     }
 
-    fn user_operation_from_proto(
+    fn user_operation_v0_6_from_proto(
         input: &Proto::SigningInput,
         user_op: &Proto::UserOperation,
         erc4337_payload: Data,
