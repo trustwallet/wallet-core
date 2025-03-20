@@ -10,6 +10,7 @@ use tw_evm::abi::prebuild::erc20::Erc20;
 use tw_evm::address::Address;
 use tw_evm::evm_context::StandardEvmContext;
 use tw_evm::modules::signer::Signer;
+use tw_misc::traits::ToBytesVec;
 use tw_number::U256;
 use tw_proto::Ethereum::Proto;
 
@@ -199,7 +200,7 @@ fn test_barz_batched_account_deployed() {
 }
 
 #[test]
-fn test_barz_transfer_account_deployed_v0_7() {
+fn test_barz_transfer_account_not_deployed_v0_7() {
     let private_key =
         hex::decode("0x3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483").unwrap();
 
@@ -245,4 +246,61 @@ fn test_barz_transfer_account_deployed_v0_7() {
         hex::encode(output.pre_hash, false),
         "f177858c1c500e51f38ffe937bed7e4d3a8678725900be4682d3ce04d97071eb"
     );
+}
+
+#[test]
+fn test_barz_transfer_erc7702_eoa() {
+    let private_key =
+        hex::decode("0x3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483").unwrap();
+
+    let user_op = Proto::UserOperationV0_7 {
+        entry_point: "0x0000000071727De22E5E9d8BAf0edAc6f37da032".into(),
+        sender: "0x2EF648D7C03412B832726fd4683E2625deA047Ba".into(),
+        pre_verification_gas: U256::from(1000000u64).to_big_endian_compact().into(),
+        verification_gas_limit: U256::from(100000u128).to_big_endian_compact().into(),
+        paymaster: "0xb0086171AC7b6BD4D046580bca6d6A4b0835c232".into(),
+        paymaster_verification_gas_limit: U256::from(99999u128).to_big_endian_compact().into(),
+        paymaster_post_op_gas_limit: U256::from(88888u128).to_big_endian_compact().into(),
+        // Dummy paymaster data.
+        paymaster_data: "00000000000b0000000000002e234dae75c793f67a35089c9d99245e1c58470b00000000000000000000000000000000000000000000000000000000000186a0072f35038bcacc31bcdeda87c1d9857703a26fb70a053f6e87da5a4e7a1e1f3c4b09fbe2dbff98e7a87ebb45a635234f4b79eff3225d07560039c7764291c97e1b".decode_hex().unwrap().into(),
+        ..Proto::UserOperationV0_7::default()
+    };
+
+    let approve = Proto::mod_Transaction::ERC20Approve {
+        // Paymaster address.
+        spender: "0xb0086171AC7b6BD4D046580bca6d6A4b0835c232".into(),
+        amount: U256::encode_be_compact(655_360_197_115_136_u64),
+    };
+    let input = Proto::SigningInput {
+        chain_id: U256::encode_be_compact(31337u64),
+        nonce: U256::encode_be_compact(0u64),
+        tx_mode: Proto::TransactionMode::UserOp,
+        gas_limit: U256::from(100000u128).to_big_endian_compact().into(),
+        max_fee_per_gas: U256::from(100000u128).to_big_endian_compact().into(),
+        max_inclusion_fee_per_gas: U256::from(100000u128).to_big_endian_compact().into(),
+        // USDT token.
+        to_address: "0xdac17f958d2ee523a2206206994597c13d831ec7".into(),
+        private_key: private_key.into(),
+        transaction: Some(Proto::Transaction {
+            transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::erc20_approve(
+                approve,
+            ),
+        }),
+        user_operation_oneof:
+            Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation_v0_7(user_op),
+        user_operation_mode: Proto::UserOperationMode::Erc7702Eoa,
+        ..Proto::SigningInput::default()
+    };
+
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
+    assert_eq!(output.error, SigningErrorType::OK);
+    assert!(output.error_message.is_empty());
+
+    assert_eq!(
+        hex::encode(output.pre_hash, false),
+        "68109b9caf49f7971b689307c9a77ceec46e4b8fa88421c4276dd846f782d92c"
+    );
+
+    let user_op: serde_json::Value = serde_json::from_slice(&output.encoded).unwrap();
+    assert_eq!(user_op["callData"], "0x76276c82000000000000000000000000dac17f958d2ee523a2206206994597c13d831ec7000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000044095ea7b3000000000000000000000000b0086171ac7b6bd4d046580bca6d6a4b0835c2320000000000000000000000000000000000000000000000000002540befbfbd0000000000000000000000000000000000000000000000000000000000");
 }
