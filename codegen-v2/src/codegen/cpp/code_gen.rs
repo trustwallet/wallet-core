@@ -38,7 +38,7 @@ fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
                         continue;
                     }
                     if included_headers.insert(header_name.clone()) {
-                        if let Ok(true) = fs::exists(format!("{}{}.h", HEADER_IN_DIR, header_name)) {
+                        if std::path::Path::new(&format!("{}{}.h", HEADER_IN_DIR, header_name)).exists() {
                             writeln!(file, "#include <TrustWalletCore/{}.h>", header_name)?;
                         } else {
                             writeln!(file, "#include <TrustWalletCore/Generated/{}.h>", header_name)?;
