@@ -147,10 +147,17 @@ impl<Context: EvmContext> TxBuilder<Context> {
                     .iter()
                     .map(Self::erc4337_execute_call_from_proto)
                     .collect::<Result<Vec<_>, _>>()?;
-                let payload = Erc4337SimpleAccount::encode_execute_batch(calls)
-                    .map_err(abi_to_signing_error)?;
+                let user_op_payload = match input.user_operation_mode {
+                    UserOpMode::Erc4337Contract => {
+                        Erc4337SimpleAccount::encode_execute_batch(calls)
+                    },
+                    UserOpMode::Erc7702Eoa => {
+                        Erc4337SimpleAccount::encode_execute_4337_op_batch(calls)
+                    },
+                }
+                .map_err(abi_to_signing_error)?;
 
-                return Self::user_operation_from_proto(input, payload);
+                return Self::user_operation_from_proto(input, user_op_payload);
             },
             Tx::None => {
                 return SigningError::err(SigningErrorType::Error_invalid_params)

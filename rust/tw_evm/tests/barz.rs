@@ -304,3 +304,91 @@ fn test_barz_transfer_erc7702_eoa() {
     let user_op: serde_json::Value = serde_json::from_slice(&output.encoded).unwrap();
     assert_eq!(user_op["callData"], "0x76276c82000000000000000000000000dac17f958d2ee523a2206206994597c13d831ec7000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000044095ea7b3000000000000000000000000b0086171ac7b6bd4d046580bca6d6a4b0835c2320000000000000000000000000000000000000000000000000002540befbfbd0000000000000000000000000000000000000000000000000000000000");
 }
+
+#[test]
+fn test_barz_transfer_erc7702_eoa_batch() {
+    let private_key =
+        hex::decode("0x3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483").unwrap();
+
+    let user_op = Proto::UserOperationV0_7 {
+        entry_point: "0x0000000071727De22E5E9d8BAf0edAc6f37da032".into(),
+        sender: "0x2EF648D7C03412B832726fd4683E2625deA047Ba".into(),
+        pre_verification_gas: U256::from(1000000u64).to_big_endian_compact().into(),
+        verification_gas_limit: U256::from(100000u128).to_big_endian_compact().into(),
+        paymaster: "0xb0086171AC7b6BD4D046580bca6d6A4b0835c232".into(),
+        paymaster_verification_gas_limit: U256::from(99999u128).to_big_endian_compact().into(),
+        paymaster_post_op_gas_limit: U256::from(88888u128).to_big_endian_compact().into(),
+        // Dummy paymaster data.
+        paymaster_data: "00000000000b0000000000002e234dae75c793f67a35089c9d99245e1c58470b00000000000000000000000000000000000000000000000000000000000186a0072f35038bcacc31bcdeda87c1d9857703a26fb70a053f6e87da5a4e7a1e1f3c4b09fbe2dbff98e7a87ebb45a635234f4b79eff3225d07560039c7764291c97e1b".decode_hex().unwrap().into(),
+        ..Proto::UserOperationV0_7::default()
+    };
+
+    let mut calls = Vec::with_capacity(2);
+
+    // ERC20 approve. At least one of the calls should be an ERC20.approve()
+    // so paymaster can collect tokens to cover the fees.
+    {
+        // Paymaster address.
+        let recipient = Address::from("0xb0086171AC7b6BD4D046580bca6d6A4b0835c232");
+        let amount = U256::from(655_360_197_115_136_u64);
+        let payload = Erc20::approve(recipient, amount).unwrap();
+
+        calls.push(Proto::mod_Transaction::mod_Batch::BatchedCall {
+            // USDT
+            address: "0xdac17f958d2ee523a2206206994597c13d831ec7".into(),
+            amount: Cow::default(),
+            payload: payload.into(),
+        });
+    }
+
+    // ERC20 transfer. Regular transaction.
+    {
+        let recipient = Address::from("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789");
+        let amount = U256::from(0x8AC7_2304_89E8_0000_u64);
+        let payload = Erc20::transfer(recipient, amount).unwrap();
+
+        calls.push(Proto::mod_Transaction::mod_Batch::BatchedCall {
+            address: "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266".into(),
+            amount: Cow::default(),
+            payload: payload.into(),
+        });
+    }
+
+    let input = Proto::SigningInput {
+        chain_id: U256::encode_be_compact(31337u64),
+        nonce: U256::encode_be_compact(0u64),
+        tx_mode: Proto::TransactionMode::UserOp,
+        gas_limit: U256::from(100000u128).to_big_endian_compact().into(),
+        max_fee_per_gas: U256::from(100000u128).to_big_endian_compact().into(),
+        max_inclusion_fee_per_gas: U256::from(100000u128).to_big_endian_compact().into(),
+        // USDT token.
+        to_address: "0xdac17f958d2ee523a2206206994597c13d831ec7".into(),
+        private_key: private_key.into(),
+        transaction: Some(Proto::Transaction {
+            transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::batch(
+                Proto::mod_Transaction::Batch { calls },
+            ),
+        }),
+        user_operation_oneof:
+            Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation_v0_7(user_op),
+        user_operation_mode: Proto::UserOperationMode::Erc7702Eoa,
+        ..Proto::SigningInput::default()
+    };
+
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
+    assert_eq!(
+        output.error,
+        SigningErrorType::OK,
+        "{}",
+        output.error_message
+    );
+
+    assert_eq!(
+        hex::encode(output.pre_hash, false),
+        "f6340068891dc3eb78959993151c421dde23982b3a1407c0dbbd62c2c22c3cb8"
+    );
+
+    let user_op: serde_json::Value = serde_json::from_slice(&output.encoded).unwrap();
+    // TODO verify with Biz smart contract.
+    assert_eq!(user_op["callData"], "0x26da7d880000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000120000000000000000000000000dac17f958d2ee523a2206206994597c13d831ec7000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000044095ea7b3000000000000000000000000b0086171ac7b6bd4d046580bca6d6a4b0835c2320000000000000000000000000000000000000000000000000002540befbfbd000000000000000000000000000000000000000000000000000000000000000000000000000000000003bbb5660b8687c2aa453a0e42dcb6e0732b1266000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000044a9059cbb0000000000000000000000005ff137d4b0fdcd49dca30c7cf57e578a026d27890000000000000000000000000000000000000000000000008ac7230489e8000000000000000000000000000000000000000000000000000000000000");
+}
