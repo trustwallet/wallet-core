@@ -320,4 +320,53 @@ TEST(PrivateKey, SignShortDigest) {
     }
 }
 
+TEST(PrivateKey, SignWithDifferentCurveWorks) {
+    Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+    // Using the deprecated constructor without specifying a curve
+    auto privateKey = PrivateKey(privKeyData);
+    Data messageData = TW::data("hello");
+    Data hash = Hash::keccak256(messageData);
+    
+    // Should be able to sign with any curve when using the normal constructor
+    try {
+        auto signatureSECP256k1 = privateKey.sign(hash, TWCurveSECP256k1);
+        EXPECT_FALSE(signatureSECP256k1.empty());
+        EXPECT_EQ(signatureSECP256k1.size(), 65ul);
+        
+        auto signatureNIST256p1 = privateKey.sign(hash, TWCurveNIST256p1);
+        EXPECT_FALSE(signatureNIST256p1.empty());
+        EXPECT_EQ(signatureNIST256p1.size(), 65ul);
+        
+        // Verify the signatures are different for different curves
+        EXPECT_NE(hex(signatureSECP256k1), hex(signatureNIST256p1));
+    } catch (const std::exception& e) {
+        FAIL() << "Unexpected exception was thrown: " << e.what();
+    }
+}
+
+TEST(PrivateKey, SignWithDifferentCurveThrows) {
+    Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+    // Using the constructor that specifies a curve
+    auto privateKey = PrivateKey(privKeyData, TWCurveSECP256k1);
+    Data messageData = TW::data("hello");
+    Data hash = Hash::keccak256(messageData);
+    
+    // Should throw an exception if signing with a different curve
+    try {
+        auto _ = privateKey.sign(hash, TWCurveNIST256p1);
+        FAIL() << "Expected exception was not thrown";
+    } catch (const std::invalid_argument& e) {
+        EXPECT_STREQ("Specified curve is different from the curve of the private key", e.what());
+    }
+
+    // Check that signing with the same curve works fine
+    try {
+        auto signature = privateKey.sign(hash, TWCurveSECP256k1);
+        EXPECT_EQ(signature.size(), 65ul);
+        EXPECT_TRUE(!signature.empty());
+    } catch (const std::exception& e) {
+        FAIL() << "Unexpected exception was thrown: " << e.what();
+    }
+}
+
 } // namespace TW::tests
