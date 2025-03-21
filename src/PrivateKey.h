@@ -10,6 +10,8 @@
 #include <TrustWalletCore/TWPrivateKeyType.h>
 #include <TrustWalletCore/TWCurve.h>
 
+#include <optional>
+
 namespace TW {
 
 class PrivateKey {
