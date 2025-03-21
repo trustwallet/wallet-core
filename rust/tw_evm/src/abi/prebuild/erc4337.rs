@@ -81,7 +81,7 @@ impl Erc4337SimpleAccount {
         ])
     }
 
-    pub fn encode_execute_4337_op_batch<I>(args: I) -> AbiResult<Data>
+    pub fn encode_execute_4337_ops<I>(args: I) -> AbiResult<Data>
     where
         I: IntoIterator<Item = ExecuteArgs>,
     {

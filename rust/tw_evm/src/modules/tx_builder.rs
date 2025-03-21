@@ -151,9 +151,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
                     UserOpMode::Erc4337Contract => {
                         Erc4337SimpleAccount::encode_execute_batch(calls)
                     },
-                    UserOpMode::Erc7702Eoa => {
-                        Erc4337SimpleAccount::encode_execute_4337_op_batch(calls)
-                    },
+                    UserOpMode::Erc7702Eoa => Erc4337SimpleAccount::encode_execute_4337_ops(calls),
                 }
                 .map_err(abi_to_signing_error)?;
 
