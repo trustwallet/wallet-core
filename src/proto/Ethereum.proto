@@ -174,6 +174,15 @@ message Access {
     repeated bytes stored_keys = 2;
 }
 
+// Smart Contract account type.
+enum SCAccountType {
+    // ERC-4337 compatible smart contract wallet.
+    // https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/accounts/SimpleAccount.sol
+    SimpleAccount = 0;
+    // Biz smart contract (Trust Wallet specific).
+    Biz4337 = 1;
+}
+
 // Input data necessary to create a signed transaction.
 // Legacy and EIP2718/EIP1559 transactions supported, see TransactionMode.
 message SigningInput {
@@ -222,6 +231,9 @@ message SigningInput {
     // Optional list of addresses and storage keys that the transaction plans to access.
     // Used in `TransactionMode::Enveloped` only.
     repeated Access access_list = 12;
+
+    // Smart contract account type. Used in `TransactionMode::UserOp` only.
+    SCAccountType user_operation_mode = 14;
 }
 
 // Result containing the signed and encoded transaction.
