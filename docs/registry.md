@@ -163,3 +163,4 @@ This list is generated from [./registry.json](../registry.json)
 | 90000118 | Neutron          | NTRN   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/neutron/info/logo.png" width="32" />      | <https://neutron.org/>        |
 | 245022934 | Neon             | NEON   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/neon/info/logo.png" width="32" />         | <https://neonevm.org>         |
 | 1323161554 | Aurora           | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aurora/info/logo.png" width="32" />       | <https://aurora.dev/>         |
+| 10002789 | BricsChain       | BRICS  | <img src="https://raw.githubusercontent.com/BRICS2789/bricslogo/121ad63288feb8a8d5d4bf1d74a8b9bb1005146a/logo.png" width="32" />   | <https://chainbrics.com>      |
