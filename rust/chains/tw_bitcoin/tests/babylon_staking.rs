@@ -35,12 +35,12 @@ fn test_babylon_scripts() {
         let expected = &test["expected"];
 
         let covenant_public_keys = parse_pks(&params["covenant_public_keys"]);
-        let convenant_quorum = params["covenant_quorum"].as_u64().unwrap() as u32;
+        let covenant_quorum = params["covenant_quorum"].as_u64().unwrap() as u32;
         let finality_provider_public_keys = parse_pks(&params["finality_provider_public_keys"]);
         let staker_public_key = parse_pk(&params["staker_public_key"]);
         let staker_time = params["staking_time"].as_u64().unwrap() as u16;
 
-        let covenants = MultiSigOrderedKeys::new(covenant_public_keys, convenant_quorum).unwrap();
+        let covenants = MultiSigOrderedKeys::new(covenant_public_keys, covenant_quorum).unwrap();
         let finality_providers =
             MultiSigOrderedKeys::new(finality_provider_public_keys, 1).unwrap();
 

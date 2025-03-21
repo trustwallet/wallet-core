@@ -71,7 +71,7 @@ mod tests {
         let ticker = Brc20Ticker::new("asdf".to_string());
         assert!(ticker.is_ok());
 
-        // Cover clone implemenation.
+        // Cover clone implementation.
         let ticker = ticker.unwrap();
 
         let _cloned = ticker.clone();
