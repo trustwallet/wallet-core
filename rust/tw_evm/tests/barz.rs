@@ -288,7 +288,7 @@ fn test_barz_transfer_erc7702_eoa() {
         }),
         user_operation_oneof:
             Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation_v0_7(user_op),
-        user_operation_mode: Proto::UserOperationMode::Erc7702Eoa,
+        user_operation_mode: Proto::SCAccountType::Biz4337,
         ..Proto::SigningInput::default()
     };
 
@@ -371,7 +371,7 @@ fn test_barz_transfer_erc7702_eoa_batch() {
         }),
         user_operation_oneof:
             Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation_v0_7(user_op),
-        user_operation_mode: Proto::UserOperationMode::Erc7702Eoa,
+        user_operation_mode: Proto::SCAccountType::Biz4337,
         ..Proto::SigningInput::default()
     };
 

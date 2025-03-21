@@ -25,8 +25,8 @@ use tw_proto::Common::Proto::SigningError as CommonError;
 use tw_proto::Ethereum::Proto;
 use Proto::mod_SigningInput::OneOfuser_operation_oneof as UserOp;
 use Proto::mod_Transaction::OneOftransaction_oneof as Tx;
+use Proto::SCAccountType;
 use Proto::TransactionMode as TxMode;
-use Proto::UserOperationMode as UserOpMode;
 
 pub struct TxBuilder<Context: EvmContext> {
     _phantom: PhantomData<Context>,
@@ -148,10 +148,10 @@ impl<Context: EvmContext> TxBuilder<Context> {
                     .map(Self::erc4337_execute_call_from_proto)
                     .collect::<Result<Vec<_>, _>>()?;
                 let user_op_payload = match input.user_operation_mode {
-                    UserOpMode::Erc4337Contract => {
+                    SCAccountType::SimpleAccount => {
                         Erc4337SimpleAccount::encode_execute_batch(calls)
                     },
-                    UserOpMode::Erc7702Eoa => Erc4337SimpleAccount::encode_execute_4337_ops(calls),
+                    SCAccountType::Biz4337 => Erc4337SimpleAccount::encode_execute_4337_ops(calls),
                 }
                 .map_err(abi_to_signing_error)?;
 
@@ -181,8 +181,8 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 };
 
                 let user_op_payload = match input.user_operation_mode {
-                    UserOpMode::Erc4337Contract => Erc4337SimpleAccount::encode_execute(args),
-                    UserOpMode::Erc7702Eoa => Erc4337SimpleAccount::encode_execute_4337_op(args),
+                    SCAccountType::SimpleAccount => Erc4337SimpleAccount::encode_execute(args),
+                    SCAccountType::Biz4337 => Erc4337SimpleAccount::encode_execute_4337_op(args),
                 }
                 .map_err(abi_to_signing_error)?;
                 Self::user_operation_from_proto(input, user_op_payload)?

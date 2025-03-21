@@ -174,11 +174,13 @@ message Access {
     repeated bytes stored_keys = 2;
 }
 
-enum UserOperationMode {
+// Smart Contract account type.
+enum SCAccountType {
     // ERC-4337 compatible smart contract wallet.
-    Erc4337Contract = 0;
-    // EOA (externally owned account) using ERC-4337 functionalities through ERC-7702.
-    Erc7702Eoa = 1;
+    // https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/accounts/SimpleAccount.sol
+    SimpleAccount = 0;
+    // Biz smart contract (Trust Wallet specific).
+    Biz4337 = 1;
 }
 
 // Input data necessary to create a signed transaction.
@@ -230,8 +232,8 @@ message SigningInput {
     // Used in `TransactionMode::Enveloped` only.
     repeated Access access_list = 12;
 
-    // UserOperation mode.
-    UserOperationMode user_operation_mode = 14;
+    // Smart contract account type. Used in `TransactionMode::UserOp` only.
+    SCAccountType user_operation_mode = 14;
 }
 
 // Result containing the signed and encoded transaction.
