@@ -64,7 +64,7 @@ describe("CoinType", () => {
     assert.equal(CoinTypeExt.purpose(CoinType.pactus), Purpose.bip44);
     assert.equal(CoinTypeExt.curve(CoinType.pactus), Curve.ed25519);
     assert.isTrue(CoinTypeExt.validate(CoinType.pactus, "pc1rnvlc4wa73lc0rydmgfswz4j5wad4un376vv2d7"))
-    assert.equal(CoinTypeExt.derivationPath(CoinType.pactus), "m/44'/21888'/3'");
+    assert.equal(CoinTypeExt.derivationPath(CoinType.pactus), "m/44'/21888'/3'/0'");
     assert.equal(CoinTypeExt.derivationPathWithDerivation(CoinType.pactus, Derivation.pactusMainnet), "m/44'/21888'/3'/0'");
     assert.equal(CoinTypeExt.derivationPathWithDerivation(CoinType.pactus, Derivation.pactustestnet), "m/44'/21777'/3'/0'");
   });
