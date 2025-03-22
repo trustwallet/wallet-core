@@ -159,25 +159,25 @@ TEST(StoredKey, AccountGetCreate) {
     // not exists, wallet nonnull, create
     std::optional<Account> acc3 = key.account(coinTypeBc, &wallet);
     EXPECT_TRUE(acc3.has_value());
-    EXPECT_EQ(acc3->coin, coinTypeBc); 
+    EXPECT_EQ(acc3->coin, coinTypeBc);
     EXPECT_EQ(key.accounts.size(), 1ul);
 
     // exists
     std::optional<Account> acc4 = key.account(coinTypeBc);
     EXPECT_TRUE(acc4.has_value());
-    EXPECT_EQ(acc4->coin, coinTypeBc); 
+    EXPECT_EQ(acc4->coin, coinTypeBc);
     EXPECT_EQ(key.accounts.size(), 1ul);
 
     // exists, wallet nonnull, not create
     std::optional<Account> acc5 = key.account(coinTypeBc, &wallet);
     EXPECT_TRUE(acc5.has_value());
-    EXPECT_EQ(acc5->coin, coinTypeBc); 
+    EXPECT_EQ(acc5->coin, coinTypeBc);
     EXPECT_EQ(key.accounts.size(), 1ul);
 
     // exists, wallet null, not create
     std::optional<Account> acc6 = key.account(coinTypeBc, nullptr);
     EXPECT_TRUE(acc6.has_value());
-    EXPECT_EQ(acc6->coin, coinTypeBc); 
+    EXPECT_EQ(acc6->coin, coinTypeBc);
     EXPECT_EQ(key.accounts.size(), 1ul);
 }
 
@@ -435,7 +435,7 @@ TEST(StoredKey, CreateAccounts) {
     string mnemonicPhrase = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
     auto key = StoredKey::createWithMnemonic("name", gPassword, mnemonicPhrase, TWStoredKeyEncryptionLevelDefault);
     const auto wallet = key.wallet(gPassword);
-    
+
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->address, "0x494f60cb6Ac2c8F5E1393aD9FdBdF4Ad589507F7");
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->publicKey, "04cc32a479080d83fdcf69966713f0aad1bc1dc3ecf873b034894e84259841bc1c9b122717803e68905220ff54952d3f5ea2ab2698ca31f843addf94ae73fae9fd");
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->extendedPublicKey, "");
@@ -695,6 +695,38 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         EXPECT_EQ(key.getAccounts(coin)[1].address, expectedBtc2);
         EXPECT_EQ(key.getAccounts(coin)[2].address, expectedBtc3);
         EXPECT_EQ(key.getAccounts(coin)[2].derivationPath.string(), "m/44'/2'/0'/0/0");
+    }
+
+    { // Create Multi account for Pactus
+        const auto coin = TWCoinTypePactus;
+
+        const auto pactusMainnet1 = key.account(coin, TWDerivationPactusMainnet, wallet);
+        const auto pactusMainnet2 = key.account(coin, TWDerivationPactusMainnet, wallet);
+        const auto pactusTestnet1 = key.account(coin, TWDerivationPactusTestnet, wallet);
+        const auto pactusTestnet2 = key.account(coin, TWDerivationPactusTestnet, wallet);
+
+        const auto expectedMainnetAddr1 = "pc1";
+        const auto expectedMainnetAddr2 = "pc1";
+        const auto expectedTestnetAddr1 = "tpc1";
+        const auto expectedTestnetAddr2 = "tpc1";
+
+        EXPECT_EQ(pactusMainnet1.address, expectedMainnetAddr1);
+        EXPECT_EQ(pactusMainnet2.address, expectedMainnetAddr2);
+        EXPECT_EQ(pactusTestnet1.address, expectedTestnetAddr1);
+        EXPECT_EQ(pactusTestnet2.address, expectedTestnetAddr2);
+
+        EXPECT_EQ(pactusMainnet1.derivationPath.string(), "m/44'/21888'/3'/0'");
+        EXPECT_EQ(pactusMainnet2.derivationPath.string(), "m/44'/21888'/3'/1'");
+        EXPECT_EQ(pactusTestnet1.derivationPath.string(), "m/44'/21777'/3'/0'");
+        EXPECT_EQ(pactusTestnet2.derivationPath.string(), "m/44'/21777'/3'/1'");
+
+        EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
+
+        EXPECT_EQ(key.account(coin)->address, expectedMainnetAddr1);
+        EXPECT_EQ(key.account(coin, TWDerivationPactusMainnet, wallet).address, expectedMainnetAddr2);
+        EXPECT_EQ(key.getAccounts(coin).size(), 2ul);
+        EXPECT_EQ(key.getAccounts(coin)[0].address, expectedMainnetAddr1);
+        EXPECT_EQ(key.getAccounts(coin)[1].address, expectedMainnetAddr2);
     }
 }
 
