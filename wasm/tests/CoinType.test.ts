@@ -57,24 +57,24 @@ describe("CoinType", () => {
     assert.equal(addr, "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4");
   });
 
-  it("test CoinTypeExt methods for pactus", () => {
+  it("test CoinTypeExt methods for Pactus", () => {
     const { CoinType, CoinTypeExt, Blockchain, Purpose, Curve, Derivation } = globalThis.core;
 
     assert.equal(CoinTypeExt.blockchain(CoinType.pactus), Blockchain.pactus);
     assert.equal(CoinTypeExt.purpose(CoinType.pactus), Purpose.bip44);
     assert.equal(CoinTypeExt.curve(CoinType.pactus), Curve.ed25519);
-    assert.isTrue(CoinTypeExt.validate(CoinType.pactus, "Bxp8yhH9zNwxyE4UqxP7a7hgJ5xTZfxNNft7YJJ2VRjT"))
+    assert.isTrue(CoinTypeExt.validate(CoinType.pactus, "pc1rnvlc4wa73lc0rydmgfswz4j5wad4un376vv2d7"))
     assert.equal(CoinTypeExt.derivationPath(CoinType.pactus), "m/44'/21888'/3'");
     assert.equal(CoinTypeExt.derivationPathWithDerivation(CoinType.pactus, Derivation.pactusMainnet), "m/44'/21888'/3'/0'");
     assert.equal(CoinTypeExt.derivationPathWithDerivation(CoinType.pactus, Derivation.pactustestnet), "m/44'/21777'/3'/0'");
   });
 
-  it("test deriveAddress", () => {
+  it("test deriveAddress for Pactus", () => {
     const { CoinType, CoinTypeExt, PrivateKey, HexCoding } = globalThis.core;
 
     const data = HexCoding.decode("8778cc93c6596387e751d2dc693bbd93e434bd233bc5b68a826c56131821cb63");
     const key = PrivateKey.createWithData(data);
     const addr = CoinTypeExt.deriveAddress(CoinType.pactus, key);
-    assert.equal(addr, "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q")
+    assert.equal(addr, "pc1rnvlc4wa73lc0rydmgfswz4j5wad4un376vv2d7")
   });
 });
