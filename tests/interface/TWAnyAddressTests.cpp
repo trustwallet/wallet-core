@@ -186,6 +186,7 @@ TEST(TWAnyAddress, createFromPubKeyDerivation) {
     const auto pubkey_data = WRAPD(TWDataCreateWithHexString(pubkey_twstring.get()));
     const auto pubkey_obj = WRAP(TWPublicKey, TWPublicKeyCreateWithData(pubkey_data.get(), TWPublicKeyTypeSECP256k1));
 
+    /*** Bitcoin ***/
     {
         const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypeBitcoin, TWDerivationDefault));
         assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "bc1qcj2vfjec3c3luf9fx9vddnglhh9gawmncmgxhz");
@@ -198,12 +199,17 @@ TEST(TWAnyAddress, createFromPubKeyDerivation) {
         const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypeBitcoin, TWDerivationBitcoinTestnet));
         assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "tb1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3");
     }
+    /*** Pactus ***/
     {
         const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypePactus, TWDerivationDefault));
         assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "p1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3");
     }
     {
-        const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypePactus, TWDerivationTestnet));
+        const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypePactus, TWDerivationPactusMainnet));
+        assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "p1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3");
+    }
+    {
+        const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypePactus, TWDerivationPactusTestnet));
         assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "tp1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3");
     }
 }
