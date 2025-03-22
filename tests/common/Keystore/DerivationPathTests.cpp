@@ -93,10 +93,11 @@ TEST(Derivation, alternativeDerivation) {
     EXPECT_EQ(TW::derivationPath(TWCoinTypeSolana, TWDerivationSolanaSolana).string(), "m/44'/501'/0'/0'");
     EXPECT_EQ(std::string(TW::derivationName(TWCoinTypeSolana, TWDerivationSolanaSolana)), "solana");
 
-    EXPECT_EQ(TW::derivationPath(TWCoinTypePactus).string(), "m/44'/21777'/3'/0'");
-    EXPECT_EQ(TW::derivationPath(TWCoinTypePactus, TWDerivationDefault).string(), "m/44'/501'/0'");
-    EXPECT_EQ(TW::derivationPath(TWCoinTypePactus, TWDerivationPactusTestnet).string(), "m/44'/501'/0'/0'");
-    EXPECT_EQ(std::string(TW::derivationName(TWCoinTypeSolana, TWDerivationSolanaSolana)), "solana");
+    EXPECT_EQ(TW::derivationPath(TWCoinTypePactus).string(), "m/44'/21888'/3'/0'");
+    EXPECT_EQ(TW::derivationPath(TWCoinTypePactus, TWDerivationPactusMainnet).string(), "m/44'/21888'/3'/0'");
+    EXPECT_EQ(TW::derivationPath(TWCoinTypePactus, TWDerivationPactusTestnet).string(), "m/44'/21777'/3'/0'");
+    EXPECT_EQ(std::string(TW::derivationName(TWCoinTypePactus, TWDerivationPactusMainnet)), "mainnet");
+    EXPECT_EQ(std::string(TW::derivationName(TWCoinTypePactus, TWDerivationPactusTestnet)), "testnet");
 
 
 }

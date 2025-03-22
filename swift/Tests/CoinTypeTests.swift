@@ -36,7 +36,8 @@ class CoinTypeTests: XCTestCase {
         XCTAssertEqual(CoinType.bitcoin.derivationPathWithDerivation(derivation: Derivation.bitcoinTaproot), "m/86'/0'/0'/0/0")
         XCTAssertEqual(CoinType.solana.derivationPathWithDerivation(derivation: Derivation.solanaSolana), "m/44'/501'/0'/0'")
         XCTAssertEqual(CoinType.pactus.derivationPathWithDerivation(derivation: Derivation.default), "m/44'/21888'/3'/0'")
-        XCTAssertEqual(CoinType.pactus.derivationPathWithDerivation(derivation: Derivation.Testnet), "m/44'/21777'/3'/0'")
+        XCTAssertEqual(CoinType.pactus.derivationPathWithDerivation(derivation: Derivation.pactusTestnet), "m/44'/21888'/3'/0'")
+        XCTAssertEqual(CoinType.pactus.derivationPathWithDerivation(derivation: Derivation.pactusTestnet), "m/44'/21777'/3'/0'")
     }
 
     func testDeriveAddressFromPublicKeyAndDerivationBitcoin() {
