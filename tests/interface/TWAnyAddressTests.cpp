@@ -198,6 +198,14 @@ TEST(TWAnyAddress, createFromPubKeyDerivation) {
         const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypeBitcoin, TWDerivationBitcoinTestnet));
         assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "tb1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3");
     }
+    {
+        const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypePactus, TWDerivationDefault));
+        assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "p1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3");
+    }
+    {
+        const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypePactus, TWDerivationTestnet));
+        assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "tp1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3");
+    }
 }
 
 TEST(TWAnyAddress, createFromPubKeyFilecoinAddressType) {

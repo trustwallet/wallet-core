@@ -18,6 +18,7 @@ pub enum TWDerivation {
     SolanaSolana = 6,
     StratisSegwit = 7,
     BitcoinTaproot = 8,
+    Testnet = 9,
     // end_of_derivation_enum - USED TO GENERATE CODE
     #[default]
     Default = 0,
@@ -32,6 +33,7 @@ impl From<TWDerivation> for Derivation {
             TWDerivation::BitcoinTestnet => Derivation::Testnet,
             TWDerivation::SolanaSolana => Derivation::Default,
             TWDerivation::BitcoinTaproot => Derivation::Taproot,
+            TWDerivation::Testnet => Derivation::Testnet,
         }
     }
 }

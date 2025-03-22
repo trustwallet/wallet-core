@@ -58,13 +58,31 @@ class TestCoinType {
         assertEquals(res, "m/86'/0'/0'/0/0")
         res = CoinType.createFromValue(CoinType.SOLANA.value()).derivationPathWithDerivation(Derivation.SOLANASOLANA).toString()
         assertEquals(res, "m/44'/501'/0'/0'")
+
+        res = CoinType.createFromValue(CoinType.PACTUS.value()).derivationPath().toString()
+        assertEquals(res, "m/44'/21888'/3'/0'")
+        res = CoinType.createFromValue(CoinType.PACTUS.value()).derivationPathWithDerivation(Derivation.DEFAULT).toString()
+        assertEquals(res, "m/44'/21888'/3'/0'")
+        res = CoinType.createFromValue(CoinType.PACTUS.value()).derivationPathWithDerivation(Derivation.TESTNET).toString()
+        assertEquals(res, "m/44'/21777'/3'/0'")
     }
 
     @Test
-    fun testDeriveAddressFromPublicKeyAndDerivation() {
+    fun testDeriveAddressFromPublicKeyAndDerivationBitcoin() {
         val publicKey = PublicKey("0279BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798".toHexByteArray(), PublicKeyType.SECP256K1)
 
         val address = CoinType.BITCOIN.deriveAddressFromPublicKeyAndDerivation(publicKey, Derivation.BITCOINSEGWIT)
         assertEquals(address, "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4")
+    }
+
+    @Test
+    fun testDeriveAddressFromPublicKeyAndDerivationPactus() {
+        val publicKey = PublicKey("95794161374b22c696dabb98e93f6ca9300b22f3b904921fbf560bb72145f4fa".toHexByteArray(), PublicKeyType.ED25519)
+
+        val mainnet_address = CoinType.BITCOIN.deriveAddressFromPublicKeyAndDerivation(publicKey, Derivation.DEFAULT)
+        assertEquals(mainnet_address, "pc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymcxy3lr")
+
+        val testnet_address = CoinType.BITCOIN.deriveAddressFromPublicKeyAndDerivation(publicKey, Derivation.TESTNET)
+        assertEquals(testnet_address, "tpc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymzqkcrg")
     }
 }

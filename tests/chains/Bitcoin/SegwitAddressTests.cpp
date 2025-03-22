@@ -248,4 +248,16 @@ TEST(SegwitAddress, SegwitDerivationHDWallet) {
     EXPECT_EQ(wallet.deriveAddress(coin, TWDerivationBitcoinTestnet), "tb1qq8p994ak933c39d2jaj8n4sg598tnkhnyk5sg5");
 }
 
+TEST(PactusAddress, SegwitDerivationHDWallet) {
+    const auto mnemonic1 = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon cactus";
+    const auto passphrase = "";
+    const auto coin = TWCoinTypePactus;
+    HDWallet wallet = HDWallet(mnemonic1, passphrase);
+
+    // addresses with different derivations
+    EXPECT_EQ(wallet.deriveAddress(coin), "pc1rcx9x55nfme5juwdgxd2ksjdcmhvmvkrygmxpa3");
+    EXPECT_EQ(wallet.deriveAddress(coin, TWDerivationDefault), "pc1rcx9x55nfme5juwdgxd2ksjdcmhvmvkrygmxpa3");
+    EXPECT_EQ(wallet.deriveAddress(coin, TWDerivationTestnet), "tpc1rcx9x55nfme5juwdgxd2ksjdcmhvmvkrygmxpa3");
+}
+
 } // namespace TW::Bitcoin::tests
