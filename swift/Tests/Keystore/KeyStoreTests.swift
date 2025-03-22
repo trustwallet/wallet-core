@@ -450,11 +450,11 @@ class KeyStoreTests: XCTestCase {
         XCTAssertEqual(solana2.address, "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C")
         XCTAssertEqual(solana2.derivationPath, "m/44'/501'/0'/0'")
 
-        let pactus_mainnet = try wallet.getAccount(password: password, coin: .pactus, derivation: .default)
+        let pactus_mainnet = try wallet.getAccount(password: password, coin: .pactus, derivation: .pactusMainnet)
         XCTAssertEqual(pactus_mainnet.address, "pc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymcxy3lr")
         XCTAssertEqual(pactus_mainnet.derivationPath, "m/44'/21888'/3'/0'")
 
-        let pactus_testnet = try wallet.getAccount(password: password, coin: .solana, derivation: .pactusTestnet)
+        let pactus_testnet = try wallet.getAccount(password: password, coin: .pactus, derivation: .pactusTestnet)
         XCTAssertEqual(pactus_testnet.address, "tpc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymzqkcrg")
         XCTAssertEqual(pactus_testnet.derivationPath, "m/44'/21777'/3'/0'")
     }

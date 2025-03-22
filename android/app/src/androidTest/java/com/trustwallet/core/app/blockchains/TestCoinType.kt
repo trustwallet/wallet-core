@@ -63,7 +63,9 @@ class TestCoinType {
         assertEquals(res, "m/44'/21888'/3'/0'")
         res = CoinType.createFromValue(CoinType.PACTUS.value()).derivationPathWithDerivation(Derivation.DEFAULT).toString()
         assertEquals(res, "m/44'/21888'/3'/0'")
-        res = CoinType.createFromValue(CoinType.PACTUS.value()).derivationPathWithDerivation(Derivation.TESTNET).toString()
+        res = CoinType.createFromValue(CoinType.PACTUS.value()).derivationPathWithDerivation(Derivation.PACTUSMAINNET).toString()
+        assertEquals(res, "m/44'/21888'/3'/0'")
+        res = CoinType.createFromValue(CoinType.PACTUS.value()).derivationPathWithDerivation(Derivation.PACTUSTESTNET).toString()
         assertEquals(res, "m/44'/21777'/3'/0'")
     }
 

@@ -23,5 +23,7 @@ enums:
     value: 7
   - name: BitcoinTaproot
     value: 8
-  - name: Testnet
+  - name: PactusMainnet
     value: 9
+  - name: PactusTestnet
+    value: 10
