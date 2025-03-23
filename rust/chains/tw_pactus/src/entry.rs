@@ -21,6 +21,7 @@ use tw_proto::TxCompiler::Proto as CompilerProto;
 use crate::compiler::PactusCompiler;
 use crate::modules::transaction_util::PactusTransactionUtil;
 use crate::signer::PactusSigner;
+use crate::types::network::Network;
 use crate::types::Address;
 
 pub struct PactusEntry;
@@ -60,13 +61,18 @@ impl CoinEntry for PactusEntry {
         &self,
         _coin: &dyn CoinContext,
         public_key: PublicKey,
-        _derivation: Derivation,
+        derivation: Derivation,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
         let public_key = public_key
             .to_ed25519()
             .ok_or(AddressError::PublicKeyTypeMismatch)?;
-        Address::from_public_key(public_key)
+
+        match derivation {
+            Derivation::Default => Address::from_public_key(public_key, Network::Mainnet),
+            Derivation::Testnet => Address::from_public_key(public_key, Network::Testnet),
+            _ => AddressResult::Err(AddressError::Unsupported),
+        }
     }
 
     #[inline]
