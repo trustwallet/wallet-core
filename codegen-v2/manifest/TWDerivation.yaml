@@ -19,3 +19,11 @@ enums:
     value: 5
   - name: solanaSolana
     value: 6
+  - name: StratisSegwit
+    value: 7
+  - name: BitcoinTaproot
+    value: 8
+  - name: PactusMainnet
+    value: 9
+  - name: PactusTestnet
+    value: 10
