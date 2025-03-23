@@ -36,6 +36,7 @@ class TestCoinType {
         assertEquals(CoinType.TEZOS.value(), 1729)
         assertEquals(CoinType.QTUM.value(), 2301)
         assertEquals(CoinType.NEBULAS.value(), 2718)
+        assertEquals(CoinType.PACTUS.value(), 21888)
     }
 
     @Test
@@ -81,10 +82,10 @@ class TestCoinType {
     fun testDeriveAddressFromPublicKeyAndDerivationPactus() {
         val publicKey = PublicKey("95794161374b22c696dabb98e93f6ca9300b22f3b904921fbf560bb72145f4fa".toHexByteArray(), PublicKeyType.ED25519)
 
-        val mainnet_address = CoinType.BITCOIN.deriveAddressFromPublicKeyAndDerivation(publicKey, Derivation.DEFAULT)
+        val mainnet_address = CoinType.PACTUS.deriveAddressFromPublicKeyAndDerivation(publicKey, Derivation.DEFAULT)
         assertEquals(mainnet_address, "pc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymcxy3lr")
 
-        val testnet_address = CoinType.BITCOIN.deriveAddressFromPublicKeyAndDerivation(publicKey, Derivation.TESTNET)
+        val testnet_address = CoinType.PACTUS.deriveAddressFromPublicKeyAndDerivation(publicKey, Derivation.TESTNET)
         assertEquals(testnet_address, "tpc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymzqkcrg")
     }
 }

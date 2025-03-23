@@ -160,7 +160,7 @@ class TestHDWallet {
         val key = wallet.getKeyForCoin(coin)
 
         val address = coin.deriveAddress(key)
-        assertEquals(address, "pc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85")
+        assertEquals(address, "pc1rlyqrcxr5t9a2yu6wuf0wnz3v2m7dpnnczrxde6")
     }
 
     @Test
@@ -168,11 +168,11 @@ class TestHDWallet {
         val coin = CoinType.PACTUS
         val wallet = HDWallet(words, password)
 
-        val key1 = wallet.getKeyDerivation(coin, Derivation.DEFAULT)
-        assertEquals(key1.data().toHex(), "0xb901b5994f075af71397f65bd68a9fff8d3025d65f5a2c731cf90f5e259d6aac")
+        val key1 = wallet.getKeyDerivation(coin, Derivation.MAINNET)
+        assertEquals(key1.data().toHex(), "0xd775b49dd1c88e6374f98bf152ac8c3ec04d02c6057b19b054c1346c958be159")
 
         val key2 = wallet.getKeyDerivation(coin, Derivation.TESTNET)
-        assertEquals(key4.data().toHex(), "0xb2c4d6df786f118f20330affd65d248ffdc0750ae9cbc729d27c640302afd030")
+        assertEquals(key2.data().toHex(), "0xda89972e9afd7b66a025e06ef53fcbf4f258d3756bd8eef2c91f1c08e92d9edf")
     }
 
     @Test
@@ -181,7 +181,7 @@ class TestHDWallet {
         val wallet = HDWallet(words, password)
 
         val address = wallet.getAddressForCoin(coin)
-        assertEquals(address, "pc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85")
+        assertEquals(address, "pc1rlyqrcxr5t9a2yu6wuf0wnz3v2m7dpnnczrxde6")
     }
 
     @Test
@@ -189,11 +189,11 @@ class TestHDWallet {
         val coin = CoinType.PACTUS
         val wallet = HDWallet(words, password)
 
-        val address1 = wallet.getAddressDerivation(coin, Derivation.DEFAULT)
-        assertEquals(address1, "pc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85")
+        val address1 = wallet.getAddressDerivation(coin, Derivation.MAINNET)
+        assertEquals(address1, "pc1rlyqrcxr5t9a2yu6wuf0wnz3v2m7dpnnczrxde6")
 
         val address2 = wallet.getAddressDerivation(coin, Derivation.TESTNET)
-        assertEquals(address2, "pcPeUvjuxyf31aJKX6kCXuaqxhmG78ZUdL1")
+        assertEquals(address2, "tpc1rjuvuwjcwa0yzmu0wuf2f6c8p725qvpch6t4j08")
     }
 
     @Test
