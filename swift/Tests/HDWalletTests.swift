@@ -134,10 +134,10 @@ class HDWalletTests: XCTestCase {
         let coin = CoinType.pactus
         let wallet = HDWallet.test
 
-        let key1 = wallet.getKeyDerivation(coin: coin, derivation: .mainnet)
+        let key1 = wallet.getKeyDerivation(coin: coin, derivation: .pactusMainnet)
         XCTAssertEqual(key1.data.hexString, "d775b49dd1c88e6374f98bf152ac8c3ec04d02c6057b19b054c1346c958be159")
 
-        let key2 = wallet.getKeyDerivation(coin: coin, derivation: .testnet)
+        let key2 = wallet.getKeyDerivation(coin: coin, derivation: .pactusTestnet)
         XCTAssertEqual(key2.data.hexString, "da89972e9afd7b66a025e06ef53fcbf4f258d3756bd8eef2c91f1c08e92d9edf")
     }
 
@@ -153,10 +153,10 @@ class HDWalletTests: XCTestCase {
         let coin = CoinType.pactus
         let wallet = HDWallet.test
 
-        let address1 = wallet.getAddressDerivation(coin: coin, derivation: .mainnet)
+        let address1 = wallet.getAddressDerivation(coin: coin, derivation: .pactusMainnet)
         XCTAssertEqual(address1, "pc1rlyqrcxr5t9a2yu6wuf0wnz3v2m7dpnnczrxde6")
 
-        let address2 = wallet.getAddressDerivation(coin: coin, derivation: .testnet)
+        let address2 = wallet.getAddressDerivation(coin: coin, derivation: .pactusTestnet)
         XCTAssertEqual(address2, "tpc1rjuvuwjcwa0yzmu0wuf2f6c8p725qvpch6t4j08")
     }
 

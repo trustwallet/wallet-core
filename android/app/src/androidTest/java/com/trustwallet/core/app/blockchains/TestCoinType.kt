@@ -42,15 +42,17 @@ class TestCoinType {
     @Test
     fun testCoinPurpose() {
         assertEquals(Purpose.BIP84, CoinType.BITCOIN.purpose())
+        assertEquals(Purpose.BIP84, CoinType.PACTUS.purpose())
     }
 
     @Test
     fun testCoinCurve() {
         assertEquals(Curve.SECP256K1, CoinType.BITCOIN.curve())
+        assertEquals(Curve.ED25519, CoinType.PACTUS.curve())
     }
 
     @Test
-    fun testDerivationPath() {
+    fun testDerivationPathBitcoin() {
         var res = CoinType.createFromValue(CoinType.BITCOIN.value()).derivationPath().toString()
         assertEquals(res, "m/84'/0'/0'/0/0")
         res = CoinType.createFromValue(CoinType.BITCOIN.value()).derivationPathWithDerivation(Derivation.BITCOINLEGACY).toString()
@@ -59,15 +61,6 @@ class TestCoinType {
         assertEquals(res, "m/86'/0'/0'/0/0")
         res = CoinType.createFromValue(CoinType.SOLANA.value()).derivationPathWithDerivation(Derivation.SOLANASOLANA).toString()
         assertEquals(res, "m/44'/501'/0'/0'")
-
-        res = CoinType.createFromValue(CoinType.PACTUS.value()).derivationPath().toString()
-        assertEquals(res, "m/44'/21888'/3'/0'")
-        res = CoinType.createFromValue(CoinType.PACTUS.value()).derivationPathWithDerivation(Derivation.DEFAULT).toString()
-        assertEquals(res, "m/44'/21888'/3'/0'")
-        res = CoinType.createFromValue(CoinType.PACTUS.value()).derivationPathWithDerivation(Derivation.PACTUSMAINNET).toString()
-        assertEquals(res, "m/44'/21888'/3'/0'")
-        res = CoinType.createFromValue(CoinType.PACTUS.value()).derivationPathWithDerivation(Derivation.PACTUSTESTNET).toString()
-        assertEquals(res, "m/44'/21777'/3'/0'")
     }
 
     @Test
@@ -79,13 +72,23 @@ class TestCoinType {
     }
 
     @Test
+    fun testDerivationPathPactus() {
+        res = CoinType.createFromValue(CoinType.PACTUS.value()).derivationPath().toString()
+        assertEquals(res, "m/44'/21888'/3'/0'")
+        res = CoinType.createFromValue(CoinType.PACTUS.value()).derivationPathWithDerivation(Derivation.PACTUSMAINNET).toString()
+        assertEquals(res, "m/44'/21888'/3'/0'")
+        res = CoinType.createFromValue(CoinType.PACTUS.value()).derivationPathWithDerivation(Derivation.PACTUSTESTNET).toString()
+        assertEquals(res, "m/44'/21777'/3'/0'")
+    }
+
+    @Test
     fun testDeriveAddressFromPublicKeyAndDerivationPactus() {
         val publicKey = PublicKey("95794161374b22c696dabb98e93f6ca9300b22f3b904921fbf560bb72145f4fa".toHexByteArray(), PublicKeyType.ED25519)
 
-        val mainnet_address = CoinType.PACTUS.deriveAddressFromPublicKeyAndDerivation(publicKey, Derivation.DEFAULT)
+        val mainnet_address = CoinType.PACTUS.deriveAddressFromPublicKeyAndDerivation(publicKey, Derivation.PACTUSMAINNET)
         assertEquals(mainnet_address, "pc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymcxy3lr")
 
-        val testnet_address = CoinType.PACTUS.deriveAddressFromPublicKeyAndDerivation(publicKey, Derivation.TESTNET)
+        val testnet_address = CoinType.PACTUS.deriveAddressFromPublicKeyAndDerivation(publicKey, Derivation.PACTUSTESTNET)
         assertEquals(testnet_address, "tpc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymzqkcrg")
     }
 }
