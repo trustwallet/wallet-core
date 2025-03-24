@@ -39,7 +39,7 @@ TEST(NeblTransactionBuilder, BuildWithTime) {
     utxo0->mutable_out_point()->set_sequence(4294967294);
     utxo0->set_amount(2500000000);
 
-    auto utxoKey0 = PrivateKey(parse_hex("4222aae79af41eade7b07ce6fd44d926ea8e3f95e51a06e85f8bdec89680cbd9"));
+    auto utxoKey0 = PrivateKey(parse_hex("4222aae79af41eade7b07ce6fd44d926ea8e3f95e51a06e85f8bdec89680cbd9"), TWCoinTypeCurve(TWCoinTypeNebl));
     auto script0 = Bitcoin::Script::lockScriptForAddress("NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc", TWCoinTypeNebl);
     ASSERT_EQ(hex(script0.bytes), "76a914ae40b2142aba5ddd10f74d9440bfda8a36cbad5b88ac");
     utxo0->set_script(script0.bytes.data(), script0.bytes.size());

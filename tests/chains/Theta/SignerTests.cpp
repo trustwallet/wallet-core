@@ -13,7 +13,7 @@ using boost::multiprecision::uint256_t;
 
 TEST(Signer, Sign) {
     const auto pkFrom =
-        PrivateKey(parse_hex("0x93a90ea508331dfdf27fb79757d4250b4e84954927ba0073cd67454ac432c737"));
+        PrivateKey(parse_hex("0x93a90ea508331dfdf27fb79757d4250b4e84954927ba0073cd67454ac432c737"), TWCurveSECP256k1);
     const auto from = Ethereum::Address("0x2E833968E5bB786Ae419c4d13189fB081Cc43bab");
     const auto to = Ethereum::Address("0x9F1233798E905E173560071255140b4A8aBd3Ec6");
     auto transaction = Transaction(from, to, 10, 20, 1);

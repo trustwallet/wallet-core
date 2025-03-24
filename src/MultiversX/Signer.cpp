@@ -15,9 +15,9 @@ namespace TW::MultiversX {
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     TransactionFactory factory;
 
-    auto privateKey = PrivateKey(input.private_key());
+    auto privateKey = PrivateKey(input.private_key(), TWCurveED25519);
     auto signableAsData = buildUnsignedTxBytes(input);
-    auto signature = privateKey.sign(signableAsData, TWCurveED25519);
+    auto signature = privateKey.sign(signableAsData);
 
     return buildSigningOutput(input, signature);
 }

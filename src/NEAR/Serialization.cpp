@@ -164,7 +164,7 @@ static void writeAction(Data& data, const Proto::Action& action) {
 Data transactionData(const Proto::SigningInput& input) {
     Data data;
     writeString(data, input.signer_id());
-    auto key = PrivateKey(input.private_key());
+    auto key = PrivateKey(input.private_key(), TWCurveED25519);
     auto public_key = key.getPublicKey(TWPublicKeyTypeED25519);
     auto public_key_proto = Proto::PublicKey();
     public_key_proto.set_data(public_key.bytes.data(), public_key.bytes.size());

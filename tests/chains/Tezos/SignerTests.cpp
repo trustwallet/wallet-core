@@ -22,7 +22,7 @@ TEST(TezosSigner, SignString) {
     append(expected, bytesToSign);
     append(expected, expectedSignature);
 
-    auto key = PrivateKey(parse_hex("0x2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f"));
+    auto key = PrivateKey(parse_hex("0x2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f"), TWCurveED25519);
     auto signedBytes = Signer().signData(key, bytesToSign);
 
     ASSERT_EQ(signedBytes, expected);
@@ -77,7 +77,7 @@ TEST(TezosSigner, SignOperationList) {
     op_list.addOperation(delegateOperation);
 
     auto decodedPrivateKey = Base58::decodeCheck("edsk4bMQMM6HYtMazF3m7mYhQ6KQ1WCEcBuRwh6DTtdnoqAvC3nPCc");
-    auto key = PrivateKey(Data(decodedPrivateKey.begin() + 4, decodedPrivateKey.end()));
+    auto key = PrivateKey(Data(decodedPrivateKey.begin() + 4, decodedPrivateKey.end()), TWCurveED25519);
 
     std::string expectedForgedBytesToSign = hex(op_list.forge(key));
     std::string expectedSignature = "871693145f2dc72861ff6816e7ac3ce93c57611ac09a4c657a5a35270fa57153334c14cd8cae94ee228b6ef52f0e3f10948721e666318bc54b6c455404b11e03";

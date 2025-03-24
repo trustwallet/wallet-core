@@ -47,15 +47,15 @@ Account::Account(const Proto::AccountInfo& account) {
 }
 
 Data Account::sign(const Data& digest, TWCurve curve) const {
-    return PrivateKey(activeKey).sign(digest, curve);
+    return PrivateKey(activeKey, curve).sign(digest);
 }
 
 Data Account::publicActiveKey() const {
-    return PrivateKey(activeKey).getPublicKey(TWPublicKeyTypeED25519).bytes;
+    return PrivateKey(activeKey, TWCurveED25519).getPublicKey(TWPublicKeyTypeED25519).bytes;
 }
 
 Data Account::publicOwnerKey() const {
-    return PrivateKey(ownerKey).getPublicKey(TWPublicKeyTypeED25519).bytes;
+    return PrivateKey(ownerKey, TWCurveED25519).getPublicKey(TWPublicKeyTypeED25519).bytes;
 }
 
 std::string Account::address(const std::string& publickey) {

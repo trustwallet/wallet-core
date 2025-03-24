@@ -10,7 +10,7 @@
 namespace TW::Nimiq {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveED25519);
     auto pubkey = key.getPublicKey(TWPublicKeyTypeED25519);
     std::array<uint8_t, 32> pubkeyBytes;
     std::copy(pubkey.bytes.begin(), pubkey.bytes.end(), pubkeyBytes.data());

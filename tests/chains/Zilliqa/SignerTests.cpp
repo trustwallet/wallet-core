@@ -14,7 +14,7 @@
 namespace TW::Zilliqa::tests {
 
 TEST(ZilliqaSigner, PreImage) {
-    auto privateKey = PrivateKey(parse_hex("0E891B9DFF485000C7D1DC22ECF3A583CC50328684321D61947A86E57CF6C638"));
+    auto privateKey = PrivateKey(parse_hex("0E891B9DFF485000C7D1DC22ECF3A583CC50328684321D61947A86E57CF6C638"), TWCurveSECP256k1);
     auto pubKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     ASSERT_EQ(hex(pubKey.bytes), "034ae47910d58b9bde819c3cffa8de4441955508db00aa2540db8e6bf6e99abc1b");
 
@@ -46,7 +46,7 @@ TEST(ZilliqaSigner, PreImage) {
 }
 
 TEST(ZilliqaSigner, Signing) {
-    auto privateKey = PrivateKey(parse_hex("0x68ffa8ec149ce50da647166036555f73d57f662eb420e154621e5f24f6cf9748"));
+    auto privateKey = PrivateKey(parse_hex("0x68ffa8ec149ce50da647166036555f73d57f662eb420e154621e5f24f6cf9748"), TWCurveSECP256k1);
     auto pubKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
 
     // 1 ZIL
@@ -76,7 +76,7 @@ TEST(ZilliqaSigner, Signing) {
 
 TEST(ZilliqaSigner, SigningData) {
     // https://viewblock.io/zilliqa/tx/0x6228b3d7e69fc3481b84fd00e892cec359a41654f58948ff7b1b932396b00ad9
-    auto privateKey = PrivateKey(parse_hex("0x68ffa8ec149ce50da647166036555f73d57f662eb420e154621e5f24f6cf9748"));
+    auto privateKey = PrivateKey(parse_hex("0x68ffa8ec149ce50da647166036555f73d57f662eb420e154621e5f24f6cf9748"), TWCurveSECP256k1);
     auto pubKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
 
     // 10 ZIL

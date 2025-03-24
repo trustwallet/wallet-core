@@ -431,9 +431,9 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBitcoin) {
         // 2 private keys are needed (despite >2 UTXOs)
         auto key0 = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
         auto key1 = parse_hex("7878787878787878787878787878787878787878787878787878787878787878");
-        EXPECT_EQ(hex(PrivateKey(key0).getPublicKey(TWPublicKeyTypeSECP256k1).bytes),
+        EXPECT_EQ(hex(PrivateKey(key0, TWCurveSECP256k1).getPublicKey(TWPublicKeyTypeSECP256k1).bytes),
                   hex(inPubKey0));
-        EXPECT_EQ(hex(PrivateKey(key1).getPublicKey(TWPublicKeyTypeSECP256k1).bytes),
+        EXPECT_EQ(hex(PrivateKey(key1, TWCurveSECP256k1).getPublicKey(TWPublicKeyTypeSECP256k1).bytes),
                   hex(inPubKey1));
         *input.add_private_key() = std::string(key0.begin(), key0.end());
         *input.add_private_key() = std::string(key1.begin(), key1.end());

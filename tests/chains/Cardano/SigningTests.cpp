@@ -615,7 +615,7 @@ TEST(CardanoSigning, SignTransferFromLegacy) {
 
     const auto privateKeyData = parse_hex("98f266d1aac660179bc2f456033941238ee6b2beb8ed0f9f34c9902816781f5a9903d1d395d6ab887b65ea5e344ef09b449507c21a75f0ce8c59d0ed1c6764eba7f484aa383806735c46fd769c679ee41f8952952036a6e2338ada940b8a91f4e890ca4eb6bec44bf751b5a843174534af64d6ad1f44e0613db78a7018781f5aa151d2997f52059466b715d8eefab30a78b874ae6ef4931fa58bb21ef8ce2423d46f19d0fbf75afb0b9a24e31d533f4fd74cee3b56e162568e8defe37123afc4");
     {
-        const auto privKey = PrivateKey(privateKeyData);
+        const auto privKey = PrivateKey(privateKeyData, TWCurveED25519ExtendedCardano);
         const auto pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         const auto addr = AddressV2(pubKey);
         EXPECT_EQ(addr.string(), "Ae2tdPwUPEZ6vkqxSjJxaQYmDxHf5DTnxtZ67pFLJGTb9LTnCGkDP6ca3f8");
