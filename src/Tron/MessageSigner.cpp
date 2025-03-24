@@ -14,7 +14,7 @@ namespace TW::Tron {
 Data generateMessage(const std::string& message) {
     std::string prefix(1, MessageSigner::TronPrefix);
     std::stringstream ss;
-    ss << prefix << MessageSigner::MessagePrefix << message;
+    ss << prefix << MessageSigner::MessagePrefix << message.length() << message;
     Data signableMessage = Hash::keccak256(data(ss.str()));
     return signableMessage;
 }
