@@ -243,8 +243,8 @@ Data getAuthorizationHash(const Data& chainId, const std::string& contractAddres
 
 std::vector<Data> getRSVY(const Data& hash, const std::string& privateKey) {
     auto privateKeyData = parse_hex(privateKey);
-    auto privateKeyObj = PrivateKey(privateKeyData);
-    auto signature = privateKeyObj.sign(hash, TWCurveSECP256k1);
+    auto privateKeyObj = PrivateKey(privateKeyData, TWCurveSECP256k1);
+    auto signature = privateKeyObj.sign(hash);
     if (signature.empty()) {
         return {};
     }

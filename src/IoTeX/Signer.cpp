@@ -16,17 +16,17 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 }
 
 Data Signer::sign() const {
-    auto key = PrivateKey(input.privatekey());
-    return key.sign(hash(), TWCurveSECP256k1);
+    auto key = PrivateKey(input.privatekey(), TWCurveSECP256k1);
+    return key.sign(hash());
 }
 
 Proto::SigningOutput Signer::build() const {
     auto signedAction = Proto::Action();
     signedAction.mutable_core()->MergeFrom(action);
-    auto key = PrivateKey(input.privatekey());
+    auto key = PrivateKey(input.privatekey(), TWCurveSECP256k1);
     auto pk = key.getPublicKey(TWPublicKeyTypeSECP256k1Extended).bytes;
     signedAction.set_senderpubkey(pk.data(), pk.size());
-    auto sig = key.sign(hash(), TWCurveSECP256k1);
+    auto sig = key.sign(hash());
     signedAction.set_signature(sig.data(), sig.size());
 
     auto output = Proto::SigningOutput();

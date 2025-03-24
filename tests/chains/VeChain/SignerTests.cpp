@@ -23,7 +23,7 @@ TEST(Signer, Sign) {
     transaction.gas = 21000;
     transaction.nonce = 1;
 
-    auto key = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
+    auto key = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"), TWCurveSECP256k1);
     auto signature = Signer::sign(key, transaction);
 
     ASSERT_EQ(hex(signature), "3181b1094150f8e4f51f370b805cc9c5b107504145b9e316e846d5e5dbeedb5c1c2b5d217f197a105983dfaad6a198414d5731c7447493cb6b5169907d73dbe101");

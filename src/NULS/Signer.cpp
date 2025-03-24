@@ -151,11 +151,11 @@ Data Signer::sign() const {
     Data txHash = calcTransactionDigest(dataRet);
 
     Data privKey = data(input.private_key());
-    auto priv = PrivateKey(privKey);
+    auto priv = PrivateKey(privKey, TWCurveSECP256k1);
     auto transactionSignature = makeTransactionSignature(priv, txHash);
     if (Address::isValid(input.fee_payer()) && input.from() != input.fee_payer()) {
         Data feePayerPrivKey = data(input.fee_payer_private_key());
-        auto feePayerPriv = PrivateKey(feePayerPrivKey);
+        auto feePayerPriv = PrivateKey(feePayerPrivKey, TWCurveSECP256k1);
         auto feePayerTransactionSignature = makeTransactionSignature(feePayerPriv, txHash);
         transactionSignature.insert(transactionSignature.end(),
                                     feePayerTransactionSignature.begin(),

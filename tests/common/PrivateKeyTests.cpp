@@ -19,7 +19,7 @@ namespace TW::tests {
 TEST(PrivateKey, CreateValid) {
     Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
     EXPECT_TRUE(PrivateKey::isValid(privKeyData, TWCurveSECP256k1));
-    auto privateKey = PrivateKey(privKeyData);
+    auto privateKey = PrivateKey(privKeyData, TWCurveSECP256k1);
     EXPECT_EQ(hex(privKeyData), hex(privateKey.bytes));
 }
 
@@ -117,26 +117,29 @@ TEST(PrivateKey, Valid) {
 
 TEST(PrivateKey, PublicKey) {
     Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
-    auto privateKey = PrivateKey(privKeyData);
     {
+        const auto privateKey = PrivateKey(privKeyData, TWCurveSECP256k1);
         const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
         EXPECT_EQ(
             "4870d56d074c50e891506d78faa4fb69ca039cc5f131eb491e166b975880e867",
             hex(publicKey.bytes));
     }
     {
+        const auto privateKey = PrivateKey(privKeyData, TWCurveSECP256k1);
         const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
         EXPECT_EQ(
             "0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1",
             hex(publicKey.bytes));
     }
     {
+        const auto privateKey = PrivateKey(privKeyData, TWCurveSECP256k1);
         const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
         EXPECT_EQ(
             "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c166b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91",
             hex(publicKey.bytes));
     }
     {
+        const auto privateKey = PrivateKey(privKeyData, TWCurveNIST256p1);
         const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1Extended);
         EXPECT_EQ(
             "046d786ab8fda678cf50f71d13641049a393b325063b8c0d4e5070de48a2caf9ab918b4fe46ccbf56701fb210d67d91c5779468f6b3fdc7a63692b9b62543f47ae",

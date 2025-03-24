@@ -24,7 +24,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 }
 
 Data Signer::build() const {
-    auto privateKey = PrivateKey(input.private_key());
+    auto privateKey = PrivateKey(input.private_key(), TWCurveED25519);
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
 
     if(input.has_transfer()) {
@@ -53,7 +53,7 @@ Data Signer::build() const {
 
 template <typename T>
 Data Signer::signTransaction(T& tx) const {
-    auto privateKey = PrivateKey(input.private_key());
+    auto privateKey = PrivateKey(input.private_key(), TWCurveED25519);
 
     // The use of this context thing is explained here -->
     // https://docs.oasis.dev/oasis-core/common-functionality/crypto#domain-separation
@@ -62,7 +62,7 @@ Data Signer::signTransaction(T& tx) const {
     dataToHash.insert(dataToHash.end(), encodedMessage.begin(), encodedMessage.end());
     auto hash = Hash::sha512_256(dataToHash);
 
-    auto signature = privateKey.sign(hash, TWCurveED25519);
+    auto signature = privateKey.sign(hash);
     return Data(signature.begin(), signature.end());
 }
 

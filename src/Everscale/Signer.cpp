@@ -12,7 +12,7 @@
 namespace TW::Everscale {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    auto key = PrivateKey(input.private_key());
+    auto key = PrivateKey(input.private_key(), TWCurveED25519);
     auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
 
     auto protoOutput = Proto::SigningOutput();
