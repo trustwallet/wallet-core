@@ -78,7 +78,7 @@ TEST(DecredCompiler, CompileWithSignatures) {
               "9e4305478d1a69ee5c89a2e234d1cf270798d447d5db983b8fc3c817afddec34");
 
     // compile
-    auto publicKey = PrivateKey(utxoKey).getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto publicKey = PrivateKey(utxoKey, TWCurveSECP256k1).getPublicKey(TWPublicKeyTypeSECP256k1);
     auto signature = parse_hex("304402206ee887c9239e5fff0048674bdfff2a8cfbeec6cd4a3ccebcc12fac44b24cc5ac0220718f7c760818fde18bc5ba8457d43d5a145cc4cf13d2a5557cba9107e9f4558d");
     auto outputData =
         TransactionCompiler::compileWithSignatures(coin, txInputData, {signature}, {publicKey.bytes});

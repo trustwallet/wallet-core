@@ -29,7 +29,7 @@ const auto poolIdNufi = "7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a
 
 TEST(CardanoStaking, RegisterStakingKey) {
     const auto privateKeyData = parse_hex(privateKeyTest1);
-    const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
+    const auto publicKey = PrivateKey(privateKeyData, TWCurveED25519ExtendedCardano).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
     const auto stakingAddress = AddressV3(publicKey).getStakingAddress();
@@ -76,7 +76,7 @@ TEST(CardanoStaking, RegisterStakingKey) {
 
 TEST(CardanoStaking, DeregisterStakingKey) {
     const auto privateKeyData = parse_hex(privateKeyTest1);
-    const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
+    const auto publicKey = PrivateKey(privateKeyData, TWCurveED25519ExtendedCardano).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
     const auto stakingAddress = AddressV3(publicKey).getStakingAddress();
@@ -123,7 +123,7 @@ TEST(CardanoStaking, DeregisterStakingKey) {
 
 TEST(CardanoStaking, Redelegate) {
     const auto privateKeyData = parse_hex(privateKeyTest1);
-    const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
+    const auto publicKey = PrivateKey(privateKeyData, TWCurveED25519ExtendedCardano).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
     const auto stakingAddress = AddressV3(publicKey).getStakingAddress();
@@ -171,7 +171,7 @@ TEST(CardanoStaking, Redelegate) {
 
 TEST(CardanoStaking, RegisterAndDelegate_similar53339b) {
     const auto privateKeyData = parse_hex(privateKeyTest1);
-    const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
+    const auto publicKey = PrivateKey(privateKeyData, TWCurveED25519ExtendedCardano).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
     const auto stakingAddress = AddressV3(publicKey).getStakingAddress();
@@ -265,7 +265,7 @@ TEST(CardanoStaking, RegisterAndDelegate_similar53339b) {
 
 TEST(CardanoStaking, Withdraw_similarf48098) {
     const auto privateKeyData = parse_hex(privateKeyTest1);
-    const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
+    const auto publicKey = PrivateKey(privateKeyData, TWCurveED25519ExtendedCardano).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
     const auto stakingAddress = AddressV3(publicKey).getStakingAddress();

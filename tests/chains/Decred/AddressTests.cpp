@@ -19,7 +19,7 @@ TEST(DecredAddress, FromPublicKey) {
         ASSERT_EQ(address.string(), "DsmcYVbP1Nmag2H4AS17UTvmWXmGeA7nLDx");
     }
     {
-        const auto privateKey = PrivateKey(parse_hex("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a"));
+        const auto privateKey = PrivateKey(parse_hex("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a"), TWCurveED25519);
         const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeED25519));
         EXPECT_ANY_THROW(new Address(publicKey));
     }
