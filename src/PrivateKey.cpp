@@ -114,12 +114,12 @@ TWPrivateKeyType PrivateKey::getType(TWCurve curve) noexcept {
     }
 }
 
-PrivateKey::PrivateKey(const Data& data) {
-    if (!isValid(data)) {
-        throw std::invalid_argument("Invalid private key data");
-    }
-    bytes = data;
-}
+ PrivateKey::PrivateKey(const Data& data) {
+     if (!isValid(data)) {
+         throw std::invalid_argument("Invalid private key data");
+     }
+     bytes = data;
+ }
 
 PrivateKey::PrivateKey(const Data& data, TWCurve curve) {
     if (!isValid(data, curve)) {
@@ -284,6 +284,13 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
     return result;
 }
 
+Data PrivateKey::sign(const Data& digest, int (*canonicalChecker)(uint8_t by, uint8_t sig[64])) const {
+    if (!_curve.has_value()) {
+        throw std::invalid_argument("Curve is not set");
+    }
+    return sign(digest, _curve.value(), canonicalChecker);
+}
+
 Data PrivateKey::sign(const Data& digest, TWCurve curve, int (*canonicalChecker)(uint8_t by, uint8_t sig[64])) const {
     if (_curve.has_value() && _curve.value() != curve) {
         throw std::invalid_argument("Specified curve is different from the curve of the private key");
@@ -316,6 +323,13 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve, int (*canonicalChecker)
     // graphene adds 31 to the recovery id
     result[0] += 31;
     return result;
+}
+
+Data PrivateKey::sign(const Data& digest) const {
+    if (!_curve.has_value()) {
+        throw std::invalid_argument("Curve is not set");
+    }
+    return sign(digest, _curve.value());
 }
 
 Data PrivateKey::signAsDER(const Data& digest) const {

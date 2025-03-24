@@ -86,12 +86,22 @@ class PrivateKey {
 
     /// Signs a digest using the given ECDSA curve.
     /// If constructed with a curve, an exception will be thrown if the curve does not match the one specified.
+    /// @deprecated Use sign(const Data& digest) instead
     Data sign(const Data& digest, TWCurve curve) const;
+
+    /// Signs a digest using the given ECDSA curve at the time of construction.
+    /// IF constructed without a curve, an exception will be thrown.
+    Data sign(const Data& digest) const;
 
     /// Signs a digest using the given ECDSA curve and prepends the recovery id (a la graphene)
     /// Only a sig that passes canonicalChecker is returned
     /// If constructed with a curve, an exception will be thrown if the curve does not match the one specified.
+    /// @deprecated Use sign(const Data& digest, int(*canonicalChecker)(uint8_t by, uint8_t sig[64])) instead
     Data sign(const Data& digest, TWCurve curve, int(*canonicalChecker)(uint8_t by, uint8_t sig[64])) const;
+
+    /// Signs a digest using the given ECDSA curve and prepends the recovery id (a la graphene)
+    /// Only a sig that passes canonicalChecker is returned
+    Data sign(const Data& digest, int (*canonicalChecker)(uint8_t by, uint8_t sig[64])) const;
 
     /// Signs a digest using the given ECDSA curve. The result is encoded with
     /// DER.
