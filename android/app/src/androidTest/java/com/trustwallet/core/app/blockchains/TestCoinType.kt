@@ -73,7 +73,7 @@ class TestCoinType {
 
     @Test
     fun testDerivationPathPactus() {
-        res = CoinType.createFromValue(CoinType.PACTUS.value()).derivationPath().toString()
+        var res = CoinType.createFromValue(CoinType.PACTUS.value()).derivationPath().toString()
         assertEquals(res, "m/44'/21888'/3'/0'")
         res = CoinType.createFromValue(CoinType.PACTUS.value()).derivationPathWithDerivation(Derivation.PACTUSMAINNET).toString()
         assertEquals(res, "m/44'/21888'/3'/0'")
