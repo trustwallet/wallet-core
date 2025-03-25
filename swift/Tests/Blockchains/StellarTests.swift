@@ -8,7 +8,7 @@ import WalletCore
 class StellarTests: XCTestCase {
 
     func testAddressFromPrivateKey() {
-        let key = PrivateKey(data: Data(hexString: "59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722")!)!
+        let key = PrivateKey(data: Data(hexString: "59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722")!, curve: CoinType.stellar.curve)!
         let pubkey = key.getPublicKeyEd25519()
         let address = AnyAddress(publicKey: pubkey, coin: .stellar)
 

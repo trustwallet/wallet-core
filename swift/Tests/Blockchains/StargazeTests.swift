@@ -7,7 +7,7 @@ import XCTest
 
 class StargazeTests: XCTestCase {
     func testAddress() {
-        let key = PrivateKey(data: Data(hexString: "a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433")!)!
+        let key = PrivateKey(data: Data(hexString: "a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433")!, curve: CoinType.stargaze.curve)!
         let pubkey = key.getPublicKeySecp256k1(compressed: true)
         let address = AnyAddress(publicKey: pubkey, coin: .stargaze)
         let addressFromString = AnyAddress(string: "stars1mry47pkga5tdswtluy0m8teslpalkdq02a8nhy", coin: .stargaze)!
@@ -17,7 +17,7 @@ class StargazeTests: XCTestCase {
     }
     
     func testSignCW721() {
-        let privateKey = PrivateKey(data: Data(hexString: "a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433")!, curve: CoinType.stargaze.curve)!
 
         let txMessage = "{\"transfer_nft\": {\"recipient\": \"stars1kd5q7qejlqz94kpmd9pvr4v2gzgnca3lvt6xnp\",\"token_id\": \"1209\"}}";
         let wasmMsg = CosmosMessage.WasmExecuteContractGeneric.with {
@@ -63,7 +63,7 @@ class StargazeTests: XCTestCase {
     }
 
     func testSign() {
-        let privateKey = PrivateKey(data: Data(hexString: "a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433")!, curve: CoinType.stargaze.curve)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         let fromAddress = AnyAddress(publicKey: publicKey, coin: .stargaze)
 

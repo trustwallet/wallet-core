@@ -7,9 +7,9 @@ import WalletCore
 
 class TerraTests: XCTestCase {
 
-    let privateKey80e8 = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005")!)! // terra1hsk6jryyqjfhp5dhc55tc9jtckygx0ep37hdd2
-    let privateKeycf08 = PrivateKey(data: Data(hexString: "cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616")!)! // terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf
-    let privateKey1037 = PrivateKey(data: Data(hexString: "1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6")!)!
+    let privateKey80e8 = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005")!, curve: CoinType.terra.curve)! // terra1hsk6jryyqjfhp5dhc55tc9jtckygx0ep37hdd2
+    let privateKeycf08 = PrivateKey(data: Data(hexString: "cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616")!, curve: CoinType.terra.curve)! // terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf
+    let privateKey1037 = PrivateKey(data: Data(hexString: "1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6")!, curve: CoinType.terra.curve)!
 
     func testAddress() {
         let address = CoinType.terraV2.deriveAddress(privateKey: privateKey1037)

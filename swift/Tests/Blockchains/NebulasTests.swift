@@ -10,7 +10,7 @@ import WalletCore
 class NebulasTests: XCTestCase {
 
     func testAddressFromPublicKey() {
-        let privateKey = PrivateKey(data: Data(hexString: "d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b")!, curve: CoinType.nebulas.curve)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
         let address = AnyAddress(publicKey: publicKey, coin: .nebulas)
 
@@ -28,7 +28,7 @@ class NebulasTests: XCTestCase {
             $0.amount = Data(hexString: "98a7d9b8314c0000")!  //11000000000000000000ULL
             $0.payload = ""
             $0.timestamp = Data(hexString: "5cfc84ca")!   //1560052938
-            $0.privateKey = PrivateKey(data: Data(hexString: "d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b")!)!.data
+            $0.privateKey = PrivateKey(data: Data(hexString: "d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b")!, curve: CoinType.nebulas.curve)!.data
         }
         let output: NebulasSigningOutput = AnySigner.sign(input: input, coin: .nebulas)
         XCTAssertEqual(output.algorithm, 1)

@@ -8,7 +8,7 @@ import XCTest
 class AvalancheTests: XCTestCase {
 
     func testCChainAddress() {
-        let key = PrivateKey(data: Data(hexString: "98cb077f972feb0481f1d894f272c6a1e3c15e272a1658ff716444f465200070")!)!
+        let key = PrivateKey(data: Data(hexString: "98cb077f972feb0481f1d894f272c6a1e3c15e272a1658ff716444f465200070")!, curve: CoinType.avalancheCChain.curve)!
         let pubkey = key.getPublicKeySecp256k1(compressed: false)
         let address = AnyAddress(publicKey: pubkey, coin: .avalancheCChain)
         let addressETH = AnyAddress(publicKey: pubkey, coin: .ethereum)

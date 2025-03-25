@@ -8,7 +8,7 @@ import XCTest
 class NEOTests: XCTestCase {
 
     func testAddress() {
-        let key = PrivateKey(data: Data(hexString: "2A9EAB0FEC93CD94FA0A209AC5604602C1F0105FB02EAB398E17B4517C2FFBAB")!)!
+        let key = PrivateKey(data: Data(hexString: "2A9EAB0FEC93CD94FA0A209AC5604602C1F0105FB02EAB398E17B4517C2FFBAB")!, curve: CoinType.neo.curve)!
         let pubkey = key.getPublicKeyNist256p1()
         let address = AnyAddress(publicKey: pubkey, coin: .neo)
         let addressFromString = AnyAddress(string: "AQCSMB3oSDA1dHPn6GXN6KB4NHmdo1fX41", coin: .neo)

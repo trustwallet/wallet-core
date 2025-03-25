@@ -7,7 +7,7 @@ import WalletCore
 
 class IoTeXTests: XCTestCase {
     func testSign() {
-        let privateKey = PrivateKey(data: Data(hexString: "0x68ffa8ec149ce50da647166036555f73d57f662eb420e154621e5f24f6cf9748")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "0x68ffa8ec149ce50da647166036555f73d57f662eb420e154621e5f24f6cf9748")!, curve: CoinType.ioTeX.curve)!
 
         let input = IoTeXSigningInput.with {
             $0.version = 1

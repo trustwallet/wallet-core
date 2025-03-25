@@ -20,7 +20,7 @@ class THORChainAddressTests: XCTestCase {
 
 class THORChainSignerTests: XCTestCase {
 
-    let privateKey = PrivateKey(data: Data(hexString: "7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e")!)!
+    let privateKey = PrivateKey(data: Data(hexString: "7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e")!, curve: CoinType.thorchain.curve)!
 
     func testJsonModeSigning() {
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)

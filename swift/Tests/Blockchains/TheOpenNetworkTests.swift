@@ -8,7 +8,7 @@ import XCTest
 class TheOpenNetworkTests: XCTestCase {
     func testAddressFromPrivateKey() {
         let data = Data(hexString: "63474e5fe9511f1526a50567ce142befc343e71a49b865ac3908f58667319cb8")
-        let privateKey = PrivateKey(data: data!)!
+        let privateKey = PrivateKey(data: data!, curve: CoinType.ton.curve)!
         let publicKey = privateKey.getPublicKeyEd25519()
         let address = AnyAddress(publicKey: publicKey, coin: .ton)
         XCTAssertEqual(address.description, "UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV")
@@ -71,7 +71,7 @@ class TheOpenNetworkTests: XCTestCase {
         // from the following mnemonic:
         // document shield addict crime broom point story depend suit satisfy test chicken valid tail speak fortune sound drill seek cube cheap body music recipe
         let privateKeyData = Data(hexString: "112d4e2e700a468f1eae699329202f1ee671d6b665caa2d92dea038cf3868c18")!
-        let privateKey = PrivateKey(data: privateKeyData)!
+        let privateKey = PrivateKey(data: privateKeyData, curve: CoinType.ton.curve)!
         let message = "Hello world"
         let signature = TONMessageSigner.signMessage(privateKey: privateKey, message: message)!
         // The following signature has been computed by calling `window.ton.send("ton_personalSign", { data: "Hello world" });`.

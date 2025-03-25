@@ -21,7 +21,7 @@ class IconTests: XCTestCase {
     }
 
     func testFromPrivateKey() {
-        let privateKey = PrivateKey(data: Data(hexString: "94d1a980d5e528067d44bf8a60d646f556e40ca71e17cd4ead2d56f89e4bd20f")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "94d1a980d5e528067d44bf8a60d646f556e40ca71e17cd4ead2d56f89e4bd20f")!, curve: CoinType.icon.curve)!
         let address = AnyAddress(publicKey: privateKey.getPublicKeySecp256k1(compressed: false), coin: .icon)
         XCTAssertEqual(address.description, "hx98c0832ca5bd8e8bf355ca9491888aa9725c2c48")
     }
@@ -32,7 +32,7 @@ class IconTests: XCTestCase {
     }
 
     func testSigning() {
-        let privateKey = PrivateKey(data: Data(hexString: "2d42994b2f7735bbc93a3e64381864d06747e574aa94655c516f9ad0a74eed79")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "2d42994b2f7735bbc93a3e64381864d06747e574aa94655c516f9ad0a74eed79")!, curve: CoinType.icon.curve)!
         let input = IconSigningInput.with {
             $0.fromAddress = "hxbe258ceb872e08851f1f59694dac2558708ece11"
             $0.toAddress = "hx5bfdb090f43a808005ffc27c25b213145e80b7cd"
