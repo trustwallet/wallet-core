@@ -5,8 +5,8 @@
 #pragma once
 
 #include "TWBase.h"
-#include "TWCryptoBoxPublicKey.h"
-#include "TWCryptoBoxSecretKey.h"
+#include <TrustWalletCore/Generated/TWCryptoBoxPublicKey.h>
+#include <TrustWalletCore/Generated/TWCryptoBoxSecretKey.h>
 #include "TWData.h"
 #include "TWString.h"
 

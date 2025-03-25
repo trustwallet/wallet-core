@@ -104,7 +104,16 @@ kotlin {
                     rootDir.parentFile.resolve("include"),
                     rootDir.parentFile.resolve("include/TrustWalletCore"),
                 )
-                headers(rootDir.parentFile.resolve("include/TrustWalletCore").listFiles()!!)
+                
+                // Include headers from TrustWalletCore directory
+                val trustWalletCoreDir = rootDir.parentFile.resolve("include/TrustWalletCore")
+                headers(trustWalletCoreDir.listFiles()!!.filter { it.isFile })
+                
+                // Include headers from Generated directory
+                val generatedDir = rootDir.parentFile.resolve("include/TrustWalletCore/Generated")
+                if (generatedDir.exists()) {
+                    headers(generatedDir.listFiles()!!.filter { it.isFile })
+                }
             }
         }
     }
