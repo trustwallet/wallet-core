@@ -20,18 +20,37 @@ static const size_t TWPrivateKeySize = 32;
 
 /// Create a random private key
 ///
+/// \deprecated use TWPrivateKeyCreateWithCurve.
 /// \note Should be deleted with \TWPrivateKeyDelete
 /// \return Non-null Private key
 TW_EXPORT_STATIC_METHOD
 struct TWPrivateKey* _Nonnull TWPrivateKeyCreate(void);
 
+/// Create a random private key with the given curve
+///
+/// \param curve the curve of the private key
+/// \note Should be deleted with \TWPrivateKeyDelete
+/// \return Non-null Private key
+TW_EXPORT_STATIC_METHOD
+struct TWPrivateKey* _Nonnull TWPrivateKeyCreateWithCurve(enum TWCurve curve);
+
 /// Create a private key with the given block of data
 ///
+/// \deprecated use TWPrivateKeyCreateWithDataAndCurve.
 /// \param data a block of data
 /// \note Should be deleted with \TWPrivateKeyDelete
 /// \return Nullable pointer to Private Key
 TW_EXPORT_STATIC_METHOD
 struct TWPrivateKey* _Nullable TWPrivateKeyCreateWithData(TWData* _Nonnull data);
+
+/// Create a private key with the given block of data and curve
+///
+/// \param data a block of data
+/// \param curve the curve of the private key
+/// \note Should be deleted with \TWPrivateKeyDelete
+/// \return Nullable pointer to Private Key
+TW_EXPORT_STATIC_METHOD
+struct TWPrivateKey* _Nullable TWPrivateKeyCreateWithDataAndCurve(TWData* _Nonnull data, enum TWCurve curve);
 
 /// Deep copy a given private key
 ///
@@ -123,12 +142,21 @@ struct TWPublicKey* _Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivate
 
 /// Signs a digest using ECDSA and given curve.
 ///
+/// \deprecated use TWPrivateKeySignSafe.
 /// \param pk  Non-null pointer to a Private key
 /// \param digest Non-null digest block of data
 /// \param curve Eliptic curve
 /// \return Signature as a Non-null block of data
 TW_EXPORT_METHOD
 TWData* _Nullable TWPrivateKeySign(struct TWPrivateKey* _Nonnull pk, TWData* _Nonnull digest, enum TWCurve curve);
+
+/// Signs a digest using ECDSA
+///
+/// \param pk  Non-null pointer to a Private key
+/// \param digest Non-null digest block of data
+/// \return Signature as a Non-null block of data
+TW_EXPORT_METHOD
+TWData* _Nullable TWPrivateKeySignSafe(struct TWPrivateKey* _Nonnull pk, TWData* _Nonnull digest);
 
 /// Signs a digest using ECDSA. The result is encoded with DER.
 ///

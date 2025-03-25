@@ -61,4 +61,12 @@ class PrivateKeyTests: XCTestCase {
         XCTAssertEqual(sig.hexString, "d166b1ae7892c5ef541461dc12a50214d0681b63d8037cda29a3fe6af8bb973e4ea94624d85bc0010bdc1b38d05198328fae21254adc2bf5feaf2804d54dba55")
         XCTAssertTrue(verified)
     }
+
+    func testSignWithoutCurve() {
+        let data = Data(hexString: "0139fe4d6f02e666e86a6f58e65060f115cd3c185bd9e98bd829636931458f79")!
+        let privateKey = PrivateKey(data: data, curve: .starkex)!
+        let digest = Data(hexString: "06fea80189363a786037ed3e7ba546dad0ef7de49fccae0e31eb658b7dd4ea76")!
+        let signature = privateKey.signSafe(digest: digest)!
+        XCTAssertEqual(signature.hexString, "061ec782f76a66f6984efc3a1b6d152a124c701c00abdd2bf76641b4135c770f04e44e759cea02c23568bb4d8a09929bbca8768ab68270d50c18d214166ccd9a")
+    }
 }

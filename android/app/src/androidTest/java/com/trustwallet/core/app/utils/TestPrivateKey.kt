@@ -86,4 +86,13 @@ class TestPrivateKey {
         val privateKey = PrivateKey(privateKeyData)
         assertEquals(privateKey.getPublicKey(CoinType.ETHEREUM).data().toHex(), "0x0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c166b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91");
     }
+
+    @Test
+    fun testCreateKeySigningWithoutCurve() {
+        val data = Numeric.hexStringToByteArray("0139fe4d6f02e666e86a6f58e65060f115cd3c185bd9e98bd829636931458f79")
+        var privateKey = PrivateKey(data, Curve.STARKEX)
+        val digest = Numeric.hexStringToByteArray("06fea80189363a786037ed3e7ba546dad0ef7de49fccae0e31eb658b7dd4ea76")
+        val signature = privateKey.signSafe(digest)
+        assertEquals(signature.toHex(), "0x061ec782f76a66f6984efc3a1b6d152a124c701c00abdd2bf76641b4135c770f04e44e759cea02c23568bb4d8a09929bbca8768ab68270d50c18d214166ccd9a")
+    }
 }

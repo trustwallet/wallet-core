@@ -29,6 +29,20 @@ struct TWPrivateKey *TWPrivateKeyCreate() {
     return new TWPrivateKey{ PrivateKey(std::move(bytes)) };
 }
 
+struct TWPrivateKey *TWPrivateKeyCreateWithCurve(enum TWCurve curve) {
+    Data bytes(PrivateKey::_size);
+    random_buffer(bytes.data(), PrivateKey::_size);
+    if (!PrivateKey::isValid(bytes, curve)) {
+        // Under no circumstance return an invalid private key. We'd rather
+        // crash. This also captures cases where the random generator fails
+        // since we initialize the array to zeros, which is an invalid private
+        // key.
+        std::terminate();
+    }
+
+    return new TWPrivateKey{ PrivateKey(std::move(bytes), curve) };
+}
+
 struct TWPrivateKey *_Nullable TWPrivateKeyCreateWithData(TWData *_Nonnull data) {
     auto dataSize = TWDataSize(data);
     Data bytes(dataSize);
@@ -37,6 +51,16 @@ struct TWPrivateKey *_Nullable TWPrivateKeyCreateWithData(TWData *_Nonnull data)
         return nullptr;
     }
    return new TWPrivateKey{ PrivateKey(std::move(bytes)) };
+}
+
+struct TWPrivateKey *_Nullable TWPrivateKeyCreateWithDataAndCurve(TWData *_Nonnull data, enum TWCurve curve) {
+    auto dataSize = TWDataSize(data);
+    Data bytes(dataSize);
+    TWDataCopyBytes(data, 0, dataSize, bytes.data());
+    if (!PrivateKey::isValid(bytes, curve)) {
+        return nullptr;
+    }
+    return new TWPrivateKey{ PrivateKey(std::move(bytes), curve) };
 }
 
 struct TWPrivateKey *_Nullable TWPrivateKeyCreateCopy(struct TWPrivateKey *_Nonnull key) {
@@ -98,8 +122,18 @@ TWData *TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull dige
     }
 }
 
-TWData* TWPrivateKeySignAsDER(struct TWPrivateKey* pk, TWData* digest) {
-    auto& d = *reinterpret_cast<const Data*>(digest);
+TWData *TWPrivateKeySignSafe(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest) {
+    const auto& d = *reinterpret_cast<const Data*>(digest);
+    auto result = pk->impl.sign(d);
+    if (result.empty()) {
+        return nullptr;
+    } else {
+        return TWDataCreateWithBytes(result.data(), result.size());
+    }
+}
+
+TWData *TWPrivateKeySignAsDER(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest) {
+    const auto& d = *reinterpret_cast<const Data*>(digest);
     auto result = pk->impl.signAsDER(d);
     if (result.empty()) {
         return nullptr;
