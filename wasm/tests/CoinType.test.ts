@@ -33,7 +33,7 @@ describe("CoinType", () => {
     const { CoinType, CoinTypeExt, PrivateKey, HexCoding } = globalThis.core;
 
     const data = HexCoding.decode("8778cc93c6596387e751d2dc693bbd93e434bd233bc5b68a826c56131821cb63");
-    const key = PrivateKey.createWithData(data);
+    const key = PrivateKey.createWithData(data, CoinTypeExt.curve(CoinType.solana));
     const addr = CoinTypeExt.deriveAddress(CoinType.solana, key);
     assert.equal(addr, "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q")
   });

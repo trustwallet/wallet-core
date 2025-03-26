@@ -16,14 +16,14 @@ describe("Bitcoin", () => {
   // Transfer from P2TR to P2WPKH address.
   // Successfully broadcasted: https://mempool.space/tx/a9c63dfe54f6ff462155d966a54226c456b3e43b52a9abe55d7fa87d6564c6e4
   it("test Bitcoin sign P2TR", () => {
-    const { AnySigner, BitcoinSigHashType, PrivateKey, HexCoding, CoinType } = globalThis.core;
+    const { AnySigner, BitcoinSigHashType, PrivateKey, HexCoding, CoinType, CoinTypeExt } = globalThis.core;
     const Proto = TW.BitcoinV2.Proto;
 
     const privateKeyData = HexCoding.decode("7fa638b0df495b2968ae6dc7011c4db08c86df16c91aa71a77ee6a222954e5bb");
     const dustAmount = new Long(546);
     const utxoTxId = HexCoding.decode("75ed78f0ae2bad924065d2357ef01184ceee2181c44e03337746512be9371a82").reverse();
 
-    const privateKey = PrivateKey.createWithData(privateKeyData);
+    const privateKey = PrivateKey.createWithData(privateKeyData, CoinTypeExt.curve(CoinType.bitcoin));
     const publicKey = privateKey.getPublicKeySecp256k1(true);
 
     const utxo0 = Proto.Input.create({
@@ -94,7 +94,7 @@ describe("Bitcoin", () => {
 
   // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/3e3576eb02667fac284a5ecfcb25768969680cc4c597784602d0a33ba7c654b7
   it("test Bitcoin sign BRC20 Transfer", () => {
-    const { AnySigner, BitcoinSigHashType, PrivateKey, HexCoding, CoinType } = globalThis.core;
+    const { AnySigner, BitcoinSigHashType, PrivateKey, HexCoding, CoinType, CoinTypeExt } = globalThis.core;
     const Proto = TW.BitcoinV2.Proto;
 
     const privateKeyData = HexCoding.decode("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
@@ -102,7 +102,7 @@ describe("Bitcoin", () => {
     const txIdInscription = HexCoding.decode("7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca").reverse();
     const txIdForFees = HexCoding.decode("797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1").reverse();
 
-    const privateKey = PrivateKey.createWithData(privateKeyData);
+    const privateKey = PrivateKey.createWithData(privateKeyData, CoinTypeExt.curve(CoinType.bitcoin));
     const publicKey = privateKey.getPublicKeySecp256k1(true);
     const bobAddress = "bc1qazgc2zhu2kmy42py0vs8d7yff67l3zgpwfzlpk";
 
@@ -188,14 +188,14 @@ describe("Bitcoin", () => {
 
   // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1
   it("test Bitcoin sign BRC20 Commit", () => {
-    const { AnySigner, BitcoinSigHashType, PrivateKey, HexCoding, CoinType } = globalThis.core;
+    const { AnySigner, BitcoinSigHashType, PrivateKey, HexCoding, CoinType, CoinTypeExt } = globalThis.core;
     const Proto = TW.BitcoinV2.Proto;
 
     const privateKeyData = HexCoding.decode("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
     const dustAmount = new Long(546);
     const txId = HexCoding.decode("8ec895b4d30adb01e38471ca1019bfc8c3e5fbd1f28d9e7b5653260d89989008").reverse();
 
-    const privateKey = PrivateKey.createWithData(privateKeyData);
+    const privateKey = PrivateKey.createWithData(privateKeyData, CoinTypeExt.curve(CoinType.bitcoin));
     const publicKey = privateKey.getPublicKeySecp256k1(true);
 
     const utxo0 = Proto.Input.create({
@@ -270,14 +270,14 @@ describe("Bitcoin", () => {
 
   // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca
   it("test Bitcoin sign BRC20 Reveal", () => {
-    const { AnySigner, BitcoinSigHashType, PrivateKey, HexCoding, CoinType } = globalThis.core;
+    const { AnySigner, BitcoinSigHashType, PrivateKey, HexCoding, CoinType, CoinTypeExt } = globalThis.core;
     const Proto = TW.BitcoinV2.Proto;
 
     const privateKeyData = HexCoding.decode("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
     const dustAmount = new Long(546);
     const txIdCommit = HexCoding.decode("797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1").reverse();
 
-    const privateKey = PrivateKey.createWithData(privateKeyData);
+    const privateKey = PrivateKey.createWithData(privateKeyData, CoinTypeExt.curve(CoinType.bitcoin));
     const publicKey = privateKey.getPublicKeySecp256k1(true);
 
     // Now spend just created `797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1` commit output.
