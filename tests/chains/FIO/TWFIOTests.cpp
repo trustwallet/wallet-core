@@ -19,7 +19,7 @@ namespace TW::FIO::TWFIOTests {
 using namespace std;
 
 TEST(TWFIO, Address) {
-    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035").get()));
+    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035").get(), TWCoinTypeCurve(TWCoinTypeFIO)));
     ASSERT_NE(nullptr, privateKey.get());
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false));
     ASSERT_NE(nullptr, publicKey.get());

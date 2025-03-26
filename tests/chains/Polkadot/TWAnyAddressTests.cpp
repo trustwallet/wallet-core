@@ -43,7 +43,7 @@ TEST(PolkadotAddress, Validation) {
 
 TEST(PolkadotAddress, FromPrivateKey) {
     // subkey phrase `chief menu kingdom stereo hope hazard into island bag trick egg route`
-    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("0x612d82bc053d1b4729057688ecb1ebf62745d817ddd9b595bc822f5f2ba0e41a").get()));
+    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("0x612d82bc053d1b4729057688ecb1ebf62745d817ddd9b595bc822f5f2ba0e41a").get(), TWCoinTypeCurve(TWCoinTypePolkadot)));
     const auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKey(privateKey.get(), TWCoinTypePolkadot));
     const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypePolkadot));
     const auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));

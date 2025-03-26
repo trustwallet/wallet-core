@@ -150,7 +150,7 @@ namespace TW::Ethereum {
 
     TEST(TWEthereumMessageSigner, SignAndVerifyImmutableX) {
         const auto privKeyData = "3b0a61f46fdae924007146eacb6db6642de7a5603ad843ec58e10331d89d4b84";
-        const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get()));
+        const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get(), TWCoinTypeCurve(TWCoinTypeEthereum)));
         const auto message = STRING("Only sign this request if you’ve initiated an action with Immutable X.\n\nFor internal use:\nbd717ba31dca6e0f3f136f7c4197babce5f09a9f25176044c0b3112b1b6017a3");
 
         const auto pubKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKey(privateKey.get(), TWCoinTypeEthereum));
@@ -161,7 +161,7 @@ namespace TW::Ethereum {
 
     TEST(TWEthereumMessageSigner, SignAndVerifyLegacy) {
         const auto privKeyData = "03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d";
-        const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get()));
+        const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get(), TWCoinTypeCurve(TWCoinTypeEthereum)));
         const auto message = STRING("Foo");
 
         const auto pubKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKey(privateKey.get(), TWCoinTypeEthereum));
@@ -172,7 +172,7 @@ namespace TW::Ethereum {
 
     TEST(TWEthereumMessageSigner, SignAndVerifyEip155) {
         const auto privKeyData = "03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d";
-        const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get()));
+        const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get(), TWCoinTypeCurve(TWCoinTypeEthereum)));
         const auto message = STRING("Foo");
 
         const auto pubKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKey(privateKey.get(), TWCoinTypeEthereum));
@@ -183,7 +183,7 @@ namespace TW::Ethereum {
 
     TEST(TWEthereumEip712, SignMessageAndVerifyLegacy) {
         const auto privKeyData = "03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d";
-        const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get()));
+        const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get(), TWCoinTypeCurve(TWCoinTypeEthereum)));
         auto msg = STRING(R"(
             {
                 "types": {
@@ -218,7 +218,7 @@ namespace TW::Ethereum {
 
     TEST(TWEthereumEip712, SignMessageAndVerifyEip155) {
         const auto privKeyData = "03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d";
-        const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get()));
+        const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get(), TWCoinTypeCurve(TWCoinTypeEthereum)));
         auto msg = STRING(R"(
             {
                 "types": {
@@ -259,7 +259,7 @@ namespace TW::Ethereum {
         auto typeData = load_file(path);
 
         const auto privKeyData = "9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0";
-        const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get()));
+        const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get(), TWCoinTypeCurve(TWCoinTypeEthereum)));
         auto msg = STRING(typeData.c_str());
         auto expected = "cb3a4684a991014a387a04a85b59227ebb79567c2025addcb296b4ca856e9f810d3b526f2a0d0fad6ad1b126b3b9516f8b3be020a7cca9c03ce3cf47f4199b6d1b";
         const auto signature = WRAPS(TWEthereumMessageSignerSignTypedMessage(privateKey.get(), msg.get()));

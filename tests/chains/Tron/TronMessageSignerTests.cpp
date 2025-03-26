@@ -29,7 +29,7 @@ namespace TW::Tron {
     
     TEST(TWTronMessageSigner, SignAndVerifyLegacy) {
         const auto privKeyData = "75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a";
-        const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get()));
+        const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get(), TWCoinTypeCurve(TWCoinTypeTron)));
         const auto message = STRING("Hello World");
         
         const auto pubKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKey(privateKey.get(), TWCoinTypeTron));

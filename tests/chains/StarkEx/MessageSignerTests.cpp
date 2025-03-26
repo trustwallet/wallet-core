@@ -22,7 +22,7 @@ TEST(StarkExMessageSigner, SignAndVerify) {
 
 TEST(TWStarkExMessageSigner, SignAndVerify) {
     const auto privKeyData = "04be51a04e718c202e4dca60c2b72958252024cfc1070c090dd0f170298249de";
-    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get()));
+    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get(), TWCurveStarkex));
     const auto message = STRING("463a2240432264a3aa71a5713f2a4e4c1b9e12bbb56083cd56af6d878217cf");
     
     const auto pubKey = TWPrivateKeyGetPublicKeyByType(privateKey.get(), TWPublicKeyTypeStarkex);

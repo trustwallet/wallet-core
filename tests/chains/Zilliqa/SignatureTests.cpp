@@ -14,7 +14,7 @@ using namespace TW;
 
 TEST(ZilliqaSignature, Signing) {
     auto keyData = WRAPD(TWDataCreateWithHexString(STRING("0xafeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5").get()));
-    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(keyData.get()));
+    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(keyData.get(), TWCoinTypeCurve(TWCoinTypeZilliqa)));
     auto pubKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
 
     auto message = "hello schnorr";
