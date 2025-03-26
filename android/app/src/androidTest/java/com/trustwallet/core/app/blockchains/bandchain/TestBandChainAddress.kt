@@ -19,7 +19,7 @@ class TestBandChainAddress {
     @Test
     fun testAddress() {
 
-        val key = PrivateKey("1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6".toHexByteArray())
+        val key = PrivateKey("1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6".toHexByteArray(), CoinType.BANDCHAIN.curve())
         val publicKey = key.getPublicKeySecp256k1(true)
         val address = AnyAddress(publicKey, CoinType.BANDCHAIN)
         val expected = AnyAddress("band1jf9aaj9myrzsnmpdr7twecnaftzmku2mgms4n3", CoinType.BANDCHAIN)

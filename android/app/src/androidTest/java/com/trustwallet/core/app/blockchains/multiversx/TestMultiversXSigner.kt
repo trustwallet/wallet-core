@@ -26,7 +26,7 @@ class TestMultiversXSigner {
    
     @Test
     fun signGenericAction() {
-        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray()).data())
+        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray(), CoinType.MULTIVERSX.curve()).data())
 
         val accounts = MultiversX.Accounts.newBuilder()
             .setSenderNonce(7)
@@ -58,7 +58,7 @@ class TestMultiversXSigner {
 
     @Test
     fun signGenericActionWithGuardian() {
-        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray()).data())
+        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray(), CoinType.MULTIVERSX.curve()).data())
 
         val accounts = MultiversX.Accounts.newBuilder()
             .setSenderNonce(42)
@@ -91,7 +91,7 @@ class TestMultiversXSigner {
 
     @Test
     fun signGenericActionWithRelayer() {
-        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray()).data())
+        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray(), CoinType.MULTIVERSX.curve()).data())
 
         val accounts = MultiversX.Accounts.newBuilder()
             .setSenderNonce(42)
@@ -124,7 +124,7 @@ class TestMultiversXSigner {
     @Test
     fun signGenericActionUndelegate() {
         // Successfully broadcasted https://explorer.multiversx.com/transactions/3301ae5a6a77f0ab9ceb5125258f12539a113b0c6787de76a5c5867f2c515d65
-        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray()).data())
+        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray(), CoinType.MULTIVERSX.curve()).data())
 
         val accounts = MultiversX.Accounts.newBuilder()
             .setSenderNonce(6)
@@ -157,7 +157,7 @@ class TestMultiversXSigner {
     @Test
     fun signGenericActionDelegate() {
         // Successfully broadcasted https://explorer.multiversx.com/transactions/e5007662780f8ed677b37b156007c24bf60b7366000f66ec3525cfa16a4564e7
-        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray()).data())
+        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray(), CoinType.MULTIVERSX.curve()).data())
 
         val accounts = MultiversX.Accounts.newBuilder()
             .setSenderNonce(1)
@@ -189,7 +189,7 @@ class TestMultiversXSigner {
 
     @Test
     fun signEGLDTransfer() {
-        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray()).data())
+        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray(), CoinType.MULTIVERSX.curve()).data())
 
         val accounts = MultiversX.Accounts.newBuilder()
             .setSenderNonce(7)
@@ -217,7 +217,7 @@ class TestMultiversXSigner {
 
     @Test
     fun signEGLDTransferWithGuardian() {
-        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray()).data())
+        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray(), CoinType.MULTIVERSX.curve()).data())
 
         val accounts = MultiversX.Accounts.newBuilder()
             .setSenderNonce(7)
@@ -246,7 +246,7 @@ class TestMultiversXSigner {
 
     @Test
     fun signESDTTransfer() {
-        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray()).data())
+        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray(), CoinType.MULTIVERSX.curve()).data())
 
         val accounts = MultiversX.Accounts.newBuilder()
             .setSenderNonce(7)
@@ -276,7 +276,7 @@ class TestMultiversXSigner {
 
     @Test
     fun signESDTNFTTransfer() {
-        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray()).data())
+        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray(), CoinType.MULTIVERSX.curve()).data())
 
         val accounts = MultiversX.Accounts.newBuilder()
             .setSenderNonce(7)

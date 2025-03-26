@@ -99,7 +99,7 @@ class TestBarz {
     fun testSignK1TransferAccountDeployed() {
         val signingInput = Ethereum.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483".toHexByteArray(), CoinType.ETHEREUM.curve()).data())
             chainId = ByteString.copyFrom("0x61".toHexByteArray())
             nonce = ByteString.copyFrom("0x2".toHexByteArray())
             toAddress = "0x61061fCAE11fD5461535e134EfF67A98CFFF44E9"
@@ -140,7 +140,7 @@ class TestBarz {
 
         val signingInput = Ethereum.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483".toHexByteArray(), CoinType.ETHEREUM.curve()).data())
             chainId = ByteString.copyFrom("0x61".toHexByteArray())
             nonce = ByteString.copyFrom("0x00".toHexByteArray())
             toAddress = "0x61061fCAE11fD5461535e134EfF67A98CFFF44E9"
@@ -187,7 +187,7 @@ class TestBarz {
 
         val signingInput = Ethereum.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483".toHexByteArray(), CoinType.ETHEREUM.curve()).data())
             chainId = ByteString.copyFrom("0x61".toHexByteArray())
             nonce = ByteString.copyFrom("0x03".toHexByteArray())
             txMode = TransactionMode.UserOp
@@ -284,7 +284,7 @@ class TestBarz {
 
         // Create signing input
         val signingInput = Ethereum.SigningInput.newBuilder().apply {
-            privateKey = ByteString.copyFrom(PrivateKey("3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483".toHexByteArray(), CoinType.ETHEREUM.curve()).data())
             chainId = ByteString.copyFrom(chainIdByteArray)               // 31337
             nonce = ByteString.copyFrom("0x00".toHexByteArray())
             txMode = Ethereum.TransactionMode.UserOp

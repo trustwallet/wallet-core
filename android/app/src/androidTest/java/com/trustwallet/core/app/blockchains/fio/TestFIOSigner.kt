@@ -26,7 +26,7 @@ class TestFIOSigner {
     @Test
     fun testRegisterFioAddress() {
         val chainId = ByteString.copyFrom("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77".toHexBytes())
-        val privateKey = PrivateKey("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035".toHexByteArray())
+        val privateKey = PrivateKey("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035".toHexByteArray(), CoinType.FIO.curve())
         val publicKey = privateKey.getPublicKeySecp256k1(false)
         val address = AnyAddress(publicKey, CoinType.FIO)
 
@@ -57,7 +57,7 @@ class TestFIOSigner {
     @Test
     fun testAddPubAddress() {
         val chainId = ByteString.copyFrom("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77".toHexBytes())
-        val privateKey = PrivateKey("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035".toHexByteArray())
+        val privateKey = PrivateKey("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035".toHexByteArray(), CoinType.FIO.curve())
 
         val chainParams = FIO.ChainParams.newBuilder()
             .setChainId(chainId)
@@ -88,7 +88,7 @@ class TestFIOSigner {
     @Test
     fun testTransfer() {
         val chainId = ByteString.copyFrom("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77".toHexBytes())
-        val privateKey = PrivateKey("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035".toHexByteArray())
+        val privateKey = PrivateKey("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035".toHexByteArray(), CoinType.FIO.curve())
 
         val chainParams = FIO.ChainParams.newBuilder()
             .setChainId(chainId)

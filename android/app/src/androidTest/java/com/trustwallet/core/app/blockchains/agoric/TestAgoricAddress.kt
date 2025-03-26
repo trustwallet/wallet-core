@@ -19,7 +19,7 @@ class TestAgoricAddress {
     @Test
     fun testAddress() {
 
-        val key = PrivateKey("037048190544fa57651452f477c096de4f3073e7835cf3845b04602563a73f73".toHexByteArray())
+        val key = PrivateKey("037048190544fa57651452f477c096de4f3073e7835cf3845b04602563a73f73".toHexByteArray(), CoinType.AGORIC.curve())
         val pubkey = key.getPublicKeySecp256k1(true)
         val address = AnyAddress(pubkey, CoinType.AGORIC)
         val expected = AnyAddress("agoric18zvvgk6j3eq5wd7mqxccgt20gz2w94cy88aek5", CoinType.AGORIC)

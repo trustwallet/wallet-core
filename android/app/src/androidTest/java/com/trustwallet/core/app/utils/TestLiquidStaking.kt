@@ -50,7 +50,7 @@ class TestLiquidStaking {
             maxFeePerGas = ByteString.copyFrom("0x8fbcc8fcd8".toHexByteArray())
             maxInclusionFeePerGas = ByteString.copyFrom("0x085e42c7c0".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x01c520".toHexByteArray())
-            privateKey = ByteString.copyFrom(PrivateKey("0x4a160b803c4392ea54865d0c5286846e7ad5e68fbd78880547697472b22ea7ab".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("0x4a160b803c4392ea54865d0c5286846e7ad5e68fbd78880547697472b22ea7ab".toHexByteArray(), CoinType.ETHEREUM.curve()).data())
         }.build()
 
         val output = AnySigner.sign(txInputFull, CoinType.ETHEREUM, Ethereum.SigningOutput.parser())

@@ -19,7 +19,7 @@ class TestPolkadotAddress {
     @Test
     fun testAddress() {
 
-        val key = PrivateKey("0xd65ed4c1a742699b2e20c0c1f1fe780878b1b9f7d387f934fe0a7dc36f1f9008".toHexByteArray())
+        val key = PrivateKey("0xd65ed4c1a742699b2e20c0c1f1fe780878b1b9f7d387f934fe0a7dc36f1f9008".toHexByteArray(), CoinType.POLKADOT.curve())
         val pubkey = key.publicKeyEd25519
         val address = AnyAddress(pubkey, CoinType.POLKADOT)
         val expected = AnyAddress("12twBQPiG5yVSf3jQSBkTAKBKqCShQ5fm33KQhH3Hf6VDoKW", CoinType.POLKADOT)

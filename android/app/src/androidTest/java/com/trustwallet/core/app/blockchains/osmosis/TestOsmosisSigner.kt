@@ -28,7 +28,7 @@ class TestOsmosisSigner {
 
     @Test
     fun OsmosisTransactionSigning() {
-        val key = PrivateKey("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af".toHexByteArray())
+        val key = PrivateKey("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af".toHexByteArray(), CoinType.OSMOSIS.curve())
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, OSMOSIS).description()
 

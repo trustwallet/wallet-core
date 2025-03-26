@@ -18,7 +18,7 @@ class TestAcalaAddress {
 
     @Test
     fun testAddress() {
-        val key = PrivateKey("0x9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0".toHexByteArray())
+        val key = PrivateKey("0x9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0".toHexByteArray(), CoinType.ACALA.curve())
         val pubkey = key.publicKeyEd25519
         val address = AnyAddress(pubkey, CoinType.ACALA)
         assertEquals(address.description(), "269ZCS3WLGydTN8ynhyhZfzJrXkePUcdhwgLQs6TWFs5wVL5")

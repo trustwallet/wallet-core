@@ -18,7 +18,7 @@ class TestOasisAddress {
 
     @Test
     fun testAddress() {
-        val key = PrivateKey("4f8b5676990b00e23d9904a92deb8d8f428ff289c8939926358f1d20537c21a0".toHexByteArray())
+        val key = PrivateKey("4f8b5676990b00e23d9904a92deb8d8f428ff289c8939926358f1d20537c21a0".toHexByteArray(), CoinType.OASIS.curve())
         val pubkey = key.publicKeyEd25519
         val address = AnyAddress(pubkey, CoinType.OASIS)
         val expected = AnyAddress("oasis1qzawzy5kaa2xgphenf3r0f5enpr3mx5dps559yxm", CoinType.OASIS)
