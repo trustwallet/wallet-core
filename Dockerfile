@@ -38,7 +38,7 @@ ENV CXX=/usr/bin/clang++-14
 RUN wget "https://sh.rustup.rs" -O rustup.sh \
     && sh rustup.sh -y
 ENV PATH="/root/.cargo/bin:${PATH}"
-RUN rustup default nightly-2024-06-13
+RUN rustup default nightly-2025-01-16
 RUN cargo install --force cbindgen \
     && rustup target add wasm32-unknown-emscripten
 

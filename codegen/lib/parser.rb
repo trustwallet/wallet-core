@@ -9,12 +9,13 @@ require 'type_decl'
 
 # C header parser
 class Parser
-  attr_reader :path, :entity, :entity_comment
+  attr_reader :path, :entity, :entity_comment, :is_generated
 
   def initialize(path:, string: nil)
     @path = path
     @buffer = StringScanner.new(string || File.read(path))
     @entity = nil
+    @is_generated = path.include?('Generated')
   end
 
   # Parses a C header file for class/struct declarations
@@ -134,7 +135,7 @@ class Parser
     @buffer.skip(/\s*/)
     report_error 'Invalid type name' if @buffer.scan(/struct TW(\w+)\s*;/).nil?
     report_error 'Found more than one class/struct in the same file' unless @entity.nil?
-    @entity = EntityDecl.new(name: @buffer[1], is_struct: false, comment: @entity_comment)
+    @entity = EntityDecl.new(name: @buffer[1], is_struct: false, is_generated: @is_generated, comment: @entity_comment)
     puts "Found a class #{@entity.name}"
   end
 
@@ -142,7 +143,7 @@ class Parser
     @buffer.skip(/\s*/)
     report_error 'Invalid type name at' if @buffer.scan(/struct TW(\w+)\s*\{?/).nil?
     report_error 'Found more than one class/struct in the same file' unless @entity.nil?
-    @entity = EntityDecl.new(name: @buffer[1], is_struct: true, comment: @entity_comment)
+    @entity = EntityDecl.new(name: @buffer[1], is_struct: true, is_generated: @is_generated, comment: @entity_comment)
     puts "Found a struct #{@buffer[1]}"
   end
 
