@@ -10,7 +10,9 @@ use crate::abi::prebuild::erc721::Erc721;
 use crate::address::{Address, EvmAddress};
 use crate::evm_context::EvmContext;
 use crate::transaction::access_list::{Access, AccessList};
+use crate::transaction::authorization_list::AuthorizationList;
 use crate::transaction::transaction_eip1559::TransactionEip1559;
+use crate::transaction::transaction_eip7702::TransactionEip7702;
 use crate::transaction::transaction_non_typed::TransactionNonTyped;
 use crate::transaction::user_operation::UserOperation;
 use crate::transaction::user_operation_v0_7::UserOperationV0_7;
@@ -19,6 +21,7 @@ use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::H256;
+use tw_keypair::ecdsa::secp256k1;
 use tw_memory::Data;
 use tw_number::U256;
 use tw_proto::Common::Proto::SigningError as CommonError;
@@ -152,10 +155,19 @@ impl<Context: EvmContext> TxBuilder<Context> {
                         Erc4337SimpleAccount::encode_execute_batch(calls)
                     },
                     SCAccountType::Biz4337 => Erc4337SimpleAccount::encode_execute_4337_ops(calls),
+                    SCAccountType::Biz => todo!(),
                 }
                 .map_err(abi_to_signing_error)?;
 
-                return Self::user_operation_from_proto(input, user_op_payload);
+                return match input.tx_mode {
+                    TxMode::UserOp => Self::user_operation_from_proto(input, user_op_payload),
+                    TxMode::SetCode => {
+                        Self::transaction_eip7702_from_proto(input, U256::zero(), user_op_payload)
+                    },
+                    _ => SigningError::err(SigningErrorType::Error_invalid_params).context(
+                        "Transaction batch can be used in `UserOp` or `SetCode` modes only",
+                    ),
+                };
             },
             Tx::None => {
                 return SigningError::err(SigningErrorType::Error_invalid_params)
@@ -183,9 +195,28 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 let user_op_payload = match input.user_operation_mode {
                     SCAccountType::SimpleAccount => Erc4337SimpleAccount::encode_execute(args),
                     SCAccountType::Biz4337 => Erc4337SimpleAccount::encode_execute_4337_op(args),
+                    SCAccountType::Biz => todo!(),
                 }
                 .map_err(abi_to_signing_error)?;
                 Self::user_operation_from_proto(input, user_op_payload)?
+            },
+            TxMode::SetCode => {
+                let to = to
+                    .or_tw_err(SigningErrorType::Error_invalid_address)
+                    .context("No contract/destination address specified")?;
+                let args = ExecuteArgs {
+                    to,
+                    value: eth_amount,
+                    data: payload,
+                };
+
+                let user_op_payload = match input.user_operation_mode {
+                    SCAccountType::SimpleAccount => Erc4337SimpleAccount::encode_execute(args),
+                    SCAccountType::Biz4337 => Erc4337SimpleAccount::encode_execute_4337_op(args),
+                    SCAccountType::Biz => todo!(),
+                }
+                .map_err(abi_to_signing_error)?;
+                Self::transaction_eip7702_from_proto(input, eth_amount, user_op_payload)?
             },
         };
         Ok(tx)
@@ -292,6 +323,53 @@ impl<Context: EvmContext> TxBuilder<Context> {
             payload,
             access_list,
         })
+    }
+
+    #[inline]
+    fn transaction_eip7702_from_proto(
+        input: &Proto::SigningInput,
+        eth_amount: U256,
+        payload: Data,
+    ) -> SigningResult<Box<dyn UnsignedTransactionBox>> {
+        let signer_key = secp256k1::PrivateKey::try_from(input.private_key.as_ref())
+            .into_tw()
+            .context("Sender's private key must be provided to generate an EIP-7702 transaction")?;
+        let signer = Address::with_secp256k1_pubkey(&signer_key.public());
+
+        let nonce = U256::from_big_endian_slice(&input.nonce)
+            .into_tw()
+            .context("Invalid nonce")?;
+
+        let gas_limit = U256::from_big_endian_slice(&input.gas_limit)
+            .into_tw()
+            .context("Invalid gas limit")?;
+
+        let max_inclusion_fee_per_gas =
+            U256::from_big_endian_slice(&input.max_inclusion_fee_per_gas)
+                .into_tw()
+                .context("Invalid max inclusion fee per gas")?;
+
+        let max_fee_per_gas = U256::from_big_endian_slice(&input.max_fee_per_gas)
+            .into_tw()
+            .context("Invalid max fee per gas")?;
+
+        let access_list =
+            Self::parse_access_list(&input.access_list).context("Invalid access list")?;
+
+        Ok(TransactionEip7702 {
+            nonce,
+            max_inclusion_fee_per_gas,
+            max_fee_per_gas,
+            gas_limit,
+            // EIP-7702 transaction calls a smart contract function of the authorized address.
+            to: Some(signer),
+            amount: eth_amount,
+            payload,
+            access_list,
+            // TODO
+            authorization_list: AuthorizationList::default(),
+        }
+        .into_boxed())
     }
 
     fn user_operation_v0_6_from_proto(
