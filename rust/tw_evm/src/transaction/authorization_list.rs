@@ -7,14 +7,19 @@ use crate::rlp::buffer::RlpBuffer;
 use crate::rlp::RlpEncode;
 use tw_number::U256;
 
-/// Signed authorization for 7702 txn support.
-pub struct SignedAuthorization {
+/// Authorization for 7702 txn support.
+pub struct Authorization {
     /// The chain ID of the authorization.
     pub chain_id: U256,
     /// The address of the authorization.
     pub address: Address,
     /// The nonce for the authorization.
     pub nonce: U256,
+}
+
+/// Signed authorization for 7702 txn support.
+pub struct SignedAuthorization {
+    pub authorization: Authorization,
     /// y-parity of the signature.
     pub y_parity: u8,
     /// r part of the signature.
@@ -27,9 +32,9 @@ impl RlpEncode for SignedAuthorization {
     fn rlp_append(&self, buf: &mut RlpBuffer) {
         buf.begin_list();
 
-        self.chain_id.rlp_append(buf);
-        self.address.rlp_append(buf);
-        self.nonce.rlp_append(buf);
+        self.authorization.chain_id.rlp_append(buf);
+        self.authorization.address.rlp_append(buf);
+        self.authorization.nonce.rlp_append(buf);
         self.y_parity.rlp_append(buf);
         self.r.rlp_append(buf);
         self.s.rlp_append(buf);
@@ -42,11 +47,9 @@ impl RlpEncode for SignedAuthorization {
 #[derive(Default)]
 pub struct AuthorizationList(Vec<SignedAuthorization>);
 
-impl AuthorizationList {
-    #[inline]
-    pub fn add_access(&mut self, authorization: SignedAuthorization) -> &mut Self {
-        self.0.push(authorization);
-        self
+impl From<Vec<SignedAuthorization>> for AuthorizationList {
+    fn from(value: Vec<SignedAuthorization>) -> Self {
+        AuthorizationList(value)
     }
 }
 
@@ -71,9 +74,11 @@ mod tests {
     #[test]
     fn test_encode_signed_authorization() {
         let authorization = SignedAuthorization {
-            chain_id: U256::from(123_u32),
-            address: Address::from_str("0x0101010101010101010101010101010101010101").unwrap(),
-            nonce: U256::from(321_u32),
+            authorization: Authorization {
+                chain_id: U256::from(123_u32),
+                address: Address::from_str("0x0101010101010101010101010101010101010101").unwrap(),
+                nonce: U256::from(321_u32),
+            },
             y_parity: 3,
             r: U256::from(222_u32),
             s: U256::from(333_u32),

@@ -3,14 +3,17 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::abi::abi_to_signing_error;
+use crate::abi::prebuild::biz::BizAccount;
 use crate::abi::prebuild::erc1155::Erc1155;
 use crate::abi::prebuild::erc20::Erc20;
-use crate::abi::prebuild::erc4337::{Erc4337SimpleAccount, ExecuteArgs};
+use crate::abi::prebuild::erc4337::Erc4337SimpleAccount;
 use crate::abi::prebuild::erc721::Erc721;
+use crate::abi::prebuild::ExecuteArgs;
 use crate::address::{Address, EvmAddress};
 use crate::evm_context::EvmContext;
+use crate::modules::authorization_signer::AuthorizationSigner;
 use crate::transaction::access_list::{Access, AccessList};
-use crate::transaction::authorization_list::AuthorizationList;
+use crate::transaction::authorization_list::{Authorization, AuthorizationList};
 use crate::transaction::transaction_eip1559::TransactionEip1559;
 use crate::transaction::transaction_eip7702::TransactionEip7702;
 use crate::transaction::transaction_non_typed::TransactionNonTyped;
@@ -150,19 +153,12 @@ impl<Context: EvmContext> TxBuilder<Context> {
                     .iter()
                     .map(Self::erc4337_execute_call_from_proto)
                     .collect::<Result<Vec<_>, _>>()?;
-                let user_op_payload = match input.user_operation_mode {
-                    SCAccountType::SimpleAccount => {
-                        Erc4337SimpleAccount::encode_execute_batch(calls)
-                    },
-                    SCAccountType::Biz4337 => Erc4337SimpleAccount::encode_execute_4337_ops(calls),
-                    SCAccountType::Biz => todo!(),
-                }
-                .map_err(abi_to_signing_error)?;
+                let execute_payload = Self::encode_execute_batch(input.user_operation_mode, calls)?;
 
                 return match input.tx_mode {
-                    TxMode::UserOp => Self::user_operation_from_proto(input, user_op_payload),
+                    TxMode::UserOp => Self::user_operation_from_proto(input, execute_payload),
                     TxMode::SetCode => {
-                        Self::transaction_eip7702_from_proto(input, U256::zero(), user_op_payload)
+                        Self::transaction_eip7702_from_proto(input, U256::zero(), execute_payload)
                     },
                     _ => SigningError::err(SigningErrorType::Error_invalid_params).context(
                         "Transaction batch can be used in `UserOp` or `SetCode` modes only",
@@ -192,12 +188,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
                     data: payload,
                 };
 
-                let user_op_payload = match input.user_operation_mode {
-                    SCAccountType::SimpleAccount => Erc4337SimpleAccount::encode_execute(args),
-                    SCAccountType::Biz4337 => Erc4337SimpleAccount::encode_execute_4337_op(args),
-                    SCAccountType::Biz => todo!(),
-                }
-                .map_err(abi_to_signing_error)?;
+                let user_op_payload = Self::encode_execute(input.user_operation_mode, args)?;
                 Self::user_operation_from_proto(input, user_op_payload)?
             },
             TxMode::SetCode => {
@@ -210,13 +201,8 @@ impl<Context: EvmContext> TxBuilder<Context> {
                     data: payload,
                 };
 
-                let user_op_payload = match input.user_operation_mode {
-                    SCAccountType::SimpleAccount => Erc4337SimpleAccount::encode_execute(args),
-                    SCAccountType::Biz4337 => Erc4337SimpleAccount::encode_execute_4337_op(args),
-                    SCAccountType::Biz => todo!(),
-                }
-                .map_err(abi_to_signing_error)?;
-                Self::transaction_eip7702_from_proto(input, eth_amount, user_op_payload)?
+                let execute_payload = Self::encode_execute(input.user_operation_mode, args)?;
+                Self::transaction_eip7702_from_proto(input, eth_amount, execute_payload)?
             },
         };
         Ok(tx)
@@ -356,6 +342,29 @@ impl<Context: EvmContext> TxBuilder<Context> {
         let access_list =
             Self::parse_access_list(&input.access_list).context("Invalid access list")?;
 
+        let authority: Address = input
+            .eip7702_authority
+            .as_ref()
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("'eip7702Authority' must be provided for `SetCode` transaction")?
+            .address
+            // Parse `Address`
+            .parse()
+            .into_tw()
+            .context("Invalid authority address")?;
+
+        let chain_id = U256::from_big_endian_slice(&input.chain_id)
+            .into_tw()
+            .context("Invalid chain ID")?;
+
+        let authorization = Authorization {
+            chain_id,
+            address: authority,
+            nonce,
+        };
+        let signed_authorization = AuthorizationSigner::sign(&signer_key, authorization)?;
+        let authorization_list = AuthorizationList::from(vec![signed_authorization]);
+
         Ok(TransactionEip7702 {
             nonce,
             max_inclusion_fee_per_gas,
@@ -366,8 +375,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
             amount: eth_amount,
             payload,
             access_list,
-            // TODO
-            authorization_list: AuthorizationList::default(),
+            authorization_list,
         }
         .into_boxed())
     }
@@ -511,6 +519,29 @@ impl<Context: EvmContext> TxBuilder<Context> {
             paymaster_data: user_op_v0_7.paymaster_data.to_vec(),
             entry_point,
         })
+    }
+
+    #[inline]
+    fn encode_execute(account_type: SCAccountType, args: ExecuteArgs) -> SigningResult<Data> {
+        match account_type {
+            SCAccountType::SimpleAccount => Erc4337SimpleAccount::encode_execute(args),
+            SCAccountType::Biz4337 => BizAccount::encode_execute_4337_op(args),
+            SCAccountType::Biz => BizAccount::encode_execute(args),
+        }
+        .map_err(abi_to_signing_error)
+    }
+
+    #[inline]
+    fn encode_execute_batch(
+        account_type: SCAccountType,
+        calls: Vec<ExecuteArgs>,
+    ) -> SigningResult<Data> {
+        match account_type {
+            SCAccountType::SimpleAccount => Erc4337SimpleAccount::encode_execute_batch(calls),
+            SCAccountType::Biz4337 => BizAccount::encode_execute_4337_ops(calls),
+            SCAccountType::Biz => BizAccount::encode_execute_batch(calls),
+        }
+        .map_err(abi_to_signing_error)
     }
 
     fn parse_address(addr: &str) -> SigningResult<Address> {
