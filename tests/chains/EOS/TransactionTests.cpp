@@ -55,7 +55,7 @@ TEST(EOSTransaction, Serialization) {
 
     // make transaction invalid and see if signing succeeds
     tx.maxNetUsageWords = UINT32_MAX;
-    ASSERT_THROW(signer.sign(PrivateKey(Hash::sha256(std::string("A"))), Type::ModernK1, tx), std::invalid_argument);
+    ASSERT_THROW(signer.sign(PrivateKey(Hash::sha256(std::string("A")), TWCurveSECP256k1), Type::ModernK1, tx), std::invalid_argument);
 
     referenceBlockId = parse_hex("000067d6f6a7e7799a1f3d487439a679f8cf95f1c986f35c0d2fa320f51a7144");
     referenceBlockTime = 1554209118;

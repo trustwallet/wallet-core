@@ -114,34 +114,12 @@ TWPrivateKeyType PrivateKey::getType(TWCurve curve) noexcept {
     }
 }
 
- PrivateKey::PrivateKey(const Data& data) {
-     if (!isValid(data)) {
-         throw std::invalid_argument("Invalid private key data");
-     }
-     bytes = data;
- }
-
 PrivateKey::PrivateKey(const Data& data, TWCurve curve) {
     if (!isValid(data, curve)) {
         throw std::invalid_argument("Invalid private key data");
     }
     bytes = data;
     _curve = curve;
-}
-
-PrivateKey::PrivateKey(
-    const Data& key1, const Data& extension1, const Data& chainCode1,
-    const Data& key2, const Data& extension2, const Data& chainCode2) {
-    if (key1.size() != _size || extension1.size() != _size || chainCode1.size() != _size ||
-        key2.size() != _size || extension2.size() != _size || chainCode2.size() != _size) {
-        throw std::invalid_argument("Invalid private key or extended key data");
-    }
-    bytes = key1;
-    append(bytes, extension1);
-    append(bytes, chainCode1);
-    append(bytes, key2);
-    append(bytes, extension2);
-    append(bytes, chainCode2);
 }
 
 PrivateKey::PrivateKey(
@@ -230,13 +208,10 @@ int ecdsa_sign_digest_checked(const ecdsa_curve* curve, const uint8_t* priv_key,
     return ecdsa_sign_digest(curve, priv_key, digest, sig, pby, is_canonical);
 }
 
-Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
-    if (_curve.has_value() && _curve.value() != curve) {
-        throw std::invalid_argument("Specified curve is different from the curve of the private key");
-    }
+Data PrivateKey::sign(const Data& digest) const {
     Data result;
     bool success = false;
-    switch (curve) {
+    switch (_curve) {
         case TWCurveSECP256k1: {
             result.resize(65);
             success = ecdsa_sign_digest_checked(&secp256k1, key().data(), digest.data(), digest.size(), result.data(), result.data() + 64, nullptr) == 0;
@@ -270,7 +245,7 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
             success = ecdsa_sign_digest_checked(&nist256p1, key().data(), digest.data(), digest.size(), result.data(), result.data() + 64, nullptr) == 0;
         } break;
     case TWCurveStarkex: {
-        result = rust_private_key_sign(key(), digest, curve);
+        result = rust_private_key_sign(key(), digest, _curve);
         success = result.size() == 64;
     } break;
     case TWCurveNone:
@@ -285,19 +260,9 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
 }
 
 Data PrivateKey::sign(const Data& digest, int (*canonicalChecker)(uint8_t by, uint8_t sig[64])) const {
-    if (!_curve.has_value()) {
-        throw std::invalid_argument("Curve is not set");
-    }
-    return sign(digest, _curve.value(), canonicalChecker);
-}
-
-Data PrivateKey::sign(const Data& digest, TWCurve curve, int (*canonicalChecker)(uint8_t by, uint8_t sig[64])) const {
-    if (_curve.has_value() && _curve.value() != curve) {
-        throw std::invalid_argument("Specified curve is different from the curve of the private key");
-    }
     Data result;
     bool success = false;
-    switch (curve) {
+    switch (_curve) {
     case TWCurveSECP256k1: {
         result.resize(65);
         success = ecdsa_sign_digest_checked(&secp256k1, key().data(), digest.data(), digest.size(), result.data() + 1, result.data(), canonicalChecker) == 0;
@@ -325,15 +290,8 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve, int (*canonicalChecker)
     return result;
 }
 
-Data PrivateKey::sign(const Data& digest) const {
-    if (!_curve.has_value()) {
-        throw std::invalid_argument("Curve is not set");
-    }
-    return sign(digest, _curve.value());
-}
-
 Data PrivateKey::signAsDER(const Data& digest) const {
-    if (_curve.has_value() && _curve.value() != TWCurveSECP256k1) {
+    if (_curve != TWCurveSECP256k1) {
         throw std::invalid_argument("DER signature is only supported for SECP256k1");
     }
     Data sig(64);
@@ -352,7 +310,7 @@ Data PrivateKey::signAsDER(const Data& digest) const {
 }
 
 Data PrivateKey::signZilliqa(const Data& message) const {
-    if (_curve.has_value() && _curve.value() != TWCurveSECP256k1) {
+    if (_curve != TWCurveSECP256k1) {
         throw std::invalid_argument("Zilliqa signature is only supported for SECP256k1");
     }
     Data sig(64);

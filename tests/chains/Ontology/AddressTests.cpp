@@ -4,7 +4,7 @@
 
 #include "HexCoding.h"
 #include "PublicKey.h"
-
+#include "TestUtilities.h"
 #include "Ontology/Address.h"
 #include "Ontology/Signer.h"
 
@@ -34,9 +34,9 @@ TEST(OntologyAddress, fromString) {
 }
 
 TEST(OntologyAddress, fromMultiPubKeys) {
-    auto signer1 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646")));
-    auto signer2 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464652")));
-    auto signer3 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464658")));
+    auto signer1 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"), TWCoinTypeCurve(TWCoinTypeOntology)));
+    auto signer2 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464652"), TWCoinTypeCurve(TWCoinTypeOntology)));
+    auto signer3 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464658"), TWCoinTypeCurve(TWCoinTypeOntology)));
     std::vector<Data> pubKeys{signer1.getPublicKey().bytes, signer2.getPublicKey().bytes, signer3.getPublicKey().bytes};
     uint8_t m = 2;
     auto multiAddress = Address(m, pubKeys);

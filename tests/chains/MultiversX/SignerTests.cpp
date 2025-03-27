@@ -709,7 +709,7 @@ TEST(ElrondSigner, buildSigningOutput) {
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     auto unsignedTxBytes = Signer::buildUnsignedTxBytes(input);
-    auto signature = privateKey.sign(unsignedTxBytes, TWCurveED25519);
+    auto signature = privateKey.sign(unsignedTxBytes);
 
     auto output = Signer::buildSigningOutput(input, signature);
     std::string expectedSignatureHex = "e8647dae8b16e034d518a1a860c6a6c38d16192d0f1362833e62424f424e5da660770dff45f4b951d9cc58bfb9d14559c977d443449bfc4b8783ff9c84065700";

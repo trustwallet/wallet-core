@@ -14,7 +14,7 @@ namespace TW::Hedera::tests {
 TEST(TWAnySignerHedera, Sign) {
     // Successfully broadcasted: https://hashscan.io/testnet/transaction/0.0.48694347-1667222879-749068449?t=1667222891.440398729&p=1
     Proto::SigningInput input;
-    auto privateKey = PrivateKey(parse_hex("e87a5584c0173263e138db689fdb2a7389025aaae7cb1a18a1017d76012130e8"));
+    auto privateKey = PrivateKey(parse_hex("e87a5584c0173263e138db689fdb2a7389025aaae7cb1a18a1017d76012130e8"), TWCoinTypeCurve(TWCoinTypeHedera));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     auto* body = input.mutable_body();
 

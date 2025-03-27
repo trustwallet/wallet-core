@@ -34,7 +34,7 @@ TEST(NEOCompiler, CompileWithSignatures) {
 
     TW::NEO::Proto::SigningInput input;
     auto privateKey =
-        PrivateKey(parse_hex("F18B2F726000E86B4950EBEA7BFF151F69635951BC4A31C44F28EE6AF7AEC128"));
+        PrivateKey(parse_hex("F18B2F726000E86B4950EBEA7BFF151F69635951BC4A31C44F28EE6AF7AEC128"), TWCoinTypeCurve(coin));
     auto publicKey = privateKey.getPublicKey(publicKeyType(coin));
     input.set_gas_asset_id(GAS_ASSET_ID);
     input.set_gas_change_address("AdtSLMBqACP4jv8tRWwyweXGpyGG46eMXV");

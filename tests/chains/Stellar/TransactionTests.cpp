@@ -37,7 +37,7 @@ TEST(StellarTransaction, sign) {
 }
 
 TEST(StellarTransaction, signWithMemoText) {
-    auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
+    auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"), TWCoinTypeCurve(TWCoinTypeStellar));
     auto input = TW::Stellar::Proto::SigningInput();
     input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
@@ -57,7 +57,7 @@ TEST(StellarTransaction, signWithMemoText) {
 }
 
 TEST(StellarTransaction, signWithMemoHash) {
-    auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
+    auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"), TWCoinTypeCurve(TWCoinTypeStellar));
     auto input = TW::Stellar::Proto::SigningInput();
     input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
@@ -78,7 +78,7 @@ TEST(StellarTransaction, signWithMemoHash) {
 }
 
 TEST(StellarTransaction, signWithMemoReturn) {
-    auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
+    auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"), TWCoinTypeCurve(TWCoinTypeStellar));
     auto input = TW::Stellar::Proto::SigningInput();
     input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
@@ -99,7 +99,7 @@ TEST(StellarTransaction, signWithMemoReturn) {
 }
 
 TEST(StellarTransaction, signWithMemoID) {
-    auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
+    auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"), TWCoinTypeCurve(TWCoinTypeStellar));
     auto input = TW::Stellar::Proto::SigningInput();
     input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
@@ -119,7 +119,7 @@ TEST(StellarTransaction, signWithMemoID) {
 }
 
 TEST(StellarTransaction, signAcreateAccount) {
-    auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
+    auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"), TWCoinTypeCurve(TWCoinTypeStellar));
     auto input = TW::Stellar::Proto::SigningInput();
     input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");

@@ -17,7 +17,7 @@ using namespace std;
 TEST(NEOSigner, FromPublicPrivateKey) {
     auto hexPrvKey = "4646464646464646464646464646464646464646464646464646464646464646";
     auto hexPubKey = "031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486";
-    auto signer = Signer(PrivateKey(parse_hex(hexPrvKey)));
+    auto signer = Signer(PrivateKey(parse_hex(hexPrvKey), TWCurveNIST256p1));
     auto prvKey = signer.getPrivateKey();
     auto pubKey = signer.getPublicKey();
 
@@ -42,7 +42,7 @@ TEST(NEOSigner, SigningData) {
 TEST(NEOAccount, validity) {
     auto hexPrvKey = "4646464646464646464646464646464646464646464646464646464646464646";
     auto hexPubKey = "031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486";
-    auto signer = Signer(PrivateKey(parse_hex(hexPrvKey)));
+    auto signer = Signer(PrivateKey(parse_hex(hexPrvKey), TWCurveNIST256p1));
     auto prvKey = signer.getPrivateKey();
     auto pubKey = signer.getPublicKey();
     EXPECT_EQ(hexPrvKey, hex(prvKey.bytes));

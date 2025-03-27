@@ -37,7 +37,7 @@ TEST(TWAnySingerStellar, Sign_Payment) {
 
 TEST(TWAnySingerStellar, Sign_Payment_66b5) {
     auto key = parse_hex("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9");
-    PrivateKey privKey = PrivateKey(key);
+    PrivateKey privKey = PrivateKey(key, TWCoinTypeCurve(TWCoinTypeStellar));
     PublicKey pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519);
     Address addr = Address(pubKey);
     EXPECT_EQ(addr.string(), "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
@@ -60,7 +60,7 @@ TEST(TWAnySingerStellar, Sign_Payment_66b5) {
 
 TEST(TWAnySingerStellar, Sign_Payment_Asset_ea50) {
     auto key = parse_hex("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9");
-    PrivateKey privKey = PrivateKey(key);
+    PrivateKey privKey = PrivateKey(key, TWCoinTypeCurve(TWCoinTypeStellar));
     PublicKey pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519);
     Address addr = Address(pubKey);
     EXPECT_EQ(addr.string(), "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
@@ -85,7 +85,7 @@ TEST(TWAnySingerStellar, Sign_Payment_Asset_ea50) {
 
 TEST(TWAnySingerStellar, Sign_Change_Trust_ad9c) {
     auto key = parse_hex("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9");
-    PrivateKey privKey = PrivateKey(key);
+    PrivateKey privKey = PrivateKey(key, TWCoinTypeCurve(TWCoinTypeStellar));
     PublicKey pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519);
     Address addr = Address(pubKey);
     EXPECT_EQ(addr.string(), "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
@@ -109,7 +109,7 @@ TEST(TWAnySingerStellar, Sign_Change_Trust_ad9c) {
 
 TEST(TWAnySingerStellar, Sign_Change_Trust_2) {
     auto key = parse_hex("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9");
-    PrivateKey privKey = PrivateKey(key);
+    PrivateKey privKey = PrivateKey(key, TWCoinTypeCurve(TWCoinTypeStellar));
     PublicKey pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519);
     Address addr = Address(pubKey);
     EXPECT_EQ(addr.string(), "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
@@ -132,7 +132,7 @@ TEST(TWAnySingerStellar, Sign_Change_Trust_2) {
 
 TEST(TWAnySingerStellar, Sign_Create_Claimable_Balance_1f1f84) {
     auto key = parse_hex("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9");
-    PrivateKey privKey = PrivateKey(key);
+    PrivateKey privKey = PrivateKey(key, TWCoinTypeCurve(TWCoinTypeStellar));
     PublicKey pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519);
     Address addr = Address(pubKey);
     EXPECT_EQ(addr.string(), "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
@@ -158,7 +158,7 @@ TEST(TWAnySingerStellar, Sign_Create_Claimable_Balance_1f1f84) {
 
 TEST(TWAnySingerStellar, Sign_Claim_Claimable_Balance_c1fb3c) {
     auto key = parse_hex("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9");
-    PrivateKey privKey = PrivateKey(key);
+    PrivateKey privKey = PrivateKey(key, TWCoinTypeCurve(TWCoinTypeStellar));
     PublicKey pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519);
     Address addr = Address(pubKey);
     EXPECT_EQ(addr.string(), "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");

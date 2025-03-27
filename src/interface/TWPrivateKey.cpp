@@ -40,7 +40,7 @@ struct TWPrivateKey *_Nullable TWPrivateKeyCreateWithData(TWData *_Nonnull data,
 }
 
 struct TWPrivateKey *_Nullable TWPrivateKeyCreateCopy(struct TWPrivateKey *_Nonnull key) {
-   return new TWPrivateKey{ PrivateKey(key->impl.bytes) };
+   return new TWPrivateKey{ PrivateKey(key->impl.bytes, key->impl.curve()) };
 }
 
 void TWPrivateKeyDelete(struct TWPrivateKey *_Nonnull pk) {

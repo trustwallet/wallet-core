@@ -24,7 +24,7 @@ TEST(TezosMessageSigner, formatMessage) {
 
 TEST(TezosMessageSigner, SignMessage) {
     auto payload = Tezos::MessageSigner::inputToPayload("Tezos Signed Message: testUrl 2023-02-08T10:36:18.454Z Hello World");
-    PrivateKey privKey(parse_hex("91b4fb8d7348db2e7de2693f58ce1cceb966fa960739adac1d9dba2cbaa0940a"));
+    PrivateKey privKey(parse_hex("91b4fb8d7348db2e7de2693f58ce1cceb966fa960739adac1d9dba2cbaa0940a"), TWCoinTypeCurve(TWCoinTypeTezos));
     auto result = Tezos::MessageSigner::signMessage(privKey, payload);
     auto expected = "edsigu3se2fcEJUCm1aqxjzbHdf7Wsugr4mLaA9YM2UVZ9Yy5meGv87VqHN3mmDeRwApTj1JKDaYjqmLZifSFdWCqBoghqaowwJ";
     ASSERT_EQ(result, expected);

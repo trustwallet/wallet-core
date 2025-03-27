@@ -5,8 +5,10 @@
 #include "HexCoding.h"
 #include "Ontology/Ont.h"
 
-#include <string>
+#include <TrustWalletCore/TWCoinType.h>
+
 #include <gtest/gtest.h>
+#include <string>
 
 namespace TW::Ontology::tests {
 
@@ -32,10 +34,10 @@ TEST(OntologyOnt, queryBalance) {
 }
 
 TEST(OntologyOnt, transfer) {
-    PrivateKey privateKey1(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"));
+    PrivateKey privateKey1(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"), TWCoinTypeCurve(TWCoinTypeOntology));
     Signer signer1(privateKey1);
 
-    PrivateKey privateKey2(parse_hex("4646464646464646464646464646464646464646464646464646464646464652"));
+    PrivateKey privateKey2(parse_hex("4646464646464646464646464646464646464646464646464646464646464652"), TWCoinTypeCurve(TWCoinTypeOntology));
     Signer signer2(privateKey2);
 
     auto toAddress = Address("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn");

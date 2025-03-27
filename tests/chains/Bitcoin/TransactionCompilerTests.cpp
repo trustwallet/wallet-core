@@ -249,9 +249,9 @@ TEST(BitcoinCompiler, CompileWithSignatures) {
         // 2 private keys are needed (despite >2 UTXOs)
         auto key0 = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
         auto key1 = parse_hex("7878787878787878787878787878787878787878787878787878787878787878");
-        EXPECT_EQ(hex(PrivateKey(key0).getPublicKey(TWPublicKeyTypeSECP256k1).bytes),
+        EXPECT_EQ(hex(PrivateKey(key0, TWCurveSECP256k1).getPublicKey(TWPublicKeyTypeSECP256k1).bytes),
                   hex(inPubKey0));
-        EXPECT_EQ(hex(PrivateKey(key1).getPublicKey(TWPublicKeyTypeSECP256k1).bytes),
+        EXPECT_EQ(hex(PrivateKey(key1, TWCurveSECP256k1).getPublicKey(TWPublicKeyTypeSECP256k1).bytes),
                   hex(inPubKey1));
         *input.add_private_key() = std::string(key0.begin(), key0.end());
         *input.add_private_key() = std::string(key1.begin(), key1.end());
@@ -299,7 +299,7 @@ TEST(BitcoinCompiler, CompileWithSignaturesV2) {
     Bitcoin::Proto::SigningInput inputLegacy;
     auto& input = *inputLegacy.mutable_signing_v2();
 
-    const PrivateKey alicePrivateKey(parse_hex("56429688a1a6b00b90ccd22a0de0a376b6569d8684022ae92229a28478bfb657"));
+    const PrivateKey alicePrivateKey(parse_hex("56429688a1a6b00b90ccd22a0de0a376b6569d8684022ae92229a28478bfb657"), TWCurveSECP256k1);
     const auto alicePublicKey = alicePrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     const auto bobPublicKey = parse_hex("037ed9a436e11ec4947ac4b7823787e24ba73180f1edd2857bff19c9f4d62b65bf");
 
@@ -351,7 +351,7 @@ TEST(BitcoinCompiler, CompileWithSignaturesV2) {
 
     // Step 3: Simulate signature, normally obtained from signature server
 
-    const auto sig0 = alicePrivateKey.sign(data(sighash0.sighash()), TWCurveSECP256k1);
+    const auto sig0 = alicePrivateKey.sign(data(sighash0.sighash()));
     EXPECT_EQ(hex(sig0), "78eda020d4b86fcb3af78ef919912e6d79b81164dbbb0b0b96da6ac58a2de4b11a5fd8d48734d5a02371c4b5ee551a69dca3842edbf577d863cf8ae9fdbbd45900");
 
     // Step 4: Compile transaction info

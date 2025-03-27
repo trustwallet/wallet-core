@@ -12,7 +12,7 @@
 namespace TW::StarkEx::tests {
 
 TEST(StarkExMessageSigner, SignAndVerify) {
-    PrivateKey starkPrivKey(parse_hex("04be51a04e718c202e4dca60c2b72958252024cfc1070c090dd0f170298249de", true));
+    PrivateKey starkPrivKey(parse_hex("04be51a04e718c202e4dca60c2b72958252024cfc1070c090dd0f170298249de", true), TWCurveStarkex);
     auto starkPubKey  = starkPrivKey.getPublicKey(TWPublicKeyTypeStarkex);
     auto starkMsg = "463a2240432264a3aa71a5713f2a4e4c1b9e12bbb56083cd56af6d878217cf";
     auto starkSignature = StarkEx::MessageSigner::signMessage(starkPrivKey, starkMsg);

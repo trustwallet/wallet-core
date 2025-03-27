@@ -18,7 +18,7 @@ TEST(GroestlcoinAddress, FromPublicKey) {
     const auto address = Address(publicKey, 36);
     ASSERT_EQ(address.string(), "Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM");
 
-    const auto privateKey = PrivateKey(parse_hex("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a"));
+    const auto privateKey = PrivateKey(parse_hex("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a"), TWCoinTypeCurve(TWCoinTypeGroestlcoin));
     const auto publicKey2 = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeED25519));
     EXPECT_ANY_THROW(new Address(publicKey2, 36));
 }

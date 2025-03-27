@@ -24,7 +24,7 @@ TEST(ThetaCompiler, CompileWithSignatures) {
     const auto coin = TWCoinTypeTheta;
     /// Step 1: Prepare transaction input (protobuf)
     const auto pkFrom =
-        PrivateKey(parse_hex("0x93a90ea508331dfdf27fb79757d4250b4e84954927ba0073cd67454ac432c737"));
+        PrivateKey(parse_hex("0x93a90ea508331dfdf27fb79757d4250b4e84954927ba0073cd67454ac432c737"), TWCoinTypeCurve(coin));
     const auto publicKey = pkFrom.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
     TW::Theta::Proto::SigningInput input;
     input.set_chain_id("privatenet");

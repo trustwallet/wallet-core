@@ -63,7 +63,7 @@ TEST(NEOAddress, Invalid) {
 }
 
 TEST(NEOAddress, FromPrivateKey) {
-    auto key = PrivateKey(parse_hex("0x2A9EAB0FEC93CD94FA0A209AC5604602C1F0105FB02EAB398E17B4517C2FFBAB"));
+    auto key = PrivateKey(parse_hex("0x2A9EAB0FEC93CD94FA0A209AC5604602C1F0105FB02EAB398E17B4517C2FFBAB"), TWCurveNIST256p1);
     auto publicKey = key.getPublicKey(TWPublicKeyTypeNIST256p1);
     auto address = Address(publicKey);
     ASSERT_EQ(address.string(), "AQCSMB3oSDA1dHPn6GXN6KB4NHmdo1fX41");

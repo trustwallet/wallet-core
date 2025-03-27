@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 
+#include "TestUtilities.h"
 #include "Ethereum/RLP.h"
 #include "Harmony/Address.h"
 #include "Harmony/Signer.h"
@@ -54,7 +55,7 @@ TEST(HarmonySigner, RLPEncodingAndHashAssumeLocalNet) {
 
 TEST(HarmonySigner, SignAssumeLocalNet) {
     auto key =
-        PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"));
+        PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"), TWCoinTypeCurve(TWCoinTypeHarmony));
     auto signer = SignerExposed(LOCAL_NET);
 
     uint256_t v("0x28");
@@ -77,7 +78,7 @@ TEST(HarmonySigner, SignProtoBufAssumeLocalNet) {
 
     trasactionMsg->set_to_address(TEST_RECEIVER.string());
     const auto privateKey =
-        PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"));
+        PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"), TWCoinTypeCurve(TWCoinTypeHarmony));
     auto payload = parse_hex("");
     trasactionMsg->set_payload(payload.data(), payload.size());
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -119,7 +120,7 @@ TEST(HarmonySigner, SignOverProtoBufAssumeMainNet) {
     auto trasactionMsg = input.mutable_transaction_message();
     trasactionMsg->set_to_address(TEST_RECEIVER.string());
     const auto privateKey =
-        PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"));
+        PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"), TWCoinTypeCurve(TWCoinTypeHarmony));
     auto payload = parse_hex("");
     trasactionMsg->set_payload(payload.data(), payload.size());
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -166,7 +167,7 @@ TEST(HarmonySigner, BuildSigningOutput) {
     auto trasactionMsg = input.mutable_transaction_message();
     trasactionMsg->set_to_address(TEST_RECEIVER.string());
     const auto privateKey =
-        PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"));
+        PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"), TWCoinTypeCurve(TWCoinTypeHarmony));
     auto payload = parse_hex("");
     trasactionMsg->set_payload(payload.data(), payload.size());
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -216,7 +217,7 @@ TEST(HarmonySigner, BuildUnsignedTxBytes) {
     auto trasactionMsg = input.mutable_transaction_message();
     trasactionMsg->set_to_address(TEST_RECEIVER.string());
     const auto privateKey =
-        PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"));
+        PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"), TWCoinTypeCurve(TWCoinTypeHarmony));
     auto payload = parse_hex("");
     trasactionMsg->set_payload(payload.data(), payload.size());
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -254,7 +255,7 @@ TEST(HarmonySigner, BuildUnsignedStakingTxBytes) {
     auto input = Proto::SigningInput();
     auto stakingMsg = input.mutable_staking_message();
     const auto privateKey =
-        PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"));
+        PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"), TWCoinTypeCurve(TWCoinTypeHarmony));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     auto value = store(MAIN_NET);

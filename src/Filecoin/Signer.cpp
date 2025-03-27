@@ -47,7 +47,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
 Data Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexcept {
     Data toSign = Hash::blake2b(transaction.cid(), 32);
-    auto signature = privateKey.sign(toSign, TWCurveSECP256k1);
+    auto signature = privateKey.sign(toSign);
     return Data(signature.begin(), signature.end());
 }
 

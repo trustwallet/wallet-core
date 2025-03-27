@@ -21,7 +21,7 @@
 
 namespace TW::Bitcoin::MessageSignerTests {
 
-const auto gPrivateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+const auto gPrivateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCoinTypeCurve(TWCoinTypeBitcoin));
 
 TEST(BitcoinMessageSigner, VerifyMessage) {
     EXPECT_TRUE(MessageSigner::verifyMessage(

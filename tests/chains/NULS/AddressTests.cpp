@@ -5,6 +5,8 @@
 #include "NULS/Address.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
+#include "TestUtilities.h"
+
 #include <gtest/gtest.h>
 
 namespace TW::NULS::tests {
@@ -41,7 +43,7 @@ TEST(NULSAddress, FromString) {
 
 TEST(NULSAddress, FromPrivateKey) {
     const auto privateKey =
-        PrivateKey(parse_hex("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a"));
+        PrivateKey(parse_hex("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a"), TWCoinTypeCurve(TWCoinTypeNULS));
     const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
     const auto address = Address(publicKey, true);
     ASSERT_EQ(address.string(), "NULSd6HghWa4CN5qdxqMwYVikQxRZyj57Jn4L");
@@ -58,7 +60,7 @@ TEST(NULSAddress, FromCompressedPublicKey) {
 }
 
 TEST(NULSAddress, FromPrivateKey33) {
-    const auto privateKey = PrivateKey(parse_hex("d77580833f0b3c35b7114c23d6b66790d726c308baf237ec8c369152f2c08d27"));
+    const auto privateKey = PrivateKey(parse_hex("d77580833f0b3c35b7114c23d6b66790d726c308baf237ec8c369152f2c08d27"), TWCoinTypeCurve(TWCoinTypeNULS));
     const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
     const auto address = Address(publicKey, true);
 

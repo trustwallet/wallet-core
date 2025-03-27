@@ -6,6 +6,8 @@
 
 #include "Ontology/Ong.h"
 
+#include <TrustWalletCore/TWCoinType.h>
+
 #include <gtest/gtest.h>
 #include <string>
 
@@ -33,10 +35,10 @@ TEST(OntologyOng, balanceOf) {
 }
 
 TEST(OntologyOng, transfer) {
-    PrivateKey privateKey1(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"));
+    PrivateKey privateKey1(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"), TWCoinTypeCurve(TWCoinTypeOntology));
     Signer signer1(privateKey1);
 
-    PrivateKey privateKey2(parse_hex("4646464646464646464646464646464646464646464646464646464646464652"));
+    PrivateKey privateKey2(parse_hex("4646464646464646464646464646464646464646464646464646464646464652"), TWCoinTypeCurve(TWCoinTypeOntology));
     Signer signer2(privateKey2);
 
     Address toAddress("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn");
@@ -72,10 +74,10 @@ TEST(OntologyOng, transfer) {
 }
 
 TEST(OntologyOng, withdraw) {
-    PrivateKey privateKey1(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"));
+    PrivateKey privateKey1(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"), TWCoinTypeCurve(TWCoinTypeOntology));
     Signer signer1(privateKey1);
 
-    PrivateKey privateKey2(parse_hex("4646464646464646464646464646464646464646464646464646464646464652"));
+    PrivateKey privateKey2(parse_hex("4646464646464646464646464646464646464646464646464646464646464652"), TWCoinTypeCurve(TWCoinTypeOntology));
     Signer signer2(privateKey2);
 
     uint32_t nonce = 0;

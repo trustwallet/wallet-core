@@ -12,7 +12,7 @@
 
 namespace TW::Tron {
     TEST(TronMessageSigner, SignMessageAndVerify) {
-        PrivateKey tronKey(parse_hex("75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a"));
+        PrivateKey tronKey(parse_hex("75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a"), TWCoinTypeCurve(TWCoinTypeTron));
         auto msg = "Hello World";
         auto signature = Tron::MessageSigner::signMessage(tronKey, msg);
         auto pubKey = tronKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);

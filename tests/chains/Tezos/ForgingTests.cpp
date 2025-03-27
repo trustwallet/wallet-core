@@ -100,7 +100,7 @@ TEST(Forging, forge_tz3) {
 TEST(Forging, ForgeED25519PublicKey) {
     auto expected = "00311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff95";
 
-    auto privateKey = PrivateKey(parse_hex("c6377a4cc490dc913fc3f0d9cf67d293a32df4547c46cb7e9e33c3b7b97c64d8"));
+    auto privateKey = PrivateKey(parse_hex("c6377a4cc490dc913fc3f0d9cf67d293a32df4547c46cb7e9e33c3b7b97c64d8"), TWCoinTypeCurve(TWCoinTypeTezos));
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
     auto output = forgePublicKey(publicKey);
 
@@ -134,7 +134,7 @@ TEST(Forging, ForgeMichelsonFA12) {
 TEST(Forging, ForgeSECP256k1PublicKey) {
     auto expected = "0102b4ac9056d20c52ac11b0d7e83715dd3eac851cfc9cb64b8546d9ea0d4bb3bdfe";
 
-    auto privateKey = PrivateKey(parse_hex("3a8e0a528f62f4ca2c77744c8a571def2845079b50105a9f7ef6b1b823def67a"));
+    auto privateKey = PrivateKey(parse_hex("3a8e0a528f62f4ca2c77744c8a571def2845079b50105a9f7ef6b1b823def67a"), TWCoinTypeCurve(TWCoinTypeTezos));
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto output = forgePublicKey(publicKey);
 

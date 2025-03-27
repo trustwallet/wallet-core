@@ -42,7 +42,7 @@ Proto::SigningOutput Signer::compile(const Proto::SigningInput& input, const Dat
 
 Data Signer::signData(const PrivateKey& privKey, const Data& data) {
     Data hash = Hash::sha256(data);
-    Data signature = privKey.sign(hash, TWCurveSECP256k1, isCanonical);
+    Data signature = privKey.sign(hash, isCanonical);
     return signature;
 }
 

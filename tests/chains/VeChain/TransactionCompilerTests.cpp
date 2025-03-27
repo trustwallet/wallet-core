@@ -25,7 +25,7 @@ TEST(VechainCompiler, CompileWithSignatures) {
     /// Step 1: Prepare transaction input (protobuf)
     TW::VeChain::Proto::SigningInput input;
     PrivateKey privateKey =
-        PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
+        PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"), TWCoinTypeCurve(TWCoinTypeVeChain));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     auto publicKey = privateKey.getPublicKey(publicKeyType(coin));
 

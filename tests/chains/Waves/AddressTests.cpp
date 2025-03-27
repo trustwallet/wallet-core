@@ -24,7 +24,7 @@ TEST(WavesAddress, SecureHash) {
 
 TEST(WavesAddress, FromPrivateKey) {
     const auto privateKey =
-        PrivateKey(parse_hex("9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a"));
+        PrivateKey(parse_hex("9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a"), TWCoinTypeCurve(TWCoinTypeWaves));
     const auto publicKeyEd25519 = privateKey.getPublicKey(TWPublicKeyTypeED25519);
     ASSERT_EQ(hex(Data(publicKeyEd25519.bytes.begin(), publicKeyEd25519.bytes.end())),
               "ff84c4bfc095df25b01e48807715856d95af93d88c5b57f30cb0ce567ca4ced6");

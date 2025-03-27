@@ -47,11 +47,11 @@ TEST(MultiversXAddress, FromData) {
 }
 
 TEST(MultiversXAddress, FromPrivateKey) {
-    auto aliceKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto aliceKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     auto alice = Address(aliceKey.getPublicKey(TWPublicKeyTypeED25519));
     ASSERT_EQ(ALICE_BECH32, alice.string());
 
-    auto bobKey = PrivateKey(parse_hex(BOB_SEED_HEX));
+    auto bobKey = PrivateKey(parse_hex(BOB_SEED_HEX), TWCurveED25519);
     auto bob = Address(bobKey.getPublicKey(TWPublicKeyTypeED25519));
     ASSERT_EQ(BOB_BECH32, bob.string());
 }
