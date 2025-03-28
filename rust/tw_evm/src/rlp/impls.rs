@@ -10,7 +10,11 @@ use tw_number::U256;
 
 impl RlpEncode for u8 {
     fn rlp_append(&self, buf: &mut RlpBuffer) {
-        buf.append_data(&[*self])
+        if *self == 0 {
+            buf.append_data(&[])
+        } else {
+            buf.append_data(&[*self])
+        }
     }
 }
 

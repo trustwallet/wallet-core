@@ -142,11 +142,6 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 (amount, payload, to_address)
             },
             Tx::batch(ref batch) => {
-                if input.tx_mode != TxMode::UserOp {
-                    return SigningError::err(SigningErrorType::Error_invalid_params)
-                        .context("Transaction batch can be used in User Operation mode only");
-                }
-
                 // Payload should match ERC4337 standard.
                 let calls: Vec<_> = batch
                     .calls
