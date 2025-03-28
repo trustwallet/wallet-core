@@ -355,7 +355,8 @@ impl<Context: EvmContext> TxBuilder<Context> {
         let authorization = Authorization {
             chain_id,
             address: authority,
-            nonce,
+            // `authorization.nonce` must be incremented by 1 over `transaction.nonce`.
+            nonce: nonce + 1,
         };
         let signed_authorization = AuthorizationSigner::sign(&signer_key, authorization)?;
         let authorization_list = AuthorizationList::from(vec![signed_authorization]);
