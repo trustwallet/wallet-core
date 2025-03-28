@@ -17,8 +17,10 @@ use tw_memory::Data;
 use tw_number::U256;
 
 pub mod access_list;
+pub mod authorization_list;
 pub mod signature;
 pub mod transaction_eip1559;
+pub mod transaction_eip7702;
 pub mod transaction_non_typed;
 pub mod user_operation;
 pub mod user_operation_v0_7;
