@@ -17,7 +17,7 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
     toAddress = input.to_address();
     changeAddress = input.change_address();
     for (auto&& key : input.private_key()) {
-        privateKeys.emplace_back(key);
+        privateKeys.emplace_back(key, TWCurveSECP256k1);
     }
     for (auto&& script : input.scripts()) {
         scripts[script.first] = Script(script.second.begin(), script.second.end());

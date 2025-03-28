@@ -8,7 +8,7 @@ import XCTest
 class NativeInjectiveTests: XCTestCase {
     
     func testAddress() {
-        let key = PrivateKey(data: Data(hexString: "9ee18daf8e463877aaf497282abc216852420101430482a28e246c179e2c5ef1")!)!
+        let key = PrivateKey(data: Data(hexString: "9ee18daf8e463877aaf497282abc216852420101430482a28e246c179e2c5ef1")!, curve: CoinType.nativeInjective.curve)!
         let pubkey = key.getPublicKeySecp256k1(compressed: false)
         let address = AnyAddress(publicKey: pubkey, coin: .nativeInjective)
         let addressFromString = AnyAddress(string: "inj13u6g7vqgw074mgmf2ze2cadzvkz9snlwcrtq8a", coin: .nativeInjective)!
@@ -17,7 +17,7 @@ class NativeInjectiveTests: XCTestCase {
     }
 
     func testSign() {
-        let privateKey = PrivateKey(data: Data(hexString: "9ee18daf8e463877aaf497282abc216852420101430482a28e246c179e2c5ef1")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "9ee18daf8e463877aaf497282abc216852420101430482a28e246c179e2c5ef1")!, curve: CoinType.nativeInjective.curve)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
         let fromAddress = AnyAddress(publicKey: publicKey, coin: .nativeInjective)
 

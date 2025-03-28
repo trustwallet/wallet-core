@@ -19,7 +19,7 @@ class TestKusamaAddress {
     @Test
     fun testAddress() {
 
-        val key = PrivateKey("0x85fca134b3fe3fd523d8b528608d803890e26c93c86dc3d97b8d59c7b3540c97".toHexByteArray())
+        val key = PrivateKey("0x85fca134b3fe3fd523d8b528608d803890e26c93c86dc3d97b8d59c7b3540c97".toHexByteArray(), CoinType.KUSAMA.curve())
         val pubkey = key.publicKeyEd25519
         val address = AnyAddress(pubkey, CoinType.KUSAMA)
         val expected = AnyAddress("HewiDTQv92L2bVtkziZC8ASxrFUxr6ajQ62RXAnwQ8FDVmg", CoinType.KUSAMA)

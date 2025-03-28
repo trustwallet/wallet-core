@@ -67,7 +67,7 @@ static inline Proto::SigningOutput sign(const proto::TransactionBody& body, cons
     auto protoOutput = Proto::SigningOutput();
     Data encoded;
     auto encodedBody = data(body.SerializeAsString());
-    auto signedBody = privateKey.sign(encodedBody, TWCurveED25519);
+    auto signedBody = privateKey.sign(encodedBody);
     auto sigMap = proto::SignatureMap();
     auto* sigPair = sigMap.add_sigpair();
     sigPair->set_ed25519(signedBody.data(), signedBody.size());
@@ -86,7 +86,7 @@ static inline Proto::SigningOutput sign(const proto::TransactionBody& body, cons
 namespace TW::Hedera {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveED25519);
     auto body = internals::transactionBodyPrerequisites(input);
 
     switch (input.body().data_case()) {

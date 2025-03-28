@@ -25,7 +25,7 @@ TEST(TWPublicKeyTests, Create) {
 }
 
 TEST(TWPublicKeyTests, CreateFromPrivateSecp256k1) {
-    const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveSECP256k1);
     const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
 
@@ -43,7 +43,7 @@ TEST(TWPublicKeyTests, CreateInvalid) {
 }
 
 TEST(TWPublicKeyTests, CompressedExtended) {
-    const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveCurve25519);
     const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
     EXPECT_EQ(TWPublicKeyKeyType(publicKey.get()), TWPublicKeyTypeSECP256k1);
@@ -66,21 +66,21 @@ TEST(TWPublicKeyTests, CompressedExtended) {
 }
 
 TEST(TWPublicKeyTests, Verify) {
-    const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveSECP256k1);
     const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
 
     const char* message = "Hello";
     auto messageData = WRAPD(TWDataCreateWithBytes((const uint8_t*)message, strlen(message)));
     auto digest = WRAPD(TWHashKeccak256(messageData.get()));
 
-    auto signature = WRAPD(TWPrivateKeySign(privateKey.get(), digest.get(), TWCurveSECP256k1));
+    auto signature = WRAPD(TWPrivateKeySign(privateKey.get(), digest.get()));
 
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false));
     ASSERT_TRUE(TWPublicKeyVerify(publicKey.get(), signature.get(), digest.get()));
 }
 
 TEST(TWPublicKeyTests, VerifyAsDER) {
-    const PrivateKey key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const PrivateKey key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveSECP256k1);
     const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
 
     const char* message = "Hello";
@@ -97,18 +97,19 @@ TEST(TWPublicKeyTests, VerifyAsDER) {
 }
 
 TEST(TWPublicKeyTests, VerifyEd25519) {
-    const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
-    const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
-
     const char* message = "Hello";
     auto messageData = WRAPD(TWDataCreateWithBytes((const uint8_t*)message, strlen(message)));
     auto digest = WRAPD(TWHashSHA256(messageData.get()));
 
-    auto signature = WRAPD(TWPrivateKeySign(privateKey.get(), digest.get(), TWCurveED25519));
-    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(privateKey.get()));
+    const PrivateKey key1(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveED25519);
+    const auto privateKey1 = WRAP(TWPrivateKey, new TWPrivateKey{ key1 });
+    auto signature = WRAPD(TWPrivateKeySign(privateKey1.get(), digest.get()));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(privateKey1.get()));
 
-    auto signature2 = WRAPD(TWPrivateKeySign(privateKey.get(), digest.get(), TWCurveED25519Blake2bNano));
-    auto publicKey2 = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519Blake2b(privateKey.get()));
+    const PrivateKey key2(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveED25519Blake2bNano);
+    const auto privateKey2 = WRAP(TWPrivateKey, new TWPrivateKey{ key2 });
+    auto signature2 = WRAPD(TWPrivateKeySign(privateKey2.get(), digest.get()));
+    auto publicKey2 = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519Blake2b(privateKey2.get()));
 
     ASSERT_TRUE(TWPublicKeyVerify(publicKey.get(), signature.get(), digest.get()));
     ASSERT_TRUE(TWPublicKeyVerify(publicKey2.get(), signature2.get(), digest.get()));

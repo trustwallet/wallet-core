@@ -6,6 +6,7 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "Solana/Address.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 
@@ -22,7 +23,7 @@ TEST(SolanaAddress, FromPublicKey) {
         ASSERT_EQ(addressString, address.string());
     }
     {
-        const auto privateKey = PrivateKey(parse_hex("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a"));
+        const auto privateKey = PrivateKey(parse_hex("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a"), TWCoinTypeCurve(TWCoinTypeSolana));
         const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
         EXPECT_ANY_THROW(new Address(publicKey));
     }

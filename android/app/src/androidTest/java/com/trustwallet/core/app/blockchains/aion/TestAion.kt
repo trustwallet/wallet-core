@@ -22,7 +22,7 @@ class TestAionAddress {
 
     @Test
     fun testAddressFromPublicKey() {
-        val privateKey = PrivateKey("db33ffdf82c7ba903daf68d961d3c23c20471a8ce6b408e52d579fd8add80cc9".toHexByteArray())
+        val privateKey = PrivateKey("db33ffdf82c7ba903daf68d961d3c23c20471a8ce6b408e52d579fd8add80cc9".toHexByteArray(), CoinType.AION.curve())
         val publicKey = privateKey.getPublicKeyEd25519()
         val address = AnyAddress(publicKey, CoinType.AION)
 

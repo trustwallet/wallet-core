@@ -16,7 +16,7 @@ describe("Ethereum", () => {
 
     assert.isTrue(PrivateKey.isValid(data, Curve.secp256k1));
 
-    const key = PrivateKey.createWithData(data);
+    const key = PrivateKey.createWithData(data, Curve.secp256k1);
     const pubKey = key.getPublicKeySecp256k1(false);
 
     assert.equal(
@@ -104,9 +104,9 @@ describe("Ethereum", () => {
 
     assert.equal(HexCoding.encode(hash), "0x1da44b586eb0729ff70a73c326926f6ed5a25f5b056e7f47fbc6e58d86871655");
 
-    var key = PrivateKey.createWithData(HexCoding.decode("1fcb84974220eb76e619d7208e1446ae9c0f755e97fb220a8f61c7dc03a0dfce"));
+    var key = PrivateKey.createWithData(HexCoding.decode("1fcb84974220eb76e619d7208e1446ae9c0f755e97fb220a8f61c7dc03a0dfce"), Curve.secp256k1);
 
-    const signature = key.sign(hash, Curve.secp256k1);
+    const signature = key.sign(hash);
 
     assert.equal(HexCoding.encode(signature), "0x58156c371347613642e94b66abc4ced8e36011fb3233f5372371aa5ad321671b1a10c0b88f47ce543fd4c455761f5fbf8f61d050f57dcba986640011da794a9000");
 
@@ -116,7 +116,7 @@ describe("Ethereum", () => {
   it("test signing EIP712 message", () => {
     const { EthereumAbi, HexCoding, Hash, PrivateKey, Curve } = globalThis.core;;
 
-    const key = PrivateKey.createWithData(Hash.keccak256(Buffer.from("cow")));
+    const key = PrivateKey.createWithData(Hash.keccak256(Buffer.from("cow")), Curve.secp256k1);
     const message = {
       types: {
         EIP712Domain: [
@@ -156,7 +156,7 @@ describe("Ethereum", () => {
     };
 
     const hash = EthereumAbi.encodeTyped(JSON.stringify(message));
-    const signature = key.sign(hash, Curve.secp256k1);
+    const signature = key.sign(hash);
   
     assert.equal(HexCoding.encode(hash), "0xbe609aee343fb3c4b28e1df9e632fca64fcfaede20f02e86244efddf30957bd2");
     assert.equal(HexCoding.encode(signature), "0x4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b9156201");

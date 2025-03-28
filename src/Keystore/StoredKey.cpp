@@ -61,8 +61,8 @@ StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(const std::string& na
     StoredKey key = createWithPrivateKey(name, password, privateKeyData, encryption);
     const auto derivationPath = TW::derivationPath(coin);
     const auto pubKeyType = TW::publicKeyType(coin);
-    const auto pubKey = PrivateKey(privateKeyData).getPublicKey(pubKeyType);
-    const auto address = TW::deriveAddress(coin, PrivateKey(privateKeyData));
+    const auto pubKey = PrivateKey(privateKeyData, TWCoinTypeCurve(coin)).getPublicKey(pubKeyType);
+    const auto address = TW::deriveAddress(coin, PrivateKey(privateKeyData, TWCoinTypeCurve(coin)));
     key.accounts.emplace_back(address, coin, TWDerivationDefault, derivationPath, hex(pubKey.bytes), "");
     return key;
 }
@@ -261,7 +261,7 @@ const PrivateKey StoredKey::privateKey(TWCoinType coin, [[maybe_unused]] TWDeriv
         return wallet.getKey(coin, account.derivationPath);
     }
     // type == StoredKeyType::privateKey
-    return PrivateKey(payload.decrypt(password));
+    return PrivateKey(payload.decrypt(password), TWCoinTypeCurve(coin));
 }
 
 void StoredKey::fixAddresses(const Data& password) {
@@ -280,12 +280,12 @@ void StoredKey::fixAddresses(const Data& password) {
     } break;
 
     case StoredKeyType::privateKey: {
-        auto key = PrivateKey(payload.decrypt(password));
         for (auto& account : accounts) {
             if (!account.address.empty() && !account.publicKey.empty() &&
                 TW::validateAddress(account.coin, account.address)) {
                 continue;
             }
+            auto key = PrivateKey(payload.decrypt(password), TWCoinTypeCurve(account.coin));
             updateAddressForAccount(key, account);
         }
     } break;

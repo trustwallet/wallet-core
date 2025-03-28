@@ -14,7 +14,7 @@ class TestHarmonyAddress {
 
     @Test
     fun testAddressFromPrivateKey() {
-         val key = PrivateKey(Base58.decodeNoCheck("GGzxJ4QmKCXH2juK89RVAmvFAfdUfUARCvxEsBM356vX"))
+         val key = PrivateKey(Base58.decodeNoCheck("GGzxJ4QmKCXH2juK89RVAmvFAfdUfUARCvxEsBM356vX"), CoinType.HARMONY.curve())
          val pubkey = key.getPublicKeySecp256k1(false)
          val address = AnyAddress(pubkey, CoinType.HARMONY)
          assertEquals(address.description(), targetAddress)

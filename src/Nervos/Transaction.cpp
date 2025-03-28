@@ -197,7 +197,7 @@ Common::Proto::SigningError Transaction::signWitnesses(const PrivateKey& private
     }
 
     auto messageHash = Hash::blake2b(message, 32, Constants::gHashPersonalization);
-    auto signature = privateKey.sign(messageHash, TWCurveSECP256k1);
+    auto signature = privateKey.sign(messageHash);
     if (signature.empty()) {
         // Error: Failed to sign
         return Common::Proto::Error_signing;

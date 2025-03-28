@@ -31,7 +31,7 @@ std::string nodeToHexString(const HDNode& node) {
 }
 
 Data publicKeyFromPrivateKey(const Data& privateKey) {
-    return PrivateKey(privateKey).getPublicKey(TWPublicKeyTypeSECP256k1).bytes;
+    return PrivateKey(privateKey, TWCurveSECP256k1).getPublicKey(TWPublicKeyTypeSECP256k1).bytes;
 }
 
 TEST(HDWalletInternal, SquareDerivationRoutes) {

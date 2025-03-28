@@ -65,7 +65,7 @@ MessageData createSignedMessage(PublicKey& publicKey, PrivateKey& key, bool boun
     auto payloadCell = payloadCopy.intoCell();
 
     Data data(payloadCell->hash.begin(), payloadCell->hash.end());
-    auto signature = key.sign(data, TWCurveED25519);
+    auto signature = key.sign(data);
     payload.prependRaw(signature, static_cast<uint16_t>(signature.size()) * 8);
 
     auto header = std::make_shared<ExternalInboundMessageHeader>(InitData(publicKey).computeAddr(WorkchainType::Basechain));

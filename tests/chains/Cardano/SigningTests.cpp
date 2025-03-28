@@ -143,7 +143,7 @@ TEST(CardanoSigning, SendNft) {
     utxo3->set_address(fromAddress);
     utxo3->set_amount(2000000);
 
-    PrivateKey privKey(parse_hex(fromAddressPrivKey));
+    PrivateKey privKey(parse_hex(fromAddressPrivKey), TWCurveED25519ExtendedCardano);
     input.add_private_key(privKey.bytes.data(), privKey.bytes.size());
 
     // Set an output info.
@@ -615,7 +615,7 @@ TEST(CardanoSigning, SignTransferFromLegacy) {
 
     const auto privateKeyData = parse_hex("98f266d1aac660179bc2f456033941238ee6b2beb8ed0f9f34c9902816781f5a9903d1d395d6ab887b65ea5e344ef09b449507c21a75f0ce8c59d0ed1c6764eba7f484aa383806735c46fd769c679ee41f8952952036a6e2338ada940b8a91f4e890ca4eb6bec44bf751b5a843174534af64d6ad1f44e0613db78a7018781f5aa151d2997f52059466b715d8eefab30a78b874ae6ef4931fa58bb21ef8ce2423d46f19d0fbf75afb0b9a24e31d533f4fd74cee3b56e162568e8defe37123afc4");
     {
-        const auto privKey = PrivateKey(privateKeyData);
+        const auto privKey = PrivateKey(privateKeyData, TWCurveED25519ExtendedCardano);
         const auto pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         const auto addr = AddressV2(pubKey);
         EXPECT_EQ(addr.string(), "Ae2tdPwUPEZ6vkqxSjJxaQYmDxHf5DTnxtZ67pFLJGTb9LTnCGkDP6ca3f8");
@@ -1012,7 +1012,9 @@ TEST(CardanoSigning, SignMessageWithKey) {
         "69272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000"
         "1111111111111111111111111111111111111111111111111111111111111111"
         "1111111111111111111111111111111111111111111111111111111111111111"
-        "1111111111111111111111111111111111111111111111111111111111111111"));
+        "1111111111111111111111111111111111111111111111111111111111111111"),
+        TWCurveED25519ExtendedCardano
+    );
 
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
     EXPECT_EQ(hex(publicKey.bytes),
@@ -1024,7 +1026,7 @@ TEST(CardanoSigning, SignMessageWithKey) {
     const auto sampleMessageStr = "Hello world";
     const auto sampleMessage = data(sampleMessageStr);
 
-    const auto signature = privateKey.sign(sampleMessage, TWCurveED25519ExtendedCardano);
+    const auto signature = privateKey.sign(sampleMessage);
 
     const auto sampleRightSignature = "1096ddcfb2ad21a4c0d861ef3fabe18841e8de88105b0d8e36430d7992c588634ead4100c32b2800b31b65e014d54a8238bdda63118d829bf0bcf1b631e86f0e";
     EXPECT_EQ(hex(signature), sampleRightSignature);

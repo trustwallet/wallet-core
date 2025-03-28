@@ -46,7 +46,7 @@ bool Address::addrPri(const string& coinid, const string& prikey_in, string& res
         return false;
     }
     auto ctype = (TWCoinType)coin.c;
-    PrivateKey priKey = PrivateKey(priDat);
+    PrivateKey priKey = PrivateKey(priDat, TWCoinTypeCurve(ctype));
     res = TW::deriveAddress(ctype, priKey);
     return true;
 }

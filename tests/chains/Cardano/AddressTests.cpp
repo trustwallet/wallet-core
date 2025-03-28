@@ -324,7 +324,7 @@ TEST(CardanoAddress, FromPrivateKeyV3) {
             parse_hex("d809b1b4b4c74734037f76aace501730a3fe2fca30b5102df99ad3f7c0103e48"),
             parse_hex("d54cde47e9041b31f3e6873d700d83f7a937bea746dadfa2c5b0a6a92502356c"),
             parse_hex("69272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000"),
-            dummyKey, dummyKey, dummyKey);
+            dummyKey, dummyKey, dummyKey, TWCurveED25519);
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
         EXPECT_ANY_THROW(new AddressV3(publicKey));
     }
@@ -409,7 +409,7 @@ TEST(CardanoAddress, FromPrivateKeyV2) {
             parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"),
             parse_hex("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff"),
             parse_hex("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4"),
-            dummyKey, dummyKey, dummyKey
+            dummyKey, dummyKey, dummyKey, TWCurveED25519ExtendedCardano
         );
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         ASSERT_EQ(hex(publicKey.bytes),
@@ -426,7 +426,7 @@ TEST(CardanoAddress, FromPrivateKeyV2) {
             parse_hex("a089c9423100960440ccd5b7adbd202d1ab1993a7bb30fc88b287d94016df247"),
             parse_hex("da86a87f08fb15de1431a6c0ccd5ebf51c3bee81f7eaf714801bbbe4d903154a"),
             parse_hex("e513fa1290da1d22e83a41f17eed72d4489483b561fff36b9555ffdb91c430e2"),
-            dummyKey, dummyKey, dummyKey
+            dummyKey, dummyKey, dummyKey, TWCurveED25519ExtendedCardano
         );
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         ASSERT_EQ(hex(publicKey.bytes),
@@ -443,7 +443,7 @@ TEST(CardanoAddress, FromPrivateKeyV2) {
             parse_hex("d809b1b4b4c74734037f76aace501730a3fe2fca30b5102df99ad3f7c0103e48"),
             parse_hex("d54cde47e9041b31f3e6873d700d83f7a937bea746dadfa2c5b0a6a92502356c"),
             parse_hex("69272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000"),
-            dummyKey, dummyKey, dummyKey
+            dummyKey, dummyKey, dummyKey, TWCurveED25519ExtendedCardano
         );
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         ASSERT_EQ(hex(publicKey.bytes),
@@ -460,7 +460,7 @@ TEST(CardanoAddress, FromPrivateKeyV2) {
             parse_hex("d809b1b4b4c74734037f76aace501730a3fe2fca30b5102df99ad3f7c0103e48"),
             parse_hex("d54cde47e9041b31f3e6873d700d83f7a937bea746dadfa2c5b0a6a92502356c"),
             parse_hex("69272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000"),
-            dummyKey, dummyKey, dummyKey);
+            dummyKey, dummyKey, dummyKey, TWCurveED25519);
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
         EXPECT_ANY_THROW(new AddressV2(publicKey));
     }
@@ -472,14 +472,14 @@ TEST(CardanoAddress, PrivateKeyExtended) {
         parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"),
         parse_hex("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff"),
         parse_hex("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4"),
-        dummyKey, dummyKey, dummyKey
+        dummyKey, dummyKey, dummyKey, TWCurveED25519ExtendedCardano
     );
     auto publicKeyExt = privateKeyExt.getPublicKey(TWPublicKeyTypeED25519Cardano);
     ASSERT_EQ(128ul, publicKeyExt.bytes.size());
 
     // Non-extended: both are 32 bytes.
     auto privateKeyNonext = PrivateKey(
-        parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"));
+        parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"), TWCurveED25519);
     auto publicKeyNonext = privateKeyNonext.getPublicKey(TWPublicKeyTypeED25519);
     ASSERT_EQ(32ul, publicKeyNonext.bytes.size());
 }

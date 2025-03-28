@@ -169,7 +169,7 @@ class TestBitcoinSigning {
         val dustSatoshis = 546.toLong()
         val txId = Numeric.hexStringToByteArray("8ec895b4d30adb01e38471ca1019bfc8c3e5fbd1f28d9e7b5653260d89989008").reversedArray()
 
-        val privateKey = PrivateKey(privateKeyData)
+        val privateKey = PrivateKey(privateKeyData, CoinType.BITCOIN.curve())
         val publicKey = ByteString.copyFrom(privateKey.getPublicKeySecp256k1(true).data())
 
         val utxo0 = BitcoinV2.Input.newBuilder()
@@ -235,7 +235,7 @@ class TestBitcoinSigning {
         val dustSatoshis = 546.toLong()
         val txIdCommit = Numeric.hexStringToByteArray("797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1").reversedArray()
 
-        val privateKey = PrivateKey(privateKeyData)
+        val privateKey = PrivateKey(privateKeyData, CoinType.BITCOIN.curve())
         val publicKey = ByteString.copyFrom(privateKey.getPublicKeySecp256k1(true).data())
 
         val utxo0 = BitcoinV2.Input.newBuilder()
@@ -295,7 +295,7 @@ class TestBitcoinSigning {
         val txIdInscription = Numeric.hexStringToByteArray("7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca").reversedArray()
         val txIdForFees = Numeric.hexStringToByteArray("797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1").reversedArray()
 
-        val privateKey = PrivateKey(privateKeyData)
+        val privateKey = PrivateKey(privateKeyData, CoinType.BITCOIN.curve())
         val publicKey = ByteString.copyFrom(privateKey.getPublicKeySecp256k1(true).data())
         val bobAddress = "bc1qazgc2zhu2kmy42py0vs8d7yff67l3zgpwfzlpk"
 

@@ -6,6 +6,7 @@
 #include "Filecoin/Signer.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 
@@ -13,7 +14,7 @@ namespace TW::Filecoin {
 
 TEST(FilecoinSigner, DerivePublicKey) {
     const PrivateKey privateKey(
-        parse_hex("1d969865e189957b9824bd34f26d5cbf357fda1a6d844cbf0c9ab1ed93fa7dbe"));
+        parse_hex("1d969865e189957b9824bd34f26d5cbf357fda1a6d844cbf0c9ab1ed93fa7dbe"), TWCoinTypeCurve(TWCoinTypeFilecoin));
     const PublicKey publicKey((privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended)));
     const Address address = Address::secp256k1Address(publicKey);
     ASSERT_EQ(address.string(), "f1z4a36sc7mfbv4z3qwutblp2flycdui3baffytbq");
@@ -21,7 +22,7 @@ TEST(FilecoinSigner, DerivePublicKey) {
 
 TEST(FilecoinSigner, Sign) {
     const PrivateKey privateKey(
-        parse_hex("1d969865e189957b9824bd34f26d5cbf357fda1a6d844cbf0c9ab1ed93fa7dbe"));
+        parse_hex("1d969865e189957b9824bd34f26d5cbf357fda1a6d844cbf0c9ab1ed93fa7dbe"), TWCoinTypeCurve(TWCoinTypeFilecoin));
     const PublicKey publicKey((privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended)));
     const Address fromAddress = Address::secp256k1Address(publicKey);
     const Address toAddress("f1rletqqhinhagw6nxjcr4kbfws25thgt7owzuruy");

@@ -22,7 +22,7 @@ class TestAgoricSigner {
 
     @Test
     fun AgoricTransactionSigning() {
-        val key = PrivateKey("037048190544fa57651452f477c096de4f3073e7835cf3845b04602563a73f73".toHexByteArray())
+        val key = PrivateKey("037048190544fa57651452f477c096de4f3073e7835cf3845b04602563a73f73".toHexByteArray(), CoinType.AGORIC.curve())
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, CoinType.AGORIC).description()
 

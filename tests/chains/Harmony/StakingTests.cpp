@@ -20,7 +20,7 @@ static bool testAccountDecodeResult =
     Address::decode("one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9", TEST_ACCOUNT);
 
 static auto PRIVATE_KEY =
-    PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
+    PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"), TWCoinTypeCurve(TWCoinTypeHarmony));
 
 TEST(HarmonyStaking, SignCreateValidator) {
     auto input = Proto::SigningInput();

@@ -138,10 +138,11 @@ public final class KeyStore {
             return try self.import(mnemonic: mnemonic, name: name, encryptPassword: newPassword, coins: coins)
         }
 
-        guard let privateKey = PrivateKey(data: data) else {
+        let coin = coins.first ?? .ethereum
+        guard let privateKey = PrivateKey(data: data, curve: coin.curve) else {
             throw Error.invalidKey
         }
-        return try self.import(privateKey: privateKey, name: name, password: newPassword, coin: coins.first ?? .ethereum)
+        return try self.import(privateKey: privateKey, name: name, password: newPassword, coin: coin)
     }
 
     private func checkMnemonic(_ data: Data) -> String? {

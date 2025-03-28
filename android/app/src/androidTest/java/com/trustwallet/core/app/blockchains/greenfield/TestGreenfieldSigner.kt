@@ -24,7 +24,7 @@ class TestGreenfieldSigner {
         // Successfully broadcasted: https://greenfieldscan.com/tx/ED8508F3C174C4430B8EE718A6D6F0B02A8C516357BE72B1336CF74356529D19
 
         val key =
-            PrivateKey("825d2bb32965764a98338139412c7591ed54c951dd65504cd8ddaeaa0fea7b2a".toHexByteArray())
+            PrivateKey("825d2bb32965764a98338139412c7591ed54c951dd65504cd8ddaeaa0fea7b2a".toHexByteArray(), CoinType.GREENFIELD.curve())
 
         val msgSend = Greenfield.Message.Send.newBuilder().apply {
             fromAddress = "0xA815ae0b06dC80318121745BE40e7F8c6654e9f3"
@@ -74,7 +74,7 @@ class TestGreenfieldSigner {
         // BSC (parent transaction): https://testnet.bscscan.com/tx/0x7f73c8a362e14e58cb5e0ec17616afc50eff7aa398db472383a6d017c8a5861a
 
         val key =
-            PrivateKey("9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0".toHexByteArray())
+            PrivateKey("9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0".toHexByteArray(), CoinType.GREENFIELD.curve())
 
         val msgTransferOut = Greenfield.Message.BridgeTransferOut.newBuilder().apply {
             fromAddress = "0x9d1d97aDFcd324Bbd603D3872BD78e04098510b1"

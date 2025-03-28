@@ -14,8 +14,8 @@ namespace TW {
 
 TEST(Coin, DeriveAddress) {
     auto dummyKeyData = parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646");
-    const auto privateKey = PrivateKey(dummyKeyData);
-    const auto privateKeyExt = PrivateKey(dummyKeyData, dummyKeyData, dummyKeyData, dummyKeyData, dummyKeyData, dummyKeyData);
+    const auto privateKey = PrivateKey(dummyKeyData, TWCurveSECP256k1);
+    const auto privateKeyExt = PrivateKey(dummyKeyData, dummyKeyData, dummyKeyData, dummyKeyData, dummyKeyData, dummyKeyData, TWCurveSECP256k1);
 
     const auto coins = TW::getCoinTypes();
     for (auto& c : coins) {

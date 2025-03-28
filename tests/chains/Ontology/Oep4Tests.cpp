@@ -6,6 +6,7 @@
 
 #include "Ontology/Oep4.h"
 #include "Ontology/Signer.h"
+#include "TestUtilities.h"
 #include <gtest/gtest.h>
 #include <string>
 
@@ -71,8 +72,8 @@ TEST(OntologyOep4, addressHack) {
     auto ownerbin = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
     auto payerbin = parse_hex("4646464646464646464646464646464646464646464646464646464646464652");
 
-    PrivateKey owner(ownerbin);
-    PrivateKey payer(payerbin);
+    PrivateKey owner(ownerbin, TWCoinTypeCurve(TWCoinTypeOntology));
+    PrivateKey payer(payerbin, TWCoinTypeCurve(TWCoinTypeOntology));
 
     auto pubKey = owner.getPublicKey(TWPublicKeyTypeNIST256p1);
     Address addr(pubKey);
@@ -85,10 +86,10 @@ TEST(OntologyOep4, addressHack) {
 }
 
 TEST(OntologyOep4, transfer) {
-    PrivateKey fromPrivate(parse_hex("4646464646464646464646464646464646464646464646464646464646464652"));
+    PrivateKey fromPrivate(parse_hex("4646464646464646464646464646464646464646464646464646464646464652"), TWCoinTypeCurve(TWCoinTypeOntology));
     Signer from(fromPrivate);
 
-    PrivateKey payerPrivate(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"));
+    PrivateKey payerPrivate(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"), TWCoinTypeCurve(TWCoinTypeOntology));
     Signer payer(payerPrivate);
 
     auto toAddress = Address("AVY6LfvxauVQAVHDV9hC3ZCv7cQqzfDotH");
@@ -114,10 +115,10 @@ TEST(OntologyOep4, transfer) {
 
 TEST(OntologyOep4, transferMainnet) {
     auto from = Signer(
-        PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464652")));
+        PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464652"), TWCoinTypeCurve(TWCoinTypeOntology)));
 
     auto payer = Signer(
-        PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646")));
+        PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"), TWCoinTypeCurve(TWCoinTypeOntology)));
 
     auto toAddress = Address("AUJJhwRNi4RsNfvuexLETxXEb6szu9D5Ad");
 

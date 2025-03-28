@@ -6,6 +6,7 @@ import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
+import wallet.core.jni.CoinType
 import wallet.core.jni.PrivateKey
 import wallet.core.jni.proto.Harmony
 import wallet.core.jni.proto.Harmony.SigningOutput
@@ -14,7 +15,7 @@ import wallet.core.jni.CoinType.HARMONY
 class TestHarmonyStakingDelegateSigner {
 
     val oneAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
-    val privateKeyData = ByteString.copyFrom(PrivateKey("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48".toHexByteArray()).data())
+    val privateKeyData = ByteString.copyFrom(PrivateKey("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48".toHexByteArray(), CoinType.HARMONY.curve()).data())
     val pubKeyData = ByteString.copyFrom("b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611".toHexByteArray())
     val blsSigData = ByteString.copyFrom("4252b0f1210efb0d5061e8a706a7ea9d62292a7947a975472fb77e1af7278a1c3c2e6eeba73c0581ece398613829940df129f3071c9a24b4b448bb1e880dc5872a58cb07eed94294c4e01a5c864771cafef7b96be541cb3c521a98f01838dd94".toHexByteArray())
 

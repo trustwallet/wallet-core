@@ -18,7 +18,7 @@ class TestTheOpenNetworkAddress {
 
     @Test
     fun testAddressFromPrivateKey() {
-        val privateKey = PrivateKey("63474e5fe9511f1526a50567ce142befc343e71a49b865ac3908f58667319cb8".toHexByteArray())
+        val privateKey = PrivateKey("63474e5fe9511f1526a50567ce142befc343e71a49b865ac3908f58667319cb8".toHexByteArray(), CoinType.TON.curve())
         val publicKey = privateKey.getPublicKeyEd25519()
         val address = AnyAddress(publicKey, CoinType.TON)
         assertEquals(publicKey.data().toHex(), "0xf42c77f931bea20ec5d0150731276bbb2e2860947661245b2319ef8133ee8d41")

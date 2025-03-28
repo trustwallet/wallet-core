@@ -13,6 +13,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.AnyAddress
+import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.BLUZELLE
 import wallet.core.jni.PrivateKey
 import wallet.core.jni.proto.Cosmos
@@ -29,7 +30,7 @@ class TestBluzelleSigner {
 
         // Submitted Realworld tx for the following test : https://bigdipper.net.bluzelle.com/transactions/B3A7F30539CCDF72D210BC995FAF65B43F9BE04FA9F8AFAE0EC969660744002F
         val key =
-            PrivateKey("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005".toHexByteArray())
+            PrivateKey("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005".toHexByteArray(), CoinType.BLUZELLE.curve())
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, BLUZELLE).description()
 

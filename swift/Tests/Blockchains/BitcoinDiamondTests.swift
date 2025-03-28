@@ -7,7 +7,7 @@ import XCTest
 
 class BitcoinDiamondTests: XCTestCase {
     func testAddress() {
-        let key = PrivateKey(data: Data(hexString: "d2b9f2846d3adcead910ee0124a3ba7ae29e8a4729787d27f9bea1f532928eee")!)!
+        let key = PrivateKey(data: Data(hexString: "d2b9f2846d3adcead910ee0124a3ba7ae29e8a4729787d27f9bea1f532928eee")!, curve: CoinType.bitcoinDiamond.curve)!
         let pubkey = key.getPublicKeySecp256k1(compressed: true)
         let address = AnyAddress(publicKey: pubkey, coin: .bitcoinDiamond)
         let addressFromString = AnyAddress(string: "1G15VvshDxwFTnahZZECJfFwEkq9fP79o8", coin: .bitcoinDiamond)!
@@ -17,7 +17,7 @@ class BitcoinDiamondTests: XCTestCase {
     }
 
     func testSign() {
-        let key = PrivateKey(data: Data(hexString: "d2b9f2846d3adcead910ee0124a3ba7ae29e8a4729787d27f9bea1f532928eee")!)!
+        let key = PrivateKey(data: Data(hexString: "d2b9f2846d3adcead910ee0124a3ba7ae29e8a4729787d27f9bea1f532928eee")!, curve: CoinType.bitcoinDiamond.curve)!
 
         let script = BitcoinScript.lockScriptForAddress(address: "1G15VvshDxwFTnahZZECJfFwEkq9fP79o8", coin: .bitcoinDiamond)
         let utxos = [

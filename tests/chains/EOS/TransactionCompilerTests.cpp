@@ -67,7 +67,7 @@ TEST(EOSCompiler, CompileWithSignatures) {
     EXPECT_EQ(hex(preImageHash), "14fc3299ee3e1113096bf1869dfa14c04a7ffdedd8ebdabf530683e4cfcd726c");
 
     // Simulate signature, normally obtained from signature server
-    const PublicKey publicKey = PrivateKey(key).getPublicKey(TWPublicKeyTypeNIST256p1);
+    const PublicKey publicKey = PrivateKey(key, TWCurveNIST256p1).getPublicKey(TWPublicKeyTypeNIST256p1);
     const auto signature = parse_hex("1f6c4efceb5a6dadab271fd7e2153d97d22690938475b23f017cf9ec29e20d25725e90e541e130daa83c38fc4c933725f05837422c3f4a51f8c1d07208c8fd5e0b"); // data("SIG_K1_K9RdLC7DEDWjTfR64GU8BtDHcAjzR1ntcT651JMcfHNTpdsvDrUwfyzF1FkvL9fxEi2UCtGJZ9zYoNbJoMF1fbU64cRiJ7");
 
     /// Step 3: Compile transaction info

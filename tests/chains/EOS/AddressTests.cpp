@@ -53,7 +53,7 @@ TEST(EOSAddress, FromPrivateKey) {
                            "PUB_K1_6enPVMggisfqVVRZ1tj47d9UeHK46CBssoCmAz6sLDMBdtZk78"};
 
     for (int i = 0; i < 4; i++) {
-        const auto privateKey = PrivateKey(parse_hex(privArray[i]));
+        const auto privateKey = PrivateKey(parse_hex(privArray[i]), privTypes[i] == Type::ModernR1 ? TWCurveNIST256p1 : TWCurveSECP256k1);
         const auto publicKey = PublicKey(privateKey.getPublicKey(privTypes[i] == Type::ModernR1 ? TWPublicKeyTypeNIST256p1 : TWPublicKeyTypeSECP256k1));
         const auto address = Address(publicKey, privTypes[i]);
 

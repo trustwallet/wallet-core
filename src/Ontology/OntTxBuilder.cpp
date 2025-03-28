@@ -20,8 +20,8 @@ Data OntTxBuilder::balanceOf(const Ontology::Proto::SigningInput& input) {
 }
 
 Data OntTxBuilder::transfer(const Ontology::Proto::SigningInput& input) {
-    auto payerSigner = Signer(PrivateKey(input.payer_private_key()));
-    auto fromSigner = Signer(PrivateKey(input.owner_private_key()));
+    auto payerSigner = Signer(PrivateKey(input.payer_private_key(), TWCurveNIST256p1));
+    auto fromSigner = Signer(PrivateKey(input.owner_private_key(), TWCurveNIST256p1));
     auto toAddress = Address(input.to_address());
     auto tranferTx = Ont().transfer(fromSigner, toAddress, input.amount(), payerSigner,
                                     input.gas_price(), input.gas_limit(), input.nonce());

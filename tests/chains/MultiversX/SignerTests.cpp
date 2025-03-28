@@ -22,7 +22,7 @@ namespace TW::MultiversX::tests {
 
 TEST(MultiversXSigner, SignGenericAction) {
     auto input = Proto::SigningInput();
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(7);
@@ -59,7 +59,7 @@ TEST(MultiversXSigner, SignGenericAction) {
 
 TEST(MultiversXSigner, SignGenericActionUnDelegate) {
     auto input = Proto::SigningInput();
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(6);
@@ -96,7 +96,7 @@ TEST(MultiversXSigner, SignGenericActionUnDelegate) {
 
 TEST(MultiversXSigner, SignGenericActionRedelegateRewards) {
     auto input = Proto::SigningInput();
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(7);
@@ -132,7 +132,7 @@ TEST(MultiversXSigner, SignGenericActionRedelegateRewards) {
 
 TEST(MultiversXSigner, SignGenericActionClaimRewards) {
     auto input = Proto::SigningInput();
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(7);
@@ -168,7 +168,7 @@ TEST(MultiversXSigner, SignGenericActionClaimRewards) {
 
 TEST(MultiversXSigner, SignGenericActionWithdrawStake) {
     auto input = Proto::SigningInput();
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(7);
@@ -205,7 +205,7 @@ TEST(MultiversXSigner, SignGenericActionWithdrawStake) {
 
 TEST(MultiversXSigner, SignGenericActionDelegate) {
     auto input = Proto::SigningInput();
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(1);
@@ -259,7 +259,7 @@ TEST(MultiversXSigner, SignGenericActionJSON) {
             "chainId": "1"
         })";
 
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     auto encoded = Signer::signJSON(input, privateKey.bytes);
     nlohmann::json expected = R"(
                                     {
@@ -280,7 +280,7 @@ TEST(MultiversXSigner, SignGenericActionJSON) {
 
 TEST(MultiversXSigner, SignWithoutData) {
     auto input = Proto::SigningInput();
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(0);
@@ -332,7 +332,7 @@ TEST(MultiversXSigner, SignJSONWithoutData) {
             "chainId": "1"
         })";
 
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     auto encoded = Signer::signJSON(input, privateKey.bytes);
     nlohmann::json expected = R"(
                                     {
@@ -354,7 +354,7 @@ TEST(MultiversXSigner, SignWithUsernames) {
     // https://github.com/multiversx/mx-chain-go/blob/master/examples/construction_test.go, scenario "TestConstructTransaction_Usernames".
 
     auto input = Proto::SigningInput();
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(89);
@@ -394,7 +394,7 @@ TEST(MultiversXSigner, SignWithUsernames) {
 
 TEST(MultiversXSigner, SignWithOptions) {
     auto input = Proto::SigningInput();
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(89);
@@ -434,7 +434,7 @@ TEST(MultiversXSigner, SignWithOptions) {
 
 TEST(MultiversXSigner, SignEGLDTransfer) {
     auto input = Proto::SigningInput();
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.mutable_egld_transfer()->mutable_accounts()->set_sender_nonce(7);
@@ -465,7 +465,7 @@ TEST(MultiversXSigner, SignEGLDTransfer) {
 
 TEST(MultiversXSigner, SignESDTTransfer) {
     auto input = Proto::SigningInput();
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.mutable_esdt_transfer()->mutable_accounts()->set_sender_nonce(7);
@@ -500,7 +500,7 @@ TEST(MultiversXSigner, SignESDTTransfer) {
 
 TEST(MultiversXSigner, SignESDTNFTTransfer) {
     auto input = Proto::SigningInput();
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.mutable_esdtnft_transfer()->mutable_accounts()->set_sender_nonce(7);
@@ -536,7 +536,7 @@ TEST(MultiversXSigner, SignESDTNFTTransfer) {
 
 TEST(MultiversXSigner, SignGenericActionWithGuardian) {
     auto input = Proto::SigningInput();
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(42);
@@ -576,7 +576,7 @@ TEST(MultiversXSigner, SignGenericActionWithGuardian) {
 
 TEST(MultiversXSigner, SignEGLDTransferWithGuardian) {
     auto input = Proto::SigningInput();
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.mutable_egld_transfer()->mutable_accounts()->set_sender_nonce(7);
@@ -610,7 +610,7 @@ TEST(MultiversXSigner, SignEGLDTransferWithGuardian) {
 
 TEST(MultiversXSigner, SignGenericActionWithRelayer) {
     auto input = Proto::SigningInput();
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(42);
@@ -648,7 +648,7 @@ TEST(MultiversXSigner, SignGenericActionWithRelayer) {
 
 TEST(MultiversXSigner, SignEGLDTransferWithRelayer) {
     auto input = Proto::SigningInput();
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.mutable_egld_transfer()->mutable_accounts()->set_sender_nonce(7);
@@ -706,10 +706,10 @@ TEST(ElrondSigner, buildSigningOutput) {
     input.set_gas_price(1000000000);
     input.set_gas_limit(50000);
     input.set_chain_id("1");
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     auto unsignedTxBytes = Signer::buildUnsignedTxBytes(input);
-    auto signature = privateKey.sign(unsignedTxBytes, TWCurveED25519);
+    auto signature = privateKey.sign(unsignedTxBytes);
 
     auto output = Signer::buildSigningOutput(input, signature);
     std::string expectedSignatureHex = "e8647dae8b16e034d518a1a860c6a6c38d16192d0f1362833e62424f424e5da660770dff45f4b951d9cc58bfb9d14559c977d443449bfc4b8783ff9c84065700";

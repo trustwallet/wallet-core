@@ -19,7 +19,7 @@ class TestPolymeshAddress {
     @Test
     fun testAddress() {
 
-        val key = PrivateKey("0x790a0a01ec2e7c7db4abcaffc92ce70a960ef9ad3021dbe3bf327c1c6343aee4".toHexByteArray())
+        val key = PrivateKey("0x790a0a01ec2e7c7db4abcaffc92ce70a960ef9ad3021dbe3bf327c1c6343aee4".toHexByteArray(), CoinType.POLYMESH.curve())
         val pubkey = key.publicKeyEd25519
         val address = AnyAddress(pubkey, CoinType.POLYMESH)
         val expected = AnyAddress("2EANwBfNsFu9KV8JsW5sbhF6ft8bzvw5EW1LCrgHhrqtK6Ys", CoinType.POLYMESH)

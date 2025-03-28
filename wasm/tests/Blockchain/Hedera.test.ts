@@ -20,7 +20,7 @@ describe("Hedera", () => {
   });
 
   it("test sign simple transfer Hedera", () => {
-    const { PrivateKey, HexCoding, AnySigner, AnyAddress, CoinType } = globalThis.core;
+    const { PrivateKey, HexCoding, AnySigner, AnyAddress, CoinType, CoinTypeExt } = globalThis.core;
     const transferMsg = TW.Hedera.Proto.TransferMessage.create({
       from: "0.0.48694347",
       to: "0.0.48462050",
@@ -49,6 +49,7 @@ describe("Hedera", () => {
           HexCoding.decode(
               "0xe87a5584c0173263e138db689fdb2a7389025aaae7cb1a18a1017d76012130e8",
           ),
+          CoinTypeExt.curve(CoinType.hedera)
       ).data(),
       body: transactionBody
     });

@@ -18,7 +18,7 @@ class TestStargazeAddress {
 
     @Test
     fun testAddress() {
-        val key = PrivateKey("a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433".toHexByteArray())
+        val key = PrivateKey("a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433".toHexByteArray(), CoinType.STARGAZE.curve())
         val pubkey = key.getPublicKeySecp256k1(true)
         val address = AnyAddress(pubkey, CoinType.STARGAZE)
         val expected = AnyAddress("stars1mry47pkga5tdswtluy0m8teslpalkdq02a8nhy", CoinType.STARGAZE)

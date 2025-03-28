@@ -147,14 +147,14 @@ template <std::size_t seedSize>
 PrivateKey HDWallet<seedSize>::getMasterKey(TWCurve curve) const {
     auto node = getMasterNode(*this, curve);
     auto data = Data(node.private_key, node.private_key + PrivateKey::_size);
-    return PrivateKey(data);
+    return PrivateKey(data, curve);
 }
 
 template <std::size_t seedSize>
 PrivateKey HDWallet<seedSize>::getMasterKeyExtension(TWCurve curve) const {
     auto node = getMasterNode(*this, curve);
     auto data = Data(node.private_key_extension, node.private_key_extension + PrivateKey::_size);
-    return PrivateKey(data);
+    return PrivateKey(data, curve);
 }
 
 template <std::size_t seedSize>
@@ -173,7 +173,7 @@ PrivateKey HDWallet<seedSize>::getKeyByCurve(TWCurve curve, const DerivationPath
     case TWPrivateKeyTypeCardano: {
         if (derivationPath.indices.size() < 4 || derivationPath.indices[3].value > 1) {
             // invalid derivation path
-            return PrivateKey(Data(PrivateKey::cardanoKeySize));
+            return PrivateKey(Data(PrivateKey::cardanoKeySize), curve);
         }
         const DerivationPath stakingPath = cardanoStakingDerivationPath(derivationPath);
 
@@ -188,7 +188,7 @@ PrivateKey HDWallet<seedSize>::getKeyByCurve(TWCurve curve, const DerivationPath
         auto chainCode2 = Data(node2.chain_code, node2.chain_code + PrivateKey::_size);
 
         TW::memzero(&node);
-        return PrivateKey(pkData, extData, chainCode, pkData2, extData2, chainCode2);
+        return PrivateKey(pkData, extData, chainCode, pkData2, extData2, chainCode2, curve);
     }
     case TWPrivateKeyTypeDefault:
     default:
@@ -196,9 +196,9 @@ PrivateKey HDWallet<seedSize>::getKeyByCurve(TWCurve curve, const DerivationPath
         auto data = Data(node.private_key, node.private_key + PrivateKey::_size);
         TW::memzero(&node);
         if (curve == TWCurveStarkex) {
-            return ImmutableX::getPrivateKeyFromEthPrivKey(PrivateKey(data));
+            return ImmutableX::getPrivateKeyFromEthPrivKey(PrivateKey(data, curve));
         }
-        return PrivateKey(data);
+        return PrivateKey(data, curve);
     }
 }
 
@@ -312,7 +312,7 @@ std::optional<PrivateKey> HDWallet<seedSize>::getPrivateKeyFromExtended(const st
     hdnode_private_ckd(&node, path.change());
     hdnode_private_ckd(&node, path.address());
 
-    return PrivateKey(Data(node.private_key, node.private_key + 32));
+    return PrivateKey(Data(node.private_key, node.private_key + 32), curve);
 }
 
 template <std::size_t seedSize>

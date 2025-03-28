@@ -15,7 +15,7 @@ using namespace TW;
 namespace TW::Aeternity {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveED25519);
     std::string sender_id = input.from_address();
     std::string recipient_id = input.to_address();
     std::string payload = input.payload();
@@ -34,7 +34,7 @@ Proto::SigningOutput Signer::sign(const TW::PrivateKey& privateKey, Transaction&
     auto msg = buildMessageToSign(txRlp);
 
     /// sign ed25519
-    auto sigRaw = privateKey.sign(msg, TWCurveED25519);
+    auto sigRaw = privateKey.sign(msg);
     auto signature = Identifiers::prefixSignature + Base58::encodeCheck(sigRaw);
 
     /// encode the message using rlp

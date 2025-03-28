@@ -28,7 +28,7 @@ class TestTHORChainSigner {
     @Test
     fun THORChainTransactionSigning() {
         val key =
-            PrivateKey("7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e".toHexByteArray())
+            PrivateKey("7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e".toHexByteArray(), CoinType.THORCHAIN.curve())
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, THORCHAIN).data()
         val to = AnyAddress("thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn", THORCHAIN).data()

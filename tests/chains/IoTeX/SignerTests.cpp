@@ -4,11 +4,13 @@
 
 #include <gtest/gtest.h>
 
-#include "HexCoding.h"
 #include "Hash.h"
+#include "HexCoding.h"
 #include "IoTeX/Address.h"
 #include "IoTeX/Signer.h"
 #include "proto/IoTeX.pb.h"
+
+#include <TrustWalletCore/TWCoinType.h>
 
 namespace TW::IoTeX {
 
@@ -84,7 +86,7 @@ TEST(IoTeXSigner, Compile) {
     ASSERT_EQ(hex(sig), checkSig);
 
     //build compile
-    auto k = PrivateKey(key);
+    auto k = PrivateKey(key, TWCoinTypeCurve(TWCoinTypeIoTeX));
     PublicKey pk = k.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
     //merge hash data and signature
     auto output = signer.compile(input, sig, pk);

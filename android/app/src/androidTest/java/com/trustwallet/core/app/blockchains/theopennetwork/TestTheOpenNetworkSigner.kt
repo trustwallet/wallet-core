@@ -22,7 +22,7 @@ class TestTheOpenNetworkSigner {
 
     @Test
     fun TheOpenNetworkTransactionSigning() {
-        val privateKey = PrivateKey("c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0".toHexByteArray())
+        val privateKey = PrivateKey("c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0".toHexByteArray(), CoinType.TON.curve())
 
         val transfer = TheOpenNetwork.Transfer.newBuilder()
             .setDest("EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
@@ -49,7 +49,7 @@ class TestTheOpenNetworkSigner {
 
     @Test
     fun TheOpenNetworkJettonTransferSigning() {
-        val privateKey = PrivateKey("c054900a527538c1b4325688a421c0469b171c29f23a62da216e90b0df2412ee".toHexByteArray())
+        val privateKey = PrivateKey("c054900a527538c1b4325688a421c0469b171c29f23a62da216e90b0df2412ee".toHexByteArray(), CoinType.TON.curve())
 
         val jettonTransfer = TheOpenNetwork.JettonTransfer.newBuilder()
             .setJettonAmount(500 * 1000 * 1000)
@@ -84,7 +84,7 @@ class TestTheOpenNetworkSigner {
 
     @Test
     fun TheOpenNetworkTransferCustomPayload() {
-        val privateKey = PrivateKey("5525e673087587bc0efd7ab09920ef7d3c1bf6b854a661430244ca59ab19e9d1".toHexByteArray())
+        val privateKey = PrivateKey("5525e673087587bc0efd7ab09920ef7d3c1bf6b854a661430244ca59ab19e9d1".toHexByteArray(), CoinType.TON.curve())
 
         // Doge chatbot contract payload to be deployed.
         // Docs: https://docs.ton.org/develop/dapps/ton-connect/transactions#smart-contract-deployment

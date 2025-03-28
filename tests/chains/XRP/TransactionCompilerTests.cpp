@@ -24,7 +24,7 @@ TEST(RippleCompiler, CompileRippleWithSignatures) {
     /// Step 1: Prepare transaction input (protobuf)
     auto key = parse_hex("acf1bbf6264e699da0cc65d17ac03fcca6ded1522d19529df7762db46097ff9f");
     auto input = TW::Ripple::Proto::SigningInput();
-    auto privateKey = TW::PrivateKey(key);
+    auto privateKey = TW::PrivateKey(key, TWCurveSECP256k1);
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
 
     input.mutable_op_payment()->set_amount(1000000);
@@ -46,7 +46,7 @@ TEST(RippleCompiler, CompileRippleWithSignatures) {
     auto preImageHash = preSigningOutput.data_hash();
     EXPECT_EQ(hex(preImageHash), "86ef78df7a4aad29e6b3730f7965c1bd5ccd2439426cb738d7c494a64cfaf4af");
     // Simulate signature, normally obtained from signature server
-    const auto signature = privateKey.sign(TW::data(preImageHash), TWCurveSECP256k1);
+    const auto signature = privateKey.sign(TW::data(preImageHash));
     // Verify signature (pubkey & hash & signature)
     EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
 

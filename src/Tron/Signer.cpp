@@ -404,9 +404,9 @@ Data serialize(const protocol::Transaction& tx) noexcept {
 }
 
 Proto::SigningOutput signDirect(const Proto::SigningInput& input) {
-    const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveSECP256k1);
     auto hash = parse_hex(input.txid());
-    const auto signature = key.sign(hash, TWCurveSECP256k1);
+    const auto signature = key.sign(hash);
     auto output = Proto::SigningOutput();
     output.set_signature(signature.data(), signature.size());
     output.set_id(input.txid());
@@ -441,8 +441,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
     const auto hash = Hash::sha256(serialize(tx));
 
-    const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    const auto signature = key.sign(hash, TWCurveSECP256k1);
+    const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveSECP256k1);
+    const auto signature = key.sign(hash);
 
     const auto json = transactionJSON(tx, hash, signature).dump();
 

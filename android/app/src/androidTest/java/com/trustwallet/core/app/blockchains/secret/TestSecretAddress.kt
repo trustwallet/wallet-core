@@ -18,7 +18,7 @@ class TestSecretAddress {
 
     @Test
     fun testAddress() {
-        val key = PrivateKey("87201512d132ef7a1e57f9e24905fbc24300bd73f676b5716182be5f3e39dada".toHexByteArray())
+        val key = PrivateKey("87201512d132ef7a1e57f9e24905fbc24300bd73f676b5716182be5f3e39dada".toHexByteArray(), CoinType.SECRET.curve())
         val pubkey = key.getPublicKeySecp256k1(true)
         val address = AnyAddress(pubkey, CoinType.SECRET)
         val expected = AnyAddress("secret18mdrja40gfuftt5yx6tgj0fn5lurplezyp894y", CoinType.SECRET)

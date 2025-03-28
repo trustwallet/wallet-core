@@ -129,7 +129,7 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
         }
 
         // Add this private key and associated address
-        const auto privateKey = PrivateKey(privateKeyData);
+        const auto privateKey = PrivateKey(privateKeyData, TWCurveED25519ExtendedCardano);
         const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         const auto address = AddressV3(publicKey);
         privateKeys[address.string()] = privateKeyData;
@@ -190,9 +190,9 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
                 return Common::Proto::Error_missing_private_key;
             }
         }
-        const auto privateKey = PrivateKey(privateKeyData);
+        const auto privateKey = PrivateKey(privateKeyData, TWCurveED25519ExtendedCardano);
         const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
-        const auto signature = privateKey.sign(txId, TWCurveED25519ExtendedCardano);
+        const auto signature = privateKey.sign(txId);
         signatures.emplace_back(publicKey.bytes, signature);
     }
 

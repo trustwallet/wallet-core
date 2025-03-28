@@ -8,7 +8,7 @@ import XCTest
 class NULSTests: XCTestCase {
 
     func testAddress() {
-        let privateKey = PrivateKey(data: Data(hexString: "0xa1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "0xa1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a")!, curve: CoinType.nuls.curve)!
         let pubkey = privateKey.getPublicKeySecp256k1(compressed: true)
         let address = AnyAddress(publicKey: pubkey, coin: .nuls)
         let addressFromString = AnyAddress(string: "NULSd6HghWa4CN5qdxqMwYVikQxRZyj57Jn4L", coin: .nuls)!

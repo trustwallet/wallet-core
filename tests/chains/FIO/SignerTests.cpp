@@ -9,6 +9,7 @@
 #include "Base58.h"
 #include "Hash.h"
 #include "HexCoding.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 
@@ -24,7 +25,7 @@ TEST(FIOSigner, SignEncode) {
 
 TEST(FIOSigner, SignInternals) {
     // 5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf
-    PrivateKey pk = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035"));
+    PrivateKey pk = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035"), TWCoinTypeCurve(TWCoinTypeFIO));
     {
         Data pk2 = parse_hex("80");
         append(pk2, pk.bytes);
@@ -77,7 +78,7 @@ TEST(FIOSigner, Actor) {
 TEST(FIOSigner, compile) {
         const Data chainId = parse_hex("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77");
         // 5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf
-        const PrivateKey privKeyBA = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035"));
+        const PrivateKey privKeyBA = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035"), TWCoinTypeCurve(TWCoinTypeFIO));
         const PublicKey pubKey6M = privKeyBA.getPublicKey(TWPublicKeyTypeSECP256k1);
         const Address addr6M(pubKey6M);
         Proto::SigningInput input;

@@ -21,7 +21,7 @@ namespace TW::Waves::tests {
 
 TEST(WavesLease, serialize) {
     const auto privateKey =
-        PrivateKey(parse_hex("9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a"));
+        PrivateKey(parse_hex("9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a"), TWCurveCurve25519);
     auto input = Proto::SigningInput();
     input.set_timestamp(int64_t(1526646497465));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -42,7 +42,7 @@ TEST(WavesLease, serialize) {
 
 TEST(WavesLease, CancelSerialize) {
     const auto privateKey =
-        PrivateKey(parse_hex("9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a"));
+        PrivateKey(parse_hex("9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a"), TWCurveCurve25519);
     auto input = Proto::SigningInput();
     input.set_timestamp(int64_t(1568831000826));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -62,7 +62,7 @@ TEST(WavesLease, CancelSerialize) {
 
 TEST(WavesLease, jsonSerialize) {
     const auto privateKey = PrivateKey(parse_hex(
-        "9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a"));
+        "9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a"), TWCurveCurve25519);
     const auto publicKeyCurve25519 =
         privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
     auto input = Proto::SigningInput();
@@ -102,7 +102,7 @@ TEST(WavesLease, jsonSerialize) {
 
 TEST(WavesLease, jsonCancelSerialize) {
     const auto privateKey = PrivateKey(parse_hex(
-        "9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a"));
+        "9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a"), TWCurveCurve25519);
     const auto publicKeyCurve25519 =
         privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
     auto input = Proto::SigningInput();
