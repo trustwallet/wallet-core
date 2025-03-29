@@ -42,7 +42,7 @@ class TestCoinType {
     @Test
     fun testCoinPurpose() {
         assertEquals(Purpose.BIP84, CoinType.BITCOIN.purpose())
-        assertEquals(Purpose.BIP84, CoinType.PACTUS.purpose())
+        assertEquals(Purpose.BIP44, CoinType.PACTUS.purpose())
     }
 
     @Test
