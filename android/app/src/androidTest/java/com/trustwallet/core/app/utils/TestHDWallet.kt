@@ -169,10 +169,10 @@ class TestHDWallet {
         val wallet = HDWallet(words, password)
 
         val key1 = wallet.getKeyDerivation(coin, Derivation.PACTUSMAINNET)
-        assertEquals(key1.data().toHex(), "0x97b1d49179481dc1cb953a089e2b38290182b07c1a60f8ec27d6e5c700d10f4d")
+        assertEquals(key1.data().toHex(), "0x153fefb8168f246f9f77c60ea10765c1c39828329e87284ddd316770717f3a5e")
 
         val key2 = wallet.getKeyDerivation(coin, Derivation.PACTUSTESTNET)
-        assertEquals(key2.data().toHex(), "0xdfdcadd50dc2c39bbffbb04075acbd351b50fcff415b131ec600ee31da8c8e9d")
+        assertEquals(key2.data().toHex(), "0x54f3c54dd6af5794bea1f86de05b8b9f164215e8deee896f604919046399e54d")
     }
 
     @Test
