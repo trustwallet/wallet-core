@@ -5,8 +5,9 @@ use bech32::FromBase32;
 use std::str::FromStr;
 use tw_keypair::KeyPairError;
 
+use super::network::{MAINNET_PUBLIC_KEY_HRP, TESTNET_PUBLIC_KEY_HRP};
+
 pub const BLS_PUBLIC_KEY_SIZE: usize = 96;
-pub const PUBLIC_KEY_HRP: &str = "public";
 
 #[derive(Debug)]
 pub struct ValidatorPublicKey(pub [u8; BLS_PUBLIC_KEY_SIZE]);
@@ -34,7 +35,7 @@ impl FromStr for ValidatorPublicKey {
 
     fn from_str(s: &str) -> Result<Self, KeyPairError> {
         let (hrp, b32, _variant) = bech32::decode(s).map_err(|_| KeyPairError::InvalidPublicKey)?;
-        if hrp != PUBLIC_KEY_HRP {
+        if hrp != MAINNET_PUBLIC_KEY_HRP && hrp != TESTNET_PUBLIC_KEY_HRP {
             return Err(KeyPairError::InvalidPublicKey);
         }
 
@@ -81,6 +82,11 @@ mod test {
             TestCase {
                 name: "OK",
                 pub_key_str: "public1p4u8hfytl2pj6l9rj0t54gxcdmna4hq52ncqkkqjf3arha5mlk3x4mzpyjkhmdl20jae7f65aamjrvqcvf4sudcapz52ctcwc8r9wz3z2gwxs38880cgvfy49ta5ssyjut05myd4zgmjqstggmetyuyg7v5jhx47a",
+                pub_key_data: "af0f74917f5065af94727ae9541b0ddcfb5b828a9e016b02498f477ed37fb44d5d882495afb6fd4f9773e4ea9deee436030c4d61c6e3a1151585e1d838cae1444a438d089ce77e10c492a55f6908125c5be9b236a246e4082d08de564e111e65",
+            },
+            TestCase {
+                name: "OK",
+                pub_key_str: "tpublic1p4u8hfytl2pj6l9rj0t54gxcdmna4hq52ncqkkqjf3arha5mlk3x4mzpyjkhmdl20jae7f65aamjrvqcvf4sudcapz52ctcwc8r9wz3z2gwxs38880cgvfy49ta5ssyjut05myd4zgmjqstggmetyuyg7v5fmv7tx",
                 pub_key_data: "af0f74917f5065af94727ae9541b0ddcfb5b828a9e016b02498f477ed37fb44d5d882495afb6fd4f9773e4ea9deee436030c4d61c6e3a1151585e1d838cae1444a438d089ce77e10c492a55f6908125c5be9b236a246e4082d08de564e111e65",
             },
        ];
