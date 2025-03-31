@@ -113,7 +113,7 @@ impl fmt::Display for Address {
             return f.write_str(TREASURY_ADDRESS_STRING);
         }
 
-        let hrp = self.network.hrp().map_err(|_| fmt::Error)?;
+        let hrp = self.network.address_hrp().map_err(|_| fmt::Error)?;
         let mut b32 = Vec::with_capacity(33);
 
         b32.push(bech32::u5::try_from_u8(self.addr_type.clone() as u8).map_err(|_| fmt::Error)?);

@@ -34,6 +34,9 @@ pub enum Network {
 const MAINNET_ADDRESS_HRP: &str = "pc";
 const TESTNET_ADDRESS_HRP: &str = "tpc";
 
+pub const MAINNET_PUBLIC_KEY_HRP: &str = "public";
+pub const TESTNET_PUBLIC_KEY_HRP: &str = "tpublic";
+
 impl Network {
     pub fn try_from_hrp(hrp: &str) -> Result<Self, AddressError> {
         match hrp {
@@ -43,10 +46,18 @@ impl Network {
         }
     }
 
-    pub fn hrp(&self) -> Result<&'static str, AddressError> {
+    pub fn address_hrp(&self) -> Result<&'static str, AddressError> {
         match &self {
             Network::Mainnet => Ok(MAINNET_ADDRESS_HRP),
             Network::Testnet => Ok(TESTNET_ADDRESS_HRP),
+            Network::Unknown => Err(AddressError::InvalidHrp),
+        }
+    }
+
+    pub fn public_key_hrp(&self) -> Result<&'static str, AddressError> {
+        match &self {
+            Network::Mainnet => Ok(MAINNET_PUBLIC_KEY_HRP),
+            Network::Testnet => Ok(TESTNET_PUBLIC_KEY_HRP),
             Network::Unknown => Err(AddressError::InvalidHrp),
         }
     }
