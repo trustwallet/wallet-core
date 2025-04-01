@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export GTEST_VERSION=1.11.0
+export GTEST_VERSION=1.16.0
 export CHECK_VERSION=0.15.2
 export JSON_VERSION=3.11.3
 export PROTOBUF_VERSION=3.19.2

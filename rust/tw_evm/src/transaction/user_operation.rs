@@ -162,7 +162,8 @@ struct SignedUserOperationSerde {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::abi::prebuild::erc4337::{Erc4337SimpleAccount, ExecuteArgs};
+    use crate::abi::prebuild::erc4337::Erc4337SimpleAccount;
+    use crate::abi::prebuild::ExecuteArgs;
 
     #[test]
     fn test_encode_user_operation() {
