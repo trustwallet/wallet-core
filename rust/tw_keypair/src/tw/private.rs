@@ -2,13 +2,14 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::ecdsa::canonical::sign_canonical_ffi;
 use crate::ecdsa::{nist256p1, secp256k1};
 use crate::schnorr;
 use crate::traits::SigningKeyTrait;
 use crate::tw::{Curve, PublicKey, PublicKeyType};
 use crate::{ed25519, starkex, KeyPairError, KeyPairResult};
 use std::ops::Range;
-use tw_hash::H256;
+use tw_hash::{Hash, H256};
 use tw_misc::traits::ToBytesVec;
 use zeroize::ZeroizeOnDrop;
 
@@ -18,6 +19,7 @@ use zeroize::ZeroizeOnDrop;
 #[derive(ZeroizeOnDrop)]
 pub struct PrivateKey {
     bytes: Vec<u8>,
+    curve: Curve,
 }
 
 /// cbindgen:ignore
@@ -30,11 +32,11 @@ impl PrivateKey {
     const EXTENDED_CARDANO_RANGE: Range<usize> = 0..Self::CARDANO_SIZE;
 
     /// Validates the given `bytes` secret and creates a private key.
-    pub fn new(bytes: Vec<u8>) -> KeyPairResult<PrivateKey> {
+    pub fn new(bytes: Vec<u8>, curve: Curve) -> KeyPairResult<PrivateKey> {
         if !Self::is_valid_general(&bytes) {
             return Err(KeyPairError::InvalidSecretKey);
         }
-        Ok(PrivateKey { bytes })
+        Ok(PrivateKey { bytes, curve })
     }
 
     pub fn bytes(&self) -> &[u8] {
@@ -95,7 +97,7 @@ impl PrivateKey {
     }
 
     /// Signs a `message` with using the given elliptic curve.
-    pub fn sign(&self, message: &[u8], curve: Curve) -> KeyPairResult<Vec<u8>> {
+    pub fn sign(&self, message: &[u8]) -> KeyPairResult<Vec<u8>> {
         fn sign_impl<Key>(signing_key: Key, message: &[u8]) -> KeyPairResult<Vec<u8>>
         where
             Key: SigningKeyTrait,
@@ -105,7 +107,7 @@ impl PrivateKey {
             signing_key.sign(hash_to_sign).map(|sig| sig.to_vec())
         }
 
-        match curve {
+        match self.curve {
             Curve::Secp256k1 => sign_impl(self.to_secp256k1_privkey()?, message),
             Curve::Ed25519 => sign_impl(self.to_ed25519()?, message),
             Curve::Ed25519Blake2bNano => sign_impl(self.to_ed25519_blake2b()?, message),
@@ -116,6 +118,37 @@ impl PrivateKey {
             },
             Curve::Starkex => sign_impl(self.to_starkex_privkey()?, message),
             Curve::Schnorr => sign_impl(self.to_schnorr_privkey()?, message),
+        }
+    }
+
+    pub fn sign_canonical(
+        &self,
+        message: &[u8],
+        canonical_checker: Option<unsafe extern "C" fn(by: u8, sig: [u8; 64]) -> i32>,
+    ) -> KeyPairResult<Vec<u8>> {
+        let message_hash =
+            Hash::<32>::try_from(message).map_err(|_| KeyPairError::InvalidSignMessage)?;
+
+        match self.curve {
+            Curve::Secp256k1 => {
+                let private_key = self.to_secp256k1_privkey()?;
+                sign_canonical_ffi(
+                    &private_key.secret,
+                    message_hash,
+                    canonical_checker,
+                    |sig| sig.to_bytes_with_recovery_in_front().to_vec(),
+                )
+            },
+            Curve::Nist256p1 => {
+                let private_key = self.to_nist256p1_privkey()?;
+                sign_canonical_ffi(
+                    &private_key.secret,
+                    message_hash,
+                    canonical_checker,
+                    |sig| sig.to_bytes_with_recovery_in_front().to_vec(),
+                )
+            },
+            _ => Err(KeyPairError::UnsupportedCurve),
         }
     }
 
@@ -205,5 +238,24 @@ impl PrivateKey {
     /// Tries to convert [`PrivateKey::key`] to [`schnorr::PrivateKey`].
     fn to_schnorr_privkey(&self) -> KeyPairResult<schnorr::PrivateKey> {
         schnorr::PrivateKey::try_from(self.key().as_slice())
+    }
+
+    /// Signs a digest using ECDSA as DER.
+    pub fn sign_as_der(&self, digest: &[u8]) -> KeyPairResult<Vec<u8>> {
+        match self.curve {
+            Curve::Secp256k1 => {
+                let private_key = self.to_secp256k1_privkey()?;
+                let hash_to_sign =
+                    <secp256k1::PrivateKey as SigningKeyTrait>::SigningMessage::try_from(digest)
+                        .map_err(|_| KeyPairError::InvalidSignMessage)?;
+                let sig = private_key
+                    .sign(hash_to_sign)
+                    .map_err(|_| KeyPairError::InvalidSignature)?;
+                let der_sig = crate::ecdsa::der::Signature::new(sig.r(), sig.s())
+                    .map_err(|_| KeyPairError::InvalidSignature)?;
+                Ok(der_sig.der_bytes())
+            },
+            _ => Err(KeyPairError::UnsupportedCurve),
+        }
     }
 }

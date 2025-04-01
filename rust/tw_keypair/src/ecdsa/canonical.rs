@@ -67,6 +67,35 @@ where
     Err(KeyPairError::SigningError)
 }
 
+pub(crate) fn sign_canonical_ffi<F, C: EcdsaCurve>(
+    secret: &SigningKey<C>,
+    hash_to_sign: H256,
+    canonical_checker: Option<unsafe extern "C" fn(by: u8, sig: [u8; 64]) -> i32>,
+    transform_result: F,
+) -> KeyPairResult<Vec<u8>>
+where
+    F: FnOnce(Signature<C>) -> Vec<u8>,
+    Scalar<C>: SignPrimitive<C>,
+    <C as Curve>::Uint: FieldBytesEncoding<C>,
+{
+    let checker = move |sig: &Signature<C>| {
+        if let Some(checker_fn) = canonical_checker {
+            // Convert signature to bytes and pass to the C function
+            let sig_bytes = sig.to_bytes();
+            let mut sig_array = [0u8; 64];
+            sig_array.copy_from_slice(&sig_bytes[..64]);
+
+            // Call the C function and check if it returns a positive value
+            unsafe { checker_fn(sig_bytes[64], sig_array) > 0 }
+        } else {
+            // If no checker provided, accept all signatures
+            true
+        }
+    };
+
+    sign_with_canonical(secret, hash_to_sign, checker).map(transform_result)
+}
+
 fn ct_eq<N: ArrayLength<u8>>(a: &ByteArray<N>, b: &ByteArray<N>) -> Choice {
     let mut ret = Choice::from(1);
 

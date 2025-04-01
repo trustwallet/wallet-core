@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_keypair::test_utils::tw_private_key_helper::TWPrivateKeyHelper;
+use tw_keypair::{test_utils::tw_private_key_helper::TWPrivateKeyHelper, tw::Curve};
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
 use wallet_core_rs::ffi::ton::message_signer::tw_ton_message_signer_sign_message;
 
@@ -10,6 +10,7 @@ use wallet_core_rs::ffi::ton::message_signer::tw_ton_message_signer_sign_message
 fn test_ton_wallet_create_state_init() {
     let private_key = TWPrivateKeyHelper::with_hex(
         "112d4e2e700a468f1eae699329202f1ee671d6b665caa2d92dea038cf3868c18",
+        Curve::Ed25519.to_raw(),
     );
     assert!(!private_key.is_null());
     let message = TWStringHelper::create("Hello world");

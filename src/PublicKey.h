@@ -8,6 +8,7 @@
 #include "Hash.h"
 
 #include <TrustWalletCore/TWPublicKeyType.h>
+#include "rust/Wrapper.h"
 
 #include <cassert>
 #include <stdexcept>
@@ -55,6 +56,9 @@ class PublicKey {
     /// \throws std::invalid_argument if the data is not a valid public key.
     explicit PublicKey(const Data& data, enum TWPublicKeyType type);
 
+    /// Initializes a public key with a Rust implementation.
+    explicit PublicKey(std::shared_ptr<TW::Rust::TWPublicKey> impl);
+
     /// Determines if this is a compressed public key.
     bool isCompressed() const {
         return type != TWPublicKeyTypeSECP256k1Extended && type != TWPublicKeyTypeNIST256p1Extended;
@@ -97,6 +101,8 @@ class PublicKey {
 
     /// Check if this key makes a valid ED25519 key (it is on the curve)
     bool isValidED25519() const;
+private:
+    std::shared_ptr<TW::Rust::TWPublicKey> _impl;
 };
 
 inline bool operator==(const PublicKey& lhs, const PublicKey& rhs) {

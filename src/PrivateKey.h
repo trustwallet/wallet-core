@@ -94,6 +94,7 @@ class PrivateKey {
     TWCurve curve() const { return _curve; }
 private:
     TWCurve _curve;
+    std::shared_ptr<TW::Rust::TWPrivateKey> _impl;
 };
 
 } // namespace TW

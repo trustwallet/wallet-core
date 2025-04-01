@@ -12,16 +12,17 @@ pub struct TWPrivateKeyHelper {
 }
 
 impl TWPrivateKeyHelper {
-    pub fn with_bytes<T: Into<Data>>(bytes: T) -> TWPrivateKeyHelper {
+    pub fn with_bytes<T: Into<Data>>(bytes: T, curve: u32) -> TWPrivateKeyHelper {
         let priv_key_raw = CByteArray::from(bytes.into());
-        let ptr =
-            unsafe { tw_private_key_create_with_data(priv_key_raw.data(), priv_key_raw.size()) };
+        let ptr = unsafe {
+            tw_private_key_create_with_data(priv_key_raw.data(), priv_key_raw.size(), curve)
+        };
         TWPrivateKeyHelper { ptr }
     }
 
-    pub fn with_hex(hex: &str) -> TWPrivateKeyHelper {
+    pub fn with_hex(hex: &str, curve: u32) -> TWPrivateKeyHelper {
         let priv_key_data = hex::decode(hex).unwrap();
-        TWPrivateKeyHelper::with_bytes(priv_key_data)
+        TWPrivateKeyHelper::with_bytes(priv_key_data, curve)
     }
 
     pub fn ptr(&self) -> *mut TWPrivateKey {

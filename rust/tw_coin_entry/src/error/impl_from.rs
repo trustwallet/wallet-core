@@ -45,7 +45,9 @@ impl From<KeyPairError> for SigningError {
             | KeyPairError::InvalidSignature
             | KeyPairError::InvalidSignMessage
             | KeyPairError::SignatureVerifyError
-            | KeyPairError::InvalidEncryptedMessage => {
+            | KeyPairError::InvalidEncryptedMessage
+            | KeyPairError::InvalidMessage
+            | KeyPairError::UnsupportedCurve => {
                 TWError::new(SigningErrorType::Error_invalid_params)
             },
             KeyPairError::SigningError => TWError::new(SigningErrorType::Error_signing),

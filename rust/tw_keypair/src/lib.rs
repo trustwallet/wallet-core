@@ -67,4 +67,6 @@ pub enum KeyPairError {
     SignatureVerifyError,
     SigningError,
     InternalError,
+    InvalidMessage,
+    UnsupportedCurve,
 }

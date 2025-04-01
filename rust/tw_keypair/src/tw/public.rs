@@ -4,11 +4,11 @@
 
 use crate::ecdsa::{nist256p1, secp256k1};
 use crate::schnorr;
-use crate::traits::VerifyingKeyTrait;
+use crate::traits::{SigningKeyTrait, VerifyingKeyTrait};
 use crate::tw::PublicKeyType;
 use crate::{ed25519, starkex, KeyPairError, KeyPairResult};
 use tw_misc::traits::ToBytesVec;
-use tw_misc::try_or_false;
+use tw_misc::{try_or_else, try_or_false};
 
 /// Represents a public key that can be used to verify signatures and messages.
 #[derive(Clone)]
@@ -52,6 +52,12 @@ impl PublicKey {
             },
             PublicKeyType::Ed25519 if ed25519::sha512::PublicKey::LEN == bytes.len() => {
                 let pubkey = ed25519::sha512::PublicKey::try_from(bytes.as_slice())?;
+                Ok(PublicKey::Ed25519(pubkey))
+            },
+            PublicKeyType::Ed25519
+                if ed25519::sha512::PublicKey::LEN + 1 == bytes.len() && bytes[0] == 0x01 =>
+            {
+                let pubkey = ed25519::sha512::PublicKey::try_from(&bytes[1..])?;
                 Ok(PublicKey::Ed25519(pubkey))
             },
             PublicKeyType::Ed25519Blake2b if ed25519::blake2b::PublicKey::LEN == bytes.len() => {
@@ -173,4 +179,72 @@ impl PublicKey {
             PublicKey::Schnorr(_) => PublicKeyType::Schnorr,
         }
     }
+
+    pub fn compressed(&self) -> KeyPairResult<PublicKey> {
+        match self {
+            PublicKey::Secp256k1Extended(secp) => {
+                let bytes = secp.compressed().to_vec();
+                PublicKey::new(bytes, PublicKeyType::Secp256k1)
+            },
+            PublicKey::Nist256p1Extended(nist) => {
+                let bytes = nist.compressed().to_vec();
+                PublicKey::new(bytes, PublicKeyType::Nist256p1)
+            },
+            _ => Ok(self.clone()),
+        }
+    }
+
+    pub fn extended(&self) -> KeyPairResult<PublicKey> {
+        match self {
+            PublicKey::Secp256k1(secp) => {
+                let bytes = secp.uncompressed().to_vec();
+                PublicKey::new(bytes, PublicKeyType::Secp256k1Extended)
+            },
+            PublicKey::Nist256p1(nist) => {
+                let bytes = nist.uncompressed().to_vec();
+                PublicKey::new(bytes, PublicKeyType::Nist256p1Extended)
+            },
+            _ => Ok(self.clone()),
+        }
+    }
+
+    pub fn recover_from_signature(
+        sig: &[u8],
+        message: &[u8],
+        rec_id: u8,
+    ) -> KeyPairResult<PublicKey> {
+        let verify_sig = try_or_else!(
+            <secp256k1::PrivateKey as SigningKeyTrait>::Signature::new_from_bytes(sig, rec_id),
+            || {
+                return Err(KeyPairError::InvalidSignature);
+            }
+        );
+        let message = try_or_else!(
+            <secp256k1::PrivateKey as SigningKeyTrait>::SigningMessage::try_from(message),
+            || {
+                return Err(KeyPairError::InvalidMessage);
+            }
+        );
+        let pubkey = secp256k1::PublicKey::recover(verify_sig, message)?;
+        Ok(PublicKey::Secp256k1Extended(pubkey))
+    }
+
+    pub fn verify_as_der(&self, sig: &[u8], message: &[u8]) -> bool {
+        match self {
+            PublicKey::Secp256k1(secp) | PublicKey::Secp256k1Extended(secp) => {
+                let der_sig = try_or_false!(crate::ecdsa::der::Signature::from_bytes(sig));
+                let verify_sig = try_or_false!(
+                    <secp256k1::PublicKey as VerifyingKeyTrait>::VerifySignature::try_from(
+                        der_sig.to_bytes().as_slice()
+                    )
+                );
+                let message = try_or_false!(
+                    <secp256k1::PublicKey as VerifyingKeyTrait>::SigningMessage::try_from(message)
+                );
+                secp.verify(verify_sig, message)
+            },
+            _ => false,
+        }
+    }
+
 }
