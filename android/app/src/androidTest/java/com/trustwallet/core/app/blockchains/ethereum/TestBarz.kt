@@ -244,7 +244,7 @@ class TestBarz {
 
         val signingInput = Ethereum.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("0xe148e40f06ee3ba316cdb2571f33486cf879c0ffd2b279ce9f9a88c41ce962e7".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("0xe148e40f06ee3ba316cdb2571f33486cf879c0ffd2b279ce9f9a88c41ce962e7".toHexByteArray(), CoinType.ETHEREUM.curve()).data())
             chainId = ByteString.copyFrom("0x38".toHexByteArray())
             nonce = ByteString.copyFrom("0x12".toHexByteArray())
             txMode = TransactionMode.SetCode
