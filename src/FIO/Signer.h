@@ -34,7 +34,7 @@ class Signer {
     /// Verify a signature, used in testing
     static bool verify(const PublicKey& pubKey, const Data& data, const Data& signature);
 
-    static int isCanonical(uint8_t by, uint8_t sig[64]);
+    static int isCanonical(uint8_t by, const uint8_t sig[64]);
 };
 
 } // namespace TW::FIO

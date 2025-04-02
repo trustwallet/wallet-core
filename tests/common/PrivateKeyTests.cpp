@@ -292,7 +292,7 @@ TEST(PrivateKey, SignNIST256p1VerifyLegacy) {
     }
 }
 
-int isCanonical([[maybe_unused]] uint8_t by, [[maybe_unused]] uint8_t sig[64]) {
+int isCanonical([[maybe_unused]] uint8_t by, [[maybe_unused]] const uint8_t sig[64]) {
     return 1;
 }
 

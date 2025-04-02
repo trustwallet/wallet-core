@@ -156,7 +156,7 @@ pub unsafe extern "C" fn tw_private_key_sign_canonical(
     key: *mut TWPrivateKey,
     digest: *const u8,
     digest_len: usize,
-    canonical_checker: Option<unsafe extern "C" fn(by: u8, sig: [u8; 64]) -> i32>,
+    canonical_checker: Option<unsafe extern "C" fn(by: u8, sig: *const u8) -> i32>,
 ) -> CByteArray {
     let private = try_or_else!(TWPrivateKey::from_ptr_as_ref(key), CByteArray::default);
     let digest_to_sign = try_or_else!(

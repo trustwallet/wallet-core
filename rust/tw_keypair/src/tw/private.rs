@@ -125,7 +125,7 @@ impl PrivateKey {
     pub fn sign_canonical(
         &self,
         message: &[u8],
-        canonical_checker: Option<unsafe extern "C" fn(by: u8, sig: [u8; 64]) -> i32>,
+        canonical_checker: Option<unsafe extern "C" fn(by: u8, sig: *const u8) -> i32>,
     ) -> KeyPairResult<Vec<u8>> {
         let message_hash =
             Hash::<32>::try_from(message).map_err(|_| KeyPairError::InvalidSignMessage)?;

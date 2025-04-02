@@ -119,7 +119,7 @@ Data PrivateKey::sign(const Data& digest) const {
     return res.data;
 }
 
-Data PrivateKey::sign(const Data& digest, int (*canonicalChecker)(uint8_t by, uint8_t sig[64])) const {
+Data PrivateKey::sign(const Data& digest, int (*canonicalChecker)(uint8_t by, const uint8_t sig[64])) const {
     Rust::CByteArrayWrapper res = Rust::tw_private_key_sign_canonical(_impl.get(), digest.data(), digest.size(), canonicalChecker);
     if (res.data.size() == 0) {
         return {};

@@ -76,7 +76,7 @@ class PrivateKey {
 
     /// Signs a digest using the given ECDSA curve and prepends the recovery id (a la graphene)
     /// Only a sig that passes canonicalChecker is returned
-    Data sign(const Data& digest, int (*canonicalChecker)(uint8_t by, uint8_t sig[64])) const;
+    Data sign(const Data& digest, int (*canonicalChecker)(uint8_t by, const uint8_t sig[64])) const;
 
     /// Signs a digest using the given ECDSA curve. The result is encoded with
     /// DER.
