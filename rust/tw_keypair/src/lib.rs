@@ -51,6 +51,7 @@ pub mod schnorr;
 pub mod starkex;
 pub mod traits;
 pub mod tw;
+pub mod zilliqa_schnorr;
 
 #[cfg(feature = "test-utils")]
 pub mod test_utils;

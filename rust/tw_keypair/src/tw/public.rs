@@ -6,6 +6,7 @@ use crate::ecdsa::{nist256p1, secp256k1};
 use crate::schnorr;
 use crate::traits::{SigningKeyTrait, VerifyingKeyTrait};
 use crate::tw::PublicKeyType;
+use crate::zilliqa_schnorr;
 use crate::{ed25519, starkex, KeyPairError, KeyPairResult};
 use tw_misc::traits::ToBytesVec;
 use tw_misc::{try_or_else, try_or_false};
@@ -247,4 +248,25 @@ impl PublicKey {
         }
     }
 
+    pub fn verify_zilliqa(&self, sig: &[u8], message: &[u8]) -> bool {
+        match self {
+            PublicKey::Secp256k1(secp) | PublicKey::Secp256k1Extended(secp) => {
+                let zilliq_pubkey = try_or_false!(zilliqa_schnorr::PublicKey::try_from(
+                    secp.to_vec().as_slice()
+                ));
+                let verify_sig = try_or_false!(
+                    <zilliqa_schnorr::PublicKey as VerifyingKeyTrait>::VerifySignature::try_from(
+                        sig
+                    )
+                );
+                let message = try_or_false!(
+                    <zilliqa_schnorr::PublicKey as VerifyingKeyTrait>::SigningMessage::try_from(
+                        message
+                    )
+                );
+                zilliq_pubkey.verify(verify_sig, message)
+            },
+            _ => false,
+        }
+    }
 }

@@ -8,9 +8,6 @@
 #include "rust/bindgen/WalletCoreRSBindgen.h"
 #include "rust/Wrapper.h"
 
-#include <TrezorCrypto/secp256k1.h>
-#include <TrezorCrypto/zilliqa.h>
-
 #include <iterator>
 
 namespace TW {
@@ -98,19 +95,6 @@ bool PublicKey::verifyAsDER(const Data& signature, const Data& message) const {
 }
 
 bool PublicKey::verifyZilliqa(const Data& signature, const Data& message) const {
-    switch (type) {
-    case TWPublicKeyTypeSECP256k1:
-    case TWPublicKeyTypeSECP256k1Extended:
-        return zil_schnorr_verify(&secp256k1, bytes.data(), signature.data(), message.data(), static_cast<uint32_t>(message.size())) == 0;
-    case TWPublicKeyTypeNIST256p1:
-    case TWPublicKeyTypeNIST256p1Extended:
-    case TWPublicKeyTypeED25519:
-    case TWPublicKeyTypeED25519Blake2b:
-    case TWPublicKeyTypeED25519Cardano:
-    case TWPublicKeyTypeCURVE25519:
-    default:
-        return false;
-    }
     return Rust::tw_public_key_verify_zilliqa(_impl.get(), signature.data(), signature.size(), message.data(), message.size());
 }
 
