@@ -76,14 +76,31 @@ TWString *_Nonnull TWBarzSignAuthorization(TWData* _Nonnull chainId, TWString* _
     return TWStringCreateWithUTF8Bytes(signedAuthorization.c_str());
 }
 
-TWData *_Nonnull TWBarzGetEncodedHash(TWData* _Nonnull chainId, TWString* _Nonnull wallet, TWString* _Nonnull version, TWString* _Nonnull typeHash, TWString* _Nonnull domainSeparatorHash, TWString* _Nonnull hash) {
+TWData *_Nonnull TWBarzGetEncodedHash(
+    TWData* _Nonnull chainId,
+    TWString* _Nonnull codeAddress,
+    TWString* _Nonnull codeName,
+    TWString* _Nonnull codeVersion,
+    TWString* _Nonnull typeHash,
+    TWString* _Nonnull domainSeparatorHash,
+    TWString* _Nonnull sender,
+    TWString* _Nonnull userOpHash) {
     const auto& chainIdData = *reinterpret_cast<const TW::Data*>(chainId);
-    const auto& walletStr = *reinterpret_cast<const std::string*>(wallet);
-    const auto& versionStr = *reinterpret_cast<const std::string*>(version);
+    const auto& codeAddressStr = *reinterpret_cast<const std::string*>(codeAddress);
+    const auto& codeNameStr = *reinterpret_cast<const std::string*>(codeName);
+    const auto& codeVersionStr = *reinterpret_cast<const std::string*>(codeVersion);
     const auto& typeHashStr = *reinterpret_cast<const std::string*>(typeHash);
     const auto& domainSeparatorHashStr = *reinterpret_cast<const std::string*>(domainSeparatorHash);
-    const auto& hashStr = *reinterpret_cast<const std::string*>(hash);
-    const auto encodedHash = TW::Barz::getEncodedHash(chainIdData, walletStr, versionStr, typeHashStr, domainSeparatorHashStr, hashStr);
+    const auto& senderStr = *reinterpret_cast<const std::string*>(sender);
+    const auto& userOpHashStr = *reinterpret_cast<const std::string*>(userOpHash);
+    const auto encodedHash = TW::Barz::getEncodedHash(
+        chainIdData,
+        codeAddressStr,
+        codeNameStr,
+        codeVersionStr, typeHashStr,
+        domainSeparatorHashStr,
+        senderStr,
+        userOpHashStr);
     return TWDataCreateWithData(&encodedHash);
 }
 

@@ -31,7 +31,7 @@ function download_dependencies() {
 function build_gtest() {
     # Build gtest
     GTEST_DIR="$ROOT/build/local/src/gtest"
-    cd ${GTEST_DIR}/googletest-release-$GTEST_VERSION
+    cd ${GTEST_DIR}/googletest-$GTEST_VERSION
     $CMAKE -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -H.
     $MAKE -j4
     $MAKE install
