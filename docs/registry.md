@@ -64,6 +64,7 @@ This list is generated from [./registry.json](../registry.json)
 | 508     | MultiversX       | eGLD   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/elrond/info/logo.png" width="32" />       | <https://multiversx.com/>     |
 | 529     | Secret           | SCRT   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/secret/info/logo.png" width="32" />       | <https://scrt.network/>       |
 | 564     | Agoric           | BLD    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/agoric/info/logo.png" width="32" />       | <https://agoric.com>          |
+| 595     | Polymesh         | POLYX  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polymesh/info/logo.png" width="32" />     | <https://polymesh.network>    |
 | 607     | TON              | TON    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ton/info/logo.png" width="32" />          | <https://ton.org>             |
 | 637     | Aptos            | APT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aptos/info/logo.png" width="32" />        | <https://aptoslabs.com/>      |
 | 714     | BNB Beacon Chain | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png" width="32" />      | <https://www.bnbchain.org>    |
@@ -132,7 +133,7 @@ This list is generated from [./registry.json](../registry.json)
 | 10004689 | IoTeX EVM        | IOTX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iotexevm/info/logo.png" width="32" />     | <https://iotex.io/>           |
 | 10007000 | NativeZetaChain  | ZETA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zetachain/info/logo.png" width="32" />    | <https://www.zetachain.com/>  |
 | 10007700 | NativeCanto      | CANTO  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nativecanto/info/logo.png" width="32" />  | <https://canto.io/>           |
-| 10008217 | Kaia             | KAIA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/klaytn/info/logo.png" width="32" />         | <https://kaia.io>             |
+| 10008217 | Kaia             | KAIA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kaia/info/logo.png" width="32" />         | <https://kaia.io>             |
 | 10009000 | Avalanche C-Chain | AVAX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/avalanchec/info/logo.png" width="32" />   | <https://www.avalabs.org/>    |
 | 10009001 | Evmos            | EVMOS  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/evmos/info/logo.png" width="32" />        | <https://evmos.org/>          |
 | 10042170 | Arbitrum Nova    | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/arbitrumnova/info/logo.png" width="32" /> | <https://nova.arbitrum.io>    |

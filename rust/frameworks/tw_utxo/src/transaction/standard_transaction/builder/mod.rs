@@ -2,7 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use super::{Transaction, TransactionInput, TransactionOutput};
+use super::{Transaction, TransactionInput, TransactionOutput, DEFAULT_LOCKTIME};
+use crate::transaction::unsigned_transaction::UnsignedTransaction;
+use crate::transaction::UtxoToSign;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::H256;
@@ -10,8 +12,6 @@ use tw_hash::H256;
 mod output;
 mod utxo;
 
-use crate::transaction::unsigned_transaction::UnsignedTransaction;
-use crate::transaction::UtxoToSign;
 pub use output::OutputBuilder;
 pub use utxo::UtxoBuilder;
 
@@ -41,7 +41,7 @@ impl TransactionBuilder {
             version: 2,
             inputs: Vec::new(),
             outputs: Vec::new(),
-            locktime: 0,
+            locktime: DEFAULT_LOCKTIME,
             utxo_args: Vec::default(),
         }
     }
@@ -69,7 +69,7 @@ impl TransactionBuilder {
 
     pub fn build(self) -> SigningResult<UnsignedTransaction<Transaction>> {
         let transaction = Transaction {
-            version: self.version as i32,
+            version: self.version,
             inputs: self.inputs,
             outputs: self.outputs,
             locktime: self.locktime,

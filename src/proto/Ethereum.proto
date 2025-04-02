@@ -110,6 +110,11 @@ enum TransactionMode {
 
     // EIP4337-compatible UserOperation
     UserOp = 2;
+
+    // EIP-7702 transaction (with type 0x4); allows to set the code of a contract for an EOA.
+    // Note that `SetCode` transaction extends `Enveloped` transaction.
+    // https://eips.ethereum.org/EIPS/eip-7702
+    SetCode = 4;
 }
 
 // ERC-4337 structure that describes a transaction to be sent on behalf of a user
@@ -133,12 +138,62 @@ message UserOperation {
     bytes paymaster_and_data = 6;
 }
 
+// EIP-7702 compatible ERC-4337 structure that describes a transaction to be sent on behalf of a user
+message UserOperationV0_7 {
+    // Entry point contract address
+    string entry_point = 1;
+
+    // Account factory contract address
+    string factory = 2;
+
+    // Account factory data
+    bytes factory_data = 3;
+
+    // Account logic contract address
+    string sender = 4;
+
+    // The amount of gas to pay for to compensate the bundler for pre-verification execution and calldata
+    bytes pre_verification_gas = 5;
+
+    // The amount of gas to allocate for the verification step
+    bytes verification_gas_limit = 6;
+
+    // Address of paymaster
+    string paymaster = 7;
+
+    // The amount of gas to allocate for the paymaster verification step
+    bytes paymaster_verification_gas_limit = 8;
+
+    // The amount of gas to allocate for paymaster post ops
+    bytes paymaster_post_op_gas_limit = 9;
+
+    // Paymaster data
+    bytes paymaster_data = 10;
+}
+
 // An item of the [EIP-2930](https://eips.ethereum.org/EIPS/eip-2930) access list.
 message Access {
     // Address to be accessed by the transaction.
     string address = 1;
     // Storage keys to be accessed by the transaction.
     repeated bytes stored_keys = 2;
+}
+
+// [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) authority.
+message Authority {
+    // Address to be authorized, a smart contract address.
+    string address = 2;
+}
+
+// Smart Contract account type.
+enum SCAccountType {
+    // ERC-4337 compatible smart contract wallet.
+    // https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/accounts/SimpleAccount.sol
+    SimpleAccount = 0;
+    // Biz smart contract (Trust Wallet specific) through ERC-4337 EntryPoint.
+    Biz4337 = 1;
+    // Biz smart contract (Trust Wallet specific) directly through ERC-7702.
+    Biz = 2;
 }
 
 // Input data necessary to create a signed transaction.
@@ -179,11 +234,23 @@ message SigningInput {
     Transaction transaction = 10;
 
     // UserOperation for ERC-4337 wallets
-    UserOperation user_operation = 11;
+    oneof user_operation_oneof {
+        UserOperation user_operation = 11;
+
+        // EIP-7702 compatible
+        UserOperationV0_7 user_operation_v0_7 = 13;
+    }
 
     // Optional list of addresses and storage keys that the transaction plans to access.
     // Used in `TransactionMode::Enveloped` only.
     repeated Access access_list = 12;
+
+    // Smart contract account type. Used in `TransactionMode::UserOp` only.
+    SCAccountType user_operation_mode = 14;
+
+    // A smart contract to which we’re delegating to.
+    // Currently, we support delegation to only one authority at a time.
+    Authority eip7702_authority = 15;
 }
 
 // Result containing the signed and encoded transaction.

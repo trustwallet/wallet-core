@@ -14,7 +14,7 @@ using namespace TW;
 namespace TW::Nano::tests {
 
 TEST(NanoSigner, sign1) {
-    const auto privateKey = PrivateKey(parse_hex(kPrivateKey));
+    const auto privateKey = PrivateKey(parse_hex(kPrivateKey), TWCurveED25519Blake2bNano);
     const auto linkBlock = parse_hex("491fca2c69a84607d374aaf1f6acd3ce70744c5be0721b5ed394653e85233507");
 
     auto input = Proto::SigningInput();
@@ -44,7 +44,7 @@ TEST(NanoSigner, sign1) {
 }
 
 TEST(NanoSigner, sign2) {
-    const auto privateKey = PrivateKey(parse_hex(kPrivateKey));
+    const auto privateKey = PrivateKey(parse_hex(kPrivateKey), TWCurveED25519Blake2bNano);
     const auto parentBlock = parse_hex("f9a323153daefe041efb94d69b9669c882c935530ed953bbe8a665dfedda9696");
 
     auto input = Proto::SigningInput();
@@ -61,7 +61,7 @@ TEST(NanoSigner, sign2) {
 }
 
 TEST(NanoSigner, sign3) {
-    const auto privateKey = PrivateKey(parse_hex(kPrivateKey));
+    const auto privateKey = PrivateKey(parse_hex(kPrivateKey), TWCurveED25519Blake2bNano);
     const auto parentBlock = parse_hex("2568bf76336f7a415ca236dab97c1df9de951ca057a2e79df1322e647a259e7b");
     const auto linkBlock = parse_hex("d7384845d2ae530b45a5dd50ee50757f988329f652781767af3f1bc2322f52b9");
 
@@ -92,7 +92,7 @@ TEST(NanoSigner, sign3) {
 }
 
 TEST(NanoSigner, sign4) {
-    const auto privateKey = PrivateKey(parse_hex(kPrivateKey));
+    const auto privateKey = PrivateKey(parse_hex(kPrivateKey), TWCurveED25519Blake2bNano);
     const auto parentBlock = parse_hex("1ca240212838d053ecaa9dceee598c52a6080067edecaeede3319eb0b7db6525");
 
     auto input = Proto::SigningInput();
@@ -110,7 +110,7 @@ TEST(NanoSigner, sign4) {
 }
 
 TEST(NanoSigner, signInvalid1) {
-    const auto privateKey = PrivateKey(parse_hex(kPrivateKey));
+    const auto privateKey = PrivateKey(parse_hex(kPrivateKey), TWCurveED25519Blake2bNano);
 
     // Missing link_block
     auto input = Proto::SigningInput();
@@ -122,7 +122,7 @@ TEST(NanoSigner, signInvalid1) {
 }
 
 TEST(NanoSigner, signInvalid2) {
-    const auto privateKey = PrivateKey(parse_hex(kPrivateKey));
+    const auto privateKey = PrivateKey(parse_hex(kPrivateKey), TWCurveED25519Blake2bNano);
     const auto linkBlock = parse_hex("491fca2c69a84607d374aaf1f6acd3ce70744c5be0721b5ed394653e85233507");
 
     // Missing representative
@@ -135,7 +135,7 @@ TEST(NanoSigner, signInvalid2) {
 }
 
 TEST(NanoSigner, signInvalid3) {
-    const auto privateKey = PrivateKey(parse_hex(kPrivateKey));
+    const auto privateKey = PrivateKey(parse_hex(kPrivateKey), TWCurveED25519Blake2bNano);
     const auto linkBlock = parse_hex("491fca2c69a84607d374aaf1f6acd3ce70744c5be0721b5ed394653e85233507");
 
     // Missing balance
@@ -148,7 +148,7 @@ TEST(NanoSigner, signInvalid3) {
 }
 
 TEST(NanoSigner, signInvalid4) {
-    const auto privateKey = PrivateKey(parse_hex(kPrivateKey));
+    const auto privateKey = PrivateKey(parse_hex(kPrivateKey), TWCurveED25519Blake2bNano);
     const auto linkBlock = parse_hex("491fca2c69a84607d374aaf1f6acd3ce70744c5be0721b5ed394653e85233507");
 
     // Account first block cannot be 0 balance
@@ -162,7 +162,7 @@ TEST(NanoSigner, signInvalid4) {
 }
 
 TEST(NanoSigner, signInvalid5) {
-    const auto privateKey = PrivateKey(parse_hex(kPrivateKey));
+    const auto privateKey = PrivateKey(parse_hex(kPrivateKey), TWCurveED25519Blake2bNano);
 
     // First block must use link_block not link_recipient
     auto input = Proto::SigningInput();
@@ -175,7 +175,7 @@ TEST(NanoSigner, signInvalid5) {
 }
 
 TEST(NanoSigner, signInvalid6) {
-    const auto privateKey = PrivateKey(parse_hex(kPrivateKey));
+    const auto privateKey = PrivateKey(parse_hex(kPrivateKey), TWCurveED25519Blake2bNano);
     const auto linkBlock = parse_hex("491fca2c69a84607d374aaf1f6acd3ce70744c5be0721b5ed394653e85233507");
 
     // Invalid representative value
@@ -189,7 +189,7 @@ TEST(NanoSigner, signInvalid6) {
 }
 
 TEST(NanoSigner, signInvalid7) {
-    const auto privateKey = PrivateKey(parse_hex(kPrivateKey));
+    const auto privateKey = PrivateKey(parse_hex(kPrivateKey), TWCurveED25519Blake2bNano);
     const auto parentBlock = parse_hex("f9a323153daefe041efb94d69b9669c882c935530ed953bbe8a665dfedda9696");
 
     auto input = Proto::SigningInput();
@@ -203,7 +203,7 @@ TEST(NanoSigner, signInvalid7) {
 }
 
 TEST(NanoSigner, buildUnsignedTxBytes) {
-    const auto privateKey = PrivateKey(parse_hex(kPrivateKey));
+    const auto privateKey = PrivateKey(parse_hex(kPrivateKey), TWCurveED25519Blake2bNano);
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Blake2b);
     const auto linkBlock = parse_hex("491fca2c69a84607d374aaf1f6acd3ce70744c5be0721b5ed394653e85233507");
 
@@ -218,7 +218,7 @@ TEST(NanoSigner, buildUnsignedTxBytes) {
 }
 
 TEST(NanoSigner, buildSigningOutput) {
-    const auto privateKey = PrivateKey(parse_hex(kPrivateKey));
+    const auto privateKey = PrivateKey(parse_hex(kPrivateKey), TWCurveED25519Blake2bNano);
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Blake2b);
     const auto linkBlock = parse_hex("491fca2c69a84607d374aaf1f6acd3ce70744c5be0721b5ed394653e85233507");
 

@@ -7,9 +7,15 @@ use crate::transaction::{
 };
 use tw_coin_entry::error::prelude::SigningResult;
 use tw_hash::H32;
-use tw_utxo::transaction::standard_transaction::{TransactionInput, TransactionOutput};
+use tw_utxo::transaction::standard_transaction::{
+    TransactionInput, TransactionOutput, DEFAULT_LOCKTIME,
+};
+use tw_utxo::transaction::transaction_parts::Amount;
 use tw_utxo::transaction::unsigned_transaction::UnsignedTransaction;
 use tw_utxo::transaction::UtxoToSign;
+
+pub const DISABLE_EXPIRY: u32 = 0;
+pub const ZERO_SAPLING_VALUE_BALANCE: Amount = 0;
 
 pub struct ZcashTransactionBuilder {
     transaction: ZcashTransaction,
@@ -24,16 +30,16 @@ impl ZcashTransactionBuilder {
                 version_group_id: TRANSACTION_VERSION_GROUP_ID,
                 transparent_inputs: Vec::default(),
                 transparent_outputs: Vec::default(),
-                locktime: 0,
-                expiry_height: 0,
-                sapling_value_balance: 0,
+                locktime: DEFAULT_LOCKTIME,
+                expiry_height: DISABLE_EXPIRY,
+                sapling_value_balance: ZERO_SAPLING_VALUE_BALANCE,
                 branch_id: NU6_BRANCH_ID,
             },
             utxo_args: Vec::default(),
         }
     }
 
-    pub fn version(&mut self, version: i32) -> &mut Self {
+    pub fn version(&mut self, version: u32) -> &mut Self {
         self.transaction.version = version;
         self
     }

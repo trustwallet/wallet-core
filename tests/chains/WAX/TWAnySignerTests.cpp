@@ -21,7 +21,7 @@ TEST(TWAnySignerWAX, Sign) {
     const auto refBlock = parse_hex("0cffaeda15039f3468398c5b4295d220fcc217f7cf96030c3729773097c6bd76");
     const auto key = parse_hex("d30d185a296b9591d648cb92fe0aa8f8a42de30ed9d2a21da9e7f69c67e8e355");
 
-    const auto pubKey = PublicKey(PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1));
+    const auto pubKey = PublicKey(PrivateKey(key, TWCurveSECP256k1).getPublicKey(TWPublicKeyTypeSECP256k1));
     const auto address = Address(pubKey);
     EXPECT_EQ(address.string(), "EOS7rC6zYUjuxWkiokZTrwwHqwFvZ15Qdrn5WNxMKVXtHiDDmBWog");
 

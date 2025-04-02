@@ -25,6 +25,7 @@ fn main() {
         .input(proto_src.to_string() + "/Bitcoin.proto")
         .input(proto_src.to_string() + "/BitcoinV2.proto")
         .input(proto_src.to_string() + "/BabylonStaking.proto")
+        .input(proto_src.to_string() + "/DecredV2.proto")
         .input(proto_src.to_string() + "/Ethereum.proto")
         .input(proto_src.to_string() + "/Utxo.proto")
         .input(proto_src.to_string() + "/Zcash.proto")

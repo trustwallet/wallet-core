@@ -77,7 +77,7 @@ Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& pub
 
 Proto::SigningOutput Signer::signSecp256k1(const Proto::SigningInput& input) {
     // Load private key and transaction from Protobuf input.
-    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveSECP256k1);
     auto pubkey = key.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
 
     auto transaction = Signer::buildTx(pubkey, input);
@@ -123,7 +123,7 @@ Transaction Signer::buildTx(const PublicKey& publicKey, const Proto::SigningInpu
 /// https://github.com/filecoin-project/lotus/blob/ce17546a762eef311069e13410d15465d832a45e/chain/messagesigner/messagesigner.go#L197-L211
 Proto::SigningOutput Signer::signDelegated(const Proto::SigningInput& input) {
     // Load private key from Protobuf input.
-    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveSECP256k1);
     auto pubkey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
 
     // Load the transaction params.
@@ -172,7 +172,7 @@ Proto::SigningOutput Signer::signDelegated(const Proto::SigningInput& input) {
 
     auto preHash = data(ethOutput.data_hash());
     // Sign transaction as an Ethereum EIP1559 native transfer.
-    Data signature = privateKey.sign(preHash, TWCurveSECP256k1);
+    Data signature = privateKey.sign(preHash);
 
     // Generate a Filecoin signed message.
     Transaction filecoinTransaction(

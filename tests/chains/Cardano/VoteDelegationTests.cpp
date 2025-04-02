@@ -25,7 +25,7 @@ const auto dRepAddressCIP105 = "drep13d6sxkyz6st9h65qqrzd8ukpywhr8swe9f6357qntgj
 
 TEST(CardanoVoteDelegation, DelegateToSpecificDRepCIP129) {
     const auto privateKeyData = parse_hex(privateKeyTest1);
-    const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
+    const auto publicKey = PrivateKey(privateKeyData, TWCurveED25519ExtendedCardano).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
     const auto stakingAddress = AddressV3(publicKey).getStakingAddress();
@@ -82,7 +82,7 @@ TEST(CardanoVoteDelegation, DelegateToSpecificDRepCIP129) {
 
 TEST(CardanoVoteDelegation, DelegateToSpecificDRepCIP105) {
     const auto privateKeyData = parse_hex(privateKeyTest1);
-    const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
+    const auto publicKey = PrivateKey(privateKeyData, TWCurveED25519ExtendedCardano).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
     const auto stakingAddress = AddressV3(publicKey).getStakingAddress();
@@ -139,7 +139,7 @@ TEST(CardanoVoteDelegation, DelegateToSpecificDRepCIP105) {
 
 TEST(CardanoVoteDelegation, DelegateToAlwaysAbstain) {
     const auto privateKeyData = parse_hex(privateKeyTest1);
-    const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
+    const auto publicKey = PrivateKey(privateKeyData, TWCurveED25519ExtendedCardano).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
     const auto stakingAddress = AddressV3(publicKey).getStakingAddress();
@@ -195,7 +195,7 @@ TEST(CardanoVoteDelegation, DelegateToAlwaysAbstain) {
 
 TEST(CardanoVoteDelegation, DelegateToNoConfidence) {
     const auto privateKeyData = parse_hex(privateKeyTest1);
-    const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
+    const auto publicKey = PrivateKey(privateKeyData, TWCurveED25519ExtendedCardano).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
     const auto stakingAddress = AddressV3(publicKey).getStakingAddress();

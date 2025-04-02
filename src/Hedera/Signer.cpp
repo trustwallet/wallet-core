@@ -86,7 +86,7 @@ static inline Proto::SigningOutput sign(const proto::TransactionBody& body, cons
 namespace TW::Hedera {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveED25519);
     auto body = internals::transactionBodyPrerequisites(input);
 
     switch (input.body().data_case()) {

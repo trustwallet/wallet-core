@@ -4,6 +4,7 @@ package TW.Decred.Proto;
 option java_package = "wallet.core.jni.proto";
 
 import "Bitcoin.proto";
+import "BitcoinV2.proto";
 import "Common.proto";
 
 // A transfer transaction
@@ -36,13 +37,13 @@ message TransactionInput {
     uint32 sequence = 2;
 
     // The amount of the input
-	int64 valueIn = 3;
+    int64 valueIn = 3;
 
     // Creation block height
-	uint32 blockHeight = 4;
+    uint32 blockHeight = 4;
 
     // Index within the block
-	uint32 blockIndex = 5;
+    uint32 blockIndex = 5;
 
     // Computational script for confirming transaction authorization.
     bytes script = 6;
@@ -75,4 +76,8 @@ message SigningOutput {
     Common.Proto.SigningError error = 4;
 
     string error_message = 5;
+
+    // Result of a transaction signing using the Bitcoin 2.0 protocol.
+    // Set if `Bitcoin.Proto.SigningInput.signing_v2` used.
+    BitcoinV2.Proto.SigningOutput signing_result_v2 = 6;
 }

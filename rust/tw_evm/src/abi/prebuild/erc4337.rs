@@ -4,12 +4,11 @@
 
 use crate::abi::contract::Contract;
 use crate::abi::param_type::ParamType;
+use crate::abi::prebuild::ExecuteArgs;
 use crate::abi::token::Token;
 use crate::abi::AbiResult;
-use crate::address::Address;
 use lazy_static::lazy_static;
 use tw_memory::Data;
-use tw_number::U256;
 
 /// Generated via https://remix.ethereum.org
 /// https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/samples/SimpleAccount.sol
@@ -18,12 +17,6 @@ const ERC4337_SIMPLE_ACCOUNT_ABI: &str = include_str!("resource/erc4337.simple_a
 lazy_static! {
     static ref ERC4337_SIMPLE_ACCOUNT: Contract =
         serde_json::from_str(ERC4337_SIMPLE_ACCOUNT_ABI).unwrap();
-}
-
-pub struct ExecuteArgs {
-    pub to: Address,
-    pub value: U256,
-    pub data: Data,
 }
 
 pub struct Erc4337SimpleAccount;

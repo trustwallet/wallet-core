@@ -4,10 +4,11 @@
 
 #![allow(clippy::missing_safety_doc)]
 
+use tw_macros::tw_ffi;
 use tw_memory::ffi::tw_data::TWData;
 use tw_memory::ffi::tw_data_vector::TWDataVector;
 use tw_memory::ffi::tw_string::TWString;
-use tw_memory::ffi::RawPtrTrait;
+use tw_memory::ffi::{Nonnull, NullableMut, RawPtrTrait};
 use tw_misc::try_or_else;
 use tw_solana::modules::utils::SolanaTransaction;
 
@@ -22,12 +23,13 @@ use tw_solana::modules::utils::SolanaTransaction;
 /// \param recent_blockhash base58 encoded recent blockhash.
 /// \param private_keys list of private keys that should be used to re-sign the transaction.
 /// \return serialized `Solana::Proto::SigningOutput`.
+#[tw_ffi(ty = static_function, class = TWSolanaTransaction, name = UpdateBlockhashAndSign)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_solana_transaction_update_blockhash_and_sign(
-    encoded_tx: *const TWString,
-    recent_blockhash: *const TWString,
-    private_keys: *const TWDataVector,
-) -> *mut TWData {
+    encoded_tx: Nonnull<TWString>,
+    recent_blockhash: Nonnull<TWString>,
+    private_keys: Nonnull<TWDataVector>,
+) -> NullableMut<TWData> {
     let encoded_tx = try_or_else!(TWString::from_ptr_as_ref(encoded_tx), std::ptr::null_mut);
     let encoded_tx = try_or_else!(encoded_tx.as_str(), std::ptr::null_mut);
 
@@ -55,10 +57,11 @@ pub unsafe extern "C" fn tw_solana_transaction_update_blockhash_and_sign(
 ///
 /// \param encoded_tx base64 encoded Solana transaction.
 /// \return nullable Unit Price as a decimal string. Null if no instruction found.
+#[tw_ffi(ty = static_function, class = TWSolanaTransaction, name = GetComputeUnitPrice)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_solana_transaction_get_compute_unit_price(
-    encoded_tx: *const TWString,
-) -> *mut TWString {
+    encoded_tx: Nonnull<TWString>,
+) -> NullableMut<TWString> {
     let encoded_tx = try_or_else!(TWString::from_ptr_as_ref(encoded_tx), std::ptr::null_mut);
     let encoded_tx = try_or_else!(encoded_tx.as_str(), std::ptr::null_mut);
 
@@ -73,10 +76,11 @@ pub unsafe extern "C" fn tw_solana_transaction_get_compute_unit_price(
 ///
 /// \param encoded_tx base64 encoded Solana transaction.
 /// \return nullable Unit Limit as a decimal string. Null if no instruction found.
+#[tw_ffi(ty = static_function, class = TWSolanaTransaction, name = GetComputeUnitLimit)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_solana_transaction_get_compute_unit_limit(
-    encoded_tx: *const TWString,
-) -> *mut TWString {
+    encoded_tx: Nonnull<TWString>,
+) -> NullableMut<TWString> {
     let encoded_tx = try_or_else!(TWString::from_ptr_as_ref(encoded_tx), std::ptr::null_mut);
     let encoded_tx = try_or_else!(encoded_tx.as_str(), std::ptr::null_mut);
 
@@ -92,11 +96,12 @@ pub unsafe extern "C" fn tw_solana_transaction_get_compute_unit_limit(
 /// \param encoded_tx base64 encoded Solana transaction.
 /// \price Unit Price as a decimal string.
 /// \return base64 encoded Solana transaction. Null if an error occurred.
+#[tw_ffi(ty = static_function, class = TWSolanaTransaction, name = SetComputeUnitPrice)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_solana_transaction_set_compute_unit_price(
-    encoded_tx: *const TWString,
-    price: *const TWString,
-) -> *mut TWString {
+    encoded_tx: Nonnull<TWString>,
+    price: Nonnull<TWString>,
+) -> NullableMut<TWString> {
     let encoded_tx = try_or_else!(TWString::from_ptr_as_ref(encoded_tx), std::ptr::null_mut);
     let encoded_tx = try_or_else!(encoded_tx.as_str(), std::ptr::null_mut);
 
@@ -116,11 +121,12 @@ pub unsafe extern "C" fn tw_solana_transaction_set_compute_unit_price(
 /// \param encoded_tx base64 encoded Solana transaction.
 /// \limit Unit Limit as a decimal string.
 /// \return base64 encoded Solana transaction. Null if an error occurred.
+#[tw_ffi(ty = static_function, class = TWSolanaTransaction, name = SetComputeUnitLimit)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_solana_transaction_set_compute_unit_limit(
-    encoded_tx: *const TWString,
-    limit: *const TWString,
-) -> *mut TWString {
+    encoded_tx: Nonnull<TWString>,
+    limit: Nonnull<TWString>,
+) -> NullableMut<TWString> {
     let encoded_tx = try_or_else!(TWString::from_ptr_as_ref(encoded_tx), std::ptr::null_mut);
     let encoded_tx = try_or_else!(encoded_tx.as_str(), std::ptr::null_mut);
 
@@ -139,11 +145,12 @@ pub unsafe extern "C" fn tw_solana_transaction_set_compute_unit_limit(
 /// \param encoded_tx base64 encoded Solana transaction.
 /// \param fee_payer fee payer account address. Must be a base58 encoded public key. It must NOT be in the account list yet.
 /// \return base64 encoded Solana transaction. Null if an error occurred.
+#[tw_ffi(ty = static_function, class = TWSolanaTransaction, name = SetFeePayer)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_solana_transaction_set_fee_payer(
-    encoded_tx: *const TWString,
-    fee_payer: *const TWString,
-) -> *mut TWString {
+    encoded_tx: Nonnull<TWString>,
+    fee_payer: Nonnull<TWString>,
+) -> NullableMut<TWString> {
     let encoded_tx = try_or_else!(TWString::from_ptr_as_ref(encoded_tx), std::ptr::null_mut);
     let encoded_tx = try_or_else!(encoded_tx.as_str(), std::ptr::null_mut);
 

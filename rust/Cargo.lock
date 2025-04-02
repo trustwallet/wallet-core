@@ -1743,6 +1743,7 @@ dependencies = [
  "tw_encoding",
  "tw_hash",
  "tw_keypair",
+ "tw_macros",
  "tw_memory",
  "tw_misc",
  "tw_proto",
@@ -1877,6 +1878,7 @@ dependencies = [
  "tw_bitcoincash",
  "tw_coin_entry",
  "tw_cosmos",
+ "tw_decred",
  "tw_ethereum",
  "tw_evm",
  "tw_greenfield",
@@ -1891,6 +1893,7 @@ dependencies = [
  "tw_native_injective",
  "tw_pactus",
  "tw_polkadot",
+ "tw_polymesh",
  "tw_ripple",
  "tw_ronin",
  "tw_solana",
@@ -1930,6 +1933,21 @@ dependencies = [
  "tw_misc",
  "tw_number",
  "tw_proto",
+]
+
+[[package]]
+name = "tw_decred"
+version = "0.1.0"
+dependencies = [
+ "tw_base58_address",
+ "tw_bitcoin",
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_proto",
+ "tw_utxo",
 ]
 
 [[package]]
@@ -2075,6 +2093,7 @@ dependencies = [
  "tw_encoding",
  "tw_hash",
  "tw_keypair",
+ "tw_macros",
  "tw_memory",
  "tw_misc",
  "zeroize",
@@ -2170,6 +2189,22 @@ dependencies = [
 
 [[package]]
 name = "tw_polkadot"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_number",
+ "tw_proto",
+ "tw_scale",
+ "tw_ss58_address",
+ "tw_substrate",
+]
+
+[[package]]
+name = "tw_polymesh"
 version = "0.1.0"
 dependencies = [
  "tw_coin_entry",

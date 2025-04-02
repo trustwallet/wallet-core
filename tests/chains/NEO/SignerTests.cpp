@@ -31,7 +31,7 @@ TEST(NEOSigner, FromPublicPrivateKey) {
 }
 
 TEST(NEOSigner, SigningData) {
-    auto signer = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646")));
+    auto signer = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"), TWCurveNIST256p1));
     auto verScript = "ba7908ddfe5a1177f2c9d3fa1d3dc71c9c289a3325b3bdd977e20c50136959ed02d1411efa5e8b897d970ef7e2325e6c0a3fdee4eb421223f0d86e455879a9ad";
     auto invocationScript = string("401642b3d538e138f34b32330e381a7fe3f5151fcf958f2030991e72e2e25043143e4a1ebd239634efba279c96fa0ab04a15aa15179d73a7ef5a886ac8a06af484401642b3d538e138f34b32330e381a7fe3f5151fcf958f2030991e72e2e25043143e4a1ebd239634efba279c96fa0ab04a15aa15179d73a7ef5a886ac8a06af484401642b3d538e138f34b32330e381a7fe3f5151fcf958f2030991e72e2e25043143e4a1ebd239634efba279c96fa0ab04a15aa15179d73a7ef5a886ac8a06af484");
     invocationScript = string(invocationScript.rbegin(), invocationScript.rend());
@@ -50,7 +50,7 @@ TEST(NEOAccount, validity) {
 }
 
 TEST(NEOSigner, SigningTransaction) {
-    auto privateKey = PrivateKey(parse_hex("F18B2F726000E86B4950EBEA7BFF151F69635951BC4A31C44F28EE6AF7AEC128"));
+    auto privateKey = PrivateKey(parse_hex("F18B2F726000E86B4950EBEA7BFF151F69635951BC4A31C44F28EE6AF7AEC128"), TWCurveNIST256p1);
     auto signer = Signer(privateKey);
     auto transaction = Transaction();
     transaction.type = TransactionType::TT_ContractTransaction;

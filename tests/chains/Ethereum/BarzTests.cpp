@@ -15,7 +15,6 @@
 #include <TrustWalletCore/TWEthereumAbiFunction.h>
 
 namespace TW::Barz::tests {
-
 // https://testnet.bscscan.com/tx/0x6c6e1fe81c722c0abce1856b9b4e078ab2cad06d51f2d1b04945e5ba2286d1b4
 TEST(Barz, GetInitCode) {
     const PublicKey& publicKey = PublicKey(parse_hex("0x04e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b02"), TWPublicKeyTypeNIST256p1Extended);
@@ -414,5 +413,67 @@ TEST(Barz, GetDiamondCutCodeWithLongInitData) {
     }
 }
 
+TEST(Barz, GetAuthorizationHash) {
+    {
+        const auto chainId = store(uint256_t(1));
+        const auto contractAddress = "0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1";
+        const auto nonce = store(uint256_t(1));
+        
+        const auto& authorizationHash = Barz::getAuthorizationHash(chainId, contractAddress, nonce);
+        ASSERT_EQ(hexEncoded(authorizationHash), "0x3ae543b2fa103a39a6985d964a67caed05f6b9bb2430ad6d498cda743fe911d9"); // Verified with viem
+    }
 }
 
+TEST(Barz, SignAuthorization) {
+    {
+        const auto chainId = store(uint256_t(1));
+        const auto contractAddress = "0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1";
+        const auto nonce = store(uint256_t(1));
+        const auto privateKey = "0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8";
+
+        const auto signedAuthorization = Barz::signAuthorization(chainId, contractAddress, nonce, privateKey);
+        auto json = nlohmann::json::parse(signedAuthorization);
+        // Verified with viem
+        ASSERT_EQ(json["chainId"], hexEncoded(chainId));
+        ASSERT_EQ(json["address"], contractAddress);
+        ASSERT_EQ(json["nonce"], hexEncoded(nonce));
+        ASSERT_EQ(json["yParity"], hexEncoded(store(uint256_t(1))));
+        ASSERT_EQ(json["r"], "0x2c39f2f64441dd38c364ee175dc6b9a87f34ca330bce968f6c8e22811e3bb710");
+        ASSERT_EQ(json["s"], "0x5f1bcde93dee4b214e60bc0e63babcc13e4fecb8a23c4098fd89844762aa012c");
+    }
+}
+
+TEST(Barz, GetEncodedHash) {
+    {
+        const auto chainId = store(uint256_t(31337), 32);
+        const auto codeAddress = "0x2e234DAe75C793f67A35089C9d99245E1C58470b";
+        const auto codeName = "Biz";
+        const auto codeVersion = "v1.0.0";
+        const auto typeHash = "0x4f51e7a567f083a31264743067875fc6a7ae45c32c5bd71f6a998c4625b13867";
+        const auto domainSeparatorHash = "0xd87cd6ef79d4e2b95e15ce8abf732db51ec771f1ca2edccf22a46c729ac56472";
+        const auto sender = "0x174a240e5147D02dE4d7724D5D3E1c1bF11cE029";
+        const auto userOpHash = "0xf177858c1c500e51f38ffe937bed7e4d3a8678725900be4682d3ce04d97071eb";
+
+        const auto& encodedHash = Barz::getEncodedHash(
+            chainId,
+            codeAddress,
+            codeName,
+            codeVersion,
+            typeHash,
+            domainSeparatorHash,
+            sender,
+            userOpHash);
+        ASSERT_EQ(hexEncoded(encodedHash), "0xc63891abc38f7a991f89ad7cb6d7e53543627b0536c3f5e545b736756c971635");
+    }
+}
+
+TEST(Barz, GetSignedHash) {
+    {
+        const auto hash = "0xc63891abc38f7a991f89ad7cb6d7e53543627b0536c3f5e545b736756c971635";
+        const auto privateKey = "0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8";
+        const auto signedHash = Barz::getSignedHash(hash, privateKey);
+        ASSERT_EQ(hexEncoded(signedHash), "0xa29e460720e4b539f593d1a407827d9608cccc2c18b7af7b3689094dca8a016755bca072ffe39bc62285b65aff8f271f20798a421acf18bb2a7be8dbe0eb05f81c");
+    }
+}
+
+}

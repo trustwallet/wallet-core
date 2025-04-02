@@ -17,6 +17,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto signer = Signer(chainId);
         auto tx = signer.buildTx(input);
 
+        // values for Legacy and ModernK1
+        TWCurve curve = TWCurveSECP256k1;
         // get key type
         EOS::Type type = Type::Legacy;
         switch (input.private_key_type()) {
@@ -29,6 +31,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
             break;
 
         case Proto::KeyType::MODERNR1:
+            curve = TWCurveNIST256p1;
             type = Type::ModernR1;
             break;
         default:
@@ -36,7 +39,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         }
 
         // sign the transaction with a Signer
-        auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+        auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), curve);
         signer.sign(key, type, tx);
 
         // Pack the transaction and add the json encoding to Signing outputput
@@ -55,17 +58,14 @@ void Signer::sign(const PrivateKey& privateKey, Type type, Transaction& transact
         throw std::invalid_argument("Invalid transaction!");
     }
 
-    // values for Legacy and ModernK1
-    TWCurve curve = TWCurveSECP256k1;
     auto canonicalChecker = isCanonical;
 
     //  Values for ModernR1
     if (type == Type::ModernR1) {
-        curve = TWCurveNIST256p1;
         canonicalChecker = nullptr;
     }
 
-    const Data result = privateKey.sign(hash(transaction), curve, canonicalChecker);
+    const Data result = privateKey.sign(hash(transaction), canonicalChecker);
 
     transaction.signatures.emplace_back(Signature(result, type));
 }

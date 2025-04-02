@@ -152,7 +152,9 @@ impl<'a> ProtobufBuilder<'a> {
             .to_classic_address()
             .into_tw()
             .context("Error converting 'Payment.destination' to a Classic address")?;
-        let destination_tag = payment.destination_tag.zero_or_some();
+        let destination_tag = payment
+            .destination_tag
+            .try_into_u32_optional("destinationTag")?;
 
         self.prepare_builder()?
             .payment(amount, destination, destination_tag)
@@ -200,9 +202,15 @@ impl<'a> ProtobufBuilder<'a> {
             .escrow_create(
                 native_amount,
                 destination,
-                escrow_create.destination_tag.zero_or_some(),
-                escrow_create.cancel_after.zero_or_some(),
-                escrow_create.finish_after.zero_or_some(),
+                escrow_create
+                    .destination_tag
+                    .try_into_u32_optional("destinationTag")?,
+                escrow_create
+                    .cancel_after
+                    .try_into_u32_optional("cancelAfter")?,
+                escrow_create
+                    .finish_after
+                    .try_into_u32_optional("finishAfter")?,
                 condition,
             )
             .map(TransactionType::EscrowCreate)
@@ -323,13 +331,13 @@ impl<'a> ProtobufBuilder<'a> {
         let mut builder = TransactionBuilder::default();
         builder
             .fee(fee)
-            .flags(self.input.flags)
+            .flags(self.input.flags.try_into_u32("inputFlags")?)
             .sequence(self.input.sequence)
             .last_ledger_sequence(self.input.last_ledger_sequence)
             .account_str(self.input.account.as_ref())?
             .signing_pub_key(&signing_public_key);
         if self.input.source_tag != 0 {
-            builder.source_tag(self.input.source_tag);
+            builder.source_tag(self.input.source_tag.try_into_u32("sourceTag")?);
         }
         Ok(builder)
     }
@@ -369,3 +377,19 @@ impl<'a> ProtobufBuilder<'a> {
         })
     }
 }
+
+trait AsUint32: TryInto<u32> {
+    fn try_into_u32(self, param: &str) -> SigningResult<u32> {
+        self.try_into()
+            .map_err(|_| SigningError::new(SigningErrorType::Error_invalid_params))
+            .with_context(|| format!("'{param}' must fit u32"))
+    }
+
+    /// Tries to convert `self` as `u32`.
+    /// Returns error if `self` doesn't fit `u32` type, or returns `None` if `self` is 0.
+    fn try_into_u32_optional(self, param: &str) -> SigningResult<Option<u32>> {
+        self.try_into_u32(param).map(u32::zero_or_some)
+    }
+}
+
+impl<T> AsUint32 for T where T: TryInto<u32> {}

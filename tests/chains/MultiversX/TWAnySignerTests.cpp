@@ -16,7 +16,7 @@ namespace TW::MultiversX::tests {
 
 TEST(TWAnySignerMultiversX, Sign) {
     auto input = Proto::SigningInput();
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(7);

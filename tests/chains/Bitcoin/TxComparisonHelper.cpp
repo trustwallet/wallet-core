@@ -48,7 +48,7 @@ SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, b
     input.dustCalculator = std::make_shared<LegacyDustCalculator>(coin);
 
     if (!omitPrivateKey) {
-        auto utxoKey = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"));
+        auto utxoKey = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"), TWCurveSECP256k1);
         auto pubKey = utxoKey.getPublicKey(TWPublicKeyTypeSECP256k1);
         auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
         assert(hex(utxoPubkeyHash) == "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1");

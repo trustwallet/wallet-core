@@ -10,7 +10,7 @@ use tw_proto::Ripple::Proto;
 use tw_proto::Ripple::Proto::mod_OperationPayment::OneOfamount_oneof as AmountType;
 use tw_proto::Ripple::Proto::mod_SigningInput::OneOfoperation_oneof as OperationType;
 
-const SELL_NFTOKEN_FLAG: u32 = 0x00000001;
+const SELL_NFTOKEN_FLAG: u64 = 0x00000001;
 
 #[test]
 fn test_ripple_sign_xrp_payment_0() {

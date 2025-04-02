@@ -161,8 +161,10 @@ fn test_coin_address_derivation() {
             CoinType::Zcash => "t1SUmK7UVqTXQDpEAqHcJWBv7pNUFHJRpDx",
             CoinType::Zelcash => "t1SUmK7UVqTXQDpEAqHcJWBv7pNUFHJRpDx",
             CoinType::Komodo => "RHtMPHweTxYNhBYUN2nJTu9QKyjm7MRKsF",
+            CoinType::Polymesh => "2E5u4xA1TqswQ3jMJH96zekxwr2itvKu79fDC1mmnVZRh6Uv",
             CoinType::XRP => "r9cwJ8hM13jodBBGtioB44FUZ5HwWGwqfX",
             CoinType::Groestlcoin => "grs1qten42eesehw0ktddcp0fws7d3ycsqez35034a2",
+            CoinType::Decred => "DsbEmWV6ZZBsUJY2vVi5u7H62GUfBFPBfoF",
             // end_of_coin_address_derivation_tests_marker_do_not_modify
             _ => panic!("{:?} must be covered", coin),
         };

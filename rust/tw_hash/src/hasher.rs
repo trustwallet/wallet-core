@@ -2,7 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::ripemd::sha256_ripemd;
+use crate::blake::blake_256;
+use crate::ripemd::{blake256_ripemd, sha256_ripemd};
 use crate::sha2::{sha256, sha256_d};
 use crate::sha3::keccak256;
 use crate::{H160, H256};
@@ -92,6 +93,11 @@ pub enum Hasher {
     /// ripemd hash of the SHA256 hash
     #[serde(rename = "sha256ripemd")]
     Sha256ripemd,
+    #[serde(rename = "blake256")]
+    Blake256,
+    /// ripemd hash of the BLAKE256 hash
+    #[serde(rename = "blake256ripemd")]
+    Blake256ripemd,
     #[serde(rename = "tapsighash")]
     TapSighash,
 }
@@ -103,6 +109,8 @@ impl StatefulHasher for Hasher {
             Hasher::Keccak256 => keccak256(data),
             Hasher::Sha256d => sha256_d(data),
             Hasher::Sha256ripemd => sha256_ripemd(data),
+            Hasher::Blake256 => blake_256(data),
+            Hasher::Blake256ripemd => blake256_ripemd(data),
             Hasher::TapSighash => tapsighash(data),
         }
     }
@@ -110,8 +118,8 @@ impl StatefulHasher for Hasher {
     /// Returns a corresponding hash len.
     fn hash_len(&self) -> usize {
         match self {
-            Hasher::Sha256 | Hasher::Keccak256 | Hasher::Sha256d => H256::len(),
-            Hasher::Sha256ripemd => H160::len(),
+            Hasher::Sha256 | Hasher::Keccak256 | Hasher::Sha256d | Hasher::Blake256 => H256::len(),
+            Hasher::Sha256ripemd | Hasher::Blake256ripemd => H160::len(),
             Hasher::TapSighash => H256::len(),
         }
     }

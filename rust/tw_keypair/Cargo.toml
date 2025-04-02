@@ -36,6 +36,7 @@ crypto_box = "0.9.1"
 # Starknet specific:
 starknet-crypto = "0.5.0"
 starknet-ff = "0.3.2"
+tw_macros = { path = "../tw_macros" }
 
 [dev-dependencies]
 serde_json = "1.0"
