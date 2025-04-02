@@ -110,6 +110,11 @@ enum TransactionMode {
 
     // EIP4337-compatible UserOperation
     UserOp = 2;
+
+    // EIP-7702 transaction (with type 0x4); allows to set the code of a contract for an EOA.
+    // Note that `SetCode` transaction extends `Enveloped` transaction.
+    // https://eips.ethereum.org/EIPS/eip-7702
+    SetCode = 4;
 }
 
 // ERC-4337 structure that describes a transaction to be sent on behalf of a user
@@ -174,13 +179,21 @@ message Access {
     repeated bytes stored_keys = 2;
 }
 
+// [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) authority.
+message Authority {
+    // Address to be authorized, a smart contract address.
+    string address = 2;
+}
+
 // Smart Contract account type.
 enum SCAccountType {
     // ERC-4337 compatible smart contract wallet.
     // https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/accounts/SimpleAccount.sol
     SimpleAccount = 0;
-    // Biz smart contract (Trust Wallet specific).
+    // Biz smart contract (Trust Wallet specific) through ERC-4337 EntryPoint.
     Biz4337 = 1;
+    // Biz smart contract (Trust Wallet specific) directly through ERC-7702.
+    Biz = 2;
 }
 
 // Input data necessary to create a signed transaction.
@@ -234,6 +247,10 @@ message SigningInput {
 
     // Smart contract account type. Used in `TransactionMode::UserOp` only.
     SCAccountType user_operation_mode = 14;
+
+    // A smart contract to which we’re delegating to.
+    // Currently, we support delegation to only one authority at a time.
+    Authority eip7702_authority = 15;
 }
 
 // Result containing the signed and encoded transaction.

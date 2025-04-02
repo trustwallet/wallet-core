@@ -188,11 +188,7 @@ impl SignedTransaction for SignedUserOperationV0_7 {
         let tx = SignedUserOperationV0_7Serde {
             sender: self.unsigned.sender.to_string(),
             nonce: self.unsigned.nonce.to_string(),
-            factory: self
-                .unsigned
-                .factory
-                .map(|addr| addr.to_string())
-                .unwrap_or_default(),
+            factory: self.unsigned.factory.map(|addr| addr.to_string()),
             factory_data: hex::encode(&self.unsigned.factory_data, prefix),
             call_data: hex::encode(&self.unsigned.call_data, prefix),
             call_data_gas_limit: self.unsigned.call_data_gas_limit.to_string(),
@@ -200,11 +196,7 @@ impl SignedTransaction for SignedUserOperationV0_7 {
             pre_verification_gas: self.unsigned.pre_verification_gas.to_string(),
             max_fee_per_gas: self.unsigned.max_fee_per_gas.to_string(),
             max_priority_fee_per_gas: self.unsigned.max_priority_fee_per_gas.to_string(),
-            paymaster: self
-                .unsigned
-                .paymaster
-                .map(|addr| addr.to_string())
-                .unwrap_or_default(),
+            paymaster: self.unsigned.paymaster.map(|addr| addr.to_string()),
             paymaster_verification_gas_limit: self
                 .unsigned
                 .paymaster_verification_gas_limit
@@ -229,7 +221,7 @@ impl SignedTransaction for SignedUserOperationV0_7 {
 struct SignedUserOperationV0_7Serde {
     sender: String,
     nonce: String,
-    factory: String,
+    factory: Option<String>,
     factory_data: String,
     call_data: String,
     call_data_gas_limit: String,
@@ -237,7 +229,7 @@ struct SignedUserOperationV0_7Serde {
     pre_verification_gas: String,
     max_fee_per_gas: String,
     max_priority_fee_per_gas: String,
-    paymaster: String,
+    paymaster: Option<String>,
     paymaster_verification_gas_limit: String,
     paymaster_post_op_gas_limit: String,
     paymaster_data: String,
