@@ -34,6 +34,28 @@ use Proto::mod_Transaction::OneOftransaction_oneof as Tx;
 use Proto::SCAccountType;
 use Proto::TransactionMode as TxMode;
 
+pub struct TransactionParts {
+    pub eth_amount: U256,
+    pub data: Data,
+    pub to: Option<Address>,
+}
+
+impl TryFrom<TransactionParts> for ExecuteArgs {
+    type Error = SigningError;
+
+    fn try_from(value: TransactionParts) -> Result<Self, Self::Error> {
+        let to = value
+            .to
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("Error creating a Smart Contract Wallet execute call - no destination address specified")?;
+        Ok(ExecuteArgs {
+            to,
+            value: value.eth_amount,
+            data: value.data,
+        })
+    }
+}
+
 pub struct TxBuilder<Context: EvmContext> {
     _phantom: PhantomData<Context>,
 }
@@ -47,16 +69,43 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 .context("No transaction specified");
         };
 
-        let (eth_amount, payload, to) = match transaction.transaction_oneof {
+        let TransactionParts {
+            eth_amount,
+            data,
+            to,
+        } = Self::handle_transaction_type(input, &transaction.transaction_oneof)?;
+
+        let tx = match input.tx_mode {
+            TxMode::Legacy => {
+                Self::transaction_non_typed_from_proto(input, eth_amount, data, to)?.into_boxed()
+            },
+            TxMode::Enveloped => {
+                Self::transaction_eip1559_from_proto(input, eth_amount, data, to)?.into_boxed()
+            },
+            TxMode::UserOp => Self::user_operation_from_proto(input, data)?,
+            TxMode::SetCode => Self::transaction_eip7702_from_proto(input, eth_amount, data, to)?,
+        };
+        Ok(tx)
+    }
+
+    fn handle_transaction_type(
+        input: &Proto::SigningInput,
+        transaction: &Tx,
+    ) -> SigningResult<TransactionParts> {
+        match transaction {
             Tx::transfer(ref transfer) => {
-                let amount = U256::from_big_endian_slice(&transfer.amount)
+                let eth_amount = U256::from_big_endian_slice(&transfer.amount)
                     .into_tw()
                     .context("Invalid amount")?;
 
                 let to_address = Self::parse_address(&input.to_address)
                     .context("Invalid destination address")?;
 
-                (amount, transfer.data.to_vec(), Some(to_address))
+                Ok(TransactionParts {
+                    eth_amount,
+                    data: transfer.data.to_vec(),
+                    to: Some(to_address),
+                })
             },
             Tx::erc20_transfer(ref erc20_transfer) => {
                 let token_to_address = Self::parse_address(&erc20_transfer.to)
@@ -69,9 +118,14 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 let contract_address =
                     Self::parse_address(&input.to_address).context("Invalid Contract address")?;
 
-                let payload = Erc20::transfer(token_to_address, token_amount)
+                let data = Erc20::transfer(token_to_address, token_amount)
                     .map_err(abi_to_signing_error)?;
-                (U256::zero(), payload, Some(contract_address))
+
+                Ok(TransactionParts {
+                    eth_amount: U256::zero(),
+                    data,
+                    to: Some(contract_address),
+                })
             },
             Tx::erc20_approve(ref erc20_approve) => {
                 let spender = Self::parse_address(&erc20_approve.spender)
@@ -84,9 +138,13 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 let contract_address =
                     Self::parse_address(&input.to_address).context("Invalid Contract address")?;
 
-                let payload =
-                    Erc20::approve(spender, token_amount).map_err(abi_to_signing_error)?;
-                (U256::zero(), payload, Some(contract_address))
+                let data = Erc20::approve(spender, token_amount).map_err(abi_to_signing_error)?;
+
+                Ok(TransactionParts {
+                    eth_amount: U256::zero(),
+                    data,
+                    to: Some(contract_address),
+                })
             },
             Tx::erc721_transfer(ref erc721_transfer) => {
                 let from =
@@ -101,9 +159,14 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 let contract_address =
                     Self::parse_address(&input.to_address).context("Invalid Contract address")?;
 
-                let payload = Erc721::encode_transfer_from(from, token_to_address, token_id)
+                let data = Erc721::encode_transfer_from(from, token_to_address, token_id)
                     .map_err(abi_to_signing_error)?;
-                (U256::zero(), payload, Some(contract_address))
+
+                Ok(TransactionParts {
+                    eth_amount: U256::zero(),
+                    data,
+                    to: Some(contract_address),
+                })
             },
             Tx::erc1155_transfer(ref erc1155_transfer) => {
                 let from = Self::parse_address(&erc1155_transfer.from)
@@ -124,22 +187,31 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 let contract_address =
                     Self::parse_address(&input.to_address).context("Invalid Contract address")?;
 
-                let payload = Erc1155::encode_safe_transfer_from(from, to, token_id, value, data)
+                let data = Erc1155::encode_safe_transfer_from(from, to, token_id, value, data)
                     .map_err(abi_to_signing_error)?;
-                (U256::zero(), payload, Some(contract_address))
+
+                Ok(TransactionParts {
+                    eth_amount: U256::zero(),
+                    data,
+                    to: Some(contract_address),
+                })
             },
             Tx::contract_generic(ref contract_generic) => {
-                let amount = U256::from_big_endian_slice(&contract_generic.amount)
+                let eth_amount = U256::from_big_endian_slice(&contract_generic.amount)
                     .into_tw()
                     .context("Invalid amount")?;
 
-                let payload = contract_generic.data.to_vec();
+                let data = contract_generic.data.to_vec();
                 // `to_address` can be omitted for the generic contract call.
                 // For example, on creating a new smart contract.
-                let to_address = Self::parse_address_optional(&input.to_address)
+                let to = Self::parse_address_optional(&input.to_address)
                     .context("Invalid destination address")?;
 
-                (amount, payload, to_address)
+                Ok(TransactionParts {
+                    eth_amount,
+                    data,
+                    to,
+                })
             },
             Tx::batch(ref batch) => {
                 // Payload should match ERC4337 standard.
@@ -148,59 +220,38 @@ impl<Context: EvmContext> TxBuilder<Context> {
                     .iter()
                     .map(Self::erc4337_execute_call_from_proto)
                     .collect::<Result<Vec<_>, _>>()?;
-                let execute_payload = Self::encode_execute_batch(input.user_operation_mode, calls)?;
+                let execute_payload = Self::encode_execute_batch(batch.account_type, calls)?;
+                let to = Self::sc_tx_destination(input, batch.account_type)?;
 
-                return match input.tx_mode {
-                    TxMode::UserOp => Self::user_operation_from_proto(input, execute_payload),
-                    TxMode::SetCode => {
-                        Self::transaction_eip7702_from_proto(input, U256::zero(), execute_payload)
-                    },
-                    _ => SigningError::err(SigningErrorType::Error_invalid_params).context(
-                        "Transaction batch can be used in `UserOp` or `SetCode` modes only",
-                    ),
-                };
-            },
-            Tx::None => {
-                return SigningError::err(SigningErrorType::Error_invalid_params)
-                    .context("No transaction specified")
-            },
-        };
-
-        let tx = match input.tx_mode {
-            TxMode::Legacy => {
-                Self::transaction_non_typed_from_proto(input, eth_amount, payload, to)?.into_boxed()
-            },
-            TxMode::Enveloped => {
-                Self::transaction_eip1559_from_proto(input, eth_amount, payload, to)?.into_boxed()
-            },
-            TxMode::UserOp => {
-                let to = to
-                    .or_tw_err(SigningErrorType::Error_invalid_address)
-                    .context("No contract/destination address specified")?;
-                let args = ExecuteArgs {
+                Ok(TransactionParts {
+                    eth_amount: U256::zero(),
+                    data: execute_payload,
                     to,
-                    value: eth_amount,
-                    data: payload,
-                };
-
-                let user_op_payload = Self::encode_execute(input.user_operation_mode, args)?;
-                Self::user_operation_from_proto(input, user_op_payload)?
+                })
             },
-            TxMode::SetCode => {
-                let to = to
-                    .or_tw_err(SigningErrorType::Error_invalid_address)
-                    .context("No contract/destination address specified")?;
-                let args = ExecuteArgs {
+            Tx::execute(ref execute) => {
+                let inner_transaction = execute
+                    .transaction
+                    .as_ref()
+                    .or_tw_err(SigningErrorType::Error_invalid_params)
+                    .context("`Execute.transaction` must be provided")?;
+
+                let execute_args =
+                    Self::handle_transaction_type(input, &inner_transaction.transaction_oneof)?
+                        .try_into()?;
+                let execute_call_payload =
+                    Self::encode_execute(execute.account_type, execute_args)?;
+
+                let to = Self::sc_tx_destination(input, execute.account_type)?;
+                Ok(TransactionParts {
+                    eth_amount: U256::zero(),
+                    data: execute_call_payload,
                     to,
-                    value: eth_amount,
-                    data: payload,
-                };
-
-                let execute_payload = Self::encode_execute(input.user_operation_mode, args)?;
-                Self::transaction_eip7702_from_proto(input, eth_amount, execute_payload)?
+                })
             },
-        };
-        Ok(tx)
+            Tx::None => SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("No transaction specified"),
+        }
     }
 
     #[inline]
@@ -311,11 +362,17 @@ impl<Context: EvmContext> TxBuilder<Context> {
         input: &Proto::SigningInput,
         eth_amount: U256,
         payload: Data,
+        to_address: Option<Address>,
     ) -> SigningResult<Box<dyn UnsignedTransactionBox>> {
         let signer_key = secp256k1::PrivateKey::try_from(input.private_key.as_ref())
             .into_tw()
             .context("Sender's private key must be provided to generate an EIP-7702 transaction")?;
         let signer = Address::with_secp256k1_pubkey(&signer_key.public());
+        if to_address != Some(signer) {
+            return SigningError::err(SigningErrorType::Error_invalid_params).context(
+                "Unexpected 'accountAddress'. Expected to be the same as the signer address",
+            );
+        }
 
         let nonce = U256::from_big_endian_slice(&input.nonce)
             .into_tw()
@@ -517,6 +574,31 @@ impl<Context: EvmContext> TxBuilder<Context> {
         })
     }
 
+    /// Returns a destination address of the Smart Contract Wallet transaction.
+    /// Returns:
+    /// - `Ok(Some(address))` when generating a transaction calling a function of the account itself through EIP-7702 authorized code.
+    /// - `Ok(None)` when generating a UserOperation.
+    /// - `Err(e)` when the account type is not supported for the given transaction mode.
+    #[inline]
+    fn sc_tx_destination(
+        input: &Proto::SigningInput,
+        account_type: SCAccountType,
+    ) -> SigningResult<Option<Address>> {
+        match (input.tx_mode, account_type) {
+            // Destination address is not used when generating UserOperation.
+            (TxMode::UserOp, SCAccountType::SimpleAccount | SCAccountType::Biz4337) => Ok(None),
+            (TxMode::UserOp, _) => SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Biz account cannot be used in UserOperation flow"),
+            (TxMode::Legacy | TxMode::Enveloped | TxMode::SetCode, SCAccountType::Biz) => {
+                Self::signer_address(input).map(Some)
+            },
+            (TxMode::Legacy | TxMode::Enveloped | TxMode::SetCode, _) => SigningError::err(
+                SigningErrorType::Error_invalid_params,
+            )
+            .context("Biz account can only be used in Legacy/Enveloped/SetCode transactions flow"),
+        }
+    }
+
     #[inline]
     fn encode_execute(account_type: SCAccountType, args: ExecuteArgs) -> SigningResult<Data> {
         match account_type {
@@ -574,5 +656,13 @@ impl<Context: EvmContext> TxBuilder<Context> {
             access.add_storage_key(storage_key);
         }
         Ok(access)
+    }
+
+    fn signer_address(input: &Proto::SigningInput) -> SigningResult<Address> {
+        let signer_key = secp256k1::PrivateKey::try_from(input.private_key.as_ref())
+            .into_tw()
+            .context("Sender's private key must be provided to generate an EIP-7702 transaction")?;
+        let signer = Address::with_secp256k1_pubkey(&signer_key.public());
+        Ok(signer)
     }
 }
