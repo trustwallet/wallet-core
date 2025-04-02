@@ -270,7 +270,7 @@ std::vector<Data> getRSVY(const Data& hash, const std::string& privateKey) {
 std::string signAuthorization(const Data& chainId, const std::string& contractAddress, const Data& nonce, const std::string& privateKey) {
     auto authorizationHash = getAuthorizationHash(chainId, contractAddress, nonce);
     auto rsvy = getRSVY(authorizationHash, privateKey);
-    
+
     nlohmann::json jsonObj;
     jsonObj["chainId"] = hexEncoded(chainId);
     jsonObj["address"] = contractAddress;
@@ -278,33 +278,43 @@ std::string signAuthorization(const Data& chainId, const std::string& contractAd
     jsonObj["yParity"] = hexEncoded(rsvy[3]);
     jsonObj["r"] = hexEncoded(rsvy[0]);
     jsonObj["s"] = hexEncoded(rsvy[1]);
-    
+
     return jsonObj.dump();
 }
 
-Data getEncodedHash(const Data& chainId, const std::string& wallet, const std::string& version, const std::string& typeHash, const std::string& domainSeparatorHash, const std::string& hash) {
-    // Create domain separator: keccak256(abi.encode(BIZ_DOMAIN_SEPARATOR_HASH, block.chainid, wallet, "v0.1.0"))
+Data getEncodedHash(
+    const Data& chainId,
+    const std::string& codeAddress,
+    const std::string& codeName,
+    const std::string& codeVersion,
+    const std::string& typeHash,
+    const std::string& domainSeparatorHash,
+    const std::string& sender,
+    const std::string& userOpHash)
+{
+    Data codeAddressBytes32(12, 0);
+    append(codeAddressBytes32, parse_hex(codeAddress));
+
+    // Create domain separator: keccak256(abi.encode(BIZ_DOMAIN_SEPARATOR_HASH, "Biz", "v1.0.0", block.chainid, wallet, _addressToBytes32(singleton)))
     auto domainSeparator = Ethereum::ABI::Function::encodeParams(Ethereum::ABI::BaseParams {
         std::make_shared<Ethereum::ABI::ProtoBytes32>(parse_hex(domainSeparatorHash)),
+        std::make_shared<Ethereum::ABI::ProtoBytes32>(Hash::keccak256(codeName)),
+        std::make_shared<Ethereum::ABI::ProtoBytes32>(Hash::keccak256(codeVersion)),
         std::make_shared<Ethereum::ABI::ProtoUInt256>(chainId),
-        std::make_shared<Ethereum::ABI::ProtoAddress>(wallet),
-        std::make_shared<Ethereum::ABI::ProtoString>(version)
+        std::make_shared<Ethereum::ABI::ProtoAddress>(sender),
+        std::make_shared<Ethereum::ABI::ProtoBytes32>(codeAddressBytes32),
     });
     if (!domainSeparator.has_value()) {
         return {};
     }
     Data domainSeparatorEncodedHash = Hash::keccak256(domainSeparator.value());
-    
-    // Create message hash: keccak256(abi.encode(typeHash, keccak256(abi.encode(hash))))
-    Data encodedHash;
-    Ethereum::ABI::ValueEncoder::encodeBytes(parse_hex(hash), encodedHash);
-    Data innerHash = Hash::keccak256(encodedHash);
 
-    Data messageData;
-    Ethereum::ABI::ValueEncoder::encodeBytes(parse_hex(typeHash), messageData);
-    Ethereum::ABI::ValueEncoder::encodeBytes(innerHash, messageData);
-    Data messageHash = Hash::keccak256(messageData);
-    
+    // Create message hash: keccak256(abi.encode(typeHash, hash))
+    Data messageToHash;
+    append(messageToHash, parse_hex(typeHash));
+    append(messageToHash, parse_hex(userOpHash));
+    Data messageHash = Hash::keccak256(messageToHash);
+
     // Final hash: keccak256(abi.encodePacked("\x19\x01", domainSeparator, messageHash))
     Data encoded;
     append(encoded, parse_hex("0x1901"));
@@ -315,7 +325,7 @@ Data getEncodedHash(const Data& chainId, const std::string& wallet, const std::s
 
 Data getSignedHash(const std::string& hash, const std::string& privateKey) {
     auto rsvy = getRSVY(parse_hex(hash), privateKey);
-    
+
     Data result;
     append(result, rsvy[0]);
     append(result, rsvy[1]);

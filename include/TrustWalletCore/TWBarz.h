@@ -78,15 +78,25 @@ TWString *_Nonnull TWBarzSignAuthorization(TWData* _Nonnull chainId, TWString* _
 
 /// Returns the encoded hash of the user operation
 ///
-/// \param chainId The chainId of the network
-/// \param wallet The address of the wallet
-/// \param version The version of the wallet
-/// \param typeHash The type hash of the transaction
-/// \param domainSeparatorHash The domain separator hash of the wallet
-/// \param hash The hash of the user operation
+/// \param chainId The chainId of the network.
+/// \param codeAddress The address of the Biz Smart Contract.
+/// \param codeName The name of the Biz Smart Contract.
+/// \param codeVersion The version of the Biz Smart Contract.
+/// \param typeHash The type hash of the transaction.
+/// \param domainSeparatorHash The domain separator hash of the wallet.
+/// \param sender The address of the UserOperation sender.
+/// \param userOpHash The hash of the user operation.
 /// \return The encoded hash of the user operation
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWBarzGetEncodedHash(TWData* _Nonnull chainId, TWString* _Nonnull wallet, TWString* _Nonnull version, TWString* _Nonnull typeHash, TWString* _Nonnull domainSeparatorHash, TWString* _Nonnull hash);
+TWData *_Nonnull TWBarzGetEncodedHash(
+    TWData* _Nonnull chainId,
+    TWString* _Nonnull codeAddress,
+    TWString* _Nonnull codeName,
+    TWString* _Nonnull codeVersion,
+    TWString* _Nonnull typeHash,
+    TWString* _Nonnull domainSeparatorHash,
+    TWString* _Nonnull sender,
+    TWString* _Nonnull userOpHash);
 
 /// Signs a message using the private key
 ///
