@@ -9,7 +9,7 @@ use crate::tw::PublicKeyType;
 use crate::zilliqa_schnorr;
 use crate::{ed25519, starkex, KeyPairError, KeyPairResult};
 use tw_misc::traits::ToBytesVec;
-use tw_misc::{try_or_else, try_or_false};
+use tw_misc::try_or_false;
 
 /// Represents a public key that can be used to verify signatures and messages.
 #[derive(Clone)]
@@ -214,18 +214,11 @@ impl PublicKey {
         message: &[u8],
         rec_id: u8,
     ) -> KeyPairResult<PublicKey> {
-        let verify_sig = try_or_else!(
-            <secp256k1::PrivateKey as SigningKeyTrait>::Signature::new_from_bytes(sig, rec_id),
-            || {
-                return Err(KeyPairError::InvalidSignature);
-            }
-        );
-        let message = try_or_else!(
-            <secp256k1::PrivateKey as SigningKeyTrait>::SigningMessage::try_from(message),
-            || {
-                return Err(KeyPairError::InvalidMessage);
-            }
-        );
+        let verify_sig =
+            <secp256k1::PrivateKey as SigningKeyTrait>::Signature::new_from_bytes(sig, rec_id)
+                .map_err(|_| KeyPairError::InvalidSignature)?;
+        let message = <secp256k1::PrivateKey as SigningKeyTrait>::SigningMessage::try_from(message)
+            .map_err(|_| KeyPairError::InvalidMessage)?;
         let pubkey = secp256k1::PublicKey::recover(verify_sig, message)?;
         Ok(PublicKey::Secp256k1Extended(pubkey))
     }
@@ -259,11 +252,10 @@ impl PublicKey {
                         sig
                     )
                 );
-                let message = try_or_false!(
-                    <zilliqa_schnorr::PublicKey as VerifyingKeyTrait>::SigningMessage::try_from(
-                        message
-                    )
-                );
+                let message =
+                    <zilliqa_schnorr::PublicKey as VerifyingKeyTrait>::SigningMessage::from(
+                        message,
+                    );
                 zilliq_pubkey.verify(verify_sig, message)
             },
             _ => false,
