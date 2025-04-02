@@ -219,7 +219,7 @@ mod tests {
             assert_eq!(signature.r().to_string(), r);
             assert_eq!(signature.s().to_string(), s);
 
-            assert!(public_key.verify(signature.signature, message));
+            assert!(public_key.verify(signature, message));
         }
     }
 }
