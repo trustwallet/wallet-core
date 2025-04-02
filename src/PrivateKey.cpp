@@ -11,7 +11,6 @@
 #include <TrezorCrypto/memzero.h>
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/secp256k1.h>
-#include <TrezorCrypto/zilliqa.h>
 
 #include <iterator>
 
@@ -137,16 +136,8 @@ Data PrivateKey::signAsDER(const Data& digest) const {
 }
 
 Data PrivateKey::signZilliqa(const Data& message) const {
-    if (_curve != TWCurveSECP256k1) {
-        throw std::invalid_argument("Zilliqa signature is only supported for SECP256k1");
-    }
-    Data sig(64);
-    bool success = zil_schnorr_sign(&secp256k1, key().data(), message.data(), static_cast<uint32_t>(message.size()), sig.data()) == 0;
-
-    if (!success) {
-        return {};
-    }
-    return sig;
+    Rust::CByteArrayWrapper res = Rust::tw_private_key_sign_zilliqa(_impl.get(), message.data(), message.size());
+    return res.data;
 }
 
 void PrivateKey::cleanup() {

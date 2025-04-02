@@ -7,6 +7,7 @@ use crate::ecdsa::{nist256p1, secp256k1};
 use crate::schnorr;
 use crate::traits::SigningKeyTrait;
 use crate::tw::{Curve, PublicKey, PublicKeyType};
+use crate::zilliqa_schnorr;
 use crate::{ed25519, starkex, KeyPairError, KeyPairResult};
 use std::ops::Range;
 use tw_hash::{Hash, H256};
@@ -254,6 +255,22 @@ impl PrivateKey {
                 let der_sig = crate::ecdsa::der::Signature::new(sig.r(), sig.s())
                     .map_err(|_| KeyPairError::InvalidSignature)?;
                 Ok(der_sig.der_bytes())
+            },
+            _ => Err(KeyPairError::UnsupportedCurve),
+        }
+    }
+
+    /// Signs a message using Zilliqa Schnorr.
+    pub fn sign_zilliqa(&self, message: &[u8]) -> KeyPairResult<Vec<u8>> {
+        match self.curve {
+            Curve::Secp256k1 => {
+                let private_key = self.to_secp256k1_privkey()?;
+                let zilliqa_privkey =
+                    zilliqa_schnorr::PrivateKey::try_from(private_key.secret.to_bytes().as_slice())
+                        .map_err(|_| KeyPairError::InvalidSecretKey)?;
+                zilliqa_privkey
+                    .sign(message.to_vec())
+                    .map(|sig| sig.to_vec())
             },
             _ => Err(KeyPairError::UnsupportedCurve),
         }

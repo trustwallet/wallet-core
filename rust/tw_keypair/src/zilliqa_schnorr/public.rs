@@ -14,7 +14,7 @@ use std::ops::Deref;
 use std::str::FromStr;
 use tw_encoding::hex;
 
-pub type VerifySignature = k256::ecdsa::Signature;
+pub type VerifySignature = super::Signature;
 
 /// secp256k1 (K-256) public key.
 #[derive(Debug, Clone)]
@@ -95,6 +95,7 @@ impl VerifyingKeyTrait for PublicKey {
     type SigningMessage = Vec<u8>;
     type VerifySignature = VerifySignature;
 
+    // Taken from https://github.com/Zilliqa/zilliqa-rs/blob/24a0e882bcab634b6e776d94709c1760841023d4/src/crypto/schnorr.rs#L50
     fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool {
         let (r, s) = signature.split_scalars();
 

@@ -196,6 +196,27 @@ pub unsafe extern "C" fn tw_private_key_sign_as_der(
     CByteArray::from(sig)
 }
 
+/// Signs a message using Zilliqa Schnorr.
+///
+/// \param key *non-null* pointer to a Private key
+/// \param message *non-null* byte array.
+/// \return Signature as a C-compatible result with a C-compatible byte array.
+#[no_mangle]
+pub unsafe extern "C" fn tw_private_key_sign_zilliqa(
+    key: *mut TWPrivateKey,
+    message: *const u8,
+    message_len: usize,
+) -> CByteArray {
+    let private = try_or_else!(TWPrivateKey::from_ptr_as_ref(key), CByteArray::default);
+    let message_to_sign = try_or_else!(
+        CByteArrayRef::new(message, message_len).as_slice(),
+        CByteArray::default
+    );
+
+    let sig = private.0.sign_zilliqa(message_to_sign).unwrap_or_default();
+    CByteArray::from(sig)
+}
+
 // #[no_mangle]
 // pub unsafe extern "C" fn tw_private_key_get_shared_key(
 //     key: *mut TWPrivateKey,
