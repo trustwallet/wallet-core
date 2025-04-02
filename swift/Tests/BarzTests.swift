@@ -87,8 +87,12 @@ class BarzTests: XCTestCase {
             }
 
             $0.transaction = EthereumTransaction.with {
-                $0.transfer = EthereumTransaction.Transfer.with {
-                    $0.amount = Data(hexString: "2386f26fc10000")!
+                $0.execute = EthereumTransaction.Execute.with {
+                    $0.transaction = EthereumTransaction.with {
+                        $0.transfer = EthereumTransaction.Transfer.with {
+                            $0.amount = Data(hexString: "2386f26fc10000")!
+                        }
+                    }
                 }
             }
         }
@@ -124,10 +128,14 @@ class BarzTests: XCTestCase {
                     salt: 0
                 )
             }
-
+            
             $0.transaction = EthereumTransaction.with {
-                $0.transfer = EthereumTransaction.Transfer.with {
-                    $0.amount = Data(hexString: "2386f26fc10000")!
+                $0.execute = EthereumTransaction.Execute.with {
+                    $0.transaction = EthereumTransaction.with {
+                        $0.transfer = EthereumTransaction.Transfer.with {
+                            $0.amount = Data(hexString: "2386f26fc10000")!
+                        }
+                    }
                 }
             }
         }
