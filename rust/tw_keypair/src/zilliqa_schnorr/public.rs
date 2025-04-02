@@ -44,7 +44,7 @@ impl FromStr for PublicKey {
     ///
     /// # Example
     ///  ```
-    /// use zilliqa_rs::core::PublicKey;
+    /// use tw_keypair::zilliqa_schnorr::PublicKey;
     /// let public_key: PublicKey = "03bfad0f0b53cff5213b5947f3ddd66acee8906aba3610c111915aecc84092e052"
     ///     .parse()
     ///     .unwrap();
@@ -54,11 +54,6 @@ impl FromStr for PublicKey {
     /// );
     /// ```
     fn from_str(public_key: &str) -> Result<Self, Self::Err> {
-        let public_key = match public_key.strip_prefix("0x") {
-            Some(public_key) => public_key,
-            None => public_key,
-        };
-
         let bytes = hex::decode(public_key).map_err(|_| KeyPairError::InvalidPublicKey)?;
         Ok(Self(
             k256::PublicKey::from_sec1_bytes(&bytes).map_err(|_| KeyPairError::InvalidPublicKey)?,
@@ -86,7 +81,7 @@ impl Display for PublicKey {
         write!(
             f,
             "{}",
-            hex::encode(self.to_sec1_bytes(), true).to_lowercase()
+            hex::encode(self.to_sec1_bytes(), false).to_lowercase()
         )
     }
 }

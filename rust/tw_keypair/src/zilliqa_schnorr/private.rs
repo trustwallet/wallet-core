@@ -35,7 +35,7 @@ impl PrivateKey {
     ///
     /// # Example
     /// ```
-    /// use zilliqa_rs::core::PrivateKey;
+    /// use tw_keypair::zilliqa_schnorr::PrivateKey;
     /// let private_key = PrivateKey::create_random();
     /// ```
     pub fn create_random() -> Self {
@@ -103,7 +103,7 @@ impl FromStr for PrivateKey {
     ///
     /// # Example
     /// ```
-    /// use zilliqa_rs::core::PrivateKey;
+    /// use tw_keypair::zilliqa_schnorr::PrivateKey;
     ///let pv: PrivateKey = "D96e9eb5b782a80ea153c937fa83e5948485fbfc8b7e7c069d7b914dbc350aba"
     ///    .parse()
     ///    .unwrap();
@@ -130,7 +130,7 @@ impl Deref for PrivateKey {
 
 impl Display for PrivateKey {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", hex::encode(self.to_bytes(), true).to_lowercase())
+        write!(f, "{}", hex::encode(self.to_bytes(), false).to_lowercase())
     }
 }
 
