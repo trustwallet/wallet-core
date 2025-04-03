@@ -99,19 +99,6 @@ impl TryFrom<&[u8]> for PrivateKey {
 impl FromStr for PrivateKey {
     type Err = KeyPairError;
 
-    /// Create a private key out of a sting slice.
-    ///
-    /// # Example
-    /// ```
-    /// use tw_keypair::zilliqa_schnorr::PrivateKey;
-    ///let pv: PrivateKey = "D96e9eb5b782a80ea153c937fa83e5948485fbfc8b7e7c069d7b914dbc350aba"
-    ///    .parse()
-    ///    .unwrap();
-    ///assert_eq!(
-    ///    "d96e9eb5b782a80ea153c937fa83e5948485fbfc8b7e7c069d7b914dbc350aba",
-    ///    pv.to_string()
-    ///);
-    ///```
     fn from_str(secret_key: &str) -> Result<Self, Self::Err> {
         let bytes = hex::decode(secret_key).map_err(|_| KeyPairError::InvalidSecretKey)?;
         Ok(Self(
