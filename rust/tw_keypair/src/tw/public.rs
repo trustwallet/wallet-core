@@ -8,8 +8,11 @@ use crate::traits::{SigningKeyTrait, VerifyingKeyTrait};
 use crate::tw::PublicKeyType;
 use crate::zilliqa_schnorr;
 use crate::{ed25519, starkex, KeyPairError, KeyPairResult};
+use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
 use tw_misc::try_or_false;
+
+use super::PrivateKey;
 
 /// Represents a public key that can be used to verify signatures and messages.
 #[derive(Clone)]
@@ -222,11 +225,20 @@ impl PublicKey {
         message: &[u8],
         rec_id: u8,
     ) -> KeyPairResult<PublicKey> {
+        if sig.len() < 2 * PrivateKey::SIZE {
+            return Err(KeyPairError::InvalidSignature);
+        }
+        if rec_id >= 4 {
+            return Err(KeyPairError::InvalidRecId);
+        }
+        if message.len() < PrivateKey::SIZE {
+            return Err(KeyPairError::InvalidMessage);
+        }
+
         let verify_sig =
             <secp256k1::PrivateKey as SigningKeyTrait>::Signature::new_from_bytes(sig, rec_id)
                 .map_err(|_| KeyPairError::InvalidSignature)?;
-        let message = <secp256k1::PrivateKey as SigningKeyTrait>::SigningMessage::try_from(message)
-            .map_err(|_| KeyPairError::InvalidMessage)?;
+        let message = H256::try_from(message).map_err(|_| KeyPairError::InvalidMessage)?;
         let pubkey = secp256k1::PublicKey::recover(verify_sig, message)?;
         Ok(PublicKey::Secp256k1Extended(pubkey))
     }
@@ -235,14 +247,10 @@ impl PublicKey {
         match self {
             PublicKey::Secp256k1(secp) | PublicKey::Secp256k1Extended(secp) => {
                 let der_sig = try_or_false!(crate::ecdsa::der::Signature::from_bytes(sig));
-                let verify_sig = try_or_false!(
-                    <secp256k1::PublicKey as VerifyingKeyTrait>::VerifySignature::try_from(
-                        der_sig.to_bytes().as_slice()
-                    )
-                );
-                let message = try_or_false!(
-                    <secp256k1::PublicKey as VerifyingKeyTrait>::SigningMessage::try_from(message)
-                );
+                let verify_sig = try_or_false!(secp256k1::VerifySignature::try_from(
+                    der_sig.to_bytes().as_slice()
+                ));
+                let message = try_or_false!(H256::try_from(message));
                 secp.verify(verify_sig, message)
             },
             _ => false,

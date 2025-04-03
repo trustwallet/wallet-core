@@ -26,7 +26,7 @@ pub struct PrivateKey {
 /// cbindgen:ignore
 impl PrivateKey {
     /// The number of bytes in a private key.
-    const SIZE: usize = 32;
+    pub(crate) const SIZE: usize = 32;
     const CARDANO_SIZE: usize = ed25519::cardano::ExtendedPrivateKey::LEN;
 
     const KEY_RANGE: Range<usize> = 0..Self::SIZE;
@@ -141,7 +141,7 @@ impl PrivateKey {
                     &private_key.secret,
                     message_hash,
                     canonical_checker,
-                    |sig| sig.to_bytes_with_recovery_in_front().to_vec(),
+                    |sig| sig.vrs().to_vec(),
                 )
             },
             Curve::Nist256p1 => {
@@ -150,7 +150,7 @@ impl PrivateKey {
                     &private_key.secret,
                     message_hash,
                     canonical_checker,
-                    |sig| sig.to_bytes_with_recovery_in_front().to_vec(),
+                    |sig| sig.vrs().to_vec(),
                 )
             },
             _ => Err(KeyPairError::UnsupportedCurve),
@@ -260,8 +260,7 @@ impl PrivateKey {
             Curve::Secp256k1 => {
                 let private_key = self.to_secp256k1_privkey()?;
                 let hash_to_sign =
-                    <secp256k1::PrivateKey as SigningKeyTrait>::SigningMessage::try_from(digest)
-                        .map_err(|_| KeyPairError::InvalidSignMessage)?;
+                    H256::try_from(digest).map_err(|_| KeyPairError::InvalidSignMessage)?;
                 let sig = private_key
                     .sign(hash_to_sign)
                     .map_err(|_| KeyPairError::InvalidSignature)?;

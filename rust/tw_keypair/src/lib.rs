@@ -63,6 +63,7 @@ pub enum KeyPairError {
     InvalidSecretKey,
     InvalidPublicKey,
     InvalidSignature,
+    InvalidRecId,
     InvalidSignMessage,
     InvalidEncryptedMessage,
     SignatureVerifyError,

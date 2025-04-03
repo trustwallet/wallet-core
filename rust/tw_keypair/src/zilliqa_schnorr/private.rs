@@ -134,13 +134,6 @@ impl Display for PrivateKey {
     }
 }
 
-impl PartialEq for PrivateKey {
-    // TODO: Make it efficient
-    fn eq(&self, other: &Self) -> bool {
-        self.to_string() == other.to_string()
-    }
-}
-
 impl SigningKeyTrait for PrivateKey {
     type SigningMessage = Vec<u8>;
     type Signature = Signature;
@@ -216,8 +209,8 @@ mod tests {
 
             let signature = secret_key.sign_inner(k, &message).unwrap();
 
-            assert_eq!(signature.r().to_string(), r);
-            assert_eq!(signature.s().to_string(), s);
+            assert_eq!(signature.signature.r().to_string(), r);
+            assert_eq!(signature.signature.s().to_string(), s);
 
             assert!(public_key.verify(signature, message));
         }

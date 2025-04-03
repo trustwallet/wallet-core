@@ -114,15 +114,6 @@ Data PublicKey::hash(const Data& prefix, Hash::Hasher hasher, bool skipTypeByte)
 }
 
 PublicKey PublicKey::recoverRaw(const Data& signatureRS, byte recId, const Data& messageDigest) {
-    if (signatureRS.size() < 2 * PrivateKey::_size) {
-        throw std::invalid_argument("signature too short");
-    }
-    if (recId >= 4) {
-        throw std::invalid_argument("Invalid recId (>=4)");
-    }
-    if (messageDigest.size() < PrivateKey::_size) {
-        throw std::invalid_argument("digest too short");
-    }
     auto* pubkey = Rust::tw_public_key_recover_from_signature(signatureRS.data(), signatureRS.size(), messageDigest.data(), messageDigest.size(), recId);
     if (pubkey == nullptr) {
         throw std::invalid_argument("Recover failed");

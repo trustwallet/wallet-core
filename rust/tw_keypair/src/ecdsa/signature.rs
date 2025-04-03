@@ -34,6 +34,10 @@ impl<C: EcdsaCurve> Signature<C> {
     }
 
     pub(crate) fn new_from_bytes(sig: &[u8], rec_id: u8) -> KeyPairResult<Self> {
+        if sig.len() + 1 < Self::len() {
+            return Err(KeyPairError::InvalidSignature);
+        }
+
         let v = ecdsa::RecoveryId::from_byte(rec_id).ok_or(KeyPairError::InvalidSignature)?;
         let signature = Self::signature_from_slices(&sig[Self::R_RANGE], &sig[Self::S_RANGE])?;
         Ok(Self::new(signature, v))
@@ -96,7 +100,7 @@ impl<C: EcdsaCurve> Signature<C> {
         dest
     }
 
-    pub fn to_bytes_with_recovery_in_front(&self) -> H520 {
+    pub fn vrs(&self) -> H520 {
         let (r, s) = self.signature.split_bytes();
 
         let mut dest = H520::default();

@@ -7,7 +7,7 @@ use k256::NonZeroScalar;
 use tw_misc::traits::ToBytesVec;
 
 pub struct Signature {
-    pub signature: k256::ecdsa::Signature,
+    pub(crate) signature: k256::ecdsa::Signature,
 }
 
 impl Signature {
@@ -15,15 +15,7 @@ impl Signature {
         Self { signature }
     }
 
-    pub fn r(&self) -> NonZeroScalar {
-        self.signature.r()
-    }
-
-    pub fn s(&self) -> NonZeroScalar {
-        self.signature.s()
-    }
-
-    pub fn split_scalars(&self) -> (NonZeroScalar, NonZeroScalar) {
+    pub(crate) fn split_scalars(&self) -> (NonZeroScalar, NonZeroScalar) {
         self.signature.split_scalars()
     }
 }

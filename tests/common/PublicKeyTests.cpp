@@ -305,13 +305,13 @@ TEST(PublicKeyTests, RecoverRawNegative) {
     const auto message = parse_hex("de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb11432");
     const auto signature = parse_hex("00000000000000000000000000000000000000000000000000000000000000020123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
     // recid >= 4
-    EXPECT_EXCEPTION(PublicKey::recoverRaw(signature, 4ul, message), "Invalid recId");
+    EXPECT_EXCEPTION(PublicKey::recoverRaw(signature, 4ul, message), "Recover failed");
     // signature too short
     EXPECT_EXCEPTION(PublicKey::recoverRaw(parse_hex("00000000000000000000000000000000000000000000000000000000000000020123456789abcdef0123456789abcdef0123456789abcdef0123456789abcd"), 1ul, message),
-        "signature too short");
+        "Recover failed");
     // Digest too  short
     EXPECT_EXCEPTION(PublicKey::recoverRaw(signature, 1ul, parse_hex("de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb114")),
-        "digest too short");
+        "Recover failed");
 }
 
 TEST(PublicKeyTests, Recover) {

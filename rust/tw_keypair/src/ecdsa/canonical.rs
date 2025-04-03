@@ -93,7 +93,10 @@ where
         }
     };
 
-    sign_with_canonical(secret, hash_to_sign, checker).map(transform_result)
+    let mut sig = sign_with_canonical(secret, hash_to_sign, checker).map(transform_result)?;
+    // graphene adds 31 to the recovery id
+    sig[0] += 31;
+    Ok(sig)
 }
 
 fn ct_eq<N: ArrayLength<u8>>(a: &ByteArray<N>, b: &ByteArray<N>) -> Choice {

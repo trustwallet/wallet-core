@@ -122,13 +122,7 @@ Data PrivateKey::sign(const Data& digest) const {
 
 Data PrivateKey::sign(const Data& digest, int (*canonicalChecker)(uint8_t by, const uint8_t sig[64])) const {
     Rust::CByteArrayWrapper res = Rust::tw_private_key_sign_canonical(_impl.get(), digest.data(), digest.size(), canonicalChecker);
-    if (res.data.size() == 0) {
-        return {};
-    }
-    Data result = res.data;
-    // graphene adds 31 to the recovery id
-    result[0] += 31;
-    return result;
+    return res.data;
 }
 
 Data PrivateKey::signAsDER(const Data& digest) const {
