@@ -6,7 +6,7 @@ use tw_encoding::hex;
 use tw_hash::sha2::sha256;
 use tw_hash::sha3::keccak256;
 use tw_keypair::ffi::privkey::{
-    tw_private_key_get_public_key_by_type, tw_private_key_sign, tw_private_key_sign_as_der
+    tw_private_key_get_public_key_by_type, tw_private_key_sign, tw_private_key_sign_as_der,
 };
 use tw_keypair::ffi::pubkey::{
     tw_public_key_compressed, tw_public_key_data, tw_public_key_delete, tw_public_key_extended,
@@ -292,8 +292,7 @@ fn test_tw_public_key_verify_zilliqa() {
 
     // Sign the digest using Zilliqa format
     let signature = unsafe {
-        tw_private_key_sign(tw_privkey.ptr(), digest_raw.data(), digest_raw.size())
-            .into_vec()
+        tw_private_key_sign(tw_privkey.ptr(), digest_raw.data(), digest_raw.size()).into_vec()
     };
     let signature_raw = CByteArray::from(signature.clone());
 
