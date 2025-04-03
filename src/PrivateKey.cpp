@@ -7,10 +7,7 @@
 #include "HexCoding.h"
 #include "PublicKey.h"
 
-#include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/memzero.h>
-#include <TrezorCrypto/nist256p1.h>
-#include <TrezorCrypto/secp256k1.h>
 
 #include <iterator>
 
@@ -33,40 +30,7 @@ bool PrivateKey::isValid(const Data& data) {
 }
 
 bool PrivateKey::isValid(const Data& data, TWCurve curve) {
-    // check size
-    bool valid = isValid(data);
-    if (!valid) {
-        return false;
-    }
-
-    const ecdsa_curve* ec_curve = nullptr;
-    switch (curve) {
-    case TWCurveSECP256k1:
-    case TWCurveZILLIQASchnorr:
-        ec_curve = &secp256k1;
-        break;
-    case TWCurveNIST256p1:
-        ec_curve = &nist256p1;
-        break;
-    case TWCurveED25519:
-    case TWCurveED25519Blake2bNano:
-    case TWCurveED25519ExtendedCardano:
-    case TWCurveCurve25519:
-    case TWCurveNone:
-    default:
-        break;
-    }
-
-    if (ec_curve != nullptr) {
-        bignum256 k;
-        bn_read_be(data.data(), &k);
-        if (!bn_is_less(&k, &ec_curve->order)) {
-            memzero(&k, sizeof(k));
-            return false;
-        };
-    }
-
-    return true;
+    return Rust::tw_private_key_is_valid(data.data(), data.size(), static_cast<uint32_t>(curve));
 }
 
 TWPrivateKeyType PrivateKey::getType(TWCurve curve) noexcept {
@@ -85,7 +49,10 @@ PrivateKey::PrivateKey(const Data& data, TWCurve curve) {
     bytes = data;
     _curve = curve;
     auto* privkey = Rust::tw_private_key_create_with_data(data.data(), data.size(), static_cast<uint32_t>(curve));
-    _impl = privkey ? Rust::wrapTWPrivateKey(privkey) : nullptr;
+    if (privkey == nullptr) {
+        throw std::invalid_argument("Invalid private key");
+    }
+    _impl = Rust::wrapTWPrivateKey(privkey);
 }
 
 PrivateKey::PrivateKey(
@@ -104,7 +71,10 @@ PrivateKey::PrivateKey(
     append(bytes, chainCode2);
     _curve = curve;
     auto* privkey = Rust::tw_private_key_create_with_data(bytes.data(), bytes.size(), static_cast<uint32_t>(curve));
-    _impl = privkey ? Rust::wrapTWPrivateKey(privkey) : nullptr;
+    if (privkey == nullptr) {
+        throw std::invalid_argument("Invalid private key");
+    }
+    _impl = Rust::wrapTWPrivateKey(privkey);
 }
 
 PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const { 

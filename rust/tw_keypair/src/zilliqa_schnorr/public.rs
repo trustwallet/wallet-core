@@ -62,13 +62,6 @@ impl FromStr for PublicKey {
     }
 }
 
-impl PartialEq for PublicKey {
-    // TODO: Make it efficient
-    fn eq(&self, other: &Self) -> bool {
-        self.to_string() == other.to_string()
-    }
-}
-
 impl Deref for PublicKey {
     type Target = k256::PublicKey;
 

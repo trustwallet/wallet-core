@@ -271,3 +271,30 @@ fn test_tw_private_key_sign_zilliqa() {
         "b8118ccb99563fe014279c957b0a9d563c1666e00367e9896fe541765246964f64a53052513da4e6dc20fdaf69ef0d95b4ca51c87ad3478986cf053c2dd0b853"
     );
 }
+
+#[test]
+fn test_private_key_is_valid() {
+    let private_key_hex = "0x4646464646464646464646464646464646464646464646464646464646464646";
+    let bytes = hex::decode(private_key_hex).unwrap();
+    let bytes_ptr = bytes.as_ptr();
+    let bytes_len = bytes.len();
+
+    let is_valid =
+        unsafe { tw_private_key_is_valid(bytes_ptr, bytes_len, Curve::Secp256k1.to_raw()) };
+
+    assert!(is_valid);
+}
+
+#[test]
+fn test_private_key_cardano_is_valid() {
+    let private_key_hex = "0xa018cd746e128a0be0782b228c275473205445c33b9000a33dd5668b430b5744";
+    let bytes = hex::decode(private_key_hex).unwrap();
+    let bytes_ptr = bytes.as_ptr();
+    let bytes_len = bytes.len();
+
+    let is_valid = unsafe {
+        tw_private_key_is_valid(bytes_ptr, bytes_len, Curve::Ed25519ExtendedCardano.to_raw())
+    };
+
+    assert!(is_valid);
+}

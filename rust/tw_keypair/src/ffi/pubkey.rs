@@ -41,6 +41,23 @@ pub unsafe extern "C" fn tw_public_key_create_with_data(
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
 
+/// Determines if the given public key is valid or not.
+///
+/// \param key *non-null* byte array.
+/// \param key_len the length of the `key` array.
+/// \param curve Eliptic curve of the public key.
+/// \return true if the public key is valid, false otherwise.
+#[no_mangle]
+pub unsafe extern "C" fn tw_public_key_is_valid(
+    key: *const u8,
+    key_len: usize,
+    pubkey_type: u32,
+) -> bool {
+    let pubkey_type = try_or_false!(PublicKeyType::from_raw(pubkey_type));
+    let pub_key_bytes = try_or_false!(CByteArrayRef::new(key, key_len).to_vec());
+    PublicKey::is_valid(pub_key_bytes, pubkey_type)
+}
+
 /// Delete the given public key.
 ///
 /// \param key *non-null* pointer to public key.
@@ -169,22 +186,3 @@ pub unsafe extern "C" fn tw_public_key_verify_as_der(
     let msg = try_or_false!(CByteArrayRef::new(msg, msg_len).as_slice());
     public.0.verify_as_der(sig, msg)
 }
-
-// #[no_mangle]
-// pub unsafe extern "C" fn tw_public_key_is_valid(
-//     pubkey: *const u8,
-//     pubkey_len: usize,
-//     pubkey_type: u32,
-// ) -> bool {
-//     let ty = match TWPublicKeyType::from_raw(pubkey_type) {
-//         Some(ty) => ty,
-//         None => return false,
-//     };
-//
-//     let pubkey_slice = match CByteArrayRef::new(pubkey, pubkey_len).as_slice() {
-//         Some(pubkey) => pubkey,
-//         None => return false,
-//     };
-//
-//     TWPublicKey::is_valid(pubkey_slice, ty)
-// }

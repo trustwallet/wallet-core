@@ -89,6 +89,16 @@ impl PrivateKey {
             },
             Curve::Nist256p1 => nist256p1::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
             Curve::Ed25519ExtendedCardano => {
+                let bytes = if bytes.len() == Self::SIZE {
+                    // For a regular private key, replicate it 6 times to match the Cardano extended format
+                    let mut extended_bytes = Vec::with_capacity(Self::CARDANO_SIZE);
+                    for _ in 0..6 {
+                        extended_bytes.extend_from_slice(&bytes[Self::KEY_RANGE]);
+                    }
+                    extended_bytes
+                } else {
+                    bytes.to_vec()
+                };
                 ed25519::cardano::ExtendedPrivateKey::try_from(&bytes[Self::EXTENDED_CARDANO_RANGE])
                     .is_ok()
             },

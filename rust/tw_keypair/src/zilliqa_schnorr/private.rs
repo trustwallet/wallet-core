@@ -139,6 +139,7 @@ impl SigningKeyTrait for PrivateKey {
     type SigningMessage = Vec<u8>;
     type Signature = Signature;
 
+    // Taken from https://github.com/Zilliqa/zilliqa-rs/blob/24a0e882bcab634b6e776d94709c1760841023d4/src/crypto/schnorr.rs#L20
     fn sign(&self, message: Self::SigningMessage) -> KeyPairResult<Self::Signature> {
         let priv_scalar = self.0.as_scalar_primitive();
         let entropy_input = &priv_scalar.to_bytes();

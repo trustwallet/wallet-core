@@ -196,7 +196,7 @@ PrivateKey HDWallet<seedSize>::getKeyByCurve(TWCurve curve, const DerivationPath
         auto data = Data(node.private_key, node.private_key + PrivateKey::_size);
         TW::memzero(&node);
         if (curve == TWCurveStarkex) {
-            return ImmutableX::getPrivateKeyFromEthPrivKey(PrivateKey(data, curve));
+            return ImmutableX::getPrivateKeyFromEthPrivKey(PrivateKey(data, TWCurveSECP256k1));
         }
         return PrivateKey(data, curve);
     }

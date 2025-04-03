@@ -17,31 +17,7 @@ namespace TW {
 /// Determines if a collection of bytes makes a valid public key of the
 /// given type.
 bool PublicKey::isValid(const Data& data, enum TWPublicKeyType type) {
-    const auto size = data.size();
-    if (size == 0) {
-        return false;
-    }
-    switch (type) {
-    case TWPublicKeyTypeED25519:
-        return size == ed25519Size || (size == ed25519Size + 1 && data[0] == 0x01);
-    case TWPublicKeyTypeCURVE25519:
-    case TWPublicKeyTypeED25519Blake2b:
-        return size == ed25519Size;
-    case TWPublicKeyTypeED25519Cardano:
-        return size == cardanoKeySize;
-    case TWPublicKeyTypeSECP256k1:
-    case TWPublicKeyTypeNIST256p1:
-    case TWPublicKeyTypeSchnorr:
-    case TWPublicKeyTypeZILLIQASchnorr:
-        return size == secp256k1Size && (data[0] == 0x02 || data[0] == 0x03);
-    case TWPublicKeyTypeSECP256k1Extended:
-    case TWPublicKeyTypeNIST256p1Extended:
-        return size == secp256k1ExtendedSize && data[0] == 0x04;
-    case TWPublicKeyTypeStarkex:
-        return size == starkexSize;
-    default:
-        return false;
-    }
+    return Rust::tw_public_key_is_valid(data.data(), data.size(), static_cast<uint32_t>(type));
 }
 
 /// Initializes a public key with a collection of bytes.
@@ -53,14 +29,12 @@ PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type)
         throw std::invalid_argument("Invalid public key data");
     }
     auto* pubkey = Rust::tw_public_key_create_with_data(data.data(), data.size(), static_cast<uint32_t>(type));
-    if (pubkey != nullptr) {
-        _impl = Rust::wrapTWPublicKey(pubkey);
-        Rust::CByteArrayWrapper pubkeyData = Rust::tw_public_key_data(_impl.get());
-        bytes = pubkeyData.data;
-    } else {
-        _impl = nullptr;
-        bytes = data;
+    if (pubkey == nullptr) {
+        throw std::invalid_argument("Invalid public key");
     }
+    _impl = Rust::wrapTWPublicKey(pubkey);
+    Rust::CByteArrayWrapper pubkeyData = Rust::tw_public_key_data(_impl.get());
+    bytes = pubkeyData.data;
 }
 
 PublicKey::PublicKey(std::shared_ptr<TW::Rust::TWPublicKey> _impl)

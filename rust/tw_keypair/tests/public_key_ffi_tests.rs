@@ -10,8 +10,8 @@ use tw_keypair::ffi::privkey::{
 };
 use tw_keypair::ffi::pubkey::{
     tw_public_key_compressed, tw_public_key_data, tw_public_key_delete, tw_public_key_extended,
-    tw_public_key_recover_from_signature, tw_public_key_type, tw_public_key_verify,
-    tw_public_key_verify_as_der,
+    tw_public_key_is_valid, tw_public_key_recover_from_signature, tw_public_key_type,
+    tw_public_key_verify, tw_public_key_verify_as_der,
 };
 use tw_keypair::test_utils::tw_private_key_helper::TWPrivateKeyHelper;
 use tw_keypair::test_utils::tw_public_key_helper::TWPublicKeyHelper;
@@ -321,4 +321,17 @@ fn test_tw_public_key_verify_zilliqa() {
         hex::encode(signature, false),
         "b8118ccb99563fe014279c957b0a9d563c1666e00367e9896fe541765246964f64a53052513da4e6dc20fdaf69ef0d95b4ca51c87ad3478986cf053c2dd0b853"
     );
+}
+
+#[test]
+fn test_public_key_is_valid() {
+    let public_key_hex = "0xbeff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa527908";
+    let bytes = hex::decode(public_key_hex).unwrap();
+    let bytes_ptr = bytes.as_ptr();
+    let bytes_len = bytes.len();
+
+    let is_valid =
+        unsafe { tw_public_key_is_valid(bytes_ptr, bytes_len, PublicKeyType::Ed25519 as u32) };
+
+    assert!(is_valid);
 }
