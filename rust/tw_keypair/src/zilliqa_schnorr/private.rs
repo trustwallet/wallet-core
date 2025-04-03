@@ -19,7 +19,6 @@ use k256::{
 use rfc6979::HmacDrbg;
 use secp256k1::rand;
 use sha2::{Digest, Sha256};
-use std::fmt::Display;
 use std::ops::Deref;
 use std::str::FromStr;
 use tw_encoding::hex;
@@ -126,12 +125,6 @@ impl Deref for PrivateKey {
 
     fn deref(&self) -> &Self::Target {
         &self.0
-    }
-}
-
-impl Display for PrivateKey {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", hex::encode(self.to_bytes(), false).to_lowercase())
     }
 }
 
