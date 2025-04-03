@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
       'swift/Sources/Types/*.swift',
       'swift/Sources/Generated/Enums/*.swift',
       'swift/Sources/Generated/Protobuf/*.swift'
-    ss.dependency 'SwiftProtobuf'
+    ss.dependency 'WalletCoreSwiftProtobuf'
   end
 
   s.subspec 'Core' do |ss|
