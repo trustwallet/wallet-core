@@ -170,28 +170,6 @@ pub unsafe extern "C" fn tw_public_key_verify_as_der(
     public.0.verify_as_der(sig, msg)
 }
 
-/// Verify a Zilliqa signature.
-///
-/// \param key *non-null* pointer to a public key.
-/// \param sig *non-null* pointer to a block of data corresponding to the signature.
-/// \param sig_len the length of the `sig` array.
-/// \param msg *non-null* pointer to a block of data corresponding to the message.
-/// \param msg_len the length of the `msg` array.
-/// \return true if the signature and the message belongs to the given public key, otherwise false.
-#[no_mangle]
-pub unsafe extern "C" fn tw_public_key_verify_zilliqa(
-    key: *mut TWPublicKey,
-    sig: *const u8,
-    sig_len: usize,
-    msg: *const u8,
-    msg_len: usize,
-) -> bool {
-    let public = try_or_false!(TWPublicKey::from_ptr_as_ref(key));
-    let sig = try_or_false!(CByteArrayRef::new(sig, sig_len).as_slice());
-    let msg = try_or_false!(CByteArrayRef::new(msg, msg_len).as_slice());
-    public.0.verify_zilliqa(sig, msg)
-}
-
 // #[no_mangle]
 // pub unsafe extern "C" fn tw_public_key_is_valid(
 //     pubkey: *const u8,

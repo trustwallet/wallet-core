@@ -83,10 +83,6 @@ class PrivateKey {
     /// If constructed with a curve, an exception will be thrown if the curve does not match SECP256k1.
     Data signAsDER(const Data& digest) const;
 
-    /// Signs a digest using given ECDSA curve, returns Zilliqa schnorr signature
-    /// If constructed with a curve, an exception will be thrown if the curve does not match SECP256k1.
-    Data signZilliqa(const Data& message) const;
-
     /// Cleanup contents (fill with 0s), called before destruction
     void cleanup();
 

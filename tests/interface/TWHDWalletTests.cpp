@@ -258,7 +258,7 @@ TEST(HDWallet, DeriveDoge) {
 TEST(HDWallet, DeriveZilliqa) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeZilliqa));
-    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(key.get(), true));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyZilliqaSchnorr(key.get()));
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
 
     assertHexEqual(publicKeyData, "0262746d4988c63b9972c63272461e9fa080d4dfa2a1fda3dd01285620c0a60c22");

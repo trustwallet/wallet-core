@@ -50,13 +50,13 @@ class PrivateKeyTests: XCTestCase {
     }
 
     func testSignSchnorr() {
-        let privateKey = PrivateKey(data: Data(hexString: "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")!, curve: .secp256k1)!
-        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
+        let privateKey = PrivateKey(data: Data(hexString: "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")!, curve: .zilliqaschnorr)!
+        let publicKey = privateKey.getPublicKeyZilliqaSchnorr()
 
         let message = "hello schnorr".data(using: .utf8)!
 
-        let sig = privateKey.signZilliqaSchnorr(message: message)!
-        let verified = publicKey.verifyZilliqaSchnorr(signature: sig, message: message)
+        let sig = privateKey.sign(digest: message)!
+        let verified = publicKey.verify(signature: sig, message: message)
 
         XCTAssertEqual(sig.hexString, "d166b1ae7892c5ef541461dc12a50214d0681b63d8037cda29a3fe6af8bb973e4ea94624d85bc0010bdc1b38d05198328fae21254adc2bf5feaf2804d54dba55")
         XCTAssertTrue(verified)

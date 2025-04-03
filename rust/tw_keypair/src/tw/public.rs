@@ -25,6 +25,7 @@ pub enum PublicKey {
     Ed25519ExtendedCardano(Box<ed25519::cardano::ExtendedPublicKey>),
     Starkex(starkex::PublicKey),
     Schnorr(schnorr::PublicKey),
+    ZilliqaSchnorr(zilliqa_schnorr::PublicKey),
 }
 
 impl PublicKey {
@@ -83,6 +84,10 @@ impl PublicKey {
                 let pubkey = schnorr::PublicKey::try_from(bytes.as_slice())?;
                 Ok(PublicKey::Schnorr(pubkey))
             },
+            PublicKeyType::ZilliqaSchnorr => {
+                let pubkey = zilliqa_schnorr::PublicKey::try_from(bytes.as_slice())?;
+                Ok(PublicKey::ZilliqaSchnorr(pubkey))
+            },
             _ => Err(KeyPairError::InvalidPublicKey),
         }
     }
@@ -121,6 +126,7 @@ impl PublicKey {
             },
             PublicKey::Starkex(stark) => verify_impl(stark, sig, message),
             PublicKey::Schnorr(schnorr) => verify_impl(schnorr, sig, message),
+            PublicKey::ZilliqaSchnorr(zilliqa) => verify_impl(zilliqa, sig, message),
         }
     }
 
@@ -137,6 +143,7 @@ impl PublicKey {
             PublicKey::Ed25519ExtendedCardano(cardano) => cardano.to_vec(),
             PublicKey::Starkex(stark) => stark.to_vec(),
             PublicKey::Schnorr(schnorr) => schnorr.to_vec(),
+            PublicKey::ZilliqaSchnorr(zilliqa) => zilliqa.to_vec(),
         }
     }
 
@@ -178,6 +185,7 @@ impl PublicKey {
             PublicKey::Ed25519ExtendedCardano(_) => PublicKeyType::Ed25519ExtendedCardano,
             PublicKey::Starkex(_) => PublicKeyType::Starkex,
             PublicKey::Schnorr(_) => PublicKeyType::Schnorr,
+            PublicKey::ZilliqaSchnorr(_) => PublicKeyType::ZilliqaSchnorr,
         }
     }
 
@@ -236,27 +244,6 @@ impl PublicKey {
                     <secp256k1::PublicKey as VerifyingKeyTrait>::SigningMessage::try_from(message)
                 );
                 secp.verify(verify_sig, message)
-            },
-            _ => false,
-        }
-    }
-
-    pub fn verify_zilliqa(&self, sig: &[u8], message: &[u8]) -> bool {
-        match self {
-            PublicKey::Secp256k1(secp) | PublicKey::Secp256k1Extended(secp) => {
-                let zilliq_pubkey = try_or_false!(zilliqa_schnorr::PublicKey::try_from(
-                    secp.to_vec().as_slice()
-                ));
-                let verify_sig = try_or_false!(
-                    <zilliqa_schnorr::PublicKey as VerifyingKeyTrait>::VerifySignature::try_from(
-                        sig
-                    )
-                );
-                let message =
-                    <zilliqa_schnorr::PublicKey as VerifyingKeyTrait>::SigningMessage::from(
-                        message,
-                    );
-                zilliq_pubkey.verify(verify_sig, message)
             },
             _ => false,
         }

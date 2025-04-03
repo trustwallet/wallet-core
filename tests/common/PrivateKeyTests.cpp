@@ -253,10 +253,10 @@ TEST(PrivateKey, SignExtended) {
 }
 
 TEST(PrivateKey, SignSchnorr) {
-    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveSECP256k1);
+    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveZILLIQASchnorr);
     const Data messageData = TW::data("hello schnorr");
     const Data digest = Hash::sha256(messageData);
-    const auto signature = privateKey.signZilliqa(digest);
+    const auto signature = privateKey.sign(digest);
     EXPECT_EQ(hex(signature),
               "b8118ccb99563fe014279c957b0a9d563c1666e00367e9896fe541765246964f64a53052513da4e6dc20fdaf69ef0d95b4ca51c87ad3478986cf053c2dd0b853");
 }

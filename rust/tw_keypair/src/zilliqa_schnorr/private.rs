@@ -50,13 +50,13 @@ impl PrivateKey {
     }
 
     /// Returns corresponding public key of the private key
-    pub fn public_key(&self) -> PublicKey {
+    pub fn public(&self) -> PublicKey {
         PublicKey::new(self.0.public_key())
     }
 
     // Taken from https://github.com/Zilliqa/zilliqa-rs/blob/24a0e882bcab634b6e776d94709c1760841023d4/src/crypto/schnorr.rs#L20
     fn sign_inner(&self, k: Scalar, message: &[u8]) -> Option<Signature> {
-        let public_key = self.public_key();
+        let public_key = self.public();
 
         // 2. Compute the commitment Q = kG, where G is the base point.
         let q = AffinePoint::GENERATOR * k;

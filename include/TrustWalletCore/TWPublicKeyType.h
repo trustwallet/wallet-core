@@ -20,6 +20,8 @@ enum TWPublicKeyType {
     TWPublicKeyTypeCURVE25519 = 6,
     TWPublicKeyTypeED25519Cardano = 7,
     TWPublicKeyTypeStarkex = 8,
+    TWPublicKeyTypeSchnorr = 9,
+    TWPublicKeyTypeZILLIQASchnorr = 10,
 };
 
 TW_EXTERN_C_END

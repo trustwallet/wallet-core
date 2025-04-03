@@ -42,6 +42,7 @@ bool PrivateKey::isValid(const Data& data, TWCurve curve) {
     const ecdsa_curve* ec_curve = nullptr;
     switch (curve) {
     case TWCurveSECP256k1:
+    case TWCurveZILLIQASchnorr:
         ec_curve = &secp256k1;
         break;
     case TWCurveNIST256p1:
@@ -135,11 +136,7 @@ Data PrivateKey::signAsDER(const Data& digest) const {
     return res.data;
 }
 
-Data PrivateKey::signZilliqa(const Data& message) const {
-    Rust::CByteArrayWrapper res = Rust::tw_private_key_sign_zilliqa(_impl.get(), message.data(), message.size());
-    return res.data;
-}
-
 void PrivateKey::cleanup() {
     memzero(bytes.data(), bytes.size());
+    _impl = nullptr;
 }

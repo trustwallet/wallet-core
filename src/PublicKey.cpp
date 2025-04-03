@@ -29,6 +29,8 @@ bool PublicKey::isValid(const Data& data, enum TWPublicKeyType type) {
         return size == cardanoKeySize;
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeNIST256p1:
+    case TWPublicKeyTypeSchnorr:
+    case TWPublicKeyTypeZILLIQASchnorr:
         return size == secp256k1Size && (data[0] == 0x02 || data[0] == 0x03);
     case TWPublicKeyTypeSECP256k1Extended:
     case TWPublicKeyTypeNIST256p1Extended:
@@ -98,10 +100,6 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
 
 bool PublicKey::verifyAsDER(const Data& signature, const Data& message) const {
     return Rust::tw_public_key_verify_as_der(_impl.get(), signature.data(), signature.size(), message.data(), message.size());
-}
-
-bool PublicKey::verifyZilliqa(const Data& signature, const Data& message) const {
-    return Rust::tw_public_key_verify_zilliqa(_impl.get(), signature.data(), signature.size(), message.data(), message.size());
 }
 
 Data PublicKey::hash(const Data& prefix, Hash::Hasher hasher, bool skipTypeByte) const {

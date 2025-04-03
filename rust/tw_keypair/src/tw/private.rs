@@ -94,6 +94,9 @@ impl PrivateKey {
             },
             Curve::Starkex => starkex::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
             Curve::Schnorr => schnorr::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
+            Curve::ZilliqaSchnorr => {
+                zilliqa_schnorr::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok()
+            },
         }
     }
 
@@ -119,6 +122,7 @@ impl PrivateKey {
             },
             Curve::Starkex => sign_impl(self.to_starkex_privkey()?, message),
             Curve::Schnorr => sign_impl(self.to_schnorr_privkey()?, message),
+            Curve::ZilliqaSchnorr => sign_impl(self.to_zilliqa_schnorr_privkey()?, message),
         }
     }
 
@@ -198,6 +202,10 @@ impl PrivateKey {
                 let privkey = self.to_schnorr_privkey()?;
                 Ok(PublicKey::Schnorr(privkey.public()))
             },
+            PublicKeyType::ZilliqaSchnorr => {
+                let privkey = self.to_zilliqa_schnorr_privkey()?;
+                Ok(PublicKey::ZilliqaSchnorr(privkey.public()))
+            },
         }
     }
 
@@ -241,6 +249,11 @@ impl PrivateKey {
         schnorr::PrivateKey::try_from(self.key().as_slice())
     }
 
+    /// Tries to convert [`PrivateKey::key`] to [`zilliqa_schnorr::PrivateKey`].
+    fn to_zilliqa_schnorr_privkey(&self) -> KeyPairResult<zilliqa_schnorr::PrivateKey> {
+        zilliqa_schnorr::PrivateKey::try_from(self.key().as_slice())
+    }
+
     /// Signs a digest using ECDSA as DER.
     pub fn sign_as_der(&self, digest: &[u8]) -> KeyPairResult<Vec<u8>> {
         match self.curve {
@@ -255,22 +268,6 @@ impl PrivateKey {
                 let der_sig = crate::ecdsa::der::Signature::new(sig.r(), sig.s())
                     .map_err(|_| KeyPairError::InvalidSignature)?;
                 Ok(der_sig.der_bytes())
-            },
-            _ => Err(KeyPairError::UnsupportedCurve),
-        }
-    }
-
-    /// Signs a message using Zilliqa Schnorr.
-    pub fn sign_zilliqa(&self, message: &[u8]) -> KeyPairResult<Vec<u8>> {
-        match self.curve {
-            Curve::Secp256k1 => {
-                let private_key = self.to_secp256k1_privkey()?;
-                let zilliqa_privkey =
-                    zilliqa_schnorr::PrivateKey::try_from(private_key.secret.to_bytes().as_slice())
-                        .map_err(|_| KeyPairError::InvalidSecretKey)?;
-                zilliqa_privkey
-                    .sign(message.to_vec())
-                    .map(|sig| sig.to_vec())
             },
             _ => Err(KeyPairError::UnsupportedCurve),
         }

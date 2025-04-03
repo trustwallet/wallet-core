@@ -59,6 +59,8 @@ class PublicKey {
     /// Initializes a public key with a Rust implementation.
     explicit PublicKey(std::shared_ptr<TW::Rust::TWPublicKey> impl);
 
+    virtual ~PublicKey() { bytes.clear(); _impl = nullptr; }
+
     /// Determines if this is a compressed public key.
     bool isCompressed() const {
         return type != TWPublicKeyTypeSECP256k1Extended && type != TWPublicKeyTypeNIST256p1Extended;
@@ -75,10 +77,7 @@ class PublicKey {
 
     /// Verifies a signature in DER format.
     bool verifyAsDER(const Data& signature, const Data& message) const;
-
-    /// Verifies a Zilliqa schnorr signature for the provided message.
-    bool verifyZilliqa(const Data& signature, const Data& message) const;
-
+    
     /// Computes the public key hash.
     ///
     /// The public key hash is computed by applying the hasher to the public key

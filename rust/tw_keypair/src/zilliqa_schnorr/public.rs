@@ -13,6 +13,7 @@ use std::fmt::Display;
 use std::ops::Deref;
 use std::str::FromStr;
 use tw_encoding::hex;
+use tw_misc::traits::ToBytesVec;
 
 pub type VerifySignature = super::Signature;
 
@@ -83,6 +84,12 @@ impl Display for PublicKey {
             "{}",
             hex::encode(self.to_sec1_bytes(), false).to_lowercase()
         )
+    }
+}
+
+impl ToBytesVec for PublicKey {
+    fn to_vec(&self) -> Vec<u8> {
+        self.0.to_sec1_bytes().to_vec()
     }
 }
 

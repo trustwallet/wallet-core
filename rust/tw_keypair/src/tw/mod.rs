@@ -35,6 +35,8 @@ pub enum Curve {
     Starkex = 6,
     #[serde(rename = "schnorr")]
     Schnorr = 7,
+    #[serde(rename = "zilliqaSchnorr")]
+    ZilliqaSchnorr = 8,
 }
 
 impl Curve {
@@ -49,6 +51,7 @@ impl Curve {
             5 => Some(Curve::Ed25519ExtendedCardano),
             6 => Some(Curve::Starkex),
             7 => Some(Curve::Schnorr),
+            8 => Some(Curve::ZilliqaSchnorr),
             _ => None,
         }
     }
@@ -63,6 +66,7 @@ impl Curve {
             Curve::Ed25519ExtendedCardano => 5,
             Curve::Starkex => 6,
             Curve::Schnorr => 7,
+            Curve::ZilliqaSchnorr => 8,
         }
     }
 }
@@ -94,6 +98,8 @@ pub enum PublicKeyType {
     Starkex = 8,
     #[serde(rename = "schnorr")]
     Schnorr = 9,
+    #[serde(rename = "zilliqaSchnorr")]
+    ZilliqaSchnorr = 10,
 }
 
 impl PublicKeyType {
@@ -110,6 +116,7 @@ impl PublicKeyType {
             7 => Some(PublicKeyType::Ed25519ExtendedCardano),
             8 => Some(PublicKeyType::Starkex),
             9 => Some(PublicKeyType::Schnorr),
+            10 => Some(PublicKeyType::ZilliqaSchnorr),
             _ => None,
         }
     }
@@ -130,7 +137,8 @@ mod tests {
             (5, Some(Curve::Ed25519ExtendedCardano)),
             (6, Some(Curve::Starkex)),
             (7, Some(Curve::Schnorr)),
-            (8, None),
+            (8, Some(Curve::ZilliqaSchnorr)),
+            (9, None),
         ];
         for (raw, expected) in tests {
             assert_eq!(Curve::from_raw(raw), expected);
@@ -150,7 +158,8 @@ mod tests {
             (7, Some(PublicKeyType::Ed25519ExtendedCardano)),
             (8, Some(PublicKeyType::Starkex)),
             (9, Some(PublicKeyType::Schnorr)),
-            (10, None),
+            (10, Some(PublicKeyType::ZilliqaSchnorr)),
+            (11, None),
         ];
         for (raw, expected) in tests {
             assert_eq!(PublicKeyType::from_raw(raw), expected);

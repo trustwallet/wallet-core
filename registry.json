@@ -1892,8 +1892,8 @@
         "path": "m/44'/313'/0'/0/0"
       }
     ],
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1",
+    "curve": "zilliqaSchnorr",
+    "publicKeyType": "zilliqaSchnorr",
     "hrp": "zil",
     "explorer": {
       "url": "https://viewblock.io",

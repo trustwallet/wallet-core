@@ -9,7 +9,6 @@ use tw_hash::H256;
 use tw_keypair::ffi::privkey::{
     tw_private_key_create_with_data, tw_private_key_get_public_key_by_type,
     tw_private_key_is_valid, tw_private_key_sign, tw_private_key_sign_as_der,
-    tw_private_key_sign_zilliqa,
 };
 use tw_keypair::ffi::pubkey::{tw_public_key_data, tw_public_key_delete, tw_public_key_verify};
 use tw_keypair::test_utils::tw_private_key_helper::TWPrivateKeyHelper;
@@ -254,7 +253,7 @@ fn test_tw_private_key_sign_as_der() {
 fn test_tw_private_key_sign_zilliqa() {
     let tw_privkey = TWPrivateKeyHelper::with_hex(
         "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
-        Curve::Secp256k1.to_raw(),
+        Curve::ZilliqaSchnorr.to_raw(),
     );
     assert!(!tw_privkey.is_null());
 
@@ -264,8 +263,7 @@ fn test_tw_private_key_sign_zilliqa() {
     let digest_raw = CByteArray::from(digest.to_vec());
 
     let signature = unsafe {
-        tw_private_key_sign_zilliqa(tw_privkey.ptr(), digest_raw.data(), digest_raw.size())
-            .into_vec()
+        tw_private_key_sign(tw_privkey.ptr(), digest_raw.data(), digest_raw.size()).into_vec()
     };
 
     assert_eq!(

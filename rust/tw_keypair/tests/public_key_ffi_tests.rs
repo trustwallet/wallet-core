@@ -6,12 +6,12 @@ use tw_encoding::hex;
 use tw_hash::sha2::sha256;
 use tw_hash::sha3::keccak256;
 use tw_keypair::ffi::privkey::{
-    tw_private_key_get_public_key_by_type, tw_private_key_sign_as_der, tw_private_key_sign_zilliqa,
+    tw_private_key_get_public_key_by_type, tw_private_key_sign, tw_private_key_sign_as_der
 };
 use tw_keypair::ffi::pubkey::{
     tw_public_key_compressed, tw_public_key_data, tw_public_key_delete, tw_public_key_extended,
     tw_public_key_recover_from_signature, tw_public_key_type, tw_public_key_verify,
-    tw_public_key_verify_as_der, tw_public_key_verify_zilliqa,
+    tw_public_key_verify_as_der,
 };
 use tw_keypair::test_utils::tw_private_key_helper::TWPrivateKeyHelper;
 use tw_keypair::test_utils::tw_public_key_helper::TWPublicKeyHelper;
@@ -281,7 +281,7 @@ fn test_tw_public_key_verify_as_der() {
 fn test_tw_public_key_verify_zilliqa() {
     let tw_privkey = TWPrivateKeyHelper::with_hex(
         "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
-        Curve::Secp256k1.to_raw(),
+        Curve::ZilliqaSchnorr.to_raw(),
     );
     assert!(!tw_privkey.is_null());
 
@@ -292,7 +292,7 @@ fn test_tw_public_key_verify_zilliqa() {
 
     // Sign the digest using Zilliqa format
     let signature = unsafe {
-        tw_private_key_sign_zilliqa(tw_privkey.ptr(), digest_raw.data(), digest_raw.size())
+        tw_private_key_sign(tw_privkey.ptr(), digest_raw.data(), digest_raw.size())
             .into_vec()
     };
     let signature_raw = CByteArray::from(signature.clone());
@@ -301,13 +301,13 @@ fn test_tw_public_key_verify_zilliqa() {
     let tw_public_key = unsafe {
         TWPublicKeyHelper::wrap(tw_private_key_get_public_key_by_type(
             tw_privkey.ptr(),
-            PublicKeyType::Secp256k1 as u32,
+            PublicKeyType::ZilliqaSchnorr as u32,
         ))
     };
 
     // Verify the Zilliqa signature
     let is_valid = unsafe {
-        tw_public_key_verify_zilliqa(
+        tw_public_key_verify(
             tw_public_key.ptr(),
             signature_raw.data(),
             signature_raw.size(),
