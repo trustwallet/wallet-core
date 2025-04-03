@@ -13,6 +13,20 @@ use tw_evm::modules::signer::Signer;
 use tw_misc::traits::ToBytesVec;
 use tw_number::U256;
 use tw_proto::Ethereum::Proto;
+use tw_proto::Ethereum::Proto::mod_Transaction::OneOftransaction_oneof as TransactionType;
+
+fn execute(tx: TransactionType, wallet_type: Proto::SCWalletType) -> Proto::Transaction {
+    Proto::Transaction {
+        transaction_oneof: TransactionType::scw_execute(Box::new(
+            Proto::mod_Transaction::SCWalletExecute {
+                transaction: Some(Box::new(Proto::Transaction {
+                    transaction_oneof: tx,
+                })),
+                wallet_type,
+            },
+        )),
+    }
+}
 
 // https://testnet.bscscan.com/tx/0x43fc13dfdf06bbb09da8ce070953753764f1e43782d0c8b621946d8b45749419
 #[test]
@@ -42,9 +56,10 @@ fn test_barz_transfer_account_deployed() {
         max_inclusion_fee_per_gas: U256::encode_be_compact(0x1_a339_c9e9),
         to_address: "0x61061fCAE11fD5461535e134EfF67A98CFFF44E9".into(),
         private_key: private_key.into(),
-        transaction: Some(Proto::Transaction {
-            transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::transfer(transfer),
-        }),
+        transaction: Some(execute(
+            TransactionType::transfer(transfer),
+            Proto::SCWalletType::SimpleAccount,
+        )),
         user_operation_oneof: Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation(
             user_op,
         ),
@@ -97,9 +112,10 @@ fn test_barz_transfer_account_not_deployed() {
         max_inclusion_fee_per_gas: U256::encode_be_compact(0x1_a339_c9e9),
         to_address: "0x61061fCAE11fD5461535e134EfF67A98CFFF44E9".into(),
         private_key: private_key.into(),
-        transaction: Some(Proto::Transaction {
-            transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::transfer(transfer),
-        }),
+        transaction: Some(execute(
+            TransactionType::transfer(transfer),
+            Proto::SCWalletType::SimpleAccount,
+        )),
         user_operation_oneof: Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation(
             user_op,
         ),
@@ -136,7 +152,7 @@ fn test_barz_batched_account_deployed() {
         let amount = U256::from(0x8AC7_2304_89E8_0000_u64);
         let payload = Erc20::approve(spender, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_Batch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_SCWalletBatch::BatchedCall {
             address: contract_address.into(),
             amount: Cow::default(),
             payload: payload.into(),
@@ -149,7 +165,7 @@ fn test_barz_batched_account_deployed() {
         let amount = U256::from(0x8AC7_2304_89E8_0000_u64);
         let payload = Erc20::transfer(recipient, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_Batch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_SCWalletBatch::BatchedCall {
             address: contract_address.into(),
             amount: Cow::default(),
             payload: payload.into(),
@@ -175,9 +191,10 @@ fn test_barz_batched_account_deployed() {
         to_address: contract_address.into(),
         private_key: private_key.into(),
         transaction: Some(Proto::Transaction {
-            transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::batch(
-                Proto::mod_Transaction::Batch { calls },
-            ),
+            transaction_oneof: TransactionType::scw_batch(Proto::mod_Transaction::SCWalletBatch {
+                calls,
+                wallet_type: Proto::SCWalletType::SimpleAccount,
+            }),
         }),
         user_operation_oneof: Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation(
             user_op,
@@ -230,9 +247,10 @@ fn test_barz_transfer_account_not_deployed_v0_7() {
         max_inclusion_fee_per_gas: U256::from(100000u128).to_big_endian_compact().into(),
         to_address: "0x61061fCAE11fD5461535e134EfF67A98CFFF44E9".into(),
         private_key: private_key.into(),
-        transaction: Some(Proto::Transaction {
-            transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::transfer(transfer),
-        }),
+        transaction: Some(execute(
+            TransactionType::transfer(transfer),
+            Proto::SCWalletType::SimpleAccount,
+        )),
         user_operation_oneof:
             Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation_v0_7(user_op),
         ..Proto::SigningInput::default()
@@ -249,7 +267,7 @@ fn test_barz_transfer_account_not_deployed_v0_7() {
 }
 
 #[test]
-fn test_barz_transfer_erc4337_eoa() {
+fn test_biz4337_transfer() {
     let private_key =
         hex::decode("0x3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483").unwrap();
 
@@ -281,14 +299,12 @@ fn test_barz_transfer_erc4337_eoa() {
         // USDT token.
         to_address: "0xdac17f958d2ee523a2206206994597c13d831ec7".into(),
         private_key: private_key.into(),
-        transaction: Some(Proto::Transaction {
-            transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::erc20_approve(
-                approve,
-            ),
-        }),
+        transaction: Some(execute(
+            TransactionType::erc20_approve(approve),
+            Proto::SCWalletType::Biz4337,
+        )),
         user_operation_oneof:
             Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation_v0_7(user_op),
-        user_operation_mode: Proto::SCAccountType::Biz4337,
         ..Proto::SigningInput::default()
     };
 
@@ -306,7 +322,7 @@ fn test_barz_transfer_erc4337_eoa() {
 }
 
 #[test]
-fn test_barz_transfer_erc4337_eoa_batch() {
+fn test_biz4337_transfer_batch() {
     let private_key =
         hex::decode("0x3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483").unwrap();
 
@@ -333,7 +349,7 @@ fn test_barz_transfer_erc4337_eoa_batch() {
         let amount = U256::from(655_360_197_115_136_u64);
         let payload = Erc20::approve(recipient, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_Batch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_SCWalletBatch::BatchedCall {
             // USDT
             address: "0xdac17f958d2ee523a2206206994597c13d831ec7".into(),
             amount: Cow::default(),
@@ -347,7 +363,7 @@ fn test_barz_transfer_erc4337_eoa_batch() {
         let amount = U256::from(0x8AC7_2304_89E8_0000_u64);
         let payload = Erc20::transfer(recipient, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_Batch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_SCWalletBatch::BatchedCall {
             address: "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266".into(),
             amount: Cow::default(),
             payload: payload.into(),
@@ -365,13 +381,13 @@ fn test_barz_transfer_erc4337_eoa_batch() {
         to_address: "0xdac17f958d2ee523a2206206994597c13d831ec7".into(),
         private_key: private_key.into(),
         transaction: Some(Proto::Transaction {
-            transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::batch(
-                Proto::mod_Transaction::Batch { calls },
-            ),
+            transaction_oneof: TransactionType::scw_batch(Proto::mod_Transaction::SCWalletBatch {
+                calls,
+                wallet_type: Proto::SCWalletType::Biz4337,
+            }),
         }),
         user_operation_oneof:
             Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation_v0_7(user_op),
-        user_operation_mode: Proto::SCAccountType::Biz4337,
         ..Proto::SigningInput::default()
     };
 
@@ -393,7 +409,7 @@ fn test_barz_transfer_erc4337_eoa_batch() {
 }
 
 #[test]
-fn test_barz_transfer_erc7702_eoa() {
+fn test_biz_eip7702_transfer() {
     let private_key =
         hex::decode("0xe148e40f06ee3ba316cdb2571f33486cf879c0ffd2b279ce9f9a88c41ce962e7").unwrap();
 
@@ -413,13 +429,12 @@ fn test_barz_transfer_erc7702_eoa() {
             .to_big_endian_compact()
             .into(),
         private_key: private_key.into(),
-        transaction: Some(Proto::Transaction {
-            transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::erc20_transfer(
-                erc20_transfer,
-            ),
-        }),
+        transaction: Some(execute(
+            TransactionType::erc20_transfer(erc20_transfer),
+            Proto::SCWalletType::Biz,
+        )),
+        // TWT token.
         to_address: "0x4B0F1812e5Df2A09796481Ff14017e6005508003".into(),
-        user_operation_mode: Proto::SCAccountType::Biz,
         eip7702_authority: Some(Proto::Authority {
             address: "0x117BC8454756456A0f83dbd130Bb94D793D3F3F7".into(),
         }),
@@ -447,7 +462,7 @@ fn test_barz_transfer_erc7702_eoa() {
 }
 
 #[test]
-fn test_barz_transfer_erc7702_eoa_batch() {
+fn test_biz_eip7702_transfer_batch() {
     let private_key =
         hex::decode("0xe148e40f06ee3ba316cdb2571f33486cf879c0ffd2b279ce9f9a88c41ce962e7").unwrap();
 
@@ -460,7 +475,7 @@ fn test_barz_transfer_erc7702_eoa_batch() {
         let amount = U256::from(100_000_000_000_000_u64);
         let payload = Erc20::transfer(recipient, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_Batch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_SCWalletBatch::BatchedCall {
             // TWT
             address: "0x4B0F1812e5Df2A09796481Ff14017e6005508003".into(),
             amount: Cow::default(),
@@ -475,7 +490,7 @@ fn test_barz_transfer_erc7702_eoa_batch() {
         let amount = U256::from(500_000_000_000_000_u64);
         let payload = Erc20::transfer(recipient, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_Batch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_SCWalletBatch::BatchedCall {
             // TWT
             address: "0x4B0F1812e5Df2A09796481Ff14017e6005508003".into(),
             amount: Cow::default(),
@@ -496,11 +511,11 @@ fn test_barz_transfer_erc7702_eoa_batch() {
             .into(),
         private_key: private_key.into(),
         transaction: Some(Proto::Transaction {
-            transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::batch(
-                Proto::mod_Transaction::Batch { calls },
-            ),
+            transaction_oneof: TransactionType::scw_batch(Proto::mod_Transaction::SCWalletBatch {
+                calls,
+                wallet_type: Proto::SCWalletType::Biz,
+            }),
         }),
-        user_operation_mode: Proto::SCAccountType::Biz,
         eip7702_authority: Some(Proto::Authority {
             address: "0x117BC8454756456A0f83dbd130Bb94D793D3F3F7".into(),
         }),
@@ -525,4 +540,136 @@ fn test_barz_transfer_erc7702_eoa_batch() {
         output.encoded.to_hex(),
         "04f9030f3812843b9aca00843b9aca00830186a0945132829820b44dc3e8586cec926a16fca0a5608480b9024434fcd5be00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000001200000000000000000000000004b0f1812e5df2a09796481ff14017e6005508003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000044a9059cbb0000000000000000000000002ef648d7c03412b832726fd4683e2625dea047ba00000000000000000000000000000000000000000000000000005af3107a4000000000000000000000000000000000000000000000000000000000000000000000000000000000004b0f1812e5df2a09796481ff14017e6005508003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000044a9059cbb00000000000000000000000095dc01ebd10b6dccf1cc329af1a3f73806117c2e0000000000000000000000000000000000000000000000000001c6bf5263400000000000000000000000000000000000000000000000000000000000c0f85cf85a3894117bc8454756456a0f83dbd130bb94d793d3f3f71380a0073afc661c158a2dccf4183f87e1e4d62b4d406af418cfd69959368ec9bec2a6a064292fd61d4d16b840470a86fc4f7a89413f9126d897f2268eb76a1d887c6d7a01a0e8bcbd96323c9d3e67b74366b2f43299100996d9e8874a6fd87186ac8f580d4ca07c25b4f0619af77fb953e8f0e4372bfbee62616ad419697516108eeb9bcebb28"
     );
+}
+
+#[test]
+fn test_biz_eip1559_transfer() {
+    // 0x6E860086BbA8fdEafB553815aF0F09a854cC887a
+    let private_key =
+        hex::decode("0xe762e91cc4889a9fce79b2d2ffc079f86c48331f57b2cd16a33bee060fe448e1").unwrap();
+
+    let erc20_transfer = Proto::mod_Transaction::ERC20Transfer {
+        to: "0x95dc01ebd10b6dccf1cc329af1a3f73806117c2e".into(),
+        amount: U256::encode_be_compact(200_000_000_000_000_u64),
+    };
+    let input = Proto::SigningInput {
+        chain_id: U256::encode_be_compact(56_u64),
+        nonce: U256::encode_be_compact(2_u64),
+        tx_mode: Proto::TransactionMode::Enveloped,
+        gas_limit: U256::from(100_000_u128).to_big_endian_compact().into(),
+        max_fee_per_gas: U256::from(1_000_000_000_u128)
+            .to_big_endian_compact()
+            .into(),
+        max_inclusion_fee_per_gas: U256::from(1_000_000_000_u128)
+            .to_big_endian_compact()
+            .into(),
+        private_key: private_key.into(),
+        transaction: Some(execute(
+            TransactionType::erc20_transfer(erc20_transfer),
+            Proto::SCWalletType::Biz,
+        )),
+        // TWT token.
+        to_address: "0x4B0F1812e5Df2A09796481Ff14017e6005508003".into(),
+        ..Proto::SigningInput::default()
+    };
+
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
+    assert_eq!(
+        output.error,
+        SigningErrorType::OK,
+        "{}",
+        output.error_message
+    );
+
+    assert_eq!(
+        output.pre_hash.to_hex(),
+        "60260356568ae70838bd80085b971e1e4ebe42046688fd8511a268986e522121"
+    );
+    // Successfully broadcasted transaction:
+    // https://bscscan.com/tx/0x6f8b2c8d50e8bb543d7124703b75d9e495832116a1a61afabf40b9b0ac43c980
+    assert_eq!(
+        output.encoded.to_hex(),
+        "02f901503802843b9aca00843b9aca00830186a0946e860086bba8fdeafb553815af0f09a854cc887a80b8e4b61d27f60000000000000000000000004b0f1812e5df2a09796481ff14017e6005508003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000044a9059cbb00000000000000000000000095dc01ebd10b6dccf1cc329af1a3f73806117c2e0000000000000000000000000000000000000000000000000000b5e620f4800000000000000000000000000000000000000000000000000000000000c080a0fb45762a262f4c32090576e9de087482d25cd00b6ea2522eb7d5a40f435acdbaa0151dbd48a4f4bf06080313775fe32ececd68869d721518a92bf292e4a84322f9"
+    );
+}
+
+#[test]
+fn test_biz_eip1559_transfer_with_incorrect_wallet_type_error() {
+    // 0x6E860086BbA8fdEafB553815aF0F09a854cC887a
+    let private_key =
+        hex::decode("0xe762e91cc4889a9fce79b2d2ffc079f86c48331f57b2cd16a33bee060fe448e1").unwrap();
+
+    let erc20_transfer = Proto::mod_Transaction::ERC20Transfer {
+        to: "0x95dc01ebd10b6dccf1cc329af1a3f73806117c2e".into(),
+        amount: U256::encode_be_compact(200_000_000_000_000_u64),
+    };
+    let input = Proto::SigningInput {
+        chain_id: U256::encode_be_compact(56_u64),
+        nonce: U256::encode_be_compact(2_u64),
+        tx_mode: Proto::TransactionMode::Enveloped,
+        gas_limit: U256::from(100_000_u128).to_big_endian_compact().into(),
+        max_fee_per_gas: U256::from(1_000_000_000_u128)
+            .to_big_endian_compact()
+            .into(),
+        max_inclusion_fee_per_gas: U256::from(1_000_000_000_u128)
+            .to_big_endian_compact()
+            .into(),
+        private_key: private_key.into(),
+        transaction: Some(execute(
+            TransactionType::erc20_transfer(erc20_transfer),
+            // Biz4337 account cannot be used in Legacy/Enveloped/SetCode transaction flow.
+            Proto::SCWalletType::Biz4337,
+        )),
+        // TWT token.
+        to_address: "0x4B0F1812e5Df2A09796481Ff14017e6005508003".into(),
+        ..Proto::SigningInput::default()
+    };
+
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
+    assert_eq!(output.error, SigningErrorType::Error_invalid_params,);
+}
+
+#[test]
+fn test_user_operation_transfer_with_incorrect_wallet_type_error() {
+    let private_key =
+        hex::decode("0x3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483").unwrap();
+
+    let transfer = Proto::mod_Transaction::Transfer {
+        amount: U256::encode_be_compact(0x23_86f2_6fc1_0000),
+        data: Cow::default(),
+    };
+    let user_op = Proto::UserOperationV0_7 {
+        entry_point: "0x0000000071727De22E5E9d8BAf0edAc6f37da032".into(),
+        sender: "0x174a240e5147D02dE4d7724D5D3E1c1bF11cE029".into(),
+        pre_verification_gas: U256::from(1000000u64).to_big_endian_compact().into(),
+        verification_gas_limit: U256::from(100000u128).to_big_endian_compact().into(),
+        factory: "0xf471789937856d80e589f5996cf8b0511ddd9de4".into(),
+        factory_data: "f471789937856d80e589f5996cf8b0511ddd9de4".decode_hex().unwrap().into(),
+        paymaster: "0xf62849f9a0b5bf2913b396098f7c7019b51a820a".into(),
+        paymaster_verification_gas_limit: U256::from(99999u128).to_big_endian_compact().into(),
+        paymaster_post_op_gas_limit: U256::from(88888u128).to_big_endian_compact().into(),
+        paymaster_data: "00000000000b0000000000002e234dae75c793f67a35089c9d99245e1c58470b00000000000000000000000000000000000000000000000000000000000186a0072f35038bcacc31bcdeda87c1d9857703a26fb70a053f6e87da5a4e7a1e1f3c4b09fbe2dbff98e7a87ebb45a635234f4b79eff3225d07560039c7764291c97e1b".decode_hex().unwrap().into(),
+    };
+
+    let input = Proto::SigningInput {
+        chain_id: U256::encode_be_compact(31337u64),
+        nonce: U256::encode_be_compact(0u64),
+        tx_mode: Proto::TransactionMode::UserOp,
+        gas_limit: U256::from(100000u128).to_big_endian_compact().into(),
+        max_fee_per_gas: U256::from(100000u128).to_big_endian_compact().into(),
+        max_inclusion_fee_per_gas: U256::from(100000u128).to_big_endian_compact().into(),
+        to_address: "0x61061fCAE11fD5461535e134EfF67A98CFFF44E9".into(),
+        private_key: private_key.into(),
+        transaction: Some(execute(
+            TransactionType::transfer(transfer),
+            // Biz account cannot be used in UserOperation flow.
+            Proto::SCWalletType::Biz,
+        )),
+        user_operation_oneof:
+            Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation_v0_7(user_op),
+        ..Proto::SigningInput::default()
+    };
+
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
+    assert_eq!(output.error, SigningErrorType::Error_invalid_params);
 }
