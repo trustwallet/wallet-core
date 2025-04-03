@@ -87,7 +87,7 @@ class BarzTests: XCTestCase {
             }
 
             $0.transaction = EthereumTransaction.with {
-                $0.execute = EthereumTransaction.Execute.with {
+                $0.aaExecute = EthereumTransaction.AAExecute.with {
                     $0.transaction = EthereumTransaction.with {
                         $0.transfer = EthereumTransaction.Transfer.with {
                             $0.amount = Data(hexString: "2386f26fc10000")!
@@ -130,7 +130,7 @@ class BarzTests: XCTestCase {
             }
             
             $0.transaction = EthereumTransaction.with {
-                $0.execute = EthereumTransaction.Execute.with {
+                $0.aaExecute = EthereumTransaction.AAExecute.with {
                     $0.transaction = EthereumTransaction.with {
                         $0.transfer = EthereumTransaction.Transfer.with {
                             $0.amount = Data(hexString: "2386f26fc10000")!
@@ -173,14 +173,14 @@ class BarzTests: XCTestCase {
             }
 
             $0.transaction = EthereumTransaction.with {
-                $0.batch = EthereumTransaction.Batch.with {
+                $0.aaBatch = EthereumTransaction.AABatch.with {
                     $0.calls = [
-                        EthereumTransaction.Batch.BatchedCall.with {
+                        EthereumTransaction.AABatch.BatchedCall.with {
                             $0.address = "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266"
                             $0.amount = Data(hexString: "00")!
                             $0.payload = approveCall
                         },
-                        EthereumTransaction.Batch.BatchedCall.with {
+                        EthereumTransaction.AABatch.BatchedCall.with {
                             $0.address = "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266"
                             $0.amount = Data(hexString: "00")!
                             $0.payload = transferCall

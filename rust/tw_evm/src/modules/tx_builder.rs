@@ -213,7 +213,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
                     to,
                 })
             },
-            Tx::batch(ref batch) => {
+            Tx::aa_batch(ref batch) => {
                 // Payload should match ERC4337 standard.
                 let calls: Vec<_> = batch
                     .calls
@@ -229,7 +229,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
                     to,
                 })
             },
-            Tx::execute(ref execute) => {
+            Tx::aa_execute(ref execute) => {
                 let inner_transaction = execute
                     .transaction
                     .as_ref()
@@ -275,7 +275,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
 
     #[inline]
     fn erc4337_execute_call_from_proto(
-        call: &Proto::mod_Transaction::mod_Batch::BatchedCall,
+        call: &Proto::mod_Transaction::mod_AABatch::BatchedCall,
     ) -> SigningResult<ExecuteArgs> {
         let to = Self::parse_address(&call.address)
             .context("Invalid 'BatchedCall' destination address")?;

@@ -72,8 +72,8 @@ message Transaction {
         bytes data = 2;
     }
 
-    // Batched transaction for ERC-4337 wallets
-    message Batch {
+    // Account Abstraction batch transaction (for ERC-4337 and ERC-7702 wallets).
+    message AABatch {
         message BatchedCall {
             // Recipient addresses.
             string address = 1;
@@ -91,8 +91,8 @@ message Transaction {
         SCAccountType account_type = 2;
     }
 
-    // Execute a transaction on a smart contract wallet.
-    message Execute {
+    // Account Abstraction execute transaction (for ERC-4337 and ERC-7702 wallets).
+    message AAExecute {
         // Transaction to be executed on the smart contract wallet.
         // TODO currently, smart contract wallet address is specified in `SigningInput.toAddress`, but it will be refactored soon.
         Transaction transaction = 1;
@@ -108,8 +108,10 @@ message Transaction {
         ERC721Transfer erc721_transfer = 4;
         ERC1155Transfer erc1155_transfer = 5;
         ContractGeneric contract_generic = 6;
-        Batch batch = 7;
-        Execute execute = 8;
+        // Account Abstraction batch transaction (for ERC-4337 and ERC-7702 wallets).
+        AABatch aa_batch = 7;
+        // Account Abstraction execute transaction (for ERC-4337 and ERC-7702 wallets).
+        AAExecute aa_execute = 8;
     }
 }
 

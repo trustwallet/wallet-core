@@ -17,12 +17,14 @@ use tw_proto::Ethereum::Proto::mod_Transaction::OneOftransaction_oneof as Transa
 
 fn execute(tx: TransactionType, account_type: Proto::SCAccountType) -> Proto::Transaction {
     Proto::Transaction {
-        transaction_oneof: TransactionType::execute(Box::new(Proto::mod_Transaction::Execute {
-            transaction: Some(Box::new(Proto::Transaction {
-                transaction_oneof: tx,
-            })),
-            account_type,
-        })),
+        transaction_oneof: TransactionType::aa_execute(Box::new(
+            Proto::mod_Transaction::AAExecute {
+                transaction: Some(Box::new(Proto::Transaction {
+                    transaction_oneof: tx,
+                })),
+                account_type,
+            },
+        )),
     }
 }
 
@@ -150,7 +152,7 @@ fn test_barz_batched_account_deployed() {
         let amount = U256::from(0x8AC7_2304_89E8_0000_u64);
         let payload = Erc20::approve(spender, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_Batch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_AABatch::BatchedCall {
             address: contract_address.into(),
             amount: Cow::default(),
             payload: payload.into(),
@@ -163,7 +165,7 @@ fn test_barz_batched_account_deployed() {
         let amount = U256::from(0x8AC7_2304_89E8_0000_u64);
         let payload = Erc20::transfer(recipient, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_Batch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_AABatch::BatchedCall {
             address: contract_address.into(),
             amount: Cow::default(),
             payload: payload.into(),
@@ -189,7 +191,7 @@ fn test_barz_batched_account_deployed() {
         to_address: contract_address.into(),
         private_key: private_key.into(),
         transaction: Some(Proto::Transaction {
-            transaction_oneof: TransactionType::batch(Proto::mod_Transaction::Batch {
+            transaction_oneof: TransactionType::aa_batch(Proto::mod_Transaction::AABatch {
                 calls,
                 account_type: Proto::SCAccountType::SimpleAccount,
             }),
@@ -347,7 +349,7 @@ fn test_biz4337_transfer_batch() {
         let amount = U256::from(655_360_197_115_136_u64);
         let payload = Erc20::approve(recipient, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_Batch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_AABatch::BatchedCall {
             // USDT
             address: "0xdac17f958d2ee523a2206206994597c13d831ec7".into(),
             amount: Cow::default(),
@@ -361,7 +363,7 @@ fn test_biz4337_transfer_batch() {
         let amount = U256::from(0x8AC7_2304_89E8_0000_u64);
         let payload = Erc20::transfer(recipient, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_Batch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_AABatch::BatchedCall {
             address: "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266".into(),
             amount: Cow::default(),
             payload: payload.into(),
@@ -379,7 +381,7 @@ fn test_biz4337_transfer_batch() {
         to_address: "0xdac17f958d2ee523a2206206994597c13d831ec7".into(),
         private_key: private_key.into(),
         transaction: Some(Proto::Transaction {
-            transaction_oneof: TransactionType::batch(Proto::mod_Transaction::Batch {
+            transaction_oneof: TransactionType::aa_batch(Proto::mod_Transaction::AABatch {
                 calls,
                 account_type: Proto::SCAccountType::Biz4337,
             }),
@@ -473,7 +475,7 @@ fn test_biz_eip7702_transfer_batch() {
         let amount = U256::from(100_000_000_000_000_u64);
         let payload = Erc20::transfer(recipient, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_Batch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_AABatch::BatchedCall {
             // TWT
             address: "0x4B0F1812e5Df2A09796481Ff14017e6005508003".into(),
             amount: Cow::default(),
@@ -488,7 +490,7 @@ fn test_biz_eip7702_transfer_batch() {
         let amount = U256::from(500_000_000_000_000_u64);
         let payload = Erc20::transfer(recipient, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_Batch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_AABatch::BatchedCall {
             // TWT
             address: "0x4B0F1812e5Df2A09796481Ff14017e6005508003".into(),
             amount: Cow::default(),
@@ -509,7 +511,7 @@ fn test_biz_eip7702_transfer_batch() {
             .into(),
         private_key: private_key.into(),
         transaction: Some(Proto::Transaction {
-            transaction_oneof: TransactionType::batch(Proto::mod_Transaction::Batch {
+            transaction_oneof: TransactionType::aa_batch(Proto::mod_Transaction::AABatch {
                 calls,
                 account_type: Proto::SCAccountType::Biz,
             }),
