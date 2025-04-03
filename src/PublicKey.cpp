@@ -55,8 +55,8 @@ PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type)
     auto* pubkey = Rust::tw_public_key_create_with_data(data.data(), data.size(), static_cast<uint32_t>(type));
     if (pubkey != nullptr) {
         _impl = Rust::wrapTWPublicKey(pubkey);
-        auto pubkeyData = Rust::tw_public_key_data(_impl.get());
-        bytes = Data(pubkeyData.data, pubkeyData.data + pubkeyData.size);
+        Rust::CByteArrayWrapper pubkeyData = Rust::tw_public_key_data(_impl.get());
+        bytes = pubkeyData.data;
     } else {
         _impl = nullptr;
         bytes = data;
@@ -65,8 +65,8 @@ PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type)
 
 PublicKey::PublicKey(std::shared_ptr<TW::Rust::TWPublicKey> _impl)
     : _impl(_impl) {
-    auto pubkeyData = Rust::tw_public_key_data(_impl.get());
-    bytes = Data(pubkeyData.data, pubkeyData.data + pubkeyData.size);
+    Rust::CByteArrayWrapper pubkeyData = Rust::tw_public_key_data(_impl.get());
+    bytes = pubkeyData.data;
     type = static_cast<enum TWPublicKeyType>(Rust::tw_public_key_type(_impl.get()));
 }
 
