@@ -8,6 +8,8 @@
 #include "rust/bindgen/WalletCoreRSBindgen.h"
 #include "rust/Wrapper.h"
 
+#include <TrezorCrypto/memzero.h>
+
 #include <iterator>
 
 namespace TW {
@@ -138,6 +140,11 @@ bool PublicKey::isValidED25519() const {
         return false;
     }
     return _impl != nullptr;
+}
+
+void PublicKey::cleanup() {
+    memzero(bytes.data(), bytes.size());
+    _impl = nullptr;
 }
 
 } // namespace TW

@@ -59,7 +59,7 @@ class PublicKey {
     /// Initializes a public key with a Rust implementation.
     explicit PublicKey(std::shared_ptr<TW::Rust::TWPublicKey> impl);
 
-    virtual ~PublicKey() { bytes.clear(); _impl = nullptr; }
+    virtual ~PublicKey() { cleanup(); }
 
     /// Determines if this is a compressed public key.
     bool isCompressed() const {
@@ -100,6 +100,9 @@ class PublicKey {
 
     /// Check if this key makes a valid ED25519 key (it is on the curve)
     bool isValidED25519() const;
+
+    /// Cleanup contents (fill with 0s), called before destruction
+    void cleanup();
 private:
     std::shared_ptr<TW::Rust::TWPublicKey> _impl;
 };
