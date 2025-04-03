@@ -19,11 +19,11 @@ use k256::{
 use rfc6979::HmacDrbg;
 use secp256k1::rand;
 use sha2::{Digest, Sha256};
-use zeroize::ZeroizeOnDrop;
 use std::fmt::Display;
 use std::ops::Deref;
 use std::str::FromStr;
 use tw_encoding::hex;
+use zeroize::ZeroizeOnDrop;
 
 type CurveDigest<C> = <C as DigestPrimitive>::Digest;
 
