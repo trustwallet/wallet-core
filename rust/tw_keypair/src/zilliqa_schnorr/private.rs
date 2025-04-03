@@ -19,6 +19,7 @@ use k256::{
 use rfc6979::HmacDrbg;
 use secp256k1::rand;
 use sha2::{Digest, Sha256};
+use zeroize::ZeroizeOnDrop;
 use std::fmt::Display;
 use std::ops::Deref;
 use std::str::FromStr;
@@ -26,7 +27,7 @@ use tw_encoding::hex;
 
 type CurveDigest<C> = <C as DigestPrimitive>::Digest;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, ZeroizeOnDrop)]
 /// secp256k1 (K-256) secret key.
 pub struct PrivateKey(k256::SecretKey);
 
