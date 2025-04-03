@@ -72,8 +72,8 @@ message Transaction {
         bytes data = 2;
     }
 
-    // Account Abstraction batch transaction (for ERC-4337 and ERC-7702 wallets).
-    message AABatch {
+    // Batch transaction to a Smart Contract Wallet (ERC-4337 and ERC-7702).
+    message SCWalletBatch {
         message BatchedCall {
             // Recipient addresses.
             string address = 1;
@@ -87,17 +87,17 @@ message Transaction {
 
         // Batched calls to be executed on the smart contract wallet.
         repeated BatchedCall calls = 1;
-        // Smart contract account type.
-        SCAccountType account_type = 2;
+        // Smart contract wallet type.
+        SCWalletType wallet_type = 2;
     }
 
-    // Account Abstraction execute transaction (for ERC-4337 and ERC-7702 wallets).
-    message AAExecute {
+    // Execute transaction to a Smart Contract Wallet (ERC-4337 and ERC-7702).
+    message SCWalletExecute {
         // Transaction to be executed on the smart contract wallet.
         // TODO currently, smart contract wallet address is specified in `SigningInput.toAddress`, but it will be refactored soon.
         Transaction transaction = 1;
-        // Smart contract account type.
-        SCAccountType account_type = 2;
+        // Smart contract wallet type.
+        SCWalletType wallet_type = 2;
     }
 
     // Payload transfer
@@ -108,10 +108,10 @@ message Transaction {
         ERC721Transfer erc721_transfer = 4;
         ERC1155Transfer erc1155_transfer = 5;
         ContractGeneric contract_generic = 6;
-        // Account Abstraction batch transaction (for ERC-4337 and ERC-7702 wallets).
-        AABatch aa_batch = 7;
-        // Account Abstraction execute transaction (for ERC-4337 and ERC-7702 wallets).
-        AAExecute aa_execute = 8;
+        // Batch transaction to a Smart Contract Wallet (ERC-4337 and ERC-7702).
+        SCWalletBatch scw_batch = 7;
+        // Execute transaction to a Smart Contract Wallet (ERC-4337 and ERC-7702).
+        SCWalletExecute scw_execute = 8;
     }
 }
 
@@ -200,8 +200,8 @@ message Authority {
     string address = 2;
 }
 
-// Smart Contract account type.
-enum SCAccountType {
+// Smart Contract Wallet type.
+enum SCWalletType {
     // ERC-4337 compatible smart contract wallet.
     // https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/accounts/SimpleAccount.sol
     SimpleAccount = 0;

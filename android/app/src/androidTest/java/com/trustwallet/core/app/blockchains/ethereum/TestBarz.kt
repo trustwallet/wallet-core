@@ -117,7 +117,7 @@ class TestBarz {
             }.build()
 
             transaction = Ethereum.Transaction.newBuilder().apply {
-                aaExecute = Ethereum.Transaction.AAExecute.newBuilder().apply {
+                scwExecute = Ethereum.Transaction.SCWalletExecute.newBuilder().apply {
                     transaction = Ethereum.Transaction.newBuilder().apply {
                         transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
                             amount = ByteString.copyFrom("0x2386f26fc10000".toHexByteArray())
@@ -163,7 +163,7 @@ class TestBarz {
             }.build()
 
             transaction = Ethereum.Transaction.newBuilder().apply {
-                aaExecute = Ethereum.Transaction.AAExecute.newBuilder().apply {
+                scwExecute = Ethereum.Transaction.SCWalletExecute.newBuilder().apply {
                     transaction = Ethereum.Transaction.newBuilder().apply {
                         transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
                             amount = ByteString.copyFrom("0x2386f26fc10000".toHexByteArray())
@@ -212,14 +212,14 @@ class TestBarz {
             }.build()
 
             transaction = Ethereum.Transaction.newBuilder().apply {
-                aaBatch = Ethereum.Transaction.AABatch.newBuilder().apply {
+                scwBatch = Ethereum.Transaction.SCWalletBatch.newBuilder().apply {
                     addAllCalls(listOf(
-                        Ethereum.Transaction.AABatch.BatchedCall.newBuilder().apply {
+                        Ethereum.Transaction.SCWalletBatch.BatchedCall.newBuilder().apply {
                             address = "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266"
                             amount = ByteString.copyFrom("0x00".toHexByteArray())
                             payload = ByteString.copyFrom(approveCall)
                         }.build(),
-                        Ethereum.Transaction.AABatch.BatchedCall.newBuilder().apply {
+                        Ethereum.Transaction.SCWalletBatch.BatchedCall.newBuilder().apply {
                             address = "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266"
                             amount = ByteString.copyFrom("0x00".toHexByteArray())
                             payload = ByteString.copyFrom(transferCall)
@@ -262,16 +262,16 @@ class TestBarz {
             maxInclusionFeePerGas = ByteString.copyFrom("0x3b9aca00".toHexByteArray())
 
             transaction = Ethereum.Transaction.newBuilder().apply {
-                aaBatch = Ethereum.Transaction.AABatch.newBuilder().apply {
-                    accountType = Ethereum.SCAccountType.Biz
+                scwBatch = Ethereum.Transaction.SCWalletBatch.newBuilder().apply {
+                    walletType = Ethereum.SCWalletType.Biz
                     addAllCalls(listOf(
-                        Ethereum.Transaction.AABatch.BatchedCall.newBuilder().apply {
+                        Ethereum.Transaction.SCWalletBatch.BatchedCall.newBuilder().apply {
                             // TWT
                             address = "0x4B0F1812e5Df2A09796481Ff14017e6005508003"
                             amount = ByteString.copyFrom("0x00".toHexByteArray())
                             payload = ByteString.copyFrom(transferPayload1)
                         }.build(),
-                        Ethereum.Transaction.AABatch.BatchedCall.newBuilder().apply {
+                        Ethereum.Transaction.SCWalletBatch.BatchedCall.newBuilder().apply {
                             // TWT
                             address = "0x4B0F1812e5Df2A09796481Ff14017e6005508003"
                             amount = ByteString.copyFrom("0x00".toHexByteArray())
@@ -307,8 +307,8 @@ class TestBarz {
             maxInclusionFeePerGas = ByteString.copyFrom("0x3b9aca00".toHexByteArray())
 
             transaction = Ethereum.Transaction.newBuilder().apply {
-                aaExecute = Ethereum.Transaction.AAExecute.newBuilder().apply {
-                    accountType = Ethereum.SCAccountType.Biz
+                scwExecute = Ethereum.Transaction.SCWalletExecute.newBuilder().apply {
+                    walletType = Ethereum.SCWalletType.Biz
                     transaction = Ethereum.Transaction.newBuilder().apply {
                         erc20Transfer = Ethereum.Transaction.ERC20Transfer.newBuilder().apply {
                             to = "0x95dc01ebd10b6dccf1cc329af1a3f73806117c2e"
@@ -395,7 +395,7 @@ class TestBarz {
             toAddress = "0x61061fCAE11fD5461535e134EfF67A98CFFF44E9"
 
             transaction = Ethereum.Transaction.newBuilder().apply {
-                aaExecute = Ethereum.Transaction.AAExecute.newBuilder().apply {
+                scwExecute = Ethereum.Transaction.SCWalletExecute.newBuilder().apply {
                     transaction = Ethereum.Transaction.newBuilder().apply {
                         this.transfer = transfer
                     }.build()

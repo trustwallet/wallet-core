@@ -31,7 +31,7 @@ use tw_proto::Common::Proto::SigningError as CommonError;
 use tw_proto::Ethereum::Proto;
 use Proto::mod_SigningInput::OneOfuser_operation_oneof as UserOp;
 use Proto::mod_Transaction::OneOftransaction_oneof as Tx;
-use Proto::SCAccountType;
+use Proto::SCWalletType;
 use Proto::TransactionMode as TxMode;
 
 pub struct TransactionParts {
@@ -213,15 +213,15 @@ impl<Context: EvmContext> TxBuilder<Context> {
                     to,
                 })
             },
-            Tx::aa_batch(ref batch) => {
+            Tx::scw_batch(ref batch) => {
                 // Payload should match ERC4337 standard.
                 let calls: Vec<_> = batch
                     .calls
                     .iter()
                     .map(Self::erc4337_execute_call_from_proto)
                     .collect::<Result<Vec<_>, _>>()?;
-                let execute_payload = Self::encode_execute_batch(batch.account_type, calls)?;
-                let to = Self::sc_tx_destination(input, batch.account_type)?;
+                let execute_payload = Self::encode_execute_batch(batch.wallet_type, calls)?;
+                let to = Self::sc_tx_destination(input, batch.wallet_type)?;
 
                 Ok(TransactionParts {
                     eth_amount: U256::zero(),
@@ -229,7 +229,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
                     to,
                 })
             },
-            Tx::aa_execute(ref execute) => {
+            Tx::scw_execute(ref execute) => {
                 let inner_transaction = execute
                     .transaction
                     .as_ref()
@@ -239,10 +239,9 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 let execute_args =
                     Self::handle_transaction_type(input, &inner_transaction.transaction_oneof)?
                         .try_into()?;
-                let execute_call_payload =
-                    Self::encode_execute(execute.account_type, execute_args)?;
+                let execute_call_payload = Self::encode_execute(execute.wallet_type, execute_args)?;
 
-                let to = Self::sc_tx_destination(input, execute.account_type)?;
+                let to = Self::sc_tx_destination(input, execute.wallet_type)?;
                 Ok(TransactionParts {
                     eth_amount: U256::zero(),
                     data: execute_call_payload,
@@ -275,7 +274,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
 
     #[inline]
     fn erc4337_execute_call_from_proto(
-        call: &Proto::mod_Transaction::mod_AABatch::BatchedCall,
+        call: &Proto::mod_Transaction::mod_SCWalletBatch::BatchedCall,
     ) -> SigningResult<ExecuteArgs> {
         let to = Self::parse_address(&call.address)
             .context("Invalid 'BatchedCall' destination address")?;
@@ -582,14 +581,14 @@ impl<Context: EvmContext> TxBuilder<Context> {
     #[inline]
     fn sc_tx_destination(
         input: &Proto::SigningInput,
-        account_type: SCAccountType,
+        wallet_type: SCWalletType,
     ) -> SigningResult<Option<Address>> {
-        match (input.tx_mode, account_type) {
+        match (input.tx_mode, wallet_type) {
             // Destination address is not used when generating UserOperation.
-            (TxMode::UserOp, SCAccountType::SimpleAccount | SCAccountType::Biz4337) => Ok(None),
+            (TxMode::UserOp, SCWalletType::SimpleAccount | SCWalletType::Biz4337) => Ok(None),
             (TxMode::UserOp, _) => SigningError::err(SigningErrorType::Error_invalid_params)
                 .context("Biz account cannot be used in UserOperation flow"),
-            (TxMode::Legacy | TxMode::Enveloped | TxMode::SetCode, SCAccountType::Biz) => {
+            (TxMode::Legacy | TxMode::Enveloped | TxMode::SetCode, SCWalletType::Biz) => {
                 Self::signer_address(input).map(Some)
             },
             (TxMode::Legacy | TxMode::Enveloped | TxMode::SetCode, _) => SigningError::err(
@@ -600,24 +599,24 @@ impl<Context: EvmContext> TxBuilder<Context> {
     }
 
     #[inline]
-    fn encode_execute(account_type: SCAccountType, args: ExecuteArgs) -> SigningResult<Data> {
-        match account_type {
-            SCAccountType::SimpleAccount => Erc4337SimpleAccount::encode_execute(args),
-            SCAccountType::Biz4337 => BizAccount::encode_execute_4337_op(args),
-            SCAccountType::Biz => BizAccount::encode_execute(args),
+    fn encode_execute(wallet_type: SCWalletType, args: ExecuteArgs) -> SigningResult<Data> {
+        match wallet_type {
+            SCWalletType::SimpleAccount => Erc4337SimpleAccount::encode_execute(args),
+            SCWalletType::Biz4337 => BizAccount::encode_execute_4337_op(args),
+            SCWalletType::Biz => BizAccount::encode_execute(args),
         }
         .map_err(abi_to_signing_error)
     }
 
     #[inline]
     fn encode_execute_batch(
-        account_type: SCAccountType,
+        wallet_type: SCWalletType,
         calls: Vec<ExecuteArgs>,
     ) -> SigningResult<Data> {
-        match account_type {
-            SCAccountType::SimpleAccount => Erc4337SimpleAccount::encode_execute_batch(calls),
-            SCAccountType::Biz4337 => BizAccount::encode_execute_4337_ops(calls),
-            SCAccountType::Biz => BizAccount::encode_execute_batch(calls),
+        match wallet_type {
+            SCWalletType::SimpleAccount => Erc4337SimpleAccount::encode_execute_batch(calls),
+            SCWalletType::Biz4337 => BizAccount::encode_execute_4337_ops(calls),
+            SCWalletType::Biz => BizAccount::encode_execute_batch(calls),
         }
         .map_err(abi_to_signing_error)
     }

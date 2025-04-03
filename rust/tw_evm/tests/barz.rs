@@ -15,14 +15,14 @@ use tw_number::U256;
 use tw_proto::Ethereum::Proto;
 use tw_proto::Ethereum::Proto::mod_Transaction::OneOftransaction_oneof as TransactionType;
 
-fn execute(tx: TransactionType, account_type: Proto::SCAccountType) -> Proto::Transaction {
+fn execute(tx: TransactionType, wallet_type: Proto::SCWalletType) -> Proto::Transaction {
     Proto::Transaction {
-        transaction_oneof: TransactionType::aa_execute(Box::new(
-            Proto::mod_Transaction::AAExecute {
+        transaction_oneof: TransactionType::scw_execute(Box::new(
+            Proto::mod_Transaction::SCWalletExecute {
                 transaction: Some(Box::new(Proto::Transaction {
                     transaction_oneof: tx,
                 })),
-                account_type,
+                wallet_type,
             },
         )),
     }
@@ -58,7 +58,7 @@ fn test_barz_transfer_account_deployed() {
         private_key: private_key.into(),
         transaction: Some(execute(
             TransactionType::transfer(transfer),
-            Proto::SCAccountType::SimpleAccount,
+            Proto::SCWalletType::SimpleAccount,
         )),
         user_operation_oneof: Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation(
             user_op,
@@ -114,7 +114,7 @@ fn test_barz_transfer_account_not_deployed() {
         private_key: private_key.into(),
         transaction: Some(execute(
             TransactionType::transfer(transfer),
-            Proto::SCAccountType::SimpleAccount,
+            Proto::SCWalletType::SimpleAccount,
         )),
         user_operation_oneof: Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation(
             user_op,
@@ -152,7 +152,7 @@ fn test_barz_batched_account_deployed() {
         let amount = U256::from(0x8AC7_2304_89E8_0000_u64);
         let payload = Erc20::approve(spender, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_AABatch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_SCWalletBatch::BatchedCall {
             address: contract_address.into(),
             amount: Cow::default(),
             payload: payload.into(),
@@ -165,7 +165,7 @@ fn test_barz_batched_account_deployed() {
         let amount = U256::from(0x8AC7_2304_89E8_0000_u64);
         let payload = Erc20::transfer(recipient, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_AABatch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_SCWalletBatch::BatchedCall {
             address: contract_address.into(),
             amount: Cow::default(),
             payload: payload.into(),
@@ -191,9 +191,9 @@ fn test_barz_batched_account_deployed() {
         to_address: contract_address.into(),
         private_key: private_key.into(),
         transaction: Some(Proto::Transaction {
-            transaction_oneof: TransactionType::aa_batch(Proto::mod_Transaction::AABatch {
+            transaction_oneof: TransactionType::scw_batch(Proto::mod_Transaction::SCWalletBatch {
                 calls,
-                account_type: Proto::SCAccountType::SimpleAccount,
+                wallet_type: Proto::SCWalletType::SimpleAccount,
             }),
         }),
         user_operation_oneof: Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation(
@@ -249,7 +249,7 @@ fn test_barz_transfer_account_not_deployed_v0_7() {
         private_key: private_key.into(),
         transaction: Some(execute(
             TransactionType::transfer(transfer),
-            Proto::SCAccountType::SimpleAccount,
+            Proto::SCWalletType::SimpleAccount,
         )),
         user_operation_oneof:
             Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation_v0_7(user_op),
@@ -301,7 +301,7 @@ fn test_biz4337_transfer() {
         private_key: private_key.into(),
         transaction: Some(execute(
             TransactionType::erc20_approve(approve),
-            Proto::SCAccountType::Biz4337,
+            Proto::SCWalletType::Biz4337,
         )),
         user_operation_oneof:
             Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation_v0_7(user_op),
@@ -349,7 +349,7 @@ fn test_biz4337_transfer_batch() {
         let amount = U256::from(655_360_197_115_136_u64);
         let payload = Erc20::approve(recipient, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_AABatch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_SCWalletBatch::BatchedCall {
             // USDT
             address: "0xdac17f958d2ee523a2206206994597c13d831ec7".into(),
             amount: Cow::default(),
@@ -363,7 +363,7 @@ fn test_biz4337_transfer_batch() {
         let amount = U256::from(0x8AC7_2304_89E8_0000_u64);
         let payload = Erc20::transfer(recipient, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_AABatch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_SCWalletBatch::BatchedCall {
             address: "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266".into(),
             amount: Cow::default(),
             payload: payload.into(),
@@ -381,9 +381,9 @@ fn test_biz4337_transfer_batch() {
         to_address: "0xdac17f958d2ee523a2206206994597c13d831ec7".into(),
         private_key: private_key.into(),
         transaction: Some(Proto::Transaction {
-            transaction_oneof: TransactionType::aa_batch(Proto::mod_Transaction::AABatch {
+            transaction_oneof: TransactionType::scw_batch(Proto::mod_Transaction::SCWalletBatch {
                 calls,
-                account_type: Proto::SCAccountType::Biz4337,
+                wallet_type: Proto::SCWalletType::Biz4337,
             }),
         }),
         user_operation_oneof:
@@ -431,7 +431,7 @@ fn test_biz_eip7702_transfer() {
         private_key: private_key.into(),
         transaction: Some(execute(
             TransactionType::erc20_transfer(erc20_transfer),
-            Proto::SCAccountType::Biz,
+            Proto::SCWalletType::Biz,
         )),
         // TWT token.
         to_address: "0x4B0F1812e5Df2A09796481Ff14017e6005508003".into(),
@@ -475,7 +475,7 @@ fn test_biz_eip7702_transfer_batch() {
         let amount = U256::from(100_000_000_000_000_u64);
         let payload = Erc20::transfer(recipient, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_AABatch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_SCWalletBatch::BatchedCall {
             // TWT
             address: "0x4B0F1812e5Df2A09796481Ff14017e6005508003".into(),
             amount: Cow::default(),
@@ -490,7 +490,7 @@ fn test_biz_eip7702_transfer_batch() {
         let amount = U256::from(500_000_000_000_000_u64);
         let payload = Erc20::transfer(recipient, amount).unwrap();
 
-        calls.push(Proto::mod_Transaction::mod_AABatch::BatchedCall {
+        calls.push(Proto::mod_Transaction::mod_SCWalletBatch::BatchedCall {
             // TWT
             address: "0x4B0F1812e5Df2A09796481Ff14017e6005508003".into(),
             amount: Cow::default(),
@@ -511,9 +511,9 @@ fn test_biz_eip7702_transfer_batch() {
             .into(),
         private_key: private_key.into(),
         transaction: Some(Proto::Transaction {
-            transaction_oneof: TransactionType::aa_batch(Proto::mod_Transaction::AABatch {
+            transaction_oneof: TransactionType::scw_batch(Proto::mod_Transaction::SCWalletBatch {
                 calls,
-                account_type: Proto::SCAccountType::Biz,
+                wallet_type: Proto::SCWalletType::Biz,
             }),
         }),
         eip7702_authority: Some(Proto::Authority {
@@ -566,7 +566,7 @@ fn test_biz_eip1559_transfer() {
         private_key: private_key.into(),
         transaction: Some(execute(
             TransactionType::erc20_transfer(erc20_transfer),
-            Proto::SCAccountType::Biz,
+            Proto::SCWalletType::Biz,
         )),
         // TWT token.
         to_address: "0x4B0F1812e5Df2A09796481Ff14017e6005508003".into(),
@@ -594,7 +594,7 @@ fn test_biz_eip1559_transfer() {
 }
 
 #[test]
-fn test_biz_eip1559_transfer_with_incorrect_account_type_error() {
+fn test_biz_eip1559_transfer_with_incorrect_wallet_type_error() {
     // 0x6E860086BbA8fdEafB553815aF0F09a854cC887a
     let private_key =
         hex::decode("0xe762e91cc4889a9fce79b2d2ffc079f86c48331f57b2cd16a33bee060fe448e1").unwrap();
@@ -618,7 +618,7 @@ fn test_biz_eip1559_transfer_with_incorrect_account_type_error() {
         transaction: Some(execute(
             TransactionType::erc20_transfer(erc20_transfer),
             // Biz4337 account cannot be used in Legacy/Enveloped/SetCode transaction flow.
-            Proto::SCAccountType::Biz4337,
+            Proto::SCWalletType::Biz4337,
         )),
         // TWT token.
         to_address: "0x4B0F1812e5Df2A09796481Ff14017e6005508003".into(),
@@ -630,7 +630,7 @@ fn test_biz_eip1559_transfer_with_incorrect_account_type_error() {
 }
 
 #[test]
-fn test_user_operation_transfer_with_incorrect_account_type_error() {
+fn test_user_operation_transfer_with_incorrect_wallet_type_error() {
     let private_key =
         hex::decode("0x3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483").unwrap();
 
@@ -663,7 +663,7 @@ fn test_user_operation_transfer_with_incorrect_account_type_error() {
         transaction: Some(execute(
             TransactionType::transfer(transfer),
             // Biz account cannot be used in UserOperation flow.
-            Proto::SCAccountType::Biz,
+            Proto::SCWalletType::Biz,
         )),
         user_operation_oneof:
             Proto::mod_SigningInput::OneOfuser_operation_oneof::user_operation_v0_7(user_op),
