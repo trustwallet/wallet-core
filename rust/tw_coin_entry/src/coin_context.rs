@@ -4,12 +4,15 @@
 
 use crate::derivation::DerivationWithPath;
 use tw_hash::hasher::Hasher;
-use tw_keypair::tw::PublicKeyType;
+use tw_keypair::tw::{Curve, PublicKeyType};
 
 /// Extend the trait with methods required for blockchain additions.
 pub trait CoinContext {
     /// Necessary chain property.
     fn public_key_type(&self) -> PublicKeyType;
+
+    /// Returns the curve for the coin.
+    fn curve(&self) -> Curve;
 
     /// Optional chain property.
     fn address_hasher(&self) -> Option<Hasher>;

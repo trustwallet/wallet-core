@@ -123,6 +123,13 @@ struct TWPublicKey* _Nonnull TWPrivateKeyGetPublicKeyEd25519Cardano(struct TWPri
 TW_EXPORT_METHOD
 struct TWPublicKey* _Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivateKey* _Nonnull pk);
 
+/// Returns the Zilliqa Schnorr public key associated with the given private key
+///
+/// \param pk Non-null pointer to the private key
+/// \return Non-null pointer to the corresponding public key
+TW_EXPORT_METHOD
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyZilliqaSchnorr(struct TWPrivateKey *_Nonnull pk);
+
 /// Signs a digest using ECDSA
 ///
 /// \param pk  Non-null pointer to a Private key
@@ -138,13 +145,5 @@ TWData* _Nullable TWPrivateKeySign(struct TWPrivateKey* _Nonnull pk, TWData* _No
 /// \return Signature as a Non-null block of data
 TW_EXPORT_METHOD
 TWData* _Nullable TWPrivateKeySignAsDER(struct TWPrivateKey* _Nonnull pk, TWData* _Nonnull digest);
-
-/// Signs a digest using ECDSA and Zilliqa schnorr signature scheme.
-///
-/// \param pk Non-null pointer to a Private key
-/// \param message Non-null message
-/// \return Signature as a Non-null block of data
-TW_EXPORT_METHOD
-TWData* _Nullable TWPrivateKeySignZilliqaSchnorr(struct TWPrivateKey* _Nonnull pk, TWData* _Nonnull message);
 
 TW_EXTERN_C_END

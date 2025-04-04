@@ -88,6 +88,14 @@ struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivate
     return TWPrivateKeyGetPublicKeyByType(pk, TWPublicKeyTypeCURVE25519);
 }
 
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeySchnorr(struct TWPrivateKey *_Nonnull pk) {
+    return TWPrivateKeyGetPublicKeyByType(pk, TWPublicKeyTypeSchnorr);
+}
+
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyZilliqaSchnorr(struct TWPrivateKey *_Nonnull pk) {
+    return TWPrivateKeyGetPublicKeyByType(pk, TWPublicKeyTypeZILLIQASchnorr);
+}
+
 TWData *TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest) {
     const auto& d = *reinterpret_cast<const Data*>(digest);
     auto result = pk->impl.sign(d);
@@ -101,17 +109,6 @@ TWData *TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull dige
 TWData *TWPrivateKeySignAsDER(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest) {
     const auto& d = *reinterpret_cast<const Data*>(digest);
     auto result = pk->impl.signAsDER(d);
-    if (result.empty()) {
-        return nullptr;
-    } else {
-        return TWDataCreateWithBytes(result.data(), result.size());
-    }
-}
-
-TWData *TWPrivateKeySignZilliqaSchnorr(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull message) {
-    const auto& msg = *reinterpret_cast<const Data*>(message);
-    auto result = pk->impl.signZilliqa(msg);
-
     if (result.empty()) {
         return nullptr;
     } else {

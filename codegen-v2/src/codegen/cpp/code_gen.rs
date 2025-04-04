@@ -400,7 +400,7 @@ fn generate_conversion_code_with_var_name(tw_type: TWType, name: &str) -> Result
                 writeln!(
                     &mut conversion_code,
                     "\tauto &{name}PrivateKey = *reinterpret_cast<const TW::PrivateKey*>({name});\n\
-                    \tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}PrivateKey.bytes.data(), {name}PrivateKey.bytes.size());\n\
+                    \tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}PrivateKey.bytes.data(), {name}PrivateKey.bytes.size(), static_cast<uint32_t>({name}PrivateKey.curve()));\n\
                     \tconst auto {name}RustPrivateKey = Rust::wrapTWPrivateKey({name}RustRaw);"
                 )
                 .map_err(|e| BadFormat(e.to_string()))?;
@@ -413,7 +413,7 @@ fn generate_conversion_code_with_var_name(tw_type: TWType, name: &str) -> Result
                     "\tstd::shared_ptr<TW::Rust::TWPrivateKey> {name}RustPrivateKey;\n\
                     \tif ({name} != nullptr) {{\n\
                     \t\tconst auto& {name}PrivateKey = {name};\n\
-                    \t\tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}PrivateKey->impl.bytes.data(), {name}PrivateKey->impl.bytes.size());\n\
+                    \t\tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}PrivateKey->impl.bytes.data(), {name}PrivateKey->impl.bytes.size(), static_cast<uint32_t>({name}PrivateKey->impl.curve()));\n\
                     \t\t{name}RustPrivateKey = Rust::wrapTWPrivateKey({name}RustRaw);\n\
                     \t}}"
                 )

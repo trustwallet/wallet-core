@@ -213,11 +213,9 @@ TEST(PrivateKey, PrivateKeyExtended) {
 }
 
 TEST(PrivateKey, PrivateKeyExtendedError) {
-    // TWPublicKeyTypeED25519Cardano pubkey with non-extended private: error
-    auto privateKeyNonext = PrivateKey(parse_hex(
-        "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveED25519ExtendedCardano);
     try {
-        auto publicKeyError = privateKeyNonext.getPublicKey(TWPublicKeyTypeED25519Cardano);
+        auto privateKeyNonext = PrivateKey(parse_hex(
+            "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveED25519ExtendedCardano);
     } catch (invalid_argument& ex) {
         // expected exception
         return;
@@ -253,10 +251,10 @@ TEST(PrivateKey, SignExtended) {
 }
 
 TEST(PrivateKey, SignSchnorr) {
-    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveSECP256k1);
+    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveZILLIQASchnorr);
     const Data messageData = TW::data("hello schnorr");
     const Data digest = Hash::sha256(messageData);
-    const auto signature = privateKey.signZilliqa(digest);
+    const auto signature = privateKey.sign(digest);
     EXPECT_EQ(hex(signature),
               "b8118ccb99563fe014279c957b0a9d563c1666e00367e9896fe541765246964f64a53052513da4e6dc20fdaf69ef0d95b4ca51c87ad3478986cf053c2dd0b853");
 }
@@ -292,7 +290,7 @@ TEST(PrivateKey, SignNIST256p1VerifyLegacy) {
     }
 }
 
-int isCanonical([[maybe_unused]] uint8_t by, [[maybe_unused]] uint8_t sig[64]) {
+int isCanonical([[maybe_unused]] uint8_t by, [[maybe_unused]] const uint8_t sig[64]) {
     return 1;
 }
 

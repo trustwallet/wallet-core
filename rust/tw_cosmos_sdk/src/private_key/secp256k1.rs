@@ -21,14 +21,12 @@ impl<'a> TryFrom<&'a [u8]> for Secp256PrivateKey {
     type Error = KeyPairError;
 
     fn try_from(value: &'a [u8]) -> Result<Self, Self::Error> {
-        tw::PrivateKey::new(value.to_vec()).map(Secp256PrivateKey)
+        tw::PrivateKey::new(value.to_vec(), Curve::Secp256k1).map(Secp256PrivateKey)
     }
 }
 
 impl CosmosPrivateKey for Secp256PrivateKey {
     fn sign_tx_hash(&self, hash: &[u8]) -> SigningResult<Data> {
-        self.0
-            .sign(hash, Curve::Secp256k1)
-            .map_err(SigningError::from)
+        self.0.sign(hash).map_err(SigningError::from)
     }
 }

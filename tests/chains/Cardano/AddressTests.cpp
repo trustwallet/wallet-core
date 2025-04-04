@@ -145,16 +145,6 @@ TEST(CardanoAddress, MnemonicToAddressV3) {
         EXPECT_EQ("30a6f50aeb58ff7699b822d63e0ef27aeff17d9f", hex(wallet.getEntropy()));
 
         {
-            PrivateKey masterPrivKey = wallet.getMasterKey(TWCurve::TWCurveED25519ExtendedCardano);
-            PrivateKey masterPrivKeyExt = wallet.getMasterKeyExtension(TWCurve::TWCurveED25519ExtendedCardano);
-            // the two together matches first half of keypair
-            ASSERT_EQ("a018cd746e128a0be0782b228c275473205445c33b9000a33dd5668b430b5744", hex(masterPrivKey.bytes));
-            ASSERT_EQ("26877cfe435fddda02409b839b7386f3738f10a30b95a225f4b720ee71d2505b", hex(masterPrivKeyExt.bytes));
-
-            PublicKey masterPublicKey = masterPrivKey.getPublicKey(TWPublicKeyTypeED25519);
-            ASSERT_EQ("3aecb95953edd0b16db20366097ddedcb3512fe36193473c5fca2af774d44739", hex(masterPublicKey.bytes));
-        }
-        {
             string addr = wallet.deriveAddress(TWCoinType::TWCoinTypeCardano);
             EXPECT_EQ("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq", addr);
         }
@@ -320,13 +310,11 @@ TEST(CardanoAddress, FromDataV3_Base) {
 TEST(CardanoAddress, FromPrivateKeyV3) {
     {
         // from cardano-crypto.js test
-        auto privateKey = PrivateKey(
+        EXPECT_ANY_THROW(PrivateKey(
             parse_hex("d809b1b4b4c74734037f76aace501730a3fe2fca30b5102df99ad3f7c0103e48"),
             parse_hex("d54cde47e9041b31f3e6873d700d83f7a937bea746dadfa2c5b0a6a92502356c"),
             parse_hex("69272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000"),
-            dummyKey, dummyKey, dummyKey, TWCurveED25519);
-        auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
-        EXPECT_ANY_THROW(new AddressV3(publicKey));
+            dummyKey, dummyKey, dummyKey, TWCurveED25519));
     }
 }
 
@@ -456,13 +444,11 @@ TEST(CardanoAddress, FromPrivateKeyV2) {
     }
     {
         // from cardano-crypto.js test
-        auto privateKey = PrivateKey(
+        EXPECT_ANY_THROW(PrivateKey(
             parse_hex("d809b1b4b4c74734037f76aace501730a3fe2fca30b5102df99ad3f7c0103e48"),
             parse_hex("d54cde47e9041b31f3e6873d700d83f7a937bea746dadfa2c5b0a6a92502356c"),
             parse_hex("69272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000"),
-            dummyKey, dummyKey, dummyKey, TWCurveED25519);
-        auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
-        EXPECT_ANY_THROW(new AddressV2(publicKey));
+            dummyKey, dummyKey, dummyKey, TWCurveED25519));
     }
 }
 

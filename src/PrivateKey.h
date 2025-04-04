@@ -76,16 +76,12 @@ class PrivateKey {
 
     /// Signs a digest using the given ECDSA curve and prepends the recovery id (a la graphene)
     /// Only a sig that passes canonicalChecker is returned
-    Data sign(const Data& digest, int (*canonicalChecker)(uint8_t by, uint8_t sig[64])) const;
+    Data sign(const Data& digest, int (*canonicalChecker)(uint8_t by, const uint8_t sig[64])) const;
 
     /// Signs a digest using the given ECDSA curve. The result is encoded with
     /// DER.
     /// If constructed with a curve, an exception will be thrown if the curve does not match SECP256k1.
     Data signAsDER(const Data& digest) const;
-
-    /// Signs a digest using given ECDSA curve, returns Zilliqa schnorr signature
-    /// If constructed with a curve, an exception will be thrown if the curve does not match SECP256k1.
-    Data signZilliqa(const Data& message) const;
 
     /// Cleanup contents (fill with 0s), called before destruction
     void cleanup();
@@ -94,6 +90,7 @@ class PrivateKey {
     TWCurve curve() const { return _curve; }
 private:
     TWCurve _curve;
+    std::shared_ptr<TW::Rust::TWPrivateKey> _impl;
 };
 
 } // namespace TW
