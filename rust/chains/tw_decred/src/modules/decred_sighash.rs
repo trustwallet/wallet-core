@@ -19,10 +19,10 @@ impl DecredSighash {
         let mut tx_preimage = tx.clone();
 
         let inputs_to_preimage = LegacySighash::inputs_for_preimage(&tx_preimage, args)?;
-        let outpus_to_preimage = LegacySighash::outputs_for_preimage(&tx_preimage, args);
+        let outputs_to_preimage = LegacySighash::outputs_for_preimage(&tx_preimage, args);
 
         tx_preimage.replace_inputs(inputs_to_preimage);
-        tx_preimage.replace_outputs(outpus_to_preimage);
+        tx_preimage.replace_outputs(outputs_to_preimage);
 
         let prefix_hash = Self::tx_prefix_hash(&tx_preimage);
         let witness_hash = Self::tx_witness_hash(&tx_preimage);

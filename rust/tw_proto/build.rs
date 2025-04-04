@@ -70,7 +70,7 @@ fn main() {
 }
 
 /// Unfortunately, `pb-rs` does not provide a proper support of custom derives.
-/// [`ConfigBuilder::custom_struct_derive`] adds the derive macroses for structs only,
+/// [`ConfigBuilder::custom_struct_derive`] adds the derive macros for structs only,
 /// however they should be added for enums too.
 /// Issues: https://github.com/tafia/quick-protobuf/issues/195, https://github.com/tafia/quick-protobuf/issues/212
 #[cfg(feature = "fuzz")]
