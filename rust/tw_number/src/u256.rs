@@ -236,6 +236,7 @@ mod impl_serde {
     use serde::de::Error as DeError;
     use serde::{Deserialize, Deserializer, Serializer};
     use std::str::FromStr;
+    use tw_encoding::hex;
 
     impl U256 {
         pub fn as_decimal_str<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
@@ -258,6 +259,17 @@ mod impl_serde {
             D: Deserializer<'de>,
         {
             crate::serde_common::from_num_or_decimal_str::<'de, U256, u64, D>(deserializer)
+        }
+
+        pub fn as_hex<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: Serializer,
+        {
+            let prefix = true;
+            let min_bytes_len = 1;
+
+            let hex_str = hex::encode(self.to_big_endian_compact_min_len(min_bytes_len), prefix);
+            serializer.serialize_str(&hex_str)
         }
     }
 }
