@@ -165,31 +165,25 @@ fn test_tw_private_key_get_public_key_by_type() {
 
 #[test]
 fn test_tw_private_key_is_valid() {
-    fn is_valid(privkey_bytes: Vec<u8>) -> bool {
+    fn is_valid(privkey_bytes: Vec<u8>, curve: Curve) -> bool {
         let privkey_raw = CByteArray::from(privkey_bytes);
-        unsafe {
-            tw_private_key_is_valid(
-                privkey_raw.data(),
-                privkey_raw.size(),
-                Curve::Secp256k1.to_raw(),
-            )
-        }
+        unsafe { tw_private_key_is_valid(privkey_raw.data(), privkey_raw.size(), curve.to_raw()) }
     }
 
     // Non-zero private key.
     let privkey_bytes =
         H256::from("0000000000000000000000000000000000000000000000000000000000000001");
-    assert!(is_valid(privkey_bytes.into_vec()));
+    assert!(is_valid(privkey_bytes.into_vec(), Curve::Secp256k1));
 
     // Cardano private key.
     let privkey_bytes =
         hex::decode("089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e").unwrap();
-    assert!(is_valid(privkey_bytes));
+    assert!(is_valid(privkey_bytes, Curve::Ed25519ExtendedCardano));
 
     // Zero private key.
     let privkey_bytes =
         H256::from("0000000000000000000000000000000000000000000000000000000000000000");
-    assert!(!is_valid(privkey_bytes.into_vec()));
+    assert!(!is_valid(privkey_bytes.into_vec(), Curve::Secp256k1));
 }
 
 // `schnorr` generates unique signatures based on auxiliary random.
@@ -281,20 +275,6 @@ fn test_private_key_is_valid() {
 
     let is_valid =
         unsafe { tw_private_key_is_valid(bytes_ptr, bytes_len, Curve::Secp256k1.to_raw()) };
-
-    assert!(is_valid);
-}
-
-#[test]
-fn test_private_key_cardano_is_valid() {
-    let private_key_hex = "0xa018cd746e128a0be0782b228c275473205445c33b9000a33dd5668b430b5744";
-    let bytes = hex::decode(private_key_hex).unwrap();
-    let bytes_ptr = bytes.as_ptr();
-    let bytes_len = bytes.len();
-
-    let is_valid = unsafe {
-        tw_private_key_is_valid(bytes_ptr, bytes_len, Curve::Ed25519ExtendedCardano.to_raw())
-    };
 
     assert!(is_valid);
 }

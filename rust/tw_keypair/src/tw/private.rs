@@ -34,7 +34,7 @@ impl PrivateKey {
 
     /// Validates the given `bytes` secret and creates a private key.
     pub fn new(bytes: Vec<u8>, curve: Curve) -> KeyPairResult<PrivateKey> {
-        if !Self::is_valid_general(&bytes) {
+        if !Self::is_valid_general(&bytes, &curve) {
             return Err(KeyPairError::InvalidSecretKey);
         }
         Ok(PrivateKey { bytes, curve })
@@ -62,9 +62,15 @@ impl PrivateKey {
         Ok(&self.bytes[Self::EXTENDED_CARDANO_RANGE])
     }
 
-    /// Checks if the given `bytes` secret is valid in general (without a concrete curve).
-    pub fn is_valid_general(bytes: &[u8]) -> bool {
-        if bytes.len() != Self::SIZE && bytes.len() != Self::CARDANO_SIZE {
+    /// Checks if the given `bytes` secret is valid in general for the given `curve`.
+    pub fn is_valid_general(bytes: &[u8], curve: &Curve) -> bool {
+        let expected_len = if curve == &Curve::Ed25519ExtendedCardano {
+            Self::CARDANO_SIZE
+        } else {
+            Self::SIZE
+        };
+
+        if bytes.len() != expected_len {
             return false;
         }
         // Check for zero address.
@@ -73,7 +79,7 @@ impl PrivateKey {
 
     /// Checks if the given `bytes` secret is valid.
     pub fn is_valid(bytes: &[u8], curve: Curve) -> bool {
-        if !Self::is_valid_general(bytes) {
+        if !Self::is_valid_general(bytes, &curve) {
             return false;
         }
         match curve {
@@ -89,16 +95,6 @@ impl PrivateKey {
             },
             Curve::Nist256p1 => nist256p1::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
             Curve::Ed25519ExtendedCardano => {
-                let bytes = if bytes.len() == Self::SIZE {
-                    // For a regular private key, replicate it 6 times to match the Cardano extended format
-                    let mut extended_bytes = Vec::with_capacity(Self::CARDANO_SIZE);
-                    for _ in 0..6 {
-                        extended_bytes.extend_from_slice(&bytes[Self::KEY_RANGE]);
-                    }
-                    extended_bytes
-                } else {
-                    bytes.to_vec()
-                };
                 ed25519::cardano::ExtendedPrivateKey::try_from(&bytes[Self::EXTENDED_CARDANO_RANGE])
                     .is_ok()
             },

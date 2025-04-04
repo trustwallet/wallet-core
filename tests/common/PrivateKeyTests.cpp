@@ -213,11 +213,9 @@ TEST(PrivateKey, PrivateKeyExtended) {
 }
 
 TEST(PrivateKey, PrivateKeyExtendedError) {
-    // TWPublicKeyTypeED25519Cardano pubkey with non-extended private: error
-    auto privateKeyNonext = PrivateKey(parse_hex(
-        "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveED25519ExtendedCardano);
     try {
-        auto publicKeyError = privateKeyNonext.getPublicKey(TWPublicKeyTypeED25519Cardano);
+        auto privateKeyNonext = PrivateKey(parse_hex(
+            "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveED25519ExtendedCardano);
     } catch (invalid_argument& ex) {
         // expected exception
         return;
