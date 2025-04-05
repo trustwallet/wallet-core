@@ -9,6 +9,7 @@ use crate::public_key::{CosmosPublicKey, PublicKeyParams};
 use crate::transaction::message::cosmos_generic_message::JsonRawMessage;
 use crate::transaction::message::{CosmosMessage, CosmosMessageBox};
 use crate::transaction::{Coin, Fee, SignMode, SignerInfo, TxBody, UnsignedTransaction};
+use std::borrow::Cow;
 use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -176,67 +177,71 @@ where
         match input.message_oneof {
             MessageEnum::send_coins_message(ref send) => Self::send_msg_from_proto(coin, send),
             MessageEnum::transfer_tokens_message(ref transfer) => {
-                Self::transfer_tokens_msg_from_proto(coin, transfer)
-            },
+                        Self::transfer_tokens_msg_from_proto(coin, transfer)
+                    },
             MessageEnum::stake_message(ref delegate) => {
-                Self::delegate_msg_from_proto(coin, delegate)
-            },
+                        Self::delegate_msg_from_proto(coin, delegate)
+                    },
             MessageEnum::unstake_message(ref undelegate) => {
-                Self::undelegate_msg_from_proto(coin, undelegate)
-            },
+                        Self::undelegate_msg_from_proto(coin, undelegate)
+                    },
             MessageEnum::withdraw_stake_reward_message(ref withdraw) => {
-                Self::withdraw_reward_msg_from_proto(coin, withdraw)
-            },
+                        Self::withdraw_reward_msg_from_proto(coin, withdraw)
+                    },
             MessageEnum::set_withdraw_address_message(ref set) => {
-                Self::set_withdraw_address_msg_from_proto(coin, set)
-            },
+                        Self::set_withdraw_address_msg_from_proto(coin, set)
+                    },
             MessageEnum::restake_message(ref redelegate) => {
-                Self::redelegate_msg_from_proto(coin, redelegate)
-            },
+                        Self::redelegate_msg_from_proto(coin, redelegate)
+                    },
             MessageEnum::raw_json_message(ref raw_json) => {
-                Self::wasm_raw_msg_from_proto(coin, raw_json)
-            },
+                        Self::wasm_raw_msg_from_proto(coin, raw_json)
+                    },
             MessageEnum::wasm_terra_execute_contract_transfer_message(ref transfer) => {
-                Self::wasm_terra_execute_contract_transfer_msg_from_proto(coin, transfer)
-            },
+                        Self::wasm_terra_execute_contract_transfer_msg_from_proto(coin, transfer)
+                    },
             MessageEnum::wasm_terra_execute_contract_send_message(ref send) => {
-                Self::wasm_terra_execute_contract_send_msg_from_proto(coin, send)
-            },
+                        Self::wasm_terra_execute_contract_send_msg_from_proto(coin, send)
+                    },
             MessageEnum::thorchain_send_message(ref send) => {
-                Self::thorchain_send_msg_from_proto(coin, send)
-            },
+                        Self::thorchain_send_msg_from_proto(coin, send)
+                    },
             MessageEnum::wasm_terra_execute_contract_generic(ref generic) => {
-                Self::wasm_terra_execute_contract_generic_msg_from_proto(coin, generic)
-            },
+                        Self::wasm_terra_execute_contract_generic_msg_from_proto(coin, generic)
+                    },
             MessageEnum::wasm_execute_contract_transfer_message(ref transfer) => {
-                Self::wasm_execute_contract_transfer_msg_from_proto(coin, transfer)
-            },
+                        Self::wasm_execute_contract_transfer_msg_from_proto(coin, transfer)
+                    },
             MessageEnum::wasm_execute_contract_send_message(ref send) => {
-                Self::wasm_execute_contract_send_msg_from_proto(coin, send)
-            },
+                        Self::wasm_execute_contract_send_msg_from_proto(coin, send)
+                    },
             MessageEnum::wasm_execute_contract_generic(ref generic) => {
-                Self::wasm_execute_contract_generic_msg_from_proto(coin, generic)
-            },
+                        Self::wasm_execute_contract_generic_msg_from_proto(coin, generic)
+                    },
             MessageEnum::sign_direct_message(ref _sign) => {
-                // `SignDirect` message must be handled before this function is called.
-                // Consider using `Self::try_sign_direct_args` instead.
-                SigningError::err(SigningErrorType::Error_not_supported)
-                    .context("Consider using `Self::try_sign_direct_args` instead")
-            },
+                        // `SignDirect` message must be handled before this function is called.
+                        // Consider using `Self::try_sign_direct_args` instead.
+                        SigningError::err(SigningErrorType::Error_not_supported)
+                            .context("Consider using `Self::try_sign_direct_args` instead")
+                    },
             MessageEnum::auth_grant(ref grant) => Self::auth_grant_msg_from_proto(coin, grant),
             MessageEnum::auth_revoke(ref revoke) => Self::auth_revoke_msg_from_proto(coin, revoke),
             MessageEnum::msg_vote(ref vote) => Self::vote_msg_from_proto(coin, vote),
             MessageEnum::msg_stride_liquid_staking_stake(ref stake) => {
-                Self::stride_stake_msg_from_proto(coin, stake)
-            },
+                        Self::stride_stake_msg_from_proto(coin, stake)
+                    },
             MessageEnum::msg_stride_liquid_staking_redeem(ref redeem) => {
-                Self::stride_redeem_msg_from_proto(coin, redeem)
-            },
+                        Self::stride_redeem_msg_from_proto(coin, redeem)
+                    },
             MessageEnum::thorchain_deposit_message(ref deposit) => {
-                Self::thorchain_deposit_msg_from_proto(coin, deposit)
-            },
+                        Self::thorchain_deposit_msg_from_proto(coin, deposit)
+                    },
             MessageEnum::None => SigningError::err(SigningErrorType::Error_invalid_params)
-                .context("No TX message provided"),
+                        .context("No TX message provided"),
+            MessageEnum::wasm_instantiate_contract_message(ref generic) => {
+                Self::wasm_instantiate_contract_generic_msg_from_proto(coin, generic)
+            },
+
         }
     }
 
@@ -598,6 +603,45 @@ where
             msg: ExecuteMsg::String(generic.execute_msg.to_string()),
             coins,
         };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn wasm_instantiate_contract_generic_msg_from_proto(
+        _coin: &dyn CoinContext,
+        generic: &Proto::mod_Message::WasmInstantiateContract<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        use crate::transaction::message::wasm_message_instantiate_contract::{InstantiateMsg, WasmInstantiateContractMessage};
+    
+        let funds = generic
+            .init_funds
+            .iter()
+            .map(Self::coin_from_proto)
+            .collect::<SigningResult<_>>()?;
+
+        let sender = Address::from_str(&generic.sender)
+            .into_tw()
+            .context("Invalid sender address")?;
+    
+        let admin = if generic.admin.is_empty() {
+            None
+        } else {
+            Some(
+                Address::from_str(&generic.admin)
+                    .into_tw()
+                    .context("Invalid admin address")?,
+            )
+        };
+    
+        let msg = WasmInstantiateContractMessage {
+            sender,
+            admin,
+            code_id: generic.code_id,
+            label: generic.label.to_string(),
+            // We assume the init_msg bytes represent a JSON string.
+            init_msg: InstantiateMsg::Json(serde_json::from_slice(&generic.init_msg).into_tw().context("Invalid JSON in init_msg")?),
+            funds,
+        };
+    
         Ok(msg.into_boxed())
     }
 
