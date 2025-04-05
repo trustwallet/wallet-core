@@ -73,7 +73,7 @@ Then add libraries to target's `dependencies`:
 
 ```swift
 .product(name: "WalletCore", package: "WalletCore"),
-.product(name: "SwiftProtobuf", package: "WalletCore"),
+.product(name: "WalletCoreSwiftProtobuf", package: "WalletCore"),
 ```
 
 ### CocoaPods

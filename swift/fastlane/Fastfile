@@ -23,7 +23,7 @@ platform :ios do
   lane :swift_protobuf_xcframework do
     create_xcframework(
       workspace: 'TrustWalletCore.xcworkspace',
-      scheme: 'SwiftProtobuf',
+      scheme: 'WalletCoreSwiftProtobuf',
       destinations: ['iOS'],
       xcframework_output_directory: 'build',
       enable_bitcode: false
