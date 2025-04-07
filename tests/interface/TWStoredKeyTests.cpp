@@ -97,6 +97,42 @@ TEST(TWStoredKey, importPrivateKeyAes256) {
     TWPrivateKeyDelete(privateKey3);
 }
 
+TEST(TWStoredKey, importPrivateKeyEncoded) {
+    const auto privateKeyHex = "SAV76USXIJOBMEQXPANUOQM6F5LIOTLPDIDVRJBFFE2MDJXG24TAPUU7";
+    const auto decodedPrivateKeyHex = "2bff5257425c161217781b47419e2f56874d6f1a0758a4252934c1a6e6d72607";
+    const auto privateKey = WRAPS(TWStringCreateWithUTF8Bytes(privateKeyHex));
+    const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    const auto coin = TWCoinTypeStellar;
+    const auto key = WRAP(TWStoredKey, TWStoredKeyImportPrivateKeyEncoded(privateKey.get(), name.get(), password.get(), coin));
+    const auto privateKey2 = WRAPD(TWStoredKeyDecryptPrivateKey(key.get(), password.get()));
+    EXPECT_EQ(hex(data(TWDataBytes(privateKey2.get()), TWDataSize(privateKey2.get()))), decodedPrivateKeyHex);
+    
+    const auto privateKey3 = TWStoredKeyPrivateKey(key.get(), coin, password.get());
+    const auto pkData3 = WRAPD(TWPrivateKeyData(privateKey3));
+    EXPECT_EQ(hex(data(TWDataBytes(pkData3.get()), TWDataSize(pkData3.get()))), decodedPrivateKeyHex);
+    TWPrivateKeyDelete(privateKey3);
+}
+
+TEST(TWStoredKey, importPrivateKeyEncodedAes256) {
+    const auto privateKeyHex = "SAV76USXIJOBMEQXPANUOQM6F5LIOTLPDIDVRJBFFE2MDJXG24TAPUU7";
+    const auto decodedPrivateKeyHex = "2bff5257425c161217781b47419e2f56874d6f1a0758a4252934c1a6e6d72607";
+    const auto privateKey = WRAPS(TWStringCreateWithUTF8Bytes(privateKeyHex));
+    const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    const auto coin = TWCoinTypeStellar;
+    const auto key = WRAP(TWStoredKey, TWStoredKeyImportPrivateKeyEncodedWithEncryption(privateKey.get(), name.get(), password.get(), coin, TWStoredKeyEncryptionAes256Ctr));
+    const auto privateKey2 = WRAPD(TWStoredKeyDecryptPrivateKey(key.get(), password.get()));
+    EXPECT_EQ(hex(data(TWDataBytes(privateKey2.get()), TWDataSize(privateKey2.get()))), decodedPrivateKeyHex);
+
+    const auto privateKey3 = TWStoredKeyPrivateKey(key.get(), coin, password.get());
+    const auto pkData3 = WRAPD(TWPrivateKeyData(privateKey3));
+    EXPECT_EQ(hex(data(TWDataBytes(pkData3.get()), TWDataSize(pkData3.get()))), decodedPrivateKeyHex);
+    TWPrivateKeyDelete(privateKey3);
+}
+
 TEST(TWStoredKey, importHDWallet) {
     const auto mnemonic = WRAPS(TWStringCreateWithUTF8Bytes("team engine square letter hero song dizzy scrub tornado fabric divert saddle"));
     const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
