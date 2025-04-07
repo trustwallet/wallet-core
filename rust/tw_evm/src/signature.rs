@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use std::ops::BitXor;
-use tw_number::{NumberResult, U256};
+use tw_number::{NumberError, NumberResult, U256};
 
 /// EIP155 Eth encoding of V, of the form 27+v, or 35+chainID*2+v.
 /// cbindgin:ignore
@@ -19,10 +19,17 @@ pub fn replay_protection(chain_id: U256, v: u8) -> NumberResult<U256> {
     }
 }
 
-/// Embeds `chain_id` in `v` param, for replay protection, legacy.
+/// Embeds legacy protection into `v` param.
 #[inline]
 pub fn legacy_replay_protection(v: u8) -> NumberResult<U256> {
     U256::from(v).checked_add(ETHEREUM_SIGNATURE_V_OFFSET)
+}
+
+/// Embeds legacy protection into `v` param.
+#[inline]
+pub fn legacy_replay_protection_u8(v: u8) -> NumberResult<u8> {
+    v.checked_add(ETHEREUM_SIGNATURE_V_OFFSET)
+        .ok_or(NumberError::IntegerOverflow)
 }
 
 /// Embeds `chain_id` in `v` param, for replay protection, EIP155.

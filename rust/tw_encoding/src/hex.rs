@@ -135,6 +135,31 @@ pub mod as_hex {
     }
 }
 
+pub mod as_hex_prefixed {
+    use crate::hex::encode;
+    use serde::{Deserializer, Serialize, Serializer};
+    use std::fmt;
+
+    /// Serializes the `value` as a `0x` prefixed hex.
+    pub fn serialize<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        T: AsRef<[u8]>,
+        S: Serializer,
+    {
+        encode(value, true).serialize(serializer)
+    }
+
+    pub fn deserialize<'de, D, T, E>(deserializer: D) -> Result<T, D::Error>
+    where
+        D: Deserializer<'de>,
+        T: for<'a> TryFrom<&'a [u8], Error = E>,
+        E: fmt::Debug,
+    {
+        // `as_hex::deserialize` handles the prefix already.
+        super::as_hex::deserialize(deserializer)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
