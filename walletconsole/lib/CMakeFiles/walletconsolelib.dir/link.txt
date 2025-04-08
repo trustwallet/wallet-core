@@ -1,0 +1,2 @@
+ccache /usr/bin/ar qc libwalletconsolelib.a CMakeFiles/walletconsolelib.dir/Address.cpp.o CMakeFiles/walletconsolelib.dir/Buffer.cpp.o CMakeFiles/walletconsolelib.dir/Coins.cpp.o CMakeFiles/walletconsolelib.dir/CommandExecutor.cpp.o CMakeFiles/walletconsolelib.dir/Keys.cpp.o CMakeFiles/walletconsolelib.dir/Util.cpp.o CMakeFiles/walletconsolelib.dir/WalletConsole.cpp.o
+ccache /usr/bin/ranlib libwalletconsolelib.a
