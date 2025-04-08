@@ -33,7 +33,7 @@
         }
     },
     {
-        "name": "1 finality key, 3/5 covenant committe, 1 staker key with op_return",
+        "name": "1 finality key, 3/5 covenant committee, 1 staker key with op_return",
         "parameters": {
             "covenant_public_keys": [
                 "02cc5c77da065c490a320834fdcf2c3da70ecd442054c90f874a1edb4669607b83",
@@ -70,7 +70,7 @@
         }
     },
     {
-        "name": "3 finality keys, 3/5 covenant committe, 1 staker key with no op_return",
+        "name": "3 finality keys, 3/5 covenant committee, 1 staker key with no op_return",
         "parameters": {
             "covenant_public_keys": [
                 "02042916c9cd52cfa146118c37b6b118f082bb50fb91da1c51b76dfc2100e66f00",
@@ -109,7 +109,7 @@
         }
     },
     {
-        "name": "1 finality keys, 7/9 covenant committe, 1 staker key with op_return",
+        "name": "1 finality keys, 7/9 covenant committee, 1 staker key with op_return",
         "parameters": {
             "covenant_public_keys": [
                 "0287ed5bb2d036baf209eb49520327f6bd05285dabd30c97f239c3a69ff419950b",
@@ -150,7 +150,7 @@
         }
     },
     {
-        "name": "10 finality keys, 18/20 covenant committe, 1 staker key with no op_return",
+        "name": "10 finality keys, 18/20 covenant committee, 1 staker key with no op_return",
         "parameters": {
             "covenant_public_keys": [
                 "02e3803a6ecff76daf35709c8484f382783d211970f22397d7a258f40ca3b46304",
