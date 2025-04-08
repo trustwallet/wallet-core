@@ -2,8 +2,8 @@
 #
 # Copyright © 2017 Trust Wallet.
 
-set(protobuf_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/../build/local/src/protobuf/protobuf-3.19.2)
-set(protobuf_source_dir ${CMAKE_CURRENT_LIST_DIR}/../build/local/src/protobuf/protobuf-3.19.2)
+set(protobuf_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/../build/local/src/protobuf/protobuf-3.20.3)
+set(protobuf_source_dir ${CMAKE_CURRENT_LIST_DIR}/../build/local/src/protobuf/protobuf-3.20.3)
 
 # sort + uniq -u
 # https://github.com/protocolbuffers/protobuf/blob/master/cmake/libprotobuf.cmake
