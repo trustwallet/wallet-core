@@ -98,8 +98,13 @@ set(protobuf_SOURCE_FILES
 )
 
 set(protobuf_HEADER_FILES
+  ${protobuf_source_dir}/src/google/protobuf/any.h
   ${protobuf_source_dir}/src/google/protobuf/any.pb.h
   ${protobuf_source_dir}/src/google/protobuf/api.pb.h
+  ${protobuf_source_dir}/src/google/protobuf/arena.h
+  ${protobuf_source_dir}/src/google/protobuf/arena_impl.h
+  ${protobuf_source_dir}/src/google/protobuf/arenastring.h
+  ${protobuf_source_dir}/src/google/protobuf/arenaz_sampler.h
   ${protobuf_source_dir}/src/google/protobuf/compiler/importer.h
   ${protobuf_source_dir}/src/google/protobuf/compiler/parser.h
   ${protobuf_source_dir}/src/google/protobuf/descriptor.h
@@ -108,47 +113,15 @@ set(protobuf_HEADER_FILES
   ${protobuf_source_dir}/src/google/protobuf/duration.pb.h
   ${protobuf_source_dir}/src/google/protobuf/dynamic_message.h
   ${protobuf_source_dir}/src/google/protobuf/empty.pb.h
-  ${protobuf_source_dir}/src/google/protobuf/field_access_listener.h
-  ${protobuf_source_dir}/src/google/protobuf/field_mask.pb.h
-  ${protobuf_source_dir}/src/google/protobuf/generated_enum_reflection.h
-  ${protobuf_source_dir}/src/google/protobuf/generated_message_bases.h
-  ${protobuf_source_dir}/src/google/protobuf/generated_message_reflection.h
-  ${protobuf_source_dir}/src/google/protobuf/io/gzip_stream.h
-  ${protobuf_source_dir}/src/google/protobuf/io/printer.h
-  ${protobuf_source_dir}/src/google/protobuf/io/tokenizer.h
-  ${protobuf_source_dir}/src/google/protobuf/map_entry.h
-  ${protobuf_source_dir}/src/google/protobuf/map_field.h
-  ${protobuf_source_dir}/src/google/protobuf/map_field_inl.h
-  ${protobuf_source_dir}/src/google/protobuf/message.h
-  ${protobuf_source_dir}/src/google/protobuf/metadata.h
-  ${protobuf_source_dir}/src/google/protobuf/reflection.h
-  ${protobuf_source_dir}/src/google/protobuf/reflection_ops.h
-  ${protobuf_source_dir}/src/google/protobuf/service.h
-  ${protobuf_source_dir}/src/google/protobuf/source_context.pb.h
-  ${protobuf_source_dir}/src/google/protobuf/struct.pb.h
-  ${protobuf_source_dir}/src/google/protobuf/text_format.h
-  ${protobuf_source_dir}/src/google/protobuf/timestamp.pb.h
-  ${protobuf_source_dir}/src/google/protobuf/type.pb.h
-  ${protobuf_source_dir}/src/google/protobuf/unknown_field_set.h
-  ${protobuf_source_dir}/src/google/protobuf/util/delimited_message_util.h
-  ${protobuf_source_dir}/src/google/protobuf/util/field_comparator.h
-  ${protobuf_source_dir}/src/google/protobuf/util/field_mask_util.h
-  ${protobuf_source_dir}/src/google/protobuf/util/json_util.h
-  ${protobuf_source_dir}/src/google/protobuf/util/message_differencer.h
-  ${protobuf_source_dir}/src/google/protobuf/util/time_util.h
-  ${protobuf_source_dir}/src/google/protobuf/util/type_resolver.h
-  ${protobuf_source_dir}/src/google/protobuf/util/type_resolver_util.h
-  ${protobuf_source_dir}/src/google/protobuf/wire_format.h
-  ${protobuf_source_dir}/src/google/protobuf/wrappers.pb.h
-  ${protobuf_source_dir}/src/google/protobuf/any.h
-  ${protobuf_source_dir}/src/google/protobuf/arena.h
-  ${protobuf_source_dir}/src/google/protobuf/arena_impl.h
-  ${protobuf_source_dir}/src/google/protobuf/arenastring.h
-  ${protobuf_source_dir}/src/google/protobuf/arenaz_sampler.h
   ${protobuf_source_dir}/src/google/protobuf/explicitly_constructed.h
   ${protobuf_source_dir}/src/google/protobuf/extension_set.h
   ${protobuf_source_dir}/src/google/protobuf/extension_set_inl.h
+  ${protobuf_source_dir}/src/google/protobuf/field_access_listener.h
+  ${protobuf_source_dir}/src/google/protobuf/field_mask.pb.h
+  ${protobuf_source_dir}/src/google/protobuf/generated_enum_reflection.h
   ${protobuf_source_dir}/src/google/protobuf/generated_enum_util.h
+  ${protobuf_source_dir}/src/google/protobuf/generated_message_bases.h
+  ${protobuf_source_dir}/src/google/protobuf/generated_message_reflection.h
   ${protobuf_source_dir}/src/google/protobuf/generated_message_tctable_decl.h
   ${protobuf_source_dir}/src/google/protobuf/generated_message_tctable_impl.h
   ${protobuf_source_dir}/src/google/protobuf/generated_message_util.h
@@ -156,21 +129,34 @@ set(protobuf_HEADER_FILES
   ${protobuf_source_dir}/src/google/protobuf/implicit_weak_message.h
   ${protobuf_source_dir}/src/google/protobuf/inlined_string_field.h
   ${protobuf_source_dir}/src/google/protobuf/io/coded_stream.h
+  ${protobuf_source_dir}/src/google/protobuf/io/gzip_stream.h
   ${protobuf_source_dir}/src/google/protobuf/io/io_win32.h
+  ${protobuf_source_dir}/src/google/protobuf/io/printer.h
   ${protobuf_source_dir}/src/google/protobuf/io/strtod.h
+  ${protobuf_source_dir}/src/google/protobuf/io/tokenizer.h
   ${protobuf_source_dir}/src/google/protobuf/io/zero_copy_stream.h
   ${protobuf_source_dir}/src/google/protobuf/io/zero_copy_stream_impl.h
   ${protobuf_source_dir}/src/google/protobuf/io/zero_copy_stream_impl_lite.h
   ${protobuf_source_dir}/src/google/protobuf/map.h
+  ${protobuf_source_dir}/src/google/protobuf/map_entry.h
   ${protobuf_source_dir}/src/google/protobuf/map_entry_lite.h
+  ${protobuf_source_dir}/src/google/protobuf/map_field.h
+  ${protobuf_source_dir}/src/google/protobuf/map_field_inl.h
   ${protobuf_source_dir}/src/google/protobuf/map_field_lite.h
   ${protobuf_source_dir}/src/google/protobuf/map_type_handler.h
+  ${protobuf_source_dir}/src/google/protobuf/message.h
   ${protobuf_source_dir}/src/google/protobuf/message_lite.h
+  ${protobuf_source_dir}/src/google/protobuf/metadata.h
   ${protobuf_source_dir}/src/google/protobuf/metadata_lite.h
   ${protobuf_source_dir}/src/google/protobuf/parse_context.h
   ${protobuf_source_dir}/src/google/protobuf/port.h
+  ${protobuf_source_dir}/src/google/protobuf/reflection.h
+  ${protobuf_source_dir}/src/google/protobuf/reflection_ops.h
   ${protobuf_source_dir}/src/google/protobuf/repeated_field.h
   ${protobuf_source_dir}/src/google/protobuf/repeated_ptr_field.h
+  ${protobuf_source_dir}/src/google/protobuf/service.h
+  ${protobuf_source_dir}/src/google/protobuf/source_context.pb.h
+  ${protobuf_source_dir}/src/google/protobuf/struct.pb.h
   ${protobuf_source_dir}/src/google/protobuf/stubs/bytestream.h
   ${protobuf_source_dir}/src/google/protobuf/stubs/callback.h
   ${protobuf_source_dir}/src/google/protobuf/stubs/casts.h
@@ -188,7 +174,21 @@ set(protobuf_HEADER_FILES
   ${protobuf_source_dir}/src/google/protobuf/stubs/stringpiece.h
   ${protobuf_source_dir}/src/google/protobuf/stubs/strutil.h
   ${protobuf_source_dir}/src/google/protobuf/stubs/template_util.h
+  ${protobuf_source_dir}/src/google/protobuf/text_format.h
+  ${protobuf_source_dir}/src/google/protobuf/timestamp.pb.h
+  ${protobuf_source_dir}/src/google/protobuf/type.pb.h
+  ${protobuf_source_dir}/src/google/protobuf/unknown_field_set.h
+  ${protobuf_source_dir}/src/google/protobuf/util/delimited_message_util.h
+  ${protobuf_source_dir}/src/google/protobuf/util/field_comparator.h
+  ${protobuf_source_dir}/src/google/protobuf/util/field_mask_util.h
+  ${protobuf_source_dir}/src/google/protobuf/util/json_util.h
+  ${protobuf_source_dir}/src/google/protobuf/util/message_differencer.h
+  ${protobuf_source_dir}/src/google/protobuf/util/time_util.h
+  ${protobuf_source_dir}/src/google/protobuf/util/type_resolver.h
+  ${protobuf_source_dir}/src/google/protobuf/util/type_resolver_util.h
+  ${protobuf_source_dir}/src/google/protobuf/wire_format.h
   ${protobuf_source_dir}/src/google/protobuf/wire_format_lite.h
+  ${protobuf_source_dir}/src/google/protobuf/wrappers.pb.h
 )
 
 #file(GLOB_RECURSE protobuf_HEADER_FILES ${protobuf_SOURCE_DIR}/src/**/*.h)
