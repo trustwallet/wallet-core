@@ -19,7 +19,7 @@ pub fn calculate_checksum(prefix: &str, payload: &[u8]) -> u64 {
     poly_mod(&raw_data)
 }
 
-pub fn cacl_and_append_checksum(prefix: &str, payload: &[u8]) -> Data {
+pub fn calc_and_append_checksum(prefix: &str, payload: &[u8]) -> Data {
     // The checksum sits in the last eight bytes.
     // Append the phantom checksum to calculate an actual value.
     let mut payload_with_checksum: Vec<_> =
