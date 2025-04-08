@@ -16,6 +16,13 @@ use tw_number::U256;
 use tw_proto::Cosmos::Proto;
 use tw_proto::Cosmos::Proto::mod_Message::OneOfmessage_oneof as MessageEnum;
 
+fn account_593_private_key() -> Cow<'static, [u8]> {
+    "7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e"
+        .decode_hex()
+        .unwrap()
+        .into()
+}
+
 fn account_336_private_key() -> Cow<'static, [u8]> {
     "37f0af5bc20adb6832d39368a15492cd1e9e0cc1556d4317a5f75f9ccdf525ee"
         .decode_hex()
@@ -123,6 +130,53 @@ fn test_wasm_execute_generic_with_coins() {
         signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A3BmOsew+Ykpb+tc5Z+6SlDX6U4c4lbf8iUUWcos2awA"},"signature":"ohL3xBbHumPGwz7nCyocMmS9n08bq27bOlV3hRSduNZzwsaxq5IktzizeYTRmv5uLvAhKHsrsMwWvJWU0J0nvw=="}]"#,
     });
 }
+
+/// TerraV2 DepositStable
+#[test]
+fn test_wasm_instantiate_contract() {
+    let coin = TestCoinContext::default()
+        .with_public_key_type(PublicKeyType::Secp256k1)
+        .with_hrp("thor");
+
+    let execute_msg = r#"
+        {
+          "decay_starts_at": "1746403200000000000",
+          "decay_ends_at": "1775347200000000000",
+          "merge_denom": "thor.kuji",
+          "merge_supply": "11234621200000000",
+          "ruji_allocation": "4184468200000000",
+          "ruji_denom": "x/ruji",
+          "bypass_min_merge_denom": true
+        }
+        "#;
+    let contract = Proto::mod_Message::WasmInstantiateContract {
+        sender: "thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r".into(),
+        admin: "thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r".into(),
+        code_id: 1,
+        label: "RUJI Merge: NSTK".into(),
+        init_msg: Cow::Borrowed(execute_msg.as_bytes()),
+        init_funds: vec![],
+        ..Proto::mod_Message::WasmInstantiateContract::default()
+    };
+
+    let input = Proto::SigningInput {
+        account_number: 593,
+        chain_id: "thorchain-mainnet-v1".into(),
+        sequence: 21,
+        fee: Some(make_fee(2500000, make_amount("rune", "200"))),
+        private_key: account_593_private_key(),
+        messages: vec![make_message(MessageEnum::wasm_instantiate_contract_message(
+            contract,
+        ))],
+        ..Proto::SigningInput::default()
+    };
+
+    // i need to see the result of the input
+    println!("input: {:?}", input);
+
+}
+
+
 
 /// TerraV2 Transfer
 #[test]
