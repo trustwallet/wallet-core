@@ -113,6 +113,17 @@ TEST(TWStoredKey, importPrivateKeyEncoded) {
     const auto pkData3 = WRAPD(TWPrivateKeyData(privateKey3));
     EXPECT_EQ(hex(data(TWDataBytes(pkData3.get()), TWDataSize(pkData3.get()))), decodedPrivateKeyHex);
     TWPrivateKeyDelete(privateKey3);
+
+    const auto solanaPrivateKey = "A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr";
+    const auto decodedSolanaPrivateKeyHex = "8778cc93c6596387e751d2dc693bbd93e434bd233bc5b68a826c56131821cb63";
+    const auto solanaKey = WRAP(TWStoredKey, TWStoredKeyImportPrivateKeyEncoded(WRAPS(TWStringCreateWithUTF8Bytes(solanaPrivateKey)).get(), name.get(), password.get(), TWCoinTypeSolana));
+    const auto solanaPrivateKey2 = WRAPD(TWStoredKeyDecryptPrivateKey(solanaKey.get(), password.get()));
+    EXPECT_EQ(hex(data(TWDataBytes(solanaPrivateKey2.get()), TWDataSize(solanaPrivateKey2.get()))), decodedSolanaPrivateKeyHex);
+    
+    const auto solanaPrivateKey3 = TWStoredKeyPrivateKey(solanaKey.get(), TWCoinTypeSolana, password.get());
+    const auto solanaPkData3 = WRAPD(TWPrivateKeyData(solanaPrivateKey3));
+    EXPECT_EQ(hex(data(TWDataBytes(solanaPkData3.get()), TWDataSize(solanaPkData3.get()))), decodedSolanaPrivateKeyHex);
+    TWPrivateKeyDelete(solanaPrivateKey3);
 }
 
 TEST(TWStoredKey, importPrivateKeyEncodedAes256) {

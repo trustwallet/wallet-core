@@ -8,6 +8,7 @@
 #include "proto/TransactionCompiler.pb.h"
 #include "Signer.h"
 #include "Base32.h"
+#include "Coin.h"
 
 namespace TW::Stellar {
 
@@ -94,7 +95,7 @@ Data calculateChecksum(const Data& payload) {
     for (size_t i = 0; i < payload.size(); i++) {
         uint8_t byte = payload[i];
         uint8_t lookupIndex = (crc16 >> 8) ^ byte;
-        crc16 = (crc16 << 8) ^ crcTable[lookupIndex];
+        crc16 = static_cast<uint16_t>((crc16 << 8) ^ crcTable[lookupIndex]);
         crc16 &= 0xffff;
     }
     
@@ -124,7 +125,7 @@ bool verifyChecksum(const Data& expected, const Data& actual) {
 }
 
 // Taken from: https://github.com/stellar/js-stellar-base/blob/087e2d651a59b5cbed01386b4b8c45862d358259/src/strkey.js#L290
-Data Entry::decodePrivateKey([[maybe_unused]] TWCoinType coin, const std::string& privateKey) const {
+Data Entry::decodePrivateKey(TWCoinType coin, const std::string& privateKey) const {
     Data decoded;
     Base32::decode(privateKey, decoded);
 
@@ -145,6 +146,10 @@ Data Entry::decodePrivateKey([[maybe_unused]] TWCoinType coin, const std::string
     const auto expectedChecksum = calculateChecksum(payload);
     if (!verifyChecksum(expectedChecksum, checksum)) {
         throw std::invalid_argument("invalid checksum");
+    }
+
+    if (!PrivateKey::isValid(data, TW::curve(coin))) {
+        throw std::invalid_argument("Invalid private key");
     }
 
     return data;
