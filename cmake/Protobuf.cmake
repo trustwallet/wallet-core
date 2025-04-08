@@ -2,8 +2,8 @@
 #
 # Copyright © 2017 Trust Wallet.
 
-set(protobuf_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/../build/local/src/protobuf/protobuf-3.19.2)
-set(protobuf_source_dir ${CMAKE_CURRENT_LIST_DIR}/../build/local/src/protobuf/protobuf-3.19.2)
+set(protobuf_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/../build/local/src/protobuf/protobuf-3.20.3)
+set(protobuf_source_dir ${CMAKE_CURRENT_LIST_DIR}/../build/local/src/protobuf/protobuf-3.20.3)
 
 # sort + uniq -u
 # https://github.com/protocolbuffers/protobuf/blob/master/cmake/libprotobuf.cmake
@@ -16,6 +16,7 @@ set(protobuf_SOURCE_FILES
   ${protobuf_source_dir}/src/google/protobuf/api.pb.cc
   ${protobuf_source_dir}/src/google/protobuf/arena.cc
   ${protobuf_source_dir}/src/google/protobuf/arenastring.cc
+  ${protobuf_source_dir}/src/google/protobuf/arenaz_sampler.cc
   ${protobuf_source_dir}/src/google/protobuf/compiler/importer.cc
   ${protobuf_source_dir}/src/google/protobuf/compiler/parser.cc
   ${protobuf_source_dir}/src/google/protobuf/descriptor.cc
@@ -30,8 +31,6 @@ set(protobuf_SOURCE_FILES
   ${protobuf_source_dir}/src/google/protobuf/generated_enum_util.cc
   ${protobuf_source_dir}/src/google/protobuf/generated_message_bases.cc
   ${protobuf_source_dir}/src/google/protobuf/generated_message_reflection.cc
-  ${protobuf_source_dir}/src/google/protobuf/generated_message_table_driven.cc
-  ${protobuf_source_dir}/src/google/protobuf/generated_message_table_driven_lite.cc
   ${protobuf_source_dir}/src/google/protobuf/generated_message_tctable_full.cc
   ${protobuf_source_dir}/src/google/protobuf/generated_message_tctable_lite.cc
   ${protobuf_source_dir}/src/google/protobuf/generated_message_util.cc
@@ -51,6 +50,7 @@ set(protobuf_SOURCE_FILES
   ${protobuf_source_dir}/src/google/protobuf/message.cc
   ${protobuf_source_dir}/src/google/protobuf/message_lite.cc
   ${protobuf_source_dir}/src/google/protobuf/parse_context.cc
+  ${protobuf_source_dir}/src/google/protobuf/reflection_internal.h
   ${protobuf_source_dir}/src/google/protobuf/reflection_ops.cc
   ${protobuf_source_dir}/src/google/protobuf/repeated_field.cc
   ${protobuf_source_dir}/src/google/protobuf/repeated_ptr_field.cc
@@ -104,6 +104,7 @@ set(protobuf_HEADER_FILES
   ${protobuf_source_dir}/src/google/protobuf/arena.h
   ${protobuf_source_dir}/src/google/protobuf/arena_impl.h
   ${protobuf_source_dir}/src/google/protobuf/arenastring.h
+  ${protobuf_source_dir}/src/google/protobuf/arenaz_sampler.h
   ${protobuf_source_dir}/src/google/protobuf/compiler/importer.h
   ${protobuf_source_dir}/src/google/protobuf/compiler/parser.h
   ${protobuf_source_dir}/src/google/protobuf/descriptor.h
@@ -121,11 +122,8 @@ set(protobuf_HEADER_FILES
   ${protobuf_source_dir}/src/google/protobuf/generated_enum_util.h
   ${protobuf_source_dir}/src/google/protobuf/generated_message_bases.h
   ${protobuf_source_dir}/src/google/protobuf/generated_message_reflection.h
-  ${protobuf_source_dir}/src/google/protobuf/generated_message_table_driven.h
-  ${protobuf_source_dir}/src/google/protobuf/generated_message_table_driven_lite.h
   ${protobuf_source_dir}/src/google/protobuf/generated_message_tctable_decl.h
   ${protobuf_source_dir}/src/google/protobuf/generated_message_tctable_impl.h
-  ${protobuf_source_dir}/src/google/protobuf/generated_message_tctable_impl.inc
   ${protobuf_source_dir}/src/google/protobuf/generated_message_util.h
   ${protobuf_source_dir}/src/google/protobuf/has_bits.h
   ${protobuf_source_dir}/src/google/protobuf/implicit_weak_message.h

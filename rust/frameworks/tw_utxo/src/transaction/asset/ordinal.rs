@@ -58,7 +58,7 @@ fn create_envelope(
         .push_slice(b"ord")
         // Separator.
         .push_opcode(OP_PUSHBYTES_1)
-        // MIME types require this addtional push. It seems that the original
+        // MIME types require this additional push. It seems that the original
         // creator inadvertently used `push_slice(&[1])`, which leads to
         // `<1><1>`, which denotes a length prefix followed by the value. On the
         // other hand, for the data, `push_slice(&[])` is used, producing `<0>`.

@@ -150,6 +150,7 @@ targets:
       - protobuf/google/protobuf/api.pb.cc
       - protobuf/google/protobuf/arena.cc
       - protobuf/google/protobuf/arenastring.cc
+      - protobuf/google/protobuf/arenaz_sampler.cc
       - protobuf/google/protobuf/compiler/importer.cc
       - protobuf/google/protobuf/compiler/parser.cc
       - protobuf/google/protobuf/descriptor.cc
@@ -164,8 +165,6 @@ targets:
       - protobuf/google/protobuf/generated_enum_util.cc
       - protobuf/google/protobuf/generated_message_bases.cc
       - protobuf/google/protobuf/generated_message_reflection.cc
-      - protobuf/google/protobuf/generated_message_table_driven.cc
-      - protobuf/google/protobuf/generated_message_table_driven_lite.cc
       - protobuf/google/protobuf/generated_message_tctable_full.cc
       - protobuf/google/protobuf/generated_message_tctable_lite.cc
       - protobuf/google/protobuf/generated_message_util.cc
