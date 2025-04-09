@@ -72,8 +72,8 @@ message Transaction {
         bytes data = 2;
     }
 
-    // Batched transaction for ERC-4337 wallets
-    message Batch {
+    // Batch transaction to a Smart Contract Wallet (ERC-4337 and ERC-7702).
+    message SCWalletBatch {
         message BatchedCall {
             // Recipient addresses.
             string address = 1;
@@ -85,7 +85,19 @@ message Transaction {
             bytes payload = 3;
         }
 
+        // Batched calls to be executed on the smart contract wallet.
         repeated BatchedCall calls = 1;
+        // Smart contract wallet type.
+        SCWalletType wallet_type = 2;
+    }
+
+    // Execute transaction to a Smart Contract Wallet (ERC-4337 and ERC-7702).
+    message SCWalletExecute {
+        // Transaction to be executed on the smart contract wallet.
+        // TODO currently, smart contract wallet address is specified in `SigningInput.toAddress`, but it will be refactored soon.
+        Transaction transaction = 1;
+        // Smart contract wallet type.
+        SCWalletType wallet_type = 2;
     }
 
     // Payload transfer
@@ -96,7 +108,10 @@ message Transaction {
         ERC721Transfer erc721_transfer = 4;
         ERC1155Transfer erc1155_transfer = 5;
         ContractGeneric contract_generic = 6;
-        Batch batch = 7;
+        // Batch transaction to a Smart Contract Wallet (ERC-4337 and ERC-7702).
+        SCWalletBatch scw_batch = 7;
+        // Execute transaction to a Smart Contract Wallet (ERC-4337 and ERC-7702).
+        SCWalletExecute scw_execute = 8;
     }
 }
 
@@ -185,8 +200,8 @@ message Authority {
     string address = 2;
 }
 
-// Smart Contract account type.
-enum SCAccountType {
+// Smart Contract Wallet type.
+enum SCWalletType {
     // ERC-4337 compatible smart contract wallet.
     // https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/accounts/SimpleAccount.sol
     SimpleAccount = 0;
@@ -225,6 +240,7 @@ message SigningInput {
     bytes max_fee_per_gas = 7;
 
     // Recipient's address.
+    // TODO currently, will be moved to each `Transaction` oneof soon.
     string to_address = 8;
 
     // The secret private key used for signing (32 bytes).
@@ -245,10 +261,8 @@ message SigningInput {
     // Used in `TransactionMode::Enveloped` only.
     repeated Access access_list = 12;
 
-    // Smart contract account type. Used in `TransactionMode::UserOp` only.
-    SCAccountType user_operation_mode = 14;
-
     // A smart contract to which we’re delegating to.
+    // Used in `TransactionMode::SetOp` only.
     // Currently, we support delegation to only one authority at a time.
     Authority eip7702_authority = 15;
 }
