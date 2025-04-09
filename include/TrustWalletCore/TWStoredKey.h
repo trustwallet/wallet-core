@@ -275,6 +275,14 @@ bool TWStoredKeyStore(struct TWStoredKey* _Nonnull key, TWString* _Nonnull path)
 TW_EXPORT_METHOD
 TWData* _Nullable TWStoredKeyDecryptPrivateKey(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
 
+/// Decrypts the encoded private key.
+///
+/// \param key Non-null pointer to a stored key
+/// \param password Non-null block of data, password of the stored key
+/// \return Decrypted encoded private key as a string if success, null pointer otherwise
+TW_EXPORT_METHOD
+TWString* _Nullable TWStoredKeyDecryptEncodedPrivateKey(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
+
 /// Decrypts the mnemonic phrase.
 ///
 /// \param key Non-null pointer to a stored key

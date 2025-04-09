@@ -63,10 +63,9 @@ struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyEncoded(TWString* _Nonn
 struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyEncodedWithEncryption(TWString* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin, enum TWStoredKeyEncryption encryption) {
     try {
         const auto& privateKeyString = *reinterpret_cast<const std::string*>(privateKey);
-        const auto decodedPrivateKeyData = TW::decodePrivateKey(coin, privateKeyString);
         const auto& nameString = *reinterpret_cast<const std::string*>(name);
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
-        return new TWStoredKey{ KeyStore::StoredKey::createWithPrivateKeyAddDefaultAddress(nameString, passwordData, coin, decodedPrivateKeyData, encryption) };
+        return new TWStoredKey{ KeyStore::StoredKey::createWithEncodedPrivateKeyAddDefaultAddress(nameString, passwordData, coin, privateKeyString, encryption) };
     } catch (...) {
         return nullptr;
     }
@@ -191,6 +190,20 @@ TWData* _Nullable TWStoredKeyDecryptPrivateKey(struct TWStoredKey* _Nonnull key,
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
         const auto data = key->impl.payload.decrypt(passwordData);
         return TWDataCreateWithBytes(data.data(), data.size());
+    } catch (...) {
+        return nullptr;
+    }
+}
+
+TWString* _Nullable TWStoredKeyDecryptEncodedPrivateKey(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
+    try {
+        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        if (!key->impl.encodedPayload) {
+            return nullptr;
+        }
+        const auto encodedData = key->impl.encodedPayload->decrypt(passwordData);
+        const auto encodedStr = std::string(reinterpret_cast<const char*>(encodedData.data()), encodedData.size());
+        return TWStringCreateWithUTF8Bytes(encodedStr.c_str());
     } catch (...) {
         return nullptr;
     }
