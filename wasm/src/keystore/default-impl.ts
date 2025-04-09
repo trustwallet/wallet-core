@@ -104,6 +104,26 @@ export class Default implements Types.IKeyStore {
     });
   }
 
+  importKeyEncoded(
+    key: string,
+    name: string,
+    password: string,
+    coin: CoinType,
+    encryption: StoredKeyEncryption
+  ): Promise<Types.Wallet> {
+    return new Promise((resolve, reject) => {
+      const { StoredKey, PrivateKey, Curve, StoredKeyEncryption } = this.core;
+
+      let pass = Buffer.from(password);
+      let storedKey = StoredKey.importPrivateKeyEncodedWithEncryption(key, name, pass, coin, encryption);
+      let wallet = this.mapWallet(storedKey);
+      storedKey.delete();
+      this.importWallet(wallet)
+        .then(() => resolve(wallet))
+        .catch((error) => reject(error));
+    });
+  }
+
   addAccounts(
     id: string,
     password: string,
@@ -146,6 +166,18 @@ export class Default implements Types.IKeyStore {
     });
   }
 
+  getKeyEncoded(
+    id: string,
+    password: string,
+  ): Promise<string> {
+    return this.load(id).then((wallet) => {
+      let storedKey = this.mapStoredKey(wallet);
+      let encodedPrivateKey = storedKey.decryptPrivateKeyEncoded(Buffer.from(password));
+      storedKey.delete();
+      return encodedPrivateKey;
+    });
+  }
+
   export(id: string, password: string): Promise<string | Uint8Array> {
     return this.load(id).then((wallet) => {
       let storedKey = this.mapStoredKey(wallet);
@@ -160,6 +192,37 @@ export class Default implements Types.IKeyStore {
         default:
           throw Types.Error.InvalidJSON;
       }
+      storedKey.delete();
+      return value;
+    });
+  }
+
+  getWalletType(id: string): Promise<Types.WalletType> {
+    return this.load(id).then((wallet) => wallet.type);
+  }
+
+  exportMnemonic(id: string, password: string): Promise<string> {
+    return this.load(id).then((wallet) => {
+      let storedKey = this.mapStoredKey(wallet);
+      let value = storedKey.decryptMnemonic(Buffer.from(password));
+      storedKey.delete();
+      return value;
+    });
+  }
+
+  exportPrivateKey(id: string, password: string): Promise<Uint8Array> {
+    return this.load(id).then((wallet) => {
+      let storedKey = this.mapStoredKey(wallet);
+      let value = storedKey.decryptPrivateKey(Buffer.from(password));
+      storedKey.delete();
+      return value;
+    });
+  }
+
+  exportEncodedPrivateKey(id: string, password: string): Promise<string> {
+    return this.load(id).then((wallet) => {
+      let storedKey = this.mapStoredKey(wallet);
+      let value = storedKey.decryptPrivateKeyEncoded(Buffer.from(password));
       storedKey.delete();
       return value;
     });

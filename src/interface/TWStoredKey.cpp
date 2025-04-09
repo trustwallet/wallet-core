@@ -8,7 +8,7 @@
 #include "Data.h"
 #include "../HDWallet.h"
 #include "../Keystore/StoredKey.h"
-
+#include "../HexCoding.h"
 #include <stdexcept>
 #include <cassert>
 
@@ -195,18 +195,25 @@ TWData* _Nullable TWStoredKeyDecryptPrivateKey(struct TWStoredKey* _Nonnull key,
     }
 }
 
-TWString* _Nullable TWStoredKeyDecryptEncodedPrivateKey(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
+TWString* _Nullable TWStoredKeyDecryptPrivateKeyEncoded(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
     try {
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
-        if (!key->impl.encodedPayload) {
-            return nullptr;
+        if (key->impl.encodedPayload) {
+            const auto encodedData = key->impl.encodedPayload->decrypt(passwordData);
+            const auto encodedStr = std::string(reinterpret_cast<const char*>(encodedData.data()), encodedData.size());
+            return TWStringCreateWithUTF8Bytes(encodedStr.c_str());
+        } else {
+            auto data = key->impl.payload.decrypt(passwordData);
+            auto str = TW::hex(data);
+            return TWStringCreateWithUTF8Bytes(str.c_str());
         }
-        const auto encodedData = key->impl.encodedPayload->decrypt(passwordData);
-        const auto encodedStr = std::string(reinterpret_cast<const char*>(encodedData.data()), encodedData.size());
-        return TWStringCreateWithUTF8Bytes(encodedStr.c_str());
     } catch (...) {
         return nullptr;
     }
+}
+
+bool TWStoredKeyIsEncoded(struct TWStoredKey* _Nonnull key) {
+    return key->impl.encodedPayload.has_value();
 }
 
 TWString* _Nullable TWStoredKeyDecryptMnemonic(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {

@@ -348,6 +348,7 @@ static const auto type = "type";
 static const auto name = "name";
 static const auto id = "id";
 static const auto crypto = "crypto";
+static const auto encodedCrypto = "encodedCrypto";
 static const auto activeAccounts = "activeAccounts";
 static const auto version = "version";
 static const auto coin = "coin";
@@ -388,6 +389,12 @@ void StoredKey::loadJson(const nlohmann::json& json) {
         throw DecryptionError::invalidKeyFile;
     }
 
+    if (json.count(CodingKeys::SK::encodedCrypto) != 0) {
+        encodedPayload = EncryptedPayload(json[CodingKeys::SK::encodedCrypto]);
+    } else { 
+        encodedPayload = std::nullopt;
+    }
+
     if (json.count(CodingKeys::SK::activeAccounts) != 0 &&
         json[CodingKeys::SK::activeAccounts].is_array()) {
         for (auto& accountJSON : json[CodingKeys::SK::activeAccounts]) {
@@ -425,6 +432,9 @@ nlohmann::json StoredKey::json() const {
 
     j[CodingKeys::SK::name] = name;
     j[CodingKeys::SK::crypto] = payload.json();
+    if (encodedPayload) {
+        j[CodingKeys::SK::encodedCrypto] = encodedPayload->json();
+    }
 
     nlohmann::json accountsJSON = nlohmann::json::array();
     for (const auto& account : accounts) {

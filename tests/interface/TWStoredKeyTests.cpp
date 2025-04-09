@@ -97,7 +97,27 @@ TEST(TWStoredKey, importPrivateKeyAes256) {
     TWPrivateKeyDelete(privateKey3);
 }
 
-TEST(TWStoredKey, importPrivateKeyEncoded) {
+TEST(TWStoredKey, importPrivateKeyEncodedHex) {
+    const auto privateKeyHex = "3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266";
+    const auto privateKey = WRAPS(TWStringCreateWithUTF8Bytes(privateKeyHex));
+    const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    const auto coin = TWCoinTypeBitcoin;
+    const auto key = WRAP(TWStoredKey, TWStoredKeyImportPrivateKeyEncoded(privateKey.get(), name.get(), password.get(), coin));
+    const auto privateKey2 = WRAPD(TWStoredKeyDecryptPrivateKey(key.get(), password.get()));
+    EXPECT_EQ(hex(data(TWDataBytes(privateKey2.get()), TWDataSize(privateKey2.get()))), privateKeyHex);
+    EXPECT_TRUE(TWStoredKeyIsEncoded(key.get()));
+    const auto privateKey2Encoded = WRAPS(TWStoredKeyDecryptPrivateKeyEncoded(key.get(), password.get()));
+    EXPECT_EQ(std::string(TWStringUTF8Bytes(privateKey2Encoded.get())), privateKeyHex);
+    
+    const auto privateKey3 = TWStoredKeyPrivateKey(key.get(), coin, password.get());
+    const auto pkData3 = WRAPD(TWPrivateKeyData(privateKey3));
+    EXPECT_EQ(hex(data(TWDataBytes(pkData3.get()), TWDataSize(pkData3.get()))), privateKeyHex);
+    TWPrivateKeyDelete(privateKey3);
+}
+
+TEST(TWStoredKey, importPrivateKeyEncodedStellar) {
     const auto privateKeyEncoded = "SAV76USXIJOBMEQXPANUOQM6F5LIOTLPDIDVRJBFFE2MDJXG24TAPUU7";
     const auto decodedPrivateKeyHex = "2bff5257425c161217781b47419e2f56874d6f1a0758a4252934c1a6e6d72607";
     const auto privateKey = WRAPS(TWStringCreateWithUTF8Bytes(privateKeyEncoded));
@@ -108,20 +128,27 @@ TEST(TWStoredKey, importPrivateKeyEncoded) {
     const auto key = WRAP(TWStoredKey, TWStoredKeyImportPrivateKeyEncoded(privateKey.get(), name.get(), password.get(), coin));
     const auto privateKey2 = WRAPD(TWStoredKeyDecryptPrivateKey(key.get(), password.get()));
     EXPECT_EQ(hex(data(TWDataBytes(privateKey2.get()), TWDataSize(privateKey2.get()))), decodedPrivateKeyHex);
-    const auto privateKey2Encoded = WRAPS(TWStoredKeyDecryptEncodedPrivateKey(key.get(), password.get()));
+    EXPECT_TRUE(TWStoredKeyIsEncoded(key.get()));
+    const auto privateKey2Encoded = WRAPS(TWStoredKeyDecryptPrivateKeyEncoded(key.get(), password.get()));
     EXPECT_EQ(std::string(TWStringUTF8Bytes(privateKey2Encoded.get())), privateKeyEncoded);
     
     const auto privateKey3 = TWStoredKeyPrivateKey(key.get(), coin, password.get());
     const auto pkData3 = WRAPD(TWPrivateKeyData(privateKey3));
     EXPECT_EQ(hex(data(TWDataBytes(pkData3.get()), TWDataSize(pkData3.get()))), decodedPrivateKeyHex);
     TWPrivateKeyDelete(privateKey3);
+}
 
+TEST(TWStoredKey, importPrivateKeyEncodedSolana) {
     const auto solanaPrivateKey = "A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr";
     const auto decodedSolanaPrivateKeyHex = "8778cc93c6596387e751d2dc693bbd93e434bd233bc5b68a826c56131821cb63";
+    const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
     const auto solanaKey = WRAP(TWStoredKey, TWStoredKeyImportPrivateKeyEncoded(WRAPS(TWStringCreateWithUTF8Bytes(solanaPrivateKey)).get(), name.get(), password.get(), TWCoinTypeSolana));
     const auto solanaPrivateKey2 = WRAPD(TWStoredKeyDecryptPrivateKey(solanaKey.get(), password.get()));
     EXPECT_EQ(hex(data(TWDataBytes(solanaPrivateKey2.get()), TWDataSize(solanaPrivateKey2.get()))), decodedSolanaPrivateKeyHex);
-    const auto solanaPrivateKey2Encoded = WRAPS(TWStoredKeyDecryptEncodedPrivateKey(solanaKey.get(), password.get()));
+    EXPECT_TRUE(TWStoredKeyIsEncoded(solanaKey.get()));
+    const auto solanaPrivateKey2Encoded = WRAPS(TWStoredKeyDecryptPrivateKeyEncoded(solanaKey.get(), password.get()));
     EXPECT_EQ(std::string(TWStringUTF8Bytes(solanaPrivateKey2Encoded.get())), solanaPrivateKey);
     
     const auto solanaPrivateKey3 = TWStoredKeyPrivateKey(solanaKey.get(), TWCoinTypeSolana, password.get());
