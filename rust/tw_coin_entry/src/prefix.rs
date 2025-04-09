@@ -13,7 +13,7 @@ pub enum AddressPrefix {
     SubstrateNetwork(u16),
 }
 
-/// A blockchain's address prefix should be convertable from an `AddressPrefix`.
+/// A blockchain's address prefix should be convertible from an `AddressPrefix`.
 pub trait Prefix: TryFrom<AddressPrefix, Error = AddressError> {}
 
 impl<T> Prefix for T where T: TryFrom<AddressPrefix, Error = AddressError> {}

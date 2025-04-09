@@ -88,7 +88,7 @@ pub unsafe extern "C" fn tw_private_key_data(key: *mut TWPrivateKey) -> CByteArr
 ///
 /// \param key *non-null* byte array.
 /// \param key_len the length of the `key` array.
-/// \param curve Eliptic curve of the private key.
+/// \param curve Elliptic curve of the private key.
 /// \return true if the private key is valid, false otherwise.
 #[no_mangle]
 pub unsafe extern "C" fn tw_private_key_is_valid(
@@ -106,7 +106,7 @@ pub unsafe extern "C" fn tw_private_key_is_valid(
 /// \param key *non-null* pointer to a Private key
 /// \param message *non-null* byte array.
 /// \param message_len the length of the `input` array.
-/// \param curve Eliptic curve.
+/// \param curve Elliptic curve.
 /// \return Signature as a C-compatible result with a C-compatible byte array.
 #[no_mangle]
 pub unsafe extern "C" fn tw_private_key_sign(
