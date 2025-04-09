@@ -5,12 +5,13 @@
 use crate::coin_context::CoinContext;
 use crate::derivation::DerivationWithPath;
 use tw_hash::hasher::Hasher;
-use tw_keypair::tw::PublicKeyType;
+use tw_keypair::tw::{Curve, PublicKeyType};
 
 /// Test coin context that panics on any `CoinContext` method call.
 #[derive(Default)]
 pub struct TestCoinContext {
     pub public_key_type: Option<PublicKeyType>,
+    pub curve: Option<Curve>,
     pub address_hasher: Option<Hasher>,
     pub hrp: Option<String>,
     pub p2pkh: Option<u8>,
@@ -33,6 +34,12 @@ impl CoinContext for TestCoinContext {
     fn public_key_type(&self) -> PublicKeyType {
         self.public_key_type
             .expect("EmptyCoinContext::public_key_type was not set")
+    }
+
+    fn curve(&self) -> Curve {
+        self.curve
+            .clone()
+            .expect("EmptyCoinContext::curve was not set")
     }
 
     fn address_hasher(&self) -> Option<Hasher> {

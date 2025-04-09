@@ -22,7 +22,7 @@ class TestNativeZetaChainSigner {
 
     @Test
     fun NativeZetaChainTransactionSigning() {
-        val key = PrivateKey("8d2a3bd62d300a148c89dc8635f87b7a24a951bd1c4e78675fe40e1a640d46ed".toHexByteArray())
+        val key = PrivateKey("8d2a3bd62d300a148c89dc8635f87b7a24a951bd1c4e78675fe40e1a640d46ed".toHexByteArray(), CoinType.NATIVEZETACHAIN.curve())
         val publicKey = key.getPublicKeySecp256k1(false)
         val from = AnyAddress(publicKey, CoinType.NATIVEZETACHAIN).description()
 

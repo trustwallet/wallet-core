@@ -25,7 +25,7 @@ class TestInternetComputerSigner {
 
     @Test
     fun InternetComputerTransactionSigning() {
-        val key = PrivateKey("227102911bb99ce7285a55f952800912b7d22ebeeeee59d77fc33a5d7c7080be".toHexByteArray())
+        val key = PrivateKey("227102911bb99ce7285a55f952800912b7d22ebeeeee59d77fc33a5d7c7080be".toHexByteArray(), CoinType.INTERNETCOMPUTER.curve())
 
         val input = InternetComputer.SigningInput.newBuilder()
             .setTransaction(InternetComputer.Transaction.newBuilder().apply {
@@ -43,7 +43,7 @@ class TestInternetComputerSigner {
 
     @Test
     fun InternetComputerTransactionSigningWithInvalidToAccountIdentifier() {
-        val key = PrivateKey("227102911bb99ce7285a55f952800912b7d22ebeeeee59d77fc33a5d7c7080be".toHexByteArray())
+        val key = PrivateKey("227102911bb99ce7285a55f952800912b7d22ebeeeee59d77fc33a5d7c7080be".toHexByteArray(), CoinType.INTERNETCOMPUTER.curve())
 
         val input = InternetComputer.SigningInput.newBuilder()
             .setTransaction(InternetComputer.Transaction.newBuilder().apply {
@@ -61,7 +61,7 @@ class TestInternetComputerSigner {
 
     @Test
     fun InternetComputerTransactionSigningWithInvalidAmount() {
-        val key = PrivateKey("227102911bb99ce7285a55f952800912b7d22ebeeeee59d77fc33a5d7c7080be".toHexByteArray())
+        val key = PrivateKey("227102911bb99ce7285a55f952800912b7d22ebeeeee59d77fc33a5d7c7080be".toHexByteArray(), CoinType.INTERNETCOMPUTER.curve())
 
         val input = InternetComputer.SigningInput.newBuilder()
             .setTransaction(InternetComputer.Transaction.newBuilder().apply {

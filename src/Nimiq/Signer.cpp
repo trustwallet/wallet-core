@@ -34,7 +34,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
 void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept {
     auto preImage = transaction.getPreImage();
-    auto signature = privateKey.sign(preImage, TWCurveED25519);
+    auto signature = privateKey.sign(preImage);
     std::copy(signature.begin(), signature.end(), transaction.signature.begin());
 }
 

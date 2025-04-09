@@ -15,7 +15,7 @@ namespace TW::Bitcoin::tests {
 
 void testBitcoinAddressFromPublicKeyDerivation(const char* privateKey, TWDerivation derivation, const char* expectedAddr) {
     const auto data = DATA(privateKey);
-    const auto privkey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(data.get()));
+    const auto privkey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(data.get(), TWCoinTypeCurve(TWCoinTypeBitcoin)));
     const auto pubkey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyByType(privkey.get(), TWPublicKeyTypeSECP256k1));
     const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey.get(), TWCoinTypeBitcoin, derivation));
     const auto addrDescription = WRAPS(TWAnyAddressDescription(addr.get()));

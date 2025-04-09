@@ -11,7 +11,7 @@ class PolymeshTests: XCTestCase {
     let testKey1 = Data(hexString: "0x790a0a01ec2e7c7db4abcaffc92ce70a960ef9ad3021dbe3bf327c1c6343aee4")!
 
     func testAddress() {
-        let key = PrivateKey(data: Data(hexString: "0x790a0a01ec2e7c7db4abcaffc92ce70a960ef9ad3021dbe3bf327c1c6343aee4")!)!
+        let key = PrivateKey(data: Data(hexString: "0x790a0a01ec2e7c7db4abcaffc92ce70a960ef9ad3021dbe3bf327c1c6343aee4")!, curve: CoinType.polymesh.curve)!
         let pubkey = key.getPublicKeyEd25519()
         let address = AnyAddress(publicKey: pubkey, coin: .polymesh)
         let addressFromString = AnyAddress(string: "2EANwBfNsFu9KV8JsW5sbhF6ft8bzvw5EW1LCrgHhrqtK6Ys", coin: .polymesh)!

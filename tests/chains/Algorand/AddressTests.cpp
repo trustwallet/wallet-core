@@ -29,7 +29,7 @@ TEST(AlgorandAddress, Validation) {
 }
 
 TEST(AlgorandAddress, FromPrivateKey) {
-    auto privateKey = PrivateKey(parse_hex("526d96fffdbfe787b2f00586298538f9a019e97f6587964dc61aae9ad1d7fa23"));
+    auto privateKey = PrivateKey(parse_hex("526d96fffdbfe787b2f00586298538f9a019e97f6587964dc61aae9ad1d7fa23"), TWCurveED25519);
     auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeED25519));
     ASSERT_EQ(address.string(), "JBCQYJ2FREG667NAN7BFKH4RFIKPT7CYDQJNW3SNN5Z7F7ILFLKQ346TSU");
 }
@@ -39,7 +39,7 @@ TEST(AlgorandAddress, FromPublicKey) {
     auto address = Address(publicKey);
     ASSERT_EQ(address.string(), "YK2CHL5IWAEV4WXBAVTIXENSCMW3JWW36OFM7RSJBDJUO2QADEP5QYVO5I");
 
-    auto privateKey2 = PrivateKey(parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f"));
+    auto privateKey2 = PrivateKey(parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f"), TWCurveSECP256k1);
     auto publicKey2 = privateKey2.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
     EXPECT_ANY_THROW(new Address(publicKey2));
 }

@@ -11,12 +11,12 @@ import Long = require("long");
 describe("InternetComputer", () => {
 
     it("test address", () => {
-        const { PrivateKey, HexCoding, AnyAddress, CoinType, Curve } = globalThis.core;
+        const { PrivateKey, HexCoding, AnyAddress, CoinType, Curve, CoinTypeExt } = globalThis.core;
         const privateKeyBytes = HexCoding.decode("ee42eaada903e20ef6e5069f0428d552475c1ea7ed940842da6448f6ef9d48e7");
 
         assert.isTrue(PrivateKey.isValid(privateKeyBytes, Curve.secp256k1));
 
-        const privateKey = PrivateKey.createWithData(privateKeyBytes);
+        const privateKey = PrivateKey.createWithData(privateKeyBytes, CoinTypeExt.curve(CoinType.hedera));
         const publicKey = privateKey.getPublicKeySecp256k1(false);
 
         assert.equal(

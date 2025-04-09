@@ -143,7 +143,7 @@ TEST(CardanoSigning, SendNft) {
     utxo3->set_address(fromAddress);
     utxo3->set_amount(2000000);
 
-    PrivateKey privKey(parse_hex(fromAddressPrivKey));
+    PrivateKey privKey(parse_hex(fromAddressPrivKey), TWCurveED25519ExtendedCardano);
     input.add_private_key(privKey.bytes.data(), privKey.bytes.size());
 
     // Set an output info.
@@ -1012,7 +1012,9 @@ TEST(CardanoSigning, SignMessageWithKey) {
         "69272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000"
         "1111111111111111111111111111111111111111111111111111111111111111"
         "1111111111111111111111111111111111111111111111111111111111111111"
-        "1111111111111111111111111111111111111111111111111111111111111111"));
+        "1111111111111111111111111111111111111111111111111111111111111111"),
+        TWCurveED25519ExtendedCardano
+    );
 
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
     EXPECT_EQ(hex(publicKey.bytes),
@@ -1024,7 +1026,7 @@ TEST(CardanoSigning, SignMessageWithKey) {
     const auto sampleMessageStr = "Hello world";
     const auto sampleMessage = data(sampleMessageStr);
 
-    const auto signature = privateKey.sign(sampleMessage, TWCurveED25519ExtendedCardano);
+    const auto signature = privateKey.sign(sampleMessage);
 
     const auto sampleRightSignature = "1096ddcfb2ad21a4c0d861ef3fabe18841e8de88105b0d8e36430d7992c588634ead4100c32b2800b31b65e014d54a8238bdda63118d829bf0bcf1b631e86f0e";
     EXPECT_EQ(hex(signature), sampleRightSignature);

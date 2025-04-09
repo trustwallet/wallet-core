@@ -5,9 +5,17 @@
 use tw_encoding::hex;
 use tw_hash::sha2::sha256;
 use tw_hash::sha3::keccak256;
-use tw_keypair::ffi::pubkey::{tw_public_key_delete, tw_public_key_verify};
+use tw_keypair::ffi::privkey::{
+    tw_private_key_get_public_key_by_type, tw_private_key_sign, tw_private_key_sign_as_der,
+};
+use tw_keypair::ffi::pubkey::{
+    tw_public_key_compressed, tw_public_key_data, tw_public_key_delete, tw_public_key_extended,
+    tw_public_key_is_valid, tw_public_key_recover_from_signature, tw_public_key_type,
+    tw_public_key_verify, tw_public_key_verify_as_der,
+};
+use tw_keypair::test_utils::tw_private_key_helper::TWPrivateKeyHelper;
 use tw_keypair::test_utils::tw_public_key_helper::TWPublicKeyHelper;
-use tw_keypair::tw::PublicKeyType;
+use tw_keypair::tw::{Curve, PublicKeyType};
 use tw_memory::ffi::c_byte_array::CByteArray;
 
 fn test_verify(ty: PublicKeyType, public: &str, msg: &str, sign: &str) {
@@ -38,6 +46,8 @@ fn test_tw_public_key_create_by_type() {
         PublicKeyType::Secp256k1,
     );
     assert!(!tw_public.is_null());
+    let ty = unsafe { tw_public_key_type(tw_public.ptr()) };
+    assert_eq!(ty, PublicKeyType::Secp256k1 as u32);
 
     // Compressed pubkey with '03' prefix.
     let tw_public = TWPublicKeyHelper::with_hex(
@@ -45,12 +55,16 @@ fn test_tw_public_key_create_by_type() {
         PublicKeyType::Secp256k1,
     );
     assert!(!tw_public.is_null());
+    let ty = unsafe { tw_public_key_type(tw_public.ptr()) };
+    assert_eq!(ty, PublicKeyType::Secp256k1 as u32);
 
     let tw_public = TWPublicKeyHelper::with_hex(
         "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c166b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91",
         PublicKeyType::Secp256k1Extended,
     );
     assert!(!tw_public.is_null());
+    let ty = unsafe { tw_public_key_type(tw_public.ptr()) };
+    assert_eq!(ty, PublicKeyType::Secp256k1Extended as u32);
 
     // Pass an extended pubkey, but Secp256k1 type.
     let tw_public = TWPublicKeyHelper::with_hex(
@@ -58,6 +72,8 @@ fn test_tw_public_key_create_by_type() {
         PublicKeyType::Secp256k1,
     );
     assert!(tw_public.is_null());
+    let ty = unsafe { tw_public_key_type(tw_public.ptr()) };
+    assert_eq!(ty, PublicKeyType::Secp256k1 as u32);
 
     // Pass a compressed pubkey, but Secp256k1Extended type.
     let tw_public = TWPublicKeyHelper::with_hex(
@@ -65,6 +81,8 @@ fn test_tw_public_key_create_by_type() {
         PublicKeyType::Secp256k1Extended,
     );
     assert!(tw_public.is_null());
+    let ty = unsafe { tw_public_key_type(tw_public.ptr()) };
+    assert_eq!(ty, PublicKeyType::Secp256k1 as u32);
 }
 
 #[test]
@@ -119,4 +137,201 @@ fn test_tw_public_key_verify_ed25519_extended_cardano() {
     let msg = hex::encode(keccak256(b"hello").as_slice(), false);
     let sign = "375df53b6a4931dcf41e062b1c64288ed4ff3307f862d5c1b1c71964ce3b14c99422d0fdfeb2807e9900a26d491d5e8a874c24f98eec141ed694d7a433a90f08";
     test_verify(PublicKeyType::Ed25519ExtendedCardano, public, &msg, sign);
+}
+
+#[test]
+fn test_tw_public_key_compressed_extended() {
+    let tw_privkey = TWPrivateKeyHelper::with_hex(
+        "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
+        Curve::Secp256k1.to_raw(),
+    );
+    assert!(!tw_privkey.is_null());
+
+    let tw_pubkey = unsafe {
+        TWPublicKeyHelper::wrap(tw_private_key_get_public_key_by_type(
+            tw_privkey.ptr(),
+            PublicKeyType::Secp256k1 as u32,
+        ))
+    };
+    assert!(!tw_pubkey.is_null());
+
+    unsafe {
+        assert_eq!(
+            tw_public_key_type(tw_pubkey.ptr()),
+            PublicKeyType::Secp256k1 as u32
+        );
+    }
+
+    let tw_extended = unsafe { TWPublicKeyHelper::wrap(tw_public_key_extended(tw_pubkey.ptr())) };
+    assert!(!tw_extended.is_null());
+
+    unsafe {
+        assert_eq!(
+            tw_public_key_type(tw_extended.ptr()),
+            PublicKeyType::Secp256k1Extended as u32
+        );
+    }
+
+    let tw_compressed =
+        unsafe { TWPublicKeyHelper::wrap(tw_public_key_compressed(tw_extended.ptr())) };
+    assert!(!tw_compressed.is_null());
+
+    unsafe {
+        assert_eq!(
+            tw_public_key_type(tw_compressed.ptr()),
+            PublicKeyType::Secp256k1 as u32
+        );
+    }
+}
+
+#[test]
+fn test_tw_public_key_recover() {
+    let message =
+        hex::decode("de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb11432").unwrap();
+    let signature = hex::decode("00000000000000000000000000000000000000000000000000000000000000020123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef80").unwrap();
+
+    let message_raw = CByteArray::from(message);
+    let signature_raw = CByteArray::from(signature);
+
+    let tw_public_key = unsafe {
+        TWPublicKeyHelper::wrap(tw_public_key_recover_from_signature(
+            signature_raw.data(),
+            signature_raw.size(),
+            message_raw.data(),
+            message_raw.size(),
+            0x01,
+        ))
+    };
+
+    assert!(!tw_public_key.is_null());
+
+    unsafe {
+        assert_eq!(
+            tw_public_key_type(tw_public_key.ptr()),
+            PublicKeyType::Secp256k1Extended as u32
+        );
+
+        let public_key_data = tw_public_key_data(tw_public_key.ptr());
+        let public_key_hex = hex::encode(public_key_data.into_vec(), false);
+
+        assert_eq!(
+            public_key_hex,
+            "0456d8089137b1fd0d890f8c7d4a04d0fd4520a30b19518ee87bd168ea12ed8090329274c4c6c0d9df04515776f2741eeffc30235d596065d718c3973e19711ad0"
+        );
+    }
+}
+
+#[test]
+fn test_tw_public_key_verify_as_der() {
+    let tw_privkey = TWPrivateKeyHelper::with_hex(
+        "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
+        Curve::Secp256k1.to_raw(),
+    );
+    assert!(!tw_privkey.is_null());
+
+    let message = "Hello";
+    let message_data = message.as_bytes();
+    let digest = keccak256(message_data);
+    let digest_raw = CByteArray::from(digest.to_vec());
+
+    // Sign the digest using DER format
+    let signature = unsafe {
+        tw_private_key_sign_as_der(tw_privkey.ptr(), digest_raw.data(), digest_raw.size())
+            .into_vec()
+    };
+    let signature_raw = CByteArray::from(signature);
+
+    // Get the public key
+    let tw_public_key = unsafe {
+        TWPublicKeyHelper::wrap(tw_private_key_get_public_key_by_type(
+            tw_privkey.ptr(),
+            PublicKeyType::Secp256k1Extended as u32,
+        ))
+    };
+
+    // Verify the DER signature
+    let is_valid_der = unsafe {
+        tw_public_key_verify_as_der(
+            tw_public_key.ptr(),
+            signature_raw.data(),
+            signature_raw.size(),
+            digest_raw.data(),
+            digest_raw.size(),
+        )
+    };
+    assert!(is_valid_der, "DER signature verification failed");
+
+    // Regular verification should fail with DER signature
+    let is_valid_regular = unsafe {
+        tw_public_key_verify(
+            tw_public_key.ptr(),
+            signature_raw.data(),
+            signature_raw.size(),
+            digest_raw.data(),
+            digest_raw.size(),
+        )
+    };
+    assert!(
+        !is_valid_regular,
+        "Regular verification should fail with DER signature"
+    );
+}
+
+#[test]
+fn test_tw_public_key_verify_zilliqa() {
+    let tw_privkey = TWPrivateKeyHelper::with_hex(
+        "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
+        Curve::ZilliqaSchnorr.to_raw(),
+    );
+    assert!(!tw_privkey.is_null());
+
+    let message = "hello schnorr";
+    let message_data = message.as_bytes();
+    let digest = sha256(message_data);
+    let digest_raw = CByteArray::from(digest.to_vec());
+
+    // Sign the digest using Zilliqa format
+    let signature = unsafe {
+        tw_private_key_sign(tw_privkey.ptr(), digest_raw.data(), digest_raw.size()).into_vec()
+    };
+    let signature_raw = CByteArray::from(signature.clone());
+
+    // Get the public key
+    let tw_public_key = unsafe {
+        TWPublicKeyHelper::wrap(tw_private_key_get_public_key_by_type(
+            tw_privkey.ptr(),
+            PublicKeyType::ZilliqaSchnorr as u32,
+        ))
+    };
+
+    // Verify the Zilliqa signature
+    let is_valid = unsafe {
+        tw_public_key_verify(
+            tw_public_key.ptr(),
+            signature_raw.data(),
+            signature_raw.size(),
+            digest_raw.data(),
+            digest_raw.size(),
+        )
+    };
+    assert!(is_valid, "Zilliqa signature verification failed");
+
+    // Check the expected signature
+    assert_eq!(
+        hex::encode(signature, false),
+        "b8118ccb99563fe014279c957b0a9d563c1666e00367e9896fe541765246964f64a53052513da4e6dc20fdaf69ef0d95b4ca51c87ad3478986cf053c2dd0b853"
+    );
+}
+
+#[test]
+fn test_public_key_is_valid() {
+    let public_key_hex = "0xbeff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa527908";
+    let bytes = hex::decode(public_key_hex).unwrap();
+    let bytes_ptr = bytes.as_ptr();
+    let bytes_len = bytes.len();
+
+    let is_valid =
+        unsafe { tw_public_key_is_valid(bytes_ptr, bytes_len, PublicKeyType::Ed25519 as u32) };
+
+    assert!(is_valid);
 }

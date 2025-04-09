@@ -19,7 +19,7 @@ class TestKavaTransactions {
 
     @Test
     fun testSigningTransaction() {
-        val key = PrivateKey("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005".toHexByteArray())
+        val key = PrivateKey("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005".toHexByteArray(), CoinType.KAVA.curve())
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, KAVA).description()
 

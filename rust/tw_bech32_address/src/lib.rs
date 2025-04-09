@@ -202,7 +202,7 @@ impl Serialize for Bech32Address {
 mod tests {
     use super::*;
     use tw_encoding::hex::{DecodeHex, ToHex};
-
+    use tw_keypair::tw::Curve;
     struct FromPublicKeyTestInput<'a> {
         hrp: &'a str,
         private_key: &'a str,
@@ -212,7 +212,8 @@ mod tests {
     }
 
     fn test_from_public_key(input: FromPublicKeyTestInput<'_>) {
-        let private_key = PrivateKey::new(input.private_key.decode_hex().unwrap()).unwrap();
+        let private_key =
+            PrivateKey::new(input.private_key.decode_hex().unwrap(), Curve::Secp256k1).unwrap();
         let public_key = private_key
             .get_public_key_by_type(input.public_key_type)
             .unwrap();

@@ -10,9 +10,9 @@ import Long = require("long");
 
 describe("TheOpenNetwork", () => {
   it("test address from private key TheOpenNetwork", () => {
-    const { PrivateKey, HexCoding, AnyAddress, CoinType, Curve } = globalThis.core;
+    const { PrivateKey, HexCoding, AnyAddress, CoinType, Curve, CoinTypeExt } = globalThis.core;
     let data = HexCoding.decode("63474e5fe9511f1526a50567ce142befc343e71a49b865ac3908f58667319cb8");
-    let privateKey = PrivateKey.createWithData(data);
+    let privateKey = PrivateKey.createWithData(data, CoinTypeExt.curve(CoinType.ton));
 
     assert.isTrue(PrivateKey.isValid(data, Curve.ed25519));
 
@@ -66,7 +66,7 @@ describe("TheOpenNetwork", () => {
   });
 
   it("test sign TheOpenNetwork", () => {
-    const { PrivateKey, HexCoding, CoinType, AnySigner } = globalThis.core;
+    const { PrivateKey, HexCoding, CoinType, AnySigner, CoinTypeExt } = globalThis.core;
 
     let privateKeyData = HexCoding.decode("c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0");
 
@@ -79,7 +79,7 @@ describe("TheOpenNetwork", () => {
 
     let input = TW.TheOpenNetwork.Proto.SigningInput.create({
         messages: [transfer],
-        privateKey: PrivateKey.createWithData(privateKeyData).data(),
+        privateKey: PrivateKey.createWithData(privateKeyData, CoinTypeExt.curve(CoinType.ton)).data(),
         sequenceNumber: 6,
         expireAt: 1671132440,
         walletVersion: TW.TheOpenNetwork.Proto.WalletVersion.WALLET_V4_R2,
@@ -96,7 +96,7 @@ describe("TheOpenNetwork", () => {
   });
 
   it("test jetton transfer TheOpenNetwork", () => {
-    const { PrivateKey, HexCoding, CoinType, AnySigner } = globalThis.core;
+    const { PrivateKey, HexCoding, CoinType, AnySigner, CoinTypeExt } = globalThis.core;
 
     let privateKeyData = HexCoding.decode("c054900a527538c1b4325688a421c0469b171c29f23a62da216e90b0df2412ee");
 
@@ -118,7 +118,7 @@ describe("TheOpenNetwork", () => {
 
     let input = TW.TheOpenNetwork.Proto.SigningInput.create({
         messages: [transfer],
-        privateKey: PrivateKey.createWithData(privateKeyData).data(),
+        privateKey: PrivateKey.createWithData(privateKeyData, CoinTypeExt.curve(CoinType.ton)).data(),
         sequenceNumber: 1,
         expireAt: 1787693046,
         walletVersion: TW.TheOpenNetwork.Proto.WalletVersion.WALLET_V4_R2,

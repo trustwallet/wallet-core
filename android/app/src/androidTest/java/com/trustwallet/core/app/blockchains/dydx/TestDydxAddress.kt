@@ -17,7 +17,7 @@ class TestDydxAddress {
 
     @Test
     fun testAddress() {
-        val key = PrivateKey("a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433".toHexByteArray())
+        val key = PrivateKey("a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433".toHexByteArray(), CoinType.DYDX.curve())
         val pubKey = key.getPublicKeySecp256k1(true)
         val address = AnyAddress(pubKey, CoinType.DYDX)
         val expected = AnyAddress("dydx1mry47pkga5tdswtluy0m8teslpalkdq0hc72uz", CoinType.DYDX)

@@ -9,7 +9,7 @@ namespace TW::StarkEx {
 
 std::string MessageSigner::signMessage(const TW::PrivateKey& privateKey, const std::string& message) {
     auto digest = parse_hex(message, true);
-    return hex(privateKey.sign(digest, TWCurveStarkex));
+    return hex(privateKey.sign(digest));
 }
 
 bool MessageSigner::verifyMessage(const PublicKey& publicKey, const std::string& message, const std::string& signature) noexcept {

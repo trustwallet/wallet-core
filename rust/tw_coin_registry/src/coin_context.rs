@@ -6,7 +6,7 @@ use crate::registry::CoinItem;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::derivation::DerivationWithPath;
 use tw_hash::hasher::Hasher;
-use tw_keypair::tw::PublicKeyType;
+use tw_keypair::tw::{Curve, PublicKeyType};
 
 pub struct CoinRegistryContext {
     item: &'static CoinItem,
@@ -23,6 +23,11 @@ impl CoinContext for CoinRegistryContext {
     #[inline]
     fn public_key_type(&self) -> PublicKeyType {
         self.item.public_key_type
+    }
+
+    #[inline]
+    fn curve(&self) -> Curve {
+        self.item.curve.clone()
     }
 
     #[inline]

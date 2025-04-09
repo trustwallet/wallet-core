@@ -7,12 +7,12 @@ import XCTest
 
 class GroestlcoinTests: XCTestCase {
     func testAddress() {
-        let privateKey1 = PrivateKey(data: Data(hexString: "3c3385ddc6fd95ba7282051aeb440bc75820b8c10db5c83c052d7586e3e98e84")!)!
+        let privateKey1 = PrivateKey(data: Data(hexString: "3c3385ddc6fd95ba7282051aeb440bc75820b8c10db5c83c052d7586e3e98e84")!, curve: CoinType.groestlcoin.curve)!
         let publicKey1 = privateKey1.getPublicKeySecp256k1(compressed: true)
         let legacyAddress = GroestlcoinAddress(publicKey: publicKey1, prefix: CoinType.groestlcoin.p2pkhPrefix)
         XCTAssertEqual(GroestlcoinAddress(string: "Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM")!.description, legacyAddress.description)
 
-        let privateKey2 = PrivateKey(data: Data(hexString: "8c59c0a6f433a961109d4fd485c4562f87e0f1ad0ece32e1db406a84c5028391")!)!
+        let privateKey2 = PrivateKey(data: Data(hexString: "8c59c0a6f433a961109d4fd485c4562f87e0f1ad0ece32e1db406a84c5028391")!, curve: CoinType.groestlcoin.curve)!
         let publicKey2 = privateKey2.getPublicKeySecp256k1(compressed: true)
         let bech32Address = SegwitAddress(hrp: .groestlcoin, publicKey: publicKey2)
         XCTAssertEqual(SegwitAddress(string: "grs1qsjpmsmm4x34wlt6kk4zef9u0jtculguktwgwg4")!.description, bech32Address.description)

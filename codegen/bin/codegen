@@ -62,16 +62,28 @@ end.parse!
 
 entities = []
 files = []
-Dir.foreach(options.input) do |item|
-  next if ['.', '..', '.DS_Store'].include?(item)
-
-  file_path = File.expand_path(File.join(options.input, item))
+def process_file(file_path, entities, files)
   entity = Parser.new(path: file_path).parse
-  next if entity.nil?
+  return if entity.nil?
 
   entities << entity
-  files << File.basename(item, '.h').sub(/^TW/, '')
+  files << File.basename(file_path, '.h').sub(/^TW/, '')
 end
+
+def process_directory(dir_path, entities, files)
+  Dir.foreach(dir_path) do |item|
+    next if ['.', '..', '.DS_Store'].include?(item)
+
+    path = File.expand_path(File.join(dir_path, item))
+    if File.directory?(path)
+      process_directory(path, entities, files)
+    else
+      process_file(path, entities, files) if item.end_with?('.h')
+    end
+  end
+end
+
+process_directory(options.input, entities, files)
 
 generator = CodeGenerator.new(entities: entities, files: files, output_folder: options.output)
 if options.swift

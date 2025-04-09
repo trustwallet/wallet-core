@@ -46,7 +46,7 @@ TEST(RippleCompiler, CompileRippleWithSignatures) {
     auto preImageHash = preSigningOutput.data_hash();
     EXPECT_EQ(hex(preImageHash), "86ef78df7a4aad29e6b3730f7965c1bd5ccd2439426cb738d7c494a64cfaf4af");
     // Simulate signature, normally obtained from signature server
-    const auto signature = privateKey.sign(TW::data(preImageHash), TWCurveSECP256k1);
+    const auto signature = privateKey.sign(TW::data(preImageHash));
     // Verify signature (pubkey & hash & signature)
     EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
 

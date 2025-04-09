@@ -17,7 +17,7 @@ class TestThetaFuelAddress {
 
     @Test
     fun testAddress() {
-        val key = PrivateKey("4646464646464646464646464646464646464646464646464646464646464646".toHexByteArray())
+        val key = PrivateKey("4646464646464646464646464646464646464646464646464646464646464646".toHexByteArray(), CoinType.THETAFUEL.curve())
         val pubkey = key.getPublicKeySecp256k1(false)
         val address = AnyAddress(pubkey, CoinType.THETAFUEL)
         val expected = AnyAddress("0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F", CoinType.THETAFUEL)
