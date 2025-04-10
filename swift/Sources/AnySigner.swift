@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 import Foundation
-import WalletCoreSwiftProtobuf
+import SwiftProtobuf
 
 public typealias SigningInput = Message
 public typealias SigningOutput = Message
