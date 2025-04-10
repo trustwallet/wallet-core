@@ -1,16 +1,16 @@
 PODS:
-  - SwiftProtobuf (1.13.0)
+  - WalletCoreSwiftProtobuf (1.29.0)
 
 DEPENDENCIES:
-  - SwiftProtobuf
+  - WalletCoreSwiftProtobuf (from `WalletCoreSwiftProtobuf.podspec`)
 
-SPEC REPOS:
-  trunk:
-    - SwiftProtobuf
+EXTERNAL SOURCES:
+  WalletCoreSwiftProtobuf:
+    :podspec: WalletCoreSwiftProtobuf.podspec
 
 SPEC CHECKSUMS:
-  SwiftProtobuf: fd4693388a96c8c2df35d3b063272b0e7c499d00
+  WalletCoreSwiftProtobuf: 1d46b8125aeeebddc002cf4375078420f47748dc
 
-PODFILE CHECKSUM: aac2324ba35cdd5631cb37618cd483887bab9cfd
+PODFILE CHECKSUM: 925076324f8f0386dfd98f1cf254f2b463c15876
 
 COCOAPODS: 1.16.2

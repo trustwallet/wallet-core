@@ -69,6 +69,9 @@ tools/doxygen_convert_comments
 
 if [ -x "$(command -v protoc-gen-swift)" ] && isTargetSpecified "ios"; then
     "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=lite:jni/proto --swift_out=swift/Sources/Generated/Protobuf --swift_opt=Visibility=Public src/proto/*.proto
+    # Replace SwiftProtobuf with WalletCoreSwiftProtobuf
+     find swift/Sources/Generated/Protobuf -name "*.swift" -exec sed -i '' 's/import SwiftProtobuf/import WalletCoreSwiftProtobuf/g' {} \;
+     find swift/Sources/Generated/Protobuf -name "*.swift" -exec sed -i '' 's/SwiftProtobuf./WalletCoreSwiftProtobuf./g' {} \;
 else
     "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=lite:jni/proto src/proto/*.proto
 fi
