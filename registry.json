@@ -4874,5 +4874,35 @@
       "rpc": "wss://rpc.polymesh.network/",
       "documentation": "https://developers.polymesh.network/"
     }
+  },
+  {
+    "id": "xdc",
+    "name": "XDC Network",
+    "coinId": 550,
+    "symbol": "XDC",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/550'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "chainId": 50,
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://xdcscan.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xeb7f118ef101ed5a1505db73163e806801f21496a399e6e8e1f99e553589df3f",
+      "sampleAccount": "0x22e1DCFF9Bba3B751b8bACF0d9c25eE3D9110613"
+    },
+    "info": {
+      "url": "https://xdc.org/",
+      "source": "https://github.com/XinFinOrg/XinFin-Node",
+      "rpc": "https://rpc.xinfin.network",
+      "documentation": "https://docs.xdc.network"
+    }
   }
 ]
