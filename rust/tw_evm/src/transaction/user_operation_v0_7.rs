@@ -6,14 +6,17 @@ use crate::abi::encode::encode_tokens;
 use crate::abi::non_empty_array::NonEmptyBytes;
 use crate::abi::token::Token;
 use crate::address::Address;
+use crate::signature::legacy_replay_protection_u8;
 use crate::transaction::signature::Signature;
 use crate::transaction::{SignedTransaction, TransactionCommon, UnsignedTransaction};
-use serde::Serialize;
+use serde::ser::Error as SerError;
+use serde::{Serialize, Serializer};
 use tw_coin_entry::error::prelude::*;
-use tw_encoding::hex;
+use tw_encoding::hex::{self, as_hex_prefixed};
 use tw_hash::sha3::keccak256;
 use tw_hash::H256;
 use tw_memory::Data;
+use tw_number::serde::as_u256_hex;
 use tw_number::U256;
 
 pub struct PackedUserOperation {
@@ -115,22 +118,45 @@ impl PackedUserOperation {
     }
 }
 
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UserOperationV0_7 {
     pub sender: Address,
+    #[serde(serialize_with = "U256::as_hex")]
     pub nonce: U256,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub factory: Option<Address>,
+    #[serde(skip_serializing_if = "Data::is_empty")]
+    #[serde(with = "as_hex_prefixed")]
     pub factory_data: Data,
+
+    #[serde(with = "as_hex_prefixed")]
     pub call_data: Data,
+
+    #[serde(serialize_with = "as_u256_hex")]
     pub call_data_gas_limit: u128,
+    #[serde(serialize_with = "as_u256_hex")]
     pub verification_gas_limit: u128,
+    #[serde(serialize_with = "U256::as_hex")]
     pub pre_verification_gas: U256,
+
+    #[serde(serialize_with = "as_u256_hex")]
     pub max_fee_per_gas: u128,
+    #[serde(serialize_with = "as_u256_hex")]
     pub max_priority_fee_per_gas: u128,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub paymaster: Option<Address>,
+    #[serde(serialize_with = "as_u256_hex")]
     pub paymaster_verification_gas_limit: u128,
+    #[serde(serialize_with = "as_u256_hex")]
     pub paymaster_post_op_gas_limit: u128,
+    #[serde(skip_serializing_if = "Data::is_empty")]
+    #[serde(with = "as_hex_prefixed")]
     pub paymaster_data: Data,
 
+    #[serde(skip)]
     pub entry_point: Address,
 }
 
@@ -165,8 +191,12 @@ impl UnsignedTransaction for UserOperationV0_7 {
     }
 }
 
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SignedUserOperationV0_7 {
+    #[serde(flatten)]
     unsigned: UserOperationV0_7,
+    #[serde(serialize_with = "serialize_signature_with_legacy_replay_protect")]
     signature: Signature,
 }
 
@@ -181,31 +211,7 @@ impl SignedTransaction for SignedUserOperationV0_7 {
     type Signature = Signature;
 
     fn encode(&self) -> Data {
-        let mut signature = self.signature.to_rsv_bytes();
-        signature[64] += 27;
-
-        let prefix = true;
-        let tx = SignedUserOperationV0_7Serde {
-            sender: self.unsigned.sender.to_string(),
-            nonce: self.unsigned.nonce.to_string(),
-            factory: self.unsigned.factory.map(|addr| addr.to_string()),
-            factory_data: hex::encode(&self.unsigned.factory_data, prefix),
-            call_data: hex::encode(&self.unsigned.call_data, prefix),
-            call_data_gas_limit: self.unsigned.call_data_gas_limit.to_string(),
-            verification_gas_limit: self.unsigned.verification_gas_limit.to_string(),
-            pre_verification_gas: self.unsigned.pre_verification_gas.to_string(),
-            max_fee_per_gas: self.unsigned.max_fee_per_gas.to_string(),
-            max_priority_fee_per_gas: self.unsigned.max_priority_fee_per_gas.to_string(),
-            paymaster: self.unsigned.paymaster.map(|addr| addr.to_string()),
-            paymaster_verification_gas_limit: self
-                .unsigned
-                .paymaster_verification_gas_limit
-                .to_string(),
-            paymaster_post_op_gas_limit: self.unsigned.paymaster_post_op_gas_limit.to_string(),
-            paymaster_data: hex::encode(&self.unsigned.paymaster_data, prefix),
-            signature: hex::encode(signature.as_slice(), prefix),
-        };
-        serde_json::to_string(&tx)
+        serde_json::to_string(self)
             .expect("Simple structure should never fail on serialization")
             .into_bytes()
     }
@@ -214,26 +220,6 @@ impl SignedTransaction for SignedUserOperationV0_7 {
     fn signature(&self) -> &Self::Signature {
         &self.signature
     }
-}
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-struct SignedUserOperationV0_7Serde {
-    sender: String,
-    nonce: String,
-    factory: Option<String>,
-    factory_data: String,
-    call_data: String,
-    call_data_gas_limit: String,
-    verification_gas_limit: String,
-    pre_verification_gas: String,
-    max_fee_per_gas: String,
-    max_priority_fee_per_gas: String,
-    paymaster: Option<String>,
-    paymaster_verification_gas_limit: String,
-    paymaster_post_op_gas_limit: String,
-    paymaster_data: String,
-    signature: String,
 }
 
 fn concat_u128_be(a: u128, b: u128) -> [u8; 32] {
@@ -246,6 +232,22 @@ fn concat_u128_be(a: u128, b: u128) -> [u8; 32] {
             a[i]
         }
     })
+}
+
+pub fn serialize_signature_with_legacy_replay_protect<S>(
+    signature: &Signature,
+    serializer: S,
+) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    let prefix = true;
+    let mut rsv = signature.to_rsv_bytes();
+    rsv[64] =
+        legacy_replay_protection_u8(rsv[64]).map_err(|e| SerError::custom(format!("{e:?}")))?;
+
+    let hex_str = hex::encode(rsv, prefix);
+    serializer.serialize_str(&hex_str)
 }
 
 #[cfg(test)]
@@ -310,7 +312,7 @@ mod tests {
             nonce: U256::from(0u64),
             init_code: "f471789937856d80e589f5996cf8b0511ddd9de4f471789937856d80e589f5996cf8b0511ddd9de4".decode_hex().unwrap(),
             call_data: "00".decode_hex().unwrap(),
-            account_gas_limits:concat_u128_be(100000u128, 100000u128).to_vec(),
+            account_gas_limits: concat_u128_be(100000u128, 100000u128).to_vec(),
             pre_verification_gas: U256::from(1000000u64),
             gas_fees: concat_u128_be(100000u128, 100000u128).to_vec(),
             paymaster_and_data: "f62849f9a0b5bf2913b396098f7c7019b51a820a0000000000000000000000000001869f00000000000000000000000000015b3800000000000b0000000000002e234dae75c793f67a35089c9d99245e1c58470b00000000000000000000000000000000000000000000000000000000000186a0072f35038bcacc31bcdeda87c1d9857703a26fb70a053f6e87da5a4e7a1e1f3c4b09fbe2dbff98e7a87ebb45a635234f4b79eff3225d07560039c7764291c97e1b".decode_hex().unwrap(),

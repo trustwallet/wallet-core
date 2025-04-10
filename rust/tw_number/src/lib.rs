@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 mod i256;
+pub mod serde;
 mod sign;
 mod u256;
 

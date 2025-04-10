@@ -5,7 +5,7 @@
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use tw_misc::serde::hashmap_as_tupple_list;
+use tw_misc::serde::hashmap_as_tuple_list;
 
 pub const DEFINITIONS_JSON: &str = include_str!("../definitions/definitions.json");
 
@@ -39,7 +39,7 @@ pub struct FieldInfo {
 #[serde(rename_all = "UPPERCASE")]
 pub struct Definitions {
     pub types: HashMap<String, i16>,
-    #[serde(with = "hashmap_as_tupple_list")]
+    #[serde(with = "hashmap_as_tuple_list")]
     pub fields: HashMap<String, FieldInfo>,
     pub transaction_types: HashMap<String, i16>,
 }

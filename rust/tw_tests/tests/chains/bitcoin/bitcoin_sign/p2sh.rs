@@ -162,7 +162,7 @@ fn test_bitcoin_sign_output_p2sh_with_address() {
 //
 //     let sig = &signatures[0];
 //
-//     // Construc the final redeem scrip with the necessary stack items (signature + pubkey).
+//     // Construct the final redeem scrip with the necessary stack items (signature + pubkey).
 //     let mut sig_buf = PushBytesBuf::new();
 //     sig_buf.extend_from_slice(sig).unwrap();
 //
