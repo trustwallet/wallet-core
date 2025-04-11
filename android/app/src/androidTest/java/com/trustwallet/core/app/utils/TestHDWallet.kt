@@ -99,7 +99,7 @@ class TestHDWallet {
     }
 
     @Test
-    fun testGetKeyForCoin() {
+    fun testGetKeyForCoinBitcoin() {
         val coin = CoinType.BITCOIN
         val wallet = HDWallet(words, password)
         val key = wallet.getKeyForCoin(coin)
@@ -109,7 +109,7 @@ class TestHDWallet {
     }
 
     @Test
-    fun testGetKeyDerivation() {
+    fun testGetKeyDerivationBitcoin() {
         val coin = CoinType.BITCOIN
         val wallet = HDWallet(words, password)
 
@@ -127,7 +127,7 @@ class TestHDWallet {
     }
 
     @Test
-    fun testGetAddressForCoin() {
+    fun testGetAddressForCoinBitcoin() {
         val coin = CoinType.BITCOIN
         val wallet = HDWallet(words, password)
 
@@ -136,7 +136,7 @@ class TestHDWallet {
     }
 
     @Test
-    fun testGetAddressDerivation() {
+    fun testGetAddressDerivationBitcoin() {
         val coin = CoinType.BITCOIN
         val wallet = HDWallet(words, password)
 
@@ -151,6 +151,49 @@ class TestHDWallet {
 
         val address4 = wallet.getAddressDerivation(coin, Derivation.BITCOINTAPROOT)
         assertEquals(address4, "bc1pgqks0cynn93ymve4x0jq3u7hne77908nlysp289hc44yc4cmy0hslyckrz")
+    }
+
+    @Test
+    fun testGetKeyForCoinPactus() {
+        val coin = CoinType.PACTUS
+        val wallet = HDWallet(words, password)
+        val key = wallet.getKeyForCoin(coin)
+
+        val address = coin.deriveAddress(key)
+        assertEquals(address, "pc1rjkzc23l7qkkenx6xwy04srwppzfk6m5t7q46ff")
+    }
+
+    @Test
+    fun testGetKeyDerivationPactus() {
+        val coin = CoinType.PACTUS
+        val wallet = HDWallet(words, password)
+
+        val key1 = wallet.getKeyDerivation(coin, Derivation.PACTUSMAINNET)
+        assertEquals(key1.data().toHex(), "0x153fefb8168f246f9f77c60ea10765c1c39828329e87284ddd316770717f3a5e")
+
+        val key2 = wallet.getKeyDerivation(coin, Derivation.PACTUSTESTNET)
+        assertEquals(key2.data().toHex(), "0x54f3c54dd6af5794bea1f86de05b8b9f164215e8deee896f604919046399e54d")
+    }
+
+    @Test
+    fun testGetAddressForCoinPactus() {
+        val coin = CoinType.PACTUS
+        val wallet = HDWallet(words, password)
+
+        val address = wallet.getAddressForCoin(coin)
+        assertEquals(address, "pc1rjkzc23l7qkkenx6xwy04srwppzfk6m5t7q46ff")
+    }
+
+    @Test
+    fun testGetAddressDerivationPactus() {
+        val coin = CoinType.PACTUS
+        val wallet = HDWallet(words, password)
+
+        val address1 = wallet.getAddressDerivation(coin, Derivation.PACTUSMAINNET)
+        assertEquals(address1, "pc1rjkzc23l7qkkenx6xwy04srwppzfk6m5t7q46ff")
+
+        val address2 = wallet.getAddressDerivation(coin, Derivation.PACTUSTESTNET)
+        assertEquals(address2, "tpc1rjtamyqp203j4367q4plkp4qt32d7sv34kfmj5e")
     }
 
     @Test
