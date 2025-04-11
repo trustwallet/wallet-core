@@ -23,7 +23,7 @@ impl TxSigner {
 
         let message_encoded = Self::preimage_versioned(&unsigned_msg)?;
 
-        // Add external signatures first, so they can be overriden if corresponding private keys are specified.
+        // Add external signatures first, so they can be overridden if corresponding private keys are specified.
         key_signs.extend(external_signatures.clone());
 
         // Sign the message with all given private keys.

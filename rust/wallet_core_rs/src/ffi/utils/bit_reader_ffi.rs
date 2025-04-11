@@ -21,7 +21,7 @@ pub enum CBitReaderCode {
     /// Requested more bits than the returned variable can hold, for example more than 8 bits when
     /// reading into a u8.
     TooManyBitsForType = 2,
-    InalidInput = 3,
+    InvalidInput = 3,
 }
 
 impl From<BitReaderError> for CBitReaderCode {
@@ -126,7 +126,7 @@ pub unsafe extern "C" fn tw_bit_reader_read_u8(
 ) -> CUInt8Result {
     let tw_reader = try_or_else!(
         TWBitReader::from_ptr_as_mut(reader),
-        || CUInt8Result::error(CBitReaderCode::InalidInput)
+        || CUInt8Result::error(CBitReaderCode::InvalidInput)
     );
     tw_reader.read_u8(bit_count).into()
 }
@@ -143,7 +143,7 @@ pub unsafe extern "C" fn tw_bit_reader_read_u8_slice(
     byte_count: usize,
 ) -> CByteArrayResult {
     let tw_reader = try_or_else!(TWBitReader::from_ptr_as_mut(reader), || {
-        CByteArrayResult::error(CBitReaderCode::InalidInput)
+        CByteArrayResult::error(CBitReaderCode::InvalidInput)
     });
     tw_reader
         .read_u8_slice(byte_count)
