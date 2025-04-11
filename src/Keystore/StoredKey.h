@@ -157,6 +157,12 @@ public:
     /// In case of multiple accounts, all of them will be updated.
     bool updateAddress(TWCoinType coin);
 
+    /// Decrypts the encoded private key.
+    ///
+    /// \returns the decoded private key.
+    /// \throws DecryptionError
+    const std::string decryptPrivateKeyEncoded(const Data& password) const;
+
 private:
     /// Default constructor, private
     StoredKey() : type(StoredKeyType::mnemonicPhrase) {}
@@ -164,7 +170,15 @@ private:
     /// Initializes a `StoredKey` with a type, an encryption password, and unencrypted data.
     /// This constructor will encrypt the provided data with default encryption
     /// parameters.
-    StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr, const std::string& encodedStr = "");
+    StoredKey(
+        StoredKeyType type, 
+        std::string name, 
+        const Data& password, 
+        const Data& data, 
+        TWStoredKeyEncryptionLevel encryptionLevel, 
+        TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr, 
+        const std::optional<std::string>& encodedStr = std::nullopt
+    );
 
     /// Find default account for coin, if exists.  If multiple exist, default is returned.
     /// Optional wallet is needed to derive default address

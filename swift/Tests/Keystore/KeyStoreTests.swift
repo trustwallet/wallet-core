@@ -179,7 +179,7 @@ class KeyStoreTests: XCTestCase {
         let wallet = try keyStore.import(json: json, name: "name", password: "password", newPassword: "newPassword", coins: [.ethereum])
         let storedData = wallet.key.decryptPrivateKey(password: Data("newPassword".utf8))
 
-        XCTAssertFalse(wallet.key.isEncoded)
+        XCTAssertFalse(wallet.key.isPrivateKeyEncoded)
         XCTAssertNotNil(keyStore.keyWallet)
         XCTAssertNotNil(storedData)
         XCTAssertNotNil(PrivateKey(data: storedData!))
@@ -208,9 +208,9 @@ class KeyStoreTests: XCTestCase {
         let wallet = try keyStore.import(json: json, name: "name", password: "password", newPassword: "newPassword", coins: [.ethereum])
         let storedEncoded = wallet.key.decryptPrivateKeyEncoded(password: Data("newPassword".utf8))
     
-        let exportedPrivateKey = try keyStore.exportEncodedPrivateKey(wallet: wallet, password: "newPassword")
+        let exportedPrivateKey = try keyStore.exportPrivateKeyEncoded(wallet: wallet, password: "newPassword")
 
-        XCTAssertTrue(wallet.key.isEncoded)
+        XCTAssertTrue(wallet.key.isPrivateKeyEncoded)
         XCTAssertNotNil(keyStore.keyWallet)
         XCTAssertNotNil(storedEncoded)
         XCTAssertEqual(privateKeyHex, storedEncoded)
@@ -226,9 +226,9 @@ class KeyStoreTests: XCTestCase {
         let wallet = try keyStore.import(json: json, name: "name", password: "password", newPassword: "newPassword", coins: [.solana])
         let storedEncoded = wallet.key.decryptPrivateKeyEncoded(password: Data("newPassword".utf8))
         
-        let exportedPrivateKey = try keyStore.exportEncodedPrivateKey(wallet: wallet, password: "newPassword")
+        let exportedPrivateKey = try keyStore.exportPrivateKeyEncoded(wallet: wallet, password: "newPassword")
 
-        XCTAssertTrue(wallet.key.isEncoded)
+        XCTAssertTrue(wallet.key.isPrivateKeyEncoded)
         XCTAssertNotNil(keyStore.keyWallet)
         XCTAssertNotNil(storedEncoded)
         XCTAssertEqual(privateKeyBase58, storedEncoded)
@@ -244,7 +244,7 @@ class KeyStoreTests: XCTestCase {
         let wallet = try keyStore.import(json: json, name: "name", password: "password", newPassword: "newPassword", coins: [.stellar])
         let storedEncoded = wallet.key.decryptPrivateKeyEncoded(password: Data("newPassword".utf8))
 
-        XCTAssertTrue(wallet.key.isEncoded)
+        XCTAssertTrue(wallet.key.isPrivateKeyEncoded)
         XCTAssertNotNil(keyStore.keyWallet)
         XCTAssertNotNil(storedEncoded)
         XCTAssertEqual(privateKeyBase32, storedEncoded)

@@ -166,18 +166,6 @@ export class Default implements Types.IKeyStore {
     });
   }
 
-  getKeyEncoded(
-    id: string,
-    password: string,
-  ): Promise<string> {
-    return this.load(id).then((wallet) => {
-      let storedKey = this.mapStoredKey(wallet);
-      let encodedPrivateKey = storedKey.decryptPrivateKeyEncoded(Buffer.from(password));
-      storedKey.delete();
-      return encodedPrivateKey;
-    });
-  }
-
   export(id: string, password: string): Promise<string | Uint8Array> {
     return this.load(id).then((wallet) => {
       let storedKey = this.mapStoredKey(wallet);
@@ -203,6 +191,9 @@ export class Default implements Types.IKeyStore {
 
   exportMnemonic(id: string, password: string): Promise<string> {
     return this.load(id).then((wallet) => {
+      if (wallet.type !== Types.WalletType.Mnemonic) {
+        throw Types.Error.UnsupportedWalletType;
+      }
       let storedKey = this.mapStoredKey(wallet);
       let value = storedKey.decryptMnemonic(Buffer.from(password));
       storedKey.delete();
@@ -212,6 +203,9 @@ export class Default implements Types.IKeyStore {
 
   exportPrivateKey(id: string, password: string): Promise<Uint8Array> {
     return this.load(id).then((wallet) => {
+      if (wallet.type !== Types.WalletType.PrivateKey) {
+        throw Types.Error.UnsupportedWalletType;
+      }
       let storedKey = this.mapStoredKey(wallet);
       let value = storedKey.decryptPrivateKey(Buffer.from(password));
       storedKey.delete();
@@ -219,8 +213,11 @@ export class Default implements Types.IKeyStore {
     });
   }
 
-  exportEncodedPrivateKey(id: string, password: string): Promise<string> {
+  exportPrivateKeyEncoded(id: string, password: string): Promise<string> {
     return this.load(id).then((wallet) => {
+      if (wallet.type !== Types.WalletType.PrivateKey) {
+        throw Types.Error.UnsupportedWalletType;
+      }
       let storedKey = this.mapStoredKey(wallet);
       let value = storedKey.decryptPrivateKeyEncoded(Buffer.from(password));
       storedKey.delete();

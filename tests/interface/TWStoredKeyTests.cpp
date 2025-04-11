@@ -107,7 +107,7 @@ TEST(TWStoredKey, importPrivateKeyEncodedHex) {
     const auto key = WRAP(TWStoredKey, TWStoredKeyImportPrivateKeyEncoded(privateKey.get(), name.get(), password.get(), coin));
     const auto privateKey2 = WRAPD(TWStoredKeyDecryptPrivateKey(key.get(), password.get()));
     EXPECT_EQ(hex(data(TWDataBytes(privateKey2.get()), TWDataSize(privateKey2.get()))), privateKeyHex);
-    EXPECT_TRUE(TWStoredKeyIsEncoded(key.get()));
+    EXPECT_TRUE(TWStoredKeyIsPrivateKeyEncoded(key.get()));
     const auto privateKey2Encoded = WRAPS(TWStoredKeyDecryptPrivateKeyEncoded(key.get(), password.get()));
     EXPECT_EQ(std::string(TWStringUTF8Bytes(privateKey2Encoded.get())), privateKeyHex);
     
@@ -128,7 +128,7 @@ TEST(TWStoredKey, importPrivateKeyEncodedStellar) {
     const auto key = WRAP(TWStoredKey, TWStoredKeyImportPrivateKeyEncoded(privateKey.get(), name.get(), password.get(), coin));
     const auto privateKey2 = WRAPD(TWStoredKeyDecryptPrivateKey(key.get(), password.get()));
     EXPECT_EQ(hex(data(TWDataBytes(privateKey2.get()), TWDataSize(privateKey2.get()))), decodedPrivateKeyHex);
-    EXPECT_TRUE(TWStoredKeyIsEncoded(key.get()));
+    EXPECT_TRUE(TWStoredKeyIsPrivateKeyEncoded(key.get()));
     const auto privateKey2Encoded = WRAPS(TWStoredKeyDecryptPrivateKeyEncoded(key.get(), password.get()));
     EXPECT_EQ(std::string(TWStringUTF8Bytes(privateKey2Encoded.get())), privateKeyEncoded);
     
@@ -147,13 +147,31 @@ TEST(TWStoredKey, importPrivateKeyEncodedSolana) {
     const auto solanaKey = WRAP(TWStoredKey, TWStoredKeyImportPrivateKeyEncoded(WRAPS(TWStringCreateWithUTF8Bytes(solanaPrivateKey)).get(), name.get(), password.get(), TWCoinTypeSolana));
     const auto solanaPrivateKey2 = WRAPD(TWStoredKeyDecryptPrivateKey(solanaKey.get(), password.get()));
     EXPECT_EQ(hex(data(TWDataBytes(solanaPrivateKey2.get()), TWDataSize(solanaPrivateKey2.get()))), decodedSolanaPrivateKeyHex);
-    EXPECT_TRUE(TWStoredKeyIsEncoded(solanaKey.get()));
+    EXPECT_TRUE(TWStoredKeyIsPrivateKeyEncoded(solanaKey.get()));
     const auto solanaPrivateKey2Encoded = WRAPS(TWStoredKeyDecryptPrivateKeyEncoded(solanaKey.get(), password.get()));
     EXPECT_EQ(std::string(TWStringUTF8Bytes(solanaPrivateKey2Encoded.get())), solanaPrivateKey);
     
     const auto solanaPrivateKey3 = TWStoredKeyPrivateKey(solanaKey.get(), TWCoinTypeSolana, password.get());
     const auto solanaPkData3 = WRAPD(TWPrivateKeyData(solanaPrivateKey3));
     EXPECT_EQ(hex(data(TWDataBytes(solanaPkData3.get()), TWDataSize(solanaPkData3.get()))), decodedSolanaPrivateKeyHex);
+    TWPrivateKeyDelete(solanaPrivateKey3);
+}
+
+TEST(TWStoredKey, importPrivateKeyHexEncodedSolana) {
+    const auto solanaPrivateKey = "8778cc93c6596387e751d2dc693bbd93e434bd233bc5b68a826c56131821cb63";
+    const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    const auto solanaKey = WRAP(TWStoredKey, TWStoredKeyImportPrivateKeyEncoded(WRAPS(TWStringCreateWithUTF8Bytes(solanaPrivateKey)).get(), name.get(), password.get(), TWCoinTypeSolana));
+    const auto solanaPrivateKey2 = WRAPD(TWStoredKeyDecryptPrivateKey(solanaKey.get(), password.get()));
+    EXPECT_EQ(hex(data(TWDataBytes(solanaPrivateKey2.get()), TWDataSize(solanaPrivateKey2.get()))), solanaPrivateKey);
+    EXPECT_TRUE(TWStoredKeyIsPrivateKeyEncoded(solanaKey.get()));
+    const auto solanaPrivateKey2Encoded = WRAPS(TWStoredKeyDecryptPrivateKeyEncoded(solanaKey.get(), password.get()));
+    EXPECT_EQ(std::string(TWStringUTF8Bytes(solanaPrivateKey2Encoded.get())), solanaPrivateKey);
+
+    const auto solanaPrivateKey3 = TWStoredKeyPrivateKey(solanaKey.get(), TWCoinTypeSolana, password.get());
+    const auto solanaPkData3 = WRAPD(TWPrivateKeyData(solanaPrivateKey3));
+    EXPECT_EQ(hex(data(TWDataBytes(solanaPkData3.get()), TWDataSize(solanaPkData3.get()))), solanaPrivateKey);
     TWPrivateKeyDelete(solanaPrivateKey3);
 }
 

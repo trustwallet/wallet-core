@@ -69,29 +69,24 @@ StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(const std::string& na
 
 StoredKey StoredKey::createWithEncodedPrivateKeyAddDefaultAddress(const std::string& name, const Data& password, TWCoinType coin, const std::string& encodedPrivateKey, TWStoredKeyEncryption encryption) {
     const auto curve = TW::curve(coin);
-    const auto privateKeyData = TW::decodePrivateKey(coin, encodedPrivateKey);
-    if (!PrivateKey::isValid(privateKeyData, curve)) {
-        throw std::invalid_argument("Invalid private key data");
-    }
-    StoredKey key = StoredKey(StoredKeyType::privateKey, name, password, privateKeyData, TWStoredKeyEncryptionLevelDefault, encryption, encodedPrivateKey);
+    const auto privateKey = TW::decodePrivateKey(coin, encodedPrivateKey);
+    StoredKey key = StoredKey(StoredKeyType::privateKey, name, password, privateKey.bytes, TWStoredKeyEncryptionLevelDefault, encryption, encodedPrivateKey);
     const auto derivationPath = TW::derivationPath(coin);
     const auto pubKeyType = TW::publicKeyType(coin);
-    const auto pubKey = PrivateKey(privateKeyData, curve).getPublicKey(pubKeyType);
-    const auto address = TW::deriveAddress(coin, PrivateKey(privateKeyData));
+    const auto pubKey = privateKey.getPublicKey(pubKeyType);
+    const auto address = TW::deriveAddress(coin, privateKey);
     key.accounts.emplace_back(address, coin, TWDerivationDefault, derivationPath, hex(pubKey.bytes), "");
     return key;
 }
 
-StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption, const std::string& encodedStr)
+StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption, const std::optional<std::string>& encodedStr)
     : type(type), id(), name(std::move(name)), accounts() {
     const auto encryptionParams = EncryptionParameters::getPreset(encryptionLevel, encryption);
     payload = EncryptedPayload(password, data, encryptionParams);
-    if (!encodedStr.empty()) {
-        const auto bytes = reinterpret_cast<const uint8_t*>(encodedStr.c_str());
-        const auto encodedData = Data(bytes, bytes + encodedStr.size());
+    if (encodedStr) {
+        const auto bytes = reinterpret_cast<const uint8_t*>(encodedStr->c_str());
+        const auto encodedData = Data(bytes, bytes + encodedStr->size());
         encodedPayload = EncryptedPayload(password, encodedData, encryptionParams);
-    } else {
-        encodedPayload = std::nullopt;
     }
     const char* uuid_ptr = Rust::tw_uuid_random();
     id = std::make_optional<std::string>(uuid_ptr);
@@ -329,6 +324,16 @@ bool StoredKey::updateAddress(TWCoinType coin) {
     }
 
     return addressUpdated;
+}
+
+const std::string StoredKey::decryptPrivateKeyEncoded(const Data& password) const {
+    Data data;
+    if (encodedPayload) {
+       data = encodedPayload->decrypt(password);
+    } else {
+        data = payload.decrypt(password);
+    }
+    return std::string(reinterpret_cast<const char*>(data.data()), data.size());
 }
 
 // -----------------

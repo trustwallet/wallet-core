@@ -141,7 +141,7 @@ public final class KeyStore {
         guard let privateKey = PrivateKey(data: data) else {
             throw Error.invalidKey
         }
-        if key.isEncoded {
+        if key.isPrivateKeyEncoded {
             guard let encodedPrivateKey = key.decryptPrivateKeyEncoded(password: Data(password.utf8)) else {
                 throw Error.invalidPassword
             }
@@ -159,7 +159,7 @@ public final class KeyStore {
     }
     
     private func checkEncoded(wallet: Wallet, password: String) -> String? {
-        guard wallet.key.isEncoded else {
+        guard wallet.key.isPrivateKeyEncoded else {
             return nil
         }
         return wallet.key.decryptPrivateKeyEncoded(password: Data(password.utf8))
@@ -284,8 +284,8 @@ public final class KeyStore {
     /// - Parameters:
     ///   - wallet: wallet to export
     ///   - password: account password
-    /// - Returns: private key data for encrypted keys or mnemonic phrase for HD wallets
-    public func exportEncodedPrivateKey(wallet: Wallet, password: String) throws -> String {
+    /// - Returns: encoded private key data
+    public func exportPrivateKeyEncoded(wallet: Wallet, password: String) throws -> String {
         guard let key = wallet.key.decryptPrivateKeyEncoded(password: Data(password.utf8)) else {
             throw Error.invalidPassword
         }

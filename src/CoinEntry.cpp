@@ -30,12 +30,9 @@ byte getFromPrefixPkhOrDefault(const PrefixVariant &prefix, TWCoinType coin) {
     return TW::p2pkhPrefix(coin);
 }
 
-Data CoinEntry::decodePrivateKey(TWCoinType coin, const std::string& privateKey) const {
+PrivateKey CoinEntry::decodePrivateKey(TWCoinType coin, const std::string& privateKey) const {
     auto data = parse_hex(privateKey);
-    if (!PrivateKey::isValid(data, TW::curve(coin))) {
-        throw std::invalid_argument("Invalid private key");
-    }
-    return data;
+    return PrivateKey(data, TW::curve(coin));
 }
 
 } // namespace TW

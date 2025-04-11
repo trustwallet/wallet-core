@@ -62,42 +62,6 @@ describe("KeyStore", () => {
     assert.equal(HexCoding.encode(exported2), "0x9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c");
   }).timeout(10000);
 
-  it("test import key encoded bitcoin", async () => {
-    const { CoinType, StoredKeyEncryption } = globalThis.core;
-    const password = globalThis.password as string;
-
-    const storage = new KeyStore.FileSystemStorage("/tmp");
-    const keystore = new KeyStore.Default(globalThis.core, storage);
-
-    const inputPrivateKeyHex = "0x9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c";
-    const wallet = await keystore.importKeyEncoded(inputPrivateKeyHex, "Coolw", password, CoinType.bitcoin, StoredKeyEncryption.aes128Ctr);
-
-    const key = await keystore.getKeyEncoded(wallet.id, password);
-
-    assert.equal(
-      key,
-      inputPrivateKeyHex
-    );
-  }).timeout(10000);
-
-  it("test import key encoded solana", async () => {
-    const { CoinType, StoredKeyEncryption } = globalThis.core;
-    const password = globalThis.password as string;
-
-    const storage = new KeyStore.FileSystemStorage("/tmp");
-    const keystore = new KeyStore.Default(globalThis.core, storage);
-
-    const inputPrivateKeyBase58 = "A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr";
-    const wallet = await keystore.importKeyEncoded(inputPrivateKeyBase58, "Coolw", password, CoinType.solana, StoredKeyEncryption.aes128Ctr);
-
-    const key = await keystore.getKeyEncoded(wallet.id, password);
-
-    assert.equal(
-      key,
-      inputPrivateKeyBase58
-    );
-  }).timeout(10000);
-
   it("test export mnemonic", async () => {
     const { CoinType, StoredKeyEncryption, HexCoding } = globalThis.core;
     const mnemonic = globalThis.mnemonic as string;
@@ -141,7 +105,7 @@ describe("KeyStore", () => {
     const wallet = await keystore.importKeyEncoded(inputPrivateKeyBase58, "Coolw", password, CoinType.solana, StoredKeyEncryption.aes128Ctr);
     assert.equal(await keystore.getWalletType(wallet.id), "private-key");
 
-    const exported = await keystore.exportEncodedPrivateKey(wallet.id, password);
+    const exported = await keystore.exportPrivateKeyEncoded(wallet.id, password);
     assert.equal(exported, inputPrivateKeyBase58);
   }).timeout(10000);
 });

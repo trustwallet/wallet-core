@@ -75,16 +75,13 @@ bool verifyChecksum(const Data& expected, const Data& actual) {
 }
 
 // Taken from: https://github.com/stellar/js-stellar-base/blob/087e2d651a59b5cbed01386b4b8c45862d358259/src/strkey.js#L290
-Data Entry::decodePrivateKey(TWCoinType coin, const std::string& privateKey) const {
+PrivateKey Entry::decodePrivateKey(TWCoinType coin, const std::string& privateKey) const {
     Data decoded;
     Base32::decode(privateKey, decoded);
 
     if (decoded.size() != 35) {
         auto hexData = parse_hex(privateKey);
-        if (!PrivateKey::isValid(hexData, TW::curve(coin))) {
-            throw std::invalid_argument("Invalid encoded string: too short");
-        }
-        return hexData;
+        return PrivateKey(hexData, TW::curve(coin));
     }
     
     uint8_t versionByte = decoded[0];
@@ -102,11 +99,7 @@ Data Entry::decodePrivateKey(TWCoinType coin, const std::string& privateKey) con
         throw std::invalid_argument("invalid checksum");
     }
 
-    if (!PrivateKey::isValid(data, TW::curve(coin))) {
-        throw std::invalid_argument("Invalid private key");
-    }
-
-    return data;
+    return PrivateKey(data, TW::curve(coin));
 }
 
 } // namespace TW::Stellar

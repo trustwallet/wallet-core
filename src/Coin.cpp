@@ -300,7 +300,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDer
     return dispatcher->deriveAddress(coin, publicKey, derivation, addressPrefix);
 }
 
-Data TW::decodePrivateKey(TWCoinType coin, const std::string& privateKey) {
+PrivateKey TW::decodePrivateKey(TWCoinType coin, const std::string& privateKey) {
     auto const* dispatcher = coinDispatcher(coin);
     assert(dispatcher != nullptr);
     return dispatcher->decodePrivateKey(coin, privateKey);
