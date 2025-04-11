@@ -141,7 +141,7 @@ public final class KeyStore {
         guard let privateKey = PrivateKey(data: data) else {
             throw Error.invalidKey
         }
-        if key.isPrivateKeyEncoded {
+        if key.hasPrivateKeyEncoded {
             guard let encodedPrivateKey = key.decryptPrivateKeyEncoded(password: Data(password.utf8)) else {
                 throw Error.invalidPassword
             }
@@ -159,7 +159,7 @@ public final class KeyStore {
     }
     
     private func checkEncoded(wallet: Wallet, password: String) -> String? {
-        guard wallet.key.isPrivateKeyEncoded else {
+        guard wallet.key.hasPrivateKeyEncoded else {
             return nil
         }
         return wallet.key.decryptPrivateKeyEncoded(password: Data(password.utf8))

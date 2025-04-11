@@ -327,13 +327,13 @@ bool StoredKey::updateAddress(TWCoinType coin) {
 }
 
 const std::string StoredKey::decryptPrivateKeyEncoded(const Data& password) const {
-    Data data;
     if (encodedPayload) {
-       data = encodedPayload->decrypt(password);
+        auto data = encodedPayload->decrypt(password);
+        return std::string(reinterpret_cast<const char*>(data.data()), data.size());
     } else {
-        data = payload.decrypt(password);
+        auto data = payload.decrypt(password);
+        return TW::hex(data);
     }
-    return std::string(reinterpret_cast<const char*>(data.data()), data.size());
 }
 
 // -----------------

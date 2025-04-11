@@ -205,7 +205,7 @@ TWString* _Nullable TWStoredKeyDecryptPrivateKeyEncoded(struct TWStoredKey* _Non
     }
 }
 
-bool TWStoredKeyIsPrivateKeyEncoded(struct TWStoredKey* _Nonnull key) {
+bool TWStoredKeyHasPrivateKeyEncoded(struct TWStoredKey* _Nonnull key) {
     return key->impl.encodedPayload.has_value();
 }
 

@@ -288,7 +288,7 @@ TWString* _Nullable TWStoredKeyDecryptPrivateKeyEncoded(struct TWStoredKey* _Non
 /// \param key Non-null pointer to a stored key
 /// \return true if the private key is encoded, false otherwise
 TW_EXPORT_PROPERTY
-bool TWStoredKeyIsPrivateKeyEncoded(struct TWStoredKey* _Nonnull key);
+bool TWStoredKeyHasPrivateKeyEncoded(struct TWStoredKey* _Nonnull key);
 
 /// Decrypts the mnemonic phrase.
 ///
