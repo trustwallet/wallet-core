@@ -102,7 +102,7 @@ class TestKeyStore {
         val keyStore = StoredKey.importJSON(json)
         val storedEncoded = keyStore.decryptPrivateKeyEncoded(password)
 
-        assertTrue(keyStore.hasPrivateKeyEncoded)
+        assertTrue(keyStore.hasPrivateKeyEncoded())
         assertNotNull(keyStore)
         assertNotNull(storedEncoded)
         assertEquals(privateKeyHex, storedEncoded)
@@ -118,7 +118,7 @@ class TestKeyStore {
         val keyStore = StoredKey.importJSON(json)
         val storedEncoded = keyStore.decryptPrivateKeyEncoded(password)
 
-        assertTrue(keyStore.hasPrivateKeyEncoded)
+        assertTrue(keyStore.hasPrivateKeyEncoded())
         assertNotNull(keyStore)
         assertNotNull(storedEncoded)
         assertEquals(privateKeyBase58, storedEncoded)
