@@ -183,7 +183,7 @@ class KeyStoreTests: XCTestCase {
         XCTAssertNotNil(storedData)
         XCTAssertNotNil(PrivateKey(data: storedData!))
     }
-    
+
     func testImportPrivateKeyAES256() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let privateKeyData = Data(hexString: "9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c")!
@@ -222,7 +222,7 @@ class KeyStoreTests: XCTestCase {
         XCTAssertEqual(wallet.accounts.count, 1)
         XCTAssertNotNil(keyStore.hdWallet)
     }
-    
+
     func testImportWalletAES256() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let wallet = try keyStore.import(mnemonic: mnemonic, name: "name", encryptPassword: "newPassword", coins: [.ethereum], encryption: .aes256Ctr)
@@ -437,7 +437,7 @@ class KeyStoreTests: XCTestCase {
         let btc2 = try wallet.getAccount(password: password, coin: .bitcoin, derivation: .bitcoinLegacy)
         XCTAssertEqual(btc2.address, "1NyRyFewhZcWMa9XCj3bBxSXPXyoSg8dKz")
         XCTAssertEqual(btc2.extendedPublicKey, "xpub6CR52eaUuVb4kXAVyHC2i5ZuqJ37oWNPZFtjXaazFPXZD45DwWBYEBLdrF7fmCR9pgBuCA9Q57zZfyJjDUBDNtWkhWuGHNYKLgDHpqrHsxV")
-        
+
         let btc3 = try wallet.getAccount(password: password, coin: .bitcoin, derivation: .bitcoinTaproot)
         XCTAssertEqual(btc3.address, "bc1pyqkqf20fmmwmcxf98tv6k63e2sgnjy4zne6d0r32vxwm3au0hnksq6ec57")
         XCTAssertEqual(btc3.extendedPublicKey, "zpub6qNRYbLLXquaD1GKxHZWDs3moUFQfP4iqXiDPCd8aD3oNHZkCAusAw5raKQEWV8BkXBTXhWBkgZTxzjjnQ5cRjWa6LNcjmrVVNdUKvbKTgm")
@@ -449,6 +449,14 @@ class KeyStoreTests: XCTestCase {
         let solana2 = try wallet.getAccount(password: password, coin: .solana, derivation: .solanaSolana)
         XCTAssertEqual(solana2.address, "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C")
         XCTAssertEqual(solana2.derivationPath, "m/44'/501'/0'/0'")
+
+        let pactus_mainnet = try wallet.getAccount(password: password, coin: .pactus, derivation: .pactusMainnet)
+        XCTAssertEqual(pactus_mainnet.address, "pc1rzuswvfwde5hleqfemvpz4swlh6uud6nkukumdu")
+        XCTAssertEqual(pactus_mainnet.derivationPath, "m/44'/21888'/3'/0'")
+
+        let pactus_testnet = try wallet.getAccount(password: password, coin: .pactus, derivation: .pactusTestnet)
+        XCTAssertEqual(pactus_testnet.address, "tpc1rxs9tperv58gvfwpn0vj5na7vrcffml40j2v6r9")
+        XCTAssertEqual(pactus_testnet.derivationPath, "m/44'/21777'/3'/0'")
     }
 
     func createTempDirURL() throws -> URL {
