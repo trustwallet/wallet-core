@@ -9,6 +9,7 @@ use crate::public_key::{CosmosPublicKey, PublicKeyParams};
 use crate::transaction::message::cosmos_generic_message::JsonRawMessage;
 use crate::transaction::message::{CosmosMessage, CosmosMessageBox};
 use crate::transaction::{Coin, Fee, SignMode, SignerInfo, TxBody, UnsignedTransaction};
+use std::borrow::Cow;
 use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -237,6 +238,9 @@ where
             },
             MessageEnum::None => SigningError::err(SigningErrorType::Error_invalid_params)
                 .context("No TX message provided"),
+            MessageEnum::wasm_instantiate_contract_message(ref generic) => {
+                Self::wasm_instantiate_contract_generic_msg_from_proto(coin, generic)
+            },
         }
     }
 
@@ -598,6 +602,45 @@ where
             msg: ExecuteMsg::String(generic.execute_msg.to_string()),
             coins,
         };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn wasm_instantiate_contract_generic_msg_from_proto(
+        _coin: &dyn CoinContext,
+        generic: &Proto::mod_Message::WasmInstantiateContract<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        use crate::transaction::message::wasm_message_instantiate_contract::{InstantiateMsg, WasmInstantiateContractMessage};
+    
+        let funds = generic
+            .init_funds
+            .iter()
+            .map(Self::coin_from_proto)
+            .collect::<SigningResult<_>>()?;
+
+        let sender = Address::from_str(&generic.sender)
+            .into_tw()
+            .context("Invalid sender address")?;
+    
+        let admin = if generic.admin.is_empty() {
+            None
+        } else {
+            Some(
+                Address::from_str(&generic.admin)
+                    .into_tw()
+                    .context("Invalid admin address")?,
+            )
+        };
+    
+        let msg = WasmInstantiateContractMessage {
+            sender,
+            admin,
+            code_id: generic.code_id,
+            label: generic.label.to_string(),
+            // We assume the init_msg bytes represent a JSON string.
+            init_msg: InstantiateMsg::Json(serde_json::from_slice(&generic.init_msg).into_tw().context("Invalid JSON in init_msg")?),
+            funds,
+        };
+    
         Ok(msg.into_boxed())
     }
 

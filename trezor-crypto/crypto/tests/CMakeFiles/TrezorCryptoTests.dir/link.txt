@@ -1,0 +1,1 @@
+ccache /usr/bin/cc  -arch arm64 -mmacosx-version-min=10.15 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/TrezorCryptoTests.dir/test_check.c.o -o TrezorCryptoTests   -L/Users/enriquesouza/projects/enriquesouza/wallet-core/build/local/lib  -Wl,-rpath,/Users/enriquesouza/projects/enriquesouza/wallet-core/build/local/lib ../../libTrezorCrypto.a -lcheck
