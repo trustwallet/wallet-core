@@ -17,7 +17,8 @@ use tw_memory::Data;
 use crate::encoder::error::Error;
 use crate::encoder::{Decodable, Encodable};
 
-const ADDRESS_HRP: &str = "pc";
+use super::network::Network;
+
 const TREASURY_ADDRESS_STRING: &str = "000000000000000000000000000000000000000000";
 
 /// Enum for Pactus address types.
@@ -66,18 +67,20 @@ impl Decodable for AddressType {
 /// The hash is computed as RIPEMD160(Blake2b(public key)).
 #[derive(Debug, Clone, PartialEq)]
 pub struct Address {
+    network: Network,
     addr_type: AddressType,
     pub_hash: H160,
 }
 
 impl Address {
-    pub fn from_public_key(public_key: &PublicKey) -> Result<Self, AddressError> {
+    pub fn from_public_key(public_key: &PublicKey, network: Network) -> Result<Self, AddressError> {
         let pud_data = public_key.to_bytes();
         let pub_hash_data =
             ripemd_160(&blake2_b(pud_data.as_ref(), 32).map_err(|_| AddressError::Internal)?);
         let pub_hash = Address::vec_to_pub_hash(pub_hash_data)?;
 
         Ok(Address {
+            network,
             addr_type: AddressType::Ed25519Account,
             pub_hash,
         })
@@ -110,12 +113,12 @@ impl fmt::Display for Address {
             return f.write_str(TREASURY_ADDRESS_STRING);
         }
 
+        let hrp = self.network.address_hrp().map_err(|_| fmt::Error)?;
         let mut b32 = Vec::with_capacity(33);
 
         b32.push(bech32::u5::try_from_u8(self.addr_type.clone() as u8).map_err(|_| fmt::Error)?);
         b32.extend_from_slice(&self.pub_hash.to_vec().to_base32());
-        bech32::encode_to_fmt(f, ADDRESS_HRP, &b32, bech32::Variant::Bech32m)
-            .map_err(|_| fmt::Error)?
+        bech32::encode_to_fmt(f, hrp, &b32, bech32::Variant::Bech32m).map_err(|_| fmt::Error)?
     }
 }
 
@@ -146,6 +149,7 @@ impl Decodable for Address {
         let addr_type = AddressType::decode(r)?;
         if addr_type == AddressType::Treasury {
             return Ok(Address {
+                network: Network::Unknown,
                 addr_type,
                 pub_hash: H160::new(),
             });
@@ -153,6 +157,7 @@ impl Decodable for Address {
 
         let pub_hash = H160::decode(r)?;
         Ok(Address {
+            network: Network::Unknown,
             addr_type,
             pub_hash,
         })
@@ -165,16 +170,14 @@ impl FromStr for Address {
     fn from_str(s: &str) -> Result<Self, AddressError> {
         if s == TREASURY_ADDRESS_STRING {
             return Ok(Address {
+                network: Network::Unknown,
                 addr_type: AddressType::Treasury,
                 pub_hash: H160::new(),
             });
         }
 
         let (hrp, b32, _variant) = bech32::decode(s).map_err(|_| AddressError::FromBech32Error)?;
-
-        if hrp != ADDRESS_HRP {
-            return Err(AddressError::InvalidHrp);
-        }
+        let network = Network::try_from_hrp(&hrp)?;
 
         if b32.len() != 33 {
             return Err(AddressError::InvalidInput);
@@ -185,6 +188,7 @@ impl FromStr for Address {
         let pub_hash = Address::vec_to_pub_hash(b8)?;
 
         Ok(Address {
+            network,
             addr_type,
             pub_hash,
         })
@@ -241,11 +245,19 @@ mod test {
             .decode_hex()
             .unwrap();
 
-        let addr = deserialize::<Address>(&data).unwrap();
+        let mut addr = deserialize::<Address>(&data).unwrap();
         assert!(!addr.is_treasury());
+
+        addr.network = Network::Mainnet;
         assert_eq!(
             addr.to_string(),
             "pc1rqqqsyqcyq5rqwzqfpg9scrgwpuqqzqsr36kkra"
+        );
+
+        addr.network = Network::Testnet;
+        assert_eq!(
+            addr.to_string(),
+            "tpc1rqqqsyqcyq5rqwzqfpg9scrgwpuqqzqsrtuyllk"
         );
     }
 
@@ -289,6 +301,7 @@ mod test {
         for case in test_cases {
             let pub_hash_data = case.pub_hash.decode_hex().unwrap();
             let addr = Address {
+                network: Network::Mainnet,
                 addr_type: case.addr_type,
                 pub_hash: Address::vec_to_pub_hash(pub_hash_data).unwrap(),
             };
@@ -307,7 +320,7 @@ mod test {
             "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
         )
         .unwrap();
-        let address = Address::from_public_key(&private_key.public()).unwrap();
+        let address = Address::from_public_key(&private_key.public(), Network::Mainnet).unwrap();
         let mut w = Vec::new();
 
         address.encode(&mut w).unwrap();
@@ -323,13 +336,16 @@ mod test {
             .unwrap();
         let private_key = PrivateKey::try_from(private_key_data.as_slice()).unwrap();
         let public_key = private_key.public();
-        let address = Address::from_public_key(&public_key).unwrap();
+        let mainnet_address = Address::from_public_key(&public_key, Network::Mainnet).unwrap();
+        let testnet_address = Address::from_public_key(&public_key, Network::Testnet).unwrap();
 
         let expected_public_key =
             "95794161374b22c696dabb98e93f6ca9300b22f3b904921fbf560bb72145f4fa";
-        let expected_address = "pc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymcxy3lr";
+        let expected_mainnet_address = "pc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymcxy3lr";
+        let expected_testnet_address = "tpc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymzqkcrg";
 
         assert_eq!(public_key.to_bytes().to_hex(), expected_public_key);
-        assert_eq!(address.to_string(), expected_address);
+        assert_eq!(mainnet_address.to_string(), expected_mainnet_address);
+        assert_eq!(testnet_address.to_string(), expected_testnet_address);
     }
 }
