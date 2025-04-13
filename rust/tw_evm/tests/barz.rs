@@ -437,8 +437,9 @@ fn test_biz_eip7702_transfer() {
         )),
         // TWT token.
         to_address: "0x4B0F1812e5Df2A09796481Ff14017e6005508003".into(),
-        eip7702_authority: Some(Proto::Authority {
+        eip7702_authorization: Some(Proto::Authorization {
             address: "0x117BC8454756456A0f83dbd130Bb94D793D3F3F7".into(),
+            other_auth_fields: None,
         }),
         ..Proto::SigningInput::default()
     };
@@ -518,8 +519,9 @@ fn test_biz_eip7702_transfer_batch() {
                 wallet_type: Proto::SCWalletType::Biz,
             }),
         }),
-        eip7702_authority: Some(Proto::Authority {
+        eip7702_authorization: Some(Proto::Authorization {
             address: "0x117BC8454756456A0f83dbd130Bb94D793D3F3F7".into(),
+            other_auth_fields: None,
         }),
         ..Proto::SigningInput::default()
     };
