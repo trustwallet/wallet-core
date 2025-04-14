@@ -498,7 +498,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
         let factory = Self::parse_address_optional(user_op_v0_7.factory.as_ref())
             .context("Invalid factory address")?;
 
-        let call_data_gas_limit = U256::from_big_endian_slice(&input.gas_limit)
+        let call_gas_limit = U256::from_big_endian_slice(&input.gas_limit)
             .into_tw()
             .context("Invalid gas limit")?
             .try_into()
@@ -560,7 +560,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
             factory,
             factory_data: user_op_v0_7.factory_data.to_vec(),
             call_data: erc4337_payload,
-            call_data_gas_limit,
+            call_gas_limit,
             verification_gas_limit,
             pre_verification_gas,
             max_fee_per_gas,
