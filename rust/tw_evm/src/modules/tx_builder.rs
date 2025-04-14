@@ -658,8 +658,8 @@ impl<Context: EvmContext> TxBuilder<Context> {
             .context("Invalid authority address")?;
 
         let signed_authorization =
-            if let Some(other_auth_fields) = &eip7702_authorization.other_auth_fields {
-                // If field `other_auth_fields` is set, it means that the authorization is already signed.
+            if let Some(other_auth_fields) = &eip7702_authorization.custom_signature {
+                // If field `custom_signature` is provided, it means that the authorization is already signed.
                 let chain_id = U256::from_big_endian_slice(&other_auth_fields.chain_id)
                     .into_tw()
                     .context("Invalid chain ID")?;
@@ -687,7 +687,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
                     s: U256::from_big_endian(signature.s()),
                 }
             } else {
-                // If field `other_auth_fields` is not set, it means that the authorization is not signed yet.
+                // If field `custom_signature` is not provided, the authorization will be signed with the provided private key, nonce and chainId
                 let signer_key = secp256k1::PrivateKey::try_from(input.private_key.as_ref())
                     .into_tw()
                     .context(

@@ -198,12 +198,12 @@ message Access {
 message Authorization {
     // Address to be authorized, a smart contract address.
     string address = 2;
-    // If you already have signature, set it in other_auth_fields.
-    MaybeOtherAuthFields other_auth_fields = 3;
+    // If custom_signature isn't provided, the authorization will be signed with the provided private key, nonce and chainId
+    AuthorizationCustomSignature custom_signature = 3;
 }
 
 // [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) authorization.
-message MaybeOtherAuthFields {
+message AuthorizationCustomSignature {
     // Chain id (uint256, serialized big endian).
     bytes chain_id = 1;
     // Nonce, the nonce of authority.

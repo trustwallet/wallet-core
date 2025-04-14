@@ -14,7 +14,7 @@ use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_memory::test_utils::tw_data_vector_helper::TWDataVectorHelper;
 use tw_number::U256;
 use tw_proto::Ethereum::Proto;
-use tw_proto::Ethereum::Proto::{Authorization, MaybeOtherAuthFields, TransactionMode};
+use tw_proto::Ethereum::Proto::{Authorization, AuthorizationCustomSignature, TransactionMode};
 use tw_proto::TxCompiler::Proto as CompilerProto;
 use tw_proto::{deserialize, serialize};
 
@@ -103,7 +103,7 @@ fn test_transaction_compiler_eip7702() {
         }),
         eip7702_authorization: Some(Authorization {
             address: "0x3535353535353535353535353535353535353535".into(),
-            other_auth_fields: Some(MaybeOtherAuthFields {
+            custom_signature: Some(AuthorizationCustomSignature {
                 nonce: U256::encode_be_compact(1),
                 chain_id: U256::encode_be_compact(0), // chain id 0 means any chain
                 signature: "08b7bfc6bcaca1dfd7a295c3a6908fea545a62958cf2c048639224a8bede8d1f56dce327574529c56f7f3db308a34d44e2312a11c89db8af99371d4fe490e55f00".into(),
