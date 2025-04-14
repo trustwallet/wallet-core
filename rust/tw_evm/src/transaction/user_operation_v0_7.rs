@@ -42,7 +42,7 @@ impl PackedUserOperation {
         };
 
         let account_gas_limits =
-            concat_u128_be(user_op.verification_gas_limit, user_op.call_data_gas_limit);
+            concat_u128_be(user_op.verification_gas_limit, user_op.call_gas_limit);
         let gas_fees = concat_u128_be(user_op.max_fee_per_gas, user_op.max_priority_fee_per_gas);
 
         let paymaster_and_data = if let Some(paymaster) = user_op.paymaster {
@@ -135,7 +135,7 @@ pub struct UserOperationV0_7 {
     pub call_data: Data,
 
     #[serde(serialize_with = "as_u256_hex")]
-    pub call_data_gas_limit: u128,
+    pub call_gas_limit: u128,
     #[serde(serialize_with = "as_u256_hex")]
     pub verification_gas_limit: u128,
     #[serde(serialize_with = "U256::as_hex")]
@@ -294,7 +294,7 @@ mod tests {
             factory: Some(Address::from("0xf471789937856d80e589f5996cf8b0511ddd9de4")),
             factory_data: "f471789937856d80e589f5996cf8b0511ddd9de4".decode_hex().unwrap(),
             call_data: "00".decode_hex().unwrap(),
-            call_data_gas_limit: 100000u128,
+            call_gas_limit: 100000u128,
             verification_gas_limit: 100000u128,
             pre_verification_gas: U256::from(1000000u64),
             max_fee_per_gas: 100000u128,
