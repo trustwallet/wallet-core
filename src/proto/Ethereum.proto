@@ -314,6 +314,8 @@ enum MessageType {
     MessageType_typed_eip155 = 3;
     // Sign a message with Immutable X msg type.
     MessageType_immutable_x = 4;
+    // Sign a EIP-7702 authorization tuple.
+    MessageType_eip7702_authorization = 5;
 }
 
 message MaybeChainId {
