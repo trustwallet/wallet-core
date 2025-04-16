@@ -47,7 +47,7 @@ jobs:
 
     - name: Cache internal dependencies
       id: internal_cache
-      uses: actions/cache@v4
+      uses: actions/cache@v3
       with:
         path: build/local
         key: ${{ runner.os }}-${{ runner.arch }}-internal-${{ hashFiles('tools/install-dependencies') }}-${{ hashFiles('tools/dependencies-version') }}
