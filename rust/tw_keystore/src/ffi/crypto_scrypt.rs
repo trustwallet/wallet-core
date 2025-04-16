@@ -11,7 +11,6 @@ use crate::crypto_scrypt::scrypt;
 use tw_memory::ffi::c_byte_array::{CByteArray, CByteArrayResult};
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::c_result::ErrorCode;
-use tw_misc::try_or_else;
 
 #[repr(C)]
 pub enum ScryptError {
