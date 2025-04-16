@@ -29,7 +29,7 @@ jobs:
           tools/install-sys-dependencies-linux
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.10.0
+        uses: mozilla-actions/sccache-action@v0.0.8
 
       - name: Cache Rust
         uses: Swatinem/rust-cache@v2
@@ -74,7 +74,7 @@ jobs:
           tools/install-sys-dependencies-linux
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.10.0
+        uses: mozilla-actions/sccache-action@v0.0.8
 
       - name: Cache Rust
         uses: Swatinem/rust-cache@v2
@@ -105,7 +105,7 @@ jobs:
           tools/install-sys-dependencies-mac
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.10.0
+        uses: mozilla-actions/sccache-action@v0.0.8
 
       - name: Cache Rust
         uses: Swatinem/rust-cache@v2
