@@ -13,6 +13,7 @@ default = [
     "bitcoin",
     "ethereum",
     "keypair",
+    "keystore",
     "solana",
     "ton",
     "utils",
