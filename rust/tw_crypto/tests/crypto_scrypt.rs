@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use tw_encoding::hex;
 use tw_crypto::crypto_scrypt::params::Params;
 use tw_crypto::crypto_scrypt::scrypt;
+use tw_encoding::hex;
 
 #[test]
 fn test_scrypt() {
