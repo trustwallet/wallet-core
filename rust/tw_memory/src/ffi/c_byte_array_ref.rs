@@ -34,7 +34,7 @@ impl CByteArrayRef {
     /// The inner data must be valid.
     pub unsafe fn as_slice(&self) -> Option<&'static [u8]> {
         if self.data.is_null() {
-            return None;
+            return if self.size == 0 { Some(&[]) } else { None };
         }
         Some(std::slice::from_raw_parts(self.data, self.size))
     }
