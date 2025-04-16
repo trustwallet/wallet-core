@@ -12,8 +12,8 @@ pub extern crate tw_encoding;
 pub extern crate tw_hash;
 #[cfg(feature = "keypair")]
 pub extern crate tw_keypair;
-#[cfg(feature = "keystore")]
-pub extern crate tw_keystore;
+#[cfg(feature = "crypto")]
+pub extern crate tw_crypto;
 #[cfg(feature = "utils")]
 pub extern crate tw_memory;
 

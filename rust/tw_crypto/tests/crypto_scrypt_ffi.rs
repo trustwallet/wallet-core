@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use tw_encoding::hex;
-use tw_keystore::ffi::crypto_scrypt::crypto_scrypt;
+use tw_crypto::ffi::crypto_scrypt::crypto_scrypt;
 use tw_memory::ffi::c_byte_array::CByteArray;
 
 #[test]

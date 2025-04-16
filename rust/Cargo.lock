@@ -1946,6 +1946,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_crypto"
+version = "0.1.0"
+dependencies = [
+ "pbkdf2",
+ "salsa20",
+ "sha2",
+ "tw_encoding",
+ "tw_memory",
+ "tw_misc",
+]
+
+[[package]]
 name = "tw_decred"
 version = "0.1.0"
 dependencies = [
@@ -2107,18 +2119,6 @@ dependencies = [
  "tw_memory",
  "tw_misc",
  "zeroize",
-]
-
-[[package]]
-name = "tw_keystore"
-version = "0.1.0"
-dependencies = [
- "pbkdf2",
- "salsa20",
- "sha2",
- "tw_encoding",
- "tw_memory",
- "tw_misc",
 ]
 
 [[package]]
@@ -2537,11 +2537,11 @@ dependencies = [
  "tw_any_coin",
  "tw_bitcoin",
  "tw_coin_registry",
+ "tw_crypto",
  "tw_encoding",
  "tw_ethereum",
  "tw_hash",
  "tw_keypair",
- "tw_keystore",
  "tw_macros",
  "tw_memory",
  "tw_misc",

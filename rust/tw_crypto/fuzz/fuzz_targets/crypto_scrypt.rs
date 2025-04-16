@@ -7,7 +7,7 @@
 #![no_main]
 
 use libfuzzer_sys::{arbitrary, fuzz_target};
-use tw_keystore::crypto_scrypt::{params::Params, scrypt};
+use tw_crypto::crypto_scrypt::{params::Params, scrypt};
 
 #[derive(arbitrary::Arbitrary, Debug)]
 struct ScryptInput<'a> {

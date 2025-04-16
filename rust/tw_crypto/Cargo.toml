@@ -1,6 +1,6 @@
 
 [package]
-name = "tw_keystore"
+name = "tw_crypto"
 version = "0.1.0"
 edition = "2021"
 

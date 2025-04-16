@@ -37,7 +37,7 @@ members = [
     "tw_evm",
     "tw_hash",
     "tw_keypair",
-    "tw_keystore",
+    "tw_crypto",
     "tw_macros",
     "tw_memory",
     "tw_misc",
