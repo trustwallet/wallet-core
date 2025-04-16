@@ -6,6 +6,7 @@
 
 use pbkdf2::pbkdf2_hmac;
 use sha2::Sha256;
+
 pub fn hmac_sha256(password: &[u8], salt: &[u8], iterations: u32, desired_len: u32) -> Vec<u8> {
     let mut output = vec![0u8; desired_len as usize];
     pbkdf2_hmac::<Sha256>(password, salt, iterations, &mut output);
