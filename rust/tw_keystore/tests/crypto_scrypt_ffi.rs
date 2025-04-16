@@ -13,9 +13,7 @@ fn test_crypto_scrypt_ffi_null_salt() {
     let password = hex::decode("70617373776f7264").unwrap();
     let password = CByteArray::from(password);
 
-    let salt =
-        hex::decode("80132842c6cde8f9d04582932ef92c3cad3ba6b41e1296ef681692372886db86").unwrap();
-    let salt = CByteArray::from(salt);
+    let salt = CByteArray::null();
 
     let res = unsafe {
         crypto_scrypt(
@@ -23,9 +21,9 @@ fn test_crypto_scrypt_ffi_null_salt() {
             password.size(),
             salt.data(),
             salt.size(),
-            1 << 12,
+            16384,
             8,
-            6,
+            4,
             32,
         )
     }
@@ -33,6 +31,6 @@ fn test_crypto_scrypt_ffi_null_salt() {
     let data = unsafe { res.into_vec() };
     assert_eq!(
         hex::encode(&data, false),
-        "1217705511f43b7d2faea767a156a9946c579b3436ba27252a73278a7162cedc"
+        "004f57df809101216a343d6215879a9a7f1d7e2c04ef2845b4494cf5f10181a1"
     );
 }

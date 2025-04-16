@@ -48,14 +48,10 @@ pub unsafe extern "C" fn crypto_scrypt(
     desired_len: usize,
 ) -> CByteArrayResult {
     let password_ref = CByteArrayRef::new(password, password_len);
-    let password = try_or_else!(password_ref.as_slice(), || CByteArrayResult::error(
-        ScryptError::InvalidParams
-    ));
+    let password = password_ref.as_slice().unwrap_or_default();
 
     let salt_ref = CByteArrayRef::new(salt, salt_len);
-    let salt = try_or_else!(salt_ref.as_slice(), || CByteArrayResult::error(
-        ScryptError::InvalidParams
-    ));
+    let salt = salt_ref.as_slice().unwrap_or_default();
 
     let params = Params {
         n,
