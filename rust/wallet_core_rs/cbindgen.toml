@@ -11,6 +11,7 @@ extra_bindings = [
     "tw_encoding",
     "tw_hash",
     "tw_keypair",
+    "tw_keystore",
     "tw_memory",
 ]
 include = [
@@ -18,5 +19,6 @@ include = [
     "tw_encoding",
     "tw_hash",
     "tw_keypair",
+    "tw_keystore",
     "tw_memory",
 ]

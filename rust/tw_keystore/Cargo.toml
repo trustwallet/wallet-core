@@ -1,0 +1,13 @@
+
+[package]
+name = "tw_keystore"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+pbkdf2 = "0.12.2"
+salsa20 = "0.10.2"
+sha2 = "0.10.8"
+tw_encoding = { path = "../tw_encoding" }
+tw_memory = { path = "../tw_memory" }
+tw_misc = { path = "../tw_misc" }

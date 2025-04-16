@@ -8,8 +8,8 @@
 
 #include <TrezorCrypto/aes.h>
 #include <TrezorCrypto/pbkdf2.h>
-#include <TrezorCrypto/scrypt.h>
 #include <cassert>
+#include <rust/Wrapper.h>
 
 using namespace TW;
 
@@ -36,6 +36,23 @@ static const auto kdf = "kdf";
 static const auto kdfParams = "kdfparams";
 static const auto mac = "mac";
 } // namespace CodingKeys
+
+static Data rustScrypt(const Data& password, const ScryptParameters& params) {
+    Rust::CByteArrayResultWrapper res = Rust::crypto_scrypt(
+        password.data(),
+        password.size(),
+        params.salt.data(),
+        params.salt.size(),
+        params.n,
+        params.r,
+        params.p,
+        params.desiredKeyLength
+    );
+    if (!res.isOk()) {
+        throw std::runtime_error("Invalid scrypt parameters");
+    }
+    return res.unwrap().data;
+}
 
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
     auto cipher = json[CodingKeys::cipher].get<std::string>();
@@ -68,10 +85,7 @@ nlohmann::json EncryptionParameters::json() const {
 EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const EncryptionParameters& params)
     : params(std::move(params)), _mac() {
     auto scryptParams = std::get<ScryptParameters>(this->params.kdfParams);
-    auto derivedKey = Data(scryptParams.desiredKeyLength);
-    scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
-           scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
-           scryptParams.desiredKeyLength);
+    auto derivedKey = rustScrypt(password, scryptParams);
 
     aes_encrypt_ctx ctx;
     auto result = 0;
@@ -106,10 +120,7 @@ Data EncryptedPayload::decrypt(const Data& password) const {
     auto mac = Data();
 
     if (auto* scryptParams = std::get_if<ScryptParameters>(&params.kdfParams); scryptParams) {
-        derivedKey.resize(scryptParams->defaultDesiredKeyLength);
-        scrypt(password.data(), password.size(), scryptParams->salt.data(),
-               scryptParams->salt.size(), scryptParams->n, scryptParams->r, scryptParams->p, derivedKey.data(),
-               scryptParams->defaultDesiredKeyLength);
+        derivedKey = rustScrypt(password, *scryptParams);
         mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
     } else if (auto* pbkdf2Params = std::get_if<PBKDF2Parameters>(&params.kdfParams); pbkdf2Params) {
         derivedKey.resize(pbkdf2Params->defaultDesiredKeyLength);

@@ -21,6 +21,7 @@ any-coin = ["tw_any_coin"]
 bitcoin = ["tw_bitcoin", "tw_coin_registry"]
 ethereum = ["tw_ethereum", "tw_coin_registry"]
 keypair = ["tw_keypair"]
+keystore = ["tw_keystore"]
 solana = ["tw_solana"]
 ton = ["tw_ton"]
 utils = [
@@ -41,6 +42,7 @@ tw_encoding = { path = "../tw_encoding", optional = true }
 tw_ethereum = { path = "../chains/tw_ethereum", optional = true }
 tw_hash = { path = "../tw_hash", optional = true }
 tw_keypair = { path = "../tw_keypair", optional = true }
+tw_keystore = { path = "../tw_keystore", optional = true }
 tw_memory = { path = "../tw_memory", optional = true }
 tw_number = { path = "../tw_number", optional = true }
 tw_macros = { path = "../tw_macros" }
