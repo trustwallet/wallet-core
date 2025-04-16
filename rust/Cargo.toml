@@ -57,11 +57,14 @@ panic = "abort"
 
 [profile.wasm-test]
 inherits = "release"
-# Fixes an incredibly slow compilation of `curve25519-dalek` package.
-opt-level = 1
+opt-level = 3
 debug = true
 debug-assertions = true
 overflow-checks = true
+
+# Fixes an incredibly slow compilation of `curve25519-dalek` package.
+[profile.wasm-test.package.curve25519-dalek]
+opt-level = 1
 
 [profile.release.package.curve25519-dalek]
 opt-level = 2
