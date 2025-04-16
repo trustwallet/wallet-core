@@ -1953,6 +1953,7 @@ dependencies = [
  "salsa20",
  "sha2",
  "tw_encoding",
+ "tw_macros",
  "tw_memory",
  "tw_misc",
 ]

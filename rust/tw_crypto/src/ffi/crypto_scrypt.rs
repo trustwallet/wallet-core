@@ -8,6 +8,7 @@
 
 use crate::crypto_scrypt::params::Params;
 use crate::crypto_scrypt::scrypt;
+use tw_macros::tw_ffi;
 use tw_memory::ffi::c_byte_array::{CByteArray, CByteArrayResult};
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::c_result::ErrorCode;
@@ -35,6 +36,7 @@ impl From<ScryptError> for ErrorCode {
 /// \param p scrypt parameter `p`: parallelism.
 /// \param desired_len scrypt parameter `Key length`.
 /// \return C-compatible byte array.
+#[tw_ffi(ty = static_function, class = TWCrypto, name = Scrypt)]
 #[no_mangle]
 pub unsafe extern "C" fn crypto_scrypt(
     password: *const u8,

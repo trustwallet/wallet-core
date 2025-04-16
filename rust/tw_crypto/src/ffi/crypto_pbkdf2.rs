@@ -7,6 +7,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use crate::crypto_hmac::hmac_sha256;
+use tw_macros::tw_ffi;
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 
@@ -19,6 +20,7 @@ use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 /// \param iterations PBKDF2 parameter `iterations`.
 /// \param desired_len PBKDF2 parameter `desired_len`.
 /// \return C-compatible byte array.
+#[tw_ffi(ty = static_function, class = TWCrypto, name = PBKDF2)]
 #[no_mangle]
 pub unsafe extern "C" fn crypto_pbkdf2(
     password: *const u8,

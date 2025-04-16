@@ -9,5 +9,6 @@ pbkdf2 = "0.12.2"
 salsa20 = "0.10.2"
 sha2 = "0.10.8"
 tw_encoding = { path = "../tw_encoding" }
+tw_macros = { path = "../tw_macros" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
