@@ -6,8 +6,7 @@
 
 #![allow(clippy::missing_safety_doc)]
 
-use pbkdf2::pbkdf2_hmac;
-use sha2::Sha256;
+use crate::crypto_hmac::hmac_sha256;
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 
@@ -35,8 +34,7 @@ pub unsafe extern "C" fn crypto_pbkdf2(
     let salt_ref = CByteArrayRef::new(salt, salt_len);
     let salt = salt_ref.as_slice().unwrap_or_default();
 
-    let mut output = vec![0u8; desired_len as usize];
-    pbkdf2_hmac::<Sha256>(password, salt, iterations, &mut output);
+    let output = hmac_sha256(password, salt, iterations, desired_len);
 
     CByteArray::from(output)
 }
