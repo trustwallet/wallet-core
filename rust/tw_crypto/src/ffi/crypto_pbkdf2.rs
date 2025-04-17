@@ -6,7 +6,7 @@
 
 #![allow(clippy::missing_safety_doc)]
 
-use crate::crypto_hmac::hmac_sha256;
+use crate::crypto_pbkdf2::pbkdf2_hmac_sha256;
 use tw_macros::tw_ffi;
 use tw_memory::ffi::{tw_data::TWData, Nonnull, NullableMut, RawPtrTrait};
 
@@ -32,6 +32,6 @@ pub unsafe extern "C" fn crypto_pbkdf2(
         .map(|data| data.as_slice())
         .unwrap_or_default();
 
-    let output = hmac_sha256(password, salt, iterations, desired_len);
+    let output = pbkdf2_hmac_sha256(password, salt, iterations, desired_len);
     TWData::from(output).into_ptr()
 }
