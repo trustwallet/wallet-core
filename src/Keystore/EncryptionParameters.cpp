@@ -7,9 +7,8 @@
 #include "../Hash.h"
 
 #include <TrezorCrypto/aes.h>
-#include <TrezorCrypto/pbkdf2.h>
 #include <cassert>
-#include <rust/Wrapper.h>
+#include "TrustWalletCore/Generated/TWCrypto.h"
 
 using namespace TW;
 
@@ -38,20 +37,39 @@ static const auto mac = "mac";
 } // namespace CodingKeys
 
 static Data rustScrypt(const Data& password, const ScryptParameters& params) {
-    Rust::CByteArrayResultWrapper res = Rust::crypto_scrypt(
-        password.data(),
-        password.size(),
-        params.salt.data(),
-        params.salt.size(),
+    Rust::TWDataWrapper passwordData = password;
+    Rust::TWDataWrapper saltData = params.salt;
+
+    Rust::TWDataWrapper res = Rust::crypto_scrypt(
+        passwordData.get(),
+        saltData.get(),
         params.n,
         params.r,
         params.p,
         params.desiredKeyLength
     );
-    if (!res.isOk()) {
+    auto data = res.toDataOrDefault();
+    if (data.empty()) {
         throw std::runtime_error("Invalid scrypt parameters");
     }
-    return res.unwrap().data;
+    return data;
+}
+
+static Data rustPbkdf2(const Data& password, const PBKDF2Parameters& params) {
+    Rust::TWDataWrapper passwordData = password;
+    Rust::TWDataWrapper saltData = params.salt;
+
+    Rust::TWDataWrapper res = Rust::crypto_pbkdf2(
+        passwordData.get(),
+        saltData.get(),
+        params.iterations,
+        params.desiredKeyLength
+    );
+    auto data = res.toDataOrDefault();
+    if (data.empty()) {
+        throw std::runtime_error("Invalid pbkdf2 parameters");
+    }
+    return data;
 }
 
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
@@ -123,10 +141,7 @@ Data EncryptedPayload::decrypt(const Data& password) const {
         derivedKey = rustScrypt(password, *scryptParams);
         mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
     } else if (auto* pbkdf2Params = std::get_if<PBKDF2Parameters>(&params.kdfParams); pbkdf2Params) {
-        derivedKey.resize(pbkdf2Params->defaultDesiredKeyLength);
-        pbkdf2_hmac_sha256(password.data(), static_cast<int>(password.size()), pbkdf2Params->salt.data(),
-                           static_cast<int>(pbkdf2Params->salt.size()), pbkdf2Params->iterations, derivedKey.data(),
-                           pbkdf2Params->defaultDesiredKeyLength);
+        derivedKey = rustPbkdf2(password, *pbkdf2Params);
         mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
     } else {
         throw DecryptionError::unsupportedKDF;
