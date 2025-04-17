@@ -8,35 +8,30 @@
 
 use crate::crypto_hmac::hmac_sha256;
 use tw_macros::tw_ffi;
-use tw_memory::ffi::c_byte_array::CByteArray;
-use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
+use tw_memory::ffi::{tw_data::TWData, Nullable, NullableMut, RawPtrTrait};
 
 /// The PBKDF2 key derivation function.
 ///
-/// \param password *nullable* byte array.
-/// \param password_len the length of the `password` array.
-/// \param salt *nullable* byte array.
-/// \param salt_len the length of the `salt` array.
+/// \param password *nullable* data.
+/// \param salt *nullable* data.
 /// \param iterations PBKDF2 parameter `iterations`.
 /// \param desired_len PBKDF2 parameter `desired_len`.
-/// \return C-compatible byte array.
+/// \return *nullable* data.
 #[tw_ffi(ty = static_function, class = TWCrypto, name = PBKDF2)]
 #[no_mangle]
 pub unsafe extern "C" fn crypto_pbkdf2(
-    password: *const u8,
-    password_len: usize,
-    salt: *const u8,
-    salt_len: usize,
+    password: Nullable<TWData>,
+    salt: Nullable<TWData>,
     iterations: u32,
-    desired_len: u32,
-) -> CByteArray {
-    let password_ref = CByteArrayRef::new(password, password_len);
-    let password = password_ref.as_slice().unwrap_or_default();
-
-    let salt_ref = CByteArrayRef::new(salt, salt_len);
-    let salt = salt_ref.as_slice().unwrap_or_default();
+    desired_len: usize,
+) -> NullableMut<TWData> {
+    let password = TWData::from_ptr_as_ref(password)
+        .map(|data| data.as_slice())
+        .unwrap_or_default();
+    let salt = TWData::from_ptr_as_ref(salt)
+        .map(|data| data.as_slice())
+        .unwrap_or_default();
 
     let output = hmac_sha256(password, salt, iterations, desired_len);
-
-    CByteArray::from(output)
+    TWData::from(output).into_ptr()
 }

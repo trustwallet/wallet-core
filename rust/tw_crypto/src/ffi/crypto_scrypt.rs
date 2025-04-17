@@ -9,9 +9,8 @@
 use crate::crypto_scrypt::params::Params;
 use crate::crypto_scrypt::scrypt;
 use tw_macros::tw_ffi;
-use tw_memory::ffi::c_byte_array::{CByteArray, CByteArrayResult};
-use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::c_result::ErrorCode;
+use tw_memory::ffi::{tw_data::TWData, Nullable, NullableMut, RawPtrTrait};
 
 #[repr(C)]
 pub enum ScryptError {
@@ -39,20 +38,19 @@ impl From<ScryptError> for ErrorCode {
 #[tw_ffi(ty = static_function, class = TWCrypto, name = Scrypt)]
 #[no_mangle]
 pub unsafe extern "C" fn crypto_scrypt(
-    password: *const u8,
-    password_len: usize,
-    salt: *const u8,
-    salt_len: usize,
+    password: Nullable<TWData>,
+    salt: Nullable<TWData>,
     n: u32,
     r: u32,
     p: u32,
     desired_len: usize,
-) -> CByteArrayResult {
-    let password_ref = CByteArrayRef::new(password, password_len);
-    let password = password_ref.as_slice().unwrap_or_default();
-
-    let salt_ref = CByteArrayRef::new(salt, salt_len);
-    let salt = salt_ref.as_slice().unwrap_or_default();
+) -> NullableMut<TWData> {
+    let password = TWData::from_ptr_as_ref(password)
+        .map(|data| data.as_slice())
+        .unwrap_or_default();
+    let salt = TWData::from_ptr_as_ref(salt)
+        .map(|data| data.as_slice())
+        .unwrap_or_default();
 
     let params = Params {
         n,
@@ -61,7 +59,6 @@ pub unsafe extern "C" fn crypto_scrypt(
         desired_len,
     };
     scrypt(password, salt, &params)
-        .map(CByteArray::from)
-        .map_err(|_| ScryptError::InvalidParams)
-        .into()
+        .map(|output| TWData::from(output).into_ptr())
+        .unwrap_or_else(|_| std::ptr::null_mut())
 }

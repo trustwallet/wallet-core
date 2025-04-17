@@ -12,3 +12,6 @@ tw_encoding = { path = "../tw_encoding" }
 tw_macros = { path = "../tw_macros" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
+
+[dev-dependencies]
+tw_memory = { path = "../tw_memory", features = ["test-utils"] }
