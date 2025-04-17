@@ -8,20 +8,20 @@
 
 use crate::crypto_hmac::hmac_sha256;
 use tw_macros::tw_ffi;
-use tw_memory::ffi::{tw_data::TWData, Nullable, NullableMut, RawPtrTrait};
+use tw_memory::ffi::{tw_data::TWData, Nonnull, NullableMut, RawPtrTrait};
 
 /// The PBKDF2 key derivation function.
 ///
-/// \param password *nullable* data.
-/// \param salt *nullable* data.
+/// \param password data.
+/// \param salt data.
 /// \param iterations PBKDF2 parameter `iterations`.
 /// \param desired_len PBKDF2 parameter `desired_len`.
 /// \return *nullable* data.
 #[tw_ffi(ty = static_function, class = TWCrypto, name = PBKDF2)]
 #[no_mangle]
 pub unsafe extern "C" fn crypto_pbkdf2(
-    password: Nullable<TWData>,
-    salt: Nullable<TWData>,
+    password: Nonnull<TWData>,
+    salt: Nonnull<TWData>,
     iterations: u32,
     desired_len: usize,
 ) -> NullableMut<TWData> {

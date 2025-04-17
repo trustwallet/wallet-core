@@ -10,7 +10,7 @@ use crate::crypto_scrypt::params::Params;
 use crate::crypto_scrypt::scrypt;
 use tw_macros::tw_ffi;
 use tw_memory::ffi::c_result::ErrorCode;
-use tw_memory::ffi::{tw_data::TWData, Nullable, NullableMut, RawPtrTrait};
+use tw_memory::ffi::{tw_data::TWData, Nonnull, NullableMut, RawPtrTrait};
 
 #[repr(C)]
 pub enum ScryptError {
@@ -26,10 +26,8 @@ impl From<ScryptError> for ErrorCode {
 
 /// The scrypt key derivation function.
 ///
-/// \param password *nullable* byte array.
-/// \param password_len the length of the `password` array.
-/// \param salt *nullable* byte array.
-/// \param salt_len the length of the `salt` array.
+/// \param password data.
+/// \param salt data.
 /// \param n scrypt parameter `N`: CPU/memory cost.
 /// \param r scrypt parameter `r`: block size.
 /// \param p scrypt parameter `p`: parallelism.
@@ -38,8 +36,8 @@ impl From<ScryptError> for ErrorCode {
 #[tw_ffi(ty = static_function, class = TWCrypto, name = Scrypt)]
 #[no_mangle]
 pub unsafe extern "C" fn crypto_scrypt(
-    password: Nullable<TWData>,
-    salt: Nullable<TWData>,
+    password: Nonnull<TWData>,
+    salt: Nonnull<TWData>,
     n: u32,
     r: u32,
     p: u32,
