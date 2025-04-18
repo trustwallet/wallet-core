@@ -64,7 +64,7 @@ pub struct WasmInstantiateContractMessage<Address: CosmosAddress> {
     /// A human-readable label for the contract instance.
     pub label: String,
     /// A JSON-encoded initialization message.
-    pub init_msg: InstantiateMsg,
+    pub msg: InstantiateMsg,
     /// A list of coins to be sent along with the instantiation.
     pub funds: Vec<Coin>,
 }
@@ -79,7 +79,7 @@ impl<Address: CosmosAddress> CosmosMessage for WasmInstantiateContractMessage<Ad
                 .map_or("".into(), |admin| admin.to_string().into()),
             code_id: self.code_id,
             label: self.label.clone().into(),
-            init_msg: self.init_msg.to_bytes().into(),
+            msg: self.msg.to_bytes().into(),
             // Use "init_funds" here, matching the protobuf definition.
             init_funds: self.funds.iter().map(build_coin).collect(),
         };
@@ -92,8 +92,7 @@ impl<Address: CosmosAddress> CosmosMessage for WasmInstantiateContractMessage<Ad
             "admin": self.admin,
             "code_id": self.code_id,
             "label": self.label,
-            "init_msg": self.init_msg.try_to_json(),
-            // Use "init_funds" here as well.
+            "msg": self.msg.try_to_json(),
             "init_funds": self.funds,
         });
         Ok(JsonMessage {

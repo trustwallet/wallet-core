@@ -636,8 +636,7 @@ where
             admin,
             code_id: generic.code_id,
             label: generic.label.to_string(),
-            // We assume the init_msg bytes represent a JSON string.
-            init_msg: InstantiateMsg::Json(serde_json::from_slice(&generic.init_msg).into_tw().context("Invalid JSON in init_msg")?),
+            msg: InstantiateMsg::Json(serde_json::from_slice(&generic.msg).into_tw().context("Invalid JSON in msg")?),
             funds,
         };
     

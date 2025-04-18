@@ -234,20 +234,11 @@ message Message {
 
     // MsgInstantiateContract defines a message for instantiating a new CosmWasm contract.
     message WasmInstantiateContract {
-        // The address of the account instantiating the contract.
         string sender = 1;
-        // (Optional) The admin address allowed to perform contract migrations.
         string admin = 2;
-        // Code ID referencing the stored contract code.
         uint64 code_id = 3;
-        // A human-readable label for the contract instance.
         string label = 4;
-        // A JSON-encoded initialization message.
-        bytes init_msg = 5;
-        // Initial funds sent along with the instantiation.
-        // Note: Although other parts of the system may use a structured Coin type,
-        // Terra Classic messages (e.g. WasmTerraExecuteContractSend) use a repeated string.
-        // This definition uses repeated string for compatibility.
+        bytes msg = 5;
         repeated Amount init_funds = 6;
     }
 
