@@ -7,7 +7,7 @@ use std::borrow::Cow;
 use tw_coin_entry::test_utils::test_context::TestCoinContext;
 use tw_cosmos_sdk::context::StandardCosmosContext;
 use tw_cosmos_sdk::modules::tx_builder::TxBuilder;
-use tw_cosmos_sdk::test_utils::proto_utils::{make_amount, make_fee, make_message};
+use tw_cosmos_sdk::test_utils::proto_utils::{make_amount, make_fee, make_fee_none, make_message};
 use tw_cosmos_sdk::test_utils::sign_utils::{test_sign_json, test_sign_protobuf, TestInput};
 use tw_encoding::base64::{self, STANDARD};
 use tw_encoding::hex::DecodeHex;
@@ -131,52 +131,46 @@ fn test_wasm_execute_generic_with_coins() {
     });
 }
 
-/// TerraV2 DepositStable
 #[test]
 fn test_wasm_instantiate_contract() {
     let coin = TestCoinContext::default()
         .with_public_key_type(PublicKeyType::Secp256k1)
         .with_hrp("thor");
 
-    let execute_msg = r#"
-        {
-          "decay_starts_at": "1746403200000000000",
-          "decay_ends_at": "1775347200000000000",
-          "merge_denom": "thor.kuji",
-          "merge_supply": "11234621200000000",
-          "ruji_allocation": "4184468200000000",
-          "ruji_denom": "x/ruji",
-          "bypass_min_merge_denom": true
-        }
-        "#;
+    let execute_msg = r#"{"foo":"bar"}"#;
+
     let contract = Proto::mod_Message::WasmInstantiateContract {
         sender: "thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r".into(),
-        admin: "thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r".into(),
+        admin:  "thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r".into(),
         code_id: 1,
-        label: "RUJI Merge: NSTK".into(),
-        init_msg: Cow::Borrowed(execute_msg.as_bytes()),
+        label:   "Contract".into(),
+        msg: Cow::Borrowed(execute_msg.as_bytes()),
         init_funds: vec![],
-        ..Proto::mod_Message::WasmInstantiateContract::default()
+        ..Default::default()
     };
 
     let input = Proto::SigningInput {
         account_number: 593,
-        chain_id: "thorchain-mainnet-v1".into(),
-        sequence: 21,
-        fee: Some(make_fee(2500000, make_amount("rune", "200"))),
-        private_key: account_593_private_key(),
-        messages: vec![make_message(MessageEnum::wasm_instantiate_contract_message(
-            contract,
-        ))],
-        ..Proto::SigningInput::default()
+        chain_id:        "thorchain-1".into(),
+        sequence:        24,
+        fee:             Some(make_fee_none(200_000)),
+        private_key:     account_593_private_key(),
+        mode:            Proto::BroadcastMode::SYNC,
+        messages:        vec![make_message(
+            MessageEnum::wasm_instantiate_contract_message(contract),
+        )],
+        ..Default::default()
     };
 
-    // i need to see the result of the input
-    println!("input: {:?}", input);
-
+    // https://thornode.ninerealms.com/cosmos/tx/v1beta1/txs/45CECF3858D1B4C2D49A48C83082D6F018A1E06CA68B1E76F7FF86D5CEC67255
+    test_sign_protobuf::<StandardCosmosContext>(TestInput {
+        coin: &coin,
+        input: input.clone(),
+        tx: r#"{"mode":"BROADCAST_MODE_SYNC","tx_bytes":"CqQBCqEBCigvY29zbXdhc20ud2FzbS52MS5Nc2dJbnN0YW50aWF0ZUNvbnRyYWN0EnUKK3Rob3IxejUzd3dlN21kNmNld3o5c3F3cXpuMGFhdnBhdW4wZ3cwZXhuMnISK3Rob3IxejUzd3dlN21kNmNld3o5c3F3cXpuMGFhdnBhdW4wZ3cwZXhuMnIYASIIQ29udHJhY3QqDXsiZm9vIjoiYmFyIn0SWApQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohA+2Zfjls9CkvX85aQrukFZnM1dluMTFUp8nqcEneMXx3EgQKAggBGBgSBBDAmgwaQBJNYdvq5b6xOY6tZDgJo7ueYCjs4XKPwg3Np10E6T6CLO6W7SsYKh2GiSrwHvzSA5ragedrQ+h9HwaTIGTLmOE="}"#,
+        signature: "124d61dbeae5beb1398ead643809a3bb9e6028ece1728fc20dcda75d04e93e822cee96ed2b182a1d86892af01efcd2039ada81e76b43e87d1f06932064cb98e1",
+        signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A+2Zfjls9CkvX85aQrukFZnM1dluMTFUp8nqcEneMXx3"},"signature":"Ek1h2+rlvrE5jq1kOAmju55gKOzhco/CDc2nXQTpPoIs7pbtKxgqHYaJKvAe/NIDmtqB52tD6H0fBpMgZMuY4Q=="}]"#
+    });
 }
-
-
 
 /// TerraV2 Transfer
 #[test]
