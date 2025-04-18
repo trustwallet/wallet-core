@@ -18,6 +18,7 @@ export enum Error {
   InvalidMnemonic = "invalid mnemonic",
   InvalidJSON = "invalid JSON",
   InvalidKey = "invalid key",
+  UnsupportedWalletType = "unsupported wallet type",
 }
 
 export interface ActiveAccount {

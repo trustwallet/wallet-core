@@ -141,7 +141,14 @@ public final class KeyStore {
         guard let privateKey = PrivateKey(data: data) else {
             throw Error.invalidKey
         }
-        return try self.import(privateKey: privateKey, name: name, password: newPassword, coin: coins.first ?? .ethereum)
+        if key.hasPrivateKeyEncoded {
+            guard let encodedPrivateKey = key.decryptPrivateKeyEncoded(password: Data(password.utf8)) else {
+                throw Error.invalidPassword
+            }
+            return try self.import(encodedPrivateKey: encodedPrivateKey, name: name, password: newPassword, coin: coins.first ?? .ethereum)
+        } else {
+            return try self.import(privateKey: privateKey, name: name, password: newPassword, coin: coins.first ?? .ethereum)
+        }
     }
 
     private func checkMnemonic(_ data: Data) -> String? {
@@ -149,6 +156,13 @@ public final class KeyStore {
             return nil
         }
         return mnemonic
+    }
+    
+    private func checkEncoded(wallet: Wallet, password: String) -> String? {
+        guard wallet.key.hasPrivateKeyEncoded else {
+            return nil
+        }
+        return wallet.key.decryptPrivateKeyEncoded(password: Data(password.utf8))
     }
 
     /// Imports a private key.
@@ -160,6 +174,27 @@ public final class KeyStore {
     /// - Returns: new wallet
     public func `import`(privateKey: PrivateKey, name: String, password: String, coin: CoinType, encryption: StoredKeyEncryption = .aes128Ctr) throws -> Wallet {
         guard let newKey = StoredKey.importPrivateKeyWithEncryption(privateKey: privateKey.data, name: name, password: Data(password.utf8), coin: coin, encryption: encryption) else {
+            throw Error.invalidKey
+        }
+        let url = makeAccountURL()
+        let wallet = Wallet(keyURL: url, key: newKey)
+        _ = try wallet.getAccount(password: password, coin: coin)
+        wallets.append(wallet)
+
+        try save(wallet: wallet)
+
+        return wallet
+    }
+
+    /// Imports an encoded private key.
+    ///
+    /// - Parameters:
+    ///   - privateKey: private key to import
+    ///   - password: password to use for the imported private key
+    ///   - coin: coin to use for this wallet
+    /// - Returns: new wallet
+    public func `import`(encodedPrivateKey: String, name: String, password: String, coin: CoinType, encryption: StoredKeyEncryption = .aes128Ctr) throws -> Wallet {
+        guard let newKey = StoredKey.importPrivateKeyEncodedWithEncryption(privateKey: encodedPrivateKey, name: name, password: Data(password.utf8), coin: coin, encryption: encryption) else {
             throw Error.invalidKey
         }
         let url = makeAccountURL()
@@ -216,6 +251,11 @@ public final class KeyStore {
                 throw Error.invalidKey
             }
             return json
+        } else if let privateKey = checkEncoded(wallet: wallet, password: password), let newKey = StoredKey.importPrivateKeyEncodedWithEncryption(privateKey: privateKey, name: "", password: Data(newPassword.utf8), coin: coin, encryption: encryption) {
+            guard let json = newKey.exportJSON() else {
+                throw Error.invalidKey
+            }
+            return json
         } else if let newKey = StoredKey.importPrivateKeyWithEncryption(privateKey: privateKeyData, name: "", password: Data(newPassword.utf8), coin: coin, encryption: encryption) {
             guard let json = newKey.exportJSON() else {
                 throw Error.invalidKey
@@ -234,6 +274,19 @@ public final class KeyStore {
     /// - Returns: private key data for encrypted keys or mnemonic phrase for HD wallets
     public func exportPrivateKey(wallet: Wallet, password: String) throws -> Data {
         guard let key = wallet.key.decryptPrivateKey(password: Data(password.utf8)) else {
+            throw Error.invalidPassword
+        }
+        return key
+    }
+    
+    /// Exports a wallet as encoded private key data.
+    ///
+    /// - Parameters:
+    ///   - wallet: wallet to export
+    ///   - password: account password
+    /// - Returns: encoded private key data
+    public func exportPrivateKeyEncoded(wallet: Wallet, password: String) throws -> String {
+        guard let key = wallet.key.decryptPrivateKeyEncoded(password: Data(password.utf8)) else {
             throw Error.invalidPassword
         }
         return key

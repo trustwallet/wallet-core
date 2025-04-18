@@ -85,7 +85,7 @@ impl<const SIZE: usize, const CHECKSUM_SIZE: usize, ChecksumHasher> fmt::Display
 // }
 
 // /// Deserializes a `Base58Address<SIZE>` with Bitcoin alphabet.
-// pub fn deserialize_with_bitcoin_alph<'de, const SIZE: usize, const CHECKSUM_SIZE: usize, D>(
+// pub fn deserialize_with_bitcoin_alpha<'de, const SIZE: usize, const CHECKSUM_SIZE: usize, D>(
 //     deserializer: D,
 // ) -> Result<Base58Address<SIZE, CHECKSUM_SIZE>, D::Error>
 // where

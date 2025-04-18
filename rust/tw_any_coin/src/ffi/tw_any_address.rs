@@ -123,7 +123,7 @@ pub unsafe extern "C" fn tw_any_address_create_with_string(
 
 /// Creates an address from a public key and derivation option.
 ///
-/// \param public_key derivates the address from the public key.
+/// \param public_key derives the address from the public key.
 /// \param coin coin type of the address.
 /// \param derivation the custom derivation to use.
 /// \return `TWAnyAddress` pointer or nullptr if public key is invalid.
@@ -145,7 +145,7 @@ pub unsafe extern "C" fn tw_any_address_create_with_public_key_derivation(
 
 /// Creates an bech32 address from a public key and a given hrp.
 ///
-/// \param public_key derivates the address from the public key.
+/// \param public_key derives the address from the public key.
 /// \param coin coin type of the address.
 /// \param hrp hrp of the address.
 /// \return TWAnyAddress pointer or nullptr if public key is invalid.
@@ -174,7 +174,7 @@ pub unsafe extern "C" fn tw_any_address_create_bech32_with_public_key(
 
 /// Creates an Base58 Bitcoin address from a public key and a given hrp.
 ///
-/// \param public_key derivates the address from the public key.
+/// \param public_key derives the address from the public key.
 /// \param coin coin type of the address.
 /// \param p2pkh pay-to-public-key-hash address prefix.
 /// \param p2sh pay-to-script-hash address prefix.
@@ -202,7 +202,7 @@ pub unsafe extern "C" fn tw_any_address_create_base58_with_public_key(
 
 /// Creates an SS58 Substrate address from a public key and a given ss58 prefix.
 ///
-/// \param public_key derivates the address from the public key.
+/// \param public_key derives the address from the public key.
 /// \param coin coin type of the address.
 /// \param ss58 SS58 address prefix.
 /// \return TWAnyAddress pointer or nullptr if public key is invalid.

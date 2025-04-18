@@ -100,7 +100,7 @@ impl CashAddress {
             bech32::convert_bits(&payload, from, to, pad).map_err(|_| AddressError::InvalidInput)?
         };
 
-        let payload_with_checksum = checksum::cacl_and_append_checksum(hrp, &payload_u5);
+        let payload_with_checksum = checksum::calc_and_append_checksum(hrp, &payload_u5);
         let encoded_payload =
             cash_base32::encode(&payload_with_checksum).map_err(|_| AddressError::InvalidInput)?;
         Ok(format!("{hrp}:{encoded_payload}"))

@@ -64,7 +64,7 @@ Pod::Spec.new do |s|
       'Sources/Types/*.swift',
       'Sources/Generated/Enums/*.swift',
       'Sources/Generated/Protobuf/*.swift'
-    ss.dependency 'SwiftProtobuf'
+    ss.dependency 'WalletCoreSwiftProtobuf'
   end
   s.subspec 'Core' do |ss|
     ss.vendored_frameworks = '*.xcframework'

@@ -179,11 +179,12 @@ class KeyStoreTests: XCTestCase {
         let wallet = try keyStore.import(json: json, name: "name", password: "password", newPassword: "newPassword", coins: [.ethereum])
         let storedData = wallet.key.decryptPrivateKey(password: Data("newPassword".utf8))
 
+        XCTAssertFalse(wallet.key.hasPrivateKeyEncoded)
         XCTAssertNotNil(keyStore.keyWallet)
         XCTAssertNotNil(storedData)
         XCTAssertNotNil(PrivateKey(data: storedData!))
     }
-    
+
     func testImportPrivateKeyAES256() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let privateKeyData = Data(hexString: "9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c")!
@@ -196,6 +197,57 @@ class KeyStoreTests: XCTestCase {
         XCTAssertNotNil(keyStore.keyWallet)
         XCTAssertNotNil(storedData)
         XCTAssertNotNil(PrivateKey(data: storedData!))
+    }
+    
+    func testImportKeyEncodedEthereum() throws {
+        let keyStore = try KeyStore(keyDirectory: keyDirectory)
+        let privateKeyHex = "9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c"
+        let key = StoredKey.importPrivateKeyEncoded(privateKey: privateKeyHex, name: "name", password: Data("password".utf8), coin: .ethereum)!
+        let json = key.exportJSON()!
+
+        let wallet = try keyStore.import(json: json, name: "name", password: "password", newPassword: "newPassword", coins: [.ethereum])
+        let storedEncoded = wallet.key.decryptPrivateKeyEncoded(password: Data("newPassword".utf8))
+    
+        let exportedPrivateKey = try keyStore.exportPrivateKeyEncoded(wallet: wallet, password: "newPassword")
+
+        XCTAssertTrue(wallet.key.hasPrivateKeyEncoded)
+        XCTAssertNotNil(keyStore.keyWallet)
+        XCTAssertNotNil(storedEncoded)
+        XCTAssertEqual(privateKeyHex, storedEncoded)
+        XCTAssertEqual(privateKeyHex, exportedPrivateKey)
+    }
+    
+    func testImportKeyEncodedSolana() throws {
+        let keyStore = try KeyStore(keyDirectory: keyDirectory)
+        let privateKeyBase58 = "A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"
+        let key = StoredKey.importPrivateKeyEncoded(privateKey: privateKeyBase58, name: "name", password: Data("password".utf8), coin: .solana)!
+        let json = key.exportJSON()!
+
+        let wallet = try keyStore.import(json: json, name: "name", password: "password", newPassword: "newPassword", coins: [.solana])
+        let storedEncoded = wallet.key.decryptPrivateKeyEncoded(password: Data("newPassword".utf8))
+        
+        let exportedPrivateKey = try keyStore.exportPrivateKeyEncoded(wallet: wallet, password: "newPassword")
+
+        XCTAssertTrue(wallet.key.hasPrivateKeyEncoded)
+        XCTAssertNotNil(keyStore.keyWallet)
+        XCTAssertNotNil(storedEncoded)
+        XCTAssertEqual(privateKeyBase58, storedEncoded)
+        XCTAssertEqual(privateKeyBase58, exportedPrivateKey)
+    }
+    
+    func testImportPrivateKeyAES256Stellar() throws {
+        let keyStore = try KeyStore(keyDirectory: keyDirectory)
+        let privateKeyBase32 = "SAV76USXIJOBMEQXPANUOQM6F5LIOTLPDIDVRJBFFE2MDJXG24TAPUU7"
+        let key = StoredKey.importPrivateKeyEncodedWithEncryption(privateKey: privateKeyBase32, name: "name", password: Data("password".utf8), coin: .stellar, encryption: StoredKeyEncryption.aes256Ctr)!
+        let json = key.exportJSON()!
+
+        let wallet = try keyStore.import(json: json, name: "name", password: "password", newPassword: "newPassword", coins: [.stellar])
+        let storedEncoded = wallet.key.decryptPrivateKeyEncoded(password: Data("newPassword".utf8))
+
+        XCTAssertTrue(wallet.key.hasPrivateKeyEncoded)
+        XCTAssertNotNil(keyStore.keyWallet)
+        XCTAssertNotNil(storedEncoded)
+        XCTAssertEqual(privateKeyBase32, storedEncoded)
     }
 
     func testImportPrivateKey() throws {
@@ -222,7 +274,7 @@ class KeyStoreTests: XCTestCase {
         XCTAssertEqual(wallet.accounts.count, 1)
         XCTAssertNotNil(keyStore.hdWallet)
     }
-    
+
     func testImportWalletAES256() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let wallet = try keyStore.import(mnemonic: mnemonic, name: "name", encryptPassword: "newPassword", coins: [.ethereum], encryption: .aes256Ctr)
@@ -437,7 +489,7 @@ class KeyStoreTests: XCTestCase {
         let btc2 = try wallet.getAccount(password: password, coin: .bitcoin, derivation: .bitcoinLegacy)
         XCTAssertEqual(btc2.address, "1NyRyFewhZcWMa9XCj3bBxSXPXyoSg8dKz")
         XCTAssertEqual(btc2.extendedPublicKey, "xpub6CR52eaUuVb4kXAVyHC2i5ZuqJ37oWNPZFtjXaazFPXZD45DwWBYEBLdrF7fmCR9pgBuCA9Q57zZfyJjDUBDNtWkhWuGHNYKLgDHpqrHsxV")
-        
+
         let btc3 = try wallet.getAccount(password: password, coin: .bitcoin, derivation: .bitcoinTaproot)
         XCTAssertEqual(btc3.address, "bc1pyqkqf20fmmwmcxf98tv6k63e2sgnjy4zne6d0r32vxwm3au0hnksq6ec57")
         XCTAssertEqual(btc3.extendedPublicKey, "zpub6qNRYbLLXquaD1GKxHZWDs3moUFQfP4iqXiDPCd8aD3oNHZkCAusAw5raKQEWV8BkXBTXhWBkgZTxzjjnQ5cRjWa6LNcjmrVVNdUKvbKTgm")
@@ -449,6 +501,14 @@ class KeyStoreTests: XCTestCase {
         let solana2 = try wallet.getAccount(password: password, coin: .solana, derivation: .solanaSolana)
         XCTAssertEqual(solana2.address, "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C")
         XCTAssertEqual(solana2.derivationPath, "m/44'/501'/0'/0'")
+
+        let pactus_mainnet = try wallet.getAccount(password: password, coin: .pactus, derivation: .pactusMainnet)
+        XCTAssertEqual(pactus_mainnet.address, "pc1rzuswvfwde5hleqfemvpz4swlh6uud6nkukumdu")
+        XCTAssertEqual(pactus_mainnet.derivationPath, "m/44'/21888'/3'/0'")
+
+        let pactus_testnet = try wallet.getAccount(password: password, coin: .pactus, derivation: .pactusTestnet)
+        XCTAssertEqual(pactus_testnet.address, "tpc1rxs9tperv58gvfwpn0vj5na7vrcffml40j2v6r9")
+        XCTAssertEqual(pactus_testnet.derivationPath, "m/44'/21777'/3'/0'")
     }
 
     func createTempDirURL() throws -> URL {

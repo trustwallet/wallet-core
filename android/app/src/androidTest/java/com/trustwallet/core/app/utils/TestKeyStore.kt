@@ -91,4 +91,36 @@ class TestKeyStore {
         val privateKey = newKeyStore.decryptPrivateKey("".toByteArray())
         assertNull(privateKey)
     }
+
+    @Test
+    fun testImportKeyEncodedEthereum() {
+        val privateKeyHex = "9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c"
+        val password = "password".toByteArray()
+        val key = StoredKey.importPrivateKeyEncoded(privateKeyHex, "name", password, CoinType.ETHEREUM)
+        val json = key.exportJSON()
+
+        val keyStore = StoredKey.importJSON(json)
+        val storedEncoded = keyStore.decryptPrivateKeyEncoded(password)
+
+        assertTrue(keyStore.hasPrivateKeyEncoded())
+        assertNotNull(keyStore)
+        assertNotNull(storedEncoded)
+        assertEquals(privateKeyHex, storedEncoded)
+    }
+
+    @Test
+    fun testImportKeyEncodedSolana() {
+        val privateKeyBase58 = "A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"
+        val password = "password".toByteArray()
+        val key = StoredKey.importPrivateKeyEncoded(privateKeyBase58, "name", password, CoinType.SOLANA)
+        val json = key.exportJSON()
+
+        val keyStore = StoredKey.importJSON(json)
+        val storedEncoded = keyStore.decryptPrivateKeyEncoded(password)
+
+        assertTrue(keyStore.hasPrivateKeyEncoded())
+        assertNotNull(keyStore)
+        assertNotNull(storedEncoded)
+        assertEquals(privateKeyBase58, storedEncoded)
+    }
 }
