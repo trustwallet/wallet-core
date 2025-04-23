@@ -7,8 +7,8 @@
 #![allow(clippy::missing_safety_doc)]
 
 use crate::crypto_aes_ctr::{
-    aes_ctr_decrypt_128, aes_ctr_decrypt_192, aes_ctr_decrypt_256, aes_ctr_encrypt_128,
-    aes_ctr_encrypt_192, aes_ctr_encrypt_256,
+    aes_ctr_decrypt, aes_ctr_decrypt_128, aes_ctr_decrypt_192, aes_ctr_decrypt_256,
+    aes_ctr_encrypt, aes_ctr_encrypt_128, aes_ctr_encrypt_192, aes_ctr_encrypt_256,
 };
 use tw_macros::tw_ffi;
 use tw_memory::ffi::{tw_data::TWData, Nonnull, NullableMut, RawPtrTrait};
@@ -143,6 +143,50 @@ pub unsafe extern "C" fn crypto_aes_ctr_decrypt_256(
         .unwrap_or_default();
 
     aes_ctr_decrypt_256(data, iv, key)
+        .map(|output| TWData::from(output).into_ptr())
+        .unwrap_or_else(|_| std::ptr::null_mut())
+}
+
+#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCtrEncrypt)]
+#[no_mangle]
+pub unsafe extern "C" fn crypto_aes_ctr_encrypt(
+    data: Nonnull<TWData>,
+    iv: Nonnull<TWData>,
+    key: Nonnull<TWData>,
+) -> NullableMut<TWData> {
+    let data = TWData::from_ptr_as_ref(data)
+        .map(|data| data.as_slice())
+        .unwrap_or_default();
+    let iv = TWData::from_ptr_as_ref(iv)
+        .map(|data| data.as_slice())
+        .unwrap_or_default();
+    let key = TWData::from_ptr_as_ref(key)
+        .map(|data| data.as_slice())
+        .unwrap_or_default();
+
+    aes_ctr_encrypt(data, iv, key)
+        .map(|output| TWData::from(output).into_ptr())
+        .unwrap_or_else(|_| std::ptr::null_mut())
+}
+
+#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCtrDecrypt)]
+#[no_mangle]
+pub unsafe extern "C" fn crypto_aes_ctr_decrypt(
+    data: Nonnull<TWData>,
+    iv: Nonnull<TWData>,
+    key: Nonnull<TWData>,
+) -> NullableMut<TWData> {
+    let data = TWData::from_ptr_as_ref(data)
+        .map(|data| data.as_slice())
+        .unwrap_or_default();
+    let iv = TWData::from_ptr_as_ref(iv)
+        .map(|data| data.as_slice())
+        .unwrap_or_default();
+    let key = TWData::from_ptr_as_ref(key)
+        .map(|data| data.as_slice())
+        .unwrap_or_default();
+
+    aes_ctr_decrypt(data, iv, key)
         .map(|output| TWData::from(output).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
 }

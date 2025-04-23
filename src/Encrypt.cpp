@@ -9,6 +9,9 @@
 #include <cstring>
 #include <stdexcept>
 
+#include "rust/Wrapper.h"
+#include "TrustWalletCore/Generated/TWCrypto.h"
+
 namespace TW::Encrypt {
 
 size_t paddingSize(size_t origSize, size_t blockSize, TWAESPaddingMode paddingMode) {
@@ -83,25 +86,37 @@ Data AESCBCDecrypt(const Data& key, const Data& data, Data& iv, TWAESPaddingMode
 }
 
 Data AESCTREncrypt(const Data& key, const Data& data, Data& iv) {
-	aes_encrypt_ctx ctx;
-    if (aes_encrypt_key(key.data(), static_cast<int>(key.size()), &ctx) != EXIT_SUCCESS) {
-        throw std::invalid_argument("Invalid key");
-    }
+    Rust::TWDataWrapper dataWrapper = data;
+    Rust::TWDataWrapper ivWrapper = iv;
+    Rust::TWDataWrapper keyWrapper = key;
 
-    Data result(data.size());
-    aes_ctr_encrypt(data.data(), result.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
-    return result;
+    Rust::TWDataWrapper res = Rust::crypto_aes_ctr_encrypt(
+        dataWrapper.get(),
+        ivWrapper.get(),
+        keyWrapper.get()
+    );
+    auto resData = res.toDataOrDefault();
+    if (resData.empty()) {
+        throw std::runtime_error("Invalid aes ctr encrypt");
+    }
+    return resData;
 }
 
 Data AESCTRDecrypt(const Data& key, const Data& data, Data& iv) {
-    aes_encrypt_ctx ctx;
-    if (aes_encrypt_key(key.data(), static_cast<int>(key.size()), &ctx) != EXIT_SUCCESS) {
-        throw std::invalid_argument("Invalid key");
-    }
+    Rust::TWDataWrapper dataWrapper = data;
+    Rust::TWDataWrapper ivWrapper = iv;
+    Rust::TWDataWrapper keyWrapper = key;
 
-    Data result(data.size());
-    aes_ctr_decrypt(data.data(), result.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
-    return result;
+    Rust::TWDataWrapper res = Rust::crypto_aes_ctr_decrypt(
+        dataWrapper.get(),
+        ivWrapper.get(),
+        keyWrapper.get()
+    );
+    auto resData = res.toDataOrDefault();
+    if (resData.empty()) {
+        throw std::runtime_error("Invalid aes ctr decrypt");
+    }
+    return resData;
 }
 
 } // namespace TW::Encrypt

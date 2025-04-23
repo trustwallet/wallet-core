@@ -86,3 +86,21 @@ pub fn aes_ctr_decrypt_256(
     cipher.try_apply_keystream(&mut data_vec)?;
     Ok(data_vec)
 }
+
+pub fn aes_ctr_encrypt(data: &[u8], iv: &[u8], key: &[u8]) -> Result<Vec<u8>, StreamCipherError> {
+    match key.len() {
+        16 => aes_ctr_encrypt_128(data, iv, key),
+        24 => aes_ctr_encrypt_192(data, iv, key),
+        32 => aes_ctr_encrypt_256(data, iv, key),
+        _ => Err(StreamCipherError),
+    }
+}
+
+pub fn aes_ctr_decrypt(data: &[u8], iv: &[u8], key: &[u8]) -> Result<Vec<u8>, StreamCipherError> {
+    match key.len() {
+        16 => aes_ctr_decrypt_128(data, iv, key),
+        24 => aes_ctr_decrypt_192(data, iv, key),
+        32 => aes_ctr_decrypt_256(data, iv, key),
+        _ => Err(StreamCipherError),
+    }
+}
