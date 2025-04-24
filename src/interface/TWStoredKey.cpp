@@ -90,8 +90,8 @@ struct TWStoredKey* _Nullable TWStoredKeyImportHDWalletWithEncryption(TWString* 
 struct TWStoredKey* _Nullable TWStoredKeyImportJSON(TWData* _Nonnull json) {
     try {
         const auto& d = *reinterpret_cast<const TW::Data*>(json);
-        const auto parsed = nlohmann::json::parse(d);
-        return new TWStoredKey{ KeyStore::StoredKey::createWithJson(nlohmann::json::parse(d)) };
+        const auto parsed = nlohmann::json::parse(std::string(d.begin(), d.end()));
+        return new TWStoredKey{ KeyStore::StoredKey::createWithJson(parsed) };
     } catch (...) {
         return nullptr;
     }
