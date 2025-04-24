@@ -5,15 +5,19 @@
 use crate::address::SolanaAddress;
 use borsh::BorshSerialize;
 use serde::{Deserialize, Serialize};
+use tw_encoding::base58::as_base58_bitcoin;
 use tw_memory::Data;
 
+#[derive(Debug, Default, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Instruction {
     /// Pubkey of the program that executes this instruction.
     pub program_id: SolanaAddress,
     /// Metadata describing accounts that should be passed to the program.
     pub accounts: Vec<AccountMeta>,
     /// Opaque data passed to the program for its own interpretation.
-    pub data: Data,
+    #[serde(with = "as_base58_bitcoin")]
+    pub data: Data, // Rpc getTransaction uses base58 encoding, we use the same encoding for consistency
 }
 
 impl Instruction {
@@ -72,6 +76,7 @@ impl Instruction {
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AccountMeta {
     /// An account's public key.
     pub pubkey: SolanaAddress,
