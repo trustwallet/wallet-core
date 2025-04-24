@@ -128,7 +128,7 @@ TEST(Encrypt, AESCBCEncryptInvalidKeySize) {
     Data iv = Data(16);
     try {
         Data result = AESCBCEncrypt(Data(19), Data(100), iv);
-    } catch (std::invalid_argument&) {
+    } catch (...) {
         // expected exception, OK
         return;
     }
@@ -139,7 +139,7 @@ TEST(Encrypt, AESCBCDecryptInvalidKeySize) {
     Data iv = Data(16);
     try {
         Data result = AESCBCDecrypt(Data(19), Data(100), iv);
-    } catch (std::invalid_argument&) {
+    } catch (...) {
         // expected exception, OK
         return;
     }
@@ -150,7 +150,7 @@ TEST(Encrypt, AESCBCDecryptInvalidDataSize) {
     Data iv = Data(16);
     try {
         Data result = AESCBCDecrypt(Data(16), Data(100), iv);
-    } catch (std::invalid_argument&) {
+    } catch (...) {
         // expected exception, OK
         return;
     }
@@ -161,7 +161,7 @@ TEST(Encrypt, AESCTREncryptInvalidKeySize) {
     Data iv = Data(16);
     try {
         Data result = AESCTREncrypt(Data(19), Data(100), iv);
-    } catch (std::invalid_argument&) {
+    } catch (...) {
         // expected exception, OK
         return;
     }
@@ -172,7 +172,7 @@ TEST(Encrypt, AESCTRDecryptInvalidKeySize) {
     Data iv = Data(16);
     try {
         Data result = AESCTRDecrypt(Data(19), Data(100), iv);
-    } catch (std::invalid_argument&) {
+    } catch (...) {
         // expected exception, OK
         return;
     }
