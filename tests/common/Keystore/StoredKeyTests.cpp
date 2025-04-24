@@ -49,6 +49,38 @@ TEST(StoredKey, CreateWithMnemonic) {
     EXPECT_EQ(json["crypto"]["kdfparams"]["salt"].get<std::string>().size(), 64ul);
 }
 
+TEST(StoredKey, CreateWithMnemonicAes192Ctr) {
+    auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelDefault, TWStoredKeyEncryptionAes192Ctr);
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
+    EXPECT_EQ(key.accounts.size(), 0ul);
+    EXPECT_EQ(key.wallet(gPassword).getMnemonic(), string(gMnemonic));
+
+    const auto json = key.json();
+    EXPECT_EQ(json["name"], "name");
+    EXPECT_EQ(json["type"], "mnemonic");
+    EXPECT_EQ(json["version"], 3);
+    // Salt is 32 bytes, encoded as hex.
+    EXPECT_EQ(json["crypto"]["kdfparams"]["salt"].get<std::string>().size(), 64ul);
+}
+
+TEST(StoredKey, CreateWithMnemonicAes256Ctr) {
+    auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelDefault, TWStoredKeyEncryptionAes256Ctr);
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
+    EXPECT_EQ(key.accounts.size(), 0ul);
+    EXPECT_EQ(key.wallet(gPassword).getMnemonic(), string(gMnemonic));
+
+    const auto json = key.json();
+    EXPECT_EQ(json["name"], "name");
+    EXPECT_EQ(json["type"], "mnemonic");
+    EXPECT_EQ(json["version"], 3);
+    // Salt is 32 bytes, encoded as hex.
+    EXPECT_EQ(json["crypto"]["kdfparams"]["salt"].get<std::string>().size(), 64ul);
+}
+
 TEST(StoredKey, CreateWithMnemonicCbc) {
     auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelDefault, TWStoredKeyEncryptionAes128Cbc);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
