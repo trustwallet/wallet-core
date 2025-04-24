@@ -6,7 +6,6 @@
 
 #include "../Hash.h"
 
-#include <TrezorCrypto/aes.h>
 #include <cassert>
 #include "TrustWalletCore/Generated/TWCrypto.h"
 
@@ -174,6 +173,43 @@ static Data rustAesCtrDecrypt256(const Data& data, const Data& iv, const Data& k
     return resData;
 }
 
+static Data rustAesCbcEncrypt(const Data& data, const Data& iv, const Data& key) {
+    Rust::TWDataWrapper dataWrapper = data;
+    Rust::TWDataWrapper ivWrapper = iv;
+    Rust::TWDataWrapper keyWrapper = key;
+
+    Rust::TWDataWrapper res = Rust::crypto_aes_cbc_encrypt(
+        dataWrapper.get(),
+        ivWrapper.get(),
+        keyWrapper.get(),
+        0
+    );
+    auto resData = res.toDataOrDefault();
+    if (resData.empty()) {
+        throw std::runtime_error("Invalid aes cbc encrypt");
+    }
+    return resData;
+}
+
+static Data rustAesCbcDecrypt(const Data& data, const Data& iv, const Data& key) {
+    Rust::TWDataWrapper dataWrapper = data;
+    Rust::TWDataWrapper ivWrapper = iv;
+    Rust::TWDataWrapper keyWrapper = key;
+
+    Rust::TWDataWrapper res = Rust::crypto_aes_cbc_decrypt(
+        dataWrapper.get(),
+        ivWrapper.get(),
+        keyWrapper.get(),
+        0
+    );
+    auto resData = res.toDataOrDefault();
+    if (resData.empty()) {
+        throw std::runtime_error("Invalid aes cbc decrypt");
+    }
+    return resData;
+}
+
+
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
     auto cipher = json[CodingKeys::cipher].get<std::string>();
     cipherParams = AESParameters::AESParametersFromJson(json[CodingKeys::cipherParams], cipher);
@@ -209,7 +245,6 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
 
     switch(this->params.cipherParams.mCipherEncryption) {
     case TWStoredKeyEncryptionAes128Ctr:
-    case TWStoredKeyEncryptionAes128Cbc:
         encrypted = rustAesCtrEncrypt128(data, this->params.cipherParams.iv, derivedKey);
         break;
     case TWStoredKeyEncryptionAes192Ctr:
@@ -217,6 +252,9 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
         break;
     case TWStoredKeyEncryptionAes256Ctr:
         encrypted = rustAesCtrEncrypt256(data, this->params.cipherParams.iv, derivedKey);
+        break;
+    case TWStoredKeyEncryptionAes128Cbc:
+        encrypted = rustAesCbcEncrypt(data, this->params.cipherParams.iv, derivedKey);
         break;
     }
     _mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
@@ -257,16 +295,9 @@ Data EncryptedPayload::decrypt(const Data& password) const {
     case TWStoredKeyEncryptionAes256Ctr:
         decrypted = rustAesCtrDecrypt256(encrypted, iv, derivedKey);
         break;
-    case TWStoredKeyEncryptionAes128Cbc: {
-        aes_decrypt_ctx ctx;
-        [[maybe_unused]] auto result = aes_decrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
-        assert(result != EXIT_FAILURE);
-
-        for (auto i = 0ul; i < encrypted.size(); i += params.getKeyBytesSize()) {
-            aes_cbc_decrypt(encrypted.data() + i, decrypted.data() + i, params.getKeyBytesSize(), iv.data(), &ctx);
-        }
+    case TWStoredKeyEncryptionAes128Cbc:
+        decrypted = rustAesCbcDecrypt(encrypted, iv, derivedKey);
         break;
-    }
     }
 
     return decrypted;

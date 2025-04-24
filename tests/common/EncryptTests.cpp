@@ -20,27 +20,6 @@ inline void assertHexEqual(const Data& data, const char* expected) {
     EXPECT_EQ(hex(data), expected);
 }
 
-TEST(Encrypt, paddingSize) {
-    EXPECT_EQ(paddingSize(0, 16, TWAESPaddingModeZero), 0ul);
-    EXPECT_EQ(paddingSize(1, 16, TWAESPaddingModeZero), 15ul);
-    EXPECT_EQ(paddingSize(8, 16, TWAESPaddingModeZero), 8ul);
-    EXPECT_EQ(paddingSize(15, 16, TWAESPaddingModeZero), 1ul);
-    EXPECT_EQ(paddingSize(16, 16, TWAESPaddingModeZero), 0ul);
-    EXPECT_EQ(paddingSize(17, 16, TWAESPaddingModeZero), 15ul);
-    EXPECT_EQ(paddingSize(24, 16, TWAESPaddingModeZero), 8ul);
-    EXPECT_EQ(paddingSize(31, 16, TWAESPaddingModeZero), 1ul);
-    EXPECT_EQ(paddingSize(32, 16, TWAESPaddingModeZero), 0ul);
-    EXPECT_EQ(paddingSize(0, 16, TWAESPaddingModePKCS7), 16ul);
-    EXPECT_EQ(paddingSize(1, 16, TWAESPaddingModePKCS7), 15ul);
-    EXPECT_EQ(paddingSize(8, 16, TWAESPaddingModePKCS7), 8ul);
-    EXPECT_EQ(paddingSize(15, 16, TWAESPaddingModePKCS7), 1ul);
-    EXPECT_EQ(paddingSize(16, 16, TWAESPaddingModePKCS7), 16ul);
-    EXPECT_EQ(paddingSize(17, 16, TWAESPaddingModePKCS7), 15ul);
-    EXPECT_EQ(paddingSize(24, 16, TWAESPaddingModePKCS7), 8ul);
-    EXPECT_EQ(paddingSize(31, 16, TWAESPaddingModePKCS7), 1ul);
-    EXPECT_EQ(paddingSize(32, 16, TWAESPaddingModePKCS7), 16ul);
-}
-
 TEST(Encrypt, AESCBCEncrypt) {
 	auto iv = parse_hex("000102030405060708090A0B0C0D0E0F");
     auto data = parse_hex("6bc1bee22e409f96e93d7e117393172a");
