@@ -204,10 +204,7 @@ fn test_crypto_aes_cbc_decrypt_with_padding() {
             unsafe { crypto_aes_cbc_decrypt(encrypted_not_padded.ptr(), iv.ptr(), key.ptr(), 0) };
         let decrypt_result = unsafe { TWData::from_ptr_as_mut(decrypt_result).unwrap() };
 
-        let mut expected = "secret message".as_bytes().to_vec();
-        expected.push(0);
-        expected.push(0);
-
+        let expected = "secret message".as_bytes().to_vec();
         assert_eq!(decrypt_result.to_vec(), expected);
     }
 }

@@ -66,8 +66,6 @@ TEST(Encrypt, AESCBCDecryptWithPadding) {
         Data iv = parse_hex("f300888ca4f512cebdc0020ff0f7224c");        
         Data encrypted = AESCBCDecrypt(key, encryptedNotPadded, iv);
         Data expected = TW::data("secret message");
-        TW::append(expected, 0);
-        TW::append(expected, 0);
         assertHexEqual(encrypted, hex(expected).c_str());
     }
 }
