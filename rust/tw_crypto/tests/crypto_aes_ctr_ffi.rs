@@ -20,10 +20,10 @@ fn test_crypto_aes_ctr_128_ffi() {
     let key = hex::decode("2b7e151628aed2a6abf7158809cf4f3c").unwrap();
     let key = TWDataHelper::create(key);
 
-    let encrypted = unsafe { crypto_aes_ctr_encrypt_128(data.ptr(), iv.ptr(), key.ptr()) };
+    let encrypted = unsafe { tw_aes_encrypt_ctr_128(key.ptr(), data.ptr(), iv.ptr()) };
     let encrypted = unsafe { TWData::from_ptr_as_mut(encrypted).unwrap() };
 
-    let decrypted = unsafe { crypto_aes_ctr_decrypt_128(encrypted, iv.ptr(), key.ptr()) };
+    let decrypted = unsafe { tw_aes_decrypt_ctr_128(key.ptr(), encrypted, iv.ptr()) };
     let decrypted = unsafe { TWData::from_ptr_as_mut(decrypted).unwrap() };
 
     let decrypted_data = decrypted.to_vec();
@@ -40,10 +40,10 @@ fn test_crypto_aes_ctr_192_ffi() {
     let key = hex::decode("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b").unwrap();
     let key = TWDataHelper::create(key);
 
-    let encrypted = unsafe { crypto_aes_ctr_encrypt_192(data.ptr(), iv.ptr(), key.ptr()) };
+    let encrypted = unsafe { tw_aes_encrypt_ctr_192(key.ptr(), data.ptr(), iv.ptr()) };
     let encrypted = unsafe { TWData::from_ptr_as_mut(encrypted).unwrap() };
 
-    let decrypted = unsafe { crypto_aes_ctr_decrypt_192(encrypted, iv.ptr(), key.ptr()) };
+    let decrypted = unsafe { tw_aes_decrypt_ctr_192(key.ptr(), encrypted, iv.ptr()) };
     let decrypted = unsafe { TWData::from_ptr_as_mut(decrypted).unwrap() };
 
     let decrypted_data = decrypted.to_vec();
@@ -61,11 +61,10 @@ fn test_crypto_aes_ctr_256_ffi() {
         hex::decode("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4").unwrap();
     let key = TWDataHelper::create(key);
 
-    let encrypted: *mut TWData =
-        unsafe { crypto_aes_ctr_encrypt_256(data.ptr(), iv.ptr(), key.ptr()) };
+    let encrypted = unsafe { tw_aes_encrypt_ctr_256(key.ptr(), data.ptr(), iv.ptr()) };
     let encrypted = unsafe { TWData::from_ptr_as_mut(encrypted).unwrap() };
 
-    let decrypted = unsafe { crypto_aes_ctr_decrypt_256(encrypted, iv.ptr(), key.ptr()) };
+    let decrypted = unsafe { tw_aes_decrypt_ctr_256(key.ptr(), encrypted, iv.ptr()) };
     let decrypted = unsafe { TWData::from_ptr_as_mut(decrypted).unwrap() };
 
     let decrypted_data = decrypted.to_vec();
@@ -82,7 +81,7 @@ fn test_crypto_aes_ctr_encrypt() {
         hex::decode("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4").unwrap();
     let key = TWDataHelper::create(key);
 
-    let encrypt_result = unsafe { crypto_aes_ctr_encrypt(data.ptr(), iv.ptr(), key.ptr()) };
+    let encrypt_result = unsafe { tw_aes_encrypt_ctr(key.ptr(), data.ptr(), iv.ptr()) };
     let encrypt_result = unsafe { TWData::from_ptr_as_mut(encrypt_result).unwrap() };
 
     assert_eq!(
@@ -101,7 +100,7 @@ fn test_crypto_aes_ctr_decrypt() {
         hex::decode("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4").unwrap();
     let key = TWDataHelper::create(key);
 
-    let decrypt_result = unsafe { crypto_aes_ctr_decrypt(cipher.ptr(), iv.ptr(), key.ptr()) };
+    let decrypt_result = unsafe { tw_aes_decrypt_ctr(key.ptr(), cipher.ptr(), iv.ptr()) };
     let decrypt_result = unsafe { TWData::from_ptr_as_mut(decrypt_result).unwrap() };
 
     assert_eq!(
@@ -120,7 +119,7 @@ fn test_crypto_aes_ctr_decrypt_multiple_blocks() {
         hex::decode("d172bf743a674da9cdad04534d56926ef8358534d458fffccd4e6ad2fbde479c").unwrap();
     let data = TWDataHelper::create(data);
 
-    let decrypt_result = unsafe { crypto_aes_ctr_decrypt(data.ptr(), iv.ptr(), key.ptr()) };
+    let decrypt_result = unsafe { tw_aes_decrypt_ctr(key.ptr(), data.ptr(), iv.ptr()) };
     let decrypt_result = unsafe { TWData::from_ptr_as_mut(decrypt_result).unwrap() };
 
     assert_eq!(
@@ -138,7 +137,7 @@ fn test_crypto_aes_ctr_encrypt_multiple_blocks() {
     let data = hex::decode("726970706c652073636973736f7273206b69636b206d616d6d616c206869726520636f6c756d6e206f616b20616761696e2073756e206f66666572207765616c746820746f6d6f72726f77207761676f6e207475726e20666174616c00").unwrap();
     let data = TWDataHelper::create(data);
 
-    let result = unsafe { crypto_aes_ctr_encrypt(data.ptr(), iv.ptr(), key.ptr()) };
+    let result = unsafe { tw_aes_encrypt_ctr(key.ptr(), data.ptr(), iv.ptr()) };
     let result = unsafe { TWData::from_ptr_as_mut(result).unwrap() };
 
     assert_eq!(
@@ -156,7 +155,7 @@ fn test_crypto_aes_ctr_encrypt_invalid_key_size() {
     let data = vec![0; 100];
     let data = TWDataHelper::create(data);
 
-    let result = unsafe { crypto_aes_ctr_encrypt(data.ptr(), iv.ptr(), key.ptr()) };
+    let result = unsafe { tw_aes_encrypt_ctr(key.ptr(), data.ptr(), iv.ptr()) };
     assert!(
         result.is_null(),
         "Expected null result for invalid key size"
@@ -172,7 +171,7 @@ fn test_crypto_aes_ctr_decrypt_invalid_key_size() {
     let data = vec![0; 100];
     let data = TWDataHelper::create(data);
 
-    let result = unsafe { crypto_aes_ctr_decrypt(data.ptr(), iv.ptr(), key.ptr()) };
+    let result = unsafe { tw_aes_decrypt_ctr(key.ptr(), data.ptr(), iv.ptr()) };
     assert!(
         result.is_null(),
         "Expected null result for invalid key size"

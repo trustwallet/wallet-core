@@ -75,11 +75,9 @@ impl PaddingMode {
                     data.to_vec()
                 }
             },
-            PaddingMode::Zero => {
-                // Find the position of the last non-zero byte and return data up to that point
-                let last_non_zero = data.iter().rposition(|&b| b != 0).map_or(0, |pos| pos + 1);
-                data[..last_non_zero].to_vec()
-            },
+            // Zero padding can be ambiguous, so we return the original data
+            // and the caller can strip the padding if needed
+            PaddingMode::Zero => data.to_vec(),
         }
     }
 }

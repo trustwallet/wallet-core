@@ -7,6 +7,7 @@
 #include "../Hash.h"
 
 #include <cassert>
+#include <TrustWalletCore/TWAESPaddingMode.h>
 #include "TrustWalletCore/Generated/TWCrypto.h"
 
 using namespace TW;
@@ -77,9 +78,9 @@ static Data rustAesOperation(const Data& data, const Data& iv, const Data& key, 
     Rust::TWDataWrapper keyWrapper = key;
 
     Rust::TWDataWrapper res = cryptoFunc(
+        keyWrapper.get(),
         dataWrapper.get(),
-        ivWrapper.get(),
-        keyWrapper.get()
+        ivWrapper.get()
     );
     auto resData = res.toDataOrDefault();
     if (resData.empty()) {
@@ -89,38 +90,38 @@ static Data rustAesOperation(const Data& data, const Data& iv, const Data& key, 
 }
 
 static Data rustAesCtrEncrypt128(const Data& data, const Data& iv, const Data& key) {
-    return rustAesOperation(data, iv, key, Rust::crypto_aes_ctr_encrypt_128, "Invalid aes ctr encrypt 128");
+    return rustAesOperation(data, iv, key, Rust::tw_aes_encrypt_ctr_128, "Invalid aes ctr encrypt 128");
 }
 
 static Data rustAesCtrDecrypt128(const Data& data, const Data& iv, const Data& key) {
-    return rustAesOperation(data, iv, key, Rust::crypto_aes_ctr_decrypt_128, "Invalid aes ctr decrypt 128");
+    return rustAesOperation(data, iv, key, Rust::tw_aes_decrypt_ctr_128, "Invalid aes ctr decrypt 128");
 }
 
 static Data rustAesCtrEncrypt192(const Data& data, const Data& iv, const Data& key) {
-    return rustAesOperation(data, iv, key, Rust::crypto_aes_ctr_encrypt_192, "Invalid aes ctr encrypt 192");
+    return rustAesOperation(data, iv, key, Rust::tw_aes_encrypt_ctr_192, "Invalid aes ctr encrypt 192");
 }
 
 static Data rustAesCtrDecrypt192(const Data& data, const Data& iv, const Data& key) {
-    return rustAesOperation(data, iv, key, Rust::crypto_aes_ctr_decrypt_192, "Invalid aes ctr decrypt 192");
+    return rustAesOperation(data, iv, key, Rust::tw_aes_decrypt_ctr_192, "Invalid aes ctr decrypt 192");
 }
 
 static Data rustAesCtrEncrypt256(const Data& data, const Data& iv, const Data& key) {
-    return rustAesOperation(data, iv, key, Rust::crypto_aes_ctr_encrypt_256, "Invalid aes ctr encrypt 256");
+    return rustAesOperation(data, iv, key, Rust::tw_aes_encrypt_ctr_256, "Invalid aes ctr encrypt 256");
 }
 
 static Data rustAesCtrDecrypt256(const Data& data, const Data& iv, const Data& key) {
-    return rustAesOperation(data, iv, key, Rust::crypto_aes_ctr_decrypt_256, "Invalid aes ctr decrypt 256");
+    return rustAesOperation(data, iv, key, Rust::tw_aes_decrypt_ctr_256, "Invalid aes ctr decrypt 256");
 }
 
 static Data rustAesCbcEncrypt(const Data& data, const Data& iv, const Data& key) {
     return rustAesOperation(data, iv, key, 
-        [](auto d, auto i, auto k) { return Rust::crypto_aes_cbc_encrypt(d, i, k, 0); }, 
+        [](auto d, auto i, auto k) { return Rust::tw_aes_encrypt_cbc(d, i, k, TWAESPaddingModePKCS7); }, 
         "Invalid aes cbc encrypt");
 }
 
 static Data rustAesCbcDecrypt(const Data& data, const Data& iv, const Data& key) {
     return rustAesOperation(data, iv, key, 
-        [](auto d, auto i, auto k) { return Rust::crypto_aes_cbc_decrypt(d, i, k, 0); }, 
+        [](auto d, auto i, auto k) { return Rust::tw_aes_decrypt_cbc(d, i, k, TWAESPaddingModePKCS7); }, 
         "Invalid aes cbc decrypt");
 }
 

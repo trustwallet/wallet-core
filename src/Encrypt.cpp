@@ -18,10 +18,10 @@ Data AESCBCEncrypt(const Data& key, const Data& data, Data& iv, TWAESPaddingMode
     Rust::TWDataWrapper ivWrapper = iv;
     Rust::TWDataWrapper keyWrapper = key;
 
-    Rust::TWDataWrapper res = Rust::crypto_aes_cbc_encrypt(
+    Rust::TWDataWrapper res = Rust::tw_aes_encrypt_cbc(
+        keyWrapper.get(),
         dataWrapper.get(),
         ivWrapper.get(),
-        keyWrapper.get(),
         paddingMode
     );
     auto resData = res.toDataOrDefault();
@@ -36,10 +36,10 @@ Data AESCBCDecrypt(const Data& key, const Data& data, Data& iv, TWAESPaddingMode
     Rust::TWDataWrapper ivWrapper = iv;
     Rust::TWDataWrapper keyWrapper = key;
 
-    Rust::TWDataWrapper res = Rust::crypto_aes_cbc_decrypt(
+    Rust::TWDataWrapper res = Rust::tw_aes_decrypt_cbc(
+        keyWrapper.get(),
         dataWrapper.get(),
         ivWrapper.get(),
-        keyWrapper.get(),
         paddingMode
     );
     auto resData = res.toDataOrDefault();
@@ -54,10 +54,10 @@ Data AESCTREncrypt(const Data& key, const Data& data, Data& iv) {
     Rust::TWDataWrapper ivWrapper = iv;
     Rust::TWDataWrapper keyWrapper = key;
 
-    Rust::TWDataWrapper res = Rust::crypto_aes_ctr_encrypt(
+    Rust::TWDataWrapper res = Rust::tw_aes_encrypt_ctr(
+        keyWrapper.get(),
         dataWrapper.get(),
-        ivWrapper.get(),
-        keyWrapper.get()
+        ivWrapper.get()
     );
     auto resData = res.toDataOrDefault();
     if (resData.empty()) {
@@ -71,10 +71,10 @@ Data AESCTRDecrypt(const Data& key, const Data& data, Data& iv) {
     Rust::TWDataWrapper ivWrapper = iv;
     Rust::TWDataWrapper keyWrapper = key;
 
-    Rust::TWDataWrapper res = Rust::crypto_aes_ctr_decrypt(
+    Rust::TWDataWrapper res = Rust::tw_aes_decrypt_ctr(
+        keyWrapper.get(),
         dataWrapper.get(),
-        ivWrapper.get(),
-        keyWrapper.get()
+        ivWrapper.get()
     );
     auto resData = res.toDataOrDefault();
     if (resData.empty()) {

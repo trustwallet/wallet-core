@@ -21,7 +21,7 @@ type Aes256CbcDec = cbc::Decryptor<aes::Aes256>;
 
 fn blocks<N: BlockSizeUser>(data: &[u8]) -> Vec<Block<N>> {
     data.chunks(BLOCK_SIZE_AES)
-        .map(|chunk| Block::<N>::clone_from_slice(chunk))
+        .map(Block::<N>::clone_from_slice)
         .collect()
 }
 

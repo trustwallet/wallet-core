@@ -42,89 +42,145 @@ where
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
 
-#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCbcEncrypt128)]
+/// Encrypts a block of Data using AES in Cipher Block Chaining (CBC) mode with 128-bit key.
+///
+/// \param key encryption key Data, must be 16 bytes long.
+/// \param data Data to encrypt.
+/// \param iv initialization vector.
+/// \param mode padding mode.
+/// \return encrypted Data.
+#[tw_ffi(ty = static_function, class = TWAES, name = EncryptCBC128)]
 #[no_mangle]
-pub unsafe extern "C" fn crypto_aes_cbc_encrypt_128(
+pub unsafe extern "C" fn tw_aes_encrypt_cbc_128(
+    key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    key: Nonnull<TWData>,
     padding_mode: u32,
 ) -> NullableMut<TWData> {
     handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_encrypt_128)
 }
 
-#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCbcDecrypt128)]
+/// Decrypts a block of Data using AES in Cipher Block Chaining (CBC) mode with 128-bit key.
+///
+/// \param key decryption key Data, must be 16 bytes long.
+/// \param data Data to decrypt.
+/// \param iv initialization vector.
+/// \param mode padding mode.
+/// \return decrypted Data.
+#[tw_ffi(ty = static_function, class = TWAES, name = DecryptCBC128)]
 #[no_mangle]
-pub unsafe extern "C" fn crypto_aes_cbc_decrypt_128(
+pub unsafe extern "C" fn tw_aes_decrypt_cbc_128(
+    key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    key: Nonnull<TWData>,
     padding_mode: u32,
 ) -> NullableMut<TWData> {
     handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_decrypt_128)
 }
 
-#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCbcEncrypt192)]
+/// Encrypts a block of Data using AES in Cipher Block Chaining (CBC) mode with 192-bit key.
+///
+/// \param key encryption key Data, must be 24 bytes long.
+/// \param data Data to encrypt.
+/// \param iv initialization vector.
+/// \param mode padding mode.
+/// \return encrypted Data.
+#[tw_ffi(ty = static_function, class = TWAES, name = EncryptCBC192)]
 #[no_mangle]
-pub unsafe extern "C" fn crypto_aes_cbc_encrypt_192(
+pub unsafe extern "C" fn tw_aes_encrypt_cbc_192(
+    key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    key: Nonnull<TWData>,
     padding_mode: u32,
 ) -> NullableMut<TWData> {
     handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_encrypt_192)
 }
 
-#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCbcDecrypt192)]
+/// Decrypts a block of Data using AES in Cipher Block Chaining (CBC) mode with 192-bit key.
+///
+/// \param key decryption key Data, must be 24 bytes long.
+/// \param data Data to decrypt.
+/// \param iv initialization vector.
+/// \param mode padding mode.
+/// \return decrypted Data.
+#[tw_ffi(ty = static_function, class = TWAES, name = DecryptCBC192)]
 #[no_mangle]
-pub unsafe extern "C" fn crypto_aes_cbc_decrypt_192(
+pub unsafe extern "C" fn tw_aes_decrypt_cbc_192(
+    key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    key: Nonnull<TWData>,
     padding_mode: u32,
 ) -> NullableMut<TWData> {
     handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_decrypt_192)
 }
 
-#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCbcEncrypt256)]
+/// Encrypts a block of Data using AES in Cipher Block Chaining (CBC) mode with 256-bit key.
+///
+/// \param key encryption key Data, must be 32 bytes long.
+/// \param data Data to encrypt.
+/// \param iv initialization vector.
+/// \param mode padding mode.
+/// \return encrypted Data.
+#[tw_ffi(ty = static_function, class = TWAES, name = EncryptCBC256)]
 #[no_mangle]
-pub unsafe extern "C" fn crypto_aes_cbc_encrypt_256(
+pub unsafe extern "C" fn tw_aes_encrypt_cbc_256(
+    key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    key: Nonnull<TWData>,
     padding_mode: u32,
 ) -> NullableMut<TWData> {
     handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_encrypt_256)
 }
 
-#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCbcDecrypt256)]
+/// Decrypts a block of Data using AES in Cipher Block Chaining (CBC) mode with 256-bit key.
+///
+/// \param key decryption key Data, must be 32 bytes long.
+/// \param data Data to decrypt.
+/// \param iv initialization vector.
+/// \param mode padding mode.
+/// \return decrypted Data.
+#[tw_ffi(ty = static_function, class = TWAES, name = DecryptCBC256)]
 #[no_mangle]
-pub unsafe extern "C" fn crypto_aes_cbc_decrypt_256(
+pub unsafe extern "C" fn tw_aes_decrypt_cbc_256(
+    key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    key: Nonnull<TWData>,
     padding_mode: u32,
 ) -> NullableMut<TWData> {
     handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_decrypt_256)
 }
 
-#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCbcEncrypt)]
+/// Encrypts a block of Data using AES in Cipher Block Chaining (CBC) mode.
+///
+/// \param key encryption key Data, must be 16, 24, or 32 bytes long.
+/// \param data Data to encrypt.
+/// \param iv initialization vector.
+/// \param mode padding mode.
+/// \return encrypted Data.
+#[tw_ffi(ty = static_function, class = TWAES, name = EncryptCBC)]
 #[no_mangle]
-pub unsafe extern "C" fn crypto_aes_cbc_encrypt(
+pub unsafe extern "C" fn tw_aes_encrypt_cbc(
+    key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    key: Nonnull<TWData>,
     padding_mode: u32,
 ) -> NullableMut<TWData> {
     handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_encrypt)
 }
 
-#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCbcDecrypt)]
+/// Decrypts a block of data using AES in Cipher Block Chaining (CBC) mode.
+///
+/// \param key decryption key Data, must be 16, 24, or 32 bytes long.
+/// \param data Data to decrypt.
+/// \param iv initialization vector Data.
+/// \param mode padding mode.
+/// \return decrypted Data.
+#[tw_ffi(ty = static_function, class = TWAES, name = DecryptCBC)]
 #[no_mangle]
-pub unsafe extern "C" fn crypto_aes_cbc_decrypt(
+pub unsafe extern "C" fn tw_aes_decrypt_cbc(
+    key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    key: Nonnull<TWData>,
     padding_mode: u32,
 ) -> NullableMut<TWData> {
     handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_decrypt)

@@ -38,82 +38,132 @@ where
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
 
-#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCtrEncrypt128)]
+/// Encrypts a block of data using AES in Counter (CTR) mode with 128-bit key.
+///
+/// \param key encryption key Data, must be 16 bytes long.
+/// \param data Data to encrypt.
+/// \param iv initialization vector Data.
+/// \return encrypted Data.
+#[tw_ffi(ty = static_function, class = TWAES, name = EncryptCTR128)]
 #[no_mangle]
-pub unsafe extern "C" fn crypto_aes_ctr_encrypt_128(
+pub unsafe extern "C" fn tw_aes_encrypt_ctr_128(
+    key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    key: Nonnull<TWData>,
 ) -> NullableMut<TWData> {
     handle_aes_ctr_operation(data, iv, key, aes_ctr_encrypt_128)
 }
 
-#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCtrDecrypt128)]
+/// Decrypts a block of data using AES in Counter (CTR) mode with 128-bit key.
+///
+/// \param key decryption key Data, must be 16 bytes long.
+/// \param data Data to decrypt.
+/// \param iv initialization vector Data.
+/// \return decrypted Data.
+#[tw_ffi(ty = static_function, class = TWAES, name = DecryptCTR128)]
 #[no_mangle]
-pub unsafe extern "C" fn crypto_aes_ctr_decrypt_128(
+pub unsafe extern "C" fn tw_aes_decrypt_ctr_128(
+    key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    key: Nonnull<TWData>,
 ) -> NullableMut<TWData> {
     handle_aes_ctr_operation(data, iv, key, aes_ctr_decrypt_128)
 }
 
-#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCtrEncrypt192)]
+/// Encrypts a block of data using AES in Counter (CTR) mode with 192-bit key.
+///
+/// \param key encryption key Data, must be 24 bytes long.
+/// \param data Data to encrypt.
+/// \param iv initialization vector Data.
+/// \return encrypted Data.
+#[tw_ffi(ty = static_function, class = TWAES, name = EncryptCTR192)]
 #[no_mangle]
-pub unsafe extern "C" fn crypto_aes_ctr_encrypt_192(
+pub unsafe extern "C" fn tw_aes_encrypt_ctr_192(
+    key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    key: Nonnull<TWData>,
 ) -> NullableMut<TWData> {
     handle_aes_ctr_operation(data, iv, key, aes_ctr_encrypt_192)
 }
 
-#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCtrDecrypt192)]
+/// Decrypts a block of data using AES in Counter (CTR) mode with 192-bit key.
+///
+/// \param key decryption key Data, must be 24 bytes long.
+/// \param data Data to decrypt.
+/// \param iv initialization vector Data.
+/// \return decrypted Data.
+#[tw_ffi(ty = static_function, class = TWAES, name = DecryptCTR192)]
 #[no_mangle]
-pub unsafe extern "C" fn crypto_aes_ctr_decrypt_192(
+pub unsafe extern "C" fn tw_aes_decrypt_ctr_192(
+    key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    key: Nonnull<TWData>,
 ) -> NullableMut<TWData> {
     handle_aes_ctr_operation(data, iv, key, aes_ctr_decrypt_192)
 }
 
-#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCtrEncrypt256)]
+/// Encrypts a block of data using AES in Counter (CTR) mode with 256-bit key.
+///
+/// \param key encryption key Data, must be 32 bytes long.
+/// \param data Data to encrypt.
+/// \param iv initialization vector Data.
+/// \return encrypted Data.
+#[tw_ffi(ty = static_function, class = TWAES, name = EncryptCTR256)]
 #[no_mangle]
-pub unsafe extern "C" fn crypto_aes_ctr_encrypt_256(
+pub unsafe extern "C" fn tw_aes_encrypt_ctr_256(
+    key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    key: Nonnull<TWData>,
 ) -> NullableMut<TWData> {
     handle_aes_ctr_operation(data, iv, key, aes_ctr_encrypt_256)
 }
 
-#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCtrDecrypt256)]
+/// Decrypts a block of data using AES in Counter (CTR) mode with 256-bit key.
+///
+/// \param key decryption key Data, must be 32 bytes long.
+/// \param data Data to decrypt.
+/// \param iv initialization vector Data.
+/// \return decrypted Data.
+#[tw_ffi(ty = static_function, class = TWAES, name = DecryptCTR256)]
 #[no_mangle]
-pub unsafe extern "C" fn crypto_aes_ctr_decrypt_256(
+pub unsafe extern "C" fn tw_aes_decrypt_ctr_256(
+    key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    key: Nonnull<TWData>,
 ) -> NullableMut<TWData> {
     handle_aes_ctr_operation(data, iv, key, aes_ctr_decrypt_256)
 }
 
-#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCtrEncrypt)]
+/// Encrypts a block of data using AES in Counter (CTR) mode.
+///
+/// \param key encryption key Data, must be 16, 24, or 32 bytes long.
+/// \param data Data to encrypt.
+/// \param iv initialization vector Data.
+/// \return encrypted Data.
+
+#[tw_ffi(ty = static_function, class = TWAES, name = EncryptCTR)]
 #[no_mangle]
-pub unsafe extern "C" fn crypto_aes_ctr_encrypt(
+pub unsafe extern "C" fn tw_aes_encrypt_ctr(
+    key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    key: Nonnull<TWData>,
 ) -> NullableMut<TWData> {
     handle_aes_ctr_operation(data, iv, key, aes_ctr_encrypt)
 }
 
-#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCtrDecrypt)]
+/// Decrypts a block of data using AES in Counter (CTR) mode.
+///
+/// \param key decryption key Data, must be 16, 24, or 32 bytes long.
+/// \param data Data to decrypt.
+/// \param iv initialization vector Data.
+/// \return decrypted Data.
+
+#[tw_ffi(ty = static_function, class = TWAES, name = DecryptCTR)]
 #[no_mangle]
-pub unsafe extern "C" fn crypto_aes_ctr_decrypt(
+pub unsafe extern "C" fn tw_aes_decrypt_ctr(
+    key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    key: Nonnull<TWData>,
 ) -> NullableMut<TWData> {
     handle_aes_ctr_operation(data, iv, key, aes_ctr_decrypt)
 }

@@ -16,7 +16,6 @@ FOUNDATION_EXPORT const unsigned char WalletCoreVersionString[];
 
 #include "TWAnySigner.h"
 
-#include "TWAES.h"
 #include "TWAESPaddingMode.h"
 #include "TWAccount.h"
 #include "TWAnyAddress.h"
