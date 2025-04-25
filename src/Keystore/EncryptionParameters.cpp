@@ -6,8 +6,8 @@
 
 #include "../Hash.h"
 
-#include <TrezorCrypto/aes.h>
 #include <cassert>
+#include <TrustWalletCore/TWAESPaddingMode.h>
 #include "TrustWalletCore/Generated/TWCrypto.h"
 
 using namespace TW;
@@ -71,6 +71,59 @@ static Data rustPbkdf2(const Data& password, const PBKDF2Parameters& params) {
     }
     return data;
 }
+template <typename CryptoFunc>
+static Data rustAesOperation(const Data& data, const Data& iv, const Data& key, CryptoFunc cryptoFunc, const char* errorMsg) {
+    Rust::TWDataWrapper dataWrapper = data;
+    Rust::TWDataWrapper ivWrapper = iv;
+    Rust::TWDataWrapper keyWrapper = key;
+
+    Rust::TWDataWrapper res = cryptoFunc(
+        keyWrapper.get(),
+        dataWrapper.get(),
+        ivWrapper.get()
+    );
+    auto resData = res.toDataOrDefault();
+    if (resData.empty()) {
+        throw std::runtime_error(errorMsg);
+    }
+    return resData;
+}
+
+static Data rustAesCtrEncrypt128(const Data& data, const Data& iv, const Data& key) {
+    return rustAesOperation(data, iv, key, Rust::tw_aes_encrypt_ctr_128, "Invalid aes ctr encrypt 128");
+}
+
+static Data rustAesCtrDecrypt128(const Data& data, const Data& iv, const Data& key) {
+    return rustAesOperation(data, iv, key, Rust::tw_aes_decrypt_ctr_128, "Invalid aes ctr decrypt 128");
+}
+
+static Data rustAesCtrEncrypt192(const Data& data, const Data& iv, const Data& key) {
+    return rustAesOperation(data, iv, key, Rust::tw_aes_encrypt_ctr_192, "Invalid aes ctr encrypt 192");
+}
+
+static Data rustAesCtrDecrypt192(const Data& data, const Data& iv, const Data& key) {
+    return rustAesOperation(data, iv, key, Rust::tw_aes_decrypt_ctr_192, "Invalid aes ctr decrypt 192");
+}
+
+static Data rustAesCtrEncrypt256(const Data& data, const Data& iv, const Data& key) {
+    return rustAesOperation(data, iv, key, Rust::tw_aes_encrypt_ctr_256, "Invalid aes ctr encrypt 256");
+}
+
+static Data rustAesCtrDecrypt256(const Data& data, const Data& iv, const Data& key) {
+    return rustAesOperation(data, iv, key, Rust::tw_aes_decrypt_ctr_256, "Invalid aes ctr decrypt 256");
+}
+
+static Data rustAesCbcEncrypt(const Data& data, const Data& iv, const Data& key) {
+    return rustAesOperation(data, iv, key, 
+        [](auto d, auto i, auto k) { return Rust::tw_aes_encrypt_cbc(d, i, k, TWAESPaddingModePKCS7); }, 
+        "Invalid aes cbc encrypt");
+}
+
+static Data rustAesCbcDecrypt(const Data& data, const Data& iv, const Data& key) {
+    return rustAesOperation(data, iv, key, 
+        [](auto d, auto i, auto k) { return Rust::tw_aes_decrypt_cbc(d, i, k, TWAESPaddingModePKCS7); }, 
+        "Invalid aes cbc decrypt");
+}
 
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
     auto cipher = json[CodingKeys::cipher].get<std::string>();
@@ -105,27 +158,21 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
     auto scryptParams = std::get<ScryptParameters>(this->params.kdfParams);
     auto derivedKey = rustScrypt(password, scryptParams);
 
-    aes_encrypt_ctx ctx;
-    auto result = 0;
     switch(this->params.cipherParams.mCipherEncryption) {
     case TWStoredKeyEncryptionAes128Ctr:
-    case TWStoredKeyEncryptionAes128Cbc:
-        result = aes_encrypt_key128(derivedKey.data(), &ctx);
+        encrypted = rustAesCtrEncrypt128(data, this->params.cipherParams.iv, derivedKey);
         break;
     case TWStoredKeyEncryptionAes192Ctr:
-        result = aes_encrypt_key192(derivedKey.data(), &ctx);
+        encrypted = rustAesCtrEncrypt192(data, this->params.cipherParams.iv, derivedKey);
         break;
     case TWStoredKeyEncryptionAes256Ctr:
-        result = aes_encrypt_key256(derivedKey.data(), &ctx);
+        encrypted = rustAesCtrEncrypt256(data, this->params.cipherParams.iv, derivedKey);
+        break;
+    case TWStoredKeyEncryptionAes128Cbc:
+        encrypted = rustAesCbcEncrypt(data, this->params.cipherParams.iv, derivedKey);
         break;
     }
-    assert(result == EXIT_SUCCESS);
-    if (result == EXIT_SUCCESS) {
-        Data iv = this->params.cipherParams.iv;
-        encrypted = Data(data.size());
-        aes_ctr_encrypt(data.data(), encrypted.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
-        _mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
-    }
+    _mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
 }
 
 EncryptedPayload::~EncryptedPayload() {
@@ -153,24 +200,19 @@ Data EncryptedPayload::decrypt(const Data& password) const {
 
     Data decrypted(encrypted.size());
     Data iv = params.cipherParams.iv;
-    const auto encryption = params.cipherParams.mCipherEncryption;
-    if (encryption == TWStoredKeyEncryptionAes128Ctr || encryption == TWStoredKeyEncryptionAes256Ctr) {
-        aes_encrypt_ctx ctx;
-        [[maybe_unused]] auto result = aes_encrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
-        assert(result != EXIT_FAILURE);
-
-        aes_ctr_decrypt(encrypted.data(), decrypted.data(), static_cast<int>(encrypted.size()), iv.data(),
-                        aes_ctr_cbuf_inc, &ctx);
-    } else if (encryption == TWStoredKeyEncryptionAes128Cbc) {
-        aes_decrypt_ctx ctx;
-        [[maybe_unused]] auto result = aes_decrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
-        assert(result != EXIT_FAILURE);
-
-        for (auto i = 0ul; i < encrypted.size(); i += params.getKeyBytesSize()) {
-            aes_cbc_decrypt(encrypted.data() + i, decrypted.data() + i, params.getKeyBytesSize(), iv.data(), &ctx);
-        }
-    } else {
-        throw DecryptionError::unsupportedCipher;
+    switch (params.cipherParams.mCipherEncryption) {
+    case TWStoredKeyEncryptionAes128Ctr:
+        decrypted = rustAesCtrDecrypt128(encrypted, iv, derivedKey);
+        break;
+    case TWStoredKeyEncryptionAes192Ctr:
+        decrypted = rustAesCtrDecrypt192(encrypted, iv, derivedKey);
+        break;
+    case TWStoredKeyEncryptionAes256Ctr:
+        decrypted = rustAesCtrDecrypt256(encrypted, iv, derivedKey);
+        break;
+    case TWStoredKeyEncryptionAes128Cbc:
+        decrypted = rustAesCbcDecrypt(encrypted, iv, derivedKey);
+        break;
     }
 
     return decrypted;

@@ -51,6 +51,10 @@ fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
                     {
                         // Need to handle this case separately because it's not a pointer type
                         writeln!(file, "#include <TrustWalletCore/TWCoinType.h>")?;
+                    } else if ty.contains("TWFFIAESPaddingMode")
+                        && included_headers.insert("TWAESPaddingMode.h".to_string())
+                    {
+                        writeln!(file, "#include <TrustWalletCore/TWAESPaddingMode.h>")?;
                     }
                 }
             }

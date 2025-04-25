@@ -49,6 +49,54 @@ TEST(StoredKey, CreateWithMnemonic) {
     EXPECT_EQ(json["crypto"]["kdfparams"]["salt"].get<std::string>().size(), 64ul);
 }
 
+TEST(StoredKey, CreateWithMnemonicAes192Ctr) {
+    auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelDefault, TWStoredKeyEncryptionAes192Ctr);
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
+    EXPECT_EQ(key.accounts.size(), 0ul);
+    EXPECT_EQ(key.wallet(gPassword).getMnemonic(), string(gMnemonic));
+
+    const auto json = key.json();
+    EXPECT_EQ(json["name"], "name");
+    EXPECT_EQ(json["type"], "mnemonic");
+    EXPECT_EQ(json["version"], 3);
+    // Salt is 32 bytes, encoded as hex.
+    EXPECT_EQ(json["crypto"]["kdfparams"]["salt"].get<std::string>().size(), 64ul);
+}
+
+TEST(StoredKey, CreateWithMnemonicAes256Ctr) {
+    auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelDefault, TWStoredKeyEncryptionAes256Ctr);
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
+    EXPECT_EQ(key.accounts.size(), 0ul);
+    EXPECT_EQ(key.wallet(gPassword).getMnemonic(), string(gMnemonic));
+
+    const auto json = key.json();
+    EXPECT_EQ(json["name"], "name");
+    EXPECT_EQ(json["type"], "mnemonic");
+    EXPECT_EQ(json["version"], 3);
+    // Salt is 32 bytes, encoded as hex.
+    EXPECT_EQ(json["crypto"]["kdfparams"]["salt"].get<std::string>().size(), 64ul);
+}
+
+TEST(StoredKey, CreateWithMnemonicCbc) {
+    auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelDefault, TWStoredKeyEncryptionAes128Cbc);
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
+    EXPECT_EQ(key.accounts.size(), 0ul);
+    EXPECT_EQ(key.wallet(gPassword).getMnemonic(), string(gMnemonic));
+
+    const auto json = key.json();
+    EXPECT_EQ(json["name"], "name");
+    EXPECT_EQ(json["type"], "mnemonic");
+    EXPECT_EQ(json["version"], 3);
+    // Salt is 32 bytes, encoded as hex.
+    EXPECT_EQ(json["crypto"]["kdfparams"]["salt"].get<std::string>().size(), 64ul);
+}
+
 TEST(StoredKey, CreateWithMnemonicInvalid) {
     try {
         auto key = StoredKey::createWithMnemonic("name", gPassword, "_THIS_IS_NOT_A_VALID_MNEMONIC_", TWStoredKeyEncryptionLevelDefault);
@@ -452,6 +500,22 @@ TEST(StoredKey, CreateAccountsAes256) {
     const auto wallet = key.wallet(gPassword);
 
     EXPECT_EQ(header.params.cipher(), "aes-256-ctr");
+    EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->address, "0x494f60cb6Ac2c8F5E1393aD9FdBdF4Ad589507F7");
+    EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->publicKey, "04cc32a479080d83fdcf69966713f0aad1bc1dc3ecf873b034894e84259841bc1c9b122717803e68905220ff54952d3f5ea2ab2698ca31f843addf94ae73fae9fd");
+    EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->extendedPublicKey, "");
+
+    EXPECT_EQ(key.account(coinTypeBc, &wallet)->address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
+    EXPECT_EQ(key.account(coinTypeBc, &wallet)->publicKey, "02df6fc590ab3101bbe0bb5765cbaeab9b5dcfe09ac9315d707047cbd13bc7e006");
+    EXPECT_EQ(key.account(coinTypeBc, &wallet)->extendedPublicKey, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
+}
+
+TEST(StoredKey, CreateAccountsAesCbc128) {
+    string mnemonicPhrase = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
+    auto key = StoredKey::createWithMnemonic("name", gPassword, mnemonicPhrase, TWStoredKeyEncryptionLevelDefault, TWStoredKeyEncryptionAes128Cbc);
+    auto header = key.payload;
+    const auto wallet = key.wallet(gPassword);
+
+    EXPECT_EQ(header.params.cipher(), "aes-128-cbc");
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->address, "0x494f60cb6Ac2c8F5E1393aD9FdBdF4Ad589507F7");
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->publicKey, "04cc32a479080d83fdcf69966713f0aad1bc1dc3ecf873b034894e84259841bc1c9b122717803e68905220ff54952d3f5ea2ab2698ca31f843addf94ae73fae9fd");
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->extendedPublicKey, "");
