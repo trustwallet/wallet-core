@@ -140,7 +140,6 @@ pub unsafe extern "C" fn tw_aes_decrypt_ctr_256(
 /// \param data Data to encrypt.
 /// \param iv initialization vector Data.
 /// \return encrypted Data.
-
 #[tw_ffi(ty = static_function, class = TWAES, name = EncryptCTR)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_aes_encrypt_ctr(
@@ -157,7 +156,6 @@ pub unsafe extern "C" fn tw_aes_encrypt_ctr(
 /// \param data Data to decrypt.
 /// \param iv initialization vector Data.
 /// \return decrypted Data.
-
 #[tw_ffi(ty = static_function, class = TWAES, name = DecryptCTR)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_aes_decrypt_ctr(
