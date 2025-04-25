@@ -13,6 +13,8 @@ pub enum PaddingMode {
     PKCS7 = 1,
 }
 
+pub type TWFFIAESPaddingMode = u32;
+
 #[derive(Clone, Copy, Debug)]
 pub struct InvalidPaddingMode;
 

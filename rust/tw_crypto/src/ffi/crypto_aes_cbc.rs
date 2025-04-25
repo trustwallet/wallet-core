@@ -9,7 +9,7 @@
 use crate::crypto_aes_cbc::{
     aes_cbc_decrypt, aes_cbc_decrypt_128, aes_cbc_decrypt_192, aes_cbc_decrypt_256,
     aes_cbc_encrypt, aes_cbc_encrypt_128, aes_cbc_encrypt_192, aes_cbc_encrypt_256,
-    padding::PaddingMode,
+    padding::{PaddingMode, TWFFIAESPaddingMode},
 };
 use aes::cipher::StreamCipherError;
 use tw_macros::tw_ffi;
@@ -20,7 +20,7 @@ unsafe fn handle_aes_cbc_operation<F>(
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
     key: Nonnull<TWData>,
-    padding_mode: u32,
+    padding_mode: TWFFIAESPaddingMode,
     operation: F,
 ) -> NullableMut<TWData>
 where
@@ -55,7 +55,7 @@ pub unsafe extern "C" fn tw_aes_encrypt_cbc_128(
     key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    mode: u32,
+    mode: TWFFIAESPaddingMode,
 ) -> NullableMut<TWData> {
     handle_aes_cbc_operation(data, iv, key, mode, aes_cbc_encrypt_128)
 }
@@ -73,7 +73,7 @@ pub unsafe extern "C" fn tw_aes_decrypt_cbc_128(
     key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    mode: u32,
+    mode: TWFFIAESPaddingMode,
 ) -> NullableMut<TWData> {
     handle_aes_cbc_operation(data, iv, key, mode, aes_cbc_decrypt_128)
 }
@@ -91,7 +91,7 @@ pub unsafe extern "C" fn tw_aes_encrypt_cbc_192(
     key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    mode: u32,
+    mode: TWFFIAESPaddingMode,
 ) -> NullableMut<TWData> {
     handle_aes_cbc_operation(data, iv, key, mode, aes_cbc_encrypt_192)
 }
@@ -109,7 +109,7 @@ pub unsafe extern "C" fn tw_aes_decrypt_cbc_192(
     key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    mode: u32,
+    mode: TWFFIAESPaddingMode,
 ) -> NullableMut<TWData> {
     handle_aes_cbc_operation(data, iv, key, mode, aes_cbc_decrypt_192)
 }
@@ -127,7 +127,7 @@ pub unsafe extern "C" fn tw_aes_encrypt_cbc_256(
     key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    mode: u32,
+    mode: TWFFIAESPaddingMode,
 ) -> NullableMut<TWData> {
     handle_aes_cbc_operation(data, iv, key, mode, aes_cbc_encrypt_256)
 }
@@ -145,7 +145,7 @@ pub unsafe extern "C" fn tw_aes_decrypt_cbc_256(
     key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    mode: u32,
+    mode: TWFFIAESPaddingMode,
 ) -> NullableMut<TWData> {
     handle_aes_cbc_operation(data, iv, key, mode, aes_cbc_decrypt_256)
 }
@@ -163,7 +163,7 @@ pub unsafe extern "C" fn tw_aes_encrypt_cbc(
     key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    mode: u32,
+    mode: TWFFIAESPaddingMode,
 ) -> NullableMut<TWData> {
     handle_aes_cbc_operation(data, iv, key, mode, aes_cbc_encrypt)
 }
@@ -181,7 +181,7 @@ pub unsafe extern "C" fn tw_aes_decrypt_cbc(
     key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    mode: u32,
+    mode: TWFFIAESPaddingMode,
 ) -> NullableMut<TWData> {
     handle_aes_cbc_operation(data, iv, key, mode, aes_cbc_decrypt)
 }

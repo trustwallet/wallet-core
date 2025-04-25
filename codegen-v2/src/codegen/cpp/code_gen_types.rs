@@ -134,6 +134,7 @@ impl TWType {
                 "i32" => "int32_t".to_string(),
                 "i64" => "int64_t".to_string(),
                 "TWFFICoinType" => "enum TWCoinType".to_string(),
+                "TWFFIAESPaddingMode" => "enum TWAESPaddingMode".to_string(),
                 _ => ty.to_string(),
             },
             TWType::Pointer(pointer_type, ty) => {
