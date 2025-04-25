@@ -6,8 +6,10 @@
 
 pub mod padding;
 
-use aes::cipher::{BlockDecryptMut, BlockEncryptMut, KeyIvInit, StreamCipherError};
-use aes::Block;
+use crate::{KEY_SIZE_AES_128, KEY_SIZE_AES_192, KEY_SIZE_AES_256};
+use aes::cipher::{
+    Block, BlockDecryptMut, BlockEncryptMut, BlockSizeUser, KeyIvInit, StreamCipherError,
+};
 use padding::{PaddingMode, BLOCK_SIZE_AES};
 
 type Aes128CbcEnc = cbc::Encryptor<aes::Aes128>;
@@ -17,14 +19,52 @@ type Aes192CbcDec = cbc::Decryptor<aes::Aes192>;
 type Aes256CbcEnc = cbc::Encryptor<aes::Aes256>;
 type Aes256CbcDec = cbc::Decryptor<aes::Aes256>;
 
-fn blocks(data: &[u8]) -> Vec<Block> {
-    let mut blocks = Vec::new();
-    for i in 0..data.len() / BLOCK_SIZE_AES {
-        let start = i * BLOCK_SIZE_AES;
-        let end = start + BLOCK_SIZE_AES;
-        blocks.push(Block::clone_from_slice(&data[start..end]));
+fn blocks<N: BlockSizeUser>(data: &[u8]) -> Vec<Block<N>> {
+    data.chunks(BLOCK_SIZE_AES)
+        .map(|chunk| Block::<N>::clone_from_slice(chunk))
+        .collect()
+}
+
+fn aes_cbc_encrypt_impl<E: KeyIvInit + BlockEncryptMut>(
+    data: &[u8],
+    iv: &[u8],
+    key: &[u8],
+    key_size: usize,
+    padding_mode: PaddingMode,
+) -> Result<Vec<u8>, StreamCipherError> {
+    let key = if key.len() > key_size {
+        &key[0..key_size]
+    } else {
+        key
+    };
+    let data = padding_mode.pad(data);
+    let mut blocks = blocks::<E>(&data);
+    let mut cipher = E::new(key.into(), iv.into());
+    cipher.encrypt_blocks_mut(&mut blocks[..]);
+    let buffer = blocks.concat();
+    Ok(buffer)
+}
+
+fn aes_cbc_decrypt_impl<D: KeyIvInit + BlockDecryptMut>(
+    data: &[u8],
+    iv: &[u8],
+    key: &[u8],
+    key_size: usize,
+    padding_mode: PaddingMode,
+) -> Result<Vec<u8>, StreamCipherError> {
+    let key = if key.len() > key_size {
+        &key[0..key_size]
+    } else {
+        key
+    };
+    if data.len() % BLOCK_SIZE_AES != 0 {
+        return Err(StreamCipherError);
     }
-    blocks
+    let mut blocks = blocks::<D>(data);
+    let mut cipher = D::new(key.into(), iv.into());
+    cipher.decrypt_blocks_mut(&mut blocks[..]);
+    let buffer = blocks.concat();
+    Ok(padding_mode.unpad(&buffer))
 }
 
 pub fn aes_cbc_encrypt_128(
@@ -33,13 +73,7 @@ pub fn aes_cbc_encrypt_128(
     key: &[u8],
     padding_mode: PaddingMode,
 ) -> Result<Vec<u8>, StreamCipherError> {
-    let key = if key.len() > 16 { &key[0..16] } else { key };
-    let data = padding_mode.pad(data);
-    let mut blocks = blocks(&data);
-    let mut cipher = Aes128CbcEnc::new(key.into(), iv.into());
-    cipher.encrypt_blocks_mut(&mut blocks[..]);
-    let buffer = blocks.concat();
-    Ok(buffer)
+    aes_cbc_encrypt_impl::<Aes128CbcEnc>(data, iv, key, KEY_SIZE_AES_128, padding_mode)
 }
 
 pub fn aes_cbc_decrypt_128(
@@ -48,15 +82,7 @@ pub fn aes_cbc_decrypt_128(
     key: &[u8],
     padding_mode: PaddingMode,
 ) -> Result<Vec<u8>, StreamCipherError> {
-    let key = if key.len() > 16 { &key[0..16] } else { key };
-    if data.len() % BLOCK_SIZE_AES != 0 {
-        return Err(StreamCipherError);
-    }
-    let mut blocks = blocks(data);
-    let mut cipher = Aes128CbcDec::new(key.into(), iv.into());
-    cipher.decrypt_blocks_mut(&mut blocks[..]);
-    let buffer = blocks.concat();
-    Ok(padding_mode.unpad(&buffer))
+    aes_cbc_decrypt_impl::<Aes128CbcDec>(data, iv, key, KEY_SIZE_AES_128, padding_mode)
 }
 
 pub fn aes_cbc_encrypt_192(
@@ -65,13 +91,7 @@ pub fn aes_cbc_encrypt_192(
     key: &[u8],
     padding_mode: PaddingMode,
 ) -> Result<Vec<u8>, StreamCipherError> {
-    let key = if key.len() > 24 { &key[0..24] } else { key };
-    let data = padding_mode.pad(data);
-    let mut blocks = blocks(&data);
-    let mut cipher = Aes192CbcEnc::new(key.into(), iv.into());
-    cipher.encrypt_blocks_mut(&mut blocks[..]);
-    let buffer = blocks.concat();
-    Ok(buffer)
+    aes_cbc_encrypt_impl::<Aes192CbcEnc>(data, iv, key, KEY_SIZE_AES_192, padding_mode)
 }
 
 pub fn aes_cbc_decrypt_192(
@@ -80,15 +100,7 @@ pub fn aes_cbc_decrypt_192(
     key: &[u8],
     padding_mode: PaddingMode,
 ) -> Result<Vec<u8>, StreamCipherError> {
-    let key = if key.len() > 24 { &key[0..24] } else { key };
-    if data.len() % BLOCK_SIZE_AES != 0 {
-        return Err(StreamCipherError);
-    }
-    let mut blocks = blocks(data);
-    let mut cipher = Aes192CbcDec::new(key.into(), iv.into());
-    cipher.decrypt_blocks_mut(&mut blocks[..]);
-    let buffer = blocks.concat();
-    Ok(padding_mode.unpad(&buffer))
+    aes_cbc_decrypt_impl::<Aes192CbcDec>(data, iv, key, KEY_SIZE_AES_192, padding_mode)
 }
 
 pub fn aes_cbc_encrypt_256(
@@ -97,13 +109,7 @@ pub fn aes_cbc_encrypt_256(
     key: &[u8],
     padding_mode: PaddingMode,
 ) -> Result<Vec<u8>, StreamCipherError> {
-    let key = if key.len() > 32 { &key[0..32] } else { key };
-    let data = padding_mode.pad(data);
-    let mut blocks = blocks(&data);
-    let mut cipher = Aes256CbcEnc::new(key.into(), iv.into());
-    cipher.encrypt_blocks_mut(&mut blocks[..]);
-    let buffer = blocks.concat();
-    Ok(buffer)
+    aes_cbc_encrypt_impl::<Aes256CbcEnc>(data, iv, key, KEY_SIZE_AES_256, padding_mode)
 }
 
 pub fn aes_cbc_decrypt_256(
@@ -112,15 +118,7 @@ pub fn aes_cbc_decrypt_256(
     key: &[u8],
     padding_mode: PaddingMode,
 ) -> Result<Vec<u8>, StreamCipherError> {
-    let key = if key.len() > 32 { &key[0..32] } else { key };
-    if data.len() % BLOCK_SIZE_AES != 0 {
-        return Err(StreamCipherError);
-    }
-    let mut blocks = blocks(data);
-    let mut cipher = Aes256CbcDec::new(key.into(), iv.into());
-    cipher.decrypt_blocks_mut(&mut blocks[..]);
-    let buffer = blocks.concat();
-    Ok(padding_mode.unpad(&buffer))
+    aes_cbc_decrypt_impl::<Aes256CbcDec>(data, iv, key, KEY_SIZE_AES_256, padding_mode)
 }
 
 pub fn aes_cbc_encrypt(
@@ -130,9 +128,9 @@ pub fn aes_cbc_encrypt(
     padding_mode: PaddingMode,
 ) -> Result<Vec<u8>, StreamCipherError> {
     match key.len() {
-        16 => aes_cbc_encrypt_128(data, iv, key, padding_mode),
-        24 => aes_cbc_encrypt_192(data, iv, key, padding_mode),
-        32 => aes_cbc_encrypt_256(data, iv, key, padding_mode),
+        KEY_SIZE_AES_128 => aes_cbc_encrypt_128(data, iv, key, padding_mode),
+        KEY_SIZE_AES_192 => aes_cbc_encrypt_192(data, iv, key, padding_mode),
+        KEY_SIZE_AES_256 => aes_cbc_encrypt_256(data, iv, key, padding_mode),
         _ => Err(StreamCipherError),
     }
 }
@@ -144,9 +142,9 @@ pub fn aes_cbc_decrypt(
     padding_mode: PaddingMode,
 ) -> Result<Vec<u8>, StreamCipherError> {
     match key.len() {
-        16 => aes_cbc_decrypt_128(data, iv, key, padding_mode),
-        24 => aes_cbc_decrypt_192(data, iv, key, padding_mode),
-        32 => aes_cbc_decrypt_256(data, iv, key, padding_mode),
+        KEY_SIZE_AES_128 => aes_cbc_decrypt_128(data, iv, key, padding_mode),
+        KEY_SIZE_AES_192 => aes_cbc_decrypt_192(data, iv, key, padding_mode),
+        KEY_SIZE_AES_256 => aes_cbc_decrypt_256(data, iv, key, padding_mode),
         _ => Err(StreamCipherError),
     }
 }

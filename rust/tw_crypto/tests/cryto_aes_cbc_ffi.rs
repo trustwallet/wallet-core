@@ -306,7 +306,7 @@ fn test_crypto_aes_cbc_128_ffi() {
 }
 
 #[test]
-fn test_crypto_aes_ctr_192_ffi() {
+fn test_crypto_aes_cbc_192_ffi() {
     let data_hex = "6bc1bee22e409f96e93d7e117393172aae2d8a571e03ac9c9eb76fac45af8e5130c81c46a35ce411e5fbc1191a0a52eff69f2445df4f9b17ad2b417be66c3710";
     let data = hex::decode(data_hex).unwrap();
     let data = TWDataHelper::create(data);
@@ -326,7 +326,7 @@ fn test_crypto_aes_ctr_192_ffi() {
 }
 
 #[test]
-fn test_crypto_aes_ctr_256_ffi() {
+fn test_crypto_aes_cbc_256_ffi() {
     let data_hex = "6bc1bee22e409f96e93d7e117393172aae2d8a571e03ac9c9eb76fac45af8e5130c81c46a35ce411e5fbc1191a0a52eff69f2445df4f9b17ad2b417be66c3710";
     let data = hex::decode(data_hex).unwrap();
     let data = TWDataHelper::create(data);

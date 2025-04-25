@@ -11,18 +11,21 @@ use crate::crypto_aes_cbc::{
     aes_cbc_encrypt, aes_cbc_encrypt_128, aes_cbc_encrypt_192, aes_cbc_encrypt_256,
     padding::PaddingMode,
 };
+use aes::cipher::StreamCipherError;
 use tw_macros::tw_ffi;
 use tw_memory::ffi::{tw_data::TWData, Nonnull, NullableMut, RawPtrTrait};
 use tw_misc::try_or_else;
 
-#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCbcEncrypt128)]
-#[no_mangle]
-pub unsafe extern "C" fn crypto_aes_cbc_encrypt_128(
+unsafe fn handle_aes_cbc_operation<F>(
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
     key: Nonnull<TWData>,
     padding_mode: u32,
-) -> NullableMut<TWData> {
+    operation: F,
+) -> NullableMut<TWData>
+where
+    F: FnOnce(&[u8], &[u8], &[u8], PaddingMode) -> Result<Vec<u8>, StreamCipherError>,
+{
     let padding_mode = try_or_else!(PaddingMode::try_from(padding_mode), std::ptr::null_mut);
     let data = TWData::from_ptr_as_ref(data)
         .map(|data| data.as_slice())
@@ -34,9 +37,20 @@ pub unsafe extern "C" fn crypto_aes_cbc_encrypt_128(
         .map(|data| data.as_slice())
         .unwrap_or_default();
 
-    aes_cbc_encrypt_128(data, iv, key, padding_mode)
+    operation(data, iv, key, padding_mode)
         .map(|output| TWData::from(output).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
+}
+
+#[tw_ffi(ty = static_function, class = TWCrypto, name = AesCbcEncrypt128)]
+#[no_mangle]
+pub unsafe extern "C" fn crypto_aes_cbc_encrypt_128(
+    data: Nonnull<TWData>,
+    iv: Nonnull<TWData>,
+    key: Nonnull<TWData>,
+    padding_mode: u32,
+) -> NullableMut<TWData> {
+    handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_encrypt_128)
 }
 
 #[tw_ffi(ty = static_function, class = TWCrypto, name = AesCbcDecrypt128)]
@@ -47,20 +61,7 @@ pub unsafe extern "C" fn crypto_aes_cbc_decrypt_128(
     key: Nonnull<TWData>,
     padding_mode: u32,
 ) -> NullableMut<TWData> {
-    let padding_mode = try_or_else!(PaddingMode::try_from(padding_mode), std::ptr::null_mut);
-    let data = TWData::from_ptr_as_ref(data)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-    let iv = TWData::from_ptr_as_ref(iv)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-    let key = TWData::from_ptr_as_ref(key)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-
-    aes_cbc_decrypt_128(data, iv, key, padding_mode)
-        .map(|output| TWData::from(output).into_ptr())
-        .unwrap_or_else(|_| std::ptr::null_mut())
+    handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_decrypt_128)
 }
 
 #[tw_ffi(ty = static_function, class = TWCrypto, name = AesCbcEncrypt192)]
@@ -71,20 +72,7 @@ pub unsafe extern "C" fn crypto_aes_cbc_encrypt_192(
     key: Nonnull<TWData>,
     padding_mode: u32,
 ) -> NullableMut<TWData> {
-    let padding_mode = try_or_else!(PaddingMode::try_from(padding_mode), std::ptr::null_mut);
-    let data = TWData::from_ptr_as_ref(data)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-    let iv = TWData::from_ptr_as_ref(iv)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-    let key = TWData::from_ptr_as_ref(key)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-
-    aes_cbc_encrypt_192(data, iv, key, padding_mode)
-        .map(|output| TWData::from(output).into_ptr())
-        .unwrap_or_else(|_| std::ptr::null_mut())
+    handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_encrypt_192)
 }
 
 #[tw_ffi(ty = static_function, class = TWCrypto, name = AesCbcDecrypt192)]
@@ -95,20 +83,7 @@ pub unsafe extern "C" fn crypto_aes_cbc_decrypt_192(
     key: Nonnull<TWData>,
     padding_mode: u32,
 ) -> NullableMut<TWData> {
-    let padding_mode = try_or_else!(PaddingMode::try_from(padding_mode), std::ptr::null_mut);
-    let data = TWData::from_ptr_as_ref(data)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-    let iv = TWData::from_ptr_as_ref(iv)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-    let key = TWData::from_ptr_as_ref(key)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-
-    aes_cbc_decrypt_192(data, iv, key, padding_mode)
-        .map(|output| TWData::from(output).into_ptr())
-        .unwrap_or_else(|_| std::ptr::null_mut())
+    handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_decrypt_192)
 }
 
 #[tw_ffi(ty = static_function, class = TWCrypto, name = AesCbcEncrypt256)]
@@ -119,20 +94,7 @@ pub unsafe extern "C" fn crypto_aes_cbc_encrypt_256(
     key: Nonnull<TWData>,
     padding_mode: u32,
 ) -> NullableMut<TWData> {
-    let padding_mode = try_or_else!(PaddingMode::try_from(padding_mode), std::ptr::null_mut);
-    let data = TWData::from_ptr_as_ref(data)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-    let iv = TWData::from_ptr_as_ref(iv)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-    let key = TWData::from_ptr_as_ref(key)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-
-    aes_cbc_encrypt_256(data, iv, key, padding_mode)
-        .map(|output| TWData::from(output).into_ptr())
-        .unwrap_or_else(|_| std::ptr::null_mut())
+    handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_encrypt_256)
 }
 
 #[tw_ffi(ty = static_function, class = TWCrypto, name = AesCbcDecrypt256)]
@@ -143,20 +105,7 @@ pub unsafe extern "C" fn crypto_aes_cbc_decrypt_256(
     key: Nonnull<TWData>,
     padding_mode: u32,
 ) -> NullableMut<TWData> {
-    let padding_mode = try_or_else!(PaddingMode::try_from(padding_mode), std::ptr::null_mut);
-    let data = TWData::from_ptr_as_ref(data)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-    let iv = TWData::from_ptr_as_ref(iv)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-    let key = TWData::from_ptr_as_ref(key)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-
-    aes_cbc_decrypt_256(data, iv, key, padding_mode)
-        .map(|output| TWData::from(output).into_ptr())
-        .unwrap_or_else(|_| std::ptr::null_mut())
+    handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_decrypt_256)
 }
 
 #[tw_ffi(ty = static_function, class = TWCrypto, name = AesCbcEncrypt)]
@@ -167,20 +116,7 @@ pub unsafe extern "C" fn crypto_aes_cbc_encrypt(
     key: Nonnull<TWData>,
     padding_mode: u32,
 ) -> NullableMut<TWData> {
-    let padding_mode = try_or_else!(PaddingMode::try_from(padding_mode), std::ptr::null_mut);
-    let data = TWData::from_ptr_as_ref(data)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-    let iv = TWData::from_ptr_as_ref(iv)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-    let key = TWData::from_ptr_as_ref(key)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-
-    aes_cbc_encrypt(data, iv, key, padding_mode)
-        .map(|output| TWData::from(output).into_ptr())
-        .unwrap_or_else(|_| std::ptr::null_mut())
+    handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_encrypt)
 }
 
 #[tw_ffi(ty = static_function, class = TWCrypto, name = AesCbcDecrypt)]
@@ -191,18 +127,5 @@ pub unsafe extern "C" fn crypto_aes_cbc_decrypt(
     key: Nonnull<TWData>,
     padding_mode: u32,
 ) -> NullableMut<TWData> {
-    let padding_mode = try_or_else!(PaddingMode::try_from(padding_mode), std::ptr::null_mut);
-    let data = TWData::from_ptr_as_ref(data)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-    let iv = TWData::from_ptr_as_ref(iv)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-    let key = TWData::from_ptr_as_ref(key)
-        .map(|data| data.as_slice())
-        .unwrap_or_default();
-
-    aes_cbc_decrypt(data, iv, key, padding_mode)
-        .map(|output| TWData::from(output).into_ptr())
-        .unwrap_or_else(|_| std::ptr::null_mut())
+    handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_decrypt)
 }

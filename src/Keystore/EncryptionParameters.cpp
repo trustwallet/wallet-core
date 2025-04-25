@@ -70,145 +70,59 @@ static Data rustPbkdf2(const Data& password, const PBKDF2Parameters& params) {
     }
     return data;
 }
-
-static Data rustAesCtrEncrypt128(const Data& data, const Data& iv, const Data& key) {
+template <typename CryptoFunc>
+static Data rustAesOperation(const Data& data, const Data& iv, const Data& key, CryptoFunc cryptoFunc, const char* errorMsg) {
     Rust::TWDataWrapper dataWrapper = data;
     Rust::TWDataWrapper ivWrapper = iv;
     Rust::TWDataWrapper keyWrapper = key;
 
-    Rust::TWDataWrapper res = Rust::crypto_aes_ctr_encrypt_128(
+    Rust::TWDataWrapper res = cryptoFunc(
         dataWrapper.get(),
         ivWrapper.get(),
         keyWrapper.get()
     );
     auto resData = res.toDataOrDefault();
     if (resData.empty()) {
-        throw std::runtime_error("Invalid aes ctr encrypt 128");
+        throw std::runtime_error(errorMsg);
     }
     return resData;
+}
+
+static Data rustAesCtrEncrypt128(const Data& data, const Data& iv, const Data& key) {
+    return rustAesOperation(data, iv, key, Rust::crypto_aes_ctr_encrypt_128, "Invalid aes ctr encrypt 128");
 }
 
 static Data rustAesCtrDecrypt128(const Data& data, const Data& iv, const Data& key) {
-    Rust::TWDataWrapper dataWrapper = data;
-    Rust::TWDataWrapper ivWrapper = iv;
-    Rust::TWDataWrapper keyWrapper = key;
-
-    Rust::TWDataWrapper res = Rust::crypto_aes_ctr_decrypt_128(
-        dataWrapper.get(),
-        ivWrapper.get(),
-        keyWrapper.get()
-    );
-    auto resData = res.toDataOrDefault();
-    if (resData.empty()) {
-        throw std::runtime_error("Invalid aes ctr decrypt 128");
-    }
-    return resData;
+    return rustAesOperation(data, iv, key, Rust::crypto_aes_ctr_decrypt_128, "Invalid aes ctr decrypt 128");
 }
 
 static Data rustAesCtrEncrypt192(const Data& data, const Data& iv, const Data& key) {
-    Rust::TWDataWrapper dataWrapper = data;
-    Rust::TWDataWrapper ivWrapper = iv;
-    Rust::TWDataWrapper keyWrapper = key;
-
-    Rust::TWDataWrapper res = Rust::crypto_aes_ctr_encrypt_192(
-        dataWrapper.get(),
-        ivWrapper.get(),
-        keyWrapper.get()
-    );
-    auto resData = res.toDataOrDefault();
-    if (resData.empty()) {
-        throw std::runtime_error("Invalid aes ctr encrypt 192");
-    }
-    return resData;
+    return rustAesOperation(data, iv, key, Rust::crypto_aes_ctr_encrypt_192, "Invalid aes ctr encrypt 192");
 }
 
 static Data rustAesCtrDecrypt192(const Data& data, const Data& iv, const Data& key) {
-    Rust::TWDataWrapper dataWrapper = data;
-    Rust::TWDataWrapper ivWrapper = iv;
-    Rust::TWDataWrapper keyWrapper = key;
-
-    Rust::TWDataWrapper res = Rust::crypto_aes_ctr_decrypt_192(
-        dataWrapper.get(),
-        ivWrapper.get(),
-        keyWrapper.get()
-    );
-    auto resData = res.toDataOrDefault();
-    if (resData.empty()) {
-        throw std::runtime_error("Invalid aes ctr decrypt 192");
-    }
-    return resData;
+    return rustAesOperation(data, iv, key, Rust::crypto_aes_ctr_decrypt_192, "Invalid aes ctr decrypt 192");
 }
 
 static Data rustAesCtrEncrypt256(const Data& data, const Data& iv, const Data& key) {
-    Rust::TWDataWrapper dataWrapper = data;
-    Rust::TWDataWrapper ivWrapper = iv;
-    Rust::TWDataWrapper keyWrapper = key;
-
-    Rust::TWDataWrapper res = Rust::crypto_aes_ctr_encrypt_256(
-        dataWrapper.get(),
-        ivWrapper.get(),
-        keyWrapper.get()
-    );
-    auto resData = res.toDataOrDefault();
-    if (resData.empty()) {
-        throw std::runtime_error("Invalid aes ctr encrypt 256");
-    }
-    return resData;
+    return rustAesOperation(data, iv, key, Rust::crypto_aes_ctr_encrypt_256, "Invalid aes ctr encrypt 256");
 }
 
 static Data rustAesCtrDecrypt256(const Data& data, const Data& iv, const Data& key) {
-    Rust::TWDataWrapper dataWrapper = data;
-    Rust::TWDataWrapper ivWrapper = iv;
-    Rust::TWDataWrapper keyWrapper = key;
-
-    Rust::TWDataWrapper res = Rust::crypto_aes_ctr_decrypt_256(
-        dataWrapper.get(),
-        ivWrapper.get(),
-        keyWrapper.get()
-    );
-    auto resData = res.toDataOrDefault();
-    if (resData.empty()) {
-        throw std::runtime_error("Invalid aes ctr decrypt 256");
-    }
-    return resData;
+    return rustAesOperation(data, iv, key, Rust::crypto_aes_ctr_decrypt_256, "Invalid aes ctr decrypt 256");
 }
 
 static Data rustAesCbcEncrypt(const Data& data, const Data& iv, const Data& key) {
-    Rust::TWDataWrapper dataWrapper = data;
-    Rust::TWDataWrapper ivWrapper = iv;
-    Rust::TWDataWrapper keyWrapper = key;
-
-    Rust::TWDataWrapper res = Rust::crypto_aes_cbc_encrypt(
-        dataWrapper.get(),
-        ivWrapper.get(),
-        keyWrapper.get(),
-        0
-    );
-    auto resData = res.toDataOrDefault();
-    if (resData.empty()) {
-        throw std::runtime_error("Invalid aes cbc encrypt");
-    }
-    return resData;
+    return rustAesOperation(data, iv, key, 
+        [](auto d, auto i, auto k) { return Rust::crypto_aes_cbc_encrypt(d, i, k, 0); }, 
+        "Invalid aes cbc encrypt");
 }
 
 static Data rustAesCbcDecrypt(const Data& data, const Data& iv, const Data& key) {
-    Rust::TWDataWrapper dataWrapper = data;
-    Rust::TWDataWrapper ivWrapper = iv;
-    Rust::TWDataWrapper keyWrapper = key;
-
-    Rust::TWDataWrapper res = Rust::crypto_aes_cbc_decrypt(
-        dataWrapper.get(),
-        ivWrapper.get(),
-        keyWrapper.get(),
-        0
-    );
-    auto resData = res.toDataOrDefault();
-    if (resData.empty()) {
-        throw std::runtime_error("Invalid aes cbc decrypt");
-    }
-    return resData;
+    return rustAesOperation(data, iv, key, 
+        [](auto d, auto i, auto k) { return Rust::crypto_aes_cbc_decrypt(d, i, k, 0); }, 
+        "Invalid aes cbc decrypt");
 }
-
 
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
     auto cipher = json[CodingKeys::cipher].get<std::string>();
