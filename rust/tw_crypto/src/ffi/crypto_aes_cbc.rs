@@ -55,9 +55,9 @@ pub unsafe extern "C" fn tw_aes_encrypt_cbc_128(
     key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    padding_mode: u32,
+    mode: u32,
 ) -> NullableMut<TWData> {
-    handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_encrypt_128)
+    handle_aes_cbc_operation(data, iv, key, mode, aes_cbc_encrypt_128)
 }
 
 /// Decrypts a block of Data using AES in Cipher Block Chaining (CBC) mode with 128-bit key.
@@ -73,9 +73,9 @@ pub unsafe extern "C" fn tw_aes_decrypt_cbc_128(
     key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    padding_mode: u32,
+    mode: u32,
 ) -> NullableMut<TWData> {
-    handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_decrypt_128)
+    handle_aes_cbc_operation(data, iv, key, mode, aes_cbc_decrypt_128)
 }
 
 /// Encrypts a block of Data using AES in Cipher Block Chaining (CBC) mode with 192-bit key.
@@ -91,9 +91,9 @@ pub unsafe extern "C" fn tw_aes_encrypt_cbc_192(
     key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    padding_mode: u32,
+    mode: u32,
 ) -> NullableMut<TWData> {
-    handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_encrypt_192)
+    handle_aes_cbc_operation(data, iv, key, mode, aes_cbc_encrypt_192)
 }
 
 /// Decrypts a block of Data using AES in Cipher Block Chaining (CBC) mode with 192-bit key.
@@ -109,9 +109,9 @@ pub unsafe extern "C" fn tw_aes_decrypt_cbc_192(
     key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    padding_mode: u32,
+    mode: u32,
 ) -> NullableMut<TWData> {
-    handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_decrypt_192)
+    handle_aes_cbc_operation(data, iv, key, mode, aes_cbc_decrypt_192)
 }
 
 /// Encrypts a block of Data using AES in Cipher Block Chaining (CBC) mode with 256-bit key.
@@ -127,9 +127,9 @@ pub unsafe extern "C" fn tw_aes_encrypt_cbc_256(
     key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    padding_mode: u32,
+    mode: u32,
 ) -> NullableMut<TWData> {
-    handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_encrypt_256)
+    handle_aes_cbc_operation(data, iv, key, mode, aes_cbc_encrypt_256)
 }
 
 /// Decrypts a block of Data using AES in Cipher Block Chaining (CBC) mode with 256-bit key.
@@ -145,9 +145,9 @@ pub unsafe extern "C" fn tw_aes_decrypt_cbc_256(
     key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    padding_mode: u32,
+    mode: u32,
 ) -> NullableMut<TWData> {
-    handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_decrypt_256)
+    handle_aes_cbc_operation(data, iv, key, mode, aes_cbc_decrypt_256)
 }
 
 /// Encrypts a block of Data using AES in Cipher Block Chaining (CBC) mode.
@@ -163,9 +163,9 @@ pub unsafe extern "C" fn tw_aes_encrypt_cbc(
     key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    padding_mode: u32,
+    mode: u32,
 ) -> NullableMut<TWData> {
-    handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_encrypt)
+    handle_aes_cbc_operation(data, iv, key, mode, aes_cbc_encrypt)
 }
 
 /// Decrypts a block of data using AES in Cipher Block Chaining (CBC) mode.
@@ -181,7 +181,7 @@ pub unsafe extern "C" fn tw_aes_decrypt_cbc(
     key: Nonnull<TWData>,
     data: Nonnull<TWData>,
     iv: Nonnull<TWData>,
-    padding_mode: u32,
+    mode: u32,
 ) -> NullableMut<TWData> {
-    handle_aes_cbc_operation(data, iv, key, padding_mode, aes_cbc_decrypt)
+    handle_aes_cbc_operation(data, iv, key, mode, aes_cbc_decrypt)
 }
