@@ -609,8 +609,10 @@ where
         _coin: &dyn CoinContext,
         generic: &Proto::mod_Message::WasmInstantiateContract<'_>,
     ) -> SigningResult<CosmosMessageBox> {
-        use crate::transaction::message::wasm_message_instantiate_contract::{InstantiateMsg, WasmInstantiateContractMessage};
-    
+        use crate::transaction::message::wasm_message_instantiate_contract::{
+            InstantiateMsg, WasmInstantiateContractMessage,
+        };
+
         let funds = generic
             .init_funds
             .iter()
@@ -620,7 +622,7 @@ where
         let sender = Address::from_str(&generic.sender)
             .into_tw()
             .context("Invalid sender address")?;
-    
+
         let admin = if generic.admin.is_empty() {
             None
         } else {
@@ -630,16 +632,20 @@ where
                     .context("Invalid admin address")?,
             )
         };
-    
+
         let msg = WasmInstantiateContractMessage {
             sender,
             admin,
             code_id: generic.code_id,
             label: generic.label.to_string(),
-            msg: InstantiateMsg::Json(serde_json::from_slice(&generic.msg).into_tw().context("Invalid JSON in msg")?),
+            msg: InstantiateMsg::Json(
+                serde_json::from_slice(&generic.msg)
+                    .into_tw()
+                    .context("Invalid JSON in msg")?,
+            ),
             funds,
         };
-    
+
         Ok(msg.into_boxed())
     }
 

@@ -141,9 +141,9 @@ fn test_wasm_instantiate_contract() {
 
     let contract = Proto::mod_Message::WasmInstantiateContract {
         sender: "thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r".into(),
-        admin:  "thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r".into(),
+        admin: "thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r".into(),
         code_id: 1,
-        label:   "Contract".into(),
+        label: "Contract".into(),
         msg: Cow::Borrowed(execute_msg.as_bytes()),
         init_funds: vec![],
         ..Default::default()
@@ -151,12 +151,12 @@ fn test_wasm_instantiate_contract() {
 
     let input = Proto::SigningInput {
         account_number: 593,
-        chain_id:        "thorchain-1".into(),
-        sequence:        24,
-        fee:             Some(make_fee_none(200_000)),
-        private_key:     account_593_private_key(),
-        mode:            Proto::BroadcastMode::SYNC,
-        messages:        vec![make_message(
+        chain_id: "thorchain-1".into(),
+        sequence: 24,
+        fee: Some(make_fee_none(200_000)),
+        private_key: account_593_private_key(),
+        mode: Proto::BroadcastMode::SYNC,
+        messages: vec![make_message(
             MessageEnum::wasm_instantiate_contract_message(contract),
         )],
         ..Default::default()
