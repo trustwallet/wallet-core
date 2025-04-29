@@ -658,7 +658,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
             .into_tw()
             .context("Invalid authority address")?;
 
-        let signed_authorization =
+        let (authorization, signature) =
             if let Some(other_auth_fields) = &eip7702_authorization.custom_signature {
                 // If field `custom_signature` is provided, it means that the authorization is already signed.
                 let chain_id = U256::from_big_endian_slice(&other_auth_fields.chain_id)
@@ -677,16 +677,14 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 .tw_err(SigningErrorType::Error_invalid_params)
                 .context("Invalid signature")?;
 
-                SignedAuthorization {
-                    authorization: Authorization {
+                (
+                    Authorization {
                         chain_id,
                         address,
                         nonce,
                     },
-                    y_parity: signature.v(),
-                    r: U256::from_big_endian(signature.r()),
-                    s: U256::from_big_endian(signature.s()),
-                }
+                    signature,
+                )
             } else {
                 // If field `custom_signature` is not provided, the authorization will be signed with the provided private key, nonce and chainId
                 let signer_key = secp256k1::PrivateKey::try_from(input.private_key.as_ref())
@@ -718,13 +716,15 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 let pre_hash = authorization.hash().map_err(to_signing)?;
                 let signature = signer_key.sign(pre_hash)?;
 
-                SignedAuthorization {
-                    authorization,
-                    y_parity: signature.v(),
-                    r: U256::from_big_endian(signature.r()),
-                    s: U256::from_big_endian(signature.s()),
-                }
+                (authorization, signature)
             };
+
+        let signed_authorization = SignedAuthorization {
+            authorization,
+            y_parity: signature.v(),
+            r: U256::from_big_endian(signature.r()),
+            s: U256::from_big_endian(signature.s()),
+        };
 
         Ok(AuthorizationList::from(vec![signed_authorization]))
     }

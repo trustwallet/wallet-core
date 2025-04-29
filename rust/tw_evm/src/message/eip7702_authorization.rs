@@ -2,90 +2,21 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::address::Address;
 use crate::message::{EthMessage, MessageSigningErrorKind, MessageSigningResult};
 use crate::rlp::list::RlpList;
 use crate::transaction::authorization_list::Authorization;
-use serde::{Deserialize, Deserializer};
 use std::iter;
 use std::str::FromStr;
-use tw_coin_entry::error::prelude::*;
 use tw_hash::sha3::keccak256;
 use tw_hash::H256;
-use tw_number::U256;
 
 pub const EIP_7702_MAGIC_PREFIX: u8 = 0x05;
 
-impl<'de> Deserialize<'de> for Authorization {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        use serde::de::{self, MapAccess, Visitor};
-        use std::fmt;
+impl FromStr for Authorization {
+    type Err = MessageSigningErrorKind;
 
-        struct AuthorizationVisitor;
-
-        impl<'de> Visitor<'de> for AuthorizationVisitor {
-            type Value = Authorization;
-
-            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                formatter.write_str("struct Authorization")
-            }
-
-            fn visit_map<V>(self, mut map: V) -> Result<Self::Value, V::Error>
-            where
-                V: MapAccess<'de>,
-            {
-                let mut chain_id = None;
-                let mut address = None;
-                let mut nonce = None;
-
-                while let Some(key) = map.next_key::<&str>()? {
-                    match key {
-                        "chainId" => {
-                            let value: String = map.next_value()?;
-                            chain_id = Some(U256::from_str(&value).map_err(de::Error::custom)?);
-                        },
-                        "address" => {
-                            let value: String = map.next_value()?;
-                            address = Some(Address::from_str(&value).map_err(de::Error::custom)?);
-                        },
-                        "nonce" => {
-                            let value: String = map.next_value()?;
-                            nonce = Some(U256::from_str(&value).map_err(de::Error::custom)?);
-                        },
-                        // Skip unknown field.
-                        _ => {},
-                    }
-                }
-
-                let chain_id = chain_id.ok_or_else(|| de::Error::missing_field("chainId"))?;
-                let address = address.ok_or_else(|| de::Error::missing_field("address"))?;
-                let nonce = nonce.ok_or_else(|| de::Error::missing_field("nonce"))?;
-
-                Ok(Authorization {
-                    chain_id,
-                    address,
-                    nonce,
-                })
-            }
-        }
-
-        deserializer.deserialize_struct(
-            "Authorization",
-            &["chainId", "address", "nonce"],
-            AuthorizationVisitor,
-        )
-    }
-}
-
-impl Authorization {
-    /// Tries to construct an EIP7702 authorization tuple from the given string.
-    pub fn new<S: AsRef<str>>(message_to_sign: S) -> MessageSigningResult<Authorization> {
-        serde_json::from_str(message_to_sign.as_ref())
-            .map_err(|_| MessageSigningErrorKind::TypeValueMismatch.into())
-            .context("Error deserializing EIP7702 authorization as JSON")
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        serde_json::from_str(s).map_err(|_| MessageSigningErrorKind::TypeValueMismatch)
     }
 }
 
@@ -113,6 +44,7 @@ mod tests {
     use tw_encoding::hex::ToHex;
     use tw_keypair::ecdsa::secp256k1;
     use tw_keypair::traits::SigningKeyTrait;
+    use tw_number::U256;
 
     #[test]
     fn test_pre_hash() {

@@ -125,8 +125,8 @@ impl EthMessageSigner {
                     .into_boxed()),
             },
             Proto::MessageType::MessageType_eip7702_authorization => {
-                Ok(Authorization::new(input.message)
-                    .map_err(to_signing)?
+                Ok(Authorization::from_str(&input.message)
+                    .map_err(|e| to_signing(e.into()))?
                     .into_boxed())
             },
         }
@@ -136,7 +136,7 @@ impl EthMessageSigner {
         match Eip712Message::new(user_message) {
             // Try to parse as an EIP712 message
             Ok(typed_data) => Ok(typed_data.into_boxed()),
-            Err(_) => match Authorization::new(user_message) {
+            Err(_) => match Authorization::from_str(user_message) {
                 // Try to parse as an EIP7702 authorization tuple
                 Ok(authorization) => Ok(authorization.into_boxed()),
                 Err(_) => Ok(Eip191Message::new(user_message).into_boxed()),
