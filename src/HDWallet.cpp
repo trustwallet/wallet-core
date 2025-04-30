@@ -19,7 +19,6 @@
 #include <TrezorCrypto/options.h>
 
 #include <TrezorCrypto/bip32.h>
-#include <TrezorCrypto/bip39.h>
 #include <TrezorCrypto/cardano.h>
 #include <TrezorCrypto/curves.h>
 
@@ -36,8 +35,6 @@ bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher
 const char* curveName(TWCurve curve);
 } // namespace
 
-const int MnemonicBufLength = Mnemonic::MaxWords * (BIP39_MAX_WORD_LENGTH + 3) + 20; // some extra slack
-
 template <std::size_t seedSize>
 HDWallet<seedSize>::HDWallet(const Data& seed) {
     std::copy_n(seed.begin(), seedSize, this->seed.begin());
@@ -47,28 +44,20 @@ template <std::size_t seedSize>
 void HDWallet<seedSize>::updateSeedAndEntropy([[maybe_unused]] bool check) {
     assert(!check || Mnemonic::isValid(mnemonic)); // precondition
 
-    // generate seed from mnemonic
-    mnemonic_to_seed(mnemonic.c_str(), passphrase.c_str(), seed.data(), nullptr);
-
-    // generate entropy bits from mnemonic
-    Data entropyRaw((Mnemonic::MaxWords * Mnemonic::BitsPerWord) / 8);
-    // entropy is truncated to fully bytes, 4 bytes for each 3 words (=33 bits)
-    auto entropyBytes = mnemonic_to_bits(mnemonic.c_str(), entropyRaw.data()) / 33 * 4;
-    // copy to truncate
-    entropy = data(entropyRaw.data(), entropyBytes);
+    auto seedData = Mnemonic::toSeed(mnemonic, passphrase);
+    std::copy_n(seedData.begin(), seedSize, seed.begin());
+    entropy = Mnemonic::toEntropy(mnemonic);
+   
     assert(!check || entropy.size() > 10);
 }
 
 template <std::size_t seedSize>
 HDWallet<seedSize>::HDWallet(int strength, const std::string& passphrase)
     : passphrase(passphrase) {
-    char buf[MnemonicBufLength];
-    const char* mnemonic_chars = mnemonic_generate(strength, buf, MnemonicBufLength);
-    if (mnemonic_chars == nullptr) {
+    mnemonic = Mnemonic::generate(strength);
+    if (mnemonic.empty()) {
         throw std::invalid_argument("Invalid strength");
     }
-    mnemonic = mnemonic_chars;
-    TW::memzero(buf, MnemonicBufLength);
     updateSeedAndEntropy();
 }
 
@@ -85,13 +74,10 @@ HDWallet<seedSize>::HDWallet(const std::string& mnemonic, const std::string& pas
 template <std::size_t seedSize>
 HDWallet<seedSize>::HDWallet(const Data& entropy, const std::string& passphrase)
     : passphrase(passphrase) {
-    char buf[MnemonicBufLength];
-    const char* mnemonic_chars = mnemonic_from_data(entropy.data(), static_cast<int>(entropy.size()), buf, MnemonicBufLength);
-    if (mnemonic_chars == nullptr) {
+    mnemonic = Mnemonic::generateFromData(entropy);
+    if (mnemonic.empty()) {
         throw std::invalid_argument("Invalid mnemonic data");
     }
-    mnemonic = mnemonic_chars;
-    TW::memzero(buf, MnemonicBufLength);
     updateSeedAndEntropy();
 }
 
