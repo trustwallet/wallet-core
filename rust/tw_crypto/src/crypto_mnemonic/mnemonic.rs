@@ -83,7 +83,7 @@ impl Mnemonic {
     }
 
     // Taken from https://github.com/iqlusioninc/crates/blob/95c6b87ce657dc51a0bd11159ef39c603a197f8d/bip32/src/mnemonic/phrase.rs#L134
-    pub fn to_seed(mnemonic: &'static str, passphrase: &str) -> [u8; SEED_SIZE] {
+    pub fn to_seed(mnemonic: &str, passphrase: &str) -> [u8; SEED_SIZE] {
         let mut seed = [0u8; SEED_SIZE];
         let salt = zeroize::Zeroizing::new(format!("mnemonic{}", passphrase));
         pbkdf2::pbkdf2_hmac::<sha2::Sha512>(
