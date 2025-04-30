@@ -2018,7 +2018,6 @@ version = "0.1.0"
 dependencies = [
  "aes",
  "bip39",
- "bitcoin_hashes",
  "cbc",
  "ctr",
  "pbkdf2",
@@ -2028,6 +2027,7 @@ dependencies = [
  "tw_macros",
  "tw_memory",
  "tw_misc",
+ "zeroize",
 ]
 
 [[package]]
