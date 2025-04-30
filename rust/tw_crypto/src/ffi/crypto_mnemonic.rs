@@ -4,10 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#![allow(clippy::missing_safety_doc)]
+
 use crate::crypto_mnemonic::to_seed;
 use bip39::{Language, Mnemonic};
 use tw_macros::tw_ffi;
-use tw_memory::ffi::{tw_data::TWData, tw_string::TWString, Nonnull, NullableMut, RawPtrTrait};
+use tw_memory::ffi::{
+    tw_data::TWData, tw_string::TWString, Nonnull, NonnullMut, NullableMut, RawPtrTrait,
+};
 use tw_misc::{try_or_else, try_or_false};
 
 const SUGGEST_MAX_COUNT: usize = 10;
@@ -15,7 +19,7 @@ const SUGGEST_MAX_COUNT: usize = 10;
 #[tw_ffi(ty = static_function, class = TWMnemonic, name = Generate)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_mnemonic_generate(strength: u32) -> NullableMut<TWString> {
-    if strength % 32 != 0 || strength < 128 || strength > 256 {
+    if strength % 32 != 0 || !(128..=256).contains(&strength) {
         return std::ptr::null_mut();
     }
 
@@ -39,7 +43,7 @@ pub unsafe extern "C" fn tw_mnemonic_generate_from_data(
         .map(|data| data.as_slice())
         .unwrap_or_default();
 
-    let mnemonic = try_or_else!(Mnemonic::from_entropy(&data), std::ptr::null_mut);
+    let mnemonic = try_or_else!(Mnemonic::from_entropy(data), std::ptr::null_mut);
 
     let mnemonic_string = mnemonic.to_string();
     TWString::from(mnemonic_string).into_ptr()
@@ -80,14 +84,14 @@ pub unsafe extern "C" fn tw_mnemonic_find_word(word: Nonnull<TWString>) -> i32 {
     let word_string = try_or_else!(word_string.as_str(), || -1);
     let language = Language::English;
     language
-        .find_word(&word_string)
+        .find_word(word_string)
         .map(|index| index as i32)
         .unwrap_or(-1)
 }
 
 #[tw_ffi(ty = static_function, class = TWMnemonic, name = Suggest)]
 #[no_mangle]
-pub unsafe extern "C" fn tw_mnemonic_suggest(prefix: Nonnull<TWString>) -> NullableMut<TWString> {
+pub unsafe extern "C" fn tw_mnemonic_suggest(prefix: Nonnull<TWString>) -> NonnullMut<TWString> {
     let prefix_string = try_or_else!(TWString::from_ptr_as_ref(prefix), std::ptr::null_mut);
     let prefix_string = try_or_else!(prefix_string.as_str(), std::ptr::null_mut);
     if prefix_string.is_empty() {
