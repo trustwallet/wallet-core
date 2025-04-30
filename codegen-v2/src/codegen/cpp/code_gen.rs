@@ -38,10 +38,16 @@ fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
                         continue;
                     }
                     if included_headers.insert(header_name.clone()) {
-                        if std::path::Path::new(&format!("{}{}.h", HEADER_IN_DIR, header_name)).exists() {
+                        if std::path::Path::new(&format!("{}{}.h", HEADER_IN_DIR, header_name))
+                            .exists()
+                        {
                             writeln!(file, "#include <TrustWalletCore/{}.h>", header_name)?;
                         } else {
-                            writeln!(file, "#include <TrustWalletCore/Generated/{}.h>", header_name)?;
+                            writeln!(
+                                file,
+                                "#include <TrustWalletCore/Generated/{}.h>",
+                                header_name
+                            )?;
                         }
                     }
                 }
@@ -179,7 +185,11 @@ fn generate_wrapper_header(info: &TWConfig) -> Result<()> {
 }
 
 fn generate_source_includes(file: &mut std::fs::File, info: &TWConfig) -> Result<()> {
-    writeln!(file, "#include <TrustWalletCore/Generated/{}.h>", info.class)?;
+    writeln!(
+        file,
+        "#include <TrustWalletCore/Generated/{}.h>",
+        info.class
+    )?;
     writeln!(file, "#include \"rust/Wrapper.h\"")?;
 
     // Include headers based on argument types
@@ -244,7 +254,15 @@ fn generate_return_type(func: &TWFunction, converted_args: &Vec<String>) -> Resu
                 .map_err(|e| BadFormat(e.to_string()))?;
             }
             (TWPointerType::NonnullMut, "TWString") | (TWPointerType::Nonnull, "TWString") => {
-                panic!("Nonnull TWString is not supported");
+                write!(
+                    &mut return_string,
+                    "\tconst Rust::TWStringWrapper result = Rust::{}{}\n\
+                    \tif (!result) {{ return TWStringCreateWithUTF8Bytes(\"\"); }}\n\
+                    \treturn TWStringCreateWithUTF8Bytes(result.c_str());\n",
+                    func.rust_name,
+                    generate_function_call(&converted_args)?.as_str()
+                )
+                .map_err(|e| BadFormat(e.to_string()))?;
             }
             (TWPointerType::NullableMut, "TWData") | (TWPointerType::Nullable, "TWData") => {
                 write!(
