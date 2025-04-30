@@ -27,8 +27,10 @@ pub unsafe extern "C" fn tw_mnemonic_generate(strength: u32) -> NullableMut<TWSt
     let mnemonic_length = length * 3 / 4;
 
     let mut rng = bip39::rand::thread_rng();
-    let mnemonic =
-        Mnemonic::generate_in_with(&mut rng, Language::English, mnemonic_length as usize).unwrap();
+    let mnemonic = try_or_else!(
+        Mnemonic::generate_in_with(&mut rng, Language::English, mnemonic_length as usize),
+        std::ptr::null_mut
+    );
 
     let mnemonic_string = mnemonic.to_string();
     TWString::from(mnemonic_string).into_ptr()
