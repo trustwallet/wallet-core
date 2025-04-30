@@ -257,8 +257,8 @@ fn generate_return_type(func: &TWFunction, converted_args: &Vec<String>) -> Resu
                 write!(
                     &mut return_string,
                     "\tconst Rust::TWStringWrapper result = Rust::{}{}\n\
-                    \tif (!result) {{ return TWStringCreateWithUTF8Bytes(\"\"); }}\n\
-                    \treturn TWStringCreateWithUTF8Bytes(result.c_str());\n",
+                    \tconst auto resultString = result.toStringOrDefault();\n\
+                    \treturn TWStringCreateWithUTF8Bytes(resultString.c_str());\n",
                     func.rust_name,
                     generate_function_call(&converted_args)?.as_str()
                 )
