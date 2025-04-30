@@ -9,7 +9,7 @@
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWData.h>
 #include <TrustWalletCore/TWHDWallet.h>
-#include <TrustWalletCore/TWMnemonic.h>
+#include <TrustWalletCore/Generated/TWMnemonic.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWBase58.h>

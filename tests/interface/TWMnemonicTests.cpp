@@ -4,7 +4,7 @@
 
 #include "TestUtilities.h"
 
-#include <TrustWalletCore/TWMnemonic.h>
+#include <TrustWalletCore/Generated/TWMnemonic.h>
 
 TEST(TWMnemonic, IsValid) {
     EXPECT_TRUE(TWMnemonicIsValid(STRING("credit expect life fade cover suit response wash pear what skull force").get()));

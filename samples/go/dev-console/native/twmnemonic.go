@@ -1,6 +1,6 @@
 package native
 
-// #include <TrustWalletCore/TWMnemonic.h>
+// #include <TrustWalletCore/Generated/TWMnemonic.h>
 import "C"
 
 func IsMnemonicValid(mn string) bool {
