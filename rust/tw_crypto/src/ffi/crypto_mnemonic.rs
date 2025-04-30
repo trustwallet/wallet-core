@@ -6,34 +6,19 @@
 
 #![allow(clippy::missing_safety_doc)]
 
-use crate::crypto_mnemonic::to_seed;
-use bip39::{Language, Mnemonic};
+use crate::crypto_mnemonic::{mnemonic::Mnemonic, to_seed};
+use bip39::Language;
 use tw_macros::tw_ffi;
 use tw_memory::ffi::{
     tw_data::TWData, tw_string::TWString, Nonnull, NonnullMut, NullableMut, RawPtrTrait,
 };
 use tw_misc::{try_or_else, try_or_false};
 
-const SUGGEST_MAX_COUNT: usize = 10;
-
 #[tw_ffi(ty = static_function, class = TWMnemonic, name = Generate)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_mnemonic_generate(strength: u32) -> NullableMut<TWString> {
-    if strength % 32 != 0 || !(128..=256).contains(&strength) {
-        return std::ptr::null_mut();
-    }
-
-    let length = strength / 8;
-    let mnemonic_length = length * 3 / 4;
-
-    let mut rng = bip39::rand::thread_rng();
-    let mnemonic = try_or_else!(
-        Mnemonic::generate_in_with(&mut rng, Language::English, mnemonic_length as usize),
-        std::ptr::null_mut
-    );
-
-    let mnemonic_string = mnemonic.to_string();
-    TWString::from(mnemonic_string).into_ptr()
+    let mnemonic = try_or_else!(Mnemonic::generate(strength), std::ptr::null_mut);
+    TWString::from(mnemonic.to_string()).into_ptr()
 }
 
 #[tw_ffi(ty = static_function, class = TWMnemonic, name = GenerateFromData)]
@@ -45,10 +30,8 @@ pub unsafe extern "C" fn tw_mnemonic_generate_from_data(
         .map(|data| data.as_slice())
         .unwrap_or_default();
 
-    let mnemonic = try_or_else!(Mnemonic::from_entropy(data), std::ptr::null_mut);
-
-    let mnemonic_string = mnemonic.to_string();
-    TWString::from(mnemonic_string).into_ptr()
+    let mnemonic = try_or_else!(Mnemonic::generate_from_data(data), std::ptr::null_mut);
+    TWString::from(mnemonic.to_string()).into_ptr()
 }
 
 #[tw_ffi(ty = static_function, class = TWMnemonic, name = IsValid)]
@@ -56,10 +39,7 @@ pub unsafe extern "C" fn tw_mnemonic_generate_from_data(
 pub unsafe extern "C" fn tw_mnemonic_is_valid(mnemonic: Nonnull<TWString>) -> bool {
     let mnemonic_string = try_or_false!(TWString::from_ptr_as_ref(mnemonic));
     let mnemonic_string = try_or_false!(mnemonic_string.as_str());
-    if mnemonic_string.trim() != mnemonic_string || mnemonic_string.contains("  ") {
-        return false;
-    }
-    Mnemonic::parse_in(Language::English, mnemonic_string).is_ok()
+    Mnemonic::parse(mnemonic_string).is_ok()
 }
 
 #[tw_ffi(ty = static_function, class = TWMnemonic, name = IsValidWord)]
@@ -94,21 +74,9 @@ pub unsafe extern "C" fn tw_mnemonic_find_word(word: Nonnull<TWString>) -> i32 {
 #[tw_ffi(ty = static_function, class = TWMnemonic, name = Suggest)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_mnemonic_suggest(prefix: Nonnull<TWString>) -> NonnullMut<TWString> {
-    let empty_string = TWString::from("".to_string()).into_ptr();
-    let prefix_string = try_or_else!(TWString::from_ptr_as_ref(prefix), || empty_string);
-    let prefix_string = try_or_else!(prefix_string.as_str(), || empty_string);
-    if prefix_string.is_empty() {
-        return empty_string;
-    }
-    let language = Language::English;
-    let prefix_string = prefix_string.to_lowercase();
-    let words = language.words_by_prefix(&prefix_string);
-    let words_string = words
-        .iter()
-        .take(SUGGEST_MAX_COUNT)
-        .map(|w| w.to_string())
-        .collect::<Vec<_>>()
-        .join(" ");
+    let prefix_string = try_or_else!(TWString::from_ptr_as_ref(prefix), std::ptr::null_mut);
+    let prefix_string = try_or_else!(prefix_string.as_str(), std::ptr::null_mut);
+    let words_string = Mnemonic::suggest(prefix_string);
     TWString::from(words_string).into_ptr()
 }
 

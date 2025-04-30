@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+pub mod mnemonic;
 mod mnemonic_pbkdf2;
 
 pub fn to_seed<I>(words: I, passphrase: &str) -> [u8; 64]
