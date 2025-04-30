@@ -68,6 +68,8 @@ public:
     virtual Data preImageHashes([[maybe_unused]] TWCoinType coin, [[maybe_unused]] const Data& txInputData) const { return {}; }
     // Optional method for compiling a transaction with externally-supplied signatures & pubkeys.
     virtual void compile([[maybe_unused]] TWCoinType coin, [[maybe_unused]] const Data& txInputData, [[maybe_unused]] const std::vector<Data>& signatures, [[maybe_unused]] const std::vector<PublicKey>& publicKeys, [[maybe_unused]] Data& dataOut) const {}
+    // Optional method for decoding a private key. Could throw an exception if the encoded private key is invalid.
+    virtual PrivateKey decodePrivateKey([[maybe_unused]] TWCoinType coin, const std::string& privateKey) const;
 };
 
 // In each coin's Entry.cpp the specific types of the coin are used, this template enforces the Signer implement:

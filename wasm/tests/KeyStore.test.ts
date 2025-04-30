@@ -61,4 +61,51 @@ describe("KeyStore", () => {
     const exported2 = await keystore.export(wallet.id, password);
     assert.equal(HexCoding.encode(exported2), "0x9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c");
   }).timeout(10000);
+
+  it("test export mnemonic", async () => {
+    const { CoinType, StoredKeyEncryption, HexCoding } = globalThis.core;
+    const mnemonic = globalThis.mnemonic as string;
+    const password = globalThis.password as string;
+    
+    const storage = new KeyStore.FileSystemStorage("/tmp");
+    const keystore = new KeyStore.Default(globalThis.core, storage);
+
+    var wallet = await keystore.import(mnemonic, "Coolw", password, [
+      CoinType.bitcoin,
+    ], StoredKeyEncryption.aes128Ctr);
+    assert.equal(await keystore.getWalletType(wallet.id), "mnemonic");
+    
+    const exported = await keystore.exportMnemonic(wallet.id, password);
+    assert.equal(exported, mnemonic);
+  }).timeout(10000);
+
+  it("test export key", async () => {
+    const { CoinType, StoredKeyEncryption, HexCoding } = globalThis.core;
+    const password = globalThis.password as string;
+    
+    const storage = new KeyStore.FileSystemStorage("/tmp");
+    const keystore = new KeyStore.Default(globalThis.core, storage);
+
+    const inputPrivateKey = Buffer.from("9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c", "hex");
+    const wallet = await keystore.importKey(inputPrivateKey, "Coolw", password, CoinType.solana, StoredKeyEncryption.aes128Ctr);
+    assert.equal(await keystore.getWalletType(wallet.id), "private-key");
+
+    const exported = await keystore.exportPrivateKey(wallet.id, password);
+    assert.equal(HexCoding.encode(exported), "0x9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c");
+  }).timeout(10000);
+
+  it("test export key encoded", async () => {
+    const { CoinType, StoredKeyEncryption } = globalThis.core;
+    const password = globalThis.password as string;
+    
+    const storage = new KeyStore.FileSystemStorage("/tmp");
+    const keystore = new KeyStore.Default(globalThis.core, storage);
+
+    const inputPrivateKeyBase58 = "A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr";
+    const wallet = await keystore.importKeyEncoded(inputPrivateKeyBase58, "Coolw", password, CoinType.solana, StoredKeyEncryption.aes128Ctr);
+    assert.equal(await keystore.getWalletType(wallet.id), "private-key");
+
+    const exported = await keystore.exportPrivateKeyEncoded(wallet.id, password);
+    assert.equal(exported, inputPrivateKeyBase58);
+  }).timeout(10000);
 });

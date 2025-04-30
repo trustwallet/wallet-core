@@ -14,7 +14,7 @@ pub mod side_chain_delegate;
 pub mod time_lock_order;
 pub mod token_order;
 pub mod trade_order;
-pub mod tranfer_out_order;
+pub mod transfer_out_order;
 
 pub trait BinanceMessage {
     fn to_amino_protobuf(&self) -> SigningResult<Data>;
@@ -29,7 +29,7 @@ pub trait TWBinanceProto: Sized {
     fn to_tw_proto(&self) -> Self::Proto<'static>;
 }
 
-/// Please note that some of the fields are typped such as `SideDelegateOrder`.
+/// Please note that some of the fields are typed such as `SideDelegateOrder`.
 #[derive(Deserialize, Serialize)]
 #[serde(untagged)]
 pub enum BinanceMessageEnum {
@@ -52,7 +52,7 @@ pub enum BinanceMessageEnum {
     TokenBurnOrder(token_order::TokenBurnOrder),
     NewTradeOrder(trade_order::NewTradeOrder),
     CancelTradeOrder(trade_order::CancelTradeOrder),
-    TransferOutOrder(tranfer_out_order::TransferOutOrder),
+    TransferOutOrder(transfer_out_order::TransferOutOrder),
 }
 
 impl TWBinanceProto for BinanceMessageEnum {
@@ -107,7 +107,7 @@ impl TWBinanceProto for BinanceMessageEnum {
                     .map(BinanceMessageEnum::TokenBurnOrder)
             },
             BinanceMessageProto::transfer_out_order(ref order) => {
-                tranfer_out_order::TransferOutOrder::from_tw_proto(coin, order)
+                transfer_out_order::TransferOutOrder::from_tw_proto(coin, order)
                     .map(BinanceMessageEnum::TransferOutOrder)
             },
             BinanceMessageProto::side_delegate_order(ref order) => {

@@ -4827,7 +4827,12 @@
     "blockchain": "Pactus",
     "derivation": [
       {
+        "name": "mainnet",
         "path": "m/44'/21888'/3'/0'"
+      },
+      {
+        "name": "testnet",
+        "path": "m/44'/21777'/3'/0'"
       }
     ],
     "curve": "ed25519",
