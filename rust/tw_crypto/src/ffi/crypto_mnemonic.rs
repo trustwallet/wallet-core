@@ -94,10 +94,11 @@ pub unsafe extern "C" fn tw_mnemonic_find_word(word: Nonnull<TWString>) -> i32 {
 #[tw_ffi(ty = static_function, class = TWMnemonic, name = Suggest)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_mnemonic_suggest(prefix: Nonnull<TWString>) -> NonnullMut<TWString> {
-    let prefix_string = try_or_else!(TWString::from_ptr_as_ref(prefix), std::ptr::null_mut);
-    let prefix_string = try_or_else!(prefix_string.as_str(), std::ptr::null_mut);
+    let empty_string = TWString::from("".to_string()).into_ptr();
+    let prefix_string = try_or_else!(TWString::from_ptr_as_ref(prefix), || empty_string);
+    let prefix_string = try_or_else!(prefix_string.as_str(), || empty_string);
     if prefix_string.is_empty() {
-        return TWString::from("".to_string()).into_ptr();
+        return empty_string;
     }
     let language = Language::English;
     let prefix_string = prefix_string.to_lowercase();
