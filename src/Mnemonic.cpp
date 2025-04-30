@@ -18,19 +18,13 @@ const int Mnemonic::SuggestMaxCount = 10;
 
 std::string Mnemonic::generate(uint32_t strength) {
     const Rust::TWStringWrapper result = Rust::tw_mnemonic_generate(strength);
-    if (!result) {
-        return "";
-    }
-    return std::string(result.c_str());
+    return result.toStringOrDefault();
 }
 
 std::string Mnemonic::generateFromData(const Data& data) {
     const Rust::TWDataWrapper dataRustData = data;
     const Rust::TWStringWrapper result = Rust::tw_mnemonic_generate_from_data(dataRustData.get());
-    if (!result) {
-        return "";
-    }
-    return std::string(result.c_str());
+    return result.toStringOrDefault();
 }
 
 bool Mnemonic::isValid(const std::string& mnemonic) {
@@ -40,10 +34,7 @@ bool Mnemonic::isValid(const std::string& mnemonic) {
 
 std::string Mnemonic::getWord(uint32_t index) {
     const Rust::TWStringWrapper result = Rust::tw_mnemonic_get_word(index);
-    if (!result) {
-        return "";
-    }
-    return std::string(result.c_str());
+    return result.toStringOrDefault();
 }
 
 bool Mnemonic::isValidWord(const std::string& word) {
@@ -54,10 +45,7 @@ bool Mnemonic::isValidWord(const std::string& word) {
 std::string Mnemonic::suggest(const std::string& prefix) {
     const Rust::TWStringWrapper prefixRustStr = prefix;
     const Rust::TWStringWrapper result = Rust::tw_mnemonic_suggest(prefixRustStr.get());
-    if (!result) {
-        return "";
-    }
-    return std::string(result.c_str());
+    return result.toStringOrDefault();
 }
 
 Data Mnemonic::toSeed(const std::string& mnemonic, const std::string& passphrase) {
