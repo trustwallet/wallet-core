@@ -18,6 +18,7 @@ pub mod stride_message;
 pub mod terra_wasm_message;
 pub mod thorchain_message;
 pub mod wasm_message;
+pub mod wasm_message_instantiate_contract;
 
 pub type ProtobufMessage = google::protobuf::Any<'static>;
 pub type CosmosMessageBox = Box<dyn CosmosMessage>;

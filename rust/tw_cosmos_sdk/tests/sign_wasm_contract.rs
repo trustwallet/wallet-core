@@ -7,7 +7,7 @@ use std::borrow::Cow;
 use tw_coin_entry::test_utils::test_context::TestCoinContext;
 use tw_cosmos_sdk::context::StandardCosmosContext;
 use tw_cosmos_sdk::modules::tx_builder::TxBuilder;
-use tw_cosmos_sdk::test_utils::proto_utils::{make_amount, make_fee, make_message};
+use tw_cosmos_sdk::test_utils::proto_utils::{make_amount, make_fee, make_fee_none, make_message};
 use tw_cosmos_sdk::test_utils::sign_utils::{test_sign_json, test_sign_protobuf, TestInput};
 use tw_encoding::base64::{self, STANDARD};
 use tw_encoding::hex::DecodeHex;
@@ -15,6 +15,13 @@ use tw_keypair::tw::PublicKeyType;
 use tw_number::U256;
 use tw_proto::Cosmos::Proto;
 use tw_proto::Cosmos::Proto::mod_Message::OneOfmessage_oneof as MessageEnum;
+
+fn account_593_private_key() -> Cow<'static, [u8]> {
+    "7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e"
+        .decode_hex()
+        .unwrap()
+        .into()
+}
 
 fn account_336_private_key() -> Cow<'static, [u8]> {
     "37f0af5bc20adb6832d39368a15492cd1e9e0cc1556d4317a5f75f9ccdf525ee"
@@ -121,6 +128,47 @@ fn test_wasm_execute_generic_with_coins() {
         tx: r#"{"mode":"block","tx":{"fee":{"amount":[{"amount":"7000","denom":"uluna"}],"gas":"600000"},"memo":"","msg":[{"type":"wasm/MsgExecuteContract","value":{"coins":[{"amount":"1000","denom":"uusd"}],"contract":"terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s","msg":{"deposit_stable":{}},"sender":"terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A3BmOsew+Ykpb+tc5Z+6SlDX6U4c4lbf8iUUWcos2awA"},"signature":"ohL3xBbHumPGwz7nCyocMmS9n08bq27bOlV3hRSduNZzwsaxq5IktzizeYTRmv5uLvAhKHsrsMwWvJWU0J0nvw=="}]}}"#,
         signature: "a212f7c416c7ba63c6c33ee70b2a1c3264bd9f4f1bab6edb3a557785149db8d673c2c6b1ab9224b738b37984d19afe6e2ef021287b2bb0cc16bc9594d09d27bf",
         signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A3BmOsew+Ykpb+tc5Z+6SlDX6U4c4lbf8iUUWcos2awA"},"signature":"ohL3xBbHumPGwz7nCyocMmS9n08bq27bOlV3hRSduNZzwsaxq5IktzizeYTRmv5uLvAhKHsrsMwWvJWU0J0nvw=="}]"#,
+    });
+}
+
+#[test]
+fn test_wasm_instantiate_contract() {
+    let coin = TestCoinContext::default()
+        .with_public_key_type(PublicKeyType::Secp256k1)
+        .with_hrp("thor");
+
+    let execute_msg = r#"{"foo":"bar"}"#;
+
+    let contract = Proto::mod_Message::WasmInstantiateContract {
+        sender: "thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r".into(),
+        admin: "thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r".into(),
+        code_id: 1,
+        label: "Contract".into(),
+        msg: Cow::Borrowed(execute_msg.as_bytes()),
+        init_funds: vec![],
+        ..Default::default()
+    };
+
+    let input = Proto::SigningInput {
+        account_number: 593,
+        chain_id: "thorchain-1".into(),
+        sequence: 24,
+        fee: Some(make_fee_none(200_000)),
+        private_key: account_593_private_key(),
+        mode: Proto::BroadcastMode::SYNC,
+        messages: vec![make_message(
+            MessageEnum::wasm_instantiate_contract_message(contract),
+        )],
+        ..Default::default()
+    };
+
+    // https://thornode.ninerealms.com/cosmos/tx/v1beta1/txs/45CECF3858D1B4C2D49A48C83082D6F018A1E06CA68B1E76F7FF86D5CEC67255
+    test_sign_protobuf::<StandardCosmosContext>(TestInput {
+        coin: &coin,
+        input: input.clone(),
+        tx: r#"{"mode":"BROADCAST_MODE_SYNC","tx_bytes":"CqQBCqEBCigvY29zbXdhc20ud2FzbS52MS5Nc2dJbnN0YW50aWF0ZUNvbnRyYWN0EnUKK3Rob3IxejUzd3dlN21kNmNld3o5c3F3cXpuMGFhdnBhdW4wZ3cwZXhuMnISK3Rob3IxejUzd3dlN21kNmNld3o5c3F3cXpuMGFhdnBhdW4wZ3cwZXhuMnIYASIIQ29udHJhY3QqDXsiZm9vIjoiYmFyIn0SWApQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohA+2Zfjls9CkvX85aQrukFZnM1dluMTFUp8nqcEneMXx3EgQKAggBGBgSBBDAmgwaQBJNYdvq5b6xOY6tZDgJo7ueYCjs4XKPwg3Np10E6T6CLO6W7SsYKh2GiSrwHvzSA5ragedrQ+h9HwaTIGTLmOE="}"#,
+        signature: "124d61dbeae5beb1398ead643809a3bb9e6028ece1728fc20dcda75d04e93e822cee96ed2b182a1d86892af01efcd2039ada81e76b43e87d1f06932064cb98e1",
+        signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A+2Zfjls9CkvX85aQrukFZnM1dluMTFUp8nqcEneMXx3"},"signature":"Ek1h2+rlvrE5jq1kOAmju55gKOzhco/CDc2nXQTpPoIs7pbtKxgqHYaJKvAe/NIDmtqB52tD6H0fBpMgZMuY4Q=="}]"#
     });
 }
 
