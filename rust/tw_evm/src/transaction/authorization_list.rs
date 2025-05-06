@@ -48,9 +48,9 @@ impl RlpEncode for SignedAuthorization {
     }
 }
 
-/// [EIP-2930](https://eips.ethereum.org/EIPS/eip-2930) access list.
+/// [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) authorization list.
 #[derive(Default)]
-pub struct AuthorizationList(Vec<SignedAuthorization>);
+pub struct AuthorizationList(pub(crate) Vec<SignedAuthorization>);
 
 impl From<Vec<SignedAuthorization>> for AuthorizationList {
     fn from(value: Vec<SignedAuthorization>) -> Self {
