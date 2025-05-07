@@ -5,20 +5,15 @@
 use crate::address::Address;
 use crate::rlp::buffer::RlpBuffer;
 use crate::rlp::RlpEncode;
-use serde::Deserialize;
 use tw_number::U256;
 
 /// Authorization for 7702 txn support.
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct Authorization {
     /// The chain ID of the authorization.
-    #[serde(deserialize_with = "U256::from_hex_or_decimal_str")]
     pub chain_id: U256,
     /// The address of the authorization.
     pub address: Address,
     /// The nonce for the authorization.
-    #[serde(deserialize_with = "U256::from_hex_or_decimal_str")]
     pub nonce: U256,
 }
 
