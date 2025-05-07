@@ -11,7 +11,7 @@ use crate::abi::prebuild::erc721::Erc721;
 use crate::abi::prebuild::ExecuteArgs;
 use crate::address::{Address, EvmAddress};
 use crate::evm_context::EvmContext;
-use crate::message::{to_signing, EthMessage};
+use crate::modules::authorization_signer::AuthorizationSigner;
 use crate::transaction::access_list::{Access, AccessList};
 use crate::transaction::authorization_list::{
     Authorization, AuthorizationList, SignedAuthorization,
@@ -29,7 +29,6 @@ use tw_encoding::hex::DecodeHex;
 use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::ecdsa::secp256k1::Signature;
-use tw_keypair::traits::SigningKeyTrait;
 use tw_keypair::KeyPairError;
 use tw_memory::Data;
 use tw_number::U256;
@@ -658,7 +657,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
             .into_tw()
             .context("Invalid authority address")?;
 
-        let (authorization, signature) =
+        let signed_authorization =
             if let Some(other_auth_fields) = &eip7702_authorization.custom_signature {
                 // If field `custom_signature` is provided, it means that the authorization is already signed.
                 let chain_id = U256::from_big_endian_slice(&other_auth_fields.chain_id)
@@ -677,14 +676,16 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 .tw_err(SigningErrorType::Error_invalid_params)
                 .context("Invalid signature")?;
 
-                (
-                    Authorization {
+                SignedAuthorization {
+                    authorization: Authorization {
                         chain_id,
                         address,
                         nonce,
                     },
-                    signature,
-                )
+                    y_parity: signature.v(),
+                    r: U256::from_big_endian(signature.r()),
+                    s: U256::from_big_endian(signature.s()),
+                }
             } else {
                 // If field `custom_signature` is not provided, the authorization will be signed with the provided private key, nonce and chainId
                 let signer_key = secp256k1::PrivateKey::try_from(input.private_key.as_ref())
@@ -706,25 +707,16 @@ impl<Context: EvmContext> TxBuilder<Context> {
                     .into_tw()
                     .context("Invalid nonce")?;
 
-                let authorization = Authorization {
-                    chain_id,
-                    address,
-                    // `authorization.nonce` must be incremented by 1 over `transaction.nonce`.
-                    nonce: nonce + 1,
-                };
-
-                let pre_hash = authorization.hash().map_err(to_signing)?;
-                let signature = signer_key.sign(pre_hash)?;
-
-                (authorization, signature)
+                AuthorizationSigner::sign(
+                    &signer_key,
+                    Authorization {
+                        chain_id,
+                        address,
+                        // `authorization.nonce` must be incremented by 1 over `transaction.nonce`.
+                        nonce: nonce + 1,
+                    },
+                )?
             };
-
-        let signed_authorization = SignedAuthorization {
-            authorization,
-            y_parity: signature.v(),
-            r: U256::from_big_endian(signature.r()),
-            s: U256::from_big_endian(signature.s()),
-        };
 
         Ok(AuthorizationList::from(vec![signed_authorization]))
     }
