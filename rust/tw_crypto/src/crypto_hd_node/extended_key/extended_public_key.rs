@@ -1,0 +1,149 @@
+// Copyright © 2017-2023 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+use std::str::FromStr;
+
+use bip32::{
+    ChildNumber, DerivationPath, Error, ExtendedKey, ExtendedKeyAttrs, KeyFingerprint, Prefix,
+    Result,
+};
+
+use crate::crypto_hd_node::extended_key::{
+    bip32_private_key::BIP32PrivateKey, bip32_public_key::BIP32PublicKey,
+    extended_private_key::ExtendedPrivateKey,
+};
+
+use super::hd_version::HDVersion;
+
+/// Extended public keys derived using BIP32.
+///
+/// Generic around a [`PublicKey`] type. When the `secp256k1` feature of this
+/// crate is enabled, the [`XPub`] type provides a convenient alias for
+/// extended ECDSA/secp256k1 public keys.
+#[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+pub struct ExtendedPublicKey<K: BIP32PublicKey> {
+    /// Derived public key
+    public_key: K,
+
+    /// Extended key attributes.
+    attrs: ExtendedKeyAttrs,
+}
+
+impl<K> ExtendedPublicKey<K>
+where
+    K: BIP32PublicKey,
+{
+    /// Create a new extended public key from a public key and attributes.
+    pub fn new(public_key: K, attrs: ExtendedKeyAttrs) -> Self {
+        Self { public_key, attrs }
+    }
+
+    /// Obtain the non-extended public key value `K`.
+    pub fn public_key(&self) -> &K {
+        &self.public_key
+    }
+
+    /// Get attributes for this key such as depth, parent fingerprint,
+    /// child number, and chain code.
+    pub fn attrs(&self) -> &ExtendedKeyAttrs {
+        &self.attrs
+    }
+
+    /// Compute a 4-byte key fingerprint for this extended public key.
+    pub fn fingerprint(&self) -> KeyFingerprint {
+        self.public_key().fingerprint()
+    }
+
+    /// Serialize the raw public key as a byte array (e.g. SEC1-encoded).
+    pub fn to_bytes(&self) -> Vec<u8> {
+        self.public_key.to_bytes()
+    }
+
+    /// Serialize this key as an [`ExtendedKey`].
+    pub fn to_extended_key(&self, prefix: Prefix) -> ExtendedKey {
+        ExtendedKey {
+            prefix,
+            attrs: self.attrs.clone(),
+            key_bytes: self.to_bytes().try_into().unwrap(),
+        }
+    }
+
+    pub fn derive_from_path(&self, path: &DerivationPath) -> Result<Self> {
+        path.iter().fold(Ok(self.clone()), |maybe_key, child_num| {
+            maybe_key.and_then(|key| key.derive_child(child_num))
+        })
+    }
+
+    /// Derive a child key for a particular [`ChildNumber`].
+    pub fn derive_child(&self, child_number: ChildNumber) -> Result<Self> {
+        let depth = self.attrs.depth.checked_add(1).ok_or(Error::Depth)?;
+        let (tweak, chain_code) = self
+            .public_key
+            .derive_tweak(&self.attrs.chain_code, child_number)?;
+
+        // We should technically loop here if the tweak is zero or overflows
+        // the order of the underlying elliptic curve group, incrementing the
+        // index, however per "Child key derivation (CKD) functions":
+        // https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#child-key-derivation-ckd-functions
+        //
+        // > "Note: this has probability lower than 1 in 2^127."
+        //
+        // ...so instead, we simply return an error if this were ever to happen,
+        // as the chances of it happening are vanishingly small.
+        let public_key = self.public_key.derive_child(&tweak, child_number)?;
+
+        let attrs = ExtendedKeyAttrs {
+            parent_fingerprint: self.public_key.fingerprint(),
+            child_number,
+            chain_code,
+            depth,
+        };
+
+        Ok(ExtendedPublicKey { public_key, attrs })
+    }
+}
+
+impl<K> From<&ExtendedPrivateKey<K>> for ExtendedPublicKey<K::BIP32PublicKey>
+where
+    K: BIP32PrivateKey,
+{
+    fn from(xprv: &ExtendedPrivateKey<K>) -> ExtendedPublicKey<K::BIP32PublicKey> {
+        ExtendedPublicKey {
+            public_key: xprv.private_key().public_key(),
+            attrs: xprv.attrs().clone(),
+        }
+    }
+}
+
+impl<K> FromStr for ExtendedPublicKey<K>
+where
+    K: BIP32PublicKey,
+{
+    type Err = Error;
+
+    fn from_str(xpub: &str) -> Result<Self> {
+        ExtendedKey::from_str(xpub)?.try_into()
+    }
+}
+
+impl<K> TryFrom<ExtendedKey> for ExtendedPublicKey<K>
+where
+    K: BIP32PublicKey,
+{
+    type Error = Error;
+
+    fn try_from(key: ExtendedKey) -> Result<Self> {
+        let version: HDVersion = key.prefix.version().into();
+        if version.is_public() {
+            Ok(ExtendedPublicKey {
+                public_key: K::from_bytes(&key.key_bytes)?,
+                attrs: key.attrs.clone(),
+            })
+        } else {
+            Err(Error::Crypto)
+        }
+    }
+}

@@ -31,3 +31,7 @@ pub trait VerifyingKeyTrait {
     /// Verifies if the given `hash` was signed using the private key.
     fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool;
 }
+
+pub trait DerivableKeyTrait: Sized {
+    fn derive_child(&self, other: &[u8]) -> KeyPairResult<Self>;
+}

@@ -1,0 +1,72 @@
+// Copyright © 2017-2023 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+#[repr(u32)]
+pub enum HDVersion {
+    None = 0,
+
+    // Bitcoin
+    XPUB = 0x0488b21e,
+    XPRV = 0x0488ade4,
+    YPUB = 0x049d7cb2,
+    YPRV = 0x049d7878,
+    ZPUB = 0x04b24746,
+    ZPRV = 0x04b2430c,
+    VPUB = 0x045f1cf6,
+    VPRV = 0x045f18bc,
+    TPUB = 0x043587cf,
+    TPRV = 0x04358394,
+
+    // Litecoin
+    LTUB = 0x019da462,
+    LTPV = 0x019d9cfe,
+    MTUB = 0x01b26ef6,
+    MTPV = 0x01b26792,
+    TTUB = 0x0436f6e1,
+    TTPV = 0x0436ef7d,
+
+    // Decred
+    DPUB = 0x2fda926,
+    DPRV = 0x2fda4e8,
+
+    // Dogecoin
+    DGUB = 0x02facafd,
+    DGPV = 0x02fac398,
+}
+
+impl From<u32> for HDVersion {
+    fn from(value: u32) -> Self {
+        unsafe { std::mem::transmute(value) }
+    }
+}
+
+impl HDVersion {
+    pub fn is_public(&self) -> bool {
+        match self {
+            HDVersion::XPUB
+            | HDVersion::YPUB
+            | HDVersion::ZPUB
+            | HDVersion::LTUB
+            | HDVersion::MTUB
+            | HDVersion::DPUB
+            | HDVersion::DGUB => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_private(&self) -> bool {
+        match self {
+            HDVersion::XPRV
+            | HDVersion::YPRV
+            | HDVersion::ZPRV
+            | HDVersion::LTPV
+            | HDVersion::MTPV
+            | HDVersion::DPRV
+            | HDVersion::DGPV => true,
+            _ => false,
+        }
+    }
+}

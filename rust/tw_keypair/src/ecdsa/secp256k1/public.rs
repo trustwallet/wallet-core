@@ -3,9 +3,10 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::ecdsa::secp256k1::{Signature, VerifySignature};
-use crate::traits::VerifyingKeyTrait;
+use crate::traits::{DerivableKeyTrait, VerifyingKeyTrait};
 use crate::{KeyPairError, KeyPairResult};
 use der::Document;
+use ecdsa::elliptic_curve::group::prime::PrimeCurveAffine;
 use k256::ecdsa::signature::hazmat::PrehashVerifier;
 use k256::ecdsa::VerifyingKey;
 use tw_encoding::hex;
@@ -117,5 +118,24 @@ impl<'a> TryFrom<&'a [u8]> for PublicKey {
 impl ToBytesVec for PublicKey {
     fn to_vec(&self) -> Vec<u8> {
         self.compressed().to_vec()
+    }
+}
+
+impl DerivableKeyTrait for PublicKey {
+    fn derive_child(&self, other: &[u8]) -> KeyPairResult<Self> {
+        let other: [u8; 32] = other
+            .try_into()
+            .map_err(|_| KeyPairError::InvalidPublicKey)?;
+
+        let child_scalar =
+            Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::from_repr(other.into()))
+                .ok_or(KeyPairError::InternalError)?;
+
+        let projective_point: k256::ProjectivePoint = self.public.as_affine().into();
+        let child_point = projective_point + (k256::AffinePoint::generator() * *child_scalar);
+        let public = VerifyingKey::from_affine(child_point.into())
+            .map_err(|_| KeyPairError::InternalError)?;
+
+        Ok(PublicKey { public })
     }
 }

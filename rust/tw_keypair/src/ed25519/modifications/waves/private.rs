@@ -12,6 +12,7 @@ use tw_misc::traits::ToBytesZeroizing;
 use zeroize::Zeroizing;
 
 /// Represents an `ed25519` private key that is used in Waves blockchain.
+#[derive(Clone)]
 pub struct PrivateKey<H: Hasher512> {
     standard_key: StandardPrivateKey<H>,
 }

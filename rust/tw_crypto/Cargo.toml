@@ -6,13 +6,17 @@ edition = "2021"
 
 [dependencies]
 aes = "0.8.4"
+bip32 = "0.5.3"
 bip39 = { version = "2.1.0", features = ["rand" ] }
 cbc = "0.1.2"
 ctr = "0.9.2"
+ed25519-bip32 = "0.4.1"
 pbkdf2 = "0.12.2"
 salsa20 = "0.10.2"
 sha2 = "0.10.8"
 tw_encoding = { path = "../tw_encoding" }
+tw_hash = { path = "../tw_hash" }
+tw_keypair = { path = "../tw_keypair" }
 tw_macros = { path = "../tw_macros" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
