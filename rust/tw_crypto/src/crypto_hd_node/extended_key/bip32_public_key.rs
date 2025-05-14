@@ -6,8 +6,8 @@
 
 use bip32::{ChainCode, ChildNumber, Error, KeyFingerprint, Result, KEY_SIZE};
 use sha2::digest::Mac;
+use tw_hash::hasher::{Hasher, StatefulHasher};
 use tw_hash::hmac::HmacSha512;
-use tw_hash::ripemd::sha256_ripemd;
 
 /// Trait for key types which can be derived using BIP32.
 pub trait BIP32PublicKey: Sized + Clone {
@@ -20,8 +20,8 @@ pub trait BIP32PublicKey: Sized + Clone {
     /// Compute a 4-byte key fingerprint for this public key.
     ///
     /// Default implementation uses `RIPEMD160(SHA256(public_key))`.
-    fn fingerprint(&self) -> KeyFingerprint {
-        let digest = sha256_ripemd(&self.to_bytes().as_slice());
+    fn fingerprint(&self, hasher: Hasher) -> KeyFingerprint {
+        let digest = hasher.hash(&self.to_bytes().as_slice());
         digest[..4].try_into().expect("digest truncated")
     }
 

@@ -6,13 +6,15 @@
 
 use bip32::{
     ChildNumber, DerivationPath, Error, ExtendedKey, ExtendedKeyAttrs, KeyFingerprint, Prefix,
-    Result, KEY_SIZE,
+    Result, Version, KEY_SIZE,
 };
-use core::str::FromStr;
 use sha2::digest::Mac;
 use tw_encoding::hex::{self, ToHex};
+use tw_hash::hasher::Hasher;
+use tw_hash::hasher::StatefulHasher;
 use tw_hash::hmac::HmacSha512;
 use tw_keypair::tw::Curve;
+use zeroize::Zeroize;
 use zeroize::Zeroizing;
 
 use crate::crypto_hd_node::extended_key::{
@@ -78,14 +80,14 @@ where
     }
 
     /// Derive a child key from the given [`DerivationPath`].
-    pub fn derive_from_path(&self, path: &DerivationPath) -> Result<Self> {
+    pub fn derive_from_path(&self, path: &DerivationPath, hasher: Hasher) -> Result<Self> {
         path.iter().fold(Ok(self.clone()), |maybe_key, child_num| {
-            maybe_key.and_then(|key| key.derive_child(child_num))
+            maybe_key.and_then(|key| key.derive_child(child_num, hasher))
         })
     }
 
     /// Derive a child key for a particular [`ChildNumber`].
-    pub fn derive_child(&self, child_number: ChildNumber) -> Result<Self> {
+    pub fn derive_child(&self, child_number: ChildNumber, hasher: Hasher) -> Result<Self> {
         let depth = self.attrs.depth.checked_add(1).ok_or(Error::Depth)?;
         let (tweak, chain_code) = self
             .private_key
@@ -103,7 +105,7 @@ where
         let private_key = self.private_key.derive_child(&tweak, child_number)?;
 
         let attrs = ExtendedKeyAttrs {
-            parent_fingerprint: self.private_key.public_key().fingerprint(),
+            parent_fingerprint: self.private_key.public_key().fingerprint(hasher),
             child_number,
             chain_code,
             depth,
@@ -162,16 +164,10 @@ where
     pub fn to_string(&self, prefix: Prefix) -> Result<Zeroizing<String>> {
         Ok(Zeroizing::new(self.to_extended_key(prefix)?.to_string()))
     }
-}
 
-impl<K> FromStr for ExtendedPrivateKey<K>
-where
-    K: BIP32PrivateKey,
-{
-    type Err = Error;
-
-    fn from_str(xpub: &str) -> Result<Self> {
-        ExtendedKey::from_str(xpub)?.try_into()
+    pub fn from_base58(xprv: &str, hasher: Hasher) -> Result<Self> {
+        let extended_key = decode_base58(xprv, hasher)?;
+        extended_key.try_into()
     }
 }
 
@@ -192,4 +188,105 @@ where
             Err(Error::Crypto)
         }
     }
+}
+
+/// Size of an extended key when deserialized into bytes from Base58.
+const BYTE_SIZE: usize = 78;
+
+/// Size of the checksum in a Base58Check-encoded extended key.
+const CHECKSUM_LEN: usize = 4;
+
+/// Maximum size of a Base58Check-encoded extended key in bytes.
+///
+/// Note that extended keys can also be 111-bytes.
+const MAX_BASE58_SIZE: usize = 112;
+
+/// Write a Base58-encoded key to the provided buffer, returning a `String`
+/// containing the serialized data.
+pub fn encode_base58<'a>(extended_key: &'a ExtendedKey, hasher: Hasher) -> Result<String> {
+    let mut buffer = [0u8; MAX_BASE58_SIZE];
+
+    let mut bytes = [0u8; BYTE_SIZE]; // with 4-byte checksum
+    bytes[..4].copy_from_slice(&extended_key.prefix.to_bytes());
+    bytes[4] = extended_key.attrs.depth;
+    bytes[5..9].copy_from_slice(&extended_key.attrs.parent_fingerprint);
+    bytes[9..13].copy_from_slice(&extended_key.attrs.child_number.to_bytes());
+    bytes[13..45].copy_from_slice(&extended_key.attrs.chain_code);
+    bytes[45..78].copy_from_slice(&extended_key.key_bytes);
+
+    let checksum = hasher.hash(&bytes);
+
+    let mut bytes_with_checksum = [0u8; BYTE_SIZE + CHECKSUM_LEN];
+    bytes_with_checksum[..BYTE_SIZE].copy_from_slice(&bytes);
+    bytes_with_checksum[78..].copy_from_slice(&checksum[..CHECKSUM_LEN]);
+    bytes.zeroize();
+
+    let base58_len = bs58::encode(&bytes_with_checksum).onto(buffer.as_mut())?;
+    bytes_with_checksum.zeroize();
+
+    String::from_utf8(buffer[..base58_len].to_vec()).map_err(|_| Error::Base58)
+}
+
+pub fn decode_base58(base58: &str, hasher: Hasher) -> Result<ExtendedKey> {
+    let mut bytes = [0u8; BYTE_SIZE + CHECKSUM_LEN]; // with 4-byte checksum
+    let decoded_len = bs58::decode(base58).onto(&mut bytes)?;
+
+    if decoded_len != BYTE_SIZE + CHECKSUM_LEN {
+        return Err(Error::Decode);
+    }
+
+    let checksum_index = decoded_len - CHECKSUM_LEN;
+
+    let expected_checksum = &bytes[checksum_index..decoded_len];
+
+    let hash = hasher.hash(&bytes[0..checksum_index]);
+    let (checksum, _) = hash.split_at(CHECKSUM_LEN);
+
+    if checksum != expected_checksum {
+        return Err(Error::Crypto);
+    }
+
+    let prefix = base58.get(..4).ok_or(Error::Decode).and_then(|chars| {
+        validate_prefix(chars)?;
+        let version = Version::from_be_bytes(bytes[..4].try_into()?);
+        Ok(Prefix::from_parts_unchecked(chars, version))
+    })?;
+
+    let depth = bytes[4];
+    let parent_fingerprint = bytes[5..9].try_into()?;
+    let child_number = ChildNumber::from_bytes(bytes[9..13].try_into()?);
+    let chain_code = bytes[13..45].try_into()?;
+    let key_bytes = bytes[45..78].try_into()?;
+    bytes.zeroize();
+
+    let attrs = ExtendedKeyAttrs {
+        depth,
+        parent_fingerprint,
+        child_number,
+        chain_code,
+    };
+
+    Ok(ExtendedKey {
+        prefix,
+        attrs,
+        key_bytes,
+    })
+}
+
+const fn validate_prefix(s: &str) -> Result<&str> {
+    if s.as_bytes().len() != Prefix::LENGTH {
+        return Err(Error::Decode);
+    }
+
+    let mut i = 0;
+
+    while i < Prefix::LENGTH {
+        if s.as_bytes()[i].is_ascii_alphabetic() {
+            i += 1;
+        } else {
+            return Err(Error::Decode);
+        }
+    }
+
+    Ok(s)
 }

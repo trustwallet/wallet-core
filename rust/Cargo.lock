@@ -383,6 +383,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bf88ba1141d185c399bee5288d850d63b8369520c1eafc32a0430b5b6c287bf4"
 dependencies = [
  "sha2",
+ "tinyvec",
 ]
 
 [[package]]
@@ -2062,11 +2063,13 @@ dependencies = [
  "aes",
  "bip32",
  "bip39",
+ "bs58 0.5.1",
  "cbc",
  "ctr",
  "ed25519-bip32",
  "pbkdf2",
  "salsa20",
+ "serde_json",
  "sha2",
  "tw_encoding",
  "tw_hash",

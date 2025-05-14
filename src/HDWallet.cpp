@@ -91,9 +91,9 @@ static TWHDNode* getMasterNode(const HDWallet<seedSize>& wallet, TWCurve curve) 
 }
 
 template <size_t seedSize>
-static TWHDNode* getNode(const HDWallet<seedSize>& wallet, TWCurve curve, const DerivationPath& derivationPath) {
+static TWHDNode* getNode(const HDWallet<seedSize>& wallet, TWCurve curve, const DerivationPath& derivationPath, TW::Hash::Hasher hasher) {
     auto node = getMasterNode<seedSize>(wallet, curve);
-    return TWHDNodeDeriveFromPath(node, derivationPath.string().c_str());
+    return TWHDNodeDeriveFromPath(node, derivationPath.string().c_str(), hasher);
 }
 
 template <std::size_t seedSize>
@@ -106,7 +106,7 @@ PrivateKey HDWallet<seedSize>::getMasterKey(TWCurve curve) const {
 template <std::size_t seedSize>
 PrivateKey HDWallet<seedSize>::getKeyByCurve(TWCurve curve, const DerivationPath& derivationPath) const {
     auto curveToUse = curve == TWCurveStarkex ? TWCurveSECP256k1 : curve;
-    auto node = getNode<seedSize>(*this, curveToUse, derivationPath);
+    auto node = getNode<seedSize>(*this, curveToUse, derivationPath, Hash::HasherSha256ripemd);
     auto privateKeyData = TWHDNodePrivateKeyData(node);
     auto data = Data(TWDataBytes(privateKeyData), TWDataBytes(privateKeyData) + TWDataSize(privateKeyData));
     auto privateKey = PrivateKey(data, curveToUse);
@@ -133,7 +133,7 @@ template <std::size_t seedSize>
 std::string HDWallet<seedSize>::getRootKey(TWCoinType coin, TWHDVersion version) const {
     const auto curve = TWCoinTypeCurve(coin);
     auto node = getMasterNode(*this, curve);
-    auto extendedPrivateKey = TWHDNodeExtendedPrivateKey(node, version);
+    auto extendedPrivateKey = TWHDNodeExtendedPrivateKey(node, version, TW::base58Hasher(coin));
     auto* bytes = TWStringUTF8Bytes(extendedPrivateKey);
     return {bytes};
 }
@@ -158,8 +158,9 @@ std::string HDWallet<seedSize>::getExtendedPrivateKeyAccount(TWPurpose purpose, 
     const auto curve = TWCoinTypeCurve(coin);
     const auto path = TW::derivationPath(coin, derivation);
     auto derivationPath = DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(path.coin(), true), DerivationPathIndex(account, true)});
-    auto node = getNode(*this, curve, derivationPath);
-    auto extendedPrivateKey = TWHDNodeExtendedPrivateKey(node, version);
+    auto node = getNode(*this, curve, derivationPath, TW::publicKeyHasher(coin));
+    auto privateKeyBytes = TWHDNodePrivateKeyData(node);
+    auto extendedPrivateKey = TWHDNodeExtendedPrivateKey(node, version, TW::base58Hasher(coin));
     auto* bytes = TWStringUTF8Bytes(extendedPrivateKey);
     return {bytes};
 }
@@ -173,8 +174,8 @@ std::string HDWallet<seedSize>::getExtendedPublicKeyAccount(TWPurpose purpose, T
     const auto curve = TWCoinTypeCurve(coin);
     const auto path = TW::derivationPath(coin, derivation);
     auto derivationPath = DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(path.coin(), true), DerivationPathIndex(account, true)});
-    auto node = getNode(*this, curve, derivationPath);
-    auto extendedPublicKey = TWHDNodeExtendedPublicKey(node, version);
+    auto node = getNode(*this, curve, derivationPath, TW::publicKeyHasher(coin));
+    auto extendedPublicKey = TWHDNodeExtendedPublicKey(node, version, TW::base58Hasher(coin));
     auto* bytes = TWStringUTF8Bytes(extendedPublicKey);
     return {bytes};
 }
@@ -182,31 +183,38 @@ std::string HDWallet<seedSize>::getExtendedPublicKeyAccount(TWPurpose purpose, T
 template <std::size_t seedSize>
 std::optional<PublicKey> HDWallet<seedSize>::getPublicKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path) {
     const auto curve = TW::curve(coin);
-    auto node = TWHDNodePublicCreateWithExtendedPublicKey(TWStringCreateWithUTF8Bytes(extended.c_str()), curve);
+    auto node = TWHDNodePublicCreateWithExtendedPublicKey(TWStringCreateWithUTF8Bytes(extended.c_str()), curve, TW::base58Hasher(coin));
     if (node == nullptr) {
         return {};
     }
     auto childPath = DerivationPath({DerivationPathIndex(path.change(), false), DerivationPathIndex(path.address(), false)});
-    auto childNode = TWHDNodePublicDeriveFromPath(node, childPath.string().c_str());
+    auto childNode = TWHDNodePublicDeriveFromPath(node, childPath.string().c_str(), TW::publicKeyHasher(coin));
     if (childNode == nullptr) {
         return {};
     }
 
     auto pubkeyData = TWHDNodePublicPublicKeyData(childNode);
     TWPublicKeyType keyType = TW::publicKeyType(coin);
-    auto pubkey = PublicKey(Data(TWDataBytes(pubkeyData), TWDataBytes(pubkeyData) + TWDataSize(pubkeyData)), keyType);
-    return pubkey;
+    if (keyType == TWPublicKeyTypeSECP256k1Extended) {
+        auto pubkey = PublicKey(Data(TWDataBytes(pubkeyData), TWDataBytes(pubkeyData) + TWDataSize(pubkeyData)), TWPublicKeyTypeSECP256k1);
+        return pubkey.extended();
+    } else if (keyType == TWPublicKeyTypeNIST256p1Extended) {
+        auto pubkey = PublicKey(Data(TWDataBytes(pubkeyData), TWDataBytes(pubkeyData) + TWDataSize(pubkeyData)), TWPublicKeyTypeNIST256p1);
+        return pubkey.extended();
+    } else {
+        return PublicKey(Data(TWDataBytes(pubkeyData), TWDataBytes(pubkeyData) + TWDataSize(pubkeyData)), keyType);
+    }
 }
 
 template <std::size_t seedSize>
 std::optional<PrivateKey> HDWallet<seedSize>::getPrivateKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path) {
     const auto curve = TW::curve(coin);
-    auto node = TWHDNodeCreateWithExtendedPrivateKey(TWStringCreateWithUTF8Bytes(extended.c_str()), curve);
+    auto node = TWHDNodeCreateWithExtendedPrivateKey(TWStringCreateWithUTF8Bytes(extended.c_str()), curve, TW::base58Hasher(coin));
     if (node == nullptr) {
         return {};
     }
     auto childPath = DerivationPath({DerivationPathIndex(path.change(), false), DerivationPathIndex(path.address(), false)});
-    auto childNode = TWHDNodeDeriveFromPath(node, childPath.string().c_str());
+    auto childNode = TWHDNodeDeriveFromPath(node, childPath.string().c_str(), TW::publicKeyHasher(coin));
     if (childNode == nullptr) {
         return {};
     }

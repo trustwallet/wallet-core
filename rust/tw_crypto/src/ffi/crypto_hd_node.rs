@@ -7,6 +7,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use crate::crypto_hd_node::hd_node::HDNode;
+use tw_hash::hasher::Hasher;
 use tw_keypair::tw::Curve;
 use tw_macros::tw_ffi;
 use tw_memory::ffi::{
@@ -51,12 +52,14 @@ pub unsafe extern "C" fn tw_hd_node_create_with_seed(
 ///
 /// \param extended_private_key *non-null* string.
 /// \param curve the curve to use.
+/// \param hasher the hasher to use.
 /// \return Nullable pointer to HDNode.
 #[tw_ffi(ty = constructor, class = TWHDNode, name = CreateWithExtendedPrivateKey)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_hd_node_create_with_extended_private_key(
     extended_private_key: Nonnull<TWString>,
     curve: u32,
+    hasher: u32,
 ) -> NullableMut<TWHDNode> {
     let extended_private_key_ref = try_or_else!(
         TWString::from_ptr_as_ref(extended_private_key),
@@ -65,7 +68,8 @@ pub unsafe extern "C" fn tw_hd_node_create_with_extended_private_key(
     let extended_private_key_str =
         try_or_else!(extended_private_key_ref.as_str(), std::ptr::null_mut);
     let curve = try_or_else!(Curve::from_raw(curve), std::ptr::null_mut);
-    HDNode::try_from(extended_private_key_str, curve)
+    let hasher = try_or_else!(Hasher::try_from(hasher), std::ptr::null_mut);
+    HDNode::try_from(extended_private_key_str, curve, hasher)
         .map(|hd_node| TWHDNode(hd_node).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
@@ -90,13 +94,15 @@ pub unsafe extern "C" fn tw_hd_node_delete(key: NonnullMut<TWHDNode>) {
 pub unsafe extern "C" fn tw_hd_node_derive_from_path(
     hd_node: Nonnull<TWHDNode>,
     path: Nonnull<TWString>,
+    hasher: u32,
 ) -> NullableMut<TWHDNode> {
     let hd_node_ref = try_or_else!(TWHDNode::from_ptr_as_ref(hd_node), std::ptr::null_mut);
     let path_ref = try_or_else!(TWString::from_ptr_as_ref(path), std::ptr::null_mut);
     let path_str = try_or_else!(path_ref.as_str(), std::ptr::null_mut);
+    let hasher = try_or_else!(Hasher::try_from(hasher), std::ptr::null_mut);
     hd_node_ref
         .0
-        .derive_from_path(&path_str)
+        .derive_from_path(&path_str, hasher)
         .map(|hd_node| TWHDNode(hd_node).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
@@ -181,11 +187,13 @@ pub unsafe extern "C" fn tw_hd_node_child_number(hd_node: Nonnull<TWHDNode>) -> 
 pub unsafe extern "C" fn tw_hd_node_extended_private_key(
     hd_node: Nonnull<TWHDNode>,
     version: u32,
+    hasher: u32,
 ) -> NonnullMut<TWString> {
+    let hasher = try_or_else!(Hasher::try_from(hasher), std::ptr::null_mut);
     let hd_node_ref = try_or_else!(TWHDNode::from_ptr_as_ref(hd_node), std::ptr::null_mut);
     hd_node_ref
         .0
-        .extended_private_key(version)
+        .extended_private_key(version, hasher)
         .map(|key| TWString::from(key).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
@@ -199,11 +207,13 @@ pub unsafe extern "C" fn tw_hd_node_extended_private_key(
 pub unsafe extern "C" fn tw_hd_node_extended_public_key(
     hd_node: Nonnull<TWHDNode>,
     version: u32,
+    hasher: u32,
 ) -> NonnullMut<TWString> {
+    let hasher = try_or_else!(Hasher::try_from(hasher), std::ptr::null_mut);
     let hd_node_ref = try_or_else!(TWHDNode::from_ptr_as_ref(hd_node), std::ptr::null_mut);
     hd_node_ref
         .0
-        .extended_public_key(version)
+        .extended_public_key(version, hasher)
         .map(|key| TWString::from(key).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
 }

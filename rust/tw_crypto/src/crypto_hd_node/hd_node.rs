@@ -7,12 +7,14 @@
 use std::str::FromStr;
 
 use bip32::{DerivationPath, Error, Prefix, Result};
+use tw_hash::hasher::Hasher;
 use tw_keypair::tw::Curve;
 
 use crate::crypto_hd_node::extended_key::bip32_private_key::BIP32PrivateKey;
 use crate::crypto_hd_node::extended_key::extended_private_key::ExtendedPrivateKey;
 
 use super::ed25519::cardano::cardano_staking_derivation_path;
+use super::extended_key::extended_private_key::encode_base58;
 
 pub type XPrvSecp256k1 = ExtendedPrivateKey<tw_keypair::ecdsa::secp256k1::PrivateKey>;
 pub type XPrvNist256p1 = ExtendedPrivateKey<tw_keypair::ecdsa::nist256p1::PrivateKey>;
@@ -67,37 +69,37 @@ impl HDNode {
         }
     }
 
-    pub fn derive_from_path(&self, path: &str) -> Result<Self> {
+    pub fn derive_from_path(&self, path: &str, hasher: Hasher) -> Result<Self> {
         let path = DerivationPath::from_str(path).map_err(|_| Error::Crypto)?;
         match self {
             HDNode::Secp256k1(xprv) => {
-                let xprv = xprv.derive_from_path(&path)?;
+                let xprv = xprv.derive_from_path(&path, hasher)?;
                 Ok(HDNode::Secp256k1(xprv))
             },
             HDNode::Nist256p1(xprv) => {
-                let xprv = xprv.derive_from_path(&path)?;
+                let xprv = xprv.derive_from_path(&path, hasher)?;
                 Ok(HDNode::Nist256p1(xprv))
             },
             HDNode::Ed25519(xprv) => {
-                let xprv = xprv.derive_from_path(&path)?;
+                let xprv = xprv.derive_from_path(&path, hasher)?;
                 Ok(HDNode::Ed25519(xprv))
             },
             HDNode::Ed25519Blake2bNano(xprv) => {
-                let xprv = xprv.derive_from_path(&path)?;
+                let xprv = xprv.derive_from_path(&path, hasher)?;
                 Ok(HDNode::Ed25519Blake2bNano(xprv))
             },
             HDNode::Curve25519Waves(xprv) => {
-                let xprv = xprv.derive_from_path(&path)?;
+                let xprv = xprv.derive_from_path(&path, hasher)?;
                 Ok(HDNode::Curve25519Waves(xprv))
             },
             HDNode::Ed25519ExtendedCardano(xprv, _) => {
-                let xprv1 = xprv.derive_from_path(&path)?;
+                let xprv1 = xprv.derive_from_path(&path, hasher)?;
                 let staking_path = cardano_staking_derivation_path(&path)?;
-                let xprv2 = xprv.derive_from_path(&staking_path)?;
+                let xprv2 = xprv.derive_from_path(&staking_path, hasher)?;
                 Ok(HDNode::Ed25519ExtendedCardano(xprv1, Some(xprv2)))
             },
             HDNode::ZilliqaSchnorr(xprv) => {
-                let xprv = xprv.derive_from_path(&path)?;
+                let xprv = xprv.derive_from_path(&path, hasher)?;
                 Ok(HDNode::ZilliqaSchnorr(xprv))
             },
         }
@@ -175,58 +177,52 @@ impl HDNode {
         }
     }
 
-    pub fn extended_private_key(&self, version: u32) -> Result<String> {
+    pub fn extended_private_key(&self, version: u32, hasher: Hasher) -> Result<String> {
         let prefix = Prefix::try_from(version).map_err(|_| Error::Crypto)?;
-        match self {
-            HDNode::Secp256k1(xprv) => Ok(xprv.to_extended_key(prefix)?.to_string()),
-            HDNode::Nist256p1(xprv) => Ok(xprv.to_extended_key(prefix)?.to_string()),
-            HDNode::Ed25519(xprv) => Ok(xprv.to_extended_key(prefix)?.to_string()),
-            HDNode::Ed25519Blake2bNano(xprv) => Ok(xprv.to_extended_key(prefix)?.to_string()),
-            HDNode::Curve25519Waves(xprv) => Ok(xprv.to_extended_key(prefix)?.to_string()),
-            HDNode::Ed25519ExtendedCardano(xprv, _) => {
-                Ok(xprv.to_extended_key(prefix)?.to_string())
-            },
-            HDNode::ZilliqaSchnorr(xprv) => Ok(xprv.to_extended_key(prefix)?.to_string()),
-        }
+        let extended_key = match self {
+            HDNode::Secp256k1(xprv) => xprv.to_extended_key(prefix)?,
+            HDNode::Nist256p1(xprv) => xprv.to_extended_key(prefix)?,
+            HDNode::Ed25519(xprv) => xprv.to_extended_key(prefix)?,
+            HDNode::Ed25519Blake2bNano(xprv) => xprv.to_extended_key(prefix)?,
+            HDNode::Curve25519Waves(xprv) => xprv.to_extended_key(prefix)?,
+            HDNode::Ed25519ExtendedCardano(xprv, _) => xprv.to_extended_key(prefix)?,
+            HDNode::ZilliqaSchnorr(xprv) => xprv.to_extended_key(prefix)?,
+        };
+        encode_base58(&extended_key, hasher)
     }
 
-    pub fn extended_public_key(&self, version: u32) -> Result<String> {
+    pub fn extended_public_key(&self, version: u32, hasher: Hasher) -> Result<String> {
         let prefix = Prefix::try_from(version).map_err(|_| Error::Crypto)?;
-        match self {
-            HDNode::Secp256k1(xprv) => Ok(xprv.public_key().to_extended_key(prefix).to_string()),
-            HDNode::Nist256p1(xprv) => Ok(xprv.public_key().to_extended_key(prefix).to_string()),
-            HDNode::Ed25519(xprv) => Ok(xprv.public_key().to_extended_key(prefix).to_string()),
-            HDNode::Ed25519Blake2bNano(xprv) => {
-                Ok(xprv.public_key().to_extended_key(prefix).to_string())
-            },
-            HDNode::Curve25519Waves(xprv) => {
-                Ok(xprv.public_key().to_extended_key(prefix).to_string())
-            },
-            HDNode::Ed25519ExtendedCardano(xprv, _) => {
-                Ok(xprv.public_key().to_extended_key(prefix).to_string())
-            },
-            HDNode::ZilliqaSchnorr(xprv) => {
-                Ok(xprv.public_key().to_extended_key(prefix).to_string())
-            },
-        }
+        let extended_key = match self {
+            HDNode::Secp256k1(xprv) => xprv.public_key().to_extended_key(prefix),
+            HDNode::Nist256p1(xprv) => xprv.public_key().to_extended_key(prefix),
+            HDNode::Ed25519(xprv) => xprv.public_key().to_extended_key(prefix),
+            HDNode::Ed25519Blake2bNano(xprv) => xprv.public_key().to_extended_key(prefix),
+            HDNode::Curve25519Waves(xprv) => xprv.public_key().to_extended_key(prefix),
+            HDNode::Ed25519ExtendedCardano(xprv, _) => xprv.public_key().to_extended_key(prefix),
+            HDNode::ZilliqaSchnorr(xprv) => xprv.public_key().to_extended_key(prefix),
+        };
+        encode_base58(&extended_key, hasher)
     }
 
-    pub fn try_from(s: &str, curve: Curve) -> Result<Self> {
+    pub fn try_from(s: &str, curve: Curve, hasher: Hasher) -> Result<Self> {
         match curve {
-            Curve::Secp256k1 => Ok(HDNode::Secp256k1(XPrvSecp256k1::from_str(s)?)),
-            Curve::Nist256p1 => Ok(HDNode::Nist256p1(XPrvNist256p1::from_str(s)?)),
-            Curve::Ed25519 => Ok(HDNode::Ed25519(XPrvEd25519::from_str(s)?)),
+            Curve::Secp256k1 => Ok(HDNode::Secp256k1(XPrvSecp256k1::from_base58(s, hasher)?)),
+            Curve::Nist256p1 => Ok(HDNode::Nist256p1(XPrvNist256p1::from_base58(s, hasher)?)),
+            Curve::Ed25519 => Ok(HDNode::Ed25519(XPrvEd25519::from_base58(s, hasher)?)),
             Curve::Ed25519Blake2bNano => Ok(HDNode::Ed25519Blake2bNano(
-                XPrvEd25519Blake2bNano::from_str(s)?,
+                XPrvEd25519Blake2bNano::from_base58(s, hasher)?,
             )),
-            Curve::Curve25519Waves => {
-                Ok(HDNode::Curve25519Waves(XPrvCurve25519Waves::from_str(s)?))
-            },
+            Curve::Curve25519Waves => Ok(HDNode::Curve25519Waves(
+                XPrvCurve25519Waves::from_base58(s, hasher)?,
+            )),
             Curve::Ed25519ExtendedCardano => Ok(HDNode::Ed25519ExtendedCardano(
-                XPrvCardano::from_str(s)?,
+                XPrvCardano::from_base58(s, hasher)?,
                 None,
             )),
-            Curve::ZilliqaSchnorr => Ok(HDNode::ZilliqaSchnorr(XPrvZilliqaSchnorr::from_str(s)?)),
+            Curve::ZilliqaSchnorr => Ok(HDNode::ZilliqaSchnorr(XPrvZilliqaSchnorr::from_base58(
+                s, hasher,
+            )?)),
             _ => Err(Error::Crypto),
         }
     }

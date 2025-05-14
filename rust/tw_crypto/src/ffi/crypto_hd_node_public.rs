@@ -7,6 +7,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use crate::crypto_hd_node::hd_node_public::HDNodePublic;
+use tw_hash::hasher::Hasher;
 use tw_keypair::tw::Curve;
 use tw_macros::tw_ffi;
 use tw_memory::ffi::{
@@ -28,12 +29,14 @@ impl AsRef<HDNodePublic> for TWHDNodePublic {
 ///
 /// \param extended_public_key *non-null* string.
 /// \param curve the curve to use.
+/// \param hasher the hasher to use.
 /// \return Nullable pointer to HDNodePublic.
 #[tw_ffi(ty = constructor, class = TWHDNodePublic, name = CreateWithExtendedPublicKey)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_hd_node_public_create_with_extended_public_key(
     extended_public_key: Nonnull<TWString>,
     curve: u32,
+    hasher: u32,
 ) -> NullableMut<TWHDNodePublic> {
     let extended_public_key_ref = try_or_else!(
         TWString::from_ptr_as_ref(extended_public_key),
@@ -42,7 +45,8 @@ pub unsafe extern "C" fn tw_hd_node_public_create_with_extended_public_key(
     let extended_public_key_str =
         try_or_else!(extended_public_key_ref.as_str(), std::ptr::null_mut);
     let curve = try_or_else!(Curve::from_raw(curve), std::ptr::null_mut);
-    HDNodePublic::try_from(extended_public_key_str, curve)
+    let hasher = try_or_else!(Hasher::try_from(hasher), std::ptr::null_mut);
+    HDNodePublic::try_from(extended_public_key_str, curve, hasher)
         .map(|hd_node| TWHDNodePublic(hd_node).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
@@ -67,13 +71,15 @@ pub unsafe extern "C" fn tw_hd_node_public_delete(key: NonnullMut<TWHDNodePublic
 pub unsafe extern "C" fn tw_hd_node_public_derive_from_path(
     hd_node: Nonnull<TWHDNodePublic>,
     path: Nonnull<TWString>,
+    hasher: u32,
 ) -> NullableMut<TWHDNodePublic> {
     let hd_node_ref = try_or_else!(TWHDNodePublic::from_ptr_as_ref(hd_node), std::ptr::null_mut);
     let path_ref = try_or_else!(TWString::from_ptr_as_ref(path), std::ptr::null_mut);
     let path_str = try_or_else!(path_ref.as_str(), std::ptr::null_mut);
+    let hasher = try_or_else!(Hasher::try_from(hasher), std::ptr::null_mut);
     hd_node_ref
         .0
-        .derive_from_path(path_str)
+        .derive_from_path(path_str, hasher)
         .map(|hd_node| TWHDNodePublic(hd_node).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
 }

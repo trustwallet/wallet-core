@@ -2,12 +2,13 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::blake::blake_256;
+use crate::blake::{blake_256, blake256_d};
+use crate::groestl::groestl_512d;
 use crate::ripemd::{blake256_ripemd, sha256_ripemd};
 use crate::sha2::{sha256, sha256_d};
 use crate::sha3::keccak256;
 use crate::{H160, H256};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use tw_memory::Data;
 
 #[macro_export]
@@ -81,7 +82,7 @@ pub trait StatefulHasher {
 ///
 /// Add hash types if necessary. For example, when add a new hasher to `registry.json`,
 /// otherwise use hash functions directly.
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum Hasher {
     #[serde(rename = "sha256")]
     Sha256,
@@ -98,6 +99,10 @@ pub enum Hasher {
     /// ripemd hash of the BLAKE256 hash
     #[serde(rename = "blake256ripemd")]
     Blake256ripemd,
+    #[serde(rename = "blake256d")]
+    Blake256d,
+    #[serde(rename = "groestl512d")]
+    Groestl512d,
     #[serde(rename = "tapsighash")]
     TapSighash,
 }
@@ -111,6 +116,8 @@ impl StatefulHasher for Hasher {
             Hasher::Sha256ripemd => sha256_ripemd(data),
             Hasher::Blake256 => blake_256(data),
             Hasher::Blake256ripemd => blake256_ripemd(data),
+            Hasher::Blake256d => blake256_d(data),
+            Hasher::Groestl512d => groestl_512d(data),
             Hasher::TapSighash => tapsighash(data),
         }
     }
@@ -118,9 +125,68 @@ impl StatefulHasher for Hasher {
     /// Returns a corresponding hash len.
     fn hash_len(&self) -> usize {
         match self {
-            Hasher::Sha256 | Hasher::Keccak256 | Hasher::Sha256d | Hasher::Blake256 => H256::len(),
+            Hasher::Sha256 | Hasher::Keccak256 | Hasher::Sha256d | Hasher::Blake256 | Hasher::Blake256d => H256::len(),
             Hasher::Sha256ripemd | Hasher::Blake256ripemd => H160::len(),
+            Hasher::Groestl512d => H256::len(),
             Hasher::TapSighash => H256::len(),
         }
     }
 }
+
+impl TryFrom<u32> for Hasher {
+    type Error = String;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        let hasher = match value {
+            // 0 => Hasher::Sha1, // SHA1
+            1 => Hasher::Sha256, // SHA256
+            // 2 => Hasher::Sha512, // SHA512
+            // 3 => Hasher::Sha512_256, // SHA512/256
+            4 => Hasher::Keccak256, // Keccak SHA256
+            // 5 => Hasher::Keccak512, // Keccak SHA512
+            // 6 => Hasher::Sha3_256, // version 3 SHA256
+            // 7 => Hasher::Sha3_512, // version 3 SHA512
+            // 8 => Hasher::Ripemd, // RIPEMD160
+            // 9 => Hasher::Blake2b, // Blake2b
+            10 => Hasher::Blake256, // Blake256
+            // 11 => Hasher::Groestl512, // Groestl 512
+            12 => Hasher::Sha256d, // SHA256 hash of the SHA256 hash
+            13 => Hasher::Sha256ripemd, // ripemd hash of the SHA256 hash
+            // 14 => Hasher::Sha3_256ripemd, // ripemd hash of the SHA256 hash
+            15 => Hasher::Blake256d, // Blake256 hash of the Blake256 hash
+            16 => Hasher::Blake256ripemd, // ripemd hash of the Blake256 hash
+            17 => Hasher::Groestl512d, // Groestl512 hash of the Groestl512 hash
+            18 => Hasher::TapSighash, // TapSighash
+            _ => return Err("Invalid hasher value".to_string()),
+        };
+
+        Ok(hasher)
+    }
+}
+
+impl From<Hasher> for u32 {
+    fn from(hasher: Hasher) -> Self {
+        match hasher {
+            // Hasher::Sha1 => 0, // SHA1
+            Hasher::Sha256 => 1, // SHA256
+            // Hasher::Sha512 => 2, // SHA512
+            // Hasher::Sha512_256 => 3, // SHA512/256
+            Hasher::Keccak256 => 4, // Keccak SHA256
+            // Hasher::Keccak512 => 5, // Keccak SHA512
+            // Hasher::Sha3_256 => 6, // version 3 SHA256
+            // Hasher::Sha3_512 => 7, // version 3 SHA512
+            // Hasher::Ripemd => 8, // RIPEMD160
+            // Hasher::Blake2b => 9, // Blake2b
+            Hasher::Blake256 => 10, // Blake256
+            // Hasher::Groestl512 => 11, // Groestl 512
+            Hasher::Sha256d => 12, // SHA256 hash of the SHA256 hash
+            Hasher::Sha256ripemd => 13, // ripemd hash of the SHA256 hash
+            // Hasher::Sha3_256ripemd => 14, // ripemd hash of the SHA256 hash
+            Hasher::Blake256d => 15, // Blake256 hash of the Blake256 hash
+            Hasher::Blake256ripemd => 16, // ripemd hash of the Blake256 hash
+            Hasher::Groestl512d => 17, // Groestl512 hash of the Groestl512 hash
+            Hasher::TapSighash => 18, // TapSighash
+        }
+    }
+}
+

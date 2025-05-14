@@ -4,8 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use std::str::FromStr;
-
 use bip32::{
     ChildNumber, DerivationPath, Error, ExtendedKey, ExtendedKeyAttrs, KeyFingerprint, Prefix,
     Result,
@@ -16,7 +14,8 @@ use crate::crypto_hd_node::extended_key::{
     extended_private_key::ExtendedPrivateKey,
 };
 
-use super::hd_version::HDVersion;
+use super::{extended_private_key::decode_base58, hd_version::HDVersion};
+use tw_hash::hasher::Hasher;
 
 /// Extended public keys derived using BIP32.
 ///
@@ -53,8 +52,8 @@ where
     }
 
     /// Compute a 4-byte key fingerprint for this extended public key.
-    pub fn fingerprint(&self) -> KeyFingerprint {
-        self.public_key().fingerprint()
+    pub fn fingerprint(&self, hasher: Hasher) -> KeyFingerprint {
+        self.public_key().fingerprint(hasher)
     }
 
     /// Serialize the raw public key as a byte array (e.g. SEC1-encoded).
@@ -71,14 +70,14 @@ where
         }
     }
 
-    pub fn derive_from_path(&self, path: &DerivationPath) -> Result<Self> {
+    pub fn derive_from_path(&self, path: &DerivationPath, hasher: Hasher) -> Result<Self> {
         path.iter().fold(Ok(self.clone()), |maybe_key, child_num| {
-            maybe_key.and_then(|key| key.derive_child(child_num))
+            maybe_key.and_then(|key| key.derive_child(child_num, hasher))
         })
     }
 
     /// Derive a child key for a particular [`ChildNumber`].
-    pub fn derive_child(&self, child_number: ChildNumber) -> Result<Self> {
+    pub fn derive_child(&self, child_number: ChildNumber, hasher: Hasher) -> Result<Self> {
         let depth = self.attrs.depth.checked_add(1).ok_or(Error::Depth)?;
         let (tweak, chain_code) = self
             .public_key
@@ -96,13 +95,18 @@ where
         let public_key = self.public_key.derive_child(&tweak, child_number)?;
 
         let attrs = ExtendedKeyAttrs {
-            parent_fingerprint: self.public_key.fingerprint(),
+            parent_fingerprint: self.public_key.fingerprint(hasher),
             child_number,
             chain_code,
             depth,
         };
 
         Ok(ExtendedPublicKey { public_key, attrs })
+    }
+
+    pub fn from_base58(xpub: &str, hasher: Hasher) -> Result<Self> {
+        let extended_key = decode_base58(xpub, hasher)?;
+        extended_key.try_into()
     }
 }
 
@@ -115,17 +119,6 @@ where
             public_key: xprv.private_key().public_key(),
             attrs: xprv.attrs().clone(),
         }
-    }
-}
-
-impl<K> FromStr for ExtendedPublicKey<K>
-where
-    K: BIP32PublicKey,
-{
-    type Err = Error;
-
-    fn from_str(xpub: &str) -> Result<Self> {
-        ExtendedKey::from_str(xpub)?.try_into()
     }
 }
 

@@ -7,6 +7,7 @@
 use bip32::{DerivationPath, Prefix, XPub};
 use std::str::FromStr;
 use tw_encoding::hex;
+use tw_hash::hasher::Hasher;
 
 use tw_crypto::crypto_hd_node::{
     extended_key::bip32_private_key::BIP32PrivateKey,
@@ -34,13 +35,19 @@ fn test_extended_private_key() {
     let xprv = XPrvSecp256k1::new(&seed).unwrap();
 
     let child_xprv = xprv
-        .derive_from_path(&DerivationPath::from_str("m/44'/0'/0'").unwrap())
+        .derive_from_path(
+            &DerivationPath::from_str("m/44'/0'/0'").unwrap(),
+            Hasher::Sha256ripemd,
+        )
         .unwrap();
     let child_extended_key = child_xprv.to_extended_key(Prefix::ZPRV).unwrap();
     assert_eq!(child_extended_key.to_string(), "zprvAcwsTZNaY1f7rfwsy5GseSDStYBrxwtsBZDkb3iyuQUs4NF6n58BuH7Xj54RuaSCWtU5CiQzuYQgFgqr1HokgKcVAeGeXokhJUAJeP3VmvY");
 
     let child_xprv = xprv
-        .derive_from_path(&DerivationPath::from_str("m/44'/0'/1'").unwrap())
+        .derive_from_path(
+            &DerivationPath::from_str("m/44'/0'/1'").unwrap(),
+            Hasher::Sha256ripemd,
+        )
         .unwrap();
     let child_extended_key = child_xprv.to_extended_key(Prefix::ZPRV).unwrap();
     assert_eq!(child_extended_key.to_string(), "zprvAcwsTZNaY1f7sifgNNgdNa4P9mPtyg3zRVgwkx2qF9Sn7F255MzP6Zyumn6bgV5xuoS8ZrDvjzE7APcFSacXdzFYpGvyybb1bnAoh5nHxpn");
@@ -48,11 +55,14 @@ fn test_extended_private_key() {
 
 #[test]
 fn test_extended_private_key_mtpv() {
-    let xprv = XPrvSecp256k1::from_str("Mtpv7SkyM349Svcf1WiRtB5hC91ZZkVsGuv3kz1V7tThGxBFBzBLFnw6LpaSvwpHHuy8dAfMBqpBvaSAHzbffvhj2TwfojQxM7Ppm3CzW67AFL5").unwrap();
+    let xprv = XPrvSecp256k1::from_base58("Mtpv7SkyM349Svcf1WiRtB5hC91ZZkVsGuv3kz1V7tThGxBFBzBLFnw6LpaSvwpHHuy8dAfMBqpBvaSAHzbffvhj2TwfojQxM7Ppm3CzW67AFL5", Hasher::Sha256d).unwrap();
 
     let path = "m/0/4";
     let child_xprv = xprv
-        .derive_from_path(&DerivationPath::from_str(path).unwrap())
+        .derive_from_path(
+            &DerivationPath::from_str(path).unwrap(),
+            Hasher::Sha256ripemd,
+        )
         .unwrap();
 
     let public_key = child_xprv.public_key();
@@ -68,13 +78,19 @@ fn test_extended_public_key() {
     let xprv = XPrvSecp256k1::new(&seed).unwrap();
 
     let child_xprv = xprv
-        .derive_from_path(&DerivationPath::from_str("m/44'/0'/0'").unwrap())
+        .derive_from_path(
+            &DerivationPath::from_str("m/44'/0'/0'").unwrap(),
+            Hasher::Sha256ripemd,
+        )
         .unwrap();
     let child_extended_key = child_xprv.public_key().to_extended_key(Prefix::ZPUB);
     assert_eq!(child_extended_key.to_string(), "zpub6qwDs4uUNPDR5A2M56ot1aABSa2MNQciYn9MPS8bTk1qwAaFKcSST5S1aLidvPp9twqpaumG7vikR2vHhBXjp5oGgHyMvWK3AtUkfeEgyns");
 
     let child_xprv = xprv
-        .derive_from_path(&DerivationPath::from_str("m/44'/0'/1'").unwrap())
+        .derive_from_path(
+            &DerivationPath::from_str("m/44'/0'/1'").unwrap(),
+            Hasher::Sha256ripemd,
+        )
         .unwrap();
     let child_extended_key = child_xprv.public_key().to_extended_key(Prefix::ZPUB);
     assert_eq!(child_extended_key.to_string(), "zpub6qwDs4uUNPDR6Ck9UQDdji17hoEPP8mqnicYZLSSoUykz3MDcuJdeNJPd3BozqEafeLZkegWqzAvkgA4JZZ5tTN2rDpGKfk54essyfx1eZP");
@@ -90,7 +106,7 @@ fn test_get_key_by_curve() {
     {
         let xprv = XPrvSecp256k1::new(&seed).unwrap();
         let path = DerivationPath::from_str(deriv_path).unwrap();
-        let xprv = xprv.derive_from_path(&path).unwrap();
+        let xprv = xprv.derive_from_path(&path, Hasher::Sha256ripemd).unwrap();
         let private_key = xprv.private_key().to_bytes();
         assert_eq!(
             hex::encode(private_key, false),
@@ -102,7 +118,7 @@ fn test_get_key_by_curve() {
     {
         let xprv = XPrvNist256p1::new(&seed).unwrap();
         let path = DerivationPath::from_str(deriv_path).unwrap();
-        let xprv = xprv.derive_from_path(&path).unwrap();
+        let xprv = xprv.derive_from_path(&path, Hasher::Sha256ripemd).unwrap();
         let private_key = xprv.private_key().to_bytes();
         assert_eq!(
             hex::encode(private_key, false),
@@ -129,14 +145,18 @@ fn test_derive_xpub_pub_vs_priv_pub() {
 
     // -> privateKey -> publicKey
     {
-        let xprv1 = xprv.derive_from_path(&deriv_path1).unwrap();
+        let xprv1 = xprv
+            .derive_from_path(&deriv_path1, Hasher::Sha256ripemd)
+            .unwrap();
         assert_eq!(
             hex::encode(xprv1.public_key().to_bytes(), false),
             expected_public_key1
         );
     }
     {
-        let xprv2 = xprv.derive_from_path(&deriv_path2).unwrap();
+        let xprv2 = xprv
+            .derive_from_path(&deriv_path2, Hasher::Sha256ripemd)
+            .unwrap();
         assert_eq!(
             hex::encode(xprv2.public_key().to_bytes(), false),
             expected_public_key2
@@ -145,7 +165,9 @@ fn test_derive_xpub_pub_vs_priv_pub() {
 
     // zpub -> publicKey
     let account_path = DerivationPath::from_str("m/84'/0'/0'").unwrap();
-    let account_xprv = xprv.derive_from_path(&account_path).unwrap();
+    let account_xprv = xprv
+        .derive_from_path(&account_path, Hasher::Sha256ripemd)
+        .unwrap();
     let zpub = account_xprv
         .public_key()
         .to_extended_key(Prefix::ZPUB)
@@ -184,9 +206,9 @@ fn test_derive_xpub_pub_vs_priv_pub() {
 
     let deriv_path1 = DerivationPath::from_str("m/0/0").unwrap();
     {
-        let private_key1 = XPrvSecp256k1::from_str(&zpriv).unwrap();
+        let private_key1 = XPrvSecp256k1::from_base58(&zpriv, Hasher::Sha256d).unwrap();
         let private_key1 = deriv_path1.iter().fold(private_key1, |key, child_num| {
-            key.derive_child(child_num).unwrap() //_or(key)
+            key.derive_child(child_num, Hasher::Sha256ripemd).unwrap() //_or(key)
         });
         assert_eq!(
             hex::encode(private_key1.public_key().to_bytes(), false),
@@ -196,9 +218,9 @@ fn test_derive_xpub_pub_vs_priv_pub() {
 
     let deriv_path2 = DerivationPath::from_str("m/0/2").unwrap();
     {
-        let private_key2 = XPrvSecp256k1::from_str(&zpriv).unwrap();
+        let private_key2 = XPrvSecp256k1::from_base58(&zpriv, Hasher::Sha256d).unwrap();
         let private_key2 = deriv_path2.iter().fold(private_key2, |key, child_num| {
-            key.derive_child(child_num).unwrap() //_or(key)
+            key.derive_child(child_num, Hasher::Sha256ripemd).unwrap() //_or(key)
         });
         assert_eq!(
             hex::encode(private_key2.public_key().to_bytes(), false),
@@ -214,7 +236,9 @@ fn test_aptos_key() {
     let xprv = XPrvEd25519::new(&seed).unwrap();
 
     let deriv_path = DerivationPath::from_str("m/44'/637'/0'/0'/0'").unwrap();
-    let xprv = xprv.derive_from_path(&deriv_path).unwrap();
+    let xprv = xprv
+        .derive_from_path(&deriv_path, Hasher::Sha256ripemd)
+        .unwrap();
     assert_eq!(
         hex::encode(xprv.private_key().to_bytes(), false),
         "7f2634c0e2414a621e96e39c41d09021700cee12ee43328ed094c5580cd0bd6f"
@@ -234,7 +258,9 @@ fn test_cardano_key() {
     let xprv = XPrvCardano::new(&entropy).unwrap();
 
     let deriv_path = DerivationPath::from_str("m/44'/637'/0'/0'/0").unwrap();
-    let xprv = xprv.derive_from_path(&deriv_path).unwrap();
+    let xprv = xprv
+        .derive_from_path(&deriv_path, Hasher::Sha256ripemd)
+        .unwrap();
     assert_eq!(
         hex::encode(xprv.private_key().to_bytes(), false),
         "680113743091be93bcdab47ec2f6a2e3c710812f3f051ebb84ac70aa15a14952c8d771b5dd2726467412ed62c37d6c819c36d1dba83991a8585c31bb4790f2cde5232f0770ce99adfc7e6ec1a5270f52d6435c30ceb51415258d1eaccd28b5fe"
@@ -263,7 +289,9 @@ fn test_nano_key() {
     );
 
     let deriv_path = DerivationPath::from_str("m/44'/637'/0'/0'").unwrap();
-    let xprv = xprv.derive_from_path(&deriv_path).unwrap();
+    let xprv = xprv
+        .derive_from_path(&deriv_path, Hasher::Sha256ripemd)
+        .unwrap();
     assert_eq!(
         hex::encode(xprv.private_key().to_bytes(), false),
         "ffd43b8b4273e69a8278b9dbb4ac724134a878adc82927e503145c935b432959"
@@ -308,7 +336,9 @@ fn test_zilliqa_schnorr_key() {
     );
 
     let deriv_path = DerivationPath::from_str("m/44'/637'/0'/0'/0").unwrap();
-    let xprv = xprv.derive_from_path(&deriv_path).unwrap();
+    let xprv = xprv
+        .derive_from_path(&deriv_path, Hasher::Sha256ripemd)
+        .unwrap();
     assert_eq!(
         hex::encode(xprv.private_key().to_bytes(), false),
         "4fc45a32e714677a8d3fbed23a8e1afbba8decbf60d479149129342dc894d2a4"

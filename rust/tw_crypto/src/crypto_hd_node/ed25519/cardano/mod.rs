@@ -97,7 +97,7 @@ pub fn cardano_staking_derivation_path(path: &DerivationPath) -> Result<Derivati
             if item.index() > 1 {
                 return Err(Error::Crypto);
             }
-            staking_path.push(ChildNumber::new(2, true)?);
+            staking_path.push(ChildNumber::new(2, false)?);
         } else if i == 4 {
             staking_path.push(ChildNumber::new(0, false)?);
         } else {

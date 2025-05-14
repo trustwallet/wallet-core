@@ -10,12 +10,13 @@ use tw_crypto::ffi::crypto_hd_node_public::{
     tw_hd_node_public_public_key_data,
 };
 use tw_encoding::hex;
+use tw_hash::hasher::Hasher;
 use tw_keypair::tw::Curve;
 use tw_memory::ffi::{tw_data::TWData, RawPtrTrait};
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
 
 #[test]
-fn test_public_key_from_xprv() {
+fn test_public_key_from_zpub() {
     use tw_keypair::ecdsa::secp256k1::PublicKey;
 
     let zpub = "zpub6rNUNtxSa9Gxvm4Bdxf1MPMwrvkzwDx6vP96Hkzw3jiQKdg3fhXBStxjn12YixQB8h88B3RMSRscRstf9AEVaYr3MAqVBEWBDuEJU4PGaT9";
@@ -26,13 +27,18 @@ fn test_public_key_from_xprv() {
         tw_hd_node_public_create_with_extended_public_key(
             zpub_string.ptr(),
             Curve::Secp256k1.to_raw(),
+            Hasher::Sha256d.into(),
         )
     };
 
     let path = "m/0/0";
     let path_string = TWStringHelper::create(path);
-    let derived_node_ptr =
-        unsafe { tw_hd_node_public_derive_from_path(hd_node_ptr, path_string.ptr()) };
+
+    let hasher = Hasher::Sha256ripemd;
+
+    let derived_node_ptr = unsafe {
+        tw_hd_node_public_derive_from_path(hd_node_ptr, path_string.ptr(), hasher.into())
+    };
 
     let public_key_data = unsafe { tw_hd_node_public_public_key_data(derived_node_ptr) };
     assert!(!public_key_data.is_null());
@@ -44,5 +50,77 @@ fn test_public_key_from_xprv() {
     assert_eq!(
         public_key_hex,
         "02df9ef2a7a5552765178b181e1e1afdefc7849985c7dfe9647706dd4fa40df6ac"
+    );
+}
+
+#[test]
+fn test_public_key_from_dpub() {
+    use tw_keypair::ecdsa::secp256k1::PublicKey;
+
+    let zpub = "dpubZFUmm9oh5zmQkR2Tr2AXS4tCkTWg4B27SpCPFkapZrrAqgU1EwgEFgrmi6EnLGXhak86yDHhXPxFAnGU58W5S4e8NCKG1ASUVaxwRqqNdfP";
+    let zpub_string = TWStringHelper::create(zpub);
+
+    // Create HDNode from extended private key
+    let hd_node_ptr = unsafe {
+        tw_hd_node_public_create_with_extended_public_key(
+            zpub_string.ptr(),
+            Curve::Secp256k1.to_raw(),
+            Hasher::Blake256d.into(),
+        )
+    };
+
+    let path = "m/0/0";
+    let path_string = TWStringHelper::create(path);
+
+    let hasher = Hasher::Blake256ripemd;
+
+    let derived_node_ptr = unsafe {
+        tw_hd_node_public_derive_from_path(hd_node_ptr, path_string.ptr(), hasher.into())
+    };
+
+    let public_key_data = unsafe { tw_hd_node_public_public_key_data(derived_node_ptr) };
+    assert!(!public_key_data.is_null());
+
+    let public_key_bytes = unsafe { TWData::from_ptr_as_ref(public_key_data).unwrap().to_vec() };
+    let public_key = PublicKey::try_from(public_key_bytes.as_slice()).unwrap();
+
+    let public_key_hex = hex::encode(public_key.to_bytes(), false);
+    assert_eq!(
+        public_key_hex,
+        "035328794a9392d6618c0f8071d2ba25fecef85230d916c2ef17f578af70483103"
+    );
+}
+
+#[test]
+fn test_public_key_from_extended_ethereum() {
+    let xpub = "xpub6C7LtZJgtz1BKXG9mExKUxYvX7HSF38UMMmGbpqNQw3DfYwAw8E6sH7VSVxFipvEEm2afSqTjoRgcLmycXX4zfxCWJ4HY73a9KdgvfHEQGB";
+    let xpub_string = TWStringHelper::create(xpub);
+
+    let hd_node_ptr = unsafe {
+        tw_hd_node_public_create_with_extended_public_key(
+            xpub_string.ptr(),
+            Curve::Secp256k1.to_raw(),
+            Hasher::Sha256d.into(),
+        )
+    };
+    assert!(!hd_node_ptr.is_null());
+
+    let hasher = Hasher::Sha256ripemd;
+    let path = "m/0/1";
+    let path_string = TWStringHelper::create(path);
+
+    let derived_node_ptr = unsafe {
+        tw_hd_node_public_derive_from_path(hd_node_ptr, path_string.ptr(), hasher.into())
+    };
+
+    let public_key_data = unsafe { tw_hd_node_public_public_key_data(derived_node_ptr) };
+    assert!(!public_key_data.is_null());
+
+    let public_key_bytes = unsafe { TWData::from_ptr_as_ref(public_key_data).unwrap().to_vec() };
+
+    let public_key_hex = hex::encode(public_key_bytes, false);
+    assert_eq!(
+        public_key_hex,
+        "024516c4aa5352035e1bb5be132694e1389a4ac37d32e5e717d35ee4c4dfab5132"
     );
 }
