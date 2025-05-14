@@ -35,7 +35,7 @@ impl BIP32PrivateKey for ed25519::cardano::ExtendedPrivateKey {
         chain_code: &bip32::ChainCode,
         _child_number: bip32::ChildNumber,
     ) -> Result<(Vec<u8>, bip32::ChainCode)> {
-        Ok((vec![], chain_code.clone()))
+        Ok((vec![], *chain_code))
     }
 
     fn derive_child(&self, _other: &[u8], child_number: ChildNumber) -> Result<Self> {

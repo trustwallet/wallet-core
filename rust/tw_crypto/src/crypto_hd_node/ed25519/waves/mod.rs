@@ -29,7 +29,7 @@ impl BIP32PrivateKey for ed25519::waves::PrivateKey {
 
     fn derive_child(&self, other: &[u8], child_number: ChildNumber) -> Result<Self> {
         if child_number.is_hardened() {
-            Self::from_bytes(&other)
+            Self::from_bytes(other)
         } else {
             Ok(self.clone())
         }
@@ -59,7 +59,7 @@ impl BIP32PublicKey for ed25519::waves::PublicKey {
 
     fn derive_child(&self, other: &[u8], child_number: ChildNumber) -> Result<Self> {
         if child_number.is_hardened() {
-            Self::from_bytes(&other)
+            Self::from_bytes(other)
         } else {
             Ok(self.clone())
         }

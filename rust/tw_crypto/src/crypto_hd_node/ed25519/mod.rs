@@ -32,7 +32,7 @@ impl BIP32PrivateKey for ed25519::sha512::PrivateKey {
 
     fn derive_child(&self, other: &[u8], child_number: ChildNumber) -> Result<Self> {
         if child_number.is_hardened() {
-            Self::from_bytes(&other)
+            Self::from_bytes(other)
         } else {
             Ok(self.clone())
         }
@@ -62,7 +62,7 @@ impl BIP32PublicKey for ed25519::sha512::PublicKey {
 
     fn derive_child(&self, other: &[u8], child_number: ChildNumber) -> Result<Self> {
         if child_number.is_hardened() {
-            Self::from_bytes(&other)
+            Self::from_bytes(other)
         } else {
             Ok(self.clone())
         }
@@ -86,7 +86,7 @@ impl BIP32PrivateKey for ed25519::blake2b::PrivateKey {
 
     fn derive_child(&self, other: &[u8], child_number: ChildNumber) -> Result<Self> {
         if child_number.is_hardened() {
-            Self::from_bytes(&other)
+            Self::from_bytes(other)
         } else {
             Ok(self.clone())
         }
@@ -116,7 +116,7 @@ impl BIP32PublicKey for ed25519::blake2b::PublicKey {
 
     fn derive_child(&self, other: &[u8], child_number: ChildNumber) -> Result<Self> {
         if child_number.is_hardened() {
-            Self::from_bytes(&other)
+            Self::from_bytes(other)
         } else {
             Ok(self.clone())
         }

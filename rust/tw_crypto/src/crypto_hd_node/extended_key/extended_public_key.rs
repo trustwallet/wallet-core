@@ -71,8 +71,8 @@ where
     }
 
     pub fn derive_from_path(&self, path: &DerivationPath, hasher: Hasher) -> Result<Self> {
-        path.iter().fold(Ok(self.clone()), |maybe_key, child_num| {
-            maybe_key.and_then(|key| key.derive_child(child_num, hasher))
+        path.iter().try_fold(self.clone(), |key, child_num| {
+            key.derive_child(child_num, hasher)
         })
     }
 

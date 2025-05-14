@@ -102,7 +102,7 @@ pub unsafe extern "C" fn tw_hd_node_derive_from_path(
     let hasher = try_or_else!(Hasher::try_from(hasher), std::ptr::null_mut);
     hd_node_ref
         .0
-        .derive_from_path(&path_str, hasher)
+        .derive_from_path(path_str, hasher)
         .map(|hd_node| TWHDNode(hd_node).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
 }

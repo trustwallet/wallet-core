@@ -81,8 +81,8 @@ where
 
     /// Derive a child key from the given [`DerivationPath`].
     pub fn derive_from_path(&self, path: &DerivationPath, hasher: Hasher) -> Result<Self> {
-        path.iter().fold(Ok(self.clone()), |maybe_key, child_num| {
-            maybe_key.and_then(|key| key.derive_child(child_num, hasher))
+        path.iter().try_fold(self.clone(), |key, child_num| {
+            key.derive_child(child_num, hasher)
         })
     }
 
@@ -138,7 +138,7 @@ where
     /// Serialize the raw private key extension as a byte array.
     pub fn private_key_extension_bytes(&self) -> Vec<u8> {
         if K::curve() == Curve::Ed25519ExtendedCardano {
-            return self.private_key.to_bytes()[32..64].to_vec();
+            self.private_key.to_bytes()[32..64].to_vec()
         } else {
             vec![]
         }
@@ -203,7 +203,7 @@ const MAX_BASE58_SIZE: usize = 112;
 
 /// Write a Base58-encoded key to the provided buffer, returning a `String`
 /// containing the serialized data.
-pub fn encode_base58<'a>(extended_key: &'a ExtendedKey, hasher: Hasher) -> Result<String> {
+pub fn encode_base58(extended_key: &ExtendedKey, hasher: Hasher) -> Result<String> {
     let mut buffer = [0u8; MAX_BASE58_SIZE];
 
     let mut bytes = [0u8; BYTE_SIZE]; // with 4-byte checksum
@@ -274,7 +274,7 @@ pub fn decode_base58(base58: &str, hasher: Hasher) -> Result<ExtendedKey> {
 }
 
 const fn validate_prefix(s: &str) -> Result<&str> {
-    if s.as_bytes().len() != Prefix::LENGTH {
+    if s.len() != Prefix::LENGTH {
         return Err(Error::Decode);
     }
 

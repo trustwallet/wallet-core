@@ -29,7 +29,7 @@ pub enum HDNodePublic {
     Ed25519(XPubEd25519),
     Ed25519Blake2bNano(XPubEd25519Blake2bNano),
     Curve25519Waves(XPubCurve25519Waves),
-    Ed25519ExtendedCardano(XPubCardano, Option<XPubCardano>),
+    Ed25519ExtendedCardano(Box<XPubCardano>, Option<Box<XPubCardano>>),
     ZilliqaSchnorr(XPubZilliqaSchnorr),
 }
 
@@ -58,7 +58,7 @@ impl HDNodePublic {
             },
             Curve::Ed25519ExtendedCardano => {
                 let xpub = XPubCardano::from_base58(s, hasher)?;
-                Ok(HDNodePublic::Ed25519ExtendedCardano(xpub, None))
+                Ok(HDNodePublic::Ed25519ExtendedCardano(Box::new(xpub), None))
             },
             Curve::ZilliqaSchnorr => {
                 let xpub = XPubZilliqaSchnorr::from_base58(s, hasher)?;
@@ -95,7 +95,10 @@ impl HDNodePublic {
                 let xpub = xpub.derive_from_path(&path, hasher)?;
                 let staking_path = cardano_staking_derivation_path(&path)?;
                 let xpub2 = xpub.derive_from_path(&staking_path, hasher)?;
-                Ok(HDNodePublic::Ed25519ExtendedCardano(xpub, Some(xpub2)))
+                Ok(HDNodePublic::Ed25519ExtendedCardano(
+                    Box::new(xpub),
+                    Some(Box::new(xpub2)),
+                ))
             },
             HDNodePublic::ZilliqaSchnorr(xpub) => {
                 let xpub = xpub.derive_from_path(&path, hasher)?;

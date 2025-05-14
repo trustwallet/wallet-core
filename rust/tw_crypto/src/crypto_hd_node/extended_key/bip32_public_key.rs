@@ -21,7 +21,7 @@ pub trait BIP32PublicKey: Sized + Clone {
     ///
     /// Default implementation uses `RIPEMD160(SHA256(public_key))`.
     fn fingerprint(&self, hasher: Hasher) -> KeyFingerprint {
-        let digest = hasher.hash(&self.to_bytes().as_slice());
+        let digest = hasher.hash(self.to_bytes().as_slice());
         digest[..4].try_into().expect("digest truncated")
     }
 

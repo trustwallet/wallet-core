@@ -24,6 +24,8 @@ use tw_memory::ffi::{tw_data::TWData, tw_string::TWString, RawPtrTrait};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
 
+const BIP39_TEST_VECTORS: &str = include_str!("bip39_vectors.json");
+
 #[test]
 fn test_extended_private_key() {
     let mnemonic = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
@@ -587,10 +589,7 @@ fn test_cardano_key() {
 #[test]
 fn test_bip39_vectors() {
     // BIP39 test vectors, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
-    let vectors_json_path =
-        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/bip39_vectors.json");
-    let vectors_json = std::fs::read_to_string(vectors_json_path).unwrap();
-    let vectors: serde_json::Value = serde_json::from_str(&vectors_json).unwrap();
+    let vectors: serde_json::Value = serde_json::from_str(&BIP39_TEST_VECTORS).unwrap();
     let english_vectors = vectors["english"].as_array().unwrap();
 
     let curve: Curve = Curve::Secp256k1;
@@ -614,8 +613,6 @@ fn test_bip39_vectors() {
                 .as_str()
                 .unwrap()
         };
-        println!("xprv_string: {}", xprv_string);
-        println!("xprv: {}", xprv);
         assert_eq!(xprv_string, xprv);
     }
 }

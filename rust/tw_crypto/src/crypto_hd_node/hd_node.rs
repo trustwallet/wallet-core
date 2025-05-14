@@ -30,7 +30,7 @@ pub enum HDNode {
     Ed25519(XPrvEd25519),
     Ed25519Blake2bNano(XPrvEd25519Blake2bNano),
     Curve25519Waves(XPrvCurve25519Waves),
-    Ed25519ExtendedCardano(XPrvCardano, Option<XPrvCardano>),
+    Ed25519ExtendedCardano(Box<XPrvCardano>, Option<Box<XPrvCardano>>),
     ZilliqaSchnorr(XPrvZilliqaSchnorr),
 }
 
@@ -59,7 +59,7 @@ impl HDNode {
             },
             Curve::Ed25519ExtendedCardano => {
                 let xprv = XPrvCardano::new(seed).unwrap();
-                Ok(HDNode::Ed25519ExtendedCardano(xprv, None))
+                Ok(HDNode::Ed25519ExtendedCardano(Box::new(xprv), None))
             },
             Curve::ZilliqaSchnorr => {
                 let xprv = XPrvZilliqaSchnorr::new(seed).unwrap();
@@ -96,7 +96,10 @@ impl HDNode {
                 let xprv1 = xprv.derive_from_path(&path, hasher)?;
                 let staking_path = cardano_staking_derivation_path(&path)?;
                 let xprv2 = xprv.derive_from_path(&staking_path, hasher)?;
-                Ok(HDNode::Ed25519ExtendedCardano(xprv1, Some(xprv2)))
+                Ok(HDNode::Ed25519ExtendedCardano(
+                    Box::new(xprv1),
+                    Some(Box::new(xprv2)),
+                ))
             },
             HDNode::ZilliqaSchnorr(xprv) => {
                 let xprv = xprv.derive_from_path(&path, hasher)?;
@@ -217,7 +220,7 @@ impl HDNode {
                 XPrvCurve25519Waves::from_base58(s, hasher)?,
             )),
             Curve::Ed25519ExtendedCardano => Ok(HDNode::Ed25519ExtendedCardano(
-                XPrvCardano::from_base58(s, hasher)?,
+                Box::new(XPrvCardano::from_base58(s, hasher)?),
                 None,
             )),
             Curve::ZilliqaSchnorr => Ok(HDNode::ZilliqaSchnorr(XPrvZilliqaSchnorr::from_base58(

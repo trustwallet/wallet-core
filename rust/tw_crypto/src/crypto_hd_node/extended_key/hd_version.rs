@@ -45,28 +45,28 @@ impl From<u32> for HDVersion {
 
 impl HDVersion {
     pub fn is_public(&self) -> bool {
-        match self {
+        matches!(
+            self,
             HDVersion::XPUB
-            | HDVersion::YPUB
-            | HDVersion::ZPUB
-            | HDVersion::LTUB
-            | HDVersion::MTUB
-            | HDVersion::DPUB
-            | HDVersion::DGUB => true,
-            _ => false,
-        }
+                | HDVersion::YPUB
+                | HDVersion::ZPUB
+                | HDVersion::LTUB
+                | HDVersion::MTUB
+                | HDVersion::DPUB
+                | HDVersion::DGUB
+        )
     }
 
     pub fn is_private(&self) -> bool {
-        match self {
+        matches!(
+            self,
             HDVersion::XPRV
-            | HDVersion::YPRV
-            | HDVersion::ZPRV
-            | HDVersion::LTPV
-            | HDVersion::MTPV
-            | HDVersion::DPRV
-            | HDVersion::DGPV => true,
-            _ => false,
-        }
+                | HDVersion::YPRV
+                | HDVersion::ZPRV
+                | HDVersion::LTPV
+                | HDVersion::MTPV
+                | HDVersion::DPRV
+                | HDVersion::DGPV
+        )
     }
 }
