@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::blake::{blake_256, blake256_d};
+use crate::blake::{blake256_d, blake_256};
 use crate::groestl::groestl_512d;
 use crate::ripemd::{blake256_ripemd, sha256_ripemd};
 use crate::sha2::{sha256, sha256_d};
@@ -125,7 +125,11 @@ impl StatefulHasher for Hasher {
     /// Returns a corresponding hash len.
     fn hash_len(&self) -> usize {
         match self {
-            Hasher::Sha256 | Hasher::Keccak256 | Hasher::Sha256d | Hasher::Blake256 | Hasher::Blake256d => H256::len(),
+            Hasher::Sha256
+            | Hasher::Keccak256
+            | Hasher::Sha256d
+            | Hasher::Blake256
+            | Hasher::Blake256d => H256::len(),
             Hasher::Sha256ripemd | Hasher::Blake256ripemd => H160::len(),
             Hasher::Groestl512d => H256::len(),
             Hasher::TapSighash => H256::len(),
@@ -150,7 +154,7 @@ impl TryFrom<u32> for Hasher {
             // 9 => Hasher::Blake2b, // Blake2b
             10 => Hasher::Blake256, // Blake256
             // 11 => Hasher::Groestl512, // Groestl 512
-            12 => Hasher::Sha256d, // SHA256 hash of the SHA256 hash
+            12 => Hasher::Sha256d,      // SHA256 hash of the SHA256 hash
             13 => Hasher::Sha256ripemd, // ripemd hash of the SHA256 hash
             // 14 => Hasher::Sha3_256ripemd, // ripemd hash of the SHA256 hash
             15 => Hasher::Blake256d, // Blake256 hash of the Blake256 hash
@@ -179,7 +183,7 @@ impl From<Hasher> for u32 {
             // Hasher::Blake2b => 9, // Blake2b
             Hasher::Blake256 => 10, // Blake256
             // Hasher::Groestl512 => 11, // Groestl 512
-            Hasher::Sha256d => 12, // SHA256 hash of the SHA256 hash
+            Hasher::Sha256d => 12,      // SHA256 hash of the SHA256 hash
             Hasher::Sha256ripemd => 13, // ripemd hash of the SHA256 hash
             // Hasher::Sha3_256ripemd => 14, // ripemd hash of the SHA256 hash
             Hasher::Blake256d => 15, // Blake256 hash of the Blake256 hash
@@ -189,4 +193,3 @@ impl From<Hasher> for u32 {
         }
     }
 }
-
