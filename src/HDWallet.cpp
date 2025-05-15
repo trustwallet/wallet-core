@@ -87,7 +87,9 @@ static TWHDNode* getMasterNode(const HDWallet<seedSize>& wallet, TWCurve curve) 
     } else {
         seedData = TWDataCreateWithBytes(wallet.getSeed().data(), wallet.getSeed().size());
     }
-    return TWHDNodeCreateWithSeed(seedData, curve);
+    auto node = TWHDNodeCreateWithSeed(seedData, curve);
+    TWDataDelete(seedData);
+    return node;
 }
 
 template <size_t seedSize>
@@ -98,7 +100,8 @@ static TWHDNode* getNode(const HDWallet<seedSize>& wallet, TWCurve curve, const 
     }
     auto derivationPathString = TWStringCreateWithUTF8Bytes(derivationPath.string().c_str());
     auto child_node = TWHDNodeDeriveFromPath(node, derivationPathString, hasher);
-    delete node;
+    TWStringDelete(derivationPathString);
+    TWHDNodeDelete(node);
     return child_node;
 }
 
@@ -109,8 +112,10 @@ PrivateKey HDWallet<seedSize>::getMasterKey(TWCurve curve) const {
         throw std::invalid_argument("Invalid master node");
     }
     auto privateKeyData = TWHDNodePrivateKeyData(node);
-    delete node;
-    return PrivateKey(Data(TWDataBytes(privateKeyData), TWDataBytes(privateKeyData) + TWDataSize(privateKeyData)), curve);
+    TWHDNodeDelete(node);
+    auto data = Data(TWDataBytes(privateKeyData), TWDataBytes(privateKeyData) + TWDataSize(privateKeyData));
+    TWDataDelete(privateKeyData);
+    return PrivateKey(data, curve);
 }
 
 template <std::size_t seedSize>
@@ -121,8 +126,9 @@ PrivateKey HDWallet<seedSize>::getKeyByCurve(TWCurve curve, const DerivationPath
         throw std::invalid_argument("Invalid node");
     }
     auto privateKeyData = TWHDNodePrivateKeyData(node);
-    delete node;
+    TWHDNodeDelete(node);
     auto data = Data(TWDataBytes(privateKeyData), TWDataBytes(privateKeyData) + TWDataSize(privateKeyData));
+    TWDataDelete(privateKeyData);
     auto privateKey = PrivateKey(data, curveToUse);
     if (curve == TWCurveStarkex) {
         return ImmutableX::getPrivateKeyFromEthPrivKey(privateKey);
@@ -151,9 +157,11 @@ std::string HDWallet<seedSize>::getRootKey(TWCoinType coin, TWHDVersion version)
         return "";
     }
     auto extendedPrivateKey = TWHDNodeExtendedPrivateKey(node, version, TW::base58Hasher(coin));
-    delete node;
+    TWHDNodeDelete(node);
     auto* bytes = TWStringUTF8Bytes(extendedPrivateKey);
-    return {bytes};
+    std::string result(bytes);
+    TWStringDelete(extendedPrivateKey);
+    return result;
 }
 
 template <std::size_t seedSize>
@@ -181,9 +189,11 @@ std::string HDWallet<seedSize>::getExtendedPrivateKeyAccount(TWPurpose purpose, 
         return "";
     }
     auto extendedPrivateKey = TWHDNodeExtendedPrivateKey(node, version, TW::base58Hasher(coin));
-    delete node;
+    TWHDNodeDelete(node);
     auto* bytes = TWStringUTF8Bytes(extendedPrivateKey);
-    return {bytes};
+    std::string result(bytes);
+    TWStringDelete(extendedPrivateKey);
+    return result;
 }
 
 template <std::size_t seedSize>
@@ -200,9 +210,11 @@ std::string HDWallet<seedSize>::getExtendedPublicKeyAccount(TWPurpose purpose, T
         return "";
     }
     auto extendedPublicKey = TWHDNodeExtendedPublicKey(node, version, TW::base58Hasher(coin));
-    delete node;
+    TWHDNodeDelete(node);
     auto* bytes = TWStringUTF8Bytes(extendedPublicKey);
-    return {bytes};
+    std::string result(bytes);
+    TWStringDelete(extendedPublicKey);
+    return result;
 }
 
 template <std::size_t seedSize>
@@ -221,16 +233,18 @@ std::optional<PublicKey> HDWallet<seedSize>::getPublicKeyFromExtended(const std:
     }
 
     auto pubkeyData = TWHDNodePublicPublicKeyData(childNode);
-    delete childNode;
+    TWHDNodePublicDelete(childNode);
+    auto data = Data(TWDataBytes(pubkeyData), TWDataBytes(pubkeyData) + TWDataSize(pubkeyData));
+    TWDataDelete(pubkeyData);
     TWPublicKeyType keyType = TW::publicKeyType(coin);
     if (keyType == TWPublicKeyTypeSECP256k1Extended) {
-        auto pubkey = PublicKey(Data(TWDataBytes(pubkeyData), TWDataBytes(pubkeyData) + TWDataSize(pubkeyData)), TWPublicKeyTypeSECP256k1);
+        auto pubkey = PublicKey(data, TWPublicKeyTypeSECP256k1);
         return pubkey.extended();
     } else if (keyType == TWPublicKeyTypeNIST256p1Extended) {
-        auto pubkey = PublicKey(Data(TWDataBytes(pubkeyData), TWDataBytes(pubkeyData) + TWDataSize(pubkeyData)), TWPublicKeyTypeNIST256p1);
+        auto pubkey = PublicKey(data, TWPublicKeyTypeNIST256p1);
         return pubkey.extended();
     } else {
-        return PublicKey(Data(TWDataBytes(pubkeyData), TWDataBytes(pubkeyData) + TWDataSize(pubkeyData)), keyType);
+        return PublicKey(data, keyType);
     }
 }
 
@@ -249,8 +263,10 @@ std::optional<PrivateKey> HDWallet<seedSize>::getPrivateKeyFromExtended(const st
         return {};
     }
     auto privkeyData = TWHDNodePrivateKeyData(childNode);
-    delete childNode;
-    return PrivateKey(Data(TWDataBytes(privkeyData), TWDataBytes(privkeyData) + TWDataSize(privkeyData)), curve);
+    TWHDNodeDelete(childNode);
+    auto data = Data(TWDataBytes(privkeyData), TWDataBytes(privkeyData) + TWDataSize(privkeyData));
+    TWDataDelete(privkeyData);
+    return PrivateKey(data, curve);
 }
 
 template <std::size_t seedSize>
