@@ -6,7 +6,7 @@
 
 use bip32::{
     ChildNumber, DerivationPath, Error, ExtendedKey, ExtendedKeyAttrs, KeyFingerprint, Prefix,
-    Result,
+    Result, KEY_SIZE,
 };
 
 use crate::crypto_hd_node::extended_key::{
@@ -63,10 +63,20 @@ where
 
     /// Serialize this key as an [`ExtendedKey`].
     pub fn to_extended_key(&self, prefix: Prefix) -> ExtendedKey {
+        let bytes = self.to_bytes();
+
+        let mut key_bytes = [0u8; KEY_SIZE + 1];
+        if bytes.len() == KEY_SIZE {
+            // Add leading `0` byte
+            key_bytes[1..].copy_from_slice(&self.to_bytes());
+        } else {
+            key_bytes.copy_from_slice(&self.to_bytes());
+        }
+
         ExtendedKey {
             prefix,
             attrs: self.attrs.clone(),
-            key_bytes: self.to_bytes().try_into().unwrap(),
+            key_bytes,
         }
     }
 
