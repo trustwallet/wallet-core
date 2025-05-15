@@ -99,10 +99,10 @@ static TWHDNode* getNode(const HDWallet<seedSize>& wallet, TWCurve curve, const 
         return nullptr;
     }
     auto derivationPathString = TWStringCreateWithUTF8Bytes(derivationPath.string().c_str());
-    auto child_node = TWHDNodeDeriveFromPath(node, derivationPathString, hasher);
+    auto childNode = TWHDNodeDeriveFromPath(node, derivationPathString, hasher);
     TWStringDelete(derivationPathString);
     TWHDNodeDelete(node);
-    return child_node;
+    return childNode;
 }
 
 template <std::size_t seedSize>
@@ -229,6 +229,7 @@ std::optional<PublicKey> HDWallet<seedSize>::getPublicKeyFromExtended(const std:
     auto childPath = DerivationPath({DerivationPathIndex(path.change(), false), DerivationPathIndex(path.address(), false)});
     auto childPathString = TWStringCreateWithUTF8Bytes(childPath.string().c_str());
     auto childNode = TWHDNodePublicDeriveFromPath(node, childPathString, TW::publicKeyHasher(coin));
+    TWHDNodePublicDelete(node);
     TWStringDelete(childPathString);
     if (childNode == nullptr) {
         return {};
@@ -262,6 +263,7 @@ std::optional<PrivateKey> HDWallet<seedSize>::getPrivateKeyFromExtended(const st
     auto childPath = DerivationPath({DerivationPathIndex(path.change(), false), DerivationPathIndex(path.address(), false)});
     auto childPathString = TWStringCreateWithUTF8Bytes(childPath.string().c_str());
     auto childNode = TWHDNodeDeriveFromPath(node, childPathString, TW::publicKeyHasher(coin));
+    TWHDNodeDelete(node);
     TWStringDelete(childPathString);
     if (childNode == nullptr) {
         return {};
