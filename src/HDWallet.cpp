@@ -222,6 +222,7 @@ std::optional<PublicKey> HDWallet<seedSize>::getPublicKeyFromExtended(const std:
     const auto curve = TW::curve(coin);
     auto extendedString = TWStringCreateWithUTF8Bytes(extended.c_str());
     auto node = TWHDNodePublicCreateWithExtendedPublicKey(extendedString, curve, TW::base58Hasher(coin));
+    TWStringDelete(extendedString);
     if (node == nullptr) {
         return {};
     }
@@ -254,6 +255,7 @@ std::optional<PrivateKey> HDWallet<seedSize>::getPrivateKeyFromExtended(const st
     const auto curve = TW::curve(coin);
     auto extendedString = TWStringCreateWithUTF8Bytes(extended.c_str());
     auto node = TWHDNodeCreateWithExtendedPrivateKey(extendedString, curve, TW::base58Hasher(coin));
+    TWStringDelete(extendedString);
     if (node == nullptr) {
         return {};
     }
