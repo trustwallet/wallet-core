@@ -228,6 +228,7 @@ std::optional<PublicKey> HDWallet<seedSize>::getPublicKeyFromExtended(const std:
     auto childPath = DerivationPath({DerivationPathIndex(path.change(), false), DerivationPathIndex(path.address(), false)});
     auto childPathString = TWStringCreateWithUTF8Bytes(childPath.string().c_str());
     auto childNode = TWHDNodePublicDeriveFromPath(node, childPathString, TW::publicKeyHasher(coin));
+    TWStringDelete(childPathString);
     if (childNode == nullptr) {
         return {};
     }
@@ -259,6 +260,7 @@ std::optional<PrivateKey> HDWallet<seedSize>::getPrivateKeyFromExtended(const st
     auto childPath = DerivationPath({DerivationPathIndex(path.change(), false), DerivationPathIndex(path.address(), false)});
     auto childPathString = TWStringCreateWithUTF8Bytes(childPath.string().c_str());
     auto childNode = TWHDNodeDeriveFromPath(node, childPathString, TW::publicKeyHasher(coin));
+    TWStringDelete(childPathString);
     if (childNode == nullptr) {
         return {};
     }
