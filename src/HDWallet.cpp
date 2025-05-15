@@ -93,6 +93,9 @@ static TWHDNode* getMasterNode(const HDWallet<seedSize>& wallet, TWCurve curve) 
 template <size_t seedSize>
 static TWHDNode* getNode(const HDWallet<seedSize>& wallet, TWCurve curve, const DerivationPath& derivationPath, TW::Hash::Hasher hasher) {
     auto node = getMasterNode<seedSize>(wallet, curve);
+    if (node == nullptr) {
+        return nullptr;
+    }
     auto derivationPathString = TWStringCreateWithUTF8Bytes(derivationPath.string().c_str());
     auto child_node = TWHDNodeDeriveFromPath(node, derivationPathString, hasher);
     delete node;
@@ -101,7 +104,10 @@ static TWHDNode* getNode(const HDWallet<seedSize>& wallet, TWCurve curve, const 
 
 template <std::size_t seedSize>
 PrivateKey HDWallet<seedSize>::getMasterKey(TWCurve curve) const {
-    auto node = getMasterNode(*this, curve);    
+    auto node = getMasterNode(*this, curve);  
+    if (node == nullptr) {
+        throw std::invalid_argument("Invalid master node");
+    }
     auto privateKeyData = TWHDNodePrivateKeyData(node);
     delete node;
     return PrivateKey(Data(TWDataBytes(privateKeyData), TWDataBytes(privateKeyData) + TWDataSize(privateKeyData)), curve);
@@ -138,6 +144,9 @@ template <std::size_t seedSize>
 std::string HDWallet<seedSize>::getRootKey(TWCoinType coin, TWHDVersion version) const {
     const auto curve = TWCoinTypeCurve(coin);
     auto node = getMasterNode(*this, curve);
+    if (node == nullptr) {
+        return "";
+    }
     auto extendedPrivateKey = TWHDNodeExtendedPrivateKey(node, version, TW::base58Hasher(coin));
     delete node;
     auto* bytes = TWStringUTF8Bytes(extendedPrivateKey);
