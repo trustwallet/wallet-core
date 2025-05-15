@@ -190,12 +190,14 @@ std::string HDWallet<seedSize>::getExtendedPublicKeyAccount(TWPurpose purpose, T
 template <std::size_t seedSize>
 std::optional<PublicKey> HDWallet<seedSize>::getPublicKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path) {
     const auto curve = TW::curve(coin);
-    auto node = TWHDNodePublicCreateWithExtendedPublicKey(TWStringCreateWithUTF8Bytes(extended.c_str()), curve, TW::base58Hasher(coin));
+    auto extendedString = TWStringCreateWithUTF8Bytes(extended.c_str());
+    auto node = TWHDNodePublicCreateWithExtendedPublicKey(extendedString, curve, TW::base58Hasher(coin));
     if (node == nullptr) {
         return {};
     }
     auto childPath = DerivationPath({DerivationPathIndex(path.change(), false), DerivationPathIndex(path.address(), false)});
-    auto childNode = TWHDNodePublicDeriveFromPath(node, childPath.string().c_str(), TW::publicKeyHasher(coin));
+    auto childPathString = TWStringCreateWithUTF8Bytes(childPath.string().c_str());
+    auto childNode = TWHDNodePublicDeriveFromPath(node, childPathString, TW::publicKeyHasher(coin));
     if (childNode == nullptr) {
         return {};
     }
@@ -217,12 +219,14 @@ std::optional<PublicKey> HDWallet<seedSize>::getPublicKeyFromExtended(const std:
 template <std::size_t seedSize>
 std::optional<PrivateKey> HDWallet<seedSize>::getPrivateKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path) {
     const auto curve = TW::curve(coin);
-    auto node = TWHDNodeCreateWithExtendedPrivateKey(TWStringCreateWithUTF8Bytes(extended.c_str()), curve, TW::base58Hasher(coin));
+    auto extendedString = TWStringCreateWithUTF8Bytes(extended.c_str());
+    auto node = TWHDNodeCreateWithExtendedPrivateKey(extendedString, curve, TW::base58Hasher(coin));
     if (node == nullptr) {
         return {};
     }
     auto childPath = DerivationPath({DerivationPathIndex(path.change(), false), DerivationPathIndex(path.address(), false)});
-    auto childNode = TWHDNodeDeriveFromPath(node, childPath.string().c_str(), TW::publicKeyHasher(coin));
+    auto childPathString = TWStringCreateWithUTF8Bytes(childPath.string().c_str());
+    auto childNode = TWHDNodeDeriveFromPath(node, childPathString, TW::publicKeyHasher(coin));
     if (childNode == nullptr) {
         return {};
     }
