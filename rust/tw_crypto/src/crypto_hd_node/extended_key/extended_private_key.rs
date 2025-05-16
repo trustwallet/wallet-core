@@ -230,7 +230,7 @@ pub fn encode_base58(extended_key: &ExtendedKey, hasher: Hasher) -> Result<Strin
     let base58_len = bs58::encode(&bytes_with_checksum).onto(buffer.as_mut())?;
     bytes_with_checksum.zeroize();
 
-    Ok(String::from_utf8(buffer[..base58_len].to_vec()).map_err(|_| Error::Base58)?)
+    String::from_utf8(buffer[..base58_len].to_vec()).map_err(|_| Error::Base58)
 }
 
 pub fn decode_base58(base58: &str, hasher: Hasher) -> Result<ExtendedKey> {

@@ -192,7 +192,7 @@ impl HDNode {
             HDNode::Ed25519ExtendedCardano(xprv, _) => xprv.to_extended_key(prefix)?,
             HDNode::ZilliqaSchnorr(xprv) => xprv.to_extended_key(prefix)?,
         };
-        Ok(encode_base58(&extended_key, hasher)?)
+        encode_base58(&extended_key, hasher)
     }
 
     pub fn extended_public_key(&self, version: u32, hasher: Hasher) -> Result<String> {
@@ -206,7 +206,7 @@ impl HDNode {
             HDNode::Ed25519ExtendedCardano(xprv, _) => xprv.public_key().to_extended_key(prefix),
             HDNode::ZilliqaSchnorr(xprv) => xprv.public_key().to_extended_key(prefix),
         };
-        Ok(encode_base58(&extended_key, hasher)?)
+        encode_base58(&extended_key, hasher)
     }
 
     pub fn try_from(s: &str, curve: Curve, hasher: Hasher) -> Result<Self> {
