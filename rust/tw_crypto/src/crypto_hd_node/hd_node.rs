@@ -6,11 +6,12 @@
 
 use std::str::FromStr;
 
-use bip32::{DerivationPath, Error, Prefix, Result};
+use bip32::{DerivationPath, Prefix};
 use tw_hash::hasher::Hasher;
 use tw_keypair::tw::Curve;
+use tw_misc::traits::ToBytesVec;
 
-use crate::crypto_hd_node::extended_key::bip32_private_key::BIP32PrivateKey;
+use crate::crypto_hd_node::error::{Error, Result};
 use crate::crypto_hd_node::extended_key::extended_private_key::ExtendedPrivateKey;
 
 use super::ed25519::cardano::cardano_staking_derivation_path;
@@ -38,39 +39,39 @@ impl HDNode {
     pub fn new(seed: &[u8], curve: Curve) -> Result<Self> {
         match curve {
             Curve::Secp256k1 => {
-                let xprv = XPrvSecp256k1::new(seed).unwrap();
+                let xprv = XPrvSecp256k1::new(seed)?;
                 Ok(HDNode::Secp256k1(xprv))
             },
             Curve::Nist256p1 => {
-                let xprv = XPrvNist256p1::new(seed).unwrap();
+                let xprv = XPrvNist256p1::new(seed)?;
                 Ok(HDNode::Nist256p1(xprv))
             },
             Curve::Ed25519 => {
-                let xprv = XPrvEd25519::new(seed).unwrap();
+                let xprv = XPrvEd25519::new(seed)?;
                 Ok(HDNode::Ed25519(xprv))
             },
             Curve::Ed25519Blake2bNano => {
-                let xprv = XPrvEd25519Blake2bNano::new(seed).unwrap();
+                let xprv = XPrvEd25519Blake2bNano::new(seed)?;
                 Ok(HDNode::Ed25519Blake2bNano(xprv))
             },
             Curve::Curve25519Waves => {
-                let xprv = XPrvCurve25519Waves::new(seed).unwrap();
+                let xprv = XPrvCurve25519Waves::new(seed)?;
                 Ok(HDNode::Curve25519Waves(xprv))
             },
             Curve::Ed25519ExtendedCardano => {
-                let xprv = XPrvCardano::new(seed).unwrap();
+                let xprv = XPrvCardano::new(seed)?;
                 Ok(HDNode::Ed25519ExtendedCardano(Box::new(xprv), None))
             },
             Curve::ZilliqaSchnorr => {
-                let xprv = XPrvZilliqaSchnorr::new(seed).unwrap();
+                let xprv = XPrvZilliqaSchnorr::new(seed)?;
                 Ok(HDNode::ZilliqaSchnorr(xprv))
             },
-            _ => Err(Error::Crypto),
+            _ => Err(Error::UnsupportedCurve(curve.to_raw())),
         }
     }
 
     pub fn derive_from_path(&self, path: &str, hasher: Hasher) -> Result<Self> {
-        let path = DerivationPath::from_str(path).map_err(|_| Error::Crypto)?;
+        let path = DerivationPath::from_str(path)?;
         match self {
             HDNode::Secp256k1(xprv) => {
                 let xprv = xprv.derive_from_path(&path, hasher)?;
@@ -110,19 +111,19 @@ impl HDNode {
 
     pub fn private_key_data(&self) -> Result<Vec<u8>> {
         match self {
-            HDNode::Secp256k1(xprv) => Ok(xprv.private_key().to_bytes().to_vec()),
-            HDNode::Nist256p1(xprv) => Ok(xprv.private_key().to_bytes().to_vec()),
-            HDNode::Ed25519(xprv) => Ok(xprv.private_key().to_bytes().to_vec()),
-            HDNode::Ed25519Blake2bNano(xprv) => Ok(xprv.private_key().to_bytes().to_vec()),
-            HDNode::Curve25519Waves(xprv) => Ok(xprv.private_key().to_bytes().to_vec()),
+            HDNode::Secp256k1(xprv) => Ok(xprv.private_key().to_vec()),
+            HDNode::Nist256p1(xprv) => Ok(xprv.private_key().to_vec()),
+            HDNode::Ed25519(xprv) => Ok(xprv.private_key().to_vec()),
+            HDNode::Ed25519Blake2bNano(xprv) => Ok(xprv.private_key().to_vec()),
+            HDNode::Curve25519Waves(xprv) => Ok(xprv.private_key().to_vec()),
             HDNode::Ed25519ExtendedCardano(xprv, xprv2) => {
-                let mut data = xprv.private_key().to_bytes().to_vec();
+                let mut data = xprv.private_key().to_vec();
                 if let Some(xprv2) = xprv2 {
-                    data.extend(xprv2.private_key().to_bytes().to_vec());
+                    data.extend(xprv2.private_key().to_vec());
                 }
                 Ok(data)
             },
-            HDNode::ZilliqaSchnorr(xprv) => Ok(xprv.private_key().to_bytes().to_vec()),
+            HDNode::ZilliqaSchnorr(xprv) => Ok(xprv.private_key().to_vec()),
         }
     }
 
@@ -181,7 +182,7 @@ impl HDNode {
     }
 
     pub fn extended_private_key(&self, version: u32, hasher: Hasher) -> Result<String> {
-        let prefix = Prefix::try_from(version).map_err(|_| Error::Crypto)?;
+        let prefix = Prefix::try_from(version)?;
         let extended_key = match self {
             HDNode::Secp256k1(xprv) => xprv.to_extended_key(prefix)?,
             HDNode::Nist256p1(xprv) => xprv.to_extended_key(prefix)?,
@@ -191,11 +192,11 @@ impl HDNode {
             HDNode::Ed25519ExtendedCardano(xprv, _) => xprv.to_extended_key(prefix)?,
             HDNode::ZilliqaSchnorr(xprv) => xprv.to_extended_key(prefix)?,
         };
-        encode_base58(&extended_key, hasher)
+        Ok(encode_base58(&extended_key, hasher)?)
     }
 
     pub fn extended_public_key(&self, version: u32, hasher: Hasher) -> Result<String> {
-        let prefix = Prefix::try_from(version).map_err(|_| Error::Crypto)?;
+        let prefix = Prefix::try_from(version)?;
         let extended_key = match self {
             HDNode::Secp256k1(xprv) => xprv.public_key().to_extended_key(prefix),
             HDNode::Nist256p1(xprv) => xprv.public_key().to_extended_key(prefix),
@@ -205,7 +206,7 @@ impl HDNode {
             HDNode::Ed25519ExtendedCardano(xprv, _) => xprv.public_key().to_extended_key(prefix),
             HDNode::ZilliqaSchnorr(xprv) => xprv.public_key().to_extended_key(prefix),
         };
-        encode_base58(&extended_key, hasher)
+        Ok(encode_base58(&extended_key, hasher)?)
     }
 
     pub fn try_from(s: &str, curve: Curve, hasher: Hasher) -> Result<Self> {
@@ -226,7 +227,7 @@ impl HDNode {
             Curve::ZilliqaSchnorr => Ok(HDNode::ZilliqaSchnorr(XPrvZilliqaSchnorr::from_base58(
                 s, hasher,
             )?)),
-            _ => Err(Error::Crypto),
+            _ => Err(Error::UnsupportedCurve(curve.to_raw())),
         }
     }
 }

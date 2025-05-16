@@ -6,6 +6,7 @@
 
 pub mod ecdsa;
 pub mod ed25519;
+pub mod error;
 pub mod extended_key;
 pub mod hd_node;
 pub mod hd_node_public;

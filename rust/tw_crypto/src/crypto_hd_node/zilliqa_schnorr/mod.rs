@@ -4,13 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use std::str::FromStr;
-
-use bip32::{ChildNumber, Error, Result};
+use bip32::ChildNumber;
 use tw_keypair::traits::DerivableKeyTrait;
 use tw_keypair::{tw::Curve, zilliqa_schnorr};
-use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
 
+use crate::crypto_hd_node::error::{Error, Result};
 use crate::crypto_hd_node::extended_key::{
     bip32_private_key::BIP32PrivateKey, bip32_public_key::BIP32PublicKey,
 };
@@ -18,21 +16,9 @@ use crate::crypto_hd_node::extended_key::{
 impl BIP32PrivateKey for zilliqa_schnorr::PrivateKey {
     type BIP32PublicKey = zilliqa_schnorr::PublicKey;
 
-    fn from_bytes(bytes: &[u8]) -> Result<Self> {
-        zilliqa_schnorr::PrivateKey::try_from(bytes).map_err(|_| Error::Crypto)
-    }
-
-    fn from_hex(hex: &str) -> Result<Self> {
-        zilliqa_schnorr::PrivateKey::from_str(hex).map_err(|_| Error::Crypto)
-    }
-
-    fn to_bytes(&self) -> Vec<u8> {
-        self.to_zeroizing_vec().to_vec()
-    }
-
     fn derive_child(&self, other: &[u8], _child_number: ChildNumber) -> Result<Self> {
         <zilliqa_schnorr::PrivateKey as DerivableKeyTrait>::derive_child(self, other)
-            .map_err(|_| Error::Crypto)
+            .map_err(|_| Error::DerivationFailed)
     }
 
     fn curve() -> Curve {
@@ -49,16 +35,8 @@ impl BIP32PrivateKey for zilliqa_schnorr::PrivateKey {
 }
 
 impl BIP32PublicKey for zilliqa_schnorr::PublicKey {
-    fn from_bytes(bytes: &[u8]) -> Result<Self> {
-        zilliqa_schnorr::PublicKey::try_from(bytes).map_err(|_| Error::Crypto)
-    }
-
-    fn to_bytes(&self) -> Vec<u8> {
-        self.to_vec()
-    }
-
     fn derive_child(&self, other: &[u8], _child_number: ChildNumber) -> Result<Self> {
         <zilliqa_schnorr::PublicKey as DerivableKeyTrait>::derive_child(self, other)
-            .map_err(|_| Error::Crypto)
+            .map_err(|_| Error::DerivationFailed)
     }
 }

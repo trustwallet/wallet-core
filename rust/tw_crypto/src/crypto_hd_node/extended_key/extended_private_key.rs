@@ -5,8 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use bip32::{
-    ChildNumber, DerivationPath, Error, ExtendedKey, ExtendedKeyAttrs, KeyFingerprint, Prefix,
-    Result, Version, KEY_SIZE,
+    ChildNumber, DerivationPath, ExtendedKey, ExtendedKeyAttrs, KeyFingerprint, Prefix, Version,
+    KEY_SIZE,
 };
 use sha2::digest::Mac;
 use tw_encoding::hex::{self, ToHex};
@@ -14,12 +14,13 @@ use tw_hash::hasher::Hasher;
 use tw_hash::hasher::StatefulHasher;
 use tw_hash::hmac::HmacSha512;
 use tw_keypair::tw::Curve;
+use tw_misc::traits::ToBytesVec;
 use zeroize::Zeroize;
 use zeroize::Zeroizing;
 
+use crate::crypto_hd_node::error::{Error, Result};
 use crate::crypto_hd_node::extended_key::{
-    bip32_private_key::BIP32PrivateKey, bip32_public_key::BIP32PublicKey,
-    extended_public_key::ExtendedPublicKey,
+    bip32_private_key::BIP32PrivateKey, extended_public_key::ExtendedPublicKey,
 };
 
 use super::hd_version::HDVersion;
@@ -56,17 +57,22 @@ where
             secret[31] &= 0x1f;
             secret[31] |= 0x40;
 
-            (K::from_bytes(&digest[0..96])?, digest[64..96].try_into()?)
+            (
+                K::try_from(&digest[0..96]).map_err(|_| Error::InvalidKeyData)?,
+                digest[64..96].try_into()?,
+            )
         } else {
-            let domain_separator =
-                hex::decode(&K::bip32_name().to_hex()).map_err(|_| Error::Crypto)?;
+            let domain_separator = hex::decode(&K::bip32_name().to_hex())?;
 
-            let mut hmac = HmacSha512::new_from_slice(&domain_separator)?;
+            let mut hmac = HmacSha512::new_from_slice(&domain_separator).expect("Should not fail");
             hmac.update(seed.as_ref());
 
             let result = hmac.finalize().into_bytes();
             let (private_key, chain_code) = result.split_at(KEY_SIZE);
-            (K::from_bytes(private_key)?, chain_code.try_into()?)
+            (
+                K::try_from(private_key).map_err(|_| Error::InvalidKeyData)?,
+                chain_code.try_into()?,
+            )
         };
 
         let attrs = ExtendedKeyAttrs {
@@ -88,7 +94,7 @@ where
 
     /// Derive a child key for a particular [`ChildNumber`].
     pub fn derive_child(&self, child_number: ChildNumber, hasher: Hasher) -> Result<Self> {
-        let depth = self.attrs.depth.checked_add(1).ok_or(Error::Depth)?;
+        let depth = self.attrs.depth.checked_add(1).ok_or(Error::InvalidDepth)?;
         let (tweak, chain_code) = self
             .private_key
             .derive_tweak(&self.attrs.chain_code, child_number)?;
@@ -105,7 +111,7 @@ where
         let private_key = self.private_key.derive_child(&tweak, child_number)?;
 
         let attrs = ExtendedKeyAttrs {
-            parent_fingerprint: self.private_key.public_key().fingerprint(hasher),
+            parent_fingerprint: self.public_key().fingerprint(hasher),
             child_number,
             chain_code,
             depth,
@@ -132,22 +138,13 @@ where
 
     /// Serialize the raw private key as a byte array.
     pub fn to_bytes(&self) -> Vec<u8> {
-        self.private_key.to_bytes()
-    }
-
-    /// Serialize the raw private key extension as a byte array.
-    pub fn private_key_extension_bytes(&self) -> Vec<u8> {
-        if K::curve() == Curve::Ed25519ExtendedCardano {
-            self.private_key.to_bytes()[32..64].to_vec()
-        } else {
-            vec![]
-        }
+        self.private_key.to_vec()
     }
 
     /// Serialize this key as an [`ExtendedKey`].
     pub fn to_extended_key(&self, prefix: Prefix) -> Result<ExtendedKey> {
         if K::curve() == Curve::Ed25519ExtendedCardano {
-            return Err(Error::Crypto);
+            return Err(Error::UnsupportedCurve(K::curve().to_raw()));
         }
         // Add leading `0` byte
         let mut key_bytes = [0u8; KEY_SIZE + 1];
@@ -181,12 +178,21 @@ where
         let version: HDVersion = key.prefix.version().into();
         if version.is_private() && key.key_bytes[0] == 0 {
             Ok(ExtendedPrivateKey {
-                private_key: K::from_bytes(&key.key_bytes[1..])?,
+                private_key: K::try_from(&key.key_bytes[1..]).map_err(|_| Error::InvalidKeyData)?,
                 attrs: key.attrs.clone(),
             })
         } else {
-            Err(Error::Crypto)
+            Err(Error::InvalidKeyData)
         }
+    }
+}
+
+impl<K> ToBytesVec for ExtendedPrivateKey<K>
+where
+    K: BIP32PrivateKey,
+{
+    fn to_vec(&self) -> Vec<u8> {
+        self.private_key.to_vec()
     }
 }
 
@@ -224,7 +230,7 @@ pub fn encode_base58(extended_key: &ExtendedKey, hasher: Hasher) -> Result<Strin
     let base58_len = bs58::encode(&bytes_with_checksum).onto(buffer.as_mut())?;
     bytes_with_checksum.zeroize();
 
-    String::from_utf8(buffer[..base58_len].to_vec()).map_err(|_| Error::Base58)
+    Ok(String::from_utf8(buffer[..base58_len].to_vec()).map_err(|_| Error::Base58)?)
 }
 
 pub fn decode_base58(base58: &str, hasher: Hasher) -> Result<ExtendedKey> {
@@ -243,7 +249,7 @@ pub fn decode_base58(base58: &str, hasher: Hasher) -> Result<ExtendedKey> {
     let (checksum, _) = hash.split_at(CHECKSUM_LEN);
 
     if checksum != expected_checksum {
-        return Err(Error::Crypto);
+        return Err(Error::InvalidChecksum);
     }
 
     let prefix = base58.get(..4).ok_or(Error::Decode).and_then(|chars| {
@@ -289,4 +295,15 @@ const fn validate_prefix(s: &str) -> Result<&str> {
     }
 
     Ok(s)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_validate_prefix() {
+        assert!(validate_prefix("eaab").is_ok());
+        assert!(validate_prefix("eaab1").is_err());
+    }
 }

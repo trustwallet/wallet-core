@@ -5,10 +5,11 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use bip32::{
-    ChildNumber, DerivationPath, Error, ExtendedKey, ExtendedKeyAttrs, KeyFingerprint, Prefix,
-    Result, KEY_SIZE,
+    ChildNumber, DerivationPath, ExtendedKey, ExtendedKeyAttrs, KeyFingerprint, Prefix, KEY_SIZE,
 };
+use tw_misc::traits::ToBytesVec;
 
+use crate::crypto_hd_node::error::{Error, Result};
 use crate::crypto_hd_node::extended_key::{
     bip32_private_key::BIP32PrivateKey, bip32_public_key::BIP32PublicKey,
     extended_private_key::ExtendedPrivateKey,
@@ -35,20 +36,9 @@ impl<K> ExtendedPublicKey<K>
 where
     K: BIP32PublicKey,
 {
-    /// Create a new extended public key from a public key and attributes.
-    pub fn new(public_key: K, attrs: ExtendedKeyAttrs) -> Self {
-        Self { public_key, attrs }
-    }
-
     /// Obtain the non-extended public key value `K`.
     pub fn public_key(&self) -> &K {
         &self.public_key
-    }
-
-    /// Get attributes for this key such as depth, parent fingerprint,
-    /// child number, and chain code.
-    pub fn attrs(&self) -> &ExtendedKeyAttrs {
-        &self.attrs
     }
 
     /// Compute a 4-byte key fingerprint for this extended public key.
@@ -58,7 +48,7 @@ where
 
     /// Serialize the raw public key as a byte array (e.g. SEC1-encoded).
     pub fn to_bytes(&self) -> Vec<u8> {
-        self.public_key.to_bytes()
+        self.public_key.to_vec()
     }
 
     /// Serialize this key as an [`ExtendedKey`].
@@ -88,7 +78,7 @@ where
 
     /// Derive a child key for a particular [`ChildNumber`].
     pub fn derive_child(&self, child_number: ChildNumber, hasher: Hasher) -> Result<Self> {
-        let depth = self.attrs.depth.checked_add(1).ok_or(Error::Depth)?;
+        let depth = self.attrs.depth.checked_add(1).ok_or(Error::InvalidDepth)?;
         let (tweak, chain_code) = self
             .public_key
             .derive_tweak(&self.attrs.chain_code, child_number)?;
@@ -142,11 +132,20 @@ where
         let version: HDVersion = key.prefix.version().into();
         if version.is_public() {
             Ok(ExtendedPublicKey {
-                public_key: K::from_bytes(&key.key_bytes)?,
+                public_key: K::try_from(&key.key_bytes).map_err(|_| Error::InvalidKeyData)?,
                 attrs: key.attrs.clone(),
             })
         } else {
-            Err(Error::Crypto)
+            Err(Error::InvalidKeyData)
         }
+    }
+}
+
+impl<K> ToBytesVec for ExtendedPublicKey<K>
+where
+    K: BIP32PublicKey,
+{
+    fn to_vec(&self) -> Vec<u8> {
+        self.public_key.to_vec()
     }
 }

@@ -6,11 +6,12 @@
 
 use std::str::FromStr;
 
-use bip32::{DerivationPath, Error, Result};
+use bip32::DerivationPath;
 use tw_hash::hasher::Hasher;
 use tw_keypair::tw::Curve;
+use tw_misc::traits::ToBytesVec;
 
-use crate::crypto_hd_node::extended_key::bip32_public_key::BIP32PublicKey;
+use crate::crypto_hd_node::error::{Error, Result};
 use crate::crypto_hd_node::extended_key::extended_public_key::ExtendedPublicKey;
 
 use super::ed25519::cardano::cardano_staking_derivation_path;
@@ -64,12 +65,12 @@ impl HDNodePublic {
                 let xpub = XPubZilliqaSchnorr::from_base58(s, hasher)?;
                 Ok(HDNodePublic::ZilliqaSchnorr(xpub))
             },
-            _ => Err(Error::Crypto),
+            _ => Err(Error::UnsupportedCurve(curve.to_raw())),
         }
     }
 
     pub fn derive_from_path(&self, path: &str, hasher: Hasher) -> Result<Self> {
-        let path = DerivationPath::from_str(path).map_err(|_| Error::Crypto)?;
+        let path = DerivationPath::from_str(path)?;
         match self {
             HDNodePublic::Secp256k1(xpub) => {
                 let xpub = xpub.derive_from_path(&path, hasher)?;
@@ -109,15 +110,13 @@ impl HDNodePublic {
 
     pub fn public_key_data(&self) -> Result<Vec<u8>> {
         match self {
-            HDNodePublic::Secp256k1(xpub) => Ok(xpub.public_key().to_bytes().to_vec()),
-            HDNodePublic::Nist256p1(xpub) => Ok(xpub.public_key().to_bytes().to_vec()),
-            HDNodePublic::Ed25519(xpub) => Ok(xpub.public_key().to_bytes().to_vec()),
-            HDNodePublic::Ed25519Blake2bNano(xpub) => Ok(xpub.public_key().to_bytes().to_vec()),
-            HDNodePublic::Curve25519Waves(xpub) => Ok(xpub.public_key().to_bytes().to_vec()),
-            HDNodePublic::Ed25519ExtendedCardano(xpub, _) => {
-                Ok(xpub.public_key().to_bytes().to_vec())
-            },
-            HDNodePublic::ZilliqaSchnorr(xpub) => Ok(xpub.public_key().to_bytes().to_vec()),
+            HDNodePublic::Secp256k1(xpub) => Ok(xpub.public_key().to_vec()),
+            HDNodePublic::Nist256p1(xpub) => Ok(xpub.public_key().to_vec()),
+            HDNodePublic::Ed25519(xpub) => Ok(xpub.public_key().to_vec()),
+            HDNodePublic::Ed25519Blake2bNano(xpub) => Ok(xpub.public_key().to_vec()),
+            HDNodePublic::Curve25519Waves(xpub) => Ok(xpub.public_key().to_vec()),
+            HDNodePublic::Ed25519ExtendedCardano(xpub, _) => Ok(xpub.public_key().to_vec()),
+            HDNodePublic::ZilliqaSchnorr(xpub) => Ok(xpub.public_key().to_vec()),
         }
     }
 }

@@ -4,26 +4,21 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use bip32::{ChainCode, ChildNumber, Error, Result, KEY_SIZE};
+use std::str::FromStr;
+
+use bip32::{ChainCode, ChildNumber, KEY_SIZE};
 use sha2::digest::Mac;
 use tw_hash::hmac::HmacSha512;
 use tw_keypair::tw::Curve;
+use tw_misc::traits::{FromSlice, ToBytesVec};
 
+use crate::crypto_hd_node::error::Result;
 use crate::crypto_hd_node::extended_key::bip32_public_key::BIP32PublicKey;
 
 /// Trait for key types which can be derived using BIP32.
-pub trait BIP32PrivateKey: Sized + Clone {
+pub trait BIP32PrivateKey: Sized + Clone + ToBytesVec + FromSlice + FromStr {
     /// Public key type which corresponds to this private key.
     type BIP32PublicKey: BIP32PublicKey;
-
-    /// Initialize this key from bytes.
-    fn from_bytes(bytes: &[u8]) -> Result<Self>;
-
-    /// Initialize this key from a hex string.
-    fn from_hex(hex: &str) -> Result<Self>;
-
-    /// Serialize this key as bytes.
-    fn to_bytes(&self) -> Vec<u8>;
 
     /// Derive a child key from a parent key and the a provided tweak value,
     /// i.e. where `other` is referred to as "I sub L" in BIP32 and sourced
@@ -34,9 +29,7 @@ pub trait BIP32PrivateKey: Sized + Clone {
     fn curve() -> Curve;
 
     /// Get the BIP32 name of the curve.
-    fn bip32_name() -> &'static str {
-        "Bitcoin seed"
-    }
+    fn bip32_name() -> &'static str;
 
     /// Get the [`Self::PublicKey`] that corresponds to this private key.
     fn public_key(&self) -> Self::BIP32PublicKey;
@@ -55,13 +48,13 @@ pub trait BIP32PrivateKey: Sized + Clone {
         chain_code: &ChainCode,
         child_number: ChildNumber,
     ) -> Result<(Vec<u8>, ChainCode)> {
-        let mut hmac = HmacSha512::new_from_slice(chain_code).map_err(|_| Error::Crypto)?;
+        let mut hmac = HmacSha512::new_from_slice(chain_code).expect("Should not fail");
 
         if child_number.is_hardened() {
             hmac.update(&[0]);
-            hmac.update(&self.to_bytes());
+            hmac.update(&self.to_vec());
         } else {
-            hmac.update(&self.public_key().to_bytes());
+            hmac.update(&self.public_key().to_vec());
         }
 
         hmac.update(&child_number.to_bytes());

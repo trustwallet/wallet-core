@@ -9,9 +9,10 @@ use crate::ed25519::Hasher512;
 use crate::traits::SigningKeyTrait;
 use crate::{KeyPairError, KeyPairResult};
 use std::fmt;
+use std::str::FromStr;
 use tw_encoding::hex;
 use tw_hash::H256;
-use tw_misc::traits::ToBytesZeroizing;
+use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
 use zeroize::{ZeroizeOnDrop, Zeroizing};
 
 /// Represents an `ed25519` private key.
@@ -67,6 +68,20 @@ impl<'a, H: Hasher512> TryFrom<&'a str> for PrivateKey<H> {
     fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
         let bytes = Zeroizing::new(hex::decode(hex).map_err(|_| KeyPairError::InvalidSecretKey)?);
         Self::try_from(bytes.as_slice())
+    }
+}
+
+impl<H: Hasher512> FromStr for PrivateKey<H> {
+    type Err = KeyPairError;
+
+    fn from_str(hex: &str) -> Result<Self, Self::Err> {
+        Self::try_from(hex)
+    }
+}
+
+impl<H: Hasher512> ToBytesVec for PrivateKey<H> {
+    fn to_vec(&self) -> Vec<u8> {
+        self.secret.to_vec()
     }
 }
 

@@ -7,10 +7,10 @@
 pub mod cardano;
 pub mod waves;
 
-use bip32::{ChildNumber, Error, Result};
+use bip32::ChildNumber;
 use tw_keypair::{ed25519, tw::Curve};
-use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
 
+use crate::crypto_hd_node::error::{Error, Result};
 use crate::crypto_hd_node::extended_key::{
     bip32_private_key::BIP32PrivateKey, bip32_public_key::BIP32PublicKey,
 };
@@ -18,21 +18,9 @@ use crate::crypto_hd_node::extended_key::{
 impl BIP32PrivateKey for ed25519::sha512::PrivateKey {
     type BIP32PublicKey = ed25519::sha512::PublicKey;
 
-    fn from_bytes(bytes: &[u8]) -> Result<Self> {
-        ed25519::sha512::PrivateKey::try_from(bytes).map_err(|_| Error::Crypto)
-    }
-
-    fn from_hex(hex: &str) -> Result<Self> {
-        ed25519::sha512::PrivateKey::try_from(hex).map_err(|_| Error::Crypto)
-    }
-
-    fn to_bytes(&self) -> Vec<u8> {
-        self.to_zeroizing_vec().to_vec()
-    }
-
     fn derive_child(&self, other: &[u8], child_number: ChildNumber) -> Result<Self> {
         if child_number.is_hardened() {
-            Self::from_bytes(other)
+            Self::try_from(other).map_err(|_| Error::InvalidKeyData)
         } else {
             Ok(self.clone())
         }
@@ -52,17 +40,9 @@ impl BIP32PrivateKey for ed25519::sha512::PrivateKey {
 }
 
 impl BIP32PublicKey for ed25519::sha512::PublicKey {
-    fn from_bytes(bytes: &[u8]) -> Result<Self> {
-        ed25519::sha512::PublicKey::try_from(bytes).map_err(|_| Error::Crypto)
-    }
-
-    fn to_bytes(&self) -> Vec<u8> {
-        self.to_vec()
-    }
-
     fn derive_child(&self, other: &[u8], child_number: ChildNumber) -> Result<Self> {
         if child_number.is_hardened() {
-            Self::from_bytes(other)
+            Self::try_from(other).map_err(|_| Error::InvalidKeyData)
         } else {
             Ok(self.clone())
         }
@@ -72,21 +52,9 @@ impl BIP32PublicKey for ed25519::sha512::PublicKey {
 impl BIP32PrivateKey for ed25519::blake2b::PrivateKey {
     type BIP32PublicKey = ed25519::blake2b::PublicKey;
 
-    fn from_bytes(bytes: &[u8]) -> Result<Self> {
-        ed25519::blake2b::PrivateKey::try_from(bytes).map_err(|_| Error::Crypto)
-    }
-
-    fn from_hex(hex: &str) -> Result<Self> {
-        ed25519::blake2b::PrivateKey::try_from(hex).map_err(|_| Error::Crypto)
-    }
-
-    fn to_bytes(&self) -> Vec<u8> {
-        self.to_zeroizing_vec().to_vec()
-    }
-
     fn derive_child(&self, other: &[u8], child_number: ChildNumber) -> Result<Self> {
         if child_number.is_hardened() {
-            Self::from_bytes(other)
+            Self::try_from(other).map_err(|_| Error::InvalidKeyData)
         } else {
             Ok(self.clone())
         }
@@ -106,17 +74,9 @@ impl BIP32PrivateKey for ed25519::blake2b::PrivateKey {
 }
 
 impl BIP32PublicKey for ed25519::blake2b::PublicKey {
-    fn from_bytes(bytes: &[u8]) -> Result<Self> {
-        ed25519::blake2b::PublicKey::try_from(bytes).map_err(|_| Error::Crypto)
-    }
-
-    fn to_bytes(&self) -> Vec<u8> {
-        self.to_vec()
-    }
-
     fn derive_child(&self, other: &[u8], child_number: ChildNumber) -> Result<Self> {
         if child_number.is_hardened() {
-            Self::from_bytes(other)
+            Self::try_from(other).map_err(|_| Error::InvalidKeyData)
         } else {
             Ok(self.clone())
         }

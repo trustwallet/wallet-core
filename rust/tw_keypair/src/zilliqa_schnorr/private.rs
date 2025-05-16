@@ -20,6 +20,7 @@ use k256::{
 use rfc6979::HmacDrbg;
 use secp256k1::rand;
 use sha2::{Digest, Sha256};
+use tw_misc::traits::ToBytesVec;
 use std::ops::Deref;
 use std::str::FromStr;
 use tw_encoding::hex;
@@ -115,6 +116,12 @@ impl Deref for PrivateKey {
 
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+impl ToBytesVec for PrivateKey {
+    fn to_vec(&self) -> Vec<u8> {
+        self.0.to_bytes().to_vec()
     }
 }
 

@@ -4,24 +4,21 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use bip32::{ChainCode, ChildNumber, Error, KeyFingerprint, Result, KEY_SIZE};
+use bip32::{ChainCode, ChildNumber, KeyFingerprint, KEY_SIZE};
 use sha2::digest::Mac;
 use tw_hash::hasher::{Hasher, StatefulHasher};
 use tw_hash::hmac::HmacSha512;
+use tw_misc::traits::{FromSlice, ToBytesVec};
+
+use crate::crypto_hd_node::error::{Error, Result};
 
 /// Trait for key types which can be derived using BIP32.
-pub trait BIP32PublicKey: Sized + Clone {
-    /// Initialize this key from bytes.
-    fn from_bytes(bytes: &[u8]) -> Result<Self>;
-
-    /// Serialize this key as bytes.
-    fn to_bytes(&self) -> Vec<u8>;
-
+pub trait BIP32PublicKey: Sized + Clone + ToBytesVec + FromSlice {
     /// Compute a 4-byte key fingerprint for this public key.
     ///
     /// Default implementation uses `RIPEMD160(SHA256(public_key))`.
     fn fingerprint(&self, hasher: Hasher) -> KeyFingerprint {
-        let digest = hasher.hash(self.to_bytes().as_slice());
+        let digest = hasher.hash(self.to_vec().as_slice());
         digest[..4].try_into().expect("digest truncated")
     }
 
@@ -46,12 +43,12 @@ pub trait BIP32PublicKey: Sized + Clone {
     ) -> Result<(Vec<u8>, ChainCode)> {
         if child_number.is_hardened() {
             // Cannot derive child public keys for hardened `ChildNumber`s
-            return Err(Error::ChildNumber);
+            return Err(Error::InvalidChildNumber);
         }
 
-        let mut hmac = HmacSha512::new_from_slice(chain_code).map_err(|_| Error::Crypto)?;
+        let mut hmac = HmacSha512::new_from_slice(chain_code).expect("Should not fail");
 
-        hmac.update(&self.to_bytes());
+        hmac.update(&self.to_vec());
         hmac.update(&child_number.to_bytes());
 
         let result = hmac.finalize().into_bytes();

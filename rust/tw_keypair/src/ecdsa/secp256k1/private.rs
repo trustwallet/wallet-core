@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use std::str::FromStr;
+
 use crate::ecdsa::secp256k1::public::PublicKey;
 use crate::ecdsa::secp256k1::Signature;
 use crate::traits::DerivableKeyTrait;
@@ -12,6 +14,7 @@ use k256::elliptic_curve::sec1::ToEncodedPoint;
 use k256::{AffinePoint, ProjectivePoint};
 use tw_encoding::hex;
 use tw_hash::H256;
+use tw_misc::traits::ToBytesVec;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::{ZeroizeOnDrop, Zeroizing};
 
@@ -77,6 +80,20 @@ impl<'a> TryFrom<&'a str> for PrivateKey {
     fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
         let bytes = Zeroizing::new(hex::decode(hex).map_err(|_| KeyPairError::InvalidSecretKey)?);
         Self::try_from(bytes.as_slice())
+    }
+}
+
+impl FromStr for PrivateKey {
+    type Err = KeyPairError;
+
+    fn from_str(hex: &str) -> Result<Self, Self::Err> {
+        Self::try_from(hex)
+    }
+}
+
+impl ToBytesVec for PrivateKey {
+    fn to_vec(&self) -> Vec<u8> {
+        self.secret.to_bytes().to_vec()
     }
 }
 
