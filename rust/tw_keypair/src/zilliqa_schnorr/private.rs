@@ -20,10 +20,10 @@ use k256::{
 use rfc6979::HmacDrbg;
 use secp256k1::rand;
 use sha2::{Digest, Sha256};
-use tw_misc::traits::ToBytesVec;
 use std::ops::Deref;
 use std::str::FromStr;
 use tw_encoding::hex;
+use tw_misc::traits::ToBytesVec;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::ZeroizeOnDrop;
 use zeroize::Zeroizing;
