@@ -15,7 +15,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
     auto tx = signer.buildTransaction(input);
 
-    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveSECP256k1);
     signer.sign(privateKey, tx);
 
     auto output = Proto::SigningOutput();
@@ -29,7 +29,7 @@ void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const 
     transaction.hash = this->hash(transaction);
     transaction.chainID = chainID;
     transaction.algorithm = 1;
-    transaction.signature = privateKey.sign(transaction.hash, TWCurveSECP256k1);
+    transaction.signature = privateKey.sign(transaction.hash);
     transaction.serializeToRaw();
 }
 

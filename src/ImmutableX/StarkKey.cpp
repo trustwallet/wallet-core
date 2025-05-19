@@ -34,11 +34,11 @@ std::string grindKey(const Data& seed) {
 PrivateKey getPrivateKeyFromSeed(const Data& seed, const DerivationPath& path) {
     auto key = HDWallet<32>::bip32DeriveRawSeed(TWCoinTypeEthereum, seed, path);
     auto data = parse_hex(grindKey(key.bytes), true);
-    return PrivateKey(data);
+    return PrivateKey(data, TWCurveStarkex);
 }
 
 PrivateKey getPrivateKeyFromEthPrivKey(const PrivateKey& ethPrivKey) {
-    return PrivateKey(parse_hex(ImmutableX::grindKey(ethPrivKey.bytes), true));
+    return PrivateKey(parse_hex(ImmutableX::grindKey(ethPrivKey.bytes), true), TWCurveStarkex);
 }
 
 PrivateKey getPrivateKeyFromRawSignature(const Data& signature, const DerivationPath& derivationPath) {

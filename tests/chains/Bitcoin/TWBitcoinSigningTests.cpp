@@ -46,7 +46,7 @@ SigningInput buildInputP2PKH(bool omitKey = false) {
     input.changeAddress = "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU";
     input.coinType = TWCoinTypeBitcoin;
 
-    auto utxoKey0 = PrivateKey(parse_hex("bbc27228ddcb9209d7fd6f36b02f7dfa6252af40bb2f1cbc7a557da8027ff866"));
+    auto utxoKey0 = PrivateKey(parse_hex("bbc27228ddcb9209d7fd6f36b02f7dfa6252af40bb2f1cbc7a557da8027ff866"), TWCurveSECP256k1);
     auto pubKey0 = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubkeyHash0 = Hash::ripemd(Hash::sha256(pubKey0.bytes));
     assert(hex(utxoPubkeyHash0) == "b7cd046b6d522a3d61dbcb5235c0e9cc97265457");
@@ -54,7 +54,7 @@ SigningInput buildInputP2PKH(bool omitKey = false) {
         input.privateKeys.push_back(utxoKey0);
     }
 
-    auto utxoKey1 = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"));
+    auto utxoKey1 = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"), TWCurveSECP256k1);
     auto pubKey1 = utxoKey1.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubkeyHash1 = Hash::ripemd(Hash::sha256(pubKey1.bytes));
     assert(hex(utxoPubkeyHash1) == "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
@@ -84,7 +84,7 @@ SigningInput buildInputP2PKH(bool omitKey = false) {
 }
 
 TEST(BitcoinSigning, SpendMinimumAmountP2WPKH) {
-    auto myPrivateKey = PrivateKey(parse_hex("9ea2172511ed73ae0096be8e593c3b75631700edaf729f1abbae607314a20e35"));
+    auto myPrivateKey = PrivateKey(parse_hex("9ea2172511ed73ae0096be8e593c3b75631700edaf729f1abbae607314a20e35"), TWCurveSECP256k1);
 
     auto myPublicKey = myPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(myPublicKey.bytes));
@@ -474,7 +474,7 @@ TEST(BitcoinSigning, SignPlanTransactionWithDustAmount) {
 
 // If the change amount is less than "dust", there should not be a change output.
 TEST(BitcoinSigning, SignPlanTransactionNoChange) {
-    const auto myPrivateKey = PrivateKey(parse_hex("9ea2172511ed73ae0096be8e593c3b75631700edaf729f1abbae607314a20e35"));
+    const auto myPrivateKey = PrivateKey(parse_hex("9ea2172511ed73ae0096be8e593c3b75631700edaf729f1abbae607314a20e35"), TWCurveSECP256k1);
     auto myPublicKey = myPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(myPublicKey.bytes));
     auto redeemScript = Script::buildPayToWitnessPublicKeyHash(utxoPubkeyHash);
@@ -560,7 +560,7 @@ TEST(BitcoinSigning, SignPlanTransactionNoChange) {
 
 // Not enough funds to send requested amount after UTXO dust filtering.
 TEST(BitcoinSigning, SignPlanTransactionNotSufficientAfterDustFiltering) {
-    const auto myPrivateKey = PrivateKey(parse_hex("9ea2172511ed73ae0096be8e593c3b75631700edaf729f1abbae607314a20e35"));
+    const auto myPrivateKey = PrivateKey(parse_hex("9ea2172511ed73ae0096be8e593c3b75631700edaf729f1abbae607314a20e35"), TWCurveSECP256k1);
     auto myPublicKey = myPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(myPublicKey.bytes));
     auto redeemScript = Script::buildPayToWitnessPublicKeyHash(utxoPubkeyHash);
@@ -628,7 +628,7 @@ TEST(BitcoinSigning, SignPlanTransactionNotSufficientAfterDustFiltering) {
 // Deposit 0.0001 BTC from bc1q2sphzvc2uqmxqte2w9dd4gzy4sy9vvfv0me9ke to 0xa8491D40d4F71A752cA41DA0516AEd80c33a1B56 on ZETA mainnet.
 // https://www.zetachain.com/docs/developers/omnichain/bitcoin/#example-1-deposit-btc-into-an-account-in-zevm
 TEST(BitcoinSigning, SignDepositBtcToZetaChain) {
-    const auto myPrivateKey = PrivateKey(parse_hex("428d66be0b5a620f126a00fa67637222ce3dc9badfe5c605189520760810cfac"));
+    const auto myPrivateKey = PrivateKey(parse_hex("428d66be0b5a620f126a00fa67637222ce3dc9badfe5c605189520760810cfac"), TWCurveSECP256k1);
     auto myPublicKey = myPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(myPublicKey.bytes));
     auto redeemScript = Script::buildPayToWitnessPublicKeyHash(utxoPubkeyHash);
@@ -795,7 +795,7 @@ TEST(BitcoinSigning, SignP2WPKH_Bip143) {
     input.changeAddress = "16TZ8J6Q5iZKBWizWzFAYnrsaox5Z5aBRV";
 
     const auto hash0 = parse_hex("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f");
-    const auto utxoKey0 = PrivateKey(parse_hex("bbc27228ddcb9209d7fd6f36b02f7dfa6252af40bb2f1cbc7a557da8027ff866"));
+    const auto utxoKey0 = PrivateKey(parse_hex("bbc27228ddcb9209d7fd6f36b02f7dfa6252af40bb2f1cbc7a557da8027ff866"), TWCurveSECP256k1);
     const auto pubKey0 = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
     EXPECT_EQ(hex(pubKey0.bytes), "03c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432");
 
@@ -806,7 +806,7 @@ TEST(BitcoinSigning, SignP2WPKH_Bip143) {
     input.privateKeys.push_back(utxoKey0);
 
     const auto hash1 = parse_hex("ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a");
-    const auto utxoKey1 = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"));
+    const auto utxoKey1 = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"), TWCurveSECP256k1);
     const auto pubKey1 = utxoKey1.getPublicKey(TWPublicKeyTypeSECP256k1);
     EXPECT_EQ(hex(pubKey1.bytes), "025476c2e83188368da1ff3e292e7acafcdb3566bb0ad253f62fc70f07aeee6357");
     const auto utxoPubkeyHash1 = Hash::ripemd(Hash::sha256(pubKey1.bytes));
@@ -882,13 +882,13 @@ SigningInput buildInputP2WPKH(int64_t amount, TWBitcoinSigHashType hashType, int
     input.changeAddress = "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU";
     input.coinType = TWCoinTypeBitcoin;
 
-    auto utxoKey0 = PrivateKey(parse_hex("bbc27228ddcb9209d7fd6f36b02f7dfa6252af40bb2f1cbc7a557da8027ff866"));
+    auto utxoKey0 = PrivateKey(parse_hex("bbc27228ddcb9209d7fd6f36b02f7dfa6252af40bb2f1cbc7a557da8027ff866"), TWCurveSECP256k1);
     auto pubKey0 = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubkeyHash0 = Hash::ripemd(Hash::sha256(pubKey0.bytes));
     assert(hex(utxoPubkeyHash0) == "b7cd046b6d522a3d61dbcb5235c0e9cc97265457");
     input.privateKeys.push_back(utxoKey0);
 
-    auto utxoKey1 = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"));
+    auto utxoKey1 = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"), TWCurveSECP256k1);
     auto pubKey1 = utxoKey1.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubkeyHash1 = Hash::ripemd(Hash::sha256(pubKey1.bytes));
     assert(hex(utxoPubkeyHash1) == "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
@@ -1105,10 +1105,10 @@ SigningInput buildInputP2WSH(enum TWBitcoinSigHashType hashType, bool omitScript
     input.dustCalculator = std::make_shared<FixedDustCalculator>(50);
 
     if (!omitKeys) {
-        auto utxoKey0 = PrivateKey(parse_hex("ed00a0841cd53aedf89b0c616742d1d2a930f8ae2b0fb514765a17bb62c7521a"));
+        auto utxoKey0 = PrivateKey(parse_hex("ed00a0841cd53aedf89b0c616742d1d2a930f8ae2b0fb514765a17bb62c7521a"), TWCurveSECP256k1);
         input.privateKeys.push_back(utxoKey0);
 
-        auto utxoKey1 = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"));
+        auto utxoKey1 = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"), TWCurveSECP256k1);
         input.privateKeys.push_back(utxoKey1);
     }
 
@@ -1532,17 +1532,17 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     input.changeAddress = "1Bd1VA2bnLjoBk4ook3H19tZWETk8s6Ym5";
 
     auto key0 = parse_hex("730fff80e1413068a05b57d6a58261f07551163369787f349438ea38ca80fac6");
-    input.privateKeys.push_back(PrivateKey(key0));
+    input.privateKeys.push_back(PrivateKey(key0, TWCurveSECP256k1));
     auto key1 = parse_hex("11fa3d25a17cbc22b29c44a484ba552b5a53149d106d3d853e22fdd05a2d8bb3");
-    input.privateKeys.push_back(PrivateKey(key1));
+    input.privateKeys.push_back(PrivateKey(key1, TWCurveSECP256k1));
     auto key2 = parse_hex("77bf4141a87d55bdd7f3cd0bdccf6e9e642935fec45f2f30047be7b799120661");
-    input.privateKeys.push_back(PrivateKey(key2));
+    input.privateKeys.push_back(PrivateKey(key2, TWCurveSECP256k1));
     auto key3 = parse_hex("14af36970f5025ea3e8b5542c0f8ebe7763e674838d08808896b63c3351ffe49");
-    input.privateKeys.push_back(PrivateKey(key3));
+    input.privateKeys.push_back(PrivateKey(key3, TWCurveSECP256k1));
     auto key4 = parse_hex("fe9a95c19eef81dde2b95c1284ef39be497d128e2aa46916fb02d552485e0323");
-    input.privateKeys.push_back(PrivateKey(key4));
+    input.privateKeys.push_back(PrivateKey(key4, TWCurveSECP256k1));
     auto key5 = parse_hex("428a7aee9f0c2af0cd19af3cf1c78149951ea528726989b2e83e4778d2c3f890");
-    input.privateKeys.push_back(PrivateKey(key5));
+    input.privateKeys.push_back(PrivateKey(key5, TWCurveSECP256k1));
 
     auto redeemScript = Script::buildPayToWitnessScriptHash(parse_hex("a16b5755f7f6f96dbd65f5f0d6ab9418b89af4b1f14a1bb8a09062c35f0dcb54"));
     auto scriptHash = Hash::ripemd(Hash::sha256(redeemScript.bytes));
@@ -1657,10 +1657,10 @@ TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
     input.toAddress = "THIS-IS-NOT-A-BITCOIN-ADDRESS";
     input.changeAddress = "THIS-IS-NOT-A-BITCOIN-ADDRESS-EITHER";
 
-    auto utxoKey0 = PrivateKey(parse_hex("bbc27228ddcb9209d7fd6f36b02f7dfa6252af40bb2f1cbc7a557da8027ff866"));
+    auto utxoKey0 = PrivateKey(parse_hex("bbc27228ddcb9209d7fd6f36b02f7dfa6252af40bb2f1cbc7a557da8027ff866"), TWCurveSECP256k1);
     input.privateKeys.push_back(utxoKey0);
 
-    auto utxoKey1 = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"));
+    auto utxoKey1 = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"), TWCurveSECP256k1);
     input.privateKeys.push_back(utxoKey1);
 
     auto scriptPub1 = Script(parse_hex("00141d0f172a0ecb48aee1be1f2687d2963ae33f71a1"));
@@ -1738,7 +1738,7 @@ TEST(BitcoinSigning, Plan_10input_MaxAmount) {
     EXPECT_TRUE(verifyPlan(plan, {1'000'000, 1'010'000, 1'020'000, 1'030'000, 1'040'000, 1'050'000, 1'060'000, 1'070'000, 1'080'000, 1'090'000}, 10'449'278, 722));
 
     // Extend input with keys, reuse plan, Sign
-    auto privKey = PrivateKey(parse_hex(ownPrivateKey));
+    auto privKey = PrivateKey(parse_hex(ownPrivateKey), TWCurveSECP256k1);
     input.privateKeys.push_back(privKey);
     input.plan = plan;
 
@@ -1771,7 +1771,7 @@ TEST(BitcoinSigning, Sign_LitecoinReal_a85f) {
     input.toAddress = "ltc1q0dvup9kzplv6yulzgzzxkge8d35axkq4n45hum";
     input.changeAddress = ownAddress;
 
-    auto privKey = PrivateKey(parse_hex(ownPrivateKey));
+    auto privKey = PrivateKey(parse_hex(ownPrivateKey), TWCurveSECP256k1);
     input.privateKeys.push_back(privKey);
 
     auto utxo0Script = Script::lockScriptForAddress(ownAddress, coin);
@@ -1861,7 +1861,7 @@ TEST(BitcoinSigning, PlanAndSign_LitecoinReal_8435) {
     EXPECT_TRUE(verifyPlan(plan, {3'899'774}, 1'200'000, 141));
 
     // Extend input with keys and plan, for Sign
-    auto privKey = PrivateKey(parse_hex(ownPrivateKey));
+    auto privKey = PrivateKey(parse_hex(ownPrivateKey), TWCurveSECP256k1);
     input.privateKeys.push_back(privKey);
     input.plan = plan;
 
@@ -1946,7 +1946,7 @@ TEST(BitcoinSigning, Sign_ManyUtxos_400) {
     EXPECT_TRUE(verifyPlan(plan, subset, 300'000, 4'561));
 
     // Extend input with keys, reuse plan, Sign
-    auto privKey = PrivateKey(parse_hex(ownPrivateKey));
+    auto privKey = PrivateKey(parse_hex(ownPrivateKey), TWCurveSECP256k1);
     input.privateKeys.push_back(privKey);
     input.plan = plan;
 
@@ -2015,7 +2015,7 @@ TEST(BitcoinSigning, Sign_ManyUtxos_2000) {
     EXPECT_TRUE(verifyPlan(plan, subset, 2'000'000, 40'943));
 
     // Extend input with keys, reuse plan, Sign
-    auto privKey = PrivateKey(parse_hex(ownPrivateKey));
+    auto privKey = PrivateKey(parse_hex(ownPrivateKey), TWCurveSECP256k1);
     input.privateKeys.push_back(privKey);
     input.plan = plan;
 
@@ -2075,7 +2075,7 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
 
     // add signature
 
-    auto privkey = PrivateKey(parse_hex(ownPrivateKey));
+    auto privkey = PrivateKey(parse_hex(ownPrivateKey), TWCurveSECP256k1);
     auto pubkey = PrivateKey(privkey).getPublicKey(TWPublicKeyTypeSECP256k1);
     EXPECT_EQ(hex(pubkey.bytes), "036739829f2cfec79cfe6aaf1c22ecb7d4867dfd8ab4deb7121b36a00ab646caed");
 
@@ -2123,7 +2123,7 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
 TEST(BitcoinSigning, RedeemExtendedPubkeyUTXO) {
     auto wif = "L4BeKzm3AHDUMkxLRVKTSVxkp6Hz9FcMQPh18YCKU1uioXfovzwP";
     auto decoded = Base58::decodeCheck(wif);
-    auto key = PrivateKey(Data(decoded.begin() + 1, decoded.begin() + 33));
+    auto key = PrivateKey(Data(decoded.begin() + 1, decoded.begin() + 33), TWCurveSECP256k1);
     auto pubkey = key.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
     auto hash = Hash::sha256ripemd(pubkey.bytes.data(), pubkey.bytes.size());
 
@@ -2191,7 +2191,7 @@ TEST(BitcoinSigning, SignP2TR_5df51e) {
     input.changeAddress = ownAddress;
     input.coinType = coin;
 
-    auto utxoKey0 = PrivateKey(parse_hex(privateKey));
+    auto utxoKey0 = PrivateKey(parse_hex(privateKey), TWCurveSECP256k1);
     auto pubKey0 = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
     EXPECT_EQ(hex(pubKey0.bytes), "021e582a887bd94d648a9267143eb600449a8d59a0db0653740b1378067a6d0cee");
     EXPECT_EQ(SegwitAddress(pubKey0, "bc").string(), ownAddress);
@@ -2313,7 +2313,7 @@ TEST(BitcoinSigning, Build_OpReturn_THORChainSwap_eb4c) {
 }
 
 TEST(BitcoinSigning, Sign_OpReturn_THORChainSwap) {
-    PrivateKey privateKey = PrivateKey(parse_hex("6bd4096fa6f08bd3af2b437244ba0ca2d35045c5233b8d6796df37e61e974de5"));
+    PrivateKey privateKey = PrivateKey(parse_hex("6bd4096fa6f08bd3af2b437244ba0ca2d35045c5233b8d6796df37e61e974de5"), TWCurveSECP256k1);
     PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto ownAddress = SegwitAddress(publicKey, "bc");
     auto ownAddressString = ownAddress.string();

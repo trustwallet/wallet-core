@@ -66,7 +66,7 @@ TEST(TWPublicKeyTests, CompressedExtended) {
 }
 
 TEST(TWPublicKeyTests, Verify) {
-    const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveSECP256k1);
     const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
 
     const char* message = "Hello";
@@ -80,7 +80,7 @@ TEST(TWPublicKeyTests, Verify) {
 }
 
 TEST(TWPublicKeyTests, VerifyAsDER) {
-    const PrivateKey key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const PrivateKey key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveSECP256k1);
     const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
 
     const char* message = "Hello";

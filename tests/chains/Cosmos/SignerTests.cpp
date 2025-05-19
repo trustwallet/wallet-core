@@ -240,7 +240,7 @@ TEST(CosmosSigner, SignIbcTransferProtobuf_817101) {
     amountOfFee->set_amount("12500");
 
     auto privateKey = parse_hex("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af");
-    EXPECT_EQ(Cosmos::Address(TWCoinTypeCosmos, PrivateKey(privateKey).getPublicKey(TWPublicKeyTypeSECP256k1)).string(), "cosmos1mky69cn8ektwy0845vec9upsdphktxt03gkwlx");
+    EXPECT_EQ(Cosmos::Address(TWCoinTypeCosmos, PrivateKey(privateKey, TWCurveSECP256k1).getPublicKey(TWPublicKeyTypeSECP256k1)).string(), "cosmos1mky69cn8ektwy0845vec9upsdphktxt03gkwlx");
     input.set_private_key(privateKey.data(), privateKey.size());
 
     auto output = Proto::SigningOutput();

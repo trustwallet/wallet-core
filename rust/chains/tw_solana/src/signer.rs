@@ -40,7 +40,7 @@ impl SolanaSigner {
         let unsigned_msg = builder.build()?;
 
         let encoded_unsigned = bincode::serialize(&unsigned_msg)
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("Error serializing Solana Message as 'bincode'")?;
         let encoded_unsigned = encode(&encoded_unsigned);
 
@@ -48,7 +48,7 @@ impl SolanaSigner {
             TxSigner::sign_versioned(unsigned_msg, &signing_keys, &external_signatures)?;
 
         let encoded_tx = bincode::serialize(&signed_tx)
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
             .context("Error serializing Solana Transaction as 'bincode'")?;
         let encoded_tx = encode(&encoded_tx);
 

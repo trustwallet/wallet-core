@@ -38,7 +38,7 @@ pub struct CustomTypeBuilder<'a> {
     type_properties: &'a mut Vec<Property>,
 }
 
-impl<'a> CustomTypeBuilder<'a> {
+impl CustomTypeBuilder<'_> {
     pub fn add_property(&mut self, name: &str, property_type: PropertyType) -> &mut Self {
         self.type_properties.push(Property {
             name: name.to_string(),

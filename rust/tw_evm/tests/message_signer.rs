@@ -20,6 +20,9 @@ const EIP712_GREENFIELD: &str = include_str!("data/eip712_greenfield.json");
 const EIP712_FIXED_BYTES: &str = include_str!("data/eip712_fixed_bytes.json");
 const EIP712_LONG_BYTES: &str = include_str!("data/eip712_long_bytes.json");
 const EIP712_DIFFERENT_BYTES: &str = include_str!("data/eip712_different_bytes.json");
+const EIP7702_AUTHORIZATION: &str = include_str!("data/eip7702_authorization.json");
+const EIP7702_AUTHORIZATION_DECIMAL_STRING: &str =
+    include_str!("data/eip7702_authorization_decimal_string.json");
 
 struct SignVerifyTestInput {
     private_key: &'static str,
@@ -310,5 +313,27 @@ fn test_message_signer_sign_verify_eip712_different_bytes() {
         msg_type: Proto::MessageType::MessageType_typed,
         chain_id: None,
         signature: "48dc667cd8a53beb58ea6b1745f98c21b12e1a57587ce28bae07689dba3600d40cef2685dc8a68028d38f3e63289891868ecdf05e8affc275fee3001e51d6c581c",
+    });
+}
+
+#[test]
+fn test_message_signer_sign_eip7702_authorization() {
+    test_message_signer_sign_verify(SignVerifyTestInput {
+        private_key: "6f96f3aa7e8052170f1864f72a9a53606ee9c0d185188266cab895512a4bcf84",
+        msg: EIP7702_AUTHORIZATION,
+        msg_type: Proto::MessageType::MessageType_eip7702_authorization,
+        chain_id: None,
+        signature: "a2c790e864ff524e703c6a476609e0b738cdcd3a96628be0ef74cb5610a29a473908f07f762f4da896e7f8d3cdaad567c58aa81412ac6dd864eb5d3956a1f04c00",
+    });
+}
+
+#[test]
+fn test_message_signer_sign_eip7702_authorization_decimal_string() {
+    test_message_signer_sign_verify(SignVerifyTestInput {
+        private_key: "6f96f3aa7e8052170f1864f72a9a53606ee9c0d185188266cab895512a4bcf84",
+        msg: EIP7702_AUTHORIZATION_DECIMAL_STRING,
+        msg_type: Proto::MessageType::MessageType_eip7702_authorization,
+        chain_id: None,
+        signature: "a2c790e864ff524e703c6a476609e0b738cdcd3a96628be0ef74cb5610a29a473908f07f762f4da896e7f8d3cdaad567c58aa81412ac6dd864eb5d3956a1f04c00",
     });
 }

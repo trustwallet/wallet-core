@@ -26,6 +26,7 @@ public:
     std::string receiver;
     std::string receiverUsername;
     std::string guardian;
+    std::string relayer;
     std::string value;
     std::string data;
     uint64_t gasPrice;
@@ -37,6 +38,7 @@ public:
     Transaction();
 
     bool hasGuardian() const;
+    bool hasRelayer() const;
 };
 
 } // namespace TW::MultiversX

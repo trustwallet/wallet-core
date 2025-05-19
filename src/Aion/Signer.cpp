@@ -9,7 +9,7 @@ using namespace TW;
 namespace TW::Aion {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveED25519);
     auto transaction = Signer::buildTransaction(input);
     Signer::sign(key, transaction);
 
@@ -23,7 +23,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexcept {
     auto encoded = transaction.encode();
     auto hashData = Hash::blake2b(encoded, 32);
-    auto hashSignature = privateKey.sign(hashData, TWCurveED25519);
+    auto hashSignature = privateKey.sign(hashData);
     auto publicKeyData = privateKey.getPublicKey(TWPublicKeyTypeED25519).bytes;
 
     // Aion signature = pubKeyBytes + signatureBytes

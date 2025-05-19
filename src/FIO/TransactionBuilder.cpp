@@ -70,7 +70,7 @@ string TransactionBuilder::actionName(const Proto::SigningInput& input) {
 }
 
 string TransactionBuilder::sign(Proto::SigningInput in) {
-    PrivateKey privateKey(in.private_key());
+    PrivateKey privateKey(in.private_key(), TWCurveSECP256k1);
     PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     Address owner(publicKey);
     

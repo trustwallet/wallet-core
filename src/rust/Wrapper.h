@@ -20,6 +20,10 @@ inline std::shared_ptr<TWPublicKey> wrapTWPublicKey(TWPublicKey* publicKey) {
     return std::shared_ptr<TWPublicKey>(publicKey, tw_public_key_delete);
 }
 
+inline std::shared_ptr<TWPrivateKey> wrapTWPrivateKey(TWPrivateKey* privateKey) {
+    return std::shared_ptr<TWPrivateKey>(privateKey, tw_private_key_delete);
+}
+
 struct TWDataVectorWrapper {
     TWDataVectorWrapper():
         ptr(std::shared_ptr<TWDataVector>(tw_data_vector_create(), Rust::tw_data_vector_delete)) {
@@ -62,6 +66,8 @@ struct TWDataWrapper {
     TWDataWrapper(TWData *ptr): ptr(std::shared_ptr<TWData>(ptr, tw_data_delete)) {
     }
 
+    TWDataWrapper() = default;
+
     ~TWDataWrapper() = default;
 
     TWData* get() const {
@@ -97,6 +103,8 @@ struct TWStringWrapper {
         auto* stringRaw = tw_string_create_with_utf8_bytes(string);
         ptr = std::shared_ptr<TWString>(stringRaw, tw_string_delete);
     }
+
+    TWStringWrapper() = default;
 
     ~TWStringWrapper() = default;
 

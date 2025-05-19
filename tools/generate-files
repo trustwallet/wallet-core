@@ -56,19 +56,22 @@ mkdir -p swift/Sources/Generated/Protobuf swift/Sources/Generated/Enums
 # Generate coins info from registry.json
 codegen/bin/coins
 
+# Generate rust bindgen
+tools/rust-bindgen "$@"
+
 # Generate interface code, Swift bindings excluded.
 codegen/bin/codegen
 
 # Convert doxygen comments to appropriate format
 tools/doxygen_convert_comments
 
-# Generate rust bindgen
-tools/rust-bindgen "$@"
-
 # Generate Java, C++ and Swift Protobuf files
 
 if [ -x "$(command -v protoc-gen-swift)" ] && isTargetSpecified "ios"; then
     "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=lite:jni/proto --swift_out=swift/Sources/Generated/Protobuf --swift_opt=Visibility=Public src/proto/*.proto
+    # Replace SwiftProtobuf with WalletCoreSwiftProtobuf
+     find swift/Sources/Generated/Protobuf -name "*.swift" -exec sed -i '' 's/import SwiftProtobuf/import WalletCoreSwiftProtobuf/g' {} \;
+     find swift/Sources/Generated/Protobuf -name "*.swift" -exec sed -i '' 's/SwiftProtobuf./WalletCoreSwiftProtobuf./g' {} \;
 else
     "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=lite:jni/proto src/proto/*.proto
 fi

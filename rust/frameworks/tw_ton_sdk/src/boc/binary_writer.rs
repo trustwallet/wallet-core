@@ -21,7 +21,7 @@ impl BinaryWriter {
     pub fn write_bit(&mut self, bit: bool) -> CellResult<&mut Self> {
         self.writer
             .write_bit(bit)
-            .tw_err(|_| CellErrorType::BagOfCellsSerializationError)?;
+            .tw_err(CellErrorType::BagOfCellsSerializationError)?;
         Ok(self)
     }
 
@@ -31,14 +31,14 @@ impl BinaryWriter {
     {
         self.writer
             .write(bits, val)
-            .tw_err(|_| CellErrorType::BagOfCellsSerializationError)?;
+            .tw_err(CellErrorType::BagOfCellsSerializationError)?;
         Ok(self)
     }
 
     pub fn write_bytes(&mut self, bytes: &[u8]) -> CellResult<&mut Self> {
         self.writer
             .write_bytes(bytes)
-            .tw_err(|_| CellErrorType::BagOfCellsSerializationError)?;
+            .tw_err(CellErrorType::BagOfCellsSerializationError)?;
         Ok(self)
     }
 
@@ -54,7 +54,7 @@ impl BinaryWriter {
         } else {
             self.write_bytes(&data[..data_len - 1])?;
             let last_byte = data[data_len - 1];
-            let l = last_byte | 1 << (8 - rest_bits - 1);
+            let l = last_byte | (1 << (8 - rest_bits - 1));
             self.write(8, l)?;
         }
 

@@ -16,7 +16,7 @@ impl ToJson for Json {
     }
 }
 
-impl<'a> ToJson for Cow<'a, str> {
+impl ToJson for Cow<'_, str> {
     #[track_caller]
     fn to_json(&self) -> Json {
         self.as_ref().to_json()
@@ -30,7 +30,7 @@ impl ToJson for String {
     }
 }
 
-impl<'a> ToJson for &'a str {
+impl ToJson for &str {
     #[track_caller]
     fn to_json(&self) -> Json {
         serde_json::from_str(self).expect("Error on deserializing JSON from string")

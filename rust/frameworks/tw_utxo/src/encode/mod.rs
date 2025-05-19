@@ -24,4 +24,10 @@ pub trait Encodable {
 
     /// Hint about the size of serialized struct.
     fn encoded_size(&self) -> usize;
+
+    fn encode_out(&self) -> Data {
+        let mut stream = Stream::new();
+        self.encode(&mut stream);
+        stream.out()
+    }
 }

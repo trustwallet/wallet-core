@@ -7,7 +7,7 @@ use crate::modules::tx_builder::BitcoinChainInfo;
 use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
-use tw_hash::hasher::sha256_ripemd;
+use tw_hash::hasher::StatefulHasher;
 use tw_hash::sha2::sha256;
 use tw_hash::{Hash, H256};
 use tw_keypair::{ecdsa, schnorr};
@@ -71,7 +71,8 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
         redeem: &Proto::mod_Output::RedeemScriptOrHash,
     ) -> SigningResult<TransactionOutput> {
         let redeem_hash =
-            Self::redeem_hash_from_proto(redeem, sha256_ripemd).context("P2SH builder")?;
+            Self::redeem_hash_from_proto(redeem, |bytes| Context::PUBLIC_KEY_HASHER.hash(bytes))
+                .context("P2SH builder")?;
         Ok(self.prepare_builder()?.p2sh_from_hash(&redeem_hash))
     }
 
@@ -118,7 +119,7 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
         tweaked_pubkey: &[u8],
     ) -> SigningResult<TransactionOutput> {
         let tweaked_x_only = H256::try_from(tweaked_pubkey)
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid P2TR tweaked public key. Expected 32 bytes x-only public key")?;
         Ok(self
             .prepare_builder()?
@@ -136,7 +137,7 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
             )?;
 
         let merkle_root = H256::try_from(taproot_script_path.merkle_root.as_ref())
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid OutputTaprootScriptPath.merkle_root. Must be a 32 byte array")?;
 
         Ok(self
@@ -195,7 +196,7 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
             },
         };
         Hash::<N>::try_from(hash_data.as_slice())
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .with_context(|| format!("Expected exactly {N} bytes redeem script hash"))
     }
 
@@ -204,7 +205,10 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
             return SigningError::err(SigningErrorType::Error_invalid_params)
                 .context("Transaction Output amount cannot be negative");
         }
-        Ok(OutputBuilder::new(self.output.value))
+        Ok(OutputBuilder::with_public_key_hasher(
+            self.output.value,
+            Context::PUBLIC_KEY_HASHER,
+        ))
     }
 
     /// Tries to convert [`Proto::PublicKeyOrHash`] to [`Hash<N>`].
@@ -215,7 +219,9 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
         use Proto::mod_PublicKeyOrHash::OneOfvariant as PublicKeyOrHashType;
 
         let hash_data = match input.variant {
-            PublicKeyOrHashType::pubkey(ref pubkey) => sha256_ripemd(pubkey.as_ref()),
+            PublicKeyOrHashType::pubkey(ref pubkey) => {
+                Context::PUBLIC_KEY_HASHER.hash(pubkey.as_ref())
+            },
             PublicKeyOrHashType::hash(ref hash) => hash.to_vec(),
             PublicKeyOrHashType::None => {
                 return SigningError::err(SigningErrorType::Error_invalid_params)
@@ -223,7 +229,7 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
             },
         };
         Hash::<N>::try_from(hash_data.as_slice())
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .with_context(|| format!("Expected exactly {N} bytes public key hash"))
     }
 }

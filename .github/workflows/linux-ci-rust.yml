@@ -29,7 +29,7 @@ jobs:
           tools/install-sys-dependencies-linux
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.3
+        uses: mozilla-actions/sccache-action@v0.0.8
 
       - name: Cache Rust
         uses: Swatinem/rust-cache@v2
@@ -59,6 +59,10 @@ jobs:
         run: |
           tools/check-coverage rust/coverage.stats rust/coverage.info
 
+      - name: Run Doc tests
+        run: |
+          tools/rust-test doc
+
   # Run Rust tests in WASM.
   test-wasm:
     runs-on: ubuntu-24.04
@@ -70,7 +74,7 @@ jobs:
           tools/install-sys-dependencies-linux
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.3
+        uses: mozilla-actions/sccache-action@v0.0.8
 
       - name: Cache Rust
         uses: Swatinem/rust-cache@v2
@@ -101,7 +105,7 @@ jobs:
           tools/install-sys-dependencies-mac
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.3
+        uses: mozilla-actions/sccache-action@v0.0.8
 
       - name: Cache Rust
         uses: Swatinem/rust-cache@v2

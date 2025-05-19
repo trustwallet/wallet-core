@@ -18,9 +18,9 @@ pub struct StrideLiquidStakeMessage<Address: CosmosAddress> {
 impl<Address: CosmosAddress> CosmosMessage for StrideLiquidStakeMessage<Address> {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let proto_msg = stride::stakeibc::MsgLiquidStake {
-            creator: self.creator.to_string(),
-            amount: self.amount.to_string(),
-            host_denom: self.host_denom.clone(),
+            creator: self.creator.to_string().into(),
+            amount: self.amount.to_string().into(),
+            host_denom: self.host_denom.clone().into(),
         };
         Ok(to_any(&proto_msg))
     }
@@ -36,10 +36,10 @@ pub struct StrideLiquidRedeemMessage {
 impl CosmosMessage for StrideLiquidRedeemMessage {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let proto_msg = stride::stakeibc::MsgRedeemStake {
-            creator: self.creator.clone(),
-            amount: self.amount.to_string(),
-            receiver: self.receiver.clone(),
-            host_zone: self.host_zone.clone(),
+            creator: self.creator.clone().into(),
+            amount: self.amount.to_string().into(),
+            receiver: self.receiver.clone().into(),
+            host_zone: self.host_zone.clone().into(),
         };
         Ok(to_any(&proto_msg))
     }

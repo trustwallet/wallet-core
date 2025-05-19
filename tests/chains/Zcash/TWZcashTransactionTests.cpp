@@ -181,7 +181,7 @@ TEST(TWZcashTransaction, BlossomSigning) {
     utxo0->set_amount(27615);
 
     // real key 1p "m/44'/133'/0'/0/14"
-    auto utxoKey0 = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
+    auto utxoKey0 = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"), TWCurveSECP256k1);
     auto utxoAddr0 = TW::deriveAddress(TWCoinTypeZcash, utxoKey0);
     auto script0 = Bitcoin::Script::lockScriptForAddress(utxoAddr0, TWCoinTypeZcash);
     utxo0->set_script(script0.bytes.data(), script0.bytes.size());

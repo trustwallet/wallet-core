@@ -8,16 +8,20 @@ use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::base64::STANDARD;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_encoding::{base58, base64};
+use tw_keypair::ed25519::sha512::KeyPair;
+use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_memory::test_utils::tw_data_vector_helper::TWDataVectorHelper;
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
+use tw_misc::traits::ToBytesVec;
 use tw_proto::Common::Proto::SigningError;
 use tw_proto::Solana::Proto::{self};
 use tw_solana::SOLANA_ALPHABET;
 use wallet_core_rs::ffi::solana::transaction::{
-    tw_solana_transaction_get_compute_unit_limit, tw_solana_transaction_get_compute_unit_price,
-    tw_solana_transaction_set_compute_unit_limit, tw_solana_transaction_set_compute_unit_price,
-    tw_solana_transaction_set_fee_payer, tw_solana_transaction_update_blockhash_and_sign,
+    tw_solana_transaction_add_instruction, tw_solana_transaction_get_compute_unit_limit,
+    tw_solana_transaction_get_compute_unit_price, tw_solana_transaction_set_compute_unit_limit,
+    tw_solana_transaction_set_compute_unit_price, tw_solana_transaction_set_fee_payer,
+    tw_solana_transaction_update_blockhash_and_sign,
 };
 
 #[test]
@@ -363,4 +367,145 @@ fn test_solana_transaction_set_fee_payer_already_exists() {
     // The fee payer is already in the transaction.
     // We expect tw_solana_transaction_set_fee_payer to return null.
     assert_eq!(updated_tx.to_string(), None);
+}
+
+#[test]
+fn test_solana_transaction_add_instruction() {
+    // Step 1 - Prepare a transaction.
+    // The original transaction contains the following instruction:
+    // Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ transfer 0.001 SOL to B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V
+    let encoded_tx_str = "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEDyyrwibVqVXc3vBcY4MvyMs9bAuFO4Kp8ZnUjP19vm1eUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA3G7dwaciEKWYvJQnuUEK1pCl+Zbd0ANxw8XYKfUO2eQBAgIAAQwCAAAAQEIPAAAAAAA=";
+    let encoded_tx = TWStringHelper::create(encoded_tx_str);
+
+    // Step 2 - Prepare a new instruction (sender and receiver are already in the transaction):
+    // YUz1AupPEy1vttBeDS7sXYZFhQJppcXMzjDiDx18Srf transfer 0.003 SOL to d8DiHEeHKdXkM2ZupT86mrvavhmJwUZjHPCzMiB5Lqb
+    let instruction_str = r#"{"programId":"11111111111111111111111111111111","accounts":[{"pubkey":"YUz1AupPEy1vttBeDS7sXYZFhQJppcXMzjDiDx18Srf","isSigner":true,"isWritable":true},{"pubkey":"d8DiHEeHKdXkM2ZupT86mrvavhmJwUZjHPCzMiB5Lqb","isSigner":false,"isWritable":true}],"data":"3Bxs4Z6oyhaczjLK"}"#;
+    let instruction = TWStringHelper::create(instruction_str);
+
+    // Step 3 - Add the instruction to the transaction.
+    let updated_tx = TWStringHelper::wrap(unsafe {
+        tw_solana_transaction_add_instruction(encoded_tx.ptr(), instruction.ptr())
+    });
+    let updated_tx = updated_tx.to_string().unwrap();
+    assert_eq!(updated_tx, "AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgABBcsq8Im1alV3N7wXGODL8jLPWwLhTuCqfGZ1Iz9fb5tXCBClNVEnVmpLrtsxbBm36nAMo3+zrd60SK3Q+9MM/byUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWglBEmXIJbeoWIaTmY86w/B7o6y+gDQmzmrQfxH7VFEOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADcbt3BpyIQpZi8lCe5QQrWkKX5lt3QA3HDxdgp9Q7Z5AIEAgACDAIAAABAQg8AAAAAAAQCAQMMAgAAAMDGLQAAAAAA");
+
+    // Step 4 - Obtain preimage hash.
+    let tx_data = base64::decode(&updated_tx, STANDARD).unwrap();
+    let mut decoder = TransactionDecoderHelper::<Proto::DecodingTransactionOutput>::default();
+    let output = decoder.decode(CoinType::Solana, tx_data);
+    assert_eq!(output.error, SigningError::OK);
+    let decoded_tx = output.transaction.unwrap();
+    let signing_input = Proto::SigningInput {
+        raw_message: Some(decoded_tx),
+        tx_encoding: Proto::Encoding::Base64,
+        ..Proto::SigningInput::default()
+    };
+
+    let mut pre_imager = PreImageHelper::<Proto::PreSigningOutput>::default();
+    let preimage_output = pre_imager.pre_image_hashes(CoinType::Solana, &signing_input);
+    assert_eq!(preimage_output.error, SigningError::OK);
+    assert_eq!(
+        preimage_output.data.to_hex(),
+        "02000105cb2af089b56a557737bc1718e0cbf232cf5b02e14ee0aa7c6675233f5f6f9b570810a5355127566a4baedb316c19b7ea700ca37fb3addeb448add0fbd30cfdbc94c3890fa8d4bc04ab2a676d2cafea5cdc899ecd95a9cbe593e9df258759685a09411265c825b7a8588693998f3ac3f07ba3acbe803426ce6ad07f11fb54510e0000000000000000000000000000000000000000000000000000000000000000dc6eddc1a72210a598bc9427b9410ad690a5f996ddd00371c3c5d829f50ed9e402040200020c0200000040420f0000000000040201030c02000000c0c62d0000000000"
+    );
+
+    // Step 5 - Get signatures.
+    let keypair1 =
+        KeyPair::try_from("4b9d6f57d28b06cbfa1d4cc710953e62d653caf853415c56ffd9d150acdeb7f7")
+            .unwrap();
+    let signature1 = keypair1
+        .sign(preimage_output.data.to_vec())
+        .unwrap()
+        .to_vec();
+    let public_key1 = keypair1.public().to_vec();
+
+    let keypair2 =
+        KeyPair::try_from("1c0774714429e780ca1f12151fb3a7e672bdbef0ce49d4ea9467ae8699af3451")
+            .unwrap();
+    let signature2 = keypair2
+        .sign(preimage_output.data.to_vec())
+        .unwrap()
+        .to_vec();
+    let public_key2 = keypair2.public().to_vec();
+
+    // Step 6 - Compile transaction info.
+    let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
+    let output = compiler.compile(
+        CoinType::Solana,
+        &signing_input,
+        vec![signature1, signature2],
+        vec![public_key1, public_key2],
+    );
+
+    assert_eq!(output.error, SigningError::OK);
+    // Successfully broadcasted tx:
+    // https://explorer.solana.com/tx/3JqWkMtjepGLq9CKTjApNUfa5VGRwV3XPS2hHzAoafLXFdf9khxehhHQnvhYbszYdY9DZzCFgabceSxCsrAhZ4Yv?cluster=devnet
+    let expected = "AnNqW1ZasaRYorSc9KK2O/GxfEmKk3snmjOnqBNAeloK9BSUSONuXsxGSVT/UeDpiTmIkgupYjVeH6OlaXxnHQejdab2170qEk0Z3WgjGKqhqcl9RG1z5cUkK4pdqF1iM4qm6kbAM/f+mdKq4HwIyRODKRjHwm0OtV2zYnmkSM8FAgABBcsq8Im1alV3N7wXGODL8jLPWwLhTuCqfGZ1Iz9fb5tXCBClNVEnVmpLrtsxbBm36nAMo3+zrd60SK3Q+9MM/byUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWglBEmXIJbeoWIaTmY86w/B7o6y+gDQmzmrQfxH7VFEOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADcbt3BpyIQpZi8lCe5QQrWkKX5lt3QA3HDxdgp9Q7Z5AIEAgACDAIAAABAQg8AAAAAAAQCAQMMAgAAAMDGLQAAAAAA";
+    assert_eq!(output.encoded, expected);
+}
+
+#[test]
+fn test_solana_transaction_add_instruction_accounts_already_exist() {
+    // Step 1 - Prepare a transaction.
+    // The original transaction contains the following instruction:
+    // Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ transfer 0.001 SOL to B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V
+    let encoded_tx_str = "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEDyyrwibVqVXc3vBcY4MvyMs9bAuFO4Kp8ZnUjP19vm1eUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKGmdal3puKe8Ts38zAeBNhPflrnIsh+y0vOJUCYnOOIBAgIAAQwCAAAAQEIPAAAAAAA=";
+    let encoded_tx = TWStringHelper::create(encoded_tx_str);
+
+    // Step 2 - Prepare a new instruction (sender and receiver are already in the transaction):
+    // Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ transfer 0.002 SOL to B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V
+    let instruction_str = r#"{"programId":"11111111111111111111111111111111","accounts":[{"pubkey":"Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ","isSigner":true,"isWritable":true},{"pubkey":"B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V","isSigner":false,"isWritable":true}],"data":"3Bxs4NMRjdEwjxAj"}"#;
+    let instruction = TWStringHelper::create(instruction_str);
+
+    // Step 3 - Add the instruction to the transaction.
+    let updated_tx = TWStringHelper::wrap(unsafe {
+        tw_solana_transaction_add_instruction(encoded_tx.ptr(), instruction.ptr())
+    });
+    let updated_tx = updated_tx.to_string().unwrap();
+    assert_eq!(updated_tx, "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEDyyrwibVqVXc3vBcY4MvyMs9bAuFO4Kp8ZnUjP19vm1eUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKGmdal3puKe8Ts38zAeBNhPflrnIsh+y0vOJUCYnOOICAgIAAQwCAAAAQEIPAAAAAAACAgABDAIAAACAhB4AAAAAAA==");
+
+    // Step 4 - Obtain preimage hash.
+    let tx_data = base64::decode(&updated_tx, STANDARD).unwrap();
+    let mut decoder = TransactionDecoderHelper::<Proto::DecodingTransactionOutput>::default();
+    let output = decoder.decode(CoinType::Solana, tx_data);
+    assert_eq!(output.error, SigningError::OK);
+    let decoded_tx = output.transaction.unwrap();
+    let signing_input = Proto::SigningInput {
+        raw_message: Some(decoded_tx),
+        tx_encoding: Proto::Encoding::Base64,
+        ..Proto::SigningInput::default()
+    };
+
+    let mut pre_imager = PreImageHelper::<Proto::PreSigningOutput>::default();
+    let preimage_output = pre_imager.pre_image_hashes(CoinType::Solana, &signing_input);
+    assert_eq!(preimage_output.error, SigningError::OK);
+    assert_eq!(
+        preimage_output.data.to_hex(),
+        "01000103cb2af089b56a557737bc1718e0cbf232cf5b02e14ee0aa7c6675233f5f6f9b5794c3890fa8d4bc04ab2a676d2cafea5cdc899ecd95a9cbe593e9df258759685a000000000000000000000000000000000000000000000000000000000000000028699d6a5de9b8a7bc4ecdfccc07813613df96b9c8b21fb2d2f38950262738e202020200010c0200000040420f0000000000020200010c0200000080841e0000000000"
+    );
+
+    // Step 5 - Get signature.
+    let keypair =
+        KeyPair::try_from("4b9d6f57d28b06cbfa1d4cc710953e62d653caf853415c56ffd9d150acdeb7f7")
+            .unwrap();
+    let signature = keypair
+        .sign(preimage_output.data.to_vec())
+        .unwrap()
+        .to_vec();
+    let public_key = keypair.public().to_vec();
+
+    // Step 6 - Compile transaction info.
+    let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
+    let output = compiler.compile(
+        CoinType::Solana,
+        &signing_input,
+        vec![signature],
+        vec![public_key],
+    );
+
+    assert_eq!(output.error, SigningError::OK);
+    // Successfully broadcasted tx:
+    // https://explorer.solana.com/tx/cBkG3BKyyWVCNbpW4GpUHPhZZyqaD9XUnEMaB7R4sNs51fhj8fsnUmpXdzhRmV483WQcgBwPCkKjrvqLmvP1Gug?cluster=devnet
+    let expected = "AR5Xqmoj8pkYuLazQMM6x79T9wp35xvnCua/a3YllOShi0pTPWLqZrHdYnZlBcX0wdV7Ef5DqKoQCrUxY2RyKwsBAAEDyyrwibVqVXc3vBcY4MvyMs9bAuFO4Kp8ZnUjP19vm1eUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKGmdal3puKe8Ts38zAeBNhPflrnIsh+y0vOJUCYnOOICAgIAAQwCAAAAQEIPAAAAAAACAgABDAIAAACAhB4AAAAAAA==";
+    assert_eq!(output.encoded, expected);
 }

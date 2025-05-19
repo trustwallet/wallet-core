@@ -119,7 +119,8 @@ class CoinAddressDerivationTests: XCTestCase {
                      .lightlink,
                      .blast,
                      .bounceBit,
-                     .zkLinkNova:
+                     .zkLinkNova,
+                     .sonic:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ronin:
@@ -202,6 +203,9 @@ class CoinAddressDerivationTests: XCTestCase {
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .polkadot:
                     let expectedResult = "13nN6BGAoJwd7Nw1XxeBCx5YcBXuYnL94Mh7i3xBprqVSsFk"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .polymesh:
+                    let expectedResult = "2DHK8VhBpacs9quk78AVP9TmmcG5iXi2oKtZqneSNsVXxCKw"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .qtum:
                     let expectedResult = "QhceuaTdeCZtcxmVc6yyEDEJ7Riu5gWFoF"

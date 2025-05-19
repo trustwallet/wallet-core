@@ -55,4 +55,55 @@ TWData *_Nonnull TWBarzGetPrefixedMsgHash(TWData* _Nonnull msgHash, TWString* _N
 /// \return The encoded bytes of diamondCut function call
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWBarzGetDiamondCutCode(TWData *_Nonnull input);
+
+/// Computes an Authorization hash in [EIP-7702 format](https://eips.ethereum.org/EIPS/eip-7702)
+/// `keccak256('0x05' || rlp([chain_id, address, nonce]))`.
+///
+/// \param chainId The chainId of the network
+/// \param contractAddress The address of the contract to be authorized
+/// \param nonce The nonce of the transaction
+/// \return The authorization hash
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWBarzGetAuthorizationHash(TWData* _Nonnull chainId, TWString* _Nonnull contractAddress, TWData* _Nonnull nonce);
+
+/// Returns the signed authorization hash
+///
+/// \param chainId The chainId of the network
+/// \param contractAddress The address of the contract to be authorized
+/// \param nonce The nonce of the transaction
+/// \param privateKey The private key
+/// \return A json string of the signed authorization
+TW_EXPORT_STATIC_METHOD
+TWString *_Nonnull TWBarzSignAuthorization(TWData* _Nonnull chainId, TWString* _Nonnull contractAddress, TWData* _Nonnull nonce, TWString* _Nonnull privateKey);
+
+/// Returns the encoded hash of the user operation
+///
+/// \param chainId The chainId of the network.
+/// \param codeAddress The address of the Biz Smart Contract.
+/// \param codeName The name of the Biz Smart Contract.
+/// \param codeVersion The version of the Biz Smart Contract.
+/// \param typeHash The type hash of the transaction.
+/// \param domainSeparatorHash The domain separator hash of the wallet.
+/// \param sender The address of the UserOperation sender.
+/// \param userOpHash The hash of the user operation.
+/// \return The encoded hash of the user operation
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWBarzGetEncodedHash(
+    TWData* _Nonnull chainId,
+    TWString* _Nonnull codeAddress,
+    TWString* _Nonnull codeName,
+    TWString* _Nonnull codeVersion,
+    TWString* _Nonnull typeHash,
+    TWString* _Nonnull domainSeparatorHash,
+    TWString* _Nonnull sender,
+    TWString* _Nonnull userOpHash);
+
+/// Signs a message using the private key
+///
+/// \param hash The hash to sign
+/// \param privateKey The private key
+/// \return The signature
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWBarzGetSignedHash(TWString* _Nonnull hash, TWString* _Nonnull privateKey);
+
 TW_EXTERN_C_END

@@ -24,7 +24,7 @@ TEST(TWBitcoinGoldAddress, Valid) {
 }
 
 TEST(TWBitcoinGoldAddress, PubkeyToAddress) {
-    const auto privateKey = PrivateKey(parse_hex(PRIVATE_KEY));
+    const auto privateKey = PrivateKey(parse_hex(PRIVATE_KEY), TWCurveSECP256k1);
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
 
     /// construct with public key

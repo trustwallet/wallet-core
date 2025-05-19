@@ -54,7 +54,7 @@ TEST(NeblCompiler, CompileWithSignatures) {
     ASSERT_EQ(hex(script0.bytes), "76a914ae40b2142aba5ddd10f74d9440bfda8a36cbad5b88ac");
     utxo0->set_script(script0.bytes.data(), script0.bytes.size());
 
-    auto utxoKey0 = PrivateKey(parse_hex("4222aae79af41eade7b07ce6fd44d926ea8e3f95e51a06e85f8bdec89680cbd9"));
+    auto utxoKey0 = PrivateKey(parse_hex("4222aae79af41eade7b07ce6fd44d926ea8e3f95e51a06e85f8bdec89680cbd9"), TWCoinTypeCurve(TWCoinTypeNebl));
     input.add_private_key(utxoKey0.bytes.data(), utxoKey0.bytes.size());
 
     EXPECT_EQ(input.utxo_size(), 1);

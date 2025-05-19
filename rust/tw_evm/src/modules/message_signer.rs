@@ -6,6 +6,7 @@ use crate::message::eip191::Eip191Message;
 use crate::message::eip712::eip712_message::Eip712Message;
 use crate::message::signature::{MessageSignature, SignatureType};
 use crate::message::{to_signing, EthMessage, EthMessageBoxed};
+use crate::transaction::authorization_list::Authorization;
 use std::borrow::Cow;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -123,13 +124,23 @@ impl EthMessageSigner {
                     .map_err(to_signing)?
                     .into_boxed()),
             },
+            Proto::MessageType::MessageType_eip7702_authorization => {
+                Ok(Authorization::from_str(&input.message)
+                    .map_err(|e| to_signing(e.into()))?
+                    .into_boxed())
+            },
         }
     }
 
     fn message_from_str(user_message: &str) -> SigningResult<EthMessageBoxed> {
         match Eip712Message::new(user_message) {
+            // Try to parse as an EIP712 message
             Ok(typed_data) => Ok(typed_data.into_boxed()),
-            Err(_) => Ok(Eip191Message::new(user_message).into_boxed()),
+            Err(_) => match Authorization::from_str(user_message) {
+                // Try to parse as an EIP7702 authorization tuple
+                Ok(authorization) => Ok(authorization.into_boxed()),
+                Err(_) => Ok(Eip191Message::new(user_message).into_boxed()),
+            },
         }
     }
 
@@ -138,7 +149,8 @@ impl EthMessageSigner {
         maybe_chain_id: Option<Proto::MaybeChainId>,
     ) -> SignatureType {
         match msg_type {
-            Proto::MessageType::MessageType_immutable_x => SignatureType::Standard,
+            Proto::MessageType::MessageType_immutable_x
+            | Proto::MessageType::MessageType_eip7702_authorization => SignatureType::Standard,
             Proto::MessageType::MessageType_legacy | Proto::MessageType::MessageType_typed => {
                 SignatureType::Legacy
             },

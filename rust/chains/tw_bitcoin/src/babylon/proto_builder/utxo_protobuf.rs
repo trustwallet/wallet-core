@@ -38,7 +38,7 @@ pub trait BabylonUtxoProtobuf {
     ) -> SigningResult<(TransactionInput, UtxoToSign)>;
 }
 
-impl<'a, Context: UtxoContext> BabylonUtxoProtobuf for UtxoProtobuf<'a, Context> {
+impl<Context: UtxoContext> BabylonUtxoProtobuf for UtxoProtobuf<'_, Context> {
     fn babylon_staking_timelock(
         &self,
         timelock: &Proto::mod_InputBuilder::StakingTimelockPath,

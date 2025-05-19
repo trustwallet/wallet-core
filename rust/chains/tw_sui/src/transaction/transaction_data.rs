@@ -22,9 +22,10 @@ impl TransactionData {
     pub fn new(
         kind: TransactionKind,
         sender: SuiAddress,
-        gas_payment: ObjectRef,
+        gas_payment: Vec<ObjectRef>,
         gas_budget: u64,
         gas_price: u64,
+        expiration: Option<TransactionExpiration>,
     ) -> Self {
         TransactionData::V1(TransactionDataV1 {
             kind,
@@ -32,10 +33,10 @@ impl TransactionData {
             gas_data: GasData {
                 price: gas_price,
                 owner: sender,
-                payment: vec![gas_payment],
+                payment: gas_payment,
                 budget: gas_budget,
             },
-            expiration: TransactionExpiration::None,
+            expiration: expiration.unwrap_or(TransactionExpiration::None),
         })
     }
 

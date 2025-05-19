@@ -27,7 +27,7 @@ impl SolanaTransactionDecoder {
         tx: &[u8],
     ) -> SigningResult<Proto::DecodingTransactionOutput<'static>> {
         let decoded_tx: VersionedTransaction = bincode::deserialize(tx)
-            .tw_err(|_| SigningErrorType::Error_input_parse)
+            .tw_err(SigningErrorType::Error_input_parse)
             .context("Error decoding transaction as 'bincode'")?;
         let transaction = ProtoBuilder::build_from_tx(&decoded_tx);
 

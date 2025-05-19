@@ -27,12 +27,13 @@ uint16_t computeBitLen(const Data& data, bool aligned) {
     }
 
     for (auto i = static_cast<int64_t>(data.size() - 1); i >= 0; --i) {
-        if (data[i] == 0) {
+        const auto index = static_cast<size_t>(i);
+        if (data[index] == 0) {
             bitLen -= 8;
         } else {
             auto skip = 1;
             uint8_t mask = 1;
-            while ((data[i] & mask) == 0) {
+            while ((data[index] & mask) == 0) {
                 skip += 1;
                 mask <<= 1;
             }

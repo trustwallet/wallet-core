@@ -7,6 +7,7 @@ import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.BitcoinSigHashType
 import wallet.core.jni.CoinType
+import wallet.core.jni.proto.Utxo
 import wallet.core.jni.proto.Bitcoin
 import wallet.core.jni.proto.BitcoinV2
 import wallet.core.jni.proto.Common.SigningError
@@ -22,7 +23,7 @@ class TestBitcoinCashSigning {
         val privateKey = "7fdafb9db5bc501f2096e7d13d331dc7a75d9594af3d251313ba8b6200f4e384".toHexBytesInByteString()
 
         val utxo1 = BitcoinV2.Input.newBuilder().apply {
-            outPoint = BitcoinV2.OutPoint.newBuilder().apply {
+            outPoint = Utxo.OutPoint.newBuilder().apply {
                 hash = "e28c2b955293159898e34c6840d99bf4d390e2ee1c6f606939f18ee1e2000d05".toHexBytesInByteString()
                 vout = 2
             }.build()

@@ -4,7 +4,7 @@ use crate::chains::common::bitcoin::{
 };
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
-use tw_hash::hasher::sha256_ripemd;
+use tw_hash::ripemd::sha256_ripemd;
 use tw_hash::H160;
 use tw_keypair::ecdsa;
 use tw_proto::BitcoinV2::Proto;
@@ -162,7 +162,7 @@ fn test_bitcoin_sign_output_p2sh_with_address() {
 //
 //     let sig = &signatures[0];
 //
-//     // Construc the final redeem scrip with the necessary stack items (signature + pubkey).
+//     // Construct the final redeem scrip with the necessary stack items (signature + pubkey).
 //     let mut sig_buf = PushBytesBuf::new();
 //     sig_buf.extend_from_slice(sig).unwrap();
 //

@@ -18,11 +18,11 @@ const std::string ASSET_TRANSACTION = "axfer";
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto protoOutput = Proto::SigningOutput();
-    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveED25519);
     auto pubkey = key.getPublicKey(TWPublicKeyTypeED25519);
 
     auto preImageData = Signer::preImage(pubkey, input);
-    auto signature = key.sign(preImageData, TWCurveED25519);
+    auto signature = key.sign(preImageData);
     return Signer::encodeTransaction(signature, pubkey, input);
 }
 
@@ -37,7 +37,7 @@ Data Signer::sign(const PrivateKey& privateKey, const BaseTransaction& transacti
     Data data;
     append(data, TRANSACTION_TAG);
     append(data, transaction.serialize());
-    auto signature = privateKey.sign(data, TWCurveED25519);
+    auto signature = privateKey.sign(data);
     return {signature.begin(), signature.end()};
 }
 

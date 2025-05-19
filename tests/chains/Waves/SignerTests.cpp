@@ -16,7 +16,7 @@ namespace TW::Waves::tests {
 
 TEST(WavesSigner, SignTransaction) {
     const auto privateKey =
-        PrivateKey(parse_hex("9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a"));
+        PrivateKey(parse_hex("9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a"), TWCurveCurve25519);
     const auto publicKeyCurve25519 = privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
     ASSERT_EQ(hex(Data(publicKeyCurve25519.bytes.begin(), publicKeyCurve25519.bytes.end())),
               "559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d");

@@ -53,6 +53,7 @@ impl<'a> TWTransactionBuilder<'a> {
             TransactionType::transfer_object(ref transfer_obj) => {
                 self.transfer_object_from_proto(transfer_obj)
             },
+            TransactionType::raw_json(ref raw_json) => self.raw_json_from_proto(raw_json),
             TransactionType::None => SigningError::err(SigningErrorType::Error_invalid_params),
         }?;
         Ok(TWTransaction::Transaction(tx_data))
@@ -60,7 +61,7 @@ impl<'a> TWTransactionBuilder<'a> {
 
     fn sign_direct_from_proto(&self, sign_direct: &Proto::SignDirect<'_>) -> SigningResult<Data> {
         base64::decode(&sign_direct.unsigned_tx_msg, STANDARD)
-            .tw_err(|_| SigningErrorType::Error_input_parse)
+            .tw_err(SigningErrorType::Error_input_parse)
             .context("Error parsing Raw Unsigned TX message as base64")
     }
 
@@ -177,6 +178,14 @@ impl<'a> TWTransactionBuilder<'a> {
             object,
             recipient,
             gas,
+            self.input.gas_budget,
+            self.input.reference_gas_price,
+        )
+    }
+
+    fn raw_json_from_proto(&self, raw_json: &str) -> SigningResult<TransactionData> {
+        TransactionBuilder::raw_json(
+            raw_json,
             self.input.gas_budget,
             self.input.reference_gas_price,
         )

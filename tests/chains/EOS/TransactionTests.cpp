@@ -77,7 +77,7 @@ TEST(EOSTransaction, Serialization) {
 
     // verify k1 sigs
     for (int i = 0; i < 5; i++) {
-        PrivateKey pk(Hash::sha256(std::string(i + 1, 'A')));
+        PrivateKey pk(Hash::sha256(std::string(i + 1, 'A')), TWCurveSECP256k1);
         ASSERT_NO_THROW(signer.sign(pk, Type::ModernK1, tx2));
 
         ASSERT_EQ(
@@ -87,7 +87,7 @@ TEST(EOSTransaction, Serialization) {
 
     // verify r1 sigs
     for (int i = 0; i < 5; i++) {
-        PrivateKey pk(Hash::sha256(std::string(i + 1, 'A')));
+        PrivateKey pk(Hash::sha256(std::string(i + 1, 'A')), TWCurveNIST256p1);
         ASSERT_NO_THROW(signer.sign(pk, Type::ModernR1, tx2));
 
         ASSERT_EQ(

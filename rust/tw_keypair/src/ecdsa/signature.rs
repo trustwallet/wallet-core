@@ -94,6 +94,10 @@ impl<C: EcdsaCurve> Signature<C> {
         der::Signature::new(self.r(), self.s())
     }
 
+    pub fn to_verify_sig(&self) -> VerifySignature<C> {
+        VerifySignature::from(self.clone())
+    }
+
     /// # Panic
     ///
     /// `r` and `s` must be 32 byte arrays, otherwise the function panics.

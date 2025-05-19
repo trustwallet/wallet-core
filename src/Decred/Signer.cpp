@@ -14,11 +14,22 @@
 namespace TW::Decred {
 
 Bitcoin::Proto::TransactionPlan Signer::plan(const Bitcoin::Proto::SigningInput& input) noexcept {
+    if (input.has_signing_v2()) {
+        return Bitcoin::Signer::planAsV2(input);
+    }
+
     auto signer = Signer(input);
     return signer.txPlan.proto();
 }
 
 Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs) noexcept {
+    if (input.has_signing_v2()) {
+        const auto output = Bitcoin::Signer::signAsV2(input);
+        Proto::SigningOutput decredOutput;
+        *decredOutput.mutable_signing_result_v2() = output.signing_result_v2();
+        return decredOutput;
+    }
+
     SigningMode signingMode = optionalExternalSigs.has_value() ? SigningMode_External : SigningMode_Normal;
     auto signer = Signer(std::move(input), signingMode, optionalExternalSigs);
     auto result = signer.sign();
@@ -42,6 +53,10 @@ Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input, std
 }
 
 Bitcoin::Proto::PreSigningOutput Signer::preImageHashes(const Bitcoin::Proto::SigningInput& input) noexcept {
+    if (input.has_signing_v2()) {
+        return Bitcoin::Signer::preImageHashesAsV2(input);
+    }
+
     Bitcoin::Proto::PreSigningOutput output;
 
     auto signer = Signer(std::move(input), SigningMode_HashOnly);
@@ -166,7 +181,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> Signer::signStep(Bitcoin:
                 return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
             }
         } else {
-            pubkey = PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1).bytes;
+            pubkey = PrivateKey(key, TWCurveSECP256k1).getPublicKey(TWPublicKeyTypeSECP256k1).bytes;
         }
 
         auto signature = createSignature(transactionToSign, script, key, data, index);
@@ -248,7 +263,7 @@ Data Signer::createSignature(const Transaction& transaction, const Bitcoin::Scri
         return externalSignature;
     }
 
-    auto pk = PrivateKey(key);
+    auto pk = PrivateKey(key, TWCurveSECP256k1);
     auto signature = pk.signAsDER(Data(begin(sighash), end(sighash)));
     if (script.empty()) {
         return {};
@@ -260,7 +275,7 @@ Data Signer::createSignature(const Transaction& transaction, const Bitcoin::Scri
 
 Data Signer::keyForPublicKeyHash(const Data& hash) const {
     for (auto& key : input.private_key()) {
-        auto publicKey = PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1);
+        auto publicKey = PrivateKey(key, TWCurveSECP256k1).getPublicKey(TWPublicKeyTypeSECP256k1);
         auto keyHash = TW::Hash::ripemd(TW::Hash::blake256(publicKey.bytes));
         if (std::equal(std::begin(keyHash), std::end(keyHash), std::begin(hash), std::end(hash))) {
             return Data(key.begin(), key.end());

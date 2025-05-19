@@ -34,7 +34,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& signingInput) noexc
     std::vector<PrivateKey> privateKeys;
     privateKeys.reserve(signingInput.private_key_size());
     for (auto&& privateKey : signingInput.private_key()) {
-        privateKeys.emplace_back(privateKey);
+        privateKeys.emplace_back(PrivateKey(privateKey, TWCurveSECP256k1));
     }
     auto error = tx.sign(privateKeys);
     if (error != Common::Proto::OK) {

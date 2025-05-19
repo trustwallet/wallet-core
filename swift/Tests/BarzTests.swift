@@ -87,8 +87,12 @@ class BarzTests: XCTestCase {
             }
 
             $0.transaction = EthereumTransaction.with {
-                $0.transfer = EthereumTransaction.Transfer.with {
-                    $0.amount = Data(hexString: "2386f26fc10000")!
+                $0.scwExecute = EthereumTransaction.SCWalletExecute.with {
+                    $0.transaction = EthereumTransaction.with {
+                        $0.transfer = EthereumTransaction.Transfer.with {
+                            $0.amount = Data(hexString: "2386f26fc10000")!
+                        }
+                    }
                 }
             }
         }
@@ -124,10 +128,14 @@ class BarzTests: XCTestCase {
                     salt: 0
                 )
             }
-
+            
             $0.transaction = EthereumTransaction.with {
-                $0.transfer = EthereumTransaction.Transfer.with {
-                    $0.amount = Data(hexString: "2386f26fc10000")!
+                $0.scwExecute = EthereumTransaction.SCWalletExecute.with {
+                    $0.transaction = EthereumTransaction.with {
+                        $0.transfer = EthereumTransaction.Transfer.with {
+                            $0.amount = Data(hexString: "2386f26fc10000")!
+                        }
+                    }
                 }
             }
         }
@@ -165,14 +173,14 @@ class BarzTests: XCTestCase {
             }
 
             $0.transaction = EthereumTransaction.with {
-                $0.batch = EthereumTransaction.Batch.with {
+                $0.scwBatch = EthereumTransaction.SCWalletBatch.with {
                     $0.calls = [
-                        EthereumTransaction.Batch.BatchedCall.with {
+                        EthereumTransaction.SCWalletBatch.BatchedCall.with {
                             $0.address = "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266"
                             $0.amount = Data(hexString: "00")!
                             $0.payload = approveCall
                         },
-                        EthereumTransaction.Batch.BatchedCall.with {
+                        EthereumTransaction.SCWalletBatch.BatchedCall.with {
                             $0.address = "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266"
                             $0.amount = Data(hexString: "00")!
                             $0.payload = transferCall
@@ -184,6 +192,15 @@ class BarzTests: XCTestCase {
         let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
         XCTAssertEqual(output.preHash.hexString, "84d0464f5a2b191e06295443970ecdcd2d18f565d0d52b5a79443192153770ab")
         XCTAssertEqual(String(data: output.encoded, encoding: .utf8), "{\"callData\":\"0x47e1da2a000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000200000000000000000000000003bbb5660b8687c2aa453a0e42dcb6e0732b126600000000000000000000000003bbb5660b8687c2aa453a0e42dcb6e0732b12660000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000044095ea7b30000000000000000000000005ff137d4b0fdcd49dca30c7cf57e578a026d27890000000000000000000000000000000000000000000000008ac7230489e80000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000044a9059cbb0000000000000000000000005ff137d4b0fdcd49dca30c7cf57e578a026d27890000000000000000000000000000000000000000000000008ac7230489e8000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"88673\",\"initCode\":\"0x\",\"maxFeePerGas\":\"10000000000\",\"maxPriorityFeePerGas\":\"10000000000\",\"nonce\":\"3\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"56060\",\"sender\":\"0x1E6c542ebC7c960c6A155A9094DB838cEf842cf5\",\"signature\":\"0x0747b665fe9f3a52407f95a35ac3e76de37c9b89483ae440431244e89a77985f47df712c7364c1a299a5ef62d0b79a2cf4ed63d01772275dd61f72bd1ad5afce1c\",\"verificationGasLimit\":\"522180\"}")
+    }
+    
+    func testAuthorizationHash() {
+        let chainId = Data(hexString: "0x01")!
+        let contractAddress = "0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1"
+        let nonce = Data(hexString: "0x01")!
+        
+        let authorizationHash = Barz.getAuthorizationHash(chainId: chainId, contractAddress: contractAddress, nonce: nonce)
+        XCTAssertEqual(authorizationHash.hexString, "3ae543b2fa103a39a6985d964a67caed05f6b9bb2430ad6d498cda743fe911d9") // Verified with viem
     }
 
     let factory = "0x3fC708630d85A3B5ec217E53100eC2b735d4f800"

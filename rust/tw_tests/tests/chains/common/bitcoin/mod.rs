@@ -22,6 +22,7 @@ pub const MINER_FEE: i64 = 1_000_000;
 pub const DUST: i64 = 546;
 
 pub const SIGHASH_ALL: u32 = 0x01;
+pub const SIGHASH_NONE: u32 = 0x02;
 pub const SIGHASH_SINGLE: u32 = 0x03;
 pub const SIGHASH_ANYONE_CAN_PAY: u32 = 0x80;
 
@@ -41,8 +42,10 @@ pub use tw_proto::BitcoinV2::Proto::mod_Output::{
 };
 pub use tw_proto::BitcoinV2::Proto::mod_PublicKeyOrHash::OneOfvariant as PublicKeyOrHashType;
 pub use tw_proto::BitcoinV2::Proto::mod_SigningInput::OneOftransaction as TransactionOneof;
+pub use tw_proto::BitcoinV2::Proto::mod_TransactionBuilder::OneOfchain_specific as ChainSpecific;
 
 use tw_proto::BitcoinV2::Proto;
+use tw_proto::Utxo::Proto as UtxoProto;
 
 pub fn btc_info() -> Option<Proto::ChainInfo<'static>> {
     Some(Proto::ChainInfo {
@@ -71,8 +74,8 @@ pub mod input {
         txid.decode_hex().unwrap().into_iter().rev().collect()
     }
 
-    pub fn out_point(txid: &str, vout: u32) -> Option<Proto::OutPoint<'static>> {
-        Some(Proto::OutPoint {
+    pub fn out_point(txid: &str, vout: u32) -> Option<UtxoProto::OutPoint<'static>> {
+        Some(UtxoProto::OutPoint {
             hash: reverse_txid(txid).into(),
             vout,
         })
@@ -226,5 +229,9 @@ pub mod output {
 
     pub fn op_return(data: Data) -> RecipientType<'static> {
         receiver_builder(OutputBuilderType::op_return(data.into()))
+    }
+
+    pub fn custom_script(data: Data) -> RecipientType<'static> {
+        RecipientType::custom_script_pubkey(data.into())
     }
 }

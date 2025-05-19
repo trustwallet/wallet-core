@@ -105,7 +105,7 @@ impl SigningRequestBuilder {
         };
 
         let mode = u8::try_from(input.mode)
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("'mode' must fit uint8")?;
 
         let payload = match input.payload {

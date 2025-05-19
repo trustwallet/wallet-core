@@ -7,6 +7,8 @@ use std::env;
 use std::path::PathBuf;
 
 pub mod blockchain_dispatcher_generator;
+pub mod code_gen;
+pub mod code_gen_types;
 pub mod entry_generator;
 pub mod new_blockchain;
 pub mod new_cosmos_chain;

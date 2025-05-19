@@ -25,6 +25,8 @@ jobs:
 
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: 8.10.2
 
     - name: Install system dependencies
       run: |
@@ -48,7 +50,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: build/local
-        key: ${{ runner.os }}-${{ runner.arch }}-internal-${{ hashFiles('tools/install-dependencies') }}
+        key: ${{ runner.os }}-${{ runner.arch }}-internal-${{ hashFiles('tools/install-dependencies') }}-${{ hashFiles('tools/dependencies-version') }}
 
     - name: Install internal dependencies
       run: tools/install-dependencies

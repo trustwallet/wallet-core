@@ -8,7 +8,7 @@ use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
 use tw_encoding::bech32;
-use tw_hash::hasher::sha256_ripemd;
+use tw_hash::ripemd::sha256_ripemd;
 use tw_hash::H160;
 use tw_keypair::ecdsa;
 use tw_memory::Data;
@@ -100,7 +100,7 @@ impl CashAddress {
             bech32::convert_bits(&payload, from, to, pad).map_err(|_| AddressError::InvalidInput)?
         };
 
-        let payload_with_checksum = checksum::cacl_and_append_checksum(hrp, &payload_u5);
+        let payload_with_checksum = checksum::calc_and_append_checksum(hrp, &payload_u5);
         let encoded_payload =
             cash_base32::encode(&payload_with_checksum).map_err(|_| AddressError::InvalidInput)?;
         Ok(format!("{hrp}:{encoded_payload}"))

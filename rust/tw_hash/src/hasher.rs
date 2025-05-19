@@ -2,21 +2,35 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::ripemd::ripemd_160;
-use crate::sha2::sha256;
+use crate::blake::blake_256;
+use crate::ripemd::{blake256_ripemd, sha256_ripemd};
+use crate::sha2::{sha256, sha256_d};
 use crate::sha3::keccak256;
 use crate::{H160, H256};
 use serde::Deserialize;
 use tw_memory::Data;
 
-/// ripemd hash of the SHA256 hash.
-pub fn sha256_ripemd(data: &[u8]) -> Data {
-    ripemd_160(&sha256(data))
-}
+#[macro_export]
+macro_rules! impl_static_hasher {
+    ($name:ty, $hash_fun:ident, $hash_len:literal) => {
+        impl $crate::hasher::StaticHasher for $name {
+            const HASH_LEN: usize = $hash_len;
 
-/// SHA256 hash of the SHA256 hash.
-pub fn sha256_d(data: &[u8]) -> Data {
-    sha256(&sha256(data))
+            fn hash(data: &[u8]) -> Vec<u8> {
+                $hash_fun(data)
+            }
+        }
+
+        impl $crate::hasher::StatefulHasher for $name {
+            fn hash(&self, data: &[u8]) -> Vec<u8> {
+                $hash_fun(data)
+            }
+
+            fn hash_len(&self) -> usize {
+                $hash_len
+            }
+        }
+    };
 }
 
 /// TapSighash, required for Bitcoin Taproot. This function computes
@@ -37,6 +51,32 @@ pub fn tapsighash(data: &[u8]) -> Data {
     sha256(&t)
 }
 
+/// A trait for hashing algorithms that do not require pre-configuration, and can be used statically.
+pub trait StaticHasher {
+    const HASH_LEN: usize;
+
+    fn hash(data: &[u8]) -> Data;
+
+    /// Returns a zeroized hash with a corresponding len.
+    fn zero_hash() -> Data {
+        vec![0; Self::HASH_LEN]
+    }
+}
+
+/// A trait for hashing algorithms that require pre-configuration,
+/// but can also be implemented for stateless hashers like [`Hasher`] enum.
+pub trait StatefulHasher {
+    fn hash(&self, data: &[u8]) -> Data;
+
+    /// Returns a zeroized hash with a corresponding len.
+    fn zero_hash(&self) -> Data {
+        vec![0; self.hash_len()]
+    }
+
+    /// Returns a corresponding hash len.
+    fn hash_len(&self) -> usize;
+}
+
 /// Enum selector for the supported hash functions.
 ///
 /// Add hash types if necessary. For example, when add a new hasher to `registry.json`,
@@ -53,31 +93,33 @@ pub enum Hasher {
     /// ripemd hash of the SHA256 hash
     #[serde(rename = "sha256ripemd")]
     Sha256ripemd,
+    #[serde(rename = "blake256")]
+    Blake256,
+    /// ripemd hash of the BLAKE256 hash
+    #[serde(rename = "blake256ripemd")]
+    Blake256ripemd,
     #[serde(rename = "tapsighash")]
     TapSighash,
 }
 
-impl Hasher {
-    pub fn hash(&self, data: &[u8]) -> Data {
+impl StatefulHasher for Hasher {
+    fn hash(&self, data: &[u8]) -> Data {
         match self {
             Hasher::Sha256 => sha256(data),
             Hasher::Keccak256 => keccak256(data),
             Hasher::Sha256d => sha256_d(data),
             Hasher::Sha256ripemd => sha256_ripemd(data),
+            Hasher::Blake256 => blake_256(data),
+            Hasher::Blake256ripemd => blake256_ripemd(data),
             Hasher::TapSighash => tapsighash(data),
         }
     }
 
-    /// Returns a zeroized hash with a corresponding len.
-    pub fn zero_hash(&self) -> Data {
-        vec![0; self.hash_len()]
-    }
-
     /// Returns a corresponding hash len.
-    pub fn hash_len(&self) -> usize {
+    fn hash_len(&self) -> usize {
         match self {
-            Hasher::Sha256 | Hasher::Keccak256 | Hasher::Sha256d => H256::len(),
-            Hasher::Sha256ripemd => H160::len(),
+            Hasher::Sha256 | Hasher::Keccak256 | Hasher::Sha256d | Hasher::Blake256 => H256::len(),
+            Hasher::Sha256ripemd | Hasher::Blake256ripemd => H160::len(),
             Hasher::TapSighash => H256::len(),
         }
     }

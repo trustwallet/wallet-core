@@ -19,7 +19,7 @@ namespace TW::Decred::tests {
 
 // clang-format off
 TEST(DecredSigner, SignP2PKH) {
-    const auto privateKey = PrivateKey(parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c"));
+    const auto privateKey = PrivateKey(parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c"), TWCurveSECP256k1);
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     const auto keyhash = Hash::ripemd(Hash::blake256(publicKey.bytes));
 
@@ -121,7 +121,7 @@ TEST(DecredSigner, SignP2PKH) {
 }
 
 TEST(DecredSigner, SignP2PK) {
-    const auto privateKey = PrivateKey(parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c"));
+    const auto privateKey = PrivateKey(parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c"), TWCurveSECP256k1);
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     const auto keyhash = Hash::ripemd(Hash::blake256(publicKey.bytes));
 
@@ -203,7 +203,7 @@ TEST(DecredSigner, SignP2PK) {
 }
 
 TEST(DecredSigner, SignP2SH) {
-    const auto privateKey = PrivateKey(parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c"));
+    const auto privateKey = PrivateKey(parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c"), TWCurveSECP256k1);
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     const auto keyhash = Hash::ripemd(Hash::blake256(publicKey.bytes));
 
@@ -309,7 +309,7 @@ TEST(DecredSigner, SignP2SH) {
 }
 
 TEST(DecredSigner, SignNegativeNoUtxo) {
-    const auto privateKey = PrivateKey(parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c"));
+    const auto privateKey = PrivateKey(parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c"), TWCurveSECP256k1);
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     const auto keyhash = Hash::ripemd(Hash::blake256(publicKey.bytes));
 
@@ -364,7 +364,7 @@ TEST(DecredSigner, SignNegativeNoUtxo) {
 }
 
 TEST(DecredSigner, SignP2PKH_NoPlan) {
-    const auto privateKey = PrivateKey(parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c"));
+    const auto privateKey = PrivateKey(parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c"), TWCurveSECP256k1);
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     const auto keyhash = Hash::ripemd(Hash::blake256(publicKey.bytes));
 

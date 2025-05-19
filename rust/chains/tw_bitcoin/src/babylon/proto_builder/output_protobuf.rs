@@ -28,7 +28,7 @@ pub trait BabylonOutputProtobuf {
     ) -> SigningResult<TransactionOutput>;
 }
 
-impl<'a, Context: UtxoContext> BabylonOutputProtobuf for OutputProtobuf<'a, Context> {
+impl<Context: UtxoContext> BabylonOutputProtobuf for OutputProtobuf<'_, Context> {
     fn babylon_staking(
         &self,
         staking: &Proto::mod_OutputBuilder::StakingOutput,
@@ -42,14 +42,14 @@ impl<'a, Context: UtxoContext> BabylonOutputProtobuf for OutputProtobuf<'a, Cont
         op_return: &Proto::mod_OutputBuilder::OpReturn,
     ) -> SigningResult<TransactionOutput> {
         let tag = H32::try_from(op_return.tag.as_ref())
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("Expected exactly 4 bytes tag")?;
         let staker =
             parse_schnorr_pk(&op_return.staker_public_key).context("Invalid stakerPublicKey")?;
         let staking_locktime: u16 = op_return
             .staking_time
             .try_into()
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("stakingTime cannot be greater than 65535")?;
         let finality_provider = &parse_schnorr_pk(&op_return.finality_provider_public_key)
             .context("Invalid finalityProviderPublicKeys")?;

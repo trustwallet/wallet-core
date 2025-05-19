@@ -55,7 +55,7 @@ TEST(AlgorandSigner, EncodeBytes) {
 }
 
 TEST(AlgorandSigner, Sign) {
-    auto key = PrivateKey(parse_hex("c9d3cc16fecabe2747eab86b81528c6ed8b65efc1d6906d86aabc27187a1fe7c"));
+    auto key = PrivateKey(parse_hex("c9d3cc16fecabe2747eab86b81528c6ed8b65efc1d6906d86aabc27187a1fe7c"), TWCurveED25519);
     auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
     auto from = Address(publicKey);
     auto to = Address("UCE2U2JC4O4ZR6W763GUQCG57HQCDZEUJY4J5I6VYY4HQZUJDF7AKZO5GM");
@@ -85,7 +85,7 @@ TEST(AlgorandSigner, Sign) {
 
 TEST(AlgorandSigner, SignAssetNFTTransfer) {
     // Successfully broadcasted: https://allo.info/tx/FFLUH4QKZHG744RIQ2AZNWZUSIIH262KZ4MEWSY4RXMWN5NMOOJA
-    auto key = PrivateKey(parse_hex("dc6051ffc7b3ec601bde432f6dea34d40fe3855e4181afa0f0524c42194a6da7"));
+    auto key = PrivateKey(parse_hex("dc6051ffc7b3ec601bde432f6dea34d40fe3855e4181afa0f0524c42194a6da7"), TWCurveED25519);
     auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
     auto from = Address(publicKey);
     auto to = Address("362T7CSXNLIOBX6J3H2SCPS4LPYFNV6DDWE6G64ZEUJ6SY5OJIR6SB5CVE");
@@ -116,7 +116,7 @@ TEST(AlgorandSigner, SignAssetNFTTransfer) {
 
 TEST(AlgorandSigner, SignAsset) {
     // https://explorer.bitquery.io/algorand_testnet/tx/NJ62HYO2LC222AVLIN2GW5LKIWKLGC7NZLIQ3DUL2RDVRYO2UW7A
-    auto key = PrivateKey(parse_hex("5a6a3cfe5ff4cc44c19381d15a0d16de2a76ee5c9b9d83b232e38cb5a2c84b04"));
+    auto key = PrivateKey(parse_hex("5a6a3cfe5ff4cc44c19381d15a0d16de2a76ee5c9b9d83b232e38cb5a2c84b04"), TWCurveED25519);
     auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
     auto from = Address(publicKey);
     auto to = Address("GJIWJSX2EU5RC32LKTDDXWLA2YICBHKE35RV2ZPASXZYKWUWXFLKNFSS4U");
@@ -146,7 +146,7 @@ TEST(AlgorandSigner, SignAsset) {
 }
 
 TEST(AlgorandSigner, SignAssetWithNote) {
-    auto key = PrivateKey(parse_hex("5a6a3cfe5ff4cc44c19381d15a0d16de2a76ee5c9b9d83b232e38cb5a2c84b04"));
+    auto key = PrivateKey(parse_hex("5a6a3cfe5ff4cc44c19381d15a0d16de2a76ee5c9b9d83b232e38cb5a2c84b04"), TWCurveED25519);
     auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
     auto from = Address(publicKey);
     auto to = Address("GJIWJSX2EU5RC32LKTDDXWLA2YICBHKE35RV2ZPASXZYKWUWXFLKNFSS4U");
@@ -173,7 +173,7 @@ TEST(AlgorandSigner, SignAssetWithNote) {
 
 TEST(AlgorandSigner, SignAssetOptIn) {
     // https://explorer.bitquery.io/algorand_testnet/tx/47LE2QS4B5N6IFHXOUN2MJUTCOQCHNY6AB3AJYECK4IM2VYKJDKQ
-    auto key = PrivateKey(parse_hex("5a6a3cfe5ff4cc44c19381d15a0d16de2a76ee5c9b9d83b232e38cb5a2c84b04"));
+    auto key = PrivateKey(parse_hex("5a6a3cfe5ff4cc44c19381d15a0d16de2a76ee5c9b9d83b232e38cb5a2c84b04"), TWCurveED25519);
     auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
     auto address = Address(publicKey);
     Data note;

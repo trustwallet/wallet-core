@@ -2,13 +2,13 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::context::UtxoContext;
 use crate::dust::dust_filter::DustFilter;
 use crate::dust::DustPolicy;
 use crate::modules::utxo_selector::exact_selector::ExactInputSelector;
 use crate::modules::utxo_selector::max_selector::MaxInputSelector;
 use crate::modules::utxo_selector::{InputSelector, SelectResult};
 use crate::transaction::transaction_interface::TransactionInterface;
-use crate::transaction::transaction_parts::Amount;
 use crate::transaction::unsigned_transaction::UnsignedTransaction;
 use std::marker::PhantomData;
 use tw_coin_entry::error::prelude::*;
@@ -21,10 +21,10 @@ pub const MAX_TRANSACTION_SIZE: usize = 100 * 1024;
 /// # Important
 ///
 /// If needed to add chain specific parameters, consider adding a different Request struct.
-pub struct PlanRequest<Transaction: TransactionInterface> {
-    pub ty: RequestType<Transaction>,
+pub struct PlanRequest<Context: UtxoContext> {
+    pub ty: RequestType<Context::Transaction>,
     pub dust_policy: DustPolicy,
-    pub fee_per_vbyte: Amount,
+    pub fee_estimator: Context::FeeEstimator,
 }
 
 pub enum RequestType<Transaction: TransactionInterface> {
@@ -47,14 +47,16 @@ pub struct TxPlanner<Transaction> {
     _phantom: PhantomData<Transaction>,
 }
 
-impl<Transaction> TxPlanner<Transaction>
+impl<Context> TxPlanner<Context>
 where
-    Transaction: TransactionInterface,
+    Context: UtxoContext,
 {
     /// * Filters dust UTXOs
     /// * Checks if all outputs are not dust
     /// * Select UTXOs as specified in the request
-    pub fn plan(request: PlanRequest<Transaction>) -> SigningResult<SelectResult<Transaction>> {
+    pub fn plan(
+        request: PlanRequest<Context>,
+    ) -> SigningResult<SelectResult<Context::Transaction>> {
         let dust_filter = DustFilter::new(request.dust_policy);
 
         let select_result = match request.ty {
@@ -64,7 +66,7 @@ where
                     .context("Error filtering dust UTXOs")?;
 
                 MaxInputSelector::new(unsigned_tx)
-                    .select_max(request.fee_per_vbyte, request.dust_policy)
+                    .select_max(request.dust_policy, &request.fee_estimator)
             },
             RequestType::SendExact {
                 unsigned_tx,
@@ -77,7 +79,7 @@ where
 
                 ExactInputSelector::new(unsigned_tx)
                     .maybe_change_output(change_output)
-                    .select_inputs(request.dust_policy, input_selector, request.fee_per_vbyte)
+                    .select_inputs(request.dust_policy, input_selector, &request.fee_estimator)
             },
         }
         .context("Error selecting UTXOs")?;

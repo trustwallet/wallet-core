@@ -4,6 +4,7 @@
 
 use crate::address::SolanaAddress;
 use crate::defined_addresses::{COMPUTE_BUDGET_ADDRESS, SYSTEM_PROGRAM_ID_ADDRESS};
+use crate::instruction::Instruction;
 use crate::modules::insert_instruction::InsertInstruction;
 use crate::modules::instruction_builder::compute_budget_instruction::{
     ComputeBudgetInstruction, ComputeBudgetInstructionBuilder, UnitLimit, UnitPrice,
@@ -50,7 +51,7 @@ impl SolanaTransaction {
 
         let new_blockchain_hash = base58::decode(recent_blockhash, SOLANA_ALPHABET)?;
         let new_blockchain_hash = H256::try_from(new_blockchain_hash.as_slice())
-            .tw_err(|_| SigningErrorType::Error_invalid_params)?;
+            .tw_err(SigningErrorType::Error_invalid_params)?;
 
         // Update the transaction's blockhash and re-sign it.
         msg_to_sign.set_recent_blockhash(new_blockchain_hash);
@@ -73,7 +74,7 @@ impl SolanaTransaction {
 
         let unsigned_encoded = base64::encode(&unsigned_encoded, STANDARD);
         let signed_encoded =
-            bincode::serialize(&signed_tx).tw_err(|_| SigningErrorType::Error_internal)?;
+            bincode::serialize(&signed_tx).tw_err(SigningErrorType::Error_internal)?;
         let signed_encoded = base64::encode(&signed_encoded, STANDARD);
 
         Ok(Proto::SigningOutput {
@@ -115,14 +116,14 @@ impl SolanaTransaction {
         // If it presents already, it's enough to update the instruction data only.
         if let Some(pos) = ix_position {
             tx.message.instructions_mut()[pos].data = set_price_ix.data;
-            return tx.to_base64().tw_err(|_| SigningErrorType::Error_internal);
+            return tx.to_base64().tw_err(SigningErrorType::Error_internal);
         }
 
         // `ComputeBudgetInstruction::SetComputeUnitPrice` can be pushed to the end of the instructions list.
         tx.message
             .push_simple_instruction(set_price_ix.program_id, set_price_ix.data)?;
 
-        tx.to_base64().tw_err(|_| SigningErrorType::Error_internal)
+        tx.to_base64().tw_err(SigningErrorType::Error_internal)
     }
 
     pub fn set_compute_unit_limit(encoded_tx: &str, limit: UnitLimit) -> SigningResult<String> {
@@ -140,7 +141,7 @@ impl SolanaTransaction {
         // If it presents already, it's enough to update the instruction data only.
         if let Some(pos) = ix_position {
             tx.message.instructions_mut()[pos].data = set_limit_ix.data;
-            return tx.to_base64().tw_err(|_| SigningErrorType::Error_internal);
+            return tx.to_base64().tw_err(SigningErrorType::Error_internal);
         }
 
         // `ComputeBudgetInstruction::SetComputeUnitLimit` should be at the beginning of the instructions list.
@@ -157,7 +158,7 @@ impl SolanaTransaction {
             set_limit_ix.data,
         )?;
 
-        tx.to_base64().tw_err(|_| SigningErrorType::Error_internal)
+        tx.to_base64().tw_err(SigningErrorType::Error_internal)
     }
 
     pub fn set_fee_payer(encoded_tx: &str, fee_payer: SolanaAddress) -> SigningResult<String> {
@@ -171,7 +172,28 @@ impl SolanaTransaction {
         let unsigned_tx = VersionedTransaction::unsigned(tx.message);
         unsigned_tx
             .to_base64()
-            .tw_err(|_| SigningErrorType::Error_internal)
+            .tw_err(SigningErrorType::Error_internal)
+    }
+
+    pub fn add_instruction(encoded_tx: &str, instruction: &str) -> SigningResult<String> {
+        let tx_bytes = base64::decode(encoded_tx, STANDARD)?;
+        let mut tx: VersionedTransaction =
+            bincode::deserialize(&tx_bytes).map_err(|_| SigningErrorType::Error_input_parse)?;
+
+        let instruction: Instruction =
+            serde_json::from_str(instruction).map_err(|_| SigningErrorType::Error_input_parse)?;
+
+        tx.message.push_instruction(
+            instruction.program_id,
+            instruction.accounts,
+            instruction.data,
+        )?;
+
+        // Set the correct number of zero signatures
+        let unsigned_tx = VersionedTransaction::unsigned(tx.message);
+        unsigned_tx
+            .to_base64()
+            .tw_err(SigningErrorType::Error_internal)
     }
 }
 

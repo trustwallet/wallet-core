@@ -12,7 +12,7 @@ plugins {
 kotlin {
     targetHierarchy.default()
 
-    android {
+    androidTarget {
         publishLibraryVariants = listOf("release")
     }
 
@@ -23,6 +23,7 @@ kotlin {
             }
         }
     }
+    jvmToolchain(17)
 
     val nativeTargets =
         listOf(
@@ -99,9 +100,17 @@ kotlin {
             val main by compilations.getting
             main.cinterops.create("WalletCore") {
                 packageName = "com.trustwallet.core"
+                includeDirs(
+                    rootDir.parentFile.resolve("include"),
+                    rootDir.parentFile.resolve("include/TrustWalletCore"),
+                )
                 headers(rootDir.parentFile.resolve("include/TrustWalletCore").listFiles()!!)
             }
         }
+    }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 }
 

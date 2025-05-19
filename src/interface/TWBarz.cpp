@@ -58,3 +58,55 @@ TWData *_Nonnull TWBarzGetDiamondCutCode(TWData *_Nonnull input) {
     const auto diamondCutCode = TW::Barz::getDiamondCutCode(inputProto);
     return TWDataCreateWithData(&diamondCutCode);
 }
+
+TWData *_Nonnull TWBarzGetAuthorizationHash(TWData* _Nonnull chainId, TWString* _Nonnull contractAddress, TWString* _Nonnull nonce) {
+    const auto& chainIdData = *reinterpret_cast<const TW::Data*>(chainId);
+    const auto& contractAddressStr = *reinterpret_cast<const std::string*>(contractAddress);
+    const auto& nonceData = *reinterpret_cast<const TW::Data*>(nonce);
+    const auto authorizationHash = TW::Barz::getAuthorizationHash(chainIdData, contractAddressStr, nonceData);
+    return TWDataCreateWithData(&authorizationHash);
+}
+
+TWString *_Nonnull TWBarzSignAuthorization(TWData* _Nonnull chainId, TWString* _Nonnull contractAddress, TWData* _Nonnull nonce, TWString* _Nonnull privateKey) {
+    const auto& chainIdData = *reinterpret_cast<const TW::Data*>(chainId);
+    const auto& contractAddressStr = *reinterpret_cast<const std::string*>(contractAddress);
+    const auto& nonceData = *reinterpret_cast<const TW::Data*>(nonce);
+    const auto& privateKeyStr = *reinterpret_cast<const std::string*>(privateKey);
+    const auto signedAuthorization = TW::Barz::signAuthorization(chainIdData, contractAddressStr, nonceData, privateKeyStr);
+    return TWStringCreateWithUTF8Bytes(signedAuthorization.c_str());
+}
+
+TWData *_Nonnull TWBarzGetEncodedHash(
+    TWData* _Nonnull chainId,
+    TWString* _Nonnull codeAddress,
+    TWString* _Nonnull codeName,
+    TWString* _Nonnull codeVersion,
+    TWString* _Nonnull typeHash,
+    TWString* _Nonnull domainSeparatorHash,
+    TWString* _Nonnull sender,
+    TWString* _Nonnull userOpHash) {
+    const auto& chainIdData = *reinterpret_cast<const TW::Data*>(chainId);
+    const auto& codeAddressStr = *reinterpret_cast<const std::string*>(codeAddress);
+    const auto& codeNameStr = *reinterpret_cast<const std::string*>(codeName);
+    const auto& codeVersionStr = *reinterpret_cast<const std::string*>(codeVersion);
+    const auto& typeHashStr = *reinterpret_cast<const std::string*>(typeHash);
+    const auto& domainSeparatorHashStr = *reinterpret_cast<const std::string*>(domainSeparatorHash);
+    const auto& senderStr = *reinterpret_cast<const std::string*>(sender);
+    const auto& userOpHashStr = *reinterpret_cast<const std::string*>(userOpHash);
+    const auto encodedHash = TW::Barz::getEncodedHash(
+        chainIdData,
+        codeAddressStr,
+        codeNameStr,
+        codeVersionStr, typeHashStr,
+        domainSeparatorHashStr,
+        senderStr,
+        userOpHashStr);
+    return TWDataCreateWithData(&encodedHash);
+}
+
+TWData *_Nonnull TWBarzGetSignedHash(TWString* _Nonnull hash, TWString* _Nonnull privateKey) {
+    const auto& hashStr = *reinterpret_cast<const std::string*>(hash);
+    const auto& privateKeyStr = *reinterpret_cast<const std::string*>(privateKey);
+    const auto signedHash = TW::Barz::getSignedHash(hashStr, privateKeyStr);
+    return TWDataCreateWithData(&signedHash);
+}

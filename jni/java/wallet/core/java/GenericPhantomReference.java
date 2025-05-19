@@ -4,12 +4,13 @@ import java.lang.ref.PhantomReference;
 import java.lang.ref.ReferenceQueue;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Collections;
 
 public class GenericPhantomReference extends PhantomReference<Object> {
     private final long nativeHandle;
     private final OnDeleteCallback onDeleteCallback;
 
-    private static final Set<GenericPhantomReference> references = new HashSet<>();
+    private static final Set<GenericPhantomReference> references = Collections.synchronizedSet(new HashSet<>());
     private static final ReferenceQueue<Object> queue = new ReferenceQueue<>();
 
     static {

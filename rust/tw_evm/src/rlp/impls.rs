@@ -8,6 +8,16 @@ use crate::rlp::RlpEncode;
 use tw_hash::H256;
 use tw_number::U256;
 
+impl RlpEncode for u8 {
+    fn rlp_append(&self, buf: &mut RlpBuffer) {
+        if *self == 0 {
+            buf.append_data(&[])
+        } else {
+            buf.append_data(&[*self])
+        }
+    }
+}
+
 impl RlpEncode for U256 {
     fn rlp_append(&self, buf: &mut RlpBuffer) {
         buf.append_data(&self.to_big_endian_compact())

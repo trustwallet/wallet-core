@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
 use tw_any_coin::test_utils::transaction_calc_tx_hash_utils::TransactionUtilHelper;
 use tw_coin_registry::coin_type::CoinType;
 

@@ -12,6 +12,10 @@
 #include "../proto/Barz.pb.h"
 #include "AsnParser.h"
 #include "Base64.h"
+#include "../proto/EthereumRlp.pb.h"
+#include "RLP.h"
+#include "PrivateKey.h"
+#include <nlohmann/json.hpp>
 
 namespace TW::Barz {
 
@@ -216,6 +220,118 @@ Data getDiamondCutCode(const Proto::DiamondCutInput& input) {
     append(encoded, parse_hex(padding));
 
     return encoded;
+}
+
+Data getAuthorizationHash(const Data& chainId, const std::string& contractAddress, const Data& nonce) {
+    EthereumRlp::Proto::EncodingInput input;
+    auto* list = input.mutable_item()->mutable_list();
+
+    list->add_items()->set_number_u256(chainId.data(), chainId.size());
+
+    list->add_items()->set_address(contractAddress);
+
+    list->add_items()->set_number_u256(nonce.data(), nonce.size());
+
+    auto dataOut = Ethereum::RLP::encode(input);
+
+    Data encoded;
+    append(encoded, parse_hex("0x05"));
+    append(encoded, dataOut);
+
+    return Hash::keccak256(encoded);
+}
+
+std::vector<Data> getRSVY(const Data& hash, const std::string& privateKey) {
+    auto privateKeyData = parse_hex(privateKey);
+    auto privateKeyObj = PrivateKey(privateKeyData, TWCurveSECP256k1);
+    auto signature = privateKeyObj.sign(hash);
+    if (signature.empty()) {
+        return {};
+    }
+    // Extract r, s, v values from the signature
+    Data r;
+    Data s;
+    Data v;
+    Data yParity;
+    // r value (first 32 bytes)
+    append(r, subData(signature, 0, 32));
+    // s value (next 32 bytes)
+    append(s, subData(signature, 32, 32));
+    // v value (last byte, should be 0 or 1, add 27 to make it 27 or 28)
+    uint8_t vValue = signature[64] + 27;
+    append(v, vValue);
+    // yParity value (last byte)
+    uint8_t yParityValue = signature[64];
+    append(yParity, yParityValue);
+
+    return {r, s, v, yParity};
+}
+
+std::string signAuthorization(const Data& chainId, const std::string& contractAddress, const Data& nonce, const std::string& privateKey) {
+    auto authorizationHash = getAuthorizationHash(chainId, contractAddress, nonce);
+    auto rsvy = getRSVY(authorizationHash, privateKey);
+
+    nlohmann::json jsonObj;
+    jsonObj["chainId"] = hexEncoded(chainId);
+    jsonObj["address"] = contractAddress;
+    jsonObj["nonce"] = hexEncoded(nonce);
+    jsonObj["yParity"] = hexEncoded(rsvy[3]);
+    jsonObj["r"] = hexEncoded(rsvy[0]);
+    jsonObj["s"] = hexEncoded(rsvy[1]);
+
+    return jsonObj.dump();
+}
+
+Data getEncodedHash(
+    const Data& chainId,
+    const std::string& codeAddress,
+    const std::string& codeName,
+    const std::string& codeVersion,
+    const std::string& typeHash,
+    const std::string& domainSeparatorHash,
+    const std::string& sender,
+    const std::string& userOpHash)
+{
+    Data codeAddressBytes32(12, 0);
+    append(codeAddressBytes32, parse_hex(codeAddress));
+
+    // Create domain separator: keccak256(abi.encode(BIZ_DOMAIN_SEPARATOR_HASH, "Biz", "v1.0.0", block.chainid, wallet, _addressToBytes32(singleton)))
+    auto domainSeparator = Ethereum::ABI::Function::encodeParams(Ethereum::ABI::BaseParams {
+        std::make_shared<Ethereum::ABI::ProtoBytes32>(parse_hex(domainSeparatorHash)),
+        std::make_shared<Ethereum::ABI::ProtoBytes32>(Hash::keccak256(codeName)),
+        std::make_shared<Ethereum::ABI::ProtoBytes32>(Hash::keccak256(codeVersion)),
+        std::make_shared<Ethereum::ABI::ProtoUInt256>(chainId),
+        std::make_shared<Ethereum::ABI::ProtoAddress>(sender),
+        std::make_shared<Ethereum::ABI::ProtoBytes32>(codeAddressBytes32),
+    });
+    if (!domainSeparator.has_value()) {
+        return {};
+    }
+    Data domainSeparatorEncodedHash = Hash::keccak256(domainSeparator.value());
+
+    // Create message hash: keccak256(abi.encode(typeHash, hash))
+    Data messageToHash;
+    append(messageToHash, parse_hex(typeHash));
+    append(messageToHash, parse_hex(userOpHash));
+    Data messageHash = Hash::keccak256(messageToHash);
+
+    // Final hash: keccak256(abi.encodePacked("\x19\x01", domainSeparator, messageHash))
+    Data encoded;
+    append(encoded, parse_hex("0x1901"));
+    append(encoded, domainSeparatorEncodedHash);
+    append(encoded, messageHash);
+    return Hash::keccak256(encoded);
+}
+
+Data getSignedHash(const std::string& hash, const std::string& privateKey) {
+    auto rsvy = getRSVY(parse_hex(hash), privateKey);
+
+    Data result;
+    append(result, rsvy[0]);
+    append(result, rsvy[1]);
+    append(result, rsvy[2]);
+
+    return result;
 }
 
 } // namespace TW::Barz

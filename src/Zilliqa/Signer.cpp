@@ -44,7 +44,7 @@ static inline ByteArray* byteArray(const void* data, size_t size) {
 
 Data Signer::getPreImage(const Proto::SigningInput& input, Address& address) noexcept {
     auto internal = ZilliqaMessage::ProtoTransactionCoreInfo();
-    const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveSECP256k1);
     if (!Address::decode(input.to(), address)) {
         // invalid input address
         return Data(0);
@@ -91,7 +91,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto output = Proto::SigningOutput();
     Address address;
     const auto preImage = Signer::getPreImage(input, address);
-    const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveSECP256k1);
     const auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
     const auto signature = key.signZilliqa(preImage);
     const auto transaction = input.transaction();

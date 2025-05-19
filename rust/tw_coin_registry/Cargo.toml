@@ -15,23 +15,31 @@ tw_bitcoin = { path = "../chains/tw_bitcoin" }
 tw_bitcoincash = { path = "../chains/tw_bitcoincash" }
 tw_coin_entry = { path = "../tw_coin_entry" }
 tw_cosmos = { path = "../chains/tw_cosmos" }
+tw_decred = { path = "../chains/tw_decred" }
 tw_ethereum = { path = "../chains/tw_ethereum" }
 tw_evm = { path = "../tw_evm" }
 tw_greenfield = { path = "../chains/tw_greenfield" }
+tw_groestlcoin = { path = "../chains/tw_groestlcoin" }
 tw_hash = { path = "../tw_hash" }
 tw_internet_computer = { path = "../chains/tw_internet_computer" }
 tw_keypair = { path = "../tw_keypair" }
+tw_komodo = { path = "../chains/tw_komodo" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
 tw_native_evmos = { path = "../chains/tw_native_evmos" }
 tw_native_injective = { path = "../chains/tw_native_injective" }
 tw_pactus = { path = "../chains/tw_pactus" }
+tw_polkadot = { path = "../chains/tw_polkadot" }
+tw_polymesh = { path = "../chains/tw_polymesh" }
+tw_ripple = { path = "../chains/tw_ripple" }
 tw_ronin = { path = "../chains/tw_ronin" }
 tw_solana = { path = "../chains/tw_solana" }
+tw_substrate = { path = "../frameworks/tw_substrate" }
 tw_sui = { path = "../chains/tw_sui" }
 tw_thorchain = { path = "../chains/tw_thorchain" }
 tw_ton = { path = "../chains/tw_ton" }
 tw_utxo = { path = "../frameworks/tw_utxo" }
+tw_zcash = { path = "../chains/tw_zcash" }
 
 [build-dependencies]
 itertools = "0.10.5"

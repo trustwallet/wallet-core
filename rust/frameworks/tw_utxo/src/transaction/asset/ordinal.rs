@@ -48,7 +48,7 @@ fn create_envelope(
     let mut mime_buf = bitcoin::script::PushBytesBuf::new();
     mime_buf
         .extend_from_slice(mime)
-        .tw_err(|_| SigningErrorType::Error_invalid_params)
+        .tw_err(SigningErrorType::Error_invalid_params)
         .context("Given Ordinals mime is too long")?;
 
     // Create an Ordinals Inscription.
@@ -58,7 +58,7 @@ fn create_envelope(
         .push_slice(b"ord")
         // Separator.
         .push_opcode(OP_PUSHBYTES_1)
-        // MIME types require this addtional push. It seems that the original
+        // MIME types require this additional push. It seems that the original
         // creator inadvertently used `push_slice(&[1])`, which leads to
         // `<1><1>`, which denotes a length prefix followed by the value. On the
         // other hand, for the data, `push_slice(&[])` is used, producing `<0>`.
@@ -77,7 +77,7 @@ fn create_envelope(
         let mut data_buf = bitcoin::script::PushBytesBuf::new();
         data_buf
             .extend_from_slice(chunk)
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("Ordinals payload is too long")?;
 
         // Push buffer
@@ -90,7 +90,7 @@ fn create_envelope(
     // The internal key.
     let xonly = bitcoin::secp256k1::XOnlyPublicKey::from(
         bitcoin::PublicKey::from_slice(pubkey.as_slice())
-            .tw_err(|_| SigningErrorType::Error_invalid_params)
+            .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid public key")?
             .inner,
     );
