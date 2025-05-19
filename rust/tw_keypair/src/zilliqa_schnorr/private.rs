@@ -24,7 +24,6 @@ use std::ops::Deref;
 use std::str::FromStr;
 use tw_encoding::hex;
 use tw_hash::H256;
-use tw_misc::traits::ToBytesVec;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::ZeroizeOnDrop;
 use zeroize::Zeroizing;
@@ -117,12 +116,6 @@ impl Deref for PrivateKey {
 
     fn deref(&self) -> &Self::Target {
         &self.0
-    }
-}
-
-impl ToBytesVec for PrivateKey {
-    fn to_vec(&self) -> Vec<u8> {
-        self.0.to_bytes().to_vec()
     }
 }
 
