@@ -37,7 +37,7 @@ impl BIP32PrivateKey for ed25519::cardano::ExtendedPrivateKey {
             ed25519_bip32::XPrv::from_bytes_verified(bytes).map_err(|_| Error::InvalidKeyData)?;
         let child: ed25519_bip32::XPrv =
             bip32_xpr.derive(ed25519_bip32::DerivationScheme::V2, child_number.0);
-        Self::try_from(child.to_vec().as_slice()).map_err(|_| Error::InvalidKeyData)
+        Self::try_from(child.as_ref()).map_err(|_| Error::InvalidKeyData)
     }
 
     fn curve() -> Curve {
@@ -61,7 +61,7 @@ impl BIP32PublicKey for ed25519::cardano::ExtendedPublicKey {
         let child: ed25519_bip32::XPub = bip32_xpub
             .derive(ed25519_bip32::DerivationScheme::V2, child_number.0)
             .map_err(|_| Error::DerivationFailed)?;
-        Ok(Self::try_from(child.to_vec().as_slice())?)
+        Ok(Self::try_from(child.as_ref()).map_err(|_| Error::InvalidKeyData)?)
     }
 }
 
