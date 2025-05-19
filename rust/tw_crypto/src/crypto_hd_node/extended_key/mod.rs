@@ -4,10 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub mod crypto_aes_cbc;
-pub mod crypto_aes_ctr;
-pub mod crypto_hd_node;
-pub mod crypto_hd_node_public;
-pub mod crypto_mnemonic;
-pub mod crypto_pbkdf2;
-pub mod crypto_scrypt;
+pub mod bip32_private_key;
+pub mod bip32_public_key;
+pub mod extended_private_key;
+pub mod extended_public_key;
+pub mod hd_version;

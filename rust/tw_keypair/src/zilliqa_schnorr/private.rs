@@ -5,6 +5,7 @@
 use super::PublicKey;
 use super::Signature;
 use crate::ecdsa::canonical::generate_k;
+use crate::traits::DerivableKeyTrait;
 use crate::KeyPairResult;
 use crate::{traits::SigningKeyTrait, KeyPairError};
 use ecdsa::elliptic_curve::PrimeField;
@@ -22,7 +23,10 @@ use sha2::{Digest, Sha256};
 use std::ops::Deref;
 use std::str::FromStr;
 use tw_encoding::hex;
+use tw_hash::H256;
+use tw_misc::traits::ToBytesZeroizing;
 use zeroize::ZeroizeOnDrop;
+use zeroize::Zeroizing;
 
 type CurveDigest<C> = <C as DigestPrimitive>::Digest;
 
@@ -115,6 +119,13 @@ impl Deref for PrivateKey {
     }
 }
 
+impl ToBytesZeroizing for PrivateKey {
+    fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
+        let secret = Zeroizing::new(self.0.to_bytes());
+        Zeroizing::new(secret.as_slice().to_vec())
+    }
+}
+
 impl SigningKeyTrait for PrivateKey {
     type SigningMessage = Vec<u8>;
     type Signature = Signature;
@@ -143,6 +154,23 @@ impl SigningKeyTrait for PrivateKey {
         }
 
         Err(KeyPairError::SigningError)
+    }
+}
+
+impl DerivableKeyTrait for PrivateKey {
+    fn derive_child(&self, other: H256) -> KeyPairResult<Self> {
+        let child_scalar = Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::from_repr(
+            other.take().into(),
+        ))
+        .ok_or(KeyPairError::InternalError)?;
+
+        let derived_scalar = self.0.to_nonzero_scalar().as_ref() + child_scalar.as_ref();
+
+        let secret = Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::new(derived_scalar))
+            .map(Into::into)
+            .ok_or(KeyPairError::InternalError)?;
+
+        Ok(PrivateKey(secret))
     }
 }
 

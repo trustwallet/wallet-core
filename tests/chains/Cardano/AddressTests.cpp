@@ -236,7 +236,7 @@ TEST(CardanoAddress, MnemonicToAddressV3) {
         // V2 Tested against AdaLite
         auto mnemonicPlay1 = "youth away raise north opinion slice dash bus soldier dizzy bitter increase saddle live champion";
         auto wallet = HDWallet(mnemonicPlay1, "");
-        PrivateKey privateKey = wallet.getKey(TWCoinTypeCardano, DerivationPath(TWPurposeBIP44, TWCoinTypeCardano, DerivationPathIndex(0, true).derivationIndex(), 0, 0));
+        PrivateKey privateKey = wallet.getKey(TWCoinTypeCardano, DerivationPath(TWPurposeBIP44, TWCoinTypeCardano, 0, 0, 0));
         PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         string addr = AddressV2(publicKey).string();
         EXPECT_EQ("Ae2tdPwUPEZJYT9g1JgQWtLveUHavyRxQGi6hVzoQjct7yyCLGgk3pCyx7h", addr);
@@ -245,7 +245,7 @@ TEST(CardanoAddress, MnemonicToAddressV3) {
         // V2 Tested against AdaLite
         auto mnemonicPlay2 = "return custom two home gain guilt kangaroo supply market current curtain tomorrow heavy blue robot";
         auto wallet = HDWallet(mnemonicPlay2, "");
-        PrivateKey privateKey = wallet.getKey(TWCoinTypeCardano, DerivationPath(TWPurposeBIP44, TWCoinTypeCardano, DerivationPathIndex(0, true).derivationIndex(), 0, 0));
+        PrivateKey privateKey = wallet.getKey(TWCoinTypeCardano, DerivationPath(TWPurposeBIP44, TWCoinTypeCardano, 0, 0, 0));
         PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         string addr = AddressV2(publicKey).string();
         EXPECT_EQ("Ae2tdPwUPEZLtJx7LA2XZ3zzwonH9x9ieX3dMzaTBD3TfXuKczjMSjTecr1", addr);
@@ -255,7 +255,7 @@ TEST(CardanoAddress, MnemonicToAddressV3) {
         // In AdaLite V1 addr0 is DdzFFzCqrht7HGoJ87gznLktJGywK1LbAJT2sbd4txmgS7FcYLMQFhawb18ojS9Hx55mrbsHPr7PTraKh14TSQbGBPJHbDZ9QVh6Z6Di
         auto mnemonicALDemo = "civil void tool perfect avocado sweet immense fluid arrow aerobic boil flash";
         auto wallet = HDWallet(mnemonicALDemo, "");
-        PrivateKey privateKey = wallet.getKey(TWCoinTypeCardano, DerivationPath(TWPurposeBIP44, TWCoinTypeCardano, DerivationPathIndex(0, true).derivationIndex(), 0, 0));
+        PrivateKey privateKey = wallet.getKey(TWCoinTypeCardano, DerivationPath(TWPurposeBIP44, TWCoinTypeCardano, 0, 0, 0));
         PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         string addr = AddressV2(publicKey).string();
         EXPECT_EQ("Ae2tdPwUPEZJbLcD8iLgN7hVGvq66WdR4zocntRekSP97Ds3MvCfmEDjJYu", addr);

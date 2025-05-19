@@ -18,18 +18,22 @@ pub struct ExtendedPublicKey<H: Hasher512> {
     /// The first half of the public key (64 bytes).
     key: ExtendedPublicPart<H>,
     /// The second half of the public key (64 bytes).
-    second_key: ExtendedPublicPart<H>,
+    second_key: Option<ExtendedPublicPart<H>>,
 }
 
 /// cbindgen:ignore
 impl<H: Hasher512> ExtendedPublicKey<H> {
     /// The number of bytes in a serialized public key.
+    pub const PUBLIC_LEN: usize = ExtendedPublicPart::<H>::LEN;
     pub const LEN: usize = ExtendedPublicPart::<H>::LEN * 2;
     const KEY_RANGE: Range<usize> = 0..ExtendedPublicPart::<H>::LEN;
     const SECOND_KEY_RANGE: Range<usize> = ExtendedPublicPart::<H>::LEN..Self::LEN;
 
     /// Creates a public key with the given [`ExtendedPublicPart`] first and second keys.
-    pub(crate) fn new(key: ExtendedPublicPart<H>, second_key: ExtendedPublicPart<H>) -> Self {
+    pub(crate) fn new(
+        key: ExtendedPublicPart<H>,
+        second_key: Option<ExtendedPublicPart<H>>,
+    ) -> Self {
         ExtendedPublicKey { key, second_key }
     }
 
@@ -51,7 +55,9 @@ impl<H: Hasher512> VerifyingKeyTrait for ExtendedPublicKey<H> {
 impl<H: Hasher512> ToBytesVec for ExtendedPublicKey<H> {
     fn to_vec(&self) -> Vec<u8> {
         let mut res = self.key.to_vec();
-        res.extend_from_slice(self.second_key.to_vec().as_slice());
+        if let Some(second_key) = &self.second_key {
+            res.extend_from_slice(second_key.to_vec().as_slice());
+        }
         res
     }
 }
@@ -60,14 +66,22 @@ impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedPublicKey<H> {
     type Error = KeyPairError;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
-        if bytes.len() != Self::LEN {
-            return Err(KeyPairError::InvalidPublicKey);
+        if bytes.len() == Self::LEN {
+            let key = ExtendedPublicPart::try_from(&bytes[Self::KEY_RANGE])?;
+            let second_key = ExtendedPublicPart::try_from(&bytes[Self::SECOND_KEY_RANGE])?;
+            Ok(ExtendedPublicKey {
+                key,
+                second_key: Some(second_key),
+            })
+        } else if bytes.len() == Self::PUBLIC_LEN {
+            let key = ExtendedPublicPart::try_from(&bytes[Self::KEY_RANGE])?;
+            Ok(ExtendedPublicKey {
+                key,
+                second_key: None,
+            })
+        } else {
+            Err(KeyPairError::InvalidPublicKey)
         }
-
-        let key = ExtendedPublicPart::try_from(&bytes[Self::KEY_RANGE])?;
-        let second_key = ExtendedPublicPart::try_from(&bytes[Self::SECOND_KEY_RANGE])?;
-
-        Ok(ExtendedPublicKey { key, second_key })
     }
 }
 

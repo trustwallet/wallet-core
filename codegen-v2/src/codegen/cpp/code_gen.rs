@@ -330,7 +330,7 @@ fn generate_return_type(func: &TWFunction, converted_args: &Vec<String>) -> Resu
                 let wrapper_class_name = class_name.replace("TW", "");
                 let null_return = match pointer_type {
                     TWPointerType::Nullable | TWPointerType::NullableMut => {
-                        "if (!resultRaw) {{ return nullptr; }}\n"
+                        "\tif (!resultRaw) {{ return nullptr; }}\n"
                     }
                     _ => "",
                 };

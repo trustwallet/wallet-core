@@ -6,6 +6,7 @@
 
 pub mod crypto_aes_cbc;
 pub mod crypto_aes_ctr;
+pub mod crypto_hd_node;
 pub mod crypto_mnemonic;
 pub mod crypto_pbkdf2;
 pub mod crypto_scrypt;

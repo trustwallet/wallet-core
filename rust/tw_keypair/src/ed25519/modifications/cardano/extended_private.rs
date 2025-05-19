@@ -12,22 +12,25 @@ use crate::ed25519::Hasher512;
 use crate::traits::SigningKeyTrait;
 use crate::{KeyPairError, KeyPairResult};
 use std::ops::Range;
+use std::str::FromStr;
 use tw_encoding::hex;
 use tw_hash::H256;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::{ZeroizeOnDrop, Zeroizing};
 
 /// Represents an `ed25519` extended private key that is used in Cardano blockchain.
+#[derive(Clone)]
 pub struct ExtendedPrivateKey<H: Hasher512> {
     /// The first half (96 bytes) of the extended secret.
     key: ExtendedSecretPart<H>,
     /// The second half (96 bytes) of the extended secret.
-    second_key: ExtendedSecretPart<H>,
+    second_key: Option<ExtendedSecretPart<H>>,
 }
 
 /// cbindgen:ignore
 impl<H: Hasher512> ExtendedPrivateKey<H> {
     /// The number of bytes in a serialized private key (192 bytes).
+    pub const SECRET_LEN: usize = ExtendedSecretPart::<H>::LEN;
     pub const LEN: usize = ExtendedSecretPart::<H>::LEN * 2;
     const KEY_RANGE: Range<usize> = 0..ExtendedSecretPart::<H>::LEN;
     const SECOND_KEY_RANGE: Range<usize> = ExtendedSecretPart::<H>::LEN..Self::LEN;
@@ -35,13 +38,17 @@ impl<H: Hasher512> ExtendedPrivateKey<H> {
     /// Returns an associated Cardano extended `ed25519` public key.
     pub fn public(&self) -> ExtendedPublicKey<H> {
         let key_public = PublicKey::with_expanded_secret_no_mangle(&self.key.expanded_key);
-        let second_key_public =
-            PublicKey::with_expanded_secret_no_mangle(&self.second_key.expanded_key);
-
         let key = ExtendedPublicPart::new(key_public, self.key.chain_code);
-        let second_key = ExtendedPublicPart::new(second_key_public, self.second_key.chain_code);
 
-        ExtendedPublicKey::new(key, second_key)
+        if let Some(second_key) = &self.second_key {
+            let second_key_public =
+                PublicKey::with_expanded_secret_no_mangle(&second_key.expanded_key);
+            let second_key = ExtendedPublicPart::new(second_key_public, second_key.chain_code);
+
+            ExtendedPublicKey::new(key, Some(second_key))
+        } else {
+            ExtendedPublicKey::new(key, None)
+        }
     }
 }
 
@@ -59,7 +66,9 @@ impl<H: Hasher512> SigningKeyTrait for ExtendedPrivateKey<H> {
 impl<H: Hasher512> ToBytesZeroizing for ExtendedPrivateKey<H> {
     fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
         let mut res = self.key.to_zeroizing_vec();
-        res.extend_from_slice(self.second_key.to_zeroizing_vec().as_slice());
+        if let Some(second_key) = &self.second_key {
+            res.extend_from_slice(second_key.to_zeroizing_vec().as_slice());
+        }
         res
     }
 }
@@ -68,13 +77,22 @@ impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedPrivateKey<H> {
     type Error = KeyPairError;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
-        if bytes.len() != Self::LEN {
-            return Err(KeyPairError::InvalidSecretKey);
+        if bytes.len() == Self::LEN {
+            let key = ExtendedSecretPart::try_from(&bytes[Self::KEY_RANGE])?;
+            let second_key = ExtendedSecretPart::try_from(&bytes[Self::SECOND_KEY_RANGE])?;
+            Ok(ExtendedPrivateKey {
+                key,
+                second_key: Some(second_key),
+            })
+        } else if bytes.len() == Self::SECRET_LEN {
+            let key = ExtendedSecretPart::try_from(&bytes[Self::KEY_RANGE])?;
+            Ok(ExtendedPrivateKey {
+                key,
+                second_key: None,
+            })
+        } else {
+            Err(KeyPairError::InvalidSecretKey)
         }
-        let key = ExtendedSecretPart::try_from(&bytes[Self::KEY_RANGE])?;
-        let second_key = ExtendedSecretPart::try_from(&bytes[Self::SECOND_KEY_RANGE])?;
-
-        Ok(ExtendedPrivateKey { key, second_key })
     }
 }
 
@@ -87,7 +105,15 @@ impl<'a, H: Hasher512> TryFrom<&'a str> for ExtendedPrivateKey<H> {
     }
 }
 
-#[derive(ZeroizeOnDrop)]
+impl<H: Hasher512> FromStr for ExtendedPrivateKey<H> {
+    type Err = KeyPairError;
+
+    fn from_str(hex: &str) -> Result<Self, Self::Err> {
+        Self::try_from(hex)
+    }
+}
+
+#[derive(ZeroizeOnDrop, Clone)]
 struct ExtendedSecretPart<H: Hasher512> {
     secret: H256,
     extension: H256,

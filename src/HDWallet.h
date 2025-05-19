@@ -74,9 +74,6 @@ public:
     /// Returns master key.
     PrivateKey getMasterKey(TWCurve curve) const;
 
-    /// Returns the master private key extension (32 byte).
-    PrivateKey getMasterKeyExtension(TWCurve curve) const;
-
     /// Returns the private key with the given derivation.
     PrivateKey getKey(const TWCoinType coin, TWDerivation derivation) const;
 
