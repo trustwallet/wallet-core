@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #[repr(u32)]
+#[derive(strum_macros::FromRepr)]
 pub enum HDVersion {
     None = 0,
 
@@ -35,12 +36,6 @@ pub enum HDVersion {
     // Dogecoin
     DGUB = 0x02facafd,
     DGPV = 0x02fac398,
-}
-
-impl From<u32> for HDVersion {
-    fn from(value: u32) -> Self {
-        unsafe { std::mem::transmute(value) }
-    }
 }
 
 impl HDVersion {

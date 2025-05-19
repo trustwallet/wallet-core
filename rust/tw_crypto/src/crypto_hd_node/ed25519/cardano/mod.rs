@@ -9,7 +9,7 @@ use std::str::FromStr;
 use bip32::{ChildNumber, DerivationPath};
 use ed25519_bip32::{XPRV_SIZE, XPUB_SIZE};
 use tw_keypair::{ed25519, tw::Curve};
-use tw_misc::traits::ToBytesVec;
+use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
 
 use crate::crypto_hd_node::error::{Error, Result};
 use crate::crypto_hd_node::extended_key::{
@@ -28,8 +28,10 @@ impl BIP32PrivateKey for ed25519::cardano::ExtendedPrivateKey {
     }
 
     fn derive_child(&self, _other: &[u8], child_number: ChildNumber) -> Result<Self> {
-        let bytes = self.to_vec();
-        let bytes: [u8; XPRV_SIZE] = bytes[..XPRV_SIZE].try_into().expect("Should not fail");
+        let bytes = self.to_zeroizing_vec();
+        let bytes: [u8; XPRV_SIZE] = bytes.as_slice()[..XPRV_SIZE]
+            .try_into()
+            .expect("Should not fail");
         let bip32_xpr =
             ed25519_bip32::XPrv::from_bytes_verified(bytes).map_err(|_| Error::InvalidKeyData)?;
         let child: ed25519_bip32::XPrv =

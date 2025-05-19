@@ -14,7 +14,6 @@ use k256::elliptic_curve::sec1::ToEncodedPoint;
 use k256::{AffinePoint, ProjectivePoint};
 use tw_encoding::hex;
 use tw_hash::H256;
-use tw_misc::traits::ToBytesVec;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::{ZeroizeOnDrop, Zeroizing};
 
@@ -91,12 +90,6 @@ impl FromStr for PrivateKey {
     }
 }
 
-impl ToBytesVec for PrivateKey {
-    fn to_vec(&self) -> Vec<u8> {
-        self.secret.to_bytes().to_vec()
-    }
-}
-
 impl ToBytesZeroizing for PrivateKey {
     fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
         let secret = Zeroizing::new(self.secret.to_bytes());
@@ -105,14 +98,11 @@ impl ToBytesZeroizing for PrivateKey {
 }
 
 impl DerivableKeyTrait for PrivateKey {
-    fn derive_child(&self, other: &[u8]) -> KeyPairResult<Self> {
-        let other: [u8; 32] = other
-            .try_into()
-            .map_err(|_| KeyPairError::InvalidSecretKey)?;
-
-        let child_scalar =
-            Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::from_repr(other.into()))
-                .ok_or(KeyPairError::InternalError)?;
+    fn derive_child(&self, other: H256) -> KeyPairResult<Self> {
+        let child_scalar = Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::from_repr(
+            other.take().into(),
+        ))
+        .ok_or(KeyPairError::InternalError)?;
 
         let derived_scalar = self.secret.as_nonzero_scalar().as_ref() + child_scalar.as_ref();
 

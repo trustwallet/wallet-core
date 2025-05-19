@@ -15,6 +15,7 @@ ed25519-bip32 = "0.4.1"
 pbkdf2 = "0.12.2"
 salsa20 = "0.10.2"
 sha2 = "0.10.8"
+strum_macros = "0.25"
 tw_encoding = { path = "../tw_encoding" }
 tw_hash = { path = "../tw_hash" }
 tw_keypair = { path = "../tw_keypair" }

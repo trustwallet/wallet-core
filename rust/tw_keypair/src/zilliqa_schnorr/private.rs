@@ -23,6 +23,7 @@ use sha2::{Digest, Sha256};
 use std::ops::Deref;
 use std::str::FromStr;
 use tw_encoding::hex;
+use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::ZeroizeOnDrop;
@@ -164,14 +165,11 @@ impl SigningKeyTrait for PrivateKey {
 }
 
 impl DerivableKeyTrait for PrivateKey {
-    fn derive_child(&self, other: &[u8]) -> KeyPairResult<Self> {
-        let other: [u8; 32] = other
-            .try_into()
-            .map_err(|_| KeyPairError::InvalidSecretKey)?;
-
-        let child_scalar =
-            Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::from_repr(other.into()))
-                .ok_or(KeyPairError::InternalError)?;
+    fn derive_child(&self, other: H256) -> KeyPairResult<Self> {
+        let child_scalar = Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::from_repr(
+            other.take().into(),
+        ))
+        .ok_or(KeyPairError::InternalError)?;
 
         let derived_scalar = self.0.to_nonzero_scalar().as_ref() + child_scalar.as_ref();
 

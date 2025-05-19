@@ -45,7 +45,7 @@ pub unsafe extern "C" fn tw_hd_node_public_create_with_extended_public_key(
     let extended_public_key_str =
         try_or_else!(extended_public_key_ref.as_str(), std::ptr::null_mut);
     let curve = try_or_else!(Curve::from_raw(curve), std::ptr::null_mut);
-    let hasher = try_or_else!(Hasher::try_from(hasher), std::ptr::null_mut);
+    let hasher = try_or_else!(Hasher::from_repr(hasher), std::ptr::null_mut);
     HDNodePublic::try_from(extended_public_key_str, curve, hasher)
         .map(|hd_node| TWHDNodePublic(hd_node).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
@@ -76,7 +76,7 @@ pub unsafe extern "C" fn tw_hd_node_public_derive_from_path(
     let hd_node_ref = try_or_else!(TWHDNodePublic::from_ptr_as_ref(hd_node), std::ptr::null_mut);
     let path_ref = try_or_else!(TWString::from_ptr_as_ref(path), std::ptr::null_mut);
     let path_str = try_or_else!(path_ref.as_str(), std::ptr::null_mut);
-    let hasher = try_or_else!(Hasher::try_from(hasher), std::ptr::null_mut);
+    let hasher = try_or_else!(Hasher::from_repr(hasher), std::ptr::null_mut);
     hd_node_ref
         .0
         .derive_from_path(path_str, hasher)
