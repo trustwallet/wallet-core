@@ -11,6 +11,7 @@ use sha2::digest::Mac;
 use tw_hash::hmac::HmacSha512;
 use tw_keypair::tw::Curve;
 use tw_misc::traits::{FromSlice, ToBytesVec, ToBytesZeroizing};
+use zeroize::Zeroizing;
 
 use crate::crypto_hd_node::error::Result;
 use crate::crypto_hd_node::extended_key::bip32_public_key::BIP32PublicKey;
@@ -47,7 +48,7 @@ pub trait BIP32PrivateKey: Sized + Clone + ToBytesZeroizing + FromSlice + FromSt
         &self,
         chain_code: &ChainCode,
         child_number: ChildNumber,
-    ) -> Result<(Vec<u8>, ChainCode)> {
+    ) -> Result<(Zeroizing<Vec<u8>>, ChainCode)> {
         let mut hmac = HmacSha512::new_from_slice(chain_code).expect("Should not fail");
 
         if child_number.is_hardened() {
@@ -64,6 +65,6 @@ pub trait BIP32PrivateKey: Sized + Clone + ToBytesZeroizing + FromSlice + FromSt
 
         let chain_code = chain_code_bytes.try_into()?;
 
-        Ok((tweak_bytes.to_vec(), chain_code))
+        Ok((Zeroizing::new(tweak_bytes.to_vec()), chain_code))
     }
 }
