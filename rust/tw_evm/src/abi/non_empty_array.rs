@@ -56,6 +56,10 @@ impl<T> NonEmptyArray<T> {
     pub fn into_vec(self) -> Vec<T> {
         self.0
     }
+
+    pub fn get(&self) -> &Vec<T> {
+        &self.0
+    }
 }
 
 impl<T> IntoIterator for NonEmptyArray<T> {
