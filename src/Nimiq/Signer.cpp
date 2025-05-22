@@ -3,7 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "Signer.h"
-#include <TrezorCrypto/ed25519.h>
 
 #include <algorithm>
 

@@ -5,7 +5,6 @@
 #include "../Base58.h"
 #include "../Bitcoin/Address.h"
 
-#include <TrezorCrypto/ecdsa.h>
 #include <TrustWalletCore/TWBitcoinAddress.h>
 #include <TrustWalletCore/TWPublicKey.h>
 

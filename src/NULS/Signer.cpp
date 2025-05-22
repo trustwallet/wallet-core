@@ -3,12 +3,12 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "Signer.h"
-#include <TrezorCrypto/ecdsa.h>
 
 #include "Address.h"
 #include "BinaryCoding.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
+#include <TrustWalletCore/Generated/TWECDSA.h>
 
 using namespace TW;
 
@@ -196,10 +196,13 @@ Data Signer::buildSignedTx(const std::vector<Data> publicKeys,
         std::copy(publicKeys[i].begin(), publicKeys[i].end(),
                   std::back_inserter(transactionSignature));
 
-        std::array<uint8_t, 72> tempSigBytes;
-        size_t size = ecdsa_sig_to_der(signatures[i].data(), tempSigBytes.data());
+        auto sig = TWDataCreateWithBytes(signatures[i].data(), signatures[i].size());
+        auto der = TWECDSASigToDER(sig, true);
+        TWDataDelete(sig);
+
         auto signature = Data{};
-        std::copy(tempSigBytes.begin(), tempSigBytes.begin() + size, std::back_inserter(signature));
+        std::copy(TWDataBytes(der), TWDataBytes(der) + TWDataSize(der), std::back_inserter(signature));
+        TWDataDelete(der);
 
         encodeVarInt(signature.size(), transactionSignature);
         std::copy(signature.begin(), signature.end(), std::back_inserter(transactionSignature));

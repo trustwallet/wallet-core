@@ -5,9 +5,6 @@
 #include "Signer.h"
 #include "Asset.h"
 #include "PackedTransaction.h"
-
-#include <TrezorCrypto/ecdsa.h>
-
 namespace TW::EOS {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {

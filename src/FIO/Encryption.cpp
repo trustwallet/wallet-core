@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "Encryption.h"
+#include "rand.h"
 
 #include "../Base64.h"
 #include "../Encrypt.h"
@@ -10,11 +11,9 @@
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
 #include "../PublicKey.h"
-
-#include <TrezorCrypto/rand.h>
-#include <TrezorCrypto/ecdsa.h>
-#include <TrezorCrypto/secp256k1.h>
+#include <TrustWalletCore/Generated/TWECDSA.h>
 #include <TrustWalletCore/TWAESPaddingMode.h>
+
 
 #include <cassert>
 
@@ -88,21 +87,15 @@ Data Encryption::checkDecrypt(const Data& secret, const Data& message) {
 Data Encryption::getSharedSecret(const PrivateKey& privateKey1, const PublicKey& publicKey2) {
     // See https://github.com/fioprotocol/fiojs/blob/master/src/ecc/key_private.js
     
-    curve_point KBP;
-    [[maybe_unused]] int read_res = ecdsa_read_pubkey(&secp256k1, publicKey2.bytes.data(), &KBP);
-    assert(read_res);
+    auto privateKey = TWDataCreateWithBytes(privateKey1.bytes.data(), privateKey1.bytes.size());
+    auto publicKey = TWDataCreateWithBytes(publicKey2.bytes.data(), publicKey2.bytes.size());
+    auto sharedKey = TWECDSASharedKey(privateKey, publicKey, true);
+    TWDataDelete(privateKey);
+    TWDataDelete(publicKey);
+    auto S = Data(TWDataBytes(sharedKey), TWDataBytes(sharedKey) + TWDataSize(sharedKey));
+    TWDataDelete(sharedKey);
 
-    bignum256 privBN;
-    bn_read_be(privateKey1.bytes.data(), &privBN);
-    
-    curve_point P;
-    point_multiply(&secp256k1, &privBN, &KBP, &P);
-
-    Data S(32);
-    bn_write_be(&P.x, S.data());
-    
-    // SHA512 used in ECIES
-    return Hash::sha512(S);
+    return S;
 }
 
 Data Encryption::encrypt(const PrivateKey& privateKey1, const PublicKey& publicKey2, const Data& message, const Data& iv) {

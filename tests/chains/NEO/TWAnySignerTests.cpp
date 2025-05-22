@@ -3,7 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "PrivateKey.h"
-#include "PublicKeyLegacy.h"
 #include "TestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 #include "HexCoding.h"

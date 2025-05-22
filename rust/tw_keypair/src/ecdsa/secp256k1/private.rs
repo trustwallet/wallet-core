@@ -9,11 +9,12 @@ use crate::ecdsa::secp256k1::Signature;
 use crate::traits::DerivableKeyTrait;
 use crate::traits::SigningKeyTrait;
 use crate::{KeyPairError, KeyPairResult};
+use ecdsa::elliptic_curve::point::AffineCoordinates;
 use k256::ecdsa::{SigningKey, VerifyingKey};
 use k256::elliptic_curve::sec1::ToEncodedPoint;
 use k256::{AffinePoint, ProjectivePoint};
 use tw_encoding::hex;
-use tw_hash::H256;
+use tw_hash::{H256, H512};
 use tw_misc::traits::ToBytesVec;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::{ZeroizeOnDrop, Zeroizing};
@@ -41,6 +42,14 @@ impl PrivateKey {
 
         let shared_secret_hash = tw_hash::sha2::sha256(shared_secret_compressed.as_bytes());
         H256::try_from(shared_secret_hash.as_slice()).expect("Expected 32 byte array sha256 hash")
+    }
+
+    // See https://github.com/fioprotocol/fiojs/blob/master/src/ecc/key_private.js
+    pub fn ecies_shared_key(&self, pubkey: &PublicKey) -> H512 {
+        let shared_secret = diffie_hellman(&self.secret, &pubkey.public);
+        let shared_secret_bytes = shared_secret.x().to_vec();
+        let hash = tw_hash::sha2::sha512(shared_secret_bytes.as_slice());
+        H512::try_from(hash.as_slice()).expect("Expected 64 byte array sha512 hash")
     }
 }
 

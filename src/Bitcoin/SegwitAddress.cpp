@@ -5,8 +5,8 @@
 
 #include "SegwitAddress.h"
 #include "../Bech32.h"
-
-#include <TrezorCrypto/ecdsa.h>
+#include "../Hash.h"
+#include <TrustWalletCore/Generated/TWECDSA.h>
 
 namespace TW::Bitcoin {
 
@@ -34,8 +34,12 @@ SegwitAddress::SegwitAddress(const PublicKey& publicKey, std::string hrp)
         throw std::invalid_argument("SegwitAddress needs a compressed SECP256k1 public key.");
     }
     witnessProgram.resize(20);
-    ecdsa_get_pubkeyhash(publicKey.compressed().bytes.data(), HASHER_SHA2_RIPEMD,
-                         witnessProgram.data());
+    auto compressed = publicKey.compressed();
+    auto data = TWDataCreateWithBytes(compressed.bytes.data(), compressed.bytes.size());
+    auto result = TWECDSAPubkeyHash(data, true, Hash::HasherSha256ripemd);
+    std::copy(TWDataBytes(result), TWDataBytes(result) + TWDataSize(result), witnessProgram.begin());
+    TWDataDelete(data);
+    TWDataDelete(result);
 }
 
 std::tuple<SegwitAddress, std::string, bool> SegwitAddress::decode(const std::string& addr) {

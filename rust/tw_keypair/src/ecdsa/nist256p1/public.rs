@@ -2,14 +2,19 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use std::cmp::Ordering;
+
 use crate::ecdsa::nist256p1::{Signature, VerifySignature};
 use crate::traits::{DerivableKeyTrait, VerifyingKeyTrait};
 use crate::{KeyPairError, KeyPairResult};
 use ecdsa::elliptic_curve::group::prime::PrimeCurveAffine;
+use ecdsa::elliptic_curve::point::AffineCoordinates;
 use p256::ecdsa::signature::hazmat::PrehashVerifier;
 use p256::ecdsa::VerifyingKey;
 use tw_encoding::hex;
+use tw_hash::hasher::{Hasher, StatefulHasher};
 use tw_hash::{H256, H264, H520};
+use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
 
 /// Represents a `nist256p1` public key.
@@ -49,6 +54,23 @@ impl PublicKey {
         let compressed = false;
         H520::try_from(self.public.to_encoded_point(compressed).as_bytes())
             .expect("Expected 65 byte array Public Key")
+    }
+
+    pub fn hash(&self, hasher: Hasher) -> Data {
+        hasher.hash(self.compressed().as_slice())
+    }
+
+    pub fn compare(&self, other: &PublicKey) -> Ordering {
+        let self_as_affine = self.public.as_affine();
+        let other_as_affine = other.public.as_affine();
+        let result = self_as_affine.x().cmp(&other_as_affine.x());
+        if result != Ordering::Equal {
+            return result;
+        }
+        self_as_affine
+            .y_is_odd()
+            .unwrap_u8()
+            .cmp(&other_as_affine.y_is_odd().unwrap_u8())
     }
 }
 

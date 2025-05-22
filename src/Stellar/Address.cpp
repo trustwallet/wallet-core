@@ -7,7 +7,7 @@
 #include "../Base32.h"
 #include "../HexCoding.h"
 
-#include <TrezorCrypto/memzero.h>
+#include"memzero.h"
 #include <TrustWalletCore/TWStellarVersionByte.h>
 
 #include <array>

@@ -4,7 +4,6 @@
 
 #include "../Bitcoin/SegwitAddress.h"
 
-#include <TrezorCrypto/ecdsa.h>
 #include <TrustWalletCore/TWSegwitAddress.h>
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWHRP.h>

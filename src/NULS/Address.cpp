@@ -3,8 +3,9 @@
 // Copyright © 2017 Trust Wallet.
 #include "Address.h"
 
-#include <TrezorCrypto/ecdsa.h>
+#include <TrustWalletCore/Generated/TWECDSA.h>
 
+#include "../Hash.h"
 #include "../Base58.h"
 #include "../BinaryCoding.h"
 #include "../HexCoding.h"
@@ -59,7 +60,11 @@ Address::Address(const TW::PublicKey& publicKey, bool isMainnet) {
     }
     // Address Type
     bytes[2] = addressType;
-    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.begin() + 3);
+    auto data = TWDataCreateWithBytes(publicKey.bytes.data(), publicKey.bytes.size());
+    auto result = TWECDSAPubkeyHash(data, true, Hash::HasherSha256ripemd);
+    std::copy(TWDataBytes(result), TWDataBytes(result) + TWDataSize(result), bytes.begin() + 3);
+    TWDataDelete(data);
+    TWDataDelete(result);
     bytes[23] = checksum(bytes);
 }
 

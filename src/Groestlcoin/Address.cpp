@@ -6,7 +6,8 @@
 #include "Base58.h"
 
 #include <algorithm>
-#include <TrezorCrypto/ecdsa.h>
+#include "../Hash.h"
+#include <TrustWalletCore/Generated/TWECDSA.h>
 
 namespace TW::Groestlcoin {
 
@@ -50,7 +51,11 @@ Address::Address(const PublicKey& publicKey, uint8_t prefix) {
         throw std::invalid_argument("Groestlcoin::Address needs a compressed SECP256k1 public key.");
     }
     bytes[0] = prefix;
-    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.data() + 1);
+    auto data = TWDataCreateWithBytes(publicKey.bytes.data(), publicKey.bytes.size());
+    auto result = TWECDSAPubkeyHash(data, true, Hash::HasherSha256ripemd);
+    std::copy(TWDataBytes(result), TWDataBytes(result) + TWDataSize(result), bytes.begin() + 1);
+    TWDataDelete(data);
+    TWDataDelete(result);
 }
 
 std::string Address::string() const {

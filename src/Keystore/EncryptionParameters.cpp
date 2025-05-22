@@ -59,7 +59,7 @@ static Data rustPbkdf2(const Data& password, const PBKDF2Parameters& params) {
     Rust::TWDataWrapper passwordData = password;
     Rust::TWDataWrapper saltData = params.salt;
 
-    Rust::TWDataWrapper res = Rust::crypto_pbkdf2(
+    Rust::TWDataWrapper res = Rust::tw_pbkdf2_hmac_sha256(
         passwordData.get(),
         saltData.get(),
         params.iterations,

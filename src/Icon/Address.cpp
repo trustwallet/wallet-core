@@ -5,8 +5,7 @@
 #include "Address.h"
 
 #include "../HexCoding.h"
-
-#include <TrezorCrypto/sha3.h>
+#include "../Hash.h"
 
 namespace TW::Icon {
 
@@ -43,8 +42,7 @@ Address::Address(const std::string& string) {
 
 Address::Address(const PublicKey& publicKey, enum AddressType type)
     : type(type) {
-    auto hash = std::array<uint8_t, Hash::sha256Size>();
-    sha3_256(publicKey.bytes.data() + 1, publicKey.bytes.size() - 1, hash.data());
+    auto hash = Hash::sha3_256(publicKey.bytes.data() + 1, publicKey.bytes.size() - 1);
     std::copy(hash.end() - Address::size, hash.end(), bytes.begin());
 }
 

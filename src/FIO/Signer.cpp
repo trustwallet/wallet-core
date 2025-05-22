@@ -12,9 +12,6 @@
 #include "../proto/Common.pb.h"
 #include "TransactionBuilder.h"
 
-#include <TrezorCrypto/ecdsa.h>
-#include <TrezorCrypto/secp256k1.h>
-
 #include <cassert>
 
 namespace TW::FIO {
