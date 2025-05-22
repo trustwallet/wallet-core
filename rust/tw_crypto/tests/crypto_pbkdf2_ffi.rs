@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use tw_crypto::ffi::crypto_pbkdf2::crypto_pbkdf2;
+use tw_crypto::ffi::crypto_pbkdf2::tw_pbkdf2_hmac_sha256;
 use tw_encoding::{base64, base64::STANDARD, hex};
 use tw_memory::ffi::tw_data::TWData;
 use tw_memory::ffi::RawPtrTrait;
@@ -18,14 +18,14 @@ fn test_crypto_pbkdf2_ffi() {
     let salt = hex::decode("73616C74").unwrap();
     let salt = TWDataHelper::create(salt);
 
-    let res = unsafe { crypto_pbkdf2(password.ptr(), salt.ptr(), 1, 20) };
+    let res = unsafe { tw_pbkdf2_hmac_sha256(password.ptr(), salt.ptr(), 1, 20) };
     let res = unsafe { TWData::from_ptr_as_mut(res).unwrap() };
     assert_eq!(
         hex::encode(res.to_vec(), false),
         "120fb6cffcf8b32c43e7225256c4f837a86548c9"
     );
 
-    let res = unsafe { crypto_pbkdf2(password.ptr(), salt.ptr(), 4096, 20) };
+    let res = unsafe { tw_pbkdf2_hmac_sha256(password.ptr(), salt.ptr(), 4096, 20) };
     let res = unsafe { TWData::from_ptr_as_mut(res).unwrap() };
     assert_eq!(
         hex::encode(res.to_vec(), false),
@@ -35,7 +35,7 @@ fn test_crypto_pbkdf2_ffi() {
     let salt2 = base64::decode("kNHS+Mx//slRsmLF9396HQ==", STANDARD).unwrap();
     let salt2 = TWDataHelper::create(salt2);
 
-    let res = unsafe { crypto_pbkdf2(password.ptr(), salt2.ptr(), 100, 32) };
+    let res = unsafe { tw_pbkdf2_hmac_sha256(password.ptr(), salt2.ptr(), 100, 32) };
     let res = unsafe { TWData::from_ptr_as_mut(res).unwrap() };
     assert_eq!(
         hex::encode(res.to_vec(), false),
