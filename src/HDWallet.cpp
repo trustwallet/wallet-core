@@ -123,7 +123,7 @@ PrivateKey HDWallet<seedSize>::getKeyByCurve(TWCurve curve, const DerivationPath
     auto curveToUse = curve == TWCurveStarkex ? TWCurveSECP256k1 : curve;
     auto node = getNode<seedSize>(*this, curveToUse, derivationPath, Hash::HasherSha256ripemd);
     if (node == nullptr) {
-        throw std::invalid_argument("Invalid node");
+        throw std::invalid_argument("Invalid derivation path");
     }
     auto privateKeyData = TWHDNodePrivateKeyData(node);
     TWHDNodeDelete(node);
@@ -154,7 +154,7 @@ std::string HDWallet<seedSize>::getRootKey(TWCoinType coin, TWHDVersion version)
     const auto curve = TWCoinTypeCurve(coin);
     auto node = getMasterNode(*this, curve);
     if (node == nullptr) {
-        return "";
+        return "Unsupported curve";
     }
     auto extendedPrivateKey = TWHDNodeExtendedPrivateKey(node, version, TW::base58Hasher(coin));
     TWHDNodeDelete(node);
@@ -186,7 +186,7 @@ std::string HDWallet<seedSize>::getExtendedPrivateKeyAccount(TWPurpose purpose, 
     auto derivationPath = DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(path.coin(), true), DerivationPathIndex(account, true)});
     auto node = getNode(*this, curve, derivationPath, TW::publicKeyHasher(coin));
     if (node == nullptr) {
-        return "";
+        return "Invalid derivation path";
     }
     auto extendedPrivateKey = TWHDNodeExtendedPrivateKey(node, version, TW::base58Hasher(coin));
     TWHDNodeDelete(node);
@@ -207,7 +207,7 @@ std::string HDWallet<seedSize>::getExtendedPublicKeyAccount(TWPurpose purpose, T
     auto derivationPath = DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(path.coin(), true), DerivationPathIndex(account, true)});
     auto node = getNode(*this, curve, derivationPath, TW::publicKeyHasher(coin));
     if (node == nullptr) {
-        return "";
+        return "Invalid derivation path";
     }
     auto extendedPublicKey = TWHDNodeExtendedPublicKey(node, version, TW::base58Hasher(coin));
     TWHDNodeDelete(node);

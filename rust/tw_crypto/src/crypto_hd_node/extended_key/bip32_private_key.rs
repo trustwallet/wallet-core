@@ -10,13 +10,14 @@ use bip32::{ChainCode, ChildNumber, KEY_SIZE};
 use sha2::digest::Mac;
 use tw_hash::hmac::HmacSha512;
 use tw_keypair::tw::Curve;
-use tw_misc::traits::{FromSlice, ToBytesVec};
+use tw_misc::traits::{FromSlice, ToBytesVec, ToBytesZeroizing};
+use zeroize::Zeroizing;
 
 use crate::crypto_hd_node::error::Result;
 use crate::crypto_hd_node::extended_key::bip32_public_key::BIP32PublicKey;
 
 /// Trait for key types which can be derived using BIP32.
-pub trait BIP32PrivateKey: Sized + Clone + ToBytesVec + FromSlice + FromStr {
+pub trait BIP32PrivateKey: Sized + Clone + ToBytesZeroizing + FromSlice + FromStr {
     /// Public key type which corresponds to this private key.
     type BIP32PublicKey: BIP32PublicKey;
 
@@ -47,12 +48,12 @@ pub trait BIP32PrivateKey: Sized + Clone + ToBytesVec + FromSlice + FromStr {
         &self,
         chain_code: &ChainCode,
         child_number: ChildNumber,
-    ) -> Result<(Vec<u8>, ChainCode)> {
+    ) -> Result<(Zeroizing<Vec<u8>>, ChainCode)> {
         let mut hmac = HmacSha512::new_from_slice(chain_code).expect("Should not fail");
 
         if child_number.is_hardened() {
             hmac.update(&[0]);
-            hmac.update(&self.to_vec());
+            hmac.update(&self.to_zeroizing_vec());
         } else {
             hmac.update(&self.public_key().to_vec());
         }
@@ -64,6 +65,6 @@ pub trait BIP32PrivateKey: Sized + Clone + ToBytesVec + FromSlice + FromStr {
 
         let chain_code = chain_code_bytes.try_into()?;
 
-        Ok((tweak_bytes.to_vec(), chain_code))
+        Ok((Zeroizing::new(tweak_bytes.to_vec()), chain_code))
     }
 }

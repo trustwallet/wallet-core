@@ -10,7 +10,7 @@ use crate::ed25519::{private::PrivateKey as StandardPrivateKey, Hasher512};
 use crate::traits::SigningKeyTrait;
 use crate::{KeyPairError, KeyPairResult};
 use tw_encoding::hex;
-use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
+use tw_misc::traits::ToBytesZeroizing;
 use zeroize::Zeroizing;
 
 /// Represents an `ed25519` private key that is used in Waves blockchain.
@@ -60,12 +60,6 @@ impl<H: Hasher512> FromStr for PrivateKey<H> {
 
     fn from_str(hex: &str) -> Result<Self, Self::Err> {
         Self::try_from(hex)
-    }
-}
-
-impl<H: Hasher512> ToBytesVec for PrivateKey<H> {
-    fn to_vec(&self) -> Vec<u8> {
-        self.standard_key.to_vec()
     }
 }
 

@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use bip32::ChildNumber;
+use tw_hash::H256;
 use tw_keypair::traits::DerivableKeyTrait;
 use tw_keypair::{ecdsa::secp256k1, tw::Curve};
 
@@ -17,6 +18,7 @@ impl BIP32PrivateKey for secp256k1::PrivateKey {
     type BIP32PublicKey = secp256k1::PublicKey;
 
     fn derive_child(&self, other: &[u8], _child_number: ChildNumber) -> Result<Self> {
+        let other = H256::try_from(other).map_err(|_| Error::InvalidKeyData)?;
         <secp256k1::PrivateKey as DerivableKeyTrait>::derive_child(self, other)
             .map_err(|_| Error::DerivationFailed)
     }
@@ -36,6 +38,7 @@ impl BIP32PrivateKey for secp256k1::PrivateKey {
 
 impl BIP32PublicKey for secp256k1::PublicKey {
     fn derive_child(&self, other: &[u8], _child_number: ChildNumber) -> Result<Self> {
+        let other = H256::try_from(other).map_err(|_| Error::InvalidKeyData)?;
         <secp256k1::PublicKey as DerivableKeyTrait>::derive_child(self, other)
             .map_err(|_| Error::DerivationFailed)
     }

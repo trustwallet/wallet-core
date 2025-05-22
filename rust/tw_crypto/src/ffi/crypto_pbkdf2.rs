@@ -15,7 +15,7 @@ use tw_memory::ffi::{tw_data::TWData, Nonnull, NullableMut, RawPtrTrait};
 /// \param password data.
 /// \param salt data.
 /// \param iterations PBKDF2 parameter `iterations`.
-/// \param desired_len PBKDF2 parameter `desired_len`.
+/// \param dk_len PBKDF2 parameter `desired_len`.
 /// \return *nullable* data.
 #[tw_ffi(ty = static_function, class = TWPBKDF2, name = HmacSha256)]
 #[no_mangle]
@@ -23,7 +23,7 @@ pub unsafe extern "C" fn tw_pbkdf2_hmac_sha256(
     password: Nonnull<TWData>,
     salt: Nonnull<TWData>,
     iterations: u32,
-    desired_len: usize,
+    dk_len: usize,
 ) -> NullableMut<TWData> {
     let password = TWData::from_ptr_as_ref(password)
         .map(|data| data.as_slice())
@@ -32,7 +32,7 @@ pub unsafe extern "C" fn tw_pbkdf2_hmac_sha256(
         .map(|data| data.as_slice())
         .unwrap_or_default();
 
-    let output = pbkdf2_hmac_sha256(password, salt, iterations, desired_len);
+    let output = pbkdf2_hmac_sha256(password, salt, iterations, dk_len);
     TWData::from(output).into_ptr()
 }
 
@@ -41,7 +41,7 @@ pub unsafe extern "C" fn tw_pbkdf2_hmac_sha256(
 /// \param password data.
 /// \param salt data.
 /// \param iterations PBKDF2 parameter `iterations`.
-/// \param desired_len PBKDF2 parameter `desired_len`.
+/// \param dk_len PBKDF2 parameter `desired_len`.
 /// \return *nullable* data.
 #[tw_ffi(ty = static_function, class = TWPBKDF2, name = HmacSha512)]
 #[no_mangle]
@@ -49,7 +49,7 @@ pub unsafe extern "C" fn tw_pbkdf2_hmac_sha512(
     password: Nonnull<TWData>,
     salt: Nonnull<TWData>,
     iterations: u32,
-    desired_len: usize,
+    dk_len: usize,
 ) -> NullableMut<TWData> {
     let password = TWData::from_ptr_as_ref(password)
         .map(|data| data.as_slice())
@@ -58,6 +58,6 @@ pub unsafe extern "C" fn tw_pbkdf2_hmac_sha512(
         .map(|data| data.as_slice())
         .unwrap_or_default();
 
-    let output = pbkdf2_hmac_512(password, salt, iterations, desired_len);
+    let output = pbkdf2_hmac_512(password, salt, iterations, dk_len);
     TWData::from(output).into_ptr()
 }

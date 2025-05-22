@@ -115,14 +115,11 @@ impl ToBytesVec for PublicKey {
 }
 
 impl DerivableKeyTrait for PublicKey {
-    fn derive_child(&self, other: &[u8]) -> KeyPairResult<Self> {
-        let other: [u8; 32] = other
-            .try_into()
-            .map_err(|_| KeyPairError::InvalidPublicKey)?;
-
-        let child_scalar =
-            Option::<p256::NonZeroScalar>::from(p256::NonZeroScalar::from_repr(other.into()))
-                .ok_or(KeyPairError::InternalError)?;
+    fn derive_child(&self, other: H256) -> KeyPairResult<Self> {
+        let child_scalar = Option::<p256::NonZeroScalar>::from(p256::NonZeroScalar::from_repr(
+            other.take().into(),
+        ))
+        .ok_or(KeyPairError::InvalidPublicKey)?;
 
         let projective_point: p256::ProjectivePoint = self.public.as_affine().into();
         let child_point = projective_point + (p256::AffinePoint::generator() * *child_scalar);

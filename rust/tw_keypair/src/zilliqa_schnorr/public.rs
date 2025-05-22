@@ -14,6 +14,7 @@ use std::fmt::Display;
 use std::ops::Deref;
 use std::str::FromStr;
 use tw_encoding::hex;
+use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
 
 pub type VerifySignature = super::Signature;
@@ -120,14 +121,11 @@ impl VerifyingKeyTrait for PublicKey {
 }
 
 impl DerivableKeyTrait for PublicKey {
-    fn derive_child(&self, other: &[u8]) -> KeyPairResult<Self> {
-        let other: [u8; 32] = other
-            .try_into()
-            .map_err(|_| KeyPairError::InvalidPublicKey)?;
-
-        let child_scalar =
-            Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::from_repr(other.into()))
-                .ok_or(KeyPairError::InternalError)?;
+    fn derive_child(&self, other: H256) -> KeyPairResult<Self> {
+        let child_scalar = Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::from_repr(
+            other.take().into(),
+        ))
+        .ok_or(KeyPairError::InternalError)?;
 
         let projective_point: k256::ProjectivePoint = self.0.as_affine().into();
         let child_point = projective_point + (k256::AffinePoint::generator() * *child_scalar);

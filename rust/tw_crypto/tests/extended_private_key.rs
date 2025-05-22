@@ -21,7 +21,8 @@ use tw_crypto::crypto_mnemonic::mnemonic::Mnemonic;
 use tw_encoding::hex;
 use tw_hash::hasher::Hasher;
 use tw_keypair::tw::Curve;
-use tw_misc::traits::ToBytesVec;
+use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
+use zeroize::Zeroizing;
 
 #[test]
 fn test_from_seed() {
@@ -134,7 +135,7 @@ fn test_get_key_by_curve() {
         let xprv = XPrvSecp256k1::new(&seed).unwrap();
         let path = DerivationPath::from_str(deriv_path).unwrap();
         let xprv = xprv.derive_from_path(&path, Hasher::Sha256ripemd).unwrap();
-        let private_key = xprv.private_key().to_vec();
+        let private_key = xprv.private_key().to_zeroizing_vec();
         assert_eq!(
             hex::encode(private_key, false),
             "4fb8657d6464adcaa086d6758d7f0b6b6fc026c98dc1671fcc6460b5a74abc62"
@@ -147,7 +148,7 @@ fn test_get_key_by_curve() {
         let path = DerivationPath::from_str(deriv_path).unwrap();
         let xprv = xprv.derive_from_path(&path, Hasher::Sha256ripemd).unwrap();
 
-        let private_key = xprv.to_vec();
+        let private_key = xprv.to_zeroizing_vec();
         assert_eq!(
             hex::encode(private_key, false),
             "a13df52d5a5b438bbf921bbf86276e4347fe8e2f2ed74feaaee12b77d6d26f86"
@@ -268,7 +269,7 @@ fn test_aptos_key() {
         .derive_from_path(&deriv_path, Hasher::Sha256ripemd)
         .unwrap();
     assert_eq!(
-        hex::encode(xprv.private_key().to_vec(), false),
+        hex::encode(xprv.private_key().to_zeroizing_vec(), false),
         "7f2634c0e2414a621e96e39c41d09021700cee12ee43328ed094c5580cd0bd6f"
     );
 
@@ -293,7 +294,7 @@ fn test_cardano_key() {
         .derive_from_path(&deriv_path, Hasher::Sha256ripemd)
         .unwrap();
     assert_eq!(
-        hex::encode(xprv.private_key().to_vec(), false),
+        hex::encode(xprv.private_key().to_zeroizing_vec(), false),
         "680113743091be93bcdab47ec2f6a2e3c710812f3f051ebb84ac70aa15a14952c8d771b5dd2726467412ed62c37d6c819c36d1dba83991a8585c31bb4790f2cde5232f0770ce99adfc7e6ec1a5270f52d6435c30ceb51415258d1eaccd28b5fe"
     );
 
@@ -316,7 +317,7 @@ fn test_nano_key() {
     let seed = Mnemonic::to_seed(mnemonic, "");
     let xprv = XPrvEd25519Blake2bNano::new(&seed).unwrap();
     assert_eq!(
-        hex::encode(xprv.private_key().to_vec(), false),
+        hex::encode(xprv.private_key().to_zeroizing_vec(), false),
         "d258c2521f7802b8e83c32f2cc97bd06b69747847390c5e247a3d19faa74202e"
     );
     let xpub = xprv.public_key();
@@ -330,7 +331,7 @@ fn test_nano_key() {
         .derive_from_path(&deriv_path, Hasher::Sha256ripemd)
         .unwrap();
     assert_eq!(
-        hex::encode(xprv.private_key().to_vec(), false),
+        hex::encode(xprv.private_key().to_zeroizing_vec(), false),
         "ffd43b8b4273e69a8278b9dbb4ac724134a878adc82927e503145c935b432959"
     );
 
@@ -350,7 +351,7 @@ fn test_waves_key() {
     let seed = Mnemonic::to_seed(mnemonic, "");
     let xprv = XPrvCurve25519Waves::new(&seed).unwrap();
     assert_eq!(
-        hex::encode(xprv.private_key().to_vec(), false),
+        hex::encode(xprv.private_key().to_zeroizing_vec(), false),
         "7374826cbd731cf656c11b3fdd458084288f655c8fd4056175996655d0fda4c9"
     );
     let xpub = xprv.public_key();
@@ -376,7 +377,7 @@ fn test_zilliqa_schnorr_key() {
     let seed = Mnemonic::to_seed(mnemonic, "");
     let xprv = XPrvZilliqaSchnorr::new(&seed).unwrap();
     assert_eq!(
-        hex::encode(xprv.private_key().to_vec(), false),
+        hex::encode(xprv.private_key().to_zeroizing_vec(), false),
         "d1b2b553b053f278d510a8494ead811252b1d5ec0da4434d0997a75de92bcea9"
     );
     let xpub = xprv.public_key();
@@ -390,7 +391,7 @@ fn test_zilliqa_schnorr_key() {
         .derive_from_path(&deriv_path, Hasher::Sha256ripemd)
         .unwrap();
     assert_eq!(
-        hex::encode(xprv.private_key().to_vec(), false),
+        hex::encode(xprv.private_key().to_zeroizing_vec(), false),
         "4fc45a32e714677a8d3fbed23a8e1afbba8decbf60d479149129342dc894d2a4"
     );
 
@@ -592,9 +593,9 @@ fn test_invalid_key_cardano() {
         }
     }
 
-    impl ToBytesVec for InvalidPrivateKey {
-        fn to_vec(&self) -> Vec<u8> {
-            vec![]
+    impl ToBytesZeroizing for InvalidPrivateKey {
+        fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
+            Zeroizing::new(vec![])
         }
     }
 
@@ -674,9 +675,9 @@ fn test_invalid_key_secp256k1() {
         }
     }
 
-    impl ToBytesVec for InvalidPrivateKey {
-        fn to_vec(&self) -> Vec<u8> {
-            vec![]
+    impl ToBytesZeroizing for InvalidPrivateKey {
+        fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
+            Zeroizing::new(vec![])
         }
     }
 

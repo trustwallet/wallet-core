@@ -15,7 +15,7 @@ use std::ops::Range;
 use std::str::FromStr;
 use tw_encoding::hex;
 use tw_hash::H256;
-use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
+use tw_misc::traits::ToBytesZeroizing;
 use zeroize::{ZeroizeOnDrop, Zeroizing};
 
 /// Represents an `ed25519` extended private key that is used in Cardano blockchain.
@@ -113,16 +113,6 @@ impl<H: Hasher512> FromStr for ExtendedPrivateKey<H> {
     }
 }
 
-impl<H: Hasher512> ToBytesVec for ExtendedPrivateKey<H> {
-    fn to_vec(&self) -> Vec<u8> {
-        let mut res = self.key.to_vec();
-        if let Some(second_key) = &self.second_key {
-            res.extend_from_slice(second_key.to_vec().as_slice());
-        }
-        res
-    }
-}
-
 #[derive(ZeroizeOnDrop, Clone)]
 struct ExtendedSecretPart<H: Hasher512> {
     secret: H256,
@@ -149,16 +139,6 @@ impl<H: Hasher512> ToBytesZeroizing for ExtendedSecretPart<H> {
         res.extend_from_slice(self.extension.as_slice());
         res.extend_from_slice(self.chain_code.as_slice());
         Zeroizing::new(res)
-    }
-}
-
-impl<H: Hasher512> ToBytesVec for ExtendedSecretPart<H> {
-    fn to_vec(&self) -> Vec<u8> {
-        let mut res = Vec::with_capacity(H256::len() * 3);
-        res.extend_from_slice(self.secret.as_slice());
-        res.extend_from_slice(self.extension.as_slice());
-        res.extend_from_slice(self.chain_code.as_slice());
-        res
     }
 }
 

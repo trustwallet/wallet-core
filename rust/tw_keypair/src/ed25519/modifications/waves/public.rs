@@ -46,9 +46,7 @@ impl<H: Hasher512> PublicKey<H> {
     pub fn to_standard_pubkey(&self) -> Option<StandardPublicKey<H>> {
         let montgomery_point = MontgomeryPoint(self.curve25519_pk.take());
         let sign_bit = self.curve25519_pk[31] & PUBKEY_SIGN_MASK;
-        let Some(edwards_point) = montgomery_point.to_edwards(sign_bit) else {
-            return None;
-        };
+        let edwards_point = montgomery_point.to_edwards(sign_bit)?;
         Some(StandardPublicKey::<H>::with_edwards_point(edwards_point))
     }
 }

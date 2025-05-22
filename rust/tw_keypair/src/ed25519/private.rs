@@ -12,7 +12,7 @@ use std::fmt;
 use std::str::FromStr;
 use tw_encoding::hex;
 use tw_hash::H256;
-use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
+use tw_misc::traits::ToBytesZeroizing;
 use zeroize::{ZeroizeOnDrop, Zeroizing};
 
 /// Represents an `ed25519` private key.
@@ -76,12 +76,6 @@ impl<H: Hasher512> FromStr for PrivateKey<H> {
 
     fn from_str(hex: &str) -> Result<Self, Self::Err> {
         Self::try_from(hex)
-    }
-}
-
-impl<H: Hasher512> ToBytesVec for PrivateKey<H> {
-    fn to_vec(&self) -> Vec<u8> {
-        self.secret.to_vec()
     }
 }
 

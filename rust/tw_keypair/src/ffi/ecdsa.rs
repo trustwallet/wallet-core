@@ -59,7 +59,7 @@ pub unsafe extern "C" fn tw_ecdsa_pubkey_hash(
     let pubkey_data = TWData::from_ptr_as_ref(pubkey_data)
         .map(|data| data.as_slice())
         .unwrap_or_default();
-    let hasher = try_or_else!(Hasher::try_from(hasher), std::ptr::null_mut);
+    let hasher = try_or_else!(Hasher::from_repr(hasher), std::ptr::null_mut);
     let hash = if is_secp256k1 {
         let pubkey = try_or_else!(SECPublicKey::try_from(pubkey_data), std::ptr::null_mut);
         pubkey.hash(hasher)

@@ -129,7 +129,7 @@ where
     type Error = Error;
 
     fn try_from(key: ExtendedKey) -> Result<Self> {
-        let version: HDVersion = key.prefix.version().into();
+        let version = HDVersion::from_repr(key.prefix.version()).ok_or(Error::InvalidKeyData)?;
         if version.is_public() {
             Ok(ExtendedPublicKey {
                 public_key: K::try_from(&key.key_bytes).map_err(|_| Error::InvalidKeyData)?,

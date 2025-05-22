@@ -9,7 +9,8 @@ use std::str::FromStr;
 use bip32::{DerivationPath, Prefix};
 use tw_hash::hasher::Hasher;
 use tw_keypair::tw::Curve;
-use tw_misc::traits::ToBytesVec;
+use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
+use zeroize::Zeroizing;
 
 use crate::crypto_hd_node::error::{Error, Result};
 use crate::crypto_hd_node::extended_key::extended_private_key::ExtendedPrivateKey;
@@ -109,21 +110,21 @@ impl HDNode {
         }
     }
 
-    pub fn private_key_data(&self) -> Result<Vec<u8>> {
+    pub fn private_key_data(&self) -> Result<Zeroizing<Vec<u8>>> {
         match self {
-            HDNode::Secp256k1(xprv) => Ok(xprv.private_key().to_vec()),
-            HDNode::Nist256p1(xprv) => Ok(xprv.private_key().to_vec()),
-            HDNode::Ed25519(xprv) => Ok(xprv.private_key().to_vec()),
-            HDNode::Ed25519Blake2bNano(xprv) => Ok(xprv.private_key().to_vec()),
-            HDNode::Curve25519Waves(xprv) => Ok(xprv.private_key().to_vec()),
+            HDNode::Secp256k1(xprv) => Ok(xprv.private_key().to_zeroizing_vec()),
+            HDNode::Nist256p1(xprv) => Ok(xprv.private_key().to_zeroizing_vec()),
+            HDNode::Ed25519(xprv) => Ok(xprv.private_key().to_zeroizing_vec()),
+            HDNode::Ed25519Blake2bNano(xprv) => Ok(xprv.private_key().to_zeroizing_vec()),
+            HDNode::Curve25519Waves(xprv) => Ok(xprv.private_key().to_zeroizing_vec()),
             HDNode::Ed25519ExtendedCardano(xprv, xprv2) => {
-                let mut data = xprv.private_key().to_vec();
+                let mut data = xprv.private_key().to_zeroizing_vec();
                 if let Some(xprv2) = xprv2 {
-                    data.extend(xprv2.private_key().to_vec());
+                    data.extend(xprv2.private_key().to_zeroizing_vec().as_slice());
                 }
                 Ok(data)
             },
-            HDNode::ZilliqaSchnorr(xprv) => Ok(xprv.private_key().to_vec()),
+            HDNode::ZilliqaSchnorr(xprv) => Ok(xprv.private_key().to_zeroizing_vec()),
         }
     }
 

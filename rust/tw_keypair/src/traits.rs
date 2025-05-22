@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::KeyPairResult;
+use tw_hash::H256;
 use tw_misc::traits::{FromSlice, ToBytesVec, ToBytesZeroizing};
 
 pub trait KeyPairTrait: FromSlice + SigningKeyTrait + VerifyingKeyTrait {
@@ -33,5 +34,5 @@ pub trait VerifyingKeyTrait {
 }
 
 pub trait DerivableKeyTrait: Sized {
-    fn derive_child(&self, other: &[u8]) -> KeyPairResult<Self>;
+    fn derive_child(&self, other: H256) -> KeyPairResult<Self>;
 }

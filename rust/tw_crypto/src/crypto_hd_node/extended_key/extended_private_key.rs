@@ -14,7 +14,7 @@ use tw_hash::hasher::Hasher;
 use tw_hash::hasher::StatefulHasher;
 use tw_hash::hmac::HmacSha512;
 use tw_keypair::tw::Curve;
-use tw_misc::traits::ToBytesVec;
+use tw_misc::traits::ToBytesZeroizing;
 use zeroize::Zeroize;
 use zeroize::Zeroizing;
 
@@ -136,11 +136,6 @@ where
         &self.attrs
     }
 
-    /// Serialize the raw private key as a byte array.
-    pub fn to_bytes(&self) -> Vec<u8> {
-        self.private_key.to_vec()
-    }
-
     /// Serialize this key as an [`ExtendedKey`].
     pub fn to_extended_key(&self, prefix: Prefix) -> Result<ExtendedKey> {
         if K::curve() == Curve::Ed25519ExtendedCardano {
@@ -148,7 +143,7 @@ where
         }
         // Add leading `0` byte
         let mut key_bytes = [0u8; KEY_SIZE + 1];
-        key_bytes[1..].copy_from_slice(&self.to_bytes());
+        key_bytes[1..].copy_from_slice(&self.private_key.to_zeroizing_vec());
 
         Ok(ExtendedKey {
             prefix,
@@ -175,7 +170,7 @@ where
     type Error = Error;
 
     fn try_from(key: ExtendedKey) -> Result<Self> {
-        let version: HDVersion = key.prefix.version().into();
+        let version = HDVersion::from_repr(key.prefix.version()).ok_or(Error::InvalidKeyData)?;
         if version.is_private() && key.key_bytes[0] == 0 {
             Ok(ExtendedPrivateKey {
                 private_key: K::try_from(&key.key_bytes[1..]).map_err(|_| Error::InvalidKeyData)?,
@@ -187,12 +182,12 @@ where
     }
 }
 
-impl<K> ToBytesVec for ExtendedPrivateKey<K>
+impl<K> ToBytesZeroizing for ExtendedPrivateKey<K>
 where
     K: BIP32PrivateKey,
 {
-    fn to_vec(&self) -> Vec<u8> {
-        self.private_key.to_vec()
+    fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
+        self.private_key.to_zeroizing_vec()
     }
 }
 

@@ -123,7 +123,7 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/google/protobuf/wrappers.pb.cc"
       
     ss.exclude_files = 
-      'src/rand.c',
+      'src/rand.cpp',
       'swift/Sources/Generated/WalletCore.h'
 
     ss.public_header_files =

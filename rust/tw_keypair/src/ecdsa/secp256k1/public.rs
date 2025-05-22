@@ -13,10 +13,8 @@ use ecdsa::elliptic_curve::point::AffineCoordinates;
 use k256::ecdsa::signature::hazmat::PrehashVerifier;
 use k256::ecdsa::VerifyingKey;
 use tw_encoding::hex;
-use tw_hash::{
-    hasher::{Hasher, StatefulHasher},
-    Hash, H256, H264, H512, H520,
-};
+use tw_hash::hasher::{Hasher, StatefulHasher};
+use tw_hash::{Hash, H256, H264, H512, H520};
 use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
 
@@ -147,14 +145,11 @@ impl ToBytesVec for PublicKey {
 }
 
 impl DerivableKeyTrait for PublicKey {
-    fn derive_child(&self, other: &[u8]) -> KeyPairResult<Self> {
-        let other: [u8; 32] = other
-            .try_into()
-            .map_err(|_| KeyPairError::InvalidPublicKey)?;
-
-        let child_scalar =
-            Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::from_repr(other.into()))
-                .ok_or(KeyPairError::InternalError)?;
+    fn derive_child(&self, other: H256) -> KeyPairResult<Self> {
+        let child_scalar = Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::from_repr(
+            other.take().into(),
+        ))
+        .ok_or(KeyPairError::InternalError)?;
 
         let projective_point: k256::ProjectivePoint = self.public.as_affine().into();
         let child_point = projective_point + (k256::AffinePoint::generator() * *child_scalar);
