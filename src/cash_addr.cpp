@@ -19,10 +19,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <string>
 #include "cash_addr.h"
 
 #define MAX_CASHADDR_SIZE 129
@@ -88,7 +88,7 @@ int cash_encode(char* output, const char* hrp, const uint8_t* data,
 int cash_decode(char* hrp, uint8_t* data, size_t* data_len, const char* input) {
   uint64_t chk = 1;
   size_t i = 0;
-  size_t input_len = strlen(input);
+  size_t input_len = std::string(input).size();
   size_t hrp_len = 0;
   int have_lower = 0, have_upper = 0;
   if (input_len < CHECKSUM_SIZE || input_len > MAX_CASHADDR_SIZE) {
