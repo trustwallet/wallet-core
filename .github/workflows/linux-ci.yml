@@ -54,6 +54,7 @@ jobs:
         CXX: /usr/bin/clang++
     - name: Build and test
       run: |
+        ninja -Cbuild tests
         build/tests/tests --gtest_output=xml
       env:
         CC: /usr/bin/clang
