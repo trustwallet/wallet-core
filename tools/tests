@@ -5,6 +5,7 @@
 set -e
 
 cmake -H. -Bbuild
+make -Cbuild -j12 tests
 
 export CK_TIMEOUT_MULTIPLIER=4
 
