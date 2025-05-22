@@ -199,6 +199,9 @@ Data Signer::buildSignedTx(const std::vector<Data> publicKeys,
         auto sig = TWDataCreateWithBytes(signatures[i].data(), signatures[i].size());
         auto der = TWECDSASigToDER(sig, true);
         TWDataDelete(sig);
+        if (der == nullptr) {
+            throw std::invalid_argument("Invalid signature");
+        }
 
         auto signature = Data{};
         std::copy(TWDataBytes(der), TWDataBytes(der) + TWDataSize(der), std::back_inserter(signature));

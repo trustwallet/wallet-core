@@ -86,8 +86,11 @@ CashAddress::CashAddress(std::string hrp, const PublicKey& publicKey)
     payload[0] = 0;
     auto data = TWDataCreateWithBytes(publicKey.bytes.data(), publicKey.bytes.size());
     auto result = TWECDSAPubkeyHash(data, true, Hash::HasherSha256ripemd);
-    std::copy(TWDataBytes(result), TWDataBytes(result) + TWDataSize(result), payload.begin() + 1);
     TWDataDelete(data);
+    if (result == nullptr) {
+        throw std::invalid_argument("Invalid public key hash");
+    }
+    std::copy(TWDataBytes(result), TWDataBytes(result) + TWDataSize(result), payload.begin() + 1);
     TWDataDelete(result);
 
     size_t outlen = 0;

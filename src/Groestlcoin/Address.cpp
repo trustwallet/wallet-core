@@ -53,8 +53,11 @@ Address::Address(const PublicKey& publicKey, uint8_t prefix) {
     bytes[0] = prefix;
     auto data = TWDataCreateWithBytes(publicKey.bytes.data(), publicKey.bytes.size());
     auto result = TWECDSAPubkeyHash(data, true, Hash::HasherSha256ripemd);
-    std::copy(TWDataBytes(result), TWDataBytes(result) + TWDataSize(result), bytes.begin() + 1);
     TWDataDelete(data);
+    if (result == nullptr) {
+        throw std::invalid_argument("Invalid public key hash");
+    }
+    std::copy(TWDataBytes(result), TWDataBytes(result) + TWDataSize(result), bytes.begin() + 1);
     TWDataDelete(result);
 }
 

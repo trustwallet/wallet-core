@@ -37,8 +37,11 @@ SegwitAddress::SegwitAddress(const PublicKey& publicKey, std::string hrp)
     auto compressed = publicKey.compressed();
     auto data = TWDataCreateWithBytes(compressed.bytes.data(), compressed.bytes.size());
     auto result = TWECDSAPubkeyHash(data, true, Hash::HasherSha256ripemd);
-    std::copy(TWDataBytes(result), TWDataBytes(result) + TWDataSize(result), witnessProgram.begin());
     TWDataDelete(data);
+    if (result == nullptr) {
+        throw std::invalid_argument("Invalid public key hash");
+    }
+    std::copy(TWDataBytes(result), TWDataBytes(result) + TWDataSize(result), witnessProgram.begin());
     TWDataDelete(result);
 }
 

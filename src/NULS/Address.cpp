@@ -62,8 +62,11 @@ Address::Address(const TW::PublicKey& publicKey, bool isMainnet) {
     bytes[2] = addressType;
     auto data = TWDataCreateWithBytes(publicKey.bytes.data(), publicKey.bytes.size());
     auto result = TWECDSAPubkeyHash(data, true, Hash::HasherSha256ripemd);
-    std::copy(TWDataBytes(result), TWDataBytes(result) + TWDataSize(result), bytes.begin() + 3);
     TWDataDelete(data);
+    if (result == nullptr) {
+        throw std::invalid_argument("Invalid public key hash");
+    }
+    std::copy(TWDataBytes(result), TWDataBytes(result) + TWDataSize(result), bytes.begin() + 3);
     TWDataDelete(result);
     bytes[23] = checksum(bytes);
 }

@@ -92,6 +92,9 @@ Data Encryption::getSharedSecret(const PrivateKey& privateKey1, const PublicKey&
     auto sharedKey = TWECDSASharedKey(privateKey, publicKey, true);
     TWDataDelete(privateKey);
     TWDataDelete(publicKey);
+    if (sharedKey == nullptr) {
+        throw std::invalid_argument("Invalid shared key");
+    }
     auto S = Data(TWDataBytes(sharedKey), TWDataBytes(sharedKey) + TWDataSize(sharedKey));
     TWDataDelete(sharedKey);
 
