@@ -14,7 +14,6 @@
             </cross_compilation>
             <header_search_paths>
                 <header_search_path>include</header_search_path>
-                <header_search_path>trezor-crypto/include</header_search_path>
                 <header_search_path>build/local/include</header_search_path>
             </header_search_paths>
             <name>C++ Source Group</name>

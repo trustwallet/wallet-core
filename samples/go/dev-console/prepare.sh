@@ -6,6 +6,5 @@ ninja
 cp libTrustWalletCore.a ../native/packaged/lib/
 cp libprotobuf.a ../native/packaged/lib
 cp ../../../../build/local/lib/libwallet_core_rs.a ../native/packaged/lib
-cp trezor-crypto/libTrezorCrypto.a ../native/packaged/lib
 cd -
 cp -R ../../../include native/packaged/

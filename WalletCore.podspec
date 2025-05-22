@@ -37,8 +37,6 @@ Pod::Spec.new do |s|
       'swift/Sources/*.{swift,h,m,cpp}',
       'swift/Sources/Extensions/*.swift',
       'swift/Sources/Generated/*.{swift,h}',
-      'trezor-crypto/crypto/**/*.{c,h}',
-      'trezor-crypto/include/**/*.{h}',
       "#{protobuf_source_dir}/src/google/protobuf/any.cc",
       "#{protobuf_source_dir}/src/google/protobuf/any.pb.cc",
       "#{protobuf_source_dir}/src/google/protobuf/any_lite.cc",
@@ -125,11 +123,7 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/google/protobuf/wrappers.pb.cc"
       
     ss.exclude_files = 
-      'trezor-crypto/include/TrezorCrypto/base58.h',
-      'trezor-crypto/crypto/monero',
-      'trezor-crypto/crypto/tests',
-      'trezor-crypto/crypto/tools',
-      'trezor-crypto/crypto/rand.c',
+      'src/rand.c',
       'swift/Sources/Generated/WalletCore.h'
 
     ss.public_header_files =
@@ -137,7 +131,6 @@ Pod::Spec.new do |s|
       'swift/Sources/*.h'
 
     ss.preserve_paths =
-      'trezor-crypto/crypto/*.{table}',
       "#{protobuf_source_dir}/src/**/*.{h,inc}",
       "#{include_dir}/nlohmann/**/*.hpp",
       'src/proto/*.proto'
@@ -145,12 +138,10 @@ Pod::Spec.new do |s|
     ss.xcconfig = {
       'HEADER_SEARCH_PATHS' => '$(inherited) ' \
         '$(SRCROOT)/../../wallet-core ' \
-        '${SRCROOT}/../../trezor-crypto/crypto ',
       'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) ' \
         '/usr/local/include ' \
         '${SRCROOT}/../../include ' \
         '${SRCROOT}/../../../build/local/include ' \
-        "${SRCROOT}/../../trezor-crypto/include " \
         "${SRCROOT}/../../protobuf ",
       'GCC_WARN_UNUSED_FUNCTION' => 'NO',
       'GCC_WARN_64_TO_32_BIT_CONVERSION' => 'NO',
