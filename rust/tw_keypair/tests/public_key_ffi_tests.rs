@@ -5,6 +5,7 @@
 use tw_encoding::hex;
 use tw_hash::sha2::sha256;
 use tw_hash::sha3::keccak256;
+use tw_keypair::ffi::ecdsa::{tw_ecdsa_pubkey_compare, tw_ecdsa_shared_key};
 use tw_keypair::ffi::privkey::{
     tw_private_key_get_public_key_by_type, tw_private_key_sign, tw_private_key_sign_as_der,
 };
@@ -17,6 +18,7 @@ use tw_keypair::test_utils::tw_private_key_helper::TWPrivateKeyHelper;
 use tw_keypair::test_utils::tw_public_key_helper::TWPublicKeyHelper;
 use tw_keypair::tw::{Curve, PublicKeyType};
 use tw_memory::ffi::c_byte_array::CByteArray;
+use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 
 fn test_verify(ty: PublicKeyType, public: &str, msg: &str, sign: &str) {
     let tw_public = TWPublicKeyHelper::with_hex(public, ty);
@@ -334,4 +336,77 @@ fn test_public_key_is_valid() {
         unsafe { tw_public_key_is_valid(bytes_ptr, bytes_len, PublicKeyType::Ed25519 as u32) };
 
     assert!(is_valid);
+}
+
+#[test]
+fn test_zillqa_schnorr_public_key_is_valid() {
+    let public_key_hex = "034ae47910d58b9bde819c3cffa8de4441955508db00aa2540db8e6bf6e99abc1b";
+    let bytes = hex::decode(public_key_hex).unwrap();
+    let bytes_ptr = bytes.as_ptr();
+    let bytes_len = bytes.len();
+
+    let is_valid = unsafe {
+        tw_public_key_is_valid(bytes_ptr, bytes_len, PublicKeyType::ZilliqaSchnorr as u32)
+    };
+
+    assert!(is_valid);
+}
+
+#[test]
+fn test_secp256k1_shared_key_ffi() {
+    let private_key = TWDataHelper::create(
+        hex::decode("2bd806c97f0e00af1a1fc3328fa763a9269723c8db8fac4f93af71db186d6e90").unwrap(),
+    );
+    let public_key = TWDataHelper::create(
+        hex::decode("024edfcf9dfe6c0b5c83d1ab3f78d1b39a46ebac6798e08e19761f5ed89ec83c10").unwrap(),
+    );
+    let shared_key = TWDataHelper::wrap(unsafe {
+        tw_ecdsa_shared_key(private_key.ptr(), public_key.ptr(), true)
+    });
+    assert_eq!(hex::encode(shared_key.to_vec().unwrap(), false), "a71b4ec5a9577926a1d2aa1d9d99327fd3b68f6a1ea597200a0d890bd3331df300a2d49fec0b2b3e6969ce9263c5d6cf47c191c1ef149373ecc9f0d98116b598");
+}
+
+#[test]
+fn test_nist256p1_shared_key_ffi() {
+    let private_key = TWDataHelper::create(
+        hex::decode("bca2a4e7db34577e1193d6b6312244a246832228598c91fd5123cba52c182979").unwrap(),
+    );
+    let public_key = TWDataHelper::create(
+        hex::decode("031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486").unwrap(),
+    );
+    let shared_key = TWDataHelper::wrap(unsafe {
+        tw_ecdsa_shared_key(private_key.ptr(), public_key.ptr(), false)
+    });
+    assert_eq!(hex::encode(shared_key.to_vec().unwrap(), false), "d5277ff8bda8bd043a663583019b9b4397b58c69a7fdbb9c39e6525eb99e5183f9a82cd4ce9f75d81ebc61ced5c763d612a9f8dc255ba4aea25675d882a8e514");
+}
+
+#[test]
+fn test_nist256p1_pubkey_compare() {
+    let public_key_1 = TWDataHelper::create(
+        hex::decode("031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486").unwrap(),
+    );
+    let public_key_2 = TWDataHelper::create(
+        hex::decode("03d9fd62df332403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1ee").unwrap(),
+    );
+    let public_key_3 = TWDataHelper::create(
+        hex::decode("0305947c8564734b0e634531c405a0b6488e2cb9bcde5eddefcf3f008f0c048115").unwrap(),
+    );
+    let result = unsafe { tw_ecdsa_pubkey_compare(public_key_1.ptr(), public_key_2.ptr(), false) };
+    assert_eq!(result, -1);
+    let result = unsafe { tw_ecdsa_pubkey_compare(public_key_1.ptr(), public_key_3.ptr(), false) };
+    assert_eq!(result, 1);
+    let result = unsafe { tw_ecdsa_pubkey_compare(public_key_2.ptr(), public_key_3.ptr(), false) };
+    assert_eq!(result, 1);
+}
+
+#[test]
+fn test_secp256k1_pubkey_compare() {
+    let public_key_1 = TWDataHelper::create(
+        hex::decode("02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992").unwrap(),
+    );
+    let public_key_2 = TWDataHelper::create(
+        hex::decode("0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1").unwrap(),
+    );
+    let result = unsafe { tw_ecdsa_pubkey_compare(public_key_1.ptr(), public_key_2.ptr(), true) };
+    assert_eq!(result, 1);
 }

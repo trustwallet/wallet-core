@@ -6,7 +6,7 @@ use serde::Deserialize;
 use tw_encoding::hex::{self, as_hex};
 use tw_hash::{H256, H264, H520};
 use tw_keypair::ecdsa::nist256p1::{PrivateKey, PublicKey, VerifySignature};
-use tw_keypair::ffi::ecdsa::tw_ecdsa_sig_to_der;
+use tw_keypair::ffi::ecdsa::{tw_ecdsa_pubkey_hash, tw_ecdsa_sig_to_der};
 use tw_keypair::traits::VerifyingKeyTrait;
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_misc::traits::ToBytesVec;
@@ -103,5 +103,29 @@ fn test_tw_sig_to_der() {
     assert_eq!(
         hex::encode(signature.to_vec().unwrap(), false),
         "304402206cc8a52ea475c5ab090bb91f62e1e3e9831450b6941d30ed0600a08acec014db022065e7ecee3a3e1f95a53054a03f16f0e44f1d0aa3a44b87a4664819a0f5c0f388"
+    );
+}
+
+#[test]
+fn test_tw_invalid_sig_to_der() {
+    let signature = "6ccd";
+    let signature_data = hex::decode(signature).unwrap();
+    let tw_signature = TWDataHelper::create(signature_data);
+
+    let signature = TWDataHelper::wrap(unsafe { tw_ecdsa_sig_to_der(tw_signature.ptr(), false) });
+    assert_eq!(signature.is_null(), true);
+}
+
+#[test]
+fn test_tw_pubkey_hash() {
+    let pubkey = "031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486";
+    let pubkey_data = hex::decode(pubkey).unwrap();
+    let tw_pubkey = TWDataHelper::create(pubkey_data);
+
+    let hash = TWDataHelper::wrap(unsafe { tw_ecdsa_pubkey_hash(tw_pubkey.ptr(), false, 1) });
+
+    assert_eq!(
+        hex::encode(hash.to_vec().unwrap(), false),
+        "fc5f90ded54731474b8bb18ee579f77ad93427486a888d23a1af92719bcf5640"
     );
 }
