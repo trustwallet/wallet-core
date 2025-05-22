@@ -9,7 +9,7 @@ use std::path::Path;
 static WALLET_CORE_PROJECT_DIR: &str = "../..";
 
 // libs to link with, in reverse dependency order
-static LIBS: [&str; 4] = ["TrustWalletCore", "protobuf", "wallet_core_rs"];
+static LIBS: [&str; 3] = ["TrustWalletCore", "protobuf", "wallet_core_rs"];
 
 fn main() {
     // Generate protobuf interface files

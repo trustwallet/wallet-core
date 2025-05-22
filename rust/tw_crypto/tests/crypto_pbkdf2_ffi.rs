@@ -4,14 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use tw_crypto::ffi::crypto_pbkdf2::tw_pbkdf2_hmac_sha256;
+use tw_crypto::ffi::crypto_pbkdf2::{tw_pbkdf2_hmac_sha256, tw_pbkdf2_hmac_sha512};
 use tw_encoding::{base64, base64::STANDARD, hex};
 use tw_memory::ffi::tw_data::TWData;
 use tw_memory::ffi::RawPtrTrait;
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 
 #[test]
-fn test_crypto_pbkdf2_ffi() {
+fn test_pbkdf2_hmac_sha256_ffi() {
     let password = hex::decode("70617373776f7264").unwrap();
     let password = TWDataHelper::create(password);
 
@@ -40,5 +40,22 @@ fn test_crypto_pbkdf2_ffi() {
     assert_eq!(
         hex::encode(res.to_vec(), false),
         "9cf33ebd3542c691fac6f61609a8d13355a0adf4d15eed77cc9d13f792b77c3a"
+    );
+}
+
+#[test]
+fn test_pbkdf2_hmac_sha512_ffi() {
+    let password = hex::decode("70617373776f7264").unwrap();
+    let password = TWDataHelper::create(password);
+
+    let salt = hex::decode("73616C74").unwrap();
+    let salt = TWDataHelper::create(salt);
+
+    let res = unsafe { tw_pbkdf2_hmac_sha512(password.ptr(), salt.ptr(), 1, 20) };
+    let res = unsafe { TWData::from_ptr_as_mut(res).unwrap() };
+
+    assert_eq!(
+        hex::encode(res.to_vec(), false),
+        "867f70cf1ade02cff3752599a3a53dc4af34c7a6"
     );
 }
