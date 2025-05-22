@@ -85,17 +85,10 @@ int cash_encode(char* output, const char* hrp, const uint8_t* data,
   return 1;
 }
 
-size_t size_of_str(const char *src) {
-  char dest[256];
-  strncpy(dest, src, sizeof dest);
-  dest[sizeof dest - 1] = 0;
-  return strlen(dest);
-}
-
 int cash_decode(char* hrp, uint8_t* data, size_t* data_len, const char* input) {
   uint64_t chk = 1;
   size_t i = 0;
-  size_t input_len = size_of_str(input);
+  size_t input_len = strlen(input);
   size_t hrp_len = 0;
   int have_lower = 0, have_upper = 0;
   if (input_len < CHECKSUM_SIZE || input_len > MAX_CASHADDR_SIZE) {
