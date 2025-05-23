@@ -10,7 +10,6 @@ use crate::traits::{DerivableKeyTrait, SigningKeyTrait};
 use crate::{KeyPairError, KeyPairResult};
 use ecdsa::elliptic_curve::point::AffineCoordinates;
 use p256::ecdsa::{SigningKey, VerifyingKey};
-use p256::elliptic_curve::sec1::ToEncodedPoint;
 use p256::{AffinePoint, ProjectivePoint};
 use tw_encoding::hex;
 use tw_hash::{H256, H512};
@@ -29,24 +28,10 @@ impl PrivateKey {
         PublicKey::new(*self.secret.verifying_key())
     }
 
-    /// Computes an EC Diffie-Hellman secret in constant time.
-    /// The method is ported from [TW::PrivateKey::getSharedKey](https://github.com/trustwallet/wallet-core/blob/830b1c5baaf90692196163999e4ee2063c5f4e49/src/PrivateKey.cpp#L175-L191).
-    pub fn shared_key_hash(&self, pubkey: &PublicKey) -> H256 {
-        let shared_secret = diffie_hellman(&self.secret, &pubkey.public);
-
-        // Get a compressed shared secret (33 bytes with a tag in front).
-        let compress = true;
-        let shared_secret_compressed = shared_secret.to_encoded_point(compress);
-
-        let shared_secret_hash = tw_hash::sha2::sha256(shared_secret_compressed.as_bytes());
-        H256::try_from(shared_secret_hash.as_slice()).expect("Expected 32 byte array sha256 hash")
-    }
-
     // See https://github.com/fioprotocol/fiojs/blob/master/src/ecc/key_private.js
     pub fn ecies_shared_key(&self, pubkey: &PublicKey) -> H512 {
         let shared_secret = diffie_hellman(&self.secret, &pubkey.public);
-        let shared_secret_bytes = shared_secret.x().to_vec();
-        let hash = tw_hash::sha2::sha512(shared_secret_bytes.as_slice());
+        let hash = tw_hash::sha2::sha512(shared_secret.x().as_slice());
         H512::try_from(hash.as_slice()).expect("Expected 64 byte array sha512 hash")
     }
 }

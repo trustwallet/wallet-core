@@ -5,6 +5,7 @@
 #include "ParamsBuilder.h"
 #include "Data.h"
 #include "OpCode.h"
+#include "../Utils.h"
 
 #include <algorithm>
 #include <list>
@@ -205,11 +206,9 @@ Data ParamsBuilder::fromMultiPubkey(uint8_t m, const std::vector<Data>& pubKeys)
     builder.push(m);
     auto sortedPubKeys = pubKeys;
     std::sort(sortedPubKeys.begin(), sortedPubKeys.end(), [](Data& o1, Data& o2) -> int {
-        auto pubkey1 = TWDataCreateWithBytes(o1.data(), o1.size());
-        auto pubkey2 = TWDataCreateWithBytes(o2.data(), o2.size());
-        auto result = TWECDSAPubkeyCompare(pubkey1, pubkey2, false);
-        TWDataDelete(pubkey1);
-        TWDataDelete(pubkey2);
+        auto pubkey1 = wrapTWData(TWDataCreateWithBytes(o1.data(), o1.size()));
+        auto pubkey2 = wrapTWData(TWDataCreateWithBytes(o2.data(), o2.size()));
+        auto result = TWECDSAPubkeyCompare(pubkey1.get(), pubkey2.get(), false);
         return result < 0;
     });
     for (auto const& pk : sortedPubKeys) {

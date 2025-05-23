@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include "../Hash.h"
+#include "../Utils.h"
 #include <TrustWalletCore/Generated/TWECDSA.h>
 
 namespace TW::Groestlcoin {
@@ -51,14 +52,13 @@ Address::Address(const PublicKey& publicKey, uint8_t prefix) {
         throw std::invalid_argument("Groestlcoin::Address needs a compressed SECP256k1 public key.");
     }
     bytes[0] = prefix;
-    auto data = TWDataCreateWithBytes(publicKey.bytes.data(), publicKey.bytes.size());
-    auto result = TWECDSAPubkeyHash(data, true, Hash::HasherSha256ripemd);
-    TWDataDelete(data);
+    auto data = wrapTWData(TWDataCreateWithBytes(publicKey.bytes.data(), publicKey.bytes.size()));
+    auto result = wrapTWData(TWECDSAPubkeyHash(data.get(), true, Hash::HasherSha256ripemd));
     if (result == nullptr) {
         throw std::invalid_argument("Invalid public key hash");
     }
-    std::copy(TWDataBytes(result), TWDataBytes(result) + TWDataSize(result), bytes.begin() + 1);
-    TWDataDelete(result);
+    auto resultData = dataFromTWData(result);
+    std::copy(resultData.begin(), resultData.end(), bytes.begin() + 1);
 }
 
 std::string Address::string() const {

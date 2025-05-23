@@ -11,6 +11,7 @@
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
 #include "../PublicKey.h"
+#include "../Utils.h"
 #include <TrustWalletCore/Generated/TWECDSA.h>
 #include <TrustWalletCore/TWAESPaddingMode.h>
 
@@ -86,19 +87,14 @@ Data Encryption::checkDecrypt(const Data& secret, const Data& message) {
 
 Data Encryption::getSharedSecret(const PrivateKey& privateKey1, const PublicKey& publicKey2) {
     // See https://github.com/fioprotocol/fiojs/blob/master/src/ecc/key_private.js
-    
-    auto privateKey = TWDataCreateWithBytes(privateKey1.bytes.data(), privateKey1.bytes.size());
-    auto publicKey = TWDataCreateWithBytes(publicKey2.bytes.data(), publicKey2.bytes.size());
-    auto sharedKey = TWECDSASharedKey(privateKey, publicKey, true);
-    TWDataDelete(privateKey);
-    TWDataDelete(publicKey);
+        
+    auto privateKey = wrapTWData(TWDataCreateWithBytes(privateKey1.bytes.data(), privateKey1.bytes.size()));
+    auto publicKey = wrapTWData(TWDataCreateWithBytes(publicKey2.bytes.data(), publicKey2.bytes.size()));
+    auto sharedKey = wrapTWData(TWECDSASharedKey(privateKey.get(), publicKey.get(), true));
     if (sharedKey == nullptr) {
         throw std::invalid_argument("Invalid shared key");
     }
-    auto S = Data(TWDataBytes(sharedKey), TWDataBytes(sharedKey) + TWDataSize(sharedKey));
-    TWDataDelete(sharedKey);
-
-    return S;
+    return dataFromTWData(sharedKey);
 }
 
 Data Encryption::encrypt(const PrivateKey& privateKey1, const PublicKey& publicKey2, const Data& message, const Data& iv) {

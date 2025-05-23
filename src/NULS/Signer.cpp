@@ -8,6 +8,7 @@
 #include "BinaryCoding.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
+#include "../Utils.h"
 #include <TrustWalletCore/Generated/TWECDSA.h>
 
 using namespace TW;
@@ -196,16 +197,15 @@ Data Signer::buildSignedTx(const std::vector<Data> publicKeys,
         std::copy(publicKeys[i].begin(), publicKeys[i].end(),
                   std::back_inserter(transactionSignature));
 
-        auto sig = TWDataCreateWithBytes(signatures[i].data(), signatures[i].size());
-        auto der = TWECDSASigToDER(sig, true);
-        TWDataDelete(sig);
+        auto sig = wrapTWData(TWDataCreateWithBytes(signatures[i].data(), signatures[i].size()));
+        auto der = wrapTWData(TWECDSASigToDER(sig.get(), true));
         if (der == nullptr) {
             throw std::invalid_argument("Invalid signature");
         }
 
         auto signature = Data{};
-        std::copy(TWDataBytes(der), TWDataBytes(der) + TWDataSize(der), std::back_inserter(signature));
-        TWDataDelete(der);
+        auto derData = dataFromTWData(der);
+        std::copy(derData.begin(), derData.end(), std::back_inserter(signature));
 
         encodeVarInt(signature.size(), transactionSignature);
         std::copy(signature.begin(), signature.end(), std::back_inserter(transactionSignature));
