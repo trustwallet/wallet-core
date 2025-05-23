@@ -5,10 +5,9 @@
 set -e
 
 cmake -H. -Bbuild
-make -Cbuild -j12 tests TrezorCryptoTests
+make -Cbuild -j12 tests
 
 export CK_TIMEOUT_MULTIPLIER=4
-build/trezor-crypto/crypto/tests/TrezorCryptoTests
 
 build/tests/tests tests
 

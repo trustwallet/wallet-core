@@ -11,7 +11,7 @@ use tw_misc::traits::ToBytesVec;
 
 /// cbindgen:ignore
 /// Equals to 0x80.
-const PUBKEY_SIGN_MASK: u8 = 0b1000_0000;
+pub(crate) const PUBKEY_SIGN_MASK: u8 = 0b1000_0000;
 
 /// cbindgen:ignore
 /// Equals to 127.

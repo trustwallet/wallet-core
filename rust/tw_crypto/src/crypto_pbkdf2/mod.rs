@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use pbkdf2::pbkdf2_hmac;
-use sha2::Sha256;
+use sha2::{Sha256, Sha512};
 
 pub fn pbkdf2_hmac_sha256(
     password: &[u8],
@@ -15,5 +15,16 @@ pub fn pbkdf2_hmac_sha256(
 ) -> Vec<u8> {
     let mut output = vec![0u8; desired_len];
     pbkdf2_hmac::<Sha256>(password, salt, iterations, &mut output);
+    output
+}
+
+pub fn pbkdf2_hmac_512(
+    password: &[u8],
+    salt: &[u8],
+    iterations: u32,
+    desired_len: usize,
+) -> Vec<u8> {
+    let mut output = vec![0u8; desired_len];
+    pbkdf2_hmac::<Sha512>(password, salt, iterations, &mut output);
     output
 }

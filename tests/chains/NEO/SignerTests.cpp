@@ -4,7 +4,6 @@
 
 #include "HexCoding.h"
 #include "PublicKey.h"
-#include "PublicKeyLegacy.h"
 #include "NEO/Address.h"
 #include "NEO/Signer.h"
 

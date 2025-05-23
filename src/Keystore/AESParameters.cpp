@@ -5,8 +5,7 @@
 #include "AESParameters.h"
 
 #include "../HexCoding.h"
-
-#include <TrezorCrypto/rand.h>
+#include "rand.h"
 
 using namespace TW;
 

@@ -7,9 +7,6 @@
 #include "../HexCoding.h"
 #include "../PublicKey.h"
 
-#include <TrezorCrypto/ecdsa.h>
-#include <TrezorCrypto/secp256k1.h>
-
 using TW::PublicKey;
 
 struct TWPublicKey *_Nullable TWPublicKeyCreateWithData(TWData *_Nonnull data, enum TWPublicKeyType type) {

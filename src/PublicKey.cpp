@@ -8,7 +8,7 @@
 #include "rust/bindgen/WalletCoreRSBindgen.h"
 #include "rust/Wrapper.h"
 
-#include <TrezorCrypto/memzero.h>
+#include "memzero.h"
 
 #include <iterator>
 

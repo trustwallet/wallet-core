@@ -5,8 +5,9 @@
 #include "CashAddress.h"
 #include "../Coin.h"
 
-#include <TrezorCrypto/cash_addr.h>
-#include <TrezorCrypto/ecdsa.h>
+#include "../cash_addr.h"
+#include "../Hash.h"
+#include <TrustWalletCore/Generated/TWECDSA.h>
 
 #include <array>
 #include <cassert>
@@ -83,7 +84,14 @@ CashAddress::CashAddress(std::string hrp, const PublicKey& publicKey)
     }
     std::array<uint8_t, 21> payload{};
     payload[0] = 0;
-    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, payload.data() + 1);
+    auto data = TWDataCreateWithBytes(publicKey.bytes.data(), publicKey.bytes.size());
+    auto result = TWECDSAPubkeyHash(data, true, Hash::HasherSha256ripemd);
+    TWDataDelete(data);
+    if (result == nullptr) {
+        throw std::invalid_argument("Invalid public key hash");
+    }
+    std::copy(TWDataBytes(result), TWDataBytes(result) + TWDataSize(result), payload.begin() + 1);
+    TWDataDelete(result);
 
     size_t outlen = 0;
     auto success = cash_addr_to_data(bytes.data(), &outlen, payload.data(), 21) != 0;

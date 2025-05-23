@@ -3,8 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "PBKDF2Parameters.h"
-
-#include <TrezorCrypto/rand.h>
+#include "rand.h"
 
 using namespace TW;
 

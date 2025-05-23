@@ -2,12 +2,10 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+#include "rand.h"
 #include "../PrivateKey.h"
 #include "../PublicKey.h"
 
-#include <TrezorCrypto/ecdsa.h>
-#include <TrezorCrypto/rand.h>
-#include <TrezorCrypto/secp256k1.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWCoinType.h>
 

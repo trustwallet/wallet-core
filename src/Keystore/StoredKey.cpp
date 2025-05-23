@@ -10,7 +10,7 @@
 #include "PrivateKey.h"
 
 #include <nlohmann/json.hpp>
-#include <TrezorCrypto/memzero.h>
+#include "memzero.h"
 
 #include <cassert>
 #include <fstream>

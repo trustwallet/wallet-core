@@ -7,14 +7,17 @@ use tw_hash::sha2::sha256;
 use tw_hash::sha3::keccak256;
 use tw_hash::H256;
 use tw_keypair::ffi::privkey::{
-    tw_private_key_create_with_data, tw_private_key_get_public_key_by_type,
-    tw_private_key_is_valid, tw_private_key_sign, tw_private_key_sign_as_der,
+    tw_private_key_bytes, tw_private_key_create_with_data, tw_private_key_data,
+    tw_private_key_get_public_key_by_type, tw_private_key_is_valid, tw_private_key_sign,
+    tw_private_key_sign_as_der, tw_private_key_size,
 };
 use tw_keypair::ffi::pubkey::{tw_public_key_data, tw_public_key_delete, tw_public_key_verify};
 use tw_keypair::test_utils::tw_private_key_helper::TWPrivateKeyHelper;
 use tw_keypair::test_utils::tw_public_key_helper::TWPublicKeyHelper;
 use tw_keypair::tw::{Curve, PublicKeyType};
 use tw_memory::ffi::c_byte_array::CByteArray;
+use tw_memory::ffi::tw_data::tw_data_create_with_bytes;
+use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 
 fn test_sign(curve: Curve, secret: &str, msg: &str, expected_sign: &str) {
     let tw_privkey = TWPrivateKeyHelper::with_hex(secret, curve.to_raw());
@@ -33,6 +36,20 @@ fn test_tw_private_key_create() {
         Curve::Secp256k1.to_raw(),
     );
     assert!(!tw_privkey.is_null());
+
+    let bytes = unsafe { tw_private_key_bytes(tw_privkey.ptr()) };
+    let size = unsafe { tw_private_key_size(tw_privkey.ptr()) };
+    let tw_data = TWDataHelper::wrap(unsafe { tw_data_create_with_bytes(bytes, size) });
+    assert_eq!(
+        hex::encode(tw_data.to_vec().unwrap(), false),
+        "ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a"
+    );
+
+    let data = unsafe { tw_private_key_data(tw_privkey.ptr()) };
+    assert_eq!(
+        hex::encode(unsafe { data.into_vec() }, false),
+        "ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a"
+    );
 
     // Invalid hex.
     let tw_privkey = TWPrivateKeyHelper::with_bytes(*b"123", Curve::Secp256k1.to_raw());

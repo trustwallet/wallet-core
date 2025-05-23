@@ -8,9 +8,11 @@ use crate::ecdsa::nist256p1::public::PublicKey;
 use crate::ecdsa::nist256p1::Signature;
 use crate::traits::{DerivableKeyTrait, SigningKeyTrait};
 use crate::{KeyPairError, KeyPairResult};
-use p256::ecdsa::SigningKey;
+use ecdsa::elliptic_curve::point::AffineCoordinates;
+use p256::ecdsa::{SigningKey, VerifyingKey};
+use p256::{AffinePoint, ProjectivePoint};
 use tw_encoding::hex;
-use tw_hash::H256;
+use tw_hash::{H256, H512};
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::{ZeroizeOnDrop, Zeroizing};
 
@@ -25,6 +27,21 @@ impl PrivateKey {
     pub fn public(&self) -> PublicKey {
         PublicKey::new(*self.secret.verifying_key())
     }
+
+    // See https://github.com/fioprotocol/fiojs/blob/master/src/ecc/key_private.js
+    pub fn ecies_shared_key(&self, pubkey: &PublicKey) -> H512 {
+        let shared_secret = diffie_hellman(&self.secret, &pubkey.public);
+        let hash = tw_hash::sha2::sha512(shared_secret.x().as_slice());
+        H512::try_from(hash.as_slice()).expect("Expected 64 byte array sha512 hash")
+    }
+}
+
+/// This method is inspired by [elliptic_curve::ecdh::diffie_hellman](https://github.com/RustCrypto/traits/blob/f0dbe44fea56d4c17e625ababacb580fec842137/elliptic-curve/src/ecdh.rs#L60-L70)
+fn diffie_hellman(private: &SigningKey, public: &VerifyingKey) -> AffinePoint {
+    let public_point = ProjectivePoint::from(*public.as_affine());
+    let secret_scalar = private.as_nonzero_scalar().as_ref();
+    // Multiply the secret and public to get a shared secret affine point (x, y).
+    (public_point * secret_scalar).to_affine()
 }
 
 impl SigningKeyTrait for PrivateKey {

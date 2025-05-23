@@ -5,7 +5,6 @@
 #include "Bech32Address.h"
 #include "Bech32.h"
 #include "Data.h"
-#include <TrezorCrypto/ecdsa.h>
 
 using namespace TW;
 

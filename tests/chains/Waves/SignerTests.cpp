@@ -6,8 +6,9 @@
 #include "PublicKey.h"
 #include "Waves/Signer.h"
 #include "Waves/Transaction.h"
+#include "Utils.h"
 
-#include <TrezorCrypto/sodium/keypair.h>
+#include <TrustWalletCore/Generated/TWCurve25519.h>
 #include <gtest/gtest.h>
 
 using namespace TW;
@@ -55,7 +56,9 @@ TEST(WavesSigner, curve25519_pk_to_ed25519) {
         parse_hex("559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d");
     auto r = Data();
     r.resize(32);
-    curve25519_pk_to_ed25519(r.data(), publicKeyCurve25519.data());
+    auto curvePubkey = wrapTWData(TWDataCreateWithBytes(publicKeyCurve25519.data(), publicKeyCurve25519.size()));
+    auto ed25519Pubkey = wrapTWData(TWCurve25519PubkeyToEd25519(curvePubkey.get()));
+    r = dataFromTWData(ed25519Pubkey);
     EXPECT_EQ(hex(r), "ff84c4bfc095df25b01e48807715856d95af93d88c5b57f30cb0ce567ca4ce56");
 }
 

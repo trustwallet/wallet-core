@@ -7,7 +7,7 @@
 #include "HexCoding.h"
 #include "PublicKey.h"
 
-#include <TrezorCrypto/memzero.h>
+#include <memzero.h>
 
 #include <iterator>
 
