@@ -56,6 +56,24 @@ struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyWithEncryption(TWData* 
     }
 }
 
+struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyWithEncryptionAndDerivation(
+    TWData* _Nonnull privateKey,
+    TWString* _Nonnull name,
+    TWData* _Nonnull password,
+    enum TWCoinType coin,
+    enum TWStoredKeyEncryption encryption,
+    enum TWDerivation derivation
+) {
+    try {
+        const auto& privateKeyData = *reinterpret_cast<const TW::Data*>(privateKey);
+        const auto& nameString = *reinterpret_cast<const std::string*>(name);
+        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        return new TWStoredKey{ KeyStore::StoredKey::createWithPrivateKeyAddDefaultAddress(nameString, passwordData, coin, privateKeyData, encryption, derivation) };
+    } catch (...) {
+        return nullptr;
+    }
+}
+
 struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyEncoded(TWString* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin) {
     return TWStoredKeyImportPrivateKeyEncodedWithEncryption(privateKey, name, password, coin, TWStoredKeyEncryptionAes128Ctr);
 }
@@ -66,6 +84,24 @@ struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyEncodedWithEncryption(T
         const auto& nameString = *reinterpret_cast<const std::string*>(name);
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
         return new TWStoredKey{ KeyStore::StoredKey::createWithEncodedPrivateKeyAddDefaultAddress(nameString, passwordData, coin, privateKeyString, encryption) };
+    } catch (...) {
+        return nullptr;
+    }
+}
+
+struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyEncodedWithEncryptionAndDerivation(
+    TWString* _Nonnull privateKey,
+    TWString* _Nonnull name,
+    TWData* _Nonnull password,
+    enum TWCoinType coin,
+    enum TWStoredKeyEncryption encryption,
+    enum TWDerivation derivation
+) {
+    try {
+        const auto& privateKeyString = *reinterpret_cast<const std::string*>(privateKey);
+        const auto& nameString = *reinterpret_cast<const std::string*>(name);
+        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        return new TWStoredKey{ KeyStore::StoredKey::createWithEncodedPrivateKeyAddDefaultAddress(nameString, passwordData, coin, privateKeyString, encryption, derivation) };
     } catch (...) {
         return nullptr;
     }

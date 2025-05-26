@@ -63,11 +63,25 @@ public:
 
     /// Create a new StoredKey, with the given name and private key, and also add the default address for the given coin..
     /// @throws std::invalid_argument if privateKeyData is not a valid private key
-    static StoredKey createWithPrivateKeyAddDefaultAddress(const std::string& name, const Data& password, TWCoinType coin, const Data& privateKeyData, TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr);
+    static StoredKey createWithPrivateKeyAddDefaultAddress(
+        const std::string& name,
+        const Data& password,
+        TWCoinType coin,
+        const Data& privateKeyData,
+        TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr,
+        TWDerivation derivation = TWDerivationDefault
+    );
 
     /// Create a new StoredKey, with the given name and encoded private key, and also add the default address for the given coin..
     /// @throws std::invalid_argument if encodedPrivateKey is not a valid private key
-    static StoredKey createWithEncodedPrivateKeyAddDefaultAddress(const std::string& name, const Data& password, TWCoinType coin, const std::string& encodedPrivateKey, TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr);
+    static StoredKey createWithEncodedPrivateKeyAddDefaultAddress(
+        const std::string& name,
+        const Data& password,
+        TWCoinType coin,
+        const std::string& encodedPrivateKey,
+        TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr,
+        TWDerivation derivation = TWDerivationDefault
+    );
 
     /// Create a StoredKey from a JSON object.
     static StoredKey createWithJson(const nlohmann::json& json);
