@@ -52,30 +52,44 @@ StoredKey StoredKey::createWithPrivateKey(const std::string& name, const Data& p
     return StoredKey(StoredKeyType::privateKey, name, password, privateKeyData, TWStoredKeyEncryptionLevelDefault, encryption);
 }
 
-StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(const std::string& name, const Data& password, TWCoinType coin, const Data& privateKeyData, TWStoredKeyEncryption encryption) {
+StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(
+    const std::string& name,
+    const Data& password,
+    TWCoinType coin,
+    const Data& privateKeyData,
+    TWStoredKeyEncryption encryption,
+    TWDerivation derivation
+) {
     const auto curve = TW::curve(coin);
     if (!PrivateKey::isValid(privateKeyData, curve)) {
         throw std::invalid_argument("Invalid private key data");
     }
 
     StoredKey key = createWithPrivateKey(name, password, privateKeyData, encryption);
-    const auto derivationPath = TW::derivationPath(coin);
+    const auto derivationPath = TW::derivationPath(coin, derivation);
     const auto pubKeyType = TW::publicKeyType(coin);
     const auto pubKey = PrivateKey(privateKeyData, TWCoinTypeCurve(coin)).getPublicKey(pubKeyType);
-    const auto address = TW::deriveAddress(coin, PrivateKey(privateKeyData));
-    key.accounts.emplace_back(address, coin, TWDerivationDefault, derivationPath, hex(pubKey.bytes), "");
+    const auto address = TW::deriveAddress(coin, PrivateKey(privateKeyData), derivation);
+    key.accounts.emplace_back(address, coin, derivation, derivationPath, hex(pubKey.bytes), "");
     return key;
 }
 
-StoredKey StoredKey::createWithEncodedPrivateKeyAddDefaultAddress(const std::string& name, const Data& password, TWCoinType coin, const std::string& encodedPrivateKey, TWStoredKeyEncryption encryption) {
+StoredKey StoredKey::createWithEncodedPrivateKeyAddDefaultAddress(
+    const std::string& name,
+    const Data& password,
+    TWCoinType coin,
+    const std::string& encodedPrivateKey,
+    TWStoredKeyEncryption encryption,
+    TWDerivation derivation
+) {
     const auto curve = TW::curve(coin);
     const auto privateKey = TW::decodePrivateKey(coin, encodedPrivateKey);
     StoredKey key = StoredKey(StoredKeyType::privateKey, name, password, privateKey.bytes, TWStoredKeyEncryptionLevelDefault, encryption, encodedPrivateKey);
-    const auto derivationPath = TW::derivationPath(coin);
+    const auto derivationPath = TW::derivationPath(coin, derivation);
     const auto pubKeyType = TW::publicKeyType(coin);
     const auto pubKey = privateKey.getPublicKey(pubKeyType);
-    const auto address = TW::deriveAddress(coin, privateKey);
-    key.accounts.emplace_back(address, coin, TWDerivationDefault, derivationPath, hex(pubKey.bytes), "");
+    const auto address = TW::deriveAddress(coin, privateKey, derivation);
+    key.accounts.emplace_back(address, coin, derivation, derivationPath, hex(pubKey.bytes), "");
     return key;
 }
 
