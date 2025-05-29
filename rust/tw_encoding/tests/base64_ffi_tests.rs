@@ -29,7 +29,11 @@ fn test_decode_base64_url() {
     let expected = b"+'?ab";
 
     let encoded_c_str = CString::new(encoded).unwrap();
-    let decoded = unsafe { decode_base64(encoded_c_str.as_ptr(), true).unwrap().into_vec() };
+    let decoded = unsafe {
+        decode_base64(encoded_c_str.as_ptr(), true)
+            .unwrap()
+            .into_vec()
+    };
     assert_eq!(decoded, expected);
 }
 
@@ -39,7 +43,11 @@ fn test_decode_base64() {
     let expected = b"hello world!";
 
     let encoded_c_str = CString::new(encoded).unwrap();
-    let decoded = unsafe { decode_base64(encoded_c_str.as_ptr(), false).unwrap().into_vec() };
+    let decoded = unsafe {
+        decode_base64(encoded_c_str.as_ptr(), false)
+            .unwrap()
+            .into_vec()
+    };
     assert_eq!(decoded, expected);
 }
 
