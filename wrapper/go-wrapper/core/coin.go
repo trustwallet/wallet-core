@@ -6,7 +6,7 @@ package core
 // #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 import "C"
 
-import "tw/types"
+import "github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/types"
 
 type CoinType uint32
 

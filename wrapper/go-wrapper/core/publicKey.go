@@ -5,7 +5,7 @@ package core
 // #include <TrustWalletCore/TWPublicKey.h>
 import "C"
 
-import "tw/types"
+import "github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/types"
 
 type PublicKeyType uint32
 

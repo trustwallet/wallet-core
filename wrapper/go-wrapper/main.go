@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"math"
 	"math/big"
-	"tw/core"
-	"tw/protos/bitcoin"
-	"tw/protos/common"
-	"tw/protos/ethereum"
-	"tw/sample"
+
+	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/core"
+	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/protos/bitcoin"
+	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/protos/common"
+	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/protos/ethereum"
+	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/sample"
 )
 
 func main() {

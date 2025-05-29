@@ -7,7 +7,7 @@ package core
 import "C"
 
 import (
-	"tw/types"
+	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/types"
 
 	"google.golang.org/protobuf/proto"
 )

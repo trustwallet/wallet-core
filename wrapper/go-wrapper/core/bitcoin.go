@@ -7,7 +7,7 @@ package core
 // #include <TrustWalletCore/TWBitcoinSigHashType.h>
 import "C"
 
-import "tw/types"
+import "github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/types"
 
 const (
 	BitcoinSigHashTypeAll          = C.TWBitcoinSigHashTypeAll

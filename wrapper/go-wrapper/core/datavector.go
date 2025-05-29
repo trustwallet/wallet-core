@@ -4,7 +4,7 @@ package core
 // #cgo LDFLAGS: -L../../../build -L../../../build/local/lib -L../../../build/trezor-crypto -lTrustWalletCore -lwallet_core_rs -lprotobuf -lTrezorCrypto -lstdc++ -lm
 // #include <TrustWalletCore/TWDataVector.h>
 import "C"
-import "tw/types"
+import "github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/types"
 
 type TWDataVector *C.struct_TWDataVector
 

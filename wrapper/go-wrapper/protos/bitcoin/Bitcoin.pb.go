@@ -11,7 +11,7 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
-	common "tw/protos/common"
+	common "github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/protos/common"
 )
 
 const (

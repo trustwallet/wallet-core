@@ -5,7 +5,7 @@ package core
 // #include <TrustWalletCore/TWMnemonic.h>
 import "C"
 
-import "tw/types"
+import "github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/types"
 
 func IsMnemonicValid(mn string) bool {
 	str := types.TWStringCreateWithGoString(mn)

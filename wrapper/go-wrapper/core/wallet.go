@@ -9,7 +9,8 @@ import "C"
 
 import (
 	"errors"
-	"tw/types"
+
+	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/types"
 )
 
 type Wallet struct {

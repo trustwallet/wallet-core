@@ -7,11 +7,11 @@
 package polkadot
 
 import (
+	common "github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/protos/common"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
-	common "tw/protos/common"
 	unsafe "unsafe"
 )
 
