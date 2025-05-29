@@ -1,0 +1,71 @@
+name: Memory Leak Check
+
+on:
+  push:
+    branches: [ dev, master ]
+  pull_request:
+    branches: [ dev, master ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  memory-check:
+    runs-on: ubuntu-24.04
+    if: github.event.pull_request.draft == false
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install system dependencies
+      run: |
+        tools/install-sys-dependencies-linux
+        tools/install-rust-dependencies
+    - name: Cache internal dependencies
+      id: internal_cache
+      uses: actions/cache@v3
+      with:
+        path: build/local
+        key: ${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tools/install-sys-dependencies-linux') }}-internal-${{ hashFiles('tools/install-dependencies') }}-${{ hashFiles('tools/dependencies-version') }}
+    - name: Install internal dependencies
+      run: |
+        tools/install-dependencies
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+      if: steps.internal_cache.outputs.cache-hit != 'true'
+
+    - name: Cache Rust
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: |
+          rust
+
+    - name: Cache Valgrind
+      uses: actions/cache@v3
+      with:
+        path: /usr/bin/valgrind
+        key: ${{ runner.os }}-valgrind
+        restore-keys: |
+          ${{ runner.os }}-valgrind-
+
+    - name: Install Valgrind
+      if: steps.cache-valgrind.outputs.cache-hit != 'true'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y valgrind
+
+    - name: Install cargo-valgrind
+      run: cargo install cargo-valgrind
+
+    - name: Run memory check with cargo-valgrind
+      run: |
+        cd rust
+        cargo valgrind test -- --nocapture
+
+    - name: Upload Valgrind report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: valgrind-report
+        path: rust/valgrind-out.txt
