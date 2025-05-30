@@ -10,7 +10,7 @@ use std::ffi::{c_char, CString};
 /// This uses the [`getrandom`] crate to utilise the operating system's RNG
 /// as the source of random numbers.
 #[no_mangle]
-pub unsafe extern "C" fn tw_uuid_random() -> *const c_char {
+pub unsafe extern "C" fn tw_uuid_random() -> *mut c_char {
     let res = uuid::Uuid::new_v4();
     CString::new(res.to_string()).unwrap().into_raw()
 }

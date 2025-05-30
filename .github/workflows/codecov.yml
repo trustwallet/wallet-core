@@ -1,0 +1,50 @@
+name: Rust Coverage CI
+
+on:
+  push:
+    branches: [ dev, master ]
+  pull_request:
+    branches: [ dev, master ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+
+      - name: cargo install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+        
+      - name: cargo generate-lockfile
+        if: hashFiles('Cargo.lock') == ''
+        run: |
+          cd rust
+          cargo generate-lockfile
+      
+      - name: cargo llvm-cov
+        run: |
+          cd rust
+          cargo llvm-cov --locked --all-features --lcov --output-path lcov.info
+      
+      - name: Record Rust version
+        run: echo "RUST=$(rustc --version)" >> "$GITHUB_ENV"
+      
+      - name: Upload to codecov.io
+        uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: false #TODO: change to true when codecov token is added
+          token: ${{ secrets.CODECOV_TOKEN }}
+          env_vars: OS,RUST
