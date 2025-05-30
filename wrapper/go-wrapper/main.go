@@ -52,6 +52,7 @@ func main() {
 	fmt.Println("\t", btcTxn)
 
 	sample.ExternalSigningDemo()
+	sample.TestCardano()
 }
 
 func createEthTransaction(ew *core.Wallet) string {
