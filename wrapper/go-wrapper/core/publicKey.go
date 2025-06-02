@@ -5,13 +5,21 @@ package core
 // #include <TrustWalletCore/TWPublicKey.h>
 import "C"
 
-import "github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/types"
+import (
+	"unsafe"
+
+	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/types"
+)
 
 type PublicKeyType uint32
+
+type TWPublicKey *C.struct_TWPublicKey
 
 const (
 	PublicKeyTypeSECP256k1         PublicKeyType = C.TWPublicKeyTypeSECP256k1
 	PublicKeyTypeSECP256k1Extended PublicKeyType = C.TWPublicKeyTypeSECP256k1Extended
+	PublicKeyTypeED25519Cardano    PublicKeyType = C.TWPublicKeyTypeED25519Cardano
+	PublicKeyTypeED25519           PublicKeyType = C.TWPublicKeyTypeED25519
 )
 
 func PublicKeyVerify(key []byte, keyType PublicKeyType, signature []byte, message []byte) bool {
@@ -38,4 +46,8 @@ func PublicKeyVerifyAsDER(key []byte, keyType PublicKeyType, signature []byte, m
 	defer C.TWDataDelete(msg)
 
 	return bool(C.TWPublicKeyVerifyAsDER(publicKey, sig, msg))
+}
+
+func PublicKeyDescription(key TWPublicKey) unsafe.Pointer {
+	return C.TWPublicKeyDescription(key)
 }

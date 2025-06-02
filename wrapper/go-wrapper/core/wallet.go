@@ -20,6 +20,7 @@ type Wallet struct {
 	CoinType
 }
 
+// Using with secp256k1
 func CreateWalletWithMnemonic(mn string, ct CoinType) (*Wallet, error) {
 	if !IsMnemonicValid(mn) {
 		return nil, errors.New("mnemonic is not valid")
