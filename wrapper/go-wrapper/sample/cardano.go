@@ -3,6 +3,7 @@ package sample
 import (
 	"encoding/hex"
 	"errors"
+	"fmt"
 
 	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/core"
 	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/protos/cardano"
@@ -13,6 +14,7 @@ import (
 
 // Using real succesfull transation:
 func TestCardano() {
+	fmt.Println("Test Cardano")
 	txHash1, _ := hex.DecodeString("8316e5007d61fb90652cabb41141972a38b5bc60954d602cf843476aa3f67f63")
 	utxo1 := cardano.TxInput{
 		OutPoint: &cardano.OutPoint{
@@ -88,9 +90,15 @@ func TestCardano() {
 		panic(errors.New("no value for publickey"))
 	}
 
+	fmt.Println("\nData for signing", preSigningOutput.DataHash)
+	fmt.Println("\nSignature:", types.TWDataGoBytes(signature))
+	fmt.Println("\nPublicKey bytes", pubKeyBytes)
+
 	valid := core.PublicKeyVerify(pubKeyBytes, core.PublicKeyTypeED25519Cardano, types.TWDataGoBytes(signature), preSigningOutput.DataHash)
 	if !valid {
 		panic(errors.New("verification failed"))
 	}
+	fmt.Println("\nSignature veryfication:", valid)
 	core.PrivateKeyDelete(twPrivateKey)
+	fmt.Println("\nDone Test")
 }
