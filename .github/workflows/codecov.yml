@@ -19,6 +19,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
+        run: |
+          tools/install-sys-dependencies-linux
 
       - name: Install stable
         uses: dtolnay/rust-toolchain@stable
