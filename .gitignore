@@ -57,6 +57,7 @@ emsdk/
 wasm-build/
 
 # Code coverage files
+lcov.info
 coverage.info
 coverage/
 swift/test_output/
