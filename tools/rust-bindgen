@@ -55,7 +55,7 @@ if isTargetSpecified "android"; then
   cargo build -Z build-std=std,panic_abort --target aarch64-linux-android --target armv7-linux-androideabi --target x86_64-linux-android --target i686-linux-android --release --lib
 fi
 
-if isTargetSpecified "ios" && [[ $(uname) == "Darwin" ]]; then
+if isTargetSpecified "ios" && [[ $(uname -s) == "Darwin" ]]; then
   echo "Generating iOS targets"
   cargo build -Z build-std=std,panic_abort --target aarch64-apple-ios --target aarch64-apple-ios-sim --target x86_64-apple-ios --target aarch64-apple-darwin --target x86_64-apple-darwin --target aarch64-apple-ios-macabi --target x86_64-apple-ios-macabi --release --lib &
   wait
@@ -75,7 +75,7 @@ cd -
 echo "Generating C++ files..."
 pushd codegen-v2 && cargo run -- cpp && popd
 
-if isTargetSpecified "ios" && [[ $(uname) == "Darwin" ]]; then
+if isTargetSpecified "ios" && [[ $(uname -s) == "Darwin" ]]; then
 cd rust
 cat > $TARGET_XCFRAMEWORK_NAME/Info.plist << EOF
 <?xml version="1.0" encoding="UTF-8"?>
