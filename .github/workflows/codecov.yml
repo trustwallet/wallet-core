@@ -34,10 +34,17 @@ jobs:
           cd rust
           cargo generate-lockfile
       
-      - name: cargo llvm-cov
+      - name: Run tests
         run: |
-          cd rust
-          cargo llvm-cov --locked --all-features --lcov --output-path lcov.info
+          tools/rust-coverage
+
+      - name: Gather and check Rust code coverage
+        run: |
+          tools/check-coverage rust/coverage.stats rust/lcov.info
+    
+      - name: Run Doc tests
+        run: |
+          tools/rust-test doc
       
       - name: Record Rust version
         run: echo "RUST=$(rustc --version)" >> "$GITHUB_ENV"
