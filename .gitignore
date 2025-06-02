@@ -80,3 +80,5 @@ samples/cpp/sample
 
 # Rust target build
 **/target/
+
+main
