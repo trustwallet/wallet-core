@@ -215,23 +215,25 @@ jobs:
     if: github.event.pull_request.draft == false
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-
+      - uses: actions/checkout@v3
       - name: Install system dependencies
         run: |
           tools/install-sys-dependencies-linux
 
-      - name: Install stable
-        uses: dtolnay/rust-toolchain@stable
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.8
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
         with:
-          components: llvm-tools-preview
+          workspaces: |
+            rust
+
+      - name: Install Rust dependencies
+        run: |
+          tools/install-rust-dependencies dev
 
       - name: cargo install cargo-llvm-cov
-        uses: taiki-e/install-action@cargo-llvm-cov
-        
-      - name: cargo generate-lockfile
         if: hashFiles('Cargo.lock') == ''
         run: |
           cd rust
