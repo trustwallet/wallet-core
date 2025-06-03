@@ -232,9 +232,6 @@ jobs:
       - name: Install Rust dependencies
         run: |
           tools/install-rust-dependencies dev
-
-      - name: cargo install cargo-llvm-cov
-        uses: taiki-e/install-action@cargo-llvm-cov
         
       - name: cargo generate-lockfile
         if: hashFiles('Cargo.lock') == ''
