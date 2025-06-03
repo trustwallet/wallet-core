@@ -39,10 +39,6 @@ jobs:
       - name: Run tests
         run: |
           tools/rust-coverage
-
-      - name: Gather and check Rust code coverage
-        run: |
-          tools/check-coverage rust/coverage.stats rust/lcov.info
     
       - name: Run Doc tests
         run: |
@@ -54,6 +50,10 @@ jobs:
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v5
         with:
-          fail_ci_if_error: false #TODO: change to true when codecov token is added
+          fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
           env_vars: OS,RUST
+
+      - name: Gather and check Rust code coverage
+        run: |
+          tools/check-coverage rust/coverage.stats rust/lcov.info
