@@ -11,7 +11,7 @@ ANDROID_CMDTOOLS=$(find_android_cmdline_tools)
 AVD_NAME="integration-tests"
 PORT=5556
 
-if [[ `uname` == "Darwin" ]]; then
+if [[ $(uname -s) == "Darwin" ]]; then
     export BOOST_ROOT=$(brew --prefix boost)
 fi
 

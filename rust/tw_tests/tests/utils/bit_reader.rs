@@ -5,7 +5,7 @@
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use wallet_core_rs::ffi::utils::bit_reader_ffi::{
-    tw_bit_reader_create, tw_bit_reader_finished, tw_bit_reader_read_u8,
+    tw_bit_reader_create, tw_bit_reader_delete, tw_bit_reader_finished, tw_bit_reader_read_u8,
     tw_bit_reader_read_u8_slice, CBitReaderCode,
 };
 
@@ -37,6 +37,8 @@ fn test_tw_bit_reader_success() {
     );
 
     assert!(unsafe { tw_bit_reader_finished(reader) });
+
+    unsafe { tw_bit_reader_delete(reader) };
 }
 
 #[test]
@@ -66,4 +68,6 @@ fn test_tw_bit_reader_error() {
         res.into_result().unwrap_err(),
         CBitReaderCode::NotEnoughData as i32
     );
+
+    unsafe { tw_bit_reader_delete(reader) };
 }

@@ -68,7 +68,7 @@ function build_protobuf() {
     $CMAKE --install build --prefix $PREFIX
     $CMAKE --build build --target clean
 
-    if [[ -x "$(command -v swift)" && $(uname) == "Darwin" ]]; then
+    if [[ -x "$(command -v swift)" && $(uname -s) == "Darwin" ]]; then
         build_swift_plugin
     fi
 }
