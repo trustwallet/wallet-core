@@ -218,6 +218,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
+
+      - name: Install system dependencies
         run: |
           tools/install-sys-dependencies-linux
 
