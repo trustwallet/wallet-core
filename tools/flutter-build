@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+
+mkdir -p build
+
+pushd build
+cmake .. -DFLUTTER=ON
+make -j12
+popd
+
+cp build/libTrustWalletCore.dylib flutter/lib/
+
+pushd flutter
+
+echo "Generating bindings..."
+dart run ffigen --config config.yaml
+
+
+echo "Verifying the build..."
+dart run
+
+echo "Done"
+
+popd
