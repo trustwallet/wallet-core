@@ -9,7 +9,13 @@ cmake .. -DFLUTTER=ON
 make -j12
 popd
 
-cp build/libTrustWalletCore.dylib flutter/lib/
+if [ "$(uname -s)" == "Darwin" ]; then
+    cp build/libTrustWalletCore.dylib flutter/lib/
+elif [ "$(uname -s)" == "Linux" ]; then
+    cp build/libTrustWalletCore.so flutter/lib/
+elif [ "$(uname -s)" == "Windows" ]; then
+    cp build/libTrustWalletCore.dll flutter/lib/
+fi
 
 pushd flutter
 
