@@ -64,3 +64,7 @@ jobs:
     - name: Flutter build
       run: |
         tools/flutter-build
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+
