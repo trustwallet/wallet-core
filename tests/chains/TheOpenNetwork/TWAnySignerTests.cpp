@@ -8,6 +8,8 @@
 #include <TrustWalletCore/TWAnySigner.h>
 
 #include "TestUtilities.h"
+#include "uint256.h"
+
 #include <gtest/gtest.h>
 
 namespace TW::TheOpenNetwork::tests {
@@ -17,7 +19,10 @@ TEST(TWAnySignerTheOpenNetwork, SignMessageToTransferAndDeployWalletV4R2) {
 
     auto& transfer = *input.add_messages();
     transfer.set_dest("EQDYW_1eScJVxtitoBRksvoV9cCYo4uKGWLVNIHB1JqRR3n0");
-    transfer.set_amount(10);
+
+    Data amountData = store(uint256_t(10));
+    std::string amountStr(amountData.begin(), amountData.end());
+    transfer.set_amount(amountStr);
     transfer.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
     transfer.set_bounceable(true);
 
@@ -42,7 +47,9 @@ TEST(TWAnySignerTheOpenNetwork, SignMessageToTransferAndDeployWalletV5R1) {
 
     auto& transfer = *input.add_messages();
     transfer.set_dest("EQBe6DtCpJZe8M4t-crMXe93JlEYgSl30S5OUuMSLOfeQfBu");
-    transfer.set_amount(10);
+    Data amountData = store(uint256_t(10));
+    std::string amountStr(amountData.begin(), amountData.end());
+    transfer.set_amount(amountStr);
     transfer.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
     transfer.set_bounceable(true);
 
