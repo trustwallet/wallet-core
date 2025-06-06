@@ -72,7 +72,7 @@ describe("TheOpenNetwork", () => {
 
     let transfer = TW.TheOpenNetwork.Proto.Transfer.create({
         dest: "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q",
-        amount: new Long(10),
+        amount: Buffer.from("0A", "hex"), // 10
         mode: (TW.TheOpenNetwork.Proto.SendMode.PAY_FEES_SEPARATELY | TW.TheOpenNetwork.Proto.SendMode.IGNORE_ACTION_PHASE_ERRORS),
         bounceable: true,
     });
@@ -101,15 +101,15 @@ describe("TheOpenNetwork", () => {
     let privateKeyData = HexCoding.decode("c054900a527538c1b4325688a421c0469b171c29f23a62da216e90b0df2412ee");
 
     let jettonTransfer = TW.TheOpenNetwork.Proto.JettonTransfer.create({
-        jettonAmount: new Long(500 * 1000 * 1000),
+        jettonAmount: Buffer.from("1DCD6500", "hex"), // 500 * 1000 * 1000,
         toOwner: "EQAFwMs5ha8OgZ9M4hQr80z9NkE7rGxUpE1hCFndiY6JnDx8",
         responseAddress: "EQBaKIMq5Am2p_rfR1IFTwsNWHxBkOpLTmwUain5Fj4llTXk",
-        forwardAmount: new Long(1)
+        forwardAmount: Buffer.from("01", "hex"), // 1
     });
 
     let transfer = TW.TheOpenNetwork.Proto.Transfer.create({
         dest: "EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja",
-        amount: new Long(100 * 1000 * 1000),
+        amount: Buffer.from("05F5E100", "hex"), // 100 * 1000 * 1000,
         mode: (TW.TheOpenNetwork.Proto.SendMode.PAY_FEES_SEPARATELY | TW.TheOpenNetwork.Proto.SendMode.IGNORE_ACTION_PHASE_ERRORS),
         comment: "test comment",
         bounceable: true,

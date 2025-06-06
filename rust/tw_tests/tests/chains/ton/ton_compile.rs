@@ -6,6 +6,7 @@ use crate::chains::ton::ton_sign::assert_eq_boc;
 use tw_any_coin::test_utils::sign_utils::{CompilerHelper, PreImageHelper};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
+use tw_number::U256;
 use tw_proto::Common::Proto::SigningError;
 use tw_proto::TheOpenNetwork::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
@@ -16,7 +17,7 @@ fn test_ton_compile_wallet_v4r2_transfer_and_deploy() {
 
     let transfer = Proto::Transfer {
         dest: "EQDYW_1eScJVxtitoBRksvoV9cCYo4uKGWLVNIHB1JqRR3n0".into(),
-        amount: 10,
+        amount: U256::encode_be_compact(10),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -63,7 +64,7 @@ fn test_ton_compile_wallet_v5r1_transfer_and_deploy() {
 
     let transfer = Proto::Transfer {
         dest: "EQBe6DtCpJZe8M4t-crMXe93JlEYgSl30S5OUuMSLOfeQfBu".into(),
-        amount: 10,
+        amount: U256::encode_be_compact(10),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,

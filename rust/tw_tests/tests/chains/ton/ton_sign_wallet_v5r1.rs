@@ -9,6 +9,7 @@ use crate::chains::ton::ton_sign::assert_eq_boc;
 use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
+use tw_number::U256;
 use tw_proto::Common::Proto::SigningError;
 use tw_proto::TheOpenNetwork::Proto;
 use tw_proto::TheOpenNetwork::Proto::mod_Transfer::OneOfpayload as PayloadType;
@@ -19,7 +20,7 @@ fn test_ton_sign_wallet_v5r1_transfer_and_deploy() {
 
     let transfer = Proto::Transfer {
         dest: "EQBe6DtCpJZe8M4t-crMXe93JlEYgSl30S5OUuMSLOfeQfBu".into(),
-        amount: 10,
+        amount: U256::encode_be_compact(10),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -52,7 +53,7 @@ fn test_ton_sign_wallet_v5r1_transfer_ordinary() {
 
     let transfer = Proto::Transfer {
         dest: "EQBe6DtCpJZe8M4t-crMXe93JlEYgSl30S5OUuMSLOfeQfBu".into(),
-        amount: 10,
+        amount: U256::encode_be_compact(10),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -87,7 +88,7 @@ fn test_ton_sign_wallet_v5r1_transfer_all_balance() {
 
     let transfer = Proto::Transfer {
         dest: "UQAU3o5-Sp1MYRpw3U7b_wmARxqI49LxiFhEoVCxpUKjTYXk".into(),
-        amount: 0,
+        amount: U256::encode_be_compact(0),
         mode: Proto::SendMode::ATTACH_ALL_CONTRACT_BALANCE as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -121,7 +122,7 @@ fn test_ton_sign_wallet_v5r1_transfer_all_balance_non_bounceable() {
 
     let transfer = Proto::Transfer {
         dest: "UQBe6DtCpJZe8M4t-crMXe93JlEYgSl30S5OUuMSLOfeQa2r".into(),
-        amount: 0,
+        amount: U256::encode_be_compact(0),
         mode: Proto::SendMode::ATTACH_ALL_CONTRACT_BALANCE as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: false,
@@ -155,7 +156,7 @@ fn test_ton_sign_wallet_v5r1_transfer_with_ascii_comment() {
 
     let transfer = Proto::Transfer {
         dest: "EQBe6DtCpJZe8M4t-crMXe93JlEYgSl30S5OUuMSLOfeQfBu".into(),
-        amount: 10,
+        amount: U256::encode_be_compact(10),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -190,7 +191,7 @@ fn test_ton_sign_wallet_v5r1_transfer_with_utf8_comment() {
 
     let transfer = Proto::Transfer {
         dest: "EQBe6DtCpJZe8M4t-crMXe93JlEYgSl30S5OUuMSLOfeQfBu".into(),
-        amount: 10,
+        amount: U256::encode_be_compact(10),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -226,17 +227,17 @@ fn test_ton_sign_wallet_v5r1_transfer_jettons() {
     let jetton_transfer = Proto::JettonTransfer {
         query_id: 69,
         // Transfer 0.12 USDT (decimal precision is 6).
-        jetton_amount: 120000,
+        jetton_amount: U256::encode_be_compact(120000),
         to_owner: "UQAU3o5-Sp1MYRpw3U7b_wmARxqI49LxiFhEoVCxpUKjTYXk".into(),
         // Send unused toncoins back to sender.
         response_address: "UQCh41gQP1A4I0lnAn6yAfitDAIYpXG6UFIXqeSz1TVxNOJ_".into(),
-        forward_amount: 1,
+        forward_amount: U256::encode_be_compact(1),
         ..Default::default()
     };
 
     let transfer = Proto::Transfer {
         dest: "EQDg4AjfaxQBVsUFueenkKlHLhhYWrcBvCEzbEgfrT0nxuGC".into(),
-        amount: 100 * 1000 * 1000,
+        amount: U256::encode_be_compact(100 * 1000 * 1000),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -272,17 +273,17 @@ fn test_ton_sign_wallet_v5r1_transfer_jettons_with_comment() {
     let jetton_transfer = Proto::JettonTransfer {
         query_id: 0,
         // Transfer 0.11 USDT (decimal precision is 6).
-        jetton_amount: 110000,
+        jetton_amount: U256::encode_be_compact(110000),
         to_owner: "UQAU3o5-Sp1MYRpw3U7b_wmARxqI49LxiFhEoVCxpUKjTYXk".into(),
         // Send unused toncoins back to sender.
         response_address: "UQCh41gQP1A4I0lnAn6yAfitDAIYpXG6UFIXqeSz1TVxNOJ_".into(),
-        forward_amount: 1,
+        forward_amount: U256::encode_be_compact(1),
         ..Default::default()
     };
 
     let transfer = Proto::Transfer {
         dest: "EQDg4AjfaxQBVsUFueenkKlHLhhYWrcBvCEzbEgfrT0nxuGC".into(),
-        amount: 100 * 1000 * 1000,
+        amount: U256::encode_be_compact(100 * 1000 * 1000),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -320,7 +321,7 @@ fn test_ton_sign_wallet_v5r1_transfer_custom_payload() {
     let transfer = Proto::Transfer {
         dest: "UQAU3o5-Sp1MYRpw3U7b_wmARxqI49LxiFhEoVCxpUKjTYXk".into(),
         // 0.00025 TON
-        amount: 250_000,
+        amount: U256::encode_be_compact(250_000),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -371,7 +372,7 @@ fn test_ton_sign_wallet_v5r1_transfer_custom_payload_with_state_init() {
     let transfer = Proto::Transfer {
         dest: doge_contract_address.into(),
         // 0.0069 TON
-        amount: 6_900_000,
+        amount: U256::encode_be_compact(6_900_000),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: false,
@@ -409,7 +410,7 @@ fn test_ton_sign_wallet_v5r1_missing_required_send_mode() {
 
     let transfer = Proto::Transfer {
         dest: "EQBe6DtCpJZe8M4t-crMXe93JlEYgSl30S5OUuMSLOfeQfBu".into(),
-        amount: 10,
+        amount: U256::encode_be_compact(10),
         // Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS is required for wallet v5r1 external messages.
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32,
         bounceable: true,
@@ -438,17 +439,17 @@ fn test_ton_sign_wallet_v5r1_mintless_jetton() {
     let jetton_transfer = Proto::JettonTransfer {
         query_id: 1,
         // Transfer 0 mintless jetton to self.
-        jetton_amount: 0,
+        jetton_amount: U256::encode_be_compact(0),
         to_owner: "UQCh41gQP1A4I0lnAn6yAfitDAIYpXG6UFIXqeSz1TVxNOJ_".into(),
         // Send unused toncoins back to sender.
         response_address: "UQCh41gQP1A4I0lnAn6yAfitDAIYpXG6UFIXqeSz1TVxNOJ_".into(),
-        forward_amount: 1,
+        forward_amount: U256::encode_be_compact(1),
         custom_payload: "te6ccgECNQEABJMAAQgN9gLWAQlGA6+1FWXC4ss/wvDOFwMk2bVM97AUEWqaUhh63uWfQ26nAB4CIgWBcAIDBChIAQEZG2ZqtEYGAq27TvzHdGuGrhhKoICBU+Zg9Xq/qRMHGAAdIgEgBQYiASAHCChIAQEV0tdPcZG01smq0thhsmqf9ZzE0QqpP3c+ERvuHF1JDgAbKEgBAf3dO8qdKoPys7AWvavs1wMNWCOq5XashXaRopmksx/LABsiASAJCiIBIAsMKEgBAWP0xUs9JBrfQRl1FkF2tIfIDYpwLdf3fXqMi6BqxNtmABoiASANDihIAQFOErI5E7ld/nTAgHXdGI74UH8kxIaFyAkH42P54tEC9QAYIgEgDxAoSAEBrF16Czdlg18FB467CrR6Ucwxb8H+Z1e4qDeFWbkz1WEAFyIBIBESKEgBAXeWzg9xTFO6z0FP+axi8Njuxxp0zPrAUs4vnmt/dE3xABYoSAEBEZ7KazNpaWJoInmqO4II/AfncyhMNWxh6BE2qFU7/9wAFCIBIBMUKEgBAZleZTNXbgCF+8G08kiQeDPanQtNCVakzEU3g9GKB+K2ABQiASAVFihIAQFeCM83J7sm36g24qFeEDvStahHWn6SsEk+Wii49rzBiAASIgEgFxgoSAEBfV9jrgSeiAKVqeeLliXdoLrxFWe2HK0f4SG5h4kfb8YAESIBIBkaIgEgGxwoSAEBImHhXIbOHuOnOgE5f0KLqoXDB7/ZLQQGiHysuulUq2IAECIBIB0eKEgBAXT+qb5w1+qtvbJ1Fbn8y6IhO85YfxKIgKBga6ROO/yQAA8iASAfIChIAQGoJHXWXWRQGZdP9xIUrMowhvgnf+CwKTIIOBxlDiKgcAANKEgBAZ6tCuDr89HFRz3WwwK+wW4XmkE+O7Hf+NgUDI+uqnAJAAwiASAhIihIAQHtasTLBAw7MZHpRTsKyC47E1PZ/LAtF3n2Y2b5ThX0VgALIgEgIyQiASAlJihIAQGumGRf7UXrpK12Cuvj06565IC0Kbd4i2XoG6dnqC+uQAAJKEgBAXM19HUUkz6ns7o/2x45kQ2iLj8gl3zYhrAhISEUg0O1AAgiASAnKCIBICkqKEgBAa7kNA+lev+Z5T/xqKBbO648BvnLL6/hAp1auOiZTWRhAAcoSAEBxn19AKZGAUPYWs8pTpNQrCB4Ap0KfzyjOgB1Mc9PbIUABSIBICssKEgBAWarrCPqSS6+lq6NRcrWZ2/v6bN4b6Zd3GWAtN6j8a6BAAQiASAtLiIBIC8wKEgBAXYYqhLZ1tHg+HdKd8vLmTBsojkj61ZiafXB7pOt+hEFAAMiASAxMihIAQHt8p6qBiXtz+kKcgo13Udyh7Uo8irrdKlSSY2dOdALogAAIgFIMzQoSAEByacrlqsAKiFOlv4Rp4V1gNg2i4aVPkcHJq8Vug/89k4AAABduZA/UDgjSWcCfrIB+K0MAhilcbpQUhep5LPVNXE0Q7msoAAABm4N2AAABm9VrQgoSAEByIAktH0CNxT//QZ8Vgj68CApZON9XBKDfE0D2rY8Fx4AAA==".into()
     };
 
     let transfer = Proto::Transfer {
         dest: "UQCn2lssMz09Gn60mBnv544DgiqIX3mK5cqGEPEPKxCNbE0E".into(), // jetton wallet address
-        amount: 90 * 1000 * 1000,                                        // 0.09 TON as fee
+        amount: U256::encode_be_compact(90 * 1000 * 1000), // 0.09 TON as fee
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,

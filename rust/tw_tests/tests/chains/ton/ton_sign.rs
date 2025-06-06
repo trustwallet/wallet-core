@@ -8,6 +8,7 @@ use crate::chains::ton::cell_example::{
 use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
+use tw_number::U256;
 use tw_proto::Common::Proto::SigningError;
 use tw_proto::TheOpenNetwork::Proto;
 use tw_proto::TheOpenNetwork::Proto::mod_Transfer::OneOfpayload as PayloadType;
@@ -30,7 +31,7 @@ fn test_ton_sign_transfer_and_deploy() {
 
     let transfer = Proto::Transfer {
         dest: "EQDYW_1eScJVxtitoBRksvoV9cCYo4uKGWLVNIHB1JqRR3n0".into(),
-        amount: 10,
+        amount: U256::encode_be_compact(10),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -65,7 +66,7 @@ fn test_ton_sign_transfer_and_deploy_4b1d9f() {
     let transfer = Proto::Transfer {
         dest: "UQA6whN_oU5h9jPljnlDSWRYQNDPkLaUqqaEWULNB_Zoykuu".into(),
         // 0.0001 TON
-        amount: 100_000,
+        amount: U256::encode_be_compact(100_000),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -98,7 +99,7 @@ fn test_ton_sign_transfer_ordinary() {
 
     let transfer = Proto::Transfer {
         dest: "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q".into(),
-        amount: 10,
+        amount: U256::encode_be_compact(10),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -132,7 +133,7 @@ fn test_ton_sign_transfer_all_balance() {
 
     let transfer = Proto::Transfer {
         dest: "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q".into(),
-        amount: 0,
+        amount: U256::encode_be_compact(0),
         mode: Proto::SendMode::ATTACH_ALL_CONTRACT_BALANCE as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -166,7 +167,7 @@ fn test_ton_sign_transfer_all_balance_non_bounceable() {
 
     let transfer = Proto::Transfer {
         dest: "UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV".into(),
-        amount: 0,
+        amount: U256::encode_be_compact(0),
         mode: Proto::SendMode::ATTACH_ALL_CONTRACT_BALANCE as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: false,
@@ -200,7 +201,7 @@ fn test_ton_sign_transfer_with_ascii_comment() {
 
     let transfer = Proto::Transfer {
         dest: "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q".into(),
-        amount: 10,
+        amount: U256::encode_be_compact(10),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -235,7 +236,7 @@ fn test_ton_sign_transfer_with_utf8_comment() {
 
     let transfer = Proto::Transfer {
         dest: "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q".into(),
-        amount: 10,
+        amount: U256::encode_be_compact(10),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -270,7 +271,7 @@ fn test_ton_sign_transfer_invalid_wallet_version() {
 
     let transfer = Proto::Transfer {
         dest: "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q".into(),
-        amount: 10,
+        amount: U256::encode_be_compact(10),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -298,17 +299,17 @@ fn test_ton_sign_transfer_jettons() {
     let jetton_transfer = Proto::JettonTransfer {
         query_id: 69,
         // Transfer 1 testtwt (decimal precision is 9).
-        jetton_amount: 1000 * 1000 * 1000,
+        jetton_amount: U256::encode_be_compact(1000 * 1000 * 1000),
         to_owner: "EQAFwMs5ha8OgZ9M4hQr80z9NkE7rGxUpE1hCFndiY6JnDx8".into(),
         // Send unused toncoins back to sender.
         response_address: "EQBaKIMq5Am2p_rfR1IFTwsNWHxBkOpLTmwUain5Fj4llTXk".into(),
-        forward_amount: 1,
+        forward_amount: U256::encode_be_compact(1),
         ..Proto::JettonTransfer::default()
     };
 
     let transfer = Proto::Transfer {
         dest: "EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja".into(),
-        amount: 100 * 1000 * 1000,
+        amount: U256::encode_be_compact(100 * 1000 * 1000),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -344,17 +345,17 @@ fn test_ton_sign_transfer_jettons_with_comment() {
     let jetton_transfer = Proto::JettonTransfer {
         query_id: 0,
         // Transfer 0.5 testtwt (decimal precision is 9).
-        jetton_amount: 500 * 1000 * 1000,
+        jetton_amount: U256::encode_be_compact(500 * 1000 * 1000),
         to_owner: "EQAFwMs5ha8OgZ9M4hQr80z9NkE7rGxUpE1hCFndiY6JnDx8".into(),
         // Send unused toncoins back to sender.
         response_address: "EQBaKIMq5Am2p_rfR1IFTwsNWHxBkOpLTmwUain5Fj4llTXk".into(),
-        forward_amount: 1,
+        forward_amount: U256::encode_be_compact(1),
         ..Proto::JettonTransfer::default()
     };
 
     let transfer = Proto::Transfer {
         dest: "EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja".into(),
-        amount: 100 * 1000 * 1000,
+        amount: U256::encode_be_compact(100 * 1000 * 1000),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -392,7 +393,7 @@ fn test_ton_sign_transfer_custom_payload() {
     let transfer = Proto::Transfer {
         dest: "UQA6whN_oU5h9jPljnlDSWRYQNDPkLaUqqaEWULNB_Zoykuu".into(),
         // 0.00025 TON
-        amount: 250_000,
+        amount: U256::encode_be_compact(250_000),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: true,
@@ -443,7 +444,7 @@ fn test_ton_sign_transfer_custom_payload_with_state_init() {
     let transfer = Proto::Transfer {
         dest: doge_contract_address.into(),
         // 0.069 TON
-        amount: 69_000_000,
+        amount: U256::encode_be_compact(69_000_000),
         mode: Proto::SendMode::PAY_FEES_SEPARATELY as u32
             | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS as u32,
         bounceable: false,
