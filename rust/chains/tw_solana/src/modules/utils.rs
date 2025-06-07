@@ -175,10 +175,10 @@ impl SolanaTransaction {
             .tw_err(SigningErrorType::Error_internal)
     }
 
-    pub fn add_instruction(
+    pub fn insert_instruction(
         encoded_tx: &str,
-        instruction: &str,
         insert_at: i32,
+        instruction: &str,
     ) -> SigningResult<String> {
         let tx_bytes = base64::decode(encoded_tx, STANDARD)?;
         let mut tx: VersionedTransaction =

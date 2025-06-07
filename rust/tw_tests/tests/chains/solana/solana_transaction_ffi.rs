@@ -18,8 +18,8 @@ use tw_proto::Common::Proto::SigningError;
 use tw_proto::Solana::Proto::{self};
 use tw_solana::SOLANA_ALPHABET;
 use wallet_core_rs::ffi::solana::transaction::{
-    tw_solana_transaction_add_instruction, tw_solana_transaction_get_compute_unit_limit,
-    tw_solana_transaction_get_compute_unit_price, tw_solana_transaction_set_compute_unit_limit,
+    tw_solana_transaction_get_compute_unit_limit, tw_solana_transaction_get_compute_unit_price,
+    tw_solana_transaction_insert_instruction, tw_solana_transaction_set_compute_unit_limit,
     tw_solana_transaction_set_compute_unit_price, tw_solana_transaction_set_fee_payer,
     tw_solana_transaction_update_blockhash_and_sign,
 };
@@ -370,7 +370,7 @@ fn test_solana_transaction_set_fee_payer_already_exists() {
 }
 
 #[test]
-fn test_solana_transaction_add_instruction() {
+fn test_solana_transaction_insert_instruction() {
     // The original transaction contains the following instruction:
     // Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ transfer 0.001 SOL to B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V
     let encoded_tx_str = "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEDyyrwibVqVXc3vBcY4MvyMs9bAuFO4Kp8ZnUjP19vm1eUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA3G7dwaciEKWYvJQnuUEK1pCl+Zbd0ANxw8XYKfUO2eQBAgIAAQwCAAAAQEIPAAAAAAA=";
@@ -380,10 +380,10 @@ fn test_solana_transaction_add_instruction() {
     let instruction_str = r#"{"programId":"11111111111111111111111111111111","accounts":[{"pubkey":"YUz1AupPEy1vttBeDS7sXYZFhQJppcXMzjDiDx18Srf","isSigner":true,"isWritable":true},{"pubkey":"d8DiHEeHKdXkM2ZupT86mrvavhmJwUZjHPCzMiB5Lqb","isSigner":false,"isWritable":true}],"data":"3Bxs4Z6oyhaczjLK"}"#;
 
     // Test adding instruction, don't care about the position.
-    test_add_instruction_helper(
+    test_insert_instruction_helper(
         encoded_tx_str,
-        instruction_str,
         -1,
+        instruction_str,
         "AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgABBcsq8Im1alV3N7wXGODL8jLPWwLhTuCqfGZ1Iz9fb5tXCBClNVEnVmpLrtsxbBm36nAMo3+zrd60SK3Q+9MM/byUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWglBEmXIJbeoWIaTmY86w/B7o6y+gDQmzmrQfxH7VFEOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADcbt3BpyIQpZi8lCe5QQrWkKX5lt3QA3HDxdgp9Q7Z5AIEAgACDAIAAABAQg8AAAAAAAQCAQMMAgAAAMDGLQAAAAAA",
         "02000105cb2af089b56a557737bc1718e0cbf232cf5b02e14ee0aa7c6675233f5f6f9b570810a5355127566a4baedb316c19b7ea700ca37fb3addeb448add0fbd30cfdbc94c3890fa8d4bc04ab2a676d2cafea5cdc899ecd95a9cbe593e9df258759685a09411265c825b7a8588693998f3ac3f07ba3acbe803426ce6ad07f11fb54510e0000000000000000000000000000000000000000000000000000000000000000dc6eddc1a72210a598bc9427b9410ad690a5f996ddd00371c3c5d829f50ed9e402040200020c0200000040420f0000000000040201030c02000000c0c62d0000000000",
         // Successfully broadcasted tx:
@@ -394,7 +394,7 @@ fn test_solana_transaction_add_instruction() {
 }
 
 #[test]
-fn test_solana_transaction_add_instruction_at_begin() {
+fn test_solana_transaction_insert_instruction_at_begin() {
     // The original transaction contains the following instruction:
     // Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ transfer 0.001 SOL to B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V
     let encoded_tx_str = "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEDyyrwibVqVXc3vBcY4MvyMs9bAuFO4Kp8ZnUjP19vm1eUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAm/KjJXypxOZEREGLk4gcEwWz73mw65GbMZT5F2vRJqkBAgIAAQwCAAAAQEIPAAAAAAA=";
@@ -404,10 +404,10 @@ fn test_solana_transaction_add_instruction_at_begin() {
     let instruction_str = r#"{"programId":"11111111111111111111111111111111","accounts":[{"pubkey":"YUz1AupPEy1vttBeDS7sXYZFhQJppcXMzjDiDx18Srf","isSigner":true,"isWritable":true},{"pubkey":"d8DiHEeHKdXkM2ZupT86mrvavhmJwUZjHPCzMiB5Lqb","isSigner":false,"isWritable":true}],"data":"3Bxs4Z6oyhaczjLK"}"#;
 
     // Test adding instruction at the beginning (insert_at = 0).
-    test_add_instruction_helper(
+    test_insert_instruction_helper(
         encoded_tx_str,
-        instruction_str,
         0,
+        instruction_str,
         "AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgABBcsq8Im1alV3N7wXGODL8jLPWwLhTuCqfGZ1Iz9fb5tXCBClNVEnVmpLrtsxbBm36nAMo3+zrd60SK3Q+9MM/byUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWglBEmXIJbeoWIaTmY86w/B7o6y+gDQmzmrQfxH7VFEOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACb8qMlfKnE5kREQYuTiBwTBbPvebDrkZsxlPkXa9EmqQIEAgEDDAIAAADAxi0AAAAAAAQCAAIMAgAAAEBCDwAAAAAA",
         "02000105cb2af089b56a557737bc1718e0cbf232cf5b02e14ee0aa7c6675233f5f6f9b570810a5355127566a4baedb316c19b7ea700ca37fb3addeb448add0fbd30cfdbc94c3890fa8d4bc04ab2a676d2cafea5cdc899ecd95a9cbe593e9df258759685a09411265c825b7a8588693998f3ac3f07ba3acbe803426ce6ad07f11fb54510e00000000000000000000000000000000000000000000000000000000000000009bf2a3257ca9c4e64444418b93881c1305b3ef79b0eb919b3194f9176bd126a902040201030c02000000c0c62d0000000000040200020c0200000040420f0000000000",
         // Successfully broadcasted tx:
@@ -418,7 +418,7 @@ fn test_solana_transaction_add_instruction_at_begin() {
 }
 
 #[test]
-fn test_solana_transaction_add_instruction_at_end() {
+fn test_solana_transaction_insert_instruction_at_end() {
     // The original transaction contains the following instruction:
     // Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ transfer 0.001 SOL to B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V
     let encoded_tx_str = "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEDyyrwibVqVXc3vBcY4MvyMs9bAuFO4Kp8ZnUjP19vm1eUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA3G7dwaciEKWYvJQnuUEK1pCl+Zbd0ANxw8XYKfUO2eQBAgIAAQwCAAAAQEIPAAAAAAA=";
@@ -428,10 +428,10 @@ fn test_solana_transaction_add_instruction_at_end() {
     let instruction_str = r#"{"programId":"11111111111111111111111111111111","accounts":[{"pubkey":"YUz1AupPEy1vttBeDS7sXYZFhQJppcXMzjDiDx18Srf","isSigner":true,"isWritable":true},{"pubkey":"d8DiHEeHKdXkM2ZupT86mrvavhmJwUZjHPCzMiB5Lqb","isSigner":false,"isWritable":true}],"data":"3Bxs4Z6oyhaczjLK"}"#;
 
     // Test adding instruction at the end (insert_at = 1, as only one instruction in the transaction).
-    test_add_instruction_helper(
+    test_insert_instruction_helper(
         encoded_tx_str,
-        instruction_str,
         1,
+        instruction_str,
         "AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgABBcsq8Im1alV3N7wXGODL8jLPWwLhTuCqfGZ1Iz9fb5tXCBClNVEnVmpLrtsxbBm36nAMo3+zrd60SK3Q+9MM/byUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWglBEmXIJbeoWIaTmY86w/B7o6y+gDQmzmrQfxH7VFEOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADcbt3BpyIQpZi8lCe5QQrWkKX5lt3QA3HDxdgp9Q7Z5AIEAgACDAIAAABAQg8AAAAAAAQCAQMMAgAAAMDGLQAAAAAA",
         "02000105cb2af089b56a557737bc1718e0cbf232cf5b02e14ee0aa7c6675233f5f6f9b570810a5355127566a4baedb316c19b7ea700ca37fb3addeb448add0fbd30cfdbc94c3890fa8d4bc04ab2a676d2cafea5cdc899ecd95a9cbe593e9df258759685a09411265c825b7a8588693998f3ac3f07ba3acbe803426ce6ad07f11fb54510e0000000000000000000000000000000000000000000000000000000000000000dc6eddc1a72210a598bc9427b9410ad690a5f996ddd00371c3c5d829f50ed9e402040200020c0200000040420f0000000000040201030c02000000c0c62d0000000000",
         // Successfully broadcasted tx:
@@ -442,7 +442,7 @@ fn test_solana_transaction_add_instruction_at_end() {
 }
 
 #[test]
-fn test_solana_transaction_add_instruction_accounts_already_exist() {
+fn test_solana_transaction_insert_instruction_accounts_already_exist() {
     // The original transaction contains the following instruction:
     // Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ transfer 0.001 SOL to B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V
     let encoded_tx_str = "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEDyyrwibVqVXc3vBcY4MvyMs9bAuFO4Kp8ZnUjP19vm1eUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKGmdal3puKe8Ts38zAeBNhPflrnIsh+y0vOJUCYnOOIBAgIAAQwCAAAAQEIPAAAAAAA=";
@@ -451,10 +451,10 @@ fn test_solana_transaction_add_instruction_accounts_already_exist() {
     // Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ transfer 0.002 SOL to B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V
     let instruction_str = r#"{"programId":"11111111111111111111111111111111","accounts":[{"pubkey":"Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ","isSigner":true,"isWritable":true},{"pubkey":"B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V","isSigner":false,"isWritable":true}],"data":"3Bxs4NMRjdEwjxAj"}"#;
 
-    test_add_instruction_helper(
+    test_insert_instruction_helper(
         encoded_tx_str,
-        instruction_str,
         -1,
+        instruction_str,
         "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEDyyrwibVqVXc3vBcY4MvyMs9bAuFO4Kp8ZnUjP19vm1eUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKGmdal3puKe8Ts38zAeBNhPflrnIsh+y0vOJUCYnOOICAgIAAQwCAAAAQEIPAAAAAAACAgABDAIAAACAhB4AAAAAAA==",
         "01000103cb2af089b56a557737bc1718e0cbf232cf5b02e14ee0aa7c6675233f5f6f9b5794c3890fa8d4bc04ab2a676d2cafea5cdc899ecd95a9cbe593e9df258759685a000000000000000000000000000000000000000000000000000000000000000028699d6a5de9b8a7bc4ecdfccc07813613df96b9c8b21fb2d2f38950262738e202020200010c0200000040420f0000000000020200010c0200000080841e0000000000",
         // Successfully broadcasted tx:
@@ -465,7 +465,7 @@ fn test_solana_transaction_add_instruction_accounts_already_exist() {
 }
 
 #[test]
-fn test_solana_transaction_add_instruction_accounts_already_exist_at_begin() {
+fn test_solana_transaction_insert_instruction_accounts_already_exist_at_begin() {
     // The original transaction contains the following instruction:
     // Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ transfer 0.001 SOL to B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V
     let encoded_tx_str = "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEDyyrwibVqVXc3vBcY4MvyMs9bAuFO4Kp8ZnUjP19vm1eUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAztQHuMytNoDl0ffcUALK8+HmkItxuRS720ZqYu9MBZMBAgIAAQwCAAAAQEIPAAAAAAA=";
@@ -475,10 +475,10 @@ fn test_solana_transaction_add_instruction_accounts_already_exist_at_begin() {
     let instruction_str = r#"{"programId":"11111111111111111111111111111111","accounts":[{"pubkey":"Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ","isSigner":true,"isWritable":true},{"pubkey":"B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V","isSigner":false,"isWritable":true}],"data":"3Bxs4NMRjdEwjxAj"}"#;
 
     // Test adding instruction at the beginning (insert_at = 0).
-    test_add_instruction_helper(
+    test_insert_instruction_helper(
         encoded_tx_str,
-        instruction_str,
         0,
+        instruction_str,
         "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEDyyrwibVqVXc3vBcY4MvyMs9bAuFO4Kp8ZnUjP19vm1eUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAztQHuMytNoDl0ffcUALK8+HmkItxuRS720ZqYu9MBZMCAgIAAQwCAAAAgIQeAAAAAAACAgABDAIAAABAQg8AAAAAAA==",
         "01000103cb2af089b56a557737bc1718e0cbf232cf5b02e14ee0aa7c6675233f5f6f9b5794c3890fa8d4bc04ab2a676d2cafea5cdc899ecd95a9cbe593e9df258759685a0000000000000000000000000000000000000000000000000000000000000000ced407b8ccad3680e5d1f7dc5002caf3e1e6908b71b914bbdb466a62ef4c059302020200010c0200000080841e0000000000020200010c0200000040420f0000000000",
         // Successfully broadcasted tx:
@@ -489,7 +489,7 @@ fn test_solana_transaction_add_instruction_accounts_already_exist_at_begin() {
 }
 
 #[test]
-fn test_solana_transaction_add_instruction_accounts_already_exist_at_end() {
+fn test_solana_transaction_insert_instruction_accounts_already_exist_at_end() {
     // The original transaction contains the following instruction:
     // Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ transfer 0.001 SOL to B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V
     let encoded_tx_str = "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEDyyrwibVqVXc3vBcY4MvyMs9bAuFO4Kp8ZnUjP19vm1eUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKGmdal3puKe8Ts38zAeBNhPflrnIsh+y0vOJUCYnOOIBAgIAAQwCAAAAQEIPAAAAAAA=";
@@ -499,10 +499,10 @@ fn test_solana_transaction_add_instruction_accounts_already_exist_at_end() {
     let instruction_str = r#"{"programId":"11111111111111111111111111111111","accounts":[{"pubkey":"Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ","isSigner":true,"isWritable":true},{"pubkey":"B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V","isSigner":false,"isWritable":true}],"data":"3Bxs4NMRjdEwjxAj"}"#;
 
     // Test adding instruction at the end (insert_at = 1, as only one instruction in the transaction).
-    test_add_instruction_helper(
+    test_insert_instruction_helper(
         encoded_tx_str,
-        instruction_str,
         1,
+        instruction_str,
         "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEDyyrwibVqVXc3vBcY4MvyMs9bAuFO4Kp8ZnUjP19vm1eUw4kPqNS8BKsqZ20sr+pc3ImezZWpy+WT6d8lh1loWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKGmdal3puKe8Ts38zAeBNhPflrnIsh+y0vOJUCYnOOICAgIAAQwCAAAAQEIPAAAAAAACAgABDAIAAACAhB4AAAAAAA==",
         "01000103cb2af089b56a557737bc1718e0cbf232cf5b02e14ee0aa7c6675233f5f6f9b5794c3890fa8d4bc04ab2a676d2cafea5cdc899ecd95a9cbe593e9df258759685a000000000000000000000000000000000000000000000000000000000000000028699d6a5de9b8a7bc4ecdfccc07813613df96b9c8b21fb2d2f38950262738e202020200010c0200000040420f0000000000020200010c0200000080841e0000000000",
         // Successfully broadcasted tx:
@@ -513,10 +513,10 @@ fn test_solana_transaction_add_instruction_accounts_already_exist_at_end() {
 }
 
 // Helper function to test adding instruction with different insert positions
-fn test_add_instruction_helper(
+fn test_insert_instruction_helper(
     encoded_tx_str: &str,
-    instruction_str: &str,
     insert_at: i32,
+    instruction_str: &str,
     expected_updated_tx: &str,
     expected_preimage_hash: &str,
     expected_signed_tx: &str,
@@ -530,7 +530,7 @@ fn test_add_instruction_helper(
 
     // Step 3 - Add the instruction to the transaction.
     let updated_tx = TWStringHelper::wrap(unsafe {
-        tw_solana_transaction_add_instruction(encoded_tx.ptr(), instruction.ptr(), insert_at)
+        tw_solana_transaction_insert_instruction(encoded_tx.ptr(), insert_at, instruction.ptr())
     });
     let updated_tx = updated_tx.to_string().unwrap();
     assert_eq!(updated_tx, expected_updated_tx);
