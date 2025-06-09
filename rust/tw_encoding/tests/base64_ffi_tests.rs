@@ -2,23 +2,25 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use std::ffi::{CStr, CString};
+use std::ffi::CString;
 use tw_encoding::ffi::{decode_base64, encode_base64};
 
 #[test]
 fn test_encode_base64() {
     let data = b"hello world";
-    let encoded = unsafe { CStr::from_ptr(encode_base64(data.as_ptr(), data.len(), false)) };
+    let result_ptr = unsafe { encode_base64(data.as_ptr(), data.len(), false) };
+    let result = unsafe { CString::from_raw(result_ptr) };
     let expected = "aGVsbG8gd29ybGQ=";
-    assert_eq!(encoded.to_str().unwrap(), expected);
+    assert_eq!(result.to_str().unwrap(), expected);
 }
 
 #[test]
 fn test_encode_base64_url() {
     let data = b"+'?ab";
-    let encoded = unsafe { CStr::from_ptr(encode_base64(data.as_ptr(), data.len(), true)) };
+    let result_ptr = unsafe { encode_base64(data.as_ptr(), data.len(), true) };
+    let result = unsafe { CString::from_raw(result_ptr) };
     let expected = "Kyc_YWI=";
-    assert_eq!(encoded.to_str().unwrap(), expected);
+    assert_eq!(result.to_str().unwrap(), expected);
 }
 
 #[test]
@@ -27,9 +29,11 @@ fn test_decode_base64_url() {
     let expected = b"+'?ab";
 
     let encoded_c_str = CString::new(encoded).unwrap();
-    let encoded_ptr = encoded_c_str.as_ptr();
-
-    let decoded = unsafe { decode_base64(encoded_ptr, true).unwrap().into_vec() };
+    let decoded = unsafe {
+        decode_base64(encoded_c_str.as_ptr(), true)
+            .unwrap()
+            .into_vec()
+    };
     assert_eq!(decoded, expected);
 }
 
@@ -39,9 +43,11 @@ fn test_decode_base64() {
     let expected = b"hello world!";
 
     let encoded_c_str = CString::new(encoded).unwrap();
-    let encoded_ptr = encoded_c_str.as_ptr();
-
-    let decoded = unsafe { decode_base64(encoded_ptr, false).unwrap().into_vec() };
+    let decoded = unsafe {
+        decode_base64(encoded_c_str.as_ptr(), false)
+            .unwrap()
+            .into_vec()
+    };
     assert_eq!(decoded, expected);
 }
 
@@ -49,7 +55,6 @@ fn test_decode_base64() {
 fn test_decode_base64_invalid() {
     let invalid_encoded = "_This_is_an_invalid_base64_";
     let encoded_c_str = CString::new(invalid_encoded).unwrap();
-    let encoded_ptr = encoded_c_str.as_ptr();
-    let res = unsafe { decode_base64(encoded_ptr, false) };
+    let res = unsafe { decode_base64(encoded_c_str.as_ptr(), false) };
     assert!(res.is_err());
 }

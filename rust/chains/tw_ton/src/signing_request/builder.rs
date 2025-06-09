@@ -116,9 +116,13 @@ impl SigningRequestBuilder {
             PayloadType::None => None,
         };
 
+        let ton_amount = U256::from_big_endian_slice(input.amount.as_ref())
+            .tw_err(SigningErrorType::Error_invalid_params)
+            .context("Invalid 'amount'")?;
+
         Ok(TransferRequest {
             dest,
-            ton_amount: U256::from(input.amount),
+            ton_amount,
             mode,
             comment,
             state_init,
@@ -141,13 +145,21 @@ impl SigningRequestBuilder {
             Some(input.custom_payload.to_string())
         };
 
+        let jetton_amount = U256::from_big_endian_slice(input.jetton_amount.as_ref())
+            .tw_err(SigningErrorType::Error_invalid_params)
+            .context("Invalid 'jetton_amount'")?;
+
+        let forward_ton_amount = U256::from_big_endian_slice(input.forward_amount.as_ref())
+            .tw_err(SigningErrorType::Error_invalid_params)
+            .context("Invalid 'forward_amount'")?;
+
         let jetton_payload = JettonTransferRequest {
             query_id: input.query_id,
-            jetton_amount: U256::from(input.jetton_amount),
+            jetton_amount,
             dest,
             response_address,
             custom_payload,
-            forward_ton_amount: U256::from(input.forward_amount),
+            forward_ton_amount,
         };
 
         Ok(TransferPayload::JettonTransfer(jetton_payload))

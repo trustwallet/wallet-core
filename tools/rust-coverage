@@ -19,11 +19,11 @@ pushd rust
 # Generate HTML report if requested
 if [[ "$1" == "html" ]]; then
     cargo llvm-cov test --workspace --exclude wallet_core_bin --html
-    cargo llvm-cov report --lcov --output-path coverage.info
+    cargo llvm-cov report --lcov --output-path lcov.info
 else
-    cargo llvm-cov test --workspace --exclude wallet_core_bin --lcov --output-path coverage.info
+    cargo llvm-cov test --workspace --exclude wallet_core_bin --lcov --output-path lcov.info
 fi
 
 popd
 
-tools/check-coverage rust/coverage.stats rust/coverage.info
+tools/check-coverage rust/coverage.stats rust/lcov.info
