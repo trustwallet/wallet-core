@@ -83,7 +83,7 @@ class TheOpenNetworkTests: XCTestCase {
 
         let transfer = TheOpenNetworkTransfer.with {
             $0.dest = "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q"
-            $0.amount = 10
+            $0.amount = Data(hexString: "0A")!
             $0.mode = UInt32(TheOpenNetworkSendMode.payFeesSeparately.rawValue | TheOpenNetworkSendMode.ignoreActionPhaseErrors.rawValue)
             $0.bounceable = true
         }
@@ -108,15 +108,15 @@ class TheOpenNetworkTests: XCTestCase {
         let privateKeyData = Data(hexString: "c054900a527538c1b4325688a421c0469b171c29f23a62da216e90b0df2412ee")!
         
         let jettonTransfer = TheOpenNetworkJettonTransfer.with {
-            $0.jettonAmount = 500 * 1000 * 1000
+            $0.jettonAmount = Data(hexString: "1DCD6500")! //500 * 1000 * 1000
             $0.toOwner = "EQAFwMs5ha8OgZ9M4hQr80z9NkE7rGxUpE1hCFndiY6JnDx8"
             $0.responseAddress = "EQBaKIMq5Am2p_rfR1IFTwsNWHxBkOpLTmwUain5Fj4llTXk"
-            $0.forwardAmount = 1
+            $0.forwardAmount = Data(hexString: "01")!;
         }
         
         let transfer = TheOpenNetworkTransfer.with {
             $0.dest = "EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja"
-            $0.amount = 100 * 1000 * 1000
+            $0.amount = Data(hexString: "05F5E100")! //100 * 1000 * 1000
             $0.mode = UInt32(TheOpenNetworkSendMode.payFeesSeparately.rawValue | TheOpenNetworkSendMode.ignoreActionPhaseErrors.rawValue)
             $0.comment = "test comment"
             $0.bounceable = true
@@ -156,7 +156,7 @@ class TheOpenNetworkTests: XCTestCase {
         let transfer = TheOpenNetworkTransfer.with {
             $0.dest = dogeChatbotDeployingAddress
             // 0.069 TON
-            $0.amount = 69_000_000
+            $0.amount = Data(hexString: "041CDB40")! //69_000_000
             $0.mode = UInt32(TheOpenNetworkSendMode.payFeesSeparately.rawValue | TheOpenNetworkSendMode.ignoreActionPhaseErrors.rawValue)
             $0.bounceable = false
             $0.stateInit = dogeChatbotStateInit
