@@ -30,7 +30,8 @@ message Transfer {
     string dest = 1;
 
     // Amount to send in nanotons
-    uint64 amount = 2;
+    // uint128 / big endian byte order
+    bytes amount = 2;
 
     // Send mode (optional, 0 by default)
     // Learn more: https://ton.org/docs/develop/func/stdlib#send_raw_message
@@ -61,7 +62,8 @@ message JettonTransfer {
     uint64 query_id = 1;
 
     // Amount of transferred jettons in elementary integer units. The real value transferred is jetton_amount multiplied by ten to the power of token decimal precision
-    uint64 jetton_amount = 2;
+    // uint128 / big endian byte order
+    bytes jetton_amount = 2;
 
     // Address of the new owner of the jettons.
     string to_owner = 3;
@@ -70,7 +72,8 @@ message JettonTransfer {
     string response_address = 4;
 
     // Amount in nanotons to forward to recipient. Basically minimum amount - 1 nanoton should be used
-    uint64 forward_amount = 5;
+    // uint128 / big endian byte order
+    bytes forward_amount = 5;
 
     // Optional raw one-cell BoC encoded in Base64.
     // Can be used in the case of mintless jetton transfers.
