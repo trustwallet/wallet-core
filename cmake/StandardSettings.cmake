@@ -1,7 +1,9 @@
 #
 # Default settings
 #
-set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+if (NOT FLUTTER)
+    set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+endif ()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum OS X deployment version" FORCE)
@@ -66,7 +68,7 @@ endif ()
 option(TW_UNIT_TESTS "Enable the unit tests of the project" ON)
 option(TW_BUILD_EXAMPLES "Enable the examples builds of the project" ON)
 
-if (ANDROID OR IOS_PLATFORM OR TW_COMPILE_WASM OR TW_COMPILE_JAVA)
+if (ANDROID OR IOS_PLATFORM OR TW_COMPILE_WASM OR TW_COMPILE_JAVA OR FLUTTER)
     set(TW_UNIT_TESTS OFF)
     set(TW_BUILD_EXAMPLES OFF)
 endif()
