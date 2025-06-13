@@ -12,6 +12,7 @@ default = [
     "any-coin",
     "bitcoin",
     "ethereum",
+    "evm",
     "keypair",
     "solana",
     "ton",
@@ -20,6 +21,7 @@ default = [
 any-coin = ["tw_any_coin"]
 bitcoin = ["tw_bitcoin", "tw_coin_registry"]
 ethereum = ["tw_ethereum", "tw_coin_registry"]
+evm = ["tw_evm"]
 keypair = ["tw_keypair"]
 solana = ["tw_solana"]
 ton = ["tw_ton"]
@@ -39,6 +41,7 @@ tw_bitcoin = { path = "../chains/tw_bitcoin", optional = true }
 tw_coin_registry = { path = "../tw_coin_registry", optional = true }
 tw_encoding = { path = "../tw_encoding", optional = true }
 tw_ethereum = { path = "../chains/tw_ethereum", optional = true }
+tw_evm = { path = "../tw_evm", optional = true }
 tw_hash = { path = "../tw_hash", optional = true }
 tw_keypair = { path = "../tw_keypair", optional = true }
 tw_memory = { path = "../tw_memory", optional = true }

@@ -12,6 +12,7 @@ extra_bindings = [
     "tw_hash",
     "tw_keypair",
     "tw_memory",
+    "tw_evm",
 ]
 include = [
     "tw_any_coin",
@@ -19,4 +20,5 @@ include = [
     "tw_hash",
     "tw_keypair",
     "tw_memory",
+    "tw_evm",
 ]

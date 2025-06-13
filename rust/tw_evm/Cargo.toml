@@ -13,6 +13,7 @@ tw_coin_entry = { path = "../tw_coin_entry" }
 tw_encoding = { path = "../tw_encoding" }
 tw_hash = { path = "../tw_hash" }
 tw_keypair = { path = "../tw_keypair" }
+tw_macros = { path = "../tw_macros" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
 tw_number = { path = "../tw_number", features = ["serde"] }
@@ -20,3 +21,5 @@ tw_proto = { path = "../tw_proto" }
 
 [dev-dependencies]
 tw_coin_entry = { path = "../tw_coin_entry", features = ["test-utils"] }
+tw_memory = { path = "../tw_memory", features = ["test-utils"] }
+tw_keypair = { path = "../tw_keypair", features = ["test-utils"]  }

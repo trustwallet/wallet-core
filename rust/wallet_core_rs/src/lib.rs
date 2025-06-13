@@ -14,5 +14,7 @@ pub extern crate tw_hash;
 pub extern crate tw_keypair;
 #[cfg(feature = "utils")]
 pub extern crate tw_memory;
+#[cfg(feature = "evm")]
+pub extern crate tw_evm;
 
 pub mod ffi;
