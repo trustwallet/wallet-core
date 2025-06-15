@@ -160,12 +160,12 @@ pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
         docs,
     };
 
-    if let Ok(out_dir) = env::var("CARGO_WORKSPACE_DIR") {
-        let bindings_dir = Path::new(&out_dir).join("bindings");
-        fs::create_dir_all(&bindings_dir).expect("Failed to create bindings directory");
-        let yaml_file_path = bindings_dir.join(format!("{}.yaml", class));
+    let out_dir = env::var("CARGO_WORKSPACE_DIR").unwrap_or_default();
+    let bindings_dir = Path::new(&out_dir).join("bindings");
+    fs::create_dir_all(&bindings_dir).expect("Failed to create bindings directory");
+    let yaml_file_path = bindings_dir.join(format!("{}.yaml", class));
 
-        let mut config = if yaml_file_path.exists() {
+    let mut config = if yaml_file_path.exists() {
             match fs::read_to_string(&yaml_file_path) {
                 Ok(contents) => match serde_yaml::from_str(&contents) {
                     Ok(config) => config,
@@ -217,9 +217,6 @@ pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
         let yaml_output: String =
             serde_yaml::to_string(&config).expect("Failed to serialize to YAML");
         fs::write(&yaml_file_path, yaml_output).expect("Failed to write YAML file");
-    } else {
-        panic!("CARGO_WORKSPACE_DIR is not set");
-    }
 
     Ok(item)
 }
