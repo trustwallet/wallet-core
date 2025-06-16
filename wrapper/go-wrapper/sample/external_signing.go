@@ -8,17 +8,20 @@ import (
 	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/core"
 	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/protos/binance"
 	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/protos/bitcoin"
+	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/protos/bitcoinv2"
 	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/protos/ethereum"
 	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/protos/transactioncompiler"
+	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/protos/utxo"
 
 	"google.golang.org/protobuf/proto"
 )
 
 func ExternalSigningDemo() {
 	fmt.Println("")
-	SignExternalBinanceDemo()
-	SignExternalEthereumDemo()
-	SignExternalBitcoinDemo()
+	// SignExternalBinanceDemo()
+	// SignExternalEthereumDemo()
+	// SignExternalBitcoinDemo()
+	SignExternalLitecoinDemo()
 }
 
 func SignExternalBinanceDemo() {
@@ -255,4 +258,121 @@ func SignExternalBitcoinDemo() {
 	fmt.Println("output.encoded:  ", len(output.Encoded), hex.EncodeToString(output.Encoded))
 
 	fmt.Println("")
+}
+
+func SignExternalLitecoinDemo() {
+
+	mn := "scheme unfold sea follow canvas food average knife stamp random collect slot"
+
+	// bitcoin wallet
+	bw, err := core.CreateWalletWithMnemonic(mn, core.CoinTypeLitecoin)
+	privateKey, _ := hex.DecodeString(bw.PriKey)
+	fmt.Println("Pri", (bw.PriKey))
+	fmt.Println("Pub", (bw.PubKey))
+
+	utxoHash0, _ := hex.DecodeString("4b2698a851b2a38ebef43c2af7da4726058b3a88e6dda4cace43d2e944d99227")
+
+	utxoHash0 = ReverseBytes(utxoHash0)
+
+	inPubKey0, _ := hex.DecodeString("039ca3f93a9a0aabd4a940b9246ce174a4e7e796798fc7f7c02a5cbc85dd88b2fe")
+	// inPubkeyHash0, _ := hex.DecodeString("5ffe562c595838c8efec448fdddfbb9bca0de17f")
+	// Real signature from witness
+	inSig0, _ := hex.DecodeString("3045022100a44ab9bd7124a17598c641636d5e31b9e47ce2ecbaca11a969a18e7039edefad022054be2a8eda90e062dd0827833085423092af4c82b7ee4c8058bfad7d97c1954f")
+
+	chainInfo := &bitcoinv2.ChainInfo{
+		P2PkhPrefix: 48,
+		P2ShPrefix:  50,
+	}
+
+	signingInput := bitcoinv2.SigningInput{
+		DangerousUseFixedSchnorrRng: true,
+		ChainInfo:                   chainInfo,
+		PrivateKeys:                 [][]byte{privateKey},
+		Transaction: &bitcoinv2.SigningInput_Builder{
+			Builder: &bitcoinv2.TransactionBuilder{
+				DustPolicy: &bitcoinv2.TransactionBuilder_FixedDustThreshold{
+					FixedDustThreshold: 546,
+				},
+			},
+		},
+	}
+
+	builder := signingInput.Transaction.(*bitcoinv2.SigningInput_Builder).Builder
+	builder.Version = bitcoinv2.TransactionVersion_V1
+	builder.InputSelector = bitcoinv2.InputSelector_UseAll
+
+	utxo0 := &bitcoinv2.Input{
+		OutPoint: &utxo.OutPoint{
+			Hash: utxoHash0,
+			Vout: 0,
+		},
+		Sequence: &bitcoinv2.Input_Sequence{
+			Sequence: 0xffffffff,
+		},
+		Value:       95118,
+		SighashType: uint32(core.BitcoinSigHashTypeAll),
+		ClaimingScript: &bitcoinv2.Input_ScriptBuilder{
+			ScriptBuilder: &bitcoinv2.Input_InputBuilder{
+				Variant: &bitcoinv2.Input_InputBuilder_P2Wpkh{
+					P2Wpkh: &bitcoinv2.PublicKeyOrHash{
+						Variant: &bitcoinv2.PublicKeyOrHash_Pubkey{
+							Pubkey: inPubKey0,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	out0 := bitcoinv2.Output{
+		Value: int64(94118),
+		ToRecipient: &bitcoinv2.Output_ToAddress{
+			ToAddress: "ltc1qzwus8mmd8y302aw20wg84whhszj6h0ay75vyhm",
+		},
+	}
+
+	builder.Inputs = make([]*bitcoinv2.Input, 0)
+	builder.Inputs = append(builder.Inputs, utxo0)
+
+	builder.Outputs = make([]*bitcoinv2.Output, 0)
+	builder.Outputs = append(builder.Outputs, &out0)
+
+	// Setup input
+	legacySigning := bitcoin.SigningInput{
+		SigningV2: &signingInput,
+	}
+
+	txInputData, e := proto.Marshal(&legacySigning)
+	fmt.Println("e:", e)
+
+	var signingOutput bitcoin.SigningOutput
+	e = core.CreateSignedTx(&legacySigning, core.CoinTypeLitecoin, &signingOutput)
+	fmt.Println("", e)
+	fmt.Println("", hex.EncodeToString(signingOutput.SigningResultV2.Encoded))
+
+	// Step 2: Preimage hashes
+	hashes := core.PreImageHashes(core.CoinTypeLitecoin, txInputData)
+
+	var preSigningOutput bitcoin.PreSigningOutput
+	err = proto.Unmarshal(hashes, &preSigningOutput)
+
+	fmt.Println("PreimagesHash", err, preSigningOutput.PreSigningResultV2.Sighashes)
+
+	SignData := preSigningOutput.PreSigningResultV2.Sighashes[0].Sighash
+	verifyRes := core.PublicKeyVerifyAsDER(inPubKey0, core.PublicKeyTypeSECP256k1, inSig0, SignData)
+	fmt.Println("signature verification:", verifyRes)
+}
+
+type SignatureInfo struct {
+	signature []byte
+	publicKey []byte
+}
+
+func ReverseBytes(b []byte) []byte {
+	n := len(b)
+	reversed := make([]byte, n)
+	for i := 0; i < n; i++ {
+		reversed[i] = b[n-1-i]
+	}
+	return reversed
 }

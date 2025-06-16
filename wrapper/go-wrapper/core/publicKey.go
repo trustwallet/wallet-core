@@ -6,6 +6,8 @@ package core
 import "C"
 
 import (
+	"encoding/hex"
+	"errors"
 	"unsafe"
 
 	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/types"
@@ -50,4 +52,12 @@ func PublicKeyVerifyAsDER(key []byte, keyType PublicKeyType, signature []byte, m
 
 func PublicKeyDescription(key TWPublicKey) unsafe.Pointer {
 	return C.TWPublicKeyDescription(key)
+}
+
+func PublicKeyBytes(key TWPublicKey) ([]byte, error) {
+	pubValue := PublicKeyDescription(key)
+	if pubValue == nil {
+		return nil, errors.New("invalid public key")
+	}
+	return hex.DecodeString(types.TWStringGoString(pubValue))
 }

@@ -7,15 +7,19 @@ package core
 // #include <TrustWalletCore/TWBitcoinSigHashType.h>
 import "C"
 
-import "github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/types"
+import (
+	"github.com/Cramiumlabs/wallet-core/wrapper/go-wrapper/types"
+)
+
+type BitcoinSignHashType uint32
 
 const (
-	BitcoinSigHashTypeAll          = C.TWBitcoinSigHashTypeAll
-	BitcoinSigHashTypeNone         = C.TWBitcoinSigHashTypeNone
-	BitcoinSigHashTypeSingle       = C.TWBitcoinSigHashTypeSingle
-	BitcoinSigHashTypeFork         = C.TWBitcoinSigHashTypeFork
-	BitcoinSigHashTypeForkBTG      = C.TWBitcoinSigHashTypeForkBTG
-	BitcoinSigHashTypeAnyoneCanPay = C.TWBitcoinSigHashTypeAnyoneCanPay
+	BitcoinSigHashTypeAll          BitcoinSignHashType = C.TWBitcoinSigHashTypeAll
+	BitcoinSigHashTypeNone         BitcoinSignHashType = C.TWBitcoinSigHashTypeNone
+	BitcoinSigHashTypeSingle       BitcoinSignHashType = C.TWBitcoinSigHashTypeSingle
+	BitcoinSigHashTypeFork         BitcoinSignHashType = C.TWBitcoinSigHashTypeFork
+	BitcoinSigHashTypeForkBTG      BitcoinSignHashType = C.TWBitcoinSigHashTypeForkBTG
+	BitcoinSigHashTypeAnyoneCanPay BitcoinSignHashType = C.TWBitcoinSigHashTypeAnyoneCanPay
 )
 
 func BitcoinScriptLockScriptForAddress(addr string, ct CoinType) []byte {

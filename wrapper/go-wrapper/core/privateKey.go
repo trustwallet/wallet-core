@@ -35,3 +35,7 @@ func PrivateKeySign(key TWPrivateKey, in unsafe.Pointer, curve CurveType) unsafe
 func TWPrivateKeyGetPublicKeyEd25519Cardano(key TWPrivateKey) TWPublicKey {
 	return C.TWPrivateKeyGetPublicKeyEd25519Cardano(key)
 }
+
+func TWPrivateKeyGetPublicKey(key TWPrivateKey, coinType CoinType) TWPublicKey {
+	return C.TWPrivateKeyGetPublicKey(key, C.enum_TWCoinType(coinType))
+}
