@@ -8,13 +8,13 @@ pub extern crate tw_any_coin;
 pub extern crate tw_bitcoin;
 #[cfg(feature = "utils")]
 pub extern crate tw_encoding;
+#[cfg(feature = "evm")]
+pub extern crate tw_evm;
 #[cfg(feature = "utils")]
 pub extern crate tw_hash;
 #[cfg(feature = "keypair")]
 pub extern crate tw_keypair;
 #[cfg(feature = "utils")]
 pub extern crate tw_memory;
-#[cfg(feature = "evm")]
-pub extern crate tw_evm;
 
 pub mod ffi;
