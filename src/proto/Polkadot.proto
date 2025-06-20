@@ -139,6 +139,24 @@ message Staking {
         CallIndices nominate_call_indices = 7;
     }
 
+    // Bond extra, with nominators
+    message BondExtraAndNominate {
+        // amount (uint256, serialized big endian)
+        bytes value = 1;
+
+        // list of nominators
+        repeated string nominators = 2;
+
+        // Batch call indices
+        CallIndices call_indices = 3;
+
+        // Staking.BondExtra call indices
+        CallIndices bond_extra_call_indices = 4;
+
+        // Staking.Nominate call indices
+        CallIndices nominate_call_indices = 5;
+    }
+
     // Bond extra amount
     message BondExtra {
         // amount (uint256, serialized big endian)
@@ -215,6 +233,7 @@ message Staking {
         Chill chill = 7;
         ChillAndUnbond chill_and_unbond = 8;
         Rebond rebond = 9;
+        BondExtraAndNominate bond_extra_and_nominate = 10;
     }
 }
 
