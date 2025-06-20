@@ -68,7 +68,12 @@ pub fn helper_encode_and_compile(
     let mut pre_imager = PreImageHelper::<CompilerProto::PreSigningOutput>::default();
     let preimage_output = pre_imager.pre_image_hashes(coin, &input);
 
-    assert_eq!(preimage_output.error, SigningError::OK);
+    assert_eq!(
+        preimage_output.error,
+        SigningError::OK,
+        "{}",
+        preimage_output.error_message
+    );
     let preimage = preimage_output.data.to_hex();
 
     // Step 2: Compile transaction info
@@ -87,7 +92,7 @@ pub fn helper_encode_and_compile(
     // Compile transaction info
     let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
     let output = compiler.compile(coin, &input, vec![signature_bytes], vec![public_key]);
-    assert_eq!(output.error, SigningError::OK);
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
     let signed = output.encoded.to_hex();
 
     (preimage, signed)
