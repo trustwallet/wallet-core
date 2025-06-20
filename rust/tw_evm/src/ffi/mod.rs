@@ -2,5 +2,5 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-pub mod address;
 pub mod barz;
+pub mod ethereum_address;

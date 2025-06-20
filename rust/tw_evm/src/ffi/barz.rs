@@ -6,8 +6,8 @@
 
 use crate::modules::barz::core::{
     get_authorization_hash, get_counterfactual_address, get_diamond_cut_code, get_encoded_hash,
-    get_formatted_signature, get_init_code, get_prefixed_msg_hash, get_signed_hash,
-    sign_authorization,
+    get_formatted_signature, get_init_code, get_prefixed_msg_hash, sign_authorization,
+    sign_user_op_hash,
 };
 use tw_keypair::ffi::pubkey::{tw_public_key_data, TWPublicKey};
 use tw_macros::tw_ffi;
@@ -53,7 +53,7 @@ pub unsafe extern "C" fn tw_barz_get_init_code(
     public_key: NonnullMut<TWPublicKey>,
     verification_facet: Nonnull<TWString>,
     salt: u32,
-) -> NonnullMut<TWData> {
+) -> NullableMut<TWData> {
     let factory_address = try_or_else!(TWString::from_ptr_as_ref(factory), std::ptr::null_mut);
     let factory_address = try_or_else!(factory_address.as_str(), std::ptr::null_mut);
     let public_key = try_or_else!(TWPublicKey::from_ptr_as_mut(public_key), std::ptr::null_mut);
@@ -89,7 +89,7 @@ pub unsafe extern "C" fn tw_barz_get_formatted_signature(
     challenge: Nonnull<TWData>,
     authenticator_data: Nonnull<TWData>,
     client_data_json: Nonnull<TWString>,
-) -> NonnullMut<TWData> {
+) -> NullableMut<TWData> {
     let signature = try_or_else!(TWData::from_ptr_as_ref(signature), std::ptr::null_mut);
     let challenge = try_or_else!(TWData::from_ptr_as_ref(challenge), std::ptr::null_mut);
     let authenticator_data = try_or_else!(
@@ -125,7 +125,7 @@ pub unsafe extern "C" fn tw_barz_get_prefixed_msg_hash(
     msg_hash: Nonnull<TWData>,
     barz_address: Nonnull<TWString>,
     chain_id: u32,
-) -> NonnullMut<TWData> {
+) -> NullableMut<TWData> {
     let msg_hash = try_or_else!(TWData::from_ptr_as_ref(msg_hash), std::ptr::null_mut);
     let barz_address = try_or_else!(TWString::from_ptr_as_ref(barz_address), std::ptr::null_mut);
     let barz_address = try_or_else!(barz_address.as_str(), std::ptr::null_mut);
@@ -144,7 +144,7 @@ pub unsafe extern "C" fn tw_barz_get_prefixed_msg_hash(
 #[no_mangle]
 pub unsafe extern "C" fn tw_barz_get_diamond_cut_code(
     input: Nonnull<TWData>,
-) -> NonnullMut<TWData> {
+) -> NullableMut<TWData> {
     let input = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
     let mut reader = BytesReader::from_bytes(input.as_slice());
     let input = try_or_else!(
@@ -168,7 +168,7 @@ pub unsafe extern "C" fn tw_barz_get_authorization_hash(
     chain_id: Nonnull<TWData>,
     contract_address: Nonnull<TWString>,
     nonce: Nonnull<TWData>,
-) -> NonnullMut<TWData> {
+) -> NullableMut<TWData> {
     let chain_id = try_or_else!(TWData::from_ptr_as_ref(chain_id), std::ptr::null_mut);
     let contract_address = try_or_else!(
         TWString::from_ptr_as_ref(contract_address),
@@ -197,7 +197,7 @@ pub unsafe extern "C" fn tw_barz_sign_authorization(
     contract_address: Nonnull<TWString>,
     nonce: Nonnull<TWData>,
     private_key: Nonnull<TWString>,
-) -> NonnullMut<TWString> {
+) -> NullableMut<TWString> {
     let chain_id = try_or_else!(TWData::from_ptr_as_ref(chain_id), std::ptr::null_mut);
     let contract_address = try_or_else!(
         TWString::from_ptr_as_ref(contract_address),
@@ -241,7 +241,7 @@ pub unsafe extern "C" fn tw_barz_get_encoded_hash(
     domain_separator_hash: Nonnull<TWString>,
     sender: Nonnull<TWString>,
     user_op_hash: Nonnull<TWString>,
-) -> NonnullMut<TWData> {
+) -> NullableMut<TWData> {
     let chain_id = try_or_else!(TWData::from_ptr_as_ref(chain_id), std::ptr::null_mut);
     let code_address = try_or_else!(TWString::from_ptr_as_ref(code_address), std::ptr::null_mut);
     let code_address = try_or_else!(code_address.as_str(), std::ptr::null_mut);
@@ -291,6 +291,6 @@ pub unsafe extern "C" fn tw_barz_get_signed_hash(
     let hash = try_or_else!(hash.as_str(), std::ptr::null_mut);
     let private_key = try_or_else!(TWString::from_ptr_as_ref(private_key), std::ptr::null_mut);
     let private_key = try_or_else!(private_key.as_str(), std::ptr::null_mut);
-    let signed_hash = try_or_else!(get_signed_hash(hash, private_key), std::ptr::null_mut);
+    let signed_hash = try_or_else!(sign_user_op_hash(hash, private_key), std::ptr::null_mut);
     TWData::from(signed_hash).into_ptr()
 }

@@ -7,7 +7,7 @@ use tw_encoding::hex::FromHexError;
 use tw_keypair::KeyPairError;
 use tw_number::NumberError;
 
-use crate::abi::AbiError;
+use crate::{abi::AbiError, message::MessageSigningError};
 
 pub type BarzResult<T> = Result<T, BarzError>;
 
@@ -19,6 +19,9 @@ pub enum BarzError {
     AbiError,
     NumberError,
     KeypairError,
+    HashError,
+    MessageSigningError,
+    SerializationError,
 }
 
 impl From<AddressError> for BarzError {
@@ -48,5 +51,23 @@ impl From<NumberError> for BarzError {
 impl From<KeyPairError> for BarzError {
     fn from(_: KeyPairError) -> Self {
         BarzError::KeypairError
+    }
+}
+
+impl From<tw_hash::Error> for BarzError {
+    fn from(_: tw_hash::Error) -> Self {
+        BarzError::HashError
+    }
+}
+
+impl From<MessageSigningError> for BarzError {
+    fn from(_: MessageSigningError) -> Self {
+        BarzError::MessageSigningError
+    }
+}
+
+impl From<serde_json::Error> for BarzError {
+    fn from(_: serde_json::Error) -> Self {
+        BarzError::SerializationError
     }
 }

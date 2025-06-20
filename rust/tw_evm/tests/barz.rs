@@ -884,12 +884,12 @@ fn test_sign_authorization() {
     // Verified with viem
     assert_eq!(
         json["chainId"].as_str().unwrap(),
-        hex::encode(&chain_id[..], true)
+        hex::encode(U256::from(1u64).to_big_endian_compact(), true)
     );
     assert_eq!(json["address"].as_str().unwrap(), contract_address);
     assert_eq!(
         json["nonce"].as_str().unwrap(),
-        hex::encode(&nonce[..], true)
+        hex::encode(U256::from(1u64).to_big_endian_compact(), true)
     );
     assert_eq!(json["yParity"].as_str().unwrap(), hex::encode(&[1u8], true));
     assert_eq!(
@@ -932,9 +932,9 @@ fn test_get_encoded_hash() {
 }
 
 #[test]
-fn test_get_signed_hash() {
+fn test_sign_user_op_hash() {
     let hash = "0xc63891abc38f7a991f89ad7cb6d7e53543627b0536c3f5e545b736756c971635";
     let private_key = "0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8";
-    let signed_hash = get_signed_hash(hash, private_key).unwrap();
+    let signed_hash = sign_user_op_hash(hash, private_key).unwrap();
     assert_eq!(hex::encode(signed_hash, true), "0xa29e460720e4b539f593d1a407827d9608cccc2c18b7af7b3689094dca8a016755bca072ffe39bc62285b65aff8f271f20798a421acf18bb2a7be8dbe0eb05f81c");
 }

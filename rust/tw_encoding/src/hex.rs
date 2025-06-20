@@ -182,6 +182,31 @@ pub mod as_hex_prefixed {
     }
 }
 
+pub mod u8_as_hex {
+    use super::*;
+    use serde::{Deserialize, Deserializer, Serializer};
+
+    pub fn serialize<S>(value: &u8, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let hex_str = encode([*value], true);
+        serializer.serialize_str(&hex_str)
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<u8, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let hex_str = String::deserialize(deserializer)?;
+        let bytes = decode(&hex_str).map_err(serde::de::Error::custom)?;
+        bytes
+            .first()
+            .copied()
+            .ok_or_else(|| serde::de::Error::custom("Expected single byte but got empty bytes"))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

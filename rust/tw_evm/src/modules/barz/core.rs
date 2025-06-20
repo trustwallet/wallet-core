@@ -9,17 +9,28 @@ use crate::abi::param_type::ParamType;
 use crate::abi::uint::UintBits;
 use crate::abi::{encode, token::Token};
 use crate::address::Address;
-use crate::rlp::list::RlpList;
+use crate::message::EthMessage;
+use crate::transaction::authorization_list::{Authorization, SignedAuthorization};
 use std::str::FromStr;
 use tw_encoding::{base64, hex};
 use tw_hash::sha3::keccak256;
 use tw_hash::H256;
 use tw_keypair::ecdsa::der;
-use tw_keypair::tw::{Curve, PrivateKey};
+use tw_keypair::ecdsa::secp256k1::PrivateKey;
+use tw_keypair::traits::SigningKeyTrait;
+use tw_misc::traits::ToBytesVec;
 use tw_number::U256;
 use tw_proto::Barz::Proto::{ContractAddressInput, DiamondCutInput};
 
 use super::error::BarzResult;
+
+const BARZ_DOMAIN_SEPARATOR_TYPE_HASH: &str =
+    "47e79534a245952e8b16893a336b85a3d9ea9fa8c573f3d803afb92a79469218";
+const BARZ_MSG_HASH_DATA: &str = "b1bcb804a4a3a1af3ee7920d949bdfd417ea1b736c3552c8d6563a229a619100";
+const BARZ_SIGNED_DATA_PREFIX: &str = "1901";
+
+const BARZ_DIAMOND_CUT_SELECTOR: &str = "1f931c1c";
+const BARZ_DATA_LOCATION_CHUNK: &str = "60";
 
 pub fn get_counterfactual_address(input: &ContractAddressInput) -> BarzResult<String> {
     let encoded_data = encode::encode_tokens(&[
@@ -33,17 +44,19 @@ pub fn get_counterfactual_address(input: &ContractAddressInput) -> BarzResult<St
 
     let mut init_code = hex::decode(&input.bytecode)?;
     init_code.extend_from_slice(&encoded_data);
-
     let init_code_hash = keccak256(&init_code);
+    let init_code_hash = H256::try_from(init_code_hash.as_slice())?;
+
     let salt = input.salt.to_be_bytes();
     let mut salt_bytes = [0u8; 32];
     salt_bytes[32 - salt.len()..].copy_from_slice(&salt);
+    let salt_bytes = H256::try_from(salt_bytes.as_slice())?;
 
     Ok(Address::eip1014_create2_address(
         &hex::decode(&input.factory)?,
         &salt_bytes,
         &init_code_hash,
-    )?
+    )
     .into_checksum_address())
 }
 
@@ -75,10 +88,6 @@ pub fn get_init_code(
     };
     let encoded = function.encode_input(&tokens)?;
 
-    if encoded.is_empty() {
-        return Ok(Vec::new());
-    }
-
     let mut envelope = Vec::new();
     envelope.extend_from_slice(&hex::decode(factory_address)?);
     envelope.extend_from_slice(&encoded);
@@ -106,16 +115,13 @@ pub fn get_formatted_signature(
         return Ok(Vec::new());
     };
 
-    let r_value = H256::try_from(signature.r()).unwrap();
-    let s_value = H256::try_from(signature.s()).unwrap();
-
     Ok(encode::encode_tokens(&[
         Token::Uint {
-            uint: U256::from_big_endian(r_value),
+            uint: U256::from_big_endian(*signature.r()),
             bits: UintBits::default(),
         },
         Token::Uint {
-            uint: U256::from_big_endian(s_value),
+            uint: U256::from_big_endian(*signature.s()),
             bits: UintBits::default(),
         },
         Token::Bytes(authenticator_data.to_vec()),
@@ -130,12 +136,10 @@ pub fn get_prefixed_msg_hash(
     chain_id: u32,
 ) -> BarzResult<Vec<u8>> {
     // keccak256("EIP712Domain(uint256 chainId,address verifyingContract)")
-    let domain_separator_type_hash =
-        hex::decode("47e79534a245952e8b16893a336b85a3d9ea9fa8c573f3d803afb92a79469218")?;
+    let domain_separator_type_hash = hex::decode(BARZ_DOMAIN_SEPARATOR_TYPE_HASH)?;
     // keccak256("BarzMessage(bytes message)")
-    let barz_msg_hash_data =
-        hex::decode("b1bcb804a4a3a1af3ee7920d949bdfd417ea1b736c3552c8d6563a229a619100")?;
-    let signed_data_prefix = hex::decode("1901")?;
+    let barz_msg_hash_data = hex::decode(BARZ_MSG_HASH_DATA)?;
+    let signed_data_prefix = hex::decode(BARZ_SIGNED_DATA_PREFIX)?;
 
     let domain_separator_tokens = vec![
         Token::FixedBytes(NonEmptyBytes::new(domain_separator_type_hash)?),
@@ -172,8 +176,8 @@ pub fn get_prefixed_msg_hash(
 
 // Function to encode the diamondCut function call using protobuf message as input
 pub fn get_diamond_cut_code(input: &DiamondCutInput) -> BarzResult<Vec<u8>> {
-    let diamond_cut_selector = hex::decode("1f931c1c")?;
-    let data_location_chunk = hex::decode("60")?;
+    let diamond_cut_selector = hex::decode(BARZ_DIAMOND_CUT_SELECTOR)?;
+    let data_location_chunk = hex::decode(BARZ_DATA_LOCATION_CHUNK)?;
     let mut encoded = Vec::new();
 
     // diamondCut() function selector
@@ -327,26 +331,28 @@ pub fn get_encoded_hash(
 
     // Create message hash
     let mut message_to_hash = Vec::new();
-    message_to_hash.extend_from_slice(&hex::decode(type_hash.trim_start_matches("0x"))?);
-    message_to_hash.extend_from_slice(&hex::decode(user_op_hash.trim_start_matches("0x"))?);
+    message_to_hash.extend_from_slice(&hex::decode(type_hash)?);
+    message_to_hash.extend_from_slice(&hex::decode(user_op_hash)?);
     let message_hash = keccak256(&message_to_hash);
 
     // Create final encoded hash
     let mut encoded = Vec::new();
-    encoded.extend_from_slice(&hex::decode("1901")?);
+    encoded.extend_from_slice(&hex::decode(BARZ_SIGNED_DATA_PREFIX)?);
     encoded.extend_from_slice(&domain_separator_encoded_hash);
     encoded.extend_from_slice(&message_hash);
 
     Ok(keccak256(&encoded))
 }
 
-pub fn get_signed_hash(hash: &str, private_key: &str) -> BarzResult<Vec<u8>> {
-    let rsvy = get_rsvy(&hex::decode(hash.trim_start_matches("0x"))?, private_key)?;
+pub fn sign_user_op_hash(hash: &str, private_key: &str) -> BarzResult<Vec<u8>> {
+    let private_key = PrivateKey::try_from(private_key)?;
+    let message = H256::from_str(hash)?;
+    let signature = private_key.sign(message)?;
 
-    let mut result = Vec::new();
-    result.extend_from_slice(&rsvy[0]);
-    result.extend_from_slice(&rsvy[1]);
-    result.extend_from_slice(&rsvy[2]);
+    let mut result = signature.to_vec();
+    // v value (last byte, should be 0 or 1, add 27 to make it 27 or 28)
+    let v_value = result[64] + 27;
+    result[64] = v_value;
 
     Ok(result)
 }
@@ -356,15 +362,13 @@ pub fn get_authorization_hash(
     contract_address: &str,
     nonce: &[u8],
 ) -> BarzResult<Vec<u8>> {
-    let mut list = RlpList::new();
-    list.append(&U256::from_big_endian_slice(chain_id)?)
-        .append(&Address::from_str(contract_address)?)
-        .append(&U256::from_big_endian_slice(nonce)?);
+    let authorization = Authorization {
+        chain_id: U256::from_big_endian_slice(chain_id)?,
+        address: Address::from_str(contract_address)?,
+        nonce: U256::from_big_endian_slice(nonce)?,
+    };
 
-    let mut encoded = hex::decode("0x05")?;
-    encoded.extend_from_slice(&list.finish());
-
-    Ok(keccak256(&encoded))
+    Ok(authorization.hash()?.to_vec())
 }
 
 pub fn sign_authorization(
@@ -373,66 +377,21 @@ pub fn sign_authorization(
     nonce: &[u8],
     private_key: &str,
 ) -> BarzResult<String> {
-    let authorization_hash = get_authorization_hash(chain_id, contract_address, nonce)?;
-    let rsvy = get_rsvy(&authorization_hash, private_key)?;
+    let authorization = Authorization {
+        chain_id: U256::from_big_endian_slice(chain_id)?,
+        address: Address::from_str(contract_address)?,
+        nonce: U256::from_big_endian_slice(nonce)?,
+    };
+    let authorization_hash = authorization.hash()?;
+    let private_key = PrivateKey::try_from(private_key)?;
+    let signature = private_key.sign(authorization_hash)?;
 
-    let mut json_obj = serde_json::Map::new();
-    json_obj.insert(
-        "chainId".to_string(),
-        serde_json::Value::String(hex::encode(chain_id, true)),
-    );
-    json_obj.insert(
-        "address".to_string(),
-        serde_json::Value::String(contract_address.to_string()),
-    );
-    json_obj.insert(
-        "nonce".to_string(),
-        serde_json::Value::String(hex::encode(nonce, true)),
-    );
-    json_obj.insert(
-        "yParity".to_string(),
-        serde_json::Value::String(hex::encode(&rsvy[3], true)),
-    );
-    json_obj.insert(
-        "r".to_string(),
-        serde_json::Value::String(hex::encode(&rsvy[0], true)),
-    );
-    json_obj.insert(
-        "s".to_string(),
-        serde_json::Value::String(hex::encode(&rsvy[1], true)),
-    );
+    let signed_authorization = SignedAuthorization {
+        authorization,
+        y_parity: signature.v(),
+        r: U256::from_big_endian_slice(signature.r().as_slice())?,
+        s: U256::from_big_endian_slice(signature.s().as_slice())?,
+    };
 
-    Ok(serde_json::Value::Object(json_obj).to_string())
-}
-
-fn get_rsvy(hash: &[u8], private_key: &str) -> BarzResult<Vec<Vec<u8>>> {
-    let private_key_data = hex::decode(private_key.trim_start_matches("0x"))?;
-    let private_key_obj = PrivateKey::new(private_key_data)?;
-    let signature = private_key_obj.sign(hash, Curve::Secp256k1)?;
-
-    if signature.is_empty() {
-        return Ok(vec![]);
-    }
-
-    // Extract r, s, v values from the signature
-    let mut r = Vec::new();
-    let mut s = Vec::new();
-    let mut v = Vec::new();
-    let mut y_parity = Vec::new();
-
-    // r value (first 32 bytes)
-    r.extend_from_slice(&signature[0..32]);
-
-    // s value (next 32 bytes)
-    s.extend_from_slice(&signature[32..64]);
-
-    // v value (last byte, should be 0 or 1, add 27 to make it 27 or 28)
-    let v_value = signature[64] + 27;
-    v.push(v_value);
-
-    // yParity value (last byte)
-    let y_parity_value = signature[64];
-    y_parity.push(y_parity_value);
-
-    Ok(vec![r, s, v, y_parity])
+    Ok(serde_json::to_string(&signed_authorization)?)
 }

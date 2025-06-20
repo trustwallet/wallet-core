@@ -8,10 +8,9 @@ use std::str::FromStr;
 
 use crate::address::Address;
 use tw_encoding::hex;
+use tw_hash::H256;
 use tw_macros::tw_ffi;
-use tw_memory::ffi::{
-    tw_data::TWData, tw_string::TWString, Nonnull, NonnullMut, NullableMut, RawPtrTrait,
-};
+use tw_memory::ffi::{tw_data::TWData, tw_string::TWString, Nonnull, NullableMut, RawPtrTrait};
 use tw_misc::try_or_else;
 
 /// Returns the checksummed address.
@@ -44,7 +43,7 @@ pub unsafe extern "C" fn tw_ethereum_eip2645_get_path(
     layer: Nonnull<TWString>,
     application: Nonnull<TWString>,
     index: Nonnull<TWString>,
-) -> NonnullMut<TWString> {
+) -> NullableMut<TWString> {
     let address = try_or_else!(TWString::from_ptr_as_ref(eth_address), std::ptr::null_mut);
     let address = try_or_else!(address.as_str(), std::ptr::null_mut);
     let address = try_or_else!(Address::from_str(address), std::ptr::null_mut);
@@ -78,11 +77,13 @@ pub unsafe extern "C" fn tw_ethereum_eip1014_create2_address(
     let from = try_or_else!(from.as_str(), std::ptr::null_mut);
     let from = try_or_else!(hex::decode(from), std::ptr::null_mut);
     let salt = try_or_else!(TWData::from_ptr_as_ref(salt), std::ptr::null_mut);
+    let salt = try_or_else!(H256::try_from(salt.as_slice()), std::ptr::null_mut);
     let init_code_hash = try_or_else!(TWData::from_ptr_as_ref(init_code_hash), std::ptr::null_mut);
-    let address = try_or_else!(
-        Address::eip1014_create2_address(&from, salt.as_slice(), init_code_hash.as_slice()),
+    let init_code_hash = try_or_else!(
+        H256::try_from(init_code_hash.as_slice()),
         std::ptr::null_mut
     );
+    let address = Address::eip1014_create2_address(&from, &salt, &init_code_hash);
     TWString::from(address.into_checksum_address()).into_ptr()
 }
 

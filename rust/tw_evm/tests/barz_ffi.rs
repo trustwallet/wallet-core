@@ -266,7 +266,7 @@ fn test_sign_authorization_ffi() {
     // Verified with viem
     assert_eq!(
         json["chainId"].as_str().unwrap(),
-        hex::encode(U256::from(1u64).to_big_endian(), true)
+        hex::encode(U256::from(1u64).to_big_endian_compact(), true)
     );
     assert_eq!(
         json["address"].as_str().unwrap(),
@@ -274,7 +274,7 @@ fn test_sign_authorization_ffi() {
     );
     assert_eq!(
         json["nonce"].as_str().unwrap(),
-        hex::encode(U256::from(1u64).to_big_endian(), true)
+        hex::encode(U256::from(1u64).to_big_endian_compact(), true)
     );
     assert_eq!(json["yParity"].as_str().unwrap(), hex::encode(&[1u8], true));
     assert_eq!(
