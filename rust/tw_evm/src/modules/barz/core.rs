@@ -389,8 +389,8 @@ pub fn sign_authorization(
     let signed_authorization = SignedAuthorization {
         authorization,
         y_parity: signature.v(),
-        r: U256::from_big_endian_slice(signature.r().as_slice())?,
-        s: U256::from_big_endian_slice(signature.s().as_slice())?,
+        r: U256::from_big_endian(signature.r()),
+        s: U256::from_big_endian(signature.s()),
     };
 
     Ok(serde_json::to_string(&signed_authorization)?)

@@ -872,9 +872,9 @@ fn test_get_authorization_hash() {
 
 #[test]
 fn test_sign_authorization() {
-    let chain_id = U256::from(1u64).to_big_endian();
+    let chain_id = U256::from(1u64).to_big_endian_compact();
     let contract_address = "0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1";
-    let nonce = U256::from(1u64).to_big_endian();
+    let nonce = U256::from(1u64).to_big_endian_compact();
     let private_key = "0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8";
 
     let signed_authorization =
@@ -884,13 +884,10 @@ fn test_sign_authorization() {
     // Verified with viem
     assert_eq!(
         json["chainId"].as_str().unwrap(),
-        hex::encode(U256::from(1u64).to_big_endian_compact(), true)
+        hex::encode(chain_id, true)
     );
     assert_eq!(json["address"].as_str().unwrap(), contract_address);
-    assert_eq!(
-        json["nonce"].as_str().unwrap(),
-        hex::encode(U256::from(1u64).to_big_endian_compact(), true)
-    );
+    assert_eq!(json["nonce"].as_str().unwrap(), hex::encode(nonce, true));
     assert_eq!(json["yParity"].as_str().unwrap(), hex::encode(&[1u8], true));
     assert_eq!(
         json["r"].as_str().unwrap(),

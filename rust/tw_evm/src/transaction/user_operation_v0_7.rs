@@ -19,6 +19,8 @@ use tw_memory::Data;
 use tw_number::serde::as_u256_hex;
 use tw_number::U256;
 
+use super::authorization_list::SignedAuthorization;
+
 pub struct PackedUserOperation {
     pub sender: Address,
     pub nonce: U256,
@@ -157,27 +159,10 @@ pub struct UserOperationV0_7 {
     pub paymaster_data: Data,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub eip7702_auth: Option<Eip7702Auth>,
+    pub eip7702_auth: Option<SignedAuthorization>,
 
     #[serde(skip)]
     pub entry_point: Address,
-}
-
-// See: https://eips.ethereum.org/EIPS/eip-4337#support-for-eip-7702-authorizations
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Eip7702Auth {
-    #[serde(serialize_with = "U256::as_hex")]
-    pub chain_id: U256,
-    pub address: Address,
-    #[serde(serialize_with = "U256::as_hex")]
-    pub nonce: U256,
-    #[serde(serialize_with = "U256::as_hex")]
-    pub y_parity: U256,
-    #[serde(serialize_with = "U256::as_hex")]
-    pub r: U256,
-    #[serde(serialize_with = "U256::as_hex")]
-    pub s: U256,
 }
 
 impl TransactionCommon for UserOperationV0_7 {

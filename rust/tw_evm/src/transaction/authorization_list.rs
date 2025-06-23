@@ -10,7 +10,7 @@ use tw_encoding::hex::u8_as_hex;
 use tw_number::U256;
 
 /// Authorization for 7702 txn support.
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Authorization {
     /// The chain ID of the authorization.
@@ -26,7 +26,8 @@ pub struct Authorization {
 }
 
 /// Signed authorization for 7702 txn support.
-#[derive(Serialize, Deserialize)]
+/// See: https://eips.ethereum.org/EIPS/eip-4337#support-for-eip-7702-authorizations
+#[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SignedAuthorization {
     #[serde(flatten)]
