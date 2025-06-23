@@ -52,12 +52,8 @@ pub fn get_counterfactual_address(input: &ContractAddressInput) -> BarzResult<St
     salt_bytes[32 - salt.len()..].copy_from_slice(&salt);
     let salt_bytes = H256::try_from(salt_bytes.as_slice())?;
 
-    Ok(Address::eip1014_create2_address(
-        &hex::decode(&input.factory)?,
-        &salt_bytes,
-        &init_code_hash,
-    )
-    .into_checksum_address())
+    let address = Address::eip1014_create2_address(&input.factory, &salt_bytes, &init_code_hash)?;
+    Ok(address.into_checksum_address())
 }
 
 pub fn get_init_code(
