@@ -160,66 +160,62 @@ pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
         docs,
     };
 
-    if let Ok(out_dir) = env::var("CARGO_WORKSPACE_DIR") {
-        let bindings_dir = Path::new(&out_dir).join("bindings");
-        fs::create_dir_all(&bindings_dir).expect("Failed to create bindings directory");
-        let yaml_file_path = bindings_dir.join(format!("{}.yaml", class));
+    let out_dir = env::var("CARGO_WORKSPACE_DIR").unwrap_or_default();
+    let bindings_dir = Path::new(&out_dir).join("bindings");
+    fs::create_dir_all(&bindings_dir).expect("Failed to create bindings directory");
+    let yaml_file_path = bindings_dir.join(format!("{}.yaml", class));
 
-        let mut config = if yaml_file_path.exists() {
-            match fs::read_to_string(&yaml_file_path) {
-                Ok(contents) => match serde_yaml::from_str(&contents) {
-                    Ok(config) => config,
-                    Err(_) => {
-                        let _ = fs::remove_file(&yaml_file_path);
-                        TWConfig {
-                            class,
-                            ..Default::default()
-                        }
-                    },
+    let mut config = if yaml_file_path.exists() {
+        match fs::read_to_string(&yaml_file_path) {
+            Ok(contents) => match serde_yaml::from_str(&contents) {
+                Ok(config) => config,
+                Err(_) => {
+                    let _ = fs::remove_file(&yaml_file_path);
+                    TWConfig {
+                        class,
+                        ..Default::default()
+                    }
                 },
-                Err(_) => TWConfig {
-                    class,
-                    ..Default::default()
-                },
-            }
-        } else {
-            TWConfig {
+            },
+            Err(_) => TWConfig {
                 class,
                 ..Default::default()
-            }
-        };
-        match args.ty {
-            Some(TWFFIType::StaticFunction) => {
-                if let Some(idx) = config
-                    .static_functions
-                    .iter()
-                    .position(|f| f.name == function.name)
-                {
-                    config.static_functions[idx] = function;
-                } else {
-                    config.static_functions.push(function);
-                }
             },
-            Some(TWFFIType::Constructor) => {
-                update_or_append_function(&mut config.constructors, function);
-            },
-            Some(TWFFIType::Destructor) => {
-                config.destructor = Some(function);
-            },
-            Some(TWFFIType::Method) => {
-                update_or_append_function(&mut config.methods, function);
-            },
-            Some(TWFFIType::Property) => {
-                update_or_append_function(&mut config.properties, function);
-            },
-            _ => panic!("Invalid FFI type"),
         }
-        let yaml_output: String =
-            serde_yaml::to_string(&config).expect("Failed to serialize to YAML");
-        fs::write(&yaml_file_path, yaml_output).expect("Failed to write YAML file");
     } else {
-        panic!("CARGO_WORKSPACE_DIR is not set");
+        TWConfig {
+            class,
+            ..Default::default()
+        }
+    };
+    match args.ty {
+        Some(TWFFIType::StaticFunction) => {
+            if let Some(idx) = config
+                .static_functions
+                .iter()
+                .position(|f| f.name == function.name)
+            {
+                config.static_functions[idx] = function;
+            } else {
+                config.static_functions.push(function);
+            }
+        },
+        Some(TWFFIType::Constructor) => {
+            update_or_append_function(&mut config.constructors, function);
+        },
+        Some(TWFFIType::Destructor) => {
+            config.destructor = Some(function);
+        },
+        Some(TWFFIType::Method) => {
+            update_or_append_function(&mut config.methods, function);
+        },
+        Some(TWFFIType::Property) => {
+            update_or_append_function(&mut config.properties, function);
+        },
+        _ => panic!("Invalid FFI type"),
     }
+    let yaml_output: String = serde_yaml::to_string(&config).expect("Failed to serialize to YAML");
+    fs::write(&yaml_file_path, yaml_output).expect("Failed to write YAML file");
 
     Ok(item)
 }
