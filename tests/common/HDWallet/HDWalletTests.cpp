@@ -10,7 +10,6 @@
 #include "Cosmos/Address.h"
 #include "Coin.h"
 #include "Ethereum/Address.h"
-#include "Ethereum/EIP2645.h"
 #include "Ethereum/MessageSigner.h"
 #include "HDWallet.h"
 #include "Hash.h"
@@ -22,6 +21,7 @@
 #include "PublicKey.h"
 #include "StarkEx/MessageSigner.h"
 #include "TestUtilities.h"
+#include "TrustWalletCore/TWEthereum.h"
 
 #include <gtest/gtest.h>
 
@@ -474,9 +474,10 @@ TEST(HDWallet, FromSeedStark) {
 TEST(HDWallet, FromMnemonicStark) {
     // https://github.com/starkware-libs/starkware-crypto-utils/blob/d3a1e655105afd66ebc07f88a179a3042407cc7b/test/js/key_derivation.spec.js#L20
     const auto mnemonic = "range mountain blast problem vibrant void vivid doctor cluster enough melody salt layer language laptop boat major space monkey unit glimpse pause change vibrant";
-    const auto ethAddress = "0xA4864D977b944315389d1765Ffa7E66F74eE8cD7";
+    const std::string ethAddress = "0xA4864D977b944315389d1765Ffa7E66F74eE8cD7";
     HDWallet wallet = HDWallet(mnemonic, "");
-    auto derivationPath = DerivationPath(Ethereum::accountPathFromAddress(ethAddress, "starkex", "starkdeployement", "0"));
+    const auto& res = WRAPS(TWEthereumEip2645GetPath(STRING(ethAddress.c_str()).get(), STRING("starkex").get(), STRING("starkdeployement").get(), STRING("0").get()));
+    auto derivationPath = DerivationPath(TWStringUTF8Bytes(res.get()));
     ASSERT_EQ(derivationPath.string(), "m/2645'/579218131'/891216374'/1961790679'/2135936222'/0");
 
     // ETH
@@ -500,7 +501,8 @@ TEST(HDWallet, FromMnemonicImmutableX) {
     const auto mnemonic = "owner erupt swamp room swift final allow unaware hint identify figure cotton";
     const auto ethAddress = "0x1A817D0cC495C8157E4C734c48a1e840473CBCa1";
     HDWallet wallet = HDWallet(mnemonic, "");
-    auto derivationPath = DerivationPath(Ethereum::accountPathFromAddress(ethAddress, "starkex", "immutablex", "1"));
+    const auto& res = WRAPS(TWEthereumEip2645GetPath(STRING(ethAddress).get(), STRING("starkex").get(), STRING("immutablex").get(), STRING("1").get()));
+    auto derivationPath = DerivationPath(TWStringUTF8Bytes(res.get()));
     ASSERT_EQ(derivationPath.string(), "m/2645'/579218131'/211006541'/1195162785'/289656960'/1");
 
     // ETH
@@ -529,7 +531,8 @@ TEST(HDWallet, FromMnemonicImmutableXMainnet) {
     const auto mnemonic = "ocean seven canyon push fiscal banana music guess arrange edit glance school";
     const auto ethAddress = "0x39E652fE9458D391737058b0dd5eCC6ec910A7dd";
     HDWallet wallet = HDWallet(mnemonic, "");
-    auto derivationPath = DerivationPath(Ethereum::accountPathFromAddress(ethAddress, "starkex", "immutablex", "1"));
+    const auto& res = WRAPS(TWEthereumEip2645GetPath(STRING(ethAddress).get(), STRING("starkex").get(), STRING("immutablex").get(), STRING("1").get()));
+    auto derivationPath = DerivationPath(TWStringUTF8Bytes(res.get()));
     ASSERT_EQ(derivationPath.string(), "m/2645'/579218131'/211006541'/1225828317'/985503965'/1");
 
     // ETH
@@ -564,7 +567,8 @@ TEST(HDWallet, FromMnemonicImmutableXMainnetFromSignature) {
     const auto mnemonic = "obscure opera favorite shuffle mail tip age debate dirt pact cement loyal";
     const auto ethAddress = "0xd0972E2312518Ca15A2304D56ff9cc0b7ea0Ea37";
     HDWallet wallet = HDWallet(mnemonic, "");
-    auto derivationPath = DerivationPath(Ethereum::accountPathFromAddress(ethAddress, "starkex", "immutablex", "1"));
+    const auto& res = WRAPS(TWEthereumEip2645GetPath(STRING(ethAddress).get(), STRING("starkex").get(), STRING("immutablex").get(), STRING("1").get()));
+    auto derivationPath = DerivationPath(TWStringUTF8Bytes(res.get()));
     ASSERT_EQ(derivationPath.string(), "m/2645'/579218131'/211006541'/2124474935'/1609799702'/1");
 
     // ETH + stark

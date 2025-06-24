@@ -235,7 +235,15 @@ fn generate_return_type(func: &TWFunction, converted_args: &Vec<String>) -> Resu
                 .map_err(|e| BadFormat(e.to_string()))?;
             }
             (TWPointerType::NonnullMut, "TWString") | (TWPointerType::Nonnull, "TWString") => {
-                panic!("Nonnull TWString is not supported");
+                write!(
+                    &mut return_string,
+                    "\tconst Rust::TWStringWrapper result = Rust::{}{}\n\
+                    \tconst auto resultString = result.toStringOrDefault();\n\
+                    \treturn TWStringCreateWithUTF8Bytes(resultString.c_str());\n",
+                    func.rust_name,
+                    generate_function_call(&converted_args)?.as_str()
+                )
+                .map_err(|e| BadFormat(e.to_string()))?;
             }
             (TWPointerType::NullableMut, "TWData") | (TWPointerType::Nullable, "TWData") => {
                 write!(
@@ -390,7 +398,7 @@ fn generate_conversion_code_with_var_name(tw_type: TWType, name: &str) -> Result
                 .map_err(|e| BadFormat(e.to_string()))?;
                 Ok((conversion_code, format!("{}RustData.get()", name)))
             }
-            (TWPointerType::Nonnull, "TWPrivateKey") => {
+            (TWPointerType::Nonnull, "TWPrivateKey") | (TWPointerType::NonnullMut, "TWPrivateKey") => {
                 let mut conversion_code = String::new();
                 writeln!(
                     &mut conversion_code,
@@ -401,7 +409,7 @@ fn generate_conversion_code_with_var_name(tw_type: TWType, name: &str) -> Result
                 .map_err(|e| BadFormat(e.to_string()))?;
                 Ok((conversion_code, format!("{}RustPrivateKey.get()", name)))
             }
-            (TWPointerType::Nullable, "TWPrivateKey") => {
+            (TWPointerType::Nullable, "TWPrivateKey") | (TWPointerType::NullableMut, "TWPrivateKey") => {
                 let mut conversion_code = String::new();
                 writeln!(
                     &mut conversion_code,
@@ -415,7 +423,7 @@ fn generate_conversion_code_with_var_name(tw_type: TWType, name: &str) -> Result
                 .map_err(|e| BadFormat(e.to_string()))?;
                 Ok((conversion_code, format!("{}RustPrivateKey.get()", name)))
             }
-            (TWPointerType::Nonnull, "TWPublicKey") => {
+            (TWPointerType::Nonnull, "TWPublicKey") | (TWPointerType::NonnullMut, "TWPublicKey") => {
                 let mut conversion_code = String::new();
                 writeln!(
                     &mut conversion_code,
@@ -427,7 +435,7 @@ fn generate_conversion_code_with_var_name(tw_type: TWType, name: &str) -> Result
                 .map_err(|e| BadFormat(e.to_string()))?;
                 Ok((conversion_code, format!("{}RustPublicKey.get()", name)))
             }
-            (TWPointerType::Nullable, "TWPublicKey") => {
+            (TWPointerType::Nullable, "TWPublicKey") | (TWPointerType::NullableMut, "TWPublicKey") => {
                 let mut conversion_code = String::new();
                 writeln!(
                     &mut conversion_code,

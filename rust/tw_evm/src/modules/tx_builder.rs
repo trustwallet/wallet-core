@@ -20,7 +20,7 @@ use crate::transaction::transaction_eip1559::TransactionEip1559;
 use crate::transaction::transaction_eip7702::TransactionEip7702;
 use crate::transaction::transaction_non_typed::TransactionNonTyped;
 use crate::transaction::user_operation::UserOperation;
-use crate::transaction::user_operation_v0_7::{Eip7702Auth, UserOperationV0_7};
+use crate::transaction::user_operation_v0_7::UserOperationV0_7;
 use crate::transaction::UnsignedTransactionBox;
 use std::marker::PhantomData;
 use std::str::FromStr;
@@ -528,19 +528,9 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 .into_tw()
                 .context("Paymaster post-op gas limit exceeds u128")?;
 
-        let eip7702_auth =
-            Self::build_authorization_list(input, sender)
-                .ok()
-                .and_then(|auth_list| {
-                    auth_list.0.first().map(|signed_auth| Eip7702Auth {
-                        chain_id: signed_auth.authorization.chain_id,
-                        address: signed_auth.authorization.address,
-                        nonce: signed_auth.authorization.nonce,
-                        y_parity: U256::from(signed_auth.y_parity),
-                        r: signed_auth.r,
-                        s: signed_auth.s,
-                    })
-                });
+        let eip7702_auth = Self::build_authorization_list(input, sender)
+            .ok()
+            .and_then(|auth_list| auth_list.0.first().cloned());
 
         let entry_point = Self::parse_address(user_op_v0_7.entry_point.as_ref())
             .context("Invalid entry point")?;

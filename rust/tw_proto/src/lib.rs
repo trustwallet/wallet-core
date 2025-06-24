@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use quick_protobuf::{BytesReader, MessageInfo, Writer};
+use quick_protobuf::{MessageInfo, Writer};
 use std::borrow::Cow;
 
 #[allow(non_snake_case)]
@@ -25,7 +25,7 @@ pub use common::google;
 pub use generated::TW::*;
 pub use quick_protobuf::{
     deserialize_from_slice as deserialize_prefixed, serialize_into_vec as serialize_prefixed,
-    Error as ProtoError, MessageRead, MessageWrite, Result as ProtoResult,
+    BytesReader, Error as ProtoError, MessageRead, MessageWrite, Result as ProtoResult,
 };
 
 /// Serializes a Protobuf message without the length prefix.

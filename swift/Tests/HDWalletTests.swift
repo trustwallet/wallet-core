@@ -21,7 +21,7 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual(ethPrivateKey.data.hexString, "03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d");
 
         // StarkKey Derivation Path
-        let derivationPath = DerivationPath(string: starkDerivationPath)!
+        let derivationPath = DerivationPath(string: starkDerivationPath!)!
 
         // Retrieve Stark Private key part
         let ethMsg = "Only sign this request if you’ve initiated an action with Immutable X."

@@ -130,8 +130,11 @@ pub struct VerifySignature<C: EcdsaCurve> {
 
 impl<C: EcdsaCurve> VerifySignature<C> {
     pub fn from_der(der_signature: der::Signature) -> KeyPairResult<Self> {
-        let signature = Signature::signature_from_slices(der_signature.r(), der_signature.s())
-            .map_err(|_| KeyPairError::InvalidSignature)?;
+        let signature = Signature::signature_from_slices(
+            der_signature.r().as_slice(),
+            der_signature.s().as_slice(),
+        )
+        .map_err(|_| KeyPairError::InvalidSignature)?;
         Ok(VerifySignature { signature })
     }
 
