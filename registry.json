@@ -3111,6 +3111,39 @@
     "testFolderName": "Binance"
   },
   {
+    "id": "popecash",
+    "name": "Pope Cash",
+    "displayName": "Pope Cash",
+    "coinId": 20000715,
+    "slip44": 715,
+    "symbol": "POPECASH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "798",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://www.popescan.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xb9ae2e808fe8e57171f303ad8f6e3fd17d949b0bfc7b4db6e8e30a71cc517d7e",
+      "sampleAccount": "0x35552c16704d214347f29Fa77f77DA6d75d7C752"
+    },
+    "info": {
+      "url": "https://popechain.org/",
+      "source": "https://github.com/evmdevpope",
+      "rpc": "https://mainnet-rpc.popescan.com",
+      "documentation": "https://eth.wiki/json-rpc/API"
+    },
+    "testFolderName": "Binance"
+  },
+  {
     "id": "polygon",
     "name": "Polygon",
     "coinId": 966,
