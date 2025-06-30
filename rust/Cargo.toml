@@ -21,6 +21,7 @@ members = [
     "chains/tw_ronin",
     "chains/tw_solana",
     "chains/tw_sui",
+    "chains/tw_tezos",
     "chains/tw_thorchain",
     "chains/tw_ton",
     "chains/tw_zcash",
