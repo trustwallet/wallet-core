@@ -39,6 +39,9 @@ public:
     /// Encrypted payload.
     EncryptedPayload payload;
 
+    /// Optional encoded payload. Used when an encoded private key is imported.
+    std::optional<EncryptedPayload> encodedPayload;
+
     /// Active accounts.  Address should be unique.
     std::vector<Account> accounts;
 
@@ -60,7 +63,25 @@ public:
 
     /// Create a new StoredKey, with the given name and private key, and also add the default address for the given coin..
     /// @throws std::invalid_argument if privateKeyData is not a valid private key
-    static StoredKey createWithPrivateKeyAddDefaultAddress(const std::string& name, const Data& password, TWCoinType coin, const Data& privateKeyData, TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr);
+    static StoredKey createWithPrivateKeyAddDefaultAddress(
+        const std::string& name,
+        const Data& password,
+        TWCoinType coin,
+        const Data& privateKeyData,
+        TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr,
+        TWDerivation derivation = TWDerivationDefault
+    );
+
+    /// Create a new StoredKey, with the given name and encoded private key, and also add the default address for the given coin..
+    /// @throws std::invalid_argument if encodedPrivateKey is not a valid private key
+    static StoredKey createWithEncodedPrivateKeyAddDefaultAddress(
+        const std::string& name,
+        const Data& password,
+        TWCoinType coin,
+        const std::string& encodedPrivateKey,
+        TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr,
+        TWDerivation derivation = TWDerivationDefault
+    );
 
     /// Create a StoredKey from a JSON object.
     static StoredKey createWithJson(const nlohmann::json& json);
@@ -150,6 +171,12 @@ public:
     /// In case of multiple accounts, all of them will be updated.
     bool updateAddress(TWCoinType coin);
 
+    /// Decrypts the encoded private key.
+    ///
+    /// \returns the decoded private key.
+    /// \throws DecryptionError
+    const std::string decryptPrivateKeyEncoded(const Data& password) const;
+
 private:
     /// Default constructor, private
     StoredKey() : type(StoredKeyType::mnemonicPhrase) {}
@@ -157,7 +184,15 @@ private:
     /// Initializes a `StoredKey` with a type, an encryption password, and unencrypted data.
     /// This constructor will encrypt the provided data with default encryption
     /// parameters.
-    StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr);
+    StoredKey(
+        StoredKeyType type, 
+        std::string name, 
+        const Data& password, 
+        const Data& data, 
+        TWStoredKeyEncryptionLevel encryptionLevel, 
+        TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr, 
+        const std::optional<std::string>& encodedStr = std::nullopt
+    );
 
     /// Find default account for coin, if exists.  If multiple exist, default is returned.
     /// Optional wallet is needed to derive default address

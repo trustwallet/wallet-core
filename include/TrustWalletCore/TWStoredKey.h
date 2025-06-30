@@ -51,6 +51,52 @@ struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKey(TWData* _Nonnull priva
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyWithEncryption(TWData* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin, enum TWStoredKeyEncryption encryption);
 
+/// Imports a private key.
+///
+/// \param privateKey Non-null Block of data private key
+/// \param name The name of the stored key to import as a non-null string
+/// \param password Non-null block of data, password of the stored key
+/// \param coin the coin type
+/// \param encryption cipher encryption mode
+/// \param derivation derivation of the given coin type
+TW_EXPORT_STATIC_METHOD
+struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyWithEncryptionAndDerivation(TWData* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin, enum TWStoredKeyEncryption encryption, enum TWDerivation derivation);
+
+/// Imports an encoded private key.
+///
+/// \param privateKey Non-null encoded private key
+/// \param password Non-null block of data, password of the stored key
+/// \param coin the coin type
+/// \note Returned object needs to be deleted with \TWStoredKeyDelete
+/// \return Nullptr if the key can't be imported, the stored key otherwise
+TW_EXPORT_STATIC_METHOD
+struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyEncoded(TWString* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin);
+
+/// Imports an encoded private key.
+///
+/// \param privateKey Non-null encoded private key
+/// \param name The name of the stored key to import as a non-null string
+/// \param password Non-null block of data, password of the stored key
+/// \param coin the coin type
+/// \param encryption cipher encryption mode
+/// \note Returned object needs to be deleted with \TWStoredKeyDelete
+/// \return Nullptr if the key can't be imported, the stored key otherwise
+TW_EXPORT_STATIC_METHOD
+struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyEncodedWithEncryption(TWString* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin, enum TWStoredKeyEncryption encryption);
+
+/// Imports an encoded private key.
+///
+/// \param privateKey Non-null encoded private key
+/// \param name The name of the stored key to import as a non-null string
+/// \param password Non-null block of data, password of the stored key
+/// \param coin the coin type
+/// \param encryption cipher encryption mode
+/// \param derivation derivation of the given coin type
+/// \note Returned object needs to be deleted with \TWStoredKeyDelete
+/// \return Nullptr if the key can't be imported, the stored key otherwise
+TW_EXPORT_STATIC_METHOD
+struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyEncodedWithEncryptionAndDerivation(TWString* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin, enum TWStoredKeyEncryption encryption, enum TWDerivation derivation);
+
 /// Imports an HD wallet.
 ///
 /// \param mnemonic Non-null bip39 mnemonic
@@ -252,6 +298,21 @@ bool TWStoredKeyStore(struct TWStoredKey* _Nonnull key, TWString* _Nonnull path)
 /// \return Decrypted private key as a block of data if success, null pointer otherwise
 TW_EXPORT_METHOD
 TWData* _Nullable TWStoredKeyDecryptPrivateKey(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
+
+/// Decrypts the encoded private key.
+///
+/// \param key Non-null pointer to a stored key
+/// \param password Non-null block of data, password of the stored key
+/// \return Decrypted encoded private key as a string if success, null pointer otherwise
+TW_EXPORT_METHOD
+TWString* _Nullable TWStoredKeyDecryptPrivateKeyEncoded(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
+
+/// Whether the private key is encoded.
+///
+/// \param key Non-null pointer to a stored key
+/// \return true if the private key is encoded, false otherwise
+TW_EXPORT_PROPERTY
+bool TWStoredKeyHasPrivateKeyEncoded(struct TWStoredKey* _Nonnull key);
 
 /// Decrypts the mnemonic phrase.
 ///

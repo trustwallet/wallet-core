@@ -18,6 +18,7 @@ public:
 
     Data preImageHashes(TWCoinType coin, const Data& txInputData) const override;
     void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const override;
+    PrivateKey decodePrivateKey(TWCoinType coin, const std::string& privateKey) const override;
 };
 
 } // namespace TW::Stellar

@@ -15,7 +15,7 @@ if isHelp; then
 fi
 
 echo "#### Installing system dependencies ... ####"
-if [[ $(uname) == "Darwin" ]]; then
+if [[ $(uname -s) == "Darwin" ]]; then
   tools/install-sys-dependencies-mac
 else
   tools/install-sys-dependencies-linux

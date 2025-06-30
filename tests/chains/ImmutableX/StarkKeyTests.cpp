@@ -2,18 +2,19 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-#include "Ethereum/EIP2645.h"
 #include "HexCoding.h"
 #include "ImmutableX/Constants.h"
 #include "ImmutableX/StarkKey.h"
 #include <gtest/gtest.h>
+#include <TrustWalletCore/TWEthereum.h>
+#include "TestUtilities.h"
 
 namespace TW::ImmutableX::tests {
 
 TEST(ImmutableX, PathFromAddress) {
     // https://github.com/immutable/imx-core-sdk-swift/blob/main/Tests/ImmutableXCoreTests/Crypto/Stark/StarkKeyTests.swift#L30
-    auto res = Ethereum::accountPathFromAddress("0xa76e3eeb2f7143165618ab8feaabcd395b6fac7f", internal::gLayer, internal::gApplication, internal::gIndex);
-    ASSERT_EQ(res, "m/2645'/579218131'/211006541'/1534045311'/1431804530'/1");
+    const auto& res = WRAPS(TWEthereumEip2645GetPath(STRING("0xa76e3eeb2f7143165618ab8feaabcd395b6fac7f").get(), STRING(internal::gLayer).get(), STRING(internal::gApplication).get(), STRING(internal::gIndex).get()));
+    assertStringsEqual(res, "m/2645'/579218131'/211006541'/1534045311'/1431804530'/1");
 }
 
 TEST(ImmutableX, ExtraGrinding) {
@@ -21,7 +22,8 @@ TEST(ImmutableX, ExtraGrinding) {
     std::string signature = "0x6d1550458c7a9a1257d73adbcf0fabc12f4497e970d9fa62dd88bf7d9e12719148c96225c1402d8707fd061b1aae2222bdf13571dfc82b3aa9974039f247f2b81b";
     std::string address = "0xa4864d977b944315389d1765ffa7e66F74ee8cd7";
     auto data = parse_hex(signature);
-    auto path = DerivationPath(Ethereum::accountPathFromAddress(address, gLayer, gApplication, gIndex));
+    const auto& res = WRAPS(TWEthereumEip2645GetPath(STRING(address.c_str()).get(), STRING(internal::gLayer).get(), STRING(internal::gApplication).get(), STRING(internal::gIndex).get()));
+    auto path = DerivationPath(TWStringUTF8Bytes(res.get()));
     auto privKey = ImmutableX::getPrivateKeyFromRawSignature(parse_hex(signature), path);
     auto pubKey = privKey.getPublicKey(TWPublicKeyTypeStarkex);
     ASSERT_EQ(hexEncoded(pubKey.bytes), "0x035919acd61e97b3ecdc75ff8beed8d1803f7ea3cad2937926ae59cc3f8070d4");
@@ -46,7 +48,8 @@ TEST(ImmutableX, GetPrivateKeyFromSignature) {
     using namespace internal;
     std::string address = "0xa76e3eeb2f7143165618ab8feaabcd395b6fac7f";
     std::string signature = "0x5a263fad6f17f23e7c7ea833d058f3656d3fe464baf13f6f5ccba9a2466ba2ce4c4a250231bcac7beb165aec4c9b049b4ba40ad8dd287dc79b92b1ffcf20cdcf1b";
-    auto path = DerivationPath(Ethereum::accountPathFromAddress(address, gLayer, gApplication, gIndex));
+    const auto& res = WRAPS(TWEthereumEip2645GetPath(STRING(address.c_str()).get(), STRING(internal::gLayer).get(), STRING(internal::gApplication).get(), STRING(internal::gIndex).get()));
+    auto path = DerivationPath(TWStringUTF8Bytes(res.get()));
     auto privKey = ImmutableX::getPrivateKeyFromRawSignature(parse_hex(signature), path);
     ASSERT_EQ(hex(privKey.bytes), "058ab7989d625b1a690400dcbe6e070627adedceff7bd196e58d4791026a8afe");
     ASSERT_TRUE(PrivateKey::isValid(privKey.bytes));

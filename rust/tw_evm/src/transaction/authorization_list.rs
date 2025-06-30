@@ -5,26 +5,43 @@
 use crate::address::Address;
 use crate::rlp::buffer::RlpBuffer;
 use crate::rlp::RlpEncode;
+use serde::{Deserialize, Serialize};
+use tw_encoding::hex::u8_as_hex;
 use tw_number::U256;
 
 /// Authorization for 7702 txn support.
+#[derive(Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct Authorization {
     /// The chain ID of the authorization.
+    #[serde(deserialize_with = "U256::from_hex_or_decimal_str")]
+    #[serde(serialize_with = "U256::as_hex")]
     pub chain_id: U256,
     /// The address of the authorization.
     pub address: Address,
     /// The nonce for the authorization.
+    #[serde(deserialize_with = "U256::from_hex_or_decimal_str")]
+    #[serde(serialize_with = "U256::as_hex")]
     pub nonce: U256,
 }
 
 /// Signed authorization for 7702 txn support.
+/// See: https://eips.ethereum.org/EIPS/eip-4337#support-for-eip-7702-authorizations
+#[derive(Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct SignedAuthorization {
+    #[serde(flatten)]
     pub authorization: Authorization,
     /// y-parity of the signature.
+    #[serde(with = "u8_as_hex")]
     pub y_parity: u8,
     /// r part of the signature.
+    #[serde(deserialize_with = "U256::from_hex_or_decimal_str")]
+    #[serde(serialize_with = "U256::as_hex")]
     pub r: U256,
     /// s part of the signature.
+    #[serde(deserialize_with = "U256::from_hex_or_decimal_str")]
+    #[serde(serialize_with = "U256::as_hex")]
     pub s: U256,
 }
 
@@ -43,9 +60,9 @@ impl RlpEncode for SignedAuthorization {
     }
 }
 
-/// [EIP-2930](https://eips.ethereum.org/EIPS/eip-2930) access list.
+/// [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) authorization list.
 #[derive(Default)]
-pub struct AuthorizationList(Vec<SignedAuthorization>);
+pub struct AuthorizationList(pub(crate) Vec<SignedAuthorization>);
 
 impl From<Vec<SignedAuthorization>> for AuthorizationList {
     fn from(value: Vec<SignedAuthorization>) -> Self {

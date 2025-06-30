@@ -19,6 +19,8 @@ use tw_memory::Data;
 use tw_number::serde::as_u256_hex;
 use tw_number::U256;
 
+use super::authorization_list::SignedAuthorization;
+
 pub struct PackedUserOperation {
     pub sender: Address,
     pub nonce: U256,
@@ -42,8 +44,8 @@ impl PackedUserOperation {
         };
 
         let account_gas_limits =
-            concat_u128_be(user_op.verification_gas_limit, user_op.call_data_gas_limit);
-        let gas_fees = concat_u128_be(user_op.max_fee_per_gas, user_op.max_priority_fee_per_gas);
+            concat_u128_be(user_op.verification_gas_limit, user_op.call_gas_limit);
+        let gas_fees = concat_u128_be(user_op.max_priority_fee_per_gas, user_op.max_fee_per_gas);
 
         let paymaster_and_data = if let Some(paymaster) = user_op.paymaster {
             let mut paymaster_and_data = paymaster.bytes().into_vec();
@@ -135,7 +137,7 @@ pub struct UserOperationV0_7 {
     pub call_data: Data,
 
     #[serde(serialize_with = "as_u256_hex")]
-    pub call_data_gas_limit: u128,
+    pub call_gas_limit: u128,
     #[serde(serialize_with = "as_u256_hex")]
     pub verification_gas_limit: u128,
     #[serde(serialize_with = "U256::as_hex")]
@@ -155,6 +157,9 @@ pub struct UserOperationV0_7 {
     #[serde(skip_serializing_if = "Data::is_empty")]
     #[serde(with = "as_hex_prefixed")]
     pub paymaster_data: Data,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub eip7702_auth: Option<SignedAuthorization>,
 
     #[serde(skip)]
     pub entry_point: Address,
@@ -262,7 +267,26 @@ mod tests {
         let chain_id = U256::from(11155111u64);
         let entry_point = Address::from("0x0000000071727De22E5E9d8BAf0edAc6f37da032");
 
-        let user_op = PackedUserOperation {
+        let user_op = UserOperationV0_7 {
+            sender: Address::from("0xb292Cf4a8E1fF21Ac27C4f94071Cd02C022C414b"),
+            nonce: U256::from_str("0xF83D07238A7C8814A48535035602123AD6DBFA63000000000000000000000001").unwrap(),
+            factory: None,
+            factory_data: Vec::default(),
+            call_data: "e9ae5c530000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000001d8b292cf4a8e1ff21ac27c4f94071cd02c022c414b00000000000000000000000000000000000000000000000000000000000000009517e29f0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000ad6330089d9a1fe89f4020292e1afe9969a5a2fc00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000001518000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000018e2fbe8980000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000800000000000000000000000002372912728f93ab3daaaebea4f87e6e28476d987000000000000000000000000000000000000000000000000002386f26fc10000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000".decode_hex().unwrap(),
+            call_gas_limit: 1231285u128,
+            verification_gas_limit: 70908u128,
+            pre_verification_gas: U256::from(48916u64),
+            max_fee_per_gas: 71308035098u128,
+            max_priority_fee_per_gas: 1380000000u128,
+            paymaster: None,
+            paymaster_verification_gas_limit: 0,
+            paymaster_post_op_gas_limit: 0,
+            paymaster_data: Vec::default(),
+            eip7702_auth: None,
+            entry_point,
+        };
+
+        let packed_user_op = PackedUserOperation {
             sender: Address::from("0xb292Cf4a8E1fF21Ac27C4f94071Cd02C022C414b"),
             nonce: U256::from_str("0xF83D07238A7C8814A48535035602123AD6DBFA63000000000000000000000001").unwrap(),
             init_code: Vec::default(),
@@ -273,14 +297,18 @@ mod tests {
             paymaster_and_data: Vec::default(),
         };
 
-        let encoded = hex::encode(user_op.encode(), false);
+        let encoded_from_user_op = hex::encode(user_op.encode(chain_id), false);
+        let encoded_from_packed_user_op = hex::encode(packed_user_op.encode(), false);
         let expected = "000000000000000000000000b292cf4a8e1ff21ac27c4f94071cd02c022c414bf83d07238a7c8814a48535035602123ad6dbfa63000000000000000000000001c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470f1b8863cae5d3c89d78ce8e239e0c416de4c9224226a78fbb6c4af63ed0eebf7000000000000000000000000000114fc0000000000000000000000000012c9b5000000000000000000000000000000000000000000000000000000000000bf14000000000000000000000000524121000000000000000000000000109a4a441ac5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470";
-        assert_eq!(encoded, expected);
+        assert_eq!(encoded_from_user_op, expected);
+        assert_eq!(encoded_from_packed_user_op, expected);
 
-        let pre_hash = user_op.pre_hash(chain_id, entry_point);
+        let pre_hash_from_user_op = user_op.pre_hash(chain_id);
+        let pre_hash_from_packed_user_op = packed_user_op.pre_hash(chain_id, entry_point);
         let expected_pre_hash =
             H256::from("e486401370d145766c3cf7ba089553214a1230d38662ae532c9b62eb6dadcf7e");
-        assert_eq!(pre_hash, expected_pre_hash);
+        assert_eq!(pre_hash_from_user_op, expected_pre_hash);
+        assert_eq!(pre_hash_from_packed_user_op, expected_pre_hash);
     }
 
     #[test]
@@ -294,7 +322,7 @@ mod tests {
             factory: Some(Address::from("0xf471789937856d80e589f5996cf8b0511ddd9de4")),
             factory_data: "f471789937856d80e589f5996cf8b0511ddd9de4".decode_hex().unwrap(),
             call_data: "00".decode_hex().unwrap(),
-            call_data_gas_limit: 100000u128,
+            call_gas_limit: 100000u128,
             verification_gas_limit: 100000u128,
             pre_verification_gas: U256::from(1000000u64),
             max_fee_per_gas: 100000u128,
@@ -303,6 +331,7 @@ mod tests {
             paymaster_verification_gas_limit: 99999u128,
             paymaster_post_op_gas_limit: 88888u128,
             paymaster_data: "00000000000b0000000000002e234dae75c793f67a35089c9d99245e1c58470b00000000000000000000000000000000000000000000000000000000000186a0072f35038bcacc31bcdeda87c1d9857703a26fb70a053f6e87da5a4e7a1e1f3c4b09fbe2dbff98e7a87ebb45a635234f4b79eff3225d07560039c7764291c97e1b".decode_hex().unwrap(),
+            eip7702_auth: None,
             entry_point: Address::from("0x0000000071727De22E5E9d8BAf0edAc6f37da032"),
         };
         let packed_user_op = PackedUserOperation::new(&user_op);

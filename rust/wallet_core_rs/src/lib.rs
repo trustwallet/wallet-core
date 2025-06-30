@@ -10,6 +10,8 @@ pub extern crate tw_bitcoin;
 pub extern crate tw_crypto;
 #[cfg(feature = "utils")]
 pub extern crate tw_encoding;
+#[cfg(feature = "evm")]
+pub extern crate tw_evm;
 #[cfg(feature = "utils")]
 pub extern crate tw_hash;
 #[cfg(feature = "keypair")]

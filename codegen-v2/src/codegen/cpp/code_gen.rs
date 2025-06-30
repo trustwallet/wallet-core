@@ -417,7 +417,7 @@ fn generate_conversion_code_with_var_name(tw_type: TWType, name: &str) -> Result
                 .map_err(|e| BadFormat(e.to_string()))?;
                 Ok((conversion_code, format!("{}RustData.get()", name)))
             }
-            (TWPointerType::Nonnull, "TWPrivateKey") => {
+            (TWPointerType::Nonnull, "TWPrivateKey") | (TWPointerType::NonnullMut, "TWPrivateKey") => {
                 let mut conversion_code = String::new();
                 writeln!(
                     &mut conversion_code,
@@ -428,7 +428,7 @@ fn generate_conversion_code_with_var_name(tw_type: TWType, name: &str) -> Result
                 .map_err(|e| BadFormat(e.to_string()))?;
                 Ok((conversion_code, format!("{}RustPrivateKey.get()", name)))
             }
-            (TWPointerType::Nullable, "TWPrivateKey") => {
+            (TWPointerType::Nullable, "TWPrivateKey") | (TWPointerType::NullableMut, "TWPrivateKey") => {
                 let mut conversion_code = String::new();
                 writeln!(
                     &mut conversion_code,
@@ -442,7 +442,7 @@ fn generate_conversion_code_with_var_name(tw_type: TWType, name: &str) -> Result
                 .map_err(|e| BadFormat(e.to_string()))?;
                 Ok((conversion_code, format!("{}RustPrivateKey.get()", name)))
             }
-            (TWPointerType::Nonnull, "TWPublicKey") => {
+            (TWPointerType::Nonnull, "TWPublicKey") | (TWPointerType::NonnullMut, "TWPublicKey") => {
                 let mut conversion_code = String::new();
                 writeln!(
                     &mut conversion_code,
@@ -454,7 +454,7 @@ fn generate_conversion_code_with_var_name(tw_type: TWType, name: &str) -> Result
                 .map_err(|e| BadFormat(e.to_string()))?;
                 Ok((conversion_code, format!("{}RustPublicKey.get()", name)))
             }
-            (TWPointerType::Nullable, "TWPublicKey") => {
+            (TWPointerType::Nullable, "TWPublicKey") | (TWPointerType::NullableMut, "TWPublicKey") => {
                 let mut conversion_code = String::new();
                 writeln!(
                     &mut conversion_code,

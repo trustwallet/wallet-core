@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use strum_macros::Display;
+use tw_encoding::hex::FromHexError;
 
 pub type AddressResult<T> = Result<T, AddressError>;
 
@@ -24,4 +25,10 @@ pub enum AddressError {
     InvalidChecksum,
     InvalidWitnessProgram,
     Internal,
+}
+
+impl From<FromHexError> for AddressError {
+    fn from(_: FromHexError) -> Self {
+        AddressError::FromHexError
+    }
 }

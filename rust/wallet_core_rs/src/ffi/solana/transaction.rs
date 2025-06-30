@@ -163,3 +163,28 @@ pub unsafe extern "C" fn tw_solana_transaction_set_fee_payer(
         _ => std::ptr::null_mut(),
     }
 }
+
+/// Inserts an instruction to the given transaction at the specified position, returning the updated transaction.
+///
+/// \param encoded_tx base64 encoded Solana transaction.
+/// \param insert_at index where the instruction should be inserted. If you don't care about the position, use -1.
+/// \param instruction json encoded instruction. Here is an example: {"programId":"11111111111111111111111111111111","accounts":[{"pubkey":"YUz1AupPEy1vttBeDS7sXYZFhQJppcXMzjDiDx18Srf","isSigner":true,"isWritable":true},{"pubkey":"d8DiHEeHKdXkM2ZupT86mrvavhmJwUZjHPCzMiB5Lqb","isSigner":false,"isWritable":true}],"data":"3Bxs4Z6oyhaczjLK"}
+/// \return base64 encoded Solana transaction. Null if an error occurred.
+#[tw_ffi(ty = static_function, class = TWSolanaTransaction, name = InsertInstruction)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_solana_transaction_insert_instruction(
+    encoded_tx: Nonnull<TWString>,
+    insert_at: i32,
+    instruction: Nonnull<TWString>,
+) -> NullableMut<TWString> {
+    let encoded_tx = try_or_else!(TWString::from_ptr_as_ref(encoded_tx), std::ptr::null_mut);
+    let encoded_tx = try_or_else!(encoded_tx.as_str(), std::ptr::null_mut);
+
+    let instruction = try_or_else!(TWString::from_ptr_as_ref(instruction), std::ptr::null_mut);
+    let instruction = try_or_else!(instruction.as_str(), std::ptr::null_mut);
+
+    match SolanaTransaction::insert_instruction(encoded_tx, insert_at, instruction) {
+        Ok(updated_tx) => TWString::from(updated_tx).into_ptr(),
+        _ => std::ptr::null_mut(),
+    }
+}

@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 pub mod abi_encoder;
-pub mod authorization_signer;
+pub mod barz;
 pub mod compiler;
 pub mod message_signer;
 pub mod rlp_encoder;
