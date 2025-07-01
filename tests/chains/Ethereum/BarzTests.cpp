@@ -4,7 +4,7 @@
 
 #include "TestUtilities.h"
 #include <TrustWalletCore/Generated/TWEthereum.h>
-#include <TrustWalletCore/TWBarz.h>
+#include <TrustWalletCore/Generated/TWBarz.h>
 #include <TrustWalletCore/TWHash.h>
 #include <PrivateKey.h>
 #include "proto/Ethereum.pb.h"
