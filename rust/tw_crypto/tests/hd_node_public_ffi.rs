@@ -11,7 +11,7 @@ use tw_crypto::ffi::crypto_hd_node_public::{
 use tw_encoding::hex;
 use tw_hash::hasher::Hasher;
 use tw_keypair::tw::Curve;
-use tw_memory::ffi::{tw_data::TWData, RawPtrTrait};
+use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
 use tw_misc::traits::ToBytesVec;
 
@@ -40,10 +40,11 @@ fn test_public_key_from_zpub() {
         tw_hd_node_public_derive_from_path(hd_node_ptr, path_string.ptr(), hasher as u32)
     };
 
-    let public_key_data = unsafe { tw_hd_node_public_public_key_data(derived_node_ptr) };
+    let public_key_data =
+        TWDataHelper::wrap(unsafe { tw_hd_node_public_public_key_data(derived_node_ptr) });
     assert!(!public_key_data.is_null());
 
-    let public_key_bytes = unsafe { TWData::from_ptr_as_ref(public_key_data).unwrap().to_vec() };
+    let public_key_bytes = public_key_data.to_vec().unwrap();
     let public_key = PublicKey::try_from(public_key_bytes.as_slice()).unwrap();
 
     let public_key_hex = hex::encode(public_key.to_vec(), false);
@@ -52,6 +53,7 @@ fn test_public_key_from_zpub() {
         "02df9ef2a7a5552765178b181e1e1afdefc7849985c7dfe9647706dd4fa40df6ac"
     );
 
+    unsafe { tw_hd_node_public_delete(derived_node_ptr) };
     unsafe { tw_hd_node_public_delete(hd_node_ptr) };
 }
 
@@ -80,10 +82,11 @@ fn test_public_key_from_dpub() {
         tw_hd_node_public_derive_from_path(hd_node_ptr, path_string.ptr(), hasher as u32)
     };
 
-    let public_key_data = unsafe { tw_hd_node_public_public_key_data(derived_node_ptr) };
+    let public_key_data =
+        TWDataHelper::wrap(unsafe { tw_hd_node_public_public_key_data(derived_node_ptr) });
     assert!(!public_key_data.is_null());
 
-    let public_key_bytes = unsafe { TWData::from_ptr_as_ref(public_key_data).unwrap().to_vec() };
+    let public_key_bytes = public_key_data.to_vec().unwrap();
     let public_key = PublicKey::try_from(public_key_bytes.as_slice()).unwrap();
 
     let public_key_hex = hex::encode(public_key.to_vec(), false);
@@ -91,6 +94,9 @@ fn test_public_key_from_dpub() {
         public_key_hex,
         "035328794a9392d6618c0f8071d2ba25fecef85230d916c2ef17f578af70483103"
     );
+
+    unsafe { tw_hd_node_public_delete(derived_node_ptr) };
+    unsafe { tw_hd_node_public_delete(hd_node_ptr) };
 }
 
 #[test]
@@ -115,16 +121,20 @@ fn test_public_key_from_extended_ethereum() {
         tw_hd_node_public_derive_from_path(hd_node_ptr, path_string.ptr(), hasher as u32)
     };
 
-    let public_key_data = unsafe { tw_hd_node_public_public_key_data(derived_node_ptr) };
+    let public_key_data =
+        TWDataHelper::wrap(unsafe { tw_hd_node_public_public_key_data(derived_node_ptr) });
     assert!(!public_key_data.is_null());
 
-    let public_key_bytes = unsafe { TWData::from_ptr_as_ref(public_key_data).unwrap().to_vec() };
+    let public_key_bytes = public_key_data.to_vec().unwrap();
 
     let public_key_hex = hex::encode(public_key_bytes, false);
     assert_eq!(
         public_key_hex,
         "024516c4aa5352035e1bb5be132694e1389a4ac37d32e5e717d35ee4c4dfab5132"
     );
+
+    unsafe { tw_hd_node_public_delete(derived_node_ptr) };
+    unsafe { tw_hd_node_public_delete(hd_node_ptr) };
 }
 
 #[test]
@@ -150,6 +160,10 @@ fn test_public_key_from_zpub_nist() {
         tw_hd_node_public_derive_from_path(hd_node_ptr, path_string.ptr(), hasher as u32)
     };
 
-    let public_key_data = unsafe { tw_hd_node_public_public_key_data(derived_node_ptr) };
+    let public_key_data =
+        TWDataHelper::wrap(unsafe { tw_hd_node_public_public_key_data(derived_node_ptr) });
     assert!(!public_key_data.is_null());
+
+    unsafe { tw_hd_node_public_delete(derived_node_ptr) };
+    unsafe { tw_hd_node_public_delete(hd_node_ptr) };
 }

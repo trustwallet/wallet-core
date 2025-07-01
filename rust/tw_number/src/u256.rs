@@ -246,7 +246,7 @@ mod impl_serde {
             serializer.serialize_str(&self.to_string())
         }
 
-        pub fn from_decimal_str<'de, D>(deserializer: D) -> Result<Self, D::Error>
+        pub fn from_hex_or_decimal_str<'de, D>(deserializer: D) -> Result<Self, D::Error>
         where
             D: Deserializer<'de>,
         {

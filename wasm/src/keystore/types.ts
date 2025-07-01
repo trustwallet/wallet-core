@@ -18,6 +18,7 @@ export enum Error {
   InvalidMnemonic = "invalid mnemonic",
   InvalidJSON = "invalid JSON",
   InvalidKey = "invalid key",
+  UnsupportedWalletType = "unsupported wallet type",
 }
 
 export interface ActiveAccount {
@@ -67,7 +68,8 @@ export interface IKeyStore {
     name: string,
     password: string,
     coin: CoinType,
-    encryption: StoredKeyEncryption
+    encryption: StoredKeyEncryption,
+    derivation: Derivation
   ): Promise<Wallet>;
 
   // Import a Wallet object directly

@@ -6,42 +6,36 @@
 
 use tw_crypto::ffi::crypto_mnemonic::*;
 use tw_encoding::hex;
-use tw_memory::ffi::tw_data::TWData;
-use tw_memory::ffi::tw_string::TWString;
-use tw_memory::ffi::RawPtrTrait;
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
 
 #[test]
 fn test_bip39_generate_and_check_mnemonic() {
     let strength = 128;
-    let res = unsafe { tw_mnemonic_generate(strength) };
-    let res = unsafe { TWString::from_ptr_as_ref(res).unwrap() };
-    let mnemonic_string = res.as_str().unwrap();
+    let res = TWStringHelper::wrap(unsafe { tw_mnemonic_generate(strength) });
+    let mnemonic_string = res.to_string().unwrap();
     let mnemonic_words = mnemonic_string.split(" ").collect::<Vec<_>>();
     assert_eq!(mnemonic_words.len(), 12);
 
-    let is_valid = unsafe { tw_mnemonic_is_valid(res) };
+    let is_valid = unsafe { tw_mnemonic_is_valid(res.ptr()) };
     assert!(is_valid);
 
     let strength = 192;
-    let res = unsafe { tw_mnemonic_generate(strength) };
-    let res = unsafe { TWString::from_ptr_as_ref(res).unwrap() };
-    let mnemonic_string = res.as_str().unwrap();
+    let res = TWStringHelper::wrap(unsafe { tw_mnemonic_generate(strength) });
+    let mnemonic_string = res.to_string().unwrap();
     let mnemonic_words = mnemonic_string.split(" ").collect::<Vec<_>>();
     assert_eq!(mnemonic_words.len(), 18);
 
-    let is_valid = unsafe { tw_mnemonic_is_valid(res) };
+    let is_valid = unsafe { tw_mnemonic_is_valid(res.ptr()) };
     assert!(is_valid);
 
     let strength = 256;
-    let res = unsafe { tw_mnemonic_generate(strength) };
-    let res = unsafe { TWString::from_ptr_as_ref(res).unwrap() };
-    let mnemonic_string = res.as_str().unwrap();
+    let res = TWStringHelper::wrap(unsafe { tw_mnemonic_generate(strength) });
+    let mnemonic_string = res.to_string().unwrap();
     let mnemonic_words = mnemonic_string.split(" ").collect::<Vec<_>>();
     assert_eq!(mnemonic_words.len(), 24);
 
-    let is_valid = unsafe { tw_mnemonic_is_valid(res) };
+    let is_valid = unsafe { tw_mnemonic_is_valid(res.ptr()) };
     assert!(is_valid);
 }
 
@@ -83,19 +77,22 @@ fn test_bip39_generate_mnemonic_from_data() {
         let entropy_data = TWDataHelper::create(entropy);
 
         let mnemonic_ptr = unsafe { tw_mnemonic_generate_from_data(entropy_data.ptr()) };
-        let mnemonic_data = unsafe { TWString::from_ptr_as_ref(mnemonic_ptr).unwrap() };
-        let mnemonic_string = mnemonic_data.as_str().unwrap();
+        let mnemonic_data = TWStringHelper::wrap(mnemonic_ptr);
+        let mnemonic_string = mnemonic_data.to_string().unwrap();
 
         assert_eq!(mnemonic_string, *expected_mnemonic);
 
-        let is_valid = unsafe { tw_mnemonic_is_valid(mnemonic_ptr) };
+        let is_valid = unsafe { tw_mnemonic_is_valid(mnemonic_data.ptr()) };
         assert!(is_valid);
 
         let passphrase_string = TWStringHelper::create("TREZOR");
 
         let seed_ptr = unsafe { tw_mnemonic_to_seed(mnemonic_ptr, passphrase_string.ptr()) };
-        let seed_data = unsafe { TWData::from_ptr_as_ref(seed_ptr).unwrap() };
-        assert_eq!(hex::encode(seed_data.to_vec(), false), *expected_seed);
+        let seed_data = TWDataHelper::wrap(seed_ptr);
+        assert_eq!(
+            hex::encode(seed_data.to_vec().unwrap(), false),
+            *expected_seed
+        );
     }
 }
 
@@ -204,8 +201,8 @@ fn test_bip39_find_word() {
 
     for i in 0..2048 {
         let word = unsafe { tw_mnemonic_get_word(i) };
-        let word_string = unsafe { TWString::from_ptr_as_ref(word).unwrap() };
-        let index = unsafe { tw_mnemonic_find_word(word_string) };
+        let word_string = TWStringHelper::wrap(word);
+        let index = unsafe { tw_mnemonic_find_word(word_string.ptr()) };
         assert_eq!(index, i as i32);
     }
 }
@@ -326,8 +323,8 @@ fn test_mnemonic_suggest() {
     for (prefix, expected) in test_cases {
         let prefix_string = TWStringHelper::create(prefix);
         let result = unsafe { tw_mnemonic_suggest(prefix_string.ptr()) };
-        let result_string = unsafe { TWString::from_ptr_as_ref(result).unwrap() };
-        let result_string = result_string.as_str().unwrap();
+        let result_string = TWStringHelper::wrap(result);
+        let result_string = result_string.to_string().unwrap();
         assert_eq!(result_string, expected);
     }
 }
@@ -339,11 +336,11 @@ fn test_spanish_mnemonic() {
     let mnemonic_string = TWStringHelper::create(mnemonic);
 
     let entropy = unsafe { tw_mnemonic_to_entropy(mnemonic_string.ptr()) };
-    let entropy_data = unsafe { TWData::from_ptr_as_ref(entropy).unwrap() };
-    assert_eq!(hex::encode(entropy_data.to_vec(), false), "");
+    let entropy_data = TWDataHelper::wrap(entropy);
+    assert_eq!(hex::encode(entropy_data.to_vec().unwrap(), false), "");
 
     let seed =
         unsafe { tw_mnemonic_to_seed(mnemonic_string.ptr(), TWStringHelper::create("").ptr()) };
-    let seed_data = unsafe { TWData::from_ptr_as_ref(seed).unwrap() };
-    assert_eq!(hex::encode(seed_data.to_vec(), false), "ec8f8703432fc7d32e699ee056e9d84b1435e6a64a6a40ad63dbde11eab189a276ddcec20f3326d3c6ee39cbd018585b104fc3633b801c011063ae4c318fb9b6");
+    let seed_data = TWDataHelper::wrap(seed);
+    assert_eq!(hex::encode(seed_data.to_vec().unwrap(), false), "ec8f8703432fc7d32e699ee056e9d84b1435e6a64a6a40ad63dbde11eab189a276ddcec20f3326d3c6ee39cbd018585b104fc3633b801c011063ae4c318fb9b6");
 }

@@ -13,7 +13,8 @@ use std::path::PathBuf;
 const BLOCKCHAIN_ADDRESS_TEMPLATE: &str = include_str!("templates/blockchain_crate/address.rs");
 const BLOCKCHAIN_COMPILER_TEMPLATE: &str = include_str!("templates/blockchain_crate/compiler.rs");
 const BLOCKCHAIN_ENTRY_TEMPLATE: &str = include_str!("templates/blockchain_crate/entry.rs");
-const BLOCKCHAIN_MANIFEST_TEMPLATE: &str = include_str!("templates/blockchain_crate/Cargo.toml");
+const BLOCKCHAIN_MANIFEST_TEMPLATE: &str =
+    include_str!("templates/blockchain_crate/Cargo.toml.hbs");
 const BLOCKCHAIN_LIB_TEMPLATE: &str = include_str!("templates/blockchain_crate/lib.rs");
 const BLOCKCHAIN_SIGNER_TEMPLATE: &str = include_str!("templates/blockchain_crate/signer.rs");
 

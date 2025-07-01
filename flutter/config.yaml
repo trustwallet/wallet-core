@@ -1,0 +1,10 @@
+# Flutter FFI bindings configuration for TrustWalletCore
+# Note: This config requires the --compiler-opts "-Iinclude" flag when running ffigen
+# Example: dart run ffigen --config config.yaml --compiler-opts "-Iinclude"
+output: 'lib/wallet_core_bindings.dart'
+headers:
+  entry-points:
+    - 'include/**.h'
+name: 'WalletCore'
+description: 'Bindings to WalletCore'
+silence-enum-warning: true

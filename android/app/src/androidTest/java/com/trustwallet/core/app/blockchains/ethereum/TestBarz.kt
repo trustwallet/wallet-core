@@ -281,7 +281,7 @@ class TestBarz {
                 }.build()
             }.build()
 
-            eip7702Authority = Ethereum.Authority.newBuilder().apply {
+            eip7702Authorization = Ethereum.Authorization.newBuilder().apply {
                 address = "0x117BC8454756456A0f83dbd130Bb94D793D3F3F7"
             }.build()
         }

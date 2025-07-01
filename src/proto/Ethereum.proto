@@ -194,10 +194,22 @@ message Access {
     repeated bytes stored_keys = 2;
 }
 
-// [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) authority.
-message Authority {
+// [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) authorization.
+message Authorization {
     // Address to be authorized, a smart contract address.
     string address = 2;
+    // If custom_signature isn't provided, the authorization will be signed with the provided private key, nonce and chainId
+    AuthorizationCustomSignature custom_signature = 3;
+}
+
+// [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) authorization.
+message AuthorizationCustomSignature {
+    // Chain id (uint256, serialized big endian).
+    bytes chain_id = 1;
+    // Nonce, the nonce of authority.
+    bytes nonce = 2;
+    // The signature, Hex-encoded.
+    string signature = 3;
 }
 
 // Smart Contract Wallet type.
@@ -261,10 +273,10 @@ message SigningInput {
     // Used in `TransactionMode::Enveloped` only.
     repeated Access access_list = 12;
 
-    // A smart contract to which we’re delegating to.
-    // Used in `TransactionMode::SetOp` only.
+    // EIP7702 authorization.
+    // Used in `TransactionMode::SetOp` or `TransactionMode::UserOp`.
     // Currently, we support delegation to only one authority at a time.
-    Authority eip7702_authority = 15;
+    Authorization eip7702_authorization = 15;
 }
 
 // Result containing the signed and encoded transaction.
@@ -302,6 +314,8 @@ enum MessageType {
     MessageType_typed_eip155 = 3;
     // Sign a message with Immutable X msg type.
     MessageType_immutable_x = 4;
+    // Sign a EIP-7702 authorization tuple.
+    MessageType_eip7702_authorization = 5;
 }
 
 message MaybeChainId {

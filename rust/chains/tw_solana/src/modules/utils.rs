@@ -4,6 +4,7 @@
 
 use crate::address::SolanaAddress;
 use crate::defined_addresses::{COMPUTE_BUDGET_ADDRESS, SYSTEM_PROGRAM_ID_ADDRESS};
+use crate::instruction::Instruction;
 use crate::modules::insert_instruction::InsertInstruction;
 use crate::modules::instruction_builder::compute_budget_instruction::{
     ComputeBudgetInstruction, ComputeBudgetInstructionBuilder, UnitLimit, UnitPrice,
@@ -166,6 +167,42 @@ impl SolanaTransaction {
             bincode::deserialize(&tx_bytes).map_err(|_| SigningErrorType::Error_input_parse)?;
 
         tx.message.set_fee_payer(fee_payer)?;
+
+        // Set the correct number of zero signatures
+        let unsigned_tx = VersionedTransaction::unsigned(tx.message);
+        unsigned_tx
+            .to_base64()
+            .tw_err(SigningErrorType::Error_internal)
+    }
+
+    pub fn insert_instruction(
+        encoded_tx: &str,
+        insert_at: i32,
+        instruction: &str,
+    ) -> SigningResult<String> {
+        let tx_bytes = base64::decode(encoded_tx, STANDARD)?;
+        let mut tx: VersionedTransaction =
+            bincode::deserialize(&tx_bytes).map_err(|_| SigningErrorType::Error_input_parse)?;
+
+        let instruction: Instruction =
+            serde_json::from_str(instruction).map_err(|_| SigningErrorType::Error_input_parse)?;
+
+        if insert_at >= 0 && insert_at as usize > tx.message.instructions().len() {
+            return Err(SigningError::from(SigningErrorType::Error_invalid_params));
+        }
+
+        let final_insert_at = if insert_at < 0 {
+            tx.message.instructions().len() // Append to the end if negative
+        } else {
+            insert_at as usize // Use the specified position
+        };
+
+        tx.message.insert_instruction(
+            final_insert_at,
+            instruction.program_id,
+            instruction.accounts,
+            instruction.data,
+        )?;
 
         // Set the correct number of zero signatures
         let unsigned_tx = VersionedTransaction::unsigned(tx.message);

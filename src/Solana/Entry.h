@@ -15,6 +15,7 @@ class Entry final : public Rust::RustCoinEntryWithSignJSON {
 public:
     bool supportsJSONSigning() const override { return true; }
     std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const override;
+    PrivateKey decodePrivateKey(TWCoinType coin, const std::string& privateKey) const override;
 };
 
 } // namespace TW::Solana

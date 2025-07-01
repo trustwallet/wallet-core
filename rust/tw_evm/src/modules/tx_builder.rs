@@ -11,9 +11,11 @@ use crate::abi::prebuild::erc721::Erc721;
 use crate::abi::prebuild::ExecuteArgs;
 use crate::address::{Address, EvmAddress};
 use crate::evm_context::EvmContext;
-use crate::modules::authorization_signer::AuthorizationSigner;
+use crate::message::{to_signing, EthMessage};
 use crate::transaction::access_list::{Access, AccessList};
-use crate::transaction::authorization_list::{Authorization, AuthorizationList};
+use crate::transaction::authorization_list::{
+    Authorization, AuthorizationList, SignedAuthorization,
+};
 use crate::transaction::transaction_eip1559::TransactionEip1559;
 use crate::transaction::transaction_eip7702::TransactionEip7702;
 use crate::transaction::transaction_non_typed::TransactionNonTyped;
@@ -23,8 +25,12 @@ use crate::transaction::UnsignedTransactionBox;
 use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
+use tw_encoding::hex::DecodeHex;
 use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1;
+use tw_keypair::ecdsa::secp256k1::Signature;
+use tw_keypair::traits::SigningKeyTrait;
+use tw_keypair::KeyPairError;
 use tw_memory::Data;
 use tw_number::U256;
 use tw_proto::Common::Proto::SigningError as CommonError;
@@ -363,16 +369,6 @@ impl<Context: EvmContext> TxBuilder<Context> {
         payload: Data,
         to_address: Option<Address>,
     ) -> SigningResult<Box<dyn UnsignedTransactionBox>> {
-        let signer_key = secp256k1::PrivateKey::try_from(input.private_key.as_ref())
-            .into_tw()
-            .context("Sender's private key must be provided to generate an EIP-7702 transaction")?;
-        let signer = Address::with_secp256k1_pubkey(&signer_key.public());
-        if to_address != Some(signer) {
-            return SigningError::err(SigningErrorType::Error_invalid_params).context(
-                "Unexpected 'accountAddress'. Expected to be the same as the signer address",
-            );
-        }
-
         let nonce = U256::from_big_endian_slice(&input.nonce)
             .into_tw()
             .context("Invalid nonce")?;
@@ -380,6 +376,10 @@ impl<Context: EvmContext> TxBuilder<Context> {
         let gas_limit = U256::from_big_endian_slice(&input.gas_limit)
             .into_tw()
             .context("Invalid gas limit")?;
+
+        let to = to_address
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("'to' must be provided for `SetCode` transaction")?;
 
         let max_inclusion_fee_per_gas =
             U256::from_big_endian_slice(&input.max_inclusion_fee_per_gas)
@@ -393,37 +393,14 @@ impl<Context: EvmContext> TxBuilder<Context> {
         let access_list =
             Self::parse_access_list(&input.access_list).context("Invalid access list")?;
 
-        let authority: Address = input
-            .eip7702_authority
-            .as_ref()
-            .or_tw_err(SigningErrorType::Error_invalid_params)
-            .context("'eip7702Authority' must be provided for `SetCode` transaction")?
-            .address
-            // Parse `Address`
-            .parse()
-            .into_tw()
-            .context("Invalid authority address")?;
-
-        let chain_id = U256::from_big_endian_slice(&input.chain_id)
-            .into_tw()
-            .context("Invalid chain ID")?;
-
-        let authorization = Authorization {
-            chain_id,
-            address: authority,
-            // `authorization.nonce` must be incremented by 1 over `transaction.nonce`.
-            nonce: nonce + 1,
-        };
-        let signed_authorization = AuthorizationSigner::sign(&signer_key, authorization)?;
-        let authorization_list = AuthorizationList::from(vec![signed_authorization]);
+        let authorization_list = Self::build_authorization_list(input, to)?;
 
         Ok(TransactionEip7702 {
             nonce,
             max_inclusion_fee_per_gas,
             max_fee_per_gas,
             gas_limit,
-            // EIP-7702 transaction calls a smart contract function of the authorized address.
-            to: Some(signer),
+            to,
             amount: eth_amount,
             payload,
             access_list,
@@ -498,7 +475,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
         let factory = Self::parse_address_optional(user_op_v0_7.factory.as_ref())
             .context("Invalid factory address")?;
 
-        let call_data_gas_limit = U256::from_big_endian_slice(&input.gas_limit)
+        let call_gas_limit = U256::from_big_endian_slice(&input.gas_limit)
             .into_tw()
             .context("Invalid gas limit")?
             .try_into()
@@ -551,6 +528,10 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 .into_tw()
                 .context("Paymaster post-op gas limit exceeds u128")?;
 
+        let eip7702_auth = Self::build_authorization_list(input, sender)
+            .ok()
+            .and_then(|auth_list| auth_list.0.first().cloned());
+
         let entry_point = Self::parse_address(user_op_v0_7.entry_point.as_ref())
             .context("Invalid entry point")?;
 
@@ -560,7 +541,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
             factory,
             factory_data: user_op_v0_7.factory_data.to_vec(),
             call_data: erc4337_payload,
-            call_data_gas_limit,
+            call_gas_limit,
             verification_gas_limit,
             pre_verification_gas,
             max_fee_per_gas,
@@ -569,6 +550,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
             paymaster_verification_gas_limit,
             paymaster_post_op_gas_limit,
             paymaster_data: user_op_v0_7.paymaster_data.to_vec(),
+            eip7702_auth,
             entry_point,
         })
     }
@@ -663,5 +645,92 @@ impl<Context: EvmContext> TxBuilder<Context> {
             .context("Sender's private key must be provided to generate an EIP-7702 transaction")?;
         let signer = Address::with_secp256k1_pubkey(&signer_key.public());
         Ok(signer)
+    }
+
+    fn build_authorization_list(
+        input: &Proto::SigningInput,
+        destination: Address, // Field `destination` is only used for sanity check
+    ) -> SigningResult<AuthorizationList> {
+        let eip7702_authorization = input
+            .eip7702_authorization
+            .as_ref()
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("'eip7702Authorization' must be provided for `SetCode` transaction")?;
+
+        let address = eip7702_authorization
+            .address
+            .parse()
+            .into_tw()
+            .context("Invalid authority address")?;
+
+        let (authorization, signature) =
+            if let Some(other_auth_fields) = &eip7702_authorization.custom_signature {
+                // If field `custom_signature` is provided, it means that the authorization is already signed.
+                let chain_id = U256::from_big_endian_slice(&other_auth_fields.chain_id)
+                    .into_tw()
+                    .context("Invalid chain ID")?;
+                let nonce = U256::from_big_endian_slice(&other_auth_fields.nonce)
+                    .into_tw()
+                    .context("Invalid nonce")?;
+                let signature = Signature::try_from(
+                    other_auth_fields
+                        .signature
+                        .decode_hex()
+                        .map_err(|_| KeyPairError::InvalidSignature)?
+                        .as_slice(),
+                )
+                .tw_err(SigningErrorType::Error_invalid_params)
+                .context("Invalid signature")?;
+
+                (
+                    Authorization {
+                        chain_id,
+                        address,
+                        nonce,
+                    },
+                    signature,
+                )
+            } else {
+                // If field `custom_signature` is not provided, the authorization will be signed with the provided private key, nonce and chainId
+                let signer_key = secp256k1::PrivateKey::try_from(input.private_key.as_ref())
+                    .into_tw()
+                    .context(
+                        "Sender's private key must be provided to generate an EIP-7702 transaction",
+                    )?;
+                let signer = Address::with_secp256k1_pubkey(&signer_key.public());
+                if destination != signer {
+                    return SigningError::err(SigningErrorType::Error_invalid_params).context(
+                        "Unexpected 'destination'. Expected to be the same as the signer address",
+                    );
+                }
+
+                let chain_id = U256::from_big_endian_slice(&input.chain_id)
+                    .into_tw()
+                    .context("Invalid chain ID")?;
+                let nonce = U256::from_big_endian_slice(&input.nonce)
+                    .into_tw()
+                    .context("Invalid nonce")?;
+
+                let authorization = Authorization {
+                    chain_id,
+                    address,
+                    // `authorization.nonce` must be incremented by 1 over `transaction.nonce`.
+                    nonce: nonce + 1,
+                };
+
+                let pre_hash = authorization.hash().map_err(to_signing)?;
+                let signature = signer_key.sign(pre_hash)?;
+
+                (authorization, signature)
+            };
+
+        let signed_authorization = SignedAuthorization {
+            authorization,
+            y_parity: signature.v(),
+            r: U256::from_big_endian(signature.r()),
+            s: U256::from_big_endian(signature.s()),
+        };
+
+        Ok(AuthorizationList::from(vec![signed_authorization]))
     }
 }

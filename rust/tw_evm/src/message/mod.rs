@@ -7,6 +7,7 @@ use tw_hash::H256;
 
 pub mod eip191;
 pub mod eip712;
+pub mod eip7702_authorization;
 pub mod signature;
 
 pub type EthMessageBoxed = Box<dyn EthMessage>;
