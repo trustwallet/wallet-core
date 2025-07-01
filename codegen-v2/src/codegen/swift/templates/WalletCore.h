@@ -37,7 +37,6 @@ FOUNDATION_EXPORT const unsigned char WalletCoreVersionString[];
 #include "TWDerivation.h"
 #include "TWDerivationPath.h"
 #include "TWDerivationPathIndex.h"
-#include "TWEthereum.h"
 #include "TWEthereumAbi.h"
 #include "TWEthereumAbiFunction.h"
 #include "TWEthereumAbiValue.h"

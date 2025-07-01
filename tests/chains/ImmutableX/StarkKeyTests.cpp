@@ -6,7 +6,7 @@
 #include "ImmutableX/Constants.h"
 #include "ImmutableX/StarkKey.h"
 #include <gtest/gtest.h>
-#include <TrustWalletCore/TWEthereum.h>
+#include <TrustWalletCore/Generated/TWEthereum.h>
 #include "TestUtilities.h"
 
 namespace TW::ImmutableX::tests {

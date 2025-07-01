@@ -15,7 +15,7 @@
 #include <TrustWalletCore/TWBase58.h>
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWSegwitAddress.h>
-#include <TrustWalletCore/TWEthereum.h>
+#include <TrustWalletCore/Generated/TWEthereum.h>
 #include <TrustWalletCore/TWEthereumMessageSigner.h>
 #include <TrustWalletCore/TWStarkExMessageSigner.h>
 #include <TrustWalletCore/TWStarkWare.h>
