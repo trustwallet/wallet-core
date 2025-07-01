@@ -53,6 +53,7 @@ fn test_public_key_from_zpub() {
         "02df9ef2a7a5552765178b181e1e1afdefc7849985c7dfe9647706dd4fa40df6ac"
     );
 
+    unsafe { tw_hd_node_public_delete(derived_node_ptr) };
     unsafe { tw_hd_node_public_delete(hd_node_ptr) };
 }
 
@@ -94,6 +95,7 @@ fn test_public_key_from_dpub() {
         "035328794a9392d6618c0f8071d2ba25fecef85230d916c2ef17f578af70483103"
     );
 
+    unsafe { tw_hd_node_public_delete(derived_node_ptr) };
     unsafe { tw_hd_node_public_delete(hd_node_ptr) };
 }
 
@@ -131,6 +133,7 @@ fn test_public_key_from_extended_ethereum() {
         "024516c4aa5352035e1bb5be132694e1389a4ac37d32e5e717d35ee4c4dfab5132"
     );
 
+    unsafe { tw_hd_node_public_delete(derived_node_ptr) };
     unsafe { tw_hd_node_public_delete(hd_node_ptr) };
 }
 
@@ -161,5 +164,6 @@ fn test_public_key_from_zpub_nist() {
         TWDataHelper::wrap(unsafe { tw_hd_node_public_public_key_data(derived_node_ptr) });
     assert!(!public_key_data.is_null());
 
+    unsafe { tw_hd_node_public_delete(derived_node_ptr) };
     unsafe { tw_hd_node_public_delete(hd_node_ptr) };
 }
