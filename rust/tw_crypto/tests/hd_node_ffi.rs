@@ -623,6 +623,7 @@ fn test_derive_xpub_pub_vs_priv_pub() {
         let public_key_hex = hex::encode(public_key_bytes, false);
         assert_eq!(public_key_hex, expected_public_key1);
 
+        unsafe { tw_hd_node_public_delete(derived_node_ptr) };
         unsafe { tw_hd_node_public_delete(hd_node_ptr) };
     }
 
@@ -653,6 +654,7 @@ fn test_derive_xpub_pub_vs_priv_pub() {
         assert_eq!(public_key_hex, expected_public_key2);
 
         unsafe { tw_hd_node_public_delete(derived_node_ptr) };
+        unsafe { tw_hd_node_public_delete(hd_node_ptr) };
     }
 
     // zpriv -> privateKey -> publicKey
@@ -884,10 +886,10 @@ fn test_bip39_vectors() {
         let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_data.ptr(), curve.to_raw()) };
         let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
 
-        let xprv_ptr =
-            unsafe { tw_hd_node_extended_private_key(hd_node, version, base58_hasher as u32) };
-        let xprv_string = TWStringHelper::wrap(xprv_ptr);
-        let xprv_string = xprv_string.to_string().unwrap();
+        let xprv_ptr = TWStringHelper::wrap(unsafe {
+            tw_hd_node_extended_private_key(hd_node, version, base58_hasher as u32)
+        });
+        let xprv_string = xprv_ptr.to_string().unwrap();
         assert_eq!(xprv_string, xprv);
 
         unsafe { tw_hd_node_delete(hd_node_ptr) };
@@ -927,11 +929,10 @@ fn test_extended_public_key_iost_ffi() {
         unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32) };
     let derived_node = unsafe { TWHDNode::from_ptr_as_ref(derived_node_ptr).unwrap() };
 
-    let ext_pub_key = unsafe {
+    let ext_pub_key = TWStringHelper::wrap(unsafe {
         tw_hd_node_extended_public_key(derived_node, pub_hd_version, base58_hasher as u32)
-    };
-    let ext_pub_key_string = TWStringHelper::wrap(ext_pub_key);
-    let ext_pub_key_string = ext_pub_key_string.to_string().unwrap();
+    });
+    let ext_pub_key_string = ext_pub_key.to_string().unwrap();
     assert_eq!(ext_pub_key_string, "xpub6CazMhni6xNtFaEeRqeaa2S3LyfrQWXk8YoEykEUyKpYyxqxG18HSo3e8Kkco5YkEddiCEF1pav6gXy71sGFKMux9rcdc8TCEfZG662hhxg");
 
     unsafe { tw_hd_node_delete(derived_node_ptr) };
