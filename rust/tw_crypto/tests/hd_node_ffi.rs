@@ -86,8 +86,8 @@ fn test_extended_private_key_ffi() {
     let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw()) };
     let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
 
-    let chain_code = unsafe { tw_hd_node_chain_code(hd_node_ptr) };
-    assert!(!chain_code.is_null());
+    let chain_code = TWDataHelper::wrap(unsafe { tw_hd_node_chain_code(hd_node_ptr) });
+    assert!(!chain_code.ptr().is_null());
 
     let pubkey_hasher = Hasher::Sha256ripemd;
 
@@ -152,8 +152,8 @@ fn test_extended_private_key_nist256p1_ffi() {
     let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw()) };
     let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
 
-    let chain_code = unsafe { tw_hd_node_chain_code(hd_node_ptr) };
-    assert!(!chain_code.is_null());
+    let chain_code = TWDataHelper::wrap(unsafe { tw_hd_node_chain_code(hd_node_ptr) });
+    assert!(!chain_code.ptr().is_null());
 
     let pubkey_hasher = Hasher::Sha256ripemd;
 
@@ -171,8 +171,8 @@ fn test_extended_private_key_nist256p1_ffi() {
         "a13df52d5a5b438bbf921bbf86276e4347fe8e2f2ed74feaaee12b77d6d26f86"
     );
 
-    let pubkey_data = unsafe { tw_hd_node_public_key_data(derived_node_ptr) };
-    assert!(!pubkey_data.is_null());
+    let pubkey_data = TWDataHelper::wrap(unsafe { tw_hd_node_public_key_data(derived_node_ptr) });
+    assert!(!pubkey_data.ptr().is_null());
 
     let depth = unsafe { tw_hd_node_depth(derived_node_ptr) };
     assert_eq!(depth, 5);
@@ -223,8 +223,8 @@ fn test_extended_private_key_ed25519_blake2b_ffi() {
         "37d29aff891f03abaa1ea1989cff6de0f46bd677f3ca7b3abb6e7f1c03786540"
     );
 
-    let chain_code = unsafe { tw_hd_node_chain_code(hd_node_ptr) };
-    assert!(!chain_code.is_null());
+    let chain_code = TWDataHelper::wrap(unsafe { tw_hd_node_chain_code(hd_node_ptr) });
+    assert!(!chain_code.ptr().is_null());
 
     let depth = unsafe { tw_hd_node_depth(derived_node_ptr) };
     assert_eq!(depth, 4);
@@ -266,8 +266,8 @@ fn test_extended_private_key_waves_ffi() {
         "b6c00ffdacb469da62062a1dc8218a733a61720ab0942ba3625194281faf7d3d"
     );
 
-    let chain_code = unsafe { tw_hd_node_chain_code(hd_node_ptr) };
-    assert!(!chain_code.is_null());
+    let chain_code = TWDataHelper::wrap(unsafe { tw_hd_node_chain_code(hd_node_ptr) });
+    assert!(!chain_code.ptr().is_null());
 
     let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
     let pubkey_hasher = Hasher::Sha256ripemd;
@@ -318,8 +318,8 @@ fn test_extended_private_key_zillqa_schnorr_ffi() {
         "02f54cd391076f956b1cfc37cf182c18373f7c1566408c1748132cf4e782498e19"
     );
 
-    let chain_code = unsafe { tw_hd_node_chain_code(hd_node_ptr) };
-    assert!(!chain_code.is_null());
+    let chain_code = TWDataHelper::wrap(unsafe { tw_hd_node_chain_code(hd_node_ptr) });
+    assert!(!chain_code.ptr().is_null());
 
     let depth = unsafe { tw_hd_node_depth(hd_node_ptr) };
     assert_eq!(depth, 0);
@@ -393,18 +393,16 @@ fn test_extended_public_key_ffi() {
         unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32) };
     let derived_node = unsafe { TWHDNode::from_ptr_as_ref(derived_node_ptr).unwrap() };
 
-    let ext_pub_key = unsafe {
+    let ext_pub_key = TWStringHelper::wrap(unsafe {
         tw_hd_node_extended_public_key(derived_node, pub_hd_version, base58_hasher as u32)
-    };
-    let ext_pub_key_string = TWStringHelper::wrap(ext_pub_key);
-    let ext_pub_key_string = ext_pub_key_string.to_string().unwrap();
+    });
+    let ext_pub_key_string = ext_pub_key.to_string().unwrap();
     assert_eq!(ext_pub_key_string, "dpubZFUmm9oh5zmQkR2Tr2AXS4tCkTWg4B27SpCPFkapZrrAqgU1EwgEFgrmi6EnLGXhak86yDHhXPxFAnGU58W5S4e8NCKG1ASUVaxwRqqNdfP");
 
-    let ext_priv_key = unsafe {
+    let ext_priv_key = TWStringHelper::wrap(unsafe {
         tw_hd_node_extended_private_key(derived_node, prv_hd_version, base58_hasher as u32)
-    };
-    let ext_priv_key_string = TWStringHelper::wrap(ext_priv_key);
-    let ext_priv_key_string = ext_priv_key_string.to_string().unwrap();
+    });
+    let ext_priv_key_string = ext_priv_key.to_string().unwrap();
     assert_eq!(ext_priv_key_string, "dprv3oggQ2FQ1chcr18hbW7Aur5x8SxQdES3FGa4WqeTZnFY88SNMzLdB7LkZLroF4bGAqWS8sDm3w4DKyYV7sDKfC6JMSVHnVJdpDLgHioq1vq");
 
     unsafe { tw_hd_node_delete(derived_node_ptr) };
@@ -478,7 +476,7 @@ fn test_private_key_from_xprv_invalid() {
 
         let private_key_data =
             TWDataHelper::wrap(unsafe { tw_hd_node_private_key_data(derived_node_ptr) });
-        assert!(private_key_data.is_null());
+        assert!(private_key_data.ptr().is_null());
 
         unsafe { tw_hd_node_delete(derived_node_ptr) };
         unsafe { tw_hd_node_delete(hd_node_ptr) };
@@ -506,7 +504,7 @@ fn test_private_key_from_xprv_invalid() {
 
         let private_key_data =
             TWDataHelper::wrap(unsafe { tw_hd_node_private_key_data(derived_node_ptr) });
-        assert!(private_key_data.is_null());
+        assert!(private_key_data.ptr().is_null());
 
         unsafe { tw_hd_node_delete(derived_node_ptr) };
         unsafe { tw_hd_node_delete(hd_node_ptr) };
