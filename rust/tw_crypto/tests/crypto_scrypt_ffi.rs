@@ -6,8 +6,6 @@
 
 use tw_crypto::ffi::crypto_scrypt::crypto_scrypt;
 use tw_encoding::hex;
-use tw_memory::ffi::tw_data::TWData;
-use tw_memory::ffi::RawPtrTrait;
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 
 #[test]
@@ -17,10 +15,10 @@ fn test_crypto_scrypt_ffi_null_salt() {
 
     let salt = TWDataHelper::create(Vec::new());
 
-    let res = unsafe { crypto_scrypt(password.ptr(), salt.ptr(), 16384, 8, 4, 32) };
-    let res = unsafe { TWData::from_ptr_as_mut(res).unwrap() };
+    let res =
+        TWDataHelper::wrap(unsafe { crypto_scrypt(password.ptr(), salt.ptr(), 16384, 8, 4, 32) });
     assert_eq!(
-        hex::encode(res.to_vec(), false),
+        hex::encode(res.to_vec().unwrap(), false),
         "004f57df809101216a343d6215879a9a7f1d7e2c04ef2845b4494cf5f10181a1"
     );
 }
