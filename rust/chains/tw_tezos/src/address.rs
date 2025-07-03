@@ -11,7 +11,10 @@ use tw_encoding::base58::Alphabet;
 use tw_hash::blake2::blake2_b;
 use tw_hash::sha2::Sha256d;
 use tw_hash::H160;
-use tw_keypair::{ecdsa, ed25519};
+use tw_keypair::{
+    ecdsa, ed25519,
+    tw::{PublicKey, PublicKeyType},
+};
 use tw_memory::Data;
 
 use crate::forging::forge_public_key_hash;
@@ -43,6 +46,24 @@ impl TezosAddress {
         bytes.extend_from_slice(prefix);
         bytes.extend_from_slice(public_key_hash);
         Base58Address::new(&bytes, Alphabet::Bitcoin).map(TezosAddress)
+    }
+
+    pub fn with_public_key(public_key: &PublicKey) -> AddressResult<TezosAddress> {
+        if public_key.public_key_type() == PublicKeyType::Secp256k1 {
+            TezosAddress::with_secp256k1_public_key(
+                public_key
+                    .to_secp256k1()
+                    .ok_or(AddressError::PublicKeyTypeMismatch)?,
+            )
+        } else if public_key.public_key_type() == PublicKeyType::Ed25519 {
+            TezosAddress::with_ed25519_public_key(
+                public_key
+                    .to_ed25519()
+                    .ok_or(AddressError::PublicKeyTypeMismatch)?,
+            )
+        } else {
+            Err(AddressError::InvalidInput)
+        }
     }
 
     pub fn with_secp256k1_public_key(

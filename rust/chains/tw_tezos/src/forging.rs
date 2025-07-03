@@ -38,6 +38,7 @@ pub enum ForgeError {
     FromParseIntError,
     FromHexError,
     InvalidBranch,
+    InvalidPublicKey,
 }
 
 impl From<EncodingError> for ForgeError {
