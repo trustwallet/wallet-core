@@ -6,8 +6,24 @@
       parameters = method.parameters.drop(1)
   end
 
-  parameters.each do |param|
-    if param.type.name == :data -%>
+  parameters.each do |param| -%>
+<%  if !param.type.is_nullable
+      # In case of constructor (starts with Create), it always returns jlong type.
+      if method.name.start_with?('Create') -%>
+    JNI_CHECK_NULL_AND_RETURN_ZERO(env, <%= param.name %>, "<%= param.name %>");
+<%    elsif JNIHelper.type(method.return_type) == 'void' -%>
+    JNI_CHECK_NULL_AND_RETURN_VOID(env, <%= param.name %>, "<%= param.name %>");
+<%    elsif JNIHelper.type(method.return_type) == 'jbyteArray' -%>
+    JNI_CHECK_NULL_AND_RETURN_NULL(env, <%= param.name %>, "<%= param.name %>");
+<%    elsif JNIHelper.type(method.return_type) == 'jstring' -%>
+    JNI_CHECK_NULL_AND_RETURN_NULL(env, <%= param.name %>, "<%= param.name %>");
+<%    elsif JNIHelper.type(method.return_type) == 'jobject' -%>
+    JNI_CHECK_NULL_AND_RETURN_NULL(env, <%= param.name %>, "<%= param.name %>");
+<%    else -%>
+    JNI_CHECK_NULL_AND_RETURN_ZERO(env, <%= param.name %>, "<%= param.name %>");
+<%    end -%>
+<%  end -%>
+<%  if param.type.name == :data -%>
     TWData *<%= param.name %>Data = TWDataCreateWithJByteArray(env, <%= param.name %>);
 <%  elsif param.type.name == :string -%>
     TWString *<%= param.name %>String = TWStringCreateWithJString(env, <%= param.name %>);
