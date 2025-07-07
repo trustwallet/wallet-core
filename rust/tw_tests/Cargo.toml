@@ -20,6 +20,7 @@ wallet-core-rs = { path = "../wallet_core_rs" }
 # Chain specific:
 tw_cosmos_sdk = { path = "../tw_cosmos_sdk", features = ["test-utils"] }
 tw_solana = { path = "../chains/tw_solana" }
+tw_tezos = { path = "../chains/tw_tezos" }
 tw_ton = { path = "../chains/tw_ton" }
 tw_ton_sdk = { path = "../frameworks/tw_ton_sdk" }
 tw_utxo = { path = "../frameworks/tw_utxo" }
