@@ -1,0 +1,92 @@
+name: TWTezosMessageSigner
+structs:
+- name: TWTezosMessageSigner
+  is_public: true
+  is_class: false
+functions:
+- name: TWTezosMessageSignerFormatMessage
+  is_public: true
+  is_static: true
+  params:
+  - name: message
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: url
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWTezosMessageSignerInputToPayload
+  is_public: true
+  is_static: true
+  params:
+  - name: message
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWTezosMessageSignerSignMessage
+  is_public: true
+  is_static: true
+  params:
+  - name: privateKey
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: message
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWTezosMessageSignerVerifyMessage
+  is_public: true
+  is_static: true
+  params:
+  - name: pubKey
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: message
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: signature
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
