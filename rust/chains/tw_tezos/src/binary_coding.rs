@@ -9,6 +9,7 @@ use tw_encoding::{
 use tw_hash::sha2::sha256_d;
 use tw_keypair::{ecdsa, ed25519, KeyPairError};
 use tw_memory::Data;
+use zeroize::Zeroizing;
 
 use crate::address::TEZOS_ADDRESS_PREFIX_SIZE;
 
@@ -35,17 +36,17 @@ pub fn encode_check(data: &[u8], alphabet: Alphabet) -> String {
     base58::encode(&to_be_encoded, alphabet)
 }
 
-pub fn base58_to_hex(input: &str, prefix_length: usize) -> String {
+pub fn base58_to_hex(input: &str, prefix_length: usize) -> Result<String, EncodingError> {
     let decoded = match decode_check(input, Alphabet::Bitcoin) {
         Ok(d) => d,
-        Err(_) => return String::new(),
+        Err(_) => return Err(EncodingError::InvalidInput),
     };
 
     if decoded.len() < prefix_length {
-        return String::new();
+        return Err(EncodingError::InvalidInput);
     }
 
-    hex::encode(&decoded[prefix_length..], false)
+    Ok(hex::encode(&decoded[prefix_length..], false))
 }
 
 pub fn parse_public_key(public_key: &str) -> Result<tw_keypair::tw::PublicKey, KeyPairError> {
@@ -75,8 +76,9 @@ pub fn parse_public_key(public_key: &str) -> Result<tw_keypair::tw::PublicKey, K
 }
 
 pub fn parse_private_key(private_key: &str) -> Result<tw_keypair::tw::PrivateKey, KeyPairError> {
-    let decoded =
-        decode_check(private_key, Alphabet::Bitcoin).map_err(|_| KeyPairError::InvalidSecretKey)?;
+    let decoded = Zeroizing::new(
+        decode_check(private_key, Alphabet::Bitcoin).map_err(|_| KeyPairError::InvalidSecretKey)?,
+    );
 
     if decoded.len() != 32 + TEZOS_KEY_PREFIX_SIZE {
         return Err(KeyPairError::InvalidSecretKey);

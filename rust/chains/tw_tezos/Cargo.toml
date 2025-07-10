@@ -12,6 +12,7 @@ tw_hash = { path = "../../tw_hash" }
 tw_memory = { path = "../../tw_memory" }
 tw_misc = { path = "../../tw_misc", features = ["serde"] }
 tw_proto = { path = "../../tw_proto" }
+zeroize = "1.8.1"
 
 [dev-dependencies]
 tw_coin_entry = { path = "../../tw_coin_entry", features = ["test-utils"] }

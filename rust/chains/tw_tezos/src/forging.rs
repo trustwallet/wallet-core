@@ -158,7 +158,11 @@ pub fn forge_public_key(public_key: &[u8], key_type: PublicKeyType) -> Result<Da
     let mut data = prefix.to_vec();
     data.extend_from_slice(public_key);
     let pk = encode_check(&data, Alphabet::Bitcoin);
-    let decoded = format!("{}{}", tag, base58_to_hex(&pk, TEZOS_ADDRESS_CHECKSUM_SIZE));
+    let decoded = format!(
+        "{}{}",
+        tag,
+        base58_to_hex(&pk, TEZOS_ADDRESS_CHECKSUM_SIZE)?
+    );
     Ok(hex::decode(&decoded)?)
 }
 

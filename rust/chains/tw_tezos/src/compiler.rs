@@ -13,6 +13,8 @@ use tw_proto::TxCompiler::Proto as CompilerProto;
 use crate::operation_list::OperationList;
 use crate::signer::TezosSigner;
 
+const WATERMARK_PREFIX: u8 = 0x03;
+
 pub struct TezosCompiler;
 
 impl TezosCompiler {
@@ -50,7 +52,7 @@ impl TezosCompiler {
             .map_err(|_| SigningErrorType::Error_internal)?;
 
         let mut watermarked_data = Vec::new();
-        watermarked_data.push(0x03);
+        watermarked_data.push(WATERMARK_PREFIX);
         watermarked_data.extend_from_slice(&pre_image);
         let pre_image_hash =
             blake2_b(&watermarked_data, 32).map_err(|_| SigningErrorType::Error_internal)?;
