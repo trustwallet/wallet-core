@@ -406,9 +406,31 @@ Data serialize(const protocol::Transaction& tx) noexcept {
 
 Proto::SigningOutput signDirect(const Proto::SigningInput& input) {
     const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveSECP256k1);
-    auto hash = parse_hex(input.txid());
-    const auto signature = key.sign(hash);
     auto output = Proto::SigningOutput();
+
+    Data hash;
+    if (!input.txid().empty()) {
+        hash = parse_hex(input.txid());
+    } else if (!input.raw_json().empty()) {
+        try {
+            auto parsed = nlohmann::json::parse(input.raw_json());
+            if (parsed.contains("txID") && parsed["txID"].is_string()) {
+                hash = parse_hex(parsed["txID"].get<std::string>());
+            } else {
+                // Ignore parsing errors, hash will remain empty
+                output.set_error(Common::Proto::Error_invalid_params);
+                output.set_error_message("No txID found in raw JSON");
+                return output;
+            }
+        } catch (const std::exception& e) {
+            // Ignore parsing errors, hash will remain empty
+            output.set_error(Common::Proto::Error_invalid_params);
+            output.set_error_message(e.what());
+            return output;
+        }
+    }
+
+    const auto signature = key.sign(hash);
     output.set_signature(signature.data(), signature.size());
     output.set_id(input.txid());
     output.set_id(hash.data(), hash.size());
@@ -416,7 +438,7 @@ Proto::SigningOutput signDirect(const Proto::SigningInput& input) {
 }
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    if (!input.txid().empty()) {
+    if (!input.txid().empty() || !input.raw_json().empty()) {
         return signDirect(input);
     }
 
