@@ -417,13 +417,13 @@ Proto::SigningOutput signDirect(const Proto::SigningInput& input) {
             if (parsed.contains("txID") && parsed["txID"].is_string()) {
                 hash = parse_hex(parsed["txID"].get<std::string>());
             } else {
-                // Ignore parsing errors, hash will remain empty
+                // If txID is not present, return an error
                 output.set_error(Common::Proto::Error_invalid_params);
                 output.set_error_message("No txID found in raw JSON");
                 return output;
             }
         } catch (const std::exception& e) {
-            // Ignore parsing errors, hash will remain empty
+            // If parsing fails, return an error
             output.set_error(Common::Proto::Error_invalid_params);
             output.set_error_message(e.what());
             return output;
