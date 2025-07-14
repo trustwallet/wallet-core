@@ -483,7 +483,7 @@ Proto::SigningOutput Signer::compile(const Data& signature) const {
         try {
             auto parsed = nlohmann::json::parse(input.raw_json());
             // Add signature to JSON and set to output
-            parsed["signature"] = hex(signature);
+            parsed["signature"] = nlohmann::json::array({hex(signature)});
             output.set_json(parsed.dump());
             output.set_signature(signature.data(), signature.size());
             // Extract txID and set to output
