@@ -19,3 +19,30 @@
 #include <jni.h>
 #include "TWJNIData.h"
 #include "TWJNIString.h"
+
+#define JNI_CHECK_NULL_AND_RETURN_VOID(env, param, paramName) \
+    do { \
+        if (param == NULL) { \
+            jclass exceptionClass = (*env)->FindClass(env, "java/lang/IllegalArgumentException"); \
+            (*env)->ThrowNew(env, exceptionClass, paramName " parameter cannot be null"); \
+            return; \
+        } \
+    } while(0)
+
+#define JNI_CHECK_NULL_AND_RETURN_ZERO(env, param, paramName) \
+    do { \
+        if (param == NULL) { \
+            jclass exceptionClass = (*env)->FindClass(env, "java/lang/IllegalArgumentException"); \
+            (*env)->ThrowNew(env, exceptionClass, paramName " parameter cannot be null"); \
+            return 0; \
+        } \
+    } while(0)
+
+#define JNI_CHECK_NULL_AND_RETURN_NULL(env, param, paramName) \
+    do { \
+        if (param == NULL) { \
+            jclass exceptionClass = (*env)->FindClass(env, "java/lang/IllegalArgumentException"); \
+            (*env)->ThrowNew(env, exceptionClass, paramName " parameter cannot be null"); \
+            return NULL; \
+        } \
+    } while(0)
