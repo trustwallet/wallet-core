@@ -42,3 +42,18 @@ fn test_scrypt_invalid_n() {
     };
     scrypt(&password, &salt, &params).unwrap_err();
 }
+
+#[test]
+fn test_scrypt_exceeds_max_output_size() {
+    let password = hex::decode("70617373776f7264").unwrap();
+    let salt =
+        hex::decode("80132842c6cde8f9d04582932ef92c3cad3ba6b41e1296ef681692372886db86").unwrap();
+
+    let params = Params {
+        n: 1 << 12,
+        r: 8,
+        p: 6,
+        desired_len: 1025,
+    };
+    scrypt(&password, &salt, &params).unwrap_err();
+}

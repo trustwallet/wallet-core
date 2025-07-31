@@ -9,6 +9,7 @@
 use crate::crypto_pbkdf2::{pbkdf2_hmac_512, pbkdf2_hmac_sha256};
 use tw_macros::tw_ffi;
 use tw_memory::ffi::{tw_data::TWData, Nonnull, NullableMut, RawPtrTrait};
+use tw_misc::try_or_else;
 
 /// The PBKDF2 key derivation function.
 ///
@@ -32,7 +33,10 @@ pub unsafe extern "C" fn tw_pbkdf2_hmac_sha256(
         .map(|data| data.as_slice())
         .unwrap_or_default();
 
-    let output = pbkdf2_hmac_sha256(password, salt, iterations, dk_len);
+    let output = try_or_else!(
+        pbkdf2_hmac_sha256(password, salt, iterations, dk_len),
+        std::ptr::null_mut
+    );
     TWData::from(output).into_ptr()
 }
 
@@ -58,6 +62,9 @@ pub unsafe extern "C" fn tw_pbkdf2_hmac_sha512(
         .map(|data| data.as_slice())
         .unwrap_or_default();
 
-    let output = pbkdf2_hmac_512(password, salt, iterations, dk_len);
+    let output = try_or_else!(
+        pbkdf2_hmac_512(password, salt, iterations, dk_len),
+        std::ptr::null_mut
+    );
     TWData::from(output).into_ptr()
 }
