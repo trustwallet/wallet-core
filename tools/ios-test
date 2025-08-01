@@ -7,6 +7,7 @@ set -o pipefail
 
 pushd swift
 
+rm -f Podfile.lock
 xcodegen && pod install
 xcodebuild -workspace TrustWalletCore.xcworkspace -list
 xcodebuild -workspace TrustWalletCore.xcworkspace \
