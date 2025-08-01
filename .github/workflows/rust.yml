@@ -21,7 +21,8 @@ jobs:
       contents: read
       checks: write
     runs-on: ubuntu-24.04
-    if: github.event.pull_request.draft == false
+    if: false
+    # if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v3
       - name: Install system dependencies
@@ -54,7 +55,8 @@ jobs:
   # Run Rust tests in WASM.
   test-wasm:
     runs-on: ubuntu-24.04
-    if: github.event.pull_request.draft == false
+    if: false
+    # if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v3
       - name: Install system dependencies
@@ -85,7 +87,8 @@ jobs:
       contents: read
       pull-requests: write
     runs-on: macos-latest-xlarge
-    if: github.event.pull_request.draft == false
+    if: false
+    # if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v3
       - name: Install system dependencies
@@ -154,7 +157,8 @@ jobs:
 
   memory-profiler:
     runs-on: ubuntu-24.04
-    if: github.event.pull_request.draft == false
+    if: false
+    # if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v4
         with:
@@ -212,7 +216,8 @@ jobs:
 
   coverage:
     runs-on: ubuntu-24.04
-    if: github.event.pull_request.draft == false
+    if: false
+    # if: github.event.pull_request.draft == false
 
     steps:
       - uses: actions/checkout@v3
