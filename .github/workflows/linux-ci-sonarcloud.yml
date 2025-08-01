@@ -12,8 +12,7 @@ concurrency:
 
 jobs:
   build:
-    if: false
-    # if: github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v3
