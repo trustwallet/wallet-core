@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-latest-xlarge
+    runs-on: macos-15-xlarge
     if: github.event.pull_request.draft == false
     steps:
     - uses: actions/checkout@v3

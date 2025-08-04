@@ -11,6 +11,7 @@
 #include "../BinaryCoding.h"
 #include "../HexCoding.h"
 
+#include <nlohmann/json.hpp>
 #include <cassert>
 #include <chrono>
 
@@ -405,9 +406,31 @@ Data serialize(const protocol::Transaction& tx) noexcept {
 
 Proto::SigningOutput signDirect(const Proto::SigningInput& input) {
     const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveSECP256k1);
-    auto hash = parse_hex(input.txid());
-    const auto signature = key.sign(hash);
     auto output = Proto::SigningOutput();
+
+    Data hash;
+    if (!input.txid().empty()) {
+        hash = parse_hex(input.txid());
+    } else if (!input.raw_json().empty()) {
+        try {
+            auto parsed = nlohmann::json::parse(input.raw_json());
+            if (parsed.contains("txID") && parsed["txID"].is_string()) {
+                hash = parse_hex(parsed["txID"].get<std::string>());
+            } else {
+                // If txID is not present, return an error
+                output.set_error(Common::Proto::Error_invalid_params);
+                output.set_error_message("No txID found in raw JSON");
+                return output;
+            }
+        } catch (const std::exception& e) {
+            // If parsing fails, return an error
+            output.set_error(Common::Proto::Error_invalid_params);
+            output.set_error_message(e.what());
+            return output;
+        }
+    }
+
+    const auto signature = key.sign(hash);
     output.set_signature(signature.data(), signature.size());
     output.set_id(input.txid());
     output.set_id(hash.data(), hash.size());
@@ -415,7 +438,7 @@ Proto::SigningOutput signDirect(const Proto::SigningInput& input) {
 }
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    if (!input.txid().empty()) {
+    if (!input.txid().empty() || !input.raw_json().empty()) {
         return signDirect(input);
     }
 
@@ -455,6 +478,26 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
 Proto::SigningOutput Signer::compile(const Data& signature) const {
     Proto::SigningOutput output;
+    if (!input.raw_json().empty()) {
+        // If raw JSON is provided, we use it directly
+        try {
+            auto parsed = nlohmann::json::parse(input.raw_json());
+            // Add signature to JSON and set to output
+            parsed["signature"] = nlohmann::json::array({hex(signature)});
+            output.set_json(parsed.dump());
+            output.set_signature(signature.data(), signature.size());
+            // Extract txID and set to output
+            if (parsed.contains("txID") && parsed["txID"].is_string()) {
+                auto txID = parse_hex(parsed["txID"].get<std::string>());
+                output.set_id(txID.data(), txID.size());
+            }
+            return output;
+        } catch (const std::exception& e) {
+            output.set_error(Common::Proto::Error_invalid_params);
+            output.set_error_message(e.what());
+            return output;
+        }
+    }
     auto preImage = signaturePreimage();
     auto hash = Hash::sha256(preImage);
     auto transaction = buildTransaction(input);
@@ -468,7 +511,40 @@ Proto::SigningOutput Signer::compile(const Data& signature) const {
 }
 
 Data Signer::signaturePreimage() const {
+    if (!input.raw_json().empty()) {
+        // If raw JSON is provided, we use raw_data_hex directly
+        try {
+            auto parsed = nlohmann::json::parse(input.raw_json());
+            if (parsed.contains("raw_data_hex") && parsed["raw_data_hex"].is_string()) {
+                return parse_hex(parsed["raw_data_hex"].get<std::string>());
+            }
+            // If raw_data_hex is not present, return an empty Data
+            return {};
+        } catch (...) {
+            // Ignore parsing errors, return an empty Data
+            return {};
+        }
+    }
     return serialize(buildTransaction(input));
+}
+
+Data Signer::signaturePreimageHash() const {
+    if (!input.raw_json().empty()) {
+        // If raw JSON is provided, we use txID directly
+        try {
+            auto parsed = nlohmann::json::parse(input.raw_json());
+            if (parsed.contains("txID") && parsed["txID"].is_string()) {
+                return parse_hex(parsed["txID"].get<std::string>());
+            }
+            // If txID is not present, return an empty Data
+            return {};
+        } catch (...) {
+            // Ignore parsing errors, return an empty Data
+            return {};
+        }
+    }
+    auto preImage = signaturePreimage();
+    return Hash::sha256(preImage);
 }
 
 } // namespace TW::Tron

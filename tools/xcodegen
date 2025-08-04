@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# This script generates the Xcode project using xcodegen.
+
+pushd swift
+
+xcodegen
+
+# Update project version from 70 to 56
+# This is a workaround for a bug in xcodegen 2.44.0 that causes pod install will fail with error:
+# ArgumentError - [Xcodeproj] Unable to find compatibility version string for object version `70`.
+echo "Updating project version from 70 to 56..."
+find . -name "project.pbxproj" -type f | while read -r file; do
+    if grep -q "objectVersion = 70;" "$file" || grep -q "preferredProjectObjectVersion = 70;" "$file"; then
+        sed -i '' 's/objectVersion = 70;/objectVersion = 56;/g' "$file"
+        sed -i '' 's/preferredProjectObjectVersion = 70;/preferredProjectObjectVersion = 56;/g' "$file"
+        echo "✓ project.pbxproj objectVersion in $file to 56"
+    fi
+done
+
+pod install
+
+popd

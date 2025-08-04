@@ -21,6 +21,7 @@ class Signer {
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
     Proto::SigningOutput compile(const Data& signature) const;
     Data signaturePreimage() const;
+    Data signaturePreimageHash() const;
 };
 
 } // namespace TW::Tron
