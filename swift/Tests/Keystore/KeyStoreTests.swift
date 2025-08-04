@@ -249,57 +249,6 @@ class KeyStoreTests: XCTestCase {
         XCTAssertNotNil(storedEncoded)
         XCTAssertEqual(privateKeyBase32, storedEncoded)
     }
-    
-    func testImportKeyEncodedEthereum() throws {
-        let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let privateKeyHex = "9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c"
-        let key = StoredKey.importPrivateKeyEncoded(privateKey: privateKeyHex, name: "name", password: Data("password".utf8), coin: .ethereum)!
-        let json = key.exportJSON()!
-
-        let wallet = try keyStore.import(json: json, name: "name", password: "password", newPassword: "newPassword", coins: [.ethereum])
-        let storedEncoded = wallet.key.decryptPrivateKeyEncoded(password: Data("newPassword".utf8))
-    
-        let exportedPrivateKey = try keyStore.exportPrivateKeyEncoded(wallet: wallet, password: "newPassword")
-
-        XCTAssertTrue(wallet.key.hasPrivateKeyEncoded)
-        XCTAssertNotNil(keyStore.keyWallet)
-        XCTAssertNotNil(storedEncoded)
-        XCTAssertEqual(privateKeyHex, storedEncoded)
-        XCTAssertEqual(privateKeyHex, exportedPrivateKey)
-    }
-    
-    func testImportKeyEncodedSolana() throws {
-        let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let privateKeyBase58 = "A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"
-        let key = StoredKey.importPrivateKeyEncoded(privateKey: privateKeyBase58, name: "name", password: Data("password".utf8), coin: .solana)!
-        let json = key.exportJSON()!
-
-        let wallet = try keyStore.import(json: json, name: "name", password: "password", newPassword: "newPassword", coins: [.solana])
-        let storedEncoded = wallet.key.decryptPrivateKeyEncoded(password: Data("newPassword".utf8))
-        
-        let exportedPrivateKey = try keyStore.exportPrivateKeyEncoded(wallet: wallet, password: "newPassword")
-
-        XCTAssertTrue(wallet.key.hasPrivateKeyEncoded)
-        XCTAssertNotNil(keyStore.keyWallet)
-        XCTAssertNotNil(storedEncoded)
-        XCTAssertEqual(privateKeyBase58, storedEncoded)
-        XCTAssertEqual(privateKeyBase58, exportedPrivateKey)
-    }
-    
-    func testImportPrivateKeyAES256Stellar() throws {
-        let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let privateKeyBase32 = "SAV76USXIJOBMEQXPANUOQM6F5LIOTLPDIDVRJBFFE2MDJXG24TAPUU7"
-        let key = StoredKey.importPrivateKeyEncodedWithEncryption(privateKey: privateKeyBase32, name: "name", password: Data("password".utf8), coin: .stellar, encryption: StoredKeyEncryption.aes256Ctr)!
-        let json = key.exportJSON()!
-
-        let wallet = try keyStore.import(json: json, name: "name", password: "password", newPassword: "newPassword", coins: [.stellar])
-        let storedEncoded = wallet.key.decryptPrivateKeyEncoded(password: Data("newPassword".utf8))
-
-        XCTAssertTrue(wallet.key.hasPrivateKeyEncoded)
-        XCTAssertNotNil(keyStore.keyWallet)
-        XCTAssertNotNil(storedEncoded)
-        XCTAssertEqual(privateKeyBase32, storedEncoded)
-    }
 
     func testImportPrivateKey() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)

@@ -27,7 +27,7 @@ TEST(TronSigner, SignDirectTransferAsset) {
 
 TEST(TronSigner, SignDirectRawJsonTransferAsset) {
     auto input = Proto::SigningInput();
-    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     auto rawJson = R"({
 	"raw_data": {
