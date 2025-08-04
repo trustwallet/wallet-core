@@ -12,7 +12,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    if: false
     steps:
       - uses: actions/checkout@v3
       - name: Lint Dockerfile
