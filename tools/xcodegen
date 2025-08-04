@@ -2,6 +2,8 @@
 #
 # This script generates the Xcode project using xcodegen.
 
+pushd swift
+
 xcodegen
 
 # Update project version from 70 to 56
@@ -17,3 +19,5 @@ find . -name "project.pbxproj" -type f | while read -r file; do
 done
 
 pod install
+
+popd
