@@ -5,9 +5,10 @@
 set -e
 set -o pipefail
 
+tools/xcodegen
+
 pushd swift
 
-xcodegen && pod install
 xcodebuild -workspace TrustWalletCore.xcworkspace \
 	-scheme WalletCore \
 	-sdk iphonesimulator \
