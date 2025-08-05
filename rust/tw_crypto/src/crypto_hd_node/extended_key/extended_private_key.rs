@@ -62,8 +62,7 @@ where
                 digest[64..96].try_into()?,
             );
 
-            // Wipe the key parts (index 0..64) of the digest array
-            digest[0..64].iter_mut().for_each(|byte| *byte = 0);
+            digest.zeroize();
 
             result
         } else {
