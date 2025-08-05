@@ -88,10 +88,7 @@ fi
 
 # Generate Xcode project
 if [ -x "$(command -v xcodegen)" ] && isTargetSpecified "ios"; then
-    pushd swift
-    xcodegen
-    pod install
-    popd
+    tools/xcodegen
 elif isTargetSpecified "ios"; then
     echo -e "\nWARNING: Skipped generating Xcode project because the xcodegen tool is not installed."
 else
