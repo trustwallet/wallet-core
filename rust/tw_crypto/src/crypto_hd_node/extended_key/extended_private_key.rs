@@ -57,10 +57,15 @@ where
             secret[31] &= 0x1f;
             secret[31] |= 0x40;
 
-            (
+            let result = (
                 K::try_from(&digest[0..96]).map_err(|_| Error::InvalidKeyData)?,
                 digest[64..96].try_into()?,
-            )
+            );
+
+            // Wipe the key parts (index 0..64) of the digest array
+            digest[0..64].iter_mut().for_each(|byte| *byte = 0);
+
+            result
         } else {
             let domain_separator = hex::decode(&K::bip32_name().to_hex())?;
 
