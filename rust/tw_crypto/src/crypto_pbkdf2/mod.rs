@@ -4,18 +4,28 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+pub mod error;
+
+use error::Error;
+use error::Result;
 use pbkdf2::pbkdf2_hmac;
 use sha2::{Sha256, Sha512};
+
+const MAX_OUTPUT_SIZE: usize = 1024;
 
 pub fn pbkdf2_hmac_sha256(
     password: &[u8],
     salt: &[u8],
     iterations: u32,
     desired_len: usize,
-) -> Vec<u8> {
+) -> Result<Vec<u8>> {
+    if desired_len > MAX_OUTPUT_SIZE {
+        return Err(Error::InvalidOutputSize);
+    }
+
     let mut output = vec![0u8; desired_len];
     pbkdf2_hmac::<Sha256>(password, salt, iterations, &mut output);
-    output
+    Ok(output)
 }
 
 pub fn pbkdf2_hmac_512(
@@ -23,8 +33,12 @@ pub fn pbkdf2_hmac_512(
     salt: &[u8],
     iterations: u32,
     desired_len: usize,
-) -> Vec<u8> {
+) -> Result<Vec<u8>> {
+    if desired_len > MAX_OUTPUT_SIZE {
+        return Err(Error::InvalidOutputSize);
+    }
+
     let mut output = vec![0u8; desired_len];
     pbkdf2_hmac::<Sha512>(password, salt, iterations, &mut output);
-    output
+    Ok(output)
 }

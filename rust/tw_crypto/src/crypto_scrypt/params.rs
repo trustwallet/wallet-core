@@ -6,6 +6,8 @@
 
 use std::mem::size_of;
 
+const MAX_OUTPUT_SIZE: usize = 1024;
+
 #[derive(Clone, Copy, Debug)]
 pub struct InvalidParams;
 
@@ -35,6 +37,10 @@ impl Params {
     /// The only reason we should have rewritten the function is that it does unnecessary `log_n >= r * 16` check:
     /// https://github.com/RustCrypto/password-hashes/blob/a737bef1f992368f165face097d621bb1e76eba4/scrypt/src/params.rs#L67-L72
     pub fn check_params(&self) -> Result<(), InvalidParams> {
+        if self.desired_len > MAX_OUTPUT_SIZE {
+            return Err(InvalidParams);
+        }
+
         let log_n = self.try_log_n()?;
 
         let cond1 = (log_n as usize) < usize::BITS as usize;
