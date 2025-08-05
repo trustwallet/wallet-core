@@ -43,10 +43,10 @@ TEST(TransactionCompiler, IoTeXCompileWithSignatures) {
         "0d1d3799c4700a0b1be21a41de4be56ce74dce8e526590f5b5f947385b00947c4c2ead014429aa706a2470055c"
         "56c7e57d1b119b487765d59b21bcdeafac25108f6929a14f9edf4b2309534501";
 
-    const auto prkey0 = PrivateKey(privateKey0);
+    const auto prkey0 = PrivateKey(privateKey0, TWCoinTypeCurve(TWCoinTypeIoTeX));
     const PublicKey pbkey0 = prkey0.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
 
-    const auto prkey1 = PrivateKey(privateKey1);
+    const auto prkey1 = PrivateKey(privateKey1, TWCoinTypeCurve(TWCoinTypeIoTeX));
     const PublicKey pbkey1 = prkey1.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
 
     /// Step 1: Prepare transaction input (protobuf)
@@ -101,7 +101,7 @@ TEST(TransactionCompiler, IoTeXCompileWithSignatures) {
       // keys were not used anywhere up to this point.
         TW::IoTeX::Proto::SigningInput signingInput;
         ASSERT_TRUE(signingInput.ParseFromArray(inputStrData.data(), (int)inputStrData.size()));
-        EXPECT_EQ(hex(PrivateKey(privateKey0).getPublicKey(TWPublicKeyTypeSECP256k1).bytes),
+        EXPECT_EQ(hex(PrivateKey(privateKey0, TWCoinTypeCurve(TWCoinTypeIoTeX)).getPublicKey(TWPublicKeyTypeSECP256k1).bytes),
                   hex(pubKey0));
         signingInput.set_privatekey(prkey0.bytes.data(), prkey0.bytes.size());
         TW::IoTeX::Proto::SigningOutput output;
@@ -113,7 +113,7 @@ TEST(TransactionCompiler, IoTeXCompileWithSignatures) {
     { // more signatures
         TW::IoTeX::Proto::SigningInput signingInput;
         ASSERT_TRUE(signingInput.ParseFromArray(inputStrData.data(), (int)inputStrData.size()));
-        EXPECT_EQ(hex(PrivateKey(privateKey1).getPublicKey(TWPublicKeyTypeSECP256k1).bytes),
+        EXPECT_EQ(hex(PrivateKey(privateKey1, TWCoinTypeCurve(TWCoinTypeIoTeX)).getPublicKey(TWPublicKeyTypeSECP256k1).bytes),
                   hex(pubKey1));
         signingInput.set_privatekey(prkey1.bytes.data(), prkey1.bytes.size());
         TW::IoTeX::Proto::SigningOutput output;

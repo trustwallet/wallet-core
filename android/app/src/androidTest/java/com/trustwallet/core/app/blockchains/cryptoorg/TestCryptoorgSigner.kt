@@ -27,7 +27,7 @@ class TestCryptoorgSigner {
 
     @Test
     fun CryptoorgTransactionSigning() {
-        val key = PrivateKey("200e439e39cf1aad465ee3de6166247f914cbc0f823fc2dd48bf16dcd556f39d".toHexByteArray())
+        val key = PrivateKey("200e439e39cf1aad465ee3de6166247f914cbc0f823fc2dd48bf16dcd556f39d".toHexByteArray(), CoinType.CRYPTOORG.curve())
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, CRYPTOORG).description()
 

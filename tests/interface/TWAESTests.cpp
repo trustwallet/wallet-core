@@ -4,7 +4,8 @@
 
 #include "TestUtilities.h"
 
-#include <TrustWalletCore/TWAES.h>
+#include <TrustWalletCore/TWAESPaddingMode.h>
+#include <TrustWalletCore/Generated/TWAES.h>
 
 #include <gtest/gtest.h>
 

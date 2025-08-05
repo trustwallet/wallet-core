@@ -71,7 +71,7 @@ TEST(HarmonyCompiler, CompileWithSignatures) {
     ASSERT_EQ(hex(preImage), expectedPreImage);
     ASSERT_EQ(hex(preImageHash), expectedPreImageHash);
 
-    const auto privateKey = PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"));
+    const auto privateKey = PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"), TWCoinTypeCurve(TWCoinTypeHarmony));
     Data signature = parse_hex("43824f50bf4b16ebe1020114de16e3579bdb5f3dcaa26117de87a73b5414b72550506609fd60e3cb565b1f9bae0952d37f3a6c6be262380f7f18cbda5216f34300");
     const PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
 

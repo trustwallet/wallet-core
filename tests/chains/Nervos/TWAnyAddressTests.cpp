@@ -19,7 +19,7 @@ TEST(TWAnyAddressNervos, AddressFromPublicKey) {
     auto privateKey =
         WRAP(TWPrivateKey,
              TWPrivateKeyCreateWithData(
-                 DATA("8a2a726c44e46d1efaa0f9c2a8efed932f0e96d6050b914fde762ee285e61feb").get()));
+                 DATA("8a2a726c44e46d1efaa0f9c2a8efed932f0e96d6050b914fde762ee285e61feb").get(), TWCoinTypeCurve(TWCoinTypeNervos)));
     ASSERT_NE(nullptr, privateKey.get());
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
     ASSERT_NE(nullptr, publicKey.get());

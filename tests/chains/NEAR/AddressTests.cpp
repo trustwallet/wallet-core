@@ -2,9 +2,11 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-#include "NEAR/Address.h"
 #include "Base58.h"
+#include "NEAR/Address.h"
 #include "PrivateKey.h"
+
+#include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWPublicKeyType.h>
 
 #include <gtest/gtest.h>
@@ -38,7 +40,7 @@ TEST(NEARAddress, FromString) {
 
 TEST(NEARAddress, FromPrivateKey) {
     auto fullKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
-    auto key = PrivateKey(Data(fullKey.begin(), fullKey.begin() + 32));
+    auto key = PrivateKey(Data(fullKey.begin(), fullKey.begin() + 32), TWCoinTypeCurve(TWCoinTypeNEAR));
     auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
     auto address = Address(publicKey);
 

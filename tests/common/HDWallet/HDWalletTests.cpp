@@ -21,7 +21,7 @@
 #include "PublicKey.h"
 #include "StarkEx/MessageSigner.h"
 #include "TestUtilities.h"
-#include "TrustWalletCore/TWEthereum.h"
+#include <TrustWalletCore/Generated/TWEthereum.h>
 
 #include <gtest/gtest.h>
 

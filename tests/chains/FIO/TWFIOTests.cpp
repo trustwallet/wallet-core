@@ -19,7 +19,7 @@ namespace TW::FIO::TWFIOTests {
 using namespace std;
 
 TEST(TWFIO, Address) {
-    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035").get()));
+    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035").get(), TWCoinTypeCurve(TWCoinTypeFIO)));
     ASSERT_NE(nullptr, privateKey.get());
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false));
     ASSERT_NE(nullptr, publicKey.get());
@@ -39,7 +39,7 @@ TEST(TWFIO, Address) {
 const Data gChainId = parse_hex("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77");
 const Data gChainIdMainnet = parse_hex("21dcae42c0182200e93f954a074011f9048a7624c6fe81d3c9541a614a88bd1c");
 // 5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf
-const PrivateKey privKeyBA = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035"));
+const PrivateKey privKeyBA = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035"), TWCoinTypeCurve(TWCoinTypeFIO));
 const PublicKey pubKey6M = privKeyBA.getPublicKey(TWPublicKeyTypeSECP256k1);
 const Address addr6M(pubKey6M);
 

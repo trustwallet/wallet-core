@@ -33,6 +33,16 @@ impl<C: EcdsaCurve> Signature<C> {
         Signature { signature, v }
     }
 
+    pub(crate) fn new_from_bytes(sig: &[u8], rec_id: u8) -> KeyPairResult<Self> {
+        if sig.len() + 1 < Self::len() {
+            return Err(KeyPairError::InvalidSignature);
+        }
+
+        let v = ecdsa::RecoveryId::from_byte(rec_id).ok_or(KeyPairError::InvalidSignature)?;
+        let signature = Self::signature_from_slices(&sig[Self::R_RANGE], &sig[Self::S_RANGE])?;
+        Ok(Self::new(signature, v))
+    }
+
     /// Returns the number of bytes for a serialized signature representation.
     pub const fn len() -> usize {
         Self::LEN
@@ -87,6 +97,16 @@ impl<C: EcdsaCurve> Signature<C> {
         dest[Self::R_RANGE].copy_from_slice(r.as_slice());
         dest[Self::S_RANGE].copy_from_slice(s.as_slice());
         dest[Self::RECOVERY_LAST] = self.v.to_byte();
+        dest
+    }
+
+    pub fn vrs(&self) -> H520 {
+        let (r, s) = self.signature.split_bytes();
+
+        let mut dest = H520::default();
+        dest[0] = self.v.to_byte();
+        dest[1..33].copy_from_slice(r.as_slice());
+        dest[33..65].copy_from_slice(s.as_slice());
         dest
     }
 

@@ -21,7 +21,7 @@ Data generateMessage(const std::string& message) {
 
 std::string MessageSigner::signMessage(const PrivateKey& privateKey, const std::string& message) {
     auto signableMessage = generateMessage(message);
-    auto data = privateKey.sign(signableMessage, TWCurveSECP256k1);
+    auto data = privateKey.sign(signableMessage);
     data[64] += 27;
     return hex(data);
 }

@@ -25,7 +25,7 @@ class TestNebulasAddress {
 
     @Test
     fun testAddressFromPublicKey() {
-        var priKey = PrivateKey(("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b").toHexByteArray())
+        var priKey = PrivateKey(("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b").toHexByteArray(), CoinType.NEBULAS.curve())
         val pubkey = priKey.getPublicKeySecp256k1(false)
         val address = AnyAddress(pubkey, CoinType.NEBULAS)
 

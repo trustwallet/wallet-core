@@ -7,7 +7,7 @@ import XCTest
 
 class ZenTests: XCTestCase {
     func testAddress() {
-        let key = PrivateKey(data: Data(hexString: "3a8e0a528f62f4ca2c77744c8a571def2845079b50105a9f7ef6b1b823def67a")!)!
+        let key = PrivateKey(data: Data(hexString: "3a8e0a528f62f4ca2c77744c8a571def2845079b50105a9f7ef6b1b823def67a")!, curve: CoinType.zen.curve)!
         let pubkey = key.getPublicKeySecp256k1(compressed: true)
         let address = AnyAddress(publicKey: pubkey, coin: .zen)
         let addressFromString = AnyAddress(string: "znk19H1wcARcCa7TM6zgmJUbWoWWtZ8k5cg", coin: .zen)!
@@ -17,7 +17,7 @@ class ZenTests: XCTestCase {
     }
 
     func testSign() {
-        let key = PrivateKey(data: Data(hexString: "3a8e0a528f62f4ca2c77744c8a571def2845079b50105a9f7ef6b1b823def67a")!)!
+        let key = PrivateKey(data: Data(hexString: "3a8e0a528f62f4ca2c77744c8a571def2845079b50105a9f7ef6b1b823def67a")!, curve: CoinType.zen.curve)!
         let blockHash = Data(hexString: "81dc725fd33fada1062323802eefb54d3325d924d4297a692214560400000000")!
         let blockHeight = Int64(1147624)
         let utxos = [

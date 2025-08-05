@@ -8,11 +8,10 @@
 # - run cmake, to enable coverage measurement
 #   cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug
 # - build tester
-#   make -Cbuild -j12 tests TrezorCryptoTests
+#   make -Cbuild -j12 tests
 # - Remove any old coverage files
 #   find . -name "*.gcda" -exec rm \{\} \;
 # - run unit tests
-#   ./build/trezor-crypto/crypto/tests/TrezorCryptoTests
 #   ./build/tests/tests tests --gtest_output=xml
 # - generate coverage info (slow).  Optionally generate report in HTML format:
 #   ./tools/coverage html

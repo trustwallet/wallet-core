@@ -27,7 +27,7 @@ class TestSecretSigner {
 
     @Test
     fun SecretTransactionSigning() {
-        val key = PrivateKey("87201512d132ef7a1e57f9e24905fbc24300bd73f676b5716182be5f3e39dada".toHexByteArray())
+        val key = PrivateKey("87201512d132ef7a1e57f9e24905fbc24300bd73f676b5716182be5f3e39dada".toHexByteArray(), CoinType.SECRET.curve())
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, SECRET).description()
 

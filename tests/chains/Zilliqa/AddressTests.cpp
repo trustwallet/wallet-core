@@ -15,8 +15,8 @@ namespace TW::Zilliqa::tests {
 
 TEST(ZilliqaAddress, FromPrivateKey) {
     const auto privateKey =
-        PrivateKey(parse_hex("3382266517e2ebe6df51faf4bfe612236ad46fb8bd59ac982a223b045e080ac6"), TWCurveSECP256k1);
-    const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+        PrivateKey(parse_hex("3382266517e2ebe6df51faf4bfe612236ad46fb8bd59ac982a223b045e080ac6"), TWCurveZILLIQASchnorr);
+    const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeZILLIQASchnorr));
     const auto address = Address(publicKey);
     auto expectedAddress = "zil1j8xae6lggm8y63m3y2r7aefu797ze7mhzulnqg";
 

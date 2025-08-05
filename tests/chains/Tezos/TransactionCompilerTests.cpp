@@ -24,7 +24,7 @@ TEST(TezosCompiler, CompileWithSignatures) {
 
     /// Step 1: Prepare transaction input (protobuf)
     auto privateKey =
-        PrivateKey(parse_hex("2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f"));
+        PrivateKey(parse_hex("2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f"), TWCoinTypeCurve(coin));
     auto publicKey = privateKey.getPublicKey(::publicKeyType(coin));
     auto revealKey = parse_hex("311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff95");
 

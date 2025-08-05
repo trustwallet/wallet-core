@@ -32,9 +32,9 @@ TEST(SuiCompiler, PreHashAndCompile) {
     EXPECT_EQ(data(preSigningOutput.data()), expectedData);
     EXPECT_EQ(data(preSigningOutput.data_hash()), expectedHash);
 
-    auto privateKey = PrivateKey(parse_hex("3823dce5288ab55dd1c00d97e91933c613417fdb282a0b8b01a7f5f5a533b266"));
+    auto privateKey = PrivateKey(parse_hex("3823dce5288ab55dd1c00d97e91933c613417fdb282a0b8b01a7f5f5a533b266"), TWCurveED25519);
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519).bytes;
-    auto signature = privateKey.sign(expectedHash, TWCurveED25519);
+    auto signature = privateKey.sign(expectedHash);
 
     auto outputData = TransactionCompiler::compileWithSignatures(TWCoinTypeSui, inputStrData, {signature}, {publicKey});
     Proto::SigningOutput output;

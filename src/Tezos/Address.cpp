@@ -11,8 +11,6 @@
 #include "../Hash.h"
 #include "../HexCoding.h"
 
-#include <TrezorCrypto/ecdsa.h>
-
 namespace TW::Tezos {
 
 /// Address prefixes.

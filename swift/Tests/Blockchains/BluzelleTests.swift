@@ -9,7 +9,7 @@ class BluzelleAddressTests: XCTestCase {
     func testAddressPublicKey() {
 
         let privateKeyData = Data(hexString: "1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6")!
-        let privateKey = PrivateKey(data: privateKeyData)!
+        let privateKey = PrivateKey(data: privateKeyData, curve: CoinType.bluzelle.curve)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
 
         let expectedAddress = "bluzelle1jf9aaj9myrzsnmpdr7twecnaftzmku2myvn4dg"
@@ -86,7 +86,7 @@ class BluzelleSignerTests: XCTestCase {
     func testSigningMessage() {
         // Submitted Realworld tx for the following test : https://bigdipper.net.bluzelle.com/transactions/B3A7F30539CCDF72D210BC995FAF65B43F9BE04FA9F8AFAE0EC969660744002F
 
-        let privateKey = PrivateKey(data: privateKeyData)!
+        let privateKey = PrivateKey(data: privateKeyData, curve: CoinType.bluzelle.curve)!
 
         let sendCoinsMessage = CosmosMessage.Send.with {
             $0.fromAddress = myAddress

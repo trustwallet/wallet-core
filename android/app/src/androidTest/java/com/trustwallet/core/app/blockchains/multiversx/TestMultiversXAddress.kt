@@ -22,7 +22,7 @@ class TestMultiversXAddress {
 
     @Test
     fun testAddressFromPrivateKey() {
-        val key = PrivateKey(aliceSeedHex.toHexByteArray())
+        val key = PrivateKey(aliceSeedHex.toHexByteArray(), CoinType.MULTIVERSX.curve())
         val pubKey = key.publicKeyEd25519
         val address = AnyAddress(pubKey, CoinType.MULTIVERSX)
 

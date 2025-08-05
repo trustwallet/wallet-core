@@ -11,7 +11,7 @@ class InternetComputerTests: XCTestCase {
     func testAddress() {
         // TODO: Check and finalize implementation
 
-        let key = PrivateKey(data: Data(hexString: "ee42eaada903e20ef6e5069f0428d552475c1ea7ed940842da6448f6ef9d48e7")!)!
+        let key = PrivateKey(data: Data(hexString: "ee42eaada903e20ef6e5069f0428d552475c1ea7ed940842da6448f6ef9d48e7")!, curve: CoinType.internetComputer.curve)!
         let pubkey = key.getPublicKeySecp256k1(compressed: false)
         let address = AnyAddress(publicKey: pubkey, coin: .internetComputer)
         let addressFromString = AnyAddress(string: "2f25874478d06cf68b9833524a6390d0ba69c566b02f46626979a3d6a4153211", coin: .internetComputer)!
@@ -21,7 +21,7 @@ class InternetComputerTests: XCTestCase {
     }
 
     func testSign() {
-        let key = PrivateKey(data: Data(hexString: "227102911bb99ce7285a55f952800912b7d22ebeeeee59d77fc33a5d7c7080be")!)!
+        let key = PrivateKey(data: Data(hexString: "227102911bb99ce7285a55f952800912b7d22ebeeeee59d77fc33a5d7c7080be")!, curve: CoinType.internetComputer.curve)!
         let input = InternetComputerSigningInput.with {
             $0.privateKey = key.data
             $0.transaction = InternetComputerTransaction.with {
@@ -39,7 +39,7 @@ class InternetComputerTests: XCTestCase {
     }
     
     func testSignWithInvalidToAccountIdentifier() {
-        let key = PrivateKey(data: Data(hexString: "227102911bb99ce7285a55f952800912b7d22ebeeeee59d77fc33a5d7c7080be")!)!
+        let key = PrivateKey(data: Data(hexString: "227102911bb99ce7285a55f952800912b7d22ebeeeee59d77fc33a5d7c7080be")!, curve: CoinType.internetComputer.curve)!
         let input = InternetComputerSigningInput.with {
             $0.privateKey = key.data
             $0.transaction = InternetComputerTransaction.with {
@@ -57,7 +57,7 @@ class InternetComputerTests: XCTestCase {
     }
     
     func testSignWithInvalidAmount() {
-        let key = PrivateKey(data: Data(hexString: "227102911bb99ce7285a55f952800912b7d22ebeeeee59d77fc33a5d7c7080be")!)!
+        let key = PrivateKey(data: Data(hexString: "227102911bb99ce7285a55f952800912b7d22ebeeeee59d77fc33a5d7c7080be")!, curve: CoinType.internetComputer.curve)!
         let input = InternetComputerSigningInput.with {
             $0.privateKey = key.data
             $0.transaction = InternetComputerTransaction.with {

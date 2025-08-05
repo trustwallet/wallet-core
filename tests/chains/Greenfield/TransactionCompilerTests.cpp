@@ -23,7 +23,7 @@ TEST(GreenfieldCompiler, PreHashCompile) {
     // Successfully broadcasted https://greenfieldscan.com/tx/0x9f895cf2dd64fb1f428cefcf2a6585a813c3540fc9fe1ef42db1da2cb1df55ab
 
     auto privateKeyData = parse_hex("9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0");
-    PrivateKey privateKey(privateKeyData);
+    PrivateKey privateKey(privateKeyData, TWCurveSECP256k1);
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
 
     Proto::SigningInput input;
@@ -60,7 +60,7 @@ TEST(GreenfieldCompiler, PreHashCompile) {
 
     // Step 2: Sign "remotely"
 
-    auto signature = privateKey.sign(data(preOutput.data_hash()), TWCurveSECP256k1);
+    auto signature = privateKey.sign(data(preOutput.data_hash()));
 
     EXPECT_EQ(hex(signature), "cb3a4684a991014a387a04a85b59227ebb79567c2025addcb296b4ca856e9f810d3b526f2a0d0fad6ad1b126b3b9516f8b3be020a7cca9c03ce3cf47f4199b6d00");
 

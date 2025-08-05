@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::KeyPairResult;
+use tw_hash::H256;
 use tw_misc::traits::{FromSlice, ToBytesVec, ToBytesZeroizing};
 
 pub trait KeyPairTrait: FromSlice + SigningKeyTrait + VerifyingKeyTrait {
@@ -30,4 +31,8 @@ pub trait VerifyingKeyTrait {
 
     /// Verifies if the given `hash` was signed using the private key.
     fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool;
+}
+
+pub trait DerivableKeyTrait: Sized {
+    fn derive_child(&self, other: H256) -> KeyPairResult<Self>;
 }

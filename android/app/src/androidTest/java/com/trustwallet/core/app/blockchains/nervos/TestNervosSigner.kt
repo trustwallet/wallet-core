@@ -23,7 +23,7 @@ class TestNervosSigner {
 
     @Test
     fun testSigning() {
-        val key = PrivateKey("8a2a726c44e46d1efaa0f9c2a8efed932f0e96d6050b914fde762ee285e61feb".toHexByteArray())
+        val key = PrivateKey("8a2a726c44e46d1efaa0f9c2a8efed932f0e96d6050b914fde762ee285e61feb".toHexByteArray(), CoinType.NERVOS.curve())
 
         val lockScript = Script.newBuilder().apply {
             codeHash = "9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8".toHexBytesInByteString()
