@@ -11,12 +11,18 @@ use sha2::Sha256;
 pub mod params;
 mod romix;
 
+const MAX_INPUT_SIZE: usize = 1024;
+
 /// The scrypt key derivation function.
 /// Original: https://github.com/RustCrypto/password-hashes/blob/a737bef1f992368f165face097d621bb1e76eba4/scrypt/src/lib.rs#L89
 ///
 /// The only reason we should have rewritten the function is that it does unnecessary `log_n >= r * 16` check:
 /// https://github.com/RustCrypto/password-hashes/blob/a737bef1f992368f165face097d621bb1e76eba4/scrypt/src/params.rs#L67-L72
 pub fn scrypt(password: &[u8], salt: &[u8], params: &Params) -> Result<Vec<u8>, InvalidParams> {
+    if password.len() > MAX_INPUT_SIZE || salt.len() > MAX_INPUT_SIZE {
+        return Err(InvalidParams);
+    }
+
     params.check_params()?;
 
     // The checks in the `Params::check_params` guarantee
