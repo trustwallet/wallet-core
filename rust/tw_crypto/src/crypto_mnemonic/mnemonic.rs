@@ -16,7 +16,7 @@ use std::{borrow::Cow, fmt};
 
 const MIN_NB_WORDS: usize = 12;
 const MAX_NB_WORDS: usize = 24;
-const EOF: u16 = u16::max_value();
+const EOF: u16 = u16::MAX;
 
 const SUGGEST_MAX_COUNT: usize = 10;
 const PBKDF2_ROUNDS: u32 = 2048;
@@ -47,11 +47,11 @@ impl Mnemonic {
         if nb_bits % 32 != 0 {
             return Err(Error::BadEntropyBitCount(nb_bits));
         }
-        if nb_bits < MIN_ENTROPY_BITS || nb_bits > MAX_ENTROPY_BITS {
+        if !(MIN_ENTROPY_BITS..=MAX_ENTROPY_BITS).contains(&nb_bits) {
             return Err(Error::BadEntropyBitCount(nb_bits));
         }
 
-        let check = sha256(&entropy);
+        let check = sha256(entropy);
         let mut bits = [false; MAX_ENTROPY_BITS + MAX_CHECKSUM_BITS];
         for i in 0..nb_bytes {
             for j in 0..8 {
@@ -131,7 +131,7 @@ impl Mnemonic {
             words[i] = idx;
 
             for j in 0..11 {
-                bits[i * 11 + j] = idx >> (10 - j) & 1 == 1;
+                bits[i * 11 + j] = ((idx >> (10 - j)) & 1) == 1;
             }
         }
 
@@ -160,7 +160,7 @@ impl Mnemonic {
     }
 
     /// Ensure the content of the [Cow] is normalized UTF8.
-    fn normalize_utf8_cow<'a>(cow: &mut Cow<'a, str>) {
+    fn normalize_utf8_cow(cow: &mut Cow<str>) {
         // Avoid conditional branching by always normalizing, at the cost of some extra work.
         // This ensures similar timing regardless of input normalization state.
         *cow = Cow::Owned(cow.as_ref().nfkd().to_string());
