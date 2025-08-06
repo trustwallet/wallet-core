@@ -34,8 +34,9 @@ impl Params {
     ///
     /// Original: https://github.com/RustCrypto/password-hashes/blob/a737bef1f992368f165face097d621bb1e76eba4/scrypt/src/params.rs#L44
     ///
-    /// The only reason we should have rewritten the function is that it does unnecessary `log_n >= r * 16` check:
-    /// https://github.com/RustCrypto/password-hashes/blob/a737bef1f992368f165face097d621bb1e76eba4/scrypt/src/params.rs#L67-L72
+    /// The only reason we should have rewritten the function is that legacy wallets can have `log_n > r * 16`, while original implementation does not allow that.
+    /// Instead, we restrict `log_n` to be `log_n < r * 19`.
+    /// Ref: https://github.com/RustCrypto/password-hashes/blob/a737bef1f992368f165face097d621bb1e76eba4/scrypt/src/params.rs#L67-L72
     pub fn check_params(&self) -> Result<(), InvalidParams> {
         if self.desired_len > MAX_OUTPUT_SIZE {
             return Err(InvalidParams);
@@ -63,6 +64,13 @@ impl Params {
 
         // check that p * r * 128 doesn't overflow
         r128.checked_mul(p).ok_or(InvalidParams)?;
+
+        // This check required by Scrypt:
+        // check: n < 2 ^ (19 * r)
+        // r * 19 won't overflow since r128 didn't
+        if (log_n as usize) >= r * 19 {
+            return Err(InvalidParams);
+        }
 
         // This check required by Scrypt:
         // check: p <= ((2^32-1) * 32) / (128 * r)
