@@ -7,7 +7,7 @@
   end
 
   parameters.each do |param| -%>
-<%  if !param.type.is_nullable
+<%  if !param.type.is_nullable && (KotlinJniHelper.type(param.type) == 'jobject' || KotlinJniHelper.type(param.type) == 'jstring' || KotlinJniHelper.type(param.type) == 'jbyteArray')
       # In case of constructor (starts with Create), it always returns jlong type.
       if method.name.start_with?('Create') -%>
     JNI_CHECK_NULL_AND_RETURN_ZERO(env, <%= param.name %>, "<%= param.name %>");
