@@ -51,7 +51,7 @@ void __attribute__((weak)) random_buffer(uint8_t *buf, size_t len) {
     if (randomData < 0) {
         throw std::runtime_error("Failed to open /dev/urandom");
     }
-    if (read(randomData, buf, len) < 0) {
+    if (read(randomData, buf, len) < len) {
         throw std::runtime_error("Failed to read from /dev/urandom");
     }
     close(randomData);

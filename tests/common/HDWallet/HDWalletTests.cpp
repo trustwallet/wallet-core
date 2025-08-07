@@ -442,7 +442,7 @@ TEST(HDWallet, AptosKey) {
 TEST(HDWallet, HederaKey) {
     // https://github.com/hashgraph/hedera-sdk-js/blob/e0cd39c84ab189d59a6bcedcf16e4102d7bb8beb/packages/cryptography/test/unit/Mnemonic.js#L47
     {
-        const auto derivPath = "m/44'/3030'/0'/0'/0";
+        const auto derivPath = "m/44'/3030'/0'/0'";
         HDWallet wallet = HDWallet("inmate flip alley wear offer often piece magnet surge toddler submit right radio absent pear floor belt raven price stove replace reduce plate home", "");
         {
             const auto privateKey = wallet.getKey(TWCoinTypeHedera, DerivationPath(derivPath));
@@ -451,7 +451,7 @@ TEST(HDWallet, HederaKey) {
         }
     }
     {
-        const auto derivPath = "m/44'/3030'/0'/0'/0";
+        const auto derivPath = "m/44'/3030'/0'/0'";
         HDWallet wallet = HDWallet("walk gun glide frequent exhaust sugar siege prosper staff skill swarm label", "");
         {
             const auto privateKey = wallet.getKey(TWCoinTypeHedera, DerivationPath(derivPath));

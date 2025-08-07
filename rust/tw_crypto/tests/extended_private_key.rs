@@ -280,7 +280,7 @@ fn test_aptos_key() {
     );
 
     let child_public_key = public_key.derive_child(bip32::ChildNumber(0), Hasher::Sha256ripemd);
-    assert!(child_public_key.is_ok());
+    assert!(child_public_key.is_err());
 }
 
 #[test]
@@ -342,7 +342,7 @@ fn test_nano_key() {
     );
 
     let child_public_key = public_key.derive_child(bip32::ChildNumber(0), Hasher::Sha256ripemd);
-    assert!(child_public_key.is_ok());
+    assert!(child_public_key.is_err());
 }
 
 #[test]
@@ -446,7 +446,7 @@ fn test_ed25519_key_derivation() {
     )
     .unwrap();
     let child_key = private_key.derive_child(&[0x00], ChildNumber::new(0, false).unwrap());
-    assert!(child_key.is_ok());
+    assert!(child_key.is_err());
 
     let child_key = private_key.derive_child(&[0x00], ChildNumber::new(0, true).unwrap());
     assert!(child_key.is_err());
@@ -505,7 +505,7 @@ fn test_nano_key_derivation_failure() {
     assert!(child_key.is_err());
 
     let child_key = public_key.derive_child(&[0x00], ChildNumber::new(0, false).unwrap());
-    assert!(child_key.is_ok());
+    assert!(child_key.is_err());
 }
 
 #[test]

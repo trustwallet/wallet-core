@@ -39,6 +39,7 @@ void HDWallet<seedSize>::updateSeedAndEntropy([[maybe_unused]] bool check) {
     std::copy_n(seedData.begin(), seedSize, seed.begin());
     entropy = Mnemonic::toEntropy(mnemonic);
    
+    memzero(seedData.data(), seedData.size());
     assert(!check || entropy.size() > 10);
 }
 
@@ -77,6 +78,7 @@ HDWallet<seedSize>::~HDWallet() {
     memzero(seed.data(), seed.size());
     memzero(mnemonic.data(), mnemonic.size());
     memzero(passphrase.data(), passphrase.size());
+    memzero(entropy.data(), entropy.size());
 }
 
 template <size_t seedSize>
@@ -88,7 +90,9 @@ static TWHDNode* getMasterNode(const HDWallet<seedSize>& wallet, TWCurve curve) 
         seedData = TWDataCreateWithBytes(wallet.getSeed().data(), wallet.getSeed().size());
     }
     auto node = TWHDNodeCreateWithSeed(seedData, curve);
-    TWDataDelete(seedData);
+    if (seedData != nullptr) {
+        TWDataDelete(seedData);
+    }
     return node;
 }
 

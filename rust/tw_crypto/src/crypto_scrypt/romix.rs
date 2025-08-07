@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 //! Original: https://github.com/RustCrypto/password-hashes/blob/master/scrypt/src/romix.rs
+
 /// Execute the ROMix operation in-place.
 /// b - the data to operate on
 /// v - a temporary variable to store the vector V

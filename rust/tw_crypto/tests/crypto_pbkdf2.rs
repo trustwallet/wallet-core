@@ -44,3 +44,15 @@ fn test_pbkdf2_hmac_exceeds_max_output_size() {
     let data = pbkdf2_hmac_512(&password, &salt, 1, 1025);
     assert_eq!(data.err(), Some(Error::InvalidOutputSize));
 }
+
+#[test]
+fn test_pbkdf2_hmac_exceeds_max_iterations() {
+    let password = hex::decode("70617373776f7264").unwrap();
+    let salt = hex::decode("73616C74").unwrap();
+
+    let data = pbkdf2_hmac_sha256(&password, &salt, 1000001, 20);
+    assert_eq!(data.err(), Some(Error::InvalidOutputSize));
+
+    let data = pbkdf2_hmac_512(&password, &salt, 1000001, 20);
+    assert_eq!(data.err(), Some(Error::InvalidOutputSize));
+}

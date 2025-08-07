@@ -104,7 +104,8 @@ impl FromStr for PrivateKey {
     type Err = KeyPairError;
 
     fn from_str(secret_key: &str) -> Result<Self, Self::Err> {
-        let bytes = hex::decode(secret_key).map_err(|_| KeyPairError::InvalidSecretKey)?;
+        let bytes =
+            Zeroizing::new(hex::decode(secret_key).map_err(|_| KeyPairError::InvalidSecretKey)?);
         Ok(Self(
             k256::SecretKey::from_slice(&bytes).map_err(|_| KeyPairError::InvalidSecretKey)?,
         ))
@@ -133,7 +134,7 @@ impl SigningKeyTrait for PrivateKey {
     // Taken from https://github.com/Zilliqa/zilliqa-rs/blob/24a0e882bcab634b6e776d94709c1760841023d4/src/crypto/schnorr.rs#L20
     fn sign(&self, message: Self::SigningMessage) -> KeyPairResult<Self::Signature> {
         let priv_scalar = self.0.as_scalar_primitive();
-        let entropy_input = &priv_scalar.to_bytes();
+        let entropy_input = Zeroizing::new(priv_scalar.to_bytes());
 
         let message_hash = sha2::Sha256::digest(message.as_slice());
         let nonce = bits2field::<Secp256k1>(message_hash.as_slice())
@@ -141,8 +142,11 @@ impl SigningKeyTrait for PrivateKey {
         let n = Secp256k1::ORDER.to_be_byte_array();
         let additional_data = &[];
 
-        let mut hmac_drbg =
-            HmacDrbg::<CurveDigest<Secp256k1>>::new(entropy_input, &nonce, additional_data);
+        let mut hmac_drbg = HmacDrbg::<CurveDigest<Secp256k1>>::new(
+            entropy_input.as_slice(),
+            &nonce,
+            additional_data,
+        );
 
         for _ in 0..10000 {
             let k = generate_k(&mut hmac_drbg, &n);

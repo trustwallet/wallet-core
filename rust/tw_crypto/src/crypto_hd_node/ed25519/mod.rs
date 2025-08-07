@@ -22,7 +22,7 @@ impl BIP32PrivateKey for ed25519::sha512::PrivateKey {
         if child_number.is_hardened() {
             Self::try_from(other).map_err(|_| Error::InvalidKeyData)
         } else {
-            Ok(self.clone())
+            Err(Error::InvalidChildNumber)
         }
     }
 
@@ -44,7 +44,7 @@ impl BIP32PublicKey for ed25519::sha512::PublicKey {
         if child_number.is_hardened() {
             Self::try_from(other).map_err(|_| Error::InvalidKeyData)
         } else {
-            Ok(self.clone())
+            Err(Error::InvalidChildNumber)
         }
     }
 }
@@ -56,7 +56,7 @@ impl BIP32PrivateKey for ed25519::blake2b::PrivateKey {
         if child_number.is_hardened() {
             Self::try_from(other).map_err(|_| Error::InvalidKeyData)
         } else {
-            Ok(self.clone())
+            Err(Error::InvalidChildNumber)
         }
     }
 
@@ -78,7 +78,7 @@ impl BIP32PublicKey for ed25519::blake2b::PublicKey {
         if child_number.is_hardened() {
             Self::try_from(other).map_err(|_| Error::InvalidKeyData)
         } else {
-            Ok(self.clone())
+            Err(Error::InvalidChildNumber)
         }
     }
 }

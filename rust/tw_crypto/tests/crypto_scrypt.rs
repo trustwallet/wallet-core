@@ -57,3 +57,26 @@ fn test_scrypt_exceeds_max_output_size() {
     };
     scrypt(&password, &salt, &params).unwrap_err();
 }
+
+#[test]
+fn test_scrypt_exceeds_max_input_size() {
+    // Use a password that exceeds the MAX_INPUT_SIZE (1024 bytes) to trigger the error.
+    // We'll generate a 1025-byte password.
+    let password = vec![b'a'; 1025];
+    let salt =
+        hex::decode("80132842c6cde8f9d04582932ef92c3cad3ba6b41e1296ef681692372886db86").unwrap();
+
+    let params = Params {
+        n: 1 << 12,
+        r: 8,
+        p: 6,
+        desired_len: 32,
+    };
+    scrypt(&password, &salt, &params).unwrap_err();
+
+    // Use a salt that exceeds the MAX_INPUT_SIZE (1024 bytes) to trigger the error.
+    // We'll generate a 1025-byte salt.
+    let password = hex::decode("70617373776f7264").unwrap();
+    let salt = vec![b'a'; 1025];
+    scrypt(&password, &salt, &params).unwrap_err();
+}

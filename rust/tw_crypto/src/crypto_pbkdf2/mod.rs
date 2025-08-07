@@ -12,6 +12,7 @@ use pbkdf2::pbkdf2_hmac;
 use sha2::{Sha256, Sha512};
 
 const MAX_OUTPUT_SIZE: usize = 1024;
+const MAX_ITERATIONS: u32 = 1000000;
 
 pub fn pbkdf2_hmac_sha256(
     password: &[u8],
@@ -19,7 +20,7 @@ pub fn pbkdf2_hmac_sha256(
     iterations: u32,
     desired_len: usize,
 ) -> Result<Vec<u8>> {
-    if desired_len > MAX_OUTPUT_SIZE {
+    if desired_len > MAX_OUTPUT_SIZE || iterations > MAX_ITERATIONS {
         return Err(Error::InvalidOutputSize);
     }
 
@@ -34,7 +35,7 @@ pub fn pbkdf2_hmac_512(
     iterations: u32,
     desired_len: usize,
 ) -> Result<Vec<u8>> {
-    if desired_len > MAX_OUTPUT_SIZE {
+    if desired_len > MAX_OUTPUT_SIZE || iterations > MAX_ITERATIONS {
         return Err(Error::InvalidOutputSize);
     }
 
