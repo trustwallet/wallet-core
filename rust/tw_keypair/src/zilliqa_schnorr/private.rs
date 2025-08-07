@@ -104,11 +104,12 @@ impl FromStr for PrivateKey {
     type Err = KeyPairError;
 
     fn from_str(secret_key: &str) -> Result<Self, Self::Err> {
-        let bytes = hex::decode(secret_key).map_err(|_| KeyPairError::InvalidSecretKey)?;
-        let result =
-            Self(k256::SecretKey::from_slice(&bytes).map_err(|_| KeyPairError::InvalidSecretKey)?);
-        drop(bytes);
-        Ok(result)
+        let bytes = Zeroizing::new(
+            hex::decode(secret_key).map_err(|_| KeyPairError::InvalidSecretKey)?,
+        );
+        Ok(Self(
+            k256::SecretKey::from_slice(&bytes).map_err(|_| KeyPairError::InvalidSecretKey)?,
+        ))
     }
 }
 

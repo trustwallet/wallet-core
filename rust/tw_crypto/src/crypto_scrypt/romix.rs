@@ -6,11 +6,9 @@
 
 //! Original: https://github.com/RustCrypto/password-hashes/blob/master/scrypt/src/romix.rs
 
-use zeroize::Zeroize;
-
 /// Execute the ROMix operation in-place.
 /// b - the data to operate on
-/// v - a temporary variable to store the vector V (will be zeroized after use)
+/// v - a temporary variable to store the vector V
 /// t - a temporary variable to store the result of the xor
 /// n - the scrypt parameter N
 #[allow(clippy::many_single_char_names)]
@@ -38,8 +36,6 @@ pub(crate) fn scrypt_ro_mix(b: &mut [u8], v: &mut [u8], t: &mut [u8], n: usize) 
         xor(b, &v[j * len..(j + 1) * len], t);
         scrypt_block_mix(t, b);
     }
-
-    v.zeroize();
 }
 
 /// Execute the BlockMix operation
