@@ -30,6 +30,7 @@ pub enum BlockchainType {
     Ronin,
     Solana,
     Sui,
+    Tezos,
     TheOpenNetwork,
     Thorchain,
     Zcash,
