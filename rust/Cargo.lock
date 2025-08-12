@@ -218,19 +218,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bip39"
-version = "2.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "33415e24172c1b7d6066f6d999545375ab8e1d95421d6784bdfff9496f292387"
-dependencies = [
- "bitcoin_hashes",
- "rand",
- "rand_core",
- "serde",
- "unicode-normalization",
-]
-
-[[package]]
 name = "bitcoin"
 version = "0.30.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2062,12 +2049,13 @@ version = "0.1.0"
 dependencies = [
  "aes",
  "bip32",
- "bip39",
  "bs58 0.5.1",
  "cbc",
  "ctr",
  "ed25519-bip32",
  "pbkdf2",
+ "rand",
+ "rand_core",
  "salsa20",
  "serde_json",
  "sha2",
@@ -2078,6 +2066,7 @@ dependencies = [
  "tw_macros",
  "tw_memory",
  "tw_misc",
+ "unicode-normalization",
  "zeroize",
 ]
 

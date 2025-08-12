@@ -761,7 +761,7 @@ fn test_hedera_key() {
         let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw()) };
         let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
 
-        let path = "m/44'/3030'/0'/0'/0";
+        let path = "m/44'/3030'/0'/0'";
         let path_string = TWStringHelper::create(&path);
         let derived_node_ptr = unsafe {
             tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32)
@@ -801,7 +801,7 @@ fn test_hedera_key() {
         let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw()) };
         let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
 
-        let path = "m/44'/3030'/0'/0'/0";
+        let path = "m/44'/3030'/0'/0'";
         let path_string = TWStringHelper::create(&path);
         let derived_node_ptr = unsafe {
             tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32)

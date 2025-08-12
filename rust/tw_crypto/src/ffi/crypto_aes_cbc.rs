@@ -44,6 +44,8 @@ where
 
 /// Encrypts a block of Data using AES in Cipher Block Chaining (CBC) mode with 128-bit key.
 ///
+/// Warning: Only provided for backwards compatibility. Avoid using this function.
+///
 /// \param key encryption key Data, must be 16 bytes long.
 /// \param data Data to encrypt.
 /// \param iv initialization vector.
@@ -61,6 +63,8 @@ pub unsafe extern "C" fn tw_aes_encrypt_cbc_128(
 }
 
 /// Decrypts a block of Data using AES in Cipher Block Chaining (CBC) mode with 128-bit key.
+///
+/// Warning: Only provided for backwards compatibility. Avoid using this function.
 ///
 /// \param key decryption key Data, must be 16 bytes long.
 /// \param data Data to decrypt.
@@ -80,6 +84,8 @@ pub unsafe extern "C" fn tw_aes_decrypt_cbc_128(
 
 /// Encrypts a block of Data using AES in Cipher Block Chaining (CBC) mode with 192-bit key.
 ///
+/// Warning: Only provided for backwards compatibility. Avoid using this function.
+///
 /// \param key encryption key Data, must be 24 bytes long.
 /// \param data Data to encrypt.
 /// \param iv initialization vector.
@@ -97,6 +103,8 @@ pub unsafe extern "C" fn tw_aes_encrypt_cbc_192(
 }
 
 /// Decrypts a block of Data using AES in Cipher Block Chaining (CBC) mode with 192-bit key.
+///
+/// Warning: Only provided for backwards compatibility. Avoid using this function.
 ///
 /// \param key decryption key Data, must be 24 bytes long.
 /// \param data Data to decrypt.
@@ -116,6 +124,8 @@ pub unsafe extern "C" fn tw_aes_decrypt_cbc_192(
 
 /// Encrypts a block of Data using AES in Cipher Block Chaining (CBC) mode with 256-bit key.
 ///
+/// Warning: Only provided for backwards compatibility. Avoid using this function.
+///
 /// \param key encryption key Data, must be 32 bytes long.
 /// \param data Data to encrypt.
 /// \param iv initialization vector.
@@ -133,6 +143,8 @@ pub unsafe extern "C" fn tw_aes_encrypt_cbc_256(
 }
 
 /// Decrypts a block of Data using AES in Cipher Block Chaining (CBC) mode with 256-bit key.
+///
+/// Warning: Only provided for backwards compatibility. Avoid using this function.
 ///
 /// \param key decryption key Data, must be 32 bytes long.
 /// \param data Data to decrypt.
@@ -152,6 +164,8 @@ pub unsafe extern "C" fn tw_aes_decrypt_cbc_256(
 
 /// Encrypts a block of Data using AES in Cipher Block Chaining (CBC) mode.
 ///
+/// Warning: Only provided for backwards compatibility. Avoid using this function.
+///
 /// \param key encryption key Data, must be 16, 24, or 32 bytes long.
 /// \param data Data to encrypt.
 /// \param iv initialization vector.
@@ -169,6 +183,8 @@ pub unsafe extern "C" fn tw_aes_encrypt_cbc(
 }
 
 /// Decrypts a block of data using AES in Cipher Block Chaining (CBC) mode.
+///
+/// Warning: Only provided for backwards compatibility. Avoid using this function.
 ///
 /// \param key decryption key Data, must be 16, 24, or 32 bytes long.
 /// \param data Data to decrypt.
