@@ -4862,22 +4862,30 @@
         "path": "m/44'/595'/0'/0'/0'"
       }
     ],
-    "curve": "ed25519",
-    "publicKeyType": "ed25519",
-    "addressHasher": "keccak256",
-    "ss58Prefix": 12,
-    "explorer": {
-      "url": "https://polymesh.subscan.io",
-      "txPath": "/extrinsic/",
-      "accountPath": "/account/",
-      "sampleTx": "0x98cb5e33d8ff3dd5838c384e2ef9e291314ed8db13f5d4f42cdd70bad54a5e04",
-      "sampleAccount": "2E5u4xA1TqswQ3jMJH96zekxwr2itvKu79fDC1mmnVZRh6Uv"
-    },
-    "info": {
-      "url": "https://polymesh.network",
-      "source": "https://github.com/PolymeshAssociation/Polymesh",
-      "rpc": "wss://rpc.polymesh.network/",
-      "documentation": "https://developers.polymesh.network/"
+  {
+  "id": "fitochain",
+  "name": "Fitochain",
+  "coinId": 1233,
+  "symbol": "FITO",
+  "decimals": 18,
+  "blockchain": "Fitochain",
+  "derivation": [
+    {
+      "path": "m/44'/1233'/0'/0/0"
     }
+  ],
+  "curve": "secp256k1",
+  "publicKeyType": "secp256k1",
+  "explorer": {
+    "url": "https://explorer.fitochain.com",
+    "txPath": "/tx/{txHash}",
+    "accountPath": "/address/{address}"
+  },
+  "info": {
+    "url": "https://fitochain.com",
+    "source": "https://github.com/donholmes805", 
+    "rpc": "https://rpc.fitochain.com",
+    "documentation": "https://fitochain.com/docs"
   }
+}
 ]
