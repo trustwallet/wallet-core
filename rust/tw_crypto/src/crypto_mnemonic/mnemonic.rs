@@ -164,7 +164,7 @@ impl Mnemonic {
             return Err(Error::InvalidChecksum);
         }
         let mnemonic = Zeroizing::new(mnemonic.nfkd().collect::<String>());
-        Ok(Mnemonic::parse_in_normalized(mnemonic.as_ref())?)
+        Mnemonic::parse_in_normalized(mnemonic.as_ref())
     }
 
     pub fn is_valid(mnemonic: &str) -> bool {
