@@ -4879,5 +4879,34 @@
       "rpc": "wss://rpc.polymesh.network/",
       "documentation": "https://developers.polymesh.network/"
     }
+  },
+  {
+    "id": "zedxion",
+    "name": "Zedxion Smart Chain",
+    "coinId": 30314,
+    "symbol": "ZEDX",
+    "decimals": 18,
+    "blockchain": "Zedxion",
+    "derivation": [
+      {
+        "path": "m/44'/30314'/0'/0'/0'"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://zedscan.net",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x4b597fc35623f499f1c04fff6199d23bc7a5f74251abc8a2ed56f9a4b99492b9",
+      "sampleAccount": "0x8Ff7681aF9a59DEd9bA13Cf2ef5DECb0D0CA1775"
+    },
+    "info": {
+      "url": "https://docs.zedscan.net/",
+      "source": "https://github.com/ZedScanTeam",
+      "rpc": "https://mainnet-rpc.zedscan.net/",
+      "documentation": "https://docs.zedscan.net/"
+    }
   }
 ]
