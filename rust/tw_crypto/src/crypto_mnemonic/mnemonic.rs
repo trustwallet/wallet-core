@@ -9,10 +9,10 @@
 use rand_core::RngCore;
 use tw_hash::sha2::sha256;
 use unicode_normalization::UnicodeNormalization;
-use zeroize::{Zeroize, ZeroizeOnDrop};
+use zeroize::{Zeroize, ZeroizeOnDrop, Zeroizing};
 
 use super::{error::Error, language::Language};
-use std::{borrow::Cow, fmt};
+use std::fmt;
 
 const MIN_NB_WORDS: usize = 12;
 const MAX_NB_WORDS: usize = 24;
@@ -159,24 +159,12 @@ impl Mnemonic {
         Ok(Mnemonic { words })
     }
 
-    /// Ensure the content of the [Cow] is normalized UTF8.
-    fn normalize_utf8_cow(cow: &mut Cow<str>) {
-        // Avoid conditional branching by always normalizing, at the cost of some extra work.
-        // This ensures similar timing regardless of input normalization state.
-        *cow = Cow::Owned(cow.as_ref().nfkd().to_string());
-    }
-
     pub fn parse(mnemonic: &str) -> Result<Mnemonic, Error> {
         if mnemonic.trim() != mnemonic || mnemonic.contains("  ") {
             return Err(Error::InvalidChecksum);
         }
-        let mut cow = mnemonic.into();
-        Mnemonic::normalize_utf8_cow(&mut cow);
-        let mnemonic = Self::parse_in_normalized(cow.as_ref())?;
-        if let std::borrow::Cow::Owned(ref mut s) = cow {
-            s.zeroize();
-        }
-        Ok(mnemonic)
+        let mnemonic = Zeroizing::new(mnemonic.nfkd().collect::<String>());
+        Ok(Mnemonic::parse_in_normalized(mnemonic.as_ref())?)
     }
 
     pub fn is_valid(mnemonic: &str) -> bool {
@@ -219,8 +207,10 @@ impl Mnemonic {
 
     // Taken from https://github.com/iqlusioninc/crates/blob/95c6b87ce657dc51a0bd11159ef39c603a197f8d/bip32/src/mnemonic/phrase.rs#L134
     pub fn to_seed(mnemonic: &str, passphrase: &str) -> [u8; SEED_SIZE] {
+        let mnemonic = Zeroizing::new(mnemonic.nfkd().collect::<String>());
+        let passphrase = Zeroizing::new(passphrase.nfkd().collect::<String>());
         let mut seed = [0u8; SEED_SIZE];
-        let salt = zeroize::Zeroizing::new(format!("mnemonic{}", passphrase));
+        let salt = Zeroizing::new(format!("mnemonic{}", passphrase.as_str()));
         pbkdf2::pbkdf2_hmac::<sha2::Sha512>(
             mnemonic.as_bytes(),
             salt.as_bytes(),
