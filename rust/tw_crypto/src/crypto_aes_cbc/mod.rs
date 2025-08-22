@@ -6,7 +6,7 @@
 
 pub mod padding;
 
-use crate::{KEY_SIZE_AES_128, KEY_SIZE_AES_192, KEY_SIZE_AES_256};
+use crate::{IV_SIZE, KEY_SIZE_AES_128, KEY_SIZE_AES_192, KEY_SIZE_AES_256};
 use aes::cipher::{
     Block, BlockDecryptMut, BlockEncryptMut, BlockSizeUser, KeyIvInit, StreamCipherError,
 };
@@ -32,6 +32,9 @@ fn aes_cbc_encrypt_impl<E: KeyIvInit + BlockEncryptMut>(
     key_size: usize,
     padding_mode: PaddingMode,
 ) -> Result<Vec<u8>, StreamCipherError> {
+    if iv.len() != IV_SIZE {
+        return Err(StreamCipherError);
+    }
     let key = if key.len() > key_size {
         &key[0..key_size]
     } else {

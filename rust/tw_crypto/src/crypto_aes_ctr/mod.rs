@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::{KEY_SIZE_AES_128, KEY_SIZE_AES_192, KEY_SIZE_AES_256};
+use crate::{IV_SIZE, KEY_SIZE_AES_128, KEY_SIZE_AES_192, KEY_SIZE_AES_256};
 use aes::cipher::{KeyIvInit, StreamCipher, StreamCipherError};
 use aes::{Aes128, Aes192, Aes256};
 use ctr::Ctr64BE;
@@ -19,6 +19,9 @@ fn aes_ctr_process<C: KeyIvInit + StreamCipher>(
     key: &[u8],
     key_size: usize,
 ) -> Result<Vec<u8>, StreamCipherError> {
+    if iv.len() != IV_SIZE {
+        return Err(StreamCipherError);
+    }
     let key = if key.len() > key_size {
         &key[0..key_size]
     } else {

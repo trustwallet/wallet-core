@@ -173,3 +173,29 @@ fn test_crypto_aes_ctr_decrypt_invalid_key_size() {
         "Expected null result for invalid key size"
     );
 }
+
+#[test]
+fn test_crypto_aes_ctr_encrypt_invalid_iv_size() {
+    let iv = vec![0; 15];
+    let iv = TWDataHelper::create(iv);
+    let key = vec![0; 16];
+    let key = TWDataHelper::create(key);
+    let data = vec![0; 100];
+    let data = TWDataHelper::create(data);
+
+    let result = TWDataHelper::wrap(unsafe { tw_aes_encrypt_ctr(key.ptr(), data.ptr(), iv.ptr()) });
+    assert!(result.is_null(), "Expected null result for invalid iv size");
+}
+
+#[test]
+fn test_crypto_aes_ctr_decrypt_invalid_iv_size() {
+    let iv = vec![0; 15];
+    let iv = TWDataHelper::create(iv);
+    let key = vec![0; 16];
+    let key = TWDataHelper::create(key);
+    let data = vec![0; 100];
+    let data = TWDataHelper::create(data);
+
+    let result = TWDataHelper::wrap(unsafe { tw_aes_decrypt_ctr(key.ptr(), data.ptr(), iv.ptr()) });
+    assert!(result.is_null(), "Expected null result for invalid iv size");
+}
