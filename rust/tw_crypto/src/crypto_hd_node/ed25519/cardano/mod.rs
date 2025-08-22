@@ -5,8 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 mod common;
-mod key;
 mod derivation;
+mod key;
 mod v2;
 
 use std::str::FromStr;
@@ -39,10 +39,8 @@ impl BIP32PrivateKey for ed25519::cardano::ExtendedPrivateKey {
         let bytes: [u8; XPRV_SIZE] = bytes.as_slice()[..XPRV_SIZE]
             .try_into()
             .expect("Should not fail");
-        let bip32_xpr =
-            key::XPrv::from_bytes_verified(bytes).map_err(|_| Error::InvalidKeyData)?;
-        let child: key::XPrv =
-            bip32_xpr.derive(DerivationScheme::V2, child_number.0);
+        let bip32_xpr = key::XPrv::from_bytes_verified(bytes).map_err(|_| Error::InvalidKeyData)?;
+        let child: key::XPrv = bip32_xpr.derive(DerivationScheme::V2, child_number.0);
         Self::try_from(child.as_ref()).map_err(|_| Error::InvalidKeyData)
     }
 

@@ -67,7 +67,7 @@ pub fn private(xprv: &XPrv, index: DerivationIndex, scheme: DerivationScheme) ->
             imac.input(&[0x3]);
             imac.input(&pk);
             imac.input(&seri);
-        }
+        },
         DerivationType::Hard(_) => {
             zmac.input(&[0x0]);
             zmac.input(ekey);
@@ -75,7 +75,7 @@ pub fn private(xprv: &XPrv, index: DerivationIndex, scheme: DerivationScheme) ->
             imac.input(&[0x1]);
             imac.input(ekey);
             imac.input(&seri);
-        }
+        },
     };
 
     let mut zout = [0u8; 64];
@@ -118,13 +118,13 @@ fn point_plus(p1: &[u8; 32], p2: &[u8; 32]) -> Result<[u8; 32], DerivationError>
         Some(g) => g,
         None => {
             return Err(DerivationError::InvalidAddition);
-        }
+        },
     };
     let b = match Ge::from_bytes(p2) {
         Some(g) => g,
         None => {
             return Err(DerivationError::InvalidAddition);
-        }
+        },
     };
     let r = &a + &b.to_cached();
     let mut r = r.to_full().to_bytes();
@@ -151,10 +151,10 @@ pub fn public(
             imac.input(&[0x3]);
             imac.input(pk);
             imac.input(&seri);
-        }
+        },
         DerivationType::Hard(_) => {
             return Err(DerivationError::ExpectedSoftDerivation);
-        }
+        },
     };
 
     let mut zout = [0u8; 64];
