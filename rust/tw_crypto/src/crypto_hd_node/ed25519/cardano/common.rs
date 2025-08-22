@@ -34,13 +34,8 @@ impl DerivationType {
 /// Only V2 is supported anymore, and this is
 /// left as an API compatibility type. V1 has
 /// been removed due to some shortcomings
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum DerivationScheme {
+    #[default]
     V2,
-}
-
-impl Default for DerivationScheme {
-    fn default() -> Self {
-        DerivationScheme::V2
-    }
 }
