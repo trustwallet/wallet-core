@@ -351,3 +351,25 @@ fn test_crypto_aes_cbc_256_ffi() {
     let decrypted_data = decrypted.to_vec().unwrap();
     assert_eq!(hex::encode(&decrypted_data, false), data_hex);
 }
+
+#[test]
+fn test_crypto_aes_cbc_encrypt_invalid_iv_size() {
+    let iv = TWDataHelper::create(vec![0; 15]);
+    let key = TWDataHelper::create(vec![0; 16]);
+    let data = TWDataHelper::create(vec![0; 100]);
+
+    let result =
+        TWDataHelper::wrap(unsafe { tw_aes_encrypt_cbc(key.ptr(), data.ptr(), iv.ptr(), 0) });
+    assert!(result.is_null(), "Expected null result for invalid iv size");
+}
+
+#[test]
+fn test_crypto_aes_cbc_decrypt_invalid_iv_size() {
+    let iv = TWDataHelper::create(vec![0; 15]);
+    let key = TWDataHelper::create(vec![0; 16]);
+    let data = TWDataHelper::create(vec![0; 100]);
+
+    let result =
+        TWDataHelper::wrap(unsafe { tw_aes_decrypt_cbc(key.ptr(), data.ptr(), iv.ptr(), 0) });
+    assert!(result.is_null(), "Expected null result for invalid iv size");
+}

@@ -567,9 +567,9 @@ dependencies = [
 
 [[package]]
 name = "cryptoxide"
-version = "0.4.4"
+version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "382ce8820a5bb815055d3553a610e8cb542b2d767bbacea99038afda96cd760d"
+checksum = "facfae029ec4373769eb4bd936bcf537de1052abaee9f246e667c9443be6aa95"
 
 [[package]]
 name = "ctr"
@@ -694,15 +694,6 @@ dependencies = [
  "elliptic-curve",
  "rfc6979",
  "signature",
-]
-
-[[package]]
-name = "ed25519-bip32"
-version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cb588f93c0d91b2f668849fd6d030cddb0b2e31f105963be189da5acdf492a21"
-dependencies = [
- "cryptoxide",
 ]
 
 [[package]]
@@ -2051,8 +2042,8 @@ dependencies = [
  "bip32",
  "bs58 0.5.1",
  "cbc",
+ "cryptoxide",
  "ctr",
- "ed25519-bip32",
  "pbkdf2",
  "rand",
  "rand_core",

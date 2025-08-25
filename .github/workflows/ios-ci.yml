@@ -43,6 +43,10 @@ jobs:
         tools/install-dependencies
       if: steps.internal_cache.outputs.cache-hit != 'true'
 
+    - name: Switch Xcode
+      run: |
+        sudo xcode-select --switch /Applications/Xcode_16.4.app
+
     - name: Run codegen tests
       run: tools/codegen-test
 

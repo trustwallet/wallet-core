@@ -19,7 +19,7 @@ impl BIP32PrivateKey for ed25519::waves::PrivateKey {
         if child_number.is_hardened() {
             Self::try_from(other).map_err(|_| Error::InvalidKeyData)
         } else {
-            Ok(self.clone())
+            Err(Error::InvalidChildNumber)
         }
     }
 
@@ -41,7 +41,7 @@ impl BIP32PublicKey for ed25519::waves::PublicKey {
         if child_number.is_hardened() {
             Self::try_from(other).map_err(|_| Error::InvalidKeyData)
         } else {
-            Ok(self.clone())
+            Err(Error::InvalidChildNumber)
         }
     }
 }

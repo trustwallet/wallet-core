@@ -362,13 +362,7 @@ fn test_waves_key() {
 
     let deriv_path = DerivationPath::from_str("m/44'/5741564'/0'/0'/0").unwrap();
     let xprv = xprv.derive_from_path(&deriv_path, Hasher::Sha256ripemd);
-    assert!(xprv.is_ok());
-
-    let child_public_key = xprv
-        .unwrap()
-        .public_key()
-        .derive_child(bip32::ChildNumber(0), Hasher::Sha256ripemd);
-    assert!(child_public_key.is_ok());
+    assert!(xprv.is_err());
 }
 
 #[test]
