@@ -70,7 +70,7 @@ impl BIP32PublicKey for ed25519::cardano::ExtendedPublicKey {
             .derive(DerivationScheme::V2, child_number.0)
             .map_err(|_| Error::DerivationFailed)?;
         let public_key = Self::try_from(child.as_ref()).map_err(|_| Error::InvalidKeyData)?;
-        let chaincode = child.chain_code().clone();
+        let chaincode = *child.chain_code();
         Ok((public_key, chaincode))
     }
 }
