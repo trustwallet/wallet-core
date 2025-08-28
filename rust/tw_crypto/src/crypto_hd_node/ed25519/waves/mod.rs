@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use bip32::ChildNumber;
+use bip32::{ChainCode, ChildNumber};
 use tw_keypair::{ed25519, tw::Curve};
 
 use crate::crypto_hd_node::error::{Error, Result};
@@ -37,9 +37,24 @@ impl BIP32PrivateKey for ed25519::waves::PrivateKey {
 }
 
 impl BIP32PublicKey for ed25519::waves::PublicKey {
-    fn derive_child(&self, other: &[u8], child_number: ChildNumber) -> Result<Self> {
+    fn derive_child(
+        &self,
+        chain_code: &ChainCode,
+        child_number: ChildNumber,
+    ) -> Result<(Self, ChainCode)> {
+        let (tweak, chain_code) = self.derive_tweak(chain_code, child_number)?;
+        // We should technically loop here if the tweak is zero or overflows
+        // the order of the underlying elliptic curve group, incrementing the
+        // index, however per "Child key derivation (CKD) functions":
+        // https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#child-key-derivation-ckd-functions
+        //
+        // > "Note: this has probability lower than 1 in 2^127."
+        //
+        // ...so instead, we simply return an error if this were ever to happen,
+        // as the chances of it happening are vanishingly small.
         if child_number.is_hardened() {
-            Self::try_from(other).map_err(|_| Error::InvalidKeyData)
+            let public_key = Self::try_from(&tweak[..]).map_err(|_| Error::InvalidKeyData)?;
+            Ok((public_key, chain_code))
         } else {
             Err(Error::InvalidChildNumber)
         }

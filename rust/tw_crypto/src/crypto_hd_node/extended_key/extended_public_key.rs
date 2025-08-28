@@ -79,20 +79,9 @@ where
     /// Derive a child key for a particular [`ChildNumber`].
     pub fn derive_child(&self, child_number: ChildNumber, hasher: Hasher) -> Result<Self> {
         let depth = self.attrs.depth.checked_add(1).ok_or(Error::InvalidDepth)?;
-        let (tweak, chain_code) = self
+        let (public_key, chain_code) = self
             .public_key
-            .derive_tweak(&self.attrs.chain_code, child_number)?;
-
-        // We should technically loop here if the tweak is zero or overflows
-        // the order of the underlying elliptic curve group, incrementing the
-        // index, however per "Child key derivation (CKD) functions":
-        // https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#child-key-derivation-ckd-functions
-        //
-        // > "Note: this has probability lower than 1 in 2^127."
-        //
-        // ...so instead, we simply return an error if this were ever to happen,
-        // as the chances of it happening are vanishingly small.
-        let public_key = self.public_key.derive_child(&tweak, child_number)?;
+            .derive_child(&self.attrs.chain_code, child_number)?;
 
         let attrs = ExtendedKeyAttrs {
             parent_fingerprint: self.public_key.fingerprint(hasher),

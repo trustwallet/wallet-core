@@ -23,7 +23,11 @@ pub trait BIP32PublicKey: Sized + Clone + ToBytesVec + FromSlice {
     }
 
     /// Derive a child key from a parent key and a provided tweak value.
-    fn derive_child(&self, other: &[u8], child_number: ChildNumber) -> Result<Self>;
+    fn derive_child(
+        &self,
+        chain_code: &ChainCode,
+        child_number: ChildNumber,
+    ) -> Result<(Self, ChainCode)>;
 
     /// Derive a tweak value that can be used to generate the child key (see [`derive_child`]).
     ///

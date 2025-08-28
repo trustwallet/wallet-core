@@ -113,16 +113,16 @@ static Data rustAesCtrDecrypt256(const Data& data, const Data& iv, const Data& k
     return rustAesOperation(data, iv, key, Rust::tw_aes_decrypt_ctr_256, "Invalid aes ctr decrypt 256");
 }
 
-static Data rustAesCbcEncrypt(const Data& data, const Data& iv, const Data& key) {
+static Data rustAesCbcEncrypt128(const Data& data, const Data& iv, const Data& key) {
     return rustAesOperation(data, iv, key, 
-        [](auto d, auto i, auto k) { return Rust::tw_aes_encrypt_cbc(d, i, k, TWAESPaddingModePKCS7); }, 
-        "Invalid aes cbc encrypt");
+        [](auto d, auto i, auto k) { return Rust::tw_aes_encrypt_cbc_128(d, i, k, TWAESPaddingModePKCS7); }, 
+        "Invalid aes cbc encrypt 128");
 }
 
-static Data rustAesCbcDecrypt(const Data& data, const Data& iv, const Data& key) {
+static Data rustAesCbcDecrypt128(const Data& data, const Data& iv, const Data& key) {
     return rustAesOperation(data, iv, key, 
-        [](auto d, auto i, auto k) { return Rust::tw_aes_decrypt_cbc(d, i, k, TWAESPaddingModePKCS7); }, 
-        "Invalid aes cbc decrypt");
+        [](auto d, auto i, auto k) { return Rust::tw_aes_decrypt_cbc_128(d, i, k, TWAESPaddingModePKCS7); }, 
+        "Invalid aes cbc decrypt 128");
 }
 
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
@@ -169,7 +169,7 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
         encrypted = rustAesCtrEncrypt256(data, this->params.cipherParams.iv, derivedKey);
         break;
     case TWStoredKeyEncryptionAes128Cbc:
-        encrypted = rustAesCbcEncrypt(data, this->params.cipherParams.iv, derivedKey);
+        encrypted = rustAesCbcEncrypt128(data, this->params.cipherParams.iv, derivedKey);
         break;
     }
     _mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
@@ -211,7 +211,7 @@ Data EncryptedPayload::decrypt(const Data& password) const {
         decrypted = rustAesCtrDecrypt256(encrypted, iv, derivedKey);
         break;
     case TWStoredKeyEncryptionAes128Cbc:
-        decrypted = rustAesCbcDecrypt(encrypted, iv, derivedKey);
+        decrypted = rustAesCbcDecrypt128(encrypted, iv, derivedKey);
         break;
     }
 

@@ -4,9 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use std::str::FromStr;
-
-use bip32::DerivationPath;
+use crate::crypto_hd_node::utils::derivation_path_from_str;
 use tw_hash::hasher::Hasher;
 use tw_keypair::tw::Curve;
 use tw_misc::traits::ToBytesVec;
@@ -70,7 +68,7 @@ impl HDNodePublic {
     }
 
     pub fn derive_from_path(&self, path: &str, hasher: Hasher) -> Result<Self> {
-        let path = DerivationPath::from_str(path)?;
+        let path = derivation_path_from_str(path)?;
         match self {
             HDNodePublic::Secp256k1(xpub) => {
                 let xpub = xpub.derive_from_path(&path, hasher)?;
