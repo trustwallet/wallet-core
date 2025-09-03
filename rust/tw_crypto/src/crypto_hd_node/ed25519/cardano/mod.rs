@@ -68,7 +68,9 @@ impl BIP32PublicKey for ed25519::cardano::ExtendedPublicKey {
         child_number: ChildNumber,
     ) -> Result<(Self, ChainCode)> {
         let bytes = self.to_vec();
-        let bytes: [u8; XPUB_SIZE] = bytes[..XPUB_SIZE].try_into().map_err(|_| Error::InvalidKeyData)?;
+        let bytes: [u8; XPUB_SIZE] = bytes[..XPUB_SIZE]
+            .try_into()
+            .map_err(|_| Error::InvalidKeyData)?;
         let bip32_xpub = key::XPub::from_bytes(bytes);
         let child: key::XPub = bip32_xpub
             .derive(DerivationScheme::V2, child_number.0)

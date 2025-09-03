@@ -45,7 +45,7 @@ pub enum Error {
 
     /// Invalid chain code
     InvalidChainCode,
-    
+
     /// InvalidDomainSeparator
     InvalidDomainSeparator,
 }

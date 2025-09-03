@@ -54,7 +54,8 @@ pub trait BIP32PublicKey: Sized + Clone + ToBytesVec + FromSlice {
             return Err(Error::InvalidChildNumber);
         }
 
-        let mut hmac = HmacSha512::new_from_slice(chain_code).map_err(|_| Error::InvalidChainCode)?;
+        let mut hmac =
+            HmacSha512::new_from_slice(chain_code).map_err(|_| Error::InvalidChainCode)?;
 
         hmac.update(&self.to_vec());
         hmac.update(&child_number.to_bytes());

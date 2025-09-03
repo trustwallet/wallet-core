@@ -49,7 +49,8 @@ pub trait BIP32PrivateKey: Sized + Clone + ToBytesZeroizing + FromSlice + FromSt
         chain_code: &ChainCode,
         child_number: ChildNumber,
     ) -> Result<(Zeroizing<Vec<u8>>, ChainCode)> {
-        let mut hmac = HmacSha512::new_from_slice(chain_code).map_err(|_| Error::InvalidChainCode)?;
+        let mut hmac =
+            HmacSha512::new_from_slice(chain_code).map_err(|_| Error::InvalidChainCode)?;
 
         if child_number.is_hardened() {
             hmac.update(&[0]);
