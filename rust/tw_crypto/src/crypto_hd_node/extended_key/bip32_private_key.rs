@@ -13,7 +13,7 @@ use tw_keypair::tw::Curve;
 use tw_misc::traits::{FromSlice, ToBytesVec, ToBytesZeroizing};
 use zeroize::Zeroizing;
 
-use crate::crypto_hd_node::error::Result;
+use crate::crypto_hd_node::error::{Error, Result};
 use crate::crypto_hd_node::extended_key::bip32_public_key::BIP32PublicKey;
 
 /// Trait for key types which can be derived using BIP32.
@@ -49,7 +49,7 @@ pub trait BIP32PrivateKey: Sized + Clone + ToBytesZeroizing + FromSlice + FromSt
         chain_code: &ChainCode,
         child_number: ChildNumber,
     ) -> Result<(Zeroizing<Vec<u8>>, ChainCode)> {
-        let mut hmac = HmacSha512::new_from_slice(chain_code).expect("Should not fail");
+        let mut hmac = HmacSha512::new_from_slice(chain_code).map_err(|_| Error::InvalidChainCode)?;
 
         if child_number.is_hardened() {
             hmac.update(&[0]);

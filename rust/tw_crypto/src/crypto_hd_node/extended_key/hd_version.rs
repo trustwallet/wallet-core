@@ -45,8 +45,11 @@ impl HDVersion {
             HDVersion::XPUB
                 | HDVersion::YPUB
                 | HDVersion::ZPUB
+                | HDVersion::VPUB
+                | HDVersion::TPUB
                 | HDVersion::LTUB
                 | HDVersion::MTUB
+                | HDVersion::TTUB
                 | HDVersion::DPUB
                 | HDVersion::DGUB
         )
@@ -58,8 +61,11 @@ impl HDVersion {
             HDVersion::XPRV
                 | HDVersion::YPRV
                 | HDVersion::ZPRV
+                | HDVersion::VPRV
+                | HDVersion::TPRV
                 | HDVersion::LTPV
                 | HDVersion::MTPV
+                | HDVersion::TTPV
                 | HDVersion::DPRV
                 | HDVersion::DGPV
         )

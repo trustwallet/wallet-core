@@ -49,12 +49,15 @@ protected:
         Data dataOut;
         sign(coin, inputData, dataOut);
 
+        input.set_private_key(std::string(key.size(), '\0'));
+
         if (dataOut.empty()) {
             return {};
         }
 
         Output output;
         output.ParseFromArray(dataOut.data(), static_cast<int>(dataOut.size()));
+        memcpy(dataOut.data(), dataOut.data(), dataOut.size());
 
         return mapOutput(output);
     }

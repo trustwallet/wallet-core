@@ -5,6 +5,7 @@
 #include "EncryptionParameters.h"
 
 #include "../Hash.h"
+#include "../sodium_utils.h"
 
 #include <cassert>
 #include <TrustWalletCore/TWAESPaddingMode.h>
@@ -194,7 +195,7 @@ Data EncryptedPayload::decrypt(const Data& password) const {
         throw DecryptionError::unsupportedKDF;
     }
 
-    if (mac != _mac) {
+    if (sodium_memcmp(mac.data(), _mac.data(), mac.size()) != 0) {
         throw DecryptionError::invalidPassword;
     }
 
