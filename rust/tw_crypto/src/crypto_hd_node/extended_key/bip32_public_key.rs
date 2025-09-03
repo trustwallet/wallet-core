@@ -8,12 +8,16 @@ use bip32::{ChainCode, ChildNumber, KeyFingerprint, KEY_SIZE};
 use sha2::digest::Mac;
 use tw_hash::hasher::{Hasher, StatefulHasher};
 use tw_hash::hmac::HmacSha512;
+use tw_keypair::tw::Curve;
 use tw_misc::traits::{FromSlice, ToBytesVec};
 
 use crate::crypto_hd_node::error::{Error, Result};
 
 /// Trait for key types which can be derived using BIP32.
 pub trait BIP32PublicKey: Sized + Clone + ToBytesVec + FromSlice {
+    /// Get the curve of the public key.
+    fn curve() -> Curve;
+
     /// Compute a 4-byte key fingerprint for this public key.
     ///
     /// Default implementation uses `RIPEMD160(SHA256(public_key))`.

@@ -37,6 +37,10 @@ impl BIP32PrivateKey for zilliqa_schnorr::PrivateKey {
 }
 
 impl BIP32PublicKey for zilliqa_schnorr::PublicKey {
+    fn curve() -> Curve {
+        Curve::ZilliqaSchnorr
+    }
+
     fn derive_child(
         &self,
         chain_code: &ChainCode,

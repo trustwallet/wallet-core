@@ -58,6 +58,10 @@ impl BIP32PrivateKey for ed25519::cardano::ExtendedPrivateKey {
 }
 
 impl BIP32PublicKey for ed25519::cardano::ExtendedPublicKey {
+    fn curve() -> Curve {
+        Curve::Ed25519ExtendedCardano
+    }
+
     fn derive_child(
         &self,
         _chain_code: &ChainCode,

@@ -37,6 +37,10 @@ impl BIP32PrivateKey for ed25519::waves::PrivateKey {
 }
 
 impl BIP32PublicKey for ed25519::waves::PublicKey {
+    fn curve() -> Curve {
+        Curve::Curve25519Waves
+    }
+
     fn derive_child(
         &self,
         chain_code: &ChainCode,

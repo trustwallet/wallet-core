@@ -37,6 +37,10 @@ impl BIP32PrivateKey for nist256p1::PrivateKey {
 }
 
 impl BIP32PublicKey for nist256p1::PublicKey {
+    fn curve() -> Curve {
+        Curve::Nist256p1
+    }
+
     fn derive_child(
         &self,
         chain_code: &ChainCode,

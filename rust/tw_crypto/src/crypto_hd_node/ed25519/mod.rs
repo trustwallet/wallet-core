@@ -40,6 +40,10 @@ impl BIP32PrivateKey for ed25519::sha512::PrivateKey {
 }
 
 impl BIP32PublicKey for ed25519::sha512::PublicKey {
+    fn curve() -> Curve {
+        Curve::Ed25519
+    }
+
     fn derive_child(
         &self,
         chain_code: &ChainCode,
@@ -89,6 +93,10 @@ impl BIP32PrivateKey for ed25519::blake2b::PrivateKey {
 }
 
 impl BIP32PublicKey for ed25519::blake2b::PublicKey {
+    fn curve() -> Curve {
+        Curve::Ed25519Blake2bNano
+    }
+
     fn derive_child(
         &self,
         chain_code: &ChainCode,

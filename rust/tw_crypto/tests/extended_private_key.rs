@@ -111,7 +111,10 @@ fn test_extended_public_key() {
             Hasher::Sha256ripemd,
         )
         .unwrap();
-    let child_extended_key = child_xprv.public_key().to_extended_key(Prefix::ZPUB);
+    let child_extended_key = child_xprv
+        .public_key()
+        .to_extended_key(Prefix::ZPUB)
+        .unwrap();
     assert_eq!(child_extended_key.to_string(), "zpub6qwDs4uUNPDR5A2M56ot1aABSa2MNQciYn9MPS8bTk1qwAaFKcSST5S1aLidvPp9twqpaumG7vikR2vHhBXjp5oGgHyMvWK3AtUkfeEgyns");
 
     let child_xprv = xprv
@@ -120,7 +123,10 @@ fn test_extended_public_key() {
             Hasher::Sha256ripemd,
         )
         .unwrap();
-    let child_extended_key = child_xprv.public_key().to_extended_key(Prefix::ZPUB);
+    let child_extended_key = child_xprv
+        .public_key()
+        .to_extended_key(Prefix::ZPUB)
+        .unwrap();
     assert_eq!(child_extended_key.to_string(), "zpub6qwDs4uUNPDR6Ck9UQDdji17hoEPP8mqnicYZLSSoUykz3MDcuJdeNJPd3BozqEafeLZkegWqzAvkgA4JZZ5tTN2rDpGKfk54essyfx1eZP");
 }
 
@@ -200,6 +206,7 @@ fn test_derive_xpub_pub_vs_priv_pub() {
     let zpub = account_xprv
         .public_key()
         .to_extended_key(Prefix::ZPUB)
+        .unwrap()
         .to_string();
     assert_eq!(zpub, "zpub6rNUNtxSa9Gxvm4Bdxf1MPMwrvkzwDx6vP96Hkzw3jiQKdg3fhXBStxjn12YixQB8h88B3RMSRscRstf9AEVaYr3MAqVBEWBDuEJU4PGaT9");
 
@@ -582,6 +589,10 @@ fn test_invalid_key_cardano() {
     }
 
     impl BIP32PublicKey for InvalidPublicKey {
+        fn curve() -> Curve {
+            Curve::Ed25519ExtendedCardano
+        }
+
         fn derive_child(
             &self,
             _chain_code: &ChainCode,
@@ -668,6 +679,10 @@ fn test_invalid_key_secp256k1() {
     }
 
     impl BIP32PublicKey for InvalidPublicKey {
+        fn curve() -> Curve {
+            Curve::Secp256k1
+        }
+
         fn derive_child(
             &self,
             _chain_code: &ChainCode,

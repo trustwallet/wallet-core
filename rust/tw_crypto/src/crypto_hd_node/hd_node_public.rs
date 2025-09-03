@@ -91,11 +91,11 @@ impl HDNodePublic {
                 Ok(HDNodePublic::Curve25519Waves(xpub))
             },
             HDNodePublic::Ed25519ExtendedCardano(xpub, _) => {
-                let xpub = xpub.derive_from_path(&path, hasher)?;
+                let xpub1 = xpub.derive_from_path(&path, hasher)?;
                 let staking_path = cardano_staking_derivation_path(&path)?;
                 let xpub2 = xpub.derive_from_path(&staking_path, hasher)?;
                 Ok(HDNodePublic::Ed25519ExtendedCardano(
-                    Box::new(xpub),
+                    Box::new(xpub1),
                     Some(Box::new(xpub2)),
                 ))
             },

@@ -37,6 +37,10 @@ impl BIP32PrivateKey for secp256k1::PrivateKey {
 }
 
 impl BIP32PublicKey for secp256k1::PublicKey {
+    fn curve() -> Curve {
+        Curve::Secp256k1
+    }
+
     fn derive_child(
         &self,
         chain_code: &ChainCode,

@@ -7,6 +7,7 @@
 use bip32::{
     ChildNumber, DerivationPath, ExtendedKey, ExtendedKeyAttrs, KeyFingerprint, Prefix, KEY_SIZE,
 };
+use tw_keypair::tw::Curve;
 use tw_misc::traits::ToBytesVec;
 
 use crate::crypto_hd_node::error::{Error, Result};
@@ -52,7 +53,10 @@ where
     }
 
     /// Serialize this key as an [`ExtendedKey`].
-    pub fn to_extended_key(&self, prefix: Prefix) -> ExtendedKey {
+    pub fn to_extended_key(&self, prefix: Prefix) -> Result<ExtendedKey> {
+        if K::curve() == Curve::Ed25519ExtendedCardano {
+            return Err(Error::UnsupportedCurve(K::curve().to_raw()));
+        }
         let bytes = self.to_bytes();
 
         let mut key_bytes = [0u8; KEY_SIZE + 1];
@@ -63,11 +67,11 @@ where
             key_bytes.copy_from_slice(&self.to_bytes());
         }
 
-        ExtendedKey {
+        Ok(ExtendedKey {
             prefix,
             attrs: self.attrs.clone(),
             key_bytes,
-        }
+        })
     }
 
     pub fn derive_from_path(&self, path: &DerivationPath, hasher: Hasher) -> Result<Self> {
