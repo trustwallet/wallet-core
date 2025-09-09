@@ -2,7 +2,7 @@
 
 set -e
 
-brew install cmake boost ninja xcodegen xcbeautify
+brew install boost ninja xcodegen xcbeautify
 
 if command -v cmake &> /dev/null
 then
