@@ -8,7 +8,7 @@ if command -v cmake &> /dev/null
 then
     echo "Skip installing CMake."
 else
-  brew install cmake
+    brew install cmake
 fi
 
 if [[ "$BOOST_ROOT" == "" ]]; then
