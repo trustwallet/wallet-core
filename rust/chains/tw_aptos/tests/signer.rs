@@ -122,17 +122,6 @@ fn setup_proto_transaction<'a>(
                 panic!("Unsupported arguments")
             }
         },
-        "register_token" => {
-            if let OpsDetails::RegisterToken(register_token) = ops_details.unwrap() {
-                Proto::mod_SigningInput::OneOftransaction_payload::register_token(
-                    Proto::ManagedTokensRegisterMessage {
-                        function: Some(convert_type_tag_to_struct_tag(register_token.coin_type)),
-                    },
-                )
-            } else {
-                panic!("Unsupported arguments")
-            }
-        },
         "liquid_staking_ops" => {
             if let OpsDetails::LiquidStakingOps(liquid_staking_ops) = ops_details.unwrap() {
                 Proto::mod_SigningInput::OneOftransaction_payload::liquid_staking_message(
