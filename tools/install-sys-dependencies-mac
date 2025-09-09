@@ -4,6 +4,13 @@ set -e
 
 brew install cmake boost ninja xcodegen xcbeautify
 
+if command -v cmake &> /dev/null
+then
+    echo "Skip installing CMake."
+else
+  brew install cmake
+fi
+
 if [[ "$BOOST_ROOT" == "" ]]; then
     echo "export BOOST_ROOT=$(brew --prefix boost)" >>  ~/.zprofile
 fi
