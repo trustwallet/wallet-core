@@ -199,13 +199,13 @@ impl HDNode {
     pub fn extended_public_key(&self, version: u32, hasher: Hasher) -> Result<String> {
         let prefix = Prefix::try_from(version)?;
         let extended_key = match self {
-            HDNode::Secp256k1(xprv) => xprv.public_key().to_extended_key(prefix),
-            HDNode::Nist256p1(xprv) => xprv.public_key().to_extended_key(prefix),
-            HDNode::Ed25519(xprv) => xprv.public_key().to_extended_key(prefix),
-            HDNode::Ed25519Blake2bNano(xprv) => xprv.public_key().to_extended_key(prefix),
-            HDNode::Curve25519Waves(xprv) => xprv.public_key().to_extended_key(prefix),
-            HDNode::Ed25519ExtendedCardano(xprv, _) => xprv.public_key().to_extended_key(prefix),
-            HDNode::ZilliqaSchnorr(xprv) => xprv.public_key().to_extended_key(prefix),
+            HDNode::Secp256k1(xprv) => xprv.public_key().to_extended_key(prefix)?,
+            HDNode::Nist256p1(xprv) => xprv.public_key().to_extended_key(prefix)?,
+            HDNode::Ed25519(xprv) => xprv.public_key().to_extended_key(prefix)?,
+            HDNode::Ed25519Blake2bNano(xprv) => xprv.public_key().to_extended_key(prefix)?,
+            HDNode::Curve25519Waves(xprv) => xprv.public_key().to_extended_key(prefix)?,
+            HDNode::Ed25519ExtendedCardano(xprv, _) => xprv.public_key().to_extended_key(prefix)?,
+            HDNode::ZilliqaSchnorr(xprv) => xprv.public_key().to_extended_key(prefix)?,
         };
         encode_base58(&extended_key, hasher)
     }

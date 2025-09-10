@@ -44,7 +44,7 @@ void HDWallet<seedSize>::updateSeedAndEntropy([[maybe_unused]] bool check) {
 }
 
 template <std::size_t seedSize>
-HDWallet<seedSize>::HDWallet(int strength, const std::string& passphrase)
+HDWallet<seedSize>::HDWallet(uint32_t strength, const std::string& passphrase)
     : passphrase(passphrase) {
     mnemonic = Mnemonic::generate(strength);
     if (mnemonic.empty()) {
