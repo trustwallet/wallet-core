@@ -60,7 +60,7 @@ TEST(BinanceSmartChain, SignTokenTransfer) {
     auto tokenContractAddress = "0xed24fc36d5ee211ea25a80239fb8c4cfd80f12ee";
     auto dummyAmount = store(uint256_t(0));
     // addr: 0xB9F5771C27664bF2282D98E09D7F50cEc7cB01a7  mnemonic: isolate dismiss ... cruel note
-    auto privateKey = PrivateKey(parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904"));
+    auto privateKey = PrivateKey(parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904"), TWCoinTypeCurve(TWCoinTypeSmartChain));
 
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());

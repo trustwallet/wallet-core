@@ -7,7 +7,7 @@ import WalletCore
 
 class KavaTests: XCTestCase {
 
-    let privateKey = PrivateKey(data: Data(hexString: "1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6")!)!
+    let privateKey = PrivateKey(data: Data(hexString: "1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6")!, curve: CoinType.kava.curve)!
 
     func testAddress() {
         let address = CoinType.kava.deriveAddress(privateKey: privateKey)

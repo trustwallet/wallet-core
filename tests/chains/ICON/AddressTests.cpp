@@ -5,6 +5,7 @@
 #include "HexCoding.h"
 #include "Icon/Address.h"
 #include "PrivateKey.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 
@@ -32,7 +33,7 @@ TEST(IconAddress, String) {
 }
 
 TEST(IconAddress, FromPrivateKey) {
-    const auto privateKey = PrivateKey(parse_hex("94d1a980d5e528067d44bf8a60d646f556e40ca71e17cd4ead2d56f89e4bd20f"));
+    const auto privateKey = PrivateKey(parse_hex("94d1a980d5e528067d44bf8a60d646f556e40ca71e17cd4ead2d56f89e4bd20f"), TWCoinTypeCurve(TWCoinTypeICON));
     const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     const auto address = Address(publicKey, TypeAddress);
 

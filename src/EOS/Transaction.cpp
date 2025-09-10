@@ -5,8 +5,7 @@
 #include "../Base58.h"
 #include "../HexCoding.h"
 #include "Transaction.h"
-
-#include <TrezorCrypto/ripemd160.h>
+#include "../Hash.h"
 
 #include <ctime>
 #include <stdexcept>
@@ -43,10 +42,7 @@ std::string Signature::string() const noexcept {
         buffer.push_back(static_cast<uint8_t>(c));
     }
 
-    Data hash;
-    hash.resize(RIPEMD160_DIGEST_LENGTH);
-
-    ripemd160(buffer.data(), static_cast<uint32_t>(buffer.size()), hash.data());
+    auto hash = Hash::ripemd(buffer.data(), buffer.size());
 
     // drop the subPrefix and append the checksum to the bufer
     buffer.resize(DataSize);

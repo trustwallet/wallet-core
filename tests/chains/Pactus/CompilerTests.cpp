@@ -31,9 +31,9 @@ TEST(PactusCompiler, CompileAndSign) {
         EXPECT_EQ(hex(actualDataToSign), testCase.dataToSign);
 
         // Sign the pre-hash data.
-        auto privateKey = PrivateKey(parse_hex(PRIVATE_KEY_HEX));
+        auto privateKey = PrivateKey(parse_hex(PRIVATE_KEY_HEX), TWCurveED25519);
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519).bytes;
-        auto signature = privateKey.sign(actualDataToSign, TWCurveED25519);
+        auto signature = privateKey.sign(actualDataToSign);
         EXPECT_EQ(hex(signature), testCase.signature);
 
         // Compile the transaction.

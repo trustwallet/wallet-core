@@ -17,11 +17,11 @@ class TestBinanceTransactionSigning {
         System.loadLibrary("TrustWalletCore")
     }
 
-    val testKey = PrivateKey("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d".toHexBytes())
+    val testKey = PrivateKey("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d".toHexBytes(), BINANCE.curve())
 
     @Test
     fun testSignBinanceTransaction() {
-        val privateKey = PrivateKey("95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832".toHexBytes())
+        val privateKey = PrivateKey("95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832".toHexBytes(), BINANCE.curve())
         val publicKey = privateKey.getPublicKeySecp256k1(true)
 
         val signingInput = Binance.SigningInput.newBuilder()

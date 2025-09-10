@@ -25,7 +25,7 @@ class OntologyAddressTests: XCTestCase {
     }
 
     func testFromPrivateKey() {
-        let privateKey = PrivateKey(data: Data(hexString: "4cbd05e59cbe5faba43bbf5a15fdaf27ad72c232f8d88d987c6b3d4d98300af5")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "4cbd05e59cbe5faba43bbf5a15fdaf27ad72c232f8d88d987c6b3d4d98300af5")!, curve: CoinType.ontology.curve)!
         let address = AnyAddress(publicKey: privateKey.getPublicKeyNist256p1(), coin: .ontology)
         XCTAssertEqual(address.description, "AH11LGtFk6VU9Z7suuM5eNpho1bAoE5Gbz")
     }

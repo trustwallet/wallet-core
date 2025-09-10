@@ -19,7 +19,7 @@ TEST(PactusSigner, Sign) {
     for (const auto& testCase : TEST_CASES) {
         auto input = testCase.createSigningInput();
 
-        auto privateKey = PrivateKey(parse_hex(PRIVATE_KEY_HEX));
+        auto privateKey = PrivateKey(parse_hex(PRIVATE_KEY_HEX), TWCoinTypeCurve(TWCoinTypePactus));
         input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
         TW::Pactus::Proto::SigningOutput output;

@@ -1,19 +1,28 @@
 <%# Include entity headers -%>
 <% require 'set' -%>
-<%  includes = Set.new([entity.name]) -%>
+<%  includes = Set.new -%>
+<%  includes.add({name: entity.name, generated: entity.generated?}) -%>
 <%  (entity.static_methods + entity.methods).each do |method| -%>
-<%    includes << method.return_type.name if method.return_type.is_struct || method.return_type.is_class -%>
+<%    if method.return_type.is_struct || method.return_type.is_class -%>
+<%      includes.add({name: method.return_type.name, generated: method.return_type.is_generated}) -%>
+<%    end -%>
 <%    method.parameters.each do |param| -%>
-<%      includes << param.type.name if param.type.is_struct || param.type.is_class -%>
+<%      if param.type.is_struct || param.type.is_class -%>
+<%        includes.add({name: param.type.name, generated: param.type.is_generated}) -%>
+<%      end -%>
 <%    end -%>
 <%  end -%>
 <%  includes.each do |include| -%>
-#include <TrustWalletCore/TW<%= include %>.h>
+<%    if include[:generated] -%>
+#include <TrustWalletCore/Generated/TW<%= include[:name] %>.h>
+<%    else -%>
+#include <TrustWalletCore/TW<%= include[:name] %>.h>
+<%    end -%>
 <%  end -%>
 
 <%  includes.each do |include| -%>
-<%  next if include == entity.name -%>
-#include "./<%= include %>.h"
+<%  next if include[:name] == entity.name -%>
+#include "./<%= include[:name] %>.h"
 <%  end -%>
 
 #include <emscripten/bind.h>

@@ -77,7 +77,7 @@ TEST(GroestlcoinCompiler, CompileWithSignatures) {
               "0fb3da786ad1028574f0b40ff1446515eb85cacccff3f3d0459e191b660597b3");
 
     // compile
-    auto publicKey = PrivateKey(utxoKey0).getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto publicKey = PrivateKey(utxoKey0, TWCoinTypeCurve(coin)).getPublicKey(TWPublicKeyTypeSECP256k1);
     auto signature = parse_hex("304402202163ab98b028aa13563f0de00b785d6df81df5eac0b7c91d23f5be7ea674aa3702202bf6cd7055c6f8f697ce045b1a4f9b997cf6e5761a661d27696ac34064479d19");
     {
         const Data outputData =

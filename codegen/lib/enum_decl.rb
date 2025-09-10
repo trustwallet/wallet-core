@@ -25,6 +25,10 @@ class EnumDecl
     false
   end
 
+  def generated?
+    false
+  end
+
   def enum?
     true
   end

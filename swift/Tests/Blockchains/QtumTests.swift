@@ -7,13 +7,13 @@ import XCTest
 
 class QtumTests: XCTestCase {
     func testAddress() {
-        let privateKey1 = PrivateKey(data: Data(hexString: "a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730")!)!
+        let privateKey1 = PrivateKey(data: Data(hexString: "a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730")!, curve: CoinType.qtum.curve)!
         let publicKey1 = privateKey1.getPublicKeySecp256k1(compressed: true)
 
         let legacyAddress = BitcoinAddress(publicKey: publicKey1, prefix: CoinType.qtum.p2pkhPrefix)!
         XCTAssertEqual(BitcoinAddress(string: "QWVNLCXwhJqzut9YCLxbeMTximr2hmw7Vr")!.description, legacyAddress.description)
 
-        let privateKey2 = PrivateKey(data: Data(hexString: "55f9cbb0376c422946fa28397c1219933ac60b312ede41bfacaf701ecd546625")!)!
+        let privateKey2 = PrivateKey(data: Data(hexString: "55f9cbb0376c422946fa28397c1219933ac60b312ede41bfacaf701ecd546625")!, curve: CoinType.qtum.curve)!
         let publicKey2 = privateKey2.getPublicKeySecp256k1(compressed: true)
         let bech32Address = SegwitAddress(hrp: .qtum, publicKey: publicKey2)
         XCTAssertEqual(SegwitAddress(string: "qc1qytnqzjknvv03jwfgrsmzt0ycmwqgl0as6uywkk")!.description, bech32Address.description)

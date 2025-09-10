@@ -5,9 +5,7 @@
 #include "Address.h"
 #include "../Base58.h"
 #include "../BinaryCoding.h"
-
-#include <TrezorCrypto/ripemd160.h>
-
+#include "../Hash.h"
 #include <stdexcept>
 
 using namespace TW;
@@ -34,18 +32,8 @@ bool Address::isValid(const Data& bytes) {
 
 /// Creates a checksum of PublicKeyDataSize bytes at the buffer
 uint32_t Address::createChecksum(const Data& bytes) {
-    // create checksum and compare
-    uint8_t hash[RIPEMD160_DIGEST_LENGTH];
-    RIPEMD160_CTX ctx;
-    ripemd160_Init(&ctx);
-
-    // add the bytes to the hash input
-    ripemd160_Update(&ctx, bytes.data(), PublicKey::secp256k1Size);
-
-    // finalize the hash
-    ripemd160_Final(&ctx, hash);
-
-    return decode32LE(hash);
+    auto hash = Hash::ripemd(bytes.data(), PublicKey::secp256k1Size);
+    return decode32LE(hash.data());
 }
 
 /// Decode and verifies the key data from a base58 string.

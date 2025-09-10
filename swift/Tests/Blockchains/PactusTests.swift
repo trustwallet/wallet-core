@@ -10,7 +10,7 @@ class PactusTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        privateKey = PrivateKey(data: Data(hexString: "4e51f1f3721f644ac7a193be7f5e7b8c2abaa3467871daf4eacb5d3af080e5d6")!)!
+        privateKey = PrivateKey(data: Data(hexString: "4e51f1f3721f644ac7a193be7f5e7b8c2abaa3467871daf4eacb5d3af080e5d6")!, curve: CoinType.pactus.curve)!
     }
 
    func testAddress() {

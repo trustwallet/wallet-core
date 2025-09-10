@@ -108,7 +108,7 @@ def generate_skeleton(coin_id, mode)
     json_string = File.read('registry.json')
     coins = JSON.parse(json_string).sort_by { |x| x['name'] }
 
-    entity = EntityDecl.new(name: "New" + coin_id, is_struct: false, comment: '')
+    entity = EntityDecl.new(name: "New" + coin_id, is_struct: false, is_generated: false, comment: '')
     file = "new"+ coin_id
 
     generator = CodeGenerator.new(entities: [entity], files: [file], output_folder: ".")

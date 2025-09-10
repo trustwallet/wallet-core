@@ -16,7 +16,7 @@ class NervosTests: XCTestCase {
 
     func testAddress() throws {
 
-        let key = PrivateKey(data: Data(hexString: "8a2a726c44e46d1efaa0f9c2a8efed932f0e96d6050b914fde762ee285e61feb")!)!
+        let key = PrivateKey(data: Data(hexString: "8a2a726c44e46d1efaa0f9c2a8efed932f0e96d6050b914fde762ee285e61feb")!, curve: CoinType.nervos.curve)!
         let pubkey = key.getPublicKeySecp256k1(compressed: true)
         let address = AnyAddress(publicKey: pubkey, coin: .nervos)
         let addressFromString = AnyAddress(string: "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwyk5x9erg8furras980hksatlslfaktks7epf25", coin: .nervos)!

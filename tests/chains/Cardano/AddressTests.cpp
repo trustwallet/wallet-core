@@ -145,16 +145,6 @@ TEST(CardanoAddress, MnemonicToAddressV3) {
         EXPECT_EQ("30a6f50aeb58ff7699b822d63e0ef27aeff17d9f", hex(wallet.getEntropy()));
 
         {
-            PrivateKey masterPrivKey = wallet.getMasterKey(TWCurve::TWCurveED25519ExtendedCardano);
-            PrivateKey masterPrivKeyExt = wallet.getMasterKeyExtension(TWCurve::TWCurveED25519ExtendedCardano);
-            // the two together matches first half of keypair
-            ASSERT_EQ("a018cd746e128a0be0782b228c275473205445c33b9000a33dd5668b430b5744", hex(masterPrivKey.bytes));
-            ASSERT_EQ("26877cfe435fddda02409b839b7386f3738f10a30b95a225f4b720ee71d2505b", hex(masterPrivKeyExt.bytes));
-
-            PublicKey masterPublicKey = masterPrivKey.getPublicKey(TWPublicKeyTypeED25519);
-            ASSERT_EQ("3aecb95953edd0b16db20366097ddedcb3512fe36193473c5fca2af774d44739", hex(masterPublicKey.bytes));
-        }
-        {
             string addr = wallet.deriveAddress(TWCoinType::TWCoinTypeCardano);
             EXPECT_EQ("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq", addr);
         }
@@ -246,7 +236,7 @@ TEST(CardanoAddress, MnemonicToAddressV3) {
         // V2 Tested against AdaLite
         auto mnemonicPlay1 = "youth away raise north opinion slice dash bus soldier dizzy bitter increase saddle live champion";
         auto wallet = HDWallet(mnemonicPlay1, "");
-        PrivateKey privateKey = wallet.getKey(TWCoinTypeCardano, DerivationPath(TWPurposeBIP44, TWCoinTypeCardano, DerivationPathIndex(0, true).derivationIndex(), 0, 0));
+        PrivateKey privateKey = wallet.getKey(TWCoinTypeCardano, DerivationPath(TWPurposeBIP44, TWCoinTypeCardano, 0, 0, 0));
         PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         string addr = AddressV2(publicKey).string();
         EXPECT_EQ("Ae2tdPwUPEZJYT9g1JgQWtLveUHavyRxQGi6hVzoQjct7yyCLGgk3pCyx7h", addr);
@@ -255,7 +245,7 @@ TEST(CardanoAddress, MnemonicToAddressV3) {
         // V2 Tested against AdaLite
         auto mnemonicPlay2 = "return custom two home gain guilt kangaroo supply market current curtain tomorrow heavy blue robot";
         auto wallet = HDWallet(mnemonicPlay2, "");
-        PrivateKey privateKey = wallet.getKey(TWCoinTypeCardano, DerivationPath(TWPurposeBIP44, TWCoinTypeCardano, DerivationPathIndex(0, true).derivationIndex(), 0, 0));
+        PrivateKey privateKey = wallet.getKey(TWCoinTypeCardano, DerivationPath(TWPurposeBIP44, TWCoinTypeCardano, 0, 0, 0));
         PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         string addr = AddressV2(publicKey).string();
         EXPECT_EQ("Ae2tdPwUPEZLtJx7LA2XZ3zzwonH9x9ieX3dMzaTBD3TfXuKczjMSjTecr1", addr);
@@ -265,7 +255,7 @@ TEST(CardanoAddress, MnemonicToAddressV3) {
         // In AdaLite V1 addr0 is DdzFFzCqrht7HGoJ87gznLktJGywK1LbAJT2sbd4txmgS7FcYLMQFhawb18ojS9Hx55mrbsHPr7PTraKh14TSQbGBPJHbDZ9QVh6Z6Di
         auto mnemonicALDemo = "civil void tool perfect avocado sweet immense fluid arrow aerobic boil flash";
         auto wallet = HDWallet(mnemonicALDemo, "");
-        PrivateKey privateKey = wallet.getKey(TWCoinTypeCardano, DerivationPath(TWPurposeBIP44, TWCoinTypeCardano, DerivationPathIndex(0, true).derivationIndex(), 0, 0));
+        PrivateKey privateKey = wallet.getKey(TWCoinTypeCardano, DerivationPath(TWPurposeBIP44, TWCoinTypeCardano, 0, 0, 0));
         PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         string addr = AddressV2(publicKey).string();
         EXPECT_EQ("Ae2tdPwUPEZJbLcD8iLgN7hVGvq66WdR4zocntRekSP97Ds3MvCfmEDjJYu", addr);
@@ -320,13 +310,11 @@ TEST(CardanoAddress, FromDataV3_Base) {
 TEST(CardanoAddress, FromPrivateKeyV3) {
     {
         // from cardano-crypto.js test
-        auto privateKey = PrivateKey(
+        EXPECT_ANY_THROW(PrivateKey(
             parse_hex("d809b1b4b4c74734037f76aace501730a3fe2fca30b5102df99ad3f7c0103e48"),
             parse_hex("d54cde47e9041b31f3e6873d700d83f7a937bea746dadfa2c5b0a6a92502356c"),
             parse_hex("69272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000"),
-            dummyKey, dummyKey, dummyKey);
-        auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
-        EXPECT_ANY_THROW(new AddressV3(publicKey));
+            dummyKey, dummyKey, dummyKey, TWCurveED25519));
     }
 }
 
@@ -409,7 +397,7 @@ TEST(CardanoAddress, FromPrivateKeyV2) {
             parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"),
             parse_hex("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff"),
             parse_hex("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4"),
-            dummyKey, dummyKey, dummyKey
+            dummyKey, dummyKey, dummyKey, TWCurveED25519ExtendedCardano
         );
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         ASSERT_EQ(hex(publicKey.bytes),
@@ -426,7 +414,7 @@ TEST(CardanoAddress, FromPrivateKeyV2) {
             parse_hex("a089c9423100960440ccd5b7adbd202d1ab1993a7bb30fc88b287d94016df247"),
             parse_hex("da86a87f08fb15de1431a6c0ccd5ebf51c3bee81f7eaf714801bbbe4d903154a"),
             parse_hex("e513fa1290da1d22e83a41f17eed72d4489483b561fff36b9555ffdb91c430e2"),
-            dummyKey, dummyKey, dummyKey
+            dummyKey, dummyKey, dummyKey, TWCurveED25519ExtendedCardano
         );
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         ASSERT_EQ(hex(publicKey.bytes),
@@ -443,7 +431,7 @@ TEST(CardanoAddress, FromPrivateKeyV2) {
             parse_hex("d809b1b4b4c74734037f76aace501730a3fe2fca30b5102df99ad3f7c0103e48"),
             parse_hex("d54cde47e9041b31f3e6873d700d83f7a937bea746dadfa2c5b0a6a92502356c"),
             parse_hex("69272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000"),
-            dummyKey, dummyKey, dummyKey
+            dummyKey, dummyKey, dummyKey, TWCurveED25519ExtendedCardano
         );
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         ASSERT_EQ(hex(publicKey.bytes),
@@ -456,13 +444,11 @@ TEST(CardanoAddress, FromPrivateKeyV2) {
     }
     {
         // from cardano-crypto.js test
-        auto privateKey = PrivateKey(
+        EXPECT_ANY_THROW(PrivateKey(
             parse_hex("d809b1b4b4c74734037f76aace501730a3fe2fca30b5102df99ad3f7c0103e48"),
             parse_hex("d54cde47e9041b31f3e6873d700d83f7a937bea746dadfa2c5b0a6a92502356c"),
             parse_hex("69272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000"),
-            dummyKey, dummyKey, dummyKey);
-        auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
-        EXPECT_ANY_THROW(new AddressV2(publicKey));
+            dummyKey, dummyKey, dummyKey, TWCurveED25519));
     }
 }
 
@@ -472,14 +458,14 @@ TEST(CardanoAddress, PrivateKeyExtended) {
         parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"),
         parse_hex("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff"),
         parse_hex("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4"),
-        dummyKey, dummyKey, dummyKey
+        dummyKey, dummyKey, dummyKey, TWCurveED25519ExtendedCardano
     );
     auto publicKeyExt = privateKeyExt.getPublicKey(TWPublicKeyTypeED25519Cardano);
     ASSERT_EQ(128ul, publicKeyExt.bytes.size());
 
     // Non-extended: both are 32 bytes.
     auto privateKeyNonext = PrivateKey(
-        parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"));
+        parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"), TWCurveED25519);
     auto publicKeyNonext = privateKeyNonext.getPublicKey(TWPublicKeyTypeED25519);
     ASSERT_EQ(32ul, publicKeyNonext.bytes.size());
 }

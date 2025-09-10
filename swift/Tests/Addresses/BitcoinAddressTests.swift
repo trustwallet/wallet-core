@@ -44,7 +44,7 @@ class BitcoinAddressTests: XCTestCase {
 
     func testFromPrivateKey() {
         let data = Data(hexString: "f7b5f7a8090c5c93cd2d6d01383c9286b221ea78d8bef3e482f0c5cdde653e68")!
-        let privateKey = PrivateKey(data: data)!
+        let privateKey = PrivateKey(data: data, curve: CoinType.bitcoin.curve)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         let address = BitcoinAddress.compatibleAddress(publicKey: publicKey, prefix: CoinType.bitcoin.p2shPrefix)
 
@@ -53,7 +53,7 @@ class BitcoinAddressTests: XCTestCase {
 
     func testFromPrivateKeyUncompressed() {
         let data = Data(hexString: "f7b5f7a8090c5c93cd2d6d01383c9286b221ea78d8bef3e482f0c5cdde653e68")!
-        let privateKey = PrivateKey(data: data)!
+        let privateKey = PrivateKey(data: data, curve: CoinType.bitcoin.curve)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
         let address = BitcoinAddress.compatibleAddress(publicKey: publicKey, prefix: CoinType.bitcoin.p2shPrefix)
 
@@ -62,7 +62,7 @@ class BitcoinAddressTests: XCTestCase {
 
     func testFromPrivateKeySegwitAddress() {
         let data = Data(hexString: "28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4")!
-        let privateKey = PrivateKey(data: data)!
+        let privateKey = PrivateKey(data: data, curve: CoinType.bitcoin.curve)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
 
         let address = BitcoinAddress(publicKey: publicKey, prefix: CoinType.bitcoin.p2pkhPrefix)!
@@ -228,7 +228,7 @@ class BitcoinAddressTests: XCTestCase {
     }
 
     func testBitcoinDeriveAddress() {
-        let privateKey = PrivateKey(data: Data(hexString: "4646464646464646464646464646464646464646464646464646464646464646")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "4646464646464646464646464646464646464646464646464646464646464646")!, curve: CoinType.bitcoin.curve)!
         let address = CoinType.bitcoin.deriveAddress(privateKey: privateKey)
         XCTAssertEqual("bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv", address.description)
     }

@@ -18,7 +18,7 @@ class TestZenAddress {
 
     @Test
     fun testAddress() {
-        val key = PrivateKey("3a8e0a528f62f4ca2c77744c8a571def2845079b50105a9f7ef6b1b823def67a".toHexByteArray())
+        val key = PrivateKey("3a8e0a528f62f4ca2c77744c8a571def2845079b50105a9f7ef6b1b823def67a".toHexByteArray(), CoinType.ZEN.curve())
         val pubkey = key.getPublicKeySecp256k1(true)
         val address = AnyAddress(pubkey, CoinType.ZEN)
         val expected = AnyAddress("znk19H1wcARcCa7TM6zgmJUbWoWWtZ8k5cg", CoinType.ZEN)
