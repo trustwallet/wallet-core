@@ -29,10 +29,6 @@ jobs:
     - name: Install Kotlin Dependencies
       run: tools/install-kotlin-dependencies
 
-    - name: Switch Xcode
-    run: |
-      sudo xcode-select --switch /Applications/Xcode_16.4.app
-
     - name: Build KMP Sample
       run: |
         ./gradlew --version
