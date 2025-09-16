@@ -20,7 +20,7 @@ class TestTerraTransactions {
     @Test
     fun testSigningTransaction() {
         val key =
-            PrivateKey("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005".toHexByteArray())
+            PrivateKey("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005".toHexByteArray(), CoinType.TERRAV2.curve())
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, TERRAV2).description()
 
@@ -70,7 +70,7 @@ class TestTerraTransactions {
     @Test
     fun testSigningWasmTerraTransferTx() {
         val key =
-            PrivateKey("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616".toHexByteArray())
+            PrivateKey("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616".toHexByteArray(), CoinType.TERRAV2.curve())
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, TERRAV2).description()
 

@@ -4,12 +4,12 @@
 
 #include "TestUtilities.h"
 
-#include <TrustWalletCore/TWPBKDF2.h>
+#include <TrustWalletCore/Generated/TWPBKDF2.h>
 
 #include <gtest/gtest.h>
 
 TEST(TWPBKDF2, Sha256_sha512) {
-	auto password = DATA("50617373776f7264"); // Password
+    auto password = DATA("50617373776f7264"); // Password
     auto salt = DATA("4e61436c");             // NaCl
 
     auto sha256Result = WRAPD(TWPBKDF2HmacSha256(password.get(), salt.get(), 80000, 128));

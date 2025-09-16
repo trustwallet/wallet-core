@@ -22,7 +22,7 @@ class TestNativeInjectiveSigner {
 
     @Test
     fun NativeInjectiveTransactionSigning() {
-        val key = PrivateKey("9ee18daf8e463877aaf497282abc216852420101430482a28e246c179e2c5ef1".toHexByteArray())
+        val key = PrivateKey("9ee18daf8e463877aaf497282abc216852420101430482a28e246c179e2c5ef1".toHexByteArray(), CoinType.NATIVEINJECTIVE.curve())
         val publicKey = key.getPublicKeySecp256k1(false)
         val from = AnyAddress(publicKey, CoinType.NATIVEINJECTIVE).description()
 

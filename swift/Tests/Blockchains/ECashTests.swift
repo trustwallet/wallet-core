@@ -60,7 +60,7 @@ class ECashTests: XCTestCase {
 
     func testSign() throws {
         let utxoTxId = "050d00e2e18ef13969606f1ceee290d3f49bd940684ce39898159352952b8ce2"
-        let privateKey = PrivateKey(data: Data(hexString: "7fdafb9db5bc501f2096e7d13d331dc7a75d9594af3d251313ba8b6200f4e384")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "7fdafb9db5bc501f2096e7d13d331dc7a75d9594af3d251313ba8b6200f4e384")!, curve: CoinType.ecash.curve)!
         let address = CoinType.ecash.deriveAddress(privateKey: privateKey)
         let utxo = BitcoinUnspentTransaction.with {
             $0.outPoint.hash = Data.reverse(hexString: utxoTxId) // reverse of UTXO tx id, Bitcoin internal expects network byte order

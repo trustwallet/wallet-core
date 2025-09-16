@@ -17,7 +17,7 @@ class TezosTests: XCTestCase {
     }
 
     public func testAddressFromPublicKey() {
-        let privateKey = PrivateKey(data: Data(hexString: "b177a72743f54ed4bdf51f1b55527c31bcd68c6d2cb2436d76cadd0227c99ff0")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "b177a72743f54ed4bdf51f1b55527c31bcd68c6d2cb2436d76cadd0227c99ff0")!, curve: CoinType.tezos.curve)!
         let publicKey = privateKey.getPublicKeyEd25519()
 
         let address = tezos.deriveAddressFromPublicKey(publicKey: publicKey)
@@ -113,7 +113,7 @@ class TezosTests: XCTestCase {
     }
     
     public func testMessageSignerSignAndVerify() {
-        let privateKey = PrivateKey(data: Data(hexString: "91b4fb8d7348db2e7de2693f58ce1cceb966fa960739adac1d9dba2cbaa0940a")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "91b4fb8d7348db2e7de2693f58ce1cceb966fa960739adac1d9dba2cbaa0940a")!, curve: CoinType.tezos.curve)!
         let msg = "05010000004254657a6f73205369676e6564204d6573736167653a207465737455726c20323032332d30322d30385431303a33363a31382e3435345a2048656c6c6f20576f726c64"
         let signature = TezosMessageSigner.signMessage(privateKey: privateKey, message: msg)
         XCTAssertEqual(signature, "edsigu3se2fcEJUCm1aqxjzbHdf7Wsugr4mLaA9YM2UVZ9Yy5meGv87VqHN3mmDeRwApTj1JKDaYjqmLZifSFdWCqBoghqaowwJ")
@@ -135,7 +135,7 @@ class TezosTests: XCTestCase {
 
     public func testSigning() {
         let privateKeyData = Data(hexString: "c6377a4cc490dc913fc3f0d9cf67d293a32df4547c46cb7e9e33c3b7b97c64d8")!
-        let privateKey = PrivateKey(data: privateKeyData)!
+        let privateKey = PrivateKey(data: privateKeyData, curve: CoinType.tezos.curve)!
         let publicKey = privateKey.getPublicKeyEd25519()
 
         let branch = "BL8euoCWqNCny9AR3AKjnpi38haYMxjei1ZqNHuXMn19JSQnoWp"
@@ -201,8 +201,8 @@ class TezosTests: XCTestCase {
         watermark.append(bytes)
 
         let hash = Hash.blake2b(data: watermark, size: 32)
-        let privateKey = PrivateKey(data: key)!
-        let signature = privateKey.sign(digest: hash, curve: .ed25519)!
+        let privateKey = PrivateKey(data: key, curve: .ed25519)!
+        let signature = privateKey.sign(digest: hash)!
 
         var signed = Data()
         signed.append(bytes)

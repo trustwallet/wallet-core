@@ -17,7 +17,7 @@ class TestNativeInjectiveAddress {
 
     @Test
     fun testAddress() {
-        val key = PrivateKey("9ee18daf8e463877aaf497282abc216852420101430482a28e246c179e2c5ef1".toHexByteArray())
+        val key = PrivateKey("9ee18daf8e463877aaf497282abc216852420101430482a28e246c179e2c5ef1".toHexByteArray(), CoinType.NATIVEINJECTIVE.curve())
         val pubKey = key.getPublicKeySecp256k1(false)
         val address = AnyAddress(pubKey, CoinType.NATIVEINJECTIVE)
         val expected = AnyAddress("inj13u6g7vqgw074mgmf2ze2cadzvkz9snlwcrtq8a", CoinType.NATIVEINJECTIVE)

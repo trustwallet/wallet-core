@@ -9,10 +9,11 @@ import Long = require("long");
 
 describe("Ripple", () => {
     it("test sign XRP payment", () => {
-        const {PrivateKey, HexCoding, AnySigner, CoinType} = globalThis.core;
+        const {PrivateKey, HexCoding, AnySigner, CoinType, CoinTypeExt} = globalThis.core;
 
         const privateKey = PrivateKey.createWithData(
-            HexCoding.decode("0xa5576c0f63da10e584568c8d134569ff44017b0a249eb70657127ae04f38cc77")
+            HexCoding.decode("0xa5576c0f63da10e584568c8d134569ff44017b0a249eb70657127ae04f38cc77"),
+            CoinTypeExt.curve(CoinType.xrp)
         );
         const txDataInput = TW.Ripple.Proto.SigningInput.create({
             fee: new Long(10),

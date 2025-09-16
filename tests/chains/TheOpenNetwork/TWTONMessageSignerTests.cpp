@@ -5,13 +5,13 @@
 #include "TestUtilities.h"
 
 #include "HexCoding.h"
-#include "TrustWalletCore/TWTONMessageSigner.h"
+#include "TrustWalletCore/Generated/TWTONMessageSigner.h"
 
 namespace TW::TheOpenNetwork::tests {
 
 TEST(TWTONMessageSigner, SignMessage) {
     const auto privateKeyBytes = DATA("112d4e2e700a468f1eae699329202f1ee671d6b665caa2d92dea038cf3868c18");
-    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(privateKeyBytes.get()));
+    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(privateKeyBytes.get(), TWCoinTypeCurve(TWCoinTypeTON)));
     const auto message = STRING("Hello world");
 
     const auto signature = WRAPS(TWTONMessageSignerSignMessage(privateKey.get(), message.get()));

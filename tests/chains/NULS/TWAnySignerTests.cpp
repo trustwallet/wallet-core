@@ -91,7 +91,7 @@ TEST(TWAnySigner, SignWithFeePayer) {
         parse_hex("0x48c91cd24a27a1cdc791022ff39316444229db1c466b3b1841b40c919dee3002");
     auto feePayerPrivateKey =
         parse_hex("0x9401fd554cb700777e57b05338f9ff47597add8b23ce9f1c8e041e9b4e2116b6");
-    auto pk = PrivateKey(privateKey);
+    auto pk = PrivateKey(privateKey, TWCoinTypeCurve(TWCoinTypeNULS));
     auto amount = store(uint256_t(100000));
     auto balance = store(uint256_t(1000000));
     auto feePayerBalance = store(uint256_t(1000000));

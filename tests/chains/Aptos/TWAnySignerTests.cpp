@@ -26,7 +26,7 @@ TEST(TWAnySignerAptos, TxSign) {
     input.set_gas_unit_price(100);
     input.set_expiration_timestamp_secs(3664390082);
     input.set_chain_id(33);
-    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"));
+    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"), TWCoinTypeCurve(TWCoinTypeAptos));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeAptos);
@@ -85,7 +85,7 @@ TEST(TWAnySignerAptos, TxSignWithABI) {
         "u64",
         "bool"
     ])");
-    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"));
+    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"), TWCoinTypeCurve(TWCoinTypeAptos));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeAptos);

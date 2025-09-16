@@ -10,6 +10,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.AnyAddress
+import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.BANDCHAIN
 import wallet.core.jni.PrivateKey
 import wallet.core.jni.proto.Cosmos
@@ -24,7 +25,7 @@ class TestBandChainSigner {
     @Test
     fun testSigningTransaction() {
         val key =
-            PrivateKey("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005".toHexByteArray())
+            PrivateKey("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005".toHexByteArray(), CoinType.BANDCHAIN.curve())
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, BANDCHAIN).description()
 

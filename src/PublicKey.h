@@ -8,6 +8,7 @@
 #include "Hash.h"
 
 #include <TrustWalletCore/TWPublicKeyType.h>
+#include "rust/Wrapper.h"
 
 #include <cassert>
 #include <stdexcept>
@@ -55,6 +56,11 @@ class PublicKey {
     /// \throws std::invalid_argument if the data is not a valid public key.
     explicit PublicKey(const Data& data, enum TWPublicKeyType type);
 
+    /// Initializes a public key with a Rust implementation.
+    explicit PublicKey(std::shared_ptr<TW::Rust::TWPublicKey> impl);
+
+    virtual ~PublicKey() { cleanup(); }
+
     /// Determines if this is a compressed public key.
     bool isCompressed() const {
         return type != TWPublicKeyTypeSECP256k1Extended && type != TWPublicKeyTypeNIST256p1Extended;
@@ -71,10 +77,7 @@ class PublicKey {
 
     /// Verifies a signature in DER format.
     bool verifyAsDER(const Data& signature, const Data& message) const;
-
-    /// Verifies a Zilliqa schnorr signature for the provided message.
-    bool verifyZilliqa(const Data& signature, const Data& message) const;
-
+    
     /// Computes the public key hash.
     ///
     /// The public key hash is computed by applying the hasher to the public key
@@ -97,6 +100,11 @@ class PublicKey {
 
     /// Check if this key makes a valid ED25519 key (it is on the curve)
     bool isValidED25519() const;
+
+    /// Cleanup contents (fill with 0s), called before destruction
+    void cleanup();
+private:
+    std::shared_ptr<TW::Rust::TWPublicKey> _impl;
 };
 
 inline bool operator==(const PublicKey& lhs, const PublicKey& rhs) {

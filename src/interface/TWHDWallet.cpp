@@ -60,7 +60,10 @@ TWData *_Nonnull TWHDWalletEntropy(struct TWHDWallet *_Nonnull wallet) {
     return TWDataCreateWithBytes(wallet->impl.getEntropy().data(), wallet->impl.getEntropy().size());
 }
 
-struct TWPrivateKey *_Nonnull TWHDWalletGetMasterKey(struct TWHDWallet *_Nonnull wallet, TWCurve curve) {
+struct TWPrivateKey *_Nullable TWHDWalletGetMasterKey(struct TWHDWallet *_Nonnull wallet, TWCurve curve) {
+    if (curve == TWCurveED25519ExtendedCardano) {
+        return nullptr;
+    }
     return new TWPrivateKey{ wallet->impl.getMasterKey(curve) };
 }
 

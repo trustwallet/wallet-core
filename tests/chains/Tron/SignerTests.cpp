@@ -9,6 +9,7 @@
 #include "uint256.h"
 #include "proto/Tron.pb.h"
 #include "Tron/Signer.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 
@@ -16,7 +17,7 @@ namespace TW::Tron {
 
 TEST(TronSigner, SignDirectTransferAsset) {
     auto input = Proto::SigningInput();
-    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     input.set_txid("546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb");
     const auto output = Signer::sign(input);
@@ -26,7 +27,7 @@ TEST(TronSigner, SignDirectTransferAsset) {
 
 TEST(TronSigner, SignDirectRawJsonTransferAsset) {
     auto input = Proto::SigningInput();
-    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     auto rawJson = R"({
 	"raw_data": {
@@ -80,7 +81,7 @@ TEST(TronSigner, SignTransferAsset) {
     blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
     blockHeader.set_version(3);
 
-    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     const auto output = Signer::sign(input);
@@ -112,7 +113,7 @@ TEST(TronSigner, SignTransfer) {
     blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
     blockHeader.set_version(3);
 
-    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     const auto output = Signer::sign(input);
@@ -146,7 +147,7 @@ TEST(TronSigner, SignTransferWithMemo) {
     blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
     blockHeader.set_version(30);
 
-    const auto privateKey = PrivateKey(parse_hex("7c2108a30f6f69f8dce72a7df897eabadfe9810eee6976b43bdf8c0b0d35337d"));
+    const auto privateKey = PrivateKey(parse_hex("7c2108a30f6f69f8dce72a7df897eabadfe9810eee6976b43bdf8c0b0d35337d"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     const auto output = Signer::sign(input);
@@ -179,7 +180,7 @@ TEST(TronSigner, SignFreezeBalanceV2) {
     blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
     blockHeader.set_version(26);
 
-    const auto privateKey = PrivateKey(parse_hex("75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a"));
+    const auto privateKey = PrivateKey(parse_hex("75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     const auto output = Signer::sign(input);
@@ -210,7 +211,7 @@ TEST(TronSigner, WithdrawExpireUnfreezeContract) {
     blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
     blockHeader.set_version(27);
 
-    const auto privateKey = PrivateKey(parse_hex("75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a"));
+    const auto privateKey = PrivateKey(parse_hex("75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     const auto output = Signer::sign(input);
@@ -243,7 +244,7 @@ TEST(TronSigner, SignUnFreezeBalanceV2) {
     blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
     blockHeader.set_version(26);
 
-    const auto privateKey = PrivateKey(parse_hex("75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a"));
+    const auto privateKey = PrivateKey(parse_hex("75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     const auto output = Signer::sign(input);
@@ -277,7 +278,7 @@ TEST(TronSigner, DelegateResourceContract) {
     blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
     blockHeader.set_version(26);
 
-    const auto privateKey = PrivateKey(parse_hex("75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a"));
+    const auto privateKey = PrivateKey(parse_hex("75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     const auto output = Signer::sign(input);
@@ -311,7 +312,7 @@ TEST(TronSigner, UnDelegateResourceContract) {
     blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
     blockHeader.set_version(26);
 
-    const auto privateKey = PrivateKey(parse_hex("75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a"));
+    const auto privateKey = PrivateKey(parse_hex("75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     const auto output = Signer::sign(input);
@@ -345,7 +346,7 @@ TEST(TronSigner, SignFreezeBalance) {
     blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
     blockHeader.set_version(3);
 
-    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     const auto output = Signer::sign(input);
@@ -377,7 +378,7 @@ TEST(TronSigner, SignUnFreezeBalance) {
     blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
     blockHeader.set_version(3);
 
-    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     const auto output = Signer::sign(input);
@@ -407,7 +408,7 @@ TEST(TronSigner, SignUnFreezeAsset) {
     blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
     blockHeader.set_version(3);
 
-    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     const auto output = Signer::sign(input);
@@ -437,7 +438,7 @@ TEST(TronSigner, SignWithdrawBalance) {
     blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
     blockHeader.set_version(3);
 
-    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     const auto output = Signer::sign(input);
@@ -470,7 +471,7 @@ TEST(TronSigner, SignVoteAsset) {
     blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
     blockHeader.set_version(3);
 
-    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     const auto output = Signer::sign(input);
@@ -505,7 +506,7 @@ TEST(TronSigner, SignVoteWitness) {
     blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
     blockHeader.set_version(3);
 
-    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     const auto output = Signer::sign(input);
@@ -540,7 +541,7 @@ TEST(TronSigner, SignTriggerSmartContract) {
     blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
     blockHeader.set_version(3);
 
-    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     const auto output = Signer::sign(input);
@@ -572,7 +573,7 @@ TEST(TronSigner, SignTransferTrc20Contract) {
     blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
     blockHeader.set_version(3);
 
-    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     const auto output = Signer::sign(input);

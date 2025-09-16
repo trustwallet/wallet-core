@@ -18,7 +18,7 @@ class TestTezosMessageSigner {
     @Test
     fun testMessageSignerSignAndVerify() {
         val data = Numeric.hexStringToByteArray("91b4fb8d7348db2e7de2693f58ce1cceb966fa960739adac1d9dba2cbaa0940a")
-        val privateKey = PrivateKey(data)
+        val privateKey = PrivateKey(data, CoinType.TEZOS.curve())
         val msg = "05010000004254657a6f73205369676e6564204d6573736167653a207465737455726c20323032332d30322d30385431303a33363a31382e3435345a2048656c6c6f20576f726c64"
         val signature = TezosMessageSigner.signMessage(privateKey, msg)
         assertEquals("edsigu3se2fcEJUCm1aqxjzbHdf7Wsugr4mLaA9YM2UVZ9Yy5meGv87VqHN3mmDeRwApTj1JKDaYjqmLZifSFdWCqBoghqaowwJ", signature)

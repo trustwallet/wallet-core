@@ -9,6 +9,7 @@ import wallet.core.java.AnySigner
 import wallet.core.jni.proto.Harmony
 import wallet.core.jni.proto.Harmony.SigningOutput
 import com.trustwallet.core.app.utils.Numeric
+import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.HARMONY
 
 class TestHarmonyTransactionSigner {
@@ -31,7 +32,7 @@ class TestHarmonyTransactionSigner {
         }
         val signingInput = Harmony.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("0xb578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("0xb578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e".toHexByteArray(), CoinType.HARMONY.curve()).data())
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
             transactionMessage = transaction.build()
         }

@@ -80,7 +80,7 @@ class ZcashTests: XCTestCase {
         let txId = Data.reverse(hexString: "3a19dd44032dfed61bfca5ba5751aab8a107b30609cbd5d70dc5ef09885b6853")
         let sapplingBranchId = Data(hexString: "bb09b876")!
 
-        let privateKey = PrivateKey(data: privateKeyData)!
+        let privateKey = PrivateKey(data: privateKeyData, curve: CoinType.zcash.curve)!
 
         let utxo0 = BitcoinV2Input.with {
             $0.outPoint = UtxoOutPoint.with {

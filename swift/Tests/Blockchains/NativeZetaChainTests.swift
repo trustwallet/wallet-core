@@ -7,7 +7,7 @@ import XCTest
 
 class NativeZetaChainTests: XCTestCase {
     func testAddress() {
-        let key = PrivateKey(data: Data(hexString: "8d2a3bd62d300a148c89dc8635f87b7a24a951bd1c4e78675fe40e1a640d46ed")!)!
+        let key = PrivateKey(data: Data(hexString: "8d2a3bd62d300a148c89dc8635f87b7a24a951bd1c4e78675fe40e1a640d46ed")!, curve: CoinType.nativeZetaChain.curve)!
         let pubkey = key.getPublicKeySecp256k1(compressed: false)
         let address = AnyAddress(publicKey: pubkey, coin: .nativeZetaChain)
         let addressFromString = AnyAddress(string: "zeta14py36sx57ud82t9yrks9z6hdsrpn5x6kmxs0ne", coin: .nativeZetaChain)!
@@ -16,7 +16,7 @@ class NativeZetaChainTests: XCTestCase {
     }
 
     func testSign() {
-        let privateKey = PrivateKey(data: Data(hexString: "8d2a3bd62d300a148c89dc8635f87b7a24a951bd1c4e78675fe40e1a640d46ed")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "8d2a3bd62d300a148c89dc8635f87b7a24a951bd1c4e78675fe40e1a640d46ed")!, curve: CoinType.nativeZetaChain.curve)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
         let fromAddress = AnyAddress(publicKey: publicKey, coin: .nativeZetaChain)
 

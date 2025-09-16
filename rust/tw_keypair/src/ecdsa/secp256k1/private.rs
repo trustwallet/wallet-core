@@ -2,20 +2,24 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use std::str::FromStr;
+
 use crate::ecdsa::secp256k1::public::PublicKey;
 use crate::ecdsa::secp256k1::Signature;
+use crate::traits::DerivableKeyTrait;
 use crate::traits::SigningKeyTrait;
 use crate::{KeyPairError, KeyPairResult};
+use ecdsa::elliptic_curve::point::AffineCoordinates;
 use k256::ecdsa::{SigningKey, VerifyingKey};
-use k256::elliptic_curve::sec1::ToEncodedPoint;
 use k256::{AffinePoint, ProjectivePoint};
 use tw_encoding::hex;
 use tw_hash::H256;
+use tw_hash::H512;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::{ZeroizeOnDrop, Zeroizing};
 
 /// Represents a `secp256k1` private key.
-#[derive(ZeroizeOnDrop)]
+#[derive(ZeroizeOnDrop, Clone)]
 pub struct PrivateKey {
     pub(crate) secret: SigningKey,
 }
@@ -26,17 +30,11 @@ impl PrivateKey {
         PublicKey::new(*self.secret.verifying_key())
     }
 
-    /// Computes an EC Diffie-Hellman secret in constant time.
-    /// The method is ported from [TW::PrivateKey::getSharedKey](https://github.com/trustwallet/wallet-core/blob/830b1c5baaf90692196163999e4ee2063c5f4e49/src/PrivateKey.cpp#L175-L191).
-    pub fn shared_key_hash(&self, pubkey: &PublicKey) -> H256 {
+    // See https://github.com/fioprotocol/fiojs/blob/master/src/ecc/key_private.js
+    pub fn ecies_shared_key(&self, pubkey: &PublicKey) -> H512 {
         let shared_secret = diffie_hellman(&self.secret, &pubkey.public);
-
-        // Get a compressed shared secret (33 bytes with a tag in front).
-        let compress = true;
-        let shared_secret_compressed = shared_secret.to_encoded_point(compress);
-
-        let shared_secret_hash = tw_hash::sha2::sha256(shared_secret_compressed.as_bytes());
-        H256::try_from(shared_secret_hash.as_slice()).expect("Expected 32 byte array sha256 hash")
+        let hash = tw_hash::sha2::sha512(shared_secret.x().as_slice());
+        H512::try_from(hash.as_slice()).expect("Expected 64 byte array sha512 hash")
     }
 }
 
@@ -79,9 +77,34 @@ impl<'a> TryFrom<&'a str> for PrivateKey {
     }
 }
 
+impl FromStr for PrivateKey {
+    type Err = KeyPairError;
+
+    fn from_str(hex: &str) -> Result<Self, Self::Err> {
+        Self::try_from(hex)
+    }
+}
+
 impl ToBytesZeroizing for PrivateKey {
     fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
         let secret = Zeroizing::new(self.secret.to_bytes());
         Zeroizing::new(secret.as_slice().to_vec())
+    }
+}
+
+impl DerivableKeyTrait for PrivateKey {
+    fn derive_child(&self, other: H256) -> KeyPairResult<Self> {
+        let child_scalar = Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::from_repr(
+            other.take().into(),
+        ))
+        .ok_or(KeyPairError::InternalError)?;
+
+        let derived_scalar = self.secret.as_nonzero_scalar().as_ref() + child_scalar.as_ref();
+
+        let secret = Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::new(derived_scalar))
+            .map(Into::into)
+            .ok_or(KeyPairError::InternalError)?;
+
+        Ok(PrivateKey { secret })
     }
 }

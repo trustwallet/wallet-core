@@ -179,7 +179,7 @@ where
             return TWError::err(SigningErrorType::Error_not_supported);
         };
 
-        let private_key = PrivateKey::new(private_key)?;
+        let private_key = PrivateKey::new(private_key, coin.curve())?;
         json_signer.sign_json(coin, input_json, &private_key)
     }
 

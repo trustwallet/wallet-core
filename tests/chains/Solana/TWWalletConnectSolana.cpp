@@ -7,7 +7,7 @@
 #include "proto/WalletConnect.pb.h"
 #include "Coin.h"
 #include <TrustWalletCore/TWAnySigner.h>
-#include <TrustWalletCore/TWWalletConnectRequest.h>
+#include <TrustWalletCore/Generated/TWWalletConnectRequest.h>
 
 #include "TestUtilities.h"
 #include <gtest/gtest.h>

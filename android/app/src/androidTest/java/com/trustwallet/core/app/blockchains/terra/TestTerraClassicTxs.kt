@@ -20,7 +20,7 @@ class TestTerraClassicTxs {
     @Test
     fun testSigningTransaction() {
         val key =
-            PrivateKey("1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6".toHexByteArray())
+            PrivateKey("1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6".toHexByteArray(), CoinType.TERRA.curve())
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, TERRA).description()
 
@@ -71,7 +71,7 @@ class TestTerraClassicTxs {
     @Test
     fun testSigningWasmTerraTransferTxProtobuf() {
         val key =
-            PrivateKey("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616".toHexByteArray())
+            PrivateKey("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616".toHexByteArray(), CoinType.TERRA.curve())
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, TERRA).description()
 
@@ -116,7 +116,7 @@ class TestTerraClassicTxs {
     @Test
     fun testSigningWasmTerraGenericProtobuf() {
         val key =
-            PrivateKey("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616".toHexByteArray())
+            PrivateKey("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616".toHexByteArray(), CoinType.TERRA.curve())
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, TERRA).description()
 
@@ -160,7 +160,7 @@ class TestTerraClassicTxs {
     @Test
     fun testSigningWasmTerraGenericWithCoinsProtobuf() {
         val key =
-            PrivateKey("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616".toHexByteArray())
+            PrivateKey("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616".toHexByteArray(), CoinType.TERRA.curve())
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, TERRA).description()
 

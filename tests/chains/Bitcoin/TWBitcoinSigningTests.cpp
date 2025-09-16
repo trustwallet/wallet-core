@@ -378,7 +378,7 @@ TEST(BitcoinSigning, SignBRC20TransferCommitV2) {
     auto forFeeAmount = fullAmount - brcInscribeAmount - minerFee;
     auto txId = parse_hex("089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e");
 
-    PrivateKey key(privateKey);
+    PrivateKey key(privateKey, TWCurveSECP256k1);
     auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
 
     TW::BitcoinV2::Proto::SigningInput signing;
@@ -1372,7 +1372,7 @@ SigningInput buildInputP2SH_P2WPKH(bool omitScript = false, bool omitKeys = fals
     input.changeAddress = "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU";
     input.coinType = TWCoinTypeBitcoin;
 
-    auto utxoKey0 = PrivateKey(parse_hex("eb696a065ef48a2192da5b28b694f87544b30fae8327c4510137a922f32c6dcf"));
+    auto utxoKey0 = PrivateKey(parse_hex("eb696a065ef48a2192da5b28b694f87544b30fae8327c4510137a922f32c6dcf"), TWCurveSECP256k1);
     auto pubKey0 = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(pubKey0.bytes));
     assert(hex(utxoPubkeyHash) == "79091972186c449eb1ded22b78e40d009bdf0089");

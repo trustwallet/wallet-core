@@ -87,15 +87,6 @@ bool TWPublicKeyVerify(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull signatu
 TW_EXPORT_METHOD
 bool TWPublicKeyVerifyAsDER(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull signature, TWData *_Nonnull message);
 
-/// Verify a Zilliqa schnorr signature with a signature and message.
-///
-/// \param pk Non-null pointer to a public key
-/// \param signature Non-null pointer to a block of data corresponding to the signature
-/// \param message Non-null pointer to a block of data corresponding to the message
-/// \return true if the signature and the message belongs to the given public key, false otherwise
-TW_EXPORT_METHOD
-bool TWPublicKeyVerifyZilliqaSchnorr(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull signature, TWData *_Nonnull message);
-
 /// Give the public key type (eliptic) of a given public key
 ///
 /// \param publicKey Non-null pointer to a public key

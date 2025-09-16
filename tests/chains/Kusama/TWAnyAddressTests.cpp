@@ -35,7 +35,7 @@ TEST(KusamaAddress, Validation) {
 
 TEST(KusamaAddress, FromPrivateKey) {
     // from subkey: tiny escape drive pupil flavor endless love walk gadget match filter luxury
-    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("0xa21981f3bb990c40837df44df639541ff57c5e600f9eb4ac00ed8d1f718364e5").get()));
+    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("0xa21981f3bb990c40837df44df639541ff57c5e600f9eb4ac00ed8d1f718364e5").get(), TWCoinTypeCurve(TWCoinTypeKusama)));
     const auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKey(privateKey.get(), TWCoinTypeKusama));
     const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeKusama));
     const auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));

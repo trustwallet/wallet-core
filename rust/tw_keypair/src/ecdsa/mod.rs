@@ -8,7 +8,7 @@ use ecdsa::elliptic_curve::CurveArithmetic;
 use ecdsa::hazmat::DigestPrimitive;
 use ecdsa::PrimeCurve;
 
-mod canonical;
+pub mod canonical;
 pub mod der;
 pub mod nist256p1;
 pub mod secp256k1;

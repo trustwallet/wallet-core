@@ -22,7 +22,7 @@ class PolkadotTests: XCTestCase {
     }
 
     func testAddress() {
-        let key = PrivateKey(data: Data(hexString: "0xd65ed4c1a742699b2e20c0c1f1fe780878b1b9f7d387f934fe0a7dc36f1f9008")!)!
+        let key = PrivateKey(data: Data(hexString: "0xd65ed4c1a742699b2e20c0c1f1fe780878b1b9f7d387f934fe0a7dc36f1f9008")!, curve: CoinType.polkadot.curve)!
         let pubkey = key.getPublicKeyEd25519()
         let address = AnyAddress(publicKey: pubkey, coin: .polkadot)
         let addressFromString = AnyAddress(string: "12twBQPiG5yVSf3jQSBkTAKBKqCShQ5fm33KQhH3Hf6VDoKW", coin: .polkadot)!
@@ -138,7 +138,7 @@ class PolkadotTests: XCTestCase {
 
     func testChillAndUnbond() {
         // real key in 1p test
-        let key = PrivateKey(data: Data(hexString: "298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266")!)!
+        let key = PrivateKey(data: Data(hexString: "298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266")!, curve: CoinType.polkadot.curve)!
 
         let input = PolkadotSigningInput.with {
             $0.genesisHash = genesisHash
@@ -164,7 +164,7 @@ class PolkadotTests: XCTestCase {
     
     func testAcalaSigning() {
         // real key in 1p test
-        let key = PrivateKey(data: Data(hexString: "9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0")!)!
+        let key = PrivateKey(data: Data(hexString: "9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0")!, curve: CoinType.polkadot.curve)!
         
         let acalaGenesisHash = Data(hexString: "0xfc41b9bd8ef8fe53d58c7ea67c794c7ec9a73daf05e6d54b14ff6342c99ba64c")!
 
