@@ -23,6 +23,7 @@ std::string signMessageRust(const PrivateKey& privateKey, const std::string& mes
     Rust::TWDataWrapper inputData(data(input.SerializeAsString()));
     Rust::TWDataWrapper outputPtr = Rust::tw_message_signer_sign(TWCoinTypeEthereum, inputData.get());
 
+    input.set_private_key(std::string(privateKey.bytes.size(), '\0'));
     auto outputData = outputPtr.toDataOrDefault();
     if (outputData.empty()) {
         return {};

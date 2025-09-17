@@ -12,7 +12,6 @@ use unicode_normalization::UnicodeNormalization;
 use zeroize::{Zeroize, ZeroizeOnDrop, Zeroizing};
 
 use super::{error::Error, language::Language};
-use std::fmt;
 
 const MIN_NB_WORDS: usize = 12;
 const MAX_NB_WORDS: usize = 24;
@@ -206,7 +205,7 @@ impl Mnemonic {
     }
 
     // Taken from https://github.com/iqlusioninc/crates/blob/95c6b87ce657dc51a0bd11159ef39c603a197f8d/bip32/src/mnemonic/phrase.rs#L134
-    pub fn to_seed(mnemonic: &str, passphrase: &str) -> [u8; SEED_SIZE] {
+    pub fn to_seed(mnemonic: &str, passphrase: &str) -> Zeroizing<[u8; SEED_SIZE]> {
         let mnemonic = Zeroizing::new(mnemonic.nfkd().collect::<String>());
         let passphrase = Zeroizing::new(passphrase.nfkd().collect::<String>());
         let mut seed = [0u8; SEED_SIZE];
@@ -217,7 +216,7 @@ impl Mnemonic {
             PBKDF2_ROUNDS,
             &mut seed,
         );
-        seed
+        Zeroizing::new(seed)
     }
 
     fn word_indices(&self) -> impl Iterator<Item = usize> + Clone + '_ {
@@ -266,17 +265,16 @@ impl Mnemonic {
         let entropy_bytes = (nb_words / 3) * 4;
         entropy[0..entropy_bytes].to_vec()
     }
-}
 
-impl fmt::Display for Mnemonic {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    pub fn to_string_zeroizing(&self) -> Zeroizing<String> {
+        let mut string = String::new();
         for (i, word) in self.words().enumerate() {
             if i > 0 {
-                f.write_str(" ")?;
+                string.push(' ');
             }
-            f.write_str(word)?;
+            string.push_str(word);
         }
-        Ok(())
+        Zeroizing::new(string)
     }
 }
 
@@ -439,7 +437,7 @@ mod tests {
 
             {
                 assert_eq!(
-                    &mnemonic.to_string(),
+                    mnemonic.to_string_zeroizing().as_str(),
                     mnemonic_str,
                     "failed vector: {}",
                     mnemonic_str

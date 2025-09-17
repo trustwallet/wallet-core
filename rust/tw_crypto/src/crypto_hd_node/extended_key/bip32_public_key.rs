@@ -8,12 +8,16 @@ use bip32::{ChainCode, ChildNumber, KeyFingerprint, KEY_SIZE};
 use sha2::digest::Mac;
 use tw_hash::hasher::{Hasher, StatefulHasher};
 use tw_hash::hmac::HmacSha512;
+use tw_keypair::tw::Curve;
 use tw_misc::traits::{FromSlice, ToBytesVec};
 
 use crate::crypto_hd_node::error::{Error, Result};
 
 /// Trait for key types which can be derived using BIP32.
 pub trait BIP32PublicKey: Sized + Clone + ToBytesVec + FromSlice {
+    /// Get the curve of the public key.
+    fn curve() -> Curve;
+
     /// Compute a 4-byte key fingerprint for this public key.
     ///
     /// Default implementation uses `RIPEMD160(SHA256(public_key))`.
@@ -23,7 +27,11 @@ pub trait BIP32PublicKey: Sized + Clone + ToBytesVec + FromSlice {
     }
 
     /// Derive a child key from a parent key and a provided tweak value.
-    fn derive_child(&self, other: &[u8], child_number: ChildNumber) -> Result<Self>;
+    fn derive_child(
+        &self,
+        chain_code: &ChainCode,
+        child_number: ChildNumber,
+    ) -> Result<(Self, ChainCode)>;
 
     /// Derive a tweak value that can be used to generate the child key (see [`derive_child`]).
     ///
@@ -46,7 +54,8 @@ pub trait BIP32PublicKey: Sized + Clone + ToBytesVec + FromSlice {
             return Err(Error::InvalidChildNumber);
         }
 
-        let mut hmac = HmacSha512::new_from_slice(chain_code).expect("Should not fail");
+        let mut hmac =
+            HmacSha512::new_from_slice(chain_code).map_err(|_| Error::InvalidChainCode)?;
 
         hmac.update(&self.to_vec());
         hmac.update(&child_number.to_bytes());

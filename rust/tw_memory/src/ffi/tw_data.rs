@@ -5,6 +5,7 @@
 use crate::ffi::c_byte_array_ref::CByteArrayRef;
 use crate::ffi::RawPtrTrait;
 use crate::Data;
+use zeroize::Zeroize;
 
 /// Defines a resizable block of data.
 ///
@@ -22,11 +23,6 @@ impl TWData {
     /// Creates a `TWData` from a raw byte array.
     pub unsafe fn from_raw_data(bytes: *const u8, size: usize) -> Option<TWData> {
         CByteArrayRef::new(bytes, size).to_vec().map(TWData)
-    }
-
-    /// Converts `TWData` into `Data` without additional allocation.
-    pub fn into_vec(self) -> Data {
-        self.0
     }
 
     /// Copies underlying data.
@@ -47,6 +43,12 @@ impl TWData {
     /// Returns a length of the data.
     pub fn size(&self) -> usize {
         self.0.len()
+    }
+}
+
+impl Drop for TWData {
+    fn drop(&mut self) {
+        self.0.zeroize();
     }
 }
 

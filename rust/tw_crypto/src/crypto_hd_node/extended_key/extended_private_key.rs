@@ -68,7 +68,8 @@ where
         } else {
             let domain_separator = hex::decode(&K::bip32_name().to_hex())?;
 
-            let mut hmac = HmacSha512::new_from_slice(&domain_separator).expect("Should not fail");
+            let mut hmac = HmacSha512::new_from_slice(&domain_separator)
+                .map_err(|_| Error::InvalidDomainSeparator)?;
             hmac.update(seed.as_ref());
 
             let result = hmac.finalize().into_bytes();

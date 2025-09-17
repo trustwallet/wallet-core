@@ -67,7 +67,7 @@ fn aes_cbc_decrypt_impl<D: KeyIvInit + BlockDecryptMut>(
     let mut cipher = D::new(key.into(), iv.into());
     cipher.decrypt_blocks_mut(&mut blocks[..]);
     let buffer = blocks.concat();
-    Ok(padding_mode.unpad(&buffer))
+    padding_mode.unpad(&buffer).map_err(|_| StreamCipherError)
 }
 
 pub fn aes_cbc_encrypt_128(

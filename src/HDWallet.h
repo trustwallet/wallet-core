@@ -54,7 +54,7 @@ public:
 
     /// Initializes a new random HDWallet with the provided strength in bits.  
     /// Throws on invalid strength.
-    HDWallet(int strength, const std::string& passphrase);
+    HDWallet(uint32_t strength, const std::string& passphrase);
 
     /// Initializes an HDWallet from a BIP39 mnemonic and a passphrase, check English dict by default.
     /// Throws on invalid mnemonic.

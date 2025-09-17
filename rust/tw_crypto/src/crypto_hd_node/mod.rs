@@ -10,4 +10,5 @@ pub mod error;
 pub mod extended_key;
 pub mod hd_node;
 pub mod hd_node_public;
+pub mod utils;
 pub mod zilliqa_schnorr;
