@@ -113,7 +113,13 @@ impl HDNodePublic {
             HDNodePublic::Ed25519(xpub) => Ok(xpub.public_key().to_vec()),
             HDNodePublic::Ed25519Blake2bNano(xpub) => Ok(xpub.public_key().to_vec()),
             HDNodePublic::Curve25519Waves(xpub) => Ok(xpub.public_key().to_vec()),
-            HDNodePublic::Ed25519ExtendedCardano(xpub, _) => Ok(xpub.public_key().to_vec()),
+            HDNodePublic::Ed25519ExtendedCardano(xpub, xpub2) => {
+                let mut data = xpub.public_key().to_vec();
+                if let Some(xpub2) = xpub2 {
+                    data.extend(xpub2.public_key().to_vec());
+                }
+                Ok(data)
+            },
             HDNodePublic::ZilliqaSchnorr(xpub) => Ok(xpub.public_key().to_vec()),
         }
     }

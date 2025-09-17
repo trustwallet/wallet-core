@@ -199,3 +199,29 @@ fn test_crypto_aes_ctr_decrypt_invalid_iv_size() {
     let result = TWDataHelper::wrap(unsafe { tw_aes_decrypt_ctr(key.ptr(), data.ptr(), iv.ptr()) });
     assert!(result.is_null(), "Expected null result for invalid iv size");
 }
+
+#[test]
+fn test_crypto_aes_ctr_encrypt_too_large_data() {
+    let iv = vec![0; 16];
+    let iv = TWDataHelper::create(iv);
+    let key = vec![0; 16];
+    let key = TWDataHelper::create(key);
+    let data = vec![0; 10 * 1024 * 1024 + 1];
+    let data = TWDataHelper::create(data);
+
+    let result = TWDataHelper::wrap(unsafe { tw_aes_encrypt_ctr(key.ptr(), data.ptr(), iv.ptr()) });
+    assert!(result.is_null(), "Expected null result for too large data");
+}
+
+#[test]
+fn test_crypto_aes_ctr_decrypt_too_large_data() {
+    let iv = vec![0; 16];
+    let iv = TWDataHelper::create(iv);
+    let key = vec![0; 16];
+    let key = TWDataHelper::create(key);
+    let data = vec![0; 10 * 1024 * 1024 + 1];
+    let data = TWDataHelper::create(data);
+
+    let result = TWDataHelper::wrap(unsafe { tw_aes_decrypt_ctr(key.ptr(), data.ptr(), iv.ptr()) });
+    assert!(result.is_null(), "Expected null result for too large data");
+}

@@ -31,7 +31,7 @@ const BIP39_TEST_VECTORS: &str = include_str!("bip39_vectors.json");
 fn test_extended_private_key() {
     let mnemonic = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
     let seed = Mnemonic::to_seed(mnemonic, "");
-    let hd_node = HDNode::new(&seed, Curve::Secp256k1).unwrap();
+    let hd_node = HDNode::new(seed.as_ref(), Curve::Secp256k1).unwrap();
 
     // BIP44 purpose and Bitcoin coin type
     let purpose = 44;

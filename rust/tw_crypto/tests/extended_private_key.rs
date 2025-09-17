@@ -30,7 +30,7 @@ fn test_from_seed() {
         "tiny escape drive pupil flavor endless love walk gadget match filter luxury",
         "",
     );
-    assert_eq!(hex::encode(seed, false), "d430216f5b506dfd281d6ff6e92150d205868923df00774bc301e5ffdc2f4d1ad38a602017ddea6fc7d6315345d8b9cadbd8213ed2ffce5dfc550fa918665eb8");
+    assert_eq!(hex::encode(&seed, false), "d430216f5b506dfd281d6ff6e92150d205868923df00774bc301e5ffdc2f4d1ad38a602017ddea6fc7d6315345d8b9cadbd8213ed2ffce5dfc550fa918665eb8");
     let xprv = XPrvSecp256k1::new(&seed);
     assert!(xprv.is_ok());
 }

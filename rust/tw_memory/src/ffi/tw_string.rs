@@ -5,7 +5,7 @@
 use crate::ffi::c_byte_array_ref::CByteArrayRef;
 use crate::ffi::RawPtrTrait;
 use std::ffi::{c_char, CStr, CString};
-use zeroize::Zeroize;
+use zeroize::{Zeroize, Zeroizing};
 
 /// Defines a resizable string.
 ///
@@ -61,6 +61,12 @@ impl Drop for TWString {
 impl From<String> for TWString {
     fn from(s: String) -> Self {
         TWString(CString::new(s).expect("CString::new(String) should never fail"))
+    }
+}
+
+impl From<Zeroizing<String>> for TWString {
+    fn from(s: Zeroizing<String>) -> Self {
+        TWString(CString::new(s.as_str()).expect("CString::new(String) should never fail"))
     }
 }
 
