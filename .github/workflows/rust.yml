@@ -1,4 +1,4 @@
-name: Linux CI Rust
+name: Rust CI
 
 on:
   push:
@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   # Check formatting, clippy warnings, run tests and check code coverage.
-  build-and-test:
+  rust-lints:
     permissions:
       contents: read
       checks: write
@@ -50,18 +50,6 @@ jobs:
         run: |
           cargo clippy -- -D warnings
         working-directory: rust
-
-      - name: Run tests
-        run: |
-          tools/rust-coverage
-
-      - name: Gather and check Rust code coverage
-        run: |
-          tools/check-coverage rust/coverage.stats rust/coverage.info
-
-      - name: Run Doc tests
-        run: |
-          tools/rust-test doc
 
   # Run Rust tests in WASM.
   test-wasm:
@@ -163,3 +151,113 @@ jobs:
           comment-author: 'github-actions[bot]'
           edit-mode: replace
           body-path: 'report-diff.md'
+
+  memory-profiler:
+    runs-on: ubuntu-24.04
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.8
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            rust
+
+      - name: Install llvm
+        run: |
+          # to get the symbolizer for debug symbol resolution
+          sudo apt install llvm
+
+      - name: Install nightly
+        uses: dtolnay/rust-toolchain@nightly
+
+      - name: Enable debug symbols
+        run: |
+            cd rust
+            # to fix buggy leak analyzer:
+            # https://github.com/japaric/rust-san#unrealiable-leaksanitizer
+            # ensure there's a profile.dev section
+            if ! grep -qE '^[ \t]*[profile.dev]' Cargo.toml; then
+                echo >> Cargo.toml
+                echo '[profile.dev]' >> Cargo.toml
+            fi
+            # remove pre-existing opt-levels in profile.dev
+            sed -i '/^\s*\[profile.dev\]/,/^\s*\[/ {/^\s*opt-level/d}' Cargo.toml
+            # now set opt-level to 1
+            sed -i '/^\s*\[profile.dev\]/a opt-level = 1' Cargo.toml
+            cat Cargo.toml
+        
+      - name: cargo test -Zsanitizer=address
+        # only --lib --tests b/c of https://github.com/rust-lang/rust/issues/53945
+        run: |
+          cd rust
+          cargo test --lib --tests --all-features --target x86_64-unknown-linux-gnu
+        env:
+          ASAN_OPTIONS: "detect_odr_violation=0:detect_leaks=0"
+          RUSTFLAGS: "-Z sanitizer=address"
+
+      - name: cargo test -Zsanitizer=leak
+        if: always()
+        run: |
+          cd rust
+          cargo test --all-features --target x86_64-unknown-linux-gnu
+        env:
+          RUSTFLAGS: "-Z sanitizer=leak"
+
+  coverage:
+    runs-on: ubuntu-24.04
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install system dependencies
+        run: |
+          tools/install-sys-dependencies-linux
+
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.8
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            rust
+
+      - name: Install Rust dependencies
+        run: |
+          tools/install-rust-dependencies dev
+        
+      - name: cargo generate-lockfile
+        if: hashFiles('Cargo.lock') == ''
+        run: |
+          cd rust
+          cargo generate-lockfile
+      
+      - name: Run tests
+        run: |
+          tools/rust-coverage
+    
+      - name: Run Doc tests
+        run: |
+          tools/rust-test doc
+      
+      - name: Record Rust version
+        run: echo "RUST=$(rustc --version)" >> "$GITHUB_ENV"
+      
+      # TODO: Uncomment this when we have a codecov token
+      # - name: Upload to codecov.io
+      #   uses: codecov/codecov-action@v5
+      #   with:
+      #     fail_ci_if_error: true
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     env_vars: OS,RUST
+
+      - name: Gather and check Rust code coverage
+        run: |
+          tools/check-coverage rust/coverage.stats rust/lcov.info

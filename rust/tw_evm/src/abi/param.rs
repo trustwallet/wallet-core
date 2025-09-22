@@ -18,8 +18,6 @@ pub struct Param {
 }
 
 impl Param {
-    /// Should be used in tests only.
-    #[cfg(test)]
     pub(crate) fn with_type(kind: ParamType) -> Param {
         Param {
             name: None,

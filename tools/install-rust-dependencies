@@ -10,7 +10,7 @@ rustup toolchain install $NIGHTLY-x86_64-apple-darwin --force-non-host
 rustup toolchain install $NIGHTLY-aarch64-apple-darwin --force-non-host
 rustup component add rust-src --toolchain $NIGHTLY-aarch64-apple-darwin
 rustup component add rust-src --toolchain $NIGHTLY-x86_64-apple-darwin
-if [[ `uname` == "Linux" ]]; then
+if [[ $(uname -s) == "Linux" ]]; then
   rustup component add rust-src --toolchain $NIGHTLY-$(uname -m)-unknown-linux-gnu
 fi
 

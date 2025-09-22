@@ -71,13 +71,13 @@ impl Signature {
     }
 
     /// Get the `r` component of the signature.
-    pub fn r(&self) -> &[u8] {
-        self.r.as_slice()
+    pub fn r(&self) -> &H256 {
+        &self.r
     }
 
     /// Get the `s` component of the signature.
-    pub fn s(&self) -> &[u8] {
-        self.s.as_slice()
+    pub fn s(&self) -> &H256 {
+        &self.s
     }
 
     /// Returns the standard binary signature representation:
@@ -85,8 +85,8 @@ impl Signature {
     pub fn to_bytes(&self) -> SignatureBytes {
         let mut sign = SignatureBytes::default();
 
-        sign[0..R_LENGTH].copy_from_slice(self.r());
-        sign[R_LENGTH..].copy_from_slice(self.s());
+        sign[0..R_LENGTH].copy_from_slice(self.r().as_slice());
+        sign[R_LENGTH..].copy_from_slice(self.s().as_slice());
 
         sign
     }

@@ -28,7 +28,7 @@ EOF
     sudo chmod 755 /tmp/llvm-gcov.sh
 }
 
-if [[ `uname` == "Darwin" ]]; then
+if [[ $(uname -s) == "Darwin" ]]; then
     echo "gcov is llvm-cov on macOS"
     lcov --capture --directory . --output-file coverage.info
 else

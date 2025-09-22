@@ -82,7 +82,8 @@ export class Default implements Types.IKeyStore {
     name: string,
     password: string,
     coin: CoinType,
-    encryption: StoredKeyEncryption
+    encryption: StoredKeyEncryption,
+    derivation: Derivation
   ): Promise<Types.Wallet> {
     return new Promise((resolve, reject) => {
       const { StoredKey, PrivateKey, Curve, StoredKeyEncryption } = this.core;
@@ -95,7 +96,7 @@ export class Default implements Types.IKeyStore {
         throw Types.Error.InvalidKey;
       }
       let pass = Buffer.from(password);
-      let storedKey = StoredKey.importPrivateKeyWithEncryption(key, name, pass, coin, encryption);
+      let storedKey = StoredKey.importPrivateKeyWithEncryptionAndDerivation(key, name, pass, coin, encryption, derivation);
       let wallet = this.mapWallet(storedKey);
       storedKey.delete();
       this.importWallet(wallet)
@@ -109,13 +110,14 @@ export class Default implements Types.IKeyStore {
     name: string,
     password: string,
     coin: CoinType,
-    encryption: StoredKeyEncryption
+    encryption: StoredKeyEncryption,
+    derivation: Derivation
   ): Promise<Types.Wallet> {
     return new Promise((resolve, reject) => {
       const { StoredKey, PrivateKey, Curve, StoredKeyEncryption } = this.core;
 
       let pass = Buffer.from(password);
-      let storedKey = StoredKey.importPrivateKeyEncodedWithEncryption(key, name, pass, coin, encryption);
+      let storedKey = StoredKey.importPrivateKeyEncodedWithEncryptionAndDerivation(key, name, pass, coin, encryption, derivation);
       let wallet = this.mapWallet(storedKey);
       storedKey.delete();
       this.importWallet(wallet)

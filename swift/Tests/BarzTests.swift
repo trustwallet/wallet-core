@@ -13,7 +13,7 @@ class BarzTests: XCTestCase {
         let publicKeyData = Data(hexString: "0x04e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b02")!
         let publicKey = PublicKey(data: publicKeyData, type: .nist256p1Extended)!
         let verificationFacet = "0x6BF22ff186CC97D88ECfbA47d1473a234CEBEFDf"
-        let result = Barz.getInitCode(factory: factoryAddress, publicKey: publicKey, verificationFacet: verificationFacet, salt: 0)
+        let result = Barz.getInitCode(factory: factoryAddress, publicKey: publicKey, verificationFacet: verificationFacet, salt: 0)!
         XCTAssertEqual(result.hexString, "3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004104e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b0200000000000000000000000000000000000000000000000000000000000000")
     }
 
@@ -22,7 +22,7 @@ class BarzTests: XCTestCase {
         let publicKeyData = Data(hexString: "0x04e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b02")!
         let publicKey = PublicKey(data: publicKeyData, type: .nist256p1Extended)!
         let verificationFacet = "0x6BF22ff186CC97D88ECfbA47d1473a234CEBEFDf"
-        let result = Barz.getInitCode(factory: factoryAddress, publicKey: publicKey, verificationFacet: verificationFacet, salt: 1)
+        let result = Barz.getInitCode(factory: factoryAddress, publicKey: publicKey, verificationFacet: verificationFacet, salt: 1)!
         XCTAssertEqual(result.hexString, "3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000004104e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b0200000000000000000000000000000000000000000000000000000000000000")
     }
 
@@ -63,7 +63,7 @@ class BarzTests: XCTestCase {
         let challenge = Data(hexString: "0xcf267a78c5adaf96f341a696eb576824284c572f3e61be619694d539db1925f9")!
         let authenticatorData = Data(hexString: "0x1a70842af8c1feb7133b81e6a160a6a2be45ee057f0eb6d3f7f5126daa202e071d00000000")!
         let clientDataJSON = "{\"type\":\"webauthn.get\",\"challenge\":\"zyZ6eMWtr5bzQaaW61doJChMVy8-Yb5hlpTVOdsZJfk\",\"origin\":\"https://trustwallet.com\"}";
-        let result = Barz.getFormattedSignature(signature: signature, challenge: challenge, authenticatorData: authenticatorData, clientDataJSON: clientDataJSON);
+        let result = Barz.getFormattedSignature(signature: signature, challenge: challenge, authenticatorData: authenticatorData, clientDataJson: clientDataJSON)!;
         XCTAssertEqual(result.hexString, "12d89e3b41e253dc9e90bd34dc1750d059b76d0b1d16af2059aa26e90b8960bf256d8a05572c654906ce422464693e280e243e6d9dbc5f96a681dba846bca27600000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000000251a70842af8c1feb7133b81e6a160a6a2be45ee057f0eb6d3f7f5126daa202e071d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000247b2274797065223a22776562617574686e2e676574222c226368616c6c656e6765223a22000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000025222c226f726967696e223a2268747470733a2f2f747275737477616c6c65742e636f6d227d000000000000000000000000000000000000000000000000000000")
     }
 
@@ -126,7 +126,7 @@ class BarzTests: XCTestCase {
                     publicKey: publicKey,
                     verificationFacet: "0x5034534Efe9902779eD6eA6983F435c00f3bc510",
                     salt: 0
-                )
+                )!
             }
             
             $0.transaction = EthereumTransaction.with {
@@ -199,7 +199,7 @@ class BarzTests: XCTestCase {
         let contractAddress = "0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1"
         let nonce = Data(hexString: "0x01")!
         
-        let authorizationHash = Barz.getAuthorizationHash(chainId: chainId, contractAddress: contractAddress, nonce: nonce)
+        let authorizationHash = Barz.getAuthorizationHash(chainId: chainId, contractAddress: contractAddress, nonce: nonce)!
         XCTAssertEqual(authorizationHash.hexString, "3ae543b2fa103a39a6985d964a67caed05f6b9bb2430ad6d498cda743fe911d9") // Verified with viem
     }
 

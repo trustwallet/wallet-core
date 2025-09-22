@@ -67,6 +67,28 @@ pub fn encode<T: AsRef<[u8]>>(data: T, prefixed: bool) -> String {
     encoded
 }
 
+pub fn hex_to_bits(str: &str) -> FromHexResult<String> {
+    let hex_str = str.trim_start_matches("0x");
+    let mut bits = String::new();
+    for (index, c) in hex_str.chars().enumerate() {
+        let val = c
+            .to_digit(16)
+            .ok_or(FromHexError::InvalidHexCharacter { c, index })?;
+        bits.push_str(&format!("{:04b}", val));
+    }
+    Ok(bits)
+}
+
+pub fn data_to_bits(data: &[u8]) -> FromHexResult<String> {
+    let hex_str = encode(data, false);
+    hex_to_bits(&hex_str)
+}
+
+pub fn bits_to_u32(bits: &str, from: usize, to: usize) -> FromHexResult<u32> {
+    u32::from_str_radix(&bits[from..to], 2)
+        .map_err(|_| FromHexError::InvalidHexCharacter { c: '0', index: 0 })
+}
+
 pub mod as_hex {
     use super::*;
     use serde::de::Error;
@@ -160,6 +182,31 @@ pub mod as_hex_prefixed {
     }
 }
 
+pub mod u8_as_hex {
+    use super::*;
+    use serde::{Deserialize, Deserializer, Serializer};
+
+    pub fn serialize<S>(value: &u8, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let hex_str = encode([*value], true);
+        serializer.serialize_str(&hex_str)
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<u8, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let hex_str = String::deserialize(deserializer)?;
+        let bytes = decode(&hex_str).map_err(serde::de::Error::custom)?;
+        bytes
+            .first()
+            .copied()
+            .ok_or_else(|| serde::de::Error::custom("Expected single byte but got empty bytes"))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -185,6 +232,14 @@ mod tests {
         assert_eq!(
             decode("0x2db500ac919cdde351ac36e3711d832c6db97669"),
             Ok(expected)
+        );
+    }
+
+    #[test]
+    fn test_encode_bits() {
+        assert_eq!(
+            hex_to_bits("0x2db500ac919cdde351ac36e3711d832c6db97669").unwrap(), 
+            "0010110110110101000000001010110010010001100111001101110111100011010100011010110000110110111000110111000100011101100000110010110001101101101110010111011001101001"
         );
     }
 }

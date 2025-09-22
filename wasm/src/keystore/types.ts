@@ -68,7 +68,8 @@ export interface IKeyStore {
     name: string,
     password: string,
     coin: CoinType,
-    encryption: StoredKeyEncryption
+    encryption: StoredKeyEncryption,
+    derivation: Derivation
   ): Promise<Wallet>;
 
   // Import a Wallet object directly

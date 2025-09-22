@@ -5,9 +5,8 @@
 use crate::address::from_account_error;
 use crate::aptos_move_packages::{
     aptos_account_create_account, aptos_account_transfer, aptos_account_transfer_coins,
-    coin_transfer, fungible_asset_transfer, managed_coin_register,
-    token_transfers_cancel_offer_script, token_transfers_claim_script,
-    token_transfers_offer_script,
+    coin_transfer, fungible_asset_transfer, token_transfers_cancel_offer_script,
+    token_transfers_claim_script, token_transfers_offer_script,
 };
 use crate::constants::{GAS_UNIT_PRICE, MAX_GAS_AMOUNT};
 use crate::liquid_staking::{
@@ -124,13 +123,6 @@ impl TransactionFactory {
             OneOftransaction_payload::nft_message(nft_message) => {
                 factory.nft_ops(NftOperation::try_from(nft_message)?)
             },
-            OneOftransaction_payload::register_token(register_token) => {
-                let function = register_token
-                    .function
-                    .or_tw_err(SigningErrorType::Error_invalid_params)
-                    .context("'ManagedTokensRegisterMessage::function' is not set")?;
-                Ok(factory.register_token(convert_proto_struct_tag_to_type_tag(function)?))
-            },
             OneOftransaction_payload::liquid_staking_message(msg) => {
                 factory.liquid_staking_ops(LiquidStakingOperation::try_from(msg)?)
             },
@@ -198,10 +190,6 @@ impl TransactionFactory {
 
     pub fn create_user_account(&self, to: AccountAddress) -> SigningResult<TransactionBuilder> {
         Ok(self.payload(aptos_account_create_account(to)?))
-    }
-
-    pub fn register_token(&self, coin_type: TypeTag) -> TransactionBuilder {
-        self.payload(managed_coin_register(coin_type))
     }
 
     pub fn nft_ops(&self, operation: NftOperation) -> SigningResult<TransactionBuilder> {

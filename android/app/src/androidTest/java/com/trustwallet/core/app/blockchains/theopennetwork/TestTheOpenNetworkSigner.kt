@@ -26,7 +26,7 @@ class TestTheOpenNetworkSigner {
 
         val transfer = TheOpenNetwork.Transfer.newBuilder()
             .setDest("EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
-            .setAmount(10)
+            .setAmount(ByteString.copyFrom("0A".toHexByteArray())) // 10
             .setMode(TheOpenNetwork.SendMode.PAY_FEES_SEPARATELY_VALUE or TheOpenNetwork.SendMode.IGNORE_ACTION_PHASE_ERRORS_VALUE)
             .setBounceable(true)
             .build()
@@ -52,15 +52,15 @@ class TestTheOpenNetworkSigner {
         val privateKey = PrivateKey("c054900a527538c1b4325688a421c0469b171c29f23a62da216e90b0df2412ee".toHexByteArray())
 
         val jettonTransfer = TheOpenNetwork.JettonTransfer.newBuilder()
-            .setJettonAmount(500 * 1000 * 1000)
+            .setJettonAmount(ByteString.copyFrom("1DCD6500".toHexByteArray())) // 500 * 1000 * 1000
             .setToOwner("EQAFwMs5ha8OgZ9M4hQr80z9NkE7rGxUpE1hCFndiY6JnDx8")
             .setResponseAddress("EQBaKIMq5Am2p_rfR1IFTwsNWHxBkOpLTmwUain5Fj4llTXk")
-            .setForwardAmount(1)
+            .setForwardAmount(ByteString.copyFrom("01".toHexByteArray())) // 1
             .build()
 
         val transfer = TheOpenNetwork.Transfer.newBuilder()
             .setDest("EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja")
-            .setAmount(100 * 1000 * 1000)
+            .setAmount(ByteString.copyFrom("05F5E100".toHexByteArray())) // 100 * 1000 * 1000
             .setMode(TheOpenNetwork.SendMode.PAY_FEES_SEPARATELY_VALUE or TheOpenNetwork.SendMode.IGNORE_ACTION_PHASE_ERRORS_VALUE)
             .setComment("test comment")
             .setBounceable(true)
@@ -100,7 +100,7 @@ class TestTheOpenNetworkSigner {
         val transfer = TheOpenNetwork.Transfer.newBuilder()
             .setDest(dogeChatbotDeployingAddress)
             // 0.069 TON
-            .setAmount(69_000_000)
+            .setAmount(ByteString.copyFrom("041CDB40".toHexByteArray())) // 69_000_000
             .setMode(TheOpenNetwork.SendMode.PAY_FEES_SEPARATELY_VALUE or TheOpenNetwork.SendMode.IGNORE_ACTION_PHASE_ERRORS_VALUE)
             .setBounceable(false)
             .setStateInit(dogeChatbotStateInit)
