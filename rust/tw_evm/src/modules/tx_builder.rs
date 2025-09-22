@@ -528,6 +528,10 @@ impl<Context: EvmContext> TxBuilder<Context> {
                 .into_tw()
                 .context("Paymaster post-op gas limit exceeds u128")?;
 
+        let eip7702_auth = Self::build_authorization_list(input, sender)
+            .ok()
+            .and_then(|auth_list| auth_list.0.first().cloned());
+
         let entry_point = Self::parse_address(user_op_v0_7.entry_point.as_ref())
             .context("Invalid entry point")?;
 
@@ -546,6 +550,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
             paymaster_verification_gas_limit,
             paymaster_post_op_gas_limit,
             paymaster_data: user_op_v0_7.paymaster_data.to_vec(),
+            eip7702_auth,
             entry_point,
         })
     }

@@ -51,12 +51,15 @@ include/TrustWalletCore/TWWalletConnectRequest.h
 include/TrustWalletCore/TWSolanaTransaction.h
 include/TrustWalletCore/TWCryptoBoxPublicKey.h
 include/TrustWalletCore/TWCryptoBoxSecretKey.h
+include/TrustWalletCore/TWEthereum.h
+include/TrustWalletCore/TWBarz.h
 
 # Wasm
 emsdk/
 wasm-build/
 
 # Code coverage files
+lcov.info
 coverage.info
 coverage/
 swift/test_output/

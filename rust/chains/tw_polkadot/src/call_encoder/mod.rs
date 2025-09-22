@@ -5,7 +5,7 @@ use tw_proto::Polkadot::Proto::{
     mod_CallIndices::OneOfvariant as CallIndicesVariant,
     mod_SigningInput::OneOfmessage_oneof as SigningVariant,
     mod_Staking::{
-        Bond, BondAndNominate, Chill, ChillAndUnbond, Nominate,
+        Bond, BondAndNominate, BondExtra, BondExtraAndNominate, Chill, ChillAndUnbond, Nominate,
         OneOfmessage_oneof as StakingVariant, Unbond,
     },
     Balance, CallIndices, Staking,
@@ -131,6 +131,30 @@ impl CallEncoder {
         self.encode_batch(vec![first, second], &ban.call_indices)
     }
 
+    fn encode_staking_bond_extra_and_nominate(
+        &self,
+        bean: &BondExtraAndNominate,
+    ) -> EncodeResult<RawOwned> {
+        // Encode a bond call
+        let first = self.encode_call(&SigningVariant::staking_call(Proto::Staking {
+            message_oneof: StakingVariant::bond_extra(BondExtra {
+                value: bean.value.clone(),
+                call_indices: bean.bond_extra_call_indices.clone(),
+            }),
+        }))?;
+
+        // Encode a nominate call
+        let second = self.encode_call(&SigningVariant::staking_call(Proto::Staking {
+            message_oneof: StakingVariant::nominate(Nominate {
+                nominators: bean.nominators.clone(),
+                call_indices: bean.nominate_call_indices.clone(),
+            }),
+        }))?;
+
+        // Encode both calls as batched
+        self.encode_batch(vec![first, second], &bean.call_indices)
+    }
+
     fn encode_staking_chill_and_unbond(&self, cau: &ChillAndUnbond) -> EncodeResult<RawOwned> {
         let first = self.encode_call(&SigningVariant::staking_call(Proto::Staking {
             message_oneof: StakingVariant::chill(Chill {
@@ -153,6 +177,10 @@ impl CallEncoder {
         match &s.message_oneof {
             StakingVariant::bond_and_nominate(ban) => {
                 let batch = self.encode_staking_bond_and_nominate(ban)?;
+                Ok(Some(batch))
+            },
+            StakingVariant::bond_extra_and_nominate(bean) => {
+                let batch = self.encode_staking_bond_extra_and_nominate(bean)?;
                 Ok(Some(batch))
             },
             StakingVariant::chill_and_unbond(cau) => {

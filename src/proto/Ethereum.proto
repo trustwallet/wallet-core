@@ -274,7 +274,7 @@ message SigningInput {
     repeated Access access_list = 12;
 
     // EIP7702 authorization.
-    // Used in `TransactionMode::SetOp` only.
+    // Used in `TransactionMode::SetOp` or `TransactionMode::UserOp`.
     // Currently, we support delegation to only one authority at a time.
     Authorization eip7702_authorization = 15;
 }

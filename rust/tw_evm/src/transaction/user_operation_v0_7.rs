@@ -19,6 +19,8 @@ use tw_memory::Data;
 use tw_number::serde::as_u256_hex;
 use tw_number::U256;
 
+use super::authorization_list::SignedAuthorization;
+
 pub struct PackedUserOperation {
     pub sender: Address,
     pub nonce: U256,
@@ -156,6 +158,9 @@ pub struct UserOperationV0_7 {
     #[serde(with = "as_hex_prefixed")]
     pub paymaster_data: Data,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub eip7702_auth: Option<SignedAuthorization>,
+
     #[serde(skip)]
     pub entry_point: Address,
 }
@@ -277,6 +282,7 @@ mod tests {
             paymaster_verification_gas_limit: 0,
             paymaster_post_op_gas_limit: 0,
             paymaster_data: Vec::default(),
+            eip7702_auth: None,
             entry_point,
         };
 
@@ -325,6 +331,7 @@ mod tests {
             paymaster_verification_gas_limit: 99999u128,
             paymaster_post_op_gas_limit: 88888u128,
             paymaster_data: "00000000000b0000000000002e234dae75c793f67a35089c9d99245e1c58470b00000000000000000000000000000000000000000000000000000000000186a0072f35038bcacc31bcdeda87c1d9857703a26fb70a053f6e87da5a4e7a1e1f3c4b09fbe2dbff98e7a87ebb45a635234f4b79eff3225d07560039c7764291c97e1b".decode_hex().unwrap(),
+            eip7702_auth: None,
             entry_point: Address::from("0x0000000071727De22E5E9d8BAf0edAc6f37da032"),
         };
         let packed_user_op = PackedUserOperation::new(&user_op);

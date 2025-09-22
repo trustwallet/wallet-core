@@ -31,7 +31,7 @@ Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInput
         txInputData, [](const auto& input, auto& output) {
             const auto signer = Signer(input);
             auto preImage = signer.signaturePreimage();
-            auto preImageHash = Hash::sha256(preImage);
+            auto preImageHash = signer.signaturePreimageHash();
             output.set_data_hash(preImageHash.data(), preImageHash.size());
             output.set_data(preImage.data(), preImage.size());
         });

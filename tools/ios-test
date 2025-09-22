@@ -5,13 +5,14 @@
 set -e
 set -o pipefail
 
+tools/xcodegen
+
 pushd swift
 
-xcodegen && pod install
 xcodebuild -workspace TrustWalletCore.xcworkspace \
 	-scheme WalletCore \
 	-sdk iphonesimulator \
-	-destination "platform=iOS Simulator,name=iPhone 15,OS=17.2" \
+	-destination "platform=iOS Simulator,name=iPhone 16,OS=18.5" \
 	test | xcbeautify
 
 popd

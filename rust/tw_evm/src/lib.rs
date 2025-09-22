@@ -6,6 +6,7 @@ pub mod abi;
 pub mod address;
 pub mod evm_context;
 pub mod evm_entry;
+pub mod ffi;
 pub mod message;
 pub mod modules;
 pub mod rlp;

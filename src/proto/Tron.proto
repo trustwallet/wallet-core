@@ -263,7 +263,11 @@ message SigningInput {
     bytes private_key = 2;
 
     // For direct sign in Tron, we just have to sign the txId returned by the DApp json payload.
+    // TODO: This field can be removed in the future, as we can use raw_json.txID instead.
     string txId = 3;
+
+    // Raw JSON data from the DApp, which contains fields 'txID', 'raw_data' and 'raw_data_hex' normally.
+    string raw_json = 4;
 }
 
 // Result containing the signed and encoded transaction.

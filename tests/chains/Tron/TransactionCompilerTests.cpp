@@ -108,3 +108,76 @@ TEST(TronCompiler, CompileWithSignatures) {
         EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
     }
 }
+
+TEST(TronCompiler, CompileWithSignaturesRawJson) {
+    const auto privateKey =
+        PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+    constexpr auto coin = TWCoinTypeTron;
+    /// Step 1: Prepare transaction input (protobuf)
+    auto input = TW::Tron::Proto::SigningInput();
+    auto rawJson = R"({
+	"raw_data": {
+		"contract": [{
+			"parameter": {
+				"type_url": "type.googleapis.com/protocol.TransferAssetContract",
+				"value": {
+					"amount": 4,
+					"asset_name": "31303030393539",
+					"owner_address": "415cd0fb0ab3ce40f3051414c604b27756e69e43db",
+					"to_address": "41521ea197907927725ef36d70f25f850d1659c7c7"
+				}
+			},
+			"type": "TransferAssetContract"
+		}],
+		"expiration": 1541926116000,
+		"ref_block_bytes": "b801",
+		"ref_block_hash": "0e2bc08d550f5f58",
+		"timestamp": 1539295479000
+	},
+	"visible":false,
+	"txID": "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb"
+})";
+    input.set_raw_json(rawJson);
+
+    auto inputString = input.SerializeAsString();
+    auto inputStrData = TW::Data(inputString.begin(), inputString.end());
+
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashesData = TransactionCompiler::preImageHashes(coin, inputStrData);
+    auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
+    preSigningOutput.ParseFromArray(preImageHashesData.data(), static_cast<int>(preImageHashesData.size()));
+    ASSERT_EQ(preSigningOutput.error(), Common::Proto::OK);
+    auto preImageHash = preSigningOutput.data_hash();
+    EXPECT_EQ(hex(preImageHash), "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb");
+    auto signature = parse_hex("77f5eabde31e739d34a66914540f1756981dc7d782c9656f5e14e53b59a15371603"
+                               "a183aa12124adeee7991bf55acc8e488a6ca04fb393b1a8ac16610eeafdfc00");
+
+    // Verify signature (pubkey & hash & signature)
+    EXPECT_TRUE(publicKey.verify(signature, TW::data(preSigningOutput.data_hash())));
+    /// Step 3: Compile transaction info
+    const auto expectedTx = R"({"raw_data":{"contract":[{"parameter":{"type_url":"type.googleapis.com/protocol.TransferAssetContract","value":{"amount":4,"asset_name":"31303030393539","owner_address":"415cd0fb0ab3ce40f3051414c604b27756e69e43db","to_address":"41521ea197907927725ef36d70f25f850d1659c7c7"}},"type":"TransferAssetContract"}],"expiration":1541926116000,"ref_block_bytes":"b801","ref_block_hash":"0e2bc08d550f5f58","timestamp":1539295479000},"signature":["77f5eabde31e739d34a66914540f1756981dc7d782c9656f5e14e53b59a15371603a183aa12124adeee7991bf55acc8e488a6ca04fb393b1a8ac16610eeafdfc00"],"txID":"546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb","visible":false})";
+    auto outputData =
+        TransactionCompiler::compileWithSignatures(coin, inputStrData, {signature}, {publicKey.bytes});
+
+    {
+        TW::Tron::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
+        EXPECT_EQ(output.json(), expectedTx);
+    }
+
+    { // Negative: invalid raw json
+        auto input = TW::Tron::Proto::SigningInput();
+        auto invalidRawJson = "not valid json";
+        input.set_raw_json(invalidRawJson);
+        auto inputString = input.SerializeAsString();
+        auto inputStrData = TW::Data(inputString.begin(), inputString.end());
+
+        outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputStrData, {signature}, {publicKey.bytes});
+        Tron::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
+        EXPECT_EQ(output.json().size(), 0ul);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    }
+}
