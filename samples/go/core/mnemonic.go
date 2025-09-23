@@ -1,8 +1,8 @@
 package core
 
 // #cgo CFLAGS: -I../../../include
-// #cgo LDFLAGS: -L../../../build -L../../../build/local/lib -L../../../build/trezor-crypto -lTrustWalletCore -lwallet_core_rs -lprotobuf -lTrezorCrypto -lstdc++ -lm
-// #include <TrustWalletCore/TWMnemonic.h>
+// #cgo LDFLAGS: -L../../../build -L../../../build/local/lib -lTrustWalletCore -lwallet_core_rs -lprotobuf -lstdc++ -lm
+// #include <TrustWalletCore/Generated/TWMnemonic.h>
 import "C"
 
 import "tw/types"

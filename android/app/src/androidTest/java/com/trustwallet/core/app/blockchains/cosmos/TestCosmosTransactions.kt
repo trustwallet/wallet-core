@@ -22,7 +22,7 @@ class TestCosmosTransactions {
     @Test
     fun testAuthStakingTransaction() {
         val key =
-            PrivateKey("c7764249cdf77f8f1d840fa8af431579e5e41cf1af937e1e23afa22f3f4f0ccc".toHexByteArray())
+            PrivateKey("c7764249cdf77f8f1d840fa8af431579e5e41cf1af937e1e23afa22f3f4f0ccc".toHexByteArray(), CoinType.COSMOS.curve())
 
         val stakeAuth = Cosmos.Message.StakeAuthorization.newBuilder().apply {
             allowList = Cosmos.Message.StakeAuthorization.Validators.newBuilder().apply {
@@ -75,7 +75,7 @@ class TestCosmosTransactions {
     @Test
     fun testRemoveAuthStakingTransaction() {
         val key =
-            PrivateKey("c7764249cdf77f8f1d840fa8af431579e5e41cf1af937e1e23afa22f3f4f0ccc".toHexByteArray())
+            PrivateKey("c7764249cdf77f8f1d840fa8af431579e5e41cf1af937e1e23afa22f3f4f0ccc".toHexByteArray(), CoinType.COSMOS.curve())
 
         val removeAuthStakingMsg = Cosmos.Message.AuthRevoke.newBuilder().apply {
             grantee = "cosmos1fs7lu28hx5m9akm7rp0c2422cn8r2f7gurujhf"
@@ -120,7 +120,7 @@ class TestCosmosTransactions {
     @Test
     fun testSigningTransaction() {
         val key =
-            PrivateKey("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005".toHexByteArray())
+            PrivateKey("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005".toHexByteArray(), CoinType.COSMOS.curve())
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, COSMOS).description()
 
@@ -196,7 +196,7 @@ class TestCosmosTransactions {
         }
         """
         val key =
-            "c9b0a273831931aa4a5f8d1a570d5021dda91d3319bd3819becdaabfb7b44e3b".toHexByteArray()
+            PrivateKey("c9b0a273831931aa4a5f8d1a570d5021dda91d3319bd3819becdaabfb7b44e3b".toHexByteArray(), CoinType.COSMOS.curve()).data()
         val result = AnySigner.signJSON(json, key, COSMOS.value())
         assertEquals(
             result,

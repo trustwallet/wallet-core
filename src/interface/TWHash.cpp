@@ -7,10 +7,6 @@
 #include "Data.h"
 
 #include "BinaryCoding.h"
-#include <TrezorCrypto/blake2b.h>
-#include <TrezorCrypto/ripemd160.h>
-#include <TrezorCrypto/sha2.h>
-#include <TrezorCrypto/sha3.h>
 
 #include <array>
 
@@ -82,13 +78,10 @@ TWData* _Nonnull TWHashSHA256SHA256(TWData* _Nonnull data) {
 }
 
 TWData *_Nonnull TWHashBlake2bPersonal(TWData *_Nonnull data, TWData * _Nonnull personal, size_t outlen) {
-    auto resultBytes = TW::Data(outlen);
-    auto dataBytes = TWDataBytes(data);
     auto personalBytes = TWDataBytes(personal);
     auto personalSize = TWDataSize(personal);
-    tc_blake2b_Personal(dataBytes, static_cast<uint32_t>(TWDataSize(data)), personalBytes, personalSize, resultBytes.data(), outlen);
-    auto result = TWDataCreateWithBytes(resultBytes.data(), outlen);
-    return result;
+    const auto result = Hash::blake2b(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data), outlen, Data(personalBytes, personalBytes + personalSize));
+    return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashSHA256RIPEMD(TWData* _Nonnull data) {

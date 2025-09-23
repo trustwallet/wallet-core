@@ -9,7 +9,7 @@ class OasisTests: XCTestCase {
 
     func testAddress() {
 
-        let key = PrivateKey(data: Data(hexString: "4f8b5676990b00e23d9904a92deb8d8f428ff289c8939926358f1d20537c21a0")!)!
+        let key = PrivateKey(data: Data(hexString: "4f8b5676990b00e23d9904a92deb8d8f428ff289c8939926358f1d20537c21a0")!, curve: CoinType.oasis.curve)!
         let pubkey = key.getPublicKeyEd25519()
         let address = AnyAddress(publicKey: pubkey, coin: .oasis)
         let addressFromString = AnyAddress(string: "oasis1qzawzy5kaa2xgphenf3r0f5enpr3mx5dps559yxm", coin: .oasis)!
@@ -19,7 +19,7 @@ class OasisTests: XCTestCase {
     }
 
     func testSign() {
-        let privateKey = PrivateKey(data: Data(hexString: "0x4f8b5676990b00e23d9904a92deb8d8f428ff289c8939926358f1d20537c21a0")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "0x4f8b5676990b00e23d9904a92deb8d8f428ff289c8939926358f1d20537c21a0")!, curve: CoinType.oasis.curve)!
         let input = OasisSigningInput.with {
             $0.privateKey = privateKey.data
             $0.transfer = OasisTransferMessage.with {

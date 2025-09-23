@@ -182,7 +182,7 @@ class KeyStoreTests: XCTestCase {
         XCTAssertFalse(wallet.key.hasPrivateKeyEncoded)
         XCTAssertNotNil(keyStore.keyWallet)
         XCTAssertNotNil(storedData)
-        XCTAssertNotNil(PrivateKey(data: storedData!))
+        XCTAssertNotNil(PrivateKey(data: storedData!, curve: CoinType.ethereum.curve))
     }
 
     func testImportPrivateKeyAES256() throws {
@@ -196,7 +196,7 @@ class KeyStoreTests: XCTestCase {
 
         XCTAssertNotNil(keyStore.keyWallet)
         XCTAssertNotNil(storedData)
-        XCTAssertNotNil(PrivateKey(data: storedData!))
+        XCTAssertNotNil(PrivateKey(data: storedData!, curve: CoinType.ethereum.curve))
     }
     
     func testImportKeyEncodedEthereum() throws {
@@ -252,12 +252,12 @@ class KeyStoreTests: XCTestCase {
 
     func testImportPrivateKey() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let privateKey = PrivateKey(data: Data(hexString: "9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c")!, curve: CoinType.ethereum.curve)!
 
         let wallet = try keyStore.import(privateKey: privateKey, name: "name", password: "password", coin: .ethereum)
         let storedData = wallet.key.decryptPrivateKey(password: Data("password".utf8))
         XCTAssertNotNil(storedData)
-        XCTAssertNotNil(PrivateKey(data: storedData!))
+        XCTAssertNotNil(PrivateKey(data: storedData!, curve: CoinType.ethereum.curve))
 
         XCTAssertEqual(wallet.accounts.count, 1)
 

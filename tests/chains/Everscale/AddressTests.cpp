@@ -36,7 +36,7 @@ TEST(EverscaleAddress, FromString) {
 }
 
 TEST(EverscaleAddress, FromPrivateKey) {
-    auto privateKey = PrivateKey(parse_hex("5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f"));
+    auto privateKey = PrivateKey(parse_hex("5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f"), TWCurveED25519);
     auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeED25519), WorkchainType::Basechain);
     ASSERT_EQ(address.string(), "0:269fee242eb410786abe1777a14785c8bbeb1e34100c7570e17698b36ad66fb0");
 }

@@ -13,6 +13,8 @@ use tw_encoding::hex;
 use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
 
+use super::signature::PUBKEY_SIGN_MASK;
+
 /// Represents an `ed25519` public key that is used in Waves blockchain.
 #[derive(Clone)]
 pub struct PublicKey<H: Hasher512> {
@@ -39,6 +41,13 @@ impl<H: Hasher512> PublicKey<H> {
     /// Returns the raw data of the public key (32 bytes).
     pub fn to_bytes(&self) -> H256 {
         self.curve25519_pk
+    }
+
+    pub fn to_standard_pubkey(&self) -> Option<StandardPublicKey<H>> {
+        let montgomery_point = MontgomeryPoint(self.curve25519_pk.take());
+        let sign_bit = self.curve25519_pk[31] & PUBKEY_SIGN_MASK;
+        let edwards_point = montgomery_point.to_edwards(sign_bit)?;
+        Some(StandardPublicKey::<H>::with_edwards_point(edwards_point))
     }
 }
 

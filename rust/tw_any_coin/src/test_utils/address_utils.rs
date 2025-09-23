@@ -49,7 +49,7 @@ pub fn test_address_derive_with_derivation(
 
     let public_key = match key {
         KeyType::PrivateKey(key) => {
-            let private_key = TWPrivateKeyHelper::with_hex(key);
+            let private_key = TWPrivateKeyHelper::with_hex(key, coin_item.curve.to_raw());
             TWPublicKeyHelper::wrap(unsafe {
                 tw_private_key_get_public_key_by_type(
                     private_key.ptr(),
@@ -156,7 +156,8 @@ pub struct AddressCreateBech32WithPublicKey<'a> {
 }
 
 pub fn test_address_create_bech32_with_public_key(input: AddressCreateBech32WithPublicKey<'_>) {
-    let private_key = TWPrivateKeyHelper::with_hex(input.private_key);
+    let coin_item = get_coin_item(input.coin).unwrap();
+    let private_key = TWPrivateKeyHelper::with_hex(input.private_key, coin_item.curve.to_raw());
     let public_key = TWPublicKeyHelper::wrap(unsafe {
         tw_private_key_get_public_key_by_type(private_key.ptr(), input.public_key_type as u32)
     });

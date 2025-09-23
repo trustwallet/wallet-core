@@ -491,7 +491,7 @@ TEST(TWAnySignerEthereum, StakeRocketPool) {
     auto maxInclusionFeePerGas = store(uint256_t(1000000000));
     auto toAddress = "0x2cac916b2a963bf162f076c0a8a4a8200bcfbfb4";
     auto key = parse_hex("9f56448d33de406db1561aae15fce64bdf0e9706ff15c45d4409e8fcbfd1a498");
-    const auto pk = PrivateKey(key);
+    const auto pk = PrivateKey(key, TWCurveSECP256k1);
 
     // 0.01 ETH
     auto valueData = store(uint256_t(10000000000000000));
@@ -540,7 +540,7 @@ TEST(TWAnySignerEthereum, UnstakeRocketPool) {
     auto maxInclusionFeePerGas = store(uint256_t(1000000000));
     auto toAddress = "0xae78736Cd615f374D3085123A210448E74Fc6393";
     auto key = parse_hex("9f56448d33de406db1561aae15fce64bdf0e9706ff15c45d4409e8fcbfd1a498");
-    const auto pk = PrivateKey(key);
+    const auto pk = PrivateKey(key, TWCurveSECP256k1);
 
     auto valueData = store(uint256_t(0));
 

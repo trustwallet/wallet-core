@@ -14,7 +14,7 @@ class TestAlgorandAddress {
 
     @Test
     fun testAddress() {
-        val key = PrivateKey("a6c4394041e64fe93d889386d7922af1b9a87f12e433762759608e61434d6cf7".toHexByteArray())
+        val key = PrivateKey("a6c4394041e64fe93d889386d7922af1b9a87f12e433762759608e61434d6cf7".toHexByteArray(), CoinType.ALGORAND.curve())
         val pubkey = key.publicKeyEd25519
         val address = AnyAddress(pubkey, CoinType.ALGORAND)
         val expected = AnyAddress("ADIYK65L3XR5ODNNCUIQVEET455L56MRKJHRBX5GU4TZI2752QIWK4UL5A", CoinType.ALGORAND)

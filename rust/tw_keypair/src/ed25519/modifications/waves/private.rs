@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use std::str::FromStr;
+
 use crate::ed25519::modifications::waves::public::PublicKey;
 use crate::ed25519::modifications::waves::signature::Signature;
 use crate::ed25519::{private::PrivateKey as StandardPrivateKey, Hasher512};
@@ -12,6 +14,7 @@ use tw_misc::traits::ToBytesZeroizing;
 use zeroize::Zeroizing;
 
 /// Represents an `ed25519` private key that is used in Waves blockchain.
+#[derive(Clone)]
 pub struct PrivateKey<H: Hasher512> {
     standard_key: StandardPrivateKey<H>,
 }
@@ -49,6 +52,14 @@ impl<'a, H: Hasher512> TryFrom<&'a str> for PrivateKey<H> {
     fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
         let bytes = Zeroizing::new(hex::decode(hex).map_err(|_| KeyPairError::InvalidSecretKey)?);
         Self::try_from(bytes.as_slice())
+    }
+}
+
+impl<H: Hasher512> FromStr for PrivateKey<H> {
+    type Err = KeyPairError;
+
+    fn from_str(hex: &str) -> Result<Self, Self::Err> {
+        Self::try_from(hex)
     }
 }
 

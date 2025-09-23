@@ -5,8 +5,7 @@
 #include "Address.h"
 
 #include "../Base32.h"
-
-#include <TrezorCrypto/blake2b.h>
+#include "../Hash.h"
 
 #include <algorithm>
 
@@ -87,8 +86,7 @@ Address::Address(const std::vector<uint8_t>& data) {
 }
 
 Address::Address(const PublicKey& publicKey) {
-    auto hash = std::array<uint8_t, 32>();
-    tc_blake2b(publicKey.bytes.data(), 32, hash.data(), hash.size());
+    auto hash = Hash::blake2b(publicKey.bytes.data(), publicKey.bytes.size());
     std::copy(hash.begin(), hash.begin() + Address::size, bytes.begin());
 }
 

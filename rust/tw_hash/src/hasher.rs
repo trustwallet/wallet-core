@@ -2,12 +2,13 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::blake::blake_256;
+use crate::blake::{blake256_d, blake_256};
+use crate::groestl::groestl_512d;
 use crate::ripemd::{blake256_ripemd, sha256_ripemd};
 use crate::sha2::{sha256, sha256_d};
 use crate::sha3::keccak256;
 use crate::{H160, H256};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use tw_memory::Data;
 
 #[macro_export]
@@ -81,25 +82,30 @@ pub trait StatefulHasher {
 ///
 /// Add hash types if necessary. For example, when add a new hasher to `registry.json`,
 /// otherwise use hash functions directly.
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, strum_macros::FromRepr)]
 pub enum Hasher {
     #[serde(rename = "sha256")]
-    Sha256,
+    Sha256 = 1,
     #[serde(rename = "keccak256")]
-    Keccak256,
+    Keccak256 = 4,
+    #[serde(rename = "blake256")]
+    Blake256 = 10,
     /// SHA256 hash of the SHA256 hash
     #[serde(rename = "sha256d")]
-    Sha256d,
+    Sha256d = 12,
     /// ripemd hash of the SHA256 hash
     #[serde(rename = "sha256ripemd")]
-    Sha256ripemd,
-    #[serde(rename = "blake256")]
-    Blake256,
+    Sha256ripemd = 13,
+    #[serde(rename = "blake256d")]
+    Blake256d = 15,
     /// ripemd hash of the BLAKE256 hash
     #[serde(rename = "blake256ripemd")]
-    Blake256ripemd,
+    Blake256ripemd = 16,
+    #[serde(rename = "groestl512d")]
+    Groestl512d = 17,
     #[serde(rename = "tapsighash")]
-    TapSighash,
+    TapSighash = 18,
 }
 
 impl StatefulHasher for Hasher {
@@ -111,6 +117,8 @@ impl StatefulHasher for Hasher {
             Hasher::Sha256ripemd => sha256_ripemd(data),
             Hasher::Blake256 => blake_256(data),
             Hasher::Blake256ripemd => blake256_ripemd(data),
+            Hasher::Blake256d => blake256_d(data),
+            Hasher::Groestl512d => groestl_512d(data),
             Hasher::TapSighash => tapsighash(data),
         }
     }
@@ -118,8 +126,13 @@ impl StatefulHasher for Hasher {
     /// Returns a corresponding hash len.
     fn hash_len(&self) -> usize {
         match self {
-            Hasher::Sha256 | Hasher::Keccak256 | Hasher::Sha256d | Hasher::Blake256 => H256::len(),
+            Hasher::Sha256
+            | Hasher::Keccak256
+            | Hasher::Sha256d
+            | Hasher::Blake256
+            | Hasher::Blake256d => H256::len(),
             Hasher::Sha256ripemd | Hasher::Blake256ripemd => H160::len(),
+            Hasher::Groestl512d => H256::len(),
             Hasher::TapSighash => H256::len(),
         }
     }

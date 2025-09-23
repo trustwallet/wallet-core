@@ -68,7 +68,7 @@ namespace TW::Cosmos::tests::internal {
     }
 
     static inline void testCreateFromPrivKey(const CosmosAddressParameters& addressParameters) {
-        auto privateKey = PrivateKey(parse_hex(addressParameters.privKey));
+        auto privateKey = PrivateKey(parse_hex(addressParameters.privKey), TWCoinTypeCurve(addressParameters.coinType));
         auto address = Address(addressParameters.coinType, privateKey.getPublicKey(addressParameters.publicKeyType));
         ASSERT_EQ(address.string(), addressParameters.address);
     }

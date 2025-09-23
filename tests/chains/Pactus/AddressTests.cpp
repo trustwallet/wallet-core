@@ -22,7 +22,7 @@ TEST(PactusAddress, AddressData) {
 }
 
 TEST(PactusAddress, FromPrivateKey) {
-    auto privateKey = PrivateKey(parse_hex("2134ae97465505dfd5a1fd05a8a0f146209c601eb3f1b0363b4cfe4b47ba1ab4"));
+    auto privateKey = PrivateKey(parse_hex("2134ae97465505dfd5a1fd05a8a0f146209c601eb3f1b0363b4cfe4b47ba1ab4"), TWCoinTypeCurve(TWCoinTypePactus));
     auto pubkey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
     Entry entry;
     auto address = entry.deriveAddress(TWCoinTypePactus, pubkey, TWDerivationDefault, std::monostate{});

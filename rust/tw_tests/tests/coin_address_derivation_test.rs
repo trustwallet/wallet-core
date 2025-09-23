@@ -16,12 +16,13 @@ use tw_memory::test_utils::tw_string_helper::TWStringHelper;
 
 #[test]
 fn test_coin_address_derivation() {
-    let private_key = TWPrivateKeyHelper::with_hex(
-        "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
-    );
-
     for coin in CoinType::iter() {
         let coin_item = get_coin_item(coin).unwrap();
+
+        let private_key = TWPrivateKeyHelper::with_hex(
+            "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
+            coin_item.curve.to_raw(),
+        );
 
         // Skip unsupported blockchains.
         if !coin_item.blockchain.is_supported() {

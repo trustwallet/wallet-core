@@ -8,7 +8,7 @@
 
 #include <type_traits>
 
-#include <TrezorCrypto/memzero.h>
+#include "memzero.h"
 
 namespace TW {
 

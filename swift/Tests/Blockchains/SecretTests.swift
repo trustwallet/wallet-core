@@ -7,7 +7,7 @@ import XCTest
 
 class SecretTests: XCTestCase {
     func testAddress() {
-        let key = PrivateKey(data: Data(hexString: "87201512d132ef7a1e57f9e24905fbc24300bd73f676b5716182be5f3e39dada")!)!
+        let key = PrivateKey(data: Data(hexString: "87201512d132ef7a1e57f9e24905fbc24300bd73f676b5716182be5f3e39dada")!, curve: CoinType.secret.curve)!
         let pubkey = key.getPublicKeySecp256k1(compressed: true)
         let address = AnyAddress(publicKey: pubkey, coin: .secret)
         let addressFromString = AnyAddress(string: "secret18mdrja40gfuftt5yx6tgj0fn5lurplezyp894y", coin: .secret)!
@@ -17,7 +17,7 @@ class SecretTests: XCTestCase {
     }
 
     func testSigningTransaction() {
-        let privateKey = PrivateKey(data: Data(hexString: "87201512d132ef7a1e57f9e24905fbc24300bd73f676b5716182be5f3e39dada")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "87201512d132ef7a1e57f9e24905fbc24300bd73f676b5716182be5f3e39dada")!, curve: CoinType.secret.curve)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         let fromAddress = AnyAddress(publicKey: publicKey, coin: .secret)
 

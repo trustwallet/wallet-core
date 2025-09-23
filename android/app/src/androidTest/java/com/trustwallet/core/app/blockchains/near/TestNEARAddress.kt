@@ -15,7 +15,7 @@ class TestNEARAddress {
     @Test
     fun testAddressFromPrivateKey() {
         val privateKeyBytes = Base58.decodeNoCheck("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv").sliceArray(0..31)
-        val key = PrivateKey(privateKeyBytes)
+        val key = PrivateKey(privateKeyBytes, CoinType.NEAR.curve())
         val pubkey = key.getPublicKeyEd25519()
         val address = AnyAddress(pubkey, CoinType.NEAR)
 

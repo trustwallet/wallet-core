@@ -16,7 +16,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let dustAmount = 546 as Int64
         let txId = Data.reverse(hexString: "8ec895b4d30adb01e38471ca1019bfc8c3e5fbd1f28d9e7b5653260d89989008")
         
-        let privateKey = PrivateKey(data: privateKeyData)!
+        let privateKey = PrivateKey(data: privateKeyData, curve: CoinType.bitcoin.curve)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         
         let utxo0 = BitcoinV2Input.with {
@@ -88,7 +88,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         // Now spend just created `797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1` commit output.
         let txIdCommit = Data.reverse(hexString: "797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1")
         
-        let privateKey = PrivateKey(data: privateKeyData)!
+        let privateKey = PrivateKey(data: privateKeyData, curve: CoinType.bitcoin.curve)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         
         let utxo0 = BitcoinV2Input.with {
@@ -152,7 +152,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let txIdReveal = Data.reverse(hexString: "7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca")
         let txIdForFee = Data.reverse(hexString: "797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1")
         
-        let privateKey = PrivateKey(data: privateKeyData)!
+        let privateKey = PrivateKey(data: privateKeyData, curve: CoinType.bitcoin.curve)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         
         let bobAddress = "bc1qazgc2zhu2kmy42py0vs8d7yff67l3zgpwfzlpk"
@@ -302,7 +302,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
     func testSignP2SH_P2WPKH() {
         let address = "3LGoLac9mtCwDy2q8PYyvwL8kMyrCWCYQW"
         let lockScript = BitcoinScript.lockScriptForAddress(address: address, coin: .bitcoin)
-        let key = PrivateKey(data: Data(hexString: "e240ef3419d038577e48426c8c37c3c13bec1a0ed3f5270b82e7377bc48699dd")!)!
+        let key = PrivateKey(data: Data(hexString: "e240ef3419d038577e48426c8c37c3c13bec1a0ed3f5270b82e7377bc48699dd")!, curve: CoinType.bitcoin.curve)!
         let pubkey = key.getPublicKeySecp256k1(compressed: true)
         let utxos = [
             BitcoinUnspentTransaction.with {
@@ -351,7 +351,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         // compressed WIF, real key is 5KCr
         let wif = "L4BeKzm3AHDUMkxLRVKTSVxkp6Hz9FcMQPh18YCKU1uioXfovzwP"
         let decoded = Base58.decode(string: wif)!
-        let key = PrivateKey(data: decoded[1 ..< 33])!
+        let key = PrivateKey(data: decoded[1 ..< 33], curve: CoinType.bitcoin.curve)!
         let pubkey = key.getPublicKeySecp256k1(compressed: false)
 
         // shortcut methods only support compressed public key
@@ -420,7 +420,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
     
     func testPlanPsbtThorSwap() throws {
         let privateKeyBytes = Data(hexString: "f00ffbe44c5c2838c13d2778854ac66b75e04eb6054f0241989e223223ad5e55")!
-        let privateKey = PrivateKey(data: privateKeyBytes)!
+        let privateKey = PrivateKey(data: privateKeyBytes, curve: CoinType.bitcoin.curve)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
 
         let psbt = Data(hexString: "70736274ff0100bc0200000001147010db5fbcf619067c1090fec65c131443fbc80fb4aaeebe940e44206098c60000000000ffffffff0360ea000000000000160014f22a703617035ef7f490743d50f26ae08c30d0a70000000000000000426a403d3a474149412e41544f4d3a636f736d6f7331737377797a666d743675396a373437773537753438746778646575393573757a666c6d7175753a303a743a35303e12000000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d000000000001011f6603010000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d00000000")!
