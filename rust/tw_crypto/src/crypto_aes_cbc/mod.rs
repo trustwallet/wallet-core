@@ -35,11 +35,10 @@ fn aes_cbc_encrypt_impl<E: KeyIvInit + BlockEncryptMut>(
     if iv.len() != IV_SIZE {
         return Err(StreamCipherError);
     }
-    let key = if key.len() > key_size {
-        &key[0..key_size]
-    } else {
-        key
-    };
+    if key.len() < key_size {
+        return Err(StreamCipherError);
+    }
+    let key = &key[0..key_size];
     let data = padding_mode.pad(data);
     let mut blocks = blocks::<E>(&data);
     let mut cipher = E::new(key.into(), iv.into());
@@ -55,11 +54,13 @@ fn aes_cbc_decrypt_impl<D: KeyIvInit + BlockDecryptMut>(
     key_size: usize,
     padding_mode: PaddingMode,
 ) -> Result<Vec<u8>, StreamCipherError> {
-    let key = if key.len() > key_size {
-        &key[0..key_size]
-    } else {
-        key
-    };
+    if iv.len() != IV_SIZE {
+        return Err(StreamCipherError);
+    }
+    if key.len() < key_size {
+        return Err(StreamCipherError);
+    }
+    let key = &key[0..key_size];
     if data.len() % BLOCK_SIZE_AES != 0 {
         return Err(StreamCipherError);
     }
