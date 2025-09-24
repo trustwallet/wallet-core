@@ -148,44 +148,47 @@ message CreateAndTransferToken {
 
 // CreateTokenAccount and TokenTransfer combined with a token transfer to sponsor
 message SponsoredCreateAndTransferToken {
-    string fee_mint_address = 1;
+    string fee_token_mint_address = 1;
 
-    string sponsor_token_address = 2;
+    string fee_sponsor_token_address = 2;
 
     uint64 fee_amount = 3;
 
+    // Sender's fee token address
+    string fee_sender_token_address = 4;
+
     // Note: 8-bit value
-    uint32 fee_decimals = 4;
+    uint32 fee_decimals = 5;
 
     // optional token program id
-    TokenProgramId fee_token_program_id = 5;
+    TokenProgramId fee_token_program_id = 6;
 
     // main account -- can be same as signer, or other main account (if done on some other account's behalf)
-    string recipient_main_address = 6;
+    string recipient_main_address = 7;
 
     // Mint address of the token
-    string token_mint_address = 7;
+    string token_mint_address = 8;
 
     // Token address for the recipient, will be created first
-    string recipient_token_address = 8;
+    string recipient_token_address = 9;
 
     // Sender's token address
-    string sender_token_address = 9;
+    string sender_token_address = 10;
 
     // amount
-    uint64 amount = 10;
+    uint64 amount = 11;
 
     // Note: 8-bit value
-    uint32 decimals = 11;
+    uint32 decimals = 12;
 
     // optional
-    string memo = 12;
+    string memo = 13;
 
     // optional referenced public keys
-    repeated string references = 13;
+    repeated string references = 14;
 
     // optional token program id
-    TokenProgramId token_program_id = 14;
+    TokenProgramId token_program_id = 15;
 }
 
 message CreateNonceAccount {

@@ -472,20 +472,50 @@ impl<'a> MessageBuilder<'a> {
         let signer = self.signer_address()?;
         let fee_payer = self.fee_payer()?;
 
+        let fee_mint_address = SolanaAddress::from_str(
+            sponsored_create_and_transfer
+                .fee_token_mint_address
+                .as_ref(),
+        )
+        .into_tw()
+        .context("Invalid fee mint address")?;
+
+        let sponsor_token_address = SolanaAddress::from_str(
+            sponsored_create_and_transfer
+                .fee_sponsor_token_address
+                .as_ref(),
+        )
+        .into_tw()
+        .context("Invalid sponsor token address")?;
+
+        let fee_sender_token_address = SolanaAddress::from_str(
+            sponsored_create_and_transfer
+                .fee_sender_token_address
+                .as_ref(),
+        )
+        .into_tw()
+        .context("Invalid fee sender token address")?;
+
+        let fee_decimals = sponsored_create_and_transfer
+            .fee_decimals
+            .try_into()
+            .tw_err(SigningErrorType::Error_invalid_params)
+            .context("Invalid fee decimals. Expected lower than 256")?;
+
+        let fee_transfer_instruction = TokenInstructionBuilder::transfer_checked(
+            fee_sender_token_address,
+            fee_mint_address,
+            sponsor_token_address,
+            signer,
+            sponsored_create_and_transfer.fee_amount,
+            fee_decimals,
+            match_program_id(sponsored_create_and_transfer.fee_token_program_id),
+        );
+
         let sender_token_address =
             SolanaAddress::from_str(sponsored_create_and_transfer.sender_token_address.as_ref())
                 .into_tw()
                 .context("Invalid sender token address")?;
-
-        let fee_mint_address =
-            SolanaAddress::from_str(sponsored_create_and_transfer.fee_mint_address.as_ref())
-                .into_tw()
-                .context("Invalid fee mint address")?;
-
-        let sponsor_token_address =
-            SolanaAddress::from_str(sponsored_create_and_transfer.sponsor_token_address.as_ref())
-                .into_tw()
-                .context("Invalid sponsor token address")?;
 
         let token_mint_address =
             SolanaAddress::from_str(sponsored_create_and_transfer.token_mint_address.as_ref())
@@ -507,22 +537,6 @@ impl<'a> MessageBuilder<'a> {
         )
         .into_tw()
         .context("Invalid recipient token address")?;
-
-        let fee_decimals = sponsored_create_and_transfer
-            .fee_decimals
-            .try_into()
-            .tw_err(SigningErrorType::Error_invalid_params)
-            .context("Invalid fee decimals. Expected lower than 256")?;
-
-        let fee_transfer_instruction = TokenInstructionBuilder::transfer_checked(
-            sender_token_address,
-            fee_mint_address,
-            sponsor_token_address,
-            signer,
-            sponsored_create_and_transfer.fee_amount,
-            fee_decimals,
-            match_program_id(sponsored_create_and_transfer.fee_token_program_id),
-        );
 
         let references = Self::parse_references(&sponsored_create_and_transfer.references)?;
 
