@@ -141,6 +141,11 @@ impl<'a> MessageBuilder<'a> {
             ProtoTransactionType::advance_nonce_account(ref advance_nonce) => {
                 self.advance_nonce_from_proto(advance_nonce)
             },
+            ProtoTransactionType::sponsored_create_and_transfer_token_transaction(
+                ref sponsored_create_and_transfer_token,
+            ) => self.sponsored_create_and_transfer_token_from_proto(
+                sponsored_create_and_transfer_token,
+            ),
             ProtoTransactionType::None => SigningError::err(SigningErrorType::Error_invalid_params)
                 .context("No transaction type specified"),
         }
@@ -456,6 +461,105 @@ impl<'a> MessageBuilder<'a> {
             .add_instruction(create_account_instruction)
             // Optional memo. Order: before transfer, as per documentation.
             .maybe_memo(create_and_transfer.memo.as_ref())
+            .add_instruction(transfer_instruction);
+        Ok(builder.output())
+    }
+
+    fn sponsored_create_and_transfer_token_from_proto(
+        &self,
+        sponsored_create_and_transfer: &Proto::SponsoredCreateAndTransferToken,
+    ) -> SigningResult<Vec<Instruction>> {
+        let signer = self.signer_address()?;
+        let fee_payer = self.fee_payer()?;
+
+        let sender_token_address =
+            SolanaAddress::from_str(sponsored_create_and_transfer.sender_token_address.as_ref())
+                .into_tw()
+                .context("Invalid sender token address")?;
+
+        let fee_mint_address =
+            SolanaAddress::from_str(sponsored_create_and_transfer.fee_mint_address.as_ref())
+                .into_tw()
+                .context("Invalid fee mint address")?;
+
+        let sponsor_token_address =
+            SolanaAddress::from_str(sponsored_create_and_transfer.sponsor_token_address.as_ref())
+                .into_tw()
+                .context("Invalid sponsor token address")?;
+
+        let token_mint_address =
+            SolanaAddress::from_str(sponsored_create_and_transfer.token_mint_address.as_ref())
+                .into_tw()
+                .context("Invalid token mint address")?;
+
+        let recipient_main_address = SolanaAddress::from_str(
+            sponsored_create_and_transfer
+                .recipient_main_address
+                .as_ref(),
+        )
+        .into_tw()
+        .context("Invalid recipient main address")?;
+
+        let recipient_token_address = SolanaAddress::from_str(
+            sponsored_create_and_transfer
+                .recipient_token_address
+                .as_ref(),
+        )
+        .into_tw()
+        .context("Invalid recipient token address")?;
+
+        let fee_decimals = sponsored_create_and_transfer
+            .fee_decimals
+            .try_into()
+            .tw_err(SigningErrorType::Error_invalid_params)
+            .context("Invalid fee decimals. Expected lower than 256")?;
+
+        let fee_transfer_instruction = TokenInstructionBuilder::transfer_checked(
+            sender_token_address,
+            fee_mint_address,
+            sponsor_token_address,
+            signer,
+            sponsored_create_and_transfer.fee_amount,
+            fee_decimals,
+            match_program_id(sponsored_create_and_transfer.fee_token_program_id),
+        );
+
+        let references = Self::parse_references(&sponsored_create_and_transfer.references)?;
+
+        let decimals = sponsored_create_and_transfer
+            .decimals
+            .try_into()
+            .tw_err(SigningErrorType::Error_invalid_params)
+            .context("Invalid token decimals. Expected lower than 256")?;
+
+        let create_account_instruction = TokenInstructionBuilder::create_account(
+            // Can be different from the actual signer.
+            fee_payer,
+            recipient_main_address,
+            token_mint_address,
+            recipient_token_address,
+            match_program_id(sponsored_create_and_transfer.token_program_id),
+        );
+        let transfer_instruction = TokenInstructionBuilder::transfer_checked(
+            sender_token_address,
+            token_mint_address,
+            recipient_token_address,
+            signer,
+            sponsored_create_and_transfer.amount,
+            decimals,
+            match_program_id(sponsored_create_and_transfer.token_program_id),
+        )
+        .with_references(references);
+
+        let mut builder = InstructionBuilder::default();
+        builder
+            .maybe_advance_nonce(self.nonce_account()?, signer)
+            .maybe_priority_fee_price(self.priority_fee_price())
+            .maybe_priority_fee_limit(self.priority_fee_limit())
+            .add_instruction(fee_transfer_instruction)
+            .add_instruction(create_account_instruction)
+            // Optional memo. Order: before transfer, as per documentation.
+            .maybe_memo(sponsored_create_and_transfer.memo.as_ref())
             .add_instruction(transfer_instruction);
         Ok(builder.output())
     }

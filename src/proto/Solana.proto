@@ -146,6 +146,48 @@ message CreateAndTransferToken {
     TokenProgramId token_program_id = 9;
 }
 
+// CreateTokenAccount and TokenTransfer combined with a token transfer to sponsor
+message SponsoredCreateAndTransferToken {
+    string fee_mint_address = 1;
+
+    string sponsor_token_address = 2;
+
+    uint64 fee_amount = 3;
+
+    // Note: 8-bit value
+    uint32 fee_decimals = 4;
+
+    // optional token program id
+    TokenProgramId fee_token_program_id = 5;
+
+    // main account -- can be same as signer, or other main account (if done on some other account's behalf)
+    string recipient_main_address = 6;
+
+    // Mint address of the token
+    string token_mint_address = 7;
+
+    // Token address for the recipient, will be created first
+    string recipient_token_address = 8;
+
+    // Sender's token address
+    string sender_token_address = 9;
+
+    // amount
+    uint64 amount = 10;
+
+    // Note: 8-bit value
+    uint32 decimals = 11;
+
+    // optional
+    string memo = 12;
+
+    // optional referenced public keys
+    repeated string references = 13;
+
+    // optional token program id
+    TokenProgramId token_program_id = 14;
+}
+
 message CreateNonceAccount {
     // Required for building pre-signing hash of a transaction
     string nonce_account = 1;
@@ -266,6 +308,7 @@ message SigningInput {
         CreateNonceAccount create_nonce_account = 13;
         WithdrawNonceAccount withdraw_nonce_account = 16;
         AdvanceNonceAccount advance_nonce_account = 19;
+        SponsoredCreateAndTransferToken sponsored_create_and_transfer_token_transaction = 24;
     }
     // Required for building pre-signing hash of a transaction
     string sender = 14;
