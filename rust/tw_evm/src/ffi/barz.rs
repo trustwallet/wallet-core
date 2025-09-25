@@ -39,6 +39,19 @@ pub unsafe extern "C" fn tw_barz_get_counterfactual_address(
     TWString::from(address).into_ptr()
 }
 
+/// Calculate a counterfactual address for the smart contract wallet
+///
+/// \warning This is a temporary fix function. Will be removed
+/// \param input The serialized data of ContractAddressInput.
+/// \return The address.
+#[tw_ffi(ty = static_function, class = TWBarz, name = GetCounterfactualAddressBridge)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_barz_get_counterfactual_address_bridge(
+    input: Nonnull<TWData>,
+) -> NullableMut<TWString> {
+    tw_barz_get_counterfactual_address(input)
+}
+
 /// Returns the init code parameter of ERC-4337 User Operation
 ///
 /// \param factory The address of the factory contract.
@@ -73,6 +86,25 @@ pub unsafe extern "C" fn tw_barz_get_init_code(
         std::ptr::null_mut
     );
     TWData::from(init_code).into_ptr()
+}
+
+/// Returns the init code parameter of ERC-4337 User Operation
+///
+/// \warning This is a temporary fix function. Will be removed
+/// \param factory The address of the factory contract.
+/// \param public_key Public key for the verification facet
+/// \param verification_facet The address of the verification facet.
+/// \param salt The salt of the init code.
+/// \return The init code.
+#[tw_ffi(ty = static_function, class = TWBarz, name = GetInitCodeBridge)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_barz_get_init_code_bridge(
+    factory: Nonnull<TWString>,
+    public_key: NonnullMut<TWPublicKey>,
+    verification_facet: Nonnull<TWString>,
+    salt: u32,
+) -> NullableMut<TWData> {
+    tw_barz_get_init_code(factory, public_key, verification_facet, salt)
 }
 
 /// Converts the original ASN-encoded signature from webauthn to the format accepted by Barz
@@ -113,6 +145,25 @@ pub unsafe extern "C" fn tw_barz_get_formatted_signature(
     TWData::from(formatted_signature).into_ptr()
 }
 
+/// Converts the original ASN-encoded signature from webauthn to the format accepted by Barz
+///
+/// \warning This is a temporary fix function. Will be removed
+/// \param signature Original signature
+/// \param challenge The original challenge that was signed
+/// \param authenticator_data Returned from Webauthn API
+/// \param client_data_json Returned from Webauthn API
+/// \return Bytes of the formatted signature
+#[tw_ffi(ty = static_function, class = TWBarz, name = GetFormattedSignatureBridge)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_barz_get_formatted_signature_bridge(
+    signature: Nonnull<TWData>,
+    challenge: Nonnull<TWData>,
+    authenticator_data: Nonnull<TWData>,
+    client_data_json: Nonnull<TWString>,
+) -> NullableMut<TWData> {
+    tw_barz_get_formatted_signature(signature, challenge, authenticator_data, client_data_json)
+}
+
 /// Returns the final hash to be signed by Barz for signing messages & typed data
 ///
 /// \param msg_hash Original msgHash
@@ -136,6 +187,23 @@ pub unsafe extern "C" fn tw_barz_get_prefixed_msg_hash(
     TWData::from(prefixed_msg_hash).into_ptr()
 }
 
+/// Returns the final hash to be signed by Barz for signing messages & typed data
+///
+/// \warning This is a temporary fix function. Will be removed
+/// \param msg_hash Original msgHash
+/// \param barzAddress The address of Barz wallet signing the message
+/// \param chainId The chainId of the network the verification will happen
+/// \return The final hash to be signed.
+#[tw_ffi(ty = static_function, class = TWBarz, name = GetPrefixedMsgHashBridge)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_barz_get_prefixed_msg_hash_bridge(
+    msg_hash: Nonnull<TWData>,
+    barz_address: Nonnull<TWString>,
+    chain_id: u32,
+) -> NullableMut<TWData> {
+    tw_barz_get_prefixed_msg_hash(msg_hash, barz_address, chain_id)
+}
+
 /// Returns the encoded diamondCut function call for Barz contract upgrades
 ///
 /// \param input The serialized data of DiamondCutInput.
@@ -153,6 +221,19 @@ pub unsafe extern "C" fn tw_barz_get_diamond_cut_code(
     );
     let diamond_cut_code = try_or_else!(get_diamond_cut_code(&input), std::ptr::null_mut);
     TWData::from(diamond_cut_code).into_ptr()
+}
+
+/// Returns the encoded diamondCut function call for Barz contract upgrades
+///
+/// \warning This is a temporary fix function. Will be removed
+/// \param input The serialized data of DiamondCutInput.
+/// \return The diamond cut code.
+#[tw_ffi(ty = static_function, class = TWBarz, name = GetDiamondCutCodeBridge)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_barz_get_diamond_cut_code_bridge(
+    input: Nonnull<TWData>,
+) -> NullableMut<TWData> {
+    tw_barz_get_diamond_cut_code(input)
 }
 
 /// Computes an Authorization hash in [EIP-7702 format](https://eips.ethereum.org/EIPS/eip-7702)
@@ -181,6 +262,24 @@ pub unsafe extern "C" fn tw_barz_get_authorization_hash(
         std::ptr::null_mut
     );
     TWData::from(authorization_hash).into_ptr()
+}
+
+/// Computes an Authorization hash in [EIP-7702 format](https://eips.ethereum.org/EIPS/eip-7702)
+/// `keccak256('0x05' || rlp([chain_id, address, nonce]))`.
+///
+/// \warning This is a temporary fix function. Will be removed
+/// \param chain_id The chain ID of the user.
+/// \param contract_address The address of the smart contract wallet.
+/// \param nonce The nonce of the user.
+/// \return The authorization hash.
+#[tw_ffi(ty = static_function, class = TWBarz, name = GetAuthorizationHashBridge)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_barz_get_authorization_hash_bridge(
+    chain_id: Nonnull<TWData>,
+    contract_address: Nonnull<TWString>,
+    nonce: Nonnull<TWData>,
+) -> NullableMut<TWData> {
+    tw_barz_get_authorization_hash(chain_id, contract_address, nonce)
 }
 
 /// Returns the signed authorization hash
@@ -217,6 +316,25 @@ pub unsafe extern "C" fn tw_barz_sign_authorization(
         std::ptr::null_mut
     );
     TWString::from(signed_authorization).into_ptr()
+}
+
+/// Returns the signed authorization hash
+///
+/// \warning This is a temporary fix function. Will be removed
+/// \param chain_id The chain ID of the user.
+/// \param contract_address The address of the smart contract wallet.
+/// \param nonce The nonce of the user.
+/// \param private_key The private key of the user.
+/// \return The signed authorization.
+#[tw_ffi(ty = static_function, class = TWBarz, name = SignAuthorizationBridge)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_barz_sign_authorization_bridge(
+    chain_id: Nonnull<TWData>,
+    contract_address: Nonnull<TWString>,
+    nonce: Nonnull<TWData>,
+    private_key: Nonnull<TWString>,
+) -> NullableMut<TWString> {
+    tw_barz_sign_authorization(chain_id, contract_address, nonce, private_key)
 }
 
 /// Returns the encoded hash of the user operation
@@ -276,6 +394,42 @@ pub unsafe extern "C" fn tw_barz_get_encoded_hash(
     TWData::from(encoded_hash).into_ptr()
 }
 
+/// Returns the encoded hash of the user operation
+///
+/// \warning This is a temporary fix function. Will be removed
+/// \param chain_id The chain ID of the user.
+/// \param code_address The address of the smart contract wallet.
+/// \param code_name The name of the smart contract wallet.
+/// \param code_version The version of the smart contract wallet.
+/// \param type_hash The type hash of the smart contract wallet.
+/// \param domain_separator_hash The domain separator hash of the smart contract wallet.
+/// \param sender The sender of the smart contract wallet.
+/// \param user_op_hash The user operation hash of the smart contract wallet.
+/// \return The encoded hash.
+#[tw_ffi(ty = static_function, class = TWBarz, name = GetEncodedHashBridge)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_barz_get_encoded_hash_bridge(
+    chain_id: Nonnull<TWData>,
+    code_address: Nonnull<TWString>,
+    code_name: Nonnull<TWString>,
+    code_version: Nonnull<TWString>,
+    type_hash: Nonnull<TWString>,
+    domain_separator_hash: Nonnull<TWString>,
+    sender: Nonnull<TWString>,
+    user_op_hash: Nonnull<TWString>,
+) -> NullableMut<TWData> {
+    tw_barz_get_encoded_hash(
+        chain_id,
+        code_address,
+        code_name,
+        code_version,
+        type_hash,
+        domain_separator_hash,
+        sender,
+        user_op_hash,
+    )
+}
+
 /// Signs a message using the private key
 ///
 /// \param hash The hash of the user.
@@ -293,4 +447,19 @@ pub unsafe extern "C" fn tw_barz_get_signed_hash(
     let private_key = try_or_else!(private_key.as_str(), std::ptr::null_mut);
     let signed_hash = try_or_else!(sign_user_op_hash(hash, private_key), std::ptr::null_mut);
     TWData::from(signed_hash).into_ptr()
+}
+
+/// Signs a message using the private key
+///
+/// \warning This is a temporary fix function. Will be removed
+/// \param hash The hash of the user.
+/// \param private_key The private key of the user.
+/// \return The signed hash.
+#[tw_ffi(ty = static_function, class = TWBarz, name = GetSignedHashBridge)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_barz_get_signed_hash_bridge(
+    hash: Nonnull<TWString>,
+    private_key: Nonnull<TWString>,
+) -> NullableMut<TWData> {
+    tw_barz_get_signed_hash(hash, private_key)
 }

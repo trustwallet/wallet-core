@@ -4,10 +4,11 @@
 
 use tw_encoding::hex;
 use tw_evm::ffi::barz::{
-    tw_barz_get_authorization_hash, tw_barz_get_counterfactual_address,
-    tw_barz_get_diamond_cut_code, tw_barz_get_encoded_hash, tw_barz_get_formatted_signature,
-    tw_barz_get_init_code, tw_barz_get_prefixed_msg_hash, tw_barz_get_signed_hash,
-    tw_barz_sign_authorization,
+    tw_barz_get_authorization_hash_bridge, tw_barz_get_counterfactual_address_bridge,
+    tw_barz_get_diamond_cut_code_bridge, tw_barz_get_encoded_hash_bridge,
+    tw_barz_get_formatted_signature_bridge, tw_barz_get_init_code_bridge,
+    tw_barz_get_prefixed_msg_hash_bridge, tw_barz_get_signed_hash_bridge,
+    tw_barz_sign_authorization_bridge,
 };
 use tw_keypair::{test_utils::tw_public_key_helper::TWPublicKeyHelper, tw::PublicKeyType};
 use tw_memory::test_utils::{tw_data_helper::TWDataHelper, tw_string_helper::TWStringHelper};
@@ -33,7 +34,8 @@ fn test_get_counterfactual_address_non_zero_salt_ffi() {
     let input = serialize(&input).unwrap();
     let input = TWDataHelper::create(input);
 
-    let address = TWStringHelper::wrap(unsafe { tw_barz_get_counterfactual_address(input.ptr()) });
+    let address =
+        TWStringHelper::wrap(unsafe { tw_barz_get_counterfactual_address_bridge(input.ptr()) });
     assert_eq!(
         address.to_string(),
         Some("0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1".to_string())
@@ -49,7 +51,7 @@ fn test_get_init_code_ffi() {
     let salt = 0;
 
     let init_code = TWDataHelper::wrap(unsafe {
-        tw_barz_get_init_code(
+        tw_barz_get_init_code_bridge(
             factory_address.ptr(),
             public_key.ptr(),
             verification_facet.ptr(),
@@ -60,7 +62,7 @@ fn test_get_init_code_ffi() {
 
     let salt = 1;
     let init_code = TWDataHelper::wrap(unsafe {
-        tw_barz_get_init_code(
+        tw_barz_get_init_code_bridge(
             factory_address.ptr(),
             public_key.ptr(),
             verification_facet.ptr(),
@@ -83,7 +85,7 @@ fn test_get_formatted_signature_ffi() {
     let client_data_json = TWStringHelper::create("{\"type\":\"webauthn.get\",\"challenge\":\"zyZ6eMWtr5bzQaaW61doJChMVy8-Yb5hlpTVOdsZJfk\",\"origin\":\"https://trustwallet.com\"}");
 
     let formatted_signature = TWDataHelper::wrap(unsafe {
-        tw_barz_get_formatted_signature(
+        tw_barz_get_formatted_signature_bridge(
             signature.ptr(),
             challenge.ptr(),
             authenticator_data.ptr(),
@@ -102,7 +104,7 @@ fn test_get_prefixed_msg_hash_ffi() {
     let chain_id = 3604;
 
     let prefixed_msg_hash = TWDataHelper::wrap(unsafe {
-        tw_barz_get_prefixed_msg_hash(
+        tw_barz_get_prefixed_msg_hash_bridge(
             TWDataHelper::create(msg_hash).ptr(),
             TWStringHelper::create(barz_address).ptr(),
             chain_id,
@@ -122,7 +124,7 @@ fn test_get_prefixed_msg_hash_with_zero_chain_id_ffi() {
     let chain_id = 0;
 
     let prefixed_msg_hash = TWDataHelper::wrap(unsafe {
-        tw_barz_get_prefixed_msg_hash(
+        tw_barz_get_prefixed_msg_hash_bridge(
             TWDataHelper::create(msg_hash).ptr(),
             TWStringHelper::create(barz_address).ptr(),
             chain_id,
@@ -148,7 +150,8 @@ fn test_get_diamond_cut_code_ffi() {
     let input = serialize(&input).unwrap();
     let input = TWDataHelper::create(input);
 
-    let diamond_cut_code = TWDataHelper::wrap(unsafe { tw_barz_get_diamond_cut_code(input.ptr()) });
+    let diamond_cut_code =
+        TWDataHelper::wrap(unsafe { tw_barz_get_diamond_cut_code_bridge(input.ptr()) });
     assert_eq!(hex::encode(diamond_cut_code.to_vec().unwrap(), true), "0x1f931c1c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000002279b7a0a67db372996a5fab50d91eaa73d2ebe6000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000001fdd8a83c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000");
 }
 
@@ -177,7 +180,8 @@ fn test_get_diamond_cut_code_with_multiple_cut_ffi() {
     let input = serialize(&input).unwrap();
     let input = TWDataHelper::create(input);
 
-    let diamond_cut_code = TWDataHelper::wrap(unsafe { tw_barz_get_diamond_cut_code(input.ptr()) });
+    let diamond_cut_code =
+        TWDataHelper::wrap(unsafe { tw_barz_get_diamond_cut_code_bridge(input.ptr()) });
     assert_eq!(hex::encode(diamond_cut_code.to_vec().unwrap(), true), "0x1f931c1c00000000000000000000000000000000000000000000000000000000000000600000000000000000000000002279b7a0a67db372996a5fab50d91eaa73d2ebe600000000000000000000000000000000000000000000000000000000000002400000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000001200000000000000000000000002279b7a0a67db372996a5fab50d91eaa73d2ebe6000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000003fdd8a83c00000000000000000000000000000000000000000000000000000000fdd8a83c00000000000000000000000000000000000000000000000000000000fdd8a83c000000000000000000000000000000000000000000000000000000000000000000000000000000006e3c94d74af6227aeef75b54a679e969189a6aec000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000001123456780000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041234123400000000000000000000000000000000000000000000000000000000");
 }
 
@@ -195,7 +199,8 @@ fn test_get_diamond_cut_code_with_zero_selector_ffi() {
     let input = serialize(&input).unwrap();
     let input = TWDataHelper::create(input);
 
-    let diamond_cut_code = TWDataHelper::wrap(unsafe { tw_barz_get_diamond_cut_code(input.ptr()) });
+    let diamond_cut_code =
+        TWDataHelper::wrap(unsafe { tw_barz_get_diamond_cut_code_bridge(input.ptr()) });
     assert_eq!(hex::encode(diamond_cut_code.to_vec().unwrap(), true), "0x1f931c1c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000002279b7a0a67db372996a5fab50d91eaa73d2ebe600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000");
 }
 
@@ -215,7 +220,8 @@ fn test_get_diamond_cut_code_with_long_init_data_ffi() {
     let input = serialize(&input).unwrap();
     let input = TWDataHelper::create(input);
 
-    let diamond_cut_code = TWDataHelper::wrap(unsafe { tw_barz_get_diamond_cut_code(input.ptr()) });
+    let diamond_cut_code =
+        TWDataHelper::wrap(unsafe { tw_barz_get_diamond_cut_code_bridge(input.ptr()) });
     assert_eq!(hex::encode(diamond_cut_code.to_vec().unwrap(), true), "0x1f931c1c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000002279b7a0a67db372996a5fab50d91eaa73d2ebe600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c4b61d27f6000000000000000000000000c2ce171d25837cd43e496719f5355a847edc679b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000024a526d83b00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b9060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
 }
 
@@ -230,7 +236,7 @@ fn test_get_authorization_hash_ffi() {
     let nonce = TWDataHelper::create(nonce.to_vec());
 
     let authorization_hash = TWDataHelper::wrap(unsafe {
-        tw_barz_get_authorization_hash(chain_id.ptr(), contract_address.ptr(), nonce.ptr())
+        tw_barz_get_authorization_hash_bridge(chain_id.ptr(), contract_address.ptr(), nonce.ptr())
     });
     assert_eq!(
         hex::encode(authorization_hash.to_vec().unwrap(), true),
@@ -253,7 +259,7 @@ fn test_sign_authorization_ffi() {
     );
 
     let signed_authorization = TWStringHelper::wrap(unsafe {
-        tw_barz_sign_authorization(
+        tw_barz_sign_authorization_bridge(
             chain_id.ptr(),
             contract_address.ptr(),
             nonce.ptr(),
@@ -307,7 +313,7 @@ fn test_get_encoded_hash_ffi() {
     );
 
     let encoded_hash = TWDataHelper::wrap(unsafe {
-        tw_barz_get_encoded_hash(
+        tw_barz_get_encoded_hash_bridge(
             chain_id.ptr(),
             code_address.ptr(),
             code_name.ptr(),
@@ -332,7 +338,8 @@ fn test_get_signed_hash_ffi() {
     let private_key = TWStringHelper::create(
         "0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8",
     );
-    let signed_hash =
-        TWDataHelper::wrap(unsafe { tw_barz_get_signed_hash(hash.ptr(), private_key.ptr()) });
+    let signed_hash = TWDataHelper::wrap(unsafe {
+        tw_barz_get_signed_hash_bridge(hash.ptr(), private_key.ptr())
+    });
     assert_eq!(hex::encode(signed_hash.to_vec().unwrap(), true), "0xa29e460720e4b539f593d1a407827d9608cccc2c18b7af7b3689094dca8a016755bca072ffe39bc62285b65aff8f271f20798a421acf18bb2a7be8dbe0eb05f81c");
 }
