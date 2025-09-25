@@ -102,8 +102,9 @@ pub unsafe extern "C" fn tw_barz_get_init_code_bridge(
     factory: Nonnull<TWString>,
     public_key: NonnullMut<TWPublicKey>,
     verification_facet: Nonnull<TWString>,
-    salt: u32,
+    salt: i32,
 ) -> NullableMut<TWData> {
+    let salt = try_or_else!(salt.try_into(), std::ptr::null_mut);
     tw_barz_get_init_code(factory, public_key, verification_facet, salt)
 }
 
@@ -199,8 +200,9 @@ pub unsafe extern "C" fn tw_barz_get_prefixed_msg_hash(
 pub unsafe extern "C" fn tw_barz_get_prefixed_msg_hash_bridge(
     msg_hash: Nonnull<TWData>,
     barz_address: Nonnull<TWString>,
-    chain_id: u32,
+    chain_id: i32,
 ) -> NullableMut<TWData> {
+    let chain_id = try_or_else!(chain_id.try_into(), std::ptr::null_mut);
     tw_barz_get_prefixed_msg_hash(msg_hash, barz_address, chain_id)
 }
 
