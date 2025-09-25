@@ -146,12 +146,15 @@ message CreateAndTransferToken {
     TokenProgramId token_program_id = 9;
 }
 
-// CreateTokenAccount and TokenTransfer combined with a token transfer to sponsor
-message SponsoredCreateAndTransferToken {
+// Transfer tokens to the feepayer
+message TokenTransferToFeePayer {
+    // Mint address of the fee token
     string fee_token_mint_address = 1;
 
+    // Token account address of the fee sponsor for the fee mint
     string fee_sponsor_token_address = 2;
 
+    // Fee amount
     uint64 fee_amount = 3;
 
     // Sender's fee token address
@@ -162,33 +165,6 @@ message SponsoredCreateAndTransferToken {
 
     // optional token program id
     TokenProgramId fee_token_program_id = 6;
-
-    // main account -- can be same as signer, or other main account (if done on some other account's behalf)
-    string recipient_main_address = 7;
-
-    // Mint address of the token
-    string token_mint_address = 8;
-
-    // Token address for the recipient, will be created first
-    string recipient_token_address = 9;
-
-    // Sender's token address
-    string sender_token_address = 10;
-
-    // amount
-    uint64 amount = 11;
-
-    // Note: 8-bit value
-    uint32 decimals = 12;
-
-    // optional
-    string memo = 13;
-
-    // optional referenced public keys
-    repeated string references = 14;
-
-    // optional token program id
-    TokenProgramId token_program_id = 15;
 }
 
 message CreateNonceAccount {
@@ -311,7 +287,6 @@ message SigningInput {
         CreateNonceAccount create_nonce_account = 13;
         WithdrawNonceAccount withdraw_nonce_account = 16;
         AdvanceNonceAccount advance_nonce_account = 19;
-        SponsoredCreateAndTransferToken sponsored_create_and_transfer_token_transaction = 24;
     }
     // Required for building pre-signing hash of a transaction
     string sender = 14;
@@ -332,6 +307,8 @@ message SigningInput {
     // fee for higher transaction prioritization.
     // https://solana.com/docs/intro/transaction_fees#prioritization-fee
     PriorityFeeLimit priority_fee_limit = 23;
+    // Optional token transfer to fee payer
+    TokenTransferToFeePayer token_transfer_to_fee_payer = 24;
 }
 
 // Result containing the signed and encoded transaction.
