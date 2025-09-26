@@ -18,6 +18,9 @@ pub type TWFFIAESPaddingMode = u32;
 #[derive(Clone, Copy, Debug)]
 pub struct InvalidPaddingMode;
 
+#[derive(Clone, Copy, Debug)]
+pub struct InvalidPadding;
+
 impl TryFrom<u32> for PaddingMode {
     type Error = InvalidPaddingMode;
 
@@ -64,22 +67,28 @@ impl PaddingMode {
         padded
     }
 
-    pub fn unpad(&self, data: &[u8]) -> Vec<u8> {
+    pub fn unpad(&self, data: &[u8]) -> Result<Vec<u8>, InvalidPadding> {
         if data.is_empty() {
-            return data.to_vec();
+            return Ok(data.to_vec());
         }
         match self {
             PaddingMode::PKCS7 => {
                 let padding_len = data[data.len() - 1] as usize;
-                if padding_len <= data.len() {
-                    data[..data.len() - padding_len].to_vec()
-                } else {
-                    data.to_vec()
+                if padding_len == 0 || padding_len > BLOCK_SIZE_AES || padding_len > data.len() {
+                    return Err(InvalidPadding);
                 }
+                // Check that all padding bytes are equal to padding_len
+                if !data[data.len() - padding_len..]
+                    .iter()
+                    .all(|&b| b as usize == padding_len)
+                {
+                    return Err(InvalidPadding);
+                }
+                Ok(data[..data.len() - padding_len].to_vec())
             },
             // Zero padding can be ambiguous, so we return the original data
             // and the caller can strip the padding if needed
-            PaddingMode::Zero => data.to_vec(),
+            PaddingMode::Zero => Ok(data.to_vec()),
         }
     }
 }

@@ -2254,6 +2254,9 @@ dependencies = [
 [[package]]
 name = "tw_memory"
 version = "0.1.0"
+dependencies = [
+ "zeroize",
+]
 
 [[package]]
 name = "tw_misc"

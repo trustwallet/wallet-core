@@ -11,7 +11,7 @@ mod v2;
 
 use std::str::FromStr;
 
-use bip32::{ChildNumber, DerivationPath};
+use bip32::{ChainCode, ChildNumber, DerivationPath};
 use derivation::DerivationScheme;
 use key::{XPRV_SIZE, XPUB_SIZE};
 use tw_keypair::{ed25519, tw::Curve};
@@ -38,7 +38,7 @@ impl BIP32PrivateKey for ed25519::cardano::ExtendedPrivateKey {
         let bytes = self.to_zeroizing_vec();
         let bytes: [u8; XPRV_SIZE] = bytes.as_slice()[..XPRV_SIZE]
             .try_into()
-            .expect("Should not fail");
+            .map_err(|_| Error::InvalidKeyData)?;
         let bip32_xpr = key::XPrv::from_bytes_verified(bytes).map_err(|_| Error::InvalidKeyData)?;
         let child: key::XPrv = bip32_xpr.derive(DerivationScheme::V2, child_number.0);
         Self::try_from(child.as_ref()).map_err(|_| Error::InvalidKeyData)
@@ -58,14 +58,26 @@ impl BIP32PrivateKey for ed25519::cardano::ExtendedPrivateKey {
 }
 
 impl BIP32PublicKey for ed25519::cardano::ExtendedPublicKey {
-    fn derive_child(&self, _other: &[u8], child_number: ChildNumber) -> Result<Self> {
+    fn curve() -> Curve {
+        Curve::Ed25519ExtendedCardano
+    }
+
+    fn derive_child(
+        &self,
+        _chain_code: &ChainCode,
+        child_number: ChildNumber,
+    ) -> Result<(Self, ChainCode)> {
         let bytes = self.to_vec();
-        let bytes: [u8; XPUB_SIZE] = bytes[..XPUB_SIZE].try_into().expect("Should not fail");
+        let bytes: [u8; XPUB_SIZE] = bytes[..XPUB_SIZE]
+            .try_into()
+            .map_err(|_| Error::InvalidKeyData)?;
         let bip32_xpub = key::XPub::from_bytes(bytes);
         let child: key::XPub = bip32_xpub
             .derive(DerivationScheme::V2, child_number.0)
             .map_err(|_| Error::DerivationFailed)?;
-        Self::try_from(child.as_ref()).map_err(|_| Error::InvalidKeyData)
+        let public_key = Self::try_from(child.as_ref()).map_err(|_| Error::InvalidKeyData)?;
+        let chaincode = *child.chain_code();
+        Ok((public_key, chaincode))
     }
 }
 

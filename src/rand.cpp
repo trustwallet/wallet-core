@@ -29,23 +29,6 @@
 #include <unistd.h>
 #include <stdexcept>
 
-// [wallet-core]
-uint32_t __attribute__((weak)) random32(void) {
-    int randomData = open("/dev/urandom", O_RDONLY);
-    if (randomData < 0) {
-        throw std::runtime_error("Failed to open /dev/urandom");
-    }
-
-    uint32_t result;
-    if (read(randomData, &result, sizeof(result)) < 0) {
-        throw std::runtime_error("Failed to read from /dev/urandom");
-    }
-
-    close(randomData);
-
-    return result;
-}
-
 void __attribute__((weak)) random_buffer(uint8_t *buf, size_t len) {
     int randomData = open("/dev/urandom", O_RDONLY);
     if (randomData < 0) {

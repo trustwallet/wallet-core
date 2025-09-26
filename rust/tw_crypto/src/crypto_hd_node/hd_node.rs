@@ -4,9 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use std::str::FromStr;
-
-use bip32::{DerivationPath, Prefix};
+use bip32::Prefix;
 use tw_hash::hasher::Hasher;
 use tw_keypair::tw::Curve;
 use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
@@ -14,6 +12,7 @@ use zeroize::Zeroizing;
 
 use crate::crypto_hd_node::error::{Error, Result};
 use crate::crypto_hd_node::extended_key::extended_private_key::ExtendedPrivateKey;
+use crate::crypto_hd_node::utils::derivation_path_from_str;
 
 use super::ed25519::cardano::cardano_staking_derivation_path;
 use super::extended_key::extended_private_key::encode_base58;
@@ -72,7 +71,7 @@ impl HDNode {
     }
 
     pub fn derive_from_path(&self, path: &str, hasher: Hasher) -> Result<Self> {
-        let path = DerivationPath::from_str(path)?;
+        let path = derivation_path_from_str(path)?;
         match self {
             HDNode::Secp256k1(xprv) => {
                 let xprv = xprv.derive_from_path(&path, hasher)?;
@@ -199,13 +198,13 @@ impl HDNode {
     pub fn extended_public_key(&self, version: u32, hasher: Hasher) -> Result<String> {
         let prefix = Prefix::try_from(version)?;
         let extended_key = match self {
-            HDNode::Secp256k1(xprv) => xprv.public_key().to_extended_key(prefix),
-            HDNode::Nist256p1(xprv) => xprv.public_key().to_extended_key(prefix),
-            HDNode::Ed25519(xprv) => xprv.public_key().to_extended_key(prefix),
-            HDNode::Ed25519Blake2bNano(xprv) => xprv.public_key().to_extended_key(prefix),
-            HDNode::Curve25519Waves(xprv) => xprv.public_key().to_extended_key(prefix),
-            HDNode::Ed25519ExtendedCardano(xprv, _) => xprv.public_key().to_extended_key(prefix),
-            HDNode::ZilliqaSchnorr(xprv) => xprv.public_key().to_extended_key(prefix),
+            HDNode::Secp256k1(xprv) => xprv.public_key().to_extended_key(prefix)?,
+            HDNode::Nist256p1(xprv) => xprv.public_key().to_extended_key(prefix)?,
+            HDNode::Ed25519(xprv) => xprv.public_key().to_extended_key(prefix)?,
+            HDNode::Ed25519Blake2bNano(xprv) => xprv.public_key().to_extended_key(prefix)?,
+            HDNode::Curve25519Waves(xprv) => xprv.public_key().to_extended_key(prefix)?,
+            HDNode::Ed25519ExtendedCardano(xprv, _) => xprv.public_key().to_extended_key(prefix)?,
+            HDNode::ZilliqaSchnorr(xprv) => xprv.public_key().to_extended_key(prefix)?,
         };
         encode_base58(&extended_key, hasher)
     }

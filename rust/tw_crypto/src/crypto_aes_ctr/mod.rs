@@ -13,20 +13,24 @@ type Aes128Ctr64BE = Ctr64BE<Aes128>;
 type Aes192Ctr64BE = Ctr64BE<Aes192>;
 type Aes256Ctr64BE = Ctr64BE<Aes256>;
 
+const MAX_DATA_SIZE: usize = 10 * 1024 * 1024; // 10 MB
+
 fn aes_ctr_process<C: KeyIvInit + StreamCipher>(
     data: &[u8],
     iv: &[u8],
     key: &[u8],
     key_size: usize,
 ) -> Result<Vec<u8>, StreamCipherError> {
+    if data.len() > MAX_DATA_SIZE {
+        return Err(StreamCipherError);
+    }
     if iv.len() != IV_SIZE {
         return Err(StreamCipherError);
     }
-    let key = if key.len() > key_size {
-        &key[0..key_size]
-    } else {
-        key
-    };
+    if key.len() < key_size {
+        return Err(StreamCipherError);
+    }
+    let key = &key[0..key_size];
     let mut cipher = C::new(key.into(), iv.into());
     let mut data_vec = data.to_vec();
     cipher.try_apply_keystream(&mut data_vec)?;
