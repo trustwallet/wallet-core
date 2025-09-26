@@ -91,6 +91,7 @@ static TWHDNode* getMasterNode(const HDWallet<seedSize>& wallet, TWCurve curve) 
     }
     auto node = TWHDNodeCreateWithSeed(seedData, curve);
     if (seedData != nullptr) {
+        TWDataReset(seedData);
         TWDataDelete(seedData);
     }
     return node;
