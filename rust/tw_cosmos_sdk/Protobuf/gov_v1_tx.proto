@@ -1,0 +1,16 @@
+// Since: cosmos-sdk 0.46
+syntax = "proto3";
+
+import "google/protobuf/any.proto";
+
+package cosmos.gov.v1;
+
+// MsgExecLegacyContent is used to wrap the legacy content field into a message.
+// This ensures backwards compatibility with v1beta1.MsgSubmitProposal.
+message MsgExecLegacyContent {
+  // content is the proposal's content.
+  google.protobuf.Any content = 1;
+  // authority must be the gov module address.
+  string authority = 2;
+}
+
