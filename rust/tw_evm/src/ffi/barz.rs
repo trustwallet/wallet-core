@@ -41,10 +41,10 @@ pub unsafe extern "C" fn tw_barz_get_counterfactual_address(
 
 /// Returns the init code parameter of ERC-4337 User Operation
 ///
-/// \param factory The address of the factory contract.
+/// \param factory The address of the factory contract
 /// \param public_key Public key for the verification facet
-/// \param verification_facet The address of the verification facet.
-/// \param salt The salt of the init code.
+/// \param verification_facet The address of the verification facet
+/// \param salt The salt of the init code; Must be non-negative
 /// \return The init code.
 #[tw_ffi(ty = static_function, class = TWBarz, name = GetInitCode)]
 #[no_mangle]
@@ -52,7 +52,7 @@ pub unsafe extern "C" fn tw_barz_get_init_code(
     factory: Nonnull<TWString>,
     public_key: NonnullMut<TWPublicKey>,
     verification_facet: Nonnull<TWString>,
-    salt: u32,
+    salt: i32,
 ) -> NullableMut<TWData> {
     let factory_address = try_or_else!(TWString::from_ptr_as_ref(factory), std::ptr::null_mut);
     let factory_address = try_or_else!(factory_address.as_str(), std::ptr::null_mut);
@@ -63,6 +63,8 @@ pub unsafe extern "C" fn tw_barz_get_init_code(
         std::ptr::null_mut
     );
     let verification_facet = try_or_else!(verification_facet.as_str(), std::ptr::null_mut);
+    let salt = try_or_else!(salt.try_into(), std::ptr::null_mut);
+
     let init_code = try_or_else!(
         get_init_code(
             factory_address,
@@ -117,18 +119,20 @@ pub unsafe extern "C" fn tw_barz_get_formatted_signature(
 ///
 /// \param msg_hash Original msgHash
 /// \param barzAddress The address of Barz wallet signing the message
-/// \param chainId The chainId of the network the verification will happen
+/// \param chainId The chainId of the network the verification will happen; Must be non-negative
 /// \return The final hash to be signed.
 #[tw_ffi(ty = static_function, class = TWBarz, name = GetPrefixedMsgHash)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_barz_get_prefixed_msg_hash(
     msg_hash: Nonnull<TWData>,
     barz_address: Nonnull<TWString>,
-    chain_id: u32,
+    chain_id: i32,
 ) -> NullableMut<TWData> {
     let msg_hash = try_or_else!(TWData::from_ptr_as_ref(msg_hash), std::ptr::null_mut);
     let barz_address = try_or_else!(TWString::from_ptr_as_ref(barz_address), std::ptr::null_mut);
     let barz_address = try_or_else!(barz_address.as_str(), std::ptr::null_mut);
+    let chain_id = try_or_else!(chain_id.try_into(), std::ptr::null_mut);
+
     let prefixed_msg_hash = try_or_else!(
         get_prefixed_msg_hash(msg_hash.as_slice(), barz_address, chain_id),
         std::ptr::null_mut
