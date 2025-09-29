@@ -1,16 +1,48 @@
 package com.trustwallet.core.test
 
+import com.ionspin.kotlin.bignum.integer.BigInteger
+import com.ionspin.kotlin.bignum.integer.toBigInteger
+import com.trustwallet.core.Barz
 import com.trustwallet.core.CoinType
 import com.trustwallet.core.CoinType.*
 import com.trustwallet.core.HDWallet
 import com.trustwallet.core.LibLoader
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import okio.ByteString.Companion.toByteString
 
 class CoinAddressDerivationTests {
 
     init {
         LibLoader.loadLibrary()
+    }
+
+    @Test
+    fun whenNonceIsBigIntegerZeroThenReturnJson() {
+        val authSign: String? = Barz.signAuthorization(
+            chainId = "10".toBigInteger().toByteArray().toByteString().toByteArray(),
+            contractAddress = "0xD2e28229F6f2c235e57De2EbC727025A1D0530FB",
+            nonce = BigInteger.ZERO.toByteArray(),
+            privateKey = "da700cf3ec58bf9739079f6264f5e6334a722aa98737fc996f376aab00ac86cc",
+        )
+
+        assertNotNull(authSign)
+        assertEquals(BigInteger.ZERO, 0.toBigInteger())
+    }
+
+    @Test
+    fun whenNonceIs0ThenReturnNull() {
+        val authSign: String? = Barz.signAuthorization(
+            chainId = "10".toBigInteger().toByteArray().toByteString().toByteArray(),
+            contractAddress = "0xD2e28229F6f2c235e57De2EbC727025A1D0530FB",
+            nonce = 0.toBigInteger().toByteArray(),
+            privateKey = "da700cf3ec58bf9739079f6264f5e6334a722aa98737fc996f376aab00ac86cc",
+        )
+
+        assertNull(authSign)
+        assertEquals(0.toBigInteger(), BigInteger.ZERO)
     }
 
     @Test
