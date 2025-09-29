@@ -20,8 +20,8 @@ impl TWData {
     }
 
     /// Creates a `TWData` from a raw byte array.
-    pub unsafe fn from_raw_data(bytes: *const u8, size: usize) -> Option<TWData> {
-        CByteArrayRef::new(bytes, size).to_vec().map(TWData)
+    pub unsafe fn from_raw_data(bytes: *const u8, size: usize) -> TWData {
+        TWData(CByteArrayRef::new(bytes, size).to_vec())
     }
 
     /// Converts `TWData` into `Data` without additional allocation.
@@ -65,9 +65,7 @@ impl RawPtrTrait for TWData {}
 /// \return Non-null filled block of data.
 #[no_mangle]
 pub unsafe extern "C" fn tw_data_create_with_bytes(bytes: *const u8, size: usize) -> *mut TWData {
-    TWData::from_raw_data(bytes, size)
-        .map(|data| data.into_ptr())
-        .unwrap_or_else(std::ptr::null_mut)
+    TWData::from_raw_data(bytes, size).into_ptr()
 }
 
 /// Deletes a block of data created with a `TWDataCreate*` method.
