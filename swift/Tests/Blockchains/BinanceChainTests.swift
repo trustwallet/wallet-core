@@ -7,7 +7,7 @@ import WalletCore
 
 class BinanceChainTests: XCTestCase {
 
-    let testKey = PrivateKey(data: Data(hexString: "eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d")!)!
+    let testKey = PrivateKey(data: Data(hexString: "eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d")!, curve: .secp256k1)!
 
     func testAddress() {
         let publicKey = PublicKey(data: Data(hexString: "0x026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502")!, type: .secp256k1)!
@@ -36,7 +36,7 @@ class BinanceChainTests: XCTestCase {
     }
 
     func testSignSendOrder() {
-        let privateKey = PrivateKey(data: Data(hexString: "95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832")!, curve: .secp256k1)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
 
         let token = BinanceSendOrder.Token.with {

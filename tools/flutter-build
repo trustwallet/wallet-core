@@ -20,8 +20,7 @@ fi
 pushd flutter
 
 echo "Generating bindings..."
-dart run ffigen --config config.yaml
-
+dart run ffigen --config config.yaml --compiler-opts "-Iinclude"
 
 echo "Verifying the build..."
 dart run

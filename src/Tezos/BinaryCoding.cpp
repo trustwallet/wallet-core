@@ -8,7 +8,6 @@
 #include "../PublicKey.h"
 #include "../PrivateKey.h"
 
-#include <TrezorCrypto/ecdsa.h>
 #include <string>
 
 namespace TW::Tezos {

@@ -22,7 +22,7 @@ class CosmosAddressTests: XCTestCase {
 
 class CosmosSignerTests: XCTestCase {
 
-    let privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005")!)!
+    let privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005")!, curve: CoinType.cosmos.curve)!
 
     func testSigningTransaction() {
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
@@ -95,7 +95,7 @@ class CosmosSignerTests: XCTestCase {
             $0.sequence = 5
             $0.messages = [message]
             $0.fee = fee
-            $0.privateKey = PrivateKey(data: Data(hexString: "c7764249cdf77f8f1d840fa8af431579e5e41cf1af937e1e23afa22f3f4f0ccc")!)!.data
+            $0.privateKey = PrivateKey(data: Data(hexString: "c7764249cdf77f8f1d840fa8af431579e5e41cf1af937e1e23afa22f3f4f0ccc")!, curve: CoinType.cosmos.curve)!.data
         }
         
         let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
@@ -129,7 +129,7 @@ class CosmosSignerTests: XCTestCase {
             $0.sequence = 4
             $0.messages = [message]
             $0.fee = fee
-            $0.privateKey = PrivateKey(data: Data(hexString: "c7764249cdf77f8f1d840fa8af431579e5e41cf1af937e1e23afa22f3f4f0ccc")!)!.data
+            $0.privateKey = PrivateKey(data: Data(hexString: "c7764249cdf77f8f1d840fa8af431579e5e41cf1af937e1e23afa22f3f4f0ccc")!, curve: CoinType.cosmos.curve)!.data
         }
         
         let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
@@ -223,7 +223,7 @@ class CosmosSignerTests: XCTestCase {
     }
 
     func testIbcTransfer() {
-        let privateKey = PrivateKey(data: Data(hexString: "8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af")!, curve: CoinType.cosmos.curve)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         let fromAddress = AnyAddress(publicKey: publicKey, coin: .cosmos)
 

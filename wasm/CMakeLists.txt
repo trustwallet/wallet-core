@@ -9,7 +9,7 @@ set(CMAKE_EXECUTABLE_SUFFIX ".js")
 add_executable(${TARGET_NAME} ${wasm_sources} ${wasm_headers})
 
 target_link_libraries(${TARGET_NAME} TrustWalletCore)
-target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/trezor-crypto/include)
+target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_compile_options(${TARGET_NAME} PRIVATE "-Wall")
 
 set_target_properties(${TARGET_NAME}

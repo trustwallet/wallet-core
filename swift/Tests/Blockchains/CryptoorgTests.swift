@@ -7,7 +7,7 @@ import XCTest
 
 class CryptoorgTests: XCTestCase {
     func testAddress() {
-        let key = PrivateKey(data: Data(hexString: "7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e")!)!
+        let key = PrivateKey(data: Data(hexString: "7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e")!, curve: CoinType.cosmos.curve)!
         let pubkey = key.getPublicKeySecp256k1(compressed: true)
         let address = AnyAddress(publicKey: pubkey, coin: .cryptoOrg)
         let addressFromString = AnyAddress(string: "cro1z53wwe7md6cewz9sqwqzn0aavpaun0gw39h3rd", coin: .cryptoOrg)!
@@ -16,7 +16,7 @@ class CryptoorgTests: XCTestCase {
         XCTAssertEqual(address.description, addressFromString.description)
     }
 
-    let privateKey = PrivateKey(data: Data(hexString: "200e439e39cf1aad465ee3de6166247f914cbc0f823fc2dd48bf16dcd556f39d")!)!
+    let privateKey = PrivateKey(data: Data(hexString: "200e439e39cf1aad465ee3de6166247f914cbc0f823fc2dd48bf16dcd556f39d")!, curve: CoinType.cosmos.curve)!
 
     func testSign() {
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)

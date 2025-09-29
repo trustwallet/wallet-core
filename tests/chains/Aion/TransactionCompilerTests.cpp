@@ -23,7 +23,7 @@ namespace TW::Aion::tests {
 TEST(AionCompiler, CompileWithSignatures) {
     /// Step 1: Prepare transaction input (protobuf)
     auto privateKey = parse_hex("db33ffdf82c7ba903daf68d961d3c23c20471a8ce6b408e52d579fd8add80cc9");
-    auto key = PrivateKey(privateKey);
+    auto key = PrivateKey(privateKey, TWCurveED25519);
     auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
 
     Proto::SigningInput input;
@@ -50,7 +50,7 @@ TEST(AionCompiler, CompileWithSignatures) {
     EXPECT_EQ(hex(preImageHash), "d4423fe7d233b85c1bf5b1120ec03842e572fb25f3755f7a20bc83addc8c4d85");
 
     // Simulate signature, normally obtained from signature server
-    const auto signature = key.sign(preImageHash, TWCurveED25519);
+    const auto signature = key.sign(preImageHash);
 
     /// Step 3: Compile transaction info
     auto outputData =

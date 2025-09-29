@@ -10,7 +10,7 @@ class AcalaTests: XCTestCase {
     let genesisHash = Data(hexString: "0xfc41b9bd8ef8fe53d58c7ea67c794c7ec9a73daf05e6d54b14ff6342c99ba64c")!
 
     func testAddress() {
-        let key = PrivateKey(data: Data(hexString: "0x9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0")!)!
+        let key = PrivateKey(data: Data(hexString: "0x9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0")!, curve: CoinType.acala.curve)!
         let pubkey = key.getPublicKeyEd25519()
         let address = AnyAddress(publicKey: pubkey, coin: .acala)
         let addressFromString = AnyAddress(string: "269ZCS3WLGydTN8ynhyhZfzJrXkePUcdhwgLQs6TWFs5wVL5", coin: .acala)!
@@ -21,7 +21,7 @@ class AcalaTests: XCTestCase {
 
     func testSigning() {
         // real key in 1p test
-        let key = PrivateKey(data: Data(hexString: "9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0")!)!
+        let key = PrivateKey(data: Data(hexString: "9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0")!, curve: CoinType.acala.curve)!
 
         let input = PolkadotSigningInput.with {
             $0.genesisHash = genesisHash

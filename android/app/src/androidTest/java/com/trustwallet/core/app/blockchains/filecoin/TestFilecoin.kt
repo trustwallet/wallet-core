@@ -18,7 +18,7 @@ class TestFilecoin {
 
     @Test
     fun testCreateAddress() {
-        val privateKey = PrivateKey("1d969865e189957b9824bd34f26d5cbf357fda1a6d844cbf0c9ab1ed93fa7dbe".toHexByteArray())
+        val privateKey = PrivateKey("1d969865e189957b9824bd34f26d5cbf357fda1a6d844cbf0c9ab1ed93fa7dbe".toHexByteArray(), CoinType.FILECOIN.curve())
         val publicKey = privateKey.getPublicKeySecp256k1(false)
         val address = AnyAddress(publicKey, CoinType.FILECOIN)
         assertEquals("f1z4a36sc7mfbv4z3qwutblp2flycdui3baffytbq", address.description())
@@ -26,7 +26,7 @@ class TestFilecoin {
 
     @Test
     fun testCreateDelegatedAddress() {
-        val privateKey = PrivateKey("825d2bb32965764a98338139412c7591ed54c951dd65504cd8ddaeaa0fea7b2a".toHexByteArray())
+        val privateKey = PrivateKey("825d2bb32965764a98338139412c7591ed54c951dd65504cd8ddaeaa0fea7b2a".toHexByteArray(), CoinType.FILECOIN.curve())
         val publicKey = privateKey.getPublicKeySecp256k1(false)
         val address = AnyAddress(publicKey, FilecoinAddressType.DELEGATED)
         assertEquals("f410fvak24cyg3saddajborn6idt7rrtfj2ptauk5pbq", address.description())

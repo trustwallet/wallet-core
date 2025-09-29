@@ -23,7 +23,7 @@ std::vector<PrivateKey> getPrivateKeys(Proto::SigningInput& input) {
     std::vector<PrivateKey> privateKeys;
     privateKeys.reserve(input.private_key_size());
     for (auto&& privateKey : input.private_key()) {
-        privateKeys.emplace_back(privateKey);
+        privateKeys.emplace_back(privateKey, TWCoinTypeCurve(TWCoinTypeNervos));
     }
     return privateKeys;
 }

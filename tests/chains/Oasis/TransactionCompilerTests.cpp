@@ -22,7 +22,7 @@ namespace TW::Oasis::tests {
 TEST(OasisCompiler, CompileWithSignatures) {
     const auto coin = TWCoinTypeOasis;
     /// Step 1: Prepare transaction input (protobuf)
-    auto privateKey = PrivateKey(parse_hex("4f8b5676990b00e23d9904a92deb8d8f428ff289c8939926358f1d20537c21a0"));
+    auto privateKey = PrivateKey(parse_hex("4f8b5676990b00e23d9904a92deb8d8f428ff289c8939926358f1d20537c21a0"), TWCoinTypeCurve(TWCoinTypeOasis));
     auto publicKey = privateKey.getPublicKey(publicKeyType(coin));
 
     auto input = TW::Oasis::Proto::SigningInput();

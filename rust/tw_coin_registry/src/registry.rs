@@ -10,7 +10,7 @@ use serde::Deserialize;
 use std::collections::HashMap;
 use tw_coin_entry::derivation::DerivationWithPath;
 use tw_hash::hasher::Hasher;
-use tw_keypair::tw::PublicKeyType;
+use tw_keypair::tw::{Curve, PublicKeyType};
 
 type RegistryMap = HashMap<CoinType, CoinItem>;
 
@@ -32,6 +32,7 @@ pub struct CoinItem {
     pub blockchain: BlockchainType,
     pub derivation: Vec<DerivationWithPath>,
     pub public_key_type: PublicKeyType,
+    pub curve: Curve,
     pub address_hasher: Option<Hasher>,
     pub hrp: Option<String>,
     pub p2pkh_prefix: Option<u8>,

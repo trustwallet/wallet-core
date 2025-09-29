@@ -21,7 +21,7 @@
 
 namespace TW::Bitcoin::MessageSignerTests {
 
-const auto gPrivateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+const auto gPrivateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCoinTypeCurve(TWCoinTypeBitcoin));
 
 TEST(BitcoinMessageSigner, VerifyMessage) {
     EXPECT_TRUE(MessageSigner::verifyMessage(
@@ -152,7 +152,7 @@ TEST(TWBitcoinMessageSigner, VerifyMessage) {
 
 TEST(TWBitcoinMessageSigner, SignAndVerify) {
     const auto privKeyData = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
-    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get()));
+    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get(), TWCoinTypeCurve(TWCoinTypeBitcoin)));
     const auto address = STRING("19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X");
     const auto message = STRING("test signature");
 

@@ -45,7 +45,7 @@ class NEARTests: XCTestCase {
 
     func testSigningTransaction() {
         // swiftlint:disable:next line_length
-        let privateKey = PrivateKey(data: Base58.decodeNoCheck(string: "3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv")!.subdata(in: 0..<32))!
+        let privateKey = PrivateKey(data: Base58.decodeNoCheck(string: "3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv")!.subdata(in: 0..<32), curve: CoinType.near.curve)!
 
         let input = NEARSigningInput.with {
             $0.signerID = "test.near"

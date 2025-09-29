@@ -26,7 +26,7 @@ class TestEthereumTransactionSigner {
     fun testEthereumTransactionSigning() {
         val signingInput = Ethereum.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("0x4646464646464646464646464646464646464646464646464646464646464646".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("0x4646464646464646464646464646464646464646464646464646464646464646".toHexByteArray(), CoinType.ETHEREUM.curve()).data())
             toAddress = "0x3535353535353535353535353535353535353535"
             chainId = ByteString.copyFrom("0x1".toHexByteArray())
             nonce = ByteString.copyFrom("0x9".toHexByteArray())
@@ -49,7 +49,7 @@ class TestEthereumTransactionSigner {
     fun testEthereumERC20Signing() {
         val signingInput = Ethereum.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151".toHexByteArray(), CoinType.ETHEREUM.curve()).data())
             toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
             chainId = ByteString.copyFrom("0x1".toHexByteArray())
             nonce = ByteString.copyFrom("0x0".toHexByteArray())
@@ -74,7 +74,7 @@ class TestEthereumTransactionSigner {
     fun testEthereumERC20_1559_Signing() {
         val signingInput = Ethereum.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151".toHexByteArray(), CoinType.ETHEREUM.curve()).data())
             toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
             chainId = ByteString.copyFrom("0x1".toHexByteArray())
             nonce = ByteString.copyFrom("0x0".toHexByteArray())
@@ -99,7 +99,7 @@ class TestEthereumTransactionSigner {
     fun testEthereumERC721Signing() {
         val signingInput = Ethereum.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151".toHexByteArray(), CoinType.ETHEREUM.curve()).data())
             toAddress = "0x0d8c864DA1985525e0af0acBEEF6562881827bd5"
             chainId = ByteString.copyFrom("0x1".toHexByteArray())
             nonce = ByteString.copyFrom("0x02de".toHexByteArray())
@@ -125,7 +125,7 @@ class TestEthereumTransactionSigner {
     fun testEthereumERC1155Signing() {
         val signingInput = Ethereum.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151".toHexByteArray(), CoinType.ETHEREUM.curve()).data())
             toAddress = "0x4e45e92ed38f885d39a733c14f1817217a89d425" // contract
             chainId = ByteString.copyFrom("0x01".toHexByteArray())
             nonce = ByteString.copyFrom("0x00".toHexByteArray())
@@ -162,7 +162,7 @@ class TestEthereumTransactionSigner {
             maxFeePerGas = ByteString.copyFrom("067ef83700".toHexByteArray()) // 27900000000
             maxInclusionFeePerGas = ByteString.copyFrom("3b9aca00".toHexByteArray()) // 1000000000
             toAddress = "0x2cac916b2a963bf162f076c0a8a4a8200bcfbfb4" // contract
-            privateKey = ByteString.copyFrom(PrivateKey("9f56448d33de406db1561aae15fce64bdf0e9706ff15c45d4409e8fcbfd1a498".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("9f56448d33de406db1561aae15fce64bdf0e9706ff15c45d4409e8fcbfd1a498".toHexByteArray(), CoinType.ETHEREUM.curve()).data())
             transaction = Ethereum.Transaction.newBuilder().apply {
                 transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
                     amount = ByteString.copyFrom("2386f26fc10000".toHexByteArray()) // 0.01 ETH
@@ -193,7 +193,7 @@ class TestEthereumTransactionSigner {
             maxFeePerGas = ByteString.copyFrom("067ef83700".toHexByteArray()) // 27900000000
             maxInclusionFeePerGas = ByteString.copyFrom("3b9aca00".toHexByteArray()) // 1000000000
             toAddress = "0xae78736Cd615f374D3085123A210448E74Fc6393" // contract
-            privateKey = ByteString.copyFrom(PrivateKey("9f56448d33de406db1561aae15fce64bdf0e9706ff15c45d4409e8fcbfd1a498".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("9f56448d33de406db1561aae15fce64bdf0e9706ff15c45d4409e8fcbfd1a498".toHexByteArray(), CoinType.ETHEREUM.curve()).data())
             transaction = Ethereum.Transaction.newBuilder().apply {
                 contractGeneric = Ethereum.Transaction.ContractGeneric.newBuilder().apply {
                     amount = ByteString.copyFrom("00".toHexByteArray())

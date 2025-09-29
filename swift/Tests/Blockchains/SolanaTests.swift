@@ -10,7 +10,7 @@ class SolanaTests: XCTestCase {
     let privateKeyData = Data(Base58.decodeNoCheck( string: "A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr")!)
 
     func testAddressFromPrivateKey() {
-        let privateKey = PrivateKey(data: privateKeyData)!
+        let privateKey = PrivateKey(data: privateKeyData, curve: CoinType.solana.curve)!
         let publicKey = privateKey.getPublicKeyEd25519()
         let address = AnyAddress(publicKey: publicKey, coin: .solana)
         XCTAssertEqual(address.description, "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q")

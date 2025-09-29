@@ -5,6 +5,8 @@
 #include "Nebulas/Address.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
+#include "TestUtilities.h"
+
 #include <gtest/gtest.h>
 
 namespace TW::Nebulas::tests {
@@ -40,7 +42,7 @@ TEST(NebulasAddress, Data) {
 }
 
 TEST(NebulasAddress, FromPrivateKey) {
-    const auto privateKey = PrivateKey(parse_hex("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b"));
+    const auto privateKey = PrivateKey(parse_hex("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b"), TWCoinTypeCurve(TWCoinTypeNebulas));
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
     const auto address = Address(publicKey);
     ASSERT_EQ(address.string(), "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");

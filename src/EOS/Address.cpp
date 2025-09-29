@@ -5,8 +5,7 @@
 #include "Address.h"
 #include "../Base58.h"
 #include "../BinaryCoding.h"
-
-#include <TrezorCrypto/ripemd160.h>
+#include "../Hash.h"
 
 #include <stdexcept>
 
@@ -35,36 +34,30 @@ bool Address::isValid(const Data& bytes, EOS::Type type) {
 /// IMPORTANT: THERE ARE NO SIZE CHECKS. THE BUFFER IS ASSUMED
 ///             TO HAVE PublicKeyDataSize bytes.
 uint32_t Address::createChecksum(const Data& bytes, Type type) {
-    // create our own checksum and compare the two
-    uint8_t hash[RIPEMD160_DIGEST_LENGTH];
-    RIPEMD160_CTX ctx;
-    ripemd160_Init(&ctx);
-
-    // add the bytes to the hash input
-    ripemd160_Update(&ctx, bytes.data(), PublicKeyDataSize);
-
-    //  append the prefix to the hash input as well in case of modern types
+    Data hashInput;
+    append(hashInput, Data(bytes.begin(), bytes.begin() + PublicKeyDataSize));
+    
     switch (type) {
     case Type::Legacy: // no extra input
         break;
 
-    case Type::ModernK1:
-        ripemd160_Update(&ctx,
-                         (const uint8_t*)Modern::K1::prefix.c_str(),
-                         static_cast<uint32_t>(Modern::K1::prefix.size()));
-        break;
-
-    case Type::ModernR1:
-        ripemd160_Update(&ctx,
-                         (const uint8_t*)Modern::R1::prefix.c_str(),
-                         static_cast<uint32_t>(Modern::R1::prefix.size()));
+    case Type::ModernK1: {
+        auto startK1 = (const uint8_t*)Modern::K1::prefix.c_str();
+        auto endK1 = startK1 + static_cast<uint32_t>(Modern::K1::prefix.size());
+        append(hashInput, Data(startK1, endK1));
         break;
     }
 
-    // finalize the hash
-    ripemd160_Final(&ctx, hash);
+    case Type::ModernR1: {
+        auto startR1 = (const uint8_t*)Modern::R1::prefix.c_str();
+        auto endR1 = startR1 + static_cast<uint32_t>(Modern::R1::prefix.size());
+        append(hashInput, Data(startR1, endR1));
+        break;
+    }
+    }
 
-    return decode32LE(hash);
+    auto hash = Hash::ripemd(hashInput.data(), hashInput.size());
+    return decode32LE(hash.data());
 }
 
 /// Extracts and verifies the key data from a base58 string.
