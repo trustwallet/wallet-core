@@ -240,6 +240,9 @@ where
             MessageEnum::wasm_instantiate_contract_message(ref generic) => {
                 Self::wasm_instantiate_contract_generic_msg_from_proto(coin, generic)
             },
+            MessageEnum::dydx_governance_proposal(ref proposal) => {
+                Self::dydx_governance_proposal_msg_from_proto(coin, proposal)
+            },
         }
     }
 
@@ -817,6 +820,22 @@ where
             coins,
             memo: deposit.memo.to_string(),
             signer: deposit.signer.to_vec(),
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn dydx_governance_proposal_msg_from_proto(
+        _coin: &dyn CoinContext,
+        proposal: &Proto::mod_Message::DydxGovernanceProposal<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        use crate::transaction::message::cosmos_gov_message::DydxGovernanceProposal;
+
+        let msg = DydxGovernanceProposal {
+            title: proposal.title.to_string(),
+            description: proposal.description.to_string(),
+            authority: Address::from_str(&proposal.authority)
+                .into_tw()
+                .context("Invalid authority address")?,
         };
         Ok(msg.into_boxed())
     }
