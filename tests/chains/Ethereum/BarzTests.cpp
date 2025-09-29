@@ -423,6 +423,24 @@ TEST(Barz, SignAuthorization) {
     }
 }
 
+TEST(Barz, SignAuthorizationZeroNonce) {
+    {
+        const auto chainId = store(uint256_t(1));
+        const auto contractAddress = "0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1";
+        const Data nonce;
+        const auto privateKey = "0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8";
+
+        const auto signedAuthorization = WRAPS(TWBarzSignAuthorization(WRAPD(TWDataCreateWithBytes(chainId.data(), chainId.size())).get(), STRING(contractAddress).get(), WRAPD(TWDataCreateWithBytes(nonce.data(), nonce.size())).get(), STRING(privateKey).get()));
+        auto json = nlohmann::json::parse(std::string(TWStringUTF8Bytes(signedAuthorization.get())));
+        ASSERT_EQ(json["chainId"], hexEncoded(chainId));
+        ASSERT_EQ(json["address"], contractAddress);
+        ASSERT_EQ(json["nonce"], "0x00");
+        ASSERT_EQ(json["yParity"], hexEncoded(store(uint256_t(0))));
+        ASSERT_EQ(json["r"], "0x2269a34ea41b8898fb28196c3548836e2df0efe5968574be1cefc0355af11c24");
+        ASSERT_EQ(json["s"], "0x601b4443deafb48303d4f4a580505485e3fa7f516472675227494a88e9d0a5b5");
+    }
+}
+
 TEST(Barz, GetEncodedHash) {
     {
         const auto chainId = store(uint256_t(31337), 32);

@@ -16,9 +16,7 @@ pub struct TWString(CString);
 
 impl TWString {
     pub unsafe fn is_utf8_string(bytes: *const u8, size: usize) -> bool {
-        let Some(bytes) = CByteArrayRef::new(bytes, size).to_vec() else {
-            return false;
-        };
+        let bytes = CByteArrayRef::new(bytes, size).to_vec();
         String::from_utf8(bytes).is_ok()
     }
 
