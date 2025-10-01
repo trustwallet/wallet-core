@@ -5,10 +5,11 @@
 use tw_encoding::hex;
 use tw_encoding::hex::ToHex;
 use tw_evm::ffi::barz::{
-    tw_barz_encode_register_session_call, tw_barz_get_authorization_hash,
-    tw_barz_get_counterfactual_address, tw_barz_get_diamond_cut_code, tw_barz_get_encoded_hash,
-    tw_barz_get_formatted_signature, tw_barz_get_init_code, tw_barz_get_prefixed_msg_hash,
-    tw_barz_get_signed_hash, tw_barz_sign_authorization,
+    tw_barz_encode_register_session_call, tw_barz_encode_remove_session_call,
+    tw_barz_get_authorization_hash, tw_barz_get_counterfactual_address,
+    tw_barz_get_diamond_cut_code, tw_barz_get_encoded_hash, tw_barz_get_formatted_signature,
+    tw_barz_get_init_code, tw_barz_get_prefixed_msg_hash, tw_barz_get_signed_hash,
+    tw_barz_sign_authorization,
 };
 use tw_keypair::{test_utils::tw_public_key_helper::TWPublicKeyHelper, tw::PublicKeyType};
 use tw_memory::test_utils::{tw_data_helper::TWDataHelper, tw_string_helper::TWStringHelper};
@@ -351,5 +352,18 @@ fn test_register_session_ffi() {
     assert_eq!(
         data.to_vec().unwrap().to_hex(),
         "826491fb000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000151810000000000000000000000000000000000000000000000000000000000000041041c05286fe694493eae33312f2d2e0d0abeda8db76238b7a204be1fb87f54ce4228fef61ef4ac300f631657635c28e59bfb2fe71bce1634c81c65642042f6dc4d00000000000000000000000000000000000000000000000000000000000000"
+    );
+}
+
+#[test]
+fn test_remove_session_ffi() {
+    let public_key = TWPublicKeyHelper::with_hex(
+        "0x041c05286fe694493eae33312f2d2e0d0abeda8db76238b7a204be1fb87f54ce4228fef61ef4ac300f631657635c28e59bfb2fe71bce1634c81c65642042f6dc4d",
+        PublicKeyType::Nist256p1Extended
+    );
+    let data = TWDataHelper::wrap(unsafe { tw_barz_encode_remove_session_call(public_key.ptr()) });
+    assert_eq!(
+        data.to_vec().unwrap().to_hex(),
+        "e1c06abd00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000041041c05286fe694493eae33312f2d2e0d0abeda8db76238b7a204be1fb87f54ce4228fef61ef4ac300f631657635c28e59bfb2fe71bce1634c81c65642042f6dc4d00000000000000000000000000000000000000000000000000000000000000"
     );
 }

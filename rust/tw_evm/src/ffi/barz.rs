@@ -5,9 +5,9 @@
 #![allow(clippy::missing_safety_doc)]
 
 use crate::modules::barz::core::{
-    encode_register_passkey_session, get_authorization_hash, get_counterfactual_address,
-    get_diamond_cut_code, get_encoded_hash, get_formatted_signature, get_init_code,
-    get_prefixed_msg_hash, sign_authorization, sign_user_op_hash,
+    encode_register_passkey_session, encode_remove_passkey_session, get_authorization_hash,
+    get_counterfactual_address, get_diamond_cut_code, get_encoded_hash, get_formatted_signature,
+    get_init_code, get_prefixed_msg_hash, sign_authorization, sign_user_op_hash,
 };
 use tw_keypair::ffi::pubkey::{tw_public_key_data, TWPublicKey};
 use tw_macros::tw_ffi;
@@ -299,11 +299,11 @@ pub unsafe extern "C" fn tw_barz_get_signed_hash(
     TWData::from(signed_hash).into_ptr()
 }
 
-/// Signs a message using the private key
+/// Encodes `Biz.registerSession` function call to register a session passkey public key.
 ///
 /// \param session_passkey_public_key The nist256p1 (aka secp256p1) public key of the session passkey.
 /// \param valid_until_timestamp The timestamp until which the session is valid. Big endian uint64.
-/// \return The signed hash.
+/// \return ABI-encoded function call.
 #[tw_ffi(ty = static_function, class = TWBarz, name = EncodeRegisterSessionCall)]
 #[no_mangle]
 pub unsafe extern "C" fn tw_barz_encode_register_session_call(
@@ -323,6 +323,26 @@ pub unsafe extern "C" fn tw_barz_encode_register_session_call(
             session_passkey_public_key.as_ref(),
             valid_until_timestamp.as_slice()
         ),
+        std::ptr::null_mut
+    );
+    TWData::from(encoded).into_ptr()
+}
+
+/// Encodes `Biz.removeSession` function call to deregister a session passkey public key.
+///
+/// \param session_passkey_public_key The nist256p1 (aka secp256p1) public key of the session passkey.
+/// \return ABI-encoded function call.
+#[tw_ffi(ty = static_function, class = TWBarz, name = EncodeRemoveSessionCall)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_barz_encode_remove_session_call(
+    session_passkey_public_key: Nonnull<TWPublicKey>,
+) -> NullableMut<TWData> {
+    let session_passkey_public_key = try_or_else!(
+        TWPublicKey::from_ptr_as_ref(session_passkey_public_key),
+        std::ptr::null_mut
+    );
+    let encoded = try_or_else!(
+        encode_remove_passkey_session(session_passkey_public_key.as_ref(),),
         std::ptr::null_mut
     );
     TWData::from(encoded).into_ptr()

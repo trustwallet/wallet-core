@@ -408,3 +408,15 @@ pub fn encode_register_passkey_session(
         valid_until,
     )?)
 }
+
+pub fn encode_remove_passkey_session(
+    session_passkey_public_key: &tw::PublicKey,
+) -> BarzResult<Data> {
+    let session_passkey_public_key = session_passkey_public_key
+        .to_nist256p1()
+        .ok_or(BarzError::InvalidPublicKey)?
+        .uncompressed();
+    Ok(BizPasskeySessionAccount::remove_session(
+        session_passkey_public_key,
+    )?)
+}

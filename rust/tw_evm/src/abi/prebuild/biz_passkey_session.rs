@@ -30,4 +30,9 @@ impl BizPasskeySessionAccount {
             Token::u256(valid_until_timestamp),
         ])
     }
+
+    pub fn remove_session(session_passkey_public_key: H520) -> AbiResult<Data> {
+        let func = BIZ_PASSKEY_SESSION_ACCOUNT.function("removeSession")?;
+        func.encode_input(&[Token::Bytes(session_passkey_public_key.to_vec())])
+    }
 }
