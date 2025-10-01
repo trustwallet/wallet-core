@@ -3,11 +3,12 @@
 // Copyright © 2017 Trust Wallet.
 
 use tw_encoding::hex;
+use tw_encoding::hex::ToHex;
 use tw_evm::ffi::barz::{
-    tw_barz_get_authorization_hash, tw_barz_get_counterfactual_address,
-    tw_barz_get_diamond_cut_code, tw_barz_get_encoded_hash, tw_barz_get_formatted_signature,
-    tw_barz_get_init_code, tw_barz_get_prefixed_msg_hash, tw_barz_get_signed_hash,
-    tw_barz_sign_authorization,
+    tw_barz_encode_register_session_call, tw_barz_get_authorization_hash,
+    tw_barz_get_counterfactual_address, tw_barz_get_diamond_cut_code, tw_barz_get_encoded_hash,
+    tw_barz_get_formatted_signature, tw_barz_get_init_code, tw_barz_get_prefixed_msg_hash,
+    tw_barz_get_signed_hash, tw_barz_sign_authorization,
 };
 use tw_keypair::{test_utils::tw_public_key_helper::TWPublicKeyHelper, tw::PublicKeyType};
 use tw_memory::test_utils::{tw_data_helper::TWDataHelper, tw_string_helper::TWStringHelper};
@@ -335,4 +336,20 @@ fn test_get_signed_hash_ffi() {
     let signed_hash =
         TWDataHelper::wrap(unsafe { tw_barz_get_signed_hash(hash.ptr(), private_key.ptr()) });
     assert_eq!(hex::encode(signed_hash.to_vec().unwrap(), true), "0xa29e460720e4b539f593d1a407827d9608cccc2c18b7af7b3689094dca8a016755bca072ffe39bc62285b65aff8f271f20798a421acf18bb2a7be8dbe0eb05f81c");
+}
+
+#[test]
+fn test_register_session_ffi() {
+    let public_key = TWPublicKeyHelper::with_hex(
+        "0x041c05286fe694493eae33312f2d2e0d0abeda8db76238b7a204be1fb87f54ce4228fef61ef4ac300f631657635c28e59bfb2fe71bce1634c81c65642042f6dc4d",
+        PublicKeyType::Nist256p1Extended
+    );
+    let valid_until = TWDataHelper::create(U256::from(86_401_u64).to_big_endian_compact());
+    let data = TWDataHelper::wrap(unsafe {
+        tw_barz_encode_register_session_call(public_key.ptr(), valid_until.ptr())
+    });
+    assert_eq!(
+        data.to_vec().unwrap().to_hex(),
+        "826491fb000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000151810000000000000000000000000000000000000000000000000000000000000041041c05286fe694493eae33312f2d2e0d0abeda8db76238b7a204be1fb87f54ce4228fef61ef4ac300f631657635c28e59bfb2fe71bce1634c81c65642042f6dc4d00000000000000000000000000000000000000000000000000000000000000"
+    );
 }

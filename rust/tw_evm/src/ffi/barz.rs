@@ -5,9 +5,9 @@
 #![allow(clippy::missing_safety_doc)]
 
 use crate::modules::barz::core::{
-    get_authorization_hash, get_counterfactual_address, get_diamond_cut_code, get_encoded_hash,
-    get_formatted_signature, get_init_code, get_prefixed_msg_hash, sign_authorization,
-    sign_user_op_hash,
+    encode_register_passkey_session, get_authorization_hash, get_counterfactual_address,
+    get_diamond_cut_code, get_encoded_hash, get_formatted_signature, get_init_code,
+    get_prefixed_msg_hash, sign_authorization, sign_user_op_hash,
 };
 use tw_keypair::ffi::pubkey::{tw_public_key_data, TWPublicKey};
 use tw_macros::tw_ffi;
@@ -297,4 +297,33 @@ pub unsafe extern "C" fn tw_barz_get_signed_hash(
     let private_key = try_or_else!(private_key.as_str(), std::ptr::null_mut);
     let signed_hash = try_or_else!(sign_user_op_hash(hash, private_key), std::ptr::null_mut);
     TWData::from(signed_hash).into_ptr()
+}
+
+/// Signs a message using the private key
+///
+/// \param session_passkey_public_key The nist256p1 (aka secp256p1) public key of the session passkey.
+/// \param valid_until_timestamp The timestamp until which the session is valid. Big endian uint64.
+/// \return The signed hash.
+#[tw_ffi(ty = static_function, class = TWBarz, name = EncodeRegisterSessionCall)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_barz_encode_register_session_call(
+    session_passkey_public_key: Nonnull<TWPublicKey>,
+    valid_until_timestamp: Nonnull<TWData>,
+) -> NullableMut<TWData> {
+    let session_passkey_public_key = try_or_else!(
+        TWPublicKey::from_ptr_as_ref(session_passkey_public_key),
+        std::ptr::null_mut
+    );
+    let valid_until_timestamp = try_or_else!(
+        TWData::from_ptr_as_ref(valid_until_timestamp),
+        std::ptr::null_mut
+    );
+    let encoded = try_or_else!(
+        encode_register_passkey_session(
+            session_passkey_public_key.as_ref(),
+            valid_until_timestamp.as_slice()
+        ),
+        std::ptr::null_mut
+    );
+    TWData::from(encoded).into_ptr()
 }

@@ -2,10 +2,12 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use super::error::{BarzError, BarzResult};
 use crate::abi::function::Function;
 use crate::abi::non_empty_array::NonEmptyBytes;
 use crate::abi::param::Param;
 use crate::abi::param_type::ParamType;
+use crate::abi::prebuild::biz_passkey_session::BizPasskeySessionAccount;
 use crate::abi::uint::UintBits;
 use crate::abi::{encode, token::Token};
 use crate::address::Address;
@@ -18,11 +20,11 @@ use tw_hash::H256;
 use tw_keypair::ecdsa::der;
 use tw_keypair::ecdsa::secp256k1::PrivateKey;
 use tw_keypair::traits::SigningKeyTrait;
+use tw_keypair::tw;
+use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
 use tw_number::U256;
 use tw_proto::Barz::Proto::{ContractAddressInput, DiamondCutInput};
-
-use super::error::BarzResult;
 
 const BARZ_DOMAIN_SEPARATOR_TYPE_HASH: &str =
     "47e79534a245952e8b16893a336b85a3d9ea9fa8c573f3d803afb92a79469218";
@@ -390,4 +392,19 @@ pub fn sign_authorization(
     };
 
     Ok(serde_json::to_string(&signed_authorization)?)
+}
+
+pub fn encode_register_passkey_session(
+    session_passkey_public_key: &tw::PublicKey,
+    valid_until_timestamp: &[u8],
+) -> BarzResult<Data> {
+    let session_passkey_public_key = session_passkey_public_key
+        .to_nist256p1()
+        .ok_or(BarzError::InvalidPublicKey)?
+        .uncompressed();
+    let valid_until = U256::from_big_endian_slice(valid_until_timestamp)?;
+    Ok(BizPasskeySessionAccount::register_session(
+        session_passkey_public_key,
+        valid_until,
+    )?)
 }
