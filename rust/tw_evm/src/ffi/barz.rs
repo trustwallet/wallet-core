@@ -5,7 +5,8 @@
 #![allow(clippy::missing_safety_doc)]
 
 use crate::modules::barz::core::{
-    encode_passkey_nonce, encode_register_passkey_session, encode_remove_passkey_session,
+    encode_execute_with_passkey_session_call, encode_passkey_nonce,
+    encode_register_passkey_session_call, encode_remove_passkey_session_call,
     get_authorization_hash, get_counterfactual_address, get_diamond_cut_code, get_encoded_hash,
     get_formatted_signature, get_init_code, get_prefixed_msg_hash, sign_authorization,
     sign_user_op_hash,
@@ -16,7 +17,9 @@ use tw_memory::ffi::{
     tw_data::TWData, tw_string::TWString, Nonnull, NonnullMut, NullableMut, RawPtrTrait,
 };
 use tw_misc::try_or_else;
+use tw_proto::Barz::Proto::ExecuteWithPasskeySessionInput;
 use tw_proto::{
+    deserialize,
     Barz::Proto::{ContractAddressInput, DiamondCutInput},
     BytesReader, MessageRead,
 };
@@ -320,7 +323,7 @@ pub unsafe extern "C" fn tw_barz_encode_register_session_call(
         std::ptr::null_mut
     );
     let encoded = try_or_else!(
-        encode_register_passkey_session(
+        encode_register_passkey_session_call(
             session_passkey_public_key.as_ref(),
             valid_until_timestamp.as_slice()
         ),
@@ -343,7 +346,7 @@ pub unsafe extern "C" fn tw_barz_encode_remove_session_call(
         std::ptr::null_mut
     );
     let encoded = try_or_else!(
-        encode_remove_passkey_session(session_passkey_public_key.as_ref(),),
+        encode_remove_passkey_session_call(session_passkey_public_key.as_ref(),),
         std::ptr::null_mut
     );
     TWData::from(encoded).into_ptr()
@@ -360,5 +363,23 @@ pub unsafe extern "C" fn tw_barz_encode_passkey_session_nonce(
 ) -> NullableMut<TWData> {
     let nonce = try_or_else!(TWData::from_ptr_as_ref(nonce), std::ptr::null_mut);
     let encoded = try_or_else!(encode_passkey_nonce(nonce.as_slice()), std::ptr::null_mut);
+    TWData::from(encoded).into_ptr()
+}
+
+/// Encodes `Biz.executeWithPasskeySession` function call to execute a batch of transactions.
+///
+/// \param input The serialized data of `Barz.ExecuteWithPasskeySessionInput` protobuf message.
+/// \return ABI-encoded function call.
+#[tw_ffi(ty = static_function, class = TWBarz, name = EncodeExecuteWithPasskeySessionCall)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_barz_encode_execute_with_passkey_session_call(
+    input: Nonnull<TWData>,
+) -> NullableMut<TWData> {
+    let input = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
+    let input: ExecuteWithPasskeySessionInput = deserialize(input.as_slice()).unwrap();
+    let encoded = try_or_else!(
+        encode_execute_with_passkey_session_call(&input),
+        std::ptr::null_mut
+    );
     TWData::from(encoded).into_ptr()
 }

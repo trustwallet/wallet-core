@@ -50,3 +50,27 @@ message DiamondCutInput {
   bytes init_data = 3; // Data to pass to `init` function call
 }
 
+message ExecuteWithPasskeySessionInput {
+  message BatchedCall {
+    // Recipient addresses.
+    string address = 1;
+
+    // Amounts to send in wei (uint256, serialized big endian)
+    bytes amount = 2;
+
+    // Contract call payloads data
+    bytes payload = 3;
+  }
+
+  // Batched executions to be executed on the smart contract wallet.
+  repeated BatchedCall executions = 1;
+
+  // Transaction valid after this timestamp.
+  uint64 valid_after = 2;
+
+  // Transaction valid until this timestamp.
+  uint64 valid_until = 3;
+
+  // Passkey session signature.
+  bytes passkey_signature = 4;
+}

@@ -8,6 +8,7 @@ use crate::abi::non_empty_array::NonEmptyBytes;
 use crate::abi::param::Param;
 use crate::abi::param_type::ParamType;
 use crate::abi::prebuild::biz_passkey_session::BizPasskeySessionAccount;
+use crate::abi::prebuild::ExecuteArgs;
 use crate::abi::uint::UintBits;
 use crate::abi::{encode, token::Token};
 use crate::address::Address;
@@ -24,7 +25,9 @@ use tw_keypair::tw;
 use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
 use tw_number::U256;
-use tw_proto::Barz::Proto::{ContractAddressInput, DiamondCutInput};
+use tw_proto::Barz::Proto::{
+    ContractAddressInput, DiamondCutInput, ExecuteWithPasskeySessionInput,
+};
 
 const BARZ_DOMAIN_SEPARATOR_TYPE_HASH: &str =
     "47e79534a245952e8b16893a336b85a3d9ea9fa8c573f3d803afb92a79469218";
@@ -395,7 +398,7 @@ pub fn sign_authorization(
     Ok(serde_json::to_string(&signed_authorization)?)
 }
 
-pub fn encode_register_passkey_session(
+pub fn encode_register_passkey_session_call(
     session_passkey_public_key: &tw::PublicKey,
     valid_until_timestamp: &[u8],
 ) -> BarzResult<Data> {
@@ -410,7 +413,7 @@ pub fn encode_register_passkey_session(
     )?)
 }
 
-pub fn encode_remove_passkey_session(
+pub fn encode_remove_passkey_session_call(
     session_passkey_public_key: &tw::PublicKey,
 ) -> BarzResult<Data> {
     let session_passkey_public_key = session_passkey_public_key
@@ -430,4 +433,30 @@ pub fn encode_passkey_nonce(nonce: &[u8]) -> BarzResult<Data> {
     let passkey_nonce_key = U256::from(BARZ_PASSKEY_USEROP_VALIDATION_NONCE_KEY) << 64;
     let passkey_nonce = passkey_nonce_key | nonce;
     Ok(passkey_nonce.to_big_endian().to_vec())
+}
+
+pub fn encode_execute_with_passkey_session_call(
+    input: &ExecuteWithPasskeySessionInput,
+) -> BarzResult<Data> {
+    let executions: Vec<_> = input
+        .executions
+        .iter()
+        .map(|exec| {
+            Ok(ExecuteArgs {
+                to: Address::from_str(&exec.address)?,
+                value: U256::from_big_endian_slice(&exec.amount)?,
+                data: exec.payload.to_vec(),
+            })
+        })
+        .collect::<BarzResult<_>>()?;
+
+    let valid_after = U256::from(input.valid_after);
+    let valid_until = U256::from(input.valid_until);
+    let signature = input.passkey_signature.to_vec();
+    Ok(BizPasskeySessionAccount::execute_with_passkey_session(
+        executions,
+        valid_after,
+        valid_until,
+        signature,
+    )?)
 }

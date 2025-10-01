@@ -3,9 +3,12 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::abi::contract::Contract;
+use crate::abi::prebuild::biz::batch_calls_into_array_token;
+use crate::abi::prebuild::ExecuteArgs;
 use crate::abi::token::Token;
-use crate::abi::AbiResult;
+use crate::abi::{AbiErrorKind, AbiResult};
 use lazy_static::lazy_static;
+use tw_coin_entry::error::prelude::{OrTWError, ResultContext};
 use tw_hash::H520;
 use tw_memory::Data;
 use tw_number::U256;
@@ -34,5 +37,32 @@ impl BizPasskeySessionAccount {
     pub fn remove_session(session_passkey_public_key: H520) -> AbiResult<Data> {
         let func = BIZ_PASSKEY_SESSION_ACCOUNT.function("removeSession")?;
         func.encode_input(&[Token::Bytes(session_passkey_public_key.to_vec())])
+    }
+
+    pub fn execute_with_passkey_session<I>(
+        executions: I,
+        valid_after: U256,
+        valid_until: U256,
+        signature: Data,
+    ) -> AbiResult<Data>
+    where
+        I: IntoIterator<Item = ExecuteArgs>,
+    {
+        let func = BIZ_PASSKEY_SESSION_ACCOUNT.function("executeWithPasskeySession")?;
+
+        // `tuple[]`, where each item is a tuple of (address, uint256, bytes).
+        let array_param = func
+            .inputs
+            .first()
+            .or_tw_err(AbiErrorKind::Error_internal)
+            .context("'Biz.execute4337Ops()' should contain only one argument")?;
+        let array_token = batch_calls_into_array_token(array_param, executions)?;
+
+        func.encode_input(&[
+            array_token,
+            Token::u256(valid_after),
+            Token::u256(valid_until),
+            Token::Bytes(signature),
+        ])
     }
 }
