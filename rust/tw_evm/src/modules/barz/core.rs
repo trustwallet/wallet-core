@@ -33,6 +33,7 @@ const BARZ_SIGNED_DATA_PREFIX: &str = "1901";
 
 const BARZ_DIAMOND_CUT_SELECTOR: &str = "1f931c1c";
 const BARZ_DATA_LOCATION_CHUNK: &str = "60";
+const BARZ_PASSKEY_USEROP_VALIDATION_NONCE_KEY: u64 = 360_360_360_360_360_360_u64;
 
 pub fn get_counterfactual_address(input: &ContractAddressInput) -> BarzResult<String> {
     let encoded_data = encode::encode_tokens(&[
@@ -419,4 +420,14 @@ pub fn encode_remove_passkey_session(
     Ok(BizPasskeySessionAccount::remove_session(
         session_passkey_public_key,
     )?)
+}
+
+pub fn encode_passkey_nonce(nonce: &[u8]) -> BarzResult<Data> {
+    let nonce = U256::from_big_endian_slice(nonce)?;
+    // Check if nonce fits in u64.
+    u64::try_from(nonce)?;
+
+    let passkey_nonce_key = U256::from(BARZ_PASSKEY_USEROP_VALIDATION_NONCE_KEY) << 64;
+    let passkey_nonce = passkey_nonce_key | nonce;
+    Ok(passkey_nonce.to_big_endian().to_vec())
 }

@@ -5,11 +5,11 @@
 use tw_encoding::hex;
 use tw_encoding::hex::ToHex;
 use tw_evm::ffi::barz::{
-    tw_barz_encode_register_session_call, tw_barz_encode_remove_session_call,
-    tw_barz_get_authorization_hash, tw_barz_get_counterfactual_address,
-    tw_barz_get_diamond_cut_code, tw_barz_get_encoded_hash, tw_barz_get_formatted_signature,
-    tw_barz_get_init_code, tw_barz_get_prefixed_msg_hash, tw_barz_get_signed_hash,
-    tw_barz_sign_authorization,
+    tw_barz_encode_passkey_session_nonce, tw_barz_encode_register_session_call,
+    tw_barz_encode_remove_session_call, tw_barz_get_authorization_hash,
+    tw_barz_get_counterfactual_address, tw_barz_get_diamond_cut_code, tw_barz_get_encoded_hash,
+    tw_barz_get_formatted_signature, tw_barz_get_init_code, tw_barz_get_prefixed_msg_hash,
+    tw_barz_get_signed_hash, tw_barz_sign_authorization,
 };
 use tw_keypair::{test_utils::tw_public_key_helper::TWPublicKeyHelper, tw::PublicKeyType};
 use tw_memory::test_utils::{tw_data_helper::TWDataHelper, tw_string_helper::TWStringHelper};
@@ -365,5 +365,15 @@ fn test_remove_session_ffi() {
     assert_eq!(
         data.to_vec().unwrap().to_hex(),
         "e1c06abd00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000041041c05286fe694493eae33312f2d2e0d0abeda8db76238b7a204be1fb87f54ce4228fef61ef4ac300f631657635c28e59bfb2fe71bce1634c81c65642042f6dc4d00000000000000000000000000000000000000000000000000000000000000"
+    );
+}
+
+#[test]
+fn test_encode_passkey_nonce_ffi() {
+    let nonce = TWDataHelper::create(U256::from(123_u64).to_big_endian_compact());
+    let data = TWDataHelper::wrap(unsafe { tw_barz_encode_passkey_session_nonce(nonce.ptr()) });
+    assert_eq!(
+        data.to_vec().unwrap().to_hex(),
+        "00000000000000000000000000000000050041d6a66939a8000000000000007b"
     );
 }

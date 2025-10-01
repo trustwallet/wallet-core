@@ -5,9 +5,10 @@
 #![allow(clippy::missing_safety_doc)]
 
 use crate::modules::barz::core::{
-    encode_register_passkey_session, encode_remove_passkey_session, get_authorization_hash,
-    get_counterfactual_address, get_diamond_cut_code, get_encoded_hash, get_formatted_signature,
-    get_init_code, get_prefixed_msg_hash, sign_authorization, sign_user_op_hash,
+    encode_passkey_nonce, encode_register_passkey_session, encode_remove_passkey_session,
+    get_authorization_hash, get_counterfactual_address, get_diamond_cut_code, get_encoded_hash,
+    get_formatted_signature, get_init_code, get_prefixed_msg_hash, sign_authorization,
+    sign_user_op_hash,
 };
 use tw_keypair::ffi::pubkey::{tw_public_key_data, TWPublicKey};
 use tw_macros::tw_ffi;
@@ -345,5 +346,19 @@ pub unsafe extern "C" fn tw_barz_encode_remove_session_call(
         encode_remove_passkey_session(session_passkey_public_key.as_ref(),),
         std::ptr::null_mut
     );
+    TWData::from(encoded).into_ptr()
+}
+
+/// Encodes Biz Passkey Session nonce.
+///
+/// \param nonce The nonce of the Biz Passkey Session account.
+/// \return uint256 represented as [passkey_nonce_key_192, nonce_64].
+#[tw_ffi(ty = static_function, class = TWBarz, name = EncodePasskeySessionNonce)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_barz_encode_passkey_session_nonce(
+    nonce: Nonnull<TWData>,
+) -> NullableMut<TWData> {
+    let nonce = try_or_else!(TWData::from_ptr_as_ref(nonce), std::ptr::null_mut);
+    let encoded = try_or_else!(encode_passkey_nonce(nonce.as_slice()), std::ptr::null_mut);
     TWData::from(encoded).into_ptr()
 }
