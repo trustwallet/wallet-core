@@ -117,7 +117,7 @@ class TestBiz {
     }
 
     @Test
-    fun testBarzTransferAccountDeployedV07() {
+    fun testBizTransferAccountDeployedV07() {
         val chainIdByteArray = "0x7A69".toHexByteArray() // 31337
         val wallet = "0x174a240e5147D02dE4d7724D5D3E1c1bF11cE029"
 
@@ -201,6 +201,43 @@ class TestBiz {
         assertEquals(
             "0xa29e460720e4b539f593d1a407827d9608cccc2c18b7af7b3689094dca8a016755bca072ffe39bc62285b65aff8f271f20798a421acf18bb2a7be8dbe0eb05f81c",
             Numeric.toHexString(signedHash)
+        )
+    }
+
+    @Test
+    fun testBizEncodeRegisterSessionCall() {
+        val publicKey = PublicKey(
+            "0x041c05286fe694493eae33312f2d2e0d0abeda8db76238b7a204be1fb87f54ce4228fef61ef4ac300f631657635c28e59bfb2fe71bce1634c81c65642042f6dc4d".toHexByteArray(),
+            PublicKeyType.NIST256P1EXTENDED
+        )
+        val validUntil = "0x15181" // 86_401
+        val encoded = WCBiz.encodeRegisterSessionCall(publicKey, Numeric.hexStringToByteArray(validUntil))
+        assertEquals(
+            "0x826491fb000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000151810000000000000000000000000000000000000000000000000000000000000041041c05286fe694493eae33312f2d2e0d0abeda8db76238b7a204be1fb87f54ce4228fef61ef4ac300f631657635c28e59bfb2fe71bce1634c81c65642042f6dc4d00000000000000000000000000000000000000000000000000000000000000",
+            Numeric.toHexString(encoded)
+        )
+    }
+
+    @Test
+    fun testBizEncodeRemoveSessionCall() {
+        val publicKey = PublicKey(
+            "0x041c05286fe694493eae33312f2d2e0d0abeda8db76238b7a204be1fb87f54ce4228fef61ef4ac300f631657635c28e59bfb2fe71bce1634c81c65642042f6dc4d".toHexByteArray(),
+            PublicKeyType.NIST256P1EXTENDED
+        )
+        val encoded = WCBiz.encodeRemoveSessionCall(publicKey)
+        assertEquals(
+            "0xe1c06abd00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000041041c05286fe694493eae33312f2d2e0d0abeda8db76238b7a204be1fb87f54ce4228fef61ef4ac300f631657635c28e59bfb2fe71bce1634c81c65642042f6dc4d00000000000000000000000000000000000000000000000000000000000000",
+            Numeric.toHexString(encoded)
+        )
+    }
+
+    @Test
+    fun testBizEncodePasskeyNonce() {
+        val nonce = "0x7b" // 123
+        val passkeyNonce = WCBiz.encodePasskeySessionNonce(Numeric.hexStringToByteArray(nonce))
+        assertEquals(
+            "0x00000000000000000000000000000000050041d6a66939a8000000000000007b",
+            Numeric.toHexString(passkeyNonce)
         )
     }
 }
