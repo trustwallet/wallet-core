@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+#![allow(clippy::missing_safety_doc)]
+
 use crate::modules::webauthn::{get_formatted_webauthn_signature, get_webauthn_message_hash};
 use tw_macros::tw_ffi;
 use tw_memory::ffi::tw_data::TWData;
@@ -14,9 +16,9 @@ use tw_misc::try_or_else;
 /// \param authenticator_data The authenticator data in hex format.
 /// \param client_data_json The client data JSON string with a challenge.
 /// \return WebAuthn message hash.
-#[tw_ffi(ty = static_function, class = TWWebAuthn, name = GetMessageHash)]
+#[tw_ffi(ty = static_function, class = TWWebAuthnSolidity, name = GetMessageHash)]
 #[no_mangle]
-pub unsafe extern "C" fn tw_webauthn_get_webauthn_message_hash(
+pub unsafe extern "C" fn tw_webauthn_solidity_get_webauthn_message_hash(
     authenticator_data: Nonnull<TWString>,
     client_data_json: Nonnull<TWString>,
 ) -> NullableMut<TWData> {
@@ -33,7 +35,7 @@ pub unsafe extern "C" fn tw_webauthn_get_webauthn_message_hash(
     let client_data_json = try_or_else!(client_data_json.as_str(), std::ptr::null_mut);
 
     let message_hash = try_or_else!(
-        get_webauthn_message_hash(authenticator_data, client_data_json,),
+        get_webauthn_message_hash(authenticator_data, client_data_json),
         std::ptr::null_mut
     );
     TWData::from(message_hash).into_ptr()
@@ -45,9 +47,9 @@ pub unsafe extern "C" fn tw_webauthn_get_webauthn_message_hash(
 /// \param client_data_json The client data JSON string with a challenge.
 /// \param der_signature original ASN-encoded signature from webauthn.
 /// \return WebAuthn ABI-encoded data.
-#[tw_ffi(ty = static_function, class = TWWebAuthn, name = GetFormattedSignature)]
+#[tw_ffi(ty = static_function, class = TWWebAuthnSolidity, name = GetFormattedSignature)]
 #[no_mangle]
-pub unsafe extern "C" fn tw_webauthn_get_formatted_signature(
+pub unsafe extern "C" fn tw_webauthn_solidity_get_formatted_signature(
     authenticator_data: Nonnull<TWString>,
     client_data_json: Nonnull<TWString>,
     der_signature: Nonnull<TWData>,

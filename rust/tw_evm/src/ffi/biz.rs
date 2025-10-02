@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+#![allow(clippy::missing_safety_doc)]
+
 use crate::modules::biz::{
     encode_execute_with_passkey_session_call, encode_passkey_nonce,
     encode_register_passkey_session_call, encode_remove_passkey_session_call, get_encoded_hash,

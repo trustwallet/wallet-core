@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+#![allow(clippy::missing_safety_doc)]
+
 use crate::modules::eip7702::{get_authorization_hash, sign_authorization};
 use tw_macros::tw_ffi;
 use tw_memory::ffi::tw_data::TWData;
