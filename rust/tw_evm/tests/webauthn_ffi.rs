@@ -4,6 +4,9 @@
 
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_evm::ffi::webauthn_solidity::tw_webauthn_solidity_get_webauthn_message_hash;
+use tw_hash::H256;
+use tw_keypair::ecdsa::{der, nist256p1};
+use tw_keypair::traits::SigningKeyTrait;
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
 
@@ -41,6 +44,13 @@ fn test_get_webauthn_formatted_signature() {
             .decode_hex()
             .unwrap()
     );
+    let pk = nist256p1::KeyPair::try_from(
+        "0x03d99692017473e2d631945a812607b23269d85721e0f370b8d3e7d29a874fd2",
+    )
+    .unwrap();
+    let sig = pk.sign(H256::from("0x0b8772b952d27e2a8d6a51b0177b18b8ed1c3ebede2d0d7992646841b25322ac")).unwrap();
+    let ss = der::Signature::new(sig.r(), sig.s()).unwrap();
+    println!("{}", ss.to_hex_prefixed());
 
     let formatted_signature = TWDataHelper::wrap(unsafe {
         tw_evm::ffi::webauthn_solidity::tw_webauthn_solidity_get_formatted_signature(
