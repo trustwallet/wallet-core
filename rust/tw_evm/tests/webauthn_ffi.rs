@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use tw_encoding::hex::{DecodeHex, ToHex};
-use tw_evm::ffi::webauthn_solidity::tw_webauthn_solidity_get_webauthn_message_hash;
+use tw_evm::ffi::webauthn_solidity::tw_webauthn_solidity_get_message_hash;
 use tw_hash::H256;
 use tw_keypair::ecdsa::{der, nist256p1};
 use tw_keypair::traits::SigningKeyTrait;
@@ -20,7 +20,7 @@ fn test_get_webauthn_message_hash() {
     );
 
     let message_hash = TWDataHelper::wrap(unsafe {
-        tw_webauthn_solidity_get_webauthn_message_hash(
+        tw_webauthn_solidity_get_message_hash(
             authenticator_data.ptr(),
             client_data_json.ptr(),
         )

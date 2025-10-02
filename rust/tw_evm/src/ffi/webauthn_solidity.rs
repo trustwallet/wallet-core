@@ -18,7 +18,7 @@ use tw_misc::try_or_else;
 /// \return WebAuthn message hash.
 #[tw_ffi(ty = static_function, class = TWWebAuthnSolidity, name = GetMessageHash)]
 #[no_mangle]
-pub unsafe extern "C" fn tw_webauthn_solidity_get_webauthn_message_hash(
+pub unsafe extern "C" fn tw_webauthn_solidity_get_message_hash(
     authenticator_data: Nonnull<TWString>,
     client_data_json: Nonnull<TWString>,
 ) -> NullableMut<TWData> {
