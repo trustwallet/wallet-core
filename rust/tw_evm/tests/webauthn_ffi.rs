@@ -48,7 +48,11 @@ fn test_get_webauthn_formatted_signature() {
         "0x03d99692017473e2d631945a812607b23269d85721e0f370b8d3e7d29a874fd2",
     )
     .unwrap();
-    let sig = pk.sign(H256::from("0x0b8772b952d27e2a8d6a51b0177b18b8ed1c3ebede2d0d7992646841b25322ac")).unwrap();
+    let sig = pk
+        .sign(H256::from(
+            "0x0b8772b952d27e2a8d6a51b0177b18b8ed1c3ebede2d0d7992646841b25322ac",
+        ))
+        .unwrap();
     let ss = der::Signature::new(sig.r(), sig.s()).unwrap();
     println!("{}", ss.to_hex_prefixed());
 
