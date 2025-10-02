@@ -205,12 +205,7 @@
         ]
       },
       {
-        "name": "validAfter",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "validUntil",
+        "name": "validityTimestamp",
         "type": "uint256",
         "internalType": "uint256"
       },
@@ -250,12 +245,7 @@
         ]
       },
       {
-        "name": "validAfter",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "validUntil",
+        "name": "validityTimestamp",
         "type": "uint256",
         "internalType": "uint256"
       },
@@ -937,6 +927,11 @@
   {
     "type": "error",
     "name": "OnlySelf",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OnlySelfOrEntryPoint",
     "inputs": []
   },
   {

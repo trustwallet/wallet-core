@@ -144,11 +144,11 @@ pub fn encode_execute_with_passkey_session_call(
 
     let valid_after = U256::from(input.valid_after);
     let valid_until = U256::from(input.valid_until);
+    let validity_timestamp = valid_until << 128 | valid_after;
     let signature = input.passkey_signature.to_vec();
     Ok(BizPasskeySessionAccount::execute_with_passkey_session(
         executions,
-        valid_after,
-        valid_until,
+        validity_timestamp,
         signature,
     )?)
 }

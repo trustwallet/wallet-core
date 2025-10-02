@@ -41,8 +41,7 @@ impl BizPasskeySessionAccount {
 
     pub fn execute_with_passkey_session<I>(
         executions: I,
-        valid_after: U256,
-        valid_until: U256,
+        validity_timestamp: U256,
         signature: Data,
     ) -> AbiResult<Data>
     where
@@ -60,8 +59,7 @@ impl BizPasskeySessionAccount {
 
         func.encode_input(&[
             array_token,
-            Token::u256(valid_after),
-            Token::u256(valid_until),
+            Token::u256(validity_timestamp),
             Token::Bytes(signature),
         ])
     }
