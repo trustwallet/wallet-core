@@ -17,7 +17,10 @@ fn test_get_webauthn_message_hash() {
     );
 
     let message_hash = TWDataHelper::wrap(unsafe {
-        tw_webauthn_solidity_get_webauthn_message_hash(authenticator_data.ptr(), client_data_json.ptr())
+        tw_webauthn_solidity_get_webauthn_message_hash(
+            authenticator_data.ptr(),
+            client_data_json.ptr(),
+        )
     });
     assert_eq!(
         message_hash.to_vec().unwrap().to_hex_prefixed(),
