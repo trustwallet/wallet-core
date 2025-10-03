@@ -1,0 +1,33 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+syntax = "proto3";
+
+package TW.Biz.Proto;
+option java_package = "wallet.core.jni.proto";
+
+message ExecuteWithPasskeySessionInput {
+    message Execution {
+        // Recipient addresses.
+        string address = 1;
+
+        // Amounts to send in wei (uint256, serialized big endian)
+        bytes amount = 2;
+
+        // Contract call payloads data
+        bytes payload = 3;
+    }
+
+    // Batched executions to be executed on the smart contract wallet.
+    repeated Execution executions = 1;
+
+    // Transaction valid after this timestamp.
+    uint64 valid_after = 2;
+
+    // Transaction valid until this timestamp.
+    uint64 valid_until = 3;
+
+    // Passkey session signature.
+    bytes passkey_signature = 4;
+}

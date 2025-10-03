@@ -14,6 +14,7 @@ pub type BarzResult<T> = Result<T, BarzError>;
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum BarzError {
     InvalidInput,
+    InvalidPublicKey,
     AddressError,
     FromHexError,
     AbiError,
