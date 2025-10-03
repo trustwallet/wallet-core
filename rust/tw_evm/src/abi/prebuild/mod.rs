@@ -7,6 +7,7 @@ use tw_memory::Data;
 use tw_number::U256;
 
 pub mod biz;
+pub mod biz_passkey_session;
 pub mod erc1155;
 pub mod erc1967;
 pub mod erc20;

@@ -2,15 +2,20 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+#include "HexCoding.h"
 #include "TestUtilities.h"
-#include <TrustWalletCore/TWEthereum.h>
+#include "TrustWalletCore/TWEip7702.h"
+#include "proto/Barz.pb.h"
+#include "proto/Ethereum.pb.h"
+#include "uint256.h"
+
 #include <TrustWalletCore/TWBarz.h>
+#include <TrustWalletCore/TWBiz.h>
+#include <TrustWalletCore/TWEip7702.h>
+#include <TrustWalletCore/TWEthereum.h>
 #include <TrustWalletCore/TWHash.h>
 #include <PrivateKey.h>
-#include "proto/Ethereum.pb.h"
-#include "proto/Barz.pb.h"
-#include "HexCoding.h"
-#include "uint256.h"
+
 #include <TrustWalletCore/TWAnySigner.h>
 #include <TrustWalletCore/TWEthereumAbi.h>
 #include <TrustWalletCore/TWEthereumAbiFunction.h>
@@ -398,7 +403,7 @@ TEST(Barz, GetAuthorizationHash) {
         const auto contractAddress = STRING("0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1");
         const auto nonce = store(uint256_t(1));
 
-        const auto& authorizationHash = TWBarzGetAuthorizationHash(WRAPD(TWDataCreateWithBytes(chainId.data(), chainId.size())).get(), contractAddress.get(), WRAPD(TWDataCreateWithBytes(nonce.data(), nonce.size())).get());
+        const auto& authorizationHash = TWEip7702GetAuthorizationHash(WRAPD(TWDataCreateWithBytes(chainId.data(), chainId.size())).get(), contractAddress.get(), WRAPD(TWDataCreateWithBytes(nonce.data(), nonce.size())).get());
         const auto& authorizationHashData = hexEncoded(*reinterpret_cast<const Data*>(WRAPD(authorizationHash).get()));
         ASSERT_EQ(authorizationHashData, "0x3ae543b2fa103a39a6985d964a67caed05f6b9bb2430ad6d498cda743fe911d9"); // Verified with viem
     }
@@ -411,7 +416,7 @@ TEST(Barz, SignAuthorization) {
         const auto nonce = store(uint256_t(1));
         const auto privateKey = "0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8";
 
-        const auto signedAuthorization = WRAPS(TWBarzSignAuthorization(WRAPD(TWDataCreateWithBytes(chainId.data(), chainId.size())).get(), STRING(contractAddress).get(), WRAPD(TWDataCreateWithBytes(nonce.data(), nonce.size())).get(), STRING(privateKey).get()));
+        const auto signedAuthorization = WRAPS(TWEip7702SignAuthorization(WRAPD(TWDataCreateWithBytes(chainId.data(), chainId.size())).get(), STRING(contractAddress).get(), WRAPD(TWDataCreateWithBytes(nonce.data(), nonce.size())).get(), STRING(privateKey).get()));
         auto json = nlohmann::json::parse(std::string(TWStringUTF8Bytes(signedAuthorization.get())));
         // Verified with viem
         ASSERT_EQ(json["chainId"], hexEncoded(chainId));
@@ -430,7 +435,7 @@ TEST(Barz, SignAuthorizationZeroNonce) {
         const Data nonce;
         const auto privateKey = "0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8";
 
-        const auto signedAuthorization = WRAPS(TWBarzSignAuthorization(WRAPD(TWDataCreateWithBytes(chainId.data(), chainId.size())).get(), STRING(contractAddress).get(), WRAPD(TWDataCreateWithBytes(nonce.data(), nonce.size())).get(), STRING(privateKey).get()));
+        const auto signedAuthorization = WRAPS(TWEip7702SignAuthorization(WRAPD(TWDataCreateWithBytes(chainId.data(), chainId.size())).get(), STRING(contractAddress).get(), WRAPD(TWDataCreateWithBytes(nonce.data(), nonce.size())).get(), STRING(privateKey).get()));
         auto json = nlohmann::json::parse(std::string(TWStringUTF8Bytes(signedAuthorization.get())));
         ASSERT_EQ(json["chainId"], hexEncoded(chainId));
         ASSERT_EQ(json["address"], contractAddress);
@@ -452,7 +457,7 @@ TEST(Barz, GetEncodedHash) {
         const auto sender = STRING("0x174a240e5147D02dE4d7724D5D3E1c1bF11cE029");
         const auto userOpHash = STRING("0xf177858c1c500e51f38ffe937bed7e4d3a8678725900be4682d3ce04d97071eb");
 
-        const auto& encodedHash = TWBarzGetEncodedHash(
+        const auto& encodedHash = TWBizGetEncodedHash(
             WRAPD(TWDataCreateWithBytes(chainId.data(), chainId.size())).get(),
             codeAddress.get(),
             codeName.get(),
@@ -470,7 +475,7 @@ TEST(Barz, GetSignedHash) {
     {
         const auto hash = STRING("0xc63891abc38f7a991f89ad7cb6d7e53543627b0536c3f5e545b736756c971635");
         const auto privateKey = STRING("0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8");
-        const auto signedHash = TWBarzGetSignedHash(hash.get(), privateKey.get());
+        const auto signedHash = TWBizGetSignedHash(hash.get(), privateKey.get());
         const auto& signedHashData = hexEncoded(*reinterpret_cast<const Data*>(WRAPD(signedHash).get()));
         ASSERT_EQ(signedHashData, "0xa29e460720e4b539f593d1a407827d9608cccc2c18b7af7b3689094dca8a016755bca072ffe39bc62285b65aff8f271f20798a421acf18bb2a7be8dbe0eb05f81c");
     }

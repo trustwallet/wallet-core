@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::abi::param::Param;
+use crate::abi::param_token::NamedToken;
 use crate::abi::token::Token;
 use tw_hash::H256;
 use tw_memory::Data;
@@ -13,6 +15,19 @@ pub fn encode_tokens(tokens: &[Token]) -> Data {
         .into_iter()
         .flat_map(H256::take)
         .collect()
+}
+
+pub fn encode_tuple(tokens: Vec<Token>) -> Data {
+    let token_params: Vec<_> = tokens
+        .into_iter()
+        .map(|token| {
+            let param = Param::with_type(token.to_param_type());
+            NamedToken::with_param_and_token(&param, token)
+        })
+        .collect();
+    encode_tokens(&[Token::Tuple {
+        params: token_params,
+    }])
 }
 
 #[derive(Debug)]

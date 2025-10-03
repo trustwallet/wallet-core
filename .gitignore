@@ -53,6 +53,9 @@ include/TrustWalletCore/TWCryptoBoxPublicKey.h
 include/TrustWalletCore/TWCryptoBoxSecretKey.h
 include/TrustWalletCore/TWEthereum.h
 include/TrustWalletCore/TWBarz.h
+include/TrustWalletCore/TWBiz.h
+include/TrustWalletCore/TWEip7702.h
+include/TrustWalletCore/TWWebAuthnSolidity.h
 
 # Wasm
 emsdk/
@@ -83,3 +86,6 @@ samples/cpp/sample
 
 # Rust target build
 **/target/
+
+# Kotlin
+kotlin/.kotlin
