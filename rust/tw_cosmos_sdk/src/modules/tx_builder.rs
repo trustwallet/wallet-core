@@ -803,6 +803,8 @@ where
                 symbol: asset_proto.symbol.to_string(),
                 ticker: asset_proto.ticker.to_string(),
                 synth: asset_proto.synth,
+                trade: asset_proto.trade,
+                secured: asset_proto.secured,
             };
             coins.push(ThorchainCoin {
                 asset,
