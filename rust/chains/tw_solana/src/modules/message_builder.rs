@@ -166,7 +166,8 @@ impl<'a> MessageBuilder<'a> {
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
             .maybe_memo(transfer.memo.as_ref())
-            .add_instruction(transfer_ix);
+            .add_instruction(transfer_ix)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -202,7 +203,8 @@ impl<'a> MessageBuilder<'a> {
             .maybe_advance_nonce(self.nonce_account()?, sender)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instructions(deposit_ixs);
+            .add_instructions(deposit_ixs)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -222,7 +224,8 @@ impl<'a> MessageBuilder<'a> {
             .maybe_advance_nonce(self.nonce_account()?, sender)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instruction(deactivate_ix);
+            .add_instruction(deactivate_ix)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -246,7 +249,8 @@ impl<'a> MessageBuilder<'a> {
             .maybe_advance_nonce(self.nonce_account()?, sender)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instructions(deactivate_ixs);
+            .add_instructions(deactivate_ixs)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -274,7 +278,8 @@ impl<'a> MessageBuilder<'a> {
             .maybe_advance_nonce(self.nonce_account()?, sender)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instruction(withdraw_ix);
+            .add_instruction(withdraw_ix)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -308,7 +313,8 @@ impl<'a> MessageBuilder<'a> {
             .maybe_advance_nonce(self.nonce_account()?, sender)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instructions(withdraw_ixs);
+            .add_instructions(withdraw_ixs)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -342,7 +348,8 @@ impl<'a> MessageBuilder<'a> {
             .maybe_advance_nonce(self.nonce_account()?, funding_account)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instruction(instruction);
+            .add_instruction(instruction)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -390,7 +397,8 @@ impl<'a> MessageBuilder<'a> {
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
             .maybe_memo(token_transfer.memo.as_ref())
-            .add_instruction(transfer_instruction);
+            .add_instruction(transfer_instruction)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -456,7 +464,8 @@ impl<'a> MessageBuilder<'a> {
             .add_instruction(create_account_instruction)
             // Optional memo. Order: before transfer, as per documentation.
             .maybe_memo(create_and_transfer.memo.as_ref())
-            .add_instruction(transfer_instruction);
+            .add_instruction(transfer_instruction)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -489,7 +498,8 @@ impl<'a> MessageBuilder<'a> {
                 new_nonce_account,
                 create_nonce.rent,
                 DEFAULT_CREATE_NONCE_SPACE,
-            ));
+            ))
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -516,7 +526,8 @@ impl<'a> MessageBuilder<'a> {
                 signer,
                 recipient,
                 withdraw_nonce.value,
-            ));
+            ))
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -533,7 +544,8 @@ impl<'a> MessageBuilder<'a> {
         builder
             .maybe_advance_nonce(Some(nonce_account), signer)
             .maybe_priority_fee_price(self.priority_fee_price())
-            .maybe_priority_fee_limit(self.priority_fee_limit());
+            .maybe_priority_fee_limit(self.priority_fee_limit())
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -646,6 +658,24 @@ impl<'a> MessageBuilder<'a> {
             .priority_fee_limit
             .as_ref()
             .map(|proto| proto.limit)
+    }
+
+    fn transfer_to_fee_payer(&self) -> SigningResult<Option<Instruction>> {
+        let Some(ref transfer_to_fee_payer) = self.input.transfer_to_fee_payer else {
+            return Ok(None);
+        };
+
+        let from = self.signer_address()?;
+        let to = SolanaAddress::from_str(&transfer_to_fee_payer.recipient)
+            .into_tw()
+            .context("Invalid 'transfer_to_fee_payer.recipient' address")?;
+
+        let references = Self::parse_references(&transfer_to_fee_payer.references)?;
+
+        Ok(Some(
+            SystemInstructionBuilder::transfer(from, to, transfer_to_fee_payer.value)
+                .with_references(references),
+        ))
     }
 
     fn parse_references(refs: &[Cow<'_, str>]) -> SigningResult<Vec<SolanaAddress>> {

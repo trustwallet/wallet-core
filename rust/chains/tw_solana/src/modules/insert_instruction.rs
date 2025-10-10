@@ -132,10 +132,10 @@ pub trait InsertInstruction {
             .iter()
             .position(|key| *key == account.pubkey)
         {
-            let is_signer =
+            let existing_is_signer =
                 existing_index < self.message_header_mut().num_required_signatures as usize;
 
-            let is_writable = if is_signer {
+            let existing_is_writable = if existing_is_signer {
                 existing_index
                     < (self.message_header_mut().num_required_signatures
                         - self.message_header_mut().num_readonly_signed_accounts)
@@ -146,16 +146,30 @@ pub trait InsertInstruction {
                         - self.message_header_mut().num_readonly_unsigned_accounts as usize)
             };
 
-            if account.is_signer != is_signer {
-                return SigningError::err(SigningErrorType::Error_internal).context(
-                    "Account already exists but the `is_signer` attribute does not match",
-                );
+            match (existing_is_signer, account.is_signer) {
+                // If new account requires weaker or the same signing permissions, it's ok.
+                (true, false) | (false, false) | (true, true) => (),
+                // If new account requires stronger signing permissions than we have already, then would need to reorder accounts.
+                // TODO: Implement reordering accounts if needed.
+                (false, true) => {
+                    return SigningError::err(SigningErrorType::Error_internal).context(
+                        "Account already exists but the `is_signer` attribute does not match",
+                    );
+                },
             }
-            if account.is_writable != is_writable {
-                return SigningError::err(SigningErrorType::Error_internal).context(
-                    "Account already exists but the `is_writable` attribute does not match",
-                );
+
+            match (existing_is_writable, account.is_writable) {
+                // If new account requires weaker or the same writable permissions, it's ok.
+                (true, false) | (false, false) | (true, true) => (),
+                // If new account requires stronger writable permissions than we have already, then would need to reorder accounts.
+                // TODO: Implement reordering accounts if needed.
+                (false, true) => {
+                    return SigningError::err(SigningErrorType::Error_internal).context(
+                        "Account already exists but the `is_writable` attribute does not match",
+                    );
+                },
             }
+
             // Return the existing index if validation passes
             return try_into_u8(existing_index);
         }

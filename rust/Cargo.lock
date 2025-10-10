@@ -2285,6 +2285,7 @@ dependencies = [
  "tw_keypair",
  "tw_memory",
  "tw_misc",
+ "tw_number",
  "tw_proto",
 ]
 
