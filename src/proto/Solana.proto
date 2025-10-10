@@ -307,8 +307,11 @@ message SigningInput {
     // fee for higher transaction prioritization.
     // https://solana.com/docs/intro/transaction_fees#prioritization-fee
     PriorityFeeLimit priority_fee_limit = 23;
-    // Optional token transfer to fee payer
+    // Optional token transfer to fee payer.
     TokenTransferToFeePayer token_transfer_to_fee_payer = 24;
+    // Optional SOL transfer to fee payer. This will be the last instruction in the transaction.
+    // https://docs.blinklabs.xyz/blink/solana/gas-sponsorship/api-reference#active-sponsorship
+    Transfer transfer_to_fee_payer = 25;
 }
 
 // Result containing the signed and encoded transaction.
