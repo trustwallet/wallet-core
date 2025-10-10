@@ -190,6 +190,7 @@ pub unsafe extern "C" fn tw_solana_transaction_insert_instruction(
 }
 
 /// Inserts a SOL transfer instruction to the given transaction at the specified position, returning the updated transaction.
+/// Please note that compute price and limit instructions should always be the first instructions if they are present in the transaction.
 ///
 /// \param encoded_tx base64 encoded Solana transaction.
 /// \param insert_at index where the instruction should be inserted. If you don't care about the position, use -1.
