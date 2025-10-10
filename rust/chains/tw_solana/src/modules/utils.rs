@@ -215,6 +215,9 @@ impl SolanaTransaction {
             .tw_err(SigningErrorType::Error_internal)
     }
 
+    /// Inserts a SOL transfer instruction to the given transaction at the specified position, returning the updated transaction.
+    /// Please note that compute price and limit instructions should always be the first instructions if they are present in the transaction.
+    /// If you don't care about the position, use -1.
     pub fn insert_transfer_instruction(
         encoded_tx: &str,
         insert_at: i32,
