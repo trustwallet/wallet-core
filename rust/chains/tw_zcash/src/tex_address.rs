@@ -19,7 +19,7 @@ use tw_utxo::script::Script;
 
 pub const BECH32_VARIANT: bech32::Variant = bech32::Variant::Bech32m;
 
-/// A TEX Address, also called a Transparent-Source-Only Address, is a Bech32m 15 reencoding of a transparent Zcash P2PKH address 11.
+/// A TEX Address, also called a Transparent-Source-Only Address, is a Bech32m reencoding of a transparent Zcash P2PKH address.
 pub struct TexAddress {
     hrp: String,
     bytes: H160,
@@ -75,6 +75,10 @@ impl TexAddress {
         Ok(conditions::new_p2pkh(&self.bytes))
     }
 
+    pub fn to_t_address(&self, p2pkh_prefix: u8) -> AddressResult<TAddress> {
+        TAddress::new(p2pkh_prefix, self.bytes.as_slice())
+    }
+
     fn fmt_internal(hrp: &str, bytes: &H160) -> AddressResult<String> {
         const STRING_CAPACITY: usize = 100;
 
@@ -108,10 +112,6 @@ impl FromStr for TexAddress {
         if checksum_variant != BECH32_VARIANT {
             return Err(AddressError::FromBech32Error);
         }
-        if payload_u5.len() != H160::LEN {
-            return Err(AddressError::InvalidInput);
-        }
-
         let payload = Data::from_base32(&payload_u5).map_err(|_| AddressError::FromBech32Error)?;
         let bytes =
             H160::try_from(payload.as_slice()).map_err(|_| AddressError::FromBech32Error)?;
