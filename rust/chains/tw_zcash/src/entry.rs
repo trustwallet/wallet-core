@@ -2,8 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::address::ZcashAddress;
 use crate::context::ZcashContext;
-use crate::t_address::TAddress;
 use std::str::FromStr;
 use tw_bitcoin::modules::compiler::BitcoinCompiler;
 use tw_bitcoin::modules::planner::BitcoinPlanner;
@@ -17,15 +17,15 @@ use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
 use tw_coin_entry::modules::transaction_util::NoTransactionUtil;
 use tw_coin_entry::modules::wallet_connector::NoWalletConnector;
-use tw_coin_entry::prefix::BitcoinBase58Prefix;
 use tw_keypair::tw::PublicKey;
 use tw_proto::BitcoinV2::Proto as BitcoinV2Proto;
+use tw_utxo::address::standard_bitcoin::StandardBitcoinPrefix;
 
 pub struct ZcashEntry;
 
 impl CoinEntry for ZcashEntry {
-    type AddressPrefix = BitcoinBase58Prefix;
-    type Address = TAddress;
+    type AddressPrefix = StandardBitcoinPrefix;
+    type Address = ZcashAddress;
     type SigningInput<'a> = BitcoinV2Proto::SigningInput<'a>;
     type SigningOutput = BitcoinV2Proto::SigningOutput<'static>;
     type PreSigningOutput = BitcoinV2Proto::PreSigningOutput<'static>;
@@ -45,12 +45,12 @@ impl CoinEntry for ZcashEntry {
         address: &str,
         prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        TAddress::from_str_with_coin_and_prefix(coin, address, prefix)
+        ZcashAddress::from_str_with_coin_and_prefix(coin, address, prefix)
     }
 
     #[inline]
     fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address> {
-        TAddress::from_str(address)
+        ZcashAddress::from_str(address)
     }
 
     #[inline]
@@ -61,7 +61,10 @@ impl CoinEntry for ZcashEntry {
         _derivation: Derivation,
         prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        TAddress::p2pkh_with_coin_and_prefix(coin, &public_key, prefix)
+        let public_key = public_key
+            .to_secp256k1()
+            .ok_or(AddressError::PublicKeyTypeMismatch)?;
+        ZcashAddress::address_with_coin_and_prefix(coin, public_key, prefix)
     }
 
     #[inline]
