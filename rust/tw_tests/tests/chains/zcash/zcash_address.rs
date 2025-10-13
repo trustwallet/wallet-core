@@ -43,6 +43,11 @@ fn test_zcash_address_is_valid() {
         CoinType::Zcash,
         "tex1auz6gx89x2wcku6gswdvaz2nf9x3seex6px6v0",
     );
+    // https://zips.z.cash/zip-0320#reference-implementation
+    test_address_valid(
+        CoinType::Zcash,
+        "tex1s2rt77ggv6q989lr49rkgzmh5slsksa9khdgte",
+    );
 }
 
 #[test]
@@ -63,7 +68,7 @@ fn test_zcash_address_invalid() {
     test_address_invalid(CoinType::Zcash, "TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
     // Invalid T-prefix
     test_address_invalid(CoinType::Zcash, "2NRbuP5YfzRNEa1RibT5kXay1VgvQHnydZY1");
-    // Invalid Tex-prefix
+    // Invalid Tex-address checksum
     test_address_invalid(
         CoinType::Zcash,
         "textest1auz6gx89x2wcku6gswdvaz2nf9x3seex6px6v0",

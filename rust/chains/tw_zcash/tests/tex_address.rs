@@ -5,10 +5,11 @@
 use std::str::FromStr;
 use tw_zcash::tex_address::TexAddress;
 
+/// https://zips.z.cash/zip-0320#reference-implementation
 #[test]
 fn test_from_to_t_address() {
-    const TEX_ADDRESS: &str = "tex1auz6gx89x2wcku6gswdvaz2nf9x3seex6px6v0";
-    const T_ADDRESS: &str = "t1ffSG8KGpAmsCU3Rh14bV8fUazFK6xUc3P";
+    const TEX_ADDRESS: &str = "tex1s2rt77ggv6q989lr49rkgzmh5slsksa9khdgte";
+    const T_ADDRESS: &str = "t1VmmGiyjVNeCjxDZzg7vZmd99WyzVby9yC";
     const TEX_HRP: &str = "tex";
 
     let tex_address = TexAddress::from_str(TEX_ADDRESS).unwrap();
