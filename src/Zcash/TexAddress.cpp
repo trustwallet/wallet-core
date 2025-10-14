@@ -12,7 +12,7 @@ bool TexAddress::isValid(const std::string& addr) {
 bool TexAddress::isValid(const std::string& addr, const std::string& hrp) {
     try {
         TexAddress address(addr);
-        return address.getHrp() == hrp;
+        return hrp.empty() || address.getHrp() == hrp;
     } catch (...) {
         return false;
     }
