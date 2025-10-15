@@ -605,10 +605,13 @@ impl<'a> MessageBuilder<'a> {
                 .into_tw()
                 .context("Invalid fee mint address")?;
 
-        let sponsor_token_address =
-            SolanaAddress::from_str(sponsored_transfer_token.fee_sponsor_token_address.as_ref())
-                .into_tw()
-                .context("Invalid sponsor token address")?;
+        let fee_recipient_token_address = SolanaAddress::from_str(
+            sponsored_transfer_token
+                .fee_recipient_token_address
+                .as_ref(),
+        )
+        .into_tw()
+        .context("Invalid sponsor token address")?;
 
         let fee_sender_token_address =
             SolanaAddress::from_str(sponsored_transfer_token.fee_sender_token_address.as_ref())
@@ -625,7 +628,7 @@ impl<'a> MessageBuilder<'a> {
         builder.add_instruction(TokenInstructionBuilder::transfer_checked(
             fee_sender_token_address,
             fee_mint_address,
-            sponsor_token_address,
+            fee_recipient_token_address,
             signer,
             sponsored_transfer_token.fee_amount,
             fee_decimals,
