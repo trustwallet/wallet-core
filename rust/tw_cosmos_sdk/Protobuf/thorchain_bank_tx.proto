@@ -12,6 +12,8 @@ message Asset {
     string symbol = 2;
     string ticker = 3;
     bool synth = 4;
+    bool trade = 5;
+    bool secured = 6;
 }
 
 // Original: https://gitlab.com/thorchain/thornode/-/blob/develop/proto/thorchain/v1/common/common.proto
@@ -23,8 +25,8 @@ message Coin {
 
 // MsgSend represents a message to send coins from one account to another.
 message MsgSend {
-    bytes    from_address             = 1;
-    bytes    to_address               = 2;
+    bytes from_address = 1;
+    bytes to_address = 2;
     repeated cosmos.base.v1beta1.Coin amount = 3;
 }
 
