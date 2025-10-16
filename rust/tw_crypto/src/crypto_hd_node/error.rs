@@ -45,6 +45,9 @@ pub enum Error {
 
     /// Invalid chain code
     InvalidChainCode,
+
+    /// InvalidDomainSeparator
+    InvalidDomainSeparator,
 }
 
 impl From<bip32::Error> for Error {

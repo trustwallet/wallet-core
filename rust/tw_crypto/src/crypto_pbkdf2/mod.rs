@@ -11,6 +11,7 @@ use error::Result;
 use pbkdf2::pbkdf2_hmac;
 use sha2::{Sha256, Sha512};
 
+const MIN_SALT_SIZE: usize = 16;
 const MAX_OUTPUT_SIZE: usize = 1024;
 const MAX_ITERATIONS: u32 = 1000000;
 
@@ -22,6 +23,9 @@ pub fn pbkdf2_hmac_sha256(
 ) -> Result<Vec<u8>> {
     if desired_len > MAX_OUTPUT_SIZE || iterations > MAX_ITERATIONS {
         return Err(Error::InvalidOutputSize);
+    }
+    if salt.len() < MIN_SALT_SIZE {
+        return Err(Error::InvalidSaltSize);
     }
 
     let mut output = vec![0u8; desired_len];
@@ -37,6 +41,9 @@ pub fn pbkdf2_hmac_512(
 ) -> Result<Vec<u8>> {
     if desired_len > MAX_OUTPUT_SIZE || iterations > MAX_ITERATIONS {
         return Err(Error::InvalidOutputSize);
+    }
+    if salt.len() < MIN_SALT_SIZE {
+        return Err(Error::InvalidSaltSize);
     }
 
     let mut output = vec![0u8; desired_len];

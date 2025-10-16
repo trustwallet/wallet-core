@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use bip32::ChildNumber;
+use bip32::{ChainCode, ChildNumber};
 use tw_hash::H256;
 use tw_keypair::traits::DerivableKeyTrait;
 use tw_keypair::{ecdsa::secp256k1, tw::Curve};
@@ -37,9 +37,28 @@ impl BIP32PrivateKey for secp256k1::PrivateKey {
 }
 
 impl BIP32PublicKey for secp256k1::PublicKey {
-    fn derive_child(&self, other: &[u8], _child_number: ChildNumber) -> Result<Self> {
-        let other = H256::try_from(other).map_err(|_| Error::InvalidKeyData)?;
-        <secp256k1::PublicKey as DerivableKeyTrait>::derive_child(self, other)
-            .map_err(|_| Error::DerivationFailed)
+    fn curve() -> Curve {
+        Curve::Secp256k1
+    }
+
+    fn derive_child(
+        &self,
+        chain_code: &ChainCode,
+        child_number: ChildNumber,
+    ) -> Result<(Self, ChainCode)> {
+        let (tweak, chain_code) = self.derive_tweak(chain_code, child_number)?;
+        // We should technically loop here if the tweak is zero or overflows
+        // the order of the underlying elliptic curve group, incrementing the
+        // index, however per "Child key derivation (CKD) functions":
+        // https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#child-key-derivation-ckd-functions
+        //
+        // > "Note: this has probability lower than 1 in 2^127."
+        //
+        // ...so instead, we simply return an error if this were ever to happen,
+        // as the chances of it happening are vanishingly small.
+        let tweak = H256::try_from(&tweak[..]).map_err(|_| Error::InvalidKeyData)?;
+        let public_key = <secp256k1::PublicKey as DerivableKeyTrait>::derive_child(self, tweak)
+            .map_err(|_| Error::DerivationFailed)?;
+        Ok((public_key, chain_code))
     }
 }

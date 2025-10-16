@@ -4,9 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use std::str::FromStr;
-
-use bip32::DerivationPath;
+use crate::crypto_hd_node::utils::derivation_path_from_str;
 use tw_hash::hasher::Hasher;
 use tw_keypair::tw::Curve;
 use tw_misc::traits::ToBytesVec;
@@ -70,7 +68,7 @@ impl HDNodePublic {
     }
 
     pub fn derive_from_path(&self, path: &str, hasher: Hasher) -> Result<Self> {
-        let path = DerivationPath::from_str(path)?;
+        let path = derivation_path_from_str(path)?;
         match self {
             HDNodePublic::Secp256k1(xpub) => {
                 let xpub = xpub.derive_from_path(&path, hasher)?;
@@ -93,11 +91,11 @@ impl HDNodePublic {
                 Ok(HDNodePublic::Curve25519Waves(xpub))
             },
             HDNodePublic::Ed25519ExtendedCardano(xpub, _) => {
-                let xpub = xpub.derive_from_path(&path, hasher)?;
+                let xpub1 = xpub.derive_from_path(&path, hasher)?;
                 let staking_path = cardano_staking_derivation_path(&path)?;
                 let xpub2 = xpub.derive_from_path(&staking_path, hasher)?;
                 Ok(HDNodePublic::Ed25519ExtendedCardano(
-                    Box::new(xpub),
+                    Box::new(xpub1),
                     Some(Box::new(xpub2)),
                 ))
             },
@@ -115,7 +113,13 @@ impl HDNodePublic {
             HDNodePublic::Ed25519(xpub) => Ok(xpub.public_key().to_vec()),
             HDNodePublic::Ed25519Blake2bNano(xpub) => Ok(xpub.public_key().to_vec()),
             HDNodePublic::Curve25519Waves(xpub) => Ok(xpub.public_key().to_vec()),
-            HDNodePublic::Ed25519ExtendedCardano(xpub, _) => Ok(xpub.public_key().to_vec()),
+            HDNodePublic::Ed25519ExtendedCardano(xpub, xpub2) => {
+                let mut data = xpub.public_key().to_vec();
+                if let Some(xpub2) = xpub2 {
+                    data.extend(xpub2.public_key().to_vec());
+                }
+                Ok(data)
+            },
             HDNodePublic::ZilliqaSchnorr(xpub) => Ok(xpub.public_key().to_vec()),
         }
     }

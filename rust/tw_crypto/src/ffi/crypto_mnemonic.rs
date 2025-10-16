@@ -17,7 +17,7 @@ use tw_misc::{try_or_else, try_or_false};
 #[no_mangle]
 pub unsafe extern "C" fn tw_mnemonic_generate(strength: u32) -> NullableMut<TWString> {
     let mnemonic = try_or_else!(Mnemonic::generate(strength), std::ptr::null_mut);
-    TWString::from(mnemonic.to_string()).into_ptr()
+    TWString::from(mnemonic.to_string_zeroizing()).into_ptr()
 }
 
 #[tw_ffi(ty = static_function, class = TWMnemonic, name = GenerateFromData)]
@@ -30,7 +30,7 @@ pub unsafe extern "C" fn tw_mnemonic_generate_from_data(
         .unwrap_or_default();
 
     let mnemonic = try_or_else!(Mnemonic::generate_from_data(data), std::ptr::null_mut);
-    TWString::from(mnemonic.to_string()).into_ptr()
+    TWString::from(mnemonic.to_string_zeroizing()).into_ptr()
 }
 
 #[tw_ffi(ty = static_function, class = TWMnemonic, name = IsValid)]

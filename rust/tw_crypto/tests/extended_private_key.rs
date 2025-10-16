@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use bip32::{ChildNumber, DerivationPath, Prefix, XPub};
+use bip32::{ChainCode, ChildNumber, DerivationPath, Prefix, XPub};
 use std::str::FromStr;
 use tw_crypto::crypto_hd_node::ed25519::cardano::cardano_staking_derivation_path;
 use tw_crypto::crypto_hd_node::error::{Error, Result};
@@ -30,7 +30,7 @@ fn test_from_seed() {
         "tiny escape drive pupil flavor endless love walk gadget match filter luxury",
         "",
     );
-    assert_eq!(hex::encode(seed, false), "d430216f5b506dfd281d6ff6e92150d205868923df00774bc301e5ffdc2f4d1ad38a602017ddea6fc7d6315345d8b9cadbd8213ed2ffce5dfc550fa918665eb8");
+    assert_eq!(hex::encode(&seed, false), "d430216f5b506dfd281d6ff6e92150d205868923df00774bc301e5ffdc2f4d1ad38a602017ddea6fc7d6315345d8b9cadbd8213ed2ffce5dfc550fa918665eb8");
     let xprv = XPrvSecp256k1::new(&seed);
     assert!(xprv.is_ok());
 }
@@ -111,7 +111,10 @@ fn test_extended_public_key() {
             Hasher::Sha256ripemd,
         )
         .unwrap();
-    let child_extended_key = child_xprv.public_key().to_extended_key(Prefix::ZPUB);
+    let child_extended_key = child_xprv
+        .public_key()
+        .to_extended_key(Prefix::ZPUB)
+        .unwrap();
     assert_eq!(child_extended_key.to_string(), "zpub6qwDs4uUNPDR5A2M56ot1aABSa2MNQciYn9MPS8bTk1qwAaFKcSST5S1aLidvPp9twqpaumG7vikR2vHhBXjp5oGgHyMvWK3AtUkfeEgyns");
 
     let child_xprv = xprv
@@ -120,7 +123,10 @@ fn test_extended_public_key() {
             Hasher::Sha256ripemd,
         )
         .unwrap();
-    let child_extended_key = child_xprv.public_key().to_extended_key(Prefix::ZPUB);
+    let child_extended_key = child_xprv
+        .public_key()
+        .to_extended_key(Prefix::ZPUB)
+        .unwrap();
     assert_eq!(child_extended_key.to_string(), "zpub6qwDs4uUNPDR6Ck9UQDdji17hoEPP8mqnicYZLSSoUykz3MDcuJdeNJPd3BozqEafeLZkegWqzAvkgA4JZZ5tTN2rDpGKfk54essyfx1eZP");
 }
 
@@ -200,6 +206,7 @@ fn test_derive_xpub_pub_vs_priv_pub() {
     let zpub = account_xprv
         .public_key()
         .to_extended_key(Prefix::ZPUB)
+        .unwrap()
         .to_string();
     assert_eq!(zpub, "zpub6rNUNtxSa9Gxvm4Bdxf1MPMwrvkzwDx6vP96Hkzw3jiQKdg3fhXBStxjn12YixQB8h88B3RMSRscRstf9AEVaYr3MAqVBEWBDuEJU4PGaT9");
 
@@ -412,7 +419,7 @@ fn test_nist256p1_key_derivation_failure() {
         "02d03f2d72c850abe7fbde0507c661a9c940808f751d6d1c08f1c632b632af52ce",
     )
     .unwrap();
-    let child_key = public_key.derive_child(&[0x00], ChildNumber::new(0, true).unwrap());
+    let child_key = public_key.derive_child(&[0x00; 32], ChildNumber::new(0, true).unwrap());
     assert!(child_key.is_err());
 }
 
@@ -429,7 +436,7 @@ fn test_secp256k1_key_derivation_failure() {
         "023fc76c1210da890c598a3868f267d7d6a2c2c1fa4c60e6e105c9ef9f9f6e6532",
     )
     .unwrap();
-    let child_key = public_key.derive_child(&[0x00], ChildNumber::new(0, true).unwrap());
+    let child_key = public_key.derive_child(&[0x00; 32], ChildNumber::new(0, true).unwrap());
     assert!(child_key.is_err());
 }
 
@@ -449,7 +456,7 @@ fn test_ed25519_key_derivation() {
         "633e5c7e355bdd484706436ce1f06fdf280bd7c2229a7f9b6489684412c6967c",
     )
     .unwrap();
-    let child_key = public_key.derive_child(&[0x00], ChildNumber::new(0, true).unwrap());
+    let child_key = public_key.derive_child(&[0x00; 32], ChildNumber::new(0, true).unwrap());
     assert!(child_key.is_err());
 }
 
@@ -460,7 +467,7 @@ fn test_cardano_key_derivation() {
     assert!(child_key.is_ok());
 
     let public_key = tw_keypair::ed25519::cardano::ExtendedPublicKey::try_from("797a077d4f2cca772b45fa67ada88502000470adf7f81fcb578357a73649fc76e5232f0770ce99adfc7e6ec1a5270f52d6435c30ceb51415258d1eaccd28b5fe").unwrap();
-    let child_key = public_key.derive_child(&[0x00], ChildNumber::new(0, true).unwrap());
+    let child_key = public_key.derive_child(&[0x00; 32], ChildNumber::new(0, true).unwrap());
     assert!(child_key.is_err());
 
     assert_eq!(
@@ -495,10 +502,10 @@ fn test_nano_key_derivation_failure() {
         "9833ff5684764ca31955727966df954be334ea051ad8c285eea6e4fbaa549001",
     )
     .unwrap();
-    let child_key = public_key.derive_child(&[0x00], ChildNumber::new(0, true).unwrap());
+    let child_key = public_key.derive_child(&[0x00; 32], ChildNumber::new(0, true).unwrap());
     assert!(child_key.is_err());
 
-    let child_key = public_key.derive_child(&[0x00], ChildNumber::new(0, false).unwrap());
+    let child_key = public_key.derive_child(&[0x00; 32], ChildNumber::new(0, false).unwrap());
     assert!(child_key.is_err());
 }
 
@@ -515,7 +522,7 @@ fn test_wave_key_derivation_failure() {
         "b6c00ffdacb469da62062a1dc8218a733a61720ab0942ba3625194281faf7d3d",
     )
     .unwrap();
-    let child_key = public_key.derive_child(&[0x00], ChildNumber::new(0, true).unwrap());
+    let child_key = public_key.derive_child(&[0x00; 32], ChildNumber::new(0, true).unwrap());
     assert!(child_key.is_err());
 }
 
@@ -532,7 +539,7 @@ fn test_zilliqa_schnorr_key_derivation_failure() {
         "02f54cd391076f956b1cfc37cf182c18373f7c1566408c1748132cf4e782498e19",
     )
     .unwrap();
-    let child_key = public_key.derive_child(&[0x00], ChildNumber::new(0, true).unwrap());
+    let child_key = public_key.derive_child(&[0x00; 32], ChildNumber::new(0, true).unwrap());
     assert!(child_key.is_err());
 }
 
@@ -582,7 +589,15 @@ fn test_invalid_key_cardano() {
     }
 
     impl BIP32PublicKey for InvalidPublicKey {
-        fn derive_child(&self, _other: &[u8], _child_number: ChildNumber) -> Result<Self> {
+        fn curve() -> Curve {
+            Curve::Ed25519ExtendedCardano
+        }
+
+        fn derive_child(
+            &self,
+            _chain_code: &ChainCode,
+            _child_number: ChildNumber,
+        ) -> Result<(Self, ChainCode)> {
             Err(Error::InvalidKeyData)
         }
     }
@@ -631,7 +646,7 @@ fn test_invalid_key_cardano() {
     assert!(child_key.is_err());
 
     let invalid_key = InvalidPublicKey;
-    let child_key = invalid_key.derive_child(&[0x00], ChildNumber::new(0, true).unwrap());
+    let child_key = invalid_key.derive_child(&[0x00; 32], ChildNumber::new(0, true).unwrap());
     assert!(child_key.is_err());
 }
 
@@ -664,7 +679,15 @@ fn test_invalid_key_secp256k1() {
     }
 
     impl BIP32PublicKey for InvalidPublicKey {
-        fn derive_child(&self, _other: &[u8], _child_number: ChildNumber) -> Result<Self> {
+        fn curve() -> Curve {
+            Curve::Secp256k1
+        }
+
+        fn derive_child(
+            &self,
+            _chain_code: &ChainCode,
+            _child_number: ChildNumber,
+        ) -> Result<(Self, ChainCode)> {
             Err(Error::InvalidKeyData)
         }
     }
