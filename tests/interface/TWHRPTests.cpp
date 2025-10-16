@@ -92,6 +92,7 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPECash, TWCoinTypeHRP(TWCoinTypeECash));
     ASSERT_EQ(TWHRPSecret, TWCoinTypeHRP(TWCoinTypeSecret));
     ASSERT_EQ(TWHRPPactus, TWCoinTypeHRP(TWCoinTypePactus));
+    ASSERT_EQ(TWHRPZcash, TWCoinTypeHRP(TWCoinTypeZcash));
 
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeAion));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeCallisto));
@@ -118,7 +119,6 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeTron));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeVeChain));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeWanchain));
-    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeZcash));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeFiro));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeZelcash));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeRavencoin));

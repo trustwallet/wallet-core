@@ -978,7 +978,7 @@ fn test_solana_sign_transfer_token_2022() {
 fn test_solana_sign_sponsored_transfer_token_with_external_fee_payer() {
     let token_transfer_to_fee_payer = Proto::TokenTransferToFeePayer {
         fee_token_mint_address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v".into(),
-        fee_sponsor_token_address: "reqtRKoVXCKVtvCL47VBxwncifQE8oJL6ZUzo1a28hD".into(),
+        fee_recipient_token_address: "reqtRKoVXCKVtvCL47VBxwncifQE8oJL6ZUzo1a28hD".into(),
         fee_sender_token_address: "5Wa3KnBQAGs2KKZvHGZ7TcWJHexKCgG3F2H6RFMars67".into(),
         fee_amount: 1,
         fee_decimals: 6,

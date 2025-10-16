@@ -151,8 +151,9 @@ message TokenTransferToFeePayer {
     // Mint address of the fee token
     string fee_token_mint_address = 1;
 
-    // Token account address of the fee sponsor for the fee mint
-    string fee_sponsor_token_address = 2;
+    // Token account address of the fee recipient. 
+    // Note that it could be different from the token account of the feepayer.
+    string fee_recipient_token_address = 2;
 
     // Fee amount
     uint64 fee_amount = 3;

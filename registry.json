@@ -1343,6 +1343,7 @@
     "p2shPrefix": 189,
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
+    "hrp": "tex",
     "explorer": {
       "url": "https://blockchair.com/zcash",
       "txPath": "/transaction/",
