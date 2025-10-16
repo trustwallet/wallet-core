@@ -7,6 +7,7 @@
 #include "CoinEntry.h"
 
 #include <google/protobuf/util/json_util.h>
+#include "memory/memzero_wrapper.h"
 
 namespace TW::Rust {
 
@@ -57,7 +58,7 @@ protected:
 
         Output output;
         output.ParseFromArray(dataOut.data(), static_cast<int>(dataOut.size()));
-        memcpy(dataOut.data(), dataOut.data(), dataOut.size());
+        memzero(dataOut.data(), dataOut.size());
 
         return mapOutput(output);
     }
