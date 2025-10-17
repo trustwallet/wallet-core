@@ -345,6 +345,13 @@ message Message {
         string receiver = 4;
     }
 
+    // DYDX Governance Proposal Message
+    message DydxGovernanceProposal {
+        string title = 1;
+        string description = 2;
+        string authority = 3;
+    }
+
     // The payload message
     oneof message_oneof {
         Send send_coins_message = 1;
@@ -370,6 +377,7 @@ message Message {
         MsgStrideLiquidStakingRedeem msg_stride_liquid_staking_redeem = 22;
         THORChainDeposit thorchain_deposit_message = 23;
         WasmInstantiateContract wasm_instantiate_contract_message = 24;
+        DydxGovernanceProposal dydx_governance_proposal = 25;
     }
 }
 
