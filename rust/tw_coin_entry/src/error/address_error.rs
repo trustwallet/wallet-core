@@ -25,10 +25,17 @@ pub enum AddressError {
     InvalidChecksum,
     InvalidWitnessProgram,
     Internal,
+    FromHashError,
 }
 
 impl From<FromHexError> for AddressError {
     fn from(_: FromHexError) -> Self {
         AddressError::FromHexError
+    }
+}
+
+impl From<tw_hash::Error> for AddressError {
+    fn from(_: tw_hash::Error) -> Self {
+        AddressError::FromHashError
     }
 }

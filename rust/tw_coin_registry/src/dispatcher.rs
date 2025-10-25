@@ -30,6 +30,7 @@ use tw_ronin::entry::RoninEntry;
 use tw_solana::entry::SolanaEntry;
 use tw_substrate::entry::SubstrateEntry;
 use tw_sui::entry::SuiEntry;
+use tw_tezos::entry::TezosEntry;
 use tw_thorchain::entry::ThorchainEntry;
 use tw_ton::entry::TheOpenNetworkEntry;
 use tw_zcash::entry::ZcashEntry;
@@ -58,6 +59,7 @@ const RIPPLE: RippleEntry = RippleEntry;
 const RONIN: RoninEntry = RoninEntry;
 const SOLANA: SolanaEntry = SolanaEntry;
 const SUI: SuiEntry = SuiEntry;
+const TEZOS: TezosEntry = TezosEntry;
 const THE_OPEN_NETWORK: TheOpenNetworkEntry = TheOpenNetworkEntry;
 const THORCHAIN: ThorchainEntry = ThorchainEntry;
 const ZCASH: ZcashEntry = ZcashEntry;
@@ -87,6 +89,7 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::Ronin => Ok(&RONIN),
         BlockchainType::Solana => Ok(&SOLANA),
         BlockchainType::Sui => Ok(&SUI),
+        BlockchainType::Tezos => Ok(&TEZOS),
         BlockchainType::TheOpenNetwork => Ok(&THE_OPEN_NETWORK),
         BlockchainType::Thorchain => Ok(&THORCHAIN),
         BlockchainType::Zcash => Ok(&ZCASH),
