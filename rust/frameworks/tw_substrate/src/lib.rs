@@ -45,13 +45,28 @@ pub type EncodeResult<T> = Result<T, TWError<EncodeError>>;
 pub type WithCallIndexResult<T> = Result<WithCallIndex<T>, TWError<EncodeError>>;
 
 #[derive(Debug, Clone)]
+pub enum FeeAssetId {
+    Native,
+    Asset(u32),
+}
+
+impl FeeAssetId {
+    pub fn as_u32(&self) -> u32 {
+        match self {
+            FeeAssetId::Native => 0,
+            FeeAssetId::Asset(id) => *id,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct SubstrateContext {
     pub multi_address: bool,
     pub check_metadata: bool,
     pub network: NetworkId,
     pub spec_version: u32,
     pub transaction_version: u32,
-    pub fee_asset_id: Option<u32>,
+    pub fee_asset_id: Option<FeeAssetId>,
 }
 
 impl SubstrateContext {
