@@ -3,7 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "HexCoding.h"
-#include "Tezos/BinaryCoding.h"
 #include "proto/Tezos.pb.h"
 #include "TestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
