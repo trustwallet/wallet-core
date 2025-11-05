@@ -24,6 +24,6 @@ TEST(TWMonadCoinType, TWCoinType) {
     ASSERT_EQ(TWCoinTypeP2pkhPrefix(coin), 0);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0);
-    assertStringsEqual(txUrl, "https://monadexplorer.com/tx/0x8394f9f01bc2ae2cc93e19170bf80c303210f6f4198e5ec3cc99b0cba04962b6");
-    assertStringsEqual(accUrl, "https://monadexplorer.com/address/0x6ab69B482987b0BA1f1c96BDbDC192a80CB09132");
+    assertStringsEqual(txUrl, "http://monvision.io/tx/0x8394f9f01bc2ae2cc93e19170bf80c303210f6f4198e5ec3cc99b0cba04962b6");
+    assertStringsEqual(accUrl, "http://monvision.io/address/0x6ab69B482987b0BA1f1c96BDbDC192a80CB09132");
 }
