@@ -2784,6 +2784,36 @@
       "documentation": "https://tezos.gitlab.io/tezos/api/rpc.html"
     }
   },
+{
+    "id": "carrchain",
+    "name": "CarrChain",
+    "coinId": 10007667,
+    "symbol": "CARR",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "7667",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://carrscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "",
+      "sampleAccount": ""
+    },
+    "info": {
+      "url": "https://carnomaly.io",
+      "source": "https://github.com/carnomaly",
+      "rpc": "https://rpc.carrchain.io",
+      "documentation": "https://carrscan.io"
+    }
+  },
   {
     "id": "cardano",
     "name": "Cardano",
