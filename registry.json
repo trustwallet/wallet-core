@@ -4929,7 +4929,7 @@
     "chainId": "143",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://monadexplorer.com",
+      "url": "https://monvision.io",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x8394f9f01bc2ae2cc93e19170bf80c303210f6f4198e5ec3cc99b0cba04962b6",
