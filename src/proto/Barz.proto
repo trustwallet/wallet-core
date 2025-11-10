@@ -49,4 +49,3 @@ message DiamondCutInput {
   string init_address = 2; // Address to call with `init` data after applying cuts
   bytes init_data = 3; // Data to pass to `init` function call
 }
-

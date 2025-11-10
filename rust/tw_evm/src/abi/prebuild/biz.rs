@@ -4,6 +4,7 @@
 
 use crate::abi::contract::Contract;
 use crate::abi::function::Function;
+use crate::abi::param::Param;
 use crate::abi::param_token::NamedToken;
 use crate::abi::param_type::ParamType;
 use crate::abi::prebuild::ExecuteArgs;
@@ -58,7 +59,7 @@ impl BizAccount {
     }
 }
 
-fn encode_batch<I>(function: &Function, args: I) -> AbiResult<Data>
+pub fn encode_batch<I>(function: &Function, batch_calls: I) -> AbiResult<Data>
 where
     I: IntoIterator<Item = ExecuteArgs>,
 {
@@ -69,6 +70,15 @@ where
         .or_tw_err(AbiErrorKind::Error_internal)
         .context("'Biz.execute4337Ops()' should contain only one argument")?;
 
+    let array_token = batch_calls_into_array_token(array_param, batch_calls)?;
+    function.encode_input(&[array_token])
+}
+
+/// Converts a batch of calls into a single Token representing an array of tuples.
+pub fn batch_calls_into_array_token<I>(array_param: &Param, batch_calls: I) -> AbiResult<Token>
+where
+    I: IntoIterator<Item = ExecuteArgs>,
+{
     let ParamType::Array {
         kind: array_elem_type,
     } = array_param.kind.clone()
@@ -100,7 +110,7 @@ where
         });
     }
 
-    let array_tokens = args
+    let array_tokens = batch_calls
         .into_iter()
         .map(|call| Token::Tuple {
             params: vec![
@@ -111,5 +121,5 @@ where
         })
         .collect();
 
-    function.encode_input(&[Token::array(*array_elem_type, array_tokens)])
+    Ok(Token::array(*array_elem_type, array_tokens))
 }

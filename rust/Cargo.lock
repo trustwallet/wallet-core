@@ -2285,6 +2285,7 @@ dependencies = [
  "tw_keypair",
  "tw_memory",
  "tw_misc",
+ "tw_number",
  "tw_proto",
 ]
 
@@ -2429,7 +2430,9 @@ dependencies = [
 name = "tw_zcash"
 version = "0.1.0"
 dependencies = [
+ "bech32",
  "tw_base58_address",
+ "tw_bech32_address",
  "tw_bitcoin",
  "tw_coin_entry",
  "tw_encoding",

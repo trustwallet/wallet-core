@@ -57,12 +57,6 @@ message FungibleAssetTransferMessage {
   uint64 amount = 3;
 }
 
-// Necessary fields to process a ManagedTokensRegisterMessage
-message ManagedTokensRegisterMessage {
-  // token function to register, e.g BTC: 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC
-  StructTag function = 1;
-}
-
 // Necessary fields to process a CreateAccountMessage
 message CreateAccountMessage {
   // auth account address to create
@@ -171,7 +165,6 @@ message SigningInput {
     TokenTransferMessage token_transfer = 10;
     CreateAccountMessage create_account = 11;
     NftMessage nft_message = 12;
-    ManagedTokensRegisterMessage register_token = 13;
     LiquidStaking liquid_staking_message = 14;
     TokenTransferCoinsMessage token_transfer_coins = 15;
     FungibleAssetTransferMessage fungible_asset_transfer = 16;

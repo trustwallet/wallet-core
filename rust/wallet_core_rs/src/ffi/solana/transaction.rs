@@ -188,3 +188,40 @@ pub unsafe extern "C" fn tw_solana_transaction_insert_instruction(
         _ => std::ptr::null_mut(),
     }
 }
+
+/// Inserts a SOL transfer instruction to the given transaction at the specified position, returning the updated transaction.
+/// Please note that compute price and limit instructions should always be the first instructions if they are present in the transaction.
+///
+/// \param encoded_tx base64 encoded Solana transaction.
+/// \param insert_at index where the instruction should be inserted. If you don't care about the position, use -1.
+/// \param from sender account from which the lamports will be debited.
+/// \param to receiver account to which the lamports will be transferred.
+/// \param lamports amount of lamports to transfer, as a decimal string.
+/// \return base64 encoded Solana transaction. Null if an error occurred.
+#[tw_ffi(ty = static_function, class = TWSolanaTransaction, name = InsertTransferInstruction)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_solana_transaction_insert_transfer_instruction(
+    encoded_tx: Nonnull<TWString>,
+    insert_at: i32,
+    from: Nonnull<TWString>,
+    to: Nonnull<TWString>,
+    lamports: Nonnull<TWString>,
+) -> NullableMut<TWString> {
+    let encoded_tx = try_or_else!(TWString::from_ptr_as_ref(encoded_tx), std::ptr::null_mut);
+    let encoded_tx = try_or_else!(encoded_tx.as_str(), std::ptr::null_mut);
+
+    let from = try_or_else!(TWString::from_ptr_as_ref(from), std::ptr::null_mut);
+    let from = try_or_else!(from.as_str(), std::ptr::null_mut);
+
+    let to = try_or_else!(TWString::from_ptr_as_ref(to), std::ptr::null_mut);
+    let to = try_or_else!(to.as_str(), std::ptr::null_mut);
+
+    let lamports = try_or_else!(TWString::from_ptr_as_ref(lamports), std::ptr::null_mut);
+    let lamports = try_or_else!(lamports.as_str(), std::ptr::null_mut);
+
+    match SolanaTransaction::insert_transfer_instruction(encoded_tx, insert_at, from, to, lamports)
+    {
+        Ok(updated_tx) => TWString::from(updated_tx).into_ptr(),
+        _ => std::ptr::null_mut(),
+    }
+}

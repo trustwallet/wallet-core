@@ -160,13 +160,14 @@ impl<'a> MessageBuilder<'a> {
         let transfer_ix = SystemInstructionBuilder::transfer(from, to, transfer.value)
             .with_references(references);
 
-        let mut builder = InstructionBuilder::default();
+        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
         builder
             .maybe_advance_nonce(self.nonce_account()?, from)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
             .maybe_memo(transfer.memo.as_ref())
-            .add_instruction(transfer_ix);
+            .add_instruction(transfer_ix)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -197,12 +198,13 @@ impl<'a> MessageBuilder<'a> {
             space: DEFAULT_SPACE,
         });
 
-        let mut builder = InstructionBuilder::default();
+        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
         builder
             .maybe_advance_nonce(self.nonce_account()?, sender)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instructions(deposit_ixs);
+            .add_instructions(deposit_ixs)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -217,12 +219,13 @@ impl<'a> MessageBuilder<'a> {
 
         let deactivate_ix = StakeInstructionBuilder::deactivate(stake_account, sender);
 
-        let mut builder = InstructionBuilder::default();
+        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
         builder
             .maybe_advance_nonce(self.nonce_account()?, sender)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instruction(deactivate_ix);
+            .add_instruction(deactivate_ix)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -241,12 +244,13 @@ impl<'a> MessageBuilder<'a> {
             .collect::<SigningResult<Vec<_>>>()
             .context("Invalid stake account(s)")?;
 
-        let mut builder = InstructionBuilder::default();
+        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
         builder
             .maybe_advance_nonce(self.nonce_account()?, sender)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instructions(deactivate_ixs);
+            .add_instructions(deactivate_ixs)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -269,12 +273,13 @@ impl<'a> MessageBuilder<'a> {
             custodian_account,
         );
 
-        let mut builder = InstructionBuilder::default();
+        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
         builder
             .maybe_advance_nonce(self.nonce_account()?, sender)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instruction(withdraw_ix);
+            .add_instruction(withdraw_ix)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -303,12 +308,13 @@ impl<'a> MessageBuilder<'a> {
             })
             .collect::<SigningResult<Vec<_>>>()?;
 
-        let mut builder = InstructionBuilder::default();
+        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
         builder
             .maybe_advance_nonce(self.nonce_account()?, sender)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instructions(withdraw_ixs);
+            .add_instructions(withdraw_ixs)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -337,12 +343,13 @@ impl<'a> MessageBuilder<'a> {
             token_address,
             match_program_id(create_token_acc.token_program_id),
         );
-        let mut builder = InstructionBuilder::default();
+        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
         builder
             .maybe_advance_nonce(self.nonce_account()?, funding_account)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instruction(instruction);
+            .add_instruction(instruction)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -384,13 +391,14 @@ impl<'a> MessageBuilder<'a> {
         )
         .with_references(references);
 
-        let mut builder = InstructionBuilder::default();
+        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
         builder
             .maybe_advance_nonce(self.nonce_account()?, signer)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
             .maybe_memo(token_transfer.memo.as_ref())
-            .add_instruction(transfer_instruction);
+            .add_instruction(transfer_instruction)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -448,7 +456,7 @@ impl<'a> MessageBuilder<'a> {
         )
         .with_references(references);
 
-        let mut builder = InstructionBuilder::default();
+        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
         builder
             .maybe_advance_nonce(self.nonce_account()?, signer)
             .maybe_priority_fee_price(self.priority_fee_price())
@@ -456,7 +464,8 @@ impl<'a> MessageBuilder<'a> {
             .add_instruction(create_account_instruction)
             // Optional memo. Order: before transfer, as per documentation.
             .maybe_memo(create_and_transfer.memo.as_ref())
-            .add_instruction(transfer_instruction);
+            .add_instruction(transfer_instruction)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -479,7 +488,7 @@ impl<'a> MessageBuilder<'a> {
                 .context("Invalid nonce account")?
         };
 
-        let mut builder = InstructionBuilder::default();
+        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
         builder
             .maybe_advance_nonce(prev_nonce_account, signer)
             .maybe_priority_fee_price(self.priority_fee_price())
@@ -489,7 +498,8 @@ impl<'a> MessageBuilder<'a> {
                 new_nonce_account,
                 create_nonce.rent,
                 DEFAULT_CREATE_NONCE_SPACE,
-            ));
+            ))
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -506,7 +516,7 @@ impl<'a> MessageBuilder<'a> {
             .into_tw()
             .context("Invalid recipient")?;
 
-        let mut builder = InstructionBuilder::default();
+        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
         builder
             .maybe_advance_nonce(self.nonce_account()?, signer)
             .maybe_priority_fee_price(self.priority_fee_price())
@@ -516,7 +526,8 @@ impl<'a> MessageBuilder<'a> {
                 signer,
                 recipient,
                 withdraw_nonce.value,
-            ));
+            ))
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -529,11 +540,12 @@ impl<'a> MessageBuilder<'a> {
             .into_tw()
             .context("Invalid nonce account")?;
 
-        let mut builder = InstructionBuilder::default();
+        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
         builder
             .maybe_advance_nonce(Some(nonce_account), signer)
             .maybe_priority_fee_price(self.priority_fee_price())
-            .maybe_priority_fee_limit(self.priority_fee_limit());
+            .maybe_priority_fee_limit(self.priority_fee_limit())
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
     }
 
@@ -580,6 +592,51 @@ impl<'a> MessageBuilder<'a> {
         self.signer_address()
     }
 
+    fn builder_with_token_transfer_to_fee_payer_if_applicable(
+        &self,
+    ) -> SigningResult<InstructionBuilder> {
+        let Some(sponsored_transfer_token) = self.input.token_transfer_to_fee_payer.as_ref() else {
+            return Ok(InstructionBuilder::default());
+        };
+        let signer = self.signer_address()?;
+
+        let fee_mint_address =
+            SolanaAddress::from_str(sponsored_transfer_token.fee_token_mint_address.as_ref())
+                .into_tw()
+                .context("Invalid fee mint address")?;
+
+        let fee_recipient_token_address = SolanaAddress::from_str(
+            sponsored_transfer_token
+                .fee_recipient_token_address
+                .as_ref(),
+        )
+        .into_tw()
+        .context("Invalid sponsor token address")?;
+
+        let fee_sender_token_address =
+            SolanaAddress::from_str(sponsored_transfer_token.fee_sender_token_address.as_ref())
+                .into_tw()
+                .context("Invalid fee sender token address")?;
+
+        let fee_decimals = sponsored_transfer_token
+            .fee_decimals
+            .try_into()
+            .tw_err(SigningErrorType::Error_invalid_params)
+            .context("Invalid fee decimals. Expected lower than 256")?;
+
+        let mut builder = InstructionBuilder::default();
+        builder.add_instruction(TokenInstructionBuilder::transfer_checked(
+            fee_sender_token_address,
+            fee_mint_address,
+            fee_recipient_token_address,
+            signer,
+            sponsored_transfer_token.fee_amount,
+            fee_decimals,
+            match_program_id(sponsored_transfer_token.fee_token_program_id),
+        ));
+        Ok(builder)
+    }
+
     fn recent_blockhash(&self) -> SigningResult<Blockhash> {
         Blockhash::from_str(&self.input.recent_blockhash)
             .map_err(SigningError::from)
@@ -604,6 +661,24 @@ impl<'a> MessageBuilder<'a> {
             .priority_fee_limit
             .as_ref()
             .map(|proto| proto.limit)
+    }
+
+    fn transfer_to_fee_payer(&self) -> SigningResult<Option<Instruction>> {
+        let Some(ref transfer_to_fee_payer) = self.input.transfer_to_fee_payer else {
+            return Ok(None);
+        };
+
+        let from = self.signer_address()?;
+        let to = SolanaAddress::from_str(&transfer_to_fee_payer.recipient)
+            .into_tw()
+            .context("Invalid 'transfer_to_fee_payer.recipient' address")?;
+
+        let references = Self::parse_references(&transfer_to_fee_payer.references)?;
+
+        Ok(Some(
+            SystemInstructionBuilder::transfer(from, to, transfer_to_fee_payer.value)
+                .with_references(references),
+        ))
     }
 
     fn parse_references(refs: &[Cow<'_, str>]) -> SigningResult<Vec<SolanaAddress>> {

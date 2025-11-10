@@ -92,3 +92,13 @@ TEST(DataTests, hasPrefix) {
     const Data prefix23 = parse_hex("bb");
     EXPECT_FALSE(has_prefix(data, prefix23));
 }
+
+TEST(DataTests, rustEmptyArray) {
+    Data empty;
+    EXPECT_EQ(empty.size(), 0ul);
+    EXPECT_EQ(empty.data(), nullptr);
+    auto* rustPtr = Rust::tw_data_create_with_bytes(empty.data(), empty.size());
+    EXPECT_NE(rustPtr, nullptr);
+    EXPECT_EQ(Rust::tw_data_size(rustPtr), 0);
+    Rust::tw_data_delete(rustPtr);
+}

@@ -16,6 +16,15 @@
 
 #include <gtest/gtest.h>
 
+TEST(TWZcash, IsValidTexAddress) {
+    ASSERT_TRUE(TWAnyAddressIsValid(STRING("tex1auz6gx89x2wcku6gswdvaz2nf9x3seex6px6v0").get(), TWCoinTypeZcash));
+}
+
+TEST(TWZcash, TexAddressData) {
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(STRING("tex1auz6gx89x2wcku6gswdvaz2nf9x3seex6px6v0").get(), TWCoinTypeZcash));
+    assertHexEqual(WRAPD(TWAnyAddressData(address.get())), "ef05a418e5329d8b7348839ace8953494d186726");
+}
+
 TEST(TWZcash, TransparentAddress) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("987919d988ef94e678bce254c932e7a7a76744b2c008467448406d4246513132").get()));
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));

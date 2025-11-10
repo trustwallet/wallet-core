@@ -143,6 +143,16 @@ impl PublicKey {
         }
     }
 
+    /// Returns a `nist256p1` public key if the key type is matched.
+    pub fn to_nist256p1(&self) -> Option<&nist256p1::PublicKey> {
+        match self {
+            PublicKey::Nist256p1(nist256p1) | PublicKey::Nist256p1Extended(nist256p1) => {
+                Some(nist256p1)
+            },
+            _ => None,
+        }
+    }
+
     pub fn to_ed25519(&self) -> Option<&ed25519::sha512::PublicKey> {
         match self {
             PublicKey::Ed25519(ed25519) => Some(ed25519),

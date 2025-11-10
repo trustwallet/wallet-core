@@ -33,7 +33,7 @@ pub unsafe extern "C" fn tw_private_key_create_with_data(
     input_len: usize,
 ) -> *mut TWPrivateKey {
     let bytes_ref = CByteArrayRef::new(input, input_len);
-    let bytes = try_or_else!(bytes_ref.to_vec(), std::ptr::null_mut);
+    let bytes = bytes_ref.to_vec();
 
     PrivateKey::new(bytes)
         .map(|private| TWPrivateKey(private).into_ptr())
@@ -85,7 +85,7 @@ pub unsafe extern "C" fn tw_private_key_is_valid(
     curve: u32,
 ) -> bool {
     let curve = try_or_false!(Curve::from_raw(curve));
-    let priv_key_slice = try_or_false!(CByteArrayRef::new(key, key_len).as_slice());
+    let priv_key_slice = CByteArrayRef::new(key, key_len).as_slice();
     PrivateKey::is_valid(priv_key_slice, curve)
 }
 
@@ -105,10 +105,7 @@ pub unsafe extern "C" fn tw_private_key_sign(
 ) -> CByteArray {
     let curve = try_or_else!(Curve::from_raw(curve), CByteArray::default);
     let private = try_or_else!(TWPrivateKey::from_ptr_as_ref(key), CByteArray::default);
-    let message_to_sign = try_or_else!(
-        CByteArrayRef::new(message, message_len).as_slice(),
-        CByteArray::default
-    );
+    let message_to_sign = CByteArrayRef::new(message, message_len).as_slice();
 
     // Return an empty signature if an error occurs.
     let sig = private.0.sign(message_to_sign, curve).unwrap_or_default();

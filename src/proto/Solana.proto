@@ -146,6 +146,28 @@ message CreateAndTransferToken {
     TokenProgramId token_program_id = 9;
 }
 
+// Transfer tokens to the feepayer
+message TokenTransferToFeePayer {
+    // Mint address of the fee token
+    string fee_token_mint_address = 1;
+
+    // Token account address of the fee recipient. 
+    // Note that it could be different from the token account of the feepayer.
+    string fee_recipient_token_address = 2;
+
+    // Fee amount
+    uint64 fee_amount = 3;
+
+    // Sender's fee token address
+    string fee_sender_token_address = 4;
+
+    // Note: 8-bit value
+    uint32 fee_decimals = 5;
+
+    // optional token program id
+    TokenProgramId fee_token_program_id = 6;
+}
+
 message CreateNonceAccount {
     // Required for building pre-signing hash of a transaction
     string nonce_account = 1;
@@ -286,6 +308,11 @@ message SigningInput {
     // fee for higher transaction prioritization.
     // https://solana.com/docs/intro/transaction_fees#prioritization-fee
     PriorityFeeLimit priority_fee_limit = 23;
+    // Optional token transfer to fee payer.
+    TokenTransferToFeePayer token_transfer_to_fee_payer = 24;
+    // Optional SOL transfer to fee payer. This will be the last instruction in the transaction.
+    // https://docs.blinklabs.xyz/blink/solana/gas-sponsorship/api-reference#active-sponsorship
+    Transfer transfer_to_fee_payer = 25;
 }
 
 // Result containing the signed and encoded transaction.
