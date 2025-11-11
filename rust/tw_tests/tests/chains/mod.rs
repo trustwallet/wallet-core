@@ -26,6 +26,7 @@ mod ripple;
 mod solana;
 mod sui;
 mod tbinance;
+mod tezos;
 mod thorchain;
 mod ton;
 mod zcash;

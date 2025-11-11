@@ -1899,6 +1899,7 @@ dependencies = [
  "tw_solana",
  "tw_substrate",
  "tw_sui",
+ "tw_tezos",
  "tw_thorchain",
  "tw_ton",
  "tw_utxo",
@@ -2353,10 +2354,26 @@ dependencies = [
  "tw_number",
  "tw_proto",
  "tw_solana",
+ "tw_tezos",
  "tw_ton",
  "tw_ton_sdk",
  "tw_utxo",
  "wallet-core-rs",
+]
+
+[[package]]
+name = "tw_tezos"
+version = "0.1.0"
+dependencies = [
+ "tw_base58_address",
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_misc",
+ "tw_number",
+ "tw_proto",
 ]
 
 [[package]]
