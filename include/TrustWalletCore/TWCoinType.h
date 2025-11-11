@@ -191,6 +191,7 @@ enum TWCoinType {
     TWCoinTypePolymesh = 595,
     TWCoinTypePlasma = 9745,
     TWCoinTypeMonad = 10143,
+    TWCoinTypeWardenProtocol = 10008765,
     // end_of_tw_coin_type_marker_do_not_modify
 };
 
