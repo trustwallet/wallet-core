@@ -4940,5 +4940,35 @@
       "rpc": "https://rpc.monad.xyz",
       "documentation": "https://docs.monad.xyz"
     }
+  },
+  {
+    "id": "wardenprotocol",
+    "name": "Warden Protocol",
+    "displayName": "Warden Protocol",
+    "coinId": 10008765,
+    "symbol": "WARD",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "8765",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.wardenprotocol.org",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x90aaaaf8379eecc479ac8679a1430e7fb53d2e64749c4bc9132371d4e1ea98f2",
+      "sampleAccount": "0xDc3D9d2f5fC5bEb330c7135b2c38f354c18656f0"
+    },
+    "info": {
+      "url": "https://www.wardenprotocol.org",
+      "rpc": "https://evm.wardenprotocol.org",
+      "documentation": "https://docs.wardenprotocol.org"
+    }
   }
 ]
