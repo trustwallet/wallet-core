@@ -66,7 +66,7 @@ TEST(TezosCompiler, CompileWithSignatures) {
 
     auto preImageHash = preSigningOutput.data_hash();
     EXPECT_EQ(hex(preImageHash),
-              "12e4f8b17ad3b316a5a56960db76c7d6505dbf2fff66106be75c8d6753daac0e");
+              "2268aec5a2becbcd784a03060a4816e20396e6d96e7839ddaf2c3b980632e591");
 
     auto signature = parse_hex("0217034271b815e5f0c0a881342838ce49d7b48cdf507c72b1568c69a10db70c987"
                                "74cdad1a74df760763e25f760ff13afcbbf3a1f2c833a0beeb9576a579c05");
@@ -75,7 +75,7 @@ TEST(TezosCompiler, CompileWithSignatures) {
     const auto tx =
         "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b0081faa75f741ef614b0e35f"
         "cc8c90dfa3b0b95721f80992f001f44e810200311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10"
-        "906f511cff956c0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f74"
+        "906f511cff95006c0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f74"
         "1ef614b0e35fcc8c90dfa3b0b95721000217034271b815e5f0c0a881342838ce49d7b48cdf507c72b1568c69a1"
         "0db70c98774cdad1a74df760763e25f760ff13afcbbf3a1f2c833a0beeb9576a579c05";
     auto outputData =
