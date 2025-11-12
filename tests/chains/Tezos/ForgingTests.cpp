@@ -226,7 +226,7 @@ TEST(TezosTransaction, forgeReveal) {
     revealOperation.set_kind(TW::Tezos::Proto::Operation::REVEAL);
     revealOperation.set_allocated_reveal_operation_data(revealOperationData);
 
-    auto expected = "6b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
+    auto expected = "6b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e00";
     auto serialized = forgeOperation(revealOperation);
 
     ASSERT_EQ(hex(serialized), expected);
