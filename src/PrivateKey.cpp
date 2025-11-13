@@ -55,6 +55,12 @@ PrivateKey::PrivateKey(const Data& data, TWCurve curve) {
     _impl = Rust::wrapTWPrivateKey(privkey);
 }
 
+PrivateKey::PrivateKey(const std::string& data, TWCurve curve) {
+    auto bytes = TW::data(data);
+    *this = PrivateKey(bytes, curve);
+    memzero(bytes.data(), bytes.size());
+}
+
 PrivateKey::PrivateKey(
     const Data& key1, const Data& extension1, const Data& chainCode1,
     const Data& key2, const Data& extension2, const Data& chainCode2,
