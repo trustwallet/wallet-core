@@ -50,7 +50,7 @@ class PrivateKey {
 
     /// Initializes a private key from a string of bytes and a curve.
     /// Signing functions will throw an exception if the provided curve is different from the one specified.
-    explicit PrivateKey(const std::string& data, TWCurve curve) : PrivateKey(TW::data(data), curve) {}
+    explicit PrivateKey(const std::string& data, TWCurve curve);
 
     /// Initializes a Cardano style key with a specified curve.
     /// Signing functions will throw an exception if the provided curve is different from the one specified.
