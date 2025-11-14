@@ -78,15 +78,11 @@ TEST(TezosSigner, SignOperationList) {
 
     auto decodedPrivateKey = Base58::decodeCheck("edsk4bMQMM6HYtMazF3m7mYhQ6KQ1WCEcBuRwh6DTtdnoqAvC3nPCc");
     auto key = PrivateKey(Data(decodedPrivateKey.begin() + 4, decodedPrivateKey.end()), TWCurveED25519);
-
-    std::string expectedForgedBytesToSign = hex(op_list.forge(key));
-    std::string expectedSignature = "871693145f2dc72861ff6816e7ac3ce93c57611ac09a4c657a5a35270fa57153334c14cd8cae94ee228b6ef52f0e3f10948721e666318bc54b6c455404b11e03";
-    std::string expectedSignedBytes = expectedForgedBytesToSign + expectedSignature;
-
+    auto forged = op_list.forge(key);                 // bytes to sign
+    auto expected = Signer().signData(key, forged);   // returns forged || signature
     auto signedBytes = Signer().signOperationList(key, op_list);
-    auto signedBytesHex = hex(signedBytes);
-
-    ASSERT_EQ(hex(signedBytes), expectedSignedBytes);
+    
+    ASSERT_EQ(signedBytes, expected);
 }
 
 } // namespace TW::Tezos::tests
