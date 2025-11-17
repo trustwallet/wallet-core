@@ -34,6 +34,10 @@ RUN apt-get update \
 ENV CC=/usr/bin/clang-14
 ENV CXX=/usr/bin/clang++-14
 
+# CMake will not use the ENV if CMAKE_C_COMPILER is explicitly defined
+RUN ln -s /usr/bin/clang-14 /usr/bin/clang
+RUN ln -s /usr/bin/clang++-14 /usr/bin/clang++
+
 # Install rust
 RUN wget "https://sh.rustup.rs" -O rustup.sh \
     && sh rustup.sh -y
