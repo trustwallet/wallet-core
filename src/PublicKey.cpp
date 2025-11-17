@@ -20,6 +20,26 @@
 
 namespace TW {
 
+bool validateSignatureLength(TWPublicKeyType type, const Data& signature) {
+    std::size_t minLength = 64;
+    std::size_t maxLength = 64;
+
+    switch (type) {
+    case TWPublicKeyTypeSECP256k1:
+    case TWPublicKeyTypeSECP256k1Extended:
+    case TWPublicKeyTypeNIST256p1:
+    case TWPublicKeyTypeNIST256p1Extended: {
+        maxLength = 65;
+        break;
+    }
+    default: {
+        break;
+    }
+    }
+
+    return minLength <= signature.size() && signature.size() <= maxLength;
+}
+
 /// Determines if a collection of bytes makes a valid public key of the
 /// given type.
 bool PublicKey::isValid(const Data& data, enum TWPublicKeyType type) {
@@ -142,6 +162,10 @@ bool rust_public_key_verify(const Data& key, TWPublicKeyType type, const Data& s
 }
 
 bool PublicKey::verify(const Data& signature, const Data& message) const {
+    if (!validateSignatureLength(type, signature)) {
+        return false;
+    }
+
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended:
