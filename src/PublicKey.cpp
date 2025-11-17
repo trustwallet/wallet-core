@@ -30,8 +30,11 @@ bool validateSignatureLength(TWPublicKeyType type, const Data& signature) {
     case TWPublicKeyTypeNIST256p1:
     case TWPublicKeyTypeNIST256p1Extended: {
         maxLength = 65;
+        break;
     }
-    default: {}
+    default: {
+        break;
+    }
     }
 
     return minLength <= signature.size() && signature.size() <= maxLength;

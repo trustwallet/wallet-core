@@ -83,8 +83,8 @@ TEST(TWPublicKeyTests, VerifyInvalidLength) {
     const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveSECP256k1);
     const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
 
-    // 63 bytes instead of 64 or 65.
     const auto message = DATA("de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb11432");
+    // 63 bytes instead of 64 or 65.
     const auto signature = DATA("0000000000000000000000000000000000000000000000000000000000020123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef80");
 
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false));
