@@ -2,15 +2,13 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-#include "Data.h"
+#include "Coin.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
-#include "Coin.h"
-
-#include "Tezos/TransactionCompiler.h"
+#include "TransactionCompiler.h"
 
 #include "proto/Tezos.pb.h"
-#include "proto/TxCompiler.pb.h"      // for TW::TxCompiler::Proto::PreSigningOutput
+#include "proto/TransactionCompiler.pb.h"
 
 #include <TrustWalletCore/TWAnySigner.h>
 #include <TrustWalletCore/TWCoinType.h>
@@ -83,7 +81,7 @@ TEST(TezosCompiler, CompileWithSignatures) {
 
     // -------- Step 3: Compile transaction using that signature
     auto compiledData = TransactionCompiler::compileWithSignatures(coin, inputStrData, {signature}, {});
-    TW::Tezos::Proto::SigningOutput compiledOutput;
+    Proto::SigningOutput compiledOutput;
     ASSERT_TRUE(compiledOutput.ParseFromArray(compiledData.data(), (int)compiledData.size()));
     const auto compiledHex = hex(compiledOutput.encoded());
 
@@ -92,11 +90,13 @@ TEST(TezosCompiler, CompileWithSignatures) {
     ASSERT_TRUE(signingInput.ParseFromArray(inputStrData.data(), (int)inputStrData.size()));
     signingInput.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
-    TW::Tezos::Proto::SigningOutput anySignOutput;
-    ANY_SIGN(signingInput, coin);
-    const auto anySignHex = hex(anySignOutput.encoded());
+    {
+        Proto::SigningOutput output;
+        ANY_SIGN(signingInput, coin);
+        const auto anySignHex = hex(output.encoded());
 
-    ASSERT_EQ(compiledHex, anySignHex);
+        ASSERT_EQ(compiledHex, anySignHex);
+    }
 
     // -------- Structural Seoul check:
     // Ensure the reveal has the new presence_of_proof byte (0x00) after the forged public key,
@@ -120,7 +120,7 @@ TEST(TezosCompiler, CompileWithSignatures) {
     {
         auto compiledBad = TransactionCompiler::compileWithSignatures(
             coin, inputStrData, {signature, signature}, {});
-        TW::Tezos::Proto::SigningOutput badOutput;
+        Proto::SigningOutput badOutput;
         ASSERT_TRUE(badOutput.ParseFromArray(compiledBad.data(), (int)compiledBad.size()));
         EXPECT_EQ(badOutput.encoded().size(), 0ul);
         EXPECT_EQ(badOutput.error(), Common::Proto::Error_signatures_count);
