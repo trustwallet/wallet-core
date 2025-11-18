@@ -21,23 +21,17 @@
 namespace TW {
 
 bool validateSignatureLength(TWPublicKeyType type, const Data& signature) {
-    std::size_t minLength = 64;
-    std::size_t maxLength = 64;
-
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended:
     case TWPublicKeyTypeNIST256p1:
     case TWPublicKeyTypeNIST256p1Extended: {
-        maxLength = 65;
-        break;
+        return PublicKey::signatureSize <= signature.size() && signature.size() <= PublicKey::secp256k1SignatureSize;
     }
     default: {
-        break;
+        return signature.size() == PublicKey::signatureSize;
     }
     }
-
-    return minLength <= signature.size() && signature.size() <= maxLength;
 }
 
 /// Determines if a collection of bytes makes a valid public key of the
@@ -97,7 +91,10 @@ PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type)
         break;
     case TWPublicKeyTypeED25519Blake2b:
         bytes.reserve(ed25519Size);
-        assert(data.size() == ed25519Size); // ensured by isValid() above
+        // Sanity check, ensured by isValid() above.
+        if (bytes.size() != ed25519Size) {
+            throw std::invalid_argument("Invalid public key size");
+        }
         std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
         break;
     case TWPublicKeyTypeED25519Cardano:
@@ -110,21 +107,23 @@ PublicKey PublicKey::compressed() const {
     if (type != TWPublicKeyTypeSECP256k1Extended && type != TWPublicKeyTypeNIST256p1Extended) {
         return *this;
     }
+    if (bytes.size() < 65) {
+        throw std::invalid_argument("Invalid public key size");
+    }
 
     Data newBytes(secp256k1Size);
-    assert(bytes.size() >= 65);
     newBytes[0] = 0x02 | (bytes[64] & 0x01);
 
-    assert(type == TWPublicKeyTypeSECP256k1Extended || type == TWPublicKeyTypeNIST256p1Extended);
     switch (type) {
     case TWPublicKeyTypeSECP256k1Extended:
         std::copy(bytes.begin() + 1, bytes.begin() + secp256k1Size, newBytes.begin() + 1);
         return PublicKey(newBytes, TWPublicKeyTypeSECP256k1);
 
     case TWPublicKeyTypeNIST256p1Extended:
-    default:
         std::copy(bytes.begin() + 1, bytes.begin() + secp256k1Size, newBytes.begin() + 1);
         return PublicKey(newBytes, TWPublicKeyTypeNIST256p1);
+    default:
+        return *this;
     }
 }
 
@@ -220,6 +219,10 @@ bool PublicKey::verifyAsDER(const Data& signature, const Data& message) const {
 }
 
 bool PublicKey::verifyZilliqa(const Data& signature, const Data& message) const {
+    if (signature.size() < signatureSize || secp256k1SignatureSize < signature.size()) {
+        return false;
+    }
+
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended:
@@ -279,7 +282,9 @@ bool PublicKey::isValidED25519() const {
     if (type != TWPublicKeyTypeED25519) {
         return false;
     }
-    assert(bytes.size() == ed25519Size);
+    if (bytes.size() != ed25519Size) {
+        return false;
+    }
     ge25519 r;
     return ge25519_unpack_negative_vartime(&r, bytes.data()) != 0;
 }

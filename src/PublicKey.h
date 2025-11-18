@@ -31,6 +31,9 @@ class PublicKey {
     /// The number of bytes in a secp256k1 and nist256p1 extended public key.
     static const size_t secp256k1ExtendedSize = 65;
 
+    /// The number of bytes in a secp256k1 signature without V byte in the end.
+    static const size_t signatureSize = 64;
+
     /// The number of bytes in a secp256k1 signature.
     static const size_t secp256k1SignatureSize = 65;
 
