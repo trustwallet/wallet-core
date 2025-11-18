@@ -26,7 +26,8 @@ bool validateSignatureLength(TWPublicKeyType type, const Data& signature) {
     case TWPublicKeyTypeSECP256k1Extended:
     case TWPublicKeyTypeNIST256p1:
     case TWPublicKeyTypeNIST256p1Extended: {
-        return PublicKey::signatureSize <= signature.size() && signature.size() <= PublicKey::secp256k1SignatureSize;
+        return signature.size() == PublicKey::signatureSize
+            || signature.size() == PublicKey::secp256k1SignatureSize;
     }
     default: {
         return signature.size() == PublicKey::signatureSize;
@@ -107,7 +108,7 @@ PublicKey PublicKey::compressed() const {
     if (type != TWPublicKeyTypeSECP256k1Extended && type != TWPublicKeyTypeNIST256p1Extended) {
         return *this;
     }
-    if (bytes.size() < 65) {
+    if (bytes.size() < secp256k1ExtendedSize) {
         throw std::invalid_argument("Invalid public key size");
     }
 
@@ -219,7 +220,7 @@ bool PublicKey::verifyAsDER(const Data& signature, const Data& message) const {
 }
 
 bool PublicKey::verifyZilliqa(const Data& signature, const Data& message) const {
-    if (signature.size() < signatureSize || secp256k1SignatureSize < signature.size()) {
+    if (signature.size() != signatureSize && signature.size() != secp256k1SignatureSize) {
         return false;
     }
 
