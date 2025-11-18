@@ -93,7 +93,7 @@ PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type)
     case TWPublicKeyTypeED25519Blake2b:
         bytes.reserve(ed25519Size);
         // Sanity check, ensured by isValid() above.
-        if (bytes.size() != ed25519Size) {
+        if (data.size() != ed25519Size) {
             throw std::invalid_argument("Invalid public key size");
         }
         std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
