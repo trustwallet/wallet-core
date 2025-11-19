@@ -2204,6 +2204,7 @@ dependencies = [
  "tw_ripple",
  "tw_ronin",
  "tw_solana",
+ "tw_stacks",
  "tw_substrate",
  "tw_sui",
  "tw_thorchain",
@@ -2607,6 +2608,16 @@ dependencies = [
  "tw_keypair",
  "tw_memory",
  "tw_scale",
+]
+
+[[package]]
+name = "tw_stacks"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_keypair",
+ "tw_memory",
+ "tw_proto",
 ]
 
 [[package]]

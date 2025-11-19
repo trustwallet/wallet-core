@@ -29,6 +29,7 @@ pub enum BlockchainType {
     Ripple,
     Ronin,
     Solana,
+    Stacks,
     Sui,
     TheOpenNetwork,
     Thorchain,

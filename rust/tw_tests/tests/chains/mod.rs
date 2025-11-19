@@ -24,6 +24,7 @@ mod polkadot;
 mod polymesh;
 mod ripple;
 mod solana;
+mod stacks;
 mod sui;
 mod tbinance;
 mod thorchain;

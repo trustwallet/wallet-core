@@ -41,8 +41,11 @@ fn new_blockchain_rust(args: &[String]) -> Result<()> {
 }
 
 fn new_blockchain(args: &[String]) -> Result<()> {
+    println!("new_blockchain");
     let coin_str = args.iter().next().ok_or_else(|| Error::InvalidCommand)?;
+    println!("new_blockchain {coin_str}");
     let coin_id = CoinId::new(coin_str.clone())?;
+    println!("new_blockchain coin_id");
     let coin_item = read_coin_from_registry(&coin_id)?;
 
     println!("New '{coin_str}' blockchain template requested");
