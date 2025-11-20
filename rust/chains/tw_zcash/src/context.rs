@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::ZcashAddress;
+use crate::modules::pczt;
 use crate::modules::protobuf_builder::ZcashProtobufBuilder;
 use crate::modules::signing_request::ZcashSigningRequestBuilder;
 use crate::modules::zcash_fee_estimator::ZcashFeeEstimator;
@@ -20,6 +21,7 @@ impl UtxoContext for ZcashContext {
     type Address = ZcashAddress;
     type Transaction = ZcashTransaction;
     type FeeEstimator = ZcashFeeEstimator;
+    type Psbt = pczt::Pczt;
 
     fn addr_to_script_pubkey(
         addr: &Self::Address,
@@ -35,5 +37,5 @@ impl UtxoContext for ZcashContext {
 impl BitcoinSigningContext for ZcashContext {
     type SigningRequestBuilder = ZcashSigningRequestBuilder;
     type ProtobufBuilder = ZcashProtobufBuilder;
-    type PsbtRequestBuilder = NoPsbtRequestBuilder;
+    type PsbtRequestHandler = NoPsbtRequestBuilder;
 }

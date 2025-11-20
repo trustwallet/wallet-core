@@ -4,23 +4,26 @@
 
 use crate::modules::psbt_request::output_psbt::OutputPsbt;
 use crate::modules::psbt_request::utxo_psbt::UtxoPsbt;
-use crate::modules::psbt_request::{PsbtRequest, PsbtRequestBuilder};
+use crate::modules::psbt_request::{PsbtRequest, PsbtRequestHandler};
 use crate::modules::signing_request::standard_signing_request::StandardSigningRequestBuilder;
-use bitcoin::psbt::Psbt;
 use std::marker::PhantomData;
 use tw_coin_entry::error::prelude::*;
+use tw_memory::Data;
 use tw_proto::BitcoinV2::Proto;
 use tw_utxo::context::UtxoContext;
 use tw_utxo::transaction::standard_transaction::builder::TransactionBuilder;
 use tw_utxo::transaction::standard_transaction::Transaction;
+use tw_utxo::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
 
-pub struct StandardPsbtRequestBuilder;
+pub use bitcoin::psbt::Psbt;
 
-impl<Context> PsbtRequestBuilder<Context> for StandardPsbtRequestBuilder
+pub struct StandardPsbtRequestHandler;
+
+impl<Context> PsbtRequestHandler<Context> for StandardPsbtRequestHandler
 where
-    Context: UtxoContext<Transaction = Transaction>,
+    Context: UtxoContext<Transaction = Transaction, Psbt = Psbt>,
 {
-    fn build(
+    fn parse_request(
         input: &Proto::SigningInput,
         psbt_input: &Proto::Psbt,
     ) -> SigningResult<PsbtRequest<Context>> {
@@ -65,5 +68,35 @@ where
             unsigned_tx,
             _phantom: PhantomData,
         })
+    }
+
+    fn update_signed(
+        psbt: &mut Context::Psbt,
+        signed_tx: &Context::Transaction,
+    ) -> SigningResult<()> {
+        for (signed_txin, utxo_psbt) in signed_tx.inputs().iter().zip(psbt.inputs.iter_mut()) {
+            if signed_txin.has_script_sig() {
+                utxo_psbt.final_script_sig = Some(bitcoin::ScriptBuf::from_bytes(
+                    signed_txin.script_sig().to_vec(),
+                ));
+            }
+
+            if let Some(witness) = signed_txin.witness() {
+                if witness.is_empty() {
+                    continue;
+                }
+
+                let mut final_witness = bitcoin::Witness::new();
+                for witness_item in witness.as_items() {
+                    final_witness.push(bitcoin::ScriptBuf::from_bytes(witness_item.to_vec()));
+                }
+                utxo_psbt.final_script_witness = Some(final_witness);
+            }
+        }
+        Ok(())
+    }
+
+    fn serialize_psbt(psbt: &Context::Psbt) -> SigningResult<Data> {
+        Ok(psbt.serialize())
     }
 }

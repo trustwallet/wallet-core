@@ -4,8 +4,7 @@
 
 use crate::context::BitcoinSigningContext;
 use crate::modules::protobuf_builder::ProtobufBuilder;
-use crate::modules::psbt::update_psbt_signed;
-use crate::modules::psbt_request::{PsbtRequest, PsbtRequestBuilder};
+use crate::modules::psbt_request::{PsbtRequest, PsbtRequestHandler};
 use crate::modules::signing_request::SigningRequestBuilder;
 use std::borrow::Cow;
 use std::marker::PhantomData;
@@ -89,7 +88,7 @@ impl<Context: BitcoinSigningContext> BitcoinSigner<Context> {
             mut psbt,
             unsigned_tx,
             ..
-        } = Context::PsbtRequestBuilder::build(input, psbt_input)?;
+        } = Context::PsbtRequestHandler::parse_request(input, psbt_input)?;
 
         let fee = unsigned_tx.fee()?;
 
@@ -102,7 +101,7 @@ impl<Context: BitcoinSigningContext> BitcoinSigner<Context> {
         let signed_tx =
             TxSigner::sign_tx(unsigned_tx, &keys_manager).context("Error signing transaction")?;
 
-        update_psbt_signed(&mut psbt, &signed_tx);
+        Context::PsbtRequestHandler::update_signed(&mut psbt, &signed_tx)?;
 
         Ok(Proto::SigningOutput {
             transaction: Context::ProtobufBuilder::tx_to_proto(&signed_tx),
@@ -113,7 +112,7 @@ impl<Context: BitcoinSigningContext> BitcoinSigner<Context> {
             fee,
             weight: signed_tx.weight() as u64,
             psbt: Some(Proto::Psbt {
-                psbt: Cow::from(psbt.serialize()),
+                psbt: Cow::from(Context::PsbtRequestHandler::serialize_psbt(&psbt)?),
             }),
             ..Proto::SigningOutput::default()
         })

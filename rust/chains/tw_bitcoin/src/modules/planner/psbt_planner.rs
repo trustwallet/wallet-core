@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::context::BitcoinSigningContext;
-use crate::modules::psbt_request::{PsbtRequest, PsbtRequestBuilder};
+use crate::modules::psbt_request::{PsbtRequest, PsbtRequestHandler};
 use crate::modules::signing_request::standard_signing_request::chain_info;
 use crate::modules::tx_builder::script_parser::StandardScriptParser;
 use crate::modules::tx_builder::BitcoinChainInfo;
@@ -32,7 +32,7 @@ impl<Context: BitcoinSigningContext> PsbtPlanner<Context> {
     ) -> SigningResult<Proto::TransactionPlan<'static>> {
         let chain_info = chain_info(coin, &input.chain_info)?;
         let PsbtRequest { unsigned_tx, .. } =
-            Context::PsbtRequestBuilder::build(input, psbt_input)?;
+            Context::PsbtRequestHandler::parse_request(input, psbt_input)?;
 
         let total_input = unsigned_tx.total_input()?;
         let fee_estimate = unsigned_tx.fee()?;

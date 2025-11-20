@@ -44,6 +44,11 @@ impl ZcashTransactionBuilder {
         self
     }
 
+    pub fn version_group_id(&mut self, version_group_id: u32) -> &mut Self {
+        self.transaction.version_group_id = version_group_id;
+        self
+    }
+
     pub fn lock_time(&mut self, locktime: u32) -> &mut Self {
         self.transaction.locktime = locktime;
         self

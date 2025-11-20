@@ -21,6 +21,7 @@ impl UtxoContext for KomodoContext {
     type Address = LegacyAddress;
     type Transaction = ZcashTransaction;
     type FeeEstimator = ZcashFeeEstimator;
+    type Psbt = ();
 
     fn addr_to_script_pubkey(
         addr: &Self::Address,
@@ -33,5 +34,5 @@ impl UtxoContext for KomodoContext {
 impl BitcoinSigningContext for KomodoContext {
     type SigningRequestBuilder = ZcashSigningRequestBuilder;
     type ProtobufBuilder = ZcashProtobufBuilder;
-    type PsbtRequestBuilder = NoPsbtRequestBuilder;
+    type PsbtRequestHandler = NoPsbtRequestBuilder;
 }
