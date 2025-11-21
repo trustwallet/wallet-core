@@ -46,7 +46,7 @@ impl Pczt {
         let version = u32::from_le_bytes(bytes[4..8].try_into().unwrap());
         if version != PCZT_VERSION_1 {
             return SigningError::err(SigningErrorType::Error_input_parse)
-                .context("PCZT PCZT version mismatch");
+                .context("PCZT version mismatch");
         }
 
         // This is a v1 PCZT.

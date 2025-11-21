@@ -42,10 +42,11 @@ impl<'a> UtxoPczt<'a> {
             .value
             .try_into()
             .tw_err(SigningErrorType::Error_invalid_utxo_amount)
-            .context("PSBT UTXO amount is too large")?;
+            .context("PCZT UTXO amount is too large")?;
 
         // [`pczt::transparent::Input::sighash_type`] is a private field, assume it as default.
-        let sighash_ty = SighashType::default();
+        let sighash_ty = SighashType::from_u32(self.utxo.sighash_type as u32)
+            .context("Invalid sighash type in PCZT UTXO")?;
 
         let builder = UtxoBuilder::default()
             .prev_txid(prevout_hash)
@@ -80,7 +81,7 @@ impl<'a> UtxoPczt<'a> {
             },
             StandardScript::P2SH(_) | StandardScript::P2WSH(_) => {
                 SigningError::err(SigningErrorType::Error_not_supported)
-                    .context("P2SH and P2WSH scriptPubkey's are not supported yet")
+                    .context("P2SH and P2WSH scriptPubkeys are not supported yet")
             },
             StandardScript::OpReturn(_) => SigningError::err(SigningErrorType::Error_invalid_utxo)
                 .context("Cannot spend an OP_RETURN output"),
