@@ -6,7 +6,7 @@ use crate::modules::pczt;
 use crate::modules::pczt_request::output_pczt::OutputPczt;
 use crate::modules::pczt_request::utxo_pczt::UtxoPczt;
 use crate::modules::transaction_builder::ZcashTransactionBuilder;
-use crate::transaction::ZcashTransaction;
+use crate::transaction::{ZcashTransaction, TRANSACTION_VERSION_4, TRANSACTION_VERSION_GROUP_ID};
 use std::marker::PhantomData;
 use tw_bitcoin::modules::psbt_request::{PsbtRequest, PsbtRequestHandler};
 use tw_bitcoin::modules::signing_request::standard_signing_request::StandardSigningRequestBuilder;
@@ -17,9 +17,9 @@ use tw_proto::BitcoinV2::Proto;
 use tw_utxo::context::UtxoContext;
 use tw_utxo::transaction::transaction_interface::{TransactionInterface, TxInputInterface};
 
-pub struct PcztRequestBuilder;
+pub struct PcztRequestHandler;
 
-impl<Context> PsbtRequestHandler<Context> for PcztRequestBuilder
+impl<Context> PsbtRequestHandler<Context> for PcztRequestHandler
 where
     Context: UtxoContext<Transaction = ZcashTransaction, Psbt = pczt::Pczt>,
 {
@@ -31,6 +31,17 @@ where
 
         let version = pczt.global.tx_version;
         let version_group_id = pczt.global.version_group_id;
+
+        if version != TRANSACTION_VERSION_4 {
+            return SigningError::err(SigningErrorType::Error_not_supported)
+                .context(format!("PCZT with unsupported version: {version}"));
+        }
+        if version_group_id != TRANSACTION_VERSION_GROUP_ID {
+            return SigningError::err(SigningErrorType::Error_not_supported).context(format!(
+                "PCZT with unsupported version group ID: {version_group_id}"
+            ));
+        }
+
         // No `locktime` in PCZT, default to 0.
         let expiry_height = pczt.global.expiry_height;
         let branch_id = H32::from_array(pczt.global.consensus_branch_id.to_le_bytes());
@@ -48,8 +59,8 @@ where
 
         let mut builder = ZcashTransactionBuilder::default();
         builder
-            .version(version)
-            .version_group_id(version_group_id)
+            .overwintered_version(TRANSACTION_VERSION_4)
+            .version_group_id(TRANSACTION_VERSION_GROUP_ID)
             .expiry_height(expiry_height)
             .branch_id(branch_id);
 

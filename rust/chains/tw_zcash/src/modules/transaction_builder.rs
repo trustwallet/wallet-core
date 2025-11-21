@@ -3,7 +3,8 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::transaction::{
-    ZcashTransaction, NU6_BRANCH_ID, TRANSACTION_VERSION_4, TRANSACTION_VERSION_GROUP_ID,
+    ZcashTransaction, NU6_BRANCH_ID, OVERWINTERED_FLAG, TRANSACTION_VERSION_4,
+    TRANSACTION_VERSION_GROUP_ID,
 };
 use tw_coin_entry::error::prelude::SigningResult;
 use tw_hash::H32;
@@ -26,7 +27,7 @@ impl ZcashTransactionBuilder {
     pub fn new() -> Self {
         ZcashTransactionBuilder {
             transaction: ZcashTransaction {
-                version: TRANSACTION_VERSION_4,
+                version: TRANSACTION_VERSION_4 | OVERWINTERED_FLAG,
                 version_group_id: TRANSACTION_VERSION_GROUP_ID,
                 transparent_inputs: Vec::default(),
                 transparent_outputs: Vec::default(),
@@ -39,8 +40,8 @@ impl ZcashTransactionBuilder {
         }
     }
 
-    pub fn version(&mut self, version: u32) -> &mut Self {
-        self.transaction.version = version;
+    pub fn overwintered_version(&mut self, version: u32) -> &mut Self {
+        self.transaction.version = version | OVERWINTERED_FLAG;
         self
     }
 
