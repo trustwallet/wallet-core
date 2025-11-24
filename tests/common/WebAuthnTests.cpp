@@ -30,7 +30,7 @@ TEST(WebAuthn, GetRSValues) {
     // C
     {
         const auto signature = DATA("0x30440220766589b461a838748708cdf88444b21b1fa52b57d70671b4f9bf60ad14b372ec022020cc439c9c20661bfa39bbea24a900ec1484b2395eb065ead8ef4e273144a57d");
-        const auto& rsValuesData = TWWebAuthnGetRSValues(signature.get());
+        const auto* rsValuesData = TWWebAuthnGetRSValues(signature.get());
         const auto& rsValues = hexEncoded(*reinterpret_cast<const Data*>(WRAPD(rsValuesData).get()));
         EXPECT_EQ(rsValues, "0x766589b461a838748708cdf88444b21b1fa52b57d70671b4f9bf60ad14b372ec20cc439c9c20661bfa39bbea24a900ec1484b2395eb065ead8ef4e273144a57d");
     }

@@ -12,6 +12,11 @@
 
 namespace TW::WebAuthn {
 
+// 32 + 1 flags + 4 counter
+static const std::size_t gAuthDataMinSize = 37;
+// 16 aaguid + 2 credIDLen
+static const std::size_t gAuthCredentialDataMinSize = 18;
+
 // https://www.w3.org/TR/webauthn-2/#authenticator-data
 struct AuthData {
     Data rpIdHash;
@@ -30,7 +35,11 @@ struct AuthData {
     Data COSEPublicKey;
 };
 
-AuthData parseAuthData(const Data& buffer) {
+std::optional<AuthData> parseAuthData(const Data& buffer) {
+    if (buffer.size() < gAuthDataMinSize) {
+        return std::nullopt;
+    }
+
     AuthData authData;
 
     authData.rpIdHash = subData(buffer, 0, 32);
@@ -53,6 +62,10 @@ AuthData parseAuthData(const Data& buffer) {
     it += 4;
 
     if (authData.flags.at) {
+        if (static_cast<size_t>(buffer.end() - it) < gAuthCredentialDataMinSize) {
+            return std::nullopt;
+        }
+
         authData.aaguid = Data(it, it + 16);
         it += 16;
 
@@ -60,6 +73,10 @@ AuthData parseAuthData(const Data& buffer) {
         std::uint16_t credIDLen = static_cast<std::uint16_t>((credIDLenBuf[0] << 8) |
                                                              credIDLenBuf[1]);
         it += 2;
+
+        if (static_cast<size_t>(buffer.end() - it) < static_cast<size_t>(credIDLen)) {
+            return std::nullopt;
+        }
 
         authData.credID = Data(it, it + credIDLen);
         it += credIDLen;
@@ -83,31 +100,47 @@ auto findStringKey = [](const auto& map, const auto& key) {
 };
 
 std::optional<PublicKey> getPublicKey(const Data& attestationObject) {
-    const Data authData = findStringKey(TW::Cbor::Decode(attestationObject).getMapElements(), "authData")->second.getBytes();
-    if (authData.empty()) {
+    try {
+        const auto attestationObjectElements = TW::Cbor::Decode(attestationObject).getMapElements();
+        const auto authDataIter = findStringKey(attestationObjectElements, "authData");
+        if (authDataIter == attestationObjectElements.end()) {
+            return std::nullopt;
+        }
+
+        const Data authData = authDataIter->second.getBytes();
+        if (authData.empty()) {
+            return std::nullopt;
+        }
+
+        const auto authDataParsed = parseAuthData(authData);
+        if (!authDataParsed.has_value()) {
+            return std::nullopt;
+        }
+        const auto COSEPublicKey = TW::Cbor::Decode(authDataParsed->COSEPublicKey).getMapElements();
+
+        if (COSEPublicKey.empty()) {
+            return std::nullopt;
+        }
+
+        // https://www.w3.org/TR/webauthn-2/#sctn-encoded-credPubKey-examples
+        const std::string xKey = "-2";
+        const std::string yKey = "-3";
+
+        const auto x = findIntKey(COSEPublicKey, xKey);
+        const auto y = findIntKey(COSEPublicKey, yKey);
+        if (x == COSEPublicKey.end() || y == COSEPublicKey.end()) {
+            return std::nullopt;
+        }
+
+        Data publicKey;
+        append(publicKey, 0x04);
+        append(publicKey, x->second.getBytes());
+        append(publicKey, y->second.getBytes());
+
+        return PublicKey(publicKey, TWPublicKeyTypeNIST256p1Extended);
+    } catch (...) {
         return std::nullopt;
     }
-
-    const AuthData authDataParsed = parseAuthData(authData);
-    const auto COSEPublicKey = TW::Cbor::Decode(authDataParsed.COSEPublicKey).getMapElements();
-
-    if (COSEPublicKey.empty()) {
-        return std::nullopt;
-    }
-
-    // https://www.w3.org/TR/webauthn-2/#sctn-encoded-credPubKey-examples
-    const std::string xKey = "-2";
-    const std::string yKey = "-3";
-
-    const auto x = findIntKey(COSEPublicKey, xKey);
-    const auto y = findIntKey(COSEPublicKey, yKey);
-
-    Data publicKey;
-    append(publicKey, 0x04);
-    append(publicKey, x->second.getBytes());
-    append(publicKey, y->second.getBytes());
-
-    return PublicKey(publicKey, TWPublicKeyTypeNIST256p1Extended);
 }
 
 Data reconstructSignedMessage(const Data& authenticatorData, const Data& clientDataJSON) {
