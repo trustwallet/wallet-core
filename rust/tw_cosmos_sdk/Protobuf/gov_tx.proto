@@ -1,5 +1,8 @@
 // Since: cosmos-sdk 0.43
 syntax = "proto3";
+
+import "google/protobuf/any.proto";
+
 package cosmos.gov.v1beta1;
 
 // VoteOption enumerates the valid vote options for a given governance proposal.
@@ -21,4 +24,13 @@ message MsgVote {
   uint64     proposal_id = 1;
   string     voter       = 2;
   VoteOption option      = 3;
+}
+
+// TextProposal defines a standard text proposal whose changes need to be
+// manually updated in case of approval.
+message TextProposal {
+  // title of the proposal
+  string title = 1;
+  // description of the proposal
+  string description = 2;
 }
