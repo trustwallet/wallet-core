@@ -85,9 +85,22 @@ public:
     /// Constructor, create from CBOR byte stream
     Decode(const Data& input);
 
-public: // decoding
+public:
+    enum MajorType {
+        MT_uint = 0,
+        MT_negint = 1,
+        MT_bytes = 2,
+        MT_string = 3,
+        MT_array = 4,
+        MT_map = 5,
+        MT_tag = 6,
+        MT_special = 7,
+    };
+
     /// Check if contains a valid CBOR byte stream.
     bool isValid() const;
+    // Get the major type
+    MajorType getMajorType() const;
     /// Get the value of a simple type
     uint64_t getValue() const;
     /// Get the value of a string/bytes as string
@@ -107,17 +120,6 @@ public: // decoding
     uint32_t length() const { return subLen; }
     /// Return encoded form (useful e.g for parsed out sub-parts)
     Data encoded() const;
-
-    enum MajorType {
-        MT_uint = 0,
-        MT_negint = 1,
-        MT_bytes = 2,
-        MT_string = 3,
-        MT_array = 4,
-        MT_map = 5,
-        MT_tag = 6,
-        MT_special = 7,
-    };
     
 private:
     /// Struct used to keep reference to original data

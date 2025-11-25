@@ -16,6 +16,8 @@ namespace TW::WebAuthn {
 static const std::size_t gAuthDataMinSize = 37;
 // 16 aaguid + 2 credIDLen
 static const std::size_t gAuthCredentialDataMinSize = 18;
+// 6 = -gAlgES256 - 1, where gAlgES256 = -7, ES256 = ECDSA w/ SHA-256 on P-256 curve
+static const uint64_t gAlgES256Encoded = 6;
 
 // https://www.w3.org/TR/webauthn-2/#authenticator-data
 struct AuthData {
@@ -125,17 +127,32 @@ std::optional<PublicKey> getPublicKey(const Data& attestationObject) {
         // https://www.w3.org/TR/webauthn-2/#sctn-encoded-credPubKey-examples
         const std::string xKey = "-2";
         const std::string yKey = "-3";
+        const std::string algKey = "3";
 
         const auto x = findIntKey(COSEPublicKey, xKey);
         const auto y = findIntKey(COSEPublicKey, yKey);
-        if (x == COSEPublicKey.end() || y == COSEPublicKey.end()) {
+        const auto alg = findIntKey(COSEPublicKey, algKey);
+        if (x == COSEPublicKey.end() || y == COSEPublicKey.end() || alg == COSEPublicKey.end()) {
             return std::nullopt;
         }
 
+        if (alg->second.getMajorType() != Cbor::Decode::MajorType::MT_negint) {
+            return std::nullopt;
+        }
+        // Currently, we only support P256 public keys.
+        if (alg->second.getValue() != gAlgES256Encoded) {
+            return std::nullopt;
+        }
+
+        const auto xBytes = x->second.getBytes();
+        const auto yBytes = y->second.getBytes();
+        if (xBytes.size() != 32 || yBytes.size() != 32) {
+            return std::nullopt;
+        }
         Data publicKey;
         append(publicKey, 0x04);
-        append(publicKey, x->second.getBytes());
-        append(publicKey, y->second.getBytes());
+        append(publicKey, xBytes);
+        append(publicKey, yBytes);
 
         return PublicKey(publicKey, TWPublicKeyTypeNIST256p1Extended);
     } catch (...) {

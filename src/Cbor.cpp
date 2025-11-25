@@ -246,6 +246,11 @@ uint32_t Decode::getTotalLen() const {
     }
 }
 
+Decode::MajorType Decode::getMajorType() const {
+    TypeDesc typeDesc = getTypeDesc();
+    return typeDesc.majorType;
+}
+
 uint64_t Decode::getValue() const {
     TypeDesc typeDesc = getTypeDesc();
     if (typeDesc.majorType != MT_uint && typeDesc.majorType != MT_negint) {
