@@ -12,7 +12,7 @@ using RLP = TW::Ethereum::RLP;
 namespace TW::Theta {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    auto pkFrom = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveSECP256k1);
+    auto pkFrom = PrivateKey(input.private_key(), TWCurveSECP256k1);
     auto from = Ethereum::Address(pkFrom.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
 
     auto transaction = Transaction(

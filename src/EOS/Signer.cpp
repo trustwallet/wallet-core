@@ -39,7 +39,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         }
 
         // sign the transaction with a Signer
-        auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), curve);
+        auto key = PrivateKey(input.private_key(), curve);
         signer.sign(key, type, tx);
 
         // Pack the transaction and add the json encoding to Signing outputput

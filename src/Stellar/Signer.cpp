@@ -23,7 +23,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
 std::string Signer::sign() const noexcept {
 
-    auto key = PrivateKey(Data(_input.private_key().begin(), _input.private_key().end()), TWCurveED25519);
+    auto key = PrivateKey(_input.private_key(), TWCurveED25519);
     auto account = Address(_input.account());
     auto encoded = encode(_input);
 

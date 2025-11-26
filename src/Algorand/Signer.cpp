@@ -18,7 +18,7 @@ const std::string ASSET_TRANSACTION = "axfer";
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto protoOutput = Proto::SigningOutput();
-    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveED25519);
+    auto key = PrivateKey(input.private_key(), TWCurveED25519);
     auto pubkey = key.getPublicKey(TWPublicKeyTypeED25519);
 
     auto preImageData = Signer::preImage(pubkey, input);

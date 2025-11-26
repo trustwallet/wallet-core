@@ -114,18 +114,33 @@ TWPrivateKeyType PrivateKey::getType(TWCurve curve) noexcept {
     }
 }
 
- PrivateKey::PrivateKey(const Data& data) {
-     if (!isValid(data)) {
-         throw std::invalid_argument("Invalid private key data");
-     }
-     bytes = data;
- }
+PrivateKey::PrivateKey(const Data& data) {
+    if (!isValid(data)) {
+     throw std::invalid_argument("Invalid private key data");
+    }
+    bytes = data;
+}
+
+PrivateKey::PrivateKey(Data&& data) {
+    if (!isValid(data)) {
+        throw std::invalid_argument("Invalid private key data");
+    }
+    bytes = std::move(data);
+}
 
 PrivateKey::PrivateKey(const Data& data, TWCurve curve) {
     if (!isValid(data, curve)) {
         throw std::invalid_argument("Invalid private key data");
     }
     bytes = data;
+    _curve = curve;
+}
+
+PrivateKey::PrivateKey(Data&& data, TWCurve curve) {
+    if (!isValid(data, curve)) {
+        throw std::invalid_argument("Invalid private key data");
+    }
+    bytes = std::move(data);
     _curve = curve;
 }
 

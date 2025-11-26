@@ -15,7 +15,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
     auto tx = signer.buildTransaction(input);
 
-    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveSECP256k1);
+    auto privateKey = PrivateKey(input.private_key(), TWCurveSECP256k1);
     signer.sign(privateKey, tx);
 
     auto output = Proto::SigningOutput();

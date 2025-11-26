@@ -264,7 +264,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto output = Proto::SigningOutput();
     try {
         auto signer =
-            Signer(PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveNIST256p1));
+            Signer(PrivateKey(input.private_key(), TWCurveNIST256p1));
         Proto::TransactionPlan plan;
         if (input.has_plan()) {
             plan = input.plan();
