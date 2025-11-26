@@ -97,6 +97,8 @@ public:
         MT_special = 7,
     };
 
+    using MapElements = std::vector<std::pair<Decode, Decode>>;
+
     /// Check if contains a valid CBOR byte stream.
     bool isValid() const;
     // Get the major type
@@ -110,7 +112,7 @@ public:
     /// Get all elements of array
     std::vector<Decode> getArrayElements() const { return getCompoundElements(1, MT_array); }
     /// Get all elements of map
-    std::vector<std::pair<Decode, Decode>> getMapElements() const;
+    MapElements getMapElements() const;
     /// Get the tag number
     uint64_t getTagValue() const;
     /// Get the tag element

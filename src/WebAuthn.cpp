@@ -16,8 +16,12 @@ namespace TW::WebAuthn {
 static const std::size_t gAuthDataMinSize = 37;
 // 16 aaguid + 2 credIDLen
 static const std::size_t gAuthCredentialDataMinSize = 18;
+// 2 stands for EC2 key type
+static const uint64_t gKtyEC2KeyType = 2;
 // 6 = -gAlgES256 - 1, where gAlgES256 = -7, ES256 = ECDSA w/ SHA-256 on P-256 curve
 static const uint64_t gAlgES256Encoded = 6;
+// 1 stands for P-256 curve
+static const uint64_t gCrvP256 = 1;
 
 // https://www.w3.org/TR/webauthn-2/#authenticator-data
 struct AuthData {
@@ -101,6 +105,21 @@ auto findStringKey = [](const auto& map, const auto& key) {
     });
 };
 
+bool checkCOSEPublicKeyParameter(const Cbor::Decode::MapElements& COSEPublicKey, const std::string& key, Cbor::Decode::MajorType expectedType, uint64_t expectedValue) {
+    const auto iter = findIntKey(COSEPublicKey, key);
+    if (iter == COSEPublicKey.end()) {
+        return false;
+    }
+    const auto& value = iter->second;
+    if (value.getMajorType() != expectedType) {
+        return false;
+    }
+    if (value.getValue() != expectedValue) {
+        return false;
+    }
+    return true;
+}
+
 std::optional<PublicKey> getPublicKey(const Data& attestationObject) {
     try {
         const auto attestationObjectElements = TW::Cbor::Decode(attestationObject).getMapElements();
@@ -127,22 +146,31 @@ std::optional<PublicKey> getPublicKey(const Data& attestationObject) {
         // https://www.w3.org/TR/webauthn-2/#sctn-encoded-credPubKey-examples
         const std::string xKey = "-2";
         const std::string yKey = "-3";
+        const std::string crvKey = "-1";
+        const std::string ktyKey = "1";
         const std::string algKey = "3";
+
+        // Currently, we only support P256 public keys.
+        if (!checkCOSEPublicKeyParameter(COSEPublicKey, crvKey, Cbor::Decode::MT_uint, gCrvP256)) {
+            return std::nullopt;
+        }
+
+        // EC2 key type supported only.
+        if (!checkCOSEPublicKeyParameter(COSEPublicKey, ktyKey, Cbor::Decode::MT_uint, gKtyEC2KeyType)) {
+            return std::nullopt;
+        }
+
+        // ES256 = ECDSA w/ SHA-256 on P-256 curve
+        if (!checkCOSEPublicKeyParameter(COSEPublicKey, algKey, Cbor::Decode::MT_negint, gAlgES256Encoded)) {
+            return std::nullopt;
+        }
 
         const auto x = findIntKey(COSEPublicKey, xKey);
         const auto y = findIntKey(COSEPublicKey, yKey);
-        const auto alg = findIntKey(COSEPublicKey, algKey);
-        if (x == COSEPublicKey.end() || y == COSEPublicKey.end() || alg == COSEPublicKey.end()) {
+        if (x == COSEPublicKey.end() || y == COSEPublicKey.end()) {
             return std::nullopt;
         }
 
-        if (alg->second.getMajorType() != Cbor::Decode::MajorType::MT_negint) {
-            return std::nullopt;
-        }
-        // Currently, we only support P256 public keys.
-        if (alg->second.getValue() != gAlgES256Encoded) {
-            return std::nullopt;
-        }
 
         const auto xBytes = x->second.getBytes();
         const auto yBytes = y->second.getBytes();
