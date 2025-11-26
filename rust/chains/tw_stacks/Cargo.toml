@@ -5,6 +5,8 @@ edition = "2021"
 
 [dependencies]
 tw_coin_entry = { path = "../../tw_coin_entry" }
+tw_encoding = { path = "../../tw_encoding" }
 tw_keypair = { path = "../../tw_keypair" }
 tw_memory = { path = "../../tw_memory" }
 tw_proto = { path = "../../tw_proto" }
+tw_hash = { path = "../../tw_hash" }

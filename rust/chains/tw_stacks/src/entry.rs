@@ -42,10 +42,10 @@ impl CoinEntry for StacksEntry {
     fn parse_address(
         &self,
         _coin: &dyn CoinContext,
-        _address: &str,
+        address: &str,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        StacksAddress::from_str(address)
     }
 
     #[inline]
@@ -57,11 +57,17 @@ impl CoinEntry for StacksEntry {
     fn derive_address(
         &self,
         _coin: &dyn CoinContext,
-        _public_key: PublicKey,
-        _derivation: Derivation,
+        public_key: PublicKey,
+        derivation: Derivation,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        let version = match derivation {
+            Derivation::Default => 22,
+            Derivation::Testnet => 26,
+            _ => return Err(AddressError::FromHexError),
+        };
+
+        Ok(StacksAddress::new(version, &public_key))
     }
 
     #[inline]

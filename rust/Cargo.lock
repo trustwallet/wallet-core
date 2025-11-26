@@ -2615,6 +2615,8 @@ name = "tw_stacks"
 version = "0.1.0"
 dependencies = [
  "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
  "tw_keypair",
  "tw_memory",
  "tw_proto",
@@ -2657,6 +2659,7 @@ dependencies = [
 name = "tw_tests"
 version = "0.1.0"
 dependencies = [
+ "k256",
  "serde",
  "serde_json",
  "tw_any_coin",
