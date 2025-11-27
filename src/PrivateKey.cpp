@@ -116,7 +116,7 @@ TWPrivateKeyType PrivateKey::getType(TWCurve curve) noexcept {
 
 PrivateKey::PrivateKey(const Data& data) {
     if (!isValid(data)) {
-     throw std::invalid_argument("Invalid private key data");
+        throw std::invalid_argument("Invalid private key data");
     }
     bytes = data;
 }
@@ -177,16 +177,20 @@ PrivateKey::PrivateKey(
 }
 
 PrivateKey& PrivateKey::operator=(const PrivateKey& other) noexcept {
-    cleanup();
-    bytes = other.bytes;
-    _curve = other._curve;
+    if (this != &other) {
+        cleanup();
+        bytes = other.bytes;
+        _curve = other._curve;
+    }
     return *this;
 }
 
 PrivateKey& PrivateKey::operator=(PrivateKey&& other) noexcept {
-    cleanup();
-    bytes = std::move(other.bytes);
-    _curve = other._curve;
+    if (this != &other) {
+        cleanup();
+        bytes = std::move(other.bytes);
+        _curve = other._curve;
+    }
     return *this;
 }
 
