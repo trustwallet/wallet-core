@@ -83,10 +83,10 @@ class PrivateKey {
         TWCurve curve);
 
     PrivateKey(const PrivateKey& other) = default;
-    PrivateKey& operator=(const PrivateKey& other) = default;
+    PrivateKey& operator=(const PrivateKey& other) noexcept;
 
     PrivateKey(PrivateKey&& other) = default;
-    PrivateKey& operator=(PrivateKey&& other) = default;
+    PrivateKey& operator=(PrivateKey&& other) noexcept;
 
     virtual ~PrivateKey() { cleanup(); }
 

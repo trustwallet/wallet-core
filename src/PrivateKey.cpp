@@ -176,6 +176,20 @@ PrivateKey::PrivateKey(
     _curve = curve;
 }
 
+PrivateKey& PrivateKey::operator=(const PrivateKey& other) noexcept {
+    cleanup();
+    bytes = other.bytes;
+    _curve = other._curve;
+    return *this;
+}
+
+PrivateKey& PrivateKey::operator=(PrivateKey&& other) noexcept {
+    cleanup();
+    bytes = std::move(other.bytes);
+    _curve = other._curve;
+    return *this;
+}
+
 PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
     Data result;
     switch (type) {
