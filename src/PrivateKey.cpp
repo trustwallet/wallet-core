@@ -114,18 +114,33 @@ TWPrivateKeyType PrivateKey::getType(TWCurve curve) noexcept {
     }
 }
 
- PrivateKey::PrivateKey(const Data& data) {
-     if (!isValid(data)) {
-         throw std::invalid_argument("Invalid private key data");
-     }
-     bytes = data;
- }
+PrivateKey::PrivateKey(const Data& data) {
+    if (!isValid(data)) {
+        throw std::invalid_argument("Invalid private key data");
+    }
+    bytes = data;
+}
+
+PrivateKey::PrivateKey(Data&& data) {
+    if (!isValid(data)) {
+        throw std::invalid_argument("Invalid private key data");
+    }
+    bytes = std::move(data);
+}
 
 PrivateKey::PrivateKey(const Data& data, TWCurve curve) {
     if (!isValid(data, curve)) {
         throw std::invalid_argument("Invalid private key data");
     }
     bytes = data;
+    _curve = curve;
+}
+
+PrivateKey::PrivateKey(Data&& data, TWCurve curve) {
+    if (!isValid(data, curve)) {
+        throw std::invalid_argument("Invalid private key data");
+    }
+    bytes = std::move(data);
     _curve = curve;
 }
 
@@ -159,6 +174,24 @@ PrivateKey::PrivateKey(
     append(bytes, extension2);
     append(bytes, chainCode2);
     _curve = curve;
+}
+
+PrivateKey& PrivateKey::operator=(const PrivateKey& other) noexcept {
+    if (this != &other) {
+        cleanup();
+        bytes = other.bytes;
+        _curve = other._curve;
+    }
+    return *this;
+}
+
+PrivateKey& PrivateKey::operator=(PrivateKey&& other) noexcept {
+    if (this != &other) {
+        cleanup();
+        bytes = std::move(other.bytes);
+        _curve = other._curve;
+    }
+    return *this;
 }
 
 PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {

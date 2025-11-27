@@ -18,18 +18,18 @@ class Signer {
     Signer() = delete;
 
     /// Returns a transaction plan (utxo selection, fee estimation)
-    static Proto::TransactionPlan plan(const Proto::SigningInput& input) noexcept;
+    static Proto::TransactionPlan plan(const Proto::SigningInput& input);
 
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs = {}) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs = {});
 
     /// Collects pre-image hashes to be signed
-    static Proto::PreSigningOutput preImageHashes(const Proto::SigningInput& input) noexcept;
+    static Proto::PreSigningOutput preImageHashes(const Proto::SigningInput& input);
 
     /// Compiles a transaction with the given signatures and public keys.
     static Proto::SigningOutput compile(const Proto::SigningInput& input,
                                         const std::vector<Data>& signatures,
-                                        const std::vector<PublicKey>& publicKeys) noexcept;
+                                        const std::vector<PublicKey>& publicKeys);
 
     /// Plans a transaction via BitcoinV2 protocol (utxo selection, fee estimation).
     static Proto::TransactionPlan planAsV2(const Proto::SigningInput& input) noexcept;

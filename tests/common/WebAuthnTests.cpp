@@ -25,12 +25,42 @@ TEST(WebAuthn, GetPublicKey) {
     }
 }
 
+TEST(WebAuthn, GetPublicKeyBufferOverflow) {
+    // AuthData length is 36 bytes (expected at least 37).
+    {
+        const auto attestationObject = DATA("0xa16861757468446174615824f95bc73828ee210f9fd3bbe72d97908013b0a3759e9aea3d0ae318766cd2e1ad45000000");
+        const auto* publicKey = TWWebAuthnGetPublicKey(attestationObject.get());
+        EXPECT_EQ(publicKey, nullptr);
+    }
+
+    // AuthData length is 37 bytes, `flags.at` is true, but missing credential public key data.
+    {
+        const auto attestationObject = DATA("0xa16861757468446174615825f95bc73828ee210f9fd3bbe72d97908013b0a3759e9aea3d0ae318766cd2e1ad4500000000");
+        const auto* publicKey = TWWebAuthnGetPublicKey(attestationObject.get());
+        EXPECT_EQ(publicKey, nullptr);
+    }
+
+    // AuthData length has enough size, but `credIDLen` is too large. Instead of 0x0020, it's 0xffff.
+    {
+        const auto attestationObject = DATA("0xa363666d74646e6f6e656761747453746d74a068617574684461746158a4f95bc73828ee210f9fd3bbe72d97908013b0a3759e9aea3d0ae318766cd2e1ad4500000000adce000235bcc60a648b0b25f1f05503ffffc720eb493e167ce93183dd91f5661e1004ed8cc1be23d3340d92381da5c0c80ca5010203262001215820a620a8cfc88fd062b11eab31663e56cad95278bef612959be214d98779f645b82258204e7b905b42917570148b0432f99ba21f2e7eebe018cbf837247e38150a89f771");
+        const auto* publicKey = TWWebAuthnGetPublicKey(attestationObject.get());
+        EXPECT_EQ(publicKey, nullptr);
+    }
+
+    // COSEPublicKey is only one byte length, error decoding as Cbor.
+    {
+        const auto attestationObject = DATA("0xa16861757468446174615858f95bc73828ee210f9fd3bbe72d97908013b0a3759e9aea3d0ae318766cd2e1ad4500000000adce000235bcc60a648b0b25f1f055030020c720eb493e167ce93183dd91f5661e1004ed8cc1be23d3340d92381da5c0c80ca5");
+        const auto* publicKey = TWWebAuthnGetPublicKey(attestationObject.get());
+        EXPECT_EQ(publicKey, nullptr);
+    }
+}
+
 TEST(WebAuthn, GetRSValues) {
 
     // C
     {
         const auto signature = DATA("0x30440220766589b461a838748708cdf88444b21b1fa52b57d70671b4f9bf60ad14b372ec022020cc439c9c20661bfa39bbea24a900ec1484b2395eb065ead8ef4e273144a57d");
-        const auto& rsValuesData = TWWebAuthnGetRSValues(signature.get());
+        const auto* rsValuesData = TWWebAuthnGetRSValues(signature.get());
         const auto& rsValues = hexEncoded(*reinterpret_cast<const Data*>(WRAPD(rsValuesData).get()));
         EXPECT_EQ(rsValues, "0x766589b461a838748708cdf88444b21b1fa52b57d70671b4f9bf60ad14b372ec20cc439c9c20661bfa39bbea24a900ec1484b2395eb065ead8ef4e273144a57d");
     }

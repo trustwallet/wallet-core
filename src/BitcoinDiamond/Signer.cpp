@@ -13,12 +13,12 @@
 using namespace TW;
 namespace TW::BitcoinDiamond {
 
-TransactionPlan Signer::plan(const SigningInput& input) noexcept {
+TransactionPlan Signer::plan(const SigningInput& input) {
     auto plan = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>::plan(input);
     return plan.proto();
 }
 
-SigningOutput Signer::sign(const SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs) noexcept {
+SigningOutput Signer::sign(const SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs) {
     SigningOutput output;
     auto result = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>::sign(input, false, optionalExternalSigs);
     if (!result) {
@@ -43,7 +43,7 @@ SigningOutput Signer::sign(const SigningInput& input, std::optional<SignaturePub
     return output;
 }
 
-PreSigningOutput Signer::preImageHashes(const SigningInput& input) noexcept {
+PreSigningOutput Signer::preImageHashes(const SigningInput& input) {
     PreSigningOutput output;
     auto result = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>::preImageHashes(input);
     if (!result) {

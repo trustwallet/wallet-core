@@ -10,7 +10,7 @@
 
 namespace TW::NEAR {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto transaction = transactionData(input);
     auto key = PrivateKey(input.private_key(), TWCurveED25519);
     auto hash = Hash::sha256(transaction);

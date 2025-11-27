@@ -15,7 +15,7 @@ using namespace TW;
 
 namespace TW::Oasis {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto output = Proto::SigningOutput();
     auto signer = Signer(input);
     auto encoded = signer.build();
