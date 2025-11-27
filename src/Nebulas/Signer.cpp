@@ -10,7 +10,7 @@ using namespace TW;
 
 namespace TW::Nebulas {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto signer = Signer(load(input.chain_id()));
 
     auto tx = signer.buildTransaction(input);
@@ -25,7 +25,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
-void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept {
+void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const {
     transaction.hash = this->hash(transaction);
     transaction.chainID = chainID;
     transaction.algorithm = 1;
@@ -41,7 +41,7 @@ Data Signer::hash(const Data& data) const noexcept {
     return Hash::sha3_256(data);
 }
 
-Transaction Signer::buildTransaction(const Proto::SigningInput& input) const noexcept {
+Transaction Signer::buildTransaction(const Proto::SigningInput& input) const {
     return {Transaction(Address(input.from_address()), load(input.nonce()), load(input.gas_price()),
                         load(input.gas_limit()), Address(input.to_address()), load(input.amount()),
                         load(input.timestamp()), input.payload())};

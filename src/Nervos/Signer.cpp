@@ -8,13 +8,13 @@
 
 namespace TW::Nervos {
 
-Proto::TransactionPlan Signer::plan(const Proto::SigningInput& signingInput) noexcept {
+Proto::TransactionPlan Signer::plan(const Proto::SigningInput& signingInput) {
     TransactionPlan txPlan;
     txPlan.plan(signingInput);
     return txPlan.proto();
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& signingInput) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& signingInput) {
     Proto::SigningOutput output;
 
     TransactionPlan txPlan;

@@ -437,7 +437,7 @@ Proto::SigningOutput signDirect(const Proto::SigningInput& input) {
     return output;
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     if (!input.txid().empty() || !input.raw_json().empty()) {
         return signDirect(input);
     }

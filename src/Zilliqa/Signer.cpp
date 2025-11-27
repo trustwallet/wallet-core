@@ -42,7 +42,7 @@ static inline ByteArray* byteArray(const void* data, size_t size) {
     return array;
 }
 
-Data Signer::getPreImage(const Proto::SigningInput& input, Address& address) noexcept {
+Data Signer::getPreImage(const Proto::SigningInput& input, Address& address) {
     auto internal = ZilliqaMessage::ProtoTransactionCoreInfo();
     const auto key = PrivateKey(input.private_key(), TWCurveSECP256k1);
     if (!Address::decode(input.to(), address)) {
@@ -87,7 +87,7 @@ Data Signer::getPreImage(const Proto::SigningInput& input, Address& address) noe
     return Data(serialized.begin(), serialized.end());
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto output = Proto::SigningOutput();
     Address address;
     const auto preImage = Signer::getPreImage(input, address);

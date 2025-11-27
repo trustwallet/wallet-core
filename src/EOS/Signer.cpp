@@ -10,7 +10,7 @@
 
 namespace TW::EOS {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     Proto::SigningOutput output;
     try {
         auto chainId = Data(input.chain_id().begin(), input.chain_id().end());

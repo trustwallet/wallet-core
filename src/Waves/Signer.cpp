@@ -10,7 +10,7 @@ using namespace TW;
 
 namespace TW::Waves {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto privateKey = PrivateKey(input.private_key(), TWCurveCurve25519);
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
     auto transaction = Transaction(input, publicKey.bytes);
@@ -23,7 +23,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
-Data Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexcept {
+Data Signer::sign(const PrivateKey& privateKey, Transaction& transaction) {
     try {
         auto bytesToSign = transaction.serializeToSign();
         auto signature = privateKey.sign(bytesToSign);

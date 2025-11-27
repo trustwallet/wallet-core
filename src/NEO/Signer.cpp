@@ -260,7 +260,7 @@ std::shared_ptr<Transaction> Signer::prepareUnsignedTransaction(const Proto::Sig
     return transaction;
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto output = Proto::SigningOutput();
     try {
         auto signer =

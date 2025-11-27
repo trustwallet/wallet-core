@@ -17,13 +17,13 @@ class Signer {
     Signer() = delete;
 
     /// Signs the given signing input
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
 
     /// Signs a json Proto::SigningInput with private key
     static std::string signJSON(const std::string& json, const Data& key);
 
     /// compute preImage and decode address from signing input.
-    static Data getPreImage(const Proto::SigningInput& input, Address& address) noexcept;
+    static Data getPreImage(const Proto::SigningInput& input, Address& address);
 };
 
 } // namespace TW::Zilliqa

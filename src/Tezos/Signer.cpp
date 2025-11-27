@@ -15,7 +15,7 @@ using namespace TW;
 
 namespace TW::Tezos {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto signer = Signer();
     PrivateKey key = PrivateKey(input.private_key(), TWCurveED25519);
     Data encoded;

@@ -14,14 +14,14 @@
 using namespace TW;
 
 namespace TW::Stellar {
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto signer = Signer(input);
     auto output = Proto::SigningOutput();
     output.set_signature(signer.sign());
     return output;
 }
 
-std::string Signer::sign() const noexcept {
+std::string Signer::sign() const {
 
     auto key = PrivateKey(_input.private_key(), TWCurveED25519);
     auto account = Address(_input.account());

@@ -10,7 +10,7 @@ using namespace TW;
 
 namespace TW::VeChain {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto key = PrivateKey(input.private_key(), TWCurveSECP256k1);
     auto transaction = Transaction();
     transaction.chainTag = static_cast<uint8_t>(input.chain_tag());
@@ -34,7 +34,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return protoOutput;
 }
 
-Data Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexcept {
+Data Signer::sign(const PrivateKey& privateKey, Transaction& transaction) {
     auto encoded = transaction.encode();
     auto hash = Hash::blake2b(encoded, 32);
     auto signature = privateKey.sign(hash);

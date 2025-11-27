@@ -30,7 +30,7 @@ static Proto::SigningOutput errorOutput(const char* error) {
     return output;
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     try {
         switch (input.derivation()) {
             case Proto::DerivationType::SECP256K1:
@@ -45,7 +45,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     }
 }
 
-Data Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexcept {
+Data Signer::sign(const PrivateKey& privateKey, Transaction& transaction) {
     Data toSign = Hash::blake2b(transaction.cid(), 32);
     auto signature = privateKey.sign(toSign, TWCurveSECP256k1);
     return Data(signature.begin(), signature.end());
@@ -59,13 +59,13 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     return output.json();
 }
 
-TW::Data Signer::signaturePreimage(const Proto::SigningInput& input) noexcept {
+TW::Data Signer::signaturePreimage(const Proto::SigningInput& input) {
     auto pubkey = PublicKey(Data(input.public_key().begin(), input.public_key().end()), TWPublicKeyTypeSECP256k1Extended);
     auto tx = Signer::buildTx(pubkey, input);
     return tx.cid();
 }
 
-Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& publicKey, const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& publicKey, const Proto::SigningInput& input) {
     auto tx = Signer::buildTx(publicKey, input);
     const auto json = tx.serialize(Transaction::SignatureType::SECP256K1, signature);
     
@@ -92,7 +92,7 @@ Proto::SigningOutput Signer::signSecp256k1(const Proto::SigningInput& input) {
     return output;
 }
 
-Transaction Signer::buildTx(const PublicKey& publicKey, const Proto::SigningInput& input) noexcept {
+Transaction Signer::buildTx(const PublicKey& publicKey, const Proto::SigningInput& input) {
     Address from_address = Address::secp256k1Address(publicKey);
     Address to_address(input.to());
 

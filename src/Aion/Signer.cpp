@@ -8,7 +8,7 @@ using namespace TW;
 
 namespace TW::Aion {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto key = PrivateKey(input.private_key(), TWCurveED25519);
     auto transaction = Signer::buildTransaction(input);
     Signer::sign(key, transaction);
@@ -20,7 +20,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
-void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexcept {
+void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) {
     auto encoded = transaction.encode();
     auto hashData = Hash::blake2b(encoded, 32);
     auto hashSignature = privateKey.sign(hashData);
@@ -33,13 +33,13 @@ void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexce
     transaction.signature = result;
 }
 
-TW::Data Signer::signaturePreimage(const Proto::SigningInput& input) noexcept {
+TW::Data Signer::signaturePreimage(const Proto::SigningInput& input) {
     auto transaction = Signer::buildTransaction(input);
     auto encoded = transaction.encode();
     return transaction.encode();
 }
 
-Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& publicKey, const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& publicKey, const Proto::SigningInput& input) {
     auto transaction = Signer::buildTransaction(input);
 
     // Aion signature = pubKeyBytes + signatureBytes
@@ -56,7 +56,7 @@ Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& pub
     return output;
 }
 
-Transaction Signer::buildTransaction(const Proto::SigningInput& input) noexcept {
+Transaction Signer::buildTransaction(const Proto::SigningInput& input) {
     auto transaction = Transaction(
         /* nonce: */ static_cast<uint128_t>(load(input.nonce())),
         /* gasPrice: */ static_cast<uint128_t>(load(input.gas_price())),

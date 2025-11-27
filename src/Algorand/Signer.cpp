@@ -16,7 +16,7 @@ const Data TRANSACTION_TAG = {84, 88};
 const std::string TRANSACTION_PAY = "pay";
 const std::string ASSET_TRANSACTION = "axfer";
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto protoOutput = Proto::SigningOutput();
     auto key = PrivateKey(input.private_key(), TWCurveED25519);
     auto pubkey = key.getPublicKey(TWPublicKeyTypeED25519);
@@ -33,7 +33,7 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     return hex(Signer::sign(input).encoded());
 }
 
-Data Signer::sign(const PrivateKey& privateKey, const BaseTransaction& transaction) noexcept {
+Data Signer::sign(const PrivateKey& privateKey, const BaseTransaction& transaction) {
     Data data;
     append(data, TRANSACTION_TAG);
     append(data, transaction.serialize());
@@ -41,16 +41,16 @@ Data Signer::sign(const PrivateKey& privateKey, const BaseTransaction& transacti
     return {signature.begin(), signature.end()};
 }
 
-TW::Data Signer::signaturePreimage(const Proto::SigningInput& input) noexcept {
+TW::Data Signer::signaturePreimage(const Proto::SigningInput& input) {
     auto pubKey = input.public_key();
     return Signer::preImage(PublicKey(Data(pubKey.begin(), pubKey.end()), TWPublicKeyTypeED25519), input);
 }
 
-Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& publicKey, const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& publicKey, const Proto::SigningInput& input) {
     return Signer::encodeTransaction(signature, publicKey, input);
 }
 
-TW::Data Signer::preImage(const TW::PublicKey& pubKey, const Proto::SigningInput& input) noexcept {
+TW::Data Signer::preImage(const TW::PublicKey& pubKey, const Proto::SigningInput& input) {
     auto from = Address(pubKey);
     auto firstRound = input.first_round();
     auto lastRound = input.last_round();
@@ -93,7 +93,7 @@ TW::Data Signer::preImage(const TW::PublicKey& pubKey, const Proto::SigningInput
     return data;
 }
 
-Proto::SigningOutput Signer::encodeTransaction(const Data& signature, const TW::PublicKey& pubKey, const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::encodeTransaction(const Data& signature, const TW::PublicKey& pubKey, const Proto::SigningInput& input) {
     auto protoOutput = Proto::SigningOutput();
 
     auto from = Address(pubKey);

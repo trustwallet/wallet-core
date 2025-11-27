@@ -22,7 +22,7 @@ std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t& chai
 }
 
 std::tuple<uint256_t, uint256_t, uint256_t>
-Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept {
+Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) {
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);
     return values(chainID, signature);
 }
@@ -43,7 +43,7 @@ Proto::SigningOutput Signer::prepareOutput(const Data& encoded, const T& transac
     return protoOutput;
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) {
     auto output = Proto::SigningOutput();
     try {
 
