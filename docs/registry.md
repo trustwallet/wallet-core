@@ -96,6 +96,7 @@ This list is generated from [./registry.json](../registry.json)
 | 6060    | GoChain          | GO     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/gochain/info/logo.png" width="32" />      | <https://gochain.io>          |
 | 7332    | Zen EON          | ZEN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zeneon/info/logo.png" width="32" />       | <https://eon.horizen.io>      |
 | 8453    | Base             | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/base/info/logo.png" width="32" />         | <https://base.mirror.xyz/>    |
+| 8765    | Warden Protocol  | WARD   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/wardenprotocol/info/logo.png" width="32" /> | <https://wardenprotocol.org/>    |
 | 8964    | NULS             | NULS   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nuls/info/logo.png" width="32" />         | <https://nuls.io>             |
 | 9745    | Plasma Mainnet   | XPL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/plasma/info/logo.png" width="32" />       | <https://plasma.to>           |
 | 10143   | Monad            | MON    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/monad/info/logo.png" width="32" />        | <https://www.monad.xyz>       |
