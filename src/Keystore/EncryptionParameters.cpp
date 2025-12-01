@@ -40,6 +40,9 @@ static const auto mac = "mac";
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
     auto cipher = json[CodingKeys::cipher].get<std::string>();
     cipherParams = AESParameters::AESParametersFromJson(json[CodingKeys::cipherParams], cipher);
+    if (!cipherParams.isValid()) {
+        throw std::invalid_argument("Invalid cipher params");
+    }
 
     auto kdf = json[CodingKeys::kdf].get<std::string>();
     if (kdf == "scrypt") {
