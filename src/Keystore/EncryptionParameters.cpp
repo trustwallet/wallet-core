@@ -67,6 +67,10 @@ nlohmann::json EncryptionParameters::json() const {
 
 EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const EncryptionParameters& params)
     : params(std::move(params)), _mac() {
+    if (!this->params.cipherParams.isValid()) {
+        throw std::invalid_argument("Invalid cipher params");
+    }
+
     auto scryptParams = std::get<ScryptParameters>(this->params.kdfParams);
     auto derivedKey = Data(scryptParams.desiredKeyLength);
     scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
@@ -90,6 +94,9 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
     assert(result == EXIT_SUCCESS);
     if (result == EXIT_SUCCESS) {
         Data iv = this->params.cipherParams.iv;
+        // iv size should have been validated in `AESParameters::isValid()`.
+        assert(iv.size() == gBlockSize);
+
         encrypted = Data(data.size());
         aes_ctr_encrypt(data.data(), encrypted.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
         _mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
@@ -124,6 +131,13 @@ Data EncryptedPayload::decrypt(const Data& password) const {
     if (mac != _mac) {
         throw DecryptionError::invalidPassword;
     }
+
+    // Even though the cipher params should have been validated in `EncryptedPayload` constructor,
+    // double check them here.
+    if (!params.cipherParams.isValid()) {
+        throw DecryptionError::invalidCipher;
+    }
+    assert(params.cipherParams.iv.size() == gBlockSize);
 
     Data decrypted(encrypted.size());
     Data iv = params.cipherParams.iv;
