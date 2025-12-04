@@ -54,6 +54,7 @@ fn test_coin_address_derivation() {
             | CoinType::GoChain
             | CoinType::KavaEvm
             | CoinType::Kaia
+            | CoinType::Dfkchain
             | CoinType::KuCoinCommunityChain
             | CoinType::Meter
             | CoinType::Metis

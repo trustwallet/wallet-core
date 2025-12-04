@@ -115,6 +115,7 @@ enum TWCoinType {
     TWCoinTypeKuCoinCommunityChain = 10000321,
     TWCoinTypeBitcoinDiamond = 999,
     TWCoinTypeBoba = 10000288,
+    TWCoinTypeDfkchain = 10053935,
     TWCoinTypeSyscoin = 57,
     TWCoinTypeVerge = 77,
     TWCoinTypeZen = 121,

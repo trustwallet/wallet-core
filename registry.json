@@ -3887,6 +3887,36 @@
     }
   },
   {
+    "id": "dfkchain",
+    "name": "DFK Chain",
+    "coinId": 10053935,
+    "symbol": "JEWEL",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "53935",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://subnets.avax.network/defi-kingdoms",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x92729e50d2a5a2da74f1f9d9bcd9533a3da9ffac396df5e05dd25957c2fb47a3",
+      "sampleAccount": "0xf57a8182a132d66513ab287e451768fda0fdfad5"
+    },
+    "info": {
+      "url": "https://defikingdoms.com",
+      "source": "https://github.com/DefiKingdoms",
+      "rpc": "https://subnets.avax.network/defi-kingdoms/dfk-chain/rpc",
+      "documentation": "https://docs.defikingdoms.com"
+    }
+  },
+  {
     "id": "metis",
     "name": "Metis",
     "coinId": 10001088,
