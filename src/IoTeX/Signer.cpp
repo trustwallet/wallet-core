@@ -10,7 +10,7 @@ using namespace TW;
 
 namespace TW::IoTeX {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto signer = Signer(input);
     return signer.build();
 }

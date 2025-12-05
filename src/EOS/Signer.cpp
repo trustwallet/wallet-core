@@ -10,7 +10,7 @@
 
 namespace TW::EOS {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     Proto::SigningOutput output;
     try {
         auto chainId = Data(input.chain_id().begin(), input.chain_id().end());
@@ -39,7 +39,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         }
 
         // sign the transaction with a Signer
-        auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), curve);
+        auto key = PrivateKey(input.private_key(), curve);
         signer.sign(key, type, tx);
 
         // Pack the transaction and add the json encoding to Signing outputput

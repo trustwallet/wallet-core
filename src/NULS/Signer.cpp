@@ -14,7 +14,7 @@ using namespace TW;
 
 namespace TW::NULS {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto output = Proto::SigningOutput();
     try {
         auto signer = Signer(input);

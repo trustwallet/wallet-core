@@ -14,7 +14,7 @@
 
 namespace TW::Bitcoin {
 
-Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
+Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) {
     if (input.has_signing_v2()) {
         return planAsV2(input);
     }
@@ -22,7 +22,7 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
     return plan.proto();
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs) {
     if (input.has_signing_v2()) {
         return signAsV2(input);
     }
@@ -51,7 +51,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, std::optiona
     return output;
 }
 
-Proto::PreSigningOutput Signer::preImageHashes(const Proto::SigningInput& input) noexcept {
+Proto::PreSigningOutput Signer::preImageHashes(const Proto::SigningInput& input) {
     if (input.has_signing_v2()) {
         return preImageHashesAsV2(input);
     }
@@ -76,7 +76,7 @@ Proto::PreSigningOutput Signer::preImageHashes(const Proto::SigningInput& input)
 
 Proto::SigningOutput Signer::compile(const Proto::SigningInput& input,
                                      const std::vector<Data>& signatures,
-                                     const std::vector<PublicKey>& publicKeys) noexcept {
+                                     const std::vector<PublicKey>& publicKeys) {
     if (input.has_signing_v2()) {
         return compileAsV2(input, signatures, publicKeys);
     }

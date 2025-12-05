@@ -21,6 +21,7 @@ impl UtxoContext for DecredContext {
     type Address = DecredAddress;
     type Transaction = DecredTransaction;
     type FeeEstimator = StandardFeeEstimator<DecredTransaction>;
+    type Psbt = ();
 
     const PUBLIC_KEY_HASHER: Hasher = Hasher::Blake256ripemd;
     const TX_HASHER: Hasher = Hasher::Blake256;
@@ -36,5 +37,5 @@ impl UtxoContext for DecredContext {
 impl BitcoinSigningContext for DecredContext {
     type SigningRequestBuilder = DecredSigningRequestBuilder;
     type ProtobufBuilder = DecredProtobufBuilder;
-    type PsbtRequestBuilder = NoPsbtRequestBuilder;
+    type PsbtRequestHandler = NoPsbtRequestBuilder;
 }

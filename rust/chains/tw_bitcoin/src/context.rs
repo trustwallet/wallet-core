@@ -4,8 +4,8 @@
 
 use crate::modules::protobuf_builder::standard_protobuf_builder::StandardProtobufBuilder;
 use crate::modules::protobuf_builder::ProtobufBuilder;
-use crate::modules::psbt_request::standard_psbt_request_builder::StandardPsbtRequestBuilder;
-use crate::modules::psbt_request::PsbtRequestBuilder;
+use crate::modules::psbt_request::standard_psbt_request_handler::StandardPsbtRequestHandler;
+use crate::modules::psbt_request::PsbtRequestHandler;
 use crate::modules::signing_request::standard_signing_request::StandardSigningRequestBuilder;
 use crate::modules::signing_request::SigningRequestBuilder;
 use tw_coin_entry::error::prelude::SigningResult;
@@ -21,7 +21,7 @@ use tw_utxo::transaction::standard_transaction::Transaction;
 pub trait BitcoinSigningContext: UtxoContext + Sized {
     type SigningRequestBuilder: SigningRequestBuilder<Self>;
     type ProtobufBuilder: ProtobufBuilder<Self>;
-    type PsbtRequestBuilder: PsbtRequestBuilder<Self>;
+    type PsbtRequestHandler: PsbtRequestHandler<Self>;
 }
 
 #[derive(Default)]
@@ -31,6 +31,7 @@ impl UtxoContext for StandardBitcoinContext {
     type Address = StandardBitcoinAddress;
     type Transaction = Transaction;
     type FeeEstimator = StandardFeeEstimator<Self::Transaction>;
+    type Psbt = bitcoin::psbt::Psbt;
 
     fn addr_to_script_pubkey(
         addr: &Self::Address,
@@ -49,5 +50,5 @@ impl UtxoContext for StandardBitcoinContext {
 impl BitcoinSigningContext for StandardBitcoinContext {
     type SigningRequestBuilder = StandardSigningRequestBuilder;
     type ProtobufBuilder = StandardProtobufBuilder;
-    type PsbtRequestBuilder = StandardPsbtRequestBuilder;
+    type PsbtRequestHandler = StandardPsbtRequestHandler;
 }

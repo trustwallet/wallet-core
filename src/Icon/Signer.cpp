@@ -71,12 +71,12 @@ std::string Signer::encode(const Data& signature) const noexcept {
     return json.dump();
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto signer = Signer(input);
     return signer.sign();
 }
 
-Proto::SigningOutput Signer::sign() const noexcept {
+Proto::SigningOutput Signer::sign() const {
     const auto hash = Hash::sha3_256(Signer::preImage());
 
     const auto key = PrivateKey(input.private_key(), TWCurveSECP256k1);
