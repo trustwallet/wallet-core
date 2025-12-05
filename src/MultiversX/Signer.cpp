@@ -12,7 +12,7 @@
 
 namespace TW::MultiversX {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     TransactionFactory factory;
 
     auto privateKey = PrivateKey(input.private_key(), TWCurveED25519);

@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+pub mod pczt;
+pub mod pczt_request;
 pub mod protobuf_builder;
 pub mod signing_request;
 pub mod transaction_builder;

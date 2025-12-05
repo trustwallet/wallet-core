@@ -21,7 +21,7 @@ namespace TW::FIO {
 
 using namespace std;
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     FIO::Proto::SigningOutput output;
     try {
         const string actionName = TransactionBuilder::actionName(input);
@@ -34,7 +34,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
-Proto::SigningOutput Signer::compile(const Proto::SigningInput& input, const Data& signature) noexcept {
+Proto::SigningOutput Signer::compile(const Proto::SigningInput& input, const Data& signature) {
     FIO::Proto::SigningOutput output;
     output = TransactionBuilder::buildSigningOutput(input, signature);
     return output;

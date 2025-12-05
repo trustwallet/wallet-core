@@ -3,8 +3,8 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::chains::common::bitcoin::{
-    dust_threshold, input, output, plan, sign, transaction_psbt, TransactionOneof, DUST,
-    SIGHASH_ALL,
+    dust_threshold, input, output, plan, psbt_sign, sign, transaction_psbt_b64, TransactionOneof,
+    DUST, SIGHASH_ALL,
 };
 use crate::chains::zcash::{zcash_extra_data, zec_info, NU6_BRANCH_ID, SAPLING_BRANCH_ID};
 use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
@@ -168,13 +168,40 @@ fn test_zcash_send_to_tex_address() {
 }
 
 #[test]
-fn test_zcash_sign_psbt_not_supported() {
-    const DUMMY_PRIV: &str = "a9684f5bebd0e1208aae2e02bc9e9163bd1965ad23d8538644e1df8b99b99559";
+fn test_zcash_sign_pczt() {
+    const PRIVATE_KEY: &str = "c9d84f11d992c1a527293b468ba67f739f8098c333748493da45b9cf53844ec4";
+    const PSBT: &str = "UENaVAEAAAAEhcG8yQjVoJzHDAEAz+i/AYUBgwACD/xF9t6uGgnrn6HPk4TTxoTB42mxjfZ2E8dQ7UzfodcAAf////8PAAAAgIl6GXapFFWjZeeDsUiGjDI8hm1k+WCt0MtqiKwAAAEAAAAAAACg+XQ96jWHJsJWFA3/kk+6ZaHhUI5wi57Hf3ZM6xQzRQEB/////w8AAAC1lhgZdqkUVaNl54OxSIaMMjyGbWT5YK3Qy2qIrAAAAQAAAAAAAALD8X4ZdqkUkFFaBL/xtThv5Hnc0F1hHGFf2sSIrAAAASN0MVgyZ21OUVJxd1dpR2luY0syVXRZd1piV2c3aXhZRkVLcgDCwxEZdqkUVaNl54OxSIaMMjyGbWT5YK3Qy2qIrAAAASN0MVJnUkJqam54WFNnMXB0TERya2FNTmlWNHRKVlh1N2RXVgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
 
     let signing = Proto::SigningInput {
-        private_keys: vec![DUMMY_PRIV.decode_hex().unwrap().into()],
+        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
         chain_info: zec_info(),
-        transaction: transaction_psbt("01020304"),
+        transaction: transaction_psbt_b64(PSBT),
+        ..Default::default()
+    };
+
+    // Successfully broadcasted tx:
+    // https://blockchair.com/zcash/transaction/5055198cfba7109a23de0406885298939e3ea8ce5c160737b4cdf02360a8d10b
+    psbt_sign::BitcoinPsbtSignHelper::new(&signing)
+        .coin(CoinType::Zcash)
+        .sign_psbt(psbt_sign::Expected {
+            psbt: "50435a54010000000485c1bcc908d5a09cc70c0100cfe8bf0185018300020ffc45f6deae1a09eb9fa1cf9384d3c684c1e369b18df67613c750ed4cdfa1d70001ffffffff0f0000016b4830450221008ec23495bc2a7e7ccab7b7c6f7b1f9ee2f77a048bc4d2f4b5299fc1ab08b607e0220175453b2e2f25462abc1b5bff30d0c9e01fba60beab1d5a8460260612507e0d0012103f395d296aca81ab1d54a0eab0349333478c83591e6de81b9979cb63aef97c9ad80897a1976a91455a365e783b148868c323c866d64f960add0cb6a88ac000001000000000000a0f9743dea358726c256140dff924fba65a1e1508e708b9ec77f764ceb1433450101ffffffff0f0000016a473044022022d1eb63d66f868228439e6e18d21df262d8e05fce380ab3b21aa84f064ca614022063e87e73110b1829d4c8eb747d7ca8cc43e28e0a4f7d287aa42ed84048ba3cd4012103f395d296aca81ab1d54a0eab0349333478c83591e6de81b9979cb63aef97c9adb596181976a91455a365e783b148868c323c866d64f960add0cb6a88ac00000100000000000002c3f17e1976a91490515a04bff1b5386fe479dcd05d611c615fdac488ac0000012374315832676d4e51527177576947696e634b32557459775a6257673769785946454b7200c2c3111976a91455a365e783b148868c323c866d64f960add0cb6a88ac000001237431526752426a6a6e785853673170744c44726b614d4e695634744a56587537645756000000000000000000000000000000000000000000000000000000000000000000000000000003000100000000000000000000000000000000000000000000000000000000000000000000",
+            encoded: "0400008085202f89020ffc45f6deae1a09eb9fa1cf9384d3c684c1e369b18df67613c750ed4cdfa1d7000000006b4830450221008ec23495bc2a7e7ccab7b7c6f7b1f9ee2f77a048bc4d2f4b5299fc1ab08b607e0220175453b2e2f25462abc1b5bff30d0c9e01fba60beab1d5a8460260612507e0d0012103f395d296aca81ab1d54a0eab0349333478c83591e6de81b9979cb63aef97c9adffffffffa0f9743dea358726c256140dff924fba65a1e1508e708b9ec77f764ceb143345010000006a473044022022d1eb63d66f868228439e6e18d21df262d8e05fce380ab3b21aa84f064ca614022063e87e73110b1829d4c8eb747d7ca8cc43e28e0a4f7d287aa42ed84048ba3cd4012103f395d296aca81ab1d54a0eab0349333478c83591e6de81b9979cb63aef97c9adffffffff02c3b81f00000000001976a91490515a04bff1b5386fe479dcd05d611c615fdac488acc2610400000000001976a91455a365e783b148868c323c866d64f960add0cb6a88ac000000004ff42f000000000000000000000000",
+            txid: "5055198cfba7109a23de0406885298939e3ea8ce5c160737b4cdf02360a8d10b",
+            vsize: 392,
+            weight: 1568,
+            fee: 30000,
+        });
+}
+
+#[test]
+fn test_zcash_sign_pczt_unsupported_tx_version() {
+    const PRIVATE_KEY: &str = "c9d84f11d992c1a527293b468ba67f739f8098c333748493da45b9cf53844ec4";
+    const PSBT: &str = "UENaVAEAAAAFis6ctQLVoJzHDAEA4ua/AYUBgwABFRZQRxlNqLSGFmGot6F/FeWgAGC2IUW5epyMH5ttEEQAAf////8PAAAAoMuYARl2qRRVo2Xng7FIhowyPIZtZPlgrdDLaoisAAABAAAAAAAAAsPxfhl2qRQthdKs2GnpfCJRan162hFZgsQNXoisAAABI3QxTjJKajlkRG9ZUUVtRVdBQlZ4TmF6YndzR3VVcko0UDREALWWGBl2qRRVo2Xng7FIhowyPIZtZPlgrdDLaoisAAABI3QxUmdSQmpqbnhYU2cxcHRMRHJrYU1OaVY0dEpWWHU3ZFdWAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
+        chain_info: zec_info(),
+        transaction: transaction_psbt_b64(PSBT),
         ..Default::default()
     };
 

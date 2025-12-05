@@ -96,7 +96,7 @@ impl<'a> UtxoPsbt<'a> {
             },
             StandardScript::P2SH(_) | StandardScript::P2WSH(_) => {
                 SigningError::err(SigningErrorType::Error_not_supported)
-                    .context("P2SH and P2WSH scriptPubkey's are not supported yet")
+                    .context("P2SH and P2WSH scriptPubkeys are not supported yet")
             },
             StandardScript::OpReturn(_) => SigningError::err(SigningErrorType::Error_invalid_utxo)
                 .context("Cannot spend an OP_RETURN output"),
