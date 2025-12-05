@@ -34,12 +34,16 @@ RUN apt-get update \
 ENV CC=/usr/bin/clang-14
 ENV CXX=/usr/bin/clang++-14
 
+# CMake will not use the ENV if CMAKE_C_COMPILER is explicitly defined
+RUN ln -s /usr/bin/clang-14 /usr/bin/clang
+RUN ln -s /usr/bin/clang++-14 /usr/bin/clang++
+
 # Install rust
 RUN wget "https://sh.rustup.rs" -O rustup.sh \
     && sh rustup.sh -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN rustup default nightly-2024-06-13
-RUN cargo install --force cbindgen \
+RUN cargo install --force cbindgen --locked \
     && rustup target add wasm32-unknown-emscripten
 
 # ↑ Setup build environment
