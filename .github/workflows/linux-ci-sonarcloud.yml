@@ -12,9 +12,9 @@ concurrency:
 
 jobs:
   build:
-    # if: github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false
     # Temporarily disabled due to issues with SonarCloud account.
-    if: false
+    # if: false
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v3
