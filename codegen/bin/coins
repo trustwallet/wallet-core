@@ -26,6 +26,10 @@ def self.camel_case(id)
   id[0].upcase + id[1..].downcase
 end
 
+def self.upper_camel_case(id)
+  id.split('_').map { |w| w.capitalize }.join
+end
+
 def self.coin_img(coin)
   "<img src=\"https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/#{coin}/info/logo.png\" width=\"32\" />"
 end
