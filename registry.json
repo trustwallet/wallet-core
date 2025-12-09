@@ -3090,11 +3090,6 @@
     "derivation": [
       {
         "path": "m/44'/60'/0'/0/0"
-      },
-      {
-        "name": "stable_account",
-        "path": "m/44'/60'/9172'/3604/9999",
-        "description": "TrustWallet's specific derivation path for Stable Account wallets"
       }
     ],
     "curve": "secp256k1",
