@@ -299,9 +299,15 @@ json raw_dataJSON(const protocol::Transaction::raw& raw) {
     return raw_dataJSON;
 }
 
+Data serializeTxRawData(const protocol::Transaction& tx) noexcept {
+    const auto serialized = tx.raw_data().SerializeAsString();
+    return { serialized.begin(), serialized.end() };
+}
+
 json transactionJSON(const protocol::Transaction& transaction, const TW::Data& txID, const TW::Data& signature) {
     json transactionJSON;
     transactionJSON["raw_data"] = raw_dataJSON(transaction.raw_data());
+    transactionJSON["raw_data_hex"] = hex(serializeTxRawData(transaction));
     transactionJSON["txID"] = hex(txID);
     transactionJSON["signature"] = json::array({hex(signature)});
 

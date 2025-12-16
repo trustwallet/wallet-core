@@ -399,11 +399,6 @@ protocol::Transaction buildTransaction(const Proto::SigningInput& input) noexcep
     return tx;
 }
 
-Data serialize(const protocol::Transaction& tx) noexcept {
-    const auto serialized = tx.raw_data().SerializeAsString();
-    return Data(serialized.begin(), serialized.end());
-}
-
 Proto::SigningOutput signDirect(const Proto::SigningInput& input) {
     const auto key = PrivateKey(input.private_key(), TWCurveSECP256k1);
     auto output = Proto::SigningOutput();
@@ -462,7 +457,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     output.set_ref_block_bytes(tx.raw_data().ref_block_bytes());
     output.set_ref_block_hash(tx.raw_data().ref_block_hash());
 
-    const auto hash = Hash::sha256(serialize(tx));
+    const auto hash = Hash::sha256(serializeTxRawData(tx));
 
     const auto key = PrivateKey(input.private_key(), TWCurveSECP256k1);
     const auto signature = key.sign(hash);
@@ -525,7 +520,7 @@ Data Signer::signaturePreimage() const {
             return {};
         }
     }
-    return serialize(buildTransaction(input));
+    return serializeTxRawData(buildTransaction(input));
 }
 
 Data Signer::signaturePreimageHash() const {
