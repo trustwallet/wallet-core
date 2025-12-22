@@ -39,12 +39,9 @@ impl From<TWDerivation> for Derivation {
             TWDerivation::BitcoinTaproot => Derivation::Taproot,
             TWDerivation::PactusMainnet => Derivation::Default,
             TWDerivation::PactusTestnet => Derivation::Testnet,
-<<<<<<< HEAD
             TWDerivation::SmartChainStableAccount => Derivation::Default,
-=======
             TWDerivation::StacksMainnet => Derivation::Default,
             TWDerivation::StacksTestnet => Derivation::Testnet,
->>>>>>> 6df5d20d9 (initial implementation and file generation)
         }
     }
 }
