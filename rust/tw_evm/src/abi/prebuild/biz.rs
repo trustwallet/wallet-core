@@ -57,6 +57,23 @@ impl BizAccount {
         let func = ERC4337_BIZ_ACCOUNT.function("execute4337Ops")?;
         encode_batch(func, args)
     }
+
+    pub fn execute_with_signature<I>(executions: I, signature: Data) -> AbiResult<Data>
+    where
+        I: IntoIterator<Item = ExecuteArgs>,
+    {
+        let func = ERC4337_BIZ_ACCOUNT.function("executeWithSignature")?;
+
+        // `tuple[]`, where each item is a tuple of (address, uint256, bytes).
+        let array_param = func
+            .inputs
+            .first()
+            .or_tw_err(AbiErrorKind::Error_internal)
+            .context("'Biz.executeWithSignature()' should contain only one argument")?;
+
+        let array_token = batch_calls_into_array_token(array_param, executions)?;
+        func.encode_input(&[array_token, Token::Bytes(signature)])
+    }
 }
 
 pub fn encode_batch<I>(function: &Function, batch_calls: I) -> AbiResult<Data>

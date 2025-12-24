@@ -5,6 +5,7 @@
 pub mod abi_encoder;
 pub mod barz;
 pub mod biz;
+pub mod biz_passkey_session;
 pub mod compiler;
 pub mod eip7702;
 pub mod message_signer;
