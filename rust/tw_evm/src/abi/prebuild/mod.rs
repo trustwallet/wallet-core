@@ -14,6 +14,7 @@ pub mod erc20;
 pub mod erc4337;
 pub mod erc721;
 
+#[derive(Clone)]
 pub struct ExecuteArgs {
     pub to: Address,
     pub value: U256,

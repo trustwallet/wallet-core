@@ -54,8 +54,36 @@ impl BizPasskeySessionAccount {
             .inputs
             .first()
             .or_tw_err(AbiErrorKind::Error_internal)
-            .context("'Biz.execute4337Ops()' should contain only one argument")?;
+            .context("'BizPasskeySession.execute4337Ops()' should contain only one argument")?;
         let array_token = batch_calls_into_array_token(array_param, executions)?;
+
+        func.encode_input(&[
+            array_token,
+            Token::u256(validity_timestamp),
+            Token::Bytes(signature),
+        ])
+    }
+
+    pub fn execute_with_signature<I>(
+        executions: I,
+        valid_after: u128,
+        valid_until: u128,
+        signature: Data,
+    ) -> AbiResult<Data>
+    where
+        I: IntoIterator<Item = ExecuteArgs>,
+    {
+        let func = BIZ_PASSKEY_SESSION_ACCOUNT.function("executeWithSignature")?;
+
+        // `tuple[]`, where each item is a tuple of (address, uint256, bytes).
+        let array_param = func
+            .inputs
+            .first()
+            .or_tw_err(AbiErrorKind::Error_internal)
+            .context("'BizPasskeySession.executeWithSignature()' have a tuple array as its first argument")?;
+
+        let array_token = batch_calls_into_array_token(array_param, executions)?;
+        let validity_timestamp = U256::from(valid_after) | (U256::from(valid_until) << 128);
 
         func.encode_input(&[
             array_token,
