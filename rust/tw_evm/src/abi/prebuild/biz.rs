@@ -69,7 +69,7 @@ impl BizAccount {
             .inputs
             .first()
             .or_tw_err(AbiErrorKind::Error_internal)
-            .context("'Biz.executeWithSignature()' should contain only one argument")?;
+            .context("'Biz.executeWithSignature()' have a tuple array as its first argument")?;
 
         let array_token = batch_calls_into_array_token(array_param, executions)?;
         func.encode_input(&[array_token, Token::Bytes(signature)])

@@ -56,11 +56,11 @@ message ExecuteWithSignatureInput {
   // Batched executions to be executed on the smart contract wallet.
   repeated Execution executions = 1;
 
-  // Private key to sign the `Biz.executeWithSignature` function call.
+  // Private key to sign the `BizPasskeySession.executeWithSignature` function call.
   bytes private_key = 2;
 
   // BizGuard nonce (uint256, serialized big endian).
-  // Used to sign the `Biz.executeWithSignature` function call.
+  // Used to sign the `BizPasskeySession.executeWithSignature` function call.
   bytes nonce = 3;
 
   // Transaction valid after this timestamp in seconds.

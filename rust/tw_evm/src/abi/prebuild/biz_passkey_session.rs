@@ -54,7 +54,7 @@ impl BizPasskeySessionAccount {
             .inputs
             .first()
             .or_tw_err(AbiErrorKind::Error_internal)
-            .context("'Biz.execute4337Ops()' should contain only one argument")?;
+            .context("'BizPasskeySession.execute4337Ops()' should contain only one argument")?;
         let array_token = batch_calls_into_array_token(array_param, executions)?;
 
         func.encode_input(&[
@@ -80,7 +80,7 @@ impl BizPasskeySessionAccount {
             .inputs
             .first()
             .or_tw_err(AbiErrorKind::Error_internal)
-            .context("'Biz.executeWithSignature()' should contain only one argument")?;
+            .context("'BizPasskeySession.executeWithSignature()' have a tuple array as its first argument")?;
 
         let array_token = batch_calls_into_array_token(array_param, executions)?;
         let validity_timestamp = U256::from(valid_after) | (U256::from(valid_until) << 128);

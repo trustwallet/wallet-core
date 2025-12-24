@@ -92,7 +92,8 @@ pub unsafe extern "C" fn tw_biz_passkey_session_encode_execute_with_passkey_sess
     input: Nonnull<TWData>,
 ) -> NullableMut<TWData> {
     let input = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
-    let input: ExecuteWithPasskeySessionInput = deserialize(input.as_slice()).unwrap();
+    let input: ExecuteWithPasskeySessionInput =
+        try_or_else!(deserialize(input.as_slice()), std::ptr::null_mut);
     let encoded = try_or_else!(
         encode_execute_with_passkey_session_call(&input),
         std::ptr::null_mut
@@ -100,7 +101,7 @@ pub unsafe extern "C" fn tw_biz_passkey_session_encode_execute_with_passkey_sess
     TWData::from(encoded).into_ptr()
 }
 
-/// Signs and encodes `Biz.executeWithPasskeySession` function call to execute a batch of transactions.
+/// Signs and encodes `BizPasskeySession.executeWithPasskeySession` function call to execute a batch of transactions.
 ///
 /// \param input The serialized data of `BizPasskeySession.ExecuteWithSignatureInput` protobuf message.
 /// \return ABI-encoded function call.
@@ -110,7 +111,8 @@ pub unsafe extern "C" fn tw_biz_passkey_session_sign_execute_with_signature_call
     input: Nonnull<TWData>,
 ) -> NullableMut<TWData> {
     let input = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
-    let input: ExecuteWithSignatureInput = deserialize(input.as_slice()).unwrap();
+    let input: ExecuteWithSignatureInput =
+        try_or_else!(deserialize(input.as_slice()), std::ptr::null_mut);
     let encoded = try_or_else!(sign_execute_with_signature_call(&input), std::ptr::null_mut);
     TWData::from(encoded).into_ptr()
 }
