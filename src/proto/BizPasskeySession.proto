@@ -4,7 +4,7 @@
 
 syntax = "proto3";
 
-package TW.Biz.Proto;
+package TW.BizPasskeySession.Proto;
 option java_package = "wallet.core.jni.proto";
 
 message EncodingHashParams {
@@ -38,6 +38,20 @@ message Execution {
   bytes payload = 3;
 }
 
+message ExecuteWithPasskeySessionInput {
+  // Batched executions to be executed on the smart contract wallet.
+  repeated Execution executions = 1;
+
+  // Transaction valid after this timestamp.
+  uint64 valid_after = 2;
+
+  // Transaction valid until this timestamp.
+  uint64 valid_until = 3;
+
+  // Passkey session signature.
+  bytes passkey_signature = 4;
+}
+
 message ExecuteWithSignatureInput {
   // Batched executions to be executed on the smart contract wallet.
   repeated Execution executions = 1;
@@ -49,6 +63,12 @@ message ExecuteWithSignatureInput {
   // Used to sign the `Biz.executeWithSignature` function call.
   bytes nonce = 3;
 
+  // Transaction valid after this timestamp in seconds.
+  uint64 valid_after = 4;
+
+  // Transaction valid until this timestamp in seconds.
+  uint64 valid_until = 5;
+
   // Parameters used to generate an encoded Biz-specific hash to be signed.
-  EncodingHashParams encoding_hash_params = 4;
+  EncodingHashParams encoding_hash_params = 6;
 }

@@ -91,7 +91,7 @@ pub fn sign_user_op_hash(hash: &str, private_key: &str) -> BarzResult<Vec<u8>> {
     Ok(result)
 }
 
-pub fn encode_execute_with_signature_call(
+pub fn sign_execute_with_signature_call(
     input: &BizProto::ExecuteWithSignatureInput,
 ) -> BarzResult<Data> {
     let executions: Vec<_> = input

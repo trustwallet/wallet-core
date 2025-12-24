@@ -4,9 +4,7 @@
 
 #![allow(clippy::missing_safety_doc)]
 
-use crate::modules::biz::{
-    encode_execute_with_signature_call, get_encoded_hash, sign_user_op_hash,
-};
+use crate::modules::biz::{get_encoded_hash, sign_execute_with_signature_call, sign_user_op_hash};
 use tw_macros::tw_ffi;
 use tw_memory::ffi::tw_data::TWData;
 use tw_memory::ffi::tw_string::TWString;
@@ -102,9 +100,6 @@ pub unsafe extern "C" fn tw_biz_sign_execute_with_signature_call(
 ) -> NullableMut<TWData> {
     let input = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
     let input: ExecuteWithSignatureInput = deserialize(input.as_slice()).unwrap();
-    let encoded = try_or_else!(
-        encode_execute_with_signature_call(&input),
-        std::ptr::null_mut
-    );
+    let encoded = try_or_else!(sign_execute_with_signature_call(&input), std::ptr::null_mut);
     TWData::from(encoded).into_ptr()
 }
