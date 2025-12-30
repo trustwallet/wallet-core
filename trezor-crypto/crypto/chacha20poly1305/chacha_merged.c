@@ -24,8 +24,8 @@ void ECRYPT_init(void)
 }
 
 // [wallet-core][non static] rename to avoid duplicate symbol in blake256.c 
-const char chacha_sigma[16] = "expand 32-byte k";
-const char tau[16] = "expand 16-byte k";
+const char chacha_sigma[16] = {'e','x','p','a','n','d',' ','3','2','-','b','y','t','e',' ','k'};
+const char tau[16] = {'e','x','p','a','n','d',' ','1','6','-','b','y','t','e',' ','k'};
 
 void ECRYPT_keysetup(ECRYPT_ctx *x,const u8 *k,u32 kbits,u32 ivbits)
 {

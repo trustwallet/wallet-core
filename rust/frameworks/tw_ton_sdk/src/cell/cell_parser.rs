@@ -54,7 +54,11 @@ impl<'a> CellParser<'a> {
 
     pub fn load_uint(&mut self, bit_len: usize) -> CellResult<U256> {
         let num_words = bit_len.div_ceil(32);
-        let high_word_bits = if bit_len.is_multiple_of(32) { 32 } else { bit_len % 32 };
+        let high_word_bits = if bit_len.is_multiple_of(32) {
+            32
+        } else {
+            bit_len % 32
+        };
         let mut words: Vec<u32> = vec![0; num_words];
         let high_word = self.load_u32(high_word_bits)?;
         words[num_words - 1] = high_word;
