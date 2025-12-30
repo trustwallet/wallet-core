@@ -21,7 +21,7 @@ jobs:
           tools/install-sys-dependencies-linux
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.8
+        uses: mozilla-actions/sccache-action@65101d47ea8028ed0c98a1cdea8dd9182e9b5133 # v0.0.8
 
       - name: Install Rust dependencies
         run: |

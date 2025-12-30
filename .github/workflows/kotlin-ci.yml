@@ -24,10 +24,10 @@ jobs:
         distribution: 'temurin'
 
     - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
+      uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3.2.2
 
     - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
+      uses: gradle/gradle-build-action@a8f75513eafdebd8141bd1cd4e30fcd194af8dfa # v2.12.0
       with:
         gradle-version: 8.10.2
 
@@ -36,7 +36,7 @@ jobs:
         tools/install-sys-dependencies-mac
 
     - name: Cache Rust
-      uses: Swatinem/rust-cache@v2
+      uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
       with:
         workspaces: |
           rust

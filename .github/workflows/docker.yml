@@ -19,7 +19,7 @@ jobs:
           curl -L https://github.com/hadolint/hadolint/releases/download/v1.17.6/hadolint-Linux-x86_64 -o hadolint && chmod +x hadolint
           ./hadolint Dockerfile
       - name: Build Dockerfile
-        uses: docker/build-push-action@v1.1.0
+        uses: docker/build-push-action@92e71463491f2d026a477188b8ad3a0fdd9d672c # v1.1.0
         with:
           repository: trustwallet/wallet-core
           tags: latest

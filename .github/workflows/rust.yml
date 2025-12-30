@@ -29,10 +29,10 @@ jobs:
           tools/install-sys-dependencies-linux
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.8
+        uses: mozilla-actions/sccache-action@65101d47ea8028ed0c98a1cdea8dd9182e9b5133 # v0.0.8
 
       - name: Cache Rust
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
         with:
           workspaces: |
             rust
@@ -62,10 +62,10 @@ jobs:
           tools/install-sys-dependencies-linux
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.8
+        uses: mozilla-actions/sccache-action@65101d47ea8028ed0c98a1cdea8dd9182e9b5133 # v0.0.8
 
       - name: Cache Rust
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
         with:
           workspaces: |
             rust
@@ -93,10 +93,10 @@ jobs:
           tools/install-sys-dependencies-mac
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.8
+        uses: mozilla-actions/sccache-action@65101d47ea8028ed0c98a1cdea8dd9182e9b5133 # v0.0.8
 
       - name: Cache Rust
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
         with:
           workspaces: |
             rust
@@ -126,7 +126,7 @@ jobs:
       # Download previous release report, compare the release binary sizes, and post/update a comment at the Pull Request.
       - name: Download previous release report
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false
-        uses: dawidd6/action-download-artifact@v6
+        uses: dawidd6/action-download-artifact@bf251b5aa9c2f7eeb574a96ee720e24f801b7c11 # v6
         with:
           commit: ${{github.event.pull_request.base.sha}}
           path: previous
@@ -144,7 +144,7 @@ jobs:
 
       - name: Create or Update Comment
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false
-        uses: edumserrano/find-create-or-update-comment@v2
+        uses: edumserrano/find-create-or-update-comment@3d340543af6d2743c70ab2d525deeb0f12e290de # v2.0.0
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body-includes: "Binary size comparison"
@@ -161,10 +161,10 @@ jobs:
           submodules: true
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.8
+        uses: mozilla-actions/sccache-action@65101d47ea8028ed0c98a1cdea8dd9182e9b5133 # v0.0.8
 
       - name: Cache Rust
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
         with:
           workspaces: |
             rust
@@ -174,8 +174,9 @@ jobs:
           # to get the symbolizer for debug symbol resolution
           sudo apt install llvm
 
-      - name: Install nightly
-        uses: dtolnay/rust-toolchain@nightly
+      - name: Install Rust dependencies
+        run: |
+          tools/install-rust-dependencies
 
       - name: Enable debug symbols
         run: |
@@ -221,10 +222,10 @@ jobs:
           tools/install-sys-dependencies-linux
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.8
+        uses: mozilla-actions/sccache-action@65101d47ea8028ed0c98a1cdea8dd9182e9b5133 # v0.0.8
 
       - name: Cache Rust
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
         with:
           workspaces: |
             rust
