@@ -15,7 +15,7 @@ tw_encoding = { path = "../tw_encoding" }
 tw_hash = { path = "../tw_hash" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
-zeroize = "1.8.1"
+zeroize = "1.8.2"
 # ECDSA specific:
 ecdsa = "0.16.6"
 der = "0.7.3"

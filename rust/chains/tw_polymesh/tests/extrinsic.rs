@@ -33,7 +33,7 @@ fn expect_encoded(input: &Proto::SigningInput<'_>, expected_value: &str) {
     assert_eq!(encoded.0.to_hex(), expected_value);
 }
 
-fn polymesh_identity_call(call: IdentityVariant) -> RuntimeCall<'_> {
+fn polymesh_identity_call(call: IdentityVariant<'_>) -> RuntimeCall<'_> {
     RuntimeCall {
         pallet_oneof: CallVariant::identity_call(Identity {
             message_oneof: call,
@@ -41,7 +41,7 @@ fn polymesh_identity_call(call: IdentityVariant) -> RuntimeCall<'_> {
     }
 }
 
-fn polymesh_add_auth_call(add_auth: AddAuthorization) -> RuntimeCall<'_> {
+fn polymesh_add_auth_call(add_auth: AddAuthorization<'_>) -> RuntimeCall<'_> {
     polymesh_identity_call(IdentityVariant::add_authorization(add_auth))
 }
 
@@ -52,7 +52,7 @@ fn polymesh_join_identity(auth_id: u64) -> RuntimeCall<'static> {
     }))
 }
 
-fn balance_call(call: BalanceVariant) -> RuntimeCall<'_> {
+fn balance_call(call: BalanceVariant<'_>) -> RuntimeCall<'_> {
     RuntimeCall {
         pallet_oneof: CallVariant::balance_call(Balance {
             message_oneof: call,
@@ -60,7 +60,7 @@ fn balance_call(call: BalanceVariant) -> RuntimeCall<'_> {
     }
 }
 
-fn staking_call(call: StakingVariant) -> RuntimeCall<'_> {
+fn staking_call(call: StakingVariant<'_>) -> RuntimeCall<'_> {
     RuntimeCall {
         pallet_oneof: CallVariant::staking_call(Staking {
             message_oneof: call,
