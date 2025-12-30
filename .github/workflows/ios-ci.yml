@@ -15,7 +15,7 @@ jobs:
     runs-on: macos-15-xlarge
     if: github.event.pull_request.draft == false
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
     - name: Install system dependencies
       run: |
@@ -33,7 +33,7 @@ jobs:
 
     - name: Cache internal dependencies
       id: internal_cache
-      uses: actions/cache@v3
+      uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
       with:
         path: build/local
         key: ${{ runner.os }}-${{ runner.arch }}-internal-${{ hashFiles('tools/install-dependencies') }}-${{ hashFiles('tools/dependencies-version') }}
