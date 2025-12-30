@@ -4969,9 +4969,6 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
-    "p2pkhPrefix": 0,
-    "p2shPrefix": 1,
-    "hrp": "S",
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
     "explorer": {
