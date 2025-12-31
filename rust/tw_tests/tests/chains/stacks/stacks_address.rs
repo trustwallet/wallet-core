@@ -17,6 +17,13 @@ fn test_stacks_address_derive() {
         "SP2SF6ENB7636XSYSDNQ05X5T3SP4K2034A6D1G43K",
     );
 
+    let private_key_hexstr = "4646464646464646464646464646464646464646464646464646464646464646";
+    test_address_derive(
+        CoinType::Stacks,
+        KeyType::PrivateKey(private_key_hexstr),
+        "SP2TYS424BPZM2TR8TKEAFQDTA1441AAVR9W6EVSKY",
+    );
+
     let private_key_hexstr = "5ee478841eee47c23c164530d3df3469168431af52569c3dcc5d715666a7321b";
     test_address_derive(
         CoinType::Stacks,

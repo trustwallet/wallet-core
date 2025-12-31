@@ -406,7 +406,7 @@ TEST(Coin, DeriveAddress) {
             EXPECT_EQ(address, "2HqjMm2goapWvXQBqjjEdVaTZsUmunWwEq1TSToDR1pDzQ1F");
             break;
         case TWCoinTypeStacks:
-            EXPECT_EQ(address, "__TODO__");
+            EXPECT_EQ(address, "SP2TYS424BPZM2TR8TKEAFQDTA1441AAVR9W6EVSKY");
             break;
             // end_of_coin_address_derivation_tests_marker_do_not_modify
             // no default branch here, intentionally, to better notice any missing coins
