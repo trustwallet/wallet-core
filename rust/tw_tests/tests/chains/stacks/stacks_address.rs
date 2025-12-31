@@ -10,6 +10,13 @@ use tw_coin_registry::coin_type::CoinType;
 
 #[test]
 fn test_stacks_address_derive() {
+    let private_key_hexstr = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
+    test_address_derive(
+        CoinType::Stacks,
+        KeyType::PrivateKey(private_key_hexstr),
+        "SP2SF6ENB7636XSYSDNQ05X5T3SP4K2034A6D1G43K",
+    );
+
     let private_key_hexstr = "5ee478841eee47c23c164530d3df3469168431af52569c3dcc5d715666a7321b";
     test_address_derive(
         CoinType::Stacks,

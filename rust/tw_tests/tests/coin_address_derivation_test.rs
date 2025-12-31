@@ -167,7 +167,7 @@ fn test_coin_address_derivation() {
             CoinType::XRP => "r9cwJ8hM13jodBBGtioB44FUZ5HwWGwqfX",
             CoinType::Groestlcoin => "grs1qten42eesehw0ktddcp0fws7d3ycsqez35034a2",
             CoinType::Decred => "DsbEmWV6ZZBsUJY2vVi5u7H62GUfBFPBfoF",
-            CoinType::Stacks => todo!(),
+            CoinType::Stacks => "SP2SF6ENB7636XSYSDNQ05X5T3SP4K2034A6D1G43K"m
             // end_of_coin_address_derivation_tests_marker_do_not_modify
             _ => panic!("{:?} must be covered", coin),
         };
