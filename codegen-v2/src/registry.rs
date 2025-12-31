@@ -80,7 +80,7 @@ impl CoinItem {
 
 pub fn read_coin_from_registry(coin: &CoinId) -> Result<CoinItem> {
     let registry_path = registry_json_path();
-    
+
     let registry_bytes = fs::read(registry_path)?;
     let coins: Vec<CoinItem> =
         serde_json::from_slice(&registry_bytes).map_err(|e| Error::RegistryError(e.to_string()))?;
