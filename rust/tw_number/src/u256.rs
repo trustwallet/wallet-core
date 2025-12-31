@@ -142,7 +142,7 @@ impl U256 {
 
     #[inline]
     fn leading_zero_bytes(&self) -> usize {
-        U256::BYTES - (self.0.bits() + 7) / 8
+        U256::BYTES - self.0.bits().div_ceil(8)
     }
 }
 

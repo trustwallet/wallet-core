@@ -119,7 +119,7 @@ fn encode_head_tail_append(acc: &mut Vec<H256>, mediates: &[Mediate]) {
     mediates.iter().for_each(|m| m.tail_append(acc));
 }
 
-fn mediate_token(token: &Token) -> Mediate {
+fn mediate_token(token: &Token) -> Mediate<'_> {
     match token {
         Token::Address(_) => Mediate::Raw(1, token),
         Token::Bytes(bytes) => Mediate::Prefixed(pad_bytes_len(bytes), token),
@@ -186,7 +186,7 @@ pub fn pad_u32(value: u32) -> H256 {
 
 fn pad_bytes_len(bytes: &[u8]) -> u32 {
     // "+ 1" because len is also appended
-    ((bytes.len() + 31) / 32) as u32 + 1
+    bytes.len().div_ceil(32) as u32 + 1
 }
 
 fn pad_bytes_append(data: &mut Vec<H256>, bytes: &[u8]) {
@@ -195,11 +195,11 @@ fn pad_bytes_append(data: &mut Vec<H256>, bytes: &[u8]) {
 }
 
 fn fixed_bytes_len(bytes: &[u8]) -> u32 {
-    ((bytes.len() + 31) / 32) as u32
+    bytes.len().div_ceil(32) as u32
 }
 
 fn fixed_bytes_append(result: &mut Vec<H256>, bytes: &[u8]) {
-    let len = (bytes.len() + 31) / 32;
+    let len = bytes.len().div_ceil(32);
     for i in 0..len {
         let mut padded = H256::default();
 

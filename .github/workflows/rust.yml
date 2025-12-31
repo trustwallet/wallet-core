@@ -23,16 +23,16 @@ jobs:
     runs-on: ubuntu-24.04
     if: github.event.pull_request.draft == false
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Install system dependencies
         run: |
           tools/install-sys-dependencies-linux
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.8
+        uses: mozilla-actions/sccache-action@65101d47ea8028ed0c98a1cdea8dd9182e9b5133 # v0.0.8
 
       - name: Cache Rust
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
         with:
           workspaces: |
             rust
@@ -56,16 +56,16 @@ jobs:
     runs-on: ubuntu-24.04
     if: github.event.pull_request.draft == false
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Install system dependencies
         run: |
           tools/install-sys-dependencies-linux
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.8
+        uses: mozilla-actions/sccache-action@65101d47ea8028ed0c98a1cdea8dd9182e9b5133 # v0.0.8
 
       - name: Cache Rust
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
         with:
           workspaces: |
             rust
@@ -87,16 +87,16 @@ jobs:
     runs-on: macos-latest-xlarge
     if: github.event.pull_request.draft == false
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Install system dependencies
         run: |
           tools/install-sys-dependencies-mac
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.8
+        uses: mozilla-actions/sccache-action@65101d47ea8028ed0c98a1cdea8dd9182e9b5133 # v0.0.8
 
       - name: Cache Rust
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
         with:
           workspaces: |
             rust
@@ -118,7 +118,7 @@ jobs:
           ./tools/release-size measure-rust > release-report.json
 
       - name: Upload release report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: release_report
           path: release-report.json
@@ -126,7 +126,7 @@ jobs:
       # Download previous release report, compare the release binary sizes, and post/update a comment at the Pull Request.
       - name: Download previous release report
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false
-        uses: dawidd6/action-download-artifact@v6
+        uses: dawidd6/action-download-artifact@bf251b5aa9c2f7eeb574a96ee720e24f801b7c11 # v6
         with:
           commit: ${{github.event.pull_request.base.sha}}
           path: previous
@@ -144,7 +144,7 @@ jobs:
 
       - name: Create or Update Comment
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false
-        uses: edumserrano/find-create-or-update-comment@v2
+        uses: edumserrano/find-create-or-update-comment@3d340543af6d2743c70ab2d525deeb0f12e290de # v2.0.0
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body-includes: "Binary size comparison"
@@ -156,15 +156,15 @@ jobs:
     runs-on: ubuntu-24.04
     if: github.event.pull_request.draft == false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           submodules: true
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.8
+        uses: mozilla-actions/sccache-action@65101d47ea8028ed0c98a1cdea8dd9182e9b5133 # v0.0.8
 
       - name: Cache Rust
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
         with:
           workspaces: |
             rust
@@ -174,8 +174,9 @@ jobs:
           # to get the symbolizer for debug symbol resolution
           sudo apt install llvm
 
-      - name: Install nightly
-        uses: dtolnay/rust-toolchain@nightly
+      - name: Install Rust dependencies
+        run: |
+          tools/install-rust-dependencies
 
       - name: Enable debug symbols
         run: |
@@ -192,7 +193,7 @@ jobs:
             # now set opt-level to 1
             sed -i '/^\s*\[profile.dev\]/a opt-level = 1' Cargo.toml
             cat Cargo.toml
-        
+
       - name: cargo test -Zsanitizer=address
         # only --lib --tests b/c of https://github.com/rust-lang/rust/issues/53945
         run: |
@@ -201,6 +202,12 @@ jobs:
         env:
           ASAN_OPTIONS: "detect_odr_violation=0:detect_leaks=0"
           RUSTFLAGS: "-Z sanitizer=address"
+
+      # Clean up build directory to free up the disc space.
+      - name: Clean up after ASAN
+        run: |
+          cd rust
+          cargo clean
 
       - name: cargo test -Zsanitizer=leak
         if: always()
@@ -215,16 +222,16 @@ jobs:
     if: github.event.pull_request.draft == false
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Install system dependencies
         run: |
           tools/install-sys-dependencies-linux
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.8
+        uses: mozilla-actions/sccache-action@65101d47ea8028ed0c98a1cdea8dd9182e9b5133 # v0.0.8
 
       - name: Cache Rust
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
         with:
           workspaces: |
             rust
@@ -252,7 +259,7 @@ jobs:
       
       # TODO: Uncomment this when we have a codecov token
       # - name: Upload to codecov.io
-      #   uses: codecov/codecov-action@v5
+      #   uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
       #   with:
       #     fail_ci_if_error: true
       #     token: ${{ secrets.CODECOV_TOKEN }}

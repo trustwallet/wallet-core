@@ -21,7 +21,7 @@ pub struct ThorchainAsset {
 }
 
 impl ThorchainAsset {
-    pub fn to_proto(&self) -> types::Asset {
+    pub fn to_proto(&self) -> types::Asset<'_> {
         types::Asset {
             chain: self.chain.clone().into(),
             symbol: self.symbol.clone().into(),
@@ -40,7 +40,7 @@ pub struct ThorchainCoin {
 }
 
 impl ThorchainCoin {
-    pub fn to_proto(&self) -> types::Coin {
+    pub fn to_proto(&self) -> types::Coin<'_> {
         types::Coin {
             asset: Some(self.asset.to_proto()),
             amount: self.amount.to_string().into(),

@@ -59,7 +59,7 @@ Address::Address(const TW::PublicKey& publicKey, bool isMainnet) {
     }
     // Address Type
     bytes[2] = addressType;
-    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.begin() + 3);
+    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.data() + 3);
     bytes[23] = checksum(bytes);
 }
 

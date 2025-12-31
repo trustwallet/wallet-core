@@ -110,7 +110,7 @@ impl Cell {
         self.depths[level.min(3) as usize]
     }
 
-    pub fn parser(&self) -> CellParser {
+    pub fn parser(&self) -> CellParser<'_> {
         CellParser::new(&self.data, self.bit_len)
     }
 

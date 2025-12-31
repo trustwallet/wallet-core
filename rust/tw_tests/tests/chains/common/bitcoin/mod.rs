@@ -60,13 +60,13 @@ pub fn dust_threshold(threshold: i64) -> Proto::mod_TransactionBuilder::OneOfdus
     Proto::mod_TransactionBuilder::OneOfdust_policy::fixed_dust_threshold(threshold)
 }
 
-pub fn transaction_psbt(hex: &str) -> TransactionOneof {
+pub fn transaction_psbt(hex: &str) -> TransactionOneof<'_> {
     TransactionOneof::psbt(Proto::Psbt {
         psbt: hex.decode_hex().unwrap().into(),
     })
 }
 
-pub fn transaction_psbt_b64(b64: &str) -> TransactionOneof {
+pub fn transaction_psbt_b64(b64: &str) -> TransactionOneof<'_> {
     TransactionOneof::psbt(Proto::Psbt {
         psbt: base64::decode(b64, base64::STANDARD).unwrap().into(),
     })
