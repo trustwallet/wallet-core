@@ -15,7 +15,14 @@ jobs:
     runs-on: ubuntu-24.04
     if: github.event.pull_request.draft == false
     steps:
+    - uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      id: app-token
+      with:
+        app-id: ${{ secrets.CI_APP_ID }}
+        private-key: ${{ secrets.CI_PRIVATE_KEY }}
+
     - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      token: ${{ steps.app-token.outputs.token }}
 
     - name: Install system dependencies
       run: |
@@ -57,6 +64,8 @@ jobs:
     - name: Fetch Nexus User Auth Credentials
       id: fetch_nexus_credentials
       uses: trustwallet/devops/ci/actions/nexus-token-fetcher@main
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
       with:
         nexus_url: https://nexus.twinternal.net
         nexus_username: ${{ secrets.NEXUS_USERNAME }}
