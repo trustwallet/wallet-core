@@ -54,7 +54,29 @@ jobs:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
 
+    - name: Fetch Nexus User Auth Credentials
+      id: fetch_nexus_credentials
+      uses: trustwallet/devops/ci/actions/nexus-token-fetcher@main
+      with:
+        nexus_url: https://nexus.twinternal.net
+        nexus_username: ${{ secrets.NEXUS_USERNAME }}
+        nexus_password: ${{ secrets.NEXUS_PASSWORD }}
+
+    - name: Configure npmrc file
+      run: |
+        NEXUS_AUTH_TOKEN=$(echo -n "${{ steps.fetch_nexus_credentials.outputs.nexus_token_username }}:${{ steps.fetch_nexus_credentials.outputs.nexus_token_password }}" | base64)
+        cat > ~/.npmrc << EOF
+        registry=https://nexus.twinternal.net/repository/trust-sdk-npm/
+        //nexus.twinternal.net/repository/trust-sdk-npm/:_auth=${NEXUS_AUTH_TOKEN}
+        EOF
+
     - name: Test
       run: |
-        npm install && npm run build-and-test
+        npm install --loglevel=verbose && npm run build-and-test
       working-directory: wasm
+
+    - name: Cleanup npmrc
+      if: always()
+      run: |
+        rm -f ~/.npmrc
+        rm -f .npmrc
