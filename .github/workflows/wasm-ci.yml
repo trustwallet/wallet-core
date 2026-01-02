@@ -80,6 +80,12 @@ jobs:
         //nexus.twinternal.net/repository/trust-sdk-npm/:_auth=${NEXUS_AUTH_TOKEN}
         EOF
 
+    - name: Validate package-lock uses Nexus
+      shell: bash
+      working-directory: wasm
+      run: |
+        bash ${{ github.workspace }}/.github/scripts/validate-package-lock.sh package-lock.json
+
     - name: Test
       run: |
         npm install --loglevel=verbose && npm run build-and-test
