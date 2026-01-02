@@ -13,7 +13,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    if: github.event.pull_request.draft == false
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
     steps:
     - uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
       id: app-token
@@ -22,7 +22,8 @@ jobs:
         private-key: ${{ secrets.CI_PRIVATE_KEY }}
 
     - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-      token: ${{ steps.app-token.outputs.token }}
+      with:
+        token: ${{ steps.app-token.outputs.token }}
 
     - name: Install system dependencies
       run: |
