@@ -2,10 +2,18 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use hex::decode;
-use ripemd::{Ripemd160, Digest as RipemdDigest};
-use sha2::{Sha256, Sha512};
-use secp256k1::{Message, PublicKey, RecoverableSignature, RecoveryId, Secp256k1, SecretKey};
+use tw_encoding::hex;
+use tw_hash::{
+    H160, H256, 
+    hasher::StatefulHasher,
+    ripemd::Sha256Ripemd,
+    sha2,
+};
+use tw_keypair::{
+    ecdsa::secp256k1::PrivateKey,
+    traits::SigningKeyTrait,
+};
+use tw_misc::traits::ToBytesVec;
 
 #[test]
 fn test_stacks_sign() {
@@ -30,29 +38,25 @@ fn test_stacks_sign() {
     let hash_mode: u8 = 0x00; // P2PKH single-sig
 
     // Parse private key
-    let private_key_bytes = decode(private_key_hex)?;
-    let secret_key = SecretKey::from_slice(&private_key_bytes)?;
+    let private_key_bytes = hex::decode(private_key_hex).unwrap();
+    let secret_key = PrivateKey::try_from(&private_key_bytes[..]).unwrap();
 
     // Compute public key (compressed)
-    let secp = Secp256k1::new();
-    let public_key = PublicKey::from_secret_key(&secp, &secret_key);
-    let pubkey_bytes = public_key.serialize(); // 33 bytes compressed
+    let public_key = secret_key.public();
+    let pubkey_bytes = public_key.to_vec(); // 33 bytes compressed
 
     // Compute signer hash160: ripemd160(sha256(pubkey_bytes))
-    let mut sha_hasher = Sha256::new();
-    sha_hasher.update(&pubkey_bytes);
-    let sha_hash = sha_hasher.finalize();
-    let mut ripemd_hasher = Ripemd160::new();
-    ripemd_hasher.update(&sha_hash);
-    let signer_hash160: [u8; 20] = ripemd_hasher.finalize().into();
+    let hasher = Sha256Ripemd;
+    let signer_hash160: [u8; 20] = hasher.hash(&pubkey_bytes).try_into().unwrap();
 
     // Recipient hash160
-    let recipient_hash160 = decode(recipient_hash160_hex)?[..].try_into()?;
+    let recipient_hash160_bytes = hex::decode(recipient_hash160_hex).unwrap();
+    let recipient_hash160 = H160::try_from(&recipient_hash160_bytes[..]).unwrap();
 
     // Build payload: 0x00 + recipient principal (version + hash160) + amount BE + memo
     let mut payload = vec![0x00];
     payload.push(recipient_version);
-    payload.extend_from_slice(&recipient_hash160);
+    payload.extend_from_slice(&recipient_hash160.as_slice());
     payload.extend_from_slice(&amount.to_be_bytes());
     payload.extend_from_slice(&memo_bytes);
 
@@ -75,7 +79,7 @@ fn test_stacks_sign() {
     unsigned_tx.extend_from_slice(&payload);
 
     // Compute initial sighash = SHA512/256(unsigned_tx)
-    let initial_sighash = sha512_256(&unsigned_tx);
+    let initial_sighash = sha2::sha512_256(&unsigned_tx);
 
     // Auth flag for standard origin: 0x04
     let auth_flag: u8 = 0x04;
@@ -86,19 +90,19 @@ fn test_stacks_sign() {
     pre_sign_data.push(auth_flag);
     pre_sign_data.extend_from_slice(&fee.to_be_bytes());
     pre_sign_data.extend_from_slice(&nonce.to_be_bytes());
-    let pre_sign_hash = sha512_256(&pre_sign_data);
-
+    let pre_sign_hash = sha2::sha512_256(&pre_sign_data);
+    
     // Sign the pre_sign_hash with ECDSA secp256k1
-    let message = Message::from_digest(pre_sign_hash);
-    let recoverable_sig: RecoverableSignature = secp.sign_ecdsa_recoverable(&message, &secret_key);
+    let message = H256::try_from(&pre_sign_hash[..]).unwrap();
+    let rsig = secret_key.sign(message).unwrap();
 
     // Serialize signature to 65 bytes Bitcoin-style
-    let (rec_id, compact) = recoverable_sig.serialize_compact();
     let compressed = true; // since we used compressed pubkey
-    let header_byte = rec_id.to_i32() as u8 + 27 + if compressed { 0 } else { 4 };
+    let header_byte = rsig.v() + 27 + if compressed { 0 } else { 4 };
     let mut signature = [0u8; 65];
     signature[0] = header_byte;
-    signature[1..].copy_from_slice(&compact);
+    signature[1..33].copy_from_slice(&rsig.r().as_slice());
+    signature[33..].copy_from_slice(&rsig.s().as_slice());
 
     // Key encoding: 0x00 compressed, 0x01 uncompressed
     let key_encoding: u8 = if compressed { 0x00 } else { 0x01 };
@@ -121,17 +125,7 @@ fn test_stacks_sign() {
     signed_tx.extend_from_slice(&payload);
 
     // Hex encode
-    let serialized_hex = hex::encode(&signed_tx);
+    let serialized_hex = hex::encode(&signed_tx, false);
 
     println!("Signed transaction (hex): {}", serialized_hex);
 }
-
-fn sha512_256(data: &[u8]) -> [u8; 32] {
-    let mut hasher = Sha512::new();
-    hasher.update(data);
-    let full_hash = hasher.finalize();
-    let mut trunc = [0u8; 32];
-    trunc.copy_from_slice(&full_hash[0..32]);
-    trunc
-}
-
