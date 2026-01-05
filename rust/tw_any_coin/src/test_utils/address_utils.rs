@@ -46,11 +46,7 @@ pub fn test_address_derive_with_derivation(
     address: &str,
     derivation: TWDerivation,
 ) {
-    //println!("test_address_derive_with_derivation: {coin:?} {key:?} {address} derivation");
     let coin_item = get_coin_item(coin).unwrap();
-    //let public_key_type = coin_item.public_key_type;
-    //println!("{coin_item:?}");
-    //println!("{public_key_type:?}");
 
     let public_key = match key {
         KeyType::PrivateKey(key) => {
