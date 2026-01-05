@@ -15,6 +15,7 @@ message TransferMessage {
     int64 fee = 2;
     string to = 3;
     string memo = 4;
+    int64 nonce = 5;
 }
 
 // TODO: Input data necessary to create a signed transaction.

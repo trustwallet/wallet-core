@@ -9,19 +9,11 @@ use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_encoding::hex;
-use tw_hash::{
-    H160, H256, 
-    hasher::StatefulHasher,
-    ripemd::Sha256Ripemd,
-    sha2,
-};
-use tw_keypair::{
-    ecdsa::secp256k1::PrivateKey,
-    traits::SigningKeyTrait,
-};
+use tw_hash::{hasher::StatefulHasher, ripemd::Sha256Ripemd, sha2, H160, H256};
+use tw_keypair::{ecdsa::secp256k1::PrivateKey, traits::SigningKeyTrait};
 use tw_misc::traits::ToBytesVec;
 use tw_proto::Stacks::Proto;
-use tw_proto::Stacks::Proto::mod_SigningInput::OneOfmessage_oneof;
+use tw_proto::Stacks::Proto::mod_SigningInput::OneOfmessage_oneof as SigningInputMessage;
 
 use std::str::FromStr;
 
@@ -41,7 +33,7 @@ impl StacksSigner {
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let signed_tx = match input.message_oneof {
-            OneOfmessage_oneof::transfer(xfer) => {
+            SigningInputMessage::transfer(xfer) => {
                 let rcpt_version: u8 = 0x16; // Mainnet P2PKH
                 let rcpt_addr = StacksAddress::from_str(&xfer.to).unwrap();
                 let amount: u64 = xfer.amount.try_into().unwrap(); // microSTX
@@ -61,7 +53,7 @@ impl StacksSigner {
                 let hash_mode: u8 = 0x00; // P2PKH single-sig
 
                 // Parse private key
-                let private_key_bytes = input.private_key;//hex::decode(private_key_hex).unwrap();
+                let private_key_bytes = input.private_key; //hex::decode(private_key_hex).unwrap();
                 let secret_key = PrivateKey::try_from(&private_key_bytes[..]).unwrap();
 
                 // Compute public key (compressed)
@@ -114,7 +106,7 @@ impl StacksSigner {
                 pre_sign_data.extend_from_slice(&fee.to_be_bytes());
                 pre_sign_data.extend_from_slice(&nonce.to_be_bytes());
                 let pre_sign_hash = sha2::sha512_256(&pre_sign_data);
-                
+
                 // Sign the pre_sign_hash with ECDSA secp256k1
                 let message = H256::try_from(&pre_sign_hash[..]).unwrap();
                 let rsig = secret_key.sign(message).unwrap();
@@ -148,7 +140,7 @@ impl StacksSigner {
                 signed_tx.extend_from_slice(&payload);
 
                 signed_tx
-            }
+            },
             _ => todo!(),
         };
 
