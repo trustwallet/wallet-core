@@ -26,6 +26,6 @@ TEST(TWStacks, Sign) {
     auto privateKey = PrivateKey(parse_hex("a1b2c3d4e5f60000000000000000000000000000000000000000000000000001"));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     Stacks::Proto::SigningOutput output;
-    ANY_SIGN(input, TWCoinTypeAptos);
+    ANY_SIGN(input, TWCoinTypeStacks);
     //ASSERT_EQ(hex(output.raw_txn()), "07968dab936c1bad187c60ce4082f307d03}
 }
