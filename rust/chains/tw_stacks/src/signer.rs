@@ -53,12 +53,12 @@ impl StacksSigner {
                 let hash_mode: u8 = 0x00; // P2PKH single-sig
 
                 // Parse private key
-                let private_key_bytes = input.private_key; //hex::decode(private_key_hex).unwrap();
+                let private_key_bytes = input.private_key;
                 let secret_key = PrivateKey::try_from(&private_key_bytes[..]).unwrap();
 
                 // Compute public key (compressed)
                 let public_key = secret_key.public();
-                let pubkey_bytes = public_key.to_vec(); // 33 bytes compressed
+                let pubkey_bytes = public_key.to_vec();
 
                 // Compute signer hash160: ripemd160(sha256(pubkey_bytes))
                 let hasher = Sha256Ripemd;

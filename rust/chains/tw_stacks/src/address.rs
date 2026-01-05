@@ -7,7 +7,6 @@ use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
 use tw_encoding::base32;
-//use tw_encoding::hex;
 use tw_hash::{hasher::StatefulHasher, ripemd::Sha256Ripemd, sha2, H160};
 use tw_keypair::tw::PublicKey;
 use tw_memory::Data;
@@ -27,12 +26,9 @@ impl StacksAddress {
         let mut hash_bytes = hasher.hash(&hash_data);
         let bytes = H160::try_from(hash_bytes.as_slice()).unwrap(); // Sha256Ripemd will always return correct number of bytes
 
-        //println!("new: hash_bytes {}", hex::encode(&hash_bytes, true));
-
         let mut check_data = Vec::new();
         check_data.push(version);
         check_data.append(&mut hash_bytes);
-        //println!("new: check_data {check_data:?}");
 
         let check_bytes = sha2::sha256(&sha2::sha256(&check_data))[0..4].to_vec();
 
@@ -57,9 +53,7 @@ impl FromStr for StacksAddress {
     type Err = AddressError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        //println!("from_str({s})");
         if &s[0..1] != "S" {
-            //println!("from_str: no initial S");
             return Err(AddressError::MissingPrefix);
         }
 
@@ -69,7 +63,6 @@ impl FromStr for StacksAddress {
             "T" => 26,
             "N" => 21,
             _ => {
-                //println!("from_str: unknown version");
                 return Err(AddressError::Unsupported);
             },
         };
@@ -77,7 +70,6 @@ impl FromStr for StacksAddress {
         let payload = base32::decode(&s[2..], Some(ALPHABET.to_string()), false).unwrap();
 
         if payload[0] != version {
-            //println!("from_str: unexpected version");
             return Err(AddressError::Unsupported);
         }
 
@@ -85,12 +77,10 @@ impl FromStr for StacksAddress {
         let bytes = H160::try_from(hash_bytes.as_slice()).unwrap(); // Sha256Ripemd will always return correct number of bytes
 
         let check_data = &payload[0..21];
-        //println!("from_str: check_data {check_data:?}");
 
         let check_bytes = sha2::sha256(&sha2::sha256(check_data))[0..4].to_vec();
 
         if check_bytes != payload[21..].to_vec() {
-            //println!("from_str: bad checksum");
             return Err(AddressError::InvalidChecksum);
         }
 
