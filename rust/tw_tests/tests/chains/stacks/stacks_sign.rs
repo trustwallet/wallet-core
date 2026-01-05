@@ -4,6 +4,7 @@
 
 use tw_any_coin::ffi::tw_any_signer::tw_any_signer_sign;
 use tw_coin_entry::error::prelude::*;
+use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 //use tw_misc::assert_eq_json;
@@ -37,7 +38,7 @@ fn test_stacks_sign() {
 
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
 
-    let output = TWDataHelper::wrap(unsafe { tw_any_signer_sign(input_data.ptr(), 5757) })
+    let output = TWDataHelper::wrap(unsafe { tw_any_signer_sign(input_data.ptr(), CoinType::Stacks as u32) })
         .to_vec()
         .expect("!tw_any_signer_sign returned nullptr");
 
