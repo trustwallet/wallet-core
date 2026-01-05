@@ -4,5 +4,5 @@
 
 #[test]
 fn test_stacks_compile() {
-    todo!()
+    // compilation is not supported in the stacks blockchain
 }
