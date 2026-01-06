@@ -243,8 +243,8 @@ message TransactionBuilder {
     // Leave empty to explicitly disable change output creation.
     Output change_output = 7;
     // The only output with a max available amount to be send.
-    // If set, `SigningInput.outputs` and `SigningInput.change` will be ignored.
     // The `Output.value` will be overwritten, leave default.
+    // Note: `max_amount_output` is mutually exclusive with `outputs` and `change_output`; do not use them together.
     Output max_amount_output = 8;
     // One of the "Dust" amount policies.
     // Later, we plan to add support for `DynamicDust` policy with a `min_relay_fee` amount.
