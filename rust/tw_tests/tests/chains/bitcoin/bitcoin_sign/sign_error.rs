@@ -48,7 +48,7 @@ fn test_bitcoin_sign_both_outputs_and_max_amount_error() {
     let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V2,
         inputs: vec![tx1.clone()],
-        outputs: vec![out],
+        outputs: vec![out.clone()],
         max_amount_output: Some(max_out.clone()),
         input_selector: Proto::InputSelector::UseAll,
         dust_policy: dust_threshold(DUST),
@@ -71,7 +71,32 @@ fn test_bitcoin_sign_both_outputs_and_max_amount_error() {
     // Secondly, create transaction with change output and max amount set.
     let builder = Proto::TransactionBuilder {
         version: Proto::TransactionVersion::V2,
+        inputs: vec![tx1.clone()],
+        change_output: Some(change_out.clone()),
+        max_amount_output: Some(max_out.clone()),
+        input_selector: Proto::InputSelector::UseAll,
+        dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![alice_private_key.clone().into()],
+        transaction: TransactionOneof::builder(builder),
+        ..Default::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Bitcoin, signing);
+    assert_eq!(
+        output.error,
+        Common::Proto::SigningError::Error_invalid_params
+    );
+
+    // Lastly, create transaction with all change output, outputs and max amount set.
+    let builder = Proto::TransactionBuilder {
+        version: Proto::TransactionVersion::V2,
         inputs: vec![tx1],
+        outputs: vec![out],
         change_output: Some(change_out),
         max_amount_output: Some(max_out),
         input_selector: Proto::InputSelector::UseAll,
