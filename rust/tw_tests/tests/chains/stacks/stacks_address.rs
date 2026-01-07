@@ -50,7 +50,27 @@ fn test_stacks_address_derive() {
 fn test_stacks_address_normalization() {
     test_address_normalization(
         CoinType::Stacks,
+        "SP2VR2M51ACOoTKNMF08XE9WSJDZ3WT4QGQNEQPDQA",
         "SP2VR2M51AC00TKNMF08XE9WSJDZ3WT4QGQNEQPDQA",
+    );
+    test_address_normalization(
+        CoinType::Stacks,
+        "SP2VR2M5IAC00TKNMF08XE9WSJDZ3WT4QGQNEQPDQA",
+        "SP2VR2M51AC00TKNMF08XE9WSJDZ3WT4QGQNEQPDQA",
+    );
+    test_address_normalization(
+        CoinType::Stacks,
+        "SP2VR2M5iAC00TKNMF08XE9WSJDZ3WT4QGQNEQPDQA",
+        "SP2VR2M51AC00TKNMF08XE9WSJDZ3WT4QGQNEQPDQA",
+    );
+    test_address_normalization(
+        CoinType::Stacks,
+        "SP2VR2M5LAC00TKNMF08XE9WSJDZ3WT4QGQNEQPDQA",
+        "SP2VR2M51AC00TKNMF08XE9WSJDZ3WT4QGQNEQPDQA",
+    );
+    test_address_normalization(
+        CoinType::Stacks,
+        "SP2VR2M5lAC00TKNMF08XE9WSJDZ3WT4QGQNEQPDQA",
         "SP2VR2M51AC00TKNMF08XE9WSJDZ3WT4QGQNEQPDQA",
     );
 }

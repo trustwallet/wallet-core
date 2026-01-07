@@ -38,9 +38,11 @@ fn test_stacks_sign() {
 
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
 
-    let output = TWDataHelper::wrap(unsafe { tw_any_signer_sign(input_data.ptr(), CoinType::Stacks as u32) })
-        .to_vec()
-        .expect("!tw_any_signer_sign returned nullptr");
+    let output = TWDataHelper::wrap(unsafe {
+        tw_any_signer_sign(input_data.ptr(), CoinType::Stacks as u32)
+    })
+    .to_vec()
+    .expect("!tw_any_signer_sign returned nullptr");
 
     let output: Proto::SigningOutput = deserialize(&output).unwrap();
     assert_eq!(output.error, SigningErrorType::OK);

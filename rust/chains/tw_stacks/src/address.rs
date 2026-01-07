@@ -53,6 +53,22 @@ impl FromStr for StacksAddress {
     type Err = AddressError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        // first, normalize the following characters:
+        // O, o => 0
+        // I, i => 1
+        // L, l => 1
+        let s = s.replace("O", "0");
+        let s = s.replace("o", "0");
+        let s = s.replace("I", "1");
+        let s = s.replace("i", "1");
+        let s = s.replace("L", "1");
+        let s = s.replace("l", "1");
+        let s = s.as_str();
+
+        if s.len() < 2 {
+            return Err(AddressError::MissingPrefix);
+        }
+
         if &s[0..1] != "S" {
             return Err(AddressError::MissingPrefix);
         }
@@ -63,11 +79,16 @@ impl FromStr for StacksAddress {
             "T" => 26,
             "N" => 21,
             _ => {
-                return Err(AddressError::Unsupported);
+                return Err(AddressError::UnexpectedAddressPrefix);
             },
         };
 
-        let payload = base32::decode(&s[2..], Some(ALPHABET.to_string()), false).unwrap();
+        let payload = base32::decode(&s[2..], Some(ALPHABET.to_string()), false)
+            .map_err(|_| AddressError::FromBech32Error)?;
+
+        if payload.len() < 21 {
+            return Err(AddressError::Unsupported);
+        }
 
         if payload[0] != version {
             return Err(AddressError::Unsupported);
@@ -78,13 +99,17 @@ impl FromStr for StacksAddress {
 
         let check_data = &payload[0..21];
 
-        let check_bytes = sha2::sha256(&sha2::sha256(check_data))[0..4].to_vec();
+        let check_bytes = sha2::sha256(&sha2::sha256(check_data))[0..4].to_vec(); // we can always grab 4 bytes from the beginning of a SHA256 hash
+
+        if payload.len() == 21 {
+            return Err(AddressError::InvalidChecksum);
+        }
 
         if check_bytes != payload[21..].to_vec() {
             return Err(AddressError::InvalidChecksum);
         }
 
-        let check: [u8; 4] = check_bytes.try_into().unwrap();
+        let check: [u8; 4] = check_bytes.try_into().unwrap(); // we grabbed exactly 4 bytes above
 
         Ok(StacksAddress {
             version,
