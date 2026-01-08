@@ -13,10 +13,10 @@ using namespace TW;
 // TODO: Finalize tests
 
 TEST(TWStacks, Address) {
-    auto string = STRING("SP2VR2M51AC00TKNMF08XE9WSJDZ3WT4QGQNEQPDQA");
+    auto string = STRING("SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7");
     auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeStacks));
     auto string2 = WRAPS(TWAnyAddressDescription(addr.get()));
     EXPECT_TRUE(TWStringEqual(string.get(), string2.get()));
     auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
-    assertHexEqual(keyHash, "f02a142a6001a9d68f023ae4f3326fc7cd12f0bd");
+    assertHexEqual(keyHash, "a46ff88886c2ef9762d970b4d2c63678835bd39d");
 }

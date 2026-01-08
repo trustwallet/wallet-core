@@ -19,7 +19,7 @@ using namespace TW;
 TEST(TWStacks, Sign) {
     Stacks::Proto::SigningInput input;
     auto& tf = *input.mutable_transfer();
-    tf.set_to("SP2VR2M51AC00TKNMF08XE9WSJDZ3WT4QGQNEQPDQA");
+    tf.set_to("SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7");
     tf.set_amount(100000);
     tf.set_fee(10000);
     tf.set_memo("hello");
