@@ -17,8 +17,7 @@ fn test_stacks_sign() {
     // Configuration
     let private_key_hex = "a1b2c3d4e5f60000000000000000000000000000000000000000000000000001";
     //let recipient_hash160_hex = "a46ff88886c2ef9762d970b4d2c63678835bd39d"; // From SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7
-    //let to = "SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7";
-    let to = "SPBSKNASSGSQEFPBDDR1F9EGYDH4RG0S2HK8C10WR";
+    let to = "SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7";
     let amount: i64 = 100_000; // microSTX
     let fee: i64 = 10_000; // microSTX
     let nonce: i64 = 5;

@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use stacks_core::c32;
+use crate::c32;
 use std::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
