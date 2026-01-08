@@ -14,35 +14,35 @@ fn test_stacks_address_derive() {
     test_address_derive(
         CoinType::Stacks,
         KeyType::PrivateKey(private_key_hexstr),
-        "SPBSKNASSGSQEFPBDDR1F9EGYDH4RG0S2HK8C10WR",
+        "SP1F6ENB7636XSYSDNQ05X5T3SP4K2034A6D1G43K",
     );
 
     let private_key_hexstr = "4646464646464646464646464646464646464646464646464646464646464646";
     test_address_derive(
         CoinType::Stacks,
         KeyType::PrivateKey(private_key_hexstr),
-        "SPQP90H2XQX0PP26MVJKXVEJG910AJPY2F1KPYCZG",
+        "SP2YS424BPZM2TR8TKEAFQDTA1441AAVR9W6EVSKY",
     );
 
     let private_key_hexstr = "5ee478841eee47c23c164530d3df3469168431af52569c3dcc5d715666a7321b";
     test_address_derive(
         CoinType::Stacks,
         KeyType::PrivateKey(private_key_hexstr),
-        "SPY0N18AK006MXD3R27BJF6CKFRZ6H5W5XBNXKDTG",
+        "SP3R2M51AC00TKNMF08XE9WSJDZ3WT4QGQNEQPDQA",
     );
 
     let private_key_hexstr = "0000000000000000000000000000000000000000000000000000000000000001";
     test_address_derive(
         CoinType::Stacks,
         KeyType::PrivateKey(private_key_hexstr),
-        "SPEMF7DT0SJ6BD8N4M3H2X3CX34FRM6EYP8F82XN0",
+        "SP1THWXQ8368SDN2MJGE4BMDKMCHZ2GSVTS1X0BPM",
     );
 
     let private_key_hexstr = "1111111111111111111111111111111111111111111111111111111111111111";
     test_address_derive(
         CoinType::Stacks,
         KeyType::PrivateKey(private_key_hexstr),
-        "SPZHS518GHVVEWE3Q5M9SRVSFGF0BKA77FGY2PW10",
+        "SP3Y74M5227FDVHREWPH773F5Y1W1ED8WXY3RAVG4",
     );
 }
 
@@ -50,18 +50,18 @@ fn test_stacks_address_derive() {
 fn test_stacks_address_normalization() {
     test_address_normalization(
         CoinType::Stacks,
-        "SPBSKNASSGSQEFPBDDR1F9EGYDH4RGOS2HK8C1oWR",
-        "SPBSKNASSGSQEFPBDDR1F9EGYDH4RG0S2HK8C10WR",
+        "SP1F6ENB7636XSYSDNQO5X5T3SP4K2o34A6D1G43K",
+        "SP1F6ENB7636XSYSDNQ05X5T3SP4K2034A6D1G43K",
     );
     test_address_normalization(
         CoinType::Stacks,
-        "SPBSKNASSGSQEFPBDDRIF9EGYDH4RG0S2HK8Ci0WR",
-        "SPBSKNASSGSQEFPBDDR1F9EGYDH4RG0S2HK8C10WR",
+        "SPIF6ENB7636XSYSDNQ05X5T3SP4K2034A6DiG43K",
+        "SP1F6ENB7636XSYSDNQ05X5T3SP4K2034A6D1G43K",
     );
     test_address_normalization(
         CoinType::Stacks,
-        "SPBSKNASSGSQEFPBDDRLF9EGYDH4RG0S2HK8Cl0WR",
-        "SPBSKNASSGSQEFPBDDR1F9EGYDH4RG0S2HK8C10WR",
+        "SPLF6ENB7636XSYSDNQ05X5T3SP4K2034A6DlG43K",
+        "SP1F6ENB7636XSYSDNQ05X5T3SP4K2034A6D1G43K",
     );
 }
 
@@ -69,7 +69,7 @@ fn test_stacks_address_normalization() {
 fn test_stacks_address_is_valid() {
     test_address_valid(
         CoinType::Stacks,
-        "SPBSKNASSGSQEFPBDDR1F9EGYDH4RG0S2HK8C10WR",
+        "SP1F6ENB7636XSYSDNQ05X5T3SP4K2034A6D1G43K",
     );
 }
 
@@ -77,26 +77,20 @@ fn test_stacks_address_is_valid() {
 fn test_stacks_address_invalid() {
     test_address_invalid(
         CoinType::Stacks,
-        "ZPBSKNASSGSQEFPBDDR1F9EGYDH4RG0S2HK8C10WR",
+        "ZP1F6ENB7636XSYSDNQ05X5T3SP4K2034A6D1G43K",
     );
     test_address_invalid(
         CoinType::Stacks,
-        "SXBSKNASSGSQEFPBDDR1F9EGYDH4RG0S2HK8C10WR",
+        "SX1F6ENB7636XSYSDNQ05X5T3SP4K2034A6D1G43K",
     );
     test_address_invalid(
         CoinType::Stacks,
-        "SPBSKNASSGSQEFPBDDR1F9EGYDH4RG0S2HK8C10WS",
+        "SP1F6ENB7636XSYSDNQ05X5T3SP4K2034A6D1G43Z",
     );
 }
 
 #[test]
 fn test_stacks_address_get_data() {
-    test_address_get_data(
-        CoinType::Stacks,
-        "SPBSKNASSGSQEFPBDDRLF9EGYDH4RG0S2HK8Cl0WR",
-        "0x5e67556730cddcfb2dadc05e9743cd8931006451",
-    );
-    /*
     test_address_get_data(
         CoinType::Stacks,
         "SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7",
@@ -117,5 +111,4 @@ fn test_stacks_address_get_data() {
         "SN2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKP6D2ZK9",
         "0xa46ff88886c2ef9762d970b4d2c63678835bd39d",
     );
-    */
 }
