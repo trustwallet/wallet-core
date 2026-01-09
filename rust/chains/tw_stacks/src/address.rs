@@ -12,7 +12,7 @@ use tw_keypair::tw::PublicKey;
 use tw_memory::Data;
 
 pub struct StacksAddress {
-    version: u8,
+    pub(crate) version: u8,
     bytes: H160,
     check: [u8; 4],
 }

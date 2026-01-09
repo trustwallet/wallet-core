@@ -8,7 +8,7 @@ use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
-use tw_encoding::hex;
+//use tw_encoding::hex;
 use tw_hash::{hasher::StatefulHasher, ripemd::Sha256Ripemd, sha2, H160, H256};
 use tw_keypair::{ecdsa::secp256k1::PrivateKey, traits::SigningKeyTrait};
 use tw_misc::traits::ToBytesVec;
@@ -34,7 +34,7 @@ impl StacksSigner {
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let signed_tx = match input.message_oneof {
             SigningInputMessage::transfer(xfer) => {
-                let rcpt_version: u8 = 0x16; // Mainnet P2PKH
+                let rcpt_type: u8 = 0x05; // rcpt address
                 let rcpt_addr = StacksAddress::from_str(&xfer.to).unwrap();
                 let amount: u64 = xfer.amount.try_into().unwrap(); // microSTX
                 let fee: u64 = xfer.fee.try_into().unwrap(); // microSTX
@@ -70,7 +70,8 @@ impl StacksSigner {
 
                 // Build payload: 0x00 + rcpt principal (version + hash160) + amount BE + memo
                 let mut payload = vec![0x00];
-                payload.push(rcpt_version);
+                payload.push(rcpt_type);
+                payload.push(rcpt_addr.version);
                 payload.extend_from_slice(&rcpt_hash160.as_slice());
                 payload.extend_from_slice(&amount.to_be_bytes());
                 payload.extend_from_slice(&memo_bytes);
@@ -78,8 +79,8 @@ impl StacksSigner {
                 // Build unsigned auth: 0x04 + hash_mode + signer + nonce0 + fee0
                 let mut auth_unsigned = vec![0x04, hash_mode];
                 auth_unsigned.extend_from_slice(&signer_hash160);
-                auth_unsigned.extend_from_slice(&[0u8; 8]); // nonce 0
-                auth_unsigned.extend_from_slice(&[0u8; 8]); // fee 0
+                auth_unsigned.extend_from_slice(&nonce.to_be_bytes());
+                auth_unsigned.extend_from_slice(&fee.to_be_bytes());
 
                 // Build post conditions: u32 0
                 let post_conditions = [0u8; 4];
@@ -95,6 +96,9 @@ impl StacksSigner {
 
                 // Compute initial sighash = SHA512/256(unsigned_tx)
                 let initial_sighash = sha2::sha512_256(&unsigned_tx);
+
+                //let serialized_sighash = hex::encode(&initial_sighash, false);
+                //println!("sighash (hex): {}", serialized_sighash);
 
                 // Auth flag for standard origin: 0x04
                 let auth_flag: u8 = 0x04;
@@ -113,7 +117,7 @@ impl StacksSigner {
 
                 // Serialize signature to 65 bytes Bitcoin-style
                 let compressed = true; // since we used compressed pubkey
-                let header_byte = rsig.v() + 27 + if compressed { 0 } else { 4 };
+                let header_byte = rsig.v(); // + 27 + if compressed { 0 } else { 4 };
                 let mut signature = [0u8; 65];
                 signature[0] = header_byte;
                 signature[1..33].copy_from_slice(&rsig.r().as_slice());
@@ -144,8 +148,8 @@ impl StacksSigner {
             _ => todo!(),
         };
 
-        let serialized_hex = hex::encode(&signed_tx, false);
-        println!("Signed transaction (hex): {}", serialized_hex);
+        //let serialized_hex = hex::encode(&signed_tx, false);
+        //println!("Signed transaction (hex): {}", serialized_hex);
 
         Ok(Proto::SigningOutput {
             encoded: signed_tx.into(),
