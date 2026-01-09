@@ -335,6 +335,9 @@ vector<Decode> Decode::getCompoundElements(uint32_t countMultiplier, TW::byte ex
 
 Decode::MapElements Decode::getMapElements() const {
     auto elems = getCompoundElements(2, MT_map);
+    if (elems.size() % 2 != 0) {
+        throw std::invalid_argument("CBOR map with odd number of elements");
+    }
     MapElements map;
     for (auto i = 0ul; i < elems.size(); i += 2) {
         map.emplace_back(make_pair(elems[i], elems[i + 1]));

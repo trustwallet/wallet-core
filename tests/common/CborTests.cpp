@@ -517,5 +517,15 @@ TEST(Cbor, GetTagElementNotTag) {
     }
     FAIL() << "Expected exception";
 }
+
+TEST(Cbor, MapIndefOddElements) {
+    // Indefinite-length CBOR map with odd element count
+    Data malformed = {0xBF, 0x01, 0xFF};
+
+    Cbor::Decode cbor(malformed);
+    ASSERT_TRUE(cbor.isValid());
+    EXPECT_THROW(cbor.getMapElements(), std::invalid_argument);
+}
+
 // clang-format on
 } // namespace TW::Cbor::tests
