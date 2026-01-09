@@ -4945,5 +4945,44 @@
       "rpc": "https://rpc.monad.xyz",
       "documentation": "https://docs.monad.xyz"
     }
+  },
+  {
+    "id": "stacks",
+    "name": "Stacks",
+    "coinId": 5757,
+    "symbol": "STX",
+    "decimals": 8,
+    "blockchain": "Stacks",
+    "derivation": [
+      {
+        "name": "mainnet",
+        "path": "m/44'/5757'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
+      },
+      {
+        "name": "testnet",
+        "path": "m/44'/5757/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "explorer": {
+      "url": "https://explorer.hiro.so",
+      "txPath": "/txid/",
+      "accountPath": "/address/",
+      "sampleTx": "0x2aeb646c13a0261ebc02003877d2db6c839d3bcbeea6ba7ede877f484f6ce70c",
+      "sampleAccount": "SP3XXK8BG5X7CRH7W07RRJK3JZJXJ799WX3Y0SMCR"
+    },
+    "info": {
+      "url": "https://stacks.org",
+      "source": "https://github.com/stacks-network/stacks-core",
+      "rpc": "",
+      "documentation": "https://docs.hiro.so/en"
+    }
   }
 ]

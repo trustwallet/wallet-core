@@ -28,6 +28,7 @@ use tw_polymesh::entry::PolymeshEntry;
 use tw_ripple::entry::RippleEntry;
 use tw_ronin::entry::RoninEntry;
 use tw_solana::entry::SolanaEntry;
+use tw_stacks::entry::StacksEntry;
 use tw_substrate::entry::SubstrateEntry;
 use tw_sui::entry::SuiEntry;
 use tw_thorchain::entry::ThorchainEntry;
@@ -57,6 +58,7 @@ const POLYMESH: SubstrateEntry<PolymeshEntry> = SubstrateEntry(PolymeshEntry);
 const RIPPLE: RippleEntry = RippleEntry;
 const RONIN: RoninEntry = RoninEntry;
 const SOLANA: SolanaEntry = SolanaEntry;
+const STACKS: StacksEntry = StacksEntry;
 const SUI: SuiEntry = SuiEntry;
 const THE_OPEN_NETWORK: TheOpenNetworkEntry = TheOpenNetworkEntry;
 const THORCHAIN: ThorchainEntry = ThorchainEntry;
@@ -86,6 +88,7 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::Ripple => Ok(&RIPPLE),
         BlockchainType::Ronin => Ok(&RONIN),
         BlockchainType::Solana => Ok(&SOLANA),
+        BlockchainType::Stacks => Ok(&STACKS),
         BlockchainType::Sui => Ok(&SUI),
         BlockchainType::TheOpenNetwork => Ok(&THE_OPEN_NETWORK),
         BlockchainType::Thorchain => Ok(&THORCHAIN),

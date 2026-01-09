@@ -70,6 +70,7 @@
 #include "Pactus/Entry.h"
 #include "Komodo/Entry.h"
 #include "Polymesh/Entry.h"
+#include "Stacks/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -133,6 +134,7 @@ BitcoinCash::Entry BitcoinCashDP;
 Pactus::Entry PactusDP;
 Komodo::Entry KomodoDP;
 Polymesh::Entry PolymeshDP;
+Stacks::Entry StacksDP;
 // end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
@@ -198,6 +200,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainPactus: entry = &PactusDP; break;
         case TWBlockchainKomodo: entry = &KomodoDP; break;
         case TWBlockchainPolymesh: entry = &PolymeshDP; break;
+        case TWBlockchainStacks: entry = &StacksDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;

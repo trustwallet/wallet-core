@@ -23,3 +23,4 @@ tw_solana = { path = "../chains/tw_solana" }
 tw_ton = { path = "../chains/tw_ton" }
 tw_ton_sdk = { path = "../frameworks/tw_ton_sdk" }
 tw_utxo = { path = "../frameworks/tw_utxo" }
+k256 = { version = "0.13.0", features = ["ecdh", "ecdsa", "pkcs8", "schnorr", "std"], default-features = false }
