@@ -518,7 +518,7 @@ TEST(Cbor, GetTagElementNotTag) {
     FAIL() << "Expected exception";
 }
 
-TEST(Cbor, Tag) {
+TEST(Cbor, MapIndefOddElements) {
     // Indefinite-length CBOR map with odd element count
     Data malformed = {0xBF, 0x01, 0xFF};
 
