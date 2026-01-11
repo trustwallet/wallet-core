@@ -65,7 +65,7 @@
 
 // implement BIP39 caching
 #ifndef USE_BIP39_CACHE
-#define USE_BIP39_CACHE 1
+#define USE_BIP39_CACHE 0 // [wallet-core]
 #define BIP39_CACHE_SIZE 4
 #endif
 
