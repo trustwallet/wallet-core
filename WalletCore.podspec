@@ -129,7 +129,7 @@ Pod::Spec.new do |s|
       'trezor-crypto/crypto/monero',
       'trezor-crypto/crypto/tests',
       'trezor-crypto/crypto/tools',
-      'trezor-crypto/crypto/rand.c',
+      'src/Random.cpp',
       'swift/Sources/Generated/WalletCore.h'
 
     ss.public_header_files =

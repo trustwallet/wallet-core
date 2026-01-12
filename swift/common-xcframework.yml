@@ -62,7 +62,6 @@ targets:
       - trezor-crypto/crypto/ecdsa.c
       - trezor-crypto/crypto/curves.c
       - trezor-crypto/crypto/secp256k1.c
-      - trezor-crypto/crypto/rand.c
       - trezor-crypto/crypto/hmac.c
       - trezor-crypto/crypto/bip32.c
       - trezor-crypto/crypto/bip39.c
