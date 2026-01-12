@@ -126,7 +126,6 @@ Pod::Spec.new do |s|
       
     ss.exclude_files = 
       'trezor-crypto/include/TrezorCrypto/base58.h',
-      'trezor-crypto/crypto/monero',
       'trezor-crypto/crypto/tests',
       'trezor-crypto/crypto/tools',
       'trezor-crypto/crypto/rand.c',
