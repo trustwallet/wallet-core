@@ -60,7 +60,7 @@ randombytes_init_if_needed(void)
     }
 }
 
-static int
+static void
 javascript_buf(void * const buf, const size_t size)
 {
     unsigned char *p = (unsigned char *) buf;
