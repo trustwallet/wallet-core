@@ -7,7 +7,7 @@
 @import Security;
 
 int random32(uint32_t *result) {
-    if (SecRandomCopyBytes(kSecRandomDefault, sizeof(uint32_t), &result) != errSecSuccess) {
+    if (SecRandomCopyBytes(kSecRandomDefault, sizeof(uint32_t), result) != errSecSuccess) {
         // failed to generate random number
         return -1;
     }
