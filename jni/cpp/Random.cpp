@@ -10,8 +10,8 @@
 static JavaVM* cachedJVM = nullptr;
 
 extern "C" {
-    uint32_t random32();
-    void random_buffer(uint8_t *buf, size_t len);
+    int random32(uint32_t *result);
+    int random_buffer(uint8_t *buf, size_t len);
 }
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, [[maybe_unused]] void *reserved) {
@@ -19,24 +19,22 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, [[maybe_unused]] void *reserved) 
     return JNI_VERSION_1_2;
 }
 
-uint32_t random32() {
-    uint32_t result;
-    random_buffer((uint8_t*) &result, sizeof(uint32_t));
-    return result;
+int random32(uint32_t *result) {
+    return random_buffer((uint8_t*) result, sizeof(uint32_t));
 }
 
-void random_buffer(uint8_t *buf, size_t len) {
+int random_buffer(uint8_t *buf, size_t len) {
     // Check whether the JVM instance has been set at `JNI_OnLoad`.
     // https://github.com/trustwallet/wallet-core/pull/3984
     if (cachedJVM == nullptr) {
         std::ifstream randomData("/dev/urandom", std::ios::in | std::ios::binary);
         if (!randomData.is_open()) {
-            throw std::runtime_error("Error opening '/dev/urandom'");
+            return -1;
         }
 
         randomData.read(reinterpret_cast<char*>(buf), len);
         randomData.close();
-        return;
+        return 0;
     }
 
     JNIEnv *env;
@@ -65,4 +63,6 @@ void random_buffer(uint8_t *buf, size_t len) {
     env->DeleteLocalRef(array);
     env->DeleteLocalRef(random);
     env->DeleteLocalRef(secureRandomClass);
+
+    return 0;
 }

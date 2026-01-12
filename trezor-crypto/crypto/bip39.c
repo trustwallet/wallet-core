@@ -52,15 +52,22 @@ void bip39_cache_clear(void) {
 #endif
 
 // [wallet-core] Added output buffer
-const char *mnemonic_generate(int strength, char *buf, int buflen) {
+int mnemonic_generate(int strength, char *buf, int buflen) {
   if (strength % 32 || strength < 128 || strength > 256) {
-    return 0;
+    return -1;
   }
   uint8_t data[32] = {0};
-  random_buffer(data, 32);
+  int result = random_buffer(data, 32);
+  if (result != 0) {
+    memzero(data, sizeof(data));
+    return result;
+  }
   const char *r = mnemonic_from_data(data, strength / 8, buf, buflen);
   memzero(data, sizeof(data));
-  return r;
+  if (r == 0) {
+    return -1;
+  }
+  return 0;
 }
 
 // [wallet-core] Global buffer no longer used

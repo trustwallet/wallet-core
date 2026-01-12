@@ -55,7 +55,9 @@ void openssl_check(unsigned int iterations, int nid, const ecdsa_curve *curve) {
 
   for (unsigned int iter = 0; iter < iterations; iter++) {
     // random message len between 1 and 256
-    int msg_len = (random32() & 0xFF) + 1;
+    uint32_t random_len;
+    random32(&random_len);
+    int msg_len = (random_len & 0xFF) + 1;
     // create random message
     random_buffer(msg, msg_len);
 

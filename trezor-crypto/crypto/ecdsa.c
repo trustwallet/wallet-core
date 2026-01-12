@@ -170,21 +170,31 @@ typedef struct jacobian_curve_point {
 } jacobian_curve_point;
 
 // generate random K for signing/side-channel noise
-static void generate_k_random(bignum256 *k, const bignum256 *prime) {
+// returns < 0 on random generation error
+static int generate_k_random(bignum256 *k, const bignum256 *prime) {
+  int ret  = 0;
   do {
     int i = 0;
     for (i = 0; i < 8; i++) {
-      k->val[i] = random32() & ((1u << BN_BITS_PER_LIMB) - 1);
+      ret = random32(&k->val[i]);
+      if (ret < 0) { return ret; }
+      k->val[i] &= (1u << BN_BITS_PER_LIMB) - 1;
     }
-    k->val[8] = random32() & ((1u << BN_BITS_LAST_LIMB) - 1);
+
+    ret = random32(&k->val[8]);
+    if (ret < 0) { return ret; }
+    k->val[8] &= (1u << BN_BITS_LAST_LIMB) - 1;
     // check that k is in range and not zero.
   } while (bn_is_zero(k) || !bn_is_less(k, prime));
+  return 0;
 }
 
-void curve_to_jacobian(const curve_point *p, jacobian_curve_point *jp,
+// returns < 0 on random generation error
+int curve_to_jacobian(const curve_point *p, jacobian_curve_point *jp,
                        const bignum256 *prime) {
   // randomize z coordinate
-  generate_k_random(&jp->z, prime);
+  int ret = generate_k_random(&jp->z, prime);
+  if (ret < 0) { return ret; }
 
   jp->x = jp->z;
   bn_multiply(&jp->z, &jp->x, prime);
@@ -195,6 +205,7 @@ void curve_to_jacobian(const curve_point *p, jacobian_curve_point *jp,
 
   bn_multiply(&p->x, &jp->x, prime);
   bn_multiply(&p->y, &jp->y, prime);
+  return 0;
 }
 
 void jacobian_to_curve(const jacobian_curve_point *jp, curve_point *p,
@@ -404,6 +415,7 @@ void point_jacobian_double(jacobian_curve_point *p, const ecdsa_curve *curve) {
 
 // res = k * p
 // returns 0 on success
+// returns < 0 on random generation error
 int point_multiply(const ecdsa_curve *curve, const bignum256 *k,
                    const curve_point *p, curve_point *res) {
   // this algorithm is loosely based on
@@ -485,7 +497,12 @@ int point_multiply(const ecdsa_curve *curve, const bignum256 *k,
   sign = (bits >> 4) - 1;
   bits ^= sign;
   bits &= 15;
-  curve_to_jacobian(&pmult[bits >> 1], &jres, prime);
+  int ret = curve_to_jacobian(&pmult[bits >> 1], &jres, prime);
+  if (ret < 0) {
+      memzero(&a, sizeof(a));
+      memzero(&jres, sizeof(jres));
+      return ret;
+  }
   for (i = 62; i >= 0; i--) {
     // sign = sign(a[i+1])  (0xffffffff for negative, 0 for positive)
     // invariant jres = (-1)^sign sum_{j=i+1..63} (a[j] * 16^{j-i-1} * p)
@@ -534,6 +551,7 @@ int point_multiply(const ecdsa_curve *curve, const bignum256 *k,
 // res = k * G
 // k must be a normalized number with 0 <= k < curve->order
 // returns 0 on success
+// returns < 0 on random generation error
 int scalar_multiply(const ecdsa_curve *curve, const bignum256 *k,
                     curve_point *res) {
   if (!bn_is_less(k, &curve->order)) {
@@ -592,7 +610,12 @@ int scalar_multiply(const ecdsa_curve *curve, const bignum256 *k,
   lowbits = a.val[0] & ((1 << 5) - 1);
   lowbits ^= (lowbits >> 4) - 1;
   lowbits &= 15;
-  curve_to_jacobian(&curve->cp[0][lowbits >> 1], &jres, prime);
+  int ret = curve_to_jacobian(&curve->cp[0][lowbits >> 1], &jres, prime);
+  if (ret < 0) {
+      memzero(&a, sizeof(a));
+      memzero(&jres, sizeof(jres));
+      return ret;
+  }
   for (i = 1; i < 64; i++) {
     // invariant res = sign(a[i-1]) sum_{j=0..i-1} (a[j] * 16^j * G)
 
@@ -646,7 +669,12 @@ int ecdh_multiply(const ecdsa_curve *curve, const uint8_t *priv_key,
     return 2;
   }
 
-  point_multiply(curve, &k, &point, &point);
+  int ret = point_multiply(curve, &k, &point, &point);
+  if (ret < 0) {
+      memzero(&k, sizeof(k));
+      memzero(&point, sizeof(point));
+      return ret;
+  }
   memzero(&k, sizeof(k));
 
   session_key[0] = 0x04;
@@ -676,9 +704,21 @@ int ecdsa_sign(const ecdsa_curve *curve, HasherType hasher_sign,
 // digest is 32 bytes of digest
 // is_canonical is an optional function that checks if the signature
 // conforms to additional coin-specific rules.
+// returns 0 on success
+// returns < 0 in case of an error
 int ecdsa_sign_digest(const ecdsa_curve *curve, const uint8_t *priv_key,
                       const uint8_t *digest, uint8_t *sig, uint8_t *pby,
                       int (*is_canonical)(uint8_t by, uint8_t sig[64])) {
+#if USE_RFC6979
+#define ecdsa_sign_digest_rfc6979_cleanup memzero(&rng, sizeof(rng));
+#else
+#define ecdsa_sign_digest_rfc6979_cleanup
+#endif
+
+#define ecdsa_sign_digest_cleanup() memzero(&k, sizeof(k)); \
+memzero(&randk, sizeof(randk)); \
+ecdsa_sign_digest_rfc6979_cleanup
+
   int i = 0;
   curve_point R = {0};
   bignum256 k = {0}, z = {0}, randk = {0};
@@ -709,11 +749,19 @@ int ecdsa_sign_digest(const ecdsa_curve *curve, const uint8_t *priv_key,
     }
 #else
     // generate random number k
-    generate_k_random(&k, &curve->order);
+    int k_result = generate_k_random(&k, &curve->order);
+    if (k_result < 0) {
+        ecdsa_sign_digest_cleanup();
+        return k_result;
+    }
 #endif
 
     // compute k*G
-    scalar_multiply(curve, &k, &R);
+    int mul_result = scalar_multiply(curve, &k, &R);
+    if (mul_result < 0) {
+        ecdsa_sign_digest_cleanup();
+        return mul_result;
+    }
     by = R.y.val[0] & 1;
     // r = (rx mod n)
     if (!bn_is_less(&R.x, &curve->order)) {
@@ -727,12 +775,17 @@ int ecdsa_sign_digest(const ecdsa_curve *curve, const uint8_t *priv_key,
 
     bn_read_be(priv_key, s);
     if (bn_is_zero(s) || !bn_is_less(s, &curve->order)) {
+        ecdsa_sign_digest_cleanup();
       // Invalid private key.
       return 2;
     }
 
     // randomize operations to counter side-channel attacks
-    generate_k_random(&randk, &curve->order);
+    int randk_result = generate_k_random(&randk, &curve->order);
+    if (randk_result < 0) {
+        ecdsa_sign_digest_cleanup();
+        return randk_result;
+    }
     bn_multiply(&randk, &k, &curve->order);  // k*rand
     bn_inverse(&k, &curve->order);           // (k*rand)^-1
     bn_multiply(&R.x, s, &curve->order);     // R.x*priv
@@ -763,21 +816,13 @@ int ecdsa_sign_digest(const ecdsa_curve *curve, const uint8_t *priv_key,
       *pby = by;
     }
 
-    memzero(&k, sizeof(k));
-    memzero(&randk, sizeof(randk));
-#if USE_RFC6979
-    memzero(&rng, sizeof(rng));
-#endif
+    ecdsa_sign_digest_cleanup();
     return 0;
   }
 
   // Too many retries without a valid signature
   // -> fail with an error
-  memzero(&k, sizeof(k));
-  memzero(&randk, sizeof(randk));
-#if USE_RFC6979
-  memzero(&rng, sizeof(rng));
-#endif
+  ecdsa_sign_digest_cleanup();
   return -1;
 }
 
@@ -1019,6 +1064,7 @@ int ecdsa_verify(const ecdsa_curve *curve, HasherType hasher_sign,
 
 // Compute public key from signature and recovery id.
 // returns 0 if the key is successfully recovered
+// returns < 0 in case of an error
 int ecdsa_recover_pub_from_sig(const ecdsa_curve *curve, uint8_t *pub_key,
                                const uint8_t *sig, const uint8_t *digest,
                                int recid) {
@@ -1060,9 +1106,15 @@ int ecdsa_recover_pub_from_sig(const ecdsa_curve *curve, uint8_t *pub_key,
   bn_multiply(&r, &s, &curve->order);
   bn_mod(&s, &curve->order);
   // cp = s * r^-1 * k * G
-  point_multiply(curve, &s, &cp, &cp);
+  int cp_result = point_multiply(curve, &s, &cp, &cp);
+  if (cp_result < 0) {
+      return cp_result;
+  }
   // cp2 = -digest * r^-1 * G
-  scalar_multiply(curve, &e, &cp2);
+  int cp2_result = scalar_multiply(curve, &e, &cp2);
+  if (cp2_result < 0) {
+      return cp2_result;
+  }
   // cp = (s * r^-1 * k - digest * r^-1) * G = Pub
   point_add(curve, &cp2, &cp);
   // The point at infinity is not considered to be a valid public key.
@@ -1114,8 +1166,14 @@ int ecdsa_verify_digest(const ecdsa_curve *curve, const uint8_t *pub_key,
   if (result == 0) {
     bn_multiply(&r, &s, &curve->order);  // s = r * s  [u2 = r * s^-1 mod n]
     bn_mod(&s, &curve->order);
-    scalar_multiply(curve, &z, &res);       // res = z * G    [= u1 * G]
-    point_multiply(curve, &s, &pub, &pub);  // pub = s * pub  [= u2 * Q]
+    result = scalar_multiply(curve, &z, &res);       // res = z * G    [= u1 * G]
+  }
+
+  if (result == 0) {
+    result = point_multiply(curve, &s, &pub, &pub);  // pub = s * pub  [= u2 * Q]
+  }
+
+  if (result == 0) {
     point_add(curve, &pub, &res);  // res = pub + res  [R = u1 * G + u2 * Q]
     if (point_is_infinity(&res)) {
       // R == Infinity

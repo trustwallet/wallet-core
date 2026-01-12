@@ -308,7 +308,15 @@ int hdnode_public_ckd_cp(const ecdsa_curve *curve, const curve_point *parent,
     hmac_sha512(parent_chain_code, 32, data, sizeof(data), I);
     bn_read_be(I, &c);
     if (bn_is_less(&c, &curve->order)) {  // < order
-      scalar_multiply(curve, &c, child);  // b = c * G
+      int mul_result = scalar_multiply(curve, &c, child);  // b = c * G
+      if (mul_result < 0) {
+        // Wipe all stack data.
+        memzero(data, sizeof(data));
+        memzero(I, sizeof(I));
+        memzero(&c, sizeof(c));
+        return 0;
+      }
+
       point_add(curve, parent, child);    // b = a + b
       if (!point_is_infinity(child)) {
         if (child_chain_code) {
@@ -351,7 +359,7 @@ int hdnode_public_ckd(HDNode *inout, uint32_t i) {
   return 1;
 }
 
-void hdnode_public_ckd_address_optimized(const curve_point *pub,
+int hdnode_public_ckd_address_optimized(const curve_point *pub,
                                          const uint8_t *chain_code, uint32_t i,
                                          uint32_t version,
                                          HasherType hasher_pubkey,
@@ -360,7 +368,9 @@ void hdnode_public_ckd_address_optimized(const curve_point *pub,
   uint8_t child_pubkey[33] = {0};
   curve_point b = {0};
 
-  hdnode_public_ckd_cp(&secp256k1, pub, chain_code, i, &b, NULL);
+  if (!hdnode_public_ckd_cp(&secp256k1, pub, chain_code, i, &b, NULL)) {
+      return 0;
+  }
   child_pubkey[0] = 0x02 | (b.y.val[0] & 0x01);
   bn_write_be(&b.x, child_pubkey + 1);
 
@@ -374,6 +384,7 @@ void hdnode_public_ckd_address_optimized(const curve_point *pub,
                         addr, addrsize);
       break;
   }
+  return 1;
 }
 
 #if USE_BIP32_CACHE

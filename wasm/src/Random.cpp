@@ -60,7 +60,7 @@ randombytes_init_if_needed(void)
     }
 }
 
-static void
+static int
 javascript_buf(void * const buf, const size_t size)
 {
     unsigned char *p = (unsigned char *) buf;
@@ -73,15 +73,16 @@ javascript_buf(void * const buf, const size_t size)
 // clang-format on
 
 extern "C" {
-uint32_t random32(void) {
+int random32(uint32_t *result) {
     randombytes_init_if_needed();
-    return javascript_random();
+    *result = javascript_random();
+    return 0;
 }
 
-void random_buffer(uint8_t* buf, size_t len) {
+int random_buffer(uint8_t* buf, size_t len) {
     randombytes_init_if_needed();
     javascript_buf(buf, len);
-    return;
+    return 0;
 }
 
 } // extern "C"

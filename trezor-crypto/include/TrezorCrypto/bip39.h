@@ -45,7 +45,8 @@ void bip39_cache_clear(void);
 #define BIP39_MAX_WORD_LENGTH 9
 
 // [wallet-core] Added output buffer
-const char *mnemonic_generate(int strength, char *buf, int buflen); // strength in bits
+// Returns 0 on success, otherwise an error code.
+int mnemonic_generate(int strength, char *buf, int buflen); // strength in bits
 const char *mnemonic_from_data(const uint8_t *data, int datalen, char *buf, int buflen);
 void mnemonic_clear(void);
 

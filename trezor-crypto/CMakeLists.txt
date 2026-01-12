@@ -38,10 +38,6 @@ add_library(TrezorCrypto
     crypto/ed25519-donna/ed25519-donna-basepoint-table.c crypto/ed25519-donna/ed25519-donna-32bit-tables.c crypto/ed25519-donna/ed25519-donna-impl-base.c
     crypto/ed25519-donna/ed25519.c crypto/ed25519-donna/curve25519-donna-scalarmult-base.c crypto/ed25519-donna/ed25519-sha3.c crypto/ed25519-donna/ed25519-keccak.c crypto/ed25519-donna/ed25519-blake2b.c
     crypto/sodium/private/fe_25_5/fe.c crypto/sodium/private/ed25519_ref10.c crypto/sodium/private/ed25519_ref10_fe_25_5.c crypto/sodium/keypair.c
-    crypto/monero/base58.c
-    crypto/monero/serialize.c
-    #crypto/monero/xmr.c
-    crypto/monero/range_proof.c
     crypto/blake256.c
     crypto/blake2b.c crypto/blake2s.c
     crypto/chacha_drbg.c

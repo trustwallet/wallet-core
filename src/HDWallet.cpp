@@ -63,11 +63,11 @@ template <std::size_t seedSize>
 HDWallet<seedSize>::HDWallet(int strength, const std::string& passphrase)
     : passphrase(passphrase) {
     char buf[MnemonicBufLength];
-    const char* mnemonic_chars = mnemonic_generate(strength, buf, MnemonicBufLength);
-    if (mnemonic_chars == nullptr) {
-        throw std::invalid_argument("Invalid strength");
+    int result = mnemonic_generate(strength, buf, MnemonicBufLength);
+    if (result != 0) {
+        throw std::invalid_argument("Invalid strength or random generation failed");
     }
-    mnemonic = mnemonic_chars;
+    mnemonic = buf;
     TW::memzero(buf, MnemonicBufLength);
     updateSeedAndEntropy();
 }

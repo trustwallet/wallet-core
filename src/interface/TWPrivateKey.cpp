@@ -17,13 +17,11 @@ using namespace TW;
 
 struct TWPrivateKey *TWPrivateKeyCreate() {
     Data bytes(PrivateKey::_size);
-    random_buffer(bytes.data(), PrivateKey::_size);
+    if (random_buffer(bytes.data(), PrivateKey::_size) < 0) {
+        return nullptr;
+    }
     if (!PrivateKey::isValid(bytes)) {
-        // Under no circumstance return an invalid private key. We'd rather
-        // crash. This also captures cases where the random generator fails
-        // since we initialize the array to zeros, which is an invalid private
-        // key.
-        std::terminate();
+        return nullptr;
     }
 
     return new TWPrivateKey{ PrivateKey(std::move(bytes)) };

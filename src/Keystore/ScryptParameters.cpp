@@ -15,7 +15,9 @@ namespace internal {
 
 Data randomSalt() {
     Data salt(32);
-    random_buffer(salt.data(), salt.size());
+    if (random_buffer(salt.data(), salt.size()) < 0) {
+        throw std::runtime_error("Error generating random salt");
+    }
     return salt;
 }
 

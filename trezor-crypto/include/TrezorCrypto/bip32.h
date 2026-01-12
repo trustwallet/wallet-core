@@ -85,7 +85,7 @@ int hdnode_public_ckd_cp(const ecdsa_curve *curve, const curve_point *parent,
 
 int hdnode_public_ckd(HDNode *inout, uint32_t i);
 
-void hdnode_public_ckd_address_optimized(const curve_point *pub,
+int hdnode_public_ckd_address_optimized(const curve_point *pub,
                                          const uint8_t *chain_code, uint32_t i,
                                          uint32_t version,
                                          HasherType hasher_pubkey,

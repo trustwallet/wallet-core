@@ -32,7 +32,9 @@ Data Encryption::checkEncrypt(const Data& secret, const Data& message, Data& iv)
     if (iv.size() == 0) {
         // fill iv with strong random value
         iv = Data(IvSize);
-        random_buffer(iv.data(), iv.size());
+        if (random_buffer(iv.data(), iv.size()) < 0) {
+            throw std::runtime_error("Error generating random iv");
+        }
     } else {
         if (iv.size() != IvSize) {
             throw std::invalid_argument("invalid IV size");

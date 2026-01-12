@@ -29,29 +29,31 @@
 #include <unistd.h>
 
 // [wallet-core]
-uint32_t __attribute__((weak)) random32(void) {
+int __attribute__((weak)) random32(uint32_t *result) {
     int randomData = open("/dev/urandom", O_RDONLY);
     if (randomData < 0) {
-        return 0;
+        return randomData;
     }
 
-    uint32_t result;
-    if (read(randomData, &result, sizeof(result)) < 0) {
-        return 0;
-    }
-
+    size_t ret = read(randomData, result, sizeof(uint32_t));
     close(randomData);
-
-    return result;
+    if (ret != sizeof(uint32_t)) {
+        return -1;
+    }
+    return 0;
 }
 
-void __attribute__((weak)) random_buffer(uint8_t *buf, size_t len) {
+int __attribute__((weak)) random_buffer(uint8_t *buf, size_t len) {
     int randomData = open("/dev/urandom", O_RDONLY);
     if (randomData < 0) {
-        return;
+        return randomData;
     }
-    if (read(randomData, buf, len) < 0) {
-        return;
-    }
+
+    size_t ret = read(randomData, buf, len);
     close(randomData);
+
+    if (ret != len) {
+        return -1;
+    }
+    return 0;
 }

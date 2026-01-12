@@ -58,9 +58,6 @@
 #include <TrezorCrypto/ed25519.h>
 #include <TrezorCrypto/hmac_drbg.h>
 #include <TrezorCrypto/memzero.h>
-#if USE_MONERO // [wallet-core]
-#include "../monero/monero.h"
-#endif
 #include <TrezorCrypto/nem.h>
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/pbkdf2.h>
@@ -9060,10 +9057,6 @@ static int my_strncasecmp(const char *s1, const char *s2, size_t n) {
 
 #if USE_CARDANO
 #include "test_check_cardano.h"
-#endif
-
-#if USE_MONERO
-#include "test_check_monero.h"
 #endif
 
 // define test suite and cases
