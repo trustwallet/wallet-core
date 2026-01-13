@@ -37,7 +37,7 @@ uint32_t __attribute__((weak)) random32(void) {
     }
 
     uint32_t result;
-    size_t readLen = read(randomData, &result, sizeof(result));
+    ssize_t readLen = read(randomData, &result, sizeof(result));
     close(randomData);
     if (readLen != sizeof(result)) {
         abort();  // Critical: failed to read random data
@@ -51,9 +51,9 @@ void __attribute__((weak)) random_buffer(uint8_t *buf, size_t len) {
     if (randomData < 0) {
         abort();  // Critical: cannot proceed without random source
     }
-    size_t readLen = read(randomData, buf, len);
+    ssize_t readLen = read(randomData, buf, len);
     close(randomData);
-    if (readLen != len) {
+    if (readLen != (ssize_t)len) {
         abort();  // Critical: failed to read random data
     }
 }

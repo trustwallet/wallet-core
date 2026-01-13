@@ -35,8 +35,14 @@ void random_buffer(uint8_t *buf, size_t len) {
             std::terminate();
         }
 
-        randomData.read(reinterpret_cast<char*>(buf), len);
+        randomData.read(reinterpret_cast<char*>(buf), static_cast<std::streamsize>(len));
         randomData.close();
+
+        if (!randomData.good() || randomData.gcount() != static_cast<std::streamsize>(len)) {
+            // Critical: failed to read required amount of random data
+            std::terminate();
+        }
+
         return;
     }
 
