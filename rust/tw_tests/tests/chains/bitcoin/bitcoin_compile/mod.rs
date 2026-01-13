@@ -5,3 +5,4 @@
 mod brc20;
 mod compile_error;
 mod p2pkh;
+mod psbt;

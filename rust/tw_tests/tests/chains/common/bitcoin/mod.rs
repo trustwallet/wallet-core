@@ -14,6 +14,7 @@ pub mod compile;
 pub mod data;
 pub mod plan;
 pub mod preimage;
+pub mod psbt_compile;
 pub mod psbt_plan;
 pub mod psbt_sign;
 pub mod sign;

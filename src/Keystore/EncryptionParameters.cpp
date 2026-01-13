@@ -60,11 +60,20 @@ static Data rustPbkdf2(const Data& password, const PBKDF2Parameters& params) {
     Rust::TWDataWrapper passwordData = password;
     Rust::TWDataWrapper saltData = params.salt;
 
+    // Check if iterations fits in int32_t range
+    const auto maxI32 = std::numeric_limits<int32_t>::max();
+    if (params.iterations > static_cast<uint32_t>(maxI32)) {
+        throw std::runtime_error("PBKDF2 iterations exceeds int32_t maximum");
+    }
+    if (params.desiredKeyLength > static_cast<std::size_t>(maxI32)) {
+        throw std::runtime_error("PBKDF2 desired key length exceeds int32_t maximum");
+    }
+
     Rust::TWDataWrapper res = Rust::tw_pbkdf2_hmac_sha256(
         passwordData.get(),
         saltData.get(),
-        params.iterations,
-        params.desiredKeyLength
+        static_cast<int32_t>(params.iterations),
+        static_cast<int32_t>(params.desiredKeyLength)
     );
     auto data = res.toDataOrDefault();
     if (data.empty()) {

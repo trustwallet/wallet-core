@@ -137,12 +137,17 @@ impl<Context: BitcoinSigningContext> BitcoinCompiler<Context> {
         psbt: &Proto::Psbt,
         signatures: Vec<SignatureBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
-        let PsbtRequest { unsigned_tx, .. } =
-            Context::PsbtRequestHandler::parse_request(input, psbt)?;
+        let PsbtRequest {
+            mut psbt,
+            unsigned_tx,
+            ..
+        } = Context::PsbtRequestHandler::parse_request(input, psbt)?;
         let fee = unsigned_tx.fee()?;
 
         SighashVerifier::verify_signatures(&unsigned_tx, &signatures)?;
         let signed_tx = TxCompiler::compile(unsigned_tx, &signatures)?;
+
+        Context::PsbtRequestHandler::update_signed(&mut psbt, &signed_tx)?;
 
         Ok(Proto::SigningOutput {
             transaction: Context::ProtobufBuilder::tx_to_proto(&signed_tx),
@@ -152,6 +157,9 @@ impl<Context: BitcoinSigningContext> BitcoinCompiler<Context> {
             vsize: signed_tx.vsize() as u64,
             weight: signed_tx.weight() as u64,
             fee,
+            psbt: Some(Proto::Psbt {
+                psbt: Cow::from(Context::PsbtRequestHandler::serialize_psbt(&psbt)?),
+            }),
             ..Proto::SigningOutput::default()
         })
     }
