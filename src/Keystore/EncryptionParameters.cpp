@@ -215,13 +215,6 @@ Data EncryptedPayload::decrypt(const Data& password) const {
         throw DecryptionError::invalidPassword;
     }
 
-    // Even though the cipher params should have been validated in `EncryptedPayload` constructor,
-    // double check them here.
-    if (!params.cipherParams.isValid()) {
-        throw DecryptionError::invalidCipher;
-    }
-    assert(params.cipherParams.iv.size() == gBlockSize);
-
     Data decrypted(encrypted.size());
     Data iv = params.cipherParams.iv;
     switch (params.cipherParams.mCipherEncryption) {
