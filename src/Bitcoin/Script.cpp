@@ -16,6 +16,7 @@
 #include "../Decred/Address.h"
 #include "../Groestlcoin/Address.h"
 #include "../Zcash/TAddress.h"
+#include "../Zcash/TexAddress.h"
 #include "../Zen/Address.h"
 
 #include <algorithm>
@@ -538,6 +539,10 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
                 } else if (address.bytes[1] == TW::p2shPrefix(TWCoinTypeZcash)) {
                     return buildPayToScriptHash(data);
                 }
+            }
+            if (Zcash::TexAddress::isValid(string)) {
+                Zcash::TexAddress address(string);
+                return buildPayToPublicKeyHash(address.getKeyHash());
             }
             return {};
 

@@ -1,0 +1,74 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+
+syntax = "proto3";
+
+package TW.BizPasskeySession.Proto;
+option java_package = "wallet.core.jni.proto";
+
+message EncodingHashParams {
+  // Chain identifier (uint256, serialized big endian).
+  bytes chain_id = 1;
+
+  // The address of the smart contract wallet.
+  string code_address = 2;
+
+  // The name of the smart contract wallet.
+  string code_name = 3;
+
+  // The version of the smart contract wallet.
+  string code_version = 4;
+
+  // The type hash of the smart contract wallet.
+  string type_hash = 5;
+
+  // The domain separator hash of the smart contract wallet.
+  string domain_separator_hash = 6;
+}
+
+message Execution {
+  // Recipient addresses.
+  string address = 1;
+
+  // Amounts to send in wei (uint256, serialized big endian)
+  bytes amount = 2;
+
+  // Contract call payloads data
+  bytes payload = 3;
+}
+
+message ExecuteWithPasskeySessionInput {
+  // Batched executions to be executed on the smart contract wallet.
+  repeated Execution executions = 1;
+
+  // Transaction valid after this timestamp.
+  uint64 valid_after = 2;
+
+  // Transaction valid until this timestamp.
+  uint64 valid_until = 3;
+
+  // Passkey session signature.
+  bytes passkey_signature = 4;
+}
+
+message ExecuteWithSignatureInput {
+  // Batched executions to be executed on the smart contract wallet.
+  repeated Execution executions = 1;
+
+  // Private key to sign the `BizPasskeySession.executeWithSignature` function call.
+  bytes private_key = 2;
+
+  // BizGuard nonce (uint256, serialized big endian).
+  // Used to sign the `BizPasskeySession.executeWithSignature` function call.
+  bytes nonce = 3;
+
+  // Transaction valid after this timestamp in seconds.
+  uint64 valid_after = 4;
+
+  // Transaction valid until this timestamp in seconds.
+  uint64 valid_until = 5;
+
+  // Parameters used to generate an encoded Biz-specific hash to be signed.
+  EncodingHashParams encoding_hash_params = 6;
+}

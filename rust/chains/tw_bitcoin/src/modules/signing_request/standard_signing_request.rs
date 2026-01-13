@@ -62,6 +62,14 @@ where
 
         // If `max_amount_output` is set, construct a transaction with only one output.
         if let Some(max_output_proto) = transaction_builder.max_amount_output.as_ref() {
+            if !transaction_builder.outputs.is_empty()
+                || transaction_builder.change_output.is_some()
+            {
+                return SigningError::err(SigningErrorType::Error_invalid_params).context(
+                    "'max_amount_output' cannot be set together with 'outputs' or 'change_output'",
+                );
+            }
+
             let output_builder = OutputProtobuf::<Context>::new(&chain_info, max_output_proto);
 
             let max_output = output_builder

@@ -14,7 +14,7 @@ end
 # Returns a string of `<Coin><Derivation>` if derivation's name is specified, otherwise returns `Default`.
 def derivation_enum_name_no_prefix(deriv, coin)
   return "Default" if deriv['name'].nil?
-  format_name(coin['name']) + camel_case(deriv['name'])
+  format_name(coin['name']) + upper_camel_case(deriv['name'])
 end
 
 # Returns a string of `TWDerivation<Coin><Derivation>` if derivation's name is specified, otherwise returns `TWDerivationDefault`.

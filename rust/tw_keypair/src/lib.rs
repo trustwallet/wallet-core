@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+#![allow(unused_assignments)]
+
 //! `tw_keypair` crate defines the keypairs, private and public keys that are used to sign messages,
 //! verify signatures and more.
 //!

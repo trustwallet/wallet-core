@@ -9,7 +9,6 @@
 #include <stdexcept>
 
 #include "rust/Wrapper.h"
-#include "TrustWalletCore/Generated/TWCrypto.h"
 
 namespace TW::Encrypt {
 

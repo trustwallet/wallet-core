@@ -25,15 +25,22 @@ pub fn network_id_from_tw(input: &'_ Proto::SigningInput<'_>) -> EncodeResult<Ne
     Ok(NetworkId::try_from(input.network as u16).map_err(|_| EncodeError::InvalidNetworkId)?)
 }
 
-pub fn fee_asset_id_from_tw(input: &'_ Proto::SigningInput<'_>) -> Option<u32> {
+pub fn fee_asset_id_from_tw(input: &'_ Proto::SigningInput<'_>) -> Option<FeeAssetId> {
     // Special case for batches.
-    match &input.message_oneof {
-        SigningVariant::balance_call(b) => match &b.message_oneof {
-            BalanceVariant::asset_transfer(at) => Some(at.fee_asset_id),
-            BalanceVariant::batch_asset_transfer(bat) => Some(bat.fee_asset_id),
-            _ => None,
-        },
-        _ => None,
+    if let SigningVariant::balance_call(b) = &input.message_oneof {
+        match &b.message_oneof {
+            BalanceVariant::asset_transfer(at) => return Some(FeeAssetId::Asset(at.fee_asset_id)),
+            BalanceVariant::batch_asset_transfer(bat) => {
+                return Some(FeeAssetId::Asset(bat.fee_asset_id))
+            },
+            _ => {},
+        }
+    }
+
+    if input.charge_native_as_asset_tx_payment {
+        Some(FeeAssetId::Native)
+    } else {
+        None
     }
 }
 

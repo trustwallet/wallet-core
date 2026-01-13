@@ -14,8 +14,8 @@ using namespace TW;
 
 namespace TW::Aeternity {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveED25519);
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
+    auto privateKey = PrivateKey(input.private_key(), TWCurveED25519);
     std::string sender_id = input.from_address();
     std::string recipient_id = input.to_address();
     std::string payload = input.payload();

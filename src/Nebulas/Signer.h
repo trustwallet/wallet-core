@@ -16,7 +16,7 @@ namespace TW::Nebulas {
 class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
 
   public:
     uint256_t chainID;
@@ -25,7 +25,7 @@ class Signer {
     explicit Signer(uint256_t chainID) : chainID(std::move(chainID)) {}
 
     /// Signs the given transaction.
-    void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
+    void sign(const PrivateKey& privateKey, Transaction& transaction) const;
 
   protected:
     /// Computes the transaction hash.
@@ -34,7 +34,7 @@ class Signer {
     /// Computes hash.
     Data hash(const Data& preImage) const noexcept;
 
-    Transaction buildTransaction(const Proto::SigningInput& input) const noexcept;
+    Transaction buildTransaction(const Proto::SigningInput& input) const;
 
     /// Get transaction data.
     Data getPreImage(const Transaction& transaction) const noexcept;

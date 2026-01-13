@@ -14,7 +14,7 @@ pub const STANDARD: Config = Config {
 
 pub const NO_PAD: Config = Config {
     url: false,
-    pad: true,
+    pad: false,
 };
 
 pub const URL_SAFE: Config = Config {

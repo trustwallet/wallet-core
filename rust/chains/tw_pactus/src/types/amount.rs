@@ -5,7 +5,15 @@ pub struct Amount(pub i64);
 
 impl Encodable for Amount {
     fn encode(&self, w: &mut dyn std::io::Write) -> Result<(), Error> {
-        VarInt::from(self.0 as usize).encode(w)
+        let amount: usize = match self.0.try_into() {
+            Ok(amount) => amount,
+            Err(_) => {
+                return Err(Error::IoError(std::io::Error::from(
+                    std::io::ErrorKind::InvalidInput,
+                )));
+            },
+        };
+        VarInt::from(amount).encode(w)
     }
 
     fn encoded_size(&self) -> usize {

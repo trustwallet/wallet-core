@@ -9,7 +9,7 @@
 
 #include <cassert>
 #include <TrustWalletCore/TWAESPaddingMode.h>
-#include "TrustWalletCore/Generated/TWCrypto.h"
+#include "rust/Wrapper.h"
 
 using namespace TW;
 
@@ -129,6 +129,9 @@ static Data rustAesCbcDecrypt128(const Data& data, const Data& iv, const Data& k
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
     auto cipher = json[CodingKeys::cipher].get<std::string>();
     cipherParams = AESParameters::AESParametersFromJson(json[CodingKeys::cipherParams], cipher);
+    if (!cipherParams.isValid()) {
+        throw std::invalid_argument("Invalid cipher params");
+    }
 
     auto kdf = json[CodingKeys::kdf].get<std::string>();
     if (kdf == "scrypt") {
@@ -156,6 +159,10 @@ nlohmann::json EncryptionParameters::json() const {
 
 EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const EncryptionParameters& params)
     : params(std::move(params)), _mac() {
+    if (!this->params.cipherParams.isValid()) {
+        throw std::invalid_argument("Invalid cipher params");
+    }
+
     auto scryptParams = std::get<ScryptParameters>(this->params.kdfParams);
     auto derivedKey = rustScrypt(password, scryptParams);
 
@@ -198,6 +205,13 @@ Data EncryptedPayload::decrypt(const Data& password) const {
     if (sodium_memcmp(mac.data(), _mac.data(), mac.size()) != 0) {
         throw DecryptionError::invalidPassword;
     }
+
+    // Even though the cipher params should have been validated in `EncryptedPayload` constructor,
+    // double check them here.
+    if (!params.cipherParams.isValid()) {
+        throw DecryptionError::invalidCipher;
+    }
+    assert(params.cipherParams.iv.size() == gBlockSize);
 
     Data decrypted(encrypted.size());
     Data iv = params.cipherParams.iv;

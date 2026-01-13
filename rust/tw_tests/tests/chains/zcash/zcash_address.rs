@@ -24,6 +24,11 @@ fn test_zcash_address_normalization() {
         "t1RygJmrLdNGgi98gUgEJDTVaELTAYWoMBy",
         "t1RygJmrLdNGgi98gUgEJDTVaELTAYWoMBy",
     );
+    test_address_normalization(
+        CoinType::Zcash,
+        "tex1auz6gx89x2wcku6gswdvaz2nf9x3seex6px6v0",
+        "tex1auz6gx89x2wcku6gswdvaz2nf9x3seex6px6v0",
+    );
 }
 
 #[test]
@@ -34,6 +39,15 @@ fn test_zcash_address_is_valid() {
     test_address_valid(CoinType::Zcash, "t1Wg9uPPAfwhBWeRjtDPa5ZHNzyBx9rJVKY");
     test_address_valid(CoinType::Zcash, "t1TKCtCETHPrAdA6eY1fdhhnTkTmb371oPt");
     test_address_valid(CoinType::Zcash, "t1cWhcXydPYTG1pgHMsZ6JEPsWGxVMdJ5t6");
+    test_address_valid(
+        CoinType::Zcash,
+        "tex1auz6gx89x2wcku6gswdvaz2nf9x3seex6px6v0",
+    );
+    // https://zips.z.cash/zip-0320#reference-implementation
+    test_address_valid(
+        CoinType::Zcash,
+        "tex1s2rt77ggv6q989lr49rkgzmh5slsksa9khdgte",
+    );
 }
 
 #[test]
@@ -54,6 +68,11 @@ fn test_zcash_address_invalid() {
     test_address_invalid(CoinType::Zcash, "TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
     // Invalid T-prefix
     test_address_invalid(CoinType::Zcash, "2NRbuP5YfzRNEa1RibT5kXay1VgvQHnydZY1");
+    // Invalid Tex-address checksum
+    test_address_invalid(
+        CoinType::Zcash,
+        "textest1auz6gx89x2wcku6gswdvaz2nf9x3seex6px6v0",
+    );
 }
 
 #[test]
@@ -62,5 +81,10 @@ fn test_zcash_address_get_data() {
         CoinType::Zcash,
         "t1Wg9uPPAfwhBWeRjtDPa5ZHNzyBx9rJVKY",
         "8c6f453157897ce2e6de413f329d995fe0d8f902",
+    );
+    test_address_get_data(
+        CoinType::Zcash,
+        "tex1auz6gx89x2wcku6gswdvaz2nf9x3seex6px6v0",
+        "ef05a418e5329d8b7348839ace8953494d186726",
     );
 }

@@ -21,7 +21,7 @@ const ACCOUNT_16_PRIVATE_KEY: &str =
 const ACCOUNT_91147_PRIVATE_KEY: &str =
     "56b1253d944956c7f5b7668892509a44290f1fd149edecbe4fd44f69ba04b84c";
 
-fn make_token(denom: &str, amount: i64) -> Proto::mod_SendOrder::Token {
+fn make_token(denom: &str, amount: i64) -> Proto::mod_SendOrder::Token<'_> {
     Proto::mod_SendOrder::Token {
         denom: denom.into(),
         amount,

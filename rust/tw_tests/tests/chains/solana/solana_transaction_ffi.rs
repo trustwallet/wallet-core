@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use tw_any_coin::ffi::tw_transaction_decoder::tw_transaction_decoder_decode;
 use tw_any_coin::test_utils::sign_utils::{AnySignerHelper, CompilerHelper, PreImageHelper};
 use tw_any_coin::test_utils::transaction_decode_utils::TransactionDecoderHelper;
 use tw_coin_registry::coin_type::CoinType;
@@ -19,9 +20,9 @@ use tw_proto::Solana::Proto::{self};
 use tw_solana::SOLANA_ALPHABET;
 use wallet_core_rs::ffi::solana::transaction::{
     tw_solana_transaction_get_compute_unit_limit, tw_solana_transaction_get_compute_unit_price,
-    tw_solana_transaction_insert_instruction, tw_solana_transaction_set_compute_unit_limit,
-    tw_solana_transaction_set_compute_unit_price, tw_solana_transaction_set_fee_payer,
-    tw_solana_transaction_update_blockhash_and_sign,
+    tw_solana_transaction_insert_instruction, tw_solana_transaction_insert_transfer_instruction,
+    tw_solana_transaction_set_compute_unit_limit, tw_solana_transaction_set_compute_unit_price,
+    tw_solana_transaction_set_fee_payer, tw_solana_transaction_update_blockhash_and_sign,
 };
 
 #[test]
@@ -573,4 +574,62 @@ fn test_insert_instruction_helper(
 
     assert_eq!(output.error, SigningError::OK);
     assert_eq!(output.encoded, expected_signed_tx);
+}
+
+#[test]
+fn test_solana_transaction_insert_transfer_instruction_and_sign() {
+    const PRIVATE_KEY: &str = "7537978967203bdca1bcde4caa811c2771b36043a303824110cf240b10d9fde8";
+
+    // base64 encoded
+    let encoded_tx = "AZCD8pcHQwSjqVChVPKlihneVA2OSM8Y4rM+0+uXtj7goUcDHWR4/TrAvDfaPRlHNOF0EYln3VoplQF6b5ZoRwUBAAIFgKRCBGe2W59ezw1CyHDoV4KZVuJFTtmsN0F25EL3I8228PMELJSiAl2nvEzyY4v/LfSQnxkFNlH4pjU2F3nMpcBeC+e4AaQzF6GCh63HW7KnhG+YuIbF1AvkM6nwOXMjzgEOYK/tsicXvWMZL1QUWj+WWjO7gtLHAp6yzh4ggmQG3fbh12Whk9nL4UbO63msHLSF7V9bN5E6jPWFfv8AqZt5Fl/Sxu1PqvB1jJ/pn2HrqUrA2xvjx65OCI9rSH5YAQQEAQMCAAoMECcAAAAAAAAG";
+    let encoded_tx = TWStringHelper::create(encoded_tx);
+
+    let from = "9fATSMy2QhUjd1RpJgGTcs6kJzeSHzzL6DzCCEFv5Xvc";
+    let from = TWStringHelper::create(from);
+
+    let to = "EkBtoCtDihccznHSF3P64kvcTt5xNxQ2jxYMjPXVH3DX";
+    let to = TWStringHelper::create(to);
+
+    let lamports = "200000";
+    let lamports = TWStringHelper::create(lamports);
+
+    // Insert the transfer instruction at position 1 (the end of the instructions list).
+    let insert_at = 1;
+
+    let updated_encoded_tx = unsafe {
+        TWStringHelper::wrap(tw_solana_transaction_insert_transfer_instruction(
+            encoded_tx.ptr(),
+            insert_at,
+            from.ptr(),
+            to.ptr(),
+            lamports.ptr(),
+        ))
+        .to_string()
+        .unwrap()
+    };
+    let updated_tx = base64::decode(&updated_encoded_tx, STANDARD).unwrap();
+    let updated_tx = TWDataHelper::create(updated_tx);
+
+    let decode_output = TWDataHelper::wrap(unsafe {
+        tw_transaction_decoder_decode(CoinType::Solana as u32, updated_tx.ptr())
+    })
+    .to_vec()
+    .unwrap();
+
+    let output: Proto::DecodingTransactionOutput = tw_proto::deserialize(&decode_output).unwrap();
+    assert_eq!(output.error, SigningError::OK);
+
+    let signing_input = Proto::SigningInput {
+        private_key: PRIVATE_KEY.decode_hex().unwrap().into(),
+        raw_message: Some(output.transaction.unwrap()),
+        tx_encoding: Proto::Encoding::Base64,
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, signing_input);
+
+    // https://solscan.io/tx/52s8gt34WfZyJv1cDdadwA3V9PeRwazNqhVKDJ43F9JyxTE7ncqMSmqYAi1u4TsG2AyXNPbswG7krBHqWAhstCtL
+    let expected = "Acms/WrZj/mOpUTTBFHLtBFKrMSAJPBBkD8qYK+oqgE0gFT5aoEfw5dlJZZl1edVde325gi0qVPai7ddgoP2WQUBAAMHgKRCBGe2W59ezw1CyHDoV4KZVuJFTtmsN0F25EL3I8228PMELJSiAl2nvEzyY4v/LfSQnxkFNlH4pjU2F3nMpcBeC+e4AaQzF6GCh63HW7KnhG+YuIbF1AvkM6nwOXMjzDg4vU3/xSfZJTqguxQVNsgitkm5dHCm6V6l4NCCDp7OAQ5gr+2yJxe9YxkvVBRaP5ZaM7uC0scCnrLOHiCCZAbd9uHXZaGT2cvhRs7reawctIXtX1s3kTqM9YV+/wCpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACbeRZf0sbtT6rwdYyf6Z9h66lKwNsb48euTgiPa0h+WAIFBAEEAgAKDBAnAAAAAAAABgYCAAMMAgAAAEANAwAAAAAA";
+    assert_eq!(output.encoded, expected);
 }
