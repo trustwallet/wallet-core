@@ -83,7 +83,7 @@ fn test_extended_private_key_ffi() {
         tw_mnemonic_to_seed(mnemonic_string.ptr(), passphrase_string.ptr())
     });
 
-    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw()) };
+    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw() as i32) };
     let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
 
     let chain_code = TWDataHelper::wrap(unsafe { tw_hd_node_chain_code(hd_node_ptr) });
@@ -104,11 +104,11 @@ fn test_extended_private_key_ffi() {
     let path = format!("m/{}'/{}'/{}'", purpose, coin, 0);
     let path_string = TWStringHelper::create(&path);
     let derived_node_ptr =
-        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32) };
+        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as i32) };
     let derived_node = unsafe { TWHDNode::from_ptr_as_ref(derived_node_ptr).unwrap() };
 
     let ext_priv_key = TWStringHelper::wrap(unsafe {
-        tw_hd_node_extended_private_key(derived_node, hd_version, base58_hasher as u32)
+        tw_hd_node_extended_private_key(derived_node, hd_version, base58_hasher as i32)
     });
     let ext_priv_key_string = ext_priv_key.to_string().unwrap();
     assert_eq!(ext_priv_key_string, "zprvAcwsTZNaY1f7rfwsy5GseSDStYBrxwtsBZDkb3iyuQUs4NF6n58BuH7Xj54RuaSCWtU5CiQzuYQgFgqr1HokgKcVAeGeXokhJUAJeP3VmvY");
@@ -118,11 +118,11 @@ fn test_extended_private_key_ffi() {
     let path = format!("m/{}'/{}'/{}'", purpose, coin, 1);
     let path_string = TWStringHelper::create(&path);
     let derived_node_ptr =
-        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32) };
+        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as i32) };
     let derived_node = unsafe { TWHDNode::from_ptr_as_ref(derived_node_ptr).unwrap() };
 
     let ext_priv_key = TWStringHelper::wrap(unsafe {
-        tw_hd_node_extended_private_key(derived_node, hd_version, base58_hasher as u32)
+        tw_hd_node_extended_private_key(derived_node, hd_version, base58_hasher as i32)
     });
     let ext_priv_key_string = ext_priv_key.to_string().unwrap();
     assert_eq!(ext_priv_key_string, "zprvAcwsTZNaY1f7sifgNNgdNa4P9mPtyg3zRVgwkx2qF9Sn7F255MzP6Zyumn6bgV5xuoS8ZrDvjzE7APcFSacXdzFYpGvyybb1bnAoh5nHxpn");
@@ -149,7 +149,7 @@ fn test_extended_private_key_nist256p1_ffi() {
         tw_mnemonic_to_seed(mnemonic_string.ptr(), passphrase_string.ptr())
     });
 
-    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw()) };
+    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw() as i32) };
     let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
 
     let chain_code = TWDataHelper::wrap(unsafe { tw_hd_node_chain_code(hd_node_ptr) });
@@ -160,7 +160,7 @@ fn test_extended_private_key_nist256p1_ffi() {
     let path = "m/44'/539'/0'/0/0";
     let path_string = TWStringHelper::create(&path);
     let derived_node_ptr =
-        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32) };
+        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as i32) };
 
     let private_key_data =
         TWDataHelper::wrap(unsafe { tw_hd_node_private_key_data(derived_node_ptr) });
@@ -196,7 +196,7 @@ fn test_extended_private_key_ed25519_blake2b_ffi() {
         tw_mnemonic_to_seed(mnemonic_string.ptr(), passphrase_string.ptr())
     });
 
-    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw()) };
+    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw() as i32) };
     let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
 
     let pubkey_hasher = Hasher::Sha256ripemd;
@@ -204,7 +204,7 @@ fn test_extended_private_key_ed25519_blake2b_ffi() {
     let path = "m/44'/637'/0'/0'";
     let path_string = TWStringHelper::create(&path);
     let derived_node_ptr =
-        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32) };
+        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as i32) };
 
     let private_key_data =
         TWDataHelper::wrap(unsafe { tw_hd_node_private_key_data(derived_node_ptr) });
@@ -248,7 +248,7 @@ fn test_extended_private_key_waves_ffi() {
         tw_mnemonic_to_seed(mnemonic_string.ptr(), passphrase_string.ptr())
     });
 
-    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw()) };
+    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw() as i32) };
 
     let private_key_data = TWDataHelper::wrap(unsafe { tw_hd_node_private_key_data(hd_node_ptr) });
     let private_key_bytes = private_key_data.to_vec().unwrap();
@@ -275,7 +275,7 @@ fn test_extended_private_key_waves_ffi() {
     let path = "m/44'/5741564'/0'/0'/0'";
     let path_string = TWStringHelper::create(&path);
     let derived_node_ptr =
-        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32) };
+        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as i32) };
     assert!(!derived_node_ptr.is_null());
 
     let depth = unsafe { tw_hd_node_depth(derived_node_ptr) };
@@ -300,7 +300,7 @@ fn test_extended_private_key_zillqa_schnorr_ffi() {
         tw_mnemonic_to_seed(mnemonic_string.ptr(), passphrase_string.ptr())
     });
 
-    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw()) };
+    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw() as i32) };
 
     let private_key_data = TWDataHelper::wrap(unsafe { tw_hd_node_private_key_data(hd_node_ptr) });
     let private_key_bytes = private_key_data.to_vec().unwrap();
@@ -329,7 +329,7 @@ fn test_extended_private_key_zillqa_schnorr_ffi() {
     let path = "m/44'/637'/0'/0'/0";
     let path_string = TWStringHelper::create(&path);
     let derived_node_ptr = unsafe {
-        tw_hd_node_derive_from_path(hd_node_ptr, path_string.ptr(), pubkey_hasher as u32)
+        tw_hd_node_derive_from_path(hd_node_ptr, path_string.ptr(), pubkey_hasher as i32)
     };
 
     let private_key_data =
@@ -371,7 +371,7 @@ fn test_extended_public_key_ffi() {
         tw_mnemonic_to_seed(mnemonic_string.ptr(), passphrase_string.ptr())
     });
 
-    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw()) };
+    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw() as i32) };
     let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
 
     // BIP44 purpose and Bitcoin coin type
@@ -390,17 +390,17 @@ fn test_extended_public_key_ffi() {
     let path = format!("m/{}'/{}'/{}'", purpose, coin, 0);
     let path_string = TWStringHelper::create(&path);
     let derived_node_ptr =
-        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32) };
+        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as i32) };
     let derived_node = unsafe { TWHDNode::from_ptr_as_ref(derived_node_ptr).unwrap() };
 
     let ext_pub_key = TWStringHelper::wrap(unsafe {
-        tw_hd_node_extended_public_key(derived_node, pub_hd_version, base58_hasher as u32)
+        tw_hd_node_extended_public_key(derived_node, pub_hd_version, base58_hasher as i32)
     });
     let ext_pub_key_string = ext_pub_key.to_string().unwrap();
     assert_eq!(ext_pub_key_string, "dpubZFUmm9oh5zmQkR2Tr2AXS4tCkTWg4B27SpCPFkapZrrAqgU1EwgEFgrmi6EnLGXhak86yDHhXPxFAnGU58W5S4e8NCKG1ASUVaxwRqqNdfP");
 
     let ext_priv_key = TWStringHelper::wrap(unsafe {
-        tw_hd_node_extended_private_key(derived_node, prv_hd_version, base58_hasher as u32)
+        tw_hd_node_extended_private_key(derived_node, prv_hd_version, base58_hasher as i32)
     });
     let ext_priv_key_string = ext_priv_key.to_string().unwrap();
     assert_eq!(ext_priv_key_string, "dprv3oggQ2FQ1chcr18hbW7Aur5x8SxQdES3FGa4WqeTZnFY88SNMzLdB7LkZLroF4bGAqWS8sDm3w4DKyYV7sDKfC6JMSVHnVJdpDLgHioq1vq");
@@ -420,8 +420,8 @@ fn test_private_key_from_xprv() {
     let hd_node_ptr = unsafe {
         tw_hd_node_create_with_extended_private_key(
             xprv_string.ptr(),
-            Curve::Secp256k1.to_raw(),
-            Hasher::Sha256d as u32,
+            Curve::Secp256k1.to_raw() as i32,
+            Hasher::Sha256d as i32,
         )
     };
 
@@ -430,7 +430,7 @@ fn test_private_key_from_xprv() {
     let path = "m/0/3";
     let path_string = TWStringHelper::create(path);
     let derived_node_ptr = unsafe {
-        tw_hd_node_derive_from_path(hd_node_ptr, path_string.ptr(), pubkey_hasher as u32)
+        tw_hd_node_derive_from_path(hd_node_ptr, path_string.ptr(), pubkey_hasher as i32)
     };
 
     let private_key_data =
@@ -463,15 +463,15 @@ fn test_private_key_from_xprv_invalid() {
         let hd_node_ptr = unsafe {
             tw_hd_node_create_with_extended_private_key(
                 xprv_string.ptr(),
-                Curve::Secp256k1.to_raw(),
-                Hasher::Sha256d as u32,
+                Curve::Secp256k1.to_raw() as i32,
+                Hasher::Sha256d as i32,
             )
         };
 
         let path = "m/0/3";
         let path_string = TWStringHelper::create(path);
         let derived_node_ptr = unsafe {
-            tw_hd_node_derive_from_path(hd_node_ptr, path_string.ptr(), pubkey_hasher as u32)
+            tw_hd_node_derive_from_path(hd_node_ptr, path_string.ptr(), pubkey_hasher as i32)
         };
 
         let private_key_data =
@@ -491,15 +491,15 @@ fn test_private_key_from_xprv_invalid() {
         let hd_node_ptr = unsafe {
             tw_hd_node_create_with_extended_private_key(
                 xprv_string.ptr(),
-                Curve::Secp256k1.to_raw(),
-                Hasher::Sha256d as u32,
+                Curve::Secp256k1.to_raw() as i32,
+                Hasher::Sha256d as i32,
             )
         };
 
         let path = "m/0/3";
         let path_string = TWStringHelper::create(path);
         let derived_node_ptr = unsafe {
-            tw_hd_node_derive_from_path(hd_node_ptr, path_string.ptr(), pubkey_hasher as u32)
+            tw_hd_node_derive_from_path(hd_node_ptr, path_string.ptr(), pubkey_hasher as i32)
         };
 
         let private_key_data =
@@ -527,7 +527,7 @@ fn test_derive_xpub_pub_vs_priv_pub() {
         tw_mnemonic_to_seed(mnemonic_string.ptr(), passphrase_string.ptr())
     });
 
-    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw()) };
+    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw() as i32) };
     let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
 
     let deriv_path1 = "m/84'/0'/0'/0/0";
@@ -543,7 +543,7 @@ fn test_derive_xpub_pub_vs_priv_pub() {
     {
         let path_string = TWStringHelper::create(deriv_path1);
         let derived_node_ptr = unsafe {
-            tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32)
+            tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as i32)
         };
 
         let private_key_data =
@@ -563,7 +563,7 @@ fn test_derive_xpub_pub_vs_priv_pub() {
     {
         let path_string = TWStringHelper::create(deriv_path2);
         let derived_node_ptr = unsafe {
-            tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32)
+            tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as i32)
         };
 
         let private_key_data =
@@ -585,13 +585,13 @@ fn test_derive_xpub_pub_vs_priv_pub() {
     let account_path = "m/84'/0'/0'";
     let account_path_string = TWStringHelper::create(account_path);
     let account_node_ptr = unsafe {
-        tw_hd_node_derive_from_path(hd_node, account_path_string.ptr(), pubkey_hasher as u32)
+        tw_hd_node_derive_from_path(hd_node, account_path_string.ptr(), pubkey_hasher as i32)
     };
     let account_node = unsafe { TWHDNode::from_ptr_as_ref(account_node_ptr).unwrap() };
 
     let zpub_version = 0x04b24746; // TWHDVersionZPUB
     let zpub_ptr = TWStringHelper::wrap(unsafe {
-        tw_hd_node_extended_public_key(account_node, zpub_version, base58_hasher as u32)
+        tw_hd_node_extended_public_key(account_node, zpub_version, base58_hasher as i32)
     });
     let zpub = zpub_ptr.to_string().unwrap();
 
@@ -601,8 +601,8 @@ fn test_derive_xpub_pub_vs_priv_pub() {
         let hd_node_ptr = unsafe {
             tw_hd_node_public_create_with_extended_public_key(
                 zpub_ptr.ptr(),
-                curve.to_raw(),
-                Hasher::Sha256d as u32,
+                curve.to_raw() as i32,
+                Hasher::Sha256d as i32,
             )
         };
         let hd_node = unsafe { TWHDNodePublic::from_ptr_as_ref(hd_node_ptr).unwrap() };
@@ -613,7 +613,7 @@ fn test_derive_xpub_pub_vs_priv_pub() {
             tw_hd_node_public_derive_from_path(
                 hd_node,
                 child_path_string.ptr(),
-                pubkey_hasher as u32,
+                pubkey_hasher as i32,
             )
         };
 
@@ -631,8 +631,8 @@ fn test_derive_xpub_pub_vs_priv_pub() {
         let hd_node_ptr = unsafe {
             tw_hd_node_public_create_with_extended_public_key(
                 zpub_ptr.ptr(),
-                curve.to_raw(),
-                Hasher::Sha256d as u32,
+                curve.to_raw() as i32,
+                Hasher::Sha256d as i32,
             )
         };
         let hd_node = unsafe { TWHDNodePublic::from_ptr_as_ref(hd_node_ptr).unwrap() };
@@ -643,7 +643,7 @@ fn test_derive_xpub_pub_vs_priv_pub() {
             tw_hd_node_public_derive_from_path(
                 hd_node,
                 child_path_string.ptr(),
-                pubkey_hasher as u32,
+                pubkey_hasher as i32,
             )
         };
 
@@ -660,7 +660,7 @@ fn test_derive_xpub_pub_vs_priv_pub() {
     // zpriv -> privateKey -> publicKey
     let zpriv_version = 0x04b2430c; // TWHDVersionZPRV
     let zpriv_ptr = TWStringHelper::wrap(unsafe {
-        tw_hd_node_extended_private_key(account_node, zpriv_version, base58_hasher as u32)
+        tw_hd_node_extended_private_key(account_node, zpriv_version, base58_hasher as i32)
     });
     let zpriv = zpriv_ptr.to_string().unwrap();
 
@@ -670,8 +670,8 @@ fn test_derive_xpub_pub_vs_priv_pub() {
         let zpriv_node_ptr = unsafe {
             tw_hd_node_create_with_extended_private_key(
                 zpriv_ptr.ptr(),
-                Curve::Secp256k1.to_raw(),
-                Hasher::Sha256d as u32,
+                Curve::Secp256k1.to_raw() as i32,
+                Hasher::Sha256d as i32,
             )
         };
 
@@ -681,7 +681,7 @@ fn test_derive_xpub_pub_vs_priv_pub() {
             tw_hd_node_derive_from_path(
                 zpriv_node_ptr,
                 child_path_string.ptr(),
-                pubkey_hasher as u32,
+                pubkey_hasher as i32,
             )
         };
 
@@ -704,8 +704,8 @@ fn test_derive_xpub_pub_vs_priv_pub() {
         let zpriv_node_ptr = unsafe {
             tw_hd_node_create_with_extended_private_key(
                 zpriv_ptr.ptr(),
-                Curve::Secp256k1.to_raw(),
-                Hasher::Sha256d as u32,
+                Curve::Secp256k1.to_raw() as i32,
+                Hasher::Sha256d as i32,
             )
         };
 
@@ -715,7 +715,7 @@ fn test_derive_xpub_pub_vs_priv_pub() {
             tw_hd_node_derive_from_path(
                 zpriv_node_ptr,
                 child_path_string.ptr(),
-                pubkey_hasher as u32,
+                pubkey_hasher as i32,
             )
         };
 
@@ -758,13 +758,14 @@ fn test_hedera_key() {
             tw_mnemonic_to_seed(mnemonic_string.ptr(), passphrase_string.ptr())
         });
 
-        let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw()) };
+        let hd_node_ptr =
+            unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw() as i32) };
         let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
 
         let path = "m/44'/3030'/0'/0'";
         let path_string = TWStringHelper::create(&path);
         let derived_node_ptr = unsafe {
-            tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32)
+            tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as i32)
         };
 
         let private_key_data =
@@ -798,13 +799,14 @@ fn test_hedera_key() {
             tw_mnemonic_to_seed(mnemonic_string.ptr(), passphrase_string.ptr())
         });
 
-        let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw()) };
+        let hd_node_ptr =
+            unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw() as i32) };
         let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
 
         let path = "m/44'/3030'/0'/0'";
         let path_string = TWStringHelper::create(&path);
         let derived_node_ptr = unsafe {
-            tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32)
+            tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as i32)
         };
 
         let private_key_data =
@@ -837,7 +839,7 @@ fn test_cardano_key() {
     let seed_ptr = TWDataHelper::wrap(unsafe { tw_mnemonic_to_entropy(mnemonic_string.ptr()) });
 
     let curve = Curve::Ed25519ExtendedCardano;
-    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw()) };
+    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw() as i32) };
     let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
 
     let pubkey_hasher = Hasher::Sha256ripemd;
@@ -845,7 +847,7 @@ fn test_cardano_key() {
     let deriv_path = "m/1852'/1815'/0'/0/0";
     let path_string = TWStringHelper::create(deriv_path);
     let derived_node_ptr =
-        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32) };
+        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as i32) };
 
     let public_key_data =
         TWDataHelper::wrap(unsafe { tw_hd_node_public_key_data(derived_node_ptr) });
@@ -859,7 +861,7 @@ fn test_cardano_key() {
     let invalid_deriv_path = "m/1852'/1815'/'/0/0";
     let invalid_path_string = TWStringHelper::create(invalid_deriv_path);
     let invalid_derived_node_ptr = unsafe {
-        tw_hd_node_derive_from_path(hd_node, invalid_path_string.ptr(), pubkey_hasher as u32)
+        tw_hd_node_derive_from_path(hd_node, invalid_path_string.ptr(), pubkey_hasher as i32)
     };
     assert!(invalid_derived_node_ptr.is_null());
 
@@ -883,11 +885,12 @@ fn test_bip39_vectors() {
 
         let seed_data = TWDataHelper::create(hex::decode(seed).unwrap());
 
-        let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_data.ptr(), curve.to_raw()) };
+        let hd_node_ptr =
+            unsafe { tw_hd_node_create_with_seed(seed_data.ptr(), curve.to_raw() as i32) };
         let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
 
         let xprv_ptr = TWStringHelper::wrap(unsafe {
-            tw_hd_node_extended_private_key(hd_node, version, base58_hasher as u32)
+            tw_hd_node_extended_private_key(hd_node, version, base58_hasher as i32)
         });
         let xprv_string = xprv_ptr.to_string().unwrap();
         assert_eq!(xprv_string, xprv);
@@ -908,7 +911,7 @@ fn test_extended_public_key_iost_ffi() {
         tw_mnemonic_to_seed(mnemonic_string.ptr(), passphrase_string.ptr())
     });
 
-    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw()) };
+    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw() as i32) };
     let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
 
     // BIP44 purpose and Bitcoin coin type
@@ -926,11 +929,11 @@ fn test_extended_public_key_iost_ffi() {
     let path = format!("m/{}'/{}'/{}'", purpose, coin, 0);
     let path_string = TWStringHelper::create(&path);
     let derived_node_ptr =
-        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32) };
+        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as i32) };
     let derived_node = unsafe { TWHDNode::from_ptr_as_ref(derived_node_ptr).unwrap() };
 
     let ext_pub_key = TWStringHelper::wrap(unsafe {
-        tw_hd_node_extended_public_key(derived_node, pub_hd_version, base58_hasher as u32)
+        tw_hd_node_extended_public_key(derived_node, pub_hd_version, base58_hasher as i32)
     });
     let ext_pub_key_string = ext_pub_key.to_string().unwrap();
     assert_eq!(ext_pub_key_string, "xpub6CazMhni6xNtFaEeRqeaa2S3LyfrQWXk8YoEykEUyKpYyxqxG18HSo3e8Kkco5YkEddiCEF1pav6gXy71sGFKMux9rcdc8TCEfZG662hhxg");
@@ -952,7 +955,7 @@ fn test_aeternity_key() {
         tw_mnemonic_to_seed(mnemonic_string.ptr(), passphrase_string.ptr())
     });
 
-    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw()) };
+    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw() as i32) };
     let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
 
     let pubkey_hasher = Hasher::Sha256ripemd;
@@ -960,7 +963,7 @@ fn test_aeternity_key() {
     let path = "m/44'/457'/0'/0'/0'";
     let path_string = TWStringHelper::create(path);
     let derived_node_ptr =
-        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32) };
+        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as i32) };
     assert!(!derived_node_ptr.is_null());
 
     unsafe { tw_hd_node_delete(derived_node_ptr) };
@@ -979,7 +982,7 @@ fn test_binance_key() {
         tw_mnemonic_to_seed(mnemonic_string.ptr(), passphrase_string.ptr())
     });
 
-    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw()) };
+    let hd_node_ptr = unsafe { tw_hd_node_create_with_seed(seed_ptr.ptr(), curve.to_raw() as i32) };
     let hd_node = unsafe { TWHDNode::from_ptr_as_ref(hd_node_ptr).unwrap() };
 
     let private_key_data = TWDataHelper::wrap(unsafe { tw_hd_node_private_key_data(hd_node_ptr) });
@@ -994,7 +997,7 @@ fn test_binance_key() {
     let path = "m/44'/714'/0'/0/0";
     let path_string = TWStringHelper::create(path);
     let derived_node_ptr =
-        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as u32) };
+        unsafe { tw_hd_node_derive_from_path(hd_node, path_string.ptr(), pubkey_hasher as i32) };
 
     let private_key_data =
         TWDataHelper::wrap(unsafe { tw_hd_node_private_key_data(derived_node_ptr) });
