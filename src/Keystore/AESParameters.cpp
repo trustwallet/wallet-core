@@ -13,7 +13,9 @@ namespace {
 
 Data generateIv(std::size_t blockSize = TW::Keystore::gBlockSize) {
     auto iv = Data(blockSize, 0);
-    random_buffer(iv.data(), blockSize);
+    if (random_buffer(iv.data(), blockSize) != 0) {
+        throw std::runtime_error("Unable to generate random iv");
+    }
     return iv;
 }
 

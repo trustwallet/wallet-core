@@ -29,13 +29,16 @@
 #include <unistd.h>
 #include <stdexcept>
 
-void __attribute__((weak)) random_buffer(uint8_t *buf, size_t len) {
+int __attribute__((weak)) random_buffer(uint8_t *buf, size_t len) {
     int randomData = open("/dev/urandom", O_RDONLY);
     if (randomData < 0) {
-        throw std::runtime_error("Failed to open /dev/urandom");
+        return -1;
     }
-    if (read(randomData, buf, len) < len) {
-        throw std::runtime_error("Failed to read from /dev/urandom");
-    }
+
+    ssize_t readLen = read(randomData, buf, len);
     close(randomData);
+    if (readLen != static_cast<ssize_t>(len)) {
+        return -1;
+    }
+    return 0;
 }

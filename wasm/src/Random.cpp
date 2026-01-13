@@ -73,15 +73,11 @@ javascript_buf(void * const buf, const size_t size)
 // clang-format on
 
 extern "C" {
-uint32_t random32(void) {
-    randombytes_init_if_needed();
-    return javascript_random();
-}
 
-void random_buffer(uint8_t* buf, size_t len) {
+int random_buffer(uint8_t* buf, size_t len) {
     randombytes_init_if_needed();
     javascript_buf(buf, len);
-    return;
+    return 0;
 }
 
 } // extern "C"

@@ -31,7 +31,9 @@
 extern "C" {
 #endif
 
-void random_buffer(uint8_t *buf, size_t len);
+// Returns 0 on success.
+// Returns < 0 on error.
+int random_buffer(uint8_t *buf, size_t len);
 
 //uint32_t random_uniform(uint32_t n);
 //void random_permute(char *buf, size_t len);
