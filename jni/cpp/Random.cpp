@@ -31,7 +31,8 @@ void random_buffer(uint8_t *buf, size_t len) {
     if (cachedJVM == nullptr) {
         std::ifstream randomData("/dev/urandom", std::ios::in | std::ios::binary);
         if (!randomData.is_open()) {
-            throw std::runtime_error("Error opening '/dev/urandom'");
+            // Critical: cannot proceed without random source
+            std::terminate();
         }
 
         randomData.read(reinterpret_cast<char*>(buf), len);
