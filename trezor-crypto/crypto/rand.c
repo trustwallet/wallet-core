@@ -27,23 +27,51 @@
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <unistd.h>
+#include <errno.h>
+
+// getentropy() is available on:
+// - macOS 10.12+
+// - OpenBSD 5.6+
+// - FreeBSD 12.0+
+// - Linux with glibc 2.25+ (2017)
+#if defined(__APPLE__) || defined(__OpenBSD__) || defined(__FreeBSD__) || \
+    (defined(__linux__) && defined(__GLIBC__) && \
+     (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 25)))
+#define HAVE_GETENTROPY
+#include <sys/random.h>
+#endif
 
 // [wallet-core]
-int __attribute__((weak)) random32(uint32_t *result) {
-    int randomData = open("/dev/urandom", O_RDONLY);
-    if (randomData < 0) {
-        return randomData;
+// Helper function to read random data using getentropy() if available, otherwise /dev/urandom
+static int read_random(uint8_t *buf, size_t len) {
+#ifdef HAVE_GETENTROPY
+    // getentropy() has a maximum buffer size of 256 bytes
+    // If we need more, we must call it multiple times
+    size_t offset = 0;
+    while (offset < len) {
+        size_t chunk = len - offset;
+        if (chunk > 256) {
+            chunk = 256;
+        }
+
+        if (getentropy(buf + offset, chunk) != 0) {
+            // getentropy() failed, fall back to /dev/urandom
+            // This should rarely happen (only if RNG is not initialized)
+            break;
+        }
+
+        offset += chunk;
     }
 
-    size_t ret = read(randomData, result, sizeof(uint32_t));
-    close(randomData);
-    if (ret != sizeof(uint32_t)) {
-        return -1;
+    // If we successfully read all data, return success
+    if (offset == len) {
+        return 0;
     }
-    return 0;
-}
 
-int __attribute__((weak)) random_buffer(uint8_t *buf, size_t len) {
+    // If getentropy() failed, fall through to /dev/urandom
+#endif
+
+    // Fallback to /dev/urandom
     int randomData = open("/dev/urandom", O_RDONLY);
     if (randomData < 0) {
         return randomData;
@@ -57,3 +85,12 @@ int __attribute__((weak)) random_buffer(uint8_t *buf, size_t len) {
     }
     return 0;
 }
+
+int __attribute__((weak)) random32(uint32_t *result) {
+    return read_random((uint8_t *)result, sizeof(uint32_t));
+}
+
+int __attribute__((weak)) random_buffer(uint8_t *buf, size_t len) {
+    return read_random(buf, len);
+}
+
