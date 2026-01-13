@@ -38,6 +38,11 @@
     (defined(__linux__) && defined(__GLIBC__) && \
      (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 25)))
 #define HAVE_GETENTROPY
+#endif
+
+// On Linux, getentropy() is declared in sys/random.h
+// On Apple/BSD, it's declared in unistd.h (already included above)
+#if defined(HAVE_GETENTROPY) && defined(__linux__)
 #include <sys/random.h>
 #endif
 
