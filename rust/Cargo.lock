@@ -2661,7 +2661,6 @@ dependencies = [
 name = "tw_tests"
 version = "0.1.0"
 dependencies = [
- "k256",
  "serde",
  "serde_json",
  "tw_any_coin",
