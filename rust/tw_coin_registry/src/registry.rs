@@ -47,7 +47,7 @@ pub fn get_coin_item(coin: CoinType) -> RegistryResult<&'static CoinItem> {
 
 #[inline]
 pub fn registry_iter() -> impl Iterator<Item = &'static CoinItem> {
-    REGISTRY.iter().map(|(_coin_type, item)| item)
+    REGISTRY.values()
 }
 
 #[inline]

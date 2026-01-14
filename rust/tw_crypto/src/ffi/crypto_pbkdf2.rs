@@ -23,8 +23,8 @@ use tw_misc::try_or_else;
 pub unsafe extern "C" fn tw_pbkdf2_hmac_sha256(
     password: Nonnull<TWData>,
     salt: Nonnull<TWData>,
-    iterations: u32,
-    dk_len: usize,
+    iterations: i32,
+    dk_len: i32,
 ) -> NullableMut<TWData> {
     let password = TWData::from_ptr_as_ref(password)
         .map(|data| data.as_slice())
@@ -32,6 +32,9 @@ pub unsafe extern "C" fn tw_pbkdf2_hmac_sha256(
     let salt = TWData::from_ptr_as_ref(salt)
         .map(|data| data.as_slice())
         .unwrap_or_default();
+
+    let iterations: u32 = try_or_else!(iterations.try_into(), std::ptr::null_mut);
+    let dk_len: usize = try_or_else!(dk_len.try_into(), std::ptr::null_mut);
 
     let output = try_or_else!(
         pbkdf2_hmac_sha256(password, salt, iterations, dk_len),
@@ -52,8 +55,8 @@ pub unsafe extern "C" fn tw_pbkdf2_hmac_sha256(
 pub unsafe extern "C" fn tw_pbkdf2_hmac_sha512(
     password: Nonnull<TWData>,
     salt: Nonnull<TWData>,
-    iterations: u32,
-    dk_len: usize,
+    iterations: i32,
+    dk_len: i32,
 ) -> NullableMut<TWData> {
     let password = TWData::from_ptr_as_ref(password)
         .map(|data| data.as_slice())
@@ -61,6 +64,9 @@ pub unsafe extern "C" fn tw_pbkdf2_hmac_sha512(
     let salt = TWData::from_ptr_as_ref(salt)
         .map(|data| data.as_slice())
         .unwrap_or_default();
+
+    let iterations: u32 = try_or_else!(iterations.try_into(), std::ptr::null_mut);
+    let dk_len: usize = try_or_else!(dk_len.try_into(), std::ptr::null_mut);
 
     let output = try_or_else!(
         pbkdf2_hmac_512(password, salt, iterations, dk_len),

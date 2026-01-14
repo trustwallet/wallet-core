@@ -18,7 +18,8 @@ use tw_utxo::transaction::{TransactionPreimage, UtxoPreimageArgs};
 
 /// An overflow happens while converting to `i32` because 0x80000004 is greater than [`i32::MAX`].
 /// However, the value will be serialized correctly.
-pub const TRANSACTION_VERSION_4: u32 = 0x80000004_u32;
+pub const TRANSACTION_VERSION_4: u32 = 4;
+pub const OVERWINTERED_FLAG: u32 = 0x80000000_u32;
 pub const TRANSACTION_VERSION_GROUP_ID: u32 = 0x892F2085;
 /// See https://github.com/zcash/zips/blob/main/zips/zip-0253.md#nu6-deployment CONSENSUS_BRANCH_ID section
 pub const NU6_BRANCH_ID: H32 = H32::from_array([0x55, 0x10, 0xe7, 0xc8]);

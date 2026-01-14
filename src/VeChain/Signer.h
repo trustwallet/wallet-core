@@ -22,14 +22,14 @@ class Signer {
     Signer() = delete;
 
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
 
     static Data buildUnsignedTx(const Proto::SigningInput& input) noexcept;
 
     static Data buildSignedTx(const Proto::SigningInput& input, const Data& signature) noexcept;
 
     /// Signs the given transaction.
-    static Data sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;
+    static Data sign(const PrivateKey& privateKey, Transaction& transaction);
 };
 
 } // namespace TW::VeChain

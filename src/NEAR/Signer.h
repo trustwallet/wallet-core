@@ -18,7 +18,7 @@ class Signer {
     /// Initializes a transaction signer.
     explicit Signer(const Proto::SigningInput& input) : input(input) {}
     /// Signs the given transaction.
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
     Proto::SigningOutput compile(const Data& signature, const PublicKey& publicKey) const;
     Data signaturePreimage() const;
 };

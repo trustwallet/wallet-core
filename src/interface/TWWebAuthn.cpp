@@ -17,10 +17,14 @@ struct TWPublicKey *_Nullable TWWebAuthnGetPublicKey(TWData *_Nonnull attestatio
     }
 }
 
-TWData *_Nonnull TWWebAuthnGetRSValues(TWData *_Nonnull signature) {
+TWData *_Nullable TWWebAuthnGetRSValues(TWData *_Nonnull signature) {
     const auto& signatureData = *reinterpret_cast<const TW::Data*>(signature);
-    const auto& rsValues = TW::ASN::AsnParser::ecdsa_signature_from_der(signatureData);
-    return TWDataCreateWithData(&rsValues);
+    const auto maybeRSValues = TW::ASN::AsnParser::ecdsa_signature_from_der(signatureData);
+    if (!maybeRSValues.has_value()) {
+        return nullptr;
+    }
+    const auto& rsValues = maybeRSValues.value();
+    return TWDataCreateWithBytes(rsValues.data(), rsValues.size());
 }
 
 TWData *_Nonnull TWWebAuthnReconstructOriginalMessage(TWData* _Nonnull authenticatorData, TWData* _Nonnull clientDataJSON) {

@@ -24,7 +24,7 @@ struct TWPublicKey *_Nullable TWWebAuthnGetPublicKey(TWData *_Nonnull attestatio
 /// \param signature ASN encoded webauthn signature: https://www.w3.org/TR/webauthn-2/#sctn-signature-attestation-types
 /// \return Concatenated r and s values.
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWWebAuthnGetRSValues(TWData *_Nonnull signature);
+TWData *_Nullable TWWebAuthnGetRSValues(TWData *_Nonnull signature);
 
 /// Reconstructs the original message that was signed via P256 curve. Can be used for signature validation.
 ///

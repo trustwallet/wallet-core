@@ -34,7 +34,7 @@ pub unsafe extern "C" fn tw_public_key_create_with_data(
     ty: u32,
 ) -> *mut TWPublicKey {
     let bytes_ref = CByteArrayRef::new(input, input_len);
-    let bytes = try_or_else!(bytes_ref.to_vec(), std::ptr::null_mut);
+    let bytes = bytes_ref.to_vec();
     let ty = try_or_else!(PublicKeyType::from_raw(ty), std::ptr::null_mut);
     PublicKey::new(bytes, ty)
         .map(|public| TWPublicKey(public).into_ptr())
@@ -54,7 +54,7 @@ pub unsafe extern "C" fn tw_public_key_is_valid(
     pubkey_type: u32,
 ) -> bool {
     let pubkey_type = try_or_false!(PublicKeyType::from_raw(pubkey_type));
-    let pub_key_bytes = try_or_false!(CByteArrayRef::new(key, key_len).to_vec());
+    let pub_key_bytes = CByteArrayRef::new(key, key_len).to_vec();
     PublicKey::is_valid(pub_key_bytes, pubkey_type)
 }
 
@@ -84,8 +84,8 @@ pub unsafe extern "C" fn tw_public_key_verify(
     msg_len: usize,
 ) -> bool {
     let public = try_or_false!(TWPublicKey::from_ptr_as_ref(key));
-    let sig = try_or_false!(CByteArrayRef::new(sig, sig_len).as_slice());
-    let msg = try_or_false!(CByteArrayRef::new(msg, msg_len).as_slice());
+    let sig = CByteArrayRef::new(sig, sig_len).as_slice();
+    let msg = CByteArrayRef::new(msg, msg_len).as_slice();
     public.0.verify(sig, msg)
 }
 
@@ -152,14 +152,8 @@ pub unsafe extern "C" fn tw_public_key_recover_from_signature(
     msg_len: usize,
     rec_id: u8,
 ) -> *mut TWPublicKey {
-    let sig = try_or_else!(
-        CByteArrayRef::new(sig, sig_len).as_slice(),
-        std::ptr::null_mut
-    );
-    let msg = try_or_else!(
-        CByteArrayRef::new(msg, msg_len).as_slice(),
-        std::ptr::null_mut
-    );
+    let sig = CByteArrayRef::new(sig, sig_len).as_slice();
+    let msg = CByteArrayRef::new(msg, msg_len).as_slice();
     PublicKey::recover_from_signature(sig, msg, rec_id)
         .map(|public| TWPublicKey(public).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
@@ -182,7 +176,7 @@ pub unsafe extern "C" fn tw_public_key_verify_as_der(
     msg_len: usize,
 ) -> bool {
     let public = try_or_false!(TWPublicKey::from_ptr_as_ref(key));
-    let sig = try_or_false!(CByteArrayRef::new(sig, sig_len).as_slice());
-    let msg = try_or_false!(CByteArrayRef::new(msg, msg_len).as_slice());
+    let sig = CByteArrayRef::new(sig, sig_len).as_slice();
+    let msg = CByteArrayRef::new(msg, msg_len).as_slice();
     public.0.verify_as_der(sig, msg)
 }

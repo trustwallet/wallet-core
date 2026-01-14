@@ -43,10 +43,15 @@ class PrivateKey {
     // obtain private key type used by the curve/coin
     static TWPrivateKeyType getType(TWCurve curve) noexcept;
 
-    /// Initializes a private key with an array of bytes and a curve.  
-    /// Size of the data must be exact (normally 32, or 192 for extended)
+    /// Initializes a private key with an array of bytes and a curve.
+    /// Size of the data must be exact (normally 32, or 192 for extended).
     /// Signing functions will throw an exception if the provided curve is different from the one specified.
     explicit PrivateKey(const Data& data, TWCurve curve);
+
+    /// Initializes a private key with an array of bytes and a curve.
+    /// Size of the data must be exact (normally 32, or 192 for extended).
+    /// Signing functions will throw an exception if the provided curve is different from the one specified.
+    explicit PrivateKey(Data&& data, TWCurve curve);
 
     /// Initializes a private key from a string of bytes and a curve.
     /// Signing functions will throw an exception if the provided curve is different from the one specified.
@@ -60,10 +65,10 @@ class PrivateKey {
         TWCurve curve);
 
     PrivateKey(const PrivateKey& other) = default;
-    PrivateKey& operator=(const PrivateKey& other) = default;
+    PrivateKey& operator=(const PrivateKey& other) noexcept;
 
     PrivateKey(PrivateKey&& other) = default;
-    PrivateKey& operator=(PrivateKey&& other) = default;
+    PrivateKey& operator=(PrivateKey&& other) noexcept;
 
     virtual ~PrivateKey() { cleanup(); }
 

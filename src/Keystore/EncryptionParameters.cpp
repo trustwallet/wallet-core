@@ -9,7 +9,7 @@
 
 #include <cassert>
 #include <TrustWalletCore/TWAESPaddingMode.h>
-#include "TrustWalletCore/Generated/TWCrypto.h"
+#include "rust/Wrapper.h"
 
 using namespace TW;
 
@@ -60,11 +60,20 @@ static Data rustPbkdf2(const Data& password, const PBKDF2Parameters& params) {
     Rust::TWDataWrapper passwordData = password;
     Rust::TWDataWrapper saltData = params.salt;
 
+    // Check if iterations fits in int32_t range
+    const auto maxI32 = std::numeric_limits<int32_t>::max();
+    if (params.iterations > static_cast<uint32_t>(maxI32)) {
+        throw std::runtime_error("PBKDF2 iterations exceeds int32_t maximum");
+    }
+    if (params.desiredKeyLength > static_cast<std::size_t>(maxI32)) {
+        throw std::runtime_error("PBKDF2 desired key length exceeds int32_t maximum");
+    }
+
     Rust::TWDataWrapper res = Rust::tw_pbkdf2_hmac_sha256(
         passwordData.get(),
         saltData.get(),
-        params.iterations,
-        params.desiredKeyLength
+        static_cast<int32_t>(params.iterations),
+        static_cast<int32_t>(params.desiredKeyLength)
     );
     auto data = res.toDataOrDefault();
     if (data.empty()) {
@@ -129,6 +138,9 @@ static Data rustAesCbcDecrypt128(const Data& data, const Data& iv, const Data& k
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
     auto cipher = json[CodingKeys::cipher].get<std::string>();
     cipherParams = AESParameters::AESParametersFromJson(json[CodingKeys::cipherParams], cipher);
+    if (!cipherParams.isValid()) {
+        throw std::invalid_argument("Invalid cipher params");
+    }
 
     auto kdf = json[CodingKeys::kdf].get<std::string>();
     if (kdf == "scrypt") {
@@ -156,6 +168,10 @@ nlohmann::json EncryptionParameters::json() const {
 
 EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const EncryptionParameters& params)
     : params(std::move(params)), _mac() {
+    if (!this->params.cipherParams.isValid()) {
+        throw std::invalid_argument("Invalid cipher params");
+    }
+
     auto scryptParams = std::get<ScryptParameters>(this->params.kdfParams);
     auto derivedKey = rustScrypt(password, scryptParams);
 

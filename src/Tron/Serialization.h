@@ -10,6 +10,8 @@
 
 namespace TW::Tron {
 
+Data serializeTxRawData(const protocol::Transaction& tx) noexcept;
+
 nlohmann::json transactionJSON(const protocol::Transaction& transaction, const TW::Data& txID, const TW::Data& signature);
 
 }

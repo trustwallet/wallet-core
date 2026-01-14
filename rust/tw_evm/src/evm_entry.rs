@@ -33,7 +33,7 @@ pub trait EvmEntry {
     #[inline]
     fn decode_abi_params(
         input: AbiProto::ParamsDecodingInput<'_>,
-    ) -> AbiProto::ParamsDecodingOutput {
+    ) -> AbiProto::ParamsDecodingOutput<'_> {
         AbiEncoder::<Self::Context>::decode_params(input)
     }
 

@@ -16,10 +16,10 @@ namespace TW::Nimiq {
 class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
   public:
     /// Signs the given transaction.
-    void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
+    void sign(const PrivateKey& privateKey, Transaction& transaction) const;
 
     template <typename T>
     static PublicKey publicKeyFromBytes(const T& data) {

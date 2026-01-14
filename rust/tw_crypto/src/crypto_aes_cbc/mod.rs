@@ -61,7 +61,7 @@ fn aes_cbc_decrypt_impl<D: KeyIvInit + BlockDecryptMut>(
         return Err(StreamCipherError);
     }
     let key = &key[0..key_size];
-    if data.len() % BLOCK_SIZE_AES != 0 {
+    if !data.len().is_multiple_of(BLOCK_SIZE_AES) {
         return Err(StreamCipherError);
     }
     let mut blocks = blocks::<D>(data);

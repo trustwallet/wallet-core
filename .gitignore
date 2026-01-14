@@ -71,3 +71,6 @@ samples/cpp/sample
 
 # Rust target build
 **/target/
+
+# Kotlin
+kotlin/.kotlin

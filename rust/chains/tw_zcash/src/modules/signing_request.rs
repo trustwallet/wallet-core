@@ -53,7 +53,7 @@ where
 
         let mut builder = ZcashTransactionBuilder::default();
         builder
-            .version(version)
+            .overwintered_version(version)
             .lock_time(transaction_builder.lock_time)
             .expiry_height(extra_data.expiry_height)
             .branch_id(extra_data.branch_id);
@@ -121,14 +121,6 @@ where
 }
 
 impl ZcashSigningRequestBuilder {
-    pub fn transaction_version(proto: &Proto::TransactionVersion) -> SigningResult<u32> {
-        match proto {
-            Proto::TransactionVersion::UseDefault => Ok(TRANSACTION_VERSION_4),
-            _ => SigningError::err(SigningErrorType::Error_invalid_params)
-                .context("ZCash currently supports `UseDefault` transaction version only"),
-        }
-    }
-
     pub fn fee_estimator(
         proto: &Proto::TransactionBuilder,
         extra_data: &ZcashExtraData,

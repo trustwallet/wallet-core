@@ -95,7 +95,7 @@ std::string Signer::encodeTransaction(const Proto::Transaction& t) noexcept {
     return se.AsString();
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto t = input.transaction_template();
 
     if (t.actions_size() == 0) {

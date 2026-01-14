@@ -35,8 +35,8 @@ impl AsRef<HDNodePublic> for TWHDNodePublic {
 #[no_mangle]
 pub unsafe extern "C" fn tw_hd_node_public_create_with_extended_public_key(
     extended_public_key: Nonnull<TWString>,
-    curve: u32,
-    hasher: u32,
+    curve: i32,
+    hasher: i32,
 ) -> NullableMut<TWHDNodePublic> {
     let extended_public_key_ref = try_or_else!(
         TWString::from_ptr_as_ref(extended_public_key),
@@ -44,7 +44,11 @@ pub unsafe extern "C" fn tw_hd_node_public_create_with_extended_public_key(
     );
     let extended_public_key_str =
         try_or_else!(extended_public_key_ref.as_str(), std::ptr::null_mut);
+
+    let curve: u32 = try_or_else!(curve.try_into(), std::ptr::null_mut);
     let curve = try_or_else!(Curve::from_raw(curve), std::ptr::null_mut);
+
+    let hasher: u32 = try_or_else!(hasher.try_into(), std::ptr::null_mut);
     let hasher = try_or_else!(Hasher::from_repr(hasher), std::ptr::null_mut);
     HDNodePublic::try_from(extended_public_key_str, curve, hasher)
         .map(|hd_node| TWHDNodePublic(hd_node).into_ptr())
@@ -71,12 +75,15 @@ pub unsafe extern "C" fn tw_hd_node_public_delete(key: NonnullMut<TWHDNodePublic
 pub unsafe extern "C" fn tw_hd_node_public_derive_from_path(
     hd_node: Nonnull<TWHDNodePublic>,
     path: Nonnull<TWString>,
-    hasher: u32,
+    hasher: i32,
 ) -> NullableMut<TWHDNodePublic> {
     let hd_node_ref = try_or_else!(TWHDNodePublic::from_ptr_as_ref(hd_node), std::ptr::null_mut);
     let path_ref = try_or_else!(TWString::from_ptr_as_ref(path), std::ptr::null_mut);
     let path_str = try_or_else!(path_ref.as_str(), std::ptr::null_mut);
+
+    let hasher: u32 = try_or_else!(hasher.try_into(), std::ptr::null_mut);
     let hasher = try_or_else!(Hasher::from_repr(hasher), std::ptr::null_mut);
+
     hd_node_ref
         .0
         .derive_from_path(path_str, hasher)

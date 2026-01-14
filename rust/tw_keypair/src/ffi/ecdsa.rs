@@ -54,12 +54,13 @@ pub unsafe extern "C" fn tw_ecdsa_sig_to_der(
 pub unsafe extern "C" fn tw_ecdsa_pubkey_hash(
     pubkey_data: Nonnull<TWData>,
     is_secp256k1: bool,
-    hasher: u32,
+    hasher: i32,
 ) -> NullableMut<TWData> {
     let pubkey_data = TWData::from_ptr_as_ref(pubkey_data)
         .map(|data| data.as_slice())
         .unwrap_or_default();
-    let hasher = try_or_else!(Hasher::from_repr(hasher), std::ptr::null_mut);
+    let hasher_u32: u32 = try_or_else!(hasher.try_into(), std::ptr::null_mut);
+    let hasher = try_or_else!(Hasher::from_repr(hasher_u32), std::ptr::null_mut);
     let hash = if is_secp256k1 {
         let pubkey = try_or_else!(SECPublicKey::try_from(pubkey_data), std::ptr::null_mut);
         pubkey.hash(hasher)

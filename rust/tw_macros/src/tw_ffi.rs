@@ -12,6 +12,7 @@ use std::fs;
 use std::path::Path;
 
 use crate::code_gen::{TWArg, TWConfig, TWFunction};
+use crate::utils::is_uint;
 
 pub mod keywords {
     use syn::custom_keyword;
@@ -134,6 +135,13 @@ pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
     };
 
     let class = args.class.unwrap().to_string();
+    // TODO add support for structs.
+    if func_args.iter().any(|arg| is_uint(&arg.ty)) {
+        return Err(syn::Error::new(
+            proc_macro2::Span::call_site(),
+            "Unsigned integers are not supported within class methods. Consider using 'struct' or signed integers. See https://kotlinlang.org/docs/inline-classes.html#mangling"
+        ));
+    }
     let docs = func
         .attrs
         .iter()
