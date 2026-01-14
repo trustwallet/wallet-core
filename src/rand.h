@@ -10,7 +10,7 @@ namespace TW::Random {
 
 enum RandomResult : int32_t {
     OK = 0,
-    ERROR_UNKNOWN = -1,
+    ERROR_RANDOM_GENERATION_FAILED = -1,
 };
 
 // Fills the provided buffer with cryptographically secure random bytes.

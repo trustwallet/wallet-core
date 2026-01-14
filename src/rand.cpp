@@ -13,7 +13,7 @@ RandomResult random_buffer(uint8_t *buf, size_t len) {
         return OK;
     }
 
-    return ERROR_UNKNOWN;
+    return ERROR_RANDOM_GENERATION_FAILED;
 }
 
 } // namespace TW::Random
