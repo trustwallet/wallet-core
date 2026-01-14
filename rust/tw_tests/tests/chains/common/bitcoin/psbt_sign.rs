@@ -45,6 +45,10 @@ impl<'a> BitcoinPsbtSignHelper<'a> {
         let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
         let output = signer.sign(coin_type, self.input.clone());
 
+        Self::verify_output(output, expected);
+    }
+
+    pub fn verify_output(output: Proto::SigningOutput, expected: Expected) {
         assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
 
         let psbt = output.psbt.expect("No PSBT in the SigningOutput").psbt;
