@@ -246,6 +246,11 @@ uint32_t Decode::getTotalLen() const {
     }
 }
 
+Decode::MajorType Decode::getMajorType() const {
+    TypeDesc typeDesc = getTypeDesc();
+    return typeDesc.majorType;
+}
+
 uint64_t Decode::getValue() const {
     TypeDesc typeDesc = getTypeDesc();
     if (typeDesc.majorType != MT_uint && typeDesc.majorType != MT_negint) {
@@ -328,9 +333,12 @@ vector<Decode> Decode::getCompoundElements(uint32_t countMultiplier, TW::byte ex
     return elems;
 }
 
-vector<pair<Decode, Decode>> Decode::getMapElements() const {
+Decode::MapElements Decode::getMapElements() const {
     auto elems = getCompoundElements(2, MT_map);
-    vector<pair<Decode, Decode>> map;
+    if (elems.size() % 2 != 0) {
+        throw std::invalid_argument("CBOR map with odd number of elements");
+    }
+    MapElements map;
     for (auto i = 0ul; i < elems.size(); i += 2) {
         map.emplace_back(make_pair(elems[i], elems[i + 1]));
     }

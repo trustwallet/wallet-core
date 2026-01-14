@@ -5,7 +5,9 @@
 use crate::address::GroestlAddress;
 use tw_bitcoin::context::BitcoinSigningContext;
 use tw_bitcoin::modules::protobuf_builder::standard_protobuf_builder::StandardProtobufBuilder;
-use tw_bitcoin::modules::psbt_request::standard_psbt_request_builder::StandardPsbtRequestBuilder;
+use tw_bitcoin::modules::psbt_request::standard_psbt_request_handler::{
+    Psbt, StandardPsbtRequestHandler,
+};
 use tw_bitcoin::modules::signing_request::standard_signing_request::StandardSigningRequestBuilder;
 use tw_coin_entry::error::prelude::SigningResult;
 use tw_hash::hasher::Hasher;
@@ -22,6 +24,7 @@ impl UtxoContext for GroestlContext {
     type Address = GroestlAddress;
     type Transaction = Transaction;
     type FeeEstimator = StandardFeeEstimator<Self::Transaction>;
+    type Psbt = Psbt;
 
     /// Groestlcoin uses a different hash algorithm.
     const TX_HASHER: Hasher = Sha256;
@@ -42,5 +45,5 @@ impl UtxoContext for GroestlContext {
 impl BitcoinSigningContext for GroestlContext {
     type SigningRequestBuilder = StandardSigningRequestBuilder;
     type ProtobufBuilder = StandardProtobufBuilder;
-    type PsbtRequestBuilder = StandardPsbtRequestBuilder;
+    type PsbtRequestHandler = StandardPsbtRequestHandler;
 }

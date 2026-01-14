@@ -127,8 +127,10 @@
 //! assert.equal(output.signingResultV2!.error, TW.Common.Proto.SigningError.OK);
 //! ```
 
+pub mod address;
 pub mod context;
 pub mod entry;
 pub mod modules;
 pub mod t_address;
+pub mod tex_address;
 pub mod transaction;

@@ -92,7 +92,7 @@ fn helper_encode_and_compile(
     (preimage, signed)
 }
 
-fn balance_call(call: Proto::mod_Balance::OneOfmessage_oneof) -> Proto::RuntimeCall<'_> {
+fn balance_call(call: Proto::mod_Balance::OneOfmessage_oneof<'_>) -> Proto::RuntimeCall<'_> {
     Proto::RuntimeCall {
         pallet_oneof: Proto::mod_RuntimeCall::OneOfpallet_oneof::balance_call(Proto::Balance {
             message_oneof: call,
@@ -100,7 +100,7 @@ fn balance_call(call: Proto::mod_Balance::OneOfmessage_oneof) -> Proto::RuntimeC
     }
 }
 
-fn identity_call(call: Proto::mod_Identity::OneOfmessage_oneof) -> Proto::RuntimeCall<'_> {
+fn identity_call(call: Proto::mod_Identity::OneOfmessage_oneof<'_>) -> Proto::RuntimeCall<'_> {
     Proto::RuntimeCall {
         pallet_oneof: Proto::mod_RuntimeCall::OneOfpallet_oneof::identity_call(Proto::Identity {
             message_oneof: call,
@@ -109,7 +109,7 @@ fn identity_call(call: Proto::mod_Identity::OneOfmessage_oneof) -> Proto::Runtim
 }
 
 fn identity_add_auth_call(
-    add_auth: Proto::mod_Identity::AddAuthorization,
+    add_auth: Proto::mod_Identity::AddAuthorization<'_>,
 ) -> Proto::RuntimeCall<'_> {
     identity_call(Proto::mod_Identity::OneOfmessage_oneof::add_authorization(
         add_auth,
@@ -130,7 +130,7 @@ fn identity_join_identity(
     )
 }
 
-fn staking_call(call: Proto::mod_Staking::OneOfmessage_oneof) -> Proto::RuntimeCall<'_> {
+fn staking_call(call: Proto::mod_Staking::OneOfmessage_oneof<'_>) -> Proto::RuntimeCall<'_> {
     Proto::RuntimeCall {
         pallet_oneof: Proto::mod_RuntimeCall::OneOfpallet_oneof::staking_call(Proto::Staking {
             message_oneof: call,

@@ -56,7 +56,7 @@ impl PolkadotEntry {
         builder.extension(CheckEra { era, current_hash });
         builder.extension(CheckNonce::new(input.nonce as u32));
         if let Some(fee_asset_id) = ctx.fee_asset_id {
-            builder.extension(ChargeAssetTxPayment::new(tip, fee_asset_id));
+            builder.extension(ChargeAssetTxPayment::new(tip, fee_asset_id.as_u32()));
         } else {
             builder.extension(ChargeTransactionPayment::new(tip));
         }

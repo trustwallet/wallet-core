@@ -18,9 +18,9 @@ namespace TW::FIO {
 class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
     /// Build the compile output
-    static Proto::SigningOutput compile(const Proto::SigningInput& input, const Data& signature) noexcept;
+    static Proto::SigningOutput compile(const Proto::SigningInput& input, const Data& signature);
   public:
     static constexpr auto SignatureSuffix = "K1";
     static constexpr auto SignaturePrefix = "SIG_K1_";

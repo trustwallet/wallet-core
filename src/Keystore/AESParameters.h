@@ -34,13 +34,18 @@ struct AESParameters {
     Data iv;
 
     /// Initializes `AESParameters` with a encryption cipher.
-    static AESParameters AESParametersFromEncryption(TWStoredKeyEncryption encryption);;
+    static AESParameters AESParametersFromEncryption(TWStoredKeyEncryption encryption);
 
     /// Initializes `AESParameters` with a JSON object.
     static AESParameters AESParametersFromJson(const nlohmann::json& json, const std::string& cipher);
 
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;
+
+    /// Validates AES parameters.
+    [[nodiscard]] bool isValid() const {
+        return iv.size() == static_cast<std::size_t>(mBlockSize);
+    }
 };
 
 } // namespace TW::Keystore

@@ -10,6 +10,7 @@
 #include "TWJNI.h"
 
 jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativeSign(JNIEnv *env, jclass thisClass, jbyteArray input, jint coin) {
+    JNI_CHECK_NULL_AND_RETURN_NULL(env, input, "input");
     TWData *inputData = TWDataCreateWithJByteArray(env, input);
     TWData *outputData = TWAnySignerSign(inputData, coin);
     jbyteArray resultData = TWDataJByteArray(outputData, env);
@@ -22,7 +23,9 @@ jboolean JNICALL Java_wallet_core_java_AnySigner_supportsJSON(JNIEnv *env, jclas
 }
 
 jstring JNICALL Java_wallet_core_java_AnySigner_signJSON(JNIEnv *env, jclass thisClass, jstring json, jbyteArray key, jint coin) {
+    JNI_CHECK_NULL_AND_RETURN_NULL(env, json, "json");
     TWString *jsonString = TWStringCreateWithJString(env, json);
+    JNI_CHECK_NULL_AND_RETURN_NULL(env, key, "key");
     TWData *keyData = TWDataCreateWithJByteArray(env, key);
     TWString *result = TWAnySignerSignJSON(jsonString, keyData, coin);
     TWDataDelete(keyData);
@@ -31,6 +34,7 @@ jstring JNICALL Java_wallet_core_java_AnySigner_signJSON(JNIEnv *env, jclass thi
 }
 
 jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativePlan(JNIEnv *env, jclass thisClass, jbyteArray input, jint coin) {
+    JNI_CHECK_NULL_AND_RETURN_NULL(env, input, "input");
     TWData *inputData = TWDataCreateWithJByteArray(env, input);
     TWData *outputData = TWAnySignerPlan(inputData, coin);
     jbyteArray resultData = TWDataJByteArray(outputData, env);

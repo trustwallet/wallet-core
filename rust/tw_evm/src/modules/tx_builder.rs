@@ -569,14 +569,16 @@ impl<Context: EvmContext> TxBuilder<Context> {
             // Destination address is not used when generating UserOperation.
             (TxMode::UserOp, SCWalletType::SimpleAccount | SCWalletType::Biz4337) => Ok(None),
             (TxMode::UserOp, _) => SigningError::err(SigningErrorType::Error_invalid_params)
-                .context("Biz account cannot be used in UserOperation flow"),
+                .context(
+                "Biz account cannot be used in UserOperation flow. Consider using Biz4337 instead",
+            ),
             (TxMode::Legacy | TxMode::Enveloped | TxMode::SetCode, SCWalletType::Biz) => {
                 Self::signer_address(input).map(Some)
             },
             (TxMode::Legacy | TxMode::Enveloped | TxMode::SetCode, _) => SigningError::err(
                 SigningErrorType::Error_invalid_params,
             )
-            .context("Biz account can only be used in Legacy/Enveloped/SetCode transactions flow"),
+            .context("Biz account can only be used in Legacy/Enveloped/SetCode transactions flow. Consider using Biz4337 instead"),
         }
     }
 

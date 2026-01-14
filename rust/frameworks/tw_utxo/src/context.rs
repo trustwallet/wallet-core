@@ -26,6 +26,7 @@ pub trait UtxoContext {
     type Address: FromStr<Err = AddressError>;
     type Transaction: TransactionPreimage + TransactionInterface;
     type FeeEstimator: FeeEstimator<Self::Transaction>;
+    type Psbt;
 
     const TX_HASHER: Hasher = DEFAULT_TX_HASHER;
     const PUBLIC_KEY_HASHER: Hasher = DEFAULT_PUBLIC_KEY_HASHER;

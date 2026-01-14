@@ -66,6 +66,13 @@ impl InstructionBuilder {
         self
     }
 
+    pub fn maybe_add_instruction(&mut self, instruction: Option<Instruction>) -> &mut Self {
+        if let Some(instruction) = instruction {
+            self.instructions.push(instruction);
+        }
+        self
+    }
+
     pub fn add_instructions<I>(&mut self, instructions: I) -> &mut Self
     where
         I: IntoIterator<Item = Instruction>,

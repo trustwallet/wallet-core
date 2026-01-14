@@ -14,7 +14,7 @@
 
 namespace TW::Ontology {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto contract = std::string(input.contract().begin(), input.contract().end());
     auto output = Proto::SigningOutput();
     try {

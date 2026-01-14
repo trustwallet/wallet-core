@@ -1,0 +1,34 @@
+#!/bin/bash
+set -euo pipefail
+
+COMMIT="${COMMIT:?COMMIT environment variable is required}"
+DOWNLOAD_PATH="${DOWNLOAD_PATH:?DOWNLOAD_PATH environment variable is required}"
+ARTIFACT_NAME="${ARTIFACT_NAME:?ARTIFACT_NAME environment variable is required}"
+
+echo "Searching for artifact '$ARTIFACT_NAME' from commit $COMMIT..."
+
+# Find the artifact ID
+ARTIFACT_ID=$(gh api \
+  "repos/$GITHUB_REPOSITORY/actions/artifacts" \
+  --jq ".artifacts[] | select(.workflow_run.head_sha == \"$COMMIT\" and .name == \"$ARTIFACT_NAME\" and .expired == false) | .id" \
+  | head -n 1)
+
+if [ -z "$ARTIFACT_ID" ]; then
+  echo "Warning: No artifact found for commit $COMMIT with name '$ARTIFACT_NAME'"
+  exit 0
+fi
+
+echo "Found artifact ID: $ARTIFACT_ID"
+
+# Create download directory
+mkdir -p "$DOWNLOAD_PATH"
+
+# Download and extract artifact
+echo "Downloading artifact..."
+gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID/zip" > /tmp/artifact.zip
+
+echo "Extracting to $DOWNLOAD_PATH..."
+unzip -q /tmp/artifact.zip -d "$DOWNLOAD_PATH"
+rm /tmp/artifact.zip
+
+echo "Successfully downloaded artifact to $DOWNLOAD_PATH"

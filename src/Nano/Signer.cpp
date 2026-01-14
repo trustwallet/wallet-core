@@ -123,7 +123,7 @@ Signer::Signer(const Proto::SigningInput& input)
     blockHash(hashBlockData(publicKey, input)) {}
 
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     Proto::SigningOutput output;
     try {
         auto signer = Signer(input);
@@ -141,7 +141,7 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     return output.json();
 }
 
-std::array<byte, 64> Signer::sign() const noexcept {
+std::array<byte, 64> Signer::sign() const {
     auto digest = Data(blockHash.begin(), blockHash.end());
     auto sig = privateKey.sign(digest);
 
