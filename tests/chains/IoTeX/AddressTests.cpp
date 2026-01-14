@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 
+#include "TestUtilities.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
@@ -35,7 +36,7 @@ TEST(IoTeXAddress, FromString) {
 }
 
 TEST(IoTeXAddress, FromPrivateKey) {
-    const auto privateKey = PrivateKey(parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f"));
+    const auto privateKey = PrivateKey(parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f"), TWCoinTypeCurve(TWCoinTypeIoTeX));
     const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     const auto address = Address(publicKey);
     ASSERT_EQ(address.string(), "io187wzp08vnhjjpkydnr97qlh8kh0dpkkytfam8j");

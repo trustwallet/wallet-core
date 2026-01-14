@@ -16,12 +16,10 @@ FOUNDATION_EXPORT const unsigned char WalletCoreVersionString[];
 
 #include "TWAnySigner.h"
 
-#include "TWAES.h"
 #include "TWAESPaddingMode.h"
 #include "TWAccount.h"
 #include "TWAnyAddress.h"
 #include "TWAsnParser.h"
-#include "TWBarz.h"
 #include "TWBase32.h"
 #include "TWBase58.h"
 #include "TWBase64.h"
@@ -38,7 +36,6 @@ FOUNDATION_EXPORT const unsigned char WalletCoreVersionString[];
 #include "TWDerivation.h"
 #include "TWDerivationPath.h"
 #include "TWDerivationPathIndex.h"
-#include "TWEthereum.h"
 #include "TWEthereumAbi.h"
 #include "TWEthereumAbiFunction.h"
 #include "TWEthereumAbiValue.h"
@@ -54,7 +51,6 @@ FOUNDATION_EXPORT const unsigned char WalletCoreVersionString[];
 #include "TWHRP.h"
 #include "TWHash.h"
 #include "TWLiquidStaking.h"
-#include "TWMnemonic.h"
 #include "TWNEARAccount.h"
 #include "TWNervosAddress.h"
 #include "TWPBKDF2.h"

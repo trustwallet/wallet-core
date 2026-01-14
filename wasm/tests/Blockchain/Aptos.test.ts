@@ -10,7 +10,7 @@ import Long = require("long");
 
 describe("Aptos", () => {
   it("test sign aptos", () => {
-    const { PrivateKey, HexCoding, AnySigner, AnyAddress, CoinType } = globalThis.core;
+    const { PrivateKey, HexCoding, AnySigner, AnyAddress, CoinType, CoinTypeExt } = globalThis.core;
     const txDataInput = TW.Aptos.Proto.SigningInput.create({
       chainId: 33,
       sender: "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
@@ -26,6 +26,7 @@ describe("Aptos", () => {
           HexCoding.decode(
               "0x5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec",
           ),
+          CoinTypeExt.curve(CoinType.aptos)
       ).data(),
     });
     const input = TW.Aptos.Proto.SigningInput.encode(txDataInput).finish();

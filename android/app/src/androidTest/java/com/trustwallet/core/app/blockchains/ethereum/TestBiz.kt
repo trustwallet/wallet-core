@@ -36,7 +36,7 @@ class TestBiz {
 
         val signingInput = Ethereum.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("0xe148e40f06ee3ba316cdb2571f33486cf879c0ffd2b279ce9f9a88c41ce962e7".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("0xe148e40f06ee3ba316cdb2571f33486cf879c0ffd2b279ce9f9a88c41ce962e7".toHexByteArray(), CoinType.ETHEREUM.curve()).data())
             chainId = ByteString.copyFrom("0x38".toHexByteArray())
             nonce = ByteString.copyFrom("0x12".toHexByteArray())
             txMode = TransactionMode.SetCode
@@ -81,7 +81,7 @@ class TestBiz {
     fun testSignEnvelopedBiz() {
         val signingInput = Ethereum.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("0xe762e91cc4889a9fce79b2d2ffc079f86c48331f57b2cd16a33bee060fe448e1".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("0xe762e91cc4889a9fce79b2d2ffc079f86c48331f57b2cd16a33bee060fe448e1".toHexByteArray(), CoinType.ETHEREUM.curve()).data())
             chainId = ByteString.copyFrom("0x38".toHexByteArray())
             nonce = ByteString.copyFrom("0x02".toHexByteArray())
             txMode = TransactionMode.Enveloped
@@ -140,7 +140,7 @@ class TestBiz {
 
         // Create signing input
         val signingInput = Ethereum.SigningInput.newBuilder().apply {
-            privateKey = ByteString.copyFrom(PrivateKey("3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483".toHexByteArray(), CoinType.ETHEREUM.curve()).data())
             chainId = ByteString.copyFrom(chainIdByteArray)               // 31337
             nonce = ByteString.copyFrom("0x00".toHexByteArray())
             txMode = Ethereum.TransactionMode.UserOp

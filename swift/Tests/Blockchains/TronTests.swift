@@ -77,7 +77,7 @@ class TronTests: XCTestCase {
     }
     
     func testMessageAndVerifySigner() {
-        let privateKey = PrivateKey(data: Data(hexString: "75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a")!, curve: CoinType.tron.curve)!
         let msg = "Hello World"
         let signature = TronMessageSigner.signMessage(privateKey: privateKey, message: msg)
         XCTAssertEqual(signature, "bc0753c070cc55693097df11bc11e1a7c4bd5e1a40b9dc94c75568e59bcc9d6b50a7873ef25b469e494490a54de37327b4bc7fc825c81a377b555e34fb7261ba1c")

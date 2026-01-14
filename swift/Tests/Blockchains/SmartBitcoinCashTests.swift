@@ -8,7 +8,7 @@ import XCTest
 class SmartBitcoinCashTests: XCTestCase {
 
     func testAddress() {
-        let key = PrivateKey(data: Data(hexString: "155cbd57319f3d938977b4c18000473eb3c432c4e31b667b63e88559c497d82d")!)!
+        let key = PrivateKey(data: Data(hexString: "155cbd57319f3d938977b4c18000473eb3c432c4e31b667b63e88559c497d82d")!, curve: CoinType.smartBitcoinCash.curve)!
         let pubkey = key.getPublicKeySecp256k1(compressed: false)
         let address = AnyAddress(publicKey: pubkey, coin: .smartBitcoinCash)
         let addressFromString = AnyAddress(string: "0x8bFC9477684987dcAf0970b9bce5E3D9267C99C0", coin: .smartBitcoinCash)!

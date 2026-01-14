@@ -28,7 +28,7 @@ namespace TW::Nano::tests {
 TEST(NanoCompiler, CompileWithSignatures) {
     /// Step 1 : Prepare transaction input(protobuf)
     auto coin = TWCoinTypeNano;
-    const auto privateKey = PrivateKey(parse_hex(kPrivateKey));
+    const auto privateKey = PrivateKey(parse_hex(kPrivateKey), TWCurveED25519Blake2bNano);
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Blake2b);
     const auto linkBlock = parse_hex("491fca2c69a84607d374aaf1f6acd3ce70744c5be0721b5ed394653e85233507");
 

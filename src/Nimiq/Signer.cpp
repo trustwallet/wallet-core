@@ -3,7 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "Signer.h"
-#include <TrezorCrypto/ed25519.h>
 
 #include <algorithm>
 
@@ -34,7 +33,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
 
 void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const {
     auto preImage = transaction.getPreImage();
-    auto signature = privateKey.sign(preImage, TWCurveED25519);
+    auto signature = privateKey.sign(preImage);
     std::copy(signature.begin(), signature.end(), transaction.signature.begin());
 }
 

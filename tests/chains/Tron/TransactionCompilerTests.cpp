@@ -21,7 +21,7 @@ using namespace TW;
 
 TEST(TronCompiler, CompileWithSignatures) {
     const auto privateKey =
-        PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+        PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
     const auto coin = TWCoinTypeTron;
     /// Step 1: Prepare transaction input (protobuf)
@@ -114,7 +114,7 @@ TEST(TronCompiler, CompileWithSignatures) {
 
 TEST(TronCompiler, CompileWithSignaturesRawJson) {
     const auto privateKey =
-        PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+        PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
     constexpr auto coin = TWCoinTypeTron;
     /// Step 1: Prepare transaction input (protobuf)

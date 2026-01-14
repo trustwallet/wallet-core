@@ -31,11 +31,13 @@ impl AsRef<PrivateKey> for TWPrivateKey {
 pub unsafe extern "C" fn tw_private_key_create_with_data(
     input: *const u8,
     input_len: usize,
+    curve: u32,
 ) -> *mut TWPrivateKey {
+    let curve = try_or_else!(Curve::from_raw(curve), std::ptr::null_mut);
     let bytes_ref = CByteArrayRef::new(input, input_len);
     let bytes = bytes_ref.to_vec();
 
-    PrivateKey::new(bytes)
+    PrivateKey::new(bytes, curve)
         .map(|private| TWPrivateKey(private).into_ptr())
         // Return null if the private key is invalid.
         .unwrap_or_else(|_| std::ptr::null_mut())
@@ -72,6 +74,16 @@ pub unsafe extern "C" fn tw_private_key_size(data: *const TWPrivateKey) -> usize
         .unwrap_or_default()
 }
 
+/// Returns the raw data of a given private-key.
+///
+/// \param key *non-null* pointer to a private key.
+/// \return C-compatible result with a C-compatible byte array.
+#[no_mangle]
+pub unsafe extern "C" fn tw_private_key_data(key: *mut TWPrivateKey) -> CByteArray {
+    let private = try_or_else!(TWPrivateKey::from_ptr_as_ref(key), CByteArray::default);
+    CByteArray::from(private.0.bytes().to_vec())
+}
+
 /// Determines if the given private key is valid or not.
 ///
 /// \param key *non-null* byte array.
@@ -101,14 +113,12 @@ pub unsafe extern "C" fn tw_private_key_sign(
     key: *mut TWPrivateKey,
     message: *const u8,
     message_len: usize,
-    curve: u32,
 ) -> CByteArray {
-    let curve = try_or_else!(Curve::from_raw(curve), CByteArray::default);
     let private = try_or_else!(TWPrivateKey::from_ptr_as_ref(key), CByteArray::default);
     let message_to_sign = CByteArrayRef::new(message, message_len).as_slice();
 
     // Return an empty signature if an error occurs.
-    let sig = private.0.sign(message_to_sign, curve).unwrap_or_default();
+    let sig = private.0.sign(message_to_sign).unwrap_or_default();
     CByteArray::from(sig)
 }
 
@@ -129,6 +139,52 @@ pub unsafe extern "C" fn tw_private_key_get_public_key_by_type(
         .get_public_key_by_type(ty)
         .map(|public| TWPublicKey(public).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
+}
+
+/// Signs a digest using ECDSA with a canonical checker function.
+///
+/// \param key *non-null* pointer to a Private key
+/// \param digest *non-null* byte array containing the digest to sign.
+/// \param digest_len the length of the `digest` array.
+/// \param canonical_checker function pointer to check if signature is canonical.
+/// \return Signature as a C-compatible result with a C-compatible byte array.
+#[no_mangle]
+pub unsafe extern "C" fn tw_private_key_sign_canonical(
+    key: *mut TWPrivateKey,
+    digest: *const u8,
+    digest_len: usize,
+    canonical_checker: Option<unsafe extern "C" fn(by: u8, sig: *const u8) -> i32>,
+) -> CByteArray {
+    let private = try_or_else!(TWPrivateKey::from_ptr_as_ref(key), CByteArray::default);
+    let digest_to_sign = CByteArrayRef::new(digest, digest_len).as_slice();
+
+    // Return an empty signature if an error occurs.
+    let sig = private
+        .0
+        .sign_canonical(digest_to_sign, canonical_checker)
+        .unwrap_or_default();
+    CByteArray::from(sig)
+}
+
+/// Signs a digest using ECDSA as DER.
+///
+/// \param key *non-null* pointer to a Private key
+/// \param digest *non-null* byte array containing the digest to sign.
+/// \param digest_len the length of the `digest` array.
+/// \return Signature as a C-compatible result with a C-compatible byte array.
+/// \note This function is only available for SECP256k1.
+#[no_mangle]
+pub unsafe extern "C" fn tw_private_key_sign_as_der(
+    key: *mut TWPrivateKey,
+    digest: *const u8,
+    digest_len: usize,
+) -> CByteArray {
+    let private = try_or_else!(TWPrivateKey::from_ptr_as_ref(key), CByteArray::default);
+    let digest_to_sign = CByteArrayRef::new(digest, digest_len).as_slice();
+
+    // Return an empty signature if an error occurs.
+    let sig = private.0.sign_as_der(digest_to_sign).unwrap_or_default();
+    CByteArray::from(sig)
 }
 
 // #[no_mangle]

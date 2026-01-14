@@ -7,6 +7,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.PrivateKey
 import wallet.core.java.AnySigner
+import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.XRP
 import wallet.core.jni.proto.Ripple
 import wallet.core.jni.proto.Ripple.SigningOutput
@@ -30,7 +31,7 @@ class TestRippleTransactionSigner {
             fee = 10
             sequence = 32268248
             lastLedgerSequence = 32268269
-            privateKey = ByteString.copyFrom(PrivateKey("a5576c0f63da10e584568c8d134569ff44017b0a249eb70657127ae04f38cc77".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("a5576c0f63da10e584568c8d134569ff44017b0a249eb70657127ae04f38cc77".toHexByteArray(), CoinType.XRP.curve()).data())
             opPayment = operation.build()
         }
 

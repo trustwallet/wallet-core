@@ -1,0 +1,27 @@
+[package]
+name = "tw_crypto-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = { version = "0.4", features = ["arbitrary-derive"] }
+
+[dependencies.tw_crypto]
+path = ".."
+
+# Prevent this from interfering with workspaces
+[workspace]
+members = ["."]
+
+[profile.release]
+debug = 1
+
+[[bin]]
+name = "crypto_scrypt"
+path = "fuzz_targets/crypto_scrypt.rs"
+test = false
+doc = false

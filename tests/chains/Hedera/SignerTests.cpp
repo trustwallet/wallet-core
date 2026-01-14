@@ -10,6 +10,7 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 
@@ -18,7 +19,7 @@ namespace TW::Hedera::tests {
 TEST(HederaSigner, Sign) {
     // Successfully broadcasted: https://hashscan.io/testnet/transaction/0.0.48694347-1667222879-749068449?t=1667222891.440398729&p=1
     Proto::SigningInput input;
-    auto privateKey = PrivateKey(parse_hex("e87a5584c0173263e138db689fdb2a7389025aaae7cb1a18a1017d76012130e8"));
+    auto privateKey = PrivateKey(parse_hex("e87a5584c0173263e138db689fdb2a7389025aaae7cb1a18a1017d76012130e8"), TWCoinTypeCurve(TWCoinTypeHedera));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     auto* body = input.mutable_body();
 
@@ -43,7 +44,7 @@ TEST(HederaSigner, Sign) {
 TEST(HederaSigner, SignWithMemo) {
     // Successfully broadcasted: https://hashscan.io/testnet/transaction/0.0.48694347-1667227300-854561449?t=1667227312.554926003
     Proto::SigningInput input;
-    auto privateKey = PrivateKey(parse_hex("e87a5584c0173263e138db689fdb2a7389025aaae7cb1a18a1017d76012130e8"));
+    auto privateKey = PrivateKey(parse_hex("e87a5584c0173263e138db689fdb2a7389025aaae7cb1a18a1017d76012130e8"), TWCoinTypeCurve(TWCoinTypeHedera));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     auto* body = input.mutable_body();
 
@@ -68,7 +69,7 @@ TEST(HederaSigner, SignWithMemo) {
 TEST(HederaSigner, SignWithMemoMainnet) {
     // Successfully broadcasted: https://hashscan.io/mainnet/transaction/0.0.1377988-1667566445-926176449?t=1667566457.533804616
     Proto::SigningInput input;
-    auto privateKey = PrivateKey(parse_hex("650c5120cbdc6244e3d10001eb27eea4dd3f80c331b3b6969fa434797d4edd50"));
+    auto privateKey = PrivateKey(parse_hex("650c5120cbdc6244e3d10001eb27eea4dd3f80c331b3b6969fa434797d4edd50"), TWCoinTypeCurve(TWCoinTypeHedera));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     auto* body = input.mutable_body();
 

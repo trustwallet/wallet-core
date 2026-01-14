@@ -17,7 +17,7 @@ class TestNervosAddress {
 
     @Test
     fun testAddress() {
-        val key = PrivateKey("8a2a726c44e46d1efaa0f9c2a8efed932f0e96d6050b914fde762ee285e61feb".toHexByteArray())
+        val key = PrivateKey("8a2a726c44e46d1efaa0f9c2a8efed932f0e96d6050b914fde762ee285e61feb".toHexByteArray(), CoinType.NERVOS.curve())
         val pubkey = key.getPublicKeySecp256k1(true)
         val address = AnyAddress(pubkey, CoinType.NERVOS)
         val expected = AnyAddress("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwyk5x9erg8furras980hksatlslfaktks7epf25", CoinType.NERVOS)

@@ -6,6 +6,7 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "Solana/Address.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 
@@ -22,7 +23,7 @@ TEST(SolanaAddress, FromPublicKey) {
         ASSERT_EQ(addressString, address.string());
     }
     {
-        const auto privateKey = PrivateKey(parse_hex("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a"));
+        const auto privateKey = PrivateKey(parse_hex("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a"), TWCoinTypeCurve(TWCoinTypeSolana));
         const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
         EXPECT_ANY_THROW(new Address(publicKey));
     }
@@ -59,10 +60,10 @@ TEST(SolanaAddress, isValidOnCurve) {
     EXPECT_TRUE(PublicKey(Base58::decode("68io7dTfyeWua1wD1YcCMka4y5iiChceaFRCBjqCM5PK"), TWPublicKeyTypeED25519).isValidED25519());
     EXPECT_TRUE(PublicKey(Base58::decode("Dra34QLFCjxnk8tUNcBwxs6pgb5spF4oseQYF2xn7ABZ"), TWPublicKeyTypeED25519).isValidED25519());
     // negative case
-    EXPECT_FALSE(PublicKey(Base58::decode("6X4X1Ae24mkoWeCEpktevySVG9jzeCufut5vtUW3wFrD"), TWPublicKeyTypeED25519).isValidED25519());
-    EXPECT_FALSE(PublicKey(Base58::decode("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP"), TWPublicKeyTypeED25519).isValidED25519());
-    EXPECT_FALSE(PublicKey(Base58::decode("ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf"), TWPublicKeyTypeED25519).isValidED25519());
-    EXPECT_FALSE(PublicKey(Base58::decode("AbygL37RheNZv327cMvZPqKYLLkZ6wqWYexRxgNiZyeP"), TWPublicKeyTypeED25519).isValidED25519());
+    EXPECT_FALSE(PublicKey::isValid(Base58::decode("6X4X1Ae24mkoWeCEpktevySVG9jzeCufut5vtUW3wFrD"), TWPublicKeyTypeED25519));
+    EXPECT_FALSE(PublicKey::isValid(Base58::decode("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP"), TWPublicKeyTypeED25519));
+    EXPECT_FALSE(PublicKey::isValid(Base58::decode("ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf"), TWPublicKeyTypeED25519));
+    EXPECT_FALSE(PublicKey::isValid(Base58::decode("AbygL37RheNZv327cMvZPqKYLLkZ6wqWYexRxgNiZyeP"), TWPublicKeyTypeED25519));
 }
 
 } // namespace TW::Solana::tests

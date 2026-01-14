@@ -9,13 +9,13 @@
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWData.h>
 #include <TrustWalletCore/TWHDWallet.h>
-#include <TrustWalletCore/TWMnemonic.h>
+#include <TrustWalletCore/Generated/TWMnemonic.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWBase58.h>
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWSegwitAddress.h>
-#include <TrustWalletCore/TWEthereum.h>
+#include <TrustWalletCore/Generated/TWEthereum.h>
 #include <TrustWalletCore/TWEthereumMessageSigner.h>
 #include <TrustWalletCore/TWStarkExMessageSigner.h>
 #include <TrustWalletCore/TWStarkWare.h>
@@ -258,7 +258,7 @@ TEST(HDWallet, DeriveDoge) {
 TEST(HDWallet, DeriveZilliqa) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeZilliqa));
-    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(key.get(), true));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyZilliqaSchnorr(key.get()));
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
 
     assertHexEqual(publicKeyData, "0262746d4988c63b9972c63272461e9fa080d4dfa2a1fda3dd01285620c0a60c22");
@@ -442,12 +442,12 @@ TEST(HDWallet, PublicKeyFromExtended_Ethereum) {
 }
 
 TEST(HDWallet, PublicKeyFromExtended_NIST256p1) {
-    const auto xpub = STRING("xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj");
+    const auto xpub = STRING("xpub6C14EL78ogJs6aQEpzMdPa6oUdo7dUFdScW7ckC6MXxUAN7zDiEP6pGQphtcjS2cv4Nusp4i9CVJPmtuGmp1RKN3pCvUPWkDFcoMHCHERTA");
     const auto xpubAddr = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeNEO, STRING("m/44'/888'/0'/0/0").get())); // Neo
     ASSERT_NE(xpubAddr.get(), nullptr);
     auto data = WRAPD(TWPublicKeyData(xpubAddr.get()));
     ASSERT_NE(data.get(), nullptr);
-    assertHexEqual(data, "03774c910fcf07fa96886ea794f0d5caed9afe30b44b83f7e213bb92930e7df4bd");
+    assertHexEqual(data, "023c73be53bc3bbbacf6af57850efd294f07f1d8e324f8bb88df9274a188eac4b0");
 }
 
 TEST(HDWallet, PublicKeyFromExtended_Negative) {

@@ -24,6 +24,7 @@ use k256::sha2::digest::{FixedOutput, FixedOutputReset};
 use k256::sha2::Digest;
 use rfc6979::{ByteArray, HmacDrbg};
 use tw_hash::H256;
+use tw_memory::ffi::c_byte_array::CByteArray;
 
 type CurveDigest<C> = <C as DigestPrimitive>::Digest;
 
@@ -65,6 +66,37 @@ where
     }
 
     Err(KeyPairError::SigningError)
+}
+
+pub(crate) fn sign_canonical_ffi<F, C: EcdsaCurve>(
+    secret: &SigningKey<C>,
+    hash_to_sign: H256,
+    canonical_checker: Option<unsafe extern "C" fn(by: u8, sig: *const u8) -> i32>,
+    transform_result: F,
+) -> KeyPairResult<Vec<u8>>
+where
+    F: FnOnce(Signature<C>) -> Vec<u8>,
+    Scalar<C>: SignPrimitive<C>,
+    <C as Curve>::Uint: FieldBytesEncoding<C>,
+{
+    let checker = move |sig: &Signature<C>| {
+        if let Some(checker_fn) = canonical_checker {
+            // Convert signature to bytes and pass to the C function
+            let sig_bytes = sig.to_bytes();
+            let sig_array = CByteArray::from(sig_bytes[..64].to_vec());
+
+            // Call the C function and check if it returns a positive value
+            unsafe { checker_fn(sig_bytes[64], sig_array.data()) > 0 }
+        } else {
+            // If no checker provided, accept all signatures
+            true
+        }
+    };
+
+    let mut sig = sign_with_canonical(secret, hash_to_sign, checker).map(transform_result)?;
+    // graphene adds 31 to the recovery id
+    sig[0] += 31;
+    Ok(sig)
 }
 
 fn ct_eq<N: ArrayLength<u8>>(a: &ByteArray<N>, b: &ByteArray<N>) -> Choice {

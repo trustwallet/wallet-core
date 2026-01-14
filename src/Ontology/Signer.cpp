@@ -56,7 +56,7 @@ void Signer::sign(Transaction& tx) const {
     if (tx.sigVec.size() >= Transaction::sigVecLimit) {
         throw std::runtime_error("the number of transaction signatures should not be over 16.");
     }
-    auto signature = getPrivateKey().sign(tx.txHash(), TWCurveNIST256p1);
+    auto signature = getPrivateKey().sign(tx.txHash());
     signature.pop_back();
     tx.sigVec.emplace_back(publicKey, signature, 1);
 }
@@ -65,7 +65,7 @@ void Signer::addSign(Transaction& tx) const {
     if (tx.sigVec.size() >= Transaction::sigVecLimit) {
         throw std::runtime_error("the number of transaction signatures should not be over 16.");
     }
-    auto signature = getPrivateKey().sign(tx.txHash(), TWCurveNIST256p1);
+    auto signature = getPrivateKey().sign(tx.txHash());
     signature.pop_back();
     tx.sigVec.emplace_back(publicKey, signature, 1);
 }

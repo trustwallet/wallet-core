@@ -6,6 +6,8 @@
 #include "Oasis/Address.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
+#include "TestUtilities.h"
+
 #include <gtest/gtest.h>
 #include <vector>
 
@@ -43,7 +45,7 @@ TEST(OasisAddress, FromWrongData) {
 }
 
 TEST(OasisAddress, FromPrivateKey) {
-    auto privateKey = PrivateKey(parse_hex("4f8b5676990b00e23d9904a92deb8d8f428ff289c8939926358f1d20537c21a0"));
+    auto privateKey = PrivateKey(parse_hex("4f8b5676990b00e23d9904a92deb8d8f428ff289c8939926358f1d20537c21a0"), TWCoinTypeCurve(TWCoinTypeOasis));
     auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeED25519));
     ASSERT_EQ(address.string(), "oasis1qzawzy5kaa2xgphenf3r0f5enpr3mx5dps559yxm");
 }

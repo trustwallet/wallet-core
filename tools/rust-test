@@ -18,7 +18,10 @@ if [[ "$1" == "wasm" ]]; then
   source ../emsdk/emsdk_env.sh
   export CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_RUNNER=node
 
-  cargo test --target wasm32-unknown-emscripten --profile wasm-test --workspace --exclude wallet_core_bin
+  # Increase the `TOTAL_MEMORY` value if required.
+  CONFIG='build.rustflags=["-C","link-arg=-s","-C","link-arg=TOTAL_MEMORY=33554432"]'
+
+  cargo --config "$CONFIG" test --target wasm32-unknown-emscripten --profile wasm-test --workspace --exclude wallet_core_bin
 elif [[ "$1" == "doc" ]]; then
   cargo test --doc
 else

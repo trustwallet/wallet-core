@@ -12,9 +12,6 @@
 #include "../proto/Common.pb.h"
 #include "TransactionBuilder.h"
 
-#include <TrezorCrypto/ecdsa.h>
-#include <TrezorCrypto/secp256k1.h>
-
 #include <cassert>
 
 namespace TW::FIO {
@@ -42,7 +39,7 @@ Proto::SigningOutput Signer::compile(const Proto::SigningInput& input, const Dat
 
 Data Signer::signData(const PrivateKey& privKey, const Data& data) {
     Data hash = Hash::sha256(data);
-    Data signature = privKey.sign(hash, TWCurveSECP256k1, isCanonical);
+    Data signature = privKey.sign(hash, isCanonical);
     return signature;
 }
 
@@ -62,7 +59,7 @@ bool Signer::verify(const PublicKey& pubKey, const Data& data, const Data& signa
 }
 
 // canonical check for FIO, both R and S length is 32
-int Signer::isCanonical([[maybe_unused]] uint8_t by, uint8_t sig[64]) {
+int Signer::isCanonical([[maybe_unused]] uint8_t by, const uint8_t sig[64]) {
     return !(sig[0] & 0x80)
         && !(sig[0] == 0 && !(sig[1] & 0x80))
         && !(sig[32] & 0x80)

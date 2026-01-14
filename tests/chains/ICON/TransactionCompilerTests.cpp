@@ -49,9 +49,9 @@ TEST(IconCompiler, CompileWithSignatures) {
     EXPECT_EQ(hex(preImageHash),"f0c68a4f588233d722fff7b5a738ffa6b56ad4cb62ad6bc9fb3e5facb0c25059");
 
     auto key = parse_hex("2d42994b2f7735bbc93a3e64381864d06747e574aa94655c516f9ad0a74eed79");
-    const auto privateKey = PrivateKey(key);
+    const auto privateKey = PrivateKey(key, TWCurveSECP256k1);
     const auto publicKey = privateKey.getPublicKey(TWCoinTypePublicKeyType(coin));
-    const auto signature = privateKey.sign(parse_hex(hex(preImageHash)), TWCurveSECP256k1);
+    const auto signature = privateKey.sign(parse_hex(hex(preImageHash)));
 
     const Data outputData = TransactionCompiler::compileWithSignatures(coin, protoInputData, {signature}, {publicKey.bytes});
     Icon::Proto::SigningOutput output;

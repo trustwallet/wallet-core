@@ -75,7 +75,7 @@ class HDWalletTests: XCTestCase {
     func testMasterKey() {
         let wallet = HDWallet(mnemonic: "tiny escape drive pupil flavor endless love walk gadget match filter luxury", passphrase: "")!
         XCTAssertEqual(wallet.seed.hexString, "d430216f5b506dfd281d6ff6e92150d205868923df00774bc301e5ffdc2f4d1ad38a602017ddea6fc7d6315345d8b9cadbd8213ed2ffce5dfc550fa918665eb8")
-        let masterKey = wallet.getMasterKey(curve: Curve.secp256k1)
+        let masterKey = wallet.getMasterKey(curve: Curve.secp256k1)!
         XCTAssertEqual(masterKey.data.hexString, "e120fc1ef9d193a851926ebd937c3985dc2c4e642fb3d0832317884d5f18f3b3")
     }
 
@@ -395,7 +395,7 @@ class HDWalletTests: XCTestCase {
         let wallet = HDWallet.test
         let key = wallet.getKeyForCoin(coin: eth)
         let hash = Data(hexString: "3F891FDA3704F0368DAB65FA81EBE616F4AA2A0854995DA4DC0B59D2CADBD64F")!
-        let result = key.sign(digest: hash, curve: .secp256k1)!
+        let result = key.sign(digest: hash)!
 
         let publicKey = key.getPublicKeySecp256k1(compressed: false)
         XCTAssertEqual(result.count, 65)

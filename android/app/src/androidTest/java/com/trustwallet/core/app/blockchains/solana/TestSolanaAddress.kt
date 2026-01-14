@@ -14,7 +14,7 @@ class TestSolanaAddress {
 
     @Test
     fun testAddressFromPrivateKey() {
-        val key = PrivateKey(Base58.decodeNoCheck("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"))
+        val key = PrivateKey(Base58.decodeNoCheck("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"), CoinType.SOLANA.curve())
         val pubkey = key.publicKeyEd25519
         val address = AnyAddress(pubkey, CoinType.SOLANA)
 

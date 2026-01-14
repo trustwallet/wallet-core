@@ -7,28 +7,24 @@ use tw_hash::sha2::sha256;
 use tw_hash::sha3::keccak256;
 use tw_hash::H256;
 use tw_keypair::ffi::privkey::{
-    tw_private_key_create_with_data, tw_private_key_get_public_key_by_type,
-    tw_private_key_is_valid, tw_private_key_sign,
+    tw_private_key_bytes, tw_private_key_create_with_data, tw_private_key_data,
+    tw_private_key_get_public_key_by_type, tw_private_key_is_valid, tw_private_key_sign,
+    tw_private_key_sign_as_der, tw_private_key_size,
 };
 use tw_keypair::ffi::pubkey::{tw_public_key_data, tw_public_key_delete, tw_public_key_verify};
 use tw_keypair::test_utils::tw_private_key_helper::TWPrivateKeyHelper;
 use tw_keypair::test_utils::tw_public_key_helper::TWPublicKeyHelper;
 use tw_keypair::tw::{Curve, PublicKeyType};
 use tw_memory::ffi::c_byte_array::CByteArray;
+use tw_memory::ffi::tw_data::tw_data_create_with_bytes;
+use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 
 fn test_sign(curve: Curve, secret: &str, msg: &str, expected_sign: &str) {
-    let tw_privkey = TWPrivateKeyHelper::with_hex(secret);
+    let tw_privkey = TWPrivateKeyHelper::with_hex(secret, curve.to_raw());
     let msg = hex::decode(msg).unwrap();
     let msg_raw = CByteArray::from(msg);
-    let actual = unsafe {
-        tw_private_key_sign(
-            tw_privkey.ptr(),
-            msg_raw.data(),
-            msg_raw.size(),
-            curve as u32,
-        )
-        .into_vec()
-    };
+    let actual =
+        unsafe { tw_private_key_sign(tw_privkey.ptr(), msg_raw.data(), msg_raw.size()).into_vec() };
     let expected = hex::decode(expected_sign).unwrap();
     assert_eq!(actual, expected);
 }
@@ -37,23 +33,39 @@ fn test_sign(curve: Curve, secret: &str, msg: &str, expected_sign: &str) {
 fn test_tw_private_key_create() {
     let tw_privkey = TWPrivateKeyHelper::with_hex(
         "ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a",
+        Curve::Secp256k1.to_raw(),
     );
     assert!(!tw_privkey.is_null());
 
+    let bytes = unsafe { tw_private_key_bytes(tw_privkey.ptr()) };
+    let size = unsafe { tw_private_key_size(tw_privkey.ptr()) };
+    let tw_data = TWDataHelper::wrap(unsafe { tw_data_create_with_bytes(bytes, size) });
+    assert_eq!(
+        hex::encode(tw_data.to_vec().unwrap(), false),
+        "ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a"
+    );
+
+    let data = unsafe { tw_private_key_data(tw_privkey.ptr()) };
+    assert_eq!(
+        hex::encode(unsafe { data.into_vec() }, false),
+        "ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a"
+    );
+
     // Invalid hex.
-    let tw_privkey = TWPrivateKeyHelper::with_bytes(*b"123");
+    let tw_privkey = TWPrivateKeyHelper::with_bytes(*b"123", Curve::Secp256k1.to_raw());
     assert!(tw_privkey.is_null());
 
     // Zero private key.
     let tw_privkey = TWPrivateKeyHelper::with_hex(
         "0000000000000000000000000000000000000000000000000000000000000000",
+        Curve::Secp256k1.to_raw(),
     );
     assert!(tw_privkey.is_null());
 }
 
 #[test]
 fn test_tw_private_key_delete_null() {
-    unsafe { tw_private_key_create_with_data(std::ptr::null_mut(), 0) };
+    unsafe { tw_private_key_create_with_data(std::ptr::null_mut(), 0, Curve::Secp256k1.to_raw()) };
 }
 
 #[test]
@@ -117,17 +129,12 @@ fn test_tw_private_key_sign_starkex() {
 fn test_tw_private_key_sign_invalid_hash() {
     let tw_privkey = TWPrivateKeyHelper::with_hex(
         "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
+        Curve::Secp256k1.to_raw(),
     );
     let hash = hex::decode("0xf86a808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000808080").unwrap();
     let hash_raw = CByteArray::from(hash);
     let actual = unsafe {
-        tw_private_key_sign(
-            tw_privkey.ptr(),
-            hash_raw.data(),
-            hash_raw.size(),
-            Curve::Secp256k1 as u32,
-        )
-        .into_vec()
+        tw_private_key_sign(tw_privkey.ptr(), hash_raw.data(), hash_raw.size()).into_vec()
     };
     assert!(actual.is_empty());
 }
@@ -136,16 +143,9 @@ fn test_tw_private_key_sign_invalid_hash() {
 fn test_tw_private_key_sign_null_hash() {
     let tw_privkey = TWPrivateKeyHelper::with_hex(
         "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
+        Curve::Secp256k1.to_raw(),
     );
-    let actual = unsafe {
-        tw_private_key_sign(
-            tw_privkey.ptr(),
-            std::ptr::null(),
-            0,
-            Curve::Secp256k1 as u32,
-        )
-        .into_vec()
-    };
+    let actual = unsafe { tw_private_key_sign(tw_privkey.ptr(), std::ptr::null(), 0).into_vec() };
     assert!(actual.is_empty());
 }
 
@@ -164,6 +164,7 @@ fn test_tw_private_key_get_public_key_by_type() {
 
     let tw_privkey = TWPrivateKeyHelper::with_hex(
         "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
+        Curve::Secp256k1.to_raw(),
     );
     assert!(!tw_privkey.is_null());
 
@@ -181,31 +182,25 @@ fn test_tw_private_key_get_public_key_by_type() {
 
 #[test]
 fn test_tw_private_key_is_valid() {
-    fn is_valid(privkey_bytes: Vec<u8>) -> bool {
+    fn is_valid(privkey_bytes: Vec<u8>, curve: Curve) -> bool {
         let privkey_raw = CByteArray::from(privkey_bytes);
-        unsafe {
-            tw_private_key_is_valid(
-                privkey_raw.data(),
-                privkey_raw.size(),
-                Curve::Secp256k1 as u32,
-            )
-        }
+        unsafe { tw_private_key_is_valid(privkey_raw.data(), privkey_raw.size(), curve.to_raw()) }
     }
 
     // Non-zero private key.
     let privkey_bytes =
         H256::from("0000000000000000000000000000000000000000000000000000000000000001");
-    assert!(is_valid(privkey_bytes.into_vec()));
+    assert!(is_valid(privkey_bytes.into_vec(), Curve::Secp256k1));
 
     // Cardano private key.
     let privkey_bytes =
         hex::decode("089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e").unwrap();
-    assert!(is_valid(privkey_bytes));
+    assert!(is_valid(privkey_bytes, Curve::Ed25519ExtendedCardano));
 
     // Zero private key.
     let privkey_bytes =
         H256::from("0000000000000000000000000000000000000000000000000000000000000000");
-    assert!(!is_valid(privkey_bytes.into_vec()));
+    assert!(!is_valid(privkey_bytes.into_vec(), Curve::Secp256k1));
 }
 
 // `schnorr` generates unique signatures based on auxiliary random.
@@ -214,18 +209,11 @@ fn test_tw_private_key_sign_schnorr() {
     let secret = "0139fe4d6f02e666e86a6f58e65060f115cd3c185bd9e98bd829636931458f79";
     let msg = "99b7098e8150cde90f3ec00280815d3069f81c7cdb6d83bbe2b897b1afbe7cd6";
 
-    let tw_privkey = TWPrivateKeyHelper::with_hex(secret);
+    let tw_privkey = TWPrivateKeyHelper::with_hex(secret, Curve::Schnorr.to_raw());
     let msg = hex::decode(msg).unwrap();
     let msg_raw = CByteArray::from(msg);
-    let signature = unsafe {
-        tw_private_key_sign(
-            tw_privkey.ptr(),
-            msg_raw.data(),
-            msg_raw.size(),
-            Curve::Schnorr as u32,
-        )
-        .into_vec()
-    };
+    let signature =
+        unsafe { tw_private_key_sign(tw_privkey.ptr(), msg_raw.data(), msg_raw.size()).into_vec() };
 
     let signature_data = CByteArray::from(signature);
 
@@ -246,4 +234,64 @@ fn test_tw_private_key_sign_schnorr() {
         )
     };
     assert!(is_valid, "Error verifying a schnorr signature");
+}
+
+#[test]
+fn test_tw_private_key_sign_as_der() {
+    let tw_privkey = TWPrivateKeyHelper::with_hex(
+        "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
+        Curve::Secp256k1.to_raw(),
+    );
+    assert!(!tw_privkey.is_null());
+
+    let message = "hello";
+    let message_data = message.as_bytes();
+    let digest = keccak256(message_data);
+    let digest_raw = CByteArray::from(digest.to_vec());
+
+    let signature = unsafe {
+        tw_private_key_sign_as_der(tw_privkey.ptr(), digest_raw.data(), digest_raw.size())
+            .into_vec()
+    };
+
+    assert_eq!(
+        hex::encode(signature, false),
+        "30450221008720a46b5b3963790d94bcc61ad57ca02fd153584315bfa161ed3455e336ba6202204d68df010ed934b8792c5b6a57ba86c3da31d039f9612b44d1bf054132254de9"
+    );
+}
+
+#[test]
+fn test_tw_private_key_sign_zilliqa() {
+    let tw_privkey = TWPrivateKeyHelper::with_hex(
+        "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
+        Curve::ZilliqaSchnorr.to_raw(),
+    );
+    assert!(!tw_privkey.is_null());
+
+    let message = "hello schnorr";
+    let message_data = message.as_bytes();
+    let digest = sha256(message_data);
+    let digest_raw = CByteArray::from(digest.to_vec());
+
+    let signature = unsafe {
+        tw_private_key_sign(tw_privkey.ptr(), digest_raw.data(), digest_raw.size()).into_vec()
+    };
+
+    assert_eq!(
+        hex::encode(signature, false),
+        "b8118ccb99563fe014279c957b0a9d563c1666e00367e9896fe541765246964f64a53052513da4e6dc20fdaf69ef0d95b4ca51c87ad3478986cf053c2dd0b853"
+    );
+}
+
+#[test]
+fn test_private_key_is_valid() {
+    let private_key_hex = "0x4646464646464646464646464646464646464646464646464646464646464646";
+    let bytes = hex::decode(private_key_hex).unwrap();
+    let bytes_ptr = bytes.as_ptr();
+    let bytes_len = bytes.len();
+
+    let is_valid =
+        unsafe { tw_private_key_is_valid(bytes_ptr, bytes_len, Curve::Secp256k1.to_raw()) };
+
+    assert!(is_valid);
 }

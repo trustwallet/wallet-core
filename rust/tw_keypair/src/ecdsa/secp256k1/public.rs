@@ -2,14 +2,20 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use std::cmp::Ordering;
+
 use crate::ecdsa::secp256k1::{Signature, VerifySignature};
-use crate::traits::VerifyingKeyTrait;
+use crate::traits::{DerivableKeyTrait, VerifyingKeyTrait};
 use crate::{KeyPairError, KeyPairResult};
 use der::Document;
+use ecdsa::elliptic_curve::group::prime::PrimeCurveAffine;
+use ecdsa::elliptic_curve::point::AffineCoordinates;
 use k256::ecdsa::signature::hazmat::PrehashVerifier;
 use k256::ecdsa::VerifyingKey;
 use tw_encoding::hex;
+use tw_hash::hasher::{Hasher, StatefulHasher};
 use tw_hash::{Hash, H256, H264, H512, H520};
+use tw_memory::Data;
 use tw_misc::traits::ToBytesVec;
 
 /// Represents a `secp256k1` public key.
@@ -78,6 +84,24 @@ impl PublicKey {
         let doc = Document::try_from(&spki).unwrap();
         doc.into_vec()
     }
+
+    pub fn hash(&self, hasher: Hasher) -> Data {
+        hasher.hash(self.compressed().as_slice())
+    }
+
+    pub fn compare(&self, other: &PublicKey) -> Ordering {
+        let self_as_affine = self.public.as_affine();
+        let other_as_affine = other.public.as_affine();
+        let result = self_as_affine.x().cmp(&other_as_affine.x());
+        if result == Ordering::Equal {
+            self_as_affine
+                .y_is_odd()
+                .unwrap_u8()
+                .cmp(&other_as_affine.y_is_odd().unwrap_u8())
+        } else {
+            result
+        }
+    }
 }
 
 impl VerifyingKeyTrait for PublicKey {
@@ -117,5 +141,21 @@ impl<'a> TryFrom<&'a [u8]> for PublicKey {
 impl ToBytesVec for PublicKey {
     fn to_vec(&self) -> Vec<u8> {
         self.compressed().to_vec()
+    }
+}
+
+impl DerivableKeyTrait for PublicKey {
+    fn derive_child(&self, other: H256) -> KeyPairResult<Self> {
+        let child_scalar = Option::<k256::NonZeroScalar>::from(k256::NonZeroScalar::from_repr(
+            other.take().into(),
+        ))
+        .ok_or(KeyPairError::InternalError)?;
+
+        let projective_point: k256::ProjectivePoint = self.public.as_affine().into();
+        let child_point = projective_point + (k256::AffinePoint::generator() * *child_scalar);
+        let public = VerifyingKey::from_affine(child_point.into())
+            .map_err(|_| KeyPairError::InternalError)?;
+
+        Ok(PublicKey { public })
     }
 }

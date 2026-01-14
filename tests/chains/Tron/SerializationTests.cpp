@@ -7,6 +7,7 @@
 #include "PrivateKey.h"
 #include "HexCoding.h"
 #include "uint256.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 
@@ -35,7 +36,7 @@ namespace TW::Tron {
         blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
         blockHeader.set_version(3);
 
-        const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+        const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
         input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
         const auto output = Signer::sign(input);
@@ -67,7 +68,7 @@ namespace TW::Tron {
         blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
         blockHeader.set_version(3);
 
-        const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+        const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
         input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
         const auto output = Signer::sign(input);
@@ -101,7 +102,7 @@ namespace TW::Tron {
         blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
         blockHeader.set_version(3);
 
-        const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+        const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
         input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
         const auto output = Signer::sign(input);
@@ -135,7 +136,7 @@ namespace TW::Tron {
         blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
         blockHeader.set_version(3);
 
-        const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+        const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
         input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
         const auto output = Signer::sign(input);
@@ -166,7 +167,7 @@ namespace TW::Tron {
         blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
         blockHeader.set_version(3);
 
-        const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+        const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
         input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
         const auto output = Signer::sign(input);
@@ -197,7 +198,7 @@ namespace TW::Tron {
         blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
         blockHeader.set_version(3);
 
-        const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+        const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"), TWCoinTypeCurve(TWCoinTypeTron));
         input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
         const auto output = Signer::sign(input);

@@ -1,0 +1,76 @@
+// Copyright © 2017-2023 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+#![allow(clippy::missing_safety_doc)]
+
+use crate::crypto_pbkdf2::{pbkdf2_hmac_512, pbkdf2_hmac_sha256};
+use tw_macros::tw_ffi;
+use tw_memory::ffi::{tw_data::TWData, Nonnull, NullableMut, RawPtrTrait};
+use tw_misc::try_or_else;
+
+/// The PBKDF2 key derivation function.
+///
+/// \param password data.
+/// \param salt data.
+/// \param iterations PBKDF2 parameter `iterations`.
+/// \param dk_len PBKDF2 parameter `desired_len`.
+/// \return *nullable* data.
+#[tw_ffi(ty = static_function, class = TWPBKDF2, name = HmacSha256)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_pbkdf2_hmac_sha256(
+    password: Nonnull<TWData>,
+    salt: Nonnull<TWData>,
+    iterations: i32,
+    dk_len: i32,
+) -> NullableMut<TWData> {
+    let password = TWData::from_ptr_as_ref(password)
+        .map(|data| data.as_slice())
+        .unwrap_or_default();
+    let salt = TWData::from_ptr_as_ref(salt)
+        .map(|data| data.as_slice())
+        .unwrap_or_default();
+
+    let iterations: u32 = try_or_else!(iterations.try_into(), std::ptr::null_mut);
+    let dk_len: usize = try_or_else!(dk_len.try_into(), std::ptr::null_mut);
+
+    let output = try_or_else!(
+        pbkdf2_hmac_sha256(password, salt, iterations, dk_len),
+        std::ptr::null_mut
+    );
+    TWData::from(output).into_ptr()
+}
+
+/// The PBKDF2 key derivation function.
+///
+/// \param password data.
+/// \param salt data.
+/// \param iterations PBKDF2 parameter `iterations`.
+/// \param dk_len PBKDF2 parameter `desired_len`.
+/// \return *nullable* data.
+#[tw_ffi(ty = static_function, class = TWPBKDF2, name = HmacSha512)]
+#[no_mangle]
+pub unsafe extern "C" fn tw_pbkdf2_hmac_sha512(
+    password: Nonnull<TWData>,
+    salt: Nonnull<TWData>,
+    iterations: i32,
+    dk_len: i32,
+) -> NullableMut<TWData> {
+    let password = TWData::from_ptr_as_ref(password)
+        .map(|data| data.as_slice())
+        .unwrap_or_default();
+    let salt = TWData::from_ptr_as_ref(salt)
+        .map(|data| data.as_slice())
+        .unwrap_or_default();
+
+    let iterations: u32 = try_or_else!(iterations.try_into(), std::ptr::null_mut);
+    let dk_len: usize = try_or_else!(dk_len.try_into(), std::ptr::null_mut);
+
+    let output = try_or_else!(
+        pbkdf2_hmac_512(password, salt, iterations, dk_len),
+        std::ptr::null_mut
+    );
+    TWData::from(output).into_ptr()
+}

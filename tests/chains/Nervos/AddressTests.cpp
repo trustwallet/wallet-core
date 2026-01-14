@@ -30,7 +30,7 @@ TEST(NervosAddress, Invalid) {
 
 TEST(NervosAddress, FromPrivateKey) {
     auto privateKey =
-        PrivateKey(parse_hex("8a2a726c44e46d1efaa0f9c2a8efed932f0e96d6050b914fde762ee285e61feb"));
+        PrivateKey(parse_hex("8a2a726c44e46d1efaa0f9c2a8efed932f0e96d6050b914fde762ee285e61feb"), TWCoinTypeCurve(TWCoinTypeNervos));
     auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
     ASSERT_EQ(address.string(), "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwyk5x9er"
                                 "g8furras980hksatlslfaktks7epf25");
@@ -60,7 +60,7 @@ TEST(NervosAddress, FromString) {
 
 TEST(TWNervosAddress, AddressFromPublicKey) {
     auto privateKey =
-        PrivateKey(parse_hex("8a2a726c44e46d1efaa0f9c2a8efed932f0e96d6050b914fde762ee285e61feb"));
+        PrivateKey(parse_hex("8a2a726c44e46d1efaa0f9c2a8efed932f0e96d6050b914fde762ee285e61feb"), TWCoinTypeCurve(TWCoinTypeNervos));
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     ASSERT_EQ(publicKey.bytes.size(), 33ul);
     auto address = Address(publicKey);

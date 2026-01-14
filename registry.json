@@ -1893,8 +1893,8 @@
         "path": "m/44'/313'/0'/0/0"
       }
     ],
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1",
+    "curve": "zilliqaSchnorr",
+    "publicKeyType": "zilliqaSchnorr",
     "hrp": "zil",
     "explorer": {
       "url": "https://viewblock.io",
@@ -2007,7 +2007,7 @@
     "blockchain": "Everscale",
     "derivation": [
       {
-        "path": "m/44'/396'/0'/0/0"
+        "path": "m/44'/396'/0'"
       }
     ],
     "curve": "ed25519",
@@ -3717,7 +3717,7 @@
     "blockchain": "IOST",
     "derivation": [
       {
-        "path": "m/44'/899'/0'/0/0",
+        "path": "m/44'/899'/0'",
         "xpub": "xpub",
         "xprv": "xprv"
       }
@@ -4325,7 +4325,7 @@
     "blockchain": "Hedera",
     "derivation": [
       {
-        "path": "m/44'/3030'/0'/0'/0"
+        "path": "m/44'/3030'/0'/0'"
       }
     ],
     "curve": "ed25519",

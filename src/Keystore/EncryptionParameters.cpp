@@ -5,11 +5,11 @@
 #include "EncryptionParameters.h"
 
 #include "../Hash.h"
+#include "../sodium_utils.h"
 
-#include <TrezorCrypto/aes.h>
-#include <TrezorCrypto/pbkdf2.h>
-#include <TrezorCrypto/scrypt.h>
 #include <cassert>
+#include <TrustWalletCore/TWAESPaddingMode.h>
+#include "rust/Wrapper.h"
 
 using namespace TW;
 
@@ -36,6 +36,104 @@ static const auto kdf = "kdf";
 static const auto kdfParams = "kdfparams";
 static const auto mac = "mac";
 } // namespace CodingKeys
+
+static Data rustScrypt(const Data& password, const ScryptParameters& params) {
+    Rust::TWDataWrapper passwordData = password;
+    Rust::TWDataWrapper saltData = params.salt;
+
+    Rust::TWDataWrapper res = Rust::crypto_scrypt(
+        passwordData.get(),
+        saltData.get(),
+        params.n,
+        params.r,
+        params.p,
+        params.desiredKeyLength
+    );
+    auto data = res.toDataOrDefault();
+    if (data.empty()) {
+        throw std::runtime_error("Invalid scrypt parameters");
+    }
+    return data;
+}
+
+static Data rustPbkdf2(const Data& password, const PBKDF2Parameters& params) {
+    Rust::TWDataWrapper passwordData = password;
+    Rust::TWDataWrapper saltData = params.salt;
+
+    // Check if iterations fits in int32_t range
+    const auto maxI32 = std::numeric_limits<int32_t>::max();
+    if (params.iterations > static_cast<uint32_t>(maxI32)) {
+        throw std::runtime_error("PBKDF2 iterations exceeds int32_t maximum");
+    }
+    if (params.desiredKeyLength > static_cast<std::size_t>(maxI32)) {
+        throw std::runtime_error("PBKDF2 desired key length exceeds int32_t maximum");
+    }
+
+    Rust::TWDataWrapper res = Rust::tw_pbkdf2_hmac_sha256(
+        passwordData.get(),
+        saltData.get(),
+        static_cast<int32_t>(params.iterations),
+        static_cast<int32_t>(params.desiredKeyLength)
+    );
+    auto data = res.toDataOrDefault();
+    if (data.empty()) {
+        throw std::runtime_error("Invalid pbkdf2 parameters");
+    }
+    return data;
+}
+template <typename CryptoFunc>
+static Data rustAesOperation(const Data& data, const Data& iv, const Data& key, CryptoFunc cryptoFunc, const char* errorMsg) {
+    Rust::TWDataWrapper dataWrapper = data;
+    Rust::TWDataWrapper ivWrapper = iv;
+    Rust::TWDataWrapper keyWrapper = key;
+
+    Rust::TWDataWrapper res = cryptoFunc(
+        keyWrapper.get(),
+        dataWrapper.get(),
+        ivWrapper.get()
+    );
+    auto resData = res.toDataOrDefault();
+    if (resData.empty()) {
+        throw std::runtime_error(errorMsg);
+    }
+    return resData;
+}
+
+static Data rustAesCtrEncrypt128(const Data& data, const Data& iv, const Data& key) {
+    return rustAesOperation(data, iv, key, Rust::tw_aes_encrypt_ctr_128, "Invalid aes ctr encrypt 128");
+}
+
+static Data rustAesCtrDecrypt128(const Data& data, const Data& iv, const Data& key) {
+    return rustAesOperation(data, iv, key, Rust::tw_aes_decrypt_ctr_128, "Invalid aes ctr decrypt 128");
+}
+
+static Data rustAesCtrEncrypt192(const Data& data, const Data& iv, const Data& key) {
+    return rustAesOperation(data, iv, key, Rust::tw_aes_encrypt_ctr_192, "Invalid aes ctr encrypt 192");
+}
+
+static Data rustAesCtrDecrypt192(const Data& data, const Data& iv, const Data& key) {
+    return rustAesOperation(data, iv, key, Rust::tw_aes_decrypt_ctr_192, "Invalid aes ctr decrypt 192");
+}
+
+static Data rustAesCtrEncrypt256(const Data& data, const Data& iv, const Data& key) {
+    return rustAesOperation(data, iv, key, Rust::tw_aes_encrypt_ctr_256, "Invalid aes ctr encrypt 256");
+}
+
+static Data rustAesCtrDecrypt256(const Data& data, const Data& iv, const Data& key) {
+    return rustAesOperation(data, iv, key, Rust::tw_aes_decrypt_ctr_256, "Invalid aes ctr decrypt 256");
+}
+
+static Data rustAesCbcEncrypt128(const Data& data, const Data& iv, const Data& key) {
+    return rustAesOperation(data, iv, key, 
+        [](auto d, auto i, auto k) { return Rust::tw_aes_encrypt_cbc_128(d, i, k, TWAESPaddingModePKCS7); }, 
+        "Invalid aes cbc encrypt 128");
+}
+
+static Data rustAesCbcDecrypt128(const Data& data, const Data& iv, const Data& key) {
+    return rustAesOperation(data, iv, key, 
+        [](auto d, auto i, auto k) { return Rust::tw_aes_decrypt_cbc_128(d, i, k, TWAESPaddingModePKCS7); }, 
+        "Invalid aes cbc decrypt 128");
+}
 
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
     auto cipher = json[CodingKeys::cipher].get<std::string>();
@@ -75,35 +173,23 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
     }
 
     auto scryptParams = std::get<ScryptParameters>(this->params.kdfParams);
-    auto derivedKey = Data(scryptParams.desiredKeyLength);
-    scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
-           scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
-           scryptParams.desiredKeyLength);
+    auto derivedKey = rustScrypt(password, scryptParams);
 
-    aes_encrypt_ctx ctx;
-    auto result = 0;
     switch(this->params.cipherParams.mCipherEncryption) {
     case TWStoredKeyEncryptionAes128Ctr:
-    case TWStoredKeyEncryptionAes128Cbc:
-        result = aes_encrypt_key128(derivedKey.data(), &ctx);
+        encrypted = rustAesCtrEncrypt128(data, this->params.cipherParams.iv, derivedKey);
         break;
     case TWStoredKeyEncryptionAes192Ctr:
-        result = aes_encrypt_key192(derivedKey.data(), &ctx);
+        encrypted = rustAesCtrEncrypt192(data, this->params.cipherParams.iv, derivedKey);
         break;
     case TWStoredKeyEncryptionAes256Ctr:
-        result = aes_encrypt_key256(derivedKey.data(), &ctx);
+        encrypted = rustAesCtrEncrypt256(data, this->params.cipherParams.iv, derivedKey);
+        break;
+    case TWStoredKeyEncryptionAes128Cbc:
+        encrypted = rustAesCbcEncrypt128(data, this->params.cipherParams.iv, derivedKey);
         break;
     }
-    assert(result == EXIT_SUCCESS);
-    if (result == EXIT_SUCCESS) {
-        Data iv = this->params.cipherParams.iv;
-        // iv size should have been validated in `AESParameters::isValid()`.
-        assert(iv.size() == gBlockSize);
-
-        encrypted = Data(data.size());
-        aes_ctr_encrypt(data.data(), encrypted.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
-        _mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
-    }
+    _mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
 }
 
 EncryptedPayload::~EncryptedPayload() {
@@ -116,52 +202,34 @@ Data EncryptedPayload::decrypt(const Data& password) const {
     auto mac = Data();
 
     if (auto* scryptParams = std::get_if<ScryptParameters>(&params.kdfParams); scryptParams) {
-        derivedKey.resize(scryptParams->defaultDesiredKeyLength);
-        scrypt(password.data(), password.size(), scryptParams->salt.data(),
-               scryptParams->salt.size(), scryptParams->n, scryptParams->r, scryptParams->p, derivedKey.data(),
-               scryptParams->defaultDesiredKeyLength);
+        derivedKey = rustScrypt(password, *scryptParams);
         mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
     } else if (auto* pbkdf2Params = std::get_if<PBKDF2Parameters>(&params.kdfParams); pbkdf2Params) {
-        derivedKey.resize(pbkdf2Params->defaultDesiredKeyLength);
-        pbkdf2_hmac_sha256(password.data(), static_cast<int>(password.size()), pbkdf2Params->salt.data(),
-                           static_cast<int>(pbkdf2Params->salt.size()), pbkdf2Params->iterations, derivedKey.data(),
-                           pbkdf2Params->defaultDesiredKeyLength);
+        derivedKey = rustPbkdf2(password, *pbkdf2Params);
         mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
     } else {
         throw DecryptionError::unsupportedKDF;
     }
 
-    if (mac != _mac) {
+    if (sodium_memcmp(mac.data(), _mac.data(), mac.size()) != 0) {
         throw DecryptionError::invalidPassword;
     }
 
-    // Even though the cipher params should have been validated in `EncryptedPayload` constructor,
-    // double check them here.
-    if (!params.cipherParams.isValid()) {
-        throw DecryptionError::invalidCipher;
-    }
-    assert(params.cipherParams.iv.size() == gBlockSize);
-
     Data decrypted(encrypted.size());
     Data iv = params.cipherParams.iv;
-    const auto encryption = params.cipherParams.mCipherEncryption;
-    if (encryption == TWStoredKeyEncryptionAes128Ctr || encryption == TWStoredKeyEncryptionAes256Ctr) {
-        aes_encrypt_ctx ctx;
-        [[maybe_unused]] auto result = aes_encrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
-        assert(result != EXIT_FAILURE);
-
-        aes_ctr_decrypt(encrypted.data(), decrypted.data(), static_cast<int>(encrypted.size()), iv.data(),
-                        aes_ctr_cbuf_inc, &ctx);
-    } else if (encryption == TWStoredKeyEncryptionAes128Cbc) {
-        aes_decrypt_ctx ctx;
-        [[maybe_unused]] auto result = aes_decrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
-        assert(result != EXIT_FAILURE);
-
-        for (auto i = 0ul; i < encrypted.size(); i += params.getKeyBytesSize()) {
-            aes_cbc_decrypt(encrypted.data() + i, decrypted.data() + i, params.getKeyBytesSize(), iv.data(), &ctx);
-        }
-    } else {
-        throw DecryptionError::unsupportedCipher;
+    switch (params.cipherParams.mCipherEncryption) {
+    case TWStoredKeyEncryptionAes128Ctr:
+        decrypted = rustAesCtrDecrypt128(encrypted, iv, derivedKey);
+        break;
+    case TWStoredKeyEncryptionAes192Ctr:
+        decrypted = rustAesCtrDecrypt192(encrypted, iv, derivedKey);
+        break;
+    case TWStoredKeyEncryptionAes256Ctr:
+        decrypted = rustAesCtrDecrypt256(encrypted, iv, derivedKey);
+        break;
+    case TWStoredKeyEncryptionAes128Cbc:
+        decrypted = rustAesCbcDecrypt128(encrypted, iv, derivedKey);
+        break;
     }
 
     return decrypted;

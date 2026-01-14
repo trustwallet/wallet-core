@@ -7,8 +7,7 @@
 #include "ParamsBuilder.h"
 
 #include "../Hash.h"
-
-#include <TrezorCrypto/base58.h>
+#include "../Base58.h"
 
 #include <stdexcept>
 #include <string>
@@ -29,8 +28,7 @@ Address::Address(const std::string& b58Address) {
     if (!Address::isValid(b58Address)) {
         throw std::runtime_error("Invalid base58 encode address.");
     }
-    Data addressWithVersion(size + 1);
-    base58_decode_check(b58Address.c_str(), HASHER_SHA2D, addressWithVersion.data(), size + 1);
+    const auto addressWithVersion = Base58::decodeCheck(b58Address, Rust::Base58Alphabet::Bitcoin, Hash::HasherSha256d);
     std::copy(addressWithVersion.begin() + 1, addressWithVersion.end(), _data.begin());
 }
 
@@ -54,21 +52,16 @@ bool Address::isValid(const std::string& b58Address) noexcept {
     if (b58Address.length() != 34) {
         return false;
     }
-    Data addressWithVersion(size + 1);
-    auto len =
-        base58_decode_check(b58Address.c_str(), HASHER_SHA2D, addressWithVersion.data(), size + 1);
-    return len == size + 1;
+    const auto addressWithVersion =
+        Base58::decodeCheck(b58Address, Rust::Base58Alphabet::Bitcoin, Hash::HasherSha256d);
+    return addressWithVersion.size() == size + 1;
 }
 
 std::string Address::string() const {
     std::vector<uint8_t> encodeData(size + 1);
     encodeData[0] = version;
     std::copy(_data.begin(), _data.end(), encodeData.begin() + 1);
-    size_t b58StrSize = 34;
-    std::string b58Str(b58StrSize, ' ');
-    base58_encode_check(encodeData.data(), (int)encodeData.size(), HASHER_SHA2D, &b58Str[0],
-                        (int)b58StrSize + 1);
-    return b58Str;
+    return Base58::encodeCheck(encodeData, Rust::Base58Alphabet::Bitcoin, Hash::HasherSha256d);
 }
 
 } // namespace TW::Ontology

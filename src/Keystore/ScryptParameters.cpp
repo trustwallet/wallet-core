@@ -4,8 +4,8 @@
 
 #include "ScryptParameters.h"
 
-#include <TrezorCrypto/rand.h>
 #include <limits>
+#include "rand.h"
 
 using namespace TW;
 

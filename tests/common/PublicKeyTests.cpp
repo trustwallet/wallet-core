@@ -238,28 +238,28 @@ TEST(PublicKeyTests, VerifyEd25519Extended) {
 }
 
 TEST(PublicKeyTests, VerifySchnorr) {
-    const auto key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveSECP256k1);
+    const auto key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveZILLIQASchnorr);
     const auto privateKey = PrivateKey(key);
 
     const Data messageData = TW::data("hello schnorr");
     const Data digest = Hash::sha256(messageData);
 
-    const auto signature = privateKey.signZilliqa(digest);
-    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    EXPECT_TRUE(publicKey.verifyZilliqa(signature, digest));
+    const auto signature = privateKey.sign(digest);
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeZILLIQASchnorr);
+    EXPECT_TRUE(publicKey.verify(signature, digest));
     EXPECT_EQ(hex(signature), "b8118ccb99563fe014279c957b0a9d563c1666e00367e9896fe541765246964f64a53052513da4e6dc20fdaf69ef0d95b4ca51c87ad3478986cf053c2dd0b853");
 }
 
 TEST(PublicKeyTests, VerifySchnorrWrongType) {
-    const auto key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveSECP256k1);
+    const auto key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveZILLIQASchnorr);
     const auto privateKey = PrivateKey(key);
 
     const Data messageData = TW::data("hello schnorr");
     const Data digest = Hash::sha256(messageData);
 
-    const auto signature = privateKey.signZilliqa(digest);
-    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
-    EXPECT_FALSE(publicKey.verifyZilliqa(signature, digest));
+    const auto signature = privateKey.sign(digest);
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSchnorr);
+    EXPECT_FALSE(publicKey.verify(signature, digest));
 }
 
 TEST(PublicKeyTests, RecoverRaw) {
@@ -305,13 +305,13 @@ TEST(PublicKeyTests, RecoverRawNegative) {
     const auto message = parse_hex("de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb11432");
     const auto signature = parse_hex("00000000000000000000000000000000000000000000000000000000000000020123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
     // recid >= 4
-    EXPECT_EXCEPTION(PublicKey::recoverRaw(signature, 4ul, message), "Invalid recId");
+    EXPECT_EXCEPTION(PublicKey::recoverRaw(signature, 4ul, message), "Recover failed");
     // signature too short
     EXPECT_EXCEPTION(PublicKey::recoverRaw(parse_hex("00000000000000000000000000000000000000000000000000000000000000020123456789abcdef0123456789abcdef0123456789abcdef0123456789abcd"), 1ul, message),
-        "signature too short");
+        "Recover failed");
     // Digest too  short
     EXPECT_EXCEPTION(PublicKey::recoverRaw(signature, 1ul, parse_hex("de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb114")),
-        "digest too short");
+        "Recover failed");
 }
 
 TEST(PublicKeyTests, Recover) {
@@ -355,10 +355,8 @@ TEST(PublicKeyTests, isValidED25519) {
     EXPECT_TRUE(PublicKey::isValid(parse_hex("01beff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa527908"), TWPublicKeyTypeED25519));
     EXPECT_TRUE(PublicKey(parse_hex("01beff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa527908"), TWPublicKeyTypeED25519).isValidED25519());
     // Following 32 bytes are not valid public keys (not on the curve)
-    EXPECT_TRUE(PublicKey::isValid(parse_hex("8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519));
-    EXPECT_FALSE(PublicKey(parse_hex("8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519).isValidED25519());
-    EXPECT_TRUE(PublicKey::isValid(parse_hex("51fdd5feae59d7dcbf5ebea99c05593ebee302577a5486ceac706ed568aa1e0e"), TWPublicKeyTypeED25519));
-    EXPECT_FALSE(PublicKey(parse_hex("51fdd5feae59d7dcbf5ebea99c05593ebee302577a5486ceac706ed568aa1e0e"), TWPublicKeyTypeED25519).isValidED25519());
+    EXPECT_FALSE(PublicKey::isValid(parse_hex("8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519));
+    EXPECT_FALSE(PublicKey::isValid(parse_hex("51fdd5feae59d7dcbf5ebea99c05593ebee302577a5486ceac706ed568aa1e0e"), TWPublicKeyTypeED25519));
     // invalid input size/format
     EXPECT_FALSE(PublicKey::isValid(parse_hex("1234"), TWPublicKeyTypeED25519));
     EXPECT_FALSE(PublicKey::isValid(parse_hex("beff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa5279"), TWPublicKeyTypeED25519));

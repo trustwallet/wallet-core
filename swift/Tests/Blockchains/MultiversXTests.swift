@@ -14,7 +14,7 @@ class MultiversXTests: XCTestCase {
     let carolBech32 = "erd1k2s324ww2g0yj38qn2ch2jwctdy8mnfxep94q9arncc6xecg3xaq6mjse8"
 
     func testAddress() {
-        let key = PrivateKey(data: Data(hexString: aliceSeedHex)!)!
+        let key = PrivateKey(data: Data(hexString: aliceSeedHex)!, curve: CoinType.multiversX.curve)!
         let pubkey = key.getPublicKeyEd25519()
         let address = AnyAddress(publicKey: pubkey, coin: .multiversX)
         let addressFromString = AnyAddress(string: aliceBech32, coin: .multiversX)!
@@ -24,7 +24,7 @@ class MultiversXTests: XCTestCase {
     }
 
     func testSignGenericAction() {
-        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!)!
+        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!, curve: CoinType.multiversX.curve)!
 
         let input = MultiversXSigningInput.with {
             $0.genericAction = MultiversXGenericAction.with {
@@ -52,7 +52,7 @@ class MultiversXTests: XCTestCase {
     }
 
     func testSignGenericActionWithGuardian() {
-        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!)!
+        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!, curve: CoinType.multiversX.curve)!
 
         let input = MultiversXSigningInput.with {
             $0.genericAction = MultiversXGenericAction.with {
@@ -82,7 +82,7 @@ class MultiversXTests: XCTestCase {
     }
 
     func testSignGenericActionWithRelayer() {
-        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!)!
+        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!, curve: CoinType.multiversX.curve)!
 
         let input = MultiversXSigningInput.with {
             $0.genericAction = MultiversXGenericAction.with {
@@ -112,7 +112,7 @@ class MultiversXTests: XCTestCase {
     
     func testSignGenericActionUndelegate() {
         // Successfully broadcasted https://explorer.multiversx.com/transactions/3301ae5a6a77f0ab9ceb5125258f12539a113b0c6787de76a5c5867f2c515d65
-        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!)!
+        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!, curve: CoinType.multiversX.curve)!
 
         let input = MultiversXSigningInput.with {
             $0.genericAction = MultiversXGenericAction.with {
@@ -141,7 +141,7 @@ class MultiversXTests: XCTestCase {
     
     func testSignGenericActionDelegate() {
         // Successfully broadcasted https://explorer.multiversx.com/transactions/e5007662780f8ed677b37b156007c24bf60b7366000f66ec3525cfa16a4564e7
-        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!)!
+        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!, curve: CoinType.multiversX.curve)!
 
         let input = MultiversXSigningInput.with {
             $0.genericAction = MultiversXGenericAction.with {
@@ -169,7 +169,7 @@ class MultiversXTests: XCTestCase {
     }
 
     func testSignEGLDTransfer() {
-        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!)!
+        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!, curve: CoinType.multiversX.curve)!
 
         let input = MultiversXSigningInput.with {
             $0.egldTransfer = MultiversXEGLDTransfer.with {
@@ -193,7 +193,7 @@ class MultiversXTests: XCTestCase {
     }
 
     func testSignEGLDTransferWithGuardian() {
-        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!)!
+        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!, curve: CoinType.multiversX.curve)!
 
         let input = MultiversXSigningInput.with {
             $0.egldTransfer = MultiversXEGLDTransfer.with {
@@ -218,7 +218,7 @@ class MultiversXTests: XCTestCase {
     }
 
     func testSignESDTTransfer() {
-        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!)!
+        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!, curve: CoinType.multiversX.curve)!
 
         let input = MultiversXSigningInput.with {
             $0.esdtTransfer = MultiversXESDTTransfer.with {
@@ -244,7 +244,7 @@ class MultiversXTests: XCTestCase {
     }
 
     func testSignESDTNFTTransfer() {
-        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!)!
+        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!, curve: CoinType.multiversX.curve)!
 
         let input = MultiversXSigningInput.with {
             $0.esdtnftTransfer = MultiversXESDTNFTTransfer.with {

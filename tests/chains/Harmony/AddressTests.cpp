@@ -5,6 +5,7 @@
 #include "Harmony/Address.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 
@@ -38,7 +39,7 @@ TEST(HarmonyAddress, InvalidHarmonyAddress) {
 
 TEST(HarmonyAddress, FromPublicKey) {
     const auto privateKey =
-        PrivateKey(parse_hex("e2f88b4974ae763ca1c2db49218802c2e441293a09eaa9ab681779e05d1b7b94"));
+        PrivateKey(parse_hex("e2f88b4974ae763ca1c2db49218802c2e441293a09eaa9ab681779e05d1b7b94"), TWCoinTypeCurve(TWCoinTypeHarmony));
     const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     const auto address = Address(publicKey);
     ASSERT_EQ(address.string(), "one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe");

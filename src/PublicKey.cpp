@@ -6,61 +6,18 @@
 #include "PrivateKey.h"
 #include "Data.h"
 #include "rust/bindgen/WalletCoreRSBindgen.h"
+#include "rust/Wrapper.h"
 
-#include <TrezorCrypto/ecdsa.h>
-#include <TrezorCrypto/ed25519-donna/ed25519-blake2b.h>
-#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
-#include <TrezorCrypto/nist256p1.h>
-#include <TrezorCrypto/secp256k1.h>
-#include <TrezorCrypto/sodium/keypair.h>
-#include <TrezorCrypto/zilliqa.h>
-#include <ImmutableX/StarkKey.h>
+#include "memzero.h"
 
 #include <iterator>
 
 namespace TW {
 
-bool validateSignatureLength(TWPublicKeyType type, const Data& signature) {
-    switch (type) {
-    case TWPublicKeyTypeSECP256k1:
-    case TWPublicKeyTypeSECP256k1Extended:
-    case TWPublicKeyTypeNIST256p1:
-    case TWPublicKeyTypeNIST256p1Extended: {
-        return signature.size() == PublicKey::signatureSize
-            || signature.size() == PublicKey::secp256k1SignatureSize;
-    }
-    default: {
-        return signature.size() == PublicKey::signatureSize;
-    }
-    }
-}
-
 /// Determines if a collection of bytes makes a valid public key of the
 /// given type.
 bool PublicKey::isValid(const Data& data, enum TWPublicKeyType type) {
-    const auto size = data.size();
-    if (size == 0) {
-        return false;
-    }
-    switch (type) {
-    case TWPublicKeyTypeED25519:
-        return size == ed25519Size || (size == ed25519Size + 1 && data[0] == 0x01);
-    case TWPublicKeyTypeCURVE25519:
-    case TWPublicKeyTypeED25519Blake2b:
-        return size == ed25519Size;
-    case TWPublicKeyTypeED25519Cardano:
-        return size == cardanoKeySize;
-    case TWPublicKeyTypeSECP256k1:
-    case TWPublicKeyTypeNIST256p1:
-        return size == secp256k1Size && (data[0] == 0x02 || data[0] == 0x03);
-    case TWPublicKeyTypeSECP256k1Extended:
-    case TWPublicKeyTypeNIST256p1Extended:
-        return size == secp256k1ExtendedSize && data[0] == 0x04;
-    case TWPublicKeyTypeStarkex:
-        return size == starkexSize;
-    default:
-        return false;
-    }
+    return Rust::tw_public_key_is_valid(data.data(), data.size(), static_cast<uint32_t>(type));
 }
 
 /// Initializes a public key with a collection of bytes.
@@ -71,84 +28,36 @@ PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type)
     if (!isValid(data, type)) {
         throw std::invalid_argument("Invalid public key data");
     }
-    switch (type) {
-    case TWPublicKeyTypeStarkex:
-    case TWPublicKeyTypeSECP256k1:
-    case TWPublicKeyTypeNIST256p1:
-    case TWPublicKeyTypeSECP256k1Extended:
-    case TWPublicKeyTypeNIST256p1Extended:
-        bytes.reserve(data.size());
-        std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
-        break;
-
-    case TWPublicKeyTypeED25519:
-    case TWPublicKeyTypeCURVE25519:
-        bytes.reserve(ed25519Size);
-        if (data.size() == ed25519Size + 1) {
-            std::copy(std::begin(data) + 1, std::end(data), std::back_inserter(bytes));
-        } else {
-            std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
-        }
-        break;
-    case TWPublicKeyTypeED25519Blake2b:
-        bytes.reserve(ed25519Size);
-        // Sanity check, ensured by isValid() above.
-        if (data.size() != ed25519Size) {
-            throw std::invalid_argument("Invalid public key size");
-        }
-        std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
-        break;
-    case TWPublicKeyTypeED25519Cardano:
-        bytes.reserve(cardanoKeySize);
-        std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
+    auto* pubkey = Rust::tw_public_key_create_with_data(data.data(), data.size(), static_cast<uint32_t>(type));
+    if (pubkey == nullptr) {
+        throw std::invalid_argument("Invalid public key");
     }
+    _impl = Rust::wrapTWPublicKey(pubkey);
+    Rust::CByteArrayWrapper pubkeyData = Rust::tw_public_key_data(_impl.get());
+    bytes = pubkeyData.data;
+}
+
+PublicKey::PublicKey(std::shared_ptr<TW::Rust::TWPublicKey> _impl)
+    : _impl(_impl) {
+    Rust::CByteArrayWrapper pubkeyData = Rust::tw_public_key_data(_impl.get());
+    bytes = pubkeyData.data;
+    type = static_cast<enum TWPublicKeyType>(Rust::tw_public_key_type(_impl.get()));
 }
 
 PublicKey PublicKey::compressed() const {
-    if (type != TWPublicKeyTypeSECP256k1Extended && type != TWPublicKeyTypeNIST256p1Extended) {
+    auto compressedPubKey = Rust::tw_public_key_compressed(_impl.get());
+    if (compressedPubKey == nullptr) {
         return *this;
     }
-    if (bytes.size() < secp256k1ExtendedSize) {
-        throw std::invalid_argument("Invalid public key size");
-    }
-
-    Data newBytes(secp256k1Size);
-    newBytes[0] = 0x02 | (bytes[64] & 0x01);
-
-    switch (type) {
-    case TWPublicKeyTypeSECP256k1Extended:
-        std::copy(bytes.begin() + 1, bytes.begin() + secp256k1Size, newBytes.begin() + 1);
-        return PublicKey(newBytes, TWPublicKeyTypeSECP256k1);
-
-    case TWPublicKeyTypeNIST256p1Extended:
-        std::copy(bytes.begin() + 1, bytes.begin() + secp256k1Size, newBytes.begin() + 1);
-        return PublicKey(newBytes, TWPublicKeyTypeNIST256p1);
-    default:
-        return *this;
-    }
+    return PublicKey(Rust::wrapTWPublicKey(compressedPubKey));
 }
 
 PublicKey PublicKey::extended() const {
-    Data newBytes(secp256k1ExtendedSize);
-    switch (type) {
-    case TWPublicKeyTypeSECP256k1:
-        ecdsa_uncompress_pubkey(&secp256k1, bytes.data(), newBytes.data());
-        return PublicKey(newBytes, TWPublicKeyTypeSECP256k1Extended);
-    case TWPublicKeyTypeSECP256k1Extended:
-        return *this;
-    case TWPublicKeyTypeNIST256p1:
-        ecdsa_uncompress_pubkey(&nist256p1, bytes.data(), newBytes.data());
-        return PublicKey(newBytes, TWPublicKeyTypeNIST256p1Extended);
-    case TWPublicKeyTypeNIST256p1Extended:
-        return *this;
-    case TWPublicKeyTypeED25519:
-    case TWPublicKeyTypeCURVE25519:
-    case TWPublicKeyTypeED25519Blake2b:
-    case TWPublicKeyTypeED25519Cardano:
-        return *this;
-    default:
+    auto extendedPubKey = Rust::tw_public_key_extended(_impl.get());
+    if (extendedPubKey == nullptr) {
         return *this;
     }
+    return PublicKey(Rust::wrapTWPublicKey(extendedPubKey));
 }
 
 bool rust_public_key_verify(const Data& key, TWPublicKeyType type, const Data& sig, const Data& msgHash) {
@@ -162,81 +71,11 @@ bool rust_public_key_verify(const Data& key, TWPublicKeyType type, const Data& s
 }
 
 bool PublicKey::verify(const Data& signature, const Data& message) const {
-    if (!validateSignatureLength(type, signature)) {
-        return false;
-    }
-
-    switch (type) {
-    case TWPublicKeyTypeSECP256k1:
-    case TWPublicKeyTypeSECP256k1Extended:
-        return ecdsa_verify_digest(&secp256k1, bytes.data(), signature.data(), message.data()) == 0;
-    case TWPublicKeyTypeNIST256p1:
-    case TWPublicKeyTypeNIST256p1Extended:
-        return ecdsa_verify_digest(&nist256p1, bytes.data(), signature.data(), message.data()) == 0;
-    case TWPublicKeyTypeED25519:
-        return ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
-    case TWPublicKeyTypeED25519Blake2b:
-        return ed25519_sign_open_blake2b(message.data(), message.size(), bytes.data(), signature.data()) == 0;
-    case TWPublicKeyTypeED25519Cardano: {
-        const auto key = subData(bytes, 0, ed25519Size);
-        return ed25519_sign_open(message.data(), message.size(), key.data(), signature.data()) == 0;
-    }
-    case TWPublicKeyTypeCURVE25519: {
-        auto ed25519PublicKey = Data();
-        ed25519PublicKey.resize(PublicKey::ed25519Size);
-        curve25519_pk_to_ed25519(ed25519PublicKey.data(), bytes.data());
-
-        ed25519PublicKey[31] &= 0x7F;
-        ed25519PublicKey[31] |= signature[63] & 0x80;
-
-        // remove sign bit
-        auto verifyBuffer = Data();
-        append(verifyBuffer, signature);
-        verifyBuffer[63] &= 127;
-        return ed25519_sign_open(message.data(), message.size(), ed25519PublicKey.data(), verifyBuffer.data()) == 0;
-    }
-    case TWPublicKeyTypeStarkex:
-        return rust_public_key_verify(bytes, type, signature, message);
-    default:
-        throw std::logic_error("Not yet implemented");
-    }
+    return Rust::tw_public_key_verify(_impl.get(), signature.data(), signature.size(), message.data(), message.size());
 }
 
 bool PublicKey::verifyAsDER(const Data& signature, const Data& message) const {
-    switch (type) {
-    case TWPublicKeyTypeSECP256k1:
-    case TWPublicKeyTypeSECP256k1Extended: {
-        Data sig(64);
-        int ret = ecdsa_sig_from_der(signature.data(), signature.size(), sig.data());
-        if (ret) {
-            return false;
-        }
-        return ecdsa_verify_digest(&secp256k1, bytes.data(), sig.data(), message.data()) == 0;
-    }
-
-    default:
-        return false;
-    }
-}
-
-bool PublicKey::verifyZilliqa(const Data& signature, const Data& message) const {
-    if (signature.size() != signatureSize && signature.size() != secp256k1SignatureSize) {
-        return false;
-    }
-
-    switch (type) {
-    case TWPublicKeyTypeSECP256k1:
-    case TWPublicKeyTypeSECP256k1Extended:
-        return zil_schnorr_verify(&secp256k1, bytes.data(), signature.data(), message.data(), static_cast<uint32_t>(message.size())) == 0;
-    case TWPublicKeyTypeNIST256p1:
-    case TWPublicKeyTypeNIST256p1Extended:
-    case TWPublicKeyTypeED25519:
-    case TWPublicKeyTypeED25519Blake2b:
-    case TWPublicKeyTypeED25519Cardano:
-    case TWPublicKeyTypeCURVE25519:
-    default:
-        return false;
-    }
+    return Rust::tw_public_key_verify_as_der(_impl.get(), signature.data(), signature.size(), message.data(), message.size());
 }
 
 Data PublicKey::hash(const Data& prefix, Hash::Hasher hasher, bool skipTypeByte) const {
@@ -251,20 +90,11 @@ Data PublicKey::hash(const Data& prefix, Hash::Hasher hasher, bool skipTypeByte)
 }
 
 PublicKey PublicKey::recoverRaw(const Data& signatureRS, byte recId, const Data& messageDigest) {
-    if (signatureRS.size() < 2 * PrivateKey::_size) {
-        throw std::invalid_argument("signature too short");
+    auto* pubkey = Rust::tw_public_key_recover_from_signature(signatureRS.data(), signatureRS.size(), messageDigest.data(), messageDigest.size(), recId);
+    if (pubkey == nullptr) {
+        throw std::invalid_argument("Recover failed");
     }
-    if (recId >= 4) {
-        throw std::invalid_argument("Invalid recId (>=4)");
-    }
-    if (messageDigest.size() < PrivateKey::_size) {
-        throw std::invalid_argument("digest too short");
-    }
-    TW::Data result(secp256k1SignatureSize);
-    if (auto ret = ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signatureRS.data(), messageDigest.data(), recId); ret != 0) {
-        throw std::invalid_argument("recover failed " + std::to_string(ret));
-    }
-    return PublicKey(result, TWPublicKeyTypeSECP256k1Extended);
+    return PublicKey(Rust::wrapTWPublicKey(pubkey));
 }
 
 PublicKey PublicKey::recover(const Data& signature, const Data& messageDigest) {
@@ -283,11 +113,12 @@ bool PublicKey::isValidED25519() const {
     if (type != TWPublicKeyTypeED25519) {
         return false;
     }
-    if (bytes.size() != ed25519Size) {
-        return false;
-    }
-    ge25519 r;
-    return ge25519_unpack_negative_vartime(&r, bytes.data()) != 0;
+    return _impl != nullptr;
+}
+
+void PublicKey::cleanup() {
+    memzero(bytes.data(), bytes.size());
+    _impl = nullptr;
 }
 
 } // namespace TW

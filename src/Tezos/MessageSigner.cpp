@@ -38,7 +38,7 @@ std::string MessageSigner::formatMessage(const std::string& message, const std::
 }
 
 std::string MessageSigner::signMessage(const PrivateKey& privateKey, const std::string& message) {
-    auto signature = privateKey.sign(Hash::blake2b(parse_hex(message), 32), TWCurveED25519);
+    auto signature = privateKey.sign(Hash::blake2b(parse_hex(message), 32));
     return Base58::encodeCheck(concat(gEdSigPrefix, signature));
 }
 

@@ -6,7 +6,9 @@ use serde::Deserialize;
 use tw_encoding::hex::{self, as_hex};
 use tw_hash::{H256, H512};
 use tw_keypair::ed25519::waves::KeyPair;
+use tw_keypair::ffi::curve25519::tw_curve25519_pubkey_to_ed25519;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
+use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_misc::traits::ToBytesZeroizing;
 
 /// The tests were generated in C++ using the `trezor-crypto` library.
@@ -61,4 +63,18 @@ fn test_ed25519_waves_priv_to_pub() {
         let public = keypair.public();
         assert_eq!(public.to_bytes(), test.public);
     }
+}
+
+#[test]
+fn test_tw_curve25519_pubkey_to_ed25519() {
+    let pubkey = "559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d";
+    let pubkey_data = hex::decode(pubkey).unwrap();
+    let tw_pubkey = TWDataHelper::create(pubkey_data);
+
+    let hash = TWDataHelper::wrap(unsafe { tw_curve25519_pubkey_to_ed25519(tw_pubkey.ptr()) });
+
+    assert_eq!(
+        hex::encode(hash.to_vec().unwrap(), false),
+        "ff84c4bfc095df25b01e48807715856d95af93d88c5b57f30cb0ce567ca4ce56"
+    );
 }

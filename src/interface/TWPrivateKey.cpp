@@ -2,12 +2,10 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+#include "rand.h"
 #include "../PrivateKey.h"
 #include "../PublicKey.h"
 
-#include <TrezorCrypto/ecdsa.h>
-#include <TrezorCrypto/rand.h>
-#include <TrezorCrypto/secp256k1.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWCoinType.h>
 
@@ -15,10 +13,10 @@
 
 using namespace TW;
 
-struct TWPrivateKey *TWPrivateKeyCreate() {
+struct TWPrivateKey *TWPrivateKeyCreate(enum TWCurve curve) {
     Data bytes(PrivateKey::_size);
     random_buffer(bytes.data(), PrivateKey::_size);
-    if (!PrivateKey::isValid(bytes)) {
+    if (!PrivateKey::isValid(bytes, curve)) {
         // Under no circumstance return an invalid private key. We'd rather
         // crash. This also captures cases where the random generator fails
         // since we initialize the array to zeros, which is an invalid private
@@ -26,21 +24,21 @@ struct TWPrivateKey *TWPrivateKeyCreate() {
         std::terminate();
     }
 
-    return new TWPrivateKey{ PrivateKey(std::move(bytes)) };
+    return new TWPrivateKey{ PrivateKey(std::move(bytes), curve) };
 }
 
-struct TWPrivateKey *_Nullable TWPrivateKeyCreateWithData(TWData *_Nonnull data) {
+struct TWPrivateKey *_Nullable TWPrivateKeyCreateWithData(TWData *_Nonnull data, enum TWCurve curve) {
     auto dataSize = TWDataSize(data);
     Data bytes(dataSize);
     TWDataCopyBytes(data, 0, dataSize, bytes.data());
-    if (!PrivateKey::isValid(bytes)) {
+    if (!PrivateKey::isValid(bytes, curve)) {
         return nullptr;
     }
-   return new TWPrivateKey{ PrivateKey(std::move(bytes)) };
+    return new TWPrivateKey{ PrivateKey(std::move(bytes), curve) };
 }
 
 struct TWPrivateKey *_Nullable TWPrivateKeyCreateCopy(struct TWPrivateKey *_Nonnull key) {
-   return new TWPrivateKey{ PrivateKey(key->impl.bytes) };
+   return new TWPrivateKey{ PrivateKey(key->impl.bytes, key->impl.curve()) };
 }
 
 void TWPrivateKeyDelete(struct TWPrivateKey *_Nonnull pk) {
@@ -88,9 +86,17 @@ struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivate
     return TWPrivateKeyGetPublicKeyByType(pk, TWPublicKeyTypeCURVE25519);
 }
 
-TWData *TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, enum TWCurve curve) {
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeySchnorr(struct TWPrivateKey *_Nonnull pk) {
+    return TWPrivateKeyGetPublicKeyByType(pk, TWPublicKeyTypeSchnorr);
+}
+
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyZilliqaSchnorr(struct TWPrivateKey *_Nonnull pk) {
+    return TWPrivateKeyGetPublicKeyByType(pk, TWPublicKeyTypeZILLIQASchnorr);
+}
+
+TWData *TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest) {
     const auto& d = *reinterpret_cast<const Data*>(digest);
-    auto result = pk->impl.sign(d, curve);
+    auto result = pk->impl.sign(d);
     if (result.empty()) {
         return nullptr;
     } else {
@@ -98,20 +104,9 @@ TWData *TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull dige
     }
 }
 
-TWData* TWPrivateKeySignAsDER(struct TWPrivateKey* pk, TWData* digest) {
-    auto& d = *reinterpret_cast<const Data*>(digest);
+TWData *TWPrivateKeySignAsDER(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest) {
+    const auto& d = *reinterpret_cast<const Data*>(digest);
     auto result = pk->impl.signAsDER(d);
-    if (result.empty()) {
-        return nullptr;
-    } else {
-        return TWDataCreateWithBytes(result.data(), result.size());
-    }
-}
-
-TWData *TWPrivateKeySignZilliqaSchnorr(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull message) {
-    const auto& msg = *reinterpret_cast<const Data*>(message);
-    auto result = pk->impl.signZilliqa(msg);
-
     if (result.empty()) {
         return nullptr;
     } else {

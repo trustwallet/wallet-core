@@ -7,9 +7,6 @@
 #include "../HexCoding.h"
 #include "../PublicKey.h"
 
-#include <TrezorCrypto/ecdsa.h>
-#include <TrezorCrypto/secp256k1.h>
-
 using TW::PublicKey;
 
 struct TWPublicKey *_Nullable TWPublicKeyCreateWithData(TWData *_Nonnull data, enum TWPublicKeyType type) {
@@ -56,12 +53,6 @@ bool TWPublicKeyVerifyAsDER(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull si
     const auto& s = *reinterpret_cast<const TW::Data *>(signature);
     const auto& m = *reinterpret_cast<const TW::Data *>(message);
     return pk->impl.verifyAsDER(s, m);
-}
-
-bool TWPublicKeyVerifyZilliqaSchnorr(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull signature, TWData *_Nonnull message) {
-    const auto& s = *reinterpret_cast<const TW::Data *>(signature);
-    const auto& m = *reinterpret_cast<const TW::Data *>(message);
-    return pk->impl.verifyZilliqa(s, m);
 }
 
 enum TWPublicKeyType TWPublicKeyKeyType(struct TWPublicKey *_Nonnull publicKey) {

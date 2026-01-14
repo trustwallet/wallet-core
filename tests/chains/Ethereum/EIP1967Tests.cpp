@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "TestUtilities.h"
-#include <TrustWalletCore/TWEthereum.h>
+#include <TrustWalletCore/Generated/TWEthereum.h>
 #include <TrustWalletCore/TWHash.h>
 #include <HexCoding.h>
 #include <PrivateKey.h>

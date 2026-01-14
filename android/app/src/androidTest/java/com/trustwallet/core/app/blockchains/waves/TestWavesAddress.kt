@@ -14,7 +14,7 @@ class TestAddress {
 
     @Test
     fun testAddressFromPrivateKey() {
-        val key = PrivateKey("9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a".toHexByteArray())
+        val key = PrivateKey("9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a".toHexByteArray(), CoinType.WAVES.curve())
         val pubkey = key.publicKeyCurve25519
         val address = AnyAddress(pubkey, CoinType.WAVES)
 

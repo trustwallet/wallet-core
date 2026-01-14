@@ -4,8 +4,8 @@
 
 #include "TestUtilities.h"
 #include "TrustWalletCore/TWCryptoBox.h"
-#include "TrustWalletCore/TWCryptoBoxPublicKey.h"
-#include "TrustWalletCore/TWCryptoBoxSecretKey.h"
+#include "TrustWalletCore/Generated/TWCryptoBoxPublicKey.h"
+#include "TrustWalletCore/Generated/TWCryptoBoxSecretKey.h"
 
 #include <gtest/gtest.h>
 

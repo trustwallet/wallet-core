@@ -96,9 +96,9 @@ TWData* _Nonnull TWHDWalletEntropy(struct TWHDWallet* _Nonnull wallet);
 /// \param wallet non-null TWHDWallet
 /// \param curve  a curve
 /// \note Returned object needs to be deleted with \TWPrivateKeyDelete
-/// \return Non-null corresponding private key
+/// \return Corresponding private key. Returns null for `TWCurveED25519ExtendedCardano`.
 TW_EXPORT_METHOD
-struct TWPrivateKey* _Nonnull TWHDWalletGetMasterKey(struct TWHDWallet* _Nonnull wallet, enum TWCurve curve);
+struct TWPrivateKey* _Nullable TWHDWalletGetMasterKey(struct TWHDWallet* _Nonnull wallet, enum TWCurve curve);
 
 /// Generates the default private key for the specified coin, using default derivation.
 ///

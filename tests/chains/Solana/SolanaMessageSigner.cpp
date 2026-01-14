@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-#include <TrustWalletCore/TWMessageSigner.h>
+#include <TrustWalletCore/Generated/TWMessageSigner.h>
 #include <TrustWalletCore/TWString.h>
 
 #include "Data.h"

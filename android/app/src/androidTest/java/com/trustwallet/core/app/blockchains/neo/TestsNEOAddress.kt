@@ -33,7 +33,7 @@ class TestNEOAddress {
 
     @Test
     fun testAddressFromPrivateKey() {
-        val key = PrivateKey(Numeric.hexStringToByteArray("2A9EAB0FEC93CD94FA0A209AC5604602C1F0105FB02EAB398E17B4517C2FFBAB"))
+        val key = PrivateKey(Numeric.hexStringToByteArray("2A9EAB0FEC93CD94FA0A209AC5604602C1F0105FB02EAB398E17B4517C2FFBAB"), CoinType.NEO.curve())
         val pubkey = key.publicKeyNist256p1
         val address = AnyAddress(pubkey, CoinType.NEO)
         val expectedAddressString = "AQCSMB3oSDA1dHPn6GXN6KB4NHmdo1fX41"

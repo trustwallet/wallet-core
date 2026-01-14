@@ -25,7 +25,7 @@ TEST(NeblAddress, Invalid) {
 }
 
 TEST(NeblAddress, FromPrivateKey) {
-    auto privateKey = PrivateKey(parse_hex("4222aae79af41eade7b07ce6fd44d926ea8e3f95e51a06e85f8bdec89680cbd9"));
+    auto privateKey = PrivateKey(parse_hex("4222aae79af41eade7b07ce6fd44d926ea8e3f95e51a06e85f8bdec89680cbd9"), TWCoinTypeCurve(TWCoinTypeNebl));
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto address = Address(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeNebl));
     ASSERT_EQ(address.string(), "NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc");

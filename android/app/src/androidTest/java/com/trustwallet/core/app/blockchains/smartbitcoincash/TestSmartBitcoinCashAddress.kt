@@ -18,7 +18,7 @@ class TestSmartBitcoinCashAddress {
 
     @Test
     fun testAddress() {
-        val key = PrivateKey("155cbd57319f3d938977b4c18000473eb3c432c4e31b667b63e88559c497d82d".toHexByteArray())
+        val key = PrivateKey("155cbd57319f3d938977b4c18000473eb3c432c4e31b667b63e88559c497d82d".toHexByteArray(), CoinType.SMARTBITCOINCASH.curve())
         val pubkey = key.getPublicKeySecp256k1(false)
         val address = AnyAddress(pubkey, CoinType.SMARTBITCOINCASH)
         val expected = AnyAddress("0x8bFC9477684987dcAf0970b9bce5E3D9267C99C0", CoinType.SMARTBITCOINCASH)

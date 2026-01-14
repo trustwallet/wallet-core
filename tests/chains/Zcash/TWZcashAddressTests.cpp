@@ -26,7 +26,7 @@ TEST(TWZcash, TexAddressData) {
 }
 
 TEST(TWZcash, TransparentAddress) {
-    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("987919d988ef94e678bce254c932e7a7a76744b2c008467448406d4246513132").get()));
+    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("987919d988ef94e678bce254c932e7a7a76744b2c008467448406d4246513132").get(), TWCoinTypeCurve(TWCoinTypeZcash)));
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
     auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeZcash));
     auto addressString = WRAPS(TWAnyAddressDescription(address.get()));

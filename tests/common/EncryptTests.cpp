@@ -20,27 +20,6 @@ inline void assertHexEqual(const Data& data, const char* expected) {
     EXPECT_EQ(hex(data), expected);
 }
 
-TEST(Encrypt, paddingSize) {
-    EXPECT_EQ(paddingSize(0, 16, TWAESPaddingModeZero), 0ul);
-    EXPECT_EQ(paddingSize(1, 16, TWAESPaddingModeZero), 15ul);
-    EXPECT_EQ(paddingSize(8, 16, TWAESPaddingModeZero), 8ul);
-    EXPECT_EQ(paddingSize(15, 16, TWAESPaddingModeZero), 1ul);
-    EXPECT_EQ(paddingSize(16, 16, TWAESPaddingModeZero), 0ul);
-    EXPECT_EQ(paddingSize(17, 16, TWAESPaddingModeZero), 15ul);
-    EXPECT_EQ(paddingSize(24, 16, TWAESPaddingModeZero), 8ul);
-    EXPECT_EQ(paddingSize(31, 16, TWAESPaddingModeZero), 1ul);
-    EXPECT_EQ(paddingSize(32, 16, TWAESPaddingModeZero), 0ul);
-    EXPECT_EQ(paddingSize(0, 16, TWAESPaddingModePKCS7), 16ul);
-    EXPECT_EQ(paddingSize(1, 16, TWAESPaddingModePKCS7), 15ul);
-    EXPECT_EQ(paddingSize(8, 16, TWAESPaddingModePKCS7), 8ul);
-    EXPECT_EQ(paddingSize(15, 16, TWAESPaddingModePKCS7), 1ul);
-    EXPECT_EQ(paddingSize(16, 16, TWAESPaddingModePKCS7), 16ul);
-    EXPECT_EQ(paddingSize(17, 16, TWAESPaddingModePKCS7), 15ul);
-    EXPECT_EQ(paddingSize(24, 16, TWAESPaddingModePKCS7), 8ul);
-    EXPECT_EQ(paddingSize(31, 16, TWAESPaddingModePKCS7), 1ul);
-    EXPECT_EQ(paddingSize(32, 16, TWAESPaddingModePKCS7), 16ul);
-}
-
 TEST(Encrypt, AESCBCEncrypt) {
 	auto iv = parse_hex("000102030405060708090A0B0C0D0E0F");
     auto data = parse_hex("6bc1bee22e409f96e93d7e117393172a");
@@ -52,7 +31,7 @@ TEST(Encrypt, AESCBCEncrypt) {
 TEST(Encrypt, AESCBCEncryptInvalidIv) {
     auto iv = parse_hex("0001020304050607");
     auto data = parse_hex("6bc1bee22e409f96e93d7e117393172a");
-    ASSERT_THROW(AESCBCEncrypt(gKey, data, iv), std::invalid_argument);
+    ASSERT_THROW(AESCBCEncrypt(gKey, data, iv), std::runtime_error);
 }
 
 TEST(Encrypt, AESCBCEncryptWithPadding) {
@@ -82,7 +61,7 @@ TEST(Encrypt, AESCBCDecrypt) {
 TEST(Encrypt, AESCBCDecryptInvalidIv) {
     auto iv = parse_hex("000102030405060708090A0B0C0D0E0F000102030405060708090A0B0C0D0E0F");
     auto cipher = parse_hex("f58c4c04d6e5f1ba779eabfb5f7bfbd6");
-    ASSERT_THROW(AESCBCDecrypt(gKey, cipher, iv), std::invalid_argument);
+    ASSERT_THROW(AESCBCDecrypt(gKey, cipher, iv), std::runtime_error);
 }
 
 TEST(Encrypt, AESCBCDecryptWithPadding) {
@@ -117,7 +96,7 @@ TEST(Encrypt, AESCTREncryptIvalidIv) {
     // iv is too short.
     auto iv = parse_hex("ff");
     auto data = parse_hex("6bc1bee22e409f96e93d7e117393172a");
-    ASSERT_THROW(AESCTREncrypt(gKey, data, iv), std::invalid_argument);
+    ASSERT_THROW(AESCTREncrypt(gKey, data, iv), std::runtime_error);
 }
 
 TEST(Encrypt, AESCTRDecrypt) {
@@ -132,7 +111,7 @@ TEST(Encrypt, AESCTRDecryptIvalidIv) {
     // iv is too long.
     auto iv = parse_hex("f0f1f2f3f4f5f6f7f8f9fafbfcfdfefff0");
     auto cipher = parse_hex("601ec313775789a5b7a7f504bbf3d228");
-    ASSERT_THROW(AESCTRDecrypt(gKey, cipher, iv), std::invalid_argument);
+    ASSERT_THROW(AESCTRDecrypt(gKey, cipher, iv), std::runtime_error);
 }
 
 TEST(Encrypt, AESCBCEncryptMultipleBlocks) {
@@ -175,7 +154,7 @@ TEST(Encrypt, AESCBCEncryptInvalidKeySize) {
     Data iv = Data(16);
     try {
         Data result = AESCBCEncrypt(Data(19), Data(100), iv);
-    } catch (std::invalid_argument&) {
+    } catch (...) {
         // expected exception, OK
         return;
     }
@@ -186,7 +165,7 @@ TEST(Encrypt, AESCBCDecryptInvalidKeySize) {
     Data iv = Data(16);
     try {
         Data result = AESCBCDecrypt(Data(19), Data(100), iv);
-    } catch (std::invalid_argument&) {
+    } catch (...) {
         // expected exception, OK
         return;
     }
@@ -197,7 +176,7 @@ TEST(Encrypt, AESCBCDecryptInvalidDataSize) {
     Data iv = Data(16);
     try {
         Data result = AESCBCDecrypt(Data(16), Data(100), iv);
-    } catch (std::invalid_argument&) {
+    } catch (...) {
         // expected exception, OK
         return;
     }
@@ -208,7 +187,7 @@ TEST(Encrypt, AESCTREncryptInvalidKeySize) {
     Data iv = Data(16);
     try {
         Data result = AESCTREncrypt(Data(19), Data(100), iv);
-    } catch (std::invalid_argument&) {
+    } catch (...) {
         // expected exception, OK
         return;
     }
@@ -219,7 +198,7 @@ TEST(Encrypt, AESCTRDecryptInvalidKeySize) {
     Data iv = Data(16);
     try {
         Data result = AESCTRDecrypt(Data(19), Data(100), iv);
-    } catch (std::invalid_argument&) {
+    } catch (...) {
         // expected exception, OK
         return;
     }

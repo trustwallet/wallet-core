@@ -138,16 +138,17 @@ public final class KeyStore {
             return try self.import(mnemonic: mnemonic, name: name, encryptPassword: newPassword, coins: coins)
         }
 
-        guard let privateKey = PrivateKey(data: data) else {
+        let coin = coins.first ?? .ethereum
+        guard let privateKey = PrivateKey(data: data, curve: coin.curve) else {
             throw Error.invalidKey
         }
         if key.hasPrivateKeyEncoded {
             guard let encodedPrivateKey = key.decryptPrivateKeyEncoded(password: Data(password.utf8)) else {
                 throw Error.invalidPassword
             }
-            return try self.import(encodedPrivateKey: encodedPrivateKey, name: name, password: newPassword, coin: coins.first ?? .ethereum)
+            return try self.import(encodedPrivateKey: encodedPrivateKey, name: name, password: newPassword, coin: coin)
         } else {
-            return try self.import(privateKey: privateKey, name: name, password: newPassword, coin: coins.first ?? .ethereum)
+            return try self.import(privateKey: privateKey, name: name, password: newPassword, coin: coin)
         }
     }
 

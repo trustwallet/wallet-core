@@ -4,7 +4,7 @@
 
 
 #include <TrustWalletCore/TWString.h>
-#include <TrezorCrypto/memzero.h>
+#include "memzero.h"
 #include <string>
 
 TWString *_Nonnull TWStringCreateWithUTF8Bytes(const char *_Nonnull bytes) {

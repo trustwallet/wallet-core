@@ -7,6 +7,7 @@ import org.junit.Test
 import wallet.core.jni.PrivateKey
 import wallet.core.jni.StellarPassphrase
 import wallet.core.java.AnySigner
+import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.STELLAR
 import wallet.core.jni.proto.Stellar
 import wallet.core.jni.proto.Stellar.SigningOutput
@@ -31,7 +32,7 @@ class TestStellarTransactionSigner {
             sequence = 2
             passphrase = StellarPassphrase.STELLAR.toString()
             opPayment = operation.build()
-            privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray(), CoinType.STELLAR.curve()).data())
         }
 
         val sign = AnySigner.sign(signingInput.build(), STELLAR, SigningOutput.parser())
@@ -55,7 +56,7 @@ class TestStellarTransactionSigner {
             passphrase = StellarPassphrase.STELLAR.toString()
             opPayment = operation.build()
             memoHash = Stellar.MemoHash.newBuilder().setHash(ByteString.copyFrom("315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3".toHexByteArray())).build()
-            privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray(), CoinType.STELLAR.curve()).data())
         }
 
         val sign = AnySigner.sign(signingInput.build(), STELLAR, SigningOutput.parser())
@@ -79,7 +80,7 @@ class TestStellarTransactionSigner {
             passphrase = StellarPassphrase.STELLAR.toString()
             opPayment = operation.build()
             memoReturnHash = Stellar.MemoHash.newBuilder().setHash(ByteString.copyFrom("315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3".toHexByteArray())).build()
-            privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray(), CoinType.STELLAR.curve()).data())
         }
 
         val sign = AnySigner.sign(signingInput.build(), STELLAR, SigningOutput.parser())
@@ -103,7 +104,7 @@ class TestStellarTransactionSigner {
             passphrase = StellarPassphrase.STELLAR.toString()
             opPayment = operation.build()
             memoId = Stellar.MemoId.newBuilder().setId(1234567890).build()
-            privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray(), CoinType.STELLAR.curve()).data())
         }
 
         val sign = AnySigner.sign(signingInput.build(), STELLAR, SigningOutput.parser())
@@ -127,7 +128,7 @@ class TestStellarTransactionSigner {
             passphrase = StellarPassphrase.STELLAR.toString()
             opCreateAccount = operation.build()
             memoId = Stellar.MemoId.newBuilder().setId(1234567890).build()
-            privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray(), CoinType.STELLAR.curve()).data())
         }
 
         val sign = AnySigner.sign(signingInput.build(), STELLAR, SigningOutput.parser())
@@ -155,7 +156,7 @@ class TestStellarTransactionSigner {
             sequence = 144098454883270659
             passphrase = StellarPassphrase.STELLAR.toString()
             opChangeTrust = operation.build()
-            privateKey = ByteString.copyFrom(PrivateKey("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9".toHexByteArray(), CoinType.STELLAR.curve()).data())
         }
 
         val sign = AnySigner.sign(signingInput.build(), STELLAR, SigningOutput.parser())

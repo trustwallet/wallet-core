@@ -24,12 +24,11 @@ TEST(TezosCompiler, CompileWithSignatures) {
 
     // Test key
     auto privateKey =
-        PrivateKey(parse_hex("2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f"));
+        PrivateKey(parse_hex("2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f"), TWCoinTypeCurve(coin));
 
     // This is the forged (non-base58) reveal public key bytes used in older golden vectors.
     // It corresponds to edpk "edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A"
-    auto revealKey = parse_hex(
-        "311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff95");
+    auto revealKey = parse_hex("311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff95");
 
     // -------- Step 1: Prepare transaction input (protobuf)
     TW::Tezos::Proto::SigningInput input;
@@ -76,7 +75,7 @@ TEST(TezosCompiler, CompileWithSignatures) {
 
     // Produce a proper 64-byte Ed25519 signature (R||S) over the preimage hash.
     Data digest(preImageHash.begin(), preImageHash.end());
-    auto signature = privateKey.sign(digest, TWCurveED25519);
+    auto signature = privateKey.sign(digest);
     ASSERT_EQ(signature.size(), 64ul);
 
     // -------- Step 3: Compile transaction using that signature

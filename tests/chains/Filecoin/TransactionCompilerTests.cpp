@@ -26,7 +26,7 @@ TEST(FilecoinCompiler, CompileWithSignatures) {
     /// Step 1: Prepare transaction input (protobuf)
     Filecoin::Proto::SigningInput input;
     auto privateKey = parse_hex("1d969865e189957b9824bd34f26d5cbf357fda1a6d844cbf0c9ab1ed93fa7dbe");
-    auto key = PrivateKey(privateKey);
+    auto key = PrivateKey(privateKey, TWCurveSECP256k1);
     auto publicKey = key.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
     auto toAddress =
         "f3um6uo3qt5of54xjbx3hsxbw5mbsc6auxzrvfxekn5bv3duewqyn2tg5rhrlx73qahzzpkhuj7a34iq7oifsq";
@@ -60,7 +60,7 @@ TEST(FilecoinCompiler, CompileWithSignatures) {
     EXPECT_EQ(hex(preImageHash), "8368c0f622b2c529c7fa147d75aa02aaa7fc13fc4847d4dc57e7a5c59048aafe");
 
     // Simulate signature, normally obtained from signature server
-    const auto signature = key.sign(preImageHash, TWCurveSECP256k1);
+    const auto signature = key.sign(preImageHash);
 
     /// Step 3: Compile transaction info
     auto outputData =

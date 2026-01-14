@@ -2,13 +2,15 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::ecdsa::canonical::sign_canonical_ffi;
 use crate::ecdsa::{nist256p1, secp256k1};
 use crate::schnorr;
 use crate::traits::SigningKeyTrait;
 use crate::tw::{Curve, PublicKey, PublicKeyType};
+use crate::zilliqa_schnorr;
 use crate::{ed25519, starkex, KeyPairError, KeyPairResult};
 use std::ops::Range;
-use tw_hash::H256;
+use tw_hash::{Hash, H256};
 use tw_misc::traits::ToBytesVec;
 use zeroize::ZeroizeOnDrop;
 
@@ -18,23 +20,24 @@ use zeroize::ZeroizeOnDrop;
 #[derive(ZeroizeOnDrop)]
 pub struct PrivateKey {
     bytes: Vec<u8>,
+    curve: Curve,
 }
 
 /// cbindgen:ignore
 impl PrivateKey {
     /// The number of bytes in a private key.
-    const SIZE: usize = 32;
+    pub(crate) const SIZE: usize = 32;
     const CARDANO_SIZE: usize = ed25519::cardano::ExtendedPrivateKey::LEN;
 
     const KEY_RANGE: Range<usize> = 0..Self::SIZE;
     const EXTENDED_CARDANO_RANGE: Range<usize> = 0..Self::CARDANO_SIZE;
 
     /// Validates the given `bytes` secret and creates a private key.
-    pub fn new(bytes: Vec<u8>) -> KeyPairResult<PrivateKey> {
-        if !Self::is_valid_general(&bytes) {
+    pub fn new(bytes: Vec<u8>, curve: Curve) -> KeyPairResult<PrivateKey> {
+        if !Self::is_valid_general(&bytes, &curve) {
             return Err(KeyPairError::InvalidSecretKey);
         }
-        Ok(PrivateKey { bytes })
+        Ok(PrivateKey { bytes, curve })
     }
 
     pub fn bytes(&self) -> &[u8] {
@@ -59,9 +62,15 @@ impl PrivateKey {
         Ok(&self.bytes[Self::EXTENDED_CARDANO_RANGE])
     }
 
-    /// Checks if the given `bytes` secret is valid in general (without a concrete curve).
-    pub fn is_valid_general(bytes: &[u8]) -> bool {
-        if bytes.len() != Self::SIZE && bytes.len() != Self::CARDANO_SIZE {
+    /// Checks if the given `bytes` secret is valid in general for the given `curve`.
+    pub fn is_valid_general(bytes: &[u8], curve: &Curve) -> bool {
+        let expected_len = if curve == &Curve::Ed25519ExtendedCardano {
+            Self::CARDANO_SIZE
+        } else {
+            Self::SIZE
+        };
+
+        if bytes.len() != expected_len {
             return false;
         }
         // Check for zero address.
@@ -70,7 +79,7 @@ impl PrivateKey {
 
     /// Checks if the given `bytes` secret is valid.
     pub fn is_valid(bytes: &[u8], curve: Curve) -> bool {
-        if !Self::is_valid_general(bytes) {
+        if !Self::is_valid_general(bytes, &curve) {
             return false;
         }
         match curve {
@@ -91,11 +100,14 @@ impl PrivateKey {
             },
             Curve::Starkex => starkex::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
             Curve::Schnorr => schnorr::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
+            Curve::ZilliqaSchnorr => {
+                zilliqa_schnorr::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok()
+            },
         }
     }
 
     /// Signs a `message` with using the given elliptic curve.
-    pub fn sign(&self, message: &[u8], curve: Curve) -> KeyPairResult<Vec<u8>> {
+    pub fn sign(&self, message: &[u8]) -> KeyPairResult<Vec<u8>> {
         fn sign_impl<Key>(signing_key: Key, message: &[u8]) -> KeyPairResult<Vec<u8>>
         where
             Key: SigningKeyTrait,
@@ -105,7 +117,7 @@ impl PrivateKey {
             signing_key.sign(hash_to_sign).map(|sig| sig.to_vec())
         }
 
-        match curve {
+        match self.curve {
             Curve::Secp256k1 => sign_impl(self.to_secp256k1_privkey()?, message),
             Curve::Ed25519 => sign_impl(self.to_ed25519()?, message),
             Curve::Ed25519Blake2bNano => sign_impl(self.to_ed25519_blake2b()?, message),
@@ -116,6 +128,38 @@ impl PrivateKey {
             },
             Curve::Starkex => sign_impl(self.to_starkex_privkey()?, message),
             Curve::Schnorr => sign_impl(self.to_schnorr_privkey()?, message),
+            Curve::ZilliqaSchnorr => sign_impl(self.to_zilliqa_schnorr_privkey()?, message),
+        }
+    }
+
+    pub fn sign_canonical(
+        &self,
+        message: &[u8],
+        canonical_checker: Option<unsafe extern "C" fn(by: u8, sig: *const u8) -> i32>,
+    ) -> KeyPairResult<Vec<u8>> {
+        let message_hash =
+            Hash::<32>::try_from(message).map_err(|_| KeyPairError::InvalidSignMessage)?;
+
+        match self.curve {
+            Curve::Secp256k1 => {
+                let private_key = self.to_secp256k1_privkey()?;
+                sign_canonical_ffi(
+                    &private_key.secret,
+                    message_hash,
+                    canonical_checker,
+                    |sig| sig.vrs().to_vec(),
+                )
+            },
+            Curve::Nist256p1 => {
+                let private_key = self.to_nist256p1_privkey()?;
+                sign_canonical_ffi(
+                    &private_key.secret,
+                    message_hash,
+                    canonical_checker,
+                    |sig| sig.vrs().to_vec(),
+                )
+            },
+            _ => Err(KeyPairError::UnsupportedCurve),
         }
     }
 
@@ -164,6 +208,10 @@ impl PrivateKey {
                 let privkey = self.to_schnorr_privkey()?;
                 Ok(PublicKey::Schnorr(privkey.public()))
             },
+            PublicKeyType::ZilliqaSchnorr => {
+                let privkey = self.to_zilliqa_schnorr_privkey()?;
+                Ok(PublicKey::ZilliqaSchnorr(privkey.public()))
+            },
         }
     }
 
@@ -205,5 +253,28 @@ impl PrivateKey {
     /// Tries to convert [`PrivateKey::key`] to [`schnorr::PrivateKey`].
     fn to_schnorr_privkey(&self) -> KeyPairResult<schnorr::PrivateKey> {
         schnorr::PrivateKey::try_from(self.key().as_slice())
+    }
+
+    /// Tries to convert [`PrivateKey::key`] to [`zilliqa_schnorr::PrivateKey`].
+    fn to_zilliqa_schnorr_privkey(&self) -> KeyPairResult<zilliqa_schnorr::PrivateKey> {
+        zilliqa_schnorr::PrivateKey::try_from(self.key().as_slice())
+    }
+
+    /// Signs a digest using ECDSA as DER.
+    pub fn sign_as_der(&self, digest: &[u8]) -> KeyPairResult<Vec<u8>> {
+        match self.curve {
+            Curve::Secp256k1 => {
+                let private_key = self.to_secp256k1_privkey()?;
+                let hash_to_sign =
+                    H256::try_from(digest).map_err(|_| KeyPairError::InvalidSignMessage)?;
+                let sig = private_key
+                    .sign(hash_to_sign)
+                    .map_err(|_| KeyPairError::InvalidSignature)?;
+                let der_sig = crate::ecdsa::der::Signature::new(sig.r(), sig.s())
+                    .map_err(|_| KeyPairError::InvalidSignature)?;
+                Ok(der_sig.der_bytes())
+            },
+            _ => Err(KeyPairError::UnsupportedCurve),
+        }
     }
 }

@@ -5,6 +5,7 @@
 use crate::ffi::c_byte_array_ref::CByteArrayRef;
 use crate::ffi::RawPtrTrait;
 use std::ffi::{c_char, CStr, CString};
+use zeroize::{Zeroize, Zeroizing};
 
 /// Defines a resizable string.
 ///
@@ -34,11 +35,6 @@ impl TWString {
         Some(TWString(CString::from(str)))
     }
 
-    /// Converts `TWString` into `String` without additional allocation.
-    pub fn into_string(self) -> Option<String> {
-        self.0.into_string().ok()
-    }
-
     /// Returns a string slice.
     pub fn as_str(&self) -> Option<&str> {
         self.0.to_str().ok()
@@ -50,9 +46,25 @@ impl TWString {
     }
 }
 
+impl Drop for TWString {
+    fn drop(&mut self) {
+        let len = self.0.as_bytes().len();
+        let ptr = self.0.as_ptr() as *mut u8;
+        unsafe {
+            Zeroize::zeroize(std::slice::from_raw_parts_mut(ptr, len));
+        }
+    }
+}
+
 impl From<String> for TWString {
     fn from(s: String) -> Self {
         TWString(CString::new(s).expect("CString::new(String) should never fail"))
+    }
+}
+
+impl From<Zeroizing<String>> for TWString {
+    fn from(s: Zeroizing<String>) -> Self {
+        TWString(CString::new(s.as_str()).expect("CString::new(String) should never fail"))
     }
 }
 

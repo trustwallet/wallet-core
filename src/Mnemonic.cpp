@@ -4,8 +4,7 @@
 
 #include "Mnemonic.h"
 
-#include <TrezorCrypto/bip39_english.h>
-#include <TrezorCrypto/bip39.h>
+#include "rust/Wrapper.h"
 
 #include <algorithm>
 #include <string>
@@ -17,60 +16,49 @@ namespace TW {
 
 const int Mnemonic::SuggestMaxCount = 10;
 
-bool Mnemonic::isValid(const std::string& mnemonic) {
-    return mnemonic_check(mnemonic.c_str()) != 0;
+std::string Mnemonic::generate(uint32_t strength) {
+    const Rust::TWStringWrapper result = Rust::tw_mnemonic_generate(strength);
+    return result.toStringOrDefault();
 }
 
-inline const char* const* mnemonicWordlist() { return wordlist; }
+std::string Mnemonic::generateFromData(const Data& data) {
+    const Rust::TWDataWrapper dataRustData = data;
+    const Rust::TWStringWrapper result = Rust::tw_mnemonic_generate_from_data(dataRustData.get());
+    return result.toStringOrDefault();
+}
+
+bool Mnemonic::isValid(const std::string& mnemonic) {
+    const Rust::TWStringWrapper mnemonicRustStr = mnemonic;
+    return Rust::tw_mnemonic_is_valid(mnemonicRustStr.get());
+}
+
+std::string Mnemonic::getWord(uint32_t index) {
+    const Rust::TWStringWrapper result = Rust::tw_mnemonic_get_word(index);
+    return result.toStringOrDefault();
+}
 
 bool Mnemonic::isValidWord(const std::string& word) {
-    const char* wordC = word.c_str();
-    const auto len = word.length();
-    // Although this operation is not security-critical, we aim for constant-time operation here as well
-    // (i.e., no early exit on match)
-    auto found = false;
-    for (const char* const* w = mnemonicWordlist(); *w != nullptr; ++w) {
-        if (std::string(*w).size() == len && strncmp(*w, wordC, len) == 0) {
-            found = true;
-        }
-    }
-    return found;
+    const Rust::TWStringWrapper wordRustStr = word;
+    return Rust::tw_mnemonic_is_valid_word(wordRustStr.get());
 }
 
 std::string Mnemonic::suggest(const std::string& prefix) {
-    if (prefix.size() == 0) {
-        return "";
-    }
-    assert(prefix.size() >= 1);
-    // lowercase prefix
-    std::string prefixLo = prefix;
-    std::transform(prefixLo.begin(), prefixLo.end(), prefixLo.begin(),
-        [](unsigned char c){ return std::tolower(c); });
-    const char* prefixLoC = prefixLo.c_str();
+    const Rust::TWStringWrapper prefixRustStr = prefix;
+    const Rust::TWStringWrapper result = Rust::tw_mnemonic_suggest(prefixRustStr.get());
+    return result.toStringOrDefault();
+}
 
-    std::vector<std::string> result;
-    for (const char* const* word = mnemonicWordlist(); *word != nullptr; ++word) {
-        // check first letter match (optimization)
-        if ((*word)[0] == prefixLo[0]) {
-            if (strncmp(*word, prefixLoC, prefixLo.length()) == 0) {
-                // we have a match
-                result.emplace_back(*word);
-                if (result.size() >= SuggestMaxCount) {
-                    break; // enough results
-                }
-            }
-        }
-    }
+Data Mnemonic::toSeed(const std::string& mnemonic, const std::string& passphrase) {
+    const Rust::TWStringWrapper mnemonicRustStr = mnemonic;
+    const Rust::TWStringWrapper passphraseRustStr = passphrase;
+    const Rust::TWDataWrapper result = Rust::tw_mnemonic_to_seed(mnemonicRustStr.get(), passphraseRustStr.get());
+    return result.toDataOrDefault();
+}
 
-    // convert results to one string
-    std::string resultString;
-    for (auto& word: result) {
-        if (resultString.length() > 0) {
-            resultString += " ";
-        }
-        resultString += word;
-    }
-    return resultString;
+Data Mnemonic::toEntropy(const std::string& mnemonic) {
+    const Rust::TWStringWrapper mnemonicRustStr = mnemonic;
+    const Rust::TWDataWrapper result = Rust::tw_mnemonic_to_entropy(mnemonicRustStr.get());
+    return result.toDataOrDefault();
 }
 
 } // namespace TW

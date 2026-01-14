@@ -52,7 +52,7 @@ std::string MessageSigner::signMessage(const PrivateKey& privateKey, const std::
         throw std::invalid_argument("Address does not match key");
     }
     const auto messageHash = messageToHash(message);
-    const auto signature = privateKey.sign(messageHash, TWCurveSECP256k1);
+    const auto signature = privateKey.sign(messageHash);
 
     // The V value: add 31 (or 27 for compressed), and move to the first byte
     const byte v = signature[SignatureRSLength] + PublicKey::SignatureVOffset + (compressed ? 4ul : 0ul);

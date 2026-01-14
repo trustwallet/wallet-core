@@ -6,7 +6,7 @@ import WalletCore
 import XCTest
 
 class BandChainTests: XCTestCase {
-    let privateKey = PrivateKey(data: Data(hexString: "1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6")!)!
+    let privateKey = PrivateKey(data: Data(hexString: "1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6")!, curve: CoinType.bandChain.curve)!
 
     func testAddress() {
         let address = CoinType.bandChain.deriveAddress(privateKey: privateKey)

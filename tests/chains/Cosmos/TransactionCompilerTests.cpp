@@ -25,7 +25,7 @@ TEST(CosmosCompiler, CompileWithSignatures) {
     TW::Cosmos::Proto::SigningInput input;
 
     PrivateKey privateKey =
-        PrivateKey(parse_hex("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af"));
+        PrivateKey(parse_hex("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af"), TWCoinTypeCurve(coin));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     /// Step 1: Prepare transaction input (protobuf)

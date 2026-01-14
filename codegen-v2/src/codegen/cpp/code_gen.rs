@@ -8,7 +8,8 @@ use crate::Error::BadFormat;
 use crate::Result;
 
 static IN_DIR: &str = "../rust/bindings/";
-static HEADER_OUT_DIR: &str = "../include/TrustWalletCore/";
+static HEADER_IN_DIR: &str = "../include/TrustWalletCore/";
+static HEADER_OUT_DIR: &str = "../include/TrustWalletCore/Generated/";
 static SOURCE_OUT_DIR: &str = "../src/Generated/";
 
 fn generate_license(file: &mut std::fs::File) -> Result<()> {
@@ -24,7 +25,7 @@ fn generate_header_guard(file: &mut std::fs::File) -> Result<()> {
 }
 
 fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result<()> {
-    writeln!(file, "#include \"TWBase.h\"")?;
+    writeln!(file, "#include <TrustWalletCore/TWBase.h>")?;
 
     // Include headers based on argument types
     let mut included_headers = std::collections::HashSet::new();
@@ -37,7 +38,17 @@ fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
                         continue;
                     }
                     if included_headers.insert(header_name.clone()) {
-                        writeln!(file, "#include \"{}.h\"", header_name)?;
+                        if std::path::Path::new(&format!("{}{}.h", HEADER_IN_DIR, header_name))
+                            .exists()
+                        {
+                            writeln!(file, "#include <TrustWalletCore/{}.h>", header_name)?;
+                        } else {
+                            writeln!(
+                                file,
+                                "#include <TrustWalletCore/Generated/{}.h>",
+                                header_name
+                            )?;
+                        }
                     }
                 }
                 TWType::Standard(ty) => {
@@ -45,7 +56,11 @@ fn generate_header_includes(file: &mut std::fs::File, info: &TWConfig) -> Result
                         && included_headers.insert("TWCoinType.h".to_string())
                     {
                         // Need to handle this case separately because it's not a pointer type
-                        writeln!(file, "#include \"TWCoinType.h\"")?;
+                        writeln!(file, "#include <TrustWalletCore/TWCoinType.h>")?;
+                    } else if ty.contains("TWFFIAESPaddingMode")
+                        && included_headers.insert("TWAESPaddingMode.h".to_string())
+                    {
+                        writeln!(file, "#include <TrustWalletCore/TWAESPaddingMode.h>")?;
                     }
                 }
             }
@@ -170,7 +185,11 @@ fn generate_wrapper_header(info: &TWConfig) -> Result<()> {
 }
 
 fn generate_source_includes(file: &mut std::fs::File, info: &TWConfig) -> Result<()> {
-    writeln!(file, "#include <TrustWalletCore/{}.h>", info.class)?;
+    writeln!(
+        file,
+        "#include <TrustWalletCore/Generated/{}.h>",
+        info.class
+    )?;
     writeln!(file, "#include \"rust/Wrapper.h\"")?;
 
     // Include headers based on argument types
@@ -311,7 +330,7 @@ fn generate_return_type(func: &TWFunction, converted_args: &Vec<String>) -> Resu
                 let wrapper_class_name = class_name.replace("TW", "");
                 let null_return = match pointer_type {
                     TWPointerType::Nullable | TWPointerType::NullableMut => {
-                        "if (!resultRaw) {{ return nullptr; }}\n"
+                        "\tif (!resultRaw) {{ return nullptr; }}\n"
                     }
                     _ => "",
                 };
@@ -403,7 +422,7 @@ fn generate_conversion_code_with_var_name(tw_type: TWType, name: &str) -> Result
                 writeln!(
                     &mut conversion_code,
                     "\tauto &{name}PrivateKey = *reinterpret_cast<const TW::PrivateKey*>({name});\n\
-                    \tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}PrivateKey.bytes.data(), {name}PrivateKey.bytes.size());\n\
+                    \tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}PrivateKey.bytes.data(), {name}PrivateKey.bytes.size(), static_cast<uint32_t>({name}PrivateKey.curve()));\n\
                     \tconst auto {name}RustPrivateKey = Rust::wrapTWPrivateKey({name}RustRaw);"
                 )
                 .map_err(|e| BadFormat(e.to_string()))?;
@@ -416,7 +435,7 @@ fn generate_conversion_code_with_var_name(tw_type: TWType, name: &str) -> Result
                     "\tstd::shared_ptr<TW::Rust::TWPrivateKey> {name}RustPrivateKey;\n\
                     \tif ({name} != nullptr) {{\n\
                     \t\tconst auto& {name}PrivateKey = {name};\n\
-                    \t\tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}PrivateKey->impl.bytes.data(), {name}PrivateKey->impl.bytes.size());\n\
+                    \t\tauto* {name}RustRaw = Rust::tw_private_key_create_with_data({name}PrivateKey->impl.bytes.data(), {name}PrivateKey->impl.bytes.size(), static_cast<uint32_t>({name}PrivateKey->impl.curve()));\n\
                     \t\t{name}RustPrivateKey = Rust::wrapTWPrivateKey({name}RustRaw);\n\
                     \t}}"
                 )

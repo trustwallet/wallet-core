@@ -25,7 +25,7 @@ TEST(TWPublicKeyTests, Create) {
 }
 
 TEST(TWPublicKeyTests, CreateFromPrivateSecp256k1) {
-    const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveSECP256k1);
     const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
 
@@ -33,7 +33,7 @@ TEST(TWPublicKeyTests, CreateFromPrivateSecp256k1) {
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
     EXPECT_EQ(hex(*((Data*)(publicKeyData.get()))), "0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1");
     EXPECT_EQ(*((std::string*)(WRAPS(TWPublicKeyDescription(publicKey.get())).get())), "0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1");
-    EXPECT_TRUE(TWPublicKeyIsValid(publicKey.get(), TWPublicKeyTypeSECP256k1));
+    EXPECT_TRUE(TWPublicKeyIsValid(publicKeyData.get(), TWPublicKeyTypeSECP256k1));
     EXPECT_TRUE(TWPublicKeyIsCompressed(publicKey.get()));
 }
 
@@ -43,26 +43,29 @@ TEST(TWPublicKeyTests, CreateInvalid) {
 }
 
 TEST(TWPublicKeyTests, CompressedExtended) {
-    const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveCurve25519);
     const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
+    auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
     EXPECT_EQ(TWPublicKeyKeyType(publicKey.get()), TWPublicKeyTypeSECP256k1);
     EXPECT_EQ(publicKey.get()->impl.bytes.size(), 33ul);
     EXPECT_EQ(TWPublicKeyIsCompressed(publicKey.get()), true);
-    EXPECT_TRUE(TWPublicKeyIsValid(publicKey.get(), TWPublicKeyTypeSECP256k1));
+    EXPECT_TRUE(TWPublicKeyIsValid(publicKeyData.get(), TWPublicKeyTypeSECP256k1));
 
     auto extended = WRAP(TWPublicKey, TWPublicKeyUncompressed(publicKey.get()));
+    auto extendedData = WRAPD(TWPublicKeyData(extended.get()));
     EXPECT_EQ(TWPublicKeyKeyType(extended.get()), TWPublicKeyTypeSECP256k1Extended);
     EXPECT_EQ(extended.get()->impl.bytes.size(), 65ul);
     EXPECT_EQ(TWPublicKeyIsCompressed(extended.get()), false);
-    EXPECT_TRUE(TWPublicKeyIsValid(extended.get(), TWPublicKeyTypeSECP256k1Extended));
+    EXPECT_TRUE(TWPublicKeyIsValid(extendedData.get(), TWPublicKeyTypeSECP256k1Extended));
 
     auto compressed = WRAP(TWPublicKey, TWPublicKeyCompressed(extended.get()));
+    auto compressedData = WRAPD(TWPublicKeyData(publicKey.get()));
     //EXPECT_TRUE(compressed == publicKey.get());
     EXPECT_EQ(TWPublicKeyKeyType(compressed.get()), TWPublicKeyTypeSECP256k1);
     EXPECT_EQ(compressed.get()->impl.bytes.size(), 33ul);
     EXPECT_EQ(TWPublicKeyIsCompressed(compressed.get()), true);
-    EXPECT_TRUE(TWPublicKeyIsValid(compressed.get(), TWPublicKeyTypeSECP256k1));
+    EXPECT_TRUE(TWPublicKeyIsValid(compressedData.get(), TWPublicKeyTypeSECP256k1));
 }
 
 TEST(TWPublicKeyTests, Verify) {
@@ -73,7 +76,7 @@ TEST(TWPublicKeyTests, Verify) {
     auto messageData = WRAPD(TWDataCreateWithBytes((const uint8_t*)message, strlen(message)));
     auto digest = WRAPD(TWHashKeccak256(messageData.get()));
 
-    auto signature = WRAPD(TWPrivateKeySign(privateKey.get(), digest.get(), TWCurveSECP256k1));
+    auto signature = WRAPD(TWPrivateKeySign(privateKey.get(), digest.get()));
 
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false));
     ASSERT_TRUE(TWPublicKeyVerify(publicKey.get(), signature.get(), digest.get()));
@@ -109,18 +112,19 @@ TEST(TWPublicKeyTests, VerifyAsDER) {
 }
 
 TEST(TWPublicKeyTests, VerifyEd25519) {
-    const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
-    const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
-
     const char* message = "Hello";
     auto messageData = WRAPD(TWDataCreateWithBytes((const uint8_t*)message, strlen(message)));
     auto digest = WRAPD(TWHashSHA256(messageData.get()));
 
-    auto signature = WRAPD(TWPrivateKeySign(privateKey.get(), digest.get(), TWCurveED25519));
-    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(privateKey.get()));
+    const PrivateKey key1(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveED25519);
+    const auto privateKey1 = WRAP(TWPrivateKey, new TWPrivateKey{ key1 });
+    auto signature = WRAPD(TWPrivateKeySign(privateKey1.get(), digest.get()));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(privateKey1.get()));
 
-    auto signature2 = WRAPD(TWPrivateKeySign(privateKey.get(), digest.get(), TWCurveED25519Blake2bNano));
-    auto publicKey2 = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519Blake2b(privateKey.get()));
+    const PrivateKey key2(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveED25519Blake2bNano);
+    const auto privateKey2 = WRAP(TWPrivateKey, new TWPrivateKey{ key2 });
+    auto signature2 = WRAPD(TWPrivateKeySign(privateKey2.get(), digest.get()));
+    auto publicKey2 = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519Blake2b(privateKey2.get()));
 
     ASSERT_TRUE(TWPublicKeyVerify(publicKey.get(), signature.get(), digest.get()));
     ASSERT_TRUE(TWPublicKeyVerify(publicKey2.get(), signature2.get(), digest.get()));

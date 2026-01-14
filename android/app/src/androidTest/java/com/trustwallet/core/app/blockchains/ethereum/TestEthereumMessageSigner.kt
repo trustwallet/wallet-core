@@ -17,7 +17,7 @@ class TestEthereumMessageSigner {
     @Test
     fun testEthereumSignAndVerifyMessageImmutableX() {
         val data = Numeric.hexStringToByteArray("3b0a61f46fdae924007146eacb6db6642de7a5603ad843ec58e10331d89d4b84")
-        val privateKey = PrivateKey(data)
+        val privateKey = PrivateKey(data, CoinType.ETHEREUM.curve())
         val publicKey = privateKey.getPublicKey(CoinType.ETHEREUM)
         val msg = "Only sign this request if you’ve initiated an action with Immutable X.\n\nFor internal use:\nbd717ba31dca6e0f3f136f7c4197babce5f09a9f25176044c0b3112b1b6017a3"
         val signature = EthereumMessageSigner.signMessageImmutableX(privateKey, msg)
@@ -28,7 +28,7 @@ class TestEthereumMessageSigner {
     @Test
     fun testEthereumSignAndVerifyMessageLegacy() {
         val data = Numeric.hexStringToByteArray("03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d")
-        val privateKey = PrivateKey(data)
+        val privateKey = PrivateKey(data, CoinType.ETHEREUM.curve())
         val publicKey = privateKey.getPublicKey(CoinType.ETHEREUM)
         val msg = "Foo"
         val signature = EthereumMessageSigner.signMessage(privateKey, msg)
@@ -39,7 +39,7 @@ class TestEthereumMessageSigner {
     @Test
     fun testEthereumSignAndVerifyMessageLegacyHex() {
         val data = Numeric.hexStringToByteArray("9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0")
-        val privateKey = PrivateKey(data)
+        val privateKey = PrivateKey(data, CoinType.ETHEREUM.curve())
         val publicKey = privateKey.getPublicKey(CoinType.ETHEREUM)
         val msg = "0xc0a96273d5c3fbe4d4000491f08daef9c17f88df846c1d6f57eb5f33c1fbd035"
         val signature = EthereumMessageSigner.signMessage(privateKey, msg)
@@ -50,7 +50,7 @@ class TestEthereumMessageSigner {
     @Test
     fun testEthereumSignAndVerifyMessage712Legacy() {
         val data = Numeric.hexStringToByteArray("03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d")
-        val privateKey = PrivateKey(data)
+        val privateKey = PrivateKey(data, CoinType.ETHEREUM.curve())
         val publicKey = privateKey.getPublicKey(CoinType.ETHEREUM)
         val msg = """
             {
@@ -87,7 +87,7 @@ class TestEthereumMessageSigner {
     @Test
     fun testEthereumSignAndVerifyMessage712Eip155() {
         val data = Numeric.hexStringToByteArray("03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d")
-        val privateKey = PrivateKey(data)
+        val privateKey = PrivateKey(data, CoinType.ETHEREUM.curve())
         val publicKey = privateKey.getPublicKey(CoinType.ETHEREUM)
         val msg = """
             {
@@ -124,7 +124,7 @@ class TestEthereumMessageSigner {
     @Test
     fun testEthereumSignAndVerifyMessageEip155() {
         val data = Numeric.hexStringToByteArray("03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d")
-        val privateKey = PrivateKey(data)
+        val privateKey = PrivateKey(data, CoinType.ETHEREUM.curve())
         val publicKey = privateKey.getPublicKey(CoinType.ETHEREUM)
         val msg = "Foo"
         val signature = EthereumMessageSigner.signMessageEip155(privateKey, msg, 0)

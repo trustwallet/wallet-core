@@ -24,9 +24,9 @@ static std::string k1Sigs[5]{
 
 static std::string r1Sigs[5]{
     "SIG_R1_KC4qBxibZpXLESzN37F46Jv8w7dQtyPDeRmeFs8Z4DmEFhr3FACLkjcbSLkVN7acBt4eb6zUa9N76UfJncr4htxCSe7huZ",
-    "SIG_R1_KaWNQefJReykjKUsS51caChJRgeywUoeuucFReyKY1SPNveSoFFVgxT3jEzW56ZLtpN7qGgekoSNsKs1BzzyZ9snhCALcG",
-    "SIG_R1_KarN7JJxHeKgRJLmscWzCsdDpfdktWrBGJLvVFN7RYZpSeNHBsqNV7dKqxkvKtbhsqHukLKw1EQNTjcUcxUD6hUTVvNWcP",
-    "SIG_R1_KvHdcwEDW8RQWEPTA3BoK9RVZqtAwKqVvYQN9Wz44XUrzjrNyRkpc7vguqc8q6FLMJBUUen59hyXM3BuLvvrp2x4S6m1o8",
+    "SIG_R1_K11q2EFGPGXwAXMxFSoDUeEpSvXAdxLcHe9mFkQtJTZNBmaGtgKGvTAPN9eFg91Ub7Jf7tCuPkakQbGWGwE6KjA2Eez1zR",
+    "SIG_R1_K1MpistvFFsrrWDrgzJb7KAjquVwazP8e2tSKLogBzgoGp65dDhzf4unVunQnzQMX92ZA9CdRV8TdDRmjW9o2pdaG62G4P",
+    "SIG_R1_KLo6EWpBTjyawSGXyQyQDay1b5kMdoNTJGwsycRcpybqpwjhTntLi6XZpZWbu3P6JF9XmEBqDPPXhwJNGnu9YJ7x8Deuwd",
     "SIG_R1_KZB6ivprUS1zwGxMxZQJ7UvWk4Tpvoo6WiFKUPJuUHj4Es39ejiFVoD7ZB6MfSJxAaRPvnAF39hnApwzFAM8Erxmj3Suvm"};
 
 TEST(EOSTransaction, Serialization) {
@@ -55,7 +55,7 @@ TEST(EOSTransaction, Serialization) {
 
     // make transaction invalid and see if signing succeeds
     tx.maxNetUsageWords = UINT32_MAX;
-    ASSERT_THROW(signer.sign(PrivateKey(Hash::sha256(std::string("A"))), Type::ModernK1, tx), std::invalid_argument);
+    ASSERT_THROW(signer.sign(PrivateKey(Hash::sha256(std::string("A")), TWCurveSECP256k1), Type::ModernK1, tx), std::invalid_argument);
 
     referenceBlockId = parse_hex("000067d6f6a7e7799a1f3d487439a679f8cf95f1c986f35c0d2fa320f51a7144");
     referenceBlockTime = 1554209118;

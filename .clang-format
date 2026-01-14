@@ -12,7 +12,7 @@ PointerAlignment: Left
 IncludeCategories:
   - Regex:           '^"\.\./'
     Priority:        2
-  - Regex:           '^<(TrustWalletCore|TrezorCrypto)/'
+  - Regex:           '^<(TrustWalletCore)/'
     Priority:        3
   - Regex:           '<.*>'
     Priority:        4

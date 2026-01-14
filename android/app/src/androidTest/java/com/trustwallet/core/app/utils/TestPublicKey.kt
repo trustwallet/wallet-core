@@ -18,7 +18,7 @@ class TestPublicKey {
     fun testPublicKeyCompressed() {
         var privateKey: PrivateKey? = null
         try {
-            privateKey = PrivateKey(validPrivateKeyData)
+            privateKey = PrivateKey(validPrivateKeyData, Curve.SECP256K1)
         } catch (ex: Exception) {
 
         }
@@ -41,25 +41,26 @@ class TestPublicKey {
     fun testSign() {
         val validSign = "0x8720a46b5b3963790d94bcc61ad57ca02fd153584315bfa161ed3455e336ba624d68df010ed934b8792c5b6a57ba86c3da31d039f9612b44d1bf054132254de901"
         val data = Hash.keccak256("hello".toByteArray())
-        val sign = PrivateKey(validPrivateKeyData).sign(data, Curve.SECP256K1)
+        val sign = PrivateKey(validPrivateKeyData, Curve.SECP256K1).sign(data)
         assertEquals(sign.toHex(), validSign)
     }
 
     @Test
     fun testVerify() {
-        val privateKey = PrivateKey(validPrivateKeyData)
-
         val message = Hash.sha256("hello".toByteArray())
-        val sig1 = privateKey.sign(message, Curve.ED25519)
-        val result1 = privateKey.getPublicKeyEd25519().verify(sig1, message)
+        val privateKey1 = PrivateKey(validPrivateKeyData, Curve.ED25519)
+        val sig1 = privateKey1.sign(message)
+        val result1 = privateKey1.getPublicKeyEd25519().verify(sig1, message)
         assert(result1)
 
-        val sig2 = privateKey.sign(message, Curve.ED25519BLAKE2BNANO)
-        val result2 = privateKey.getPublicKeyEd25519Blake2b().verify(sig2, message)
+        val privateKey2 = PrivateKey(validPrivateKeyData, Curve.ED25519BLAKE2BNANO)
+        val sig2 = privateKey2.sign(message)
+        val result2 = privateKey2.getPublicKeyEd25519Blake2b().verify(sig2, message)
         assert(result2)
 
-        val sig3 = privateKey.sign(message, Curve.SECP256K1)
-        val result3 = privateKey.getPublicKeySecp256k1(true).verify(sig3, message)
+        val privateKey3 = PrivateKey(validPrivateKeyData, Curve.SECP256K1)
+        val sig3 = privateKey3.sign(message)
+        val result3 = privateKey3.getPublicKeySecp256k1(true).verify(sig3, message)
         assert(result3)
     }
 }

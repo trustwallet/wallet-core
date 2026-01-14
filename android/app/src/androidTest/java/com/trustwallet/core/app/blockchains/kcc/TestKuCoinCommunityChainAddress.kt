@@ -18,7 +18,7 @@ class TestKuCoinCommunityChainAddress {
     
     @Test
     fun testAddress() {
-        val key = PrivateKey("33b85056aabab539bcb68540735ecf054e38bc58b29b751530e2b54ecb4ca564".toHexByteArray())
+        val key = PrivateKey("33b85056aabab539bcb68540735ecf054e38bc58b29b751530e2b54ecb4ca564".toHexByteArray(), CoinType.KUCOINCOMMUNITYCHAIN.curve())
         val pubkey = key.getPublicKeySecp256k1(false)
         val address = AnyAddress(pubkey, CoinType.KUCOINCOMMUNITYCHAIN)
         val expected = AnyAddress("0xE5cA667d795685E9915E5F4b4254ca832eEB398B", CoinType.KUCOINCOMMUNITYCHAIN)

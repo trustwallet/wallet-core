@@ -39,7 +39,7 @@ TEST(VergeTransactionBuilder, BuildWithTime) {
     utxo0->mutable_out_point()->set_sequence(4294967294);
     utxo0->set_amount(2500000000);
 
-    auto utxoKey0 = PrivateKey(parse_hex("693dfe6f3ed717573eb10c24ebe5eb592fa3c239245cd499c487eb7b8ea7ed3a"));
+    auto utxoKey0 = PrivateKey(parse_hex("693dfe6f3ed717573eb10c24ebe5eb592fa3c239245cd499c487eb7b8ea7ed3a"), TWCoinTypeCurve(TWCoinTypeVerge));
     auto script0 = Bitcoin::Script::lockScriptForAddress("DRyNFvJaybnF22UfMS6NR1Qav3mqxPj86E", TWCoinTypeVerge);
     ASSERT_EQ(hex(script0.bytes), "76a914e4839a523f120882d11eb3dda13a18e11fdcbd4a88ac");
     utxo0->set_script(script0.bytes.data(), script0.bytes.size());

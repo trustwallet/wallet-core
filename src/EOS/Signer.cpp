@@ -5,9 +5,6 @@
 #include "Signer.h"
 #include "Asset.h"
 #include "PackedTransaction.h"
-
-#include <TrezorCrypto/ecdsa.h>
-
 namespace TW::EOS {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
@@ -88,7 +85,7 @@ TW::Data Signer::serializeTx(const Transaction& transaction) const noexcept {
 }
 
 // canonical check for EOS
-int Signer::isCanonical([[maybe_unused]] uint8_t by, uint8_t sig[64]) {
+int Signer::isCanonical([[maybe_unused]] uint8_t by, const uint8_t sig[64]) {
     // clang-format off
     return !(sig[0] & 0x80) 
         && !(sig[0] == 0 && !(sig[1] & 0x80))

@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-#include "TrustWalletCore/TWSolanaTransaction.h"
+#include "TrustWalletCore/Generated/TWSolanaTransaction.h"
 #include "TrustWalletCore/TWTransactionDecoder.h"
 #include "TrustWalletCore/TWAnySigner.h"
 #include "proto/Solana.pb.h"

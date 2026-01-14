@@ -18,7 +18,7 @@ class TestBitcoinDiamondAddress {
 
     @Test
     fun testAddress() {
-        val key = PrivateKey("d2b9f2846d3adcead910ee0124a3ba7ae29e8a4729787d27f9bea1f532928eee".toHexByteArray())
+        val key = PrivateKey("d2b9f2846d3adcead910ee0124a3ba7ae29e8a4729787d27f9bea1f532928eee".toHexByteArray(), CoinType.BITCOINDIAMOND.curve())
         val pubkey = key.getPublicKeySecp256k1(true);
         val address = AnyAddress(pubkey, CoinType.BITCOINDIAMOND)
         val expected = AnyAddress("1G15VvshDxwFTnahZZECJfFwEkq9fP79o8", CoinType.BITCOINDIAMOND)

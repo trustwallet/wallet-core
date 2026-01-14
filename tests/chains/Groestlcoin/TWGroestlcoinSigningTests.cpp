@@ -133,7 +133,7 @@ TEST(GroestlcoinSigning, SignP2SH_P2WPKH) {
     input.set_change_address("grs1qw4teyraux2s77nhjdwh9ar8rl9dt7zww8r6lne");
 
     // TX input
-    auto utxoKey0 = PrivateKey(parse_hex("302fc195a8fc96c5a581471e67e4c1ac2efda252f76ad5c77a53764c70d58f91"));
+    auto utxoKey0 = PrivateKey(parse_hex("302fc195a8fc96c5a581471e67e4c1ac2efda252f76ad5c77a53764c70d58f91"), TWCoinTypeCurve(TWCoinTypeGroestlcoin));
     auto pubKey0 = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(pubKey0.bytes));
     EXPECT_EQ(hex(utxoPubkeyHash), "2fc7d70acef142d1f7b5ef2f20b1a9b759797674");

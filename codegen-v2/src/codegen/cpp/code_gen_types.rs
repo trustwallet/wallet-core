@@ -128,11 +128,13 @@ impl TWType {
                 "u16" => "uint16_t".to_string(),
                 "u32" => "uint32_t".to_string(),
                 "u64" => "uint64_t".to_string(),
+                "usize" => "size_t".to_string(),
                 "i8" => "int8_t".to_string(),
                 "i16" => "int16_t".to_string(),
                 "i32" => "int32_t".to_string(),
                 "i64" => "int64_t".to_string(),
                 "TWFFICoinType" => "enum TWCoinType".to_string(),
+                "TWFFIAESPaddingMode" => "enum TWAESPaddingMode".to_string(),
                 _ => ty.to_string(),
             },
             TWType::Pointer(pointer_type, ty) => {

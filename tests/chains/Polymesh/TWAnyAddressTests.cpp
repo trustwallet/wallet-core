@@ -54,7 +54,7 @@ TEST(PolymeshAddress, Validation) {
 
 TEST(PolymeshAddress, FromPrivateKey) {
     // subkey phrase `chief menu kingdom stereo hope hazard into island bag trick egg route`
-    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("0x612d82bc053d1b4729057688ecb1ebf62745d817ddd9b595bc822f5f2ba0e41a").get()));
+    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("0x612d82bc053d1b4729057688ecb1ebf62745d817ddd9b595bc822f5f2ba0e41a").get(), TWCoinTypeCurve(TWCoinTypePolymesh)));
     const auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKey(privateKey.get(), TWCoinTypePolymesh));
     const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypePolymesh));
     const auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));

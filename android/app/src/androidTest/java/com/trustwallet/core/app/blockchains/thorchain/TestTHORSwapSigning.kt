@@ -12,6 +12,7 @@ import wallet.core.jni.proto.Ethereum.SigningOutput
 import wallet.core.jni.proto.THORChainSwap
 import wallet.core.jni.THORChainSwap.buildSwap
 import com.trustwallet.core.app.utils.Numeric
+import wallet.core.jni.CoinType
 
 class TestTHORChainSwap {
 
@@ -64,7 +65,7 @@ class TestTHORChainSwap {
             nonce = ByteString.copyFrom("0x03".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x06FC23AC00".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x013880".toHexByteArray())
-            privateKey = ByteString.copyFrom(PrivateKey("0x4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904".toHexByteArray()).data())
+            privateKey = ByteString.copyFrom(PrivateKey("0x4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904".toHexByteArray(), CoinType.THORCHAIN.curve()).data())
         }.build()
 
         // sign and encode resulting input

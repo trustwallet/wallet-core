@@ -4,16 +4,14 @@
 
 #include "HexCoding.h"
 #include "TestUtilities.h"
-#include "TrustWalletCore/TWEip7702.h"
+#include <TrustWalletCore/Generated/TWEthereum.h>
+#include <TrustWalletCore/Generated/TWBarz.h>
+#include <TrustWalletCore/Generated/TWBiz.h>
+#include <TrustWalletCore/Generated/TWEip7702.h>
 #include "proto/Barz.pb.h"
 #include "proto/Ethereum.pb.h"
 #include "uint256.h"
 
-#include <TrustWalletCore/TWBarz.h>
-#include <TrustWalletCore/TWBiz.h>
-#include <TrustWalletCore/TWEip7702.h>
-#include <TrustWalletCore/TWEthereum.h>
-#include <TrustWalletCore/TWHash.h>
 #include <PrivateKey.h>
 
 #include <TrustWalletCore/TWAnySigner.h>

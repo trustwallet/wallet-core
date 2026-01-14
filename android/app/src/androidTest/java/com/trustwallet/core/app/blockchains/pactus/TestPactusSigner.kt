@@ -32,7 +32,7 @@ class TestPactusSigner {
         signingInput.apply {
             privateKey = ByteString.copyFrom(
                 PrivateKey("4e51f1f3721f644ac7a193be7f5e7b8c2abaa3467871daf4eacb5d3af080e5d6"
-                    .toHexByteArray()).data()
+                    .toHexByteArray(), CoinType.PACTUS.curve()).data()
             )
             transaction = Pactus.TransactionMessage.newBuilder().apply {
                 lockTime = 2335524
@@ -73,7 +73,7 @@ class TestPactusSigner {
         signingInput.apply {
             privateKey = ByteString.copyFrom(
                 PrivateKey("4e51f1f3721f644ac7a193be7f5e7b8c2abaa3467871daf4eacb5d3af080e5d6"
-                    .toHexByteArray()).data()
+                    .toHexByteArray(), CoinType.PACTUS.curve()).data()
             )
             transaction = Pactus.TransactionMessage.newBuilder().apply {
                 lockTime = 2339009
@@ -115,7 +115,7 @@ class TestPactusSigner {
         signingInput.apply {
             privateKey = ByteString.copyFrom(
                 PrivateKey("4e51f1f3721f644ac7a193be7f5e7b8c2abaa3467871daf4eacb5d3af080e5d6"
-                    .toHexByteArray()).data()
+                    .toHexByteArray(), CoinType.PACTUS.curve()).data()
             )
             transaction = Pactus.TransactionMessage.newBuilder().apply {
                 lockTime = 2335580

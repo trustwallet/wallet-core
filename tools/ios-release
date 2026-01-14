@@ -59,6 +59,12 @@ Pod::Spec.new do |s|
     http: '${download_url}'
   }
   s.default_subspec = 'Core'
+
+  s.prepare_command = <<-CMD
+    find include -name "*.h" -print0 | xargs -0 sed -i '' 's/\\\(<\\\)TrustWalletCore\\\/Generated\\\/\\\(.*\\\)\\\(>\\\)/\\\"\\\2\\\"/'
+    find include -name "*.h" -print0 | xargs -0 sed -i '' 's/\\\(<\\\)TrustWalletCore\\\/\\\(.*\\\)\\\(>\\\)/\\\"\\\2\\\"/'
+  CMD
+
   s.subspec 'Types' do |ss|
     ss.source_files = 
       'Sources/Types/*.swift',

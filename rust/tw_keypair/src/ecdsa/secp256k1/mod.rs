@@ -144,22 +144,6 @@ mod tests {
     }
 
     #[test]
-    fn test_shared_key_hash() {
-        let private = PrivateKey::try_from(
-            "9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0",
-        )
-        .unwrap();
-        let public = PublicKey::try_from(
-            "02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992",
-        )
-        .unwrap();
-        let actual = private.shared_key_hash(&public);
-        let expected =
-            H256::from("ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a");
-        assert_eq!(actual, expected);
-    }
-
-    #[test]
     fn test_public_key_recover() {
         let sign_bytes = H520::from("8720a46b5b3963790d94bcc61ad57ca02fd153584315bfa161ed3455e336ba624d68df010ed934b8792c5b6a57ba86c3da31d039f9612b44d1bf054132254de901");
         let sign = Signature::from_bytes(sign_bytes.as_slice()).unwrap();

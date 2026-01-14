@@ -8,7 +8,7 @@ import XCTest
 class AgoricTests: XCTestCase {
 
     func testAddress() {
-        let key = PrivateKey(data: Data(hexString: "037048190544fa57651452f477c096de4f3073e7835cf3845b04602563a73f73")!)!
+        let key = PrivateKey(data: Data(hexString: "037048190544fa57651452f477c096de4f3073e7835cf3845b04602563a73f73")!, curve: CoinType.agoric.curve)!
         let pubkey = key.getPublicKeySecp256k1(compressed: true)
         let address = AnyAddress(publicKey: pubkey, coin: .agoric)
         let addressFromString = AnyAddress(string: "agoric18zvvgk6j3eq5wd7mqxccgt20gz2w94cy88aek5", coin: .agoric)!
@@ -18,7 +18,7 @@ class AgoricTests: XCTestCase {
     }
 
     func testSign() {
-        let privateKey = PrivateKey(data: Data(hexString: "037048190544fa57651452f477c096de4f3073e7835cf3845b04602563a73f73")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "037048190544fa57651452f477c096de4f3073e7835cf3845b04602563a73f73")!, curve: CoinType.agoric.curve)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         let fromAddress = AnyAddress(publicKey: publicKey, coin: .agoric)
 

@@ -41,6 +41,23 @@ pub unsafe extern "C" fn tw_public_key_create_with_data(
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
 
+/// Determines if the given public key is valid or not.
+///
+/// \param key *non-null* byte array.
+/// \param key_len the length of the `key` array.
+/// \param curve Eliptic curve of the public key.
+/// \return true if the public key is valid, false otherwise.
+#[no_mangle]
+pub unsafe extern "C" fn tw_public_key_is_valid(
+    key: *const u8,
+    key_len: usize,
+    pubkey_type: u32,
+) -> bool {
+    let pubkey_type = try_or_false!(PublicKeyType::from_raw(pubkey_type));
+    let pub_key_bytes = CByteArrayRef::new(key, key_len).to_vec();
+    PublicKey::is_valid(pub_key_bytes, pubkey_type)
+}
+
 /// Delete the given public key.
 ///
 /// \param key *non-null* pointer to public key.
@@ -82,21 +99,84 @@ pub unsafe extern "C" fn tw_public_key_data(key: *mut TWPublicKey) -> CByteArray
     CByteArray::from(public.0.to_bytes())
 }
 
-// #[no_mangle]
-// pub unsafe extern "C" fn tw_public_key_is_valid(
-//     pubkey: *const u8,
-//     pubkey_len: usize,
-//     pubkey_type: u32,
-// ) -> bool {
-//     let ty = match TWPublicKeyType::from_raw(pubkey_type) {
-//         Some(ty) => ty,
-//         None => return false,
-//     };
-//
-//     let pubkey_slice = match CByteArrayRef::new(pubkey, pubkey_len).as_slice() {
-//         Some(pubkey) => pubkey,
-//         None => return false,
-//     };
-//
-//     TWPublicKey::is_valid(pubkey_slice, ty)
-// }
+/// Returns the type of a given public-key.
+///
+/// \param key *non-null* pointer to a public key.
+/// \return C-compatible result with a C-compatible byte array.
+#[no_mangle]
+pub unsafe extern "C" fn tw_public_key_type(key: *mut TWPublicKey) -> u32 {
+    let public = try_or_else!(TWPublicKey::from_ptr_as_ref(key), || 0);
+    public.0.public_key_type() as u32
+}
+
+/// Returns the compressed data of a given public-key.
+///
+/// \param key *non-null* pointer to a public key.
+/// \return C-compatible result with a C-compatible byte array.
+#[no_mangle]
+pub unsafe extern "C" fn tw_public_key_compressed(key: *mut TWPublicKey) -> *mut TWPublicKey {
+    let public = try_or_else!(TWPublicKey::from_ptr_as_ref(key), std::ptr::null_mut);
+    public
+        .0
+        .compressed()
+        .map(|public| TWPublicKey(public).into_ptr())
+        .unwrap_or_else(|_| std::ptr::null_mut())
+}
+
+/// Returns the extended data of a given public-key.
+///
+/// \param key *non-null* pointer to a public key.
+/// \return C-compatible result with a C-compatible byte array.
+#[no_mangle]
+pub unsafe extern "C" fn tw_public_key_extended(key: *mut TWPublicKey) -> *mut TWPublicKey {
+    let public = try_or_else!(TWPublicKey::from_ptr_as_ref(key), std::ptr::null_mut);
+    public
+        .0
+        .extended()
+        .map(|public| TWPublicKey(public).into_ptr())
+        .unwrap_or_else(|_| std::ptr::null_mut())
+}
+
+/// Recover a public key from a signature and a message.
+///
+/// \param sig *non-null* pointer to a block of data corresponding to the signature.
+/// \param sig_len the length of the `sig` array.
+/// \param msg *non-null* pointer to a block of data corresponding to the message.
+/// \param msg_len the length of the `msg` array.
+/// \return C-compatible result with a C-compatible pointer to the public key.
+#[no_mangle]
+pub unsafe extern "C" fn tw_public_key_recover_from_signature(
+    sig: *const u8,
+    sig_len: usize,
+    msg: *const u8,
+    msg_len: usize,
+    rec_id: u8,
+) -> *mut TWPublicKey {
+    let sig = CByteArrayRef::new(sig, sig_len).as_slice();
+    let msg = CByteArrayRef::new(msg, msg_len).as_slice();
+    PublicKey::recover_from_signature(sig, msg, rec_id)
+        .map(|public| TWPublicKey(public).into_ptr())
+        .unwrap_or_else(|_| std::ptr::null_mut())
+}
+
+/// Verify a signature as DER-encoded ECDSA signature.
+///
+/// \param key *non-null* pointer to a public key.
+/// \param sig *non-null* pointer to a block of data corresponding to the signature.
+/// \param sig_len the length of the `sig` array.
+/// \param msg *non-null* pointer to a block of data corresponding to the message.
+/// \param msg_len the length of the `msg` array.
+/// \return true if the signature and the message belongs to the given public key, otherwise false.
+#[no_mangle]
+pub unsafe extern "C" fn tw_public_key_verify_as_der(
+    key: *mut TWPublicKey,
+    sig: *const u8,
+    sig_len: usize,
+    msg: *const u8,
+    msg_len: usize,
+) -> bool {
+    let public = try_or_false!(TWPublicKey::from_ptr_as_ref(key));
+    let sig = CByteArrayRef::new(sig, sig_len).as_slice();
+    let msg = CByteArrayRef::new(msg, msg_len).as_slice();
+    public.0.verify_as_der(sig, msg)
+}

@@ -17,8 +17,8 @@ class TestPactusAddress {
     }
 
     @Test
-    fun testMainnetAddress() {
-        val key = PrivateKey("4e51f1f3721f644ac7a193be7f5e7b8c2abaa3467871daf4eacb5d3af080e5d6".toHexByteArray())
+    fun testAddress() {
+        val key = PrivateKey("4e51f1f3721f644ac7a193be7f5e7b8c2abaa3467871daf4eacb5d3af080e5d6".toHexByteArray(), CoinType.PACTUS.curve())
         val pubkey = key.publicKeyEd25519
         val address = AnyAddress(pubkey, CoinType.PACTUS)
         val expected = AnyAddress("pc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymcxy3lr", CoinType.PACTUS)
@@ -29,7 +29,7 @@ class TestPactusAddress {
 
     @Test
     fun testTestnetAddress() {
-        val key = PrivateKey("4e51f1f3721f644ac7a193be7f5e7b8c2abaa3467871daf4eacb5d3af080e5d6".toHexByteArray())
+        val key = PrivateKey("4e51f1f3721f644ac7a193be7f5e7b8c2abaa3467871daf4eacb5d3af080e5d6".toHexByteArray(), CoinType.PACTUS.curve())
         val pubkey = key.publicKeyEd25519
         val address = AnyAddress(pubkey, CoinType.PACTUS, Derivation.PACTUSTESTNET)
         val expected = AnyAddress("tpc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymzqkcrg", CoinType.PACTUS)

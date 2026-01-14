@@ -26,7 +26,7 @@ TEST(VergeAddress, Invalid) {
 }
 
 TEST(VergeAddress, FromPrivateKey) {
-    auto privateKey = PrivateKey(parse_hex("693dfe6f3ed717573eb10c24ebe5eb592fa3c239245cd499c487eb7b8ea7ed3a"));
+    auto privateKey = PrivateKey(parse_hex("693dfe6f3ed717573eb10c24ebe5eb592fa3c239245cd499c487eb7b8ea7ed3a"), TWCoinTypeCurve(TWCoinTypeVerge));
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto address = Address(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeVerge));
     ASSERT_EQ(address.string(), "DRyNFvJaybnF22UfMS6NR1Qav3mqxPj86E");
