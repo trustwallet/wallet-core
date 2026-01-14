@@ -35,10 +35,20 @@ impl StacksSigner {
         let signed_tx = match input.message_oneof {
             SigningInputMessage::transfer(xfer) => {
                 let rcpt_type: u8 = 0x05; // rcpt address
-                let rcpt_addr = StacksAddress::from_str(&xfer.to).unwrap();
-                let amount: u64 = xfer.amount.try_into().unwrap(); // microSTX
-                let fee: u64 = xfer.fee.try_into().unwrap(); // microSTX
-                let nonce: u64 = xfer.nonce.try_into().unwrap();
+                let rcpt_addr = StacksAddress::from_str(&xfer.to)
+                    .map_err(|_| SigningErrorType::Error_invalid_address)?;
+                let amount: u64 = xfer
+                    .amount
+                    .try_into()
+                    .map_err(|_| SigningErrorType::Error_invalid_params)?; // microSTX
+                let fee: u64 = xfer
+                    .fee
+                    .try_into()
+                    .map_err(|_| SigningErrorType::Error_invalid_params)?; // microSTX
+                let nonce: u64 = xfer
+                    .nonce
+                    .try_into()
+                    .map_err(|_| SigningErrorType::Error_invalid_params)?;
                 let memo_bytes: [u8; 34] = {
                     let msg = xfer.memo.as_bytes();
                     let mut b = [0u8; 34];
@@ -54,7 +64,8 @@ impl StacksSigner {
 
                 // Parse private key
                 let private_key_bytes = input.private_key;
-                let secret_key = PrivateKey::try_from(&private_key_bytes[..]).unwrap();
+                let secret_key = PrivateKey::try_from(&private_key_bytes[..])
+                    .map_err(|_| SigningErrorType::Error_invalid_private_key)?;
 
                 // Compute public key (compressed)
                 let public_key = secret_key.public();
@@ -62,11 +73,11 @@ impl StacksSigner {
 
                 // Compute signer hash160: ripemd160(sha256(pubkey_bytes))
                 let hasher = Sha256Ripemd;
-                let signer_hash160: [u8; 20] = hasher.hash(&pubkey_bytes).try_into().unwrap();
+                let signer_hash160: [u8; 20] = hasher.hash(&pubkey_bytes).try_into().unwrap(); // will always give 20 bytes
 
                 // Rcpt hash160
                 let rcpt_hash160_bytes = rcpt_addr.data();
-                let rcpt_hash160 = H160::try_from(&rcpt_hash160_bytes[..]).unwrap();
+                let rcpt_hash160 = H160::try_from(&rcpt_hash160_bytes[..]).unwrap(); // is always 20 bytes
 
                 // Build payload: 0x00 + rcpt principal (version + hash160) + amount BE + memo
                 let mut payload = vec![0x00];
@@ -113,12 +124,14 @@ impl StacksSigner {
                 let pre_sign_hash = sha2::sha512_256(&pre_sign_data);
 
                 // Sign the pre_sign_hash with ECDSA secp256k1
-                let message = H256::try_from(&pre_sign_hash[..]).unwrap();
-                let rsig = secret_key.sign(message).unwrap();
+                let message = H256::try_from(&pre_sign_hash[..]).unwrap(); // is always 32 bytes
+                let rsig = secret_key
+                    .sign(message)
+                    .map_err(|_| SigningErrorType::Error_signing)?;
 
                 // Serialize signature to 65 bytes Bitcoin-style
                 let compressed = true; // since we used compressed pubkey
-                let header_byte = rsig.v(); // + 27 + if compressed { 0 } else { 4 };
+                let header_byte = rsig.v();
                 let mut signature = [0u8; 65];
                 signature[0] = header_byte;
                 signature[1..33].copy_from_slice(&rsig.r().as_slice());
