@@ -76,11 +76,12 @@ impl StacksSigner {
                 payload.extend_from_slice(&amount.to_be_bytes());
                 payload.extend_from_slice(&memo_bytes);
 
-                // Build unsigned auth: 0x04 + hash_mode + signer + nonce0 + fee0
+                // Build unsigned auth: 0x04 + hash_mode + signer + nonce0 + fee0 + cleared signature
                 let mut auth_unsigned = vec![0x04, hash_mode];
                 auth_unsigned.extend_from_slice(&signer_hash160);
-                auth_unsigned.extend_from_slice(&nonce.to_be_bytes());
-                auth_unsigned.extend_from_slice(&fee.to_be_bytes());
+                auth_unsigned.extend_from_slice(&0u64.to_be_bytes());
+                auth_unsigned.extend_from_slice(&0u64.to_be_bytes());
+                auth_unsigned.extend_from_slice(&[0u8; 66]);
 
                 // Build post conditions: u32 0
                 let post_conditions = [0u8; 4];
@@ -97,8 +98,8 @@ impl StacksSigner {
                 // Compute initial sighash = SHA512/256(unsigned_tx)
                 let initial_sighash = sha2::sha512_256(&unsigned_tx);
 
-                //let serialized_sighash = hex::encode(&initial_sighash, false);
-                //println!("sighash (hex): {}", serialized_sighash);
+                //let serialized_initial_sighash = hex::encode(&initial_sighash, false);
+                //println!("initial sighash (hex): {}", serialized_initial_sighash);
 
                 // Auth flag for standard origin: 0x04
                 let auth_flag: u8 = 0x04;
