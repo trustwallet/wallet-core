@@ -24,7 +24,11 @@ public:
     explicit JNIEnvContext() {
         jint attachResult = cachedJVM->GetEnv(reinterpret_cast<void**>(&_env), JNI_VERSION_1_6);
         if (attachResult == JNI_EDETACHED) {
+#if defined(__ANDROID__) || defined(ANDROID)
+            attachResult = cachedJVM->AttachCurrentThread(&_env, nullptr);
+#else
             attachResult = cachedJVM->AttachCurrentThread(reinterpret_cast<void**>(&_env), nullptr);
+#endif
             _needsDetach = true;
         }
 
@@ -36,9 +40,9 @@ public:
 
     ~JNIEnvContext() {
         if (_env != nullptr) {
-            for (size_t i = 0; i < _refs.size(); i++) {
-                if (_refs[i] != nullptr) {
-                    _env->DeleteLocalRef(_refs[i]);
+            for (jobject ref : _refs) {
+                if (ref != nullptr) {
+                    _env->DeleteLocalRef(ref);
                 }
             }
         }
@@ -86,7 +90,7 @@ int random_buffer(uint8_t *buf, size_t len) {
         randomData.read(reinterpret_cast<char*>(buf), static_cast<std::streamsize>(len));
 
         // Check if read was successful before closing
-        bool readSuccess = randomData.good() && randomData.gcount() == static_cast<std::streamsize>(len);
+        bool readSuccess = !randomData.fail() && randomData.gcount() == static_cast<std::streamsize>(len);
         randomData.close();
 
         if (!readSuccess) {
@@ -108,7 +112,7 @@ int random_buffer(uint8_t *buf, size_t len) {
         return -1;
     }
 
-    // `jbyte*` is not a JNI reference. Do not put it into `context.addRef()`.
+    // `jmethodID` is not a JNI reference. Do not put it into `context.addRef()`.
     jmethodID constructor = context.env()->GetMethodID(secureRandomClass, "<init>", "()V");
     if (context.catchAndHandleException() || constructor == nullptr) {
         return -1;
@@ -128,7 +132,7 @@ int random_buffer(uint8_t *buf, size_t len) {
     }
 
     // random.nextBytes(bytes);
-    // `jbyte*` is not a JNI reference. Do not put it into `context.addRef()`.
+    // `jmethodID` is not a JNI reference. Do not put it into `context.addRef()`.
     jmethodID nextBytes = context.env()->GetMethodID(secureRandomClass, "nextBytes", "([B)V");
     if (context.catchAndHandleException() || nextBytes == nullptr) {
         return -1;
