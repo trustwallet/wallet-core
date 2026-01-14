@@ -15,7 +15,7 @@ using namespace TW;
 
 struct TWPrivateKey *TWPrivateKeyCreate(enum TWCurve curve) {
     Data bytes(PrivateKey::_size);
-    if (random_buffer(bytes.data(), PrivateKey::_size) != 0) {
+    if (Random::random_buffer(bytes.data(), PrivateKey::_size) != Random::OK) {
         return nullptr;
     }
     if (!PrivateKey::isValid(bytes, curve)) {

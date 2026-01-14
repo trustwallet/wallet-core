@@ -11,7 +11,7 @@ namespace TW::Keystore {
 
 PBKDF2Parameters::PBKDF2Parameters()
     : salt(32) {
-    if (random_buffer(salt.data(), salt.size()) != 0) {
+    if (Random::random_buffer(salt.data(), salt.size()) != Random::OK) {
         throw std::runtime_error("Error generating random salt");
     }
 }

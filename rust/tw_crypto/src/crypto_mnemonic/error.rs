@@ -16,4 +16,6 @@ pub enum Error {
     BadEntropyBitCount(usize),
     /// The mnemonic has an invalid checksum.
     InvalidChecksum,
+    /// Error from the random number generator.
+    RandGeneratorError,
 }

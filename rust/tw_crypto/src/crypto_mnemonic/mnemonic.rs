@@ -87,7 +87,8 @@ impl Mnemonic {
 
         let entropy_bytes = (word_count / 3) * 4;
         let mut entropy = [0u8; (MAX_NB_WORDS / 3) * 4];
-        RngCore::fill_bytes(rng, &mut entropy[0..entropy_bytes]);
+        RngCore::try_fill_bytes(rng, &mut entropy[0..entropy_bytes])
+            .map_err(|_err| Error::RandGeneratorError)?;
         let mnemonic = Mnemonic::from_entropy_in(&entropy[0..entropy_bytes])?;
         entropy.zeroize();
         Ok(mnemonic)
