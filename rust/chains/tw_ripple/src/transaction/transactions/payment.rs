@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
 /// * Paths - Array of payment paths to be used for this transaction.
 /// * InvoiceId - Arbitrary 256-bit hash representing a specific reason or identifier for this payment.
 /// * SendMax - Highest amount of source currency this transaction is allowed to cost,
-///             including transfer fees, exchange rates, and slippage.
+///   including transfer fees, exchange rates, and slippage.
 /// * DeliverMin - Minimum amount of destination currency this transaction should deliver.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "PascalCase")]

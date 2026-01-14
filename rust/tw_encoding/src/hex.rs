@@ -50,7 +50,7 @@ pub fn decode(data: &str) -> FromHexResult<Data> {
 /// For example, `0x0` is extended to `0x00`, `0x123` is extended to `0x0123`.
 pub fn decode_lenient(data: &str) -> FromHexResult<Data> {
     let hex_string = data.trim_start_matches("0x");
-    if hex_string.len() % 2 == 0 {
+    if hex_string.len().is_multiple_of(2) {
         hex::decode(hex_string)
     } else {
         // Insert a leading 0.

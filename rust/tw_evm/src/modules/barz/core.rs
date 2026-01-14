@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use super::error::BarzResult;
 use crate::abi::function::Function;
 use crate::abi::non_empty_array::NonEmptyBytes;
 use crate::abi::param::Param;
@@ -9,28 +10,23 @@ use crate::abi::param_type::ParamType;
 use crate::abi::uint::UintBits;
 use crate::abi::{encode, token::Token};
 use crate::address::Address;
-use crate::message::EthMessage;
-use crate::transaction::authorization_list::{Authorization, SignedAuthorization};
 use std::str::FromStr;
 use tw_encoding::{base64, hex};
 use tw_hash::sha3::keccak256;
 use tw_hash::H256;
 use tw_keypair::ecdsa::der;
-use tw_keypair::ecdsa::secp256k1::PrivateKey;
-use tw_keypair::traits::SigningKeyTrait;
 use tw_misc::traits::ToBytesVec;
 use tw_number::U256;
 use tw_proto::Barz::Proto::{ContractAddressInput, DiamondCutInput};
 
-use super::error::BarzResult;
-
-const BARZ_DOMAIN_SEPARATOR_TYPE_HASH: &str =
+pub const BARZ_SIGNED_DATA_PREFIX: &str = "1901";
+pub const BARZ_DOMAIN_SEPARATOR_TYPE_HASH: &str =
     "47e79534a245952e8b16893a336b85a3d9ea9fa8c573f3d803afb92a79469218";
-const BARZ_MSG_HASH_DATA: &str = "b1bcb804a4a3a1af3ee7920d949bdfd417ea1b736c3552c8d6563a229a619100";
-const BARZ_SIGNED_DATA_PREFIX: &str = "1901";
+pub const BARZ_MSG_HASH_DATA: &str =
+    "b1bcb804a4a3a1af3ee7920d949bdfd417ea1b736c3552c8d6563a229a619100";
 
-const BARZ_DIAMOND_CUT_SELECTOR: &str = "1f931c1c";
-const BARZ_DATA_LOCATION_CHUNK: &str = "60";
+pub const BARZ_DIAMOND_CUT_SELECTOR: &str = "1f931c1c";
+pub const BARZ_DATA_LOCATION_CHUNK: &str = "60";
 
 pub fn get_counterfactual_address(input: &ContractAddressInput) -> BarzResult<String> {
     let encoded_data = encode::encode_tokens(&[
@@ -286,108 +282,4 @@ pub fn get_diamond_cut_code(input: &DiamondCutInput) -> BarzResult<Vec<u8>> {
     let padding = vec![0u8; padding_length];
     encoded.extend_from_slice(&padding);
     Ok(encoded)
-}
-
-#[allow(clippy::too_many_arguments)]
-pub fn get_encoded_hash(
-    chain_id: &[u8],
-    code_address: &str,
-    code_name: &str,
-    code_version: &str,
-    type_hash: &str,
-    domain_separator_hash: &str,
-    sender: &str,
-    user_op_hash: &str,
-) -> BarzResult<Vec<u8>> {
-    // Create code_address_bytes32 by padding with zeros
-    let mut code_address_bytes32 = vec![0u8; 12];
-    code_address_bytes32.extend_from_slice(&hex::decode(code_address.trim_start_matches("0x"))?);
-
-    // Create domain separator
-    let tokens = vec![
-        Token::FixedBytes(NonEmptyBytes::new(hex::decode(
-            domain_separator_hash.trim_start_matches("0x"),
-        )?)?),
-        Token::FixedBytes(NonEmptyBytes::new(
-            keccak256(code_name.as_bytes()).to_vec(),
-        )?),
-        Token::FixedBytes(NonEmptyBytes::new(
-            keccak256(code_version.as_bytes()).to_vec(),
-        )?),
-        Token::Uint {
-            uint: U256::from_big_endian_slice(chain_id)?,
-            bits: UintBits::default(),
-        },
-        Token::Address(Address::from_str(sender)?),
-        Token::FixedBytes(NonEmptyBytes::new(code_address_bytes32)?),
-    ];
-
-    let domain_separator = encode::encode_tokens(&tokens);
-    let domain_separator_encoded_hash = keccak256(&domain_separator);
-
-    // Create message hash
-    let mut message_to_hash = Vec::new();
-    message_to_hash.extend_from_slice(&hex::decode(type_hash)?);
-    message_to_hash.extend_from_slice(&hex::decode(user_op_hash)?);
-    let message_hash = keccak256(&message_to_hash);
-
-    // Create final encoded hash
-    let mut encoded = Vec::new();
-    encoded.extend_from_slice(&hex::decode(BARZ_SIGNED_DATA_PREFIX)?);
-    encoded.extend_from_slice(&domain_separator_encoded_hash);
-    encoded.extend_from_slice(&message_hash);
-
-    Ok(keccak256(&encoded))
-}
-
-pub fn sign_user_op_hash(hash: &str, private_key: &str) -> BarzResult<Vec<u8>> {
-    let private_key = PrivateKey::try_from(private_key)?;
-    let message = H256::from_str(hash)?;
-    let signature = private_key.sign(message)?;
-
-    let mut result = signature.to_vec();
-    // v value (last byte, should be 0 or 1, add 27 to make it 27 or 28)
-    let v_value = result[64] + 27;
-    result[64] = v_value;
-
-    Ok(result)
-}
-
-pub fn get_authorization_hash(
-    chain_id: &[u8],
-    contract_address: &str,
-    nonce: &[u8],
-) -> BarzResult<Vec<u8>> {
-    let authorization = Authorization {
-        chain_id: U256::from_big_endian_slice(chain_id)?,
-        address: Address::from_str(contract_address)?,
-        nonce: U256::from_big_endian_slice(nonce)?,
-    };
-
-    Ok(authorization.hash()?.to_vec())
-}
-
-pub fn sign_authorization(
-    chain_id: &[u8],
-    contract_address: &str,
-    nonce: &[u8],
-    private_key: &str,
-) -> BarzResult<String> {
-    let authorization = Authorization {
-        chain_id: U256::from_big_endian_slice(chain_id)?,
-        address: Address::from_str(contract_address)?,
-        nonce: U256::from_big_endian_slice(nonce)?,
-    };
-    let authorization_hash = authorization.hash()?;
-    let private_key = PrivateKey::try_from(private_key)?;
-    let signature = private_key.sign(authorization_hash)?;
-
-    let signed_authorization = SignedAuthorization {
-        authorization,
-        y_parity: signature.v(),
-        r: U256::from_big_endian(signature.r()),
-        s: U256::from_big_endian(signature.s()),
-    };
-
-    Ok(serde_json::to_string(&signed_authorization)?)
 }

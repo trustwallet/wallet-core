@@ -269,6 +269,10 @@ message SigningInput {
     // Whether enable MultiAddress
     bool multi_address = 10;
 
+    // Whether to use `ChargeAssetTxPayment` extrinsic extension instead of `ChargeTransactionPayment`
+    // when paying transaction tip in native chain token.
+    bool charge_native_as_asset_tx_payment = 13;
+
     // Payload message
     oneof message_oneof {
         Balance balance_call = 11;

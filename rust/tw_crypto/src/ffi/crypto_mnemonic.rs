@@ -15,7 +15,8 @@ use tw_misc::{try_or_else, try_or_false};
 
 #[tw_ffi(ty = static_function, class = TWMnemonic, name = Generate)]
 #[no_mangle]
-pub unsafe extern "C" fn tw_mnemonic_generate(strength: u32) -> NullableMut<TWString> {
+pub unsafe extern "C" fn tw_mnemonic_generate(strength: i32) -> NullableMut<TWString> {
+    let strength: u32 = try_or_else!(strength.try_into(), std::ptr::null_mut);
     let mnemonic = try_or_else!(Mnemonic::generate(strength), std::ptr::null_mut);
     TWString::from(mnemonic.to_string_zeroizing()).into_ptr()
 }
@@ -51,7 +52,8 @@ pub unsafe extern "C" fn tw_mnemonic_is_valid_word(word: Nonnull<TWString>) -> b
 
 #[tw_ffi(ty = static_function, class = TWMnemonic, name = GetWord)]
 #[no_mangle]
-pub unsafe extern "C" fn tw_mnemonic_get_word(index: u32) -> NullableMut<TWString> {
+pub unsafe extern "C" fn tw_mnemonic_get_word(index: i32) -> NullableMut<TWString> {
+    let index: u32 = try_or_else!(index.try_into(), std::ptr::null_mut);
     let word = try_or_else!(Mnemonic::get_word(index), std::ptr::null_mut);
     TWString::from(word.to_string()).into_ptr()
 }

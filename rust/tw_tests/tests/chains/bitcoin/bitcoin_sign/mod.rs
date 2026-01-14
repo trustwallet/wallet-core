@@ -15,3 +15,4 @@ mod p2wsh;
 mod psbt;
 mod send_to_address;
 mod sighash_single;
+mod sign_error;

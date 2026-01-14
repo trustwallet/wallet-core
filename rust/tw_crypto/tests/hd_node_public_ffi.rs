@@ -26,8 +26,8 @@ fn test_public_key_from_zpub() {
     let hd_node_ptr = unsafe {
         tw_hd_node_public_create_with_extended_public_key(
             zpub_string.ptr(),
-            Curve::Secp256k1.to_raw(),
-            Hasher::Sha256d as u32,
+            Curve::Secp256k1.to_raw() as i32,
+            Hasher::Sha256d as i32,
         )
     };
 
@@ -37,7 +37,7 @@ fn test_public_key_from_zpub() {
     let hasher = Hasher::Sha256ripemd;
 
     let derived_node_ptr = unsafe {
-        tw_hd_node_public_derive_from_path(hd_node_ptr, path_string.ptr(), hasher as u32)
+        tw_hd_node_public_derive_from_path(hd_node_ptr, path_string.ptr(), hasher as i32)
     };
 
     let public_key_data =
@@ -68,8 +68,8 @@ fn test_public_key_from_dpub() {
     let hd_node_ptr = unsafe {
         tw_hd_node_public_create_with_extended_public_key(
             zpub_string.ptr(),
-            Curve::Secp256k1.to_raw(),
-            Hasher::Blake256d as u32,
+            Curve::Secp256k1.to_raw() as i32,
+            Hasher::Blake256d as i32,
         )
     };
 
@@ -79,7 +79,7 @@ fn test_public_key_from_dpub() {
     let hasher = Hasher::Blake256ripemd;
 
     let derived_node_ptr = unsafe {
-        tw_hd_node_public_derive_from_path(hd_node_ptr, path_string.ptr(), hasher as u32)
+        tw_hd_node_public_derive_from_path(hd_node_ptr, path_string.ptr(), hasher as i32)
     };
 
     let public_key_data =
@@ -107,8 +107,8 @@ fn test_public_key_from_extended_ethereum() {
     let hd_node_ptr = unsafe {
         tw_hd_node_public_create_with_extended_public_key(
             xpub_string.ptr(),
-            Curve::Secp256k1.to_raw(),
-            Hasher::Sha256d as u32,
+            Curve::Secp256k1.to_raw() as i32,
+            Hasher::Sha256d as i32,
         )
     };
     assert!(!hd_node_ptr.is_null());
@@ -118,7 +118,7 @@ fn test_public_key_from_extended_ethereum() {
     let path_string = TWStringHelper::create(path);
 
     let derived_node_ptr = unsafe {
-        tw_hd_node_public_derive_from_path(hd_node_ptr, path_string.ptr(), hasher as u32)
+        tw_hd_node_public_derive_from_path(hd_node_ptr, path_string.ptr(), hasher as i32)
     };
 
     let public_key_data =
@@ -146,8 +146,8 @@ fn test_public_key_from_zpub_nist() {
     let hd_node_ptr = unsafe {
         tw_hd_node_public_create_with_extended_public_key(
             zpub_string.ptr(),
-            Curve::Nist256p1.to_raw(),
-            Hasher::Sha256d as u32,
+            Curve::Nist256p1.to_raw() as i32,
+            Hasher::Sha256d as i32,
         )
     };
 
@@ -157,7 +157,7 @@ fn test_public_key_from_zpub_nist() {
     let hasher = Hasher::Sha256ripemd;
 
     let derived_node_ptr = unsafe {
-        tw_hd_node_public_derive_from_path(hd_node_ptr, path_string.ptr(), hasher as u32)
+        tw_hd_node_public_derive_from_path(hd_node_ptr, path_string.ptr(), hasher as i32)
     };
 
     let public_key_data =

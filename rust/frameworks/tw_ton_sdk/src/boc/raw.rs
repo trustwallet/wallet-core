@@ -135,7 +135,7 @@ impl RawBagOfCells {
 
         let root_count = self.roots.len();
         let num_ref_bits = 32 - (self.cells.len() as u32).leading_zeros();
-        let num_ref_bytes = (num_ref_bits + 7) / 8;
+        let num_ref_bytes = num_ref_bits.div_ceil(8);
         let has_idx = false;
 
         let mut full_size = 0u32;
@@ -145,7 +145,7 @@ impl RawBagOfCells {
         }
 
         let num_offset_bits = 32 - full_size.leading_zeros();
-        let num_offset_bytes = (num_offset_bits + 7) / 8;
+        let num_offset_bytes = num_offset_bits.div_ceil(8);
 
         let total_size = 4 + // magic
             1 + // flags and s_bytes
@@ -237,7 +237,7 @@ fn read_cell(reader: &mut BinaryReader, size: u8) -> CellResult<RawCell> {
 }
 
 fn raw_cell_size(cell: &RawCell, ref_size_bytes: u32) -> u32 {
-    let data_len = (cell.bit_len + 7) / 8;
+    let data_len = cell.bit_len.div_ceil(8);
     2 + data_len as u32 + cell.references.len() as u32 * ref_size_bytes
 }
 
@@ -254,7 +254,7 @@ fn write_raw_cell(
     let padding_bits = cell.bit_len % 8;
     let full_bytes = padding_bits == 0;
     let data = cell.data.as_slice();
-    let data_len_bytes = (cell.bit_len + 7) / 8;
+    let data_len_bytes = cell.bit_len.div_ceil(8);
     // data_len_bytes <= 128 by spec, but d2 must be u8 by spec as well
     let d2 = (data_len_bytes * 2 - if full_bytes { 0 } else { 1 }) as u8; //subtract 1 if the last byte is not full
 

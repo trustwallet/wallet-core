@@ -458,6 +458,10 @@ TEST(StoredKey, InvalidPassword) {
     ASSERT_THROW(key.payload.decrypt(gPassword), DecryptionError);
 }
 
+TEST(StoredKey, InvalidIv) {
+    ASSERT_THROW(StoredKey::load(testDataPath("invalid-iv.json")), std::invalid_argument);
+}
+
 TEST(StoredKey, EmptyAccounts) {
     const auto key = StoredKey::load(testDataPath("empty-accounts.json"));
 

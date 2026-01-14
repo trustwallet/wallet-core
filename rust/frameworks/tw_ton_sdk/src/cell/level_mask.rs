@@ -49,6 +49,6 @@ impl LevelMask {
     }
 
     pub fn is_significant(&self, level: u8) -> bool {
-        level == 0 || ((self.mask >> (level - 1)) % 2 != 0)
+        level == 0 || !(self.mask >> (level - 1)).is_multiple_of(2)
     }
 }

@@ -55,11 +55,21 @@ PrivateKey::PrivateKey(const Data& data, TWCurve curve) {
     _impl = Rust::wrapTWPrivateKey(privkey);
 }
 
-PrivateKey::PrivateKey(const std::string& data, TWCurve curve) {
-    auto bytes = TW::data(data);
-    *this = PrivateKey(bytes, curve);
-    memzero(bytes.data(), bytes.size());
+PrivateKey::PrivateKey(Data&& data, TWCurve curve) {
+    if (!isValid(data, curve)) {
+        throw std::invalid_argument("Invalid private key data");
+    }
+    bytes = std::move(data);
+    _curve = curve;
+    auto* privkey = Rust::tw_private_key_create_with_data(bytes.data(), bytes.size(), static_cast<uint32_t>(curve));
+    if (privkey == nullptr) {
+        throw std::invalid_argument("Invalid private key");
+    }
+    _impl = Rust::wrapTWPrivateKey(privkey);
 }
+
+PrivateKey::PrivateKey(const std::string& data, TWCurve curve)
+    : PrivateKey(TW::data(data), curve) { }
 
 PrivateKey::PrivateKey(
     const Data& key1, const Data& extension1, const Data& chainCode1,
@@ -83,7 +93,27 @@ PrivateKey::PrivateKey(
     _impl = Rust::wrapTWPrivateKey(privkey);
 }
 
-PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const { 
+PrivateKey& PrivateKey::operator=(const PrivateKey& other) noexcept {
+    if (this != &other) {
+        cleanup();
+        bytes = other.bytes;
+        _curve = other._curve;
+        _impl = other._impl;
+    }
+    return *this;
+}
+
+PrivateKey& PrivateKey::operator=(PrivateKey&& other) noexcept {
+    if (this != &other) {
+        cleanup();
+        bytes = std::move(other.bytes);
+        _curve = other._curve;
+        _impl = std::move(other._impl);
+    }
+    return *this;
+}
+
+PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
     auto* pubkey = Rust::tw_private_key_get_public_key_by_type(_impl.get(), static_cast<uint32_t>(type));
     if (pubkey == nullptr) {
         return PublicKey(Data(), type);

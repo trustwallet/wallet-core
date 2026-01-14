@@ -110,7 +110,7 @@ impl CellBuilder {
         if val.is_zero() {
             self.store_u8(4, 0)
         } else {
-            let num_bytes = (val.bits() + 7) / 8;
+            let num_bytes = val.bits().div_ceil(8);
             self.store_u8(4, num_bytes as u8)?;
             self.store_uint(num_bytes * 8, val)
         }

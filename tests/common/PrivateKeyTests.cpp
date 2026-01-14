@@ -306,5 +306,52 @@ TEST(PrivateKey, SignShortDigest) {
     }
 }
 
+TEST(PrivateKey, CopyAssignmentOperator) {
+    Data privKeyData1 = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+    Data privKeyData2 = parse_hex("bfeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f6");
+
+    auto privateKey1 = PrivateKey(privKeyData1, TWCurveSECP256k1);
+    auto privateKey2 = PrivateKey(privKeyData2, TWCurveED25519);
+
+    // Store original data for comparison
+    auto originalKey1Bytes = privateKey1.bytes;
+    auto originalKey1Curve = privateKey1.curve();
+
+    // Perform copy assignment
+    privateKey2 = privateKey1;
+
+    // Verify that privateKey2 now has the same data as privateKey1
+    EXPECT_EQ(hex(privateKey2.bytes), hex(originalKey1Bytes));
+    EXPECT_EQ(privateKey2.curve(), originalKey1Curve);
+    EXPECT_EQ(privateKey2.curve(), TWCurveSECP256k1);
+
+    // Verify self-assignment is safe
+    privateKey1 = privateKey1;
+    EXPECT_EQ(hex(privateKey1.bytes), hex(originalKey1Bytes));
+}
+
+TEST(PrivateKey, MoveAssignmentOperator) {
+    Data privKeyData1 = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+    Data privKeyData2 = parse_hex("bfeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f6");
+
+    auto privateKey1 = PrivateKey(privKeyData1, TWCurveSECP256k1);
+    auto privateKey2 = PrivateKey(privKeyData2, TWCurveED25519);
+
+    // Store original data for comparison
+    auto originalKey1Bytes = hex(privateKey1.bytes);
+    auto originalKey1Curve = privateKey1.curve();
+
+    // Perform move assignment
+    privateKey2 = std::move(privateKey1);
+
+    // Verify that privateKey2 now has the moved data
+    EXPECT_EQ(hex(privateKey2.bytes), originalKey1Bytes);
+    EXPECT_EQ(privateKey2.curve(), originalKey1Curve);
+    EXPECT_EQ(privateKey2.curve(), TWCurveSECP256k1);
+
+    // After move, privateKey1's bytes should be empty/cleared
+    EXPECT_EQ(privateKey1.bytes.size(), 0ul);
+}
+
 
 } // namespace TW::tests

@@ -17,7 +17,7 @@ namespace TW::Theta {
 class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
 
   public:
     std::string chainID;
@@ -29,7 +29,7 @@ class Signer {
     explicit Signer(std::string chainID) : chainID(std::move(chainID)) {}
 
     /// Signs the given transaction
-    Data sign(const PrivateKey& privateKey, const Transaction& transaction) noexcept;
+    Data sign(const PrivateKey& privateKey, const Transaction& transaction);
     Data encode(const Transaction& transaction) const;
     Proto::SigningOutput compile(const Data& signature, const PublicKey& publicKey) const;
     Data signaturePreimage() const;

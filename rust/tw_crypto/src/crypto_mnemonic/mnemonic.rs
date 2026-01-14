@@ -22,7 +22,7 @@ const PBKDF2_ROUNDS: u32 = 2048;
 const SEED_SIZE: usize = 64;
 
 fn is_invalid_word_count(word_count: usize) -> bool {
-    word_count < MIN_NB_WORDS || word_count % 3 != 0 || word_count > MAX_NB_WORDS
+    word_count < MIN_NB_WORDS || !word_count.is_multiple_of(3) || word_count > MAX_NB_WORDS
 }
 
 #[derive(PartialEq, Eq, Debug, Zeroize, ZeroizeOnDrop)]
@@ -43,7 +43,7 @@ impl Mnemonic {
         let nb_bytes = entropy.len();
         let nb_bits = nb_bytes * 8;
 
-        if nb_bits % 32 != 0 {
+        if !nb_bits.is_multiple_of(32) {
             return Err(Error::BadEntropyBitCount(nb_bits));
         }
         if !(MIN_ENTROPY_BITS..=MAX_ENTROPY_BITS).contains(&nb_bits) {
@@ -94,7 +94,7 @@ impl Mnemonic {
     }
 
     pub fn generate(strength: u32) -> Result<Self, Error> {
-        if strength % 32 != 0 || !(128..=256).contains(&strength) {
+        if !strength.is_multiple_of(32) || !(128..=256).contains(&strength) {
             return Err(Error::BadEntropyBitCount(strength as usize));
         }
 

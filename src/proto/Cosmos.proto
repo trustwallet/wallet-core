@@ -44,6 +44,8 @@ message THORChainAsset {
     string symbol = 2;
     string ticker = 3;
     bool synth = 4;
+    bool trade = 5;
+    bool secured = 6;
 }
 
 message THORChainCoin {

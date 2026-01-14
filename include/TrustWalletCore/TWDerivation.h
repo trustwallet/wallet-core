@@ -27,6 +27,7 @@ enum TWDerivation {
     TWDerivationBitcoinTaproot = 8,
     TWDerivationPactusMainnet = 9,
     TWDerivationPactusTestnet = 10,
+    TWDerivationSmartChainStableAccount = 11,
     // end_of_derivation_enum - USED TO GENERATE CODE
 };
 

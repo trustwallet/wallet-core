@@ -85,29 +85,7 @@ public:
     /// Constructor, create from CBOR byte stream
     Decode(const Data& input);
 
-public: // decoding
-    /// Check if contains a valid CBOR byte stream.
-    bool isValid() const;
-    /// Get the value of a simple type
-    uint64_t getValue() const;
-    /// Get the value of a string/bytes as string
-    std::string getString() const;
-    /// Get the value of a string/bytes as Data
-    TW::Data getBytes() const;
-    /// Get all elements of array
-    std::vector<Decode> getArrayElements() const { return getCompoundElements(1, MT_array); }
-    /// Get all elements of map
-    std::vector<std::pair<Decode, Decode>> getMapElements() const;
-    /// Get the tag number
-    uint64_t getTagValue() const;
-    /// Get the tag element
-    Decode getTagElement() const;
-    /// Dump to a JSON-like string (debugging)
-    std::string dumpToString() const;
-    uint32_t length() const { return subLen; }
-    /// Return encoded form (useful e.g for parsed out sub-parts)
-    Data encoded() const;
-
+public:
     enum MajorType {
         MT_uint = 0,
         MT_negint = 1,
@@ -118,6 +96,32 @@ public: // decoding
         MT_tag = 6,
         MT_special = 7,
     };
+
+    using MapElements = std::vector<std::pair<Decode, Decode>>;
+
+    /// Check if contains a valid CBOR byte stream.
+    bool isValid() const;
+    // Get the major type
+    MajorType getMajorType() const;
+    /// Get the value of a simple type
+    uint64_t getValue() const;
+    /// Get the value of a string/bytes as string
+    std::string getString() const;
+    /// Get the value of a string/bytes as Data
+    TW::Data getBytes() const;
+    /// Get all elements of array
+    std::vector<Decode> getArrayElements() const { return getCompoundElements(1, MT_array); }
+    /// Get all elements of map
+    MapElements getMapElements() const;
+    /// Get the tag number
+    uint64_t getTagValue() const;
+    /// Get the tag element
+    Decode getTagElement() const;
+    /// Dump to a JSON-like string (debugging)
+    std::string dumpToString() const;
+    uint32_t length() const { return subLen; }
+    /// Return encoded form (useful e.g for parsed out sub-parts)
+    Data encoded() const;
     
 private:
     /// Struct used to keep reference to original data

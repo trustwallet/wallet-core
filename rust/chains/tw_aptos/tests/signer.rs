@@ -35,9 +35,7 @@ pub struct FungibleAssetTransfer {
     amount: u64,
 }
 
-pub struct RegisterToken {
-    coin_type: TypeTag,
-}
+pub struct RegisterToken;
 
 pub enum OpsDetails {
     RegisterToken(RegisterToken),
