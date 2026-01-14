@@ -22,13 +22,8 @@ std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t& chai
 }
 
 std::tuple<uint256_t, uint256_t, uint256_t>
-<<<<<<< HEAD
-Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept {
-    auto signature = privateKey.sign(hash);
-=======
 Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) {
-    auto signature = privateKey.sign(hash, TWCurveSECP256k1);
->>>>>>> master
+    auto signature = privateKey.sign(hash);
     return values(chainID, signature);
 }
 

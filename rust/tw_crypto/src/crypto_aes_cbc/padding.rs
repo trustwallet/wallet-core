@@ -37,14 +37,14 @@ impl PaddingMode {
     pub fn padding_size(&self, data_size: usize) -> usize {
         match self {
             PaddingMode::Zero => {
-                if data_size % BLOCK_SIZE_AES == 0 {
+                if data_size.is_multiple_of(BLOCK_SIZE_AES) {
                     0
                 } else {
                     BLOCK_SIZE_AES - (data_size % BLOCK_SIZE_AES)
                 }
             },
             PaddingMode::PKCS7 => {
-                if data_size % BLOCK_SIZE_AES == 0 {
+                if data_size.is_multiple_of(BLOCK_SIZE_AES) {
                     BLOCK_SIZE_AES
                 } else {
                     BLOCK_SIZE_AES - (data_size % BLOCK_SIZE_AES)
@@ -58,10 +58,10 @@ impl PaddingMode {
         let mut padded = data.to_vec();
         match self {
             PaddingMode::Zero => {
-                padded.extend(std::iter::repeat(0).take(padding_size));
+                padded.extend(std::iter::repeat_n(0, padding_size));
             },
             PaddingMode::PKCS7 => {
-                padded.extend(std::iter::repeat(padding_size as u8).take(padding_size));
+                padded.extend(std::iter::repeat_n(padding_size as u8, padding_size));
             },
         }
         padded

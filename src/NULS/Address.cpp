@@ -61,7 +61,6 @@ Address::Address(const TW::PublicKey& publicKey, bool isMainnet) {
     }
     // Address Type
     bytes[2] = addressType;
-<<<<<<< HEAD
     auto data = wrapTWData(TWDataCreateWithBytes(publicKey.bytes.data(), publicKey.bytes.size()));
     auto result = wrapTWData(TWECDSAPubkeyHash(data.get(), true, Hash::HasherSha256ripemd));
     if (result == nullptr) {
@@ -69,9 +68,6 @@ Address::Address(const TW::PublicKey& publicKey, bool isMainnet) {
     }
     auto resultData = dataFromTWData(result);
     std::copy(resultData.begin(), resultData.end(), bytes.begin() + 3);
-=======
-    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.data() + 3);
->>>>>>> master
     bytes[23] = checksum(bytes);
 }
 

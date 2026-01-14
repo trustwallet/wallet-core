@@ -156,10 +156,7 @@ pub unsafe extern "C" fn tw_private_key_sign_canonical(
     canonical_checker: Option<unsafe extern "C" fn(by: u8, sig: *const u8) -> i32>,
 ) -> CByteArray {
     let private = try_or_else!(TWPrivateKey::from_ptr_as_ref(key), CByteArray::default);
-    let digest_to_sign = try_or_else!(
-        CByteArrayRef::new(digest, digest_len).as_slice(),
-        CByteArray::default
-    );
+    let digest_to_sign = CByteArrayRef::new(digest, digest_len).as_slice();
 
     // Return an empty signature if an error occurs.
     let sig = private
@@ -183,10 +180,7 @@ pub unsafe extern "C" fn tw_private_key_sign_as_der(
     digest_len: usize,
 ) -> CByteArray {
     let private = try_or_else!(TWPrivateKey::from_ptr_as_ref(key), CByteArray::default);
-    let digest_to_sign = try_or_else!(
-        CByteArrayRef::new(digest, digest_len).as_slice(),
-        CByteArray::default
-    );
+    let digest_to_sign = CByteArrayRef::new(digest, digest_len).as_slice();
 
     // Return an empty signature if an error occurs.
     let sig = private.0.sign_as_der(digest_to_sign).unwrap_or_default();

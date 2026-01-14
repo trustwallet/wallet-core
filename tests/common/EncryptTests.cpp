@@ -31,7 +31,7 @@ TEST(Encrypt, AESCBCEncrypt) {
 TEST(Encrypt, AESCBCEncryptInvalidIv) {
     auto iv = parse_hex("0001020304050607");
     auto data = parse_hex("6bc1bee22e409f96e93d7e117393172a");
-    ASSERT_THROW(AESCBCEncrypt(gKey, data, iv), std::invalid_argument);
+    ASSERT_THROW(AESCBCEncrypt(gKey, data, iv), std::runtime_error);
 }
 
 TEST(Encrypt, AESCBCEncryptWithPadding) {
@@ -61,7 +61,7 @@ TEST(Encrypt, AESCBCDecrypt) {
 TEST(Encrypt, AESCBCDecryptInvalidIv) {
     auto iv = parse_hex("000102030405060708090A0B0C0D0E0F000102030405060708090A0B0C0D0E0F");
     auto cipher = parse_hex("f58c4c04d6e5f1ba779eabfb5f7bfbd6");
-    ASSERT_THROW(AESCBCDecrypt(gKey, cipher, iv), std::invalid_argument);
+    ASSERT_THROW(AESCBCDecrypt(gKey, cipher, iv), std::runtime_error);
 }
 
 TEST(Encrypt, AESCBCDecryptWithPadding) {
@@ -96,7 +96,7 @@ TEST(Encrypt, AESCTREncryptIvalidIv) {
     // iv is too short.
     auto iv = parse_hex("ff");
     auto data = parse_hex("6bc1bee22e409f96e93d7e117393172a");
-    ASSERT_THROW(AESCTREncrypt(gKey, data, iv), std::invalid_argument);
+    ASSERT_THROW(AESCTREncrypt(gKey, data, iv), std::runtime_error);
 }
 
 TEST(Encrypt, AESCTRDecrypt) {
@@ -111,7 +111,7 @@ TEST(Encrypt, AESCTRDecryptIvalidIv) {
     // iv is too long.
     auto iv = parse_hex("f0f1f2f3f4f5f6f7f8f9fafbfcfdfefff0");
     auto cipher = parse_hex("601ec313775789a5b7a7f504bbf3d228");
-    ASSERT_THROW(AESCTRDecrypt(gKey, cipher, iv), std::invalid_argument);
+    ASSERT_THROW(AESCTRDecrypt(gKey, cipher, iv), std::runtime_error);
 }
 
 TEST(Encrypt, AESCBCEncryptMultipleBlocks) {

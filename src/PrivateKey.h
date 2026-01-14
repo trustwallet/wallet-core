@@ -43,35 +43,16 @@ class PrivateKey {
     // obtain private key type used by the curve/coin
     static TWPrivateKeyType getType(TWCurve curve) noexcept;
 
-<<<<<<< HEAD
-    /// Initializes a private key with an array of bytes and a curve.  
-=======
-    /// Initializes a private key with an array of bytes.  Size must be exact (normally 32, or 192 for extended)
-    /// @deprecated Use PrivateKey(const Data& data, TWCurve curve) instead
-    explicit PrivateKey(const Data& data);
-
-    /// Initializes a private key with an array of bytes.  Size must be exact (normally 32, or 192 for extended)
-    /// @deprecated Use PrivateKey(const Data& data, TWCurve curve) instead
-    explicit PrivateKey(Data&& data);
-
     /// Initializes a private key with an array of bytes and a curve.
->>>>>>> master
-    /// Size of the data must be exact (normally 32, or 192 for extended)
+    /// Size of the data must be exact (normally 32, or 192 for extended).
     /// Signing functions will throw an exception if the provided curve is different from the one specified.
     explicit PrivateKey(const Data& data, TWCurve curve);
 
-<<<<<<< HEAD
-=======
     /// Initializes a private key with an array of bytes and a curve.
-    /// Size of the data must be exact (normally 32, or 192 for extended)
+    /// Size of the data must be exact (normally 32, or 192 for extended).
     /// Signing functions will throw an exception if the provided curve is different from the one specified.
     explicit PrivateKey(Data&& data, TWCurve curve);
 
-    /// Initializes a private key from a string of bytes.
-    /// @deprecated Use PrivateKey(const std::string& data, TWCurve curve) instead
-    explicit PrivateKey(const std::string& data) : PrivateKey(TW::data(data)) {}
-
->>>>>>> master
     /// Initializes a private key from a string of bytes and a curve.
     /// Signing functions will throw an exception if the provided curve is different from the one specified.
     explicit PrivateKey(const std::string& data, TWCurve curve);

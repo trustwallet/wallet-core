@@ -9,7 +9,7 @@
 
 #include <cassert>
 #include <TrustWalletCore/TWAESPaddingMode.h>
-#include "TrustWalletCore/Generated/TWCrypto.h"
+#include "rust/Wrapper.h"
 
 using namespace TW;
 
@@ -60,11 +60,20 @@ static Data rustPbkdf2(const Data& password, const PBKDF2Parameters& params) {
     Rust::TWDataWrapper passwordData = password;
     Rust::TWDataWrapper saltData = params.salt;
 
+    // Check if iterations fits in int32_t range
+    const auto maxI32 = std::numeric_limits<int32_t>::max();
+    if (params.iterations > static_cast<uint32_t>(maxI32)) {
+        throw std::runtime_error("PBKDF2 iterations exceeds int32_t maximum");
+    }
+    if (params.desiredKeyLength > static_cast<std::size_t>(maxI32)) {
+        throw std::runtime_error("PBKDF2 desired key length exceeds int32_t maximum");
+    }
+
     Rust::TWDataWrapper res = Rust::tw_pbkdf2_hmac_sha256(
         passwordData.get(),
         saltData.get(),
-        params.iterations,
-        params.desiredKeyLength
+        static_cast<int32_t>(params.iterations),
+        static_cast<int32_t>(params.desiredKeyLength)
     );
     auto data = res.toDataOrDefault();
     if (data.empty()) {
@@ -180,20 +189,7 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
         encrypted = rustAesCbcEncrypt128(data, this->params.cipherParams.iv, derivedKey);
         break;
     }
-<<<<<<< HEAD
     _mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
-=======
-    assert(result == EXIT_SUCCESS);
-    if (result == EXIT_SUCCESS) {
-        Data iv = this->params.cipherParams.iv;
-        // iv size should have been validated in `AESParameters::isValid()`.
-        assert(iv.size() == gBlockSize);
-
-        encrypted = Data(data.size());
-        aes_ctr_encrypt(data.data(), encrypted.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
-        _mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
-    }
->>>>>>> master
 }
 
 EncryptedPayload::~EncryptedPayload() {
@@ -218,13 +214,6 @@ Data EncryptedPayload::decrypt(const Data& password) const {
     if (sodium_memcmp(mac.data(), _mac.data(), mac.size()) != 0) {
         throw DecryptionError::invalidPassword;
     }
-
-    // Even though the cipher params should have been validated in `EncryptedPayload` constructor,
-    // double check them here.
-    if (!params.cipherParams.isValid()) {
-        throw DecryptionError::invalidCipher;
-    }
-    assert(params.cipherParams.iv.size() == gBlockSize);
 
     Data decrypted(encrypted.size());
     Data iv = params.cipherParams.iv;
