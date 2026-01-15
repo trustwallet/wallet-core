@@ -24,6 +24,7 @@
 #include <TrezorCrypto/rand.h>
 
 #include <fcntl.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <unistd.h>
@@ -32,15 +33,15 @@
 uint32_t __attribute__((weak)) random32(void) {
     int randomData = open("/dev/urandom", O_RDONLY);
     if (randomData < 0) {
-        return 0;
+        abort();  // Critical: cannot proceed without random source
     }
 
     uint32_t result;
-    if (read(randomData, &result, sizeof(result)) < 0) {
-        return 0;
-    }
-
+    ssize_t readLen = read(randomData, &result, sizeof(result));
     close(randomData);
+    if (readLen != sizeof(result)) {
+        abort();  // Critical: failed to read random data
+    }
 
     return result;
 }
@@ -48,10 +49,11 @@ uint32_t __attribute__((weak)) random32(void) {
 void __attribute__((weak)) random_buffer(uint8_t *buf, size_t len) {
     int randomData = open("/dev/urandom", O_RDONLY);
     if (randomData < 0) {
-        return;
+        abort();  // Critical: cannot proceed without random source
     }
-    if (read(randomData, buf, len) < 0) {
-        return;
-    }
+    ssize_t readLen = read(randomData, buf, len);
     close(randomData);
+    if (readLen != (ssize_t)len) {
+        abort();  // Critical: failed to read random data
+    }
 }
