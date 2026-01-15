@@ -75,9 +75,9 @@ ScryptParameters::ScryptParameters(const nlohmann::json& json) {
     desiredKeyLength = json[CodingKeys::SP::desiredKeyLength];
     if (json.count(CodingKeys::SP::n) != 0)
         n = json[CodingKeys::SP::n];
-    if (json.count(CodingKeys::SP::n) != 0)
+    if (json.count(CodingKeys::SP::p) != 0)
         p = json[CodingKeys::SP::p];
-    if (json.count(CodingKeys::SP::n) != 0)
+    if (json.count(CodingKeys::SP::r) != 0)
         r = json[CodingKeys::SP::r];
 }
 
