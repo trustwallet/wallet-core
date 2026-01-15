@@ -28,6 +28,8 @@ enum TWDerivation {
     TWDerivationPactusMainnet = 9,
     TWDerivationPactusTestnet = 10,
     TWDerivationSmartChainStableAccount = 11,
+    TWDerivationStacksMainnet = 12,
+    TWDerivationStacksTestnet = 13,
     // end_of_derivation_enum - USED TO GENERATE CODE
 };
 
