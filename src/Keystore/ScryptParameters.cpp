@@ -13,9 +13,13 @@ namespace TW::Keystore {
 
 namespace internal {
 
+static const size_t saltLength = 32;
+
 Data randomSalt() {
-    Data salt(32);
-    random_buffer(salt.data(), salt.size());
+    Data salt(saltLength);
+    if (Random::random_buffer(salt, saltLength) != Random::OK) {
+        throw std::runtime_error("Error generating random salt");
+    }
     return salt;
 }
 

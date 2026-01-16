@@ -10,4 +10,5 @@ pub mod crypto_hd_node;
 pub mod crypto_hd_node_public;
 pub mod crypto_mnemonic;
 pub mod crypto_pbkdf2;
+pub mod crypto_random;
 pub mod crypto_scrypt;

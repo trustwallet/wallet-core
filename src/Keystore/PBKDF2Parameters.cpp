@@ -10,8 +10,10 @@ using namespace TW;
 namespace TW::Keystore {
 
 PBKDF2Parameters::PBKDF2Parameters()
-    : salt(32) {
-    random_buffer(salt.data(), salt.size());
+    : salt(saltLength) {
+    if (Random::random_buffer(salt, saltLength) != Random::OK) {
+        throw std::runtime_error("Error generating random salt");
+    }
 }
 
 // -----------------
