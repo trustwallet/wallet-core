@@ -5,7 +5,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use rand_core::RngCore;
-use tw_memory::ffi::c_byte_array_mut::CByteArrayMut;
+use tw_memory::ffi::c_byte_array_mut::CByteArrayRefMut;
 use tw_memory::ffi::c_result::ErrorCode;
 use tw_misc::try_or_else;
 
@@ -29,7 +29,7 @@ impl From<CRandomCode> for ErrorCode {
 /// \return `CRandomCode::Ok` on success, or an error code otherwise.
 #[no_mangle]
 pub unsafe extern "C" fn crypto_random_buffer(data: *mut u8, size: usize) -> ErrorCode {
-    let mut bytes_mut = CByteArrayMut::new(data, size);
+    let mut bytes_mut = CByteArrayRefMut::new(data, size);
     let bytes_mut = try_or_else!(bytes_mut.as_mut(), || ErrorCode::from(
         CRandomCode::NullBuffer
     ));

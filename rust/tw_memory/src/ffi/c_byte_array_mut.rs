@@ -4,15 +4,15 @@
 
 /// A C-compatible wrapper over a mutable byte array pointer given as an FFI argument.
 #[repr(C)]
-pub struct CByteArrayMut {
+pub struct CByteArrayRefMut {
     data: *mut u8,
     size: usize,
 }
 
-impl CByteArrayMut {
+impl CByteArrayRefMut {
     /// Creates a new `CByteArrayMut` from the allocated byte array.
-    pub fn new(data: *mut u8, size: usize) -> CByteArrayMut {
-        CByteArrayMut { data, size }
+    pub fn new(data: *mut u8, size: usize) -> CByteArrayRefMut {
+        CByteArrayRefMut { data, size }
     }
 
     /// Returns a mutable slice if `data` is non-null and `size` is non-zero.
