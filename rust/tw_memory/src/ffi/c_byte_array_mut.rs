@@ -15,15 +15,15 @@ impl CByteArrayMut {
         CByteArrayMut { data, size }
     }
 
-    /// Returns a slice.
+    /// Returns a mutable slice if `data` is non-null and `size` is non-zero.
     ///
     /// # Safety
     ///
     /// The inner data must be valid.
-    pub unsafe fn as_mut(&mut self) -> &mut [u8] {
-        if self.data.is_null() {
-            return &mut [];
+    pub unsafe fn as_mut(&mut self) -> Option<&mut [u8]> {
+        if self.data.is_null() || self.size == 0 {
+            return None;
         }
-        std::slice::from_raw_parts_mut(self.data, self.size)
+        Some(std::slice::from_raw_parts_mut(self.data, self.size))
     }
 }
