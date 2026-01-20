@@ -30,6 +30,7 @@ impl WithDestructor for TWAnyAddress {
     }
 }
 
+#[derive(Debug)]
 pub enum KeyType {
     PrivateKey(&'static str),
     PublicKey(&'static str),

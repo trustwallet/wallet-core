@@ -34,6 +34,7 @@ tw_polymesh = { path = "../chains/tw_polymesh" }
 tw_ripple = { path = "../chains/tw_ripple" }
 tw_ronin = { path = "../chains/tw_ronin" }
 tw_solana = { path = "../chains/tw_solana" }
+tw_stacks = { path = "../chains/tw_stacks" }
 tw_substrate = { path = "../frameworks/tw_substrate" }
 tw_sui = { path = "../chains/tw_sui" }
 tw_thorchain = { path = "../chains/tw_thorchain" }

@@ -69,6 +69,7 @@ enum TWBlockchain {
     TWBlockchainPactus = 56,
     TWBlockchainKomodo = 57,
     TWBlockchainPolymesh = 58, // Substrate
+    TWBlockchainStacks = 59,
 };
 
 TW_EXTERN_C_END
