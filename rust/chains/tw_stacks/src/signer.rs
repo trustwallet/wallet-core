@@ -49,6 +49,9 @@ impl StacksSigner {
                     .nonce
                     .try_into()
                     .map_err(|_| SigningErrorType::Error_invalid_params)?;
+                if xfer.memo.as_bytes().len() > 34 {
+                    return Err(SigningErrorType::Error_invalid_params.into());
+                }
                 let memo_bytes: [u8; 34] = {
                     let msg = xfer.memo.as_bytes();
                     let mut b = [0u8; 34];
