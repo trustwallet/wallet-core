@@ -33,13 +33,17 @@ struct OutPoint {
 
     /// Initializes an out-point reference with hash, index.
     template <typename T>
-    OutPoint(const T& h, uint32_t index, uint32_t sequence = 0, int8_t tree = 0) noexcept
-        : hash(to_array<byte, 32>(h)), index(index), sequence(sequence), tree(tree) {}
+    OutPoint(const T& h, uint32_t index, uint32_t sequence = 0, int8_t tree = 0)
+        : index(index), sequence(sequence), tree(tree) {
+        if (h.size() != 32) {
+            throw std::invalid_argument("Invalid hash size. Expected exactly 32 bytes");
+        }
+        hash = to_array<byte, 32>(h);
+    }
 
     /// Initializes an out-point from a Protobuf out-point.
-    OutPoint(const Proto::OutPoint& other) noexcept
+    OutPoint(const Proto::OutPoint& other)
         : OutPoint(other.hash(), other.index(), other.sequence(), int8_t(other.tree())) {
-        assert(other.hash().size() == 32);
     }
 
     /// Encodes the out-point into the provided buffer.

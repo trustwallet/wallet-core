@@ -73,23 +73,37 @@ public:
 };
 
 // In each coin's Entry.cpp the specific types of the coin are used, this template enforces the Signer implement:
-// static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+// static Proto::SigningOutput sign(const Proto::SigningInput& input);
 // Note: use output parameter to avoid unneeded copies
-template <typename Signer, typename Input>
+template <typename Signer, typename Input, typename Output>
 void signTemplate(const Data& dataIn, Data& dataOut) {
     auto input = Input();
     input.ParseFromArray(dataIn.data(), (int)dataIn.size());
-    auto serializedOut = Signer::sign(input).SerializeAsString();
-    dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    try {
+        const auto serializedOut = Signer::sign(input).SerializeAsString();
+        dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    } catch (...) {
+        Output output;
+        output.set_error(Common::Proto::Error_invalid_params);
+        const auto serializedOut = output.SerializeAsString();
+        dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    }
 }
 
 // Note: use output parameter to avoid unneeded copies
-template <typename Planner, typename Input>
+template <typename Planner, typename Input, typename Output>
 void planTemplate(const Data& dataIn, Data& dataOut) {
     auto input = Input();
     input.ParseFromArray(dataIn.data(), (int)dataIn.size());
-    auto serializedOut = Planner::plan(input).SerializeAsString();
-    dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    try {
+        auto serializedOut = Planner::plan(input).SerializeAsString();
+        dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    } catch (...) {
+        Output output;
+        output.set_error(Common::Proto::Error_invalid_params);
+        auto serializedOut = output.SerializeAsString();
+        dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    }
 }
 
 // This template will be used for preImageHashes and compile in each coin's Entry.cpp.

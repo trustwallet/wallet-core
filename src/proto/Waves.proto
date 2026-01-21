@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Waves.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Transfer transaction
 message TransferMessage {
     // amount
@@ -69,6 +71,10 @@ message SigningOutput {
 
     // transaction in JSON format
     string json = 2;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error description
+    string error_message = 4;
 }
-
-

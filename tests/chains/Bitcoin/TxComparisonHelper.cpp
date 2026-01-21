@@ -19,7 +19,7 @@
 
 namespace TW::Bitcoin {
 
-auto emptyTxOutPoint = OutPoint(parse_hex("1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"), 0);
+auto emptyTxOutPoint = OutPoint(parse_hex("b33082a5fad105c1d9712e8d503971fe4d84713065bd323fd1019636ed940e8d"), 0);
 
 UTXO buildTestUTXO(int64_t amount) {
     UTXO utxo;
@@ -27,7 +27,7 @@ UTXO buildTestUTXO(int64_t amount) {
     utxo.outPoint = emptyTxOutPoint;
     utxo.outPoint.sequence = UINT32_MAX;
     utxo.script = Script(parse_hex("0014"
-                                   "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"));
+                                   "b33082a5fad105c1d9712e8d503971fe4d84713065bd323fd1019636ed940e8d"));
     return utxo;
 }
 
@@ -51,7 +51,7 @@ SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, b
         auto utxoKey = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"), TWCurveSECP256k1);
         auto pubKey = utxoKey.getPublicKey(TWPublicKeyTypeSECP256k1);
         auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
-        assert(hex(utxoPubkeyHash) == "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
+        assert(hex(utxoPubkeyHash) == "b33082a5fad105c1d9712e8d503971fe4d84713065bd323fd1019636ed940e8d");
         input.privateKeys.push_back(utxoKey);
     }
 

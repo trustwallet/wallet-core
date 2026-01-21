@@ -21,11 +21,11 @@ std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, [[
 }
 
 void Entry::sign([[maybe_unused]] TWCoinType coin, const Data& dataIn, Data& dataOut) const {
-    signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+    signTemplate<Signer, Proto::SigningInput, Proto::SigningOutput>(dataIn, dataOut);
 }
 
 void Entry::plan([[maybe_unused]] TWCoinType coin, const Data& dataIn, Data& dataOut) const {
-    planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+    planTemplate<Signer, Proto::SigningInput, Proto::TransactionPlan>(dataIn, dataOut);
 }
 
 } // namespace TW::Nervos
