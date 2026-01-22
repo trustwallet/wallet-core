@@ -3847,7 +3847,7 @@
     "chainId": "321",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://explorer.kcc.io/en",
+      "url": "https://scan.kcc.io",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x2f0d79cd289a02f3181b68b9583a64c3809fe7387810b274275985c29d02c80d",
