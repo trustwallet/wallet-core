@@ -4945,5 +4945,34 @@
       "rpc": "https://rpc.monad.xyz",
       "documentation": "https://docs.monad.xyz"
     }
+  },
+  {
+    "id": "megaeth",
+    "name": "MegaETH",
+    "coinId": 4326,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "4326",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://megaeth.blockscout.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x9021590996bda7682485fff4ab1ed221cea2fa0b352073f69e5a76114c7ed81a",
+      "sampleAccount": "0x6a4D1b2fC6a894928979F152A8c9245D96860604"
+    },
+    "info": {
+      "url": "https://www.megaeth.com",
+      "rpc": "https://mainnet.megaeth.com/rpc",
+      "documentation": "https://docs.megaeth.com"
+    }
   }
 ]

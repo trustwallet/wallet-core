@@ -90,6 +90,7 @@ This list is generated from [./registry.json](../registry.json)
 | 2718    | Nebulas          | NAS    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nebulas/info/logo.png" width="32" />      | <https://nebulas.io>          |
 | 3030    | Hedera           | HBAR   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/hedera/info/logo.png" width="32" />       | <https://hedera.com/>         |
 | 4200    | Merlin           | BTC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/merlin/info/logo.png" width="32" />       | <https://merlinchain.io>      |
+| 4326    | MegaETH          | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/megaeth/info/logo.png" width="32" />      | <https://www.megaeth.com>     |
 | 5000    | Mantle           | MNT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/mantle/info/logo.png" width="32" />       | <https://www.mantle.xyz>      |
 | 5600    | BNB Greenfield   | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/greenfield/info/logo.png" width="32" />   | <https://greenfield.bnbchain.org> |
 | 6001    | BounceBit        | BB     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bouncebit/info/logo.png" width="32" />    | <https://bouncebit.io>        |
