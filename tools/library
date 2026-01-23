@@ -11,12 +11,12 @@ wc_read_version() {
 wc_release_url() {
     tag="$1"
 
-    id=$(curl -u ${GITHUB_USER}:${GITHUB_TOKEN} "https://api.github.com/repos/trustwallet/wallet-core/releases/tags/${tag}" | jq ".id")
+    id=$(curl -u ${GITHUB_USER}:${GITHUB_TOKEN} "https://api.github.com/repos/trustwallet/wallet-core-releases/releases/tags/${tag}" | jq ".id")
     if [[ $id == "null" ]]; then
         echo "Failed to get release id for tag ${tag}"
         exit 22
     fi
-    release_url="https://uploads.github.com/repos/trustwallet/wallet-core/releases/${id}"
+    release_url="https://uploads.github.com/repos/trustwallet/wallet-core-releases/releases/${id}"
     echo ${release_url}
 }
 
@@ -24,7 +24,7 @@ wc_upload_asset() {
     tag="$1"
     filename="$2"
 
-    gh release upload $tag $filename --clobber
-    download_url=$(gh release view $tag --json assets --jq '.assets.[] | select(.name == "'"${filename}"'") | .url')
+    gh release upload $tag $filename --clobber --repo trustwallet/wallet-core-releases
+    download_url=$(gh release view $tag --json assets --jq '.assets.[] | select(.name == "'"${filename}"'") | .url' --repo trustwallet/wallet-core-releases)
     echo "\"${download_url}\""
 }
