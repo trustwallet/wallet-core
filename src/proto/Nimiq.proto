@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Nimiq.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 enum NetworkId {
     UseDefault = 0;
     // Default PoW Mainnet.
@@ -36,4 +38,10 @@ message SigningInput {
 message SigningOutput {
     // The encoded transaction
     bytes encoded = 1;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error description
+    string error_message = 3;
 }

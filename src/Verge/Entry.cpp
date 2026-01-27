@@ -49,11 +49,11 @@ TW::Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::strin
 }
 
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<Signer, Bitcoin::Proto::SigningInput>(dataIn, dataOut);
+    signTemplate<Signer, Bitcoin::Proto::SigningInput, Bitcoin::Proto::SigningOutput>(dataIn, dataOut);
 }
 
 void Entry::plan([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    planTemplate<Signer, Bitcoin::Proto::SigningInput>(dataIn, dataOut);
+    planTemplate<Signer, Bitcoin::Proto::SigningInput, Bitcoin::Proto::TransactionPlan>(dataIn, dataOut);
 }
 
 TW::Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {

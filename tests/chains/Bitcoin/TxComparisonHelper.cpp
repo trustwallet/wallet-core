@@ -19,7 +19,7 @@
 
 namespace TW::Bitcoin {
 
-auto emptyTxOutPoint = OutPoint(parse_hex("1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"), 0);
+auto emptyTxOutPoint = OutPoint(parse_hex("b33082a5fad105c1d9712e8d503971fe4d84713065bd323fd1019636ed940e8d"), 0);
 
 UTXO buildTestUTXO(int64_t amount) {
     UTXO utxo;
