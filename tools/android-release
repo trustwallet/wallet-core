@@ -2,11 +2,16 @@
 #
 # This script uploads android build to repositories defined in maven-push.gradle
 # It also builds and uploads Kotlin docs
+#
+# Usage: android-release <version> [publish_url]
+#   version     - version to publish (required)
+#   publish_url - optional maven repository URL (defaults to GitHub Packages)
 
 set -e
 
 source $(dirname $0)/library
 version=$(wc_read_version  $1)
+publish_url="$2"
 
 if [[ $(uname -s) == "Darwin" ]]; then
     export BOOST_ROOT=$(brew --prefix boost)
@@ -16,7 +21,14 @@ echo "Building $version"
 
 export ANDROID_HOME="$HOME/Library/Android/sdk"
 pushd android
-./gradlew clean build assembleRelease publish -Pversion="$version"
+
+publish_url_arg=""
+if [[ -n "$publish_url" ]]; then
+    echo "Using custom publish URL: $publish_url"
+    publish_url_arg="-PpublishUrl=$publish_url"
+fi
+
+./gradlew clean build assembleRelease publish -Pversion="$version" $publish_url_arg
 
 echo "Android build uploaded"
 popd # android
