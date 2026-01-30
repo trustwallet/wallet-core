@@ -3,18 +3,44 @@
 # This script uploads android build to repositories defined in maven-push.gradle
 # It also builds and uploads Kotlin docs
 #
-# Usage: android-release <version> [publish_url]
+# Usage: android-release <version> [publish_url] [--local|--both]
 #   version     - version to publish (required)
 #   publish_url - optional maven repository URL (defaults to GitHub Packages)
+#   --local     - publish only to local maven repository (requires LOCAL_MAVEN_URL env var)
+#   --both      - publish to both GitHub and local maven, continue if GitHub fails
+#
+# Environment variables for local maven:
+#   LOCAL_MAVEN_URL   - URL of the local maven repository
+#   LOCAL_MAVEN_USER  - username for local maven authentication
+#   LOCAL_MAVEN_TOKEN - password/token for local maven authentication
 
 set -e
 
-source $(dirname $0)/library
-version=$(wc_read_version  $1)
-publish_url="$2"
+source "$(dirname "$0")/library"
+
+# Parse arguments
+local_only=false
+publish_both=false
+publish_url=""
+version=""
+
+for arg in "$@"; do
+    if [[ "$arg" == "--local" ]]; then
+        local_only=true
+    elif [[ "$arg" == "--both" ]]; then
+        publish_both=true
+    elif [[ -z "$version" ]]; then
+        version="$arg"
+    elif [[ -z "$publish_url" ]]; then
+        publish_url="$arg"
+    fi
+done
+
+version=$(wc_read_version "$version")
 
 if [[ $(uname -s) == "Darwin" ]]; then
-    export BOOST_ROOT=$(brew --prefix boost)
+    BOOST_ROOT=$(brew --prefix boost)
+    export BOOST_ROOT
 fi
 
 echo "Building $version"
@@ -28,20 +54,44 @@ if [[ -n "$publish_url" ]]; then
     publish_url_arg="-PpublishUrl=$publish_url"
 fi
 
-./gradlew clean build assembleRelease publish -Pversion="$version" $publish_url_arg
+./gradlew clean build assembleRelease -Pversion="$version"
+
+# Determine publish strategy
+if [[ "$publish_both" == true ]]; then
+    if [[ -z "$LOCAL_MAVEN_URL" ]]; then
+        echo "Error: LOCAL_MAVEN_URL environment variable is required for --both flag"
+        exit 1
+    fi
+    echo "Publishing to GitHub Packages..."
+    ./gradlew publishAllPublicationsToGitHubPackagesRepository -Pversion="$version" "$publish_url_arg" || echo "Warning: GitHub publishing failed, continuing with local..."
+    echo "Publishing to local maven repository: $LOCAL_MAVEN_URL"
+    ./gradlew publishAllPublicationsToLocalMavenRepository -Pversion="$version"
+elif [[ "$local_only" == true ]]; then
+    if [[ -z "$LOCAL_MAVEN_URL" ]]; then
+        echo "Error: LOCAL_MAVEN_URL environment variable is required for --local flag"
+        exit 1
+    fi
+    echo "Publishing to local maven repository: $LOCAL_MAVEN_URL"
+    ./gradlew publishAllPublicationsToLocalMavenRepository -Pversion="$version"
+else
+    ./gradlew publish -Pversion="$version" "$publish_url_arg"
+fi
 
 echo "Android build uploaded"
 popd # android
 
-echo "Building docs..."
-tools/kotlin-doc
+# Skip docs upload for local-only publishing
+if [[ "$local_only" != true && "$publish_both" != true ]]; then
+    echo "Building docs..."
+    tools/kotlin-doc
 
-pushd build/dokka
+    pushd build/dokka
 
-filename=kdoc.zip
-echo "Upload asset $filename"
-download_url=$(wc_upload_asset ${version} ${filename})
-echo "download_url is $download_url"
+    filename=kdoc.zip
+    echo "Upload asset $filename"
+    download_url=$(wc_upload_asset "${version}" "${filename}")
+    echo "download_url is $download_url"
 
-popd # build/dokka
+    popd # build/dokka
+fi
 

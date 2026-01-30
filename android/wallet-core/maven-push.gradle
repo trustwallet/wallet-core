@@ -20,5 +20,16 @@ publishing {
                 password = System.getenv("GITHUB_TOKEN")
             }
         }
+        def localMavenUrl = System.getenv("LOCAL_MAVEN_URL")
+        if (localMavenUrl != null) {
+            maven {
+                name = "LocalMaven"
+                url = uri(localMavenUrl)
+                credentials {
+                    username = System.getenv("LOCAL_MAVEN_USER")
+                    password = System.getenv("LOCAL_MAVEN_TOKEN")
+                }
+            }
+        }
     }
 }
