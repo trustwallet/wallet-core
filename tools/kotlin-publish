@@ -1,0 +1,73 @@
+#!/bin/bash
+#
+# Publishes Kotlin artifacts to maven repositories
+#
+# Usage: kotlin-publish <version> [publish_url] [--local|--both]
+#   version     - version to publish (required)
+#   publish_url - optional maven repository URL (defaults to GitHub Packages)
+#   --local     - publish only to local maven repository (requires LOCAL_MAVEN_URL env var)
+#   --both      - publish to both GitHub and local maven, continue if GitHub fails
+#
+# Environment variables for local maven:
+#   LOCAL_MAVEN_URL   - URL of the local maven repository
+#   LOCAL_MAVEN_USER  - username for local maven authentication
+#   LOCAL_MAVEN_TOKEN - password/token for local maven authentication
+
+set -e
+
+source "$(dirname "$0")/library"
+
+# Parse arguments
+local_only=false
+publish_both=false
+publish_url=""
+version=""
+
+for arg in "$@"; do
+    if [[ "$arg" == "--local" ]]; then
+        local_only=true
+    elif [[ "$arg" == "--both" ]]; then
+        publish_both=true
+    elif [[ -z "$version" ]]; then
+        version="$arg"
+    elif [[ -z "$publish_url" ]]; then
+        publish_url="$arg"
+    fi
+done
+
+version=$(wc_read_version "$version")
+
+echo "Publishing Kotlin $version"
+
+publish_url_arg=""
+if [[ -n "$publish_url" ]]; then
+    echo "Using custom publish URL: $publish_url"
+    publish_url_arg="-PpublishUrl=$publish_url"
+fi
+
+pushd kotlin
+
+# Determine publish strategy
+if [[ "$publish_both" == true ]]; then
+    if [[ -z "$LOCAL_MAVEN_URL" ]]; then
+        echo "Error: LOCAL_MAVEN_URL environment variable is required for --both flag"
+        exit 1
+    fi
+    echo "Publishing to GitHub Packages..."
+    ./gradlew :wallet-core-kotlin:publishAllPublicationsToGitHubPackagesRepository -Pversion="$version" "$publish_url_arg" || echo "Warning: GitHub publishing failed, continuing with local..."
+    echo "Publishing to local maven repository: $LOCAL_MAVEN_URL"
+    ./gradlew :wallet-core-kotlin:publishAllPublicationsToLocalMavenRepository -Pversion="$version"
+elif [[ "$local_only" == true ]]; then
+    if [[ -z "$LOCAL_MAVEN_URL" ]]; then
+        echo "Error: LOCAL_MAVEN_URL environment variable is required for --local flag"
+        exit 1
+    fi
+    echo "Publishing to local maven repository: $LOCAL_MAVEN_URL"
+    ./gradlew :wallet-core-kotlin:publishAllPublicationsToLocalMavenRepository -Pversion="$version"
+else
+    ./gradlew :wallet-core-kotlin:publish -Pversion="$version" "$publish_url_arg"
+fi
+
+popd
+
+echo "Kotlin publish completed"
