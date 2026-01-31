@@ -4974,5 +4974,35 @@
       "rpc": "https://mainnet.megaeth.com/rpc",
       "documentation": "https://docs.megaeth.com"
     }
+  },
+  {
+    "id": "xgr",
+    "name": "XGR",
+    "coinId": 10001643,
+    "symbol": "XGR",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "1643",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.xgr.network",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xe7c2a71943e7c79b404b473c1f595adaf1c5b3896102197a74f63205ea5dfa80",
+      "sampleAccount": "0x2A021a1B25DA25e14C4046e5BAc9375Ec3bebf8c"
+    },
+    "info": {
+      "url": "https://xgr.network",
+      "source": "https://github.com/REPLACE_WITH_YOUR_REPO",
+      "rpc": "https://rpc.xgr.network",
+      "documentation": "https://REPLACE_WITH_DOCS_URL"
+    }
   }
 ]
