@@ -192,6 +192,7 @@ enum TWCoinType {
     TWCoinTypePlasma = 9745,
     TWCoinTypeMonad = 10143,
     TWCoinTypeMegaETH = 4326,
+    TWCoinTypeXGR = 10001643,
     // end_of_tw_coin_type_marker_do_not_modify
 };
 

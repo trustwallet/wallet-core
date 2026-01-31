@@ -40,7 +40,7 @@ class CoinAddressDerivationTests {
         Fantom, Celo, CronosChain, SmartBitcoinCash, KuCoinCommunityChain, Boba, Metis,
         Aurora, Evmos, Moonriver, Moonbeam, KavaEvm, Kaia, Meter, OKXChain, PolygonzkEVM, Scroll,
         ConfluxeSpace, AcalaEVM, OpBNB, Neon, Base, Linea, Greenfield, Mantle, ZenEON, MantaPacific,
-        ZetaEVM, Merlin, Lightlink, Blast, BounceBit, ZkLinkNova, Sonic, Plasma, Monad, MegaETH,
+        ZetaEVM, Merlin, Lightlink, Blast, BounceBit, ZkLinkNova, Sonic, Plasma, Monad, MegaETH,XGR,
         -> "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
 
         Ronin -> "ronin:8f348F300873Fd5DA36950B2aC75a26584584feE"
