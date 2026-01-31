@@ -5000,9 +5000,8 @@
     },
     "info": {
       "url": "https://xgr.network",
-      "source": "https://github.com/REPLACE_WITH_YOUR_REPO",
       "rpc": "https://rpc.xgr.network",
-      "documentation": "https://REPLACE_WITH_DOCS_URL"
+      "documentation": "https://github.com/xgr-network/XGR"
     }
   }
 ]
