@@ -321,7 +321,7 @@ mod encode_custom_type {
                         &field.property_type
                     };
                     // Seen this type before? or not a custom type - skip
-                    if !deps.contains(field_type) || custom_types.contains_key(field_type) {
+                    if !deps.contains(field_type) && custom_types.contains_key(field_type) {
                         types_stack.push(field_type);
                     }
                 }
@@ -340,6 +340,8 @@ mod tests {
 
     #[test]
     fn test_build_dependencies() {
+        // This custom types definition has an intentional cycle dependency between `Person` and `Mail`
+        // to test if the `build_dependencies` function can handle it without getting into an infinite loop.
         let custom_types = r#"{
 			"EIP712Domain": [
 				{ "name": "name", "type": "string" },
@@ -349,7 +351,8 @@ mod tests {
 			],
 			"Person": [
 				{ "name": "name", "type": "string" },
-				{ "name": "wallet", "type": "address" }
+				{ "name": "wallet", "type": "address" },
+				{ "name": "mail", "type": "Mail" }
 			],
 			"Mail": [
 				{ "name": "from", "type": "Person" },
