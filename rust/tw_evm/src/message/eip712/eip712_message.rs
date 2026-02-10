@@ -406,6 +406,34 @@ mod tests {
     }
 
     #[test]
+    fn test_encode_type_cyclic_dependency() {
+        let custom_types = r#"{
+			"EIP712Domain": [
+				{ "name": "name", "type": "string" },
+				{ "name": "version", "type": "string" },
+				{ "name": "chainId", "type": "uint256" },
+				{ "name": "verifyingContract", "type": "address" }
+			],
+			"Person": [
+				{ "name": "name", "type": "string" },
+				{ "name": "wallet", "type": "address" },
+				{ "name": "mail", "type": "Mail" }
+			],
+			"Mail": [
+				{ "name": "from", "type": "Person" },
+				{ "name": "to", "type": "Person" },
+				{ "name": "contents", "type": "string" }
+			]
+		}"#;
+
+        let custom_types: CustomTypes = serde_json::from_str(custom_types).expect("alas error!");
+        assert_eq!(
+            "Mail(Person from,Person to,string contents)Person(string name,address wallet,Mail mail)",
+            encode_custom_type::encode_type(&custom_types, "Mail").expect("alas error!")
+        )
+    }
+
+    #[test]
     fn test_encode_type_hash() {
         let custom_types = r#"{
 			"EIP712Domain": [
