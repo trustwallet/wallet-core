@@ -1,0 +1,128 @@
+version: 2
+updates:
+  # Rust dependencies
+  - package-ecosystem: "cargo"
+    directory: "/rust"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "rust"
+    groups:
+      rust-dependencies:
+        patterns:
+          - "*"
+
+  # Rust codegen-v2
+  - package-ecosystem: "cargo"
+    directory: "/codegen-v2"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "rust"
+    groups:
+      codegen-dependencies:
+        patterns:
+          - "*"
+
+  # NPM dependencies (wasm)
+  - package-ecosystem: "npm"
+    directory: "/wasm"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "npm"
+    groups:
+      development-dependencies:
+        dependency-type: "development"
+      production-dependencies:
+        dependency-type: "production"
+
+  # NPM dependencies (samples/node)
+  - package-ecosystem: "npm"
+    directory: "/samples/node"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "npm"
+      - "samples"
+    groups:
+      sample-dependencies:
+        patterns:
+          - "*"
+
+  # Gradle dependencies (Android)
+  - package-ecosystem: "gradle"
+    directory: "/android"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "android"
+    groups:
+      android-dependencies:
+        patterns:
+          - "*"
+
+  # Gradle dependencies (Kotlin)
+  - package-ecosystem: "gradle"
+    directory: "/kotlin"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "kotlin"
+    groups:
+      kotlin-dependencies:
+        patterns:
+          - "*"
+
+  # Gradle dependencies (samples/android)
+  - package-ecosystem: "gradle"
+    directory: "/samples/android"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "android"
+      - "samples"
+    groups:
+      android-sample-dependencies:
+        patterns:
+          - "*"
+
+  # Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "docker"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 3
+    labels:
+      - "github-actions"
