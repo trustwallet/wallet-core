@@ -15,14 +15,14 @@ jobs:
     runs-on: ubuntu-24.04
     if: github.event.pull_request.draft == false
     steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+    - uses: trustwallet/github-actions-proxy/actions/checkout@main
     - name: Install system dependencies
       run: |
         tools/install-sys-dependencies-linux
         tools/install-rust-dependencies
     - name: Cache internal dependencies
       id: internal_cache
-      uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+      uses: trustwallet/github-actions-proxy/actions/cache@main
       with:
         path: build/local
         key: ${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tools/install-sys-dependencies-linux') }}-internal-${{ hashFiles('tools/install-dependencies') }}-${{ hashFiles('tools/dependencies-version') }}
@@ -35,7 +35,7 @@ jobs:
       if: steps.internal_cache.outputs.cache-hit != 'true'
 
     - name: Cache Rust
-      uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
+      uses: trustwallet/github-actions-proxy/actions/rust-cache@main
       with:
         workspaces: |
           rust
