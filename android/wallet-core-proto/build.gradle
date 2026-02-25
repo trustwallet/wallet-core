@@ -15,7 +15,7 @@ java {
 }
 
 dependencies {
-    api 'com.google.protobuf:protobuf-javalite:3.22.3'
+    api 'com.google.protobuf:protobuf-javalite:4.33.5'
 }
 
 apply from: 'maven-push.gradle'
