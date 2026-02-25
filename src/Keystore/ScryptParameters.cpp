@@ -6,6 +6,7 @@
 
 #include <TrezorCrypto/rand.h>
 #include <limits>
+#include <sstream>
 
 using namespace TW;
 
