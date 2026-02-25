@@ -539,4 +539,34 @@ TEST(TronSigner, SignTransferTrc20Contract) {
     ASSERT_EQ(hex(output.signature()), "bec790877b3a008640781e3948b070740b1f6023c29ecb3f7b5835433c13fc5835e5cad3bd44360ff2ddad5ed7dc9d7dee6878f90e86a40355b7697f5954b88c01");
 }
 
+TEST(TronSigner, SignWithoutContract) {
+    // Test that signing fails when no contract is set
+    auto input = Proto::SigningInput();
+    auto& transaction = *input.mutable_transaction();
+
+    // Set only basic transaction fields, but no contract
+    transaction.set_timestamp(1539295479000);
+    transaction.set_expiration(1539295479000 + 10 * 60 * 60 * 1000);
+
+    auto& blockHeader = *transaction.mutable_block_header();
+    blockHeader.set_timestamp(1539295479000);
+    const auto txTrieRoot = parse_hex("64288c2db0641316762a99dbb02ef7c90f968b60f9f2e410835980614332f86d");
+    blockHeader.set_tx_trie_root(txTrieRoot.data(), txTrieRoot.size());
+    const auto parentHash = parse_hex("00000000002f7b3af4f5f8b9e23a30c530f719f165b742e7358536b280eead2d");
+    blockHeader.set_parent_hash(parentHash.data(), parentHash.size());
+    blockHeader.set_number(3111739);
+    const auto witnessAddress = parse_hex("415863f6091b8e71766da808b1dd3159790f61de7d");
+    blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
+    blockHeader.set_version(3);
+
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    const auto output = Signer::sign(input);
+
+    // Should return error when no contract is set
+    ASSERT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    ASSERT_EQ(output.error_message(), "No supported contract is set");
+}
+
 } // namespace TW::Tron

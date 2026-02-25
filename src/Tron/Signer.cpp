@@ -403,6 +403,13 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto output = Proto::SigningOutput();
     auto tx = buildTransaction(input);
 
+    // Validate that a contract is present
+    if (tx.raw_data().contract_size() == 0) {
+        output.set_error(Common::Proto::Error_invalid_params);
+        output.set_error_message("No supported contract is set");
+        return output;
+    }
+
     // Get default timestamp and expiration
     const uint64_t now = duration_cast<std::chrono::milliseconds>(
                              std::chrono::system_clock::now().time_since_epoch())
