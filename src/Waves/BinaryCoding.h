@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <vector>
+#include <limits>
 
 #include "../BinaryCoding.h"
 
