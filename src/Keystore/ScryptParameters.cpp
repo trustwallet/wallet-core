@@ -78,6 +78,10 @@ ScryptParameters::ScryptParameters(const nlohmann::json& json) {
         || json.count(CodingKeys::SP::r) == 0) {
         throw std::invalid_argument("Missing required scrypt parameters n, p, or r");
     }
+    n = json[CodingKeys::SP::n];
+    p = json[CodingKeys::SP::p];
+    r = json[CodingKeys::SP::r];
+
     if (const auto error = validate()) {
         std::stringstream ss;
         ss << "Invalid scrypt parameters: " << static_cast<int>(*error);
