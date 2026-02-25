@@ -22,6 +22,21 @@ Data randomSalt() {
 
 } // namespace internal
 
+std::string toString(const ScryptValidationError error) {
+    switch (error) {
+    case ScryptValidationError::desiredKeyLengthTooLarge:
+            return "Desired key length is too large";
+    case ScryptValidationError::blockSizeTooLarge:
+            return "Block size (r * p) is too large";
+    case ScryptValidationError::invalidCostFactor:
+            return "Cost factor n must be a power of 2 greater than 1";
+    case ScryptValidationError::overflow:
+            return "Parameters are too large and may cause overflow";
+    default:
+            return "Unknown error";
+    }
+}
+
 ScryptParameters ScryptParameters::minimal() {
     return { internal::randomSalt(), minimalN, defaultR, minimalP, defaultDesiredKeyLength };
 }
@@ -85,7 +100,7 @@ ScryptParameters::ScryptParameters(const nlohmann::json& json) {
 
     if (const auto error = validate()) {
         std::stringstream ss;
-        ss << "Invalid scrypt parameters: " << static_cast<int>(*error);
+        ss << "Invalid scrypt parameters: " << toString(*error);
         throw std::invalid_argument(ss.str());
     }
 }
