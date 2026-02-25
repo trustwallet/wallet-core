@@ -14,6 +14,10 @@ namespace TW::Waves {
 
 /// Encodes a variable length bytes.
 inline void encodeDynamicLengthBytes(std::vector<uint8_t> bytes, std::vector<uint8_t> &data) {
+    constexpr auto dataLimit = static_cast<size_t>(std::numeric_limits<uint16_t>::max());
+    if (data.size() > dataLimit) {
+        throw std::invalid_argument("Data size exceeds maximum allowed length");
+    }
     encode16BE(static_cast<uint16_t>(bytes.size()), data);
     data.insert(data.end(), bytes.begin(), bytes.end());
 }
