@@ -96,9 +96,12 @@ void TWDataReset(TWData *_Nonnull data) {
 }
 
 void TWDataDelete(TWData *_Nonnull data) {
-    auto* v = reinterpret_cast<const Data*>(data);
+    auto* vConst = reinterpret_cast<const Data*>(data);
+    // `const_cast` is safe here despite that the pointer to the data is const
+    // but `Data` is not a constant value.
+    auto *v = const_cast<Data*>(vConst);
     memzero(v->data(), v->size());
-    delete v;
+    delete vConst;
 }
 
 bool TWDataEqual(TWData *_Nonnull lhs, TWData *_Nonnull rhs) {
