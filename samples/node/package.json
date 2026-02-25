@@ -9,11 +9,11 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@trustwallet/wallet-core": "3.0.4"
+    "@trustwallet/wallet-core": "4.6.0"
   },
   "devDependencies": {
-    "@types/node": "^10.9.1",
+    "@types/node": "^25.3.0",
     "ts-node": "^10.9.1",
-    "typescript": "^4.8.3"
+    "typescript": "^5.9.3"
   }
 }
