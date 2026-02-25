@@ -4,6 +4,7 @@
 
 #include <TrustWalletCore/TWData.h>
 #include <TrustWalletCore/TWString.h>
+#include <TrezorCrypto/memzero.h>
 #include "Data.h"
 #include "HexCoding.h"
 #include <algorithm>
@@ -96,6 +97,7 @@ void TWDataReset(TWData *_Nonnull data) {
 
 void TWDataDelete(TWData *_Nonnull data) {
     auto* v = reinterpret_cast<const Data*>(data);
+    memzero(v->data(), v->size());
     delete v;
 }
 
