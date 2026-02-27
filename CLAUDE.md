@@ -184,7 +184,7 @@ Rust crates expose functionality through the C ABI via `tw_any_coin/src/ffi/`. T
 
 Rust-based code generator replacing the legacy Ruby `codegen/`. Reads `registry.json` and interface definitions to emit language bindings. Run with:
 ```bash
-cd codegen-v2 && cargo run -- [swift | kotlin | new-blockchain <name> | new-evmchain <name>]
+cd codegen-v2 && cargo run -- [swift | cpp | new-blockchain <name> | new-evmchain <name> | new-cosmos-chain <name> | new-blockchain-rust <name>]
 ```
 
 ### Proto file locations
