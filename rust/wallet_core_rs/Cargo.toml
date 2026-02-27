@@ -35,7 +35,7 @@ utils = [
 ]
 
 [dependencies]
-bitreader = "0.3.8"
+bitreader = "0.3.11"
 tw_any_coin = { path = "../tw_any_coin", optional = true }
 tw_bitcoin = { path = "../chains/tw_bitcoin", optional = true }
 tw_coin_registry = { path = "../tw_coin_registry", optional = true }
@@ -51,4 +51,4 @@ tw_misc = { path = "../tw_misc" }
 tw_proto = { path = "../tw_proto", optional = true }
 tw_solana = { path = "../chains/tw_solana", optional = true }
 tw_ton = { path = "../chains/tw_ton", optional = true }
-uuid = { version = "1.7", features = ["v4"], optional = true }
+uuid = { version = "1.21", features = ["v4"], optional = true }

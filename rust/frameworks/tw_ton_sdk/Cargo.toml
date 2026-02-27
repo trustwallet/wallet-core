@@ -4,10 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bitreader = "0.3.8"
-bitstream-io = "2.5.0"
+bitreader = "0.3.11"
+bitstream-io = "4.9.0"
 crc = "3"
-lazy_static = "1.4.0"
+lazy_static = "1.5.0"
 num-bigint = "0.4"
 tw_coin_entry = { path = "../../tw_coin_entry" }
 tw_encoding = { path = "../../tw_encoding" }
