@@ -19,6 +19,8 @@ enum class ScryptValidationError {
     overflow,
 };
 
+std::string toString(ScryptValidationError error);
+
 /// Scrypt function parameters.
 struct ScryptParameters {
     /// The N and P parameters of Scrypt encryption algorithm, using 256MB memory and

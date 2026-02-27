@@ -6,6 +6,7 @@
 
 #include <TrezorCrypto/rand.h>
 #include <limits>
+#include <sstream>
 
 using namespace TW;
 
@@ -20,6 +21,21 @@ Data randomSalt() {
 }
 
 } // namespace internal
+
+std::string toString(const ScryptValidationError error) {
+    switch (error) {
+    case ScryptValidationError::desiredKeyLengthTooLarge:
+            return "Desired key length is too large";
+    case ScryptValidationError::blockSizeTooLarge:
+            return "Block size (r * p) is too large";
+    case ScryptValidationError::invalidCostFactor:
+            return "Cost factor n must be a power of 2 greater than 1";
+    case ScryptValidationError::overflow:
+            return "Parameters are too large and may cause overflow";
+    default:
+            return "Unknown error";
+    }
+}
 
 ScryptParameters ScryptParameters::minimal() {
     return { internal::randomSalt(), minimalN, defaultR, minimalP, defaultDesiredKeyLength };
@@ -73,12 +89,20 @@ static const auto r = "r";
 ScryptParameters::ScryptParameters(const nlohmann::json& json) {
     salt = parse_hex(json[CodingKeys::SP::salt].get<std::string>());
     desiredKeyLength = json[CodingKeys::SP::desiredKeyLength];
-    if (json.count(CodingKeys::SP::n) != 0)
-        n = json[CodingKeys::SP::n];
-    if (json.count(CodingKeys::SP::n) != 0)
-        p = json[CodingKeys::SP::p];
-    if (json.count(CodingKeys::SP::n) != 0)
-        r = json[CodingKeys::SP::r];
+    if (json.count(CodingKeys::SP::n) == 0
+        || json.count(CodingKeys::SP::p) == 0
+        || json.count(CodingKeys::SP::r) == 0) {
+        throw std::invalid_argument("Missing required scrypt parameters n, p, or r");
+    }
+    n = json[CodingKeys::SP::n];
+    p = json[CodingKeys::SP::p];
+    r = json[CodingKeys::SP::r];
+
+    if (const auto error = validate()) {
+        std::stringstream ss;
+        ss << "Invalid scrypt parameters: " << toString(*error);
+        throw std::invalid_argument(ss.str());
+    }
 }
 
 /// Saves `this` as a JSON object.
