@@ -205,4 +205,4 @@ cd codegen-v2 && cargo run -- [swift | kotlin | new-blockchain <name> | new-evmc
 | WASM / TS | `wasm/tests/Blockchain/` using mocha |
 | iOS / Swift | `swift/Tests/` |
 
-C++ test files follow the pattern `tests/{Blockchain}/TW{Blockchain}Tests.cpp`.
+C++ unit tests live under `tests/{Blockchain}/` and are typically organized by functionality (for example, `TWBitcoinSigningTests.cpp`, `TWBitcoinAddressTests.cpp`, `TWBitcoinScriptTests.cpp`), rather than following a single strict filename pattern like `TW{Blockchain}Tests.cpp`.
