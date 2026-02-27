@@ -8,7 +8,6 @@ use crate::ed25519::signature::Signature;
 use crate::ed25519::Hasher512;
 use crate::traits::SigningKeyTrait;
 use crate::{KeyPairError, KeyPairResult};
-use std::fmt;
 use tw_encoding::hex;
 use tw_hash::H256;
 use tw_misc::traits::ToBytesZeroizing;
@@ -21,14 +20,6 @@ pub struct PrivateKey<H: Hasher512> {
     /// An expanded secret key obtained from [`PrivateKey::secret`].
     /// It's used to generate a public key and sign messages.
     expanded_key: ExpandedSecretKey<H>,
-}
-
-impl<H: Hasher512> fmt::Debug for PrivateKey<H> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("PrivateKey")
-            .field("secret", &self.secret)
-            .finish()
-    }
 }
 
 impl<H: Hasher512> PrivateKey<H> {
