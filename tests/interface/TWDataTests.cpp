@@ -46,8 +46,8 @@ TEST(TWData, CreateWithHexString) {
     {
         // null input
         TWString* nullstring = nullptr;
-        const auto data = WRAPD(TWDataCreateWithHexString(nullstring));
-        ASSERT_EQ(data.get(), nullptr);
+        const auto data = TWDataCreateWithHexString(nullstring);
+        ASSERT_EQ(data, nullptr);
     }
 }
 
