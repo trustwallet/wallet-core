@@ -129,7 +129,7 @@ C++ Core                 (src/)
      └─→ TrezorCrypto    (trezor-crypto/)                  ← secp256k1, ed25519, hashing
 ```
 
-The C interface is the contract. Language bindings are generated from it — never hand-edit files in `swift/Sources/Generated/`, `android/app/src/main/java/wallet/core/jni/`, or `kotlin/wallet-core-kotlin/src/commonMain/generated/`.
+The C interface is the contract. Language bindings are generated from it — never hand-edit files in `swift/Sources/Generated/`, `jni/java/wallet/core/jni/`, or `kotlin/wallet-core-kotlin/src/commonMain/generated/`.
 
 **Note on Rust layer:** Some blockchain implementations have been migrated to Rust for improved memory safety and performance. For these chains, the C++ core delegates to Rust implementations via C FFI (`src/rust/RustCoinEntry.h`). Legacy chains remain pure C++. The Rust layer is transparent to language bindings above the C interface.
 
