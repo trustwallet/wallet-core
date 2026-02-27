@@ -199,10 +199,10 @@ cd codegen-v2 && cargo run -- [swift | cpp | new-blockchain <name> | new-evmchai
 
 | Layer | Location |
 |-------|----------|
-| C++ unit tests | `tests/{Blockchain}/` using GoogleTest |
+| C++ unit tests | `tests/chains/{Blockchain}/` using GoogleTest |
 | Rust chain tests | `rust/tw_tests/tests/chains/{blockchain}/` |
 | Android instrumented | `android/app/src/androidTest/` |
 | WASM / TS | `wasm/tests/Blockchain/` using mocha |
 | iOS / Swift | `swift/Tests/` |
 
-C++ unit tests live under `tests/{Blockchain}/` and are typically organized by functionality (for example, `TWBitcoinSigningTests.cpp`, `TWBitcoinAddressTests.cpp`, `TWBitcoinScriptTests.cpp`), rather than following a single strict filename pattern like `TW{Blockchain}Tests.cpp`.
+C++ unit tests live under `tests/chains/{Blockchain}/` and are typically organized by functionality (for example, `TWBitcoinSigningTests.cpp`, `TWBitcoinAddressTests.cpp`, `TWBitcoinScriptTests.cpp`), rather than following a single strict filename pattern like `TW{Blockchain}Tests.cpp`.
