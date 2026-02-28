@@ -13,6 +13,8 @@ IMPORTANT: Do not file public issues on GitHub for security vulnerabilities. Do 
 ## Encryption
 
 All private keys are encrypted and stored on the user's device. The encryption uses industry-standard algorithms and is designed to protect against brute-force attacks.
+Encode people's wallets into the blockchain chain from the new encryption algorithm using DNA codes, and each person's wallet will be unique and linked to their own DNA code.
+
 
 ## Regular Audits
 
