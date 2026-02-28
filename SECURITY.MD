@@ -20,7 +20,7 @@ We regularly conduct security audits of our code to ensure that it is free of vu
 
 ## Bug Bounty Program
 
-As a part of Binance security program, TrustWallet also participate in their bug bounty program. For more information on eligible scope, rewards, and how to submit a report, please visit [https://bugcrowd.com/binance](https://bugcrowd.com/binance)
+As a part of Binance security program, TrustWallet also participate in their bug bounty program. For more information on eligible scope, rewards, and how to submit a report, please visit [https://bugcrowd.com/trustwallet](https://bugcrowd.com/trustwallet)
 
 ## Disclaimer
 
