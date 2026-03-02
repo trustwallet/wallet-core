@@ -78,15 +78,6 @@ TEST(TWData, Delete) {
     TWDataDelete(data);
 }
 
-TEST(TWData, Get) {
-    const auto data = WRAPD(TWDataCreateWithHexString(STRING("deadbeef").get()));
-    assertHexEqual(data, "deadbeef");
-    EXPECT_EQ(TWDataGet(data.get(), 0), 0xde);
-    EXPECT_EQ(TWDataGet(data.get(), 1), 0xad);
-    EXPECT_EQ(TWDataGet(data.get(), 2), 0xbe);
-    EXPECT_EQ(TWDataGet(data.get(), 3), 0xef);
-}
-
 TEST(TWData, Set) {
     const auto data = WRAPD(TWDataCreateWithHexString(STRING("deadbeef").get()));
     assertHexEqual(data, "deadbeef");

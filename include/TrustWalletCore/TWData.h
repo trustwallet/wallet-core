@@ -53,13 +53,6 @@ size_t TWDataSize(TWData *_Nonnull data) TW_VISIBILITY_DEFAULT;
 /// \return the raw pointer to the contents of data
 uint8_t *_Nonnull TWDataBytes(TWData *_Nonnull data) TW_VISIBILITY_DEFAULT;
 
-/// Returns the byte at the provided index.
-///
-/// \param data A non-null valid block of data
-/// \param index index of the byte that we want to fetch - index need to be < TWDataSize(data)
-/// \return the byte at the provided index
-uint8_t TWDataGet(TWData *_Nonnull data, size_t index) TW_VISIBILITY_DEFAULT;
-
 /// Sets the byte at the provided index.
 ///
 /// \param data A non-null valid block of data

@@ -397,7 +397,8 @@ TEST(TWStoredKey, exportJSON) {
     const auto json = WRAPD(TWStoredKeyExportJSON(key.get()));
     // check size and first character
     EXPECT_TRUE(TWDataSize(json.get()) > 100);
-    EXPECT_EQ(TWDataGet(json.get(), 0), '{');
+    const auto jsonBytes = TWDataBytes(json.get());
+    EXPECT_EQ(jsonBytes[0], '{');
 }
 
 TEST(TWStoredKey, storeAndImportJSONAES256) {
