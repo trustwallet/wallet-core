@@ -87,13 +87,16 @@ static const auto r = "r";
 } // namespace CodingKeys::SP
 
 ScryptParameters::ScryptParameters(const nlohmann::json& json) {
-    salt = parse_hex(json[CodingKeys::SP::salt].get<std::string>());
-    desiredKeyLength = json[CodingKeys::SP::desiredKeyLength];
     if (json.count(CodingKeys::SP::n) == 0
         || json.count(CodingKeys::SP::p) == 0
-        || json.count(CodingKeys::SP::r) == 0) {
-        throw std::invalid_argument("Missing required scrypt parameters n, p, or r");
+        || json.count(CodingKeys::SP::r) == 0
+        || json.count(CodingKeys::SP::salt) == 0
+        || json.count(CodingKeys::SP::desiredKeyLength) == 0) {
+        throw std::invalid_argument("Missing required scrypt parameters n, p, r, salt, or dklen");
     }
+
+    salt = parse_hex(json[CodingKeys::SP::salt].get<std::string>());
+    desiredKeyLength = json[CodingKeys::SP::desiredKeyLength];
     n = json[CodingKeys::SP::n];
     p = json[CodingKeys::SP::p];
     r = json[CodingKeys::SP::r];
