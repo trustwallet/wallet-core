@@ -56,22 +56,24 @@ void TWDataSet(TWData *_Nonnull data, size_t index, uint8_t byte) {
     (*v)[index] = byte;
 }
 
-void TWDataCopyBytes(TWData *_Nonnull data, size_t start, size_t size, uint8_t *_Nonnull output) {
+int TWDataCopyBytes(TWData *_Nonnull data, size_t start, size_t size, uint8_t *_Nonnull output) {
     auto* v = reinterpret_cast<const Data*>(data);
     // Check for overflow and bounds
     if (start > v->size() || size > v->size() - start) {
-        return;
+        return -1;
     }
     std::copy(std::begin(*v) + start, std::begin(*v) + start + size, output);
+    return 0;
 }
 
-void TWDataReplaceBytes(TWData *_Nonnull data, size_t start, size_t size, const uint8_t *_Nonnull bytes) {
+int TWDataReplaceBytes(TWData *_Nonnull data, size_t start, size_t size, const uint8_t *_Nonnull bytes) {
     auto* v = const_cast<Data*>(reinterpret_cast<const Data*>(data));
     // Check for overflow and bounds
     if (start > v->size() || size > v->size() - start) {
-        return;
+        return -1;
     }
     std::copy(bytes, bytes + size, std::begin(*v) + start);
+    return 0;
 }
 
 void TWDataAppendBytes(TWData *_Nonnull data, const uint8_t *_Nonnull bytes, size_t size) {

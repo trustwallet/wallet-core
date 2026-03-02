@@ -89,17 +89,32 @@ TEST(TWData, CopyBytes) {
     const auto data = WRAPD(TWDataCreateWithHexString(STRING("deadbeef").get()));
     assertHexEqual(data, "deadbeef");
     uint8_t buffer[4];
-    TWDataCopyBytes(data.get(), 0, 4, buffer);
+    ASSERT_EQ(TWDataCopyBytes(data.get(), 0, 4, buffer), 0);
     const auto data2 = WRAPD(TWDataCreateWithBytes(buffer, 4));
     assertHexEqual(data2, "deadbeef");
+}
+
+TEST(TWData, CopyBytesOutOfBounds) {
+    const auto data = WRAPD(TWDataCreateWithHexString(STRING("deadbeef").get()));
+    assertHexEqual(data, "deadbeef");
+    uint8_t buffer[4];
+    ASSERT_EQ(TWDataCopyBytes(data.get(), 4, 4, buffer), -1);
 }
 
 TEST(TWData, ReplaceBytes) {
     const auto data = WRAPD(TWDataCreateWithHexString(STRING("deadbeef").get()));
     assertHexEqual(data, "deadbeef");
     const uint8_t bytes[] = {0x12, 0x34};
-    TWDataReplaceBytes(data.get(), 1, 2, bytes);
+    ASSERT_EQ(TWDataReplaceBytes(data.get(), 1, 2, bytes), 0);
     assertHexEqual(data, "de1234ef");
+}
+
+TEST(TWData, ReplaceBytesOutOfBounds) {
+    const auto data = WRAPD(TWDataCreateWithHexString(STRING("deadbeef").get()));
+    assertHexEqual(data, "deadbeef");
+    const uint8_t bytes[] = {0x12, 0x34};
+    ASSERT_EQ(TWDataReplaceBytes(data.get(), 4, 2, bytes), -1);
+    assertHexEqual(data, "deadbeef");
 }
 
 TEST(TWData, Append) {
