@@ -58,7 +58,8 @@ void TWDataSet(TWData *_Nonnull data, size_t index, uint8_t byte) {
 
 void TWDataCopyBytes(TWData *_Nonnull data, size_t start, size_t size, uint8_t *_Nonnull output) {
     auto* v = reinterpret_cast<const Data*>(data);
-    if (start + size > v->size()) {
+    // Check for overflow and bounds
+    if (start > v->size() || size > v->size() - start) {
         return;
     }
     std::copy(std::begin(*v) + start, std::begin(*v) + start + size, output);
@@ -66,7 +67,8 @@ void TWDataCopyBytes(TWData *_Nonnull data, size_t start, size_t size, uint8_t *
 
 void TWDataReplaceBytes(TWData *_Nonnull data, size_t start, size_t size, const uint8_t *_Nonnull bytes) {
     auto* v = const_cast<Data*>(reinterpret_cast<const Data*>(data));
-    if (start + size > v->size()) {
+    // Check for overflow and bounds
+    if (start > v->size() || size > v->size() - start) {
         return;
     }
     std::copy(bytes, bytes + size, std::begin(*v) + start);
@@ -101,10 +103,12 @@ void TWDataReset(TWData *_Nonnull data) {
 
 void TWDataDelete(TWData *_Nonnull data) {
     auto* vConst = reinterpret_cast<const Data*>(data);
-    // `const_cast` is safe here despite that the pointer to the data is const
-    // but `Data` is not a constant value.
-    auto *v = const_cast<Data*>(vConst);
-    memzero(v->data(), v->size());
+    if (!vConst->empty()) {
+        // `const_cast` is safe here despite that the pointer to the data is const
+        // but `Data` is not a constant value.
+        auto *v = const_cast<Data*>(vConst);
+        memzero(v->data(), v->size());
+    }
     delete vConst;
 }
 
