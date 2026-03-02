@@ -14,6 +14,7 @@ namespace TW::Keystore {
 
 enum class ScryptValidationError {
     desiredKeyLengthTooLarge,
+    saltLengthTooLarge,
     blockSizeTooLarge,
     invalidCostFactor,
     overflow,

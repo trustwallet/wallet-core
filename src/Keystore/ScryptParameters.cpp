@@ -22,10 +22,14 @@ Data randomSalt() {
 
 } // namespace internal
 
+constexpr size_t gMaxInputSize = 1024;
+
 std::string toString(const ScryptValidationError error) {
     switch (error) {
     case ScryptValidationError::desiredKeyLengthTooLarge:
             return "Desired key length is too large";
+    case ScryptValidationError::saltLengthTooLarge:
+        return "Salt length is too large";
     case ScryptValidationError::blockSizeTooLarge:
             return "Block size (r * p) is too large";
     case ScryptValidationError::invalidCostFactor:
@@ -58,6 +62,9 @@ ScryptParameters::ScryptParameters()
 std::optional<ScryptValidationError> ScryptParameters::validate() const {
     if (desiredKeyLength > ((1ULL << 32) - 1) * 32) { // depending on size_t size on platform, may be always false
         return ScryptValidationError::desiredKeyLengthTooLarge;
+    }
+    if (salt.size() > gMaxInputSize) {
+        return ScryptValidationError::saltLengthTooLarge;
     }
     if (static_cast<uint64_t>(r) * static_cast<uint64_t>(p) >= (1 << 30)) {
         return ScryptValidationError::blockSizeTooLarge;
