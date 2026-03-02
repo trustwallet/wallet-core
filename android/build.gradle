@@ -1,5 +1,10 @@
 buildscript {
     ext.kotlin_version = '2.1.0'
+    ext.isSigningEnabled = {
+        def signingKey = System.getenv("MVN_SIGNING_KEY")
+        def signingPassphrase = System.getenv("MVN_SIGNING_PASSPHRASE")
+        return signingKey != null && !signingKey.isEmpty() && signingPassphrase != null && !signingPassphrase.isEmpty()
+    }
     repositories {
         google()
         mavenCentral()
@@ -7,6 +12,28 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:8.8.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+plugins {
+    id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
+}
+
+group = 'com.trustwallet'
+
+nexusPublishing {
+    packageGroup = 'com.trustwallet'
+    repositories {
+        sonatype {
+            nexusUrl = uri('https://ossrh-staging-api.central.sonatype.com/service/local/')
+            snapshotRepositoryUrl = uri('https://central.sonatype.com/repository/maven-snapshots/')
+            username = System.getenv('SONATYPE_USERNAME')
+            password = System.getenv('SONATYPE_PASSWORD')
+            def profileId = System.getenv('SONATYPE_STAGING_PROFILE_ID')
+            if (profileId) {
+                stagingProfileId = profileId
+            }
+        }
     }
 }
 

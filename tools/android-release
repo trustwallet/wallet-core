@@ -2,45 +2,80 @@
 #
 # This script uploads android build to repositories defined in maven-push.gradle
 # It also builds and uploads Kotlin docs
+#
+# Usage:
+#   tools/android-release [version] [--target local|sonatype|gpr|all]
+#
 
 set -e
 
 source $(dirname $0)/library
-version=$(wc_read_version  $1)
+
+# Parse arguments
+version=""
+target="all"
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --target)
+            target="$2"
+            shift 2
+            ;;
+        *)
+            version="$1"
+            shift
+            ;;
+    esac
+done
+
+version=$(wc_read_version "$version")
 
 if [[ $(uname -s) == "Darwin" ]]; then
     export BOOST_ROOT=$(brew --prefix boost)
 fi
 
-echo "Building $version"
+echo "Building $version (target: $target)"
 
 export ANDROID_HOME="$HOME/Library/Android/sdk"
 pushd android
 ./gradlew clean build assembleRelease -Pversion="$version"
 
-echo "Publishing to Maven Local..."
-./gradlew publishAllPublicationsToMavenLocalRepository -Pversion="$version"
+if [[ "$target" == "local" || "$target" == "all" ]]; then
+    echo "Publishing to Maven Local..."
+    ./gradlew publishAllPublicationsToMavenLocalRepository -Pversion="$version"
 
-echo ""
-echo "Published artifacts in Maven Local (~/.m2/repository/com/trustwallet):"
-find ~/.m2/repository/com/trustwallet -type f -name "*.pom" -o -name "*.jar" -o -name "*.aar" -o -name "*.klib" 2>/dev/null | grep "$version" | sort || echo "No artifacts found"
+    echo ""
+    echo "Published artifacts in Maven Local (~/.m2/repository/com/trustwallet):"
+    find ~/.m2/repository/com/trustwallet -type f -name "*.pom" -o -name "*.jar" -o -name "*.aar" -o -name "*.klib" 2>/dev/null | grep "$version" | sort || echo "No artifacts found"
+fi
 
-echo "Publishing to GitHub Packages..."
-./gradlew publishAllPublicationsToGitHubPackagesRepository -Pversion="$version" || echo "Warning: GitHub Packages publishing failed"
+if [[ "$target" == "sonatype" || "$target" == "all" ]]; then
+    echo "Publishing to Maven Central (Sonatype)..."
+    if [ -n "${SONATYPE_USERNAME:-}" ] && [ -n "${SONATYPE_PASSWORD:-}" ] && [ -n "${MVN_SIGNING_KEY:-}" ]; then
+        ./gradlew publishAllPublicationsToSonatypeRepository -Pversion="$version"
+        echo "Artifacts staged on Sonatype. Visit https://central.sonatype.com to verify and release."
+    else
+        echo "Skipping Sonatype: SONATYPE_USERNAME, SONATYPE_PASSWORD, and MVN_SIGNING_KEY must be set"
+    fi
+fi
 
+if [[ "$target" == "gpr" || "$target" == "all" ]]; then
+    echo "Publishing to GitHub Packages..."
+    ./gradlew publishAllPublicationsToGitHubPackagesRepository -Pversion="$version" || echo "Warning: GitHub Packages publishing failed"
+fi
 
 echo "Android build uploaded"
 popd # android
 
-echo "Building docs..."
-tools/kotlin-doc
+if [[ "$target" == "all" ]]; then
+    echo "Building docs..."
+    tools/kotlin-doc
 
-pushd build/dokka
+    pushd build/dokka
 
-filename=kdoc.zip
-echo "Upload asset $filename"
-download_url=$(wc_upload_asset ${version} ${filename})
-echo "download_url is $download_url"
+    filename=kdoc.zip
+    echo "Upload asset $filename"
+    download_url=$(wc_upload_asset ${version} ${filename})
+    echo "download_url is $download_url"
 
-popd # build/dokka
-
+    popd # build/dokka
+fi
