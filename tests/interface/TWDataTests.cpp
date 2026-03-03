@@ -94,11 +94,13 @@ TEST(TWData, CopyBytes) {
     assertHexEqual(data2, "deadbeef");
 }
 
-TEST(TWData, CopyBytesOutOfBounds) {
+TEST(TWData, CopyBytesError) {
     const auto data = WRAPD(TWDataCreateWithHexString(STRING("deadbeef").get()));
     assertHexEqual(data, "deadbeef");
-    uint8_t buffer[4];
-    ASSERT_EQ(TWDataCopyBytes(data.get(), 4, 4, buffer), -1);
+    uint8_t buffer[5];
+    ASSERT_EQ(TWDataCopyBytes(data.get(), 4, 1, buffer), -1); // Out of bounds.
+    ASSERT_EQ(TWDataCopyBytes(data.get(), 0, 5, buffer), -1); // Out of bounds.
+    ASSERT_EQ(TWDataCopyBytes(data.get(), 3, 0, buffer), -1); // Size=0
 }
 
 TEST(TWData, ReplaceBytes) {
@@ -109,11 +111,13 @@ TEST(TWData, ReplaceBytes) {
     assertHexEqual(data, "de1234ef");
 }
 
-TEST(TWData, ReplaceBytesOutOfBounds) {
+TEST(TWData, ReplaceBytesError) {
     const auto data = WRAPD(TWDataCreateWithHexString(STRING("deadbeef").get()));
     assertHexEqual(data, "deadbeef");
-    const uint8_t bytes[] = {0x12, 0x34};
-    ASSERT_EQ(TWDataReplaceBytes(data.get(), 4, 2, bytes), -1);
+    const uint8_t bytes[] = {0x12, 0x34, 0x56, 0x78};
+    ASSERT_EQ(TWDataReplaceBytes(data.get(), 4, 1, bytes), -1); // Out of bounds.
+    ASSERT_EQ(TWDataReplaceBytes(data.get(), 0, 5, bytes), -1); // Out of bounds.
+    ASSERT_EQ(TWDataReplaceBytes(data.get(), 3, 0, bytes), -1); // Size=0
     assertHexEqual(data, "deadbeef");
 }
 
