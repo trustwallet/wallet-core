@@ -10,8 +10,8 @@ helpers = []
 
 [dependencies]
 arbitrary = { version = "1", features = ["derive"], optional = true }
-lazy_static = "1.4.0"
-primitive-types = "0.10.1"
+lazy_static = "1.5.0"
+primitive-types = "0.13.1"
 serde = { version = "1.0", features = ["derive"], optional = true }
 tw_encoding = { path = "../tw_encoding" }
 tw_hash = { path = "../tw_hash" }

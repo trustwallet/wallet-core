@@ -7,7 +7,7 @@ edition = "2021"
 derivation-path = "0.2"
 serde = "1.0"
 serde_json = "1.0"
-strum_macros = "0.25"
+strum_macros = "0.28"
 tw_encoding = { path = "../tw_encoding" }
 tw_hash = { path = "../tw_hash" }
 tw_keypair = { path = "../tw_keypair" }
