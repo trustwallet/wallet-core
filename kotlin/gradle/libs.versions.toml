@@ -7,9 +7,9 @@ android-ndk = "28.0.12674087"
 
 kotlin = "2.1.0"
 agp = "8.8.0"
-wire = "4.5.6"
+wire = "5.5.0"
 
-androidx-test-runner = "1.5.2"
+androidx-test-runner = "1.7.0"
 
 [libraries]
 wire-runtime = { module = "com.squareup.wire:wire-runtime", version.ref = "wire" }
