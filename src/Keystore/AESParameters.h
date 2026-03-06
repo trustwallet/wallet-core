@@ -20,7 +20,6 @@ enum AESKeySize : std::int32_t {
 
 inline constexpr std::size_t gBlockSize{16};
 inline constexpr const char* gAes128Ctr{"aes-128-ctr"};
-inline constexpr const char* gAes128Cbc{"aes-128-cbc"};
 inline constexpr const char* gAes192Ctr{"aes-192-ctr"};
 inline constexpr const char* gAes256Ctr{"aes-256-ctr"};
 
