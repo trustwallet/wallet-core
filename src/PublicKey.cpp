@@ -20,7 +20,7 @@
 
 namespace TW {
 
-bool validateSignatureLength(TWPublicKeyType type, const Data& signature) {
+static bool validateSignatureLength(TWPublicKeyType type, const Data& signature) {
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended:
@@ -32,6 +32,25 @@ bool validateSignatureLength(TWPublicKeyType type, const Data& signature) {
     default: {
         return signature.size() == PublicKey::signatureSize;
     }
+    }
+}
+
+static bool validateMessageLength(TWPublicKeyType type, const Data& message) {
+    switch (type) {
+    case TWPublicKeyTypeED25519:
+    case TWPublicKeyTypeCURVE25519:
+    case TWPublicKeyTypeED25519Blake2b:
+    case TWPublicKeyTypeED25519Cardano:
+        // Technically, we should allow any message size for ed25519.
+        return true;
+    case TWPublicKeyTypeSECP256k1:
+    case TWPublicKeyTypeNIST256p1:
+    case TWPublicKeyTypeSECP256k1Extended:
+    case TWPublicKeyTypeNIST256p1Extended:
+    case TWPublicKeyTypeStarkex:
+        return message.size() == PublicKey::ecdsaMessageSize;
+    default:
+        return false;
     }
 }
 
@@ -163,6 +182,9 @@ bool rust_public_key_verify(const Data& key, TWPublicKeyType type, const Data& s
 
 bool PublicKey::verify(const Data& signature, const Data& message) const {
     if (!validateSignatureLength(type, signature)) {
+        return false;
+    }
+    if (!validateMessageLength(type, message)) {
         return false;
     }
 

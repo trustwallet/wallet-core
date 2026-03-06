@@ -256,10 +256,9 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
 }
 
 int ecdsa_sign_digest_checked(const ecdsa_curve* curve, const uint8_t* priv_key, const uint8_t* digest, size_t digest_size, uint8_t* sig, uint8_t* pby, int (*is_canonical)(uint8_t by, uint8_t sig[64])) {
-    if (digest_size < 32) {
+    if (digest_size != 32) {
         return -1;
     }
-    assert(digest_size >= 32);
     return ecdsa_sign_digest(curve, priv_key, digest, sig, pby, is_canonical);
 }
 
