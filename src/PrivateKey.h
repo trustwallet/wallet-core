@@ -20,6 +20,8 @@ class PrivateKey {
     static const size_t _size = 32;
     /// The number of bytes in a Cardano key (two extended ed25519 keys + chain code)
     static const size_t cardanoKeySize = 2 * 3 * 32;
+    /// The number of bytes in an ECDSA message digest (e.g., 32-byte hash) that can be signed.
+    static const size_t ecdsaMessageSize = 32;
 
     /// The private key bytes:
     /// - common case: 'size' bytes

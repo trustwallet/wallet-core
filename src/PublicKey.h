@@ -40,7 +40,7 @@ class PublicKey {
     /// Magic number used in V component encoding
     static const byte SignatureVOffset = 27;
 
-    /// The exact number of bytes in a message that can be signed or verified.
+    /// The number of bytes in an ECDSA message digest (e.g., 32-byte hash) that can be verified.
     static const size_t ecdsaMessageSize = 32;
 
     /// The public key bytes.
