@@ -21,12 +21,20 @@ Data generateIv(std::size_t blockSize = TW::Keystore::gBlockSize) {
 static TWStoredKeyEncryption getCipher(const std::string& cipher) {
     if (cipher == Keystore::gAes128Ctr) {
         return TWStoredKeyEncryption::TWStoredKeyEncryptionAes128Ctr;
-    } else if (cipher == Keystore::gAes192Ctr) {
+    }
+    if (cipher == Keystore::gAes128Cbc) {
+        return TWStoredKeyEncryption::TWStoredKeyEncryptionAes128Cbc;
+    }
+    if (cipher == Keystore::gAes192Ctr) {
         return TWStoredKeyEncryption::TWStoredKeyEncryptionAes192Ctr;
-    } else if (cipher == Keystore::gAes256Ctr) {
+    }
+    if (cipher == Keystore::gAes256Ctr) {
         return TWStoredKeyEncryption::TWStoredKeyEncryptionAes256Ctr;
     }
-    return TWStoredKeyEncryptionAes128Ctr;
+
+    std::stringstream ss;
+    ss << "Unsupported cipher: " << cipher;
+    throw std::invalid_argument(ss.str());
 }
 
 const std::unordered_map<TWStoredKeyEncryption, Keystore::AESParameters> gEncryptionRegistry{
