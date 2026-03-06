@@ -14,10 +14,13 @@ namespace TW::Keystore {
 
 enum class ScryptValidationError {
     desiredKeyLengthTooLarge,
+    invalidSaltLength,
     blockSizeTooLarge,
     invalidCostFactor,
     overflow,
 };
+
+std::string toString(ScryptValidationError error);
 
 /// Scrypt function parameters.
 struct ScryptParameters {
@@ -39,6 +42,11 @@ struct ScryptParameters {
 
     /// Default desired key length of Scrypt encryption algorithm.
     static const std::size_t defaultDesiredKeyLength = 32;
+
+    /// Minimum and maximum salt length for Scrypt encryption algorithm.
+    /// https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf
+    static const std::size_t minSaltLength = 16;
+    static const std::size_t maxSaltLength = 1024;
 
     /// Random salt.
     Data salt;
