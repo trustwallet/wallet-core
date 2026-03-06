@@ -51,8 +51,6 @@ public:
     /// \param data json data
     /// \return hash of the tuped data.
     static Data typedDataPreImageHash(const std::string& data) noexcept;
-
-    static void prepareSignature(Data& signature, MessageType msgType, MaybeChainId chainId = std::nullopt) noexcept;
 };
 
 } // namespace TW::Ethereum
