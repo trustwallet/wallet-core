@@ -6,6 +6,7 @@
 
 #include "../HexCoding.h"
 
+#include <sstream>
 #include <TrezorCrypto/rand.h>
 
 using namespace TW;
