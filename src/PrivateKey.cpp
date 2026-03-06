@@ -370,7 +370,7 @@ Data PrivateKey::signAsDER(const Data& digest) const {
     }
     Data sig(64);
     bool success =
-        ecdsa_sign_digest_checked(&secp256k1, key().data(), digest.data(), sig.data(), nullptr, nullptr) == 0;
+        ecdsa_sign_digest_checked(&secp256k1, key().data(), digest.data(), sig.data(), nullptr, nullptr, nullptr) == 0;
     if (!success) {
         return {};
     }
