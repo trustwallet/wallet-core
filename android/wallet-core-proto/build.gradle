@@ -8,6 +8,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 
     withSourcesJar()
+    withJavadocJar()
 
     sourceSets {
         main.java.srcDirs += '../../jni/proto'

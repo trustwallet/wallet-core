@@ -1,10 +1,39 @@
 apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 publishing {
     publications {
         release(MavenPublication) {
             afterEvaluate {
                 from components.release
+            }
+
+            groupId = GROUP
+            artifactId = POM_ARTIFACT_ID
+            version = project.findProperty('version') ?: VERSION_NAME
+
+            pom {
+                name = POM_NAME
+                description = POM_DESCRIPTION
+                url = POM_URL
+                licenses {
+                    license {
+                        name = POM_LICENCE_NAME
+                        url = POM_LICENCE_URL
+                        distribution = POM_LICENCE_DIST
+                    }
+                }
+                scm {
+                    url = POM_SCM_URL
+                    connection = POM_SCM_CONNECTION
+                    developerConnection = POM_SCM_DEV_CONNECTION
+                }
+                developers {
+                    developer {
+                        id = POM_DEVELOPER_ID
+                        name = POM_DEVELOPER_NAME
+                    }
+                }
             }
         }
     }
@@ -19,5 +48,12 @@ publishing {
             }
         }
         mavenLocal()
+    }
+}
+
+if (rootProject.ext.isSigningEnabled()) {
+    signing {
+        useInMemoryPgpKeys(System.getenv("MVN_SIGNING_KEY"), System.getenv("MVN_SIGNING_PASSPHRASE"))
+        sign publishing.publications.release
     }
 }
