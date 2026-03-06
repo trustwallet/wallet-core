@@ -84,7 +84,6 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
     auto result = 0;
     switch(this->params.cipherParams.mCipherEncryption) {
     case TWStoredKeyEncryptionAes128Ctr:
-    case TWStoredKeyEncryptionAes128Cbc:
         result = aes_encrypt_key128(derivedKey.data(), &ctx);
         break;
     case TWStoredKeyEncryptionAes192Ctr:
@@ -152,14 +151,6 @@ Data EncryptedPayload::decrypt(const Data& password) const {
 
         aes_ctr_decrypt(encrypted.data(), decrypted.data(), static_cast<int>(encrypted.size()), iv.data(),
                         aes_ctr_cbuf_inc, &ctx);
-    } else if (encryption == TWStoredKeyEncryptionAes128Cbc) {
-        aes_decrypt_ctx ctx;
-        [[maybe_unused]] auto result = aes_decrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
-        assert(result != EXIT_FAILURE);
-
-        for (auto i = 0ul; i < encrypted.size(); i += params.getKeyBytesSize()) {
-            aes_cbc_decrypt(encrypted.data() + i, decrypted.data() + i, params.getKeyBytesSize(), iv.data(), &ctx);
-        }
     } else {
         throw DecryptionError::unsupportedCipher;
     }
