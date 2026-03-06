@@ -37,8 +37,11 @@ class PublicKey {
     /// The number of bytes in a secp256k1 signature.
     static const size_t secp256k1SignatureSize = 65;
 
-    /// Magic number used in V compnent encoding
+    /// Magic number used in V component encoding
     static const byte SignatureVOffset = 27;
+
+    /// The number of bytes in an ECDSA message digest (e.g., 32-byte hash) that can be verified.
+    static const size_t ecdsaMessageSize = 32;
 
     /// The public key bytes.
     Data bytes;
