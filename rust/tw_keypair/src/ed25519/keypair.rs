@@ -9,7 +9,6 @@ use tw_encoding::hex;
 use zeroize::Zeroizing;
 
 /// Represents a pair of `ed25519` private and public keys.
-#[derive(Debug)]
 pub struct KeyPair<H: Hasher512> {
     private: PrivateKey<H>,
     public: PublicKey<H>,
