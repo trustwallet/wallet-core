@@ -322,6 +322,36 @@
     }
   },
   {
+    "id": "dfiometa",
+    "name": "Defi Oracle Meta Mainnet",
+    "coinId": 10000138,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "138",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.d-bis.org",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xbc36c6050ea6b6f484009a1fcd8f8c6c2c2bd629661bc75fa5e84829c662a604",
+      "sampleAccount": "0x4A666F96fC8764181194447A7dFdb7d471b301C8"
+    },
+    "info": {
+      "url": "https://d-bis.org",
+      "source": "https://gitea.d-bis.org/d-bis",
+      "rpc": "https://rpc-http-pub.d-bis.org",
+      "documentation": "https://d-bis.org"
+    }
+  },
+  {
     "id": "syscoin",
     "name": "Syscoin",
     "coinId": 57,
