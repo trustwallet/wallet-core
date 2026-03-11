@@ -4,11 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-lazy_static = "1.4.0"
+lazy_static = "1.5.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-strum = "0.25"
-strum_macros = "0.25"
+strum = "0.28"
+strum_macros = "0.28"
 tw_aptos = { path = "../chains/tw_aptos" }
 tw_binance = { path = "../chains/tw_binance" }
 tw_bitcoin = { path = "../chains/tw_bitcoin" }
@@ -42,6 +42,6 @@ tw_utxo = { path = "../frameworks/tw_utxo" }
 tw_zcash = { path = "../chains/tw_zcash" }
 
 [build-dependencies]
-itertools = "0.10.5"
+itertools = "0.14.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
