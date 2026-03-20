@@ -40,8 +40,10 @@ static const auto mac = "mac";
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
     auto cipher = json[CodingKeys::cipher].get<std::string>();
     cipherParams = AESParameters::AESParametersFromJson(json[CodingKeys::cipherParams], cipher);
-    if (!cipherParams.isValid()) {
-        throw std::invalid_argument("Invalid cipher params");
+    if (const auto error = cipherParams.validate(); error.has_value()) {
+        std::stringstream ss;
+        ss << "Invalid cipher params: " << toString(*error);
+        throw std::invalid_argument(ss.str());
     }
 
     auto kdf = json[CodingKeys::kdf].get<std::string>();
@@ -69,9 +71,11 @@ nlohmann::json EncryptionParameters::json() const {
 }
 
 EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const EncryptionParameters& params)
-    : params(std::move(params)), _mac() {
-    if (!this->params.cipherParams.isValid()) {
-        throw std::invalid_argument("Invalid cipher params");
+    : params(params), _mac() {
+    if (const auto error = this->params.cipherParams.validate(); error.has_value()) {
+        std::stringstream ss;
+        ss << "Invalid cipher params: " << toString(*error);
+        throw std::invalid_argument(ss.str());
     }
 
     auto scryptParams = std::get<ScryptParameters>(this->params.kdfParams);
@@ -84,7 +88,6 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
     auto result = 0;
     switch(this->params.cipherParams.mCipherEncryption) {
     case TWStoredKeyEncryptionAes128Ctr:
-    case TWStoredKeyEncryptionAes128Cbc:
         result = aes_encrypt_key128(derivedKey.data(), &ctx);
         break;
     case TWStoredKeyEncryptionAes192Ctr:
@@ -137,7 +140,7 @@ Data EncryptedPayload::decrypt(const Data& password) const {
 
     // Even though the cipher params should have been validated in `EncryptedPayload` constructor,
     // double check them here.
-    if (!params.cipherParams.isValid()) {
+    if (params.cipherParams.validate().has_value()) {
         throw DecryptionError::invalidCipher;
     }
     assert(params.cipherParams.iv.size() == gBlockSize);
@@ -152,14 +155,6 @@ Data EncryptedPayload::decrypt(const Data& password) const {
 
         aes_ctr_decrypt(encrypted.data(), decrypted.data(), static_cast<int>(encrypted.size()), iv.data(),
                         aes_ctr_cbuf_inc, &ctx);
-    } else if (encryption == TWStoredKeyEncryptionAes128Cbc) {
-        aes_decrypt_ctx ctx;
-        [[maybe_unused]] auto result = aes_decrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
-        assert(result != EXIT_FAILURE);
-
-        for (auto i = 0ul; i < encrypted.size(); i += params.getKeyBytesSize()) {
-            aes_cbc_decrypt(encrypted.data() + i, decrypted.data() + i, params.getKeyBytesSize(), iv.data(), &ctx);
-        }
     } else {
         throw DecryptionError::unsupportedCipher;
     }

@@ -414,6 +414,10 @@ TEST(StoredKey, InvalidIv) {
     ASSERT_THROW(StoredKey::load(testDataPath("invalid-iv.json")), std::invalid_argument);
 }
 
+TEST(StoredKey, LoadCbcEncrypted) {
+    ASSERT_THROW(StoredKey::load(testDataPath("cbc-encrypted.json")), std::invalid_argument);
+}
+
 TEST(StoredKey, EmptyAccounts) {
     const auto key = StoredKey::load(testDataPath("empty-accounts.json"));
 
