@@ -23,6 +23,12 @@ inline constexpr const char* gAes128Ctr{"aes-128-ctr"};
 inline constexpr const char* gAes192Ctr{"aes-192-ctr"};
 inline constexpr const char* gAes256Ctr{"aes-256-ctr"};
 
+enum class AESValidationError {
+    InvalidIV,
+};
+
+std::string toString(AESValidationError error);
+
 // AES128/192/256 parameters.
 struct AESParameters {
     // For AES, your block length is always going to be 128 bits/16 bytes
@@ -42,9 +48,7 @@ struct AESParameters {
     nlohmann::json json() const;
 
     /// Validates AES parameters.
-    [[nodiscard]] bool isValid() const {
-        return iv.size() == static_cast<std::size_t>(mBlockSize);
-    }
+    [[nodiscard]] std::optional<AESValidationError> validate() const noexcept;
 };
 
 } // namespace TW::Keystore

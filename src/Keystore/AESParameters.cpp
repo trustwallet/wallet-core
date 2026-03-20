@@ -48,6 +48,15 @@ namespace CodingKeys {
 static const auto iv = "iv";
 } // namespace CodingKeys
 
+std::string toString(AESValidationError error) {
+    switch (error) {
+    case AESValidationError::InvalidIV:
+        return "IV must be 16 bytes long";
+    default:
+        return "Unknown error";
+    }
+}
+
 /// Initializes `AESParameters` with a JSON object.
 AESParameters AESParameters::AESParametersFromJson(const nlohmann::json& json, const std::string& cipher) {
     auto parameters = AESParameters::AESParametersFromEncryption(getCipher(cipher));
@@ -67,6 +76,14 @@ AESParameters AESParameters::AESParametersFromEncryption(TWStoredKeyEncryption e
     // be sure to regenerate an iv.
     parameters.iv = generateIv();
     return parameters;
+}
+
+std::optional<AESValidationError> AESParameters::validate() const noexcept {
+    if (iv.size() != static_cast<std::size_t>(mBlockSize)) {
+        return AESValidationError::InvalidIV;
+    }
+
+    return {};
 }
 
 } // namespace TW::Keystore
