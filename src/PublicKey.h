@@ -42,6 +42,9 @@ class PublicKey {
 
     /// The number of bytes in an ECDSA message digest (e.g., 32-byte hash) that can be verified.
     static const size_t ecdsaMessageSize = 32;
+    /// The maximum number of bytes in a message that can be verified with a starkex public key.
+    /// Digest shorter than 32 bytes will be left-padded with zeros before verification.
+    static const size_t starkexMessageMaxSize = 32;
 
     /// The public key bytes.
     Data bytes;

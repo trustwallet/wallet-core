@@ -49,7 +49,8 @@ static bool validateMessageLength(TWPublicKeyType type, const Data& message) {
     case TWPublicKeyTypeNIST256p1Extended:
         return message.size() == PublicKey::ecdsaMessageSize;
     case TWPublicKeyTypeStarkex:
-        return message.size() >= PublicKey::ecdsaMessageSize;
+        // Digest shorter than 32 bytes will be left-padded with zeros before verification.
+        return message.size() <= PublicKey::starkexMessageMaxSize;
     default:
         return false;
     }
