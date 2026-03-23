@@ -581,4 +581,77 @@ TEST(TronSigner, SignTransferTrc20Contract) {
     ASSERT_EQ(hex(output.signature()), "bec790877b3a008640781e3948b070740b1f6023c29ecb3f7b5835433c13fc5835e5cad3bd44360ff2ddad5ed7dc9d7dee6878f90e86a40355b7697f5954b88c01");
 }
 
+TEST(TronSigner, SignTransferInvalidToAddress) {
+    auto input = Proto::SigningInput();
+    auto& transaction = *input.mutable_transaction();
+    auto& transfer = *transaction.mutable_transfer();
+    transfer.set_owner_address("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
+    transfer.set_to_address("INVALID_NOT_BASE58");
+    transfer.set_amount(100);
+
+    transaction.set_timestamp(1539295479000);
+    auto& blockHeader = *transaction.mutable_block_header();
+    blockHeader.set_timestamp(1539295479000);
+    blockHeader.set_number(3111739);
+    blockHeader.set_version(3);
+
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    const auto output = Signer::sign(input);
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_address);
+    EXPECT_TRUE(output.id().empty());
+    EXPECT_TRUE(output.signature().empty());
+}
+
+TEST(TronSigner, SignTransferTrc20InvalidToAddress) {
+    auto input = Proto::SigningInput();
+    auto& transaction = *input.mutable_transaction();
+    auto& transfer_contract = *transaction.mutable_transfer_trc20_contract();
+    transfer_contract.set_owner_address("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
+    transfer_contract.set_contract_address("THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV");
+    transfer_contract.set_to_address("TW1dU4L3eNm7Lw8WvieLKEHpXWAussRG9X"); // typo: last char changed
+    Data amount = store(uint256_t(1000));
+    transfer_contract.set_amount(std::string(amount.begin(), amount.end()));
+
+    transaction.set_timestamp(1539295479000);
+    auto& blockHeader = *transaction.mutable_block_header();
+    blockHeader.set_timestamp(1539295479000);
+    blockHeader.set_number(3111739);
+    blockHeader.set_version(3);
+
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    const auto output = Signer::sign(input);
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_address);
+    EXPECT_TRUE(output.id().empty());
+    EXPECT_TRUE(output.signature().empty());
+}
+
+TEST(TronSigner, SignTransferTrc20InvalidContractAddress) {
+    auto input = Proto::SigningInput();
+    auto& transaction = *input.mutable_transaction();
+    auto& transfer_contract = *transaction.mutable_transfer_trc20_contract();
+    transfer_contract.set_owner_address("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
+    transfer_contract.set_contract_address("0x1234567890abcdef"); // hex address, wrong network
+    transfer_contract.set_to_address("TW1dU4L3eNm7Lw8WvieLKEHpXWAussRG9Z");
+    Data amount = store(uint256_t(1000));
+    transfer_contract.set_amount(std::string(amount.begin(), amount.end()));
+
+    transaction.set_timestamp(1539295479000);
+    auto& blockHeader = *transaction.mutable_block_header();
+    blockHeader.set_timestamp(1539295479000);
+    blockHeader.set_number(3111739);
+    blockHeader.set_version(3);
+
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    const auto output = Signer::sign(input);
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_address);
+    EXPECT_TRUE(output.id().empty());
+    EXPECT_TRUE(output.signature().empty());
+}
+
 } // namespace TW::Tron
