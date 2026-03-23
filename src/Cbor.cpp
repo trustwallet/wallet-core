@@ -276,7 +276,10 @@ Data Decode::getBytes() const {
         throw std::invalid_argument("CBOR data type not bytes/string");
     }
     uint64_t requiredLen = (uint64_t)typeDesc.byteCount + typeDesc.value;
-    if (requiredLen > UINT32_MAX || length() < (uint32_t)requiredLen) {
+    if (requiredLen > UINT32_MAX) {
+        throw std::invalid_argument("CBOR bytes/string length overflow");
+    }
+    if (length() < (uint32_t)requiredLen) {
         throw std::invalid_argument("CBOR bytes/string data too short");
     }
     auto len = (uint32_t)typeDesc.value;
