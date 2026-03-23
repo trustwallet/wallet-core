@@ -15,6 +15,7 @@
 #include <nlohmann/json.hpp>
 #include <cassert>
 #include <chrono>
+#include <stdexcept>
 
 namespace TW::Tron {
 
@@ -24,6 +25,9 @@ const std::string TRANSFER_TOKEN_FUNCTION = "0xa9059cbb";
 static Data decodeAddress(const std::string& addr) {
     auto decoded = Base58::decodeCheck(addr);
     if (decoded.empty() || decoded.size() != Address::size) {
+        throw std::invalid_argument("Invalid Tron address: " + addr);
+    }
+    if (decoded[0] != Address::prefix) {
         throw std::invalid_argument("Invalid Tron address: " + addr);
     }
     return decoded;
@@ -543,7 +547,11 @@ Data Signer::signaturePreimage() const {
             return {};
         }
     }
-    return serializeTxRawData(buildTransaction(input));
+    try {
+        return serializeTxRawData(buildTransaction(input));
+    } catch (const std::invalid_argument&) {
+        return {};
+    }
 }
 
 Data Signer::signaturePreimageHash() const {
