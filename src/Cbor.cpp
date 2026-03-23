@@ -232,7 +232,13 @@ uint32_t Decode::getTotalLen() const {
             return typeDesc.byteCount;
         case MT_bytes:
         case MT_string:
-            return (uint32_t)typeDesc.byteCount + (uint32_t)typeDesc.value;
+            {
+                uint64_t totalLen = (uint64_t)typeDesc.byteCount + typeDesc.value;
+                if (totalLen > UINT32_MAX) {
+                    throw std::invalid_argument("CBOR bytes/string length overflow");
+                }
+                return (uint32_t)totalLen;
+            }
         case MT_array:
             return getCompoundLength(1);
         case MT_map:
@@ -269,12 +275,13 @@ Data Decode::getBytes() const {
     if (typeDesc.majorType != MT_bytes && typeDesc.majorType != MT_string) {
         throw std::invalid_argument("CBOR data type not bytes/string");
     }
-    auto len = (uint32_t)typeDesc.value;
-    if (length() < (uint32_t)typeDesc.byteCount + (uint32_t)len) {
+    uint64_t requiredLen = (uint64_t)typeDesc.byteCount + typeDesc.value;
+    if (requiredLen > UINT32_MAX || length() < (uint32_t)requiredLen) {
         throw std::invalid_argument("CBOR bytes/string data too short");
     }
+    auto len = (uint32_t)typeDesc.value;
     assert(subStart + typeDesc.byteCount + len <= data->origData.size());
-    return TW::data(data->origData.data() + (subStart + typeDesc.byteCount), len); 
+    return TW::data(data->origData.data() + (subStart + typeDesc.byteCount), len);
 }
 
 bool Decode::isBreak() const {
@@ -373,7 +380,7 @@ bool Decode::isValid() const {
             case MT_bytes:
             case MT_string:
                 {
-                    auto len = (uint32_t)(typeDesc.byteCount + typeDesc.value);
+                    uint64_t len = (uint64_t)typeDesc.byteCount + typeDesc.value;
                     return (len <= subLen);
                 }
 
