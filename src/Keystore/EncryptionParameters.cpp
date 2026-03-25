@@ -134,7 +134,7 @@ Data EncryptedPayload::decrypt(const Data& password) const {
         throw DecryptionError::unsupportedKDF;
     }
 
-    if (mac != _mac) {
+    if (!isEqualConstantTime(mac, _mac)) {
         throw DecryptionError::invalidPassword;
     }
 
