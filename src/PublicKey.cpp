@@ -20,6 +20,8 @@
 
 namespace TW {
 
+static constexpr size_t kEcdsaMinDigestSize = 32;
+
 bool validateSignatureLength(TWPublicKeyType type, const Data& signature) {
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
@@ -169,9 +171,11 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended:
+        if (message.size() < kEcdsaMinDigestSize) { return false; }
         return ecdsa_verify_digest(&secp256k1, bytes.data(), signature.data(), message.data()) == 0;
     case TWPublicKeyTypeNIST256p1:
     case TWPublicKeyTypeNIST256p1Extended:
+        if (message.size() < kEcdsaMinDigestSize) { return false; }
         return ecdsa_verify_digest(&nist256p1, bytes.data(), signature.data(), message.data()) == 0;
     case TWPublicKeyTypeED25519:
         return ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
@@ -206,6 +210,7 @@ bool PublicKey::verifyAsDER(const Data& signature, const Data& message) const {
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended: {
+        if (message.size() < kEcdsaMinDigestSize) { return false; }
         Data sig(64);
         int ret = ecdsa_sig_from_der(signature.data(), signature.size(), sig.data());
         if (ret) {
