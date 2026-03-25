@@ -5,6 +5,7 @@
 #include "Cbor.h"
 #include "HexCoding.h"
 #include "Numeric.h"
+#include "rust/bindgen/WalletCoreRSBindgen.h"
 
 #include <sstream>
 #include <cassert>
@@ -307,6 +308,9 @@ uint32_t Decode::getCompoundLength(uint32_t countMultiplier) const {
             break;
         }
         uint32_t elemLen = nextElem.getTotalLen();
+        if (elemLen == 0 || checkAddUnsignedOverflow(len, elemLen)) {
+            throw std::invalid_argument("CBOR invalid element length");
+        }
         if (len + elemLen > length()) {
             throw std::invalid_argument("CBOR array data too short");
         }
@@ -431,7 +435,13 @@ string Decode::dumpToStringInternal() const {
             break;
 
         case MT_string:
-            s << "\"" << getString() << "\"";
+            {
+                auto str = getString();
+                if (!Rust::tw_string_is_utf8_bytes(reinterpret_cast<const uint8_t*>(str.data()), str.size())) {
+                    throw std::invalid_argument("CBOR string is not valid UTF-8");
+                }
+                s << "\"" << str << "\"";
+            }
             break;
 
         case MT_array:

@@ -559,5 +559,21 @@ TEST(Cbor, BytesOverflowLength_getTotalLen) {
     FAIL() << "Expected exception";
 }
 
+TEST(Cbor, GetCompoundLengthOverflow) {
+    Data overflow = parse_hex("9bffffffffffffffff");
+    EXPECT_FALSE(Decode(overflow).isValid());
+}
+
+TEST(Cbor, StringInvalidUtf8Throws) {
+    Data invalidUtf8 = parse_hex("63fffefd");
+    Decode cbor(invalidUtf8);
+    EXPECT_THROW(cbor.dumpToString(), std::invalid_argument);
+}
+
+TEST(Cbor, StringValidUtf8) {
+    Data validUtf8 = Encode::string("hello").encoded();
+    EXPECT_EQ("\"hello\"", Decode(validUtf8).dumpToString());
+}
+
 // clang-format on
 } // namespace TW::Cbor::tests
