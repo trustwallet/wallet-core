@@ -108,12 +108,13 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
         _mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
     }
 
+    memzero(&ctx, sizeof(ctx));
     memzero(derivedKey.data(), derivedKey.size());
 }
 
 EncryptedPayload::~EncryptedPayload() {
-    std::fill(encrypted.begin(), encrypted.end(), 0);
-    std::fill(_mac.begin(), _mac.end(), 0);
+    memzero(encrypted.data(), encrypted.size());
+    memzero(_mac.data(), _mac.size());
 }
 
 Data EncryptedPayload::decrypt(const Data& password) const {
@@ -160,6 +161,7 @@ Data EncryptedPayload::decrypt(const Data& password) const {
 
         aes_ctr_decrypt(encrypted.data(), decrypted.data(), static_cast<int>(encrypted.size()), iv.data(),
                         aes_ctr_cbuf_inc, &ctx);
+        memzero(&ctx, sizeof(ctx));
         memzero(derivedKey.data(), derivedKey.size());
     } else {
         memzero(derivedKey.data(), derivedKey.size());
