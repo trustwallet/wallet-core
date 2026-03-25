@@ -70,15 +70,13 @@ nlohmann::json EncryptionParameters::json() const {
     return j;
 }
 
-EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const EncryptionParameters& params)
-    : params(params), _mac() {
-    if (const auto error = this->params.cipherParams.validate(); error.has_value()) {
+EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const AESParameters& cipherParams, const ScryptParameters& scryptParams) {
+    if (const auto error = cipherParams.validate(); error.has_value()) {
         std::stringstream ss;
         ss << "Invalid cipher params: " << toString(*error);
         throw std::invalid_argument(ss.str());
     }
 
-    auto scryptParams = std::get<ScryptParameters>(this->params.kdfParams);
     auto derivedKey = Data(scryptParams.desiredKeyLength);
     scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
            scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
@@ -86,7 +84,7 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
 
     aes_encrypt_ctx ctx;
     auto result = 0;
-    switch(this->params.cipherParams.mCipherEncryption) {
+    switch(cipherParams.mCipherEncryption) {
     case TWStoredKeyEncryptionAes128Ctr:
         result = aes_encrypt_key128(derivedKey.data(), &ctx);
         break;
@@ -99,10 +97,11 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
     }
     assert(result == EXIT_SUCCESS);
     if (result == EXIT_SUCCESS) {
-        Data iv = this->params.cipherParams.iv;
+        Data iv = cipherParams.iv;
         // iv size should have been validated in `AESParameters::isValid()`.
         assert(iv.size() == gBlockSize);
 
+        params = { cipherParams, scryptParams };
         encrypted = Data(data.size());
         aes_ctr_encrypt(data.data(), encrypted.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
         _mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);

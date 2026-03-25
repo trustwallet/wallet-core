@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Data.h"
+#include "TrustWalletCore/TWStoredKeyEncryptionLevel.h"
 #include "../HexCoding.h"
 
 #include <nlohmann/json.hpp>
@@ -62,6 +63,9 @@ struct ScryptParameters {
 
     /// Block size factor.
     uint32_t r = defaultR;
+
+    /// Returns a preset of Scrypt encryption parameters for the given encryption level.
+    static ScryptParameters getPreset(TWStoredKeyEncryptionLevel preset);
 
     /// Generates Scrypt encryption parameters with the minimal sufficient level (4096), and with a random salt.
     static ScryptParameters minimal();

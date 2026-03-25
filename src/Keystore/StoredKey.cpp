@@ -95,12 +95,13 @@ StoredKey StoredKey::createWithEncodedPrivateKeyAddDefaultAddress(
 
 StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption, const std::optional<std::string>& encodedStr)
     : type(type), id(), name(std::move(name)), accounts() {
-    const auto encryptionParams = EncryptionParameters::getPreset(encryptionLevel, encryption);
-    payload = EncryptedPayload(password, data, encryptionParams);
+    const auto cipherParams = AESParameters::AESParametersFromEncryption(encryption);
+    const auto scryptParams = ScryptParameters::getPreset(encryptionLevel);
+    payload = EncryptedPayload(password, data, cipherParams, scryptParams);
     if (encodedStr) {
         const auto bytes = reinterpret_cast<const uint8_t*>(encodedStr->c_str());
         const auto encodedData = Data(bytes, bytes + encodedStr->size());
-        encodedPayload = EncryptedPayload(password, encodedData, encryptionParams);
+        encodedPayload = EncryptedPayload(password, encodedData, cipherParams, scryptParams);
     }
     const char* uuid_ptr = Rust::tw_uuid_random();
     id = std::make_optional<std::string>(uuid_ptr);
