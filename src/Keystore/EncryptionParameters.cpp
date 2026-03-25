@@ -4,6 +4,7 @@
 
 #include "EncryptionParameters.h"
 
+#include "memory/memzero_wrapper.h"
 #include "../Hash.h"
 
 #include <TrezorCrypto/aes.h>
@@ -106,6 +107,8 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
         aes_ctr_encrypt(data.data(), encrypted.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
         _mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
     }
+
+    memzero(derivedKey.data(), derivedKey.size());
 }
 
 EncryptedPayload::~EncryptedPayload() {
@@ -134,6 +137,7 @@ Data EncryptedPayload::decrypt(const Data& password) const {
     }
 
     if (!isEqualConstantTime(mac, _mac)) {
+        memzero(derivedKey.data(), derivedKey.size());
         throw DecryptionError::invalidPassword;
     }
 
@@ -156,7 +160,9 @@ Data EncryptedPayload::decrypt(const Data& password) const {
 
         aes_ctr_decrypt(encrypted.data(), decrypted.data(), static_cast<int>(encrypted.size()), iv.data(),
                         aes_ctr_cbuf_inc, &ctx);
+        memzero(derivedKey.data(), derivedKey.size());
     } else {
+        memzero(derivedKey.data(), derivedKey.size());
         throw DecryptionError::unsupportedCipher;
     }
 
