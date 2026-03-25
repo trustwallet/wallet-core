@@ -148,7 +148,9 @@ Data EncryptedPayload::decrypt(const Data& password) const {
     Data decrypted(encrypted.size());
     Data iv = params.cipherParams.iv;
     const auto encryption = params.cipherParams.mCipherEncryption;
-    if (encryption == TWStoredKeyEncryptionAes128Ctr || encryption == TWStoredKeyEncryptionAes256Ctr) {
+    if (encryption == TWStoredKeyEncryptionAes128Ctr
+        || encryption == TWStoredKeyEncryptionAes192Ctr
+        || encryption == TWStoredKeyEncryptionAes256Ctr) {
         aes_encrypt_ctx ctx;
         [[maybe_unused]] auto result = aes_encrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
         assert(result != EXIT_FAILURE);

@@ -80,7 +80,24 @@ TEST(TWStoredKey, importPrivateKey) {
     TWPrivateKeyDelete(privateKey3);
 }
 
-TEST(TWStoredKey, importPrivateKeyAes256) {
+TEST(TWStoredKey, importPrivateKeyAes192Ctr) {
+    const auto privateKeyHex = "3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266";
+    const auto privateKey = WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes(privateKeyHex)).get()));
+    const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    const auto coin = TWCoinTypeBitcoin;
+    const auto key = WRAP(TWStoredKey, TWStoredKeyImportPrivateKeyWithEncryption(privateKey.get(), name.get(), password.get(), coin, TWStoredKeyEncryptionAes192Ctr));
+    const auto privateKey2 = WRAPD(TWStoredKeyDecryptPrivateKey(key.get(), password.get()));
+    EXPECT_EQ(hex(data(TWDataBytes(privateKey2.get()), TWDataSize(privateKey2.get()))), privateKeyHex);
+
+    const auto privateKey3 = TWStoredKeyPrivateKey(key.get(), coin, password.get());
+    const auto pkData3 = WRAPD(TWPrivateKeyData(privateKey3));
+    EXPECT_EQ(hex(data(TWDataBytes(pkData3.get()), TWDataSize(pkData3.get()))), privateKeyHex);
+    TWPrivateKeyDelete(privateKey3);
+}
+
+TEST(TWStoredKey, importPrivateKeyAes256Ctr) {
     const auto privateKeyHex = "3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266";
     const auto privateKey = WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes(privateKeyHex)).get()));
     const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
@@ -294,7 +311,22 @@ TEST(TWStoredKey, importHDWallet) {
     EXPECT_EQ(nokey.get(), nullptr);
 }
 
-TEST(TWStoredKey, importHDWalletAES256) {
+TEST(TWStoredKey, importHDWalletAES192Ctr) {
+    const auto mnemonic = WRAPS(TWStringCreateWithUTF8Bytes("team engine square letter hero song dizzy scrub tornado fabric divert saddle"));
+    const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    const auto coin = TWCoinTypeBitcoin;
+    const auto key = WRAP(TWStoredKey, TWStoredKeyImportHDWalletWithEncryption(mnemonic.get(), name.get(), password.get(), coin, TWStoredKeyEncryptionAes192Ctr));
+    EXPECT_TRUE(TWStoredKeyIsMnemonic(key.get()));
+
+    // invalid mnemonic
+    const auto mnemonicInvalid = WRAPS(TWStringCreateWithUTF8Bytes("_THIS_IS_AN_INVALID_MNEMONIC_"));
+    const auto nokey = WRAP(TWStoredKey, TWStoredKeyImportHDWalletWithEncryption(mnemonicInvalid.get(), name.get(), password.get(), coin, TWStoredKeyEncryptionAes192Ctr));
+    EXPECT_EQ(nokey.get(), nullptr);
+}
+
+TEST(TWStoredKey, importHDWalletAES256Ctr) {
     const auto mnemonic = WRAPS(TWStringCreateWithUTF8Bytes("team engine square letter hero song dizzy scrub tornado fabric divert saddle"));
     const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
     const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
@@ -401,7 +433,31 @@ TEST(TWStoredKey, exportJSON) {
     EXPECT_EQ(jsonBytes[0], '{');
 }
 
-TEST(TWStoredKey, storeAndImportJSONAES256) {
+TEST(TWStoredKey, storeAndImportJSONAES192Ctr) {
+    const auto key = createDefaultStoredKey(TWStoredKeyEncryptionAes192Ctr);
+    const auto outFileName = string(getTestTempDir() + "/TWStoredKey_store.json");
+    const auto outFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(outFileName.c_str()));
+    EXPECT_TRUE(TWStoredKeyStore(key.get(), outFileNameStr.get()));
+
+    // read contents of file
+    ifstream ifs(outFileName);
+    // get length of file:
+    ifs.seekg (0, ifs.end);
+    auto length = ifs.tellg();
+    ifs.seekg (0, ifs.beg);
+    EXPECT_TRUE(length > 20);
+
+    Data json(length);
+    size_t idx = 0;
+    // read the slow way, ifs.read gave some false warnings with codacy
+    while (!ifs.eof() && idx < static_cast<std::size_t>(length)) { char c = ifs.get(); json[idx++] = (uint8_t)c; }
+
+    const auto key2 = WRAP(TWStoredKey, TWStoredKeyImportJSON(WRAPD(TWDataCreateWithData(&json)).get()));
+    const auto name2 = WRAPS(TWStoredKeyName(key2.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(name2.get())), "name");
+}
+
+TEST(TWStoredKey, storeAndImportJSONAES256Ctr) {
     const auto key = createDefaultStoredKey(TWStoredKeyEncryptionAes256Ctr);
     const auto outFileName = string(getTestTempDir() + "/TWStoredKey_store.json");
     const auto outFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(outFileName.c_str()));

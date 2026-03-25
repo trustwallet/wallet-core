@@ -23,7 +23,17 @@ class TestKeyStore {
     }
 
     @Test
-    fun testDecryptMnemonicAes256() {
+    fun testDecryptMnemonicAes192Ctr() {
+        val keyStore = StoredKey("Test Wallet", "password".toByteArray(), StoredKeyEncryption.AES192CTR)
+        val result = keyStore.decryptMnemonic("wrong".toByteArray())
+        val result2 = keyStore.decryptMnemonic("password".toByteArray())
+
+        assertNull(result)
+        assertNotNull(result2)
+    }
+
+    @Test
+    fun testDecryptMnemonicAes256Ctr() {
         val keyStore = StoredKey("Test Wallet", "password".toByteArray(), StoredKeyEncryption.AES256CTR)
         val result = keyStore.decryptMnemonic("wrong".toByteArray())
         val result2 = keyStore.decryptMnemonic("password".toByteArray())
