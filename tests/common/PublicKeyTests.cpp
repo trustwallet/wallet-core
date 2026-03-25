@@ -382,3 +382,12 @@ TEST(PublicKeyTests, VerifyAsDERRejectsShortDigest) {
 
     EXPECT_FALSE(publicKey.verifyAsDER(derSig, shortDigest));
 }
+
+TEST(PublicKeyTests, VerifyNist256p1RejectsShortDigest) {
+    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveNIST256p1);
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
+    const auto validSig = parse_hex("0f5d5a9e5fc4b82a625312f3be5d3e8ad017d882de86c72c92fcefa924e894c12071772a14201a3a0debf381b5e8dea39fadb9bcabdc02ee71ab018f55bf717f");
+    const auto shortDigest = parse_hex("0102030405060708");
+
+    EXPECT_FALSE(publicKey.verify(validSig, shortDigest));
+}
