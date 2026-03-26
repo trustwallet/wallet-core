@@ -227,6 +227,9 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
 }
 
 bool PublicKey::verifyAsDER(const Data& signature, const Data& message) const {
+    if (signature.size() < derSignatureMinSize || signature.size() > derSignatureMaxSize) {
+        return false;
+    }
     if (message.size() != ecdsaMessageSize) {
         return false;
     }

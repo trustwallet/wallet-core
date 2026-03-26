@@ -383,6 +383,15 @@ TEST(PublicKeyTests, VerifyAsDERRejectsShortDigest) {
     EXPECT_FALSE(publicKey.verifyAsDER(derSig, shortDigest));
 }
 
+TEST(PublicKeyTests, VerifyAsDERRejectsInvalidSignatureSize) {
+    const auto publicKey = PublicKey(parse_hex("0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1"), TWPublicKeyTypeSECP256k1);
+    const auto digest = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+
+    EXPECT_FALSE(publicKey.verifyAsDER(Data(), digest));
+    EXPECT_FALSE(publicKey.verifyAsDER(parse_hex("30"), digest));
+    EXPECT_FALSE(publicKey.verifyAsDER(Data(73, 0x30), digest));
+}
+
 TEST(PublicKeyTests, VerifyNist256p1RejectsShortDigest) {
     const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveNIST256p1);
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
