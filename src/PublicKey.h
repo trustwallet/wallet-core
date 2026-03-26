@@ -46,6 +46,11 @@ class PublicKey {
     /// Digest shorter than 32 bytes will be left-padded with zeros before verification.
     static const size_t starkexMessageMaxSize = 32;
 
+    /// The minimum number of bytes in a valid DER-encoded ECDSA signature.
+    static const size_t derSignatureMinSize = 2;
+    /// The maximum number of bytes in a valid DER-encoded ECDSA signature.
+    static const size_t derSignatureMaxSize = 72;
+
     /// The public key bytes.
     Data bytes;
 
