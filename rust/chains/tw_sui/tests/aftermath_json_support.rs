@@ -181,7 +181,7 @@ fn test_raw_json_with_rall_inputs() {
         "inputs": [
             {
                 "kind": "Input",
-                "index": 1,
+                "index": 0,
                 "value": {
                     "Pure": [
                     89,
@@ -198,7 +198,7 @@ fn test_raw_json_with_rall_inputs() {
             },
             {
                 "kind": "Input",
-                "index": 2,
+                "index": 1,
                 "value": {
                     "Object": {
                         "Shared": {
@@ -212,7 +212,7 @@ fn test_raw_json_with_rall_inputs() {
             },
             {
                 "kind": "Input",
-                "index": 3,
+                "index": 2,
                 "value": {
                     "Object": {
                         "Receiving": {
@@ -269,4 +269,40 @@ fn test_raw_json_sorts_inputs_by_declared_index() {
     assert_eq!(pt.inputs.len(), 2);
     assert!(matches!(&pt.inputs[0], CallArg::Pure(data) if data == &[4, 5, 6]));
     assert!(matches!(&pt.inputs[1], CallArg::Pure(data) if data == &[1, 2, 3]));
+}
+
+#[test]
+fn test_raw_json_rejects_duplicate_input_indices() {
+    let raw_json = r#"
+    {
+        "version": 1,
+        "sender": "0x1",
+        "expiration": null,
+        "gasConfig": { "budget": "1000", "price": "750", "payment": [] },
+        "inputs": [
+            { "kind": "Input", "index": 0, "value": { "Pure": [1] }, "type": "pure" },
+            { "kind": "Input", "index": 0, "value": { "Pure": [2] }, "type": "pure" }
+        ],
+        "transactions": []
+    }
+    "#;
+    assert!(TransactionBuilder::raw_json(raw_json, 0, 0).is_err());
+}
+
+#[test]
+fn test_raw_json_rejects_non_contiguous_input_indices() {
+    let raw_json = r#"
+    {
+        "version": 1,
+        "sender": "0x1",
+        "expiration": null,
+        "gasConfig": { "budget": "1000", "price": "750", "payment": [] },
+        "inputs": [
+            { "kind": "Input", "index": 0, "value": { "Pure": [1] }, "type": "pure" },
+            { "kind": "Input", "index": 3, "value": { "Pure": [2] }, "type": "pure" }
+        ],
+        "transactions": []
+    }
+    "#;
+    assert!(TransactionBuilder::raw_json(raw_json, 0, 0).is_err());
 }

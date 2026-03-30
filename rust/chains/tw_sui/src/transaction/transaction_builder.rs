@@ -204,6 +204,19 @@ impl TransactionBuilder {
         let mut raw_inputs = raw_transaction.inputs;
         raw_inputs.sort_by_key(|input| input.index);
 
+        for (pos, input) in raw_inputs.iter().enumerate() {
+            if input.index as usize != pos {
+                return SigningError::err(SigningErrorType::Error_invalid_params).context(
+                    format!(
+                        "Input indices must be unique and contiguous (0..{}), but found index {} at position {}",
+                        raw_inputs.len() - 1,
+                        input.index,
+                        pos
+                    ),
+                );
+            }
+        }
+
         let inputs = raw_inputs
             .into_iter()
             .map(|input| input.value.try_into())
