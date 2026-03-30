@@ -1,6 +1,8 @@
 use tw_encoding::base64::{self, STANDARD};
 use tw_encoding::bcs;
+use tw_sui::transaction::sui_types::CallArg;
 use tw_sui::transaction::transaction_builder::TransactionBuilder;
+use tw_sui::transaction::transaction_data::{TransactionData, TransactionKind};
 
 #[test]
 fn test_aftermath_json_support() {
@@ -228,4 +230,43 @@ fn test_raw_json_with_rall_inputs() {
     "#;
     let result = TransactionBuilder::raw_json(raw_json, 0, 0);
     assert!(result.is_ok());
+}
+
+#[test]
+fn test_raw_json_sorts_inputs_by_declared_index() {
+    let raw_json = r#"
+    {
+        "version": 1,
+        "sender": "0x1",
+        "expiration": null,
+        "gasConfig": {
+            "budget": "1000",
+            "price": "750",
+            "payment": []
+        },
+        "inputs": [
+            {
+                "kind": "Input",
+                "index": 1,
+                "value": { "Pure": [1, 2, 3] },
+                "type": "pure"
+            },
+            {
+                "kind": "Input",
+                "index": 0,
+                "value": { "Pure": [4, 5, 6] },
+                "type": "pure"
+            }
+        ],
+        "transactions": []
+    }
+    "#;
+    let tx_data = TransactionBuilder::raw_json(raw_json, 0, 0).unwrap();
+
+    let TransactionData::V1(v1) = &tx_data;
+    let TransactionKind::ProgrammableTransaction(pt) = &v1.kind;
+
+    assert_eq!(pt.inputs.len(), 2);
+    assert!(matches!(&pt.inputs[0], CallArg::Pure(data) if data == &[4, 5, 6]));
+    assert!(matches!(&pt.inputs[1], CallArg::Pure(data) if data == &[1, 2, 3]));
 }

@@ -201,8 +201,10 @@ impl TransactionBuilder {
                 .context("Invalid transaction version. Only version 1 is supported.");
         }
 
-        let inputs = raw_transaction
-            .inputs
+        let mut raw_inputs = raw_transaction.inputs;
+        raw_inputs.sort_by_key(|input| input.index);
+
+        let inputs = raw_inputs
             .into_iter()
             .map(|input| input.value.try_into())
             .collect::<SigningResult<Vec<_>>>()?;
