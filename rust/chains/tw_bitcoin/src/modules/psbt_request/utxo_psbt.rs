@@ -61,7 +61,7 @@ impl<'a> UtxoPsbt<'a> {
         let actual_txid = self.utxo.previous_output.txid;
         if actual_txid != expected_txid {
             return SigningError::err(SigningErrorType::Error_invalid_utxo).context(format!(
-                "Txid mismatch between PSBT input and non-witness UTXO: PSBT references '{actual_txid}', but non-witness UTXO has '{expected_txid}",
+                "Txid mismatch between PSBT input and non-witness UTXO: PSBT references '{actual_txid}', but non-witness UTXO has '{expected_txid}'",
             ));
         }
 
