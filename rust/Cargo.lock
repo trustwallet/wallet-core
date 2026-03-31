@@ -2649,6 +2649,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tw_any_coin",
+ "tw_bitcoin",
  "tw_coin_entry",
  "tw_coin_registry",
  "tw_cosmos_sdk",
