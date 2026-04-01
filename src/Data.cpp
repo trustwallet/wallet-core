@@ -4,6 +4,8 @@
 
 #include "Data.h"
 
+#include <stdexcept>
+
 namespace TW {
 
 Data subData(const Data& data, size_t startIndex, size_t length) {
