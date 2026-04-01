@@ -8,7 +8,7 @@ use secp256k1::ThirtyTwoByteHash;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::H256;
 use tw_utxo::script::Script;
-use tw_utxo::sighash::SighashType;
+use tw_utxo::sighash::{SighashBase, SighashType};
 use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
 use tw_utxo::transaction::standard_transaction::TransactionInput;
 use tw_utxo::transaction::UtxoToSign;
@@ -34,10 +34,10 @@ impl<'a> UtxoPsbt<'a> {
     }
 
     pub fn build(self) -> SigningResult<(TransactionInput, UtxoToSign)> {
-        if let Some(ref non_witness_utxo) = self.utxo_psbt.non_witness_utxo {
-            self.build_non_witness_utxo(non_witness_utxo)
-        } else if let Some(ref witness_utxo) = self.utxo_psbt.witness_utxo {
+        if let Some(ref witness_utxo) = self.utxo_psbt.witness_utxo {
             self.build_witness_utxo(witness_utxo)
+        } else if let Some(ref non_witness_utxo) = self.utxo_psbt.non_witness_utxo {
+            self.build_non_witness_utxo(non_witness_utxo)
         } else {
             SigningError::err(SigningErrorType::Error_invalid_params)
                 .context("Neither 'witness_utxo' nor 'non_witness_utxo' are set in the PSBT")
@@ -120,6 +120,11 @@ impl<'a> UtxoPsbt<'a> {
             Some(psbt_ty) => SighashType::from_u32(psbt_ty.to_u32())?,
             None => SighashType::default(),
         };
+
+        if sighash_ty.base_type() != SighashBase::All || sighash_ty.anyone_can_pay() {
+            return SigningError::err(SigningErrorType::Error_not_supported)
+                .context("Only SIGHASH_ALL is supported for PSBT inputs");
+        }
 
         let amount = amount
             .try_into()
