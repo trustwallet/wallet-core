@@ -690,7 +690,7 @@ fn deeply_nested_token(depth: usize) -> Proto::Token<'static> {
 }
 
 /// Builds a `Proto::Param` whose type has `depth` levels of array nesting around a `uint256`.
-/// With `depth > MAX_RECURSION_DEPTH` (20) the encoder must return an error.
+/// With `depth >= MAX_RECURSION_DEPTH` (20) the encoder must return an error.
 fn deeply_nested_param_type(depth: usize) -> Proto::Param<'static> {
     let mut kind: ParamTypeEnum<'static> = ParamTypeEnum::number_uint(number_type_n::<256>());
     for _ in 0..depth {
