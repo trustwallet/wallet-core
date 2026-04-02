@@ -714,7 +714,7 @@ fn test_encode_contract_call_max_recursion_depth() {
 
 #[test]
 fn test_get_function_signature_from_proto_max_recursion_depth() {
-    // 20 levels of tuple nesting.
+    // 20 levels of array nesting.
     let deep_param = deeply_nested_param_type(20);
     let input = Proto::FunctionGetTypeInput {
         function_name: "transfer".into(),
@@ -727,7 +727,7 @@ fn test_get_function_signature_from_proto_max_recursion_depth() {
 
 #[test]
 fn test_decode_params_max_recursion_depth() {
-    // 20 levels of tuple nesting.
+    // 20 levels of array nesting.
     let deep_param = deeply_nested_param_type(20);
     let input = Proto::ParamsDecodingInput {
         encoded: vec![0u8; 32].into(),
