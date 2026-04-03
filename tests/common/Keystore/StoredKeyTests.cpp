@@ -764,6 +764,50 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts from the same wallet
     }
 }
 
+TEST(StoredKey, CreateWithEncodedPrivateKeyAddDefaultAddress) {
+    // Use a hex-encoded private key
+    const auto privateKeyHex = "3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266";
+    auto key = StoredKey::createWithEncodedPrivateKeyAddDefaultAddress("name", gPassword, coinTypeBc, privateKeyHex);
+
+    EXPECT_EQ(key.type, StoredKeyType::privateKey);
+    EXPECT_EQ(key.accounts.size(), 1ul);
+    EXPECT_EQ(key.accounts[0].coin, coinTypeBc);
+    EXPECT_EQ(key.accounts[0].address, "bc1q375sq4kl2nv0mlmup3vm8znn4eqwu7mt6hkwhr");
+
+    // Verify that the raw private key bytes can be decrypted from `payload`
+    const Data& decryptedKey = key.payload.decrypt(gPassword);
+    EXPECT_EQ(hex(decryptedKey), privateKeyHex);
+
+    // Verify that the encoded private key string can be decrypted from `encodedPayload`
+    ASSERT_TRUE(key.encodedPayload.has_value());
+    const Data& decryptedEncoded = key.encodedPayload->decrypt(gPassword);
+    EXPECT_EQ(string(decryptedEncoded.begin(), decryptedEncoded.end()), privateKeyHex);
+
+    // Validate the JSON structure
+    const auto json = key.json();
+    EXPECT_EQ(json["name"], "name");
+    EXPECT_EQ(json["type"], "private-key");
+    EXPECT_EQ(json["version"], 3);
+    EXPECT_TRUE(json.count("encodedCrypto") != 0);
+
+    // Retrieve iv and salt from `crypto` (payload) and `encodedCrypto` (encodedPayload)
+    const auto payloadIv   = json["crypto"]["cipherparams"]["iv"].get<std::string>();
+    const auto payloadSalt = json["crypto"]["kdfparams"]["salt"].get<std::string>();
+
+    const auto encodedIv   = json["encodedCrypto"]["cipherparams"]["iv"].get<std::string>();
+    const auto encodedSalt = json["encodedCrypto"]["kdfparams"]["salt"].get<std::string>();
+
+    // iv and salt must be non-empty hex strings
+    EXPECT_EQ(payloadIv.size(), 32ul);   // 16 bytes as hex
+    EXPECT_EQ(payloadSalt.size(), 64ul); // 32 bytes as hex
+    EXPECT_EQ(encodedIv.size(), 32ul);
+    EXPECT_EQ(encodedSalt.size(), 64ul);
+
+    // iv and salt must differ between `payload` and `encodedPayload`
+    EXPECT_NE(payloadIv, encodedIv);
+    EXPECT_NE(payloadSalt, encodedSalt);
+}
+
 TEST(StoredKey, CreateWithMnemonicAlternativeDerivation) {
     const auto coin = TWCoinTypeSolana;
     auto key = StoredKey::createWithMnemonicAddDefaultAddress("name", gPassword, gMnemonic, coin);

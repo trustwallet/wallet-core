@@ -98,10 +98,16 @@ StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password,
     const auto cipherParams = AESParameters::AESParametersFromEncryption(encryption);
     const auto scryptParams = ScryptParameters::getPreset(encryptionLevel);
     payload = EncryptedPayload(password, data, cipherParams, scryptParams);
+
     if (encodedStr) {
         const auto bytes = reinterpret_cast<const uint8_t*>(encodedStr->c_str());
         const auto encodedData = Data(bytes, bytes + encodedStr->size());
-        encodedPayload = EncryptedPayload(password, encodedData, cipherParams, scryptParams);
+
+        // Generate new parameters with random iv and salt for the encoded private key.
+        const auto cipherParamsEncoded = AESParameters::AESParametersFromEncryption(encryption);
+        const auto scryptParamsEncoded = ScryptParameters::getPreset(encryptionLevel);
+
+        encodedPayload = EncryptedPayload(password, encodedData, cipherParamsEncoded, scryptParamsEncoded);
     }
     const char* uuid_ptr = Rust::tw_uuid_random();
     id = std::make_optional<std::string>(uuid_ptr);
