@@ -10,7 +10,7 @@ use tw_coin_entry::error::prelude::{
 };
 use tw_hash::H256;
 use tw_utxo::script::Script;
-use tw_utxo::sighash::SighashType;
+use tw_utxo::sighash::{SighashBase, SighashType};
 use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
 use tw_utxo::transaction::standard_transaction::TransactionInput;
 use tw_utxo::transaction::transaction_parts::Amount;
@@ -47,6 +47,11 @@ impl<'a> UtxoPczt<'a> {
         // [`pczt::transparent::Input::sighash_type`] is a private field, assume it as default.
         let sighash_ty = SighashType::from_u32(self.utxo.sighash_type as u32)
             .context("Invalid sighash type in PCZT UTXO")?;
+
+        if sighash_ty.base_type() != SighashBase::All || sighash_ty.anyone_can_pay() {
+            return SigningError::err(SigningErrorType::Error_not_supported)
+                .context("Only SIGHASH_ALL is supported for PSBT inputs");
+        }
 
         let builder = UtxoBuilder::default()
             .prev_txid(prevout_hash)

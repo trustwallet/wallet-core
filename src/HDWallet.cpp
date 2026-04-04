@@ -40,6 +40,9 @@ const int MnemonicBufLength = Mnemonic::MaxWords * (BIP39_MAX_WORD_LENGTH + 3) +
 
 template <std::size_t seedSize>
 HDWallet<seedSize>::HDWallet(const Data& seed) {
+    if (seed.size() != seedSize) {
+        throw std::invalid_argument("Invalid seed size");
+    }
     std::copy_n(seed.begin(), seedSize, this->seed.begin());
 }
 
