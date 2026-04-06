@@ -4999,7 +4999,8 @@
       "sampleAccount": "0x9474feb9917b87da6f0d830ba66ee0035835c0d3"
     },
     "info": {
-      "url": "https://vinuchain.org"
+      "url": "https://vinuchain.org",
+      "clientPublic": "https://rpc.vinuchain.org"
     }
   },
   {
@@ -5026,7 +5027,8 @@
       "sampleAccount": "0x9474feb9917b87da6f0d830ba66ee0035835c0d3"
     },
     "info": {
-      "url": "https://vinuchain.org"
+      "url": "https://vinuchain.org",
+      "clientPublic": "https://testnet-rpc.vinuchain.org"
     },
     "isTestnet": true
   }
