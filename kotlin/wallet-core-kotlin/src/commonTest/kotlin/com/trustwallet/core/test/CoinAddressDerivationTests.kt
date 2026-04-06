@@ -37,7 +37,7 @@ class CoinAddressDerivationTests {
         DigiByte -> "dgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu"
 
         Ethereum, SmartChain, Polygon, Optimism, Zksync, Arbitrum, ArbitrumNova, ECOChain, AvalancheCChain, XDai,
-        VinuChain, Fantom, Celo, CronosChain, SmartBitcoinCash, KuCoinCommunityChain, Boba, Metis,
+        VinuChain, VinuChainTestnet, Fantom, Celo, CronosChain, SmartBitcoinCash, KuCoinCommunityChain, Boba, Metis,
         Aurora, Evmos, Moonriver, Moonbeam, KavaEvm, Kaia, Meter, OKXChain, PolygonzkEVM, Scroll,
         ConfluxeSpace, AcalaEVM, OpBNB, Neon, Base, Linea, Greenfield, Mantle, ZenEON, MantaPacific,
         ZetaEVM, Merlin, Lightlink, Blast, BounceBit, ZkLinkNova, Sonic, Plasma, Monad, MegaETH,

@@ -90,6 +90,7 @@ class CoinAddressDerivationTests: XCTestCase {
                      .avalancheCChain,
                      .xdai,
                      .vinuchain,
+                     .vinuchainTestnet,
                      .fantom,
                      .celo,
                      .cronosChain,

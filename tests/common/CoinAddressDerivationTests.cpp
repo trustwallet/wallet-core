@@ -49,6 +49,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeEthereumClassic:
         case TWCoinTypeEvmos:
         case TWCoinTypeVinuChain:
+        case TWCoinTypeVinuChainTestnet:
         case TWCoinTypeFantom:
         case TWCoinTypeGoChain:
         case TWCoinTypeKavaEvm:

@@ -193,6 +193,7 @@ enum TWCoinType {
     TWCoinTypeMonad = 10143,
     TWCoinTypeMegaETH = 4326,
     TWCoinTypeVinuChain = 10000207,
+    TWCoinTypeVinuChainTestnet = 10000206,
     // end_of_tw_coin_type_marker_do_not_modify
 };
 

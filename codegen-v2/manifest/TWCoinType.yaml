@@ -160,6 +160,8 @@ enums:
     value: 10000100
   - name: vinuchain
     value: 10000207
+  - name: vinuchainTestnet
+    value: 10000206
   - name: fantom
     value: 10000250
   - name: cryptoOrg

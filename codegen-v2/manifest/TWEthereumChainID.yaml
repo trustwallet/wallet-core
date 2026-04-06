@@ -41,6 +41,8 @@ enums:
     value: 10000
   - name: vinuchain
     value: 207
+  - name: vinuchainTestnet
+    value: 206
   - name: fantom
     value: 250
   - name: boba

@@ -51,6 +51,7 @@ fn test_coin_address_derivation() {
             | CoinType::EthereumClassic
             | CoinType::Evmos
             | CoinType::VinuChain
+            | CoinType::VinuChainTestnet
             | CoinType::Fantom
             | CoinType::GoChain
             | CoinType::KavaEvm
