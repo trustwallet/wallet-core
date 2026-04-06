@@ -89,6 +89,7 @@ class CoinAddressDerivationTests: XCTestCase {
                      .ecochain,
                      .avalancheCChain,
                      .xdai,
+                     .vinuchain,
                      .fantom,
                      .celo,
                      .cronosChain,

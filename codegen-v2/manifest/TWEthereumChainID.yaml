@@ -39,6 +39,8 @@ enums:
     value: 100
   - name: smartbch
     value: 10000
+  - name: vinuchain
+    value: 207
   - name: fantom
     value: 250
   - name: boba

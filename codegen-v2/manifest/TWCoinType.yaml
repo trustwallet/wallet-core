@@ -158,6 +158,8 @@ enums:
     value: 10009000
   - name: xdai
     value: 10000100
+  - name: vinuchain
+    value: 10000207
   - name: fantom
     value: 10000250
   - name: cryptoOrg

@@ -50,6 +50,7 @@ fn test_coin_address_derivation() {
             | CoinType::ECOChain
             | CoinType::EthereumClassic
             | CoinType::Evmos
+            | CoinType::VinuChain
             | CoinType::Fantom
             | CoinType::GoChain
             | CoinType::KavaEvm

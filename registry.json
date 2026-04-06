@@ -4974,5 +4974,32 @@
       "rpc": "https://mainnet.megaeth.com/rpc",
       "documentation": "https://docs.megaeth.com"
     }
+  },
+  {
+    "id": "vinuchain",
+    "name": "VinuChain",
+    "coinId": 10000207,
+    "symbol": "VC",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "207",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://vinuexplorer.org",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xb0a741d882291951de1fac72e90b9baf886ddb0c9c87658a0c206490dfaa5202",
+      "sampleAccount": "0x9474feb9917b87da6f0d830ba66ee0035835c0d3"
+    },
+    "info": {
+      "url": "https://vinuchain.org"
+    }
   }
 ]
