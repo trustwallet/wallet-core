@@ -15,6 +15,8 @@
 #include "../Verge/Transaction.h"
 #include "../Zcash/Transaction.h"
 #include "../Zcash/TransactionBuilder.h"
+#include "../Zclassic/Transaction.h"
+#include "../Zclassic/TransactionBuilder.h"
 
 namespace TW::Bitcoin {
 
@@ -346,6 +348,7 @@ template class SignatureBuilder<Bitcoin::Transaction>;
 template class SignatureBuilder<BitcoinDiamond::Transaction>;
 template class SignatureBuilder<Verge::Transaction>;
 template class SignatureBuilder<Zcash::Transaction>;
+template class SignatureBuilder<Zclassic::Transaction>;
 template class SignatureBuilder<Groestlcoin::Transaction>;
 
 } // namespace TW::Bitcoin

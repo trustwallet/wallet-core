@@ -56,6 +56,7 @@
 #include "Waves/Entry.h"
 #include "XRP/Entry.h"
 #include "Zcash/Entry.h"
+#include "Zclassic/Entry.h"
 #include "Zilliqa/Entry.h"
 #include "Zen/Entry.h"
 #include "Everscale/Entry.h"
@@ -117,6 +118,7 @@ VeChain::Entry vechainDP;
 Verge::Entry vergeDP;
 Waves::Entry wavesDP;
 Zcash::Entry zcashDP;
+Zclassic::Entry zclassicDP;
 Zilliqa::Entry zilliqaDP;
 BitcoinDiamond::Entry bcdDP;
 Zen::Entry zenDP;
@@ -178,6 +180,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainDecred: entry = &decredDP; break;
         case TWBlockchainGroestlcoin: entry = &groestlcoinDP; break;
         case TWBlockchainZcash: entry = &zcashDP; break;
+        case TWBlockchainZclassic: entry = &zclassicDP; break;
         case TWBlockchainZen: entry = &zenDP; break;
         case TWBlockchainVerge: entry = &vergeDP; break;
         case TWBlockchainIOST: entry = &iostDP; break;

@@ -17,6 +17,8 @@
 #include "../Groestlcoin/Address.h"
 #include "../Zcash/TAddress.h"
 #include "../Zcash/TexAddress.h"
+#include "../Zclassic/TAddress.h"
+#include "../Zclassic/TexAddress.h"
 #include "../Zen/Address.h"
 
 #include <algorithm>
@@ -542,6 +544,24 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
             }
             if (Zcash::TexAddress::isValid(string)) {
                 Zcash::TexAddress address(string);
+                return buildPayToPublicKeyHash(address.getKeyHash());
+            }
+            return {};
+
+        case TWCoinTypeZclassic:
+            if (Zclassic::TAddress::isValid(string)) {
+                auto address = Zclassic::TAddress(string);
+                auto data = Data();
+                data.reserve(Zclassic::TAddress::size - 2);
+                std::copy(address.bytes.begin() + 2, address.bytes.end(), std::back_inserter(data));
+                if (address.bytes[1] == TW::p2pkhPrefix(TWCoinTypeZclassic)) {
+                    return buildPayToPublicKeyHash(data);
+                } else if (address.bytes[1] == TW::p2shPrefix(TWCoinTypeZclassic)) {
+                    return buildPayToScriptHash(data);
+                }
+            }
+            if (Zclassic::TexAddress::isValid(string)) {
+                Zclassic::TexAddress address(string);
                 return buildPayToPublicKeyHash(address.getKeyHash());
             }
             return {};

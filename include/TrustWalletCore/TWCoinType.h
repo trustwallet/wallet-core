@@ -76,6 +76,7 @@ enum TWCoinType {
     TWCoinTypeViacoin = 14,
     TWCoinTypeWanchain = 5718350,
     TWCoinTypeZcash = 133,
+    TWCoinTypeZclassic = 147,
     TWCoinTypeFiro = 136,
     TWCoinTypeZilliqa = 313,
     TWCoinTypeZelcash = 19167,

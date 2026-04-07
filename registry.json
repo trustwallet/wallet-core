@@ -1359,6 +1359,42 @@
     }
   },
   {
+    "id": "zclassic",
+    "name": "Zclassic",
+    "coinId": 147,
+    "symbol": "ZCL",
+    "decimals": 8,
+    "blockchain": "Zclassic",
+    "derivation": [
+      {
+        "path": "m/44'/147'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "staticPrefix": 28,
+    "p2pkhPrefix": 184,
+    "p2shPrefix": 189,
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "hrp": "txl",
+    "explorer": {
+      "url": "https://explorer.zcl.zelcore.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "",
+      "sampleAccount": "t1XN3E2aJgqpPpv8PS8bNBCivGSXVpvttef"
+    },
+    "info": {
+      "url": "https://zclassic.org",
+      "source": "https://github.com/ZclassicCommunity/zclassic",
+      "rpc": "",
+      "documentation": ""
+    }
+  },
+  {
     "id": "firo",
     "name": "Firo",
     "coinId": 136,

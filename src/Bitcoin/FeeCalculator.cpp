@@ -76,6 +76,7 @@ const FeeCalculator& getFeeCalculator(TWCoinType coinType, bool disableFilter, b
     case TWCoinTypeZcash:
     case TWCoinTypeKomodo:
     case TWCoinTypeZelcash:
+    case TWCoinTypeZclassic:
         if (zip0317) {
             return zip0317FeeCalculator;
         }
