@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use move_core_types::account_address::{AccountAddress, AccountAddressParseError};
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::Serialize;
 use std::fmt::{Display, Formatter};
 use std::ops::RangeInclusive;
 use std::str::FromStr;
@@ -13,8 +13,10 @@ use tw_hash::sha3::sha3_256;
 use tw_keypair::ed25519;
 use tw_memory::Data;
 
-/// 0x + 64 hex chars.
+/// `0x` prefix + 64 hex chars (32 bytes * 2).
 const NUM_CHARS: usize = AccountAddress::LENGTH * 2 + 2;
+/// There can be up to 10 special addresses in the range of 0x0 to 0xa.
+/// https://aptos.dev/network/blockchain/accounts#account-address
 const SPECIAL_ADDR_RANGE: RangeInclusive<u8> = 0x0..=0xa;
 /// 0x + 1 hex char.
 const SPECIAL_ADDR_NUM_CHARS: usize = 3;
