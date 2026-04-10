@@ -29,7 +29,7 @@ TEST(AptosAddress, Valid) {
 TEST(AptosAddress, Invalid) {
     Entry entry;
     ASSERT_FALSE(entry.validateAddress(TWCoinTypeAptos, "", std::monostate{}));
-    ASSERT_TRUE(entry.validateAddress(TWCoinTypeAptos, "0x01", std::monostate{}));
+    ASSERT_FALSE(entry.validateAddress(TWCoinTypeAptos, "0x01", std::monostate{}));
     ASSERT_FALSE(entry.validateAddress(TWCoinTypeAptos, "Seff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b", std::monostate{}));
     ASSERT_FALSE(entry.validateAddress(TWCoinTypeAptos, "eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175bb", std::monostate{}));
     ASSERT_FALSE(entry.validateAddress(TWCoinTypeAptos, "0xSeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b", std::monostate{}));
