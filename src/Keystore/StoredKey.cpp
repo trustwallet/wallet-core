@@ -114,13 +114,18 @@ StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password,
     Rust::free_string(uuid_ptr);
 }
 
-const HDWallet<> StoredKey::wallet(const Data& password) const {
+HDWallet<> StoredKey::wallet(const Data& password) const {
     if (type != StoredKeyType::mnemonicPhrase) {
         throw std::invalid_argument("Invalid account requested.");
     }
-    const auto data = payload.decrypt(password);
-    const auto mnemonic = std::string(reinterpret_cast<const char*>(data.data()), data.size());
-    return HDWallet<>(mnemonic, "");
+    auto data = payload.decrypt(password);
+    auto mnemonic = std::string(reinterpret_cast<const char*>(data.data()), data.size());
+    const HDWallet<> wallet = {mnemonic, ""};
+
+    // clear decrypted data from memory
+    memzero(data.data(), data.size());
+    memzero(mnemonic.data(), mnemonic.size());
+    return wallet;
 }
 
 std::vector<Account> StoredKey::getAccounts(TWCoinType coin) const {
@@ -347,14 +352,18 @@ bool StoredKey::updateAddress(TWCoinType coin) {
     return addressUpdated;
 }
 
-const std::string StoredKey::decryptPrivateKeyEncoded(const Data& password) const {
+std::string StoredKey::decryptPrivateKeyEncoded(const Data& password) const {
     if (encodedPayload) {
         auto data = encodedPayload->decrypt(password);
-        return std::string(reinterpret_cast<const char*>(data.data()), data.size());
-    } else {
-        auto data = payload.decrypt(password);
-        return TW::hex(data);
+        const auto dataString = std::string(reinterpret_cast<const char*>(data.data()), data.size());
+        memzero(data.data(), data.size());
+        return dataString;
     }
+
+    auto data = payload.decrypt(password);
+    const auto dataHex = TW::hex(data);
+    memzero(data.data(), data.size());
+    return dataHex;
 }
 
 // -----------------
