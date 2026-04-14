@@ -32,6 +32,7 @@ use Proto::mod_ParamsDecodingInput::OneOfabi as AbiEnum;
 use Proto::mod_Token::OneOftoken as TokenEnum;
 
 const MAX_RECURSION_DEPTH: usize = 20;
+const MAX_ARRAY_LENGTH: usize = 4096;
 
 pub struct AbiEncoder<Context: EvmContext> {
     _phantom: PhantomData<Context>,
@@ -213,6 +214,15 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     fn encode_contract_call_impl(
         input: Proto::FunctionEncodingInput<'_>,
     ) -> AbiResult<Proto::FunctionEncodingOutput<'static>> {
+        if input.tokens.len() > MAX_ARRAY_LENGTH {
+            return AbiError::err(AbiErrorKind::Error_invalid_param_type).with_context(|| {
+                format!(
+                    "Number of function input tokens exceeds the maximum allowed: {} > {MAX_ARRAY_LENGTH}",
+                    input.tokens.len()
+                )
+            });
+        }
+
         let mut tokens = Vec::with_capacity(input.tokens.len());
         let mut input_types = Vec::with_capacity(input.tokens.len());
 
@@ -336,6 +346,15 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             .element_type
             .or_tw_err(AbiErrorKind::Error_missing_param_type)?;
         let element_type = Self::param_type_from_proto_step(element_type, current_depth)?;
+
+        if array.elements.len() > MAX_ARRAY_LENGTH {
+            return AbiError::err(AbiErrorKind::Error_invalid_param_type).with_context(|| {
+                format!(
+                    "Number of array elements exceeds the maximum allowed: {} > {MAX_ARRAY_LENGTH}",
+                    array.elements.len()
+                )
+            });
+        }
 
         let mut array_tokens = Vec::with_capacity(array.elements.len());
         for proto_token in array.elements {
