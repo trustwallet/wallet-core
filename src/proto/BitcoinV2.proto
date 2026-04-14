@@ -255,6 +255,8 @@ message TransactionBuilder {
     oneof chain_specific {
         // ZCash specific transaction data.
         Zcash.Proto.TransactionBuilderExtraData zcash_extra_data = 20;
+        // Decred specific transaction data.
+        DecredV2.Proto.TransactionBuilderExtraData decred_extra_data = 21;
     }
 }
 

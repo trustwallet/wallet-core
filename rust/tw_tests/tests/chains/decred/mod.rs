@@ -2,7 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::chains::common::bitcoin::ChainSpecific;
 use tw_proto::BitcoinV2::Proto;
+use tw_proto::DecredV2::Proto as DecredProto;
 
 mod decred_address;
 mod decred_compile;
@@ -17,4 +19,8 @@ pub fn decred_info() -> Option<Proto::ChainInfo<'static>> {
         p2sh_prefix: DECRED_P2PSH_PREFIX as u32,
         ..Proto::ChainInfo::default()
     })
+}
+
+pub fn decred_extra_data(expiry_height: u32) -> ChainSpecific<'static> {
+    ChainSpecific::decred_extra_data(DecredProto::TransactionBuilderExtraData { expiry_height })
 }

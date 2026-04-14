@@ -6,7 +6,7 @@ use crate::chains::common::bitcoin::{
     dust_threshold, input, output, plan, sign, TransactionOneof, DUST, SIGHASH_ALL, SIGHASH_NONE,
     SIGHASH_SINGLE,
 };
-use crate::chains::decred::decred_info;
+use crate::chains::decred::{decred_extra_data, decred_info};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_keypair::ecdsa::secp256k1;
@@ -42,6 +42,7 @@ fn test_decred_sign_p2pkh_fake() {
         outputs: vec![out1],
         input_selector: Proto::InputSelector::UseAll,
         dust_policy: dust_threshold(0),
+        chain_specific: decred_extra_data(0),
         ..Default::default()
     };
 

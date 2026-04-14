@@ -57,3 +57,9 @@ message TransactionOutput {
     // Usually contains the public key as a Decred script setting up conditions to claim this output.
     bytes script = 3;
 }
+
+// Extra data for transaction builder, such as expiry height.
+message TransactionBuilderExtraData {
+    // Zero in most cases.
+    uint32 expiry_height = 1;
+}
