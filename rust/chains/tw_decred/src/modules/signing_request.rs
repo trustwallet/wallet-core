@@ -15,6 +15,7 @@ use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::BitcoinV2::Proto::{SigningInput, TransactionBuilder};
+use tw_utxo::constants::check_max_input_output_count;
 use tw_utxo::modules::tx_planner::{PlanRequest, RequestType};
 
 pub const DEFAULT_EXPIRY: u32 = 0;
@@ -55,6 +56,13 @@ impl SigningRequestBuilder<DecredContext> for DecredSigningRequestBuilder {
         builder
             .lock_time(transaction_builder.lock_time)
             .expiry(extra_data.expiry_height);
+
+        check_max_input_output_count(
+            transaction_builder.inputs.len(),
+            transaction_builder.outputs.len(),
+            transaction_builder.change_output.is_some(),
+            transaction_builder.max_amount_output.is_some(),
+        )?;
 
         // Parse all UTXOs.
         for utxo_proto in transaction_builder.inputs.iter() {

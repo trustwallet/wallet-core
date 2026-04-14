@@ -12,6 +12,7 @@ use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_misc::traits::OptionalEmpty;
 use tw_proto::BitcoinV2::Proto;
+use tw_utxo::constants::check_max_input_output_count;
 use tw_utxo::context::UtxoContext;
 use tw_utxo::dust::DustPolicy;
 use tw_utxo::fee::fee_estimator::StandardFeeEstimator;
@@ -49,6 +50,13 @@ where
         builder
             .version(version)
             .lock_time(transaction_builder.lock_time);
+
+        check_max_input_output_count(
+            transaction_builder.inputs.len(),
+            transaction_builder.outputs.len(),
+            transaction_builder.change_output.is_some(),
+            transaction_builder.max_amount_output.is_some(),
+        )?;
 
         // Parse all UTXOs.
         for utxo_proto in transaction_builder.inputs.iter() {
