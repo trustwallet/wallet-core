@@ -508,6 +508,8 @@ Proto::SigningOutput Signer::signRawJson(const Proto::SigningInput& input) {
     const auto json = transactionJSON(transaction, expectedTxID, signature).dump();
 
     Proto::SigningOutput output;
+    output.set_ref_block_bytes(transaction.raw_data().ref_block_bytes());
+    output.set_ref_block_hash(transaction.raw_data().ref_block_hash());
     output.set_id(expectedTxID.data(), expectedTxID.size());
     output.set_signature(signature.data(), signature.size());
     output.set_json(json.data(), json.size());
@@ -534,6 +536,8 @@ Proto::SigningOutput Signer::compileRawJson(const std::string& rawJson, const Da
     output.set_id(txID.data(), txID.size());
     output.set_signature(signature.data(), signature.size());
     output.set_json(parsed.dump());
+    output.set_ref_block_bytes(transaction.raw_data().ref_block_bytes());
+    output.set_ref_block_hash(transaction.raw_data().ref_block_hash());
     return output;
 }
 
@@ -576,7 +580,7 @@ TxCompiler::Proto::PreSigningOutput Signer::signaturePreimage() const {
 
     if (!input.raw_json().empty()) {
         const auto result = signaturePreimageRawJson(input.raw_json());
-        if (!result.isSuccess()) {
+        if (result.isFailure()) {
             const auto error = result.error();
             output.set_error(error.error());
             output.set_error_message(error.error_message());

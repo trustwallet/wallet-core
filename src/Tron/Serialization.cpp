@@ -294,7 +294,11 @@ json raw_dataJSON(const protocol::Transaction::raw& raw) {
     if (!raw.data().empty()) {
         raw_dataJSON["data"] = hex(raw.data());
     }
-    raw_dataJSON["contract"] = json::array({contractJSON(raw.contract(0))});
+    auto contracts = json::array();
+    for (const auto& contract : raw.contract()) {
+        contracts.push_back(contractJSON(contract));
+    }
+    raw_dataJSON["contract"] = contracts;
 
     return raw_dataJSON;
 }

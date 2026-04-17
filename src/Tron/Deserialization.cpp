@@ -379,8 +379,8 @@ Result<protocol::Transaction> transactionFromJSONObject(const json& j) {
         if (!raw.contains("contract") || !raw["contract"].is_array() || raw["contract"].empty()) {
             return R::failure("missing or empty 'contract' array");
         }
-        for (const auto& ctr : raw["contract"]) {
-            auto result = fillContract(ctr, *rd->add_contract());
+        for (const auto& contractJ : raw["contract"]) {
+            auto result = fillContract(contractJ, *rd->add_contract());
             if (result.isFailure()) {
                 return R::failure(result.error());
             }

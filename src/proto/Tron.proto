@@ -273,8 +273,9 @@ message SigningInput {
     //   3. On success, sign and encode the transaction as usual.
     //
     // Possible errors:
+    // - `Error_invalid_params`    - `rawJson` is not a valid JSON string or missing required fields (`txID`, `raw_data`, `raw_data_hex`).
     // - `Error_tx_hash_mismatch`  – `txID` does not match SHA-256(`raw_data_hex`), indicating a tampered or malformed input.
-    // - `Error_not_supported`     – `rawJson` could not be parsed, or the transaction type is not supported.
+    // - `Error_not_supported`     – `rawJson` could not be deserialized as a known TronInternal protobuf message (i.e. not supported).
     string raw_json = 4;
 }
 
