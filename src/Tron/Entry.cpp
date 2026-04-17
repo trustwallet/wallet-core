@@ -30,10 +30,7 @@ Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInput
     return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
         txInputData, [](const auto& input, auto& output) {
             const auto signer = Signer(input);
-            auto preImage = signer.signaturePreimage();
-            auto preImageHash = signer.signaturePreimageHash();
-            output.set_data_hash(preImageHash.data(), preImageHash.size());
-            output.set_data(preImage.data(), preImage.size());
+            output = signer.signaturePreimage();
         });
 }
 
