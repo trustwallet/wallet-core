@@ -19,6 +19,7 @@ class Signer {
     explicit Signer(const Proto::SigningInput& input) : input(input) {}
     /// Signs the given transaction.
     static Proto::SigningOutput sign(const Proto::SigningInput& input);
+    static Proto::SigningOutput signRawJson(const Proto::SigningInput& input);
     Proto::SigningOutput compile(const Data& signature) const;
     Data signaturePreimage() const;
     Data signaturePreimageHash() const;
