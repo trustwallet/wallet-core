@@ -236,6 +236,11 @@ impl TransactionBuilder {
             .map(|payment| payment.try_into())
             .collect::<SigningResult<Vec<_>>>()?;
 
+        if gas_payments.is_empty() {
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Empty gas payment in raw JSON transaction");
+        }
+
         let gas_budget = if gas_budget != 0 {
             gas_budget
         } else {
