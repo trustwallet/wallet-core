@@ -11,6 +11,8 @@
 
 namespace TW::Tron {
 
+constexpr size_t MAX_JSON_SIZE = 1024 * 1024; // 1 MB
+
 /// Deserializes a Tron node JSON transaction (as produced by `transactionJSON`) back into a
 /// `protocol::Transaction`. All `bytes` fields are expected to be hex-encoded strings, matching
 /// the format used by Tron nodes and the wallet-core serialization layer.

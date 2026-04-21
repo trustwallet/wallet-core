@@ -456,6 +456,10 @@ Proto::SigningOutput errorOutput(const std::string& message, const Common::Proto
 Result<protocol::Transaction, Proto::SigningOutput> Signer::deserializeAndValidateRawJson(const std::string& rawJson) {
     using R = Result<protocol::Transaction, Proto::SigningOutput>;
 
+    if (rawJson.size() > MAX_JSON_SIZE) {
+        return R::failure(errorOutput("raw JSON exceeds maximum allowed size 1 MB"));
+    }
+
     nlohmann::json parsed;
     try {
         parsed = nlohmann::json::parse(rawJson);

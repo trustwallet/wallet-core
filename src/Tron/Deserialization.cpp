@@ -396,6 +396,11 @@ Result<protocol::Transaction> transactionFromJSONObject(const json& j) {
 
 Result<protocol::Transaction> transactionFromJSON(const std::string& jsonStr) {
     using R = Result<protocol::Transaction>;
+
+    if (jsonStr.size() > MAX_JSON_SIZE) {
+        return R::failure("raw JSON exceeds maximum allowed size 1 MB");
+    }
+
     try {
         return transactionFromJSONObject(json::parse(jsonStr));
     } catch (const std::exception& e) {
