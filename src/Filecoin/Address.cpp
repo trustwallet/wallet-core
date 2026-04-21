@@ -144,6 +144,10 @@ MaybeAddress Address::fromBytes(const Data& encoded) {
                 return std::nullopt;
             }
 
+            if (remainingPos == withoutPrefix.size()) {
+                // Payload is empty.
+                return Address(type, actorID, Data());
+            }
             return Address(type, actorID, subData(withoutPrefix, remainingPos));
         }
         default:

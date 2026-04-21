@@ -19,19 +19,6 @@ namespace TW::Keystore {
 
 /// Set of parameters used when encoding
 struct EncryptionParameters {
-    static EncryptionParameters getPreset(enum TWStoredKeyEncryptionLevel preset, enum TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr) {
-        switch (preset) {
-        case TWStoredKeyEncryptionLevelMinimal:
-            return { AESParameters::AESParametersFromEncryption(encryption), ScryptParameters::minimal() };
-        case TWStoredKeyEncryptionLevelWeak:
-        case TWStoredKeyEncryptionLevelDefault:
-        default:
-            return { AESParameters::AESParametersFromEncryption(encryption), ScryptParameters::weak() };
-        case TWStoredKeyEncryptionLevelStandard:
-            return { AESParameters::AESParametersFromEncryption(encryption), ScryptParameters::standard() };
-        }
-    }
-
     std::int32_t getKeyBytesSize() const noexcept {
         return cipherParams.mKeyLength;
     }
@@ -96,9 +83,9 @@ public:
         , encrypted(std::move(encrypted))
         , _mac(std::move(mac)) {}
 
-    /// Initializes by encrypting data with a password
-    /// using standard values.
-    EncryptedPayload(const Data& password, const Data& data, const EncryptionParameters& params);
+    /// Initializes by encrypting data with a password using standard values.
+    /// Note that we enforce to use Scrypt as KDF for new wallets encryption.
+    EncryptedPayload(const Data& password, const Data& data, const AESParameters& cipherParams, const ScryptParameters& scryptParams);
 
     /// Initializes with a JSON object.
     explicit EncryptedPayload(const nlohmann::json& json);

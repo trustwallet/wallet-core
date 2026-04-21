@@ -95,25 +95,37 @@ StoredKey StoredKey::createWithEncodedPrivateKeyAddDefaultAddress(
 
 StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption, const std::optional<std::string>& encodedStr)
     : type(type), id(), name(std::move(name)), accounts() {
-    const auto encryptionParams = EncryptionParameters::getPreset(encryptionLevel, encryption);
-    payload = EncryptedPayload(password, data, encryptionParams);
+    const auto cipherParams = AESParameters::AESParametersFromEncryption(encryption);
+    const auto scryptParams = ScryptParameters::getPreset(encryptionLevel);
+    payload = EncryptedPayload(password, data, cipherParams, scryptParams);
+
     if (encodedStr) {
         const auto bytes = reinterpret_cast<const uint8_t*>(encodedStr->c_str());
         const auto encodedData = Data(bytes, bytes + encodedStr->size());
-        encodedPayload = EncryptedPayload(password, encodedData, encryptionParams);
+
+        // Generate new parameters with random iv and salt for the encoded private key.
+        const auto cipherParamsEncoded = AESParameters::AESParametersFromEncryption(encryption);
+        const auto scryptParamsEncoded = ScryptParameters::getPreset(encryptionLevel);
+
+        encodedPayload = EncryptedPayload(password, encodedData, cipherParamsEncoded, scryptParamsEncoded);
     }
     const char* uuid_ptr = Rust::tw_uuid_random();
     id = std::make_optional<std::string>(uuid_ptr);
     Rust::free_string(uuid_ptr);
 }
 
-const HDWallet<> StoredKey::wallet(const Data& password) const {
+HDWallet<> StoredKey::wallet(const Data& password) const {
     if (type != StoredKeyType::mnemonicPhrase) {
         throw std::invalid_argument("Invalid account requested.");
     }
-    const auto data = payload.decrypt(password);
-    const auto mnemonic = std::string(reinterpret_cast<const char*>(data.data()), data.size());
-    return HDWallet<>(mnemonic, "");
+    auto data = payload.decrypt(password);
+    auto mnemonic = std::string(reinterpret_cast<const char*>(data.data()), data.size());
+    const HDWallet<> wallet = {mnemonic, ""};
+
+    // clear decrypted data from memory
+    memzero(data.data(), data.size());
+    memzero(mnemonic.data(), mnemonic.size());
+    return wallet;
 }
 
 std::vector<Account> StoredKey::getAccounts(TWCoinType coin) const {
@@ -340,14 +352,18 @@ bool StoredKey::updateAddress(TWCoinType coin) {
     return addressUpdated;
 }
 
-const std::string StoredKey::decryptPrivateKeyEncoded(const Data& password) const {
+std::string StoredKey::decryptPrivateKeyEncoded(const Data& password) const {
     if (encodedPayload) {
         auto data = encodedPayload->decrypt(password);
-        return std::string(reinterpret_cast<const char*>(data.data()), data.size());
-    } else {
-        auto data = payload.decrypt(password);
-        return TW::hex(data);
+        const auto dataString = std::string(reinterpret_cast<const char*>(data.data()), data.size());
+        memzero(data.data(), data.size());
+        return dataString;
     }
+
+    auto data = payload.decrypt(password);
+    const auto dataHex = TW::hex(data);
+    memzero(data.data(), data.size());
+    return dataHex;
 }
 
 // -----------------

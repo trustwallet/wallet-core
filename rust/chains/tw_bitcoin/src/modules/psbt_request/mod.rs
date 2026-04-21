@@ -9,6 +9,8 @@ use tw_proto::BitcoinV2::Proto;
 use tw_utxo::context::UtxoContext;
 use tw_utxo::transaction::unsigned_transaction::UnsignedTransaction;
 
+pub use bitcoin::psbt::Psbt;
+
 pub mod output_psbt;
 pub mod standard_psbt_request_handler;
 pub mod utxo_psbt;

@@ -89,10 +89,10 @@ public:
     /// Returns the HDWallet for this key.
     ///
     /// @throws std::invalid_argument if this key is of a type other than `mnemonicPhrase`.
-    const HDWallet<> wallet(const Data& password) const;
+    [[nodiscard]] HDWallet<> wallet(const Data& password) const;
 
     /// Returns all the accounts for a specific coin: 0, 1, or more.
-    std::vector<Account> getAccounts(TWCoinType coin) const;
+    [[nodiscard]] std::vector<Account> getAccounts(TWCoinType coin) const;
 
     /// If found, returns the account for a specific coin. In case of muliple accounts, the default derivation is returned, or the first one is returned.
     /// If none exists, and wallet is not null, an account is created (with default derivation).
@@ -104,10 +104,10 @@ public:
 
     /// Returns the account for a specific coin if it exists.
     /// In case of muliple accounts, the default derivation is returned, or the first one is returned.
-    std::optional<const Account> account(TWCoinType coin) const;
+    [[nodiscard]] std::optional<const Account> account(TWCoinType coin) const;
     
     /// Returns the account for a specific coin and derivation, if it exists.
-    std::optional<const Account> account(TWCoinType coin, TWDerivation derivation, const HDWallet<>& wallet) const;
+    [[nodiscard]] std::optional<const Account> account(TWCoinType coin, TWDerivation derivation, const HDWallet<>& wallet) const;
 
     /// Add an account with aribitrary address/derivation path.  Discouraged, use account() versions.
     /// Address must be unique (for a coin).
@@ -157,7 +157,7 @@ public:
     void loadJson(const nlohmann::json& json);
 
     /// Saves `this` as a JSON object.
-    nlohmann::json json() const;
+    [[nodiscard]] nlohmann::json json() const;
 
     /// Fills in all empty or invalid addresses and public keys.
     ///
@@ -175,7 +175,7 @@ public:
     ///
     /// \returns the decoded private key.
     /// \throws DecryptionError
-    const std::string decryptPrivateKeyEncoded(const Data& password) const;
+    [[nodiscard]] std::string decryptPrivateKeyEncoded(const Data& password) const;
 
 private:
     /// Default constructor, private
@@ -203,10 +203,10 @@ private:
     std::optional<Account> getDefaultAccountOrAny(TWCoinType coin, const HDWallet<>* wallet) const;
 
     /// Find account by coin+address (should be one, if multiple, first is returned)
-    std::optional<Account> getAccount(TWCoinType coin, const std::string& address) const;
+    [[nodiscard]] std::optional<Account> getAccount(TWCoinType coin, const std::string& address) const;
 
     /// Find account by coin+derivation (should be one, if multiple, first is returned)
-    std::optional<Account> getAccount(TWCoinType coin, TWDerivation derivation, const HDWallet<>& wallet) const;
+    [[nodiscard]] std::optional<Account> getAccount(TWCoinType coin, TWDerivation derivation, const HDWallet<>& wallet) const;
 
     /// Re-derive account address if missing
     Account fillAddressIfMissing(Account& account, const HDWallet<>* wallet) const;
