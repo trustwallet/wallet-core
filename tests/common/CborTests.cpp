@@ -564,6 +564,22 @@ TEST(Cbor, GetCompoundLengthOverflow) {
     EXPECT_FALSE(Decode(overflow).isValid());
 }
 
+TEST(Cbor, BytesUint64LengthOverflow_isValid) {
+    Data overflow = parse_hex("5bffffffffffffffff");
+    EXPECT_FALSE(Decode(overflow).isValid());
+}
+
+TEST(Cbor, BytesUint64LengthOverflow_getBytes) {
+    Data overflow = parse_hex("5bffffffffffffffff");
+    try {
+        Decode(overflow).getBytes();
+    } catch (const std::invalid_argument& ex) {
+        EXPECT_NE(std::string(ex.what()).find("overflow"), std::string::npos);
+        return;
+    }
+    FAIL() << "Expected exception";
+}
+
 TEST(Cbor, StringInvalidUtf8Throws) {
     Data invalidUtf8 = parse_hex("63fffefd");
     Decode cbor(invalidUtf8);
