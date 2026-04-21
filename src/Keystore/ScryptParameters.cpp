@@ -39,6 +39,19 @@ std::string toString(const ScryptValidationError error) {
     }
 }
 
+ScryptParameters ScryptParameters::getPreset(TWStoredKeyEncryptionLevel preset) {
+    switch (preset) {
+    case TWStoredKeyEncryptionLevelMinimal:
+        return minimal();
+    case TWStoredKeyEncryptionLevelStandard:
+        return standard();
+    case TWStoredKeyEncryptionLevelWeak:
+    case TWStoredKeyEncryptionLevelDefault:
+    default:
+        return weak();
+    }
+}
+
 ScryptParameters ScryptParameters::minimal() {
     return { internal::randomSalt(), minimalN, defaultR, minimalP, defaultDesiredKeyLength };
 }

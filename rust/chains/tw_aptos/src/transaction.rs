@@ -2,9 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::address::Address;
 use crate::constants::APTOS_SALT;
 use crate::transaction_payload::TransactionPayload;
-use move_core_types::account_address::AccountAddress;
 use serde::Serialize;
 use serde_json::{json, Value};
 use std::borrow::Cow;
@@ -71,7 +71,7 @@ impl TransactionAuthenticator {
 #[derive(Clone, Serialize)]
 pub struct RawTransaction {
     /// Sender's address.
-    sender: AccountAddress,
+    sender: Address,
 
     /// Sequence number of this transaction. This must match the sequence number
     /// stored in the sender's account at the time the transaction executes.
@@ -103,7 +103,7 @@ impl RawTransaction {
     /// It can be either to publish a module, to execute a script, or to issue a writeset
     /// transaction.
     pub fn new(
-        sender: AccountAddress,
+        sender: Address,
         sequence_number: u64,
         payload: TransactionPayload,
         max_gas_amount: u64,
@@ -174,7 +174,7 @@ impl RawTransaction {
             "gas_unit_price": self.gas_unit_price.to_string(),
             "max_gas_amount": self.max_gas_amount.to_string(),
             "payload": self.payload.to_json(),
-            "sender": self.sender.to_hex_literal(),
+            "sender": self.sender.to_string(),
             "sequence_number": self.sequence_number.to_string()
         })
     }

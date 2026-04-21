@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::abi::AbiResult;
+use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use crate::evm_context::EvmContext;
 use crate::modules::abi_encoder::AbiEncoder;
 use crate::modules::rlp_encoder::RlpEncoder;
@@ -47,7 +47,9 @@ pub trait EvmEntry {
 
     /// Returns the function type signature, of the form "baz(int32,uint256)".
     #[inline]
-    fn get_function_signature_from_proto(input: AbiProto::FunctionGetTypeInput<'_>) -> String {
+    fn get_function_signature_from_proto(
+        input: AbiProto::FunctionGetTypeInput<'_>,
+    ) -> AbiResult<String> {
         AbiEncoder::<Self::Context>::get_function_signature_from_proto(input)
     }
 
@@ -78,7 +80,7 @@ pub trait EvmEntryExt {
     fn decode_abi_params(&self, input: &[u8]) -> ProtoResult<Data>;
 
     /// Returns the function type signature, of the form "baz(int32,uint256)".
-    fn get_function_signature_from_proto(&self, input: &[u8]) -> ProtoResult<String>;
+    fn get_function_signature_from_proto(&self, input: &[u8]) -> AbiResult<String>;
 
     /// Returns the function type signature, of the form "baz(int32,uint256)".
     fn get_function_signature_from_abi(&self, abi: &str) -> AbiResult<String>;
@@ -112,9 +114,11 @@ where
         serialize(&output)
     }
 
-    fn get_function_signature_from_proto(&self, input: &[u8]) -> ProtoResult<String> {
-        let input = deserialize(input)?;
-        Ok(<Self as EvmEntry>::get_function_signature_from_proto(input))
+    fn get_function_signature_from_proto(&self, input: &[u8]) -> AbiResult<String> {
+        let Ok(input) = deserialize(input) else {
+            return AbiError::err(AbiErrorKind::Error_decoding_data);
+        };
+        <Self as EvmEntry>::get_function_signature_from_proto(input)
     }
 
     fn get_function_signature_from_abi(&self, abi: &str) -> AbiResult<String> {

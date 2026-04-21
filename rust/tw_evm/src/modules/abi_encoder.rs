@@ -31,6 +31,9 @@ use Proto::mod_ParamType::OneOfparam as ProtoParamType;
 use Proto::mod_ParamsDecodingInput::OneOfabi as AbiEnum;
 use Proto::mod_Token::OneOftoken as TokenEnum;
 
+const MAX_RECURSION_DEPTH: usize = 20;
+const MAX_ARRAY_LENGTH: usize = 4096;
+
 pub struct AbiEncoder<Context: EvmContext> {
     _phantom: PhantomData<Context>,
 }
@@ -61,7 +64,9 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     }
 
     #[inline]
-    pub fn get_function_signature_from_proto(input: Proto::FunctionGetTypeInput<'_>) -> String {
+    pub fn get_function_signature_from_proto(
+        input: Proto::FunctionGetTypeInput<'_>,
+    ) -> AbiResult<String> {
         Self::get_function_signature_from_proto_impl(input)
     }
 
@@ -125,7 +130,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         let decoded_protos = decoded_tokens
             .into_iter()
             .map(Self::named_token_to_proto)
-            .collect();
+            .collect::<AbiResult<_>>()?;
 
         Ok(Proto::ContractCallDecodingOutput {
             decoded_json: Cow::Owned(decoded_json),
@@ -156,7 +161,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         let decoded_protos = decoded_tokens
             .into_iter()
             .map(Self::named_token_to_proto)
-            .collect();
+            .collect::<AbiResult<_>>()?;
 
         Ok(Proto::ParamsDecodingOutput {
             tokens: decoded_protos,
@@ -173,26 +178,27 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         let token = decode_value(&param_type, &input.encoded)?;
         let token_str = token.to_string();
         Ok(Proto::ValueDecodingOutput {
-            token: Some(Self::token_to_proto(token)),
+            token: Some(Self::token_to_proto(token)?),
             param_str: token_str.into(),
             ..Proto::ValueDecodingOutput::default()
         })
     }
 
-    fn get_function_signature_from_proto_impl(input: Proto::FunctionGetTypeInput<'_>) -> String {
+    fn get_function_signature_from_proto_impl(
+        input: Proto::FunctionGetTypeInput<'_>,
+    ) -> AbiResult<String> {
         let function_inputs = input
             .inputs
             .into_iter()
             .map(Self::param_from_proto)
-            .collect::<AbiResult<Vec<_>>>()
-            .unwrap_or_default();
+            .collect::<AbiResult<Vec<_>>>()?;
 
         let fun = Function {
             name: input.function_name.to_string(),
             inputs: function_inputs,
             ..Function::default()
         };
-        fun.signature()
+        Ok(fun.signature())
     }
 
     fn get_function_signature_from_abi_impl(function_abi: &str) -> AbiResult<String> {
@@ -208,6 +214,15 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     fn encode_contract_call_impl(
         input: Proto::FunctionEncodingInput<'_>,
     ) -> AbiResult<Proto::FunctionEncodingOutput<'static>> {
+        if input.tokens.len() > MAX_ARRAY_LENGTH {
+            return AbiError::err(AbiErrorKind::Error_invalid_param_type).with_context(|| {
+                format!(
+                    "Number of function input tokens exceeds the maximum allowed: {} > {MAX_ARRAY_LENGTH}",
+                    input.tokens.len()
+                )
+            });
+        }
+
         let mut tokens = Vec::with_capacity(input.tokens.len());
         let mut input_types = Vec::with_capacity(input.tokens.len());
 
@@ -231,14 +246,18 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         })
     }
 
-    pub fn param_to_proto(param: Param) -> Proto::Param<'static> {
-        Proto::Param {
+    fn param_to_proto_step(param: Param, current_depth: usize) -> AbiResult<Proto::Param<'static>> {
+        Ok(Proto::Param {
             name: Cow::Owned(param.name.unwrap_or_default()),
-            param: Some(Self::param_type_to_proto(param.kind)),
-        }
+            param: Some(Self::param_type_to_proto_step(param.kind, current_depth)?),
+        })
     }
 
     fn param_from_proto(param: Proto::Param<'_>) -> AbiResult<Param> {
+        Self::param_from_proto_step(param, 0)
+    }
+
+    fn param_from_proto_step(param: Proto::Param<'_>, current_depth: usize) -> AbiResult<Param> {
         let name = if param.name.is_empty() {
             None
         } else {
@@ -249,7 +268,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             .param
             .or_tw_err(AbiErrorKind::Error_missing_param_type)
             .context("Missing parameter type")?;
-        let kind = Self::param_type_from_proto(proto_param_type)?;
+        let kind = Self::param_type_from_proto_step(proto_param_type, current_depth)?;
 
         Ok(Param {
             name,
@@ -259,14 +278,23 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     }
 
     fn named_token_from_proto(named_token: Proto::Token<'_>) -> AbiResult<NamedToken> {
+        Self::named_token_from_proto_step(named_token, 0)
+    }
+
+    fn named_token_from_proto_step(
+        named_token: Proto::Token<'_>,
+        current_depth: usize,
+    ) -> AbiResult<NamedToken> {
         Ok(NamedToken {
             name: Some(named_token.name.clone().into()),
-            value: Self::token_from_proto(named_token)?,
+            value: Self::token_from_proto_step(named_token, current_depth)?,
             internal_type: None,
         })
     }
 
-    fn token_from_proto(token: Proto::Token<'_>) -> AbiResult<Token> {
+    fn token_from_proto_step(token: Proto::Token<'_>, current_depth: usize) -> AbiResult<Token> {
+        Self::check_depth(current_depth)?;
+
         match token.token {
             TokenEnum::boolean(bool) => Ok(Token::Bool(bool)),
             TokenEnum::number_uint(u) => {
@@ -290,11 +318,11 @@ impl<Context: EvmContext> AbiEncoder<Context> {
                 Ok(Token::FixedBytes(checked_bytes))
             },
             TokenEnum::array(arr) => {
-                let (arr, kind) = Self::array_from_proto(arr)?;
+                let (arr, kind) = Self::array_from_proto_step(arr, current_depth + 1)?;
                 Ok(Token::Array { arr, kind })
             },
             TokenEnum::fixed_array(arr) => {
-                let (arr, kind) = Self::array_from_proto(arr)?;
+                let (arr, kind) = Self::array_from_proto_step(arr, current_depth + 1)?;
                 let arr = NonEmptyArray::new(arr)
                     .context("Empty `FixedArray` collection is not allowed")?;
                 Ok(Token::FixedArray { arr, kind })
@@ -302,7 +330,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             TokenEnum::tuple(Proto::TupleParam { params }) => {
                 let params = params
                     .into_iter()
-                    .map(Self::named_token_from_proto)
+                    .map(|p| Self::named_token_from_proto_step(p, current_depth + 1))
                     .collect::<AbiResult<Vec<_>>>()?;
                 Ok(Token::Tuple { params })
             },
@@ -310,15 +338,27 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         }
     }
 
-    fn array_from_proto(array: Proto::ArrayParam<'_>) -> AbiResult<(Vec<Token>, ParamType)> {
+    fn array_from_proto_step(
+        array: Proto::ArrayParam<'_>,
+        current_depth: usize,
+    ) -> AbiResult<(Vec<Token>, ParamType)> {
         let element_type = array
             .element_type
             .or_tw_err(AbiErrorKind::Error_missing_param_type)?;
-        let element_type = Self::param_type_from_proto(element_type)?;
+        let element_type = Self::param_type_from_proto_step(element_type, current_depth)?;
+
+        if array.elements.len() > MAX_ARRAY_LENGTH {
+            return AbiError::err(AbiErrorKind::Error_invalid_param_type).with_context(|| {
+                format!(
+                    "Number of array elements exceeds the maximum allowed: {} > {MAX_ARRAY_LENGTH}",
+                    array.elements.len()
+                )
+            });
+        }
 
         let mut array_tokens = Vec::with_capacity(array.elements.len());
         for proto_token in array.elements {
-            let token = Self::token_from_proto(proto_token)?;
+            let token = Self::token_from_proto_step(proto_token, current_depth)?;
             let token_type = token.to_param_type();
 
             // Check if all tokens are the same as declared in `ArrayParam::element_type`.
@@ -333,7 +373,12 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         Ok((array_tokens, element_type))
     }
 
-    fn param_type_to_proto(param_type: ParamType) -> Proto::ParamType<'static> {
+    fn param_type_to_proto_step(
+        param_type: ParamType,
+        current_depth: usize,
+    ) -> AbiResult<Proto::ParamType<'static>> {
+        Self::check_depth(current_depth)?;
+
         let param = match param_type {
             ParamType::Address => ProtoParamType::address(Proto::AddressType {}),
             ParamType::FixedBytes { len } => {
@@ -351,22 +396,36 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             ParamType::String => ProtoParamType::string_param(Proto::StringType {}),
             ParamType::FixedArray { kind, len } => {
                 let size = len.get() as u64;
-                let element_type = Some(Box::new(Self::param_type_to_proto(*kind)));
+                let element_type = Some(Box::new(Self::param_type_to_proto_step(
+                    *kind,
+                    current_depth + 1,
+                )?));
                 ProtoParamType::fixed_array(Box::new(Proto::FixedArrayType { size, element_type }))
             },
             ParamType::Array { kind } => {
-                let element_type = Some(Box::new(Self::param_type_to_proto(*kind)));
+                let element_type = Some(Box::new(Self::param_type_to_proto_step(
+                    *kind,
+                    current_depth + 1,
+                )?));
                 ProtoParamType::array(Box::new(Proto::ArrayType { element_type }))
             },
             ParamType::Tuple { params } => {
-                let params: Vec<_> = params.into_iter().map(Self::param_to_proto).collect();
+                let params: Vec<_> = params
+                    .into_iter()
+                    .map(|p| Self::param_to_proto_step(p, current_depth + 1))
+                    .collect::<AbiResult<_>>()?;
                 ProtoParamType::tuple(Proto::TupleType { params })
             },
         };
-        Proto::ParamType { param }
+        Ok(Proto::ParamType { param })
     }
 
-    fn param_type_from_proto(param_type: Proto::ParamType<'_>) -> AbiResult<ParamType> {
+    fn param_type_from_proto_step(
+        param_type: Proto::ParamType<'_>,
+        current_depth: usize,
+    ) -> AbiResult<ParamType> {
+        Self::check_depth(current_depth)?;
+
         match param_type.param {
             ProtoParamType::boolean(_) => Ok(ParamType::Bool),
             ProtoParamType::number_int(i) => {
@@ -389,7 +448,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
                 let element_type = arr
                     .element_type
                     .or_tw_err(AbiErrorKind::Error_missing_param_type)?;
-                let kind = Self::param_type_from_proto(*element_type)?;
+                let kind = Self::param_type_from_proto_step(*element_type, current_depth + 1)?;
                 Ok(ParamType::Array {
                     kind: Box::new(kind),
                 })
@@ -398,7 +457,10 @@ impl<Context: EvmContext> AbiEncoder<Context> {
                 let element_type = arr
                     .element_type
                     .or_tw_err(AbiErrorKind::Error_missing_param_type)?;
-                let kind = Box::new(Self::param_type_from_proto(*element_type)?);
+                let kind = Box::new(Self::param_type_from_proto_step(
+                    *element_type,
+                    current_depth + 1,
+                )?);
                 let len = NonZeroLen::new(arr.size as usize)?;
                 Ok(ParamType::FixedArray { kind, len })
             },
@@ -406,7 +468,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
                 let params = tuple
                     .params
                     .into_iter()
-                    .map(Self::param_from_proto)
+                    .map(|p| Self::param_from_proto_step(p, current_depth + 1))
                     .collect::<AbiResult<Vec<_>>>()?;
                 if params.is_empty() {
                     return AbiError::err(AbiErrorKind::Error_invalid_abi)
@@ -418,14 +480,27 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         }
     }
 
-    fn named_token_to_proto(token: NamedToken) -> Proto::Token<'static> {
-        Proto::Token {
-            name: Cow::Owned(token.name.unwrap_or_default()),
-            ..Self::token_to_proto(token.value)
-        }
+    fn named_token_to_proto(token: NamedToken) -> AbiResult<Proto::Token<'static>> {
+        Self::named_token_to_proto_step(token, 0)
     }
 
-    pub fn token_to_proto(token: Token) -> Proto::Token<'static> {
+    fn named_token_to_proto_step(
+        token: NamedToken,
+        current_depth: usize,
+    ) -> AbiResult<Proto::Token<'static>> {
+        Ok(Proto::Token {
+            name: Cow::Owned(token.name.unwrap_or_default()),
+            ..Self::token_to_proto_step(token.value, current_depth)?
+        })
+    }
+
+    pub fn token_to_proto(token: Token) -> AbiResult<Proto::Token<'static>> {
+        Self::token_to_proto_step(token, 0)
+    }
+
+    fn token_to_proto_step(token: Token, current_depth: usize) -> AbiResult<Proto::Token<'static>> {
+        Self::check_depth(current_depth)?;
+
         let value = match token {
             Token::Address(addr) => TokenEnum::address(Cow::Owned(addr.to_string())),
             Token::FixedBytes(bytes) => TokenEnum::byte_array_fix(Cow::Owned(bytes.into_vec())),
@@ -436,16 +511,22 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             },
             Token::Bool(bool) => TokenEnum::boolean(bool),
             Token::String(str) => TokenEnum::string_value(Cow::Owned(str)),
-            Token::FixedArray { kind, arr } => {
-                TokenEnum::fixed_array(Self::array_to_proto(kind, arr.into_vec()))
+            Token::FixedArray { kind, arr } => TokenEnum::fixed_array(Self::array_to_proto_step(
+                kind,
+                arr.into_vec(),
+                current_depth + 1,
+            )?),
+            Token::Array { kind, arr, .. } => {
+                TokenEnum::array(Self::array_to_proto_step(kind, arr, current_depth + 1)?)
             },
-            Token::Array { kind, arr, .. } => TokenEnum::array(Self::array_to_proto(kind, arr)),
-            Token::Tuple { params } => TokenEnum::tuple(Self::tuple_to_proto(params)),
+            Token::Tuple { params } => {
+                TokenEnum::tuple(Self::tuple_to_proto_step(params, current_depth + 1)?)
+            },
         };
-        Proto::Token {
+        Ok(Proto::Token {
             name: "".into(),
             token: value,
-        }
+        })
     }
 
     fn s_number_n_from_proto(encoded: &[u8]) -> AbiResult<I256> {
@@ -470,16 +551,37 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         }
     }
 
-    fn array_to_proto(kind: ParamType, arr: Vec<Token>) -> Proto::ArrayParam<'static> {
-        Proto::ArrayParam {
-            elements: arr.into_iter().map(Self::token_to_proto).collect(),
-            element_type: Some(Self::param_type_to_proto(kind)),
-        }
+    fn array_to_proto_step(
+        kind: ParamType,
+        arr: Vec<Token>,
+        current_depth: usize,
+    ) -> AbiResult<Proto::ArrayParam<'static>> {
+        Ok(Proto::ArrayParam {
+            elements: arr
+                .into_iter()
+                .map(|t| Self::token_to_proto_step(t, current_depth))
+                .collect::<AbiResult<_>>()?,
+            element_type: Some(Self::param_type_to_proto_step(kind, current_depth)?),
+        })
     }
 
-    fn tuple_to_proto(params: Vec<NamedToken>) -> Proto::TupleParam<'static> {
-        let params = params.into_iter().map(Self::named_token_to_proto).collect();
-        Proto::TupleParam { params }
+    fn tuple_to_proto_step(
+        params: Vec<NamedToken>,
+        current_depth: usize,
+    ) -> AbiResult<Proto::TupleParam<'static>> {
+        let params = params
+            .into_iter()
+            .map(|p| Self::named_token_to_proto_step(p, current_depth))
+            .collect::<AbiResult<_>>()?;
+        Ok(Proto::TupleParam { params })
+    }
+
+    fn check_depth(current_depth: usize) -> AbiResult<()> {
+        if current_depth >= MAX_RECURSION_DEPTH {
+            return AbiError::err(AbiErrorKind::Error_invalid_param_type)
+                .with_context(|| format!("Max recursion depth exceeded: {MAX_RECURSION_DEPTH}"));
+        }
+        Ok(())
     }
 }
 
