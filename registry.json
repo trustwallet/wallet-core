@@ -4979,7 +4979,7 @@
     "id": "seievm",
     "name": "Sei EVM",
     "coinId": 1329,
-    "symbol": "ETH",
+    "symbol": "SEI",
     "decimals": 18,
     "blockchain": "Ethereum",
     "derivation": [
@@ -5000,6 +5000,7 @@
     },
     "info": {
       "url": "https://www.sei.io",
+      "source": "https://github.com/sei-protocol",
       "rpc": "https://evm-rpc.sei-apis.com",
       "documentation": "https://docs.sei.io"
     }

@@ -18,7 +18,7 @@ TEST(TWSeiEVMCoinType, TWCoinType) {
 
     assertStringsEqual(id, "seievm");
     assertStringsEqual(name, "Sei EVM");
-    assertStringsEqual(symbol, "ETH");
+    assertStringsEqual(symbol, "SEI");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
     ASSERT_EQ(TWCoinTypeP2pkhPrefix(coin), 0);
