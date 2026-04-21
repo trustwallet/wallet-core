@@ -37,7 +37,13 @@ fn test_raw_json_with_invalid_version() {
         "gasConfig": {
             "budget": "30216120",
             "price": "750",
-            "payment": []
+            "payment": [
+                {
+                    "objectId": "0x0794be3f3016c73e67612032e88397dfc43798ba20b1c0f66769a74455a54947",
+                    "version": "486126455",
+                    "digest": "J9bKhGatNhtjoXvUnt28kCWV9kRsN3aToGi4MEXam9D4"
+                }
+            ]
         },
         "inputs": [],
         "transactions": []
@@ -63,7 +69,13 @@ fn test_raw_json_with_epoch_expiration() {
         "gasConfig": {
             "budget": "30216120",
             "price": "750",
-            "payment": []
+            "payment": [
+                {
+                    "objectId": "0x0794be3f3016c73e67612032e88397dfc43798ba20b1c0f66769a74455a54947",
+                    "version": "486126455",
+                    "digest": "J9bKhGatNhtjoXvUnt28kCWV9kRsN3aToGi4MEXam9D4"
+                }
+            ]
         },
         "inputs": [],
         "transactions": []
@@ -85,7 +97,13 @@ fn test_raw_json_with_none_expiration() {
         "gasConfig": {
             "budget": "30216120",
             "price": "750",
-            "payment": []
+            "payment": [
+                {
+                    "objectId": "0x0794be3f3016c73e67612032e88397dfc43798ba20b1c0f66769a74455a54947",
+                    "version": "486126455",
+                    "digest": "J9bKhGatNhtjoXvUnt28kCWV9kRsN3aToGi4MEXam9D4"
+                }
+            ]
         },
         "inputs": [],
         "transactions": []
@@ -105,7 +123,13 @@ fn test_raw_json_with_all_transactions() {
         "gasConfig": {
             "budget": "30216120",
             "price": "750",
-            "payment": []
+            "payment": [
+                {
+                    "objectId": "0x0794be3f3016c73e67612032e88397dfc43798ba20b1c0f66769a74455a54947",
+                    "version": "486126455",
+                    "digest": "J9bKhGatNhtjoXvUnt28kCWV9kRsN3aToGi4MEXam9D4"
+                }
+            ]
         },
         "inputs": [],
         "transactions": [
@@ -176,7 +200,13 @@ fn test_raw_json_with_rall_inputs() {
         "gasConfig": {
             "budget": "30216120",
             "price": "750",
-            "payment": []
+            "payment": [
+                {
+                    "objectId": "0x0794be3f3016c73e67612032e88397dfc43798ba20b1c0f66769a74455a54947",
+                    "version": "486126455",
+                    "digest": "J9bKhGatNhtjoXvUnt28kCWV9kRsN3aToGi4MEXam9D4"
+                }
+            ]
         },
         "inputs": [
             {
@@ -242,7 +272,13 @@ fn test_raw_json_sorts_inputs_by_declared_index() {
         "gasConfig": {
             "budget": "1000",
             "price": "750",
-            "payment": []
+            "payment": [
+                {
+                    "objectId": "0x0794be3f3016c73e67612032e88397dfc43798ba20b1c0f66769a74455a54947",
+                    "version": "486126455",
+                    "digest": "J9bKhGatNhtjoXvUnt28kCWV9kRsN3aToGi4MEXam9D4"
+                }
+            ]
         },
         "inputs": [
             {
