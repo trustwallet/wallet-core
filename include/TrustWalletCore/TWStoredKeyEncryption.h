@@ -12,7 +12,6 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_ENUM(uint32_t)
 enum TWStoredKeyEncryption {
     TWStoredKeyEncryptionAes128Ctr = 0,
-    TWStoredKeyEncryptionAes128Cbc = 1,
     TWStoredKeyEncryptionAes192Ctr = 2,
     TWStoredKeyEncryptionAes256Ctr = 3,
 };

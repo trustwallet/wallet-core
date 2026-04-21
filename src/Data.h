@@ -70,6 +70,11 @@ inline bool has_prefix(const Data& data, T& prefix) {
     return std::equal(prefix.begin(), prefix.end(), data.begin(), data.begin() + std::min(data.size(), prefix.size()));
 }
 
+/// Constant-time comparison to prevent timing attacks.
+/// Note: This function assumes that `a` and `b` are of the same size. If they are not, it will return false immediately.
+/// https://github.com/openssl/openssl/blob/94c36852d254a626739667874587b5364ddf087e/crypto/cpuid.c#L198
+bool isEqualConstantTime(const Data& in_a, const Data& in_b);
+
 // Custom hash function for `Data` type.
 struct DataHash {
     std::size_t operator()(const Data& data) const {
