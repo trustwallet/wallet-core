@@ -491,6 +491,11 @@ Result<protocol::Transaction, Proto::SigningOutput> Signer::deserializeAndValida
         return R::failure(errorOutput(errorMessage, Common::Proto::Error_not_supported));
     }
 
+    // Validate that a contract is present
+    if (transaction.payload().raw_data().contract_size() == 0) {
+        return R::failure(errorOutput("No supported contract is set"));
+    }
+
     const auto expectedTxID = Hash::sha256(serializeTxRawData(transaction.payload()));
     if (txID != expectedTxID) {
         return R::failure(errorOutput("txID does not match hash of rawJson transaction", Common::Proto::Error_tx_hash_mismatch));
