@@ -101,7 +101,10 @@ fn test_exact_selector_negative_output_error() {
 
     let mut planner = AnyPlannerHelper::<Proto::TransactionPlan>::default();
     let plan = planner.plan(CoinType::Bitcoin, input);
-    assert_eq!(plan.error, CommonProto::SigningError::Error_invalid_requested_token_amount);
+    assert_eq!(
+        plan.error,
+        CommonProto::SigningError::Error_invalid_requested_token_amount
+    );
 }
 
 #[test]
