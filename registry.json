@@ -4974,5 +4974,35 @@
       "rpc": "https://mainnet.megaeth.com/rpc",
       "documentation": "https://docs.megaeth.com"
     }
+  },
+  {
+    "id": "seievm",
+    "name": "Sei EVM",
+    "coinId": 1329,
+    "symbol": "SEI",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "1329",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://seiscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xe59dddcf9a93551399780d907eeee52fdbc44ead6406012368470d47979b7362",
+      "sampleAccount": "0xc5c8d37a73d96a925f770b5481f719df8d1a1b9e"
+    },
+    "info": {
+      "url": "https://www.sei.io",
+      "source": "https://github.com/sei-protocol",
+      "rpc": "https://evm-rpc.sei-apis.com",
+      "documentation": "https://docs.sei.io"
+    }
   }
 ]
