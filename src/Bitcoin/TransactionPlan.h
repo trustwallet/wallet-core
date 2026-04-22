@@ -63,6 +63,10 @@ struct TransactionPlan {
         , outputOpReturn(plan.output_op_return().begin(), plan.output_op_return().end())
         , error(plan.error())
     {
+        assertValidAmount(amount);
+        assertValidAmount(availableAmount);
+        assertValidAmount(fee);
+        assertValidAmount(change);
         if (plan.has_output_op_return_index()) {
             outputOpReturnIndex = plan.output_op_return_index().index();
         }

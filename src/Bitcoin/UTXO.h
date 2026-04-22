@@ -31,7 +31,9 @@ public:
         : outPoint(utxo.out_point())
         , script(utxo.script().begin(), utxo.script().end())
         , amount(utxo.amount())
-        {}
+    {
+        assertValidAmount(utxo.amount());
+    }
 
     Proto::UnspentTransaction proto() const {
         auto utxo = Proto::UnspentTransaction();

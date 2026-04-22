@@ -149,7 +149,11 @@ impl StandardSigningRequestBuilder {
 
     pub fn dust_policy(proto: &ProtoDustPolicy) -> SigningResult<DustPolicy> {
         match proto {
-            ProtoDustPolicy::fixed_dust_threshold(fixed) => Ok(DustPolicy::FixedAmount(*fixed)),
+            ProtoDustPolicy::fixed_dust_threshold(fixed) => (*fixed)
+                .try_into()
+                .map(DustPolicy::FixedAmount)
+                .tw_err(SigningErrorType::Error_wrong_fee)
+                .context("Dust threshold cannot be negative"),
             ProtoDustPolicy::None => SigningError::err(SigningErrorType::Error_invalid_params)
                 .context("No dust policy provided"),
         }
@@ -158,7 +162,12 @@ impl StandardSigningRequestBuilder {
     pub fn fee_estimator<Transaction>(
         proto: &Proto::TransactionBuilder,
     ) -> SigningResult<StandardFeeEstimator<Transaction>> {
-        let fee_policy = FeePolicy::FeePerVb(proto.fee_per_vb);
+        let fee_per_vb = proto
+            .fee_per_vb
+            .try_into()
+            .tw_err(SigningErrorType::Error_wrong_fee)
+            .context("'fee_per_vb' cannot be negative")?;
+        let fee_policy = FeePolicy::FeePerVb(fee_per_vb);
         Ok(StandardFeeEstimator::new(fee_policy))
     }
 

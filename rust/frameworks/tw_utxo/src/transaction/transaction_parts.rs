@@ -6,9 +6,9 @@ use crate::encode::stream::Stream;
 use crate::encode::Encodable;
 use tw_hash::H256;
 
-/// Amount in satoshis (Can be negative) in rare cases.
-/// https://github.com/bitcoin/bitcoin/blob/bd5d1688b4311e21c0e0ff89a3ae02ef7d0543b8/src/consensus/amount.h#L11-L12
-pub type Amount = i64;
+/// Amount in satoshis.
+/// In theory, can be negative in some cases, but we require it to be non-negative.
+pub type Amount = u64;
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct OutPoint {

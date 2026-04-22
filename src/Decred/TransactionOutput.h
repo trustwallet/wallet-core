@@ -26,7 +26,9 @@ struct TransactionOutput {
 
     /// Initializes a transaction output with a value and a script.
     TransactionOutput(Bitcoin::Amount value, uint16_t version, Bitcoin::Script script)
-        : value(value), version(version), script(std::move(script)) {}
+        : value(value), version(version), script(std::move(script)) {
+        Bitcoin::assertValidAmount(value);
+    }
 
     /// Encodes the output into the provided buffer.
     void encode(Data& data) const;

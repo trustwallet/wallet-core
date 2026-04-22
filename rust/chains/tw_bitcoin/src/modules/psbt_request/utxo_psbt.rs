@@ -126,11 +126,6 @@ impl<'a> UtxoPsbt<'a> {
                 .context("Only SIGHASH_ALL is supported for PSBT inputs");
         }
 
-        let amount = amount
-            .try_into()
-            .tw_err(SigningErrorType::Error_invalid_utxo_amount)
-            .context("PSBT UTXO amount is too large")?;
-
         Ok(UtxoBuilder::default()
             .prev_txid(prevout_hash)
             .prev_index(prevout_index)

@@ -55,10 +55,16 @@ impl<Context: BitcoinSigningContext> PsbtPlanner<Context> {
         Ok(Proto::TransactionPlan {
             inputs,
             outputs,
-            available_amount: total_input,
-            send_amount: total_input,
+            available_amount: total_input
+                .try_into()
+                .tw_err(SigningErrorType::Error_tx_too_big)?,
+            send_amount: total_input
+                .try_into()
+                .tw_err(SigningErrorType::Error_tx_too_big)?,
             vsize_estimate,
-            fee_estimate,
+            fee_estimate: fee_estimate
+                .try_into()
+                .tw_err(SigningErrorType::Error_wrong_fee)?,
             change: 0,
             ..Proto::TransactionPlan::default()
         })
@@ -87,7 +93,10 @@ impl<Context: BitcoinSigningContext> PsbtPlanner<Context> {
 
         Ok(Proto::Input {
             out_point: Some(out_point),
-            value: unsigned_txin.amount,
+            value: unsigned_txin
+                .amount
+                .try_into()
+                .tw_err(SigningErrorType::Error_invalid_utxo_amount)?,
             sighash_type: unsigned_txin.sighash_ty.raw_sighash(),
             sequence: Some(sequence),
             claiming_script: ClaimingScriptProto::receiver_address(from_address.into()),
@@ -109,7 +118,10 @@ impl<Context: BitcoinSigningContext> PsbtPlanner<Context> {
         };
 
         Ok(Proto::Output {
-            value: output.value(),
+            value: output
+                .value()
+                .try_into()
+                .tw_err(SigningErrorType::Error_invalid_requested_token_amount)?,
             to_recipient,
         })
     }

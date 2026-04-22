@@ -201,12 +201,14 @@ impl<'a, Context: UtxoContext> OutputProtobuf<'a, Context> {
     }
 
     pub fn prepare_builder(&self) -> SigningResult<OutputBuilder> {
-        if self.output.value < 0 {
-            return SigningError::err(SigningErrorType::Error_invalid_params)
-                .context("Transaction Output amount cannot be negative");
-        }
+        let value = self
+            .output
+            .value
+            .try_into()
+            .tw_err(SigningErrorType::Error_invalid_requested_token_amount)
+            .context("Transaction Output amount cannot be negative")?;
         Ok(OutputBuilder::with_public_key_hasher(
-            self.output.value,
+            value,
             Context::PUBLIC_KEY_HASHER,
         ))
     }

@@ -123,7 +123,7 @@ where
     pub fn total_input(&self) -> SigningResult<Amount> {
         self.utxo_args
             .iter()
-            .try_fold(0i64, |total_in, utxo_args| {
+            .try_fold(0_u64, |total_in, utxo_args| {
                 total_in.checked_add(utxo_args.amount)
             })
             .or_tw_err(SigningErrorType::Error_tx_too_big)
@@ -134,7 +134,7 @@ where
         self.transaction
             .outputs()
             .iter()
-            .try_fold(0i64, |total_out, output| {
+            .try_fold(0_u64, |total_out, output| {
                 total_out.checked_add(output.value())
             })
             .or_tw_err(SigningErrorType::Error_tx_too_big)

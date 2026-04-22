@@ -4,6 +4,7 @@
 
 use crate::modules::protobuf_builder::{ProtobufBuilder, ProtobufTransaction};
 use std::borrow::Cow;
+use tw_coin_entry::error::prelude::*;
 use tw_proto::Utxo::Proto as UtxoProto;
 use tw_utxo::context::UtxoContext;
 use tw_utxo::script::{Script, Witness};
@@ -19,16 +20,20 @@ impl<Context> ProtobufBuilder<Context> for StandardProtobufBuilder
 where
     Context: UtxoContext<Transaction = Transaction>,
 {
-    fn tx_to_proto(tx: &Context::Transaction) -> ProtobufTransaction<'static> {
+    fn tx_to_proto(tx: &Context::Transaction) -> SigningResult<ProtobufTransaction<'static>> {
         let inputs = tx.inputs().iter().map(Self::tx_input_to_proto).collect();
-        let outputs = tx.outputs().iter().map(Self::tx_output_to_proto).collect();
+        let outputs = tx
+            .outputs()
+            .iter()
+            .map(Self::tx_output_to_proto)
+            .collect::<SigningResult<Vec<_>>>()?;
 
-        ProtobufTransaction::bitcoin(UtxoProto::Transaction {
+        Ok(ProtobufTransaction::bitcoin(UtxoProto::Transaction {
             version: tx.version(),
             lock_time: tx.locktime,
             inputs,
             outputs,
-        })
+        }))
     }
 }
 
@@ -42,11 +47,17 @@ impl StandardProtobufBuilder {
         }
     }
 
-    pub fn tx_output_to_proto(output: &TransactionOutput) -> UtxoProto::TransactionOutput<'static> {
-        UtxoProto::TransactionOutput {
+    pub fn tx_output_to_proto(
+        output: &TransactionOutput,
+    ) -> SigningResult<UtxoProto::TransactionOutput<'static>> {
+        Ok(UtxoProto::TransactionOutput {
             script_pubkey: Self::script_data(&output.script_pubkey),
-            value: output.value,
-        }
+            value: output
+                .value
+                .try_into()
+                .tw_err(SigningErrorType::Error_invalid_requested_token_amount)
+                .context("Output amount cannot be negative")?,
+        })
     }
 
     pub fn out_point_to_proto(previous_output: &OutPoint) -> UtxoProto::OutPoint<'static> {

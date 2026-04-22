@@ -17,13 +17,13 @@ use tw_utxo::transaction::standard_transaction::builder::TransactionBuilder;
 use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
 use tw_utxo::transaction::transaction_interface::TransactionInterface;
 
-const SATS_PER_VBYTE: i64 = 20;
+const SATS_PER_VBYTE: u64 = 20;
 
 #[track_caller]
 fn verify_fee<Transaction: TransactionInterface>(
     tx: &Transaction,
-    fee_per_vbyte: i64,
-    expected: i64,
+    fee_per_vbyte: u64,
+    expected: u64,
 ) {
     let actual = StandardFeeEstimator::new(FeePolicy::FeePerVb(fee_per_vbyte))
         .estimate_fee(tx)

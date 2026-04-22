@@ -119,14 +119,17 @@ impl<Context: BitcoinSigningContext> BitcoinCompiler<Context> {
         let signed_tx = TxCompiler::compile(unsigned_tx, &signatures)?;
 
         Ok(Proto::SigningOutput {
-            transaction: Context::ProtobufBuilder::tx_to_proto(&signed_tx),
+            transaction: Context::ProtobufBuilder::tx_to_proto(&signed_tx)?,
             encoded: Cow::from(signed_tx.encode_out()),
             txid: Cow::from(signed_tx.txid(Context::TX_HASHER)),
             // `vsize` could have been changed after the transaction being signed.
             vsize: signed_tx.vsize() as u64,
             weight: signed_tx.weight() as u64,
             // `fee` should haven't been changed since it's a difference between `sum(inputs)` and `sum(outputs)`.
-            fee: plan.fee_estimate,
+            fee: plan
+                .fee_estimate
+                .try_into()
+                .tw_err(SigningErrorType::Error_wrong_fee)?,
             ..Proto::SigningOutput::default()
         })
     }
@@ -145,13 +148,13 @@ impl<Context: BitcoinSigningContext> BitcoinCompiler<Context> {
         let signed_tx = TxCompiler::compile(unsigned_tx, &signatures)?;
 
         Ok(Proto::SigningOutput {
-            transaction: Context::ProtobufBuilder::tx_to_proto(&signed_tx),
+            transaction: Context::ProtobufBuilder::tx_to_proto(&signed_tx)?,
             encoded: Cow::from(signed_tx.encode_out()),
             txid: Cow::from(signed_tx.txid(Context::TX_HASHER)),
             // `vsize` could have been changed after the transaction being signed.
             vsize: signed_tx.vsize() as u64,
             weight: signed_tx.weight() as u64,
-            fee,
+            fee: fee.try_into().tw_err(SigningErrorType::Error_wrong_fee)?,
             ..Proto::SigningOutput::default()
         })
     }

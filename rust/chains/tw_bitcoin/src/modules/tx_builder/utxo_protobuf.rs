@@ -193,11 +193,6 @@ impl<'a, Context: UtxoContext> UtxoProtobuf<'a, Context> {
         let OutPoint { hash, index } = parse_out_point(&self.input.out_point)?;
         let sighash_ty = self.sighash_ty()?;
 
-        if self.input.value < 0 {
-            return SigningError::err(SigningErrorType::Error_invalid_utxo_amount)
-                .context("UTXO amount cannot be negative");
-        }
-
         let sequence = self
             .input
             .sequence
@@ -206,11 +201,18 @@ impl<'a, Context: UtxoContext> UtxoProtobuf<'a, Context> {
             // Use the default 0xFFFFFFFF sequence value if not specified.
             .unwrap_or(u32::MAX);
 
+        let value = self
+            .input
+            .value
+            .try_into()
+            .tw_err(SigningErrorType::Error_invalid_utxo_amount)
+            .context("Transaction Input amount cannot be negative")?;
+
         Ok(UtxoBuilder::default()
             .prev_txid(hash)
             .prev_index(index)
             .sequence(sequence)
-            .amount(self.input.value)
+            .amount(value)
             .sighash_type(sighash_ty)
             .tx_hasher(Context::TX_HASHER)
             .public_key_hasher(Context::PUBLIC_KEY_HASHER))

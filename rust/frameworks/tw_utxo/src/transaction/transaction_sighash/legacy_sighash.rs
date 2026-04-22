@@ -101,7 +101,7 @@ impl<Transaction: std::fmt::Debug + TransactionInterface> LegacySighash<Transact
                     if n == args.input_index {
                         out.clone()
                     } else {
-                        // `standard_transaction::TransactionOutput` defaults to `-1`.
+                        // `standard_transaction::TransactionOutput` defaults to `-1` (the same as 'u64::MAX').
                         Transaction::Output::default()
                     }
                 })

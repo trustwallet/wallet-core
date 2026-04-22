@@ -12,8 +12,13 @@ SigningInput::SigningInput()
 
 SigningInput::SigningInput(const Proto::SigningInput& input) {
     hashType = static_cast<TWBitcoinSigHashType>(input.hash_type());
+
+    assertValidAmount(input.amount());
     amount = input.amount();
+
+    assertValidAmount(input.byte_fee());
     byteFee = input.byte_fee();
+
     toAddress = input.to_address();
     changeAddress = input.change_address();
     for (auto&& key : input.private_key()) {
@@ -42,8 +47,9 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
 
     extraOutputsAmount = 0;
     for (auto& output: input.extra_outputs()) {
+        assertValidAmount(output.amount());
         extraOutputsAmount += output.amount();
-        extraOutputs.push_back(std::make_pair(output.to_address(), output.amount()));
+        extraOutputs.emplace_back(output.to_address(), output.amount());
     }
 
     dustCalculator = getDustCalculator(input);

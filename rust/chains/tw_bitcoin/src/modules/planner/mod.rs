@@ -84,7 +84,10 @@ impl<Context: BitcoinSigningContext> BitcoinPlanner<Context> {
             );
 
             outputs_proto.push(Proto::Output {
-                value: selected_output.value(),
+                value: selected_output
+                    .value()
+                    .try_into()
+                    .tw_err(SigningErrorType::Error_invalid_requested_token_amount)?,
                 to_recipient,
             })
         }
@@ -92,11 +95,23 @@ impl<Context: BitcoinSigningContext> BitcoinPlanner<Context> {
         Ok(Proto::TransactionPlan {
             inputs: selected_inputs_proto,
             outputs: outputs_proto,
-            available_amount: plan.total_spend,
-            send_amount: plan.total_send,
+            available_amount: plan
+                .total_spend
+                .try_into()
+                .tw_err(SigningErrorType::Error_tx_too_big)?,
+            send_amount: plan
+                .total_send
+                .try_into()
+                .tw_err(SigningErrorType::Error_tx_too_big)?,
             vsize_estimate: plan.vsize_estimate as u64,
-            fee_estimate: plan.fee_estimate,
-            change: plan.change,
+            fee_estimate: plan
+                .fee_estimate
+                .try_into()
+                .tw_err(SigningErrorType::Error_wrong_fee)?,
+            change: plan
+                .change
+                .try_into()
+                .tw_err(SigningErrorType::Error_tx_too_big)?,
             ..Proto::TransactionPlan::default()
         })
     }

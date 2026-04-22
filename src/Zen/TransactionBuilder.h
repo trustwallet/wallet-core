@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Address.h"
+#include "../Bitcoin/Amount.h"
 #include "../Bitcoin/Transaction.h"
 #include "../Bitcoin/TransactionBuilder.h"
 #include "../Bitcoin/TransactionPlan.h"
@@ -84,6 +85,7 @@ struct TransactionBuilder {
 
     /// Prepares a TransactionOutput with given address and amount, prepares script for it
     static std::optional<Bitcoin::TransactionOutput> prepareOutputWithScript(const std::string& addr, Bitcoin::Amount amount, enum TWCoinType coin, const Data& blockHash, int64_t blockHeight) {
+        Bitcoin::assertValidAmount(amount);
         auto lockingScript = Bitcoin::Script::lockScriptForAddress(addr, coin, blockHash, blockHeight);
         if (lockingScript.empty()) {
             return {};

@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use tw_coin_entry::error::prelude::*;
 use tw_utxo::context::UtxoContext;
 
 pub use tw_proto::BitcoinV2::Proto::mod_SigningOutput::OneOftransaction as ProtobufTransaction;
@@ -9,5 +10,5 @@ pub use tw_proto::BitcoinV2::Proto::mod_SigningOutput::OneOftransaction as Proto
 pub mod standard_protobuf_builder;
 
 pub trait ProtobufBuilder<Context: UtxoContext> {
-    fn tx_to_proto(tx: &Context::Transaction) -> ProtobufTransaction<'static>;
+    fn tx_to_proto(tx: &Context::Transaction) -> SigningResult<ProtobufTransaction<'static>>;
 }

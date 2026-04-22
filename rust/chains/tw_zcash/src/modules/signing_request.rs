@@ -129,7 +129,12 @@ impl ZcashSigningRequestBuilder {
             return Ok(ZcashFeeEstimator::Zip0317);
         }
 
-        let fee_per_vb = FeePolicy::FeePerVb(proto.fee_per_vb);
+        let fee_per_vb = proto
+            .fee_per_vb
+            .try_into()
+            .tw_err(SigningErrorType::Error_wrong_fee)
+            .context("'fee_per_vb' cannot be negative")?;
+        let fee_per_vb = FeePolicy::FeePerVb(fee_per_vb);
         let standard = StandardFeeEstimator::new(fee_per_vb);
         Ok(ZcashFeeEstimator::Standard(standard))
     }
