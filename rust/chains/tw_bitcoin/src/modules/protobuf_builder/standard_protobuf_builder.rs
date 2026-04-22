@@ -55,8 +55,8 @@ impl StandardProtobufBuilder {
             value: output
                 .value
                 .try_into()
-                .tw_err(SigningErrorType::Error_invalid_requested_token_amount)
-                .context("Output amount cannot be negative")?,
+                .tw_err(SigningErrorType::Error_invalid_utxo_amount)
+                .context("Transaction Input amount is too large")?,
         })
     }
 

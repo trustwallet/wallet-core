@@ -30,7 +30,7 @@ impl DecredProtobufBuilder {
                 .value_in
                 .try_into()
                 .tw_err(SigningErrorType::Error_invalid_utxo_amount)
-                .context("Transaction Input amount cannot be negative")?,
+                .context("Transaction Input amount is too large")?,
             block_height: input.block_height,
             block_index: input.block_index,
             script_sig: StandardProtobufBuilder::script_data(&input.script_sig),
@@ -45,7 +45,7 @@ impl DecredProtobufBuilder {
                 .value
                 .try_into()
                 .tw_err(SigningErrorType::Error_invalid_requested_token_amount)
-                .context("Transaction Output amount cannot be negative")?,
+                .context("Transaction Output amount is too large")?,
             version: output.version as u32,
             script: StandardProtobufBuilder::script_data(&output.script_pubkey),
         })
