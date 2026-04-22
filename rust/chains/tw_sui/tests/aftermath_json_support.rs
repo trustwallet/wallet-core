@@ -1,6 +1,8 @@
 use tw_encoding::base64::{self, STANDARD};
 use tw_encoding::bcs;
+use tw_sui::transaction::sui_types::CallArg;
 use tw_sui::transaction::transaction_builder::TransactionBuilder;
+use tw_sui::transaction::transaction_data::{TransactionData, TransactionKind};
 
 #[test]
 fn test_aftermath_json_support() {
@@ -35,7 +37,13 @@ fn test_raw_json_with_invalid_version() {
         "gasConfig": {
             "budget": "30216120",
             "price": "750",
-            "payment": []
+            "payment": [
+                {
+                    "objectId": "0x0794be3f3016c73e67612032e88397dfc43798ba20b1c0f66769a74455a54947",
+                    "version": "486126455",
+                    "digest": "J9bKhGatNhtjoXvUnt28kCWV9kRsN3aToGi4MEXam9D4"
+                }
+            ]
         },
         "inputs": [],
         "transactions": []
@@ -61,7 +69,13 @@ fn test_raw_json_with_epoch_expiration() {
         "gasConfig": {
             "budget": "30216120",
             "price": "750",
-            "payment": []
+            "payment": [
+                {
+                    "objectId": "0x0794be3f3016c73e67612032e88397dfc43798ba20b1c0f66769a74455a54947",
+                    "version": "486126455",
+                    "digest": "J9bKhGatNhtjoXvUnt28kCWV9kRsN3aToGi4MEXam9D4"
+                }
+            ]
         },
         "inputs": [],
         "transactions": []
@@ -83,7 +97,13 @@ fn test_raw_json_with_none_expiration() {
         "gasConfig": {
             "budget": "30216120",
             "price": "750",
-            "payment": []
+            "payment": [
+                {
+                    "objectId": "0x0794be3f3016c73e67612032e88397dfc43798ba20b1c0f66769a74455a54947",
+                    "version": "486126455",
+                    "digest": "J9bKhGatNhtjoXvUnt28kCWV9kRsN3aToGi4MEXam9D4"
+                }
+            ]
         },
         "inputs": [],
         "transactions": []
@@ -103,7 +123,13 @@ fn test_raw_json_with_all_transactions() {
         "gasConfig": {
             "budget": "30216120",
             "price": "750",
-            "payment": []
+            "payment": [
+                {
+                    "objectId": "0x0794be3f3016c73e67612032e88397dfc43798ba20b1c0f66769a74455a54947",
+                    "version": "486126455",
+                    "digest": "J9bKhGatNhtjoXvUnt28kCWV9kRsN3aToGi4MEXam9D4"
+                }
+            ]
         },
         "inputs": [],
         "transactions": [
@@ -174,12 +200,18 @@ fn test_raw_json_with_rall_inputs() {
         "gasConfig": {
             "budget": "30216120",
             "price": "750",
-            "payment": []
+            "payment": [
+                {
+                    "objectId": "0x0794be3f3016c73e67612032e88397dfc43798ba20b1c0f66769a74455a54947",
+                    "version": "486126455",
+                    "digest": "J9bKhGatNhtjoXvUnt28kCWV9kRsN3aToGi4MEXam9D4"
+                }
+            ]
         },
         "inputs": [
             {
                 "kind": "Input",
-                "index": 1,
+                "index": 0,
                 "value": {
                     "Pure": [
                     89,
@@ -196,7 +228,7 @@ fn test_raw_json_with_rall_inputs() {
             },
             {
                 "kind": "Input",
-                "index": 2,
+                "index": 1,
                 "value": {
                     "Object": {
                         "Shared": {
@@ -210,7 +242,7 @@ fn test_raw_json_with_rall_inputs() {
             },
             {
                 "kind": "Input",
-                "index": 3,
+                "index": 2,
                 "value": {
                     "Object": {
                         "Receiving": {
@@ -228,4 +260,85 @@ fn test_raw_json_with_rall_inputs() {
     "#;
     let result = TransactionBuilder::raw_json(raw_json, 0, 0);
     assert!(result.is_ok());
+}
+
+#[test]
+fn test_raw_json_sorts_inputs_by_declared_index() {
+    let raw_json = r#"
+    {
+        "version": 1,
+        "sender": "0x1",
+        "expiration": null,
+        "gasConfig": {
+            "budget": "1000",
+            "price": "750",
+            "payment": [
+                {
+                    "objectId": "0x0794be3f3016c73e67612032e88397dfc43798ba20b1c0f66769a74455a54947",
+                    "version": "486126455",
+                    "digest": "J9bKhGatNhtjoXvUnt28kCWV9kRsN3aToGi4MEXam9D4"
+                }
+            ]
+        },
+        "inputs": [
+            {
+                "kind": "Input",
+                "index": 1,
+                "value": { "Pure": [1, 2, 3] },
+                "type": "pure"
+            },
+            {
+                "kind": "Input",
+                "index": 0,
+                "value": { "Pure": [4, 5, 6] },
+                "type": "pure"
+            }
+        ],
+        "transactions": []
+    }
+    "#;
+    let tx_data = TransactionBuilder::raw_json(raw_json, 0, 0).unwrap();
+
+    let TransactionData::V1(v1) = &tx_data;
+    let TransactionKind::ProgrammableTransaction(pt) = &v1.kind;
+
+    assert_eq!(pt.inputs.len(), 2);
+    assert!(matches!(&pt.inputs[0], CallArg::Pure(data) if data == &[4, 5, 6]));
+    assert!(matches!(&pt.inputs[1], CallArg::Pure(data) if data == &[1, 2, 3]));
+}
+
+#[test]
+fn test_raw_json_rejects_duplicate_input_indices() {
+    let raw_json = r#"
+    {
+        "version": 1,
+        "sender": "0x1",
+        "expiration": null,
+        "gasConfig": { "budget": "1000", "price": "750", "payment": [] },
+        "inputs": [
+            { "kind": "Input", "index": 0, "value": { "Pure": [1] }, "type": "pure" },
+            { "kind": "Input", "index": 0, "value": { "Pure": [2] }, "type": "pure" }
+        ],
+        "transactions": []
+    }
+    "#;
+    assert!(TransactionBuilder::raw_json(raw_json, 0, 0).is_err());
+}
+
+#[test]
+fn test_raw_json_rejects_non_contiguous_input_indices() {
+    let raw_json = r#"
+    {
+        "version": 1,
+        "sender": "0x1",
+        "expiration": null,
+        "gasConfig": { "budget": "1000", "price": "750", "payment": [] },
+        "inputs": [
+            { "kind": "Input", "index": 0, "value": { "Pure": [1] }, "type": "pure" },
+            { "kind": "Input", "index": 3, "value": { "Pure": [2] }, "type": "pure" }
+        ],
+        "transactions": []
+    }
+    "#;
+    assert!(TransactionBuilder::raw_json(raw_json, 0, 0).is_err());
 }
