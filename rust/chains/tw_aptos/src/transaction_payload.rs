@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::address::Address;
 use crate::aptos_move_types::MoveType;
 use crate::constants::{OBJECT_MODULE, OBJECT_STRUCT};
 use crate::serde_helper::vec_bytes;
@@ -227,7 +228,8 @@ fn parse_argument(layout: &MoveTypeLayout, val: Value) -> EncodingResult<MoveVal
         ),
         MoveTypeLayout::Address => MoveValue::Address(
             val_str
-                .parse::<AccountAddress>()
+                .parse::<Address>()
+                .map(|addr| addr.inner())
                 .map_err(|_| EncodingError::InvalidInput)?,
         ),
         MoveTypeLayout::Vector(item_layout) => parse_vector_argument(item_layout.as_ref(), val)?,
