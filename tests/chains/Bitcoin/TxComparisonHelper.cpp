@@ -21,7 +21,7 @@ namespace TW::Bitcoin {
 
 auto emptyTxOutPoint = OutPoint(parse_hex("b33082a5fad105c1d9712e8d503971fe4d84713065bd323fd1019636ed940e8d"), 0);
 
-UTXO buildTestUTXO(int64_t amount) {
+UTXO buildTestUTXO(Amount amount) {
     UTXO utxo;
     utxo.amount = amount;
     utxo.outPoint = emptyTxOutPoint;
@@ -31,15 +31,15 @@ UTXO buildTestUTXO(int64_t amount) {
     return utxo;
 }
 
-UTXOs buildTestUTXOs(const std::vector<int64_t>& amounts) {
+UTXOs buildTestUTXOs(const std::vector<Amount>& amounts) {
     UTXOs utxos;
-    for (long long amount : amounts) {
+    for (Amount amount : amounts) {
         utxos.push_back(buildTestUTXO(amount));
     }
     return utxos;
 }
 
-SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, bool useMaxAmount, enum TWCoinType coin, bool omitPrivateKey) {
+SigningInput buildSigningInput(Amount amount, Amount byteFee, const UTXOs& utxos, bool useMaxAmount, enum TWCoinType coin, bool omitPrivateKey) {
     SigningInput input;
     input.amount = amount;
     input.byteFee = byteFee;
@@ -61,15 +61,15 @@ SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, b
     return input;
 }
 
-int64_t sumUTXOs(const UTXOs& utxos) {
-    int64_t s = 0u;
+Amount sumUTXOs(const UTXOs& utxos) {
+    Amount s = 0u;
     for (auto& utxo : utxos) {
         s += utxo.amount;
     }
     return s;
 }
 
-bool verifySelectedUTXOs(const UTXOs& selected, const std::vector<int64_t>& expectedAmounts) {
+bool verifySelectedUTXOs(const UTXOs& selected, const std::vector<Amount>& expectedAmounts) {
     bool ret = true;
     if (selected.size() != expectedAmounts.size()) {
         ret = false;
@@ -88,7 +88,7 @@ bool verifySelectedUTXOs(const UTXOs& selected, const std::vector<int64_t>& expe
     return ret;
 }
 
-bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmounts, int64_t outputAmount, int64_t fee, Common::Proto::SigningError error) {
+bool verifyPlan(const TransactionPlan& plan, const std::vector<Amount>& utxoAmounts, Amount outputAmount, Amount fee, Common::Proto::SigningError error) {
     bool ret = true;
     if (!verifySelectedUTXOs(plan.utxos, utxoAmounts)) {
         ret = false;
@@ -101,15 +101,15 @@ bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmo
         ret = false;
         std::cerr << "Mismatch in fee, act " << plan.fee << ", exp " << fee << std::endl;
     }
-    int64_t sumExpectedUTXOs = 0;
-    for (long long utxoAmount : utxoAmounts) {
+    Amount sumExpectedUTXOs = 0;
+    for (Amount utxoAmount : utxoAmounts) {
         sumExpectedUTXOs += utxoAmount;
     }
     if (plan.availableAmount != sumExpectedUTXOs) {
         ret = false;
         std::cerr << "Mismatch in availableAmount, act " << plan.availableAmount << ", exp " << sumExpectedUTXOs << std::endl;
     }
-    int64_t expectedChange = sumExpectedUTXOs - outputAmount - fee;
+    Amount expectedChange = sumExpectedUTXOs - outputAmount - fee;
     if (plan.change != expectedChange) {
         ret = false;
         std::cerr << "Mismatch in change, act " << plan.change << ", exp " << expectedChange << std::endl;
@@ -149,7 +149,7 @@ EncodedTxSize getEncodedTxSize(const Transaction& tx) {
         tx.encode(data, Transaction::SegwitFormatMode::NonSegwit);
         size.nonSegwit = data.size();
     }
-    int64_t witnessSize = 0;
+    Amount witnessSize = 0;
     { // double check witness part: witness plus 2 bytes is the difference between segwit and non-segwit size
         Data data;
         tx.encodeWitness(data);
@@ -157,10 +157,10 @@ EncodedTxSize getEncodedTxSize(const Transaction& tx) {
         assert(size.segwit - size.nonSegwit == 2ul + witnessSize);
     }
     // compute virtual size: 3/4 of (smaller) non-segwit + 1/4 of segwit size
-    uint64_t sum = size.nonSegwit * 3 + size.segwit;
+    Amount sum = size.nonSegwit * 3 + size.segwit;
     size.virtualBytes = sum / 4 + (sum % 4 != 0);
     // alternative computation: (smaller) non-segwit + 1/4 of the diff (witness-only)
-    uint64_t vSize2 = size.nonSegwit + (witnessSize + 2) / 4 + ((witnessSize + 2) % 4 != 0);
+    Amount vSize2 = size.nonSegwit + (witnessSize + 2) / 4 + ((witnessSize + 2) % 4 != 0);
     assert(size.virtualBytes == vSize2);
     return size;
 }
@@ -172,7 +172,7 @@ bool validateEstimatedSize(const Transaction& tx, int smallerTolerance, int bigg
     }
     bool ret = true;
     auto estSize = tx.previousEstimatedVirtualSize;
-    uint64_t vsize = getEncodedTxSize(tx).virtualBytes;
+    int64_t vsize = static_cast<int64_t>(getEncodedTxSize(tx).virtualBytes);
     int64_t diff = estSize - vsize;
     if (diff < smallerTolerance) {
         ret = false;

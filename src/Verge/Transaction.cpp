@@ -18,7 +18,7 @@ using namespace TW;
 namespace TW::Verge {
 
 Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index,
-                              enum TWBitcoinSigHashType hashType, uint64_t amount) const {
+                              enum TWBitcoinSigHashType hashType, Bitcoin::Amount amount) const {
     assert(index < inputs.size());
 
     Data data;
@@ -115,7 +115,7 @@ void Transaction::encode(Data& data, enum SegwitFormatMode segwitFormat) const {
 }
 
 Data Transaction::getSignatureHash(const Bitcoin::Script& scriptCode, size_t index,
-                                   enum TWBitcoinSigHashType hashType, uint64_t amount,
+                                   enum TWBitcoinSigHashType hashType, Bitcoin::Amount amount,
                                    enum Bitcoin::SignatureVersion version) const {
     switch (version) {
     case Bitcoin::BASE:
@@ -128,7 +128,7 @@ Data Transaction::getSignatureHash(const Bitcoin::Script& scriptCode, size_t ind
 /// Generates the signature hash for Witness version 0 scripts.
 Data Transaction::getSignatureHashWitnessV0(const Bitcoin::Script& scriptCode, size_t index,
                                             enum TWBitcoinSigHashType hashType,
-                                            uint64_t amount) const {
+                                            Bitcoin::Amount amount) const {
     auto preimage = getPreImage(scriptCode, index, hashType, amount);
     auto hash = Hash::hash(hasher, preimage);
     return hash;

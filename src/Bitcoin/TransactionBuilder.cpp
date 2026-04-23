@@ -30,12 +30,12 @@ std::optional<TransactionOutput> TransactionBuilder::prepareOutputWithScript(std
 
 
 /// Estimate encoded size by simple formula
-int64_t estimateSimpleFee(const FeeCalculator& feeCalculator, const TransactionPlan& plan, int outputSize, int64_t byteFee) {
+Amount estimateSimpleFee(const FeeCalculator& feeCalculator, const TransactionPlan& plan, size_t outputSize, Amount byteFee) {
     return feeCalculator.calculate(plan.utxos.size(), outputSize, byteFee);
 }
 
 /// Estimate encoded size by invoking sign(sizeOnly), get actual size
-int64_t estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionPlan& plan, int outputSize, const SigningInput& input) {
+Amount estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionPlan& plan, size_t outputSize, const SigningInput& input) {
     TWPurpose coinPurpose = TW::purpose(static_cast<TWCoinType>(input.coinType));
     if (coinPurpose != TWPurposeBIP84) {
         // not segwit, return default simple estimate
@@ -56,8 +56,8 @@ int64_t estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionP
     auto transaction = result.payload();
     Data dataNonSegwit;
     transaction.encode(dataNonSegwit, Transaction::SegwitFormatMode::NonSegwit);
-    int64_t sizeNonSegwit = dataNonSegwit.size();
-    uint64_t vSize = 0;
+    const auto sizeNonSegwit = static_cast<Amount>(dataNonSegwit.size());
+    Amount vSize = 0;
     // Check if there is segwit
     if (!transaction.hasWitness()) {
         // no segwit, virtual size is defined as non-segwit size
@@ -65,19 +65,19 @@ int64_t estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionP
     } else {
         Data dataWitness;
         transaction.encodeWitness(dataWitness);
-        int64_t witnessSize = 2 + dataWitness.size();
+        Amount witnessSize = 2ull + dataWitness.size();
         // compute virtual size:  (smaller) non-segwit + 1/4 of the diff (witness-only)
         // (in other way: 3/4 of (smaller) non-segwit + 1/4 of segwit size)
-        vSize = sizeNonSegwit + witnessSize/4 + (witnessSize % 4 != 0);
+        vSize = sizeNonSegwit + witnessSize/4ull + (witnessSize % 4 != 0ull);
     }
-    uint64_t fee = input.byteFee * vSize;
+    const Amount fee = input.byteFee * vSize;
 
     return fee;
 }
 
-int extraOutputCount(const SigningInput& input) {
-    int count = int(input.outputOpReturn.size() > 0);
-    return count + int(input.extraOutputs.size());
+size_t extraOutputCount(const SigningInput& input) {
+    const auto count = static_cast<size_t>(!input.outputOpReturn.empty());
+    return count + input.extraOutputs.size();
 }
 
 TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
@@ -105,17 +105,17 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
 
         // if amount requested is the same or more than available amount, it cannot be satisfied, but
         // treat this case as MaxAmount, and send maximum available (which will be less)
-        if (!maxAmount && static_cast<uint64_t>(totalAmount) >= inputSum) {
+        if (!maxAmount && totalAmount >= inputSum) {
             maxAmount = true;
         }
 
         auto extraOutputs = extraOutputCount(input);
-        auto output_size = 2;
+        size_t output_size = 2ull;
         UTXOs selectedInputs;
         if (!maxAmount) {
             // Please note that there may not be a "change" output if the "change.amount" is less than "dust",
             // but we use a max amount of transaction outputs to simplify the algorithm, so the fee can be slightly bigger in rare cases.
-            output_size = 2 + extraOutputs; // output + change
+            output_size = 2ull + extraOutputs; // output + change
             if (input.useMaxUtxo) {
                 selectedInputs = inputSelector.selectMaxAmount(input.byteFee);
             } else if (input.utxos.size() <= SimpleModeLimit &&
@@ -126,7 +126,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
                     inputSelector.selectSimple(totalAmount, input.byteFee, output_size);
             }
         } else {
-            output_size = 1 + extraOutputs; // output, no change
+            output_size = 1ull + extraOutputs; // output, no change
             selectedInputs = inputSelector.selectMaxAmount(input.byteFee);
         }
         if (selectedInputs.size() <= MaxUtxosHardLimit) {
@@ -140,11 +140,11 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         }
 
         if (plan.utxos.empty()) {
-            plan.amount = 0;
+            plan.amount = 0ull;
             plan.error = Common::Proto::Error_not_enough_utxos;
         } else if (maxAmount && !input.extraOutputs.empty()) {
             // As of now, we don't support `max` amount **and** extra outputs.
-            plan.amount = 0;
+            plan.amount = 0ull;
             plan.error = Common::Proto::Error_invalid_params;
         } else {
             plan.availableAmount = InputSelector<UTXO>::sum(plan.utxos);
@@ -160,12 +160,12 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
             // must preliminary set change so that there is a second output
             if (!maxAmount) {
                 plan.amount = input.amount;
-                plan.fee = 0;
+                plan.fee = 0ull;
                 plan.change = plan.availableAmount - totalAmount;
             } else {
                 plan.amount = plan.availableAmount;
-                plan.fee = 0;
-                plan.change = 0;
+                plan.fee = 0ull;
+                plan.change = 0ull;
             }
             plan.fee = estimateSegwitFee(feeCalculator, plan, output_size, input);
 
@@ -180,17 +180,17 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
 
             // If fee is larger than availableAmount (can happen in special maxAmount case), we reduce it (and hope it will go through)
             plan.fee = std::min(plan.availableAmount, plan.fee);
-            assert(plan.fee >= 0 && plan.fee <= plan.availableAmount);
+            assert(plan.fee <= plan.availableAmount);
 
             // adjust/compute amount
             if (!maxAmount) {
                 // reduce amount if needed
-                plan.amount = std::max(Amount(0), std::min(plan.amount, plan.availableAmount - plan.fee));
+                plan.amount = std::min(plan.amount, plan.availableAmount - plan.fee);
             } else {
-                // max available amount
-                plan.amount = std::max(Amount(0), plan.availableAmount - plan.fee);
+                // max available amount; plan.fee <= plan.availableAmount so subtraction is safe
+                plan.amount = plan.availableAmount - plan.fee;
             }
-            assert(plan.amount >= 0 && plan.amount <= plan.availableAmount);
+            assert(plan.amount <= plan.availableAmount);
 
             // The total amount that will be spent.
             Amount totalSpendAmount = plan.amount + input.extraOutputsAmount + plan.fee;
@@ -215,13 +215,13 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
                 plan.change = changeAmount;
             } else {
                 // Spend the change as tx fee if it's dust, otherwise the transaction won't be mined.
-                plan.change = 0;
+                plan.change = 0ull;
                 plan.fee += changeAmount;
             }
         }
     }
-    assert(plan.change >= 0 && plan.change <= plan.availableAmount);
-    assert(!maxAmount || plan.change == 0); // change is 0 in max amount case
+    assert(plan.change <= plan.availableAmount);
+    assert(!maxAmount || plan.change == 0ull); // change is 0 in max amount case
 
     assert(plan.error != Common::Proto::OK
            // `plan.error` is OK, check if the values are expected.

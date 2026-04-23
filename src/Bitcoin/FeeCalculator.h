@@ -5,6 +5,7 @@
 #pragma once
 
 #include <TrustWalletCore/TWCoinType.h>
+#include "Amount.h"
 
 namespace TW::Bitcoin {
 
@@ -19,9 +20,9 @@ inline constexpr double gSegwitBytesBase{gDefaultBytesBase};
 class FeeCalculator {
 public:
     virtual ~FeeCalculator() noexcept = default;
-    [[nodiscard]] virtual int64_t calculate(int64_t inputs, int64_t outputs,
-                                            int64_t byteFee) const noexcept = 0;
-    [[nodiscard]] virtual int64_t calculateSingleInput(int64_t byteFee) const noexcept = 0;
+    [[nodiscard]] virtual Amount calculate(size_t inputs, size_t outputs,
+                                            Amount byteFee) const noexcept = 0;
+    [[nodiscard]] virtual Amount calculateSingleInput(Amount byteFee) const noexcept = 0;
 };
 
 /// Generic fee calculator with linear input and output size, and a fix size
@@ -34,22 +35,22 @@ public:
                                            double bytesBase) noexcept
         : bytesPerInput(bytesPerInput), bytesPerOutput(bytesPerOutput), bytesBase(bytesBase) {}
 
-    [[nodiscard]] int64_t calculate(int64_t inputs, int64_t outputs,
-                                    int64_t byteFee) const noexcept override;
-    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const noexcept override;
+    [[nodiscard]] Amount calculate(size_t inputs, size_t outputs,
+                                    Amount byteFee) const noexcept override;
+    [[nodiscard]] Amount calculateSingleInput(Amount byteFee) const noexcept override;
 };
 
 /// Constant fee calculator
 class ConstantFeeCalculator : public FeeCalculator {
 public:
-    const int64_t fee;
-    explicit constexpr ConstantFeeCalculator(int64_t fee) noexcept : fee(fee) {}
+    const Amount fee;
+    explicit constexpr ConstantFeeCalculator(Amount fee) noexcept : fee(fee) {}
 
-    [[nodiscard]] int64_t calculate([[maybe_unused]] int64_t inputs, [[maybe_unused]] int64_t outputs,
-                                    [[maybe_unused]] int64_t byteFee) const noexcept final {
+    [[nodiscard]] Amount calculate([[maybe_unused]] size_t inputs, [[maybe_unused]] size_t outputs,
+                                    [[maybe_unused]] Amount byteFee) const noexcept final {
         return fee;
     }
-    [[nodiscard]] int64_t calculateSingleInput([[maybe_unused]] int64_t byteFee) const noexcept final { return 0; }
+    [[nodiscard]] Amount calculateSingleInput([[maybe_unused]] Amount byteFee) const noexcept final { return 0; }
 };
 
 /// Default Bitcoin transaction fee calculator, non-segwit.
@@ -62,7 +63,7 @@ public:
         : LinearFeeCalculator(gDefaultBytesPerInput, gDefaultBytesPerOutput, gDefaultBytesBase)
         , disableDustFilter(disableFilter) {}
     
-    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const noexcept override {
+    [[nodiscard]] Amount calculateSingleInput(Amount byteFee) const noexcept override {
         if (disableDustFilter) { 
             return 0; 
         }
@@ -80,7 +81,7 @@ public:
         : LinearFeeCalculator(gSegwitBytesPerInput, gSegwitBytesPerOutput, gSegwitBytesBase)
         , disableDustFilter(disableFilter) {}
 
-    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const noexcept override {
+    [[nodiscard]] Amount calculateSingleInput(Amount byteFee) const noexcept override {
         if (disableDustFilter) {
             return 0;
         }
@@ -90,13 +91,13 @@ public:
 
 class Zip0317FeeCalculator: public FeeCalculator {
 public:
-    static constexpr int64_t gMarginalFee = 5000ul;
-    static constexpr int64_t gGraceActions = 2ul;
+    static constexpr Amount gMarginalFee = 5000ul;
+    static constexpr size_t gGraceActions = 2ul;
 
     Zip0317FeeCalculator() noexcept = default;
 
-    [[nodiscard]] int64_t calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const noexcept final;
-    [[nodiscard]] int64_t calculateSingleInput([[maybe_unused]] int64_t byteFee) const noexcept final {
+    [[nodiscard]] Amount calculate(size_t inputs, size_t outputs, Amount byteFee) const noexcept final;
+    [[nodiscard]] Amount calculateSingleInput([[maybe_unused]] Amount byteFee) const noexcept final {
         return gMarginalFee;
     }
 };

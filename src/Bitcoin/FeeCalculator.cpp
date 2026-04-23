@@ -15,16 +15,16 @@ constexpr double gDecredBytesPerInput{166};
 constexpr double gDecredBytesPerOutput{38};
 constexpr double gDecredBytesBase{12};
 
-int64_t LinearFeeCalculator::calculate(int64_t inputs, int64_t outputs,
-                                       int64_t byteFee) const noexcept {
+Amount LinearFeeCalculator::calculate(size_t inputs, size_t outputs,
+                                       Amount byteFee) const noexcept {
     const auto txsize =
-        static_cast<int64_t>(std::ceil(bytesPerInput * static_cast<double>(inputs) +
+        static_cast<Amount>(std::ceil(bytesPerInput * static_cast<double>(inputs) +
                                        bytesPerOutput * static_cast<double>(outputs) + bytesBase));
     return txsize * byteFee;
 }
 
-int64_t LinearFeeCalculator::calculateSingleInput(int64_t byteFee) const noexcept {
-    return static_cast<int64_t>(std::ceil(bytesPerInput)) * byteFee; // std::ceil(101.25) = 102
+Amount LinearFeeCalculator::calculateSingleInput(Amount byteFee) const noexcept {
+    return static_cast<Amount>(std::ceil(bytesPerInput)) * byteFee; // std::ceil(101.25) = 102
 }
 
 class DecredFeeCalculator : public LinearFeeCalculator {
@@ -36,7 +36,7 @@ public:
         : LinearFeeCalculator(gDecredBytesPerInput, gDecredBytesPerOutput, gDecredBytesBase)
         , disableDustFilter(disableFilter) {}
 
-    int64_t calculateSingleInput(int64_t byteFee) const noexcept override {
+    Amount calculateSingleInput(Amount byteFee) const noexcept override {
         if (disableDustFilter) { 
             return 0; 
         }
@@ -90,10 +90,10 @@ const FeeCalculator& getFeeCalculator(TWCoinType coinType, bool disableFilter, b
 }
 
 // https://github.com/Zondax/ledger-zcash-tools/blob/5ecf1c04c69d2454b73aa7acea4eadda563dfeff/ledger-zcash-app-builder/src/txbuilder.rs#L342-L363
-int64_t Zip0317FeeCalculator::calculate(int64_t inputs, int64_t outputs, [[maybe_unused]] int64_t byteFee) const noexcept {
+Amount Zip0317FeeCalculator::calculate(size_t inputs, size_t outputs, [[maybe_unused]] Amount byteFee) const noexcept {
     const auto logicalActions = std::max(inputs, outputs);
     const auto actions = std::max(gGraceActions, logicalActions);
-    return gMarginalFee * actions;
+    return gMarginalFee * static_cast<Amount>(actions);
 }
 
 } // namespace TW::Bitcoin

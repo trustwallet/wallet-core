@@ -52,21 +52,17 @@ struct TransactionPlan {
     TransactionPlan() = default;
 
     TransactionPlan(const Proto::TransactionPlan& plan)
-        : amount(plan.amount())
-        , availableAmount(plan.available_amount())
-        , fee(plan.fee())
-        , change(plan.change())
-        , utxos(std::vector<UTXO>(plan.utxos().begin(), plan.utxos().end()))
+        : utxos(std::vector<UTXO>(plan.utxos().begin(), plan.utxos().end()))
         , branchId(plan.branch_id().begin(), plan.branch_id().end())
         , preBlockHash(plan.preblockhash().begin(), plan.preblockhash().end())
         , preBlockHeight(plan.preblockheight())
         , outputOpReturn(plan.output_op_return().begin(), plan.output_op_return().end())
         , error(plan.error())
     {
-        assertValidAmount(amount);
-        assertValidAmount(availableAmount);
-        assertValidAmount(fee);
-        assertValidAmount(change);
+        amount = tryToUnsigned(plan.amount());
+        availableAmount = tryToUnsigned(plan.available_amount());
+        fee = tryToUnsigned(plan.fee());
+        change = tryToUnsigned(plan.change());
         if (plan.has_output_op_return_index()) {
             outputOpReturnIndex = plan.output_op_return_index().index();
         }
@@ -74,10 +70,10 @@ struct TransactionPlan {
 
     Proto::TransactionPlan proto() const {
         auto plan = Proto::TransactionPlan();
-        plan.set_amount(amount);
-        plan.set_available_amount(availableAmount);
-        plan.set_fee(fee);
-        plan.set_change(change);
+        plan.set_amount(tryToSigned(amount));
+        plan.set_available_amount(tryToSigned(availableAmount));
+        plan.set_fee(tryToSigned(fee));
+        plan.set_change(tryToSigned(change));
         for (auto& utxo: utxos) {
             *plan.add_utxos() = utxo.proto();
         }

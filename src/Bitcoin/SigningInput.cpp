@@ -12,12 +12,8 @@ SigningInput::SigningInput()
 
 SigningInput::SigningInput(const Proto::SigningInput& input) {
     hashType = static_cast<TWBitcoinSigHashType>(input.hash_type());
-
-    assertValidAmount(input.amount());
-    amount = input.amount();
-
-    assertValidAmount(input.byte_fee());
-    byteFee = input.byte_fee();
+    amount = tryToUnsigned(input.amount());
+    byteFee = tryToUnsigned(input.byte_fee());
 
     toAddress = input.to_address();
     changeAddress = input.change_address();
@@ -47,9 +43,9 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
 
     extraOutputsAmount = 0;
     for (auto& output: input.extra_outputs()) {
-        assertValidAmount(output.amount());
-        extraOutputsAmount += output.amount();
-        extraOutputs.emplace_back(output.to_address(), output.amount());
+        const auto extraAmount = tryToUnsigned(output.amount());
+        extraOutputsAmount += extraAmount;
+        extraOutputs.emplace_back(output.to_address(), extraAmount);
     }
 
     dustCalculator = getDustCalculator(input);

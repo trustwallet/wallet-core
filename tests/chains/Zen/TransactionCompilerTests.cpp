@@ -60,11 +60,11 @@ TEST(ZenCompiler, CompileWithSignatures) {
     utxo0->set_script(script0.bytes.data(), script0.bytes.size());
 
     auto plan = Zen::TransactionBuilder::plan(input);
-    ASSERT_EQ(plan.fee, 226);
+    ASSERT_EQ(plan.fee, 226ull);
     plan.preBlockHash = blockHash;
     plan.preBlockHeight = blockHeight;
-    plan.fee = 302;
-    plan.change = 1249057 - plan.amount - plan.fee;
+    plan.fee = 302ull;
+    plan.change = 1249057ull - plan.amount - plan.fee;
 
     auto& protoPlan = *input.mutable_plan();
     protoPlan = plan.proto();
