@@ -35,31 +35,31 @@ public:
 
     /// Selects UTXOs for max amount; select all except those which would reduce output (dust).
     /// Return indices. One output and no change is assumed.
-    std::vector<TypeWithAmount> selectMaxAmount(Amount byteFee) noexcept;
+    std::vector<TypeWithAmount> selectMaxAmount(Amount byteFee);
 
     /// Construct, using provided feeCalculator (see getFeeCalculator()) and dustCalculator (see getDustCalculator()).
     explicit InputSelector(const std::vector<TypeWithAmount>& inputs,
                            const FeeCalculator& feeCalculator,
-                           DustCalculatorShared dustCalculator) noexcept
+                           DustCalculatorShared dustCalculator)
         : _inputs(inputs),
           feeCalculator(feeCalculator),
           dustCalculator(std::move(dustCalculator)) {
     }
 
-    explicit InputSelector(const std::vector<TypeWithAmount>& inputs) noexcept
+    explicit InputSelector(const std::vector<TypeWithAmount>& inputs)
         : _inputs(inputs),
           feeCalculator(getFeeCalculator(TWCoinTypeBitcoin)),
           dustCalculator(std::make_shared<LegacyDustCalculator>(TWCoinTypeBitcoin)) {
     }
 
     /// Sum of input amounts
-    static Amount sum(const std::vector<TypeWithAmount>& amounts) noexcept;
+    static Amount sum(const std::vector<TypeWithAmount>& amounts);
     /// Filters out utxos that are dust
-    inline std::vector<TypeWithAmount> filterOutDust(const std::vector<TypeWithAmount>& inputsIn,
-                                                     Amount byteFee) noexcept;
+    std::vector<TypeWithAmount> filterOutDust(const std::vector<TypeWithAmount>& inputsIn,
+                                                     Amount byteFee);
     /// Filters out inputsIn below (or equal) a certain threshold limit
-    inline std::vector<TypeWithAmount> filterThreshold(const std::vector<TypeWithAmount>& inputsIn,
-                                                       Amount minimumAmount) noexcept;
+    std::vector<TypeWithAmount> filterThreshold(const std::vector<TypeWithAmount>& inputsIn,
+                                                       Amount minimumAmount);
 
 private:
     const std::vector<TypeWithAmount> _inputs;

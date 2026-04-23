@@ -31,14 +31,14 @@ public:
         : outPoint(utxo.out_point())
         , script(utxo.script().begin(), utxo.script().end())
     {
-        amount = tryToUnsigned(utxo.amount());
+        amount = tryToUnsigned(utxo.amount(), "utxo.amount");
     }
 
     Proto::UnspentTransaction proto() const {
         auto utxo = Proto::UnspentTransaction();
         *utxo.mutable_out_point() = outPoint.proto();
         utxo.set_script(std::string(script.bytes.begin(), script.bytes.end()));
-        utxo.set_amount(tryToSigned(amount));
+        utxo.set_amount(tryToSigned(amount, "utxo.amount"));
         return utxo;
     }
 };

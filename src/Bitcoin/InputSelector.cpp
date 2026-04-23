@@ -5,6 +5,7 @@
 #include "InputSelector.h"
 
 #include "UTXO.h"
+#include "Numeric.h"
 
 #include <algorithm>
 #include <optional>
@@ -13,10 +14,10 @@
 namespace TW::Bitcoin {
 
 template <typename TypeWithAmount>
-Amount InputSelector<TypeWithAmount>::sum(const std::vector<TypeWithAmount>& amounts) noexcept {
+Amount InputSelector<TypeWithAmount>::sum(const std::vector<TypeWithAmount>& amounts) {
     Amount sum = 0;
     for (auto& i : amounts) {
-        sum += i.amount;
+        sum = addUnsignedChecked(sum, i.amount);
     }
     return sum;
 }
@@ -24,7 +25,7 @@ Amount InputSelector<TypeWithAmount>::sum(const std::vector<TypeWithAmount>& amo
 template <typename TypeWithAmount>
 std::vector<TypeWithAmount>
 InputSelector<TypeWithAmount>::filterOutDust(const std::vector<TypeWithAmount>& inputs,
-                                             Amount byteFee) noexcept {
+                                             Amount byteFee) {
     auto dustThreshold = dustCalculator->dustAmount(byteFee);
     return filterThreshold(inputs, dustThreshold);
 }
@@ -33,7 +34,7 @@ InputSelector<TypeWithAmount>::filterOutDust(const std::vector<TypeWithAmount>& 
 template <typename TypeWithAmount>
 std::vector<TypeWithAmount>
 InputSelector<TypeWithAmount>::filterThreshold(const std::vector<TypeWithAmount>& inputs,
-                                               Amount minimumAmount) noexcept {
+                                               Amount minimumAmount) {
     std::vector<TypeWithAmount> filtered;
     for (auto& i : inputs) {
         if (static_cast<Amount>(i.amount) >= minimumAmount) {
@@ -86,7 +87,7 @@ InputSelector<TypeWithAmount>::select(Amount targetValue, Amount byteFee, size_t
     assert(sorted.size() >= 1);
 
     // definitions for the following calculation
-    const auto doubleTargetValue = targetValue * 2;
+    const auto doubleTargetValue = mulUnsignedChecked(targetValue, 2ull);
 
     // Precompute maximum amount possible to obtain with given number of inputs
     const auto n = sorted.size();
@@ -94,7 +95,7 @@ InputSelector<TypeWithAmount>::select(Amount targetValue, Amount byteFee, size_t
     maxWithXInputs.push_back(0);
     Amount maxSum = 0;
     for (auto i = 0ul; i < n; ++i) {
-        maxSum += sorted[n - 1 - i].amount;
+        maxSum = addUnsignedChecked(maxSum, sorted[n - 1 - i].amount);
         maxWithXInputs.push_back(maxSum);
     }
 
@@ -206,7 +207,7 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(Amount t
 
 template <typename TypeWithAmount>
 std::vector<TypeWithAmount>
-InputSelector<TypeWithAmount>::selectMaxAmount(Amount byteFee) noexcept {
+InputSelector<TypeWithAmount>::selectMaxAmount(Amount byteFee) {
     return filterOutDust(_inputs, byteFee);
 }
 

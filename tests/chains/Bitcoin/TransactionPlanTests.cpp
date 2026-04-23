@@ -690,15 +690,15 @@ TEST(TransactionPlan, ManyUtxosMax_5000_simple) {
 TEST(TransactionPlan, OpReturn) {
     auto ownAddress = "bc1q7s0a2l4aguksehx8hf93hs9yggl6njxds6m02g";
     auto toAddress = "bc1qxu5a8gtnjxw3xwdlmr2gl9d76h9fysu3zl656e";
-    const Amount utxoAmount = 342101ull;
-    const Amount toAmount = 300000ull;
-    const Amount byteFee = 126ull;
+    const int64_t utxoAmount = 342101ll;
+    const int64_t toAmount = 300000ll;
+    const int64_t byteFee = 126ll;
     Data memo = data("SWAP:THOR.RUNE:thor1tpercamkkxec0q0jk6ltdnlqvsw29guap8wmcl:");
 
     auto signingInput = Proto::SigningInput();
     signingInput.set_hash_type(TWBitcoinSigHashTypeAll);
-    signingInput.set_amount(tryToSigned(toAmount));
-    signingInput.set_byte_fee(tryToSigned(byteFee));
+    signingInput.set_amount(toAmount);
+    signingInput.set_byte_fee(byteFee);
     signingInput.set_to_address(toAddress);
     signingInput.set_change_address(ownAddress);
     signingInput.set_output_op_return(memo.data(), memo.size());
@@ -709,18 +709,18 @@ TEST(TransactionPlan, OpReturn) {
     utxo.mutable_out_point()->set_hash(utxoHash.data(), utxoHash.size());
     utxo.mutable_out_point()->set_index(1);
     utxo.mutable_out_point()->set_sequence(UINT32_MAX);
-    utxo.set_amount(tryToSigned(utxoAmount));
+    utxo.set_amount(utxoAmount);
 
     auto txPlan = TransactionBuilder::plan(signingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {342101}, 300000ull, 205ull * byteFee));
+    EXPECT_TRUE(verifyPlan(txPlan, {342101}, 300000ull, 205ull * static_cast<Amount>(byteFee)));
     EXPECT_EQ(txPlan.outputOpReturn.size(), 59ull);
     EXPECT_EQ(hex(txPlan.outputOpReturn), "535741503a54484f522e52554e453a74686f72317470657263616d6b6b7865633071306a6b366c74646e6c7176737732396775617038776d636c3a");
     EXPECT_FALSE(txPlan.outputOpReturnIndex.has_value());
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    EXPECT_EQ(feeCalculator.calculate(1, 2, byteFee), 174ull * byteFee);
-    EXPECT_EQ(feeCalculator.calculate(1, 3, byteFee), 205ull * byteFee);
+    EXPECT_EQ(feeCalculator.calculate(1, 2, byteFee), 174ull * static_cast<Amount>(byteFee));
+    EXPECT_EQ(feeCalculator.calculate(1, 3, byteFee), 205ull * static_cast<Amount>(byteFee));
 }
 
 } // namespace TW::Bitcoin

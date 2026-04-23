@@ -202,7 +202,7 @@ Proto::Transaction Transaction::proto() const {
 
     for (const auto& output : outputs) {
         auto* protoOutput = protoTx.add_outputs();
-        protoOutput->set_value(Bitcoin::tryToSigned(output.value));
+        protoOutput->set_value(Bitcoin::tryToSigned(output.value, "output.value"));
         protoOutput->set_script(output.script.bytes.data(), output.script.bytes.size());
     }
 

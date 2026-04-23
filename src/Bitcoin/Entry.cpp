@@ -175,7 +175,7 @@ Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInput
 
 void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures,
                     const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
-    auto txCompilerFunctor = [&signatures, &publicKeys](auto&& input, auto&& output) noexcept {
+    auto txCompilerFunctor = [&signatures, &publicKeys](auto&& input, auto&& output) {
         output = Signer::compile(input, signatures, publicKeys);
     };
     dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(txInputData,

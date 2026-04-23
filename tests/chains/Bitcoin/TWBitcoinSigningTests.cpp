@@ -369,6 +369,212 @@ TEST(BitcoinSigning, SignMaxAmount) {
     EXPECT_EQ(output0.value(), amountWithoutFee);
 }
 
+TEST(BitcoinSigning, SignNegativeUtxoAmount) {
+    const auto privateKey = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
+    const auto ownAddress = "bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv";
+
+    const auto revUtxoHash0 =
+        parse_hex("07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa8");
+    const auto inPubKey0 =
+        parse_hex("024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382");
+    const auto inPubKeyHash0 = parse_hex("bd92088bb7e82d611a9b94fbb74a0908152b784f");
+    const auto utxoScript0 = parse_hex("0014bd92088bb7e82d611a9b94fbb74a0908152b784f");
+
+    const auto initialAmount = 10'189'533;
+
+    Proto::SigningInput signingInput;
+    signingInput.set_coin_type(TWCoinTypeBitcoin);
+    signingInput.set_hash_type(TWBitcoinSigHashTypeAll);
+    signingInput.set_amount(initialAmount);
+    signingInput.set_byte_fee(1);
+    signingInput.set_to_address("bc1q2dsdlq3343vk29runkgv4yc292hmq53jedfjmp");
+    signingInput.set_change_address(ownAddress);
+    signingInput.set_use_max_amount(true);
+
+    *signingInput.add_private_key() = std::string(privateKey.begin(), privateKey.end());
+
+    // Add UTXO
+    auto utxo = signingInput.add_utxo();
+    utxo->set_script(utxoScript0.data(), utxoScript0.size());
+    utxo->set_amount(-10'000ll);
+    utxo->mutable_out_point()->set_hash(
+        std::string(revUtxoHash0.begin(), revUtxoHash0.end()));
+    utxo->mutable_out_point()->set_index(0);
+    utxo->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    // Plan
+    Proto::TransactionPlan plan;
+    ANY_PLAN(signingInput, plan, TWCoinTypeBitcoin);
+    // An exception must be caught gracefully.
+    EXPECT_EQ(plan.error(), Common::Proto::Error_invalid_params);
+
+    // Sign
+    Proto::SigningOutput output;
+    ANY_SIGN(signingInput, TWCoinTypeBitcoin);
+    // An exception must be caught gracefully.
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+}
+
+TEST(BitcoinSigning, SignUtxoAmountSumExceedsInt64) {
+    const auto privateKey = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
+    const auto ownAddress = "bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv";
+
+    const auto revUtxoHash0 =
+        parse_hex("07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa8");
+    const auto inPubKey0 =
+        parse_hex("024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382");
+    const auto inPubKeyHash0 = parse_hex("bd92088bb7e82d611a9b94fbb74a0908152b784f");
+    const auto utxoScript0 = parse_hex("0014bd92088bb7e82d611a9b94fbb74a0908152b784f");
+
+    const auto initialAmount = 10'189'533;
+
+    Proto::SigningInput signingInput;
+    signingInput.set_coin_type(TWCoinTypeBitcoin);
+    signingInput.set_hash_type(TWBitcoinSigHashTypeAll);
+    signingInput.set_amount(initialAmount);
+    signingInput.set_byte_fee(1);
+    signingInput.set_to_address("bc1q2dsdlq3343vk29runkgv4yc292hmq53jedfjmp");
+    signingInput.set_change_address(ownAddress);
+    signingInput.set_use_max_amount(true);
+
+    *signingInput.add_private_key() = std::string(privateKey.begin(), privateKey.end());
+
+    // Add UTXO
+    auto utxo1 = signingInput.add_utxo();
+    utxo1->set_script(utxoScript0.data(), utxoScript0.size());
+    utxo1->set_amount(std::numeric_limits<int64_t>::max());
+    utxo1->mutable_out_point()->set_hash(
+        std::string(revUtxoHash0.begin(), revUtxoHash0.end()));
+    utxo1->mutable_out_point()->set_index(0);
+    utxo1->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    auto utxo2 = signingInput.add_utxo();
+    utxo2->set_script(utxoScript0.data(), utxoScript0.size());
+    utxo2->set_amount(std::numeric_limits<int64_t>::max());
+    utxo2->mutable_out_point()->set_hash(
+        std::string(revUtxoHash0.begin(), revUtxoHash0.end()));
+    utxo2->mutable_out_point()->set_index(1);
+    utxo2->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    // Plan
+    Proto::TransactionPlan plan;
+    ANY_PLAN(signingInput, plan, TWCoinTypeBitcoin);
+    // An exception must be caught gracefully.
+    EXPECT_EQ(plan.error(), Common::Proto::Error_invalid_params);
+
+    // Sign
+    Proto::SigningOutput output;
+    ANY_SIGN(signingInput, TWCoinTypeBitcoin);
+    // An exception must be caught gracefully.
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+}
+
+TEST(BitcoinSigning, SignUtxoAmountOverflow) {
+    const auto privateKey = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
+    const auto ownAddress = "bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv";
+
+    const auto revUtxoHash0 =
+        parse_hex("07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa8");
+    const auto inPubKey0 =
+        parse_hex("024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382");
+    const auto inPubKeyHash0 = parse_hex("bd92088bb7e82d611a9b94fbb74a0908152b784f");
+    const auto utxoScript0 = parse_hex("0014bd92088bb7e82d611a9b94fbb74a0908152b784f");
+
+    const auto initialAmount = 10'189'533;
+
+    Proto::SigningInput signingInput;
+    signingInput.set_coin_type(TWCoinTypeBitcoin);
+    signingInput.set_hash_type(TWBitcoinSigHashTypeAll);
+    signingInput.set_amount(initialAmount);
+    signingInput.set_byte_fee(1);
+    signingInput.set_to_address("bc1q2dsdlq3343vk29runkgv4yc292hmq53jedfjmp");
+    signingInput.set_change_address(ownAddress);
+    signingInput.set_use_max_amount(true);
+
+    *signingInput.add_private_key() = std::string(privateKey.begin(), privateKey.end());
+
+    // Add UTXO
+    auto utxo1 = signingInput.add_utxo();
+    utxo1->set_script(utxoScript0.data(), utxoScript0.size());
+    utxo1->set_amount(std::numeric_limits<int64_t>::max());
+    utxo1->mutable_out_point()->set_hash(
+        std::string(revUtxoHash0.begin(), revUtxoHash0.end()));
+    utxo1->mutable_out_point()->set_index(0);
+    utxo1->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    auto utxo2 = signingInput.add_utxo();
+    utxo2->set_script(utxoScript0.data(), utxoScript0.size());
+    utxo2->set_amount(std::numeric_limits<int64_t>::max());
+    utxo2->mutable_out_point()->set_hash(
+        std::string(revUtxoHash0.begin(), revUtxoHash0.end()));
+    utxo2->mutable_out_point()->set_index(1);
+    utxo2->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    auto utxo3 = signingInput.add_utxo();
+    utxo3->set_script(utxoScript0.data(), utxoScript0.size());
+    utxo3->set_amount(10'000ll);
+    utxo3->mutable_out_point()->set_hash(
+        std::string(revUtxoHash0.begin(), revUtxoHash0.end()));
+    utxo3->mutable_out_point()->set_index(2);
+    utxo3->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    // Plan
+    Proto::TransactionPlan plan;
+    ANY_PLAN(signingInput, plan, TWCoinTypeBitcoin);
+    // An exception must be caught gracefully.
+    EXPECT_EQ(plan.error(), Common::Proto::Error_invalid_params);
+
+    // Sign
+    Proto::SigningOutput output;
+    ANY_SIGN(signingInput, TWCoinTypeBitcoin);
+    // An exception must be caught gracefully.
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+}
+
+TEST(BitcoinSigning, SignNegativeOutputAmount) {
+    const auto privateKey = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
+    const auto ownAddress = "bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv";
+
+    const auto revUtxoHash0 =
+        parse_hex("07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa8");
+    const auto inPubKey0 =
+        parse_hex("024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382");
+    const auto inPubKeyHash0 = parse_hex("bd92088bb7e82d611a9b94fbb74a0908152b784f");
+    const auto utxoScript0 = parse_hex("0014bd92088bb7e82d611a9b94fbb74a0908152b784f");
+
+    Proto::SigningInput signingInput;
+    signingInput.set_coin_type(TWCoinTypeBitcoin);
+    signingInput.set_hash_type(TWBitcoinSigHashTypeAll);
+    signingInput.set_amount(-10'000);
+    signingInput.set_byte_fee(1);
+    signingInput.set_to_address("bc1q2dsdlq3343vk29runkgv4yc292hmq53jedfjmp");
+    signingInput.set_change_address(ownAddress);
+    signingInput.set_use_max_amount(true);
+
+    *signingInput.add_private_key() = std::string(privateKey.begin(), privateKey.end());
+
+    // Add UTXO
+    auto utxo1 = signingInput.add_utxo();
+    utxo1->set_script(utxoScript0.data(), utxoScript0.size());
+    utxo1->set_amount(4863);
+    utxo1->mutable_out_point()->set_hash(
+        std::string(revUtxoHash0.begin(), revUtxoHash0.end()));
+    utxo1->mutable_out_point()->set_index(0);
+    utxo1->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    // Plan
+    Proto::TransactionPlan plan;
+    ANY_PLAN(signingInput, plan, TWCoinTypeBitcoin);
+    // An exception must be caught gracefully.
+    EXPECT_EQ(plan.error(), Common::Proto::Error_invalid_params);
+
+    // Sign
+    Proto::SigningOutput output;
+    ANY_SIGN(signingInput, TWCoinTypeBitcoin);
+    // An exception must be caught gracefully.
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+}
+
 // Tests the BitcoinV2 API through the legacy `SigningInput`.
 TEST(BitcoinSigning, SignBRC20TransferCommitV2) {
     auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");

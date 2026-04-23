@@ -6,6 +6,7 @@
 #include "Script.h"
 #include "TransactionSigner.h"
 #include "SignatureBuilder.h"
+#include "Numeric.h"
 
 #include "../Coin.h"
 
@@ -88,7 +89,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
     plan.outputOpReturnIndex = input.outputOpReturnIndex;
 
     bool maxAmount = input.useMaxAmount;
-    Amount totalAmount = input.amount + input.extraOutputsAmount;
+    Amount totalAmount = addUnsignedChecked(input.amount, input.extraOutputsAmount);
     Amount dustThreshold = input.dustCalculator->dustAmount(input.byteFee);
 
     if (totalAmount == 0 && !maxAmount) {
@@ -172,7 +173,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
             // `InputSelector` has a rough segwit fee estimation algorithm,
             // so the fee could be increased or decreased (see `InputSelector::select`).
             // We need to make sure if we have enough UTXOs to cover "requested amount + final fee".
-            if (!maxAmount && plan.availableAmount < plan.fee + plan.amount) {
+            if (!maxAmount && plan.availableAmount < addUnsignedChecked(plan.fee, plan.amount)) {
                 TransactionPlan errorPlan;
                 errorPlan.error = Common::Proto::Error_not_enough_utxos;
                 return errorPlan;
@@ -193,7 +194,10 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
             assert(plan.amount <= plan.availableAmount);
 
             // The total amount that will be spent.
-            Amount totalSpendAmount = plan.amount + input.extraOutputsAmount + plan.fee;
+            Amount totalSpendAmount = addUnsignedChecked(
+                addUnsignedChecked(plan.amount, input.extraOutputsAmount),
+                plan.fee
+            );
 
             // Make sure that the output amount is greater or at least equal to the dust threshold.
             if (plan.amount < dustThreshold) {
@@ -216,7 +220,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
             } else {
                 // Spend the change as tx fee if it's dust, otherwise the transaction won't be mined.
                 plan.change = 0ull;
-                plan.fee += changeAmount;
+                plan.fee = addUnsignedChecked(plan.fee, changeAmount);
             }
         }
     }
