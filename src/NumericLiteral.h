@@ -12,6 +12,6 @@ inline constexpr std::size_t operator"" _uz(unsigned long long int n) {
     return n;
 }
 
-inline constexpr std::uint64_t operator"" _u64(std::uint64_t n) {
+inline constexpr std::uint64_t operator"" _u64(unsigned long long int n) {
     return n;
 }
