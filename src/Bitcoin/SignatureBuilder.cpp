@@ -129,7 +129,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
 
     Data data;
     std::vector<Data> keys;
-    int required;
+    size_t required;
 
     if (script.matchPayToScriptHash(data) || script.matchPayToScriptHashReplay(data)) {
         auto redeemScript = scriptForScriptHash(data);
@@ -158,7 +158,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
     if (script.matchMultisig(keys, required)) {
         auto results = std::vector<Data>{{}}; // workaround CHECKMULTISIG bug
         for (auto& pubKey : keys) {
-            if (results.size() >= static_cast<size_t>(required) + 1ul) {
+            if (results.size() >= required + 1ul) {
                 break;
             }
             auto keyHash = Hash::ripemd(Hash::sha256(pubKey));
@@ -174,7 +174,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
             }
             results.push_back(signature);
         }
-        results.resize(static_cast<size_t>(required) + 1ul);
+        results.resize(required + 1ul);
         return Result<std::vector<Data>, Common::Proto::SigningError>::success(std::move(results));
     }
     if (script.matchPayToPublicKey(data)) {

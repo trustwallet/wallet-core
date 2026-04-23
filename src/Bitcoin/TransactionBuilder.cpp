@@ -184,7 +184,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
 
             // adjust/compute amount
             if (!maxAmount) {
-                // reduce amount if needed
+                // reduce amount if needed, plan.fee <= plan.availableAmount so subtraction is safe
                 plan.amount = std::min(plan.amount, plan.availableAmount - plan.fee);
             } else {
                 // max available amount; plan.fee <= plan.availableAmount so subtraction is safe

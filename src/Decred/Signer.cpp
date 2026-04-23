@@ -147,7 +147,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> Signer::signStep(Bitcoin:
 
     Data data;
     std::vector<Data> keys;
-    int required;
+    size_t required;
 
     if (script.matchPayToPublicKey(data)) {
         auto keyHash = TW::Hash::ripemd(TW::Hash::blake256(data));
@@ -216,7 +216,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> Signer::signStep(Bitcoin:
             }
             results.push_back(signature);
         }
-        results.resize(required + 1);
+        results.resize(required + 1ul);
         return Result<std::vector<Data>, Common::Proto::SigningError>::success(std::move(results));
     } else {
         // Error: Invalid output script

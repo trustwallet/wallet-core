@@ -32,7 +32,7 @@ inline int64_t tryToSigned(const Amount amount) {
     return static_cast<int64_t>(amount);
 }
 
-/// -1 (or uint64_t::MAX) is used when signing a transaction with SIGHASH_SINGLE and the output index is out of bounds.
+/// uint64_t::MAX (equivalent to -1) is used when signing a transaction with SIGHASH_SINGLE and the output index is out of bounds.
 inline Amount sighashSingleAmount() {
     return std::numeric_limits<Amount>::max();
 }
