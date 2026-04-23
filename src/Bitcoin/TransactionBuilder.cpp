@@ -72,7 +72,7 @@ Amount estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionPl
         // (in other way: 3/4 of (smaller) non-segwit + 1/4 of segwit size)
         vSize = sizeNonSegwit + witnessSize/4_u64 + (witnessSize % 4 != 0_u64);
     }
-    const Amount fee = input.byteFee * vSize;
+    const Amount fee = mulUnsignedChecked(input.byteFee, vSize);
 
     return fee;
 }

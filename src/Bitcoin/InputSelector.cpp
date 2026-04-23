@@ -116,7 +116,7 @@ InputSelector<TypeWithAmount>::select(Amount targetValue, Amount byteFee, size_t
     //    (3) and does not produce dust change.
     for (size_t numInputs = 1; numInputs <= n; ++numInputs) {
         const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
-        const auto targetWithFeeAndDust = targetValue + fee + dustThreshold;
+        const auto targetWithFeeAndDust = addUnsignedChecked(addUnsignedChecked(targetValue, fee), dustThreshold);
         if (maxWithXInputs[numInputs] < targetWithFeeAndDust) {
             // no way to satisfy with only numInputs inputs, skip
             continue;
@@ -193,7 +193,7 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(Amount t
             continue; // skip dust
         }
         selected.push_back(input);
-        sum += input.amount;
+        sum = addUnsignedChecked(sum, input.amount);
         if (sum >= increasedTargetValue) {
             // we have enough
             return selected;
