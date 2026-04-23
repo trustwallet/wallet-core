@@ -3,60 +3,26 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "Bitcoin/Address.h"
-#include "Tron/Address.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
-#include "uint256.h"
-#include "proto/Tron.pb.h"
 #include "Tron/Signer.h"
+#include "proto/Tron.pb.h"
+#include "uint256.h"
 
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 namespace TW::Tron {
 
-TEST(TronSigner, SignDirectTransferAsset) {
-    auto input = Proto::SigningInput();
-    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
-    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-    input.set_txid("546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb");
-    const auto output = Signer::sign(input);
-    ASSERT_EQ(hex(output.id()), "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb");
-    ASSERT_EQ(hex(output.signature()), "77f5eabde31e739d34a66914540f1756981dc7d782c9656f5e14e53b59a15371603a183aa12124adeee7991bf55acc8e488a6ca04fb393b1a8ac16610eeafdfc00");
-}
-
-TEST(TronSigner, SignDirectRawJsonTransferAsset) {
-    auto input = Proto::SigningInput();
-    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
-    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-    auto rawJson = R"({
-	"raw_data": {
-		"contract": [{
-			"parameter": {
-				"type_url": "type.googleapis.com/protocol.TransferAssetContract",
-				"value": {
-					"amount": 4,
-					"asset_name": "31303030393539",
-					"owner_address": "415cd0fb0ab3ce40f3051414c604b27756e69e43db",
-					"to_address": "41521ea197907927725ef36d70f25f850d1659c7c7"
-				}
-			},
-			"type": "TransferAssetContract"
-		}],
-		"expiration": 1541926116000,
-		"ref_block_bytes": "b801",
-		"ref_block_hash": "0e2bc08d550f5f58",
-		"timestamp": 1539295479000
-	},
-	"visible":false,
-	"txID": "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb"
-})";
-    input.set_raw_json(rawJson);
-    const auto output = Signer::sign(input);
-    ASSERT_EQ(hex(output.id()), "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb");
-    ASSERT_EQ(hex(output.signature()), "77f5eabde31e739d34a66914540f1756981dc7d782c9656f5e14e53b59a15371603a183aa12124adeee7991bf55acc8e488a6ca04fb393b1a8ac16610eeafdfc00");
+std::string eraseSignature(const std::string &jsonStr) {
+    auto rawJson = nlohmann::json::parse(jsonStr);
+    rawJson.erase("signature");
+    return rawJson.dump();
 }
 
 TEST(TronSigner, SignTransferAsset) {
+    // Step 1. Construct and sign a transfer asset transaction.
+
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
 
@@ -87,9 +53,20 @@ TEST(TronSigner, SignTransferAsset) {
 
     ASSERT_EQ(hex(output.id()), "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb");
     ASSERT_EQ(hex(output.signature()), "77f5eabde31e739d34a66914540f1756981dc7d782c9656f5e14e53b59a15371603a183aa12124adeee7991bf55acc8e488a6ca04fb393b1a8ac16610eeafdfc00");
+
+    // Step 2. Verify that the JSON output can be parsed and signed back.
+
+    auto input2 = Proto::SigningInput();
+    input2.set_raw_json(eraseSignature(output.json()));
+    input2.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    const auto output2 = Signer::sign(input2);
+    ASSERT_EQ(hex(output2.id()), "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb");
+    ASSERT_EQ(hex(output2.signature()), "77f5eabde31e739d34a66914540f1756981dc7d782c9656f5e14e53b59a15371603a183aa12124adeee7991bf55acc8e488a6ca04fb393b1a8ac16610eeafdfc00");
 }
 
 TEST(TronSigner, SignTransfer) {
+    // Step 1. Construct and sign a transfer transaction.
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
 
@@ -119,9 +96,18 @@ TEST(TronSigner, SignTransfer) {
 
     ASSERT_EQ(hex(output.id()), "dc6f6d9325ee44ab3c00528472be16e1572ab076aa161ccd12515029869d0451");
     ASSERT_EQ(hex(output.signature()), "ede769f6df28aefe6a846be169958c155e23e7e5c9621d2e8dce1719b4d952b63e8a8bf9f00e41204ac1bf69b1a663dacdf764367e48e4a5afcd6b055a747fb200");
+
+    // Step 2. Re-sign using the JSON output and verify the same id and signature.
+    auto input2 = Proto::SigningInput();
+    input2.set_raw_json(eraseSignature(output.json()));
+    input2.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    const auto output2 = Signer::sign(input2);
+    ASSERT_EQ(hex(output2.id()), "dc6f6d9325ee44ab3c00528472be16e1572ab076aa161ccd12515029869d0451");
+    ASSERT_EQ(hex(output2.signature()), "ede769f6df28aefe6a846be169958c155e23e7e5c9621d2e8dce1719b4d952b63e8a8bf9f00e41204ac1bf69b1a663dacdf764367e48e4a5afcd6b055a747fb200");
 }
 
 TEST(TronSigner, SignTransferWithMemo) {
+    // Step 1. Construct and sign a transfer transaction with a memo field.
     // Successfully broadcasted https://tronscan.org/#/transaction/20321755964d6ec5bcfc9ebfb15faeb043787ae599fff44442962e12e1c357f1
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
@@ -153,9 +139,18 @@ TEST(TronSigner, SignTransferWithMemo) {
 
     EXPECT_EQ(hex(output.id()), "20321755964d6ec5bcfc9ebfb15faeb043787ae599fff44442962e12e1c357f1");
     EXPECT_EQ(hex(output.signature()), "6fcee79c61f660ec689299f77924f32b5020b4c41593056052ef07d640cc799325103fab130c8691e8a224c96cd0704a698ac356ff789a543c284605668bf38000");
+
+    // Step 2. Re-sign using the JSON output and verify the same id and signature.
+    auto input2 = Proto::SigningInput();
+    input2.set_raw_json(eraseSignature(output.json()));
+    input2.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    const auto output2 = Signer::sign(input2);
+    EXPECT_EQ(hex(output2.id()), "20321755964d6ec5bcfc9ebfb15faeb043787ae599fff44442962e12e1c357f1");
+    EXPECT_EQ(hex(output2.signature()), "6fcee79c61f660ec689299f77924f32b5020b4c41593056052ef07d640cc799325103fab130c8691e8a224c96cd0704a698ac356ff789a543c284605668bf38000");
 }
 
 TEST(TronSigner, SignFreezeBalanceV2) {
+    // Step 1. Construct and sign a FreezeBalanceV2 transaction.
     // Successfully broadcasted https://nile.tronscan.org/#/transaction/3a46321487ce1fd115da38b3431006ea529f65ef2507f19233f5a23c05abd01d
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
@@ -186,9 +181,18 @@ TEST(TronSigner, SignFreezeBalanceV2) {
 
     ASSERT_EQ(hex(output.id()), "3a46321487ce1fd115da38b3431006ea529f65ef2507f19233f5a23c05abd01d");
     ASSERT_EQ(hex(output.signature()), "d4b539a389f6721b4e9d0eb9f39b62a539069060e1af2a118f06b81737ad9cdb49d5b4fda85f10603012f8de3996da2a1234c21d74ac6ea5e60217d3c10b630900");
+
+    // Step 2. Re-sign using the JSON output and verify the same id and signature.
+    auto input2 = Proto::SigningInput();
+    input2.set_raw_json(eraseSignature(output.json()));
+    input2.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    const auto output2 = Signer::sign(input2);
+    ASSERT_EQ(hex(output2.id()), "3a46321487ce1fd115da38b3431006ea529f65ef2507f19233f5a23c05abd01d");
+    ASSERT_EQ(hex(output2.signature()), "d4b539a389f6721b4e9d0eb9f39b62a539069060e1af2a118f06b81737ad9cdb49d5b4fda85f10603012f8de3996da2a1234c21d74ac6ea5e60217d3c10b630900");
 }
 
 TEST(TronSigner, WithdrawExpireUnfreezeContract) {
+    // Step 1. Construct and sign a WithdrawExpireUnfreeze transaction.
     // Successfully broadcasted https://nile.tronscan.org/#/transaction/65ff34192eebda9ba7013771ff2da1010615e348b70c046647f41afe865f00eb
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
@@ -217,9 +221,18 @@ TEST(TronSigner, WithdrawExpireUnfreezeContract) {
 
     ASSERT_EQ(hex(output.id()), "65ff34192eebda9ba7013771ff2da1010615e348b70c046647f41afe865f00eb");
     ASSERT_EQ(hex(output.signature()), "ef0361248c118b8afae9c4c8e6dfad1e63eec4fb6c182ae369fa3bbecc2ac29a292838949ad74300b2b7322a110ffd4458224e283181cf6d64df0324b068bb0001");
+
+    // Step 2. Re-sign using the JSON output and verify the same id and signature.
+    auto input2 = Proto::SigningInput();
+    input2.set_raw_json(eraseSignature(output.json()));
+    input2.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    const auto output2 = Signer::sign(input2);
+    ASSERT_EQ(hex(output2.id()), "65ff34192eebda9ba7013771ff2da1010615e348b70c046647f41afe865f00eb");
+    ASSERT_EQ(hex(output2.signature()), "ef0361248c118b8afae9c4c8e6dfad1e63eec4fb6c182ae369fa3bbecc2ac29a292838949ad74300b2b7322a110ffd4458224e283181cf6d64df0324b068bb0001");
 }
 
 TEST(TronSigner, SignUnFreezeBalanceV2) {
+    // Step 1. Construct and sign an UnfreezeBalanceV2 transaction.
     // Successfully broadcasted https://nile.tronscan.org/#/transaction/3070adc1743e6fdd20e04a749cc2af691ca26d2ce70e40cc0886be03595f9eeb
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
@@ -250,9 +263,18 @@ TEST(TronSigner, SignUnFreezeBalanceV2) {
 
     ASSERT_EQ(hex(output.id()), "3070adc1743e6fdd20e04a749cc2af691ca26d2ce70e40cc0886be03595f9eeb");
     ASSERT_EQ(hex(output.signature()), "10bc05c47102f1db1a3a4c0b4a6aba028d5a35dda4e505563c3f0ccf95a562cf18b53f7f7053c485299cfc599a432d1f0ee5554a56cd5981ccfff31d79b9868b00");
+
+    // Step 2. Re-sign using the JSON output and verify the same id and signature.
+    auto input2 = Proto::SigningInput();
+    input2.set_raw_json(eraseSignature(output.json()));
+    input2.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    const auto output2 = Signer::sign(input2);
+    ASSERT_EQ(hex(output2.id()), "3070adc1743e6fdd20e04a749cc2af691ca26d2ce70e40cc0886be03595f9eeb");
+    ASSERT_EQ(hex(output2.signature()), "10bc05c47102f1db1a3a4c0b4a6aba028d5a35dda4e505563c3f0ccf95a562cf18b53f7f7053c485299cfc599a432d1f0ee5554a56cd5981ccfff31d79b9868b00");
 }
 
 TEST(TronSigner, DelegateResourceContract) {
+    // Step 1. Construct and sign a DelegateResource transaction.
     // Successfully broadcasted https://nile.tronscan.org/#/transaction/ceabcd0f105854c13aae12ba35c0766945713c29cee540be1239bb0f1f0cde2c
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
@@ -284,9 +306,18 @@ TEST(TronSigner, DelegateResourceContract) {
 
     ASSERT_EQ(hex(output.id()), "ceabcd0f105854c13aae12ba35c0766945713c29cee540be1239bb0f1f0cde2c");
     ASSERT_EQ(hex(output.signature()), "664500a76466497a442cecc0e9282a9234483f047c12a997b6206d7f6a9030c70b700c879d7948c4cbdfe339c2c81a29dea18e00e9916504196c1b20cf045ca300");
+
+    // Step 2. Re-sign using the JSON output and verify the same id and signature.
+    auto input2 = Proto::SigningInput();
+    input2.set_raw_json(eraseSignature(output.json()));
+    input2.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    const auto output2 = Signer::sign(input2);
+    ASSERT_EQ(hex(output2.id()), "ceabcd0f105854c13aae12ba35c0766945713c29cee540be1239bb0f1f0cde2c");
+    ASSERT_EQ(hex(output2.signature()), "664500a76466497a442cecc0e9282a9234483f047c12a997b6206d7f6a9030c70b700c879d7948c4cbdfe339c2c81a29dea18e00e9916504196c1b20cf045ca300");
 }
 
 TEST(TronSigner, UnDelegateResourceContract) {
+    // Step 1. Construct and sign an UnDelegateResource transaction.
     // Successfully broadcasted https://nile.tronscan.org/#/transaction/3609519cc700cf2446b5e048864abc4b45e2ba6b7f9f8890d471ba2876599d3b
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
@@ -318,9 +349,18 @@ TEST(TronSigner, UnDelegateResourceContract) {
 
     ASSERT_EQ(hex(output.id()), "3609519cc700cf2446b5e048864abc4b45e2ba6b7f9f8890d471ba2876599d3b");
     ASSERT_EQ(hex(output.signature()), "b08e32a704d5a366df499d283d407c428dd50e60665f54ecf967226b75bec37157e6bc23312af07fad9dd3551cd668ce027cc280932fd4772af89d6f0fecf11900");
+
+    // Step 2. Re-sign using the JSON output and verify the same id and signature.
+    auto input2 = Proto::SigningInput();
+    input2.set_raw_json(eraseSignature(output.json()));
+    input2.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    const auto output2 = Signer::sign(input2);
+    ASSERT_EQ(hex(output2.id()), "3609519cc700cf2446b5e048864abc4b45e2ba6b7f9f8890d471ba2876599d3b");
+    ASSERT_EQ(hex(output2.signature()), "b08e32a704d5a366df499d283d407c428dd50e60665f54ecf967226b75bec37157e6bc23312af07fad9dd3551cd668ce027cc280932fd4772af89d6f0fecf11900");
 }
 
 TEST(TronSigner, SignFreezeBalance) {
+    // Step 1. Construct and sign a FreezeBalance transaction.
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
 
@@ -352,9 +392,18 @@ TEST(TronSigner, SignFreezeBalance) {
 
     ASSERT_EQ(hex(output.id()), "d314967bc1d153d649d9f54a1cc78033f0d696a58ff6922f490ddaec82558c83");
     ASSERT_EQ(hex(output.signature()), "aa7cf79fb1692ff432a1a3e520be3355c3e8168c5fa22f6e3b96c2a9f2e2827b49d67d5e6eea5c7e7cf872047d422ce5d4d149c4df752b176d13f8f48920271201");
+
+    // Step 2. Re-sign using the JSON output and verify the same id and signature.
+    auto input2 = Proto::SigningInput();
+    input2.set_raw_json(eraseSignature(output.json()));
+    input2.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    const auto output2 = Signer::sign(input2);
+    ASSERT_EQ(hex(output2.id()), "d314967bc1d153d649d9f54a1cc78033f0d696a58ff6922f490ddaec82558c83");
+    ASSERT_EQ(hex(output2.signature()), "aa7cf79fb1692ff432a1a3e520be3355c3e8168c5fa22f6e3b96c2a9f2e2827b49d67d5e6eea5c7e7cf872047d422ce5d4d149c4df752b176d13f8f48920271201");
 }
 
 TEST(TronSigner, SignUnFreezeBalance) {
+    // Step 1. Construct and sign an UnfreezeBalance transaction.
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
 
@@ -384,9 +433,18 @@ TEST(TronSigner, SignUnFreezeBalance) {
 
     ASSERT_EQ(hex(output.id()), "c5bd624bb53fed8ce4a7361475263b3a91ae71ef389630e0b3b8693c8c56d7a1");
     ASSERT_EQ(hex(output.signature()), "4b4b12b5fd091d5343335f14ac90bf23ea9a8167d648dd9d10d00c9c9b24731c484937bf133e5010f0338fb70a679a9a2eca8b945574005bc4015b419a68897300");
+
+    // Step 2. Re-sign using the JSON output and verify the same id and signature.
+    auto input2 = Proto::SigningInput();
+    input2.set_raw_json(eraseSignature(output.json()));
+    input2.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    const auto output2 = Signer::sign(input2);
+    ASSERT_EQ(hex(output2.id()), "c5bd624bb53fed8ce4a7361475263b3a91ae71ef389630e0b3b8693c8c56d7a1");
+    ASSERT_EQ(hex(output2.signature()), "4b4b12b5fd091d5343335f14ac90bf23ea9a8167d648dd9d10d00c9c9b24731c484937bf133e5010f0338fb70a679a9a2eca8b945574005bc4015b419a68897300");
 }
 
 TEST(TronSigner, SignUnFreezeAsset) {
+    // Step 1. Construct and sign an UnfreezeAsset transaction.
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
 
@@ -414,9 +472,18 @@ TEST(TronSigner, SignUnFreezeAsset) {
 
     ASSERT_EQ(hex(output.id()), "432bd5cf77ff134787712724709a672fc6e51763de00292438db02d23931e13d");
     ASSERT_EQ(hex(output.signature()), "f493d8f275538a50bb8a832d759df9cad535bb2c5cc73296b04983f551d8398b6d7a30fc0fdfd73e8a9cac77a1a6a9435dc6309bb98fbb219035e88809a0b65901");
+
+    // Step 2. Re-sign using the JSON output and verify the same id and signature.
+    auto input2 = Proto::SigningInput();
+    input2.set_raw_json(eraseSignature(output.json()));
+    input2.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    const auto output2 = Signer::sign(input2);
+    ASSERT_EQ(hex(output2.id()), "432bd5cf77ff134787712724709a672fc6e51763de00292438db02d23931e13d");
+    ASSERT_EQ(hex(output2.signature()), "f493d8f275538a50bb8a832d759df9cad535bb2c5cc73296b04983f551d8398b6d7a30fc0fdfd73e8a9cac77a1a6a9435dc6309bb98fbb219035e88809a0b65901");
 }
 
 TEST(TronSigner, SignWithdrawBalance) {
+    // Step 1. Construct and sign a WithdrawBalance transaction.
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
 
@@ -444,9 +511,18 @@ TEST(TronSigner, SignWithdrawBalance) {
 
     ASSERT_EQ(hex(output.id()), "69aaa954dcd61f28a6a73e979addece6e36541522e5b3374b18b4ef9bc3de4cb");
     ASSERT_EQ(hex(output.signature()), "cb7d23a5eb23284a25ba6deaa231de0f18d8d103592e3312bff101a4219a3e02167eca24b3f4ce78b34f0c1842b6f7fb8d813f530c4c54342cdedef9f8e1f85100");
+
+    // Step 2. Re-sign using the JSON output and verify the same id and signature.
+    auto input2 = Proto::SigningInput();
+    input2.set_raw_json(eraseSignature(output.json()));
+    input2.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    const auto output2 = Signer::sign(input2);
+    ASSERT_EQ(hex(output2.id()), "69aaa954dcd61f28a6a73e979addece6e36541522e5b3374b18b4ef9bc3de4cb");
+    ASSERT_EQ(hex(output2.signature()), "cb7d23a5eb23284a25ba6deaa231de0f18d8d103592e3312bff101a4219a3e02167eca24b3f4ce78b34f0c1842b6f7fb8d813f530c4c54342cdedef9f8e1f85100");
 }
 
 TEST(TronSigner, SignVoteAsset) {
+    // Step 1. Construct and sign a VoteAsset transaction.
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
 
@@ -477,9 +553,18 @@ TEST(TronSigner, SignVoteAsset) {
 
     ASSERT_EQ(hex(output.id()), "59b5736fb9756124f9470e4fadbcdafdc8c970da7157fa0ad34a41559418bf0a");
     ASSERT_EQ(hex(output.signature()), "501e04b08f359116a26d9ec784abc50830f92a9dc05d2c1aceefe0eba79466d2730b63b6739edf0f1f1972181618b201ce0b4167d14a66abf40eba4097c39ec400");
+
+    // Step 2. Re-sign using the JSON output and verify the same id and signature.
+    auto input2 = Proto::SigningInput();
+    input2.set_raw_json(eraseSignature(output.json()));
+    input2.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    const auto output2 = Signer::sign(input2);
+    ASSERT_EQ(hex(output2.id()), "59b5736fb9756124f9470e4fadbcdafdc8c970da7157fa0ad34a41559418bf0a");
+    ASSERT_EQ(hex(output2.signature()), "501e04b08f359116a26d9ec784abc50830f92a9dc05d2c1aceefe0eba79466d2730b63b6739edf0f1f1972181618b201ce0b4167d14a66abf40eba4097c39ec400");
 }
 
 TEST(TronSigner, SignVoteWitness) {
+    // Step 1. Construct and sign a VoteWitness transaction.
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
 
@@ -512,9 +597,18 @@ TEST(TronSigner, SignVoteWitness) {
 
     ASSERT_EQ(hex(output.id()), "3f923e9dd9571a66624fafeda27baa3e00aba1709d3fdc5c97c77b81fda18c1f");
     ASSERT_EQ(hex(output.signature()), "79ec1073ae1319ef9303a2f5a515876cfd67f8f0e155bdbde1115d391c05358a3c32f148bfafacf07e1619aaed728d9ffbc2c7e4a5046003c7b74feb86fc68e400");
+
+    // Step 2. Re-sign using the JSON output and verify the same id and signature.
+    auto input2 = Proto::SigningInput();
+    input2.set_raw_json(eraseSignature(output.json()));
+    input2.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    const auto output2 = Signer::sign(input2);
+    ASSERT_EQ(hex(output2.id()), "3f923e9dd9571a66624fafeda27baa3e00aba1709d3fdc5c97c77b81fda18c1f");
+    ASSERT_EQ(hex(output2.signature()), "79ec1073ae1319ef9303a2f5a515876cfd67f8f0e155bdbde1115d391c05358a3c32f148bfafacf07e1619aaed728d9ffbc2c7e4a5046003c7b74feb86fc68e400");
 }
 
 TEST(TronSigner, SignTriggerSmartContract) {
+    // Step 1. Construct and sign a TriggerSmartContract transaction.
     auto input = Proto::SigningInput();
     auto data = parse_hex("736f6d652064617461");
     auto& transaction = *input.mutable_transaction();
@@ -547,9 +641,18 @@ TEST(TronSigner, SignTriggerSmartContract) {
 
     ASSERT_EQ(hex(output.id()), "9927d3daae10ad001b25ef3c1bb03073c928cc0e0823f6f3ce404c2b03ce3570");
     ASSERT_EQ(hex(output.signature()), "21a99aafeabdddfdfae86538df048d120a83eb36bbcf5656595919ba6afddacd0a07d0ba051ae80337613174b109f36cb583b6e46ee5aecf6ffe3392fdbb8a2a01");
+
+    // Step 2. Re-sign using the JSON output and verify the same id and signature.
+    auto input2 = Proto::SigningInput();
+    input2.set_raw_json(eraseSignature(output.json()));
+    input2.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    const auto output2 = Signer::sign(input2);
+    ASSERT_EQ(hex(output2.id()), "9927d3daae10ad001b25ef3c1bb03073c928cc0e0823f6f3ce404c2b03ce3570");
+    ASSERT_EQ(hex(output2.signature()), "21a99aafeabdddfdfae86538df048d120a83eb36bbcf5656595919ba6afddacd0a07d0ba051ae80337613174b109f36cb583b6e46ee5aecf6ffe3392fdbb8a2a01");
 }
 
 TEST(TronSigner, SignTransferTrc20Contract) {
+    // Step 1. Construct and sign a TRC-20 transfer transaction.
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
     auto& transfer_contract = *transaction.mutable_transfer_trc20_contract();
@@ -579,6 +682,87 @@ TEST(TronSigner, SignTransferTrc20Contract) {
 
     ASSERT_EQ(hex(output.id()), "0d644290e3cf554f6219c7747f5287589b6e7e30e1b02793b48ba362da6a5058");
     ASSERT_EQ(hex(output.signature()), "bec790877b3a008640781e3948b070740b1f6023c29ecb3f7b5835433c13fc5835e5cad3bd44360ff2ddad5ed7dc9d7dee6878f90e86a40355b7697f5954b88c01");
+
+    // Step 2. Re-sign using the JSON output and verify the same id and signature.
+    auto input2 = Proto::SigningInput();
+    input2.set_raw_json(eraseSignature(output.json()));
+    input2.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    const auto output2 = Signer::sign(input2);
+    ASSERT_EQ(hex(output2.id()), "0d644290e3cf554f6219c7747f5287589b6e7e30e1b02793b48ba362da6a5058");
+    ASSERT_EQ(hex(output2.signature()), "bec790877b3a008640781e3948b070740b1f6023c29ecb3f7b5835433c13fc5835e5cad3bd44360ff2ddad5ed7dc9d7dee6878f90e86a40355b7697f5954b88c01");
+}
+
+TEST(TronSigner, SignWithoutContract) {
+    // Test that signing fails when no contract is set
+    auto input = Proto::SigningInput();
+    auto& transaction = *input.mutable_transaction();
+
+    // Set only basic transaction fields, but no contract
+    transaction.set_timestamp(1539295479000);
+    transaction.set_expiration(1539295479000 + 10 * 60 * 60 * 1000);
+
+    auto& blockHeader = *transaction.mutable_block_header();
+    blockHeader.set_timestamp(1539295479000);
+    const auto txTrieRoot = parse_hex("64288c2db0641316762a99dbb02ef7c90f968b60f9f2e410835980614332f86d");
+    blockHeader.set_tx_trie_root(txTrieRoot.data(), txTrieRoot.size());
+    const auto parentHash = parse_hex("00000000002f7b3af4f5f8b9e23a30c530f719f165b742e7358536b280eead2d");
+    blockHeader.set_parent_hash(parentHash.data(), parentHash.size());
+    blockHeader.set_number(3111739);
+    const auto witnessAddress = parse_hex("415863f6091b8e71766da808b1dd3159790f61de7d");
+    blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
+    blockHeader.set_version(3);
+
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    const auto output = Signer::sign(input);
+
+    // Should return error when no contract is set
+    ASSERT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    ASSERT_EQ(output.error_message(), "No supported contract is set");
+}
+
+TEST(TronSigner, SignRawJsonTransferContract) {
+    // Step 1. Create a signing input with raw JSON data for a TransferContract, and try to sign it.
+
+    const auto originalRawJson = R"({"raw_data":{"contract":[{"parameter":{"type_url":"type.googleapis.com/protocol.TransferContract","value":{"amount":2000000,"owner_address":"415cd0fb0ab3ce40f3051414c604b27756e69e43db","to_address":"41521ea197907927725ef36d70f25f850d1659c7c7"}},"type":"TransferContract"}],"expiration":1539331479000,"ref_block_bytes":"7b3b","ref_block_hash":"b21ace8d6ac20e7e","timestamp":1539295479000},"raw_data_hex":"0a027b3b2208b21ace8d6ac20e7e40d8abb9bae62c5a67080112630a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412320a15415cd0fb0ab3ce40f3051414c604b27756e69e43db121541521ea197907927725ef36d70f25f850d1659c7c71880897a70d889a4a9e62c","txID":"dc6f6d9325ee44ab3c00528472be16e1572ab076aa161ccd12515029869d0451"})";
+
+    auto input = Proto::SigningInput();
+    input.set_raw_json(originalRawJson);
+
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    const auto output = Signer::sign(input);
+
+    ASSERT_EQ(output.error(), Common::Proto::OK);
+    ASSERT_EQ(hex(output.id()), "dc6f6d9325ee44ab3c00528472be16e1572ab076aa161ccd12515029869d0451");
+    ASSERT_EQ(hex(output.signature()), "ede769f6df28aefe6a846be169958c155e23e7e5c9621d2e8dce1719b4d952b63e8a8bf9f00e41204ac1bf69b1a663dacdf764367e48e4a5afcd6b055a747fb200");
+
+    // Step 2. Change one of the `raw_json` parameters, so the provided `tx_id` and `raw_data_hex` don't match the modified `raw_json`.
+    // The signing should fail with an error about mismatched data.
+
+    nlohmann::json modifiedJson = nlohmann::json::parse(originalRawJson);
+    // Change amount from 2000000 to 3000000.
+    modifiedJson["raw_data"]["contract"][0]["parameter"]["value"]["amount"] = 3000000;
+    input.set_raw_json(modifiedJson.dump());
+
+    const auto output2 = Signer::sign(input);
+
+    ASSERT_EQ(output2.error(), Common::Proto::Error_tx_hash_mismatch);
+}
+
+TEST(TronSigner, SignUnsupportedRawJson) {
+    const auto rawJson = R"({"raw_data":{"contract":[{"parameter":{"type_url":"type.googleapis.com/protocol.SetAccountIdContract","value":{"account_id":"74657374","owner_address":"415cd0fb0ab3ce40f3051414c604b27756e69e43db"}},"type":"SetAccountIdContract"}],"expiration":1539331479000,"ref_block_bytes":"7b3b","ref_block_hash":"b21ace8d6ac20e7e","timestamp":1539295479000},"raw_data_hex":"0a027b3b2208b21ace8d6ac20e7e40d8abb9bae62c5a56081312520a31747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5365744163636f756e744964436f6e7472616374121d0a04746573741215415cd0fb0ab3ce40f3051414c604b27756e69e43db70d889a4a9e62c","txID":"b3e6d49784acfe62f83f1235bab54613cfb7813dddc8cffc87ced07cafc02fbe"})";
+
+    auto input = Proto::SigningInput();
+    input.set_raw_json(rawJson);
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    const auto output = Signer::sign(input);
+
+    ASSERT_EQ(output.error(), Common::Proto::Error_not_supported);
 }
 
 TEST(TronSigner, SignTransferInvalidToAddress) {

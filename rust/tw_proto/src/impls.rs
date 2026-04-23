@@ -35,6 +35,7 @@ impl fmt::Display for SigningError {
             SigningError::Error_invalid_requested_token_amount => "Invalid input token amount",
             SigningError::Error_not_supported => "Operation not supported for the chain",
             SigningError::Error_dust_amount_requested => "Requested amount is too low (less dust)",
+            SigningError::Error_tx_hash_mismatch => "The transaction hash does not match the hash derived from the raw transaction data"
         };
         write!(f, "{err}")
     }
