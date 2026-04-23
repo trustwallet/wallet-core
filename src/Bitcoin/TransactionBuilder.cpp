@@ -7,6 +7,7 @@
 #include "TransactionSigner.h"
 #include "SignatureBuilder.h"
 #include "Numeric.h"
+#include "NumericLiteral.h"
 
 #include "../Coin.h"
 
@@ -66,10 +67,10 @@ Amount estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionPl
     } else {
         Data dataWitness;
         transaction.encodeWitness(dataWitness);
-        Amount witnessSize = 2ull + dataWitness.size();
+        Amount witnessSize = 2_u64 + dataWitness.size();
         // compute virtual size:  (smaller) non-segwit + 1/4 of the diff (witness-only)
         // (in other way: 3/4 of (smaller) non-segwit + 1/4 of segwit size)
-        vSize = sizeNonSegwit + witnessSize/4ull + (witnessSize % 4 != 0ull);
+        vSize = sizeNonSegwit + witnessSize/4_u64 + (witnessSize % 4 != 0_u64);
     }
     const Amount fee = input.byteFee * vSize;
 
@@ -111,12 +112,12 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         }
 
         auto extraOutputs = extraOutputCount(input);
-        size_t output_size = 2ull;
+        size_t output_size = 2_u64;
         UTXOs selectedInputs;
         if (!maxAmount) {
             // Please note that there may not be a "change" output if the "change.amount" is less than "dust",
             // but we use a max amount of transaction outputs to simplify the algorithm, so the fee can be slightly bigger in rare cases.
-            output_size = 2ull + extraOutputs; // output + change
+            output_size = 2_u64 + extraOutputs; // output + change
             if (input.useMaxUtxo) {
                 selectedInputs = inputSelector.selectMaxAmount(input.byteFee);
             } else if (input.utxos.size() <= SimpleModeLimit &&
@@ -127,7 +128,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
                     inputSelector.selectSimple(totalAmount, input.byteFee, output_size);
             }
         } else {
-            output_size = 1ull + extraOutputs; // output, no change
+            output_size = 1_u64 + extraOutputs; // output, no change
             selectedInputs = inputSelector.selectMaxAmount(input.byteFee);
         }
         if (selectedInputs.size() <= MaxUtxosHardLimit) {
@@ -141,11 +142,11 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         }
 
         if (plan.utxos.empty()) {
-            plan.amount = 0ull;
+            plan.amount = 0_u64;
             plan.error = Common::Proto::Error_not_enough_utxos;
         } else if (maxAmount && !input.extraOutputs.empty()) {
             // As of now, we don't support `max` amount **and** extra outputs.
-            plan.amount = 0ull;
+            plan.amount = 0_u64;
             plan.error = Common::Proto::Error_invalid_params;
         } else {
             plan.availableAmount = InputSelector<UTXO>::sum(plan.utxos);
@@ -161,12 +162,12 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
             // must preliminary set change so that there is a second output
             if (!maxAmount) {
                 plan.amount = input.amount;
-                plan.fee = 0ull;
+                plan.fee = 0_u64;
                 plan.change = plan.availableAmount - totalAmount;
             } else {
                 plan.amount = plan.availableAmount;
-                plan.fee = 0ull;
-                plan.change = 0ull;
+                plan.fee = 0_u64;
+                plan.change = 0_u64;
             }
             plan.fee = estimateSegwitFee(feeCalculator, plan, output_size, input);
 
@@ -219,13 +220,13 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
                 plan.change = changeAmount;
             } else {
                 // Spend the change as tx fee if it's dust, otherwise the transaction won't be mined.
-                plan.change = 0ull;
+                plan.change = 0_u64;
                 plan.fee = addUnsignedChecked(plan.fee, changeAmount);
             }
         }
     }
     assert(plan.change <= plan.availableAmount);
-    assert(!maxAmount || plan.change == 0ull); // change is 0 in max amount case
+    assert(!maxAmount || plan.change == 0_u64); // change is 0 in max amount case
 
     assert(plan.error != Common::Proto::OK
            // `plan.error` is OK, check if the values are expected.

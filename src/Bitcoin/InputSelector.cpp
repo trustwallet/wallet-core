@@ -6,6 +6,7 @@
 
 #include "UTXO.h"
 #include "Numeric.h"
+#include "NumericLiteral.h"
 
 #include <algorithm>
 #include <optional>
@@ -87,7 +88,7 @@ InputSelector<TypeWithAmount>::select(Amount targetValue, Amount byteFee, size_t
     assert(sorted.size() >= 1);
 
     // definitions for the following calculation
-    const auto doubleTargetValue = mulUnsignedChecked(targetValue, 2ull);
+    const auto doubleTargetValue = mulUnsignedChecked(targetValue, 2_u64);
 
     // Precompute maximum amount possible to obtain with given number of inputs
     const auto n = sorted.size();
