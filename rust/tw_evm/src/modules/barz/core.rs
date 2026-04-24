@@ -278,7 +278,7 @@ pub fn get_diamond_cut_code(input: &DiamondCutInput) -> BarzResult<Vec<u8>> {
     encoded.extend_from_slice(&input.init_data);
 
     // Add padding
-    let padding_length = (encoding_chunk) - ((init_data_length) % (encoding_chunk * 2));
+    let padding_length = (encoding_chunk - (init_data_length % encoding_chunk)) % encoding_chunk;
     let padding = vec![0u8; padding_length];
     encoded.extend_from_slice(&padding);
     Ok(encoded)
