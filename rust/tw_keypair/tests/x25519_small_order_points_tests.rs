@@ -5,6 +5,9 @@
 use tw_encoding::hex;
 use tw_keypair::nacl_crypto_box::public_key::PublicKey;
 
+// Some of these examples were taken from the libsodium blocklist:
+// https://github.com/jedisct1/libsodium/blob/master/src/libsodium/crypto_scalarmult/curve25519/ref10/x25519_ref10.c
+
 #[test]
 fn test_x25519_small_order_points() {
     let small_order_points = [
