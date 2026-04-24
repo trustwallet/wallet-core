@@ -171,5 +171,15 @@ mod tests {
             matches!(err, BarzError::InvalidInput),
             "Did not reject multiple key occurrences"
         );
+
+        // Extra space after colon.
+        // Please note we don't require the JSON to be fully compact,
+        // but at least that there are no spaces between keys and colons.
+        let spaced = r#"{"challenge" : "real"}"#;
+        let err = find_json_key_index(spaced, "challenge").unwrap_err();
+        assert!(
+            matches!(err, BarzError::InvalidInput),
+            "Did not reject space after colon"
+        );
     }
 }

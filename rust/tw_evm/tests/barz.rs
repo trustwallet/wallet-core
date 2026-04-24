@@ -860,7 +860,7 @@ fn test_get_diamond_cut_code_with_long_init_data() {
 fn test_get_diamond_cut_code_with_not_aligned_init_data() {
     let input = DiamondCutInput {
         init_address: "0x0000000000000000000000000000000000000000".into(),
-        // Init data length is 33 bytes, which is not aligned to 32 bytes, which must not lead to a substruction overflow.
+        // Init data length is 33 bytes, which is not aligned to 32 bytes, which must not lead to a subtraction overflow.
         init_data: hex::decode(
             "0x123456789012345678901234567890123456789012345678901234567890123456",
         )
