@@ -141,7 +141,8 @@ TEST(FIOEncryption, getSharedSecretInvalidPublicKey) {
     }
 
     {
-        // Multiplying the order private key (n) to a valid public key should give the point at infinity, which is not a valid shared secret.
+        // The curve order value (n) is not a valid private key for this backend: scalars >= order are rejected,
+        // so shared-secret derivation fails due to an out-of-range private key / rejected scalar.
         const PrivateKey orderPrivateKey(parse_hex("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141"));
         const PublicKey publicKey(parse_hex("03a34b99f22c790c4e36b2b3c2c35a36db06226e41c692fc82b8b56ac1c540c5bd"), TWPublicKeyTypeSECP256k1);
         ASSERT_THROW(Encryption::getSharedSecret(orderPrivateKey, publicKey), std::runtime_error);
