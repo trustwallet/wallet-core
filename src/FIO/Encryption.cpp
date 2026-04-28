@@ -99,7 +99,7 @@ Data Encryption::getSharedSecret(const PrivateKey& privateKey1, const PublicKey&
     
     curve_point P;
     if (point_multiply(&secp256k1, &privBN, &KBP, &P) != 0) {
-        throw std::runtime_error("Point multiply failed");
+        throw std::invalid_argument("Invalid private key: scalar out of range");
     }
 
     Data S(32);
