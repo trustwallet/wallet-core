@@ -116,7 +116,7 @@ fn test_bitcoin_sign_psbt_witness_utxo_with_unexpected_script_type() {
         tw_bitcoin::modules::psbt_request::Psbt::deserialize(&original_psbt_bytes).unwrap();
 
     // Original PSBT has a non-witness input, we tamper it by moving the prev_output from `non_witness_utxo` to `witness_utxo`, which should lead PSBT request handler to fail
-    // because `witness_utxo` must contain P2WPKH UTXO only. Please note that `P2WSH` and `P2TR` aren't supported yet.
+    // because `witness_utxo` must contain a supported witness UTXO type (currently P2WPKH in this test path). Please note that `P2WSH` and `P2TR` script-path are not supported yet.
     let prev_output = original_psbt.inputs[0]
         .non_witness_utxo
         .as_ref()
