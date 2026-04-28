@@ -87,6 +87,10 @@ Data Encryption::checkDecrypt(const Data& secret, const Data& message) {
 
 Data Encryption::getSharedSecret(const PrivateKey& privateKey1, const PublicKey& publicKey2) {
     // See https://github.com/fioprotocol/fiojs/blob/master/src/ecc/key_private.js
+
+    if (publicKey2.type != TWPublicKeyTypeSECP256k1 && publicKey2.type != TWPublicKeyTypeSECP256k1Extended) {
+        throw std::invalid_argument("Unsupported public key type");
+    }
     
     curve_point KBP;
     int read_res = ecdsa_read_pubkey(&secp256k1, publicKey2.bytes.data(), &KBP);

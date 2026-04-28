@@ -136,6 +136,12 @@ TEST(FIOEncryption, getSharedSecret) {
 TEST(FIOEncryption, getSharedSecretInvalidPublicKey) {
     {
         const PrivateKey privateKey(parse_hex("2bd806c97f0e00af1a1fc3328fa763a9269723c8db8fac4f93af71db186d6e90"));
+        const PublicKey invalidPublicKeyType(parse_hex("a34b99f22c790c4e36b2b3c2c35a36db06226e41c692fc82b8b56ac1c540c5bd"), TWPublicKeyTypeED25519);
+        ASSERT_THROW(Encryption::getSharedSecret(privateKey, invalidPublicKeyType), std::invalid_argument);
+    }
+
+    {
+        const PrivateKey privateKey(parse_hex("2bd806c97f0e00af1a1fc3328fa763a9269723c8db8fac4f93af71db186d6e90"));
         const PublicKey invalidPublicKey(parse_hex("020000000000000000000000000000000000000000000000000000000000000000"), TWPublicKeyTypeSECP256k1);
         ASSERT_THROW(Encryption::getSharedSecret(privateKey, invalidPublicKey), std::invalid_argument);
     }
