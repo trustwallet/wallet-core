@@ -89,14 +89,18 @@ Data Encryption::getSharedSecret(const PrivateKey& privateKey1, const PublicKey&
     // See https://github.com/fioprotocol/fiojs/blob/master/src/ecc/key_private.js
     
     curve_point KBP;
-    [[maybe_unused]] int read_res = ecdsa_read_pubkey(&secp256k1, publicKey2.bytes.data(), &KBP);
-    assert(read_res);
+    int read_res = ecdsa_read_pubkey(&secp256k1, publicKey2.bytes.data(), &KBP);
+    if (read_res == 0) {
+        throw std::invalid_argument("Invalid public key");
+    }
 
     bignum256 privBN;
     bn_read_be(privateKey1.bytes.data(), &privBN);
     
     curve_point P;
-    point_multiply(&secp256k1, &privBN, &KBP, &P);
+    if (point_multiply(&secp256k1, &privBN, &KBP, &P) != 0) {
+        throw std::runtime_error("Point multiply failed");
+    }
 
     Data S(32);
     bn_write_be(&P.x, S.data());
