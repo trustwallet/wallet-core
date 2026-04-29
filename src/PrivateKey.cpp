@@ -94,7 +94,7 @@ bool PrivateKey::isValid(const Data& data, TWCurve curve) {
     }
 
     if (ec_curve != nullptr) {
-        bignum256 k;
+        bignum256 k {};
         bn_read_be(data.data(), &k);
         if (!bn_is_less(&k, &ec_curve->order)) {
             memzero(&k, sizeof(k));
