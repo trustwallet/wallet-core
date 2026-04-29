@@ -141,14 +141,18 @@ Data Encryption::getSharedSecret(const PrivateKey& privateKey1, const PublicKey&
 }
 
 Data Encryption::encrypt(const PrivateKey& privateKey1, const PublicKey& publicKey2, const Data& message, const Data& iv) {
-    const Data sharedSecret = getSharedSecret(privateKey1, publicKey2);
+    Data sharedSecret = getSharedSecret(privateKey1, publicKey2);
     Data ivCopy(iv); // writeably copy
-    return checkEncrypt(sharedSecret, message, ivCopy);
+    const auto result = checkEncrypt(sharedSecret, message, ivCopy);
+    memzero(sharedSecret.data(), sharedSecret.size());
+    return result;
 }
 
 Data Encryption::decrypt(const PrivateKey& privateKey1, const PublicKey& publicKey2, const Data& encrypted) {
-    const Data sharedSecret = getSharedSecret(privateKey1, publicKey2);
-    return checkDecrypt(sharedSecret, encrypted);
+    Data sharedSecret = getSharedSecret(privateKey1, publicKey2);
+    const auto result = checkDecrypt(sharedSecret, encrypted);
+    memzero(sharedSecret.data(), sharedSecret.size());
+    return result;
 }
 
 string Encryption::encode(const Data& encrypted) {
