@@ -74,7 +74,8 @@ std::optional<ScryptValidationError> ScryptParameters::validate() const {
     if (desiredKeyLength > ((1ULL << 32) - 1) * 32) { // depending on size_t size on platform, may be always false
         return ScryptValidationError::desiredKeyLengthTooLarge;
     }
-    if (salt.size() < minSaltLength || salt.size() > maxSaltLength) {
+    // For backward compatibility with existing keys, we allow empty and less than 16 bytes salt.
+    if (salt.size() > maxSaltLength) {
         return ScryptValidationError::invalidSaltLength;
     }
     if (static_cast<uint64_t>(r) * static_cast<uint64_t>(p) >= (1 << 30)) {
@@ -108,12 +109,21 @@ ScryptParameters::ScryptParameters(const nlohmann::json& json) {
     if (json.count(CodingKeys::SP::n) == 0
         || json.count(CodingKeys::SP::p) == 0
         || json.count(CodingKeys::SP::r) == 0
-        || json.count(CodingKeys::SP::salt) == 0
         || json.count(CodingKeys::SP::desiredKeyLength) == 0) {
-        throw std::invalid_argument("Missing required scrypt parameters n, p, r, salt, or dklen");
+        throw std::invalid_argument("Missing required scrypt parameters n, p, r, or dklen");
     }
 
-    salt = parse_hex(json[CodingKeys::SP::salt].get<std::string>());
+    // For backward compatibility with existing keys, we allow missing salt, and fallback to empty salt in that case.
+    if (json.count(CodingKeys::SP::salt) == 0) {
+        salt = Data();
+    } else {
+        const auto res = parse_hex_checked(json[CodingKeys::SP::salt].get<std::string>());
+        if (res.isFailure()) {
+            throw std::invalid_argument("Invalid scrypt parameters: salt must be a valid hex");
+        }
+        salt = res.payload();
+    }
+
     desiredKeyLength = json[CodingKeys::SP::desiredKeyLength];
     n = json[CodingKeys::SP::n];
     p = json[CodingKeys::SP::p];

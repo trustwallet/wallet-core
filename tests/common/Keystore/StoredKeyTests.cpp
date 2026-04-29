@@ -831,4 +831,46 @@ TEST(StoredKey, CreateWithMnemonicAlternativeDerivation) {
     EXPECT_EQ(hex(key.privateKey(coin, TWDerivationSolanaSolana, gPassword).bytes), "d49a5fa7f77593534c7afd2ba8dc8e9d8b007bc6ec65fe8df25ffe6fafc57151");
 }
 
+TEST(StoredKey, LoadScryptWithEmptySalt) {
+    const auto path = testDataPath("scrypt-empty-salt.json");
+    auto key = StoredKey::load(path);
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+
+    // Decrypt mnemonic
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
+
+    // JSON representation
+    const auto json = key.json();
+    ASSERT_TRUE(json["crypto"].is_object());
+    ASSERT_TRUE(json["crypto"].contains("kdfparams"));
+
+    const auto& kdfparams = json["crypto"]["kdfparams"];
+    ASSERT_TRUE(kdfparams.is_object());
+    // Salt must be present and empty
+    ASSERT_TRUE(kdfparams.contains("salt"));
+    EXPECT_EQ(kdfparams["salt"].get<std::string>(), "");
+}
+
+TEST(StoredKey, LoadScryptWithoutSalt) {
+    const auto path = testDataPath("scrypt-without-salt.json");
+    auto key = StoredKey::load(path);
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+
+    // Decrypt mnemonic
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
+
+    // JSON representation
+    const auto json = key.json();
+    ASSERT_TRUE(json["crypto"].is_object());
+    ASSERT_TRUE(json["crypto"].contains("kdfparams"));
+
+    const auto& kdfparams = json["crypto"]["kdfparams"];
+    ASSERT_TRUE(kdfparams.is_object());
+    // Salt must be present and empty
+    ASSERT_TRUE(kdfparams.contains("salt"));
+    EXPECT_EQ(kdfparams["salt"].get<std::string>(), "");
+}
+
 } // namespace TW::Keystore

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Data.h"
+#include "Result.h"
 #include "rust/bindgen/WalletCoreRSBindgen.h"
 #include "rust/Wrapper.h"
 
@@ -76,20 +77,34 @@ inline std::string hex(uint64_t value) {
     return hex(v);
 }
 
-/// Parses a string of hexadecimal values.
-///
-/// \returns the array or parsed bytes or an empty array if the string is not
-/// valid hexadecimal.
-inline Data parse_hex(const std::string& string, bool padLeft = false) {
+/// Pads a hexadecimal string with a leading zero if it has an odd length and the `padLeft` flag is set.
+inline std::string pad_left_hex(const std::string& string, bool padLeft = false) {
     if (string.size() % 2 != 0 && padLeft) {
         std::string temp = string;
         if (temp.compare(0, 2, "0x") == 0) {
             temp.erase(0, 2);
         }
         temp.insert(0, 1, '0');
-        return internal::parse_hex(temp);
+        return temp;
     }
-    return internal::parse_hex(string);
+    return string;
+}
+
+/// Parses a string of hexadecimal values.
+///
+/// \returns the array or parsed bytes or an empty array if the string is not
+/// valid hexadecimal.
+inline Data parse_hex(const std::string& string, bool padLeft = false) {
+    return internal::parse_hex(pad_left_hex(string, padLeft));
+}
+
+inline Result<Data> parse_hex_checked(const std::string& string, bool padLeft = false) {
+    const auto paddedString = pad_left_hex(string, padLeft);
+    Rust::CByteArrayResultWrapper res = Rust::decode_hex(paddedString.c_str());
+    if (res.isErr()) {
+        return Result<Data>::failure("Invalid hex string");
+    }
+    return Result<Data>::success(std::move(res.unwrap_or_default().data));
 }
 
 inline const char* hex_char_to_bin(char c) {

@@ -33,4 +33,59 @@ TEST(HexCoding, isHexEncoded) {
     ASSERT_FALSE(is_hex_encoded("0xyahoo"));
 }
 
+TEST(HexCoding, ParseHexChecked) {
+    // Valid, well-padded
+    auto res = parse_hex_checked("0x7d8bf18c7ce84b3e175b339c4ca93aed1dd166f1");
+    ASSERT_TRUE(res.isSuccess());
+    EXPECT_EQ(hex(res.payload()), "7d8bf18c7ce84b3e175b339c4ca93aed1dd166f1");
+
+    // Valid, well-padded, no 0x
+    res = parse_hex_checked("7d8bf18c7ce84b3e175b339c4ca93aed1dd166f1");
+    ASSERT_TRUE(res.isSuccess());
+    EXPECT_EQ(hex(res.payload()), "7d8bf18c7ce84b3e175b339c4ca93aed1dd166f1");
+
+    // Empty string
+    res = parse_hex_checked("");
+    ASSERT_TRUE(res.isSuccess());
+    EXPECT_TRUE(res.payload().empty());
+
+    // 0x string
+    res = parse_hex_checked("0x");
+    ASSERT_TRUE(res.isSuccess());
+    EXPECT_TRUE(res.payload().empty());
+}
+
+TEST(HexCoding, ParseHexCheckedNotPaddedFailed) {
+    // Odd-length, not padded, padLeft = false
+    auto res = parse_hex_checked("0x123", false);
+    ASSERT_FALSE(res.isSuccess());
+    EXPECT_EQ(res.error(), "Invalid hex string");
+
+    res = parse_hex_checked("123", false);
+    ASSERT_FALSE(res.isSuccess());
+    EXPECT_EQ(res.error(), "Invalid hex string");
+}
+
+TEST(HexCoding, ParseHexCheckedNotPaddedSucceeds) {
+    // Odd-length, padLeft = true
+    auto res = parse_hex_checked("0x1", true);
+    ASSERT_TRUE(res.isSuccess());
+    EXPECT_EQ(hex(res.payload()), "01");
+
+    res = parse_hex_checked("abc", true);
+    ASSERT_TRUE(res.isSuccess());
+    EXPECT_EQ(hex(res.payload()), "0abc");
+}
+
+TEST(HexCoding, ParseHexCheckedInvalidHex) {
+    // Not valid hex
+    auto res = parse_hex_checked("0xMQqpqMQgCBuiPkoXfgZZsJvuzCeI1zc00z6vHJj4");
+    ASSERT_FALSE(res.isSuccess());
+    EXPECT_EQ(res.error(), "Invalid hex string");
+
+    res = parse_hex_checked("nothex");
+    ASSERT_FALSE(res.isSuccess());
+    EXPECT_EQ(res.error(), "Invalid hex string");
+}
+
 }
