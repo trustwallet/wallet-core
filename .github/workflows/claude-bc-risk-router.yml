@@ -56,7 +56,7 @@ jobs:
             2>/dev/null || true)
 
           if [ -n "$CHANGED" ]; then
-            echo "flags=$CHANGED" >> "$GITHUB_OUTPUT"
+            echo "flags=$(echo "$CHANGED" | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
           else
             echo "flags=" >> "$GITHUB_OUTPUT"
           fi
@@ -66,7 +66,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const changedFiles = `${{ steps.scan.outputs.flags }}`.trim().split('\n').filter(Boolean);
+            const changedFiles = `${{ steps.scan.outputs.flags }}`.trim().split(/\s+/).filter(Boolean);
             const marker = '<!-- bc-risk-router:reminder -->';
 
             const { data: comments } = await github.rest.issues.listComments({
