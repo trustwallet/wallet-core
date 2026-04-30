@@ -157,7 +157,9 @@ key findings, `inline code` for file paths, function names, constants, commit SH
 and token strings. Use a bullet list for multiple findings or mitigations if needed.
 
 The comment body must follow this structure exactly so the workflow gate accepts it.
-Wrap it in a fenced code block so the author can copy raw markdown:
+Wrap it in a fenced code block labelled `markdown` so the author can copy the raw
+text. The author must paste **only the content inside the fences** into GitHub —
+not the ` ```markdown ` / ` ``` ` lines themselves.
 
 ````
 ```markdown
