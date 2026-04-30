@@ -29,6 +29,21 @@ inline Data parse_hex(const std::string& input) {
     Rust::CByteArrayResultWrapper res = Rust::decode_hex(input.c_str());
     return res.unwrap_or_default().data;
 }
+
+/// Pads a hexadecimal string with a leading zero if it has an odd length and the `padLeft` flag is set.
+inline std::string pad_left_hex(const std::string& string, bool padLeft = false) {
+    if (string.size() % 2 != 0 && padLeft) {
+        std::string temp = string;
+        if (temp.compare(0, 2, "0x") == 0) {
+            temp.insert(2, 1, '0');
+        } else {
+            temp.insert(0, 1, '0');
+        }
+        return temp;
+    }
+    return string;
+}
+
 }
 
 namespace TW {
@@ -77,29 +92,19 @@ inline std::string hex(uint64_t value) {
     return hex(v);
 }
 
-/// Pads a hexadecimal string with a leading zero if it has an odd length and the `padLeft` flag is set.
-inline std::string pad_left_hex(const std::string& string, bool padLeft = false) {
-    if (string.size() % 2 != 0 && padLeft) {
-        std::string temp = string;
-        if (temp.compare(0, 2, "0x") == 0) {
-            temp.erase(0, 2);
-        }
-        temp.insert(0, 1, '0');
-        return temp;
-    }
-    return string;
-}
-
 /// Parses a string of hexadecimal values.
 ///
 /// \returns the array or parsed bytes or an empty array if the string is not
 /// valid hexadecimal.
 inline Data parse_hex(const std::string& string, bool padLeft = false) {
-    return internal::parse_hex(pad_left_hex(string, padLeft));
+    return internal::parse_hex(internal::pad_left_hex(string, padLeft));
 }
 
+/// Parses a string of hexadecimal values.
+///
+/// \returns the array or parsed bytes, or an error if the string is not valid hexadecimal.
 inline Result<Data> parse_hex_checked(const std::string& string, bool padLeft = false) {
-    const auto paddedString = pad_left_hex(string, padLeft);
+    const auto paddedString = internal::pad_left_hex(string, padLeft);
     Rust::CByteArrayResultWrapper res = Rust::decode_hex(paddedString.c_str());
     if (res.isErr()) {
         return Result<Data>::failure("Invalid hex string");

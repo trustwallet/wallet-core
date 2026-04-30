@@ -88,4 +88,22 @@ TEST(HexCoding, ParseHexCheckedInvalidHex) {
     EXPECT_EQ(res.error(), "Invalid hex string");
 }
 
+TEST(HexCoding, PadLeftHex) {
+    // Empty string
+    EXPECT_EQ(internal::pad_left_hex(""), "");
+    // "0x" only
+    EXPECT_EQ(internal::pad_left_hex("0x"), "0x");
+    // Odd-length with 0x
+    EXPECT_EQ(internal::pad_left_hex("0x1", true), "0x01");
+    EXPECT_EQ(internal::pad_left_hex("0x12", true), "0x12");
+    EXPECT_EQ(internal::pad_left_hex("0x123", true), "0x0123");
+    // Odd-length without 0x
+    EXPECT_EQ(internal::pad_left_hex("1", true), "01");
+    EXPECT_EQ(internal::pad_left_hex("12", true), "12");
+    EXPECT_EQ(internal::pad_left_hex("123", true), "0123");
+    // padLeft = false (should not pad)
+    EXPECT_EQ(internal::pad_left_hex("0x1", false), "0x1");
+    EXPECT_EQ(internal::pad_left_hex("123", false), "123");
+}
+
 }
