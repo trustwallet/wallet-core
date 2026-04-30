@@ -5,7 +5,7 @@ name: bc-risk-router
 
 on:
   pull_request:
-    branches: [master, dev]
+    branches: [master, dev, feat/claude-backward-compatibility-skill]
     types: [opened, synchronize, reopened, edited]
   issue_comment:
     types: [created, edited, deleted]
