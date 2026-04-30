@@ -74,7 +74,7 @@ std::optional<ScryptValidationError> ScryptParameters::validate() const {
     if (desiredKeyLength > ((1ULL << 32) - 1) * 32) { // depending on size_t size on platform, may be always false
         return ScryptValidationError::desiredKeyLengthTooLarge;
     }
-    if (salt.size() < minSaltLength || salt.size() > maxSaltLength) {
+    if (salt.size() > maxSaltLength) {
         return ScryptValidationError::invalidSaltLength;
     }
     if (static_cast<uint64_t>(r) * static_cast<uint64_t>(p) >= (1 << 30)) {
