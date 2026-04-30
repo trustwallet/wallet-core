@@ -144,6 +144,11 @@ must be visible to reviewers.
 
 ## Suggested PR comment
 <choose the correct token per the table above>
+
+# BC-risk audit — <branch> @ <git SHA> — <ISO timestamp>
+
+Verdict: <SAFE (after fix) | SAFE | RISK | BLOCKER>
+
 <one-paragraph summary>
 
 ## Suggested addition to docs/bc-footguns.md
