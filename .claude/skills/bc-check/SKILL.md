@@ -125,35 +125,56 @@ must be visible to reviewers.
 
 ### Output format
 
-```
-# BC-risk audit — <branch> @ <git SHA> — <ISO timestamp>
+Emit all sections below as formatted markdown (bold, inline code, headers). Do not
+wrap the output in a code fence.
+
+---
+
+# BC-risk audit — \<branch\> @ \<git SHA\> — \<ISO timestamp\>
 
 ## Verdict
-<SAFE / RISK / BLOCKER> — one sentence.
+\<SAFE / RISK / BLOCKER\> — one sentence.
 
 ## Step 1 — Classification
 ...
+
 ## Step 2 — Historical baseline
 ...
+
 ## Step 3 — Concrete failure scenarios
 ...
+
 ## Step 4 — Red-flag checklist
 ...
+
 ## Step 5 — Required mitigations
 ...
 
 ## Suggested PR comment
-<choose the correct token per the table above>
+
+Emit this block as a GitHub-ready comment. Use markdown: **bold** for the verdict and
+key findings, `inline code` for file paths, function names, constants, commit SHAs,
+and token strings. Use a bullet list for multiple findings or mitigations if needed.
+
+The comment body must follow this structure exactly so the workflow gate accepts it.
+Wrap it in a fenced code block so the author can copy raw markdown:
+
+````
+```markdown
+[bc-check: <token>]
 
 # BC-risk audit — <branch> @ <git SHA> — <ISO timestamp>
 
 Verdict: <SAFE (after fix) | SAFE | RISK | BLOCKER>
 
-<one-paragraph summary>
+<one-paragraph summary using **bold** and `inline code`>
+```
+````
 
 ## Suggested addition to docs/bc-footguns.md
-<draft entry, OR "none">
-```
+\<draft entry, OR "none"\>
+
+---
 
 The skill never auto-posts to GitHub. Author copies the verdict + suggested comment
 into the PR; the human signs off.
