@@ -172,7 +172,6 @@ jobs:
 
   verify-bc-check-comment:
     runs-on: ubuntu-latest
-    needs: scan-and-flag
     if: always()
     steps:
       - name: Verify sign-off token
@@ -210,15 +209,15 @@ jobs:
               repo: context.repo.repo,
             });
 
-            // On pull_request events the scan flags tell us if patterns were detected.
-            // On issue_comment events scan-and-flag is skipped so flags is always ''.
-            // Use the reminder comment's presence as the gate in that case.
-            // Without this check the job would fail on any comment posted to a clean PR.
-            const flags = '${{ needs.scan-and-flag.outputs.flags }}';
+            // Gate on the reminder comment's presence. This job runs independently of
+            // scan-and-flag (no `needs` dependency) so that it fires on every
+            // issue_comment event. The cascade that enforces the gate on PR open is:
+            // scan-and-flag posts the reminder → that triggers an issue_comment event
+            // → this job runs, finds the reminder, and fails until a sign-off exists.
             const reminderMarker = '<!-- bc-risk-router:reminder -->';
             const hasReminder = comments.some(c => c.body.includes(reminderMarker));
-            if (!flags && !hasReminder) {
-              core.info('No BC-risk patterns detected and no reminder posted; nothing to verify.');
+            if (!hasReminder) {
+              core.info('No BC-risk reminder posted; nothing to verify.');
               return;
             }
 
