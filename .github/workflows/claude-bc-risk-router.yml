@@ -197,7 +197,7 @@ jobs:
               core.info('PR is a draft; skipping.');
               return;
             }
-            if (!['master', 'dev'].includes(pr.base.ref)) {
+            if (!['master', 'dev', 'feat/claude-backward-compatibility-skill'].includes(pr.base.ref)) {
               core.info(`PR targets '${pr.base.ref}'; BC gate only applies to master and dev. Skipping.`);
               return;
             }
