@@ -366,6 +366,17 @@ bool TWStoredKeyFixAddresses(struct TWStoredKey* _Nonnull key, TWData* _Nonnull 
 TW_EXPORT_METHOD
 bool TWStoredKeyUpdateAddress(struct TWStoredKey* _Nonnull key, enum TWCoinType coin);
 
+/// Re-encrypts the key payload with the recommended encryption parameters if the current
+/// parameters are considered weak or outdated (e.g. insufficient scrypt cost factor or
+/// salt length). No-op if the parameters already meet the recommended standard.
+/// This method needs the encryption password to decrypt and re-encrypt the payload.
+///
+/// \param key Non-null pointer to a stored key
+/// \param password Non-null block of data, password of the stored key
+/// \return `false` if the password is incorrect or re-encryption fails, true otherwise.
+TW_EXPORT_METHOD
+bool TWStoredKeyFixEncryption(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
+
 /// Retrieve stored key encoding parameters, as JSON string.
 ///
 /// \param key Non-null pointer to a stored key

@@ -289,6 +289,16 @@ bool TWStoredKeyFixAddresses(struct TWStoredKey* _Nonnull key, TWData* _Nonnull 
     }
 }
 
+bool TWStoredKeyFixEncryption(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
+    try {
+        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        key->impl.fixEncryption(passwordData);
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
 bool TWStoredKeyUpdateAddress(struct TWStoredKey* _Nonnull key, enum TWCoinType coin) {
     try {
         return key->impl.updateAddress(coin);
