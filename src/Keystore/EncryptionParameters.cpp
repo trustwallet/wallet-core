@@ -71,6 +71,18 @@ nlohmann::json EncryptionParameters::json() const {
     return j;
 }
 
+bool EncryptionParameters::shouldFix() const {
+    if (std::holds_alternative<ScryptParameters>(kdfParams)) {
+        return std::get<ScryptParameters>(kdfParams).shouldFix();
+    }
+    if (std::holds_alternative<PBKDF2Parameters>(kdfParams)) {
+        return std::get<PBKDF2Parameters>(kdfParams).shouldFix();
+    }
+    // This should never happen since `kdfParams` should always hold either `ScryptParameters` or `PBKDF2Parameters`,
+    // but in case if there is a new parameters type missed in the checks above, return false to avoid false positives of "shouldFix".
+    return false;
+}
+
 EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const AESParameters& cipherParams, const ScryptParameters& scryptParams) {
     if (const auto error = cipherParams.validate(); error.has_value()) {
         std::stringstream ss;
@@ -169,6 +181,21 @@ Data EncryptedPayload::decrypt(const Data& password) const {
     }
 
     return decrypted;
+}
+
+EncryptedPayload EncryptedPayload::regenerateWithRecommendedParams(const Data& password, const Data& payload) {
+    const auto cipherParams = params.cipherParams;
+
+    // IMPORTANT: `EncryptedPayload` constructor supports Scrypt encryption ONLY.
+    // Hence, we can't regenerate PBKDF2 and re-encrypt a payload with fixed PBKDF2 params.
+    // That's why we are replacing the PBKDF2 parameters with Scrypt parameters with recommended values instead.
+    auto fixedScryptParams = ScryptParameters::getPreset(TWStoredKeyEncryptionLevelDefault);
+    if (std::holds_alternative<ScryptParameters>(params.kdfParams)) {
+        // Regenerate only necessary Scrypt parameters, while leaving other settings as is.
+        fixedScryptParams = std::get<ScryptParameters>(params.kdfParams).regenerateWithRecommendedParams();
+    }
+
+    return EncryptedPayload(password, payload, cipherParams, fixedScryptParams);
 }
 
 EncryptedPayload::EncryptedPayload(const nlohmann::json& json) {

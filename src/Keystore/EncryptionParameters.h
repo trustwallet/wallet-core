@@ -51,6 +51,9 @@ struct EncryptionParameters {
     EncryptionParameters& operator=(const EncryptionParameters& other) = default;
     EncryptionParameters& operator=(EncryptionParameters&& other) = default;
 
+    /// Checks if the parameters should be fixed, i.e. if they are "valid" but do not meet the recommended security requirements,
+    bool shouldFix() const;
+
     virtual ~EncryptionParameters() = default;
 };
 
@@ -92,6 +95,11 @@ public:
 
     /// Decrypts the payload with the given password.
     Data decrypt(const Data& password) const;
+
+    /// Regenerates the encrypted payload with new recommended encryption parameters.
+    ///
+    /// IMPORTANT: Due to a technical limitation, PBKDF2 parameters will be replaced with Scrypt parameters with recommended values.
+    EncryptedPayload regenerateWithRecommendedParams(const Data& password, const Data& payload);
 
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;

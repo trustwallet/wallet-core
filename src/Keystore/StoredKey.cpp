@@ -334,6 +334,20 @@ void StoredKey::fixAddresses(const Data& password) {
     }
 }
 
+void StoredKey::fixEncryption(const Data& password) {
+    if (payload.params.shouldFix()) {
+        auto decryptedData = payload.decrypt(password);
+        payload = payload.regenerateWithRecommendedParams(password, decryptedData);
+        memzero(decryptedData.data(), decryptedData.size());
+    }
+
+    if (encodedPayload.has_value() && encodedPayload->params.shouldFix()) {
+        auto decryptedEncodedData = encodedPayload->decrypt(password);
+        *encodedPayload = encodedPayload->regenerateWithRecommendedParams(password, decryptedEncodedData);
+        memzero(decryptedEncodedData.data(), decryptedEncodedData.size());
+    }
+}
+
 bool StoredKey::updateAddress(TWCoinType coin) {
     bool addressUpdated = false;
     const auto publicKeyType = TW::publicKeyType(coin);

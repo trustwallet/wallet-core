@@ -20,6 +20,10 @@ struct PBKDF2Parameters {
     /// Default desired key length of PBKDF2 encryption algorithm.
     static const std::size_t defaultDesiredKeyLength = 32;
 
+    /// Minimum and maximum salt length for PBKDF2 encryption algorithm.
+    /// https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf
+    static const std::size_t minSaltLength = 16;
+
     /// Random salt.
     Data salt;
 
@@ -38,6 +42,12 @@ struct PBKDF2Parameters {
 
     /// Initializes `PBKDF2Parameters` with a JSON object.
     PBKDF2Parameters(const nlohmann::json& json);
+
+    /// Checks if the parameters should be fixed, i.e. if they are "valid" but do not meet the recommended security requirements,
+    /// for example if the salt is empty or too short.
+    bool shouldFix() const {
+        return salt.size() < minSaltLength;
+    }
 
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;

@@ -93,6 +93,17 @@ struct ScryptParameters {
     /// - Returns: a `ValidationError` or `nil` if the parameters are valid.
     std::optional<ScryptValidationError> validate() const;
 
+    /// Regenerates the parameters with recommended Scrypt parameters.
+    /// Note: this method only regenerates the salt with a random value for now,
+    /// but it can be extended in the future to also update the N, r, and p parameters.
+    ScryptParameters regenerateWithRecommendedParams() const;
+
+    /// Checks if the parameters should be fixed, i.e. if they are "valid" but do not meet the recommended security requirements,
+    /// for example if the salt is empty or too short.
+    bool shouldFix() const {
+        return salt.size() < minSaltLength;
+    }
+
     /// Initializes `ScryptParameters` with a JSON object.
     explicit ScryptParameters(const nlohmann::json& json);
 
