@@ -100,6 +100,25 @@ Answer yes/no with file:line evidence:
 - One-time migration with explicit failure UX.
 - Apply tightening to write paths only.
 
+### Token rules for "Suggested PR comment"
+
+| Verdict            | Valid token                          | Invalid tokens  |
+|--------------------|--------------------------------------|-----------------|
+| SAFE               | `[bc-check: Pass]`                   | —               |
+| RISK               | `[bc-check: Mitigated]` (after fix)  | `Pass`, `N/A`   |
+| BLOCKER            | `[bc-check: Mitigated]` (after fix)  | `Pass`, `N/A`   |
+| No persistence risk | `[bc-check: N/A]`                   | —               |
+
+**`N/A` means the scanner fired on a file that has zero BC relevance** (a renamed
+variable, a comment edit, a test fixture that happens to match the path filter). It
+does NOT mean "I found a real BC issue but accept the risk." Using `N/A` when the
+audit found a RISK or BLOCKER is incorrect and bypasses the gate dishonestly.
+
+**RISK / BLOCKER have one resolution: fix the problem, then post `Mitigated` with
+the post-fix audit output.** There is no "accept the risk" token. For wallet
+software where the blast radius is loss of user funds, shipping a known BC break is
+not a valid outcome.
+
 ### Output format
 
 ```
@@ -120,7 +139,7 @@ Answer yes/no with file:line evidence:
 ...
 
 ## Suggested PR comment
-[bc-check: <Pass|Mitigated|N/A>]
+<choose the correct token per the table above>
 <one-paragraph summary>
 
 ## Suggested addition to docs/bc-footguns.md
