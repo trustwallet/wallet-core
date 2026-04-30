@@ -102,22 +102,26 @@ Answer yes/no with file:line evidence:
 
 ### Token rules for "Suggested PR comment"
 
-| Verdict            | Valid token                          | Invalid tokens  |
-|--------------------|--------------------------------------|-----------------|
-| SAFE               | `[bc-check: Pass]`                   | —               |
-| RISK               | `[bc-check: Mitigated]` (after fix)  | `Pass`, `N/A`   |
-| BLOCKER            | `[bc-check: Mitigated]` (after fix)  | `Pass`, `N/A`   |
-| No persistence risk | `[bc-check: N/A]`                   | —               |
+| Verdict             | Valid token                                          | Invalid tokens  |
+|---------------------|------------------------------------------------------|-----------------|
+| SAFE                | `[bc-check: Pass]`                                   | —               |
+| RISK                | `[bc-check: Mitigated]` (after fix)                  | `Pass`, `N/A`   |
+| RISK                | `[bc-check: Risk-Accepted]` (investigated, no fix)   | `Pass`, `N/A`   |
+| BLOCKER             | `[bc-check: Mitigated]` (after fix)                  | `Pass`, `N/A`   |
+| BLOCKER             | `[bc-check: Risk-Accepted]` (investigated, no fix)   | `Pass`, `N/A`   |
+| No persistence risk | `[bc-check: N/A]`                                    | —               |
 
 **`N/A` means the scanner fired on a file that has zero BC relevance** (a renamed
 variable, a comment edit, a test fixture that happens to match the path filter). It
 does NOT mean "I found a real BC issue but accept the risk." Using `N/A` when the
 audit found a RISK or BLOCKER is incorrect and bypasses the gate dishonestly.
 
-**RISK / BLOCKER have one resolution: fix the problem, then post `Mitigated` with
-the post-fix audit output.** There is no "accept the risk" token. For wallet
-software where the blast radius is loss of user funds, shipping a known BC break is
-not a valid outcome.
+**`Risk-Accepted` is for cases where the finding is real but investigation confirms
+the blast radius is effectively zero** — e.g. telemetry or team confirmation that
+no user data in the wild can trigger the new restriction. It requires the same bar
+as `Mitigated`: full audit output pasted, plus explicit evidence for why the risk is
+acceptable (who confirmed it, what data or reasoning supports it). The audit trail
+must be visible to reviewers.
 
 ### Output format
 

@@ -142,8 +142,9 @@ jobs:
               '',
               'Post a comment with one of:',
               '- `[bc-check: Pass]` — audit run, **Verdict: SAFE**. Must include audit output.',
-              '- `[bc-check: Mitigated]` — audit found RISK or BLOCKER; **you fixed it**. Must include the post-fix audit output.',
-              "- `[bc-check: N/A]` — scanner fired on a file with **zero BC relevance** (comment edit, test fixture, renamed variable). **Invalid if the audit found a real risk** — N/A does not mean 'I accept the risk'.",
+              '- `[bc-check: Mitigated]` — audit found RISK or BLOCKER; **you fixed it in code**. Must include the post-fix audit output.',
+              '- `[bc-check: Risk-Accepted]` — audit found RISK or BLOCKER; **investigation confirms blast radius is effectively zero** (no user data in the wild can trigger it). Must include audit output + explicit evidence (who confirmed it, what data or reasoning).',
+              "- `[bc-check: N/A]` — scanner fired on a file with **zero BC relevance** (comment edit, test fixture, renamed variable). **Invalid if the audit found a real risk.**",
               '',
               'Each token must be accompanied by >=${{ env.BC_SIGNOFF_MIN_CHARS }} chars of reasoning. The reasoning must be fresh — posted or edited at or after the HEAD commit.',
               '',
@@ -231,10 +232,9 @@ jobs:
             });
             const headCommitTime = new Date(headCommit.commit.committer.date);
 
-            const tokenRegex = /\[bc-check:\s*(Pass|Mitigated|N\/A)\]/i;
-            // Pass and Mitigated MUST include audit output.
-            // N/A does not require audit evidence, but is invalid when the audit
-            // found a real risk: reject N/A if the comment contains a RISK or BLOCKER verdict.
+            const tokenRegex = /\[bc-check:\s*(Pass|Mitigated|Risk-Accepted|N\/A)\]/i;
+            // Pass, Mitigated, and Risk-Accepted all require audit output.
+            // N/A does not, but is invalid when the audit contains a real risk verdict.
             const auditEvidenceRegex = /(^|\n)#\s*BC-risk audit\b|(^|\n)\s*Verdict\s*:/i;
             const riskVerdictRegex = /Verdict\s*[:\-]\s*(RISK|BLOCKER)\b/i;
 
@@ -244,6 +244,7 @@ jobs:
               const stripped = c.body.replace(tokenRegex, '').replace(/<!--[\s\S]*?-->/g, '').trim();
               if (stripped.length < ${{ env.BC_SIGNOFF_MIN_CHARS }}) return false;
               const verdict = tokenMatch[1].toLowerCase();
+              // All tokens except N/A require audit evidence.
               if (verdict !== 'n/a' && !auditEvidenceRegex.test(c.body)) return false;
               // N/A is invalid when the comment's own audit shows a real risk.
               if (verdict === 'n/a' && riskVerdictRegex.test(c.body)) return false;
@@ -255,11 +256,13 @@ jobs:
 
             if (!signoff) {
               core.setFailed(
-                'No fresh, evidence-backed `[bc-check: Pass|Mitigated|N/A]` sign-off found. Required:\n' +
+                'No fresh, evidence-backed sign-off found. Required:\n' +
+                '  * Token: `[bc-check: Pass|Mitigated|Risk-Accepted|N/A]`\n' +
                 '  * Token + reasoning >= ${{ env.BC_SIGNOFF_MIN_CHARS }} chars.\n' +
                 '  * Posted or edited at or after the HEAD commit.\n' +
-                '  * For Pass / Mitigated: must include audit output (a `# BC-risk audit ...` header or a `Verdict:` line). Run the embedded prompt or the `/bc-check` skill and paste the report.\n' +
-                "  * N/A is only valid when the change has zero BC relevance. It is rejected if the comment's audit shows a RISK or BLOCKER verdict.\n" +
+                '  * Pass / Mitigated / Risk-Accepted: must include audit output (a `# BC-risk audit ...` header or a `Verdict:` line).\n' +
+                '  * Risk-Accepted: must also include explicit evidence that blast radius is effectively zero.\n' +
+                "  * N/A is only valid when the change has zero BC relevance; rejected if the audit shows a RISK or BLOCKER verdict.\n" +
                 'If you pushed new commits after a previous sign-off, edit the existing comment (any edit counts as a refresh) so it reflects the current diff.'
               );
               return;
