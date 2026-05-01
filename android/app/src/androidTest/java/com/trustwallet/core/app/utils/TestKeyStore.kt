@@ -1,10 +1,12 @@
 package com.trustwallet.core.app.utils
 
+import org.json.JSONObject
 import org.junit.Assert.*
 import org.junit.Test
 import wallet.core.jni.StoredKey
 import wallet.core.jni.CoinType
 import wallet.core.jni.StoredKeyEncryption
+import java.io.File
 
 class TestKeyStore {
 
@@ -116,6 +118,70 @@ class TestKeyStore {
         assertNotNull(keyStore)
         assertNotNull(storedEncoded)
         assertEquals(privateKeyHex, storedEncoded)
+    }
+
+    @Test
+    fun testFixScryptWithEmptySalt() {
+        val gMnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle"
+        val password = "password".toByteArray()
+        val walletID = "8e334366-020b-493f-81ab-a946432f536d"
+
+        val json = """
+            {
+              "activeAccounts": [
+                {
+                  "address": "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny",
+                  "coin": 0,
+                  "derivationPath": "m/84'/0'/0'/0/0",
+                  "extendedPublicKey": "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn",
+                  "publicKey": "02df6fc590ab3101bbe0bb5765cbaeab9b5dcfe09ac9315d707047cbd13bc7e006"
+                }
+              ],
+              "crypto": {
+                "cipher": "aes-128-ctr",
+                "cipherparams": { "iv": "f375d3903fa00839c43109b1d26436b7" },
+                "ciphertext": "9768cdec22c3b0d5d7eced4e5387c138045367b9481d5cf017d262e645accd478f0f197f6dcb97e2ce9105fee0e7074d891a9826df3bc8f4dca17f5cdfb9992b86e40f26028c5a392cb2de17",
+                "kdf": "scrypt",
+                "kdfparams": { "dklen": 32, "n": 16384, "p": 4, "r": 8, "salt": "" },
+                "mac": "bbdba986c713d91828a7a2f031d3535414967fce81c6c826b50b0cfab8783dfc"
+              },
+              "id": "8e334366-020b-493f-81ab-a946432f536d",
+              "name": "name",
+              "type": "mnemonic",
+              "version": 3
+            }
+        """.trimIndent()
+
+        val key = StoredKey.importJSON(json.toByteArray())
+        assertEquals(walletID, key.identifier())
+
+        val cryptoBefore = JSONObject(String(key.exportJSON())).getJSONObject("crypto")
+        val saltBefore = cryptoBefore.getJSONObject("kdfparams").getString("salt")
+        val ciphertextBefore = cryptoBefore.getString("ciphertext")
+        assertEquals("", saltBefore)
+
+        assertTrue(key.fixEncryption(password))
+
+        val tmpFile = File.createTempFile("scrypt-empty-salt", ".json")
+        try {
+            assertTrue(key.store(tmpFile.absolutePath))
+
+            val reloadedKey = StoredKey.load(tmpFile.absolutePath)
+            assertNotNull(reloadedKey)
+
+            assertEquals(walletID, reloadedKey.identifier())
+
+            val cryptoAfter = JSONObject(String(reloadedKey.exportJSON())).getJSONObject("crypto")
+            val saltAfter = cryptoAfter.getJSONObject("kdfparams").getString("salt")
+            val ciphertextAfter = cryptoAfter.getString("ciphertext")
+
+            assertTrue(saltAfter.isNotEmpty())
+            assertNotEquals(ciphertextBefore, ciphertextAfter)
+
+            assertEquals(gMnemonic, reloadedKey.decryptMnemonic(password))
+        } finally {
+            tmpFile.delete()
+        }
     }
 
     @Test
