@@ -44,6 +44,9 @@ struct AESParameters {
     /// Initializes `AESParameters` with a JSON object.
     static AESParameters AESParametersFromJson(const nlohmann::json& json, const std::string& cipher);
 
+    /// Creates a copy of `this` with a new random IV.
+    [[nodiscard]] AESParameters copyWithNewIv() const;
+
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;
 

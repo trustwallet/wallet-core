@@ -64,6 +64,12 @@ AESParameters AESParameters::AESParametersFromJson(const nlohmann::json& json, c
     return parameters;
 }
 
+AESParameters AESParameters::copyWithNewIv() const {
+    AESParameters parameters = *this;
+    parameters.iv = generateIv(mBlockSize);
+    return parameters;
+}
+
 /// Saves `this` as a JSON object.
 nlohmann::json AESParameters::json() const {
     nlohmann::json j;

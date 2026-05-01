@@ -191,7 +191,7 @@ EncryptedPayload EncryptedPayload::regenerateWithRecommendedParams(const Data& p
 
     // Regenerate only necessary Scrypt parameters, while leaving other settings as is.
     const auto fixedScryptParams = std::get<ScryptParameters>(params.kdfParams).regenerateWithRecommendedParams();
-    const auto cipherParams = params.cipherParams;
+    const auto cipherParams = params.cipherParams.copyWithNewIv();
 
     auto reEncryptedPayload = EncryptedPayload(password, decryptedData, cipherParams, fixedScryptParams);
 
