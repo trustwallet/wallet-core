@@ -535,6 +535,45 @@ class KeyStoreTests: XCTestCase {
         XCTAssertEqual(pactus_testnet.derivationPath, "m/44'/21777'/3'/0'")
     }
 
+    func testFixScryptWithEmptySalt() throws {
+        let mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle"
+        let password = Data("password".utf8)
+        let walletID = "8e334366-020b-493f-81ab-a946432f536d"
+
+        let sourceURL = Bundle(for: type(of: self)).url(forResource: "scrypt-empty-salt", withExtension: "json")!
+        let destURL = keyDirectory.appendingPathComponent("scrypt-empty-salt.json")
+        try fileManager.copyItem(at: sourceURL, to: destURL)
+
+        let keyStore = try KeyStore(keyDirectory: keyDirectory)
+        let wallet = keyStore.wallets.first(where: { $0.key.identifier == walletID })!
+
+        let jsonBeforeData = wallet.key.exportJSON()!
+        let jsonBefore = try JSONSerialization.jsonObject(with: jsonBeforeData) as! [String: Any]
+        let cryptoBefore = jsonBefore["crypto"] as! [String: Any]
+        let saltBefore = (cryptoBefore["kdfparams"] as! [String: Any])["salt"] as! String
+        let ciphertextBefore = cryptoBefore["ciphertext"] as! String
+        XCTAssertEqual(saltBefore, "")
+
+        XCTAssertTrue(wallet.key.fixEncryption(password: password))
+        XCTAssertTrue(wallet.key.store(path: wallet.keyURL.path))
+
+        let reloadedKeyStore = try KeyStore(keyDirectory: keyDirectory)
+        let reloadedWallet = reloadedKeyStore.wallets.first(where: { $0.key.identifier == walletID })!
+
+        let jsonAfterData = reloadedWallet.key.exportJSON()!
+        let jsonAfter = try JSONSerialization.jsonObject(with: jsonAfterData) as! [String: Any]
+        let cryptoAfter = jsonAfter["crypto"] as! [String: Any]
+        let saltAfter = (cryptoAfter["kdfparams"] as! [String: Any])["salt"] as! String
+        let ciphertextAfter = cryptoAfter["ciphertext"] as! String
+
+        XCTAssertEqual(reloadedWallet.key.identifier, walletID)
+        XCTAssertFalse(saltAfter.isEmpty)
+        XCTAssertNotEqual(ciphertextAfter, ciphertextBefore)
+
+        let decryptedMnemonic = reloadedWallet.key.decryptMnemonic(password: password)
+        XCTAssertEqual(decryptedMnemonic, mnemonic)
+    }
+
     func createTempDirURL() throws -> URL {
         let dir = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("keystore")
         try? fileManager.removeItem(at: dir)
