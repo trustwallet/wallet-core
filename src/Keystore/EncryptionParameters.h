@@ -98,8 +98,10 @@ public:
 
     /// Regenerates the encrypted payload with new recommended encryption parameters.
     ///
-    /// IMPORTANT: Due to a technical limitation, PBKDF2 parameters will be replaced with Scrypt parameters with recommended values.
-    EncryptedPayload regenerateWithRecommendedParams(const Data& password, const Data& payload);
+    /// IMPORTANT: Due to a technical limitation, Scrypt parameters will be replaced with new recommended values,
+    /// while PBKDF2 parameters will be left as is.
+    /// See implementation for details.
+    EncryptedPayload regenerateWithRecommendedParams(const Data& password) const;
 
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;

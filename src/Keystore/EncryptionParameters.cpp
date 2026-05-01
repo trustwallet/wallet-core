@@ -75,11 +75,8 @@ bool EncryptionParameters::shouldFix() const {
     if (std::holds_alternative<ScryptParameters>(kdfParams)) {
         return std::get<ScryptParameters>(kdfParams).shouldFix();
     }
-    if (std::holds_alternative<PBKDF2Parameters>(kdfParams)) {
-        return std::get<PBKDF2Parameters>(kdfParams).shouldFix();
-    }
-    // This should never happen since `kdfParams` should always hold either `ScryptParameters` or `PBKDF2Parameters`,
-    // but in case if there is a new parameters type missed in the checks above, return false to avoid false positives of "shouldFix".
+
+    // Note: re-encryption is currently supported for Scrypt only.
     return false;
 }
 
@@ -183,19 +180,34 @@ Data EncryptedPayload::decrypt(const Data& password) const {
     return decrypted;
 }
 
-EncryptedPayload EncryptedPayload::regenerateWithRecommendedParams(const Data& password, const Data& payload) {
-    const auto cipherParams = params.cipherParams;
-
+EncryptedPayload EncryptedPayload::regenerateWithRecommendedParams(const Data& password) const {
     // IMPORTANT: `EncryptedPayload` constructor supports Scrypt encryption ONLY.
-    // Hence, we can't regenerate PBKDF2 and re-encrypt a payload with fixed PBKDF2 params.
-    // That's why we are replacing the PBKDF2 parameters with Scrypt parameters with recommended values instead.
-    auto fixedScryptParams = ScryptParameters::getPreset(TWStoredKeyEncryptionLevelDefault);
-    if (std::holds_alternative<ScryptParameters>(params.kdfParams)) {
-        // Regenerate only necessary Scrypt parameters, while leaving other settings as is.
-        fixedScryptParams = std::get<ScryptParameters>(params.kdfParams).regenerateWithRecommendedParams();
+    // Hence, we can't regenerate PBKDF2 and re-encrypt a payload. Do nothing in that case.
+    if (!std::holds_alternative<ScryptParameters>(params.kdfParams)) {
+        return *this;
     }
 
-    return EncryptedPayload(password, payload, cipherParams, fixedScryptParams);
+    auto decryptedData = decrypt(password);
+
+    // Regenerate only necessary Scrypt parameters, while leaving other settings as is.
+    const auto fixedScryptParams = std::get<ScryptParameters>(params.kdfParams).regenerateWithRecommendedParams();
+    const auto cipherParams = params.cipherParams;
+
+    auto reEncryptedPayload = EncryptedPayload(password, decryptedData, cipherParams, fixedScryptParams);
+
+    // Try to decrypt the new payload to verify the full backward compatibility, before returning it.
+    {
+        auto reDecryptedData = reEncryptedPayload.decrypt(password);
+        if (!isEqualConstantTime(decryptedData, reDecryptedData)) {
+            memzero(decryptedData.data(), decryptedData.size());
+            memzero(reDecryptedData.data(), reDecryptedData.size());
+            throw DecryptionError::invalidKeyFile;
+        }
+        memzero(reDecryptedData.data(), reDecryptedData.size());
+    }
+
+    memzero(decryptedData.data(), decryptedData.size());
+    return reEncryptedPayload;
 }
 
 EncryptedPayload::EncryptedPayload(const nlohmann::json& json) {
