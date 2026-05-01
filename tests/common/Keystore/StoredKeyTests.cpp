@@ -675,6 +675,34 @@ TEST(StoredKey, FixScryptWithValidParams) {
     EXPECT_EQ(mnemonicAfter, mnemonicBefore);
 }
 
+TEST(StoredKey, FixPBKDF2WithEmptySalt) {
+    auto key = StoredKey::load(testDataPath("pbkdf2-empty-salt.json"));
+
+    EXPECT_FALSE(key.id.has_value());
+    EXPECT_EQ(key.name, "name");
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+    ASSERT_EQ(key.accounts.size(), 1ul);
+    EXPECT_EQ(key.accounts[0].coin, TWCoinTypeSmartChain);
+    EXPECT_EQ(key.accounts[0].derivationPath.string(), "m/44'/60'/0'/0/0");
+
+    const auto jsonBefore = key.json();
+    EXPECT_EQ(jsonBefore["crypto"]["kdfparams"]["salt"].get<std::string>(), "");
+    EXPECT_EQ(jsonBefore["crypto"]["ciphertext"].get<std::string>(), "dc6ea8644326bd86f1cbc102578b44e7645a66a1eb700334e9a819df05ee26ac410be4a9e3fd2f151849555da9b23bcc3b598e62dab23d2e8d431d29a9a4eefbb7d500c14497b67a9577e4f7");
+
+    const Data& dataBefore = key.payload.decrypt(gPassword);
+    const auto mnemonicBefore = string(reinterpret_cast<const char*>(dataBefore.data()));
+
+    // fixEncryption is a no-op for PBKDF2 — re-encryption is not supported.
+    key.fixEncryption(gPassword);
+
+    // The full JSON representation must be identical — no field may have changed.
+    EXPECT_EQ(key.json(), jsonBefore);
+
+    const Data& dataAfter = key.payload.decrypt(gPassword);
+    const auto mnemonicAfter = string(reinterpret_cast<const char*>(dataAfter.data()));
+    EXPECT_EQ(mnemonicAfter, mnemonicBefore);
+}
+
 TEST(StoredKey, MissingAddressFix) {
     auto key = StoredKey::load(testDataPath("missing-address.json"));
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
