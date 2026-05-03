@@ -335,12 +335,26 @@ void StoredKey::fixAddresses(const Data& password) {
 }
 
 void StoredKey::fixEncryption(const Data& password) {
+    // Store the re-generated payloads separately before replacing the existing ones,
+    // to avoid data loss in case of unexpected errors during regeneration.
+    std::optional<EncryptedPayload> regeneratedPayload;
+    std::optional<EncryptedPayload> regeneratedEncodedPayload;
+
     if (payload.params.shouldFix()) {
-        payload = payload.regenerateWithRecommendedParams(password);
+        regeneratedPayload = payload.regenerateWithRecommendedParams(password);
     }
 
     if (encodedPayload.has_value() && encodedPayload->params.shouldFix()) {
-        encodedPayload = encodedPayload->regenerateWithRecommendedParams(password);
+        regeneratedEncodedPayload = encodedPayload->regenerateWithRecommendedParams(password);
+    }
+
+    // Replace the existing payloads with the re-generated ones, if they were re-generated.
+    // Note: no exceptions expected from this point.
+    if (regeneratedPayload.has_value()) {
+        payload = std::move(*regeneratedPayload);
+    }
+    if (regeneratedEncodedPayload.has_value()) {
+        encodedPayload = std::move(*regeneratedEncodedPayload);
     }
 }
 

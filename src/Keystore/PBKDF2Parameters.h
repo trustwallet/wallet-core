@@ -20,10 +20,6 @@ struct PBKDF2Parameters {
     /// Default desired key length of PBKDF2 encryption algorithm.
     static const std::size_t defaultDesiredKeyLength = 32;
 
-    /// Minimum and maximum salt length for PBKDF2 encryption algorithm.
-    /// https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf
-    static const std::size_t minSaltLength = 16;
-
     /// Random salt.
     Data salt;
 

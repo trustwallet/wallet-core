@@ -121,6 +121,18 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
     memzero(derivedKey.data(), derivedKey.size());
 }
 
+EncryptedPayload& EncryptedPayload::operator=(EncryptedPayload&& other) noexcept {
+    if (this != &other) {
+        memzero(encrypted.data(), encrypted.size());
+        memzero(_mac.data(), _mac.size());
+
+        params = std::move(other.params);
+        encrypted = std::move(other.encrypted);
+        _mac = std::move(other._mac);
+    }
+    return *this;
+}
+
 EncryptedPayload::~EncryptedPayload() {
     memzero(encrypted.data(), encrypted.size());
     memzero(_mac.data(), _mac.size());
@@ -187,26 +199,22 @@ EncryptedPayload EncryptedPayload::regenerateWithRecommendedParams(const Data& p
         return *this;
     }
 
-    auto decryptedData = decrypt(password);
+    const auto decryptedData = ZeroizingData(decrypt(password));
 
     // Regenerate only necessary Scrypt parameters, while leaving other settings as is.
     const auto fixedScryptParams = std::get<ScryptParameters>(params.kdfParams).regenerateWithRecommendedParams();
     const auto cipherParams = params.cipherParams.copyWithNewIv();
 
-    auto reEncryptedPayload = EncryptedPayload(password, decryptedData, cipherParams, fixedScryptParams);
+    auto reEncryptedPayload = EncryptedPayload(password, decryptedData.get(), cipherParams, fixedScryptParams);
 
     // Try to decrypt the new payload to verify the full backward compatibility, before returning it.
     {
-        auto reDecryptedData = reEncryptedPayload.decrypt(password);
-        if (!isEqualConstantTime(decryptedData, reDecryptedData)) {
-            memzero(decryptedData.data(), decryptedData.size());
-            memzero(reDecryptedData.data(), reDecryptedData.size());
+        auto reDecryptedData = ZeroizingData(reEncryptedPayload.decrypt(password));
+        if (!isEqualConstantTime(decryptedData.get(), reDecryptedData.get())) {
             throw DecryptionError::invalidKeyFile;
         }
-        memzero(reDecryptedData.data(), reDecryptedData.size());
     }
 
-    memzero(decryptedData.data(), decryptedData.size());
     return reEncryptedPayload;
 }
 

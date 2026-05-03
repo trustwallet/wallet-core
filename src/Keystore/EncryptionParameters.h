@@ -108,8 +108,9 @@ public:
 
     EncryptedPayload(const EncryptedPayload& other) = default;
     EncryptedPayload(EncryptedPayload&& other) = default;
-    EncryptedPayload& operator=(const EncryptedPayload& other) = default;
-    EncryptedPayload& operator=(EncryptedPayload&& other) = default;
+    // Copy assignment is explicitly deleted.
+    EncryptedPayload& operator=(const EncryptedPayload& other) = delete;
+    EncryptedPayload& operator=(EncryptedPayload&& other) noexcept;
 
     virtual ~EncryptedPayload();
 };
