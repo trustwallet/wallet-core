@@ -391,7 +391,7 @@ TEST(StoredKey, LoadLegacyMnemonic) {
     EXPECT_EQ(key.id, "629aad29-0b22-488e-a0e7-b4219d4f311c");
 
     const auto data = key.payload.decrypt(gPassword);
-    const auto mnemonic = string(data.begin(), data.end());
+    const auto mnemonic = string(reinterpret_cast<const char*>(data.data()));
     EXPECT_EQ(mnemonic, "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn back");
 
     EXPECT_EQ(key.accounts[0].coin, TWCoinTypeEthereum);
@@ -659,7 +659,7 @@ TEST(StoredKey, FixScryptWithValidParams) {
     auto key = StoredKey::load(testDataPath("legacy-mnemonic.json"));
 
     const Data& dataBefore = key.payload.decrypt(gPassword);
-    const auto mnemonicBefore = string(dataBefore.begin(), dataBefore.end());
+    const auto mnemonicBefore = string(reinterpret_cast<const char*>(dataBefore.data()));
 
     const auto jsonBefore = key.json();
 
@@ -670,7 +670,7 @@ TEST(StoredKey, FixScryptWithValidParams) {
 
     // The mnemonic must still decrypt to the same value.
     const Data& dataAfter = key.payload.decrypt(gPassword);
-    const auto mnemonicAfter = string(dataAfter.begin(), dataAfter.end());
+    const auto mnemonicAfter = string(reinterpret_cast<const char*>(dataAfter.data()));
     EXPECT_EQ(mnemonicAfter, mnemonicBefore);
 }
 
@@ -689,7 +689,7 @@ TEST(StoredKey, FixPBKDF2WithEmptySalt) {
     EXPECT_EQ(jsonBefore["crypto"]["ciphertext"].get<std::string>(), "dc6ea8644326bd86f1cbc102578b44e7645a66a1eb700334e9a819df05ee26ac410be4a9e3fd2f151849555da9b23bcc3b598e62dab23d2e8d431d29a9a4eefbb7d500c14497b67a9577e4f7");
 
     const Data& dataBefore = key.payload.decrypt(gPassword);
-    const auto mnemonicBefore = string(dataBefore.begin(), dataBefore.end());
+    const auto mnemonicBefore = string(reinterpret_cast<const char*>(dataBefore.data()));
 
     // fixEncryption is a no-op for PBKDF2 — re-encryption is not supported.
     key.fixEncryption(gPassword);
@@ -698,7 +698,7 @@ TEST(StoredKey, FixPBKDF2WithEmptySalt) {
     EXPECT_EQ(key.json(), jsonBefore);
 
     const Data& dataAfter = key.payload.decrypt(gPassword);
-    const auto mnemonicAfter = string(dataAfter.begin(), dataAfter.end());
+    const auto mnemonicAfter = string(reinterpret_cast<const char*>(dataAfter.data()));
     EXPECT_EQ(mnemonicAfter, mnemonicBefore);
 }
 
