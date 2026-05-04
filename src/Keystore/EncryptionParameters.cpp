@@ -39,6 +39,13 @@ static const auto mac = "mac";
 } // namespace CodingKeys
 
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
+    if (json.count(CodingKeys::cipher) == 0 || !json[CodingKeys::cipher].is_string()) {
+        throw std::invalid_argument("Missing cipher");
+    }
+    if (json.count(CodingKeys::kdf) == 0 || !json[CodingKeys::kdf].is_string()) {
+        throw std::invalid_argument("Missing kdf");
+    }
+
     auto cipher = json[CodingKeys::cipher].get<std::string>();
     cipherParams = AESParameters::AESParametersFromJson(json[CodingKeys::cipherParams], cipher);
     if (const auto error = cipherParams.validate(); error.has_value()) {
@@ -52,6 +59,8 @@ EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
         kdfParams = ScryptParameters(json[CodingKeys::kdfParams]);
     } else if (kdf == "pbkdf2") {
         kdfParams = PBKDF2Parameters(json[CodingKeys::kdfParams]);
+    } else {
+        throw std::invalid_argument("Unsupported kdf: " + kdf);
     }
 }
 
