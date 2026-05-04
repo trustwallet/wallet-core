@@ -45,6 +45,12 @@ EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
     if (json.count(CodingKeys::kdf) == 0 || !json[CodingKeys::kdf].is_string()) {
         throw std::invalid_argument("Missing kdf");
     }
+    if (json.count(CodingKeys::cipherParams) == 0 || !json[CodingKeys::cipherParams].is_object()) {
+        throw std::invalid_argument("Missing cipher params");
+    }
+    if (json.count(CodingKeys::kdfParams) == 0 || !json[CodingKeys::kdfParams].is_object()) {
+        throw std::invalid_argument("Missing kdf params");
+    }
 
     auto cipher = json[CodingKeys::cipher].get<std::string>();
     cipherParams = AESParameters::AESParametersFromJson(json[CodingKeys::cipherParams], cipher);
@@ -228,6 +234,13 @@ EncryptedPayload EncryptedPayload::regenerateWithRecommendedParams(const Data& p
 }
 
 EncryptedPayload::EncryptedPayload(const nlohmann::json& json) {
+    if (json.count(CodingKeys::encrypted) == 0 || !json[CodingKeys::encrypted].is_string()) {
+        throw std::invalid_argument("Missing encrypted data");
+    }
+    if (json.count(CodingKeys::mac) == 0 || !json[CodingKeys::mac].is_string()) {
+        throw std::invalid_argument("Missing mac");
+    }
+
     params = EncryptionParameters(json);
     encrypted = parse_hex(json[CodingKeys::encrypted].get<std::string>());
     _mac = parse_hex(json[CodingKeys::mac].get<std::string>());

@@ -12,6 +12,7 @@
 #include "PrivateKey.h"
 
 #include <gtest/gtest.h>
+#include <filesystem>
 #include <stdexcept>
 
 extern std::string TESTS_ROOT;
@@ -1050,6 +1051,78 @@ TEST(StoredKey, LoadScryptWithoutSalt) {
     // Salt must be present and empty
     ASSERT_TRUE(kdfparams.contains("salt"));
     EXPECT_EQ(kdfparams["salt"].get<std::string>(), "");
+}
+
+TEST(StoredKey, BackwardCompatibility) {
+    const auto dir = testDataPath("BackwardCompatibility");
+    for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+        if (!entry.is_regular_file()) {
+            continue;
+        }
+        SCOPED_TRACE(entry.path().filename().string());
+
+        const auto key = StoredKey::load(entry.path().string());
+        ASSERT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+
+        const Data& decrypted = key.payload.decrypt(gPassword);
+        EXPECT_EQ(string(decrypted.begin(), decrypted.end()), string(gMnemonic));
+    }
+}
+
+TEST(StoredKey, ParseMissingFields) {
+    // Load a valid key as the base JSON, then erase fields one by one to
+    // verify each missing field is caught during parsing.
+    const auto baseJson = StoredKey::load(testDataPath("wallet.json")).json();
+
+    // Missing iv inside cipherparams → std::invalid_argument("Missing iv")
+    {
+        auto j = baseJson;
+        j["crypto"]["cipherparams"].erase("iv");
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+    // Missing cipher → std::invalid_argument("Missing cipher")
+    {
+        auto j = baseJson;
+        j["crypto"].erase("cipher");
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+    // Missing kdf → std::invalid_argument("Missing kdf")
+    {
+        auto j = baseJson;
+        j["crypto"].erase("kdf");
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+    // Missing cipherparams object → nlohmann::json::out_of_range (const [] access)
+    {
+        auto j = baseJson;
+        j["crypto"].erase("cipherparams");
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+    // Missing kdfparams object → nlohmann::json::out_of_range (const [] access)
+    {
+        auto j = baseJson;
+        j["crypto"].erase("kdfparams");
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+    // Missing individual scrypt params → std::invalid_argument("Missing required scrypt parameters n, p, r, or dklen")
+    for (const auto* param : {"dklen", "n", "p", "r"}) {
+        SCOPED_TRACE(param);
+        auto j = baseJson;
+        j["crypto"]["kdfparams"].erase(param);
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+    // Missing ciphertext → nlohmann::json::out_of_range (const [] access on absent key)
+    {
+        auto j = baseJson;
+        j["crypto"].erase("ciphertext");
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+    // Missing mac → nlohmann::json::out_of_range (const [] access on absent key)
+    {
+        auto j = baseJson;
+        j["crypto"].erase("mac");
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
 }
 
 } // namespace TW::Keystore
