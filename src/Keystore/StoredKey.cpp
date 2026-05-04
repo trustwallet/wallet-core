@@ -482,9 +482,32 @@ nlohmann::json StoredKey::json() const {
 
 // File operations
 
-void StoredKey::store(const std::string& path) {
+void StoredKey::store(const std::string& path) const {
+    const std::string jsonData = json().dump();
+
     auto stream = std::ofstream(path);
-    stream << json();
+    if (!stream) {
+        throw std::invalid_argument("Can't open file for writing: " + path);
+    }
+    stream << jsonData;
+    stream.flush();
+    if (!stream) {
+        throw std::runtime_error("Failed to write key file: " + path);
+    }
+}
+
+void StoredKey::storeWithTemporaryFile(const std::string& path, const std::string& tempFilePath) const {
+    try {
+        store(tempFilePath);
+    } catch (...) {
+        std::remove(tempFilePath.c_str());
+        throw;
+    }
+
+    if (std::rename(tempFilePath.c_str(), path.c_str()) != 0) {
+        std::remove(tempFilePath.c_str());
+        throw std::runtime_error("Failed to rename key file: temp=" + tempFilePath + ", target=" + path);
+    }
 }
 
 StoredKey StoredKey::load(const std::string& path) {

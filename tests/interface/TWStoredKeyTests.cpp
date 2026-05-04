@@ -34,8 +34,23 @@ struct std::shared_ptr<TWStoredKey> createAStoredKey(TWCoinType coin, TWData* pa
 struct std::shared_ptr<TWStoredKey> createDefaultStoredKey(TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr) {
     const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
     const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
-    
+
     return createAStoredKey(TWCoinTypeBitcoin, password.get(), encryption);
+}
+
+/// Reads the entire contents of the file at `path` into a Data buffer.
+/// Throws std::invalid_argument if the file cannot be opened.
+/// Note: uses a byte-by-byte loop instead of ifs.read() to avoid static-analysis warnings.
+static Data readFileData(const string& path) {
+    ifstream ifs(path);
+    if (!ifs.is_open()) throw std::invalid_argument("Cannot open file: " + path);
+    ifs.seekg(0, ifs.end);
+    const auto length = ifs.tellg();
+    ifs.seekg(0, ifs.beg);
+    Data data(length);
+    size_t idx = 0;
+    while (!ifs.eof() && idx < static_cast<size_t>(length)) { char c = ifs.get(); data[idx++] = static_cast<uint8_t>(c); }
+    return data;
 }
 
 TEST(TWStoredKey, loadPBKDF2Key) {
@@ -439,19 +454,8 @@ TEST(TWStoredKey, storeAndImportJSONAES192Ctr) {
     const auto outFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(outFileName.c_str()));
     EXPECT_TRUE(TWStoredKeyStore(key.get(), outFileNameStr.get()));
 
-    // read contents of file
-    ifstream ifs(outFileName);
-    // get length of file:
-    ifs.seekg (0, ifs.end);
-    auto length = ifs.tellg();
-    ifs.seekg (0, ifs.beg);
-    EXPECT_TRUE(length > 20);
-
-    Data json(length);
-    size_t idx = 0;
-    // read the slow way, ifs.read gave some false warnings with codacy
-    while (!ifs.eof() && idx < static_cast<std::size_t>(length)) { char c = ifs.get(); json[idx++] = (uint8_t)c; }
-
+    auto json = readFileData(outFileName);
+    EXPECT_GT(json.size(), 20ul);
     const auto key2 = WRAP(TWStoredKey, TWStoredKeyImportJSON(WRAPD(TWDataCreateWithData(&json)).get()));
     const auto name2 = WRAPS(TWStoredKeyName(key2.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(name2.get())), "name");
@@ -463,19 +467,8 @@ TEST(TWStoredKey, storeAndImportJSONAES256Ctr) {
     const auto outFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(outFileName.c_str()));
     EXPECT_TRUE(TWStoredKeyStore(key.get(), outFileNameStr.get()));
 
-    // read contents of file
-    ifstream ifs(outFileName);
-    // get length of file:
-    ifs.seekg (0, ifs.end);
-    auto length = ifs.tellg();
-    ifs.seekg (0, ifs.beg);
-    EXPECT_TRUE(length > 20);
-
-    Data json(length);
-    size_t idx = 0;
-    // read the slow way, ifs.read gave some false warnings with codacy
-    while (!ifs.eof() && idx < static_cast<std::size_t>(length)) { char c = ifs.get(); json[idx++] = (uint8_t)c; }
-
+    auto json = readFileData(outFileName);
+    EXPECT_GT(json.size(), 20ul);
     const auto key2 = WRAP(TWStoredKey, TWStoredKeyImportJSON(WRAPD(TWDataCreateWithData(&json)).get()));
     const auto name2 = WRAPS(TWStoredKeyName(key2.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(name2.get())), "name");
@@ -486,21 +479,9 @@ TEST(TWStoredKey, storeAndImportJSON) {
     const auto outFileName = string(getTestTempDir() + "/TWStoredKey_store.json");
     const auto outFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(outFileName.c_str()));
     EXPECT_TRUE(TWStoredKeyStore(key.get(), outFileNameStr.get()));
-    //EXPECT_TRUE(filesystem::exists(outFileName));  // some linker issues with filesystem
-    
-    // read contents of file
-    ifstream ifs(outFileName);
-    // get length of file:
-    ifs.seekg (0, ifs.end);
-    auto length = ifs.tellg();
-    ifs.seekg (0, ifs.beg);
-    EXPECT_TRUE(length > 20);
 
-    Data json(length);
-    size_t idx = 0;
-    // read the slow way, ifs.read gave some false warnings with codacy 
-    while (!ifs.eof() && idx < static_cast<std::size_t>(length)) { char c = ifs.get(); json[idx++] = (uint8_t)c; }
-
+    auto json = readFileData(outFileName);
+    EXPECT_GT(json.size(), 20ul);
     const auto key2 = WRAP(TWStoredKey, TWStoredKeyImportJSON(WRAPD(TWDataCreateWithData(&json)).get()));
     const auto name2 = WRAPS(TWStoredKeyName(key2.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(name2.get())), "name");
@@ -676,4 +657,59 @@ TEST(TWStoredKey, encryptionParameters) {
             "mac": "<mac>"
         }        
     )");
+}
+
+TEST(TWStoredKey, storeInvalidPath) {
+    const auto key = createDefaultStoredKey();
+    const auto invalidPath = WRAPS(TWStringCreateWithUTF8Bytes("/non-existing/file/path.json"));
+    EXPECT_FALSE(TWStoredKeyStore(key.get(), invalidPath.get()));
+}
+
+TEST(TWStoredKey, storeWithTemporaryFileSuccess) {
+    const auto key = createDefaultStoredKey();
+    const auto outFileName = string(getTestTempDir() + "/TWStoredKey_storeWithTmp.json");
+    const auto tmpFileName = string(getTestTempDir() + "/TWStoredKey_storeWithTmp.json.tmp");
+    const auto outFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(outFileName.c_str()));
+    const auto tmpFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(tmpFileName.c_str()));
+
+    EXPECT_TRUE(TWStoredKeyStoreWithTemporaryFile(key.get(), outFileNameStr.get(), tmpFileNameStr.get()));
+
+    // The temp file must have been renamed away — only the final file should exist.
+    EXPECT_FALSE(ifstream(tmpFileName).is_open());
+
+    // The final file must be readable and parse as a valid StoredKey.
+    auto json = readFileData(outFileName);
+    EXPECT_GT(json.size(), 20ul);
+    const auto reloaded = WRAP(TWStoredKey, TWStoredKeyImportJSON(WRAPD(TWDataCreateWithData(&json)).get()));
+    ASSERT_NE(reloaded.get(), nullptr);
+    const auto name = WRAPS(TWStoredKeyName(reloaded.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(name.get())), "name");
+}
+
+TEST(TWStoredKey, storeWithTemporaryFileInvalidPath) {
+    const auto key = createDefaultStoredKey();
+    const auto invalidPath = WRAPS(TWStringCreateWithUTF8Bytes("/non-existing/file/path.json"));
+    const auto tmpFileName = string(getTestTempDir() + "/TWStoredKey_storeWithTmpInvalidPath.json.tmp");
+    const auto tmpFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(tmpFileName.c_str()));
+
+    EXPECT_FALSE(TWStoredKeyStoreWithTemporaryFile(key.get(), invalidPath.get(), tmpFileNameStr.get()));
+}
+
+TEST(TWStoredKey, storeWithTemporaryFileInvalidTempPath) {
+    const auto key = createDefaultStoredKey();
+    const auto outFileName = string(getTestTempDir() + "/TWStoredKey_storeWithTmpInvalidTmp.json");
+    const auto outFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(outFileName.c_str()));
+    const auto invalidTmpPath = WRAPS(TWStringCreateWithUTF8Bytes("/non-existing/file/path.tmp"));
+
+    // Write known sentinel content to the destination file so we can verify it is untouched.
+    const string sentinel = "{\"sentinel\":true}";
+    { ofstream f(outFileName); f << sentinel; }
+
+    EXPECT_FALSE(TWStoredKeyStoreWithTemporaryFile(key.get(), outFileNameStr.get(), invalidTmpPath.get()));
+
+    // The destination file must be unchanged.
+    ifstream ifs(outFileName);
+    ASSERT_TRUE(ifs.is_open());
+    const string actual((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
+    EXPECT_EQ(actual, sentinel);
 }

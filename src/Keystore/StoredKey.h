@@ -151,7 +151,13 @@ public:
     /// Stores the key into an encrypted file.
     ///
     /// \param path file path to store in.
-    void store(const std::string& path);
+    void store(const std::string& path) const;
+
+    /// Stores the key into an encrypted file, using a temporary file to ensure atomicity of the operation.
+    ///
+    /// \param path file path to store in.
+    /// \param tempFilePath file path to use for temporary file during the store operation.
+    void storeWithTemporaryFile(const std::string& path, const std::string& tempFilePath) const;
 
     /// Initializes `StoredKey` with a JSON object.
     void loadJson(const nlohmann::json& json);
