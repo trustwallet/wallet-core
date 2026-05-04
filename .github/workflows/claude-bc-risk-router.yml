@@ -64,9 +64,11 @@ jobs:
       - name: Post reminder comment (once per PR)
         if: steps.scan.outputs.flags != ''
         uses: actions/github-script@v7
+        env:
+          FLAGS: ${{ steps.scan.outputs.flags }}
         with:
           script: |
-            const changedFiles = `${{ steps.scan.outputs.flags }}`.trim().split(/\s+/).filter(Boolean);
+            const changedFiles = (process.env.FLAGS || '').trim().split(/\s+/).filter(Boolean);
             const marker = '<!-- bc-risk-router:reminder -->';
 
             const { data: comments } = await github.rest.issues.listComments({
@@ -231,6 +233,7 @@ jobs:
             });
             const headCommitTime = new Date(headCommit.commit.committer.date);
 
+            const minChars = parseInt(process.env.BC_SIGNOFF_MIN_CHARS || '60', 10);
             const tokenRegex = /\[bc-check:\s*(Pass|Mitigated|Risk-Accepted|N\/A)\]/i;
             // Pass, Mitigated, and Risk-Accepted all require audit output.
             // N/A does not, but is invalid when the audit contains a real risk verdict.
@@ -241,7 +244,7 @@ jobs:
               const tokenMatch = c.body.match(tokenRegex);
               if (!tokenMatch) return false;
               const stripped = c.body.replace(tokenRegex, '').replace(/<!--[\s\S]*?-->/g, '').trim();
-              if (stripped.length < ${{ env.BC_SIGNOFF_MIN_CHARS }}) return false;
+              if (stripped.length < minChars) return false;
               const verdict = tokenMatch[1].toLowerCase();
               // All tokens except N/A require audit evidence.
               if (verdict !== 'n/a' && !auditEvidenceRegex.test(c.body)) return false;
@@ -257,7 +260,7 @@ jobs:
               core.setFailed(
                 'No fresh, evidence-backed sign-off found. Required:\n' +
                 '  * Token: `[bc-check: Pass|Mitigated|Risk-Accepted|N/A]`\n' +
-                '  * Token + reasoning >= ${{ env.BC_SIGNOFF_MIN_CHARS }} chars.\n' +
+                `  * Token + reasoning >= ${minChars} chars.\n` +
                 '  * Posted or edited at or after the HEAD commit.\n' +
                 '  * Pass / Mitigated / Risk-Accepted: must include audit output (a `# BC-risk audit ...` header or a `Verdict:` line).\n' +
                 '  * Risk-Accepted: must also include explicit evidence that blast radius is effectively zero.\n' +

@@ -4,11 +4,10 @@ description:
   Audit the current branch's diff for backward-compatibility risk against persisted user data and wire formats. Use when a PR tightens validation, changes deserialization of stored data, modifies a wire/backup format, or changes which exception a public API throws. Outputs a structured markdown report to paste into a `[bc-check: ...]` PR comment.
 ---
 
-You are auditing the current branch's diff against the configured base branch
-(`origin/master` by default) for **backward-compatibility risk against persisted user
-data and wire formats**. Find cases where this PR will reject, mis-parse, or
-mishandle inputs that older versions of our own software already wrote to disk, to
-backups, or onto the network.
+You are auditing the current branch's diff against the PR's base branch for
+**backward-compatibility risk against persisted user data and wire formats**. Find
+cases where this PR will reject, mis-parse, or mishandle inputs that older versions of
+our own software already wrote to disk, to backups, or onto the network.
 
 **Do not trust the PR description's framing.** "Just a security fix" / "stricter
 validation" is precisely the framing that hides this class of bug.
@@ -16,7 +15,12 @@ validation" is precisely the framing that hides this class of bug.
 Before starting:
 
 1. Read `docs/bc-footguns.md` if it exists. Every entry is a known constraint.
-2. `git diff origin/master...HEAD` to get the full diff.
+2. Determine the base branch and get the full diff:
+   ```bash
+   BASE=$(gh pr view --json baseRefName -q .baseRefName 2>/dev/null || echo "master")
+   git diff origin/$BASE...HEAD
+   ```
+   If `gh pr view` fails (e.g. no open PR yet), fall back to `origin/master`.
 3. Identify which files are on persistence paths (see WalletCore context below).
 
 ---
@@ -130,7 +134,7 @@ wrap the output in a code fence.
 
 ---
 
-# BC-risk audit — \<branch\> @ \<git SHA\> — \<ISO timestamp\>
+# BC-risk audit — \<branch\> → \<base-branch\> @ \<git SHA\> — \<ISO timestamp\>
 
 ## Verdict
 \<SAFE / RISK / BLOCKER\> — one sentence.
@@ -165,7 +169,7 @@ not the ` ```markdown ` / ` ``` ` lines themselves.
 ```markdown
 [bc-check: <token>]
 
-# BC-risk audit — <branch> @ <git SHA> — <ISO timestamp>
+# BC-risk audit — <branch> → <base-branch> @ <git SHA> — <ISO timestamp>
 
 Verdict: <SAFE (after fix) | SAFE | RISK | BLOCKER>
 
