@@ -130,6 +130,29 @@ class KeystoreKeyTests: XCTestCase {
         let kdfparams: KdfParams
     }
 
+    func testStoreWithTemporaryFile() {
+        let key = StoredKey.importPrivateKey(
+            privateKey: Data(hexString: "3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266")!,
+            name: "name",
+            password: Data("password".utf8),
+            coin: .ethereum
+        )!
+
+        let dir = URL(fileURLWithPath: NSTemporaryDirectory())
+        let destURL = dir.appendingPathComponent(UUID().uuidString + ".json")
+        let tempURL = dir.appendingPathComponent(UUID().uuidString + ".json.tmp")
+        defer {
+            try? FileManager.default.removeItem(at: destURL)
+            try? FileManager.default.removeItem(at: tempURL)
+        }
+
+        XCTAssertTrue(key.storeWithTemporaryFile(path: destURL.path, temporaryPath: tempURL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: destURL.path))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: tempURL.path)) // consumed by rename
+
+        XCTAssertNotNil(StoredKey.load(path: destURL.path))
+    }
+
     func testEncryptionParameters() {
         let url = Bundle(for: type(of: self)).url(forResource: "key", withExtension: "json")!
         let key = StoredKey.load(path: url.path)!
