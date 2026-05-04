@@ -692,9 +692,9 @@ TEST(TWStoredKey, fixScryptWithEmptySaltAes256Ctr) {
     const auto keyName = WRAPS(TWStoredKeyName(key.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(keyName.get())), "name");
     ASSERT_EQ(TWStoredKeyAccountCount(key.get()), 1ul);
-    const auto account = TWStoredKeyAccount(key.get(), 0);
-    EXPECT_EQ(TWAccountCoin(account), TWCoinTypeTron);
-    const auto address = WRAPS(TWAccountAddress(account));
+    const auto account = WRAP(TWAccount, TWStoredKeyAccount(key.get(), 0));
+    EXPECT_EQ(TWAccountCoin(account.get()), TWCoinTypeTron);
+    const auto address = WRAPS(TWAccountAddress(account.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(address.get())), "TMdz5HbKCqU1y5M9o5KW9yf1SZCLsLzHiU");
 
     const auto jsonDataBefore = WRAPD(TWStoredKeyExportJSON(key.get()));
