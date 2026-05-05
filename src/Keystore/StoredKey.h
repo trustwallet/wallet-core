@@ -171,6 +171,13 @@ public:
     /// the encryption password to re-derive addresses from private keys.
     void fixAddresses(const Data& password);
 
+    /// Regenerates all encrypted data with new encryption parameters, if needed only.
+    /// This can be used to re-encrypt stored data with "valid" but weak encryption parameters, for example, empty salt.
+    ///
+    /// IMPORTANT: Weak PBKDF2 parameters are not migrated automatically by this method.
+    /// Only Scrypt encryption parameters are supported by the current implementation's fix-up logic.
+    void fixEncryption(const Data& password);
+
     /// Re-derives address for the account(s) associated with the given coin.
     ///
     /// This method can be used if address format has been changed.

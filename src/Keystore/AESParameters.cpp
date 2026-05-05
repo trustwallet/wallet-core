@@ -59,8 +59,18 @@ std::string toString(AESValidationError error) {
 
 /// Initializes `AESParameters` with a JSON object.
 AESParameters AESParameters::AESParametersFromJson(const nlohmann::json& json, const std::string& cipher) {
+    if (json.count(CodingKeys::iv) == 0 || !json[CodingKeys::iv].is_string()) {
+        throw std::invalid_argument("Missing iv");
+    }
+
     auto parameters = AESParameters::AESParametersFromEncryption(getCipher(cipher));
     parameters.iv = parse_hex(json[CodingKeys::iv].get<std::string>());
+    return parameters;
+}
+
+AESParameters AESParameters::copyWithNewIv() const {
+    AESParameters parameters = *this;
+    parameters.iv = generateIv(mBlockSize);
     return parameters;
 }
 

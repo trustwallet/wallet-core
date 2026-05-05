@@ -655,7 +655,7 @@ TEST(TWStoredKey, encryptionParameters) {
                 "salt": "<salt>"
             },
             "mac": "<mac>"
-        }        
+        }
     )");
 }
 
@@ -712,4 +712,91 @@ TEST(TWStoredKey, storeWithTemporaryFileInvalidTempPath) {
     ASSERT_TRUE(ifs.is_open());
     const string actual((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
     EXPECT_EQ(actual, sentinel);
+}
+
+TEST(TWStoredKey, fixScryptWithEmptySaltAes256Ctr) {
+    const auto filename = WRAPS(TWStringCreateWithUTF8Bytes((TESTS_ROOT + "/common/Keystore/Data/scrypt-empty-salt-aes-256-ctr.json").c_str()));
+    const auto key = WRAP(TWStoredKey, TWStoredKeyLoad(filename.get()));
+    ASSERT_NE(key, nullptr);
+
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+
+    // Verify pre-fix state.
+    const auto keyId = WRAPS(TWStoredKeyIdentifier(key.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(keyId.get())), "a1357f23-333f-4efb-99ab-ec212c275810");
+    const auto keyName = WRAPS(TWStoredKeyName(key.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(keyName.get())), "name");
+    ASSERT_EQ(TWStoredKeyAccountCount(key.get()), 1ul);
+    const auto account = WRAP(TWAccount, TWStoredKeyAccount(key.get(), 0));
+    EXPECT_EQ(TWAccountCoin(account.get()), TWCoinTypeTron);
+    const auto address = WRAPS(TWAccountAddress(account.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(address.get())), "TMdz5HbKCqU1y5M9o5KW9yf1SZCLsLzHiU");
+
+    const auto jsonDataBefore = WRAPD(TWStoredKeyExportJSON(key.get()));
+    ASSERT_NE(jsonDataBefore, nullptr);
+    const auto jsonBefore = nlohmann::json::parse(string(reinterpret_cast<const char*>(TWDataBytes(jsonDataBefore.get())), TWDataSize(jsonDataBefore.get())));
+    EXPECT_EQ(jsonBefore["type"], "mnemonic");
+    EXPECT_EQ(jsonBefore["crypto"]["cipher"], "aes-256-ctr");
+    const auto saltBefore = jsonBefore["crypto"]["kdfparams"]["salt"].get<std::string>();
+    const auto macBefore  = jsonBefore["crypto"]["mac"].get<std::string>();
+    const auto ctBefore   = jsonBefore["crypto"]["ciphertext"].get<std::string>();
+    const auto ivBefore   = jsonBefore["crypto"]["cipherparams"]["iv"].get<std::string>();
+    EXPECT_EQ(saltBefore, "");
+
+    EXPECT_TRUE(TWStoredKeyFixEncryption(key.get(), password.get()));
+
+    // id, name, accounts, and cipher must be unchanged.
+    const auto keyIdAfter = WRAPS(TWStoredKeyIdentifier(key.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(keyIdAfter.get())), "a1357f23-333f-4efb-99ab-ec212c275810");
+    const auto keyNameAfter = WRAPS(TWStoredKeyName(key.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(keyNameAfter.get())), "name");
+    ASSERT_EQ(TWStoredKeyAccountCount(key.get()), 1ul);
+
+    const auto jsonDataAfter = WRAPD(TWStoredKeyExportJSON(key.get()));
+    ASSERT_NE(jsonDataAfter, nullptr);
+    const auto jsonAfter = nlohmann::json::parse(string(reinterpret_cast<const char*>(TWDataBytes(jsonDataAfter.get())), TWDataSize(jsonDataAfter.get())));
+    EXPECT_EQ(jsonAfter["crypto"]["cipher"], "aes-256-ctr");
+
+    // Salt must now be 32 bytes (64 hex chars) and no longer empty.
+    const auto saltAfter = jsonAfter["crypto"]["kdfparams"]["salt"].get<std::string>();
+    EXPECT_EQ(saltAfter.size(), 64ul);
+    EXPECT_NE(saltAfter, saltBefore);
+
+    // Other kdfparams must be preserved.
+    EXPECT_EQ(jsonAfter["crypto"]["kdfparams"]["n"], 262144);
+    EXPECT_EQ(jsonAfter["crypto"]["kdfparams"]["r"], 8);
+    EXPECT_EQ(jsonAfter["crypto"]["kdfparams"]["p"], 1);
+    EXPECT_EQ(jsonAfter["crypto"]["kdfparams"]["dklen"], 32);
+
+    // MAC, ciphertext, and IV must all have changed due to re-encryption.
+    EXPECT_NE(jsonAfter["crypto"]["mac"].get<std::string>(), macBefore);
+    EXPECT_NE(jsonAfter["crypto"]["ciphertext"].get<std::string>(), ctBefore);
+    EXPECT_NE(jsonAfter["crypto"]["cipherparams"]["iv"].get<std::string>(), ivBefore);
+
+    // The mnemonic must still be recoverable after re-encryption.
+    const auto mnemonic = WRAPS(TWStoredKeyDecryptMnemonic(key.get(), password.get()));
+    ASSERT_NE(mnemonic, nullptr);
+    EXPECT_EQ(string(TWStringUTF8Bytes(mnemonic.get())), "team engine square letter hero song dizzy scrub tornado fabric divert saddle");
+}
+
+TEST(TWStoredKey, FixEncryptionWrongPassword) {
+    const auto filename = WRAPS(TWStringCreateWithUTF8Bytes((TESTS_ROOT + "/common/Keystore/Data/scrypt-empty-salt-aes-256-ctr.json").c_str()));
+    const auto key = WRAP(TWStoredKey, TWStoredKeyLoad(filename.get()));
+    ASSERT_NE(key, nullptr);
+
+    const auto jsonDataBefore = WRAPD(TWStoredKeyExportJSON(key.get()));
+    ASSERT_NE(jsonDataBefore, nullptr);
+    const auto jsonBefore = string(reinterpret_cast<const char*>(TWDataBytes(jsonDataBefore.get())), TWDataSize(jsonDataBefore.get()));
+
+    const auto wrongPasswordString = WRAPS(TWStringCreateWithUTF8Bytes("wrong-password"));
+    const auto wrongPassword = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(TWStringUTF8Bytes(wrongPasswordString.get())), TWStringSize(wrongPasswordString.get())));
+
+    EXPECT_FALSE(TWStoredKeyFixEncryption(key.get(), wrongPassword.get()));
+
+    // JSON must be unchanged - a failed fix must leave the key untouched.
+    const auto jsonDataAfter = WRAPD(TWStoredKeyExportJSON(key.get()));
+    ASSERT_NE(jsonDataAfter, nullptr);
+    const auto jsonAfter = string(reinterpret_cast<const char*>(TWDataBytes(jsonDataAfter.get())), TWDataSize(jsonDataAfter.get()));
+    EXPECT_EQ(jsonAfter, jsonBefore);
 }

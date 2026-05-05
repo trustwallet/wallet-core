@@ -1,0 +1,30 @@
+{
+  "activeAccounts": [
+    {
+      "address": "0x494f60cb6Ac2c8F5E1393aD9FdBdF4Ad589507F7",
+      "coin": 60,
+      "derivationPath": "m/44'/60'/0'/0/0",
+      "publicKey": "04cc32a479080d83fdcf69966713f0aad1bc1dc3ecf873b034894e84259841bc1c9b122717803e68905220ff54952d3f5ea2ab2698ca31f843addf94ae73fae9fd"
+    }
+  ],
+  "crypto": {
+    "cipher": "aes-128-ctr",
+    "cipherparams": {
+      "iv": "247b7019fc5ec5942b6f2812b5fefb7e"
+    },
+    "ciphertext": "3cdc341a74638208ad1bd8e9b4b75b552fd2050899143ca6fa7e33f2966fec5aab582e3fc3fe46095f38fbe232b05fdffa36d13c844d544a08b3e126b4da7d68000b059a8c4c93df2d31abf6",
+    "kdf": "scrypt",
+    "kdfparams": {
+      "dklen": 32,
+      "n": 16384,
+      "p": 4,
+      "r": 8,
+      "salt": ""
+    },
+    "mac": "a34cc68fb540c850e81555942e5409d8009a134d63094fad837b5d2e2fdbc1c5"
+  },
+  "id": "a630278f-0e01-4c98-b82a-818d94b83c03",
+  "name": "name",
+  "type": "mnemonic",
+  "version": 3
+}

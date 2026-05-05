@@ -39,6 +39,19 @@ static const auto mac = "mac";
 } // namespace CodingKeys
 
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
+    if (json.count(CodingKeys::cipher) == 0 || !json[CodingKeys::cipher].is_string()) {
+        throw std::invalid_argument("Missing cipher");
+    }
+    if (json.count(CodingKeys::kdf) == 0 || !json[CodingKeys::kdf].is_string()) {
+        throw std::invalid_argument("Missing kdf");
+    }
+    if (json.count(CodingKeys::cipherParams) == 0 || !json[CodingKeys::cipherParams].is_object()) {
+        throw std::invalid_argument("Missing cipher params");
+    }
+    if (json.count(CodingKeys::kdfParams) == 0 || !json[CodingKeys::kdfParams].is_object()) {
+        throw std::invalid_argument("Missing kdf params");
+    }
+
     auto cipher = json[CodingKeys::cipher].get<std::string>();
     cipherParams = AESParameters::AESParametersFromJson(json[CodingKeys::cipherParams], cipher);
     if (const auto error = cipherParams.validate(); error.has_value()) {
@@ -52,6 +65,8 @@ EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
         kdfParams = ScryptParameters(json[CodingKeys::kdfParams]);
     } else if (kdf == "pbkdf2") {
         kdfParams = PBKDF2Parameters(json[CodingKeys::kdfParams]);
+    } else {
+        throw std::invalid_argument("Unsupported kdf: " + kdf);
     }
 }
 
@@ -69,6 +84,15 @@ nlohmann::json EncryptionParameters::json() const {
     }
 
     return j;
+}
+
+bool EncryptionParameters::shouldFix() const {
+    if (std::holds_alternative<ScryptParameters>(kdfParams)) {
+        return std::get<ScryptParameters>(kdfParams).shouldFix();
+    }
+
+    // Note: re-encryption is currently supported for Scrypt only.
+    return false;
 }
 
 EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const AESParameters& cipherParams, const ScryptParameters& scryptParams) {
@@ -110,6 +134,18 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
 
     memzero(&ctx, sizeof(ctx));
     memzero(derivedKey.data(), derivedKey.size());
+}
+
+EncryptedPayload& EncryptedPayload::operator=(EncryptedPayload&& other) noexcept {
+    if (this != &other) {
+        memzero(encrypted.data(), encrypted.size());
+        memzero(_mac.data(), _mac.size());
+
+        params = std::move(other.params);
+        encrypted = std::move(other.encrypted);
+        _mac = std::move(other._mac);
+    }
+    return *this;
 }
 
 EncryptedPayload::~EncryptedPayload() {
@@ -171,7 +207,40 @@ Data EncryptedPayload::decrypt(const Data& password) const {
     return decrypted;
 }
 
+EncryptedPayload EncryptedPayload::regenerateWithRecommendedParams(const Data& password) const {
+    // IMPORTANT: `EncryptedPayload` constructor supports Scrypt encryption ONLY.
+    // Hence, we can't regenerate PBKDF2 and re-encrypt a payload. Do nothing in that case.
+    if (!std::holds_alternative<ScryptParameters>(params.kdfParams)) {
+        return *this;
+    }
+
+    const auto decryptedData = ZeroizingData(decrypt(password));
+
+    // Regenerate only necessary Scrypt parameters, while leaving other settings as is.
+    const auto fixedScryptParams = std::get<ScryptParameters>(params.kdfParams).regenerateWithRecommendedParams();
+    const auto cipherParams = params.cipherParams.copyWithNewIv();
+
+    auto reEncryptedPayload = EncryptedPayload(password, decryptedData.get(), cipherParams, fixedScryptParams);
+
+    // Try to decrypt the new payload to verify the full backward compatibility, before returning it.
+    {
+        auto reDecryptedData = ZeroizingData(reEncryptedPayload.decrypt(password));
+        if (!isEqualConstantTime(decryptedData.get(), reDecryptedData.get())) {
+            throw DecryptionError::invalidKeyFile;
+        }
+    }
+
+    return reEncryptedPayload;
+}
+
 EncryptedPayload::EncryptedPayload(const nlohmann::json& json) {
+    if (json.count(CodingKeys::encrypted) == 0 || !json[CodingKeys::encrypted].is_string()) {
+        throw std::invalid_argument("Missing encrypted data");
+    }
+    if (json.count(CodingKeys::mac) == 0 || !json[CodingKeys::mac].is_string()) {
+        throw std::invalid_argument("Missing mac");
+    }
+
     params = EncryptionParameters(json);
     encrypted = parse_hex(json[CodingKeys::encrypted].get<std::string>());
     _mac = parse_hex(json[CodingKeys::mac].get<std::string>());

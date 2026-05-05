@@ -388,6 +388,19 @@ bool TWStoredKeyFixAddresses(struct TWStoredKey* _Nonnull key, TWData* _Nonnull 
 TW_EXPORT_METHOD
 bool TWStoredKeyUpdateAddress(struct TWStoredKey* _Nonnull key, enum TWCoinType coin);
 
+/// Re-encrypts the key payload only when needed to fix currently supported
+/// encryption-parameter issues. At present, this is limited to correcting the
+/// Scrypt salt length when applicable; it does not generally upgrade other KDF
+/// parameters such as PBKDF2 settings or Scrypt N/r/p values. No-op otherwise.
+/// This method needs the encryption password to decrypt and, if applicable,
+/// re-encrypt the payload.
+///
+/// \param key Non-null pointer to a stored key
+/// \param password Non-null block of data, password of the stored key
+/// \return `false` if the password is incorrect or re-encryption fails, true otherwise.
+TW_EXPORT_METHOD
+bool TWStoredKeyFixEncryption(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
+
 /// Retrieve stored key encoding parameters, as JSON string.
 ///
 /// \param key Non-null pointer to a stored key

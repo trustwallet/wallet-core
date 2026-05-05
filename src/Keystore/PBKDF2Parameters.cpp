@@ -26,10 +26,21 @@ static const auto iterations = "c";
 } // namespace CodingKeys
 
 PBKDF2Parameters::PBKDF2Parameters(const nlohmann::json& json) {
+    if (json.count(CodingKeys::salt) == 0 || !json[CodingKeys::salt].is_string()) {
+        throw std::invalid_argument("Missing salt");
+    }
+    if (json.count(CodingKeys::desiredKeyLength) == 0 || !json[CodingKeys::desiredKeyLength].is_number_unsigned()) {
+        throw std::invalid_argument("Missing desired key length");
+    }
+
     salt = parse_hex(json[CodingKeys::salt].get<std::string>());
     desiredKeyLength = json[CodingKeys::desiredKeyLength];
-    if (json.count(CodingKeys::iterations) != 0)
+    if (json.count(CodingKeys::iterations) != 0) {
+        if (!json[CodingKeys::iterations].is_number_unsigned()) {
+            throw std::invalid_argument("Invalid iterations");
+        }
         iterations = json[CodingKeys::iterations];
+    }
 }
 
 /// Saves `this` as a JSON object.

@@ -91,6 +91,12 @@ std::optional<ScryptValidationError> ScryptParameters::validate() const {
     return {};
 }
 
+ScryptParameters ScryptParameters::regenerateWithRecommendedParams() const {
+    ScryptParameters fixedParams = *this;
+    fixedParams.salt = internal::randomSalt();
+    return fixedParams;
+}
+
 // -----------------
 // Encoding/Decoding
 // -----------------
