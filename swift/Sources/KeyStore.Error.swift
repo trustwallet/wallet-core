@@ -13,6 +13,7 @@ extension KeyStore {
         case invalidJSON
         case invalidKey
         case invalidPassword
+        case storageFailed
 
         public var errorDescription: String? {
             switch self {
@@ -26,6 +27,8 @@ extension KeyStore {
                 return NSLocalizedString("Invalid private key", comment: "Error message when trying to import an invalid private key")
             case .invalidPassword:
                 return NSLocalizedString("Invalid password", comment: "Error message when trying to export a private key")
+            case .storageFailed:
+                return NSLocalizedString("Failed to save keystore file", comment: "Error message when the keystore file cannot be written to disk. Please check available disk space and directory permissions")
             }
         }
     }

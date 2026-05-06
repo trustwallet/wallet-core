@@ -402,7 +402,9 @@ public final class KeyStore {
 
     private func save(wallet: Wallet) throws {
         let tempFilePath = generateTempFileURL(accountURL: wallet.keyURL).path
-        _ = wallet.key.storeWithTemporaryFile(path: wallet.keyURL.path, temporaryPath: tempFilePath)
+        guard wallet.key.storeWithTemporaryFile(path: wallet.keyURL.path, temporaryPath: tempFilePath) else {
+            throw Error.storageFailed
+        }
     }
 
     /// Generates a unique file name for an address.

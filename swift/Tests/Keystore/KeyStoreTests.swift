@@ -574,6 +574,27 @@ class KeyStoreTests: XCTestCase {
         XCTAssertEqual(decryptedMnemonic, mnemonic)
     }
 
+    func testCreateWalletThrowsStorageFailedOnUnwritableDirectory() throws {
+        let dir = try createTempDirURL()
+        let keyStore = try KeyStore(keyDirectory: dir)
+
+        // Make the directory read-only so storeWithTemporaryFile cannot create any file in it.
+        try fileManager.setAttributes([.posixPermissions: 0o444], ofItemAtPath: dir.path)
+        defer {
+            // Restore permissions so teardown can clean up the directory.
+            try? fileManager.setAttributes([.posixPermissions: 0o755], ofItemAtPath: dir.path)
+        }
+
+        do {
+            _ = try keyStore.createWallet(name: "test", password: "password", coins: [.ethereum])
+            XCTFail("Expected storageFailed error but no error was thrown")
+        } catch KeyStore.Error.storageFailed {
+            // expected
+        } catch {
+            XCTFail("Expected storageFailed but got: \(error)")
+        }
+    }
+
     func createTempDirURL() throws -> URL {
         let dir = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("keystore")
         try? fileManager.removeItem(at: dir)
