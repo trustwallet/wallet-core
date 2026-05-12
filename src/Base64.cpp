@@ -17,6 +17,9 @@ Data decode(const std::string& val, bool is_url) {
     if (val.empty()) {
         return {};
     }
+    if (val.find('\0') != std::string::npos) {
+        return {};
+    }
     Rust::CByteArrayResultWrapper res = Rust::decode_base64(val.c_str(), is_url);
     return res.unwrap_or_default().data;
 }

@@ -66,4 +66,13 @@ TEST(Base32, DecodeInvalid) {
     ASSERT_FALSE(decode("ABC", decoded)); // invalid odd length
 }
 
+TEST(Base32, DecodeNullEmbedded) {
+    // "AE" is a valid 2-char base32 input; appending a NUL must not let the
+    // pre-NUL portion decode silently as "AE".
+    Data decoded;
+    auto with_nul = std::string("AE") + '\0' + "JUNK";
+    ASSERT_FALSE(decode(with_nul, decoded));
+    ASSERT_TRUE(decoded.empty());
+}
+
 } // namespace TW::Base32::tests
