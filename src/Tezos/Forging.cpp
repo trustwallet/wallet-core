@@ -114,8 +114,11 @@ Data forgeAddress(const std::string& address) {
 // https://github.com/ecadlabs/taquito/blob/master/packages/taquito-local-forging/src/codec.ts#L19
 Data forgePrefix(std::array<TW::byte, 3> prefix, const std::string& val) {
     const auto decoded = Base58::decodeCheck(val);
-    if (decoded.size() != Address::size || !std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
-        throw std::invalid_argument("prefix not match");
+    if (decoded.size() != Address::size) {
+        throw std::invalid_argument("Invalid address: unexpected decoded payload size");
+    }
+    if (!std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
+        throw std::invalid_argument("Prefix does not match");
     }
 
     constexpr size_t prefixSize{3};
