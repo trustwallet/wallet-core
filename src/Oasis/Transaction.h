@@ -12,6 +12,10 @@
 
 namespace TW::Oasis {
 
+/// Encodes a 256-bit quantity as a sign-extended big-endian byte string
+/// (Oasis convention: one leading 0x00 sign byte for positive values).
+Data encodeVaruint(const uint256_t& value);
+
 // Transfer transaction
 class Transaction {
   public:

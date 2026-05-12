@@ -11,7 +11,7 @@ namespace TW::Oasis {
 // clang-format off
 
 // encodeVaruint encodes a 256-bit number into a big endian encoding, omitting leading zeros.
-static Data encodeVaruint(const uint256_t& value) {
+Data encodeVaruint(const uint256_t& value) {
     Data data;
     encode256BE(data, value, 256);
     size_t i = 0;
@@ -21,10 +21,19 @@ static Data encodeVaruint(const uint256_t& value) {
         }
     }
 
-    // This is the way Oasis indicates sign of the amount
+    // This is the way Oasis indicates sign of the amount (leading 0x00 = positive)
     // https://github.com/oasisprotocol/oasis-core/blob/483bd3a897454e4bc1a8795675e7f29cd4d8e72d/go/common/quantity/quantity.go#L39-L55
     Data small;
-    small.assign(data.begin() + i - 1, data.end());
+    if (i == 0) {
+        // MSB byte is nonzero — all 32 bytes are significant; no preceding zero in
+        // the buffer to reuse as the sign byte, so prepend one explicitly.
+        small.reserve(data.size() + 1);
+        small.push_back(0x00);
+        small.insert(small.end(), data.begin(), data.end());
+    } else {
+        // data[i-1] == 0; reuse it as the sign byte.
+        small.assign(data.begin() + i - 1, data.end());
+    }
     return small;
 }
 
