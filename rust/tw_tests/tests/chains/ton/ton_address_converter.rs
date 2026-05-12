@@ -3,6 +3,9 @@
 // Copyright © 2017 Trust Wallet.
 
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
+use tw_ton::modules::address_converter::AddressConverter;
+use tw_ton_sdk::boc::BagOfCells;
+use tw_ton_sdk::cell::cell_builder::CellBuilder;
 use wallet_core_rs::ffi::ton::address_converter::{
     tw_ton_address_converter_from_boc, tw_ton_address_converter_to_boc,
     tw_ton_address_converter_to_user_friendly,
@@ -178,5 +181,27 @@ fn test_address_converter_to_user_friendly_error() {
         "EQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsor",
         false,
         false,
+    );
+}
+
+fn make_addr_cell(anycast: bool, workchain: u8, hash: &[u8; 32]) -> tw_ton_sdk::cell::Cell {
+    let mut builder = CellBuilder::new();
+    builder.store_u8(2, 0b10).unwrap(); // addr_std$10
+    builder.store_bit(anycast).unwrap();
+    builder.store_u8(8, workchain).unwrap();
+    builder.store_slice(hash).unwrap();
+    builder.build().unwrap()
+}
+
+/// A BoC with anycast=1 must be rejected by FromBoc.
+/// Previously load_address() discarded the anycast bit without consuming its payload,
+/// allowing a 267-bit cell to pass ensure_empty() and produce an attacker-chosen account.
+#[test]
+fn test_address_converter_from_boc_rejects_anycast() {
+    let cell = make_addr_cell(true, 0, &[0u8; 32]);
+    let boc = BagOfCells::from_root(cell);
+    assert!(
+        AddressConverter::parse_from_boc(&boc).is_err(),
+        "Anycast address must be rejected"
     );
 }

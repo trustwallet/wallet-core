@@ -104,7 +104,18 @@ impl<'a> CellParser<'a> {
         match tp {
             0 => Ok(AddressData::null()),
             2 => {
-                let _res1 = self.load_u8(1)?;
+                // Anycast is used for routing inside split-brain shards and is never set on
+                // normal wallet addresses. Accepting anycast=1 without consuming the Anycast
+                // payload (depth + rewrite_pfx) causes the subsequent workchain and hash reads
+                // to consume wrong bits, enabling recipient-address substitution attacks.
+                //
+                // Moreover, anycast addresses were deprecated in TVM 10.
+                // https://github.com/ton-blockchain/ton/blob/master/doc/GlobalVersions.md#version-10
+                let anycast = self.load_u8(1)?;
+                if anycast != 0 {
+                    return CellError::err(CellErrorType::CellParserError)
+                        .context("Anycast addresses are not supported");
+                }
                 let wc = self.load_u8(8)?;
                 let mut hash_part = H256::default();
                 self.load_slice(hash_part.as_mut_slice())?;

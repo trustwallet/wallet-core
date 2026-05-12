@@ -6,6 +6,7 @@ use tw_number::U256;
 use tw_ton_sdk::address::address_data::AddressData;
 use tw_ton_sdk::address::user_friendly_address::UserFriendlyAddress;
 use tw_ton_sdk::boc::BagOfCells;
+use tw_ton_sdk::cell::cell_builder::CellBuilder;
 
 /// In this test we parse a TON internal transfer message encoded as BoC.
 #[test]
@@ -53,4 +54,22 @@ fn test_cell_parse_internal_transfer_message() {
     assert_eq!(created_at, 0);
     assert_eq!(contains_state_init, false);
     assert_eq!(contains_data, false);
+}
+
+/// Anycast (Maybe Anycast = 1) in addr_std must be rejected.
+/// Before the fix, load_address() silently discarded the anycast bit and read the
+/// next 8 bits as the workchain, allowing a crafted BoC to substitute an attacker-chosen
+/// recipient address.
+#[test]
+fn test_load_address_rejects_anycast() {
+    // Build: addr_std$10 anycast=1 workchain=0 hash=zeros (267 bits total).
+    let mut builder = CellBuilder::new();
+    builder.store_u8(2, 0b10).unwrap(); // addr_std tag
+    builder.store_bit(true).unwrap(); // anycast = 1
+    builder.store_u8(8, 0).unwrap(); // workchain = 0
+    builder.store_slice(&[0u8; 32]).unwrap(); // hash
+    let cell = builder.build().unwrap();
+
+    // Must fail regardless of the specific error (anycast check or trailing-bits check).
+    assert!(cell.parse_fully(|p| p.load_address()).is_err());
 }
