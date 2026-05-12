@@ -153,9 +153,8 @@ impl<'a> ProtobufBuilder<'a> {
         let proto_tag = payment
             .destination_tag
             .try_into_u32_optional("destinationTag")?;
-        let (destination, destination_tag) =
-            Self::resolve_destination(ripple_addr, proto_tag)
-                .context("Invalid 'Payment.destination'")?;
+        let (destination, destination_tag) = Self::resolve_destination(ripple_addr, proto_tag)
+            .context("Invalid 'Payment.destination'")?;
 
         self.prepare_builder()?
             .payment(amount, destination, destination_tag)
@@ -188,9 +187,8 @@ impl<'a> ProtobufBuilder<'a> {
         let proto_tag = escrow_create
             .destination_tag
             .try_into_u32_optional("destinationTag")?;
-        let (destination, destination_tag) =
-            Self::resolve_destination(ripple_addr, proto_tag)
-                .context("Invalid 'EscrowCreate.destination'")?;
+        let (destination, destination_tag) = Self::resolve_destination(ripple_addr, proto_tag)
+            .context("Invalid 'EscrowCreate.destination'")?;
 
         let condition = escrow_create
             .condition
