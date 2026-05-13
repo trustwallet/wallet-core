@@ -130,6 +130,11 @@ impl<'a> CellParser<'a> {
         }
     }
 
+    /// Asserts that all bits in the cell have been consumed.
+    ///
+    /// Call this after finishing a fixed-structure parse to catch unexpected
+    /// trailing bits. [`Cell::parse_fully`] does this automatically; callers
+    /// using the raw [`Cell::parser`] API are responsible for calling it themselves.
     pub fn ensure_empty(&self) -> CellResult<()> {
         let remaining = self.remaining_bits();
         if remaining == 0 {
