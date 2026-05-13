@@ -1985,11 +1985,11 @@
     "addressHasher": "keccak256",
     "ss58Prefix": 0,
     "explorer": {
-      "url": "https://polkadot.subscan.io",
+      "url": "https://assethub-polkadot.subscan.io",
       "txPath": "/extrinsic/",
       "accountPath": "/account/",
-      "sampleTx": "0xb96f97d8ee508f420e606e1a6dcc74b88844713ddec2bd7cf4e3aa6b1d6beef4",
-      "sampleAccount": "13hJFqnkqQbmgnGQteGntjMjTdmTBRE8Z93JqxsrpgT7Yjd2"
+      "sampleTx": "0x5aaaeec678ab1bd5a19d2c9bfd596037a32e3d1e831383c62f315459e85fa85d",
+      "sampleAccount": "14QKFrBmnhP5xoH1t7nC2q7mssgj671AhzThsGewVj3Ea8Xt"
     },
     "info": {
       "url": "https://polkadot.network/",
@@ -2097,11 +2097,11 @@
     "addressHasher": "keccak256",
     "ss58Prefix": 2,
     "explorer": {
-      "url": "https://kusama.subscan.io",
+      "url": "https://assethub-kusama.subscan.io",
       "txPath": "/extrinsic/",
       "accountPath": "/account/",
-      "sampleTx": "0xcbe0c2e2851c1245bedaae4d52f06eaa6b4784b786bea2f0bff11af7715973dd",
-      "sampleAccount": "DbCNECPna3k6MXFWWNZa5jGsuWycqEE6zcUxZYkxhVofrFk"
+      "sampleTx": "0x834220074151531626b34acf4568cd5763a47b2eb2647bd0f0b7e46f980e0c50",
+      "sampleAccount": "FfnS7Vk2i19AdFMf6D8ZRVUhNsYWVtsLmqQEnAmTqQBqsSy"
     },
     "info": {
       "url": "https://kusama.network",
