@@ -2,11 +2,16 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use tw_hash::H256;
 use tw_number::U256;
 use tw_ton_sdk::address::address_data::AddressData;
+use tw_ton_sdk::address::raw_address::RawAddress;
 use tw_ton_sdk::address::user_friendly_address::UserFriendlyAddress;
 use tw_ton_sdk::boc::BagOfCells;
 use tw_ton_sdk::cell::cell_builder::CellBuilder;
+
+const MASTER_WORKCHAIN: i32 = -1;
+const BASE_WORKCHAIN: i32 = 0;
 
 /// In this test we parse a TON internal transfer message encoded as BoC.
 #[test]
@@ -54,6 +59,39 @@ fn test_cell_parse_internal_transfer_message() {
     assert_eq!(created_at, 0);
     assert_eq!(contains_state_init, false);
     assert_eq!(contains_data, false);
+}
+
+/// Verifies that load_address correctly sign-extends workchain byte 0xFF to -1
+/// (TON masterchain) rather than treating it as u8(255).
+#[test]
+fn test_load_address_masterchain_workchain() {
+    let hash = H256::from([0x33u8; 32]);
+    let expected = RawAddress::from(AddressData::new(MASTER_WORKCHAIN, hash));
+
+    let mut builder = CellBuilder::new();
+    builder.store_raw_address(&expected).unwrap();
+    let cell = builder.build().unwrap();
+
+    let parsed = cell.parse_fully(|p| p.load_address()).unwrap();
+
+    assert_eq!(parsed.workchain, MASTER_WORKCHAIN);
+    assert_eq!(parsed, expected.into_data());
+}
+
+/// Verifies that load_address correctly decodes workchain byte 0x00 as 0 (base workchain).
+#[test]
+fn test_load_address_base_workchain() {
+    let hash = H256::from([0x42u8; 32]);
+    let expected = RawAddress::from(AddressData::new(BASE_WORKCHAIN, hash));
+
+    let mut builder = CellBuilder::new();
+    builder.store_raw_address(&expected).unwrap();
+    let cell = builder.build().unwrap();
+
+    let parsed = cell.parse_fully(|p| p.load_address()).unwrap();
+
+    assert_eq!(parsed.workchain, BASE_WORKCHAIN);
+    assert_eq!(parsed, expected.into_data());
 }
 
 /// Anycast (Maybe Anycast = 1) in addr_std must be rejected.

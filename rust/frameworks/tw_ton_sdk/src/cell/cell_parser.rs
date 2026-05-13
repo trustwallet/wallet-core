@@ -40,6 +40,10 @@ impl<'a> CellParser<'a> {
             .tw_err(CellErrorType::CellParserError)
     }
 
+    pub fn load_i8(&mut self, bit_len: usize) -> CellResult<i8> {
+        Ok(self.load_u8(bit_len)? as i8)
+    }
+
     pub fn load_u32(&mut self, bit_len: usize) -> CellResult<u32> {
         self.bit_reader
             .read_u32(bit_len as u8)
@@ -116,7 +120,7 @@ impl<'a> CellParser<'a> {
                     return CellError::err(CellErrorType::CellParserError)
                         .context("Anycast addresses are not supported");
                 }
-                let wc = self.load_u8(8)?;
+                let wc = self.load_i8(8)?;
                 let mut hash_part = H256::default();
                 self.load_slice(hash_part.as_mut_slice())?;
                 Ok(AddressData::new(wc as i32, hash_part))
