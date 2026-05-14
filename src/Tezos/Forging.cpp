@@ -14,6 +14,10 @@ namespace TW::Tezos {
 namespace {
 
 constexpr const char* gTezosContractAddressPrefix{"KT1"};
+constexpr uint8_t gSignBitMask{0x40};
+constexpr uint8_t gFirstByteMask{0x3f};
+constexpr uint8_t gLastByteMask{0x7f};
+constexpr uint8_t gContinuationBitMask{0x80};
 
 void encodePrefix(const std::string& address, Data& forged) {
     const auto decoded = Base58::decodeCheck(address);
@@ -154,7 +158,7 @@ Data forgeOperation(const Proto::Operation& operation) {
     using namespace Proto;
     auto forged = Data();
     auto source = Address(operation.source());
-    auto forgedSource = source.forgePKH(); //https://github.com/ecadlabs/taquito/blob/master/packages/taquito-local-forging/src/schema/operation.ts#L40
+    auto forgedSource = source.forgePKH(); // https://github.com/ecadlabs/taquito/blob/master/packages/taquito-local-forging/src/schema/operation.ts#L40
     auto forgedFee = forgeZarith(operation.fee());
     auto forgedCounter = forgeZarith(operation.counter());
     auto forgedGasLimit = forgeZarith(operation.gas_limit());
@@ -303,11 +307,14 @@ Data forgeArray(const Data& data) {
 Data forgeMichelInt(const TW::int256_t& value) {
     Data forged;
     auto abs = boost::multiprecision::abs(value);
-    forged.emplace_back(static_cast<uint8_t>(value.sign() < 0 ? (abs & 0x3f - 0x40) : (abs & 0x3f)));
+    // The second most significant bit (& 0x40) of the first byte is reserved for the sign (positive if zero).
+    // The rest 6 bits (& 0x3f) are used to encode the absolute value of the integer. If the integer is larger than 6 bits, the most significant bit (& 0x80) of the first byte is set to indicate that there are more bytes to follow.
+    const auto first6Bits = static_cast<uint8_t>(abs & gFirstByteMask);
+    forged.emplace_back(value.sign() < 0 ? (first6Bits | gSignBitMask) : first6Bits);
     abs >>= 6;
     while (abs > 0) {
-        forged[forged.size() - 1] |= 0x80;
-        forged.emplace_back(static_cast<uint8_t>(abs & 0x7F));
+        forged[forged.size() - 1] |= gContinuationBitMask;
+        forged.emplace_back(static_cast<uint8_t>(abs & gLastByteMask));
         abs >>= 7;
     }
     return forged;
