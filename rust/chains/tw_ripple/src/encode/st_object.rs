@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::address::x_address::XAddress;
+use crate::address::x_address::{TagFlag, XAddress};
 use crate::address::RippleAddress;
 use crate::definitions::DEFINITIONS;
 use crate::encode::encoder::Encoder;
@@ -189,7 +189,6 @@ impl STObject {
             .context("Error converting an XAddress to Classic")?
             .to_string();
 
-        let tag = Json::Number(addr.destination_tag().into());
         let tag_name = match SpecialField::from_str(&field) {
             Some(SpecialField::Destination) => SpecialField::DestinationTag,
             Some(SpecialField::Account) => SpecialField::SourceTag,
@@ -201,16 +200,29 @@ impl STObject {
         }
         .to_string();
 
-        // Check whether the Transaction object contains the tag already.
-        // If so, it must be equal to the tag of a corresponding XAddress.
-        if let Some(handled_tag) = tx_object.get(&tag_name) {
-            if handled_tag != &tag {
-                return SigningError::err(SigningErrorType::Error_invalid_params).context("Cannot have mismatched Account/Destination X-Address and SourceTag/DestinationTag");
-            }
+        match addr.tag_flag() {
+            TagFlag::Classic => {
+                let tag = Json::Number(addr.destination_tag().into());
+                // If JSON already has the tag field, it must equal the X-address tag.
+                if let Some(handled_tag) = tx_object.get(&tag_name) {
+                    if handled_tag != &tag {
+                        return SigningError::err(SigningErrorType::Error_invalid_params)
+                            .context("Cannot have mismatched Account/Destination X-Address and SourceTag/DestinationTag");
+                    }
+                }
+                pre_processed.insert(tag_name, tag);
+            },
+            TagFlag::None => {
+                // No-tag X-address: the JSON must not carry a conflicting tag field.
+                if tx_object.contains_key(&tag_name) {
+                    return SigningError::err(SigningErrorType::Error_invalid_params)
+                        .context("Cannot specify a tag alongside a no-tag X-address");
+                }
+                // Do not inject any tag into the signing preimage.
+            },
         }
 
         pre_processed.insert(field, Json::String(classic_addr));
-        pre_processed.insert(tag_name, tag);
         Ok(())
     }
 }
