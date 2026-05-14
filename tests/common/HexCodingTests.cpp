@@ -88,6 +88,28 @@ TEST(HexCoding, ParseHexCheckedInvalidHex) {
     EXPECT_EQ(res.error(), "Invalid hex string");
 }
 
+TEST(HexCoding, ParseHexNullEmbedded) {
+    // "deadbeef" is valid hex; appending a NUL must not let the pre-NUL portion
+    // decode silently as {0xde, 0xad, 0xbe, 0xef}.
+    auto with_nul = std::string("deadbeef") + '\0' + "junk";
+    EXPECT_TRUE(parse_hex(with_nul).empty());
+
+    auto trailing_nul = std::string("deadbeef") + '\0';
+    EXPECT_TRUE(parse_hex(trailing_nul).empty());
+}
+
+TEST(HexCoding, ParseHexCheckedNullEmbedded) {
+    auto with_nul = std::string("deadbeef") + '\0' + "junk";
+    auto res = parse_hex_checked(with_nul);
+    ASSERT_FALSE(res.isSuccess());
+    EXPECT_EQ(res.error(), "Invalid hex string");
+
+    auto trailing_nul = std::string("deadbeef") + '\0';
+    res = parse_hex_checked(trailing_nul);
+    ASSERT_FALSE(res.isSuccess());
+    EXPECT_EQ(res.error(), "Invalid hex string");
+}
+
 TEST(HexCoding, PadLeftHex) {
     // Empty string
     EXPECT_EQ(internal::pad_left_hex(""), "");

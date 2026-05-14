@@ -25,7 +25,11 @@ inline Data parse_hex(const std::string& input) {
     if (input.empty()) {
         return {};
     }
-
+    // An embedded NUL is silently truncated by CStr::from_ptr in the Rust FFI,
+    // so "deadbeef\x00junk" would decode as just "deadbeef".
+    if (input.find('\0') != std::string::npos) {
+        return {};
+    }
     Rust::CByteArrayResultWrapper res = Rust::decode_hex(input.c_str());
     return res.unwrap_or_default().data;
 }
@@ -105,6 +109,9 @@ inline Data parse_hex(const std::string& string, bool padLeft = false) {
 /// \returns the array or parsed bytes, or an error if the string is not valid hexadecimal.
 inline Result<Data> parse_hex_checked(const std::string& string, bool padLeft = false) {
     const auto paddedString = internal::pad_left_hex(string, padLeft);
+    if (paddedString.find('\0') != std::string::npos) {
+        return Result<Data>::failure("Invalid hex string");
+    }
     Rust::CByteArrayResultWrapper res = Rust::decode_hex(paddedString.c_str());
     if (res.isErr()) {
         return Result<Data>::failure("Invalid hex string");

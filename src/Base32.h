@@ -18,6 +18,9 @@ inline bool decode(const std::string& encoded_in, Data& decoded_out, const char*
     if (encoded_in.empty()) {
         return true;
     }
+    if (encoded_in.find('\0') != std::string::npos) {
+        return false;
+    }
     Rust::CByteArrayResultWrapper res = Rust::decode_base32(encoded_in.c_str(), alphabet_in, false);
     if (res.isOk()) {
         decoded_out = res.unwrap().data;
