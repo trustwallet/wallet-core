@@ -122,6 +122,19 @@ TEST(Forging, ForgeEntrypoint) {
     ASSERT_EQ(hex(forgeEntrypoint("transfer")), expected);
 }
 
+TEST(Forging, ForgePublicKeyHash_TooShort) {
+    ASSERT_THROW(forgePublicKeyHash(""), std::invalid_argument);
+    ASSERT_THROW(forgePublicKeyHash("ab"), std::invalid_argument);
+}
+
+TEST(Forging, ForgeAddress_NullEmbedded) {
+    // A valid address with an embedded NULL must throw rather than forge the
+    // pre-NULL payload.  Before the fix, CStr::from_ptr truncated the input and
+    // the shortened payload passed all prefix/checksum checks silently.
+    auto with_null = std::string("tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don") + '\0' + "junk";
+    ASSERT_THROW(forgeAddress(with_null), std::invalid_argument);
+}
+
 TEST(Forging, ForgeMichelsonFA12) {
     Tezos::Proto::FA12Parameters data;
     data.set_entrypoint("transfer");

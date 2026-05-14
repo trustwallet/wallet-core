@@ -21,7 +21,10 @@ constexpr uint8_t gContinuationBitMask{0x80};
 
 void encodePrefix(const std::string& address, Data& forged) {
     const auto decoded = Base58::decodeCheck(address);
-    constexpr auto prefixSize{3};
+    constexpr size_t prefixSize{3};
+    if (decoded.size() != Address::size) {
+        throw std::invalid_argument("Invalid address: unexpected decoded payload size");
+    }
     forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
 }
 
@@ -69,6 +72,9 @@ Data forgeEntrypoint(const std::string& value) {
 // Forge the given public key hash into a hex encoded string.
 // Note: This function supports tz1, tz2 and tz3 addresses.
 Data forgePublicKeyHash(const std::string& publicKeyHash) {
+    if (publicKeyHash.size() < 3) {
+        throw std::invalid_argument("Invalid address");
+    }
     Data forged = Data();
     // Adjust prefix based on tz1, tz2 or tz3.
     switch ((char)publicKeyHash[2]) {
@@ -112,11 +118,14 @@ Data forgeAddress(const std::string& address) {
 // https://github.com/ecadlabs/taquito/blob/master/packages/taquito-local-forging/src/codec.ts#L19
 Data forgePrefix(std::array<TW::byte, 3> prefix, const std::string& val) {
     const auto decoded = Base58::decodeCheck(val);
+    if (decoded.size() != Address::size) {
+        throw std::invalid_argument("Invalid address: unexpected decoded payload size");
+    }
     if (!std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
-        throw std::invalid_argument("prefix not match");
+        throw std::invalid_argument("Prefix does not match");
     }
 
-    const auto prefixSize = 3;
+    constexpr size_t prefixSize{3};
     Data forged = Data();
     forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
     return forged;
