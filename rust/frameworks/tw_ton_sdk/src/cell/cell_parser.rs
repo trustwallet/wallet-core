@@ -40,6 +40,10 @@ impl<'a> CellParser<'a> {
             .tw_err(CellErrorType::CellParserError)
     }
 
+    pub fn load_i8(&mut self, bit_len: usize) -> CellResult<i8> {
+        Ok(self.load_u8(bit_len)? as i8)
+    }
+
     pub fn load_u32(&mut self, bit_len: usize) -> CellResult<u32> {
         self.bit_reader
             .read_u32(bit_len as u8)
@@ -104,8 +108,19 @@ impl<'a> CellParser<'a> {
         match tp {
             0 => Ok(AddressData::null()),
             2 => {
-                let _res1 = self.load_u8(1)?;
-                let wc = self.load_u8(8)?;
+                // Anycast is used for routing inside split-brain shards and is never set on
+                // normal wallet addresses. Accepting anycast=1 without consuming the Anycast
+                // payload (depth + rewrite_pfx) causes the subsequent workchain and hash reads
+                // to consume wrong bits, enabling recipient-address substitution attacks.
+                //
+                // Moreover, anycast addresses were deprecated in TVM 10.
+                // https://github.com/ton-blockchain/ton/blob/master/doc/GlobalVersions.md#version-10
+                let anycast = self.load_u8(1)?;
+                if anycast != 0 {
+                    return CellError::err(CellErrorType::CellParserError)
+                        .context("Anycast addresses are not supported");
+                }
+                let wc = self.load_i8(8)?;
                 let mut hash_part = H256::default();
                 self.load_slice(hash_part.as_mut_slice())?;
                 Ok(AddressData::new(wc as i32, hash_part))
@@ -115,6 +130,11 @@ impl<'a> CellParser<'a> {
         }
     }
 
+    /// Asserts that all bits in the cell have been consumed.
+    ///
+    /// Call this after finishing a fixed-structure parse to catch unexpected
+    /// trailing bits. [`Cell::parse_fully`] does this automatically; callers
+    /// using the raw [`Cell::parser`] API are responsible for calling it themselves.
     pub fn ensure_empty(&self) -> CellResult<()> {
         let remaining = self.remaining_bits();
         if remaining == 0 {
