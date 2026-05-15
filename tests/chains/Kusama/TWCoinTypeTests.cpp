@@ -13,9 +13,9 @@
 
 TEST(TWKusamaCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeKusama));
-    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xcbe0c2e2851c1245bedaae4d52f06eaa6b4784b786bea2f0bff11af7715973dd"));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x834220074151531626b34acf4568cd5763a47b2eb2647bd0f0b7e46f980e0c50"));
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeKusama, txId.get()));
-    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("DbCNECPna3k6MXFWWNZa5jGsuWycqEE6zcUxZYkxhVofrFk"));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("FfnS7Vk2i19AdFMf6D8ZRVUhNsYWVtsLmqQEnAmTqQBqsSy"));
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeKusama, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeKusama));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeKusama));
@@ -25,8 +25,8 @@ TEST(TWKusamaCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeKusama));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeKusama));
     assertStringsEqual(symbol, "KSM");
-    assertStringsEqual(txUrl, "https://kusama.subscan.io/extrinsic/0xcbe0c2e2851c1245bedaae4d52f06eaa6b4784b786bea2f0bff11af7715973dd");
-    assertStringsEqual(accUrl, "https://kusama.subscan.io/account/DbCNECPna3k6MXFWWNZa5jGsuWycqEE6zcUxZYkxhVofrFk");
+    assertStringsEqual(txUrl, "https://assethub-kusama.subscan.io/extrinsic/0x834220074151531626b34acf4568cd5763a47b2eb2647bd0f0b7e46f980e0c50");
+    assertStringsEqual(accUrl, "https://assethub-kusama.subscan.io/account/FfnS7Vk2i19AdFMf6D8ZRVUhNsYWVtsLmqQEnAmTqQBqsSy");
     assertStringsEqual(id, "kusama");
     assertStringsEqual(name, "Kusama");
 }

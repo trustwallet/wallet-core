@@ -12,7 +12,7 @@
 
 TEST(TWPolkadotCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypePolkadot));
-    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xb96f97d8ee508f420e606e1a6dcc74b88844713ddec2bd7cf4e3aa6b1d6beef4"));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x5aaaeec678ab1bd5a19d2c9bfd596037a32e3d1e831383c62f315459e85fa85d"));
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypePolkadot, txId.get()));
     auto accId = WRAPS(TWStringCreateWithUTF8Bytes("13hJFqnkqQbmgnGQteGntjMjTdmTBRE8Z93JqxsrpgT7Yjd2"));
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypePolkadot, accId.get()));
@@ -24,8 +24,8 @@ TEST(TWPolkadotCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypePolkadot));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypePolkadot));
     assertStringsEqual(symbol, "DOT");
-    assertStringsEqual(txUrl, "https://polkadot.subscan.io/extrinsic/0xb96f97d8ee508f420e606e1a6dcc74b88844713ddec2bd7cf4e3aa6b1d6beef4");
-    assertStringsEqual(accUrl, "https://polkadot.subscan.io/account/13hJFqnkqQbmgnGQteGntjMjTdmTBRE8Z93JqxsrpgT7Yjd2");
+    assertStringsEqual(txUrl, "https://assethub-polkadot.subscan.io/extrinsic/0x5aaaeec678ab1bd5a19d2c9bfd596037a32e3d1e831383c62f315459e85fa85d");
+    assertStringsEqual(accUrl, "https://assethub-polkadot.subscan.io/account/13hJFqnkqQbmgnGQteGntjMjTdmTBRE8Z93JqxsrpgT7Yjd2");
     assertStringsEqual(id, "polkadot");
     assertStringsEqual(name, "Polkadot");
 }
