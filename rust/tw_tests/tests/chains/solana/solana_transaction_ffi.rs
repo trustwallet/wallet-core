@@ -633,3 +633,173 @@ fn test_solana_transaction_insert_transfer_instruction_and_sign() {
     let expected = "Acms/WrZj/mOpUTTBFHLtBFKrMSAJPBBkD8qYK+oqgE0gFT5aoEfw5dlJZZl1edVde325gi0qVPai7ddgoP2WQUBAAMHgKRCBGe2W59ezw1CyHDoV4KZVuJFTtmsN0F25EL3I8228PMELJSiAl2nvEzyY4v/LfSQnxkFNlH4pjU2F3nMpcBeC+e4AaQzF6GCh63HW7KnhG+YuIbF1AvkM6nwOXMjzDg4vU3/xSfZJTqguxQVNsgitkm5dHCm6V6l4NCCDp7OAQ5gr+2yJxe9YxkvVBRaP5ZaM7uC0scCnrLOHiCCZAbd9uHXZaGT2cvhRs7reawctIXtX1s3kTqM9YV+/wCpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACbeRZf0sbtT6rwdYyf6Z9h66lKwNsb48euTgiPa0h+WAIFBAEEAgAKDBAnAAAAAAAABgYCAAMMAgAAAEANAwAAAAAA";
     assert_eq!(output.encoded, expected);
 }
+
+/// Builds a base64-encoded legacy transaction with `num_accounts` dummy accounts.
+///
+/// Account layout: `num_accounts` entries where account[i] has bytes `[1, 0, …, 0, i]`.
+/// A single transfer-like instruction is appended:
+///   - program:    last account  (index `num_accounts - 1`)
+///   - sender:     first account (index 0, writable + signer)
+///   - recipient:  second-to-last account (index `num_accounts - 2`)
+///
+/// The fee-payer address returned alongside is guaranteed not to appear in `account_keys`
+/// (its bytes are `[2, 0, …, 0]`, distinct from the `[1, …]` pattern used for accounts).
+fn make_dummy_tx(num_accounts: usize) -> (String, tw_solana::address::SolanaAddress) {
+    use tw_hash::H256;
+    use tw_solana::address::SolanaAddress;
+    use tw_solana::transaction::legacy;
+    use tw_solana::transaction::versioned::{VersionedMessage, VersionedTransaction};
+    use tw_solana::transaction::{CompiledInstruction, MessageHeader, Signature};
+
+    assert!(
+        num_accounts >= 2,
+        "need at least 2 accounts for a transfer instruction"
+    );
+    assert!(num_accounts <= 256, "Solana u8 index space is 0..=255");
+
+    let account_keys: Vec<SolanaAddress> = (0..num_accounts)
+        .map(|i| {
+            let mut b = [0u8; 32];
+            b[0] = 1;
+            b[31] = i as u8;
+            SolanaAddress::with_public_key_bytes(H256::from_array(b))
+        })
+        .collect();
+
+    let program_idx = (num_accounts - 1) as u8;
+    let recipient_idx = (num_accounts - 2) as u8;
+    let transfer_ix = CompiledInstruction {
+        program_id_index: program_idx,
+        accounts: vec![0, recipient_idx],
+        data: vec![2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], // SystemInstruction::Transfer(1)
+    };
+
+    let encoded = VersionedTransaction {
+        signatures: vec![Signature::default()],
+        message: VersionedMessage::Legacy(legacy::Message {
+            header: MessageHeader {
+                num_required_signatures: 1,
+                num_readonly_signed_accounts: 0,
+                num_readonly_unsigned_accounts: 1,
+            },
+            account_keys,
+            recent_blockhash: H256::from_array([1u8; 32]),
+            instructions: vec![transfer_ix],
+        }),
+    }
+    .to_base64()
+    .unwrap();
+
+    // Fee payer: bytes[0] = 2, all others 0 — never matches the [1, …] account pattern
+    let fee_payer = SolanaAddress::with_public_key_bytes(H256::from_array({
+        let mut b = [0u8; 32];
+        b[0] = 2;
+        b
+    }));
+
+    (encoded, fee_payer)
+}
+
+/// A transaction with 256 accounts completely fills the u8 index space (max index = 255).
+/// Calling `set_fee_payer` on it would require incrementing each existing index by one,
+/// wrapping 255 → 0 in release builds.  The fix must reject the call with an error (null).
+#[test]
+fn test_solana_transaction_set_fee_payer_256_accounts_fails() {
+    let (encoded_tx_str, fee_payer_addr) = make_dummy_tx(256);
+
+    let encoded_tx = TWStringHelper::create(&encoded_tx_str);
+    let fee_payer = TWStringHelper::create(&fee_payer_addr.to_string());
+
+    let result = TWStringHelper::wrap(unsafe {
+        tw_solana_transaction_set_fee_payer(encoded_tx.ptr(), fee_payer.ptr())
+    });
+
+    assert_eq!(result.to_string(), None);
+}
+
+/// 255 accounts is the safe boundary: max existing index is 254, which shifts to 255 after
+/// fee-payer insertion — still within u8.  This must succeed and produce correct indexes.
+#[test]
+fn test_solana_transaction_set_fee_payer_255_accounts_succeeds() {
+    use tw_solana::transaction::versioned::{VersionedMessage, VersionedTransaction};
+
+    let (encoded_tx_str, fee_payer_addr) = make_dummy_tx(255);
+
+    let encoded_tx = TWStringHelper::create(&encoded_tx_str);
+    let fee_payer = TWStringHelper::create(&fee_payer_addr.to_string());
+
+    let result = TWStringHelper::wrap(unsafe {
+        tw_solana_transaction_set_fee_payer(encoded_tx.ptr(), fee_payer.ptr())
+    });
+
+    let updated_b64 = result
+        .to_string()
+        .expect("set_fee_payer must succeed for a 255-account transaction");
+
+    let updated_tx = VersionedTransaction::from_base64(&updated_b64).unwrap();
+    let updated_msg = match updated_tx.message {
+        VersionedMessage::Legacy(m) => m,
+        _ => panic!("expected legacy message"),
+    };
+
+    // Fee payer inserted at index 0; all prior indexes shifted by +1.
+    assert_eq!(updated_msg.account_keys[0], fee_payer_addr);
+    assert_eq!(updated_msg.instructions[0].program_id_index, 255); // was 254
+    assert_eq!(updated_msg.instructions[0].accounts, vec![1, 254]); // was [0, 253]
+}
+
+/// A crafted transaction has only 5 accounts but sets `program_id_index = 255` in an instruction.
+/// The upfront `len > u8::MAX` guard does not fire (5 < 256), but `checked_add` inside
+/// `set_fee_payer` must still reject the 255 → 0 wrap.
+#[test]
+fn test_solana_transaction_set_fee_payer_program_id_index_overflow() {
+    use tw_hash::H256;
+    use tw_solana::address::SolanaAddress;
+    use tw_solana::transaction::legacy;
+    use tw_solana::transaction::versioned::{VersionedMessage, VersionedTransaction};
+    use tw_solana::transaction::{CompiledInstruction, MessageHeader, Signature};
+
+    let account_keys: Vec<SolanaAddress> = (0u8..5)
+        .map(|i| {
+            let mut b = [0u8; 32];
+            b[0] = 1;
+            b[31] = i;
+            SolanaAddress::with_public_key_bytes(H256::from_array(b))
+        })
+        .collect();
+
+    let encoded_tx_str = VersionedTransaction {
+        signatures: vec![Signature::default()],
+        message: VersionedMessage::Legacy(legacy::Message {
+            header: MessageHeader {
+                num_required_signatures: 1,
+                num_readonly_signed_accounts: 0,
+                num_readonly_unsigned_accounts: 1,
+            },
+            account_keys,
+            recent_blockhash: H256::from_array([1u8; 32]),
+            instructions: vec![CompiledInstruction {
+                program_id_index: 255, // out-of-bounds; wraps to 0 after +1 without checked_add
+                accounts: vec![0, 1],
+                data: vec![2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+            }],
+        }),
+    }
+    .to_base64()
+    .unwrap();
+
+    let fee_payer_addr = SolanaAddress::with_public_key_bytes(H256::from_array({
+        let mut b = [0u8; 32];
+        b[0] = 2;
+        b
+    }));
+
+    let encoded_tx = TWStringHelper::create(&encoded_tx_str);
+    let fee_payer = TWStringHelper::create(&fee_payer_addr.to_string());
+
+    let result = TWStringHelper::wrap(unsafe {
+        tw_solana_transaction_set_fee_payer(encoded_tx.ptr(), fee_payer.ptr())
+    });
+
+    assert_eq!(result.to_string(), None);
+}
