@@ -124,8 +124,9 @@ impl SolanaTransaction {
         }
 
         // `ComputeBudgetInstruction::SetComputeUnitPrice` can be pushed to the end of the instructions list.
-        tx.message
-            .push_simple_instruction(set_price_ix.program_id, set_price_ix.data)?;
+        tx.message =
+            tx.message
+                .with_simple_instruction(set_price_ix.program_id, set_price_ix.data)?;
 
         tx.to_base64().tw_err(SigningErrorType::Error_internal)
     }
@@ -156,7 +157,7 @@ impl SolanaTransaction {
             _ => 0,
         };
 
-        tx.message.insert_simple_instruction(
+        tx.message = tx.message.with_simple_instruction_at(
             insert_at,
             set_limit_ix.program_id,
             set_limit_ix.data,
@@ -167,13 +168,13 @@ impl SolanaTransaction {
 
     pub fn set_fee_payer(encoded_tx: &str, fee_payer: SolanaAddress) -> SigningResult<String> {
         let tx_bytes = base64::decode(encoded_tx, STANDARD)?;
-        let mut tx: VersionedTransaction =
+        let tx: VersionedTransaction =
             bincode::deserialize(&tx_bytes).map_err(|_| SigningErrorType::Error_input_parse)?;
 
-        tx.message.set_fee_payer(fee_payer)?;
+        let message = tx.message.with_fee_payer(fee_payer)?;
 
         // Set the correct number of zero signatures
-        let unsigned_tx = VersionedTransaction::unsigned(tx.message);
+        let unsigned_tx = VersionedTransaction::unsigned(message);
         unsigned_tx
             .to_base64()
             .tw_err(SigningErrorType::Error_internal)
@@ -185,7 +186,7 @@ impl SolanaTransaction {
         instruction: &str,
     ) -> SigningResult<String> {
         let tx_bytes = base64::decode(encoded_tx, STANDARD)?;
-        let mut tx: VersionedTransaction =
+        let tx: VersionedTransaction =
             bincode::deserialize(&tx_bytes).map_err(|_| SigningErrorType::Error_input_parse)?;
 
         let instruction: Instruction =
@@ -201,7 +202,7 @@ impl SolanaTransaction {
             insert_at as usize // Use the specified position
         };
 
-        tx.message.insert_instruction(
+        let message = tx.message.with_instruction_at(
             final_insert_at,
             instruction.program_id,
             instruction.accounts,
@@ -209,7 +210,7 @@ impl SolanaTransaction {
         )?;
 
         // Set the correct number of zero signatures
-        let unsigned_tx = VersionedTransaction::unsigned(tx.message);
+        let unsigned_tx = VersionedTransaction::unsigned(message);
         unsigned_tx
             .to_base64()
             .tw_err(SigningErrorType::Error_internal)
@@ -233,7 +234,7 @@ impl SolanaTransaction {
             .and_then(u64::try_from)
             .map_err(|_| SigningErrorType::Error_input_parse)?;
 
-        let mut tx: VersionedTransaction =
+        let tx: VersionedTransaction =
             bincode::deserialize(&tx_bytes).map_err(|_| SigningErrorType::Error_input_parse)?;
 
         if insert_at >= 0 && insert_at as usize > tx.message.instructions().len() {
@@ -248,7 +249,7 @@ impl SolanaTransaction {
 
         // Create transfer instruction and insert it at the specified position.
         let transfer_ix = SystemInstructionBuilder::transfer(from, to, lamports);
-        tx.message.insert_instruction(
+        let message = tx.message.with_instruction_at(
             final_insert_at,
             transfer_ix.program_id,
             transfer_ix.accounts,
@@ -256,7 +257,7 @@ impl SolanaTransaction {
         )?;
 
         // Set the correct number of zero signatures
-        let unsigned_tx = VersionedTransaction::unsigned(tx.message);
+        let unsigned_tx = VersionedTransaction::unsigned(message);
         unsigned_tx
             .to_base64()
             .tw_err(SigningErrorType::Error_internal)
