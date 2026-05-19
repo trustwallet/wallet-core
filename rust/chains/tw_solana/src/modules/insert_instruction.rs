@@ -235,7 +235,8 @@ pub trait InsertInstruction: Clone + Sized {
         // Determine the insertion position based on is_signer and is_writable
         let insert_at = match (account.is_signer, account.is_writable) {
             (true, true) => {
-                increment_counter(&mut self.message_header_mut().num_required_signatures)?;
+                increment_counter(&mut self.message_header_mut().num_required_signatures)
+                    .context("num_required_signatures overflow")?;
                 // The account is added at the end of the writable and signer accounts
                 (self.message_header_mut().num_required_signatures
                     - self.message_header_mut().num_readonly_signed_accounts)
@@ -243,8 +244,10 @@ pub trait InsertInstruction: Clone + Sized {
                     - 1
             },
             (true, false) => {
-                increment_counter(&mut self.message_header_mut().num_required_signatures)?;
-                increment_counter(&mut self.message_header_mut().num_readonly_signed_accounts)?;
+                increment_counter(&mut self.message_header_mut().num_required_signatures)
+                    .context("num_required_signatures overflow")?;
+                increment_counter(&mut self.message_header_mut().num_readonly_signed_accounts)
+                    .context("num_readonly_signed_accounts overflow")?;
                 // The account is added at the end of the read-only and signer accounts
                 self.message_header_mut().num_required_signatures as usize - 1
             },
@@ -255,7 +258,8 @@ pub trait InsertInstruction: Clone + Sized {
                     .ok_or(SigningErrorType::Error_internal)?
             },
             (false, false) => {
-                increment_counter(&mut self.message_header_mut().num_readonly_unsigned_accounts)?;
+                increment_counter(&mut self.message_header_mut().num_readonly_unsigned_accounts)
+                    .context("num_readonly_unsigned_accounts overflow")?;
                 // The account is added at the end of the list
                 accounts_number_before
             },
@@ -301,7 +305,8 @@ pub trait InsertInstruction: Clone + Sized {
         );
 
         self.account_keys_mut().push(account);
-        increment_counter(&mut self.message_header_mut().num_readonly_unsigned_accounts)?;
+        increment_counter(&mut self.message_header_mut().num_readonly_unsigned_accounts)
+            .context("num_readonly_unsigned_accounts overflow")?;
 
         let account_added_at = try_into_u8(self.account_keys_mut().len() - 1)?;
 
@@ -357,7 +362,8 @@ pub trait InsertInstruction: Clone + Sized {
 
         // Insert the fee payer account at the beginning of the account list.
         self.account_keys_mut().insert(0, account);
-        increment_counter(&mut self.message_header_mut().num_required_signatures)?;
+        increment_counter(&mut self.message_header_mut().num_required_signatures)
+            .context("num_required_signatures overflow")?;
 
         // Update `program id indexes` and `account id indexes` in every instruction as we inserted the account at the beginning of the list.
         self.instructions_mut()

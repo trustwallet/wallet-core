@@ -124,9 +124,9 @@ impl SolanaTransaction {
         }
 
         // `ComputeBudgetInstruction::SetComputeUnitPrice` can be pushed to the end of the instructions list.
-        tx.message =
-            tx.message
-                .with_simple_instruction(set_price_ix.program_id, set_price_ix.data)?;
+        tx.message = tx
+            .message
+            .with_simple_instruction(set_price_ix.program_id, set_price_ix.data)?;
 
         tx.to_base64().tw_err(SigningErrorType::Error_internal)
     }
