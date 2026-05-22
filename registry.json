@@ -5004,5 +5004,35 @@
       "rpc": "https://evm-rpc.sei-apis.com",
       "documentation": "https://docs.sei.io"
     }
+  },
+  {
+    "id": "hypeevm",
+    "name": "HypeEVM",
+    "coinId": 10000999,
+    "symbol": "HYPE",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "999",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://hyperevmscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xc79cb0bcc08995ac78f74f4a62bfd721d50a7368979b8025f3f8c229bb5a334c",
+      "sampleAccount": "0x3c43014aedbb496e173059f94bfe3b0ed1d55ba0"
+    },
+    "info": {
+      "url": "https://hyperliquid.xyz",
+      "source": "https://github.com/hyperliquid-dex",
+      "rpc": "https://rpc.hyperliquid.xyz/evm",
+      "documentation": "https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/hyperevm"
+    }
   }
 ]
