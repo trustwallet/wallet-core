@@ -5029,7 +5029,7 @@
       "sampleAccount": "0x3c43014aedbb496e173059f94bfe3b0ed1d55ba0"
     },
     "info": {
-      "url": "https://hyperliquid.xyz",
+      "url": "https://hyperfoundation.org",
       "source": "https://github.com/hyperliquid-dex",
       "rpc": "https://rpc.hyperliquid.xyz/evm",
       "documentation": "https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/hyperevm"
