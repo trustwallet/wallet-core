@@ -5,7 +5,7 @@
 import "mocha";
 import { assert } from "chai";
 import { TW } from "../../dist";
-import Long = require("long");
+import * as Long from "long";
 
 describe("Zcash", () => {
     // Successfully broadcasted: https://explorer.zcha.in/transactions/ec9033381c1cc53ada837ef9981c03ead1c7c41700ff3a954389cfaddc949256

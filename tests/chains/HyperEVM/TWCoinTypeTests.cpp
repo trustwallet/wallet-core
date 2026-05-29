@@ -6,8 +6,8 @@
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <gtest/gtest.h>
 
-TEST(TWHypeEVMCoinType, TWCoinType) {
-    const auto coin = TWCoinTypeHypeEVM;
+TEST(TWHyperEVMCoinType, TWCoinType) {
+    const auto coin = TWCoinTypeHyperEVM;
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
@@ -16,8 +16,8 @@ TEST(TWHypeEVMCoinType, TWCoinType) {
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x3c43014aedbb496e173059f94bfe3b0ed1d55ba0"));
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
-    assertStringsEqual(id, "hypeevm");
-    assertStringsEqual(name, "HypeEVM");
+    assertStringsEqual(id, "hyperevm");
+    assertStringsEqual(name, "HyperEVM");
     assertStringsEqual(symbol, "HYPE");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
