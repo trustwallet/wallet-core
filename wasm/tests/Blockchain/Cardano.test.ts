@@ -1,6 +1,6 @@
 import {TW} from "../../dist";
 import {assert} from "chai";
-import Long = require("long");
+import Long from "long";
 
 describe("Cardano", () => {
     it("test outputMinAdaAmount", () => {

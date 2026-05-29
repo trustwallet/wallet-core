@@ -5,7 +5,7 @@
 import "mocha";
 import {assert} from "chai";
 import {TW} from "../../dist";
-import Long = require("long");
+import Long from "long";
 
 describe("Ripple", () => {
     it("test sign XRP payment", () => {

@@ -6,7 +6,7 @@ import "mocha";
 import { assert } from "chai";
 import { Buffer } from "buffer";
 import { TW } from "../../dist";
-import Long = require("long");
+import Long from "long";
 
 describe("Hedera", () => {
 
