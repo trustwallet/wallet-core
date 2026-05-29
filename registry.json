@@ -5006,8 +5006,8 @@
     }
   },
   {
-    "id": "hypeevm",
-    "name": "HypeEVM",
+    "id": "hyperevm",
+    "name": "HyperEVM",
     "coinId": 10000999,
     "symbol": "HYPE",
     "decimals": 18,
