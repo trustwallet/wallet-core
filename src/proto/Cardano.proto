@@ -217,6 +217,12 @@ message SigningInput {
 
     // extra output UTXOs
     repeated TxOutput extra_outputs = 10;
+
+    // Optional auxiliary data (e.g. CIP-20 memo metadata), already CBOR-encoded.
+    // If set, its Blake2b-256 hash is committed in the transaction body
+    // (key 7, auxiliary_data_hash). The caller is responsible for appending the
+    // same bytes as the transaction's auxiliary_data after signing.
+    bytes auxiliary_data = 12;
 }
 
 // Result containing the signed and encoded transaction.

@@ -193,6 +193,8 @@ public:
     uint64_t ttl;
     std::vector<Certificate> certificates;
     std::vector<Withdrawal> withdrawals;
+    // Optional Blake2b-256 hash of the auxiliary data (CBOR body key 7). Empty if none.
+    Data auxiliaryDataHash;
 
     // Encode into CBOR binary format
     Data encode() const;
