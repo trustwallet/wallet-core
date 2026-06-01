@@ -32,7 +32,7 @@ impl TWResultVoid {
 impl RawPtrTrait for TWResultVoid {}
 
 /// Creates a `TWResultVoid` representing success.
-/// Must be deleted with `tw_result_void_delete`.
+/// Must be deleted with `TWResultVoidDelete`.
 ///
 /// \return Non-null pointer to a new `TWResultVoid`.
 #[tw_ffi(ty = constructor, class = TWResultVoid, name = CreateOk)]
@@ -42,7 +42,7 @@ pub unsafe extern "C" fn tw_result_void_create_ok() -> NonnullMut<TWResultVoid> 
 }
 
 /// Creates a `TWResultVoid` representing an error with the given message.
-/// Must be deleted with `tw_result_void_delete`.
+/// Must be deleted with `TWResultVoidDelete`.
 ///
 /// \param error A non-null `TWString` with the error description.
 /// \return Non-null pointer to a new `TWResultVoid`.

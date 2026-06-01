@@ -170,7 +170,9 @@ describe("KeyStore", () => {
     const ciphertextBefore = jsonBefore.crypto.ciphertext;
     assert.equal(saltBefore, "");
 
-    assert.isTrue(storedKey.fixEncryption(Buffer.from(password)).isSuccess());
+    const fixResult = storedKey.fixEncryption(Buffer.from(password));
+    assert.isTrue(fixResult.isSuccess());
+    fixResult.delete();
 
     const updatedWallet = JSON.parse(Buffer.from(storedKey.exportJSON()).toString());
     storedKey.delete();
