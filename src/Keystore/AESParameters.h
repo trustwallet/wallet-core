@@ -47,7 +47,7 @@ struct AESParameters {
 
     /// Validates AES parameters.
     /// \return failure with an error message (including actual IV size) if invalid, success otherwise.
-    [[nodiscard]] TW::Result<void> validate() const noexcept;
+    [[nodiscard]] TW::Result<void> validate() const;
 };
 
 } // namespace TW::Keystore

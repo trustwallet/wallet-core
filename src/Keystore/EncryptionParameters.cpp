@@ -177,6 +177,7 @@ Data EncryptedPayload::decrypt(const Data& password) const {
     // Even though the cipher params should have been validated in `EncryptedPayload` constructor,
     // double check them here.
     if (const auto result = params.cipherParams.validate(); result.isFailure()) {
+        memzero(derivedKey.data(), derivedKey.size());
         throw std::invalid_argument("Invalid cipher during decryption: " + result.error());
     }
     assert(params.cipherParams.iv.size() == gBlockSize);

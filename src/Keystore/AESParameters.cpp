@@ -80,7 +80,7 @@ AESParameters AESParameters::AESParametersFromEncryption(TWStoredKeyEncryption e
     return parameters;
 }
 
-TW::Result<void> AESParameters::validate() const noexcept {
+TW::Result<void> AESParameters::validate() const {
     if (iv.size() != static_cast<std::size_t>(mBlockSize)) {
         std::stringstream ss;
         ss << "Invalid AES IV: expected " << mBlockSize << " bytes, got " << iv.size() << " bytes";
