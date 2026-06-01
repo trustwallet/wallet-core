@@ -145,7 +145,7 @@ public:
     ///
     /// \param path file path to load from.
     /// \returns decrypted key.
-    /// \throws DecryptionError
+    /// \throws std::runtime_error on wrong password, std::invalid_argument on invalid key format
     static StoredKey load(const std::string& path);
 
     /// Stores the key into an encrypted file.
@@ -187,7 +187,7 @@ public:
     /// Decrypts the encoded private key.
     ///
     /// \returns the decoded private key.
-    /// \throws DecryptionError
+    /// \throws std::runtime_error on wrong password, std::invalid_argument on invalid key format
     [[nodiscard]] std::string decryptPrivateKeyEncoded(const Data& password) const;
 
 private:

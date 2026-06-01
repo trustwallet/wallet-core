@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 #include <TrustWalletCore/TWStoredKey.h>
+#include <TrustWalletCore/TWResultVoid.h>
 
 #include "../Coin.h"
 #include "Data.h"
@@ -300,13 +301,21 @@ bool TWStoredKeyFixAddresses(struct TWStoredKey* _Nonnull key, TWData* _Nonnull 
     }
 }
 
-bool TWStoredKeyFixEncryption(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
+struct TWResultVoid* _Nonnull TWStoredKeyFixEncryption(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
     try {
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
         key->impl.fixEncryption(passwordData);
-        return true;
+        return TWResultVoidCreateOk();
+    } catch (const std::exception& e) {
+        auto* msg = TWStringCreateWithUTF8Bytes(e.what());
+        auto* result = TWResultVoidCreateError(msg);
+        TWStringDelete(msg);
+        return result;
     } catch (...) {
-        return false;
+        auto* msg = TWStringCreateWithUTF8Bytes("Unknown error");
+        auto* result = TWResultVoidCreateError(msg);
+        TWStringDelete(msg);
+        return result;
     }
 }
 

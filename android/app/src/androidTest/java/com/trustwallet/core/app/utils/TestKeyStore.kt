@@ -146,6 +146,7 @@ class TestKeyStore {
         }
     }
 
+    @Test
     fun testFixScryptWithEmptySalt() {
         val gMnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle"
         val password = "password".toByteArray()
@@ -185,7 +186,11 @@ class TestKeyStore {
         val ciphertextBefore = cryptoBefore.getString("ciphertext")
         assertEquals("", saltBefore)
 
-        assertTrue(key.fixEncryption(password))
+        val wrongResult = key.fixEncryption("wrong-password".toByteArray())
+        assertTrue(wrongResult.isErr)
+        assertEquals("Invalid password: MAC verification failed", wrongResult.getErr)
+
+        assertTrue(key.fixEncryption(password).isSuccess)
 
         val tmpFile = File.createTempFile("scrypt-empty-salt", ".json")
         try {

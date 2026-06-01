@@ -8,6 +8,7 @@
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWStoredKey.h>
+#include <TrustWalletCore/TWResultVoid.h>
 #include <TrustWalletCore/TWData.h>
 #include "../src/HexCoding.h"
 
@@ -744,7 +745,8 @@ TEST(TWStoredKey, fixScryptWithEmptySaltAes256Ctr) {
     const auto ivBefore   = jsonBefore["crypto"]["cipherparams"]["iv"].get<std::string>();
     EXPECT_EQ(saltBefore, "");
 
-    EXPECT_TRUE(TWStoredKeyFixEncryption(key.get(), password.get()));
+    const auto fixResult = WRAP(TWResultVoid, TWStoredKeyFixEncryption(key.get(), password.get()));
+    EXPECT_TRUE(TWResultVoidIsSuccess(fixResult.get()));
 
     // id, name, accounts, and cipher must be unchanged.
     const auto keyIdAfter = WRAPS(TWStoredKeyIdentifier(key.get()));
@@ -792,7 +794,13 @@ TEST(TWStoredKey, FixEncryptionWrongPassword) {
     const auto wrongPasswordString = WRAPS(TWStringCreateWithUTF8Bytes("wrong-password"));
     const auto wrongPassword = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(TWStringUTF8Bytes(wrongPasswordString.get())), TWStringSize(wrongPasswordString.get())));
 
-    EXPECT_FALSE(TWStoredKeyFixEncryption(key.get(), wrongPassword.get()));
+    const auto fixResult = WRAP(TWResultVoid, TWStoredKeyFixEncryption(key.get(), wrongPassword.get()));
+    EXPECT_TRUE(TWResultVoidIsErr(fixResult.get()));
+    EXPECT_FALSE(TWResultVoidIsSuccess(fixResult.get()));
+
+    const auto errMsg = WRAPS(TWResultVoidGetErr(fixResult.get()));
+    ASSERT_NE(errMsg, nullptr);
+    assertStringsEqual(errMsg, "Invalid password: MAC verification failed");
 
     // JSON must be unchanged - a failed fix must leave the key untouched.
     const auto jsonDataAfter = WRAPD(TWStoredKeyExportJSON(key.get()));

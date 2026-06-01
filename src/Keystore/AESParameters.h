@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Data.h"
+#include "../Result.h"
 
 #include <nlohmann/json.hpp>
 #include <TrustWalletCore/TWStoredKeyEncryption.h>
@@ -22,12 +23,6 @@ inline constexpr std::size_t gBlockSize{16};
 inline constexpr const char* gAes128Ctr{"aes-128-ctr"};
 inline constexpr const char* gAes192Ctr{"aes-192-ctr"};
 inline constexpr const char* gAes256Ctr{"aes-256-ctr"};
-
-enum class AESValidationError {
-    InvalidIV,
-};
-
-std::string toString(AESValidationError error);
 
 // AES128/192/256 parameters.
 struct AESParameters {
@@ -51,7 +46,8 @@ struct AESParameters {
     nlohmann::json json() const;
 
     /// Validates AES parameters.
-    [[nodiscard]] std::optional<AESValidationError> validate() const noexcept;
+    /// \return failure with an error message (including actual IV size) if invalid, success otherwise.
+    [[nodiscard]] TW::Result<void> validate() const noexcept;
 };
 
 } // namespace TW::Keystore

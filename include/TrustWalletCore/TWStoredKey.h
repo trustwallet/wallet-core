@@ -12,6 +12,7 @@
 #include "TWPrivateKey.h"
 #include "TWStoredKeyEncryptionLevel.h"
 #include "TWStoredKeyEncryption.h"
+#include "TWResultVoid.h"
 #include "TWString.h"
 
 TW_EXTERN_C_BEGIN
@@ -397,9 +398,11 @@ bool TWStoredKeyUpdateAddress(struct TWStoredKey* _Nonnull key, enum TWCoinType 
 ///
 /// \param key Non-null pointer to a stored key
 /// \param password Non-null block of data, password of the stored key
-/// \return `false` if the password is incorrect or re-encryption fails, true otherwise.
+/// \return Non-null `TWResultVoid`; call `TWResultVoidIsSuccess` to check for success, or
+///         `TWResultVoidGetErr` to retrieve the error message on failure. Must be deleted with
+///         `TWResultVoidDelete`.
 TW_EXPORT_METHOD
-bool TWStoredKeyFixEncryption(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
+struct TWResultVoid* _Nonnull TWStoredKeyFixEncryption(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
 
 /// Retrieve stored key encoding parameters, as JSON string.
 ///

@@ -554,7 +554,11 @@ class KeyStoreTests: XCTestCase {
         let ciphertextBefore = cryptoBefore["ciphertext"] as! String
         XCTAssertEqual(saltBefore, "")
 
-        XCTAssertTrue(wallet.key.fixEncryption(password: password))
+        let wrongResult = wallet.key.fixEncryption(password: Data("wrong-password".utf8))
+        XCTAssertTrue(wrongResult.isErr)
+        XCTAssertEqual(wrongResult.getErr, "Invalid password: MAC verification failed")
+
+        XCTAssertTrue(wallet.key.fixEncryption(password: password).isSuccess)
         XCTAssertTrue(wallet.key.store(path: wallet.keyURL.path))
 
         let reloadedKeyStore = try KeyStore(keyDirectory: keyDirectory)
