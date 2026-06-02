@@ -153,7 +153,7 @@ describe("KeyStore", async () => {
           cipherparams: { iv: "f375d3903fa00839c43109b1d26436b7" },
           ciphertext: "9768cdec22c3b0d5d7eced4e5387c138045367b9481d5cf017d262e645accd478f0f197f6dcb97e2ce9105fee0e7074d891a9826df3bc8f4dca17f5cdfb9992b86e40f26028c5a392cb2de17",
           kdf: "scrypt",
-          kdfparams: { dklen: 32, n: 16384, p: 4, r: 8, salt: "ba85aa5dddab58d0" },
+          kdfparams: { dklen: 32, n: 16384, p: 4, r: 8, salt: "" },
           mac: "bbdba986c713d91828a7a2f031d3535414967fce81c6c826b50b0cfab8783dfc",
         },
         id: "8e334366-020b-493f-81ab-a946432f536d",
