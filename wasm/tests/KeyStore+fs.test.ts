@@ -5,6 +5,8 @@
 import "mocha";
 import { assert } from "chai";
 import * as fs from "fs";
+import * as os from "os";
+import * as path from "path";
 import { KeyStore } from "../dist";
 
 describe("KeyStore", async () => {
@@ -136,6 +138,30 @@ describe("KeyStore", async () => {
     reloadedKey.delete();
     await keystore.delete(walletID, password);
   }).timeout(15000);
+
+  it("test validateFile", () => {
+    const { StoredKey } = globalThis.core;
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "wasm-validate-"));
+
+    try {
+      // File with valid JSON syntax but missing required crypto field.
+      const invalidPath = path.join(tmpDir, "invalid.json");
+      fs.writeFileSync(invalidPath, '{"id":"abc","version":3,"name":"test","type":"mnemonic"}');
+      const invalidResult = StoredKey.validateFile(invalidPath);
+      assert.isTrue(invalidResult.isErr());
+      assert.isFalse(invalidResult.isSuccess());
+      assert.equal(invalidResult.getErr(), "Missing 'crypto' field in stored key JSON");
+      invalidResult.delete();
+
+      // Non-existent file path.
+      const missingResult = StoredKey.validateFile(path.join(tmpDir, "no-such-file.json"));
+      assert.isTrue(missingResult.isErr());
+      assert.equal(missingResult.getErr(), "Can't open file");
+      missingResult.delete();
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true });
+    }
+  }).timeout(5000);
 
   it("test FileSystemStorage AES256", async () => {
     const { CoinType, HexCoding, StoredKeyEncryption } = globalThis.core;

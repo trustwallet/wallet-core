@@ -578,6 +578,58 @@ class KeyStoreTests: XCTestCase {
         XCTAssertEqual(decryptedMnemonic, mnemonic)
     }
 
+    func testValidateFile() throws {
+        let password = Data("password".utf8)
+        let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: "name", password: password, coin: .bitcoin)!
+
+        let tmpURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString + ".json")
+        defer { try? fileManager.removeItem(at: tmpURL) }
+        XCTAssertTrue(key.store(path: tmpURL.path))
+
+        // Valid file.
+        let validResult = StoredKey.validateFile(path: tmpURL.path)
+        XCTAssertTrue(validResult.isSuccess)
+        XCTAssertFalse(validResult.isErr)
+
+        // File with valid JSON syntax but missing required crypto field.
+        let invalidURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString + ".json")
+        defer { try? fileManager.removeItem(at: invalidURL) }
+        try Data(#"{"id":"abc","version":3,"name":"test","type":"mnemonic"}"#.utf8).write(to: invalidURL)
+        let invalidResult = StoredKey.validateFile(path: invalidURL.path)
+        XCTAssertTrue(invalidResult.isErr)
+        XCTAssertFalse(invalidResult.isSuccess)
+        XCTAssertEqual(invalidResult.getErr, "Missing 'crypto' field in stored key JSON")
+
+        // Non-existent file path.
+        let missingResult = StoredKey.validateFile(path: "/no/such/file.json")
+        XCTAssertTrue(missingResult.isErr)
+        XCTAssertFalse(missingResult.isSuccess)
+        XCTAssertEqual(missingResult.getErr, "Can't open file")
+    }
+
+    func testValidateJson() {
+        let password = Data("password".utf8)
+        let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: "name", password: password, coin: .bitcoin)!
+        let json = key.exportJSON()!
+
+        // Valid JSON exported from a freshly created key.
+        let validResult = StoredKey.validateJson(json: json)
+        XCTAssertTrue(validResult.isSuccess)
+        XCTAssertFalse(validResult.isErr)
+
+        // Invalid JSON syntax.
+        let invalidResult = StoredKey.validateJson(json: Data("]]]not_json[[[".utf8))
+        XCTAssertTrue(invalidResult.isErr)
+        XCTAssertFalse(invalidResult.isSuccess)
+        XCTAssertNotNil(invalidResult.getErr)
+
+        // Valid JSON syntax but missing required crypto field.
+        let missingCryptoJson = Data(#"{"id":"abc","version":3,"name":"test","type":"mnemonic"}"#.utf8)
+        let missingResult = StoredKey.validateJson(json: missingCryptoJson)
+        XCTAssertTrue(missingResult.isErr)
+        XCTAssertEqual(missingResult.getErr, "Missing 'crypto' field in stored key JSON")
+    }
+
     func testCreateWalletThrowsStorageFailedOnUnwritableDirectory() throws {
         let dir = try createTempDirURL()
         let keyStore = try KeyStore(keyDirectory: dir)

@@ -64,6 +64,40 @@ describe("KeyStore", async () => {
     });
   }).timeout(10000);
 
+  it("test validateJson", async () => {
+    const { CoinType, StoredKey, StoredKeyEncryption } = globalThis.core;
+    const mnemonic = globalThis.mnemonic as string;
+    const password = globalThis.password as string;
+
+    const walletIdsKey = "all-wallet-ids";
+    const storage = new KeyStore.ExtensionStorage(walletIdsKey, new ChromeStorageMock());
+    const keystore = new KeyStore.Default(globalThis.core, storage);
+
+    const wallet = await keystore.import(mnemonic, "Test", password, [CoinType.bitcoin], StoredKeyEncryption.aes128Ctr);
+    const validJson = Buffer.from(JSON.stringify(wallet));
+
+    // Valid JSON from a freshly imported wallet.
+    const validResult = StoredKey.validateJson(validJson);
+    assert.isTrue(validResult.isSuccess());
+    assert.isFalse(validResult.isErr());
+    validResult.delete();
+
+    // Invalid JSON syntax.
+    const invalidResult = StoredKey.validateJson(Buffer.from("]]]not_json[[["));
+    assert.isTrue(invalidResult.isErr());
+    assert.isFalse(invalidResult.isSuccess());
+    invalidResult.delete();
+
+    // Valid JSON syntax but missing required crypto field.
+    const missingCryptoJson = Buffer.from('{"id":"abc","version":3,"name":"test","type":"mnemonic"}');
+    const missingResult = StoredKey.validateJson(missingCryptoJson);
+    assert.isTrue(missingResult.isErr());
+    assert.equal(missingResult.getErr(), "Missing 'crypto' field in stored key JSON");
+    missingResult.delete();
+
+    await keystore.delete(wallet.id, password);
+  }).timeout(10000);
+
   it("test fix scrypt with empty salt", async () => {
     const { StoredKey } = globalThis.core;
     const password = globalThis.password as string;

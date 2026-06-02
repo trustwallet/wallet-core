@@ -319,6 +319,43 @@ struct TWResultVoid* _Nonnull TWStoredKeyFixEncryption(struct TWStoredKey* _Nonn
     }
 }
 
+struct TWResultVoid* _Nonnull TWStoredKeyValidateJson(TWData* _Nonnull json) {
+    try {
+        const auto& d = *reinterpret_cast<const TW::Data*>(json);
+        const auto parsed = nlohmann::json::parse(std::string(d.begin(), d.end()));
+        KeyStore::StoredKey::createWithJson(parsed);
+        return TWResultVoidCreateOk();
+    } catch (const std::exception& e) {
+        auto* msg = TWStringCreateWithUTF8Bytes(e.what());
+        auto* result = TWResultVoidCreateError(msg);
+        TWStringDelete(msg);
+        return result;
+    } catch (...) {
+        auto* msg = TWStringCreateWithUTF8Bytes("Unknown error");
+        auto* result = TWResultVoidCreateError(msg);
+        TWStringDelete(msg);
+        return result;
+    }
+}
+
+struct TWResultVoid* _Nonnull TWStoredKeyValidateFile(TWString* _Nonnull path) {
+    try {
+        const auto& pathString = *reinterpret_cast<const std::string*>(path);
+        KeyStore::StoredKey::load(pathString);
+        return TWResultVoidCreateOk();
+    } catch (const std::exception& e) {
+        auto* msg = TWStringCreateWithUTF8Bytes(e.what());
+        auto* result = TWResultVoidCreateError(msg);
+        TWStringDelete(msg);
+        return result;
+    } catch (...) {
+        auto* msg = TWStringCreateWithUTF8Bytes("Unknown error");
+        auto* result = TWResultVoidCreateError(msg);
+        TWStringDelete(msg);
+        return result;
+    }
+}
+
 bool TWStoredKeyUpdateAddress(struct TWStoredKey* _Nonnull key, enum TWCoinType coin) {
     try {
         return key->impl.updateAddress(coin);

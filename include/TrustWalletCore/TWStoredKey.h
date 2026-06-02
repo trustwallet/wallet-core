@@ -404,6 +404,28 @@ bool TWStoredKeyUpdateAddress(struct TWStoredKey* _Nonnull key, enum TWCoinType 
 TW_EXPORT_METHOD
 struct TWResultVoid* _Nonnull TWStoredKeyFixEncryption(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
 
+/// Validates a stored key JSON blob without fully importing it.
+/// Parses and structurally validates the JSON, including crypto parameters (KDF, cipher, IV).
+/// Does NOT decrypt — the password is not required and fund access is not verified.
+///
+/// \param json Non-null block of data containing the stored key JSON
+/// \return Non-null `TWResultVoid`; call `TWResultVoidIsSuccess` to check for success, or
+///         `TWResultVoidGetErr` to retrieve the error message on failure. Must be deleted with
+///         `TWResultVoidDelete`.
+TW_EXPORT_STATIC_METHOD
+struct TWResultVoid* _Nonnull TWStoredKeyValidateJson(TWData* _Nonnull json);
+
+/// Validates a stored key file at the given path without importing it.
+/// Reads and parses the file, then structurally validates the JSON including crypto parameters
+/// (KDF, cipher, IV). Does NOT decrypt — the password is not required and fund access is not verified.
+///
+/// \param path Non-null path to the stored key JSON file
+/// \return Non-null `TWResultVoid`; call `TWResultVoidIsSuccess` to check for success, or
+///         `TWResultVoidGetErr` to retrieve the error message on failure. Must be deleted with
+///         `TWResultVoidDelete`.
+TW_EXPORT_STATIC_METHOD
+struct TWResultVoid* _Nonnull TWStoredKeyValidateFile(TWString* _Nonnull path);
+
 /// Retrieve stored key encoding parameters, as JSON string.
 ///
 /// \param key Non-null pointer to a stored key

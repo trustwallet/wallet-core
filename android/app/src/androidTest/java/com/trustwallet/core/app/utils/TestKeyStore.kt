@@ -188,7 +188,7 @@ class TestKeyStore {
 
         val wrongResult = key.fixEncryption("wrong-password".toByteArray())
         assertTrue(wrongResult.isErr)
-        assertEquals("Invalid password: MAC verification failed", wrongResult.getErr)
+        assertEquals("Invalid password: MAC verification failed", wrongResult.getErr())
 
         assertTrue(key.fixEncryption(password).isSuccess)
 
@@ -212,6 +212,67 @@ class TestKeyStore {
         } finally {
             tmpFile.delete()
         }
+    }
+
+    @Test
+    fun testValidateFile() {
+        val password = "password".toByteArray()
+        val keyStore = StoredKey("Test Wallet", password)
+
+        val tmpFile = File.createTempFile("storedkey-validate", ".json")
+        try {
+            assertTrue(keyStore.store(tmpFile.absolutePath))
+
+            // Valid file.
+            val validResult = StoredKey.validateFile(tmpFile.absolutePath)
+            assertTrue(validResult.isSuccess)
+            assertFalse(validResult.isErr)
+
+            // File with valid JSON syntax but missing required crypto field.
+            val invalidFile = File.createTempFile("storedkey-validate-invalid", ".json")
+            try {
+                invalidFile.writeText("""{"id":"abc","version":3,"name":"test","type":"mnemonic"}""")
+                val invalidResult = StoredKey.validateFile(invalidFile.absolutePath)
+                assertTrue(invalidResult.isErr)
+                assertFalse(invalidResult.isSuccess)
+                assertEquals("Missing 'crypto' field in stored key JSON", invalidResult.getErr())
+            } finally {
+                invalidFile.delete()
+            }
+
+            // Non-existent file path.
+            val missingResult = StoredKey.validateFile("/no/such/file.json")
+            assertTrue(missingResult.isErr)
+            assertFalse(missingResult.isSuccess)
+            assertEquals("Can't open file", missingResult.getErr())
+        } finally {
+            tmpFile.delete()
+        }
+    }
+
+    @Test
+    fun testValidateJson() {
+        val password = "password".toByteArray()
+        val keyStore = StoredKey("Test Wallet", password)
+        val json = keyStore.exportJSON()
+        assertNotNull(json)
+
+        // Valid JSON exported from a freshly created key.
+        val validResult = StoredKey.validateJson(json)
+        assertTrue(validResult.isSuccess)
+        assertFalse(validResult.isErr)
+
+        // Invalid JSON syntax.
+        val invalidResult = StoredKey.validateJson("]]]not_json[[[".toByteArray())
+        assertTrue(invalidResult.isErr)
+        assertFalse(invalidResult.isSuccess)
+        assertNotNull(invalidResult.getErr())
+
+        // Valid JSON syntax but missing required crypto field.
+        val missingCryptoJson = """{"id":"abc","version":3,"name":"test","type":"mnemonic"}""".toByteArray()
+        val missingResult = StoredKey.validateJson(missingCryptoJson)
+        assertTrue(missingResult.isErr)
+        assertEquals("Missing 'crypto' field in stored key JSON", missingResult.getErr())
     }
 
     @Test
