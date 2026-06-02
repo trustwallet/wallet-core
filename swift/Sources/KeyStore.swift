@@ -58,13 +58,14 @@ public final class KeyStore {
     }
 
     private func makeInvalidKey(at url: URL) -> InvalidKey {
-        let result = StoredKey.validateFile(path: url.path)
+        let data = (try? Data(contentsOf: url)) ?? Data()
+
+        let result = StoredKey.validateJson(json: data)
         let loadError = result.getErr ?? "Unknown load error"
 
         var isThirdPartyKeystore = false
         var firstAccountAddress: String?
-        if let data = try? Data(contentsOf: url),
-           let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+        if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
             isThirdPartyKeystore = json["address"] != nil
             if let accounts = json["activeAccounts"] as? [[String: Any]],
                let first = accounts.first,

@@ -5,8 +5,6 @@
 import "mocha";
 import { assert } from "chai";
 import * as fs from "fs";
-import * as os from "os";
-import * as path from "path";
 import { KeyStore } from "../dist";
 
 describe("KeyStore", async () => {
@@ -141,11 +139,12 @@ describe("KeyStore", async () => {
 
   it("test validateFile", () => {
     const { StoredKey } = globalThis.core;
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "wasm-validate-"));
+    // Write to Emscripten's virtual MEMFS so C++ std::ifstream can open it.
+    // Node.js fs writes to the real host FS which is not accessible to WASM.
+    const wasmFs = (globalThis.core as any).FS;
+    const validPath = "/tmp/wasm-validate-valid.json";
 
     try {
-      // Valid JSON from a real wallet file.
-      const validPath = path.join(tmpDir, "valid.json");
       const scryptWallet = {
         activeAccounts: [],
         crypto: {
@@ -161,13 +160,13 @@ describe("KeyStore", async () => {
         type: "mnemonic",
         version: 3,
       };
-      fs.writeFileSync(validPath, JSON.stringify(scryptWallet));
+      wasmFs.writeFile(validPath, JSON.stringify(scryptWallet));
       const validResult = StoredKey.validateFile(validPath);
       assert.isTrue(validResult.isSuccess());
       assert.isFalse(validResult.isErr());
       validResult.delete();
     } finally {
-      fs.rmSync(tmpDir, { recursive: true });
+      try { wasmFs.unlink(validPath); } catch (_) {}
     }
   }).timeout(5000);
 

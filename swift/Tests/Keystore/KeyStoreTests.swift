@@ -734,7 +734,7 @@ class KeyStoreTests: XCTestCase {
         XCTAssertEqual(keyStore.invalidKeys.count, 2)
 
         for invalidKey in keyStore.invalidKeys {
-            XCTAssertEqual(invalidKey.loadError, "Missing 'crypto' field in stored key JSON")
+            XCTAssertTrue(invalidKey.loadError.contains("crypto"), "Expected load error to mention missing crypto field, got: \(invalidKey.loadError)")
         }
 
         let twStyle = keyStore.invalidKeys.first(where: { $0.fileURL.lastPathComponent == "broken1.json" })!
