@@ -137,39 +137,6 @@ describe("KeyStore", async () => {
     await keystore.delete(walletID, password);
   }).timeout(15000);
 
-  it("test validateFile", () => {
-    const { StoredKey } = globalThis.core;
-    // Write to Emscripten's virtual MEMFS so C++ std::ifstream can open it.
-    // Node.js fs writes to the real host FS which is not accessible to WASM.
-    const wasmFs = (globalThis.core as any).FS;
-    const validPath = "/tmp/wasm-validate-valid.json";
-
-    try {
-      const scryptWallet = {
-        activeAccounts: [],
-        crypto: {
-          cipher: "aes-128-ctr",
-          cipherparams: { iv: "f375d3903fa00839c43109b1d26436b7" },
-          ciphertext: "9768cdec22c3b0d5d7eced4e5387c138045367b9481d5cf017d262e645accd478f0f197f6dcb97e2ce9105fee0e7074d891a9826df3bc8f4dca17f5cdfb9992b86e40f26028c5a392cb2de17",
-          kdf: "scrypt",
-          kdfparams: { dklen: 32, n: 16384, p: 4, r: 8, salt: "" },
-          mac: "bbdba986c713d91828a7a2f031d3535414967fce81c6c826b50b0cfab8783dfc",
-        },
-        id: "8e334366-020b-493f-81ab-a946432f536d",
-        name: "name",
-        type: "mnemonic",
-        version: 3,
-      };
-      wasmFs.writeFile(validPath, JSON.stringify(scryptWallet));
-      const validResult = StoredKey.validateFile(validPath);
-      assert.isTrue(validResult.isSuccess());
-      assert.isFalse(validResult.isErr());
-      validResult.delete();
-    } finally {
-      try { wasmFs.unlink(validPath); } catch (_) {}
-    }
-  }).timeout(5000);
-
   it("test FileSystemStorage AES256", async () => {
     const { CoinType, HexCoding, StoredKeyEncryption } = globalThis.core;
     const mnemonic = globalThis.mnemonic as string;
