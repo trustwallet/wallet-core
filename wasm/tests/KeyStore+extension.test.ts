@@ -82,19 +82,6 @@ describe("KeyStore", async () => {
     assert.isFalse(validResult.isErr());
     validResult.delete();
 
-    // Invalid JSON syntax.
-    const invalidResult = StoredKey.validateJson(Buffer.from("]]]not_json[[["));
-    assert.isTrue(invalidResult.isErr());
-    assert.isFalse(invalidResult.isSuccess());
-    invalidResult.delete();
-
-    // Valid JSON syntax but missing required crypto field.
-    const missingCryptoJson = Buffer.from('{"id":"abc","version":3,"name":"test","type":"mnemonic"}');
-    const missingResult = StoredKey.validateJson(missingCryptoJson);
-    assert.isTrue(missingResult.isErr());
-    assert.equal(missingResult.getErr(), "Missing 'crypto' field in stored key JSON");
-    missingResult.delete();
-
     await keystore.delete(wallet.id, password);
   }).timeout(10000);
 

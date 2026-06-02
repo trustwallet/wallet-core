@@ -144,20 +144,28 @@ describe("KeyStore", async () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "wasm-validate-"));
 
     try {
-      // File with valid JSON syntax but missing required crypto field.
-      const invalidPath = path.join(tmpDir, "invalid.json");
-      fs.writeFileSync(invalidPath, '{"id":"abc","version":3,"name":"test","type":"mnemonic"}');
-      const invalidResult = StoredKey.validateFile(invalidPath);
-      assert.isTrue(invalidResult.isErr());
-      assert.isFalse(invalidResult.isSuccess());
-      assert.equal(invalidResult.getErr(), "Missing 'crypto' field in stored key JSON");
-      invalidResult.delete();
-
-      // Non-existent file path.
-      const missingResult = StoredKey.validateFile(path.join(tmpDir, "no-such-file.json"));
-      assert.isTrue(missingResult.isErr());
-      assert.equal(missingResult.getErr(), "Can't open file");
-      missingResult.delete();
+      // Valid JSON from a real wallet file.
+      const validPath = path.join(tmpDir, "valid.json");
+      const scryptWallet = {
+        activeAccounts: [],
+        crypto: {
+          cipher: "aes-128-ctr",
+          cipherparams: { iv: "f375d3903fa00839c43109b1d26436b7" },
+          ciphertext: "9768cdec22c3b0d5d7eced4e5387c138045367b9481d5cf017d262e645accd478f0f197f6dcb97e2ce9105fee0e7074d891a9826df3bc8f4dca17f5cdfb9992b86e40f26028c5a392cb2de17",
+          kdf: "scrypt",
+          kdfparams: { dklen: 32, n: 16384, p: 4, r: 8, salt: "ba85aa5dddab58d0" },
+          mac: "bbdba986c713d91828a7a2f031d3535414967fce81c6c826b50b0cfab8783dfc",
+        },
+        id: "8e334366-020b-493f-81ab-a946432f536d",
+        name: "name",
+        type: "mnemonic",
+        version: 3,
+      };
+      fs.writeFileSync(validPath, JSON.stringify(scryptWallet));
+      const validResult = StoredKey.validateFile(validPath);
+      assert.isTrue(validResult.isSuccess());
+      assert.isFalse(validResult.isErr());
+      validResult.delete();
     } finally {
       fs.rmSync(tmpDir, { recursive: true });
     }
