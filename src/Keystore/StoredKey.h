@@ -141,11 +141,12 @@ public:
     /// `mnemonicPhrase` and a coin other than the default is requested.
     const PrivateKey privateKey(TWCoinType coin, TWDerivation derivation, const Data& password);
 
-    /// Loads and decrypts a stored key from a file.
+    /// Loads and parses a stored key from a file. The payload remains encrypted.
     ///
     /// \param path file path to load from.
-    /// \returns decrypted key.
-    /// \throws std::runtime_error on wrong password, std::invalid_argument on invalid key format
+    /// \returns parsed StoredKey with encrypted payload.
+    /// \throws std::invalid_argument if the file cannot be opened or a required JSON field is missing.
+    /// \throws nlohmann::json::parse_error if the file contains malformed JSON.
     static StoredKey load(const std::string& path);
 
     /// Stores the key into an encrypted file.
