@@ -254,7 +254,10 @@ std::shared_ptr<Transaction> Signer::prepareUnsignedTransaction(const Proto::Sig
             transaction->attributes.push_back(attr);
         }
         return transaction;
+    } catch (const Common::Proto::SigningError&) {
+        throw;
     } catch (...) {
+        throw Common::Proto::SigningError(Common::Proto::Error_general);
     }
 
     return transaction;
