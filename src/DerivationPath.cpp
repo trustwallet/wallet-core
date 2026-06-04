@@ -33,6 +33,9 @@ DerivationPath::DerivationPath(const std::string& string) {
         if (hardened) {
             ++it;
         }
+        if (!hardened && value >= 0x80000000) {
+            throw std::invalid_argument("Non-hardened index must be less than 2^31");
+        }
         indices.emplace_back(value, hardened);
 
         if (it == end) {
