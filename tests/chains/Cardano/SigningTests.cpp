@@ -8,6 +8,7 @@
 #include <TrustWalletCore/TWCardano.h>
 
 #include "Cbor.h"
+#include "Hash.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "uint256.h"
@@ -423,6 +424,47 @@ TEST(CardanoSigning, SignTransfer1) {
         EXPECT_EQ(decode.dumpToString(), "[{0: [[h\"554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0\", 0], [h\"f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767\", 1]], 1: [[h\"01558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd5\", 7000000], [h\"01df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\", 829804]], 2: 170196, 3: 53333333}, {0: [[h\"6d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df290\", h\"7cf591599852b5f5e007fdc241062405c47e519266c0d884b0767c1d4f5eacce00db035998e53ed10ca4ba5ce4aac8693798089717ce6cf4415f345cc764200e\"]]}, null]");
         EXPECT_EQ(decode.getArrayElements().size(), 3ul);
     }
+}
+
+TEST(CardanoSigning, SignTransferWithAuxiliaryData) {
+    auto input = createSampleInput(7000000);
+
+    // CIP-20 memo metadata: {674: {"msg": ["Hello from Vultisig"]}}
+    const auto auxData = Cbor::Encode::map({
+        {Cbor::Encode::uint(674), Cbor::Encode::map({
+            {Cbor::Encode::string("msg"), Cbor::Encode::array({
+                Cbor::Encode::string("Hello from Vultisig"),
+            })},
+        })},
+    }).encoded();
+    input.set_auxiliary_data(auxData.data(), auxData.size());
+
+    auto signer = Signer(input);
+    const auto output = signer.sign();
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+
+    const auto encoded = data(output.encoded());
+    const auto decode = Cbor::Decode(encoded);
+    ASSERT_TRUE(decode.isValid());
+
+    const auto elements = decode.getArrayElements();
+    ASSERT_EQ(elements.size(), 3ul);
+
+    // The transaction body (element 0) commits the Blake2b-256 hash of the
+    // auxiliary data under key 7 (auxiliary_data_hash).
+    const auto expectedHash = Hash::blake2b(auxData, 32);
+    bool foundAuxHash = false;
+    for (const auto& [key, value] : elements[0].getMapElements()) {
+        if (key.getValue() == 7) {
+            foundAuxHash = true;
+            EXPECT_EQ(hex(value.getBytes()), hex(expectedHash));
+        }
+    }
+    EXPECT_TRUE(foundAuxHash);
+
+    // The signed transaction carries the same auxiliary data bytes (element 2),
+    // not a null placeholder.
+    EXPECT_EQ(hex(elements[2].encoded()), hex(auxData));
 }
 
 TEST(CardanoSigning, PlanAndSignTransfer1) {

@@ -220,8 +220,11 @@ message SigningInput {
 
     // Optional auxiliary data (e.g. CIP-20 memo metadata), already CBOR-encoded.
     // If set, its Blake2b-256 hash is committed in the transaction body
-    // (key 7, auxiliary_data_hash). The caller is responsible for appending the
-    // same bytes as the transaction's auxiliary_data after signing.
+    // (key 7, auxiliary_data_hash) and these bytes are embedded as the signed
+    // transaction's auxiliary_data, so the caller does not append anything.
+    // Note: the fee planner does not account for the extra size of this field;
+    // for non-trivial auxiliary data, set an explicit `plan` with a fee/change
+    // that covers it, otherwise the transaction may be underpaid and rejected.
     bytes auxiliary_data = 12;
 }
 
