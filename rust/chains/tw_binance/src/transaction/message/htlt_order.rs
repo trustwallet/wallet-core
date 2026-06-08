@@ -14,6 +14,7 @@ use tw_memory::Data;
 use tw_proto::Binance::Proto;
 
 #[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct HTLTOrder {
     pub amount: Vec<Token>,
     pub cross_chain: bool,
@@ -81,6 +82,7 @@ impl TWBinanceProto for HTLTOrder {
 }
 
 #[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct DepositHTLTOrder {
     pub amount: Vec<Token>,
     pub from: BinanceAddress,
@@ -125,6 +127,7 @@ impl TWBinanceProto for DepositHTLTOrder {
 }
 
 #[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct ClaimHTLTOrder {
     pub from: BinanceAddress,
     #[serde(with = "as_hex")]
@@ -169,6 +172,7 @@ impl TWBinanceProto for ClaimHTLTOrder {
 }
 
 #[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct RefundHTLTOrder {
     pub from: BinanceAddress,
     #[serde(with = "as_hex")]
