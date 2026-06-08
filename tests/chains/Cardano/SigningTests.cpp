@@ -465,6 +465,12 @@ TEST(CardanoSigning, SignTransferWithAuxiliaryData) {
     // The signed transaction carries the same auxiliary data bytes (element 2),
     // not a null placeholder.
     EXPECT_EQ(hex(elements[2].encoded()), hex(auxData));
+
+    // The automatic fee planner accounts for the auxiliary data size: the same
+    // input without it plans a strictly smaller fee.
+    auto inputWithoutAux = input;
+    inputWithoutAux.clear_auxiliary_data();
+    EXPECT_GT(Signer(input).doPlan().fee, Signer(inputWithoutAux).doPlan().fee);
 }
 
 TEST(CardanoSigning, PlanAndSignTransfer1) {

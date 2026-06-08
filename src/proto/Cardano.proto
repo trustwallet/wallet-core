@@ -222,9 +222,7 @@ message SigningInput {
     // If set, its Blake2b-256 hash is committed in the transaction body
     // (key 7, auxiliary_data_hash) and these bytes are embedded as the signed
     // transaction's auxiliary_data, so the caller does not append anything.
-    // Note: the fee planner does not account for the extra size of this field;
-    // for non-trivial auxiliary data, set an explicit `plan` with a fee/change
-    // that covers it, otherwise the transaction may be underpaid and rejected.
+    // The automatic fee planner includes this field in its size/fee estimate.
     bytes auxiliary_data = 12;
 }
 
