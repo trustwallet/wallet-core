@@ -53,6 +53,9 @@ std::string Signer::sign() const {
 Data Signer::encode(const Proto::SigningInput& input) const {
     //    Address account, uint32_t fee, uint64_t sequence, uint32_t memoType,
     //    Data memoData, Address destination, uint64_t amount;
+    if (input.fee() < 0) {
+        throw std::invalid_argument("Fee must be non-negative");
+    }
     auto data = Data();
 
     encodeAddress(Address(input.account()), data);
