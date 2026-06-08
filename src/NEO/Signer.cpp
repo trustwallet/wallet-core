@@ -85,6 +85,10 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) {
         for (int i = 0; i < input.outputs_size(); i++) {
             auto* outputPlan = plan.add_outputs();
 
+            if (input.outputs(i).amount() < 0) {
+                throw Common::Proto::SigningError(Common::Proto::Error_invalid_params);
+            }
+
             if (available.find(input.outputs(i).asset_id()) == available.end() ||
                 available[input.outputs(i).asset_id()] < required[input.outputs(i).asset_id()]) {
                 throw Common::Proto::SigningError(Common::Proto::Error_low_balance);
@@ -106,6 +110,9 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) {
             for (int j = 0; j < input.outputs(i).extra_outputs_size(); j++) {
                 auto* extra_plan = outputPlan->add_extra_outputs();
 
+                if (input.outputs(i).extra_outputs(j).amount() < 0) {
+                    throw Common::Proto::SigningError(Common::Proto::Error_invalid_params);
+                }
                 extra_plan->set_to_address(input.outputs(i).extra_outputs(j).to_address());
                 extra_plan->set_amount(input.outputs(i).extra_outputs(j).amount());
                 changeAmount -= input.outputs(i).extra_outputs(j).amount();
