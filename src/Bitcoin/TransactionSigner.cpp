@@ -22,11 +22,28 @@ TransactionPlan TransactionSigner<Transaction, TransactionBuilder>::plan(const S
     return TransactionBuilder::plan(input);
 }
 
+static Common::Proto::SigningError validatePlan(const TransactionPlan& plan) {
+    if (plan.amount < 0 || plan.change < 0 || plan.fee < 0) {
+        return Common::Proto::Error_invalid_params;
+    }
+    Amount utxoSum = 0;
+    for (const auto& utxo : plan.utxos) {
+        utxoSum += utxo.amount;
+    }
+    if (utxoSum != plan.amount + plan.change + plan.fee) {
+        return Common::Proto::Error_invalid_params;
+    }
+    return Common::Proto::OK;
+}
+
 template <typename Transaction, typename TransactionBuilder>
 Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::sign(const SigningInput& input, bool estimationMode, std::optional<SignaturePubkeyList> optionalExternalSigs) {
     TransactionPlan plan;
     if (input.plan.has_value()) {
         plan = input.plan.value();
+        if (auto err = validatePlan(plan); err != Common::Proto::OK) {
+            return Result<Transaction, Common::Proto::SigningError>::failure(err);
+        }
     } else {
         plan = TransactionBuilder::plan(input);
     }
@@ -47,6 +64,9 @@ Result<HashPubkeyList, Common::Proto::SigningError> TransactionSigner<Transactio
     TransactionPlan plan;
     if (input.plan.has_value()) {
         plan = input.plan.value();
+        if (auto err = validatePlan(plan); err != Common::Proto::OK) {
+            return Result<HashPubkeyList, Common::Proto::SigningError>::failure(err);
+        }
     } else {
         plan = TransactionBuilder::plan(input);
     }
