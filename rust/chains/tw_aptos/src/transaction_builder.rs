@@ -85,7 +85,10 @@ impl TransactionFactory {
     }
 
     pub fn new_from_protobuf(input: SigningInput) -> SigningResult<TransactionBuilder> {
-        let factory = TransactionFactory::new(input.chain_id as u8)
+        let chain_id = u8::try_from(input.chain_id)
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("'chain_id' must be in range 0..=255")?;
+        let factory = TransactionFactory::new(chain_id)
             .with_gas_unit_price(input.gas_unit_price)
             .with_max_gas_amount(input.max_gas_amount)
             .with_transaction_expiration_time(input.expiration_timestamp_secs);
