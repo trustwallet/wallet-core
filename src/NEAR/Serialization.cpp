@@ -8,6 +8,7 @@
 #include "../PrivateKey.h"
 
 #include <nlohmann/json.hpp>
+#include <stdexcept>
 
 namespace TW::NEAR {
 
@@ -28,7 +29,9 @@ static void writeU64(Data& data, uint64_t number) {
 }
 
 static void writeU128(Data& data, const std::string& numberData) {
-    assert(numberData.size() == 16 && "U128 number should be 16 bytes long");
+    if (numberData.size() != 16) {
+        throw std::invalid_argument("U128 number should be exactly 16 bytes long");
+    }
     data.insert(std::end(data), std::begin(numberData), std::end(numberData));
 }
 
