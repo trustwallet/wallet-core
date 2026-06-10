@@ -8,6 +8,7 @@
 #include "../Hash.h"
 #include "../HexCoding.h"
 #include "../proto/Stellar.pb.h"
+#include <stdexcept>
 
 #include <TrustWalletCore/TWStellarMemoType.h>
 
@@ -17,7 +18,12 @@ namespace TW::Stellar {
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto signer = Signer(input);
     auto output = Proto::SigningOutput();
-    output.set_signature(signer.sign());
+    try {
+        output.set_signature(signer.sign());
+    } catch (const std::invalid_argument& ex) {
+        output.set_error(Common::Proto::Error_invalid_params);
+        output.set_error_message(ex.what());
+    }
     return output;
 }
 
@@ -201,6 +207,9 @@ void Signer::encodeAsset(const Proto::Asset& asset, Data& data) {
     uint32_t assetType = 0; // native
     std::string alphaUse;
     if (asset.issuer().length() > 0 && Address::isValid(asset.issuer()) && asset.alphanum4().length() > 0) {
+        if (asset.alphanum4().length() > 4) {
+            throw std::invalid_argument("alphanum4 asset code must be 4 characters or fewer");
+        }
         assetType = 1; // alphanum4
         alphaUse = asset.alphanum4();
     }

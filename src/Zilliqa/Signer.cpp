@@ -50,7 +50,7 @@ Data Signer::getPreImage(const Proto::SigningInput& input, Address& address) {
         return Data(0);
     }
     const auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
-    auto gasPrice = Data(input.gas_price().begin(), input.gas_price().end());
+    auto gasPrice = store(load(input.gas_price()));
 
     internal.set_version(input.version());
     internal.set_nonce(input.nonce());
@@ -63,12 +63,12 @@ Data Signer::getPreImage(const Proto::SigningInput& input, Address& address) {
     switch (input.transaction().message_oneof_case()) {
     case Proto::Transaction::kTransfer: {
         const auto transfer = input.transaction().transfer();
-        amount = Data(transfer.amount().begin(), transfer.amount().end());
+        amount = store(load(transfer.amount()));
         break;
     }
     case Proto::Transaction::kRawTransaction: {
         const auto raw = input.transaction().raw_transaction();
-        amount = Data(raw.amount().begin(), raw.amount().end());
+        amount = store(load(raw.amount()));
         if (!raw.code().empty()) {
             internal.set_code(raw.code());
         }
