@@ -26,13 +26,6 @@ static Common::Proto::SigningError validatePlan(const TransactionPlan& plan) {
     if (plan.amount < 0 || plan.change < 0 || plan.fee < 0) {
         return Common::Proto::Error_invalid_params;
     }
-    Amount utxoSum = 0;
-    for (const auto& utxo : plan.utxos) {
-        utxoSum += utxo.amount;
-    }
-    if (utxoSum != plan.amount + plan.change + plan.fee) {
-        return Common::Proto::Error_invalid_params;
-    }
     return Common::Proto::OK;
 }
 
