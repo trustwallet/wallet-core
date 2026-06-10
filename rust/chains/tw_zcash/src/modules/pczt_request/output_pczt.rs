@@ -65,7 +65,10 @@ mod tests {
     use super::*;
     use std::collections::BTreeMap;
 
-    fn make_output(script_pubkey: Vec<u8>, user_address: Option<&str>) -> pczt::transparent::Output {
+    fn make_output(
+        script_pubkey: Vec<u8>,
+        user_address: Option<&str>,
+    ) -> pczt::transparent::Output {
         pczt::transparent::Output {
             value: 100_000,
             script_pubkey,
