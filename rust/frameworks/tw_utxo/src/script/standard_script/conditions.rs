@@ -110,7 +110,8 @@ pub fn new_p2tr_script_path(pubkey: &H264, merkle_root: &H256) -> Script {
 }
 
 pub fn new_op_return(data: &[u8]) -> Script {
-    let mut s = Script::with_capacity(83);
+    // Capacity: 1 (OP_RETURN) + 3 (max push opcode for 10000 bytes is OP_PUSHDATA2 + 2 bytes) + data.len()
+    let mut s = Script::with_capacity(4 + data.len());
     s.push(OP_RETURN);
     s.push_slice(data);
     s
