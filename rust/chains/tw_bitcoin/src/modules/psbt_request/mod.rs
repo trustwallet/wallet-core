@@ -80,8 +80,8 @@ mod tests {
         let psbt_input = Proto::Psbt::default();
 
         // Test parse_request
-        use tw_coin_entry::test_utils::empty_coin_context::EmptyCoinContext;
-        let coin = EmptyCoinContext;
+        use tw_coin_entry::test_utils::test_context::TestCoinContext;
+        let coin = TestCoinContext::default();
         let result: SigningResult<PsbtRequest<StandardBitcoinContext>> =
             NoPsbtRequestBuilder::parse_request(&coin, &input, &psbt_input);
         assert_eq!(

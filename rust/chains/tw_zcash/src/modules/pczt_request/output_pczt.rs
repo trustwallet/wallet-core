@@ -20,10 +20,7 @@ pub struct OutputPczt<'a> {
 
 impl<'a> OutputPczt<'a> {
     pub fn new(output: &'a pczt::transparent::Output, chain_info: &'a BitcoinChainInfo) -> Self {
-        OutputPczt {
-            output,
-            chain_info,
-        }
+        OutputPczt { output, chain_info }
     }
 
     pub fn build(self) -> SigningResult<TransactionOutput> {
