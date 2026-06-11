@@ -473,6 +473,20 @@ TEST(CardanoSigning, SignTransferWithAuxiliaryData) {
     EXPECT_GT(Signer(input).doPlan().fee, Signer(inputWithoutAux).doPlan().fee);
 }
 
+TEST(CardanoSigning, AnySignWithInvalidAuxiliaryDataReturnsError) {
+    auto input = createSampleInput(7000000);
+    // Not valid CBOR: declares a 2-element array but provides one element, so
+    // fromRaw() throws while planning. The public signing boundary catches it
+    // and returns an error rather than terminating the process.
+    const auto invalidAux = parse_hex("8200");
+    input.set_auxiliary_data(invalidAux.data(), invalidAux.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeCardano);
+
+    EXPECT_NE(output.error(), Common::Proto::OK);
+}
+
 TEST(CardanoSigning, PlanAndSignTransfer1) {
     uint amount = 6000000;
     auto input = createSampleInput(amount);

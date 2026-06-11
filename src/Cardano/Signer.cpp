@@ -65,6 +65,12 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
     tx.ttl = input.ttl();
 
     if (!input.auxiliary_data().empty()) {
+        // Reject invalid CBOR here, so the signing/planning path returns an error
+        // instead of letting Cbor::Encode::fromRaw throw out of the noexcept
+        // Signer::sign / Signer::plan entry points (which would call std::terminate).
+        if (!Cbor::Decode(data(input.auxiliary_data())).isValid()) {
+            return Common::Proto::Error_invalid_params;
+        }
         tx.auxiliaryDataHash = Hash::blake2b(data(input.auxiliary_data()), 32);
     }
 
