@@ -375,6 +375,7 @@ Data Transaction::encode() const {
         mapElems.emplace(Cbor::Encode::uint(5), cborizeWithdrawals(withdrawals));
     }
     if (!auxiliaryDataHash.empty()) {
+        // Key 7 is auxiliary_data_hash in the Cardano transaction_body (Shelley ledger CDDL).
         mapElems.emplace(Cbor::Encode::uint(7), Cbor::Encode::bytes(auxiliaryDataHash));
     }
 
