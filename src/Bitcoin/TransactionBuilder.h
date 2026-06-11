@@ -56,8 +56,11 @@ public:
 
             auto emplace_at = tx.outputs.end();
             if (plan.outputOpReturnIndex.has_value()) {
+                const auto idx = std::min(
+                    static_cast<std::size_t>(plan.outputOpReturnIndex.value()),
+                    tx.outputs.size());
                 emplace_at = tx.outputs.begin();
-                std::advance(emplace_at, plan.outputOpReturnIndex.value());
+                std::advance(emplace_at, idx);
             }
             int64_t amount = 0;
             tx.outputs.emplace(emplace_at, amount, lockingScriptOpReturn);
