@@ -6,22 +6,24 @@ use crate::address::ZcashAddress;
 use crate::context::ZcashContext;
 use crate::modules::pczt;
 use std::str::FromStr;
+use tw_bitcoin::modules::tx_builder::BitcoinChainInfo;
 use tw_coin_entry::error::prelude::{MapTWError, ResultContext, SigningErrorType, SigningResult};
-use tw_utxo::context::{AddressPrefixes, UtxoContext};
+use tw_utxo::context::UtxoContext;
 use tw_utxo::script::Script;
 use tw_utxo::transaction::standard_transaction::TransactionOutput;
-
-const ZCASH_P2PKH_PREFIX: u8 = 0xB8;
-const ZCASH_P2SH_PREFIX: u8 = 0xBD;
 
 /// Currently, we rely on `pczt` crate to build our own [`TransactionOutput`].
 pub struct OutputPczt<'a> {
     output: &'a pczt::transparent::Output,
+    chain_info: &'a BitcoinChainInfo,
 }
 
 impl<'a> OutputPczt<'a> {
-    pub fn new(output: &'a pczt::transparent::Output) -> Self {
-        OutputPczt { output }
+    pub fn new(output: &'a pczt::transparent::Output, chain_info: &'a BitcoinChainInfo) -> Self {
+        OutputPczt {
+            output,
+            chain_info,
+        }
     }
 
     pub fn build(self) -> SigningResult<TransactionOutput> {
@@ -37,14 +39,9 @@ impl<'a> OutputPczt<'a> {
             let addr = ZcashAddress::from_str(addr_str)
                 .tw_err(SigningErrorType::Error_invalid_address)
                 .context("PCZT Output user_address is not a valid Zcash address")?;
-            let expected_script = ZcashContext::addr_to_script_pubkey(
-                &addr,
-                AddressPrefixes {
-                    p2pkh_prefix: ZCASH_P2PKH_PREFIX,
-                    p2sh_prefix: ZCASH_P2SH_PREFIX,
-                },
-            )
-            .context("PCZT Output user_address cannot be converted to a script")?;
+            let expected_script =
+                ZcashContext::addr_to_script_pubkey(&addr, self.chain_info.to_address_prefixes())
+                    .context("PCZT Output user_address cannot be converted to a script")?;
             if expected_script != script_pubkey {
                 return tw_coin_entry::error::prelude::SigningError::err(
                     SigningErrorType::Error_invalid_address,
@@ -64,6 +61,14 @@ impl<'a> OutputPczt<'a> {
 mod tests {
     use super::*;
     use std::collections::BTreeMap;
+
+    fn chain_info() -> BitcoinChainInfo {
+        BitcoinChainInfo {
+            p2pkh_prefix: 0xB8,
+            p2sh_prefix: 0xBD,
+            hrp: None,
+        }
+    }
 
     fn make_output(
         script_pubkey: Vec<u8>,
@@ -93,20 +98,23 @@ mod tests {
 
     #[test]
     fn test_no_user_address_passes() {
+        let info = chain_info();
         let output = make_output(hex_to_bytes(MERCHANT_SCRIPT), None);
-        assert!(OutputPczt::new(&output).build().is_ok());
+        assert!(OutputPczt::new(&output, &info).build().is_ok());
     }
 
     #[test]
     fn test_matching_user_address_passes() {
+        let info = chain_info();
         let output = make_output(hex_to_bytes(MERCHANT_SCRIPT), Some(MERCHANT_ADDR));
-        assert!(OutputPczt::new(&output).build().is_ok());
+        assert!(OutputPczt::new(&output, &info).build().is_ok());
     }
 
     #[test]
     fn test_mismatched_user_address_rejected() {
+        let info = chain_info();
         let output = make_output(hex_to_bytes(ATTACKER_SCRIPT), Some(MERCHANT_ADDR));
-        let result = OutputPczt::new(&output).build();
+        let result = OutputPczt::new(&output, &info).build();
         assert!(result.is_err());
         assert_eq!(
             *result.unwrap_err().error_type(),
@@ -116,8 +124,9 @@ mod tests {
 
     #[test]
     fn test_invalid_user_address_rejected() {
+        let info = chain_info();
         let output = make_output(hex_to_bytes(MERCHANT_SCRIPT), Some("not_a_valid_address"));
-        let result = OutputPczt::new(&output).build();
+        let result = OutputPczt::new(&output, &info).build();
         assert!(result.is_err());
     }
 }

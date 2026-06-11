@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use std::marker::PhantomData;
+use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 use tw_proto::BitcoinV2::Proto;
@@ -18,6 +19,7 @@ pub mod utxo_psbt;
 pub trait PsbtRequestHandler<Context: UtxoContext> {
     /// Parses a PSBT request from Protobuf.
     fn parse_request(
+        coin: &dyn CoinContext,
         input: &Proto::SigningInput,
         psbt_input: &Proto::Psbt,
     ) -> SigningResult<PsbtRequest<Context>>;
@@ -43,6 +45,7 @@ pub struct NoPsbtRequestBuilder;
 
 impl<Context: UtxoContext> PsbtRequestHandler<Context> for NoPsbtRequestBuilder {
     fn parse_request(
+        _coin: &dyn CoinContext,
         _input: &Proto::SigningInput,
         _psbt_input: &Proto::Psbt,
     ) -> SigningResult<PsbtRequest<Context>> {
@@ -77,8 +80,10 @@ mod tests {
         let psbt_input = Proto::Psbt::default();
 
         // Test parse_request
+        use tw_coin_entry::test_utils::empty_coin_context::EmptyCoinContext;
+        let coin = EmptyCoinContext;
         let result: SigningResult<PsbtRequest<StandardBitcoinContext>> =
-            NoPsbtRequestBuilder::parse_request(&input, &psbt_input);
+            NoPsbtRequestBuilder::parse_request(&coin, &input, &psbt_input);
         assert_eq!(
             *result.err().expect("Expected an error").error_type(),
             SigningErrorType::Error_not_supported

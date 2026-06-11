@@ -53,7 +53,7 @@ impl<Context: BitcoinSigningContext> BitcoinCompiler<Context> {
                 TxPlanner::plan(request)?.unsigned_tx
             },
             TransactionType::psbt(ref psbt) => {
-                Context::PsbtRequestHandler::parse_request(&input, psbt)?.unsigned_tx
+                Context::PsbtRequestHandler::parse_request(coin, &input, psbt)?.unsigned_tx
             },
             TransactionType::None => {
                 return SigningError::err(SigningErrorType::Error_invalid_params)
@@ -132,13 +132,13 @@ impl<Context: BitcoinSigningContext> BitcoinCompiler<Context> {
     }
 
     fn compile_psbt(
-        _coin: &dyn CoinContext,
+        coin: &dyn CoinContext,
         input: &Proto::SigningInput,
         psbt: &Proto::Psbt,
         signatures: Vec<SignatureBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let PsbtRequest { unsigned_tx, .. } =
-            Context::PsbtRequestHandler::parse_request(input, psbt)?;
+            Context::PsbtRequestHandler::parse_request(coin, input, psbt)?;
         let fee = unsigned_tx.fee()?;
 
         SighashVerifier::verify_signatures(&unsigned_tx, &signatures)?;
