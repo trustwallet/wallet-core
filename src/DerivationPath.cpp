@@ -29,7 +29,7 @@ DerivationPath::DerivationPath(const std::string& string) {
             ++it;
         }
 
-        if (value >= 0x80000000) {
+        if (value >= HardenedOffset) {
             throw std::invalid_argument("Derivation index out of range");
         }
         auto hardened = (it != end && *it == '\'');
