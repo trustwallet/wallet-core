@@ -157,10 +157,13 @@ jobs:
             });
 
   verify-bc-check-comment:
-    needs: [post-reminder-comment]
+    # No `needs` — runs independently on both workflow_run and issue_comment events.
+    # Uses the Checks API to post a check run directly onto pr.head.sha, so the result
+    # always lands on the right commit regardless of which event triggered this job.
     runs-on: ubuntu-latest
     if: always()
     permissions:
+      checks: write
       contents: read
       pull-requests: read
       issues: read
@@ -209,16 +212,31 @@ jobs:
               return;
             }
 
+            // Posts a check run pinned to the PR head commit. Works from any trigger event —
+            // issue_comment-triggered runs are not automatically associated with a PR commit
+            // by GitHub, so this explicit API call is the only way to update the PR check.
+            async function postCheck(conclusion, title, summary) {
+              await github.rest.checks.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'verify-bc-check-comment',
+                head_sha: pr.head.sha,
+                status: 'completed',
+                conclusion,
+                output: { title, summary },
+              });
+            }
+
             if (pr.draft) {
               core.info('PR is a draft; skipping.');
               return;
             }
             if (!['master', 'dev'].includes(pr.base.ref)) {
               core.info(`PR targets '${pr.base.ref}'; BC gate only applies to master and dev. Skipping.`);
+              await postCheck('success', 'Not applicable', `BC gate only applies to master and dev; this PR targets '${pr.base.ref}'.`);
               return;
             }
 
-            // Fetch comments — needed for both the reminder-gate check and sign-off search.
             const comments = await github.paginate(github.rest.issues.listComments, {
               issue_number: prNumber,
               owner: context.repo.owner,
@@ -226,15 +244,11 @@ jobs:
               per_page: 100,
             });
 
-            // Gate on the reminder comment's presence. The cascade that enforces the gate is:
-            // post-reminder-comment posts the reminder (needs: dependency ensures this job
-            // runs after it) → this job finds the reminder and fails until a sign-off exists.
-            // On issue_comment events, post-reminder-comment is skipped but this job still
-            // runs (if: always()) so it re-checks after every comment posted by a reviewer.
             const reminderMarker = '<!-- bc-risk-router:reminder -->';
             const hasReminder = comments.some(c => c.body.includes(reminderMarker));
             if (!hasReminder) {
               core.info('No BC-risk reminder posted; nothing to verify.');
+              await postCheck('success', 'No hot-path files changed', 'This PR does not touch persistence-sensitive files; no BC audit required.');
               return;
             }
 
@@ -272,7 +286,7 @@ jobs:
             });
 
             if (!signoff) {
-              core.setFailed(
+              const msg =
                 'No fresh, evidence-backed sign-off found. Required:\n' +
                 '  * Token: `[bc-check: Pass|Mitigated|Risk-Accepted|N/A]`\n' +
                 `  * Token + reasoning >= ${minChars} chars.\n` +
@@ -280,8 +294,10 @@ jobs:
                 '  * Pass / Mitigated / Risk-Accepted: must include audit output (a `# BC-risk audit ...` header or a `Verdict:` line).\n' +
                 '  * Risk-Accepted: must also include explicit evidence that blast radius is effectively zero.\n' +
                 "  * N/A is only valid when the change has zero BC relevance; rejected if the audit shows a RISK or BLOCKER verdict.\n" +
-                'If you pushed new commits after a previous sign-off, edit the existing comment (any edit counts as a refresh) so it reflects the current diff.'
-              );
+                'If you pushed new commits after a previous sign-off, edit the existing comment (any edit counts as a refresh) so it reflects the current diff.';
+              await postCheck('failure', 'BC sign-off required', msg);
+              core.setFailed('BC sign-off required — see the verify-bc-check-comment check on this PR.');
               return;
             }
+            await postCheck('success', 'BC sign-off verified', `Sign-off by @${signoff.user.login} is valid and current (posted at ${signoff.updated_at}).`);
             core.info(`Found fresh sign-off by @${signoff.user.login} at ${signoff.updated_at}.`);

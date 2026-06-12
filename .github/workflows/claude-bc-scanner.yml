@@ -17,9 +17,9 @@ jobs:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: refs/pull/${{ github.event.pull_request.number }}/head
           fetch-depth: 0
           persist-credentials: false
 
@@ -56,7 +56,7 @@ jobs:
           printf '%s' "$BASE_REF"  > base-ref.txt
           printf '%s' "$HEAD_SHA"  > head-sha.txt
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: bc-scan-result
           path: |
