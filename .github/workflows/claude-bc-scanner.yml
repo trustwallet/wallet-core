@@ -27,14 +27,14 @@ jobs:
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           BASE_REF: ${{ github.base_ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -e
-          BASE="origin/$BASE_REF"
 
           # Any change to a persistence-sensitive path warrants a BC audit.
           # The auditor decides what's risky — not grep patterns.
-          git diff --name-only "$BASE"...HEAD -- \
+          git diff --name-only "$BASE_SHA"...HEAD -- \
             'src/Keystore/' \
             'src/proto/' \
             'include/TrustWalletCore/' \
@@ -50,7 +50,7 @@ jobs:
             '**/StoredKey*' \
             '**/backup/**' \
             '**/schema*.sql' \
-            2>/dev/null > changed-files.txt || true
+            > changed-files.txt
 
           printf '%s' "$PR_NUMBER" > pr-number.txt
           printf '%s' "$BASE_REF"  > base-ref.txt

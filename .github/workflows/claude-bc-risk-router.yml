@@ -30,7 +30,7 @@ jobs:
       - name: Download scan result
         id: download
         continue-on-error: true   # gracefully handles skipped scanner jobs (e.g. draft PRs)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: bc-scan-result
           github-token: ${{ secrets.GITHUB_TOKEN }}
