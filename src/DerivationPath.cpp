@@ -4,7 +4,7 @@
 
 #include "DerivationPath.h"
 
-#include <cstdio>
+#include <charconv>
 #include <stdexcept>
 
 using namespace TW;
@@ -21,22 +21,21 @@ DerivationPath::DerivationPath(const std::string& string) {
     }
 
     while (it != end) {
-        uint32_t value;
-        if (std::sscanf(it, "%ud", &value) != 1) {
+        uint64_t value{0};
+        auto [ptr, ec] = std::from_chars(it, end, value);
+        if (ec == std::errc::invalid_argument) {
             throw std::invalid_argument("Invalid component");
         }
-        while (it != end && isdigit(*it)) {
-            ++it;
-        }
-
-        if (value >= HardenedOffset) {
+        if (ec == std::errc::result_out_of_range || value >= HardenedOffset) {
             throw std::invalid_argument("Derivation index out of range");
         }
+        it = ptr;
+
         auto hardened = (it != end && *it == '\'');
         if (hardened) {
             ++it;
         }
-        indices.emplace_back(value, hardened);
+        indices.emplace_back(static_cast<uint32_t>(value), hardened);
 
         if (it == end) {
             break;
