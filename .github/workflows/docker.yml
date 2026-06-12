@@ -13,13 +13,13 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: trustwallet/github-actions-proxy/actions/checkout@main
       - name: Lint Dockerfile
         run: |
           curl -L https://github.com/hadolint/hadolint/releases/download/v1.17.6/hadolint-Linux-x86_64 -o hadolint && chmod +x hadolint
           ./hadolint Dockerfile
       - name: Build Dockerfile
-        uses: docker/build-push-action@92e71463491f2d026a477188b8ad3a0fdd9d672c # v1.1.0
+        uses: trustwallet/github-actions-proxy/actions/build-push-action@main
         with:
           repository: trustwallet/wallet-core
           tags: latest
