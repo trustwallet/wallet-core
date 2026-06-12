@@ -1,0 +1,67 @@
+name: bc-scanner
+
+# Runs in the fork's unprivileged context — no secrets, no write permissions.
+# Checks out PR code safely and detects hot-path file changes, then uploads
+# the result as an artifact for bc-risk-router (workflow_run) to consume.
+
+on:
+  pull_request:
+    branches: [ master, dev ]
+    types: [ opened, synchronize, reopened, ready_for_review ]
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Detect hot-path changes
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -e
+          BASE="origin/$BASE_REF"
+
+          # Any change to a persistence-sensitive path warrants a BC audit.
+          # The auditor decides what's risky — not grep patterns.
+          git diff --name-only "$BASE"...HEAD -- \
+            'src/Keystore/' \
+            'src/proto/' \
+            'include/TrustWalletCore/' \
+            'registry.json' \
+            'src/PrivateKey*' \
+            'src/PublicKey*' \
+            'src/HDWallet*' \
+            'swift/Sources/KeyStore*' \
+            'swift/Sources/Wallet.swift' \
+            'swift/Sources/Watch.swift' \
+            'wasm/src/keystore/' \
+            '**/Migration*' \
+            '**/StoredKey*' \
+            '**/backup/**' \
+            '**/schema*.sql' \
+            2>/dev/null > changed-files.txt || true
+
+          printf '%s' "$PR_NUMBER" > pr-number.txt
+          printf '%s' "$BASE_REF"  > base-ref.txt
+          printf '%s' "$HEAD_SHA"  > head-sha.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bc-scan-result
+          path: |
+            changed-files.txt
+            pr-number.txt
+            base-ref.txt
+            head-sha.txt
+          retention-days: 1

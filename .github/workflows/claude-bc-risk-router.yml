@@ -2,87 +2,67 @@ name: bc-risk-router
 
 # To make verify-bc-check-comment actually BLOCK merging, add it as a required
 # status check in Settings -> Branches -> branch protection rules for master and dev.
+#
+# Security model:
+#   bc-scanner    — pull_request, fork context, no secrets, does the checkout + file detection.
+#   bc-risk-router — workflow_run (base-repo context, write token) reads the artifact and
+#                    posts the gating comment. No checkout ever happens here.
 
 on:
-  pull_request_target:
-    branches: [ master, dev ]
-    types: [ opened, synchronize, reopened, edited, ready_for_review ]
+  workflow_run:
+    workflows: [ "bc-scanner" ]
+    types: [ completed ]
   issue_comment:
     types: [ created, edited, deleted ]
-
-permissions:
-  contents: read
-  issues: write
-  pull-requests: write
 
 env:
   BC_SIGNOFF_MIN_CHARS: 60
 
 jobs:
-  scan-and-flag:
-    if: github.event_name == 'pull_request_target' && github.event.pull_request.draft == false
+  post-reminder-comment:
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    outputs:
-      flags: ${{ steps.scan.outputs.flags }}
+    permissions:
+      actions: read       # download artifact from the scanner run
+      issues: write
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - name: Download scan result
+        id: download
+        continue-on-error: true   # gracefully handles skipped scanner jobs (e.g. draft PRs)
+        uses: actions/download-artifact@v4
         with:
-          # Checkout the PR head so the diff reflects the fork's changes.
-          # pull_request_target defaults to the base ref; this override is required.
-          # Only git diff --name-only runs against this ref — no fork code is executed.
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
-
-      - name: Detect hot-path changes
-        id: scan
-        run: |
-          set -e
-          BASE="origin/${{ github.base_ref }}"
-
-          # Any change to a persistence-sensitive path warrants a BC audit.
-          # The auditor decides what's risky — not grep patterns.
-          CHANGED=$(git diff --name-only "$BASE"...HEAD -- \
-            'src/Keystore/' \
-            'src/proto/' \
-            'include/TrustWalletCore/' \
-            'registry.json' \
-            'src/PrivateKey*' \
-            'src/PublicKey*' \
-            'src/HDWallet*' \
-            'swift/Sources/KeyStore*' \
-            'swift/Sources/Wallet.swift' \
-            'swift/Sources/Watch.swift' \
-            'wasm/src/keystore/' \
-            '**/Migration*' \
-            '**/StoredKey*' \
-            '**/backup/**' \
-            '**/schema*.sql' \
-            2>/dev/null || true)
-
-          if [ -n "$CHANGED" ]; then
-            echo "flags=$(echo "$CHANGED" | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
-          else
-            echo "flags=" >> "$GITHUB_OUTPUT"
-          fi
+          name: bc-scan-result
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
 
       - name: Post reminder comment (once per PR)
-        if: steps.scan.outputs.flags != ''
+        if: steps.download.outcome == 'success'
         uses: actions/github-script@v7
         env:
-          FLAGS: ${{ steps.scan.outputs.flags }}
+          BC_SIGNOFF_MIN_CHARS: ${{ env.BC_SIGNOFF_MIN_CHARS }}
         with:
           script: |
-            const changedFiles = (process.env.FLAGS || '').trim().split(/\s+/).filter(Boolean);
-            const marker = '<!-- bc-risk-router:reminder -->';
+            const fs = require('fs');
 
-            const { data: comments } = await github.rest.issues.listComments({
-              issue_number: context.issue.number,
+            const changedContent = fs.readFileSync('changed-files.txt', 'utf8').trim();
+            if (!changedContent) {
+              core.info('No hot-path files changed; skipping.');
+              return;
+            }
+            const changedFiles = changedContent.split('\n').filter(Boolean);
+
+            const prNumber = parseInt(fs.readFileSync('pr-number.txt', 'utf8').trim(), 10);
+            const base     = fs.readFileSync('base-ref.txt',     'utf8').trim();
+
+            const marker = '<!-- bc-risk-router:reminder -->';
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              issue_number: prNumber,
               owner: context.repo.owner,
               repo: context.repo.repo,
+              per_page: 100,
             });
             if (comments.some(c => c.body.includes(marker))) return;
-
-            const base = context.payload.pull_request.base.ref;
 
             // Build the prompt as an array to avoid multi-line template literal
             // indentation problems inside this YAML block scalar.
@@ -152,7 +132,7 @@ jobs:
               '- `[bc-check: Risk-Accepted]` — audit found RISK or BLOCKER; **investigation confirms blast radius is effectively zero** (no user data in the wild can trigger it). Must include audit output + explicit evidence (who confirmed it, what data or reasoning).',
               "- `[bc-check: N/A]` — scanner fired on a file with **zero BC relevance** (comment edit, test fixture, renamed variable). **Invalid if the audit found a real risk.**",
               '',
-              'Each token must be accompanied by >=${{ env.BC_SIGNOFF_MIN_CHARS }} chars of reasoning. The reasoning must be fresh — posted or edited at or after the HEAD commit.',
+              `Each token must be accompanied by >=${process.env.BC_SIGNOFF_MIN_CHARS} chars of reasoning. The reasoning must be fresh — posted or edited at or after the HEAD commit.`,
               '',
               "**Why audit evidence is required for Pass / Mitigated:** humans don't reliably ask the right BC question on every PR. AI being in the loop is the whole point of this gate. The bot does not judge whether your reasoning is *correct* — reviewers do, like any other code review.",
               '',
@@ -170,30 +150,60 @@ jobs:
             ].join('\n');
 
             await github.rest.issues.createComment({
-              issue_number: context.issue.number,
+              issue_number: prNumber,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body
             });
 
   verify-bc-check-comment:
+    needs: [post-reminder-comment]
     runs-on: ubuntu-latest
     if: always()
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
     steps:
       - name: Verify sign-off token
         uses: actions/github-script@v7
+        env:
+          BC_SIGNOFF_MIN_CHARS: ${{ env.BC_SIGNOFF_MIN_CHARS }}
         with:
           script: |
             let prNumber, pr;
-            if (context.payload.pull_request) {
-              pr = context.payload.pull_request;
-              prNumber = pr.number;
-            } else if (context.payload.issue && context.payload.issue.pull_request) {
+            if (context.payload.issue && context.payload.issue.pull_request) {
               prNumber = context.payload.issue.number;
               const { data } = await github.rest.pulls.get({
                 owner: context.repo.owner, repo: context.repo.repo, pull_number: prNumber
               });
               pr = data;
+            } else if (context.payload.workflow_run) {
+              const prs = context.payload.workflow_run.pull_requests;
+              if (!prs || prs.length === 0) {
+                // Fork PRs: workflow_run.pull_requests is empty — look up by head SHA.
+                const headSha = context.payload.workflow_run.head_sha;
+                const headOwner = context.payload.workflow_run.head_repository.owner.login;
+                const headBranch = context.payload.workflow_run.head_branch;
+                const { data: openPRs } = await github.rest.pulls.list({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  state: 'open',
+                  head: `${headOwner}:${headBranch}`,
+                });
+                pr = openPRs.find(p => p.head.sha === headSha);
+                if (!pr) {
+                  core.info('Could not resolve PR from workflow_run; skipping.');
+                  return;
+                }
+                prNumber = pr.number;
+              } else {
+                prNumber = prs[0].number;
+                const { data } = await github.rest.pulls.get({
+                  owner: context.repo.owner, repo: context.repo.repo, pull_number: prNumber
+                });
+                pr = data;
+              }
             } else {
               core.info('Not a PR-related event; skipping.');
               return;
@@ -208,18 +218,19 @@ jobs:
               return;
             }
 
-            // Fetch comments early — needed for both the reminder-gate check and sign-off search.
-            const { data: comments } = await github.rest.issues.listComments({
+            // Fetch comments — needed for both the reminder-gate check and sign-off search.
+            const comments = await github.paginate(github.rest.issues.listComments, {
               issue_number: prNumber,
               owner: context.repo.owner,
               repo: context.repo.repo,
+              per_page: 100,
             });
 
-            // Gate on the reminder comment's presence. This job runs independently of
-            // scan-and-flag (no `needs` dependency) so that it fires on every
-            // issue_comment event. The cascade that enforces the gate on PR open is:
-            // scan-and-flag posts the reminder → that triggers an issue_comment event
-            // → this job runs, finds the reminder, and fails until a sign-off exists.
+            // Gate on the reminder comment's presence. The cascade that enforces the gate is:
+            // post-reminder-comment posts the reminder (needs: dependency ensures this job
+            // runs after it) → this job finds the reminder and fails until a sign-off exists.
+            // On issue_comment events, post-reminder-comment is skipped but this job still
+            // runs (if: always()) so it re-checks after every comment posted by a reviewer.
             const reminderMarker = '<!-- bc-risk-router:reminder -->';
             const hasReminder = comments.some(c => c.body.includes(reminderMarker));
             if (!hasReminder) {
