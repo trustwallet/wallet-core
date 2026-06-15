@@ -473,6 +473,53 @@ TEST(CardanoSigning, SignTransferWithAuxiliaryData) {
     EXPECT_GT(Signer(input).doPlan().fee, Signer(inputWithoutAux).doPlan().fee);
 }
 
+// Golden vector from a real CIP-20 memo transaction built with this code and
+// broadcast to the Cardano mainnet:
+//   https://cardanoscan.io/transaction/b5ab0684a1c244a1359f81b3b019526d9b7e16dbc75709f1595ce468942af32a
+// The transaction was MPC-signed, so we cannot reproduce its witness signature
+// here. Instead we assert the signature-independent transaction id, which is
+// blake2b-256 of the transaction body and commits the auxiliary_data_hash under
+// body key 7. Reproducing the on-chain id end-to-end proves the body (including
+// the memo hash) is encoded byte-for-byte as the mainnet ledger accepted it.
+TEST(CardanoSigning, SignTransferWithAuxiliaryDataMainnetGoldenTxId) {
+    Proto::SigningInput input;
+
+    auto* utxo = input.add_utxos();
+    const auto utxoHash = parse_hex("28bee653269041634a0e3274ff734250323e88e73f9676a2d0ef8e71e0478e6e");
+    utxo->mutable_out_point()->set_tx_hash(utxoHash.data(), utxoHash.size());
+    utxo->mutable_out_point()->set_output_index(1);
+    utxo->set_address("addr1v855fpsfqz8pued9vz9vp7twqujcn3cxuyfsan2vghn7jxcz9caqz");
+    utxo->set_amount(7894190);
+
+    input.mutable_transfer_message()->set_to_address("addr1v9hs3lp2vvz0he2u03rt09tq54y6a3lr6yhxaxg666zgnrgacgqwy");
+    input.mutable_transfer_message()->set_change_address("addr1v855fpsfqz8pued9vz9vp7twqujcn3cxuyfsan2vghn7jxcz9caqz");
+    input.mutable_transfer_message()->set_amount(1400000);
+    input.set_ttl(189775732);
+
+    // CIP-20 memo metadata: {674: {"msg": ["Hello from Vultisig"]}}
+    const auto auxData = Cbor::Encode::map({
+        {Cbor::Encode::uint(674), Cbor::Encode::map({
+            {Cbor::Encode::string("msg"), Cbor::Encode::array({
+                Cbor::Encode::string("Hello from Vultisig"),
+            })},
+        })},
+    }).encoded();
+    input.set_auxiliary_data(auxData.data(), auxData.size());
+
+    // Use the exact on-chain fee/change so the body matches the broadcast tx.
+    auto* plan = input.mutable_plan();
+    plan->set_available_amount(7894190);
+    plan->set_amount(1400000);
+    plan->set_fee(181320);
+    plan->set_change(6312870);
+    *plan->add_utxos() = input.utxos(0);
+
+    Transaction tx;
+    ASSERT_EQ(Signer::buildTransactionAux(tx, input, TransactionPlan::fromProto(input.plan())), Common::Proto::OK);
+
+    EXPECT_EQ(hex(tx.getId()), "b5ab0684a1c244a1359f81b3b019526d9b7e16dbc75709f1595ce468942af32a");
+}
+
 TEST(CardanoSigning, AnySignWithInvalidAuxiliaryDataReturnsError) {
     auto input = createSampleInput(7000000);
     // Not valid CBOR: declares a 2-element array but provides one element, so
