@@ -195,16 +195,22 @@ void TWStoredKeyRemoveAccountForCoinDerivation(struct TWStoredKey* _Nonnull key,
 }
 
 void TWStoredKeyRemoveAccountForCoinDerivationPath(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull derivationPath) {
-    const auto dp = TW::DerivationPath(*reinterpret_cast<const std::string*>(derivationPath));
-    key->impl.removeAccount(coin, dp);
+    try {
+        const auto dp = TW::DerivationPath(*reinterpret_cast<const std::string*>(derivationPath));
+        key->impl.removeAccount(coin, dp);
+    } catch (...) {
+    }
 }
 
 void TWStoredKeyAddAccountDerivation(struct TWStoredKey* _Nonnull key, TWString* _Nonnull address, enum TWCoinType coin, enum TWDerivation derivation, TWString* _Nonnull derivationPath, TWString* _Nonnull publicKey, TWString* _Nonnull extendedPublicKey) {
-    const auto& addressString = *reinterpret_cast<const std::string*>(address);
-    const auto& publicKeyString = *reinterpret_cast<const std::string*>(publicKey);
-    const auto& extendedPublicKeyString = *reinterpret_cast<const std::string*>(extendedPublicKey);
-    const auto dp = TW::DerivationPath(*reinterpret_cast<const std::string*>(derivationPath));
-    key->impl.addAccount(addressString, coin, derivation, dp, publicKeyString, extendedPublicKeyString);
+    try {
+        const auto& addressString = *reinterpret_cast<const std::string*>(address);
+        const auto& publicKeyString = *reinterpret_cast<const std::string*>(publicKey);
+        const auto& extendedPublicKeyString = *reinterpret_cast<const std::string*>(extendedPublicKey);
+        const auto dp = TW::DerivationPath(*reinterpret_cast<const std::string*>(derivationPath));
+        key->impl.addAccount(addressString, coin, derivation, dp, publicKeyString, extendedPublicKeyString);
+    } catch (...) {
+    }
 }
 
 void TWStoredKeyAddAccount(struct TWStoredKey* _Nonnull key, TWString* _Nonnull address, enum TWCoinType coin, TWString* _Nonnull derivationPath, TWString* _Nonnull publicKey, TWString* _Nonnull extendedPublicKey) {

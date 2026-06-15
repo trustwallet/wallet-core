@@ -138,9 +138,9 @@ TWString* _Nonnull TWHDWalletGetAddressDerivation(struct TWHDWallet* _Nonnull wa
 /// \param coin a coin type
 /// \param derivationPath  a non-null derivation path
 /// \note Returned object needs to be deleted with \TWPrivateKeyDelete
-/// \return The private key for the specified derivation path/coin
+/// \return The private key for the specified derivation path/coin, or null if the path is invalid
 TW_EXPORT_METHOD
-struct TWPrivateKey* _Nonnull TWHDWalletGetKey(struct TWHDWallet* _Nonnull wallet, enum TWCoinType coin, TWString* _Nonnull derivationPath);
+struct TWPrivateKey* _Nullable TWHDWalletGetKey(struct TWHDWallet* _Nonnull wallet, enum TWCoinType coin, TWString* _Nonnull derivationPath);
 
 /// Generates the private key for the specified derivation.
 ///
@@ -160,9 +160,9 @@ struct TWPrivateKey* _Nonnull TWHDWalletGetKeyDerivation(struct TWHDWallet* _Non
 /// \param curve a curve
 /// \param derivationPath  a non-null derivation path
 /// \note Returned object needs to be deleted with \TWPrivateKeyDelete
-/// \return The private key for the specified derivation path/curve
+/// \return The private key for the specified derivation path/curve, or null if the path is invalid
 TW_EXPORT_METHOD
-struct TWPrivateKey* _Nonnull TWHDWalletGetKeyByCurve(struct TWHDWallet* _Nonnull wallet, enum TWCurve curve, TWString* _Nonnull derivationPath);
+struct TWPrivateKey* _Nullable TWHDWalletGetKeyByCurve(struct TWHDWallet* _Nonnull wallet, enum TWCurve curve, TWString* _Nonnull derivationPath);
 
 /// Shortcut method to generate private key with the specified account/change/address (bip44 standard).
 ///
