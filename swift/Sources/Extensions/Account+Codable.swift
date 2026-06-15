@@ -55,13 +55,19 @@ extension Account: Codable {
         let publicKey         = try container.decode(String.self, forKey: .publicKey)
         let extendedPublicKey = try container.decode(String.self, forKey: .extendedPublicKey)
 
-        self.init(
+        guard let account = Account(
             address: address,
             coin: CoinType(rawValue: rawCoin)!,
             derivation: Derivation(rawValue: rawDerivation)!,
             derivationPath: derivationPath,
             publicKey: publicKey,
             extendedPublicKey: extendedPublicKey
-        )
+        ) else {
+            throw DecodingError.dataCorrupted(DecodingError.Context(
+                codingPath: decoder.codingPath,
+                debugDescription: "Invalid derivation path: \(derivationPath)"
+            ))
+        }
+        self.init(rawValue: account.rawValue)
     }
 }
