@@ -24,7 +24,7 @@ TEST(TWTONCoinType, TWCoinType) {
 
     assertStringsEqual(id, "ton");
     assertStringsEqual(name, "TON");
-    assertStringsEqual(symbol, "TON");
+    assertStringsEqual(symbol, "GRAM");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 9);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainTheOpenNetwork);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);

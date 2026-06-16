@@ -4528,7 +4528,7 @@
     "id": "ton",
     "name": "TON",
     "coinId": 607,
-    "symbol": "TON",
+    "symbol": "GRAM",
     "decimals": 9,
     "blockchain": "TheOpenNetwork",
     "derivation": [
