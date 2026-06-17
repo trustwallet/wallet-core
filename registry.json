@@ -5034,5 +5034,35 @@
       "rpc": "https://rpc.hyperliquid.xyz/evm",
       "documentation": "https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/hyperevm"
     }
+  },
+  {
+    "id": "robinhoodchain",
+    "name": "Robinhood Chain",
+    "displayName": "Robinhood Chain",
+    "coinId": 10046630,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "46630",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.testnet.chain.robinhood.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x0364950bbd89012b11a71eeb80df2f1504678836f2918dc8809fe940706c02ec",
+      "sampleAccount": "0x7943e237c7F95DA44E0301572D358911207852Fa"
+    },
+    "info": {
+      "url": "https://robinhood.com",
+      "rpc": "https://rpc.testnet.chain.robinhood.com",
+      "documentation": "https://docs.robinhood.com/chain/"
+    }
   }
 ]
