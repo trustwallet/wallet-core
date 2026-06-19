@@ -11,9 +11,9 @@ TEST(TWRobinhoodChainCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
-    const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x0364950bbd89012b11a71eeb80df2f1504678836f2918dc8809fe940706c02ec"));
+    const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x60f2d8e8ca8d64da9d3ded83a759a123ea28aca9f51a8f9b62cf34835b770cf9"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
-    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x7943e237c7F95DA44E0301572D358911207852Fa"));
+    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73"));
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
     assertStringsEqual(id, "robinhoodchain");
@@ -24,6 +24,6 @@ TEST(TWRobinhoodChainCoinType, TWCoinType) {
     ASSERT_EQ(TWCoinTypeP2pkhPrefix(coin), 0);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0);
-    assertStringsEqual(txUrl, "https://explorer.testnet.chain.robinhood.com/tx/0x0364950bbd89012b11a71eeb80df2f1504678836f2918dc8809fe940706c02ec");
-    assertStringsEqual(accUrl, "https://explorer.testnet.chain.robinhood.com/address/0x7943e237c7F95DA44E0301572D358911207852Fa");
+    assertStringsEqual(txUrl, "https://8crv4vmq6tiu1yqr.blockscout.com/tx/0x60f2d8e8ca8d64da9d3ded83a759a123ea28aca9f51a8f9b62cf34835b770cf9");
+    assertStringsEqual(accUrl, "https://8crv4vmq6tiu1yqr.blockscout.com/address/0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73");
 }

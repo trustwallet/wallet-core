@@ -5039,7 +5039,7 @@
     "id": "robinhoodchain",
     "name": "Robinhood Chain",
     "displayName": "Robinhood Chain",
-    "coinId": 10046630,
+    "coinId": 10004663,
     "symbol": "ETH",
     "decimals": 18,
     "blockchain": "Ethereum",
@@ -5050,18 +5050,18 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
-    "chainId": "46630",
+    "chainId": "4663",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://explorer.testnet.chain.robinhood.com",
+      "url": "https://8crv4vmq6tiu1yqr.blockscout.com",
       "txPath": "/tx/",
       "accountPath": "/address/",
-      "sampleTx": "0x0364950bbd89012b11a71eeb80df2f1504678836f2918dc8809fe940706c02ec",
-      "sampleAccount": "0x7943e237c7F95DA44E0301572D358911207852Fa"
+      "sampleTx": "0x60f2d8e8ca8d64da9d3ded83a759a123ea28aca9f51a8f9b62cf34835b770cf9",
+      "sampleAccount": "0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73"
     },
     "info": {
       "url": "https://robinhood.com",
-      "rpc": "https://rpc.testnet.chain.robinhood.com",
+      "rpc": "https://ac23019b22f1ae5a-sequencer.offchainlabs.com/rpc",
       "documentation": "https://docs.robinhood.com/chain/"
     }
   }
