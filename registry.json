@@ -5056,7 +5056,7 @@
       "url": "https://8crv4vmq6tiu1yqr.blockscout.com",
       "txPath": "/tx/",
       "accountPath": "/address/",
-      "sampleTx": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "sampleTx": "0x60f2d8e8ca8d64da9d3ded83a759a123ea28aca9f51a8f9b62cf34835b770cf9",
       "sampleAccount": "0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73"
     },
     "info": {
