@@ -4528,7 +4528,7 @@
     "id": "ton",
     "name": "TON",
     "coinId": 607,
-    "symbol": "TON",
+    "symbol": "GRAM",
     "decimals": 9,
     "blockchain": "TheOpenNetwork",
     "derivation": [
@@ -5033,6 +5033,36 @@
       "source": "https://github.com/hyperliquid-dex",
       "rpc": "https://rpc.hyperliquid.xyz/evm",
       "documentation": "https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/hyperevm"
+    }
+  },
+  {
+    "id": "robinhoodchain",
+    "name": "Robinhood Chain",
+    "displayName": "Robinhood Chain",
+    "coinId": 10004663,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "4663",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://8crv4vmq6tiu1yqr.blockscout.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x60f2d8e8ca8d64da9d3ded83a759a123ea28aca9f51a8f9b62cf34835b770cf9",
+      "sampleAccount": "0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73"
+    },
+    "info": {
+      "url": "https://robinhood.com",
+      "rpc": "https://ac23019b22f1ae5a-sequencer.offchainlabs.com/rpc",
+      "documentation": "https://docs.robinhood.com/chain/"
     }
   }
 ]
