@@ -186,6 +186,7 @@ impl<'a> AsRef<dyn BinanceMessage + 'a> for BinanceMessageEnum {
 }
 
 #[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Token {
     /// Amount.
     pub amount: i64,

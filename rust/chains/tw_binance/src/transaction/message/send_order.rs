@@ -14,6 +14,7 @@ use tw_proto::Binance::Proto;
 
 /// Either an input or output of a `SendOrder`.
 #[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct InOut {
     /// Source address.
     pub address: BinanceAddress,
@@ -39,6 +40,7 @@ impl InOut {
 }
 
 #[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct SendOrder {
     pub inputs: Vec<InOut>,
     pub outputs: Vec<InOut>,
