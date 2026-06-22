@@ -135,11 +135,17 @@ static HDNode getNode(const HDWallet<seedSize>& wallet, TWCurve curve, const Der
     for (auto& index : derivationPath.indices) {
         switch (privateKeyType) {
         case TWPrivateKeyTypeCardano:
-            hdnode_private_ckd_cardano(&node, index.derivationIndex());
+            if (hdnode_private_ckd_cardano(&node, index.derivationIndex()) == 0) {
+                TW::memzero(&node);
+                throw std::invalid_argument("Child key cardano derivation failed");
+            }
             break;
         case TWPrivateKeyTypeDefault:
         default:
-            hdnode_private_ckd(&node, index.derivationIndex());
+            if (hdnode_private_ckd(&node, index.derivationIndex()) == 0) {
+                TW::memzero(&node);
+                throw std::invalid_argument("Child key derivation failed");
+            }
             break;
         }
     }
@@ -246,7 +252,10 @@ std::string HDWallet<seedSize>::getExtendedPrivateKeyAccount(TWPurpose purpose, 
     auto derivationPath = DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(path.coin(), true)});
     auto node = getNode(*this, curve, derivationPath);
     auto fingerprintValue = fingerprint(&node, publicKeyHasher(coin));
-    hdnode_private_ckd(&node, account + 0x80000000);
+    if (hdnode_private_ckd(&node, account + 0x80000000) == 0) {
+        TW::memzero(&node);
+        return "";
+    }
     return serialize(&node, fingerprintValue, version, false, base58Hasher(coin));
 }
 
@@ -261,8 +270,14 @@ std::string HDWallet<seedSize>::getExtendedPublicKeyAccount(TWPurpose purpose, T
     auto derivationPath = DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(path.coin(), true)});
     auto node = getNode(*this, curve, derivationPath);
     auto fingerprintValue = fingerprint(&node, publicKeyHasher(coin));
-    hdnode_private_ckd(&node, account + 0x80000000);
-    hdnode_fill_public_key(&node);
+    if (hdnode_private_ckd(&node, account + 0x80000000) == 0) {
+        TW::memzero(&node);
+        return "";
+    }
+    if (hdnode_fill_public_key(&node) != 0) {
+        TW::memzero(&node);
+        return "";
+    }
     return serialize(&node, fingerprintValue, version, true, base58Hasher(coin));
 }
 
@@ -278,9 +293,12 @@ std::optional<PublicKey> HDWallet<seedSize>::getPublicKeyFromExtended(const std:
     if (node.curve->params == nullptr) {
         return {};
     }
-    hdnode_public_ckd(&node, path.change());
-    hdnode_public_ckd(&node, path.address());
-    hdnode_fill_public_key(&node);
+    if (hdnode_public_ckd(&node, path.change()) == 0 || hdnode_public_ckd(&node, path.address()) == 0) {
+        return {};
+    }
+    if (hdnode_fill_public_key(&node) != 0) {
+        return {};
+    }
 
     // These public key type are not applicable.  Handled above, as node.curve->params is null
     assert(curve != TWCurveED25519 && curve != TWCurveED25519Blake2bNano && curve != TWCurveED25519ExtendedCardano && curve != TWCurveCurve25519);
@@ -312,8 +330,10 @@ std::optional<PrivateKey> HDWallet<seedSize>::getPrivateKeyFromExtended(const st
     if (!deserialize(extended, curve, hasher, &node)) {
         return {};
     }
-    hdnode_private_ckd(&node, path.change());
-    hdnode_private_ckd(&node, path.address());
+    if (hdnode_private_ckd(&node, path.change()) == 0 || hdnode_private_ckd(&node, path.address()) == 0) {
+        TW::memzero(&node);
+        return {};
+    }
 
     return PrivateKey(Data(node.private_key, node.private_key + 32), curve);
 }
@@ -328,7 +348,9 @@ PrivateKey HDWallet<seedSize>::bip32DeriveRawSeed(TWCoinType coin, const Data& s
 namespace {
 
 uint32_t fingerprint(HDNode* node, Hash::Hasher hasher) {
-    hdnode_fill_public_key(node);
+    if (hdnode_fill_public_key(node) != 0) {
+        throw std::invalid_argument("Failed to fill public key for fingerprint computation");
+    }
     auto digest = Hash::hash(hasher, node->public_key, 33);
     return ((uint32_t)digest[0] << 24) + (digest[1] << 16) + (digest[2] << 8) + digest[3];
 }
