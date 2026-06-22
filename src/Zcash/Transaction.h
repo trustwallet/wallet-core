@@ -26,7 +26,7 @@ struct Transaction {
     uint32_t versionGroupId = 0x892F2085;
     uint32_t lockTime = 0;
     uint32_t expiryHeight = 0;
-    uint64_t valueBalance = 0;
+    Bitcoin::Amount valueBalance = 0;
 
     Bitcoin::TransactionInputs<Bitcoin::TransactionInput> inputs;
     Bitcoin::TransactionOutputs<Bitcoin::TransactionOutput> outputs;
@@ -38,7 +38,7 @@ struct Transaction {
     Transaction() = default;
 
     Transaction(uint32_t version, uint32_t versionGroupId, uint32_t lockTime, uint32_t expiryHeight,
-                uint64_t valueBalance, std::array<byte, 4> branchId)
+                Bitcoin::Amount valueBalance, std::array<byte, 4> branchId)
         : _version(version)
         , versionGroupId(versionGroupId)
         , lockTime(lockTime)
@@ -51,7 +51,7 @@ struct Transaction {
 
     /// Generates the signature pre-image.
     Data getPreImage(const Bitcoin::Script& scriptCode, size_t index,
-                     enum TWBitcoinSigHashType hashType, uint64_t amount) const;
+                     enum TWBitcoinSigHashType hashType, Bitcoin::Amount amount) const;
     Data getPrevoutHash() const;
     Data getSequenceHash() const;
     Data getOutputsHash() const;
@@ -64,7 +64,7 @@ struct Transaction {
     void encode(Data& data) const;
 
     Data getSignatureHash(const Bitcoin::Script& scriptCode, size_t index,
-                          enum TWBitcoinSigHashType hashType, uint64_t amount,
+                          enum TWBitcoinSigHashType hashType, Bitcoin::Amount amount,
                           enum Bitcoin::SignatureVersion version) const;
 
     /// Converts to Protobuf model

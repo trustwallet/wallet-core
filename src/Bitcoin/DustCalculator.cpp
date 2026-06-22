@@ -28,7 +28,8 @@ DustCalculatorShared getDustCalculator(const Proto::SigningInput& input) {
     }
 
     if (input.has_fixed_dust_threshold()) {
-        return std::make_shared<FixedDustCalculator>(input.fixed_dust_threshold());
+        const auto fixed_dust_threshold = tryToUnsigned(input.fixed_dust_threshold(), "fixed_dust_threshold");
+        return std::make_shared<FixedDustCalculator>(fixed_dust_threshold);
     }
 
     const auto coinType = static_cast<TWCoinType>(input.coin_type());

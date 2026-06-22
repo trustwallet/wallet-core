@@ -5,6 +5,8 @@
 #include "InputSelector.h"
 
 #include "UTXO.h"
+#include "Numeric.h"
+#include "NumericLiteral.h"
 
 #include <algorithm>
 #include <optional>
@@ -13,10 +15,10 @@
 namespace TW::Bitcoin {
 
 template <typename TypeWithAmount>
-uint64_t InputSelector<TypeWithAmount>::sum(const std::vector<TypeWithAmount>& amounts) noexcept {
-    uint64_t sum = 0;
+Amount InputSelector<TypeWithAmount>::sum(const std::vector<TypeWithAmount>& amounts) {
+    Amount sum = 0;
     for (auto& i : amounts) {
-        sum += i.amount;
+        sum = addUnsignedChecked(sum, i.amount);
     }
     return sum;
 }
@@ -24,8 +26,8 @@ uint64_t InputSelector<TypeWithAmount>::sum(const std::vector<TypeWithAmount>& a
 template <typename TypeWithAmount>
 std::vector<TypeWithAmount>
 InputSelector<TypeWithAmount>::filterOutDust(const std::vector<TypeWithAmount>& inputs,
-                                             int64_t byteFee) noexcept {
-    auto dustThreshold = static_cast<uint64_t>(dustCalculator->dustAmount(byteFee));
+                                             Amount byteFee) {
+    auto dustThreshold = dustCalculator->dustAmount(byteFee);
     return filterThreshold(inputs, dustThreshold);
 }
 
@@ -33,10 +35,10 @@ InputSelector<TypeWithAmount>::filterOutDust(const std::vector<TypeWithAmount>& 
 template <typename TypeWithAmount>
 std::vector<TypeWithAmount>
 InputSelector<TypeWithAmount>::filterThreshold(const std::vector<TypeWithAmount>& inputs,
-                                               uint64_t minimumAmount) noexcept {
+                                               Amount minimumAmount) {
     std::vector<TypeWithAmount> filtered;
     for (auto& i : inputs) {
-        if (static_cast<uint64_t>(i.amount) >= minimumAmount) {
+        if (static_cast<Amount>(i.amount) >= minimumAmount) {
             filtered.push_back(i);
         }
     }
@@ -64,7 +66,7 @@ slice(const std::vector<TypeWithAmount>& inputs, size_t sliceSize) {
 
 template <typename TypeWithAmount>
 std::vector<TypeWithAmount>
-InputSelector<TypeWithAmount>::select(uint64_t targetValue, uint64_t byteFee, uint64_t numOutputs) {
+InputSelector<TypeWithAmount>::select(Amount targetValue, Amount byteFee, size_t numOutputs) {
     // if target value is zero, no UTXOs are needed
     if (targetValue == 0) {
         return {};
@@ -86,27 +88,27 @@ InputSelector<TypeWithAmount>::select(uint64_t targetValue, uint64_t byteFee, ui
     assert(sorted.size() >= 1);
 
     // definitions for the following calculation
-    const auto doubleTargetValue = targetValue * 2;
+    const auto doubleTargetValue = mulUnsignedChecked(targetValue, 2_u64);
 
     // Precompute maximum amount possible to obtain with given number of inputs
     const auto n = sorted.size();
-    std::vector<uint64_t> maxWithXInputs = std::vector<uint64_t>();
+    std::vector<Amount> maxWithXInputs = std::vector<Amount>();
     maxWithXInputs.push_back(0);
-    int64_t maxSum = 0;
+    Amount maxSum = 0;
     for (auto i = 0ul; i < n; ++i) {
-        maxSum += sorted[n - 1 - i].amount;
+        maxSum = addUnsignedChecked(maxSum, sorted[n - 1 - i].amount);
         maxWithXInputs.push_back(maxSum);
     }
 
     // difference from 2x targetValue
-    auto distFrom2x = [doubleTargetValue](uint64_t val) -> uint64_t {
+    auto distFrom2x = [doubleTargetValue](Amount val) -> Amount {
         if (val > doubleTargetValue) {
             return val - doubleTargetValue;
         }
         return doubleTargetValue - val;
     };
 
-    const int64_t dustThreshold = dustCalculator->dustAmount(byteFee);
+    const Amount dustThreshold = dustCalculator->dustAmount(byteFee);
 
     // 1. Find a combination of the fewest inputs that is
     //    (1) bigger than what we need
@@ -114,12 +116,12 @@ InputSelector<TypeWithAmount>::select(uint64_t targetValue, uint64_t byteFee, ui
     //    (3) and does not produce dust change.
     for (size_t numInputs = 1; numInputs <= n; ++numInputs) {
         const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
-        const auto targetWithFeeAndDust = targetValue + fee + dustThreshold;
+        const auto targetWithFeeAndDust = addUnsignedChecked(addUnsignedChecked(targetValue, fee), dustThreshold);
         if (maxWithXInputs[numInputs] < targetWithFeeAndDust) {
             // no way to satisfy with only numInputs inputs, skip
             continue;
         }
-        auto slices = slice(sorted, static_cast<size_t>(numInputs));
+        auto slices = slice(sorted, numInputs);
 
         slices.erase(
             std::remove_if(slices.begin(), slices.end(),
@@ -163,9 +165,9 @@ InputSelector<TypeWithAmount>::select(uint64_t targetValue, uint64_t byteFee, ui
 }
 
 template <typename TypeWithAmount>
-std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t targetValue,
-                                                                        int64_t byteFee,
-                                                                        int64_t numOutputs) {
+std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(Amount targetValue,
+                                                                        Amount byteFee,
+                                                                        size_t numOutputs) {
     // if target value is zero, no UTXOs are needed
     if (targetValue == 0) {
         return {};
@@ -178,20 +180,20 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t 
     // target value is larger than original, but not by a factor of 2 (optimized for large UTXO
     // cases)
     const auto increasedTargetValue =
-        (uint64_t)((double)targetValue * 1.1 +
+        (Amount)((double)targetValue * 1.1 +
                    feeCalculator.calculate(_inputs.size(), numOutputs, byteFee) + 1000);
 
-    const int64_t dustThreshold = dustCalculator->dustAmount(byteFee);
+    const Amount dustThreshold = dustCalculator->dustAmount(byteFee);
 
     // Go through inputs in a single pass, in the order they appear, no optimization
-    uint64_t sum = 0;
+    Amount sum = 0;
     std::vector<TypeWithAmount> selected;
     for (auto& input : _inputs) {
         if (input.amount <= dustThreshold) {
             continue; // skip dust
         }
         selected.push_back(input);
-        sum += input.amount;
+        sum = addUnsignedChecked(sum, input.amount);
         if (sum >= increasedTargetValue) {
             // we have enough
             return selected;
@@ -206,7 +208,7 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t 
 
 template <typename TypeWithAmount>
 std::vector<TypeWithAmount>
-InputSelector<TypeWithAmount>::selectMaxAmount(int64_t byteFee) noexcept {
+InputSelector<TypeWithAmount>::selectMaxAmount(Amount byteFee) {
     return filterOutDust(_inputs, byteFee);
 }
 

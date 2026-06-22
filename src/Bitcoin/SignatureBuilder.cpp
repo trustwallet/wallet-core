@@ -129,7 +129,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
 
     Data data;
     std::vector<Data> keys;
-    int required;
+    size_t required;
 
     if (script.matchPayToScriptHash(data) || script.matchPayToScriptHashReplay(data)) {
         auto redeemScript = scriptForScriptHash(data);
@@ -174,7 +174,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
             }
             results.push_back(signature);
         }
-        results.resize(required + 1);
+        results.resize(required + 1ul);
         return Result<std::vector<Data>, Common::Proto::SigningError>::success(std::move(results));
     }
     if (script.matchPayToPublicKey(data)) {

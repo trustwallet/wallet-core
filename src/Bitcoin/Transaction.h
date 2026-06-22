@@ -67,7 +67,7 @@ public:
     bool empty() const { return inputs.empty() && outputs.empty(); }
 
     /// Generates the signature pre-image.
-    Data getPreImage(const Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType, uint64_t amount) const;
+    Data getPreImage(const Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType, Amount amount) const;
     Data getPrevoutHash() const;
     Data getSequenceHash() const;
     Data getOutputsHash() const;
@@ -91,7 +91,7 @@ public:
 
     /// Generates the signature hash for this transaction.
     Data getSignatureHash(const Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
-                          uint64_t amount, enum SignatureVersion version) const;
+                          Amount amount, enum SignatureVersion version) const;
 
     void serializeInput(size_t subindex, const Script&, size_t index, enum TWBitcoinSigHashType hashType, Data& data) const;
 
@@ -101,7 +101,7 @@ public:
 private:
     /// Generates the signature hash for Witness version 0 scripts.
     Data getSignatureHashWitnessV0(const Script& scriptCode, size_t index,
-                                   enum TWBitcoinSigHashType hashType, uint64_t amount) const;
+                                   enum TWBitcoinSigHashType hashType, Amount amount) const;
 
     /// Generates the signature hash for for scripts other than witness scripts.
     Data getSignatureHashBase(const Script& scriptCode, size_t index,

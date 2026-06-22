@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Address.h"
+#include "../Bitcoin/Amount.h"
 #include "../Bitcoin/Transaction.h"
 #include "../Bitcoin/TransactionBuilder.h"
 #include "../Bitcoin/TransactionPlan.h"
@@ -66,7 +67,7 @@ struct TransactionBuilder {
                 emplace_at = tx.outputs.begin();
                 std::advance(emplace_at, plan.outputOpReturnIndex.value());
             }
-            const int64_t amount = 0;
+            const Bitcoin::Amount amount = 0;
             tx.outputs.emplace(emplace_at, amount, lockingScriptOpReturn);
         }
 

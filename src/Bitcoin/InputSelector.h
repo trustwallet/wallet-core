@@ -21,8 +21,8 @@ public:
     /// \returns the list of indices of selected inputs. May return the entire list of UTXOs
     ///          even if they aren't enough to cover `targetValue + fee`.
     ///          That's because `InputSelector` has a rough segwit fee estimation algorithm, and the UTXOs can actually be enough.
-    std::vector<TypeWithAmount> select(uint64_t targetValue, uint64_t byteFee,
-                                       uint64_t numOutputs = 2);
+    std::vector<TypeWithAmount> select(Amount targetValue, Amount byteFee,
+                                       size_t numOutputs = 2);
 
     /// Selects unspent transactions to use given a target transaction value;
     /// Simplified version suitable for large number of inputs
@@ -30,36 +30,36 @@ public:
     /// \returns the list of indices of selected inputs. May return the entire list of UTXOs
     ///          even if they aren't enough to cover `targetValue + fee`.
     ///          That's because `InputSelector` has a rough segwit fee estimation algorithm, and the UTXOs can actually be enough.
-    std::vector<TypeWithAmount> selectSimple(int64_t targetValue, int64_t byteFee,
-                                             int64_t numOutputs = 2);
+    std::vector<TypeWithAmount> selectSimple(Amount targetValue, Amount byteFee,
+                                             size_t numOutputs = 2);
 
     /// Selects UTXOs for max amount; select all except those which would reduce output (dust).
     /// Return indices. One output and no change is assumed.
-    std::vector<TypeWithAmount> selectMaxAmount(int64_t byteFee) noexcept;
+    std::vector<TypeWithAmount> selectMaxAmount(Amount byteFee);
 
     /// Construct, using provided feeCalculator (see getFeeCalculator()) and dustCalculator (see getDustCalculator()).
     explicit InputSelector(const std::vector<TypeWithAmount>& inputs,
                            const FeeCalculator& feeCalculator,
-                           DustCalculatorShared dustCalculator) noexcept
+                           DustCalculatorShared dustCalculator)
         : _inputs(inputs),
           feeCalculator(feeCalculator),
           dustCalculator(std::move(dustCalculator)) {
     }
 
-    explicit InputSelector(const std::vector<TypeWithAmount>& inputs) noexcept
+    explicit InputSelector(const std::vector<TypeWithAmount>& inputs)
         : _inputs(inputs),
           feeCalculator(getFeeCalculator(TWCoinTypeBitcoin)),
           dustCalculator(std::make_shared<LegacyDustCalculator>(TWCoinTypeBitcoin)) {
     }
 
     /// Sum of input amounts
-    static uint64_t sum(const std::vector<TypeWithAmount>& amounts) noexcept;
+    static Amount sum(const std::vector<TypeWithAmount>& amounts);
     /// Filters out utxos that are dust
-    inline std::vector<TypeWithAmount> filterOutDust(const std::vector<TypeWithAmount>& inputsIn,
-                                                     int64_t byteFee) noexcept;
+    std::vector<TypeWithAmount> filterOutDust(const std::vector<TypeWithAmount>& inputsIn,
+                                                     Amount byteFee);
     /// Filters out inputsIn below (or equal) a certain threshold limit
-    inline std::vector<TypeWithAmount> filterThreshold(const std::vector<TypeWithAmount>& inputsIn,
-                                                       uint64_t minimumAmount) noexcept;
+    std::vector<TypeWithAmount> filterThreshold(const std::vector<TypeWithAmount>& inputsIn,
+                                                       Amount minimumAmount);
 
 private:
     const std::vector<TypeWithAmount> _inputs;

@@ -5,6 +5,7 @@
 #pragma once
 
 #include <numeric>
+#include <stdexcept>
 
 namespace TW {
 
@@ -25,6 +26,28 @@ bool checkMulUnsignedOverflow(T x, T y) {
         return false;
     }
     return x > std::numeric_limits<T>::max() / y;
+}
+
+template <
+    typename T,
+    typename = std::enable_if_t<std::is_unsigned_v<T>>
+>
+T addUnsignedChecked(T x, T y) {
+    if (checkAddUnsignedOverflow(x, y)) {
+        throw std::overflow_error("Unsigned integer addition overflow");
+    }
+    return x + y;
+}
+
+template <
+    typename T,
+    typename = std::enable_if_t<std::is_unsigned_v<T>>
+>
+T mulUnsignedChecked(T x, T y) {
+    if (checkMulUnsignedOverflow(x, y)) {
+        throw std::overflow_error("Unsigned integer multiplication overflow");
+    }
+    return x * y;
 }
 
 } // namespace TW

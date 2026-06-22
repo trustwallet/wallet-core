@@ -59,7 +59,7 @@ public:
                 emplace_at = tx.outputs.begin();
                 std::advance(emplace_at, plan.outputOpReturnIndex.value());
             }
-            int64_t amount = 0;
+            Amount amount = 0;
             tx.outputs.emplace(emplace_at, amount, lockingScriptOpReturn);
         }
 

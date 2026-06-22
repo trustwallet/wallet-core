@@ -16,7 +16,7 @@
 namespace TW::Bitcoin {
 
 Data Transaction::getPreImage(const Script& scriptCode, size_t index,
-                              enum TWBitcoinSigHashType hashType, uint64_t amount) const {
+                              enum TWBitcoinSigHashType hashType, Amount amount) const {
     assert(index < inputs.size());
 
     Data data;
@@ -152,7 +152,7 @@ bool Transaction::hasWitness() const {
 }
 
 Data Transaction::getSignatureHash(const Script& scriptCode, size_t index,
-                                   enum TWBitcoinSigHashType hashType, uint64_t amount,
+                                   enum TWBitcoinSigHashType hashType, Amount amount,
                                    enum SignatureVersion version) const {
     if (version == BASE) {
         return getSignatureHashBase(scriptCode, index, hashType);
@@ -164,7 +164,7 @@ Data Transaction::getSignatureHash(const Script& scriptCode, size_t index,
 /// Generates the signature hash for Witness version 0 scripts.
 Data Transaction::getSignatureHashWitnessV0(const Script& scriptCode, size_t index,
                                             enum TWBitcoinSigHashType hashType,
-                                            uint64_t amount) const {
+                                            Amount amount) const {
     auto preimage = getPreImage(scriptCode, index, hashType, amount);
     auto hash = Hash::hash(hasher, preimage);
     return hash;
@@ -192,7 +192,7 @@ Data Transaction::getSignatureHashBase(const Script& scriptCode, size_t index,
     encodeVarInt(serializedOutputCount, data);
     for (auto subindex = 0ul; subindex < serializedOutputCount; subindex += 1) {
         if (hashSingle && subindex != index) {
-            auto output = TransactionOutput(-1, {});
+            auto output = TransactionOutput(sighashSingleAmount(), {});
             output.encode(data);
         } else {
             outputs[subindex].encode(data);
@@ -252,7 +252,7 @@ Proto::Transaction Transaction::proto() const {
 
     for (const auto& output : outputs) {
         auto* protoOutput = protoTx.add_outputs();
-        protoOutput->set_value(output.value);
+        protoOutput->set_value(tryToSigned(output.value, "output.value"));
         protoOutput->set_script(output.script.bytes.data(), output.script.bytes.size());
     }
 

@@ -22,7 +22,8 @@ use tw_hash::H256;
 
 pub const DEFAULT_TX_HASHER: Hasher = Hasher::Sha256d;
 pub const DEFAULT_LOCKTIME: u32 = 0;
-pub const DEFAULT_OUTPUT_VALUE: Amount = -1;
+/// `u64::MAX` is equal to `-1`. Default value is used in particular in `SighashType::Single`.
+pub const DEFAULT_OUTPUT_VALUE: Amount = u64::MAX;
 
 pub mod builder;
 

@@ -239,7 +239,7 @@ TEST(BitcoinScript, GetScriptOp) {
 
 TEST(BitcoinScript, MatchMultiSig) {
     std::vector<Data> keys;
-    int required;
+    size_t required;
     EXPECT_EQ(Script(parse_hex("")).matchMultisig(keys, required), false);
     EXPECT_EQ(Script(parse_hex("20")).matchMultisig(keys, required), false);
     EXPECT_EQ(Script(parse_hex("ae")).matchMultisig(keys, required), false);

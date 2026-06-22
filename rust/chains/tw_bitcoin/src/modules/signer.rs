@@ -67,13 +67,16 @@ impl<Context: BitcoinSigningContext> BitcoinSigner<Context> {
             TxSigner::sign_tx(unsigned_tx, &keys_manager).context("Error signing transaction")?;
 
         Ok(Proto::SigningOutput {
-            transaction: Context::ProtobufBuilder::tx_to_proto(&signed_tx),
+            transaction: Context::ProtobufBuilder::tx_to_proto(&signed_tx)?,
             encoded: Cow::from(signed_tx.encode_out()),
             txid: Cow::from(signed_tx.txid(Context::TX_HASHER)),
             // `vsize` could have been changed after the transaction being signed.
             vsize: signed_tx.vsize() as u64,
             // `fee` should haven't been changed since it's a difference between `sum(inputs)` and `sum(outputs)`.
-            fee: plan.fee_estimate,
+            fee: plan
+                .fee_estimate
+                .try_into()
+                .tw_err(SigningErrorType::Error_wrong_fee)?,
             weight: signed_tx.weight() as u64,
             ..Proto::SigningOutput::default()
         })
@@ -104,12 +107,12 @@ impl<Context: BitcoinSigningContext> BitcoinSigner<Context> {
         Context::PsbtRequestHandler::update_signed(&mut psbt, &signed_tx)?;
 
         Ok(Proto::SigningOutput {
-            transaction: Context::ProtobufBuilder::tx_to_proto(&signed_tx),
+            transaction: Context::ProtobufBuilder::tx_to_proto(&signed_tx)?,
             encoded: Cow::from(signed_tx.encode_out()),
             txid: Cow::from(signed_tx.txid(Context::TX_HASHER)),
             // `vsize` could have been changed after the transaction being signed.
             vsize: signed_tx.vsize() as u64,
-            fee,
+            fee: fee.try_into().tw_err(SigningErrorType::Error_wrong_fee)?,
             weight: signed_tx.weight() as u64,
             psbt: Some(Proto::Psbt {
                 psbt: Cow::from(Context::PsbtRequestHandler::serialize_psbt(&psbt)?),

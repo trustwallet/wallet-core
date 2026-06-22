@@ -27,7 +27,7 @@ const std::array<TW::byte, 4> BlossomBranchID = {0x60, 0x0e, 0xb4, 0x2b};
 const std::array<byte, 4> Nu6BranchID = {0x55, 0x10, 0xe7, 0xc8};
 
 Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
-                              uint64_t amount) const {
+                              Bitcoin::Amount amount) const {
     assert(index < inputs.size());
 
     auto data = Data{};
@@ -177,7 +177,7 @@ void Transaction::encode(Data& data) const {
 }
 
 Data Transaction::getSignatureHash(const Bitcoin::Script& scriptCode, size_t index,
-                                   enum TWBitcoinSigHashType hashType, uint64_t amount,
+                                   enum TWBitcoinSigHashType hashType, Bitcoin::Amount amount,
                                    [[maybe_unused]] Bitcoin::SignatureVersion version) const {
     Data personalization;
     personalization.reserve(16);
@@ -205,7 +205,7 @@ Bitcoin::Proto::Transaction Transaction::proto() const {
 
     for (const auto& output : outputs) {
         auto* protoOutput = protoTx.add_outputs();
-        protoOutput->set_value(output.value);
+        protoOutput->set_value(Bitcoin::tryToSigned(output.value, "output.value"));
         protoOutput->set_script(output.script.bytes.data(), output.script.bytes.size());
     }
 

@@ -86,7 +86,7 @@ class Script {
     bool matchPayToWitnessScriptHash(Data& scriptHash) const;
 
     /// Matches the script to a multisig script.
-    bool matchMultisig(std::vector<Data>& publicKeys, int& required) const;
+    bool matchMultisig(std::vector<Data>& publicKeys, size_t& required) const;
 
     /// Builds a pay-to-public-key (P2PK) script from a public key.
     static Script buildPayToPublicKey(const Data& publicKey);

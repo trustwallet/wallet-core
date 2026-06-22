@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "SigningInput.h"
+#include "Numeric.h"
 
 namespace TW::Bitcoin {
 
@@ -12,8 +13,9 @@ SigningInput::SigningInput()
 
 SigningInput::SigningInput(const Proto::SigningInput& input) {
     hashType = static_cast<TWBitcoinSigHashType>(input.hash_type());
-    amount = input.amount();
-    byteFee = input.byte_fee();
+    amount = tryToUnsigned(input.amount(), "amount");
+    byteFee = tryToUnsigned(input.byte_fee(), "byte_fee");
+
     toAddress = input.to_address();
     changeAddress = input.change_address();
     for (auto&& key : input.private_key()) {
@@ -42,8 +44,9 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
 
     extraOutputsAmount = 0;
     for (auto& output: input.extra_outputs()) {
-        extraOutputsAmount += output.amount();
-        extraOutputs.push_back(std::make_pair(output.to_address(), output.amount()));
+        const auto extraAmount = tryToUnsigned(output.amount(), "output.amount");
+        extraOutputsAmount = addUnsignedChecked(extraOutputsAmount, extraAmount);
+        extraOutputs.emplace_back(output.to_address(), extraAmount);
     }
 
     dustCalculator = getDustCalculator(input);

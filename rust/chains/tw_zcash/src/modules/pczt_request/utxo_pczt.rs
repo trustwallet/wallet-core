@@ -5,15 +5,12 @@
 use crate::modules::pczt;
 use tw_bitcoin::modules::tx_builder::public_keys::PublicKeys;
 use tw_bitcoin::modules::tx_builder::script_parser::{StandardScript, StandardScriptParser};
-use tw_coin_entry::error::prelude::{
-    MapTWError, ResultContext, SigningError, SigningErrorType, SigningResult,
-};
+use tw_coin_entry::error::prelude::*;
 use tw_hash::H256;
 use tw_utxo::script::Script;
 use tw_utxo::sighash::{SighashBase, SighashType};
 use tw_utxo::transaction::standard_transaction::builder::UtxoBuilder;
 use tw_utxo::transaction::standard_transaction::TransactionInput;
-use tw_utxo::transaction::transaction_parts::Amount;
 use tw_utxo::transaction::UtxoToSign;
 
 /// Currently, we rely on `pczt` crate to build our own [`UtxoToSign`].
@@ -37,12 +34,7 @@ impl<'a> UtxoPczt<'a> {
         let prevout_hash = H256::from(self.utxo.prevout_txid);
         let prevout_index = self.utxo.prevout_index;
         let sequence = self.utxo.sequence;
-        let amount: Amount = self
-            .utxo
-            .value
-            .try_into()
-            .tw_err(SigningErrorType::Error_invalid_utxo_amount)
-            .context("PCZT UTXO amount is too large")?;
+        let amount = self.utxo.value;
 
         // [`pczt::transparent::Input::sighash_type`] is a private field, assume it as default.
         let sighash_ty = SighashType::from_u32(self.utxo.sighash_type as u32)

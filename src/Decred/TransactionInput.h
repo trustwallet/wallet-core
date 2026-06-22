@@ -5,6 +5,7 @@
 #pragma once
 
 #include "OutPoint.h"
+#include "../Bitcoin/Amount.h"
 #include "../Bitcoin/Script.h"
 #include "Data.h"
 
@@ -25,7 +26,7 @@ class TransactionInput {
     /// before inclusion into a block.
     uint32_t sequence = std::numeric_limits<uint32_t>::max();
 
-    int64_t valueIn = 0;
+    Bitcoin::Amount valueIn = 0;
     uint32_t blockHeight = 0;
     uint32_t blockIndex = std::numeric_limits<uint32_t>::max();
 

@@ -99,7 +99,7 @@ Data Transaction::computePrefixHash(const std::vector<TransactionInput>& inputsT
         auto value = output.value;
         auto pkScript = output.script;
         if (Bitcoin::hashTypeIsSingle(hashType) && i != index) {
-            value = -1;
+            value = Bitcoin::sighashSingleAmount();
             pkScript = {};
         }
         encode64LE(value, preimage);
@@ -202,7 +202,7 @@ Proto::Transaction Transaction::proto() const {
 
     for (const auto& output : outputs) {
         auto* protoOutput = protoTx.add_outputs();
-        protoOutput->set_value(output.value);
+        protoOutput->set_value(Bitcoin::tryToSigned(output.value, "output.value"));
         protoOutput->set_script(output.script.bytes.data(), output.script.bytes.size());
     }
 

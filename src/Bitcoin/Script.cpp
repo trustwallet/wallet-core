@@ -148,7 +148,7 @@ bool Script::matchPayToWitnessScriptHash(Data& result) const {
     return true;
 }
 
-bool Script::matchMultisig(std::vector<Data>& keys, int& required) const {
+bool Script::matchMultisig(std::vector<Data>& keys, size_t& required) const {
     keys.clear();
     required = 0;
 
@@ -164,7 +164,14 @@ bool Script::matchMultisig(std::vector<Data>& keys, int& required) const {
     if (!op || !TWOpCodeIsSmallInteger(opcode)) {
         return false;
     }
-    required = decodeNumber(opcode);
+
+    int signedRequired = decodeNumber(opcode);
+    if (signedRequired < 0) {
+        return false;
+    }
+
+    required = static_cast<size_t>(signedRequired);
+
     while (true) {
         auto res = getScriptOp(it, opcode, operand);
         if (!res) {
@@ -181,7 +188,7 @@ bool Script::matchMultisig(std::vector<Data>& keys, int& required) const {
     }
 
     std::size_t expectedCount = decodeNumber(opcode);
-    if (keys.size() != expectedCount || expectedCount < static_cast<std::size_t>(required)) {
+    if (keys.size() != expectedCount || expectedCount < required) {
         return false;
     }
     if (it + 1 != bytes.size()) {

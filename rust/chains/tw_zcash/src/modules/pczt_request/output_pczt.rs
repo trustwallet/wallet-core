@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::modules::pczt;
-use tw_coin_entry::error::prelude::{MapTWError, ResultContext, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_utxo::script::Script;
 use tw_utxo::transaction::standard_transaction::TransactionOutput;
 
@@ -18,12 +18,7 @@ impl<'a> OutputPczt<'a> {
     }
 
     pub fn build(self) -> SigningResult<TransactionOutput> {
-        let value = self
-            .output
-            .value
-            .try_into()
-            .tw_err(SigningErrorType::Error_invalid_requested_token_amount)
-            .context("PCZT Output amount is too large")?;
+        let value = self.output.value;
         let script_pubkey = Script::from(self.output.script_pubkey.clone());
         Ok(TransactionOutput {
             value,

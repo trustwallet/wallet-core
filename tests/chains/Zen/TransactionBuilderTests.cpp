@@ -61,7 +61,7 @@ TEST(ZenTransactionBuilder, Build) {
     input.add_private_key(utxoKey0.bytes.data(), utxoKey0.bytes.size());
 
     auto plan = Bitcoin::TransactionSigner<Bitcoin::Transaction, Zen::TransactionBuilder>::plan(input);
-    ASSERT_EQ(plan.fee, 294);
+    ASSERT_EQ(plan.fee, 294ull);
     plan.preBlockHash = blockHash;
     plan.preBlockHeight = blockHeight;
 
@@ -75,7 +75,7 @@ TEST(ZenTransactionBuilder, Build) {
     result = Zen::TransactionBuilder::build<Bitcoin::Transaction>(plan, input).payload();
   
     ASSERT_EQ(result.outputs.size(), 4ul);
-    ASSERT_EQ(result.outputs[3].value, 7000);
+    ASSERT_EQ(result.outputs[3].value, 7000ull);
 }
 
 TEST(ZenTransactionBuilder, BuildScript) {
@@ -86,6 +86,6 @@ TEST(ZenTransactionBuilder, BuildScript) {
     // invalid address
     auto result = Zen::TransactionBuilder::prepareOutputWithScript(
         "DRyNFvJaybnF22UfMS6NR1Qav3mqxPj86E",
-        10000, TWCoinTypeZen, blockHash, blockHeight);
+        10000ull, TWCoinTypeZen, blockHash, blockHeight);
     ASSERT_FALSE(result.has_value());
 }

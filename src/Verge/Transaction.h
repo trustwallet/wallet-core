@@ -31,7 +31,7 @@ public:
         , time(time) {}
 
     /// Generates the signature pre-image.
-    Data getPreImage(const Bitcoin::Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType, uint64_t amount) const;
+    Data getPreImage(const Bitcoin::Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType, Bitcoin::Amount amount) const;
 
     /// Encodes the transaction into the provided buffer.
     void encode(Data& data, enum SegwitFormatMode segwitFormat) const;
@@ -41,12 +41,12 @@ public:
 
     /// Generates the signature hash for this transaction.
     Data getSignatureHash(const Bitcoin::Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
-                          uint64_t amount, enum Bitcoin::SignatureVersion version) const;
+                          Bitcoin::Amount amount, enum Bitcoin::SignatureVersion version) const;
 
 private:
     /// Generates the signature hash for Witness version 0 scripts.
     Data getSignatureHashWitnessV0(const Bitcoin::Script& scriptCode, size_t index,
-                                   enum TWBitcoinSigHashType hashType, uint64_t amount) const;
+                                   enum TWBitcoinSigHashType hashType, Bitcoin::Amount amount) const;
 
     /// Generates the signature hash for for scripts other than witness scripts.
     Data getSignatureHashBase(const Bitcoin::Script& scriptCode, size_t index,
