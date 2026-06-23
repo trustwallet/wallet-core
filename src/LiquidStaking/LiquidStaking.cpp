@@ -4,6 +4,7 @@
 
 #include "LiquidStaking/LiquidStaking.h"
 #include "Data.h"
+#include "Result.h"
 
 // Stride
 #include "proto/Cosmos.pb.h"
@@ -56,36 +57,53 @@ namespace internal {
         transfer.set_amount(amountData.data(), amountData.size());
     }
 
-    void handleStake(const Proto::Stake& stake, const Proto::Blockchain& blockchain, Data& payload, uint256_t& amount, const Proto::Protocol protocol) {
+    Result<void> handleStake(const Proto::Stake& stake, const Proto::Blockchain& blockchain, Data& payload, uint256_t& amount, const Proto::Protocol protocol) {
+        auto protocolIt = gEVMLiquidStakingRegistry.find(protocol);
+        if (protocolIt == gEVMLiquidStakingRegistry.end()) {
+            return Result<void>::failure("The selected protocol is not supported for EVM liquid staking");
+        }
+        auto actionIt = protocolIt->second.find({blockchain, Action::Stake});
+        if (actionIt == protocolIt->second.end()) {
+            return Result<void>::failure("The selected protocol does not support the stake operation on the targeted blockchain");
+        }
         Ethereum::ABI::BaseParams params;
         if (protocol == Proto::Lido) {
             params.emplace_back(std::make_shared<Ethereum::ABI::ProtoAddress>());
         }
-        auto funcData = Ethereum::ABI::Function::encodeFunctionCall(gEVMLiquidStakingRegistry.at(protocol).at({blockchain, Action::Stake}), params);
+        auto funcData = Ethereum::ABI::Function::encodeFunctionCall(actionIt->second, params);
         if (funcData.has_value()) {
             payload = funcData.value();
         }
         amount = uint256_t(stake.amount());
+        return Result<void>::success();
     }
 
-    void handleUnstake(const Proto::Unstake& unstake, const Proto::Blockchain& blockchain, Data& payload) {
+    Result<void> handleUnstake(const Proto::Unstake& unstake, const Proto::Blockchain& blockchain, Data& payload) {
+        auto it = gStraderFunctionRegistry.find({blockchain, Action::Unstake});
+        if (it == gStraderFunctionRegistry.end()) {
+            return Result<void>::failure("Strader protocol does not support the unstake operation on the targeted blockchain");
+        }
         Ethereum::ABI::BaseParams params;
         params.emplace_back(std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(unstake.amount())));
-        auto functionName = gStraderFunctionRegistry.at({blockchain, Action::Unstake});
-        auto funcData = Ethereum::ABI::Function::encodeFunctionCall(functionName, params);
+        auto funcData = Ethereum::ABI::Function::encodeFunctionCall(it->second, params);
         if (funcData.has_value()) {
             payload = funcData.value();
         }
+        return Result<void>::success();
     }
 
-    void handleWithdraw(const Proto::Withdraw& withdraw, const Proto::Blockchain& blockchain, Data& payload) {
+    Result<void> handleWithdraw(const Proto::Withdraw& withdraw, const Proto::Blockchain& blockchain, Data& payload) {
+        auto it = gStraderFunctionRegistry.find({blockchain, Action::Withdraw});
+        if (it == gStraderFunctionRegistry.end()) {
+            return Result<void>::failure("Strader protocol does not support the withdraw operation on the targeted blockchain");
+        }
         Ethereum::ABI::BaseParams params;
         params.emplace_back(std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(withdraw.idx())));
-        auto functionName = gStraderFunctionRegistry.at({blockchain, Action::Withdraw});
-        auto funcData = Ethereum::ABI::Function::encodeFunctionCall(functionName, params);
+        auto funcData = Ethereum::ABI::Function::encodeFunctionCall(it->second, params);
         if (funcData.has_value()) {
             payload = funcData.value();
         }
+        return Result<void>::success();
     }
 }
 
@@ -104,17 +122,29 @@ Proto::Output Builder::buildStraderEVM() const {
 
     auto& transfer = *input.mutable_transaction()->mutable_contract_generic();
 
-    auto visitFunctor = [&transfer, this](const TAction& value) {
+    auto visitFunctor = [&transfer, &output, this](const TAction& value) {
         Data payload;
         uint256_t amount;
 
         if (auto* stake = std::get_if<Proto::Stake>(&value); stake) {
-            internal::handleStake(*stake, mBlockchain, payload, amount, Proto::Protocol::Strader);
+            auto result = internal::handleStake(*stake, mBlockchain, payload, amount, Proto::Protocol::Strader);
+            if (!result) {
+                *output.mutable_status() = generateError(Proto::ERROR_OPERATION_NOT_SUPPORTED_BY_PROTOCOL, result.error());
+                return;
+            }
         } else if (auto* unstake = std::get_if<Proto::Unstake>(&value); unstake) {
-            internal::handleUnstake(*unstake, mBlockchain, payload);
+            auto result = internal::handleUnstake(*unstake, mBlockchain, payload);
+            if (!result) {
+                *output.mutable_status() = generateError(Proto::ERROR_OPERATION_NOT_SUPPORTED_BY_PROTOCOL, result.error());
+                return;
+            }
             amount = uint256_t(0);
         } else if (auto* withdraw = std::get_if<Proto::Withdraw>(&value); withdraw) {
-            internal::handleWithdraw(*withdraw, mBlockchain, payload);
+            auto result = internal::handleWithdraw(*withdraw, mBlockchain, payload);
+            if (!result) {
+                *output.mutable_status() = generateError(Proto::ERROR_OPERATION_NOT_SUPPORTED_BY_PROTOCOL, result.error());
+                return;
+            }
             amount = uint256_t(0);
         }
 
@@ -216,7 +246,11 @@ Proto::Output Builder::buildLidoEVM() const {
         uint256_t amount;
 
         if (auto* stake = std::get_if<Proto::Stake>(&value); stake) {
-            internal::handleStake(*stake, mBlockchain, payload, amount, Proto::Lido);
+            auto result = internal::handleStake(*stake, mBlockchain, payload, amount, Proto::Lido);
+            if (!result) {
+                *output.mutable_status() = generateError(Proto::ERROR_OPERATION_NOT_SUPPORTED_BY_PROTOCOL, result.error());
+                return;
+            }
         } else {
             *output.mutable_status() = generateError(Proto::ERROR_OPERATION_NOT_SUPPORTED_BY_PROTOCOL, "Lido protocol only support stake action for now");
         }
