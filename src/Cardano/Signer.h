@@ -34,7 +34,7 @@ public:
     // Create plan from signing input
     TransactionPlan doPlan() const;
     /// Returns a transaction plan (utxo selection, fee estimation)
-    static Proto::TransactionPlan plan(const Proto::SigningInput& input) noexcept {
+    static Proto::TransactionPlan plan(const Proto::SigningInput& input) {
         const auto signer = Signer(input);
         const auto plan = signer.doPlan();
         return plan.toProto();
