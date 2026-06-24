@@ -71,9 +71,10 @@ namespace internal {
             params.emplace_back(std::make_shared<Ethereum::ABI::ProtoAddress>());
         }
         auto funcData = Ethereum::ABI::Function::encodeFunctionCall(actionIt->second, params);
-        if (funcData.has_value()) {
-            payload = funcData.value();
+        if (!funcData.has_value()) {
+            return Result<void>::failure("Failed to encode stake function call");
         }
+        payload = funcData.value();
         amount = uint256_t(stake.amount());
         return Result<void>::success();
     }
@@ -86,9 +87,10 @@ namespace internal {
         Ethereum::ABI::BaseParams params;
         params.emplace_back(std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(unstake.amount())));
         auto funcData = Ethereum::ABI::Function::encodeFunctionCall(it->second, params);
-        if (funcData.has_value()) {
-            payload = funcData.value();
+        if (!funcData.has_value()) {
+            return Result<void>::failure("Failed to encode unstake function call");
         }
+        payload = funcData.value();
         return Result<void>::success();
     }
 
@@ -100,9 +102,10 @@ namespace internal {
         Ethereum::ABI::BaseParams params;
         params.emplace_back(std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(withdraw.idx())));
         auto funcData = Ethereum::ABI::Function::encodeFunctionCall(it->second, params);
-        if (funcData.has_value()) {
-            payload = funcData.value();
+        if (!funcData.has_value()) {
+            return Result<void>::failure("Failed to encode withdraw function call");
         }
+        payload = funcData.value();
         return Result<void>::success();
     }
 }
