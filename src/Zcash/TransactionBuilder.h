@@ -33,6 +33,9 @@ struct TransactionBuilder {
         if (plan.branchId.empty()) {
             std::copy(BlossomBranchID.begin(), BlossomBranchID.end(), tx.branchId.begin());
         } else {
+            if (plan.branchId.size() != tx.branchId.size()) {
+                return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_params);
+            }
             std::copy(plan.branchId.begin(), plan.branchId.end(), tx.branchId.begin());
         }
         return Result<Transaction, Common::Proto::SigningError>(tx);
