@@ -101,3 +101,91 @@ fn test_bitcoin_sign_psbt_non_witness_tampered_output_value() {
         output.error_message
     );
 }
+
+#[test]
+fn test_bitcoin_sign_psbt_witness_utxo_with_unexpected_script_type() {
+    // 1CKZYtNxAQnTbygz6vyhBYnwx4NvcxURMB
+    let private_key = "7a87cb2c9fa56f7a63dfc50659dca260473cb6bb0fd4d8a2beeaf5357d41de95"
+        .decode_hex()
+        .unwrap();
+
+    let original_psbt_bytes = "70736274ff01008202000000015c37bcf049b7e62dd5bfd707e0998ce86163b786e3cd45db2336cb794a8d8aa10000000000ffffffff03f82a000000000000160014bf5a13a26791a5db6406304a46952e264c2b28910000000000000000056a032b3a6291950000000000001976a9147c2c0ac72afbde13ecf52fca54368e7883b538b188ac000000000001007e0200000002714916920be4dbc87cbb8697ca9b1420d6b1e47e7d732e2d2e0e7a935087788d0000000000ffffffff326c951cd9b3dc382e2d6be88796b65d7bac90406a5f72660171ac826e414a630200000000ffffffff01efca0000000000001976a9147c2c0ac72afbde13ecf52fca54368e7883b538b188ac0000000000000000"
+        .decode_hex()
+        .unwrap();
+    let mut original_psbt =
+        tw_bitcoin::modules::psbt_request::Psbt::deserialize(&original_psbt_bytes).unwrap();
+
+    // Original PSBT has a non-witness input, we tamper it by moving the prev_output from `non_witness_utxo` to `witness_utxo`, which should lead PSBT request handler to fail
+    // because `witness_utxo` must contain a supported witness UTXO type (currently P2WPKH in this test path). Please note that `P2WSH` and `P2TR` script-path are not supported yet.
+    let prev_output = original_psbt.inputs[0]
+        .non_witness_utxo
+        .as_ref()
+        .unwrap()
+        .output[0]
+        .clone();
+    original_psbt.inputs[0].witness_utxo = Some(prev_output);
+    original_psbt.inputs[0].non_witness_utxo = None;
+    let modified_psbt = original_psbt.serialize().to_hex();
+
+    let input = Proto::SigningInput {
+        private_keys: vec![private_key.into()],
+        transaction: transaction_psbt(&modified_psbt),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Bitcoin, input);
+
+    assert_eq!(
+        output.error,
+        SigningError::Error_invalid_utxo,
+        "Expected Error_invalid_utxo. Error message: {}",
+        output.error_message
+    );
+}
+
+#[test]
+fn test_bitcoin_sign_psbt_non_witness_utxo_with_unexpected_script_type() {
+    // 1CKZYtNxAQnTbygz6vyhBYnwx4NvcxURMB
+    let private_key = "7a87cb2c9fa56f7a63dfc50659dca260473cb6bb0fd4d8a2beeaf5357d41de95"
+        .decode_hex()
+        .unwrap();
+
+    let psbt_with_non_witness_p2wpkh_utxo_hex = "70736274ff0100bc0200000001147010db5fbcf619067c1090fec65c131443fbc80fb4aaeebe940e44206098c60000000000ffffffff0360ea000000000000160014f22a703617035ef7f490743d50f26ae08c30d0a70000000000000000426a403d3a474149412e41544f4d3a636f736d6f7331737377797a666d743675396a373437773537753438746778646575393573757a666c6d7175753a303a743a35303e12000000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d00000000000100bf0200000000010191fbafbaf30074c893166333074ac046138236b3798ad537e70025661adeeb4d0100000000ffffffff016603010000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d024730440220413d2144824a949df08e4f039dd488ffde8195fc15adcf7b04433f1ef4b0eb7602206db07288a58688f5e9a83e0a666f90aef2b65de1bc1549e21492c24dcf44ec45012102c9d0eee647b5237b5dc8252f9f0dc4c13542779f5223ae084ef891ebbdd80cc70000000000000000";
+    let psbt_with_non_witness_p2wpkh_utxo_bytes =
+        psbt_with_non_witness_p2wpkh_utxo_hex.decode_hex().unwrap();
+
+    let psbt_with_non_witness_p2wpkh_utxo = tw_bitcoin::modules::psbt_request::Psbt::deserialize(
+        &psbt_with_non_witness_p2wpkh_utxo_bytes,
+    )
+    .unwrap();
+
+    assert_eq!(
+        psbt_with_non_witness_p2wpkh_utxo.inputs[0]
+            .non_witness_utxo
+            .as_ref()
+            .expect("PSBT transaction must have a non-witness UTXO")
+            .output[0]
+            .script_pubkey
+            .as_bytes()
+            .to_hex(),
+        // P2WPKH scriptPubkey, which is invalid for non-witness UTXO
+        "0014b139199ec796f36fc42e637f42da8e3e6720aa9d"
+    );
+
+    let input = Proto::SigningInput {
+        private_keys: vec![private_key.into()],
+        transaction: transaction_psbt(&psbt_with_non_witness_p2wpkh_utxo_hex),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Bitcoin, input);
+
+    assert_eq!(
+        output.error,
+        SigningError::Error_invalid_utxo,
+        "Expected Error_invalid_utxo. Error message: {}",
+        output.error_message
+    );
+}
