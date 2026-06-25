@@ -200,8 +200,8 @@ TEST(TWAnySingerStellar, Sign_MemoHash_InvalidSize) {
     input.set_private_key(key.data(), key.size());
 
     // 31 bytes — one byte short of the required 32
-    const auto shortHash = parse_hex("0001020304050607080910111213141516171819202122232425262728293031");
-    input.mutable_memo_hash()->set_hash(shortHash.data(), 31);
+    const auto shortHash = parse_hex("00010203040506070809101112131415161718192021222324252627282930");
+    input.mutable_memo_hash()->set_hash(shortHash.data(), shortHash.size());
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeStellar);
@@ -210,8 +210,8 @@ TEST(TWAnySingerStellar, Sign_MemoHash_InvalidSize) {
     EXPECT_TRUE(output.signature().empty());
 
     // 33 bytes — one byte over
-    const auto longHash = parse_hex("000102030405060708091011121314151617181920212223242526272829303132");
-    input.mutable_memo_hash()->set_hash(longHash.data(), 33);
+    const auto longHash = parse_hex("0001020304050607080910111213141516171819202122232425262728293031" "33");
+    input.mutable_memo_hash()->set_hash(longHash.data(), longHash.size());
     ANY_SIGN(input, TWCoinTypeStellar);
 
     EXPECT_EQ(output.error(), Common::Proto::Error_invalid_memo);
@@ -230,8 +230,8 @@ TEST(TWAnySingerStellar, Sign_MemoReturnHash_InvalidSize) {
     input.set_private_key(key.data(), key.size());
 
     // 31 bytes — one byte short
-    const auto shortHash = parse_hex("0001020304050607080910111213141516171819202122232425262728293031");
-    input.mutable_memo_return_hash()->set_hash(shortHash.data(), 31);
+    const auto shortHash = parse_hex("00010203040506070809101112131415161718192021222324252627282930");
+    input.mutable_memo_return_hash()->set_hash(shortHash.data(), shortHash.size());
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeStellar);

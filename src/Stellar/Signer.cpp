@@ -6,7 +6,7 @@
 #include "Base64.h"
 #include "../BinaryCoding.h"
 #include "../Hash.h"
-#include "../HexCoding.h"
+#include "../PrivateKey.h"
 #include "../proto/Stellar.pb.h"
 
 #include <TrustWalletCore/TWStellarMemoType.h>
@@ -15,29 +15,28 @@ using namespace TW;
 
 namespace TW::Stellar {
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
-    if (input.has_memo_hash() && input.memo_hash().hash().size() != 32) {
-        auto output = Proto::SigningOutput();
-        output.set_error(Common::Proto::Error_invalid_memo);
-        output.set_error_message("memo_hash must be exactly 32 bytes");
-        return output;
-    }
-    if (input.has_memo_return_hash() && input.memo_return_hash().hash().size() != 32) {
-        auto output = Proto::SigningOutput();
-        output.set_error(Common::Proto::Error_invalid_memo);
-        output.set_error_message("memo_return_hash must be exactly 32 bytes");
-        return output;
-    }
     auto signer = Signer(input);
-    auto output = Proto::SigningOutput();
-    output.set_signature(signer.sign());
+    auto signResult = signer.sign();
+    if (!signResult) {
+        Proto::SigningOutput output;
+        output.set_error(Common::Proto::Error_invalid_memo);
+        output.set_error_message(signResult.error());
+        return output;
+    }
+    Proto::SigningOutput output;
+    output.set_signature(signResult.payload());
     return output;
 }
 
-std::string Signer::sign() const {
+Result<std::string> Signer::sign() const {
+    auto encodeResult = encode(_input);
+    if (!encodeResult) {
+        return Result<std::string>::failure(encodeResult.error());
+    }
+    auto encoded = encodeResult.payload();
 
     auto key = PrivateKey(_input.private_key(), TWCurveED25519);
     auto account = Address(_input.account());
-    auto encoded = encode(_input);
 
     auto encodedWithHeaders = Data();
     auto publicNetwork = _input.passphrase(); // Header
@@ -51,20 +50,25 @@ std::string Signer::sign() const {
     auto hash = Hash::sha256(encodedWithHeaders);
     auto data = Data(hash.begin(), hash.end());
 
-    auto sign = key.sign(data);
+    auto sig = key.sign(data);
 
     auto signature = Data();
     signature.insert(signature.end(), encoded.begin(), encoded.end());
     encode32BE(1, signature);
     signature.insert(signature.end(), account.bytes.end() - 4, account.bytes.end());
-    encode32BE(static_cast<uint32_t>(sign.size()), signature);
-    signature.insert(signature.end(), sign.begin(), sign.end());
-    return Base64::encode(signature);
+    encode32BE(static_cast<uint32_t>(sig.size()), signature);
+    signature.insert(signature.end(), sig.begin(), sig.end());
+    return Result<std::string>::success(Base64::encode(signature));
 }
 
-Data Signer::encode(const Proto::SigningInput& input) const {
-    //    Address account, uint32_t fee, uint64_t sequence, uint32_t memoType,
-    //    Data memoData, Address destination, uint64_t amount;
+Result<Data> Signer::encode(const Proto::SigningInput& input) const {
+    if (input.has_memo_hash() && input.memo_hash().hash().size() != 32) {
+        return Result<Data>::failure("memo_hash must be exactly 32 bytes");
+    }
+    if (input.has_memo_return_hash() && input.memo_return_hash().hash().size() != 32) {
+        return Result<Data>::failure("memo_return_hash must be exactly 32 bytes");
+    }
+
     auto data = Data();
 
     encodeAddress(Address(input.account()), data);
@@ -148,18 +152,22 @@ Data Signer::encode(const Proto::SigningInput& input) const {
         encode32BE((uint32_t)ClaimableBalanceIdTypeClaimableBalanceIdTypeV0, data);
         const auto balanceId = input.op_claim_claimable_balance().balance_id();
         if (balanceId.size() != 32) {
-            return Data();
+            return Result<Data>::failure("balance_id must be exactly 32 bytes");
         }
         data.insert(data.end(), balanceId.begin(), balanceId.end());
     } break;
     }
 
     encode32BE(0, data); // Ext
-    return data;
+    return Result<Data>::success(std::move(data));
 }
 
-Data Signer::signaturePreimage() const {
-    auto encoded = encode(_input);
+Result<Data> Signer::signaturePreimage() const {
+    auto encodeResult = encode(_input);
+    if (!encodeResult) {
+        return Result<Data>::failure(encodeResult.error());
+    }
+    auto encoded = encodeResult.payload();
 
     auto encodedWithHeaders = Data();
     auto publicNetwork = _input.passphrase(); // Header
@@ -169,12 +177,19 @@ Data Signer::signaturePreimage() const {
     encodedWithHeaders.insert(encodedWithHeaders.end(), transactionType.begin(),
                               transactionType.end());
     encodedWithHeaders.insert(encodedWithHeaders.end(), encoded.begin(), encoded.end());
-    return encodedWithHeaders;
+    return Result<Data>::success(std::move(encodedWithHeaders));
 }
 
 Proto::SigningOutput Signer::compile(const Data& sig) const {
+    auto encodeResult = encode(_input);
+    if (!encodeResult) {
+        Proto::SigningOutput output;
+        output.set_error(Common::Proto::Error_invalid_memo);
+        output.set_error_message(encodeResult.error());
+        return output;
+    }
+    auto encoded = encodeResult.payload();
     auto account = Address(_input.account());
-    auto encoded = encode(_input);
 
     auto signature = Data();
     signature.insert(signature.end(), encoded.begin(), encoded.end());
