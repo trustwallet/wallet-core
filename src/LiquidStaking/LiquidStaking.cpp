@@ -156,6 +156,9 @@ Proto::Output Builder::buildStraderEVM() const {
 
     std::visit(visitFunctor, this->mAction);
 
+    if (output.status().code() != Proto::OK) {
+        return output;
+    }
     *output.mutable_ethereum() = input;
     return output;
 }
@@ -256,12 +259,17 @@ Proto::Output Builder::buildLidoEVM() const {
             }
         } else {
             *output.mutable_status() = generateError(Proto::ERROR_OPERATION_NOT_SUPPORTED_BY_PROTOCOL, "Lido protocol only support stake action for now");
+            return;
         }
 
         internal::setTransferDataAndAmount(transfer, payload, amount);
     };
 
     std::visit(visitFunctor, this->mAction);
+
+    if (output.status().code() != Proto::OK) {
+        return output;
+    }
     *output.mutable_ethereum() = input;
     return output;
 }
