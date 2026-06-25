@@ -35,8 +35,8 @@ TW::Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txI
         txInputData, [](const auto& input, auto& output) {
             auto preImageResult = Signer(input).signaturePreimage();
             if (!preImageResult) {
-                output.set_error(Common::Proto::Error_invalid_memo);
-                output.set_error_message(preImageResult.error());
+                output.set_error(preImageResult.error());
+                output.set_error_message(Common::Proto::SigningError_Name(preImageResult.error()));
                 return;
             }
             auto preImage = preImageResult.payload();

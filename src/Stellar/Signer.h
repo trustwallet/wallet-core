@@ -23,10 +23,10 @@ class Signer {
     Signer(const Proto::SigningInput& input) : _input(input) {}
 
     /// Signs the given transaction.
-    Result<std::string> sign() const;
+    Result<std::string, Common::Proto::SigningError> sign() const;
 
-    Result<Data> encode(const Proto::SigningInput& input) const;
-    Result<Data> signaturePreimage() const;
+    Result<Data, Common::Proto::SigningError> encode(const Proto::SigningInput& input) const;
+    Result<Data, Common::Proto::SigningError> signaturePreimage() const;
     Proto::SigningOutput compile(const Data& sig) const;
 
   private:

@@ -19,8 +19,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto signResult = signer.sign();
     if (!signResult) {
         Proto::SigningOutput output;
-        output.set_error(Common::Proto::Error_invalid_memo);
-        output.set_error_message(signResult.error());
+        output.set_error(signResult.error());
+        output.set_error_message(Common::Proto::SigningError_Name(signResult.error()));
         return output;
     }
     Proto::SigningOutput output;
@@ -28,10 +28,10 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     return output;
 }
 
-Result<std::string> Signer::sign() const {
+Result<std::string, Common::Proto::SigningError> Signer::sign() const {
     auto encodeResult = encode(_input);
     if (!encodeResult) {
-        return Result<std::string>::failure(encodeResult.error());
+        return Result<std::string, Common::Proto::SigningError>::failure(encodeResult.error());
     }
     auto encoded = encodeResult.payload();
 
@@ -58,15 +58,15 @@ Result<std::string> Signer::sign() const {
     signature.insert(signature.end(), account.bytes.end() - 4, account.bytes.end());
     encode32BE(static_cast<uint32_t>(sig.size()), signature);
     signature.insert(signature.end(), sig.begin(), sig.end());
-    return Result<std::string>::success(Base64::encode(signature));
+    return Result<std::string, Common::Proto::SigningError>::success(Base64::encode(signature));
 }
 
-Result<Data> Signer::encode(const Proto::SigningInput& input) const {
+Result<Data, Common::Proto::SigningError> Signer::encode(const Proto::SigningInput& input) const {
     if (input.has_memo_hash() && input.memo_hash().hash().size() != 32) {
-        return Result<Data>::failure("memo_hash must be exactly 32 bytes");
+        return Result<Data, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_memo);
     }
     if (input.has_memo_return_hash() && input.memo_return_hash().hash().size() != 32) {
-        return Result<Data>::failure("memo_return_hash must be exactly 32 bytes");
+        return Result<Data, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_memo);
     }
 
     auto data = Data();
@@ -152,20 +152,20 @@ Result<Data> Signer::encode(const Proto::SigningInput& input) const {
         encode32BE((uint32_t)ClaimableBalanceIdTypeClaimableBalanceIdTypeV0, data);
         const auto balanceId = input.op_claim_claimable_balance().balance_id();
         if (balanceId.size() != 32) {
-            return Result<Data>::failure("balance_id must be exactly 32 bytes");
+            return Result<Data, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_params);
         }
         data.insert(data.end(), balanceId.begin(), balanceId.end());
     } break;
     }
 
     encode32BE(0, data); // Ext
-    return Result<Data>::success(std::move(data));
+    return Result<Data, Common::Proto::SigningError>::success(std::move(data));
 }
 
-Result<Data> Signer::signaturePreimage() const {
+Result<Data, Common::Proto::SigningError> Signer::signaturePreimage() const {
     auto encodeResult = encode(_input);
     if (!encodeResult) {
-        return Result<Data>::failure(encodeResult.error());
+        return Result<Data, Common::Proto::SigningError>::failure(encodeResult.error());
     }
     auto encoded = encodeResult.payload();
 
@@ -177,15 +177,15 @@ Result<Data> Signer::signaturePreimage() const {
     encodedWithHeaders.insert(encodedWithHeaders.end(), transactionType.begin(),
                               transactionType.end());
     encodedWithHeaders.insert(encodedWithHeaders.end(), encoded.begin(), encoded.end());
-    return Result<Data>::success(std::move(encodedWithHeaders));
+    return Result<Data, Common::Proto::SigningError>::success(std::move(encodedWithHeaders));
 }
 
 Proto::SigningOutput Signer::compile(const Data& sig) const {
     auto encodeResult = encode(_input);
     if (!encodeResult) {
         Proto::SigningOutput output;
-        output.set_error(Common::Proto::Error_invalid_memo);
-        output.set_error_message(encodeResult.error());
+        output.set_error(encodeResult.error());
+        output.set_error_message(Common::Proto::SigningError_Name(encodeResult.error()));
         return output;
     }
     auto encoded = encodeResult.payload();
