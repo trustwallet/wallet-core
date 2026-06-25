@@ -15,6 +15,18 @@ using namespace TW;
 
 namespace TW::Stellar {
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
+    if (input.has_memo_hash() && input.memo_hash().hash().size() != 32) {
+        auto output = Proto::SigningOutput();
+        output.set_error(Common::Proto::Error_invalid_memo);
+        output.set_error_message("memo_hash must be exactly 32 bytes");
+        return output;
+    }
+    if (input.has_memo_return_hash() && input.memo_return_hash().hash().size() != 32) {
+        auto output = Proto::SigningOutput();
+        output.set_error(Common::Proto::Error_invalid_memo);
+        output.set_error_message("memo_return_hash must be exactly 32 bytes");
+        return output;
+    }
     auto signer = Signer(input);
     auto output = Proto::SigningOutput();
     output.set_signature(signer.sign());
