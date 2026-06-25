@@ -5,6 +5,7 @@
 #include "LiquidStaking/LiquidStaking.h"
 #include "Data.h"
 #include "Result.h"
+#include <cerrno>
 
 // Stride
 #include "proto/Cosmos.pb.h"
@@ -70,12 +71,16 @@ namespace internal {
         if (protocol == Proto::Lido) {
             params.emplace_back(std::make_shared<Ethereum::ABI::ProtoAddress>());
         }
-        auto funcData = Ethereum::ABI::Function::encodeFunctionCall(actionIt->second, params);
-        if (!funcData.has_value()) {
-            return Result<void>::failure("Failed to encode stake function call");
+        try {
+            auto funcData = Ethereum::ABI::Function::encodeFunctionCall(actionIt->second, params);
+            if (!funcData.has_value()) {
+                return Result<void>::failure("Failed to encode stake function call");
+            }
+            payload = funcData.value();
+            amount = uint256_t(stake.amount());
+        } catch (const std::exception& ex) {
+            return Result<void>::failure(std::string("handleStake failed: ") + ex.what());
         }
-        payload = funcData.value();
-        amount = uint256_t(stake.amount());
         return Result<void>::success();
     }
 
@@ -84,13 +89,17 @@ namespace internal {
         if (it == gStraderFunctionRegistry.end()) {
             return Result<void>::failure("Strader protocol does not support the unstake operation on the targeted blockchain");
         }
-        Ethereum::ABI::BaseParams params;
-        params.emplace_back(std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(unstake.amount())));
-        auto funcData = Ethereum::ABI::Function::encodeFunctionCall(it->second, params);
-        if (!funcData.has_value()) {
-            return Result<void>::failure("Failed to encode unstake function call");
+        try {
+            Ethereum::ABI::BaseParams params;
+            params.emplace_back(std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(unstake.amount())));
+            auto funcData = Ethereum::ABI::Function::encodeFunctionCall(it->second, params);
+            if (!funcData.has_value()) {
+                return Result<void>::failure("Failed to encode unstake function call");
+            }
+            payload = funcData.value();
+        } catch (const std::exception& ex) {
+            return Result<void>::failure(std::string("handleUnstake failed: ") + ex.what());
         }
-        payload = funcData.value();
         return Result<void>::success();
     }
 
@@ -99,14 +108,31 @@ namespace internal {
         if (it == gStraderFunctionRegistry.end()) {
             return Result<void>::failure("Strader protocol does not support the withdraw operation on the targeted blockchain");
         }
-        Ethereum::ABI::BaseParams params;
-        params.emplace_back(std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(withdraw.idx())));
-        auto funcData = Ethereum::ABI::Function::encodeFunctionCall(it->second, params);
-        if (!funcData.has_value()) {
-            return Result<void>::failure("Failed to encode withdraw function call");
+        try {
+            Ethereum::ABI::BaseParams params;
+            params.emplace_back(std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(withdraw.idx())));
+            auto funcData = Ethereum::ABI::Function::encodeFunctionCall(it->second, params);
+            if (!funcData.has_value()) {
+                return Result<void>::failure("Failed to encode withdraw function call");
+            }
+            payload = funcData.value();
+        } catch (const std::exception& ex) {
+            return Result<void>::failure(std::string("handleWithdraw failed: ") + ex.what());
         }
-        payload = funcData.value();
         return Result<void>::success();
+    }
+
+    Result<uint64_t> parseUInt64(const std::string& str) {
+        if (str.empty()) {
+            return Result<uint64_t>::failure("Failed to parse amount: empty string");
+        }
+        char* end = nullptr;
+        errno = 0;
+        const unsigned long long val = std::strtoull(str.c_str(), &end, 0);
+        if (end == str.c_str() || *end != '\0' || errno == ERANGE) {
+            return Result<uint64_t>::failure("Failed to parse amount: " + str);
+        }
+        return Result<uint64_t>::success(static_cast<uint64_t>(val));
     }
 }
 
@@ -173,20 +199,38 @@ Proto::Output Builder::buildTortugaAptos() const {
     auto &liquid_staking_message = *input.mutable_liquid_staking_message();
     liquid_staking_message.set_smart_contract_address(*mSmartContractAddress);
 
-    auto visitFunctor = [&liquid_staking_message](const TAction& value) {
+    auto visitFunctor = [&liquid_staking_message, &output](const TAction& value) {
         if (auto* stake = std::get_if<Proto::Stake>(&value); stake) {
+            auto amount = internal::parseUInt64(stake->amount());
+            if (!amount) {
+                *output.mutable_status() = generateError(Proto::ERROR_INPUT_PROTO_DESERIALIZATION, amount.error());
+                return;
+            }
             auto& tortuga_stake = *liquid_staking_message.mutable_stake();
-            tortuga_stake.set_amount(std::strtoull(stake->amount().c_str(), nullptr, 0));
+            tortuga_stake.set_amount(amount.payload());
         } else if (auto* unstake = std::get_if<Proto::Unstake>(&value); unstake) {
+            auto amount = internal::parseUInt64(unstake->amount());
+            if (!amount) {
+                *output.mutable_status() = generateError(Proto::ERROR_INPUT_PROTO_DESERIALIZATION, amount.error());
+                return;
+            }
             auto& tortuga_unstake = *liquid_staking_message.mutable_unstake();
-            tortuga_unstake.set_amount(std::strtoull(unstake->amount().c_str(), nullptr, 0));
+            tortuga_unstake.set_amount(amount.payload());
         } else if (auto* withdraw = std::get_if<Proto::Withdraw>(&value); withdraw) {
+            auto idx = internal::parseUInt64(withdraw->idx());
+            if (!idx) {
+                *output.mutable_status() = generateError(Proto::ERROR_INPUT_PROTO_DESERIALIZATION, idx.error());
+                return;
+            }
             auto& tortuga_claim = *liquid_staking_message.mutable_claim();
-            tortuga_claim.set_idx(std::strtoull(withdraw->idx().c_str(), nullptr, 0));
+            tortuga_claim.set_idx(idx.payload());
         }
     };
 
     std::visit(visitFunctor, this->mAction);
+    if (output.status().code() != Proto::OK) {
+        return output;
+    }
     *output.mutable_aptos() = input;
     return output;
 }
@@ -218,6 +262,9 @@ Proto::Output Builder::buildStride() const {
     };
 
     std::visit(visitFunctor, this->mAction);
+    if (output.status().code() != Proto::OK) {
+        return output;
+    }
     *output.mutable_cosmos() = input;
     return output;
 }
