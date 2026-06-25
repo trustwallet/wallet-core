@@ -64,6 +64,27 @@ describe("KeyStore", async () => {
     });
   }).timeout(10000);
 
+  it("test validateJson", async () => {
+    const { CoinType, StoredKey, StoredKeyEncryption } = globalThis.core;
+    const mnemonic = globalThis.mnemonic as string;
+    const password = globalThis.password as string;
+
+    const walletIdsKey = "all-wallet-ids";
+    const storage = new KeyStore.ExtensionStorage(walletIdsKey, new ChromeStorageMock());
+    const keystore = new KeyStore.Default(globalThis.core, storage);
+
+    const wallet = await keystore.import(mnemonic, "Test", password, [CoinType.bitcoin], StoredKeyEncryption.aes128Ctr);
+    const validJson = Buffer.from(JSON.stringify(wallet));
+
+    // Valid JSON from a freshly imported wallet.
+    const validResult = StoredKey.validateJson(validJson);
+    assert.isTrue(validResult.isSuccess());
+    assert.isFalse(validResult.isErr());
+    validResult.delete();
+
+    await keystore.delete(wallet.id, password);
+  }).timeout(10000);
+
   it("test fix scrypt with empty salt", async () => {
     const { StoredKey } = globalThis.core;
     const password = globalThis.password as string;
@@ -105,7 +126,9 @@ describe("KeyStore", async () => {
     const ciphertextBefore = jsonBefore.crypto.ciphertext;
     assert.equal(saltBefore, "");
 
-    assert.isTrue(storedKey.fixEncryption(Buffer.from(password)));
+    const fixResult = storedKey.fixEncryption(Buffer.from(password));
+    assert.isTrue(fixResult.isSuccess());
+    fixResult.delete();
 
     const updatedWallet = JSON.parse(Buffer.from(storedKey.exportJSON()).toString());
     storedKey.delete();

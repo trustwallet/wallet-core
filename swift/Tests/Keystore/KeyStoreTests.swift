@@ -554,7 +554,11 @@ class KeyStoreTests: XCTestCase {
         let ciphertextBefore = cryptoBefore["ciphertext"] as! String
         XCTAssertEqual(saltBefore, "")
 
-        XCTAssertTrue(wallet.key.fixEncryption(password: password))
+        let wrongResult = wallet.key.fixEncryption(password: Data("wrong-password".utf8))
+        XCTAssertTrue(wrongResult.isErr)
+        XCTAssertEqual(wrongResult.getErr, "Invalid password: MAC verification failed")
+
+        XCTAssertTrue(wallet.key.fixEncryption(password: password).isSuccess)
         XCTAssertTrue(wallet.key.store(path: wallet.keyURL.path))
 
         let reloadedKeyStore = try KeyStore(keyDirectory: keyDirectory)
@@ -572,6 +576,58 @@ class KeyStoreTests: XCTestCase {
 
         let decryptedMnemonic = reloadedWallet.key.decryptMnemonic(password: password)
         XCTAssertEqual(decryptedMnemonic, mnemonic)
+    }
+
+    func testValidateFile() throws {
+        let password = Data("password".utf8)
+        let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: "name", password: password, coin: .bitcoin)!
+
+        let tmpURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString + ".json")
+        defer { try? fileManager.removeItem(at: tmpURL) }
+        XCTAssertTrue(key.store(path: tmpURL.path))
+
+        // Valid file.
+        let validResult = StoredKey.validateFile(path: tmpURL.path)
+        XCTAssertTrue(validResult.isSuccess)
+        XCTAssertFalse(validResult.isErr)
+
+        // File with valid JSON syntax but missing required crypto field.
+        let invalidURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString + ".json")
+        defer { try? fileManager.removeItem(at: invalidURL) }
+        try Data(#"{"id":"abc","version":3,"name":"test","type":"mnemonic"}"#.utf8).write(to: invalidURL)
+        let invalidResult = StoredKey.validateFile(path: invalidURL.path)
+        XCTAssertTrue(invalidResult.isErr)
+        XCTAssertFalse(invalidResult.isSuccess)
+        XCTAssertEqual(invalidResult.getErr, "Missing 'crypto' field in stored key JSON")
+
+        // Non-existent file path.
+        let missingResult = StoredKey.validateFile(path: "/no/such/file.json")
+        XCTAssertTrue(missingResult.isErr)
+        XCTAssertFalse(missingResult.isSuccess)
+        XCTAssertEqual(missingResult.getErr, "Can't open file")
+    }
+
+    func testValidateJson() {
+        let password = Data("password".utf8)
+        let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: "name", password: password, coin: .bitcoin)!
+        let json = key.exportJSON()!
+
+        // Valid JSON exported from a freshly created key.
+        let validResult = StoredKey.validateJson(json: json)
+        XCTAssertTrue(validResult.isSuccess)
+        XCTAssertFalse(validResult.isErr)
+
+        // Invalid JSON syntax.
+        let invalidResult = StoredKey.validateJson(json: Data("]]]not_json[[[".utf8))
+        XCTAssertTrue(invalidResult.isErr)
+        XCTAssertFalse(invalidResult.isSuccess)
+        XCTAssertNotNil(invalidResult.getErr)
+
+        // Valid JSON syntax but missing required crypto field.
+        let missingCryptoJson = Data(#"{"id":"abc","version":3,"name":"test","type":"mnemonic"}"#.utf8)
+        let missingResult = StoredKey.validateJson(json: missingCryptoJson)
+        XCTAssertTrue(missingResult.isErr)
+        XCTAssertEqual(missingResult.getErr, "Missing 'crypto' field in stored key JSON")
     }
 
     func testCreateWalletThrowsStorageFailedOnUnwritableDirectory() throws {
@@ -593,6 +649,101 @@ class KeyStoreTests: XCTestCase {
         } catch {
             XCTFail("Expected storageFailed but got: \(error)")
         }
+    }
+
+    /// All files in the directory load successfully — invalidKeys stays empty.
+    /// Includes the scrypt-empty-salt wallet (empty salt is a fixable parameter,
+    /// not a structural error, so the file loads fine without password).
+    func testLoadInvalidKeysEmptyWhenAllWalletsAreValid() throws {
+        let sourceURL = Bundle(for: type(of: self)).url(forResource: "scrypt-empty-salt", withExtension: "json")!
+        try fileManager.copyItem(at: sourceURL, to: keyDirectory.appendingPathComponent("scrypt-empty-salt.json"))
+
+        let keyStore = try KeyStore(keyDirectory: keyDirectory)
+
+        XCTAssertEqual(keyStore.wallets.count, 5)
+        XCTAssertTrue(keyStore.invalidKeys.isEmpty)
+    }
+
+    /// One structurally broken file alongside one valid wallet.
+    /// The broken file has a known activeAccounts entry so firstAccountAddress is populated.
+    func testLoadOneInvalidKeyAlongsideValidWallet() throws {
+        let dir = try createTempDirURL()
+
+        let walletURL = Bundle(for: type(of: self)).url(forResource: "wallet", withExtension: "json")!
+        try fileManager.copyItem(at: walletURL, to: dir.appendingPathComponent("wallet.json"))
+
+        let brokenJSON = """
+        {
+            "id": "broken-id",
+            "version": 3,
+            "name": "broken",
+            "type": "mnemonic",
+            "activeAccounts": [
+                {"address": "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny", "coin": 0}
+            ]
+        }
+        """
+        try Data(brokenJSON.utf8).write(to: dir.appendingPathComponent("broken.json"))
+
+        let keyStore = try KeyStore(keyDirectory: dir)
+
+        XCTAssertEqual(keyStore.wallets.count, 1)
+        XCTAssertEqual(keyStore.invalidKeys.count, 1)
+
+        let invalid = keyStore.invalidKeys[0]
+        XCTAssertEqual(invalid.loadError, "Missing 'crypto' field in stored key JSON")
+        XCTAssertFalse(invalid.isThirdPartyKeystore)
+        XCTAssertEqual(invalid.firstAccountAddress, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny")
+    }
+
+    /// Every file in the directory fails to load.
+    /// Covers two distinct failure shapes:
+    ///   - a Trust Wallet–style file (has activeAccounts, no top-level address) with missing crypto
+    ///   - a third-party keystore file (top-level address field, no activeAccounts) with missing crypto
+    func testLoadAllInvalidKeys() throws {
+        let dir = try createTempDirURL()
+
+        // Trust Wallet–style: activeAccounts present, no top-level address.
+        let brokenJSON1 = """
+        {
+            "id": "broken-1",
+            "version": 3,
+            "name": "broken",
+            "type": "mnemonic",
+            "activeAccounts": [
+                {"address": "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny", "coin": 0}
+            ]
+        }
+        """
+        try Data(brokenJSON1.utf8).write(to: dir.appendingPathComponent("broken1.json"))
+
+        // Third-party keystore style: top-level address, no activeAccounts.
+        let brokenJSON2 = """
+        {
+            "id": "broken-2",
+            "version": 3,
+            "address": "0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b",
+            "coin": 60
+        }
+        """
+        try Data(brokenJSON2.utf8).write(to: dir.appendingPathComponent("broken2.json"))
+
+        let keyStore = try KeyStore(keyDirectory: dir)
+
+        XCTAssertTrue(keyStore.wallets.isEmpty)
+        XCTAssertEqual(keyStore.invalidKeys.count, 2)
+
+        for invalidKey in keyStore.invalidKeys {
+            XCTAssertTrue(invalidKey.loadError.contains("crypto"), "Expected load error to mention missing crypto field, got: \(invalidKey.loadError)")
+        }
+
+        let twStyle = keyStore.invalidKeys.first(where: { $0.fileURL.lastPathComponent == "broken1.json" })!
+        XCTAssertFalse(twStyle.isThirdPartyKeystore)
+        XCTAssertEqual(twStyle.firstAccountAddress, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny")
+
+        let thirdParty = keyStore.invalidKeys.first(where: { $0.fileURL.lastPathComponent == "broken2.json" })!
+        XCTAssertTrue(thirdParty.isThirdPartyKeystore)
+        XCTAssertNil(thirdParty.firstAccountAddress)
     }
 
     func createTempDirURL() throws -> URL {
