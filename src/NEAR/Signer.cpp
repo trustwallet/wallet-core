@@ -35,7 +35,10 @@ Result<Data, Common::Proto::SigningError> Signer::signaturePreimage() const {
 
 Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& publicKey) const {
     if (publicKey.type != TWPublicKeyTypeED25519) {
-        throw std::invalid_argument("Invalid public key");
+        Proto::SigningOutput output;
+        output.set_error(Common::Proto::Error_invalid_params);
+        output.set_error_message("Invalid public key type: expected ED25519");
+        return output;
     }
     auto preImageResult = signaturePreimage();
     if (!preImageResult) {
