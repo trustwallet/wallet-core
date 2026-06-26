@@ -32,7 +32,7 @@ TEST(NEARSerialization, SerializeTransferTransaction) {
     auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
-    auto serialized = transactionData(input);
+    auto serialized = transactionData(input).payload();
     auto serializedHex = hex(serialized);
 
     ASSERT_EQ(serializedHex, "09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6010000000301000000000000000000000000000000");
@@ -68,7 +68,7 @@ TEST(NEARSerialization, SerializeFunctionCallTransaction) {
     auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
-    auto serialized = transactionData(input);
+    auto serialized = transactionData(input).payload();
     auto serializedHex = hex(serialized);
 
     ASSERT_EQ(serializedHex, "09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef601000000020300000071717103000000010203e80300000000000001000000000000000000000000000000");
@@ -98,7 +98,7 @@ TEST(NEARSerialization, SerializeStakeTransaction) {
     auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
-    auto serialized = transactionData(input);
+    auto serialized = transactionData(input).payload();
     auto serializedHex = hex(serialized);
 
     ASSERT_EQ(serializedHex, "09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef601000000040100000000000000000000000000000000917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d");
@@ -128,7 +128,7 @@ TEST(NEARSerialization, SerializeStakeTransaction2) {
     auto privateKey = Base58::decode("5Cfk7QBnmDxxFxQk75FFq4ADrQS9gxHKe6vtuGH6JCCm8WV8aRPEGVqp579JHNmmHMUt49gkCVcH2t7NRnh2v7Qu");
     input.set_private_key(privateKey.data(), 32);
 
-    auto serialized = transactionData(input);
+    auto serialized = transactionData(input).payload();
     auto serializedHex = hex(serialized);
 
     ASSERT_EQ(serializedHex, "0b0000007664782e746573746e657400a3cb23dbb9810abd4a6804328eec47a17236383b5c234cae903b064e9dc426dac5863d28b35400000b0000007664782e746573746e6574a2fbdae8a769c636d109952e4fe760b03688e629933cbf693aedfd97a470c7a50100000004000000fa4f3f757902ae0b080000000000a3cb23dbb9810abd4a6804328eec47a17236383b5c234cae903b064e9dc426da");
@@ -161,7 +161,7 @@ TEST(NEARSerialization, SerializeAddKeyFunctionCallTransaction) {
     auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
-    auto serialized = transactionData(input);
+    auto serialized = transactionData(input).payload();
     auto serializedHex = hex(serialized);
 
     ASSERT_EQ(serializedHex, "09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6010000000500917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d00000000000000000000030000007a7a7a0100000003000000777777");
@@ -193,7 +193,7 @@ TEST(NEARSerialization, SerializeAddKeyFullAccessTransaction) {
     auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
-    auto serialized = transactionData(input);
+    auto serialized = transactionData(input).payload();
     auto serializedHex = hex(serialized);
 
     ASSERT_EQ(serializedHex, "09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6010000000500917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d000000000000000001");
@@ -220,7 +220,7 @@ TEST(NEARSerialization, SerializeDeleteKeyTransaction) {
     auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
-    auto serialized = transactionData(input);
+    auto serialized = transactionData(input).payload();
     auto serializedHex = hex(serialized);
 
     ASSERT_EQ(serializedHex, "09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6010000000600917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d");
@@ -243,7 +243,7 @@ TEST(NEARSerialization, SerializeCreateAccountTransaction) {
     auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
-    auto serialized = transactionData(input);
+    auto serialized = transactionData(input).payload();
     auto serializedHex = hex(serialized);
 
     ASSERT_EQ(serializedHex, "09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef60100000000");
@@ -267,7 +267,7 @@ TEST(NEARSerialization, SerializeDeleteAccountTransaction) {
     auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
-    auto serialized = transactionData(input);
+    auto serialized = transactionData(input).payload();
     auto serializedHex = hex(serialized);
 
     ASSERT_EQ(serializedHex, "09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6010000000703000000313233");

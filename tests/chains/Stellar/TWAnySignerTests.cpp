@@ -180,11 +180,12 @@ TEST(TWAnySingerStellar, Sign_Claim_Claimable_Balance_c1fb3c) {
     // curl -X POST -F "tx=AAAAAMpF..DQ==" "https://horizon.stellar.org/transactions"
     EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAAhAAAAAAAAAAAAAAABAAAAAAAAAA8AAAAAnHt5S3sVDz5Mbc+iYGcrvgwkizYBKREukn4PfuL5+vgAAAAAAAAAAXfTkXUAAABAWL7dKkR1JuPZGFbDTRDgGBHW/vLPMWNRkAew+wPfGiCnZhpJJDcyX197EDDZMsJ7ungPUyhczRaeQOwZKx4DDQ==");
 
-    { // negative test: hash wrong size
+    { // negative test: balance_id wrong size — must fail, not sign invalid data
         const Data invalidBalanceIdHash = parse_hex("010203");
         input.mutable_op_claim_claimable_balance()->set_balance_id(invalidBalanceIdHash.data(), invalidBalanceIdHash.size());
         ANY_SIGN(input, TWCoinTypeStellar);
-        EXPECT_EQ(output.signature(), "AAAAAXfTkXUAAABAFCywEfLs3q5Tv9eZCIcjhkJR0s8J4Us9G5YjVKUSaMoUz/AadC8dM2oQSLhpC5wjrNBi7hevg7jlkPx5/4AJCQ==");
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+        EXPECT_TRUE(output.signature().empty());
     }
 }
 

@@ -11,7 +11,14 @@
 namespace TW::NEAR {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
-    auto transaction = transactionData(input);
+    auto txResult = transactionData(input);
+    if (!txResult) {
+        Proto::SigningOutput output;
+        output.set_error(txResult.error());
+        output.set_error_message(Common::Proto::SigningError_Name(txResult.error()));
+        return output;
+    }
+    auto transaction = txResult.payload();
     auto key = PrivateKey(input.private_key(), TWCurveED25519);
     auto hash = Hash::sha256(transaction);
     auto signature = key.sign(hash);
@@ -22,22 +29,28 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     return output;
 }
 
-Data Signer::signaturePreimage() const {
+Result<Data, Common::Proto::SigningError> Signer::signaturePreimage() const {
     return TW::NEAR::transactionDataWithPublicKey(input);
-};
+}
 
 Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& publicKey) const {
-    // validate public key
     if (publicKey.type != TWPublicKeyTypeED25519) {
         throw std::invalid_argument("Invalid public key");
     }
-    auto preImage = signaturePreimage();
+    auto preImageResult = signaturePreimage();
+    if (!preImageResult) {
+        Proto::SigningOutput output;
+        output.set_error(preImageResult.error());
+        output.set_error_message(Common::Proto::SigningError_Name(preImageResult.error()));
+        return output;
+    }
+    auto preImage = preImageResult.payload();
     auto hash = Hash::sha256(preImage);
-    {
-        // validate correctness of signature
-        if (!publicKey.verify(signature, hash)) {
-            throw std::invalid_argument("Invalid signature/hash/publickey combination");
-        }
+    if (!publicKey.verify(signature, hash)) {
+        Proto::SigningOutput output;
+        output.set_error(Common::Proto::Error_signing);
+        output.set_error_message("Invalid signature/hash/publickey combination");
+        return output;
     }
     auto signedPreImage = TW::NEAR::signedTransactionData(preImage, signature);
     auto output = Proto::SigningOutput();
