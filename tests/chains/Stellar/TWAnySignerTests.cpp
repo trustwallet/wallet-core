@@ -239,6 +239,14 @@ TEST(TWAnySingerStellar, Sign_MemoReturnHash_InvalidSize) {
 
     EXPECT_EQ(output.error(), Common::Proto::Error_invalid_memo);
     EXPECT_TRUE(output.signature().empty());
+
+    // 33 bytes — one byte over
+    const auto longHash = parse_hex("0001020304050607080910111213141516171819202122232425262728293031" "32");
+    input.mutable_memo_return_hash()->set_hash(longHash.data(), longHash.size());
+    ANY_SIGN(input, TWCoinTypeStellar);
+
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_memo);
+    EXPECT_TRUE(output.signature().empty());
 }
 
 } // namespace TW::Stellar::tests
