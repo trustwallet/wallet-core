@@ -106,7 +106,8 @@ TEST(StellarCompiler, PreImageHashes_MemoHash_InvalidSize) {
     const auto shortHash = parse_hex("00010203040506070809101112131415161718192021222324252627282930");
     input.mutable_memo_hash()->set_hash(shortHash.data(), shortHash.size()); // 31 bytes — invalid
 
-    auto inputStrData = TW::Data(input.SerializeAsString().begin(), input.SerializeAsString().end());
+    const auto serialized = input.SerializeAsString();
+    auto inputStrData = TW::Data(serialized.begin(), serialized.end());
     const auto preImageHashData = TransactionCompiler::preImageHashes(coin, inputStrData);
 
     TW::TxCompiler::Proto::PreSigningOutput preSigningOutput;
@@ -129,7 +130,8 @@ TEST(StellarCompiler, Compile_MemoHash_InvalidSize) {
     const auto shortHash = parse_hex("00010203040506070809101112131415161718192021222324252627282930");
     input.mutable_memo_hash()->set_hash(shortHash.data(), shortHash.size()); // 31 bytes — invalid
 
-    auto inputStrData = TW::Data(input.SerializeAsString().begin(), input.SerializeAsString().end());
+    const auto serialized = input.SerializeAsString();
+    auto inputStrData = TW::Data(serialized.begin(), serialized.end());
     const auto dummySig = parse_hex("aabb");
     const auto outputData = TransactionCompiler::compileWithSignatures(coin, inputStrData, {dummySig}, {});
 
