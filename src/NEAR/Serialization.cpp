@@ -161,7 +161,10 @@ static void writeAction(Data& data, const Proto::Action& action) {
     }
 }
 
-Data transactionData(const Proto::SigningInput& input) {
+Result<Data, Common::Proto::SigningError> transactionData(const Proto::SigningInput& input) {
+    if (input.block_hash().size() != 32) {
+        return Result<Data, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_params);
+    }
     Data data;
     writeString(data, input.signer_id());
     auto key = PrivateKey(input.private_key(), TWCurveED25519);
@@ -171,16 +174,18 @@ Data transactionData(const Proto::SigningInput& input) {
     writePublicKey(data, public_key_proto);
     writeU64(data, input.nonce());
     writeString(data, input.receiver_id());
-    const auto& block_hash = input.block_hash();
-    writeRawBuffer(data, block_hash);
+    writeRawBuffer(data, input.block_hash());
     writeU32(data, input.actions_size());
     for (const auto& action : input.actions()) {
         writeAction(data, action);
     }
-    return data;
+    return Result<Data, Common::Proto::SigningError>::success(std::move(data));
 }
 
-Data transactionDataWithPublicKey(const Proto::SigningInput& input) {
+Result<Data, Common::Proto::SigningError> transactionDataWithPublicKey(const Proto::SigningInput& input) {
+    if (input.block_hash().size() != 32) {
+        return Result<Data, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_params);
+    }
     Data data;
     writeString(data, input.signer_id());
     auto public_key_proto = Proto::PublicKey();
@@ -188,13 +193,12 @@ Data transactionDataWithPublicKey(const Proto::SigningInput& input) {
     writePublicKey(data, public_key_proto);
     writeU64(data, input.nonce());
     writeString(data, input.receiver_id());
-    const auto& block_hash = input.block_hash();
-    writeRawBuffer(data, block_hash);
+    writeRawBuffer(data, input.block_hash());
     writeU32(data, input.actions_size());
     for (const auto& action : input.actions()) {
         writeAction(data, action);
     }
-    return data;
+    return Result<Data, Common::Proto::SigningError>::success(std::move(data));
 }
 
 Data signedTransactionData(const Data& transactionData, const Data& signatureData) {
