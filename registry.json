@@ -5053,7 +5053,7 @@
     "chainId": "4663",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://8crv4vmq6tiu1yqr.blockscout.com",
+      "url": "https://robinhoodchain.blockscout.com",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x60f2d8e8ca8d64da9d3ded83a759a123ea28aca9f51a8f9b62cf34835b770cf9",
@@ -5061,7 +5061,7 @@
     },
     "info": {
       "url": "https://robinhood.com",
-      "rpc": "https://ac23019b22f1ae5a-sequencer.offchainlabs.com/rpc",
+      "rpc": "https://rpc.mainnet.chain.robinhood.com",
       "documentation": "https://docs.robinhood.com/chain/"
     }
   }
