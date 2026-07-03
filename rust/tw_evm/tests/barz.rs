@@ -807,6 +807,25 @@ fn test_get_formatted_signature_rejects_challenge_in_wrong_field() {
     );
 }
 
+/// JSON with duplicate "challenge" keys must be rejected to prevent split-point ambiguity.
+#[test]
+fn test_get_formatted_signature_rejects_duplicate_challenge_key() {
+    let signature = hex::decode(SIGNATURE_HEX).unwrap();
+    let challenge = hex::decode(CHALLENGE_HEX).unwrap();
+    let authenticator_data = hex::decode(AUTHENTICATOR_DATA_HEX).unwrap();
+
+    // Both "challenge" fields carry the correct value — the key pattern appears twice.
+    let client_data_json = "{\"challenge\":\"zyZ6eMWtr5bzQaaW61doJChMVy8-Yb5hlpTVOdsZJfk\",\"challenge\":\"zyZ6eMWtr5bzQaaW61doJChMVy8-Yb5hlpTVOdsZJfk\",\"origin\":\"https://trustwallet.com\"}";
+
+    let result =
+        get_formatted_signature(&signature, &challenge, &authenticator_data, client_data_json)
+            .unwrap();
+    assert!(
+        result.is_empty(),
+        "should reject clientDataJSON with duplicate challenge keys"
+    );
+}
+
 /// Invalid JSON must be rejected.
 #[test]
 fn test_get_formatted_signature_rejects_invalid_json() {
