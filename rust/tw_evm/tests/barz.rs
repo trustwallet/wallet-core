@@ -817,9 +817,13 @@ fn test_get_formatted_signature_rejects_duplicate_challenge_key() {
     // Both "challenge" fields carry the correct value — the key pattern appears twice.
     let client_data_json = "{\"challenge\":\"zyZ6eMWtr5bzQaaW61doJChMVy8-Yb5hlpTVOdsZJfk\",\"challenge\":\"zyZ6eMWtr5bzQaaW61doJChMVy8-Yb5hlpTVOdsZJfk\",\"origin\":\"https://trustwallet.com\"}";
 
-    let result =
-        get_formatted_signature(&signature, &challenge, &authenticator_data, client_data_json)
-            .unwrap();
+    let result = get_formatted_signature(
+        &signature,
+        &challenge,
+        &authenticator_data,
+        client_data_json,
+    )
+    .unwrap();
     assert!(
         result.is_empty(),
         "should reject clientDataJSON with duplicate challenge keys"
