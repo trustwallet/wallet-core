@@ -753,8 +753,7 @@ fn test_get_formatted_signature() {
 
 // The challenge used in the security tests below.
 // base64url (no padding): zyZ6eMWtr5bzQaaW61doJChMVy8-Yb5hlpTVOdsZJfk
-const CHALLENGE_HEX: &str =
-    "cf267a78c5adaf96f341a696eb576824284c572f3e61be619694d539db1925f9";
+const CHALLENGE_HEX: &str = "cf267a78c5adaf96f341a696eb576824284c572f3e61be619694d539db1925f9";
 const SIGNATURE_HEX: &str =
     "3044022012d89e3b41e253dc9e90bd34dc1750d059b76d0b1d16af2059aa26e90b8960bf0220256d8a05572c654906ce422464693e280e243e6d9dbc5f96a681dba846bca276";
 const AUTHENTICATOR_DATA_HEX: &str =
@@ -771,9 +770,13 @@ fn test_get_formatted_signature_rejects_challenge_prefix() {
     // "challenge" field contains the correct base64url plus extra suffix characters.
     let client_data_json = "{\"type\":\"webauthn.get\",\"challenge\":\"zyZ6eMWtr5bzQaaW61doJChMVy8-Yb5hlpTVOdsZJfkEXTRA\",\"origin\":\"https://trustwallet.com\"}";
 
-    let result =
-        get_formatted_signature(&signature, &challenge, &authenticator_data, client_data_json)
-            .unwrap();
+    let result = get_formatted_signature(
+        &signature,
+        &challenge,
+        &authenticator_data,
+        client_data_json,
+    )
+    .unwrap();
     assert!(
         result.is_empty(),
         "should reject clientDataJSON whose challenge is a longer value sharing the same prefix"
@@ -791,9 +794,13 @@ fn test_get_formatted_signature_rejects_challenge_in_wrong_field() {
     // "note" field contains the exact challenge base64url; "challenge" field has a different value.
     let client_data_json = "{\"note\":\"zyZ6eMWtr5bzQaaW61doJChMVy8-Yb5hlpTVOdsZJfk\",\"challenge\":\"other\",\"origin\":\"https://trustwallet.com\"}";
 
-    let result =
-        get_formatted_signature(&signature, &challenge, &authenticator_data, client_data_json)
-            .unwrap();
+    let result = get_formatted_signature(
+        &signature,
+        &challenge,
+        &authenticator_data,
+        client_data_json,
+    )
+    .unwrap();
     assert!(
         result.is_empty(),
         "should reject clientDataJSON where the challenge value appears in the wrong field"
@@ -824,13 +831,19 @@ fn test_get_formatted_signature_rejects_missing_challenge_field() {
     let challenge = hex::decode(CHALLENGE_HEX).unwrap();
     let authenticator_data = hex::decode(AUTHENTICATOR_DATA_HEX).unwrap();
 
-    let client_data_json =
-        "{\"type\":\"webauthn.get\",\"origin\":\"https://trustwallet.com\"}";
+    let client_data_json = "{\"type\":\"webauthn.get\",\"origin\":\"https://trustwallet.com\"}";
 
-    let result =
-        get_formatted_signature(&signature, &challenge, &authenticator_data, client_data_json)
-            .unwrap();
-    assert!(result.is_empty(), "should reject JSON without a challenge field");
+    let result = get_formatted_signature(
+        &signature,
+        &challenge,
+        &authenticator_data,
+        client_data_json,
+    )
+    .unwrap();
+    assert!(
+        result.is_empty(),
+        "should reject JSON without a challenge field"
+    );
 }
 
 /// JSON with whitespace between the key and colon (\"challenge\" : \"...\") must be
@@ -845,9 +858,13 @@ fn test_get_formatted_signature_rejects_spaced_json() {
     // key pattern "challenge":" won't match, locking in the intended strictness.
     let client_data_json = "{\"type\":\"webauthn.get\",\"challenge\" : \"zyZ6eMWtr5bzQaaW61doJChMVy8-Yb5hlpTVOdsZJfk\",\"origin\":\"https://trustwallet.com\"}";
 
-    let result =
-        get_formatted_signature(&signature, &challenge, &authenticator_data, client_data_json)
-            .unwrap();
+    let result = get_formatted_signature(
+        &signature,
+        &challenge,
+        &authenticator_data,
+        client_data_json,
+    )
+    .unwrap();
     assert!(
         result.is_empty(),
         "should reject JSON with whitespace between key and colon (matches find_json_key_index strictness)"
