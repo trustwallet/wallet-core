@@ -79,7 +79,7 @@ cd android && ./gradlew connectedAndroidTest
 ```bash
 tools/ios-test
 # Requires: xcodegen, xcbeautify
-# Runs on: iPhone 16 simulator, iOS 18.5
+# Runs on: iPhone 17 simulator, iOS 26.2
 ```
 
 ### WASM / TypeScript
