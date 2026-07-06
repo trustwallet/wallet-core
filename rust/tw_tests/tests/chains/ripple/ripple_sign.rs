@@ -804,6 +804,54 @@ fn test_ripple_sign_raw_json() {
     assert_eq!(output.encoded.to_hex(), "1200002405995011201b059b290f6140000000000186a068400000000000000a732103df650aab92e1b0a95cbda6a5a0fc3bfdbe991901e5b1cdfcd238b769cb4934a7744730450221008a5dba92a63fa82987a9ec3035febd1d5fe802f9a1baf3760090bb117281684e022056e4feca51231f719ca16cbfe370d312704e2cd7b94a28548f7f7886141d8bb28114023c2b9f15b95198d270b1bf92a4700c40272ca48314e1b799e72e5785c6a84af0f9c01424d4256b14aff9ea7dc1287b2266726f6d546f6b656e223a22307865656565656565656565656565656565656565656565656565656565656565656565656565656565222c22746f546f6b656e223a225452587c783561763039222c2273656e646572223a2272554653613244324a59476e354169525a6951785375705a7856354b6348454347222c2264657374696e6174696f6e223a22544255437a6763323976796b6b7646614547326d675274784b76614b6536736b7758222c226d696e52657475726e416d6f756e74223a2231333239353831303030303030222c2266726f6d416d6f756e74223a22313030303030227de1f1");
 }
 
+// Cross-currency (DEX) swap Payment: convert XRP -> USD via a `Paths` route with a
+// `SendMax` cap and the `tfPartialPayment` flag. Exercises the `PathSet` serialized type.
+// Supplied via `raw_json`; the expected blob was cross-checked with xrpl-py.
+#[test]
+fn test_ripple_sign_cross_currency_swap_raw_json() {
+    let private_key = "a5576c0f63da10e584568c8d134569ff44017b0a249eb70657127ae04f38cc77"
+        .decode_hex()
+        .unwrap();
+
+    // Deliver 10 USD (issued by the gateway), spending up to 100 XRP, allowing a
+    // partial payment along the given path. Payment to self (a conversion).
+    let raw_json = r#"{
+        "TransactionType": "Payment",
+        "Destination": "rfxdLwsZnoespnTDDb1Xhvbc8EFNdztaoq",
+        "Amount": {
+            "currency": "USD",
+            "issuer": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
+            "value": "10"
+        },
+        "SendMax": "100000000",
+        "Paths": [
+            [
+                { "currency": "USD", "issuer": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B" }
+            ]
+        ],
+        "Flags": 131072
+    }"#;
+
+    let input = Proto::SigningInput {
+        fee: 10,
+        sequence: 32_268_248,
+        last_ledger_sequence: 32_268_269,
+        account: "rfxdLwsZnoespnTDDb1Xhvbc8EFNdztaoq".into(),
+        private_key: private_key.into(),
+        raw_json: raw_json.into(),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::XRP, input);
+    assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
+
+    assert_eq!(
+        output.encoded.to_hex(),
+        "12000022000200002401ec5fd8201b01ec5fed61d4c38d7ea4c6800000000000000000000000000055534400000000000a20b3c85f482532a9578dbb3950b85ca06594d168400000000000000a694000000005f5e100732103d13e1152965a51a4a9fd9a8b4ea3dd82a4eba6b25fcad5f460a2342bb650333f7446304402206878d2931fca7f1d5b78415480a4bea0b5570491df58c13792eee88e780779720220017f4e5b24b88aef34b23adf23f687747f1d6999f8523abf90b397eb86d4b55681144c55f5a78067206507580be7bb2686c8460adff983144c55f5a78067206507580be7bb2686c8460adff901123000000000000000000000000055534400000000000a20b3c85f482532a9578dbb3950b85ca06594d100"
+    );
+}
+
 // ── Proto-path X-address DestinationTag resolution ──────────────────────────
 
 fn x_addr_payment_input(

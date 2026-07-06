@@ -10,6 +10,7 @@ use crate::types::account_id::AccountId;
 use crate::types::amount::Amount;
 use crate::types::blob::Blob;
 use crate::types::currency::Currency;
+use crate::types::path_set::PathSet;
 use crate::types::vector256::Vector256;
 use serde::de::DeserializeOwned;
 use serde_json::Value as Json;
@@ -21,11 +22,6 @@ use tw_hash::{Hash, H128, H160, H256};
 /// XRPL supported types.
 /// Missing types:
 /// * Issue
-/// * Path
-/// * PathSet
-/// * PathStep
-/// * STArray
-/// * STObject
 /// * XChainBridge
 pub enum XRPLTypes {
     AccountID(AccountId),
@@ -35,6 +31,7 @@ pub enum XRPLTypes {
     Hash128(H128),
     Hash160(H160),
     Hash256(H256),
+    PathSet(PathSet),
     Vector256(Vector256),
     STArray(STArray),
     STObject(STObject),
@@ -83,6 +80,7 @@ impl XRPLTypes {
             }
         } else if value.is_array() {
             match type_name {
+                "PathSet" => Ok(XRPLTypes::PathSet(deserialize_json(value)?)),
                 "Vector256" => Ok(XRPLTypes::Vector256(deserialize_json(value)?)),
                 "STArray" => Ok(XRPLTypes::STArray(deserialize_json(value)?)),
                 _ => unsupported_error(type_name),
@@ -103,6 +101,7 @@ impl Encodable for XRPLTypes {
             XRPLTypes::Hash128(ty) => ty.encode(dst),
             XRPLTypes::Hash160(ty) => ty.encode(dst),
             XRPLTypes::Hash256(ty) => ty.encode(dst),
+            XRPLTypes::PathSet(ty) => ty.encode(dst),
             XRPLTypes::Vector256(ty) => ty.encode(dst),
             XRPLTypes::STArray(ty) => ty.encode(dst),
             XRPLTypes::STObject(ty) => ty.encode(dst),
