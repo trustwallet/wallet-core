@@ -7,7 +7,7 @@ use crate::encode::Encodable;
 use crate::types::account_id::AccountId;
 use crate::types::currency::Currency;
 use serde::Deserialize;
-use tw_coin_entry::error::prelude::SigningResult;
+use tw_coin_entry::error::prelude::*;
 
 /// Path step type flags, indicating which fields a step carries.
 /// See PathSet Fields: <https://xrpl.org/serialization.html#pathset-fields>
@@ -54,6 +54,15 @@ impl Encodable for PathStep {
         }
         if self.issuer.is_some() {
             type_byte |= TYPE_ISSUER;
+        }
+
+        // A step must carry at least one field. An empty step would emit a 0x00 type
+        // byte, which is identical to `PATHSET_END_BYTE`; since `Paths` is not
+        // length-prefixed, a decoder would read it as the end of the PathSet and
+        // silently truncate the signed route. Reject it instead.
+        if type_byte == 0 {
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("PathStep must specify at least one of account, currency or issuer");
         }
         dst.push_byte(type_byte);
 
@@ -137,5 +146,25 @@ mod tests {
              014c55f5a78067206507580be7bb2686c8460adff9\
              3000000000000000000000000055534400000000000a20b3c85f482532a9578dbb3950b85ca06594d100",
         );
+    }
+
+    #[track_caller]
+    fn assert_encode_path_set_err(value: Json) {
+        let path_set: PathSet = serde_json::from_value(value).unwrap();
+        let mut encoder = Encoder::default();
+        assert!(path_set.encode(&mut encoder).is_err());
+    }
+
+    #[test]
+    fn test_path_set_rejects_empty_step() {
+        // An empty step encodes a 0x00 type byte, colliding with the PathSet end
+        // marker and silently truncating the signed route. It must be rejected.
+        assert_encode_path_set_err(json!([[{}]]));
+
+        // An empty step preceding a valid one is the more dangerous case: a decoder
+        // would stop at the leading 0x00 and drop the real hop.
+        assert_encode_path_set_err(json!([
+            [{}, {"account": "rfxdLwsZnoespnTDDb1Xhvbc8EFNdztaoq"}]
+        ]));
     }
 }
