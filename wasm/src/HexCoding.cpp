@@ -4,6 +4,7 @@
 //
 
 #include <emscripten/bind.h>
+#include <TrezorCrypto/memzero.h>
 
 #include "WasmData.h"
 #include "HexCoding.h"
@@ -15,7 +16,10 @@ namespace TW::Wasm {
 class HexCoding {
   public:
     static auto parseHex(const std::string& string) {
-        return DataToVal(TW::parse_hex(string, true));
+        auto data = TW::parse_hex(string, true);
+        auto result = DataToVal(data);
+        memzero(data.data(), data.size());
+        return result;
     }
 
     static auto hexEncoded(const std::string& string) {

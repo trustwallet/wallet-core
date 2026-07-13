@@ -12,7 +12,7 @@
 
 namespace TW::Wasm {
 
-auto DataToVal(Data data) -> emscripten::val;
+auto DataToVal(const Data& data) -> emscripten::val;
 
 /// Converts a TWData * to Uint8Array, deleting the TWData * when done.
 auto TWDataToVal(TWData *_Nonnull data) -> emscripten::val;

@@ -13,9 +13,9 @@
   # Method returns a string
   elsif should_return_string(method)
     if method.return_type.is_nullable -%>
-    return TWStringToStd(<%= call %>);
+    return TWStringToVal(<%= call %>);
 <%  else -%>
-    return TWStringToStd(<%= call %>);
+    return TWStringToVal(<%= call %>);
 <% end
   # Method returns a class or struct
   elsif method.return_type.is_class || method.return_type.is_struct

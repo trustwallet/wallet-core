@@ -10,7 +10,7 @@ using namespace emscripten;
 
 namespace TW::Wasm {
 
-auto DataToVal(Data data) -> val {
+auto DataToVal(const Data& data) -> val {
     auto view = val(typed_memory_view(data.size(), data.data()));
     auto jsArray = val::global("Uint8Array").new_(data.size());
     jsArray.call<void>("set", view);

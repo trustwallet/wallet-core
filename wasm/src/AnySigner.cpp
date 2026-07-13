@@ -5,6 +5,7 @@
 
 #include <TrustWalletCore/TWAnySigner.h>
 #include <emscripten/bind.h>
+#include <TrezorCrypto/memzero.h>
 
 #include "WasmData.h"
 #include "Coin.h"
@@ -18,7 +19,9 @@ class AnySigner {
     static auto sign(const std::string& string, TWCoinType coin) {
         Data out;
         TW::anyCoinSign(coin, TW::data(string), out);
-        return DataToVal(out);
+        auto result = DataToVal(out);
+        memzero(out.data(), out.size());
+        return result;
     }
 
     static auto supportsJSON(TWCoinType coin) {
@@ -28,7 +31,9 @@ class AnySigner {
     static auto plan(const std::string& string, TWCoinType coin) {
         Data out;
         TW::anyCoinPlan(coin, TW::data(string), out);
-        return DataToVal(out);
+        auto result = DataToVal(out);
+        memzero(out.data(), out.size());
+        return result;
     }
 };
 
