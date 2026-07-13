@@ -11,9 +11,9 @@
 
 namespace TW::Wasm {
 
-/// Converts a TWString * to a JS string val, zeroing all WASM-heap copies and
-/// deleting the TWString * when done.  Prefer this over TWStringToStd for any
-/// string that may contain secret material (keys, mnemonics, signatures).
+/// Converts a TWString * to a JS string val.
+/// Zeroes the WASM-heap buffer via TWStringDelete (which calls memzero internally),
+/// and explicitly zeroes the intermediate JS-heap Uint8Array before returning.
 auto TWStringToVal(TWString *_Nonnull string) -> emscripten::val;
 
 } // namespace TW::Wasm

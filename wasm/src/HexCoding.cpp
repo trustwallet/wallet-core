@@ -18,7 +18,7 @@ class HexCoding {
     static auto parseHex(const std::string& string) {
         auto data = TW::parse_hex(string, true);
         auto result = DataToVal(data);
-        memzero(data.data(), data.size());
+        if (!data.empty()) { memzero(data.data(), data.size()); }
         return result;
     }
 

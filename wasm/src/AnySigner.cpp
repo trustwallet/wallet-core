@@ -20,7 +20,7 @@ class AnySigner {
         Data out;
         TW::anyCoinSign(coin, TW::data(string), out);
         auto result = DataToVal(out);
-        memzero(out.data(), out.size());
+        if (!out.empty()) { memzero(out.data(), out.size()); }
         return result;
     }
 
@@ -32,7 +32,7 @@ class AnySigner {
         Data out;
         TW::anyCoinPlan(coin, TW::data(string), out);
         auto result = DataToVal(out);
-        memzero(out.data(), out.size());
+        if (!out.empty()) { memzero(out.data(), out.size()); }
         return result;
     }
 };

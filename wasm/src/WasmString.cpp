@@ -21,10 +21,11 @@ auto TWStringToVal(TWString *_Nonnull string) -> val {
     auto view = val(typed_memory_view(s->size(), reinterpret_cast<const uint8_t*>(s->data())));
     // Copy once into a JS-heap Uint8Array (not in WASM linear memory).
     auto jsArr = val::global("Uint8Array").new_(view);
-    // Decode to a JS string; the original WASM buffer is zeroed by the defer.
+    // Decode to a JS string.
     auto result = val::global("TextDecoder").new_().call<val>("decode", jsArr);
-    // Zero the intermediate JS-heap byte copy as well.
+    // Zero the JS-heap intermediate byte copy.
     jsArr.call<void>("fill", val(0));
+    // defer calls TWStringDelete, which calls memzero on the buffer before freeing.
     return result;
 }
 
