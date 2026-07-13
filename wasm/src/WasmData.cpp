@@ -27,7 +27,7 @@ auto TWDataToVal(TWData* _Nonnull data) -> val {
     defer {
         TWDataDelete(data);
     };
-    auto* v = reinterpret_cast<Data*>(data);
+    auto* v = const_cast<Data*>(reinterpret_cast<const Data*>(data));
     Data local = std::move(*v);  // *v is now genuinely empty; local owns the buffer
     return DataToVal(std::move(local));
 }
