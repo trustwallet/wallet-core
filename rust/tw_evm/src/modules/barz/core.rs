@@ -93,12 +93,38 @@ pub fn get_formatted_signature(
     client_data_json: &str,
 ) -> BarzResult<Vec<u8>> {
     let challenge_base64 = base64::encode(challenge, base64::URL_SAFE);
-
     let challenge_base64 = challenge_base64.trim_end_matches('=');
 
-    let Some(challenge_pos) = client_data_json.find(challenge_base64) else {
+    // Verify the "challenge" field is an exact match. A substring search would allow
+    // an assertion signed over a longer challenge to authorize a shorter UserOp hash.
+    let Ok(parsed) = serde_json::from_str::<serde_json::Value>(client_data_json) else {
         return Ok(Vec::new());
     };
+    let Some(actual_challenge) = parsed.get("challenge").and_then(|v| v.as_str()) else {
+        return Ok(Vec::new());
+    };
+    if actual_challenge != challenge_base64 {
+        return Ok(Vec::new());
+    }
+
+    // Locate the split point: find the key pattern (static str, no allocation),
+    // then confirm the value and its closing quote match exactly at that position.
+    // Reject if the pattern appears more than once to avoid ambiguity.
+    const KEY_PATTERN: &str = r#""challenge":""#;
+    let mut occurrences = client_data_json.match_indices(KEY_PATTERN);
+    let Some((key_pos, _)) = occurrences.next() else {
+        return Ok(Vec::new());
+    };
+    if occurrences.next().is_some() {
+        return Ok(Vec::new());
+    }
+    let challenge_pos = key_pos + KEY_PATTERN.len();
+    let challenge_end = challenge_pos + challenge_base64.len();
+    if client_data_json.get(challenge_pos..challenge_end) != Some(challenge_base64)
+        || client_data_json.as_bytes().get(challenge_end) != Some(&b'"')
+    {
+        return Ok(Vec::new());
+    }
 
     let client_data_json_pre = &client_data_json[..challenge_pos];
     let client_data_json_post = &client_data_json[challenge_pos + challenge_base64.len()..];
