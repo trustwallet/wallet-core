@@ -16,11 +16,18 @@
   end
 -%>
 <%  if needs_wipe -%>
+<%    if method.return_type.name == :void -%>
+    <%= return_expr %>;
+<%    data_params.each do |p| -%>
+    if (!<%= p.name %>Data.empty()) { memzero(<%= p.name %>Data.data(), <%= p.name %>Data.size()); }
+<%    end -%>
+<%    else -%>
     auto result = <%= return_expr %>;
 <%    data_params.each do |p| -%>
     if (!<%= p.name %>Data.empty()) { memzero(<%= p.name %>Data.data(), <%= p.name %>Data.size()); }
 <%    end -%>
     return result;
+<%    end -%>
 <%  else -%>
     return <%= return_expr %>;
 <%  end -%>
