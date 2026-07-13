@@ -2,28 +2,25 @@
   method = locals[:method]
   arguments = locals[:arguments] || ['instance'] + WasmCppHelper.arguments(method.parameters.drop(1))
   call = render('cpp/method_call.erb', { method: method, arguments: arguments })
+  data_params = method.parameters.select { |p| p.type.name == :data }
+  needs_wipe = !data_params.empty?
 
-  # Method returns data
   if should_return_data(method)
-    if method.return_type.is_nullable -%>
-    return TWDataToVal(<%= call %>);
-<%  else -%>
-    return TWDataToVal(<%= call %>);
-<%  end
-  # Method returns a string
+    return_expr = "TWDataToVal(#{call})"
   elsif should_return_string(method)
-    if method.return_type.is_nullable -%>
-    return TWStringToVal(<%= call %>);
-<%  else -%>
-    return TWStringToVal(<%= call %>);
-<% end
-  # Method returns a class or struct
+    return_expr = "TWStringToVal(#{call})"
   elsif method.return_type.is_class || method.return_type.is_struct
-    if method.return_type.is_nullable -%>
-    return new Wasm<%= method.return_type.name %>(<%= call %>);
+    return_expr = "new Wasm#{method.return_type.name}(#{call})"
+  else
+    return_expr = call
+  end
+-%>
+<%  if needs_wipe -%>
+    auto result = <%= return_expr %>;
+<%    data_params.each do |p| -%>
+    if (!<%= p.name %>Data.empty()) { memzero(<%= p.name %>Data.data(), <%= p.name %>Data.size()); }
+<%    end -%>
+    return result;
 <%  else -%>
-    return new Wasm<%= method.return_type.name %>(<%= call %>);
-<%  end
-  else -%>
-    return <%= call %>;
-<%end -%>
+    return <%= return_expr %>;
+<%  end -%>

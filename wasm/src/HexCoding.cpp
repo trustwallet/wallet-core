@@ -4,7 +4,6 @@
 //
 
 #include <emscripten/bind.h>
-#include <TrezorCrypto/memzero.h>
 
 #include "WasmData.h"
 #include "HexCoding.h"
@@ -17,9 +16,7 @@ class HexCoding {
   public:
     static auto parseHex(const std::string& string) {
         auto data = TW::parse_hex(string, true);
-        auto result = DataToVal(data);
-        if (!data.empty()) { memzero(data.data(), data.size()); }
-        return result;
+        return DataToVal(std::move(data));
     }
 
     static auto hexEncoded(const std::string& string) {

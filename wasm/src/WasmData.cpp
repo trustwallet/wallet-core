@@ -4,25 +4,27 @@
 //
 
 #include "WasmData.h"
-#include "Defer.h"
+
+#include <TrezorCrypto/memzero.h>
 
 using namespace emscripten;
 
 namespace TW::Wasm {
 
-auto DataToVal(const Data& data) -> val {
+auto DataToVal(Data&& data) -> val {
     auto view = val(typed_memory_view(data.size(), data.data()));
     auto jsArray = val::global("Uint8Array").new_(data.size());
     jsArray.call<void>("set", view);
+    if (!data.empty()) { memzero(data.data(), data.size()); }
     return jsArray;
 }
 
 auto TWDataToVal(TWData* _Nonnull data) -> val {
-    defer {
-        TWDataDelete(data);
-    };
-    auto* v = reinterpret_cast<const Data*>(data);
-    return DataToVal(*v);
+    auto* v = reinterpret_cast<Data*>(data);
+    auto result = DataToVal(std::move(*v));
+    // v is now moved-from (empty); TWDataDelete skips memzero but frees the object.
+    TWDataDelete(data);
+    return result;
 }
 
 } // namespace TW::Wasm
