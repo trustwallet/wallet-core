@@ -5,8 +5,9 @@ set -euo pipefail
 # Since sonar-scanner-cli 6.x the Linux artifact is arch-suffixed (linux-x64).
 TARGET=sonar-scanner-cli-8.1.0.6389-linux-x64.zip
 TARGET_DIR=sonar-scanner-8.1.0.6389-linux-x64
-curl -sSfL https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/${TARGET} --output ${TARGET}
-unzip -q ${TARGET}
-cp tools/sonar-scanner.properties ${TARGET_DIR}/conf
-chmod +x ${TARGET_DIR}/bin/sonar-scanner
-./${TARGET_DIR}/bin/sonar-scanner
+curl -sSfL "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/${TARGET}" --output "${TARGET}"
+unzip -q "${TARGET}"
+rm -f "${TARGET}"
+cp tools/sonar-scanner.properties "${TARGET_DIR}/conf"
+chmod +x "${TARGET_DIR}/bin/sonar-scanner"
+"./${TARGET_DIR}/bin/sonar-scanner"
