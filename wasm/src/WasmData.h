@@ -6,6 +6,7 @@
 #pragma once
 
 #include <TrustWalletCore/TWData.h>
+#include <TrezorCrypto/memzero.h>
 #include <emscripten/val.h>
 
 #include "Data.h"
