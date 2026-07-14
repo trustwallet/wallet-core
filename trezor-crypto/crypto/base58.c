@@ -203,7 +203,7 @@ int base58_encode_check(const uint8_t *data, int datalen,
 
 int base58_decode_check(const char *str, HasherType hasher_type, uint8_t *data,
                         int datalen) {
-  if (datalen > 128) {
+  if (datalen <= 0 || datalen > 128) {
     return 0;
   }
   uint8_t d[datalen + 4];
@@ -214,6 +214,9 @@ int base58_decode_check(const char *str, HasherType hasher_type, uint8_t *data,
   }
   uint8_t *nd = d + datalen + 4 - res;
   if (b58check(nd, res, hasher_type, str) < 0) {
+    return 0;
+  }
+  if (res < 4 || res - 4 > (size_t)datalen) {
     return 0;
   }
   memcpy(data, nd, res - 4);
