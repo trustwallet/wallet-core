@@ -31,7 +31,7 @@ struct TransactionBuilder {
         Transaction tx = tx_result.payload();
         // if not set, always use latest consensus branch id
         if (plan.branchId.empty()) {
-            std::copy(BlossomBranchID.begin(), BlossomBranchID.end(), tx.branchId.begin());
+            std::copy(Nu6BranchID.begin(), Nu6BranchID.end(), tx.branchId.begin());
         } else {
             if (plan.branchId.size() != tx.branchId.size()) {
                 return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_params);
