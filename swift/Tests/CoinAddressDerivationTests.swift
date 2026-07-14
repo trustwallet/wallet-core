@@ -12,7 +12,7 @@ class CoinAddressDerivationTests: XCTestCase {
 
         for _ in 0..<4 {
             for coin in CoinType.allCases {
-                let privateKey = wallet.getKeyForCoin(coin: coin)
+                let privateKey = wallet.getKeyForCoin(coin: coin)!
                 let derivedAddress = coin.deriveAddress(privateKey: privateKey)
                 let address = coin.address(string: derivedAddress)
 

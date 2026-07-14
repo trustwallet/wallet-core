@@ -31,7 +31,7 @@ class AccountTests: XCTestCase {
 
         let hash = Data(hexString: "3F891FDA3704F0368DAB65FA81EBE616F4AA2A0854995DA4DC0B59D2CADBD64F")!
         let hdwallet = wallet.key.wallet(password: password)!
-        let privateKey = hdwallet.getKeyForCoin(coin: .ethereum)
+        let privateKey = hdwallet.getKeyForCoin(coin: .ethereum)!
         let result = privateKey.sign(digest: hash, curve: .secp256k1)!
 
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
@@ -58,7 +58,7 @@ class AccountTests: XCTestCase {
         let wallet = Wallet(keyURL: URL(fileURLWithPath: "/"), key: key)
 
         let hdwallet = wallet.key.wallet(password: password)!
-        let privateKey = hdwallet.getKeyForCoin(coin: .bitcoin)
+        let privateKey = hdwallet.getKeyForCoin(coin: .bitcoin)!
 
         XCTAssertEqual(privateKey.data.hexString, "b511e175dc474c810ad567557a13a29f9e82576990d5f36dab342dd2d00fb5c4")
     }
@@ -100,7 +100,7 @@ class AccountTests: XCTestCase {
         let wallet = Wallet(keyURL: URL(fileURLWithPath: "/"), key: key)
 
         let hdwallet = wallet.key.wallet(password: password)!
-        let privateKey = hdwallet.getKeyForCoin(coin: .bitcoinCash)
+        let privateKey = hdwallet.getKeyForCoin(coin: .bitcoinCash)!
 
         XCTAssertEqual(privateKey.data.hexString, "04b02272b75eaee0b7f1a96d667cb4629b400e2152a841c6791f802b336a8af8")
     }

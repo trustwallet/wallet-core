@@ -442,12 +442,21 @@ TEST(HDWallet, PublicKeyFromExtended_Ethereum) {
 }
 
 TEST(HDWallet, PublicKeyFromExtended_NIST256p1) {
-    const auto xpub = STRING("xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj");
+    // Breaking change: previously, the xpub was generated on secp256k1 and reused for nist256p1, which is invalid.
+    // The xpub must be generated on the nist256p1 curve itself (via TWCoinTypeNEO below), not reused
+    // from a secp256k1 xpub: the two curves have different parameters, so a secp256k1 point is not a
+    // valid point on nist256p1, and child-key derivation from it would fail.
+    auto words = STRING("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
+
+    auto xpub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWPurposeBIP44, TWCoinTypeNEO, TWHDVersionXPUB));
+    assertStringsEqual(xpub, "xpub6C14EL78ogJs6aQEpzMdPa6oUdo7dUFdScW7ckC6MXxUAN7zDiEP6pGQphtcjS2cv4Nusp4i9CVJPmtuGmp1RKN3pCvUPWkDFcoMHCHERTA");
+
     const auto xpubAddr = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeNEO, STRING("m/44'/888'/0'/0/0").get())); // Neo
     ASSERT_NE(xpubAddr.get(), nullptr);
     auto data = WRAPD(TWPublicKeyData(xpubAddr.get()));
     ASSERT_NE(data.get(), nullptr);
-    assertHexEqual(data, "03774c910fcf07fa96886ea794f0d5caed9afe30b44b83f7e213bb92930e7df4bd");
+    assertHexEqual(data, "023c73be53bc3bbbacf6af57850efd294f07f1d8e324f8bb88df9274a188eac4b0");
 }
 
 TEST(HDWallet, PublicKeyFromExtended_Negative) {
@@ -466,6 +475,12 @@ TEST(HDWallet, PublicKeyFromExtended_Negative) {
     }
     {   // Curve25519
         const auto xpubAddr = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeWaves, STRING("m/44'/5741564'/0'/0'/0'").get())); // Waves
+        EXPECT_EQ(xpubAddr.get(), nullptr);
+    }
+    {   // secp256k1 point reused as nist256p1: valid Base58Check encoding, but the embedded point
+        // does not satisfy the nist256p1 curve equation, so hdnode_public_ckd() fails and
+        // getPublicKeyFromExtended() must return null rather than an undeviated/garbage key.
+        const auto xpubAddr = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeNEO, STRING("m/44'/888'/0'/0/0").get())); // Neo
         EXPECT_EQ(xpubAddr.get(), nullptr);
     }
 }
@@ -501,6 +516,16 @@ TEST(HDWallet, GetDerivedKey) {
     const auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetDerivedKey(wallet.get(), TWCoinTypeBitcoin, 0, 0, 0));
     const auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
     assertHexEqual(privateKeyData, "1901b5994f075af71397f65bd68a9fff8d3025d65f5a2c731cf90f5e259d6aac");
+}
+
+TEST(HDWallet, GetDerivedKeyEd25519Fails) {
+    // TWHDWalletGetDerivedKey always builds the change/address components of the derivation
+    // path as non-hardened (BIP44 style). Ed25519 (used by Solana) only supports hardened
+    // derivation, so `hdnode_private_ckd` fails on the non-hardened components and the call
+    // must return null rather than a key derived from a truncated/incorrect path.
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
+    const auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetDerivedKey(wallet.get(), TWCoinTypeSolana, 0, 0, 0));
+    EXPECT_EQ(privateKey.get(), nullptr);
 }
 
 TEST(HDWallet, GetKeyByCurve) {
