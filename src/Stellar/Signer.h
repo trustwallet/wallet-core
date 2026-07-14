@@ -5,8 +5,7 @@
 
 #include "Address.h"
 #include "Data.h"
-#include "../Hash.h"
-#include "../PrivateKey.h"
+#include "../Result.h"
 #include "../proto/Stellar.pb.h"
 
 #include <string>
@@ -17,16 +16,17 @@ class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input);
+
   public:
     const Proto::SigningInput& _input;
 
     Signer(const Proto::SigningInput& input) : _input(input) {}
 
     /// Signs the given transaction.
-    std::string sign() const;
+    Result<std::string, Common::Proto::SigningError> sign() const;
 
-    Data encode(const Proto::SigningInput& input) const;
-    Data signaturePreimage() const;
+    Result<Data, Common::Proto::SigningError> encode(const Proto::SigningInput& input) const;
+    Result<Data, Common::Proto::SigningError> signaturePreimage() const;
     Proto::SigningOutput compile(const Data& sig) const;
 
   private:

@@ -8,6 +8,9 @@
 namespace TW::Rust {
 
 bool RustCoinEntry::validateAddress(TWCoinType coin, const std::string &address, const PrefixVariant &addressPrefix) const {
+    if (address.find('\0') != std::string::npos) {
+        return false;
+    }
     Rust::TWStringWrapper addressStr = address;
 
     if (std::holds_alternative<std::monostate>(addressPrefix)) {
@@ -23,6 +26,9 @@ bool RustCoinEntry::validateAddress(TWCoinType coin, const std::string &address,
 }
 
 std::string RustCoinEntry::normalizeAddress(TWCoinType coin, const std::string& address) const {
+    if (address.find('\0') != std::string::npos) {
+        return {};
+    }
     Rust::TWStringWrapper addressStr = address;
 
     // `CoinEntry::normalizeAddress` is used when a `TWAnyAddress` has been created already, therefore validated.
@@ -73,6 +79,9 @@ std::string RustCoinEntry::deriveAddress(TWCoinType coin, const PublicKey& publi
 }
 
 Data RustCoinEntry::addressToData(TWCoinType coin, const std::string& address) const {
+    if (address.find('\0') != std::string::npos) {
+        return {};
+    }
     Rust::TWStringWrapper addressStr = address;
 
     // `CoinEntry::normalizeAddress` is used when a `TWAnyAddress` has been created already, therefore validated.

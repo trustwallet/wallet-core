@@ -91,6 +91,12 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
 
     switch (input.body().data_case()) {
     case Proto::TransactionBody::kTransfer: {
+        if (input.body().transfer().amount() <= 0) {
+            auto output = Proto::SigningOutput();
+            output.set_error(Common::Proto::Error_invalid_params);
+            output.set_error_message("Transfer amount must be positive");
+            return output;
+        }
         *body.mutable_cryptotransfer() = internals::cryptoTransferFromInput(input);
         break;
     }

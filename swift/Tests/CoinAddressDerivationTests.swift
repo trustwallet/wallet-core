@@ -124,7 +124,9 @@ class CoinAddressDerivationTests: XCTestCase {
                      .plasma,
                      .monad,
                      .megaETH,
-                     .seiEVM:
+                     .seiEVM,
+                     .hyperEVM,
+                     .robinhoodChain:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ronin:

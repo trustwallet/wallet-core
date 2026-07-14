@@ -12,6 +12,7 @@
 namespace TW::NEAR {
 
 using json = nlohmann::json;
+using SigningResult = Result<void, Common::Proto::SigningError>;
 
 static constexpr auto tokenTransferMethodName = "ft_transfer";
 
@@ -27,9 +28,12 @@ static void writeU64(Data& data, uint64_t number) {
     encode64LE(number, data);
 }
 
-static void writeU128(Data& data, const std::string& numberData) {
-    assert(numberData.size() == 16 && "U128 number should be 16 bytes long");
+static SigningResult writeU128(Data& data, const std::string& numberData) {
+    if (numberData.size() != 16) {
+        return SigningResult::failure(Common::Proto::Error_invalid_params);
+    }
     data.insert(std::end(data), std::begin(numberData), std::end(numberData));
+    return SigningResult::success();
 }
 
 template <class T>
@@ -48,57 +52,65 @@ static void writePublicKey(Data& data, const Proto::PublicKey& publicKey) {
     writeRawBuffer(data, keyData);
 }
 
-static void writeTransfer(Data& data, const Proto::Transfer& transfer) {
-    writeU128(data, transfer.deposit());
+static SigningResult writeTransfer(Data& data, const Proto::Transfer& transfer) {
+    return writeU128(data, transfer.deposit());
 }
 
-static void writeFunctionCall(Data& data, const Proto::FunctionCall& functionCall) {
+static SigningResult writeFunctionCall(Data& data, const Proto::FunctionCall& functionCall) {
     writeString(data, functionCall.method_name());
 
     writeU32(data, static_cast<uint32_t>(functionCall.args().size()));
     writeRawBuffer(data, functionCall.args());
 
     writeU64(data, functionCall.gas());
-    writeU128(data, functionCall.deposit());
+    return writeU128(data, functionCall.deposit());
 }
 
-static void writeStake(Data& data, const Proto::Stake& stake) {
-    writeU128(data, stake.stake());
+static SigningResult writeStake(Data& data, const Proto::Stake& stake) {
+    auto result = writeU128(data, stake.stake());
+    if (!result) {
+        return result;
+    }
     writePublicKey(data, stake.public_key());
+    return SigningResult::success();
 }
 
-static void writeFunctionCallPermission(Data& data, const Proto::FunctionCallPermission& functionCallPermission) {
+static SigningResult writeFunctionCallPermission(Data& data, const Proto::FunctionCallPermission& functionCallPermission) {
     if (functionCallPermission.allowance().empty()) {
         writeU8(data, 0);
     } else {
         writeU8(data, 1);
-        writeU128(data, functionCallPermission.allowance());
+        auto result = writeU128(data, functionCallPermission.allowance());
+        if (!result) {
+            return result;
+        }
     }
     writeString(data, functionCallPermission.receiver_id());
     writeU32(data, static_cast<uint32_t>(functionCallPermission.method_names().size()));
     for (auto&& methodName : functionCallPermission.method_names()) {
         writeString(data, methodName);
     }
+    return SigningResult::success();
 }
 
-static void writeAccessKey(Data& data, const Proto::AccessKey& accessKey) {
+static SigningResult writeAccessKey(Data& data, const Proto::AccessKey& accessKey) {
     writeU64(data, accessKey.nonce());
     switch (accessKey.permission_case()) {
     case Proto::AccessKey::kFunctionCall:
         writeU8(data, 0);
-        writeFunctionCallPermission(data, accessKey.function_call());
-        break;
+        return writeFunctionCallPermission(data, accessKey.function_call());
     case Proto::AccessKey::kFullAccess:
         writeU8(data, 1);
         break;
     case Proto::AccessKey::PERMISSION_NOT_SET:
         break;
     }
+    return SigningResult::success();
 }
 
-static void writeAddKey(Data& data, const Proto::AddKey& addKey) {
+static SigningResult writeAddKey(Data& data, const Proto::AddKey& addKey) {
     writePublicKey(data, addKey.public_key());
-    writeAccessKey(data, addKey.access_key());
+    return writeAccessKey(data, addKey.access_key());
 }
 
 static void writeDeleteKey(Data& data, const Proto::DeleteKey& deleteKey) {
@@ -109,7 +121,7 @@ static void writeDeleteAccount(Data& data, const Proto::DeleteAccount& deleteAcc
     writeString(data, deleteAccount.beneficiary_id());
 }
 
-static void writeTokenTransfer(Data& data, const Proto::TokenTransfer& tokenTransfer) {
+static SigningResult writeTokenTransfer(Data& data, const Proto::TokenTransfer& tokenTransfer) {
     writeString(data, tokenTransferMethodName);
 
     json functionCallArgs = {
@@ -122,10 +134,10 @@ static void writeTokenTransfer(Data& data, const Proto::TokenTransfer& tokenTran
     writeRawBuffer(data, functionCallArgsStr);
 
     writeU64(data, tokenTransfer.gas());
-    writeU128(data, tokenTransfer.deposit());
+    return writeU128(data, tokenTransfer.deposit());
 }
 
-static void writeAction(Data& data, const Proto::Action& action) {
+static SigningResult writeAction(Data& data, const Proto::Action& action) {
     uint8_t actionByte = action.payload_case() - Proto::Action::kCreateAccount;
     // `TokenTransfer` action is actually a `FunctionCall`,
     // so we need to set the actionByte to the proper value.
@@ -136,32 +148,30 @@ static void writeAction(Data& data, const Proto::Action& action) {
     writeU8(data, actionByte);
     switch (action.payload_case()) {
     case Proto::Action::kFunctionCall:
-        writeFunctionCall(data, action.function_call());
-        return;
+        return writeFunctionCall(data, action.function_call());
     case Proto::Action::kTransfer:
-        writeTransfer(data, action.transfer());
-        return;
+        return writeTransfer(data, action.transfer());
     case Proto::Action::kStake:
-        writeStake(data, action.stake());
-        return;
+        return writeStake(data, action.stake());
     case Proto::Action::kAddKey:
-        writeAddKey(data, action.add_key());
-        return;
+        return writeAddKey(data, action.add_key());
     case Proto::Action::kDeleteKey:
         writeDeleteKey(data, action.delete_key());
-        return;
+        return SigningResult::success();
     case Proto::Action::kDeleteAccount:
         writeDeleteAccount(data, action.delete_account());
-        return;
+        return SigningResult::success();
     case Proto::Action::kTokenTransfer:
-        writeTokenTransfer(data, action.token_transfer());
-        return;
+        return writeTokenTransfer(data, action.token_transfer());
     default:
-        return;
+        return SigningResult::success();
     }
 }
 
-Data transactionData(const Proto::SigningInput& input) {
+Result<Data, Common::Proto::SigningError> transactionData(const Proto::SigningInput& input) {
+    if (input.block_hash().size() != 32) {
+        return Result<Data, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_params);
+    }
     Data data;
     writeString(data, input.signer_id());
     auto key = PrivateKey(input.private_key(), TWCurveED25519);
@@ -171,16 +181,21 @@ Data transactionData(const Proto::SigningInput& input) {
     writePublicKey(data, public_key_proto);
     writeU64(data, input.nonce());
     writeString(data, input.receiver_id());
-    const auto& block_hash = input.block_hash();
-    writeRawBuffer(data, block_hash);
+    writeRawBuffer(data, input.block_hash());
     writeU32(data, input.actions_size());
     for (const auto& action : input.actions()) {
-        writeAction(data, action);
+        auto result = writeAction(data, action);
+        if (!result) {
+            return Result<Data, Common::Proto::SigningError>::failure(result.error());
+        }
     }
-    return data;
+    return Result<Data, Common::Proto::SigningError>::success(std::move(data));
 }
 
-Data transactionDataWithPublicKey(const Proto::SigningInput& input) {
+Result<Data, Common::Proto::SigningError> transactionDataWithPublicKey(const Proto::SigningInput& input) {
+    if (input.block_hash().size() != 32) {
+        return Result<Data, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_params);
+    }
     Data data;
     writeString(data, input.signer_id());
     auto public_key_proto = Proto::PublicKey();
@@ -188,13 +203,15 @@ Data transactionDataWithPublicKey(const Proto::SigningInput& input) {
     writePublicKey(data, public_key_proto);
     writeU64(data, input.nonce());
     writeString(data, input.receiver_id());
-    const auto& block_hash = input.block_hash();
-    writeRawBuffer(data, block_hash);
+    writeRawBuffer(data, input.block_hash());
     writeU32(data, input.actions_size());
     for (const auto& action : input.actions()) {
-        writeAction(data, action);
+        auto result = writeAction(data, action);
+        if (!result) {
+            return Result<Data, Common::Proto::SigningError>::failure(result.error());
+        }
     }
-    return data;
+    return Result<Data, Common::Proto::SigningError>::success(std::move(data));
 }
 
 Data signedTransactionData(const Data& transactionData, const Data& signatureData) {

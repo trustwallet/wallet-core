@@ -4528,7 +4528,7 @@
     "id": "ton",
     "name": "TON",
     "coinId": 607,
-    "symbol": "TON",
+    "symbol": "GRAM",
     "decimals": 9,
     "blockchain": "TheOpenNetwork",
     "derivation": [
@@ -5003,6 +5003,66 @@
       "source": "https://github.com/sei-protocol",
       "rpc": "https://evm-rpc.sei-apis.com",
       "documentation": "https://docs.sei.io"
+    }
+  },
+  {
+    "id": "hyperevm",
+    "name": "HyperEVM",
+    "coinId": 10000999,
+    "symbol": "HYPE",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "999",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://hyperevmscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xc79cb0bcc08995ac78f74f4a62bfd721d50a7368979b8025f3f8c229bb5a334c",
+      "sampleAccount": "0x3c43014aedbb496e173059f94bfe3b0ed1d55ba0"
+    },
+    "info": {
+      "url": "https://hyperfoundation.org",
+      "source": "https://github.com/hyperliquid-dex",
+      "rpc": "https://rpc.hyperliquid.xyz/evm",
+      "documentation": "https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/hyperevm"
+    }
+  },
+  {
+    "id": "robinhoodchain",
+    "name": "Robinhood Chain",
+    "displayName": "Robinhood Chain",
+    "coinId": 10004663,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "4663",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://robinhoodchain.blockscout.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x60f2d8e8ca8d64da9d3ded83a759a123ea28aca9f51a8f9b62cf34835b770cf9",
+      "sampleAccount": "0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73"
+    },
+    "info": {
+      "url": "https://robinhood.com",
+      "rpc": "https://rpc.mainnet.chain.robinhood.com",
+      "documentation": "https://docs.robinhood.com/chain/"
     }
   }
 ]

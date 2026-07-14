@@ -12,9 +12,9 @@ concurrency:
 
 jobs:
   build:
-    # if: github.event.pull_request.draft == false
-    # Temporarily disabled due to issues with SonarCloud account.
-    if: false
+    # Skip drafts; push events (dev/master) always run. Re-enabled after the
+    # analysis moved to the trustwallet-1 SonarCloud organization.
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
