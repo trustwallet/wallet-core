@@ -252,7 +252,7 @@ std::string HDWallet<seedSize>::getExtendedPrivateKeyAccount(TWPurpose purpose, 
     auto derivationPath = DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(path.coin(), true)});
     auto node = getNode(*this, curve, derivationPath);
     auto fingerprintValue = fingerprint(&node, publicKeyHasher(coin));
-    if (hdnode_private_ckd(&node, account + 0x80000000) == 0) {
+    if (hdnode_private_ckd(&node, DerivationPathIndex(account, true).derivationIndex()) == 0) {
         TW::memzero(&node);
         return "";
     }
@@ -270,7 +270,7 @@ std::string HDWallet<seedSize>::getExtendedPublicKeyAccount(TWPurpose purpose, T
     auto derivationPath = DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(path.coin(), true)});
     auto node = getNode(*this, curve, derivationPath);
     auto fingerprintValue = fingerprint(&node, publicKeyHasher(coin));
-    if (hdnode_private_ckd(&node, account + 0x80000000) == 0) {
+    if (hdnode_private_ckd(&node, DerivationPathIndex(account, true).derivationIndex()) == 0) {
         TW::memzero(&node);
         return "";
     }
@@ -349,6 +349,7 @@ namespace {
 
 uint32_t fingerprint(HDNode* node, Hash::Hasher hasher) {
     if (hdnode_fill_public_key(node) != 0) {
+        TW::memzero(node);
         throw std::invalid_argument("Failed to fill public key for fingerprint computation");
     }
     auto digest = Hash::hash(hasher, node->public_key, 33);

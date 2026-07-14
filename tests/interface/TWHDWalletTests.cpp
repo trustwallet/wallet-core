@@ -477,6 +477,12 @@ TEST(HDWallet, PublicKeyFromExtended_Negative) {
         const auto xpubAddr = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeWaves, STRING("m/44'/5741564'/0'/0'/0'").get())); // Waves
         EXPECT_EQ(xpubAddr.get(), nullptr);
     }
+    {   // secp256k1 point reused as nist256p1: valid Base58Check encoding, but the embedded point
+        // does not satisfy the nist256p1 curve equation, so hdnode_public_ckd() fails and
+        // getPublicKeyFromExtended() must return null rather than an undeviated/garbage key.
+        const auto xpubAddr = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeNEO, STRING("m/44'/888'/0'/0/0").get())); // Neo
+        EXPECT_EQ(xpubAddr.get(), nullptr);
+    }
 }
 
 TEST(HDWallet, MultipleThreads) {
