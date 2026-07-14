@@ -356,20 +356,68 @@ TEST(BitcoinScript, OpReturn) {
         data.push_back(0xab);
         Script script = Script::buildOpReturnScript(data);
         EXPECT_EQ(script.bytes.size(), 3 + data.size());
-        EXPECT_EQ(hex(script.bytes), 
+        EXPECT_EQ(hex(script.bytes),
             "6a4c50"
             "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ab");
     }
     {
-        // >80 bytes, fails
-        EXPECT_EQ(hex(Script::buildOpReturnScript(Data(81)).bytes), "");
-        EXPECT_EQ(hex(Script::buildOpReturnScript(Data(255)).bytes), "");
+        // 100 bytes - uses OP_PUSHDATA1 (was previously rejected with 80-byte limit)
+        Data data = Data(100, 0x42);
+        Script script = Script::buildOpReturnScript(data);
+        EXPECT_EQ(script.bytes.size(), 3 + data.size()); // OP_RETURN + OP_PUSHDATA1 + 1-byte len + data
+        EXPECT_EQ(script.bytes[0], 0x6a); // OP_RETURN
+        EXPECT_EQ(script.bytes[1], 0x4c); // OP_PUSHDATA1
+        EXPECT_EQ(script.bytes[2], 100);  // length
+    }
+    {
+        // 255 bytes - max for OP_PUSHDATA1
+        Data data = Data(255, 0x42);
+        Script script = Script::buildOpReturnScript(data);
+        EXPECT_EQ(script.bytes.size(), 3 + data.size()); // OP_RETURN + OP_PUSHDATA1 + 1-byte len + data
+        EXPECT_EQ(script.bytes[0], 0x6a); // OP_RETURN
+        EXPECT_EQ(script.bytes[1], 0x4c); // OP_PUSHDATA1
+        EXPECT_EQ(script.bytes[2], 255);  // length
+    }
+    {
+        // 256 bytes - requires OP_PUSHDATA2
+        Data data = Data(256, 0x42);
+        Script script = Script::buildOpReturnScript(data);
+        EXPECT_EQ(script.bytes.size(), 4 + data.size()); // OP_RETURN + OP_PUSHDATA2 + 2-byte len + data
+        EXPECT_EQ(script.bytes[0], 0x6a); // OP_RETURN
+        EXPECT_EQ(script.bytes[1], 0x4d); // OP_PUSHDATA2
+        EXPECT_EQ(script.bytes[2], 0x00); // length low byte (256 = 0x0100)
+        EXPECT_EQ(script.bytes[3], 0x01); // length high byte
+    }
+    {
+        // 1000 bytes - uses OP_PUSHDATA2
+        Data data = Data(1000, 0x42);
+        Script script = Script::buildOpReturnScript(data);
+        EXPECT_EQ(script.bytes.size(), 4 + data.size()); // OP_RETURN + OP_PUSHDATA2 + 2-byte len + data
+        EXPECT_EQ(script.bytes[0], 0x6a); // OP_RETURN
+        EXPECT_EQ(script.bytes[1], 0x4d); // OP_PUSHDATA2
+        EXPECT_EQ(script.bytes[2], 0xe8); // length low byte (1000 = 0x03e8)
+        EXPECT_EQ(script.bytes[3], 0x03); // length high byte
+    }
+    {
+        // 10000 bytes - max allowed (Bitcoin Core v30 default -datacarriersize)
+        Data data = Data(10000, 0x42);
+        Script script = Script::buildOpReturnScript(data);
+        EXPECT_EQ(script.bytes.size(), 4 + data.size()); // OP_RETURN + OP_PUSHDATA2 + 2-byte len + data
+        EXPECT_EQ(script.bytes[0], 0x6a); // OP_RETURN
+        EXPECT_EQ(script.bytes[1], 0x4d); // OP_PUSHDATA2
+        EXPECT_EQ(script.bytes[2], 0x10); // length low byte (10000 = 0x2710)
+        EXPECT_EQ(script.bytes[3], 0x27); // length high byte
+    }
+    {
+        // >10000 bytes, fails
+        EXPECT_EQ(hex(Script::buildOpReturnScript(Data(10001)).bytes), "");
+        EXPECT_EQ(hex(Script::buildOpReturnScript(Data(20000)).bytes), "");
     }
 }
 
 TEST(BitcoinScript, OpReturnTooLong) {
-    // too long, truncated
-    Data data = Data(89);
+    // too long (>10000 bytes), returns empty script
+    Data data = Data(10001);
     data.push_back(0xab);
     Script script = Script::buildOpReturnScript(data);
     EXPECT_EQ(hex(script.bytes), "");

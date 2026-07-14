@@ -333,17 +333,25 @@ Script Script::buildPayToScriptHashReplay(const Data& scriptHash, const Data& bl
 }
 
 
-// Append to the buffer the length for the upcoming data (push). Supported length range: 0-75 bytes
+// Append to the buffer the length for the upcoming data (push).
+// Supports length ranges: 0-75 (OP_PUSHBYTES_N), 76-255 (OP_PUSHDATA1), 256-65535 (OP_PUSHDATA2).
 void pushDataLength(Data& buffer, size_t len) {
-    assert(len <= 255);
     if (len < static_cast<byte>(OP_PUSHDATA1)) {
         // up to 75 bytes, simple OP_PUSHBYTES with len
         buffer.push_back(static_cast<byte>(len));
         return;
     }
-    // 75 < len < 256, OP_PUSHDATA with 1-byte len
-    buffer.push_back(OP_PUSHDATA1);
-    buffer.push_back(static_cast<byte>(len));
+    if (len <= 0xff) {
+        // 75 < len <= 255, OP_PUSHDATA1 with 1-byte len
+        buffer.push_back(OP_PUSHDATA1);
+        buffer.push_back(static_cast<byte>(len));
+        return;
+    }
+    // 256 <= len <= 65535, OP_PUSHDATA2 with 2-byte len (little-endian)
+    assert(len <= 0xffff);
+    buffer.push_back(OP_PUSHDATA2);
+    buffer.push_back(static_cast<byte>(len & 0xff));
+    buffer.push_back(static_cast<byte>((len >> 8) & 0xff));
 }
 
 Script Script::buildPayToV0WitnessProgram(const Data& program) {
@@ -386,7 +394,6 @@ Script Script::buildOpReturnScript(const Data& data) {
     script.bytes.push_back(OP_RETURN);
     pushDataLength(script.bytes, data.size());
     script.bytes.insert(script.bytes.end(), data.begin(), data.begin() + data.size());
-    assert(script.bytes.size() <= 83); // max script length, must always hold
     return script;
 }
 
