@@ -107,9 +107,9 @@ struct TWPrivateKey* _Nonnull TWHDWalletGetMasterKey(struct TWHDWallet* _Nonnull
 /// \param wallet non-null TWHDWallet
 /// \param coin  a coin type
 /// \note Returned object needs to be deleted with \TWPrivateKeyDelete
-/// \return return the default private key for the specified coin
+/// \return the default private key for the specified coin, or null if the derivation failed
 TW_EXPORT_METHOD
-struct TWPrivateKey* _Nonnull TWHDWalletGetKeyForCoin(struct TWHDWallet* _Nonnull wallet, enum TWCoinType coin);
+struct TWPrivateKey* _Nullable TWHDWalletGetKeyForCoin(struct TWHDWallet* _Nonnull wallet, enum TWCoinType coin);
 
 /// Generates the default address for the specified coin (without exposing intermediary private key), default derivation.
 ///
@@ -150,9 +150,9 @@ struct TWPrivateKey* _Nullable TWHDWalletGetKey(struct TWHDWallet* _Nonnull wall
 /// \param coin a coin type
 /// \param derivation a (custom) derivation to use
 /// \note Returned object needs to be deleted with \TWPrivateKeyDelete
-/// \return The private key for the specified derivation path/coin
+/// \return The private key for the specified derivation path/coin, or null if the derivation failed
 TW_EXPORT_METHOD
-struct TWPrivateKey* _Nonnull TWHDWalletGetKeyDerivation(struct TWHDWallet* _Nonnull wallet, enum TWCoinType coin, enum TWDerivation derivation);
+struct TWPrivateKey* _Nullable TWHDWalletGetKeyDerivation(struct TWHDWallet* _Nonnull wallet, enum TWCoinType coin, enum TWDerivation derivation);
 
 /// Generates the private key for the specified derivation path and curve.
 ///
@@ -174,9 +174,9 @@ struct TWPrivateKey* _Nullable TWHDWalletGetKeyByCurve(struct TWHDWallet* _Nonnu
 /// \param change valid bip44 change
 /// \param address valid bip44 address
 /// \note Returned object needs to be deleted with \TWPrivateKeyDelete
-/// \return The private key for the specified bip44 parameters
+/// \return The private key for the specified bip44 parameters, or null if the derivation failed
 TW_EXPORT_METHOD
-struct TWPrivateKey* _Nonnull TWHDWalletGetDerivedKey(struct TWHDWallet* _Nonnull wallet, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address);
+struct TWPrivateKey* _Nullable TWHDWalletGetDerivedKey(struct TWHDWallet* _Nonnull wallet, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address);
 
 /// Returns the extended private key (for default 0 account).
 ///

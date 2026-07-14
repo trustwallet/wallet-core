@@ -518,6 +518,16 @@ TEST(HDWallet, GetDerivedKey) {
     assertHexEqual(privateKeyData, "1901b5994f075af71397f65bd68a9fff8d3025d65f5a2c731cf90f5e259d6aac");
 }
 
+TEST(HDWallet, GetDerivedKeyEd25519Fails) {
+    // TWHDWalletGetDerivedKey always builds the change/address components of the derivation
+    // path as non-hardened (BIP44 style). Ed25519 (used by Solana) only supports hardened
+    // derivation, so `hdnode_private_ckd` fails on the non-hardened components and the call
+    // must return null rather than a key derived from a truncated/incorrect path.
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
+    const auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetDerivedKey(wallet.get(), TWCoinTypeSolana, 0, 0, 0));
+    EXPECT_EQ(privateKey.get(), nullptr);
+}
+
 TEST(HDWallet, GetKeyByCurve) {
     const auto derivPath = STRING("m/44'/539'/0'/0/0");
 

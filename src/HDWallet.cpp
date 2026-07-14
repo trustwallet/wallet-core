@@ -294,9 +294,11 @@ std::optional<PublicKey> HDWallet<seedSize>::getPublicKeyFromExtended(const std:
         return {};
     }
     if (hdnode_public_ckd(&node, path.change()) == 0 || hdnode_public_ckd(&node, path.address()) == 0) {
+        TW::memzero(&node);
         return {};
     }
     if (hdnode_fill_public_key(&node) != 0) {
+        TW::memzero(&node);
         return {};
     }
 
