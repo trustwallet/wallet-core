@@ -442,12 +442,21 @@ TEST(HDWallet, PublicKeyFromExtended_Ethereum) {
 }
 
 TEST(HDWallet, PublicKeyFromExtended_NIST256p1) {
-    const auto xpub = STRING("xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj");
+    // Breaking change: previously, the xpub was generated on secp256k1 and reused for nist256p1, which is invalid.
+    // The xpub must be generated on the nist256p1 curve itself (via TWCoinTypeNEO below), not reused
+    // from a secp256k1 xpub: the two curves have different parameters, so a secp256k1 point is not a
+    // valid point on nist256p1, and child-key derivation from it would fail.
+    auto words = STRING("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
+
+    auto xpub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWPurposeBIP44, TWCoinTypeNEO, TWHDVersionXPUB));
+    assertStringsEqual(xpub, "xpub6C14EL78ogJs6aQEpzMdPa6oUdo7dUFdScW7ckC6MXxUAN7zDiEP6pGQphtcjS2cv4Nusp4i9CVJPmtuGmp1RKN3pCvUPWkDFcoMHCHERTA");
+
     const auto xpubAddr = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeNEO, STRING("m/44'/888'/0'/0/0").get())); // Neo
     ASSERT_NE(xpubAddr.get(), nullptr);
     auto data = WRAPD(TWPublicKeyData(xpubAddr.get()));
     ASSERT_NE(data.get(), nullptr);
-    assertHexEqual(data, "03774c910fcf07fa96886ea794f0d5caed9afe30b44b83f7e213bb92930e7df4bd");
+    assertHexEqual(data, "023c73be53bc3bbbacf6af57850efd294f07f1d8e324f8bb88df9274a188eac4b0");
 }
 
 TEST(HDWallet, PublicKeyFromExtended_Negative) {
