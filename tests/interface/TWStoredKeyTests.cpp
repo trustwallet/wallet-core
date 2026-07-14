@@ -800,3 +800,37 @@ TEST(TWStoredKey, FixEncryptionWrongPassword) {
     const auto jsonAfter = string(reinterpret_cast<const char*>(TWDataBytes(jsonDataAfter.get())), TWDataSize(jsonDataAfter.get()));
     EXPECT_EQ(jsonAfter, jsonBefore);
 }
+
+TEST(TWStoredKey, AddAccountDerivationInvalidPath) {
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    const auto key = createAStoredKey(TWCoinTypeBitcoin, password.get());
+    const auto countBefore = TWStoredKeyAccountCount(key.get());
+
+    // Must not throw or crash — invalid path is silently ignored.
+    TWStoredKeyAddAccountDerivation(
+        key.get(),
+        WRAPS(TWStringCreateWithUTF8Bytes("bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny")).get(),
+        TWCoinTypeBitcoin,
+        TWDerivationDefault,
+        WRAPS(TWStringCreateWithUTF8Bytes("m/2147483648")).get(),
+        WRAPS(TWStringCreateWithUTF8Bytes("")).get(),
+        WRAPS(TWStringCreateWithUTF8Bytes("")).get()
+    );
+    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), countBefore);
+}
+
+TEST(TWStoredKey, RemoveAccountForCoinDerivationPathInvalidPath) {
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    const auto key = createAStoredKey(TWCoinTypeBitcoin, password.get());
+    const auto countBefore = TWStoredKeyAccountCount(key.get());
+
+    // Must not throw or crash — invalid path is silently ignored.
+    TWStoredKeyRemoveAccountForCoinDerivationPath(
+        key.get(),
+        TWCoinTypeBitcoin,
+        WRAPS(TWStringCreateWithUTF8Bytes("m/2147483648")).get()
+    );
+    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), countBefore);
+}

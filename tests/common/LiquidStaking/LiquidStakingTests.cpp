@@ -768,4 +768,17 @@ namespace TW::LiquidStaking::tests {
             // Successfully broadcasted https://etherscan.io/tx/0x4d509fd50f474a568419ade4df13b43943b5c8233e980d2217784c512941b3bd
         }
     }
+
+    TEST(LiquidStaking, StraderBnbWithdrawError) {
+        Proto::Input input;
+        input.set_blockchain(Proto::BNB_BSC);
+        input.set_protocol(Proto::Strader);
+        input.set_smart_contract_address("0x7276241a669489e4bbb76f63d2a43bfe63080f2f");
+        Proto::Withdraw withdraw;
+        withdraw.set_idx("3");
+        *input.mutable_withdraw() = withdraw;
+
+        auto output = build(input);
+        ASSERT_EQ(output.status().code(), Proto::ERROR_OPERATION_NOT_SUPPORTED_BY_PROTOCOL);
+    }
 }

@@ -610,3 +610,22 @@ TEST(TWHDWallet, Derive_XpubPub_vs_PrivPub) {
         EXPECT_EQ(std::string(TWStringUTF8Bytes(WRAPS(TWSegwitAddressDescription(address2.get())).get())), expectedAddress2);
     }
 }
+
+TEST(HDWallet, GetKeyInvalidDerivationPath) {
+    const auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
+    // Raw index >= 0x80000000 without apostrophe must not throw — return null instead.
+    const auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeEthereum, STRING("m/2147483648").get()));
+    EXPECT_EQ(key.get(), nullptr);
+}
+
+TEST(HDWallet, GetKeyByCurveInvalidDerivationPath) {
+    const auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
+    const auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyByCurve(wallet.get(), TWCurveSECP256k1, STRING("m/2147483648").get()));
+    EXPECT_EQ(key.get(), nullptr);
+}
+
+TEST(HDWallet, GetPublicKeyFromExtendedInvalidDerivationPath) {
+    // Derivation path parsing fails before the extended key is inspected.
+    const auto publicKey = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(STRING("xpub").get(), TWCoinTypeBitcoin, STRING("m/2147483648").get()));
+    EXPECT_EQ(publicKey.get(), nullptr);
+}
