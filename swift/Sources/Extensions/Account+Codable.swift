@@ -55,13 +55,36 @@ extension Account: Codable {
         let publicKey         = try container.decode(String.self, forKey: .publicKey)
         let extendedPublicKey = try container.decode(String.self, forKey: .extendedPublicKey)
 
-        self.init(
-            address: address,
-            coin: CoinType(rawValue: rawCoin)!,
-            derivation: Derivation(rawValue: rawDerivation)!,
-            derivationPath: derivationPath,
-            publicKey: publicKey,
-            extendedPublicKey: extendedPublicKey
-        )
+        guard let coin = CoinType(rawValue: rawCoin) else {
+            throw DecodingError.dataCorruptedError(forKey: .coin, in: container,
+                debugDescription: "Unknown coin type: \(rawCoin)")
+        }
+        guard let derivation = Derivation(rawValue: rawDerivation) else {
+            throw DecodingError.dataCorruptedError(forKey: .derivation, in: container,
+                debugDescription: "Unknown derivation: \(rawDerivation)")
+        }
+        // Call TWAccountCreate directly rather than using the Account failable init:
+        // if we created an intermediate Account and copied its rawValue, that wrapper's
+        // deinit would call TWAccountDelete before self uses the pointer (use-after-free).
+        let addressString = TWStringCreateWithNSString(address)
+        defer { TWStringDelete(addressString) }
+        let derivationPathString = TWStringCreateWithNSString(derivationPath)
+        defer { TWStringDelete(derivationPathString) }
+        let publicKeyString = TWStringCreateWithNSString(publicKey)
+        defer { TWStringDelete(publicKeyString) }
+        let extendedPublicKeyString = TWStringCreateWithNSString(extendedPublicKey)
+        defer { TWStringDelete(extendedPublicKeyString) }
+        guard let rawValue = TWAccountCreate(
+            addressString,
+            TWCoinType(rawValue: coin.rawValue),
+            TWDerivation(rawValue: derivation.rawValue),
+            derivationPathString,
+            publicKeyString,
+            extendedPublicKeyString
+        ) else {
+            throw DecodingError.dataCorruptedError(forKey: .derivationPath, in: container,
+                debugDescription: "Invalid derivation path: \(derivationPath)")
+        }
+        self.init(rawValue: rawValue)
     }
 }

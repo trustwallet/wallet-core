@@ -24,14 +24,14 @@ struct TWAccount;
 /// \param derivationPath The derivation path of the Account.
 /// \param publicKey hex encoded public key.
 /// \param extendedPublicKey Base58 encoded extended public key.
-/// \return A new Account.
+/// \return A new Account, or null if the derivation path is invalid.
 TW_EXPORT_STATIC_METHOD
-struct TWAccount* _Nonnull TWAccountCreate(TWString* _Nonnull address,
-                                           enum TWCoinType coin,
-                                           enum TWDerivation derivation,
-                                           TWString* _Nonnull derivationPath,
-                                           TWString* _Nonnull publicKey,
-                                           TWString* _Nonnull extendedPublicKey);
+struct TWAccount* _Nullable TWAccountCreate(TWString* _Nonnull address,
+                                            enum TWCoinType coin,
+                                            enum TWDerivation derivation,
+                                            TWString* _Nonnull derivationPath,
+                                            TWString* _Nonnull publicKey,
+                                            TWString* _Nonnull extendedPublicKey);
 /// Deletes an account.
 ///
 /// \param account Account to delete.

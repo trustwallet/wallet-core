@@ -3,7 +3,12 @@
 set -e
 
 # build-essential clang-14 libc++-dev libc++abi-dev ruby-full cmake
-sudo apt-get update && sudo apt-get install ninja-build llvm-14 clang-tidy-14 libboost-all-dev rustc --fix-missing gcc-multilib g++-multilib
+PACKAGES=(ninja-build llvm-14 clang-tidy-14 libboost-all-dev rustc)
+# gcc-multilib/g++-multilib are 32-bit x86 cross-compile packages, available only on amd64
+if [ "$(dpkg --print-architecture)" = "amd64" ]; then
+  PACKAGES+=(gcc-multilib g++-multilib)
+fi
+sudo apt-get update && sudo apt-get install --fix-missing "${PACKAGES[@]}"
 
 # As of now, Ubuntu 24.04 has lcov 2.0-4ubuntu2 only, but we don't support it yet.
 # Install lcov 1.15-1 manually.

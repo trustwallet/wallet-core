@@ -33,9 +33,13 @@ void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::D
 TW::Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {
     return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
         txInputData, [](const auto& input, auto& output) {
-            Signer signer(input);
-
-            auto preImage = signer.signaturePreimage();
+            auto preImageResult = Signer(input).signaturePreimage();
+            if (!preImageResult) {
+                output.set_error(preImageResult.error());
+                output.set_error_message(Common::Proto::SigningError_Name(preImageResult.error()));
+                return;
+            }
+            auto preImage = preImageResult.payload();
             auto preImageHash = Hash::sha256(preImage);
             output.set_data_hash(preImageHash.data(), preImageHash.size());
             output.set_data(preImage.data(), preImage.size());
