@@ -328,10 +328,9 @@ fn pczt_with_user_address(user_address: Option<&str>) -> String {
     base64::encode(&serialized, STANDARD)
 }
 
-#[test]
-fn test_zcash_sign_pczt_matching_user_address() {
+fn sign_pczt_with_user_address(user_address: &str) -> SigningError {
     const PRIVATE_KEY: &str = "c9d84f11d992c1a527293b468ba67f739f8098c333748493da45b9cf53844ec4";
-    let psbt = pczt_with_user_address(Some("t1X2gmNQRqwWiGincK2UtYwZbWg7ixYFEKr"));
+    let psbt = pczt_with_user_address(Some(user_address));
 
     let signing = Proto::SigningInput {
         private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
@@ -341,23 +340,21 @@ fn test_zcash_sign_pczt_matching_user_address() {
     };
 
     let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
-    let output = signer.sign(CoinType::Zcash, signing);
-    assert_eq!(output.error, SigningError::OK);
+    signer.sign(CoinType::Zcash, signing).error
+}
+
+#[test]
+fn test_zcash_sign_pczt_matching_user_address() {
+    assert_eq!(
+        sign_pczt_with_user_address("t1X2gmNQRqwWiGincK2UtYwZbWg7ixYFEKr"),
+        SigningError::OK
+    );
 }
 
 #[test]
 fn test_zcash_sign_pczt_mismatched_user_address_rejected() {
-    const PRIVATE_KEY: &str = "c9d84f11d992c1a527293b468ba67f739f8098c333748493da45b9cf53844ec4";
-    let psbt = pczt_with_user_address(Some("t1gWVE2uyrET2CxSmCaBiKzmWxQdHhnvMSz"));
-
-    let signing = Proto::SigningInput {
-        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
-        chain_info: zec_info(),
-        transaction: transaction_psbt_b64(&psbt),
-        ..Default::default()
-    };
-
-    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
-    let output = signer.sign(CoinType::Zcash, signing);
-    assert_eq!(output.error, SigningError::Error_invalid_address);
+    assert_eq!(
+        sign_pczt_with_user_address("t1gWVE2uyrET2CxSmCaBiKzmWxQdHhnvMSz"),
+        SigningError::Error_invalid_address
+    );
 }
