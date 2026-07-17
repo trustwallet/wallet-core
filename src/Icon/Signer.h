@@ -28,7 +28,7 @@ class Signer {
     std::string preImage() const noexcept;
 
     /// Encodes a signed transaction as JSON.
-    std::string encode(const Data& signature) const noexcept;
+    std::string encode(const Data& signature) const;
 
     TW::Data hashImage(const Data& image) const;
 
