@@ -23,16 +23,16 @@ jobs:
     runs-on: ubuntu-24.04
     if: github.event.pull_request.draft == false
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: trustwallet/github-actions-proxy/actions/checkout@main
       - name: Install system dependencies
         run: |
           tools/install-sys-dependencies-linux
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@65101d47ea8028ed0c98a1cdea8dd9182e9b5133 # v0.0.8
+        uses: trustwallet/github-actions-proxy/actions/sccache-action@main
 
       - name: Cache Rust
-        uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
+        uses: trustwallet/github-actions-proxy/actions/rust-cache@main
         with:
           workspaces: |
             rust
@@ -56,16 +56,16 @@ jobs:
     runs-on: ubuntu-24.04
     if: github.event.pull_request.draft == false
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: trustwallet/github-actions-proxy/actions/checkout@main
       - name: Install system dependencies
         run: |
           tools/install-sys-dependencies-linux
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@65101d47ea8028ed0c98a1cdea8dd9182e9b5133 # v0.0.8
+        uses: trustwallet/github-actions-proxy/actions/sccache-action@main
 
       - name: Cache Rust
-        uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
+        uses: trustwallet/github-actions-proxy/actions/rust-cache@main
         with:
           workspaces: |
             rust
@@ -87,16 +87,16 @@ jobs:
     runs-on: macos-latest-xlarge
     if: github.event.pull_request.draft == false
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: trustwallet/github-actions-proxy/actions/checkout@main
       - name: Install system dependencies
         run: |
           tools/install-sys-dependencies-mac
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@65101d47ea8028ed0c98a1cdea8dd9182e9b5133 # v0.0.8
+        uses: trustwallet/github-actions-proxy/actions/sccache-action@main
 
       - name: Cache Rust
-        uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
+        uses: trustwallet/github-actions-proxy/actions/rust-cache@main
         with:
           workspaces: |
             rust
@@ -118,7 +118,7 @@ jobs:
           ./tools/release-size measure-rust > release-report.json
 
       - name: Upload release report
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: trustwallet/github-actions-proxy/actions/upload-artifact@main
         with:
           name: release_report
           path: release-report.json
@@ -142,7 +142,7 @@ jobs:
 
       - name: Create or Update Comment
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: trustwallet/github-actions-proxy/actions/github-script@main
         with:
           script: |
             const script = require('./tools/gh-create-or-update-comment.js');
@@ -152,15 +152,15 @@ jobs:
     runs-on: ubuntu-24.04
     if: github.event.pull_request.draft == false
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: trustwallet/github-actions-proxy/actions/checkout@main
         with:
           submodules: true
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@65101d47ea8028ed0c98a1cdea8dd9182e9b5133 # v0.0.8
+        uses: trustwallet/github-actions-proxy/actions/sccache-action@main
 
       - name: Cache Rust
-        uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
+        uses: trustwallet/github-actions-proxy/actions/rust-cache@main
         with:
           workspaces: |
             rust
@@ -218,16 +218,16 @@ jobs:
     if: github.event.pull_request.draft == false
 
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: trustwallet/github-actions-proxy/actions/checkout@main
       - name: Install system dependencies
         run: |
           tools/install-sys-dependencies-linux
 
       - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@65101d47ea8028ed0c98a1cdea8dd9182e9b5133 # v0.0.8
+        uses: trustwallet/github-actions-proxy/actions/sccache-action@main
 
       - name: Cache Rust
-        uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
+        uses: trustwallet/github-actions-proxy/actions/rust-cache@main
         with:
           workspaces: |
             rust
