@@ -11,6 +11,7 @@ pub mod c_byte_array_ref;
 pub mod c_result;
 pub mod tw_data;
 pub mod tw_data_vector;
+pub mod tw_result;
 pub mod tw_string;
 
 /// Releases the memory previously allocated for the `ptr` string.

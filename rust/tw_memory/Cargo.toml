@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+tw_macros = { path = "../tw_macros" }
 
 [features]
 test-utils = []
