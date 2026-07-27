@@ -27,7 +27,7 @@ TW::Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::strin
 }
 
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+    signTemplate<Signer, Proto::SigningInput, Proto::SigningOutput>(dataIn, dataOut);
 }
 
 Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {

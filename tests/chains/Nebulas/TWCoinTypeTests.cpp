@@ -19,6 +19,7 @@ TEST(TWNebulasCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeNebulas, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNebulas));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNebulas));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeNebulas));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNebulas), 18);
     ASSERT_EQ(TWBlockchainNebulas, TWCoinTypeBlockchain(TWCoinTypeNebulas));
@@ -29,4 +30,5 @@ TEST(TWNebulasCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.nebulas.io/#/address/a12");
     assertStringsEqual(id, "nebulas");
     assertStringsEqual(name, "Nebulas");
+    assertStringsEqual(nativeTokenName, "Nebulas");
 }

@@ -40,6 +40,9 @@ const int MnemonicBufLength = Mnemonic::MaxWords * (BIP39_MAX_WORD_LENGTH + 3) +
 
 template <std::size_t seedSize>
 HDWallet<seedSize>::HDWallet(const Data& seed) {
+    if (seed.size() != seedSize) {
+        throw std::invalid_argument("Invalid seed size");
+    }
     std::copy_n(seed.begin(), seedSize, this->seed.begin());
 }
 
@@ -171,9 +174,9 @@ PrivateKey HDWallet<seedSize>::getKeyByCurve(TWCurve curve, const DerivationPath
     auto node = getNode<seedSize>(*this, curve, derivationPath);
     switch (privateKeyType) {
     case TWPrivateKeyTypeCardano: {
-        if (derivationPath.indices.size() < 4 || derivationPath.indices[3].value > 1) {
-            // invalid derivation path
-            return PrivateKey(Data(PrivateKey::cardanoKeySize), curve);
+        if (derivationPath.indices.size() < 5 || derivationPath.indices[3].value > 1) {
+            TW::memzero(&node);
+            throw std::invalid_argument("Invalid derivation path");
         }
         const DerivationPath stakingPath = cardanoStakingDerivationPath(derivationPath);
 

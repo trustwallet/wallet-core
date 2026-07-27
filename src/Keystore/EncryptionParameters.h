@@ -19,19 +19,6 @@ namespace TW::Keystore {
 
 /// Set of parameters used when encoding
 struct EncryptionParameters {
-    static EncryptionParameters getPreset(enum TWStoredKeyEncryptionLevel preset, enum TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr) {
-        switch (preset) {
-        case TWStoredKeyEncryptionLevelMinimal:
-            return { AESParameters::AESParametersFromEncryption(encryption), ScryptParameters::minimal() };
-        case TWStoredKeyEncryptionLevelWeak:
-        case TWStoredKeyEncryptionLevelDefault:
-        default:
-            return { AESParameters::AESParametersFromEncryption(encryption), ScryptParameters::weak() };
-        case TWStoredKeyEncryptionLevelStandard:
-            return { AESParameters::AESParametersFromEncryption(encryption), ScryptParameters::standard() };
-        }
-    }
-
     std::int32_t getKeyBytesSize() const noexcept {
         return cipherParams.mKeyLength;
     }
@@ -63,6 +50,9 @@ struct EncryptionParameters {
     EncryptionParameters(EncryptionParameters&& other) = default;
     EncryptionParameters& operator=(const EncryptionParameters& other) = default;
     EncryptionParameters& operator=(EncryptionParameters&& other) = default;
+
+    /// Checks if the parameters should be fixed, i.e. if they are "valid" but do not meet the recommended security requirements,
+    bool shouldFix() const;
 
     virtual ~EncryptionParameters() = default;
 };
@@ -96,9 +86,9 @@ public:
         , encrypted(std::move(encrypted))
         , _mac(std::move(mac)) {}
 
-    /// Initializes by encrypting data with a password
-    /// using standard values.
-    EncryptedPayload(const Data& password, const Data& data, const EncryptionParameters& params);
+    /// Initializes by encrypting data with a password using standard values.
+    /// Note that we enforce to use Scrypt as KDF for new wallets encryption.
+    EncryptedPayload(const Data& password, const Data& data, const AESParameters& cipherParams, const ScryptParameters& scryptParams);
 
     /// Initializes with a JSON object.
     explicit EncryptedPayload(const nlohmann::json& json);
@@ -106,13 +96,21 @@ public:
     /// Decrypts the payload with the given password.
     Data decrypt(const Data& password) const;
 
+    /// Regenerates the encrypted payload with new recommended encryption parameters.
+    ///
+    /// IMPORTANT: Due to a technical limitation, Scrypt parameters will be replaced with new recommended values,
+    /// while PBKDF2 parameters will be left as is.
+    /// See implementation for details.
+    [[nodiscard]] EncryptedPayload regenerateWithRecommendedParams(const Data& password) const;
+
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;
 
     EncryptedPayload(const EncryptedPayload& other) = default;
     EncryptedPayload(EncryptedPayload&& other) = default;
-    EncryptedPayload& operator=(const EncryptedPayload& other) = default;
-    EncryptedPayload& operator=(EncryptedPayload&& other) = default;
+    // Copy assignment is explicitly deleted.
+    EncryptedPayload& operator=(const EncryptedPayload& other) = delete;
+    EncryptedPayload& operator=(EncryptedPayload&& other) noexcept;
 
     virtual ~EncryptedPayload();
 };

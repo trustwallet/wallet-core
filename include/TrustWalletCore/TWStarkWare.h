@@ -18,8 +18,8 @@ struct TWStarkWare;
 ///
 /// \param derivationPath non-null StarkEx Derivation path
 /// \param signature valid eth signature
-/// \return  The private key for the specified derivation path/signature
+/// \return  The private key for the specified derivation path/signature, or `nullptr` if the signature or derivation path is invalid or an internal error occurs.
 TW_EXPORT_STATIC_METHOD
-struct TWPrivateKey* _Nonnull TWStarkWareGetStarkKeyFromSignature(const struct TWDerivationPath* _Nonnull derivationPath, TWString* _Nonnull signature);
+struct TWPrivateKey* _Nullable TWStarkWareGetStarkKeyFromSignature(const struct TWDerivationPath* _Nonnull derivationPath, TWString* _Nonnull signature);
 
 TW_EXTERN_C_END

@@ -19,6 +19,7 @@ TEST(TWVergeCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeVerge, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeVerge));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeVerge));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeVerge));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeVerge), 6);
     ASSERT_EQ(TWBlockchainVerge, TWCoinTypeBlockchain(TWCoinTypeVerge));
@@ -29,4 +30,5 @@ TEST(TWVergeCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://verge-blockchain.info/address/DFre88gd87bAZQdnS7dbBLwT6GWiGFMQB6");
     assertStringsEqual(id, "verge");
     assertStringsEqual(name, "Verge");
+    assertStringsEqual(nativeTokenName, "Verge");
 }

@@ -19,6 +19,7 @@ TEST(TWKavaCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeKava, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeKava));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeKava));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeKava));
     const auto chainId = WRAPS(TWCoinTypeChainId(TWCoinTypeKava));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKava), 6);
@@ -31,4 +32,5 @@ TEST(TWKavaCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://mintscan.io/kava/account/kava1xd39avn2f008jmvua0eupg39zsp2xn3wf802vn");
     assertStringsEqual(id, "kava");
     assertStringsEqual(name, "Kava");
+    assertStringsEqual(nativeTokenName, "Kava");
 }

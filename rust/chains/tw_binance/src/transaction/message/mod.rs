@@ -12,7 +12,6 @@ pub mod htlt_order;
 pub mod send_order;
 pub mod side_chain_delegate;
 pub mod time_lock_order;
-pub mod token_order;
 pub mod trade_order;
 pub mod transfer_out_order;
 
@@ -45,11 +44,6 @@ pub enum BinanceMessageEnum {
     TimeLockOrder(time_lock_order::TimeLockOrder),
     TimeRelockOrder(time_lock_order::TimeRelockOrder),
     TimeUnlockOrder(time_lock_order::TimeUnlockOrder),
-    TokenFreezeOrder(token_order::TokenFreezeOrder),
-    TokenUnfreezeOrder(token_order::TokenUnfreezeOrder),
-    TokenIssueOrder(token_order::TokenIssueOrder),
-    TokenMintOrder(token_order::TokenMintOrder),
-    TokenBurnOrder(token_order::TokenBurnOrder),
     NewTradeOrder(trade_order::NewTradeOrder),
     CancelTradeOrder(trade_order::CancelTradeOrder),
     TransferOutOrder(transfer_out_order::TransferOutOrder),
@@ -71,14 +65,6 @@ impl TWBinanceProto for BinanceMessageEnum {
             BinanceMessageProto::send_order(ref order) => {
                 send_order::SendOrder::from_tw_proto(coin, order).map(BinanceMessageEnum::SendOrder)
             },
-            BinanceMessageProto::freeze_order(ref order) => {
-                token_order::TokenFreezeOrder::from_tw_proto(coin, order)
-                    .map(BinanceMessageEnum::TokenFreezeOrder)
-            },
-            BinanceMessageProto::unfreeze_order(ref order) => {
-                token_order::TokenUnfreezeOrder::from_tw_proto(coin, order)
-                    .map(BinanceMessageEnum::TokenUnfreezeOrder)
-            },
             BinanceMessageProto::htlt_order(ref order) => {
                 htlt_order::HTLTOrder::from_tw_proto(coin, order).map(BinanceMessageEnum::HTLTOrder)
             },
@@ -93,18 +79,6 @@ impl TWBinanceProto for BinanceMessageEnum {
             BinanceMessageProto::refundHTLT_order(ref order) => {
                 htlt_order::RefundHTLTOrder::from_tw_proto(coin, order)
                     .map(BinanceMessageEnum::RefundHTLTOrder)
-            },
-            BinanceMessageProto::issue_order(ref order) => {
-                token_order::TokenIssueOrder::from_tw_proto(coin, order)
-                    .map(BinanceMessageEnum::TokenIssueOrder)
-            },
-            BinanceMessageProto::mint_order(ref order) => {
-                token_order::TokenMintOrder::from_tw_proto(coin, order)
-                    .map(BinanceMessageEnum::TokenMintOrder)
-            },
-            BinanceMessageProto::burn_order(ref order) => {
-                token_order::TokenBurnOrder::from_tw_proto(coin, order)
-                    .map(BinanceMessageEnum::TokenBurnOrder)
             },
             BinanceMessageProto::transfer_out_order(ref order) => {
                 transfer_out_order::TransferOutOrder::from_tw_proto(coin, order)
@@ -176,21 +150,6 @@ impl TWBinanceProto for BinanceMessageEnum {
             BinanceMessageEnum::TimeUnlockOrder(m) => {
                 BinanceMessageProto::time_unlock_order(m.to_tw_proto())
             },
-            BinanceMessageEnum::TokenFreezeOrder(m) => {
-                BinanceMessageProto::freeze_order(m.to_tw_proto())
-            },
-            BinanceMessageEnum::TokenUnfreezeOrder(m) => {
-                BinanceMessageProto::unfreeze_order(m.to_tw_proto())
-            },
-            BinanceMessageEnum::TokenIssueOrder(m) => {
-                BinanceMessageProto::issue_order(m.to_tw_proto())
-            },
-            BinanceMessageEnum::TokenMintOrder(m) => {
-                BinanceMessageProto::mint_order(m.to_tw_proto())
-            },
-            BinanceMessageEnum::TokenBurnOrder(m) => {
-                BinanceMessageProto::burn_order(m.to_tw_proto())
-            },
             BinanceMessageEnum::NewTradeOrder(m) => {
                 BinanceMessageProto::trade_order(m.to_tw_proto())
             },
@@ -219,11 +178,6 @@ impl<'a> AsRef<dyn BinanceMessage + 'a> for BinanceMessageEnum {
             BinanceMessageEnum::TimeLockOrder(m) => m,
             BinanceMessageEnum::TimeRelockOrder(m) => m,
             BinanceMessageEnum::TimeUnlockOrder(m) => m,
-            BinanceMessageEnum::TokenFreezeOrder(m) => m,
-            BinanceMessageEnum::TokenUnfreezeOrder(m) => m,
-            BinanceMessageEnum::TokenIssueOrder(m) => m,
-            BinanceMessageEnum::TokenMintOrder(m) => m,
-            BinanceMessageEnum::TokenBurnOrder(m) => m,
             BinanceMessageEnum::NewTradeOrder(m) => m,
             BinanceMessageEnum::CancelTradeOrder(m) => m,
             BinanceMessageEnum::TransferOutOrder(m) => m,

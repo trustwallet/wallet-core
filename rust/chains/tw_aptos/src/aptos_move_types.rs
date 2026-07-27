@@ -31,12 +31,6 @@ impl From<Address> for AccountAddress {
     }
 }
 
-impl From<&Address> for AccountAddress {
-    fn from(address: &Address) -> Self {
-        address.0
-    }
-}
-
 /// A wrapper of a Move identifier
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize, Deserialize)]
 pub struct IdentifierWrapper(pub Identifier);
@@ -50,12 +44,6 @@ impl From<IdentifierWrapper> for Identifier {
 impl From<Identifier> for IdentifierWrapper {
     fn from(value: Identifier) -> IdentifierWrapper {
         Self(value)
-    }
-}
-
-impl From<&Identifier> for IdentifierWrapper {
-    fn from(value: &Identifier) -> IdentifierWrapper {
-        Self(value.clone())
     }
 }
 
@@ -76,17 +64,6 @@ impl From<StructTag> for MoveStructTag {
             module: tag.module.into(),
             name: tag.name.into(),
             generic_type_params: tag.type_params.into_iter().map(MoveType::from).collect(),
-        }
-    }
-}
-
-impl From<&StructTag> for MoveStructTag {
-    fn from(tag: &StructTag) -> Self {
-        Self {
-            address: tag.address.into(),
-            module: IdentifierWrapper::from(&tag.module),
-            name: IdentifierWrapper::from(&tag.name),
-            generic_type_params: tag.type_params.iter().map(MoveType::from).collect(),
         }
     }
 }
@@ -193,26 +170,6 @@ impl From<TypeTag> for MoveType {
                 items: Box::new(MoveType::from(*v)),
             },
             TypeTag::Struct(v) => MoveType::Struct((*v).into()),
-        }
-    }
-}
-
-impl From<&TypeTag> for MoveType {
-    fn from(tag: &TypeTag) -> Self {
-        match tag {
-            TypeTag::Bool => MoveType::Bool,
-            TypeTag::U8 => MoveType::U8,
-            TypeTag::U16 => MoveType::U16,
-            TypeTag::U32 => MoveType::U32,
-            TypeTag::U64 => MoveType::U64,
-            TypeTag::U128 => MoveType::U128,
-            TypeTag::U256 => MoveType::U256,
-            TypeTag::Address => MoveType::Address,
-            TypeTag::Signer => MoveType::Signer,
-            TypeTag::Vector(v) => MoveType::Vector {
-                items: Box::new(MoveType::from(v.as_ref())),
-            },
-            TypeTag::Struct(v) => MoveType::Struct((&**v).into()),
         }
     }
 }

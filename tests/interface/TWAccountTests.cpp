@@ -33,3 +33,18 @@ TEST(TWAccount, Create) {
     assertStringsEqual(WRAPS(TWAccountExtendedPublicKey(account.get())), extPubKeyAdd);
     assertStringsEqual(WRAPS(TWAccountPublicKey(account.get())), pubKey);
 }
+
+TEST(TWAccount, CreateInvalidDerivationPath) {
+    const auto account = WRAP(
+        TWAccount,
+        TWAccountCreate(
+            WRAPS(TWStringCreateWithUTF8Bytes("bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny")).get(),
+            TWCoinTypeBitcoin,
+            TWDerivationDefault,
+            WRAPS(TWStringCreateWithUTF8Bytes("m/2147483648")).get(),
+            WRAPS(TWStringCreateWithUTF8Bytes("")).get(),
+            WRAPS(TWStringCreateWithUTF8Bytes("")).get()
+        )
+    );
+    EXPECT_EQ(account.get(), nullptr);
+}

@@ -11,20 +11,81 @@ use std::iter;
 use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 
-pub trait InsertInstruction {
-    /// Pushes an instruction
-    fn push_instruction(
-        &mut self,
+fn increment_counter(counter: &mut u8) -> SigningResult<()> {
+    *counter = counter
+        .checked_add(1)
+        .ok_or(SigningErrorType::Error_tx_too_big)?;
+    Ok(())
+}
+
+pub trait InsertInstruction: Clone + Sized {
+    // =========================================================================
+    // Public API
+    // Each method clones `self`, runs all mutations on the clone, and returns
+    // the updated clone on success.  On error the clone is dropped and `self`
+    // is left completely untouched.
+    // =========================================================================
+
+    fn with_instruction(
+        &self,
         program_id: SolanaAddress,
         accounts: Vec<AccountMeta>,
         data: Data,
-    ) -> SigningResult<()> {
-        let insert_at = self.instructions_mut().len();
-        self.insert_instruction(insert_at, program_id, accounts, data)
+    ) -> SigningResult<Self> {
+        let mut draft = self.clone();
+        let insert_at = draft.instructions_mut().len();
+        draft.insert_instruction_mut(insert_at, program_id, accounts, data)?;
+        Ok(draft)
     }
 
-    /// Inserts an instruction at the given `insert_at` index.
-    fn insert_instruction(
+    fn with_instruction_at(
+        &self,
+        insert_at: usize,
+        program_id: SolanaAddress,
+        accounts: Vec<AccountMeta>,
+        data: Data,
+    ) -> SigningResult<Self> {
+        let mut draft = self.clone();
+        draft.insert_instruction_mut(insert_at, program_id, accounts, data)?;
+        Ok(draft)
+    }
+
+    fn with_simple_instruction(
+        &self,
+        program_id: SolanaAddress,
+        data: Data,
+    ) -> SigningResult<Self> {
+        let mut draft = self.clone();
+        let insert_at = draft.instructions_mut().len();
+        draft.insert_simple_instruction_mut(insert_at, program_id, data)?;
+        Ok(draft)
+    }
+
+    fn with_simple_instruction_at(
+        &self,
+        insert_at: usize,
+        program_id: SolanaAddress,
+        data: Data,
+    ) -> SigningResult<Self> {
+        let mut draft = self.clone();
+        draft.insert_simple_instruction_mut(insert_at, program_id, data)?;
+        Ok(draft)
+    }
+
+    fn with_fee_payer(&self, account: SolanaAddress) -> SigningResult<Self> {
+        let mut draft = self.clone();
+        draft.set_fee_payer_mut(account)?;
+        Ok(draft)
+    }
+
+    // =========================================================================
+    // Internal mutation helpers
+    // These operate on `&mut self` and may leave the message in a partially
+    // mutated state when they return `Err`.  They must only be called on a
+    // draft that will be discarded on error (see the public wrappers above).
+    // =========================================================================
+
+    fn insert_instruction_mut(
         &mut self,
         insert_at: usize,
         program_id: SolanaAddress,
@@ -39,7 +100,7 @@ pub trait InsertInstruction {
         // Step 1 - add the `account` in the accounts list.
         let accounts: Vec<u8> = accounts
             .iter()
-            .map(|account_meta| self.push_account(account_meta))
+            .map(|account_meta| self.push_account_mut(account_meta))
             .collect::<Result<Vec<u8>, _>>()?;
 
         // Step 2 - find or add the `program_id` in the accounts list.
@@ -49,7 +110,7 @@ pub trait InsertInstruction {
             .position(|acc| *acc == program_id)
         {
             Some(pos) => try_into_u8(pos)?,
-            None => self.push_readonly_unsigned_account(program_id)?,
+            None => self.push_readonly_unsigned_account_mut(program_id)?,
         };
 
         // Step 3 - Create a `CompiledInstruction` based on the `program_id` index and instruction `accounts` and `data`.
@@ -65,18 +126,7 @@ pub trait InsertInstruction {
         Ok(())
     }
 
-    /// Pushes a simple instruction that doesn't have accounts.
-    fn push_simple_instruction(
-        &mut self,
-        program_id: SolanaAddress,
-        data: Data,
-    ) -> SigningResult<()> {
-        let insert_at = self.instructions_mut().len();
-        self.insert_simple_instruction(insert_at, program_id, data)
-    }
-
-    /// Inserts a simple instruction that doesn't have accounts at the given `insert_at` index.
-    fn insert_simple_instruction(
+    fn insert_simple_instruction_mut(
         &mut self,
         insert_at: usize,
         program_id: SolanaAddress,
@@ -94,7 +144,7 @@ pub trait InsertInstruction {
             .position(|acc| *acc == program_id)
         {
             Some(pos) => try_into_u8(pos)?,
-            None => self.push_readonly_unsigned_account(program_id)?,
+            None => self.push_readonly_unsigned_account_mut(program_id)?,
         };
 
         // Step 2 - Create a `CompiledInstruction` based on the `program_id` index and instruction `data`.
@@ -111,9 +161,9 @@ pub trait InsertInstruction {
     }
 
     /// Pushes an account to the message.
-    /// If the account already exists, it must match the `is_signer` and `is_writable` attributes
+    /// If the account already exists, it must match the `is_signer` and `is_writable` attributes.
     /// Returns the index of the account in the account list.
-    fn push_account(&mut self, account: &AccountMeta) -> SigningResult<u8> {
+    fn push_account_mut(&mut self, account: &AccountMeta) -> SigningResult<u8> {
         // The layout of the account keys is as follows:
         // +-------------------------------------+
         // | Writable and required signature     |                                     \
@@ -174,10 +224,19 @@ pub trait InsertInstruction {
             return try_into_u8(existing_index);
         }
 
+        let accounts_number_before = self.account_keys_mut().len();
+
+        // 255u8 + 1 wraps to 0 in release builds; reject before header state is mutated.
+        if accounts_number_before > u8::MAX as usize {
+            return SigningError::err(SigningErrorType::Error_tx_too_big)
+                .context("There are too many accounts in the transaction");
+        }
+
         // Determine the insertion position based on is_signer and is_writable
         let insert_at = match (account.is_signer, account.is_writable) {
             (true, true) => {
-                self.message_header_mut().num_required_signatures += 1;
+                increment_counter(&mut self.message_header_mut().num_required_signatures)
+                    .context("num_required_signatures overflow")?;
                 // The account is added at the end of the writable and signer accounts
                 (self.message_header_mut().num_required_signatures
                     - self.message_header_mut().num_readonly_signed_accounts)
@@ -185,20 +244,24 @@ pub trait InsertInstruction {
                     - 1
             },
             (true, false) => {
-                self.message_header_mut().num_required_signatures += 1;
-                self.message_header_mut().num_readonly_signed_accounts += 1;
+                increment_counter(&mut self.message_header_mut().num_required_signatures)
+                    .context("num_required_signatures overflow")?;
+                increment_counter(&mut self.message_header_mut().num_readonly_signed_accounts)
+                    .context("num_readonly_signed_accounts overflow")?;
                 // The account is added at the end of the read-only and signer accounts
                 self.message_header_mut().num_required_signatures as usize - 1
             },
             (false, true) => {
                 // The account is added at the end of the writable and non-signer accounts
-                self.account_keys_mut().len()
-                    - self.message_header_mut().num_readonly_unsigned_accounts as usize
+                accounts_number_before
+                    .checked_sub(self.message_header_mut().num_readonly_unsigned_accounts as usize)
+                    .ok_or(SigningErrorType::Error_internal)?
             },
             (false, false) => {
-                self.message_header_mut().num_readonly_unsigned_accounts += 1;
+                increment_counter(&mut self.message_header_mut().num_readonly_unsigned_accounts)
+                    .context("num_readonly_unsigned_accounts overflow")?;
                 // The account is added at the end of the list
-                self.account_keys_mut().len()
+                accounts_number_before
             },
         };
 
@@ -209,30 +272,41 @@ pub trait InsertInstruction {
 
         // Update program ID and account indexes if the new account was added before its position
         let instructions = self.instructions_mut();
-        instructions.iter_mut().for_each(|ix| {
-            // Update program ID index
-            if ix.program_id_index >= account_added_at {
-                ix.program_id_index += 1;
-            }
+        instructions
+            .iter_mut()
+            .try_for_each(|ix| -> SigningResult<()> {
+                // Update program ID index
+                if ix.program_id_index >= account_added_at {
+                    ix.program_id_index = ix
+                        .program_id_index
+                        .checked_add(1)
+                        .ok_or(SigningErrorType::Error_tx_too_big)?;
+                }
 
-            // Update account indexes
-            ix.accounts
-                .iter_mut()
-                .filter(|ix_account_id| **ix_account_id >= account_added_at)
-                .for_each(|ix_account_id| *ix_account_id += 1);
-        });
+                // Update account indexes
+                ix.accounts
+                    .iter_mut()
+                    .filter(|ix_account_id| **ix_account_id >= account_added_at)
+                    .try_for_each(|ix_account_id| -> SigningResult<()> {
+                        *ix_account_id = ix_account_id
+                            .checked_add(1)
+                            .ok_or(SigningErrorType::Error_tx_too_big)?;
+                        Ok(())
+                    })
+            })?;
 
         Ok(account_added_at)
     }
 
-    fn push_readonly_unsigned_account(&mut self, account: SolanaAddress) -> SigningResult<u8> {
+    fn push_readonly_unsigned_account_mut(&mut self, account: SolanaAddress) -> SigningResult<u8> {
         debug_assert!(
             !self.account_keys_mut().contains(&account),
             "Account must not be in the account list yet"
         );
 
         self.account_keys_mut().push(account);
-        self.message_header_mut().num_readonly_unsigned_accounts += 1;
+        increment_counter(&mut self.message_header_mut().num_readonly_unsigned_accounts)
+            .context("num_readonly_unsigned_accounts overflow")?;
 
         let account_added_at = try_into_u8(self.account_keys_mut().len() - 1)?;
 
@@ -255,14 +329,19 @@ pub trait InsertInstruction {
             })
             // Update every instruction account id that points to the address table lookups.
             .filter(|ix_account_id| **ix_account_id >= account_added_at)
-            .for_each(|ix_account_id| *ix_account_id += 1);
+            .try_for_each(|ix_account_id| -> SigningResult<()> {
+                *ix_account_id = ix_account_id
+                    .checked_add(1)
+                    .ok_or(SigningErrorType::Error_tx_too_big)?;
+                Ok(())
+            })?;
 
         Ok(account_added_at)
     }
 
     /// Adds a fee payer account to the message.
     /// Note: The fee payer must NOT be in the account list yet.
-    fn set_fee_payer(&mut self, account: SolanaAddress) -> SigningResult<()> {
+    fn set_fee_payer_mut(&mut self, account: SolanaAddress) -> SigningResult<()> {
         if self.account_keys_mut().contains(&account) {
             // For security reasons, we don't allow adding a fee payer if it's already in the account list.
             //
@@ -276,20 +355,40 @@ pub trait InsertInstruction {
                 .context("Fee payer account is already in the account list");
         }
 
+        if self.account_keys_mut().len() > u8::MAX as usize {
+            return SigningError::err(SigningErrorType::Error_tx_too_big)
+                .context("There are too many accounts in the transaction");
+        }
+
         // Insert the fee payer account at the beginning of the account list.
         self.account_keys_mut().insert(0, account);
-        self.message_header_mut().num_required_signatures += 1;
+        increment_counter(&mut self.message_header_mut().num_required_signatures)
+            .context("num_required_signatures overflow")?;
 
         // Update `program id indexes` and `account id indexes` in every instruction as we inserted the account at the beginning of the list.
-        self.instructions_mut().iter_mut().for_each(|ix| {
-            ix.program_id_index += 1; // Update `program id indexes`
-            ix.accounts
-                .iter_mut()
-                .for_each(|account_id| *account_id += 1); // Update `account id indexes`
-        });
+        self.instructions_mut()
+            .iter_mut()
+            .try_for_each(|ix| -> SigningResult<()> {
+                ix.program_id_index = ix
+                    .program_id_index
+                    .checked_add(1)
+                    .ok_or(SigningErrorType::Error_tx_too_big)?;
+                ix.accounts
+                    .iter_mut()
+                    .try_for_each(|account_id| -> SigningResult<()> {
+                        *account_id = account_id
+                            .checked_add(1)
+                            .ok_or(SigningErrorType::Error_tx_too_big)?;
+                        Ok(())
+                    })
+            })?;
 
         Ok(())
     }
+
+    // =========================================================================
+    // Abstract methods — implementors must provide these.
+    // =========================================================================
 
     /// Returns ALT (Address Lookup Tables) if supported by the message version.
     fn address_table_lookups(&self) -> Option<&[MessageAddressTableLookup]>;

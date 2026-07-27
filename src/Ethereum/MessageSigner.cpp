@@ -115,23 +115,4 @@ Data MessageSigner::typedDataPreImageHash(const std::string& data) noexcept {
     return messagePreImageHashRust(data, Proto::MessageType::MessageType_typed);
 }
 
-void MessageSigner::prepareSignature(Data& signature, MessageType msgType, TW::Ethereum::MessageSigner::MaybeChainId chainId) noexcept {
-    switch (msgType) {
-        case MessageType::ImmutableX: {
-            break;
-        }
-        case MessageType::Legacy: {
-            signature[64] += 27;
-            break;
-        }
-        case MessageType::Eip155: {
-            auto id = chainId.value_or(0);
-            signature[64] += 35 + id * 2;
-            break;
-        }
-        default:
-            break;
-    }
-}
-
 } // namespace TW::Ethereum

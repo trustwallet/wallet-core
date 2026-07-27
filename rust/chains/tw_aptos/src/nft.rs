@@ -2,16 +2,15 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::address::from_account_error;
-use move_core_types::account_address::AccountAddress;
+use crate::address::Address;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_proto::Aptos::Proto::mod_NftMessage::OneOfnft_transaction_payload;
 use tw_proto::Aptos::Proto::{CancelOfferNftMessage, ClaimNftMessage, NftMessage, OfferNftMessage};
 
 pub struct Offer {
-    pub receiver: AccountAddress,
-    pub creator: AccountAddress,
+    pub receiver: Address,
+    pub creator: Address,
     pub collection: Vec<u8>,
     pub name: Vec<u8>,
     pub property_version: u64,
@@ -19,8 +18,8 @@ pub struct Offer {
 }
 
 pub struct Claim {
-    pub sender: AccountAddress,
-    pub creator: AccountAddress,
+    pub sender: Address,
+    pub creator: Address,
     pub collection: Vec<u8>,
     pub name: Vec<u8>,
     pub property_version: u64,
@@ -77,8 +76,8 @@ impl TryFrom<OfferNftMessage<'_>> for Offer {
 
     fn try_from(value: OfferNftMessage) -> SigningResult<Self> {
         Ok(Offer {
-            receiver: AccountAddress::from_str(&value.receiver).map_err(from_account_error)?,
-            creator: AccountAddress::from_str(&value.creator).map_err(from_account_error)?,
+            receiver: Address::from_str(&value.receiver)?,
+            creator: Address::from_str(&value.creator)?,
             collection: value.collectionName.as_bytes().to_vec(),
             name: value.name.as_bytes().to_vec(),
             property_version: value.property_version,
@@ -90,8 +89,8 @@ impl TryFrom<OfferNftMessage<'_>> for Offer {
 impl From<Offer> for OfferNftMessage<'_> {
     fn from(value: Offer) -> Self {
         OfferNftMessage {
-            receiver: value.receiver.to_hex_literal().into(),
-            creator: value.creator.to_hex_literal().into(),
+            receiver: value.receiver.to_string().into(),
+            creator: value.creator.to_string().into(),
             collectionName: String::from_utf8_lossy(value.collection.as_slice())
                 .to_string()
                 .into(),
@@ -107,12 +106,10 @@ impl TryFrom<CancelOfferNftMessage<'_>> for Offer {
 
     fn try_from(value: CancelOfferNftMessage) -> SigningResult<Self> {
         Ok(Offer {
-            receiver: AccountAddress::from_str(&value.receiver)
-                .map_err(from_account_error)
+            receiver: Address::from_str(&value.receiver)
                 .into_tw()
                 .context("Invalid receiver address")?,
-            creator: AccountAddress::from_str(&value.creator)
-                .map_err(from_account_error)
+            creator: Address::from_str(&value.creator)
                 .into_tw()
                 .context("Invalid creator address")?,
             collection: value.collectionName.as_bytes().to_vec(),
@@ -126,8 +123,8 @@ impl TryFrom<CancelOfferNftMessage<'_>> for Offer {
 impl From<Offer> for CancelOfferNftMessage<'_> {
     fn from(value: Offer) -> Self {
         CancelOfferNftMessage {
-            receiver: value.receiver.to_hex_literal().into(),
-            creator: value.creator.to_hex_literal().into(),
+            receiver: value.receiver.to_string().into(),
+            creator: value.creator.to_string().into(),
             collectionName: String::from_utf8_lossy(value.collection.as_slice())
                 .to_string()
                 .into(),
@@ -144,12 +141,10 @@ impl TryFrom<ClaimNftMessage<'_>> for Claim {
 
     fn try_from(value: ClaimNftMessage) -> SigningResult<Self> {
         Ok(Claim {
-            sender: AccountAddress::from_str(&value.sender)
-                .map_err(from_account_error)
+            sender: Address::from_str(&value.sender)
                 .into_tw()
                 .context("Invalid sender address")?,
-            creator: AccountAddress::from_str(&value.creator)
-                .map_err(from_account_error)
+            creator: Address::from_str(&value.creator)
                 .into_tw()
                 .context("Invalid creator address")?,
             collection: value.collectionName.as_bytes().to_vec(),
@@ -162,8 +157,8 @@ impl TryFrom<ClaimNftMessage<'_>> for Claim {
 impl From<Claim> for ClaimNftMessage<'_> {
     fn from(value: Claim) -> Self {
         ClaimNftMessage {
-            sender: value.sender.to_hex_literal().into(),
-            creator: value.creator.to_hex_literal().into(),
+            sender: value.sender.to_string().into(),
+            creator: value.creator.to_string().into(),
             collectionName: String::from_utf8_lossy(value.collection.as_slice())
                 .to_string()
                 .into(),

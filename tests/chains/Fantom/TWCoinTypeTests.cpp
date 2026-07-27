@@ -19,6 +19,7 @@ TEST(TWFantomCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeFantom, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeFantom));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeFantom));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeFantom));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeFantom), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeFantom));
@@ -29,4 +30,5 @@ TEST(TWFantomCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://ftmscan.com/address/0x9474feb9917b87da6f0d830ba66ee0035835c0d3");
     assertStringsEqual(id, "fantom");
     assertStringsEqual(name, "Fantom");
+    assertStringsEqual(nativeTokenName, "Fantom");
 }

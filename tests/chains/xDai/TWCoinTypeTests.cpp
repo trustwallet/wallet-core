@@ -19,6 +19,7 @@ TEST(TWxDaiCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeXDai, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeXDai));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXDai));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeXDai));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeXDai), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeXDai));
@@ -29,4 +30,5 @@ TEST(TWxDaiCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://blockscout.com/xdai/mainnet/address/0x12d61a95CF55e18D267C2F1AA67d8e42ae1368f8");
     assertStringsEqual(id, "xdai");
     assertStringsEqual(name, "Gnosis Chain");
+    assertStringsEqual(nativeTokenName, "xDai");
 }

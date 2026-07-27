@@ -5,7 +5,7 @@
 import "mocha";
 import { assert } from "chai";
 import { TW } from "../../dist";
-import Long = require("long");
+import * as Long from "long";
 
 describe("Greenfield", () => {
 

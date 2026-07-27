@@ -8,20 +8,24 @@
 
 using namespace TW;
 
-struct TWAccount* _Nonnull TWAccountCreate(TWString* _Nonnull address,
-                                           enum TWCoinType coin,
-                                           enum TWDerivation derivation, 
-                                           TWString* _Nonnull derivationPath,
-                                           TWString* _Nonnull publicKey,
-                                           TWString* _Nonnull extendedPublicKey) {
-    auto& addressString = *reinterpret_cast<const std::string*>(address);
-    auto& derivationPathString = *reinterpret_cast<const std::string*>(derivationPath);
-    auto& publicKeyString = *reinterpret_cast<const std::string*>(publicKey);
-    auto& extendedPublicKeyString = *reinterpret_cast<const std::string*>(extendedPublicKey);
-    const auto dp = DerivationPath(derivationPathString);
-    return new TWAccount{
-        Keystore::Account(addressString, coin, derivation, dp, publicKeyString, extendedPublicKeyString)
-    };
+struct TWAccount* _Nullable TWAccountCreate(TWString* _Nonnull address,
+                                            enum TWCoinType coin,
+                                            enum TWDerivation derivation,
+                                            TWString* _Nonnull derivationPath,
+                                            TWString* _Nonnull publicKey,
+                                            TWString* _Nonnull extendedPublicKey) {
+    try {
+        auto& addressString = *reinterpret_cast<const std::string*>(address);
+        auto& derivationPathString = *reinterpret_cast<const std::string*>(derivationPath);
+        auto& publicKeyString = *reinterpret_cast<const std::string*>(publicKey);
+        auto& extendedPublicKeyString = *reinterpret_cast<const std::string*>(extendedPublicKey);
+        const auto dp = DerivationPath(derivationPathString);
+        return new TWAccount{
+            Keystore::Account(addressString, coin, derivation, dp, publicKeyString, extendedPublicKeyString)
+        };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 void TWAccountDelete(struct TWAccount* _Nonnull account) {

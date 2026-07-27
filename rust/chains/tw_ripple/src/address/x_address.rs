@@ -90,6 +90,15 @@ impl FromStr for XAddress {
 
         let tag = Self::read_tag(&inner.bytes)?;
         let tag_flag = Self::decode_tag_flag(&inner.bytes)?;
+
+        // A no-tag address (tag_flag == None) must carry zero tag bytes.
+        // A non-zero tag with flag=None is a malformed encoding: the address
+        // appears tagless but would silently produce a non-zero tag value,
+        // which could be injected into signed transactions and misroute funds.
+        if tag_flag == TagFlag::None && tag != 0 {
+            return Err(AddressError::InvalidInput);
+        }
+
         Ok(XAddress {
             tag,
             inner,

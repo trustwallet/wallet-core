@@ -19,6 +19,7 @@ TEST(TWMeterCoinType, TWCoinType) {
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeMeter, accId.get()));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMeter));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMeter));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeMeter));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMeter), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeMeter));
@@ -29,4 +30,5 @@ TEST(TWMeterCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://scan.meter.io/address/0xe5a273954d24eddf9ae9ea4cef2347d584cfa3dd");
     assertStringsEqual(id, "meter");
     assertStringsEqual(name, "Meter");
+    assertStringsEqual(nativeTokenName, "Meter");
 }

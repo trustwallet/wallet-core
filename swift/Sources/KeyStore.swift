@@ -395,8 +395,16 @@ public final class KeyStore {
         return keyDirectory.appendingPathComponent(generateFileName(identifier: UUID().uuidString))
     }
 
+    private func generateTempFileURL(accountURL: URL) -> URL {
+        return accountURL.deletingLastPathComponent()
+            .appendingPathComponent(accountURL.lastPathComponent + "." + UUID().uuidString + ".tmp")
+    }
+
     private func save(wallet: Wallet) throws {
-        _ = wallet.key.store(path: wallet.keyURL.path)
+        let tempFilePath = generateTempFileURL(accountURL: wallet.keyURL).path
+        guard wallet.key.storeWithTemporaryFile(path: wallet.keyURL.path, temporaryPath: tempFilePath) else {
+            throw Error.storageFailed
+        }
     }
 
     /// Generates a unique file name for an address.

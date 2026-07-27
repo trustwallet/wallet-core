@@ -19,6 +19,7 @@ TEST(TWOasisCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeOasis, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeOasis));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeOasis));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeOasis));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeOasis), 9);
     ASSERT_EQ(TWBlockchainOasisNetwork, TWCoinTypeBlockchain(TWCoinTypeOasis));
@@ -29,4 +30,5 @@ TEST(TWOasisCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://oasisscan.com/accounts/detail/oasis1qrx376dmwuckmruzn9vq64n49clw72lywctvxdf4");
     assertStringsEqual(id, "oasis");
     assertStringsEqual(name, "Oasis");
+    assertStringsEqual(nativeTokenName, "Oasis");
 }

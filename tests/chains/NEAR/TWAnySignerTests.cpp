@@ -159,4 +159,28 @@ TEST(TWAnySignerNEAR, SignTokenTransfer) {
     ASSERT_EQ(Base64::encode(data(output.signed_transaction())), "QAAAADEwNTM5NjIyOGFjMmUwZWYxNDRiOTNiY2M1MzIyZmNhMTE2N2Q1MjQ0MjJiYjczZDE3NDQwZDM1YzcxNGE1OGYAEFOWIorC4O8US5O8xTIvyhFn1SRCK7c9F0QNNccUpY8D5MPmo1QAABAAAAB0b2tlbi5wYXJhcy5uZWFyGC7O0jXN2b4SH1XfMtNISEnU8XATKOhZwxx0pLLZqTEBAAAAAgsAAABmdF90cmFuc2ZlcnAAAAB7ImFtb3VudCI6IjEwMDAwMDAwMDAwMDAwMDAwMCIsInJlY2VpdmVyX2lkIjoiYzZkNWUzZThmMzI4NDM2ZjU5NTg1NmE1OTgyMzliNjkxZDNkMTM2YjI0YzA1YTQ2MTRmOWU5NzE2ZWRjMTRmZSJ9APCrdaQNAAABAAAAAAAAAAAAAAAAAAAAANUjO7fmnTebSNW9EcHHwYwPNlQJcReGWJfJUuxWzPDAGEeo4JTcLB8pLCkqxKKsI0NE1Szv2+GAt5mCBum5mQY=");
 }
 
+TEST(TWAnySignerNEAR, Sign_InvalidBlockHash) {
+    auto privateKey = parse_hex("8737b99bf16fba78e1e753e23ba00c4b5423ac9c45d9b9caae9a519434786568");
+    auto deposit = parse_hex("01000000000000000000000000000000");
+
+    Proto::SigningInput input;
+    input.set_signer_id("test.near");
+    input.set_nonce(1);
+    input.set_receiver_id("whatever.near");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto& action = *input.add_actions();
+    action.mutable_transfer()->set_deposit(deposit.data(), deposit.size());
+
+    // 31 bytes — one byte short of the required 32
+    auto shortHash = parse_hex("0fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2f");
+    input.set_block_hash(shortHash.data(), shortHash.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeNEAR);
+
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    EXPECT_TRUE(output.signed_transaction().empty());
+}
+
 } // namespace TW::NEAR

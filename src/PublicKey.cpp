@@ -20,7 +20,7 @@
 
 namespace TW {
 
-bool validateSignatureLength(TWPublicKeyType type, const Data& signature) {
+static bool validateSignatureLength(TWPublicKeyType type, const Data& signature) {
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended:
@@ -32,6 +32,27 @@ bool validateSignatureLength(TWPublicKeyType type, const Data& signature) {
     default: {
         return signature.size() == PublicKey::signatureSize;
     }
+    }
+}
+
+static bool validateMessageLength(TWPublicKeyType type, const Data& message) {
+    switch (type) {
+    case TWPublicKeyTypeED25519:
+    case TWPublicKeyTypeCURVE25519:
+    case TWPublicKeyTypeED25519Blake2b:
+    case TWPublicKeyTypeED25519Cardano:
+        // Allow any message size for ed25519.
+        return true;
+    case TWPublicKeyTypeSECP256k1:
+    case TWPublicKeyTypeNIST256p1:
+    case TWPublicKeyTypeSECP256k1Extended:
+    case TWPublicKeyTypeNIST256p1Extended:
+        return message.size() == PublicKey::ecdsaMessageSize;
+    case TWPublicKeyTypeStarkex:
+        // Digest shorter than 32 bytes will be left-padded with zeros before verification.
+        return message.size() <= PublicKey::starkexMessageMaxSize;
+    default:
+        return false;
     }
 }
 
@@ -165,6 +186,9 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
     if (!validateSignatureLength(type, signature)) {
         return false;
     }
+    if (!validateMessageLength(type, message)) {
+        return false;
+    }
 
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
@@ -183,7 +207,7 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
     }
     case TWPublicKeyTypeCURVE25519: {
         auto ed25519PublicKey = Data();
-        ed25519PublicKey.resize(PublicKey::ed25519Size);
+        ed25519PublicKey.resize(ed25519Size);
         curve25519_pk_to_ed25519(ed25519PublicKey.data(), bytes.data());
 
         ed25519PublicKey[31] &= 0x7F;
@@ -203,6 +227,13 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
 }
 
 bool PublicKey::verifyAsDER(const Data& signature, const Data& message) const {
+    if (signature.size() < derSignatureMinSize || signature.size() > derSignatureMaxSize) {
+        return false;
+    }
+    if (message.size() != ecdsaMessageSize) {
+        return false;
+    }
+
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended: {

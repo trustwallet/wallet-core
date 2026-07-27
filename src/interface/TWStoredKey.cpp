@@ -195,16 +195,22 @@ void TWStoredKeyRemoveAccountForCoinDerivation(struct TWStoredKey* _Nonnull key,
 }
 
 void TWStoredKeyRemoveAccountForCoinDerivationPath(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull derivationPath) {
-    const auto dp = TW::DerivationPath(*reinterpret_cast<const std::string*>(derivationPath));
-    key->impl.removeAccount(coin, dp);
+    try {
+        const auto dp = TW::DerivationPath(*reinterpret_cast<const std::string*>(derivationPath));
+        key->impl.removeAccount(coin, dp);
+    } catch (...) {
+    }
 }
 
 void TWStoredKeyAddAccountDerivation(struct TWStoredKey* _Nonnull key, TWString* _Nonnull address, enum TWCoinType coin, enum TWDerivation derivation, TWString* _Nonnull derivationPath, TWString* _Nonnull publicKey, TWString* _Nonnull extendedPublicKey) {
-    const auto& addressString = *reinterpret_cast<const std::string*>(address);
-    const auto& publicKeyString = *reinterpret_cast<const std::string*>(publicKey);
-    const auto& extendedPublicKeyString = *reinterpret_cast<const std::string*>(extendedPublicKey);
-    const auto dp = TW::DerivationPath(*reinterpret_cast<const std::string*>(derivationPath));
-    key->impl.addAccount(addressString, coin, derivation, dp, publicKeyString, extendedPublicKeyString);
+    try {
+        const auto& addressString = *reinterpret_cast<const std::string*>(address);
+        const auto& publicKeyString = *reinterpret_cast<const std::string*>(publicKey);
+        const auto& extendedPublicKeyString = *reinterpret_cast<const std::string*>(extendedPublicKey);
+        const auto dp = TW::DerivationPath(*reinterpret_cast<const std::string*>(derivationPath));
+        key->impl.addAccount(addressString, coin, derivation, dp, publicKeyString, extendedPublicKeyString);
+    } catch (...) {
+    }
 }
 
 void TWStoredKeyAddAccount(struct TWStoredKey* _Nonnull key, TWString* _Nonnull address, enum TWCoinType coin, TWString* _Nonnull derivationPath, TWString* _Nonnull publicKey, TWString* _Nonnull extendedPublicKey) {
@@ -215,6 +221,17 @@ bool TWStoredKeyStore(struct TWStoredKey* _Nonnull key, TWString* _Nonnull path)
     try {
         const auto& pathString = *reinterpret_cast<const std::string*>(path);
         key->impl.store(pathString);
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
+bool TWStoredKeyStoreWithTemporaryFile(struct TWStoredKey* _Nonnull key, TWString* _Nonnull path, TWString* _Nonnull temporaryPath) {
+    try {
+        const auto& pathString = *reinterpret_cast<const std::string*>(path);
+        const auto& temporaryPathString = *reinterpret_cast<const std::string*>(temporaryPath);
+        key->impl.storeWithTemporaryFile(pathString, temporaryPathString);
         return true;
     } catch (...) {
         return false;
@@ -275,14 +292,28 @@ struct TWHDWallet* _Nullable TWStoredKeyWallet(struct TWStoredKey* _Nonnull key,
 }
 
 TWData* _Nullable TWStoredKeyExportJSON(struct TWStoredKey* _Nonnull key) {
-    const auto json = key->impl.json().dump();
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(json.data()), json.size());
+    try {
+        const auto json = key->impl.json().dump();
+        return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(json.data()), json.size());
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 bool TWStoredKeyFixAddresses(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
     try {
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
         key->impl.fixAddresses(passwordData);
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
+bool TWStoredKeyFixEncryption(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
+    try {
+        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        key->impl.fixEncryption(passwordData);
         return true;
     } catch (...) {
         return false;

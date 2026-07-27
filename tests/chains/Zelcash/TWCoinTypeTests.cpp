@@ -19,6 +19,7 @@ TEST(TWZelcashCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeZelcash, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZelcash));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZelcash));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeZelcash));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZelcash), 8);
     ASSERT_EQ(TWBlockchainZcash, TWCoinTypeBlockchain(TWCoinTypeZelcash));
@@ -29,4 +30,5 @@ TEST(TWZelcashCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.runonflux.io/address/a12");
     assertStringsEqual(id, "zelcash");
     assertStringsEqual(name, "Flux");
+    assertStringsEqual(nativeTokenName, "Flux");
 }

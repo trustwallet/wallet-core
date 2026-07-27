@@ -236,6 +236,8 @@ message TransactionBuilder {
     InputSelector input_selector = 5;
     // The amount of satoshis per vbyte ("satVb"), used for fee calculation.
     // Can be satoshis per byte ("satB") **ONLY** when transaction does not contain segwit UTXOs.
+    // In most cases, the fee rate is a positive integer, but it can be zero when fee validation is not necessary (`InputSelector.UseAll`),
+    // or the transaction is free or it contains a miner subsidy UTXO (eg. coinbase transaction).
     int64 fee_per_vb = 6;
     // (optional) The change output to be added (return to sender) at the end of the outputs list.
     // The `Output.value` will be overwritten, leave default.
@@ -255,6 +257,8 @@ message TransactionBuilder {
     oneof chain_specific {
         // ZCash specific transaction data.
         Zcash.Proto.TransactionBuilderExtraData zcash_extra_data = 20;
+        // Decred specific transaction data.
+        DecredV2.Proto.TransactionBuilderExtraData decred_extra_data = 21;
     }
 }
 

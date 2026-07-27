@@ -4,6 +4,7 @@
 
 #include "EncryptionParameters.h"
 
+#include "memory/memzero_wrapper.h"
 #include "../Hash.h"
 
 #include <TrezorCrypto/aes.h>
@@ -38,10 +39,25 @@ static const auto mac = "mac";
 } // namespace CodingKeys
 
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
+    if (json.count(CodingKeys::cipher) == 0 || !json[CodingKeys::cipher].is_string()) {
+        throw std::invalid_argument("Missing cipher");
+    }
+    if (json.count(CodingKeys::kdf) == 0 || !json[CodingKeys::kdf].is_string()) {
+        throw std::invalid_argument("Missing kdf");
+    }
+    if (json.count(CodingKeys::cipherParams) == 0 || !json[CodingKeys::cipherParams].is_object()) {
+        throw std::invalid_argument("Missing cipher params");
+    }
+    if (json.count(CodingKeys::kdfParams) == 0 || !json[CodingKeys::kdfParams].is_object()) {
+        throw std::invalid_argument("Missing kdf params");
+    }
+
     auto cipher = json[CodingKeys::cipher].get<std::string>();
     cipherParams = AESParameters::AESParametersFromJson(json[CodingKeys::cipherParams], cipher);
-    if (!cipherParams.isValid()) {
-        throw std::invalid_argument("Invalid cipher params");
+    if (const auto error = cipherParams.validate(); error.has_value()) {
+        std::stringstream ss;
+        ss << "Invalid cipher params: " << toString(*error);
+        throw std::invalid_argument(ss.str());
     }
 
     auto kdf = json[CodingKeys::kdf].get<std::string>();
@@ -49,6 +65,8 @@ EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
         kdfParams = ScryptParameters(json[CodingKeys::kdfParams]);
     } else if (kdf == "pbkdf2") {
         kdfParams = PBKDF2Parameters(json[CodingKeys::kdfParams]);
+    } else {
+        throw std::invalid_argument("Unsupported kdf: " + kdf);
     }
 }
 
@@ -68,13 +86,22 @@ nlohmann::json EncryptionParameters::json() const {
     return j;
 }
 
-EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const EncryptionParameters& params)
-    : params(std::move(params)), _mac() {
-    if (!this->params.cipherParams.isValid()) {
-        throw std::invalid_argument("Invalid cipher params");
+bool EncryptionParameters::shouldFix() const {
+    if (std::holds_alternative<ScryptParameters>(kdfParams)) {
+        return std::get<ScryptParameters>(kdfParams).shouldFix();
     }
 
-    auto scryptParams = std::get<ScryptParameters>(this->params.kdfParams);
+    // Note: re-encryption is currently supported for Scrypt only.
+    return false;
+}
+
+EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const AESParameters& cipherParams, const ScryptParameters& scryptParams) {
+    if (const auto error = cipherParams.validate(); error.has_value()) {
+        std::stringstream ss;
+        ss << "Invalid cipher params: " << toString(*error);
+        throw std::invalid_argument(ss.str());
+    }
+
     auto derivedKey = Data(scryptParams.desiredKeyLength);
     scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
            scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
@@ -82,9 +109,8 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
 
     aes_encrypt_ctx ctx;
     auto result = 0;
-    switch(this->params.cipherParams.mCipherEncryption) {
+    switch(cipherParams.mCipherEncryption) {
     case TWStoredKeyEncryptionAes128Ctr:
-    case TWStoredKeyEncryptionAes128Cbc:
         result = aes_encrypt_key128(derivedKey.data(), &ctx);
         break;
     case TWStoredKeyEncryptionAes192Ctr:
@@ -96,19 +122,35 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
     }
     assert(result == EXIT_SUCCESS);
     if (result == EXIT_SUCCESS) {
-        Data iv = this->params.cipherParams.iv;
+        Data iv = cipherParams.iv;
         // iv size should have been validated in `AESParameters::isValid()`.
         assert(iv.size() == gBlockSize);
 
+        params = { cipherParams, scryptParams };
         encrypted = Data(data.size());
         aes_ctr_encrypt(data.data(), encrypted.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
         _mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
     }
+
+    memzero(&ctx, sizeof(ctx));
+    memzero(derivedKey.data(), derivedKey.size());
+}
+
+EncryptedPayload& EncryptedPayload::operator=(EncryptedPayload&& other) noexcept {
+    if (this != &other) {
+        memzero(encrypted.data(), encrypted.size());
+        memzero(_mac.data(), _mac.size());
+
+        params = std::move(other.params);
+        encrypted = std::move(other.encrypted);
+        _mac = std::move(other._mac);
+    }
+    return *this;
 }
 
 EncryptedPayload::~EncryptedPayload() {
-    std::fill(encrypted.begin(), encrypted.end(), 0);
-    std::fill(_mac.begin(), _mac.end(), 0);
+    memzero(encrypted.data(), encrypted.size());
+    memzero(_mac.data(), _mac.size());
 }
 
 Data EncryptedPayload::decrypt(const Data& password) const {
@@ -131,13 +173,14 @@ Data EncryptedPayload::decrypt(const Data& password) const {
         throw DecryptionError::unsupportedKDF;
     }
 
-    if (mac != _mac) {
+    if (!isEqualConstantTime(mac, _mac)) {
+        memzero(derivedKey.data(), derivedKey.size());
         throw DecryptionError::invalidPassword;
     }
 
     // Even though the cipher params should have been validated in `EncryptedPayload` constructor,
     // double check them here.
-    if (!params.cipherParams.isValid()) {
+    if (params.cipherParams.validate().has_value()) {
         throw DecryptionError::invalidCipher;
     }
     assert(params.cipherParams.iv.size() == gBlockSize);
@@ -145,29 +188,59 @@ Data EncryptedPayload::decrypt(const Data& password) const {
     Data decrypted(encrypted.size());
     Data iv = params.cipherParams.iv;
     const auto encryption = params.cipherParams.mCipherEncryption;
-    if (encryption == TWStoredKeyEncryptionAes128Ctr || encryption == TWStoredKeyEncryptionAes256Ctr) {
+    if (encryption == TWStoredKeyEncryptionAes128Ctr
+        || encryption == TWStoredKeyEncryptionAes192Ctr
+        || encryption == TWStoredKeyEncryptionAes256Ctr) {
         aes_encrypt_ctx ctx;
         [[maybe_unused]] auto result = aes_encrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
         assert(result != EXIT_FAILURE);
 
         aes_ctr_decrypt(encrypted.data(), decrypted.data(), static_cast<int>(encrypted.size()), iv.data(),
                         aes_ctr_cbuf_inc, &ctx);
-    } else if (encryption == TWStoredKeyEncryptionAes128Cbc) {
-        aes_decrypt_ctx ctx;
-        [[maybe_unused]] auto result = aes_decrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
-        assert(result != EXIT_FAILURE);
-
-        for (auto i = 0ul; i < encrypted.size(); i += params.getKeyBytesSize()) {
-            aes_cbc_decrypt(encrypted.data() + i, decrypted.data() + i, params.getKeyBytesSize(), iv.data(), &ctx);
-        }
+        memzero(&ctx, sizeof(ctx));
+        memzero(derivedKey.data(), derivedKey.size());
     } else {
+        memzero(derivedKey.data(), derivedKey.size());
         throw DecryptionError::unsupportedCipher;
     }
 
     return decrypted;
 }
 
+EncryptedPayload EncryptedPayload::regenerateWithRecommendedParams(const Data& password) const {
+    // IMPORTANT: `EncryptedPayload` constructor supports Scrypt encryption ONLY.
+    // Hence, we can't regenerate PBKDF2 and re-encrypt a payload. Do nothing in that case.
+    if (!std::holds_alternative<ScryptParameters>(params.kdfParams)) {
+        return *this;
+    }
+
+    const auto decryptedData = ZeroizingData(decrypt(password));
+
+    // Regenerate only necessary Scrypt parameters, while leaving other settings as is.
+    const auto fixedScryptParams = std::get<ScryptParameters>(params.kdfParams).regenerateWithRecommendedParams();
+    const auto cipherParams = params.cipherParams.copyWithNewIv();
+
+    auto reEncryptedPayload = EncryptedPayload(password, decryptedData.get(), cipherParams, fixedScryptParams);
+
+    // Try to decrypt the new payload to verify the full backward compatibility, before returning it.
+    {
+        auto reDecryptedData = ZeroizingData(reEncryptedPayload.decrypt(password));
+        if (!isEqualConstantTime(decryptedData.get(), reDecryptedData.get())) {
+            throw DecryptionError::invalidKeyFile;
+        }
+    }
+
+    return reEncryptedPayload;
+}
+
 EncryptedPayload::EncryptedPayload(const nlohmann::json& json) {
+    if (json.count(CodingKeys::encrypted) == 0 || !json[CodingKeys::encrypted].is_string()) {
+        throw std::invalid_argument("Missing encrypted data");
+    }
+    if (json.count(CodingKeys::mac) == 0 || !json[CodingKeys::mac].is_string()) {
+        throw std::invalid_argument("Missing mac");
+    }
+
     params = EncryptionParameters(json);
     encrypted = parse_hex(json[CodingKeys::encrypted].get<std::string>());
     _mac = parse_hex(json[CodingKeys::mac].get<std::string>());

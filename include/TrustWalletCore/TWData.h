@@ -53,13 +53,6 @@ size_t TWDataSize(TWData *_Nonnull data) TW_VISIBILITY_DEFAULT;
 /// \return the raw pointer to the contents of data
 uint8_t *_Nonnull TWDataBytes(TWData *_Nonnull data) TW_VISIBILITY_DEFAULT;
 
-/// Returns the byte at the provided index.
-///
-/// \param data A non-null valid block of data
-/// \param index index of the byte that we want to fetch - index need to be < TWDataSize(data)
-/// \return the byte at the provided index
-uint8_t TWDataGet(TWData *_Nonnull data, size_t index) TW_VISIBILITY_DEFAULT;
-
 /// Sets the byte at the provided index.
 ///
 /// \param data A non-null valid block of data
@@ -71,17 +64,19 @@ void TWDataSet(TWData *_Nonnull data, size_t index, uint8_t byte) TW_VISIBILITY_
 ///
 /// \param data A non-null valid block of data
 /// \param start starting index of the range - index need to be < TWDataSize(data)
-/// \param size size of the range we want to copy - size need to be < TWDataSize(data) - start
+/// \param size size of the range we want to copy - size need to be <= TWDataSize(data) - start, but at least 1
 /// \param output The output buffer where we want to copy the data.
-void TWDataCopyBytes(TWData *_Nonnull data, size_t start, size_t size, uint8_t *_Nonnull output) TW_VISIBILITY_DEFAULT;
+/// \return 0 if the operation is successful, -1 if the operation fails (e.g. invalid start or size).
+int TWDataCopyBytes(TWData *_Nonnull data, size_t start, size_t size, uint8_t *_Nonnull output) TW_VISIBILITY_DEFAULT;
 
 /// Replaces a range of bytes with the contents of the provided buffer.
 ///
 /// \param data A non-null valid block of data
 /// \param start starting index of the range - index need to be < TWDataSize(data)
-/// \param size size of the range we want to replace - size need to be < TWDataSize(data) - start
+/// \param size size of the range we want to replace - size need to be <= TWDataSize(data) - start, but at least 1
 /// \param bytes The buffer that will replace the range of data
-void TWDataReplaceBytes(TWData *_Nonnull data, size_t start, size_t size, const uint8_t *_Nonnull bytes) TW_VISIBILITY_DEFAULT;
+/// \return 0 if the operation is successful, -1 if the operation fails (e.g. invalid start or size)
+int TWDataReplaceBytes(TWData *_Nonnull data, size_t start, size_t size, const uint8_t *_Nonnull bytes) TW_VISIBILITY_DEFAULT;
 
 /// Appends data from a byte array.
 ///

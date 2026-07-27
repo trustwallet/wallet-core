@@ -14,10 +14,17 @@ namespace TW::Tezos {
 namespace {
 
 constexpr const char* gTezosContractAddressPrefix{"KT1"};
+constexpr uint8_t gSignBitMask{0x40};
+constexpr uint8_t gFirstByteMask{0x3f};
+constexpr uint8_t gLastByteMask{0x7f};
+constexpr uint8_t gContinuationBitMask{0x80};
 
 void encodePrefix(const std::string& address, Data& forged) {
     const auto decoded = Base58::decodeCheck(address);
-    constexpr auto prefixSize{3};
+    constexpr size_t prefixSize{3};
+    if (decoded.size() != Address::size) {
+        throw std::invalid_argument("Invalid address: unexpected decoded payload size");
+    }
     forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
 }
 
@@ -65,6 +72,9 @@ Data forgeEntrypoint(const std::string& value) {
 // Forge the given public key hash into a hex encoded string.
 // Note: This function supports tz1, tz2 and tz3 addresses.
 Data forgePublicKeyHash(const std::string& publicKeyHash) {
+    if (publicKeyHash.size() < 3) {
+        throw std::invalid_argument("Invalid address");
+    }
     Data forged = Data();
     // Adjust prefix based on tz1, tz2 or tz3.
     switch ((char)publicKeyHash[2]) {
@@ -108,11 +118,14 @@ Data forgeAddress(const std::string& address) {
 // https://github.com/ecadlabs/taquito/blob/master/packages/taquito-local-forging/src/codec.ts#L19
 Data forgePrefix(std::array<TW::byte, 3> prefix, const std::string& val) {
     const auto decoded = Base58::decodeCheck(val);
+    if (decoded.size() != Address::size) {
+        throw std::invalid_argument("Invalid address: unexpected decoded payload size");
+    }
     if (!std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
-        throw std::invalid_argument("prefix not match");
+        throw std::invalid_argument("Prefix does not match");
     }
 
-    const auto prefixSize = 3;
+    constexpr size_t prefixSize{3};
     Data forged = Data();
     forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
     return forged;
@@ -154,7 +167,7 @@ Data forgeOperation(const Proto::Operation& operation) {
     using namespace Proto;
     auto forged = Data();
     auto source = Address(operation.source());
-    auto forgedSource = source.forgePKH(); //https://github.com/ecadlabs/taquito/blob/master/packages/taquito-local-forging/src/schema/operation.ts#L40
+    auto forgedSource = source.forgePKH(); // https://github.com/ecadlabs/taquito/blob/master/packages/taquito-local-forging/src/schema/operation.ts#L40
     auto forgedFee = forgeZarith(operation.fee());
     auto forgedCounter = forgeZarith(operation.counter());
     auto forgedGasLimit = forgeZarith(operation.gas_limit());
@@ -303,11 +316,14 @@ Data forgeArray(const Data& data) {
 Data forgeMichelInt(const TW::int256_t& value) {
     Data forged;
     auto abs = boost::multiprecision::abs(value);
-    forged.emplace_back(static_cast<uint8_t>(value.sign() < 0 ? (abs & 0x3f - 0x40) : (abs & 0x3f)));
+    // The second most significant bit (& 0x40) of the first byte is reserved for the sign (positive if zero).
+    // The rest 6 bits (& 0x3f) are used to encode the absolute value of the integer. If the integer is larger than 6 bits, the most significant bit (& 0x80) of the first byte is set to indicate that there are more bytes to follow.
+    const auto first6Bits = static_cast<uint8_t>(abs & gFirstByteMask);
+    forged.emplace_back(value.sign() < 0 ? (first6Bits | gSignBitMask) : first6Bits);
     abs >>= 6;
     while (abs > 0) {
-        forged[forged.size() - 1] |= 0x80;
-        forged.emplace_back(static_cast<uint8_t>(abs & 0x7F));
+        forged[forged.size() - 1] |= gContinuationBitMask;
+        forged.emplace_back(static_cast<uint8_t>(abs & gLastByteMask));
         abs >>= 7;
     }
     return forged;

@@ -19,6 +19,7 @@ TEST(TWAeternityCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeAeternity, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAeternity));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAeternity));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeAeternity));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAeternity), 18);
     ASSERT_EQ(TWBlockchainAeternity, TWCoinTypeBlockchain(TWCoinTypeAeternity));
@@ -29,4 +30,5 @@ TEST(TWAeternityCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.aepps.com/account/transactions/a12");
     assertStringsEqual(id, "aeternity");
     assertStringsEqual(name, "Aeternity");
+    assertStringsEqual(nativeTokenName, "Aeternity");
 }

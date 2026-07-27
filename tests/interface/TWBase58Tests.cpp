@@ -40,8 +40,8 @@ TEST(TWBase58, DecodeNoCheck) {
 
 TEST(TWBase58, Decode_WrongChecksum) {
     const auto input = STRING("1Bp9U1ogV3A14FMvKbRJms7ctyso5FdSz2");
-    auto result = WRAPD(TWBase58Decode(input.get()));
-    ASSERT_EQ(result.get(), nullptr);
+    auto result = TWBase58Decode(input.get());
+    ASSERT_EQ(result, nullptr);
 }
 
 TEST(TWBase58, DecodeNoCheck_WrongChecksum) {
@@ -54,13 +54,13 @@ TEST(TWBase58, DecodeNoCheck_WrongChecksum) {
 TEST(TWBase58, Decode_InvalidChar) {
     // 0 is invalid
     const auto input = STRING("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tc0");
-    auto result = WRAPD(TWBase58Decode(input.get()));
-    ASSERT_EQ(result.get(), nullptr);
+    auto result = TWBase58Decode(input.get());
+    ASSERT_EQ(result, nullptr);
 }
 
 TEST(TWBase58, DecodeNoCheck_InvalidChar) {
     // 0 is invalid
     const auto input = STRING("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tc0");
-    auto result = WRAPD(TWBase58DecodeNoCheck(input.get()));
-    ASSERT_EQ(result.get(), nullptr);
+    auto result = TWBase58DecodeNoCheck(input.get());
+    ASSERT_EQ(result, nullptr);
 }

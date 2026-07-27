@@ -17,6 +17,12 @@ namespace TW::Base58 {
         if (string.empty()) {
             return {};
         }
+        // An embedded NULL is silently truncated by CStr::from_ptr in the Rust FFI,
+        // so "valid\x00junk" would decode as just "valid" and pass later size/checksum
+        // checks on the shortened payload.
+        if (string.find('\0') != std::string::npos) {
+            return {};
+        }
         Rust::CByteArrayResultWrapper res = Rust::decode_base58(string.c_str(), alphabet);
         return res.unwrap_or_default().data;
     }

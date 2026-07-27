@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Data.h"
+#include "Result.h"
 #include "rust/bindgen/WalletCoreRSBindgen.h"
 #include "rust/Wrapper.h"
 
@@ -24,10 +25,29 @@ inline Data parse_hex(const std::string& input) {
     if (input.empty()) {
         return {};
     }
-
+    // An embedded NUL is silently truncated by CStr::from_ptr in the Rust FFI,
+    // so "deadbeef\x00junk" would decode as just "deadbeef".
+    if (input.find('\0') != std::string::npos) {
+        return {};
+    }
     Rust::CByteArrayResultWrapper res = Rust::decode_hex(input.c_str());
     return res.unwrap_or_default().data;
 }
+
+/// Pads a hexadecimal string with a leading zero if it has an odd length and the `padLeft` flag is set.
+inline std::string pad_left_hex(const std::string& string, bool padLeft = false) {
+    if (string.size() % 2 != 0 && padLeft) {
+        std::string temp = string;
+        if (temp.compare(0, 2, "0x") == 0) {
+            temp.insert(2, 1, '0');
+        } else {
+            temp.insert(0, 1, '0');
+        }
+        return temp;
+    }
+    return string;
+}
+
 }
 
 namespace TW {
@@ -81,15 +101,22 @@ inline std::string hex(uint64_t value) {
 /// \returns the array or parsed bytes or an empty array if the string is not
 /// valid hexadecimal.
 inline Data parse_hex(const std::string& string, bool padLeft = false) {
-    if (string.size() % 2 != 0 && padLeft) {
-        std::string temp = string;
-        if (temp.compare(0, 2, "0x") == 0) {
-            temp.erase(0, 2);
-        }
-        temp.insert(0, 1, '0');
-        return internal::parse_hex(temp);
+    return internal::parse_hex(internal::pad_left_hex(string, padLeft));
+}
+
+/// Parses a string of hexadecimal values.
+///
+/// \returns the array or parsed bytes, or an error if the string is not valid hexadecimal.
+inline Result<Data> parse_hex_checked(const std::string& string, bool padLeft = false) {
+    const auto paddedString = internal::pad_left_hex(string, padLeft);
+    if (paddedString.find('\0') != std::string::npos) {
+        return Result<Data>::failure("Invalid hex string");
     }
-    return internal::parse_hex(string);
+    Rust::CByteArrayResultWrapper res = Rust::decode_hex(paddedString.c_str());
+    if (res.isErr()) {
+        return Result<Data>::failure("Invalid hex string");
+    }
+    return Result<Data>::success(std::move(res.unwrap_or_default().data));
 }
 
 inline const char* hex_char_to_bin(char c) {

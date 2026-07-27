@@ -323,6 +323,24 @@ TEST(PrivateKey, SignShortDigest) {
     }
 }
 
+TEST(PrivateKey, SignLongDigest) {
+    Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+    auto privateKey = PrivateKey(privKeyData);
+    Data shortDigest = TW::data("123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef012");
+    {
+        Data actual = privateKey.sign(shortDigest, TWCurveSECP256k1);
+        EXPECT_EQ(actual.size(), 0ul);
+    }
+    {
+        Data actual = privateKey.sign(shortDigest, TWCurveNIST256p1);
+        EXPECT_EQ(actual.size(), 0ul);
+    }
+    {
+        Data actual = privateKey.sign(shortDigest, TWCurveSECP256k1, isCanonical);
+        EXPECT_EQ(actual.size(), 0ul);
+    }
+}
+
 TEST(PrivateKey, SignWithDifferentCurveWorks) {
     Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
     // Using the deprecated constructor without specifying a curve
@@ -370,6 +388,12 @@ TEST(PrivateKey, SignWithDifferentCurveThrows) {
     } catch (const std::exception& e) {
         FAIL() << "Unexpected exception was thrown: " << e.what();
     }
+}
+
+TEST(PrivateKey, SignAsDERRejectsShortDigest) {
+    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const auto shortDigest = parse_hex("0102030405060708");
+    EXPECT_TRUE(privateKey.signAsDER(shortDigest).empty());
 }
 
 } // namespace TW::tests

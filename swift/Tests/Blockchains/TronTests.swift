@@ -11,18 +11,6 @@ class TronTests: XCTestCase {
         let address = AnyAddress(string: "TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3", coin: .tron)!
         XCTAssertEqual(address.description, "TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3")
     }
-    
-    func testSignDirect() {
-        let input = TronSigningInput.with {
-            $0.privateKey = Data(hexString: "2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54")!
-            $0.txID = "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb"
-        }
-        
-        let output: TronSigningOutput = AnySigner.sign(input: input, coin: .tron)
-        
-        XCTAssertEqual(output.id, Data(hexString: "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb"))
-        XCTAssertEqual(output.signature, Data(hexString: "77f5eabde31e739d34a66914540f1756981dc7d782c9656f5e14e53b59a15371603a183aa12124adeee7991bf55acc8e488a6ca04fb393b1a8ac16610eeafdfc00"))
-    }
 
     func testSign() {
         let contract = TronTransferContract.with {
@@ -76,6 +64,21 @@ class TronTests: XCTestCase {
         XCTAssertJSONEqual(output.json, expectedJSON)
     }
     
+    func testSignRawJsonTransferContract() {
+        let input = TronSigningInput.with {
+            $0.rawJson = """
+            {"raw_data":{"contract":[{"parameter":{"type_url":"type.googleapis.com/protocol.TransferContract","value":{"amount":2000000,"owner_address":"415cd0fb0ab3ce40f3051414c604b27756e69e43db","to_address":"41521ea197907927725ef36d70f25f850d1659c7c7"}},"type":"TransferContract"}],"expiration":1539331479000,"ref_block_bytes":"7b3b","ref_block_hash":"b21ace8d6ac20e7e","timestamp":1539295479000},"raw_data_hex":"0a027b3b2208b21ace8d6ac20e7e40d8abb9bae62c5a67080112630a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412320a15415cd0fb0ab3ce40f3051414c604b27756e69e43db121541521ea197907927725ef36d70f25f850d1659c7c71880897a70d889a4a9e62c","txID":"dc6f6d9325ee44ab3c00528472be16e1572ab076aa161ccd12515029869d0451"}
+            """
+            $0.privateKey = Data(hexString: "2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54")!
+        }
+
+        let output: TronSigningOutput = AnySigner.sign(input: input, coin: .tron)
+
+        XCTAssertEqual(output.error, .ok)
+        XCTAssertEqual(output.id.hexString, "dc6f6d9325ee44ab3c00528472be16e1572ab076aa161ccd12515029869d0451")
+        XCTAssertEqual(output.signature.hexString, "ede769f6df28aefe6a846be169958c155e23e7e5c9621d2e8dce1719b4d952b63e8a8bf9f00e41204ac1bf69b1a663dacdf764367e48e4a5afcd6b055a747fb200")
+    }
+
     func testMessageAndVerifySigner() {
         let privateKey = PrivateKey(data: Data(hexString: "75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a")!)!
         let msg = "Hello World"

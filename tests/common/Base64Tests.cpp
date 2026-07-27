@@ -79,4 +79,16 @@ TEST(Base64, isBase64) {
     EXPECT_FALSE(isBase64orBase64Url("MwCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsors=#"));
 }
 
+TEST(Base64, DecodeNullEmbedded) {
+    // "SGVsbG8=" decodes to "Hello"; appending a NUL must not let the pre-NUL
+    // portion decode silently.
+    auto with_nul = std::string("SGVsbG8=") + '\0' + "garbage";
+    auto decoded = decode(with_nul);
+    EXPECT_TRUE(decoded.empty());
+
+    auto trailing_nul = std::string("SGVsbG8=") + '\0';
+    decoded = decode(trailing_nul);
+    EXPECT_TRUE(decoded.empty());
+}
+
 } // namespace TW::Base64::tests

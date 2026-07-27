@@ -19,6 +19,7 @@ TEST(TWSmartBitcoinCashCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeSmartBitcoinCash, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSmartBitcoinCash));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSmartBitcoinCash));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeSmartBitcoinCash));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSmartBitcoinCash), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeSmartBitcoinCash));
@@ -29,4 +30,5 @@ TEST(TWSmartBitcoinCashCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://www.smartscout.cash/address/0xFeEc227410E1DF9f3b4e6e2E284DC83051ae468F");
     assertStringsEqual(id, "smartbch");
     assertStringsEqual(name, "Smart Bitcoin Cash");
+    assertStringsEqual(nativeTokenName, "Smart Bitcoin Cash");
 }

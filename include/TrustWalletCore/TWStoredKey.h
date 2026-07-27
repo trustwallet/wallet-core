@@ -285,11 +285,33 @@ void TWStoredKeyRemoveAccountForCoinDerivationPath(struct TWStoredKey* _Nonnull 
 
 /// Saves the key to a file.
 ///
+/// \note Prefer `TWStoredKeyStoreWithTemporaryFile` over this function. It writes to a
+/// temporary file first and then renames it atomically, which prevents data loss if the
+/// process is interrupted mid-write. This function writes directly to `path` and will
+/// truncate the existing file before writing, so an interrupted write leaves a corrupt file.
+///
 /// \param key Non-null pointer to a stored key
 /// \param path Non-null string filepath where the key will be saved
 /// \return true if the key was successfully stored in the given filepath file, false otherwise
 TW_EXPORT_METHOD
 bool TWStoredKeyStore(struct TWStoredKey* _Nonnull key, TWString* _Nonnull path);
+
+/// Saves the key to a file atomically using a temporary file and rename.
+///
+/// Writes the key JSON to `temporaryPath` first, then renames it to `path` in a single
+/// atomic operation. The original file at `path` is never truncated until the new content
+/// is fully written and flushed, so a crash or I/O error mid-write leaves the original
+/// file intact. Prefer this over `TWStoredKeyStore` whenever the caller can supply a
+/// suitable temporary path (typically the same directory as `path` with a unique suffix
+/// to guarantee the rename stays on the same filesystem volume).
+///
+/// \param key Non-null pointer to a stored key
+/// \param path Non-null string filepath where the key will be saved
+/// \param temporaryPath Non-null string filepath used for the intermediate write; must be
+///        on the same filesystem volume as `path`
+/// \return true if the key was successfully stored in the given filepath file, false otherwise
+TW_EXPORT_METHOD
+bool TWStoredKeyStoreWithTemporaryFile(struct TWStoredKey* _Nonnull key, TWString* _Nonnull path, TWString* _Nonnull temporaryPath);
 
 /// Decrypts the private key.
 ///
@@ -365,6 +387,19 @@ bool TWStoredKeyFixAddresses(struct TWStoredKey* _Nonnull key, TWData* _Nonnull 
 /// \return `false` if there are no accounts associated with the given coin, true otherwise
 TW_EXPORT_METHOD
 bool TWStoredKeyUpdateAddress(struct TWStoredKey* _Nonnull key, enum TWCoinType coin);
+
+/// Re-encrypts the key payload only when needed to fix currently supported
+/// encryption-parameter issues. At present, this is limited to correcting the
+/// Scrypt salt length when applicable; it does not generally upgrade other KDF
+/// parameters such as PBKDF2 settings or Scrypt N/r/p values. No-op otherwise.
+/// This method needs the encryption password to decrypt and, if applicable,
+/// re-encrypt the payload.
+///
+/// \param key Non-null pointer to a stored key
+/// \param password Non-null block of data, password of the stored key
+/// \return `false` if the password is incorrect or re-encryption fails, true otherwise.
+TW_EXPORT_METHOD
+bool TWStoredKeyFixEncryption(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
 
 /// Retrieve stored key encoding parameters, as JSON string.
 ///

@@ -262,11 +262,20 @@ message SigningInput {
     // The secret private key used for signing (32 bytes).
     bytes private_key = 2;
 
-    // For direct sign in Tron, we just have to sign the txId returned by the DApp json payload.
-    // TODO: This field can be removed in the future, as we can use raw_json.txID instead.
-    string txId = 3;
-
-    // Raw JSON data from the DApp, which contains fields 'txID', 'raw_data' and 'raw_data_hex' normally.
+    // Optional. Raw transaction JSON as returned by a Tron node or DApp, containing at least the fields:
+    // - 'txID'        – the expected transaction hash (hex-encoded SHA-256 of the raw bytes).
+    // - 'raw_data'    – structured transaction fields (used to deserialize the transaction).
+    // - 'raw_data_hex'– hex-encoded serialized transaction bytes (used to compute and verify the hash, if provided).
+    //
+    // When this field is set, `transaction` is ignored. The library will:
+    //   1. Deserialize the transaction from `raw_data` into the internal Tron protobuf representation.
+    //   2. Re-serialize it to bytes and compute SHA-256, then compare against `txID`.
+    //   3. On success, sign and encode the transaction as usual.
+    //
+    // Possible errors:
+    // - `Error_invalid_params`    - `rawJson` is not a valid JSON string or missing required fields (`txID`, `raw_data`, `raw_data_hex`).
+    // - `Error_tx_hash_mismatch`  – `txID` does not match SHA-256(`raw_data_hex`), indicating a tampered or malformed input.
+    // - `Error_not_supported`     – `rawJson` could not be deserialized as a known TronInternal protobuf message (i.e. not supported).
     string raw_json = 4;
 }
 

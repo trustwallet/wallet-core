@@ -91,3 +91,52 @@ TEST(StellarCompiler, CompileWithSignatures) {
         EXPECT_EQ(output.error(), Common::Proto::Error_signatures_count);
     }
 }
+
+TEST(StellarCompiler, PreImageHashes_MemoHash_InvalidSize) {
+    const auto coin = TWCoinTypeStellar;
+    TW::Stellar::Proto::SigningInput input;
+    input.set_passphrase(TWStellarPassphrase_Stellar);
+    input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
+    input.set_fee(1000);
+    input.set_sequence(2);
+    input.mutable_op_payment()->set_destination(
+        "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
+    input.mutable_op_payment()->set_amount(10000000);
+
+    const auto shortHash = parse_hex("00010203040506070809101112131415161718192021222324252627282930");
+    input.mutable_memo_hash()->set_hash(shortHash.data(), shortHash.size()); // 31 bytes — invalid
+
+    const auto serialized = input.SerializeAsString();
+    auto inputStrData = TW::Data(serialized.begin(), serialized.end());
+    const auto preImageHashData = TransactionCompiler::preImageHashes(coin, inputStrData);
+
+    TW::TxCompiler::Proto::PreSigningOutput preSigningOutput;
+    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    EXPECT_EQ(preSigningOutput.error(), Common::Proto::Error_invalid_memo);
+    EXPECT_TRUE(preSigningOutput.data().empty());
+}
+
+TEST(StellarCompiler, Compile_MemoHash_InvalidSize) {
+    const auto coin = TWCoinTypeStellar;
+    TW::Stellar::Proto::SigningInput input;
+    input.set_passphrase(TWStellarPassphrase_Stellar);
+    input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
+    input.set_fee(1000);
+    input.set_sequence(2);
+    input.mutable_op_payment()->set_destination(
+        "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
+    input.mutable_op_payment()->set_amount(10000000);
+
+    const auto shortHash = parse_hex("00010203040506070809101112131415161718192021222324252627282930");
+    input.mutable_memo_hash()->set_hash(shortHash.data(), shortHash.size()); // 31 bytes — invalid
+
+    const auto serialized = input.SerializeAsString();
+    auto inputStrData = TW::Data(serialized.begin(), serialized.end());
+    const auto dummySig = parse_hex("aabb");
+    const auto outputData = TransactionCompiler::compileWithSignatures(coin, inputStrData, {dummySig}, {});
+
+    TW::Stellar::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_memo);
+    EXPECT_TRUE(output.signature().empty());
+}

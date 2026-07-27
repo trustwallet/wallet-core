@@ -701,6 +701,48 @@ TEST(BitcoinSigning, SignDepositBtcToZetaChain) {
     EXPECT_EQ(hex(output.encoded()), expectedTx);
 }
 
+TEST(BitcoinSigning, SignInvalidOutPointHash) {
+    const auto privateKey = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
+    const auto ownAddress = "bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv";
+
+    // Invalid hash (6 bytes only)
+    const auto invalidOutPointHash = parse_hex("07c42b969286");
+    const auto utxoScript0 = parse_hex("0014bd92088bb7e82d611a9b94fbb74a0908152b784f");
+
+    const auto dustAmount = 546;
+    const auto sendAmount = 1000;
+    const auto availableAmount = 10'189'534;
+
+    Proto::SigningInput signingInput;
+    signingInput.set_coin_type(TWCoinTypeBitcoin);
+    signingInput.set_hash_type(TWBitcoinSigHashTypeAll);
+    signingInput.set_amount(sendAmount);
+    signingInput.set_byte_fee(1);
+    signingInput.set_to_address("bc1q2dsdlq3343vk29runkgv4yc292hmq53jedfjmp");
+    signingInput.set_change_address(ownAddress);
+    signingInput.set_fixed_dust_threshold(dustAmount);
+
+    *signingInput.add_private_key() = std::string(privateKey.begin(), privateKey.end());
+
+    // Add UTXO
+    auto utxo = signingInput.add_utxo();
+    utxo->set_script(utxoScript0.data(), utxoScript0.size());
+    utxo->set_amount(availableAmount);
+    utxo->mutable_out_point()->set_hash(
+        std::string(invalidOutPointHash.begin(), invalidOutPointHash.end()));
+    utxo->mutable_out_point()->set_index(0);
+    utxo->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    Proto::TransactionPlan plan;
+    ANY_PLAN(signingInput, plan, TWCoinTypeBitcoin);
+    EXPECT_EQ(plan.error(), Common::Proto::Error_invalid_params);
+
+    // `AnySigner.sign` should return the same error.
+    Proto::SigningOutput output;
+    ANY_SIGN(signingInput, TWCoinTypeBitcoin);
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+}
+
 TEST(BitcoinSigning, SignP2PKH) {
     auto input = buildInputP2PKH();
 

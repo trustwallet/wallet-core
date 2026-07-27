@@ -113,72 +113,6 @@ message SendOrder {
     repeated Output outputs = 2;
 }
 
-// Message for TokenIssue order
-message TokenIssueOrder {
-    // owner address
-    bytes from = 1;
-
-    // token name
-    string name = 2;
-
-    // token symbol, in full name with "-" suffix
-    string symbol = 3;
-
-    // total supply
-    int64 total_supply = 4;
-
-    // mintable
-    bool mintable = 5;
-}
-
-// Message for TokenMint order
-message TokenMintOrder {
-    // owner address
-    bytes from = 1;
-
-    // token symbol, in full name with "-" suffix
-    string symbol = 2;
-
-    // amount to mint
-    int64 amount = 3;
-}
-
-// Message for TokenBurn order
-message TokenBurnOrder {
-    // owner address
-    bytes from = 1;
-
-    // token symbol, in full name with "-" suffix
-    string symbol = 2;
-
-    // amount to burn
-    int64 amount = 3;
-}
-
-// Message for TokenFreeze order
-message TokenFreezeOrder {
-    // owner address
-    bytes from = 1;
-
-    // token symbol, in full name with "-" suffix
-    string symbol = 2;
-
-    // amount of token to freeze
-    int64 amount = 3;
-}
-
-// Message for TokenUnfreeze order
-message TokenUnfreezeOrder {
-    // owner address
-    bytes from = 1;
-
-    // token symbol, in full name with "-" suffix
-    string symbol = 2;
-
-    // amount of token to unfreeze
-    int64 amount = 3;
-}
-
 // Message for HashTimeLock order
 message HTLTOrder {
     // signer address
@@ -363,15 +297,10 @@ message SigningInput {
         TradeOrder trade_order = 8;
         CancelTradeOrder cancel_trade_order = 9;
         SendOrder send_order = 10;
-        TokenFreezeOrder freeze_order = 11;
-        TokenUnfreezeOrder unfreeze_order = 12;
         HTLTOrder htlt_order = 13;
         DepositHTLTOrder depositHTLT_order = 14;
         ClaimHTLOrder claimHTLT_order = 15;
         RefundHTLTOrder refundHTLT_order = 16;
-        TokenIssueOrder issue_order = 17;
-        TokenMintOrder mint_order = 18;
-        TokenBurnOrder burn_order = 19;
         TransferOut transfer_out_order = 20;
         SideChainDelegate side_delegate_order = 21;
         SideChainRedelegate side_redelegate_order = 22;

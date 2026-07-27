@@ -24,8 +24,8 @@ TEST(TWBech32, Decode) {
 TEST(TWBech32, Decode_WrongChecksumVariant) {
     // This is a Bech32m variant, not Bech32 variant. So it should fail using Bech32 decoder.
     const auto input = STRING("abcdef1l7aum6echk45nj3s0wdvt2fg8x9yrzpqzd3ryx");
-    const auto result = WRAPD(TWBech32Decode(input.get()));
-    ASSERT_EQ(result.get(), nullptr);
+    const auto result = TWBech32Decode(input.get());
+    ASSERT_EQ(result, nullptr);
 }
 
 TEST(TWBech32, EncodeM) {
@@ -44,6 +44,6 @@ TEST(TWBech32, DecodeM) {
 TEST(TWBech32, DecodeM_WrongChecksumVariant) {
     // This is a Bech32 variant, not Bech32m variant. So it should fail using Bech32M decoder.
     const auto input = STRING("abcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw");
-    const auto result = WRAPD(TWBech32DecodeM(input.get()));
-    ASSERT_EQ(result.get(), nullptr);
+    const auto result = TWBech32DecodeM(input.get());
+    ASSERT_EQ(result, nullptr);
 }

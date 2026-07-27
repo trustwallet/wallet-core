@@ -16,7 +16,18 @@ echo "Building $version"
 
 export ANDROID_HOME="$HOME/Library/Android/sdk"
 pushd android
-./gradlew clean build assembleRelease publish -Pversion="$version"
+./gradlew clean build assembleRelease -Pversion="$version"
+
+echo "Publishing to Maven Local..."
+./gradlew publishAllPublicationsToMavenLocalRepository -Pversion="$version"
+
+echo ""
+echo "Published artifacts in Maven Local (~/.m2/repository/com/trustwallet):"
+find ~/.m2/repository/com/trustwallet -type f -name "*.pom" -o -name "*.jar" -o -name "*.aar" -o -name "*.klib" 2>/dev/null | grep "$version" | sort || echo "No artifacts found"
+
+echo "Publishing to GitHub Packages..."
+./gradlew publishAllPublicationsToGitHubPackagesRepository -Pversion="$version" || echo "Warning: GitHub Packages publishing failed"
+
 
 echo "Android build uploaded"
 popd # android

@@ -19,6 +19,7 @@ TEST(TWTronCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeTron, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTron));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTron));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeTron));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTron), 6);
     ASSERT_EQ(TWBlockchainTron, TWCoinTypeBlockchain(TWCoinTypeTron));
@@ -29,4 +30,5 @@ TEST(TWTronCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://tronscan.org/#/address/a12");
     assertStringsEqual(id, "tron");
     assertStringsEqual(name, "Tron");
+    assertStringsEqual(nativeTokenName, "Tron");
 }

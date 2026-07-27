@@ -16,6 +16,7 @@ TEST(TWAcalaEVMCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x4b0b151dd71ed8ef3174da18565790bf14f0a903a13e4f3266c7848bc8841593"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ TEST(TWAcalaEVMCoinType, TWCoinType) {
 
     assertStringsEqual(id, "acalaevm");
     assertStringsEqual(name, "Acala EVM");
+    assertStringsEqual(nativeTokenName, "Acala");
     assertStringsEqual(symbol, "ACA");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

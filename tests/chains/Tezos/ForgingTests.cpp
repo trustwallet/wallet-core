@@ -122,6 +122,19 @@ TEST(Forging, ForgeEntrypoint) {
     ASSERT_EQ(hex(forgeEntrypoint("transfer")), expected);
 }
 
+TEST(Forging, ForgePublicKeyHash_TooShort) {
+    ASSERT_THROW(forgePublicKeyHash(""), std::invalid_argument);
+    ASSERT_THROW(forgePublicKeyHash("ab"), std::invalid_argument);
+}
+
+TEST(Forging, ForgeAddress_NullEmbedded) {
+    // A valid address with an embedded NULL must throw rather than forge the
+    // pre-NULL payload.  Before the fix, CStr::from_ptr truncated the input and
+    // the shortened payload passed all prefix/checksum checks silently.
+    auto with_null = std::string("tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don") + '\0' + "junk";
+    ASSERT_THROW(forgeAddress(with_null), std::invalid_argument);
+}
+
 TEST(Forging, ForgeMichelsonFA12) {
     Tezos::Proto::FA12Parameters data;
     data.set_entrypoint("transfer");
@@ -268,6 +281,25 @@ TEST(TezosTransaction, forgeUndelegate) {
     auto serialized = forgeOperation(delegateOperation);
 
     ASSERT_EQ(hex(serialized), expected);
+}
+
+TEST(Forging, ForgeMichelIntPositive) {
+    // Small positive: 10 → 0x0a (fits in 6 bits, no sign bit, no continuation)
+    ASSERT_EQ(hex(forgeMichelInt(int256_t(10))), "0a");
+}
+
+TEST(Forging, ForgeMichelIntNegative) {
+    // Small negative: -10 → low 6 bits = 0x0a, sign bit set → 0x4a
+    ASSERT_EQ(hex(forgeMichelInt(int256_t(-10))), "4a");
+}
+
+TEST(Forging, ForgeMichelIntNegativeMultiByte) {
+    // -200: abs=200, low 6 bits=8 → 0x08|0x40=0x48, continuation → 0xc8; remainder=3 → 0x03
+    ASSERT_EQ(hex(forgeMichelInt(int256_t(-200))), "c803");
+}
+
+TEST(Forging, ForgeMichelIntZero) {
+    ASSERT_EQ(hex(forgeMichelInt(int256_t(0))), "00");
 }
 
 } // namespace TW::Tezos::tests

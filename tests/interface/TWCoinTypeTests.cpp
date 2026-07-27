@@ -5,6 +5,7 @@
 #include "TestUtilities.h"
 
 #include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <TrustWalletCore/TWPublicKey.h>
 
 #include <gtest/gtest.h>
@@ -194,4 +195,20 @@ TEST(TWCoinType, TWCoinTypeDerivationPathWithDerivationPactusTestnet) {
     auto result = *reinterpret_cast<const std::string *>(res);
     ASSERT_EQ(result, "m/44'/21777'/3'/0'");
     TWStringDelete(res);
+}
+
+TEST(TWCoinType, NativeTokenNameDefaultsToName) {
+    for (auto coin : {TWCoinTypeBitcoin, TWCoinTypeEthereum, TWCoinTypeLitecoin, TWCoinTypeMars}) {
+        auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+        auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
+        assertStringsEqual(nativeTokenName, TWStringUTF8Bytes(name.get()));
+    }
+}
+
+TEST(TWCoinType, NativeTokenNameOverride) {
+    auto cosmosNativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeCosmos));
+    assertStringsEqual(cosmosNativeTokenName, "Cosmos");
+
+    auto bscNativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeSmartChain));
+    assertStringsEqual(bscNativeTokenName, "BNB");
 }

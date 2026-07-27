@@ -6,12 +6,14 @@ use crate::chains::common::bitcoin::{
     dust_threshold, input, output, plan, sign, TransactionOneof, DUST, SIGHASH_ALL, SIGHASH_NONE,
     SIGHASH_SINGLE,
 };
-use crate::chains::decred::decred_info;
+use crate::chains::decred::{decred_extra_data, decred_info};
+use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_keypair::ecdsa::secp256k1;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
+use tw_proto::Common;
 
 /// For this example, create a fake transaction that represents what would
 /// ordinarily be the real transaction that is being spent. It contains a
@@ -42,6 +44,7 @@ fn test_decred_sign_p2pkh_fake() {
         outputs: vec![out1],
         input_selector: Proto::InputSelector::UseAll,
         dust_policy: dust_threshold(0),
+        chain_specific: decred_extra_data(0),
         ..Default::default()
     };
 
@@ -320,4 +323,112 @@ fn test_decred_sign_p2pkh_different_sighashes() {
             weight: 579 * 4,
             fee: 5850,
         });
+}
+
+#[test]
+fn test_decred_sign_both_outputs_and_max_amount_error() {
+    const PRIVATE_KEY: &str = "99ed469e6b7d9f188962940d9d0f9fd8582c6c37e52394348f177ff0526b8a03";
+    const MY_ADDRESS: &str = "DscNJ2Ki7HUPHrLGF2teBxSda3uxKSY7Fm6";
+    const TO_ADDRESS: &str = "Dsofok7qyhDLVRXcTqYdFgmGsUFSiHonbWH";
+
+    let private_key = secp256k1::PrivateKey::try_from(PRIVATE_KEY).unwrap();
+    let public_key = private_key.public();
+
+    let txid = "c5cc3b1fc20c9e43a7d1127ba7e4802d04c16515a7eaaad58a1bc388acacfeae";
+    let tx1 = Proto::Input {
+        out_point: input::out_point(txid, 0),
+        value: 100_000_000,
+        sighash_type: SIGHASH_ALL,
+        claiming_script: input::p2pkh(public_key.to_vec()),
+        ..Default::default()
+    };
+
+    let out = Proto::Output {
+        value: 10_000_000,
+        to_recipient: output::to_address(TO_ADDRESS),
+    };
+    let change_out = Proto::Output {
+        to_recipient: output::to_address(MY_ADDRESS),
+        ..Default::default()
+    };
+    let max_out = Proto::Output {
+        to_recipient: output::to_address(MY_ADDRESS),
+        ..Default::default()
+    };
+
+    // First, create transaction with both outputs and max amount set.
+    let builder = Proto::TransactionBuilder {
+        version: Proto::TransactionVersion::V1,
+        inputs: vec![tx1.clone()],
+        outputs: vec![out.clone()],
+        max_amount_output: Some(max_out.clone()),
+        input_selector: Proto::InputSelector::UseAll,
+        dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
+        chain_info: decred_info(),
+        transaction: TransactionOneof::builder(builder),
+        ..Default::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Decred, signing);
+    assert_eq!(
+        output.error,
+        Common::Proto::SigningError::Error_invalid_params
+    );
+
+    // Secondly, create transaction with change output and max amount set.
+    let builder = Proto::TransactionBuilder {
+        version: Proto::TransactionVersion::V1,
+        inputs: vec![tx1.clone()],
+        change_output: Some(change_out.clone()),
+        max_amount_output: Some(max_out.clone()),
+        input_selector: Proto::InputSelector::UseAll,
+        dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
+        chain_info: decred_info(),
+        transaction: TransactionOneof::builder(builder),
+        ..Default::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Decred, signing);
+    assert_eq!(
+        output.error,
+        Common::Proto::SigningError::Error_invalid_params
+    );
+
+    // Lastly, create transaction with all change output, outputs and max amount set.
+    let builder = Proto::TransactionBuilder {
+        version: Proto::TransactionVersion::V1,
+        inputs: vec![tx1],
+        outputs: vec![out],
+        change_output: Some(change_out),
+        max_amount_output: Some(max_out),
+        input_selector: Proto::InputSelector::UseAll,
+        dust_policy: dust_threshold(DUST),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
+        chain_info: decred_info(),
+        transaction: TransactionOneof::builder(builder),
+        ..Default::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Decred, signing);
+    assert_eq!(
+        output.error,
+        Common::Proto::SigningError::Error_invalid_params
+    );
 }

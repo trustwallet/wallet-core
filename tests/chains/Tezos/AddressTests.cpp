@@ -94,4 +94,17 @@ TEST(TezosAddress, PublicKeyInit) {
     ASSERT_EQ(address.string(), expected);
 }
 
+TEST(TezosAddress, isInvalid_NullEmbedded) {
+    // A valid address followed by an embedded NULL must be rejected.
+    // Before the fix, Base58::decode passed string.c_str() to CStr::from_ptr which
+    // truncated at the NULL, letting the pre-NULL payload decode and pass size/checksum.
+    auto valid = std::string("tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don");
+
+    auto with_junk = valid + '\0' + "garbage";
+    ASSERT_FALSE(Address::isValid(with_junk));
+
+    auto trailing_null = valid + '\0';
+    ASSERT_FALSE(Address::isValid(trailing_null));
+}
+
 } // namespace TW::Tezos::tests

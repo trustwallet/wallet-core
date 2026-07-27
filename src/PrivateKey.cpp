@@ -94,7 +94,7 @@ bool PrivateKey::isValid(const Data& data, TWCurve curve) {
     }
 
     if (ec_curve != nullptr) {
-        bignum256 k;
+        bignum256 k {};
         bn_read_be(data.data(), &k);
         if (!bn_is_less(&k, &ec_curve->order)) {
             memzero(&k, sizeof(k));
@@ -256,10 +256,9 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
 }
 
 int ecdsa_sign_digest_checked(const ecdsa_curve* curve, const uint8_t* priv_key, const uint8_t* digest, size_t digest_size, uint8_t* sig, uint8_t* pby, int (*is_canonical)(uint8_t by, uint8_t sig[64])) {
-    if (digest_size < 32) {
+    if (digest_size != PrivateKey::ecdsaMessageSize) {
         return -1;
     }
-    assert(digest_size >= 32);
     return ecdsa_sign_digest(curve, priv_key, digest, sig, pby, is_canonical);
 }
 
@@ -371,7 +370,7 @@ Data PrivateKey::signAsDER(const Data& digest) const {
     }
     Data sig(64);
     bool success =
-        ecdsa_sign_digest(&secp256k1, key().data(), digest.data(), sig.data(), nullptr, nullptr) == 0;
+        ecdsa_sign_digest_checked(&secp256k1, key().data(), digest.data(), digest.size(), sig.data(), nullptr, nullptr) == 0;
     if (!success) {
         return {};
     }

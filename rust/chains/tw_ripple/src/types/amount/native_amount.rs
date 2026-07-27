@@ -18,6 +18,11 @@ pub struct NativeAmount(i64);
 
 impl NativeAmount {
     pub fn new(amount: i64) -> SigningResult<Self> {
+        if amount < 0 {
+            return SigningError::err(SigningErrorType::Error_invalid_params).context(format!(
+                "Invalid XRP amount must not be negative (found: {amount})"
+            ));
+        }
         if amount > MAX_DROPS {
             return SigningError::err(SigningErrorType::Error_invalid_params).context(format!(
                 "Invalid XRP amount is too large (max: {MAX_DROPS} found: {amount})"
@@ -75,5 +80,6 @@ mod tests {
         NativeAmount::from_str("1e20").expect_err("More than max supply");
         NativeAmount::from_str("1e-7").expect_err("Contains decimals");
         NativeAmount::from_str("1.234").expect_err("Contains decimals");
+        NativeAmount::from_str("-1").expect_err("Negative");
     }
 }

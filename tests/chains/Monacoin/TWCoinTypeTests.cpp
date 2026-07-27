@@ -19,6 +19,7 @@ TEST(TWMonacoinCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeMonacoin, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMonacoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMonacoin));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeMonacoin));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonacoin), 8);
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeMonacoin));
@@ -29,4 +30,5 @@ TEST(TWMonacoinCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://blockbook.electrum-mona.org/address/a12");
     assertStringsEqual(id, "monacoin");
     assertStringsEqual(name, "Monacoin");
+    assertStringsEqual(nativeTokenName, "Monacoin");
 }

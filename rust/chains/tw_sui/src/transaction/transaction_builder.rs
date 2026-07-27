@@ -201,8 +201,23 @@ impl TransactionBuilder {
                 .context("Invalid transaction version. Only version 1 is supported.");
         }
 
-        let inputs = raw_transaction
-            .inputs
+        let mut raw_inputs = raw_transaction.inputs;
+        raw_inputs.sort_by_key(|input| input.index);
+
+        for (pos, input) in raw_inputs.iter().enumerate() {
+            if input.index as usize != pos {
+                return SigningError::err(SigningErrorType::Error_invalid_params).context(
+                    format!(
+                        "Input indices must be unique and contiguous (0..{}), but found index {} at position {}",
+                        raw_inputs.len() - 1,
+                        input.index,
+                        pos
+                    ),
+                );
+            }
+        }
+
+        let inputs = raw_inputs
             .into_iter()
             .map(|input| input.value.try_into())
             .collect::<SigningResult<Vec<_>>>()?;
@@ -220,6 +235,11 @@ impl TransactionBuilder {
             .into_iter()
             .map(|payment| payment.try_into())
             .collect::<SigningResult<Vec<_>>>()?;
+
+        if gas_payments.is_empty() {
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Empty gas payment in raw JSON transaction");
+        }
 
         let gas_budget = if gas_budget != 0 {
             gas_budget

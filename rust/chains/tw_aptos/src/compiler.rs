@@ -26,7 +26,7 @@ impl Compiler {
             .into_tw()
             .context("Invalid sender address")?;
         let signed_tx = builder
-            .sender(sender.inner())
+            .sender(sender)
             .sequence_number(input.sequence_number as u64)
             .build()?
             .pre_image()?;
@@ -61,7 +61,7 @@ impl Compiler {
             .or_tw_err(SigningErrorType::Error_signatures_count)?;
 
         let signed_tx = builder
-            .sender(sender.inner())
+            .sender(sender)
             .sequence_number(input.sequence_number as u64)
             .build()?
             .compile(signature.to_vec(), public_key.to_vec())?;

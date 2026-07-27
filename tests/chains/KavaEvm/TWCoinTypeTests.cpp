@@ -16,6 +16,7 @@ TEST(TWKavaEvmCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xa999bd5183568ba178795e6a9d1561566fbf4a9ccc813cc475168832bc4909b3"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ TEST(TWKavaEvmCoinType, TWCoinType) {
 
     assertStringsEqual(id, "kavaevm");
     assertStringsEqual(name, "KavaEvm");
+    assertStringsEqual(nativeTokenName, "Kava");
     assertStringsEqual(symbol, "KAVA");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

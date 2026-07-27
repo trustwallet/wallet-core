@@ -26,12 +26,13 @@ static inline char high_char(uint8_t v) {
 
 TWString *TWStringCreateWithHexData(TWData *_Nonnull data) {
     const size_t count = TWDataSize(data) * 2;
+    const auto *dataBytes = TWDataBytes(data);
     char *bytes = (char *)malloc(count + 1);
     bytes[count] = 0;
 
     for (size_t i = 0; i < TWDataSize(data); i += 1) {
-        bytes[2 * i] = high_char(TWDataGet(data, i));
-        bytes[2 * i + 1] = low_char(TWDataGet(data, i));
+        bytes[2 * i] = high_char(dataBytes[i]);
+        bytes[2 * i + 1] = low_char(dataBytes[i]);
     }
 
     const TWString *string = TWStringCreateWithUTF8Bytes(bytes);

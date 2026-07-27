@@ -32,10 +32,10 @@ class PolkadotTests: XCTestCase {
         XCTAssertEqual(address.data, pubkey.data)
     }
 
-    func testSignTransfer() {
+    func testSignTransfer() throws {
         // real key in 1p test
         let wallet = HDWallet.test
-        let key = wallet.getKey(coin: .polkadot, derivationPath: "m/44'/354'/0'")
+        let key = try XCTUnwrap(wallet.getKey(coin: .polkadot, derivationPath: "m/44'/354'/0'"))
 
         let input = PolkadotSigningInput.with {
             $0.genesisHash = genesisHash
@@ -60,10 +60,10 @@ class PolkadotTests: XCTestCase {
         XCTAssertEqual(output.encoded.hexString, "410284008d96660f14babe708b5e61853c9f5929bc90dd9874485bf4d6dc32d3e6f22eaa0038ec4973ab9773dfcbf170b8d27d36d89b85c3145e038d68914de83cf1f7aca24af64c55ec51ba9f45c5a4d74a9917dee380e9171108921c3e5546e05be15206050104000500007120f76076bcb0efdf94c7219e116899d0163ea61cb428183d71324eb33b2bce0700e40b5402")
     }
 
-    func testSigningBond() {
+    func testSigningBond() throws {
         // real key in 1p test
         let wallet = HDWallet.test
-        let key = wallet.getKey(coin: .polkadot, derivationPath: "m/44'/354'/0'")
+        let key = try XCTUnwrap(wallet.getKey(coin: .polkadot, derivationPath: "m/44'/354'/0'"))
         let address = CoinType.polkadot.deriveAddress(privateKey: key)
 
         let input = PolkadotSigningInput.with {

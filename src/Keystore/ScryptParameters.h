@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Data.h"
+#include "TrustWalletCore/TWStoredKeyEncryptionLevel.h"
 #include "../HexCoding.h"
 
 #include <nlohmann/json.hpp>
@@ -14,10 +15,13 @@ namespace TW::Keystore {
 
 enum class ScryptValidationError {
     desiredKeyLengthTooLarge,
+    invalidSaltLength,
     blockSizeTooLarge,
     invalidCostFactor,
     overflow,
 };
+
+std::string toString(ScryptValidationError error);
 
 /// Scrypt function parameters.
 struct ScryptParameters {
@@ -40,6 +44,11 @@ struct ScryptParameters {
     /// Default desired key length of Scrypt encryption algorithm.
     static const std::size_t defaultDesiredKeyLength = 32;
 
+    /// Minimum and maximum salt length for Scrypt encryption algorithm.
+    /// https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf
+    static const std::size_t minSaltLength = 16;
+    static const std::size_t maxSaltLength = 1024;
+
     /// Random salt.
     Data salt;
 
@@ -54,6 +63,9 @@ struct ScryptParameters {
 
     /// Block size factor.
     uint32_t r = defaultR;
+
+    /// Returns a preset of Scrypt encryption parameters for the given encryption level.
+    static ScryptParameters getPreset(TWStoredKeyEncryptionLevel preset);
 
     /// Generates Scrypt encryption parameters with the minimal sufficient level (4096), and with a random salt.
     static ScryptParameters minimal();
@@ -80,6 +92,17 @@ struct ScryptParameters {
     ///
     /// - Returns: a `ValidationError` or `nil` if the parameters are valid.
     std::optional<ScryptValidationError> validate() const;
+
+    /// Regenerates the parameters with recommended Scrypt parameters.
+    /// Note: this method only regenerates the salt with a random value for now,
+    /// but it can be extended in the future to also update the N, r, and p parameters.
+    ScryptParameters regenerateWithRecommendedParams() const;
+
+    /// Checks if the parameters should be fixed, i.e. if they are "valid" but do not meet the recommended security requirements,
+    /// for example if the salt is empty or too short.
+    bool shouldFix() const {
+        return salt.size() < minSaltLength;
+    }
 
     /// Initializes `ScryptParameters` with a JSON object.
     explicit ScryptParameters(const nlohmann::json& json);

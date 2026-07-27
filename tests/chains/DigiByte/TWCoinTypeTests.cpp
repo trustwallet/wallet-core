@@ -19,6 +19,7 @@ TEST(TWDigiByteCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeDigiByte, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDigiByte));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDigiByte));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeDigiByte));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDigiByte), 8);
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDigiByte));
@@ -29,4 +30,5 @@ TEST(TWDigiByteCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://digiexplorer.info/address/a12");
     assertStringsEqual(id, "digibyte");
     assertStringsEqual(name, "DigiByte");
+    assertStringsEqual(nativeTokenName, "DigiByte");
 }

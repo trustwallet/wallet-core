@@ -16,6 +16,7 @@ TEST(TWAcalaCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xf3d58aafb1208bc09d10ba74bbf1c7811dc55a9149c1505256b6fb5603f5047f"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("26JqMKx4HJJcmb1kXo24HYYobiK2jURGCq6zuEzFBK3hQ9Ti"));
@@ -23,6 +24,7 @@ TEST(TWAcalaCoinType, TWCoinType) {
 
     assertStringsEqual(id, "acala");
     assertStringsEqual(name, "Acala");
+    assertStringsEqual(nativeTokenName, "Acala");
     assertStringsEqual(symbol, "ACA");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 12);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainPolkadot);

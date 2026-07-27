@@ -194,6 +194,111 @@ fn test_zcash_sign_pczt() {
 }
 
 #[test]
+fn test_zcash_sign_both_outputs_and_max_amount_error() {
+    const PRIVATE_KEY: &str = "a9684f5bebd0e1208aae2e02bc9e9163bd1965ad23d8538644e1df8b99b99559";
+    const SENDER_ADDRESS: &str = "t1gWVE2uyrET2CxSmCaBiKzmWxQdHhnvMSz";
+    const TO_ADDRESS: &str = "t1QahNjDdibyE4EdYkawUSKBBcVTSqv64CS";
+
+    let txid = "3a19dd44032dfed61bfca5ba5751aab8a107b30609cbd5d70dc5ef09885b6853";
+    let tx1 = Proto::Input {
+        out_point: input::out_point(txid, 0),
+        value: 494_000,
+        sighash_type: SIGHASH_ALL,
+        claiming_script: input::receiver_address(SENDER_ADDRESS),
+        ..Default::default()
+    };
+
+    let out = Proto::Output {
+        value: 100_000,
+        to_recipient: output::to_address(TO_ADDRESS),
+    };
+    let change_out = Proto::Output {
+        to_recipient: output::to_address(SENDER_ADDRESS),
+        ..Default::default()
+    };
+    let max_out = Proto::Output {
+        to_recipient: output::to_address(SENDER_ADDRESS),
+        ..Default::default()
+    };
+
+    let extra_data = ZcashProto::TransactionBuilderExtraData {
+        branch_id: SAPLING_BRANCH_ID.into(),
+        zip_0317: false,
+        expiry_height: 0,
+    };
+
+    // First, create transaction with both outputs and max amount set.
+    let builder = Proto::TransactionBuilder {
+        version: Proto::TransactionVersion::UseDefault,
+        inputs: vec![tx1.clone()],
+        outputs: vec![out.clone()],
+        max_amount_output: Some(max_out.clone()),
+        input_selector: Proto::InputSelector::UseAll,
+        dust_policy: dust_threshold(DUST),
+        chain_specific: zcash_extra_data(extra_data.clone()),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
+        chain_info: zec_info(),
+        transaction: TransactionOneof::builder(builder),
+        ..Default::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Zcash, signing);
+    assert_eq!(output.error, SigningError::Error_invalid_params);
+
+    // Secondly, create transaction with change output and max amount set.
+    let builder = Proto::TransactionBuilder {
+        version: Proto::TransactionVersion::UseDefault,
+        inputs: vec![tx1.clone()],
+        change_output: Some(change_out.clone()),
+        max_amount_output: Some(max_out.clone()),
+        input_selector: Proto::InputSelector::UseAll,
+        dust_policy: dust_threshold(DUST),
+        chain_specific: zcash_extra_data(extra_data.clone()),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
+        chain_info: zec_info(),
+        transaction: TransactionOneof::builder(builder),
+        ..Default::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Zcash, signing);
+    assert_eq!(output.error, SigningError::Error_invalid_params);
+
+    // Lastly, create transaction with all change output, outputs and max amount set.
+    let builder = Proto::TransactionBuilder {
+        version: Proto::TransactionVersion::UseDefault,
+        inputs: vec![tx1],
+        outputs: vec![out],
+        change_output: Some(change_out),
+        max_amount_output: Some(max_out),
+        input_selector: Proto::InputSelector::UseAll,
+        dust_policy: dust_threshold(DUST),
+        chain_specific: zcash_extra_data(extra_data),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
+        chain_info: zec_info(),
+        transaction: TransactionOneof::builder(builder),
+        ..Default::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Zcash, signing);
+    assert_eq!(output.error, SigningError::Error_invalid_params);
+}
+
+#[test]
 fn test_zcash_sign_pczt_unsupported_tx_version() {
     const PRIVATE_KEY: &str = "c9d84f11d992c1a527293b468ba67f739f8098c333748493da45b9cf53844ec4";
     const PSBT: &str = "UENaVAEAAAAFis6ctQLVoJzHDAEA4ua/AYUBgwABFRZQRxlNqLSGFmGot6F/FeWgAGC2IUW5epyMH5ttEEQAAf////8PAAAAoMuYARl2qRRVo2Xng7FIhowyPIZtZPlgrdDLaoisAAABAAAAAAAAAsPxfhl2qRQthdKs2GnpfCJRan162hFZgsQNXoisAAABI3QxTjJKajlkRG9ZUUVtRVdBQlZ4TmF6YndzR3VVcko0UDREALWWGBl2qRRVo2Xng7FIhowyPIZtZPlgrdDLaoisAAABI3QxUmdSQmpqbnhYU2cxcHRMRHJrYU1OaVY0dEpWWHU3ZFdWAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";

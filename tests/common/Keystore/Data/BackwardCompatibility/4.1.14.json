@@ -1,0 +1,30 @@
+{
+  "activeAccounts": [
+    {
+      "address": "0x494f60cb6Ac2c8F5E1393aD9FdBdF4Ad589507F7",
+      "coin": 60,
+      "derivationPath": "m/44'/60'/0'/0/0",
+      "publicKey": "04cc32a479080d83fdcf69966713f0aad1bc1dc3ecf873b034894e84259841bc1c9b122717803e68905220ff54952d3f5ea2ab2698ca31f843addf94ae73fae9fd"
+    }
+  ],
+  "crypto": {
+    "cipher": "aes-128-ctr",
+    "cipherparams": {
+      "iv": "83fe369e460fea37b8f983fa3abd756f"
+    },
+    "ciphertext": "4a7ceed843421b608bc847ec7624d01f12c3013c059a72e88485d1411b98dbf0b56af6ddbccee779b7717f04e723595cee8ee877ef9ae5e26a18e595ad3e8bf74dcf6e8ab7b70139a85a57f4",
+    "kdf": "scrypt",
+    "kdfparams": {
+      "dklen": 32,
+      "n": 16384,
+      "p": 4,
+      "r": 8,
+      "salt": "cec627c75693e5b4fa6083da7142cdc34e5ab41bc8b2ca2530c1e1c24e2de947"
+    },
+    "mac": "f7f41a5ea381455d0d31271ca3067c3e2e18db9e74af14a93057d202ea0c3354"
+  },
+  "id": "f03cf38c-37cc-4e08-aeba-6ba1af525e0e",
+  "name": "name",
+  "type": "mnemonic",
+  "version": 3
+}

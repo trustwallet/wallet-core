@@ -32,7 +32,9 @@ struct TWPrivateKey *TWPrivateKeyCreate() {
 struct TWPrivateKey *_Nullable TWPrivateKeyCreateWithData(TWData *_Nonnull data) {
     auto dataSize = TWDataSize(data);
     Data bytes(dataSize);
-    TWDataCopyBytes(data, 0, dataSize, bytes.data());
+    if (TWDataCopyBytes(data, 0, dataSize, bytes.data()) != 0) {
+        return nullptr;
+    }
     if (!PrivateKey::isValid(bytes)) {
         return nullptr;
     }
@@ -52,7 +54,9 @@ void TWPrivateKeyDelete(struct TWPrivateKey *_Nonnull pk) {
 bool TWPrivateKeyIsValid(TWData *_Nonnull data, enum TWCurve curve) {
     auto dataSize = TWDataSize(data);
     std::vector<uint8_t> bytes(dataSize);
-    TWDataCopyBytes(data, 0, dataSize, bytes.data());
+    if (TWDataCopyBytes(data, 0, dataSize, bytes.data()) != 0) {
+        return false;
+    }
     return PrivateKey::isValid(bytes, curve);
 }
 

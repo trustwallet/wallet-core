@@ -19,6 +19,7 @@ TEST(TWNimiqCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeNimiq, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNimiq));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNimiq));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeNimiq));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNimiq), 5);
     ASSERT_EQ(TWBlockchainNimiq, TWCoinTypeBlockchain(TWCoinTypeNimiq));
@@ -29,4 +30,5 @@ TEST(TWNimiqCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://nimiq.watch/#a12");
     assertStringsEqual(id, "nimiq");
     assertStringsEqual(name, "Nimiq");
+    assertStringsEqual(nativeTokenName, "Nimiq");
 }

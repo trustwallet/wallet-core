@@ -28,7 +28,7 @@ impl Signer {
             .into_tw()
             .context("Invalid sender address")?;
         let signed_tx = builder
-            .sender(sender.inner())
+            .sender(sender)
             .sequence_number(input.sequence_number as u64)
             .build()?
             .sign(key_pair)?;

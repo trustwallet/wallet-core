@@ -60,6 +60,8 @@ impl DecredTransactionBuilder {
         self
     }
 
+    /// Pushes a standard transaction input to the builder, converting it to a DecredTransactionInput.
+    /// Since Decred does not support Segwit or Taproot, the input must use a legacy signing method, otherwise an error is returned.
     pub fn push_standard_input(
         &mut self,
         standard_input: TransactionInput,

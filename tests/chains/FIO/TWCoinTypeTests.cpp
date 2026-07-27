@@ -19,6 +19,7 @@ TEST(TWFIOCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeFIO, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeFIO));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeFIO));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeFIO));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeFIO), 9);
     ASSERT_EQ(TWBlockchainFIO, TWCoinTypeBlockchain(TWCoinTypeFIO));
@@ -29,4 +30,5 @@ TEST(TWFIOCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.fioprotocol.io/account/f5axfpgffiqz");
     assertStringsEqual(id, "fio");
     assertStringsEqual(name, "FIO");
+    assertStringsEqual(nativeTokenName, "FIO");
 }

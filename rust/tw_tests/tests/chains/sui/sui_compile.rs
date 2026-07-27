@@ -5,7 +5,7 @@
 use std::borrow::Cow;
 
 use crate::chains::sui::test_cases::{transfer_d4ay9tdb, PRIVATE_KEY_54E80D76, SENDER_54E80D76};
-use tw_any_coin::test_utils::sign_utils::{CompilerHelper, PreImageHelper};
+use tw_any_coin::test_utils::sign_utils::{AnySignerHelper, CompilerHelper, PreImageHelper};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_keypair::ed25519;
@@ -112,4 +112,27 @@ fn test_sui_compile_raw_json() {
         unsigned_tx_data: expected_unsigned_tx_data,
         signature: "ABl18CtTKml1sbI+HC1ciDlew7NiizEUK2KYfOgEDFVvrCcYbV2TSQI6lBkT710s+L+HrASGVvxVj/igpgB+dAyF69FEH+T5VPvl3GB3vwCOEZpeJpKXxvcIPQAdKsh2/g=="
     });
+}
+
+#[test]
+fn test_sui_raw_json_rejects_empty_gas_payment() {
+    let raw_json = r#"{
+        "version": 1,
+        "sender": "0xfc3af6dd6dc614cc6ee17974033d76116843536f9b3e0524b4d48c54bfb9472d",
+        "expiration": null,
+        "gasConfig": {"budget": "28457880", "price": "750", "payment": []},
+        "inputs": [],
+        "transactions": []
+    }"#;
+
+    let input = Proto::SigningInput {
+        transaction_payload: TransactionType::raw_json(raw_json.into()),
+        private_key: PRIVATE_KEY_54E80D76.decode_hex().unwrap().into(),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Sui, input);
+
+    assert_eq!(output.error, SigningError::Error_invalid_params);
 }

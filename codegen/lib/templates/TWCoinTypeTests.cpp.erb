@@ -16,6 +16,7 @@ TEST(TW<%= format_name(coin['name']) %>CoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
 <% if !coin['chainId'].nil? -%>
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
 <% end -%>
@@ -26,6 +27,7 @@ TEST(TW<%= format_name(coin['name']) %>CoinType, TWCoinType) {
 
     assertStringsEqual(id, "<%= coin['id'] %>");
     assertStringsEqual(name, "<%= display_name(coin) %>");
+    assertStringsEqual(nativeTokenName, "<%= native_token_name(coin) %>");
     assertStringsEqual(symbol, "<%= coin['symbol'] %>");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), <%= coin['decimals'] %>);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchain<%= coin['blockchain'] %>);

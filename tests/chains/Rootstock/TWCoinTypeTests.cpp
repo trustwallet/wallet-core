@@ -16,6 +16,7 @@ TEST(TWRootstockCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xeb8fa0488a655f8dc975153bffd066800bcaae5f21cf372356365b2a1d6d2288"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ TEST(TWRootstockCoinType, TWCoinType) {
 
     assertStringsEqual(id, "rootstock");
     assertStringsEqual(name, "Rootstock");
+    assertStringsEqual(nativeTokenName, "Rootstock");
     assertStringsEqual(symbol, "RBTC");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

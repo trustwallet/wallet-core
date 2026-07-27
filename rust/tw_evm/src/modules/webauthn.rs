@@ -5,6 +5,7 @@
 use crate::abi::encode;
 use crate::abi::token::Token;
 use crate::modules::barz::error::{BarzError, BarzResult};
+use serde_json::Value as Json;
 use std::str::FromStr;
 use tw_encoding::hex;
 use tw_hash::sha2::sha256;
@@ -135,6 +136,50 @@ impl WebAuthnAuth {
 }
 
 fn find_json_key_index(json: &str, key: &str) -> BarzResult<usize> {
-    let key_pattern = format!(r#""{}""#, key);
-    json.find(&key_pattern).ok_or(BarzError::InvalidInput)
+    // Parse JSON to ensure we're finding actual keys, not values
+    let parsed: Json = serde_json::from_str(json).map_err(|_| BarzError::InvalidInput)?;
+
+    // Verify the key exists in the parsed JSON
+    if parsed.get(key).is_none() {
+        return Err(BarzError::InvalidInput);
+    }
+
+    // Use a pattern that matches key position (key followed by colon)
+    let key_pattern = format!(r#""{}":"#, key);
+    let indices: Vec<_> = json.match_indices(&key_pattern).collect();
+    // There must be exactly one occurrence of the key pattern to avoid ambiguity (e.g., key appearing in a value).
+    if indices.len() != 1 {
+        return Err(BarzError::InvalidInput);
+    }
+    let (index, _pattern) = indices[0];
+    Ok(index)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_find_json_key_rejects_injected_pattern() {
+        let malicious = r#"{"note":"challenge","challenge":"real"}"#;
+        let idx = find_json_key_index(malicious, "challenge").unwrap();
+        assert_eq!(idx, 20, "Found injected pattern instead of actual key");
+
+        let malicious = r#"{"challenge":"real","value":{"challenge":1}}"#;
+        let err = find_json_key_index(malicious, "challenge").unwrap_err();
+        assert!(
+            matches!(err, BarzError::InvalidInput),
+            "Did not reject multiple key occurrences"
+        );
+
+        // Extra space after colon.
+        // Please note we don't require the JSON to be fully compact,
+        // but at least that there are no spaces between keys and colons.
+        let spaced = r#"{"challenge" : "real"}"#;
+        let err = find_json_key_index(spaced, "challenge").unwrap_err();
+        assert!(
+            matches!(err, BarzError::InvalidInput),
+            "Did not reject space after colon"
+        );
+    }
 }

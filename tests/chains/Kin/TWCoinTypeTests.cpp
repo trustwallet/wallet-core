@@ -19,6 +19,7 @@ TEST(TWKinCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeKin, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeKin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeKin));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeKin));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKin), 5);
     ASSERT_EQ(TWBlockchainStellar, TWCoinTypeBlockchain(TWCoinTypeKin));
@@ -29,4 +30,5 @@ TEST(TWKinCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://www.kin.org/blockchainAccount/?&dataType=public&header=accountID&id=a12");
     assertStringsEqual(id, "kin");
     assertStringsEqual(name, "Kin");
+    assertStringsEqual(nativeTokenName, "Kin");
 }

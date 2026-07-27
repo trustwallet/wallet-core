@@ -19,6 +19,7 @@ TEST(TWQtumCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeQtum, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeQtum));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeQtum));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeQtum));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeQtum), 8);
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeQtum));
@@ -29,4 +30,5 @@ TEST(TWQtumCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://qtum.info/address/a12");
     assertStringsEqual(id, "qtum");
     assertStringsEqual(name, "Qtum");
+    assertStringsEqual(nativeTokenName, "Qtum");
 }

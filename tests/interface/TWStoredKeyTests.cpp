@@ -34,8 +34,23 @@ struct std::shared_ptr<TWStoredKey> createAStoredKey(TWCoinType coin, TWData* pa
 struct std::shared_ptr<TWStoredKey> createDefaultStoredKey(TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr) {
     const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
     const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
-    
+
     return createAStoredKey(TWCoinTypeBitcoin, password.get(), encryption);
+}
+
+/// Reads the entire contents of the file at `path` into a Data buffer.
+/// Throws std::invalid_argument if the file cannot be opened.
+/// Note: uses a byte-by-byte loop instead of ifs.read() to avoid static-analysis warnings.
+static Data readFileData(const string& path) {
+    ifstream ifs(path);
+    if (!ifs.is_open()) throw std::invalid_argument("Cannot open file: " + path);
+    ifs.seekg(0, ifs.end);
+    const auto length = ifs.tellg();
+    ifs.seekg(0, ifs.beg);
+    Data data(length);
+    size_t idx = 0;
+    while (!ifs.eof() && idx < static_cast<size_t>(length)) { char c = ifs.get(); data[idx++] = static_cast<uint8_t>(c); }
+    return data;
 }
 
 TEST(TWStoredKey, loadPBKDF2Key) {
@@ -80,7 +95,24 @@ TEST(TWStoredKey, importPrivateKey) {
     TWPrivateKeyDelete(privateKey3);
 }
 
-TEST(TWStoredKey, importPrivateKeyAes256) {
+TEST(TWStoredKey, importPrivateKeyAes192Ctr) {
+    const auto privateKeyHex = "3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266";
+    const auto privateKey = WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes(privateKeyHex)).get()));
+    const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    const auto coin = TWCoinTypeBitcoin;
+    const auto key = WRAP(TWStoredKey, TWStoredKeyImportPrivateKeyWithEncryption(privateKey.get(), name.get(), password.get(), coin, TWStoredKeyEncryptionAes192Ctr));
+    const auto privateKey2 = WRAPD(TWStoredKeyDecryptPrivateKey(key.get(), password.get()));
+    EXPECT_EQ(hex(data(TWDataBytes(privateKey2.get()), TWDataSize(privateKey2.get()))), privateKeyHex);
+
+    const auto privateKey3 = TWStoredKeyPrivateKey(key.get(), coin, password.get());
+    const auto pkData3 = WRAPD(TWPrivateKeyData(privateKey3));
+    EXPECT_EQ(hex(data(TWDataBytes(pkData3.get()), TWDataSize(pkData3.get()))), privateKeyHex);
+    TWPrivateKeyDelete(privateKey3);
+}
+
+TEST(TWStoredKey, importPrivateKeyAes256Ctr) {
     const auto privateKeyHex = "3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266";
     const auto privateKey = WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes(privateKeyHex)).get()));
     const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
@@ -294,7 +326,22 @@ TEST(TWStoredKey, importHDWallet) {
     EXPECT_EQ(nokey.get(), nullptr);
 }
 
-TEST(TWStoredKey, importHDWalletAES256) {
+TEST(TWStoredKey, importHDWalletAES192Ctr) {
+    const auto mnemonic = WRAPS(TWStringCreateWithUTF8Bytes("team engine square letter hero song dizzy scrub tornado fabric divert saddle"));
+    const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    const auto coin = TWCoinTypeBitcoin;
+    const auto key = WRAP(TWStoredKey, TWStoredKeyImportHDWalletWithEncryption(mnemonic.get(), name.get(), password.get(), coin, TWStoredKeyEncryptionAes192Ctr));
+    EXPECT_TRUE(TWStoredKeyIsMnemonic(key.get()));
+
+    // invalid mnemonic
+    const auto mnemonicInvalid = WRAPS(TWStringCreateWithUTF8Bytes("_THIS_IS_AN_INVALID_MNEMONIC_"));
+    const auto nokey = WRAP(TWStoredKey, TWStoredKeyImportHDWalletWithEncryption(mnemonicInvalid.get(), name.get(), password.get(), coin, TWStoredKeyEncryptionAes192Ctr));
+    EXPECT_EQ(nokey.get(), nullptr);
+}
+
+TEST(TWStoredKey, importHDWalletAES256Ctr) {
     const auto mnemonic = WRAPS(TWStringCreateWithUTF8Bytes("team engine square letter hero song dizzy scrub tornado fabric divert saddle"));
     const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
     const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
@@ -397,28 +444,31 @@ TEST(TWStoredKey, exportJSON) {
     const auto json = WRAPD(TWStoredKeyExportJSON(key.get()));
     // check size and first character
     EXPECT_TRUE(TWDataSize(json.get()) > 100);
-    EXPECT_EQ(TWDataGet(json.get(), 0), '{');
+    const auto jsonBytes = TWDataBytes(json.get());
+    EXPECT_EQ(jsonBytes[0], '{');
 }
 
-TEST(TWStoredKey, storeAndImportJSONAES256) {
+TEST(TWStoredKey, storeAndImportJSONAES192Ctr) {
+    const auto key = createDefaultStoredKey(TWStoredKeyEncryptionAes192Ctr);
+    const auto outFileName = string(getTestTempDir() + "/TWStoredKey_store.json");
+    const auto outFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(outFileName.c_str()));
+    EXPECT_TRUE(TWStoredKeyStore(key.get(), outFileNameStr.get()));
+
+    auto json = readFileData(outFileName);
+    EXPECT_GT(json.size(), 20ul);
+    const auto key2 = WRAP(TWStoredKey, TWStoredKeyImportJSON(WRAPD(TWDataCreateWithData(&json)).get()));
+    const auto name2 = WRAPS(TWStoredKeyName(key2.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(name2.get())), "name");
+}
+
+TEST(TWStoredKey, storeAndImportJSONAES256Ctr) {
     const auto key = createDefaultStoredKey(TWStoredKeyEncryptionAes256Ctr);
     const auto outFileName = string(getTestTempDir() + "/TWStoredKey_store.json");
     const auto outFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(outFileName.c_str()));
     EXPECT_TRUE(TWStoredKeyStore(key.get(), outFileNameStr.get()));
 
-    // read contents of file
-    ifstream ifs(outFileName);
-    // get length of file:
-    ifs.seekg (0, ifs.end);
-    auto length = ifs.tellg();
-    ifs.seekg (0, ifs.beg);
-    EXPECT_TRUE(length > 20);
-
-    Data json(length);
-    size_t idx = 0;
-    // read the slow way, ifs.read gave some false warnings with codacy
-    while (!ifs.eof() && idx < static_cast<std::size_t>(length)) { char c = ifs.get(); json[idx++] = (uint8_t)c; }
-
+    auto json = readFileData(outFileName);
+    EXPECT_GT(json.size(), 20ul);
     const auto key2 = WRAP(TWStoredKey, TWStoredKeyImportJSON(WRAPD(TWDataCreateWithData(&json)).get()));
     const auto name2 = WRAPS(TWStoredKeyName(key2.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(name2.get())), "name");
@@ -429,21 +479,9 @@ TEST(TWStoredKey, storeAndImportJSON) {
     const auto outFileName = string(getTestTempDir() + "/TWStoredKey_store.json");
     const auto outFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(outFileName.c_str()));
     EXPECT_TRUE(TWStoredKeyStore(key.get(), outFileNameStr.get()));
-    //EXPECT_TRUE(filesystem::exists(outFileName));  // some linker issues with filesystem
-    
-    // read contents of file
-    ifstream ifs(outFileName);
-    // get length of file:
-    ifs.seekg (0, ifs.end);
-    auto length = ifs.tellg();
-    ifs.seekg (0, ifs.beg);
-    EXPECT_TRUE(length > 20);
 
-    Data json(length);
-    size_t idx = 0;
-    // read the slow way, ifs.read gave some false warnings with codacy 
-    while (!ifs.eof() && idx < static_cast<std::size_t>(length)) { char c = ifs.get(); json[idx++] = (uint8_t)c; }
-
+    auto json = readFileData(outFileName);
+    EXPECT_GT(json.size(), 20ul);
     const auto key2 = WRAP(TWStoredKey, TWStoredKeyImportJSON(WRAPD(TWDataCreateWithData(&json)).get()));
     const auto name2 = WRAPS(TWStoredKeyName(key2.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(name2.get())), "name");
@@ -617,6 +655,182 @@ TEST(TWStoredKey, encryptionParameters) {
                 "salt": "<salt>"
             },
             "mac": "<mac>"
-        }        
+        }
     )");
+}
+
+TEST(TWStoredKey, storeInvalidPath) {
+    const auto key = createDefaultStoredKey();
+    const auto invalidPath = WRAPS(TWStringCreateWithUTF8Bytes("/non-existing/file/path.json"));
+    EXPECT_FALSE(TWStoredKeyStore(key.get(), invalidPath.get()));
+}
+
+TEST(TWStoredKey, storeWithTemporaryFileSuccess) {
+    const auto key = createDefaultStoredKey();
+    const auto outFileName = string(getTestTempDir() + "/TWStoredKey_storeWithTmp.json");
+    const auto tmpFileName = string(getTestTempDir() + "/TWStoredKey_storeWithTmp.json.tmp");
+    const auto outFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(outFileName.c_str()));
+    const auto tmpFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(tmpFileName.c_str()));
+
+    EXPECT_TRUE(TWStoredKeyStoreWithTemporaryFile(key.get(), outFileNameStr.get(), tmpFileNameStr.get()));
+
+    // The temp file must have been renamed away — only the final file should exist.
+    EXPECT_FALSE(ifstream(tmpFileName).is_open());
+
+    // The final file must be readable and parse as a valid StoredKey.
+    auto json = readFileData(outFileName);
+    EXPECT_GT(json.size(), 20ul);
+    const auto reloaded = WRAP(TWStoredKey, TWStoredKeyImportJSON(WRAPD(TWDataCreateWithData(&json)).get()));
+    ASSERT_NE(reloaded.get(), nullptr);
+    const auto name = WRAPS(TWStoredKeyName(reloaded.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(name.get())), "name");
+}
+
+TEST(TWStoredKey, storeWithTemporaryFileInvalidPath) {
+    const auto key = createDefaultStoredKey();
+    const auto invalidPath = WRAPS(TWStringCreateWithUTF8Bytes("/non-existing/file/path.json"));
+    const auto tmpFileName = string(getTestTempDir() + "/TWStoredKey_storeWithTmpInvalidPath.json.tmp");
+    const auto tmpFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(tmpFileName.c_str()));
+
+    EXPECT_FALSE(TWStoredKeyStoreWithTemporaryFile(key.get(), invalidPath.get(), tmpFileNameStr.get()));
+}
+
+TEST(TWStoredKey, storeWithTemporaryFileInvalidTempPath) {
+    const auto key = createDefaultStoredKey();
+    const auto outFileName = string(getTestTempDir() + "/TWStoredKey_storeWithTmpInvalidTmp.json");
+    const auto outFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(outFileName.c_str()));
+    const auto invalidTmpPath = WRAPS(TWStringCreateWithUTF8Bytes("/non-existing/file/path.tmp"));
+
+    // Write known sentinel content to the destination file so we can verify it is untouched.
+    const string sentinel = "{\"sentinel\":true}";
+    { ofstream f(outFileName); f << sentinel; }
+
+    EXPECT_FALSE(TWStoredKeyStoreWithTemporaryFile(key.get(), outFileNameStr.get(), invalidTmpPath.get()));
+
+    // The destination file must be unchanged.
+    ifstream ifs(outFileName);
+    ASSERT_TRUE(ifs.is_open());
+    const string actual((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
+    EXPECT_EQ(actual, sentinel);
+}
+
+TEST(TWStoredKey, fixScryptWithEmptySaltAes256Ctr) {
+    const auto filename = WRAPS(TWStringCreateWithUTF8Bytes((TESTS_ROOT + "/common/Keystore/Data/scrypt-empty-salt-aes-256-ctr.json").c_str()));
+    const auto key = WRAP(TWStoredKey, TWStoredKeyLoad(filename.get()));
+    ASSERT_NE(key, nullptr);
+
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+
+    // Verify pre-fix state.
+    const auto keyId = WRAPS(TWStoredKeyIdentifier(key.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(keyId.get())), "a1357f23-333f-4efb-99ab-ec212c275810");
+    const auto keyName = WRAPS(TWStoredKeyName(key.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(keyName.get())), "name");
+    ASSERT_EQ(TWStoredKeyAccountCount(key.get()), 1ul);
+    const auto account = WRAP(TWAccount, TWStoredKeyAccount(key.get(), 0));
+    EXPECT_EQ(TWAccountCoin(account.get()), TWCoinTypeTron);
+    const auto address = WRAPS(TWAccountAddress(account.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(address.get())), "TMdz5HbKCqU1y5M9o5KW9yf1SZCLsLzHiU");
+
+    const auto jsonDataBefore = WRAPD(TWStoredKeyExportJSON(key.get()));
+    ASSERT_NE(jsonDataBefore, nullptr);
+    const auto jsonBefore = nlohmann::json::parse(string(reinterpret_cast<const char*>(TWDataBytes(jsonDataBefore.get())), TWDataSize(jsonDataBefore.get())));
+    EXPECT_EQ(jsonBefore["type"], "mnemonic");
+    EXPECT_EQ(jsonBefore["crypto"]["cipher"], "aes-256-ctr");
+    const auto saltBefore = jsonBefore["crypto"]["kdfparams"]["salt"].get<std::string>();
+    const auto macBefore  = jsonBefore["crypto"]["mac"].get<std::string>();
+    const auto ctBefore   = jsonBefore["crypto"]["ciphertext"].get<std::string>();
+    const auto ivBefore   = jsonBefore["crypto"]["cipherparams"]["iv"].get<std::string>();
+    EXPECT_EQ(saltBefore, "");
+
+    EXPECT_TRUE(TWStoredKeyFixEncryption(key.get(), password.get()));
+
+    // id, name, accounts, and cipher must be unchanged.
+    const auto keyIdAfter = WRAPS(TWStoredKeyIdentifier(key.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(keyIdAfter.get())), "a1357f23-333f-4efb-99ab-ec212c275810");
+    const auto keyNameAfter = WRAPS(TWStoredKeyName(key.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(keyNameAfter.get())), "name");
+    ASSERT_EQ(TWStoredKeyAccountCount(key.get()), 1ul);
+
+    const auto jsonDataAfter = WRAPD(TWStoredKeyExportJSON(key.get()));
+    ASSERT_NE(jsonDataAfter, nullptr);
+    const auto jsonAfter = nlohmann::json::parse(string(reinterpret_cast<const char*>(TWDataBytes(jsonDataAfter.get())), TWDataSize(jsonDataAfter.get())));
+    EXPECT_EQ(jsonAfter["crypto"]["cipher"], "aes-256-ctr");
+
+    // Salt must now be 32 bytes (64 hex chars) and no longer empty.
+    const auto saltAfter = jsonAfter["crypto"]["kdfparams"]["salt"].get<std::string>();
+    EXPECT_EQ(saltAfter.size(), 64ul);
+    EXPECT_NE(saltAfter, saltBefore);
+
+    // Other kdfparams must be preserved.
+    EXPECT_EQ(jsonAfter["crypto"]["kdfparams"]["n"], 262144);
+    EXPECT_EQ(jsonAfter["crypto"]["kdfparams"]["r"], 8);
+    EXPECT_EQ(jsonAfter["crypto"]["kdfparams"]["p"], 1);
+    EXPECT_EQ(jsonAfter["crypto"]["kdfparams"]["dklen"], 32);
+
+    // MAC, ciphertext, and IV must all have changed due to re-encryption.
+    EXPECT_NE(jsonAfter["crypto"]["mac"].get<std::string>(), macBefore);
+    EXPECT_NE(jsonAfter["crypto"]["ciphertext"].get<std::string>(), ctBefore);
+    EXPECT_NE(jsonAfter["crypto"]["cipherparams"]["iv"].get<std::string>(), ivBefore);
+
+    // The mnemonic must still be recoverable after re-encryption.
+    const auto mnemonic = WRAPS(TWStoredKeyDecryptMnemonic(key.get(), password.get()));
+    ASSERT_NE(mnemonic, nullptr);
+    EXPECT_EQ(string(TWStringUTF8Bytes(mnemonic.get())), "team engine square letter hero song dizzy scrub tornado fabric divert saddle");
+}
+
+TEST(TWStoredKey, FixEncryptionWrongPassword) {
+    const auto filename = WRAPS(TWStringCreateWithUTF8Bytes((TESTS_ROOT + "/common/Keystore/Data/scrypt-empty-salt-aes-256-ctr.json").c_str()));
+    const auto key = WRAP(TWStoredKey, TWStoredKeyLoad(filename.get()));
+    ASSERT_NE(key, nullptr);
+
+    const auto jsonDataBefore = WRAPD(TWStoredKeyExportJSON(key.get()));
+    ASSERT_NE(jsonDataBefore, nullptr);
+    const auto jsonBefore = string(reinterpret_cast<const char*>(TWDataBytes(jsonDataBefore.get())), TWDataSize(jsonDataBefore.get()));
+
+    const auto wrongPasswordString = WRAPS(TWStringCreateWithUTF8Bytes("wrong-password"));
+    const auto wrongPassword = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(TWStringUTF8Bytes(wrongPasswordString.get())), TWStringSize(wrongPasswordString.get())));
+
+    EXPECT_FALSE(TWStoredKeyFixEncryption(key.get(), wrongPassword.get()));
+
+    // JSON must be unchanged - a failed fix must leave the key untouched.
+    const auto jsonDataAfter = WRAPD(TWStoredKeyExportJSON(key.get()));
+    ASSERT_NE(jsonDataAfter, nullptr);
+    const auto jsonAfter = string(reinterpret_cast<const char*>(TWDataBytes(jsonDataAfter.get())), TWDataSize(jsonDataAfter.get()));
+    EXPECT_EQ(jsonAfter, jsonBefore);
+}
+
+TEST(TWStoredKey, AddAccountDerivationInvalidPath) {
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    const auto key = createAStoredKey(TWCoinTypeBitcoin, password.get());
+    const auto countBefore = TWStoredKeyAccountCount(key.get());
+
+    // Must not throw or crash — invalid path is silently ignored.
+    TWStoredKeyAddAccountDerivation(
+        key.get(),
+        WRAPS(TWStringCreateWithUTF8Bytes("bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny")).get(),
+        TWCoinTypeBitcoin,
+        TWDerivationDefault,
+        WRAPS(TWStringCreateWithUTF8Bytes("m/2147483648")).get(),
+        WRAPS(TWStringCreateWithUTF8Bytes("")).get(),
+        WRAPS(TWStringCreateWithUTF8Bytes("")).get()
+    );
+    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), countBefore);
+}
+
+TEST(TWStoredKey, RemoveAccountForCoinDerivationPathInvalidPath) {
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    const auto key = createAStoredKey(TWCoinTypeBitcoin, password.get());
+    const auto countBefore = TWStoredKeyAccountCount(key.get());
+
+    // Must not throw or crash — invalid path is silently ignored.
+    TWStoredKeyRemoveAccountForCoinDerivationPath(
+        key.get(),
+        TWCoinTypeBitcoin,
+        WRAPS(TWStringCreateWithUTF8Bytes("m/2147483648")).get()
+    );
+    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), countBefore);
 }

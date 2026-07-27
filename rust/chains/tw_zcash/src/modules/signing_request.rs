@@ -19,6 +19,7 @@ use tw_bitcoin::modules::signing_request::standard_signing_request::{
     chain_info, StandardSigningRequestBuilder,
 };
 use tw_hash::H32;
+use tw_utxo::constants::check_max_input_output_count;
 use tw_utxo::context::UtxoContext;
 
 pub struct ZcashExtraData {
@@ -58,6 +59,13 @@ where
             .expiry_height(extra_data.expiry_height)
             .branch_id(extra_data.branch_id);
 
+        check_max_input_output_count(
+            transaction_builder.inputs.len(),
+            transaction_builder.outputs.len(),
+            transaction_builder.change_output.is_some(),
+            transaction_builder.max_amount_output.is_some(),
+        )?;
+
         // Parse all UTXOs.
         for utxo_proto in transaction_builder.inputs.iter() {
             let utxo_builder = UtxoProtobuf::<Context>::new(&chain_info, utxo_proto, &public_keys);
@@ -70,6 +78,14 @@ where
 
         // If `max_amount_output` is set, construct a transaction with only one output.
         if let Some(max_output_proto) = transaction_builder.max_amount_output.as_ref() {
+            if !transaction_builder.outputs.is_empty()
+                || transaction_builder.change_output.is_some()
+            {
+                return SigningError::err(SigningErrorType::Error_invalid_params).context(
+                    "'max_amount_output' cannot be set together with 'outputs' or 'change_output'",
+                );
+            }
+
             let output_builder = OutputProtobuf::<Context>::new(&chain_info, max_output_proto);
 
             let max_output = output_builder

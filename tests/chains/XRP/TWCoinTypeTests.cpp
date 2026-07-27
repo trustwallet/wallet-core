@@ -19,6 +19,7 @@ TEST(TWXRPCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeXRP, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeXRP));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXRP));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeXRP));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeXRP), 6);
     ASSERT_EQ(TWBlockchainRipple, TWCoinTypeBlockchain(TWCoinTypeXRP));
@@ -29,4 +30,5 @@ TEST(TWXRPCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://bithomp.com/explorer/rfkH7EuS1XcSkB9pocy1R6T8F4CsNYixYU");
     assertStringsEqual(id, "ripple");
     assertStringsEqual(name, "XRP");
+    assertStringsEqual(nativeTokenName, "XRP");
 }

@@ -12,6 +12,7 @@
 #include "PrivateKey.h"
 
 #include <gtest/gtest.h>
+#include <filesystem>
 #include <stdexcept>
 
 extern std::string TESTS_ROOT;
@@ -84,7 +85,23 @@ TEST(StoredKey, CreateWithMnemonicAddDefaultAddress) {
     EXPECT_EQ(hex(key.privateKey(coinTypeBc, gPassword).bytes), "d2568511baea8dc347f14c4e0479eb8ebe29eb5f664ed796e755896250ffd11f");
 }
 
-TEST(StoredKey, CreateWithMnemonicAddDefaultAddressAes256) {
+TEST(StoredKey, CreateWithMnemonicAddDefaultAddressAes192Ctr) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("name", gPassword, gMnemonic, coinTypeBc, TWStoredKeyEncryptionAes192Ctr);
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+    auto header = key.payload;
+    EXPECT_EQ(header.params.cipher(), "aes-192-ctr");
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
+    EXPECT_EQ(key.accounts.size(), 1ul);
+    EXPECT_EQ(key.accounts[0].coin, coinTypeBc);
+    EXPECT_EQ(key.accounts[0].address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
+    EXPECT_EQ(key.accounts[0].publicKey, "02df6fc590ab3101bbe0bb5765cbaeab9b5dcfe09ac9315d707047cbd13bc7e006");
+    EXPECT_EQ(key.accounts[0].extendedPublicKey, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
+    EXPECT_EQ(hex(key.privateKey(coinTypeBc, gPassword).bytes), "d2568511baea8dc347f14c4e0479eb8ebe29eb5f664ed796e755896250ffd11f");
+}
+
+TEST(StoredKey, CreateWithMnemonicAddDefaultAddressAes256Ctr) {
     auto key = StoredKey::createWithMnemonicAddDefaultAddress("name", gPassword, gMnemonic, coinTypeBc, TWStoredKeyEncryptionAes256Ctr);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
     auto header = key.payload;
@@ -115,7 +132,24 @@ TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddress) {
     EXPECT_EQ(json["version"], 3);
 }
 
-TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddressAes256) {
+TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddressAes192Ctr) {
+    const auto privateKey = parse_hex("3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266");
+    auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", gPassword, coinTypeBc, privateKey, TWStoredKeyEncryptionAes192Ctr);
+    auto header = key.payload;
+    EXPECT_EQ(header.params.cipher(), "aes-192-ctr");
+    EXPECT_EQ(key.type, StoredKeyType::privateKey);
+    EXPECT_EQ(key.accounts.size(), 1ul);
+    EXPECT_EQ(key.accounts[0].coin, coinTypeBc);
+    EXPECT_EQ(key.accounts[0].address, "bc1q375sq4kl2nv0mlmup3vm8znn4eqwu7mt6hkwhr");
+    EXPECT_EQ(hex(key.privateKey(coinTypeBc, gPassword).bytes), hex(privateKey));
+
+    const auto json = key.json();
+    EXPECT_EQ(json["name"], "name");
+    EXPECT_EQ(json["type"], "private-key");
+    EXPECT_EQ(json["version"], 3);
+}
+
+TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddressAes256Ctr) {
     const auto privateKey = parse_hex("3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266");
     auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", gPassword, coinTypeBc, privateKey, TWStoredKeyEncryptionAes256Ctr);
     auto header = key.payload;
@@ -414,6 +448,10 @@ TEST(StoredKey, InvalidIv) {
     ASSERT_THROW(StoredKey::load(testDataPath("invalid-iv.json")), std::invalid_argument);
 }
 
+TEST(StoredKey, LoadCbcEncrypted) {
+    ASSERT_THROW(StoredKey::load(testDataPath("cbc-encrypted.json")), std::invalid_argument);
+}
+
 TEST(StoredKey, EmptyAccounts) {
     const auto key = StoredKey::load(testDataPath("empty-accounts.json"));
 
@@ -483,6 +521,185 @@ TEST(StoredKey, RemoveAccount) {
     key.removeAccount(TWCoinTypeEthereum);
     EXPECT_EQ(key.accounts.size(), 1ul);
     EXPECT_EQ(key.accounts[0].coin, coinTypeBc);
+}
+
+TEST(StoredKey, FixScryptWithEmptySaltAes256Ctr) {
+    auto key = StoredKey::load(testDataPath("scrypt-empty-salt-aes-256-ctr.json"));
+
+    // Capture pre-fix state.
+    ASSERT_TRUE(key.id.has_value());
+    EXPECT_EQ(key.id.value(), "a1357f23-333f-4efb-99ab-ec212c275810");
+    EXPECT_EQ(key.name, "name");
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+    ASSERT_EQ(key.accounts.size(), 1ul);
+    EXPECT_EQ(key.accounts[0].address, "TMdz5HbKCqU1y5M9o5KW9yf1SZCLsLzHiU");
+    EXPECT_EQ(key.accounts[0].coin, TWCoinTypeTron);
+
+    const auto jsonBefore = key.json();
+    EXPECT_EQ(jsonBefore["crypto"]["cipher"], "aes-256-ctr");
+    const auto saltBefore = jsonBefore["crypto"]["kdfparams"]["salt"].get<std::string>();
+    const auto macBefore  = jsonBefore["crypto"]["mac"].get<std::string>();
+    const auto ctBefore   = jsonBefore["crypto"]["ciphertext"].get<std::string>();
+    const auto ivBefore   = jsonBefore["crypto"]["cipherparams"]["iv"].get<std::string>();
+    EXPECT_EQ(saltBefore, "");
+
+    key.fixEncryption(gPassword);
+
+    // id, name, type, accounts, and cipher must be unchanged.
+    ASSERT_TRUE(key.id.has_value());
+    EXPECT_EQ(key.id.value(), "a1357f23-333f-4efb-99ab-ec212c275810");
+    EXPECT_EQ(key.name, "name");
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+    ASSERT_EQ(key.accounts.size(), 1ul);
+    EXPECT_EQ(key.accounts[0].address, "TMdz5HbKCqU1y5M9o5KW9yf1SZCLsLzHiU");
+    EXPECT_EQ(key.accounts[0].coin, TWCoinTypeTron);
+    const auto jsonAfter = key.json();
+    EXPECT_EQ(jsonAfter["crypto"]["cipher"], "aes-256-ctr");
+
+    // Salt must now be 32 bytes (64 hex chars) and no longer empty.
+    const auto saltAfter = jsonAfter["crypto"]["kdfparams"]["salt"].get<std::string>();
+    EXPECT_EQ(saltAfter.size(), 64ul);
+    EXPECT_NE(saltAfter, saltBefore);
+
+    // Other kdfparams must be preserved.
+    EXPECT_EQ(jsonAfter["crypto"]["kdfparams"]["n"], 262144);
+    EXPECT_EQ(jsonAfter["crypto"]["kdfparams"]["r"], 8);
+    EXPECT_EQ(jsonAfter["crypto"]["kdfparams"]["p"], 1);
+    EXPECT_EQ(jsonAfter["crypto"]["kdfparams"]["dklen"], 32);
+
+    // MAC, ciphertext, and IV must all have changed due to re-encryption.
+    EXPECT_NE(jsonAfter["crypto"]["mac"].get<std::string>(), macBefore);
+    EXPECT_NE(jsonAfter["crypto"]["ciphertext"].get<std::string>(), ctBefore);
+    EXPECT_NE(jsonAfter["crypto"]["cipherparams"]["iv"].get<std::string>(), ivBefore);
+
+    // The mnemonic must still be recoverable after re-encryption.
+    const Data& decrypted = key.payload.decrypt(gPassword);
+    EXPECT_EQ(string(decrypted.begin(), decrypted.end()), string(gMnemonic));
+}
+
+TEST(StoredKey, FixScryptWithEmptySaltWithEncodedPrivateKey) {
+    const auto privateKeyHex = "3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266";
+    auto key = StoredKey::load(testDataPath("scrypt-empty-salt-encoded-private-key.json"));
+
+    // Capture pre-fix state for both crypto sections.
+    ASSERT_TRUE(key.id.has_value());
+    EXPECT_EQ(key.id.value(), "125a7e09-6671-4c15-8691-46e9095a78d6");
+    EXPECT_EQ(key.name, "name");
+    EXPECT_EQ(key.type, StoredKeyType::privateKey);
+    ASSERT_EQ(key.accounts.size(), 1ul);
+    EXPECT_EQ(key.accounts[0].address, "bc1q375sq4kl2nv0mlmup3vm8znn4eqwu7mt6hkwhr");
+    EXPECT_EQ(key.accounts[0].coin, TWCoinTypeBitcoin);
+
+    const auto jsonBefore = key.json();
+    EXPECT_EQ(jsonBefore["crypto"]["cipher"], "aes-128-ctr");
+    const auto saltBefore   = jsonBefore["crypto"]["kdfparams"]["salt"].get<std::string>();
+    const auto macBefore    = jsonBefore["crypto"]["mac"].get<std::string>();
+    const auto ctBefore     = jsonBefore["crypto"]["ciphertext"].get<std::string>();
+    const auto ivBefore     = jsonBefore["crypto"]["cipherparams"]["iv"].get<std::string>();
+    EXPECT_EQ(saltBefore, "");
+
+    ASSERT_TRUE(jsonBefore.count("encodedCrypto") != 0);
+    EXPECT_EQ(jsonBefore["encodedCrypto"]["cipher"], "aes-128-ctr");
+    const auto encSaltBefore = jsonBefore["encodedCrypto"]["kdfparams"]["salt"].get<std::string>();
+    const auto encMacBefore  = jsonBefore["encodedCrypto"]["mac"].get<std::string>();
+    const auto encCtBefore   = jsonBefore["encodedCrypto"]["ciphertext"].get<std::string>();
+    const auto encIvBefore   = jsonBefore["encodedCrypto"]["cipherparams"]["iv"].get<std::string>();
+    EXPECT_EQ(encSaltBefore, "");
+
+    key.fixEncryption(gPassword);
+
+    // id, name, type, accounts, and cipher must be unchanged.
+    ASSERT_TRUE(key.id.has_value());
+    EXPECT_EQ(key.id.value(), "125a7e09-6671-4c15-8691-46e9095a78d6");
+    EXPECT_EQ(key.name, "name");
+    EXPECT_EQ(key.type, StoredKeyType::privateKey);
+    ASSERT_EQ(key.accounts.size(), 1ul);
+    EXPECT_EQ(key.accounts[0].address, "bc1q375sq4kl2nv0mlmup3vm8znn4eqwu7mt6hkwhr");
+    EXPECT_EQ(key.accounts[0].coin, TWCoinTypeBitcoin);
+
+    const auto jsonAfter = key.json();
+    EXPECT_EQ(jsonAfter["crypto"]["cipher"], "aes-128-ctr");
+
+    // crypto: salt must now be 32 bytes (64 hex chars); mac, ciphertext, and IV must have changed.
+    const auto saltAfter = jsonAfter["crypto"]["kdfparams"]["salt"].get<std::string>();
+    EXPECT_EQ(saltAfter.size(), 64ul);
+    EXPECT_NE(saltAfter, saltBefore);
+    EXPECT_EQ(jsonAfter["crypto"]["kdfparams"]["n"], 16384);
+    EXPECT_EQ(jsonAfter["crypto"]["kdfparams"]["r"], 8);
+    EXPECT_EQ(jsonAfter["crypto"]["kdfparams"]["p"], 4);
+    EXPECT_EQ(jsonAfter["crypto"]["kdfparams"]["dklen"], 32);
+    EXPECT_NE(jsonAfter["crypto"]["mac"].get<std::string>(), macBefore);
+    EXPECT_NE(jsonAfter["crypto"]["ciphertext"].get<std::string>(), ctBefore);
+    EXPECT_NE(jsonAfter["crypto"]["cipherparams"]["iv"].get<std::string>(), ivBefore);
+
+    // encodedCrypto: same invariants.
+    ASSERT_TRUE(jsonAfter.count("encodedCrypto") != 0);
+    EXPECT_EQ(jsonAfter["encodedCrypto"]["cipher"], "aes-128-ctr");
+    const auto encSaltAfter = jsonAfter["encodedCrypto"]["kdfparams"]["salt"].get<std::string>();
+    EXPECT_EQ(encSaltAfter.size(), 64ul);
+    EXPECT_NE(encSaltAfter, encSaltBefore);
+    EXPECT_EQ(jsonAfter["encodedCrypto"]["kdfparams"]["n"], 16384);
+    EXPECT_EQ(jsonAfter["encodedCrypto"]["kdfparams"]["r"], 8);
+    EXPECT_EQ(jsonAfter["encodedCrypto"]["kdfparams"]["p"], 4);
+    EXPECT_EQ(jsonAfter["encodedCrypto"]["kdfparams"]["dklen"], 32);
+    EXPECT_NE(jsonAfter["encodedCrypto"]["mac"].get<std::string>(), encMacBefore);
+    EXPECT_NE(jsonAfter["encodedCrypto"]["ciphertext"].get<std::string>(), encCtBefore);
+    EXPECT_NE(jsonAfter["encodedCrypto"]["cipherparams"]["iv"].get<std::string>(), encIvBefore);
+
+    // Both payloads must decrypt to the same private key after re-encryption.
+    const Data& decryptedKey = key.payload.decrypt(gPassword);
+    EXPECT_EQ(hex(decryptedKey), privateKeyHex);
+
+    ASSERT_TRUE(key.encodedPayload.has_value());
+    const Data& decryptedEncoded = key.encodedPayload->decrypt(gPassword);
+    EXPECT_EQ(string(decryptedEncoded.begin(), decryptedEncoded.end()), privateKeyHex);
+}
+
+TEST(StoredKey, FixScryptWithValidParams) {
+    auto key = StoredKey::load(testDataPath("legacy-mnemonic.json"));
+
+    const Data& dataBefore = key.payload.decrypt(gPassword);
+    const auto mnemonicBefore = string(dataBefore.begin(), dataBefore.end());
+
+    const auto jsonBefore = key.json();
+
+    key.fixEncryption(gPassword);
+
+    // The full JSON representation must be identical — fixEncryption must be a no-op for valid params.
+    EXPECT_EQ(key.json(), jsonBefore);
+
+    // The mnemonic must still decrypt to the same value.
+    const Data& dataAfter = key.payload.decrypt(gPassword);
+    const auto mnemonicAfter = string(dataAfter.begin(), dataAfter.end());
+    EXPECT_EQ(mnemonicAfter, mnemonicBefore);
+}
+
+TEST(StoredKey, FixPBKDF2WithEmptySalt) {
+    auto key = StoredKey::load(testDataPath("pbkdf2-empty-salt.json"));
+
+    EXPECT_FALSE(key.id.has_value());
+    EXPECT_EQ(key.name, "name");
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+    ASSERT_EQ(key.accounts.size(), 1ul);
+    EXPECT_EQ(key.accounts[0].coin, TWCoinTypeSmartChain);
+    EXPECT_EQ(key.accounts[0].derivationPath.string(), "m/44'/60'/0'/0/0");
+
+    const auto jsonBefore = key.json();
+    EXPECT_EQ(jsonBefore["crypto"]["kdfparams"]["salt"].get<std::string>(), "");
+    EXPECT_EQ(jsonBefore["crypto"]["ciphertext"].get<std::string>(), "dc6ea8644326bd86f1cbc102578b44e7645a66a1eb700334e9a819df05ee26ac410be4a9e3fd2f151849555da9b23bcc3b598e62dab23d2e8d431d29a9a4eefbb7d500c14497b67a9577e4f7");
+
+    const Data& dataBefore = key.payload.decrypt(gPassword);
+    const auto mnemonicBefore = string(dataBefore.begin(), dataBefore.end());
+
+    // fixEncryption is a no-op for PBKDF2 — re-encryption is not supported.
+    key.fixEncryption(gPassword);
+
+    // The full JSON representation must be identical — no field may have changed.
+    EXPECT_EQ(key.json(), jsonBefore);
+
+    const Data& dataAfter = key.payload.decrypt(gPassword);
+    const auto mnemonicAfter = string(dataAfter.begin(), dataAfter.end());
+    EXPECT_EQ(mnemonicAfter, mnemonicBefore);
 }
 
 TEST(StoredKey, MissingAddressFix) {
@@ -727,6 +944,50 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts from the same wallet
     }
 }
 
+TEST(StoredKey, CreateWithEncodedPrivateKeyAddDefaultAddress) {
+    // Use a hex-encoded private key
+    const auto privateKeyHex = "3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266";
+    auto key = StoredKey::createWithEncodedPrivateKeyAddDefaultAddress("name", gPassword, coinTypeBc, privateKeyHex);
+
+    EXPECT_EQ(key.type, StoredKeyType::privateKey);
+    EXPECT_EQ(key.accounts.size(), 1ul);
+    EXPECT_EQ(key.accounts[0].coin, coinTypeBc);
+    EXPECT_EQ(key.accounts[0].address, "bc1q375sq4kl2nv0mlmup3vm8znn4eqwu7mt6hkwhr");
+
+    // Verify that the raw private key bytes can be decrypted from `payload`
+    const Data& decryptedKey = key.payload.decrypt(gPassword);
+    EXPECT_EQ(hex(decryptedKey), privateKeyHex);
+
+    // Verify that the encoded private key string can be decrypted from `encodedPayload`
+    ASSERT_TRUE(key.encodedPayload.has_value());
+    const Data& decryptedEncoded = key.encodedPayload->decrypt(gPassword);
+    EXPECT_EQ(string(decryptedEncoded.begin(), decryptedEncoded.end()), privateKeyHex);
+
+    // Validate the JSON structure
+    const auto json = key.json();
+    EXPECT_EQ(json["name"], "name");
+    EXPECT_EQ(json["type"], "private-key");
+    EXPECT_EQ(json["version"], 3);
+    EXPECT_TRUE(json.count("encodedCrypto") != 0);
+
+    // Retrieve iv and salt from `crypto` (payload) and `encodedCrypto` (encodedPayload)
+    const auto payloadIv   = json["crypto"]["cipherparams"]["iv"].get<std::string>();
+    const auto payloadSalt = json["crypto"]["kdfparams"]["salt"].get<std::string>();
+
+    const auto encodedIv   = json["encodedCrypto"]["cipherparams"]["iv"].get<std::string>();
+    const auto encodedSalt = json["encodedCrypto"]["kdfparams"]["salt"].get<std::string>();
+
+    // iv and salt must be non-empty hex strings
+    EXPECT_EQ(payloadIv.size(), 32ul);   // 16 bytes as hex
+    EXPECT_EQ(payloadSalt.size(), 64ul); // 32 bytes as hex
+    EXPECT_EQ(encodedIv.size(), 32ul);
+    EXPECT_EQ(encodedSalt.size(), 64ul);
+
+    // iv and salt must differ between `payload` and `encodedPayload`
+    EXPECT_NE(payloadIv, encodedIv);
+    EXPECT_NE(payloadSalt, encodedSalt);
+}
+
 TEST(StoredKey, CreateWithMnemonicAlternativeDerivation) {
     const auto coin = TWCoinTypeSolana;
     auto key = StoredKey::createWithMnemonicAddDefaultAddress("name", gPassword, gMnemonic, coin);
@@ -748,6 +1009,120 @@ TEST(StoredKey, CreateWithMnemonicAlternativeDerivation) {
     EXPECT_EQ(key.accounts[1].address, "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C");
     EXPECT_EQ(key.accounts[1].publicKey, "ad8f57924dce62f9040f93b4f6ce3c3d39afde7e29bcb4013dad59db7913c4c7");
     EXPECT_EQ(hex(key.privateKey(coin, TWDerivationSolanaSolana, gPassword).bytes), "d49a5fa7f77593534c7afd2ba8dc8e9d8b007bc6ec65fe8df25ffe6fafc57151");
+}
+
+TEST(StoredKey, LoadScryptWithEmptySalt) {
+    const auto path = testDataPath("scrypt-empty-salt.json");
+    auto key = StoredKey::load(path);
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+
+    // Decrypt mnemonic
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
+
+    // JSON representation
+    const auto json = key.json();
+    ASSERT_TRUE(json["crypto"].is_object());
+    ASSERT_TRUE(json["crypto"].contains("kdfparams"));
+
+    const auto& kdfparams = json["crypto"]["kdfparams"];
+    ASSERT_TRUE(kdfparams.is_object());
+    // Salt must be present and empty
+    ASSERT_TRUE(kdfparams.contains("salt"));
+    EXPECT_EQ(kdfparams["salt"].get<std::string>(), "");
+}
+
+TEST(StoredKey, LoadScryptWithoutSalt) {
+    const auto path = testDataPath("scrypt-without-salt.json");
+    auto key = StoredKey::load(path);
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+
+    // Decrypt mnemonic
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
+
+    // JSON representation
+    const auto json = key.json();
+    ASSERT_TRUE(json["crypto"].is_object());
+    ASSERT_TRUE(json["crypto"].contains("kdfparams"));
+
+    const auto& kdfparams = json["crypto"]["kdfparams"];
+    ASSERT_TRUE(kdfparams.is_object());
+    // Salt must be present and empty
+    ASSERT_TRUE(kdfparams.contains("salt"));
+    EXPECT_EQ(kdfparams["salt"].get<std::string>(), "");
+}
+
+TEST(StoredKey, BackwardCompatibility) {
+    const auto dir = testDataPath("BackwardCompatibility");
+    for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+        if (!entry.is_regular_file()) {
+            continue;
+        }
+        SCOPED_TRACE(entry.path().filename().string());
+
+        const auto key = StoredKey::load(entry.path().string());
+        ASSERT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+
+        const Data& decrypted = key.payload.decrypt(gPassword);
+        EXPECT_EQ(string(decrypted.begin(), decrypted.end()), string(gMnemonic));
+    }
+}
+
+TEST(StoredKey, ParseMissingFields) {
+    // Load a valid key as the base JSON, then erase fields one by one to
+    // verify each missing field is caught during parsing.
+    const auto baseJson = StoredKey::load(testDataPath("wallet.json")).json();
+
+    // Missing iv inside cipherparams → std::invalid_argument("Missing iv")
+    {
+        auto j = baseJson;
+        j["crypto"]["cipherparams"].erase("iv");
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+    // Missing cipher → std::invalid_argument("Missing cipher")
+    {
+        auto j = baseJson;
+        j["crypto"].erase("cipher");
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+    // Missing kdf → std::invalid_argument("Missing kdf")
+    {
+        auto j = baseJson;
+        j["crypto"].erase("kdf");
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+    // Missing cipherparams object → nlohmann::json::out_of_range (const [] access)
+    {
+        auto j = baseJson;
+        j["crypto"].erase("cipherparams");
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+    // Missing kdfparams object → nlohmann::json::out_of_range (const [] access)
+    {
+        auto j = baseJson;
+        j["crypto"].erase("kdfparams");
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+    // Missing individual scrypt params → std::invalid_argument("Missing required scrypt parameters n, p, r, or dklen")
+    for (const auto* param : {"dklen", "n", "p", "r"}) {
+        SCOPED_TRACE(param);
+        auto j = baseJson;
+        j["crypto"]["kdfparams"].erase(param);
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+    // Missing ciphertext → nlohmann::json::out_of_range (const [] access on absent key)
+    {
+        auto j = baseJson;
+        j["crypto"].erase("ciphertext");
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+    // Missing mac → nlohmann::json::out_of_range (const [] access on absent key)
+    {
+        auto j = baseJson;
+        j["crypto"].erase("mac");
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
 }
 
 } // namespace TW::Keystore

@@ -11,7 +11,7 @@
 
 TEST(TWBase32, InvalidDecode) {
     const auto encodedInput = STRING("JBSWY3DPK5XXE3DE=======");
-    auto result = WRAPD(TWBase32Decode(encodedInput.get()));
+    auto result = TWBase32Decode(encodedInput.get());
     ASSERT_EQ(result, nullptr);
 }
 

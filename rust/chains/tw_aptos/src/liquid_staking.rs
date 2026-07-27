@@ -2,9 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::address::from_account_error;
+use crate::address::Address;
 use crate::transaction_payload::{EntryFunction, TransactionPayload};
-use move_core_types::{account_address::AccountAddress, ident_str, language_storage::ModuleId};
+use move_core_types::{ident_str, language_storage::ModuleId};
 use serde_json::json;
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
@@ -15,12 +15,12 @@ use tw_proto::{
 };
 
 pub fn tortuga_stake(
-    smart_contract_address: AccountAddress,
+    smart_contract_address: Address,
     amount: u64,
 ) -> SigningResult<TransactionPayload> {
     Ok(TransactionPayload::EntryFunction(EntryFunction::new(
         ModuleId::new(
-            smart_contract_address,
+            smart_contract_address.inner(),
             ident_str!("stake_router").to_owned(),
         ),
         ident_str!("stake").to_owned(),
@@ -31,12 +31,12 @@ pub fn tortuga_stake(
 }
 
 pub fn tortuga_unstake(
-    smart_contract_address: AccountAddress,
+    smart_contract_address: Address,
     amount: u64,
 ) -> SigningResult<TransactionPayload> {
     Ok(TransactionPayload::EntryFunction(EntryFunction::new(
         ModuleId::new(
-            smart_contract_address,
+            smart_contract_address.inner(),
             ident_str!("stake_router").to_owned(),
         ),
         ident_str!("unstake").to_owned(),
@@ -47,12 +47,12 @@ pub fn tortuga_unstake(
 }
 
 pub fn tortuga_claim(
-    smart_contract_address: AccountAddress,
+    smart_contract_address: Address,
     idx: u64,
 ) -> SigningResult<TransactionPayload> {
     Ok(TransactionPayload::EntryFunction(EntryFunction::new(
         ModuleId::new(
-            smart_contract_address,
+            smart_contract_address.inner(),
             ident_str!("stake_router").to_owned(),
         ),
         ident_str!("claim").to_owned(),
@@ -64,17 +64,17 @@ pub fn tortuga_claim(
 
 pub struct Stake {
     pub amount: u64,
-    pub smart_contract_address: AccountAddress,
+    pub smart_contract_address: Address,
 }
 
 pub struct Unstake {
     pub amount: u64,
-    pub smart_contract_address: AccountAddress,
+    pub smart_contract_address: Address,
 }
 
 pub struct Claim {
     pub idx: u64,
-    pub smart_contract_address: AccountAddress,
+    pub smart_contract_address: Address,
 }
 
 pub enum LiquidStakingOperation {
@@ -89,33 +89,27 @@ impl TryFrom<LiquidStaking<'_>> for LiquidStakingOperation {
     fn try_from(value: LiquidStaking) -> SigningResult<Self> {
         match value.liquid_stake_transaction_payload {
             OneOfliquid_stake_transaction_payload::stake(stake_msg) => {
-                let smart_contract_address =
-                    AccountAddress::from_str(&value.smart_contract_address)
-                        .map_err(from_account_error)
-                        .into_tw()
-                        .context("Invalid Smart Contract address")?;
+                let smart_contract_address = Address::from_str(&value.smart_contract_address)
+                    .into_tw()
+                    .context("Invalid Smart Contract address")?;
                 Ok(LiquidStakingOperation::Stake(Stake {
                     amount: stake_msg.amount,
                     smart_contract_address,
                 }))
             },
             OneOfliquid_stake_transaction_payload::unstake(unstake_msg) => {
-                let smart_contract_address =
-                    AccountAddress::from_str(&value.smart_contract_address)
-                        .map_err(from_account_error)
-                        .into_tw()
-                        .context("Invalid Smart Contract address")?;
+                let smart_contract_address = Address::from_str(&value.smart_contract_address)
+                    .into_tw()
+                    .context("Invalid Smart Contract address")?;
                 Ok(LiquidStakingOperation::Unstake(Unstake {
                     amount: unstake_msg.amount,
                     smart_contract_address,
                 }))
             },
             OneOfliquid_stake_transaction_payload::claim(claim) => {
-                let smart_contract_address =
-                    AccountAddress::from_str(&value.smart_contract_address)
-                        .map_err(from_account_error)
-                        .into_tw()
-                        .context("Invalid Smart Contract address")?;
+                let smart_contract_address = Address::from_str(&value.smart_contract_address)
+                    .into_tw()
+                    .context("Invalid Smart Contract address")?;
                 Ok(LiquidStakingOperation::Claim(Claim {
                     idx: claim.idx,
                     smart_contract_address,
@@ -132,7 +126,7 @@ impl From<LiquidStakingOperation> for LiquidStaking<'_> {
     fn from(value: LiquidStakingOperation) -> Self {
         match value {
             LiquidStakingOperation::Stake(stake) => LiquidStaking {
-                smart_contract_address: stake.smart_contract_address.to_hex_literal().into(),
+                smart_contract_address: stake.smart_contract_address.to_string().into(),
                 liquid_stake_transaction_payload: OneOfliquid_stake_transaction_payload::stake(
                     TortugaStake {
                         amount: stake.amount,
@@ -140,7 +134,7 @@ impl From<LiquidStakingOperation> for LiquidStaking<'_> {
                 ),
             },
             LiquidStakingOperation::Unstake(unstake) => LiquidStaking {
-                smart_contract_address: unstake.smart_contract_address.to_hex_literal().into(),
+                smart_contract_address: unstake.smart_contract_address.to_string().into(),
                 liquid_stake_transaction_payload: OneOfliquid_stake_transaction_payload::unstake(
                     TortugaUnstake {
                         amount: unstake.amount,
@@ -148,7 +142,7 @@ impl From<LiquidStakingOperation> for LiquidStaking<'_> {
                 ),
             },
             LiquidStakingOperation::Claim(claim) => LiquidStaking {
-                smart_contract_address: claim.smart_contract_address.to_hex_literal().into(),
+                smart_contract_address: claim.smart_contract_address.to_string().into(),
                 liquid_stake_transaction_payload: OneOfliquid_stake_transaction_payload::claim(
                     TortugaClaim { idx: claim.idx },
                 ),

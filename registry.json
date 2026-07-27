@@ -359,6 +359,7 @@
   {
     "id": "base",
     "name": "Base",
+    "nativeTokenName": "Ethereum",
     "coinId": 8453,
     "symbol": "ETH",
     "decimals": 18,
@@ -389,6 +390,7 @@
   {
     "id": "linea",
     "name": "Linea",
+    "nativeTokenName": "Ethereum",
     "coinId": 59144,
     "symbol": "ETH",
     "decimals": 18,
@@ -632,6 +634,7 @@
   {
     "id": "zen",
     "name": "Zen",
+    "nativeTokenName": "Horizen",
     "coinId": 121,
     "symbol": "ZEN",
     "decimals": 8,
@@ -726,6 +729,7 @@
     "id": "cosmos",
     "name": "Cosmos",
     "displayName": "Cosmos Hub",
+    "nativeTokenName": "Cosmos",
     "coinId": 118,
     "symbol": "ATOM",
     "decimals": 6,
@@ -1027,6 +1031,7 @@
     "id": "fetchai",
     "name": "FetchAI",
     "displayName": "Fetch AI",
+    "nativeTokenName": "Fetch.ai",
     "coinId": 12000118,
     "symbol": "FET",
     "decimals": 6,
@@ -1831,6 +1836,7 @@
     "id": "iotexevm",
     "name": "IoTeX EVM",
     "displayName": "IoTeX EVM",
+    "nativeTokenName": "IoTeX",
     "coinId": 10004689,
     "symbol": "IOTX",
     "decimals": 18,
@@ -1857,6 +1863,7 @@
   {
     "id": "nervos",
     "name": "Nervos",
+    "nativeTokenName": "Nervos Network",
     "coinId": 309,
     "symbol": "CKB",
     "decimals": 8,
@@ -1985,11 +1992,11 @@
     "addressHasher": "keccak256",
     "ss58Prefix": 0,
     "explorer": {
-      "url": "https://polkadot.subscan.io",
+      "url": "https://assethub-polkadot.subscan.io",
       "txPath": "/extrinsic/",
       "accountPath": "/account/",
-      "sampleTx": "0xb96f97d8ee508f420e606e1a6dcc74b88844713ddec2bd7cf4e3aa6b1d6beef4",
-      "sampleAccount": "13hJFqnkqQbmgnGQteGntjMjTdmTBRE8Z93JqxsrpgT7Yjd2"
+      "sampleTx": "0x5aaaeec678ab1bd5a19d2c9bfd596037a32e3d1e831383c62f315459e85fa85d",
+      "sampleAccount": "14QKFrBmnhP5xoH1t7nC2q7mssgj671AhzThsGewVj3Ea8Xt"
     },
     "info": {
       "url": "https://polkadot.network/",
@@ -2097,11 +2104,11 @@
     "addressHasher": "keccak256",
     "ss58Prefix": 2,
     "explorer": {
-      "url": "https://kusama.subscan.io",
+      "url": "https://assethub-kusama.subscan.io",
       "txPath": "/extrinsic/",
       "accountPath": "/account/",
-      "sampleTx": "0xcbe0c2e2851c1245bedaae4d52f06eaa6b4784b786bea2f0bff11af7715973dd",
-      "sampleAccount": "DbCNECPna3k6MXFWWNZa5jGsuWycqEE6zcUxZYkxhVofrFk"
+      "sampleTx": "0x834220074151531626b34acf4568cd5763a47b2eb2647bd0f0b7e46f980e0c50",
+      "sampleAccount": "FfnS7Vk2i19AdFMf6D8ZRVUhNsYWVtsLmqQEnAmTqQBqsSy"
     },
     "info": {
       "url": "https://kusama.network",
@@ -2143,6 +2150,7 @@
   {
     "id": "acalaevm",
     "name": "Acala EVM",
+    "nativeTokenName": "Acala",
     "coinId": 10000787,
     "slip44": 60,
     "symbol": "ACA",
@@ -2289,6 +2297,7 @@
   {
     "id": "band",
     "name": "BandChain",
+    "nativeTokenName": "Band Protocol",
     "symbol": "BAND",
     "coinId": 494,
     "decimals": 6,
@@ -2436,6 +2445,7 @@
     "id": "binance",
     "name": "Binance",
     "displayName": "BNB Beacon Chain",
+    "nativeTokenName": "BNB",
     "coinId": 714,
     "symbol": "BNB",
     "decimals": 8,
@@ -2468,6 +2478,7 @@
     "id": "tbinance",
     "name": "TBinance",
     "displayName": "TBNB",
+    "nativeTokenName": "BNB",
     "coinId": 30000714,
     "slip44": 714,
     "symbol": "BNB",
@@ -2528,6 +2539,7 @@
   {
     "id": "callisto",
     "name": "Callisto",
+    "nativeTokenName": "Callisto Network",
     "coinId": 820,
     "symbol": "CLO",
     "decimals": 18,
@@ -3048,6 +3060,7 @@
   {
     "id": "bsc",
     "name": "Smart Chain Legacy",
+    "nativeTokenName": "BNB",
     "coinId": 10000714,
     "slip44": 714,
     "symbol": "BNB",
@@ -3082,6 +3095,7 @@
     "id": "smartchain",
     "name": "Smart Chain",
     "displayName": "BNB Smart Chain",
+    "nativeTokenName": "BNB",
     "coinId": 20000714,
     "slip44": 714,
     "symbol": "BNB",
@@ -3211,6 +3225,7 @@
     "id": "optimism",
     "name": "Optimism",
     "displayName": "OP Mainnet",
+    "nativeTokenName": "Ethereum",
     "coinId": 10000070,
     "slip44": 60,
     "symbol": "ETH",
@@ -3243,6 +3258,7 @@
     "id": "polygonzkevm",
     "name": "Polygon zkEVM",
     "displayName": "Polygon zkEVM",
+    "nativeTokenName": "Ethereum",
     "coinId": 10001101,
     "slip44": 60,
     "symbol": "ETH",
@@ -3273,6 +3289,7 @@
     "id": "zksync",
     "name": "Zksync",
     "displayName": "zkSync Era",
+    "nativeTokenName": "Ethereum",
     "coinId": 10000324,
     "slip44": 60,
     "symbol": "ETH",
@@ -3303,6 +3320,7 @@
     "id": "scroll",
     "name": "Scroll",
     "displayName": "Scroll",
+    "nativeTokenName": "Ethereum",
     "coinId": 534352,
     "slip44": 60,
     "symbol": "ETH",
@@ -3334,6 +3352,7 @@
   {
     "id": "arbitrum",
     "name": "Arbitrum",
+    "nativeTokenName": "Ethereum",
     "coinId": 10042221,
     "slip44": 60,
     "symbol": "ETH",
@@ -3365,6 +3384,7 @@
   {
     "id": "arbitrumnova",
     "name": "Arbitrum Nova",
+    "nativeTokenName": "Ethereum",
     "coinId": 10042170,
     "slip44": 60,
     "symbol": "ETH",
@@ -3427,6 +3447,7 @@
   {
     "id": "avalanchec",
     "name": "Avalanche C-Chain",
+    "nativeTokenName": "Avalanche",
     "coinId": 10009000,
     "symbol": "AVAX",
     "decimals": 18,
@@ -3459,6 +3480,7 @@
     "id": "xdai",
     "name": "xDai",
     "displayName": "Gnosis Chain",
+    "nativeTokenName": "xDai",
     "coinId": 10000100,
     "symbol": "xDAI",
     "decimals": 18,
@@ -3520,6 +3542,7 @@
     "id": "cryptoorg",
     "name": "CryptoOrg",
     "displayName": "Crypto.org",
+    "nativeTokenName": "Cronos",
     "coinId": 394,
     "symbol": "CRO",
     "decimals": 8,
@@ -3745,6 +3768,7 @@
   {
     "id": "cronos",
     "name": "Cronos Chain",
+    "nativeTokenName": "Cronos",
     "coinId": 10000025,
     "symbol": "CRO",
     "decimals": 18,
@@ -3774,6 +3798,7 @@
   {
     "id": "kavaevm",
     "name": "KavaEvm",
+    "nativeTokenName": "Kava",
     "coinId": 10002222,
     "symbol": "KAVA",
     "decimals": 18,
@@ -3833,6 +3858,7 @@
   {
     "id": "kcc",
     "name": "KuCoin Community Chain",
+    "nativeTokenName": "KuCoin Token",
     "coinId": 10000321,
     "symbol": "KCS",
     "decimals": 18,
@@ -3924,6 +3950,7 @@
   {
     "id": "aurora",
     "name": "Aurora",
+    "nativeTokenName": "Ethereum",
     "coinId": 1323161554,
     "symbol": "ETH",
     "decimals": 18,
@@ -3985,6 +4012,7 @@
     "id": "nativeevmos",
     "name": "NativeEvmos",
     "displayName": "Native Evmos",
+    "nativeTokenName": "Evmos",
     "coinId": 20009001,
     "symbol": "EVMOS",
     "decimals": 18,
@@ -4158,6 +4186,7 @@
   {
     "id": "cfxevm",
     "name": "Conflux eSpace",
+    "nativeTokenName": "Conflux",
     "coinId": 1030,
     "chainId": "1030",
     "symbol": "CFX",
@@ -4189,6 +4218,7 @@
     "id": "greenfield",
     "name": "Greenfield",
     "displayName": "BNB Greenfield",
+    "nativeTokenName": "BNB",
     "coinId": 5600,
     "symbol": "BNB",
     "decimals": 18,
@@ -4219,6 +4249,7 @@
   {
     "id": "opbnb",
     "name": "OpBNB",
+    "nativeTokenName": "BNB",
     "coinId": 204,
     "chainId": "204",
     "symbol": "BNB",
@@ -4285,6 +4316,7 @@
   {
     "id": "Nebl",
     "name": "Nebl",
+    "nativeTokenName": "Neblio",
     "coinId": 146,
     "symbol": "NEBL",
     "decimals": 8,
@@ -4410,6 +4442,7 @@
     "id": "nativeinjective",
     "name": "NativeInjective",
     "displayName": "Native Injective",
+    "nativeTokenName": "Injective",
     "coinId": 10000060,
     "symbol": "INJ",
     "decimals": 18,
@@ -4440,6 +4473,7 @@
     "id": "nativecanto",
     "name": "NativeCanto",
     "displayName": "NativeCanto",
+    "nativeTokenName": "Canto",
     "coinId": 10007700,
     "symbol": "CANTO",
     "decimals": 18,
@@ -4470,6 +4504,7 @@
     "id": "zetachain",
     "name": "NativeZetaChain",
     "displayName": "NativeZetaChain",
+    "nativeTokenName": "ZetaChain",
     "coinId": 10007000,
     "symbol": "ZETA",
     "decimals": 18,
@@ -4499,6 +4534,7 @@
   {
     "id": "zetaevm",
     "name": "Zeta EVM",
+    "nativeTokenName": "ZetaChain",
     "coinId": 20007000,
     "symbol": "ZETA",
     "decimals": 18,
@@ -4527,8 +4563,9 @@
   {
     "id": "ton",
     "name": "TON",
+    "nativeTokenName": "Gram",
     "coinId": 607,
-    "symbol": "TON",
+    "symbol": "GRAM",
     "decimals": 9,
     "blockchain": "TheOpenNetwork",
     "derivation": [
@@ -4615,6 +4652,7 @@
   {
     "id": "manta",
     "name": "Manta Pacific",
+    "nativeTokenName": "Ethereum",
     "coinId": 169,
     "symbol": "ETH",
     "decimals": 18,
@@ -4706,6 +4744,7 @@
   {
     "id": "blast",
     "name": "Blast",
+    "nativeTokenName": "Ethereum",
     "coinId": 81457,
     "symbol": "ETH",
     "decimals": 18,
@@ -4767,6 +4806,7 @@
     "id": "zklinknova",
     "name": "ZkLinkNova",
     "displayName": "zkLink Nova Mainnet",
+    "nativeTokenName": "Ethereum",
     "coinId": 810180,
     "symbol": "ETH",
     "decimals": 18,
@@ -4890,6 +4930,7 @@
     "id": "plasma",
     "name": "Plasma",
     "displayName": "Plasma Mainnet",
+    "nativeTokenName": "Plasma",
     "coinId": 9745,
     "symbol": "XPL",
     "decimals": 18,
@@ -4973,6 +5014,99 @@
       "url": "https://www.megaeth.com",
       "rpc": "https://mainnet.megaeth.com/rpc",
       "documentation": "https://docs.megaeth.com"
+    }
+  },
+  {
+    "id": "seievm",
+    "name": "Sei EVM",
+    "nativeTokenName": "Sei",
+    "coinId": 1329,
+    "symbol": "SEI",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "1329",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://seiscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xe59dddcf9a93551399780d907eeee52fdbc44ead6406012368470d47979b7362",
+      "sampleAccount": "0xc5c8d37a73d96a925f770b5481f719df8d1a1b9e"
+    },
+    "info": {
+      "url": "https://www.sei.io",
+      "source": "https://github.com/sei-protocol",
+      "rpc": "https://evm-rpc.sei-apis.com",
+      "documentation": "https://docs.sei.io"
+    }
+  },
+  {
+    "id": "hyperevm",
+    "name": "HyperEVM",
+    "nativeTokenName": "Hyperliquid",
+    "coinId": 10000999,
+    "symbol": "HYPE",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "999",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://hyperevmscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xc79cb0bcc08995ac78f74f4a62bfd721d50a7368979b8025f3f8c229bb5a334c",
+      "sampleAccount": "0x3c43014aedbb496e173059f94bfe3b0ed1d55ba0"
+    },
+    "info": {
+      "url": "https://hyperfoundation.org",
+      "source": "https://github.com/hyperliquid-dex",
+      "rpc": "https://rpc.hyperliquid.xyz/evm",
+      "documentation": "https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/hyperevm"
+    }
+  },
+  {
+    "id": "robinhoodchain",
+    "name": "Robinhood Chain",
+    "displayName": "Robinhood Chain",
+    "nativeTokenName": "Ethereum",
+    "coinId": 10004663,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "4663",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://robinhoodchain.blockscout.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x60f2d8e8ca8d64da9d3ded83a759a123ea28aca9f51a8f9b62cf34835b770cf9",
+      "sampleAccount": "0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73"
+    },
+    "info": {
+      "url": "https://robinhood.com",
+      "rpc": "https://rpc.mainnet.chain.robinhood.com",
+      "documentation": "https://docs.robinhood.com/chain/"
     }
   }
 ]

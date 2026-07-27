@@ -66,13 +66,27 @@ TEST(DataTests, subData) {
     EXPECT_EQ(hex(subData(data, 0, 10)), "0102030405060708090a");
     EXPECT_EQ(hex(subData(data, 3, 1)), "04");
     EXPECT_EQ(hex(subData(data, 3, 0)), "");
-    EXPECT_EQ(hex(subData(data, 200, 3)), ""); // index too big
     EXPECT_EQ(hex(subData(data, 2, 300)), "030405060708090a"); // length too big
-    EXPECT_EQ(hex(subData(data, 200, 300)), ""); // index & length too big
 
     EXPECT_EQ(hex(subData(data, 3)), "0405060708090a");
     EXPECT_EQ(hex(subData(data, 0)), "0102030405060708090a");
-    EXPECT_EQ(hex(subData(data, 200)), ""); // index too big
+
+    // index too big
+    ASSERT_ANY_THROW(subData(data, 10, 3));
+    ASSERT_ANY_THROW(subData(data, 11, 1));
+    ASSERT_ANY_THROW(subData(data, 200, 300));
+
+    ASSERT_ANY_THROW(subData(data, 10ul));
+    ASSERT_ANY_THROW(subData(data, 11ul));
+    ASSERT_ANY_THROW(subData(data, 200ul));
+}
+
+TEST(DataTests, subDataInvalidStartIndex) {
+    const Data data = parse_hex("0102030405060708090a");
+    EXPECT_EQ(data.size(), 10ul);
+    ASSERT_ANY_THROW(subData(data, 10ul));
+    ASSERT_ANY_THROW(subData(data, 11ul));
+    ASSERT_ANY_THROW(subData(data, 200ul));
 }
 
 TEST(DataTests, hasPrefix) {

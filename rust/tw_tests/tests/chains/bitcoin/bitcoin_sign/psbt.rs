@@ -4,9 +4,11 @@
 
 use crate::chains::common::bitcoin::psbt_sign::{BitcoinPsbtSignHelper, Expected};
 use crate::chains::common::bitcoin::transaction_psbt;
+use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_coin_registry::coin_type::CoinType;
-use tw_encoding::hex::DecodeHex;
+use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_proto::BitcoinV2::Proto;
+use tw_proto::Common::Proto::SigningError;
 
 #[test]
 fn test_bitcoin_sign_psbt_thorchain_swap_witness() {
@@ -59,4 +61,43 @@ fn test_bitcoin_sign_psbt_thorchain_swap_non_witness() {
             weight: 944,
             fee: 2662,
         });
+}
+
+#[test]
+fn test_bitcoin_sign_psbt_non_witness_tampered_output_value() {
+    // 1CKZYtNxAQnTbygz6vyhBYnwx4NvcxURMB
+    let private_key = "7a87cb2c9fa56f7a63dfc50659dca260473cb6bb0fd4d8a2beeaf5357d41de95"
+        .decode_hex()
+        .unwrap();
+
+    let original_psbt_bytes = "70736274ff01008202000000015c37bcf049b7e62dd5bfd707e0998ce86163b786e3cd45db2336cb794a8d8aa10000000000ffffffff03f82a000000000000160014bf5a13a26791a5db6406304a46952e264c2b28910000000000000000056a032b3a6291950000000000001976a9147c2c0ac72afbde13ecf52fca54368e7883b538b188ac000000000001007e0200000002714916920be4dbc87cbb8697ca9b1420d6b1e47e7d732e2d2e0e7a935087788d0000000000ffffffff326c951cd9b3dc382e2d6be88796b65d7bac90406a5f72660171ac826e414a630200000000ffffffff01efca0000000000001976a9147c2c0ac72afbde13ecf52fca54368e7883b538b188ac0000000000000000"
+        .decode_hex()
+        .unwrap();
+    let mut original_psbt =
+        tw_bitcoin::modules::psbt_request::Psbt::deserialize(&original_psbt_bytes).unwrap();
+    let prev_output = &mut original_psbt.inputs[0]
+        .non_witness_utxo
+        .as_mut()
+        .unwrap()
+        .output[0];
+    assert_eq!(prev_output.value, 51_951);
+    // Change the amount to forge a transaction with an invalid input amount, that leads to an invalid txid.
+    prev_output.value = 1000;
+    let wrong_psbt = original_psbt.serialize().to_hex();
+
+    let input = Proto::SigningInput {
+        private_keys: vec![private_key.into()],
+        transaction: transaction_psbt(&wrong_psbt),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Bitcoin, input);
+
+    assert_eq!(
+        output.error,
+        SigningError::Error_invalid_utxo,
+        "Expected Error_invalid_utxo. Error message: {}",
+        output.error_message
+    );
 }

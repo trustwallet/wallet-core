@@ -6,6 +6,7 @@
 #include "AddressV3.h"
 
 #include "Cbor.h"
+#include "Hash.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 
@@ -62,6 +63,16 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
     }
     tx.fee = plan.fee;
     tx.ttl = input.ttl();
+
+    if (!input.auxiliary_data().empty()) {
+        // Reject invalid CBOR here, so the signing/planning path returns an error
+        // instead of letting Cbor::Encode::fromRaw throw out of the noexcept
+        // Signer::sign / Signer::plan entry points (which would call std::terminate).
+        if (!Cbor::Decode(data(input.auxiliary_data())).isValid()) {
+            return Common::Proto::Error_invalid_params;
+        }
+        tx.auxiliaryDataHash = Hash::blake2b(data(input.auxiliary_data()), 32);
+    }
 
     if (input.has_register_staking_key()) {
         const auto stakingAddress = AddressV3(input.register_staking_key().staking_address());
@@ -301,8 +312,13 @@ Common::Proto::SigningError Signer::encodeTransaction(Data& encoded, Data& txId,
     if (input.has_vote_delegation()) {
         cbor.emplace_back(Cbor::Encode::version(21));
     }
-    // Add a null value for the auxiliary data
-    cbor.emplace_back(Cbor::Encode::null());
+    // Auxiliary data: the caller-provided CBOR bytes (whose hash is committed in
+    // the tx body), or a null value when there is none.
+    if (!input.auxiliary_data().empty()) {
+        cbor.emplace_back(Cbor::Encode::fromRaw(data(input.auxiliary_data())));
+    } else {
+        cbor.emplace_back(Cbor::Encode::null());
+    }
 
     // Cbor-encode txAux & signatures
     encoded = Cbor::Encode::array(cbor).encoded();
@@ -621,6 +637,12 @@ Data Signer::encodeTransactionWithSig(const Proto::SigningInput &input, const Pu
 
     const auto sigsCbor = cborizeSignatures(signatures, hasLegacyUtxos);
 
+    // Auxiliary data: the caller-provided CBOR bytes (whose hash is committed in
+    // the tx body), or a null value when there is none.
+    const auto auxData = !input.auxiliary_data().empty()
+        ? Cbor::Encode::fromRaw(data(input.auxiliary_data()))
+        : Cbor::Encode::null();
+
     // Cbor-encode txAux & signatures
     const auto cbor = Cbor::Encode::array({
         // txaux
@@ -628,7 +650,7 @@ Data Signer::encodeTransactionWithSig(const Proto::SigningInput &input, const Pu
         // signatures
         sigsCbor,
         // aux data
-        Cbor::Encode::null(),
+        auxData,
     });
 
     return cbor.encoded();

@@ -3,13 +3,24 @@
 // Copyright © 2017 Trust Wallet.
 
 use move_core_types::account_address::{AccountAddress, AccountAddressParseError};
+use serde::Serialize;
 use std::fmt::{Display, Formatter};
+use std::ops::RangeInclusive;
 use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::sha3::sha3_256;
 use tw_keypair::ed25519;
 use tw_memory::Data;
+
+/// `0x` prefix + 64 hex chars (32 bytes * 2).
+const NUM_CHARS: usize = AccountAddress::LENGTH * 2 + 2;
+/// There can be up to 10 special addresses in the range of 0x0 to 0xa.
+/// https://aptos.dev/network/blockchain/accounts#account-address
+const SPECIAL_ADDR_RANGE: RangeInclusive<u8> = 0x0..=0xa;
+/// 0x + 1 hex char.
+const SPECIAL_ADDR_NUM_CHARS: usize = 3;
+const RADIX: u32 = 16;
 
 #[repr(u8)]
 pub enum Scheme {
@@ -38,11 +49,22 @@ impl Address {
     pub fn inner(&self) -> AccountAddress {
         self.addr
     }
+
+    pub fn is_special_address(&self) -> bool {
+        let bytes = self.addr.as_ref();
+
+        let prefix = &bytes[..bytes.len() - 1];
+        let last_byte = bytes[bytes.len() - 1];
+        prefix.iter().all(|&b| b == 0) && SPECIAL_ADDR_RANGE.contains(&last_byte)
+    }
 }
 
 impl Display for Address {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.addr.to_hex_literal())
+        if self.is_special_address() {
+            return write!(f, "0x{}", self.addr.short_str_lossless());
+        }
+        write!(f, "{:#x}", self.addr)
     }
 }
 
@@ -61,34 +83,48 @@ pub fn from_account_error(_err: AccountAddressParseError) -> AddressError {
 impl FromStr for Address {
     type Err = AddressError;
 
-    // https://github.com/aptos-labs/aptos-core/blob/261019cbdafe1c514c60c2b74357ea2c77d25e67/types/src/account_address.rs#L44
+    /// In Trust Wallet Core, we only support the removal of zeros for special addresses ranging from 0x0 to 0xa.
+    /// All other addresses must be 32 bytes (64 hex characters) with required 0x prefix.
+    /// https://aptos.dev/network/blockchain/accounts#account-address
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        const NUM_CHARS: usize = AccountAddress::LENGTH * 2;
-        let mut has_0x = false;
-        let mut working = s.trim();
-
-        // Checks if it has a 0x at the beginning, which is okay
-        if working.starts_with("0x") {
-            has_0x = true;
-            working = &working[2..];
+        if !s.starts_with("0x") {
+            return Err(AddressError::MissingPrefix);
         }
 
-        if working.len() > NUM_CHARS || (!has_0x && working.len() < NUM_CHARS) {
+        if s.len() == SPECIAL_ADDR_NUM_CHARS {
+            let special_addr =
+                u8::from_str_radix(&s[2..], RADIX).map_err(|_| AddressError::FromHexError)?;
+            if !SPECIAL_ADDR_RANGE.contains(&special_addr) {
+                return Err(AddressError::InvalidInput);
+            }
+
+            let mut bytes = [0u8; AccountAddress::LENGTH];
+            bytes[AccountAddress::LENGTH - 1] = special_addr;
+
+            return Ok(Address {
+                addr: AccountAddress::from(bytes),
+            });
+        }
+
+        if s.len() != NUM_CHARS {
             return Err(AddressError::InvalidInput);
         }
 
-        if !working.chars().all(|c| char::is_ascii_hexdigit(&c)) {
-            return Err(AddressError::InvalidInput);
-        }
-
-        let addr = if has_0x {
-            AccountAddress::from_hex_literal(s.trim())
-        } else {
-            AccountAddress::from_str(s.trim())
-        }
-        .map_err(from_account_error)?;
-
+        let addr = AccountAddress::from_hex_literal(s).map_err(from_account_error)?;
         Ok(Address { addr })
+    }
+}
+
+impl Serialize for Address {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        if serializer.is_human_readable() {
+            serializer.serialize_str(&self.to_string())
+        } else {
+            self.addr.serialize(serializer)
+        }
     }
 }
 

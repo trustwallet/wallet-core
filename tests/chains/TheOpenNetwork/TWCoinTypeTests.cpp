@@ -17,6 +17,7 @@ TEST(TWTONCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("fJXfn0EVhV09HFuEgUHu4Cchb24nUQtIMwSzmzk2tLs="));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("EQCD39VS5jcptHL8vMjEXrzGaRcCVYto7HUn4bpAOg8xqB2N"));
@@ -24,7 +25,8 @@ TEST(TWTONCoinType, TWCoinType) {
 
     assertStringsEqual(id, "ton");
     assertStringsEqual(name, "TON");
-    assertStringsEqual(symbol, "TON");
+    assertStringsEqual(nativeTokenName, "Gram");
+    assertStringsEqual(symbol, "GRAM");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 9);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainTheOpenNetwork);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);

@@ -168,19 +168,25 @@ TEST(TronCompiler, CompileWithSignaturesRawJson) {
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
         EXPECT_EQ(output.json(), expectedTx);
     }
+}
 
-    { // Negative: invalid raw json
-        auto input = TW::Tron::Proto::SigningInput();
-        auto invalidRawJson = "not valid json";
-        input.set_raw_json(invalidRawJson);
-        auto inputString = input.SerializeAsString();
-        auto inputStrData = TW::Data(inputString.begin(), inputString.end());
+TEST(TronCompiler, CompileInvalidRawJson) {
+    const auto privateKey =
+        PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+    constexpr auto coin = TWCoinTypeTron;
+    auto signature = parse_hex("77f5eabde31e739d34a66914540f1756981dc7d782c9656f5e14e53b59a15371603"
+                               "a183aa12124adeee7991bf55acc8e488a6ca04fb393b1a8ac16610eeafdfc00");
 
-        outputData = TransactionCompiler::compileWithSignatures(
-            coin, inputStrData, {signature}, {publicKey.bytes});
-        Tron::Proto::SigningOutput output;
-        ASSERT_TRUE(output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
-        EXPECT_EQ(output.json().size(), 0ul);
-        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
-    }
+    auto input = TW::Tron::Proto::SigningInput();
+    auto invalidRawJson = "not valid json";
+    input.set_raw_json(invalidRawJson);
+    auto inputString = input.SerializeAsString();
+    auto inputStrData = TW::Data(inputString.begin(), inputString.end());
+
+    auto outputData = TransactionCompiler::compileWithSignatures(coin, inputStrData, {signature}, {publicKey.bytes});
+    Tron::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
+    EXPECT_EQ(output.json().size(), 0ul);
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
 }

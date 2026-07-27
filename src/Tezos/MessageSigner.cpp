@@ -44,9 +44,13 @@ std::string MessageSigner::signMessage(const PrivateKey& privateKey, const std::
 
 bool MessageSigner::verifyMessage(const PublicKey& publicKey, const std::string& message, const std::string& signature) noexcept {
     auto decoded = Base58::decodeCheck(signature);
-    auto rawSignature = subData(decoded, gEdSigPrefix.size());
-    auto msg = Hash::blake2b(parse_hex(message), 32);
-    return publicKey.verify(rawSignature, msg);
+    try {
+        auto rawSignature = subData(decoded, gEdSigPrefix.size());
+        auto msg = Hash::blake2b(parse_hex(message), 32);
+        return publicKey.verify(rawSignature, msg);
+    } catch (...) {
+        return false;
+    }
 }
 
 } // namespace TW::Tezos

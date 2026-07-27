@@ -14,6 +14,7 @@ TEST(TWCronosCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeCronosChain, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCronosChain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCronosChain));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeCronosChain));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCronosChain), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeCronosChain));
@@ -23,4 +24,5 @@ TEST(TWCronosCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://cronoscan.com/address/0x44eed2bb80b688a8778173c19fe11cd6876af15a");
     assertStringsEqual(id, "cronos");
     assertStringsEqual(name, "Cronos Chain");
+    assertStringsEqual(nativeTokenName, "Cronos");
 }

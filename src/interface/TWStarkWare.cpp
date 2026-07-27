@@ -11,5 +11,9 @@
 struct TWPrivateKey* TWStarkWareGetStarkKeyFromSignature(const struct TWDerivationPath* derivationPath, TWString* signature) {
     using namespace TW;
     const auto& ethSignatureStr = *reinterpret_cast<const std::string*>(signature);
-    return new TWPrivateKey{ ImmutableX::getPrivateKeyFromRawSignature(parse_hex(ethSignatureStr), derivationPath->impl)};
+    try {
+        return new TWPrivateKey{ ImmutableX::getPrivateKeyFromRawSignature(parse_hex(ethSignatureStr), derivationPath->impl)};
+    } catch (...) {
+        return nullptr;
+    }
 }

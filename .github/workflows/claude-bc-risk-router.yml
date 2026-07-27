@@ -1,0 +1,272 @@
+name: bc-risk-router
+
+# To make verify-bc-check-comment actually BLOCK merging, add it as a required
+# status check in Settings -> Branches -> branch protection rules for master and dev.
+
+on:
+  pull_request:
+    branches: [ master, dev ]
+    types: [ opened, synchronize, reopened, edited, ready_for_review ]
+  issue_comment:
+    types: [ created, edited, deleted ]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+env:
+  BC_SIGNOFF_MIN_CHARS: 60
+
+jobs:
+  scan-and-flag:
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    outputs:
+      flags: ${{ steps.scan.outputs.flags }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect hot-path changes
+        id: scan
+        run: |
+          set -e
+          BASE="origin/${{ github.base_ref }}"
+
+          # Any change to a persistence-sensitive path warrants a BC audit.
+          # The auditor decides what's risky — not grep patterns.
+          CHANGED=$(git diff --name-only "$BASE"...HEAD -- \
+            'src/Keystore/' \
+            'src/proto/' \
+            'include/TrustWalletCore/' \
+            'registry.json' \
+            'src/PrivateKey*' \
+            'src/PublicKey*' \
+            'src/HDWallet*' \
+            'swift/Sources/KeyStore*' \
+            'swift/Sources/Wallet.swift' \
+            'swift/Sources/Watch.swift' \
+            'wasm/src/keystore/' \
+            '**/Migration*' \
+            '**/StoredKey*' \
+            '**/backup/**' \
+            '**/schema*.sql' \
+            2>/dev/null || true)
+
+          if [ -n "$CHANGED" ]; then
+            echo "flags=$(echo "$CHANGED" | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+          else
+            echo "flags=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Post reminder comment (once per PR)
+        if: steps.scan.outputs.flags != ''
+        uses: actions/github-script@v7
+        env:
+          FLAGS: ${{ steps.scan.outputs.flags }}
+        with:
+          script: |
+            const changedFiles = (process.env.FLAGS || '').trim().split(/\s+/).filter(Boolean);
+            const marker = '<!-- bc-risk-router:reminder -->';
+
+            const { data: comments } = await github.rest.issues.listComments({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            if (comments.some(c => c.body.includes(marker))) return;
+
+            const base = context.payload.pull_request.base.ref;
+
+            // Build the prompt as an array to avoid multi-line template literal
+            // indentation problems inside this YAML block scalar.
+            const promptLines = [
+              '```',
+              `You are auditing a Trust Wallet Core PR against origin/${base}`,
+              'for **backward-compatibility risk against persisted user data and wire formats**.',
+              'Find cases where this PR will reject, mis-parse, or mishandle inputs that older',
+              'versions of our software already wrote to disk, to backups, or onto the network.',
+              '',
+              '**Trust Wallet Core domain context:**',
+              '- src/Keystore/ — JSON keystore files (user encrypted keys/mnemonics).',
+              '  These live in iCloud, Google Drive, and manual exports.',
+              '  A parse failure = wallet inaccessible = user cannot access funds.',
+              '- src/proto/*.proto — Protobuf SigningInput/SigningOutput wire formats.',
+              '  Field numbers are permanent; reuse or removal silently corrupts binary data.',
+              '- include/TrustWalletCore/TW*.h — Public C ABI.',
+              '  Removing/renaming TW* functions or changing enum values breaks compiled bindings.',
+              '- registry.json — coin metadata (SLIP44, derivation path, curve, address encoding).',
+              '  Changing any of these re-derives different addresses for all existing wallets.',
+              '',
+              "Do NOT trust the PR description's framing.",
+              "'Just a security fix' / 'stricter validation' is exactly the framing that hides this class of bug.",
+              'Read docs/bc-footguns.md first.',
+              '',
+              'Walk these 5 steps. Cite file:line and commit SHA everywhere:',
+              '',
+              '1. Classify: tightening validation? Parsing change? Exception type change?',
+              "   Removing 'if missing use default'? Moving validation into a constructor?",
+              '2. Historical baseline. For each tightened rule:',
+              '   - Could a prior version have PRODUCED data that violates the new rule? (cite SHA)',
+              '   - Was there a partial migration that may not have completed for all users?',
+              '   - Does the format ever leave the device (backup, export, sync)?',
+              '3. Concrete failure scenarios: old version -> action -> where stored -> code path',
+              '   (file:line) -> user symptom -> blast radius. No hand-waving.',
+              '4. Red-flag checklist (yes/no + file:line evidence):',
+              '   - New throw on a read/load/decode/import path?',
+              "   - Removed an 'if missing use default' branch?",
+              '   - New length/range/enum check on a >1-year-old field?',
+              '   - Constructor changed from lenient parse to parse+validate?',
+              '   - Changed which exception type a public API throws?',
+              '   - Format ever in backup/export/sync?',
+              "   - Prior PR shipped a 'regenerate on next user action' partial migration? (cite SHA)",
+              '   - Proto: field number reused or removed? Enum value renumbered/removed?',
+              '   - Keystore: JSON key renamed/removed/made required without default fallback?',
+              '   - Registry: slip44, curve, or address-encoding field changed?',
+              '5. Mitigations: accept legacy at read + normalize on write (preferred);',
+              "   gate strict check behind 'newly created' flag; one-time migration with clear UX;",
+              '   or apply tightening to write paths only.',
+              '',
+              'Output a markdown report: Verdict (SAFE/RISK/BLOCKER) at top, then steps 1-5,',
+              "then a 'Suggested PR comment' block ([bc-check: Pass|Mitigated|N/A] + reasoning),",
+              "then a 'Suggested addition to docs/bc-footguns.md' block (or 'none').",
+              '```',
+            ];
+            const prompt = promptLines.join('\n');
+
+            const body = [
+              marker,
+              '⚠️ **Backward-compatibility check needed**',
+              '',
+              `This PR touches persistence-sensitive files: ${changedFiles.map(f => `\`${f}\``).join(', ')}.`,
+              '',
+              'Post a comment with one of:',
+              '- `[bc-check: Pass]` — audit run, **Verdict: SAFE**. Must include audit output.',
+              '- `[bc-check: Mitigated]` — audit found RISK or BLOCKER; **you fixed it in code**. Must include the post-fix audit output.',
+              '- `[bc-check: Risk-Accepted]` — audit found RISK or BLOCKER; **investigation confirms blast radius is effectively zero** (no user data in the wild can trigger it). Must include audit output + explicit evidence (who confirmed it, what data or reasoning).',
+              "- `[bc-check: N/A]` — scanner fired on a file with **zero BC relevance** (comment edit, test fixture, renamed variable). **Invalid if the audit found a real risk.**",
+              '',
+              'Each token must be accompanied by >=${{ env.BC_SIGNOFF_MIN_CHARS }} chars of reasoning. The reasoning must be fresh — posted or edited at or after the HEAD commit.',
+              '',
+              "**Why audit evidence is required for Pass / Mitigated:** humans don't reliably ask the right BC question on every PR. AI being in the loop is the whole point of this gate. The bot does not judge whether your reasoning is *correct* — reviewers do, like any other code review.",
+              '',
+              `Things worth thinking about: could a previous version have written data this PR's new check would now reject? Was there a partial migration ("regenerate on next user action") that may not have completed for all users? Does this format live in iCloud / Google Drive backup, exported files, or sync payloads? See \`docs/bc-footguns.md\` for known cases.`,
+              '',
+              `<details><summary>Changed files (${changedFiles.length})</summary>\n\n${changedFiles.map(f => `- \`${f}\``).join('\n')}\n\n</details>`,
+              '',
+              '<details><summary>Copy this audit prompt into Claude Code on this branch (or run the <code>/bc-check</code> skill) for a structured analysis you can paste into your sign-off</summary>',
+              '',
+              prompt,
+              '',
+              '</details>',
+              '',
+              'Merge is blocked by `verify-bc-check-comment` until a tagged comment is posted.',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
+
+  verify-bc-check-comment:
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Verify sign-off token
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let prNumber, pr;
+            if (context.payload.pull_request) {
+              pr = context.payload.pull_request;
+              prNumber = pr.number;
+            } else if (context.payload.issue && context.payload.issue.pull_request) {
+              prNumber = context.payload.issue.number;
+              const { data } = await github.rest.pulls.get({
+                owner: context.repo.owner, repo: context.repo.repo, pull_number: prNumber
+              });
+              pr = data;
+            } else {
+              core.info('Not a PR-related event; skipping.');
+              return;
+            }
+
+            if (pr.draft) {
+              core.info('PR is a draft; skipping.');
+              return;
+            }
+            if (!['master', 'dev'].includes(pr.base.ref)) {
+              core.info(`PR targets '${pr.base.ref}'; BC gate only applies to master and dev. Skipping.`);
+              return;
+            }
+
+            // Fetch comments early — needed for both the reminder-gate check and sign-off search.
+            const { data: comments } = await github.rest.issues.listComments({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+
+            // Gate on the reminder comment's presence. This job runs independently of
+            // scan-and-flag (no `needs` dependency) so that it fires on every
+            // issue_comment event. The cascade that enforces the gate on PR open is:
+            // scan-and-flag posts the reminder → that triggers an issue_comment event
+            // → this job runs, finds the reminder, and fails until a sign-off exists.
+            const reminderMarker = '<!-- bc-risk-router:reminder -->';
+            const hasReminder = comments.some(c => c.body.includes(reminderMarker));
+            if (!hasReminder) {
+              core.info('No BC-risk reminder posted; nothing to verify.');
+              return;
+            }
+
+            // Sign-off must be at least as recent as the HEAD commit, otherwise
+            // it was made against a stale diff (e.g. before a fix push or before
+            // additional changes requested by a reviewer).
+            const { data: headCommit } = await github.rest.repos.getCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: pr.head.sha,
+            });
+            const headCommitTime = new Date(headCommit.commit.committer.date);
+
+            const minChars = parseInt(process.env.BC_SIGNOFF_MIN_CHARS || '60', 10);
+            const tokenRegex = /\[bc-check:\s*(Pass|Mitigated|Risk-Accepted|N\/A)\]/i;
+            // Pass, Mitigated, and Risk-Accepted all require audit output.
+            // N/A does not, but is invalid when the audit contains a real risk verdict.
+            const auditEvidenceRegex = /(^|\n)#\s*BC-risk audit\b|(^|\n)\s*Verdict\s*:/i;
+            const riskVerdictRegex = /Verdict\s*[:\-]\s*(RISK|BLOCKER)\b/i;
+
+            const signoff = comments.find(c => {
+              const tokenMatch = c.body.match(tokenRegex);
+              if (!tokenMatch) return false;
+              const stripped = c.body.replace(tokenRegex, '').replace(/<!--[\s\S]*?-->/g, '').trim();
+              if (stripped.length < minChars) return false;
+              const verdict = tokenMatch[1].toLowerCase();
+              // All tokens except N/A require audit evidence.
+              if (verdict !== 'n/a' && !auditEvidenceRegex.test(c.body)) return false;
+              // N/A is invalid when the comment's own audit shows a real risk.
+              if (verdict === 'n/a' && riskVerdictRegex.test(c.body)) return false;
+              // updated_at lets the author edit an existing comment after pushing
+              // a fix instead of posting a brand-new one.
+              const commentTime = new Date(c.updated_at);
+              return commentTime >= headCommitTime;
+            });
+
+            if (!signoff) {
+              core.setFailed(
+                'No fresh, evidence-backed sign-off found. Required:\n' +
+                '  * Token: `[bc-check: Pass|Mitigated|Risk-Accepted|N/A]`\n' +
+                `  * Token + reasoning >= ${minChars} chars.\n` +
+                '  * Posted or edited at or after the HEAD commit.\n' +
+                '  * Pass / Mitigated / Risk-Accepted: must include audit output (a `# BC-risk audit ...` header or a `Verdict:` line).\n' +
+                '  * Risk-Accepted: must also include explicit evidence that blast radius is effectively zero.\n' +
+                "  * N/A is only valid when the change has zero BC relevance; rejected if the audit shows a RISK or BLOCKER verdict.\n" +
+                'If you pushed new commits after a previous sign-off, edit the existing comment (any edit counts as a refresh) so it reflects the current diff.'
+              );
+              return;
+            }
+            core.info(`Found fresh sign-off by @${signoff.user.login} at ${signoff.updated_at}.`);

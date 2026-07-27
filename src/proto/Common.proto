@@ -71,4 +71,7 @@ enum SigningError {
     Error_not_supported = 24;
     // Requested amount is too low (less dust).
     Error_dust_amount_requested = 25;
+    // The transaction hash does not match the hash derived from the raw transaction data.
+    // This can indicate a tampered or malformed transaction input.
+    Error_tx_hash_mismatch = 26;
 }

@@ -16,6 +16,7 @@ TEST(TWCrescentCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0C46F4B65706FB5A1FB3A7C32543CF7836DA33EB88295573F66F1886A264E852"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ TEST(TWCrescentCoinType, TWCoinType) {
 
     assertStringsEqual(id, "crescent");
     assertStringsEqual(name, "Crescent");
+    assertStringsEqual(nativeTokenName, "Crescent");
     assertStringsEqual(symbol, "CRE");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 6);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);

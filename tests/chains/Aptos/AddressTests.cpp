@@ -22,19 +22,20 @@ TEST(AptosAddress, Valid) {
     ASSERT_TRUE(entry.validateAddress(TWCoinTypeAptos, "0x1", std::monostate{}));
     ASSERT_TRUE(entry.validateAddress(TWCoinTypeAptos, "0x0", std::monostate{}));
     ASSERT_TRUE(entry.validateAddress(TWCoinTypeAptos, "0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b", std::monostate{}));
-    ASSERT_TRUE(entry.validateAddress(TWCoinTypeAptos, "eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b", std::monostate{}));
-    ASSERT_TRUE(entry.validateAddress(TWCoinTypeAptos, "19aadeca9388e009d136245b9a67423f3eee242b03142849eb4f81a4a409e59c", std::monostate{}));
-    ASSERT_TRUE(entry.validateAddress(TWCoinTypeAptos, "0x777821c78442e17d82c3d7a371f42de7189e4248e529fe6eee6bca40ddbb", std::monostate{}));
-    ASSERT_TRUE(entry.validateAddress(TWCoinTypeAptos, "0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175", std::monostate{}));
+    ASSERT_TRUE(entry.validateAddress(TWCoinTypeAptos, "0x19aadeca9388e009d136245b9a67423f3eee242b03142849eb4f81a4a409e59c", std::monostate{}));
+    ASSERT_TRUE(entry.validateAddress(TWCoinTypeAptos, "0x0000777821c78442e17d82c3d7a371f42de7189e4248e529fe6eee6bca40ddbb", std::monostate{}));
 }
 
 TEST(AptosAddress, Invalid) {
     Entry entry;
     ASSERT_FALSE(entry.validateAddress(TWCoinTypeAptos, "", std::monostate{}));
+    ASSERT_FALSE(entry.validateAddress(TWCoinTypeAptos, "0x01", std::monostate{}));
     ASSERT_FALSE(entry.validateAddress(TWCoinTypeAptos, "Seff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b", std::monostate{}));
     ASSERT_FALSE(entry.validateAddress(TWCoinTypeAptos, "eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175bb", std::monostate{}));
     ASSERT_FALSE(entry.validateAddress(TWCoinTypeAptos, "0xSeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b", std::monostate{}));
-
+    ASSERT_FALSE(entry.validateAddress(TWCoinTypeAptos, "eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b", std::monostate{}));
+    ASSERT_FALSE(entry.validateAddress(TWCoinTypeAptos, "0x777821c78442e17d82c3d7a371f42de7189e4248e529fe6eee6bca40ddbb", std::monostate{}));
+    ASSERT_FALSE(entry.validateAddress(TWCoinTypeAptos, "0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175", std::monostate{}));
 }
 
 TEST(AptosAddress, FromPrivateKey) {

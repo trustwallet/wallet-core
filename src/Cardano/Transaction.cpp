@@ -374,12 +374,16 @@ Data Transaction::encode() const {
     if (!withdrawals.empty()) {
         mapElems.emplace(Cbor::Encode::uint(5), cborizeWithdrawals(withdrawals));
     }
+    if (!auxiliaryDataHash.empty()) {
+        // Key 7 is auxiliary_data_hash in the Cardano transaction_body (Shelley ledger CDDL).
+        mapElems.emplace(Cbor::Encode::uint(7), Cbor::Encode::bytes(auxiliaryDataHash));
+    }
 
     Cbor::Encode encode = Cbor::Encode::map(mapElems);
     return encode.encoded();
 
     // Note: following fields are not included:
-    // 7 AUXILIARY_DATA_HASH, 8 VALIDITY_INTERVAL_START
+    // 8 VALIDITY_INTERVAL_START
 }
 
 Data Transaction::getId() const {

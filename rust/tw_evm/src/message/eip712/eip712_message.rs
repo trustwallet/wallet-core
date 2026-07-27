@@ -321,7 +321,7 @@ mod encode_custom_type {
                         &field.property_type
                     };
                     // Seen this type before? or not a custom type - skip
-                    if !deps.contains(field_type) || custom_types.contains_key(field_type) {
+                    if !deps.contains(field_type) && custom_types.contains_key(field_type) {
                         types_stack.push(field_type);
                     }
                 }
@@ -340,6 +340,8 @@ mod tests {
 
     #[test]
     fn test_build_dependencies() {
+        // This custom types definition has an intentional cycle dependency between `Person` and `Mail`
+        // to test if the `build_dependencies` function can handle it without getting into an infinite loop.
         let custom_types = r#"{
 			"EIP712Domain": [
 				{ "name": "name", "type": "string" },
@@ -349,7 +351,8 @@ mod tests {
 			],
 			"Person": [
 				{ "name": "name", "type": "string" },
-				{ "name": "wallet", "type": "address" }
+				{ "name": "wallet", "type": "address" },
+				{ "name": "mail", "type": "Mail" }
 			],
 			"Mail": [
 				{ "name": "from", "type": "Person" },
@@ -398,6 +401,34 @@ mod tests {
         let custom_types: CustomTypes = serde_json::from_str(custom_types).expect("alas error!");
         assert_eq!(
             "Mail(Person from,Person to,string contents)Person(string name,address wallet)",
+            encode_custom_type::encode_type(&custom_types, "Mail").expect("alas error!")
+        )
+    }
+
+    #[test]
+    fn test_encode_type_cyclic_dependency() {
+        let custom_types = r#"{
+			"EIP712Domain": [
+				{ "name": "name", "type": "string" },
+				{ "name": "version", "type": "string" },
+				{ "name": "chainId", "type": "uint256" },
+				{ "name": "verifyingContract", "type": "address" }
+			],
+			"Person": [
+				{ "name": "name", "type": "string" },
+				{ "name": "wallet", "type": "address" },
+				{ "name": "mail", "type": "Mail" }
+			],
+			"Mail": [
+				{ "name": "from", "type": "Person" },
+				{ "name": "to", "type": "Person" },
+				{ "name": "contents", "type": "string" }
+			]
+		}"#;
+
+        let custom_types: CustomTypes = serde_json::from_str(custom_types).expect("alas error!");
+        assert_eq!(
+            "Mail(Person from,Person to,string contents)Person(string name,address wallet,Mail mail)",
             encode_custom_type::encode_type(&custom_types, "Mail").expect("alas error!")
         )
     }

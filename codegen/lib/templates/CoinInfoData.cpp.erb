@@ -16,6 +16,7 @@ using namespace TW;
 static const CoinInfo defaultsForMissing = {
     "?",
     "?",
+    "?",
     TWBlockchainBitcoin,
     TWPurposeBIP44,
     TWCurveNone,
@@ -46,6 +47,7 @@ const CoinInfo getCoinInfo(TWCoinType coin) {
             return CoinInfo {
                 "<%= coin['id'] %>",
                 "<%= coin_name(coin) %>",
+                "<%= native_token_name(coin) %>",
                 TWBlockchain<%= format_name(coin['blockchain']) %>,
                 TWPurposeBIP<%= /^m\/(\d+)'?(\/\d+'?)+$/.match(derivation_path(coin))[1] %>,
                 TWCurve<%= format_name(coin['curve']) %>,

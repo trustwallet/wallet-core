@@ -19,6 +19,7 @@ TEST(TWECashCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeECash, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeECash));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeECash));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeECash));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeECash), 2);
     ASSERT_EQ(TWBlockchainBitcoinCash, TWCoinTypeBlockchain(TWCoinTypeECash));
@@ -29,4 +30,5 @@ TEST(TWECashCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.bitcoinabc.org/address/ecash:pqnqv9lt7e5vjyp0w88zf2af0l92l8rxdg2jj94l5j");
     assertStringsEqual(id, "ecash");
     assertStringsEqual(name, "eCash");
+    assertStringsEqual(nativeTokenName, "eCash");
 }

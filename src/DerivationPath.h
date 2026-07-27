@@ -14,6 +14,8 @@
 
 namespace TW {
 
+static constexpr uint32_t HardenedOffset = 0x80000000u;
+
 struct DerivationPathIndex {
     uint32_t value = 0;
     bool hardened = true;
@@ -25,7 +27,7 @@ struct DerivationPathIndex {
     /// The derivation index.
     uint32_t derivationIndex() const {
         if (hardened) {
-            return value | 0x80000000;
+            return value | HardenedOffset;
         } else {
             return value;
         }

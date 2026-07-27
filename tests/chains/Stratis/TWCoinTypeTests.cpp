@@ -16,6 +16,7 @@ TEST(TWStratisCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("3923df87e83859dec8b87a414cbb1529113788c512a4d0c283e1394c274f0bfb"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("XWqnSWzQA5kDAS727UTYtXkdcbKc8mEvyN"));
@@ -23,6 +24,7 @@ TEST(TWStratisCoinType, TWCoinType) {
 
     assertStringsEqual(id, "stratis");
     assertStringsEqual(name, "Stratis");
+    assertStringsEqual(nativeTokenName, "Stratis");
     assertStringsEqual(symbol, "STRAX");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 8);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainBitcoin);

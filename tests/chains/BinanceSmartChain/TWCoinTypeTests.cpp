@@ -19,6 +19,7 @@ TEST(TWBinanceSmartChainCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeSmartChain, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSmartChain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSmartChain));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeSmartChain));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSmartChain), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeSmartChain));
@@ -30,13 +31,16 @@ TEST(TWBinanceSmartChainCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://bscscan.com/address/0x35552c16704d214347f29Fa77f77DA6d75d7C752");
     assertStringsEqual(id, "smartchain");
     assertStringsEqual(name, "BNB Smart Chain");
+    assertStringsEqual(nativeTokenName, "BNB");
 }
 
 TEST(TWBinanceSmartChainLegacyCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSmartChainLegacy));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSmartChainLegacy));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeSmartChainLegacy));
 
     ASSERT_EQ(10000714, TWCoinTypeSmartChainLegacy);
     assertStringsEqual(id, "bsc");
     assertStringsEqual(name, "Smart Chain Legacy");
+    assertStringsEqual(nativeTokenName, "BNB");
 }

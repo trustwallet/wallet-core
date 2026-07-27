@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Aeternity.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // Address of the sender with "ak_" prefix
@@ -37,4 +39,10 @@ message SigningOutput {
 
     // Signature, Base58 with checksum
     string signature = 2;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error description
+    string error_message = 4;
 }

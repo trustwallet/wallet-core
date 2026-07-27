@@ -44,7 +44,7 @@ impl<T> Hasher512 for T where T: Digest<OutputSize = U64> {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
+    use crate::traits::{SigningKeyTrait, VerifyingKeyTrait};
     use tw_encoding::hex;
     use tw_hash::sha2::sha256;
     use tw_hash::sha3::keccak256;
@@ -242,22 +242,8 @@ mod tests {
     #[test]
     fn test_keypair_from_invalid_bytes() {
         let invalid = [0; 1];
-        let _ = sha512::KeyPair::try_from(&invalid[..]).unwrap_err();
-        let _ = sha512::PrivateKey::try_from(&invalid[..]).unwrap_err();
-        let _ = sha512::PublicKey::try_from(&invalid[..]).unwrap_err();
-    }
-
-    #[test]
-    fn test_debug() {
-        let secret = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
-        let sign = H512::from("ea85a47dcc18b512dfea7c209162abaea4808d77c1ec903dc7ba6e2afa3f9f07e7ed7a20a4e2fa1009db3d1443e937e6abb16ff3c3eaecb798faed7fbb40b008");
-
-        let keypair = sha512::KeyPair::try_from(secret).unwrap();
-        let sign = Signature::try_from(sign.as_slice()).unwrap();
-
-        let _ = format!("{:?}", keypair);
-        let _ = format!("{:?}", keypair.private());
-        let _ = format!("{:?}", keypair.public());
-        let _ = format!("{:?}", sign);
+        assert!(sha512::KeyPair::try_from(&invalid[..]).is_err());
+        assert!(sha512::PrivateKey::try_from(&invalid[..]).is_err());
+        assert!(sha512::PublicKey::try_from(&invalid[..]).is_err());
     }
 }

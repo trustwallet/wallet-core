@@ -12,6 +12,11 @@ use tw_proto::Ripple::Proto::mod_SigningInput::OneOfoperation_oneof as Operation
 
 const SELL_NFTOKEN_FLAG: u64 = 0x00000001;
 
+// X-address test vectors — all derived from the same key hash:
+const X_ADDR_TAG_12345: &str = "X76UnYEMbQfEs3mUqgtjp4zFy9exgThRj7XVZ6UxsdrBptF";
+const X_ADDR_NO_TAG: &str = "X76UnYEMbQfEs3mUqgtjp4zFy9exgSxWAqcQwu9z2r5d7Tm";
+const CLASSIC_ADDR: &str = "rnBFvgZphmN39GWzUJeUitaP22Fr9be75H";
+
 #[test]
 fn test_ripple_sign_xrp_payment_0() {
     let private_key = "a5576c0f63da10e584568c8d134569ff44017b0a249eb70657127ae04f38cc77"
@@ -797,4 +802,118 @@ fn test_ripple_sign_raw_json() {
 
     // https://devnet.xrpl.org/transactions/D93B0B6983134BC6C2880B27708E8C1E932CB9E6D9E78773AD31B797741944FF
     assert_eq!(output.encoded.to_hex(), "1200002405995011201b059b290f6140000000000186a068400000000000000a732103df650aab92e1b0a95cbda6a5a0fc3bfdbe991901e5b1cdfcd238b769cb4934a7744730450221008a5dba92a63fa82987a9ec3035febd1d5fe802f9a1baf3760090bb117281684e022056e4feca51231f719ca16cbfe370d312704e2cd7b94a28548f7f7886141d8bb28114023c2b9f15b95198d270b1bf92a4700c40272ca48314e1b799e72e5785c6a84af0f9c01424d4256b14aff9ea7dc1287b2266726f6d546f6b656e223a22307865656565656565656565656565656565656565656565656565656565656565656565656565656565222c22746f546f6b656e223a225452587c783561763039222c2273656e646572223a2272554653613244324a59476e354169525a6951785375705a7856354b6348454347222c2264657374696e6174696f6e223a22544255437a6763323976796b6b7646614547326d675274784b76614b6536736b7758222c226d696e52657475726e416d6f756e74223a2231333239353831303030303030222c2266726f6d416d6f756e74223a22313030303030227de1f1");
+}
+
+// ── Proto-path X-address DestinationTag resolution ──────────────────────────
+
+fn x_addr_payment_input(
+    private_key: Vec<u8>,
+    destination: &str,
+    destination_tag: u64,
+) -> Proto::SigningInput<'static> {
+    let payment = Proto::OperationPayment {
+        amount_oneof: AmountType::amount(10),
+        destination: destination.to_string().into(),
+        destination_tag,
+        ..Proto::OperationPayment::default()
+    };
+    Proto::SigningInput {
+        fee: 10,
+        sequence: 32_268_248,
+        last_ledger_sequence: 32_268_269,
+        account: "rfxdLwsZnoespnTDDb1Xhvbc8EFNdztaoq".into(),
+        private_key: private_key.into(),
+        operation_oneof: OperationType::op_payment(payment),
+        ..Proto::SigningInput::default()
+    }
+}
+
+fn sign_payment_hex(
+    key: Vec<u8>,
+    destination: &str,
+    destination_tag: u64,
+) -> (SigningError, String) {
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let out = signer.sign(
+        CoinType::XRP,
+        x_addr_payment_input(key, destination, destination_tag),
+    );
+    (out.error, out.encoded.to_hex())
+}
+
+/// Tagged X-address Destination with no explicit proto tag: the embedded tag must be
+/// extracted and used, producing the same signed bytes as classic address + tag=12345.
+#[test]
+fn test_ripple_sign_payment_x_addr_tagged_injects_destination_tag() {
+    let key = "a5576c0f63da10e584568c8d134569ff44017b0a249eb70657127ae04f38cc77"
+        .decode_hex()
+        .unwrap();
+
+    let (x_err, x_hex) = sign_payment_hex(key.clone(), X_ADDR_TAG_12345, 0);
+    assert_eq!(x_err, SigningError::OK);
+
+    let (classic_err, classic_hex) = sign_payment_hex(key, CLASSIC_ADDR, 12345);
+    assert_eq!(classic_err, SigningError::OK);
+
+    assert_eq!(
+        x_hex, classic_hex,
+        "X-address with tag=12345 must produce the same transaction as classic + explicit tag"
+    );
+}
+
+/// No-tag X-address Destination must not inject DestinationTag — same signed bytes as
+/// classic address with no tag. Also verified not to equal the with-tag reference.
+#[test]
+fn test_ripple_sign_payment_x_addr_no_tag_omits_destination_tag() {
+    let key = "a5576c0f63da10e584568c8d134569ff44017b0a249eb70657127ae04f38cc77"
+        .decode_hex()
+        .unwrap();
+
+    let (x_err, x_hex) = sign_payment_hex(key.clone(), X_ADDR_NO_TAG, 0);
+    assert_eq!(x_err, SigningError::OK);
+
+    let (no_tag_err, no_tag_hex) = sign_payment_hex(key.clone(), CLASSIC_ADDR, 0);
+    assert_eq!(no_tag_err, SigningError::OK);
+
+    let (with_tag_err, with_tag_hex) = sign_payment_hex(key, CLASSIC_ADDR, 1);
+    assert_eq!(with_tag_err, SigningError::OK);
+
+    assert_eq!(
+        x_hex, no_tag_hex,
+        "No-tag X-address must produce the same transaction as classic (no tag)"
+    );
+    assert_ne!(
+        x_hex, with_tag_hex,
+        "sanity: adding DestinationTag changes the encoding"
+    );
+}
+
+/// Tagged X-address Destination with a matching explicit proto tag must succeed.
+#[test]
+fn test_ripple_sign_payment_x_addr_matching_explicit_tag_ok() {
+    let key = "a5576c0f63da10e584568c8d134569ff44017b0a249eb70657127ae04f38cc77"
+        .decode_hex()
+        .unwrap();
+    let (err, _) = sign_payment_hex(key, X_ADDR_TAG_12345, 12345);
+    assert_eq!(err, SigningError::OK);
+}
+
+/// Tagged X-address Destination with a conflicting explicit proto tag must fail.
+#[test]
+fn test_ripple_sign_payment_x_addr_conflicting_explicit_tag_fails() {
+    let key = "a5576c0f63da10e584568c8d134569ff44017b0a249eb70657127ae04f38cc77"
+        .decode_hex()
+        .unwrap();
+    let (err, _) = sign_payment_hex(key, X_ADDR_TAG_12345, 99999);
+    assert_eq!(err, SigningError::Error_invalid_params);
+}
+
+/// No-tag X-address Destination with any explicit proto tag must fail.
+#[test]
+fn test_ripple_sign_payment_x_addr_no_tag_with_explicit_tag_fails() {
+    let key = "a5576c0f63da10e584568c8d134569ff44017b0a249eb70657127ae04f38cc77"
+        .decode_hex()
+        .unwrap();
+    let (err, _) = sign_payment_hex(key, X_ADDR_NO_TAG, 42);
+    assert_eq!(err, SigningError::Error_invalid_params);
 }

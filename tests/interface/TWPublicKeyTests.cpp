@@ -91,6 +91,19 @@ TEST(TWPublicKeyTests, VerifyInvalidLength) {
     ASSERT_FALSE(TWPublicKeyVerify(publicKey.get(), signature.get(), message.get()));
 }
 
+TEST(TWPublicKeyTests, VerifyInvalidMessageLength) {
+    const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveSECP256k1);
+    const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
+
+    // Invalid message length - 31 bytes instead of 32
+    const auto invalidMessage = DATA("de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb114");
+    // Valid 64-byte signature
+    const auto signature = DATA("00000000000000000000000000000000000000000000000000000000000000020123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef80");
+
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false));
+    ASSERT_FALSE(TWPublicKeyVerify(publicKey.get(), signature.get(), invalidMessage.get()));
+}
+
 TEST(TWPublicKeyTests, VerifyAsDER) {
     const PrivateKey key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveSECP256k1);
     const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
@@ -106,6 +119,19 @@ TEST(TWPublicKeyTests, VerifyAsDER) {
     ASSERT_TRUE(TWPublicKeyVerifyAsDER(publicKey.get(), signature.get(), digest.get()));
 
     ASSERT_FALSE(TWPublicKeyVerify(publicKey.get(), signature.get(), digest.get()));
+}
+
+TEST(TWPublicKeyTests, VerifyAsDERInvalidMessageLength) {
+    const PrivateKey key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"), TWCurveSECP256k1);
+    const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
+
+    // Invalid message length - 31 bytes instead of 32
+    const auto invalidMessage = DATA("de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb114");
+    // Valid 64-byte signature
+    const auto signature = DATA("00000000000000000000000000000000000000000000000000000000000000020123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef80");
+
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false));
+    ASSERT_FALSE(TWPublicKeyVerifyAsDER(publicKey.get(), signature.get(), invalidMessage.get()));
 }
 
 TEST(TWPublicKeyTests, VerifyEd25519) {

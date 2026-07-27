@@ -244,7 +244,7 @@ class EthereumTests: XCTestCase {
 
         XCTAssertEqual(xpub, "xpub6C7LtZJgtz1BKXG9mExKUxYvX7HSF38UMMmGbpqNQw3DfYwAw8E6sH7VSVxFipvEEm2afSqTjoRgcLmycXX4zfxCWJ4HY73a9KdgvfHEQGB")
 
-        let key = wallet.getKey(coin: .ethereum, derivationPath: path)
+        let key = try XCTUnwrap(wallet.getKey(coin: .ethereum, derivationPath: path))
         let pubkey = key.getPublicKeySecp256k1(compressed: true)
         XCTAssertEqual(pubkey.data.hexString, "024516c4aa5352035e1bb5be132694e1389a4ac37d32e5e717d35ee4c4dfab5132")
 

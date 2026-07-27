@@ -751,6 +751,149 @@ fn test_get_formatted_signature() {
     assert_eq!(hex::encode(formatted_signature, true), "0x12d89e3b41e253dc9e90bd34dc1750d059b76d0b1d16af2059aa26e90b8960bf256d8a05572c654906ce422464693e280e243e6d9dbc5f96a681dba846bca27600000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000000251a70842af8c1feb7133b81e6a160a6a2be45ee057f0eb6d3f7f5126daa202e071d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000247b2274797065223a22776562617574686e2e676574222c226368616c6c656e6765223a22000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000025222c226f726967696e223a2268747470733a2f2f747275737477616c6c65742e636f6d227d000000000000000000000000000000000000000000000000000000");
 }
 
+// The challenge used in the security tests below.
+// base64url (no padding): zyZ6eMWtr5bzQaaW61doJChMVy8-Yb5hlpTVOdsZJfk
+const CHALLENGE_HEX: &str = "cf267a78c5adaf96f341a696eb576824284c572f3e61be619694d539db1925f9";
+const SIGNATURE_HEX: &str =
+    "3044022012d89e3b41e253dc9e90bd34dc1750d059b76d0b1d16af2059aa26e90b8960bf0220256d8a05572c654906ce422464693e280e243e6d9dbc5f96a681dba846bca276";
+const AUTHENTICATOR_DATA_HEX: &str =
+    "1a70842af8c1feb7133b81e6a160a6a2be45ee057f0eb6d3f7f5126daa202e071d00000000";
+
+/// An assertion signed over a longer challenge whose base64url starts with
+/// the target UserOp hash must be rejected (prefix attack).
+#[test]
+fn test_get_formatted_signature_rejects_challenge_prefix() {
+    let signature = hex::decode(SIGNATURE_HEX).unwrap();
+    let challenge = hex::decode(CHALLENGE_HEX).unwrap();
+    let authenticator_data = hex::decode(AUTHENTICATOR_DATA_HEX).unwrap();
+
+    // "challenge" field contains the correct base64url plus extra suffix characters.
+    let client_data_json = "{\"type\":\"webauthn.get\",\"challenge\":\"zyZ6eMWtr5bzQaaW61doJChMVy8-Yb5hlpTVOdsZJfkEXTRA\",\"origin\":\"https://trustwallet.com\"}";
+
+    let result = get_formatted_signature(
+        &signature,
+        &challenge,
+        &authenticator_data,
+        client_data_json,
+    )
+    .unwrap();
+    assert!(
+        result.is_empty(),
+        "should reject clientDataJSON whose challenge is a longer value sharing the same prefix"
+    );
+}
+
+/// The challenge value appearing inside a different JSON field must not be
+/// used as the split point — the split must always land in the "challenge" field.
+#[test]
+fn test_get_formatted_signature_rejects_challenge_in_wrong_field() {
+    let signature = hex::decode(SIGNATURE_HEX).unwrap();
+    let challenge = hex::decode(CHALLENGE_HEX).unwrap();
+    let authenticator_data = hex::decode(AUTHENTICATOR_DATA_HEX).unwrap();
+
+    // "note" field contains the exact challenge base64url; "challenge" field has a different value.
+    let client_data_json = "{\"note\":\"zyZ6eMWtr5bzQaaW61doJChMVy8-Yb5hlpTVOdsZJfk\",\"challenge\":\"other\",\"origin\":\"https://trustwallet.com\"}";
+
+    let result = get_formatted_signature(
+        &signature,
+        &challenge,
+        &authenticator_data,
+        client_data_json,
+    )
+    .unwrap();
+    assert!(
+        result.is_empty(),
+        "should reject clientDataJSON where the challenge value appears in the wrong field"
+    );
+}
+
+/// JSON with duplicate "challenge" keys must be rejected to prevent split-point ambiguity.
+#[test]
+fn test_get_formatted_signature_rejects_duplicate_challenge_key() {
+    let signature = hex::decode(SIGNATURE_HEX).unwrap();
+    let challenge = hex::decode(CHALLENGE_HEX).unwrap();
+    let authenticator_data = hex::decode(AUTHENTICATOR_DATA_HEX).unwrap();
+
+    // Both "challenge" fields carry the correct value — the key pattern appears twice.
+    let client_data_json = "{\"challenge\":\"zyZ6eMWtr5bzQaaW61doJChMVy8-Yb5hlpTVOdsZJfk\",\"challenge\":\"zyZ6eMWtr5bzQaaW61doJChMVy8-Yb5hlpTVOdsZJfk\",\"origin\":\"https://trustwallet.com\"}";
+
+    let result = get_formatted_signature(
+        &signature,
+        &challenge,
+        &authenticator_data,
+        client_data_json,
+    )
+    .unwrap();
+    assert!(
+        result.is_empty(),
+        "should reject clientDataJSON with duplicate challenge keys"
+    );
+}
+
+/// Invalid JSON must be rejected.
+#[test]
+fn test_get_formatted_signature_rejects_invalid_json() {
+    let signature = hex::decode(SIGNATURE_HEX).unwrap();
+    let challenge = hex::decode(CHALLENGE_HEX).unwrap();
+    let authenticator_data = hex::decode(AUTHENTICATOR_DATA_HEX).unwrap();
+
+    let result = get_formatted_signature(
+        &signature,
+        &challenge,
+        &authenticator_data,
+        "not json at all",
+    )
+    .unwrap();
+    assert!(result.is_empty(), "should reject malformed JSON");
+}
+
+/// JSON missing the "challenge" field must be rejected.
+#[test]
+fn test_get_formatted_signature_rejects_missing_challenge_field() {
+    let signature = hex::decode(SIGNATURE_HEX).unwrap();
+    let challenge = hex::decode(CHALLENGE_HEX).unwrap();
+    let authenticator_data = hex::decode(AUTHENTICATOR_DATA_HEX).unwrap();
+
+    let client_data_json = "{\"type\":\"webauthn.get\",\"origin\":\"https://trustwallet.com\"}";
+
+    let result = get_formatted_signature(
+        &signature,
+        &challenge,
+        &authenticator_data,
+        client_data_json,
+    )
+    .unwrap();
+    assert!(
+        result.is_empty(),
+        "should reject JSON without a challenge field"
+    );
+}
+
+/// JSON with whitespace between the key and colon (\"challenge\" : \"...\") must be
+/// rejected — consistent with the strictness applied in find_json_key_index.
+#[test]
+fn test_get_formatted_signature_rejects_spaced_json() {
+    let signature = hex::decode(SIGNATURE_HEX).unwrap();
+    let challenge = hex::decode(CHALLENGE_HEX).unwrap();
+    let authenticator_data = hex::decode(AUTHENTICATOR_DATA_HEX).unwrap();
+
+    // Space between key and colon — serde_json parses this fine, but the
+    // key pattern "challenge":" won't match, locking in the intended strictness.
+    let client_data_json = "{\"type\":\"webauthn.get\",\"challenge\" : \"zyZ6eMWtr5bzQaaW61doJChMVy8-Yb5hlpTVOdsZJfk\",\"origin\":\"https://trustwallet.com\"}";
+
+    let result = get_formatted_signature(
+        &signature,
+        &challenge,
+        &authenticator_data,
+        client_data_json,
+    )
+    .unwrap();
+    assert!(
+        result.is_empty(),
+        "should reject JSON with whitespace between key and colon (matches find_json_key_index strictness)"
+    );
+}
+
 #[test]
 fn test_get_prefixed_msg_hash() {
     let msg_hash =
@@ -854,4 +997,25 @@ fn test_get_diamond_cut_code_with_long_init_data() {
 
     let diamond_cut_code = get_diamond_cut_code(&input).unwrap();
     assert_eq!(hex::encode(diamond_cut_code, true), "0x1f931c1c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000002279b7a0a67db372996a5fab50d91eaa73d2ebe600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c4b61d27f6000000000000000000000000c2ce171d25837cd43e496719f5355a847edc679b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000024a526d83b00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b9060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+}
+
+#[test]
+fn test_get_diamond_cut_code_with_not_aligned_init_data() {
+    let input = DiamondCutInput {
+        init_address: "0x0000000000000000000000000000000000000000".into(),
+        // Init data length is 33 bytes, which is not aligned to 32 bytes, which must not lead to a subtraction overflow.
+        init_data: hex::decode(
+            "0x123456789012345678901234567890123456789012345678901234567890123456",
+        )
+        .unwrap()
+        .into(),
+        facet_cuts: vec![FacetCut {
+            facet_address: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6".into(),
+            action: FacetCutAction::ADD,
+            function_selectors: vec![],
+        }],
+    };
+
+    let diamond_cut_code = get_diamond_cut_code(&input).expect("Failed to get diamond cut code");
+    assert_eq!(hex::encode(diamond_cut_code, true), "0x1f931c1c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000002279b7a0a67db372996a5fab50d91eaa73d2ebe6000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002112345678901234567890123456789012345678901234567890123456789012345600000000000000000000000000000000000000000000000000000000000000");
 }

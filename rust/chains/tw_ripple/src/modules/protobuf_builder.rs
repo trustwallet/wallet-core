@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::classic_address::ClassicAddress;
+use crate::address::x_address::TagFlag;
 use crate::address::RippleAddress;
 use crate::transaction::common_fields::CommonFields;
 use crate::transaction::json_transaction::JsonTransaction;
@@ -146,15 +147,14 @@ impl<'a> ProtobufBuilder<'a> {
             },
         };
 
-        let destination = RippleAddress::from_str(payment.destination.as_ref())
+        let ripple_addr = RippleAddress::from_str(payment.destination.as_ref())
             .into_tw()
-            .context("Invalid 'Payment.destination' address")?
-            .to_classic_address()
-            .into_tw()
-            .context("Error converting 'Payment.destination' to a Classic address")?;
-        let destination_tag = payment
+            .context("Invalid 'Payment.destination' address")?;
+        let proto_tag = payment
             .destination_tag
             .try_into_u32_optional("destinationTag")?;
+        let (destination, destination_tag) = Self::resolve_destination(ripple_addr, proto_tag)
+            .context("Invalid 'Payment.destination'")?;
 
         self.prepare_builder()?
             .payment(amount, destination, destination_tag)
@@ -181,12 +181,14 @@ impl<'a> ProtobufBuilder<'a> {
         &self,
         escrow_create: &Proto::OperationEscrowCreate,
     ) -> SigningResult<TransactionType> {
-        let destination = RippleAddress::from_str(escrow_create.destination.as_ref())
+        let ripple_addr = RippleAddress::from_str(escrow_create.destination.as_ref())
             .into_tw()
-            .context("Invalid 'EscrowCreate.destination' address")?
-            .to_classic_address()
-            .into_tw()
-            .context("Error converting 'OperationEscrowCreate.destination' to a Classic address")?;
+            .context("Invalid 'EscrowCreate.destination' address")?;
+        let proto_tag = escrow_create
+            .destination_tag
+            .try_into_u32_optional("destinationTag")?;
+        let (destination, destination_tag) = Self::resolve_destination(ripple_addr, proto_tag)
+            .context("Invalid 'EscrowCreate.destination'")?;
 
         let condition = escrow_create
             .condition
@@ -202,9 +204,7 @@ impl<'a> ProtobufBuilder<'a> {
             .escrow_create(
                 native_amount,
                 destination,
-                escrow_create
-                    .destination_tag
-                    .try_into_u32_optional("destinationTag")?,
+                destination_tag,
                 escrow_create
                     .cancel_after
                     .try_into_u32_optional("cancelAfter")?,
@@ -340,6 +340,47 @@ impl<'a> ProtobufBuilder<'a> {
             builder.source_tag(self.input.source_tag.try_into_u32("sourceTag")?);
         }
         Ok(builder)
+    }
+
+    /// Converts a `RippleAddress` destination into a `(ClassicAddress, Option<DestinationTag>)` pair,
+    /// extracting and validating any tag embedded in an X-address against the explicit proto tag.
+    ///
+    /// Rules:
+    /// - Classic address: pass `proto_tag` through unchanged.
+    /// - X-address, TagFlag::Classic: use the embedded tag; reject if `proto_tag` is set to a different value.
+    /// - X-address, TagFlag::None: no tag; reject if `proto_tag` is set.
+    fn resolve_destination(
+        addr: RippleAddress,
+        proto_tag: Option<u32>,
+    ) -> SigningResult<(ClassicAddress, Option<u32>)> {
+        let x_addr = match addr {
+            RippleAddress::Classic(classic) => return Ok((classic, proto_tag)),
+            RippleAddress::X(x) => x,
+        };
+
+        let classic = x_addr
+            .to_classic()
+            .into_tw()
+            .context("Error converting X-address to Classic")?;
+
+        let x_tag = match x_addr.tag_flag() {
+            TagFlag::Classic => Some(x_addr.destination_tag()),
+            TagFlag::None => None,
+        };
+
+        match (x_tag, proto_tag) {
+            // X-address has a tag and proto agrees (or proto is unset): use X-address tag.
+            (Some(e), None) => Ok((classic, Some(e))),
+            (Some(e), Some(p)) if e == p => Ok((classic, Some(e))),
+            // Mismatch: both tags are set but differ.
+            (Some(_), Some(_)) => SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Explicit destination_tag conflicts with X-address embedded tag"),
+            // No-tag X-address with no explicit proto tag: correct.
+            (None, None) => Ok((classic, None)),
+            // No-tag X-address but an explicit tag was provided: reject.
+            (None, Some(_)) => SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Cannot specify destination_tag alongside a no-tag X-address"),
+        }
     }
 
     fn signing_public_key(&self) -> SigningResult<secp256k1::PublicKey> {

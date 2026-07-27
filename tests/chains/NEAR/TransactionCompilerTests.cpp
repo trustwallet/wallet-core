@@ -89,3 +89,60 @@ TEST(NEARCompiler, CompileWithSignatures) {
         EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
     }
 }
+
+TEST(NEARCompiler, PreImageHashes_InvalidBlockHash) {
+    const auto coin = TWCoinTypeNEAR;
+    auto input = TW::NEAR::Proto::SigningInput();
+    input.set_signer_id("test.near");
+    input.set_receiver_id("whatever.near");
+    input.set_nonce(1);
+    input.set_public_key(Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC").data(), 32);
+
+    Data deposit(16, 0);
+    deposit[0] = 1;
+    input.add_actions()->mutable_transfer()->set_deposit(deposit.data(), deposit.size());
+
+    // 31 bytes — one byte short of the required 32
+    auto shortHash = parse_hex("0fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2f");
+    input.set_block_hash(shortHash.data(), shortHash.size());
+
+    const auto inputString = input.SerializeAsString();
+    const auto inputStrData = TW::Data(inputString.begin(), inputString.end());
+
+    const auto preImageHashesData = TransactionCompiler::preImageHashes(coin, inputStrData);
+    TW::TxCompiler::Proto::PreSigningOutput preSigningOutput;
+    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashesData.data(), (int)preImageHashesData.size()));
+
+    EXPECT_EQ(preSigningOutput.error(), Common::Proto::Error_invalid_params);
+    EXPECT_TRUE(preSigningOutput.data().empty());
+}
+
+TEST(NEARCompiler, Compile_InvalidBlockHash) {
+    const auto coin = TWCoinTypeNEAR;
+    auto input = TW::NEAR::Proto::SigningInput();
+    input.set_signer_id("test.near");
+    input.set_receiver_id("whatever.near");
+    input.set_nonce(1);
+    input.set_public_key(Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC").data(), 32);
+
+    Data deposit(16, 0);
+    deposit[0] = 1;
+    input.add_actions()->mutable_transfer()->set_deposit(deposit.data(), deposit.size());
+
+    // 31 bytes — one byte short of the required 32
+    auto shortHash = parse_hex("0fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2f");
+    input.set_block_hash(shortHash.data(), shortHash.size());
+
+    const auto inputString = input.SerializeAsString();
+    const auto inputStrData = TW::Data(inputString.begin(), inputString.end());
+
+    auto dummySig = parse_hex("aabb");
+    auto outputData = TransactionCompiler::compileWithSignatures(
+        coin, inputStrData, {dummySig}, {Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC")});
+
+    TW::NEAR::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    EXPECT_TRUE(output.signed_transaction().empty());
+}
