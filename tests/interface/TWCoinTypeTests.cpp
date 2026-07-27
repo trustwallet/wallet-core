@@ -198,7 +198,7 @@ TEST(TWCoinType, TWCoinTypeDerivationPathWithDerivationPactusTestnet) {
 }
 
 TEST(TWCoinType, NativeTokenNameDefaultsToName) {
-    for (auto coin : {TWCoinTypeBitcoin, TWCoinTypeEthereum, TWCoinTypeLitecoin}) {
+    for (auto coin : {TWCoinTypeBitcoin, TWCoinTypeEthereum, TWCoinTypeLitecoin, TWCoinTypeMars}) {
         auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
         auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
         assertStringsEqual(nativeTokenName, TWStringUTF8Bytes(name.get()));
@@ -206,6 +206,9 @@ TEST(TWCoinType, NativeTokenNameDefaultsToName) {
 }
 
 TEST(TWCoinType, NativeTokenNameOverride) {
-    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeCosmos));
-    assertStringsEqual(nativeTokenName, "Cosmos");
+    auto cosmosNativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeCosmos));
+    assertStringsEqual(cosmosNativeTokenName, "Cosmos");
+
+    auto bscNativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeSmartChain));
+    assertStringsEqual(bscNativeTokenName, "BNB");
 }
