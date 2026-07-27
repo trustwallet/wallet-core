@@ -16,6 +16,7 @@ TEST(TWTerraCoinType, TWCoinType20) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeTerraV2, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTerraV2));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTerraV2));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeTerraV2));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTerraV2), 6);
     ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeTerraV2));
@@ -26,6 +27,7 @@ TEST(TWTerraCoinType, TWCoinType20) {
     assertStringsEqual(accUrl, "https://finder.terra.money/mainnet/address/terra16t3gx5rqvz6ru37yzn3shuu20erv4ngmfr59zf");
     assertStringsEqual(id, "terrav2");
     assertStringsEqual(name, "Terra");
+    assertStringsEqual(nativeTokenName, "Terra");
 }
 
 } // namespace TW::Cosmos::tests

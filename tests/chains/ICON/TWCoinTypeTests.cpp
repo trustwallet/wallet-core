@@ -19,6 +19,7 @@ TEST(TWICONCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeICON, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeICON));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeICON));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeICON));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeICON), 18);
     ASSERT_EQ(TWBlockchainIcon, TWCoinTypeBlockchain(TWCoinTypeICON));
@@ -29,4 +30,5 @@ TEST(TWICONCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://tracker.icon.foundation/address/a12");
     assertStringsEqual(id, "icon");
     assertStringsEqual(name, "ICON");
+    assertStringsEqual(nativeTokenName, "ICON");
 }

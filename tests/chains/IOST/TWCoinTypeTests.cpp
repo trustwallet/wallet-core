@@ -19,6 +19,7 @@ TEST(TWIOSTCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeIOST, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeIOST));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeIOST));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeIOST));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIOST), 2);
     ASSERT_EQ(TWBlockchainIOST, TWCoinTypeBlockchain(TWCoinTypeIOST));
@@ -29,4 +30,5 @@ TEST(TWIOSTCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.iost.io/account/4av8w81EyzUgHonsVWqfs15WM4Vrpgox4BYYQWhNQDVu");
     assertStringsEqual(id, "iost");
     assertStringsEqual(name, "IOST");
+    assertStringsEqual(nativeTokenName, "IOST");
 }

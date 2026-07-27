@@ -17,6 +17,7 @@ TEST(TWKomodoCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("f53bd1a5c0f5dc4b60ba9a1882742ea96faa996e1b870795812a29604dd7829e"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("RWvfkt8UjbPWXgeZEcgYmKw2vA1bbAx5t2"));
@@ -24,6 +25,7 @@ TEST(TWKomodoCoinType, TWCoinType) {
 
     assertStringsEqual(id, "komodo");
     assertStringsEqual(name, "Komodo");
+    assertStringsEqual(nativeTokenName, "Komodo");
     assertStringsEqual(symbol, "KMD");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 8);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainKomodo);

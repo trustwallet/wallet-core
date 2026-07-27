@@ -140,6 +140,7 @@ struct Derivation {
 struct CoinInfo {
     const char* id;
     const char* name;
+    const char* nativeTokenName;
     TWBlockchain blockchain;
     TWPurpose purpose;
     TWCurve curve;

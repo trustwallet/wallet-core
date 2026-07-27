@@ -18,6 +18,7 @@ TEST(TWOptimismCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeOptimism, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeOptimism));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeOptimism));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeOptimism));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeOptimism), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeOptimism));
@@ -27,4 +28,5 @@ TEST(TWOptimismCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://optimistic.etherscan.io/address/0x1f932361e31d206b4f6b2478123a9d0f8c761031");
     assertStringsEqual(id, "optimism");
     assertStringsEqual(name, "OP Mainnet");
+    assertStringsEqual(nativeTokenName, "Ethereum");
 }

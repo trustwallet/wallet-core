@@ -19,6 +19,7 @@ TEST(TWFiroCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeFiro, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeFiro));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeFiro));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeFiro));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeFiro), 8);
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeFiro));
@@ -29,4 +30,5 @@ TEST(TWFiroCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.firo.org/address/a8ULhhDgfdSiXJhSZVdhb8EuDc6R3ogsaM");
     assertStringsEqual(id, "firo");
     assertStringsEqual(name, "Firo");
+    assertStringsEqual(nativeTokenName, "Firo");
 }

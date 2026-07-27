@@ -19,6 +19,7 @@ TEST(TWAionCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeAion, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAion));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAion));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeAion));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAion), 18);
     ASSERT_EQ(TWBlockchainAion, TWCoinTypeBlockchain(TWCoinTypeAion));
@@ -29,4 +30,5 @@ TEST(TWAionCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://mainnet.aion.network/#/account/a12");
     assertStringsEqual(id, "aion");
     assertStringsEqual(name, "Aion");
+    assertStringsEqual(nativeTokenName, "Aion");
 }

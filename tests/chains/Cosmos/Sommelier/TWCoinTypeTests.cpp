@@ -16,6 +16,7 @@ TEST(TWSommelierCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("E73A9E5E534777DDADF7F69A5CB41972894B862D1763FA4081FE913D8D3A5E80"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ TEST(TWSommelierCoinType, TWCoinType) {
 
     assertStringsEqual(id, "sommelier");
     assertStringsEqual(name, "Sommelier");
+    assertStringsEqual(nativeTokenName, "Sommelier");
     assertStringsEqual(symbol, "SOMM");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 6);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);

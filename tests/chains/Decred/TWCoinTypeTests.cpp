@@ -19,6 +19,7 @@ TEST(TWDecredCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeDecred, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDecred));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDecred));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeDecred));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDecred), 8);
     ASSERT_EQ(TWBlockchainDecred, TWCoinTypeBlockchain(TWCoinTypeDecred));
@@ -29,4 +30,5 @@ TEST(TWDecredCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://dcrdata.decred.org/address/a12");
     assertStringsEqual(id, "decred");
     assertStringsEqual(name, "Decred");
+    assertStringsEqual(nativeTokenName, "Decred");
 }

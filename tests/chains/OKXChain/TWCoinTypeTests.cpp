@@ -19,6 +19,7 @@ TEST(TWCoinTypeOKXChain, TWCoinType) {
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeOKXChain, accId.get()));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeOKXChain));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeOKXChain));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeOKXChain));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeOKXChain), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeOKXChain));
@@ -29,4 +30,5 @@ TEST(TWCoinTypeOKXChain, TWCoinType) {
     assertStringsEqual(accUrl, "https://www.oklink.com/oktc/address/0x074faafd0b20fad2efa115b8ed7e75993e580b85");
     assertStringsEqual(id, "okc");
     assertStringsEqual(name, "OKX Chain");
+    assertStringsEqual(nativeTokenName, "OKX Chain");
 }

@@ -19,6 +19,7 @@ TEST(TWGoChainCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeGoChain, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeGoChain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGoChain));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeGoChain));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGoChain), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeGoChain));
@@ -29,4 +30,5 @@ TEST(TWGoChainCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.gochain.io/addr/a12");
     assertStringsEqual(id, "gochain");
     assertStringsEqual(name, "GoChain");
+    assertStringsEqual(nativeTokenName, "GoChain");
 }

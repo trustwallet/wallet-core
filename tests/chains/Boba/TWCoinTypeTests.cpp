@@ -19,6 +19,7 @@ TEST(TWBobaCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeBoba, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBoba));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBoba));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeBoba));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBoba), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeBoba));
@@ -29,4 +30,5 @@ TEST(TWBobaCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://eth.bobascan.com/address/0x4F96F50eDB37a19216d87693E5dB241e31bD3735");
     assertStringsEqual(id, "boba");
     assertStringsEqual(name, "Boba");
+    assertStringsEqual(nativeTokenName, "Boba");
 }

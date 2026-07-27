@@ -16,6 +16,7 @@ TEST(TWZetaEVMCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x04cb1201857de29af97b755e51c888454fb96c1f3bb3c1329bb94d5353d5c19e"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ TEST(TWZetaEVMCoinType, TWCoinType) {
 
     assertStringsEqual(id, "zetaevm");
     assertStringsEqual(name, "Zeta EVM");
+    assertStringsEqual(nativeTokenName, "ZetaChain");
     assertStringsEqual(symbol, "ZETA");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

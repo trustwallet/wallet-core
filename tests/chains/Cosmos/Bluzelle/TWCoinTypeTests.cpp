@@ -19,6 +19,7 @@ TEST(TWCoinTypeBluzelle, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeBluzelle, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBluzelle));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBluzelle));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeBluzelle));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBluzelle), 6);
     ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeBluzelle));
@@ -29,4 +30,5 @@ TEST(TWCoinTypeBluzelle, TWCoinType) {
     assertStringsEqual(accUrl, "https://bigdipper.net.bluzelle.com/account/bluzelle1q9cryfal7u3jvnq6er5ufety20xtzw6ycx2te9");
     assertStringsEqual(id, "bluzelle");
     assertStringsEqual(name, "Bluzelle");
+    assertStringsEqual(nativeTokenName, "Bluzelle");
 }

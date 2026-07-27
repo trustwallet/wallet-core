@@ -19,6 +19,7 @@ TEST(TWEOSCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeEOS, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEOS));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEOS));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeEOS));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEOS), 4);
     ASSERT_EQ(TWBlockchainEOS, TWCoinTypeBlockchain(TWCoinTypeEOS));
@@ -29,4 +30,5 @@ TEST(TWEOSCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://bloks.io/account/a12");
     assertStringsEqual(id, "eos");
     assertStringsEqual(name, "EOS");
+    assertStringsEqual(nativeTokenName, "EOS");
 }

@@ -19,6 +19,7 @@ TEST(TWNEARCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeNEAR, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNEAR));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNEAR));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeNEAR));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNEAR), 24);
     ASSERT_EQ(TWBlockchainNEAR, TWCoinTypeBlockchain(TWCoinTypeNEAR));
@@ -29,4 +30,5 @@ TEST(TWNEARCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://nearblocks.io/address/test-trust.vlad.near");
     assertStringsEqual(id, "near");
     assertStringsEqual(name, "NEAR");
+    assertStringsEqual(nativeTokenName, "NEAR");
 }

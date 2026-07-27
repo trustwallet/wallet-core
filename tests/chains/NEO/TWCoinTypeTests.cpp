@@ -19,6 +19,7 @@ TEST(TWNEOCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeNEO, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNEO));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNEO));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeNEO));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNEO), 8);
     ASSERT_EQ(TWBlockchainNEO, TWCoinTypeBlockchain(TWCoinTypeNEO));
@@ -29,4 +30,5 @@ TEST(TWNEOCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://neoscan.io/address/AcxuqWhTureEQGeJgbmtSWNAtssjMLU7pb");
     assertStringsEqual(id, "neo");
     assertStringsEqual(name, "NEO");
+    assertStringsEqual(nativeTokenName, "NEO");
 }

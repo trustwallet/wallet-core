@@ -16,6 +16,7 @@ TEST(TWAxelarCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("838F31D023B273E6A8282085202A4CCEDE1693D2503ACCD557B37C9DAB33A79C"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ TEST(TWAxelarCoinType, TWCoinType) {
 
     assertStringsEqual(id, "axelar");
     assertStringsEqual(name, "Axelar");
+    assertStringsEqual(nativeTokenName, "Axelar");
     assertStringsEqual(symbol, "AXL");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 6);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);

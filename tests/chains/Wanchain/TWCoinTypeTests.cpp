@@ -19,6 +19,7 @@ TEST(TWWanchainCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeWanchain, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeWanchain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWanchain));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeWanchain));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWanchain), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeWanchain));
@@ -29,4 +30,5 @@ TEST(TWWanchainCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://www.wanscan.org/address/0x69B492D57bb777e97aa7044D0575228434e2E8B1");
     assertStringsEqual(id, "wanchain");
     assertStringsEqual(name, "Wanchain");
+    assertStringsEqual(nativeTokenName, "Wanchain");
 }

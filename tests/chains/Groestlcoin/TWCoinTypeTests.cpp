@@ -19,6 +19,7 @@ TEST(TWGroestlcoinCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeGroestlcoin, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeGroestlcoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGroestlcoin));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeGroestlcoin));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGroestlcoin), 8);
     ASSERT_EQ(TWBlockchainGroestlcoin, TWCoinTypeBlockchain(TWCoinTypeGroestlcoin));
@@ -29,4 +30,5 @@ TEST(TWGroestlcoinCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://blockchair.com/groestlcoin/address/a12");
     assertStringsEqual(id, "groestlcoin");
     assertStringsEqual(name, "Groestlcoin");
+    assertStringsEqual(nativeTokenName, "Groestlcoin");
 }

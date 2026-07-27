@@ -11,6 +11,7 @@ TEST(TWPlasmaCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x3700212ec535b4c804363be87ba8a5f5668de6314ed41978f6ad71c5340d4d77"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x30A3E1F27B60c095E2c87bce1e2ffB24f381C8cd"));
@@ -18,6 +19,7 @@ TEST(TWPlasmaCoinType, TWCoinType) {
 
     assertStringsEqual(id, "plasma");
     assertStringsEqual(name, "Plasma Mainnet");
+    assertStringsEqual(nativeTokenName, "Plasma");
     assertStringsEqual(symbol, "XPL");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

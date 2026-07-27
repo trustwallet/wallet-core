@@ -22,6 +22,10 @@ def self.coin_name(coin)
   coin['displayName'] || coin['name']
 end
 
+def self.native_token_name(coin)
+  coin['nativeTokenName'] || coin_name(coin)
+end
+
 def self.camel_case(id)
   id[0].upcase + id[1..].downcase
 end

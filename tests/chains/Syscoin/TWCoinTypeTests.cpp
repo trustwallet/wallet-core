@@ -19,6 +19,7 @@ TEST(TWSyscoinCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeSyscoin, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSyscoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSyscoin));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeSyscoin));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSyscoin), 8);
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeSyscoin));
@@ -29,4 +30,5 @@ TEST(TWSyscoinCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://sys1.bcfn.ca/address/sys1qh3gvhnzq2ch7w8g04x8zksr2mz7r90x7ksmu40");
     assertStringsEqual(id, "syscoin");
     assertStringsEqual(name, "Syscoin");
+    assertStringsEqual(nativeTokenName, "Syscoin");
 }

@@ -16,6 +16,7 @@ TEST(TWNeutronCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("E18BA087009A05EB6A15A22FE30BA99379B909F74A74120E6F92B9882C45F0D7"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ TEST(TWNeutronCoinType, TWCoinType) {
 
     assertStringsEqual(id, "neutron");
     assertStringsEqual(name, "Neutron");
+    assertStringsEqual(nativeTokenName, "Neutron");
     assertStringsEqual(symbol, "NTRN");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 6);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);

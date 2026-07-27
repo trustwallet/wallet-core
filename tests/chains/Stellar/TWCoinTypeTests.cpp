@@ -19,6 +19,7 @@ TEST(TWStellarCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeStellar, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeStellar));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeStellar));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeStellar));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeStellar), 7);
     ASSERT_EQ(TWBlockchainStellar, TWCoinTypeBlockchain(TWCoinTypeStellar));
@@ -29,4 +30,5 @@ TEST(TWStellarCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://blockchair.com/stellar/account/GCILJZQ3CKBKBUJWW4TAM6Q37LJA5MQX6GMSFSQN75BPLWIZ33OPRG52");
     assertStringsEqual(id, "stellar");
     assertStringsEqual(name, "Stellar");
+    assertStringsEqual(nativeTokenName, "Stellar");
 }

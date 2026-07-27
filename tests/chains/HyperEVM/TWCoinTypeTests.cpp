@@ -11,6 +11,7 @@ TEST(TWHyperEVMCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xc79cb0bcc08995ac78f74f4a62bfd721d50a7368979b8025f3f8c229bb5a334c"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x3c43014aedbb496e173059f94bfe3b0ed1d55ba0"));
@@ -18,6 +19,7 @@ TEST(TWHyperEVMCoinType, TWCoinType) {
 
     assertStringsEqual(id, "hyperevm");
     assertStringsEqual(name, "HyperEVM");
+    assertStringsEqual(nativeTokenName, "Hyperliquid");
     assertStringsEqual(symbol, "HYPE");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

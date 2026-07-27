@@ -16,6 +16,7 @@ TEST(TWHECOCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeECOChain, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeECOChain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeECOChain));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeECOChain));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeECOChain), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeECOChain));
@@ -25,4 +26,5 @@ TEST(TWHECOCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://hecoinfo.com/address/0xc5a5b3e49e5d06afe163553c942dc59b4e358cf1");
     assertStringsEqual(id, "heco");
     assertStringsEqual(name, "Huobi ECO Chain");
+    assertStringsEqual(nativeTokenName, "Huobi ECO Chain");
 }

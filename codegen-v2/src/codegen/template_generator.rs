@@ -46,6 +46,16 @@ impl TemplateGenerator {
                     &coin.name
                 },
             )
+            .add_pattern(
+                "{NATIVE_TOKEN_NAME}",
+                if coin.native_token_name.len() > 0 {
+                    &coin.native_token_name
+                } else if coin.display_name.len() > 0 {
+                    &coin.display_name
+                } else {
+                    &coin.name
+                },
+            )
             .add_pattern("{SYMBOL}", &coin.symbol)
             .add_pattern("{DECIMALS}", coin.decimals)
             .add_pattern("{P2PKH_PREFIX}", coin.p2pkh_prefix)

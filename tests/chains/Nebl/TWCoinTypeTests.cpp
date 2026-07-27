@@ -18,6 +18,7 @@ TEST(TWNeblCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeNebl, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNebl));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNebl));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeNebl));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNebl), 8);
     ASSERT_EQ(TWBlockchainVerge, TWCoinTypeBlockchain(TWCoinTypeNebl));
@@ -28,4 +29,5 @@ TEST(TWNeblCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.nebl.io/address/NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc");
     assertStringsEqual(id, "Nebl");
     assertStringsEqual(name, "Nebl");
+    assertStringsEqual(nativeTokenName, "Neblio");
 }

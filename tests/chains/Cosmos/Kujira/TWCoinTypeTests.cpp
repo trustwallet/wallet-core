@@ -16,6 +16,7 @@ TEST(TWKujiraCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("2F5D1B1E0041A86B0590AAD2ED028693E93137A3EA1E614D59FE9B02261BC235"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ TEST(TWKujiraCoinType, TWCoinType) {
 
     assertStringsEqual(id, "kujira");
     assertStringsEqual(name, "Kujira");
+    assertStringsEqual(nativeTokenName, "Kujira");
     assertStringsEqual(symbol, "KUJI");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 6);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);

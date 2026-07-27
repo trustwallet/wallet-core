@@ -19,6 +19,7 @@ TEST(TWVeChainCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeVeChain, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeVeChain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeVeChain));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeVeChain));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeVeChain), 18);
     ASSERT_EQ(TWBlockchainVechain, TWCoinTypeBlockchain(TWCoinTypeVeChain));
@@ -29,4 +30,5 @@ TEST(TWVeChainCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explore.vechain.org/accounts/0x8a0a035a33173601bfbec8b6ae7c4a6557a55103");
     assertStringsEqual(id, "vechain");
     assertStringsEqual(name, "VeChain");
+    assertStringsEqual(nativeTokenName, "VeChain");
 }

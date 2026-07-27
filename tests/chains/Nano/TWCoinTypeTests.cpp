@@ -19,6 +19,7 @@ TEST(TWNanoCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeNano, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNano));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNano));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeNano));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNano), 30);
     ASSERT_EQ(TWBlockchainNano, TWCoinTypeBlockchain(TWCoinTypeNano));
@@ -29,4 +30,5 @@ TEST(TWNanoCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://nanexplorer.com/nano/account/nano_1wpj616kwhe1y38y1mspd8aub8i334cwybqco511iyuxm55zx8d67ptf1tsf");
     assertStringsEqual(id, "nano");
     assertStringsEqual(name, "Nano");
+    assertStringsEqual(nativeTokenName, "Nano");
 }

@@ -19,6 +19,7 @@ TEST(TWBitcoinCashCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeBitcoinCash, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBitcoinCash));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBitcoinCash));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeBitcoinCash));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBitcoinCash), 8);
     ASSERT_EQ(TWBlockchainBitcoinCash, TWCoinTypeBlockchain(TWCoinTypeBitcoinCash));
@@ -29,4 +30,5 @@ TEST(TWBitcoinCashCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://blockchair.com/bitcoin-cash/address/a12");
     assertStringsEqual(id, "bitcoincash");
     assertStringsEqual(name, "Bitcoin Cash");
+    assertStringsEqual(nativeTokenName, "Bitcoin Cash");
 }

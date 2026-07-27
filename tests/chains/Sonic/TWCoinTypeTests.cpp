@@ -11,6 +11,7 @@ TEST(TWSonicCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x886c34de9e054c741b2bcb15c3a3e0382e3ed7a48f2c6f2a489f6d82abdd4a7c"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x9c174f0e2d11559447e5fe2815d930475be19016"));
@@ -18,6 +19,7 @@ TEST(TWSonicCoinType, TWCoinType) {
 
     assertStringsEqual(id, "sonic");
     assertStringsEqual(name, "Sonic");
+    assertStringsEqual(nativeTokenName, "Sonic");
     assertStringsEqual(symbol, "S");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

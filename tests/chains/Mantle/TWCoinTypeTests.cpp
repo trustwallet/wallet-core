@@ -16,6 +16,7 @@ TEST(TWMantleCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xfae996ea23f1ff9909ac04d26ae6e52ab600a84163fab9e0e893483c685629dd"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ TEST(TWMantleCoinType, TWCoinType) {
 
     assertStringsEqual(id, "mantle");
     assertStringsEqual(name, "Mantle");
+    assertStringsEqual(nativeTokenName, "Mantle");
     assertStringsEqual(symbol, "MNT");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

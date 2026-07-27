@@ -19,6 +19,7 @@ TEST(TWArbitrumCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeArbitrum, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeArbitrum));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeArbitrum));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeArbitrum));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeArbitrum), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeArbitrum));
@@ -28,4 +29,5 @@ TEST(TWArbitrumCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://arbiscan.io/address/0xecf9ffa7f51e1194f89c25ad8c484f6bfd04e1ac");
     assertStringsEqual(id, "arbitrum");
     assertStringsEqual(name, "Arbitrum");
+    assertStringsEqual(nativeTokenName, "Ethereum");
 }

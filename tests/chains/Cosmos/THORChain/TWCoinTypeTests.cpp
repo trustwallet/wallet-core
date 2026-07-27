@@ -19,6 +19,7 @@ TEST(TWTHORChainCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeTHORChain, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTHORChain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTHORChain));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeTHORChain));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTHORChain), 8);
     ASSERT_EQ(TWBlockchainThorchain, TWCoinTypeBlockchain(TWCoinTypeTHORChain));
@@ -29,4 +30,5 @@ TEST(TWTHORChainCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://viewblock.io/thorchain/address/thor196yf4pq80hjrmz7nnh0ar0ypqg02r0w4dq4mzu");
     assertStringsEqual(id, "thorchain");
     assertStringsEqual(name, "THORChain");
+    assertStringsEqual(nativeTokenName, "THORChain");
 }

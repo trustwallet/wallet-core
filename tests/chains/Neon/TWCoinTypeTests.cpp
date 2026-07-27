@@ -16,6 +16,7 @@ TEST(TWNeonCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x77d86af2c6f02f14ef13ca52bf54864d92fcc4b32d8e884e225061c006738ed6"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ TEST(TWNeonCoinType, TWCoinType) {
 
     assertStringsEqual(id, "neon");
     assertStringsEqual(name, "Neon");
+    assertStringsEqual(nativeTokenName, "Neon");
     assertStringsEqual(symbol, "NEON");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

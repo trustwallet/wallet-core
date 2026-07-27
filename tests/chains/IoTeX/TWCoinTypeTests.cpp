@@ -19,6 +19,7 @@ TEST(TWIoTeXCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeIoTeX, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeIoTeX));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeIoTeX));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeIoTeX));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIoTeX), 18);
     ASSERT_EQ(TWBlockchainIoTeX, TWCoinTypeBlockchain(TWCoinTypeIoTeX));
@@ -29,4 +30,5 @@ TEST(TWIoTeXCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://iotexscan.io/address/a12");
     assertStringsEqual(id, "iotex");
     assertStringsEqual(name, "IoTeX");
+    assertStringsEqual(nativeTokenName, "IoTeX");
 }
