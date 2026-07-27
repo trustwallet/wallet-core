@@ -16,6 +16,7 @@ namespace TW::Cosmos::tests {
         const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
         const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
         const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+        const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
         const auto chainId = WRAPS(TWCoinTypeChainId(coin));
         const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("04C790D09A40EE958DBDD385B679B5EB60C10F9BC1389CC8F896DC9193A5ED6C"));
         const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ namespace TW::Cosmos::tests {
 
         assertStringsEqual(id, "comdex");
         assertStringsEqual(name, "Comdex");
+        assertStringsEqual(nativeTokenName, "Comdex");
         assertStringsEqual(symbol, "CMDX");
         ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 6);
         ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);

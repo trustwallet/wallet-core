@@ -16,6 +16,7 @@ TEST(TWHederaCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0.0.19790-1666769504-858851231"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0.0.19790"));
@@ -23,6 +24,7 @@ TEST(TWHederaCoinType, TWCoinType) {
 
     assertStringsEqual(id, "hedera");
     assertStringsEqual(name, "Hedera");
+    assertStringsEqual(nativeTokenName, "Hedera");
     assertStringsEqual(symbol, "HBAR");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 8);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainHedera);

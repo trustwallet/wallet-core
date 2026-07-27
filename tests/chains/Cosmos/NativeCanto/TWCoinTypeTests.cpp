@@ -16,6 +16,7 @@ TEST(TWCantoCoinType, TWCoinTypeNativeCanto) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeNativeCanto, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNativeCanto));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNativeCanto));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeNativeCanto));
     const auto chainId = WRAPS(TWCoinTypeChainId(TWCoinTypeNativeCanto));
 
 
@@ -27,6 +28,7 @@ TEST(TWCantoCoinType, TWCoinTypeNativeCanto) {
     assertStringsEqual(accUrl, "https://mintscan.io/canto/account/canto17xpfvakm2amg962yls6f84z3kell8c5ljcjw34");
     assertStringsEqual(id, "nativecanto");
     assertStringsEqual(name, "NativeCanto");
+    assertStringsEqual(nativeTokenName, "Canto");
     assertStringsEqual(chainId, "canto_7700-1");
 }
 

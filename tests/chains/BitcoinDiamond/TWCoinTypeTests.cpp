@@ -19,6 +19,7 @@ TEST(TWBitcoinDiamondCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeBitcoinDiamond, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBitcoinDiamond));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBitcoinDiamond));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeBitcoinDiamond));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBitcoinDiamond), 7);
     ASSERT_EQ(TWBlockchainBitcoinDiamond, TWCoinTypeBlockchain(TWCoinTypeBitcoinDiamond));
@@ -29,4 +30,5 @@ TEST(TWBitcoinDiamondCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "http://explorer.btcd.io/#/address?address=1HNTyntGXNhy4WxNzWfffPqp7LHb8bGJ9R");
     assertStringsEqual(id, "bitcoindiamond");
     assertStringsEqual(name, "Bitcoin Diamond");
+    assertStringsEqual(nativeTokenName, "Bitcoin Diamond");
 }

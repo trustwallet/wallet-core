@@ -19,6 +19,7 @@ TEST(TWAvalancheCoinType, TWCoinTypeCChain) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeAvalancheCChain, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAvalancheCChain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAvalancheCChain));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeAvalancheCChain));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAvalancheCChain), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeAvalancheCChain));
@@ -29,4 +30,5 @@ TEST(TWAvalancheCoinType, TWCoinTypeCChain) {
     assertStringsEqual(accUrl, "https://snowtrace.io/address/0xa664325f36Ec33E66323fe2620AF3f2294b2Ef3A");
     assertStringsEqual(id, "avalanchec");
     assertStringsEqual(name, "Avalanche C-Chain");
+    assertStringsEqual(nativeTokenName, "Avalanche");
 }

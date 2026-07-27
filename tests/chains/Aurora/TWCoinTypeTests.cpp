@@ -19,6 +19,7 @@ TEST(TWAuroraCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeAurora, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAurora));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAurora));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeAurora));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAurora), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeAurora));
@@ -29,4 +30,5 @@ TEST(TWAuroraCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://aurorascan.dev/address/0x8707cdE20dd43E3dB1F74c28fcd509ef38B0bA51");
     assertStringsEqual(id, "aurora");
     assertStringsEqual(name, "Aurora");
+    assertStringsEqual(nativeTokenName, "Ethereum");
 }

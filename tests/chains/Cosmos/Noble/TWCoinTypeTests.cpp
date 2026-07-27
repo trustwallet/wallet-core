@@ -16,6 +16,7 @@ namespace TW::Cosmos::tests {
         const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
         const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
         const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+        const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
         const auto chainId = WRAPS(TWCoinTypeChainId(coin));
         const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("EA231079975A058FEC28EF372B445763918C098DE033E868E2E035F3F98C59C7"));
         const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ namespace TW::Cosmos::tests {
 
         assertStringsEqual(id, "noble");
         assertStringsEqual(name, "Noble");
+        assertStringsEqual(nativeTokenName, "Noble");
         assertStringsEqual(symbol, "USDC");
         ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 6);
         ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);

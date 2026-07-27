@@ -16,6 +16,7 @@ TEST(TWZenEONCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xb462e3dac8eef21957d3b6cff3c184d083434367a726dd871e98a774f4d037a5"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ TEST(TWZenEONCoinType, TWCoinType) {
 
     assertStringsEqual(id, "zeneon");
     assertStringsEqual(name, "Zen EON");
+    assertStringsEqual(nativeTokenName, "Zen EON");
     assertStringsEqual(symbol, "ZEN");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

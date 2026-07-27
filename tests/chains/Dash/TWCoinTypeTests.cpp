@@ -19,6 +19,7 @@ TEST(TWDashCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeDash, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDash));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDash));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeDash));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDash), 8);
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDash));
@@ -29,4 +30,5 @@ TEST(TWDashCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://blockchair.com/dash/address/a12");
     assertStringsEqual(id, "dash");
     assertStringsEqual(name, "Dash");
+    assertStringsEqual(nativeTokenName, "Dash");
 }

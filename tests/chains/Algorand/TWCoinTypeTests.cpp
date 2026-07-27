@@ -19,6 +19,7 @@ TEST(TWAlgorandCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeAlgorand, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAlgorand));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAlgorand));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeAlgorand));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAlgorand), 6);
     ASSERT_EQ(TWBlockchainAlgorand, TWCoinTypeBlockchain(TWCoinTypeAlgorand));
@@ -29,4 +30,5 @@ TEST(TWAlgorandCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://allo.info/account/J4AEINCSSLDA7LNBNWM4ZXFCTLTOZT5LG3F5BLMFPJYGFWVCMU37EZI2AM");
     assertStringsEqual(id, "algorand");
     assertStringsEqual(name, "Algorand");
+    assertStringsEqual(nativeTokenName, "Algorand");
 }

@@ -61,4 +61,11 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type);
 TW_EXPORT_STATIC_METHOD
 TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type);
 
+/// Returns native token name of coin
+///
+/// \param type A coin type
+/// \return Returns a non-null TWString, native token name of coin
+TW_EXPORT_STATIC_METHOD
+TWString *_Nonnull TWCoinTypeConfigurationGetNativeTokenName(enum TWCoinType type);
+
 TW_EXTERN_C_END

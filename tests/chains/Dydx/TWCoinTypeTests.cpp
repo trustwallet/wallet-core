@@ -11,6 +11,7 @@ TEST(TWDydxCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("F236222E4F7C92FA84711FD6451ED22DD56CBDFA319BFDAFB99A21E4E9B9EC2F"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("dydx1adl7usw7z2dnysyn7wvrghu0u0q6gr7jqs4gtt"));
@@ -18,6 +19,7 @@ TEST(TWDydxCoinType, TWCoinType) {
 
     assertStringsEqual(id, "dydx");
     assertStringsEqual(name, "dYdX");
+    assertStringsEqual(nativeTokenName, "dYdX");
     assertStringsEqual(symbol, "DYDX");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);

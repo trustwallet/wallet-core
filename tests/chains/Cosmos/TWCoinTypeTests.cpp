@@ -19,6 +19,7 @@ TEST(TWCosmosCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeCosmos, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCosmos));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCosmos));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeCosmos));
     const auto chainId = WRAPS(TWCoinTypeChainId(TWCoinTypeCosmos));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCosmos), 6);
@@ -31,4 +32,5 @@ TEST(TWCosmosCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://mintscan.io/cosmos/account/cosmos1gu6y2a0ffteesyeyeesk23082c6998xyzmt9mz");
     assertStringsEqual(id, "cosmos");
     assertStringsEqual(name, "Cosmos Hub");
+    assertStringsEqual(nativeTokenName, "Cosmos");
 }

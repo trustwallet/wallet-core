@@ -17,6 +17,7 @@ TEST(TWTiaCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("FF370C65D8D67B8236F9D3A8D2B1256337C60C1965092CADD1FA970288FCE99B"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ TEST(TWTiaCoinType, TWCoinType) {
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
     assertStringsEqual(id, "tia");
     assertStringsEqual(name, "Celestia");
+    assertStringsEqual(nativeTokenName, "Celestia");
     assertStringsEqual(symbol, "TIA");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 6);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);

@@ -16,6 +16,7 @@ namespace TW::Cosmos::tests {
         const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
         const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
         const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+        const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
         const auto chainId = WRAPS(TWCoinTypeChainId(coin));
         const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("BBD9DEE03A8D7538D8E7398217467F4A2B5690D15773E8A6442E6AEEEFA21E64"));
         const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ namespace TW::Cosmos::tests {
 
         assertStringsEqual(id, "persistence");
         assertStringsEqual(name, "Persistence");
+        assertStringsEqual(nativeTokenName, "Persistence");
         assertStringsEqual(symbol, "XPRT");
         ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 6);
         ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);

@@ -19,6 +19,7 @@ TEST(TWZilliqaCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeZilliqa, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZilliqa));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZilliqa));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeZilliqa));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZilliqa), 12);
     ASSERT_EQ(TWBlockchainZilliqa, TWCoinTypeBlockchain(TWCoinTypeZilliqa));
@@ -29,4 +30,5 @@ TEST(TWZilliqaCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://viewblock.io/zilliqa/address/a12");
     assertStringsEqual(id, "zilliqa");
     assertStringsEqual(name, "Zilliqa");
+    assertStringsEqual(nativeTokenName, "Zilliqa");
 }

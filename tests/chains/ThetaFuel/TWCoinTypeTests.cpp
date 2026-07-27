@@ -15,6 +15,7 @@ TEST(TWThetaFuelCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xdb1c1c4e06289a4fc71b98ced218242d4f4a54a09987791a6a53a5260c053555"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -23,6 +24,7 @@ TEST(TWThetaFuelCoinType, TWCoinType) {
 
     assertStringsEqual(id, "tfuelevm");
     assertStringsEqual(name, "Theta Fuel");
+    assertStringsEqual(nativeTokenName, "Theta Fuel");
     assertStringsEqual(symbol, "TFUEL");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

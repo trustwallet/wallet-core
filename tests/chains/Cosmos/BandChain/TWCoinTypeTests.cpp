@@ -19,6 +19,7 @@ TEST(TWBandChainCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeBandChain, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBandChain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBandChain));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeBandChain));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBandChain), 6);
     ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeBandChain));
@@ -29,4 +30,5 @@ TEST(TWBandChainCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://www.mintscan.io/band/account/band16gpgu994g2gdrzvwp9047le3pcq9wz6mcgtd4w");
     assertStringsEqual(id, "band");
     assertStringsEqual(name, "BandChain");
+    assertStringsEqual(nativeTokenName, "Band Protocol");
 }

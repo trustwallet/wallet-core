@@ -16,6 +16,7 @@ namespace TW::Cosmos::tests {
         const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
         const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
         const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+        const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
         const auto chainId = WRAPS(TWCoinTypeChainId(coin));
         const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("2898B89C98FE1E8CF1E05A37E4EE5EE5ED83FD957B0CAEE53DE39FC82BF1A033"));
         const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ namespace TW::Cosmos::tests {
 
         assertStringsEqual(id, "quasar");
         assertStringsEqual(name, "Quasar");
+        assertStringsEqual(nativeTokenName, "Quasar");
         assertStringsEqual(symbol, "QSR");
         ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 6);
         ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);

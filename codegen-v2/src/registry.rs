@@ -36,6 +36,9 @@ pub struct CoinItem {
     #[serde(rename = "displayName")]
     #[serde(default)]
     pub display_name: String,
+    #[serde(rename = "nativeTokenName")]
+    #[serde(default)]
+    pub native_token_name: String,
     #[serde(rename = "coinId")]
     pub coin_id_number: u32,
     pub symbol: String,

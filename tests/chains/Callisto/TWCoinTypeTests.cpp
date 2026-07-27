@@ -19,6 +19,7 @@ TEST(TWCallistoCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeCallisto, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCallisto));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCallisto));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeCallisto));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCallisto), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeCallisto));
@@ -29,4 +30,5 @@ TEST(TWCallistoCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.callistodao.org/address/a12");
     assertStringsEqual(id, "callisto");
     assertStringsEqual(name, "Callisto");
+    assertStringsEqual(nativeTokenName, "Callisto Network");
 }

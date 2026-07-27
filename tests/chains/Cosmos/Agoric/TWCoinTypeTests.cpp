@@ -16,6 +16,7 @@ TEST(TWAgoricCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("576224B1A0F3D56BA23C5350C2A0E3CEA86F40005B828793E5ACBC2F4813152E"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ TEST(TWAgoricCoinType, TWCoinType) {
 
     assertStringsEqual(id, "agoric");
     assertStringsEqual(name, "Agoric");
+    assertStringsEqual(nativeTokenName, "Agoric");
     assertStringsEqual(symbol, "BLD");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 6);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);

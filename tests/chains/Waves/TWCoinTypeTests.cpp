@@ -19,6 +19,7 @@ TEST(TWWavesCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeWaves, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeWaves));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWaves));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeWaves));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWaves), 8);
     ASSERT_EQ(TWBlockchainWaves, TWCoinTypeBlockchain(TWCoinTypeWaves));
@@ -29,4 +30,5 @@ TEST(TWWavesCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://wavesexplorer.com/address/a12");
     assertStringsEqual(id, "waves");
     assertStringsEqual(name, "Waves");
+    assertStringsEqual(nativeTokenName, "Waves");
 }

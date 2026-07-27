@@ -18,6 +18,7 @@ TEST(TWPolkadotCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypePolkadot, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypePolkadot));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypePolkadot));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypePolkadot));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypePolkadot), 10);
     ASSERT_EQ(TWBlockchainPolkadot, TWCoinTypeBlockchain(TWCoinTypePolkadot));
@@ -28,4 +29,5 @@ TEST(TWPolkadotCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://assethub-polkadot.subscan.io/account/13hJFqnkqQbmgnGQteGntjMjTdmTBRE8Z93JqxsrpgT7Yjd2");
     assertStringsEqual(id, "polkadot");
     assertStringsEqual(name, "Polkadot");
+    assertStringsEqual(nativeTokenName, "Polkadot");
 }

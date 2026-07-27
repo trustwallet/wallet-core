@@ -16,6 +16,7 @@ TEST(TWTerraCoinType, TWCoinTypeClassic) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeTerra, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTerra));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTerra));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeTerra));
     const auto chainId = WRAPS(TWCoinTypeChainId(TWCoinTypeTerra));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTerra), 6);
@@ -28,6 +29,7 @@ TEST(TWTerraCoinType, TWCoinTypeClassic) {
     assertStringsEqual(accUrl, "https://finder.terra.money/classic/address/terra16t3gx5rqvz6ru37yzn3shuu20erv4ngmfr59zf");
     assertStringsEqual(id, "terra");
     assertStringsEqual(name, "Terra Classic");
+    assertStringsEqual(nativeTokenName, "Terra Classic");
 }
 
 } // namespace TW::Cosmos::tests

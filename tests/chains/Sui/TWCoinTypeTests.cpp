@@ -16,6 +16,7 @@ TEST(TWSuiCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("68wBKsZyYXmCUydDmabQ71kTcFWTfDG7tFmTLk1HgNdN"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x54e80d76d790c277f5a44f3ce92f53d26f5894892bf395dee6375988876be6b2"));
@@ -23,6 +24,7 @@ TEST(TWSuiCoinType, TWCoinType) {
 
     assertStringsEqual(id, "sui");
     assertStringsEqual(name, "Sui");
+    assertStringsEqual(nativeTokenName, "Sui");
     assertStringsEqual(symbol, "SUI");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 9);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainSui);

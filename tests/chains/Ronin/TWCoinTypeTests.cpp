@@ -19,6 +19,7 @@ TEST(TWRoninCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeRonin, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeRonin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeRonin));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeRonin));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeRonin), 18);
     ASSERT_EQ(TWBlockchainRonin, TWCoinTypeBlockchain(TWCoinTypeRonin));
@@ -28,4 +29,5 @@ TEST(TWRoninCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.roninchain.com/address/0xdc05ecd5fbdb64058d94f3182d66f44342b9adcb");
     assertStringsEqual(id, "ronin");
     assertStringsEqual(name, "Ronin");
+    assertStringsEqual(nativeTokenName, "Ronin");
 }

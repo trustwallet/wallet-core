@@ -19,6 +19,7 @@ TEST(TWFilecoinCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeFilecoin, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeFilecoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeFilecoin));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeFilecoin));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeFilecoin), 18);
     ASSERT_EQ(TWBlockchainFilecoin, TWCoinTypeBlockchain(TWCoinTypeFilecoin));
@@ -29,4 +30,5 @@ TEST(TWFilecoinCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://filfox.info/en/address/f1abjxfbp274xpdqcpuaykwkfb43omjotacm2p3za");
     assertStringsEqual(id, "filecoin");
     assertStringsEqual(name, "Filecoin");
+    assertStringsEqual(nativeTokenName, "Filecoin");
 }

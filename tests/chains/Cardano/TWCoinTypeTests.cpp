@@ -19,6 +19,7 @@ TEST(TWCardanoCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeCardano, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCardano));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCardano));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeCardano));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCardano), 6);
     ASSERT_EQ(TWBlockchainCardano, TWCoinTypeBlockchain(TWCoinTypeCardano));
@@ -29,4 +30,5 @@ TEST(TWCardanoCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://cardanoscan.io/address/DdzFFzCqrhstpwKc8WMvPwwBb5oabcTW9zc5ykA37wJR4tYQucvsR9dXb2kEGNXkFJz2PtrpzfRiZkx8R1iNo8NYqdsukVmv7EAybFwC");
     assertStringsEqual(id, "cardano");
     assertStringsEqual(name, "Cardano");
+    assertStringsEqual(nativeTokenName, "Cardano");
 }

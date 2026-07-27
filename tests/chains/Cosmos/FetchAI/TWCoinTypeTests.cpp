@@ -16,6 +16,7 @@ namespace TW::Cosmos::tests {
         const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
         const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
         const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+        const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
         const auto chainId = WRAPS(TWCoinTypeChainId(coin));
         const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("7EB4F6C26809BA047F81CEFD0889775AC8522B7B8AF559B436083BE7039C5EA6"));
         const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ namespace TW::Cosmos::tests {
 
         assertStringsEqual(id, "fetchai");
         assertStringsEqual(name, "Fetch AI");
+        assertStringsEqual(nativeTokenName, "Fetch.ai");
         assertStringsEqual(symbol, "FET");
         ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 6);
         ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);

@@ -11,6 +11,7 @@ TEST(TWPolymeshCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x98cb5e33d8ff3dd5838c384e2ef9e291314ed8db13f5d4f42cdd70bad54a5e04"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("2E5u4xA1TqswQ3jMJH96zekxwr2itvKu79fDC1mmnVZRh6Uv"));
@@ -18,6 +19,7 @@ TEST(TWPolymeshCoinType, TWCoinType) {
 
     assertStringsEqual(id, "polymesh");
     assertStringsEqual(name, "Polymesh");
+    assertStringsEqual(nativeTokenName, "Polymesh");
     assertStringsEqual(symbol, "POLYX");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 6);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainPolymesh);

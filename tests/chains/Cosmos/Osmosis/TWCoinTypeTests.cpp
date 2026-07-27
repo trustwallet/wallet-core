@@ -19,6 +19,7 @@ TEST(TWOsmosisCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeOsmosis, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeOsmosis));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeOsmosis));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeOsmosis));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeOsmosis), 6);
     ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeOsmosis));
@@ -29,4 +30,5 @@ TEST(TWOsmosisCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://mintscan.io/osmosis/account/osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5");
     assertStringsEqual(id, "osmosis");
     assertStringsEqual(name, "Osmosis");
+    assertStringsEqual(nativeTokenName, "Osmosis");
 }

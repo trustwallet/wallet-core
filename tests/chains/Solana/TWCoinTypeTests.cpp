@@ -19,6 +19,7 @@ TEST(TWSolanaCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeSolana, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSolana));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSolana));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeSolana));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSolana), 9);
     ASSERT_EQ(TWBlockchainSolana, TWCoinTypeBlockchain(TWCoinTypeSolana));
@@ -29,4 +30,5 @@ TEST(TWSolanaCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://solscan.io/account/Bxp8yhH9zNwxyE4UqxP7a7hgJ5xTZfxNNft7YJJ2VRjT");
     assertStringsEqual(id, "solana");
     assertStringsEqual(name, "Solana");
+    assertStringsEqual(nativeTokenName, "Solana");
 }

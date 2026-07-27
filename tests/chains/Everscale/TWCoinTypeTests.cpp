@@ -17,6 +17,7 @@ TEST(TWEverscaleCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("781238b2b0d15cd4cd2e2a0a142753750cd5e1b2c8b506fcede75a90e02f1268"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0:d2bf59964a05dee84a0dd1ddc0ad83ba44d49719cf843d689dc8b726d0fb59d8"));
@@ -24,6 +25,7 @@ TEST(TWEverscaleCoinType, TWCoinType) {
 
     assertStringsEqual(id, "everscale");
     assertStringsEqual(name, "Everscale");
+    assertStringsEqual(nativeTokenName, "Everscale");
     assertStringsEqual(symbol, "EVER");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 9);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEverscale);

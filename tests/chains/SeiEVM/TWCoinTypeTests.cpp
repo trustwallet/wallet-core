@@ -11,6 +11,7 @@ TEST(TWSeiEVMCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xe59dddcf9a93551399780d907eeee52fdbc44ead6406012368470d47979b7362"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0xc5c8d37a73d96a925f770b5481f719df8d1a1b9e"));
@@ -18,6 +19,7 @@ TEST(TWSeiEVMCoinType, TWCoinType) {
 
     assertStringsEqual(id, "seievm");
     assertStringsEqual(name, "Sei EVM");
+    assertStringsEqual(nativeTokenName, "Sei");
     assertStringsEqual(symbol, "SEI");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
