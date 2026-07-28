@@ -99,6 +99,34 @@ impl<'de> Deserialize<'de> for BcsBytes {
     }
 }
 
+/// The TypeScript SDK types a few tags as `literal(true)`, so `false` is not a valid
+/// encoding of them. Accepting it would let a payload read one way to a reviewer or a
+/// middleware inspecting the JSON and another way to this parser.
+#[derive(Clone, Copy, Debug)]
+pub struct LiteralTrue;
+
+impl Serialize for LiteralTrue {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_bool(true)
+    }
+}
+
+impl<'de> Deserialize<'de> for LiteralTrue {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        if bool::deserialize(deserializer)? {
+            Ok(LiteralTrue)
+        } else {
+            Err(DeError::custom("expected `true`"))
+        }
+    }
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ObjectRefV2 {
@@ -200,7 +228,7 @@ impl TryFrom<InputArgV2> for CallArg {
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum ArgumentV2 {
-    GasCoin(bool),
+    GasCoin(LiteralTrue),
     Input(u16),
     Result(u16),
     NestedResult(u16, u16),
@@ -350,7 +378,7 @@ impl TryFrom<CommandV2> for Command {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum ExpirationV2 {
-    None(bool),
+    None(LiteralTrue),
     Epoch(JsonU64),
     /// Introduced together with the gRPC API, not representable in `TransactionData::V1`.
     ValidDuring(serde_json::Value),
@@ -397,6 +425,6 @@ pub struct RawTransactionV2 {
     pub gas_data: GasDataV2,
     pub inputs: Vec<InputArgV2>,
     pub commands: Vec<CommandV2>,
-    #[serde(default)]
-    pub digest: Option<String>,
+    // The SDK also emits a `digest`. It is not part of the signed payload, so it is left
+    // undeclared and skipped by serde rather than deserialized into a value nothing reads.
 }

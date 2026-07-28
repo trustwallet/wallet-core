@@ -6,6 +6,7 @@
 //! of the `@mysten/sui` 2.x TypeScript SDK.
 
 use std::str::FromStr;
+use tw_coin_entry::error::prelude::SigningErrorType;
 use tw_encoding::base64::{self, STANDARD};
 use tw_encoding::bcs;
 use tw_sui::address::SuiAddress;
@@ -350,6 +351,72 @@ fn test_raw_json_v2_rejects_unsupported_variants() {
     "#;
     let error = TransactionBuilder::raw_json(valid_during, 0, 0).unwrap_err();
     assert!(error.to_string().contains("'ValidDuring'"));
+}
+
+/// The SDK types `GasCoin` and the `None` expiration as `literal(true)`. Accepting `false`
+/// would let a payload read one way to a middleware inspecting the JSON and another way here.
+#[test]
+fn test_raw_json_v2_rejects_non_canonical_literal_true() {
+    let gas_coin_false = r#"{ "SplitCoins": { "coin": { "GasCoin": false }, "amounts": [] } }"#;
+    let error = TransactionBuilder::raw_json(&v2_json("", gas_coin_false), 0, 0).unwrap_err();
+    assert_eq!(*error.error_type(), SigningErrorType::Error_input_parse);
+
+    // The canonical `true` still parses.
+    let gas_coin_true = r#"{ "SplitCoins": { "coin": { "GasCoin": true }, "amounts": [] } }"#;
+    TransactionBuilder::raw_json(&v2_json("", gas_coin_true), 0, 0).unwrap();
+
+    let expiration_false = r#"
+    {
+        "version": 2,
+        "sender": "0x1",
+        "expiration": { "None": false },
+        "gasData": {
+            "budget": "1000",
+            "price": "750",
+            "owner": null,
+            "payment": [
+                {
+                    "objectId": "0x0794be3f3016c73e67612032e88397dfc43798ba20b1c0f66769a74455a54947",
+                    "version": "486126455",
+                    "digest": "J9bKhGatNhtjoXvUnt28kCWV9kRsN3aToGi4MEXam9D4"
+                }
+            ]
+        },
+        "inputs": [],
+        "commands": []
+    }
+    "#;
+    let error = TransactionBuilder::raw_json(expiration_false, 0, 0).unwrap_err();
+    assert_eq!(*error.error_type(), SigningErrorType::Error_input_parse);
+}
+
+/// The SDK emits a top-level `digest` that is not part of the signed payload.
+/// It must be ignored rather than rejected as an unknown key.
+#[test]
+fn test_raw_json_v2_ignores_sdk_digest() {
+    let with_digest = r#"
+    {
+        "version": 2,
+        "sender": "0x1",
+        "expiration": null,
+        "digest": "5ne5WwshjP1wTmNnsChhHTneG67kJa3PbD2kTPft1PY9",
+        "gasData": {
+            "budget": "1000",
+            "price": "750",
+            "owner": null,
+            "payment": [
+                {
+                    "objectId": "0x0794be3f3016c73e67612032e88397dfc43798ba20b1c0f66769a74455a54947",
+                    "version": "486126455",
+                    "digest": "J9bKhGatNhtjoXvUnt28kCWV9kRsN3aToGi4MEXam9D4"
+                }
+            ]
+        },
+        "inputs": [],
+        "commands": []
+    }
+    "#;
+    TransactionBuilder::raw_json(with_digest, 0, 0).unwrap();
 }
 
 /// `JsonU64` values may be encoded either as JSON strings or as JSON numbers.

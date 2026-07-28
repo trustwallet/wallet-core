@@ -363,6 +363,11 @@ impl TransactionBuilder {
             gas_budget,
             gas_price,
             // Defaults to the sender when no sponsor is set.
+            //
+            // Note a sponsored transaction needs two signatures to be accepted by the network -
+            // the sender's and the sponsor's. This module only produces the one belonging to
+            // `SigningInput.private_key`; obtaining the counterpart and submitting both is the
+            // caller's responsibility.
             gas_data.owner.unwrap_or(sender),
             expiration,
         ))
