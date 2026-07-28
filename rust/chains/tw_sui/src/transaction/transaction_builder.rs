@@ -12,8 +12,10 @@ use crate::transaction::programmable_transaction::{
     ProgrammableTransaction, ProgrammableTransactionBuilder,
 };
 use crate::transaction::raw_types::RawTransaction;
-use crate::transaction::sui_types::{CallArg, ObjectArg, ObjectRef};
+use crate::transaction::raw_types_v2::RawTransactionV2;
+use crate::transaction::sui_types::{CallArg, ObjectArg, ObjectRef, TransactionExpiration};
 use crate::transaction::transaction_data::{TransactionData, TransactionKind};
+use serde::Deserialize;
 use tw_coin_entry::error::prelude::*;
 use tw_encoding::bcs;
 
@@ -85,7 +87,6 @@ impl TransactionBuilder {
     /// Send `Coin<T>` to a list of addresses, where T can be any coin type, following a list of amounts.
     /// The object specified in the gas field will be used to pay the gas fee for the transaction.
     /// The gas object can not appear in input_coins.
-    /// https://docs.sui.io/sui-api-ref#unsafe_pay
     #[allow(clippy::too_many_arguments)]
     pub fn pay(
         signer: SuiAddress,
@@ -115,7 +116,6 @@ impl TransactionBuilder {
 
     /// Send SUI coins to a list of addresses, following a list of amounts.
     /// This is for SUI coin only and does not require a separate gas coin object.
-    /// https://docs.sui.io/sui-api-ref#unsafe_paysui
     pub fn pay_sui(
         signer: SuiAddress,
         mut input_coins: Vec<ObjectRef>,
@@ -143,7 +143,6 @@ impl TransactionBuilder {
 
     /// Send all SUI coins to one recipient.
     /// This is for SUI coin only and does not require a separate gas coin object.
-    /// https://docs.sui.io/sui-api-ref#unsafe_payallsui
     pub fn pay_all_sui(
         signer: SuiAddress,
         mut input_coins: Vec<ObjectRef>,
@@ -188,18 +187,40 @@ impl TransactionBuilder {
         ))
     }
 
+    /// Builds a transaction out of a JSON serialized by the `@mysten/sui` TypeScript SDK.
+    /// Both the version 1 (`Transaction.serialize()`) and version 2 (`Transaction.toJSON()`)
+    /// formats are supported.
     pub fn raw_json(
+        raw_json: &str,
+        gas_budget: u64,
+        gas_price: u64,
+    ) -> SigningResult<TransactionData> {
+        /// Only the `version` is deserialized here to choose the actual schema.
+        #[derive(Deserialize)]
+        struct RawTransactionVersion {
+            version: u32,
+        }
+
+        let RawTransactionVersion { version } = serde_json::from_str(raw_json).map_err(|e| {
+            SigningError::from(e).context("Failed to parse 'version' of the raw JSON transaction")
+        })?;
+
+        match version {
+            1 => Self::raw_json_v1(raw_json, gas_budget, gas_price),
+            2 => Self::raw_json_v2(raw_json, gas_budget, gas_price),
+            _ => SigningError::err(SigningErrorType::Error_invalid_params).context(format!(
+                "Invalid transaction version '{version}'. Only versions 1 and 2 are supported."
+            )),
+        }
+    }
+
+    fn raw_json_v1(
         raw_json: &str,
         gas_budget: u64,
         gas_price: u64,
     ) -> SigningResult<TransactionData> {
         let raw_transaction: RawTransaction = serde_json::from_str(raw_json)
             .map_err(|e| SigningError::from(e).context("Failed to parse raw JSON"))?;
-
-        if raw_transaction.version != 1 {
-            return SigningError::err(SigningErrorType::Error_invalid_params)
-                .context("Invalid transaction version. Only version 1 is supported.");
-        }
 
         let mut raw_inputs = raw_transaction.inputs;
         raw_inputs.sort_by_key(|input| input.index);
@@ -260,6 +281,90 @@ impl TransactionBuilder {
             gas_budget,
             gas_price,
             raw_transaction.expiration.map(|e| e.into()),
+        ))
+    }
+
+    fn raw_json_v2(
+        raw_json: &str,
+        gas_budget: u64,
+        gas_price: u64,
+    ) -> SigningResult<TransactionData> {
+        let raw_transaction: RawTransactionV2 = serde_json::from_str(raw_json)
+            .map_err(|e| SigningError::from(e).context("Failed to parse raw JSON"))?;
+
+        let sender = raw_transaction
+            .sender
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("No 'sender' specified in raw JSON transaction")?;
+
+        // Unlike the version 1 format, inputs are positional - no index normalization is needed.
+        let inputs = raw_transaction
+            .inputs
+            .into_iter()
+            .map(CallArg::try_from)
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        let commands = raw_transaction
+            .commands
+            .into_iter()
+            .map(Command::try_from)
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        let pt = ProgrammableTransaction { inputs, commands };
+
+        let gas_data = raw_transaction.gas_data;
+        let gas_payments = gas_data
+            .payment
+            .unwrap_or_default()
+            .into_iter()
+            .map(ObjectRef::try_from)
+            .collect::<SigningResult<Vec<_>>>()?;
+
+        if gas_payments.is_empty() {
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Empty gas payment in raw JSON transaction");
+        }
+
+        // An explicitly provided `SigningInput.gas_budget` / `reference_gas_price` takes precedence
+        // over the value embedded in the JSON, which is nullable in the version 2 format.
+        let gas_budget = if gas_budget != 0 {
+            gas_budget
+        } else {
+            gas_data
+                .budget
+                .or_tw_err(SigningErrorType::Error_invalid_params)
+                .context(
+                    "No gas budget specified neither in 'SigningInput' nor in raw JSON transaction",
+                )?
+                .0
+        };
+
+        let gas_price = if gas_price != 0 {
+            gas_price
+        } else {
+            gas_data
+                .price
+                .or_tw_err(SigningErrorType::Error_invalid_params)
+                .context(
+                    "No gas price specified neither in 'SigningInput' nor in raw JSON transaction",
+                )?
+                .0
+        };
+
+        let expiration = raw_transaction
+            .expiration
+            .map(TransactionExpiration::try_from)
+            .transpose()?;
+
+        Ok(TransactionData::new_allow_sponsor(
+            TransactionKind::ProgrammableTransaction(pt),
+            sender,
+            gas_payments,
+            gas_budget,
+            gas_price,
+            // Defaults to the sender when no sponsor is set.
+            gas_data.owner.unwrap_or(sender),
+            expiration,
         ))
     }
 }
