@@ -19,7 +19,7 @@ TEST(TWMegaETHCoinType, TWCoinType) {
 
     assertStringsEqual(id, "megaeth");
     assertStringsEqual(name, "MegaETH");
-    assertStringsEqual(nativeTokenName, "MegaETH");
+    assertStringsEqual(nativeTokenName, "Ethereum");
     assertStringsEqual(symbol, "ETH");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

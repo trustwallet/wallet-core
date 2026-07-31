@@ -4683,6 +4683,7 @@
   {
     "id": "merlin",
     "name": "Merlin",
+    "nativeTokenName": "Bitcoin",
     "coinId": 4200,
     "symbol": "BTC",
     "decimals": 18,
@@ -4714,6 +4715,7 @@
     "id": "lightlink",
     "name": "Lightlink",
     "displayName": "Lightlink Phoenix",
+    "nativeTokenName": "Ethereum",
     "coinId": 1890,
     "symbol": "ETH",
     "decimals": 18,
@@ -4990,6 +4992,7 @@
   {
     "id": "megaeth",
     "name": "MegaETH",
+    "nativeTokenName": "Ethereum",
     "coinId": 4326,
     "symbol": "ETH",
     "decimals": 18,
