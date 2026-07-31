@@ -19,7 +19,7 @@ TEST(TWMerlinCoinType, TWCoinType) {
 
     assertStringsEqual(id, "merlin");
     assertStringsEqual(name, "Merlin");
-    assertStringsEqual(nativeTokenName, "Merlin");
+    assertStringsEqual(nativeTokenName, "Bitcoin");
     assertStringsEqual(symbol, "BTC");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

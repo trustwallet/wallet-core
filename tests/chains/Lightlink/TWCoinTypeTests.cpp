@@ -19,7 +19,7 @@ TEST(TWLightlinkCoinType, TWCoinType) {
 
     assertStringsEqual(id, "lightlink");
     assertStringsEqual(name, "Lightlink Phoenix");
-    assertStringsEqual(nativeTokenName, "Lightlink Phoenix");
+    assertStringsEqual(nativeTokenName, "Ethereum");
     assertStringsEqual(symbol, "ETH");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
