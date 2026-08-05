@@ -19,6 +19,7 @@ TEST(TWCeloCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeCelo, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCelo));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCelo));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeCelo));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCelo), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeCelo));
@@ -29,4 +30,5 @@ TEST(TWCeloCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.celo.org/address/0xFBFf95e2Fa7e4Ff3aeA34eFB05fB60F9968a6aaD");
     assertStringsEqual(id, "celo");
     assertStringsEqual(name, "Celo");
+    assertStringsEqual(nativeTokenName, "Celo");
 }

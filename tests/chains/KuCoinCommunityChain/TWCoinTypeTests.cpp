@@ -19,6 +19,7 @@ TEST(TWKuCoinCommunityChainCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeKuCoinCommunityChain, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeKuCoinCommunityChain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeKuCoinCommunityChain));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeKuCoinCommunityChain));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKuCoinCommunityChain), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeKuCoinCommunityChain));
@@ -29,4 +30,5 @@ TEST(TWKuCoinCommunityChainCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://scan.kcc.io/address/0x4446fc4eb47f2f6586f9faab68b3498f86c07521");
     assertStringsEqual(id, "kcc");
     assertStringsEqual(name, "KuCoin Community Chain");
+    assertStringsEqual(nativeTokenName, "KuCoin Token");
 }

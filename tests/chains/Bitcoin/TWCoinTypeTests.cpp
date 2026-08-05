@@ -19,6 +19,7 @@ TEST(TWBitcoinCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeBitcoin, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBitcoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBitcoin));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeBitcoin));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBitcoin), 8);
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeBitcoin));
@@ -29,4 +30,5 @@ TEST(TWBitcoinCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://mempool.space/address/17A16QmavnUfCW11DAApiJxp7ARnxN5pGX");
     assertStringsEqual(id, "bitcoin");
     assertStringsEqual(name, "Bitcoin");
+    assertStringsEqual(nativeTokenName, "Bitcoin");
 }

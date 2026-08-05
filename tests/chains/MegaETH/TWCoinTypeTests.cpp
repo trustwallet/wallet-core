@@ -11,6 +11,7 @@ TEST(TWMegaETHCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x9021590996bda7682485fff4ab1ed221cea2fa0b352073f69e5a76114c7ed81a"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x6a4D1b2fC6a894928979F152A8c9245D96860604"));
@@ -18,6 +19,7 @@ TEST(TWMegaETHCoinType, TWCoinType) {
 
     assertStringsEqual(id, "megaeth");
     assertStringsEqual(name, "MegaETH");
+    assertStringsEqual(nativeTokenName, "Ethereum");
     assertStringsEqual(symbol, "ETH");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

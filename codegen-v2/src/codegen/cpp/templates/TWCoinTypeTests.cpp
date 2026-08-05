@@ -11,6 +11,7 @@ TEST(TW{COIN_TYPE}CoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("{EXPLORER_SAMPLE_TX}"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("{EXPLORER_SAMPLE_ACCOUNT}"));
@@ -18,6 +19,7 @@ TEST(TW{COIN_TYPE}CoinType, TWCoinType) {
 
     assertStringsEqual(id, "{COIN_ID}");
     assertStringsEqual(name, "{COIN_NAME}");
+    assertStringsEqual(nativeTokenName, "{NATIVE_TOKEN_NAME}");
     assertStringsEqual(symbol, "{SYMBOL}");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), {DECIMALS});
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchain{BLOCKCHAIN});

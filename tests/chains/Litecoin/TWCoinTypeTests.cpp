@@ -19,6 +19,7 @@ TEST(TWLitecoinCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeLitecoin, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeLitecoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeLitecoin));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeLitecoin));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeLitecoin), 8);
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeLitecoin));
@@ -29,4 +30,5 @@ TEST(TWLitecoinCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://blockchair.com/litecoin/address/a12");
     assertStringsEqual(id, "litecoin");
     assertStringsEqual(name, "Litecoin");
+    assertStringsEqual(nativeTokenName, "Litecoin");
 }

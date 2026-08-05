@@ -19,6 +19,7 @@ TEST(TWZcashCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeZcash, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZcash));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZcash));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeZcash));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZcash), 8);
     ASSERT_EQ(TWBlockchainZcash, TWCoinTypeBlockchain(TWCoinTypeZcash));
@@ -29,4 +30,5 @@ TEST(TWZcashCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://blockchair.com/zcash/address/t1Yfrf1dssDLmaMBsq2LFKWPbS5vH3nGpa2");
     assertStringsEqual(id, "zcash");
     assertStringsEqual(name, "Zcash");
+    assertStringsEqual(nativeTokenName, "Zcash");
 }

@@ -19,6 +19,7 @@ TEST(TWBitcoinGoldCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeBitcoinGold, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBitcoinGold));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBitcoinGold));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeBitcoinGold));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBitcoinGold), 8);
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeBitcoinGold));
@@ -29,4 +30,5 @@ TEST(TWBitcoinGoldCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.bitcoingold.org/insight/address/GJjz2Du9BoJQ3CPcoyVTHUJZSj62i1693U");
     assertStringsEqual(id, "bitcoingold");
     assertStringsEqual(name, "Bitcoin Gold");
+    assertStringsEqual(nativeTokenName, "Bitcoin Gold");
 }

@@ -11,6 +11,7 @@ TEST(TWZkLinkNovaCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xeb5eb8710369c89115a83f3e744c15c9d388030cfce2fd3a653dbd18f2947400"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0xF95115BaD9a4585B3C5e2bfB50579f17163A45aA"));
@@ -18,6 +19,7 @@ TEST(TWZkLinkNovaCoinType, TWCoinType) {
 
     assertStringsEqual(id, "zklinknova");
     assertStringsEqual(name, "zkLink Nova Mainnet");
+    assertStringsEqual(nativeTokenName, "Ethereum");
     assertStringsEqual(symbol, "ETH");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

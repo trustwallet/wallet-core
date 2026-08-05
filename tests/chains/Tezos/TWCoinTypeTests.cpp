@@ -19,6 +19,7 @@ TEST(TWTezosCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeTezos, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTezos));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTezos));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeTezos));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTezos), 6);
     ASSERT_EQ(TWBlockchainTezos, TWCoinTypeBlockchain(TWCoinTypeTezos));
@@ -29,4 +30,5 @@ TEST(TWTezosCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://tzstats.com/tz1SiPXX4MYGNJNDsRc7n8hkvUqFzg8xqF9m");
     assertStringsEqual(id, "tezos");
     assertStringsEqual(name, "Tezos");
+    assertStringsEqual(nativeTokenName, "Tezos");
 }

@@ -13,6 +13,7 @@ TEST(TWZksyncCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xae38d3ede1104d088b474da261d0eb4847952c3db24c21e820502f4c1b0c01f5"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -21,6 +22,7 @@ TEST(TWZksyncCoinType, TWCoinType) {
 
     assertStringsEqual(id, "zksync");
     assertStringsEqual(name, "zkSync Era");
+    assertStringsEqual(nativeTokenName, "Ethereum");
     assertStringsEqual(symbol, "ETH");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

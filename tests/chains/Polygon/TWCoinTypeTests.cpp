@@ -19,6 +19,7 @@ TEST(TWPolygonCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypePolygon, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypePolygon));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypePolygon));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypePolygon));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypePolygon), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypePolygon));
@@ -29,4 +30,5 @@ TEST(TWPolygonCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://polygonscan.com/address/0x720E1fa107A1Df39Db4E78A3633121ac36Bec132");
     assertStringsEqual(id, "polygon");
     assertStringsEqual(name, "Polygon");
+    assertStringsEqual(nativeTokenName, "Polygon");
 }

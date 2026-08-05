@@ -19,6 +19,7 @@ TEST(TWKusamaCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeKusama, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeKusama));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeKusama));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeKusama));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKusama), 12);
     ASSERT_EQ(TWBlockchainKusama, TWCoinTypeBlockchain(TWCoinTypeKusama));
@@ -29,4 +30,5 @@ TEST(TWKusamaCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://assethub-kusama.subscan.io/account/FfnS7Vk2i19AdFMf6D8ZRVUhNsYWVtsLmqQEnAmTqQBqsSy");
     assertStringsEqual(id, "kusama");
     assertStringsEqual(name, "Kusama");
+    assertStringsEqual(nativeTokenName, "Kusama");
 }

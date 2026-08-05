@@ -19,6 +19,7 @@ TEST(TWThunderTokenCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeThunderCore, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeThunderCore));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeThunderCore));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeThunderCore));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeThunderCore), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeThunderCore));
@@ -29,4 +30,5 @@ TEST(TWThunderTokenCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://scan.thundercore.com/address/a12");
     assertStringsEqual(id, "thundertoken");
     assertStringsEqual(name, "ThunderCore");
+    assertStringsEqual(nativeTokenName, "ThunderCore");
 }

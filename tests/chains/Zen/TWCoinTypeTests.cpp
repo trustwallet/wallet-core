@@ -19,6 +19,7 @@ TEST(TWZenCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeZen, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZen));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZen));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeZen));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZen), 8);
     ASSERT_EQ(TWBlockchainZen, TWCoinTypeBlockchain(TWCoinTypeZen));
@@ -29,4 +30,5 @@ TEST(TWZenCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.horizen.io/address/znRchPtvEyJJUwGbCALqyjwHJb1Gx6z4H4j");
     assertStringsEqual(id, "zen");
     assertStringsEqual(name, "Zen");
+    assertStringsEqual(nativeTokenName, "Horizen");
 }

@@ -16,6 +16,7 @@ TEST(TWNervosCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("t123"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("a12"));
@@ -23,6 +24,7 @@ TEST(TWNervosCoinType, TWCoinType) {
 
     assertStringsEqual(id, "nervos");
     assertStringsEqual(name, "Nervos");
+    assertStringsEqual(nativeTokenName, "Nervos Network");
     assertStringsEqual(symbol, "CKB");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 8);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainNervos);

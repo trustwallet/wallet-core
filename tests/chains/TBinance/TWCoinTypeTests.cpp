@@ -19,6 +19,7 @@ TEST(TWTBinanceCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeTBinance, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTBinance));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTBinance));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeTBinance));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTBinance), 8);
     ASSERT_EQ(TWBlockchainBinance, TWCoinTypeBlockchain(TWCoinTypeTBinance));
@@ -29,4 +30,5 @@ TEST(TWTBinanceCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://testnet-explorer.binance.org/address/tbnb1c2cxgv3cklswxlvqr9anm6mlp6536qnd36txgr");
     assertStringsEqual(id, "tbinance");
     assertStringsEqual(name, "TBNB");
+    assertStringsEqual(nativeTokenName, "BNB");
 }

@@ -19,6 +19,7 @@ TEST(TWDogecoinCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeDogecoin, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDogecoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDogecoin));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeDogecoin));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDogecoin), 8);
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDogecoin));
@@ -29,4 +30,5 @@ TEST(TWDogecoinCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://blockchair.com/dogecoin/address/a12");
     assertStringsEqual(id, "doge");
     assertStringsEqual(name, "Dogecoin");
+    assertStringsEqual(nativeTokenName, "Dogecoin");
 }

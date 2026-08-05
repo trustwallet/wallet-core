@@ -19,6 +19,7 @@ TEST(TWPOANetworkCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypePOANetwork, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypePOANetwork));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypePOANetwork));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypePOANetwork));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypePOANetwork), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypePOANetwork));
@@ -29,4 +30,5 @@ TEST(TWPOANetworkCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://blockscout.com/poa/core/address/a12");
     assertStringsEqual(id, "poa");
     assertStringsEqual(name, "POA Network");
+    assertStringsEqual(nativeTokenName, "POA Network");
 }

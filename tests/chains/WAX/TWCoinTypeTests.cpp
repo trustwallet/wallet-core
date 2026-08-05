@@ -15,6 +15,7 @@ TEST(TWWAXCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeWAX, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeWAX));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWAX));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeWAX));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWAX), 4);
     ASSERT_EQ(TWBlockchainEOS, TWCoinTypeBlockchain(TWCoinTypeWAX));
@@ -25,4 +26,5 @@ TEST(TWWAXCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://wax.bloks.io/account/k52o1qdeh.gm");
     assertStringsEqual(id, "wax");
     assertStringsEqual(name, "WAX");
+    assertStringsEqual(nativeTokenName, "WAX");
 }

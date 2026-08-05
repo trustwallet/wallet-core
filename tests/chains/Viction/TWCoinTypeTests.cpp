@@ -19,6 +19,7 @@ TEST(TWVictionType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeViction, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeViction));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeViction));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeViction));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeViction), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeViction));
@@ -29,4 +30,5 @@ TEST(TWVictionType, TWCoinType) {
     assertStringsEqual(accUrl, "https://www.vicscan.xyz/address/0x86cCbD9bfb371c355202086882bC644A7D0b024B");
     assertStringsEqual(id, "viction");
     assertStringsEqual(name, "Viction");
+    assertStringsEqual(nativeTokenName, "Viction");
 }

@@ -11,6 +11,7 @@ TEST(TWMerlinCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xca6f2891959b669237738dd0bc2c1051d966778c9de90b94165032ce58364212"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0xf7e017b3f61bD3410A3b03D7DAD7699FD6780584"));
@@ -18,6 +19,7 @@ TEST(TWMerlinCoinType, TWCoinType) {
 
     assertStringsEqual(id, "merlin");
     assertStringsEqual(name, "Merlin");
+    assertStringsEqual(nativeTokenName, "Bitcoin");
     assertStringsEqual(symbol, "BTC");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

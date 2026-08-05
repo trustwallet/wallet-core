@@ -19,6 +19,7 @@ TEST(TWThetaCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeTheta, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTheta));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTheta));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeTheta));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTheta), 18);
     ASSERT_EQ(TWBlockchainTheta, TWCoinTypeBlockchain(TWCoinTypeTheta));
@@ -29,4 +30,5 @@ TEST(TWThetaCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.thetatoken.org/account/a12");
     assertStringsEqual(id, "theta");
     assertStringsEqual(name, "Theta");
+    assertStringsEqual(nativeTokenName, "Theta");
 }

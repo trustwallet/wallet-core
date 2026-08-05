@@ -16,6 +16,7 @@ TEST(TWEvmosCoinType, TWCoinTypeNativeEvmos) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeNativeEvmos, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNativeEvmos));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNativeEvmos));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeNativeEvmos));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNativeEvmos), 18);
     ASSERT_EQ(TWBlockchainNativeEvmos, TWCoinTypeBlockchain(TWCoinTypeNativeEvmos));
@@ -25,6 +26,7 @@ TEST(TWEvmosCoinType, TWCoinTypeNativeEvmos) {
     assertStringsEqual(accUrl, "https://mintscan.io/evmos/account/evmos17xpfvakm2amg962yls6f84z3kell8c5ljcjw34");
     assertStringsEqual(id, "nativeevmos");
     assertStringsEqual(name, "Native Evmos");
+    assertStringsEqual(nativeTokenName, "Evmos");
 }
 
 } // namespace TW::NativeEvmos::tests

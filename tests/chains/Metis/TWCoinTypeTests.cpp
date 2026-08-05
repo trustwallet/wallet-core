@@ -19,6 +19,7 @@ TEST(TWMetisCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeMetis, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMetis));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMetis));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeMetis));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMetis), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeMetis));
@@ -29,4 +30,5 @@ TEST(TWMetisCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://andromeda-explorer.metis.io/address/0xBe9E8Ec25866B21bA34e97b9393BCabBcB4A5C86");
     assertStringsEqual(id, "metis");
     assertStringsEqual(name, "Metis");
+    assertStringsEqual(nativeTokenName, "Metis");
 }

@@ -19,6 +19,7 @@ TEST(TWHarmonyCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeHarmony, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeHarmony));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeHarmony));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeHarmony));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeHarmony), 18);
     ASSERT_EQ(TWBlockchainHarmony, TWCoinTypeBlockchain(TWCoinTypeHarmony));
@@ -29,4 +30,5 @@ TEST(TWHarmonyCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.harmony.one/#/address/a12");
     assertStringsEqual(id, "harmony");
     assertStringsEqual(name, "Harmony");
+    assertStringsEqual(nativeTokenName, "Harmony");
 }

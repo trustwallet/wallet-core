@@ -19,6 +19,7 @@ TEST(TWCryptoorgCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeCryptoOrg, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCryptoOrg));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCryptoOrg));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeCryptoOrg));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCryptoOrg), 8);
     ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeCryptoOrg));
@@ -29,4 +30,5 @@ TEST(TWCryptoorgCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://crypto.org/explorer/account/cro10wrflcdc4pys9vvgqm98yg7yv5ltj7d3xehent");
     assertStringsEqual(id, "cryptoorg");
     assertStringsEqual(name, "Crypto.org");
+    assertStringsEqual(nativeTokenName, "Cronos");
 }

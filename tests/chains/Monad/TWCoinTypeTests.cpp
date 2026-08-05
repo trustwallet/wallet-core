@@ -11,6 +11,7 @@ TEST(TWMonadCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x8394f9f01bc2ae2cc93e19170bf80c303210f6f4198e5ec3cc99b0cba04962b6"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x6ab69B482987b0BA1f1c96BDbDC192a80CB09132"));
@@ -18,6 +19,7 @@ TEST(TWMonadCoinType, TWCoinType) {
 
     assertStringsEqual(id, "monad");
     assertStringsEqual(name, "Monad");
+    assertStringsEqual(nativeTokenName, "Monad");
     assertStringsEqual(symbol, "MON");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

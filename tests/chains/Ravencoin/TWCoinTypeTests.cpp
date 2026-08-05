@@ -19,6 +19,7 @@ TEST(TWRavencoinCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeRavencoin, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeRavencoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeRavencoin));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeRavencoin));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeRavencoin), 8);
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeRavencoin));
@@ -29,4 +30,5 @@ TEST(TWRavencoinCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://blockbook.ravencoin.org/address/a12");
     assertStringsEqual(id, "ravencoin");
     assertStringsEqual(name, "Ravencoin");
+    assertStringsEqual(nativeTokenName, "Ravencoin");
 }

@@ -19,6 +19,7 @@ TEST(TWOntologyCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeOntology, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeOntology));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeOntology));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeOntology));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeOntology), 0);
     ASSERT_EQ(TWBlockchainOntology, TWCoinTypeBlockchain(TWCoinTypeOntology));
@@ -29,4 +30,5 @@ TEST(TWOntologyCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.ont.io/address/a12");
     assertStringsEqual(id, "ontology");
     assertStringsEqual(name, "Ontology");
+    assertStringsEqual(nativeTokenName, "Ontology");
 }

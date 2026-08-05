@@ -16,6 +16,7 @@ TEST(TWStrideCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("FB67755B3A00D4BCC11F607867B9C767CF24BCB749C718579D1EC794226087C8"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ TEST(TWStrideCoinType, TWCoinType) {
 
     assertStringsEqual(id, "stride");
     assertStringsEqual(name, "Stride");
+    assertStringsEqual(nativeTokenName, "Stride");
     assertStringsEqual(symbol, "STRD");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 6);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);

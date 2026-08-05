@@ -15,6 +15,7 @@ TEST(TWConfluxeSpaceCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x920efefb3213b2d6a3b84149cb50b61a813d085443a20e1b0eab74120e41ff72"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -23,6 +24,7 @@ TEST(TWConfluxeSpaceCoinType, TWCoinType) {
 
     assertStringsEqual(id, "cfxevm");
     assertStringsEqual(name, "Conflux eSpace");
+    assertStringsEqual(nativeTokenName, "Conflux");
     assertStringsEqual(symbol, "CFX");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);

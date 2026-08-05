@@ -19,6 +19,7 @@ TEST(TWViacoinCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeViacoin, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeViacoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeViacoin));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeViacoin));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeViacoin), 8);
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeViacoin));
@@ -29,4 +30,5 @@ TEST(TWViacoinCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.viacoin.org/address/a12");
     assertStringsEqual(id, "viacoin");
     assertStringsEqual(name, "Viacoin");
+    assertStringsEqual(nativeTokenName, "Viacoin");
 }

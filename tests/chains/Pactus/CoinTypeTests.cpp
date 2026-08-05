@@ -18,6 +18,7 @@ TEST(PactusCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes(""));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes(""));
@@ -25,6 +26,7 @@ TEST(PactusCoinType, TWCoinType) {
 
     assertStringsEqual(id, "pactus");
     assertStringsEqual(name, "Pactus");
+    assertStringsEqual(nativeTokenName, "Pactus");
     assertStringsEqual(symbol, "PAC");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 9);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainPactus);

@@ -36,6 +36,15 @@ class CoinTestGen
     name
   end
 
+  # Native token name, or display name if not specified
+  def native_token_name(coin)
+    name = coin['nativeTokenName']
+    if name == nil
+      name = display_name(coin)
+    end
+    name
+  end
+
   # Explorer urls
   def explorer_tx_url(c)
     path = c['explorer']['url'].to_s + c['explorer']['txPath'].to_s

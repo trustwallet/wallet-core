@@ -16,6 +16,7 @@ TEST(TWGreenfieldCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+    const auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x150eac42070957115fd538b1f348fadd78d710fb641c248120efcf35d1e7e4f3"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
@@ -24,6 +25,7 @@ TEST(TWGreenfieldCoinType, TWCoinType) {
 
     assertStringsEqual(id, "greenfield");
     assertStringsEqual(name, "BNB Greenfield");
+    assertStringsEqual(nativeTokenName, "BNB");
     assertStringsEqual(symbol, "BNB");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainGreenfield);

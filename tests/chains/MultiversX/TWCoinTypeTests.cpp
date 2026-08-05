@@ -19,6 +19,7 @@ TEST(TWMultiversXCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeMultiversX, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMultiversX));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMultiversX));
+    auto nativeTokenName = WRAPS(TWCoinTypeConfigurationGetNativeTokenName(TWCoinTypeMultiversX));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMultiversX), 18);
     ASSERT_EQ(TWBlockchainMultiversX, TWCoinTypeBlockchain(TWCoinTypeMultiversX));
@@ -29,4 +30,5 @@ TEST(TWMultiversXCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.multiversx.com/accounts/erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th");
     assertStringsEqual(id, "elrond");
     assertStringsEqual(name, "MultiversX");
+    assertStringsEqual(nativeTokenName, "MultiversX");
 }
