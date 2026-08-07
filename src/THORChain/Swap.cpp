@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
+#include <limits>
 
 /*
  * References:
@@ -35,13 +36,20 @@
 
 namespace TW::THORChainSwap {
 
-/// Returns true if the string is a non-empty sequence of decimal digits only.
-/// Used to reject non-numeric amount fields before they reach uint256_t()/std::stoull(),
-/// both of which throw on malformed input.
+/// Returns true if the string is a canonical decimal uint256_t (no leading zeros, e.g. "0500"
+/// would otherwise be misparsed as octal 320) that doesn't exceed uint256_t's max (which would
+/// otherwise silently wrap around).
 static bool isValidUInt(const std::string& value) {
-    return !value.empty() && std::all_of(value.begin(), value.end(), [](unsigned char c) {
-        return std::isdigit(c) != 0;
-    });
+    if (value.empty() || !std::all_of(value.begin(), value.end(), [](unsigned char c) {
+            return std::isdigit(c) != 0;
+        })) {
+        return false;
+    }
+    if (value.size() > 1 && value.front() == '0') {
+        return false;
+    }
+    using boost::multiprecision::cpp_int;
+    return cpp_int(value) <= cpp_int(std::numeric_limits<uint256_t>::max());
 }
 
 static Data ethAddressStringToData(const std::string& asString) {
