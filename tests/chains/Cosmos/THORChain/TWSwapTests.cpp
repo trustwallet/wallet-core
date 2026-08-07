@@ -411,6 +411,62 @@ TEST(TWTHORChainSwap, NegativeInvalidInput) {
     EXPECT_EQ(hex(outputData), "1a2508021221436f756c64206e6f7420646573657269616c697a6520696e7075742070726f746f");
     EXPECT_EQ(hex(data(std::string("Could not deserialize input proto"))), "436f756c64206e6f7420646573657269616c697a6520696e7075742070726f746f");
 }
+
+// Regression: a non-numeric from_amount used to make uint256_t() throw, and the exception
+// escaped the extern "C" boundary and called std::terminate. It must now return an error.
+TEST(TWTHORChainSwap, NegativeNonNumericFromAmount) {
+    Proto::SwapInput input;
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(Proto::BTC);
+    *input.mutable_from_asset() = fromAsset;
+    input.set_from_address(Address1Btc);
+    Proto::Asset toAsset;
+    toAsset.set_chain(Proto::ETH);
+    toAsset.set_symbol("ETH");
+    *input.mutable_to_asset() = toAsset;
+    input.set_to_address(Address1Eth);
+    input.set_vault_address(VaultBtc);
+    input.set_from_amount("not_a_number");
+    input.set_to_amount_limit("140000000000000000");
+
+    const auto inputData_ = input.SerializeAsString();
+    const auto inputTWData_ = WRAPD(TWDataCreateWithBytes((const uint8_t*)inputData_.data(), inputData_.size()));
+
+    const auto outputTWData_ = WRAPD(TWTHORChainSwapBuildSwap(inputTWData_.get()));
+    const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
+    Proto::SwapOutput outputProto;
+    ASSERT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
+    EXPECT_EQ(outputProto.error().code(), Proto::ErrorCode::Error_general);
+    EXPECT_FALSE(outputProto.has_bitcoin());
+}
+
+// Regression: an all-digit but out-of-range to_amount_limit passes the numeric pre-check yet
+// still overflows std::stoull() inside buildMemo(); the FFI-level try/catch must absorb it.
+TEST(TWTHORChainSwap, NegativeOverflowToAmountLimit) {
+    Proto::SwapInput input;
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(Proto::BTC);
+    *input.mutable_from_asset() = fromAsset;
+    input.set_from_address(Address1Btc);
+    Proto::Asset toAsset;
+    toAsset.set_chain(Proto::ETH);
+    toAsset.set_symbol("ETH");
+    *input.mutable_to_asset() = toAsset;
+    input.set_to_address(Address1Eth);
+    input.set_vault_address(VaultBtc);
+    input.set_from_amount("1000000");
+    input.set_to_amount_limit("99999999999999999999999999"); // > UINT64_MAX
+
+    const auto inputData_ = input.SerializeAsString();
+    const auto inputTWData_ = WRAPD(TWDataCreateWithBytes((const uint8_t*)inputData_.data(), inputData_.size()));
+
+    const auto outputTWData_ = WRAPD(TWTHORChainSwapBuildSwap(inputTWData_.get()));
+    const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
+    Proto::SwapOutput outputProto;
+    ASSERT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
+    EXPECT_EQ(outputProto.error().code(), Proto::ErrorCode::Error_general);
+    EXPECT_FALSE(outputProto.has_bitcoin());
+}
 // clang-format on
 
 } // namespace TW::ThorChainSwap::tests

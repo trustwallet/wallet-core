@@ -24,6 +24,8 @@
 #include "Binance/Address.h"
 #include "../proto/Binance.pb.h"
 
+#include <algorithm>
+#include <cctype>
 #include <cstdlib>
 
 /*
@@ -32,6 +34,15 @@
  */
 
 namespace TW::THORChainSwap {
+
+/// Returns true if the string is a non-empty sequence of decimal digits only.
+/// Used to reject non-numeric amount fields before they reach uint256_t()/std::stoull(),
+/// both of which throw on malformed input.
+static bool isValidUInt(const std::string& value) {
+    return !value.empty() && std::all_of(value.begin(), value.end(), [](unsigned char c) {
+        return std::isdigit(c) != 0;
+    });
+}
 
 static Data ethAddressStringToData(const std::string& asString) {
     Data asData(20);
@@ -110,6 +121,20 @@ SwapBundled SwapBuilder::build(bool shortened) {
         return {.status_code = static_cast<SwapErrorCode>(Proto::ErrorCode::Error_Invalid_to_address), .error = "Invalid to address"};
     }
 
+    // Validate numeric amount fields before parsing; uint256_t() and std::stoull() throw on
+    // malformed input, and this function is reached from an extern "C" boundary where an
+    // uncaught exception would terminate the host process.
+    if (!isValidUInt(mFromAmount)) {
+        return {.status_code = static_cast<SwapErrorCode>(Proto::ErrorCode::Error_general), .error = "Invalid from amount"};
+    }
+    if (!isValidUInt(mToAmountLimit)) {
+        return {.status_code = static_cast<SwapErrorCode>(Proto::ErrorCode::Error_general), .error = "Invalid to amount limit"};
+    }
+    if (mStreamParams.has_value() &&
+        (!isValidUInt(mStreamParams->mInterval) || !isValidUInt(mStreamParams->mQuantity))) {
+        return {.status_code = static_cast<SwapErrorCode>(Proto::ErrorCode::Error_general), .error = "Invalid stream params"};
+    }
+
     uint256_t fromAmountNum = uint256_t(mFromAmount);
     const auto memo = this->buildMemo(shortened);
 
@@ -134,7 +159,7 @@ SwapBundled SwapBuilder::build(bool shortened) {
         return {.status_code = static_cast<SwapErrorCode>(Proto::ErrorCode::Error_Unsupported_from_chain), .error = "Unsupported from chain: " + std::to_string(fromChain)};
     }
 }
-std::string SwapBuilder::buildMemo(bool shortened) noexcept {
+std::string SwapBuilder::buildMemo(bool shortened) {
     uint64_t toAmountLimitNum = std::stoull(mToAmountLimit);
 
     // Memo: 'SWAP', or shortened '='; see https://dev.thorchain.org/thorchain-dev/concepts/memos
