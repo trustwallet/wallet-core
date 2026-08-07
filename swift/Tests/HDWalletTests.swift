@@ -17,7 +17,7 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual(starkDerivationPath, "m/2645'/579218131'/211006541'/2124474935'/1609799702'/1")
 
         // Retrieve eth private key
-        let ethPrivateKey = wallet.getKeyForCoin(coin: CoinType.ethereum)
+        let ethPrivateKey = wallet.getKeyForCoin(coin: CoinType.ethereum)!
         XCTAssertEqual(ethPrivateKey.data.hexString, "03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d");
 
         // StarkKey Derivation Path
@@ -82,7 +82,7 @@ class HDWalletTests: XCTestCase {
     func testGetKeyForCoinBitcoin() {
         let coin = CoinType.bitcoin
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: coin)
+        let key = wallet.getKeyForCoin(coin: coin)!
 
         let address = coin.deriveAddress(privateKey: key)
         XCTAssertEqual(address, "bc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85")
@@ -92,16 +92,16 @@ class HDWalletTests: XCTestCase {
         let coin = CoinType.bitcoin
         let wallet = HDWallet.test
 
-        let key1 = wallet.getKeyDerivation(coin: coin, derivation: .bitcoinSegwit)
+        let key1 = wallet.getKeyDerivation(coin: coin, derivation: .bitcoinSegwit)!
         XCTAssertEqual(key1.data.hexString, "1901b5994f075af71397f65bd68a9fff8d3025d65f5a2c731cf90f5e259d6aac")
 
-        let key2 = wallet.getKeyDerivation(coin: coin, derivation: .bitcoinLegacy)
+        let key2 = wallet.getKeyDerivation(coin: coin, derivation: .bitcoinLegacy)!
         XCTAssertEqual(key2.data.hexString, "28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4")
 
-        let key3 = wallet.getKeyDerivation(coin: coin, derivation: .bitcoinTestnet)
+        let key3 = wallet.getKeyDerivation(coin: coin, derivation: .bitcoinTestnet)!
         XCTAssertEqual(key3.data.hexString, "ca5845e1b43e3adf577b7f110b60596479425695005a594c88f9901c3afe864f")
 
-        let key4 = wallet.getKeyDerivation(coin: coin, derivation: .bitcoinTaproot)
+        let key4 = wallet.getKeyDerivation(coin: coin, derivation: .bitcoinTaproot)!
         XCTAssertEqual(key4.data.hexString, "a2c4d6df786f118f20330affd65d248ffdc0750ae9cbc729d27c640302afd030")
     }
 
@@ -134,10 +134,10 @@ class HDWalletTests: XCTestCase {
         let coin = CoinType.pactus
         let wallet = HDWallet.test
 
-        let key1 = wallet.getKeyDerivation(coin: coin, derivation: .pactusMainnet)
+        let key1 = wallet.getKeyDerivation(coin: coin, derivation: .pactusMainnet)!
         XCTAssertEqual(key1.data.hexString, "153fefb8168f246f9f77c60ea10765c1c39828329e87284ddd316770717f3a5e")
 
-        let key2 = wallet.getKeyDerivation(coin: coin, derivation: .pactusTestnet)
+        let key2 = wallet.getKeyDerivation(coin: coin, derivation: .pactusTestnet)!
         XCTAssertEqual(key2.data.hexString, "54f3c54dd6af5794bea1f86de05b8b9f164215e8deee896f604919046399e54d")
     }
 
@@ -163,8 +163,8 @@ class HDWalletTests: XCTestCase {
     func testDerive() {
         let wallet = HDWallet.test
 
-        let key0 = wallet.getDerivedKey(coin: .ethereum, account: 0, change: 0, address: 0)
-        let key1 = wallet.getDerivedKey(coin: .ethereum, account: 0, change: 0, address: 1)
+        let key0 = wallet.getDerivedKey(coin: .ethereum, account: 0, change: 0, address: 0)!
+        let key1 = wallet.getDerivedKey(coin: .ethereum, account: 0, change: 0, address: 1)!
 
         XCTAssertEqual(AnyAddress(publicKey: key0.getPublicKeySecp256k1(compressed: false), coin: .ethereum).description, "0x27Ef5cDBe01777D62438AfFeb695e33fC2335979")
         XCTAssertEqual(AnyAddress(publicKey: key1.getPublicKeySecp256k1(compressed: false), coin: .ethereum).description, "0x98f5438cDE3F0Ff6E11aE47236e93481899d1C47")
@@ -173,7 +173,7 @@ class HDWalletTests: XCTestCase {
     func testWanchain() {
         let wanChain = CoinType.wanchain
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: wanChain)
+        let key = wallet.getKeyForCoin(coin: wanChain)!
         let address = wanChain.deriveAddress(privateKey: key)
 
         XCTAssertEqual(address, "0x4DDa26870B4b3fa3FbA32222159359038f588318")
@@ -182,7 +182,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveBitcoin() {
         let bitcoin = CoinType.bitcoin
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: bitcoin)
+        let key = wallet.getKeyForCoin(coin: bitcoin)!
         let address = bitcoin.deriveAddress(privateKey: key)
 
         XCTAssertEqual("bc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85", address)
@@ -191,7 +191,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveDigiByte() {
         let digibye = CoinType.digiByte
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: digibye)
+        let key = wallet.getKeyForCoin(coin: digibye)!
         let address = digibye.deriveAddress(privateKey: key)
 
         XCTAssertEqual("dgb1q7qk2vvetgldgq0eeh3ytsky2380l9wuessmhe3", address)
@@ -199,7 +199,7 @@ class HDWalletTests: XCTestCase {
 
     func testDeriveEthereum() {
         let ethereum = CoinType.ethereum
-        let key = HDWallet.test.getKeyForCoin(coin: ethereum)
+        let key = HDWallet.test.getKeyForCoin(coin: ethereum)!
         let address = ethereum.deriveAddress(privateKey: key)
 
         XCTAssertEqual("0x27Ef5cDBe01777D62438AfFeb695e33fC2335979", address)
@@ -208,7 +208,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveLitecoin() {
         let litecoin = CoinType.litecoin
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: litecoin)
+        let key = wallet.getKeyForCoin(coin: litecoin)!
         let address = litecoin.deriveAddress(privateKey: key)
 
         XCTAssertEqual("ltc1qmj6hw649d7q2teduv599zv9ls9akz60gkdwnp7", address)
@@ -217,7 +217,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveTron() {
         let tron = CoinType.tron
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: tron)
+        let key = wallet.getKeyForCoin(coin: tron)!
         let address = tron.deriveAddress(privateKey: key)
 
         XCTAssertEqual("THJrqfbBhoB1vX97da6S6nXWkafCxpyCNB", address)
@@ -226,8 +226,8 @@ class HDWalletTests: XCTestCase {
     func testDeriveIcon() {
         let icon = CoinType.icon
         let wallet = HDWallet.test
-        let key0 = wallet.getKeyForCoin(coin: icon)
-        let key1 = wallet.getDerivedKey(coin: icon, account: 0, change: 0, address: 1)
+        let key0 = wallet.getKeyForCoin(coin: icon)!
+        let key1 = wallet.getDerivedKey(coin: icon, account: 0, change: 0, address: 1)!
         let address0 = icon.deriveAddress(privateKey: key0)
         let address1 = icon.deriveAddress(privateKey: key1)
 
@@ -238,7 +238,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveOntology() {
         let ontology = CoinType.ontology
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: ontology)
+        let key = wallet.getKeyForCoin(coin: ontology)!
         let address = ontology.deriveAddress(privateKey: key)
 
         XCTAssertEqual("AH11LGtFk6VU9Z7suuM5eNpho1bAoE5Gbz", address)
@@ -247,7 +247,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveBitcoinCash() {
         let bitcoinCash = CoinType.bitcoinCash
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: bitcoinCash)
+        let key = wallet.getKeyForCoin(coin: bitcoinCash)!
         let address = bitcoinCash.deriveAddress(privateKey: key)
 
         XCTAssertEqual("bitcoincash:qqxktqe0pzf0yepvap9rf2g8zxq8t5mqx50dwpqlxl", address)
@@ -256,7 +256,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveDash() {
         let dash = CoinType.dash
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: dash)
+        let key = wallet.getKeyForCoin(coin: dash)!
         let address = dash.deriveAddress(privateKey: key)
 
         XCTAssertEqual("XsJg3pJaoyKEf5jMYTb5wGf3TKp9W3KX5a", address)
@@ -265,7 +265,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveZcoin() {
         let zcoin = CoinType.firo
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: zcoin)
+        let key = wallet.getKeyForCoin(coin: zcoin)!
         let address = zcoin.deriveAddress(privateKey: key)
 
         XCTAssertEqual("a5jgmKczLE7fbgBmVkDTvvAQx8pYZKL7LP", address)
@@ -274,7 +274,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveBinanceChain() {
         let binance = CoinType.binance
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: binance)
+        let key = wallet.getKeyForCoin(coin: binance)!
         let address = AnyAddress(publicKey: key.getPublicKeySecp256k1(compressed: true), coin: binance)
 
         XCTAssertEqual("bnb1wk7kxw0qrvxe2pj9mk6ydjx0t4j9jla8pja0td", address.description)
@@ -283,7 +283,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveBinanceTestnet() {
         let binance = CoinType.binance
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: binance)
+        let key = wallet.getKeyForCoin(coin: binance)!
         let address = AnyAddress(publicKey: key.getPublicKeySecp256k1(compressed: true), coin: binance, hrp: "tbnb")
 
         XCTAssertEqual("tbnb1wk7kxw0qrvxe2pj9mk6ydjx0t4j9jla8085ttu", address.description)
@@ -292,7 +292,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveZcash() {
         let zcash = CoinType.zcash
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: zcash)
+        let key = wallet.getKeyForCoin(coin: zcash)!
         let address = zcash.deriveAddress(privateKey: key)
         XCTAssertEqual("t1RygJmrLdNGgi98gUgEJDTVaELTAYWoMBy", address)
     }
@@ -300,7 +300,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveRipple() {
         let ripple = CoinType.xrp
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: ripple)
+        let key = wallet.getKeyForCoin(coin: ripple)!
         let address = ripple.deriveAddress(privateKey: key)
 
         XCTAssertEqual("r36yxStAh7qgTQNHTzjZvXybCTzUFhrfav", address)
@@ -308,7 +308,7 @@ class HDWalletTests: XCTestCase {
 
     func testDeriveAion() {
         let aion = CoinType.aion
-        let key = HDWallet.test.getKeyForCoin(coin: aion)
+        let key = HDWallet.test.getKeyForCoin(coin: aion)!
         let address = aion.deriveAddress(privateKey: key)
 
         XCTAssertEqual("0xa0dcc9e5e3bbd6a5a092f6b4975f6c5856e8eb750f37b7079bf7888e8cc1deb8", address)
@@ -316,7 +316,7 @@ class HDWalletTests: XCTestCase {
 
     func testDevieStellar() {
         let stellar = CoinType.stellar
-        let key = HDWallet.test.getKeyForCoin(coin: stellar)
+        let key = HDWallet.test.getKeyForCoin(coin: stellar)!
         let address = stellar.deriveAddress(privateKey: key)
 
         XCTAssertEqual(key.data.hexString, "4fd1cb3c9c15c171b7b90dc3fefc7b2fc54de09b869cc9d6708d26b114e8d9a5")
@@ -325,7 +325,7 @@ class HDWalletTests: XCTestCase {
 
     func testDeriveTezos() {
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: .tezos)
+        let key = wallet.getKeyForCoin(coin: .tezos)!
         let pubkey = key.getPublicKeyEd25519()
         let address = AnyAddress(publicKey: pubkey, coin: .tezos)
 
@@ -336,7 +336,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveTezos2() {
         let wallet = HDWallet(mnemonic: "kidney setup media hat relief plastic ghost census mouse science expect movie", passphrase: "")!
 
-        let key = wallet.getKeyForCoin(coin: .tezos)
+        let key = wallet.getKeyForCoin(coin: .tezos)!
         let address = CoinType.tezos.deriveAddress(privateKey: key)
 
         XCTAssertEqual("tz1M9ZMG1kthqQFK5dFi8rDCahqw6gHr1zoZ", address.description)
@@ -347,7 +347,7 @@ class HDWalletTests: XCTestCase {
         // but it's not compatible with safe.nimiq.com (can't import)
         let wallet = HDWallet(mnemonic: "insane mixed health squeeze physical trust pipe possible garage hero flock stand profit power tooth review note camera express vicious clock machine entire heavy", passphrase: "")!
         let coin = CoinType.nimiq
-        let key = wallet.getKeyForCoin(coin: coin)
+        let key = wallet.getKeyForCoin(coin: coin)!
         let address = coin.deriveAddress(privateKey: key)
 
         XCTAssertEqual("NQ77 XYYH YUNC V52U 5ADV 5JAY QXMD 2F9C Q440", address.description)
@@ -356,7 +356,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveDecred() {
         let wallet = HDWallet.test
         let coin = CoinType.decred
-        let key = wallet.getKeyForCoin(coin: coin)
+        let key = wallet.getKeyForCoin(coin: coin)!
         let address = coin.deriveAddress(privateKey: key)
 
         XCTAssertEqual("DsksmLD2wDoA8g8QfFvm99ASg8KsZL8eJFd", address.description)
@@ -365,7 +365,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveGroestlcoin() {
         let groestlcoin = CoinType.groestlcoin
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: groestlcoin)
+        let key = wallet.getKeyForCoin(coin: groestlcoin)!
         let address = groestlcoin.deriveAddress(privateKey: key)
 
         XCTAssertEqual("grs1qsjpmsmm4x34wlt6kk4zef9u0jtculguktwgwg4", address)
@@ -374,7 +374,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveDoge() {
         let doge = CoinType.dogecoin
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: doge)
+        let key = wallet.getKeyForCoin(coin: doge)!
         let address = doge.deriveAddress(privateKey: key)
 
         XCTAssertEqual("DJRoWqKj6hVmZMEMPahJ7UsqaYCtEJ3xv9", address)
@@ -383,7 +383,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveZilliqa() {
         let zil = CoinType.zilliqa
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: .zilliqa)
+        let key = wallet.getKeyForCoin(coin: .zilliqa)!
         let address = zil.deriveAddress(privateKey: key)
 
         XCTAssertEqual(key.data.hexString, "b49a9fb16cd2b46ee538be807f712073009ea528e407a25a4bf91a63c3e49f99")
@@ -393,7 +393,7 @@ class HDWalletTests: XCTestCase {
     func testSignHash() {
         let eth = CoinType.ethereum
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: eth)
+        let key = wallet.getKeyForCoin(coin: eth)!
         let hash = Data(hexString: "3F891FDA3704F0368DAB65FA81EBE616F4AA2A0854995DA4DC0B59D2CADBD64F")!
         let result = key.sign(digest: hash, curve: .secp256k1)!
 
@@ -500,7 +500,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveRavencoin() {
         let ravencoin = CoinType.ravencoin
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: ravencoin)
+        let key = wallet.getKeyForCoin(coin: ravencoin)!
         let address = ravencoin.deriveAddress(privateKey: key)
 
         XCTAssertEqual("RHQmrg7nNFnRUwg2mH7GafhRY3ZaF6FB2x", address)
@@ -508,7 +508,7 @@ class HDWalletTests: XCTestCase {
 
     func testDeriveTerraV2() {
         let coin = CoinType.terraV2
-        let key = HDWallet.test.getKeyForCoin(coin: coin)
+        let key = HDWallet.test.getKeyForCoin(coin: coin)!
         let address = CoinType.terraV2.deriveAddress(privateKey: key)
 
         XCTAssertEqual(address, "terra1jf9aaj9myrzsnmpdr7twecnaftzmku2mhs2hfe")
@@ -517,7 +517,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveMonacoin() {
         let monacoin = CoinType.monacoin
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: monacoin)
+        let key = wallet.getKeyForCoin(coin: monacoin)!
         let address = monacoin.deriveAddress(privateKey: key)
 
         XCTAssertEqual("MHkScH5duuiaAkdQ22NkLWmXqWnjq3hThM", address)
@@ -527,7 +527,7 @@ class HDWalletTests: XCTestCase {
         let fio = CoinType.fio
 
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: fio)
+        let key = wallet.getKeyForCoin(coin: fio)!
         let address = fio.deriveAddress(privateKey: key)
 
         XCTAssertEqual("FIO5J2xdfWygeNdHZNZRzRws8YGbVxjUXtp4eP8KoGkGKoLFQ7CaU", address)
@@ -536,7 +536,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveAlgorand() {
         let algo = CoinType.algorand
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: algo)
+        let key = wallet.getKeyForCoin(coin: algo)!
 
         let address = algo.deriveAddress(privateKey: key)
 
@@ -545,7 +545,7 @@ class HDWalletTests: XCTestCase {
 
     func testDeriveKava() {
         let coin = CoinType.kava
-        let key = HDWallet.test.getKeyForCoin(coin: coin)
+        let key = HDWallet.test.getKeyForCoin(coin: coin)!
         let address = coin.deriveAddress(privateKey: key)
 
         XCTAssertEqual(address, "kava1zrst72upua78pylhku9csxd5zmhsyrk7xhrdlf")
@@ -553,7 +553,7 @@ class HDWalletTests: XCTestCase {
 
     func testDeriveBandChain() {
         let coin = CoinType.bandChain
-        let key = HDWallet.test.getKeyForCoin(coin: coin)
+        let key = HDWallet.test.getKeyForCoin(coin: coin)!
         let address = coin.deriveAddress(privateKey: key)
 
         XCTAssertEqual(address, "band1pe8xm2r46rmctsukuqu7gl900vzprfsp4sguc3")

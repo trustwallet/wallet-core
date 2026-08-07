@@ -21,7 +21,7 @@ class EvmosTests: XCTestCase {
     func testSigningNativeTransfer() {
 
         let wallet = HDWallet(mnemonic: "glue blanket noodle name bring castle degree vibrant great joy usual mother pyramid cat balance swear diagram green split goat token day arm shoe", passphrase: "")!
-        let privateKey = wallet.getKeyForCoin(coin: .nativeEvmos)
+        let privateKey = wallet.getKeyForCoin(coin: .nativeEvmos)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
 
         XCTAssertEqual(publicKey.data.hexString, "049475c9fa23ec693667baa76c4da69b49cccfdf058c4dcb27ba67cfbc9082d9ed9074786560aa698b19bb9729526b1c75934f3d4a78f7be719e4386b749b36310")
