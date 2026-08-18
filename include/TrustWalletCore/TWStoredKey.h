@@ -353,6 +353,19 @@ TWString* _Nullable TWStoredKeyDecryptMnemonic(struct TWStoredKey* _Nonnull key,
 TW_EXPORT_METHOD
 struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWData* _Nonnull password);
 
+/// Sealed signing: signs a transaction inside the keystore.  Derives the key from the stored key,
+/// signs the given serialized SigningInput, and wipes the key — the private key never leaves the
+/// library (the caller receives only the signature).
+///
+/// \param key Non-null pointer to a stored key
+/// \param coin Coin type to sign for
+/// \param password Non-null block of data, password of the stored key
+/// \param input Non-null block of data, serialized SigningInput protobuf (without a private key)
+/// \note Returned object needs to be deleted with \TWDataDelete
+/// \return Null pointer on failure or if the coin is not supported by the sealed path; serialized SigningOutput otherwise
+TW_EXPORT_METHOD
+TWData* _Nullable TWStoredKeySign(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWData* _Nonnull password, TWData* _Nonnull input);
+
 /// Decrypts and returns the HD Wallet for mnemonic phrase keys.  Returned object needs to be deleted.
 ///
 /// \param key Non-null pointer to a stored key
