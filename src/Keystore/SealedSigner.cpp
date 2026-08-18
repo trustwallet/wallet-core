@@ -42,6 +42,12 @@ Data sealedSign(StoredKey& storedKey, TWCoinType coin, const Data& password, con
     // (1) Decrypt + derive the signing key ONCE, inside the library.
     //     (Account-based coins need a single key; the UTXO multi-key path — decrypt once, derive
     //      many from the in-memory HDWallet — is added in a later increment.)
+    //
+    // TODO(S2.1 follow-up): this derives at the coin's DEFAULT derivation and DEFAULT account only.
+    //   A custom derivation path or a non-default account is not yet threaded through, so signing
+    //   such a wallet uses the default account's key and won't match its address. Add a
+    //   derivation/path parameter (see claude-handoff-S2-UTXO-sealed-sign-findings.md) so callers on
+    //   custom paths / multi-account wallets are supported.
     PrivateKey privateKey = storedKey.privateKey(coin, password);
 
     // (2) Inject the key into the coin's SigningInput proto.

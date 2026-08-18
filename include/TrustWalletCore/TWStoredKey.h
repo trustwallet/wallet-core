@@ -362,6 +362,10 @@ struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnul
 /// \param password Non-null block of data, password of the stored key
 /// \param input Non-null block of data, serialized SigningInput protobuf (without a private key)
 /// \note Returned object needs to be deleted with \TWDataDelete
+/// \note LIMITATION (S2.1): the key is derived at the coin's DEFAULT derivation and DEFAULT account.
+///       A custom derivation path or a non-default account is NOT yet supported — signing such a
+///       wallet here uses the default account's key and will not match its address. Passing the
+///       derivation/path through to wallet-core is a planned S2.1 follow-up.
 /// \return Null pointer on failure or if the coin is not supported by the sealed path; serialized SigningOutput otherwise
 TW_EXPORT_METHOD
 TWData* _Nullable TWStoredKeySign(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWData* _Nonnull password, TWData* _Nonnull input);
